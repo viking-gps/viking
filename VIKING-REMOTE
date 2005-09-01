@@ -1,0 +1,2 @@
+gconftool-2  -s -t bool /desktop/gnome/url-handlers/geo/enabled "true"
+gconftool-2  -s -t string /desktop/gnome/url-handlers/geo/command "viking-remote \"%s\""

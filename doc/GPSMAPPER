@@ -1,0 +1,13 @@
+A word on exporting TrackWaypoint layers as GPSMapper files.
+(NOTE: You should always save your data as a gpspoint or Viking file also because Viking cannot open gpsmapper files)
+The comment field for each track/waypoint you want to export to GPSMapper should be in the following format:
+
+Name RGN## 0x####
+   - or -
+Name RGN## 0x##
+
+Where the first '##' is 10, 20, 40, or 80, and the second group of '#'s is the type of region.
+See the GPSmapper ( http://gps.chrisb.org/ ) docs for more details.
+By the way, if anyone knows of an open-source program to make compiled maps for (preferably Garmin, 
+but I would appreciate info on other brand) GPS receivers, please tell me!
+

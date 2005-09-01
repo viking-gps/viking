@@ -1,0 +1,1 @@
+gcc -mms-bitfields -DWINDOWS -Ic:\gtk\include\pango-1.0 -Ic:\gtk\lib\gtk-2.0\include -Ic:\gtk\include\atk-1.0 -Ic:\gtk\include -Ic:\gtk\include\gtk-2.0 -Ic:\gtk\include\glib-2.0 -Ic:\gtk\lib\glib-2.0\include -c ..\%1

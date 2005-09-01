@@ -1,0 +1,20 @@
+new file -- clipboard.c
+
+Copy layer -> layer address
+on paste, layer_copy_func in Interface. returns new layer with new data, etc.
+
+-- items --
+
+if selected thing something to be copied call
+layer_copy_item_func
+then
+layer_paste_item_func
+If same layer is selected.
+
+The only problem is determining if selected item can be copied.
+No, wait, piece of cake. Hand back sublayer_type to the layer in a new interface func
+
+gboolean layer_sublayer_is_copyable_func ( sublayer_type )
+
+to determine if copyable
+

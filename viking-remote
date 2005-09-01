@@ -1,0 +1,120 @@
+#!/usr/bin/perl
+
+#
+# geo://wpname:cmnt@34.15,-118.15/topo=/somedir,aerial=/someotherdir
+#
+
+die "Usage: viking-remote uri\n" if ( $#ARGV < 0 );
+
+if ( $ARGV[0] eq "debug" ) {
+  $DEBUG = 1;
+  shift @ARGV;
+} else {
+  $DEBUG = 0;
+}
+
+($ARGV[0] =~ m<(geo:)?/*([^/]*)(/(.*))?>) or die "Bad URI";
+$loc = $2;
+$extras = $4;
+
+if ( $loc =~ /^(GC[0-9A-Z]+)$/ ) {
+ $gc = $loc;
+ $loc=`gcfetchtxt http://www.geocaching.com/seek/cache_details.aspx?wp=$loc|head -2|tail +2`;
+}
+
+# have a lot of fun...
+($loc =~ /^(([^:@]*)(:([^:@]*))?@)?N?(S?)\s*((([0-9'"`°o\-\.])|(° ))*)[, ]\s*E?(W?)\s*(([0-9'"`o\-\.]|(° ))*)(:([0-9\-\.]*))?$/)
+    or die "Bad URI";
+
+$wp = $2 ? $2 : ( $gc ? $gc : "waypoint" );
+$cmt = $4; $lat = $6; $lon = $11; $alt = $15;
+
+$latfact = ($5 eq "S") ? -1 : 1;
+$lonfact = ($10 eq "W") ? -1 : 1;
+
+if ( $lat =~ /^(-?)(\d*)[°'"`o] *([\d.]*)$/ ) {
+  $lat = ($2 + ($3/60)) * ($1 ? -1 : 1);
+}
+if ( $lon =~ /^(-?)(\d*)[°'"`o] *([\d.]*)$/ ) {
+  $lon = ($2 + ($3/60)) * ($1 ? -1 : 1);
+ }
+
+$lat *= $latfact;
+$lon *= $lonfact;
+
+if ( $extras =~ /^(auto)?street/ ) {
+  $mode = "latlon";
+  $zoom = 4.205;
+} else {
+  $mode = "utm";
+  $zoom = 4.0;
+}
+
+if ( $DEBUG ) {
+  open(PIPE, "|cat");
+} else {
+  open(PIPE, "|viking -- -");
+}
+
+print PIPE <<ENDDATA;
+#VIKING GPS Data file http://gpsmaps.org/viking/
+xmpp=$zoom;
+ympp=$zoom;
+lat=$lat
+lon=$lon
+mode=$mode
+ENDDATA
+
+@maps = split(',', $extras);
+foreach $map (@maps) {
+  $maptype = -1;
+  $mapname = $map;
+  $mapdir = "";
+  $auto = "f";
+  if ( $map =~ /^auto/ ) {
+    $auto = "t";
+    $map = substr($map, 4, 999);
+  }
+  if ( $map =~ /^street/i ) {
+    $maptype = 9;
+  } elsif ( $map =~ /^expedia/i ) {
+    $maptype = 5;
+  } elsif ( $map =~ /^urban/ || $map =~ /^color/ ) {
+    $maptype = 4;
+  } elsif ( $map =~ /^topo/ || $map =~ /^terraserver/ ) {
+    $maptype = 2;
+  } elsif ( $map =~ /^ortho/ || $map =~ /^aerial/ ) {
+    $maptype = 1;
+  }
+  if ( $maptype != -1 ) {
+    @mapanddir = split('=', $map);
+    if ( $#mapanddir > 0 ) {
+      $mapname = $mapanddir[0];
+      $mapdir = $mapanddir[1];
+    }
+    print PIPE <<ENDDATA;
+
+~Layer Map
+name=$mapname
+mode=$maptype
+directory=$mapdir
+autodownload=$auto
+~EndLayer
+ENDDATA
+  }
+}
+
+print PIPE <<ENDDATA;
+
+~Layer TrackWaypoint
+name=$wp
+tracks_visible=t
+waypoints_visible=t
+~LayerData
+type="waypoint" latitude="$lat" longitude="$lon" name="$wp" comment="$cmt" altitude="$alt"
+~EndLayerData
+~EndLayer
+ENDDATA
+
+
+close(PIPE);

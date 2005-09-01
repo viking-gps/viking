@@ -1,0 +1,9 @@
+I don't think you need to use this anymore (just use the regular makefile), but I'm leaving it in so I know how to compile Viking on Windows ;)
+
+----
+If your GTK path isn't c:\gtk and/or your mingw path isn't c:\mingw, you will have to edit the scripts to compile.
+Then run
+
+setpath
+makeall
+link

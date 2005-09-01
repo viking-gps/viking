@@ -1,0 +1,21 @@
+Cleanups:
+Split up viktrwlayer.c, etc.
+get rid of duplicate code (including new 1mpp topo stuff & fix that hack) in vikmaplayer.c
+
+VikTRWlayer.c cleanup:
+        and maybe viktrwlayer_dialog.c
+        as much as you can fit in a week.
+        file.c >> viktrwlayer.c (yeah, viktrwlayer.c could really use some extra lines of code...)?
+        is there a way to split up viktrwlayer.c? it is a MESS! (split it up)
+        instead of get_tracks and get_waypoints, have lookup's and insert's (actually, only gpspoint.c uses it now)
+        waypoint.c with some dialog.c stuff. tool code in maybe even another file, viktrwlayer_tools.c or maybe 
+viktrwlayer_menu.c
+        all layer files: there are things that nolonger need to be non-static (sublayer_add_menu, properties, etc.)
+
+AUDITS & CLEANUPS:
+        no more dialog.c -- scatter it to layers' files.
+        audit viklayerspanel.c, viktrwlayer.c, dialog.c, and maybe others.
+        resolve nameing and semi-static stuff: dialog.c, http.c, file.c (put into viktrwlayer.c, maybe)
+
+do a BUNCH of TODOs
+
