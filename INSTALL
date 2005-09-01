@@ -1,0 +1,27 @@
+UNIX:
+You must have GTK+ 2.2.0 or greater installed.
+
+cd src
+make
+strip --strip-all viking # optional)
+cp viking /usr/local/bin # as root)
+cp ../viking-remote /usr/local/bin # optional)
+
+Or, if you are using GTK 2.2 (as opposed to 2.4 or greater):
+
+cd src
+make -f Makefile_GTK_2_2
+strip --strip-all viking
+cp viking /usr/local/bin
+cp ../viking-remote /usr/local/bin
+
+Try the "example.vik" file to get started.
+
+Windows:
+(Outdated info)
+You must have Mingw and MSYS (?) installed. Set the path to include the GTK LIB
+directory and the bin directory for mingw. Then just gcc -c each of source files
+and link 'em together along with a bunch of GTK libs. I have batch files to do
+all of this, I will include them in here soon. Cross-compiling with Linux
+might also be possible but I've never tried it.
+

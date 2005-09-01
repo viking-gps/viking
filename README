@@ -1,0 +1,20 @@
+To compile:
+
+make
+
+Or if you're using GTK 2.2:
+
+make -f Makefile_GTK_2_2
+
+... and ignore the GtkColorButton warnings etc.
+
+Viking needs documentation! Any volunteers?
+After I get some core features down I'll start on documentation. I promise.
+
+To export as GPSMapper, the track/waypoint name should be in the format of:
+
+Name RGN## 0x####
+
+or
+
+Name RGN## 0x##

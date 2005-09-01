@@ -1,0 +1,23 @@
+Naming:
+A "module" is a .c file.
+
+Functions starting with "vik_" operate on an object/structure with the module name (see layer.c for an example).
+Functions starting with "a_" do not, these modules may have static variables.
+Both are followed by the module name. Unless of course the function is static, in which case it may be called anything.
+
+All (well, practically all) global constants and macros start with "VIK_" and then the module name.
+
+----
+
+The layers panel holds all the layers. Layers connect to the layers panel via what I call "interfaces" which are really just a 
+structure of function pointers and pointers to other bits such as icons. viklayer.c switches between the layers like 
+polymorhpism. Anything specific to the layer should (in theory) be found solely in that layer's source file.
+
+There are some ugly hacks in here, like the layers panel holding the viewport and each layer holding the viewport and a 
+GtkTreeIter. Unfortunately it was the only way I could figure out to do some things. It would be _much_ easier with a 
+object-oriented language.
+
+---
+
+"xmpp" and "ympp" are really misnomers, as they only represent the Meters Per Pixel in UTM mode. Otherwise they are an artificial
+zooming system. In expedia mode it represents the "Alti", in Google mode it represents 2^(scale), e.g. 2^0 = 1, 2^8 = 256.

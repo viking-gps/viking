@@ -1,0 +1,91 @@
+
+ff2.c
+reads thru thing
+if layer, makes new layer of type
+adds to aggregate
+
+looks at line
+if starts with '[' creates layer (new interface func?)
+fgets line with 'this=this' in
+calls
+
+interface {
+...
+   params {
+     { "this", PARAM_THIS },
+     { "that", PARAM_THAT },
+   },
+   num params = 2,
+
+}
+
+set_param(VikLayer*l,gint type_id,gchar *stuff) { switch(type_id) {
+case PARAM_THIS:
+  layer_set_this(l,stuff);
+case PARAM_THAT:
+  l->that = atol(stuff)
+} }
+
+checks thru params strlen() check and strncmp()
+good -> set param
+
+*now*, what if I could use all this set_param stuff for dynamic dialog box creation?
+and default (non-interactive) new layers?
+
+param name     ID        explanation           type           widget type              min/min len               max/max len       default val
+colorvelocity  VEL       lower velocity range  CUSTOM         CUSTOM
+line_thickness THICK     Track Line Thickness  INT            SPINBUTTON               1                         15                1
+# on read,  if outside range, gives error. 
+
+special stuff like color velocity range?
+
+union param_val {
+  gchar *s;
+  long l;
+  double d;
+}
+
+color velocity range:
+[     ]  to  [      ]
+
+so we need a special get_widget_for_param() thingy.
+then                 set_param_from_widget() -> gets widget data does its thing
+
+tabs?
+radio boxes? (names)
+
+----
+
+ff2.c
+
+typedef struct {
+  Stack *under;
+  gpointer data;
+} Stack;
+
+void pop(Stack **stack) {
+  Stack *tmp = (*stack)->under;
+  g_free ( *stack );
+  *stack = tmp;
+}
+
+void push(Stack **stack)
+{
+  Stack *tmp = g_malloc ( sizeof ( Stack ) );
+  tmp->under = *stack;
+  *stack = tmp;
+}
+
+/*
+read thru file
+if "[Layer Type="
+  push(&stack)
+  new default layer of type (str_to_type) (check interface->name)
+if "[EndLayer]"
+  VikLayer *vl = stack->data;
+  pop(&stack);
+  vik_aggregate_layer_add_layer(stack->data, vl);
+if "[LayerData]"
+  vik_layer_data ( VIK_LAYER_DATA(stack->data), f, vp );
+
+*/

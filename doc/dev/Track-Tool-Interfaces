@@ -1,0 +1,27 @@
+static struct trwlayer_interface = {
+ ...,
+ trwlayer_tools,
+ sizeof ( trwlayer_tools ) / sizeof ( LayerTool ), /* gshort */
+};
+
+static struct trwlayer_tools = {
+  { "Add Waypoint", trwlayer_add_wp },
+  { "Add Track", trwlayer_add_track },
+};
+
+----
+
+Tools Adding:
+ItemFactory args:
+1) VikWindow
+2) 4-byte variable containing ID and ID of tool.
+
+struct VikLayerToolId {
+  gshort layer_id;
+  gshort tool_id;
+};
+
+Then we just need to assert (or #warning, etc.) that 
+sizeof(VikLayerToolId) <= sizeof(gpointer)
+OR, I could use guint8 to be on the safe size, for a maximum of 256 
+layer types. But I think guint16 will be file.

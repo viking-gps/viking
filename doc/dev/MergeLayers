@@ -1,0 +1,25 @@
+Merge down -> check if another TRWLayer below (HOW)
+Actual merge operation:
+Take one layer, go thru each waypoint/track of another.
+Take old name and value pointers, add to new layer, steal from old layer.
+Name conflict:
+
+ ______________________________________________________
+|_____n_a_m_e_____________c_o_n_f_l_i_c_t______________|
+|                                                      |
+| The track 'x' exists in both the top layer ('l1')    |
+| and the bottom layer ('l2'). What do you want to do? |
+|                                                      |
+| Delete From  :                   top layer ('l1')    |
+| Rename to                                            |
+| [        ] in:                                       |
+| Autorename                                           |
+| Delete All                       bottom layer ('l2') |
+| Autorename all                                       |
++------------------------------------------------------+
+
+TODO
+* check if another TRWLayer below (HOW)
+* Better/less confusing UI
+
+UI (name conflict) suggestions would be appreciated!

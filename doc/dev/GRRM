@@ -1,0 +1,12 @@
+Geo Referenced Raster Map Layer (Operation Gremlin) vikgrmlayer.c
+Tasks:
+*) read and understand World (JGW,etc) files.
+*) new layer type, world data inside later, on save written into viking file as JGW/whatever.
+*) new layer dialog choose image and type in world data, or button "load from file"
+*) reference to map. we sh/could also store whole map in memory. but there also must be a filename to write to viking file.
+*) only draws on proper zoom level, or perhaps very very close to proper zoom level
+*) right click -> go to this zoom level, goto corner or center of map, export to world file
+
+Later Versions:
+*) edit mode where we can move map, resize (really resize tracks), etc.
+*) rotation

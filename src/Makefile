@@ -1,0 +1,47 @@
+# This is the Makefile for the viking gps viewer program.
+# This file is licensed through the GPL version 2 or newer.
+
+ifeq ($shell uname -o),Cygwin)
+CYGWIN = 1
+EXE = .exe
+endif
+
+TARGET=viking$(EXE)
+OBJECTS=viktrack.o vikwaypoint.o clipboard.o coords.o gpsmapper.o gpspoint.o file.o main.o dialog.o http.o viktreeview.o viktrwlayer.o viklayer.o viklayerspanel.o vikcoordlayer.o vikstatus.o vikwindow.o vikviewport.o vikaggregatelayer.o vikgeoreflayer.o vikfileentry.o viktrwlayer_tpwin.o viktrwlayer_propwin.o thumbnails.o background.o vikradiogroup.o vikcoord.o expedia.o mapcache.o vikmapslayer.o terraserver.o google.o googlemaps.o gtkcellrendererprogress.o khmaps.o usgs.o
+
+CCFLAGS = -Wall -g
+LINKFLAGS =
+
+ifdef DEBUG
+DFLAGS += -g
+endif
+
+all:: viking
+
+.PHONY: all clean realclean depend
+
+-include .depend
+
+.compile_config:
+	pkg-config --cflags gtk+-2.0 | sed -e 's/ -I/ -isystem/g' -e 's/^-I/-isystem/g' >$@.tmp
+	mv $@.tmp $@
+.link_config:
+	pkg-config --libs gtk+-2.0 gthread-2.0 >$@.tmp
+	mv $@.tmp $@
+
+clean::
+	rm -f *.o core $(TARGET).core *.tmp
+realclean:: clean
+	rm -f $(TARGET) .depend .compile_config .link_config
+
+$(TARGET): $(OBJECTS) .link_config
+	$(CC) $(LINKFLAGS) -o $@ $(OBJECTS) `cat .link_config`
+%.o: %.c .compile_config
+	$(CC) $(CCFLAGS) -o $@ -c $< `cat .compile_config`
+
+.depend: .compile_config .link_config
+	$(CC) $(CFLAGS) -MM -MG $(OBJECTS:.o=.c) `cat .compile_config` >$@.tmp
+	mv $@.tmp $@
+	@echo dependencys got built.
+depend::
+	@#

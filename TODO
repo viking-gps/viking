@@ -1,0 +1,534 @@
+FIXES:
+
+Mapcache: checks if only a few images in cache (list_shift)
+what happens if image is bigger than cache size! fix this...
+
+del from cache when updating image
+
+check out bgitemcount stuff in background.c
+open jobs window a 2nd time after clearing (mess around a bit), crashes
+
+TOO MANY OPEN FILES!!!!!!!!!!!!!!!!!!!
+
+FIX HOLLISTER-RELATED DOWNLAOD TOPOS -> COORD NOT IN UTM ASSERT/CRASH (???)
+
+  smarter caching (size-based), too many open files bug?
+
+  what if try to REDOWLOAD while RE/DOWNLOADing?
+  remove from CACHE after REDOWNLOADing
+  Reid's 23, including waypoints, GPX/XML Viking files.
+  Fix map downloading/HTTP code.
+  Redraw when becomes available, somehow?
+  Speed up waypoint drawing; option for faster drawing.
+  FIX CACHE TOO BIG/SMALL STUFF!!! Just add a 'size' field to each tile, add and subtract as ness.
+	Then convert to MB and set this a program option.
+  map loading/memory caching in the background? (for zoom out)
+  modular plotting styles? just an idea...
+  optimize Lat/Lon performance with its own CE1, CE2 etc.
+  make ce1, cn2 etc for lat/lon & utm; maybe get out the checking code in vik_viewport (see draw_rectange for instance)
+  no alphabetize in the layer itself option for opening tons of GC's? (optimization tag for wp drawing and alphab.)
+  Progressive Loading (GdkPixbufLoader)
+  CACHING WHOLE CHUNKS? (USEFUL FOR MAP ZOOM TOO!) RELOAD BUTTON?
+  * instead of using "emit"s in tools, do this:
+
+  * "add-only" return value -- only redraw this layer and layers above it.
+ 	OR maybe even more advanced -- only redraw certain portions of screen.
+	what about ALPHA??? uh oh...
+ 	"always redraw" return value -- if layer is visible or not -- e.g. goto wp
+	"redraw if visible" return value
+  WHITE UNDER TRACKS! DONE FASTER! CLEAN THIS UP!
+  replace HTTP code!!!
+  relative photo pathnames (relative to GPS data file)
+  Optimizations (compare to 0.0.5)
+OTHER
+  Editing/Moving waypoints: if didn't move enough
+  settable defaults for layers (sigh...) OR at least config.h stuff
+  hover over pic
+  Clipboard done right -- GtkClipboard, between processes
+  Better annotation for tracks, etc. Fields, etc.
+  Waypoints -- exactly change how it looks like -- shape, size of point.
+           \-- make drawing name OPTIONAL.
+  Filled polygons and we'll have a QuasiGIS!!!
+  merge layers -OR- copy & paste >1 item (better! not too hard?)
+  New UI: "Track Tool" => just analyze/pick out, right click or button to edit
+	right click to do new track
+      or "Track/Waypoint Tool"
+  I18N
+THUMBNAILS
+  * settable viewer: xv, kview, eog, gnome-open, kfmclient, etc. custom (& web browser for geocaches)
+
+0.1.2
+  * Data sources: google, gpsbabel
+    * gpsbabel plugin -- wired up to get directions from google maps.
+    * address plugin.
+  * direct GPS support (?)
+    GPS navigation (speed, etc, etc)
+  * advanced downloader?
+0.1.3
+  * stops
+    whole list: length, max movement, icons. can make more. right click -> stops...
+  * symbols
+  * draw by altitude, altitude side thingy.
+0.1.4
+  * selections (?)
+  * NASA crazhy maps
+  * scale
+0.1.6
+  * new UI & documentation
+  * internationalization
+0.2.0
+  * TIGER data, vector maps
+0.3.0
+  * altitude stuff, goodies
+  * major UI changes, direct manipulation
+  * sit down for a day or two and design the bestest bestest UI
+  * threads, etc
+  * docs, lots of docs
+1.0
+  * more sophisticated vector data, almost GIS stuff. garmin maps, whatever
+  * party
+
+--------------------------------
+
+0.0.9 / 0.1.0
+ SELECTIONS (?)
+  * square & track-based
+  * select everything in, everything out
+  * download maps in
+ WAYPOINTS
+  * pango for text; text background with settable colors & options
+  * move & edit waypoints!!! auto-select for that
+  * maybe an option to turn on auto-select: off, on, only for same layer (default)
+ MAPS
+  * some of the above optimizations
+ MERGE TRW
+  * auto-rename dupes
+  * delete dupes by name
+  * delete dupes by location; name & location
+ TRACKS
+  * track editing -- everything on that idea sheet on my desk.
+  * insert into track
+  * show list of pics in one location
+  * maybe track-by-elevation
+ MISC
+  * alphabetize waypoints & tracks
+  * d&d layers (not worth it?)
+ FIXES
+  * crazhy-crazhy auto-switch UTM?
+  * figure out save image in background stuff, sigh...
+  * "widget properties set value param data"
+    -> check if has properties params
+    -> in layer_prop_fact: hold value's check if changed.
+    -> return TRUE only if value affects look
+    -> beautify dynamic properties boxes (checkboxes please?)
+    -> groups
+    -> maybe get rid of post_read (use set_param to update gc's -- but maybe not...)
+  * TODOs & FIXMEs
+  * due <= 2004-6-12 (1 yr after 0.0.3)
+
+DONE:
+  * do alpha _right_ (to see what I mean, try drawing a transparent PNG)
+-----------------------
+
+POSSIBLE MAP OPTIMIZATIONS:
+save conglomerates of shrunken images [to disk]?
+static cache.c shared between everything -- SHARE MAP CACHES BETWEEN LAYERS AND WINDOWS!!!
+background loading thread
+load zoomed out images into conglomerates
+ -or-
+Sort images by some sort of checksum (maybe sum of all digits) into 10 groups
+makes finding cached image 10 times faster
+if we somehow know we're not going to have enough room to store all maps for 1 redraw in cache, don't cache at all.
+better cache management -- maybe every map in memory?
+--> cache should fit more small maps than big ones!!!
+    maybe number for cache_size, keep track of it manuall, calculate from shrinkfactor? <-- good idea
+pixmap (not pixbuf) cache?
+vikmaplayer.c:520, don't run g_slist_length who-knows-howmany times (only noticable when shrinking cache)
+stat images to make sure the size isn't zero (vs. trying to load them). then show errors for bad ones (?)
+don't lookup IP each time (?)
+
+------------------------------
+
+
+ Then, focus on Lat/Lon and mapquest maps. (????)
+ Then, focus on Lat/Lon and mapquest maps.
+
+0.0.9 "260 million maps... I can't hear you at all" release:
+finalize pthread/map download UI.
+export to image fix bug
+viking running -> use this thread ( good luckers !!! )
+merge trw layers
+
+0.1.0 "where we're going, we don't need roads" release (concept idea):
+Select a waypoint, delete to delete it, real tools, a toolbar, etc.
+Drag and drop layers
+alphabetatize waypoints & tracks
+"area selections" -- select tool -> select waypoints in/outside area, download maps in area, etc. etc.
+
+-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/
+
+0.1.0: the "fixes, patches, improvements, and goodies" release
+       "Where we're going, we don't need roads..."
+
+  * move a_dialog_new_track to viktrwlayer.c. Clean up VikTrwLayer, separating into several more-managable functions.
+  * get rids of pass_along, layer_and_vlp junk, just use update signal and track_iters (maybe make waypoint_iters) (?)
+  * TODO longones
+  * general cleanups, what you have time for (vik_trackpoint_free etc, draw_track, etc.)
+    * do we really have to have all those global funcs in vik_trw_layer ?
+right click->new track here, new waypoint here. general TRWEdit tool with popup on vikviewport, it can be done.
+general edit->delete to delete whatever is selected. ugly stuff ahead.
+show human-readable timestamp
+toolbar/toolbox, tool opts win (for tpwin) like in gimp (?)
+Maybe fix "private" ref_count in clipboard.c (?)
+clean up viktrwlayer.c, call track_realize() when adding track with add_track(), del dup. code, esp. in track_draw
+move/edit by click for wp?
+toolbar/toolbox, tool opts win (for tpwin) like in gimp (?)
+only draw if in UTM zone !!!
+Track color-by-elevation ( go all over an area, make tracks thicker/zoom out to create DEM color map ?! )
+maps zoomed out
+Thing to download lotsa maps (script or builtin -- ?)
+Merge layers (what a say we have 2 layers, one with wp's, one with tracks)
+	merge: auto rename (everything begins with "layer name: ")
+	right click agg -> merge trw children -> super trw
+        or multiple slect/copy & paste
+picture layer, thumbnails and all...
+move to  gpsbabel default altitude, reflect it everywhere, include viking-remote
+gpspoint.c -- use new easy gpsbabel code, abc, 123.
+
+hard things to think about that need to be done sometime (mainly hard/impossible):
+1) map downloader process / map download queue
+2) if viking already running, use that process. cut and paste will work much better.
+
+EVERYTHING ABOVE THIS LINE SHOULD BE IN 0.1.0! 0.2.0 WILL FOCUS ON LAT/LON AND STREET MAPS
+
+-----
+
+0.2.0
+* Plot as lat/lon
+	For mapquest & georef maps: vikviewport "mode" to draw in (utm or straightened lat/lon), check before drawing, convert for TP, etc.
+* full georef support, release minnesota/manganese
+* mapquest maps
+* smart drawing -- determine if line segment passes thru area, fancy math...
+* map downloading manager, smarter ways -- e.g. "download maps within polygon"
+* maybe a gpsbabel plug-in
+* topos zoomed out if it didn't make it into 0.1.0
+* maybe better wp drawing
+* wp's alphabetically (good luckers) or at least when loading
+* wp editing
+* direct gps support
+
+0.3.0 (still here?)
+* new viking -> not new process
+* wp icons
+* routes
+* improve direct manipulation
+* bugfixes
+* smart labeling so we can see 2 wp's (nearly) in the same place
+* UTM zones (?)
+
+1.0
+* DEM maps
+* mapsource files
+* anything else possible, plausible and desirable.
+* lots and lots of docs
+* UI cleanups
+
+Uses:
+* planning
+* viewing -- showing places/tracks on topo or street maps or scanned maps
+* map download & printing -- your own, TOPO-thomas guides or city thomas guies
+* adding coord lines to scanning maps -- print 'em out or see where they are
+* editing tracks
+* managing & organizing data
+* creating maps and gps maps
+
+SCALING:
+* maybe downn scaling of higher-quality topos to accommodate odd zoom resolutions. this would also be useful for downloading _only_ high 
+  quality topos, or zooming out and seeing what topos we are missing, or downloading LOTS more topos at once (w/ download all on screen)
+  again, we will have to see how good GTK scaling is.
+* maybe scaling of weird-scale (georeferenced) maps
+
+Other
+* georeferenced raster layer:
+ Optional:
+  - fix off-by-one-pixel bug (probably corner stuff) (?)
+  - utm zones (?)
+  - tool (maybe BUTTON 4,5 thing), and maybe a better zoom tool. but for release it's OK.
+
+ROTATION/MESSED UP MAPS:
+* Track/Waypoint Plotting as Lat/Lon (or artificial rotation, maybe preferred) for those kind of maps
+  and/or rotation of maps (not as good)
+* maybe option "draw as lat long -- UTM center +- 1000 or something to find degrees/pixel (or use some other formula a la odu)
+* or just rotation in screen_to_utm and utm_to_screen
+* "anchoring down" one part of a georeferenced map for rotation and scaling.
+
+* fix coord layer, it is SO horribly broken for high zoom levels.
+
+* Investigate "chunk already freed"
+* investigate if layer type doesnt have icon wont start bug
+* Cleanups and fixes until 0.0.5-final:
+* at least two of these things
+  * Merge TRW Layers
+  * copy and paste items
+  * MapBlast
+
+These Cleanups:
+
+-> These Cleanups
+maybe "max size" thing for each param
+--> maybe address within layer (struct offset) so wwe can just do away with set_param (in most cases). put stuff in realize or after_read
+cleanup interface <---- IMPORTANT
+
+-> cleanups below
+
+-> sometime:
+   has_altitude or NO_ALTITUDE -> 999999
+
+-> 0.0.6
+
+C*L*E*A*N*U*P*S
+
+dialog.c -> misc.c, viktrwlayer.c
+export a layer from the file menu, some how. Export Layer -> choose layer. or Export Selected Layer (disabled as need be
+---
+*MAYBE*
+
+RGN type and other type in something of its own, not name.
+that way, we can use the same file for waypoints to gps and for maps.
+
+solutions to this problem:
+File->Properties:
+  Position:
+  <R> Save current position
+  <R> Save this position:
+     UTM/LATLON ZOOM
+  <R> Save no position
+
+-------
+-------
+-------
+-------
+
+(fixes + cleanups + scaling + rotation + ruler widgets (?) + topos & orthos in one (?) + copy&past items + merge layers) = 0.0.6
+
+then 0.0.7, 0.0.8, 0.0.9 focus
+
+things before "major" release:
+direct manipulation (major feature/use)
+use current viking (maybe)
+
+to second "major" release:
+libgpspoint2 and/or gpsd (show current pos)
+map ui (rough edge)
+analyzing stuff better, exact analyzing.
+
+to 1.0
+UTM ZONE!!!
+
+> Although almost all of these are on your todo list I thought I would add my thoughts.
+> 
+> 1.  Being able to choose the map units.  The metric system still baffles
+> some of us. 
+> 2.  Modular set up for map sources.  The urls tend to change/disapear
+> when companies get bought up by micro$oft (mapblast).  The ability to
+> import/export georefrenced maps.
+> 3. Manipulations of track data...distance, altitude etc.
+> 4. Export/printing of maps.  
+> 5. Eyecandy. Colors and symbols for tracks, waypoints and routes.  Shade
+> topo maps with DEM data.  
+
+file format + hig compliance + bug fixes + MAYBE track undo = 0.0.4
+FF2 + ruler widget + topos&orthos in one  +comment field + bugfixes = 0.0.5
+if viking already running, use that process. + copy and paste layers + merge layers
+	+ copy and paste items + bugfixes = 0.0.6
+Direct manipulation, WYSIWYG moving + track connecting + etc = 0.0.7
+track segment selection, deletion, track point deletion (create two segments or skip point) +
+	waypoint symbols + bugfixes = 0.0.8
+toolbar + layer properties boxes changes, etc. + misc = 0.0.9
+routes + misc + code cleanups = 0.0.10
+map download ui + code cleanups + bugfixes = 0.0.11
+other goodies, fixes, break release = 0.0.12
+misc, etc. fixes, cleanups = 0.0.14
+autotools, I18n + etc. = 0.0.15
+fixes = 0.1.0
+
+(NOT IMPORTANT. FF2 will come.)
+functions write_utm, read_utm to save space
+sizeof(Waypoint) != sizeof(components)! try to save disk space
+len of layer for each layer so older versions can skip over new layers
+Make it so if layertype >= vik_layer_num_types, skip layer. (in aggregatelayer.c)
+Use magic numbers, and lengths to better prevent version messing ups (len of layer data, if extra, 
+  rest skip, if not enough, ignore, etc.) 9in layer file themselves)
+---
+
+Viking 0.1.0 "It's been a long road..."
+
+> 0.1.0: anylyzing speed and time, libgpspoint, misc goodies
+> 0.2.0: garmap layers, utm zones, etc.
+
+0.0.4 "Lame Duck Tape"
+--------------------
+0.0.6 "Where we're going, we don't need roads..."
+--------------------
+--Definitely:
+UNDO DELETE LAYER!!! Or ask, maybe? For now, ask: later, maybe an undo "stack of commands" where things at the bottom of the stack are done only as new things push them down?
+more "Forgive the user" kind of stuff.
+
+FIXES:
+	Acceptable chars in dialog.c & gpspoint.c
+	file check if it's a directory for load & save.
+
+Route support!
+
+Toolbar
+Do something similar with tools. layer_tools func in interface, then a tools structure, array, or add2menu func. humm
+
+Track Colors -- PROBABLY.
+
+viktrwlayer_dialog.c -- we MUST do this one.
+	No, even better Idea. framework where properties are stored as RESOURCES for each type of layer.
+	Each type of layer defines it's own resources and the viking layer dialog builder picks it up and draws the dialog.
+	Comments? Format? Fields?
+	Type: check, double/spin (including range, and all other params), string, double/entry, int/entry
+	And then subdivisions (tabs) of that. Track drawing, track colors, waypoints. or Drawing, Colors, ...
+
+fix layers_menu_add_layers
+	I've made a mess of the add menu stuff. The add submeny is bad.
+	maybe a itemfactory thing in layer interface (for now, it's OK... but...) at the very least a serializedicon thing in 
+	interface so I don't have to serialize it every time... draining resources.
+
+	-- what if i have one menu with the icons and everything already made, and both vlp and wikwindow adds that? no, then i 
+	could't have custom callback data. what if all layer types' itemfactory items were modeled as "Add Layer/TRW Layer" Then 
+	I'd have an add layer menu in each?
+	-- think about it.
+
+
+MAYBE:
+  MOVE A WAYPOINT
+  Waypoint Symbols, get started. symbols.c where i have a Name->ID mapping, then an ID->icon mapping. Get Started on Icons.
+  Merge 2 TRW Layer
+  Better CoordLayer.
+  Fix Some Bugs, Clean up Some Code.
+  Bulk Map Downloader (maybe another project)
+  renaming waypoints -- overwriting
+
+
+And There's Your Release.
+
+Other Ideas:
+fix editing / move bug (ideas?)
+copy & paste individual tracks & waypoints
+tracks & waypoint ordering (?!)
+don't forget about track SEGMENTs !!! (shoot for 0.0.5; should be in by 0.0.6)
+vik_trw_layernew_track like waypoint. or maybe not (need starting point?)
+I18N  -- at least fake ( all strs _() ized)
+HIG compliance...
+maybe export all visible trw's (nah, merge)
+select waypoint; break up a track
+Coordlayer color chooser
+Coordlayer: UTM
+trw_layer centerize: randompoints & average
+maybe in item_add get visible and name from the layer / track / whatever itself.
+ALSO, maybe chane set_name to update_name.
+show tracks and waypoints (dynamic stuff)!! Copying between layers! YEAH
+
+do some TODOs
+
+---------------------------------------
+|                0.0.5                |
+---------------------------------------
+| "Not all those who wander are lost" |
+---------------------------------------
+Track & Waypoint sorting
+Convert to GLIB Gobjects for layers
+I18N
+AutoTools
+Track Colors
+select waypoints; select trackpoints; selet track segments; measuring track & segment length; analyzing trackpoint altitude 
+& time by selecting it; color by altitude/
+Copy & Paste Layer (see below)
+legend (length)
+
+copying between layers: sublayer_add_menu_items () -> copy -> static pointer for layers panel, or whole process.
+two ways of doing it: layer2copy & sublayer2copy, or general purpose "cliboard" var. on paste, layer / aggregate layer figures it out.
+I vote for "layer2copy" and "sublayer2copy". That way, each layer can check if it can paste the sublayer and paste layer will always be there.
+then you need a duplicate function for each thing you want to copy. shouldn't be too bad.
+
+
+~-~-~-~-~-~-~-~
+0.0.6 "Where no man has gone before"
+---------------
+DnD
+Map Download Background Thread
+LibGpsPoint
+Settabl eFonts
+UTM zones
+Waypoint Symbols
+Edit Timestamps
+show different fields on side: altitude, time, etc. sort by these. maybe a layer edit dialog box.
+
+------
+0.1.0
+------
+Garmap Layer!
+
+
+Other:
+--------------
+waypoint symbols
+make your own timestamp
+CACHE MAP SERVER IP; RETURN ERROR FOR WHY DOESNT WORK
+MAP DOWNLOAD PROGERESS (!)
+more g_asserts ... lots more 
+UTM zones, aye...
+
+----------------------------------------
+========================================
+++++++++++++++++++++++++++++++++++++++++
+fix tracks thing: STILL BUGS ! and clean up function maybe?
+start noplace, when open file start in middle of there
+clarification of new / open ( add to or what?  maybe add to in layer; merge layer stuff )
+status bar: don't overlap stuff
+
+i18n!!!
+
+coordlayer -- ticks only
+tick marks or lines for utm lines so you can tell where you are (TickLayer)
+
+Intelligent Map Caching: knows which way you're going ... just something to think about.
+
+Download all maps
+
+routes
+choosable gcs including background
+Maybe each track has it's own GC? Just a thought.
+Tools, explore etc. tools menu. tools window / bar
+save stuff
+status bar for track info, etc.
+
++TODO from otu ...
+
+glist for routes (pointer directly to string used in ghashtable key? possible?) and tracks.
+
+"Viking -- can you handle the power?"
+"Viking -- where do you want to go today?"
+"Viking -- where have you been today?"
+"Viking -- where did you go today?"
+
+"Vikingis Conqueris"
+
+"The Viking Conquereth"
+Viking 0.0.1pre15
+
+Viking "the fake GIS"
+Viking "the wannabee GIS"
+Viking "CasiGIS"
+
+Viking QuasiGIS (tm)
+
+GPX support, loc.gz
+So Many Possibilities...
+
+OTU can do Viking can't:
+ * routes
+ * instant GPS location (sorta)

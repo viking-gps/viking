@@ -1,0 +1,119 @@
+If I use the GPSPoint code, I can concatenate gpspoint files and make them into layers just with a text editor.
+Also, any new features I just add to that.
+However, be mindful that GPSPoint looks for EOF.
+I could modify the code to stop on a line that begins with "-"
+
+Style 1: Use GPSPoint code
+
+type="layer" id="aggregate" name="My \"Name\""
+type="layer" id="trackwaypoint" name="cool"
+type="waypoint" ...
+...
+type="layerend"
+type="layerend"
+
+Style 2: GPSPoint++
+
++Layer Aggregate
+=This Is A "Name" with "Quotes" and WEIRD *(#$% chars
+
++Layer TrackWaypoint
+=My CoolLayer
+
+type="waypoint" ..
+type="track"
+
+-EndLayer
+
+-EndLayer
+
+comments (#) ignored
+each layer parser must return control if line begins with '-'
+However, this is to freestyle.
+
+Style 3: GPSPoint to the next Level
+
++Layer Aggregate
+=This Is A "Name"
+
++Layer Coord
+=My Cool Chord Liar
+
+type="param" name="deg_inc" value="5"
+
+-EndLayer
+
+-EndLayer
+
+I'm a bit foggy on the parsing, does each layer do that? 'cause TRWLayer will have to.
+also, if we do that, we may as well use #1 with \\'d quotes as it is more standardized.
+
+Style #4: Happy-Medium
+
++Layer Aggregate
+name=This Is A "Name" with funny =-10!@$#* chars
+
++Layer TRW
+name=My Cool Layer
+
+draw_tracks=1
+draw_waypoints=0
+data_format=gpspoint
+
++LayerData # parsed by Layer itself
+
+type="waypoint" ...
+
+-LayerData
+
+-Layer
+
++Layer Coord
+name=My Cool Chord Liar
+
+deg_inc=5
+
+-Layer
+
+-Layer
+
+Every thing is done by the file parser, EXCEPT LayerData blocks.
+Everything else is done by some sort of settable resources.
+Layertypes would have to list resources and types.
+Unknown resource are simply skipped.
+Unknown Layers are simply skipped until the next '-Layer', include their LayerData blocks if they have one.
+
+comments?
+
+Issues:
+
+#1
+One start character would be nice, like
+!startlayer
+!endlayer
+
+etc.
+
+all i can think of for now.
+
+Style 5: Win Conf Style
+
+[Layer Type=Aggregate]
+name=Hello World
+
+[Layer Type=TRW]
+name=My Cool Layer
+draw_tracks=1
+draw_waypoints=0
+data_format=gpspoint
+[LayerData]
+type=waypoint ...
+[EndLayerData]
+[EndLayer]
+
+[Layer Type=Coord]
+name=Chord Liar
+deg_inc=2
+[EndLayer]
+
+[EndLayer]

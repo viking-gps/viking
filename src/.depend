@@ -1,0 +1,111 @@
+viktrack.o: viktrack.c coords.h vikcoord.h viktrack.h
+vikwaypoint.o: vikwaypoint.c coords.h vikcoord.h vikwaypoint.h
+clipboard.o: clipboard.c viking.h config.h globals.h coords.h vikcoord.h \
+  http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h
+coords.o: coords.c viking.h config.h globals.h coords.h vikcoord.h http.h \
+  vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h
+gpsmapper.o: gpsmapper.c viking.h config.h globals.h coords.h vikcoord.h \
+  http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h
+gpspoint.o: gpspoint.c viking.h config.h globals.h coords.h vikcoord.h \
+  http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h
+file.o: file.c viking.h config.h globals.h coords.h vikcoord.h http.h \
+  vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h
+main.o: main.c viking.h config.h globals.h coords.h vikcoord.h http.h \
+  vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h mapcache.h background.h
+dialog.o: dialog.c viking.h config.h globals.h coords.h vikcoord.h http.h \
+  vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h thumbnails.h
+http.o: http.c http.h
+viktreeview.o: viktreeview.c viking.h config.h globals.h coords.h \
+  vikcoord.h http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h \
+  viklayer.h vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h \
+  vikgeoreflayer.h vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h \
+  dialog.h file.h vikwindow.h gpspoint.h gpsmapper.h
+viktrwlayer.o: viktrwlayer.c viking.h config.h globals.h coords.h \
+  vikcoord.h http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h \
+  viklayer.h vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h \
+  vikgeoreflayer.h vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h \
+  dialog.h file.h vikwindow.h gpspoint.h gpsmapper.h viktrwlayer_pixmap.h \
+  viktrwlayer_tpwin.h viktrwlayer_propwin.h thumbnails.h background.h
+viklayer.o: viklayer.c viking.h config.h globals.h coords.h vikcoord.h \
+  http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h vikradiogroup.h
+viklayerspanel.o: viklayerspanel.c viking.h config.h globals.h coords.h \
+  vikcoord.h http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h \
+  viklayer.h vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h \
+  vikgeoreflayer.h vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h \
+  dialog.h file.h vikwindow.h gpspoint.h gpsmapper.h
+vikcoordlayer.o: vikcoordlayer.c viking.h config.h globals.h coords.h \
+  vikcoord.h http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h \
+  viklayer.h vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h \
+  vikgeoreflayer.h vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h \
+  dialog.h file.h vikwindow.h gpspoint.h gpsmapper.h \
+  vikcoordlayer_pixmap.h
+vikstatus.o: vikstatus.c vikstatus.h
+vikwindow.o: vikwindow.c viking.h config.h globals.h coords.h vikcoord.h \
+  http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h viklayer.h \
+  vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h vikgeoreflayer.h \
+  vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h dialog.h file.h \
+  vikwindow.h gpspoint.h gpsmapper.h background.h
+vikviewport.o: vikviewport.c coords.h vikcoord.h vikviewport.h mapcoord.h \
+  globals.h googlemaps.h
+vikaggregatelayer.o: vikaggregatelayer.c viking.h config.h globals.h \
+  coords.h vikcoord.h http.h vikwaypoint.h viktrack.h vikviewport.h \
+  viktreeview.h viklayer.h vikaggregatelayer.h viklayerspanel.h \
+  vikcoordlayer.h vikgeoreflayer.h vikstatus.h vikfileentry.h \
+  viktrwlayer.h clipboard.h dialog.h file.h vikwindow.h gpspoint.h \
+  gpsmapper.h vikaggregatelayer_pixmap.h
+vikgeoreflayer.o: vikgeoreflayer.c viking.h config.h globals.h coords.h \
+  vikcoord.h http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h \
+  viklayer.h vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h \
+  vikgeoreflayer.h vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h \
+  dialog.h file.h vikwindow.h gpspoint.h gpsmapper.h \
+  vikgeoreflayer_pixmap.h
+vikfileentry.o: vikfileentry.c vikfileentry.h
+viktrwlayer_tpwin.o: viktrwlayer_tpwin.c coords.h vikcoord.h viktrack.h \
+  viktrwlayer_tpwin.h vikwaypoint.h dialog.h
+viktrwlayer_propwin.o: viktrwlayer_propwin.c coords.h vikcoord.h \
+  viktrack.h viktrwlayer_propwin.h vikwaypoint.h dialog.h
+thumbnails.o: thumbnails.c viking.h config.h globals.h coords.h \
+  vikcoord.h http.h vikwaypoint.h viktrack.h vikviewport.h viktreeview.h \
+  viklayer.h vikaggregatelayer.h viklayerspanel.h vikcoordlayer.h \
+  vikgeoreflayer.h vikstatus.h vikfileentry.h viktrwlayer.h clipboard.h \
+  dialog.h file.h vikwindow.h gpspoint.h gpsmapper.h thumbnails.h \
+  thumbnails_pixbuf.h
+background.o: background.c background.h gtkcellrendererprogress.h
+vikradiogroup.o: vikradiogroup.c vikradiogroup.h
+vikcoord.o: vikcoord.c coords.h vikcoord.h
+expedia.o: expedia.c globals.h coords.h vikcoord.h mapcoord.h http.h
+mapcache.o: mapcache.c mapcache.h config.h
+vikmapslayer.o: vikmapslayer.c globals.h coords.h vikcoord.h \
+  viktreeview.h config.h vikviewport.h viklayer.h vikmapslayer.h \
+  vikmapslayer_pixmap.h mapcache.h vikwaypoint.h dialog.h background.h \
+  vikaggregatelayer.h viklayerspanel.h mapcoord.h terraserver.h \
+  googlemaps.h expedia.h
+terraserver.o: terraserver.c coords.h vikcoord.h mapcoord.h http.h
+googlemaps.o: googlemaps.c coords.h vikcoord.h mapcoord.h http.h \
+  googlemaps.h
+gtkcellrendererprogress.o: gtkcellrendererprogress.c \
+  gtkcellrendererprogress.h
