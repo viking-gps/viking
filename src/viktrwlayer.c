@@ -156,6 +156,8 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
 static void goto_coord ( VikLayersPanel *vlp, const VikCoord *coord );
 static void trw_layer_goto_track_startpoint ( gpointer pass_along[5] );
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] );
+static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
+static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
@@ -1584,10 +1586,238 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
   GList *trps = ((VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ))->trackpoints;
   if ( !trps )
     return;
-  while ( trps->next )
-    trps = trps->next;
+  trps = g_list_last(trps);
   goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *) trps->data)->coord));
 }
+
+
+/*************************************
+ * merge/split by time routines 
+ *************************************/
+
+/* called for each key in track hash table. if original track user_data[1] is close enough
+ * to the passed one, add it to list in user_data[0] 
+ */
+static void find_nearby_track(gpointer key, gpointer value, gpointer user_data)
+{
+  time_t t1, t2;
+  VikTrackpoint *p1, *p2;
+
+  GList **nearby_tracks = ((gpointer *)user_data)[0];
+  GList *orig_track = ((gpointer *)user_data)[1];
+  guint thr = (guint)((gpointer *)user_data)[2];
+
+  t1 = VIK_TRACKPOINT(orig_track->data)->timestamp;
+  t2 = VIK_TRACKPOINT(g_list_last(orig_track)->data)->timestamp;
+
+  if (VIK_TRACK(value)->trackpoints == orig_track) {
+    return;
+  }
+
+  p1 = VIK_TRACKPOINT(VIK_TRACK(value)->trackpoints->data);
+  p2 = VIK_TRACKPOINT(g_list_last(VIK_TRACK(value)->trackpoints)->data);
+
+  if (!p1->has_timestamp || !p2->has_timestamp) {
+    printf("no timestamp\n");
+    return;
+  }
+
+  /*  printf("Got track named %s, times %d, %d\n", (gchar *)key, p1->timestamp, p2->timestamp); */
+  if (abs(t1 - p2->timestamp) < thr*60 ||
+      /*  p1 p2      t1 t2 */
+      abs(p1->timestamp - t2) < thr*60
+      /*  t1 t2      p1 p2 */
+      ) {
+    *nearby_tracks = g_list_prepend(*nearby_tracks, key);
+  }
+}
+
+/* comparison function used to sort tracks; a and b are hash table keys */
+static gint track_compare(gconstpointer a, gconstpointer b, gpointer user_data)
+{
+  GHashTable *tracks = user_data;
+  time_t t1, t2;
+
+  t1 = VIK_TRACKPOINT(VIK_TRACK(g_hash_table_lookup(tracks, a))->trackpoints->data)->timestamp;
+  t2 = VIK_TRACKPOINT(VIK_TRACK(g_hash_table_lookup(tracks, b))->trackpoints->data)->timestamp;
+  
+  if (t1 < t2) return -1;
+  if (t1 > t2) return 1;
+  return 0;
+}
+
+/* comparison function used to sort trackpoints */
+static gint trackpoint_compare(gconstpointer a, gconstpointer b)
+{
+  time_t t1 = VIK_TRACKPOINT(a)->timestamp, t2 = VIK_TRACKPOINT(b)->timestamp;
+  
+  if (t1 < t2) return -1;
+  if (t1 > t2) return 1;
+  return 0;
+}
+
+/* merge by time routine */
+static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
+{
+  time_t t1, t2;
+  GList *nearby_tracks = NULL;
+  VikTrack *track;
+  GList *trps;
+  static  guint thr = 1;
+  guint track_count = 0;
+  gchar *orig_track_name = strdup(pass_along[3]);
+
+  if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(pass_along[0]), 
+			       "Merge Threshold...", 
+			       "Merge when time between trackpoints less than:", 
+			       &thr)) {
+    return;
+  }
+
+  /* merge tracks until we can't */
+  do {
+    gpointer params[3];
+
+    track = (VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, orig_track_name );
+    trps = track->trackpoints;
+    if ( !trps )
+      return;
+
+
+    if (nearby_tracks) {
+      g_list_free(nearby_tracks);
+      nearby_tracks = NULL;
+    }
+
+    t1 = ((VikTrackpoint *)trps->data)->timestamp;
+    t2 = ((VikTrackpoint *)g_list_last(trps)->data)->timestamp;
+    
+    /*    printf("Original track times: %d and %d\n", t1, t2);  */
+    params[0] = &nearby_tracks;
+    params[1] = trps;
+    params[2] = (gpointer)thr;
+
+    /* get a list of adjacent-in-time tracks */
+    g_hash_table_foreach(VIK_TRW_LAYER(pass_along[0])->tracks, find_nearby_track, (gpointer)params);
+
+    /* add original track */
+    nearby_tracks = g_list_prepend(nearby_tracks, orig_track_name);
+
+    /* sort by first trackpoint; assumes they don't overlap */
+    nearby_tracks = g_list_sort_with_data(nearby_tracks, track_compare, VIK_TRW_LAYER(pass_along[0])->tracks);
+
+    /* merge them */
+    { 
+#define get_track(x) VIK_TRACK(g_hash_table_lookup(VIK_TRW_LAYER(pass_along[0])->tracks, (gchar *)((x)->data)))
+#define get_first_trackpoint(x) VIK_TRACKPOINT(get_track(x)->trackpoints->data)
+#define get_last_trackpoint(x) VIK_TRACKPOINT(g_list_last(get_track(x)->trackpoints)->data)
+      GList *l = nearby_tracks;
+      VikTrack *tr = vik_track_new();
+      tr->visible = track->visible;
+      track_count = 0;
+      while (l) {
+	/*
+	time_t t1, t2;
+	t1 = get_first_trackpoint(l)->timestamp;
+	t2 = get_last_trackpoint(l)->timestamp;
+	printf("     %20s: track %d - %d\n", (char *)l->data, (int)t1, (int)t2);
+	*/
+
+
+	/* remove trackpoints from merged track, delete track */
+	tr->trackpoints = g_list_concat(tr->trackpoints, get_track(l)->trackpoints);
+	get_track(l)->trackpoints = NULL;
+	trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), l->data);
+
+	track_count ++;
+	l = g_list_next(l);
+      }
+      tr->trackpoints = g_list_sort(tr->trackpoints, trackpoint_compare);
+      vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), strdup(orig_track_name), tr);
+
+#undef get_first_trackpoint
+#undef get_last_trackpoint
+#undef get_track
+    }
+  } while (track_count > 1);
+  g_list_free(nearby_tracks);
+  free(orig_track_name);
+  vik_layer_emit_update(VIK_LAYER(pass_along[0]));
+}
+
+/* split by time routine */
+static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
+{
+  VikTrack *track = (VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  GList *trps = track->trackpoints;
+  GList *iter;
+  GList *newlists = NULL;
+  GList *newtps = NULL;
+  guint i;
+  static guint thr = 1;
+
+  time_t ts, prev_ts;
+
+  if ( !trps )
+    return;
+
+  if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(pass_along[0]), 
+			       "Split Threshold...", 
+			       "Split when time between trackpoints exceeds:", 
+			       &thr)) {
+    return;
+  }
+
+  /* iterate through trackpoints, and copy them into new lists without touching original list */
+  prev_ts = VIK_TRACKPOINT(trps->data)->timestamp;
+  iter = trps;
+
+  while (iter) {
+    ts = VIK_TRACKPOINT(iter->data)->timestamp;
+    if (ts < prev_ts) {
+      printf("panic: ts < prev_ts: this should never happen!\n");
+      return;
+    }
+    if (ts - prev_ts > thr*60) {
+      /* flush accumulated trackpoints into new list */
+      newlists = g_list_prepend(newlists, g_list_reverse(newtps));
+      newtps = NULL;
+    }
+
+    /* accumulate trackpoint copies in newtps, in reverse order */
+    newtps = g_list_prepend(newtps, vik_trackpoint_copy(VIK_TRACKPOINT(iter->data)));
+    prev_ts = ts;
+    iter = g_list_next(iter);
+  }
+  if (newtps) {
+      newlists = g_list_prepend(newlists, g_list_reverse(newtps));
+  }
+
+  /* put lists of trackpoints into tracks */
+  iter = newlists;
+  i = 1;
+  while (iter) {
+    gchar *new_tr_name;
+    VikTrack *tr;
+
+    tr = vik_track_new();
+    tr->visible = track->visible;
+    tr->trackpoints = (GList *)(iter->data);
+
+    new_tr_name = g_strdup_printf("%s #%d", (gchar *) pass_along[3], i++);
+    vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), new_tr_name, tr);
+    /*    fprintf(stderr, "adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
+	  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp);*/
+
+    iter = g_list_next(iter);
+  }
+  g_list_free(newlists);
+  trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
+  vik_layer_emit_update(VIK_LAYER(pass_along[0]));
+}
+
+/* end of split/merge routines */
+
 
 static void trw_layer_goto_waypoint ( gpointer pass_along[5] )
 {
@@ -1782,6 +2012,16 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_label ( "Goto Endpoint" );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_endpoint), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_label ( "Merge By Time" );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_by_timestamp), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_label ( "Split By Time" );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_timestamp), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
   }

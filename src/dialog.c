@@ -431,3 +431,64 @@ gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp 
   gtk_widget_destroy ( dialog );
   return FALSE;
 }
+
+static void split_spin_focused ( GtkSpinButton *spin, GtkWidget *pass_along[1] )
+{
+  gtk_toggle_button_set_active    (GTK_TOGGLE_BUTTON(pass_along[0]), 1);
+}
+
+gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint *thr )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title_text, 
+                                                  parent,
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_STOCK_CANCEL,
+                                                  GTK_RESPONSE_REJECT,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+  GtkWidget *table, *t1, *t2, *t3, *t4, *spin, *label;
+  GtkWidget *pass_along[1];
+
+  table = gtk_table_new ( 4, 2, FALSE );
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
+
+  label = gtk_label_new (label_text);
+
+  t1 = gtk_radio_button_new_with_label ( NULL, "1 min" );
+  t2 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t1), "1 hour" );
+  t3 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t2), "1 day" );
+  t4 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t3), "Custom (in minutes):" );
+
+  pass_along[0] = t4;
+
+  spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *thr, 0, 65536, 1, 5, 5 ), 1, 0 );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table), label, 0, 2, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), t1, 0, 1, 1, 2 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), t2, 0, 1, 2, 3 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), t3, 0, 1, 3, 4 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), t4, 0, 1, 4, 5 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), spin, 1, 2, 4, 5 );
+
+  gtk_widget_show_all ( table );
+
+  g_signal_connect ( G_OBJECT(spin), "grab-focus", G_CALLBACK(split_spin_focused), pass_along );
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
+  {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t1))) {
+      *thr = 1;
+    } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t2))) {
+      *thr = 60;
+    } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t3))) {
+      *thr = 60 * 24;
+    } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t4))) {
+      *thr = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(spin) );
+    }
+    gtk_widget_destroy ( dialog );
+    return TRUE;
+  }
+  gtk_widget_destroy ( dialog );
+  return FALSE;
+}
