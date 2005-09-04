@@ -101,7 +101,9 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
     queue_size -= 100;
     queue_count --;
     g_hash_table_remove ( cache, oldkey );
-    while ( queue_size > VIK_CONFIG_MAPCACHE_SIZE ) {
+
+    while ( queue_size > VIK_CONFIG_MAPCACHE_SIZE &&
+        (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
       oldkey = list_shift ();
       oldbuf = g_hash_table_lookup ( cache, oldkey );
       queue_size -= gdk_pixbuf_get_rowstride(oldbuf) * gdk_pixbuf_get_height(oldbuf);

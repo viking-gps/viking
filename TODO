@@ -1,8 +1,5 @@
 FIXES:
 
-Mapcache: checks if only a few images in cache (list_shift)
-what happens if image is bigger than cache size! fix this...
-
 del from cache when updating image
 
 check out bgitemcount stuff in background.c
