@@ -23,8 +23,8 @@
 #define __VIKING_GLOBALS_H
 
 #define PROJECT "Viking"
-#define VIKING_VERSION "0.1.0"
-#define VIKING_VERSION_NAME "Nuovo Giorno"
+#define VIKING_VERSION "0.1.1pre1"
+#define VIKING_VERSION_NAME "This Name For Rent"
 #define VIKING_URL "http://viking.sf.net/"
 
 #ifdef WINDOWS
