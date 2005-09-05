@@ -42,7 +42,7 @@ static guint32 queue_size = 0;
 static GHashTable *cache = NULL;
 
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%.3f-%.3f"
-#define HASHKEY_FORMAT_STRING_NOSHRINK "%d-%d-%d-%d-%d-%d-"
+#define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-"
 
 void a_mapcache_init ()
 {
@@ -102,6 +102,10 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
     queue_count --;
     g_hash_table_remove ( cache, oldkey );
 
+    /* should delete BEFORE adding -- not really possible because don't know size,
+     * but you could guess size (only applic if add big file to full cache) */
+
+
     while ( queue_size > VIK_CONFIG_MAPCACHE_SIZE &&
         (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
       oldkey = list_shift ();
@@ -128,7 +132,7 @@ GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint8 type, guint zoom, gui
   return g_hash_table_lookup ( cache, key );
 }
 
-void a_mapcache_remove_all_shrinkfactors ( guint16 x, guint16 y, guint16 z, guint8 type, guint zoom, guint8 alpha )
+void a_mapcache_remove_all_shrinkfactors ( guint16 x, guint16 y, guint16 z, guint8 type, guint zoom )
 {
   char key[40];
   List *loop = queue_tail;
@@ -138,7 +142,7 @@ void a_mapcache_remove_all_shrinkfactors ( guint16 x, guint16 y, guint16 z, guin
   if ( queue_tail == NULL )
     return;
 
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK, x, y, z, type, zoom, alpha );
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, x, y, z, type, zoom );
   len = strlen(key);
 
   /* TODO: check logic here */

@@ -657,6 +657,11 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         mdi->mapcoord.x = x; mdi->mapcoord.y = y;
         __map_types[mdi->maptype].download ( &(mdi->mapcoord), mdi->filename_buf );
         mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
+
+       if ( mdi->redownload !=- REDOWNLOAD_NONE )
+         a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, mdi->maptype, mdi->mapcoord.scale );
+
+
         donemaps++;
         a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
       }
