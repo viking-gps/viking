@@ -65,12 +65,13 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 
   minmax_alt(altitudes, min_alt, max_alt);
   
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], TRUE, 0, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
   for ( i = 0; i < PROFILE_WIDTH; i++ )
-    if ( altitudes[i] == VIK_DEFAULT_ALTITUDE )
+    if ( altitudes[i] == VIK_DEFAULT_ALTITUDE ) 
       gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, i, 0, i, PROFILE_HEIGHT );
-    else
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->white_gc, i, 0, i, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-*min_alt)/(*max_alt-*min_alt) );
-
+    else 
+      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->fg_gc[0], i, PROFILE_HEIGHT, i, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-*min_alt)/(*max_alt-*min_alt) );
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, 0, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
   g_object_unref ( G_OBJECT(pix) );
   g_free ( altitudes );
   g_object_unref ( G_OBJECT(no_alt_info) );
@@ -104,7 +105,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr,&min_alt,&max_alt);
 
   static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>" };
-  static gchar tmp_buf[20];
+  static gchar tmp_buf[25];
 
   left_vbox = a_dialog_create_label_vbox ( label_texts, sizeof(label_texts) / sizeof(label_texts[0]) );
   right_vbox = gtk_vbox_new ( TRUE, 3 );

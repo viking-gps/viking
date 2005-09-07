@@ -1,5 +1,10 @@
+2005-09-06
+Added Alex Foobarian's track duration patch.
+Added Alex Foobarian's track profile patch.
+
 2005-09-04
 Map cache fix: if only one map can fit / one map is bigger than cache size, then that's OK.
+Delete from cache when updating image.
 
 2005-08-18
 Map cache size based on memory usage, not number of images. Some flaws to be worked out still in this.
