@@ -1,6 +1,8 @@
 FIXES:
 
-del from cache when updating image
+checkbox in list doesn't work?! (on some GTK setups anyway)
+
+map cache size a dynamically settable option
 
 check out bgitemcount stuff in background.c
 open jobs window a 2nd time after clearing (mess around a bit), crashes
@@ -9,16 +11,11 @@ TOO MANY OPEN FILES!!!!!!!!!!!!!!!!!!!
 
 FIX HOLLISTER-RELATED DOWNLAOD TOPOS -> COORD NOT IN UTM ASSERT/CRASH (???)
 
-  smarter caching (size-based), too many open files bug?
-
   what if try to REDOWLOAD while RE/DOWNLOADing?
-  remove from CACHE after REDOWNLOADing
   Reid's 23, including waypoints, GPX/XML Viking files.
   Fix map downloading/HTTP code.
   Redraw when becomes available, somehow?
   Speed up waypoint drawing; option for faster drawing.
-  FIX CACHE TOO BIG/SMALL STUFF!!! Just add a 'size' field to each tile, add and subtract as ness.
-	Then convert to MB and set this a program option.
   map loading/memory caching in the background? (for zoom out)
   modular plotting styles? just an idea...
   optimize Lat/Lon performance with its own CE1, CE2 etc.
