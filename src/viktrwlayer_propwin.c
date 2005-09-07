@@ -21,6 +21,7 @@
 
 #include <gtk/gtk.h>
 #include <time.h>
+#include <string.h>
 #include "coords.h"
 #include "vikcoord.h"
 #include "viktrack.h"
@@ -94,7 +95,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
                                                   NULL);
   GtkWidget *left_vbox, *right_vbox, *hbox;
   GtkWidget *e_cmt;
-  GtkWidget *l_len, *l_tps, *l_segs, *l_dups, *l_maxs, *l_avgs, *l_avgd, *l_elev, *l_galo;
+  GtkWidget *l_len, *l_tps, *l_segs, *l_dups, *l_maxs, *l_avgs, *l_avgd, *l_elev, *l_galo, *l_begin, *l_end, *l_dur;
   gdouble tr_len;
   guint32 tp_count, seg_count;
   gint resp;
@@ -102,7 +103,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   gdouble min_alt, max_alt;
   GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr,&min_alt,&max_alt);
 
-  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points</b>", "<b>Max Speed</b>", "<b>Avg. Speed</b>", "<b>Avg. Dist. Between TPs</b>", "<b>Elevation Range</b>", "<b>Total Elevation Gain/Loss:</b>" };
+  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>" };
   static gchar tmp_buf[20];
 
   left_vbox = a_dialog_create_label_vbox ( label_texts, sizeof(label_texts) / sizeof(label_texts[0]) );
@@ -144,6 +145,23 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
   l_galo = gtk_label_new ( tmp_buf );
 
+  {
+    time_t t1, t2;
+    t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+    t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+
+    strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
+    tmp_buf[strlen(tmp_buf)-1] = 0;
+    l_begin = gtk_label_new(tmp_buf);
+
+    strncpy(tmp_buf, ctime(&t2), sizeof(tmp_buf));
+    tmp_buf[strlen(tmp_buf)-1] = 0;
+    l_end = gtk_label_new(tmp_buf);
+
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%d minutes", (int)(t2-t1)/60);
+    l_dur = gtk_label_new(tmp_buf);
+  }
+
   gtk_box_pack_start (GTK_BOX(right_vbox), e_cmt, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(right_vbox), l_len, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(right_vbox), l_tps, FALSE, FALSE, 0);
@@ -154,6 +172,9 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   gtk_box_pack_start (GTK_BOX(right_vbox), l_avgd, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(right_vbox), l_elev, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(right_vbox), l_galo, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_begin, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_end, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_dur, FALSE, FALSE, 0);
 
   hbox = gtk_hbox_new ( TRUE, 0 );
   gtk_box_pack_start (GTK_BOX(hbox), left_vbox, FALSE, FALSE, 0);
