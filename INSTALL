@@ -1,7 +1,15 @@
 UNIX:
+
 You must have GTK+ 2.2.0 or greater installed.
 
-cd src
+if from CVS:
+aclocal \
+&& autoheader \
+&& automake -a && automake \
+&& autoconf
+
+
+./configure
 make
 strip --strip-all viking # optional)
 cp viking /usr/local/bin # as root)
