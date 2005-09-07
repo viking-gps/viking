@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include <time.h>
+#include <stdio.h>
 #include "coords.h"
 #include "vikcoord.h"
 #include "viktrack.h"
@@ -359,7 +360,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
       if ( ignore_it )
         pts[current_chunk] = VIK_DEFAULT_ALTITUDE;
       else
-        pts[current_chunk] = altitude1 + (altitude2-altitude1)*((dist_along_seg + (chunk_length/2))/current_seg_length);
+        pts[current_chunk] = altitude1 + (altitude2-altitude1)*((dist_along_seg - (chunk_length/2))/current_seg_length);
 
       current_chunk++;
     } else {
@@ -390,8 +391,9 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
 
       /* final seg */
       dist_along_seg = chunk_length - current_dist;
-      if ( ignore_it ) 
+      if ( ignore_it || !iter->next ) {
         pts[current_chunk] = current_area_under_curve / current_dist;
+      } 
       else {
         current_area_under_curve += dist_along_seg * (altitude1 + (altitude2 - altitude1)*dist_along_seg/current_seg_length);
         pts[current_chunk] = current_area_under_curve / chunk_length;
