@@ -3,6 +3,7 @@ FIXES:
 checkbox in list doesn't work?! (on some GTK setups anyway)
 
 map cache size a dynamically settable option
+alphabetized waypoints/tracks dynamically settable option
 
 check out bgitemcount stuff in background.c
 open jobs window a 2nd time after clearing (mess around a bit), crashes

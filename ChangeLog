@@ -1,3 +1,25 @@
+2005-09-13
+Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>:
+       * bootstrap: new file to bootstrap auto-tools
+       * src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
+       * Makefile.am (bin_SCRIPTS): viking-remote added
+       * configure.ac: --enable-alphabetized-trw option added
+
+Evan Battaglia <gtoevan@gmx.net>:
+       * Experimental altitude funky plotting I'm working on
+
+2005-09-12
+Alex Foobarian <foobarian@gmail.com>'s changes
+* disable stops, for now (I forgot about those...)
+* Track elevation graph: minimum altitude difference for less jagged curves
+* Track elevation graph: gray background, blue foreground
+* Track elevation graph: lines to clearly show absolute elevation
+* New velocity-vs-time graph & calculating function
+* Notebook to hold this new graph with track elevation graph
+My (Evan's) changes:
+* Fix above v-vs-t patch to not crash on tracks without timestamp.
+* Not show v-vs-t graph and/or elevation map if the necessary data isn't there.
+
 2005-09-07
 Autotools support by Guilhem Bonnefille.
 

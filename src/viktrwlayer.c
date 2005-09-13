@@ -743,6 +743,13 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           if ( list->next ) {
             vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
 
+#if 0
+            if ( VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE )
+              vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), x, y, x, y-(VIK_TRACKPOINT(list->next->data)->altitude-540)/5);
+#endif
+
+            vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
+
             /* stops */
             if (0 && VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > 60 )
               vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, 11), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
