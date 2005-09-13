@@ -32,6 +32,8 @@
 
 #define PROFILE_WIDTH 600
 #define PROFILE_HEIGHT 300
+#define MIN_ALT_DIFF 100.0
+#define MIN_SPEED_DIFF 20.0
 
 static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 {
@@ -49,11 +51,14 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 
 }
 
+#define MARGIN 50
+#define LINES 5
 GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
-  GdkPixmap *pix = gdk_pixmap_new( window->window, PROFILE_WIDTH, PROFILE_HEIGHT, -1 );
+  GdkPixmap *pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
   GtkWidget *image = gtk_image_new_from_pixmap ( pix, NULL );
   gdouble *altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+  gdouble mina, maxa;
 
   guint i;
 
@@ -63,26 +68,170 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
   gdk_color_parse ( "red", &color );
   gdk_gc_set_rgb_fg_color ( no_alt_info, &color);
 
+
   minmax_alt(altitudes, min_alt, max_alt);
+  mina = *min_alt; 
+  maxa = *max_alt;
+  if  (maxa-mina < MIN_ALT_DIFF) {
+    maxa = mina + MIN_ALT_DIFF;
+  }
   
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], TRUE, 0, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
+  /* clear the image */
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
+		     TRUE, 0, 0, MARGIN, PROFILE_HEIGHT);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
+		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
+
+#if 0
+  {
+    int j;
+    GdkGC **colors[8] = { window->style->bg_gc, window->style->fg_gc, 
+			 window->style->light_gc, 
+			 window->style->dark_gc, window->style->mid_gc, 
+			 window->style->text_gc, window->style->base_gc,
+			 window->style->text_aa_gc };
+    for (i=0; i<5; i++) {
+      for (j=0; j<8; j++) {
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), colors[j][i],
+			   TRUE, i*20, j*20, 20, 20);
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc,
+			   FALSE, i*20, j*20, 20, 20);
+      }
+    }
+  }
+#else
+
+  
+  /* draw grid */
+#define LABEL_FONT "Sans 8"
+  for (i=0; i<=LINES; i++) {
+    PangoFontDescription *pfd;
+    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
+    gchar s[32];
+
+    pfd = pango_font_description_from_string (LABEL_FONT);
+    pango_layout_set_font_description (pl, pfd);
+    pango_font_description_free (pfd);
+    sprintf(s, "%8dm", (int)(mina + (LINES-i)*(maxa-mina)/LINES));
+    pango_layout_set_text(pl, s, -1);
+    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], 0, 
+		    CLAMP((int)i*PROFILE_HEIGHT/LINES - 5, 0, PROFILE_HEIGHT-15), pl);
+
+    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
+		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
+  }
+
+  /* draw elevations */
   for ( i = 0; i < PROFILE_WIDTH; i++ )
     if ( altitudes[i] == VIK_DEFAULT_ALTITUDE ) 
-      gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, i, 0, i, PROFILE_HEIGHT );
+      gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, 
+		      i + MARGIN, 0, i + MARGIN, PROFILE_HEIGHT );
     else 
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->fg_gc[0], i, PROFILE_HEIGHT, i, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-*min_alt)/(*max_alt-*min_alt) );
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, 0, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
+      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
+		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-mina)/(maxa-mina) );
+#endif
+  /* draw border */
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
+
   g_object_unref ( G_OBJECT(pix) );
   g_free ( altitudes );
   g_object_unref ( G_OBJECT(no_alt_info) );
   return image;
 }
+#define METRIC 1
+#ifdef METRIC 
+#define MTOK(v) ( (v)*3600.0/1000.0) /* m/s to km/h */
+#else
+#define MTOK(v) ( (v)*3600.0/1000.0 * 0.6214) /* m/s to mph - we'll handle this globally eventually but for now ...*/
+#endif
+
+GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr)
+{
+  GdkPixmap *pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  GtkWidget *image = gtk_image_new_from_pixmap ( pix, NULL );
+  gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  gdouble mins, maxs;
+
+  guint i;
+
+  for (i=0; i<PROFILE_WIDTH; i++) {
+    speeds[i] = MTOK(speeds[i]);
+  }
+
+  minmax_alt(speeds, &mins, &maxs);
+  if  (maxs-mins < MIN_SPEED_DIFF) {
+    maxs = mins + MIN_SPEED_DIFF;
+  }
+  
+  /* clear the image */
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
+		     TRUE, 0, 0, MARGIN, PROFILE_HEIGHT);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
+		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
+
+#if 0
+  /* XXX this can go out, it's just a helpful dev tool */
+  {
+    int j;
+    GdkGC **colors[8] = { window->style->bg_gc, window->style->fg_gc, 
+			 window->style->light_gc, 
+			 window->style->dark_gc, window->style->mid_gc, 
+			 window->style->text_gc, window->style->base_gc,
+			 window->style->text_aa_gc };
+    for (i=0; i<5; i++) {
+      for (j=0; j<8; j++) {
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), colors[j][i],
+			   TRUE, i*20, j*20, 20, 20);
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc,
+			   FALSE, i*20, j*20, 20, 20);
+      }
+    }
+  }
+#else
+
+  /* draw grid */
+#define LABEL_FONT "Sans 8"
+  for (i=0; i<=LINES; i++) {
+    PangoFontDescription *pfd;
+    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
+    gchar s[32];
+
+    pfd = pango_font_description_from_string (LABEL_FONT);
+    pango_layout_set_font_description (pl, pfd);
+    pango_font_description_free (pfd);
+#ifdef METRIC 
+    sprintf(s, "%5dkm/h", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
+#else
+    sprintf(s, "%8dmph", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
+#endif
+    pango_layout_set_text(pl, s, -1);
+    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], 0, 
+		    CLAMP((int)i*PROFILE_HEIGHT/LINES - 5, 0, PROFILE_HEIGHT-15), pl);
+
+    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
+		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
+  }
+
+  /* draw speeds */
+  for ( i = 0; i < PROFILE_WIDTH; i++ )
+      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
+		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(speeds[i]-mins)/(maxs-mins) );
+#endif
+  /* draw border */
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
+
+  g_object_unref ( G_OBJECT(pix) );
+  g_free ( speeds );
+  return image;
+}
+#undef MARGIN
+#undef LINES
 
 gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons ("Track Properties",
                                                   parent,
-                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
                                                   GTK_STOCK_CANCEL,
                                                   GTK_RESPONSE_REJECT,
                                                   "Split Segments",
@@ -103,6 +252,8 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
 
   gdouble min_alt, max_alt;
   GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr,&min_alt,&max_alt);
+  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr);
+  GtkWidget *graphs = gtk_notebook_new();
 
   static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>" };
   static gchar tmp_buf[25];
@@ -181,9 +332,12 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   gtk_box_pack_start (GTK_BOX(hbox), left_vbox, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), right_vbox, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), profile, FALSE, FALSE, 0);
 
 
+  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), profile, gtk_label_new("Elevation-distance"));
+  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), vtdiag, gtk_label_new("Speed-time"));
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
+  
   gtk_widget_show_all ( dialog );
   resp = gtk_dialog_run (GTK_DIALOG (dialog));
   if ( resp == GTK_RESPONSE_ACCEPT )
