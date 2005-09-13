@@ -324,6 +324,21 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
 
   GList *iter = tr->trackpoints;
 
+  { /* test if there's anything worth calculating */
+    gboolean okay = FALSE;
+    while ( iter )
+    {
+      if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+        okay = TRUE; break;
+      }
+      iter = iter->next;
+    }
+    if ( ! okay )
+      return NULL;
+  }
+
+
+
   g_assert ( num_chunks < 16000 );
 
   pts = g_malloc ( sizeof(gdouble) * num_chunks );
@@ -443,6 +458,10 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
   duration = t2 - t1;
+
+  if ( !t1 || !t2 || !duration )
+    return NULL;
+
   if (duration < 0) {
     fprintf(stderr, "negative duration: unsorted trackpoint timestamps?\n");
     return NULL;

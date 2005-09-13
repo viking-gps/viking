@@ -55,12 +55,17 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 #define LINES 5
 GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
-  GdkPixmap *pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
-  GtkWidget *image = gtk_image_new_from_pixmap ( pix, NULL );
+  GdkPixmap *pix;
+  GtkWidget *image;
   gdouble *altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
   gdouble mina, maxa;
-
   guint i;
+
+  if ( altitudes == NULL )
+    return NULL;
+
+  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  image = gtk_image_new_from_pixmap ( pix, NULL );
 
   GdkGC *no_alt_info = gdk_gc_new ( window->window );
   GdkColor color;
@@ -147,12 +152,18 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 
 GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr)
 {
-  GdkPixmap *pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
-  GtkWidget *image = gtk_image_new_from_pixmap ( pix, NULL );
-  gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  GdkPixmap *pix;
+  GtkWidget *image;
   gdouble mins, maxs;
-
   guint i;
+
+
+  gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  if ( speeds == NULL )
+    return NULL;
+
+  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  image = gtk_image_new_from_pixmap ( pix, NULL );
 
   for (i=0; i<PROFILE_WIDTH; i++) {
     speeds[i] = MTOK(speeds[i]);
@@ -333,9 +344,12 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   gtk_box_pack_start (GTK_BOX(hbox), right_vbox, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox, FALSE, FALSE, 0);
 
+  if ( profile )
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), profile, gtk_label_new("Elevation-distance"));
 
-  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), profile, gtk_label_new("Elevation-distance"));
-  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), vtdiag, gtk_label_new("Speed-time"));
+  if ( vtdiag )
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), vtdiag, gtk_label_new("Speed-time"));
+
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
   
   gtk_widget_show_all ( dialog );
