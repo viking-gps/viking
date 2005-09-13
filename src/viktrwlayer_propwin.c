@@ -87,26 +87,6 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
 		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
 
-#if 0
-  {
-    int j;
-    GdkGC **colors[8] = { window->style->bg_gc, window->style->fg_gc, 
-			 window->style->light_gc, 
-			 window->style->dark_gc, window->style->mid_gc, 
-			 window->style->text_gc, window->style->base_gc,
-			 window->style->text_aa_gc };
-    for (i=0; i<5; i++) {
-      for (j=0; j<8; j++) {
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), colors[j][i],
-			   TRUE, i*20, j*20, 20, 20);
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc,
-			   FALSE, i*20, j*20, 20, 20);
-      }
-    }
-  }
-#else
-
-  
   /* draw grid */
 #define LABEL_FONT "Sans 8"
   for (i=0; i<=LINES; i++) {
@@ -134,7 +114,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
     else 
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-mina)/(maxa-mina) );
-#endif
+
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
 

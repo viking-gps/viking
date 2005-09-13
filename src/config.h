@@ -1,7 +1,6 @@
 #ifndef VIK_CONFIG_H
 #define VIK_CONFIG_H
 
-#define VIK_CONFIG_ALPHABETIZED_TRW
 #define VIK_CONFIG_MAPCACHE_SIZE 50331648 /* 48 meggerbytes */
 
 

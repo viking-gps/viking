@@ -5,7 +5,7 @@ AC_PREREQ(2.59)
 AC_INIT(viking, 0.1.1)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
-dnl AM_CONFIG_HEADERS([config.h])
+dnl AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
@@ -27,6 +27,20 @@ AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero floor gethostbyname memset mkdir pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
 
+# Options
+AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],
+              [enable alphabetized track & waypoints (default is enable)]),
+              [ac_cv_enable_alpha_trw=$enableval],
+              [ac_cv_enable_alpha_trw=yes])
+AC_CACHE_CHECK([whether to enable alphabetized track & waypoint],
+               [ac_cv_enable_alpha_trw], [ac_cv_enable_alpha_trw=yes])
+case $ac_cv_enable_alpha_trw in
+  yes)
+    AC_DEFINE(VIK_CONFIG_ALPHABETIZED_TRW, [], [NO ALPHABETIZED TRW])
+    ;;
+esac
+
+# Configuration
 AC_CONFIG_FILES([Makefile
                  src/Makefile])
 AC_OUTPUT
