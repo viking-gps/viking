@@ -426,3 +426,38 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
     }
   }
 }
+
+gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
+{
+  gdouble *pts;
+  gdouble duration, chunk_dur, t;
+  time_t t1, t2;
+  int i;
+
+  GList *iter = tr->trackpoints;
+
+  g_assert ( num_chunks < 16000 );
+
+  pts = g_malloc ( sizeof(gdouble) * num_chunks );
+
+  t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  duration = t2 - t1;
+  if (duration < 0) {
+    fprintf(stderr, "negative duration: unsorted trackpoint timestamps?\n");
+    return NULL;
+  }
+  
+  chunk_dur = duration / num_chunks;
+  t = t1;
+  for (i = 0; i < num_chunks; i++, t+=chunk_dur) {
+    while (iter && VIK_TRACKPOINT(iter->data)->timestamp <= t) {
+      iter = iter->next;
+    }
+    pts[i] = vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord),
+					  &(VIK_TRACKPOINT(iter->data)->coord) ) / 
+      (gdouble)(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
+  }
+
+  return pts;
+}
