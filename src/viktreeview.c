@@ -104,11 +104,11 @@ static void treeview_class_init ( VikTreeviewClass *klass )
   parent_class = g_type_class_peek_parent (klass);
 
   treeview_signals[VT_ITEM_EDITED_SIGNAL] = g_signal_new ( "item_edited", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikTreeviewClass, item_edited), NULL, NULL, 
-    g_cclosure_marshal_VOID__UINT_POINTER, G_TYPE_NONE, 2, GTK_TYPE_TREE_ITER, G_TYPE_STRING);
+    gtk_marshal_VOID__POINTER_POINTER, G_TYPE_NONE, 2, GTK_TYPE_POINTER, G_TYPE_POINTER);
   /* VOID__UINT_POINTER: kinda hack-ish, but it works. */
 
   treeview_signals[VT_ITEM_TOGGLED_SIGNAL] = g_signal_new ( "item_toggled", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikTreeviewClass, item_toggled), NULL, NULL,
-    g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, GTK_TYPE_TREE_ITER );
+    g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, GTK_TYPE_POINTER );
 }
 
 static void treeview_edited_cb (GtkCellRendererText *cell, gchar *path_str, const gchar *new_name, VikTreeview *vt)
@@ -118,7 +118,7 @@ static void treeview_edited_cb (GtkCellRendererText *cell, gchar *path_str, cons
   /* get type and data */
   vik_treeview_get_iter_from_path_str ( vt, &iter, path_str );
 
-  g_signal_emit ( G_OBJECT(vt), treeview_signals[VT_ITEM_EDITED_SIGNAL], 0, &iter, new_name, 0 );
+  g_signal_emit ( G_OBJECT(vt), treeview_signals[VT_ITEM_EDITED_SIGNAL], 0, &iter, new_name );
 }
 
 static void treeview_toggled_cb (GtkCellRendererToggle *cell, gchar *path_str, VikTreeview *vt)
