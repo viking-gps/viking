@@ -69,6 +69,8 @@ gdouble vik_track_get_average_speed(const VikTrack *tr);
 void vik_track_convert ( VikTrack *tr, VikCoordMode dest_mode );
 gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks );
 void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble *down);
+VikCoord *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist );
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks );
+
 
 #endif

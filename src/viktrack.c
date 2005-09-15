@@ -451,9 +451,10 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
 
   GList *iter = tr->trackpoints;
 
-  g_assert ( num_chunks < 16000 );
+  if ( ! tr->trackpoints )
+    return NULL;
 
-  pts = g_malloc ( sizeof(gdouble) * num_chunks );
+  g_assert ( num_chunks < 16000 );
 
   t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
@@ -467,6 +468,8 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
     return NULL;
   }
   
+  pts = g_malloc ( sizeof(gdouble) * num_chunks );
+
   chunk_dur = duration / num_chunks;
   t = t1;
   for (i = 0; i < num_chunks; i++, t+=chunk_dur) {
@@ -479,4 +482,38 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   }
 
   return pts;
+}
+
+VikCoord *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist )
+{
+  gdouble dist = vik_track_get_length_including_gaps(tr) * reldist;
+  gdouble current_dist = 0.0;
+  gdouble current_inc = 0.0;
+  VikCoord *rv;
+  if ( tr->trackpoints )
+  {
+    GList *iter = tr->trackpoints->next;
+    while (iter)
+    {
+      current_inc = vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
+                                     &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+      current_dist += current_inc;
+      if ( current_dist >= dist )
+        break;
+      iter = iter->next;
+    }
+    /* we've gone past the dist already, was prev trackpoint closer? */
+    /* should do a vik_coord_average_weighted() thingy. */
+    if ( iter->prev && abs(current_dist-current_inc-dist) < abs(current_dist-dist) )
+      iter = iter->prev;
+
+
+
+    rv = g_malloc(sizeof(VikCoord));
+    *rv = VIK_TRACKPOINT(iter->data)->coord;
+
+    return rv;
+
+  }
+  return NULL;
 }

@@ -1506,7 +1506,7 @@ static void trw_layer_properties_item ( gpointer pass_along[5] )
     VikTrack *tr = g_hash_table_lookup ( vtl->tracks, pass_along[3] );
     if ( tr )
     {
-      gint resp = vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl), tr );
+      gint resp = vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl), tr, pass_along[1] /* vlp */ );
       if ( resp == VIK_TRW_LAYER_PROPWIN_DEL_DUP )
       {
         vik_track_remove_dup_points(tr);
