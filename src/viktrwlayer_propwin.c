@@ -30,6 +30,13 @@
 #include "dialog.h"
 #include "globals.h"
 
+#include "vikviewport.h" /* ugh */
+#include "viktreeview.h" /* ugh */
+#include <gdk-pixbuf/gdk-pixdata.h>
+#include "viklayer.h" /* ugh */
+#include "vikaggregatelayer.h"
+#include "viklayerspanel.h" /* ugh */
+
 #define PROFILE_WIDTH 600
 #define PROFILE_HEIGHT 300
 #define MIN_ALT_DIFF 100.0
@@ -53,12 +60,26 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 
 #define MARGIN 50
 #define LINES 5
-GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
+void track_profile_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_along )
+{
+  VikTrack *tr = pass_along[0];
+  VikCoord *coord = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) (event->x - MARGIN - 2) / PROFILE_WIDTH );
+  if ( coord ) {
+    VikLayersPanel *vlp = pass_along[1];
+    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), coord );
+    vik_layers_panel_emit_update ( vlp );
+    g_free ( coord );
+  }
+}
+
+GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdouble *min_alt, gdouble *max_alt, gpointer vlp )
 {
   GdkPixmap *pix;
   GtkWidget *image;
+  GtkWidget *eventbox;
   gdouble *altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
   gdouble mina, maxa;
+  gpointer *pass_along;
   guint i;
 
   if ( altitudes == NULL )
@@ -118,11 +139,24 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
 
+
+
   g_object_unref ( G_OBJECT(pix) );
   g_free ( altitudes );
   g_object_unref ( G_OBJECT(no_alt_info) );
-  return image;
+
+  pass_along = g_malloc ( sizeof(gpointer) * 2 );
+  pass_along[0] = tr;
+  pass_along[1] = vlp;
+
+  eventbox = gtk_event_box_new ();
+  g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
+  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+
+  return eventbox;
 }
+
 #define METRIC 1
 #ifdef METRIC 
 #define MTOK(v) ( (v)*3600.0/1000.0) /* m/s to km/h */
@@ -218,7 +252,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr)
 #undef MARGIN
 #undef LINES
 
-gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
+gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons ("Track Properties",
                                                   parent,
@@ -242,7 +276,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   gint resp;
 
   gdouble min_alt, max_alt;
-  GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr,&min_alt,&max_alt);
+  GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr,&min_alt,&max_alt,vlp);
   GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr);
   GtkWidget *graphs = gtk_notebook_new();
 
@@ -288,6 +322,19 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
   l_galo = gtk_label_new ( tmp_buf );
 
+
+  gtk_box_pack_start (GTK_BOX(right_vbox), e_cmt, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_len, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_tps, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_segs, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_dups, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_maxs, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_avgs, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_avgd, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_elev, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_galo, FALSE, FALSE, 0);
+
+  if ( tr->trackpoints )
   {
     time_t t1, t2;
     t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
@@ -303,21 +350,11 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr )
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%d minutes", (int)(t2-t1)/60);
     l_dur = gtk_label_new(tmp_buf);
-  }
 
-  gtk_box_pack_start (GTK_BOX(right_vbox), e_cmt, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_len, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_tps, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_segs, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_dups, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_maxs, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_avgs, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_avgd, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_elev, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_galo, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_begin, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_end, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), l_dur, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(right_vbox), l_begin, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(right_vbox), l_end, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(right_vbox), l_dur, FALSE, FALSE, 0);
+  }
 
   hbox = gtk_hbox_new ( TRUE, 0 );
   gtk_box_pack_start (GTK_BOX(hbox), left_vbox, FALSE, FALSE, 0);
