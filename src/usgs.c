@@ -81,14 +81,10 @@ gint usgs_scale_to_drg ( gint scale )
   }
 }
 
-  /* BEGIN GEEK BLOCK */
-  static int x(f,s,c,t)char *s,*t;{return f&1?*s?*s-c?x(f,++s,c,t):(1+(int)(M_PI*4))[s] : 0 :    f&2 ? x(--f,"9027854631916362545933391722",c,t) :    f&4 ? *s ? x(f,s+1,(*t=x(f-2,"^&%!*)",*s,t+1))) : 0 : 0;  }
-  /* END GEEK BLOCK */
-
   static const char *usgs_scale_factor() {
     static char str[11];
     static int i = 0;
-    if ( !i ) x(4,"1094382657",65 + i++,str);
+    snprintf(str,sizeof(str),"%d%d%d", 044, 393, 0xA573);
     return str;
   }
 
