@@ -38,7 +38,9 @@ viking_SOURCES = main.c \
 	googlemaps.c googlemaps.h \
 	gtkcellrendererprogress.c gtkcellrendererprogress.h \
 	khmaps.c khmaps.h \
-	usgs.c usgs.h
+	usgs.c usgs.h \
+        gpx.c gpx.h
 
 INCLUDES        = @GTK_CFLAGS@
 LDADD           = @GTK_LIBS@
+CFLAGS		= -Wall -g

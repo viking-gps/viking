@@ -772,10 +772,35 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           if (!useoldvals)
             vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &oldx, &oldy );
 
-          if ( drawing_white_background )
+          if ( drawing_white_background ) {
             vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
-          else
+          }
+          else {
+            GdkPoint tmp[4];
+#define FIXALTITUDE(what) (pow((VIK_TRACKPOINT((what))->altitude-330),2)/1500/dp->xmpp)
+            if ( list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+              tmp[0].x = oldx;
+              tmp[0].y = oldy;
+              tmp[1].x = oldx;
+              tmp[1].y = oldy-FIXALTITUDE(list->data);
+              tmp[2].x = x;
+              tmp[2].y = y-FIXALTITUDE(list->next->data);
+              tmp[3].x = x;
+              tmp[3].y = y;
+
+              GdkGC *tmp_gc;
+              if ( ((oldx - x) > 0 && (oldy - y) > 0) || ((oldx - x) < 0 && (oldy - y) < 0))
+                tmp_gc = GTK_WIDGET(dp->vp)->style->light_gc[3];
+              else
+                tmp_gc = GTK_WIDGET(dp->vp)->style->dark_gc[0];
+              vik_viewport_draw_polygon ( dp->vp, tmp_gc, TRUE, tmp, 4);
+            }
+
             vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), oldx, oldy, x, y);
+            if ( list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+              vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), oldx, oldy-FIXALTITUDE(list->data), x, y-FIXALTITUDE(list->next->data));
+            }
+          }
         }
 
         oldx = x;
