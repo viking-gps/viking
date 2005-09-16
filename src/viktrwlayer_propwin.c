@@ -55,7 +55,6 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
         *min = altitudes[i];
     }
   }
-
 }
 
 #define MARGIN 50
@@ -82,8 +81,10 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
   gpointer *pass_along;
   guint i;
 
-  if ( altitudes == NULL )
+  if ( altitudes == NULL ) {
+    *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
     return NULL;
+  }
 
   pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
@@ -282,6 +283,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
 
   static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>" };
   static gchar tmp_buf[25];
+  gdouble tmp_speed;
 
   left_vbox = a_dialog_create_label_vbox ( label_texts, sizeof(label_texts) / sizeof(label_texts[0]) );
   right_vbox = gtk_vbox_new ( TRUE, 3 );
@@ -306,20 +308,34 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", vik_track_get_dup_point_count(tr) );
   l_dups = gtk_label_new ( tmp_buf );
 
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", vik_track_get_max_speed(tr) );
+  tmp_speed = vik_track_get_max_speed(tr);
+  if ( tmp_speed == 0 )
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+  else
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
   l_maxs = gtk_label_new ( tmp_buf );
 
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", vik_track_get_average_speed(tr) );
+  tmp_speed = vik_track_get_average_speed(tr);
+  if ( tmp_speed == 0 )
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+  else
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
   l_avgs = gtk_label_new ( tmp_buf );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count ) );
   l_avgd = gtk_label_new ( tmp_buf );
 
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
+  if ( min_alt == VIK_DEFAULT_ALTITUDE )
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+  else
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
   l_elev = gtk_label_new ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
+  if ( max_alt == VIK_DEFAULT_ALTITUDE )
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+  else
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
   l_galo = gtk_label_new ( tmp_buf );
 
 
@@ -334,7 +350,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   gtk_box_pack_start (GTK_BOX(right_vbox), l_elev, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(right_vbox), l_galo, FALSE, FALSE, 0);
 
-  if ( tr->trackpoints )
+  if ( tr->trackpoints && VIK_TRACKPOINT(tr->trackpoints->data)->timestamp )
   {
     time_t t1, t2;
     t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
@@ -350,11 +366,14 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%d minutes", (int)(t2-t1)/60);
     l_dur = gtk_label_new(tmp_buf);
-
-    gtk_box_pack_start (GTK_BOX(right_vbox), l_begin, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(right_vbox), l_end, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(right_vbox), l_dur, FALSE, FALSE, 0);
+  } else {
+    l_begin = gtk_label_new("No Data");
+    l_end = gtk_label_new("No Data");
+    l_dur = gtk_label_new("No Data");
   }
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_begin, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_end, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(right_vbox), l_dur, FALSE, FALSE, 0);
 
   hbox = gtk_hbox_new ( TRUE, 0 );
   gtk_box_pack_start (GTK_BOX(hbox), left_vbox, FALSE, FALSE, 0);

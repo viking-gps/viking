@@ -454,7 +454,8 @@ gshort a_file_load ( VikAggregateLayer *top, gpointer vp, const gchar *filename 
     VikCoord new_center;
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
     vik_layer_rename ( vtl, a_file_basename ( filename ) );
-    a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
+    // a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
+    a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
 
     vik_layer_post_read ( vtl, vp );
 

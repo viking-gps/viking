@@ -29,9 +29,7 @@
 
 VikTrack *vik_track_new()
 {
-  VikTrack *tr = g_malloc ( sizeof ( VikTrack ) );
-  tr->trackpoints = NULL;
-  tr->comment = NULL;
+  VikTrack *tr = g_malloc0 ( sizeof ( VikTrack ) );
   tr->ref_count = 1;
   return tr;
 }
@@ -427,7 +425,7 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
 {
   gdouble diff;
   *up = *down = 0;
-  if ( tr->trackpoints )
+  if ( tr->trackpoints && VIK_TRACKPOINT(tr->trackpoints->data)->altitude != VIK_DEFAULT_ALTITUDE )
   {
     GList *iter = tr->trackpoints->next;
     while (iter)
@@ -440,6 +438,7 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
       iter = iter->next;
     }
   }
+  *up = *down = VIK_DEFAULT_ALTITUDE;
 }
 
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
