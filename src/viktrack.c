@@ -22,6 +22,8 @@
 #include <glib.h>
 #include <time.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 #include "coords.h"
 #include "vikcoord.h"
 #include "viktrack.h"
@@ -437,18 +439,87 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
         *down -= diff;
       iter = iter->next;
     }
-  }
-  *up = *down = VIK_DEFAULT_ALTITUDE;
+  } else
+    *up = *down = VIK_DEFAULT_ALTITUDE;
 }
 
+typedef struct {
+  double a, b, c, d;
+} spline_coeff_t;
+
+void compute_spline(int n, double *x, double *f, spline_coeff_t *p) 
+{
+  double *h, *alpha, *B, *m;
+  int i;
+  
+  /* we're solving a linear system of equations of the form Ax = B. 
+   * The matrix a is tridiagonal and consists of coefficients in 
+   * the h[] and alpha[] arrays. 
+   */
+
+  h = (double *)malloc(sizeof(double) * (n-1));
+  for (i=0; i<n-1; i++) {
+    h[i] = x[i+1]-x[i];
+  }
+
+  alpha = (double *)malloc(sizeof(double) * (n-2));
+  for (i=0; i<n-2; i++) {
+    alpha[i] = 2 * (h[i] + h[i+1]);
+  }
+
+  /* B[] is the vector on the right hand side of the equation */
+  B = (double *)malloc(sizeof(double) * (n-2));
+  for (i=0; i<n-2; i++) {
+    B[i] = 6 * ((f[i+2] - f[i+1])/h[i+1] - (f[i+1] - f[i])/h[i]);
+  }
+
+  /* Now solve the n-2 by n-2 system */
+  m = (double *)malloc(sizeof(double) * (n-2));
+  for (i=1; i<=n-3; i++) {
+    /*
+    d0 = alpha 0   
+    a0 = h1          
+    c0 = h1          
+
+      di = di - (ai-1 / di-1) * ci-1
+      bi = bi - (ai-1 / di-1) * bi-1
+      ;
+    */
+    alpha[i] = alpha[i] - (h[i]/alpha[i-1]) * h[i];
+    B[i] = B[i] - (h[i]/alpha[i-1]) * B[i-1];
+  }
+  /*  xn-3 = bn-3 / dn-3; */
+  m[n-3] = B[n-3]/alpha[n-3];
+  for (i=n-4; i>=0; i--) {
+    m[i] = (B[i]-h[i+1]*m[i+1])/alpha[i];
+  }
+
+  for (i=0; i<n-1; i++) {
+    double mi, mi1;
+    mi = (i==(n-2)) ? 0 : m[i];
+    mi1 = (i==0) ? 0 : m[i-1];
+
+    p[i].a = f[i+1];
+    p[i].b = (f[i+1] - f[i]) / h[i]  +  h[i] * (2*mi + mi1) / 6;
+    p[i].c = mi/2;
+    p[i].d = (mi-mi1)/(6*h[i]);
+  }
+
+  free(alpha);
+  free(B);
+  free(h);
+  free(m);
+}
+
+/* by Alex Foobarian */
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
 {
-  gdouble *pts;
-  gdouble duration, chunk_dur, t;
+  gdouble *v, *s, *t;
+  gdouble duration, chunk_dur, T, s_prev, s_now;
   time_t t1, t2;
-  int i;
-
-  GList *iter = tr->trackpoints;
+  int i, pt_count, numpts, spline;
+  GList *iter;
+  spline_coeff_t *p;
 
   if ( ! tr->trackpoints )
     return NULL;
@@ -466,23 +537,69 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
     fprintf(stderr, "negative duration: unsorted trackpoint timestamps?\n");
     return NULL;
   }
-  
-  pts = g_malloc ( sizeof(gdouble) * num_chunks );
+  pt_count = vik_track_get_tp_count(tr);
 
+  v = g_malloc ( sizeof(gdouble) * num_chunks );
   chunk_dur = duration / num_chunks;
-  t = t1;
-  for (i = 0; i < num_chunks; i++, t+=chunk_dur) {
-    while (iter && VIK_TRACKPOINT(iter->data)->timestamp <= t) {
-      iter = iter->next;
-    }
-    pts[i] = vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord),
-					  &(VIK_TRACKPOINT(iter->data)->coord) ) / 
-      (gdouble)(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
+
+  s = g_malloc(sizeof(double) * pt_count);
+  t = g_malloc(sizeof(double) * pt_count);
+  p = g_malloc(sizeof(spline_coeff_t) * (pt_count-1));
+
+  iter = tr->trackpoints->next;
+  numpts = 0;
+  s[0] = 0;
+  t[0] = VIK_TRACKPOINT(iter->prev->data)->timestamp;
+  numpts++;
+  while (iter) {
+    s[numpts] = s[numpts-1] + vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord), &(VIK_TRACKPOINT(iter->data)->coord) );
+    t[numpts] = VIK_TRACKPOINT(iter->data)->timestamp;
+    numpts++;
+    iter = iter->next;
   }
 
-  return pts;
+  compute_spline(numpts, t, s, p);
+
+  /*
+  printf("Got spline\n");
+  for (i=0; i<numpts-1; i++) {
+    printf("a = %15f  b = %15f  c = %15f  d = %15f\n", p[i].a, p[i].b, p[i].c, p[i].d);
+  }
+  */
+
+  /* the spline gives us distances at chunk_dur intervals. from these,
+   * we obtain average speed in each interval.
+   */
+  spline = 0;
+  T = t[spline];
+  s_prev = 
+      p[spline].d * pow(T - t[spline+1], 3) + 
+      p[spline].c * pow(T - t[spline+1], 2) + 
+      p[spline].b * (T - t[spline+1]) + 
+      p[spline].a;
+  for (i = 0; i < num_chunks; i++, T+=chunk_dur) {
+    while (T > t[spline+1]) {
+      spline++;
+    }
+    s_now = 
+      p[spline].d * pow(T - t[spline+1], 3) + 
+      p[spline].c * pow(T - t[spline+1], 2) + 
+      p[spline].b * (T - t[spline+1]) + 
+      p[spline].a;
+    v[i] = (s_now - s_prev) / chunk_dur;
+    s_prev = s_now;
+    /* 
+     * old method of averages
+    v[i] = (s[spline+1]-s[spline])/(t[spline+1]-t[spline]);
+    */
+  }
+  g_free(s);
+  g_free(t);
+  g_free(p);
+  return v;
 }
 
+/* by Alex Foobarian */
 VikCoord *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist )
 {
   gdouble dist = vik_track_get_length_including_gaps(tr) * reldist;

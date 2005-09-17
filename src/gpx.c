@@ -3,6 +3,10 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  *
+ * Some of the code adapted from GPSBabel 1.2.7
+ * http://gpsbabel.sf.net/
+ * Copyright (C) 2002, 2003, 2004, 2005 Robert Lipe, robertlipe@usa.net
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -26,8 +30,6 @@
 #include <expat.h>
 #include <string.h>
 
-// see ~/evan/programs/gpsbabel-1.2.7/gpx.c
-
 typedef enum {
         tt_unknown = 0,
 
@@ -47,6 +49,10 @@ typedef enum {
         tt_trk_trkseg_trkpt,
         tt_trk_trkseg_trkpt_ele,
         tt_trk_trkseg_trkpt_time,
+
+        tt_waypoint,
+        tt_waypoint_coord,
+        tt_waypoint_name,
 } tag_type;
 
 typedef struct tag_mapping {
@@ -61,9 +67,13 @@ typedef struct tag_mapping {
  */
 
 tag_mapping tag_path_map[] = {
-        { tt_gpx, "/gpx" },
 
         { tt_wpt, "/gpx/wpt" },
+
+        { tt_waypoint, "/loc/waypoint" },
+        { tt_waypoint_coord, "/loc/waypoint/coord" },
+        { tt_waypoint_name, "/loc/waypoint/name" },
+
         { tt_wpt_ele, "/gpx/wpt/ele" },
         { tt_wpt_name, "/gpx/wpt/name" },
         { tt_wpt_desc, "/gpx/wpt/desc" },
@@ -136,6 +146,8 @@ static gboolean set_c_ll ( const char **attr )
 
 static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
 {
+  static const gchar *tmp;
+
   g_string_append_c ( xpath, '/' );
   g_string_append ( xpath, el );
   current_tag = get_tag ( xpath->str );
@@ -185,7 +197,28 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_trk_desc:
      case tt_trk_name:
        g_string_erase ( c_cdata, 0, -1 ); /* clear the cdata buffer */
+       break;
 
+     case tt_waypoint:
+       c_wp = vik_waypoint_new ();
+       c_wp->altitude = VIK_DEFAULT_ALTITUDE;
+       c_wp->visible = TRUE;
+       break;
+
+     case tt_waypoint_coord:
+       if ( set_c_ll( attr ) )
+         vik_coord_load_from_latlon ( &(c_wp->coord), vik_trw_layer_get_coord_mode ( vtl ), &c_ll );
+       break;
+
+     case tt_waypoint_name:
+       if ( ( tmp = get_attr(attr, "id") ) ) {
+         if ( c_wp_name )
+           g_free ( c_wp_name );
+         c_wp_name = g_strdup ( tmp );
+       }
+       g_string_erase ( c_cdata, 0, -1 ); /* clear the cdata buffer for description */
+       break;
+        
      default: break;
   }
 }
@@ -197,6 +230,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
 
   switch ( current_tag ) {
 
+     case tt_waypoint:
      case tt_wpt:
        if ( ! c_wp_name )
          c_wp_name = g_strdup_printf("VIKING_WP%d", unnamed_waypoints++);
@@ -237,6 +271,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_waypoint_name: /* .loc name is really description. */
      case tt_wpt_desc:
        vik_waypoint_set_comment ( c_wp, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
@@ -258,6 +293,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
          c_tp->has_timestamp = TRUE;
        }
        g_string_erase ( c_cdata, 0, -1 );
+       break;
 
      default: break;
   }
@@ -276,6 +312,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_wpt_link:
     case tt_trk_desc:
     case tt_trk_trkseg_trkpt_time:
+    case tt_waypoint_name: /* .loc name is really description. */
       g_string_append_len ( c_cdata, s, len );
       break;
 
@@ -296,7 +333,7 @@ void a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
 
   gchar buf[4096];
 
-  //g_assert ( f != NULL && vtl != NULL );
+  g_assert ( f != NULL && vtl != NULL );
 
   xpath = g_string_new ( "" );
   c_cdata = g_string_new ( "" );
