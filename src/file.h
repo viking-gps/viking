@@ -24,6 +24,7 @@
 
 #define FILE_TYPE_GPSPOINT 1
 #define FILE_TYPE_GPSMAPPER 2
+#define FILE_TYPE_GPX 3
 
 const gchar *a_file_basename ( const gchar *filename );
 
