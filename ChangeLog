@@ -1,3 +1,19 @@
+2005-09-16
+Evan: GPX fixes
+Evan: So Geocaching .LOC _isn't_ GPX?!?!? Oh well, it's XML...
+Evan: GPX write, click v-vs-t diagram
+Alex Foobarian <foobarian@gmail.com>: fix to v-vs-t (better drawing)
+
+2005-09-15
+	* 4+ hours later and voila, GPX read support
+	* Fixes in propwin if track doesn't have certain data, say so.
+
+2005-09-14
+Me (Evan) again:
+	* Fix USGS support
+	* Click on the elevation map to go there, so you can see where a mountain-top is etc.
+	* Don't crash on track properties of an empty track.
+
 2005-09-13
 Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>:
        * bootstrap: new file to bootstrap auto-tools

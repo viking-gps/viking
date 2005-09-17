@@ -1,9 +1,25 @@
-FIXES:
+TODO till release 0.1.1 "desilusión":
+GPX, XML .vik file format.
+direct GPS support
+combine layers
+funky gpsbabel filter stuff (data sources -- think about, i want something innovative in this release.)
+bug fixes, Ui fixes, smoothing over stops, 3-d plotting, etc.
 
-checkbox in list doesn't work?! (on some GTK setups anyway)
+try renaming a waypoint (track is OK):
+	"funky" & <stuff>
+	IO MORIRÒ D'AMORE
+	'
+
+GPX: write & smooth over any wrinkles
 
 map cache size a dynamically settable option
 alphabetized waypoints/tracks dynamically settable option
+
+arrows to show track direction
+bicycle runs your track (animation) that tilts depending on slope
+stops
+elevation plotting: plot between MIN and MAX  ONSCREEN values. Better colors. Make it optional. Clean it up.
+"click to go there" elevation map: average out, not nearest trackpoint.
 
 check out bgitemcount stuff in background.c
 open jobs window a 2nd time after clearing (mess around a bit), crashes
