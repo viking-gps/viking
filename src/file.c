@@ -21,11 +21,14 @@
 
 #include "viking.h"
 
+#include "gpx.h"
+
 #include <string.h>
 #include <stdlib.h>
 
 #define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 #define VIK_MAGIC "#VIK"
+#define GPX_MAGIC "<?xm"
 #define VIK_MAGIC_LEN 4
 
 #ifdef WINDOWS
@@ -54,13 +57,13 @@ static void push(Stack **stack)
   *stack = tmp;
 }
 
-static gboolean is_viking_file ( FILE *f )
+static gboolean check_magic ( FILE *f, const gchar *magic_number )
 {
   gchar magic[VIK_MAGIC_LEN];
   gboolean rv = FALSE;
   gint8 i;
   if ( fread(magic, 1, sizeof(magic), f) == sizeof(magic) &&
-      strncmp(magic, VIK_MAGIC, sizeof(magic)) == 0 )
+      strncmp(magic, magic_number, sizeof(magic)) == 0 )
     rv = TRUE;
   for ( i = sizeof(magic)-1; i >= 0; i-- ) /* the ol' pushback */
     ungetc(magic[i],f);
@@ -442,7 +445,7 @@ gshort a_file_load ( VikAggregateLayer *top, gpointer vp, const gchar *filename 
   if ( ! f )
     return 0;
 
-  if ( is_viking_file ( f ) )
+  if ( check_magic ( f, VIK_MAGIC ) )
   {
     file_read ( top, f, vp );
     if ( f != stdin )
@@ -454,8 +457,11 @@ gshort a_file_load ( VikAggregateLayer *top, gpointer vp, const gchar *filename 
     VikCoord new_center;
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
     vik_layer_rename ( vtl, a_file_basename ( filename ) );
-    // a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
-    a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
+
+    if ( check_magic ( f, GPX_MAGIC ) )
+      a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
+    else
+     a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
 
     vik_layer_post_read ( vtl, vp );
 

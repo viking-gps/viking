@@ -23,6 +23,5 @@
 #define _VIKING_GPX_H
 
 void a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
-void a_gpx_write_file ( VikTrwLayer *trw, FILE *f );
 
 #endif

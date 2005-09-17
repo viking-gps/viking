@@ -185,6 +185,8 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr)
   }
 
   minmax_alt(speeds, &mins, &maxs);
+  mins = 0; /* splines sometimes give negative speeds */
+  maxs = maxs * 110 / 100;
   if  (maxs-mins < MIN_SPEED_DIFF) {
     maxs = mins + MIN_SPEED_DIFF;
   }
@@ -332,7 +334,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   l_elev = gtk_label_new ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
-  if ( max_alt == VIK_DEFAULT_ALTITUDE )
+  if ( min_alt == VIK_DEFAULT_ALTITUDE )
     g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
