@@ -3,7 +3,8 @@ GPX, XML .vik file format.
 direct GPS support
 combine layers
 funky gpsbabel filter stuff (data sources -- think about, i want something innovative in this release.)
-bug fixes, Ui fixes, smoothing over stops, 3-d plotting, etc.
+bug fixes, Ui fixes
+elevation plotting is not so pretty if you're moving north, as it overlays stuff uglily. discussion?
 
 try renaming a waypoint (track is OK):
 	"funky" & <stuff>
