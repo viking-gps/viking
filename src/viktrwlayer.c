@@ -1263,6 +1263,11 @@ static void trw_layer_export_gpsmapper ( gpointer layer_and_vlp[2] )
   trw_layer_export ( layer_and_vlp, FILE_TYPE_GPSMAPPER );
 }
 
+static void trw_layer_export_gpx ( gpointer layer_and_vlp[2] )
+{
+  trw_layer_export ( layer_and_vlp, FILE_TYPE_GPX );
+}
+
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
 {
   GHashTable *wps = vik_trw_layer_get_waypoints ( VIK_TRW_LAYER(layer_and_vlp[0]) );
@@ -1366,6 +1371,11 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
 
   item = gtk_menu_item_new_with_label ( "Export Layer as GPSMapper" );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpsmapper), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_label ( "Export Layer as GPX" );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpx), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 

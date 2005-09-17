@@ -30,6 +30,8 @@
 #include <expat.h>
 #include <string.h>
 
+#define GPX_TIME_FORMAT "%Y-%m-%dT%H:%M:%SZ"
+
 typedef enum {
         tt_unknown = 0,
 
@@ -80,11 +82,12 @@ tag_mapping tag_path_map[] = {
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
 
         { tt_trk, "/gpx/trk" },
+        { tt_trk, "/gpx/rte" },
         { tt_trk_name, "/gpx/trk/name" },
         { tt_trk_desc, "/gpx/trk/desc" },
         { tt_trk_trkseg, "/gpx/trk/trkseg" },
-
         { tt_trk_trkseg_trkpt, "/gpx/trk/trkseg/trkpt" },
+        { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/trk/trkseg/trkpt/ele" },
         { tt_trk_trkseg_trkpt_time, "/gpx/trk/trkseg/trkpt/time" },
 
@@ -288,7 +291,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk_trkseg_trkpt_time:
-       if ( strptime(c_cdata->str, "%Y-%m-%dT%H:%M:%SZ", &tm) != c_cdata->str ) { /* it read at least one char */
+       if ( strptime(c_cdata->str, GPX_TIME_FORMAT, &tm) != c_cdata->str ) { /* it read at least one char */
          c_tp->timestamp = mktime(&tm);
          c_tp->has_timestamp = TRUE;
        }
@@ -349,4 +352,265 @@ void a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
  
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
+}
+
+/**** entitize from GPSBabel ****/
+typedef struct {
+        const char * text;
+        const char * entity;
+        int  not_html;
+} entity_types;
+
+static
+entity_types stdentities[] =  {
+        { "&",  "&amp;", 0 },
+        { "'",  "&apos;", 1 },
+        { "<",  "&lt;", 0 },
+        { ">",  "&gt;", 0 },
+        { "\"", "&quot;", 0 },
+        { NULL, NULL, 0 }
+};
+
+void utf8_to_int( const char *cp, int *bytes, int *value )
+{
+        if ( (*cp & 0xe0) == 0xc0 ) {
+                if ( (*(cp+1) & 0xc0) != 0x80 ) goto dodefault;
+                *bytes = 2;
+                *value = ((*cp & 0x1f) << 6) |
+                        (*(cp+1) & 0x3f);
+        }
+        else if ( (*cp & 0xf0) == 0xe0 ) {
+                if ( (*(cp+1) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+2) & 0xc0) != 0x80 ) goto dodefault;
+                *bytes = 3;
+                *value = ((*cp & 0x0f) << 12) |
+                        ((*(cp+1) & 0x3f) << 6) |
+                        (*(cp+2) & 0x3f);
+        }
+        else if ( (*cp & 0xf8) == 0xf0 ) {
+                if ( (*(cp+1) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+2) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+3) & 0xc0) != 0x80 ) goto dodefault;
+                *bytes = 4;
+                *value = ((*cp & 0x07) << 18) |
+                        ((*(cp+1) & 0x3f) << 12) |
+                        ((*(cp+2) & 0x3f) << 6) |
+                        (*(cp+3) & 0x3f);
+        }
+        else if ( (*cp & 0xfc) == 0xf8 ) {
+                if ( (*(cp+1) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+2) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+3) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+4) & 0xc0) != 0x80 ) goto dodefault;
+                *bytes = 5;
+                *value = ((*cp & 0x03) << 24) |
+                        ((*(cp+1) & 0x3f) << 18) |
+                        ((*(cp+2) & 0x3f) << 12) |
+                        ((*(cp+3) & 0x3f) << 6) |
+                        (*(cp+4) & 0x3f);
+        }
+        else if ( (*cp & 0xfe) == 0xfc ) {
+                if ( (*(cp+1) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+2) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+3) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+4) & 0xc0) != 0x80 ) goto dodefault;
+                if ( (*(cp+5) & 0xc0) != 0x80 ) goto dodefault;
+                *bytes = 6;
+                *value = ((*cp & 0x01) << 30) |
+                        ((*(cp+1) & 0x3f) << 24) |
+                        ((*(cp+2) & 0x3f) << 18) |
+                        ((*(cp+3) & 0x3f) << 12) |
+                        ((*(cp+4) & 0x3f) << 6) |
+                        (*(cp+5) & 0x3f);
+        }
+        else {
+dodefault:
+                *bytes = 1;
+                *value = (unsigned char)*cp;
+        }
+}
+
+static
+char *
+entitize(const char * str)
+{
+        int elen, ecount, nsecount;
+        entity_types *ep;
+        const char * cp;
+        char * p, * tmp, * xstr;
+
+        char tmpsub[20];
+        int bytes = 0;
+        int value = 0;
+        ep = stdentities;
+        elen = ecount = nsecount = 0;
+
+        /* figure # of entity replacements and additional size. */
+        while (ep->text) {
+                cp = str;
+                while ((cp = strstr(cp, ep->text)) != NULL) {
+                        elen += strlen(ep->entity) - strlen(ep->text);
+                        ecount++;
+                        cp += strlen(ep->text);
+                }
+                ep++;
+        }
+
+        /* figure the same for other than standard entities (i.e. anything
+         * that isn't in the range U+0000 to U+007F */
+        for ( cp = str; *cp; cp++ ) {
+                if ( *cp & 0x80 ) {
+
+                        utf8_to_int( cp, &bytes, &value );
+                        cp += bytes-1;
+                        elen += sprintf( tmpsub, "&#x%x;", value ) - bytes;
+                        nsecount++;
+                }
+        }
+
+        /* enough space for the whole string plus entity replacements, if any */
+        tmp = g_malloc((strlen(str) + elen + 1));
+        strcpy(tmp, str);
+
+        /* no entity replacements */
+        if (ecount == 0 && nsecount == 0)
+                return (tmp);
+
+        if ( ecount != 0 ) {
+                for (ep = stdentities; ep->text; ep++) {
+                        p = tmp;
+                        while ((p = strstr(p, ep->text)) != NULL) {
+                                elen = strlen(ep->entity);
+
+                                xstr = g_strdup(p + strlen(ep->text));
+
+                                strcpy(p, ep->entity);
+                                strcpy(p + elen, xstr);
+
+                                g_free(xstr);
+
+                                p += elen;
+                        }
+                }
+        }
+
+        if ( nsecount != 0 ) {
+                p = tmp;
+                while (*p) {
+                        if ( *p & 0x80 ) {
+                                utf8_to_int( p, &bytes, &value );
+                                if ( p[bytes] ) {
+                                        xstr = g_strdup( p + bytes );
+                                }
+                                else {
+                                        xstr = NULL;
+                                }
+                                sprintf( p, "&#x%x;", value );
+                                p = p+strlen(p);
+                                if ( xstr ) {
+                                        strcpy( p, xstr );
+                                        g_free(xstr);
+                                }
+                        }
+                        else {
+                                p++;
+                        }
+                }
+        }
+        return (tmp);
+}
+/**** end GPSBabel code ****/
+
+/* export GPX */
+static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f ) 
+{
+  static struct LatLon ll;
+  gchar *tmp;
+  vik_coord_to_latlon ( &(wp->coord), &ll );
+  fprintf ( f, "<wpt lat=\"%f\" lon=\"%f\"%s>\n",
+               ll.lat, ll.lon, wp->visible ? "" : " hidden=\"hidden\"" );
+
+  tmp = entitize ( name );
+  fprintf ( f, "  <name>%s</name>\n", tmp );
+  g_free ( tmp);
+
+  if ( wp->altitude != VIK_DEFAULT_ALTITUDE )
+    fprintf ( f, "  <ele>%f</ele>\n", wp->altitude );
+  if ( wp->comment )
+  {
+    tmp = entitize(wp->comment);
+    fprintf ( f, "  <desc>%s</desc>\n", tmp );
+    g_free ( tmp );
+  }
+  if ( wp->image )
+  {
+    tmp = entitize(wp->image);
+    fprintf ( f, "  <link>%s</link>\n", tmp );
+    g_free ( tmp );
+  }
+  fprintf ( f, "</wpt>\n" );
+}
+
+static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
+{
+  static struct LatLon ll;
+  static gchar time_buf[30];
+  vik_coord_to_latlon ( &(tp->coord), &ll );
+
+  if ( tp->newsegment )
+    fprintf ( f, "  </trkseg>\n  <trkseg>\n" );
+
+  fprintf ( f, "  <trkpt lat=\"%f\" lon=\"%f\">\n", ll.lat, ll.lon );
+
+  if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
+    fprintf ( f, "    <ele>%f</ele>\n", tp->altitude );
+  if ( tp->has_timestamp ) {
+    time_buf [ strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&(tp->timestamp)) ) ] = '\0';
+    fprintf ( f, "    <time>%s</time>\n", time_buf );
+  }
+  fprintf ( f, "  </trkpt>\n" );
+}
+
+
+static void gpx_write_track ( const gchar *name, VikTrack *t, FILE *f )
+{
+  gchar *tmp;
+  gboolean first_tp_is_newsegment; /* must temporarily make it not so, but we want to restore state. not that it matters. */
+
+  tmp = entitize ( name );
+  fprintf ( f, "<trk%s>\n  <name>%s</name>\n", t->visible ? "" : " hidden=\"hidden\"", tmp );
+  g_free ( tmp );
+
+  if ( t->comment )
+  {
+    tmp = entitize ( t->comment );
+    fprintf ( f, "  <desc>%s</desc>\n", tmp );
+    g_free ( tmp );
+  }
+
+  fprintf ( f, "  <trkseg>\n" );
+
+  if ( t->trackpoints && t->trackpoints->data ) {
+    first_tp_is_newsegment = VIK_TRACKPOINT(t->trackpoints->data)->newsegment;
+    VIK_TRACKPOINT(t->trackpoints->data)->newsegment = FALSE; /* so we won't write </trkseg><trkseg> already */
+  }
+  g_list_foreach ( t->trackpoints, (GFunc) gpx_write_trackpoint, f );
+  if ( t->trackpoints && t->trackpoints->data )
+    VIK_TRACKPOINT(t->trackpoints->data)->newsegment = first_tp_is_newsegment; /* restore state */
+
+  fprintf ( f, "</trkseg>\n</trk>\n" );
+}
+
+void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
+{
+  fprintf(f, "<?xml version=\"1.0\"?>\n"
+          "<gpx version=\"1.0\" creator=\"Viking -- http://viking.sf.net/\"\n"
+          "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+          "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
+          "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
+  g_hash_table_foreach ( vik_trw_layer_get_waypoints ( vtl ), (GHFunc) gpx_write_waypoint, f );
+  g_hash_table_foreach ( vik_trw_layer_get_tracks ( vtl ), (GHFunc) gpx_write_track, f );
+  fprintf(f, "</gpx>\n");
+
+
 }

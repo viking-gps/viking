@@ -75,9 +75,9 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 {
   GdkPixmap *pix;
   GtkWidget *image;
-  GtkWidget *eventbox;
   gdouble *altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
   gdouble mina, maxa;
+  GtkWidget *eventbox;
   gpointer *pass_along;
   guint i;
 
@@ -165,13 +165,18 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 #define MTOK(v) ( (v)*3600.0/1000.0 * 0.6214) /* m/s to mph - we'll handle this globally eventually but for now ...*/
 #endif
 
-GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr)
+GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp)
 {
   GdkPixmap *pix;
   GtkWidget *image;
   gdouble mins, maxs;
   guint i;
+  GtkWidget *eventbox;
+  gpointer *pass_along;
 
+  pass_along = g_malloc ( sizeof(gpointer) * 2 );
+  pass_along[0] = tr;
+  pass_along[1] = vlp;
 
   gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
   if ( speeds == NULL )
@@ -250,7 +255,13 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr)
 
   g_object_unref ( G_OBJECT(pix) );
   g_free ( speeds );
-  return image;
+
+  eventbox = gtk_event_box_new ();
+  g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
+  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+
+  return eventbox;
 }
 #undef MARGIN
 #undef LINES
@@ -280,7 +291,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
 
   gdouble min_alt, max_alt;
   GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr,&min_alt,&max_alt,vlp);
-  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr);
+  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp);
   GtkWidget *graphs = gtk_notebook_new();
 
   static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>" };

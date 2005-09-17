@@ -507,6 +507,8 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_ty
   {
     if ( file_type == FILE_TYPE_GPSMAPPER )
       a_gpsmapper_write_file ( vtl, f );
+    else if ( file_type == FILE_TYPE_GPX )
+      a_gpx_write_file ( vtl, f );
     else
       a_gpspoint_write_file ( vtl, f );
     fclose ( f );
