@@ -1,0 +1,5 @@
+Try this:
+./googledirections "boston, ma" "new york, ny" | ../src/viking -
+
+Or edit gcget with your geocaching.com username and password and try this:
+./gcget 94704 50 2>/dev/null | ../src/viking -
