@@ -1,74 +1,66 @@
 TODO till release 0.1.1 "desilusión":
-GPX, XML .vik file format.
-direct GPS support
-combine layers
-funky gpsbabel filter stuff (data sources -- think about, i want something innovative in this release.)
-bug fixes, Ui fixes
-elevation plotting is not so pretty if you're moving north, as it overlays stuff uglily. discussion?
+CRASHES:
+	check out bgitemcount stuff in background.c (hangs on clear!)
+	try renaming a waypoint (track is OK):
+		"funky" & <stuff>
+		IO MORIRÒ D'AMORE
+		'
+BIG THINGS:
+	selections (select area of waypoints, trackpoints, etc)
+	Clipboard done right -- GtkClipboard, between processes
+	direct GPS support
+	combine layers
+		OR copy & paste >1 item (better! not too hard?)
+	funky gpsbabel filter stuff (data sources -- think about, i want something innovative in this release.)
+	bug fixes, UI fixes
+	elevation plotting is not so pretty if you're moving north, as it overlays stuff uglily. discussion?
+	arrows to show track direction
+	bicycle runs your track (animation) that tilts depending on slope
 
-try renaming a waypoint (track is OK):
-	"funky" & <stuff>
-	IO MORIRÒ D'AMORE
-	'
+RATHER HARD FIXES:
+	tracks have their own colors, etc.
+	replace HTTP code!!!
+	relative photo pathnames (relative to GPS data file)
+	Optimizations (compare to 0.0.5)
+	SETTABLE OPTIONS: map cache size, alphabetized waypoints/tracks, picture viewer, webbrowser
+	Speed up waypoint drawing; option for faster drawing.
+	what if try to REDOWLOAD while RE/DOWNLOADing?
+	Redraw when becomes available, somehow? Also, show maps in progress a different color.
+	map loading/memory caching in the background? (for zoom out)
+	WHITE UNDER TRACKS! DONE FASTER! CLEAN THIS UP!
 
-GPX: write & smooth over any wrinkles
+EASY FIXES:
+	"click to go there" elevation map: average out, not nearest trackpoint.
 
-map cache size a dynamically settable option
-alphabetized waypoints/tracks dynamically settable option
+FEATURE WISHLIST (i.e. unlikely to get done):
+	hover over pic
+	Better annotation for tracks, etc. Fields, etc.
+	Filled polygons
+	New UI: "Track Tool" => just analyze/pick out, right click or button to edit
+		right click to do new track
+		or "Track/Waypoint Tool"
+	I18N (das mundo ne parle pas agglika)
+	Drag & Drop Layers
+	import from data sources ( gpsbabel (gps device) / google / geocaching.com )
 
-arrows to show track direction
-bicycle runs your track (animation) that tilts depending on slope
-stops
-elevation plotting: plot between MIN and MAX  ONSCREEN values. Better colors. Make it optional. Clean it up.
-"click to go there" elevation map: average out, not nearest trackpoint.
+MISC FIXES (i.e. will never get done):
+	Reid's 23, including waypoints, GPX/XML Viking files.
+	modular plotting styles? just an idea...
+	optimize Lat/Lon performance with its own CE1, CE2 etc.
+	make ce1, cn2 etc for lat/lon & utm; maybe get out the checking code in vik_viewport (see draw_rectange for instance)
+	Progressive Loading (GdkPixbufLoader)
+	CACHING WHOLE CHUNKS? (USEFUL FOR MAP ZOOM TOO!) RELOAD BUTTON?
+	* instead of using "emit"s in tools, do this:
+	  * "add-only" return value -- only redraw this layer and layers above it.
+	 	OR maybe even more advanced -- only redraw certain portions of screen.
+		what about ALPHA??? uh oh...
+	 	"always redraw" return value -- if layer is visible or not -- e.g. goto wp
+		"redraw if visible" return value
+	settable defaults for layers (sigh...) OR at least config.h stuff
 
-check out bgitemcount stuff in background.c
-open jobs window a 2nd time after clearing (mess around a bit), crashes
+--------------
 
-TOO MANY OPEN FILES!!!!!!!!!!!!!!!!!!!
-
-FIX HOLLISTER-RELATED DOWNLAOD TOPOS -> COORD NOT IN UTM ASSERT/CRASH (???)
-
-  what if try to REDOWLOAD while RE/DOWNLOADing?
-  Reid's 23, including waypoints, GPX/XML Viking files.
-  Fix map downloading/HTTP code.
-  Redraw when becomes available, somehow?
-  Speed up waypoint drawing; option for faster drawing.
-  map loading/memory caching in the background? (for zoom out)
-  modular plotting styles? just an idea...
-  optimize Lat/Lon performance with its own CE1, CE2 etc.
-  make ce1, cn2 etc for lat/lon & utm; maybe get out the checking code in vik_viewport (see draw_rectange for instance)
-  no alphabetize in the layer itself option for opening tons of GC's? (optimization tag for wp drawing and alphab.)
-  Progressive Loading (GdkPixbufLoader)
-  CACHING WHOLE CHUNKS? (USEFUL FOR MAP ZOOM TOO!) RELOAD BUTTON?
-  * instead of using "emit"s in tools, do this:
-
-  * "add-only" return value -- only redraw this layer and layers above it.
- 	OR maybe even more advanced -- only redraw certain portions of screen.
-	what about ALPHA??? uh oh...
- 	"always redraw" return value -- if layer is visible or not -- e.g. goto wp
-	"redraw if visible" return value
-  WHITE UNDER TRACKS! DONE FASTER! CLEAN THIS UP!
-  replace HTTP code!!!
-  relative photo pathnames (relative to GPS data file)
-  Optimizations (compare to 0.0.5)
-OTHER
-  Editing/Moving waypoints: if didn't move enough
-  settable defaults for layers (sigh...) OR at least config.h stuff
-  hover over pic
-  Clipboard done right -- GtkClipboard, between processes
-  Better annotation for tracks, etc. Fields, etc.
-  Waypoints -- exactly change how it looks like -- shape, size of point.
-           \-- make drawing name OPTIONAL.
-  Filled polygons and we'll have a QuasiGIS!!!
-  merge layers -OR- copy & paste >1 item (better! not too hard?)
-  New UI: "Track Tool" => just analyze/pick out, right click or button to edit
-	right click to do new track
-      or "Track/Waypoint Tool"
-  I18N
-THUMBNAILS
-  * settable viewer: xv, kview, eog, gnome-open, kfmclient, etc. custom (& web browser for geocaches)
-
+ROADMAP (old)
 0.1.2
   * Data sources: google, gpsbabel
     * gpsbabel plugin -- wired up to get directions from google maps.
