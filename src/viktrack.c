@@ -633,3 +633,24 @@ VikCoord *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble re
   }
   return NULL;
 }
+
+gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
+{
+  *min_alt = 25000;
+  *max_alt = -5000;
+  if ( tr && tr->trackpoints && tr->trackpoints->data && (VIK_TRACKPOINT(tr->trackpoints->data)->altitude != VIK_DEFAULT_ALTITUDE) ) {
+    GList *iter = tr->trackpoints->next;
+    gdouble tmp_alt;
+    while (iter)
+    {
+      tmp_alt = VIK_TRACKPOINT(iter->data)->altitude;
+      if ( tmp_alt > *max_alt )
+        *max_alt = tmp_alt;
+      if ( tmp_alt < *min_alt )
+        *min_alt = tmp_alt;
+      iter = iter->next;
+    }
+    return TRUE;
+  }
+  return FALSE;
+}

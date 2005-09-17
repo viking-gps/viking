@@ -53,6 +53,10 @@
 #define TRACKPOINT_SIZE_APPROX 5
 #define WAYPOINT_SIZE_APPROX 5
 
+#define MIN_STOP_LENGTH 15
+#define MAX_STOP_LENGTH 86400
+#define DRAW_ELEVATION_FACTOR 30 /* height of elevation plotting, sort of relative to zoom level ("mpp" that isn't mpp necessarily) */
+                                 /* this is multiplied by user-inputted value from 1-100. */
 enum {
 VIK_TRW_LAYER_SUBLAYER_TRACKS,
 VIK_TRW_LAYER_SUBLAYER_WAYPOINTS,
@@ -72,6 +76,10 @@ struct _VikTrwLayer {
   gboolean tracks_visible, waypoints_visible;
   guint8 drawmode;
   guint8 drawpoints;
+  guint8 drawelevation;
+  guint8 elevation_factor;
+  guint8 drawstops;
+  guint32 stop_length;
   guint8 drawlines;
   guint8 line_thickness;
   guint8 bg_line_thickness;
@@ -223,6 +231,7 @@ enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES };
 static gchar *params_drawmodes[] = { "Draw by Track", "Draw by Velocity", "All Tracks Black", 0 };
 static gchar *params_wpsymbols[] = { "Filled Square", "Square", "Circle", "X", 0 };
 
+
 static VikLayerParamScale params_scales[] = {
  /* min  max    step digits */
  {  1,   10,    1,   0 }, /* line_thickness */
@@ -234,6 +243,8 @@ static VikLayerParamScale params_scales[] = {
  {   5,   500,  5,   0 }, /* image cache_size */
  {   0,   8,    1,   0 }, /* image cache_size */
  {   1,  64,    1,   0 }, /* wpsize */
+ {   MIN_STOP_LENGTH, MAX_STOP_LENGTH, 1,   0 }, /* stop_length */
+ {   1, 100, 1,   0 }, /* stop_length */
 };
 
 VikLayerParam trw_layer_params[] = {
@@ -243,6 +254,12 @@ VikLayerParam trw_layer_params[] = {
   { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track Drawing Mode:", VIK_LAYER_WIDGET_RADIOGROUP, params_drawmodes },
   { "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Track Lines", VIK_LAYER_WIDGET_CHECKBUTTON },
   { "drawpoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Trackpoints", VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "drawelevation", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Elevation", VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "elevation_factor", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Draw Elevation Height %:", VIK_LAYER_WIDGET_HSCALE, params_scales + 9 },
+
+  { "drawstops", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Stops", VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "stop_length", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Min Stop Length (seconds):", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 8 },
+
   { "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0 },
   { "bg_line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track BG Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 6 },
   { "trackbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, "Track Background Color", VIK_LAYER_WIDGET_COLOR, 0 },
@@ -263,7 +280,7 @@ VikLayerParam trw_layer_params[] = {
   { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Memory Cache Size:", VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
 };
 
-enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
+enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
 
 /****** END PARAMETERS ******/
 
@@ -411,7 +428,15 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_WV: vtl->waypoints_visible = data.b; break;
     case PARAM_DM: vtl->drawmode = data.u; break;
     case PARAM_DP: vtl->drawpoints = data.b; break;
+    case PARAM_DE: vtl->drawelevation = data.b; break;
+    case PARAM_DS: vtl->drawstops = data.b; break;
     case PARAM_DL: vtl->drawlines = data.b; break;
+    case PARAM_SL: if ( data.u >= MIN_STOP_LENGTH && data.u <= MAX_STOP_LENGTH )
+                     vtl->stop_length = data.u;
+                   break;
+    case PARAM_EF: if ( data.u >= 1 && data.u <= 100 )
+                     vtl->elevation_factor = data.u;
+                   break;
     case PARAM_LT: if ( data.u > 0 && data.u < 15 && data.u != vtl->line_thickness )
                    {
                      vtl->line_thickness = data.u;
@@ -461,6 +486,10 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
     case PARAM_WV: rv.b = vtl->waypoints_visible; break;
     case PARAM_DM: rv.u = vtl->drawmode; break;
     case PARAM_DP: rv.b = vtl->drawpoints; break;
+    case PARAM_DE: rv.b = vtl->drawelevation; break;
+    case PARAM_EF: rv.u = vtl->elevation_factor; break;
+    case PARAM_DS: rv.b = vtl->drawstops; break;
+    case PARAM_SL: rv.u = vtl->stop_length; break;
     case PARAM_DL: rv.b = vtl->drawlines; break;
     case PARAM_LT: rv.u = vtl->line_thickness; break;
     case PARAM_BLT: rv.u = vtl->bg_line_thickness; break;
@@ -500,7 +529,11 @@ static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp )
   rv->tracks_visible = vtl->tracks_visible;
   rv->waypoints_visible = vtl->waypoints_visible;
   rv->drawpoints = vtl->drawpoints;
+  rv->drawstops = vtl->drawstops;
+  rv->drawelevation = vtl->drawelevation;
+  rv->elevation_factor = vtl->elevation_factor;
   rv->drawlines = vtl->drawlines;
+  rv->stop_length = vtl->stop_length;
   rv->line_thickness = vtl->line_thickness;
   rv->bg_line_thickness = vtl->bg_line_thickness;
   rv->velocity_min = vtl->velocity_min;
@@ -548,6 +581,10 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   rv->waypoints_visible = rv->tracks_visible = TRUE;
   rv->drawmode = drawmode;
   rv->drawpoints = TRUE;
+  rv->drawstops = FALSE;
+  rv->drawelevation = FALSE;
+  rv->elevation_factor = 30;
+  rv->stop_length = 60;
   rv->drawlines = TRUE;
   rv->wplabellayout = NULL;
   rv->wp_right_click_menu = NULL;
@@ -558,7 +595,7 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   rv->velocity_max = 5.0;
   rv->velocity_min = 0.0;
   rv->line_thickness = 1;
-  rv->line_thickness = 0;
+  rv->bg_line_thickness = 0;
   rv->current_wp = NULL;
   rv->current_wp_name = NULL;
   rv->current_track = NULL;
@@ -688,10 +725,20 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
   gboolean useoldvals = TRUE;
 
   gboolean drawpoints;
+  gboolean drawstops;
+  gboolean drawelevation;
+  gdouble min_alt, max_alt, alt_diff;
 
   const guint8 tp_size_reg = 2;
   const guint8 tp_size_cur = 4;
   guint8 tp_size;
+
+  if ( dp->vtl->drawelevation )
+  {
+    /* assume if it has elevation at the beginning, it has it throughout. not ness a true good assumption */
+    if ( ( drawelevation = vik_track_get_minmax_alt ( track, &min_alt, &max_alt ) ) )
+      alt_diff = max_alt - min_alt;
+  }
 
   if ( ! track->visible )
     return;
@@ -701,9 +748,11 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     trw_layer_draw_track ( name, track, dp, TRUE );
 
   if ( drawing_white_background )
-    drawpoints = FALSE;
-  else
+    drawpoints = drawstops = FALSE;
+  else {
     drawpoints = dp->vtl->drawpoints;
+    drawstops = dp->vtl->drawstops;
+  }
 
   if (list) {
     int x, y, oldx, oldy;
@@ -743,15 +792,10 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           if ( list->next ) {
             vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
 
-#if 0
-            if ( VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE )
-              vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), x, y, x, y-(VIK_TRACKPOINT(list->next->data)->altitude-540)/5);
-#endif
-
             vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
 
             /* stops */
-            if (0 && VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > 60 )
+            if ( drawstops && VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > dp->vtl->stop_length )
               vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, 11), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
           }
           else
@@ -776,28 +820,28 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
             vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
           }
           else {
-            GdkPoint tmp[4];
-#define FIXALTITUDE(what) (pow((VIK_TRACKPOINT((what))->altitude-330),2)/1500/dp->xmpp)
-            if ( list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
-              tmp[0].x = oldx;
-              tmp[0].y = oldy;
-              tmp[1].x = oldx;
-              tmp[1].y = oldy-FIXALTITUDE(list->data);
-              tmp[2].x = x;
-              tmp[2].y = y-FIXALTITUDE(list->next->data);
-              tmp[3].x = x;
-              tmp[3].y = y;
-
-              GdkGC *tmp_gc;
-              if ( ((oldx - x) > 0 && (oldy - y) > 0) || ((oldx - x) < 0 && (oldy - y) < 0))
-                tmp_gc = GTK_WIDGET(dp->vp)->style->light_gc[3];
-              else
-                tmp_gc = GTK_WIDGET(dp->vp)->style->dark_gc[0];
-              vik_viewport_draw_polygon ( dp->vp, tmp_gc, TRUE, tmp, 4);
-            }
 
             vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), oldx, oldy, x, y);
-            if ( list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+            if ( dp->vtl->drawelevation && list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+              GdkPoint tmp[4];
+              #define FIXALTITUDE(what) ((VIK_TRACKPOINT((what))->altitude-min_alt)/alt_diff*DRAW_ELEVATION_FACTOR*dp->vtl->elevation_factor/dp->xmpp)
+              if ( list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+                tmp[0].x = oldx;
+                tmp[0].y = oldy;
+                tmp[1].x = oldx;
+                tmp[1].y = oldy-FIXALTITUDE(list->data);
+                tmp[2].x = x;
+                tmp[2].y = y-FIXALTITUDE(list->next->data);
+                tmp[3].x = x;
+                tmp[3].y = y;
+
+                GdkGC *tmp_gc;
+                if ( ((oldx - x) > 0 && (oldy - y) > 0) || ((oldx - x) < 0 && (oldy - y) < 0))
+                  tmp_gc = GTK_WIDGET(dp->vp)->style->light_gc[3];
+                else
+                  tmp_gc = GTK_WIDGET(dp->vp)->style->dark_gc[0];
+                vik_viewport_draw_polygon ( dp->vp, tmp_gc, TRUE, tmp, 4);
+              }
               vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), oldx, oldy-FIXALTITUDE(list->data), x, y-FIXALTITUDE(list->next->data));
             }
           }
