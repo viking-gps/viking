@@ -6,7 +6,6 @@ Evan:	* GPX fixes
 	* Option to show stops in TRWLayer options, and stop_length
 	* Elevation plotting relative to min and max elevation in track.
 	* Option to do elevation plotting, and controlling relative height
-	* 20,400 LOC!!! YEAH!!!
 
 2005-09-15
 	* 4+ hours later and voila, GPX read support
