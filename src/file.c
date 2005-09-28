@@ -92,7 +92,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
   VikLayerParam *params = vik_layer_get_interface(l->type)->params;
   VikLayerFuncGetParam get_param = vik_layer_get_interface(l->type)->get_param;
 
-  fprintf ( f, "name=%s\n", l->name ? l->name : "" );
+  g_fprintf ( f, "name=%s\n", l->name ? l->name : "" );
   if ( !l->visible )
     fprintf ( f, "visible=f\n" );
 
