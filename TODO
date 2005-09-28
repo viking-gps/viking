@@ -1,14 +1,19 @@
 TODO till release 0.1.1 "desilusión":
 IMPORTANT STUFF:
 	check out bgitemcount stuff in background.c (hangs on clear!)
-	DND: make it an interface
+	Toolbar icons & menu.xml: put in a nice place ("data/" or something)
+		if running from viking-0.x.x directory,
+		otherwise put in /usr/share/viking (???)
+                auto-recognizing code so it knows where to look (look in another
+                GTK-based project that uses GtkUIManager)
+	DND: make it an interface, so we don't mention VikTrwLayer in viktreeview.c
 	DND: when moving layers, take into account the layer we're moving onto
 		and move it above.
-	DND: fix "(viking:3671): Gtk-CRITICAL **: gtk_tree_model_get_iter: assertion `path->depth > 0' failed"
+	(DND?) fix "(viking:3671): Gtk-CRITICAL **: gtk_tree_model_get_iter: assertion `path->depth > 0' failed"
 	Debugging output shouldn't be printf'd but we g_print'd, and we should have a DEBUG flag
-	Fix coord layer for various projections
 
 BIG THINGS:
+	Fix coord layer for various projections
 	selections (select area of waypoints, trackpoints, etc)
 	Clipboard done right -- GtkClipboard, between processes
 	direct GPS support
