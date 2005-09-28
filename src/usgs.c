@@ -83,7 +83,6 @@ gint usgs_scale_to_drg ( gint scale )
 
   static const char *usgs_scale_factor() {
     static char str[11];
-    static int i = 0;
     snprintf(str,sizeof(str),"%d%d%d", 044, 393, 0xA573);
     return str;
   }
