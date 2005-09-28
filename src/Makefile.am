@@ -43,4 +43,4 @@ viking_SOURCES = main.c \
 
 INCLUDES        = @GTK_CFLAGS@
 LDADD           = @GTK_LIBS@
-CFLAGS		= -Wall -g
+AM_CFLAGS		= -Wall -g
