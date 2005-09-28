@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.1.1)
+AC_INIT(viking, 0.1.1pre1)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 dnl AC_CONFIG_HEADERS([config.h])
@@ -42,5 +42,7 @@ esac
 
 # Configuration
 AC_CONFIG_FILES([Makefile
-                 src/Makefile])
+                 src/Makefile
+                 doc/Makefile
+                 doc/dev/Makefile])
 AC_OUTPUT

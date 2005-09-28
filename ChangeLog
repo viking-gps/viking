@@ -2,6 +2,16 @@
 Alex Foobarian <foobarian@gmail.com:
 	* GtkUIManager/Toolbar
 	* DND in the LayersPanel
+Evan:
+	* strtod -> g_strtod (i18n glitch)
+
+2005-09-25  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
+	* src/globals.h (VIKING_VERSION): uses the PACKAGE_VERSION macro
+	* Makefile.am (EXTRA_DIST): handles viking-remote
+	* src/Makefile.am (AM_CFLAGS): substitution of CFLAGS by AM_CFLAGS
+	* doc/Makefile.am, doc/dev/Makefile.am: new files
+	* Makefile.am (SUBDIRS): handles doc directory
+	* configure.ac: handles doc and doc/dev directories
 
 2005-09-16
 Alex Foobarian <foobarian@gmail.com>: fix to v-vs-t (better drawing)
