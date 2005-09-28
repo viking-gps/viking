@@ -1507,7 +1507,38 @@ static void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_n
     trw_layer_cancel_last_tp ( vtl );
 }
 
-static gboolean trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name )
+void vik_trw_layer_move_iter ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreeIter *dest_iter )
+{
+  VikTreeview *vt = VIK_LAYER(vtl_src)->vt;
+  if (!vik_treeview_item_get_pointer(vt, src_item_iter)) {
+    fprintf(stderr, "moving a container: not implemented yet.\n");
+  } else {
+    gint type = vik_treeview_item_get_data(vt, src_item_iter);
+    gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
+
+    fprintf(stderr, "moving item '%s'\n", name);
+
+    if (type==VIK_TRW_LAYER_SUBLAYER_TRACK) {
+      VikTrack *t;
+      gchar *newname = strdup(name);
+      printf("    Moving track '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
+      t = vik_track_copy(vik_trw_layer_get_track(vtl_src, newname));
+      vik_trw_layer_delete_track(vtl_src, name);
+      vik_trw_layer_add_track(vtl_dest, newname, t);
+    }
+    if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
+      VikWaypoint *w;
+      gchar *newname = strdup(name);
+      printf("    Moving waypoint '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
+      w = vik_waypoint_copy(vik_trw_layer_get_waypoint(vtl_src, newname));
+      vik_trw_layer_delete_waypoint(vtl_src, name);
+      vik_trw_layer_add_waypoint(vtl_dest, newname, w);
+    }
+  }
+}
+
+
+gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name )
 {
   VikTrack *t = g_hash_table_lookup ( vtl->tracks, trk_name );
   gboolean was_visible = FALSE;
@@ -1531,36 +1562,43 @@ static gboolean trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name
   return was_visible;
 }
 
+gboolean vik_trw_layer_delete_waypoint ( VikTrwLayer *vtl, const gchar *wp_name )
+{
+  gboolean was_visible = FALSE;
+  VikWaypoint *wp;
+
+  wp = g_hash_table_lookup ( vtl->waypoints, wp_name );
+  if ( wp ) {
+    GtkTreeIter *it;
+
+    if ( wp == vtl->current_wp ) {
+      vtl->current_wp = NULL;
+      vtl->current_wp_name = NULL;
+      vtl->moving_wp = FALSE;
+    }
+
+    was_visible = wp->visible;
+    g_assert ( ( it = g_hash_table_lookup ( vtl->waypoints_iters, (gchar *) wp_name ) ) );
+    vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
+    g_hash_table_remove ( vtl->waypoints_iters, (gchar *) wp_name );
+    g_hash_table_remove ( vtl->waypoints, wp_name ); /* last because this frees name */
+  }
+
+  return was_visible;
+}
+
 static void trw_layer_delete_item ( gpointer pass_along[5] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
   gboolean was_visible = FALSE;
   if ( (gint) pass_along[2] == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
   {
-    VikWaypoint *wp;
-    wp = g_hash_table_lookup ( vtl->waypoints, pass_along[3] );
-    if ( wp )
-    {
-      GtkTreeIter *it;
-
-      if ( wp == vtl->current_wp ) {
-        vtl->current_wp = NULL;
-        vtl->current_wp_name = NULL;
-        vtl->moving_wp = FALSE;
-      }
-
-      was_visible = wp->visible;
-      g_assert ( ( it = g_hash_table_lookup ( vtl->waypoints_iters, (gchar *) pass_along[3] ) ) );
-      vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
-      g_hash_table_remove ( vtl->waypoints_iters, (gchar *) pass_along[3] );
-      g_hash_table_remove ( vtl->waypoints, pass_along[3] ); /* last because this frees name */
-    }
+    was_visible = vik_trw_layer_delete_waypoint ( vtl, (gchar *) pass_along[3] );
   }
   else
   {
-    was_visible = trw_layer_delete_track ( vtl, (gchar *) pass_along[3] );
+    was_visible = vik_trw_layer_delete_track ( vtl, (gchar *) pass_along[3] );
   }
-
   if ( was_visible )
     vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
@@ -1631,7 +1669,7 @@ static void trw_layer_properties_item ( gpointer pass_along[5] )
         if ( tracks )
         {
           g_free ( tracks );
-          trw_layer_delete_track ( vtl, (gchar *) pass_along[3] );
+          vik_trw_layer_delete_track ( vtl, (gchar *) pass_along[3] );
           vik_layer_emit_update ( VIK_LAYER(vtl) ); /* chase thru the hoops */
         }
       }
@@ -1813,7 +1851,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
 	/* remove trackpoints from merged track, delete track */
 	tr->trackpoints = g_list_concat(tr->trackpoints, get_track(l)->trackpoints);
 	get_track(l)->trackpoints = NULL;
-	trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), l->data);
+	vik_trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), l->data);
 
 	track_count ++;
 	l = g_list_next(l);
@@ -1898,7 +1936,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
     iter = g_list_next(iter);
   }
   g_list_free(newlists);
-  trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
+  vik_trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
   vik_layer_emit_update(VIK_LAYER(pass_along[0]));
 }
 
@@ -1947,11 +1985,11 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
       return NULL;
     }
 
-    wp = vik_waypoint_copy ( VIK_WAYPOINT(g_hash_table_lookup ( l->waypoints, sublayer )) );
-    g_hash_table_remove ( l->waypoints, sublayer );
-
     iter = g_hash_table_lookup ( l->waypoints_iters, sublayer );
     g_hash_table_steal ( l->waypoints_iters, sublayer );
+
+    wp = vik_waypoint_copy ( VIK_WAYPOINT(g_hash_table_lookup ( l->waypoints, sublayer )) );
+    g_hash_table_remove ( l->waypoints, sublayer );
 
     rv = g_strdup(newname);
     for ( i = strlen(rv) - 1; i >= 0; i-- )
@@ -2359,7 +2397,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
 
     /* if we did this before, trw_layer_delete_track would have canceled the current tp because
      * it was the current track. canceling the current tp would have set vtl->current_tpl to NULL */
-    trw_layer_delete_track ( vtl, tmp );
+    vik_trw_layer_delete_track ( vtl, tmp );
 
     trw_layer_cancel_last_tp ( vtl ); /* same TP, can't join. */
     vik_layer_emit_update(VIK_LAYER(vtl));
@@ -2754,4 +2792,14 @@ static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mo
     g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_convert, &dest_mode );
     g_hash_table_foreach ( vtl->tracks, (GHFunc) track_convert, &dest_mode );
   }
+}
+
+VikWaypoint *vik_trw_layer_get_waypoint ( VikTrwLayer *vtl, gchar *name )
+{
+  return g_hash_table_lookup ( vtl->waypoints, name );
+}
+
+VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, gchar *name )
+{
+  return g_hash_table_lookup ( vtl->tracks, name );
 }
