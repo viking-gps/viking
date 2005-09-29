@@ -1224,20 +1224,21 @@ static void window_create_ui( VikWindow *window )
 }
 
 
+#include "icons.h"
 static struct { 
-  gchar *fn[3];
+  const GdkPixdata *data;
   gchar *stock_id;
 } stock_icons[] = {
-  { { NULL, "addtr-18.png",   NULL },            "Create Track"      },
-  { { NULL, "edtr-18.png",    NULL },            "Edit Trackpoint"   },
-  { { NULL, "addwp-18.png",   NULL },            "Create Waypoint"   },
-  { { NULL, "edwp-18.png",    NULL },            "Edit Waypoint"     },
-  { { NULL, "zoom-18.png",    NULL },            "vik-icon-zoom"     },
-  { { NULL, "ruler-18.png",   NULL },            "vik-icon-ruler"    },
-  { { NULL, "geozoom-18.png", NULL },            "Georef Zoom Tool"  },
-  { { NULL, "geomove-18.png", NULL },            "Georef Move Map"   },
-  { { NULL, "mapdl-18.png",   NULL },            "Maps Download"     },
-  { { NULL, "showpic-18.png", NULL },            "Show Picture"      },
+  { &addtr_18,		"Create Track"      },
+  { &edtr_18,		"Edit Trackpoint"   },
+  { &addwp_18,		"Create Waypoint"   },
+  { &edwp_18,		"Edit Waypoint"     },
+  { &zoom_18,		"vik-icon-zoom"     },
+  { &ruler_18,		"vik-icon-ruler"    },
+  { &geozoom_18,	"Georef Zoom Tool"  },
+  { &geomove_18,	"Georef Move Map"   },
+  { &mapdl_18,		"Maps Download"     },
+  { &showpic_18,	"Show Picture"      },
 };
  
 
@@ -1247,27 +1248,11 @@ static void
 register_vik_icons (GtkIconFactory *icon_factory)
 {
   GtkIconSet *icon_set; 
-  GtkIconSource *icon_source;
   gint i;
-  gchar cwd[128];
-  getcwd(cwd, sizeof(cwd));
 
   for (i = 0; i < n_stock_icons; i++) {
-    gchar fn[128];
-    int j;
-
-    icon_set = gtk_icon_set_new ();
-
-    for (j=0; j<3; j++) {
-      if (stock_icons[i].fn[j]) {
-	icon_source = gtk_icon_source_new ();
-	sprintf(fn, "%s/%s", cwd, stock_icons[i].fn[j]);
-	gtk_icon_source_set_filename (icon_source, fn);
-	gtk_icon_set_add_source (icon_set, icon_source);
-	gtk_icon_source_free (icon_source);
-      }
-    }
-
+    icon_set = gtk_icon_set_new_from_pixbuf (gdk_pixbuf_from_pixdata (
+                   stock_icons[i].data, FALSE, NULL ));
     gtk_icon_factory_add (icon_factory, stock_icons[i].stock_id, icon_set);
     gtk_icon_set_unref (icon_set);
   }
