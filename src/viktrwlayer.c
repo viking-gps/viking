@@ -2029,7 +2029,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
       return NULL;
     }
 
-    g_hash_table_lookup_extended ( l->tracks, sublayer, (gpointer *)&orig_key, (gpointer *)&tr );
+    g_hash_table_lookup_extended ( l->tracks, sublayer, (void *)&orig_key, (void *)&tr );
     g_hash_table_steal ( l->tracks, sublayer );
 
     iter = g_hash_table_lookup ( l->tracks_iters, sublayer );

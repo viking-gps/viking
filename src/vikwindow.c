@@ -61,7 +61,6 @@ static void draw_scroll  ( VikWindow *vw, GdkEvent *event );
 static void draw_click  ( VikWindow *vw, GdkEventButton *event );
 static void draw_release ( VikWindow *vw, GdkEventButton *event );
 static void draw_mouse_motion ( VikWindow *vw, GdkEventMotion *event );
-static void draw_set_current_tool_cb ( GtkAction *a, VikWindow *vw );
 static void draw_zoom_cb ( GtkAction *a, VikWindow *vw );
 static void draw_goto_cb ( GtkAction *a, VikWindow *vw );
 
@@ -211,8 +210,8 @@ static void window_init ( VikWindow *vw )
 
   gtk_box_pack_start (GTK_BOX(main_vbox), gtk_ui_manager_get_widget (vw->uim, "/MainMenu"), FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX(main_vbox), gtk_ui_manager_get_widget (vw->uim, "/MainToolbar"), FALSE, TRUE, 0);
-  gtk_toolbar_set_icon_size(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar"), GTK_ICON_SIZE_SMALL_TOOLBAR);
-  gtk_toolbar_set_style (gtk_ui_manager_get_widget (vw->uim, "/MainToolbar"), GTK_TOOLBAR_ICONS);
+  gtk_toolbar_set_icon_size(GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_toolbar_set_style (GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_TOOLBAR_ICONS);
 
   g_signal_connect (G_OBJECT (vw), "delete_event", G_CALLBACK (delete_event), NULL);
 
@@ -403,17 +402,6 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
         event, vw->viking_vvp ) )
       a_dialog_info_msg_extra ( GTK_WINDOW(vw), "A %s Layer must exist and be either selected or visible before you can use this function.", vik_layer_get_interface ( vw->tool_layer_id )->name );
   }
-}
-
-static void draw_set_current_tool_cb ( GtkAction *a, VikWindow *vw )
-{
-  if (!strcmp(gtk_action_get_name(a), "Zoom")) {
-    vw->current_tool = TOOL_ZOOM;
-  }
-  if (!strcmp(gtk_action_get_name(a), "Ruler")) {
-    vw->current_tool = TOOL_RULER;
-  }
-  draw_status ( vw );
 }
 
 static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
@@ -875,7 +863,7 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
   GtkWidget *total_size_label;
 
   /* only used if (!one_image_only) */
-  GtkWidget *tiles_width_spin, *tiles_height_spin;
+  GtkWidget *tiles_width_spin = NULL, *tiles_height_spin = NULL;
 
 
   width_label = gtk_label_new ( "Width (pixels):" );
@@ -1129,11 +1117,9 @@ static void window_create_ui( VikWindow *window )
   GtkActionGroup *action_group;
   GtkAccelGroup *accel_group;
   GError *error;
-  GtkActionEntry add_layer_item;
   guint i, j, mid;
   GtkIconFactory *icon_factory;
   GtkIconSet *icon_set; 
-  GtkIconSource *icon_source;
   GtkRadioActionEntry *tools = NULL, *radio;
   guint ntools;
   
@@ -1193,7 +1179,6 @@ static void window_create_ui( VikWindow *window )
       radio = &tools[ntools];
       ntools++;
       
-      fprintf(stderr, "    %s\n", 			    vik_layer_get_interface(i)->tools[j].name);
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Tools", 
 			    vik_layer_get_interface(i)->tools[j].name,
 			    vik_layer_get_interface(i)->tools[j].name,
