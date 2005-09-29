@@ -110,6 +110,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
 //          char buf[15]; /* locale independent */
 //          fprintf ( f, "%s\n", (char *) g_dtostr (data.d, buf, sizeof (buf)) ); break;
             fprintf ( f, "%f\n", data.d );
+            break;
        }
         case VIK_LAYER_PARAM_UINT: fprintf ( f, "%d\n", data.u ); break;
         case VIK_LAYER_PARAM_INT: fprintf ( f, "%d\n", data.i ); break;
