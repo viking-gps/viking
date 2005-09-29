@@ -1,9 +1,15 @@
+2005-09-29
+Alex Foobarian <foobarian@gmail.com>:
+	* Added support for waypoint symbols (changing, loading, saving), and a small number of icons.
+	* Added a scale ruler
+	* Changed panning to show less "garbage" in exposed areas
+	
 2005-09-28
 Evan:
 	* menu.xml & icons inline
 
 2005-09-27
-Alex Foobarian <foobarian@gmail.com:
+Alex Foobarian <foobarian@gmail.com>:
 	* GtkUIManager/Toolbar
 	* DND in the LayersPanel
 Evan:

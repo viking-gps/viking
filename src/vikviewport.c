@@ -281,6 +281,72 @@ void vik_viewport_clear ( VikViewport *vvp )
   gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
 }
 
+void vik_viewport_draw_scale ( VikViewport *vvp )
+{
+  VikCoord left, right;
+  gdouble unit, base, diff, old_unit, old_diff, ratio;
+  gint odd, len, PAD = 10, SCSIZE = 5, HEIGHT=10;
+  PangoFontDescription *pfd;
+  PangoLayout *pl;
+  gchar s[128];
+
+  g_return_if_fail ( vvp != NULL );
+
+  vik_viewport_screen_to_coord ( vvp, 0, vvp->height, &left );
+  vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height, &right );
+
+  base = vik_coord_diff ( &left, &right ); // in meters
+  ratio = (vvp->width/SCSIZE)/base;
+
+  unit = 1;
+  diff = fabs(base-unit);
+  old_unit = unit;
+  old_diff = diff;
+  odd = 1;
+  while (diff <= old_diff) {
+    old_unit = unit;
+    old_diff = diff;
+    unit = unit * (odd%2 ? 5 : 2);
+    diff = fabs(base-unit);
+    odd++;
+  }
+  unit = old_unit;
+  len = unit * ratio;
+
+  vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
+  vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
+  vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
+  if (odd%2) {
+    int i;
+    for (i=1; i<5; i++) {
+      vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+    }
+  } else {
+    int i;
+    for (i=1; i<10; i++) {
+      vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+    }
+  }
+  pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
+  pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
+  pango_layout_set_font_description (pl, pfd);
+  pango_font_description_free (pfd);
+
+  if (unit >= 1000) {
+    sprintf(s, "%d km", (int)unit/1000);
+  } else {
+    sprintf(s, "%d m", (int)unit);
+  }
+  pango_layout_set_text(pl, s, -1);
+  vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
+			   PAD + len + PAD, vvp->height - PAD - 10, pl);
+}
+
 void vik_viewport_sync ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
@@ -289,8 +355,27 @@ void vik_viewport_sync ( VikViewport *vvp )
 
 void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off )
 {
+  gint x, y, wid, hei;
+
   g_return_if_fail ( vvp != NULL );
   gdk_draw_drawable(GTK_WIDGET(vvp)->window, GTK_WIDGET(vvp)->style->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, x_off, y_off, vvp->width, vvp->height);
+
+  if (x_off >= 0) {
+    x = 0;
+    wid = x_off;
+  } else {
+    x = vvp->width+x_off; 
+    wid = -x_off;
+  }
+  if (y_off >= 0) {
+    y = 0;
+    hei = y_off;
+  } else {
+    y = vvp->height+y_off; 
+    hei = -y_off;
+  }
+  gtk_widget_queue_draw_area(GTK_WIDGET(vvp), x, 0, wid, vvp->height);
+  gtk_widget_queue_draw_area(GTK_WIDGET(vvp), 0, y, vvp->width, hei);
 }
 
 void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
