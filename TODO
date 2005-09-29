@@ -1,11 +1,7 @@
 TODO till release 0.1.1 "desilusión":
 IMPORTANT STUFF:
 	check out bgitemcount stuff in background.c (hangs on clear!)
-	Toolbar icons & menu.xml: put in a nice place ("data/" or something)
-		if running from viking-0.x.x directory,
-		otherwise put in /usr/share/viking (???)
-                auto-recognizing code so it knows where to look (look in another
-                GTK-based project that uses GtkUIManager)
+	g_dtostr instead of fprintf in the appropriate places
 	DND: make it an interface, so we don't mention VikTrwLayer in viktreeview.c
 	DND: when moving layers, take into account the layer we're moving onto
 		and move it above.
@@ -39,6 +35,7 @@ RATHER HARD FIXES:
 
 EASY FIXES:
 	"click to go there" elevation map: average out, not nearest trackpoint.
+	Option as to whether or not to show waypoint symbols.
 
 FEATURE WISHLIST (i.e. unlikely to get done):
 	hover over pic
