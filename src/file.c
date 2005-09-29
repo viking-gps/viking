@@ -92,7 +92,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
   VikLayerParam *params = vik_layer_get_interface(l->type)->params;
   VikLayerFuncGetParam get_param = vik_layer_get_interface(l->type)->get_param;
 
-  g_fprintf ( f, "name=%s\n", l->name ? l->name : "" );
+  fprintf ( f, "name=%s\n", l->name ? l->name : "" );
   if ( !l->visible )
     fprintf ( f, "visible=f\n" );
 
@@ -106,7 +106,11 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
       fprintf ( f, "%s=", params[i].name );
       switch ( params[i].type )
       {
-        case VIK_LAYER_PARAM_DOUBLE: fprintf ( f, "%f\n", data.d ); break;
+        case VIK_LAYER_PARAM_DOUBLE: {
+//          char buf[15]; /* locale independent */
+//          fprintf ( f, "%s\n", (char *) g_dtostr (data.d, buf, sizeof (buf)) ); break;
+            fprintf ( f, "%f\n", data.d );
+       }
         case VIK_LAYER_PARAM_UINT: fprintf ( f, "%d\n", data.u ); break;
         case VIK_LAYER_PARAM_INT: fprintf ( f, "%d\n", data.i ); break;
         case VIK_LAYER_PARAM_BOOLEAN: fprintf ( f, "%c\n", data.b ? 't' : 'f' ); break;
