@@ -1121,6 +1121,7 @@ static GtkRadioActionEntry tool_entries[] = {
   { "Ruler",     "vik-icon-ruler",       "_Ruler",                        "<control><shift>R", "Ruler Tool", 1 }
 };
 
+#include "menu.xml.h"
 static void window_create_ui( VikWindow *window )
 {
   GtkUIManager *uim;
@@ -1140,7 +1141,7 @@ static void window_create_ui( VikWindow *window )
 
   
   error = NULL;
-  if (!(mid = gtk_ui_manager_add_ui_from_file (uim, "menu.xml", &error))) {
+  if (!(mid = gtk_ui_manager_add_ui_from_string (uim, menu_xml, -1, &error))) {
     g_error_free (error);
     exit (1);
   }
