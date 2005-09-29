@@ -64,6 +64,7 @@ static struct LatLon line_latlon;
 static gchar *line_name;
 static gchar *line_comment;
 static gchar *line_image;
+static gchar *line_symbol;
 static gboolean line_newsegment = FALSE;
 static gboolean line_has_timestamp = FALSE;
 static time_t line_timestamp = 0;
@@ -137,6 +138,9 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
   line_type = 0;
   line_timestamp = 0;
   line_newsegment = FALSE;
+  line_image = NULL;
+  line_symbol = NULL;
+
   current_track = NULL;
   while (fgets(line_buffer, 2048, f))
   {
@@ -207,6 +211,12 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
         line_image = NULL;
       }
 
+      if ( line_symbol )
+      {
+        vik_waypoint_set_symbol ( wp, line_symbol );
+	line_symbol = NULL;
+      }
+
       line_name = NULL; /* will be freed automatically */
     }
     else if (line_type == GPSPOINT_TYPE_TRACK && line_name)
@@ -252,14 +262,18 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       g_free ( line_comment );
     if (line_image)
       g_free ( line_image );
+    if (line_symbol)
+      g_free ( line_symbol );
     line_comment = NULL;
     line_image = NULL;
+    line_symbol = NULL;
     line_type = GPSPOINT_TYPE_NONE;
     line_newsegment = FALSE;
     line_has_timestamp = FALSE;
     line_timestamp = 0;
     line_altitude = VIK_DEFAULT_ALTITUDE;
     line_visible = TRUE;
+    line_symbol = NULL;
   }
 }
 
@@ -363,6 +377,10 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   {
     line_visible = FALSE;
   }
+  else if (key_len == 6 && strncasecmp( key, "symbol", key_len ) == 0 && value != NULL)
+  {
+    line_symbol = g_strndup ( value, value_len );
+  }
   else if (key_len == 8 && strncasecmp( key, "unixtime", key_len ) == 0 && value != NULL)
   {
     line_timestamp = g_strtod(value, NULL);
@@ -393,6 +411,10 @@ static void a_gpspoint_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE
     gchar *tmp_image = slashdup(wp->image);
     fprintf ( f, " image=\"%s\"", tmp_image );
     g_free ( tmp_image );
+  }
+  if ( wp->symbol )
+  {
+    fprintf ( f, " symbol=\"%s\"", wp->symbol );
   }
   if ( ! wp->visible )
     fprintf ( f, " visible=\"n\"" );

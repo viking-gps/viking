@@ -24,11 +24,13 @@
 #include "vikcoord.h"
 #include "vikwaypoint.h"
 
+
 VikWaypoint *vik_waypoint_new()
 {
   VikWaypoint *wp = g_malloc ( sizeof ( VikWaypoint ) );
   wp->comment = NULL;
   wp->image = NULL;
+  wp->symbol = NULL;
   return wp;
 }
 
@@ -61,12 +63,25 @@ void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image)
     wp->image = NULL;
 }
 
+void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname)
+{
+  if ( wp->symbol )
+    g_free ( wp->symbol );
+
+  if ( symname && symname[0] != '\0' )
+    wp->symbol = g_strdup(symname);
+  else
+    wp->symbol = NULL;
+}
+
 void vik_waypoint_free(VikWaypoint *wp)
 {
   if ( wp->comment )
     g_free ( wp->comment );
   if ( wp->image )
     g_free ( wp->image );
+  if ( wp->symbol )
+    g_free ( wp->symbol );
   g_free ( wp );
 }
 
@@ -78,5 +93,8 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   vik_waypoint_set_comment(new_wp,wp->comment);
   new_wp->image = NULL;
   vik_waypoint_set_image(new_wp,wp->image);
+  new_wp->symbol = NULL;
+  vik_waypoint_set_symbol(new_wp,wp->symbol);
   return new_wp;
 }
+

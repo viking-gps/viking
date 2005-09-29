@@ -300,8 +300,8 @@ static void draw_status ( VikWindow *vw )
 static void draw_redraw ( VikWindow *vw )
 {
   vik_viewport_clear ( vw->viking_vvp);
-
   vik_layers_panel_draw_all ( vw->viking_vlp );
+  vik_viewport_draw_scale ( vw->viking_vvp );
 }
 
 static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
@@ -317,8 +317,9 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 
   g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );
 
-  if ( vw->pan_x != -1 )
+  if ( vw->pan_x != -1 ) {
     vik_viewport_pan_sync ( vw->viking_vvp, event->x - vw->pan_x, event->y - vw->pan_y );
+  }
 
   vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
 }

@@ -39,12 +39,13 @@ struct _VikWaypoint {
    * dimensions of the original image. */
   guint8 image_width;
   guint8 image_height;
-  /* int symbol; */
+  gchar *symbol;
 };
 
 VikWaypoint *vik_waypoint_new();
 void vik_waypoint_set_comment(VikWaypoint *wp, const gchar *comment);
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image);
+void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);
 void vik_waypoint_free(VikWaypoint * wp);
 VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp);
 void vik_waypoint_set_comment_no_copy(VikWaypoint *wp, gchar *comment);

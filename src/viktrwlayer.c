@@ -28,6 +28,7 @@
 #include "viktrwlayer_pixmap.h"
 #include "viktrwlayer_tpwin.h"
 #include "viktrwlayer_propwin.h"
+#include "garminsymbols.h"
 #include "thumbnails.h"
 #include "background.h"
 
@@ -906,6 +907,7 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
              wp->coord.north_south > dp->cn1 && wp->coord.north_south < dp->cn2 ) )
   {
     gint x, y;
+    GdkPixbuf *sym;
     vik_viewport_coord_to_screen ( dp->vp, &(wp->coord), &x, &y );
 
     /* if in shrunken_cache, get that. If not, get and add to shrunken_cache */
@@ -978,7 +980,10 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
     }
 
     /* DRAW ACTUAL DOT */
-    if ( wp == dp->vtl->current_wp ) {
+    if ( wp->symbol && (sym = a_get_wp_sym(wp->symbol)) ) {
+      vik_viewport_draw_pixbuf ( dp->vp, sym, 0, 0, x - gdk_pixbuf_get_width(sym)/2, y - gdk_pixbuf_get_height(sym)/2, -1, -1 );
+    } 
+    else if ( wp == dp->vtl->current_wp ) {
       switch ( dp->vtl->wp_symbol ) {
         case WP_SYMBOL_FILLED_SQUARE: vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_gc, TRUE, x - (dp->vtl->wp_size), y - (dp->vtl->wp_size), dp->vtl->wp_size*2, dp->vtl->wp_size*2 ); break;
         case WP_SYMBOL_SQUARE: vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_gc, FALSE, x - (dp->vtl->wp_size), y - (dp->vtl->wp_size), dp->vtl->wp_size*2, dp->vtl->wp_size*2 ); break;
@@ -1363,17 +1368,16 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
 gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikCoord *def_coord )
 {
   gchar *name;
-  static VikWaypoint st_wp;
-  st_wp.coord = *def_coord;
-  st_wp.altitude = VIK_DEFAULT_ALTITUDE;
+  VikWaypoint *wp = vik_waypoint_new();
+  wp->coord = *def_coord;
+  wp->altitude = VIK_DEFAULT_ALTITUDE;
 
-  if ( a_dialog_new_waypoint ( w, &name, &st_wp, vik_trw_layer_get_waypoints ( vtl ), vtl->coord_mode ) )
+  if ( a_dialog_new_waypoint ( w, &name, wp, vik_trw_layer_get_waypoints ( vtl ), vtl->coord_mode ) )
   {
-    VikWaypoint *wp = vik_waypoint_new();
-    *wp = st_wp;
     vik_trw_layer_add_waypoint ( vtl, name, wp );
     return TRUE;
   }
+  vik_waypoint_free(wp);
   return FALSE;
 }
 

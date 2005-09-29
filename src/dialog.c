@@ -21,6 +21,7 @@
 
 #include "viking.h"
 #include "thumbnails.h"
+#include "garminsymbols.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -168,7 +169,12 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
                                                    GTK_RESPONSE_ACCEPT,
                                                    NULL);
   struct LatLon ll;
-  GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry, *commentlabel, *commententry, *imagelabel, *imageentry;
+  GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry, *commentlabel, 
+    *commententry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
+  GtkListStore *store;
+
+
+
 
   gchar *lat, *lon, *alt;
 
@@ -208,13 +214,44 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   imagelabel = gtk_label_new ("Image:");
   imageentry = vik_file_entry_new ();
 
+  {
+    GtkCellRenderer *r;
+    symbollabel = gtk_label_new ("Symbol:");
+    GtkTreeIter iter;
+
+    store = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
+    symbolentry = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
+    gtk_combo_box_set_wrap_width(symbolentry, 3);
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter, 0, "(none)", 1, NULL, -1);
+    a_populate_sym_list(store);
+
+    r = gtk_cell_renderer_pixbuf_new ();
+    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (symbolentry), r, FALSE);
+    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (symbolentry), r, "pixbuf", 1, NULL);
+
+    if ( dest == NULL && wp->symbol ) {
+      gboolean ok;
+      gchar *sym;
+      for (ok = gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &iter ); ok; ok = gtk_tree_model_iter_next ( GTK_TREE_MODEL(store), &iter)) {
+	gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
+	if (!strcmp(sym, wp->symbol)) {
+	  g_free(sym);
+	  break;
+	} else {
+	  g_free(sym);
+	}
+      }
+      gtk_combo_box_set_active_iter(symbolentry, &iter);
+    }
+  }
+
   if ( dest == NULL && wp->comment )
     gtk_entry_set_text ( GTK_ENTRY(commententry), wp->comment );
 
   if ( dest == NULL && wp->image )
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
-  
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), latlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), latentry, FALSE, FALSE, 0);
@@ -226,9 +263,11 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), commententry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), imagelabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), imageentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), symbollabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
   gtk_widget_show_all ( GTK_DIALOG(dialog)->vbox );
-	
+
   while ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
     if ( dest )
@@ -257,6 +296,20 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
           vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
           if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
             a_thumbnails_create ( wp->image );
+
+	  {
+	    GtkTreeIter iter, first;
+	    gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
+	    if ( !gtk_combo_box_get_active_iter ( symbolentry, &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
+	      vik_waypoint_set_symbol ( wp, NULL );
+	    } else {
+	      gchar *sym;
+	      gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
+	      vik_waypoint_set_symbol ( wp, sym );
+	      g_free(sym);
+	    }
+	  }		
+
           gtk_widget_destroy ( dialog );
           return TRUE;
         }
@@ -276,6 +329,19 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
         if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
           a_thumbnails_create ( wp->image );
       }
+
+      {
+	GtkTreeIter iter, first;
+	gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
+	if ( !gtk_combo_box_get_active_iter ( symbolentry, &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
+	  vik_waypoint_set_symbol ( wp, NULL );
+	} else {
+	  gchar *sym;
+	  gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
+	  vik_waypoint_set_symbol ( wp, sym );
+	  g_free(sym);
+	}
+      }		
 
       gtk_widget_destroy ( dialog );
 
