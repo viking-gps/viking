@@ -221,7 +221,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
     store = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
     symbolentry = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
-    gtk_combo_box_set_wrap_width(symbolentry, 3);
+    gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(symbolentry), 3);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter, 0, "(none)", 1, NULL, -1);
     a_populate_sym_list(store);
@@ -242,7 +242,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 	  g_free(sym);
 	}
       }
-      gtk_combo_box_set_active_iter(symbolentry, &iter);
+      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(symbolentry), &iter);
     }
   }
 
@@ -300,7 +300,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 	  {
 	    GtkTreeIter iter, first;
 	    gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
-	    if ( !gtk_combo_box_get_active_iter ( symbolentry, &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
+	    if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
 	      vik_waypoint_set_symbol ( wp, NULL );
 	    } else {
 	      gchar *sym;
@@ -333,7 +333,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
       {
 	GtkTreeIter iter, first;
 	gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
-	if ( !gtk_combo_box_get_active_iter ( symbolentry, &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
+	if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
 	  vik_waypoint_set_symbol ( wp, NULL );
 	} else {
 	  gchar *sym;
