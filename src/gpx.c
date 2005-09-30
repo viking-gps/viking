@@ -41,6 +41,7 @@ typedef enum {
         tt_wpt_desc,
         tt_wpt_name,
         tt_wpt_ele,
+	tt_wpt_sym,
         tt_wpt_link,            /* New in GPX 1.1 */
 
         tt_trk,
@@ -79,6 +80,7 @@ tag_mapping tag_path_map[] = {
         { tt_wpt_ele, "/gpx/wpt/ele" },
         { tt_wpt_name, "/gpx/wpt/name" },
         { tt_wpt_desc, "/gpx/wpt/desc" },
+        { tt_wpt_sym, "/gpx/wpt/sym" },
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
 
         { tt_trk, "/gpx/trk" },
@@ -285,6 +287,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_wpt_sym:
+       vik_waypoint_set_symbol ( c_wp, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_trk_desc:
        vik_track_set_comment ( c_tr, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
@@ -312,6 +319,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_wpt_ele:
     case tt_trk_trkseg_trkpt_ele:
     case tt_wpt_desc:
+    case tt_wpt_sym:
     case tt_wpt_link:
     case tt_trk_desc:
     case tt_trk_trkseg_trkpt_time:
@@ -548,6 +556,13 @@ static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
     fprintf ( f, "  <link>%s</link>\n", tmp );
     g_free ( tmp );
   }
+  if ( wp->symbol ) 
+  {
+    tmp = entitize(wp->symbol);
+    fprintf ( f, "  <sym>%s</sym>\n", tmp);
+    g_free ( tmp );
+  }
+
   fprintf ( f, "</wpt>\n" );
 }
 

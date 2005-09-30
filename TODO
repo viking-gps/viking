@@ -1,6 +1,6 @@
 TODO till release 0.1.1:
 IMPORTANT STUFF:
-	GPX symbols
+X	GPX symbols
 	Option as to whether or not to show waypoint symbols (we may want to show 'x's or something, and may have a lot of wpt_dot icons)
 	Option as to whether or not to show unit scale (esp for exporting images)
 	fix save file thing
