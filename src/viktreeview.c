@@ -172,9 +172,9 @@ gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter )
   return rv;
 }
 
-void vik_treeview_get_iter_from_path_str ( VikTreeview *vt, GtkTreeIter *iter, const gchar *path_str )
+gboolean vik_treeview_get_iter_from_path_str ( VikTreeview *vt, GtkTreeIter *iter, const gchar *path_str )
 {
-  gtk_tree_model_get_iter_from_string ( GTK_TREE_MODEL(vt->model), iter, path_str );
+  return gtk_tree_model_get_iter_from_string ( GTK_TREE_MODEL(vt->model), iter, path_str );
 }
 
 static void treeview_add_columns ( VikTreeview *vt )
@@ -388,7 +388,12 @@ void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
 {
   g_assert ( iter != NULL );
   g_assert ( icon_type < VIK_LAYER_NUM_TYPES );
-  gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, sibling );
+  if (sibling) {
+    gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, sibling );
+  } else {
+    gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
+  }
+    
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
     ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, TRUE,
