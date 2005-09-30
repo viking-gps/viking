@@ -180,6 +180,11 @@ typedef gpointer      (*VikLayerFuncCopyItem)              (VikLayer *, gint, gp
 typedef gboolean      (*VikLayerFuncPasteItem)             (VikLayer *, gint, gpointer);
 typedef void          (*VikLayerFuncFreeCopiedItem)        (gint, gpointer);
 
+/* treeview drag and drop method. called on the destination layer. it is given a source and destination layer, 
+ * and the source and destination iters in the treeview. 
+ */
+typedef void 	      (*VikLayerFuncDragDropRequest)       (VikLayer *, VikLayer *, GtkTreeIter *, GtkTreePath *);
+
 
 typedef struct _VikLayerInterface VikLayerInterface;
 
@@ -224,6 +229,8 @@ struct _VikLayerInterface {
   VikLayerFuncCopyItem              copy_item;
   VikLayerFuncPasteItem             paste_item;
   VikLayerFuncFreeCopiedItem        free_copied_item;
+
+  VikLayerFuncDragDropRequest       drag_drop_request;
 };
 
 VikLayerInterface *vik_layer_get_interface ( gint type );

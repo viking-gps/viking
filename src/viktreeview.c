@@ -67,8 +67,8 @@ static void treeview_init ( VikTreeview *vt );
 static void treeview_finalize ( GObject *gob );
 static void treeview_add_columns ( VikTreeview *vt );
 
-static gboolean vik_drag_data_received ( GtkTreeDragDest *drag_dest, GtkTreePath *dest, GtkSelectionData *selection_data );
-static gboolean vik_drag_data_delete ( GtkTreeDragSource *drag_source, GtkTreePath *path );
+static gboolean treeview_drag_data_received ( GtkTreeDragDest *drag_dest, GtkTreePath *dest, GtkSelectionData *selection_data );
+static gboolean treeview_drag_data_delete ( GtkTreeDragSource *drag_source, GtkTreePath *path );
 
 GType vik_treeview_get_type (void)
 {
@@ -269,10 +269,10 @@ void treeview_init ( VikTreeview *vt )
     GtkTreeDragDestIface *idest;
 
     isrc = g_type_interface_peek (g_type_class_peek(G_OBJECT_TYPE(vt->model)), GTK_TYPE_TREE_DRAG_SOURCE);
-    isrc->drag_data_delete = vik_drag_data_delete;
+    isrc->drag_data_delete = treeview_drag_data_delete;
 
     idest = g_type_interface_peek (g_type_class_peek(G_OBJECT_TYPE(vt->model)), GTK_TYPE_TREE_DRAG_DEST);
-    idest->drag_data_received = vik_drag_data_received;
+    idest->drag_data_received = treeview_drag_data_received;
   }      
 
   for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
@@ -473,14 +473,14 @@ static void treeview_finalize ( GObject *gob )
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
-static gboolean vik_drag_data_received (GtkTreeDragDest *drag_dest, GtkTreePath *dest, GtkSelectionData *selection_data)
+static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTreePath *dest, GtkSelectionData *selection_data)
 {
   GtkTreeModel *tree_model;
   GtkTreeStore *tree_store;
   GtkTreeModel *src_model = NULL;
   GtkTreePath *src_path = NULL, *dest_cp = NULL;
   gboolean retval = FALSE;
-  GtkTreeIter src_iter, root_iter, dest_iter;
+  GtkTreeIter src_iter, root_iter, dest_iter, dest_parent;
   guint *i_src = NULL;
   VikTreeview *vt;
   VikLayer *vl;
@@ -516,64 +516,34 @@ static gboolean vik_drag_data_received (GtkTreeDragDest *drag_dest, GtkTreePath 
       goto out;
     }
 
-    switch(vik_treeview_item_get_type(vt, &src_iter)) {
-    case VIK_TREEVIEW_TYPE_LAYER: 
-      /* dest_cp is the future new path as envisioned by Gtk, and may not exist yet. 
-       * We are interested in the future parent, which must be an aggregate layer. 
-       * Therefore, we need to find the first ancestor who is an aggregate layer.
+    if (gtk_tree_path_get_depth(dest_cp)>1) { /* can't be sibling of top layer */
+      VikLayer *vl_src, *vl_dest;
+
+      /* Find the first ancestor that is a full layer, and store in dest_parent. 
+       * In addition, put in dest_iter where Gtk wants us to insert the dragged object.
+       * (Note that this may end up being an invalid iter). 
        */
-      gtk_tree_path_up(dest_cp);
-      while (gtk_tree_model_get_iter (src_model, &dest_iter, dest_cp) &&
-	     (vik_treeview_item_get_type(vt, &dest_iter) != VIK_TREEVIEW_TYPE_LAYER ||
-	     !IS_VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer (vt, &dest_iter)))) {
+      do {
 	gtk_tree_path_up(dest_cp);
-	fprintf(stderr, "up\n");
-      }
-      if (gtk_tree_model_get_iter (src_model, &dest_iter, dest_cp)) {
-	VikLayer *vl_src, *vl_dest;
-	vl_src = vik_treeview_item_get_pointer(vt, &src_iter);
-	vl_dest = vik_treeview_item_get_pointer(vt, &dest_iter);
-	printf("moving layer '%s' into layer '%s'\n", vl_src->name, vl_dest->name);
+	dest_iter = dest_parent;
+	gtk_tree_model_get_iter (src_model, &dest_parent, dest_cp);
+      } while (gtk_tree_path_get_depth(dest_cp)>1 &&
+	       vik_treeview_item_get_type(vt, &dest_parent) != VIK_TREEVIEW_TYPE_LAYER);
 
-	/* 
-	 * FIXME: ..._layer_delete unrefs the given layer, causing it to be destroyed. 
-	 * However, ..._add_layer doesn't increase the ref count, so regardless of order
-	 * without the explicit g_object_ref this wouldn't work.  
-	 */
-	g_object_ref(vl_src);
-	vik_aggregate_layer_delete(vik_treeview_item_get_parent(vt, &src_iter), &src_iter);
-	vik_aggregate_layer_add_layer(VIK_AGGREGATE_LAYER(vl_dest), vl_src);
-      }
-      break;
-    case VIK_TREEVIEW_TYPE_SUBLAYER: 
-      /* 
-       * If we're moving a sublayer, handle all known types separately.  For now that 
-       * is only TRW.  This might be done more elegantly through an interface.
-       */
-      if (IS_VIK_TRW_LAYER(vik_treeview_item_get_parent(vt, &src_iter))) {
-	VikTrwLayer *vtl_src, *vtl_dest;
+      
+      g_assert ( vik_treeview_item_get_parent(vt, &src_iter) );
+      vl_src = vik_treeview_item_get_parent(vt, &src_iter);
+      vl_dest = vik_treeview_item_get_pointer(vt, &dest_parent);
 
-	gtk_tree_path_up(dest_cp);
-	while (gtk_tree_path_get_depth(dest_cp)>0 && 
-	       gtk_tree_model_get_iter (src_model, &dest_iter, dest_cp) &&
-	       (vik_treeview_item_get_type(vt, &dest_iter) != VIK_TREEVIEW_TYPE_LAYER ||
-	       !IS_VIK_TRW_LAYER(vik_treeview_item_get_pointer (vt, &dest_iter)))) {
-	  gtk_tree_path_up(dest_cp);
-	}
-	vtl_src = vik_treeview_item_get_parent(vt, &src_iter);
-	vtl_dest = vik_treeview_item_get_pointer(vt, &dest_iter);
-	if (IS_VIK_TRW_LAYER(vtl_dest)) {
-	  vik_trw_layer_move_iter(vtl_src, vtl_dest, &src_iter, &dest_iter);
-	}
-      }
-      break;
-
-    default:
-      printf("  Problem.\n");
+      /* TODO: might want to allow different types, and let the clients handle how they want */
+      if (vl_src->type == vl_dest->type && vik_layer_get_interface(vl_dest->type)->drag_drop_request) {
+	g_print("moving an item from layer '%s' into layer '%s'\n", vl_src->name, vl_dest->name);
+	vik_layer_get_interface(vl_dest->type)->drag_drop_request(vl_src, vl_dest, &src_iter, dest);
+      }    
     }
   }
- out:
 
+ out:
   if (dest_cp) 
     gtk_tree_path_free(dest_cp);
   if (src_path)
@@ -585,10 +555,10 @@ static gboolean vik_drag_data_received (GtkTreeDragDest *drag_dest, GtkTreePath 
 /* 
  * This may not be necessary.
  */
-static gboolean vik_drag_data_delete ( GtkTreeDragSource *drag_source, GtkTreePath *path )
+static gboolean treeview_drag_data_delete ( GtkTreeDragSource *drag_source, GtkTreePath *path )
 {
   gchar *s_dest = gtk_tree_path_to_string(path);
-  printf("delete data from %s\n", s_dest);
+  g_print("delete data from %s\n", s_dest);
   g_free(s_dest);
   return FALSE;
 }

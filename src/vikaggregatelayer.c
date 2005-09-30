@@ -28,6 +28,7 @@
 
 static VikAggregateLayer *aggregate_layer_copy ( VikAggregateLayer *val, gpointer vp );
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
+static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
 VikLayerInterface vik_aggregate_layer_interface = {
   "Aggregate",
@@ -67,6 +68,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
+  (VikLayerFuncDragDropRequest)		aggregate_layer_drag_drop_request,
 };
 
 struct _VikAggregateLayer {
@@ -347,3 +349,18 @@ gboolean vik_aggregate_layer_is_empty ( VikAggregateLayer *val )
     return FALSE;
   return TRUE;
 }
+
+static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
+{
+  VikTreeview *vt = VIK_LAYER(val_src)->vt;
+  VikLayer *vl = vik_treeview_item_get_pointer(vt, src_item_iter);
+  /* 
+   * FIXME: _layer_delete unrefs the given layer, causing it to be destroyed. 
+   * However, _add_layer doesn't increase the ref count, so regardless of order
+   * without the explicit g_object_ref this wouldn't work.  
+   */
+  g_object_ref(vl);
+  vik_aggregate_layer_delete(val_src, src_item_iter);
+  vik_aggregate_layer_add_layer(val_dest, vl);
+}
+

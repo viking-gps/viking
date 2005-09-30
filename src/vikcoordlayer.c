@@ -80,6 +80,7 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
+  (VikLayerFuncDragDropRequest)		NULL,
 };
 
 struct _VikCoordLayer {

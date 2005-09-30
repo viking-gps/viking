@@ -1,6 +1,8 @@
 2005-09-30  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
 	* configure.ac, src/Makefile.am (SUBDIRS): added auto-tools support for src/icons
-
+Alex Foobarian <foobarian@gmail.com>:
+	* Added a drag_drop_request method to layer interface, updated DnD to use it
+	
 2005-09-29
 Alex Foobarian <foobarian@gmail.com>:
 	* Added support for waypoint symbols (changing, loading, saving), and a small number of icons.
