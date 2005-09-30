@@ -133,8 +133,8 @@ VikAggregateLayer *vik_aggregate_layer_new ()
 
 void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, GtkTreeIter *replace_iter )
 {
-  GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( VIK_LAYER(val)->vt, replace_iter ) );
   GtkTreeIter iter;
+
   if ( VIK_LAYER(val)->realized )
   {
     vik_treeview_insert_layer ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), &iter, l->name, val, l, l->type, l->type, replace_iter );
@@ -145,9 +145,13 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
     if ( val->children == NULL )
       vik_treeview_expand ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter) );
   }
-  val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone)+1 );
 
-
+  if (replace_iter) {
+    GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( VIK_LAYER(val)->vt, replace_iter ) );
+    val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone)+1 );
+  } else {
+    val->children = g_list_append ( val->children, l );
+  }
   g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update), val );
 }
 
@@ -350,17 +354,27 @@ gboolean vik_aggregate_layer_is_empty ( VikAggregateLayer *val )
   return TRUE;
 }
 
+static void aggregate_layer_remove ( VikAggregateLayer *val, GtkTreeIter *iter )
+{
+  VikLayer *l = VIK_LAYER( vik_treeview_item_get_pointer ( VIK_LAYER(val)->vt, iter ) );
+  vik_treeview_item_delete ( VIK_LAYER(val)->vt, iter );
+  val->children = g_list_remove ( val->children, l );
+}
+
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
 {
   VikTreeview *vt = VIK_LAYER(val_src)->vt;
   VikLayer *vl = vik_treeview_item_get_pointer(vt, src_item_iter);
-  /* 
-   * FIXME: _layer_delete unrefs the given layer, causing it to be destroyed. 
-   * However, _add_layer doesn't increase the ref count, so regardless of order
-   * without the explicit g_object_ref this wouldn't work.  
-   */
-  g_object_ref(vl);
-  vik_aggregate_layer_delete(val_src, src_item_iter);
-  vik_aggregate_layer_add_layer(val_dest, vl);
+  gchar *ps;
+  GtkTreeIter dest_iter;
+
+  ps = gtk_tree_path_to_string(dest_path);
+  if (vik_treeview_get_iter_from_path_str(vt, &dest_iter, ps)) {
+    vik_aggregate_layer_insert_layer(val_dest, vl, &dest_iter);
+  } else {
+    vik_aggregate_layer_insert_layer(val_dest, vl, NULL); /* append */
+  }
+  aggregate_layer_remove(val_src, src_item_iter);
+  g_free(ps);
 }
 

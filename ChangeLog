@@ -2,6 +2,7 @@
 	* configure.ac, src/Makefile.am (SUBDIRS): added auto-tools support for src/icons
 Alex Foobarian <foobarian@gmail.com>:
 	* Added a drag_drop_request method to layer interface, updated DnD to use it
+	* Updated DND to insert layers at the point of the drop, instead of front of list
 	
 2005-09-29
 Alex Foobarian <foobarian@gmail.com>:
