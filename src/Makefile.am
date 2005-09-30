@@ -1,8 +1,12 @@
 # This is the Makefile for the viking gps viewer program.
 # This file is licensed through the GPL version 2 or newer.
 
+SUBDIRS = icons
+
 bin_PROGRAMS = viking
 viking_SOURCES = main.c \
+	icons.h \
+	menu.xml.h \
 	viking.h globals.h mapcoord.h config.h \
 	viktrack.c viktrack.h \
 	vikwaypoint.c vikwaypoint.h \
@@ -45,3 +49,9 @@ viking_SOURCES = main.c \
 INCLUDES        = @GTK_CFLAGS@
 LDADD           = @GTK_LIBS@
 AM_CFLAGS		= -Wall -g
+
+icons.h: icons/*_h
+	echo "/* Generated file */" > icons.h
+	for file in icons/*_h ; do echo "#include \"$$file\"" >> icons.h ; done
+
+CLEANFILES = icons.h
