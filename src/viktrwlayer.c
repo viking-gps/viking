@@ -1522,20 +1522,31 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
   } else {
     gint type = vik_treeview_item_get_data(vt, src_item_iter);
     gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
+    gint i = 2;
 
     if (type==VIK_TRW_LAYER_SUBLAYER_TRACK) {
       VikTrack *t;
-      gchar *newname = strdup(name);
-      //g_print("    Moving track '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
-      t = vik_track_copy(vik_trw_layer_get_track(vtl_src, newname));
+      gchar *newname = g_strdup(name);
+      while (vik_trw_layer_get_track(vtl_dest, newname)) {
+	gchar *new_newname = g_strdup_printf("%s#%d", name, i);
+	g_free(newname);
+	newname = new_newname;
+	i++;
+      }
+      t = vik_track_copy(vik_trw_layer_get_track(vtl_src, name));
       vik_trw_layer_delete_track(vtl_src, name);
       vik_trw_layer_add_track(vtl_dest, newname, t);
     }
     if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
       VikWaypoint *w;
-      gchar *newname = strdup(name);
-      //g_print("    Moving waypoint '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
-      w = vik_waypoint_copy(vik_trw_layer_get_waypoint(vtl_src, newname));
+      gchar *newname = g_strdup(name);
+      while (vik_trw_layer_get_waypoint(vtl_dest, newname)) {
+	gchar *new_newname = g_strdup_printf("%s#%d", name, i);
+	g_free(newname);
+	newname = new_newname;
+	i++;
+      }
+      w = vik_waypoint_copy(vik_trw_layer_get_waypoint(vtl_src, name));
       vik_trw_layer_delete_waypoint(vtl_src, name);
       vik_trw_layer_add_waypoint(vtl_dest, newname, w);
     }
