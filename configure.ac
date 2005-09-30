@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.1.1pre1)
+AC_INIT(viking, 0.1.1pre2)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 dnl AC_CONFIG_HEADERS([config.h])
@@ -10,6 +10,12 @@ dnl AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
+
+AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
+if test $GDK_PIXBUF_CSOURCE != "yes"
+then
+  AC_MSG_ERROR([gdk-pixbuf-csource is needed but not found])
+fi
 
 # Checks for libraries.
 AM_PATH_GTK_2_0(2.2.0,,AC_MSG_ERROR(needs GTK+ 2.2.0),gthread)
@@ -27,6 +33,8 @@ AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero floor gethostbyname memset mkdir pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
 
+# Expat
+
 # Options
 AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],
               [enable alphabetized track & waypoints (default is enable)]),
@@ -43,6 +51,7 @@ esac
 # Configuration
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+                 src/icons/Makefile
                  doc/Makefile
                  doc/dev/Makefile])
 AC_OUTPUT

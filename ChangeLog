@@ -1,3 +1,6 @@
+2005-09-30  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
+	* configure.ac, src/Makefile.am (SUBDIRS): added auto-tools support for src/icons
+
 2005-09-29
 Alex Foobarian <foobarian@gmail.com>:
 	* Added support for waypoint symbols (changing, loading, saving), and a small number of icons.
@@ -63,6 +66,11 @@ Alex Foobarian <foobarian@gmail.com>'s changes
 My (Evan's) changes:
 * Fix above v-vs-t patch to not crash on tracks without timestamp.
 * Not show v-vs-t graph and/or elevation map if the necessary data isn't there.
+Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>'s changes
+	* bootstrap: new file to bootstrap auto-tools
+	* src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
+	* Makefile.am (bin_SCRIPTS): viking-remote added
+	* configure.ac: --enable-alphabetized-trw option added
 
 2005-09-07
 Autotools support by Guilhem Bonnefille.
