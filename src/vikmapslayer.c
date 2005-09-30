@@ -173,6 +173,7 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
+  (VikLayerFuncDragDropRequest)		NULL,
 };
 
 struct _VikMapsLayer {

@@ -191,6 +191,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id );
 static gpointer trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
 static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, gpointer item );
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
+static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
 static void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name );
 static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl );
@@ -323,6 +324,8 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncCopyItem)                trw_layer_copy_item,
   (VikLayerFuncPasteItem)               trw_layer_paste_item,
   (VikLayerFuncFreeCopiedItem)          trw_layer_free_copied_item,
+  
+  (VikLayerFuncDragDropRequest)         trw_layer_drag_drop_request,
 };
 
 /* for copy & paste (I think?) */
@@ -1511,21 +1514,19 @@ static void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_n
     trw_layer_cancel_last_tp ( vtl );
 }
 
-void vik_trw_layer_move_iter ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreeIter *dest_iter )
+static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
 {
   VikTreeview *vt = VIK_LAYER(vtl_src)->vt;
   if (!vik_treeview_item_get_pointer(vt, src_item_iter)) {
-    fprintf(stderr, "moving a container: not implemented yet.\n");
+    g_print("moving a trw container: not implemented yet.\n");
   } else {
     gint type = vik_treeview_item_get_data(vt, src_item_iter);
     gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
 
-    fprintf(stderr, "moving item '%s'\n", name);
-
     if (type==VIK_TRW_LAYER_SUBLAYER_TRACK) {
       VikTrack *t;
       gchar *newname = strdup(name);
-      printf("    Moving track '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
+      //g_print("    Moving track '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
       t = vik_track_copy(vik_trw_layer_get_track(vtl_src, newname));
       vik_trw_layer_delete_track(vtl_src, name);
       vik_trw_layer_add_track(vtl_dest, newname, t);
@@ -1533,7 +1534,7 @@ void vik_trw_layer_move_iter ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkT
     if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
       VikWaypoint *w;
       gchar *newname = strdup(name);
-      printf("    Moving waypoint '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
+      //g_print("    Moving waypoint '%s' from layer '%s' to layer '%s'\n", newname, VIK_LAYER(vtl_src)->name, VIK_LAYER(vtl_dest)->name);
       w = vik_waypoint_copy(vik_trw_layer_get_waypoint(vtl_src, newname));
       vik_trw_layer_delete_waypoint(vtl_src, name);
       vik_trw_layer_add_waypoint(vtl_dest, newname, w);
@@ -1746,11 +1747,11 @@ static void find_nearby_track(gpointer key, gpointer value, gpointer user_data)
   p2 = VIK_TRACKPOINT(g_list_last(VIK_TRACK(value)->trackpoints)->data);
 
   if (!p1->has_timestamp || !p2->has_timestamp) {
-    printf("no timestamp\n");
+    g_print("no timestamp\n");
     return;
   }
 
-  /*  printf("Got track named %s, times %d, %d\n", (gchar *)key, p1->timestamp, p2->timestamp); */
+  /*  g_print("Got track named %s, times %d, %d\n", (gchar *)key, p1->timestamp, p2->timestamp); */
   if (abs(t1 - p2->timestamp) < thr*60 ||
       /*  p1 p2      t1 t2 */
       abs(p1->timestamp - t2) < thr*60
@@ -1820,7 +1821,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
     t1 = ((VikTrackpoint *)trps->data)->timestamp;
     t2 = ((VikTrackpoint *)g_list_last(trps)->data)->timestamp;
     
-    /*    printf("Original track times: %d and %d\n", t1, t2);  */
+    /*    g_print("Original track times: %d and %d\n", t1, t2);  */
     params[0] = &nearby_tracks;
     params[1] = trps;
     params[2] = (gpointer)thr;
@@ -1848,7 +1849,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
 	time_t t1, t2;
 	t1 = get_first_trackpoint(l)->timestamp;
 	t2 = get_last_trackpoint(l)->timestamp;
-	printf("     %20s: track %d - %d\n", (char *)l->data, (int)t1, (int)t2);
+	g_print("     %20s: track %d - %d\n", (char *)l->data, (int)t1, (int)t2);
 	*/
 
 
@@ -1903,7 +1904,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
   while (iter) {
     ts = VIK_TRACKPOINT(iter->data)->timestamp;
     if (ts < prev_ts) {
-      printf("panic: ts < prev_ts: this should never happen!\n");
+      g_print("panic: ts < prev_ts: this should never happen!\n");
       return;
     }
     if (ts - prev_ts > thr*60) {
@@ -1934,7 +1935,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
 
     new_tr_name = g_strdup_printf("%s #%d", (gchar *) pass_along[3], i++);
     vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), new_tr_name, tr);
-    /*    fprintf(stderr, "adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
+    /*    g_print("adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
 	  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp);*/
 
     iter = g_list_next(iter);
