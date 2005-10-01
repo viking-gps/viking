@@ -76,6 +76,7 @@ struct _VikViewport {
 
   GdkGC *background_gc;
   GdkColor background_color;
+  gboolean draw_scale;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
@@ -165,6 +166,7 @@ static void viewport_init ( VikViewport *vvp )
   vvp->alpha_pixbuf_width = vvp->alpha_pixbuf_height = 0;
   vvp->utm_zone_width = 0.0;
   vvp->background_gc = NULL;
+  vvp->draw_scale = TRUE;
   g_signal_connect (G_OBJECT(vvp), "configure_event", G_CALLBACK(vik_viewport_configure), NULL);
 }
 
@@ -281,70 +283,82 @@ void vik_viewport_clear ( VikViewport *vvp )
   gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
 }
 
+void vik_viewport_set_draw_scale ( VikViewport *vvp, gboolean draw_scale )
+{
+  vvp->draw_scale = draw_scale;
+}
+
+gboolean vik_viewport_get_draw_scale ( VikViewport *vvp )
+{
+  return vvp->draw_scale;
+}
+
 void vik_viewport_draw_scale ( VikViewport *vvp )
 {
-  VikCoord left, right;
-  gdouble unit, base, diff, old_unit, old_diff, ratio;
-  gint odd, len, PAD = 10, SCSIZE = 5, HEIGHT=10;
-  PangoFontDescription *pfd;
-  PangoLayout *pl;
-  gchar s[128];
+  if ( vvp->draw_scale ) {
+    VikCoord left, right;
+    gdouble unit, base, diff, old_unit, old_diff, ratio;
+    gint odd, len, PAD = 10, SCSIZE = 5, HEIGHT=10;
+    PangoFontDescription *pfd;
+    PangoLayout *pl;
+    gchar s[128];
 
-  g_return_if_fail ( vvp != NULL );
+    g_return_if_fail ( vvp != NULL );
 
-  vik_viewport_screen_to_coord ( vvp, 0, vvp->height, &left );
-  vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height, &right );
+    vik_viewport_screen_to_coord ( vvp, 0, vvp->height, &left );
+    vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height, &right );
 
-  base = vik_coord_diff ( &left, &right ); // in meters
-  ratio = (vvp->width/SCSIZE)/base;
+    base = vik_coord_diff ( &left, &right ); // in meters
+    ratio = (vvp->width/SCSIZE)/base;
 
-  unit = 1;
-  diff = fabs(base-unit);
-  old_unit = unit;
-  old_diff = diff;
-  odd = 1;
-  while (diff <= old_diff) {
+    unit = 1;
+    diff = fabs(base-unit);
     old_unit = unit;
     old_diff = diff;
-    unit = unit * (odd%2 ? 5 : 2);
-    diff = fabs(base-unit);
-    odd++;
-  }
-  unit = old_unit;
-  len = unit * ratio;
+    odd = 1;
+    while (diff <= old_diff) {
+      old_unit = unit;
+      old_diff = diff;
+      unit = unit * (odd%2 ? 5 : 2);
+      diff = fabs(base-unit);
+      odd++;
+    }
+    unit = old_unit;
+    len = unit * ratio;
 
-  vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+    vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
 			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
-  vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+    vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
 			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
-  vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+    vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
 			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
-  if (odd%2) {
-    int i;
-    for (i=1; i<5; i++) {
-      vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+    if (odd%2) {
+      int i;
+      for (i=1; i<5; i++) {
+        vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
 			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+      }
+    } else {
+      int i;
+      for (i=1; i<10; i++) {
+        vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+  			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+      }
     }
-  } else {
-    int i;
-    for (i=1; i<10; i++) {
-      vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
-			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
-    }
-  }
-  pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
-  pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
-  pango_layout_set_font_description (pl, pfd);
-  pango_font_description_free (pfd);
+    pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
+    pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
+    pango_layout_set_font_description (pl, pfd);
+    pango_font_description_free (pfd);
 
-  if (unit >= 1000) {
-    sprintf(s, "%d km", (int)unit/1000);
-  } else {
-    sprintf(s, "%d m", (int)unit);
-  }
-  pango_layout_set_text(pl, s, -1);
-  vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
+    if (unit >= 1000) {
+      sprintf(s, "%d km", (int)unit/1000);
+    } else {
+      sprintf(s, "%d m", (int)unit);
+    }
+    pango_layout_set_text(pl, s, -1);
+    vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
 			   PAD + len + PAD, vvp->height - PAD - 10, pl);
+  }
 }
 
 void vik_viewport_sync ( VikViewport *vvp )

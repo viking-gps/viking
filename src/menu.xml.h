@@ -26,6 +26,7 @@ static const char *menu_xml =
 	"      <menuitem action='GotoLL'/>"
 	"      <menuitem action='GotoUTM'/>"
 	"      <separator/>"
+	"      <menuitem action='ShowScale'/>"
 	"      <menuitem action='SetBGColor'/>"
 	"      <separator/>"
 	"      <menuitem action='ZoomIn'/>"
