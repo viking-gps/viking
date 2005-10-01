@@ -1,7 +1,5 @@
 TODO till release 0.1.1:
 IMPORTANT STUFF:
-	Option as to whether or not to show unit scale (esp for exporting images)
-	fix save file thing
 	check out bgitemcount stuff in background.c (hangs on clear!)
 	g_dtostr instead of fprintf in the appropriate places
 	Debugging output shouldn't be printf'd but we g_print'd, and we should have a DEBUG flag

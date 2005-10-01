@@ -154,9 +154,10 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
     default: modestring = "mercator";
   }
 
-  fprintf ( f, "#VIKING GPS Data file http://gpsmaps.org/viking/\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\n",
+  fprintf ( f, "#VIKING GPS Data file http://gpsmaps.org/viking/\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\ndrawscale=%s\n",
       vik_viewport_get_xmpp ( VIK_VIEWPORT(vp) ), vik_viewport_get_ympp ( VIK_VIEWPORT(vp) ), ll.lat, ll.lon,
-      modestring, vik_viewport_get_background_color(VIK_VIEWPORT(vp)) );
+      modestring, vik_viewport_get_background_color(VIK_VIEWPORT(vp)),
+      vik_viewport_get_draw_scale(VIK_VIEWPORT(vp)) ? "t" : "f" );
 
   if ( ! VIK_LAYER(top)->visible )
     fprintf ( f, "visible=f\n" );
@@ -343,6 +344,8 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
         vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_MERCATOR );
       else if ( stack->under == NULL && eq_pos == 5 && strncasecmp ( line, "color", eq_pos ) == 0 )
         vik_viewport_set_background_color ( VIK_VIEWPORT(vp), line+6 );
+      else if ( stack->under == NULL && eq_pos == 9 && strncasecmp ( line, "drawscale", eq_pos ) == 0 )
+        vik_viewport_set_draw_scale ( VIK_VIEWPORT(vp), TEST_BOOLEAN(line+10) );
       else if ( stack->under && eq_pos == 4 && strncasecmp ( line, "name", eq_pos ) == 0 )
         vik_layer_rename ( VIK_LAYER(stack->data), line+5 );
       else if ( eq_pos == 7 && strncasecmp ( line, "visible", eq_pos ) == 0 )
