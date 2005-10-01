@@ -95,7 +95,7 @@ static gdouble __mapzooms_x[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.
 static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 1.016, 2.4384, 2.54, 5.08, 10.16, 20.32, 25.4 };
 
 static gchar *params_maptypes[] = { "Terraserver Topos", "Terraserver Aerials", "Terraserver Urban Areas", "Expedia (Street Maps)", "Google Maps (Street)", "KH Maps", "New (Mercator) Google", "Transparent Google", "New (Mercator) KH" };
-static guint params_maptypes_ids[] = { 2, 1, 4, 5, 9, 6, 8, 7, 10, 11 };
+static guint params_maptypes_ids[] = { 2, 1, 4, 5, 9, 8, 7, 10, 11 };
 #define NUM_MAPZOOMS (sizeof(params_mapzooms)/sizeof(params_mapzooms[0]))
 
 /**************************/
