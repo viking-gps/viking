@@ -1,15 +1,10 @@
 TODO till release 0.1.1:
 IMPORTANT STUFF:
-X	GPX symbols
 	Option as to whether or not to show waypoint symbols (we may want to show 'x's or something, and may have a lot of wpt_dot icons)
 	Option as to whether or not to show unit scale (esp for exporting images)
 	fix save file thing
 	check out bgitemcount stuff in background.c (hangs on clear!)
 	g_dtostr instead of fprintf in the appropriate places
-X	DND: make it an interface, so we don't mention VikTrwLayer in viktreeview.c
-X	DND: when moving layers, take into account the layer we're moving onto
-		and move it above.
-X	(DND?) fix "(viking:3671): Gtk-CRITICAL **: gtk_tree_model_get_iter: assertion `path->depth > 0' failed"
 	Debugging output shouldn't be printf'd but we g_print'd, and we should have a DEBUG flag
 
 BIG THINGS:

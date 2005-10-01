@@ -81,6 +81,7 @@ tag_mapping tag_path_map[] = {
         { tt_wpt_name, "/gpx/wpt/name" },
         { tt_wpt_desc, "/gpx/wpt/desc" },
         { tt_wpt_sym, "/gpx/wpt/sym" },
+        { tt_wpt_sym, "/loc/waypoint/type" },
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
 
         { tt_trk, "/gpx/trk" },
