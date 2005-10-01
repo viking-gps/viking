@@ -9,7 +9,8 @@ Alex Foobarian <foobarian@gmail.com>:
 	* Updated DND to insert layers at the point of the drop, instead of front of list
 	* Added wp symbol support to gpx
 	* Fixed name collisions during track/wp DND
-	
+	* Layer-wide option as to whether to show waypoint symbols	
+
 2005-09-29
 Alex Foobarian <foobarian@gmail.com>:
 	* Added support for waypoint symbols (changing, loading, saving), and a small number of icons.

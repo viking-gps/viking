@@ -379,7 +379,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
             break;
           }
         if ( ! found_match )
-          g_warning ( "Line %ld: Unknown parameter", line_num );
+          g_warning ( "Line %ld: Unknown parameter. Line:\n%s", line_num, line );
       }
       else
         g_warning ( "Line %ld: Invalid parameter or parameter outside of layer.", line_num );

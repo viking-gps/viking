@@ -219,23 +219,27 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     symbollabel = gtk_label_new ("Symbol:");
     GtkTreeIter iter;
 
-    store = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
+    store = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
     symbolentry = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
     gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(symbolentry), 3);
     gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter, 0, "(none)", 1, NULL, -1);
+    gtk_list_store_set (store, &iter, 0, NULL, 1, NULL, 2, "(none)", -1);
     a_populate_sym_list(store);
 
     r = gtk_cell_renderer_pixbuf_new ();
     gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (symbolentry), r, FALSE);
     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (symbolentry), r, "pixbuf", 1, NULL);
 
+    r = gtk_cell_renderer_text_new ();
+    gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (symbolentry), r, FALSE);
+    gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (symbolentry), r, "text", 2, NULL);
+
     if ( dest == NULL && wp->symbol ) {
       gboolean ok;
       gchar *sym;
       for (ok = gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &iter ); ok; ok = gtk_tree_model_iter_next ( GTK_TREE_MODEL(store), &iter)) {
 	gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
-	if (!strcmp(sym, wp->symbol)) {
+	if (sym && !strcmp(sym, wp->symbol)) {
 	  g_free(sym);
 	  break;
 	} else {

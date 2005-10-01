@@ -87,6 +87,7 @@ struct _VikTrwLayer {
 
   guint8 wp_symbol;
   guint8 wp_size;
+  gboolean wp_draw_symbols;
 
   gdouble velocity_min, velocity_max;
   GArray *track_gc;
@@ -273,8 +274,9 @@ VikLayerParam trw_layer_params[] = {
   { "wptextcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, "Waypoint Text:", VIK_LAYER_WIDGET_COLOR, 0 },
   { "wpbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, "Background:", VIK_LAYER_WIDGET_COLOR, 0 },
   { "wpbgand", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, "Fake BG Color Translucency:", VIK_LAYER_WIDGET_CHECKBUTTON, 0 },
-  { "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint symbol:", VIK_LAYER_WIDGET_RADIOGROUP, params_wpsymbols },
+  { "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint marker:", VIK_LAYER_WIDGET_RADIOGROUP, params_wpsymbols },
   { "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint size:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 7 },
+  { "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, "Draw Waypoint Symbols:", VIK_LAYER_WIDGET_CHECKBUTTON },
 
   { "drawimages", VIK_LAYER_PARAM_BOOLEAN, GROUP_IMAGES, "Draw Waypoint Images", VIK_LAYER_WIDGET_CHECKBUTTON },
   { "image_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Size (pixels):", VIK_LAYER_WIDGET_HSCALE, params_scales + 3 },
@@ -282,7 +284,7 @@ VikLayerParam trw_layer_params[] = {
   { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Memory Cache Size:", VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
 };
 
-enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
+enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
 
 /****** END PARAMETERS ******/
 
@@ -477,6 +479,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_WPBA: gdk_gc_set_function(vtl->waypoint_bg_gc, data.b ? GDK_AND : GDK_COPY ); break;
     case PARAM_WPSYM: if ( data.u < WP_NUM_SYMBOLS ) vtl->wp_symbol = data.u; break;
     case PARAM_WPSIZE: if ( data.u > 0 && data.u <= 64 ) vtl->wp_size = data.u; break;
+    case PARAM_WPSYMS: vtl->wp_draw_symbols = data.b; break;
   }
   return TRUE;
 }
@@ -511,6 +514,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
     case PARAM_WPBA: rv.b = (vik_gc_get_function(vtl->waypoint_bg_gc)==GDK_AND); break;
     case PARAM_WPSYM: rv.u = vtl->wp_symbol; break;
     case PARAM_WPSIZE: rv.u = vtl->wp_size; break;
+    case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
   }
   return rv;
 }
@@ -551,6 +555,7 @@ static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp )
   rv->coord_mode = vtl->coord_mode;
   rv->wp_symbol = vtl->wp_symbol;
   rv->wp_size = vtl->wp_size;
+  rv->wp_draw_symbols = vtl->wp_draw_symbols;
 
   trw_layer_new_track_gcs ( rv, VIK_VIEWPORT(vp) );
 
@@ -983,7 +988,7 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
     }
 
     /* DRAW ACTUAL DOT */
-    if ( wp->symbol && (sym = a_get_wp_sym(wp->symbol)) ) {
+    if ( dp->vtl->wp_draw_symbols && wp->symbol && (sym = a_get_wp_sym(wp->symbol)) ) {
       vik_viewport_draw_pixbuf ( dp->vp, sym, 0, 0, x - gdk_pixbuf_get_width(sym)/2, y - gdk_pixbuf_get_height(sym)/2, -1, -1 );
     } 
     else if ( wp == dp->vtl->current_wp ) {
@@ -1107,6 +1112,7 @@ VikTrwLayer *vik_trw_layer_create ( VikViewport *vp )
   rv->has_verified_thumbnails = FALSE;
   rv->wp_symbol = WP_SYMBOL_FILLED_SQUARE;
   rv->wp_size = 4;
+  rv->wp_draw_symbols = TRUE;
 
   rv->coord_mode = vik_viewport_get_coord_mode ( vp );
 
