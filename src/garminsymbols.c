@@ -304,8 +304,28 @@ struct {
 
 GHashTable *icons = NULL;
 
+/* found via Google, from Sylpheed/GPL and/or gstring.c in Glib */
+static gint g_str_case_equal(gconstpointer v, gconstpointer v2)
+{
+	return strcasecmp((const gchar *)v, (const gchar *)v2) == 0;
+}
+
+static guint g_str_case_hash(gconstpointer key)
+{
+	const gchar *p = key;
+	guint h = *p;
+
+	if (h) {
+		h = tolower(h);
+		for (p += 1; *p != '\0'; p++)
+			h = (h << 5) - h + tolower(*p);
+	}
+
+	return h;
+}
+
 static void init_icons() {
-  icons = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, NULL);
+  icons = g_hash_table_new_full ( g_str_case_hash, g_str_case_equal, NULL, NULL);
   gint i;
   for (i=0; i<G_N_ELEMENTS(garmin_syms); i++) {
     g_hash_table_insert(icons, garmin_syms[i].sym, (gpointer)i);

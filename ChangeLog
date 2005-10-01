@@ -1,3 +1,7 @@
+2005-10-01
+Evan Battaglia <gtoevan@gmx.net>:
+	* make symbols work for geocaching .loc files (and case-insensitive symbol names)
+
 2005-09-30  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
 	* configure.ac, src/Makefile.am (SUBDIRS): added auto-tools support for src/icons
 Alex Foobarian <foobarian@gmail.com>:
