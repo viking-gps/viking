@@ -58,7 +58,6 @@
 #include "google.h"
 #include "khmaps.h"
 #include "expedia.h"
-#include "usgs.h"
 
 typedef struct {
   guint8 uniq_id;
@@ -81,7 +80,6 @@ static const VikMapsLayer_MapType __map_types[] = {
 { 4, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_urban_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_urban_download },
 { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download },
 { 9, 128, 128, VIK_VIEWPORT_DRAWMODE_GOOGLE, googlemaps_coord_to_mapcoord, googlemaps_mapcoord_to_center_coord, googlemaps_download },
-{ 6, 800, 600, VIK_VIEWPORT_DRAWMODE_UTM, usgs_coord_to_mapcoord, usgs_mapcoord_to_center_coord, usgs_download },
 { 8, 256, 256, VIK_VIEWPORT_DRAWMODE_KH, khmaps_coord_to_mapcoord, khmaps_mapcoord_to_center_coord, khmaps_download },
 { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download },
 { 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download },
@@ -96,7 +94,7 @@ static gchar *params_mapzooms[] = { "Use Viking Zoom Level", "0.25", "1", "2", "
 static gdouble __mapzooms_x[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 1.016, 2.4384, 2.54, 5.08, 10.16, 20.32, 25.4 };
 static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 1.016, 2.4384, 2.54, 5.08, 10.16, 20.32, 25.4 };
 
-static gchar *params_maptypes[] = { "Terraserver Topos", "Terraserver Aerials", "Terraserver Urban Areas", "Expedia (Street Maps)", "Google Maps (Street)", "USGS", "KH Maps", "New (Mercator) Google", "Transparent Google", "New (Mercator) KH" };
+static gchar *params_maptypes[] = { "Terraserver Topos", "Terraserver Aerials", "Terraserver Urban Areas", "Expedia (Street Maps)", "Google Maps (Street)", "KH Maps", "New (Mercator) Google", "Transparent Google", "New (Mercator) KH" };
 static guint params_maptypes_ids[] = { 2, 1, 4, 5, 9, 6, 8, 7, 10, 11 };
 #define NUM_MAPZOOMS (sizeof(params_mapzooms)/sizeof(params_mapzooms[0]))
 
