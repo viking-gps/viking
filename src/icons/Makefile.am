@@ -6,7 +6,18 @@ WAYPOINT_ICONS = \
   wp_geocache.png \
   wp_geocache_fnd.png \
   wp_house.png \
-  wp_wpt_dot.png
+  wp_wpt_dot.png \
+  wp_dollar.png \
+  wp_golf.png \
+  wp_summit.png \
+  wp_anchor.png \
+  wp_forest.png \
+  wp_parking.png \
+  wp_sml_cty.png \
+  wp_med_cty.png \
+  wp_lrg_cty.png \
+  wp_cap_cty.png 
+
 
 ICONS = \
   addtr_18.png \
