@@ -1,3 +1,7 @@
+2005-10-06
+Alex Foobarian <foobarian@gmail.com>:
+        * Added support for pasting coordinates in lat/lon format
+
 2005-10-05
 Alex Foobarian <foobarian@gmail.com>:
 	* Change clipboard so as to use GTKClipboard. Prepare for support for pasting coordinates, etc.
