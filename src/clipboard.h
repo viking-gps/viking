@@ -24,6 +24,5 @@
 
 void a_clipboard_copy ( VikLayersPanel *vlp );
 gboolean a_clipboard_paste ( VikLayersPanel *vlp );
-void a_clipboard_uninit ();
 
 #endif

@@ -217,6 +217,8 @@ static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikVie
 
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
 
+static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name);
+
 static VikToolInterface trw_layer_tools[] = {
   { "Create Waypoint", (VikToolInterfaceFunc) tool_new_waypoint, NULL },
   { "Create Track", (VikToolInterfaceFunc) tool_new_track, NULL },
@@ -391,13 +393,17 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, gpointer 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT && item )
   {
     NamedWaypoint *nw = (NamedWaypoint *) item;
-    vik_trw_layer_add_waypoint ( vtl, g_strdup(nw->name), vik_waypoint_copy(nw->wp) );
+    vik_trw_layer_add_waypoint ( vtl,
+        get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, nw->name),
+        vik_waypoint_copy(nw->wp) );
     return TRUE;
   }
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && item )
   {
     NamedTrack *nt = (NamedTrack *) item;
-    vik_trw_layer_add_track ( vtl, g_strdup(nt->name), vik_track_copy(nt->tr) );
+    vik_trw_layer_add_track ( vtl,
+       get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, nt->name),
+       vik_track_copy(nt->tr) );
     return TRUE;
   }
   return FALSE;
@@ -1519,6 +1525,20 @@ static void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_n
   else if (vtl->last_tp_track_name && g_strcasecmp(trk_name, vtl->last_tp_track_name) == 0)
     trw_layer_cancel_last_tp ( vtl );
 }
+	
+static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name)
+{
+ gint i = 2;
+ gchar *newname = g_strdup(name);
+ while ((sublayer_type == VIK_TRW_LAYER_SUBLAYER_TRACK) ?
+         vik_trw_layer_get_track(vtl, newname) : vik_trw_layer_get_waypoint(vtl, newname)) {
+    gchar *new_newname = g_strdup_printf("%s#%d", name, i);
+    g_free(newname);
+    newname = new_newname;
+    i++;
+  }
+  return newname;
+}
 
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
 {
@@ -1528,30 +1548,17 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
   } else {
     gint type = vik_treeview_item_get_data(vt, src_item_iter);
     gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
-    gint i = 2;
 
     if (type==VIK_TRW_LAYER_SUBLAYER_TRACK) {
       VikTrack *t;
-      gchar *newname = g_strdup(name);
-      while (vik_trw_layer_get_track(vtl_dest, newname)) {
-	gchar *new_newname = g_strdup_printf("%s#%d", name, i);
-	g_free(newname);
-	newname = new_newname;
-	i++;
-      }
+      gchar *newname = get_new_unique_sublayer_name(vtl_dest, VIK_TRW_LAYER_SUBLAYER_TRACK, name);
       t = vik_track_copy(vik_trw_layer_get_track(vtl_src, name));
       vik_trw_layer_delete_track(vtl_src, name);
       vik_trw_layer_add_track(vtl_dest, newname, t);
     }
     if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
       VikWaypoint *w;
-      gchar *newname = g_strdup(name);
-      while (vik_trw_layer_get_waypoint(vtl_dest, newname)) {
-	gchar *new_newname = g_strdup_printf("%s#%d", name, i);
-	g_free(newname);
-	newname = new_newname;
-	i++;
-      }
+      gchar *newname = get_new_unique_sublayer_name(vtl_dest, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, name);
       w = vik_waypoint_copy(vik_trw_layer_get_waypoint(vtl_src, name));
       vik_trw_layer_delete_waypoint(vtl_src, name);
       vik_trw_layer_add_waypoint(vtl_dest, newname, w);
