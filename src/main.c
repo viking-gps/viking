@@ -103,7 +103,6 @@ int main( int argc, char *argv[] )
   gtk_main ();
   gdk_threads_leave ();
 
-  a_clipboard_uninit ();
   a_mapcache_uninit ();
 
   return 0;

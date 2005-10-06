@@ -205,6 +205,8 @@ void a_clipboard_copy ( VikLayersPanel *vlp )
     if ( vik_layer_get_interface(vc->layer_type)->copy_item && (vc->clipboard = vik_layer_get_interface(vc->layer_type)->
         copy_item(sel,vc->subtype=vik_treeview_item_get_data(sel->vt,&iter),vik_treeview_item_get_pointer(sel->vt,&iter)) ))
       vc->type = DATA_SUBLAYER;
+    else
+      return; /* selected sublayer is uncopyable */
   }
   else
   {
@@ -224,9 +226,4 @@ gboolean a_clipboard_paste ( VikLayersPanel *vlp )
   GtkClipboard *c = gtk_clipboard_get ( GDK_SELECTION_CLIPBOARD );
   gtk_clipboard_request_targets ( c, clip_receive_targets, vlp );
   return TRUE;
-}
-
-void a_clipboard_uninit ()
-{
-  /* not needed any longer */
 }

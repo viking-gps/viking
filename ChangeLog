@@ -1,3 +1,9 @@
+2005-10-05
+Alex Foobarian <foobarian@gmail.com>:
+	* Change clipboard so as to use GTKClipboard. Prepare for support for pasting coordinates, etc.
+Evan Battaglia <gtoevan@gmx.net>:
+	* When pasting waypoints and tracks, do name resolution (add #2, etc)
+
 2005-10-01
 Evan Battaglia <gtoevan@gmx.net>:
 	* make symbols work for geocaching .loc files (and case-insensitive symbol names)
