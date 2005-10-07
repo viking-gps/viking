@@ -1,3 +1,7 @@
+2005-10-07
+Alex Foobarian <foobarian@gmail.com>:
+        * Added ruler drawing to the ruler tool
+
 2005-10-06
 Alex Foobarian <foobarian@gmail.com>:
         * Added support for pasting coordinates in lat/lon format

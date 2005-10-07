@@ -92,8 +92,11 @@ struct _VikWindow {
 
   GtkItemFactory *item_factory;
 
+  /* ruler variables */
   VikCoord oldcoord;
   gboolean has_oldcoord;
+  
+
   guint current_tool;
 
   guint16 tool_layer_id;
@@ -303,8 +306,63 @@ static void draw_redraw ( VikWindow *vw )
   vik_viewport_draw_scale ( vw->viking_vvp );
 }
 
+static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, gdouble distance)
+{
+  PangoFontDescription *pfd;
+  PangoLayout *pl;
+  gchar str[128];
+  GdkGC *labgc;
+
+  gdouble len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+  gdouble dx = (x2-x1)/len*10; 
+  gdouble dy = (y2-y1)/len*10;
+  gdouble c = cos(15.0 * M_PI/180.0);
+  gdouble s = sin(15.0 * M_PI/180.0);
+  gint width, height;
+  gint x, y;
+
+  gdk_draw_line(d, gc, x1, y1, x2, y2);
+  gdk_draw_line(d, gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
+  gdk_draw_line(d, gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
+  gdk_draw_line(d, gc, x2, y2, x2 - (dx * c + dy * s), y2 - (dy * c - dx * s));
+  gdk_draw_line(d, gc, x2, y2, x2 - (dx * c - dy * s), y2 - (dy * c + dx * s));
+  gdk_draw_line(d, gc, x1, y1, x1 + (dx * c + dy * s), y1 + (dy * c - dx * s));
+  gdk_draw_line(d, gc, x1, y1, x1 + (dx * c - dy * s), y1 + (dy * c + dx * s));
+
+  pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
+
+  pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
+  pango_layout_set_font_description (pl, pfd);
+  pango_font_description_free (pfd);
+
+  if (distance >= 1000 && distance < 100000) {
+    sprintf(str, "%3.2f km", distance/1000.0);
+  } else if (distance < 1000) {
+    sprintf(str, "%d m", (int)distance);
+  } else {
+    sprintf(str, "%d km", (int)distance/1000);
+  }
+  pango_layout_set_text(pl, str, -1);
+
+  pango_layout_get_pixel_size ( pl, &width, &height );
+  if (dy>0) {
+    x = (x1+x2)/2 + dy;
+    y = (y1+y2)/2 - height/2 - dx;
+  } else {
+    x = (x1+x2)/2 - dy;
+    y = (y1+y2)/2 - height/2 + dx;
+  }
+  labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
+  gdk_draw_rectangle(d, labgc, TRUE, x-2, y-1, width+4, height+1);
+  gdk_draw_rectangle(d, gc, FALSE, x-2, y-1, width+4, height+1);
+  gdk_draw_layout(d, gc, x, y, pl);
+  g_object_unref ( G_OBJECT ( labgc ) );
+
+}
+
 static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 {
+  VikViewport *vvp = vw->viking_vvp;
   static VikCoord coord;
   static struct UTM utm;
   static struct LatLon ll;
@@ -313,6 +371,42 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
   a_coords_utm_to_latlon ( &utm, &ll );
+
+  if ( vw->current_tool == TOOL_RULER )
+  {
+    struct LatLon ll;
+    VikCoord coord;
+    gchar *temp;
+
+    if ( vw->has_oldcoord ) {
+      int oldx, oldy, w1, h1, w2, h2;
+      static GdkPixmap *buf = NULL;
+      w1 = vik_viewport_get_width(vvp); 
+      h1 = vik_viewport_get_height(vvp);
+      if (!buf) {
+	buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+      }
+      gdk_drawable_get_size(buf, &w2, &h2);
+      if (w1 != w2 || h1 != h2) {
+	g_object_unref ( G_OBJECT ( buf ) );
+	buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+      }
+
+      vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
+      vik_coord_to_latlon ( &coord, &ll );
+      vik_viewport_coord_to_screen ( vvp, &vw->oldcoord, &oldx, &oldy );
+
+      gdk_draw_drawable (buf, GTK_WIDGET(vvp)->style->black_gc, 
+			 vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
+      draw_ruler(vvp, buf, GTK_WIDGET(vvp)->style->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(vw->oldcoord)) );
+      gdk_draw_drawable (GTK_WIDGET(vvp)->window, GTK_WIDGET(vvp)->style->black_gc, 
+			 buf, 0, 0, 0, 0, -1, -1);
+
+      temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(vw->oldcoord) ) );
+      vik_statusbar_set_message ( vw->viking_vs, 3, temp );
+      g_free ( temp );
+    }
+  }
 
   g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );
 
@@ -376,17 +470,20 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
     {
       vik_viewport_screen_to_coord ( vw->viking_vvp, (gint) event->x, (gint) event->y, &coord );
       vik_coord_to_latlon ( &coord, &ll );
-      if ( vw->has_oldcoord )
+      if ( vw->has_oldcoord ) {
          temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(vw->oldcoord) ) );
-      else
+	 vw->has_oldcoord = FALSE;
+      }
+      else {
         temp = g_strdup_printf ( "%f %f", ll.lat, ll.lon );
+	vw->has_oldcoord = TRUE;
+      }
 
       vik_statusbar_set_message ( vw->viking_vs, 3, temp );
       g_free ( temp );
 
       vw->oldcoord = coord;
       /* we don't use anything else so far */
-      vw->has_oldcoord = TRUE;
     }
     else
     {
