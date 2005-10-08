@@ -354,13 +354,6 @@ gboolean vik_aggregate_layer_is_empty ( VikAggregateLayer *val )
   return TRUE;
 }
 
-static void aggregate_layer_remove ( VikAggregateLayer *val, GtkTreeIter *iter )
-{
-  VikLayer *l = VIK_LAYER( vik_treeview_item_get_pointer ( VIK_LAYER(val)->vt, iter ) );
-  vik_treeview_item_delete ( VIK_LAYER(val)->vt, iter );
-  val->children = g_list_remove ( val->children, l );
-}
-
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
 {
   VikTreeview *vt = VIK_LAYER(val_src)->vt;
@@ -369,12 +362,17 @@ static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikA
   GtkTreeIter dest_iter;
 
   ps = gtk_tree_path_to_string(dest_path);
+
+  /* vik_aggregate_layer_delete unrefs, but we don't want that here.
+   * we're still using the layer. */
+  g_object_ref ( vl );
+  vik_aggregate_layer_delete(val_src, src_item_iter);
+
   if (vik_treeview_get_iter_from_path_str(vt, &dest_iter, ps)) {
     vik_aggregate_layer_insert_layer(val_dest, vl, &dest_iter);
   } else {
     vik_aggregate_layer_insert_layer(val_dest, vl, NULL); /* append */
   }
-  aggregate_layer_remove(val_src, src_item_iter);
   g_free(ps);
 }
 
