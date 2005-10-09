@@ -148,7 +148,7 @@ static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
   for (i=0; i<len-2; i++) {
     if (g_ascii_isdigit (s[i]) && s[i+1] != '.' && !g_ascii_isdigit (s[i+1])) {
       s[i+1] = ' ';
-      if (!g_ascii_isalnum (s[i+2])) {
+      if (!g_ascii_isalnum (s[i+2]) && s[i+2] != '-') {
 	s[i+2] = ' ';
       }
     }
@@ -233,6 +233,7 @@ static void clip_receive_text (GtkClipboard *c, const gchar *text, gpointer p)
 {
   VikLayersPanel *vlp = p;
   struct LatLon coord;
+  //  g_print("got text: %s\n", text);
   if (clip_parse_latlon(text, &coord)) {
     clip_add_wp(vlp, &coord);
   }
