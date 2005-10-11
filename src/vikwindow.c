@@ -311,16 +311,18 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   PangoFontDescription *pfd;
   PangoLayout *pl;
   gchar str[128];
-  GdkGC *labgc;
-
+  GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
+  GdkGC *thickgc = gdk_gc_new(d);
+  
   gdouble len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
   gdouble dx = (x2-x1)/len*10; 
   gdouble dy = (y2-y1)/len*10;
   gdouble c = cos(15.0 * M_PI/180.0);
   gdouble s = sin(15.0 * M_PI/180.0);
-  gint width, height;
-  gint x, y;
+  gdouble angle;
+  gint i;
 
+  /* draw line with arrow ends */
   gdk_draw_line(d, gc, x1, y1, x2, y2);
   gdk_draw_line(d, gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
   gdk_draw_line(d, gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
@@ -329,35 +331,102 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   gdk_draw_line(d, gc, x1, y1, x1 + (dx * c + dy * s), y1 + (dy * c - dx * s));
   gdk_draw_line(d, gc, x1, y1, x1 + (dx * c - dy * s), y1 + (dy * c + dx * s));
 
-  pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
+  /* draw compass */
+#define CR 80
+#define CW 4
+  angle = atan2(dy, dx) + M_PI/2;
+  if (angle<0) 
+    angle+=2*M_PI;
+  if (angle>2*M_PI)
+    angle-=2*M_PI;
 
-  pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
-  pango_layout_set_font_description (pl, pfd);
-  pango_font_description_free (pfd);
-
-  if (distance >= 1000 && distance < 100000) {
-    sprintf(str, "%3.2f km", distance/1000.0);
-  } else if (distance < 1000) {
-    sprintf(str, "%d m", (int)distance);
-  } else {
-    sprintf(str, "%d km", (int)distance/1000);
+  {
+    GdkColor color;
+    gdk_gc_copy(thickgc, gc);
+    gdk_gc_set_line_attributes(thickgc, CW, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+    gdk_color_parse("#2255cc", &color);
+    gdk_gc_set_rgb_fg_color(thickgc, &color);
   }
-  pango_layout_set_text(pl, str, -1);
+  gdk_draw_arc (d, thickgc, FALSE, x1-CR+CW/2, y1-CR+CW/2, 2*CR-CW, 2*CR-CW, 90*64, -angle*180/M_PI*64);
 
-  pango_layout_get_pixel_size ( pl, &width, &height );
-  if (dy>0) {
-    x = (x1+x2)/2 + dy;
-    y = (y1+y2)/2 - height/2 - dx;
-  } else {
-    x = (x1+x2)/2 - dy;
-    y = (y1+y2)/2 - height/2 + dx;
+
+  gdk_gc_copy(thickgc, gc);
+  gdk_gc_set_line_attributes(thickgc, 2, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+  for (i=0; i<180; i++) {
+    c = cos(i*M_PI/90.0);
+    s = sin(i*M_PI/90.0);
+
+    if (i%5) {
+      gdk_draw_line (d, gc, x1 + CR*c, y1 + CR*s, x1 + (CR+CW)*c, y1 + (CR+CW)*s);
+    } else {
+      gdouble ticksize = 2*CW;
+      gdk_draw_line (d, thickgc, x1 + (CR-CW)*c, y1 + (CR-CW)*s, x1 + (CR+ticksize)*c, y1 + (CR+ticksize)*s);
+    }
   }
-  labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
-  gdk_draw_rectangle(d, labgc, TRUE, x-2, y-1, width+4, height+1);
-  gdk_draw_rectangle(d, gc, FALSE, x-2, y-1, width+4, height+1);
-  gdk_draw_layout(d, gc, x, y, pl);
+
+  gdk_draw_arc (d, gc, FALSE, x1-CR, y1-CR, 2*CR, 2*CR, 0, 64*360);
+  gdk_draw_arc (d, gc, FALSE, x1-CR-CW, y1-CR-CW, 2*(CR+CW), 2*(CR+CW), 0, 64*360);
+  gdk_draw_arc (d, gc, FALSE, x1-CR+CW, y1-CR+CW, 2*(CR-CW), 2*(CR-CW), 0, 64*360);
+  gdk_draw_line (d, gc, x1-CR-CW*2, y1, x1+CR+CW*2, y1);
+  gdk_draw_line (d, gc, x1-1, y1-CR-CW*2, x1-1, y1+CR+CW*2);
+
+  /* draw labels */
+#define LABEL(x, y, w, h) { \
+    gdk_draw_rectangle(d, labgc, TRUE, (x)-2, (y)-1, (w)+4, (h)+1); \
+    gdk_draw_rectangle(d, gc, FALSE, (x)-2, (y)-1, (w)+4, (h)+1); \
+    gdk_draw_layout(d, gc, (x), (y), pl); } 
+  {
+    gint wd, hd, xd, yd;
+    gint wb, hb, xb, yb;
+
+    pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
+
+    pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
+    pango_layout_set_font_description (pl, pfd);
+    pango_font_description_free (pfd);
+
+    pango_layout_set_text(pl, "N", -1);
+    gdk_draw_layout(d, gc, x1-5, y1-CR-3*CW-8, pl);
+
+    /* draw label with distance */
+    if (distance >= 1000 && distance < 100000) {
+      sprintf(str, "%3.2f km", distance/1000.0);
+    } else if (distance < 1000) {
+      sprintf(str, "%d m", (int)distance);
+    } else {
+      sprintf(str, "%d km", (int)distance/1000);
+    }
+    pango_layout_set_text(pl, str, -1);
+
+    pango_layout_get_pixel_size ( pl, &wd, &hd );
+    if (dy>0) {
+      xd = (x1+x2)/2 + dy;
+      yd = (y1+y2)/2 - hd/2 - dx;
+    } else {
+      xd = (x1+x2)/2 - dy;
+      yd = (y1+y2)/2 - hd/2 + dx;
+    }
+    LABEL(xd, yd, wd, hd);
+
+    /* draw label with bearing */
+    sprintf(str, "%3.1f°", angle*180.0/M_PI);
+    pango_layout_set_text(pl, str, -1);
+    pango_layout_get_pixel_size ( pl, &wb, &hb );
+    xb = x1 + CR*cos(angle-M_PI_2);
+    yb = y1 + CR*sin(angle-M_PI_2);
+
+    {
+      GdkRectangle r1 = {xd-2, yd-1, wd+4, hd+1}, r2 = {xb-2, yb-1, wb+4, hb+1};
+      if (gdk_rectangle_intersect(&r1, &r2, &r2)) {
+	xb = xd + wd + 5;
+      }
+    }
+    LABEL(xb, yb, wb, hb);
+  }
+  #undef LABEL
+
   g_object_unref ( G_OBJECT ( labgc ) );
-
+  g_object_unref ( G_OBJECT ( thickgc ) );
 }
 
 static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
