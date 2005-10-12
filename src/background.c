@@ -105,7 +105,6 @@ void thread_helper ( gpointer args[6] )
 
   func ( userdata, args );
 
-  /* need MUTEX ? */
   gdk_threads_enter();
   if ( ! args[0] )
     gtk_list_store_remove ( bgstore, (GtkTreeIter *) args[5] );
@@ -157,21 +156,29 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
 
 static void bgwindow_response (GtkDialog *dialog, gint arg1 )
 {
- if ( arg1 == 1 ) /* cancel */
- {
-   GtkTreeIter iter;
-   if ( gtk_tree_selection_get_selected ( gtk_tree_view_get_selection ( GTK_TREE_VIEW(bgtreeview) ), NULL, &iter ) )
-     cancel_job_with_iter ( &iter );
-    background_thread_update();
-  }
+  /* note this function is a signal handler called back from the GTK main loop, 
+   * so GDK is already locked.  We need to release the lock before calling 
+   * thread-safe routines
+   */
+  if ( arg1 == 1 ) /* cancel */
+    {
+      GtkTreeIter iter;
+      if ( gtk_tree_selection_get_selected ( gtk_tree_view_get_selection ( GTK_TREE_VIEW(bgtreeview) ), NULL, &iter ) )
+	cancel_job_with_iter ( &iter );
+      gdk_threads_leave();
+      background_thread_update();
+      gdk_threads_enter();
+    }
   else if ( arg1 == 2 ) /* clear */
-  {
-    GtkTreeIter iter;
-    while ( gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(bgstore), &iter ) )
-      cancel_job_with_iter ( &iter );
-    bgitemcount = 0;
-    background_thread_update();
-  }
+    {
+      GtkTreeIter iter;
+      while ( gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(bgstore), &iter ) )
+	cancel_job_with_iter ( &iter );
+      bgitemcount = 0;
+      gdk_threads_leave();
+      background_thread_update();
+      gdk_threads_enter();
+    }
   else /* OK */
     gtk_widget_hide ( bgwindow );
 }
