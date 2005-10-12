@@ -423,10 +423,23 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     }
     LABEL(xb, yb, wb, hb);
   }
-  #undef LABEL
+#undef LABEL
 
   g_object_unref ( G_OBJECT ( labgc ) );
   g_object_unref ( G_OBJECT ( thickgc ) );
+}
+
+gboolean draw_buf_done = TRUE;
+
+static gboolean draw_buf(gpointer data)
+{
+  gpointer *pass_along = data;
+  gdk_threads_enter();
+  gdk_draw_drawable (pass_along[0], pass_along[1],
+		     pass_along[2], 0, 0, 0, 0, -1, -1);
+  gdk_threads_leave();
+  draw_buf_done = TRUE;
+  return FALSE;
 }
 
 static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
@@ -468,8 +481,14 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
       gdk_draw_drawable (buf, GTK_WIDGET(vvp)->style->black_gc, 
 			 vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
       draw_ruler(vvp, buf, GTK_WIDGET(vvp)->style->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(vw->oldcoord)) );
-      gdk_draw_drawable (GTK_WIDGET(vvp)->window, GTK_WIDGET(vvp)->style->black_gc, 
-			 buf, 0, 0, 0, 0, -1, -1);
+      if (draw_buf_done) {
+	static gpointer pass_along[3];
+	pass_along[0] = GTK_WIDGET(vvp)->window;
+	pass_along[1] = GTK_WIDGET(vvp)->style->black_gc;
+	pass_along[2] = buf;
+	g_idle_add (draw_buf, pass_along);
+	draw_buf_done = FALSE;
+      }
 
       temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(vw->oldcoord) ) );
       vik_statusbar_set_message ( vw->viking_vs, 3, temp );
