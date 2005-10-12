@@ -1,3 +1,7 @@
+2005-10-12
+Alex Foobarian <foobarian@gmail.com>:
+        * Coord layer drawing for lat/lon based projections
+
 2005-10-11
 Alex Foobarian <foobarian@gmail.com>:
         * Draw a compass when using a ruler

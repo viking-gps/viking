@@ -24,7 +24,7 @@ IMPORTANT STUFF:
 
 BIG THINGS:
 	DND between VikWindows
-	Fix coord layer for various projections
+?	Fix coord layer for various projections
 	selections (select area of waypoints, trackpoints, etc)
 	Clipboard done right -- GtkClipboard, between processes
 	direct GPS support
