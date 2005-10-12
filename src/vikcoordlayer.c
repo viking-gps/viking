@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <math.h>
 
 #include "viking.h"
 #include "vikcoordlayer_pixmap.h"
@@ -173,9 +174,92 @@ VikCoordLayer *vik_coord_layer_new ( )
 void vik_coord_layer_draw ( VikCoordLayer *vcl, gpointer data )
 {
   VikViewport *vp = (VikViewport *) data;
-  if ( vik_viewport_get_coord_mode(vp) != VIK_COORD_UTM )
+
+  if ( !vcl->gc ) {
     return;
-  if ( vcl->gc != NULL)
+  }
+
+  if ( vik_viewport_get_coord_mode(vp) != VIK_COORD_UTM ) 
+  {
+    VikCoord left, right, left2, right2;
+    gdouble l, r, i, j;
+    gint x1, y1, x2, y2, smod = 1, mmod = 1;
+    gboolean mins = FALSE, secs = FALSE;
+    GdkGC *dgc = vik_viewport_new_gc(vp, vcl->color, vcl->line_thickness);
+    GdkGC *mgc = vik_viewport_new_gc(vp, vcl->color, MAX(vcl->line_thickness/2, 1));
+    GdkGC *sgc = vik_viewport_new_gc(vp, vcl->color, MAX(vcl->line_thickness/5, 1));
+
+    vik_viewport_screen_to_coord ( vp, 0, 0, &left );
+    vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), 0, &right );
+    vik_viewport_screen_to_coord ( vp, 0, vik_viewport_get_height(vp), &left2 );
+    vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), vik_viewport_get_height(vp), &right2 );
+
+#define CLINE(gc, c1, c2) { \
+	  vik_viewport_coord_to_screen(vp, (c1), &x1, &y1);  \
+	  vik_viewport_coord_to_screen(vp, (c2), &x2, &y2);  \
+	  vik_viewport_draw_line (vp, (gc), x1, y1, x2, y2); \
+	}
+
+    l = left.east_west;
+    r = right.east_west;
+    if (60*fabs(l-r) < 4) {
+      secs = TRUE;
+      smod = MIN(6, (int)ceil(3600*fabs(l-r)/30.0));
+    }
+    if (fabs(l-r) < 4) {
+      mins = TRUE;
+      mmod = MIN(6, (int)ceil(60*fabs(l-r)/30.0));
+    }
+    for (i=floor(l*60); i<ceil(r*60); i+=1.0) {
+      if (secs) {
+	for (j=i*60+1; j<(i+1)*60; j+=1.0) {
+	  left.east_west = j/3600.0;
+	  left2.east_west = j/3600.0;
+	  if ((int)j % smod == 0) CLINE(sgc, &left, &left2);
+	}
+      }
+      if (mins) {
+	left.east_west = i/60.0;
+	left2.east_west = i/60.0;
+	if ((int)i % mmod == 0) CLINE(mgc, &left, &left2);
+      }
+      if ((int)i % 60 == 0) {
+	left.east_west = i/60.0;
+	left2.east_west = i/60.0;
+	CLINE(dgc, &left, &left2);
+      }
+    }
+
+    vik_viewport_screen_to_coord ( vp, 0, 0, &left );
+    l = left2.north_south;
+    r = left.north_south;
+    for (i=floor(l*60); i<ceil(r*60); i+=1.0) {
+      if (secs) {
+	for (j=i*60+1; j<(i+1)*60; j+=1.0) {
+	  left.north_south = j/3600.0;
+	  right.north_south = j/3600.0;
+	  if ((int)j % smod == 0) CLINE(sgc, &left, &right);
+	}
+      }
+      if (mins) {
+	left.north_south = i/60.0;
+	right.north_south = i/60.0;
+	if ((int)i % mmod == 0) CLINE(mgc, &left, &right);
+      }
+      if ((int)i % 60 == 0) {
+	left.north_south = i/60.0;
+	right.north_south = i/60.0;
+	CLINE(dgc, &left, &right);
+      }
+    }
+#undef CLINE
+    g_object_unref(dgc);
+    g_object_unref(sgc);
+    g_object_unref(mgc);
+    return;
+  }
+
+  if ( vik_viewport_get_coord_mode(vp) == VIK_COORD_UTM ) 
   {
     const struct UTM *center = (const struct UTM *)vik_viewport_get_center ( vp );
     gdouble xmpp = vik_viewport_get_xmpp ( vp ), ympp = vik_viewport_get_ympp ( vp );
