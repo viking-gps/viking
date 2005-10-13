@@ -358,21 +358,23 @@ static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikA
 {
   VikTreeview *vt = VIK_LAYER(val_src)->vt;
   VikLayer *vl = vik_treeview_item_get_pointer(vt, src_item_iter);
-  gchar *ps;
   GtkTreeIter dest_iter;
+  gchar *dp;
+  gboolean target_exists;
 
-  ps = gtk_tree_path_to_string(dest_path);
+  dp = gtk_tree_path_to_string(dest_path);
+  target_exists = vik_treeview_get_iter_from_path_str(vt, &dest_iter, dp);
 
   /* vik_aggregate_layer_delete unrefs, but we don't want that here.
    * we're still using the layer. */
   g_object_ref ( vl );
   vik_aggregate_layer_delete(val_src, src_item_iter);
 
-  if (vik_treeview_get_iter_from_path_str(vt, &dest_iter, ps)) {
+  if (target_exists) {
     vik_aggregate_layer_insert_layer(val_dest, vl, &dest_iter);
   } else {
     vik_aggregate_layer_insert_layer(val_dest, vl, NULL); /* append */
   }
-  g_free(ps);
+  g_free(dp);
 }
 
