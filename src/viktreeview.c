@@ -510,6 +510,13 @@ static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTree
      *    and call the move method of that layer type. 
      *
      */
+    if (!gtk_tree_model_get_iter (src_model, &src_iter, src_path)) {
+      goto out;
+    }
+    if (!gtk_tree_path_compare(src_path, dest)) {
+      goto out;
+    }
+
     i_src = gtk_tree_path_get_indices (src_path);
     dest_cp = gtk_tree_path_copy (dest);
 
@@ -517,9 +524,6 @@ static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTree
     TREEVIEW_GET(tree_model, &root_iter, ITEM_POINTER_COLUMN, &vl);
     vt = vl->vt;
 
-    if (!gtk_tree_model_get_iter (src_model, &src_iter, src_path)) {
-      goto out;
-    }
 
     if (gtk_tree_path_get_depth(dest_cp)>1) { /* can't be sibling of top layer */
       VikLayer *vl_src, *vl_dest;
@@ -542,7 +546,7 @@ static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTree
 
       /* TODO: might want to allow different types, and let the clients handle how they want */
       if (vl_src->type == vl_dest->type && vik_layer_get_interface(vl_dest->type)->drag_drop_request) {
-	g_print("moving an item from layer '%s' into layer '%s'\n", vl_src->name, vl_dest->name);
+	//	g_print("moving an item from layer '%s' into layer '%s'\n", vl_src->name, vl_dest->name);
 	vik_layer_get_interface(vl_dest->type)->drag_drop_request(vl_src, vl_dest, &src_iter, dest);
       }    
     }
