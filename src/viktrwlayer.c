@@ -1540,29 +1540,58 @@ static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type
   return newname;
 }
 
+static void trw_layer_enum_item ( const gchar *name, GList **tr, GList **l )
+{
+  *l = g_list_append(*l, (gpointer)name);
+}
+
+static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, gchar *name, gint type )
+{
+  gchar *newname = get_new_unique_sublayer_name(vtl_dest, type, name);
+  if (type == VIK_TRW_LAYER_SUBLAYER_TRACK) {
+    VikTrack *t;
+    t = vik_track_copy(vik_trw_layer_get_track(vtl_src, name));
+    vik_trw_layer_delete_track(vtl_src, name);
+    vik_trw_layer_add_track(vtl_dest, newname, t);
+  }
+  if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
+    VikWaypoint *w;
+    w = vik_waypoint_copy(vik_trw_layer_get_waypoint(vtl_src, name));
+    vik_trw_layer_delete_waypoint(vtl_src, name);
+    vik_trw_layer_add_waypoint(vtl_dest, newname, w);
+  }
+}
+
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
 {
   VikTreeview *vt = VIK_LAYER(vtl_src)->vt;
-  if (!vik_treeview_item_get_pointer(vt, src_item_iter)) {
-    g_print("moving a trw container: not implemented yet.\n");
-  } else {
-    gint type = vik_treeview_item_get_data(vt, src_item_iter);
-    gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
+  gint type = vik_treeview_item_get_data(vt, src_item_iter);
 
-    if (type==VIK_TRW_LAYER_SUBLAYER_TRACK) {
-      VikTrack *t;
-      gchar *newname = get_new_unique_sublayer_name(vtl_dest, VIK_TRW_LAYER_SUBLAYER_TRACK, name);
-      t = vik_track_copy(vik_trw_layer_get_track(vtl_src, name));
-      vik_trw_layer_delete_track(vtl_src, name);
-      vik_trw_layer_add_track(vtl_dest, newname, t);
+  if (!vik_treeview_item_get_pointer(vt, src_item_iter)) {
+    GSList *items = NULL;
+    GSList *iter;
+
+    if (type==VIK_TRW_LAYER_SUBLAYER_TRACKS) {
+      g_hash_table_foreach ( vtl_src->tracks, (GHFunc)trw_layer_enum_item, &items);
+    } 
+    if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINTS) {
+      g_hash_table_foreach ( vtl_src->waypoints, (GHFunc)trw_layer_enum_item, &items);
+    }    
+      
+    iter = items;
+    while (iter) {
+      if (type==VIK_TRW_LAYER_SUBLAYER_TRACKS) {
+	trw_layer_move_item ( vtl_src, vtl_dest, iter->data, VIK_TRW_LAYER_SUBLAYER_TRACK);
+      } else {
+	trw_layer_move_item ( vtl_src, vtl_dest, iter->data, VIK_TRW_LAYER_SUBLAYER_WAYPOINT);
+      }
+      iter = iter->next;
     }
-    if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
-      VikWaypoint *w;
-      gchar *newname = get_new_unique_sublayer_name(vtl_dest, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, name);
-      w = vik_waypoint_copy(vik_trw_layer_get_waypoint(vtl_src, name));
-      vik_trw_layer_delete_waypoint(vtl_src, name);
-      vik_trw_layer_add_waypoint(vtl_dest, newname, w);
-    }
+    if (items) 
+      g_list_free(items);
+  } else {
+    gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
+    trw_layer_move_item(vtl_src, vtl_dest, name, type);
   }
 }
 
