@@ -205,13 +205,13 @@ static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
   }
   g_free(s);
 
-  if (i<len) {
+  /* did we get to the end without actually finding a coordinate? */
+  if (i<len && lat >= -90.0 && lat <= 90.0 && lon >= -180.0 && lon <= 180.0) {
     coord->lat = lat;
     coord->lon = lon;
     return TRUE;
-  } else {
-    return FALSE;
   }
+  return FALSE;
 }
 
 static void clip_add_wp(VikLayersPanel *vlp, struct LatLon *coord) 
