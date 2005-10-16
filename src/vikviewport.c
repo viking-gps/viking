@@ -684,11 +684,36 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
   }
 }
 
+void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 )
+{
+  if ( *x1 > 20000 || *x1 < -20000 ) {
+    gdouble shrinkfactor = ABS(20000.0 / *x1);
+    *x1 = *x2 + (shrinkfactor * (*x1-*x2));
+    *y1 = *y2 + (shrinkfactor * (*y1-*y2));
+  } else if ( *y1 > 20000 || *y1 < -20000 ) {
+    gdouble shrinkfactor = ABS(20000.0 / *x1);
+    *x1 = *x2 + (shrinkfactor * (*x1-*x2));
+    *y1 = *y2 + (shrinkfactor * (*y1-*y2));
+  } else if ( *x2 > 20000 || *x2 < -20000 ) {
+    gdouble shrinkfactor = ABS(20000.0 / (gdouble)*x2);
+    *x2 = *x1 + (shrinkfactor * (*x2-*x1));
+    *y2 = *y1 + (shrinkfactor * (*y2-*y1));
+    printf("%f, %d, %d\n", shrinkfactor, *x2, *y2);
+  } else if ( *y2 > 20000 || *y2 < -20000 ) {
+    gdouble shrinkfactor = ABS(20000.0 / (gdouble)*x2);
+    *x2 = *x1 + (shrinkfactor * (*x2-*x1));
+    *y2 = *y1 + (shrinkfactor * (*y2-*y1));
+  }
+}
+
 void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2 )
 {
   if ( ! ( ( x1 < 0 && x2 < 0 ) || ( y1 < 0 && y2 < 0 ) ||
-       ( x1 > vvp->width && x2 > vvp->width ) || ( y1 > vvp->height && y2 > vvp->height ) ) )
-   gdk_draw_line ( vvp->scr_buffer, gc, x1, y1, x2, y2);
+       ( x1 > vvp->width && x2 > vvp->width ) || ( y1 > vvp->height && y2 > vvp->height ) ) ) {
+    /*** clipping, yeah! ***/
+    a_viewport_clip_line ( &x1, &y1, &x2, &y2 );
+    gdk_draw_line ( vvp->scr_buffer, gc, x1, y1, x2, y2);
+  }
 }
 
 void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 )

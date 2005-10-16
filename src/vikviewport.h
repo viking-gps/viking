@@ -102,6 +102,9 @@ gint vik_viewport_get_height ( VikViewport *vvp );
 
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness );
 
+/* run this before drawing a line. vik_viewport_draw_line runs it for you */
+void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 );
+
 void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2 );
 void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 );
 void vik_viewport_draw_string ( VikViewport *vvp, GdkFont *font, GdkGC *gc, gint x1, gint y1, const gchar *string );
