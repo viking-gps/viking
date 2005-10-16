@@ -1,6 +1,7 @@
 2005-10-16
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix ruler: show angle, distance even when compass off-screen.
+	* Fix bgitemcount. Background items status bar "should" be accurate now.
 
 2005-10-13
 Alex Foobarian <foobarian@gmail.com>:
