@@ -1568,8 +1568,8 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
   gint type = vik_treeview_item_get_data(vt, src_item_iter);
 
   if (!vik_treeview_item_get_pointer(vt, src_item_iter)) {
-    GSList *items = NULL;
-    GSList *iter;
+    GList *items = NULL;
+    GList *iter;
 
     if (type==VIK_TRW_LAYER_SUBLAYER_TRACKS) {
       g_hash_table_foreach ( vtl_src->tracks, (GHFunc)trw_layer_enum_item, &items);
@@ -1588,7 +1588,7 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
       iter = iter->next;
     }
     if (items) 
-      g_slist_free(items);
+      g_list_free(items);
   } else {
     gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
     trw_layer_move_item(vtl_src, vtl_dest, name, type);
