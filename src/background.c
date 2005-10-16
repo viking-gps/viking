@@ -149,8 +149,6 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
     /* need MUTEX ? */
     args[0] = GINT_TO_POINTER(1); /* set killswitch */
 
-    bgitemcount -= GPOINTER_TO_INT(args[6]);
-
     gtk_list_store_remove ( bgstore, piter );
 }
 
@@ -174,7 +172,6 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
       GtkTreeIter iter;
       while ( gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(bgstore), &iter ) )
 	cancel_job_with_iter ( &iter );
-      bgitemcount = 0;
       gdk_threads_leave();
       background_thread_update();
       gdk_threads_enter();
