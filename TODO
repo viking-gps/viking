@@ -1,42 +1,28 @@
-clipboard ideas:
-----------------------------
-option 1) use gtkclipboard for pasting what we can; use internal clipboard
-	  for viking data. viking data isn't useful to other programs.
-
-option 2) use gtkclipboard for viking data. if I try to paste viking data as
-	  text, this can do something useful, depending on the layer. it can
-	  paste as GPX if you copy a track, waypoint, or whole viktrwlayer.
-	  other layers? maplayer? georeflayer (world file)? paste a track as
-	  an image, past a waypoint as coordinates to plug into geocaching.com,
-	  ideas?
-
-TODO till release 0.1.1:
-
-
 IMPORTANT STUFF:
-	check out bgitemcount stuff in background.c (hangs on clear!)
-	fix weird VikTreeview crashes, possibly related to DND, possibly more than one bug
-		** ERROR **: file vikaggregatelayer.c: line 233 (disconnect_layer_signal): assertion failed: (DISCONNECT_UPDATE_SIGNAL(vl,val)==1)
-
-	g_dtostr instead of fprintf in the appropriate places
-	Debugging output shouldn't be printf'd but we g_print'd, and we should have a DEBUG flag
+	g_dtostr (??) instead of fprintf in the appropriate places (locale-independentt when reading/writing GPX files -- '.' character)
+	Debugging output shouldn't be printf'd but g_debug'd
 	fix KH maps download
+	'zoom in too much' line drawing (ruler, tracks) bugs. maybe fix coord-to-screen to clip values (or make vik_viewport_coord_to_screen_clip)?
 
-BIG THINGS:
+BEFORE RELEASE:
+	Copy & paste viking data between process & into other programs
+		copy waypoints, TRWLayers as GPX/GPSPoint. paste TRWLayers as GPX if pasting into text.
+		copy layers via file.c serialization. paste layers other than TRW into Viking only (for now)
+	Undo function
+	Map licensing issues (?)
 	DND between VikWindows
-?	Fix coord layer for various projections
-	selections (select area of waypoints, trackpoints, etc)
-	Clipboard done right -- GtkClipboard, between processes
 	direct GPS support
-	combine layers
-		OR copy & paste >1 item (better! not too hard?)
-	funky gpsbabel filter stuff (data sources -- think about, i want something innovative in this release.)
-	bug fixes, UI fixes
-	elevation plotting is not so pretty if you're moving north, as it overlays stuff uglily. discussion?
 	arrows to show track direction
-	bicycle runs your track (animation) that tilts depending on slope
 
-RATHER HARD FIXES:
+EASY FIXES:
+	"click to go there" elevation map: average out, not nearest trackpoint.
+	Ruler: calculate degrees by spherical geometry formula ('zoom in too much' bug -- coord_to_screen out of range of double)
+		for UTM: rotate compass for declination.
+		
+
+-----------------------------------------
+
+RATHER HARD FIXES, SHOULD BE DONE BUT NOT MANDATORY FOR RELEASE:
 	tracks have their own colors, etc.
 	replace HTTP code!!!
 	relative photo pathnames (relative to GPS data file)
@@ -48,10 +34,11 @@ RATHER HARD FIXES:
 	map loading/memory caching in the background? (for zoom out)
 	WHITE UNDER TRACKS! DONE FASTER! CLEAN THIS UP!
 
-EASY FIXES:
-	"click to go there" elevation map: average out, not nearest trackpoint.
-
 FEATURE WISHLIST (i.e. unlikely to get done):
+	selections (select area of waypoints, trackpoints, etc)
+	funky gpsbabel filter stuff (data sources -- think about, i want something innovative in this release.)
+	elevation plotting is not so pretty if you're moving north, as it overlays stuff uglily. discussion?
+	bicycle runs your track (animation) that tilts depending on slope
 	hover over pic
 	Better annotation for tracks, etc. Fields, etc.
 	Filled polygons
@@ -59,8 +46,8 @@ FEATURE WISHLIST (i.e. unlikely to get done):
 		right click to do new track
 		or "Track/Waypoint Tool"
 	I18N (das mundo ne parle pas agglika)
-	Drag & Drop Layers
 	import from data sources ( gpsbabel (gps device) / google / geocaching.com )
+	Vector/TIGER maps!!! (use Cairo/Roadster code?)
 
 MISC FIXES (i.e. will never get done):
 	Reid's 23, including waypoints, GPX/XML Viking files.
