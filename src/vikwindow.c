@@ -323,7 +323,15 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   gint i;
 
   /* draw line with arrow ends */
-  gdk_draw_line(d, gc, x1, y1, x2, y2);
+  {
+    gint tmp_x1=x1, tmp_y1=y1, tmp_x2=x2, tmp_y2=y2;
+    a_viewport_clip_line(&tmp_x1, &tmp_y1, &tmp_x2, &tmp_y2);
+    gdk_draw_line(d, gc, tmp_x1, tmp_y1, tmp_x2, tmp_y2);
+  }
+
+    a_viewport_clip_line(&x1, &y1, &x2, &y2);
+    gdk_draw_line(d, gc, x1, y1, x2, y2);
+
   gdk_draw_line(d, gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
   gdk_draw_line(d, gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
   gdk_draw_line(d, gc, x2, y2, x2 - (dx * c + dy * s), y2 - (dy * c - dx * s));

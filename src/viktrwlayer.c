@@ -1588,7 +1588,7 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
       iter = iter->next;
     }
     if (items) 
-      g_list_free(items);
+      g_slist_free(items);
   } else {
     gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
     trw_layer_move_item(vtl_src, vtl_dest, name, type);
