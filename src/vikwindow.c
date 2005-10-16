@@ -406,6 +406,12 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
       xd = (x1+x2)/2 - dy;
       yd = (y1+y2)/2 - hd/2 + dx;
     }
+
+    if ( xd < -5 || yd < -5 || xd > vik_viewport_get_width(vvp)+5 || yd > vik_viewport_get_height(vvp)+5 ) {
+      xd = x2 + 10;
+      yd = y2 - 5;
+    }
+
     LABEL(xd, yd, wd, hd);
 
     /* draw label with bearing */
@@ -414,6 +420,11 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     pango_layout_get_pixel_size ( pl, &wb, &hb );
     xb = x1 + CR*cos(angle-M_PI_2);
     yb = y1 + CR*sin(angle-M_PI_2);
+
+    if ( xb < -5 || yb < -5 || xb > vik_viewport_get_width(vvp)+5 || yb > vik_viewport_get_height(vvp)+5 ) {
+      xb = x2 + 10;
+      yb = y2 + 10;
+    }
 
     {
       GdkRectangle r1 = {xd-2, yd-1, wd+4, hd+1}, r2 = {xb-2, yb-1, wb+4, hb+1};
@@ -425,6 +436,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   }
 #undef LABEL
 
+  g_object_unref ( G_OBJECT ( pl ) );
   g_object_unref ( G_OBJECT ( labgc ) );
   g_object_unref ( G_OBJECT ( thickgc ) );
 }
