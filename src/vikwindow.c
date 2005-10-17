@@ -1426,7 +1426,7 @@ static void window_create_ui( VikWindow *window )
 }
 
 
-#include "icons.h"
+#include "icons/icons.h"
 static struct { 
   const GdkPixdata *data;
   gchar *stock_id;

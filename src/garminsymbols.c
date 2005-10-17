@@ -21,7 +21,7 @@
 
 #include "viking.h"
 #include "garminsymbols.h"
-#include "icons.h"
+#include "icons/icons.h"
 
 #include <string.h>
 #include <stdlib.h>
