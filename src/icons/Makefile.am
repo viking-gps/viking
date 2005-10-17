@@ -31,12 +31,18 @@ ICONS = \
   showpic_18.png \
   zoom_18.png
 
-EXTRA_DIST = $(ICONS) $(WAYPOINT_ICONS)
 
-BUILT_SOURCES = $(EXTRA_DIST:%.png=%.png_h)
+ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS)
+EXTRA_DIST = $(ALL_ICONS)
+
+BUILT_SOURCES = $(EXTRA_DIST:%.png=%.png_h) icons.h
 CLEANFILES = $(BUILT_SOURCES)
 
 SUFFIXES = .png_h .png
+
+icons.h: $(ALL_ICONS:%.png=%.png_h)
+	echo "/* Generated file */" > icons.h
+	for file in *_h ; do echo "#include \"icons/$$file\"" >> icons.h ; done
 
 .png.png_h:
 	gdk-pixbuf-csource --name="`basename $< .png`" --struct $< > $@

@@ -5,7 +5,6 @@ SUBDIRS = icons
 
 bin_PROGRAMS = viking
 viking_SOURCES = main.c \
-	icons.h \
 	menu.xml.h \
 	viking.h globals.h mapcoord.h config.h \
 	viktrack.c viktrack.h \
@@ -15,6 +14,7 @@ viking_SOURCES = main.c \
 	gpsmapper.c gpsmapper.h \
 	gpspoint.c gpspoint.h \
 	file.c file.h \
+	converter.c converter.h \
 	dialog.c dialog.h \
 	http.c http.h \
 	viktreeview.c viktreeview.h \
@@ -48,9 +48,3 @@ viking_SOURCES = main.c \
 INCLUDES        = @GTK_CFLAGS@
 LDADD           = @GTK_LIBS@
 AM_CFLAGS		= -Wall -g
-
-icons.h: icons/*_h
-	echo "/* Generated file */" > icons.h
-	for file in icons/*_h ; do echo "#include \"$$file\"" >> icons.h ; done
-
-CLEANFILES = icons.h

@@ -1,3 +1,8 @@
+2005-10-17  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
+	* src/icons/Makefile.am: assumes the creation of icons.h
+	* src/garminsymbols.c, src/vikwindow.c: icons.h re-located
+	* src/Makefile.am: no more icons.h production
+
 2005-10-16
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix ruler: show angle, distance even when compass off-screen.
