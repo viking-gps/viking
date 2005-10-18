@@ -320,6 +320,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   gdouble c = cos(15.0 * M_PI/180.0);
   gdouble s = sin(15.0 * M_PI/180.0);
   gdouble angle;
+  gdouble baseangle = 0;
   gint i;
 
   /* draw line with arrow ends */
@@ -329,8 +330,8 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     gdk_draw_line(d, gc, tmp_x1, tmp_y1, tmp_x2, tmp_y2);
   }
 
-    a_viewport_clip_line(&x1, &y1, &x2, &y2);
-    gdk_draw_line(d, gc, x1, y1, x2, y2);
+  a_viewport_clip_line(&x1, &y1, &x2, &y2);
+  gdk_draw_line(d, gc, x1, y1, x2, y2);
 
   gdk_draw_line(d, gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
   gdk_draw_line(d, gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
@@ -342,7 +343,25 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   /* draw compass */
 #define CR 80
 #define CW 4
-  angle = atan2(dy, dx) + M_PI/2;
+  angle = atan2(dy, dx) + M_PI_2;
+
+  if ( vik_viewport_get_drawmode ( vvp ) == VIK_VIEWPORT_DRAWMODE_UTM) {
+    VikCoord test;
+    struct LatLon ll;
+    struct UTM u;
+    gint tx, ty;
+
+    vik_viewport_screen_to_coord ( vvp, x1, y1, &test );
+    vik_coord_to_latlon ( &test, &ll );
+    ll.lat += vik_viewport_get_ympp ( vvp ) * vik_viewport_get_height ( vvp ) / 11000.0; // about 11km per degree latitude
+    a_coords_latlon_to_utm ( &ll, &u );
+    vik_coord_load_from_utm ( &test, VIK_VIEWPORT_DRAWMODE_UTM, &u );
+    vik_viewport_coord_to_screen ( vvp, &test, &tx, &ty );
+
+    baseangle = M_PI - atan2(tx-x1, ty-y1);
+    angle -= baseangle;
+  }
+
   if (angle<0) 
     angle+=2*M_PI;
   if (angle>2*M_PI)
@@ -355,14 +374,14 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     gdk_color_parse("#2255cc", &color);
     gdk_gc_set_rgb_fg_color(thickgc, &color);
   }
-  gdk_draw_arc (d, thickgc, FALSE, x1-CR+CW/2, y1-CR+CW/2, 2*CR-CW, 2*CR-CW, 90*64, -angle*180/M_PI*64);
+  gdk_draw_arc (d, thickgc, FALSE, x1-CR+CW/2, y1-CR+CW/2, 2*CR-CW, 2*CR-CW, (90 - baseangle*180/M_PI)*64, -angle*180/M_PI*64);
 
 
   gdk_gc_copy(thickgc, gc);
   gdk_gc_set_line_attributes(thickgc, 2, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
   for (i=0; i<180; i++) {
-    c = cos(i*M_PI/90.0);
-    s = sin(i*M_PI/90.0);
+    c = cos(i*M_PI/90.0 + baseangle);
+    s = sin(i*M_PI/90.0 + baseangle);
 
     if (i%5) {
       gdk_draw_line (d, gc, x1 + CR*c, y1 + CR*s, x1 + (CR+CW)*c, y1 + (CR+CW)*s);
@@ -375,8 +394,10 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   gdk_draw_arc (d, gc, FALSE, x1-CR, y1-CR, 2*CR, 2*CR, 0, 64*360);
   gdk_draw_arc (d, gc, FALSE, x1-CR-CW, y1-CR-CW, 2*(CR+CW), 2*(CR+CW), 0, 64*360);
   gdk_draw_arc (d, gc, FALSE, x1-CR+CW, y1-CR+CW, 2*(CR-CW), 2*(CR-CW), 0, 64*360);
-  gdk_draw_line (d, gc, x1-CR-CW*2, y1, x1+CR+CW*2, y1);
-  gdk_draw_line (d, gc, x1-1, y1-CR-CW*2, x1-1, y1+CR+CW*2);
+  c = (CR+CW*2)*cos(baseangle);
+  s = (CR+CW*2)*sin(baseangle);
+  gdk_draw_line (d, gc, x1-c, y1-s, x1+c, y1+s);
+  gdk_draw_line (d, gc, x1+s, y1-c, x1-s, y1+c);
 
   /* draw labels */
 #define LABEL(x, y, w, h) { \
@@ -398,11 +419,11 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
 
     /* draw label with distance */
     if (distance >= 1000 && distance < 100000) {
-      sprintf(str, "%3.2f km", distance/1000.0);
+      g_sprintf(str, "%3.2f km", distance/1000.0);
     } else if (distance < 1000) {
-      sprintf(str, "%d m", (int)distance);
+      g_sprintf(str, "%d m", (int)distance);
     } else {
-      sprintf(str, "%d km", (int)distance/1000);
+      g_sprintf(str, "%d km", (int)distance/1000);
     }
     pango_layout_set_text(pl, str, -1);
 
@@ -423,7 +444,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     LABEL(xd, yd, wd, hd);
 
     /* draw label with bearing */
-    sprintf(str, "%3.1f°", angle*180.0/M_PI);
+    g_sprintf(str, "%3.1f°", angle*180.0/M_PI);
     pango_layout_set_text(pl, str, -1);
     pango_layout_get_pixel_size ( pl, &wb, &hb );
     xb = x1 + CR*cos(angle-M_PI_2);
