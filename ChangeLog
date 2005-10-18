@@ -2,7 +2,7 @@
 Alex Foobarian <foobarian@gmail.com>:
         * Fix ruler declination in UTM mode
 
-2005-10-17  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
+2005-10-17  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
 	* src/icons/Makefile.am: assumes the creation of icons.h
 	* src/garminsymbols.c, src/vikwindow.c: icons.h re-located
 	* src/Makefile.am: no more icons.h production
@@ -43,7 +43,7 @@ Evan Battaglia <gtoevan@gmx.net>:
 	* make symbols work for geocaching .loc files (and case-insensitive symbol names)
 	* Option as to whether or not to show unit scale (esp for exporting images)
 
-2005-09-30  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
+2005-09-30  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
 	* configure.ac, src/Makefile.am (SUBDIRS): added auto-tools support for src/icons
 Alex Foobarian <foobarian@gmail.com>:
 	* Added a drag_drop_request method to layer interface, updated DnD to use it
@@ -69,7 +69,7 @@ Alex Foobarian <foobarian@gmail.com>:
 Evan:
 	* strtod -> g_strtod (i18n glitch)
 
-2005-09-25  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
+2005-09-25  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
 	* src/globals.h (VIKING_VERSION): uses the PACKAGE_VERSION macro
 	* Makefile.am (EXTRA_DIST): handles viking-remote
 	* src/Makefile.am (AM_CFLAGS): substitution of CFLAGS by AM_CFLAGS
@@ -97,7 +97,7 @@ Me (Evan) again:
 	* Don't crash on track properties of an empty track.
 
 2005-09-13
-Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>:
+Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>:
        * bootstrap: new file to bootstrap auto-tools
        * src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
        * Makefile.am (bin_SCRIPTS): viking-remote added
@@ -117,7 +117,7 @@ Alex Foobarian <foobarian@gmail.com>'s changes
 My (Evan's) changes:
 * Fix above v-vs-t patch to not crash on tracks without timestamp.
 * Not show v-vs-t graph and/or elevation map if the necessary data isn't there.
-Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>'s changes
+Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>'s changes
 	* bootstrap: new file to bootstrap auto-tools
 	* src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
 	* Makefile.am (bin_SCRIPTS): viking-remote added
