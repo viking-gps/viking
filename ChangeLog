@@ -1,3 +1,7 @@
+2005-10-18
+Alex Foobarian <foobarian@gmail.com>:
+        * Fix ruler declination in UTM mode
+
 2005-10-17  Guilhem BONNEFILLE  <guilhem.bonnefille@laposte.net>
 	* src/icons/Makefile.am: assumes the creation of icons.h
 	* src/garminsymbols.c, src/vikwindow.c: icons.h re-located
