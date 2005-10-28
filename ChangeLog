@@ -1,3 +1,7 @@
+2005-10-28  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+	* configure.ac: Adding --with-mapcache configure option
+	* src/config.h: Removed because no more used (generated)
+
 2005-10-18
 Alex Foobarian <foobarian@gmail.com>:
         * Fix ruler declination in UTM mode
