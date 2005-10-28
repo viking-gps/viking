@@ -5,7 +5,7 @@ AC_PREREQ(2.59)
 AC_INIT(viking, 0.1.1pre2)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
-dnl AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
@@ -47,6 +47,20 @@ case $ac_cv_enable_alpha_trw in
     AC_DEFINE(VIK_CONFIG_ALPHABETIZED_TRW, [], [NO ALPHABETIZED TRW])
     ;;
 esac
+
+AC_ARG_WITH(mapcache,
+            [AC_HELP_STRING([--with-mapcache],
+                            [specify the size of the map cache (default is 50331648)])],
+            [if test "x$withval" = "xno"; then
+                VIK_CONFIG_MAPCACHE_SIZE=0;
+             elif test "x$withval" = "xyes"; then
+                AC_MSG_ERROR([Please, set a value for size of the map cache])
+             else
+                VIK_CONFIG_MAPCACHE_SIZE=${withval}
+             fi],
+             [VIK_CONFIG_MAPCACHE_SIZE=50331648])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
+                   [Size of the map cache])
 
 # Configuration
 AC_CONFIG_FILES([Makefile
