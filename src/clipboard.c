@@ -31,9 +31,12 @@
 
 typedef struct {
   gpointer clipboard;
+  gint pid;
   guint8 type;
   gint subtype;
   guint16 layer_type;
+  guint len;
+  guint8 data[0];
 } vik_clipboard_t;
 
 static GtkTargetEntry target_table[] = {
@@ -50,7 +53,7 @@ static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint 
   vik_clipboard_t *vc = p;
   //  g_print("clip_get\n");
   if (info==0) {
-    gtk_selection_data_set ( selection_data, selection_data->target, 8, (void *)vc, sizeof(*vc) );
+    gtk_selection_data_set ( selection_data, selection_data->target, 8, (void *)vc, sizeof(*vc) + vc->len );
   }
   if (info==1) {
     if (vc->type == DATA_LAYER) {
@@ -64,13 +67,12 @@ static void clip_clear ( GtkClipboard *c, gpointer p )
   vik_clipboard_t *vc = p;
   //  g_print("clip_clear\n");
 
-  if ( vc->clipboard && vc->type == DATA_LAYER )
-    g_object_unref ( G_OBJECT(vc->clipboard) );
+  if ( vc->type == DATA_LAYER ) {
+    g_free(vc);
+  }
   else if ( vc->clipboard && vc->type == DATA_SUBLAYER )
     if ( vik_layer_get_interface(vc->layer_type)->free_copied_item )
       vik_layer_get_interface(vc->layer_type)->free_copied_item(vc->subtype,vc->clipboard);
-  vc->clipboard = NULL;
-  vc->type = DATA_NONE;
 }
 
 
@@ -89,28 +91,16 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
   } 
   //  g_print("clip receive: target = %s, type = %s\n", gdk_atom_name(sd->target), gdk_atom_name(sd->type));
   g_assert(!strcmp(gdk_atom_name(sd->target), target_table[0].target));
-  g_assert(sd->length == sizeof(*vc));
 
   vc = (vik_clipboard_t *)sd->data;
+  g_assert(sd->length == sizeof(*vc) + vc->len);
 
-  if ( vc->clipboard && vc->type == DATA_LAYER )
+  if ( vc->type == DATA_LAYER )
   {
-    /* oooh, _private_ ... so sue me, there's no other way to do this. */
-    if ( G_OBJECT(vc->clipboard)->ref_count == 1 )
-    { /* optimization -- if layer has been deleted, don't copy the layer. */
-      g_object_ref ( G_OBJECT(vc->clipboard) );
-      vik_layers_panel_add_layer ( vlp, VIK_LAYER(vc->clipboard) );
-    }
-    else
-    {
-      VikLayer *new_layer = vik_layer_copy ( VIK_LAYER(vc->clipboard), vik_layers_panel_get_viewport(vlp) );
-      if ( new_layer )
-      {
-        vik_layers_panel_add_layer ( vlp, new_layer );
-      }
-    }
+    VikLayer *new_layer = vik_layer_unmarshall ( vc->data, vc->len, vik_layers_panel_get_viewport(vlp) );
+    vik_layers_panel_add_layer ( vlp, new_layer );
   }
-  else if ( vc->clipboard && vc->type == DATA_SUBLAYER )
+  else if ( vc->clipboard && vc->type == DATA_SUBLAYER && vc->pid == getpid())
   {
     VikLayer *sel = vik_layers_panel_get_selected ( vlp );
     if ( sel && sel->type == vc->layer_type)
@@ -322,6 +312,8 @@ void a_clipboard_copy ( VikLayersPanel *vlp )
   GtkTreeIter iter;
   vik_clipboard_t *vc = g_malloc(sizeof(*vc));
   GtkClipboard *c = gtk_clipboard_get ( GDK_SELECTION_CLIPBOARD );
+  guint8 *data;
+  guint len;
 
   if ( ! sel )
     return;
@@ -333,16 +325,35 @@ void a_clipboard_copy ( VikLayersPanel *vlp )
     vc->layer_type = sel->type;
     if ( vik_layer_get_interface(vc->layer_type)->copy_item && (vc->clipboard = vik_layer_get_interface(vc->layer_type)->
         copy_item(sel,vc->subtype=vik_treeview_item_get_data(sel->vt,&iter),vik_treeview_item_get_pointer(sel->vt,&iter)) ))
+    {
       vc->type = DATA_SUBLAYER;
-    else
+      vc->len = 0;
+    }    
+    else {
+      g_free(vc);
       return; /* selected sublayer is uncopyable */
+    }
   }
   else
   {
-    vc->clipboard = sel;
-    g_object_ref ( G_OBJECT(sel) );
+    vik_clipboard_t *vc2;
     vc->type = DATA_LAYER;
+    
+    vik_layer_marshall ( sel, &data, &len );
+    if (data) {
+      vc2 = g_malloc(sizeof(*vc2) + len);
+      *vc2 = *vc;
+      vc2->len = len;
+      memcpy(vc2->data, data, len);
+      g_free(data);
+      g_free(vc);
+      vc = vc2;
+    } else {
+      g_free(vc);
+      return;
+    }
   }
+  vc->pid = getpid();
   gtk_clipboard_set_with_data ( c, target_table, G_N_ELEMENTS(target_table), clip_get, clip_clear, vc );
 }
 
