@@ -23,6 +23,7 @@
 
 #define VIKING_TITLE " - Viking " VIKING_VERSION " " VIKING_VERSION_NAME " " VIKING_URL
 
+#include <glib/gprintf.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
