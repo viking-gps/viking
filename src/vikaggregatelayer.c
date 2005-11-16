@@ -58,6 +58,8 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
   (VikLayerFuncCopy)                    aggregate_layer_copy,
+  (VikLayerFuncMarshall)		NULL,
+  (VikLayerFuncUnmarshall)		NULL,
 
   (VikLayerFuncSetParam)                NULL,
   (VikLayerFuncGetParam)                NULL,

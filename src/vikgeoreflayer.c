@@ -83,6 +83,8 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
   (VikLayerFuncCopy)                    georef_layer_copy,
+  (VikLayerFuncMarshall)		NULL,
+  (VikLayerFuncUnmarshall)		NULL,
 
   (VikLayerFuncSetParam)                georef_layer_set_param,
   (VikLayerFuncGetParam)                georef_layer_get_param,

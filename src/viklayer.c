@@ -21,6 +21,7 @@
 
 #include "viking.h"
 #include "vikradiogroup.h"
+#include <string.h>
 
 /* functions common to all layers. */
 /* TODO longone: rename interface free -> finalize */
@@ -194,6 +195,128 @@ VikLayer *vik_layer_copy ( VikLayer *vl, gpointer vp )
     return NULL;
 }
 
+typedef struct {
+  gint layer_type;
+  gint len;
+  guint8 data[0];
+} header_t;
+
+void vik_layer_marshall ( VikLayer *vl, guint8 **data, gint *len )
+{
+  header_t *header;
+  if ( vl && vik_layer_interfaces[vl->type]->marshall ) {
+    vik_layer_interfaces[vl->type]->marshall ( vl, data, len );
+    if (*data) {
+      header = g_malloc(*len + sizeof(*header));
+      header->layer_type = vl->type;
+      header->len = *len;
+      memcpy(header->data, *data, *len);
+      g_free(*data);
+      *data = (guint8 *)header;
+      *len = *len + sizeof(*header);
+    }
+  } else {
+    *data = NULL;
+  }
+}
+
+void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
+{
+  VikLayerParam *params = vik_layer_get_interface(vl->type)->params;
+  VikLayerFuncGetParam get_param = vik_layer_get_interface(vl->type)->get_param;
+  GByteArray* b = g_byte_array_new ();
+  gint len;
+
+#define vlm_append(obj, sz) 	\
+  len = (sz);    		\
+  g_byte_array_append ( b, (guint8 *)&len, sizeof(len) );	\
+  g_byte_array_append ( b, (guint8 *)(obj), len );
+
+  vlm_append(vl->name, strlen(vl->name));
+
+  if ( params && get_param )
+  {
+    VikLayerParamData d;
+    guint16 i, params_count = vik_layer_get_interface(vl->type)->params_count;
+    for ( i = 0; i < params_count; i++ )
+    {
+      d = get_param(vl, i);
+      switch ( params[i].type )
+      {
+      case VIK_LAYER_PARAM_STRING: 
+	vlm_append(d.s, strlen(d.s));
+	break;
+      default:
+	vlm_append(&d, sizeof(d));
+	break;
+      }
+    }
+  }
+  
+  *data = b->data;
+  *datalen = b->len;
+  g_byte_array_free ( b, FALSE );
+
+#undef vlm_append
+}
+
+void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, VikViewport *vvp )
+{
+  VikLayerParam *params = vik_layer_get_interface(vl->type)->params;
+  VikLayerFuncSetParam set_param = vik_layer_get_interface(vl->type)->set_param;
+  gchar *s;
+  guint8 *b = (guint8 *)data;
+  
+#define vlm_size (*(gint *)b)
+#define vlm_read(obj)				\
+  memcpy((obj), b+sizeof(gint), vlm_size);	\
+  b += sizeof(gint) + vlm_size;
+  
+  s = g_malloc(vlm_size + 1);
+  s[vlm_size]=0;
+  vlm_read(s);
+  
+  vik_layer_rename(vl, s);
+  
+  g_free(s);
+
+  if ( params && set_param )
+  {
+    VikLayerParamData d;
+    guint16 i, params_count = vik_layer_get_interface(vl->type)->params_count;
+    for ( i = 0; i < params_count; i++ )
+    {
+      switch ( params[i].type )
+      {
+      case VIK_LAYER_PARAM_STRING: 
+	s = g_malloc(vlm_size + 1);
+	s[vlm_size]=0;
+	vlm_read(s);
+	d.s = s;
+	set_param(vl, i, d, vvp);
+	g_free(s);
+	break;
+      default:
+	vlm_read(&d);
+	set_param(vl, i, d, vvp);
+	break;
+      }
+    }
+  }
+}
+
+VikLayer *vik_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp )
+{
+  header_t *header;
+
+  header = (header_t *)data;
+  
+  if ( vik_layer_interfaces[header->layer_type]->unmarshall ) {
+    return vik_layer_interfaces[header->layer_type]->unmarshall ( header->data, header->len, vvp );
+  } else {
+    return NULL;
+  }
+}
 
 static void layer_finalize ( VikLayer *vl )
 {
