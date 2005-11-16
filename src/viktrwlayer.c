@@ -31,6 +31,7 @@
 #include "garminsymbols.h"
 #include "thumbnails.h"
 #include "background.h"
+#include "gpx.h"
 
 #include <math.h>
 #include <string.h>
@@ -186,6 +187,9 @@ static gboolean tool_new_waypoint ( VikTrwLayer *vtl, GdkEventButton *event, Vik
 static gboolean tool_new_track ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp );
+static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len );
+static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *vvp );
+
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id );
 
@@ -318,6 +322,8 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   vik_trw_layer_sublayer_toggle_visible,
 
   (VikLayerFuncCopy)                    trw_layer_copy,
+  (VikLayerFuncMarshall)                trw_layer_marshall,
+  (VikLayerFuncUnmarshall)              trw_layer_unmarshall,
 
   (VikLayerFuncSetParam)                trw_layer_set_param,
   (VikLayerFuncGetParam)                trw_layer_get_param,
@@ -528,6 +534,59 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
 static void track_copy ( const gchar *name, VikTrack *tr, GHashTable *dest )
 {
   g_hash_table_insert ( dest, g_strdup ( name ), vik_track_copy(tr) );
+}
+
+static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
+{
+  guint8 *pd, *dd;
+  gint pl, dl;
+  gchar *tmpname;
+  FILE *f;
+
+  *data = NULL;
+
+  if ((f = fdopen(g_file_open_tmp (NULL, &tmpname, NULL), "r+"))) {
+    a_gpx_write_file(vtl, f);
+    vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
+    fclose(f);
+    g_file_get_contents(tmpname, (void *)&dd, &dl, NULL);
+    *len = sizeof(pl) + pl + dl;
+    *data = g_malloc(*len);
+    memcpy(*data, &pl, sizeof(pl));
+    memcpy(*data + sizeof(pl), pd, pl);
+    memcpy(*data + sizeof(pl) + pl, dd, dl);
+    
+    g_free(pd);
+    g_free(dd);
+    remove(tmpname);
+    g_free(tmpname);
+  }
+}
+
+static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *vvp )
+{
+  VikTrwLayer *rv = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, NULL, FALSE ));
+  guint pl;
+  gchar *tmpname;
+  FILE *f;
+
+
+  memcpy(&pl, data, sizeof(pl));
+  data += sizeof(pl);
+  vik_layer_unmarshall_params ( VIK_LAYER(rv), data, pl, vvp );
+  data += pl;
+
+  if (!(f = fdopen(g_file_open_tmp (NULL, &tmpname, NULL), "r+"))) {
+    g_critical("couldn't open temp file\n");
+    exit(1);
+  }
+  fwrite(data, len - pl - sizeof(pl), 1, f);
+  rewind(f);
+  a_gpx_read_file(rv, f);
+  fclose(f);
+  remove(tmpname);
+  g_free(tmpname);
+  return rv;
 }
 
 static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp )

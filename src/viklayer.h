@@ -166,6 +166,8 @@ typedef const gchar * (*VikLayerFuncSublayerRenameRequest) (VikLayer *,const gch
 typedef gboolean      (*VikLayerFuncSublayerToggleVisible) (VikLayer *,gint,gpointer);
 
 typedef VikLayer *    (*VikLayerFuncCopy)                  (VikLayer *,VikViewport *);
+typedef void          (*VikLayerFuncMarshall)              (VikLayer *, guint8 **, gint *);
+typedef VikLayer *    (*VikLayerFuncUnmarshall)            (guint8 *, gint, VikViewport *);
 
 /* returns TRUE if needs to redraw due to changed param */
 typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, guint16, VikLayerParamData, VikViewport *);
@@ -217,6 +219,8 @@ struct _VikLayerInterface {
   VikLayerFuncSublayerToggleVisible sublayer_toggle_visible;
 
   VikLayerFuncCopy                  copy;
+  VikLayerFuncMarshall              marshall;
+  VikLayerFuncUnmarshall            unmarshall;
 
   /* for I/O */
   VikLayerFuncSetParam              set_param;
@@ -257,6 +261,10 @@ void vik_layer_post_read ( VikLayer *layer, gpointer vp );
 gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 
 VikLayer *vik_layer_copy ( VikLayer *vl, gpointer vp );
+void      vik_layer_marshall ( VikLayer *vl, guint8 **data, gint *len );
+VikLayer *vik_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp );
+void      vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *len );
+void      vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint len, VikViewport *vvp );
 
 const gchar *vik_layer_sublayer_rename_request ( VikLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 

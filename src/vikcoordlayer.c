@@ -71,6 +71,8 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
   (VikLayerFuncCopy)                    coord_layer_copy,
+  (VikLayerFuncMarshall)		NULL,
+  (VikLayerFuncUnmarshall)		NULL,
 
   (VikLayerFuncSetParam)                coord_layer_set_param,
   (VikLayerFuncGetParam)                coord_layer_get_param,

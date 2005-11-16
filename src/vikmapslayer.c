@@ -102,6 +102,8 @@ static guint params_maptypes_ids[] = { 2, 1, 4, 5, 9, 8, 7, 10, 11 };
 
 
 static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp );
+static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
+static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp );
 static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id );
 static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp );
@@ -161,6 +163,8 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
   (VikLayerFuncCopy)                    maps_layer_copy,
+  (VikLayerFuncMarshall)		maps_layer_marshall,
+  (VikLayerFuncUnmarshall)		maps_layer_unmarshall,
 
   (VikLayerFuncSetParam)                maps_layer_set_param,
   (VikLayerFuncGetParam)                maps_layer_get_param,
@@ -394,6 +398,18 @@ static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp )
   *rv = *vml;
   rv->cache_dir = g_strdup(rv->cache_dir);
   VIK_LAYER(rv)->name = NULL;
+  return rv;
+}
+
+static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len )
+{
+  vik_layer_marshall_params ( VIK_LAYER(vml), data, len );
+}
+
+static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+{
+  VikMapsLayer *rv = maps_layer_new ( vvp );
+  vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
   return rv;
 }
 
