@@ -51,8 +51,8 @@ static GtkTargetEntry target_table[] = {
 static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint info, gpointer p ) 
 {
   vik_clipboard_t *vc = p;
-  //  g_print("clip_get\n");
   if (info==0) {
+    //    g_print("clip_get: vc = %p, size = %d\n", vc, sizeof(*vc) + vc->len);
     gtk_selection_data_set ( selection_data, selection_data->target, 8, (void *)vc, sizeof(*vc) + vc->len );
   }
   if (info==1) {
@@ -86,14 +86,19 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
   VikLayersPanel *vlp = p;
   vik_clipboard_t *vc;
   if (sd->length == -1) {
-    g_print("receive failed\n");
+    g_warning ( "paste failed" );
     return;
   } 
   //  g_print("clip receive: target = %s, type = %s\n", gdk_atom_name(sd->target), gdk_atom_name(sd->type));
   g_assert(!strcmp(gdk_atom_name(sd->target), target_table[0].target));
 
   vc = (vik_clipboard_t *)sd->data;
-  g_assert(sd->length == sizeof(*vc) + vc->len);
+  //  g_print("  sd->data = %p, sd->length = %d, vc->len = %d\n", sd->data, sd->length, vc->len);
+
+  if (sd->length != sizeof(*vc) + vc->len) {
+    g_warning ( "wrong clipboard data size" );
+    return;
+  }
 
   if ( vc->type == DATA_LAYER )
   {
