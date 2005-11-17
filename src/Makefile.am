@@ -14,7 +14,6 @@ viking_SOURCES = main.c \
 	gpsmapper.c gpsmapper.h \
 	gpspoint.c gpspoint.h \
 	file.c file.h \
-#	converter.c converter.h \
 	dialog.c dialog.h \
 	http.c http.h \
 	viktreeview.c viktreeview.h \
