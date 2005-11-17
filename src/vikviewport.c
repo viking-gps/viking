@@ -28,6 +28,7 @@
 
 #include <gtk/gtk.h>
 #include <math.h>
+#include <stdio.h>
 
 #include "coords.h"
 #include "vikcoord.h"
@@ -698,7 +699,7 @@ void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 )
     gdouble shrinkfactor = ABS(20000.0 / (gdouble)*x2);
     *x2 = *x1 + (shrinkfactor * (*x2-*x1));
     *y2 = *y1 + (shrinkfactor * (*y2-*y1));
-    printf("%f, %d, %d\n", shrinkfactor, *x2, *y2);
+    g_print("%f, %d, %d\n", shrinkfactor, *x2, *y2);
   } else if ( *y2 > 20000 || *y2 < -20000 ) {
     gdouble shrinkfactor = ABS(20000.0 / (gdouble)*x2);
     *x2 = *x1 + (shrinkfactor * (*x2-*x1));
