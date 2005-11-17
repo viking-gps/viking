@@ -34,6 +34,8 @@ VikLayerParam georef_layer_params[] = {
 
 enum { PARAM_IMAGE = 0, PARAM_CE, PARAM_CN, PARAM_ME, PARAM_MN, NUM_PARAMS };
 
+static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len );
+static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static VikGeorefLayer *georef_layer_copy ( VikGeorefLayer *vgl, gpointer vp );
 static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id );
@@ -83,8 +85,8 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
   (VikLayerFuncCopy)                    georef_layer_copy,
-  (VikLayerFuncMarshall)		NULL,
-  (VikLayerFuncUnmarshall)		NULL,
+  (VikLayerFuncMarshall)		georef_layer_marshall,
+  (VikLayerFuncUnmarshall)		georef_layer_unmarshall,
 
   (VikLayerFuncSetParam)                georef_layer_set_param,
   (VikLayerFuncGetParam)                georef_layer_get_param,
@@ -147,6 +149,21 @@ static VikGeorefLayer *georef_layer_copy ( VikGeorefLayer *vgl, gpointer vp )
   if ( vgl->image )
   {
     rv->image = g_strdup ( vgl->image );
+    georef_layer_load_image ( rv );
+  }
+  return rv;
+}
+
+static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len )
+{
+  vik_layer_marshall_params ( VIK_LAYER(vgl), data, len );
+}
+
+static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+{
+  VikGeorefLayer *rv = georef_layer_new ( vvp );
+  vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
+  if (rv->image) {
     georef_layer_load_image ( rv );
   }
   return rv;
