@@ -49,5 +49,7 @@ void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);
 void vik_waypoint_free(VikWaypoint * wp);
 VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp);
 void vik_waypoint_set_comment_no_copy(VikWaypoint *wp, gchar *comment);
+void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *len);
+VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen);
 
 #endif

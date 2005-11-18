@@ -20,6 +20,7 @@
  */
 
 #include <glib.h>
+#include <string.h>
 #include "coords.h"
 #include "vikcoord.h"
 #include "vikwaypoint.h"
@@ -96,5 +97,52 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   new_wp->symbol = NULL;
   vik_waypoint_set_symbol(new_wp,wp->symbol);
   return new_wp;
+}
+
+void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *datalen)
+{
+  GByteArray *b = g_byte_array_new();
+  guint len;
+
+  g_byte_array_append(b, (guint8 *)wp, sizeof(*wp));
+
+#define vwm_append(s) \
+  len = (s) ? strlen(s)+1 : 0; \
+  g_byte_array_append(b, (guint8 *)&len, sizeof(len)); \
+  if (s) g_byte_array_append(b, (guint8 *)s, len);
+
+  vwm_append(wp->comment);
+  vwm_append(wp->image);
+  vwm_append(wp->symbol);
+
+  *data = b->data;
+  *datalen = b->len;
+  g_byte_array_free(b, FALSE);
+#undef vwm_append
+}
+
+VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen)
+{
+  guint len;
+  VikWaypoint *new_wp = vik_waypoint_new();
+  memcpy(new_wp, data, sizeof(*new_wp));
+  data += sizeof(*new_wp);
+
+#define vwu_get(s) \
+  len = *(guint *)data; \
+  data += sizeof(len); \
+  if (len) { \
+    (s) = g_strdup((gchar *)data); \
+  } else { \
+    (s) = NULL; \
+  } \
+  data += len;
+
+  vwu_get(new_wp->comment);
+  vwu_get(new_wp->image); 
+  vwu_get(new_wp->symbol);
+  
+  return new_wp;
+#undef vwu_get
 }
 

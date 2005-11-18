@@ -64,15 +64,7 @@ static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint 
 
 static void clip_clear ( GtkClipboard *c, gpointer p )
 {
-  vik_clipboard_t *vc = p;
-  //  g_print("clip_clear\n");
-
-  if ( vc->type == DATA_LAYER ) {
-    g_free(vc);
-  }
-  else if ( vc->clipboard && vc->type == DATA_SUBLAYER )
-    if ( vik_layer_get_interface(vc->layer_type)->free_copied_item )
-      vik_layer_get_interface(vc->layer_type)->free_copied_item(vc->subtype,vc->clipboard);
+  g_free(p);
 }
 
 
@@ -105,13 +97,13 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
     VikLayer *new_layer = vik_layer_unmarshall ( vc->data, vc->len, vik_layers_panel_get_viewport(vlp) );
     vik_layers_panel_add_layer ( vlp, new_layer );
   }
-  else if ( vc->clipboard && vc->type == DATA_SUBLAYER && vc->pid == getpid())
+  else if ( vc->type == DATA_SUBLAYER )
   {
     VikLayer *sel = vik_layers_panel_get_selected ( vlp );
     if ( sel && sel->type == vc->layer_type)
     {
       if ( vik_layer_get_interface(vc->layer_type)->paste_item )
-        vik_layer_get_interface(vc->layer_type)->paste_item ( sel, vc->subtype, vc->clipboard );
+        vik_layer_get_interface(vc->layer_type)->paste_item ( sel, vc->subtype, vc->data, vc->len);
     }
     else
       a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vlp)), "The clipboard contains sublayer data for a %s layers. You must select a layer of this type to paste the clipboard data.", vik_layer_get_interface(vc->layer_type)->name );
@@ -237,7 +229,7 @@ static void clip_receive_text (GtkClipboard *c, const gchar *text, gpointer p)
 static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer p ) 
 {
   VikLayersPanel *vlp = p;
-  gint r, w;
+  guint r, w;
   GError *err = NULL;
   gchar *s, *span;
   gint tag = 0, i;
@@ -248,7 +240,7 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
   } 
 
   /* - copying from Mozilla seems to give html in UTF-16. */
-  if (!(s =  g_convert ( sd->data, sd->length, "UTF-8", "UTF-16", &r, &w, &err))) {
+  if (!(s =  g_convert ( (gchar *)sd->data, sd->length, "UTF-8", "UTF-16", &r, &w, &err))) {
     return;
   }
   //  g_print("html is %d bytes long: %s\n", sd->length, s);
@@ -316,8 +308,9 @@ void a_clipboard_copy ( VikLayersPanel *vlp )
   VikLayer *sel = vik_layers_panel_get_selected ( vlp );
   GtkTreeIter iter;
   vik_clipboard_t *vc = g_malloc(sizeof(*vc));
+  vik_clipboard_t *vc2;
   GtkClipboard *c = gtk_clipboard_get ( GDK_SELECTION_CLIPBOARD );
-  guint8 *data;
+  guint8 *data = NULL;
   guint len;
 
   if ( ! sel )
@@ -325,41 +318,38 @@ void a_clipboard_copy ( VikLayersPanel *vlp )
 
   vik_treeview_get_selected_iter ( sel->vt, &iter );
 
-  if ( vik_treeview_item_get_type ( sel->vt, &iter ) == VIK_TREEVIEW_TYPE_SUBLAYER )
-  {
+  if ( vik_treeview_item_get_type ( sel->vt, &iter ) == VIK_TREEVIEW_TYPE_SUBLAYER ) {
     vc->layer_type = sel->type;
-    if ( vik_layer_get_interface(vc->layer_type)->copy_item && (vc->clipboard = vik_layer_get_interface(vc->layer_type)->
-        copy_item(sel,vc->subtype=vik_treeview_item_get_data(sel->vt,&iter),vik_treeview_item_get_pointer(sel->vt,&iter)) ))
-    {
+    if ( vik_layer_get_interface(vc->layer_type)->copy_item) {
+      vc->subtype = vik_treeview_item_get_data(sel->vt, &iter);
+      vik_layer_get_interface(vc->layer_type)->copy_item(sel, vc->subtype, vik_treeview_item_get_pointer(sel->vt, &iter), &data, &len );
       vc->type = DATA_SUBLAYER;
-      vc->len = 0;
     }    
-    else {
-      g_free(vc);
-      return; /* selected sublayer is uncopyable */
-    }
   }
   else
   {
-    vik_clipboard_t *vc2;
     vc->type = DATA_LAYER;
-    
     vik_layer_marshall ( sel, &data, &len );
-    if (data) {
-      vc2 = g_malloc(sizeof(*vc2) + len);
-      *vc2 = *vc;
-      vc2->len = len;
-      memcpy(vc2->data, data, len);
-      g_free(data);
-      g_free(vc);
-      vc = vc2;
-    } else {
-      g_free(vc);
-      return;
-    }
   }
-  vc->pid = getpid();
-  gtk_clipboard_set_with_data ( c, target_table, G_N_ELEMENTS(target_table), clip_get, clip_clear, vc );
+
+
+  /* if one of the above copy operations worked, put the data after a vc header and kill the old one */
+  if (data) {
+    vc2 = g_malloc(sizeof(*vc2) + len);
+    *vc2 = *vc;
+    vc2->len = len;
+    memcpy(vc2->data, data, len);
+    g_free(data);
+    g_free(vc);
+    vc = vc2;
+
+    vc->pid = getpid();
+    gtk_clipboard_set_with_data ( c, target_table, G_N_ELEMENTS(target_table), clip_get, clip_clear, vc );
+
+  } else {
+    g_free(vc);
+  }
+
 }
 
 /*

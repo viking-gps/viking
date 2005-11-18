@@ -178,8 +178,8 @@ typedef VikLayerParamData
 typedef void          (*VikLayerFuncReadFileData)          (VikLayer *, FILE *);
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *);
 
-typedef gpointer      (*VikLayerFuncCopyItem)              (VikLayer *, gint, gpointer);
-typedef gboolean      (*VikLayerFuncPasteItem)             (VikLayer *, gint, gpointer);
+typedef void          (*VikLayerFuncCopyItem)              (VikLayer *, gint, gpointer, guint8 **, guint *);
+typedef gboolean      (*VikLayerFuncPasteItem)             (VikLayer *, gint, guint8 *, guint);
 typedef void          (*VikLayerFuncFreeCopiedItem)        (gint, gpointer);
 
 /* treeview drag and drop method. called on the destination layer. it is given a source and destination layer, 
