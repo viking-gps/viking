@@ -193,8 +193,8 @@ static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id );
 
-static gpointer trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
-static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, gpointer item );
+static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len );
+static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *item, guint len );
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
@@ -222,6 +222,8 @@ static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikVie
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
 
 static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name);
+static void waypoint_convert ( const gchar *name, VikWaypoint *wp, VikCoordMode *dest_mode );
+static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_mode );
 
 static VikToolInterface trw_layer_tools[] = {
   { "Create Waypoint", (VikToolInterfaceFunc) tool_new_waypoint, NULL },
@@ -340,14 +342,11 @@ VikLayerInterface vik_trw_layer_interface = {
 
 /* for copy & paste (I think?) */
 typedef struct {
-  gchar *name;
-  VikWaypoint *wp;
-} NamedWaypoint;
-
-typedef struct {
-  gchar *name;
-  VikTrack *tr;
-} NamedTrack;
+  guint len;
+  guint8 data[0];
+  //  gchar *name;
+  //  VikWaypoint *wp;
+} FlatItem;
 
 GType vik_trw_layer_get_type ()
 {
@@ -374,42 +373,56 @@ GType vik_trw_layer_get_type ()
 }
 
 
-static gpointer trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer )
+static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len )
 {
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT && sublayer )
-  {
-    NamedWaypoint *nw = g_malloc ( sizeof ( NamedWaypoint ) );
-    nw->name = g_strdup(sublayer);
-    nw->wp = vik_waypoint_copy ( g_hash_table_lookup ( vtl->waypoints, sublayer ) );
-    return nw;
+  FlatItem *fi;
+  guint8 *id;
+  guint il;
+
+  if (!sublayer) {
+    *item = NULL;
+    return;
   }
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && sublayer )
+
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
   {
-    NamedTrack *nt = g_malloc ( sizeof ( NamedTrack ) );
-    nt->name = g_strdup(sublayer);
-    nt->tr = g_hash_table_lookup ( vtl->tracks, sublayer );
-    vik_track_ref(nt->tr);
-    return nt;
+    vik_waypoint_marshall ( g_hash_table_lookup ( vtl->waypoints, sublayer ), &id, &il );
+  } else {
+    vik_track_marshall ( g_hash_table_lookup ( vtl->tracks, sublayer ), &id, &il );
   }
-  return NULL;
+
+  *len = sizeof(FlatItem) + strlen(sublayer) + 1 + il;
+  fi = g_malloc ( *len );
+  fi->len = strlen(sublayer) + 1;
+  memcpy(fi->data, sublayer, fi->len);
+  memcpy(fi->data + fi->len, id, il);
+  g_free(id);
+  *item = (guint8 *)fi;
 }
 
-static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, gpointer item )
+static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *item, guint len )
 {
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT && item )
+  FlatItem *fi = (FlatItem *) item;
+
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT && fi )
   {
-    NamedWaypoint *nw = (NamedWaypoint *) item;
-    vik_trw_layer_add_waypoint ( vtl,
-        get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, nw->name),
-        vik_waypoint_copy(nw->wp) );
+    VikWaypoint *w;
+    gchar *name;
+
+    name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, (gchar *)fi->data);
+    w = vik_waypoint_unmarshall(fi->data + fi->len, len - sizeof(*fi) - fi->len);
+    vik_trw_layer_add_waypoint ( vtl, name, w );
+    waypoint_convert(name, w, &vtl->coord_mode);
     return TRUE;
   }
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && item )
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && fi )
   {
-    NamedTrack *nt = (NamedTrack *) item;
-    vik_trw_layer_add_track ( vtl,
-       get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, nt->name),
-       vik_track_copy(nt->tr) );
+    VikTrack *t;
+    gchar *name;
+    name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, (gchar *)fi->data);
+    t = vik_track_unmarshall(fi->data + fi->len, len - sizeof(*fi) - fi->len);
+    vik_trw_layer_add_track ( vtl, name, t );
+    track_convert(name, t, &vtl->coord_mode);
     return TRUE;
   }
   return FALSE;
@@ -417,19 +430,8 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, gpointer 
 
 static void trw_layer_free_copied_item ( gint subtype, gpointer item )
 {
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT && item )
-  {
-    NamedWaypoint *nw = (NamedWaypoint *) item;
-    g_free ( nw->name );
-    vik_waypoint_free ( nw->wp );
-    g_free ( nw );
-  }
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && item )
-  {
-    NamedTrack *nt = (NamedTrack *) item;
-    g_free ( nt->name );
-    vik_track_free ( nt->tr );
-    g_free ( nt );
+  if (item) {
+    g_free(item);
   }
 }
 

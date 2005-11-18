@@ -23,6 +23,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "coords.h"
 #include "vikcoord.h"
@@ -654,3 +655,65 @@ gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdoubl
   }
   return FALSE;
 }
+
+void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
+{
+  GList *tps;
+  GByteArray *b = g_byte_array_new();
+  guint len;
+  guint intp, ntp;
+
+  g_byte_array_append(b, (guint8 *)tr, sizeof(*tr));
+
+  /* we'll fill out number of trackpoints later */
+  intp = b->len;
+  g_byte_array_append(b, (guint8 *)&len, sizeof(len));
+
+  tps = tr->trackpoints;
+  ntp = 0;
+  while (tps) {
+    g_byte_array_append(b, (guint8 *)tps->data, sizeof(VikTrackpoint));
+    tps = tps->next;
+    ntp++;
+  }
+  *(guint *)(b->data + intp) = ntp;
+
+  len = (tr->comment) ? strlen(tr->comment)+1 : 0; 
+  g_byte_array_append(b, (guint8 *)&len, sizeof(len)); 
+  if (tr->comment) g_byte_array_append(b, (guint8 *)tr->comment, len);
+
+  *data = b->data;
+  *datalen = b->len;
+  g_byte_array_free(b, FALSE);
+}
+
+VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
+{
+  guint len;
+  VikTrack *new_tr = vik_track_new();
+  VikTrackpoint *new_tp;
+  guint ntp;
+  gint i;
+
+  /* only the visibility is needed */
+  new_tr->visible = ((VikTrack *)data)->visible;
+  data += sizeof(*new_tr);
+
+  ntp = *(guint *)data;
+  data += sizeof(ntp);
+
+  for (i=0; i<ntp; i++) {
+    new_tp = vik_trackpoint_new();
+    memcpy(new_tp, data, sizeof(*new_tp));
+    data += sizeof(*new_tp);
+    new_tr->trackpoints = g_list_append(new_tr->trackpoints, new_tp);
+  }
+
+  len = *(guint *)data;
+  data += sizeof(len);
+  if (len) {
+    new_tr->comment = g_strdup((gchar *)data);
+  }
+  return new_tr;
+}
+
