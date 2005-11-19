@@ -42,7 +42,9 @@ viking_SOURCES = main.c \
 	gtkcellrendererprogress.c gtkcellrendererprogress.h \
 	khmaps.c khmaps.h \
         gpx.c gpx.h \
-	garminsymbols.c garminsymbols.h
+	garminsymbols.c garminsymbols.h \
+	acquire.c acquire.h \
+	babel.c babel.h
 
 INCLUDES        = @GTK_CFLAGS@
 LDADD           = @GTK_LIBS@
