@@ -3,6 +3,25 @@ IMPORTANT STUFF:
 	Debugging output shouldn't be printf'd but g_debug'd
 	fix KH maps download
 	'zoom in too much' line drawing (ruler, tracks) bugs. maybe fix coord-to-screen to clip values (or make vik_viewport_coord_to_screen_clip)?
+	acquire crashes, sometimes (???)
+	google maps download stops (try auto-download), extra processes in background doing nothing
+	CRASH in compute_spline on 2-tp track. Following file crashes when try to see track properties:
+#VIKING GPS Data file http://gpsmaps.org/viking/
+~Layer TrackWaypoint
+~LayerData
+type="waypointlist"
+type="waypointlistend"
+type="track" name="ACTIVE LOG #15"
+type="trackpoint" latitude="38.964300" longitude="-120.135477" altitude="2541.382568" unixtime="1131757498" newsegment="yes"
+type="trackpoint" latitude="38.964536" longitude="-120.135627" altitude="2541.382568" unixtime="1131757507"
+type="trackend"
+type="track" name="ACTIVE LOG #16"
+type="trackpoint" latitude="38.964901" longitude="-120.135605" altitude="2541.382568" unixtime="1131757538" newsegment="yes"
+type="trackpoint" latitude="38.964965" longitude="-120.135863" altitude="2533.691895" unixtime="1131757570"
+type="trackend"
+~EndLayerData
+~EndLayer
+
 
 BEFORE RELEASE:
 	Copy & paste viking data between process & into other programs
