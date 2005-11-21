@@ -452,6 +452,30 @@ void compute_spline(int n, double *x, double *f, spline_coeff_t *p)
 {
   double *h, *alpha, *B, *m;
   int i;
+  int orig_n = n;
+  double new_x[3], new_f[3];
+  
+  if (n==0) return;
+  if (n==1) {
+    new_x[0] = x[0];
+    new_f[0] = f[0];
+    new_x[1] = x[0]+0.00001;
+    new_f[1] = f[0];
+    x = new_x;
+    f = new_f;
+    n = 3;
+  }
+  if (n==2) {
+    new_x[0] = x[0];
+    new_f[0] = f[0];
+    new_x[1] = x[1];
+    new_f[1] = f[1];
+    new_x[2] = x[1] + x[1]-x[0];
+    new_f[2] = f[1] + f[1]-f[0];
+    x = new_x;
+    f = new_f;
+    n = 3;
+  }
   
   /* we're solving a linear system of equations of the form Ax = B. 
    * The matrix a is tridiagonal and consists of coefficients in 
@@ -495,7 +519,7 @@ void compute_spline(int n, double *x, double *f, spline_coeff_t *p)
     m[i] = (B[i]-h[i+1]*m[i+1])/alpha[i];
   }
 
-  for (i=0; i<n-1; i++) {
+  for (i=0; i<orig_n-1; i++) {
     double mi, mi1;
     mi = (i==(n-2)) ? 0 : m[i];
     mi1 = (i==0) ? 0 : m[i-1];
