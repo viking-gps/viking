@@ -1,3 +1,7 @@
+2005-11-23  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+
+	* src/gpx.c (gpx_dtostr): add better GPX export
+
 2005-11-21
 Alex Foobarian <foobarian@gmail.com>:
 	* Fixed v-t diagram crash bug
