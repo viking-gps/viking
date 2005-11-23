@@ -29,6 +29,8 @@
 #include "viking.h"
 #include <expat.h>
 #include <string.h>
+#include <glib.h>
+#include <math.h>
 
 #define GPX_TIME_FORMAT "%Y-%m-%dT%H:%M:%SZ"
 
@@ -534,20 +536,55 @@ entitize(const char * str)
 /**** end GPSBabel code ****/
 
 /* export GPX */
+
+/**
+ * Convert a double to a string WITHOUT LOCALE.
+ *
+ * Following GPX specifications, decimal values are xsd:decimal
+ * So, they must use the period separator, not the localized one.
+ *
+ * The returned value must be freed by g_free.
+ */
+static gchar *gpx_dtostr ( double d )
+{
+  /* In order to ignore locale, we do all the stuff manually */
+  double integer, decimal;
+  integer = trunc(d);
+
+  /* 6 decimals are sufficient (~0,1m) */
+  /* Cf. http://www.tbs-sct.gc.ca/rpm-gbi/guides/Latlong_f.asp */
+  decimal = d - integer;
+  decimal = decimal * 1000000;
+  decimal = trunc ( decimal );
+  decimal = fabs ( decimal );
+
+  /* Format */
+  return g_strdup_printf ( "%g.%06g", integer, decimal );
+}
+
 static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f ) 
 {
   static struct LatLon ll;
+  gchar *s_lat,*s_lon;
   gchar *tmp;
   vik_coord_to_latlon ( &(wp->coord), &ll );
-  fprintf ( f, "<wpt lat=\"%f\" lon=\"%f\"%s>\n",
-               ll.lat, ll.lon, wp->visible ? "" : " hidden=\"hidden\"" );
+  s_lat = gpx_dtostr( ll.lat );
+  s_lon = gpx_dtostr( ll.lon );
+  fprintf ( f, "<wpt lat=\"%s\" lon=\"%s\"%s>\n",
+               s_lat, s_lon, wp->visible ? "" : " hidden=\"hidden\"" );
+  g_free ( s_lat );
+  g_free ( s_lon );
 
   tmp = entitize ( name );
   fprintf ( f, "  <name>%s</name>\n", tmp );
   g_free ( tmp);
 
   if ( wp->altitude != VIK_DEFAULT_ALTITUDE )
-    fprintf ( f, "  <ele>%f</ele>\n", wp->altitude );
+  {
+    tmp = gpx_dtostr ( wp->altitude );
+    fprintf ( f, "  <ele>%s</ele>\n", tmp );
+    g_free ( tmp );
+  }
   if ( wp->comment )
   {
     tmp = entitize(wp->comment);
@@ -573,16 +610,25 @@ static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
 static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
 {
   static struct LatLon ll;
+  gchar *s_lat,*s_lon, *s_alt;
   static gchar time_buf[30];
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
   if ( tp->newsegment )
     fprintf ( f, "  </trkseg>\n  <trkseg>\n" );
 
-  fprintf ( f, "  <trkpt lat=\"%f\" lon=\"%f\">\n", ll.lat, ll.lon );
+  s_lat = gpx_dtostr( ll.lat );
+  s_lon = gpx_dtostr( ll.lon );
+  fprintf ( f, "  <trkpt lat=\"%s\" lon=\"%s\">\n", s_lat, s_lon );
+  g_free ( s_lat );
+  g_free ( s_lon );
 
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
-    fprintf ( f, "    <ele>%f</ele>\n", tp->altitude );
+  {
+    s_alt = gpx_dtostr ( tp->altitude );
+    fprintf ( f, "    <ele>%s</ele>\n", s_alt );
+    g_free ( s_alt );
+  }
   if ( tp->has_timestamp ) {
     time_buf [ strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&(tp->timestamp)) ) ] = '\0';
     fprintf ( f, "    <time>%s</time>\n", time_buf );
