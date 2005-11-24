@@ -1,4 +1,4 @@
 #!/bin/bash
 FROM="$1"
 TO="$2"
-(wget -O - "http://maps.google.com/maps?q=$FROM to $TO&output=xml" 2>/dev/null) | head -2 | tail -1 | sed 's/.*<page>\(.*\)<\/page>.*/<page>\1<\/page>/' | gpsbabel -i google -f - -o gpx -F -
+(wget -O - "http://maps.google.com/maps?q=$FROM to $TO&output=xml" 2>/dev/null) | head -3 | tail -1 | sed 's/.*<page>\(.*\)<\/page>.*/<page>\1<\/page>/' | gpsbabel -i google -f - -o gpx -F -

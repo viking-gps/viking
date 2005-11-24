@@ -1,21 +1,35 @@
-IMPORTANT STUFF:
-	g_dtostr (??) instead of fprintf in the appropriate places (locale-independentt when reading/writing GPX files -- '.' character)
-	Debugging output shouldn't be printf'd but g_debug'd
+BEFORE RELEASE:
 	fix KH maps download
 	'zoom in too much' line drawing (ruler, tracks) bugs. maybe fix coord-to-screen to clip values (or make vik_viewport_coord_to_screen_clip)?
 	fix SEGFAULT when clicking too far right on elevation diagram
 	acquire crashes, sometimes (???)
 	google maps download stops (try auto-download), extra processes in background doing nothing
+	GPSBABEL!!!
+		* Google (address -> WP and directions -> track)
+		* Geotoad
+		* Filter a TRW layer: simplify paths, get out waypoints inside a path, etc.
 
-BEFORE RELEASE:
-	Copy & paste viking data between process & into other programs
-		copy waypoints, TRWLayers as GPX/GPSPoint. paste TRWLayers as GPX if pasting into text.
-		copy layers via file.c serialization. paste layers other than TRW into Viking only (for now)
+FEATURES:
+	Paste GPX files into Viking -> TRW Layer
+	Paste TRW layers into text editor -> GPX
 	Undo function
 	Map licensing issues (?)
 	DND between VikWindows
 	direct GPS support
 	arrows to show track direction
+	Select multiple items (waypoints, etc) in layers panel (???)
+	Import from:
+		* Google (address -> WP)
+			 (directions -> track)
+		* Geocaching via GeoToad (just give me the params, I'll load 'em)
+			goto diff areas of map
+			download caches
+			merge layers
+			ENJOY...
+	Merge layers easier ("Merge down" à la Gimp)
+	Output to GPS?
+	Output to gc2visor
+	Selections (select waypoints, tracks in an area)
 
 EASY FIXES:
 	"Interesting" stuff happens when we swich modes while using the ruler.
@@ -40,7 +54,6 @@ RATHER HARD FIXES, SHOULD BE DONE BUT NOT MANDATORY FOR RELEASE:
 
 FEATURE WISHLIST (i.e. unlikely to get done):
 	selections (select area of waypoints, trackpoints, etc)
-	funky gpsbabel filter stuff (data sources -- think about, i want something innovative in this release.)
 	elevation plotting is not so pretty if you're moving north, as it overlays stuff uglily. discussion?
 	bicycle runs your track (animation) that tilts depending on slope
 	hover over pic
@@ -50,7 +63,6 @@ FEATURE WISHLIST (i.e. unlikely to get done):
 		right click to do new track
 		or "Track/Waypoint Tool"
 	I18N (das mundo ne parle pas agglika)
-	import from data sources ( gpsbabel (gps device) / google / geocaching.com )
 	Vector/TIGER maps!!! (use Cairo/Roadster code?)
 
 MISC FIXES (i.e. will never get done):
