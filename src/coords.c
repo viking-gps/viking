@@ -6,6 +6,8 @@ I (Evan Battaglia <viking@greentorch.org>) have only made some small changes suc
 renaming functions and defining LatLon and UTM structs.
 2004-02-10 -- I also added a function of my own -- a_coords_utm_diff() -- that I felt belonged in coords.c
 2004-02-21 -- I also added a_coords_utm_equal().
+2005-11-23 -- Added a_coords_dtostr() for lack of a better place.
+
 */
 /* coords.h - include file for coords routines
 **
@@ -43,6 +45,31 @@ renaming functions and defining LatLon and UTM structs.
 #ifdef WINDOWS
 #define M_PI 3.14159265358979
 #endif
+
+/**
+ * Convert a double to a string WITHOUT LOCALE.
+ *
+ * Following GPX specifications, decimal values are xsd:decimal
+ * So, they must use the period separator, not the localized one.
+ *
+ * The returned value must be freed by g_free.
+ */
+char *a_coords_dtostr ( double d )
+{
+  /* In order to ignore locale, we do all the stuff manually */
+  double integer, decimal;
+  integer = trunc(d);
+
+  /* 6 decimals are sufficient (~0,1m) */
+  /* Cf. http://www.tbs-sct.gc.ca/rpm-gbi/guides/Latlong_f.asp */
+  decimal = d - integer;
+  decimal = decimal * 1000000;
+  decimal = trunc ( decimal );
+  decimal = fabs ( decimal );
+
+  /* Format */
+  return g_strdup_printf ( "%g.%06g", integer, decimal );
+}
 
 #define PIOVER180 0.01745329252
 

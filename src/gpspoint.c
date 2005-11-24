@@ -396,10 +396,19 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
 static void a_gpspoint_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
 {
   static struct LatLon ll;
+  gchar *s_lat, *s_lon;
   vik_coord_to_latlon ( &(wp->coord), &ll );
-  fprintf ( f, "type=\"waypoint\" latitude=\"%f\" longitude=\"%f\" name=\"%s\"", ll.lat, ll.lon, name );
-  if ( wp->altitude != VIK_DEFAULT_ALTITUDE )
-    fprintf ( f, " altitude=\"%f\"", wp->altitude );
+  s_lat = a_coords_dtostr(ll.lat);
+  s_lon = a_coords_dtostr(ll.lon);
+  fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, name );
+  g_free ( s_lat ); 
+  g_free ( s_lon );
+
+  if ( wp->altitude != VIK_DEFAULT_ALTITUDE ) {
+    gchar *s_alt = a_coords_dtostr(wp->altitude);
+    fprintf ( f, " altitude=\"%s\"", s_alt );
+    g_free(s_alt);
+  }
   if ( wp->comment )
   {
     gchar *tmp_comment = slashdup(wp->comment);
@@ -424,12 +433,20 @@ static void a_gpspoint_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
 {
   static struct LatLon ll;
+  gchar *s_lat, *s_lon;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
-  fprintf ( f, "type=\"trackpoint\" latitude=\"%f\" longitude=\"%f\"", ll.lat, ll.lon );
+  s_lat = a_coords_dtostr(ll.lat);
+  s_lon = a_coords_dtostr(ll.lon);
+  fprintf ( f, "type=\"trackpoint\" latitude=\"%s\" longitude=\"%s\"", s_lat, s_lon );
+  g_free ( s_lat ); 
+  g_free ( s_lon );
 
-  if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
-    fprintf ( f, " altitude=\"%f\"", tp->altitude );
+  if ( tp->altitude != VIK_DEFAULT_ALTITUDE ) {
+    gchar *s_alt = a_coords_dtostr(tp->altitude);
+    fprintf ( f, " altitude=\"%s\"", s_alt );
+    g_free(s_alt);
+  }
   if ( tp->has_timestamp )
     fprintf ( f, " unixtime=\"%ld\"", tp->timestamp );
   if ( tp->newsegment )

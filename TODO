@@ -3,6 +3,7 @@ IMPORTANT STUFF:
 	Debugging output shouldn't be printf'd but g_debug'd
 	fix KH maps download
 	'zoom in too much' line drawing (ruler, tracks) bugs. maybe fix coord-to-screen to clip values (or make vik_viewport_coord_to_screen_clip)?
+	fix SEGFAULT when clicking too far right on elevation diagram
 	acquire crashes, sometimes (???)
 	google maps download stops (try auto-download), extra processes in background doing nothing
 

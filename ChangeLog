@@ -1,6 +1,7 @@
 2005-11-23  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
-
 	* src/gpx.c (gpx_dtostr): add better GPX export
+Evan Battaglia <gtoevan@gmx.net>:
+	* dtostr -> coords.c; use in gpsmapper.c and gpspoint.c (locale-independent output)
 
 2005-11-21
 Alex Foobarian <foobarian@gmail.com>:
