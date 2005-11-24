@@ -53,5 +53,16 @@ void a_coords_utm_to_latlon ( const struct UTM *utm, struct LatLon *latlon );
 double a_coords_utm_diff( const struct UTM *utm1, const struct UTM *utm2 );
 double a_coords_latlon_diff ( const struct LatLon *ll1, const struct LatLon *ll2 );
 
+/**
+ * Convert a double to a string WITHOUT LOCALE.
+ *
+ * Following GPX specifications, decimal values are xsd:decimal
+ * So, they must use the period separator, not the localized one.
+ *
+ * The returned value must be freed by g_free.
+ */
+char *a_coords_dtostr ( double d );
+
+
 
 #endif

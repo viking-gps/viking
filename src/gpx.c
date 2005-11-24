@@ -537,39 +537,14 @@ entitize(const char * str)
 
 /* export GPX */
 
-/**
- * Convert a double to a string WITHOUT LOCALE.
- *
- * Following GPX specifications, decimal values are xsd:decimal
- * So, they must use the period separator, not the localized one.
- *
- * The returned value must be freed by g_free.
- */
-static gchar *gpx_dtostr ( double d )
-{
-  /* In order to ignore locale, we do all the stuff manually */
-  double integer, decimal;
-  integer = trunc(d);
-
-  /* 6 decimals are sufficient (~0,1m) */
-  /* Cf. http://www.tbs-sct.gc.ca/rpm-gbi/guides/Latlong_f.asp */
-  decimal = d - integer;
-  decimal = decimal * 1000000;
-  decimal = trunc ( decimal );
-  decimal = fabs ( decimal );
-
-  /* Format */
-  return g_strdup_printf ( "%g.%06g", integer, decimal );
-}
-
 static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f ) 
 {
   static struct LatLon ll;
   gchar *s_lat,*s_lon;
   gchar *tmp;
   vik_coord_to_latlon ( &(wp->coord), &ll );
-  s_lat = gpx_dtostr( ll.lat );
-  s_lon = gpx_dtostr( ll.lon );
+  s_lat = a_coords_dtostr( ll.lat );
+  s_lon = a_coords_dtostr( ll.lon );
   fprintf ( f, "<wpt lat=\"%s\" lon=\"%s\"%s>\n",
                s_lat, s_lon, wp->visible ? "" : " hidden=\"hidden\"" );
   g_free ( s_lat );
@@ -581,7 +556,7 @@ static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
 
   if ( wp->altitude != VIK_DEFAULT_ALTITUDE )
   {
-    tmp = gpx_dtostr ( wp->altitude );
+    tmp = a_coords_dtostr ( wp->altitude );
     fprintf ( f, "  <ele>%s</ele>\n", tmp );
     g_free ( tmp );
   }
@@ -617,15 +592,15 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
   if ( tp->newsegment )
     fprintf ( f, "  </trkseg>\n  <trkseg>\n" );
 
-  s_lat = gpx_dtostr( ll.lat );
-  s_lon = gpx_dtostr( ll.lon );
+  s_lat = a_coords_dtostr( ll.lat );
+  s_lon = a_coords_dtostr( ll.lon );
   fprintf ( f, "  <trkpt lat=\"%s\" lon=\"%s\">\n", s_lat, s_lon );
   g_free ( s_lat );
   g_free ( s_lon );
 
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
   {
-    s_alt = gpx_dtostr ( tp->altitude );
+    s_alt = a_coords_dtostr ( tp->altitude );
     fprintf ( f, "    <ele>%s</ele>\n", s_alt );
     g_free ( s_alt );
   }

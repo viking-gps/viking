@@ -101,8 +101,13 @@ static void write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
   guint len = print_rgn_stuff ( wp->comment, f );
   if ( len )
   {
+    gchar *s_lat, *s_lon;
     vik_coord_to_latlon ( &(wp->coord), &ll );
-    fprintf ( f, "Data0=(%f,%f)\n", ll.lat, ll.lon );
+    s_lat = a_coords_dtostr(ll.lat);
+    s_lon = a_coords_dtostr(ll.lon);
+    fprintf ( f, "Data0=(%s,%s)\n", s_lat, s_lon );
+    g_free ( s_lat );
+    g_free ( s_lon );
     fprintf ( f, "[END-%.5s]\n\n", wp->comment+len+1 );
   }
 }
@@ -110,9 +115,13 @@ static void write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
 static void write_trackpoint ( VikTrackpoint *tp, FILE *f )
 {
   static struct LatLon ll;
-  vik_coord_to_latlon ( &(tp->coord), &ll );
-
-  fprintf ( f, "(%f,%f),", ll.lat, ll.lon );
+  gchar *s_lat, *s_lon;
+  vik_coord_to_latlon ( &(tp->coord), &ll ); 
+  s_lat = a_coords_dtostr(ll.lat);
+  s_lon = a_coords_dtostr(ll.lon);
+  fprintf ( f, "(%s,%s),", s_lat, s_lon );
+  g_free ( s_lat );
+  g_free ( s_lon );
 }
 
 static void write_track ( const gchar *name, VikTrack *t, FILE *f )
