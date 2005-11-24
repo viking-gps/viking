@@ -164,6 +164,8 @@ static void get_from_gps ( gpointer data )
   gdk_threads_leave();
 
   if (!a_babel_convert_from (vtl, "-D 9 -t -w -i garmin", progress_func, "/dev/ttyS0")) {
+//  if (!a_babel_convert_from (vtl, "-D 9 -t -w -i garmin", progress_func, "/dev/ttyS1")) {
+//  if (!a_babel_convert_from_shellcommand (vtl, "(wget -O - \"http://maps.google.com/maps?q=91214 to 94704&output=xml\" 2>/dev/null) | cat ~/vik/tools/temp.ggl | head -3 | tail -1 |  sed 's/.*<page>\\(.*\\)<\\/page>.*/<page>\\1<\\/page>/'", "google", progress_func)) {
     gdk_threads_enter();
     gtk_label_set_text ( GTK_LABEL(w->status), "Error: couldn't find gpsbabel." );
     gdk_threads_leave();
