@@ -1,3 +1,8 @@
+2005-11-25
+	* Created "data sources" structure to easily add new data sources via GPS babel.
+          It's ugly now and there's a lot to be done, but I think 79-line datasources_google.c
+          shows the power of the approach.
+
 2005-11-23  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
 	* src/gpx.c (gpx_dtostr): add better GPX export
 Evan Battaglia <gtoevan@gmx.net>:

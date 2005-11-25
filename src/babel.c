@@ -27,7 +27,7 @@
 /* in the future we could have support for other shells (change command strings), or not use a shell at all */
 #define BASH_LOCATION "/bin/bash"
 
-gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb )
+gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data )
 {
   int fd_src;
   FILE *f;
@@ -41,7 +41,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
     f = fdopen(fd_src, "w");
     a_gpx_write_file(vt, f);
     fclose(f);
-    ret = a_babel_convert_from ( vt, bargs, cb, name_src );
+    ret = a_babel_convert_from ( vt, bargs, cb, name_src, user_data );
   }
 
   g_free(bargs);
@@ -50,7 +50,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   return ret;
 }
 
-gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst )
+gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
 {
   gboolean ret;
   GPid pid;
@@ -68,9 +68,11 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
     setvbuf(diag, NULL, _IONBF, 0);
 
     while (fgets(line, sizeof(line), diag)) {
-      cb(BABEL_DIAG_OUTPUT, line);
+      if ( cb )
+        cb(BABEL_DIAG_OUTPUT, line, user_data);
     }
-    cb(BABEL_DONE, NULL);
+    if ( cb )
+      cb(BABEL_DONE, NULL, user_data);
     fclose(diag);
     waitpid(pid, NULL, 0);
     g_spawn_close_pid(pid);
@@ -84,7 +86,7 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
   return ret;
 }
 
-gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *from )
+gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *from, gpointer user_data )
 {
   int fd_dst;
   gchar *name_dst;
@@ -105,7 +107,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
     g_strlcat(cmd, name_dst, sizeof(cmd));
 
     args = g_strsplit(cmd, " ", 0);
-    ret = babel_general_convert_from ( vt, cb, args, name_dst );
+    ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
     g_strfreev(args);
   }
 
@@ -114,7 +116,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
   return ret;
 }
 
-gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_type, BabelStatusFunc cb )
+gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_type, BabelStatusFunc cb, gpointer user_data )
 {
   int fd_dst;
   gchar *name_dst;
@@ -134,7 +136,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
     args[2] = shell_command;
     args[3] = NULL;
 
-    ret = babel_general_convert_from ( vt, cb, args, name_dst );
+    ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
     g_free ( args );
     g_free ( shell_command );
   }
