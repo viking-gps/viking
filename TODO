@@ -5,9 +5,12 @@ BEFORE RELEASE:
 	acquire crashes, sometimes (???)
 	google maps download stops (try auto-download), extra processes in background doing nothing
 	GPSBABEL!!!
-		* Google (address -> WP and directions -> track)
-		* Geotoad
+		* Smooth over rough edges / ugliness / crashes
+		* Google address -> WP
+		* handling of special characters (both to wget/HTTP and shell) -- don't allow backdoor tricks
+		* ADD to a layer instead of make a new layer (maybe right click layer -> new track from Google or something)
 		* Filter a TRW layer: simplify paths, get out waypoints inside a path, etc.
+		* Geotoad
 
 FEATURES:
 	Paste GPX files into Viking -> TRW Layer

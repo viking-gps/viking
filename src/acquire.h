@@ -22,6 +22,44 @@
 #ifndef _VIKING_ACQUIRE_H
 #define _VIKING_ACQUIRE_H
 
-void a_acquire_from_gps ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp );
+/* global data structure used to expose the progress dialog to the worker thread */
+typedef struct {
+  GtkWidget *status;
+  VikWindow *vw;
+  VikLayersPanel *vlp;
+  VikViewport *vvp;
+  GtkWidget *dialog;
+  gboolean ok; /* if OK is false when we exit, we MUST free w */
+  gpointer specific_data;
+} acq_dialog_widgets_t;
+
+typedef enum { VIK_DATASOURCE_GPSBABEL_DIRECT, VIK_DATASOURCE_SHELL_CMD } vik_datasource_type_t;
+
+typedef gpointer (*VikDataSourceAddWidgetsFunc) ( GtkWidget *dialog );
+
+/* if VIK_DATASOURCE_GPSBABEL_DIRECT, babelargs and inputfile.
+   if VIK_DATASOURCE_SHELL_CMD, shellcmd and inputtype.
+   set both to NULL to signal refusal (ie already downloading) */
+typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer widgets_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
+typedef void (*VikDataSourceFirstCleanupFunc) ( gpointer widgets_data );
+typedef void  (*VikDataSourceProgressFunc)  (gpointer c, gpointer data, acq_dialog_widgets_t *w);
+typedef gpointer  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog );
+typedef void (*VikDataSourceCleanupFunc) ( gpointer progress_widgets_data );
+
+typedef struct {
+  const gchar *layer_title;
+  vik_datasource_type_t type;
+
+  VikDataSourceAddWidgetsFunc add_widgets_func; /* NULL if no first dialog */
+  VikDataSourceGetCmdStringFunc get_cmd_string_func; /* passed rv from above */
+  VikDataSourceFirstCleanupFunc first_cleanup_func; /* frees rv from addwidgets */
+
+  VikDataSourceProgressFunc progress_func;
+  VikDataSourceAddProgressWidgetsFunc add_progress_widgets_func;
+  VikDataSourceCleanupFunc cleanup_func;
+} VikDataSourceInterface;
+
+
+void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *interface );
 
 #endif

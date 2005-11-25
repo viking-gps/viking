@@ -21,6 +21,7 @@
 #include "viking.h"
 #include "background.h"
 #include "acquire.h"
+#include "datasources.h"
 
 #define VIKING_TITLE " - Viking " VIKING_VERSION " " VIKING_VERSION_NAME " " VIKING_URL
 
@@ -907,7 +908,12 @@ static gboolean save_file ( GtkAction *a, VikWindow *vw )
 
 static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire_from_gps(vw, vw->viking_vlp, vw->viking_vvp );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface );
+}
+
+static void acquire_from_google ( GtkAction *a, VikWindow *vw )
+{
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface );
 }
 
 static void clear_cb ( GtkAction *a, VikWindow *vw )
@@ -1303,7 +1309,9 @@ static GtkActionEntry entries[] = {
   { "New",       GTK_STOCK_NEW,          "_New",                          "<control>N", "New file",                                     (GCallback)newwindow_cb          },
   { "Open",      GTK_STOCK_OPEN,         "_Open",                         "<control>O", "Open a file",                                  (GCallback)load_file             },
   { "Append",    GTK_STOCK_ADD,          "A_ppend File",                  NULL,         "Append data from a different file",            (GCallback)load_file             },
-  { "Acquire",   NULL,                   "A_cquire from GPS",             NULL,         "Transfer data from a GPS device",              (GCallback)acquire_from_gps      },
+  { "Acquire", NULL, "A_cquire", 0, 0, 0 },
+  { "AcquireGPS",   NULL,                "From _GPS",            	  NULL,         "Transfer data from a GPS device",              (GCallback)acquire_from_gps      },
+  { "AcquireGoogle",   NULL,             "Google _Directions",    	  NULL,         "Get driving directions from Google",           (GCallback)acquire_from_google      },
   { "Save",      GTK_STOCK_SAVE,         "_Save",                         "<control>S", "Save the file",                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      "Save _As",                      NULL,         "Save the file under different name",           (GCallback)save_file_as          },
   { "GenImg",    GTK_STOCK_CLEAR,        "_Generate Image File",          NULL,         "Save a snapshot of the workspace into a file", (GCallback)draw_to_image_file_cb },

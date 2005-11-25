@@ -44,7 +44,10 @@ viking_SOURCES = main.c \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
-	babel.c babel.h
+	babel.c babel.h \
+	datasource_gps.c \
+	datasource_google.c \
+	datasources.h
 
 INCLUDES        = @GTK_CFLAGS@
 LDADD           = @GTK_LIBS@
