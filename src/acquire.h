@@ -22,6 +22,8 @@
 #ifndef _VIKING_ACQUIRE_H
 #define _VIKING_ACQUIRE_H
 
+typedef struct _VikDataSourceInterface VikDataSourceInterface;
+
 /* global data structure used to expose the progress dialog to the worker thread */
 typedef struct {
   GtkWidget *status;
@@ -31,6 +33,7 @@ typedef struct {
   GtkWidget *dialog;
   gboolean ok; /* if OK is false when we exit, we MUST free w */
   gpointer specific_data;
+  VikDataSourceInterface *interface;
 } acq_dialog_widgets_t;
 
 typedef enum { VIK_DATASOURCE_GPSBABEL_DIRECT, VIK_DATASOURCE_SHELL_CMD } vik_datasource_type_t;
@@ -47,7 +50,7 @@ typedef void  (*VikDataSourceProgressFunc)  (gpointer c, gpointer data, acq_dial
 typedef gpointer  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog );
 typedef void (*VikDataSourceCleanupFunc) ( gpointer progress_widgets_data );
 
-typedef struct {
+struct _VikDataSourceInterface {
   const gchar *layer_title;
   vik_datasource_type_t type;
   vik_datasource_type_t mode;
@@ -59,7 +62,7 @@ typedef struct {
   VikDataSourceProgressFunc progress_func;
   VikDataSourceAddProgressWidgetsFunc add_progress_widgets_func;
   VikDataSourceCleanupFunc cleanup_func;
-} VikDataSourceInterface;
+};
 
 
 void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *interface );

@@ -29,7 +29,6 @@
 /* passed along to worker thread */
 typedef struct {
   acq_dialog_widgets_t *w;
-  VikDataSourceInterface *interface;
   gchar *cmd;
   gchar *extra;
 } w_and_interface_t;
@@ -38,8 +37,24 @@ extern VikDataSourceInterface vik_datasource_gps_interface;
 extern VikDataSourceInterface vik_datasource_google_interface;
 
 /*********************************************************
- * Definitions and routines for acquiring data from GPS
+ * Definitions and routines for acquiring data from Data Sources in general
  *********************************************************/
+
+static void progress_func ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w )
+{
+  gdk_threads_enter ();
+  if (!w->ok) {
+    g_free ( w );
+    if ( w->interface->cleanup_func )
+      w->interface->cleanup_func( w->specific_data );
+    gdk_threads_leave();
+    g_thread_exit ( NULL );
+  }
+  gdk_threads_leave ();
+
+  if ( w->interface->progress_func )
+    w->interface->progress_func ( (gpointer) c, data, w );
+}
 
 /* this routine is the worker thread.  there is only one simultaneous download allowed */
 static void get_from_anything ( w_and_interface_t *wi )
@@ -52,7 +67,7 @@ static void get_from_anything ( w_and_interface_t *wi )
   gboolean creating_new_layer = TRUE;
 
   acq_dialog_widgets_t *w = wi->w;
-  VikDataSourceInterface *interface = wi->interface;
+  VikDataSourceInterface *interface = wi->w->interface;
   g_free ( wi );
 
   gdk_threads_enter();
@@ -71,9 +86,9 @@ static void get_from_anything ( w_and_interface_t *wi )
   gdk_threads_leave();
 
   if ( interface->type == VIK_DATASOURCE_GPSBABEL_DIRECT )
-    result = a_babel_convert_from (vtl, cmd, (BabelStatusFunc) interface->progress_func, extra, w);
+    result = a_babel_convert_from (vtl, cmd, (BabelStatusFunc) progress_func, extra, w);
   else
-    result = a_babel_convert_from_shellcommand ( vtl, cmd, extra, (BabelStatusFunc) interface->progress_func, w);
+    result = a_babel_convert_from_shellcommand ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
 
   g_free ( cmd );
   g_free ( extra );
@@ -144,7 +159,7 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
   w = g_malloc(sizeof(*w));
   wi = g_malloc(sizeof(*wi));
   wi->w = w;
-  wi->interface = interface;
+  wi->w->interface = interface;
   wi->cmd = cmd;
   wi->extra = extra;
 

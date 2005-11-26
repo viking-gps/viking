@@ -131,17 +131,6 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
   gchar *line;
   gps_acq_dialog_widgets_t *gps_data = (gps_acq_dialog_widgets_t *)w->specific_data;
 
-  /* TODO: move to datasource.c */
-  gdk_threads_enter ();
-  if (!w->ok) {
-    g_free ( w );
-    w = NULL;
-    gps_acquire_in_progress = FALSE;
-    gdk_threads_leave();
-    g_thread_exit ( NULL );
-  }
-  gdk_threads_leave ();
-
   switch(c) {
   case BABEL_DIAG_OUTPUT:
     line = (gchar *)data;
