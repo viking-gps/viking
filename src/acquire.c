@@ -140,7 +140,7 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
   if ( interface->add_widgets_func ) {
     gpointer first_dialog_data;
     dialog = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-    first_dialog_data = interface->add_widgets_func(dialog);
+    first_dialog_data = interface->add_widgets_func(dialog, vvp);
     if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
       interface->first_cleanup_func(first_dialog_data);
       gtk_widget_destroy(dialog);

@@ -39,7 +39,7 @@ typedef struct {
 typedef enum { VIK_DATASOURCE_GPSBABEL_DIRECT, VIK_DATASOURCE_SHELL_CMD } vik_datasource_type_t;
 typedef enum { VIK_DATASOURCE_CREATENEWLAYER, VIK_DATASOURCE_ADDTOLAYER } vik_datasource_mode_t;
 
-typedef gpointer (*VikDataSourceAddWidgetsFunc) ( GtkWidget *dialog );
+typedef gpointer (*VikDataSourceAddWidgetsFunc) ( GtkWidget *dialog, VikViewport *vvp );
 
 /* if VIK_DATASOURCE_GPSBABEL_DIRECT, babelargs and inputfile.
    if VIK_DATASOURCE_SHELL_CMD, shellcmd and inputtype.

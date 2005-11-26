@@ -51,7 +51,7 @@ if ( $zip ) {
   $browser->form(1);
   $browser->field("zip", $zip);
 } else {
-  $browser->form(5);
+  $browser->form(6);
   $browser->field("origin_lat", $lat);
   $browser->field("origin_long", $lon);
 }

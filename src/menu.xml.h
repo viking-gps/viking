@@ -14,6 +14,7 @@ static const char *menu_xml =
 	"      <menu action='Acquire'>"
 	"        <menuitem action='AcquireGPS'/>"
 	"        <menuitem action='AcquireGoogle'/>"
+	"        <menuitem action='AcquireGC'/>"
 	"      </menu>"
 	"      <separator/>"
 	"      <menuitem action='GenImg'/>"

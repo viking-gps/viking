@@ -33,7 +33,7 @@ typedef struct {
 } datasource_google_widgets_t;
 
 
-gpointer datasource_google_add_widgets ( GtkWidget *dialog );
+gpointer datasource_google_add_widgets ( GtkWidget *dialog, VikViewport *vvp );
 static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_type );	
 static void datasource_google_first_cleanup ( gpointer data );
 
@@ -50,7 +50,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
 };
 
 
-gpointer datasource_google_add_widgets ( GtkWidget *dialog )
+gpointer datasource_google_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
 {
   datasource_google_widgets_t *widgets = g_malloc(sizeof(*widgets));
   GtkWidget *from_label, *to_label;

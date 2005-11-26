@@ -127,7 +127,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
     ret = FALSE;
   } else {
     gchar *shell_command = g_strdup_printf("%s | gpsbabel -i %s -f - -o gpx -F %s", input_cmd, input_type, name_dst);
-
+    printf("%s\n", shell_command);
     close(fd_dst);
 
     args = g_malloc(sizeof(gchar *)*4);

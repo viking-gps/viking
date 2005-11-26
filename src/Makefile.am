@@ -47,6 +47,7 @@ viking_SOURCES = main.c \
 	babel.c babel.h \
 	datasource_gps.c \
 	datasource_google.c \
+	datasource_gc.c \
 	datasources.h
 
 INCLUDES        = @GTK_CFLAGS@
