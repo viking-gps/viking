@@ -132,8 +132,6 @@ static gchar *deslashndup ( const gchar *str, guint16 len )
 void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
   VikCoordMode coord_mode = vik_trw_layer_get_coord_mode ( trw );
   gchar *tag_start, *tag_end;
-  GHashTable *tracks = vik_trw_layer_get_tracks ( trw );
-  GHashTable *waypoints = vik_trw_layer_get_waypoints ( trw );
   g_assert ( f != NULL && trw != NULL );
   line_type = 0;
   line_timestamp = 0;
@@ -197,7 +195,9 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
 
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &line_latlon );
 
-      g_hash_table_insert ( waypoints, line_name, wp );
+      vik_trw_layer_filein_add_waypoint ( trw, line_name, wp );
+      g_free ( line_name );
+      line_name = NULL;
 
       if ( line_comment )
       {
@@ -216,8 +216,6 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
         vik_waypoint_set_symbol ( wp, line_symbol );
 	line_symbol = NULL;
       }
-
-      line_name = NULL; /* will be freed automatically */
     }
     else if (line_type == GPSPOINT_TYPE_TRACK && line_name)
     {
@@ -239,8 +237,9 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       }
 
       pl->trackpoints = NULL;
-      g_hash_table_insert ( tracks, line_name, pl );
-      line_name = NULL; /* will be freed automatically */
+      vik_trw_layer_filein_add_track ( trw, line_name, pl );
+      g_free ( line_name );
+      line_name = NULL;
 
       current_track = pl;
     }

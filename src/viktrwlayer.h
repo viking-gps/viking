@@ -39,8 +39,13 @@ GType vik_trw_layer_get_type ();
 
 typedef struct _VikTrwLayer VikTrwLayer;
 
-/* TODO 0.0.8: _none_ of this should be here... interfaces, remember... */
+/* These are meant for use in file loaders (gpspoint.c, gpx.c, etc).
+ * These copy the name, so you should free it if necessary. */
+void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
+void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *tr );
 
+
+/* TODO 0.0.8: _none_ of this should be here... interfaces, remember... */
 VikTrwLayer *vik_trw_layer_new ( gint drawmode );
 void vik_trw_layer_draw ( VikTrwLayer *l, gpointer data );
 void vik_trw_layer_free ( VikTrwLayer *trwlayer );

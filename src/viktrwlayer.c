@@ -1450,6 +1450,7 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
 
   if ( a_dialog_new_waypoint ( w, &name, wp, vik_trw_layer_get_waypoints ( vtl ), vtl->coord_mode ) )
   {
+    wp->visible = TRUE;
     vik_trw_layer_add_waypoint ( vtl, name, wp );
     return TRUE;
   }
@@ -1553,11 +1554,11 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 #endif
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter );
       g_hash_table_insert ( vtl->tracks_iters, name, iter );
-      t->visible = TRUE;
+      /* t->visible = TRUE; */
     }
   }
   else
-    t->visible = TRUE;
+    ; /* t->visible = TRUE; // this is now used by file input functions */
 
   g_hash_table_insert ( vtl->tracks, name, t );
  
@@ -1599,6 +1600,19 @@ static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type
     i++;
   }
   return newname;
+}
+
+void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp )
+{
+  vik_trw_layer_add_waypoint ( vtl,
+                        get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, name),
+                        wp );
+}
+void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *tr )
+{
+  vik_trw_layer_add_track ( vtl,
+                        get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, name),
+                        tr );
 }
 
 static void trw_layer_enum_item ( const gchar *name, GList **tr, GList **l )
@@ -1783,7 +1797,6 @@ static void trw_layer_properties_item ( gpointer pass_along[5] )
           }
           if ( new_tr_name )
             vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
-         
         }
         if ( tracks )
         {

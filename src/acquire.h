@@ -34,6 +34,7 @@ typedef struct {
 } acq_dialog_widgets_t;
 
 typedef enum { VIK_DATASOURCE_GPSBABEL_DIRECT, VIK_DATASOURCE_SHELL_CMD } vik_datasource_type_t;
+typedef enum { VIK_DATASOURCE_CREATENEWLAYER, VIK_DATASOURCE_ADDTOLAYER } vik_datasource_mode_t;
 
 typedef gpointer (*VikDataSourceAddWidgetsFunc) ( GtkWidget *dialog );
 
@@ -49,6 +50,7 @@ typedef void (*VikDataSourceCleanupFunc) ( gpointer progress_widgets_data );
 typedef struct {
   const gchar *layer_title;
   vik_datasource_type_t type;
+  vik_datasource_type_t mode;
 
   VikDataSourceAddWidgetsFunc add_widgets_func; /* NULL if no first dialog */
   VikDataSourceGetCmdStringFunc get_cmd_string_func; /* passed rv from above */

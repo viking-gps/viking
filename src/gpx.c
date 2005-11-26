@@ -242,7 +242,8 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
      case tt_wpt:
        if ( ! c_wp_name )
          c_wp_name = g_strdup_printf("VIKING_WP%d", unnamed_waypoints++);
-       g_hash_table_insert ( vik_trw_layer_get_waypoints ( vtl ), c_wp_name, c_wp );
+       vik_trw_layer_filein_add_waypoint ( vtl, c_wp_name, c_wp );
+       g_free ( c_wp_name );
        c_wp = NULL;
        c_wp_name = NULL;
        break;
@@ -250,7 +251,8 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
      case tt_trk:
        if ( ! c_tr_name )
          c_tr_name = g_strdup_printf("VIKING_TR%d", unnamed_waypoints++);
-       g_hash_table_insert ( vik_trw_layer_get_tracks ( vtl ), c_tr_name, c_tr );
+       vik_trw_layer_filein_add_track ( vtl, c_tr_name, c_tr );
+       g_free ( c_tr_name );
        c_tr = NULL;
        c_tr_name = NULL;
        break;
