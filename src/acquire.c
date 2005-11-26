@@ -44,20 +44,30 @@ extern VikDataSourceInterface vik_datasource_google_interface;
 /* this routine is the worker thread.  there is only one simultaneous download allowed */
 static void get_from_anything ( w_and_interface_t *wi )
 {
-  VikTrwLayer *vtl;
-
   gchar *cmd = wi->cmd;
   gchar *extra = wi->extra;
   gboolean result;
+  VikTrwLayer *vtl;
+
+  gboolean creating_new_layer = TRUE;
 
   acq_dialog_widgets_t *w = wi->w;
   VikDataSourceInterface *interface = wi->interface;
   g_free ( wi );
 
   gdk_threads_enter();
-  vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, NULL, FALSE ) );
-  vik_layer_rename ( VIK_LAYER ( vtl ), interface->layer_title );
-  gtk_label_set_text ( GTK_LABEL(w->status), "Working..." );
+  if (interface->mode == VIK_DATASOURCE_ADDTOLAYER) {
+    VikLayer *current_selected = vik_layers_panel_get_selected ( w->vlp );
+    if ( IS_VIK_TRW_LAYER(current_selected) ) {
+      vtl = VIK_TRW_LAYER(current_selected);
+      creating_new_layer = FALSE;
+    }
+  }
+  if ( creating_new_layer ) {
+    vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, NULL, FALSE ) );
+    vik_layer_rename ( VIK_LAYER ( vtl ), interface->layer_title );
+    gtk_label_set_text ( GTK_LABEL(w->status), "Working..." );
+  }
   gdk_threads_leave();
 
   if ( interface->type == VIK_DATASOURCE_GPSBABEL_DIRECT )
@@ -71,18 +81,22 @@ static void get_from_anything ( w_and_interface_t *wi )
   if (!result) {
     gdk_threads_enter();
     gtk_label_set_text ( GTK_LABEL(w->status), "Error: couldn't find gpsbabel." );
+    if ( creating_new_layer )
+      g_object_unref ( G_OBJECT ( vtl ) );
     gdk_threads_leave();
   } 
 
   gdk_threads_enter();
   if (w->ok) {
     gtk_label_set_text ( GTK_LABEL(w->status), "Done." );
+    if ( creating_new_layer )
     vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
     gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
     gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_REJECT, FALSE );
   } else {
     /* canceled */
-    g_object_unref(vtl);
+    if ( creating_new_layer )
+      g_object_unref(vtl);
   }
 
   if ( interface->cleanup_func )
