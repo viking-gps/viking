@@ -55,6 +55,7 @@ typedef gpointer  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog );
 typedef void (*VikDataSourceCleanupFunc) ( gpointer progress_widgets_data );
 
 struct _VikDataSourceInterface {
+  const gchar *window_title;
   const gchar *layer_title;
   vik_datasource_type_t type;
   vik_datasource_type_t mode;

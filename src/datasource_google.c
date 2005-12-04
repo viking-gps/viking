@@ -38,7 +38,8 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
 static void datasource_google_first_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_google_interface = {
-  "Acquire from Google",
+  "Google Directions",
+  "Google Directions",
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
   (VikDataSourceCheckExistenceFunc)	NULL,
@@ -70,9 +71,15 @@ gpointer datasource_google_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
 static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_type )
 {
   /* TODO: special characters handling!!! */
-  *cmd = g_strdup_printf( GOOGLE_DIRECTIONS_STRING, gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) ), gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) ) );
+  gchar *from_quoted, *to_quoted;
+  from_quoted = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) ) );
+  to_quoted = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) ) );
+
+  *cmd = g_strdup_printf( GOOGLE_DIRECTIONS_STRING, from_quoted, to_quoted );
   *input_type = g_strdup("google");
 
+  g_free(from_quoted);
+  g_free(to_quoted);
 }
 
 static void datasource_google_first_cleanup ( gpointer data )
