@@ -35,6 +35,7 @@ gpointer datasource_gps_add_progress_widgets ( GtkWidget *dialog );
 
 VikDataSourceInterface vik_datasource_gps_interface = {
   "Acquire from GPS",
+  "Acquired from GPS",
   VIK_DATASOURCE_GPSBABEL_DIRECT,
   VIK_DATASOURCE_CREATENEWLAYER,
   (VikDataSourceCheckExistenceFunc)	NULL,
@@ -193,8 +194,6 @@ gpointer datasource_gps_add_progress_widgets ( GtkWidget *dialog )
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), gpslabel, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), wplabel, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), trklabel, FALSE, FALSE, 5 );
-
-  gtk_window_set_title ( GTK_WINDOW(dialog), "Acquire data from GPS" );
 
   gtk_widget_show_all ( dialog );
 

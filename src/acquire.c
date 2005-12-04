@@ -152,6 +152,8 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
     dialog = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
 
     first_dialog_data = interface->add_widgets_func(dialog, vvp);
+    gtk_window_set_title ( GTK_WINDOW(dialog), interface->window_title );
+
     if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
       interface->first_cleanup_func(first_dialog_data);
       gtk_widget_destroy(dialog);
@@ -176,6 +178,7 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
 
   dialog = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_dialog_set_response_sensitive ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT, FALSE );
+  gtk_window_set_title ( GTK_WINDOW(dialog), interface->window_title );
 
 
   w->dialog = dialog;
@@ -193,6 +196,7 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
     w->specific_data = interface->add_progress_widgets_func ( dialog );
   else
     w->specific_data = NULL;
+
 
   g_thread_create((GThreadFunc)get_from_anything, wi, FALSE, NULL );
 

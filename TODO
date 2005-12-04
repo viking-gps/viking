@@ -1,17 +1,18 @@
+FEATURE FREEZE!!!
+--------------
 BEFORE RELEASE:
 	fix KH maps download
-	'zoom in too much' line drawing (ruler, tracks) bugs. maybe fix coord-to-screen to clip values (or make vik_viewport_coord_to_screen_clip)?
+	clipping -- OK as is?
 	fix SEGFAULT when clicking too far right on elevation diagram
-	acquire crashes, sometimes (???)
 	google maps download stops (try auto-download), extra processes in background doing nothing
 	GPSBABEL!!!
-		* existence checkers function, use for unbuffer, gcget, sed, wget, etc.
-		* error if gcget isn't functioning correctly
+		* existence check sed, wget, etc.
 		* Smooth over rough edges / ugliness / crashes
-		* Google address -> WP
-		* handling of special characters (both to wget/HTTP and shell) -- don't allow backdoor tricks
+------------------
 		* Filter a TRW layer: simplify paths, get out waypoints inside a path, etc.
 		* geocaches: all on screen / radius
+		* error if gcget isn't functioning correctly
+		* Google address -> WP
 
 FEATURES:
 	Paste GPX files into Viking -> TRW Layer

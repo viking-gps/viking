@@ -37,7 +37,8 @@ static void datasource_gc_first_cleanup ( gpointer data );
 static gchar *datasource_gc_check_existence ();
 
 VikDataSourceInterface vik_datasource_gc_interface = {
-  "Acquire from gc",
+  "Download Geocaches",
+  "Geocaching.com Caches",
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
   (VikDataSourceCheckExistenceFunc)	datasource_gc_check_existence,
