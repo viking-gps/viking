@@ -41,6 +41,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
   "Acquire from Google",
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
+  (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddWidgetsFunc)		datasource_google_add_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_google_get_cmd_string,
   (VikDataSourceFirstCleanupFunc)	datasource_google_first_cleanup,
