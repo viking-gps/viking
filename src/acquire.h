@@ -44,6 +44,10 @@ typedef gpointer (*VikDataSourceAddWidgetsFunc) ( GtkWidget *dialog, VikViewport
 /* if VIK_DATASOURCE_GPSBABEL_DIRECT, babelargs and inputfile.
    if VIK_DATASOURCE_SHELL_CMD, shellcmd and inputtype.
    set both to NULL to signal refusal (ie already downloading) */
+
+/* returns NULL if OK, otherwise returns an error message. */
+typedef gchar *(*VikDataSourceCheckExistenceFunc) ();
+
 typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer widgets_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
 typedef void (*VikDataSourceFirstCleanupFunc) ( gpointer widgets_data );
 typedef void  (*VikDataSourceProgressFunc)  (gpointer c, gpointer data, acq_dialog_widgets_t *w);
@@ -55,6 +59,7 @@ struct _VikDataSourceInterface {
   vik_datasource_type_t type;
   vik_datasource_type_t mode;
 
+  VikDataSourceCheckExistenceFunc check_existence_func; /* NULL if no first dialog */
   VikDataSourceAddWidgetsFunc add_widgets_func; /* NULL if no first dialog */
   VikDataSourceGetCmdStringFunc get_cmd_string_func; /* passed rv from above */
   VikDataSourceFirstCleanupFunc first_cleanup_func; /* frees rv from addwidgets */

@@ -31,14 +31,16 @@ typedef struct {
 } datasource_gc_widgets_t;
 
 
-gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp );
+static gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp );
 static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_type );	
 static void datasource_gc_first_cleanup ( gpointer data );
+static gchar *datasource_gc_check_existence ();
 
 VikDataSourceInterface vik_datasource_gc_interface = {
   "Acquire from gc",
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
+  (VikDataSourceCheckExistenceFunc)	datasource_gc_check_existence,
   (VikDataSourceAddWidgetsFunc)		datasource_gc_add_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_gc_get_cmd_string,
   (VikDataSourceFirstCleanupFunc)	datasource_gc_first_cleanup,
@@ -47,8 +49,17 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   (VikDataSourceCleanupFunc)		NULL
 };
 
+static gchar *datasource_gc_check_existence ()
+{
+  gchar *gcget_location = g_find_program_in_path("gcget");
+  if ( gcget_location ) {
+    g_free(gcget_location);
+    return NULL;
+  }
+  return g_strdup("Can't find gcget in path! Check that you have installed gcget correctly.");
+}
 
-gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
+static gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
 {
   datasource_gc_widgets_t *widgets = g_malloc(sizeof(*widgets));
   GtkWidget *num_label, *center_label;
@@ -75,10 +86,11 @@ gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
 
 static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_type )
 {
-  /* TODO: special characters handling!!! */
   /* TODO: we don't actually need GPSBabel... :-) */
-  *cmd = g_strdup_printf( "gcget %s %d", gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ), gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->num_spin) ) );
+  gchar *safe_string = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ) );
+  *cmd = g_strdup_printf( "gcget %s %d", safe_string, gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->num_spin) ) );
   *input_type = g_strdup("geo");
+  g_free ( safe_string );
 }
 
 static void datasource_gc_first_cleanup ( gpointer data )

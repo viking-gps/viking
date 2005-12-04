@@ -90,25 +90,36 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 {
   int fd_dst;
   gchar *name_dst;
-  gchar cmd[1024];
+  gchar *cmd;
   gboolean ret = FALSE;
   gchar **args;  
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) < 0) {
     ret = FALSE;
   } else {
+    gchar *gpsbabel_loc;
     close(fd_dst);
 
-    g_stpcpy(cmd, "/usr/local/bin/gpsbabel ");
-    g_strlcat(cmd, babelargs, sizeof(cmd));
-    g_strlcat(cmd, " -o gpx ", sizeof(cmd));
-    g_strlcat(cmd, from, sizeof(cmd));
-    g_strlcat(cmd, " ", sizeof(cmd));
-    g_strlcat(cmd, name_dst, sizeof(cmd));
+    gpsbabel_loc = g_find_program_in_path("gpsbabel");
 
-    args = g_strsplit(cmd, " ", 0);
-    ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
-    g_strfreev(args);
+    if (gpsbabel_loc ) {
+      gchar *unbuffer_loc = g_find_program_in_path("unbuffer");
+      cmd = g_strdup_printf ( "%s%s%s %s -o gpx %s %s",
+			      unbuffer_loc,
+			      unbuffer_loc ? " " : "",
+			      gpsbabel_loc,
+			      babelargs,
+			      from,
+			      name_dst );
+
+      if ( unbuffer_loc )
+        g_free ( unbuffer_loc );
+
+      args = g_strsplit(cmd, " ", 0);
+      ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
+      g_strfreev(args);
+      g_free ( cmd );
+    }
   }
 
   remove(name_dst);
