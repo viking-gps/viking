@@ -50,7 +50,6 @@ char *dirname ( char * dir )
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <malloc.h>
 
 /* dirname */
 #include <libgen.h>
