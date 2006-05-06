@@ -5,7 +5,7 @@ AC_PREREQ(2.59)
 AC_INIT(viking, 0.1.1pre2)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([src/config.h])
 
 # Checks for programs.
 AC_PROG_CC
