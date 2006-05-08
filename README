@@ -1,12 +1,15 @@
 To compile:
 
-make
+If you downloaded viking from CVS, you have to:
+$ autogen.sh
 
-Or if you're using GTK 2.2:
+Next, or if you downloaded a tarball, you have to:
+$ ./configure
+$ make
 
-make -f Makefile_GTK_2_2
+If you whish to install viking, you have to (as root):
+# make install
 
-... and ignore the GtkColorButton warnings etc.
 
 Viking needs documentation! Any volunteers?
 After I get some core features down I'll start on documentation. I promise.
