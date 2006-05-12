@@ -100,20 +100,20 @@ static void get_from_anything ( w_and_interface_t *wi )
       g_object_unref ( G_OBJECT ( vtl ) );
     gdk_threads_leave();
   } 
-
-  gdk_threads_enter();
-  if (w->ok) {
-    gtk_label_set_text ( GTK_LABEL(w->status), "Done." );
-    if ( creating_new_layer )
-    vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
-    gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
-    gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_REJECT, FALSE );
-  } else {
-    /* canceled */
-    if ( creating_new_layer )
-      g_object_unref(vtl);
+  else {
+	  gdk_threads_enter();
+	  if (w->ok) {
+		  gtk_label_set_text ( GTK_LABEL(w->status), "Done." );
+		  if ( creating_new_layer )
+			  vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
+		  gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
+		  gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_REJECT, FALSE );
+	  } else {
+		  /* canceled */
+		  if ( creating_new_layer )
+			  g_object_unref(vtl);
+	  }
   }
-
   if ( interface->cleanup_func )
     interface->cleanup_func ( w->specific_data );
 

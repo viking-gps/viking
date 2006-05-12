@@ -72,7 +72,7 @@ static void datasource_gps_get_cmd_string ( gpointer add_widgets_data_not_used, 
 
  gps_acquire_in_progress = TRUE;
  *babelargs = g_strdup_printf("%s", "-D 9 -t -w -i garmin");
- *input_file = g_strdup_printf("%s", "/dev/ttyS1" );
+ *input_file = g_strdup_printf("%s", "/dev/ttyS0" );
 }
 
 static void datasource_gps_cleanup ( gpointer data )
