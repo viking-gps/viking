@@ -306,6 +306,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk_trkseg_trkpt_time:
+
        if ( strptime(c_cdata->str, GPX_TIME_FORMAT, &tm) != c_cdata->str ) { /* it read at least one char */
          c_tp->timestamp = mktime(&tm);
          c_tp->has_timestamp = TRUE;

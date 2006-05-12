@@ -105,7 +105,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
     if (gpsbabel_loc ) {
       gchar *unbuffer_loc = g_find_program_in_path("unbuffer");
       cmd = g_strdup_printf ( "%s%s%s %s -o gpx %s %s",
-			      unbuffer_loc,
+			      unbuffer_loc ? unbuffer_loc : "",
 			      unbuffer_loc ? " " : "",
 			      gpsbabel_loc,
 			      babelargs,
