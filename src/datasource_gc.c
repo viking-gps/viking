@@ -31,9 +31,10 @@ typedef struct {
 } datasource_gc_widgets_t;
 
 
-static gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp );
+static gpointer datasource_gc_init ( );
+static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_type );	
-static void datasource_gc_first_cleanup ( gpointer data );
+static void datasource_gc_cleanup ( gpointer data );
 static gchar *datasource_gc_check_existence ();
 
 VikDataSourceInterface vik_datasource_gc_interface = {
@@ -41,14 +42,20 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   "Geocaching.com Caches",
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
+  (VikDataSourceInitFunc)		datasource_gc_init,
   (VikDataSourceCheckExistenceFunc)	datasource_gc_check_existence,
-  (VikDataSourceAddWidgetsFunc)		datasource_gc_add_widgets,
+  (VikDataSourceAddSetupWidgetsFunc)	datasource_gc_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_gc_get_cmd_string,
-  (VikDataSourceFirstCleanupFunc)	datasource_gc_first_cleanup,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
-  (VikDataSourceCleanupFunc)		NULL
+  (VikDataSourceCleanupFunc)		datasource_gc_cleanup
 };
+
+static gpointer datasource_gc_init ( )
+{
+  datasource_gc_widgets_t *widgets = g_malloc(sizeof(*widgets));
+  return widgets;
+}
 
 static gchar *datasource_gc_check_existence ()
 {
@@ -60,9 +67,9 @@ static gchar *datasource_gc_check_existence ()
   return g_strdup("Can't find gcget in path! Check that you have installed gcget correctly.");
 }
 
-static gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
+static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
 {
-  datasource_gc_widgets_t *widgets = g_malloc(sizeof(*widgets));
+  datasource_gc_widgets_t *widgets = (datasource_gc_widgets_t *)user_data;
   GtkWidget *num_label, *center_label;
   struct LatLon ll;
   gchar *s_ll;
@@ -82,7 +89,6 @@ static gpointer datasource_gc_add_widgets ( GtkWidget *dialog, VikViewport *vvp 
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), center_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), widgets->center_entry, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
-  return widgets;
 }
 
 static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_type )
@@ -94,7 +100,7 @@ static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gch
   g_free ( safe_string );
 }
 
-static void datasource_gc_first_cleanup ( gpointer data )
+static void datasource_gc_cleanup ( gpointer data )
 {
   g_free ( data );
 }
