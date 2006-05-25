@@ -44,9 +44,9 @@ static void progress_func ( BabelProgressCode c, gpointer data, acq_dialog_widge
 {
   gdk_threads_enter ();
   if (!w->ok) {
-    g_free ( w );
     if ( w->interface->cleanup_func )
-      w->interface->cleanup_func( w->specific_data );
+      w->interface->cleanup_func( w->user_data );
+    g_free ( w );
     gdk_threads_leave();
     g_thread_exit ( NULL );
   }
@@ -101,21 +101,21 @@ static void get_from_anything ( w_and_interface_t *wi )
     gdk_threads_leave();
   } 
   else {
-	  gdk_threads_enter();
-	  if (w->ok) {
-		  gtk_label_set_text ( GTK_LABEL(w->status), "Done." );
-		  if ( creating_new_layer )
-			  vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
-		  gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
-		  gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_REJECT, FALSE );
-	  } else {
-		  /* canceled */
-		  if ( creating_new_layer )
-			  g_object_unref(vtl);
-	  }
+    gdk_threads_enter();
+    if (w->ok) {
+      gtk_label_set_text ( GTK_LABEL(w->status), "Done." );
+      if ( creating_new_layer )
+	vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
+      gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
+      gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_REJECT, FALSE );
+    } else {
+      /* canceled */
+      if ( creating_new_layer )
+	g_object_unref(vtl);
+    }
   }
   if ( interface->cleanup_func )
-    interface->cleanup_func ( w->specific_data );
+    interface->cleanup_func ( w->user_data );
 
   if ( w->ok ) {
     w->ok = FALSE;
@@ -134,9 +134,13 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
   GtkWidget *status;
   gchar *cmd, *extra;
   acq_dialog_widgets_t *w;
+  gpointer user_data;
 
   w_and_interface_t *wi;
 
+  g_assert(interface->init_func);
+  user_data = interface->init_func();
+  
   if ( interface->check_existence_func ) {
     gchar *error_str = interface->check_existence_func();
     if ( error_str ) {
@@ -146,25 +150,22 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
     }
   }    
 
-  if ( interface->add_widgets_func ) {
-    gpointer first_dialog_data;
-
+  if ( interface->add_setup_widgets_func ) {
     dialog = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
 
-    first_dialog_data = interface->add_widgets_func(dialog, vvp);
+    interface->add_setup_widgets_func(dialog, vvp, user_data);
     gtk_window_set_title ( GTK_WINDOW(dialog), interface->window_title );
 
     if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
-      interface->first_cleanup_func(first_dialog_data);
+      interface->cleanup_func(user_data);
       gtk_widget_destroy(dialog);
       return;
     }
-    interface->get_cmd_string_func ( first_dialog_data, &cmd, &extra );
-    interface->first_cleanup_func(first_dialog_data);
+    interface->get_cmd_string_func ( user_data, &cmd, &extra );
     gtk_widget_destroy(dialog);
     dialog = NULL;
   } else
-    interface->get_cmd_string_func ( NULL, &cmd, &extra );
+    interface->get_cmd_string_func ( user_data, &cmd, &extra );
 
   if ( ! cmd )
     return;
@@ -183,7 +184,6 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
 
   w->dialog = dialog;
   w->ok = TRUE;
-
   status = gtk_label_new ("Status: detecting gpsbabel");
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), status, FALSE, FALSE, 5 );
   gtk_widget_show_all(status);
@@ -192,10 +192,10 @@ void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSo
   w->vw = vw;
   w->vlp = vlp;
   w->vvp = vvp;
-  if ( interface->add_progress_widgets_func )
-    w->specific_data = interface->add_progress_widgets_func ( dialog );
-  else
-    w->specific_data = NULL;
+  if ( interface->add_progress_widgets_func ) {
+    interface->add_progress_widgets_func ( dialog, user_data );
+  }
+  w->user_data = user_data;
 
 
   g_thread_create((GThreadFunc)get_from_anything, wi, FALSE, NULL );

@@ -32,27 +32,37 @@ typedef struct {
   VikViewport *vvp;
   GtkWidget *dialog;
   gboolean ok; /* if OK is false when we exit, we MUST free w */
-  gpointer specific_data;
   VikDataSourceInterface *interface;
+  gpointer user_data;
 } acq_dialog_widgets_t;
 
 typedef enum { VIK_DATASOURCE_GPSBABEL_DIRECT, VIK_DATASOURCE_SHELL_CMD } vik_datasource_type_t;
 typedef enum { VIK_DATASOURCE_CREATENEWLAYER, VIK_DATASOURCE_ADDTOLAYER } vik_datasource_mode_t;
 
-typedef gpointer (*VikDataSourceAddWidgetsFunc) ( GtkWidget *dialog, VikViewport *vvp );
 
-/* if VIK_DATASOURCE_GPSBABEL_DIRECT, babelargs and inputfile.
-   if VIK_DATASOURCE_SHELL_CMD, shellcmd and inputtype.
-   set both to NULL to signal refusal (ie already downloading) */
+/* returns pointer to state if OK, otherwise NULL */
+typedef gpointer (*VikDataSourceInitFunc) ();
 
 /* returns NULL if OK, otherwise returns an error message. */
 typedef gchar *(*VikDataSourceCheckExistenceFunc) ();
 
-typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer widgets_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
-typedef void (*VikDataSourceFirstCleanupFunc) ( gpointer widgets_data );
+/* Create widgets to show in a setup dialog, set up state via user_data */
+typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
+
+/* if VIK_DATASOURCE_GPSBABEL_DIRECT, babelargs and inputfile.
+   if VIK_DATASOURCE_SHELL_CMD, shellcmd and inputtype.
+   set both to NULL to signal refusal (ie already downloading) */
+typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
+
+/* */
 typedef void  (*VikDataSourceProgressFunc)  (gpointer c, gpointer data, acq_dialog_widgets_t *w);
-typedef gpointer  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog );
-typedef void (*VikDataSourceCleanupFunc) ( gpointer progress_widgets_data );
+
+/* Creates widgets to show in a progress dialog, may set up state via user_data */
+typedef void  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog, gpointer user_data );
+
+/* Frees any widgets created for the setup or progress dialogs, any allocated state, etc. */
+typedef void (*VikDataSourceCleanupFunc) ( gpointer user_data );
+
 
 struct _VikDataSourceInterface {
   const gchar *window_title;
@@ -60,10 +70,10 @@ struct _VikDataSourceInterface {
   vik_datasource_type_t type;
   vik_datasource_type_t mode;
 
-  VikDataSourceCheckExistenceFunc check_existence_func; /* NULL if no first dialog */
-  VikDataSourceAddWidgetsFunc add_widgets_func; /* NULL if no first dialog */
-  VikDataSourceGetCmdStringFunc get_cmd_string_func; /* passed rv from above */
-  VikDataSourceFirstCleanupFunc first_cleanup_func; /* frees rv from addwidgets */
+  VikDataSourceInitFunc init_func;
+  VikDataSourceCheckExistenceFunc check_existence_func;
+  VikDataSourceAddSetupWidgetsFunc add_setup_widgets_func;      
+  VikDataSourceGetCmdStringFunc get_cmd_string_func; 
 
   VikDataSourceProgressFunc progress_func;
   VikDataSourceAddProgressWidgetsFunc add_progress_widgets_func;

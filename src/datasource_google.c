@@ -33,28 +33,34 @@ typedef struct {
 } datasource_google_widgets_t;
 
 
-gpointer datasource_google_add_widgets ( GtkWidget *dialog, VikViewport *vvp );
+static gpointer datasource_google_init( );
+static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_type );	
-static void datasource_google_first_cleanup ( gpointer data );
+static void datasource_google_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_google_interface = {
   "Google Directions",
   "Google Directions",
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
+  (VikDataSourceInitFunc)		datasource_google_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
-  (VikDataSourceAddWidgetsFunc)		datasource_google_add_widgets,
+  (VikDataSourceAddSetupWidgetsFunc)	datasource_google_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_google_get_cmd_string,
-  (VikDataSourceFirstCleanupFunc)	datasource_google_first_cleanup,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
-  (VikDataSourceCleanupFunc)		NULL
+  (VikDataSourceCleanupFunc)		datasource_google_cleanup,
 };
 
-
-gpointer datasource_google_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
+static gpointer datasource_google_init ( )
 {
   datasource_google_widgets_t *widgets = g_malloc(sizeof(*widgets));
+  return widgets;
+}
+
+static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
+{
+  datasource_google_widgets_t *widgets = (datasource_google_widgets_t *)user_data;
   GtkWidget *from_label, *to_label;
   from_label = gtk_label_new ("From:");
   widgets->from_entry = gtk_entry_new();
@@ -65,7 +71,6 @@ gpointer datasource_google_add_widgets ( GtkWidget *dialog, VikViewport *vvp )
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), to_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), widgets->to_entry, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
-  return widgets;
 }
 
 static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_type )
@@ -82,7 +87,7 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
   g_free(to_quoted);
 }
 
-static void datasource_google_first_cleanup ( gpointer data )
+static void datasource_google_cleanup ( gpointer data )
 {
   g_free ( data );
 }

@@ -1,3 +1,8 @@
+2006-05-25
+Alex Foobarian <foobarian@gmail.com>:
+	* Cleaned up the data source interface
+	* Added a setup dialog to the GPS data source, with protocol type and serial port location
+
 2006-05-12
 Alex Foobarian <foobarian@gmail.com>:
 	* Small fixes in Acquire from GPS code
