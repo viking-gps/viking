@@ -7,6 +7,10 @@ Alex Foobarian <foobarian@gmail.com>:
 Alex Foobarian <foobarian@gmail.com>:
 	* Small fixes in Acquire from GPS code
 
+2006-05-08  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+
+	* autogen.sh: simpler method to start from CVS
+
 2005-12-03
 Evan Battaglia <gtoevan@gmx.net>
 	* Data sources -- check for existence of necessary things
