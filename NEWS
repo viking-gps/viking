@@ -1,0 +1,15 @@
+Viking 0.1.1 (2006-06-11)
+- more map sources such as google
+- drag and drop of layers and way/trackpoints
+- copy/paste between vikings
+- "smart" copy which can parse a lat/lon from web pages like geocaching, emails, etc.
+- graphs of altitude/velocity
+- newer gtk with toolbar icons
+- experimental "acquire" features: from GPS, from Google directions, from Geocaching
+- gpx support
+
+Viking 0.1.0 (2005-02-27)
+- new map layer which supports Google, Expedia, and Topozone maps in addition to the three types of Terraserver maps,
+- lots of other fixes,
+- visualization options,
+- miscellaneous goodies.
