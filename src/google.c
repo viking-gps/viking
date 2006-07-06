@@ -82,7 +82,7 @@ static void real_google_download ( MapCoord *src, const gchar *dest_fn, const ch
 
 void google_download ( MapCoord *src, const gchar *dest_fn )
 {
-   real_google_download ( src, dest_fn, "w2.5" );
+   real_google_download ( src, dest_fn, "w2.15" );
 }
 
 void google_trans_download ( MapCoord *src, const gchar *dest_fn )
