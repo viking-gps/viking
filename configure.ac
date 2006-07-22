@@ -66,6 +66,7 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/icons/Makefile
+                 test/Makefile
                  doc/Makefile
                  doc/dev/Makefile])
 AC_OUTPUT

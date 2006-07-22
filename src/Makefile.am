@@ -4,8 +4,10 @@
 SUBDIRS = icons
 
 bin_PROGRAMS = viking
+
 viking_SOURCES = main.c \
 	menu.xml.h \
+    degrees_converters.c degrees_converters.h \
 	viking.h globals.h mapcoord.h config.h \
 	viktrack.c viktrack.h \
 	vikwaypoint.c vikwaypoint.h \
