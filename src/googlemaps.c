@@ -72,7 +72,7 @@ void googlemaps_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 
 void googlemaps_download ( MapCoord *src, const gchar *dest_fn )
 {
-   gchar *uri = g_strdup_printf ( "/mt?v=.3&x=%d&y=%d&zoom=%d", src->x, src->y, src->scale );
+   gchar *uri = g_strdup_printf ( "/mt?&x=%d&y=%d&zoom=%d", src->x, src->y, src->scale );
    a_http_download_get_url ( "mt.google.com", uri, dest_fn );
    g_free ( uri );
 }
