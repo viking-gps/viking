@@ -4,6 +4,9 @@
 
 #include <glib.h>
 
+gchar *convert_lat_dec_to_dmm(gdouble lat);
+gchar *convert_lon_dec_to_dmm(gdouble lon);
+
 gchar *convert_lat_dec_to_dms(gdouble lat);
 gchar *convert_lon_dec_to_dms(gdouble lon);
 

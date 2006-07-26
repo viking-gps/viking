@@ -1,7 +1,50 @@
 #include <math.h>
 #include <glib.h>
-
 #include <stdio.h>
+#include <string.h>
+
+/**
+ * @param pos_c char for positive value
+ * @param neg_c char for negative value
+ */
+static gchar *convert_dec_to_dmm(gdouble dec, gchar pos_c, gchar neg_c)
+{
+  gdouble tmp;
+  gchar sign_c = ' ';
+  gint val_d;
+  gdouble val_m;
+  gchar *result = NULL;
+
+  if ( dec > 0 )
+    sign_c = pos_c;
+  else if ( dec < 0 )
+    sign_c = neg_c;
+  else /* Nul value */
+    sign_c = ' ';
+
+  /* Degree */
+  tmp = fabs(dec);
+  val_d = (gint)tmp;
+
+  /* Minutes */
+  val_m = (tmp - val_d) * 60;
+
+  /* Format */
+  /* TODO : replace "°" as UTF-8 */
+  result = g_strdup_printf ( "%c%d°%f'",
+                             sign_c, val_d, val_m );
+  return result;
+}
+
+gchar *convert_lat_dec_to_dmm(gdouble lat)
+{
+  return convert_dec_to_dmm(lat, 'N', 'S');
+}
+
+gchar *convert_lon_dec_to_dmm(gdouble lon)
+{
+  return convert_dec_to_dmm(lon, 'E', 'W');
+}
 
 /**
  * @param pos_c char for positive value
@@ -15,7 +58,6 @@ static gchar *convert_dec_to_dms(gdouble dec, gchar pos_c, gchar neg_c)
   gdouble val_s;
   gchar *result = NULL;
 
-  /* North ? South ? */
   if ( dec > 0 )
     sign_c = pos_c;
   else if ( dec < 0 )
@@ -61,7 +103,7 @@ gdouble convert_dms_to_dec(const gchar *dms)
 	
 	if (dms != NULL) {
 		int nbFloat = 0;
-		gchar *ptr, *endptr;
+		const gchar *ptr, *endptr;
 
 		// Compute the sign
 		// It is negative if:
