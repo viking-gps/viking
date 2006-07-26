@@ -3,68 +3,52 @@
 
 #include <stdio.h>
 
-gchar *convert_lat_dec_to_dms(gdouble lat)
+/**
+ * @param pos_c char for positive value
+ * @param neg_c char for negative value
+ */
+static gchar *convert_dec_to_dms(gdouble dec, gchar pos_c, gchar neg_c)
 {
   gdouble tmp;
-  gchar lat_c;
-  gint lat_d, lat_m;
-  gdouble lat_s;
+  gchar sign_c = ' ';
+  gint val_d, val_m;
+  gdouble val_s;
   gchar *result = NULL;
 
   /* North ? South ? */
-  if ( lat > 0 )
-    lat_c = 'N';
-  else
-    lat_c = 'S';
+  if ( dec > 0 )
+    sign_c = pos_c;
+  else if ( dec < 0 )
+    sign_c = neg_c;
+  else /* Nul value */
+    sign_c = ' ';
 
   /* Degree */
-  tmp = fabs(lat);
-  lat_d = (gint)tmp;
+  tmp = fabs(dec);
+  val_d = (gint)tmp;
 
   /* Minutes */
-  tmp = (tmp - lat_d) * 60;
-  lat_m = (gint)tmp;
+  tmp = (tmp - val_d) * 60;
+  val_m = (gint)tmp;
 
   /* Minutes */
-  lat_s = (tmp - lat_m) * 60;
+  val_s = (tmp - val_m) * 60;
 
   /* Format */
-  /* todo : replace "deg" substring by "°" as UTF-8 */
-  result = g_strdup_printf ( "%c %d° %d' %f",
-                             lat_c, lat_d, lat_m, lat_s );
+  /* TODO : replace "°" as UTF-8 */
+  result = g_strdup_printf ( "%c%d°%d'%f\"",
+                             sign_c, val_d, val_m, val_s );
   return result;
+}
+
+gchar *convert_lat_dec_to_dms(gdouble lat)
+{
+  return convert_dec_to_dms(lat, 'N', 'S');
 }
 
 gchar *convert_lon_dec_to_dms(gdouble lon)
 {
-  gdouble tmp;
-  gchar lon_c;
-  gint lon_d, lon_m;
-  gdouble lon_s;
-  gchar *result = NULL;
-
-  /* North ? South ? */
-  if ( lon > 0 )
-    lon_c = 'E';
-  else
-    lon_c = 'W';
-
-  /* Degree */
-  tmp = fabs(lon);
-  lon_d = (gint)tmp;
-
-  /* Minutes */
-  tmp = (tmp - lon_d) * 60;
-  lon_m = (gint)tmp;
-
-  /* Minutes */
-  lon_s = (tmp - lon_m) * 60;
-
-  /* Format */
-  /* todo : replace "deg" substring by "°" as UTF-8 */
-  result = g_strdup_printf ( "%c %d° %d' %f\"",
-                             lon_c, lon_d, lon_m, lon_s );
-  return result;
+  return convert_dec_to_dms(lon, 'E', 'W');
 }
 
 gdouble convert_dms_to_dec(const gchar *dms)
