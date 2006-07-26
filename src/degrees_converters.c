@@ -7,6 +7,42 @@
  * @param pos_c char for positive value
  * @param neg_c char for negative value
  */
+static gchar *convert_dec_to_ddd(gdouble dec, gchar pos_c, gchar neg_c)
+{
+  gchar sign_c = ' ';
+  gdouble val_d;
+  gchar *result = NULL;
+
+  if ( dec > 0 )
+    sign_c = pos_c;
+  else if ( dec < 0 )
+    sign_c = neg_c;
+  else /* Nul value */
+    sign_c = ' ';
+
+  /* Degree */
+  val_d = fabs(dec);
+
+  /* Format */
+  /* TODO : replace "°" as UTF-8 */
+  result = g_strdup_printf ( "%c%f°", sign_c, val_d );
+  return result;
+}
+
+gchar *convert_lat_dec_to_ddd(gdouble lat)
+{
+  return convert_dec_to_ddd(lat, 'N', 'S');
+}
+
+gchar *convert_lon_dec_to_ddd(gdouble lon)
+{
+  return convert_dec_to_ddd(lon, 'E', 'W');
+}
+
+/**
+ * @param pos_c char for positive value
+ * @param neg_c char for negative value
+ */
 static gchar *convert_dec_to_dmm(gdouble dec, gchar pos_c, gchar neg_c)
 {
   gdouble tmp;
