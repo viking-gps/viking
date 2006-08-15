@@ -22,6 +22,7 @@
 #include "viking.h"
 #include "thumbnails.h"
 #include "garminsymbols.h"
+#include "degrees_converters.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -72,8 +73,8 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
-    ll->lat = atof ( gtk_entry_get_text ( GTK_ENTRY(lat) ) );
-    ll->lon = atof ( gtk_entry_get_text ( GTK_ENTRY(lon) ) );
+    ll->lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lat) ) );
+    ll->lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lon) ) );
     gtk_widget_destroy ( dialog );
     return TRUE;
   }
@@ -292,8 +293,8 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
         {
           /* Do It */
           *dest = name;
-          ll.lat = atof ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
-          ll.lon = atof ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
+          ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
+          ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
           vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
           wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
           vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
@@ -321,8 +322,8 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     }
     else
     {
-      ll.lat = atof ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
-      ll.lon = atof ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
+      ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
+      ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
       wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
       if ( (! wp->comment) || strcmp ( wp->comment, gtk_entry_get_text ( GTK_ENTRY(commententry) ) ) != 0 )
