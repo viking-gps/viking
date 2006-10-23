@@ -333,6 +333,7 @@ gboolean vik_aggregate_layer_delete ( VikAggregateLayer *val, GtkTreeIter *iter 
   return was_visible;
 }
 
+#if 0
 /* returns 0 == we're good, 1 == didn't find any layers, 2 == got rejected */
 guint vik_aggregate_layer_tool ( VikAggregateLayer *val, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp )
 {
@@ -367,6 +368,7 @@ guint vik_aggregate_layer_tool ( VikAggregateLayer *val, guint16 layer_type, Vik
   }
   return found_rej ? 2 : 1; /* no one wanted to accept the tool call in this layer */
 }
+#endif 
 
 VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer *val, gint type )
 {

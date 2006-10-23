@@ -461,6 +461,7 @@ static void layers_move_item_down ( VikLayersPanel *vlp )
   layers_move_item ( vlp, FALSE );
 }
 
+#if 0
 gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp )
 {
   VikLayer *vl = vik_layers_panel_get_selected ( vlp );
@@ -474,6 +475,7 @@ gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToo
     return TRUE;
   return FALSE;
 }
+#endif
 
 VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, gint type )
 {

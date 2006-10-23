@@ -29,7 +29,6 @@ FEATURES:
 	Selections (select waypoints, tracks in an area)
 
 EASY FIXES:
-	"Interesting" stuff happens when we swich modes while using the ruler.
 	"click to go there" elevation map: average out, not nearest trackpoint.
 	Ruler: calculate degrees by spherical geometry formula ('zoom in too much' bug -- coord_to_screen out of range of double)
 		for UTM: rotate compass for declination.

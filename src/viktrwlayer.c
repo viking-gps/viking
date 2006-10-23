@@ -183,8 +183,6 @@ static void trw_layer_realize_waypoint ( gchar *name, VikWaypoint *wp, gpointer 
 static void trw_layer_realize_track ( gchar *name, VikTrack *track, gpointer pass_along[4] );
 static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
 
-static gboolean tool_new_waypoint ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-static gboolean tool_new_track ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp );
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len );
@@ -203,12 +201,19 @@ static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
-static gboolean tool_edit_trackpoint ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-static gboolean tool_show_picture ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
-static gboolean tool_edit_waypoint ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 static gboolean uppercase_exists_in_hash ( GHashTable *hash, const gchar *str );
 
@@ -226,13 +231,21 @@ static void waypoint_convert ( const gchar *name, VikWaypoint *wp, VikCoordMode 
 static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_mode );
 
 static VikToolInterface trw_layer_tools[] = {
-  { "Create Waypoint", (VikToolInterfaceFunc) tool_new_waypoint, NULL },
-  { "Create Track", (VikToolInterfaceFunc) tool_new_track, NULL },
-  { "Edit Waypoint", (VikToolInterfaceFunc) tool_edit_waypoint, (VikToolInterfaceFunc) tool_edit_waypoint_release },
-  { "Edit Trackpoint", (VikToolInterfaceFunc) tool_edit_trackpoint, (VikToolInterfaceFunc) tool_edit_trackpoint_release },
-  { "Show Picture", (VikToolInterfaceFunc) tool_show_picture, NULL }, 
-};
+  { "Create Waypoint", (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL, 
+    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL },
 
+  { "Create Track",    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
+    (VikToolMouseFunc) tool_new_track_click,       NULL, NULL },
+
+  { "Edit Waypoint",   (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL, 
+    (VikToolMouseFunc) tool_edit_waypoint_click,   NULL, (VikToolMouseFunc) tool_edit_waypoint_release },
+
+  { "Edit Trackpoint", (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL, 
+    (VikToolMouseFunc) tool_edit_trackpoint_click, NULL, (VikToolMouseFunc) tool_edit_trackpoint_release },
+
+  { "Show Picture",    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
+    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL },
+};
 
 /****** PARAMETERS ******/
 
@@ -551,7 +564,7 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
     a_gpx_write_file(vtl, f);
     vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
     fclose(f);
-    g_file_get_contents(tmpname, (void *)&dd, &dl, NULL);
+    g_file_get_contents(tmpname, (void *)&dd, (void *)&dl, NULL);
     *len = sizeof(pl) + pl + dl;
     *data = g_malloc(*len);
     memcpy(*data, &pl, sizeof(pl));
@@ -803,7 +816,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
   gboolean drawpoints;
   gboolean drawstops;
   gboolean drawelevation;
-  gdouble min_alt, max_alt, alt_diff;
+  gdouble min_alt, max_alt, alt_diff = 0;
 
   const guint8 tp_size_reg = 2;
   const guint8 tp_size_cur = 4;
@@ -1593,7 +1606,7 @@ static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type
  gint i = 2;
  gchar *newname = g_strdup(name);
  while ((sublayer_type == VIK_TRW_LAYER_SUBLAYER_TRACK) ?
-         vik_trw_layer_get_track(vtl, newname) : vik_trw_layer_get_waypoint(vtl, newname)) {
+         (void *)vik_trw_layer_get_track(vtl, newname) : (void *)vik_trw_layer_get_waypoint(vtl, newname)) {
     gchar *new_newname = g_strdup_printf("%s#%d", name, i);
     g_free(newname);
     newname = new_newname;
@@ -2297,100 +2310,6 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
   return rv;
 }
 
-/* Params are: vvp, event, last match found or NULL */
-static void tool_show_picture_wp ( char *name, VikWaypoint *wp, gpointer params[2] )
-{
-  if ( wp->image && wp->visible )
-  {
-    gint x, y, slackx, slacky;
-    GdkEventButton *event = (GdkEventButton *) params[1];
-
-    vik_viewport_coord_to_screen ( VIK_VIEWPORT(params[0]), &(wp->coord), &x, &y );
-    slackx = wp->image_width / 2;
-    slacky = wp->image_height / 2;
-    if (    x <= event->x + slackx && x >= event->x - slackx
-         && y <= event->y + slacky && y >= event->y - slacky )
-    {
-      params[2] = wp->image; /* we've found a match. however continue searching
-                              * since we want to find the last match -- that
-                              * is, the match that was drawn last. */
-    }
-  }
-}
-
-static gboolean tool_show_picture ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
-{
-  gpointer params[3] = { vvp, event, NULL };
-  g_hash_table_foreach ( vtl->waypoints, (GHFunc) tool_show_picture_wp, params );
-  if ( params[2] )
-  {
-    /* thanks to the Gaim people for showing me ShellExecute and g_spawn_command_line_async */
-#ifdef WINDOWS
-    ShellExecute(NULL, NULL, (char *) params[2], NULL, ".\\", 0);
-#else /* WINDOWS */
-    GError *err = NULL;
-    gchar *quoted_file = g_shell_quote ( (gchar *) params[2] );
-    gchar *cmd = g_strdup_printf ( "eog %s", quoted_file );
-    g_free ( quoted_file );
-    if ( ! g_spawn_command_line_async ( cmd, &err ) )
-    {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "Could not launch eog to open file." );
-      g_error_free ( err );
-    }
-    g_free ( cmd );
-#endif /* WINDOWS */
-    return TRUE; /* found a match */
-  }
-  else
-    return FALSE; /* go through other layers, searching for a match */
-}
-
-static gboolean tool_new_waypoint ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
-{
-  VikCoord coord;
-  vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
-  if (vik_trw_layer_new_waypoint ( vtl, VIK_GTK_WINDOW_FROM_LAYER(vtl), &coord ) && VIK_LAYER(vtl)->visible)
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
-  return TRUE;
-}
-
-typedef struct {
-  gint x, y;
-  gint closest_x, closest_y;
-  gchar *closest_track_name;
-  VikTrackpoint *closest_tp;
-  VikViewport *vvp;
-  GList *closest_tpl;
-} TPSearchParams;
-
-static void track_search_closest_tp ( gchar *name, VikTrack *t, TPSearchParams *params )
-{
-  GList *tpl = t->trackpoints;
-  VikTrackpoint *tp;
-
-  if ( !t->visible )
-    return;
-
-  while (tpl)
-  {
-    gint x, y;
-    tp = VIK_TRACKPOINT(tpl->data);
-
-    vik_viewport_coord_to_screen ( params->vvp, &(tp->coord), &x, &y );
- 
-    if ( abs (x - params->x) <= TRACKPOINT_SIZE_APPROX && abs (y - params->y) <= TRACKPOINT_SIZE_APPROX &&
-        ((!params->closest_tp) ||        /* was the old trackpoint we already found closer than this one? */
-          abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
-    {
-      params->closest_track_name = name;
-      params->closest_tp = tp;
-      params->closest_tpl = tpl;
-      params->closest_x = x;
-      params->closest_y = y;
-    }
-    tpl = tpl->next;
-  }
-}
 
 /* to be called when last_tpl no long exists. */
 static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl )
@@ -2553,102 +2472,11 @@ static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
   /* set layer name and TP data */
 }
 
-static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
-{
-  TPSearchParams params;
-  params.x = x;
-  params.y = y;
-  params.vvp = vvp;
-  params.closest_track_name = NULL;
-  params.closest_tp = NULL;
-  g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
-  return params.closest_tp;
-}
+/***************************************************************************
+ ** Tool code
+ ***************************************************************************/
 
-static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
-{
-  if ( vtl->moving_tp )
-  {
-    /* vtl->moving_tp_x, vtl->moving_tp_y, etc. */
-    VikCoord new_coord;
-    vtl->moving_tp = FALSE;
-    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
-
-    /* snap to TP */
-    if ( event->state & GDK_CONTROL_MASK )
-    {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
-      if ( tp && tp != vtl->current_tpl->data )
-        new_coord = tp->coord;
-    }
-
-    VIK_TRACKPOINT(vtl->current_tpl->data)->coord = new_coord;
-
-    /* diff dist is diff from orig */
-    vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
-    /* can't join with itself! */
-    trw_layer_cancel_last_tp ( vtl );
-
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
-  }
-  return FALSE;
-}
-
-static gboolean tool_edit_trackpoint ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
-{
-  TPSearchParams params;
-  /* OUTDATED DOCUMENTATION:
-   find 5 pixel range on each side. then put these UTM, and a pointer
-   to the winning track name (and maybe the winning track itself), and a
-   pointer to the winning trackpoint, inside an array or struct. pass 
-   this along, do a foreach on the tracks which will do a foreach on the 
-   trackpoints. */
-  params.vvp = vvp;
-  params.x = event->x;
-  params.y = event->y;
-  params.closest_track_name = NULL;
-  /* TODO: should get track listitem so we can break it up, make a new track, mess it up, all that. */
-  params.closest_tp = NULL;
-
-  if ( vtl->current_tpl )
-  {
-    /* first check if it is within range of prev. tp. and if current_tp track is shown. (if it is, we are moving that trackpoint.) */
-    VikTrackpoint *tp = VIK_TRACKPOINT(vtl->current_tpl->data);
-    VikTrack *current_tr = VIK_TRACK(g_hash_table_lookup(vtl->tracks, vtl->current_tp_track_name));
-    gint x, y;
-    g_assert ( current_tr );
-
-    vik_viewport_coord_to_screen ( vvp, &(tp->coord), &x, &y );
-
-    if ( current_tr->visible && 
-         abs(x - event->x) < TRACKPOINT_SIZE_APPROX &&
-         abs(y - event->y) < TRACKPOINT_SIZE_APPROX )
-    {
-      vtl->moving_tp = TRUE;
-      return TRUE;
-    }
-
-    vtl->last_tpl = vtl->current_tpl;
-    vtl->last_tp_track_name = vtl->current_tp_track_name;
-  }
-
-  g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
-
-  if ( params.closest_tp )
-  {
-    vtl->current_tpl = params.closest_tpl;
-    vtl->current_tp_track_name = params.closest_track_name;
-    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, vtl->current_tp_track_name ) );
-    trw_layer_tpwin_init ( vtl );
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
-  }
-
-
-  /* these aren't the droids you're looking for */
-  return FALSE;
-}
+/*** Utility data structures and functions ****/
 
 typedef struct {
   gint x, y;
@@ -2657,6 +2485,15 @@ typedef struct {
   VikWaypoint *closest_wp;
   VikViewport *vvp;
 } WPSearchParams;
+
+typedef struct {
+  gint x, y;
+  gint closest_x, closest_y;
+  gchar *closest_track_name;
+  VikTrackpoint *closest_tp;
+  VikViewport *vvp;
+  GList *closest_tpl;
+} TPSearchParams;
 
 static void waypoint_search_closest_tp ( gchar *name, VikWaypoint *wp, WPSearchParams *params )
 {
@@ -2677,45 +2514,45 @@ static void waypoint_search_closest_tp ( gchar *name, VikWaypoint *wp, WPSearchP
   }
 }
 
-static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static void track_search_closest_tp ( gchar *name, VikTrack *t, TPSearchParams *params )
 {
-  if ( vtl->moving_wp )
+  GList *tpl = t->trackpoints;
+  VikTrackpoint *tp;
+
+  if ( !t->visible )
+    return;
+
+  while (tpl)
   {
-    VikCoord new_coord;
-    vtl->moving_wp = FALSE;
-    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
+    gint x, y;
+    tp = VIK_TRACKPOINT(tpl->data);
 
-    /* snap to TP */
-    if ( event->state & GDK_CONTROL_MASK )
+    vik_viewport_coord_to_screen ( params->vvp, &(tp->coord), &x, &y );
+ 
+    if ( abs (x - params->x) <= TRACKPOINT_SIZE_APPROX && abs (y - params->y) <= TRACKPOINT_SIZE_APPROX &&
+        ((!params->closest_tp) ||        /* was the old trackpoint we already found closer than this one? */
+          abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
     {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
-      if ( tp )
-        new_coord = tp->coord;
+      params->closest_track_name = name;
+      params->closest_tp = tp;
+      params->closest_tpl = tpl;
+      params->closest_x = x;
+      params->closest_y = y;
     }
-
-    /* snap to WP */
-    if ( event->state & GDK_SHIFT_MASK )
-    {
-      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
-      if ( wp && wp != vtl->current_wp )
-        new_coord = wp->coord;
-    }
-
-    vtl->current_wp->coord = new_coord;
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
+    tpl = tpl->next;
   }
-  /* PUT IN RIGHT PLACE!!! */
-  if ( vtl->waypoint_rightclick )
-  {
-    if ( vtl->wp_right_click_menu )
-      gtk_object_sink ( GTK_OBJECT(vtl->wp_right_click_menu) );
-    vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
-    vik_trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_name, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name  ) );
-    gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
-    vtl->waypoint_rightclick = FALSE;
-  }
-  return FALSE;
+}
+
+static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
+{
+  TPSearchParams params;
+  params.x = x;
+  params.y = y;
+  params.vvp = vvp;
+  params.closest_track_name = NULL;
+  params.closest_tp = NULL;
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
+  return params.closest_tp;
 }
 
 static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
@@ -2730,10 +2567,19 @@ static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikVie
   return params.closest_wp;
 }
 
-static gboolean tool_edit_waypoint ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+/*** Edit waypoint ****/
+
+static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   WPSearchParams params;
 
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
   if ( vtl->current_wp && vtl->current_wp->visible )
   {
     /* first check if current WP is within area (other may be 'closer', but we want to move the current) */
@@ -2788,9 +2634,62 @@ static gboolean tool_edit_waypoint ( VikTrwLayer *vtl, GdkEventButton *event, Vi
   return FALSE;
 }
 
-static gboolean tool_new_track ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+  if ( vtl->moving_wp )
+  {
+    VikCoord new_coord;
+    vtl->moving_wp = FALSE;
+    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
+
+    /* snap to TP */
+    if ( event->state & GDK_CONTROL_MASK )
+    {
+      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( tp )
+        new_coord = tp->coord;
+    }
+
+    /* snap to WP */
+    if ( event->state & GDK_SHIFT_MASK )
+    {
+      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( wp && wp != vtl->current_wp )
+        new_coord = wp->coord;
+    }
+
+    vtl->current_wp->coord = new_coord;
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+  /* PUT IN RIGHT PLACE!!! */
+  if ( vtl->waypoint_rightclick )
+  {
+    if ( vtl->wp_right_click_menu )
+      gtk_object_sink ( GTK_OBJECT(vtl->wp_right_click_menu) );
+    vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
+    vik_trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_name, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name  ) );
+    gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+    vtl->waypoint_rightclick = FALSE;
+  }
+  return FALSE;
+}
+
+/*** New track ****/
+
+static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   VikTrackpoint *tp;
+
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
 
   if ( event->button == 3 && vtl->current_track )
   {
@@ -2856,6 +2755,189 @@ static gboolean tool_new_track ( VikTrwLayer *vtl, GdkEventButton *event, VikVie
   vik_layer_emit_update ( VIK_LAYER(vtl) );
   return TRUE;
 }
+
+
+/*** New waypoint ****/
+
+static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  VikCoord coord;
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+  vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
+  if (vik_trw_layer_new_waypoint ( vtl, VIK_GTK_WINDOW_FROM_LAYER(vtl), &coord ) && VIK_LAYER(vtl)->visible)
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+  return TRUE;
+}
+
+
+/*** Edit trackpoint ****/
+
+static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+   TPSearchParams params;
+  /* OUTDATED DOCUMENTATION:
+   find 5 pixel range on each side. then put these UTM, and a pointer
+   to the winning track name (and maybe the winning track itself), and a
+   pointer to the winning trackpoint, inside an array or struct. pass 
+   this along, do a foreach on the tracks which will do a foreach on the 
+   trackpoints. */
+  params.vvp = vvp;
+  params.x = event->x;
+  params.y = event->y;
+  params.closest_track_name = NULL;
+  /* TODO: should get track listitem so we can break it up, make a new track, mess it up, all that. */
+  params.closest_tp = NULL;
+
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+
+  if ( vtl->current_tpl )
+  {
+    /* first check if it is within range of prev. tp. and if current_tp track is shown. (if it is, we are moving that trackpoint.) */
+    VikTrackpoint *tp = VIK_TRACKPOINT(vtl->current_tpl->data);
+    VikTrack *current_tr = VIK_TRACK(g_hash_table_lookup(vtl->tracks, vtl->current_tp_track_name));
+    gint x, y;
+    g_assert ( current_tr );
+
+    vik_viewport_coord_to_screen ( vvp, &(tp->coord), &x, &y );
+
+    if ( current_tr->visible && 
+         abs(x - event->x) < TRACKPOINT_SIZE_APPROX &&
+         abs(y - event->y) < TRACKPOINT_SIZE_APPROX )
+    {
+      vtl->moving_tp = TRUE;
+      return TRUE;
+    }
+
+    vtl->last_tpl = vtl->current_tpl;
+    vtl->last_tp_track_name = vtl->current_tp_track_name;
+  }
+
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
+
+  if ( params.closest_tp )
+  {
+    vtl->current_tpl = params.closest_tpl;
+    vtl->current_tp_track_name = params.closest_track_name;
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, vtl->current_tp_track_name ) );
+    trw_layer_tpwin_init ( vtl );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+
+  /* these aren't the droids you're looking for */
+  return FALSE;
+}
+
+
+static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+  if ( vtl->moving_tp )
+  {
+    /* vtl->moving_tp_x, vtl->moving_tp_y, etc. */
+    VikCoord new_coord;
+    vtl->moving_tp = FALSE;
+    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
+
+    /* snap to TP */
+    if ( event->state & GDK_CONTROL_MASK )
+    {
+      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( tp && tp != vtl->current_tpl->data )
+        new_coord = tp->coord;
+    }
+
+    VIK_TRACKPOINT(vtl->current_tpl->data)->coord = new_coord;
+
+    /* diff dist is diff from orig */
+    vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
+    /* can't join with itself! */
+    trw_layer_cancel_last_tp ( vtl );
+
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+  return FALSE;
+}
+
+
+/*** Show picture ****/
+
+static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+/* Params are: vvp, event, last match found or NULL */
+static void tool_show_picture_wp ( char *name, VikWaypoint *wp, gpointer params[2] )
+{
+  if ( wp->image && wp->visible )
+  {
+    gint x, y, slackx, slacky;
+    GdkEventButton *event = (GdkEventButton *) params[1];
+
+    vik_viewport_coord_to_screen ( VIK_VIEWPORT(params[0]), &(wp->coord), &x, &y );
+    slackx = wp->image_width / 2;
+    slacky = wp->image_height / 2;
+    if (    x <= event->x + slackx && x >= event->x - slackx
+         && y <= event->y + slacky && y >= event->y - slacky )
+    {
+      params[2] = wp->image; /* we've found a match. however continue searching
+                              * since we want to find the last match -- that
+                              * is, the match that was drawn last. */
+    }
+  }
+}
+
+static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  gpointer params[3] = { vvp, event, NULL };
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) tool_show_picture_wp, params );
+  if ( params[2] )
+  {
+    /* thanks to the Gaim people for showing me ShellExecute and g_spawn_command_line_async */
+#ifdef WINDOWS
+    ShellExecute(NULL, NULL, (char *) params[2], NULL, ".\\", 0);
+#else /* WINDOWS */
+    GError *err = NULL;
+    gchar *quoted_file = g_shell_quote ( (gchar *) params[2] );
+    gchar *cmd = g_strdup_printf ( "eog %s", quoted_file );
+    g_free ( quoted_file );
+    if ( ! g_spawn_command_line_async ( cmd, &err ) )
+    {
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "Could not launch eog to open file." );
+      g_error_free ( err );
+    }
+    g_free ( cmd );
+#endif /* WINDOWS */
+    return TRUE; /* found a match */
+  }
+  else
+    return FALSE; /* go through other layers, searching for a match */
+}
+
+/***************************************************************************
+ ** End tool code 
+ ***************************************************************************/
+
+
+
+
 
 static void image_wp_make_list ( char *name, VikWaypoint *wp, GSList **pics )
 {
