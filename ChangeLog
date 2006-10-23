@@ -8,13 +8,37 @@ Alex Foobarian <foobarian@gmail.com>:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
     * Add implicit DMS->DDD conversions in waypoints dialogs
 
+2006-07-26
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* src/degrees_converters.c, src/degrees_converters.h,
+	  test/degrees_converter.c: add dec -> DDD conversion
+	* src/degrees_converters.c, src/degrees_converters.h,
+	  test/degrees_converter.c: add dec -> DMM conversion
+	* src/degrees_converters.c: refactor dms conversions
+
 2006-07-24
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
     * Add patch for GoogleMaps from Reid Priedhorsky
 
+2006-07-22
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* Makefile.am, configure.ac, src/Makefile.am,
+	  src/degrees_converters.c, src/degrees_converters.h,
+	  test/Makefile.am, test/check_degrees_conversions.sh,
+	  test/degrees_converter.c: Adding degrees conversion functions
+	  (DDD/DMM/DMS)
+
+2006-07-06
+Evan Battaglia <gtoevan@gmx.net>
+	* ChangeLog, src/google.c: Upgrade Google Maps -- Europe
+
 2006-07-01
 Evan Battaglia <gtoevan@gmx.net>:
 	* Upgrade Google Maps version (yay Europe!)
+
+2006-06-11
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* NEWS, configure.ac: Preparing 0.1.1
 
 2006-05-25
 Alex Foobarian <foobarian@gmail.com>:
@@ -26,7 +50,6 @@ Alex Foobarian <foobarian@gmail.com>:
 	* Small fixes in Acquire from GPS code
 
 2006-05-08  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
-
 	* autogen.sh: simpler method to start from CVS
 
 2005-12-03
