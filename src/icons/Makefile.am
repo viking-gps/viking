@@ -46,3 +46,5 @@ icons.h: $(ALL_ICONS:%.png=%.png_h)
 
 .png.png_h:
 	gdk-pixbuf-csource --name="`basename $< .png`" --struct $< > $@
+	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp.h
+	mv temp.h $@

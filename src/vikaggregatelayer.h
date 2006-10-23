@@ -51,7 +51,7 @@ gboolean vik_aggregate_layer_delete ( VikAggregateLayer *val, GtkTreeIter *iter 
 VikAggregateLayer *vik_aggregate_layer_create (VikViewport *vp);
 
 /* returns: 0 = success, 1 = none appl. found, 2 = found but rejected */
-guint vik_aggregate_layer_tool ( VikAggregateLayer *val, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp);
+// guint vik_aggregate_layer_tool ( VikAggregateLayer *val, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp);
 
 VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer *val, gint type );
 void vik_aggregate_layer_realize ( VikAggregateLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );

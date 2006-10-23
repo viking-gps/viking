@@ -1,3 +1,9 @@
+2006-10-23
+Alex Foobarian <foobarian@gmail.com>:
+	* Introduced a toolbar tool interface, converted existing tools to use it
+	* As a result, ruler drawing bugs are gone
+	* Sped up ruler drawing by increasing the redraw priority
+
 2006-08-15
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
     * Add implicit DMS->DDD conversions in waypoints dialogs

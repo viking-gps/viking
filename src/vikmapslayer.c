@@ -111,6 +111,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp );
 static void maps_layer_free ( VikMapsLayer *vml );
 static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
 static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
+static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp );
 static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir );
 static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const VikCoord *ul, const VikCoord *br, gint redownload );
 static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp );
@@ -132,7 +133,8 @@ VikLayerParam maps_layer_params[] = {
 enum { PARAM_MAPTYPE=0, PARAM_CACHE_DIR, PARAM_ALPHA, PARAM_AUTODOWNLOAD, PARAM_MAPZOOM, NUM_PARAMS };
 
 static VikToolInterface maps_tools[] = {
-  { "Maps Download", (VikToolInterfaceFunc) maps_layer_download_click, (VikToolInterfaceFunc) maps_layer_download_release },
+  { "Maps Download", (VikToolConstructorFunc) maps_layer_download_create, NULL, NULL, NULL,  
+    (VikToolMouseFunc) maps_layer_download_click, NULL,  (VikToolMouseFunc) maps_layer_download_release },
 };
 
 VikLayerInterface vik_maps_layer_interface = {
@@ -775,7 +777,8 @@ static void maps_layer_redownload_all ( VikMapsLayer *vml )
 
 static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
 {
-
+  if (!vml || vml->vl.type != VIK_LAYER_MAPS)
+    return FALSE;
   if ( vml->dl_tool_x != -1 && vml->dl_tool_y != -1 )
   {
     if ( event->button == 1 )
@@ -816,9 +819,16 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
   return FALSE;
 }
 
+static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
 static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
 {
   MapCoord tmp;
+  if (!vml || vml->vl.type != VIK_LAYER_MAPS)
+    return FALSE;
   if ( __map_types[vml->maptype].drawmode == vik_viewport_get_drawmode ( vvp ) &&
     __map_types[vml->maptype].coord_to_mapcoord ( vik_viewport_get_center ( vvp ),
            vml->xmapzoom ? vml->xmapzoom : vik_viewport_get_xmpp ( vvp ),

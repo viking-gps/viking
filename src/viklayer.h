@@ -19,6 +19,7 @@
  *
  */
 #include <stdio.h>
+#include "vikwindow.h"
 
 #ifndef _VIKING_LAYER_H
 #define _VIKING_LAYER_H
@@ -56,29 +57,38 @@ struct _VikLayer {
 
 
 enum {
-VIK_LAYER_AGGREGATE = 0,
-VIK_LAYER_TRW,
-VIK_LAYER_COORD,
-VIK_LAYER_GEOREF,
-VIK_LAYER_MAPS,
-VIK_LAYER_NUM_TYPES
+  VIK_LAYER_AGGREGATE = 0,
+  VIK_LAYER_TRW,
+  VIK_LAYER_COORD,
+  VIK_LAYER_GEOREF,
+  VIK_LAYER_MAPS,
+  VIK_LAYER_NUM_TYPES
 };
 
-typedef enum { VIK_LAYER_TOOL_IGNORED=0,
-               VIK_LAYER_TOOL_ACK,
-               VIK_LAYER_TOOL_ACK_REDRAW_ABOVE,
-               VIK_LAYER_TOOL_ACK_REDRAW_ALL,
-               VIK_LAYER_TOOL_ACK_REDRAW_IF_VISIBLE }
-        VikLayerToolFuncStatus;
-typedef VikLayerToolFuncStatus (*VikToolInterfaceFunc) (VikLayer *,GdkEventButton *,gpointer);
+typedef enum { 
+  VIK_LAYER_TOOL_IGNORED=0,
+  VIK_LAYER_TOOL_ACK,
+  VIK_LAYER_TOOL_ACK_REDRAW_ABOVE,
+  VIK_LAYER_TOOL_ACK_REDRAW_ALL,
+  VIK_LAYER_TOOL_ACK_REDRAW_IF_VISIBLE 
+} VikLayerToolFuncStatus;
 
-/* gpointer is viewport */
+/* gpointer is tool-specific state created in the constructor */
+typedef gpointer (*VikToolConstructorFunc) (VikWindow *, VikViewport *);
+typedef void (*VikToolDestructorFunc) (gpointer);
+typedef VikLayerToolFuncStatus (*VikToolMouseFunc) (VikLayer *, GdkEventButton *, gpointer);
+typedef void (*VikToolActivationFunc) (VikLayer *, gpointer);
 
 typedef struct _VikToolInterface VikToolInterface;
 struct _VikToolInterface {
   gchar *name;
-  VikToolInterfaceFunc callback;
-  VikToolInterfaceFunc callback_release;
+  VikToolConstructorFunc create;
+  VikToolDestructorFunc destroy;
+  VikToolActivationFunc activate;
+  VikToolActivationFunc deactivate;
+  VikToolMouseFunc click;
+  VikToolMouseFunc move;
+  VikToolMouseFunc release;
 };
 
 /* Parameters (for I/O and Properties) */

@@ -54,7 +54,7 @@ VikLayer *vik_layers_panel_get_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_delete_selected ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, gint type );
 void vik_layers_panel_set_viewport ( VikLayersPanel *vlp, VikViewport *vvp );
-gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp );
+//gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp );
 VikViewport *vik_layers_panel_get_viewport ( VikLayersPanel *vlp );
 void vik_layers_panel_emit_update ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, gint type );

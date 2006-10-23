@@ -60,7 +60,7 @@ static gboolean delete_event( VikWindow *vw );
 
 static void draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
-static void draw_scroll  ( VikWindow *vw, GdkEvent *event );
+static void draw_scroll  ( VikWindow *vw, GdkEventScroll *event );
 static void draw_click  ( VikWindow *vw, GdkEventButton *event );
 static void draw_release ( VikWindow *vw, GdkEventButton *event );
 static void draw_mouse_motion ( VikWindow *vw, GdkEventMotion *event );
@@ -74,16 +74,39 @@ static void draw_status ();
 static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw );
 static void menu_properties_cb ( GtkAction *a, VikWindow *vw );
 static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw );
+
+/* tool management */
+typedef struct {
+  VikToolInterface ti;
+  gpointer state;
+} toolbox_tool_t;
+
+typedef struct {
+  int 			active_tool;
+  int			n_tools;
+  toolbox_tool_t 	*tools;
+  VikWindow *vw;
+} toolbox_tools_t;
+
 static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw );
+static toolbox_tools_t* toolbox_create(VikWindow *vw);
+static void toolbox_add_tool(toolbox_tools_t *vt, VikToolInterface *vti);
+static int toolbox_get_tool(toolbox_tools_t *vt, const gchar *tool_name);
+static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name);
+static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event);
+static void toolbox_move (toolbox_tools_t *vt, GdkEventButton *event);
+static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event);
 
+
+/* ui creation */
 static void window_create_ui( VikWindow *window );
+static void register_vik_icons (GtkIconFactory *icon_factory);
 
+/* i/o */
 static void load_file ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw );
 static gboolean save_file ( GtkAction *a, VikWindow *vw );
 static gboolean window_save ( VikWindow *vw );
-static void register_vik_icons (GtkIconFactory *icon_factory);
-
 
 struct _VikWindow {
   GtkWindow gtkwindow;
@@ -95,13 +118,9 @@ struct _VikWindow {
 
   GtkItemFactory *item_factory;
 
-  /* ruler variables */
-  VikCoord oldcoord;
-  gboolean has_oldcoord;
-  
-
+  /* tool management state */
   guint current_tool;
-
+  toolbox_tools_t *vt;
   guint16 tool_layer_id;
   guint16 tool_tool_id;
 
@@ -191,20 +210,24 @@ static void window_init ( VikWindow *vw )
   GtkWidget *main_vbox;
   GtkWidget *hpaned;
 
-  window_create_ui(vw);
-  gtk_window_set_title ( GTK_WINDOW(vw), "Untitled" VIKING_TITLE );
 
   vw->viking_vvp = vik_viewport_new();
   vw->viking_vlp = vik_layers_panel_new();
   vik_layers_panel_set_viewport ( vw->viking_vlp, vw->viking_vvp );
   vw->viking_vs = vik_statusbar_new();
 
+  vw->vt = toolbox_create(vw);
+  window_create_ui(vw);
+  gtk_window_set_title ( GTK_WINDOW(vw), "Untitled" VIKING_TITLE );
+  
+  toolbox_activate(vw->vt, "Zoom");
+
   vw->filename = NULL;
   vw->item_factory = NULL;
 
-  vw->has_oldcoord = FALSE;
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
+  
 
   vw->pan_x = vw->pan_y = -1;
   vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
@@ -309,6 +332,88 @@ static void draw_redraw ( VikWindow *vw )
   vik_viewport_draw_scale ( vw->viking_vvp );
 }
 
+gboolean draw_buf_done = TRUE;
+
+static gboolean draw_buf(gpointer data)
+{
+  gpointer *pass_along = data;
+  gdk_threads_enter();
+  gdk_draw_drawable (pass_along[0], pass_along[1],
+		     pass_along[2], 0, 0, 0, 0, -1, -1);
+  draw_buf_done = TRUE;
+  gdk_threads_leave();
+  return FALSE;
+}
+
+
+/* Mouse event handlers ************************************************************************/
+
+static void draw_click (VikWindow *vw, GdkEventButton *event)
+{
+
+  /* middle button pressed.  we reserve all middle button and scroll events
+   * for panning and zooming; tools only get left/right/movement 
+   */
+  if ( event->button == 2) {
+    /* set panning origin */
+    vw->pan_x = (gint) event->x;
+    vw->pan_y = (gint) event->y;
+  } 
+  else {
+    toolbox_click(vw->vt, event);
+  }
+}
+
+static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
+{
+  static VikCoord coord;
+  static struct UTM utm;
+  static struct LatLon ll;
+  static char pointer_buf[36];
+
+  toolbox_move(vw->vt, (GdkEventButton *)event);
+
+  vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
+  vik_coord_to_utm ( &coord, &utm );
+  a_coords_utm_to_latlon ( &utm, &ll );
+  g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );
+  vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
+
+  if ( vw->pan_x != -1 ) {
+    vik_viewport_pan_sync ( vw->viking_vvp, event->x - vw->pan_x, event->y - vw->pan_y );
+  }
+}
+
+static void draw_release ( VikWindow *vw, GdkEventButton *event )
+{
+  if ( event->button == 2 ) {  /* move / pan */
+    if ( ABS(vw->pan_x - event->x) <= 1 && ABS(vw->pan_y - event->y) <= 1 )
+        vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
+      else
+         vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
+                                         vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
+      draw_update ( vw );
+      vw->pan_x = vw->pan_y = -1;
+  }
+  else {
+    toolbox_release(vw->vt, event);
+  }
+}
+
+static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
+{
+  if ( event->direction == GDK_SCROLL_UP )
+    vik_viewport_zoom_in (vw->viking_vvp);
+  else
+    vik_viewport_zoom_out(vw->viking_vvp);
+  draw_update(vw);
+}
+
+
+
+/********************************************************************************
+ ** Ruler tool code
+ ********************************************************************************/
 static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, gdouble distance)
 {
   PangoFontDescription *pfd;
@@ -473,165 +578,167 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   g_object_unref ( G_OBJECT ( thickgc ) );
 }
 
-gboolean draw_buf_done = TRUE;
+typedef struct {
+  VikWindow *vw;
+  VikViewport *vvp;
+  gboolean has_oldcoord;
+  VikCoord oldcoord;
+} ruler_tool_state_t;
 
-static gboolean draw_buf(gpointer data)
+static gpointer ruler_create (VikWindow *vw, VikViewport *vvp) 
 {
-  gpointer *pass_along = data;
-  gdk_threads_enter();
-  gdk_draw_drawable (pass_along[0], pass_along[1],
-		     pass_along[2], 0, 0, 0, 0, -1, -1);
-  gdk_threads_leave();
-  draw_buf_done = TRUE;
-  return FALSE;
+  ruler_tool_state_t *s = g_new(ruler_tool_state_t, 1);
+  s->vw = vw;
+  s->vvp = vvp;
+  s->has_oldcoord = FALSE;
+  return s;
 }
 
-static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
+static void ruler_destroy (ruler_tool_state_t *s)
 {
-  VikViewport *vvp = vw->viking_vvp;
-  static VikCoord coord;
-  static struct UTM utm;
-  static struct LatLon ll;
-  static char pointer_buf[36];
+  g_free(s);
+}
 
-  vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
-  vik_coord_to_utm ( &coord, &utm );
-  a_coords_utm_to_latlon ( &utm, &ll );
-
-  if ( vw->current_tool == TOOL_RULER )
-  {
-    struct LatLon ll;
-    VikCoord coord;
-    gchar *temp;
-
-    if ( vw->has_oldcoord ) {
-      int oldx, oldy, w1, h1, w2, h2;
-      static GdkPixmap *buf = NULL;
-      w1 = vik_viewport_get_width(vvp); 
-      h1 = vik_viewport_get_height(vvp);
-      if (!buf) {
-	buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
-      }
-      gdk_drawable_get_size(buf, &w2, &h2);
-      if (w1 != w2 || h1 != h2) {
-	g_object_unref ( G_OBJECT ( buf ) );
-	buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
-      }
-
-      vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
-      vik_coord_to_latlon ( &coord, &ll );
-      vik_viewport_coord_to_screen ( vvp, &vw->oldcoord, &oldx, &oldy );
-
-      gdk_draw_drawable (buf, GTK_WIDGET(vvp)->style->black_gc, 
-			 vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
-      draw_ruler(vvp, buf, GTK_WIDGET(vvp)->style->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(vw->oldcoord)) );
-      if (draw_buf_done) {
-	static gpointer pass_along[3];
-	pass_along[0] = GTK_WIDGET(vvp)->window;
-	pass_along[1] = GTK_WIDGET(vvp)->style->black_gc;
-	pass_along[2] = buf;
-	g_idle_add (draw_buf, pass_along);
-	draw_buf_done = FALSE;
-      }
-
-      temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(vw->oldcoord) ) );
-      vik_statusbar_set_message ( vw->viking_vs, 3, temp );
-      g_free ( temp );
+static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, ruler_tool_state_t *s)
+{
+  struct LatLon ll;
+  VikCoord coord;
+  gchar *temp;
+  if ( event->button == 1 ) {
+    vik_viewport_screen_to_coord ( s->vvp, (gint) event->x, (gint) event->y, &coord );
+    vik_coord_to_latlon ( &coord, &ll );
+    if ( s->has_oldcoord ) {
+      temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+      s->has_oldcoord = FALSE;
     }
+    else {
+      temp = g_strdup_printf ( "%f %f", ll.lat, ll.lon );
+      s->has_oldcoord = TRUE;
+    }
+
+    vik_statusbar_set_message ( s->vw->viking_vs, 3, temp );
+    g_free ( temp );
+
+    s->oldcoord = coord;
   }
-
-  g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );
-
-  if ( vw->pan_x != -1 ) {
-    vik_viewport_pan_sync ( vw->viking_vvp, event->x - vw->pan_x, event->y - vw->pan_y );
+  else {
+    vik_viewport_set_center_screen ( s->vvp, (gint) event->x, (gint) event->y );
+    draw_update ( s->vw );
   }
-
-  vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
+  return VIK_LAYER_TOOL_ACK;
 }
 
-static void draw_scroll (VikWindow *vw, GdkEvent *event)
+static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventButton *event, ruler_tool_state_t *s)
 {
-  if ( event->scroll.direction == GDK_SCROLL_UP )
+  VikViewport *vvp = s->vvp;
+  VikWindow *vw = s->vw;
+
+  struct LatLon ll;
+  VikCoord coord;
+  gchar *temp;
+
+  if ( s->has_oldcoord ) {
+    int oldx, oldy, w1, h1, w2, h2;
+    static GdkPixmap *buf = NULL;
+    w1 = vik_viewport_get_width(vvp); 
+    h1 = vik_viewport_get_height(vvp);
+    if (!buf) {
+      buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+    }
+    gdk_drawable_get_size(buf, &w2, &h2);
+    if (w1 != w2 || h1 != h2) {
+      g_object_unref ( G_OBJECT ( buf ) );
+      buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+    }
+
+    vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
+    vik_coord_to_latlon ( &coord, &ll );
+    vik_viewport_coord_to_screen ( vvp, &s->oldcoord, &oldx, &oldy );
+
+    gdk_draw_drawable (buf, GTK_WIDGET(vvp)->style->black_gc, 
+		       vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
+    draw_ruler(vvp, buf, GTK_WIDGET(vvp)->style->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
+    if (draw_buf_done) {
+      static gpointer pass_along[3];
+      pass_along[0] = GTK_WIDGET(vvp)->window;
+      pass_along[1] = GTK_WIDGET(vvp)->style->black_gc;
+      pass_along[2] = buf;
+      g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
+      draw_buf_done = FALSE;
+    }
+
+    temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+    vik_statusbar_set_message ( vw->viking_vs, 3, temp );
+    g_free ( temp );
+  }
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static VikLayerToolFuncStatus ruler_release (VikLayer *vl, GdkEventButton *event, ruler_tool_state_t *s)
+{
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static void ruler_deactivate (VikLayer *vl, ruler_tool_state_t *s)
+{
+  draw_update ( s->vw );
+}
+
+static VikToolInterface ruler_tool = 
+  { "Ruler", 
+    (VikToolConstructorFunc) ruler_create,
+    (VikToolDestructorFunc) ruler_destroy,
+    (VikToolActivationFunc) NULL,
+    (VikToolActivationFunc) ruler_deactivate, 
+    (VikToolMouseFunc) ruler_click, 
+    (VikToolMouseFunc) ruler_move, 
+    (VikToolMouseFunc) ruler_release };
+/*** end ruler code ********************************************************/
+
+
+
+/********************************************************************************
+ ** Zoom tool code
+ ********************************************************************************/
+static gpointer zoomtool_create (VikWindow *vw, VikViewport *vvp)
+{
+  return vw;
+}
+
+static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+{
+  vw->modified = TRUE;
+  vik_viewport_set_center_screen ( vw->viking_vvp, (gint) event->x, (gint) event->y );
+  if ( event->button == 1 )
     vik_viewport_zoom_in (vw->viking_vvp);
-  else
-    vik_viewport_zoom_out(vw->viking_vvp);
-  draw_update(vw);
+  else if ( event->button == 3 )
+    vik_viewport_zoom_out (vw->viking_vvp);
+  draw_update ( vw );
+  return VIK_LAYER_TOOL_ACK;
 }
 
-static void draw_release ( VikWindow *vw, GdkEventButton *event )
+static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventButton *event, VikViewport *vvp)
 {
-  if ( event->button == 2 ) { /* move / pan */
-    if ( ABS(vw->pan_x - event->x) <= 1 && ABS(vw->pan_y - event->y) <= 1 )
-        vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
-      else
-         vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
-                                         vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
-      draw_update ( vw );
-      vw->pan_x = vw->pan_y = -1;
-  }
-  if ( vw->current_tool == TOOL_LAYER && ( event->button == 1 || event->button == 3 ) &&
-      vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].callback_release )
-  {
-    vik_layers_panel_tool ( vw->viking_vlp, vw->tool_layer_id,
-        vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].callback_release,
-        event, vw->viking_vvp );
-  }
+  return VIK_LAYER_TOOL_ACK;
 }
 
-static void draw_click (VikWindow *vw, GdkEventButton *event)
+static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *event, VikViewport *vvp)
 {
-  if ( event->button == 2) {
-    vw->pan_x = (gint) event->x;
-    vw->pan_y = (gint) event->y;
-  } else if ( vw->current_tool == TOOL_ZOOM )
-  {
-    vw->modified = TRUE;
-    vik_viewport_set_center_screen ( vw->viking_vvp, (gint) event->x, (gint) event->y );
-    if ( event->button == 1 )
-      vik_viewport_zoom_in (vw->viking_vvp);
-    else if ( event->button == 3 )
-      vik_viewport_zoom_out (vw->viking_vvp);
-    draw_update ( vw );
-  }
-  else if ( vw->current_tool == TOOL_RULER )
-  {
-    struct LatLon ll;
-    VikCoord coord;
-    gchar *temp;
-    if ( event->button == 1 || event->button == 3 )
-    {
-      vik_viewport_screen_to_coord ( vw->viking_vvp, (gint) event->x, (gint) event->y, &coord );
-      vik_coord_to_latlon ( &coord, &ll );
-      if ( vw->has_oldcoord ) {
-         temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(vw->oldcoord) ) );
-	 vw->has_oldcoord = FALSE;
-      }
-      else {
-        temp = g_strdup_printf ( "%f %f", ll.lat, ll.lon );
-	vw->has_oldcoord = TRUE;
-      }
-
-      vik_statusbar_set_message ( vw->viking_vs, 3, temp );
-      g_free ( temp );
-
-      vw->oldcoord = coord;
-      /* we don't use anything else so far */
-    }
-    else
-    {
-      vik_viewport_set_center_screen ( vw->viking_vvp, (gint) event->x, (gint) event->y );
-      draw_update ( vw );
-    }
-  }
-  else if ( vw->current_tool == TOOL_LAYER )
-  {
-    vw->modified = TRUE;
-    if ( ! vik_layers_panel_tool ( vw->viking_vlp, vw->tool_layer_id,
-        vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].callback,
-        event, vw->viking_vvp ) )
-      a_dialog_info_msg_extra ( GTK_WINDOW(vw), "A %s Layer must exist and be either selected or visible before you can use this function.", vik_layer_get_interface ( vw->tool_layer_id )->name );
-  }
+  return VIK_LAYER_TOOL_ACK;
 }
+
+static VikToolInterface zoom_tool = 
+  { "Zoom", 
+    (VikToolConstructorFunc) zoomtool_create,
+    (VikToolDestructorFunc) NULL,
+    (VikToolActivationFunc) NULL,
+    (VikToolActivationFunc) NULL,
+    (VikToolMouseFunc) zoomtool_click, 
+    (VikToolMouseFunc) zoomtool_move,
+    (VikToolMouseFunc) zoomtool_release };
+/*** end ruler code ********************************************************/
+
+
 
 static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
 {
@@ -744,10 +851,109 @@ static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
     a_dialog_info_msg ( GTK_WINDOW(vw), "You must select a layer to delete." );
 }
 
+/***************************************
+ ** tool management routines
+ **
+ ***************************************/
+
+static toolbox_tools_t* toolbox_create(VikWindow *vw)
+{
+  toolbox_tools_t *vt = g_new(toolbox_tools_t, 1);
+  vt->tools = NULL;
+  vt->n_tools = 0;
+  vt->active_tool = -1;
+  vt->vw = vw;
+  if (!vw->viking_vvp) {
+    printf("Error: no viewport found.\n");
+    exit(1);
+  }
+  return vt;
+}
+
+static void toolbox_add_tool(toolbox_tools_t *vt, VikToolInterface *vti)
+{
+  vt->tools = g_renew(toolbox_tool_t, vt->tools, vt->n_tools+1);
+  vt->tools[vt->n_tools].ti = *vti;
+  if (vti->create) {
+    vt->tools[vt->n_tools].state = vti->create(vt->vw, vt->vw->viking_vvp);
+  } 
+  else {
+    vt->tools[vt->n_tools].state = NULL;
+  }
+  vt->n_tools++;
+}
+
+static int toolbox_get_tool(toolbox_tools_t *vt, const gchar *tool_name)
+{
+  int i;
+  for (i=0; i<vt->n_tools; i++) {
+    if (!strcmp(tool_name, vt->tools[i].ti.name)) {
+      break;
+    }
+  }
+  return i;
+}
+
+static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name)
+{
+  int tool = toolbox_get_tool(vt, tool_name);
+  toolbox_tool_t *t = &vt->tools[tool];
+  VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
+
+  if (tool == vt->n_tools) {
+    printf("panic: trying to activate a non-existent tool... \n");
+    exit(1);
+  }
+  /* is the tool already active? */
+  if (vt->active_tool == tool) {
+    return;
+  }
+
+  if (vt->active_tool != -1) {
+    if (vt->tools[vt->active_tool].ti.deactivate) {
+      vt->tools[vt->active_tool].ti.deactivate(NULL, vt->tools[vt->active_tool].state);
+    }
+  }
+  if (t->ti.activate) {
+    t->ti.activate(vl, t->state);
+  }
+  vt->active_tool = tool;
+}
+
+static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event)
+{
+  VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
+  if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.click) {
+    vt->tools[vt->active_tool].ti.click(vl, event, vt->tools[vt->active_tool].state);
+  }
+}
+
+static void toolbox_move (toolbox_tools_t *vt, GdkEventButton *event)
+{
+  VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
+  if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.move) {
+    vt->tools[vt->active_tool].ti.move(vl, event, vt->tools[vt->active_tool].state);
+  }
+}
+
+static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event)
+{
+  VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
+  if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.release) {
+    vt->tools[vt->active_tool].ti.release(vl, event, vt->tools[vt->active_tool].state);
+  }
+}
+/** End tool management ************************************/
+
+
+
+/* this function gets called whenever a toolbar tool is clicked */
 static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 {
   /* White Magic, my friends ... White Magic... */
   int i, j;
+
+  toolbox_activate(vw->vt, gtk_action_get_name(a));
 
   if (!strcmp(gtk_action_get_name(a), "Zoom")) {
     vw->current_tool = TOOL_ZOOM;
@@ -1304,6 +1510,12 @@ static void set_bg_color ( GtkAction *a, VikWindow *vw )
   gtk_widget_destroy ( colorsd );
 }
 
+
+
+/***********************************************************************************************
+ ** GUI Creation
+ ***********************************************************************************************/
+
 static GtkActionEntry entries[] = {
   { "File", NULL, "_File", 0, 0, 0 },
   { "View", NULL, "_View", 0, 0, 0 },
@@ -1384,7 +1596,9 @@ static void window_create_ui( VikWindow *window )
   uim = gtk_ui_manager_new ();
   window->uim = uim;
 
-  
+  toolbox_add_tool(window->vt, &ruler_tool);
+  toolbox_add_tool(window->vt, &zoom_tool);
+
   error = NULL;
   if (!(mid = gtk_ui_manager_add_ui_from_string (uim, menu_xml, -1, &error))) {
     g_error_free (error);
@@ -1447,6 +1661,8 @@ static void window_create_ui( VikWindow *window )
 			    vik_layer_get_interface(i)->tools[j].name,
 			    GTK_UI_MANAGER_TOOLITEM, FALSE);
 
+      toolbox_add_tool(window->vt, &(vik_layer_get_interface(i)->tools[j]));
+
       radio->name = vik_layer_get_interface(i)->tools[j].name;
       radio->stock_id = vik_layer_get_interface(i)->tools[j].name,
       radio->label = vik_layer_get_interface(i)->tools[j].name;
@@ -1467,6 +1683,7 @@ static void window_create_ui( VikWindow *window )
   gtk_icon_factory_add_default (icon_factory); 
   g_object_unref (icon_factory);
 }
+
 
 
 #include "icons/icons.h"
