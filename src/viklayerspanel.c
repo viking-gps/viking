@@ -50,11 +50,14 @@ struct _VikLayersPanel {
 };
 
 static GtkItemFactoryEntry base_entries[] = {
+ { "/C_ut", NULL, (GtkItemFactoryCallback) vik_layers_panel_cut_selected, -1, "<StockItem>", GTK_STOCK_CUT },
+ { "/_Copy", NULL, (GtkItemFactoryCallback) vik_layers_panel_copy_selected, -1, "<StockItem>", GTK_STOCK_COPY },
+ { "/_Paste", NULL, (GtkItemFactoryCallback) vik_layers_panel_paste_selected, -1, "<StockItem>", GTK_STOCK_PASTE },
  { "/_Delete", NULL, (GtkItemFactoryCallback) vik_layers_panel_delete_selected, -1, "<StockItem>", GTK_STOCK_DELETE },
  { "/New Layer", NULL, NULL, -1, "<Branch>" },
 };
 
-#define NUM_BASE_ENTRIES 2
+#define NUM_BASE_ENTRIES 5
 
 static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter);
 static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text);
@@ -277,6 +280,21 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
         gtk_menu_shell_append (GTK_MENU_SHELL (menu), prop);
         gtk_widget_show ( prop );
 
+        del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_CUT, NULL );
+        g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_cut_selected), vlp );
+        gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
+        gtk_widget_show ( del );
+
+        del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_COPY, NULL );
+        g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_copy_selected), vlp );
+        gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
+        gtk_widget_show ( del );
+
+        del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PASTE, NULL );
+        g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_paste_selected), vlp );
+        gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
+        gtk_widget_show ( del );
+
         del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_DELETE, NULL );
         g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_delete_selected), vlp );
         gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
@@ -293,7 +311,7 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
         gtk_widget_destroy ( GTK_WIDGET(menu) );
         return;
       }
-      /* TODO: copy, paste, specific things for different types */
+      /* TODO: specific things for different types */
     }
   }
   else
@@ -406,6 +424,51 @@ void vik_layers_panel_draw_all_using_viewport ( VikLayersPanel *vlp, VikViewport
 {
   if ( vlp->vvp && VIK_LAYER(vlp->toplayer)->visible )
     vik_aggregate_layer_draw ( vlp->toplayer, vvp );
+}
+
+void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
+{
+  gint type;
+  GtkTreeIter iter;
+  
+  g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
+
+  type = vik_treeview_item_get_type ( vlp->vt, &iter );
+
+  if ( type == VIK_TREEVIEW_TYPE_LAYER )
+  {
+    VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
+    if ( parent )
+    {
+      a_clipboard_copy ( vlp );
+      if ( vik_aggregate_layer_delete ( parent, &iter ) )
+        vik_layers_panel_emit_update ( vlp );
+    }
+    else
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), "You cannot cut the Top Layer." );
+  }
+}
+
+void vik_layers_panel_copy_selected ( VikLayersPanel *vlp )
+{
+  gint type;
+  GtkTreeIter iter;
+  
+  g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
+
+  type = vik_treeview_item_get_type ( vlp->vt, &iter );
+
+  if ( type == VIK_TREEVIEW_TYPE_LAYER ) {
+    a_clipboard_copy ( vlp );
+  }
+}
+
+void vik_layers_panel_paste_selected ( VikLayersPanel *vlp )
+{
+  gint type;
+  GtkTreeIter iter;
+  g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
+  a_clipboard_paste ( vlp );
 }
 
 void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
