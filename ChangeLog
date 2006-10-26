@@ -3,6 +3,7 @@ Alex Foobarian <foobarian@gmail.com>:
 	* Cleared up the drawing modes and map type descriptions
 	* Updated google version string to make it work in Europe
 	* Added Cut/Copy/Paste shortcuts to right-click menus
+	* Compacted the track properties dialog
 
 2006-10-23
 Alex Foobarian <foobarian@gmail.com>:
