@@ -83,6 +83,7 @@ static gpointer datasource_gps_init_func ()
 
 static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file )
 {
+  GtkTreeIter iter;
   gps_user_data_t *w = (gps_user_data_t *)user_data;
 
   if (gps_acquire_in_progress) {
@@ -91,12 +92,14 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   
   gps_acquire_in_progress = TRUE;
 
-  if (!strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->proto_b)), "Garmin")) {
+  if (!strcmp(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->proto_b),&iter), "Garmin")) {
     *babelargs = g_strdup_printf("%s", "-D 9 -t -w -i garmin");
   } else {
     *babelargs = g_strdup_printf("%s", "-D 9 -t -w -i magellan");
   }
-  *input_file = g_strdup_printf("%s", gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b)));
+  
+  /* Old stuff */
+  *input_file = g_strdup_printf("%s", gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter));
 
   fprintf(stderr, "using cmdline '%s' and file '%s'\n", *babelargs, *input_file);
 }
