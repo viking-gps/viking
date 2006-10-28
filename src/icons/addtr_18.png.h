@@ -1,6 +1,6 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
 
-static const GdkPixdata addtr_18 = {
+ static const GdkPixdata addtr_18 = {
   0x47646b50, /* Pixbuf magic: 'GdkP' */
   24 + 407, /* header length + pixel_data length */
   0x2010002, /* pixdata_type */
