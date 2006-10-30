@@ -188,7 +188,11 @@ typedef VikLayerParamData
 typedef void          (*VikLayerFuncReadFileData)          (VikLayer *, FILE *);
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *);
 
+/* item manipulation */
+typedef void          (*VikLayerFuncDeleteItem)            (VikLayer *, gint, gpointer);
+                                                         /*      layer, subtype, pointer to sub-item */
 typedef void          (*VikLayerFuncCopyItem)              (VikLayer *, gint, gpointer, guint8 **, guint *);
+                                                         /*      layer, subtype, pointer to sub-item, return pointer, return len */
 typedef gboolean      (*VikLayerFuncPasteItem)             (VikLayer *, gint, guint8 *, guint);
 typedef void          (*VikLayerFuncFreeCopiedItem)        (gint, gpointer);
 
@@ -240,6 +244,7 @@ struct _VikLayerInterface {
   VikLayerFuncReadFileData          read_file_data;
   VikLayerFuncWriteFileData         write_file_data;
 
+  VikLayerFuncDeleteItem            delete_item;
   VikLayerFuncCopyItem              copy_item;
   VikLayerFuncPasteItem             paste_item;
   VikLayerFuncFreeCopiedItem        free_copied_item;

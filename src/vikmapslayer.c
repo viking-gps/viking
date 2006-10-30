@@ -174,6 +174,7 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,
 
+  (VikLayerFuncDeleteItem)              NULL,
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
