@@ -154,6 +154,8 @@ struct DrawingParams {
   gdouble ce1, ce2, cn1, cn2;
 };
 
+static void trw_layer_delete_item ( gpointer *pass_along );
+
 static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct LatLon maxmin[2] );	
 
@@ -191,6 +193,7 @@ static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id );
 
+static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len );
 static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *item, guint len );
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
@@ -203,8 +206,9 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
 
 static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
+static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
+static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp);
@@ -241,7 +245,9 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseFunc) tool_edit_waypoint_click,   NULL, (VikToolMouseFunc) tool_edit_waypoint_release },
 
   { "Edit Trackpoint", (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_edit_trackpoint_click, NULL, (VikToolMouseFunc) tool_edit_trackpoint_release },
+    (VikToolMouseFunc) tool_edit_trackpoint_click,
+    (VikToolMouseFunc) tool_edit_trackpoint_move,
+    (VikToolMouseFunc) tool_edit_trackpoint_release },
 
   { "Show Picture",    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL },
@@ -346,6 +352,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncReadFileData)            a_gpspoint_read_file,
   (VikLayerFuncWriteFileData)           a_gpspoint_write_file,
 
+  (VikLayerFuncDeleteItem)              trw_layer_del_item,
   (VikLayerFuncCopyItem)                trw_layer_copy_item,
   (VikLayerFuncPasteItem)               trw_layer_paste_item,
   (VikLayerFuncFreeCopiedItem)          trw_layer_free_copied_item,
@@ -385,6 +392,21 @@ GType vik_trw_layer_get_type ()
   return vtl_type;
 }
 
+static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer )
+{
+  static gpointer pass_along[5];
+  if (!sublayer) {
+    return;
+  }
+  
+  pass_along[0] = vtl;
+  pass_along[1] = NULL;
+  pass_along[2] = (gpointer) subtype;
+  pass_along[3] = sublayer;
+  pass_along[4] = NULL;
+
+  trw_layer_delete_item ( pass_along );
+}
 
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len )
 {
@@ -2778,14 +2800,26 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
 
 /*** Edit trackpoint ****/
 
+typedef struct {
+  VikViewport *vvp;
+  gboolean holding;
+  GdkGC *gc;
+  int oldx, oldy;
+} tool_edtr_t;
+
 static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp)
 {
-  return vvp;
+  tool_edtr_t *t = g_new(tool_edtr_t, 1);
+  t->vvp = vvp;
+  t->holding = FALSE;
+  return t;
 }
 
-static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
 {
-   TPSearchParams params;
+  tool_edtr_t *t = data;
+  VikViewport *vvp = t->vvp;
+  TPSearchParams params;
   /* OUTDATED DOCUMENTATION:
    find 5 pixel range on each side. then put these UTM, and a pointer
    to the winning track name (and maybe the winning track itself), and a
@@ -2817,6 +2851,13 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
          abs(y - event->y) < TRACKPOINT_SIZE_APPROX )
     {
       vtl->moving_tp = TRUE;
+      t->holding = TRUE;
+      t->gc = vik_viewport_new_gc (vvp, "black", 2);
+      gdk_gc_set_function ( t->gc, GDK_INVERT );
+      vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, event->x-3, event->y-3, 6, 6 );
+      vik_viewport_sync(vvp);
+      t->oldx = event->x;
+      t->oldy = event->y;
       return TRUE;
     }
 
@@ -2840,16 +2881,70 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   return FALSE;
 }
 
+static gboolean edtr_sync_done = TRUE;
 
-static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static gboolean edtr_sync(gpointer data)
 {
+  VikViewport *vvp = data;
+  gdk_threads_enter();
+  vik_viewport_sync(vvp);
+  edtr_sync_done = TRUE;
+  gdk_threads_leave();
+  return FALSE;
+}
+
+static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
+{
+  tool_edtr_t *t = data;
+  VikViewport *vvp = t->vvp;
+
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return FALSE;
+
+  if ( t->holding )
+  {
+    VikCoord new_coord;
+    GdkGC *gc;
+    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
+
+    /* snap to TP */
+    if ( event->state & GDK_CONTROL_MASK )
+    {
+      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( tp && tp != vtl->current_tpl->data )
+        new_coord = tp->coord;
+    }
+    //    VIK_TRACKPOINT(vtl->current_tpl->data)->coord = new_coord;
+    vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, t->oldx-3, t->oldy-3, 6, 6 );
+    vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, event->x-3, event->y-3, 6, 6 );
+    t->oldx = event->x; 
+    t->oldy = event->y;
+    if (edtr_sync_done) {
+      g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, edtr_sync, vvp, NULL);
+      edtr_sync_done = FALSE;
+    }
+
+    return TRUE;
+  }
+  return FALSE;
+}
+
+
+static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
+{
+  tool_edtr_t *t = data;
+  VikViewport *vvp = t->vvp;
+
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+
+  /* xxx: this state is now in the tool instance... fix this */
   if ( vtl->moving_tp )
   {
     /* vtl->moving_tp_x, vtl->moving_tp_y, etc. */
     VikCoord new_coord;
     vtl->moving_tp = FALSE;
+    t->holding = FALSE;
     vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
 
     /* snap to TP */
@@ -2861,6 +2956,8 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
     }
 
     VIK_TRACKPOINT(vtl->current_tpl->data)->coord = new_coord;
+
+    vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, t->oldx-3, t->oldy-3, 6, 6 );
 
     /* diff dist is diff from orig */
     vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );

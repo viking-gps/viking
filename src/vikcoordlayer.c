@@ -82,6 +82,7 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,
 
+  (VikLayerFuncDeleteItem)              NULL,
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,

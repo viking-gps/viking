@@ -491,6 +491,12 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
     else
       a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), "You cannot delete the Top Layer." );
   }
+  else if (type == VIK_TREEVIEW_TYPE_SUBLAYER) {
+    VikLayer *sel = vik_layers_panel_get_selected ( vlp );
+    if ( vik_layer_get_interface(sel->type)->delete_item ) {
+      vik_layer_get_interface(sel->type)->delete_item ( sel, type, vik_treeview_item_get_pointer(sel->vt, &iter) );
+    }
+  }
 }
 
 VikLayer *vik_layers_panel_get_selected ( VikLayersPanel *vlp )

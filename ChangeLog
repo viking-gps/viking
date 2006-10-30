@@ -1,3 +1,9 @@
+2006-10-30
+Alex Foobarian <foobarian@gmail.com>:
+	* Created standard Edit menu
+	* Implemented Cut for trackpoints and waypoints
+	* When moving trackpoints, we now draw one under the cursor for visual feedback
+
 2006-10-26
 Alex Foobarian <foobarian@gmail.com>:
 	* Cleared up the drawing modes and map type descriptions

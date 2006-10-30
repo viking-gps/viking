@@ -1518,6 +1518,7 @@ static void set_bg_color ( GtkAction *a, VikWindow *vw )
 
 static GtkActionEntry entries[] = {
   { "File", NULL, "_File", 0, 0, 0 },
+  { "Edit", NULL, "_Edit", 0, 0, 0 },
   { "View", NULL, "_View", 0, 0, 0 },
   { "SetZoom", NULL, "_Zoom", 0, 0, 0 },
   { "Layers", NULL, "_Layers", 0, 0, 0 },
