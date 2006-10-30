@@ -1611,6 +1611,7 @@ static void window_create_ui( VikWindow *window )
   gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 0, (GCallback)window_change_coord_mode_cb, window);
 
   icon_factory = gtk_icon_factory_new ();
+  gtk_icon_factory_add_default (icon_factory); 
 
   register_vik_icons(icon_factory);
 
@@ -1671,6 +1672,7 @@ static void window_create_ui( VikWindow *window )
       radio->value = ntools;
     }
   }
+  g_object_unref (icon_factory);
 
   gtk_action_group_add_radio_actions(action_group, tools, ntools, 0, (GCallback)menu_tool_cb, window);
   g_free(tools);
@@ -1680,8 +1682,6 @@ static void window_create_ui( VikWindow *window )
   accel_group = gtk_ui_manager_get_accel_group (uim);
   gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
   gtk_ui_manager_ensure_update (uim);
-  gtk_icon_factory_add_default (icon_factory); 
-  g_object_unref (icon_factory);
 }
 
 
@@ -1703,7 +1703,6 @@ static struct {
   { &showpic_18,	"Show Picture"      },
 };
  
-
 static gint n_stock_icons = G_N_ELEMENTS (stock_icons);
 
 static void
