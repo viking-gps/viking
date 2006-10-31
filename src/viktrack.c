@@ -545,11 +545,17 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   int i, pt_count, numpts, spline;
   GList *iter;
   spline_coeff_t *p;
+  GList *mytr;
 
   if ( ! tr->trackpoints )
     return NULL;
 
   g_assert ( num_chunks < 16000 );
+
+  iter = tr->trackpoints;
+  while (iter) {
+    
+  }
 
   t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
