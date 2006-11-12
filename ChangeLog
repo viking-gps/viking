@@ -1,3 +1,7 @@
+2006-11-12
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* Add expat explicit dependency
+
 2006-10-31
 Alex Foobarian <foobarian@gmail.com>:
 	* Visual feedback for moving waypoints

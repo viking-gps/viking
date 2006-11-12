@@ -52,6 +52,6 @@ viking_SOURCES = main.c \
 	datasource_gc.c \
 	datasources.h
 
-INCLUDES        = @GTK_CFLAGS@
-LDADD           = @GTK_LIBS@
+INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@
+LDADD           = @GTK_LIBS@ @EXPAT_LIBS@
 AM_CFLAGS		= -Wall -g

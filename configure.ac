@@ -11,15 +11,6 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
-AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
-if test $GDK_PIXBUF_CSOURCE != "yes"
-then
-  AC_MSG_ERROR([gdk-pixbuf-csource is needed but not found])
-fi
-
-# Checks for libraries.
-AM_PATH_GTK_2_0(2.2.0,,AC_MSG_ERROR(needs GTK+ 2.2.0),gthread)
-
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([malloc.h netdb.h netinet/in.h stdlib.h string.h sys/param.h sys/socket.h unistd.h])
@@ -34,6 +25,16 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero floor gethostbyname memset mkdir pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
 
 # Expat
+AM_WITH_EXPAT
+
+AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
+if test $GDK_PIXBUF_CSOURCE != "yes"
+then
+  AC_MSG_ERROR([gdk-pixbuf-csource is needed but not found])
+fi
+
+# Checks for libraries.
+AM_PATH_GTK_2_0(2.2.0,,AC_MSG_ERROR(needs GTK+ 2.2.0),gthread)
 
 # Options
 AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],
