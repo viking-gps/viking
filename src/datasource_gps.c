@@ -26,6 +26,10 @@
 #include "gpx.h"
 #include "acquire.h"
 
+#if GTK_CHECK_VERSION(2,6,0)
+#define USE_NEW_COMBO_BOX
+#endif
+
 static gboolean gps_acquire_in_progress = FALSE;
 
 static gpointer datasource_gps_init_func ( );
@@ -83,7 +87,9 @@ static gpointer datasource_gps_init_func ()
 
 static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file )
 {
+#ifndef USE_NEW_COMBO_BOX
   GtkTreeIter iter;
+#endif
   gps_user_data_t *w = (gps_user_data_t *)user_data;
 
   if (gps_acquire_in_progress) {
@@ -92,14 +98,22 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   
   gps_acquire_in_progress = TRUE;
 
+#ifdef USE_NEW_COMBO_BOX
+  if (!strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->proto_b)), "Garmin")) {
+#else
   if (!strcmp(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->proto_b),&iter), "Garmin")) {
+#endif
     *babelargs = g_strdup_printf("%s", "-D 9 -t -w -i garmin");
   } else {
     *babelargs = g_strdup_printf("%s", "-D 9 -t -w -i magellan");
   }
   
   /* Old stuff */
+#ifdef USE_NEW_COMBO_BOX
+  *input_file = g_strdup_printf("%s", gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b)));
+#else
   *input_file = g_strdup_printf("%s", gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter));
+#endif
 
   fprintf(stderr, "using cmdline '%s' and file '%s'\n", *babelargs, *input_file);
 }
