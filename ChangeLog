@@ -1,3 +1,7 @@
+2006-11-30
+Alex Foobarian <foobarian@gmail.com>:
+	* Added Quy Tonthat's patch to fix a bug in Track Properties
+
 2006-11-29
 Alex Foobarian <foobarian@gmail.com>:
 	* Added patch by Quy Tonthat <mlist@exemail.com.au> to fix a crash bug
