@@ -552,10 +552,12 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
 
   g_assert ( num_chunks < 16000 );
 
+#ifdef XXXXXXXXXXXXXXXXXX
   iter = tr->trackpoints;
   while (iter) {
     
   }
+#endif /*XXXXXXXXXXXXXXXXXX*/
 
   t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
