@@ -840,6 +840,11 @@ static void menu_properties_cb ( GtkAction *a, VikWindow *vw )
     a_dialog_info_msg ( GTK_WINDOW(vw), "You must select a layer to show its properties." );
 }
 
+static void help_about_cb ( GtkAction *a, VikWindow *vw )
+{
+  a_dialog_about(GTK_WINDOW(vw));
+}
+
 static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
 {
   if ( vik_layers_panel_get_selected ( vw->viking_vlp ) )
@@ -1523,6 +1528,7 @@ static GtkActionEntry entries[] = {
   { "SetZoom", NULL, "_Zoom", 0, 0, 0 },
   { "Layers", NULL, "_Layers", 0, 0, 0 },
   { "Tools", NULL, "_Tools", 0, 0, 0 },
+  { "Help", NULL, "_Help", 0, 0, 0 },
 
   { "New",       GTK_STOCK_NEW,          "_New",                          "<control>N", "New file",                                     (GCallback)newwindow_cb          },
   { "Open",      GTK_STOCK_OPEN,         "_Open",                         "<control>O", "Open a file",                                  (GCallback)load_file             },
@@ -1561,6 +1567,8 @@ static GtkActionEntry entries[] = {
   { "Delete",    GTK_STOCK_DELETE,       "_Delete",                       NULL,         NULL,                                           (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", NULL,                   "Delete All",                    NULL,         NULL,                                           (GCallback)clear_cb              },
   { "Properties",GTK_STOCK_PROPERTIES,   "_Properties",                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
+
+  { "About",     GTK_STOCK_ABOUT,        "_About",                        NULL,         NULL,                                           (GCallback)help_about_cb    },
 };
 
 /* Radio items */

@@ -563,3 +563,51 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
   gtk_widget_destroy ( dialog );
   return FALSE;
 }
+
+
+void a_dialog_about ( GtkWindow *parent )
+{
+  int re;
+  GtkWidget *msgbox = gtk_message_dialog_new_with_markup ( parent, 
+							   GTK_DIALOG_DESTROY_WITH_PARENT, 
+							   GTK_MESSAGE_INFO, 
+							   GTK_BUTTONS_NONE,
+							   "<span font_desc='20' weight='bold'>Viking 0.1.1</span>\n\n"
+							   "GPS Data and Topo Analyzer, Explorer, and Manager.\n\n"
+							   "<small>(C) 2003-2006, Evan Battaglia</small>"
+							   );
+
+  gtk_dialog_add_buttons (GTK_DIALOG(msgbox), "Credits", 1, "License", 2, "Close", 3, NULL, NULL);
+  
+  while ((re = gtk_dialog_run ( GTK_DIALOG(msgbox))) != 3) {
+    if (re==1) {
+      /* creds */
+      a_dialog_info_msg(parent, 
+			"Author:\n"
+			"  Evan Battaglia <gtoevan@gmx.net>\n\n"
+			"Contributors:\n"
+			"  Alex Foobarian <foobarian@gmail.com>\n"
+			"  Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+			"  Quy Tonthat <mlist@exemail.com.au>\n"
+			"  Reid Priedhorsky <reid@reidster.net>\n"
+			);
+    }
+    if (re==2) {
+      a_dialog_info_msg(parent, "\n\n"
+			"This program is free software; you can redistribute it and/or modify "
+			"it under the terms of the GNU General Public License as published by "
+			"the Free Software Foundation; either version 2 of the License, or "
+			"(at your option) any later version."
+			"\n\n"
+			"This program is distributed in the hope that it will be useful, "
+			"but WITHOUT ANY WARRANTY; without even the implied warranty of "
+			"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
+			"GNU General Public License for more details."
+			"\n\n"
+			"You should have received a copy of the GNU General Public License "
+			"along with this program; if not, write to the Free Software "
+			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA");
+    }
+  }
+  gtk_widget_destroy ( msgbox );
+}
