@@ -1,10 +1,14 @@
+2006-12-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix an array overflow bug in Map Layer Properties
+	
 2006-11-30
 Alex Foobarian <foobarian@gmail.com>:
 	* Added Quy Tonthat's patch to fix a bug in Track Properties
 
 2006-11-29
 Alex Foobarian <foobarian@gmail.com>:
-	* Added patch by Quy Tonthat <mlist@exemail.com.au> to fix a crash bug
+	* Added patch by Quy Tonthat <qtonthat@gmail.com> to fix a crash bug
 	
 2006-11-12
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
