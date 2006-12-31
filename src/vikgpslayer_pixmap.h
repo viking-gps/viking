@@ -19,45 +19,22 @@
  *
  */
 
-#ifndef __VIKING_VIKING_H
-#define __VIKING_VIKING_H
+/* GdkPixbuf RGB C-Source image dump 1-byte-run-length-encoded */
 
-#include <gtk/gtk.h>
-#include <gdk-pixbuf/gdk-pixdata.h>
-#include <stdio.h>
-#include <time.h>
+static const GdkPixdata gpslayer_pixbuf = {
+  0x47646b50, /* Pixbuf magic: 'GdkP' */
+  24 + 116, /* header length + pixel_data length */
+  0x2010001, /* pixdata_type */
+  48, /* rowstride */
+  16, /* width */
+  16, /* height */
+  /* pixel_data: */
+  "\235\377\377\377\1\377\0\0\215\377\377\377\203\377\0\0\213\377\377\377"
+  "\203\377\0\0\213\377\377\377\203\377\0\0\213\377\377\377\202\377\0\0"
+  "\215\377\377\377\204\377\0\0\216\377\377\377\204\377\0\0\216\377\377"
+  "\377\204\377\0\0\214\377\377\377\202\377\0\0\214\377\377\377\203\377"
+  "\0\0\214\377\377\377\202\377\0\0\215\377\377\377\1\377\0\0\215\377\377"
+  "\377\202\377\0\0\216\377\377\377\1\377\0\0\235\377\377\377",
+};
 
-#ifdef WINDOWS
-#include <io.h>
-#include <winsock.h>
-#else
-#include <unistd.h>
-#endif
 
-#include "config.h"
-
-#include "globals.h"
-#include "coords.h"
-#include "vikcoord.h"
-#include "http.h"
-#include "vikwaypoint.h"
-#include "viktrack.h"
-#include "vikviewport.h"
-#include "viktreeview.h"
-#include "viklayer.h"
-#include "vikaggregatelayer.h"
-#include "vikgpslayer.h"
-#include "viklayerspanel.h"
-#include "vikcoordlayer.h"
-#include "vikgeoreflayer.h"
-#include "vikstatus.h"
-#include "vikfileentry.h"
-#include "viktrwlayer.h"
-#include "clipboard.h"
-#include "dialog.h"
-#include "file.h"
-#include "vikwindow.h"
-#include "gpspoint.h"
-#include "gpsmapper.h"
-
-#endif
