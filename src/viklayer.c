@@ -31,6 +31,7 @@ extern VikLayerInterface vik_trw_layer_interface;
 extern VikLayerInterface vik_maps_layer_interface;
 extern VikLayerInterface vik_coord_layer_interface;
 extern VikLayerInterface vik_georef_layer_interface;
+extern VikLayerInterface vik_gps_layer_interface;
 
 enum {
   VL_UPDATE_SIGNAL,
@@ -98,6 +99,7 @@ static VikLayerInterface *vik_layer_interfaces[VIK_LAYER_NUM_TYPES] = {
   &vik_trw_layer_interface,
   &vik_coord_layer_interface,
   &vik_georef_layer_interface,
+  &vik_gps_layer_interface,
   &vik_maps_layer_interface,
 };
 

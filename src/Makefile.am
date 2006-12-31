@@ -27,6 +27,7 @@ viking_SOURCES = main.c \
 	vikwindow.c vikwindow.h \
 	vikviewport.c vikviewport.h \
 	vikaggregatelayer.c vikaggregatelayer.h vikaggregatelayer_pixmap.h \
+	vikgpslayer.c vikgpslayer.h vikgpslayer_pixmap.h \
 	vikgeoreflayer.c vikgeoreflayer.h vikgeoreflayer_pixmap.h \
 	vikfileentry.c vikfileentry.h \
 	viktrwlayer_tpwin.c viktrwlayer_tpwin.h \

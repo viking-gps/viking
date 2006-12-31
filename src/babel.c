@@ -157,3 +157,80 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
   return ret;
 }
 
+gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
+{
+  gboolean ret;
+  GPid pid;
+  gint babel_stdin, babel_stdout, babel_stderr;
+
+  if (!a_file_export(vt, name_src, FILE_TYPE_GPX)) {
+    fprintf(stderr, "babel_general_convert_to(): error exporting to %s\n", name_src);
+    return(FALSE);
+  }
+
+  if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, &pid, &babel_stdin, &babel_stdout, &babel_stderr, NULL)) {
+    ret = FALSE;
+  } else {
+    gchar line[512];
+    FILE *diag;
+    diag = fdopen(babel_stdout, "r");
+    setvbuf(diag, NULL, _IONBF, 0);
+
+    while (fgets(line, sizeof(line), diag)) {
+      if ( cb )
+        cb(BABEL_DIAG_OUTPUT, line, user_data);
+    }
+    if ( cb )
+      cb(BABEL_DONE, NULL, user_data);
+    fclose(diag);
+    waitpid(pid, NULL, 0);
+    g_spawn_close_pid(pid);
+
+    ret = TRUE;
+  }
+    
+  return ret;
+}
+
+gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *to, gpointer user_data )
+{
+  int fd_src;
+  gchar *name_src;
+  gchar *cmd;
+  gboolean ret = FALSE;
+  gchar **args;  
+
+  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) < 0) {
+    ret = FALSE;
+  } else {
+    gchar *gpsbabel_loc;
+    close(fd_src);
+
+    gpsbabel_loc = g_find_program_in_path("gpsbabel");
+
+    if (gpsbabel_loc ) {
+      gchar *unbuffer_loc = g_find_program_in_path("unbuffer");
+      cmd = g_strdup_printf ( "%s%s%s %s -i gpx %s %s",
+			      unbuffer_loc ? unbuffer_loc : "",
+			      unbuffer_loc ? " " : "",
+			      gpsbabel_loc,
+			      babelargs,
+			      name_src,
+			      to);
+
+      if ( unbuffer_loc )
+        g_free ( unbuffer_loc );
+#ifdef DBG
+      fprintf(stderr, "cmd=%s\n", cmd);
+#endif /* DBG */
+      args = g_strsplit(cmd, " ", 0);
+      ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
+      g_strfreev(args);
+      g_free ( cmd );
+    }
+  }
+
+  remove(name_src);
+  g_free(name_src);
+  return ret;
+}
