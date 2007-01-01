@@ -18,11 +18,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <stdio.h>
-#include "vikwindow.h"
-
 #ifndef _VIKING_LAYER_H
 #define _VIKING_LAYER_H
+
+#include <stdio.h>
+#include <glib.h>
+#include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixdata.h>
+#include "vikwindow.h"
+
+#include "viktreeview.h"
+#include "vikviewport.h"
 
 #define VIK_LAYER_TYPE            (vik_layer_get_type ())
 #define VIK_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_LAYER_TYPE, VikLayer))

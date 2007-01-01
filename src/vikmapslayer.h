@@ -22,6 +22,8 @@
 #ifndef _VIKING_MAPSLAYER_H
 #define _VIKING_MAPSLAYER_H
 
+#include "viklayer.h"
+
 #define VIK_MAPS_LAYER_TYPE            (vik_maps_layer_get_type ())
 #define VIK_MAPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_MAPS_LAYER_TYPE, VikMapsLayer))
 #define VIK_MAPS_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_MAPS_LAYER_TYPE, VikMapsLayerClass))

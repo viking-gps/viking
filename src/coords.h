@@ -35,6 +35,8 @@ renaming functions and defining LatLon and UTM structs.
 #ifndef _VIKING_COORDS_H
 #define _VIKING_COORDS_H
 
+#include <glib.h>
+
 struct UTM {
   gdouble northing;
   gdouble easting;

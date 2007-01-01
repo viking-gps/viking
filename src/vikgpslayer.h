@@ -24,6 +24,8 @@
 
 #include <time.h>
 
+#include "viklayer.h"
+
 #define VIK_GPS_LAYER_TYPE            (vik_gps_layer_get_type ())
 #define VIK_GPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_GPS_LAYER_TYPE, VikGpsLayer))
 #define VIK_GPS_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_GPS_LAYER_TYPE, VikGpsLayerClass))

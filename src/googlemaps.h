@@ -22,6 +22,11 @@
 #ifndef __VIKING_GOOGLEMAPS_H
 #define __VIKING_GOOGLEMAPS_H
 
+#include <glib.h>
+
+#include "vikcoord.h"
+#include "mapcoord.h"
+
 guint8 googlemaps_zoom ( gdouble mpp );
 
 /* a bit misleading, this is the "mpp" (really just set zoom level, very

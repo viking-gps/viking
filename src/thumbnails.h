@@ -22,6 +22,9 @@
 #ifndef __VIKING_THUMBNAILS_H
 #define __VIKING_THUMBNAILS_H
 
+#include <glib.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+
 gboolean a_thumbnails_exists ( const gchar *filename );
 void a_thumbnails_create ( const gchar *filename );
 GdkPixbuf *a_thumbnails_get(const gchar *filename);

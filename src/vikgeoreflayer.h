@@ -22,6 +22,8 @@
 #ifndef _VIKING_GEOREFLAYER_H
 #define _VIKING_GEOREFLAYER_H
 
+#include "viklayer.h"
+
 #define VIK_GEOREF_LAYER_TYPE            (vik_georef_layer_get_type ())
 #define VIK_GEOREF_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_GEOREF_LAYER_TYPE, VikGeorefLayer))
 #define VIK_GEOREF_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_GEOREF_LAYER_TYPE, VikGeorefLayerClass))

@@ -22,6 +22,8 @@
 #ifndef _VIKING_CLIPBOARD_H
 #define _VIKING_CLIPBOARD_H
 
+#include "viklayerspanel.h"
+
 void a_clipboard_copy ( VikLayersPanel *vlp );
 gboolean a_clipboard_paste ( VikLayersPanel *vlp );
 

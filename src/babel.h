@@ -23,6 +23,10 @@
 #ifndef _VIKING_BABEL_H
 #define _VIKING_BABEL_H
 
+#include <glib.h>
+
+#include "viktrwlayer.h"
+
 typedef enum {
   BABEL_DIAG_OUTPUT,
   BABEL_DONE,

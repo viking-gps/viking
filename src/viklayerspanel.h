@@ -26,6 +26,9 @@
 #include <glib-object.h>
 #include <gtk/gtkvbox.h>
 
+#include "viklayer.h"
+#include "vikaggregatelayer.h"
+
 G_BEGIN_DECLS
 
 #define VIK_LAYERS_PANEL_TYPE            (vik_layers_panel_get_type ())

@@ -21,6 +21,10 @@
 #ifndef _VIKING_TRWLAYER_PROPWIN_H
 #define _VIKING_TRWLAYER_PROPWIN_H
 
+#include <glib.h>
+#include <gtk/gtk.h>
+#include "viktrack.h"
+
 /* should this file exist? */
 
 #define VIK_TRW_LAYER_PROPWIN_SPLIT 1

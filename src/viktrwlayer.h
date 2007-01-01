@@ -22,6 +22,11 @@
 #ifndef _VIKING_TRWLAYER_H
 #define _VIKING_TRWLAYER_H
 
+#include "viklayer.h"
+#include "vikviewport.h"
+#include "vikwaypoint.h"
+#include "viktrack.h"
+
 #define VIK_TRW_LAYER_TYPE            (vik_trw_layer_get_type ())
 #define VIK_TRW_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_TRW_LAYER_TYPE, VikTrwLayer))
 #define VIK_TRW_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_TRW_LAYER_TYPE, VikTrwLayerClass))

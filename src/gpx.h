@@ -22,6 +22,8 @@
 #ifndef _VIKING_GPX_H
 #define _VIKING_GPX_H
 
+#include "viktrwlayer.h"
+
 void a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f );
 

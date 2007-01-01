@@ -24,6 +24,8 @@
 
 #include <time.h>
 
+#include "viklayer.h"
+
 #define VIK_AGGREGATE_LAYER_TYPE            (vik_aggregate_layer_get_type ())
 #define VIK_AGGREGATE_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_AGGREGATE_LAYER_TYPE, VikAggregateLayer))
 #define VIK_AGGREGATE_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_AGGREGATE_LAYER_TYPE, VikAggregateLayerClass))

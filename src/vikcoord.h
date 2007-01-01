@@ -22,6 +22,8 @@
 #ifndef _VIKING_VIKCOORD_H
 #define _VIKING_VIKCOORD_H
 
+#include "coords.h"
+
 typedef gshort VikCoordMode;
 #define VIK_COORD_UTM 0
 #define VIK_COORD_LATLON 1
