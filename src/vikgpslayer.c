@@ -341,24 +341,15 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
 
 static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
 {
-#if 0
-  guint num_signals = DISCONNECT_UPDATE_SIGNAL(vl,vgl);
-  fprintf(stderr, "disconnect_layer_signal(): num_signals = %d\n", num_signals);
-#endif
-
   g_assert(DISCONNECT_UPDATE_SIGNAL(vl,vgl)==1);
 }
 
 void vik_gps_layer_free ( VikGpsLayer *vgl )
 {
-#ifdef XXXXXXXXXXXXXXX
-  g_list_foreach ( val->children, (GFunc)(disconnect_layer_signal), val );
-  g_list_foreach ( val->children, (GFunc)(g_object_unref), NULL );
-  g_list_free ( val->children );
-#endif /* XXXXXXXXXXXXXXX */
   gint i;
   for (i = 0; i < NUM_TRW; i++) {
-    disconnect_layer_signal(vgl->trw_children[i], vgl);
+    if (vgl->vl.realized)
+      disconnect_layer_signal(vgl->trw_children[i], vgl);
     g_object_unref(vgl->trw_children[i]);
   }
 }
