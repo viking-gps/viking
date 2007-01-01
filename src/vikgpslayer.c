@@ -28,6 +28,11 @@
 #include <glib/gprintf.h>
 
 #define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
+static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
+static void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
+static void vik_gps_layer_free ( VikGpsLayer *val );
+static void vik_gps_layer_draw ( VikGpsLayer *val, gpointer data );
+VikGpsLayer *vik_gps_layer_new ();
 
 static VikGpsLayer *gps_layer_copy ( VikGpsLayer *val, gpointer vp );
 static void gps_layer_marshall( VikGpsLayer *val, guint8 **data, gint *len );
@@ -76,7 +81,7 @@ static VikLayerParam gps_layer_params[] = {
   { "gps_protocol", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "GPS Protocol:", VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
   { "gps_port", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Serial Port:", VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
 };
-static enum {PARAM_PROTOCOL=0, PARAM_PORT, NUM_PARAMS};
+enum {PARAM_PROTOCOL=0, PARAM_PORT, NUM_PARAMS};
 
 VikLayerInterface vik_gps_layer_interface = {
   "GPS",
@@ -122,7 +127,7 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncDragDropRequest)		gps_layer_drag_drop_request,
 };
 
-static enum {TRW_DOWNLOAD, TRW_UPLOAD, NUM_TRW};
+enum {TRW_DOWNLOAD, TRW_UPLOAD, NUM_TRW};
 static gchar * trw_names[] = {"GPS Download", "GPS Upload"};
 struct _VikGpsLayer {
   VikLayer vl;
@@ -156,7 +161,7 @@ GType vik_gps_layer_get_type ()
   return val_type;
 }
 
-VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
+static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
 {
   VikGpsLayer *rv = vik_gps_layer_new ();
   vik_layer_rename ( VIK_LAYER(rv), vik_gps_layer_interface.name );
@@ -171,7 +176,7 @@ static VikGpsLayer *gps_layer_copy ( VikGpsLayer *vgl, gpointer vp )
   int i;
 
   for (i = 0; i < NUM_TRW; i++) {
-    rv->trw_children[i] = vik_layer_copy(VIK_LAYER(vgl->trw_children[i]), vp);
+    rv->trw_children[i] = (VikTrwLayer *)vik_layer_copy(VIK_LAYER(vgl->trw_children[i]), vp);
     g_signal_connect_swapped ( G_OBJECT(rv->trw_children[i]), "update", G_CALLBACK(vik_layer_emit_update), rv );
   }
 
@@ -230,7 +235,7 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
   while (len>0 && i < NUM_TRW) {
     child_layer = vik_layer_unmarshall ( data + sizeof(gint), alm_size, vvp );
     if (child_layer) {
-      rv->trw_children[i++] = child_layer;
+      rv->trw_children[i++] = (VikTrwLayer *)child_layer;
       g_signal_connect_swapped ( G_OBJECT(child_layer), "update", G_CALLBACK(vik_layer_emit_update), rv );
     }
     alm_next;
@@ -299,12 +304,12 @@ VikGpsLayer *vik_gps_layer_new ()
   return vgl;
 }
 
-void vik_gps_layer_draw ( VikGpsLayer *vgl, gpointer data )
+static void vik_gps_layer_draw ( VikGpsLayer *vgl, gpointer data )
 {
   gint i;
 
   for (i = 0; i < NUM_TRW; i++) {
-    vik_layer_draw(vgl->trw_children[i], data);
+    vik_layer_draw((VikLayer*)(vgl->trw_children[i]), data);
   }
 }
 
@@ -312,7 +317,7 @@ static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode )
 {
   gint i;
   for (i = 0; i < NUM_TRW; i++) {
-    vik_layer_change_coord_mode(vgl->trw_children[i], mode);
+    vik_layer_change_coord_mode((VikTrwLayer *)(vgl->trw_children[i]), mode);
   }
 }
 
@@ -344,12 +349,12 @@ static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
   g_assert(DISCONNECT_UPDATE_SIGNAL(vl,vgl)==1);
 }
 
-void vik_gps_layer_free ( VikGpsLayer *vgl )
+static void vik_gps_layer_free ( VikGpsLayer *vgl )
 {
   gint i;
   for (i = 0; i < NUM_TRW; i++) {
     if (vgl->vl.realized)
-      disconnect_layer_signal(vgl->trw_children[i], vgl);
+      disconnect_layer_signal(VIK_LAYER(vgl->trw_children[i]), vgl);
     g_object_unref(vgl->trw_children[i]);
   }
 }
@@ -414,13 +419,13 @@ guint vik_gps_layer_tool ( VikGpsLayer *val, guint16 layer_type, VikToolInterfac
 }
 #endif 
 
-void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
+static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
   GtkTreeIter iter;
   int ix;
 
   for (ix = 0; ix < NUM_TRW; ix++) {
-    VikLayer * trw = vgl->trw_children[ix];
+    VikLayer * trw = VIK_LAYER(vgl->trw_children[ix]);
     vik_treeview_add_layer ( VIK_LAYER(vgl)->vt, layer_iter, &iter,
         trw_names[ix], vgl, 
         trw, trw->type, trw->type );
