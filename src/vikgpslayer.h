@@ -42,25 +42,4 @@ GType vik_gps_layer_get_type ();
 
 typedef struct _VikGpsLayer VikGpsLayer;
 
-VikGpsLayer *vik_gps_layer_new ();
-void vik_gps_layer_add_layer ( VikGpsLayer *val, VikLayer *l );
-void vik_gps_layer_insert_layer ( VikGpsLayer *val, VikLayer *l, GtkTreeIter *replace_layer );
-void vik_gps_layer_move_layer ( VikGpsLayer *val, GtkTreeIter *child_iter, gboolean up );
-void vik_gps_layer_draw ( VikGpsLayer *val, gpointer data );
-void vik_gps_layer_free ( VikGpsLayer *val );
-void vik_gps_layer_clear ( VikGpsLayer *val );
-gboolean vik_gps_layer_delete ( VikGpsLayer *val, GtkTreeIter *iter );
-VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
-
-/* returns: 0 = success, 1 = none appl. found, 2 = found but rejected */
-// guint vik_gps_layer_tool ( VikGpsLayer *val, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp);
-
-VikLayer *vik_gps_layer_get_top_visible_layer_of_type ( VikGpsLayer *val, gint type );
-void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
-gboolean vik_gps_layer_load_layers ( VikGpsLayer *val, FILE *f, gpointer vp );
-gboolean vik_gps_layer_is_empty ( VikGpsLayer *val );
-
-const GList *vik_gps_layer_get_children ( VikGpsLayer *val );
-
-
 #endif

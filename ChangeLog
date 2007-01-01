@@ -1,7 +1,16 @@
+2007-01-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* gpslayer: Unexpose interface functions.
+
 2007-01-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
 	* Make all .h self sufficient
 	
+2007-01-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* gpslayer: fix bugs that causes crashes when click "Cancel" on layer
+	creation dialog.
+
 2006-12-31
 Quy Tonthat <qtonthat@gmail.com>:
 	* Added gps layer
