@@ -19,5 +19,11 @@
  *
  */
 
+#ifndef __GPSMAPPER_H
+#define __GPSMAPPER_H
+
+#include "viktrwlayer.h"
+
 void a_gpsmapper_write_file ( VikTrwLayer *trw, FILE *f );
 
+#endif

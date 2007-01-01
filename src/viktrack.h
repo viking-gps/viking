@@ -22,6 +22,11 @@
 #ifndef _VIKING_TRACK_H
 #define _VIKING_TRACK_H
 
+#include <time.h>
+#include <glib.h>
+
+#include "vikcoord.h"
+
 /* todo important: put these in their own header file, maybe.probably also rename */
 
 #define VIK_TRACK(x) ((VikTrack *)(x))

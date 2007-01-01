@@ -22,6 +22,10 @@
 #ifndef __VIKING_GARMINSYMBOLS_H
 #define __VIKING_GARMINSYMBOLS_H
 
+#include <glib.h>
+#include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+
 GdkPixbuf *a_get_wp_sym ( const gchar *sym );
 void a_populate_sym_list ( GtkListStore *list );
 

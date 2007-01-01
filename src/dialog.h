@@ -22,6 +22,13 @@
 #ifndef _VIKING_DIALOG_H
 #define _VIKING_DIALOG_H
 
+#include <glib.h>
+#include <gtk/gtk.h>
+
+#include "coords.h"
+#include "vikwaypoint.h"
+#include "vikcoord.h"
+
 /* most of this file is an architechtural flaw. */
 
 #define a_dialog_info_msg(win,info) a_dialog_msg(win,GTK_MESSAGE_INFO,info,NULL)

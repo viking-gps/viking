@@ -22,6 +22,8 @@
 #ifndef _VIKING_GPSPOINT_H
 #define _VIKING_GPSPOINT_H
 
+#include "viktrwlayer.h"
+
 void a_gpspoint_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpspoint_write_file ( VikTrwLayer *trw, FILE *f );
 

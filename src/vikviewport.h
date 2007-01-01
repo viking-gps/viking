@@ -27,6 +27,8 @@
 #include <glib-object.h>
 #include <gtk/gtkdrawingarea.h>
 
+#include "vikcoord.h"
+
 G_BEGIN_DECLS
 
 #define VIK_VIEWPORT_TYPE            (vik_viewport_get_type ())

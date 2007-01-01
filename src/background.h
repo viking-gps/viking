@@ -22,6 +22,11 @@
 #ifndef __VIKING_BACKGROUND_H
 #define __VIKING_BACKGROUND_H
 
+#include <glib.h>
+#include <gtk/gtk.h>
+
+#include "vikstatus.h"
+
 typedef void(*vik_thr_free_func)(gpointer);
 typedef void(*vik_thr_func)(gpointer,gpointer);
 

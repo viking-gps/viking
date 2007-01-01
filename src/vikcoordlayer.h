@@ -22,6 +22,8 @@
 #ifndef _VIKING_COORDLAYER_H
 #define _VIKING_COORDLAYER_H
 
+#include "viklayer.h"
+
 #define VIK_COORD_LAYER_TYPE            (vik_coord_layer_get_type ())
 #define VIK_COORD_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_COORD_LAYER_TYPE, VikCoordLayer))
 #define VIK_COORD_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_COORD_LAYER_TYPE, VikCoordLayerClass))

@@ -22,6 +22,12 @@
 #ifndef _VIKING_ACQUIRE_H
 #define _VIKING_ACQUIRE_H
 
+#include <gtk/gtk.h>
+
+#include "vikwindow.h"
+#include "viklayerspanel.h"
+#include "vikviewport.h"
+
 typedef struct _VikDataSourceInterface VikDataSourceInterface;
 
 /* global data structure used to expose the progress dialog to the worker thread */

@@ -22,6 +22,11 @@
 #ifndef _VIKING_FILE_H
 #define _VIKING_FILE_H
 
+#include <glib.h>
+
+#include "vikaggregatelayer.h"
+#include "viktrwlayer.h"
+
 #define FILE_TYPE_GPSPOINT 1
 #define FILE_TYPE_GPSMAPPER 2
 #define FILE_TYPE_GPX 3

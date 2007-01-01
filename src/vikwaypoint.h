@@ -22,6 +22,8 @@
 #ifndef _VIKING_WAYPOINT_H
 #define _VIKING_WAYPOINT_H
 
+#include "vikcoord.h"
+
 /* todo important: put these in their own header file, maybe.probably also rename */
 
 #define VIK_WAYPOINT(x) ((VikWaypoint *)(x))
