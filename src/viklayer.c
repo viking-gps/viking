@@ -347,6 +347,20 @@ void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter *layer_iter )
     vik_layer_interfaces[l->type]->realize ( l, vt, layer_iter );
 }
 
+void vik_layer_set_menu_items_selection(VikLayer *l, guint16 selection)
+{
+  if ( vik_layer_interfaces[l->type]->set_menu_selection )
+    vik_layer_interfaces[l->type]->set_menu_selection ( l, selection );
+}
+
+guint16 vik_layer_get_menu_items_selection(VikLayer *l)
+{
+  if ( vik_layer_interfaces[l->type]->get_menu_selection )
+    return(vik_layer_interfaces[l->type]->get_menu_selection (l));
+  else
+    return(vik_layer_interfaces[l->type]->menu_items_selection);
+}
+
 void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp )
 {
   if ( vik_layer_interfaces[l->type]->add_menu_items )

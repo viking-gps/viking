@@ -106,6 +106,9 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncDraw)                    vik_gps_layer_draw,
   (VikLayerFuncChangeCoordMode)         gps_layer_change_coord_mode,
 
+  (VikLayerFuncSetMenuItemsSelection)   NULL,
+  (VikLayerFuncGetMenuItemsSelection)   NULL,
+
   (VikLayerFuncAddMenuItems)            gps_layer_add_menu_items,
   (VikLayerFuncSublayerAddMenuItems)    NULL,
 
@@ -168,7 +171,9 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
   VikGpsLayer *rv = vik_gps_layer_new ();
   vik_layer_rename ( VIK_LAYER(rv), vik_gps_layer_interface.name );
   rv->trw_children[TRW_UPLOAD] = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE ));
+  vik_layer_set_menu_items_selection(rv->trw_children[TRW_UPLOAD], VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
   rv->trw_children[TRW_DOWNLOAD] = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE ));
+  vik_layer_set_menu_items_selection(rv->trw_children[TRW_DOWNLOAD], VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
   return rv;
 }
 
