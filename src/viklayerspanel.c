@@ -266,6 +266,7 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
     if ( vik_treeview_item_get_type ( vlp->vt, iter ) == VIK_TREEVIEW_TYPE_LAYER )
     {
       VikLayer *layer = VIK_LAYER(vik_treeview_item_get_pointer ( vlp->vt, iter ));
+      VikLayerInterface *layer_interface = vik_layer_get_interface(layer->type);
 
       if ( layer->type == VIK_LAYER_AGGREGATE )
         menu = GTK_MENU(gtk_item_factory_get_widget ( vlp->popup_factory, "<main>" ));
@@ -275,30 +276,40 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
 
         menu = GTK_MENU ( gtk_menu_new () );
 
-        prop = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PROPERTIES, NULL );
-        g_signal_connect_swapped ( G_OBJECT(prop), "activate", G_CALLBACK(vik_layers_panel_properties), vlp );
-        gtk_menu_shell_append (GTK_MENU_SHELL (menu), prop);
-        gtk_widget_show ( prop );
+	if (layer_interface->menu_items_selection & VIK_MENU_ITEM_PROPERTY) {
+	  prop = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PROPERTIES, NULL );
+	  g_signal_connect_swapped ( G_OBJECT(prop), "activate", G_CALLBACK(vik_layers_panel_properties), vlp );
+	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), prop);
+	  gtk_widget_show ( prop );
+	}
 
-        del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_CUT, NULL );
-        g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_cut_selected), vlp );
-        gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-        gtk_widget_show ( del );
+	if (layer_interface->menu_items_selection & VIK_MENU_ITEM_CUT) {
+	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_CUT, NULL );
+	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_cut_selected), vlp );
+	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
+	  gtk_widget_show ( del );
+	}
 
-        del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_COPY, NULL );
-        g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_copy_selected), vlp );
-        gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-        gtk_widget_show ( del );
+	if (layer_interface->menu_items_selection & VIK_MENU_ITEM_COPY) {
+	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_COPY, NULL );
+	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_copy_selected), vlp );
+	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
+	  gtk_widget_show ( del );
+	}
 
-        del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PASTE, NULL );
-        g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_paste_selected), vlp );
-        gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-        gtk_widget_show ( del );
+	if (layer_interface->menu_items_selection & VIK_MENU_ITEM_PASTE) {
+	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PASTE, NULL );
+	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_paste_selected), vlp );
+	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
+	  gtk_widget_show ( del );
+	}
 
-        del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_DELETE, NULL );
-        g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_delete_selected), vlp );
-        gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-        gtk_widget_show ( del );
+	if (layer_interface->menu_items_selection & VIK_MENU_ITEM_DELETE) {
+	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_DELETE, NULL );
+	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_delete_selected), vlp );
+	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
+	  gtk_widget_show ( del );
+	}
 
         vik_layer_add_menu_items ( layer, menu, vlp );
       } 

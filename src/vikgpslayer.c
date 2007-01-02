@@ -95,6 +95,8 @@ VikLayerInterface vik_gps_layer_interface = {
   NULL,
   0,
 
+  VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_COPY),
+
   (VikLayerFuncCreate)                  vik_gps_layer_create,
   (VikLayerFuncRealize)                 vik_gps_layer_realize,
   (VikLayerFuncPostRead)                NULL,

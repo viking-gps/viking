@@ -149,6 +149,8 @@ VikLayerInterface vik_maps_layer_interface = {
   NULL,
   0,
 
+  VIK_MENU_ITEM_ALL,
+
   (VikLayerFuncCreate)                  maps_layer_new,
   (VikLayerFuncRealize)                 NULL,
   (VikLayerFuncPostRead)                NULL,

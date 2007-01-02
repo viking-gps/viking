@@ -1,6 +1,7 @@
 2007-01-02
 Quy Tonthat <qtonthat@gmail.com>:
 	* gpslayer: Unexpose interface functions.
+	* Layers now can have their say on what pop up menu items they want.
 
 2007-01-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
