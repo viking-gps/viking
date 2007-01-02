@@ -44,6 +44,8 @@ VikLayerInterface vik_aggregate_layer_interface = {
   NULL,
   0,
 
+  VIK_MENU_ITEM_ALL,
+
   (VikLayerFuncCreate)                  vik_aggregate_layer_create,
   (VikLayerFuncRealize)                 vik_aggregate_layer_realize,
   (VikLayerFuncPostRead)                NULL,

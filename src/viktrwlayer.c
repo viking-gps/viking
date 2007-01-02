@@ -330,6 +330,8 @@ VikLayerInterface vik_trw_layer_interface = {
   params_groups, /* params_groups */
   sizeof(params_groups)/sizeof(params_groups[0]),    /* number of groups */
 
+  VIK_MENU_ITEM_ALL,
+
   (VikLayerFuncCreate)                  vik_trw_layer_create,
   (VikLayerFuncRealize)                 vik_trw_layer_realize,
   (VikLayerFuncPostRead)                trw_layer_verify_thumbnails,

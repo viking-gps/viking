@@ -208,6 +208,14 @@ typedef void          (*VikLayerFuncFreeCopiedItem)        (gint, gpointer);
  */
 typedef void 	      (*VikLayerFuncDragDropRequest)       (VikLayer *, VikLayer *, GtkTreeIter *, GtkTreePath *);
 
+typedef enum {
+  VIK_MENU_ITEM_PROPERTY=1,
+  VIK_MENU_ITEM_CUT=2,
+  VIK_MENU_ITEM_COPY=4,
+  VIK_MENU_ITEM_PASTE=8,
+  VIK_MENU_ITEM_DELETE=16,
+  VIK_MENU_ITEM_ALL=0xff
+} VikStdLayerMenuItem;
 
 typedef struct _VikLayerInterface VikLayerInterface;
 
@@ -224,6 +232,9 @@ struct _VikLayerInterface {
   guint16                           params_count;
   gchar **                          params_groups;
   guint8                            params_groups_count;
+
+  /* menu items to be created */
+  VikStdLayerMenuItem               menu_items_selection;
 
   VikLayerFuncCreate                create;
   VikLayerFuncRealize               realize;
