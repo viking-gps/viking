@@ -87,6 +87,9 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncDraw)                    georef_layer_draw,
   (VikLayerFuncChangeCoordMode)         NULL,
 
+  (VikLayerFuncSetMenuItemsSelection)   NULL,
+  (VikLayerFuncGetMenuItemsSelection)   NULL,
+
   (VikLayerFuncAddMenuItems)            georef_layer_add_menu_items,
   (VikLayerFuncSublayerAddMenuItems)    NULL,
 

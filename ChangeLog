@@ -1,3 +1,7 @@
+2007-01-03
+Quy Tonthat <qtonthat@gmail.com>:
+	* Menu item selection for layer instances.
+
 2007-01-02
 Quy Tonthat <qtonthat@gmail.com>:
 	* gpslayer: Unexpose interface functions.

@@ -54,6 +54,9 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    vik_aggregate_layer_draw,
   (VikLayerFuncChangeCoordMode)         aggregate_layer_change_coord_mode,
+  
+  (VikLayerFuncSetMenuItemsSelection)	NULL,
+  (VikLayerFuncGetMenuItemsSelection)	NULL,
 
   (VikLayerFuncAddMenuItems)            NULL,
   (VikLayerFuncSublayerAddMenuItems)    NULL,

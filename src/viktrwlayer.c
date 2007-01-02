@@ -135,6 +135,9 @@ struct _VikTrwLayer {
 
   GtkMenu *wp_right_click_menu;
 
+  /* menu */
+  VikStdLayerMenuItem menu_selection;
+
 };
 
 /* A caached waypoint image. */
@@ -153,6 +156,9 @@ struct DrawingParams {
   gboolean one_zone, lat_lon;
   gdouble ce1, ce2, cn1, cn2;
 };
+
+static vik_trw_layer_set_menu_selection(VikTrwLayer *vtl, guint16);
+static guint16 vik_trw_layer_get_menu_selection(VikTrwLayer *vtl);
 
 static void trw_layer_delete_item ( gpointer *pass_along );
 
@@ -340,6 +346,9 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    vik_trw_layer_draw,
   (VikLayerFuncChangeCoordMode)         trw_layer_change_coord_mode,
+
+  (VikLayerFuncSetMenuItemsSelection)   vik_trw_layer_set_menu_selection,
+  (VikLayerFuncGetMenuItemsSelection)   vik_trw_layer_get_menu_selection,
 
   (VikLayerFuncAddMenuItems)            vik_trw_layer_add_menu_items,
   (VikLayerFuncSublayerAddMenuItems)    vik_trw_layer_sublayer_add_menu_items,
@@ -1222,6 +1231,8 @@ VikTrwLayer *vik_trw_layer_create ( VikViewport *vp )
   rv->wp_draw_symbols = TRUE;
 
   rv->coord_mode = vik_viewport_get_coord_mode ( vp );
+
+  rv->menu_selection = vik_layer_get_interface(VIK_LAYER(rv)->type)->menu_items_selection;
 
   return rv;
 }
@@ -3195,3 +3206,14 @@ VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, gchar *name )
 {
   return g_hash_table_lookup ( vtl->tracks, name );
 }
+
+static vik_trw_layer_set_menu_selection(VikTrwLayer *vtl, guint16 selection)
+{
+  vtl->menu_selection = selection;
+}
+
+static guint16 vik_trw_layer_get_menu_selection(VikTrwLayer *vtl)
+{
+  return(vtl->menu_selection);
+}
+
