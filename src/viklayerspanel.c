@@ -365,12 +365,18 @@ void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
     VikAggregateLayer *addtoagg;
     if (vik_treeview_item_get_type ( vlp->vt, &iter ) == VIK_TREEVIEW_TYPE_LAYER )
     {
-      if ( ! IS_VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter )) ) {
-        addtoagg = VIK_AGGREGATE_LAYER(vik_treeview_item_get_parent ( vlp->vt, &iter ));
-        replace_iter = &iter;
+      if ( IS_VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter )) )
+         addtoagg = VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter ));
+      else {
+       VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &iter ));
+       while ( ! IS_VIK_AGGREGATE_LAYER(vl) ) {
+         iter = vl->iter;
+         vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &vl->iter ));
+         g_assert ( vl->realized );
+       }
+       addtoagg = VIK_AGGREGATE_LAYER(vl);
+       replace_iter = &iter;
       }
-      else
-        addtoagg = VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter ));
     }
     else
     {
@@ -496,8 +502,10 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
     if ( parent )
     {
-      if ( vik_aggregate_layer_delete ( parent, &iter ) )
-        vik_layers_panel_emit_update ( vlp );
+      if (IS_VIK_AGGREGATE_LAYER(parent)) {
+        if ( vik_aggregate_layer_delete ( parent, &iter ) )
+	  vik_layers_panel_emit_update ( vlp );
+      }
     }
     else
       a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), "You cannot delete the Top Layer." );
