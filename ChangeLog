@@ -1,5 +1,9 @@
 2007-01-03
 Quy Tonthat <qtonthat@gmail.com>:
+	* bug fix: crash on inserting aggregate layer if the selected layer's
+	parent is not an aggregate layer.
+	* bug fix: crash when delete a child layer whose parent is not
+	an aggregiate layer (eg gpslayer)
 	* Menu item selection for layer instances.
 
 2007-01-02
