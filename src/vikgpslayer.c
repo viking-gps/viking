@@ -171,9 +171,9 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
   VikGpsLayer *rv = vik_gps_layer_new ();
   vik_layer_rename ( VIK_LAYER(rv), vik_gps_layer_interface.name );
   rv->trw_children[TRW_UPLOAD] = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE ));
-  vik_layer_set_menu_items_selection(rv->trw_children[TRW_UPLOAD], VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
+  vik_layer_set_menu_items_selection(VIK_LAYER(rv->trw_children[TRW_UPLOAD]), VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
   rv->trw_children[TRW_DOWNLOAD] = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE ));
-  vik_layer_set_menu_items_selection(rv->trw_children[TRW_DOWNLOAD], VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
+  vik_layer_set_menu_items_selection(VIK_LAYER(rv->trw_children[TRW_DOWNLOAD]), VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
   return rv;
 }
 
@@ -324,7 +324,7 @@ static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode )
 {
   gint i;
   for (i = 0; i < NUM_TRW; i++) {
-    vik_layer_change_coord_mode((VikTrwLayer *)(vgl->trw_children[i]), mode);
+    vik_layer_change_coord_mode(VIK_LAYER(vgl->trw_children[i]), mode);
   }
 }
 
@@ -380,7 +380,7 @@ gboolean vik_gps_layer_delete ( VikGpsLayer *vgl, GtkTreeIter *iter )
 
   vik_treeview_item_delete ( VIK_LAYER(vgl)->vt, iter );
   for (i = 0; i < NUM_TRW; i++) {
-    if (vgl->trw_children[i] == l)
+    if (VIK_LAYER(vgl->trw_children[i]) == l)
       vgl->trw_children[i] = NULL;
   }
   g_assert(DISCONNECT_UPDATE_SIGNAL(l,vgl)==1);

@@ -457,7 +457,7 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
     if ( parent )
     {
-      a_clipboard_copy ( vlp );
+      a_clipboard_copy_selected ( vlp );
       if ( vik_aggregate_layer_delete ( parent, &iter ) )
         vik_layers_panel_emit_update ( vlp );
     }
@@ -476,7 +476,7 @@ void vik_layers_panel_copy_selected ( VikLayersPanel *vlp )
   type = vik_treeview_item_get_type ( vlp->vt, &iter );
 
   if ( type == VIK_TREEVIEW_TYPE_LAYER ) {
-    a_clipboard_copy ( vlp );
+    a_clipboard_copy_selected ( vlp );
   }
 }
 

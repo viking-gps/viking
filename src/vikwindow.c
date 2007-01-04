@@ -816,12 +816,12 @@ static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw )
 
 static void menu_copy_layer_cb ( GtkAction *a, VikWindow *vw )
 {
-  a_clipboard_copy ( vw->viking_vlp );
+  a_clipboard_copy_selected ( vw->viking_vlp );
 }
 
 static void menu_cut_layer_cb ( GtkAction *a, VikWindow *vw )
 {
-  a_clipboard_copy ( vw->viking_vlp );
+  a_clipboard_copy_selected ( vw->viking_vlp );
   menu_delete_layer_cb ( a, vw );
 }
 

@@ -157,10 +157,12 @@ struct DrawingParams {
   gdouble ce1, ce2, cn1, cn2;
 };
 
-static vik_trw_layer_set_menu_selection(VikTrwLayer *vtl, guint16);
+static void vik_trw_layer_set_menu_selection(VikTrwLayer *vtl, guint16);
 static guint16 vik_trw_layer_get_menu_selection(VikTrwLayer *vtl);
 
 static void trw_layer_delete_item ( gpointer *pass_along );
+static void trw_layer_copy_item_cb( gpointer *pass_along);
+static void trw_layer_cut_item_cb( gpointer *pass_along);
 
 static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct LatLon maxmin[2] );	
@@ -422,12 +424,35 @@ static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublay
   trw_layer_delete_item ( pass_along );
 }
 
+static void trw_layer_copy_item_cb( gpointer pass_along[5])
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  gint subtype = (gint)pass_along[2];
+  gpointer * sublayer = pass_along[3];
+  guint8 *data = NULL;
+  guint len;
+
+  trw_layer_copy_item( vtl, subtype, sublayer, &data, &len);
+
+  if (data) {
+    a_clipboard_copy( VIK_CLIPBOARD_DATA_SUBLAYER, VIK_LAYER_TRW,
+	subtype, len, data);
+  }
+}
+
+static void trw_layer_cut_item_cb( gpointer pass_along[5])
+{
+  trw_layer_copy_item_cb(pass_along);
+  trw_layer_delete_item(pass_along);
+}
+
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len )
 {
   FlatItem *fi;
   guint8 *id;
   guint il;
 
+  fprintf(stderr, "%s:%s() called\n", __FILE__, __PRETTY_FUNCTION__);
   if (!sublayer) {
     *item = NULL;
     return;
@@ -2275,6 +2300,16 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
+    item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_CUT, NULL );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_cut_item_cb), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_COPY, NULL );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_item_cb), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
     item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_DELETE, NULL );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_item), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
@@ -3207,7 +3242,7 @@ VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, gchar *name )
   return g_hash_table_lookup ( vtl->tracks, name );
 }
 
-static vik_trw_layer_set_menu_selection(VikTrwLayer *vtl, guint16 selection)
+static void vik_trw_layer_set_menu_selection(VikTrwLayer *vtl, guint16 selection)
 {
   vtl->menu_selection = selection;
 }
