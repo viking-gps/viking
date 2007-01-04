@@ -24,7 +24,14 @@
 
 #include "viklayerspanel.h"
 
-void a_clipboard_copy ( VikLayersPanel *vlp );
+typedef enum {
+  VIK_CLIPBOARD_DATA_NONE = 0,
+  VIK_CLIPBOARD_DATA_LAYER,
+  VIK_CLIPBOARD_DATA_SUBLAYER
+} VikClipboardDataType;
+
+void a_clipboard_copy(VikClipboardDataType  type, guint16 layer_type, gint subtype, guint len, guint8 * data);
+void a_clipboard_copy_selected ( VikLayersPanel *vlp );
 gboolean a_clipboard_paste ( VikLayersPanel *vlp );
 
 #endif

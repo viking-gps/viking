@@ -1,3 +1,8 @@
+2007-01-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Added "Copy" and "Cut" to popup menus for track and waypoint (on the
+	layer panel).
+
 2007-01-03
 Quy Tonthat <qtonthat@gmail.com>:
 	* bug fix: crash on inserting aggregate layer if the selected layer's
