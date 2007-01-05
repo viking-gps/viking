@@ -513,7 +513,8 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
   else if (type == VIK_TREEVIEW_TYPE_SUBLAYER) {
     VikLayer *sel = vik_layers_panel_get_selected ( vlp );
     if ( vik_layer_get_interface(sel->type)->delete_item ) {
-      vik_layer_get_interface(sel->type)->delete_item ( sel, type, vik_treeview_item_get_pointer(sel->vt, &iter) );
+      gint subtype = vik_treeview_item_get_data( vlp->vt, &iter);
+      vik_layer_get_interface(sel->type)->delete_item ( sel, subtype, vik_treeview_item_get_pointer(sel->vt, &iter) );
     }
   }
 }
