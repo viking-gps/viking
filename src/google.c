@@ -30,6 +30,10 @@
 #include "google.h"
 #include "vikmapslayer.h"
 
+#define GOOGLE_VERSION "w2.35"
+#define GOOGLE_TRANS_VERSION "w2t.34"
+#define GOOGLE_KH_VERSION "3"
+
 void google_init () {
   VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };
   VikMapsLayer_MapType google_2 = { 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download };
@@ -93,12 +97,12 @@ static void real_google_download ( MapCoord *src, const gchar *dest_fn, const ch
 
 void google_download ( MapCoord *src, const gchar *dest_fn )
 {
-   real_google_download ( src, dest_fn, "w2.35" );
+   real_google_download ( src, dest_fn, GOOGLE_VERSION );
 }
 
 void google_trans_download ( MapCoord *src, const gchar *dest_fn )
 {
-   real_google_download ( src, dest_fn, "w2t.1" );
+   real_google_download ( src, dest_fn, GOOGLE_TRANS_VERSION );
 }
 
 static char *kh_encode(guint32 x, guint32 y, guint8 scale)
@@ -145,7 +149,7 @@ static char *kh_encode(guint32 x, guint32 y, guint8 scale)
 void google_kh_download ( MapCoord *src, const gchar *dest_fn )
 {
    gchar *khenc = kh_encode( src->x, src->y, src->scale );
-   gchar *uri = g_strdup_printf ( "/kh?v=3&t=%s", khenc );
+   gchar *uri = g_strdup_printf ( "/kh?v=%s&t=%s", GOOGLE_KH_VERSION, khenc );
    g_free ( khenc );
    a_http_download_get_url ( "kh.google.com", uri, dest_fn );
    g_free ( uri );
