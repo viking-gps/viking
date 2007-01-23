@@ -19,7 +19,6 @@
  *
  */
 
-
 #ifndef __MAP_COORD_H
 #define __MAP_COORD_H
 
@@ -34,5 +33,5 @@ typedef struct {
   guint scale;
 } MapCoord;
 
-
 #endif
+

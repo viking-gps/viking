@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2006-2007, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,9 @@
  *
  */
 
-#ifndef __VIKING_GOOGLEMAPS_H
-#define __VIKING_GOOGLEMAPS_H
+#ifndef __VIKING_MODULES_H
+#define __VIKING_MODULES_H
 
-#include <glib.h>
-
-#include "vikcoord.h"
-#include "mapcoord.h"
-
-void googlemaps_init ();
-
-guint8 googlemaps_zoom ( gdouble mpp );
-
-/* a bit misleading, this is the "mpp" (really just set zoom level, very
- * roughly equivalent so you can easily switch between maps) of
- * google maps 1, the second google maps level (1st is 0). */
-#define GOOGLEMAPS_ZOOM_ONE_MPP 2.0
-
-gboolean googlemaps_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
-void googlemaps_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-void googlemaps_download ( MapCoord *src, const gchar *dest_fn );
+void modules_init();
 
 #endif

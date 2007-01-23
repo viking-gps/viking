@@ -1,3 +1,9 @@
+Viking modularized (2007-01-14)
+- new configure options:
+  * --disable-google
+  * --disable-terraserver
+  * --disable-expedia
+
 Viking 0.1.1 (2006-06-11)
 - more map sources such as google
 - drag and drop of layers and way/trackpoints

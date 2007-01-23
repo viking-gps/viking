@@ -29,7 +29,14 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "http.h"
+#include "vikmapslayer.h"
 
+#include "expedia.h"
+
+void expedia_init() {
+  VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download };
+  maps_layer_register_type("Expedia Street Maps", 5, &map_type);
+}
 
 #define EXPEDIA_SITE "expedia.com"
 #define MPP_MARGIN_OF_ERROR 0.01

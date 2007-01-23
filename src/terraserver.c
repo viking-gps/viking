@@ -25,6 +25,19 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "http.h"
+#include "vikmapslayer.h"
+
+#include "terraserver.h"
+
+void terraserver_init () {
+  VikMapsLayer_MapType map_type_1 = { 2, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_topo_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_topo_download };
+  VikMapsLayer_MapType map_type_2 = { 1, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_aerial_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_aerial_download };
+  VikMapsLayer_MapType map_type_3 = { 4, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_urban_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_urban_download };
+
+  maps_layer_register_type("Terraserver Topos", 2, &map_type_1);
+  maps_layer_register_type("Terraserver Aerials", 1, &map_type_2);
+  maps_layer_register_type("Terraserver Urban Areas", 4, &map_type_3);
+}
 
 #define TERRASERVER_SITE "terraserver-usa.com"
 #define MARGIN_OF_ERROR 0.001

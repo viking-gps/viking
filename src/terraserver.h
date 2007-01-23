@@ -27,6 +27,8 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 
+void terraserver_init();
+
 gboolean terraserver_topo_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest );
 void terraserver_topo_download ( MapCoord *src, const gchar *dest_fn );
 

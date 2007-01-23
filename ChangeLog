@@ -1,3 +1,7 @@
+2007-01-23
+Quy Tonthat <qtonthat@gmail.com>:
+	* Merged branch modular to trunk.
+
 2007-01-05
 Quy Tonthat <qtonthat@gmail.com>:
 	* Bug fix: main menu edit->delete and edit->cut did not work with
@@ -21,19 +25,35 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* gpslayer: Unexpose interface functions.
 	* Layers now can have their say on what pop up menu items they want.
 
-2007-01-01
+2007-01-02
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
-	* Make all .h self sufficient
-	
+	* Add ability to disable Terraserver stuff
+	* Add ability to disable Expedia stuff
+
 2007-01-01
 Quy Tonthat <qtonthat@gmail.com>:
 	* gpslayer: fix bugs that causes crashes when click "Cancel" on layer
 	creation dialog.
 
+2007-01-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* Make all .h self sufficient
+	* Add ability to disable Google stuff
+	
 2006-12-31
 Quy Tonthat <qtonthat@gmail.com>:
 	* Added gps layer
 
+2007-01-02
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* Add ability to disable Terraserver stuff
+	* Add ability to disable Expedia stuff
+
+2007-01-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* Make all .h self sufficient
+	* Add ability to disable Google stuff
+	
 2006-12-26
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a google version number change (at least in Australia).
