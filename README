@@ -7,6 +7,9 @@ Next, or if you downloaded a tarball, you have to:
 $ ./configure
 $ make
 
+Check output of "./configure --help" for configuration options.
+In particular, it is possible to disable some features, like --disable-google in order to disable any Google stuff.
+
 If you whish to install viking, you have to (as root):
 # make install
 

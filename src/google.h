@@ -27,6 +27,8 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 
+void google_init();
+
 guint8 google_zoom ( gdouble mpp );
 
 /* a bit misleading, this is the "mpp" (really just set zoom level, very

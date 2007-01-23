@@ -25,8 +25,8 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
-#include "vikwindow.h"
 
+#include "vikwindow.h"
 #include "viktreeview.h"
 #include "vikviewport.h"
 
@@ -115,8 +115,8 @@ typedef struct {
   gint16 group;
   const gchar *title;
   guint8 widget_type;
-  const gpointer widget_data;
-  const gpointer extra_widget_data;
+  gpointer widget_data;
+  gpointer extra_widget_data;
 } VikLayerParam;
 
 enum {

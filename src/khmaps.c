@@ -26,8 +26,15 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "http.h"
+#include "vikmapslayer.h"
 
 #include "khmaps.h"
+
+void khmaps_init () {
+  VikMapsLayer_MapType map_type = { 8, 256, 256, VIK_VIEWPORT_DRAWMODE_KH, khmaps_coord_to_mapcoord, khmaps_mapcoord_to_center_coord, khmaps_download };
+
+  maps_layer_register_type("Old KH Satellite Images", 8, &map_type);
+}
 
 /* 1 << (x-1) is like a 2**(x-1) */
 #define KH(x) ((1<<(x-1)))

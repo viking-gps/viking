@@ -25,6 +25,8 @@
 
 #include <string.h>
 
+#include "modules.h"
+
 #define MAX_WINDOWS 1024
 
 static guint window_count = 0;
@@ -86,6 +88,9 @@ int main( int argc, char *argv[] )
   gdk_threads_init ();
 
   gtk_init (&argc, &argv);
+
+  /* Init modules/plugins */
+  modules_init();
 
   a_mapcache_init ();
   a_background_init ();

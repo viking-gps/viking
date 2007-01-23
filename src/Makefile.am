@@ -6,6 +6,7 @@ SUBDIRS = icons
 bin_PROGRAMS = viking
 
 viking_SOURCES = main.c \
+	modules.h modules.c \
 	menu.xml.h \
     degrees_converters.c degrees_converters.h \
 	viking.h globals.h mapcoord.h config.h \
@@ -36,14 +37,9 @@ viking_SOURCES = main.c \
 	background.c background.h \
 	vikradiogroup.c vikradiogroup.h \
 	vikcoord.c vikcoord.h \
-	expedia.c expedia.h \
 	mapcache.c mapcache.h \
 	vikmapslayer.c vikmapslayer.h vikmapslayer_pixmap.h \
-	terraserver.c terraserver.h \
-	google.c google.h \
-	googlemaps.c googlemaps.h \
 	gtkcellrendererprogress.c gtkcellrendererprogress.h \
-	khmaps.c khmaps.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
@@ -52,6 +48,23 @@ viking_SOURCES = main.c \
 	datasource_google.c \
 	datasource_gc.c \
 	datasources.h
+
+if GOOGLE
+viking_SOURCES += \
+	khmaps.c khmaps.h \
+	google.c google.h \
+	googlemaps.c googlemaps.h
+endif
+
+if TERRASERVER
+viking_SOURCES += \
+	terraserver.c terraserver.h
+endif
+
+if EXPEDIA
+viking_SOURCES += \
+	expedia.c expedia.h
+endif
 
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@
 LDADD           = @GTK_LIBS@ @EXPAT_LIBS@

@@ -405,7 +405,7 @@ void vik_layer_post_read ( VikLayer *layer, gpointer vp )
 
 static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerParamData data )
 {
-  GtkWidget *rv;
+  GtkWidget *rv = NULL;
   switch ( param->widget_type )
   {
     case VIK_LAYER_WIDGET_COLOR:
@@ -444,13 +444,15 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
       break;
 #endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
+      /* widget_data and extra_widget_data are GList */
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
       {
-        rv = vik_radio_group_new ( (const gchar **) param->widget_data );
+        rv = vik_radio_group_new ( param->widget_data );
         if ( param->extra_widget_data ) /* map of alternate uint values for options */
         {
           int i;
-          for ( i = 0; ((const char **)param->widget_data)[i]; i++ )
+	  int nb_elem = g_list_length(param->widget_data);
+          for ( i = 0; i < nb_elem; i++ )
             if ( ((guint *)param->extra_widget_data)[i] == data.u )
             {
               vik_radio_group_set_selected ( VIK_RADIO_GROUP(rv), i );
@@ -521,7 +523,7 @@ static VikLayerParamData properties_widget_get_value ( GtkWidget *widget, VikLay
     case VIK_LAYER_WIDGET_RADIOGROUP:
       rv.u = vik_radio_group_get_selected(VIK_RADIO_GROUP(widget));
       if ( param->extra_widget_data )
-        rv.u = ((guint *)param->extra_widget_data)[rv.u];
+        rv.u = (guint *)g_list_nth_data(param->extra_widget_data, rv.u);
       break;
     case VIK_LAYER_WIDGET_SPINBUTTON:
       if ( param->type == VIK_LAYER_PARAM_UINT )

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.1.1)
+AC_INIT(viking, modular.1)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -48,6 +48,45 @@ case $ac_cv_enable_alpha_trw in
     AC_DEFINE(VIK_CONFIG_ALPHABETIZED_TRW, [], [NO ALPHABETIZED TRW])
     ;;
 esac
+
+AC_ARG_ENABLE(google, AC_HELP_STRING([--enable-google],
+              [enable Google stuff (default is enable)]),
+              [ac_cv_enable_google=$enableval],
+              [ac_cv_enable_google=yes])
+AC_CACHE_CHECK([whether to enable Google stuff],
+               [ac_cv_enable_google], [ac_cv_enable_google=yes])
+case $ac_cv_enable_google in
+  yes)
+    AC_DEFINE(VIK_CONFIG_GOOGLE, [], [GOOGLE STUFF])
+    ;;
+esac
+AM_CONDITIONAL([GOOGLE], [test x$ac_cv_enable_google = xyes])
+
+AC_ARG_ENABLE(terraserver, AC_HELP_STRING([--enable-terraserver],
+              [enable Terraserver stuff (default is enable)]),
+              [ac_cv_enable_terraserver=$enableval],
+              [ac_cv_enable_terraserver=yes])
+AC_CACHE_CHECK([whether to enable Terraserver stuff],
+               [ac_cv_enable_terraserver], [ac_cv_enable_terraserver=yes])
+case $ac_cv_enable_terraserver in
+  yes)
+    AC_DEFINE(VIK_CONFIG_TERRASERVER, [], [TERRASERVER STUFF])
+    ;;
+esac
+AM_CONDITIONAL([TERRASERVER], [test x$ac_cv_enable_terraserver = xyes])
+
+AC_ARG_ENABLE(expedia, AC_HELP_STRING([--enable-expedia],
+              [enable Expedia stuff (default is enable)]),
+              [ac_cv_enable_expedia=$enableval],
+              [ac_cv_enable_expedia=yes])
+AC_CACHE_CHECK([whether to enable Expedia stuff],
+               [ac_cv_enable_expedia], [ac_cv_enable_expedia=yes])
+case $ac_cv_enable_expedia in
+  yes)
+    AC_DEFINE(VIK_CONFIG_EXPEDIA, [], [EXPEDIA STUFF])
+    ;;
+esac
+AM_CONDITIONAL([EXPEDIA], [test x$ac_cv_enable_expedia = xyes])
 
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
