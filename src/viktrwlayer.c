@@ -292,7 +292,7 @@ VikLayerParam trw_layer_params[] = {
   { "tracks_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES },
   { "waypoints_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES },
 
-  { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track Drawing Mode:", VIK_LAYER_WIDGET_RADIOGROUP, params_drawmodes },
+  { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track Drawing Mode:", VIK_LAYER_WIDGET_RADIOGROUP, NULL },
   { "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Track Lines", VIK_LAYER_WIDGET_CHECKBUTTON },
   { "drawpoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Trackpoints", VIK_LAYER_WIDGET_CHECKBUTTON },
   { "drawelevation", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Elevation", VIK_LAYER_WIDGET_CHECKBUTTON },
@@ -312,7 +312,7 @@ VikLayerParam trw_layer_params[] = {
   { "wptextcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, "Waypoint Text:", VIK_LAYER_WIDGET_COLOR, 0 },
   { "wpbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, "Background:", VIK_LAYER_WIDGET_COLOR, 0 },
   { "wpbgand", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, "Fake BG Color Translucency:", VIK_LAYER_WIDGET_CHECKBUTTON, 0 },
-  { "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint marker:", VIK_LAYER_WIDGET_RADIOGROUP, params_wpsymbols },
+  { "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint marker:", VIK_LAYER_WIDGET_RADIOGROUP, NULL },
   { "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint size:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 7 },
   { "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, "Draw Waypoint Symbols:", VIK_LAYER_WIDGET_CHECKBUTTON },
 
@@ -717,8 +717,22 @@ static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp )
   return rv;
 }
 
+static GList * a_array_to_glist(gpointer data[])
+{
+  GList *gl = NULL;
+  gpointer * p;
+  for (p = data; *p; p++)
+    gl = g_list_prepend(gl, *p);
+  return(g_list_reverse(gl));
+}
+
 VikTrwLayer *vik_trw_layer_new ( gint drawmode )
 {
+  if (trw_layer_params[PARAM_DM].widget_data == NULL)
+    trw_layer_params[PARAM_DM].widget_data = a_array_to_glist(params_drawmodes);
+  if (trw_layer_params[PARAM_WPSYM].widget_data == NULL)
+    trw_layer_params[PARAM_WPSYM].widget_data = a_array_to_glist(params_wpsymbols);
+
   VikTrwLayer *rv = VIK_TRW_LAYER ( g_object_new ( VIK_TRW_LAYER_TYPE, NULL ) );
   vik_layer_init ( VIK_LAYER(rv), VIK_LAYER_TRW );
 

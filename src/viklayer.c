@@ -453,7 +453,7 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
           int i;
 	  int nb_elem = g_list_length(param->widget_data);
           for ( i = 0; i < nb_elem; i++ )
-            if ( ((guint *)param->extra_widget_data)[i] == data.u )
+            if ( g_list_nth_data(param->extra_widget_data, i) == data.u )
             {
               vik_radio_group_set_selected ( VIK_RADIO_GROUP(rv), i );
               break;
