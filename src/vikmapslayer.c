@@ -660,13 +660,25 @@ typedef struct {
   gint maxlen;
   gint mapstoget;
   gint redownload;
+  VikMapsLayer *vml;
+  VikViewport *vvp;
+  gboolean map_layer_alive;
+  GMutex *mutex;
 } MapDownloadInfo;
 
 static void mdi_free ( MapDownloadInfo *mdi )
 {
+  g_mutex_free(mdi->mutex);
   g_free ( mdi->cache_dir );
   g_free ( mdi->filename_buf );
   g_free ( mdi );
+}
+
+static GWeakNotify weak_ref_cb(MapDownloadInfo *mdi, GObject * dead_vml)
+{
+  g_mutex_lock(mdi->mutex);
+  mdi->map_layer_alive = FALSE;
+  g_mutex_unlock(mdi->mutex);
 }
 
 static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
@@ -700,6 +712,14 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       {
         mdi->mapcoord.x = x; mdi->mapcoord.y = y;
         MAPS_LAYER_NTH_TYPE(mdi->maptype)->download ( &(mdi->mapcoord), mdi->filename_buf );
+	gdk_threads_enter();
+	g_mutex_lock(mdi->mutex);
+	if (mdi->map_layer_alive) {
+	  /* TODO: check if it's on visible area */
+	  vik_layer_emit_update ( VIK_LAYER(mdi->vml) );
+	}
+	g_mutex_unlock(mdi->mutex);
+	gdk_threads_leave();
         mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
 
        if ( mdi->redownload !=- REDOWNLOAD_NONE )
@@ -707,6 +727,12 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
 
         donemaps++;
+	if (donemaps == mdi->mapstoget) {
+          g_mutex_lock(mdi->mutex);
+          if (mdi->map_layer_alive)
+	    g_object_weak_unref(VIK_LAYER(mdi->vml), weak_ref_cb, mdi);
+          g_mutex_unlock(mdi->mutex); 
+	}
         a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
       }
     }
@@ -738,6 +764,11 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
   {
     MapDownloadInfo *mdi = g_malloc ( sizeof(MapDownloadInfo) );
     gint a, b;
+
+    mdi->vml = vml;
+    mdi->vvp = vvp;
+    mdi->map_layer_alive = TRUE;
+    mdi->mutex = g_mutex_new();
 
     /* cache_dir and buffer for dest filename */
     mdi->cache_dir = g_strdup ( vml->cache_dir );
@@ -779,6 +810,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
     {
       gchar *tmp = g_strdup_printf ( "%s %s%d %s %s...", redownload ? "Redownloading" : "Downloading", redownload == REDOWNLOAD_BAD ? "up to " : "", mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype), (mdi->mapstoget == 1) ? "map" : "maps" );
 
+      g_object_weak_ref(VIK_LAYER(mdi->vml), weak_ref_cb, mdi);
       /* launch the thread */
       a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */
                             tmp,                                              /* description string */
