@@ -1,3 +1,7 @@
+2007-01-27
+Quy Tonthat <qtonthat@gmail.com>:
+	* Display map sections while downloading (bug 1303429)
+
 2007-01-25
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fixed bugs that caused crashes on creating new map layer or
