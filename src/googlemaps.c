@@ -21,6 +21,7 @@
 
 #include <gtk/gtk.h>
 #include <math.h>
+#include "viking.h"
 #include "coords.h"
 #include "vikcoord.h"
 #include "mapcoord.h"

@@ -124,6 +124,8 @@ struct _VikWindow {
   guint16 tool_layer_id;
   guint16 tool_tool_id;
 
+  GtkActionGroup *action_group;
+
   gint pan_x, pan_y;
 
   guint draw_image_width, draw_image_height;
@@ -179,6 +181,26 @@ GType vik_window_get_type (void)
   return vw_type;
 }
 
+void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
+{
+  int i, j, tool_count;
+  VikLayerInterface *layer_interface;
+
+  if (!vw->action_group) return;
+
+  for (i=0; i<VIK_LAYER_NUM_TYPES; i++) {
+    GtkAction *action;
+    layer_interface = vik_layer_get_interface(i);
+    tool_count = layer_interface->tools_count;
+
+    for (j = 0; j < tool_count; j++) {
+      action = gtk_action_group_get_action(vw->action_group,
+	    layer_interface->tools[j].name);
+      g_object_set(action, "sensitive", i == vl->type, NULL);
+    }
+  }
+}
+
 static void window_finalize ( GObject *gob )
 {
   VikWindow *vw = VIK_WINDOW(gob);
@@ -210,9 +232,11 @@ static void window_init ( VikWindow *vw )
   GtkWidget *main_vbox;
   GtkWidget *hpaned;
 
+  vw->action_group = NULL;
 
   vw->viking_vvp = vik_viewport_new();
   vw->viking_vlp = vik_layers_panel_new();
+  vik_layers_panel_set_window(vw->viking_vlp, vw);
   vik_layers_panel_set_viewport ( vw->viking_vlp, vw->viking_vvp );
   vw->viking_vs = vik_statusbar_new();
 
@@ -967,6 +991,7 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
     vw->current_tool = TOOL_RULER;
   }
   else {
+    /* TODO: only enable tools from active layer */
     for (i=0; i<VIK_LAYER_NUM_TYPES; i++) {
       for ( j = 0; j < vik_layer_get_interface(i)->tools_count; j++ ) {
 	if (!strcmp(vik_layer_get_interface(i)->tools[j].name, gtk_action_get_name(a))) {
@@ -1687,6 +1712,15 @@ static void window_create_ui( VikWindow *window )
   g_free(tools);
 
   gtk_ui_manager_insert_action_group (uim, action_group, 0);
+
+  for (i=0; i<VIK_LAYER_NUM_TYPES; i++) {
+    for ( j = 0; j < vik_layer_get_interface(i)->tools_count; j++ ) {
+      GtkAction *action = gtk_action_group_get_action(action_group,
+			    vik_layer_get_interface(i)->tools[j].name);
+      g_object_set(action, "sensitive", FALSE, NULL);
+    }
+  }
+  window->action_group = action_group;
 
   accel_group = gtk_ui_manager_get_accel_group (uim);
   gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);

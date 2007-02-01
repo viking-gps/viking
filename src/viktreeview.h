@@ -55,6 +55,8 @@ GType vik_treeview_get_type ();
 
 
 VikTreeview *vik_treeview_new ();
+void vik_treeview_set_layers_panel(VikTreeview *vt, VikLayersPanel *vlp);
+VikLayersPanel *vik_treeview_get_layers_panel(VikTreeview *vt);
 
 GtkWidget *vik_treeview_get_widget ( VikTreeview *vt );
 

@@ -37,7 +37,6 @@ G_BEGIN_DECLS
 #define IS_VIK_LAYERS_PANEL(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_LLAYERS_PANEL_TYPE))
 #define IS_VIK_LAYERS_PANEL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), VIK_LAYERS_PANEL_TYPE))
 
-typedef struct _VikLayersPanel VikLayersPanel;
 typedef struct _VikLayersPanelClass VikLayersPanelClass;
 
 struct _VikLayersPanelClass
@@ -59,6 +58,8 @@ void vik_layers_panel_copy_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_paste_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_delete_selected ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, gint type );
+void vik_layers_panel_set_window ( VikLayersPanel *vlp, VikWindow *vw );
+VikWindow * vik_layers_panel_get_window ( VikLayersPanel *vlp);
 void vik_layers_panel_set_viewport ( VikLayersPanel *vlp, VikViewport *vvp );
 //gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp );
 VikViewport *vik_layers_panel_get_viewport ( VikLayersPanel *vlp );

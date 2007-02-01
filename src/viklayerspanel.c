@@ -47,6 +47,7 @@ struct _VikLayersPanel {
   VikViewport *vvp; /* reference */
 
   GtkItemFactory *popup_factory;
+  VikWindow *vw;
 };
 
 static GtkItemFactoryEntry base_entries[] = {
@@ -111,6 +112,16 @@ VikLayersPanel *vik_layers_panel_new ()
   return VIK_LAYERS_PANEL ( g_object_new ( VIK_LAYERS_PANEL_TYPE, NULL ) );
 }
 
+void vik_layers_panel_set_window ( VikLayersPanel *vlp, VikWindow *vw )
+{
+  vlp->vw = vw;
+}
+
+VikWindow * vik_layers_panel_get_window ( VikLayersPanel *vlp)
+{
+  return(vlp->vw);
+}
+
 void vik_layers_panel_set_viewport ( VikLayersPanel *vlp, VikViewport *vvp )
 {
   vlp->vvp = vvp;
@@ -134,6 +145,7 @@ static void layers_panel_init ( VikLayersPanel *vlp )
 
   hbox = gtk_hbox_new ( TRUE, 2 );
   vlp->vt = vik_treeview_new ( );
+  vik_treeview_set_layers_panel(vlp->vt, vlp);
 
   vlp->toplayer = vik_aggregate_layer_new ();
   vik_layer_rename ( VIK_LAYER(vlp->toplayer), "Top Layer");

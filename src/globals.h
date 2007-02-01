@@ -51,4 +51,6 @@
 #define MERCLAT(x) (RAD2DEG * log(tan((0.25 * M_PI) + (0.5 * DEG2RAD * (x)))))
 #define DEMERCLAT(x) (RAD2DEG * atan(sinh(DEG2RAD * (x))))
 
+typedef struct _VikLayersPanel VikLayersPanel;
+typedef struct _VikLayer VikLayer;
 #endif
