@@ -59,7 +59,6 @@ struct _VikTreeview {
   GtkTreeModel *model;
 
   GdkPixbuf *layer_type_icons[VIK_LAYER_NUM_TYPES];
-  VikLayersPanel *vlp;
 };
 
 /* TODO: find, make "static" and put up here all non-"a_" functions */
@@ -138,16 +137,6 @@ treeview_signals[VT_ITEM_TOGGLED_SIGNAL], 0, &iter );
 VikTreeview *vik_treeview_new ()
 {
   return VIK_TREEVIEW ( g_object_new ( VIK_TREEVIEW_TYPE, NULL ) );
-}
-
-void vik_treeview_set_layers_panel(VikTreeview *vt, VikLayersPanel *vlp)
-{
-  vt->vlp = vlp;
-}
-
-VikLayersPanel *vik_treeview_get_layers_panel(VikTreeview *vt)
-{
-  return(vt->vlp);
 }
 
 gint vik_treeview_item_get_type ( VikTreeview *vt, GtkTreeIter *iter )
@@ -276,7 +265,7 @@ static void select_cb(GtkTreeSelection *selection, gpointer data)
 
   vl = VIK_LAYER( vik_treeview_item_get_pointer ( vt, &iter ) );
 
-  vw = vik_layers_panel_get_window(vt->vlp);
+  vw = VIK_GTK_WINDOW_FROM_LAYER(vl);
   vik_window_selected_layer(vw, vl);
 }
 

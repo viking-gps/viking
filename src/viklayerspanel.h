@@ -58,8 +58,6 @@ void vik_layers_panel_copy_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_paste_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_delete_selected ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, gint type );
-void vik_layers_panel_set_window ( VikLayersPanel *vlp, VikWindow *vw );
-VikWindow * vik_layers_panel_get_window ( VikLayersPanel *vlp);
 void vik_layers_panel_set_viewport ( VikLayersPanel *vlp, VikViewport *vvp );
 //gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp );
 VikViewport *vik_layers_panel_get_viewport ( VikLayersPanel *vlp );

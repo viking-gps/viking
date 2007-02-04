@@ -236,7 +236,6 @@ static void window_init ( VikWindow *vw )
 
   vw->viking_vvp = vik_viewport_new();
   vw->viking_vlp = vik_layers_panel_new();
-  vik_layers_panel_set_window(vw->viking_vlp, vw);
   vik_layers_panel_set_viewport ( vw->viking_vlp, vw->viking_vvp );
   vw->viking_vs = vik_statusbar_new();
 

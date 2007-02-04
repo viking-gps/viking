@@ -1,3 +1,7 @@
+2007-02-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Simplify tools enable/disable codes.
+
 2007-02-01
 Quy Tonthat <qtonthat@gmail.com>:
 	* Only tools that work with current active layer are enable,
