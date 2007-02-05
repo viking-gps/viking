@@ -36,6 +36,7 @@
 #define IS_VIK_LAYER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_LAYER_TYPE))
 #define IS_VIK_LAYER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), VIK_LAYER_TYPE))
 
+typedef struct _VikLayer VikLayer;
 typedef struct _VikLayerClass VikLayerClass;
 
 struct _VikLayerClass

@@ -49,7 +49,8 @@ GType vik_window_get_type ();
 
 VikWindow *vik_window_new ();
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean changefilename );
-void vik_window_selected_layer(VikWindow *vw, VikLayer *vl);
+struct _VikLayer;
+void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);
 
 G_END_DECLS
 
