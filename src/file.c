@@ -154,7 +154,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
     default: modestring = "mercator";
   }
 
-  fprintf ( f, "#VIKING GPS Data file http://gpsmaps.org/viking/\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\ndrawscale=%s\n",
+  fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\ndrawscale=%s\n",
       vik_viewport_get_xmpp ( VIK_VIEWPORT(vp) ), vik_viewport_get_ympp ( VIK_VIEWPORT(vp) ), ll.lat, ll.lon,
       modestring, vik_viewport_get_background_color(VIK_VIEWPORT(vp)),
       vik_viewport_get_draw_scale(VIK_VIEWPORT(vp)) ? "t" : "f" );
