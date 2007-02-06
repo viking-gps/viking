@@ -641,6 +641,7 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdoub
   if ( tr->trackpoints )
   {
     GList *iter = tr->trackpoints->next;
+    GList *last_iter = NULL;
     while (iter)
     {
       current_inc = vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
@@ -648,8 +649,11 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdoub
       current_dist += current_inc;
       if ( current_dist >= dist )
         break;
+      last_iter = iter;
       iter = iter->next;
     }
+    if (!iter) /* passing the end the track */
+      return (last_iter ? last_iter->data : NULL);
     /* we've gone past the dist already, was prev trackpoint closer? */
     /* should do a vik_coord_average_weighted() thingy. */
     if ( iter->prev && abs(current_dist-current_inc-dist) < abs(current_dist-dist) )

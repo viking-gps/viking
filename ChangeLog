@@ -1,3 +1,8 @@
+2007-02-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bug that causes crashes when click at the right side (outside)
+	of the track graph area in the Track Poperties window. 
+
 2007-02-06
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
 	* Add new information to Track Properties. Postion in time will be
