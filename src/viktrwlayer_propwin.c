@@ -57,17 +57,51 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
   }
 }
 
+static GtkWidget *label_date;
+
 #define MARGIN 50
 #define LINES 5
 void track_profile_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_along )
 {
+  gdouble x = event->x - image->allocation.width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
+  if (x < 0)
+    x = 0;
+  if (x > PROFILE_WIDTH)
+    x = PROFILE_WIDTH;
   VikTrack *tr = pass_along[0];
-  VikCoord *coord = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) (event->x - MARGIN - 2) / PROFILE_WIDTH );
-  if ( coord ) {
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH );
+  if ( trackpoint ) {
+    VikCoord coord = trackpoint->coord;
     VikLayersPanel *vlp = pass_along[1];
-    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), coord );
+    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord );
     vik_layers_panel_emit_update ( vlp );
-    g_free ( coord );
+  }
+}
+void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
+{
+  VikTrack *tr = pass_along[0];
+  int mouse_x, mouse_y;
+  GdkModifierType state;
+
+  if (event->is_hint)
+    gdk_window_get_pointer (event->window, &mouse_x, &mouse_y, &state);
+  else
+    mouse_x = event->x;
+
+  gdouble x = mouse_x - image->allocation.width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
+  if (x < 0)
+    x = 0;
+  if (x > PROFILE_WIDTH)
+    x = PROFILE_WIDTH;
+
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH );
+  if (trackpoint) {
+    time_t t1 = trackpoint->timestamp;
+    static gchar tmp_buf[25];
+    strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
+    tmp_buf[strlen(tmp_buf)-1] = 0;
+
+    gtk_label_set_text(GTK_LABEL(label_date), tmp_buf);
   }
 }
 
@@ -152,8 +186,12 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
+  g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_profile_move), pass_along );
   g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
   gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK
+                         | GDK_POINTER_MOTION_MASK
+                         | GDK_POINTER_MOTION_HINT_MASK);
 
   return eventbox;
 }
@@ -258,8 +296,12 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
+  g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_profile_move), pass_along );
   g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
   gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK
+                         | GDK_POINTER_MOTION_MASK
+                         | GDK_POINTER_MOTION_HINT_MASK);
 
   return eventbox;
 }
@@ -297,7 +339,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   int cnt;
   int i;
 
-  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>" };
+  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>", "<b>Selected date</b>" };
   static gchar tmp_buf[25];
   gdouble tmp_speed;
 
@@ -389,6 +431,8 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
     content[cnt++] = gtk_label_new("No Data");
     content[cnt++] = gtk_label_new("No Data");
   }
+  label_date = gtk_label_new("No Data");
+  content[cnt++] = label_date;
 
   table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);

@@ -633,12 +633,11 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
 }
 
 /* by Alex Foobarian */
-VikCoord *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist )
+VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist )
 {
   gdouble dist = vik_track_get_length_including_gaps(tr) * reldist;
   gdouble current_dist = 0.0;
   gdouble current_inc = 0.0;
-  VikCoord *rv;
   if ( tr->trackpoints )
   {
     GList *iter = tr->trackpoints->next;
@@ -656,12 +655,7 @@ VikCoord *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble re
     if ( iter->prev && abs(current_dist-current_inc-dist) < abs(current_dist-dist) )
       iter = iter->prev;
 
-
-
-    rv = g_malloc(sizeof(VikCoord));
-    *rv = VIK_TRACKPOINT(iter->data)->coord;
-
-    return rv;
+    return VIK_TRACKPOINT(iter->data);
 
   }
   return NULL;

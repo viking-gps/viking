@@ -1,4 +1,9 @@
 2007-02-06
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+	* Add new information to Track Properties. Postion in time will be
+	tracked and display when moving mouse cursor around the track graph.
+
+2007-02-06
 Quy Tonthat <qtonthat@gmail.com>:
 	* New google version numbers.
 	* correct main window title and viking website.
