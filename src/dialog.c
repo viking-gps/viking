@@ -568,14 +568,17 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
 void a_dialog_about ( GtkWindow *parent )
 {
   int re;
+  char *msg = g_markup_printf_escaped (
+    "<span font_desc='20' weight='bold'>Viking %s</span>\n\n"
+    "GPS Data and Topo Analyzer, Explorer, and Manager.\n\n"
+    "<small>(C) 2003-2007, Evan Battaglia</small>\n\n"
+    "<small>Web site: %s</small>",
+    VIKING_VERSION, VIKING_URL);
   GtkWidget *msgbox = gtk_message_dialog_new_with_markup ( parent, 
 							   GTK_DIALOG_DESTROY_WITH_PARENT, 
 							   GTK_MESSAGE_INFO, 
 							   GTK_BUTTONS_NONE,
-							   "<span font_desc='20' weight='bold'>Viking 0.1.1</span>\n\n"
-							   "GPS Data and Topo Analyzer, Explorer, and Manager.\n\n"
-							   "<small>(C) 2003-2006, Evan Battaglia</small>"
-							   );
+							   msg);
 
   gtk_dialog_add_buttons (GTK_DIALOG(msgbox), "Credits", 1, "License", 2, "Close", 3, NULL, NULL);
   
