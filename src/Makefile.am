@@ -5,6 +5,14 @@ SUBDIRS = icons
 
 bin_PROGRAMS = viking
 
+authors.h: ../AUTHORS
+	rm -f $@
+	echo "/* Generated file. */" >> $@
+	echo "#define AUTHORS \\" >> $@
+	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/\\n"\\/' $< >> $@
+
+BUILT_SOURCES = authors.h
+
 viking_SOURCES = main.c \
 	modules.h modules.c \
 	menu.xml.h \
@@ -17,6 +25,7 @@ viking_SOURCES = main.c \
 	gpsmapper.c gpsmapper.h \
 	gpspoint.c gpspoint.h \
 	file.c file.h \
+	authors.h \
 	dialog.c dialog.h \
 	http.c http.h \
 	viktreeview.c viktreeview.h \

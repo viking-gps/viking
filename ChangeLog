@@ -3,6 +3,8 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
 	* src/vikwindow.c: remove URL and version number from window title
 	* src/dialog.c: add URL and use dynamic information for version
 	* AUTHORS, src/dialog.c: update contributors list
+	* AUTHORS, src/dialog.c, src/Makefile.am: About dialog filled with
+	AUTHORS file
 
 2007-02-07
 Quy Tonthat <qtonthat@gmail.com>:

@@ -23,6 +23,7 @@
 #include "thumbnails.h"
 #include "garminsymbols.h"
 #include "degrees_converters.h"
+#include "authors.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -585,16 +586,7 @@ void a_dialog_about ( GtkWindow *parent )
   while ((re = gtk_dialog_run ( GTK_DIALOG(msgbox))) != 3) {
     if (re==1) {
       /* creds */
-      a_dialog_info_msg(parent, 
-			"Author:\n"
-			"  Evan Battaglia <gtoevan@gmx.net>\n\n"
-			"Contributors:\n"
-			"  Alex Foobarian <foobarian@gmail.com>\n"
-			"  Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
-			"  Jocelyn Jaubert <jocelyn.jaubert@gmail.com>\n"
-			"  Quy Tonthat <qtonthat@gmail.com>\n"
-			"  Reid Priedhorsky <reid@reidster.net>\n"
-			);
+      a_dialog_info_msg(parent, AUTHORS);
     }
     if (re==2) {
       a_dialog_info_msg(parent, "\n\n"
