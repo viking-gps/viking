@@ -23,7 +23,7 @@
 #include "acquire.h"
 #include "datasources.h"
 
-#define VIKING_TITLE " - Viking " VIKING_VERSION " " VIKING_URL
+#define VIKING_TITLE " - Viking"
 
 #include <glib/gprintf.h>
 #include <stdlib.h>
