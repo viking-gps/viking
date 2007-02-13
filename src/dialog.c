@@ -591,6 +591,7 @@ void a_dialog_about ( GtkWindow *parent )
 			"Contributors:\n"
 			"  Alex Foobarian <foobarian@gmail.com>\n"
 			"  Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+			"  Jocelyn Jaubert <jocelyn.jaubert@gmail.com>\n"
 			"  Quy Tonthat <qtonthat@gmail.com>\n"
 			"  Reid Priedhorsky <reid@reidster.net>\n"
 			);

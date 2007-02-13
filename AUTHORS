@@ -1,5 +1,7 @@
 Evan Battaglia <gtoevan@gmx.net> ** Concept and main design/coding
 Alex Foobarian <foobarian@gmail.com> ** DND, icons, various other features/bugfixes
-Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com> ** Autotools
+Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com> ** Autotools and releases
+Quy Tonthat <qtonthat@gmail.com> ** Many improves
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com> ** Track Properties dialog improves
 
 Few other bugfixes/minor patches from various contributors. See ChangeLog for details.
