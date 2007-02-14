@@ -20,11 +20,9 @@ FEATURES:
 	Undo function
 	Map licensing issues (?)
 	DND between VikWindows
-	direct GPS support (instant)
 	arrows to show track direction
 	Select multiple items (waypoints, etc) in layers panel (???)
 	Merge layers easier ("Merge down" à la Gimp)
-	Output to GPS?
 	Output to gc2visor
 	Selections (select waypoints, tracks in an area)
 
@@ -76,39 +74,6 @@ MISC FIXES (i.e. will never get done):
 		"redraw if visible" return value
 	settable defaults for layers (sigh...) OR at least config.h stuff
 
---------------
-
-ROADMAP (old)
-0.1.2
-  * Data sources: google, gpsbabel
-    * gpsbabel plugin -- wired up to get directions from google maps.
-    * address plugin.
-  * direct GPS support (?)
-    GPS navigation (speed, etc, etc)
-  * advanced downloader?
-0.1.3
-  * stops
-    whole list: length, max movement, icons. can make more. right click -> stops...
-  * symbols
-  * draw by altitude, altitude side thingy.
-0.1.4
-  * selections (?)
-  * NASA crazhy maps
-  * scale
-0.1.6
-  * new UI & documentation
-  * internationalization
-0.2.0
-  * TIGER data, vector maps
-0.3.0
-  * altitude stuff, goodies
-  * major UI changes, direct manipulation
-  * sit down for a day or two and design the bestest bestest UI
-  * threads, etc
-  * docs, lots of docs
-1.0
-  * more sophisticated vector data, almost GIS stuff. garmin maps, whatever
-  * party
 
 --------------------------------
 
