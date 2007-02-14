@@ -1,3 +1,7 @@
+2007-02-14
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* NEWS, configure.ac: preparing 0.1.2
+
 2007-02-13
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
 	* src/vikwindow.c: remove URL and version number from window title

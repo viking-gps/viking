@@ -1,8 +1,19 @@
-Viking modularized (2007-01-14)
+Viking 0.1.2 (2007-02-13)
+- direct access to GPS device: GPS layer
+- position inputs accept DDD/DMM/DMS formats (ex: 3.5, 3°30.0, 3°30'0.00)
+- time position in Track Poperties
+- tool (menu entries and buttons) are enabled/disabled following context
+- standard 'Edit' menu (with 'Copy', 'Cut', 'Paste' and 'Delete' actions)
+- 'Edit' popup menus for waypoint and track
 - new configure options:
   * --disable-google
   * --disable-terraserver
   * --disable-expedia
+- visual feedback when moving waypoints
+- map sections are displayed while downloading
+- cosmetics changes (window title, viking's URL in files, 'About' dialog...)
+- some improves in source code
+- lot of fixes
 
 Viking 0.1.1 (2006-06-11)
 - more map sources such as google
