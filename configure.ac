@@ -109,4 +109,6 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  doc/Makefile
                  doc/dev/Makefile])
-AC_OUTPUT
+AC_OUTPUT([
+	   viking.spec
+	   ])

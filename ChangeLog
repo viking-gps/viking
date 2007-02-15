@@ -1,3 +1,12 @@
+2007-02-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Made viking.spec.in out of Michael's viking.spec
+	* Added viking.spec.in to autoconf files.
+
+2007-02-15
+Michael A Peters <mpeters@mac.com>:
+	* Added viking.spec
+
 2007-02-14
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
 	* NEWS, configure.ac: preparing 0.1.2
