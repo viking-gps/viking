@@ -1,0 +1,54 @@
+#%% Fedora style spec file written by Michael A. Peters
+#%% It is released under Public Domain
+#%% May be redistributed without this notice.
+
+Name:		viking
+Version:	@VERSION@
+Release:	1
+
+Summary:	GPS data editor and analyzer
+
+Group:		Applications/Productivity
+License:	GPL
+URL:		http://sourceforge.net/projects/viking/
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildRequires:	expat-devel
+BuildRequires:	gtk2-devel >= 2.2.0
+BuildRequires:	pkgconfig
+
+%description
+Viking is a free/open source program to manage GPS data. You can import and
+plot tracks and waypoints, show Terraserver maps under it, add coordinate
+lines, make new tracks and waypoints, hide different things, etc. It is written
+in C with the GTK+ 2.
+
+%prep
+%setup -q
+
+%build
+%configure
+make 
+
+%install
+rm -rf %{buildroot}
+make DESTDIR=%{buildroot} install
+rm -f doc/Makefile*
+rm -f doc/dev/Makefile*
+
+%check
+make test
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS ChangeLog COPYING NEWS README TODO doc/
+%{_bindir}/viking
+%{_bindir}/viking-remote
+
+%changelog
+* Wed Feb 14 2007 Michael A. Peters <mpeters@mac.com> - 0.1.2-1
+- Initial Fedora style spec file.
