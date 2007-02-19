@@ -30,8 +30,8 @@
 #include "google.h"
 #include "vikmapslayer.h"
 
-#define GOOGLE_VERSION "w2.37"
-#define GOOGLE_TRANS_VERSION "w2t.38"
+#define GOOGLE_VERSION "w2.39"
+#define GOOGLE_TRANS_VERSION "w2t.40"
 #define GOOGLE_KH_VERSION "14"
 
 void google_init () {
