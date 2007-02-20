@@ -715,7 +715,7 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
       (dir == GPS_DOWN) ? 'i' : 'o', protocols_args[proto]);
   sess->window_title = (dir == GPS_DOWN) ? "GPS Download" : "GPS Upload";
 
-  sess->dialog = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+  sess->dialog = gtk_dialog_new_with_buttons ( "", VIK_GTK_WINDOW_FROM_LAYER(vtl), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_dialog_set_response_sensitive ( GTK_DIALOG(sess->dialog),
       GTK_RESPONSE_ACCEPT, FALSE );
   gtk_window_set_title ( GTK_WINDOW(sess->dialog), sess->window_title );
