@@ -30,9 +30,9 @@
 #include "google.h"
 #include "vikmapslayer.h"
 
-#define GOOGLE_VERSION "w2.39"
+#define GOOGLE_VERSION "w2.43"
 #define GOOGLE_TRANS_VERSION "w2t.40"
-#define GOOGLE_KH_VERSION "14"
+#define GOOGLE_KH_VERSION "17"
 
 void google_init () {
   VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };
