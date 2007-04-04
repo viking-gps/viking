@@ -26,7 +26,7 @@
 #include "gpx.h"
 #include "acquire.h"
 
-#define GOOGLE_DIRECTIONS_STRING "(wget -O - \"http://maps.google.com/maps?q=%s to %s&output=xml\" 2>/dev/null) | head -3 | tail -1 | sed 's/.*<page>\\(.*\\)<\\/page>.*/<page>\\1<\\/page>/'"
+#define GOOGLE_DIRECTIONS_STRING "(wget -O - \"http://maps.google.com/maps?q=%s to %s&output=js\" 2>/dev/null)"
 
 typedef struct {
   GtkWidget *from_entry, *to_entry;
