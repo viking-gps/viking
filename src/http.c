@@ -20,41 +20,18 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <gtk/gtk.h>
 #include <string.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-
 
 #ifdef WINDOWS
-
-#include <io.h>
 #include <winsock.h>
-#define access(a,b) _access(a,b)
-#define close(a) closesocket(a)
-
-char *dirname ( char * dir )
-{
-  char *tmp = dir + strlen(dir) - 1;
-  while ( tmp != dir && *tmp != '\\' )
-    tmp--;
-  *tmp = '\0';
-  return dir;
-}
-
 #else
-
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-
-/* dirname */
-#include <libgen.h>
-
-#endif 
+#endif
 
 #include "http.h"
 
@@ -112,35 +89,14 @@ int http_get_line(int sock, char *buf, int len)
 }
 
 /* makes directory if neccessary */
-int http_download_get_url ( const char *hostname, const char *uri, const char *fn, int already_redirected, int sendhostname )
+int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int already_redirected, int sendhostname )
 {
   static char input_buffer[1024];
   int sock;
   int len;
-  FILE *f, *tmp_f;
+  FILE *tmp_f;
   /* int hnlen = strlen ( hostname ); */
 
-  if ( access ( fn, F_OK ) == 0 )
-  {
-    return -3;
-  } else {
-    if ( errno == ENOENT)
-    {
-      char *tmp = g_strdup ( fn );
-#ifdef WINDOWS
-      mkdir( dirname ( dirname ( tmp ) ) );
-      g_free ( tmp ); tmp = g_strdup ( fn );
-      mkdir( dirname ( tmp ) );
-#else
-      mkdir( dirname ( dirname ( tmp ) ), 0777 );
-      g_free ( tmp ); tmp = g_strdup ( fn );
-      mkdir( dirname ( tmp ), 0777 );
-#endif
-      g_free ( tmp );
-    }
-    if ( ! (f = fopen ( fn, "w+b" )) ) /* immediately open file so other threads won't -- prevents race condition */
-      return -4;
-  }
 #ifdef WINDOWS
   WSADATA usadata;
   WSAStartup ( MAKEWORD(2,2), &usadata );
@@ -149,8 +105,6 @@ int http_download_get_url ( const char *hostname, const char *uri, const char *f
   sock = http_connect ( hostname, 80 );
   if (sock < 0)
   {
-    fclose ( f );
-    remove ( fn );
     return -1;
   }
 
@@ -194,11 +148,9 @@ int http_download_get_url ( const char *hostname, const char *uri, const char *f
         {
           char *newhost = g_strndup ( input_buffer + 17, uri_start - input_buffer - 17 );
           char *newuri = strdup ( uri_start );
-          fclose ( f );
-          remove ( fn );
           close ( sock );
 
-          rv = http_download_get_url ( newhost, newuri, fn, 1, sendhostname );
+          rv = http_download_get_url ( newhost, newuri, f, 1, sendhostname );
 
           free ( newhost );
           free ( newuri );
@@ -207,8 +159,7 @@ int http_download_get_url ( const char *hostname, const char *uri, const char *f
       }
     } while (input_buffer[0] != '\r' );
 
-    fclose ( f );
-    remove ( fn );
+    /* Something went wrong */
     return 1;
   }
 
@@ -216,8 +167,6 @@ int http_download_get_url ( const char *hostname, const char *uri, const char *f
   {
     if ( http_get_line ( sock, input_buffer, 1024 ) == 0 )
     {
-      fclose ( f );
-      remove ( fn );
       close ( sock );
       return -2;
     }
@@ -239,7 +188,6 @@ int http_download_get_url ( const char *hostname, const char *uri, const char *f
     fwrite ( input_buffer, 1, len, f);
   }
   fclose ( tmp_f );
-  fclose ( f );
 
   close ( sock );
 #ifdef WINDOWS

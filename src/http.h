@@ -22,6 +22,8 @@
 #ifndef _VIKING_HTTP_H
 #define _VIKING_HTTP_H
 
-int http_download_get_url ( const char *hostname, const char *uri, const char *fn, int already_redirected, int sendhostname );
+#include <stdio.h>
+
+int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int already_redirected, int sendhostname );
 
 #endif
