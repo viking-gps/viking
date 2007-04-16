@@ -19,6 +19,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <errno.h>
 #include <gtk/gtk.h>
@@ -26,7 +30,12 @@
 #include <sys/types.h>
 
 #include "download.h"
+
+#ifdef HAVE_LIBCURL
+#include "curl_download.h"
+#else
 #include "http.h"
+#endif
 
 #ifdef WINDOWS
 
@@ -83,7 +92,11 @@ static int download( const char *hostname, const char *uri, const char *fn, int 
   }
 
   /* Call the backend function */
+#ifdef HAVE_LIBCURL
+  ret = curl_download_get_url ( hostname, uri, f );
+#else
   ret = http_download_get_url ( hostname, uri, f, 0, sendhostname );
+#endif
 
   if (ret == -1 || ret == 1 || ret == -2)
   {

@@ -27,7 +27,6 @@ viking_SOURCES = main.c \
 	file.c file.h \
 	authors.h \
 	dialog.c dialog.h \
-	http.c http.h \
 	download.c download.h \
 	viktreeview.c viktreeview.h \
 	viktrwlayer.c viktrwlayer.h viktrwlayer_pixmap.h \
@@ -59,6 +58,14 @@ viking_SOURCES = main.c \
 	datasource_gc.c \
 	datasources.h
 
+if LIBCURL
+viking_SOURCES += \
+	curl_download.c curl_download.h
+else
+viking_SOURCES += \
+	http.c http.h
+endif
+
 if GOOGLE
 viking_SOURCES += \
 	khmaps.c khmaps.h \
@@ -76,6 +83,6 @@ viking_SOURCES += \
 	expedia.c expedia.h
 endif
 
-INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@
-LDADD           = @GTK_LIBS@ @EXPAT_LIBS@
+INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
+LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
 AM_CFLAGS		= -Wall -g

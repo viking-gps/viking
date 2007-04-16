@@ -88,7 +88,6 @@ int http_get_line(int sock, char *buf, int len)
   return 1;
 }
 
-/* makes directory if neccessary */
 int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int already_redirected, int sendhostname )
 {
   static char input_buffer[1024];
