@@ -24,6 +24,5 @@
 /* TODO: convert to Glib */
 int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn );
 int a_http_download_get_url_nohostname ( const char *hostname, const char *uri, const char *fn );
-int usgs_hack ( const char *scale_factor, const char *uri, const char *fn );
 
 #endif
