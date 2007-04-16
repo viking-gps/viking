@@ -28,6 +28,7 @@ viking_SOURCES = main.c \
 	authors.h \
 	dialog.c dialog.h \
 	http.c http.h \
+	download.c download.h \
 	viktreeview.c viktreeview.h \
 	viktrwlayer.c viktrwlayer.h viktrwlayer_pixmap.h \
 	viklayer.c viklayer.h \

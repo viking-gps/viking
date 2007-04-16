@@ -247,16 +247,3 @@ int http_download_get_url ( const char *hostname, const char *uri, const char *f
 #endif
   return 0;
 }
-
-/* success = 0, -1 = couldn't connect, -2 HTTP error, -3 file exists, -4 couldn't write to file... */
-/* uri: like "/uri.html?whatever" */
-/* only reason for the "wrapper" is so we can do redirects. */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn )
-{
-  return http_download_get_url ( hostname, uri, fn, 0, 1 );
-}
-
-int a_http_download_get_url_nohostname ( const char *hostname, const char *uri, const char *fn )
-{
-  return http_download_get_url ( hostname, uri, fn, 0, 0 );
-}

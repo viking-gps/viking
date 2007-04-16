@@ -25,7 +25,7 @@
 #include "coords.h"
 #include "vikcoord.h"
 #include "mapcoord.h"
-#include "http.h"
+#include "download.h"
 #include "vikmapslayer.h"
 
 #include "googlemaps.h"

@@ -19,45 +19,10 @@
  *
  */
 
-#ifndef __VIKING_VIKING_H
-#define __VIKING_VIKING_H
-
-#include <gtk/gtk.h>
-#include <gdk-pixbuf/gdk-pixdata.h>
-#include <stdio.h>
-#include <time.h>
-
-#ifdef WINDOWS
-#include <io.h>
-#include <winsock.h>
-#else
-#include <unistd.h>
-#endif
-
-#include "config.h"
-
-#include "globals.h"
-#include "coords.h"
-#include "vikcoord.h"
-#include "download.h"
-#include "vikwaypoint.h"
-#include "viktrack.h"
-#include "vikviewport.h"
-#include "viktreeview.h"
-#include "viklayer.h"
-#include "vikaggregatelayer.h"
-#include "vikgpslayer.h"
-#include "viklayerspanel.h"
-#include "vikcoordlayer.h"
-#include "vikgeoreflayer.h"
-#include "vikstatus.h"
-#include "vikfileentry.h"
-#include "viktrwlayer.h"
-#include "clipboard.h"
-#include "dialog.h"
-#include "file.h"
-#include "vikwindow.h"
-#include "gpspoint.h"
-#include "gpsmapper.h"
+#ifndef _VIKING_DOWNLOAD_H
+#define _VIKING_DOWNLOAD_H
+/* TODO: convert to Glib */
+int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn );
+int a_http_download_get_url_nohostname ( const char *hostname, const char *uri, const char *fn );
 
 #endif
