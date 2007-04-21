@@ -41,5 +41,6 @@ void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
 void google_download ( MapCoord *src, const gchar *dest_fn );
 void google_trans_download ( MapCoord *src, const gchar *dest_fn );
 void google_kh_download ( MapCoord *src, const gchar *dest_fn );
+void google_slippy_download ( MapCoord *src, const gchar *dest_fn );
 
 #endif
