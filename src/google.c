@@ -43,7 +43,7 @@ void google_init () {
   maps_layer_register_type("Google Maps", 7, &google_1);
   maps_layer_register_type("Transparent Google Maps", 10, &google_2);
   maps_layer_register_type("Google Satellite Images", 11, &google_3);
-  maps_layer_register_type("Slippy Maps", 12, &slippy);
+  maps_layer_register_type("OpenStreetMap Slippy Maps", 12, &slippy);
 }
 
 /* 1 << (x) is like a 2**(x) */
