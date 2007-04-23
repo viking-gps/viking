@@ -30,6 +30,7 @@
 #include "terraserver.h"
 #include "khmaps.h"
 #include "expedia.h"
+#include "osm.h"
 
 void modules_init()
 {
@@ -44,5 +45,6 @@ void modules_init()
 #ifdef VIK_CONFIG_TERRASERVER
   terraserver_init();
 #endif
+  osm_init();
 }
 

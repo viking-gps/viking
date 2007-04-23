@@ -1,3 +1,7 @@
+2007-04-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* OpenSourceMap slippy maps (in osm.c) -- Osmarender and Mapnik
+
 2007-04-21
 Evan Battaglia <gtoevan@gmx.net>
 	* OpenSourceMap slippy maps (in google.c) -- identical to google maps except zoom numbering

@@ -83,6 +83,10 @@ viking_SOURCES += \
 	expedia.c expedia.h
 endif
 
+viking_SOURCES += \
+	osm.c osm.h
+
+
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
 AM_CFLAGS		= -Wall -g

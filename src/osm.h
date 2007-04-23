@@ -19,27 +19,21 @@
  *
  */
 
-#ifndef __VIKING_GOOGLE_H
-#define __VIKING_GOOGLE_H
+#ifndef __VIKING_OSMARENDER_H
+#define __VIKING_OSMARENDER_H
 
 #include <glib.h>
 
 #include "vikcoord.h"
 #include "mapcoord.h"
 
-void google_init();
+void osm_init ();
 
-guint8 google_zoom ( gdouble mpp );
+guint8 osm_zoom ( gdouble mpp );
 
-/* a bit misleading, this is the "mpp" (really just set zoom level, very
- * roughly equivalent so you can easily switch between maps) of
- * google maps 1, the second google maps level (1st is 0). */
-#define GOOGLE_ZOOM_ONE_MPP 2.0
-
-gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
-void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-void google_download ( MapCoord *src, const gchar *dest_fn );
-void google_trans_download ( MapCoord *src, const gchar *dest_fn );
-void google_kh_download ( MapCoord *src, const gchar *dest_fn );
+gboolean osm_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
+void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
+void osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
+void osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
 
 #endif

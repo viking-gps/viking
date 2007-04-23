@@ -55,11 +55,6 @@
 
 #include "mapcoord.h"
 #include "terraserver.h"
-#include "googlemaps.h"
-#include "google.h"
-#include "khmaps.h"
-#include "expedia.h"
-
 
 /****** MAP TYPES ******/
 

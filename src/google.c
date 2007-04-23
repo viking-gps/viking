@@ -38,12 +38,10 @@ void google_init () {
   VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };
   VikMapsLayer_MapType google_2 = { 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download };
   VikMapsLayer_MapType google_3 = { 11, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_kh_download };
-  VikMapsLayer_MapType slippy = { 12, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_slippy_download };
 
   maps_layer_register_type("Google Maps", 7, &google_1);
   maps_layer_register_type("Transparent Google Maps", 10, &google_2);
   maps_layer_register_type("Google Satellite Images", 11, &google_3);
-  maps_layer_register_type("OpenStreetMap Slippy Maps", 12, &slippy);
 }
 
 /* 1 << (x) is like a 2**(x) */
@@ -154,12 +152,5 @@ void google_kh_download ( MapCoord *src, const gchar *dest_fn )
    gchar *uri = g_strdup_printf ( "/kh?v=%s&t=%s", GOOGLE_KH_VERSION, khenc );
    g_free ( khenc );
    a_http_download_get_url ( "kh.google.com", uri, dest_fn );
-   g_free ( uri );
-}
-
-void google_slippy_download ( MapCoord *src, const gchar *dest_fn )
-{
-   gchar *uri = g_strdup_printf ( "/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   a_http_download_get_url ( "tile.openstreetmap.org", uri, dest_fn );
    g_free ( uri );
 }
