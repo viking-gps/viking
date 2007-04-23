@@ -2,6 +2,10 @@
 Evan Battaglia <gtoevan@gmx.net>
 	* OpenSourceMap slippy maps (in google.c) -- identical to google maps except zoom numbering
 
+2007-04-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* Adding libcurl support
+
 2007-04-04
 Quy Tonthat <qtonthat@gmail.com>:
 	* New Google version number.
