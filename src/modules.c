@@ -45,6 +45,8 @@ void modules_init()
 #ifdef VIK_CONFIG_TERRASERVER
   terraserver_init();
 #endif
+#ifdef VIK_CONFIG_OPENSTREETMAP
   osm_init();
+#endif
 }
 

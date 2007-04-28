@@ -83,8 +83,10 @@ viking_SOURCES += \
 	expedia.c expedia.h
 endif
 
+if OPENSTREETMAP
 viking_SOURCES += \
 	osm.c osm.h
+endif
 
 
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@

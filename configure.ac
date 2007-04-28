@@ -91,6 +91,20 @@ case $ac_cv_enable_expedia in
 esac
 AM_CONDITIONAL([EXPEDIA], [test x$ac_cv_enable_expedia = xyes])
 
+# OpenStreetMap http://www.openstreetmap.org/
+AC_ARG_ENABLE(openstreetmap, AC_HELP_STRING([--enable-openstreetmap],
+              [enable OpenStreetMap stuff (default is enable)]),
+              [ac_cv_enable_openstreetmap=$enableval],
+              [ac_cv_enable_openstreetmap=yes])
+AC_CACHE_CHECK([whether to enable OpenStreetMap stuff],
+               [ac_cv_enable_openstreetmap], [ac_cv_enable_openstreetmap=yes])
+case $ac_cv_enable_openstreetmap in
+  yes)
+    AC_DEFINE(VIK_CONFIG_OPENSTREETMAP, [], [OPENSTREETMAP STUFF])
+    ;;
+esac
+AM_CONDITIONAL([OPENSTREETMAP], [test x$ac_cv_enable_openstreetmap = xyes])
+
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
                             [specify the size of the map cache (default is 50331648)])],
