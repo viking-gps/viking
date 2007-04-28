@@ -33,9 +33,11 @@
 /* initialisation */
 void osm_init () {
   VikMapsLayer_MapType osmarender_type = { 12, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_osmarender_download };
-  VikMapsLayer_MapType mapnik_type = { 13, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_mapnik_download };
+  VikMapsLayer_MapType mapnik_type = { 13, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_mapnik_download };  VikMapsLayer_MapType maplint_type = { 14, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_maplint_download };
+
   maps_layer_register_type("OpenStreetMap (Osmarender)", 12, &osmarender_type);
   maps_layer_register_type("OpenStreetMap (Mapnik)", 13, &mapnik_type);
+  maps_layer_register_type("OpenStreetMap (Maplint)", 14, &maplint_type);
 }
 
 /* 1 << (x) is like a 2**(x) */
@@ -79,6 +81,16 @@ void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
   dest->mode = VIK_COORD_LATLON;
   dest->east_west = ((src->x+0.5) / GZ(17) * socalled_mpp * 360) - 180;
   dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));
+}
+
+/* Maplint tiles
+ * Ex: http://dev.openstreetmap.org/~ojw/Tiles/maplint.php/10/517/375.png
+ */
+void osm_maplint_download ( MapCoord *src, const gchar *dest_fn )
+{
+   gchar *uri = g_strdup_printf ( "/~ojw/Tiles/maplint.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
+   a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn );
+   g_free ( uri );
 }
 
 void osm_mapnik_download ( MapCoord *src, const gchar *dest_fn )

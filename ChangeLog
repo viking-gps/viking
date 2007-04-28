@@ -1,3 +1,7 @@
+2007-04-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+	* OpenSourceMap slippy maps (in osm.c) -- Maplink tiles
+
 2007-04-23
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
 	* OpenSourceMap slippy maps (in osm.c) -- Osmarender and Mapnik
