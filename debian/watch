@@ -17,6 +17,6 @@ version=3
 #ftp://ftp.example.com/pub/viking-(.*)\.tar\.gz debian uupdate
 
 # Uncomment to find new files on sourceforge, for debscripts >= 2.9
-# http://sf.net/viking/viking-(.*)\.tar\.gz
+http://sf.net/viking/viking-(.*)\.tar\.gz
 
 
