@@ -8,5 +8,7 @@ Standards-Version: 3.7.2
 Package: viking
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: GPS data editor and viewer with auto-downloaded background
+ Viking is a GTK2-based GPS data editor and viewer.
+ It can download and show background maps, import and draw tracks and waypoints over them, add coordinate lines, make new tracks and waypoints, hide different things, and more.
+ It uses a hierarchical layering system to organize GPS data, maps, and other layer types with spatial data (such as coordinate lines).
