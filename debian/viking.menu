@@ -1,0 +1,2 @@
+?package(viking):needs="X11" section="Apps/Technical"\
+  title="viking" command="/usr/bin/viking"
