@@ -1,0 +1,12 @@
+Source: viking
+Section: unknown
+Priority: extra
+Maintainer: Guilhem BONNEFILLE <guilhem.bonnefille@gmail.com>
+Build-Depends: debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+
+Package: viking
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
