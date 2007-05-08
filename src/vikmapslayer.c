@@ -920,7 +920,7 @@ static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *e
 #endif
 }
 
-static void maps_layer_download_onscreen_maps ( gpointer vml_vvp[2] )
+static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
 {
   VikMapsLayer *vml = vml_vvp[0];
   VikViewport *vvp = vml_vvp[1];
@@ -938,10 +938,20 @@ static void maps_layer_download_onscreen_maps ( gpointer vml_vvp[2] )
   if ( map_type->drawmode == vik_viewport_get_drawmode ( vvp ) &&
        map_type->coord_to_mapcoord ( &ul, xzoom, yzoom, &ulm ) &&
        map_type->coord_to_mapcoord ( &br, xzoom, yzoom, &brm ) )
-    start_download_thread ( vml, vvp, &ul, &br, REDOWNLOAD_NONE );
+    start_download_thread ( vml, vvp, &ul, &br, redownload );
   else
     a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), "Wrong drawmode / zoom level for this map." );
 
+}
+
+static void maps_layer_download_onscreen_maps ( gpointer vml_vvp[2] )
+{
+  download_onscreen_maps( vml_vvp, REDOWNLOAD_NONE);
+}
+
+static void maps_layer_redownload_all_onscreen_maps ( gpointer vml_vvp[2] )
+{
+  download_onscreen_maps( vml_vvp, REDOWNLOAD_ALL);
 }
 
 static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp )
@@ -957,6 +967,11 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
 
   item = gtk_menu_item_new_with_label ( "Download Onscreen Maps" );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_onscreen_maps), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_label ( "Refresh Onscreen Tiles" );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 }
