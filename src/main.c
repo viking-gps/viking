@@ -74,7 +74,6 @@ static void open_window ( VikWindow *vw, const gchar **files )
   if ( newvw )
     while ( *files ) {
       vik_window_open_file ( newvw, *(files++), change_fn );
-      files++;
     }
 }
 
