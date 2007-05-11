@@ -151,10 +151,13 @@ void a_mapcache_remove_all_shrinkfactors ( guint16 x, guint16 y, guint16 z, guin
     if ( strncmp(tmp->key, key, len) == 0 )
     {
       g_hash_table_remove ( cache, tmp->key );
-      if ( tmp == loop )
+      if ( tmp == loop ) /* we deleted the last thing in the queue! */
         loop = queue_tail = NULL;
-      else
+      else {
         loop->next = tmp->next;
+        if ( tmp == queue_tail )
+          queue_tail = tmp->next;
+      }
       g_free ( tmp );
       tmp = NULL;
     }

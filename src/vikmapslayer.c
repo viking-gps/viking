@@ -690,6 +690,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
       if ( mdi->redownload == REDOWNLOAD_ALL)
         remove ( mdi->filename_buf );
+
       else if ( mdi->redownload == REDOWNLOAD_BAD && access ( mdi->filename_buf, F_OK ) == 0 )
       {
         /* see if this one is bad or what */
@@ -717,9 +718,9 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 	gdk_threads_leave();
         mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
 
-       if ( mdi->redownload !=- REDOWNLOAD_NONE )
-         a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, mdi->maptype, mdi->mapcoord.scale );
-
+        /* remove from memory cache */
+        if ( mdi->redownload != REDOWNLOAD_NONE )
+          a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, MAPS_LAYER_NTH_TYPE(mdi->maptype)->uniq_id, mdi->mapcoord.scale );
 
         donemaps++;
 	if (donemaps == mdi->mapstoget) {

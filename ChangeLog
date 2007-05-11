@@ -1,3 +1,7 @@
+2007-05-11
+Evan Battaglia <gtoevan@gmx.net>
+	* Fix removal of redownloaded tiles from memory cache.
+
 2007-05-09
 Quy Tonthat <qtonthat@gmail.com>:
 	* New Google version numbers.
