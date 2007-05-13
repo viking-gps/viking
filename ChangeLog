@@ -1,3 +1,7 @@
+2007-05-13
+Evan Battaglia <gtoevan@gmx.net>
+	* Fix problem of "bad" tiles showing up when downloading. The problem was loading of incomplete tiles. Fixed this by first downloading to a temporary file, then moving when complete.
+
 2007-05-11
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix removal of redownloaded tiles from memory cache.
