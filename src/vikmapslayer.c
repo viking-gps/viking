@@ -724,16 +724,14 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
 
         donemaps++;
-	if (donemaps == mdi->mapstoget) {
-          g_mutex_lock(mdi->mutex);
-          if (mdi->map_layer_alive)
-	    g_object_weak_unref(VIK_LAYER(mdi->vml), weak_ref_cb, mdi);
-          g_mutex_unlock(mdi->mutex); 
-	}
         a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
       }
     }
   }
+  g_mutex_lock(mdi->mutex);
+  if (mdi->map_layer_alive)
+    g_object_weak_unref(VIK_LAYER(mdi->vml), weak_ref_cb, mdi);
+  g_mutex_unlock(mdi->mutex); 
 }
 
 static void mdi_cancel_cleanup ( MapDownloadInfo *mdi )
