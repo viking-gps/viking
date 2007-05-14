@@ -1,3 +1,8 @@
+2007-05-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed bugs that can cause segfault on exit. The problem was caused
+by mapslayer's weak_ref not being unref'ed in some cases.
+
 2007-05-13
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix problem of "bad" tiles showing up when downloading. The problem was loading of incomplete tiles. Fixed this by first downloading to a temporary file, then moving when complete.
