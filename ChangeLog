@@ -1,3 +1,8 @@
+2007-05-17
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix problems in map downloading caused by unreliable error
+	detection.
+
 2007-05-15
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fixed bugs that can cause segfault on exit. The problem was caused

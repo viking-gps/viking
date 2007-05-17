@@ -35,7 +35,7 @@ int curl_download_uri ( const char *uri, FILE *f )
 {
 #ifdef HAVE_LIBCURL
   CURL *curl;
-  CURLcode res;
+  CURLcode res = CURLE_FAILED_INIT;
 
   curl = curl_easy_init ();
   if ( curl )
@@ -45,6 +45,7 @@ int curl_download_uri ( const char *uri, FILE *f )
       res = curl_easy_perform ( curl );
       curl_easy_cleanup ( curl );
     }
+  return(res);
 #endif
 }
 
@@ -59,5 +60,5 @@ int curl_download_get_url ( const char *hostname, const char *uri, FILE *f )
   g_free ( full );
   full = NULL;
 
-  return ret;
+  return (ret ? -2 : 0);   /* -2 HTTP error */
 }
