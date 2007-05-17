@@ -50,5 +50,8 @@ rm -rf %{buildroot}
 %{_bindir}/viking-remote
 
 %changelog
+* Thu May 15 2007 Guilhem Bonnefille <guilhem.bonnefille> - 0.1.3-1
+- Update to upstream version 0.1.3.
+
 * Wed Feb 14 2007 Michael A. Peters <mpeters@mac.com> - 0.1.2-1
 - Initial Fedora style spec file.
