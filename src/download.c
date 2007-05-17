@@ -25,6 +25,9 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <ctype.h>
+#include <string.h>
+#include <strings.h>
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -61,6 +64,41 @@ char *dirname ( char * dir )
 #include <libgen.h>
 
 #endif 
+
+static int check_map_file(FILE* f)
+{
+  char **s;
+  char *bp;
+  int res = 0;  /* good */
+  fpos_t pos;
+  char buf[33];
+  size_t nr;
+  char * html_str[] = {
+    "<html",
+    "<!DOCTYPE html",
+    "<head",
+    "<title",
+    NULL
+  };
+
+
+  bzero(buf, sizeof(buf));
+  fgetpos(f, &pos);
+  rewind(f);
+  nr = fread(buf, 1, sizeof(buf) - 1, f);
+  fsetpos(f, &pos);
+  for (bp = buf; (bp < (buf + sizeof(buf) - 1)) && (nr > (bp - buf)); bp++) {
+    if (!(isspace(*bp)))
+      break;
+  }
+  if ((bp >= (buf + sizeof(buf) -1)) || ((bp - buf) >= nr))
+    return(res);
+  for (s = html_str; *s; s++) {
+    if (strncmp(*s, bp, strlen(*s)) == 0)
+      return(-1);
+  }
+  return(res);
+}
 
 static int download( const char *hostname, const char *uri, const char *fn, int sendhostname)
 {
@@ -109,11 +147,13 @@ static int download( const char *hostname, const char *uri, const char *fn, int 
   ret = http_download_get_url ( hostname, uri, f, 0, sendhostname );
 #endif
 
-  if (ret == -1 || ret == 1 || ret == -2)
+  if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
   {
+    fprintf(stderr, "Download error: %s\n", fn);
     fclose ( f );
     remove ( tmpfilename );
     g_free ( tmpfilename );
+    remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
   }
 
