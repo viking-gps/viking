@@ -1,3 +1,7 @@
+2007-05-18
+Quy Tonthat <qtonthat@gmail.com>:
+	* Map tool: Left click can now refresh display of map tiles.
+
 2007-05-17
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix problems in map downloading caused by unreliable error
