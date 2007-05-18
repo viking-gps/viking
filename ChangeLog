@@ -1,5 +1,6 @@
 2007-05-18
 Quy Tonthat <qtonthat@gmail.com>:
+	* Add curl-devel to spec file.
 	* Map tool: Left click can now refresh display of map tiles.
 	* Check for non-displayable data after downloading map.
 
@@ -7,6 +8,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix problems in map downloading caused by unreliable error
 	detection.
+	* Release 0.1.3
 
 2007-05-15
 Quy Tonthat <qtonthat@gmail.com>:

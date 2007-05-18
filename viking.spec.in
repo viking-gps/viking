@@ -14,6 +14,7 @@ URL:		http://sourceforge.net/projects/viking/
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
+BuildRequires:	curl-devel
 BuildRequires:	expat-devel
 BuildRequires:	gtk2-devel >= 2.2.0
 BuildRequires:	pkgconfig
@@ -50,6 +51,9 @@ rm -rf %{buildroot}
 %{_bindir}/viking-remote
 
 %changelog
+* Thu May 18 2007 Quy Tonthat <qtonthat@gmail.com>
+- Added curl-devel to BuildRequires list.
+
 * Thu May 15 2007 Guilhem Bonnefille <guilhem.bonnefille> - 0.1.3-1
 - Update to upstream version 0.1.3.
 
