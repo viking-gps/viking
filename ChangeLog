@@ -1,3 +1,7 @@
+2007-05-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Stop autodownload from running forever on map downloading errors.
+
 2007-05-18
 Quy Tonthat <qtonthat@gmail.com>:
 	* Add curl-devel to spec file.
