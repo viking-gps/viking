@@ -30,6 +30,15 @@
 
 #include "osm.h"
 
+static guint8 osm_zoom ( gdouble mpp );
+
+static gboolean osm_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
+static void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
+static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn );
+static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
+static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
+
+
 /* initialisation */
 void osm_init () {
   VikMapsLayer_MapType osmarender_type = { 12, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_osmarender_download };
@@ -58,7 +67,7 @@ guint8 osm_zoom ( gdouble mpp ) {
   return 255;
 }
 
-gboolean osm_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
+static gboolean osm_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
 {
   g_assert ( src->mode == VIK_COORD_LATLON );
 
@@ -75,7 +84,7 @@ gboolean osm_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzo
   return TRUE;
 }
 
-void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
+static void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 {
   gdouble socalled_mpp = GZ(src->scale);
   dest->mode = VIK_COORD_LATLON;
@@ -86,23 +95,29 @@ void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 /* Maplint tiles
  * Ex: http://dev.openstreetmap.org/~ojw/Tiles/maplint.php/10/517/375.png
  */
-void osm_maplint_download ( MapCoord *src, const gchar *dest_fn )
+static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn )
 {
+   int res = -1;
    gchar *uri = g_strdup_printf ( "/~ojw/Tiles/maplint.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn );
+   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn );
    g_free ( uri );
+   return res;
 }
 
-void osm_mapnik_download ( MapCoord *src, const gchar *dest_fn )
+static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn )
 {
+   int res = -1;
    gchar *uri = g_strdup_printf ( "/osamrender/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   a_http_download_get_url ( "tile.openstreetmap.org", uri, dest_fn );
+   res = a_http_download_get_url ( "tile.openstreetmap.org", uri, dest_fn );
    g_free ( uri );
+   return res;
 }
 
-void osm_osmarender_download ( MapCoord *src, const gchar *dest_fn )
+static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn )
 {
+   int res = -1;
    gchar *uri = g_strdup_printf ( "/~ojw/Tiles/tile.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn );
+   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn );
    g_free ( uri );
+   return res;
 }

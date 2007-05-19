@@ -29,12 +29,4 @@
 
 void osm_init ();
 
-guint8 osm_zoom ( gdouble mpp );
-
-gboolean osm_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
-void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-void osm_maplint_download ( MapCoord *src, const gchar *dest_fn );
-void osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
-void osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
-
 #endif
