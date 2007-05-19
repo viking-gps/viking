@@ -34,6 +34,12 @@
 #define GOOGLE_TRANS_VERSION "w2t.47"
 #define GOOGLE_KH_VERSION "17"
 
+static int google_download ( MapCoord *src, const gchar *dest_fn );
+static int google_trans_download ( MapCoord *src, const gchar *dest_fn );
+static int google_kh_download ( MapCoord *src, const gchar *dest_fn );
+static void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
+static gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
+
 void google_init () {
   VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };
   VikMapsLayer_MapType google_2 = { 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download };
@@ -88,21 +94,23 @@ void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
   dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));
 }
 
-static void real_google_download ( MapCoord *src, const gchar *dest_fn, const char *verstr )
+static int real_google_download ( MapCoord *src, const gchar *dest_fn, const char *verstr )
 {
+   int res;
    gchar *uri = g_strdup_printf ( "/mt?v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
-   a_http_download_get_url ( "mt.google.com", uri, dest_fn );
+   res = a_http_download_get_url ( "mt.google.com", uri, dest_fn );
    g_free ( uri );
+   return res;
 }
 
-void google_download ( MapCoord *src, const gchar *dest_fn )
+static int google_download ( MapCoord *src, const gchar *dest_fn )
 {
-   real_google_download ( src, dest_fn, GOOGLE_VERSION );
+   return(real_google_download ( src, dest_fn, GOOGLE_VERSION ));
 }
 
-void google_trans_download ( MapCoord *src, const gchar *dest_fn )
+static int google_trans_download ( MapCoord *src, const gchar *dest_fn )
 {
-   real_google_download ( src, dest_fn, GOOGLE_TRANS_VERSION );
+   return(real_google_download ( src, dest_fn, GOOGLE_TRANS_VERSION ));
 }
 
 static char *kh_encode(guint32 x, guint32 y, guint8 scale)
@@ -146,11 +154,13 @@ static char *kh_encode(guint32 x, guint32 y, guint8 scale)
   return buf;
 }
 
-void google_kh_download ( MapCoord *src, const gchar *dest_fn )
+static int google_kh_download ( MapCoord *src, const gchar *dest_fn )
 {
+   int res;
    gchar *khenc = kh_encode( src->x, src->y, src->scale );
    gchar *uri = g_strdup_printf ( "/kh?v=%s&t=%s", GOOGLE_KH_VERSION, khenc );
    g_free ( khenc );
-   a_http_download_get_url ( "kh.google.com", uri, dest_fn );
+   res = a_http_download_get_url ( "kh.google.com", uri, dest_fn );
    g_free ( uri );
+   return(res);
 }

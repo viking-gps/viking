@@ -684,6 +684,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
   {
     for ( y = mdi->y0; y <= mdi->yf; y++ )
     {
+      gboolean remove_mem_cache = FALSE;
       g_snprintf ( mdi->filename_buf, mdi->maxlen, DIRSTRUCTURE,
                      mdi->cache_dir, MAPS_LAYER_NTH_TYPE(mdi->maptype)->uniq_id,
                      mdi->mapcoord.scale, mdi->mapcoord.z, x, y );
@@ -706,40 +707,33 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
       if ( access ( mdi->filename_buf, F_OK ) != 0 )
       {
-        mdi->mapcoord.x = x; mdi->mapcoord.y = y;
-        MAPS_LAYER_NTH_TYPE(mdi->maptype)->download ( &(mdi->mapcoord), mdi->filename_buf );
-	gdk_threads_enter();
-	g_mutex_lock(mdi->mutex);
-
-        /* remove from memory cache */
         if (( mdi->redownload != REDOWNLOAD_NONE ) ||
             ( mdi->redownload != DOWNLOAD_OR_REFRESH ))
+          remove_mem_cache = TRUE;
+      } else if ( mdi->redownload == DOWNLOAD_OR_REFRESH ) {
+        remove_mem_cache = TRUE;
+      } else
+        continue;
+
+      donemaps++;
+      a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+
+      mdi->mapcoord.x = x; mdi->mapcoord.y = y;
+      if ( MAPS_LAYER_NTH_TYPE(mdi->maptype)->download ( &(mdi->mapcoord), mdi->filename_buf ))
+          continue;
+
+      gdk_threads_enter();
+      g_mutex_lock(mdi->mutex);
+      if (remove_mem_cache)
           a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, MAPS_LAYER_NTH_TYPE(mdi->maptype)->uniq_id, mdi->mapcoord.scale );
-
-	if (mdi->map_layer_alive) {
-	  /* TODO: check if it's on visible area */
-	  vik_layer_emit_update ( VIK_LAYER(mdi->vml) );
-	}
-	g_mutex_unlock(mdi->mutex);
-	gdk_threads_leave();
-        mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
-
-        donemaps++;
-        a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+      if (mdi->map_layer_alive) {
+        /* TODO: check if it's on visible area */
+        vik_layer_emit_update ( VIK_LAYER(mdi->vml) );
       }
-      else if ( mdi->redownload == DOWNLOAD_OR_REFRESH ) {
-        mdi->mapcoord.x = x; mdi->mapcoord.y = y;
-        MAPS_LAYER_NTH_TYPE(mdi->maptype)->download ( &(mdi->mapcoord), mdi->filename_buf );
-	gdk_threads_enter();
-	g_mutex_lock(mdi->mutex);
-        a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, MAPS_LAYER_NTH_TYPE(mdi->maptype)->uniq_id, mdi->mapcoord.scale );
-	if (mdi->map_layer_alive) {
-	  /* TODO: check if it's on visible area */
-	  vik_layer_emit_update ( VIK_LAYER(mdi->vml) );
-	}
-	g_mutex_unlock(mdi->mutex);
-	gdk_threads_leave();
-      }
+      g_mutex_unlock(mdi->mutex);
+      gdk_threads_leave();
+      mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
+
     }
   }
   g_mutex_lock(mdi->mutex);

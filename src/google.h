@@ -36,10 +36,5 @@ guint8 google_zoom ( gdouble mpp );
  * google maps 1, the second google maps level (1st is 0). */
 #define GOOGLE_ZOOM_ONE_MPP 2.0
 
-gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
-void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-void google_download ( MapCoord *src, const gchar *dest_fn );
-void google_trans_download ( MapCoord *src, const gchar *dest_fn );
-void google_kh_download ( MapCoord *src, const gchar *dest_fn );
 
 #endif
