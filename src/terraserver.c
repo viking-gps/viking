@@ -30,6 +30,17 @@
 
 #include "terraserver.h"
 
+static gboolean terraserver_topo_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest );
+static int terraserver_topo_download ( MapCoord *src, const gchar *dest_fn );
+
+static gboolean terraserver_aerial_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest );
+static int terraserver_aerial_download ( MapCoord *src, const gchar *dest_fn );
+
+static gboolean terraserver_urban_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest );
+static int terraserver_urban_download ( MapCoord *src, const gchar *dest_fn );
+
+static void terraserver_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
+
 void terraserver_init () {
   VikMapsLayer_MapType map_type_1 = { 2, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_topo_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_topo_download };
   VikMapsLayer_MapType map_type_2 = { 1, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_aerial_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_aerial_download };
@@ -89,14 +100,14 @@ static gboolean terraserver_coord_to_mapcoord ( const VikCoord *src, gdouble xmp
   return TRUE;
 }
 
-gboolean terraserver_topo_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
+static gboolean terraserver_topo_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
 { return terraserver_coord_to_mapcoord ( src, xmpp, ympp, dest, 2 ); }
-gboolean terraserver_aerial_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
+static gboolean terraserver_aerial_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
 { return terraserver_coord_to_mapcoord ( src, xmpp, ympp, dest, 1 ); }
-gboolean terraserver_urban_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
+static gboolean terraserver_urban_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
 { return terraserver_coord_to_mapcoord ( src, xmpp, ympp, dest, 4 ); }
 
-void terraserver_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
+static void terraserver_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 {
   // FIXME: slowdown here!
   gdouble mpp = scale_to_mpp ( src->scale );
@@ -106,17 +117,19 @@ void terraserver_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
   dest->north_south = ((src->y * 200) + 100) * mpp;
 }
 
-static void terraserver_download ( MapCoord *src, const gchar *dest_fn, guint8 type )
+static int terraserver_download ( MapCoord *src, const gchar *dest_fn, guint8 type )
 {
+  int res = -1;
   gchar *uri = g_strdup_printf ( "/tile.ashx?T=%d&S=%d&X=%d&Y=%d&Z=%d", type,
                                   src->scale, src->x, src->y, src->z );
-  a_http_download_get_url_nohostname ( TERRASERVER_SITE, uri, dest_fn );
+  res = a_http_download_get_url_nohostname ( TERRASERVER_SITE, uri, dest_fn );
   g_free ( uri );
+  return(res);
 }
 
-void terraserver_topo_download ( MapCoord *src, const gchar *dest_fn )
-{ terraserver_download ( src, dest_fn, 2 ); }
-void terraserver_aerial_download ( MapCoord *src, const gchar *dest_fn )
-{ terraserver_download ( src, dest_fn, 1 ); }
-void terraserver_urban_download ( MapCoord *src, const gchar *dest_fn )
-{ terraserver_download ( src, dest_fn, 4 ); }
+static int terraserver_topo_download ( MapCoord *src, const gchar *dest_fn )
+{ return terraserver_download ( src, dest_fn, 2 ); }
+static int terraserver_aerial_download ( MapCoord *src, const gchar *dest_fn )
+{ return terraserver_download ( src, dest_fn, 1 ); }
+static int terraserver_urban_download ( MapCoord *src, const gchar *dest_fn )
+{ return terraserver_download ( src, dest_fn, 4 ); }

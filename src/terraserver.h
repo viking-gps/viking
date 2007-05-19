@@ -29,15 +29,4 @@
 
 void terraserver_init();
 
-gboolean terraserver_topo_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest );
-void terraserver_topo_download ( MapCoord *src, const gchar *dest_fn );
-
-gboolean terraserver_aerial_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest );
-void terraserver_aerial_download ( MapCoord *src, const gchar *dest_fn );
-
-gboolean terraserver_urban_coord_to_mapcoord ( const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest );
-void terraserver_urban_download ( MapCoord *src, const gchar *dest_fn );
-
-void terraserver_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-
 #endif
