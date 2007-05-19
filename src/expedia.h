@@ -29,8 +29,4 @@
 
 void expedia_init();
 
-gboolean expedia_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
-void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-void expedia_download ( MapCoord *src, const gchar *dest_fn );
-
 #endif

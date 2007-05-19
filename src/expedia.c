@@ -33,6 +33,10 @@
 
 #include "expedia.h"
 
+static gboolean expedia_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
+static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
+static int expedia_download ( MapCoord *src, const gchar *dest_fn );
+
 void expedia_init() {
   VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download };
   maps_layer_register_type("Expedia Street Maps", 5, &map_type);
@@ -117,7 +121,7 @@ void expedia_snip ( const gchar *file )
 
 /* if degree_freeq = 60 -> nearest minute (in middle) */
 /* everything starts at -90,-180 -> 0,0. then increments by (1/degree_freq) */
-gboolean expedia_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
+static gboolean expedia_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
 {
   gint alti;
 
@@ -147,18 +151,19 @@ void expedia_xy_to_latlon_middle ( gint alti, gint x, gint y, struct LatLon *ll 
   ll->lat = (((gdouble)y) / expedia_altis_freq(alti)) - 90;
 }
 
-void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
+static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 {
   dest->mode = VIK_COORD_LATLON;
   dest->east_west = (((gdouble)src->x) / expedia_altis_freq(src->scale)) - 180;
   dest->north_south = (((gdouble)src->y) / expedia_altis_freq(src->scale)) - 90;
 }
 
-void expedia_download ( MapCoord *src, const gchar *dest_fn )
+static int expedia_download ( MapCoord *src, const gchar *dest_fn )
 {
   gint height, width;
   struct LatLon ll;
   gchar *uri;
+  int res = -1;
 
   expedia_xy_to_latlon_middle ( src->scale, src->x, src->y, &ll );
 
@@ -171,9 +176,9 @@ void expedia_download ( MapCoord *src, const gchar *dest_fn )
   uri = g_strdup_printf ( "/pub/agent.dll?qscr=mrdt&ID=3XNsF.&CenP=%lf,%lf&Lang=%s&Alti=%d&Size=%d,%d&Offs=0.000000,0.000000&BCheck&tpid=1",
                ll.lat, ll.lon, (ll.lon > -30) ? "EUR0809" : "USA0409", src->scale, width, height );
 
-  a_http_download_get_url_nohostname ( "expedia.com", uri, dest_fn );
-
-  expedia_snip ( dest_fn );
+  if ((res = a_http_download_get_url_nohostname ( "expedia.com", uri, dest_fn )) == 0)	/* All OK */
+  	expedia_snip ( dest_fn );
+  return(res);
 }
 
 
