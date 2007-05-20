@@ -2734,8 +2734,8 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     gint x, y;
     vik_viewport_coord_to_screen ( vvp, &(vtl->current_wp->coord), &x, &y );
 
-    if ( abs(x - event->x) < WAYPOINT_SIZE_APPROX &&
-         abs(y - event->y) < WAYPOINT_SIZE_APPROX )
+    if ( abs(x - event->x) <= WAYPOINT_SIZE_APPROX &&
+         abs(y - event->y) <= WAYPOINT_SIZE_APPROX )
     {
       if ( event->button == 3 )
         vtl->waypoint_rightclick = TRUE; /* remember that we're clicking; other layers will ignore release signal */
