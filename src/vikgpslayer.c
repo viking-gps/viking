@@ -137,7 +137,8 @@ static gchar * trw_names[] = {"GPS Download", "GPS Upload"};
 struct _VikGpsLayer {
   VikLayer vl;
   VikTrwLayer * trw_children[NUM_TRW];
-  GList * children;	/* used only for read/write file */
+  GList * children;	/* used only for writing file */
+  int cur_read_child;   /* used only for reading file */
   /* params */
   guint protocol_id;
   guint serial_port_id;
@@ -305,6 +306,7 @@ VikGpsLayer *vik_gps_layer_new ()
     vgl->trw_children[i] = NULL;
   }
   vgl->children = NULL;
+  vgl->cur_read_child = 0;
 
   /* Setting params here */
   vgl->protocol_id = 0;
@@ -454,6 +456,16 @@ const GList *vik_gps_layer_get_children ( VikGpsLayer *vgl )
       vgl->children = g_list_prepend(vgl->children, vgl->trw_children[i]);
   }
   return vgl->children;
+}
+
+VikTrwLayer * vik_gps_layer_get_a_child(VikGpsLayer *vgl)
+{
+  g_assert ((vgl->cur_read_child >= 0) && (vgl->cur_read_child < NUM_TRW));
+
+  VikTrwLayer * vtl = vgl->trw_children[vgl->cur_read_child];
+  if (++(vgl->cur_read_child) >= NUM_TRW)
+    vgl->cur_read_child = 0;
+  return(vtl);
 }
 
 gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl )

@@ -44,5 +44,6 @@ typedef struct _VikGpsLayer VikGpsLayer;
 
 gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl );
 const GList *vik_gps_layer_get_children ( VikGpsLayer *vgl );
+VikTrwLayer * vik_gps_layer_get_a_child(VikGpsLayer *vgl);
 
 #endif

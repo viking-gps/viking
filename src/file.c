@@ -172,7 +172,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
       push(&stack);
       stack->data = (gpointer) vik_aggregate_layer_get_children(VIK_AGGREGATE_LAYER(current_layer));
     }
-    if ( current_layer->type == VIK_LAYER_GPS && !vik_gps_layer_is_empty(VIK_GPS_LAYER(current_layer)) )
+    else if ( current_layer->type == VIK_LAYER_GPS && !vik_gps_layer_is_empty(VIK_GPS_LAYER(current_layer)) )
     {
       push(&stack);
       stack->data = (gpointer) vik_gps_layer_get_children(VIK_GPS_LAYER(current_layer));
@@ -250,9 +250,10 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
         continue;
       else if ( str_starts_with ( line, "Layer ", 6, TRUE ) )
       {
-        if ( ( ! stack->data ) || VIK_LAYER(stack->data)->type != VIK_LAYER_AGGREGATE )
+        int parent_type = VIK_LAYER(stack->data)->type;
+        if ( ( ! stack->data ) || ((parent_type != VIK_LAYER_AGGREGATE) && (parent_type != VIK_LAYER_GPS)) )
         {
-          g_warning ( "Line %ld: Layer command inside non-Aggregate Layer", line_num );
+          g_warning ( "Line %ld: Layer command inside non-Aggregate Layer (type %d)", line_num, parent_type );
           push(&stack); /* inside INVALID layer */
           stack->data = NULL;
           continue;
@@ -265,6 +266,12 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
           {
             g_warning ( "Line %ld: Unknown type %s\n", line_num, line+6 );
             stack->data = NULL;
+          }
+          else if (parent_type == VIK_LAYER_GPS)
+          {
+            stack->data = (gpointer) vik_gps_layer_get_a_child(VIK_GPS_LAYER(stack->under->data));
+            params = vik_layer_get_interface(type)->params;
+            params_count = vik_layer_get_interface(type)->params_count;
           }
           else
           {
@@ -282,8 +289,15 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
         {
           if ( stack->data && stack->under->data )
           {
-            vik_aggregate_layer_add_layer ( VIK_AGGREGATE_LAYER(stack->under->data), VIK_LAYER(stack->data) );
-            vik_layer_post_read ( VIK_LAYER(stack->data), vp );
+            if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_AGGREGATE) {
+              vik_aggregate_layer_add_layer ( VIK_AGGREGATE_LAYER(stack->under->data), VIK_LAYER(stack->data) );
+              vik_layer_post_read ( VIK_LAYER(stack->data), vp );
+            }
+            else if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_GPS) {
+              /* TODO: anything else needs to be done here ? */
+            }
+            else
+              g_warning ( "Line %ld: EndLayer command inside non-Aggregate Layer (type %d)", line_num, VIK_LAYER(stack->data)->type );
           }
           pop(&stack);
         }
