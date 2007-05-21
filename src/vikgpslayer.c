@@ -137,6 +137,7 @@ static gchar * trw_names[] = {"GPS Download", "GPS Upload"};
 struct _VikGpsLayer {
   VikLayer vl;
   VikTrwLayer * trw_children[NUM_TRW];
+  GList * children;	/* used only for read/write file */
   /* params */
   guint protocol_id;
   guint serial_port_id;
@@ -303,6 +304,7 @@ VikGpsLayer *vik_gps_layer_new ()
   for (i = 0; i < NUM_TRW; i++) {
     vgl->trw_children[i] = NULL;
   }
+  vgl->children = NULL;
 
   /* Setting params here */
   vgl->protocol_id = 0;
@@ -441,6 +443,24 @@ static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIt
     vik_layer_realize ( trw, VIK_LAYER(vgl)->vt, &iter );
     g_signal_connect_swapped ( G_OBJECT(trw), "update", G_CALLBACK(vik_layer_emit_update), vgl );
   }
+}
+
+const GList *vik_gps_layer_get_children ( VikGpsLayer *vgl )
+{
+  int i;
+
+  if (vgl->children == NULL) {
+    for (i = NUM_TRW - 1; i >= 0; i--)
+      vgl->children = g_list_prepend(vgl->children, vgl->trw_children[i]);
+  }
+  return vgl->children;
+}
+
+gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl )
+{
+  if ( vgl->trw_children[0] )
+    return FALSE;
+  return TRUE;
 }
 
 static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )

@@ -172,6 +172,11 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
       push(&stack);
       stack->data = (gpointer) vik_aggregate_layer_get_children(VIK_AGGREGATE_LAYER(current_layer));
     }
+    if ( current_layer->type == VIK_LAYER_GPS && !vik_gps_layer_is_empty(VIK_GPS_LAYER(current_layer)) )
+    {
+      push(&stack);
+      stack->data = (gpointer) vik_gps_layer_get_children(VIK_GPS_LAYER(current_layer));
+    }
     else
     {
       stack->data = (gpointer) ((GList *)stack->data)->next;
