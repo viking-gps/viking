@@ -1,3 +1,7 @@
+2007-05-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* GPS layer track and waypoint data can now be saved.
+
 2007-05-20
 Quy Tonthat <qtonthat@gmail.com>:
 	* Stop autodownload from running forever on map downloading errors.
