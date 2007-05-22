@@ -20,6 +20,7 @@ static const char *menu_xml =
 	"      <menuitem action='GenImg'/>"
 	"      <menuitem action='GenImgDir'/>"
 	"      <separator/>"
+	"      <menuitem action='SaveExit'/>"
 	"      <menuitem action='Exit'/>"
 	"    </menu>"
 	"    <menu action='Edit'>"

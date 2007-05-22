@@ -106,6 +106,7 @@ static void register_vik_icons (GtkIconFactory *icon_factory);
 static void load_file ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw );
 static gboolean save_file ( GtkAction *a, VikWindow *vw );
+static gboolean save_file_and_exit ( GtkAction *a, VikWindow *vw );
 static gboolean window_save ( VikWindow *vw );
 
 struct _VikWindow {
@@ -1177,6 +1178,14 @@ static void window_close ( GtkAction *a, VikWindow *vw )
     gtk_widget_destroy ( GTK_WIDGET(vw) );
 }
 
+static gboolean save_file_and_exit ( GtkAction *a, VikWindow *vw )
+{
+  if (save_file( NULL, vw))
+    window_close( NULL, vw);
+  else
+    return(FALSE);
+}
+
 static void zoom_to_cb ( GtkAction *a, VikWindow *vw )
 {
   gdouble xmpp = vik_viewport_get_xmpp ( vw->viking_vvp ), ympp = vik_viewport_get_ympp ( vw->viking_vvp );
@@ -1574,6 +1583,7 @@ static GtkActionEntry entries[] = {
   { "GenImg",    GTK_STOCK_CLEAR,        "_Generate Image File",          NULL,         "Save a snapshot of the workspace into a file", (GCallback)draw_to_image_file_cb },
   { "GenImgDir", GTK_STOCK_DND_MULTIPLE, "Generate _Directory of Images", NULL,         "FIXME:IMGDIR",                                 (GCallback)draw_to_image_dir_cb  },
   { "Exit",      GTK_STOCK_QUIT,         "E_xit",                         "<control>W", "Exit the program",                             (GCallback)window_close          },
+  { "SaveExit",  GTK_STOCK_QUIT,         "Save and Exit",                 NULL, "Save and Exit the program",                             (GCallback)save_file_and_exit          },
 
   { "GotoLL",    GTK_STOCK_QUIT,         "_Go to Lat\\/Lon...",           NULL,         "Go to arbitrary lat\\/lon coordinate",         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_QUIT,         "Go to UTM...",                  NULL,         "Go to arbitrary UTM coordinate",               (GCallback)draw_goto_cb          },

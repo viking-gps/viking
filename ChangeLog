@@ -1,6 +1,8 @@
 2007-05-22
 Quy Tonthat <qtonthat@gmail.com>:
 	* GPS layer track and waypoint data can now be saved.
+	* Disable prompt for save before exit.
+	* Add "Save and Exit" to File menu.
 
 2007-05-20
 Quy Tonthat <qtonthat@gmail.com>:
