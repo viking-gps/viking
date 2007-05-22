@@ -300,7 +300,11 @@ VikWindow *vik_window_new ()
 
 static gboolean delete_event( VikWindow *vw )
 {
+#ifdef VIKING_PROMPT_IF_MODIFIED
   if ( vw->modified )
+#else
+  if (0)
+#endif
   {
     GtkDialog *dia;
     dia = GTK_DIALOG ( gtk_message_dialog_new ( GTK_WINDOW(vw), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
@@ -1078,7 +1082,11 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   if ( gtk_dialog_run ( GTK_DIALOG(vw->open_dia) ) == GTK_RESPONSE_OK )
   {
     gtk_widget_hide ( vw->open_dia );
+#ifdef VIKING_PROMPT_IF_MODIFIED
     if ( (vw->modified || vw->filename) && newwindow )
+#else
+    if ( vw->filename && newwindow )
+#endif
       g_signal_emit ( G_OBJECT(vw), window_signals[VW_OPENWINDOW_SIGNAL], 0, gtk_file_selection_get_selections (GTK_FILE_SELECTION(vw->open_dia) ) );
     else {
       gchar **files = gtk_file_selection_get_selections (GTK_FILE_SELECTION(vw->open_dia) );
