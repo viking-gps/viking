@@ -32,6 +32,8 @@ typedef struct {
   GtkWidget *from_entry, *to_entry;
 } datasource_google_widgets_t;
 
+static gchar *last_from_str = NULL;
+static gchar *last_to_str = NULL;
 
 static gpointer datasource_google_init( );
 static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
@@ -66,6 +68,10 @@ static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport
   widgets->from_entry = gtk_entry_new();
   to_label = gtk_label_new ("To:");
   widgets->to_entry = gtk_entry_new();
+  if (last_from_str)
+    gtk_entry_set_text(widgets->from_entry, last_from_str);
+  if (last_to_str)
+    gtk_entry_set_text(widgets->to_entry, last_to_str);
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), from_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), widgets->from_entry, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), to_label, FALSE, FALSE, 5 );
@@ -82,6 +88,14 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
 
   *cmd = g_strdup_printf( GOOGLE_DIRECTIONS_STRING, from_quoted, to_quoted );
   *input_type = g_strdup("google");
+
+  if (last_from_str)
+    free(last_from_str);
+  if (last_to_str)
+    free(last_to_str);
+
+  last_from_str = g_strdup(gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) ) );
+  last_to_str = g_strdup(gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) ) );
 
   g_free(from_quoted);
   g_free(to_quoted);
