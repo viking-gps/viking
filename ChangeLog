@@ -2,6 +2,9 @@
 Quy Tonthat <qtonthat@gmail.com>:
 	* New GPS layer menu items: "empty upload", "empty download", "empty
 	all"
+	* acquire->Google Directions now record and display previous queries
+	fo "From"/"To" entiries.
+	* Position Google Directions dialogs at the center of Viking window.
 
 2007-05-22
 Quy Tonthat <qtonthat@gmail.com>:
