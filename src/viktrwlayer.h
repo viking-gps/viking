@@ -78,5 +78,6 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
 
 VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl );
 
+void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl );
 
 #endif

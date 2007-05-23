@@ -1810,6 +1810,42 @@ gboolean vik_trw_layer_delete_waypoint ( VikTrwLayer *vtl, const gchar *wp_name 
   return was_visible;
 }
 
+static void remove_item_from_treeview(const gchar *name, GtkTreeIter *it, VikTreeview * vt)
+{
+    vik_treeview_item_delete (vt, it );
+}
+
+void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
+{
+
+  vtl->current_track = NULL;
+  if (vtl->current_tp_track_name)
+    trw_layer_cancel_current_tp(vtl, FALSE);
+  if (vtl->last_tp_track_name)
+    trw_layer_cancel_last_tp ( vtl );
+
+  g_hash_table_foreach(vtl->tracks_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
+  g_hash_table_remove_all(vtl->tracks_iters);
+  g_hash_table_remove_all(vtl->tracks);
+
+  /* TODO: only update if the layer is visible (ticked) */
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
+{
+  vtl->current_wp = NULL;
+  vtl->current_wp_name = NULL;
+  vtl->moving_wp = FALSE;
+
+  g_hash_table_foreach(vtl->waypoints_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
+  g_hash_table_remove_all(vtl->waypoints_iters);
+  g_hash_table_remove_all(vtl->waypoints);
+
+  /* TODO: only update if the layer is visible (ticked) */
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
 static void trw_layer_delete_item ( gpointer pass_along[5] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);

@@ -47,6 +47,9 @@ static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val
 
 static void gps_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_download_cb( gpointer layer_and_vlp[2] );
+static void gps_empty_upload_cb( gpointer layer_and_vlp[2] );
+static void gps_empty_download_cb( gpointer layer_and_vlp[2] );
+static void gps_empty_all_cb( gpointer layer_and_vlp[2] );
 
 typedef enum {GARMIN_P = 0, MAGELLAN_P, NUM_PROTOCOLS} vik_gps_proto;
 static gchar * params_protocols[] = {"Garmin", "Magellan", NULL};
@@ -350,6 +353,25 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
 
   item = gtk_menu_item_new_with_label ( "Download from GPS" );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_download_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new();
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_label ( "Empty Upload" );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_upload_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_label ( "Empty Download" );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_download_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_label ( "Empty All" );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_all_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
@@ -805,4 +827,27 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   VikTrwLayer *vtl = vgl->trw_children[TRW_DOWNLOAD];
   gps_comm(vtl, GPS_DOWN, vgl->protocol_id, params_ports[vgl->serial_port_id]);
+}
+
+static void gps_empty_upload_cb( gpointer layer_and_vlp[2] )
+{
+  VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_UPLOAD]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
+}
+
+static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
+{
+  VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
+}
+
+static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
+{
+  VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_UPLOAD]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
 }
