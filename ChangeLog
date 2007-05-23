@@ -1,3 +1,8 @@
+2007-05-23
+Quy Tonthat <qtonthat@gmail.com>:
+	* New GPS layer menu items: "empty upload", "empty download", "empty
+	all"
+
 2007-05-22
 Quy Tonthat <qtonthat@gmail.com>:
 	* GPS layer track and waypoint data can now be saved.
