@@ -173,6 +173,9 @@ struct _VikMapsLayer {
   gdouble xmapzoom, ymapzoom;
 
   gboolean autodownload;
+  VikCoord *last_center;
+  gdouble last_xmpp;
+  gdouble last_ympp;
 
   gint dl_tool_x, dl_tool_y;
 
@@ -401,6 +404,9 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   vml->dl_tool_x = vml->dl_tool_y = -1;
   maps_layer_set_cache_dir ( vml, NULL );
   vml->autodownload = FALSE;
+  vml->last_center = NULL;
+  vml->last_xmpp = 0.0;
+  vml->last_ympp = 0.0;
 
   vml->dl_right_click_menu = NULL;
 
@@ -413,6 +419,8 @@ static void maps_layer_free ( VikMapsLayer *vml )
     g_free ( vml->cache_dir );
   if ( vml->dl_right_click_menu )
     gtk_object_sink ( GTK_OBJECT(vml->dl_right_click_menu) );
+  if (vml->last_center)
+    g_free(vml->last_center);
 }
 
 static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp )
@@ -516,6 +524,31 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
   return pixbuf;
 }
 
+gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
+{
+  const VikCoord *center = vik_viewport_get_center ( vvp );
+
+  if (vml->last_center == NULL) {
+    VikCoord *new_center = g_malloc(sizeof(VikCoord));
+    *new_center = *center;
+    vml->last_center = new_center;
+    vml->last_xmpp = vik_viewport_get_xmpp(vvp);
+    vml->last_ympp = vik_viewport_get_ympp(vvp);
+    return TRUE;
+  }
+
+  /* TODO: perhaps vik_coord_diff() */
+  if (vik_coord_equals(vml->last_center, center)
+      && (vml->last_xmpp == vik_viewport_get_xmpp(vvp))
+      && (vml->last_ympp == vik_viewport_get_ympp(vvp)))
+    return FALSE;
+
+  *(vml->last_center) = *center;
+    vml->last_xmpp = vik_viewport_get_xmpp(vvp);
+    vml->last_ympp = vik_viewport_get_ympp(vvp);
+  return TRUE;
+}
+
 static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br )
 {
   MapCoord ulm, brm;
@@ -553,8 +586,10 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     guint max_path_len = strlen(vml->cache_dir) + 40;
     gchar *path_buf = g_malloc ( max_path_len * sizeof(char) );
 
-    if ( vml->autodownload )
+    if ( vml->autodownload  && should_start_autodownload(vml, vvp)) {
+      fprintf(stderr, "DEBUG: Starting autodownload\n");
       start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
+    }
 
     if ( map_type->tilesize_x == 0 ) {
       for ( x = xmin; x <= xmax; x++ ) {

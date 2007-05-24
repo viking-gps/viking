@@ -1,3 +1,7 @@
+2007-05-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Maps layer: Improve performance for map autodownload.
+
 2007-05-23
 Quy Tonthat <qtonthat@gmail.com>:
 	* New GPS layer menu items: "empty upload", "empty download", "empty
