@@ -90,7 +90,7 @@ binary-arch: build install
 #	dh_installinit
 #	dh_installcron
 #	dh_installinfo
-	dh_installman
+	dh_installman debian/viking.1 debian/viking-remote.1
 	dh_link
 	dh_strip
 	dh_compress

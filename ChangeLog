@@ -1,4 +1,8 @@
 2007-05-24
+Ralf Meyer <ranfyy@gmail.com>:
+	* Adding man pages.
+
+2007-05-24
 Quy Tonthat <qtonthat@gmail.com>:
 	* Maps layer: Improve performance for map autodownload.
 	* Make dimensions easier to be found and changed to suit own tastes.

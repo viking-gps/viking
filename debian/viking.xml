@@ -27,15 +27,15 @@ and docbook-xsl in your Build-Depends control field.
 -->
 
   <!-- Fill in your name for FIRSTNAME and SURNAME. -->
-  <!ENTITY dhfirstname "<firstname>FIRSTNAME</firstname>">
-  <!ENTITY dhsurname   "<surname>SURNAME</surname>">
+  <!ENTITY dhfirstname "<firstname>Ralf</firstname>">
+  <!ENTITY dhsurname   "<surname>Meyer</surname>">
   <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>avril 29, 2007</date>">
+  <!ENTITY dhdate      "<date>2007-05-24</date>">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
        allowed: see man(7), man(1). -->
-  <!ENTITY dhsection   "<manvolnum>SECTION</manvolnum>">
-  <!ENTITY dhemail     "<email>guilhem.bonnefille@gmail.com</email>">
-  <!ENTITY dhusername  "Guilhem BONNEFILLE">
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>ranfyy@gmail.com</email>">
+  <!ENTITY dhusername  "Ralf Meyer">
   <!ENTITY dhucpackage "<refentrytitle>VIKING</refentrytitle>">
   <!ENTITY dhpackage   "viking">
 
@@ -54,7 +54,7 @@ and docbook-xsl in your Build-Depends control field.
       &dhsurname;
     </author>
     <copyright>
-      <year>2003</year>
+      <year>2007</year>
       <holder>&dhusername;</holder>
     </copyright>
     &dhdate;
@@ -67,67 +67,58 @@ and docbook-xsl in your Build-Depends control field.
   <refnamediv>
     <refname>&dhpackage;</refname>
 
-    <refpurpose>program to do something</refpurpose>
+    <refpurpose>program to manage GPS data</refpurpose>
   </refnamediv>
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>&dhpackage;</command>
+      <arg><replaceable>[file]</replaceable></arg>
 
-      <arg><option>-e <replaceable>this</replaceable></option></arg>
-
-      <arg><option>--example <replaceable>that</replaceable></option></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para>This manual page documents briefly the
-      <command>&dhpackage;</command> and <command>bar</command>
-      commands.</para>
+    <para>
+  Viking is a free/open source program to manage GPS data. You can 
+  import and plot tracks and waypoints, show Google maps and/or 
+  Terraserver maps under it, add coordinate lines, make new tracks 
+  and waypoints, hide different things, etc. It is written in C 
+  with the GTK+ 2 toolkit, available for Linux, other POSIX 
+  operating systems, and Windows, and is licensed under the GNU GPL. 
+  If you're having a hard time visualizing it, check out the 
+  screenshots, then download and try it and tell what you think 
+  of it on the mailing list.
+    </para>
+    <para>  
+  Homepage: http://viking.sf.net
+    </para>
 
     <para>This manual page was written for the &debian; distribution
       because the original program does not have a manual page.
-      Instead, it has documentation in the &gnu;
-      <application>Info</application> format; see below.</para>
+    </para>
 
-    <para><command>&dhpackage;</command> is a program that...</para>
+    <para><command>&dhpackage;</command> is a program to manage GPS data</para>
 
   </refsect1>
   <refsect1>
     <title>OPTIONS</title>
 
-    <para>These programs follow the usual &gnu; command line syntax,
-      with long options starting with two dashes (`-').  A summary of
-      options is included below.  For a complete description, see the
-      <application>Info</application> files.</para>
-
     <variablelist>
       <varlistentry>
-        <term><option>-h</option>
-          <option>--help</option>
+        <term><option>[file]</option>
         </term>
         <listitem>
-          <para>Show summary of options.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><option>-v</option>
-          <option>--version</option>
-        </term>
-        <listitem>
-          <para>Show version of program.</para>
+          <para>Specify file to load at start.</para>
         </listitem>
       </varlistentry>
     </variablelist>
+
   </refsect1>
   <refsect1>
     <title>SEE ALSO</title>
 
-    <para>bar (1), baz (1).</para>
-
-    <para>The programs are documented fully by <citetitle>The Rise and
-      Fall of a Fooish Bar</citetitle> available via the
-      <application>Info</application> system.</para>
+    <para>viking-remote (1).</para>
   </refsect1>
   <refsect1>
     <title>AUTHOR</title>
