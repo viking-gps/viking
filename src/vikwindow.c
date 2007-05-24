@@ -279,7 +279,7 @@ static void window_init ( VikWindow *vw )
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "motion_notify_event", G_CALLBACK(draw_mouse_motion), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "update", G_CALLBACK(draw_update), vw);
 
-  gtk_window_set_default_size ( GTK_WINDOW(vw), 1000, 800);
+  gtk_window_set_default_size ( GTK_WINDOW(vw), VIKING_WINDOW_WIDTH, VIKING_WINDOW_HEIGHT);
 
   hpaned = gtk_hpaned_new ();
   gtk_paned_add1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp) );
