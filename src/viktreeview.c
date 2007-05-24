@@ -25,6 +25,10 @@
 #include "viking.h"
 #include "config.h"
 
+#define VT_COL_WIDTH_NAME     160
+#define VT_COL_WIDTH_TYPE     20
+#define VT_COL_WIDTH_VISIBLE  20
+
 #define TREEVIEW_GET(model,iter,what,dest) gtk_tree_model_get(GTK_TREE_MODEL(model),(iter),(what),(dest),-1)
 
 enum {
@@ -199,35 +203,37 @@ static void treeview_add_columns ( VikTreeview *vt )
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (vt), col_offset - 1);
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
 				   GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 100);
+  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column),
+                                   VT_COL_WIDTH_NAME);
   gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
   gtk_tree_view_column_set_resizable (GTK_TREE_VIEW_COLUMN (column), TRUE);
 
   renderer = gtk_cell_renderer_pixbuf_new ();
 
-  g_object_set (G_OBJECT (renderer), "xalign", 0.0, NULL);
+  g_object_set (G_OBJECT (renderer), "xalign", 0.5, NULL);
 
   col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (vt),
-							    -1, "Type",
+							    -1, "",
 							    renderer, "pixbuf",
 							    ICON_COLUMN,
 							    NULL);
 
 
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (vt), col_offset - 1);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 33);
+  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column),
+                                        VT_COL_WIDTH_TYPE);
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
 				   GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
 
 
   renderer = gtk_cell_renderer_toggle_new ();
-  g_object_set (G_OBJECT (renderer), "xalign", 0.0, NULL);
+  g_object_set (G_OBJECT (renderer), "xalign", 0.5, NULL);
 
   g_signal_connect (renderer, "toggled", G_CALLBACK (treeview_toggled_cb), vt);
 
   col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (vt),
-							    -1, "Visible",
+							    -1, "",
 							    renderer,
 							    "active",
 							    VISIBLE_COLUMN,
@@ -238,7 +244,8 @@ static void treeview_add_columns ( VikTreeview *vt )
 							    NULL);
 
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (vt), col_offset - 1);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 40);
+  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column),
+                                        VT_COL_WIDTH_VISIBLE);
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
 				   GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);

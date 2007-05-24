@@ -40,6 +40,8 @@
 #define make_dir(dir) mkdir(dir,0777)
 #endif
 
+#define VIKING_WINDOW_WIDTH      1000
+#define VIKING_WINDOW_HEIGHT     800
 #define DRAW_IMAGE_DEFAULT_WIDTH 1280
 #define DRAW_IMAGE_DEFAULT_HEIGHT 1024
 #define DRAW_IMAGE_DEFAULT_SAVE_AS_PNG TRUE

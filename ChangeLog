@@ -1,13 +1,15 @@
 2007-05-24
 Quy Tonthat <qtonthat@gmail.com>:
 	* Maps layer: Improve performance for map autodownload.
+	* Make dimensions easier to be found and changed to suit own tastes.
+	* Small touches on the look.
 
 2007-05-23
 Quy Tonthat <qtonthat@gmail.com>:
 	* New GPS layer menu items: "empty upload", "empty download", "empty
 	all"
 	* acquire->Google Directions now record and display previous queries
-	fo "From"/"To" entiries.
+	fo "From"/"To" entries.
 	* Position Google Directions dialogs at the center of Viking window.
 
 2007-05-22
