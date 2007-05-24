@@ -2,7 +2,7 @@ Source: viking
 Section: unknown
 Priority: extra
 Maintainer: Guilhem BONNEFILLE <guilhem.bonnefille@gmail.com>
-Build-Depends: debhelper (>= 5), autotools-dev
+Build-Depends: debhelper (>= 5), autotools-dev, docbook-to-man
 Standards-Version: 3.7.2
 
 Package: viking

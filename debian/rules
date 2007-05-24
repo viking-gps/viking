@@ -37,7 +37,8 @@ build-stamp:  config.status
 
 	# Add here commands to compile the package.
 	$(MAKE)
-	#docbook-to-man debian/viking.sgml > viking.1
+	docbook-to-man debian/viking.sgml > viking.1
+	docbook-to-man debian/viking-remote.sgml > viking-remote.1
 
 	touch $@
 
