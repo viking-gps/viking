@@ -1,3 +1,9 @@
+2007-05-26
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix intermittent problem of map redraw.
+	* Mapslayer: Fixed bugs that cause in some cases, map display can not
+	be refreshed without downloading.
+
 2007-05-24
 Ralf Meyer <ranfyy@gmail.com>:
 	* Adding man pages.
