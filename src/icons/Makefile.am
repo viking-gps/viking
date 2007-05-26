@@ -16,8 +16,69 @@ WAYPOINT_ICONS = \
   wp_sml_cty.png \
   wp_med_cty.png \
   wp_lrg_cty.png \
-  wp_cap_cty.png 
-
+  wp_cap_cty.png \
+  wp_bell.png \
+  wp_diamond_grn.png \
+  wp_diamond_red.png \
+  wp_dive1.png \
+  wp_dive2.png \
+  wp_fish.png \
+  wp_fuel.png \
+  wp_horn.png \
+  wp_knife.png \
+  wp_light.png \
+  wp_mug.png \
+  wp_skull.png \
+  wp_square_grn.png \
+  wp_square_red.png \
+  wp_wbuoy.png \
+  wp_wreck.png \
+  wp_null.png \
+  wp_mine.png \
+  wp_school.png \
+  wp_cemetery.png \
+  wp_church.png \
+  wp_military.png \
+  wp_mob.png \
+  wp_buoy_ambr.png \
+  wp_buoy_blck.png \
+  wp_buoy_blue.png \
+  wp_buoy_grn.png \
+  wp_buoy_grn_red.png \
+  wp_buoy_grn_wht.png \
+  wp_buoy_orng.png \
+  wp_buoy_red.png \
+  wp_buoy_red_grn.png \
+  wp_buoy_red_wht.png \
+  wp_buoy_violet.png \
+  wp_buoy_wht.png \
+  wp_buoy_wht_grn.png \
+  wp_buoy_wht_red.png \
+  wp_dot.png \
+  wp_rbcn.png \
+  wp_boat_ramp.png \
+  wp_restroom.png \
+  wp_shower.png \
+  wp_drinking_wtr.png \
+  wp_phone.png \
+  wp_1st_aid.png \
+  wp_info.png \
+  wp_park.png \
+  wp_picnic.png \
+  wp_scenic.png \
+  wp_skiing.png \
+  wp_swimming.png \
+  wp_dam.png \
+  wp_controlled.png \
+  wp_danger.png \
+  wp_restricted.png \
+  wp_ball.png \
+  wp_rv_park.png \
+  wp_bridge.png \
+  wp_building.png \
+  wp_tunnel.png \
+  wp_beach.png \
+  wp_airplane.png
 
 ICONS = \
   addtr_18.png \

@@ -1,4 +1,8 @@
 2007-05-26
+Mark Coulter <i_offroad@yahoo.com>
+	* new waypoint symbols.
+
+2007-05-26
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix intermittent problem of map redraw.
 	* Mapslayer: Fixed bugs that cause in some cases, map display can not
