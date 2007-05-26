@@ -720,14 +720,18 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
     for ( y = mdi->y0; y <= mdi->yf; y++ )
     {
       gboolean remove_mem_cache = FALSE;
+      gboolean need_download = FALSE;
       g_snprintf ( mdi->filename_buf, mdi->maxlen, DIRSTRUCTURE,
                      mdi->cache_dir, MAPS_LAYER_NTH_TYPE(mdi->maptype)->uniq_id,
                      mdi->mapcoord.scale, mdi->mapcoord.z, x, y );
 
+      donemaps++;
+      a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+
       if ( mdi->redownload == REDOWNLOAD_ALL)
         remove ( mdi->filename_buf );
 
-      else if ( mdi->redownload == REDOWNLOAD_BAD && access ( mdi->filename_buf, F_OK ) == 0 )
+      else if ( (mdi->redownload == REDOWNLOAD_BAD) && (access ( mdi->filename_buf, F_OK ) == 0) )
       {
         /* see if this one is bad or what */
         GError *gx = NULL;
@@ -742,7 +746,8 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
       if ( access ( mdi->filename_buf, F_OK ) != 0 )
       {
-        if (( mdi->redownload != REDOWNLOAD_NONE ) ||
+        need_download = TRUE;
+        if (( mdi->redownload != REDOWNLOAD_NONE ) &&
             ( mdi->redownload != DOWNLOAD_OR_REFRESH ))
           remove_mem_cache = TRUE;
       } else if ( mdi->redownload == DOWNLOAD_OR_REFRESH ) {
@@ -750,12 +755,12 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       } else
         continue;
 
-      donemaps++;
-      a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
-
       mdi->mapcoord.x = x; mdi->mapcoord.y = y;
-      if ( MAPS_LAYER_NTH_TYPE(mdi->maptype)->download ( &(mdi->mapcoord), mdi->filename_buf ))
+
+      if (need_download) {
+        if ( MAPS_LAYER_NTH_TYPE(mdi->maptype)->download ( &(mdi->mapcoord), mdi->filename_buf ))
           continue;
+      }
 
       gdk_threads_enter();
       g_mutex_lock(mdi->mutex);
