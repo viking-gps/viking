@@ -132,7 +132,7 @@ GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint8 type, guint zoom, gui
   return g_hash_table_lookup ( cache, key );
 }
 
-void a_mapcache_remove_all_shrinkfactors ( guint16 x, guint16 y, guint16 z, guint8 type, guint zoom )
+void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint8 type, guint zoom )
 {
   char key[40];
   List *loop = queue_tail;
