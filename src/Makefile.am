@@ -56,7 +56,8 @@ viking_SOURCES = main.c \
 	datasource_gps.c \
 	datasource_google.c \
 	datasource_gc.c \
-	datasources.h
+	datasources.h \
+	googlesearch.c googlesearch.h
 
 if LIBCURL
 viking_SOURCES += \

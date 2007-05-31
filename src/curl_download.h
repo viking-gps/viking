@@ -25,5 +25,6 @@
 #include <stdio.h>
 
 int curl_download_get_url ( const char *hostname, const char *uri, FILE *f );
+int curl_download_uri ( const char *uri, FILE *f );
 
 #endif

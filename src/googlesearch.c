@@ -1,0 +1,250 @@
+/*
+ * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
+ *
+ * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Created by Quy Tonthat <qtonthat@gmail.com>
+ */
+#include <stdlib.h>
+#include <string.h>
+#include <glib/gprintf.h>
+
+#include "viking.h"
+#include "curl_download.h"
+
+#define GOOGLE_SEARCH_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
+#define GOOGLE_SEARCH_PATTERN_1 "{center: {lat: "
+#define GOOGLE_SEARCH_PATTERN_2 ",lng: "
+
+static gchar *last_search_str = NULL;
+
+static gboolean prompt_try_again(VikWindow *vw)
+{
+  GtkWidget *dialog = NULL;
+  gboolean ret = TRUE;
+
+  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+  gtk_window_set_title(GTK_WINDOW(dialog), "Search");
+
+  GtkWidget *search_label = gtk_label_new("I don't know that place. Do you want another search?");
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
+  gtk_widget_show_all(dialog);
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT )
+    ret = FALSE;
+
+  gtk_widget_destroy(dialog);
+  return ret;
+}
+
+static gchar *  a_prompt_for_search_string(VikWindow *vw)
+{
+  GtkWidget *dialog = NULL;
+
+  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+  gtk_window_set_title(GTK_WINDOW(dialog), "Search");
+
+  GtkWidget *search_label = gtk_label_new("Enter address or place name:");
+  GtkWidget *search_entry = gtk_entry_new();
+  if (last_search_str)
+    gtk_entry_set_text(GTK_ENTRY(search_entry), last_search_str);
+
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_entry, FALSE, FALSE, 5 );
+  gtk_widget_show_all(dialog);
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
+    gtk_widget_destroy(dialog);
+    return NULL;
+  }
+
+  gchar *search_str = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(search_entry) ) );
+
+  fprintf(stderr, "DEBUG: search_str=[%s]\n", search_str);
+
+  gtk_widget_destroy(dialog);
+
+  if (search_str[0] != '\0') {
+    if (last_search_str)
+      g_free(last_search_str);
+    last_search_str = g_strdup(search_str);
+  }
+
+  return(search_str);   /* search_str needs to be freed by caller */
+}
+
+static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
+{
+  gchar *text, *pat;
+  GMappedFile *mf;
+  gsize len;
+  gboolean found = TRUE;
+  gchar lat_buf[32], lon_buf[32];
+  gchar *s;
+
+  fprintf(stderr, "DEBUG: %s() file_name=%s\n", __PRETTY_FUNCTION__, file_name);
+
+  lat_buf[0] = lon_buf[0] = '\0';
+
+  if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
+    g_critical("couldn't map temp file\n");
+    exit(1);
+  }
+  len = g_mapped_file_get_length(mf);
+  text = g_mapped_file_get_contents(mf);
+
+  if ((pat = g_strstr_len(text, len, GOOGLE_SEARCH_PATTERN_1)) == NULL) {
+    fprintf(stderr, "DEBUG: none matched\n");
+    found = FALSE;
+    goto done;
+  }
+  fprintf(stderr, "DEBUG: matched PAT_1\n");
+  pat += strlen(GOOGLE_SEARCH_PATTERN_1);
+  s = lat_buf;
+  if (*pat == '-')
+    *s++ = *pat++;
+  while ((s < (lat_buf + sizeof(lat_buf))) && (pat < (text + len)) &&
+          (g_ascii_isdigit(*pat) || (*pat == '.')))
+    *s++ = *pat++;
+  *s = '\0';
+  if ((pat >= (text + len)) || (lat_buf[0] == '\0')) {
+    found = FALSE;
+    goto done;
+  }
+
+  if (strncmp(pat, GOOGLE_SEARCH_PATTERN_2, strlen(GOOGLE_SEARCH_PATTERN_2))) {
+      found = FALSE;
+      goto done;
+  }
+  fprintf(stderr, "DEBUG: matched PAT_2\n");
+
+  pat += strlen(GOOGLE_SEARCH_PATTERN_2);
+  s = lon_buf;
+
+  if (*pat == '-')
+    *s++ = *pat++;
+  while ((s < (lon_buf + sizeof(lon_buf))) && (pat < (text + len)) &&
+          (g_ascii_isdigit(*pat) || (*pat == '.')))
+    *s++ = *pat++;
+  *s = '\0';
+  if ((pat >= (text + len)) || (lon_buf[0] == '\0')) {
+    found = FALSE;
+    goto done;
+  }
+
+  ll->lat = g_ascii_strtod(lat_buf, NULL);
+  ll->lon = g_ascii_strtod(lon_buf, NULL);
+
+  fprintf(stderr, "lat=%f lon=%f\n", ll->lat, ll->lon);
+
+done:
+  g_mapped_file_free(mf);
+  fprintf(stderr, "DEBUG: lat=[%s] Lon=[%s]\n", lat_buf, lon_buf);
+  return (found);
+
+}
+
+gchar *uri_escape(gchar *str)
+{
+  gchar *esc_str = g_malloc(3*strlen(str));
+  gchar *dst = esc_str;
+  gchar *src;
+
+  for (src = str; *src; src++) {
+    if (*src == ' ')
+     *dst++ = '+';
+    else if (g_ascii_isalnum(*src))
+     *dst++ = *src;
+    else {
+      g_sprintf(dst, "%%%02X", *src);
+      dst += 3;
+    }
+  }
+
+    return(esc_str);
+}
+
+static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord)
+{
+  FILE *tmp_file;
+  int tmp_fd;
+  gchar *tmpname;
+  gchar *uri;
+  gchar *escaped_srch_str;
+  int ret = 0;  /* OK */
+  struct LatLon ll;
+
+  escaped_srch_str = uri_escape(srch_str);
+
+  if ((tmp_fd = g_file_open_tmp (NULL, &tmpname, NULL)) == -1) {
+    g_critical("couldn't open temp file\n");
+    exit(1);
+  }
+
+  tmp_file = fdopen(tmp_fd, "r+");
+  //uri = g_strdup_printf(GOOGLE_SEARCH_URL_FMT, srch_str);
+  uri = g_strdup_printf(GOOGLE_SEARCH_URL_FMT, escaped_srch_str);
+
+  fprintf(stderr, "DEBUG: search [%s]\n", uri);
+
+  /* TODO: curl may not be available */
+  if (curl_download_uri(uri, tmp_file)) {  /* error */
+    fprintf(stderr, "DEBUG: download error\n");
+    fclose(tmp_file);
+    ret = -1;
+    goto done;
+  }
+
+  fclose(tmp_file);
+  if (!parse_file_for_latlon(tmpname, &ll)) {
+    ret = -1;
+    goto done;
+  }
+
+  vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
+
+done:
+  g_free(escaped_srch_str);
+  g_free(uri);
+  remove(tmpname);
+  g_free(tmpname);
+  return ret;
+}
+
+void a_google_search(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
+{
+  VikCoord new_center;
+  gchar *s_str;
+  gboolean more = TRUE;
+
+  do {
+    s_str = a_prompt_for_search_string(vw);
+    if ((!s_str) || (s_str[0] == 0)) {
+      more = FALSE;
+    }
+
+    else if (!google_search_get_coord(vw, vvp, s_str, &new_center)) {
+      vik_viewport_set_center_coord(vvp, &new_center);
+      vik_layers_panel_emit_update(vlp);
+      more = FALSE;
+    }
+    else if (!prompt_try_again(vw))
+        more = FALSE;
+    g_free(s_str);
+  } while (more);
+}
+

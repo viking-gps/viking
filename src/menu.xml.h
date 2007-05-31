@@ -37,6 +37,7 @@ static const char *menu_xml =
 	"      <menuitem action='ModeKH'/>"
 	"      <menuitem action='ModeMercator'/>"
 	"      <separator/>"
+	"      <menuitem action='GoogleMapsSearch'/>"
 	"      <menuitem action='GotoLL'/>"
 	"      <menuitem action='GotoUTM'/>"
 	"      <separator/>"
