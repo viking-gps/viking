@@ -704,8 +704,9 @@ static void mdi_free ( MapDownloadInfo *mdi )
   g_free ( mdi );
 }
 
-static GWeakNotify weak_ref_cb(MapDownloadInfo *mdi, GObject * dead_vml)
+static void weak_ref_cb(gpointer ptr, GObject * dead_vml)
 {
+  MapDownloadInfo *mdi = ptr;
   g_mutex_lock(mdi->mutex);
   mdi->map_layer_alive = FALSE;
   g_mutex_unlock(mdi->mutex);
@@ -778,7 +779,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
   }
   g_mutex_lock(mdi->mutex);
   if (mdi->map_layer_alive)
-    g_object_weak_unref(VIK_LAYER(mdi->vml), weak_ref_cb, mdi);
+    g_object_weak_unref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
   g_mutex_unlock(mdi->mutex); 
 }
 
@@ -853,7 +854,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
     {
       gchar *tmp = g_strdup_printf ( "%s %s%d %s %s...", redownload ? "Redownloading" : "Downloading", redownload == REDOWNLOAD_BAD ? "up to " : "", mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype), (mdi->mapstoget == 1) ? "map" : "maps" );
 
-      g_object_weak_ref(VIK_LAYER(mdi->vml), weak_ref_cb, mdi);
+      g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
       /* launch the thread */
       a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */
                             tmp,                                              /* description string */

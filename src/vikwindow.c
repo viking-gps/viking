@@ -1182,8 +1182,10 @@ static void window_close ( GtkAction *a, VikWindow *vw )
 
 static gboolean save_file_and_exit ( GtkAction *a, VikWindow *vw )
 {
-  if (save_file( NULL, vw))
+  if (save_file( NULL, vw)) {
     window_close( NULL, vw);
+    return(TRUE);
+  }
   else
     return(FALSE);
 }
