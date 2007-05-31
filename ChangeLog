@@ -1,3 +1,10 @@
+2007-05-31
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add Google Maps search to View menu and Toolbar
+	* Waypoint created right after the search will pick up the search
+	string as comment. (Use TrackWaypoint Layer menu, not toolbar, to
+	create waypoint).
+
 2007-05-26
 Mark Coulter <i_offroad@yahoo.com>
 	* new waypoint symbols.
