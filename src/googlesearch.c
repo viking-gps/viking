@@ -74,8 +74,6 @@ static gchar *  a_prompt_for_search_string(VikWindow *vw)
 
   gchar *search_str = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(search_entry) ) );
 
-  fprintf(stderr, "DEBUG: search_str=[%s]\n", search_str);
-
   gtk_widget_destroy(dialog);
 
   if (search_str[0] != '\0') {
@@ -96,8 +94,6 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   gchar lat_buf[32], lon_buf[32];
   gchar *s;
 
-  fprintf(stderr, "DEBUG: %s() file_name=%s\n", __PRETTY_FUNCTION__, file_name);
-
   lat_buf[0] = lon_buf[0] = '\0';
 
   if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
@@ -108,11 +104,9 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   text = g_mapped_file_get_contents(mf);
 
   if ((pat = g_strstr_len(text, len, GOOGLE_SEARCH_PATTERN_1)) == NULL) {
-    fprintf(stderr, "DEBUG: none matched\n");
     found = FALSE;
     goto done;
   }
-  fprintf(stderr, "DEBUG: matched PAT_1\n");
   pat += strlen(GOOGLE_SEARCH_PATTERN_1);
   s = lat_buf;
   if (*pat == '-')
@@ -130,7 +124,6 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
       found = FALSE;
       goto done;
   }
-  fprintf(stderr, "DEBUG: matched PAT_2\n");
 
   pat += strlen(GOOGLE_SEARCH_PATTERN_2);
   s = lon_buf;
@@ -153,7 +146,6 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
 
 done:
   g_mapped_file_free(mf);
-  fprintf(stderr, "DEBUG: lat=[%s] Lon=[%s]\n", lat_buf, lon_buf);
   return (found);
 
 }
@@ -199,11 +191,9 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
   //uri = g_strdup_printf(GOOGLE_SEARCH_URL_FMT, srch_str);
   uri = g_strdup_printf(GOOGLE_SEARCH_URL_FMT, escaped_srch_str);
 
-  fprintf(stderr, "DEBUG: search [%s]\n", uri);
-
   /* TODO: curl may not be available */
   if (curl_download_uri(uri, tmp_file)) {  /* error */
-    fprintf(stderr, "DEBUG: download error\n");
+    fprintf(stderr, "DEBUG: %s() download error\n", __PRETTY_FUNCTION__);
     fclose(tmp_file);
     ret = -1;
     goto done;
