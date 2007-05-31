@@ -24,6 +24,7 @@
 #include "garminsymbols.h"
 #include "degrees_converters.h"
 #include "authors.h"
+#include "googlesearch.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -212,6 +213,9 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
   commentlabel = gtk_label_new ("Comment:");
   commententry = gtk_entry_new ();
+  gchar *cmt =  a_googlesearch_get_search_string_for_this_place(parent);
+  if (cmt)
+    gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 
   imagelabel = gtk_label_new ("Image:");
   imageentry = vik_file_entry_new ();

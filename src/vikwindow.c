@@ -185,6 +185,11 @@ GType vik_window_get_type (void)
   return vw_type;
 }
 
+VikViewport * vik_window_viewport(VikWindow *vw)
+{
+  return(vw->viking_vvp);
+}
+
 void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
 {
   int i, j, tool_count;

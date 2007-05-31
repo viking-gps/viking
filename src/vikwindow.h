@@ -51,6 +51,7 @@ VikWindow *vik_window_new ();
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean changefilename );
 struct _VikLayer;
 void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);
+struct _VikViewport * vik_window_viewport(VikWindow *vw);
 
 G_END_DECLS
 

@@ -31,6 +31,19 @@
 #define GOOGLE_SEARCH_PATTERN_2 ",lng: "
 
 static gchar *last_search_str = NULL;
+static VikCoord *last_coord = NULL;
+static gchar *last_successful_search_str = NULL;
+
+gchar * a_googlesearch_get_search_string_for_this_place(VikWindow *vw)
+{
+  VikViewport *vvp = vik_window_viewport(vw);
+  VikCoord *cur_center = vik_viewport_get_center(vvp);
+  if (vik_coord_equals(cur_center, last_coord)) {
+    return(last_successful_search_str);
+  }
+  else
+    return NULL;
+}
 
 static gboolean prompt_try_again(VikWindow *vw)
 {
@@ -204,6 +217,14 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
   }
 
   vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
+
+  if (last_coord)
+    g_free(last_coord);
+  last_coord = g_malloc(sizeof(VikCoord));
+  *last_coord = *coord;
+  if (last_successful_search_str)
+    g_free(last_successful_search_str);
+  last_successful_search_str = g_strdup(last_search_str);
 
 done:
   g_free(escaped_srch_str);
