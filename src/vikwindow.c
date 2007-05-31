@@ -1595,7 +1595,7 @@ static GtkActionEntry entries[] = {
   { "Exit",      GTK_STOCK_QUIT,         "E_xit",                         "<control>W", "Exit the program",                             (GCallback)window_close          },
   { "SaveExit",  GTK_STOCK_QUIT,         "Save and Exit",                 NULL, "Save and Exit the program",                             (GCallback)save_file_and_exit          },
 
-  { "GoogleMapsSearch",   GTK_STOCK_GO_FORWARD,                 "Go To Google Maps location",    	  	  NULL,         "Get location using Google Maps search",            (GCallback)goto_address       },
+  { "GoogleMapsSearch",   GTK_STOCK_GO_FORWARD,                 "Go To Google Maps location",    	  	  NULL,         "Go to address/place using Google Maps search",            (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_QUIT,         "_Go to Lat\\/Lon...",           NULL,         "Go to arbitrary lat\\/lon coordinate",         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_QUIT,         "Go to UTM...",                  NULL,         "Go to arbitrary UTM coordinate",               (GCallback)draw_goto_cb          },
   { "SetBGColor",GTK_STOCK_SELECT_COLOR, "Set Background Color...",       NULL,         NULL,                                           (GCallback)set_bg_color          },

@@ -142,8 +142,6 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   ll->lat = g_ascii_strtod(lat_buf, NULL);
   ll->lon = g_ascii_strtod(lon_buf, NULL);
 
-  fprintf(stderr, "lat=%f lon=%f\n", ll->lat, ll->lon);
-
 done:
   g_mapped_file_free(mf);
   return (found);
