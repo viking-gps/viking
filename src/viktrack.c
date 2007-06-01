@@ -325,6 +325,9 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
 
   GList *iter = tr->trackpoints;
 
+  if (!iter->next) /* one-point track */
+	  return NULL;
+
   { /* test if there's anything worth calculating */
     gboolean okay = FALSE;
     while ( iter )
