@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#define GOOGLE_DIRECTIONS_STRING "(wget -O - \"http://maps.google.com/maps?q=%f,%f to %f,%f&output=js\" 2>/dev/null)"
 #define VIK_TRW_LAYER_TRACK_GC 13
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
@@ -120,6 +121,10 @@ struct _VikTrwLayer {
 
   /* track editing tool -- more specifically, moving tps */
   gboolean moving_tp;
+
+  /* magic scissors tool */
+  gboolean magic_scissors_started;
+  VikCoord magic_scissors_coord;
 
   gboolean drawlabels;
   gboolean drawimages;
@@ -227,6 +232,9 @@ static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+
 
 static gboolean uppercase_exists_in_hash ( GHashTable *hash, const gchar *str );
 
@@ -262,6 +270,9 @@ static VikToolInterface trw_layer_tools[] = {
 
   { "Show Picture",    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL },
+
+  { "Magic Scissors",  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
+    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL },
 };
 
 /****** PARAMETERS ******/
@@ -767,6 +778,9 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   rv->current_tp_track_name = NULL;
   rv->moving_tp = FALSE;
   rv->moving_wp = FALSE;
+
+  rv->magic_scissors_started = FALSE;
+
   rv->waypoint_rightclick = FALSE;
   rv->last_tpl = NULL;
   rv->last_tp_track_name = NULL;
@@ -3147,6 +3161,32 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
   return FALSE;
 }
 
+
+/*** Magic Scissors ***/
+static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  VikCoord tmp;
+  vik_viewport_screen_to_coord ( vvp, event->x, event->y, &tmp );
+  if ( vtl->magic_scissors_started ) {
+    struct LatLon start, end;
+    gchar *cmd;
+    vik_coord_to_latlon ( &(vtl->magic_scissors_coord), &start );
+    vik_coord_to_latlon ( &(tmp), &end );
+    cmd = g_strdup_printf(GOOGLE_DIRECTIONS_STRING, start.lat, start.lon, end.lat, end.lon );
+    a_babel_convert_from_shellcommand ( vtl, cmd, "google", NULL, NULL );
+    g_free ( cmd );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+  } else {
+    vtl->magic_scissors_coord = tmp;
+  }
+  vtl->magic_scissors_started = !vtl->magic_scissors_started;
+  return TRUE;
+}
 
 /*** Show picture ****/
 

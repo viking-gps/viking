@@ -2,6 +2,7 @@
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a bug that causes segfault when viewing properties of a track
 	that has only one trackpoint with elevation information.
+	* Backport Evan's magic scissors from DEM branch.
 
 2007-05-31
 Quy Tonthat <qtonthat@gmail.com>:
