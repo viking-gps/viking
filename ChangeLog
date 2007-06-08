@@ -1,3 +1,8 @@
+2007-06-8
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a bug that causes segfault when viewing properties of a
+	waypoint.
+
 2007-06-1
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a bug that causes segfault when viewing properties of a track
