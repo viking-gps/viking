@@ -1,3 +1,7 @@
+2007-06-13
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Adding an icon (suggested by Ralf Meyer <ranfyy@gmail.com>)
+
 2007-06-8
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a bug that causes segfault when viewing properties of a

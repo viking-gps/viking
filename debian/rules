@@ -68,6 +68,9 @@ install: build
 	# Add here commands to install the package into debian/viking.
 	$(MAKE) DESTDIR=$(CURDIR)/debian/viking install
 
+	mkdir -p $(CURDIR)/debian/viking/usr/share/viking
+	convert -resize 32x32 src/icons/viking_18.png $(CURDIR)/debian/viking/usr/share/viking/viking.xpm
+
 
 # Build architecture-independent files here.
 binary-indep: build install

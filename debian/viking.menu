@@ -1,2 +1,2 @@
 ?package(viking):needs="X11" section="Apps/Technical"\
-  title="viking" command="/usr/bin/viking"
+  title="viking" command="/usr/bin/viking" icon="/usr/share/viking/viking.xpm"
