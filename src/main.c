@@ -20,6 +20,7 @@
  */
 
 #include "viking.h"
+#include "icons/viking_18.png_h"
 #include "mapcache.h"
 #include "background.h"
 
@@ -80,6 +81,7 @@ static void open_window ( VikWindow *vw, const gchar **files )
 int main( int argc, char *argv[] )
 {
   VikWindow *first_window;
+  GdkPixbuf *main_icon;
   gboolean dashdash_already = FALSE;
   int i = 0;
 
@@ -94,6 +96,11 @@ int main( int argc, char *argv[] )
   a_mapcache_init ();
   a_background_init ();
 
+  /* Set the icon */
+  main_icon = gdk_pixbuf_from_pixdata(&viking_18, FALSE, NULL);
+  gtk_window_set_default_icon(main_icon);
+
+  /* Create the first window */
   first_window = new_window();
 
   gdk_threads_enter ();
