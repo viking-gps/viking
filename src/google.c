@@ -30,8 +30,8 @@
 #include "google.h"
 #include "vikmapslayer.h"
 
-#define GOOGLE_VERSION "w2.46"
-#define GOOGLE_TRANS_VERSION "w2t.47"
+#define GOOGLE_VERSION "w2.52"
+#define GOOGLE_TRANS_VERSION "w2t.53"
 #define GOOGLE_KH_VERSION "17"
 
 static int google_download ( MapCoord *src, const gchar *dest_fn );
