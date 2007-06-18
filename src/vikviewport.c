@@ -77,6 +77,7 @@ struct _VikViewport {
 
   GdkGC *background_gc;
   GdkColor background_color;
+  GdkGC *scale_bg_gc;
   gboolean draw_scale;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
@@ -167,6 +168,7 @@ static void viewport_init ( VikViewport *vvp )
   vvp->alpha_pixbuf_width = vvp->alpha_pixbuf_height = 0;
   vvp->utm_zone_width = 0.0;
   vvp->background_gc = NULL;
+  vvp->scale_bg_gc = NULL;
   vvp->draw_scale = TRUE;
   g_signal_connect (G_OBJECT(vvp), "configure_event", G_CALLBACK(vik_viewport_configure), NULL);
 }
@@ -256,6 +258,9 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
     vvp->background_gc = vik_viewport_new_gc ( vvp, "", 1 );
     vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR ); /* set to "backup" color in vvp->background_color */
   }
+  if ( !vvp->scale_bg_gc) {
+    vvp->scale_bg_gc = vik_viewport_new_gc(vvp, "grey", 3);
+  }
 
   return FALSE;	
 }
@@ -274,6 +279,11 @@ static void viewport_finalize ( GObject *gob )
 
   if ( vvp->background_gc )
     g_object_unref ( G_OBJECT ( vvp->background_gc ) );
+
+  if ( vvp->scale_bg_gc ) {
+    g_object_unref ( G_OBJECT ( vvp->scale_bg_gc ) );
+    vvp->scale_bg_gc = NULL;
+  }
 
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
@@ -327,6 +337,14 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     unit = old_unit;
     len = unit * ratio;
 
+    /* white background */
+    vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
+			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
+    vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
+			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
+    vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
+			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
+    /* black scale */
     vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
 			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
     vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
@@ -336,12 +354,16 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     if (odd%2) {
       int i;
       for (i=1; i<5; i++) {
+        vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
+			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
         vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
 			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
       }
     } else {
       int i;
       for (i=1; i<10; i++) {
+        vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
+  			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
         vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
   			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
       }
