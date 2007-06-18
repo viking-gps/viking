@@ -366,6 +366,7 @@ static void draw_redraw ( VikWindow *vw )
   vik_viewport_clear ( vw->viking_vvp);
   vik_layers_panel_draw_all ( vw->viking_vlp );
   vik_viewport_draw_scale ( vw->viking_vvp );
+  vik_viewport_draw_centermark ( vw->viking_vvp );
 }
 
 gboolean draw_buf_done = TRUE;
@@ -1555,6 +1556,12 @@ static void set_draw_scale ( GtkAction *a, VikWindow *vw )
   draw_update ( vw );
 }
 
+static void set_draw_centermark ( GtkAction *a, VikWindow *vw )
+{
+  vik_viewport_set_draw_centermark ( vw->viking_vvp, !vik_viewport_get_draw_centermark(vw->viking_vvp) );
+  draw_update ( vw );
+}
+
 static void set_bg_color ( GtkAction *a, VikWindow *vw )
 {
   GtkWidget *colorsd = gtk_color_selection_dialog_new ("Choose a background color");
@@ -1645,6 +1652,7 @@ static GtkRadioActionEntry tool_entries[] = {
 
 static GtkToggleActionEntry toggle_entries[] = {
   { "ShowScale", NULL,                   "Show Scale",                    NULL,         NULL,                                           (GCallback)set_draw_scale, TRUE   },
+  { "ShowCenterMark", NULL,                   "Show Center Mark",                    NULL,         NULL,                                           (GCallback)set_draw_centermark, TRUE   },
 };
 
 #include "menu.xml.h"

@@ -65,6 +65,9 @@ void vik_viewport_clear ( VikViewport *vvp );
 void vik_viewport_draw_scale ( VikViewport *vvp );
 void vik_viewport_set_draw_scale ( VikViewport *vvp, gboolean draw_scale );
 gboolean vik_viewport_get_draw_scale ( VikViewport *vvp );
+void vik_viewport_draw_centermark ( VikViewport *vvp );
+void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark );
+gboolean vik_viewport_get_draw_centermark ( VikViewport *vvp );
 
 
 GdkPixmap *vik_viewport_get_pixmap ( VikViewport *vvp );

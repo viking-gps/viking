@@ -79,6 +79,7 @@ struct _VikViewport {
   GdkColor background_color;
   GdkGC *scale_bg_gc;
   gboolean draw_scale;
+  gboolean draw_centermark;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
@@ -170,6 +171,7 @@ static void viewport_init ( VikViewport *vvp )
   vvp->background_gc = NULL;
   vvp->scale_bg_gc = NULL;
   vvp->draw_scale = TRUE;
+  vvp->draw_centermark = TRUE;
   g_signal_connect (G_OBJECT(vvp), "configure_event", G_CALLBACK(vik_viewport_configure), NULL);
 }
 
@@ -382,6 +384,35 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
 			   PAD + len + PAD, vvp->height - PAD - 10, pl);
   }
+}
+
+void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark )
+{
+  vvp->draw_centermark = draw_centermark;
+}
+
+gboolean vik_viewport_get_draw_centermark ( VikViewport *vvp )
+{
+  return vvp->draw_centermark;
+}
+
+void vik_viewport_draw_centermark ( VikViewport *vvp )
+{
+  if ( !vvp->draw_centermark )
+    return;
+
+  int len = 50;
+  int center_x = vvp->width/2;
+  int center_y = vvp->height/2;
+  GdkGC * black_gc = GTK_WIDGET(&vvp->drawing_area)->style->black_gc;
+
+  /* white back ground */
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x + len, center_y);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y - len, center_x, center_y + len);
+  /* black fore ground */
+  vik_viewport_draw_line(vvp, black_gc, center_x - len, center_y, center_x + len, center_y);
+  vik_viewport_draw_line(vvp, black_gc, center_x, center_y - len, center_x, center_y + len);
+  
 }
 
 void vik_viewport_sync ( VikViewport *vvp )
