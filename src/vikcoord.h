@@ -57,6 +57,8 @@ void vik_coord_to_utm ( const VikCoord *coord, struct UTM *dest );
 
 gboolean vik_coord_equals ( const VikCoord *coord1, const VikCoord *coord2 );
 
+void vik_coord_set_area(const VikCoord *coord, const struct LatLon *wh, VikCoord *tl, VikCoord *br);
+gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCoord *br);
 /* all coord operations MUST BE ABSTRACTED!!! */
 
 #endif

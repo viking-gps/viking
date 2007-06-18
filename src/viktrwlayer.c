@@ -25,6 +25,7 @@
 /* viktrwlayer.c -- 2200 lines can make a difference in the state of things */
 
 #include "viking.h"
+#include "vikmapslayer.h"
 #include "viktrwlayer_pixmap.h"
 #include "viktrwlayer_tpwin.h"
 #include "viktrwlayer_propwin.h"
@@ -184,6 +185,7 @@ static void trw_layer_goto_track_startpoint ( gpointer pass_along[5] );
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] );
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
+static void trw_layer_download_map_along_track_cb(gpointer pass_along[6]);
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
@@ -2430,6 +2432,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_timestamp), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_label ( "Download maps along track..." );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_download_map_along_track_cb), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
   }
 
   if ( vlp && (subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) )
@@ -3342,3 +3349,147 @@ static guint16 vik_trw_layer_get_menu_selection(VikTrwLayer *vtl)
   return(vtl->menu_selection);
 }
 
+/* ----------- Downloading maps along tracks --------------- */
+
+static int get_download_area_width(VikViewport *vvp, gdouble zoom_level, struct LatLon *wh)
+{
+  /* TODO: calculating based on current size of viewport */
+  const gdouble w_at_zoom_0_125 = 0.0013;
+  const gdouble h_at_zoom_0_125 = 0.0011;
+  gdouble zoom_factor = zoom_level/0.125;
+
+  wh->lat = h_at_zoom_0_125 * zoom_factor;
+  wh->lon = w_at_zoom_0_125 * zoom_factor;
+
+  return 0;   /* all OK */
+}
+
+void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, gdouble zoom_level)
+{
+  typedef struct _Rect {
+    VikCoord tl;
+    VikCoord br;
+  } Rect;
+
+  struct LatLon wh;
+  GList *rect_to_download = NULL;
+  GList *rect_iter;
+
+  if (get_download_area_width(vvp, zoom_level, &wh))
+    return;
+
+  GList *iter = tr->trackpoints;
+
+  gboolean new_map = TRUE;
+  VikCoord *cur_coord, tl, br;
+  Rect *rect;
+  /* TODO: handle cases when trackpoints are far apart */
+  while (iter) {
+    cur_coord = &(VIK_TRACKPOINT(iter->data))->coord;
+    if (new_map) {
+      vik_coord_set_area(cur_coord, &wh, &tl, &br);
+      rect = g_malloc(sizeof(Rect));
+      rect->tl = tl;
+      rect->br = br;
+      rect_to_download = g_list_prepend(rect_to_download, rect);
+      new_map = FALSE;
+      iter = iter->next;
+      continue;
+    }
+    gboolean found = FALSE;
+    for (rect_iter = rect_to_download; rect_iter; rect_iter = rect_iter->next) {
+      if (vik_coord_inside(cur_coord, &(((Rect *)(rect_iter->data))->tl), &(((Rect *)(rect_iter->data))->br))) {
+        found = TRUE;
+        break;
+      }
+    }
+    if (found)
+        iter = iter->next;
+    else
+      new_map = TRUE;
+  }
+  for (rect_iter = rect_to_download; rect_iter; rect_iter = rect_iter->next) {
+    maps_layer_download_section_without_redraw(vml, vvp, &(((Rect *)(rect_iter->data))->tl), &(((Rect *)(rect_iter->data))->br), zoom_level);
+  }
+
+  for (rect_iter = rect_to_download; rect_iter; rect_iter = rect_iter->next)
+    g_free(rect_iter->data);
+  g_list_free(rect_to_download);
+}
+
+
+static void trw_layer_download_map_along_track_cb(gpointer pass_along[6])
+{
+  VikMapsLayer *vml;
+  gint selected_map, default_map;
+  gchar *zoomlist[] = {"0.125", "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", NULL };
+  gdouble zoom_vals[] = {0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+  gint selected_zoom, default_zoom;
+  int i,j;
+
+
+  VikTrwLayer *vtl = pass_along[0];
+  VikLayersPanel *vlp = pass_along[1];
+  VikTrack *tr = (VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  VikViewport *vvp = vik_window_viewport((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)));
+
+  GList *vmls = vik_layers_panel_get_all_layers_of_type(vlp, VIK_LAYER_MAPS);
+  int num_maps = g_list_length(vmls);
+
+  if (!num_maps) {
+    a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_ERROR,"No map layer in use. Create one first", NULL);
+    return;
+  }
+
+  gchar **map_names = g_malloc(1 + num_maps * sizeof(gpointer));
+  VikMapsLayer **map_layers = g_malloc(1 + num_maps * sizeof(gpointer));
+
+  gchar **np = map_names;
+  VikMapsLayer **lp = map_layers;
+  for (i = 0; i < num_maps; i++) {
+    gboolean dup = FALSE;
+    vml = (VikMapsLayer *)(vmls->data);
+    for (j = 0; j < i; j++) { /* no duplicate allowed */
+      if (vik_maps_layer_get_map_type(vml) == vik_maps_layer_get_map_type(map_layers[j])) {
+        dup = TRUE;
+        break;
+      }
+    }
+    if (!dup) {
+      *lp++ = vml;
+      *np++ = vik_maps_layer_get_map_label(vml);
+    }
+    vmls = vmls->next;
+  }
+  *lp = NULL;
+  *np = NULL;
+  num_maps = lp - map_layers;
+
+  for (default_map = 0; default_map < num_maps; default_map++) {
+    /* TODO: check for parent layer's visibility */
+    if (VIK_LAYER(map_layers[default_map])->visible)
+      break;
+  }
+  default_map = (default_map == num_maps) ? 0 : default_map;
+
+  gdouble cur_zoom = vik_viewport_get_zoom(vvp);
+  for (default_zoom = 0; default_zoom < sizeof(zoom_vals)/sizeof(gdouble); default_zoom++) {
+    if (cur_zoom == zoom_vals[default_zoom])
+      break;
+  }
+  default_zoom = (default_zoom == sizeof(zoom_vals)/sizeof(gdouble)) ? sizeof(zoom_vals)/sizeof(gdouble) - 1 : default_zoom;
+
+  if (!a_dialog_map_n_zoom(VIK_GTK_WINDOW_FROM_LAYER(vtl), map_names, default_map, zoomlist, default_zoom, &selected_map, &selected_zoom))
+    goto done;
+
+  vik_track_download_map(tr, map_layers[selected_map], vvp, zoom_vals[selected_zoom]);
+
+done:
+  for (i = 0; i < num_maps; i++)
+    g_free(map_names[i]);
+  g_free(map_names);
+  g_free(map_layers);
+
+  g_list_free(vmls);
+
+}

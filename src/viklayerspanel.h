@@ -69,6 +69,7 @@ gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, gint type );
 void vik_layers_panel_clear ( VikLayersPanel *vlp );
 VikAggregateLayer *vik_layers_panel_get_top_layer ( VikLayersPanel *vlp );
 void vik_layers_panel_change_coord_mode ( VikLayersPanel *vlp, VikCoordMode mode );
+GList *vik_layers_panel_get_all_layers_of_type(VikLayersPanel *vlp, gint type);
 
 G_END_DECLS
 

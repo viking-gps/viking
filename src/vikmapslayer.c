@@ -224,6 +224,16 @@ void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapTyp
 #define MAPS_LAYER_NTH_ID(n) ((guint)g_list_nth_data(params_maptypes_ids, (n)))
 #define MAPS_LAYER_NTH_TYPE(n) ((VikMapsLayer_MapType*)g_list_nth_data(__map_types, (n)))
 
+gint vik_maps_layer_get_map_type(VikMapsLayer *vml)
+{
+  return(vml->maptype);
+}
+
+gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
+{
+  return(g_strdup(MAPS_LAYER_NTH_LABEL(vml->maptype)));
+}
+
 /****************************************/
 /******** CACHE DIR STUFF ***************/
 /****************************************/
@@ -690,6 +700,7 @@ typedef struct {
   gint maxlen;
   gint mapstoget;
   gint redownload;
+  gboolean refresh_display;
   VikMapsLayer *vml;
   VikViewport *vvp;
   gboolean map_layer_alive;
@@ -767,7 +778,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       g_mutex_lock(mdi->mutex);
       if (remove_mem_cache)
           a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, MAPS_LAYER_NTH_TYPE(mdi->maptype)->uniq_id, mdi->mapcoord.scale );
-      if (mdi->map_layer_alive) {
+      if (mdi->refresh_display && mdi->map_layer_alive) {
         /* TODO: check if it's on visible area */
         vik_layer_emit_update ( VIK_LAYER(mdi->vml) );
       }
@@ -813,6 +824,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
     mdi->vvp = vvp;
     mdi->map_layer_alive = TRUE;
     mdi->mutex = g_mutex_new();
+    mdi->refresh_display = TRUE;
 
     /* cache_dir and buffer for dest filename */
     mdi->cache_dir = g_strdup ( vml->cache_dir );
@@ -868,6 +880,74 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
     else
       mdi_free ( mdi );
   }
+}
+
+void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom)
+{
+  fprintf(stderr, "DEBUG: downloading ul= %f , %f br= %f , %f\n",
+      ul->north_south, ul->east_west, br->north_south, br->east_west);
+  MapCoord ulm, brm;
+  VikMapsLayer_MapType *map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  if (!map_type->coord_to_mapcoord(ul, zoom, zoom, &ulm) 
+    || !map_type->coord_to_mapcoord(br, zoom, zoom, &brm)) {
+    fprintf(stderr, "%s() coord_to_mapcoord() failed\n", __PRETTY_FUNCTION__);
+    return;
+  }
+
+  MapDownloadInfo *mdi = g_malloc(sizeof(MapDownloadInfo));
+  gint i, j;
+
+  mdi->vml = vml;
+  mdi->vvp = vvp;
+  mdi->map_layer_alive = TRUE;
+  mdi->mutex = g_mutex_new();
+  mdi->refresh_display = FALSE;
+
+  mdi->cache_dir = g_strdup ( vml->cache_dir );
+  mdi->maxlen = strlen ( vml->cache_dir ) + 40;
+  mdi->filename_buf = g_malloc ( mdi->maxlen * sizeof(gchar) );
+  mdi->maptype = vml->maptype;
+
+  mdi->mapcoord = ulm;
+
+  mdi->redownload = REDOWNLOAD_NONE;
+
+  mdi->x0 = MIN(ulm.x, brm.x);
+  mdi->xf = MAX(ulm.x, brm.x);
+  mdi->y0 = MIN(ulm.y, brm.y);
+  mdi->yf = MAX(ulm.y, brm.y);
+
+  mdi->mapstoget = 0;
+
+  for (i = mdi->x0; i <= mdi->xf; i++) {
+    for (j = mdi->y0; j <= mdi->yf; j++) {
+      g_snprintf ( mdi->filename_buf, mdi->maxlen, DIRSTRUCTURE,
+                   vml->cache_dir, map_type->uniq_id, ulm.scale,
+                   ulm.z, i, j );
+      if ( access ( mdi->filename_buf, F_OK ) != 0)
+            mdi->mapstoget++;
+    }
+  }
+
+  mdi->mapcoord.x = mdi->mapcoord.y = 0; /* for cleanup -- no current map */
+
+  if (mdi->mapstoget) {
+    gchar *tmp = g_strdup_printf ( "%s %d %s %s...", "Downloading", mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype), (mdi->mapstoget == 1) ? "map" : "maps" );
+
+    g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
+      /* launch the thread */
+    a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */
+      tmp,                                /* description string */
+      (vik_thr_func) map_download_thread, /* function to call within thread */
+      mdi,                                /* pass along data */
+      (vik_thr_free_func) mdi_free,       /* function to free pass along data */
+      (vik_thr_free_func) mdi_cancel_cleanup,
+      mdi->mapstoget );
+    g_free ( tmp );
+  }
+  else
+    mdi_free ( mdi );
 }
 
 static void maps_layer_redownload_bad ( VikMapsLayer *vml )

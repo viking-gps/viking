@@ -749,4 +749,3 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   }
   return new_tr;
 }
-

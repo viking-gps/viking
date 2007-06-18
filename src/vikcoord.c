@@ -115,3 +115,64 @@ gboolean vik_coord_equals ( const VikCoord *coord1, const VikCoord *coord2 )
   else /* VIK_COORD_UTM */
     return coord1->utm_zone == coord2->utm_zone && coord1->north_south == coord2->north_south && coord1->east_west == coord2->east_west;
 }
+
+static void get_north_west(struct LatLon *center, struct LatLon *dist, struct LatLon *nw) 
+{
+  nw->lat = center->lat + dist->lat;
+  nw->lon = center->lon - dist->lon;
+  if (nw->lon < -180)
+    nw->lon += 360.0;
+  if (nw->lat > 90.0) {  /* over north pole */
+    nw->lat = 180 - nw->lat;
+    nw->lon = nw->lon - 180;
+  }
+}
+
+static void get_south_east(struct LatLon *center, struct LatLon *dist, struct LatLon *se) 
+{
+  se->lat = center->lat - dist->lat;
+  se->lon = center->lon + dist->lon;
+  if (se->lon > 180.0)
+    se->lon -= 360.0;
+  if (se->lat < -90.0) {  /* over south pole */
+    se->lat += 180;
+    se->lon = se->lon - 180;
+  }
+}
+
+void vik_coord_set_area(const VikCoord *coord, const struct LatLon *wh, VikCoord *tl, VikCoord *br)
+{
+  struct LatLon center, nw, se;
+  struct LatLon dist;
+
+  dist.lat = wh->lat/2;
+  dist.lon = wh->lon/2;
+
+  vik_coord_to_latlon(coord, &center);
+  get_north_west(&center, &dist, &nw);
+  get_south_east(&center, &dist, &se);
+
+  tl->mode = br->mode = VIK_COORD_LATLON;
+  *((struct LatLon *)tl) = nw;
+  *((struct LatLon *)br) = se;
+}
+
+gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCoord *br)
+{
+  struct LatLon ll, tl_ll, br_ll;
+
+  vik_coord_to_latlon(coord, &ll);
+  vik_coord_to_latlon(tl, &tl_ll);
+  vik_coord_to_latlon(br, &br_ll);
+
+#ifdef DEBUG
+  fprintf(stderr, "DEBUG: %s() ll=%f, %f tl=%f, %f br=%f, %f\n",
+      __PRETTY_FUNCTION__, ll.lat, ll.lon, tl_ll.lat, tl_ll.lon, br_ll.lat, br_ll.lon);
+#endif
+
+  if ((ll.lat > tl_ll.lat) || (ll.lon < tl_ll.lon))
+    return FALSE;
+  if ((ll.lat  < br_ll.lat) || (ll.lon > br_ll.lon))
+    return FALSE;
+  return TRUE;
+}

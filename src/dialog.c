@@ -611,3 +611,41 @@ void a_dialog_about ( GtkWindow *parent )
   }
   gtk_widget_destroy ( msgbox );
 }
+
+gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_map, gchar *zoom_list[], gint default_zoom, gint *selected_map, gint *selected_zoom)
+{
+  gchar **s;
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( "Download along track", parent, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+
+  GtkWidget *map_label = gtk_label_new("Map type:");
+  GtkWidget *map_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  for (s = mapnames; *s; s++)
+    gtk_combo_box_append_text(map_combo, *s);
+  gtk_combo_box_set_active (map_combo, default_map);
+  GtkWidget *zoom_label = gtk_label_new("Zoom level:");
+  GtkWidget *zoom_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  for (s = zoom_list; *s; s++)
+    gtk_combo_box_append_text(zoom_combo, *s);
+  gtk_combo_box_set_active (zoom_combo, default_zoom);
+
+  GtkTable *box = GTK_TABLE(gtk_table_new(2, 2, FALSE));
+  gtk_table_attach_defaults(box, GTK_WIDGET(map_label), 0, 1, 0, 1);
+  gtk_table_attach_defaults(box, GTK_WIDGET(map_combo), 1, 2, 0, 1);
+  gtk_table_attach_defaults(box, GTK_WIDGET(zoom_label), 0, 1, 1, 2);
+  gtk_table_attach_defaults(box, GTK_WIDGET(zoom_combo), 1, 2, 1, 2);
+
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(box), FALSE, FALSE, 5 );
+
+  gtk_widget_show_all ( dialog );
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
+    gtk_widget_destroy(dialog);
+    return FALSE;
+  }
+
+  *selected_map = gtk_combo_box_get_active(map_combo);
+  *selected_zoom = gtk_combo_box_get_active(zoom_combo);
+
+  gtk_widget_destroy(dialog);
+  return TRUE;
+}
