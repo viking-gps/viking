@@ -152,9 +152,9 @@ void vik_coord_set_area(const VikCoord *coord, const struct LatLon *wh, VikCoord
   get_north_west(&center, &dist, &nw);
   get_south_east(&center, &dist, &se);
 
-  tl->mode = br->mode = VIK_COORD_LATLON;
   *((struct LatLon *)tl) = nw;
   *((struct LatLon *)br) = se;
+  tl->mode = br->mode = VIK_COORD_LATLON;
 }
 
 gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCoord *br)

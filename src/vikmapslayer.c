@@ -884,8 +884,6 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
 
 void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom)
 {
-  fprintf(stderr, "DEBUG: downloading ul= %f , %f br= %f , %f\n",
-      ul->north_south, ul->east_west, br->north_south, br->east_west);
   MapCoord ulm, brm;
   VikMapsLayer_MapType *map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
 

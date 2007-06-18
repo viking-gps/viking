@@ -3364,26 +3364,70 @@ static int get_download_area_width(VikViewport *vvp, gdouble zoom_level, struct 
   return 0;   /* all OK */
 }
 
+static VikCoord *get_next_coord(VikCoord *from, VikCoord *to, struct LatLon *dist, gdouble gradient)
+{
+  if ((dist->lon >= ABS(to->east_west - from->east_west)) &&
+      (dist->lat >= ABS(to->north_south - from->north_south)))
+    return NULL;
+
+  VikCoord *coord = g_malloc(sizeof(VikCoord));
+  coord->mode = VIK_COORD_LATLON;
+
+  if (ABS(gradient) < 1) {
+    if (from->east_west > to->east_west)
+      coord->east_west = from->east_west - dist->lon;
+    else
+      coord->east_west = from->east_west + dist->lon;
+    coord->north_south = gradient * (coord->east_west - from->east_west) + from->north_south;
+  } else {
+    if (from->north_south > to->north_south)
+      coord->north_south = from->north_south - dist->lat;
+    else
+      coord->north_south = from->north_south + dist->lat;
+    coord->east_west = (1/gradient) * (coord->north_south - from->north_south) + from->north_south;
+  }
+
+  return coord;
+}
+
+static GList *add_fillins(GList *list, VikCoord *from, VikCoord *to, struct LatLon *dist)
+{
+  /* TODO: handle virtical track (to->east_west - from->east_west == 0) */
+  gdouble gradient = (to->north_south - from->north_south)/(to->east_west - from->east_west);
+
+  VikCoord *next = from;
+  while (TRUE) {
+    if ((next = get_next_coord(next, to, dist, gradient)) == NULL)
+        break;
+    list = g_list_prepend(list, next);
+  }
+
+  return list;
+}
+
 void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, gdouble zoom_level)
 {
   typedef struct _Rect {
     VikCoord tl;
     VikCoord br;
+    VikCoord center;
   } Rect;
+#define GLRECT(iter) ((Rect *)((iter)->data))
 
   struct LatLon wh;
-  GList *rect_to_download = NULL;
+  GList *rects_to_download = NULL;
   GList *rect_iter;
 
   if (get_download_area_width(vvp, zoom_level, &wh))
     return;
 
   GList *iter = tr->trackpoints;
+  if (!iter)
+    return;
 
   gboolean new_map = TRUE;
   VikCoord *cur_coord, tl, br;
   Rect *rect;
-  /* TODO: handle cases when trackpoints are far apart */
   while (iter) {
     cur_coord = &(VIK_TRACKPOINT(iter->data))->coord;
     if (new_map) {
@@ -3391,14 +3435,15 @@ void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, g
       rect = g_malloc(sizeof(Rect));
       rect->tl = tl;
       rect->br = br;
-      rect_to_download = g_list_prepend(rect_to_download, rect);
+      rect->center = *cur_coord;
+      rects_to_download = g_list_prepend(rects_to_download, rect);
       new_map = FALSE;
       iter = iter->next;
       continue;
     }
     gboolean found = FALSE;
-    for (rect_iter = rect_to_download; rect_iter; rect_iter = rect_iter->next) {
-      if (vik_coord_inside(cur_coord, &(((Rect *)(rect_iter->data))->tl), &(((Rect *)(rect_iter->data))->br))) {
+    for (rect_iter = rects_to_download; rect_iter; rect_iter = rect_iter->next) {
+      if (vik_coord_inside(cur_coord, &GLRECT(rect_iter)->tl, &GLRECT(rect_iter)->br)) {
         found = TRUE;
         break;
       }
@@ -3408,15 +3453,48 @@ void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, g
     else
       new_map = TRUE;
   }
-  for (rect_iter = rect_to_download; rect_iter; rect_iter = rect_iter->next) {
+
+  /* fill-ins for far apart points */
+  GList *cur_rect, *next_rect;
+  GList *fillins = NULL;
+  for (cur_rect = rects_to_download;
+      (next_rect = cur_rect->next) != NULL;
+      cur_rect = cur_rect->next) {
+    if ((wh.lon < ABS(GLRECT(cur_rect)->center.east_west - GLRECT(next_rect)->center.east_west)) ||
+        (wh.lat < ABS(GLRECT(cur_rect)->center.north_south - GLRECT(next_rect)->center.north_south))) {
+      fillins = add_fillins(fillins, &GLRECT(cur_rect)->center, &GLRECT(next_rect)->center, &wh);
+    }
+  }
+
+  if (fillins) {
+    GList *iter = fillins;
+    while (iter) {
+      cur_coord = (VikCoord *)(iter->data);
+      vik_coord_set_area(cur_coord, &wh, &tl, &br);
+      rect = g_malloc(sizeof(Rect));
+      rect->tl = tl;
+      rect->br = br;
+      rect->center = *cur_coord;
+      rects_to_download = g_list_prepend(rects_to_download, rect);
+      iter = iter->next;
+    }
+  }
+
+  for (rect_iter = rects_to_download; rect_iter; rect_iter = rect_iter->next) {
     maps_layer_download_section_without_redraw(vml, vvp, &(((Rect *)(rect_iter->data))->tl), &(((Rect *)(rect_iter->data))->br), zoom_level);
   }
 
-  for (rect_iter = rect_to_download; rect_iter; rect_iter = rect_iter->next)
-    g_free(rect_iter->data);
-  g_list_free(rect_to_download);
+  if (fillins) {
+    for (iter = fillins; iter; iter = iter->next)
+      g_free(iter->data);
+    g_list_free(fillins);
+  }
+  if (rects_to_download) {
+    for (rect_iter = rects_to_download; rect_iter; rect_iter = rect_iter->next)
+      g_free(rect_iter->data);
+    g_list_free(rects_to_download);
+  }
 }
-
 
 static void trw_layer_download_map_along_track_cb(gpointer pass_along[6])
 {
