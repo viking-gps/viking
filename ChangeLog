@@ -1,4 +1,8 @@
 2007-06-18
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Copying libcurl.m4 as it is needed everywhere
+
+2007-06-18
 Quy Tonthat <qtonthat@gmail.com>:
 	* New google version numbers.
 	* Make scale more visible.

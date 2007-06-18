@@ -8,3 +8,5 @@ EXTRA_DIST = \
 
 dist-hook: viking.spec
 	cp $(top_builddir)/viking.spec $(distdir)
+
+ACLOCAL_AMFLAGS = -I m4
