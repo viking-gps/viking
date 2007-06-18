@@ -543,3 +543,20 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_ty
   }
   return FALSE;
 }
+
+const gchar *a_get_viking_dir()
+{
+  static gchar *viking_dir = NULL;
+
+  if (!viking_dir) {
+    gchar *temp[] = {"/tmp/vikXXXXXX"};
+    gchar *home = getenv("HOME");
+    if (!home || access(home, W_OK))
+      home = mktemp(temp);
+    viking_dir = g_strdup_printf("%s/%s", home, ".viking");
+    if (access(viking_dir, F_OK))
+      mkdir(viking_dir, 0755);
+  }
+
+  return viking_dir;
+}

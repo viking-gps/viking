@@ -19,6 +19,8 @@
  *
  */
 
+#include <unistd.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -27,26 +29,73 @@
 
 #ifdef HAVE_LIBCURL
 #include <curl/curl.h>
-#endif
 
+#include "file.h"
 #include "curl_download.h"
+
+static gchar *get_cookie_file(gboolean init)
+{
+  static gchar *cookie_file = NULL;
+  static GMutex *mutex = NULL;
+
+  if (init) { /* to make sure  it's thread safe */
+    mutex = g_mutex_new();
+    static gchar *cookie_fn = "cookies.txt";
+    const gchar *viking_dir = a_get_viking_dir();
+    cookie_file = g_strdup_printf("%s/%s", viking_dir, cookie_fn);
+    unlink(cookie_file);
+    return NULL;
+  }
+
+  g_assert(cookie_file != NULL);
+
+  g_mutex_lock(mutex);
+  if (access(cookie_file, F_OK)) {  /* file not there */
+    FILE * out_file = fopen("/dev/null", "w");
+    CURLcode res;
+    CURL *curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, "http://maps.google.com/"); /* google.com sets "PREF" cookie */
+    curl_easy_setopt ( curl, CURLOPT_FILE, out_file );
+    curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookie_file);
+    res = curl_easy_perform(curl);
+    if (res != CURLE_OK) {
+      fprintf(stderr, "%s() Curl perform failed: %s\n", __PRETTY_FUNCTION__,
+          curl_easy_strerror(res));
+      unlink(cookie_file);
+    }
+    curl_easy_cleanup(curl);
+  }
+  g_mutex_unlock(mutex);
+
+  return(cookie_file);
+}
+
+/* This should to be called from main() to make sure thread safe */
+void curl_download_init()
+{
+  curl_global_init(CURL_GLOBAL_ALL);
+  get_cookie_file(TRUE);
+}
 
 int curl_download_uri ( const char *uri, FILE *f )
 {
-#ifdef HAVE_LIBCURL
   CURL *curl;
   CURLcode res = CURLE_FAILED_INIT;
+  const gchar *cookie_file;
 
   curl = curl_easy_init ();
   if ( curl )
     {
       curl_easy_setopt ( curl, CURLOPT_URL, uri );
       curl_easy_setopt ( curl, CURLOPT_FILE, f );
+      if (strstr(uri, ".google.com"))
+        curl_easy_setopt ( curl, CURLOPT_REFERER, "http://maps.google.com/");
+      if (cookie_file = get_cookie_file(FALSE))
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
       res = curl_easy_perform ( curl );
       curl_easy_cleanup ( curl );
     }
   return(res);
-#endif
 }
 
 int curl_download_get_url ( const char *hostname, const char *uri, FILE *f )
@@ -62,3 +111,4 @@ int curl_download_get_url ( const char *hostname, const char *uri, FILE *f )
 
   return (ret ? -2 : 0);   /* -2 HTTP error */
 }
+#endif /* HAVE_LIB_CURL */

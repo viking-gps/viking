@@ -37,5 +37,6 @@ const gchar *a_file_basename ( const gchar *filename );
 gshort a_file_load ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type );
+const gchar *a_get_viking_dir();
 
 #endif
