@@ -32,7 +32,7 @@
 
 #define GOOGLE_VERSION "w2.52"
 #define GOOGLE_TRANS_VERSION "w2t.53"
-#define GOOGLE_KH_VERSION "17"
+#define GOOGLE_KH_VERSION "18"
 
 static int google_download ( MapCoord *src, const gchar *dest_fn );
 static int google_trans_download ( MapCoord *src, const gchar *dest_fn );

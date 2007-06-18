@@ -1,3 +1,13 @@
+2007-06-18
+Quy Tonthat <qtonthat@gmail.com>:
+	* New google version numbers.
+	* Make scale more visible.
+	* Add center mark which can be turn on/off in View menu.
+	* Viking now uses cookies for http requests. Some server(s) is quite
+	picky about this. (With great help from Lixus <gps@muellers.ms>)
+	* Download maps along a track. Left click on a track layer, select map
+	type and zoom level, viking will do the rest.
+
 2007-06-13
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Adding an icon (suggested by Ralf Meyer <ranfyy@gmail.com>)
