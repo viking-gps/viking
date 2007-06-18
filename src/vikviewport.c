@@ -401,17 +401,22 @@ void vik_viewport_draw_centermark ( VikViewport *vvp )
   if ( !vvp->draw_centermark )
     return;
 
-  int len = 50;
+  const int len = 30;
+  const int gap = 4;
   int center_x = vvp->width/2;
   int center_y = vvp->height/2;
   GdkGC * black_gc = GTK_WIDGET(&vvp->drawing_area)->style->black_gc;
 
   /* white back ground */
-  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x + len, center_y);
-  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y - len, center_x, center_y + len);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x - gap, center_y);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x + gap, center_y, center_x + len, center_y);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y - len, center_x, center_y - gap);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y + gap, center_x, center_y + len);
   /* black fore ground */
-  vik_viewport_draw_line(vvp, black_gc, center_x - len, center_y, center_x + len, center_y);
-  vik_viewport_draw_line(vvp, black_gc, center_x, center_y - len, center_x, center_y + len);
+  vik_viewport_draw_line(vvp, black_gc, center_x - len, center_y, center_x - gap, center_y);
+  vik_viewport_draw_line(vvp, black_gc, center_x + gap, center_y, center_x + len, center_y);
+  vik_viewport_draw_line(vvp, black_gc, center_x, center_y - len, center_x, center_y - gap);
+  vik_viewport_draw_line(vvp, black_gc, center_x, center_y + gap, center_x, center_y + len);
   
 }
 
