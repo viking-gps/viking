@@ -1,3 +1,9 @@
+2007-06-19
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bugs that causes "drawcentermark" not recognised when reading
+	from files.
+	* Fix a wild pointer bug that can cause crashes
+
 2007-06-18
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Copying libcurl.m4 as it is needed everywhere

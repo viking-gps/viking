@@ -215,8 +215,8 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
   guint16 len;
   long line_num = 0;
 
-  VikLayerParam *params; /* for current layer, so we don't have to keep on looking up interface */
-  guint8 params_count;
+  VikLayerParam *params = NULL; /* for current layer, so we don't have to keep on looking up interface */
+  guint8 params_count = 0;
 
   push(&stack);
   stack->under = NULL;
