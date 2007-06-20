@@ -27,8 +27,8 @@
 #include "curl_download.h"
 
 #define GOOGLE_SEARCH_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
-#define GOOGLE_SEARCH_PATTERN_1 "{center: {lat: "
-#define GOOGLE_SEARCH_PATTERN_2 ",lng: "
+#define GOOGLE_SEARCH_PATTERN_1 "{center:{lat:"
+#define GOOGLE_SEARCH_PATTERN_2 ",lng:"
 
 static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
