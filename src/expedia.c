@@ -111,7 +111,7 @@ void expedia_snip ( const gchar *file )
   cropped = gdk_pixbuf_new_subpixbuf ( old, WIDTH_BUFFER, HEIGHT_BUFFER,
                               width - 2*WIDTH_BUFFER, height - 2*HEIGHT_BUFFER );
 
-  gdk_pixbuf_save ( cropped, file, "png", NULL, NULL, &gx );
+  gdk_pixbuf_save ( cropped, file, "png", &gx, NULL );
   if ( gx ) {
     g_warning ( "Couldn't save EXPEDIA image file (right after successful download! Please report and delete image file!): %s", gx->message );
     g_error_free ( gx );

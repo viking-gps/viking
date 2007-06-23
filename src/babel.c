@@ -33,7 +33,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   FILE *f;
   gchar *name_src;
   gboolean ret = FALSE;
-  gchar *bargs = g_strconcat(babelargs, " -i gpx");
+  gchar *bargs = g_strconcat(babelargs, " -i gpx", NULL);
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) < 0) {
     ret = FALSE;
