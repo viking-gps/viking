@@ -90,7 +90,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
       curl_easy_setopt ( curl, CURLOPT_FILE, f );
       if (options != NULL && options->referer != NULL)
         curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
-      curl_easy_setopt ( curl, CURLOPT_USERAGENT, "viking/0.1.3 libcurl/7.15.4" );
+      curl_easy_setopt ( curl, CURLOPT_USERAGENT, "viking/" VERSION " libcurl/7.15.4" );
       if (cookie_file = get_cookie_file(FALSE))
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
       res = curl_easy_perform ( curl );
