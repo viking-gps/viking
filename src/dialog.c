@@ -213,7 +213,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
   commentlabel = gtk_label_new ("Comment:");
   commententry = gtk_entry_new ();
-  gchar *cmt =  a_googlesearch_get_search_string_for_this_place(parent);
+  gchar *cmt =  a_googlesearch_get_search_string_for_this_place(VIK_WINDOW(parent));
   if (cmt)
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 
@@ -619,12 +619,12 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( "Download along track", parent, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
 
   GtkWidget *map_label = gtk_label_new("Map type:");
-  GtkWidget *map_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  GtkComboBox *map_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
   for (s = mapnames; *s; s++)
     gtk_combo_box_append_text(map_combo, *s);
   gtk_combo_box_set_active (map_combo, default_map);
   GtkWidget *zoom_label = gtk_label_new("Zoom level:");
-  GtkWidget *zoom_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  GtkComboBox *zoom_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
   for (s = zoom_list; *s; s++)
     gtk_combo_box_append_text(zoom_combo, *s);
   gtk_combo_box_set_active (zoom_combo, default_zoom);

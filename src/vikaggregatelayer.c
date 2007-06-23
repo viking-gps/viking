@@ -408,7 +408,7 @@ GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList 
     return layers;
   while (children) {
     if (VIK_LAYER(children->data)->type == VIK_LAYER_AGGREGATE)
-      l = vik_aggregate_layer_get_all_layers_of_type(VIK_LAYER(children->data), l, type); 
+      l = vik_aggregate_layer_get_all_layers_of_type(VIK_AGGREGATE_LAYER(children->data), l, type); 
     else if (VIK_LAYER(children->data)->type == type)
       l = g_list_prepend(l, children->data); /* now in top down order */
     children = children->next;

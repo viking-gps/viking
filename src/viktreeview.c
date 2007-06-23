@@ -272,7 +272,7 @@ static void select_cb(GtkTreeSelection *selection, gpointer data)
 
   vl = VIK_LAYER( vik_treeview_item_get_pointer ( vt, &iter ) );
 
-  vw = VIK_GTK_WINDOW_FROM_LAYER(vl);
+  vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl));
   vik_window_selected_layer(vw, vl);
 }
 

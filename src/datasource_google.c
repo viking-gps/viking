@@ -69,9 +69,9 @@ static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport
   to_label = gtk_label_new ("To:");
   widgets->to_entry = gtk_entry_new();
   if (last_from_str)
-    gtk_entry_set_text(widgets->from_entry, last_from_str);
+    gtk_entry_set_text(GTK_ENTRY(widgets->from_entry), last_from_str);
   if (last_to_str)
-    gtk_entry_set_text(widgets->to_entry, last_to_str);
+    gtk_entry_set_text(GTK_ENTRY(widgets->to_entry), last_to_str);
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), from_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), widgets->from_entry, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), to_label, FALSE, FALSE, 5 );
