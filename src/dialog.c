@@ -172,7 +172,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
                                                    GTK_RESPONSE_ACCEPT,
                                                    NULL);
   struct LatLon ll;
-  GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry, *commentlabel, 
+  GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL, *commentlabel, 
     *commententry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
   GtkListStore *store;
 
