@@ -89,10 +89,8 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
   *cmd = g_strdup_printf( GOOGLE_DIRECTIONS_STRING, from_quoted, to_quoted );
   *input_type = g_strdup("google");
 
-  if (last_from_str)
-    free(last_from_str);
-  if (last_to_str)
-    free(last_to_str);
+  g_free(last_from_str);
+  g_free(last_to_str);
 
   last_from_str = g_strdup(gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) ) );
   last_to_str = g_strdup(gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) ) );
