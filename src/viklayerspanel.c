@@ -482,7 +482,6 @@ void vik_layers_panel_copy_selected ( VikLayersPanel *vlp )
 
 void vik_layers_panel_paste_selected ( VikLayersPanel *vlp )
 {
-  gint type;
   GtkTreeIter iter;
   g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
   a_clipboard_paste ( vlp );

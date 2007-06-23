@@ -3110,7 +3110,6 @@ static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventButton *ev
   if ( t->holding )
   {
     VikCoord new_coord;
-    GdkGC *gc;
     vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
 
     /* snap to TP */
