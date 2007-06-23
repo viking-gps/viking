@@ -225,7 +225,7 @@ static void clip_receive_text (GtkClipboard *c, const gchar *text, gpointer p)
 static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer p ) 
 {
   VikLayersPanel *vlp = p;
-  guint r, w;
+  gsize r, w;
   GError *err = NULL;
   gchar *s, *span;
   gint tag = 0, i;
