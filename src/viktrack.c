@@ -548,7 +548,6 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   int i, pt_count, numpts, spline;
   GList *iter;
   spline_coeff_t *p;
-  GList *mytr;
 
   if ( ! tr->trackpoints )
     return NULL;
