@@ -1366,7 +1366,7 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
                                                   GTK_RESPONSE_REJECT,
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
-                                                  0 );
+                                                  NULL );
   GtkWidget *width_label, *width_spin, *height_label, *height_spin;
   GtkWidget *png_radio, *jpeg_radio;
   GtkWidget *current_window_button;

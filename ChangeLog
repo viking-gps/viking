@@ -1,6 +1,6 @@
-2007-06-20
-Quy Tonthat <qtonthat@gmail.com>:
-	* Google Search: fixed to work with new Google output.
+2007-06-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Minor change to avoid SEGFAULT on x86_64
 
 2007-06-19
 Quy Tonthat <qtonthat@gmail.com>:
