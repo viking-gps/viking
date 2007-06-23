@@ -23,6 +23,7 @@
 #include "icons/viking_18.png_h"
 #include "mapcache.h"
 #include "background.h"
+#include "curl_download.h"
 
 #include <string.h>
 
