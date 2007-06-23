@@ -523,7 +523,7 @@ static VikLayerParamData properties_widget_get_value ( GtkWidget *widget, VikLay
     case VIK_LAYER_WIDGET_RADIOGROUP:
       rv.u = vik_radio_group_get_selected(VIK_RADIO_GROUP(widget));
       if ( param->extra_widget_data )
-        rv.u = (guint *)g_list_nth_data(param->extra_widget_data, rv.u);
+        rv.u = (guint32)g_list_nth_data(param->extra_widget_data, rv.u);
       break;
     case VIK_LAYER_WIDGET_SPINBUTTON:
       if ( param->type == VIK_LAYER_PARAM_UINT )

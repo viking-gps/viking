@@ -33,6 +33,7 @@
 #include "thumbnails.h"
 #include "background.h"
 #include "gpx.h"
+#include "babel.h"
 
 #include <math.h>
 #include <string.h>

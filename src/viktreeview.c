@@ -519,7 +519,7 @@ static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTree
   GtkTreePath *src_path = NULL, *dest_cp = NULL;
   gboolean retval = FALSE;
   GtkTreeIter src_iter, root_iter, dest_iter, dest_parent;
-  guint *i_src = NULL;
+  gint *i_src = NULL;
   VikTreeview *vt;
   VikLayer *vl;
 
