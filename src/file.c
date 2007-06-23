@@ -25,6 +25,8 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <glib.h>
+#include <glib/gstdio.h>
 
 #define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 #define VIK_MAGIC "#VIK"
@@ -558,7 +560,7 @@ const gchar *a_get_viking_dir()
       home = mktemp(temp);
     viking_dir = g_strdup_printf("%s/%s", home, ".viking");
     if (access(viking_dir, F_OK))
-      mkdir(viking_dir, 0755);
+      g_mkdir(viking_dir, 0755);
   }
 
   return viking_dir;
