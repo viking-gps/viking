@@ -31,6 +31,8 @@
 
 #include "khmaps.h"
 
+static DownloadOptions khmaps_options = { 1 };
+
 void khmaps_init () {
   VikMapsLayer_MapType map_type = { 8, 256, 256, VIK_VIEWPORT_DRAWMODE_KH, khmaps_coord_to_mapcoord, khmaps_mapcoord_to_center_coord, khmaps_download };
 
@@ -127,7 +129,7 @@ void khmaps_download ( MapCoord *src, const gchar *dest_fn )
    gchar *uri = g_strdup_printf ( "/kh?v=2&t=%s", tmp );
    g_print("%d %d %d = %s\n", src->x, src->y, src->scale, uri);
    g_free ( tmp );
-   a_http_download_get_url ( "kh.google.com", uri, dest_fn );
+   a_http_download_get_url ( "kh.google.com", uri, dest_fn, &khmaps_options );
    g_free ( uri );
 }
 

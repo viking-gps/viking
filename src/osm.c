@@ -38,6 +38,7 @@ static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
 
+static DownloadOptions osm_options = { 1 };
 
 /* initialisation */
 void osm_init () {
@@ -99,7 +100,7 @@ static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
    gchar *uri = g_strdup_printf ( "/~ojw/Tiles/maplint.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn );
+   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn, &osm_options );
    g_free ( uri );
    return res;
 }
@@ -108,7 +109,7 @@ static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
    gchar *uri = g_strdup_printf ( "/osamrender/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   res = a_http_download_get_url ( "tile.openstreetmap.org", uri, dest_fn );
+   res = a_http_download_get_url ( "tile.openstreetmap.org", uri, dest_fn, &osm_options );
    g_free ( uri );
    return res;
 }
@@ -117,7 +118,7 @@ static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
    gchar *uri = g_strdup_printf ( "/~ojw/Tiles/tile.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn );
+   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn, &osm_options );
    g_free ( uri );
    return res;
 }

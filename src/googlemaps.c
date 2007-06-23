@@ -30,6 +30,8 @@
 
 #include "googlemaps.h"
 
+static DownloadOptions googlemaps_options = { 1 };
+
 /* initialisation */
 void googlemaps_init () {
   VikMapsLayer_MapType map_type = { 9, 128, 128, VIK_VIEWPORT_DRAWMODE_GOOGLE, googlemaps_coord_to_mapcoord, googlemaps_mapcoord_to_center_coord, googlemaps_download };
@@ -81,6 +83,6 @@ void googlemaps_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 void googlemaps_download ( MapCoord *src, const gchar *dest_fn )
 {
    gchar *uri = g_strdup_printf ( "/mt?&x=%d&y=%d&zoom=%d", src->x, src->y, src->scale );
-   a_http_download_get_url ( "mt.google.com", uri, dest_fn );
+   a_http_download_get_url ( "mt.google.com", uri, dest_fn, &googlemaps_options );
    g_free ( uri );
 }

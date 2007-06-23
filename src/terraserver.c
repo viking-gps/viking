@@ -41,6 +41,8 @@ static int terraserver_urban_download ( MapCoord *src, const gchar *dest_fn );
 
 static void terraserver_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
 
+static DownloadOptions terraserver_options = { 0 };
+
 void terraserver_init () {
   VikMapsLayer_MapType map_type_1 = { 2, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_topo_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_topo_download };
   VikMapsLayer_MapType map_type_2 = { 1, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_aerial_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_aerial_download };
@@ -122,7 +124,7 @@ static int terraserver_download ( MapCoord *src, const gchar *dest_fn, guint8 ty
   int res = -1;
   gchar *uri = g_strdup_printf ( "/tile.ashx?T=%d&S=%d&X=%d&Y=%d&Z=%d", type,
                                   src->scale, src->x, src->y, src->z );
-  res = a_http_download_get_url_nohostname ( TERRASERVER_SITE, uri, dest_fn );
+  res = a_http_download_get_url ( TERRASERVER_SITE, uri, dest_fn, &terraserver_options );
   g_free ( uri );
   return(res);
 }

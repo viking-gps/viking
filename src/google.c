@@ -40,6 +40,8 @@ static int google_kh_download ( MapCoord *src, const gchar *dest_fn );
 static void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
 static gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 
+static DownloadOptions google_options = { 1 };
+
 void google_init () {
   VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };
   VikMapsLayer_MapType google_2 = { 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download };
@@ -98,7 +100,7 @@ static int real_google_download ( MapCoord *src, const gchar *dest_fn, const cha
 {
    int res;
    gchar *uri = g_strdup_printf ( "/mt?v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
-   res = a_http_download_get_url ( "mt.google.com", uri, dest_fn );
+   res = a_http_download_get_url ( "mt.google.com", uri, dest_fn, &google_options );
    g_free ( uri );
    return res;
 }
@@ -160,7 +162,7 @@ static int google_kh_download ( MapCoord *src, const gchar *dest_fn )
    gchar *khenc = kh_encode( src->x, src->y, src->scale );
    gchar *uri = g_strdup_printf ( "/kh?v=%s&t=%s", GOOGLE_KH_VERSION, khenc );
    g_free ( khenc );
-   res = a_http_download_get_url ( "kh.google.com", uri, dest_fn );
+   res = a_http_download_get_url ( "kh.google.com", uri, dest_fn, &google_options );
    g_free ( uri );
    return(res);
 }

@@ -21,8 +21,12 @@
 
 #ifndef _VIKING_DOWNLOAD_H
 #define _VIKING_DOWNLOAD_H
+
+typedef struct {
+  int sendhostname;
+} DownloadOptions;
+
 /* TODO: convert to Glib */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn );
-int a_http_download_get_url_nohostname ( const char *hostname, const char *uri, const char *fn );
+int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt );
 
 #endif
