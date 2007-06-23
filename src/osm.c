@@ -38,7 +38,7 @@ static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
 
-static DownloadOptions osm_options = { 1 };
+static DownloadOptions osm_options = { 1, NULL };
 
 /* initialisation */
 void osm_init () {

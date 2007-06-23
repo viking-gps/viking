@@ -88,7 +88,7 @@ int http_get_line(int sock, char *buf, int len)
   return 1;
 }
 
-int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int already_redirected, int sendhostname )
+int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int already_redirected, DownloadOptions *options )
 {
   static char input_buffer[1024];
   int sock;
@@ -108,7 +108,7 @@ int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int 
   }
 
 
-  if ( sendhostname ) {
+  if ( options != NULL && options->sendhostname ) {
     send ( sock, "GET http://", 11, 0);
     send ( sock, hostname, strlen(hostname), 0 );
     send ( sock, uri, strlen ( uri ), 0 );

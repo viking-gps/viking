@@ -77,7 +77,7 @@ void curl_download_init()
   get_cookie_file(TRUE);
 }
 
-int curl_download_uri ( const char *uri, FILE *f )
+int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
 {
   CURL *curl;
   CURLcode res = CURLE_FAILED_INIT;
@@ -88,8 +88,8 @@ int curl_download_uri ( const char *uri, FILE *f )
     {
       curl_easy_setopt ( curl, CURLOPT_URL, uri );
       curl_easy_setopt ( curl, CURLOPT_FILE, f );
-      if (strstr(uri, ".google.com"))
-        curl_easy_setopt ( curl, CURLOPT_REFERER, "http://maps.google.com/");
+      if (options != NULL && options->referer != NULL)
+        curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
       curl_easy_setopt ( curl, CURLOPT_USERAGENT, "viking/0.1.3 libcurl/7.15.4" );
       if (cookie_file = get_cookie_file(FALSE))
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
@@ -99,14 +99,14 @@ int curl_download_uri ( const char *uri, FILE *f )
   return(res);
 }
 
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f )
+int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadOptions *options )
 {
   int ret;
   gchar *full = NULL;
 
   /* Compose the full url */
   full = g_strdup_printf ( "http://%s%s", hostname, uri );
-  ret = curl_download_uri ( full, f );
+  ret = curl_download_uri ( full, f, options );
   g_free ( full );
   full = NULL;
 

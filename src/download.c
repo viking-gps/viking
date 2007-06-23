@@ -100,7 +100,7 @@ static int check_map_file(FILE* f)
   return(res);
 }
 
-static int download( const char *hostname, const char *uri, const char *fn, int sendhostname)
+static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options)
 {
   FILE *f;
   int ret;
@@ -142,9 +142,9 @@ static int download( const char *hostname, const char *uri, const char *fn, int 
 
   /* Call the backend function */
 #ifdef HAVE_LIBCURL
-  ret = curl_download_get_url ( hostname, uri, f );
+  ret = curl_download_get_url ( hostname, uri, f, options );
 #else
-  ret = http_download_get_url ( hostname, uri, f, 0, sendhostname );
+  ret = http_download_get_url ( hostname, uri, f, 0, options );
 #endif
 
   if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
@@ -168,7 +168,5 @@ static int download( const char *hostname, const char *uri, const char *fn, int 
 /* only reason for the "wrapper" is so we can do redirects. */
 int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt )
 {
-  int sendhostname = 0;
-  if (opt != NULL) sendhostname = opt->sendhostname;
-  return download ( hostname, uri, fn, sendhostname );
+  return download ( hostname, uri, fn, opt );
 }

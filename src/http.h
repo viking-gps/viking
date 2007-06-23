@@ -24,6 +24,8 @@
 
 #include <stdio.h>
 
-int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int already_redirected, int sendhostname );
+#include "download.h"
+
+int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int already_redirected, DownloadOptions *options );
 
 #endif

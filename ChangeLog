@@ -1,6 +1,7 @@
 2007-06-23
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Minor change to avoid SEGFAULT on x86_64
+	* Add DownloadOptions type to specify referer per map source
 
 2007-06-19
 Quy Tonthat <qtonthat@gmail.com>:

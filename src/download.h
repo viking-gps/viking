@@ -23,7 +23,16 @@
 #define _VIKING_DOWNLOAD_H
 
 typedef struct {
+  /**
+   * Indicates if we should send hostname on the GET request.
+   * (see http.c)
+   */
   int sendhostname;
+  /**
+   * The REFERER string to use.
+   * Could be NULL.
+   */
+  gchar *referer;
 } DownloadOptions;
 
 /* TODO: convert to Glib */
