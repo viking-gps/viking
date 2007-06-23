@@ -9,7 +9,7 @@ authors.h: ../AUTHORS
 	rm -f $@
 	echo "/* Generated file. */" >> $@
 	echo "#define AUTHORS \\" >> $@
-	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/\\n"\\/' $< >> $@
+	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/\\n"\\/' -e '$$s/\\$$//' $< >> $@
 
 BUILT_SOURCES = authors.h
 
