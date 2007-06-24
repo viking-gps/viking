@@ -422,7 +422,6 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
       }
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
-#ifndef GTK_2_2
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
       {
         gchar **pstr = param->widget_data;
@@ -442,7 +441,6 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
         gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), data.u );
       }
       break;
-#endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
       /* widget_data and extra_widget_data are GList */
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
@@ -512,14 +510,12 @@ static VikLayerParamData properties_widget_get_value ( GtkWidget *widget, VikLay
       rv.b = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
-#ifndef GTK_2_2
       rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
       if ( rv.i == -1 ) rv.i = 0;
       rv.u = rv.i;
       if ( param->extra_widget_data )
         rv.u = ((guint *)param->extra_widget_data)[rv.u];
       break;
-#endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
       rv.u = vik_radio_group_get_selected(VIK_RADIO_GROUP(widget));
       if ( param->extra_widget_data )

@@ -15,14 +15,6 @@ strip --strip-all viking # optional)
 cp viking /usr/local/bin # as root)
 cp ../viking-remote /usr/local/bin # optional)
 
-Or, if you are using GTK 2.2 (as opposed to 2.4 or greater):
-
-cd src
-make -f Makefile_GTK_2_2
-strip --strip-all viking
-cp viking /usr/local/bin
-cp ../viking-remote /usr/local/bin
-
 Try the "example.vik" file to get started.
 
 Windows:
