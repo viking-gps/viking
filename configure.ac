@@ -124,6 +124,7 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/icons/Makefile
                  test/Makefile
+		 debian/Makefile
                  doc/Makefile
                  doc/dev/Makefile])
 AC_OUTPUT([

@@ -1,4 +1,4 @@
-SUBDIRS = src test doc
+SUBDIRS = src test debian doc
 
 bin_SCRIPTS = viking-remote
 

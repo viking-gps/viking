@@ -1,6 +1,7 @@
 2007-06-24
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Merging with Ralf's work around debianization
+	* Adding debian subdirectory to automaked tarball
 
 2007-06-23
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
