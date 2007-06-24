@@ -2,18 +2,15 @@ UNIX:
 
 You must have GTK+ 2.2.0 or greater installed.
 
-if from CVS:
-aclocal \
-&& autoheader \
-&& automake -a && automake \
-&& autoconf
+if from SVN (not from prepackaged tarball):
+./autogen.sh
 
 
 ./configure
 make
-strip --strip-all viking # optional)
-cp viking /usr/local/bin # as root)
-cp ../viking-remote /usr/local/bin # optional)
+make install # as root
+
+Run "./configure --help" for some configuration options.
 
 Try the "example.vik" file to get started.
 
