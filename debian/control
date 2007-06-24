@@ -1,14 +1,17 @@
 Source: viking
-Section: unknown
-Priority: extra
+Section: x11
+Priority: optional
 Maintainer: Guilhem BONNEFILLE <guilhem.bonnefille@gmail.com>
-Build-Depends: debhelper (>= 5), autotools-dev, docbook-to-man
+Build-Depends: debhelper (>= 5), autotools-dev, docbook-to-man, libexpat1-dev, libgtk2.0-dev, libgtk2.0-0, libpng12-0, xsltproc, docbook-xsl, imagemagick
 Standards-Version: 3.7.2
 
 Package: viking
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: gpsbabel
 Description: GPS data editor and viewer with auto-downloaded background
  Viking is a GTK2-based GPS data editor and viewer.
  It can download and show background maps, import and draw tracks and waypoints over them, add coordinate lines, make new tracks and waypoints, hide different things, and more.
  It uses a hierarchical layering system to organize GPS data, maps, and other layer types with spatial data (such as coordinate lines).
+ .
+ Homepage: http://viking.sf.net

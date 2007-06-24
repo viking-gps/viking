@@ -1,10 +1,13 @@
 This is viking, debianized by Guilhem BONNEFILLE <guilhem.bonnefille@gmail.com>
-on Sun, 29 Apr 2007 22:20:31 +0200.
+on Sun, 29 Apr 2007 22:20:31 +0200,
+and by Ralf Meyer <ranfyy@gmail.com> on Sun, 20 May 2007 07:36:33 +0200.
 
 The original source can always be found at:
 	http://sourceforge.net/project/showfiles.php?group_id=83870
 
-Copyright Holder:  Evan Battaglia <gtoevan@gmx.net>
+Upstream Author: Evan Battaglia <gtoevan@gmx.net>
+
+Copyright: 2003-2007, Evan Battaglia <gtoevan@gmx.net>
 
 License:
 
@@ -24,3 +27,24 @@ License:
 
 On Debian systems, the complete text of the GNU General
 Public License can be found in `/usr/share/common-licenses/GPL'.
+
+The Debian packaging is (C) 2007, Ralf Meyer <ranfyy@gmail.com> and
+is licensed under the GPL, see above.
+
+
+src/coords.c: 
+src/coords.h: 
+	Copyright (C) 2001 by Jef Poskanzer <jef@acme.com>.
+
+src/vikviewport.c: 
+src/expedia.c: 
+	GPSDrive Copyright (C) 2001-2004 Fritz Ganter <ganter@ganter.at>
+
+src/thumbnails.c: 
+	ROX-Filer source code, Copyright (C) 2003, the ROX-Filer team,
+
+src/gpx.c: 
+	Copyright (C) 2002, 2003, 2004, 2005 Robert Lipe, robertlipe@usa.net
+
+src/babel.h: 
+	Copyright (C) 2005, Alex Foobarian <foobarian@gmail.com>

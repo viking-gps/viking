@@ -29,6 +29,9 @@ config.status: configure
 	# Add here commands to configure the package.
 	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
 
+configure:
+	cp -f /usr/share/misc/config.sub config.sub
+	cp -f /usr/share/misc/config.guess config.guess
 
 build: build-stamp
 
@@ -71,6 +74,9 @@ install: build
 	mkdir -p $(CURDIR)/debian/viking/usr/share/viking
 	convert -resize 32x32 src/icons/viking_18.png $(CURDIR)/debian/viking/usr/share/viking/viking.xpm
 
+	install -m 644 debian/viking.desktop \
+	$(CURDIR)/debian/viking/usr/share/applications/
+
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -98,6 +104,7 @@ binary-arch: build install
 	dh_link
 	dh_strip
 	dh_compress
+	dh_desktop viking
 	dh_fixperms
 #	dh_perl
 #	dh_makeshlibs

@@ -4,9 +4,17 @@ viking (0.1.3-1) unstable; urgency=low
 
  -- Guilhem BONNEFILLE <guilhem.bonnefille@gmail.com>  Thu, 13 June 2007 15:31:31 +0200
 
+viking (0.1.3.20070526-0ubuntu1) gutsy; urgency=low
+ 
+  * Initial release (Closes: LP #115365) for Ubuntu
+ 
+ -- Ralf Meyer <ranfyy@gmail.com>  Tue,  5 Jun 2007 07:54:19 +0200
+
 viking (0.1.3) unstable; urgency=low
 
   * Update to new 0.1.3 upstream version.
+  * Closes: LP #115365 on Ubuntu
+	
 
  -- Guilhem BONNEFILLE <guilhem.bonnefille@gmail.com>  Thu, 15 May 2007 16:15:31 +0200
 

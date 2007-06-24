@@ -1,4 +1,15 @@
 NEWS
 README
 TODO
-HACKING
+doc/GEOCODED-PHOTOS
+doc/GETTING-STARTED
+doc/GPSMAPPER
+doc/dev/CLEANUPS
+doc/dev/Clipboard
+doc/dev/FF2
+doc/dev/FF2-Implementation
+doc/dev/File-Format-Outline
+doc/dev/GRRM
+doc/dev/MergeLayers
+doc/dev/Track-Tool-Interfaces
+doc/dev/TrackEditing

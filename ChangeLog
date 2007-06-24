@@ -1,3 +1,7 @@
+2007-06-24
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Merging with Ralf's work around debianization
+
 2007-06-23
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Minor change to avoid SEGFAULT on x86_64
