@@ -81,7 +81,7 @@ WAYPOINT_ICONS = \
   wp_airplane.png
 
 ICONS = \
-  viking_18.png \
+  viking_icon.png \
   addtr_18.png \
   addwp_18.png \
   edtr_18.png \

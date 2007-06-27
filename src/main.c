@@ -20,7 +20,7 @@
  */
 
 #include "viking.h"
-#include "icons/viking_18.png_h"
+#include "icons/viking_icon.png_h"
 #include "mapcache.h"
 #include "background.h"
 #include "curl_download.h"

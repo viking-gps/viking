@@ -72,7 +72,7 @@ install: build
 	$(MAKE) DESTDIR=$(CURDIR)/debian/viking install
 
 	mkdir -p $(CURDIR)/debian/viking/usr/share/viking
-	convert -resize 32x32 src/icons/viking_18.png $(CURDIR)/debian/viking/usr/share/viking/viking.xpm
+	convert -resize 32x32 src/icons/viking_icon.png $(CURDIR)/debian/viking/usr/share/viking/viking.xpm
 
 	install -m 644 debian/viking.desktop \
 	$(CURDIR)/debian/viking/usr/share/applications/
