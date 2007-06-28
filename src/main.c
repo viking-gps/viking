@@ -102,7 +102,7 @@ int main( int argc, char *argv[] )
   a_background_init ();
 
   /* Set the icon */
-  main_icon = gdk_pixbuf_from_pixdata(&viking_18, FALSE, NULL);
+  main_icon = gdk_pixbuf_from_pixdata(&viking_icon, FALSE, NULL);
   gtk_window_set_default_icon(main_icon);
 
   /* Create the first window */
