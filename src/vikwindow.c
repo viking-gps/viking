@@ -139,6 +139,7 @@ struct _VikWindow {
   gboolean modified;
 
   GtkWidget *open_dia, *save_dia;
+  GtkWidget *save_img_dia, *save_img_dir_dia;
 
   gboolean only_updating_coord_mode_ui; /* hack for a bug in GTK */
   GtkUIManager *uim;
@@ -300,6 +301,8 @@ static void window_init ( VikWindow *vw )
 
   vw->open_dia = NULL;
   vw->save_dia = NULL;
+  vw->save_img_dia = NULL;
+  vw->save_img_dir_dia = NULL;
 }
 
 VikWindow *vik_window_new ()
@@ -1471,42 +1474,46 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
 
 static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *file_selector;
   const gchar *fn;
-  file_selector = gtk_file_selection_new ("Save Image");
+  if (!vw->save_img_dia) {
+    vw->save_img_dia = gtk_file_selection_new ("Save Image");
+    gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dia), GTK_WINDOW(vw) );
+    gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dia), TRUE );
+  }
 
-  while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_OK )
+  while ( gtk_dialog_run ( GTK_DIALOG(vw->save_img_dia) ) == GTK_RESPONSE_OK )
   {
-    fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(file_selector) );
-    if ( access ( fn, F_OK ) != 0 || a_dialog_overwrite ( GTK_WINDOW(file_selector), "The file \"%s\" exists, do you wish to overwrite it?", a_file_basename ( fn ) ) )
+    fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(vw->save_img_dia) );
+    if ( access ( fn, F_OK ) != 0 || a_dialog_overwrite ( GTK_WINDOW(vw->save_img_dia), "The file \"%s\" exists, do you wish to overwrite it?", a_file_basename ( fn ) ) )
     {
-      gtk_widget_hide ( file_selector );
       draw_to_image_file ( vw, fn, TRUE );
       break;
     }
   }
-  gtk_widget_destroy ( file_selector );
+  gtk_widget_hide ( vw->save_img_dia );
 }
 
 static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *file_selector;
   const gchar *fn;
-  file_selector = gtk_file_selection_new ("Choose a name for a new directory to hold images");
+  if (!vw->save_img_dir_dia) {
+    vw->save_img_dir_dia = gtk_file_selection_new ("Choose a name for a new directory to hold images");
+    gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dir_dia), GTK_WINDOW(vw) );
+    gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dir_dia), TRUE );
+  }
 
-  while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_OK )
+  while ( gtk_dialog_run ( GTK_DIALOG(vw->save_img_dir_dia) ) == GTK_RESPONSE_OK )
   {
-    fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(file_selector) );
+    fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(vw->save_img_dir_dia) );
     if ( access ( fn, F_OK ) == 0 )
-      a_dialog_info_msg_extra ( GTK_WINDOW(file_selector), "The file %s exists. Please choose a name for a new directory to hold images in that does not exist.", a_file_basename(fn) );
+      a_dialog_info_msg_extra ( GTK_WINDOW(vw->save_img_dir_dia), "The file %s exists. Please choose a name for a new directory to hold images in that does not exist.", a_file_basename(fn) );
     else
     {
-      gtk_widget_hide ( file_selector );
       draw_to_image_file ( vw, fn, FALSE );
       break;
     }
   }
-  gtk_widget_destroy ( file_selector );
+  gtk_widget_hide ( vw->save_img_dir_dia );
 }
 
 /* really a misnomer: changes coord mode (actual coordinates) AND/OR draw mode (viewport only) */
