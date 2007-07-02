@@ -192,23 +192,32 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
       gchar info[128];
       int ilen = 0;
       int i;
+      int n_tokens = 0;
 
-      for (i=8; tokens[i] && ilen < sizeof(info)-2 && strcmp(tokens[i], "00"); i++) {
-	guint ch;
-	sscanf(tokens[i], "%x", &ch);
-	info[ilen++] = ch;
+      while (tokens[n_tokens])
+        n_tokens++;
+
+      if (n_tokens > 8) {
+        for (i=8; tokens[i] && ilen < sizeof(info)-2 && strcmp(tokens[i], "00"); i++) {
+	  guint ch;
+	  sscanf(tokens[i], "%x", &ch);
+	  info[ilen++] = ch;
+        }
+        info[ilen++] = 0;
+        set_gps_info(info, w);
       }
-      info[ilen++] = 0;
-      set_gps_info(info, w);
+      g_strfreev(tokens);
     }
     if (strstr(line, "RECORD")) { 
       int lsb, msb, cnt;
 
-      sscanf(line+17, "%x", &lsb); 
-      sscanf(line+20, "%x", &msb);
-      cnt = lsb + msb * 256;
-      set_total_count(cnt, w);
-      gps_data->count = 0;
+      if (strlen(line) > 20) {
+       sscanf(line+17, "%x", &lsb); 
+       sscanf(line+20, "%x", &msb);
+       cnt = lsb + msb * 256;
+       set_total_count(cnt, w);
+       gps_data->count = 0;
+      }
     }
     if ( strstr(line, "WPTDAT") || strstr(line, "TRKHDR") || strstr(line, "TRKDAT") ) {
       gps_data->count++;
