@@ -369,7 +369,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
       else if ( stack->under == NULL && eq_pos == 9 && strncasecmp ( line, "drawscale", eq_pos ) == 0 )
         vik_viewport_set_draw_scale ( VIK_VIEWPORT(vp), TEST_BOOLEAN(line+10) );
       else if ( stack->under == NULL && eq_pos == 14 && strncasecmp ( line, "drawcentermark", eq_pos ) == 0 )
-        vik_viewport_set_draw_centermark ( VIK_VIEWPORT(vp), TEST_BOOLEAN(line+10) );
+        vik_viewport_set_draw_centermark ( VIK_VIEWPORT(vp), TEST_BOOLEAN(line+15) );
       else if ( stack->under && eq_pos == 4 && strncasecmp ( line, "name", eq_pos ) == 0 )
         vik_layer_rename ( VIK_LAYER(stack->data), line+5 );
       else if ( eq_pos == 7 && strncasecmp ( line, "visible", eq_pos ) == 0 )

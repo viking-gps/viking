@@ -1066,6 +1066,14 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       vw->only_updating_coord_mode_ui = FALSE;
 
       vik_layers_panel_change_coord_mode ( vw->viking_vlp, vik_viewport_get_coord_mode ( vw->viking_vvp ) );
+
+      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowScale" );
+      g_assert ( mode_button );
+      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_scale(vw->viking_vvp) );
+
+      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowCenterMark" );
+      g_assert ( mode_button );
+      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_centermark(vw->viking_vvp) );
     }
     default: draw_update ( vw );
   }
@@ -1559,13 +1567,19 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
 
 static void set_draw_scale ( GtkAction *a, VikWindow *vw )
 {
-  vik_viewport_set_draw_scale ( vw->viking_vvp, !vik_viewport_get_draw_scale(vw->viking_vvp) );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowScale" );
+  g_assert(check_box);
+  gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
+  vik_viewport_set_draw_scale ( vw->viking_vvp, state );
   draw_update ( vw );
 }
 
 static void set_draw_centermark ( GtkAction *a, VikWindow *vw )
 {
-  vik_viewport_set_draw_centermark ( vw->viking_vvp, !vik_viewport_get_draw_centermark(vw->viking_vvp) );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowCenterMark" );
+  g_assert(check_box);
+  gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
+  vik_viewport_set_draw_centermark ( vw->viking_vvp, state );
   draw_update ( vw );
 }
 
