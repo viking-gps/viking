@@ -1057,6 +1057,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
         case VIK_VIEWPORT_DRAWMODE_UTM: buttonname = "/ui/MainMenu/View/ModeUTM"; break;
         case VIK_VIEWPORT_DRAWMODE_EXPEDIA: buttonname = "/ui/MainMenu/View/ModeExpedia"; break;
         case VIK_VIEWPORT_DRAWMODE_GOOGLE: buttonname = "/ui/MainMenu/View/ModeGoogle"; break;
+        case VIK_VIEWPORT_DRAWMODE_MERCATOR: buttonname = "/ui/MainMenu/View/ModeMercator"; break;
         default: buttonname = "/ui/MainMenu/View/ModeKH";
       }
       mode_button = gtk_ui_manager_get_widget ( vw->uim, buttonname );
