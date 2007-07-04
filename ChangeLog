@@ -1,3 +1,7 @@
+2007-07-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Bug fix: View Mode displayed wrong setting on start up
+
 2007-07-03
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fixed bugs that caused draw_scale and draw_centermark status not being
