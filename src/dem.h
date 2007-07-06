@@ -1,7 +1,7 @@
 #ifndef __VIKING_DEM_H
 #define __VIKING_DEM_H
 
-#define VIK_DEM_INVALID_ELEVATION -32767
+#define VIK_DEM_INVALID_ELEVATION -32768
 
 /* unit codes */
 #define VIK_DEM_HORIZ_UTM_METERS 2
