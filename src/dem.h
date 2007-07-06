@@ -9,11 +9,15 @@
 
 #define VIK_DEM_VERT_DECIMETERS 2
 
+#define VIK_DEM_VERT_METERS 1 /* wrong in 250k?	 */
+
+
 typedef struct {
   guint n_columns;
   GPtrArray *columns;
 
-  guint16 horiz_units, vert_units;
+  guint8 horiz_units;
+  guint8 orig_vert_units; /* original, always converted to meters when loading. */
   gdouble east_scale; /* gap between samples */
   gdouble north_scale;
 

@@ -81,15 +81,17 @@ static gboolean dem_parse_header ( gchar *buffer, VikDEM *dem )
   get_double_and_continue(&buffer, &val, TRUE);
   dem->horiz_units = val;
   get_double_and_continue(&buffer, &val, TRUE);
-  dem->vert_units = val;
+  /* dem->orig_vert_units = val; now done below */
 
   /* TODO: do this for real. these are only for 1:24k and 1:250k USGS */
   if ( dem->horiz_units == VIK_DEM_HORIZ_UTM_METERS ) {
     dem->east_scale = 10.0; /* meters */
     dem->north_scale = 10.0;
+    dem->orig_vert_units = VIK_DEM_VERT_DECIMETERS;
   } else {
     dem->east_scale = 3.0; /* arcseconds */
     dem->north_scale = 3.0;
+    dem->orig_vert_units = VIK_DEM_VERT_METERS;
   }
 
   /* skip next */
@@ -117,9 +119,12 @@ static void dem_parse_block_as_cont ( gchar *buffer, VikDEM *dem, gint *cur_colu
 {
   gint tmp;
   while ( *cur_row < GET_COLUMN(dem, *cur_column)->n_points ) {
-    if ( get_int_and_continue(&buffer, &tmp,FALSE) )
-      GET_COLUMN(dem, *cur_column)->points[*cur_row] = (gint16) tmp;
-    else
+    if ( get_int_and_continue(&buffer, &tmp,FALSE) ) {
+      if ( dem->orig_vert_units == VIK_DEM_VERT_DECIMETERS )
+        GET_COLUMN(dem, *cur_column)->points[*cur_row] = (gint16) (tmp / 10);
+      else
+        GET_COLUMN(dem, *cur_column)->points[*cur_row] = (gint16) tmp;
+    } else
       return;
     (*cur_row)++;
   }
@@ -210,7 +215,7 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename)
   dem = g_malloc(sizeof(VikDEM));
 
   dem->horiz_units = VIK_DEM_HORIZ_LL_ARCSECONDS;
-  dem->vert_units = VIK_DEM_VERT_DECIMETERS;
+  dem->orig_vert_units = VIK_DEM_VERT_DECIMETERS;
   dem->east_scale = dem->north_scale = 3;
 
   /* TODO */
