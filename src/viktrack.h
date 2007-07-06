@@ -80,4 +80,7 @@ gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdoubl
 void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
 VikTrack *vik_track_unmarshall (guint8 *data, guint datalen);
 
+void vik_track_apply_dem_data ( VikTrack *tr, GList *dems );
+
+
 #endif

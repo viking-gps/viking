@@ -21,6 +21,7 @@
 
 #include "viking.h"
 #include "vikradiogroup.h"
+#include "vikfilelist.h"
 #include <string.h>
 
 /* functions common to all layers. */
@@ -32,6 +33,7 @@ extern VikLayerInterface vik_maps_layer_interface;
 extern VikLayerInterface vik_coord_layer_interface;
 extern VikLayerInterface vik_georef_layer_interface;
 extern VikLayerInterface vik_gps_layer_interface;
+extern VikLayerInterface vik_dem_layer_interface;
 
 enum {
   VL_UPDATE_SIGNAL,
@@ -101,6 +103,7 @@ static VikLayerInterface *vik_layer_interfaces[VIK_LAYER_NUM_TYPES] = {
   &vik_georef_layer_interface,
   &vik_gps_layer_interface,
   &vik_maps_layer_interface,
+  &vik_dem_layer_interface,
 };
 
 VikLayerInterface *vik_layer_get_interface ( gint type )
@@ -422,6 +425,7 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
       }
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
+#ifndef GTK_2_2
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
       {
         gchar **pstr = param->widget_data;
@@ -441,6 +445,7 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
         gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), data.u );
       }
       break;
+#endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
       /* widget_data and extra_widget_data are GList */
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
@@ -484,6 +489,13 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
         vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), data.s );
       }
       break;
+    case VIK_LAYER_WIDGET_FILELIST:
+      if ( param->type == VIK_LAYER_PARAM_STRING_LIST )
+      {
+        rv = vik_file_list_new ( param->title );
+        vik_file_list_set_files ( VIK_FILE_LIST(rv), data.sl );
+      }
+      break;
     case VIK_LAYER_WIDGET_HSCALE:
       if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT
            || param->type == VIK_LAYER_PARAM_INT)  && param->widget_data )
@@ -510,12 +522,14 @@ static VikLayerParamData properties_widget_get_value ( GtkWidget *widget, VikLay
       rv.b = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
+#ifndef GTK_2_2
       rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
       if ( rv.i == -1 ) rv.i = 0;
       rv.u = rv.i;
       if ( param->extra_widget_data )
         rv.u = ((guint *)param->extra_widget_data)[rv.u];
       break;
+#endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
       rv.u = vik_radio_group_get_selected(VIK_RADIO_GROUP(widget));
       if ( param->extra_widget_data )
@@ -534,6 +548,9 @@ static VikLayerParamData properties_widget_get_value ( GtkWidget *widget, VikLay
       break;
     case VIK_LAYER_WIDGET_FILEENTRY:
       rv.s = vik_file_entry_get_filename ( VIK_FILE_ENTRY(widget) );
+      break;
+    case VIK_LAYER_WIDGET_FILELIST:
+      rv.sl = vik_file_list_get_files ( VIK_FILE_LIST(widget) );
       break;
     case VIK_LAYER_WIDGET_HSCALE:
       if ( param->type == VIK_LAYER_PARAM_UINT )

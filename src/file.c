@@ -105,20 +105,37 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
     for ( i = 0; i < params_count; i++ )
     {
       data = get_param(l,i);
-      fprintf ( f, "%s=", params[i].name );
-      switch ( params[i].type )
-      {
-        case VIK_LAYER_PARAM_DOUBLE: {
-//          char buf[15]; /* locale independent */
-//          fprintf ( f, "%s\n", (char *) g_dtostr (data.d, buf, sizeof (buf)) ); break;
-            fprintf ( f, "%f\n", data.d );
-            break;
-       }
-        case VIK_LAYER_PARAM_UINT: fprintf ( f, "%d\n", data.u ); break;
-        case VIK_LAYER_PARAM_INT: fprintf ( f, "%d\n", data.i ); break;
-        case VIK_LAYER_PARAM_BOOLEAN: fprintf ( f, "%c\n", data.b ? 't' : 'f' ); break;
-        case VIK_LAYER_PARAM_STRING: fprintf ( f, "%s\n", data.s ); break;
-        case VIK_LAYER_PARAM_COLOR: fprintf ( f, "#%.2x%.2x%.2x\n", (int)(data.c.red/256),(int)(data.c.green/256),(int)(data.c.blue/256)); break;
+
+      /* string lists are handled differently. We get a GList (that shouldn't
+       * be freed) back for get_param and if it is null we shouldn't write
+       * anything at all (otherwise we'd read in a list with an empty string,
+       * not an empty string list.
+       */
+      if ( params[i].type == VIK_LAYER_PARAM_STRING_LIST ) {
+        if ( data.sl ) {
+          GList *iter = (GList *)data.sl;
+          while ( iter ) {
+            fprintf ( f, "%s=", params[i].name );
+            fprintf ( f, "%s\n", (gchar *)(iter->data) );
+            iter = iter->next;
+          }
+        }
+      } else {
+        fprintf ( f, "%s=", params[i].name );
+        switch ( params[i].type )
+        {
+          case VIK_LAYER_PARAM_DOUBLE: {
+  //          char buf[15]; /* locale independent */
+  //          fprintf ( f, "%s\n", (char *) g_dtostr (data.d, buf, sizeof (buf)) ); break;
+              fprintf ( f, "%f\n", data.d );
+              break;
+         }
+          case VIK_LAYER_PARAM_UINT: fprintf ( f, "%d\n", data.u ); break;
+          case VIK_LAYER_PARAM_INT: fprintf ( f, "%d\n", data.i ); break;
+          case VIK_LAYER_PARAM_BOOLEAN: fprintf ( f, "%c\n", data.b ? 't' : 'f' ); break;
+          case VIK_LAYER_PARAM_STRING: fprintf ( f, "%s\n", data.s ); break;
+          case VIK_LAYER_PARAM_COLOR: fprintf ( f, "#%.2x%.2x%.2x\n", (int)(data.c.red/256),(int)(data.c.green/256),(int)(data.c.blue/256)); break;
+        }
       }
     }
   }
@@ -208,6 +225,23 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
 */
 }
 
+static void string_list_delete ( gpointer key, gpointer l, gpointer user_data )
+{
+  GList *iter = (GList *) iter;
+  while ( iter ) {
+    g_free ( iter->data );
+    iter = iter->next;
+  }
+  g_list_free ( (GList *) iter );
+}
+
+static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
+{
+  VikLayerParamData x;
+  x.sl = list;
+  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1] );
+}
+
 static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
 {
   Stack *stack;
@@ -219,6 +253,8 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
 
   VikLayerParam *params = NULL; /* for current layer, so we don't have to keep on looking up interface */
   guint8 params_count = 0;
+
+  GHashTable *string_lists = g_hash_table_new(g_direct_hash,g_direct_equal);
 
   push(&stack);
   stack->under = NULL;
@@ -290,6 +326,13 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
           g_warning ( "Line %ld: Mismatched ~EndLayer command", line_num );
         else
         {
+          /* add any string lists we've accumulated */
+          gpointer layer_and_vp[2];
+          layer_and_vp[0] = stack->data;
+          layer_and_vp[1] = vp;
+          g_hash_table_foreach ( string_lists, (GHFunc) string_list_set_param, layer_and_vp );
+          g_hash_table_remove_all ( string_lists );
+
           if ( stack->data && stack->under->data )
           {
             if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_AGGREGATE) {
@@ -377,6 +420,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
       else if ( eq_pos != -1 && stack->under )
       {
         gboolean found_match = FALSE;
+
         /* go thru layer params. if len == eq_pos && starts_with jazz, set it. */
         /* also got to check for name and visible. */
 
@@ -391,17 +435,25 @@ static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
           {
             VikLayerParamData x;
             line += eq_pos+1;
-            switch ( params[i].type )
-            {
-              case VIK_LAYER_PARAM_DOUBLE: x.d = strtod(line, NULL); break;
-              case VIK_LAYER_PARAM_UINT: x.u = strtoul(line, NULL, 10); break;
-              case VIK_LAYER_PARAM_INT: x.i = strtol(line, NULL, 10); break;
-              case VIK_LAYER_PARAM_BOOLEAN: x.b = TEST_BOOLEAN(line); break;
-              case VIK_LAYER_PARAM_COLOR: memset(&(x.c), 0, sizeof(x.c)); /* default: black */
+            if ( params[i].type == VIK_LAYER_PARAM_STRING_LIST ) {
+              GList *l = g_list_append ( g_hash_table_lookup ( string_lists, (gpointer) ((gint) i) ), g_strdup(line) );
+              g_hash_table_replace ( string_lists, (gpointer) ((gint)i), l );
+              /* add the value to a list, possibly making a new list.
+               * this will be passed to the layer when we read an ~EndLayer */
+            } else {
+              switch ( params[i].type )
+              {
+                case VIK_LAYER_PARAM_DOUBLE: x.d = strtod(line, NULL); break;
+                case VIK_LAYER_PARAM_UINT: x.u = strtoul(line, NULL, 10); break;
+                case VIK_LAYER_PARAM_INT: x.i = strtol(line, NULL, 10); break;
+	        case VIK_LAYER_PARAM_BOOLEAN: x.b = TEST_BOOLEAN(line); break;
+                case VIK_LAYER_PARAM_COLOR: memset(&(x.c), 0, sizeof(x.c)); /* default: black */
                                           gdk_color_parse ( line, &(x.c) ); break;
-              default: x.s = line;
+                /* STRING or STRING_LIST -- if STRING_LIST, just set param to add a STRING */
+                default: x.s = line;
+              }
+              vik_layer_set_param ( VIK_LAYER(stack->data), i, x, vp );
             }
-            vik_layer_set_param ( VIK_LAYER(stack->data), i, x, vp );
             found_match = TRUE;
             break;
           }
@@ -435,6 +487,10 @@ name=this
 
   if ( ( ! VIK_LAYER(top)->visible ) && VIK_LAYER(top)->realized )
     vik_treeview_item_set_visible ( VIK_LAYER(top)->vt, &(VIK_LAYER(top)->iter), FALSE ); 
+
+  /* delete anything we've forgotten about -- should only happen when file ends before an EndLayer */
+  g_hash_table_foreach ( string_lists, string_list_delete, NULL );
+  g_hash_table_destroy ( string_lists );
 }
 
 /*

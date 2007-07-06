@@ -1,3 +1,7 @@
+2007-07-06
+Evan Battaglia <gtoevan@gmx.net>:
+	* Merge DEM Branch
+
 2007-07-04
 Quy Tonthat <qtonthat@gmail.com>:
 	* Bug fix: View Mode displayed wrong setting on start up
@@ -6,6 +10,11 @@ Quy Tonthat <qtonthat@gmail.com>:
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fixed bugs that caused draw_scale and draw_centermark status not being
 	consistent among View menu, viewport and loaded files.
+
+2007-07-02
+Evan Battaglia <gtoevan@gmx.net>
+        * DEM Branch: Trying to fix/cleanup various DEM things
+        * DEM Branch: Support for SRTM 3 arcsecond _global_ DEM data from http://www2.jpl.nasa.gov/srtm/ 
 
 2007-07-02
 Quy Tonthat <qtonthat@gmail.com>:
@@ -102,6 +111,10 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* GPS layer track and waypoint data can now be saved.
 	* Disable prompt for save before exit.
 	* Add "Save and Exit" to File menu.
+
+2007-05-20
+Evan Battaglia <gtoevan@gmx.net>
+        * DEM Branch
 
 2007-05-20
 Quy Tonthat <qtonthat@gmail.com>:

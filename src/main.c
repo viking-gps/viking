@@ -23,6 +23,7 @@
 #include "icons/viking_icon.png_h"
 #include "mapcache.h"
 #include "background.h"
+#include "dems.h"
 #include "curl_download.h"
 
 #include <string.h>
@@ -120,6 +121,7 @@ int main( int argc, char *argv[] )
   gdk_threads_leave ();
 
   a_mapcache_uninit ();
+  a_dems_uninit ();
 
   return 0;
 }

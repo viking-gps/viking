@@ -31,12 +31,12 @@ static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id 
 static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp, const gchar *color );
 static void coord_layer_post_read ( VikCoordLayer *vcl, VikViewport *vp );
 
-VikLayerParamScale param_scales[] = {
+static VikLayerParamScale param_scales[] = {
   { 0.05, 60.0, 0.25, 10 },
   { 1, 10, 1, 0 },
 };
 
-VikLayerParam coord_layer_params[] = {
+static VikLayerParam coord_layer_params[] = {
   { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, "Color:", VIK_LAYER_WIDGET_ENTRY },
   { "min_inc", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, "Minutes Width:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
   { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Line Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },

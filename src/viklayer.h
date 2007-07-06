@@ -69,6 +69,7 @@ enum {
   VIK_LAYER_GEOREF,
   VIK_LAYER_GPS,
   VIK_LAYER_MAPS,
+  VIK_LAYER_DEM,
   VIK_LAYER_NUM_TYPES
 };
 
@@ -107,6 +108,7 @@ typedef union {
   gboolean b;
   const gchar *s;
   GdkColor c;
+  GList *sl;
 } VikLayerParamData;
 
 typedef struct {
@@ -133,6 +135,7 @@ VIK_LAYER_WIDGET_FILEENTRY,
 VIK_LAYER_WIDGET_HSCALE,
 VIK_LAYER_WIDGET_COLOR,
 VIK_LAYER_WIDGET_COMBOBOX,
+VIK_LAYER_WIDGET_FILELIST,
 };
 
 typedef struct {
@@ -150,6 +153,14 @@ VIK_LAYER_PARAM_INT,
 VIK_LAYER_PARAM_STRING,
 VIK_LAYER_PARAM_BOOLEAN,
 VIK_LAYER_PARAM_COLOR,
+
+/* NOTE: string layer works auniquely: data.sl should NOT be free'd when
+ * the internals call get_param -- i.e. it should be managed w/in the layer.
+ * The value passed by the internals into set_param should also be managed
+ * by the layer -- i.e. free'd by the layer.
+ */
+
+VIK_LAYER_PARAM_STRING_LIST,
 };
 
 /* layer interface functions */
