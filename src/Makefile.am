@@ -58,7 +58,6 @@ viking_SOURCES = main.c \
 	datasource_gc.c \
 	datasources.h \
 	googlesearch.c googlesearch.h \
-	datasources.h \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
 	vikfilelist.c vikfilelist.h \

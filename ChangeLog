@@ -1,3 +1,7 @@
+2007-07-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed typo in Makefile.am
+
 2007-07-06
 Evan Battaglia <gtoevan@gmx.net>:
 	* Merge DEM Branch
