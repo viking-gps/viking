@@ -12,6 +12,7 @@ void a_dems_load_list ( GList **dems );
 void a_dems_list_free ( GList *dems );
 GList *a_dems_list_copy ( GList *dems );
 gint16 a_dems_list_get_elev_by_coord ( GList *dems, const VikCoord *coord );
+gint16 a_dems_get_elev_by_coord ( const VikCoord *coord );
 
 #endif
 #include <glib.h>

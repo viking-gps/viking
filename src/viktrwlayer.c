@@ -143,9 +143,6 @@ struct _VikTrwLayer {
 
   gboolean has_verified_thumbnails;
 
-  /* DEM files */
-  GList *dems;
-
   GtkMenu *wp_right_click_menu;
 
   /* menu */
@@ -286,8 +283,8 @@ static VikToolInterface trw_layer_tools[] = {
 
 /****** PARAMETERS ******/
 
-static gchar *params_groups[] = { "Waypoints", "Tracks", "Waypoint Images", "DEM Data" };
-enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES, GROUP_DEM };
+static gchar *params_groups[] = { "Waypoints", "Tracks", "Waypoint Images" };
+enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES };
 
 static gchar *params_drawmodes[] = { "Draw by Track", "Draw by Velocity", "All Tracks Black", 0 };
 static gchar *params_wpsymbols[] = { "Filled Square", "Square", "Circle", "X", 0 };
@@ -340,16 +337,13 @@ VikLayerParam trw_layer_params[] = {
   { "image_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Size (pixels):", VIK_LAYER_WIDGET_HSCALE, params_scales + 3 },
   { "image_alpha", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Alpha:", VIK_LAYER_WIDGET_HSCALE, params_scales + 4 },
   { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Memory Cache Size:", VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
-
-  { "dems", VIK_LAYER_PARAM_STRING_LIST, GROUP_DEM, "DEM Files:", VIK_LAYER_WIDGET_FILELIST },
 };
 
-enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, PARAM_DEMS, NUM_PARAMS };
+enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
 
 /*** TO ADD A PARAM:
  *** 1) Add to trw_layer_params and enumeration
  *** 2) Handle in get_param & set_param (presumably adding on to VikTrwLayer struct)
- *** 3) Add code to copy_layer, free, and new (try searching for ->dems)
  ***/
 
 /****** END PARAMETERS ******/
@@ -596,7 +590,6 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_WPSYM: if ( data.u < WP_NUM_SYMBOLS ) vtl->wp_symbol = data.u; break;
     case PARAM_WPSIZE: if ( data.u > 0 && data.u <= 64 ) vtl->wp_size = data.u; break;
     case PARAM_WPSYMS: vtl->wp_draw_symbols = data.b; break;
-    case PARAM_DEMS: a_dems_load_list ( &(data.sl) ); a_dems_list_free ( vtl->dems ); vtl->dems = data.sl; break;
   }
   return TRUE;
 }
@@ -632,7 +625,6 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
     case PARAM_WPSYM: rv.u = vtl->wp_symbol; break;
     case PARAM_WPSIZE: rv.u = vtl->wp_size; break;
     case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
-    case PARAM_DEMS: rv.sl = vtl->dems; break;
   }
   return rv;
 }
@@ -744,8 +736,6 @@ static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp )
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_copy, rv->waypoints );
   g_hash_table_foreach ( vtl->tracks, (GHFunc) track_copy, rv->tracks );
 
-  rv->dems = a_dems_list_copy ( vtl->dems );
-
   return rv;
 }
 
@@ -772,8 +762,6 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   rv->tracks = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, (GDestroyNotify) vik_track_free );
   rv->tracks_iters = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, g_free );
   rv->waypoints_iters = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, g_free );
-
-  rv->dems = NULL;
 
   /* TODO: constants at top */
   rv->waypoints_visible = rv->tracks_visible = TRUE;
@@ -822,8 +810,6 @@ void vik_trw_layer_free ( VikTrwLayer *trwlayer )
 {
   g_hash_table_destroy(trwlayer->waypoints);
   g_hash_table_destroy(trwlayer->tracks);
-
-  a_dems_list_free ( trwlayer->dems );
 
   /* ODC: replace with GArray */
   trw_layer_free_track_gcs ( trwlayer );
@@ -2008,7 +1994,7 @@ static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
   /* Also warn if overwrite old elevation data */
   VikTrack *track = (VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
 
-  vik_track_apply_dem_data ( track, VIK_TRW_LAYER(pass_along[0])->dems );
+  vik_track_apply_dem_data ( track );
 }
 
 

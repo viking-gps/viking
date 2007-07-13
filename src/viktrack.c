@@ -750,18 +750,16 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   return new_tr;
 }
 
-void vik_track_apply_dem_data ( VikTrack *tr, GList *dems )
+void vik_track_apply_dem_data ( VikTrack *tr )
 {
   GList *tp_iter;
   gint16 elev;
-  if ( ! dems )
-    return;
   tp_iter = tr->trackpoints;
   while ( tp_iter ) {
     /* TODO: of the 4 possible choices we have for choosing an elevation
      * (trackpoint in between samples), choose the one with the least elevation change
      * as the last */
-    elev = a_dems_list_get_elev_by_coord ( dems, &(VIK_TRACKPOINT(tp_iter->data)->coord) );
+    elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(tp_iter->data)->coord) );
     if ( elev != VIK_DEM_INVALID_ELEVATION )
       VIK_TRACKPOINT(tp_iter->data)->altitude = elev;
     tp_iter = tp_iter->next;
