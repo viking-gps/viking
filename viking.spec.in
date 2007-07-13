@@ -51,6 +51,9 @@ rm -rf %{buildroot}
 %{_bindir}/viking-remote
 
 %changelog
+* Fri Jul 13 2007 Guilhem Bonnefille <guilhem.bonnefille> - 0.9-1
+- Update to upstream version 0.9.
+
 * Thu May 18 2007 Quy Tonthat <qtonthat@gmail.com>
 - Added curl-devel to BuildRequires list.
 
