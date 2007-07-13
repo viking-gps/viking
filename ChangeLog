@@ -1,3 +1,8 @@
+2007-07-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* Eliminate the needs of entering DEM files for every single
+	track/waypoint layer.
+
 2007-07-07
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fixed typo in Makefile.am
