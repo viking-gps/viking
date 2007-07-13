@@ -36,7 +36,6 @@ Quy Tonthat <qtonthat@gmail.com>:
 2007-06-24
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Merging with Ralf's work around debianization
-	* Adding debian subdirectory to automaked tarball
 	* INSTALL: refreshed
 
 2007-06-23
