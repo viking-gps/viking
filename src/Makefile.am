@@ -60,6 +60,7 @@ viking_SOURCES = main.c \
 	googlesearch.c googlesearch.h \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
+	vikdemlayer_pixmap.h \
 	vikfilelist.c vikfilelist.h \
 	dems.c dems.h
 
