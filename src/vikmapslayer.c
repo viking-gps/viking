@@ -597,7 +597,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     gchar *path_buf = g_malloc ( max_path_len * sizeof(char) );
 
     if ( vml->autodownload  && should_start_autodownload(vml, vvp)) {
-      fprintf(stderr, "DEBUG: Starting autodownload\n");
+      g_debug("DEBUG: Starting autodownload\n");
       start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
     }
 
@@ -889,7 +889,7 @@ void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport 
 
   if (!map_type->coord_to_mapcoord(ul, zoom, zoom, &ulm) 
     || !map_type->coord_to_mapcoord(br, zoom, zoom, &brm)) {
-    fprintf(stderr, "%s() coord_to_mapcoord() failed\n", __PRETTY_FUNCTION__);
+    g_warning("%s() coord_to_mapcoord() failed\n", __PRETTY_FUNCTION__);
     return;
   }
 

@@ -166,7 +166,7 @@ gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCo
   vik_coord_to_latlon(br, &br_ll);
 
 #ifdef DEBUG
-  fprintf(stderr, "DEBUG: %s() ll=%f, %f tl=%f, %f br=%f, %f\n",
+  g_debug("DEBUG: %s() ll=%f, %f tl=%f, %f br=%f, %f\n",
       __PRETTY_FUNCTION__, ll.lat, ll.lon, tl_ll.lat, tl_ll.lon, br_ll.lat, br_ll.lon);
 #endif
 

@@ -138,7 +138,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
     ret = FALSE;
   } else {
     gchar *shell_command = g_strdup_printf("%s | gpsbabel -i %s -f - -o gpx -F %s", input_cmd, input_type, name_dst);
-    printf("%s\n", shell_command);
+    g_debug("%s", shell_command);
     close(fd_dst);
 
     args = g_malloc(sizeof(gchar *)*4);
@@ -164,7 +164,7 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
   gint babel_stdin, babel_stdout, babel_stderr;
 
   if (!a_file_export(vt, name_src, FILE_TYPE_GPX)) {
-    fprintf(stderr, "babel_general_convert_to(): error exporting to %s\n", name_src);
+    g_warning("babel_general_convert_to(): error exporting to %s\n", name_src);
     return(FALSE);
   }
 
@@ -221,7 +221,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
       if ( unbuffer_loc )
         g_free ( unbuffer_loc );
 #ifdef DBG
-      fprintf(stderr, "cmd=%s\n", cmd);
+      g_debug("cmd=%s\n", cmd);
 #endif /* DBG */
       args = g_strsplit(cmd, " ", 0);
       ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );

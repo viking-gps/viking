@@ -833,7 +833,7 @@ void draw_goto_cb ( GtkAction *a, VikWindow *vw )
      return;
   }
   else {
-    fprintf(stderr, "Houston we have a problem\n");
+    g_critical("Houston we have a problem\n");
     return;
   }
 
@@ -909,7 +909,7 @@ static toolbox_tools_t* toolbox_create(VikWindow *vw)
   vt->active_tool = -1;
   vt->vw = vw;
   if (!vw->viking_vvp) {
-    printf("Error: no viewport found.\n");
+    g_critical("no viewport found.");
     exit(1);
   }
   return vt;
@@ -946,7 +946,7 @@ static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name)
   VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
 
   if (tool == vt->n_tools) {
-    printf("panic: trying to activate a non-existent tool... \n");
+    g_critical("trying to activate a non-existent tool...");
     exit(1);
   }
   /* is the tool already active? */
@@ -1090,7 +1090,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     newwindow = FALSE;
   } 
   else {
-    fprintf(stderr, "Houston we got a problem\n");
+    g_critical("Houston we got a problem\n");
     return;
   }
     
@@ -1248,7 +1248,7 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   gdk_pixbuf_save ( pixbuf_to_save, fn, save_as_png ? "png" : "jpeg", &error, NULL );
   if (error)
   {
-    fprintf(stderr, "Unable to write to file %s: %s", fn, error->message );
+    g_warning("Unable to write to file %s: %s", fn, error->message );
     g_error_free (error);
   }
   g_object_unref ( G_OBJECT(pixbuf_to_save) );
@@ -1312,7 +1312,7 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
       gdk_pixbuf_save ( pixbuf_to_save, name_of_file, save_as_png ? "png" : "jpeg", &error, NULL );
       if (error)
       {
-        fprintf(stderr, "Unable to write to file %s: %s", name_of_file, error->message );
+        g_warning("Unable to write to file %s: %s", name_of_file, error->message );
         g_error_free (error);
       }
 
@@ -1545,7 +1545,7 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
     drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   }
   else {
-    fprintf(stderr, "Houston, we got a problem!\n");
+    g_critical("Houston, we got a problem!\n");
     return;
   }
 

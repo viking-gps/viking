@@ -117,7 +117,7 @@ static gboolean get_file_name(GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
 {
   gchar *str;
   gtk_tree_model_get ( model, iter, 0, &str, -1 );
-  printf("%s\n\n\n", str);
+  g_debug("get_file_name: %s", str);
   (*list) = g_list_append((*list), g_strdup(str));
   return FALSE;
 }

@@ -145,8 +145,6 @@ static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
       gint j, k;
       cand = s+i;
 
-      //      printf("Trying >>>>> %s\n", cand);
-
       for (j=0; j<2; j++) {
 	for (k=0; k<2; k++) {
 	  gchar fmt1[] = "N %d%*[ ]%lf W %d%*[ ]%lf";

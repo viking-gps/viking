@@ -59,7 +59,7 @@ static gchar *get_cookie_file(gboolean init)
     curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookie_file);
     res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
-      fprintf(stderr, "%s() Curl perform failed: %s\n", __PRETTY_FUNCTION__,
+      g_warning("%s() Curl perform failed: %s\n", __PRETTY_FUNCTION__,
           curl_easy_strerror(res));
       unlink(cookie_file);
     }

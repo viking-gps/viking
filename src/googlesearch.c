@@ -209,7 +209,7 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
 
   /* TODO: curl may not be available */
   if (curl_download_uri(uri, tmp_file, &googlesearch_options)) {  /* error */
-    fprintf(stderr, "DEBUG: %s() download error\n", __PRETTY_FUNCTION__);
+    g_debug("DEBUG: %s() download error\n", __PRETTY_FUNCTION__);
     fclose(tmp_file);
     ret = -1;
     goto done;

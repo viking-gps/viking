@@ -570,7 +570,7 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
     return NULL;
 
   if (duration < 0) {
-    fprintf(stderr, "negative duration: unsorted trackpoint timestamps?\n");
+    g_warning("negative duration: unsorted trackpoint timestamps?\n");
     return NULL;
   }
   pt_count = vik_track_get_tp_count(tr);
@@ -595,13 +595,6 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   }
 
   compute_spline(numpts, t, s, p);
-
-  /*
-  printf("Got spline\n");
-  for (i=0; i<numpts-1; i++) {
-    printf("a = %15f  b = %15f  c = %15f  d = %15f\n", p[i].a, p[i].b, p[i].c, p[i].d);
-  }
-  */
 
   /* the spline gives us distances at chunk_dur intervals. from these,
    * we obtain average speed in each interval.

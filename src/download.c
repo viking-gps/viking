@@ -149,7 +149,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 
   if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
   {
-    fprintf(stderr, "Download error: %s\n", fn);
+    g_warning("Download error: %s\n", fn);
     fclose ( f );
     remove ( tmpfilename );
     g_free ( tmpfilename );

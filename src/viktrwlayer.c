@@ -474,7 +474,7 @@ static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer subla
   guint8 *id;
   guint il;
 
-  fprintf(stderr, "%s:%s() called\n", __FILE__, __PRETTY_FUNCTION__);
+  g_debug("%s:%s() called\n", __FILE__, __PRETTY_FUNCTION__);
   if (!sublayer) {
     *item = NULL;
     return;
@@ -2838,7 +2838,7 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
   {
     /* how do we get here? I'm putting in the abort until we can figure it out. -alex */
     marker_begin_move(t, event->x, event->y);
-    printf("Abort: shouldn't be here\n");
+    g_critical("shouldn't be here");
     exit(1);
   }
   else if ( params.closest_wp )

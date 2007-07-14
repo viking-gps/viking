@@ -115,7 +115,7 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   *input_file = g_strdup_printf("%s", gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter));
 #endif
 
-  fprintf(stderr, "using cmdline '%s' and file '%s'\n", *babelargs, *input_file);
+  g_debug("using cmdline '%s' and file '%s'\n", *babelargs, *input_file);
 }
 
 static void datasource_gps_cleanup ( gpointer user_data )
