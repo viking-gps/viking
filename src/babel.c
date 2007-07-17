@@ -221,7 +221,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
       if ( unbuffer_loc )
         g_free ( unbuffer_loc );
 #ifdef DBG
-      g_debug("cmd=%s\n", cmd);
+      fprintf(stderr, "cmd=%s\n", cmd);
 #endif /* DBG */
       args = g_strsplit(cmd, " ", 0);
       ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );

@@ -597,7 +597,9 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     gchar *path_buf = g_malloc ( max_path_len * sizeof(char) );
 
     if ( vml->autodownload  && should_start_autodownload(vml, vvp)) {
-      g_debug("DEBUG: Starting autodownload\n");
+#ifdef DEBUG
+      fputs(stderr, "DEBUG: Starting autodownload\n");
+#endif
       start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
     }
 

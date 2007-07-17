@@ -474,7 +474,6 @@ static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer subla
   guint8 *id;
   guint il;
 
-  g_debug("%s:%s() called\n", __FILE__, __PRETTY_FUNCTION__);
   if (!sublayer) {
     *item = NULL;
     return;

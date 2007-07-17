@@ -295,8 +295,6 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
       g_warning("gps_layer_get_param(): unknown parameter");
   }
 
-  /* g_debug("gps_layer_get_param() called\n"); */
-
   return rv;
 }
 
@@ -504,8 +502,6 @@ static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val
   GtkTreeIter dest_iter;
   gchar *dp;
   gboolean target_exists;
-
-  g_debug("gps_layer_drag_drop_request() called\n");
 
   dp = gtk_tree_path_to_string(dest_path);
   target_exists = vik_treeview_get_iter_from_path_str(vt, &dest_iter, dp);
@@ -828,7 +824,6 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
     gps_session_delete(sess);
   }
 
-  // g_debug("\"gps_comm: cmd_args=%s\" port=%s\n", sess->cmd_args, sess->port);
   return 0;
 }
 
