@@ -149,7 +149,10 @@ int http_download_get_url ( const char *hostname, const char *uri, FILE *f, int 
           char *newuri = strdup ( uri_start );
           close ( sock );
 
-          rv = http_download_get_url ( newhost, newuri, f, 1, sendhostname );
+	  if ( options != NULL )
+            rv = http_download_get_url ( newhost, newuri, f, 1, options->sendhostname );
+	  else
+            rv = http_download_get_url ( newhost, newuri, f, 1, 0 );
 
           free ( newhost );
           free ( newuri );
