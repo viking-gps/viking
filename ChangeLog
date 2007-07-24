@@ -1,3 +1,8 @@
+2007-07-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Disable GeoCache Acquire since it nolonger works. Can be enabled
+	again using configure --enable-geocaches.
+
 2007-07-18
 Quy Tonthat <qtonthat@gmail.com>:
 	* Remove (my) debug messages which are no longer needed.

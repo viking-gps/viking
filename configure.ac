@@ -105,6 +105,19 @@ case $ac_cv_enable_openstreetmap in
 esac
 AM_CONDITIONAL([OPENSTREETMAP], [test x$ac_cv_enable_openstreetmap = xyes])
 
+AC_ARG_ENABLE(geocaches, AC_HELP_STRING([--enable-geocaches],
+	      [enable Geocaches Acquire (default is disable). WARNING: Broken, do not enable]),
+              [ac_cv_enable_geocaches=$enableval],
+              [ac_cv_enable_geocaches=no])
+AC_CACHE_CHECK([whether to enable Geocaches Acquire],
+               [ac_cv_enable_geocaches], [ac_cv_enable_geocaches=yes])
+case $ac_cv_enable_geocaches in
+  yes)
+    AC_DEFINE(VIK_CONFIG_GEOCACHES, [], [GEOCACHES STUFF])
+    ;;
+esac
+AM_CONDITIONAL([GEOCACHES], [test x$ac_cv_enable_geocaches = xyes])
+
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
                             [specify the size of the map cache (default is 50331648)])],

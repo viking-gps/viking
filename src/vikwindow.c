@@ -1181,10 +1181,12 @@ static void acquire_from_google ( GtkAction *a, VikWindow *vw )
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface );
 }
 
+#ifdef VIK_CONFIG_GEOCACHES
 static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 {
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gc_interface );
 }
+#endif
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
@@ -1621,7 +1623,9 @@ static GtkActionEntry entries[] = {
   { "Acquire", NULL, "A_cquire", 0, 0, 0 },
   { "AcquireGPS",   NULL,                "From _GPS",            	  NULL,         "Transfer data from a GPS device",              (GCallback)acquire_from_gps      },
   { "AcquireGoogle",   NULL,             "Google _Directions",    	  NULL,         "Get driving directions from Google",           (GCallback)acquire_from_google   },
+#ifdef VIK_CONFIG_GEOCACHES
   { "AcquireGC",   NULL,                 "Geo_caches",    	  	  NULL,         "Get Geocaches from geocaching.com",            (GCallback)acquire_from_gc       },
+#endif
   { "Save",      GTK_STOCK_SAVE,         "_Save",                         "<control>S", "Save the file",                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      "Save _As",                      NULL,         "Save the file under different name",           (GCallback)save_file_as          },
   { "GenImg",    GTK_STOCK_CLEAR,        "_Generate Image File",          NULL,         "Save a snapshot of the workspace into a file", (GCallback)draw_to_image_file_cb },

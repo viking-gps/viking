@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef VIK_CONFIG_GEOCACHES
 #include <string.h>
 
 #include "viking.h"
@@ -104,3 +105,4 @@ static void datasource_gc_cleanup ( gpointer data )
 {
   g_free ( data );
 }
+#endif /* VIK_CONFIG_GEOCACHES */
