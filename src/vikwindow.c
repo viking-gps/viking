@@ -23,6 +23,7 @@
 #include "acquire.h"
 #include "datasources.h"
 #include "googlesearch.h"
+#include "dems.h"
 
 #define VIKING_TITLE " - Viking"
 
@@ -410,13 +411,17 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   static struct UTM utm;
   static struct LatLon ll;
   static char pointer_buf[36];
+  gint16 alt;
 
   toolbox_move(vw->vt, (GdkEventButton *)event);
 
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
   a_coords_utm_to_latlon ( &utm, &ll );
-  g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );
+  if ((alt = a_dems_get_elev_by_coord(&coord)) != VIK_DEM_INVALID_ELEVATION)
+    g_snprintf ( pointer_buf, 36, "Cursor: %f %f %dm", ll.lat, ll.lon, alt );
+  else
+    g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );
   vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
 
   if ( vw->pan_x != -1 ) {
