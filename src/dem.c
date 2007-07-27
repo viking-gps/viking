@@ -281,8 +281,11 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
     return NULL;
 
   if ( strlen(basename)==11 && basename[7]=='.' && basename[8]=='h' && basename[9]=='g' && basename[10]=='t' &&
-       (basename[0] == 'N' || basename[0] == 'S') && (basename[3] == 'E' || basename[3] =='W'))
-    return vik_dem_read_srtm_hgt(f, basename);
+       (basename[0] == 'N' || basename[0] == 'S') && (basename[3] == 'E' || basename[3] =='W')) {
+    rv = vik_dem_read_srtm_hgt(f, basename);
+    fclose(f);
+    return(rv);
+  }
 
       /* Create Structure */
   rv = g_malloc(sizeof(VikDEM));

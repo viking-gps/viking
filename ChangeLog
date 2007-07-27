@@ -1,3 +1,7 @@
+2007-07-27
+Quy Tonthat <qtonthat@gmail.com>:
+	* Plug filedescriptor leak in dem.c
+
 2007-07-26
 Quy Tonthat <qtonthat@gmail.com>:
 	* Display on status bar altitude at cursor using data from DEM layer(s).
@@ -15,7 +19,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 Quy Tonthat <qtonthat@gmail.com>:
 	* Remove (my) debug messages which are no longer needed.
 
-2007-07-1r58
+2007-07-15
 Quy Tonthat <qtonthat@gmail.com>:
 	* Missing a few changes here.
 	* release 0.9 (by Guilhem)
