@@ -1,3 +1,10 @@
+2007-08-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* DEM module can now read hgt.zip files directly (no need to unzip
+	them).
+	* DEM module can now process 1 arc sec hgt(.zip) files (mainly for USA
+	regions).
+
 2007-07-27
 Quy Tonthat <qtonthat@gmail.com>:
 	* Plug filedescriptor leak in dem.c

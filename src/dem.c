@@ -3,6 +3,12 @@
 #include <glib.h>
 #include <math.h>
 #include <stdlib.h>
+#include <zlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/mman.h>
+
 
 #include "dem.h"
 #include "file.h"
@@ -205,18 +211,96 @@ static void dem_parse_block ( gchar *buffer, VikDEM *dem, gint *cur_column, gint
   }
 }
 
-static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename)
+/* return size of unzip data or 0 if failed */
+/* can be made generic to uncompress zip, gzip, bzip2 data */
+static guint uncompress_data(void *uncompressed_buffer, guint uncompressed_size, void *compressed_data, guint compressed_size)
 {
-  gint16 elev;
+	z_stream stream;
+	int err;
+
+	stream.next_in = compressed_data;
+	stream.avail_in = compressed_size;
+	stream.next_out = uncompressed_buffer;
+	stream.avail_out = uncompressed_size;
+	stream.zalloc = (alloc_func)0;
+	stream.zfree = (free_func)0;
+	stream.opaque = (voidpf)0;
+
+	/* negative windowBits to inflateInit2 means "no header" */
+	if ((err = inflateInit2(&stream, -MAX_WBITS)) != Z_OK) {
+		g_warning("%s(): inflateInit2 failed", __PRETTY_FUNCTION__);
+		return 0;
+	}
+
+	err = inflate(&stream, Z_FINISH);
+	if ((err != Z_OK) && (err != Z_STREAM_END) && stream.msg) {
+		g_warning("%s() inflate failed err=%d \"%s\"", __PRETTY_FUNCTION__, err, stream.msg == NULL ? "unknown" : stream.msg);
+		inflateEnd(&stream);
+		return 0;
+	}
+
+	inflateEnd(&stream);
+	return(stream.total_out);
+}
+
+static void *unzip_hgt_file(gchar *zip_file, gulong *unzip_size)
+{
+	void *unzip_data = NULL;
+	gchar *zip_data;
+	struct _lfh {
+		guint32 sig;
+		guint16 extract_version;
+		guint16 flags;
+		guint16 comp_method;
+		guint16 time;
+		guint16 date;
+		guint32 crc_32;
+		guint32 compressed_size;
+		guint32 uncompressed_size;
+		guint16 filename_len;
+		guint16 extra_field_len;
+	}  __attribute__ ((__packed__)) *local_file_header = NULL;
+
+
+	local_file_header = (struct _lfh *) zip_file;
+	if (local_file_header->sig != 0x04034b50) {
+		g_warning("%s(): wrong format\n", __PRETTY_FUNCTION__);
+		g_free(unzip_data);
+		goto end;
+	}
+
+	zip_data = zip_file + sizeof(struct _lfh) + local_file_header->filename_len + local_file_header->extra_field_len;
+	unzip_data = g_malloc(local_file_header->uncompressed_size);
+	gulong uncompressed_size = local_file_header->uncompressed_size;
+
+	if (!(*unzip_size = uncompress_data(unzip_data, uncompressed_size, zip_data, local_file_header->compressed_size))) {
+		g_free(unzip_data);
+		unzip_data = NULL;
+		goto end;
+	}
+
+end:
+	return(unzip_data);
+}
+
+static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zip)
+{
   gint i, j;
   VikDEM *dem;
-
+  struct stat stat;
+  off_t file_size;
+  gint16 *dem_mem = NULL;
+  gint16 *dem_file = NULL;
+  const gint num_rows_3sec = 1201;
+  const gint num_rows_1sec = 3601;
+  gint num_rows;
+  int fd = fileno(f);
+  gint arcsec;
 
   dem = g_malloc(sizeof(VikDEM));
 
   dem->horiz_units = VIK_DEM_HORIZ_LL_ARCSECONDS;
   dem->orig_vert_units = VIK_DEM_VERT_DECIMETERS;
-  dem->east_scale = dem->north_scale = 3;
 
   /* TODO */
   dem->min_north = atoi(basename+1) * 3600;
@@ -232,33 +316,63 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename)
   dem->columns = g_ptr_array_new();
   dem->n_columns = 0;
 
-  for ( i = 0; i < 1201; i++ ) {
-    dem->n_columns++;
-    g_ptr_array_add ( dem->columns, g_malloc(sizeof(VikDEMColumn)) );
-    GET_COLUMN(dem,i)->east_west = dem->min_east + 3*i;
-    GET_COLUMN(dem,i)->south = dem->min_north;
-    GET_COLUMN(dem,i)->n_points = 1201;
-    GET_COLUMN(dem,i)->points = g_malloc(sizeof(gint16)*1201);
+  if (fstat(fd, &stat) == -1)
+    g_error("%s(): fstat failed on %s\n", __PRETTY_FUNCTION__, basename);
+  if ((dem_file = mmap(NULL, stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == (void *) -1)
+    g_error("%s(): mmap failed on %s\n", __PRETTY_FUNCTION__, basename);
+
+  file_size = stat.st_size;
+  dem_mem = dem_file;
+  if (zip) {
+    void *unzip_mem = NULL;
+    gulong ucsize;
+
+    if ((unzip_mem = unzip_hgt_file((gchar *)dem_file, &ucsize)) == NULL) {
+      munmap(dem_file, file_size);
+      g_ptr_array_free(dem->columns, TRUE);
+      g_free(dem);
+      return NULL;
+    }
+
+    dem_mem = unzip_mem;
+    file_size = ucsize;
   }
 
-  for ( i = 1200; i >= 0; i-- ) {
-    for ( j = 0; j < 1201; j++ ) {
-      if ( feof(f) ) {
-        g_warning("Incorrect SRTM file: unexpected EOF");
-        g_print("%d %d\n", i, j);
-        return dem;
-      }
-      fread(&elev, sizeof(elev), 1, f);
-      gchar *x = (gchar *) &elev;
-      gchar tmp;
-      tmp=x[0];
-      x[0]=x[1];
-      x[1]=tmp;
-      GET_COLUMN(dem,j)->points[i] = elev;
+  if (file_size == (num_rows_3sec * num_rows_3sec * sizeof(gint16)))
+    arcsec = 3;
+  else if (file_size == (num_rows_1sec * num_rows_1sec * sizeof(gint16)))
+    arcsec = 1;
+  else {
+    g_warning("%s(): file %s does not have right size\n", __PRETTY_FUNCTION__, basename);
+    munmap(dem_file, file_size);
+    g_ptr_array_free(dem->columns, TRUE);
+    g_free(dem);
+    return NULL;
+  }
+
+  num_rows = (arcsec == 3) ? num_rows_3sec : num_rows_1sec;
+  dem->east_scale = dem->north_scale = arcsec;
+
+  for ( i = 0; i < num_rows; i++ ) {
+    dem->n_columns++;
+    g_ptr_array_add ( dem->columns, g_malloc(sizeof(VikDEMColumn)) );
+    GET_COLUMN(dem,i)->east_west = dem->min_east + arcsec*i;
+    GET_COLUMN(dem,i)->south = dem->min_north;
+    GET_COLUMN(dem,i)->n_points = num_rows;
+    GET_COLUMN(dem,i)->points = g_malloc(sizeof(gint16)*num_rows);
+  }
+
+  int ent = 0;
+  for ( i = (num_rows - 1); i >= 0; i-- ) {
+    for ( j = 0; j < num_rows; j++ ) {
+      GET_COLUMN(dem,j)->points[i] = GINT16_FROM_BE(dem_mem[ent++]);
     }
 
   }
 
+  if (zip)
+    g_free(dem_mem);
+  munmap(dem_file, stat.st_size);
   return dem;
 }
 
@@ -280,9 +394,11 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
   if ( !f )
     return NULL;
 
-  if ( strlen(basename)==11 && basename[7]=='.' && basename[8]=='h' && basename[9]=='g' && basename[10]=='t' &&
+  if ( (strlen(basename)==11 || ((strlen(basename) == 15) && (basename[11] == '.' && basename[12] == 'z' && basename[13] == 'i' && basename[14] == 'p'))) &&
+       basename[7]=='.' && basename[8]=='h' && basename[9]=='g' && basename[10]=='t' &&
        (basename[0] == 'N' || basename[0] == 'S') && (basename[3] == 'E' || basename[3] =='W')) {
-    rv = vik_dem_read_srtm_hgt(f, basename);
+    gboolean is_zip_file = (strlen(basename) == 15);
+    rv = vik_dem_read_srtm_hgt(f, basename, is_zip_file);
     fclose(f);
     return(rv);
   }
