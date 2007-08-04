@@ -87,6 +87,9 @@ static gpointer datasource_gps_init_func ()
 
 static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file )
 {
+  char *proto = NULL;
+  char *ser = NULL;
+  char *device = NULL;
 #ifndef USE_NEW_COMBO_BOX
   GtkTreeIter iter;
 #endif
@@ -99,21 +102,26 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   gps_acquire_in_progress = TRUE;
 
 #ifdef USE_NEW_COMBO_BOX
-  if (!strcmp(gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->proto_b)), "Garmin")) {
+  proto = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->proto_b));
 #else
-  if (!strcmp(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->proto_b),&iter), "Garmin")) {
+  proto = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->proto_b),&iter);
 #endif
-    *babelargs = g_strdup_printf("%s", "-D 9 -t -w -i garmin");
+  if (!strcmp(proto, "Garmin")) {
+    device = "garmin";
   } else {
-    *babelargs = g_strdup_printf("%s", "-D 9 -t -w -i magellan");
+    device = "magellan";
   }
+  *babelargs = g_strdup_printf("-D 9 -t -w -i %s", device);
+  /* device points to static content => no free */
+  device = NULL;
   
   /* Old stuff */
 #ifdef USE_NEW_COMBO_BOX
-  *input_file = g_strdup_printf("%s", gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b)));
+  ser = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
 #else
-  *input_file = g_strdup_printf("%s", gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter));
+  ser = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter);
 #endif
+  *input_file = g_strdup(ser);
 
   g_debug("using cmdline '%s' and file '%s'\n", *babelargs, *input_file);
 }
@@ -126,43 +134,46 @@ static void datasource_gps_cleanup ( gpointer user_data )
 
 static void set_total_count(gint cnt, acq_dialog_widgets_t *w)
 {
-  gchar s[128];
+  gchar *s = NULL;
   gdk_threads_enter();
   if (w->ok) {
     gps_user_data_t *gps_data = (gps_user_data_t *)w->user_data;
-    g_sprintf(s, "Downloading %d %s...", cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
+    s = g_strdup_printf("Downloading %d %s...", cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
     gtk_label_set_text ( GTK_LABEL(gps_data->progress_label), s );
     gtk_widget_show ( gps_data->progress_label );
     gps_data->total_count = cnt;
   }
+  g_free(s); s = NULL;
   gdk_threads_leave();
 }
 
 static void set_current_count(gint cnt, acq_dialog_widgets_t *w)
 {
-  gchar s[128];
+  gchar *s = NULL;
   gdk_threads_enter();
   if (w->ok) {
     gps_user_data_t *gps_data = (gps_user_data_t *)w->user_data;
 
     if (cnt < gps_data->total_count) {
-      g_sprintf(s, "Downloaded %d out of %d %s...", cnt, gps_data->total_count, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
+      s = g_strdup_printf("Downloaded %d out of %d %s...", cnt, gps_data->total_count, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
     } else {
-      g_sprintf(s, "Downloaded %d %s.", cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
+      s = g_strdup_printf("Downloaded %d %s.", cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
     }	  
     gtk_label_set_text ( GTK_LABEL(gps_data->progress_label), s );
   }
+  g_free(s); s = NULL;
   gdk_threads_leave();
 }
 
 static void set_gps_info(const gchar *info, acq_dialog_widgets_t *w)
 {
-  gchar s[256];
+  gchar *s = NULL;
   gdk_threads_enter();
   if (w->ok) {
-    g_sprintf(s, "GPS Device: %s", info);
+    s = g_strdup_printf("GPS Device: %s", info);
     gtk_label_set_text ( GTK_LABEL(((gps_user_data_t *)w->user_data)->gps_label), s );
   }
+  g_free(s); s = NULL;
   gdk_threads_leave();
 }
 
