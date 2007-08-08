@@ -408,7 +408,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
 {
   VikMapsLayer *vml = VIK_MAPS_LAYER ( g_object_new ( VIK_MAPS_LAYER_TYPE, NULL ) );
   vik_layer_init ( VIK_LAYER(vml), VIK_LAYER_MAPS );
-  vml->maptype = 0;
+  vml->maptype = 6;   /* index to __map_types[] */
   vml->alpha = 255;
   vml->mapzoom_id = 0;
   vml->dl_tool_x = vml->dl_tool_y = -1;

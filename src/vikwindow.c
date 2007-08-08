@@ -1714,7 +1714,7 @@ static void window_create_ui( VikWindow *window )
   action_group = gtk_action_group_new ("MenuActions");
   gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), window);
   gtk_action_group_add_toggle_actions (action_group, toggle_entries, G_N_ELEMENTS (toggle_entries), window);
-  gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 0, (GCallback)window_change_coord_mode_cb, window);
+  gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 4, (GCallback)window_change_coord_mode_cb, window);
 
   icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (icon_factory); 

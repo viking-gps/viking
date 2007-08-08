@@ -1,3 +1,7 @@
+2007-08-09
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make Google Map default map type.
+
 2007-08-02
 Quy Tonthat <qtonthat@gmail.com>:
 	* DEM module can now read hgt.zip files directly (no need to unzip
