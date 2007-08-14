@@ -127,18 +127,24 @@ void vik_layer_init ( VikLayer *vl, gint type )
 /* frees old name */
 void vik_layer_rename ( VikLayer *l, const gchar *new_name )
 {
-  g_assert ( l != NULL);
-  if ( l->name )
-    g_free ( l->name );
+  g_assert ( l != NULL );
+  g_assert ( new_name != NULL );
+  g_free ( l->name );
   l->name = g_strdup ( new_name );
 }
 
 void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name )
 {
-  g_assert ( l != NULL);
-  if ( l->name )
-    g_free ( l->name );
+  g_assert ( l != NULL );
+  g_assert ( new_name != NULL );
+  g_free ( l->name );
   l->name = new_name;
+}
+
+const gchar *vik_layer_get_name ( VikLayer *l )
+{
+  g_assert ( l != NULL);
+  return l->name;
 }
 
 VikLayer *vik_layer_create ( gint type, gpointer vp, GtkWindow *w, gboolean interactive )

@@ -294,6 +294,7 @@ void vik_layer_draw ( VikLayer *l, gpointer data );
 void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode );
 void vik_layer_rename ( VikLayer *l, const gchar *new_name );
 void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name );
+const gchar *vik_layer_get_name ( VikLayer *l );
 
 gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp);
 
