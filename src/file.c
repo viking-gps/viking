@@ -610,10 +610,10 @@ const gchar *a_get_viking_dir()
   static gchar *viking_dir = NULL;
 
   if (!viking_dir) {
-    gchar *temp[] = {"/tmp/vikXXXXXX"};
+    static gchar temp[] = {"/tmp/vikXXXXXX"};
     gchar *home = getenv("HOME");
     if (!home || access(home, W_OK))
-      home = mktemp(temp);
+      home = mkdtemp(temp);
     viking_dir = g_strdup_printf("%s/%s", home, ".viking");
     if (access(viking_dir, F_OK))
       g_mkdir(viking_dir, 0755);
