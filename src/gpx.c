@@ -618,7 +618,7 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
 static void gpx_write_track ( const gchar *name, VikTrack *t, FILE *f )
 {
   gchar *tmp;
-  gboolean first_tp_is_newsegment; /* must temporarily make it not so, but we want to restore state. not that it matters. */
+  gboolean first_tp_is_newsegment = FALSE; /* must temporarily make it not so, but we want to restore state. not that it matters. */
 
   tmp = entitize ( name );
   fprintf ( f, "<trk%s>\n  <name>%s</name>\n", t->visible ? "" : " hidden=\"hidden\"", tmp );
@@ -636,10 +636,9 @@ static void gpx_write_track ( const gchar *name, VikTrack *t, FILE *f )
   if ( t->trackpoints && t->trackpoints->data ) {
     first_tp_is_newsegment = VIK_TRACKPOINT(t->trackpoints->data)->newsegment;
     VIK_TRACKPOINT(t->trackpoints->data)->newsegment = FALSE; /* so we won't write </trkseg><trkseg> already */
-  }
-  g_list_foreach ( t->trackpoints, (GFunc) gpx_write_trackpoint, f );
-  if ( t->trackpoints && t->trackpoints->data )
+    g_list_foreach ( t->trackpoints, (GFunc) gpx_write_trackpoint, f );
     VIK_TRACKPOINT(t->trackpoints->data)->newsegment = first_tp_is_newsegment; /* restore state */
+  }
 
   fprintf ( f, "</trkseg>\n</trk>\n" );
 }

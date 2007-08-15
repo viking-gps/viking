@@ -42,7 +42,7 @@ gchar * a_googlesearch_get_search_string_for_this_place(VikWindow *vw)
     return NULL;
 
   VikViewport *vvp = vik_window_viewport(vw);
-  VikCoord *cur_center = vik_viewport_get_center(vvp);
+  const VikCoord *cur_center = vik_viewport_get_center(vvp);
   if (vik_coord_equals(cur_center, last_coord)) {
     return(last_successful_search_str);
   }

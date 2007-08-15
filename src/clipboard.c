@@ -322,8 +322,10 @@ void a_clipboard_copy_selected ( VikLayersPanel *vlp )
   }
   else
   {
+    gint ilen;
     type = VIK_CLIPBOARD_DATA_LAYER;
-    vik_layer_marshall ( sel, &data, &len );
+    vik_layer_marshall ( sel, &data, &ilen );
+    len = ilen;
   }
 
   if (data)

@@ -1,3 +1,7 @@
+2007-08-16
+Quy Tonthat <qtonthat@gmail.com>:
+	* Clean up and eliminate compiler warning.
+
 2007-08-15
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix bug in creating temporary HOME when HOME is not set.

@@ -390,12 +390,6 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
   }
 }
 
-static void delete_layer_iter ( VikLayer *vl )
-{
-  if ( vl->realized )
-    vik_treeview_item_delete ( vl->vt, &(vl->iter) );
-}
-
 gboolean vik_gps_layer_delete ( VikGpsLayer *vgl, GtkTreeIter *iter )
 {
   gint i;
@@ -412,43 +406,6 @@ gboolean vik_gps_layer_delete ( VikGpsLayer *vgl, GtkTreeIter *iter )
 
   return was_visible;
 }
-
-#if 0
-/* returns 0 == we're good, 1 == didn't find any layers, 2 == got rejected */
-guint vik_gps_layer_tool ( VikGpsLayer *val, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp )
-{
-  GList *iter = val->children;
-  gboolean found_rej = FALSE;
-  if (!iter)
-    return FALSE;
-  while (iter->next)
-    iter = iter->next;
-
-  while ( iter )
-  {
-    /* if this layer "accepts" the tool call */
-    if ( VIK_LAYER(iter->data)->visible && VIK_LAYER(iter->data)->type == layer_type )
-    {
-      if ( tool_func ( VIK_LAYER(iter->data), event, vvp ) )
-        return 0;
-      else
-        found_rej = TRUE;
-    }
-
-    /* recursive -- try the same for the child gps layer. */
-    else if ( VIK_LAYER(iter->data)->visible && VIK_LAYER(iter->data)->type == VIK_LAYER_GPS )
-    {
-      gint rv = vik_gps_layer_tool(VIK_GPS_LAYER(iter->data), layer_type, tool_func, event, vvp);
-      if ( rv == 0 )
-        return 0;
-      else if ( rv == 2 )
-        found_rej = TRUE;
-    }
-    iter = iter->prev;
-  }
-  return found_rej ? 2 : 1; /* no one wanted to accept the tool call in this layer */
-}
-#endif 
 
 static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {

@@ -122,7 +122,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
     /* business as usual */
   }
 
-  if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d %ld\n", queue_count, queue_size ); tmp=0; }
+  if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d %u\n", queue_count, queue_size ); tmp=0; }
 }
 
 GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint8 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
