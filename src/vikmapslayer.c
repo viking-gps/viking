@@ -406,9 +406,11 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id )
 
 static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
 {
+  int idx;
   VikMapsLayer *vml = VIK_MAPS_LAYER ( g_object_new ( VIK_MAPS_LAYER_TYPE, NULL ) );
   vik_layer_init ( VIK_LAYER(vml), VIK_LAYER_MAPS );
-  vml->maptype = 6;   /* index to __map_types[] */
+  idx = map_uniq_id_to_index(7); /* 7 is id for google maps */
+    vml->maptype = (idx < NUM_MAP_TYPES) ? idx : 0;
   vml->alpha = 255;
   vml->mapzoom_id = 0;
   vml->dl_tool_x = vml->dl_tool_y = -1;

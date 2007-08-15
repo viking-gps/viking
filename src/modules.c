@@ -34,10 +34,12 @@
 
 void modules_init()
 {
-#ifdef VIK_CONFIG_GOOGLE 
-  google_init();
+#ifdef VIK_CONFIG_OLD_GOOGLE 
   googlemaps_init();
   khmaps_init();
+#endif
+#ifdef VIK_CONFIG_GOOGLE 
+  google_init();
 #endif
 #ifdef VIK_CONFIG_EXPEDIA
   expedia_init();

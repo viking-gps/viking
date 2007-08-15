@@ -1,6 +1,9 @@
 2007-08-15
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix bug in creating temporary HOME when HOME is not set.
+	* Added --enable-old-google to configure script. Old google modes are
+	now disabled by default.
+	* Default mode for new maps is Google Maps.
 
 2007-08-09
 Quy Tonthat <qtonthat@gmail.com>:
