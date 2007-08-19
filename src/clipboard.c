@@ -51,11 +51,6 @@ static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint 
     //    g_print("clip_get: vc = %p, size = %d\n", vc, sizeof(*vc) + vc->len);
     gtk_selection_data_set ( selection_data, selection_data->target, 8, (void *)vc, sizeof(*vc) + vc->len );
   }
-  if (info==1) {
-    if (vc->type == VIK_CLIPBOARD_DATA_LAYER) {
-      gtk_selection_data_set_text ( selection_data, VIK_LAYER(vc->clipboard)->name, -1 );
-    } 
-  }
 }
 
 static void clip_clear ( GtkClipboard *c, gpointer p )

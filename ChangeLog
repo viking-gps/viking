@@ -1,3 +1,7 @@
+2007-08-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bugs that cause crashes on layers copy/paste/delete.
+
 2007-08-16
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Group "Export Layer..." entries in a sub-menu.
