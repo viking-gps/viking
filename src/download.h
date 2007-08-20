@@ -24,11 +24,6 @@
 
 typedef struct {
   /**
-   * Indicates if we should send hostname on the GET request.
-   * (see http.c)
-   */
-  int sendhostname;
-  /**
    * The REFERER string to use.
    * Could be NULL.
    */

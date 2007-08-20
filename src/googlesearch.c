@@ -35,7 +35,7 @@ static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
 static gchar *last_successful_search_str = NULL;
 
-static DownloadOptions googlesearch_options = { 0, "http://maps.google.com/" };
+static DownloadOptions googlesearch_options = { "http://maps.google.com/" };
 
 gchar * a_googlesearch_get_search_string_for_this_place(VikWindow *vw)
 {

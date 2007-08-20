@@ -25,7 +25,6 @@
 #include "coords.h"
 #include "vikcoord.h"
 #include "mapcoord.h"
-#include "http.h"
 #include "vikmapslayer.h"
 
 #include "osm.h"
@@ -38,7 +37,7 @@ static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
 
-static DownloadOptions osm_options = { 1, NULL };
+static DownloadOptions osm_options = { NULL };
 
 /* initialisation */
 void osm_init () {

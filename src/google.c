@@ -40,7 +40,7 @@ static int google_kh_download ( MapCoord *src, const gchar *dest_fn );
 static void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
 static gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 
-static DownloadOptions google_options = { 1, "http://maps.google.com/" };
+static DownloadOptions google_options = { "http://maps.google.com/" };
 
 void google_init () {
   VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };

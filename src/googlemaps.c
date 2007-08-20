@@ -30,7 +30,7 @@
 
 #include "googlemaps.h"
 
-static DownloadOptions googlemaps_options = { 1, "http://maps.google.com/" };
+static DownloadOptions googlemaps_options = { "http://maps.google.com/" };
 
 /* initialisation */
 void googlemaps_init () {

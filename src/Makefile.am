@@ -15,6 +15,7 @@ BUILT_SOURCES = authors.h
 
 viking_SOURCES = main.c \
 	modules.h modules.c \
+	curl_download.c curl_download.h \
 	menu.xml.h \
     degrees_converters.c degrees_converters.h \
 	viking.h globals.h mapcoord.h config.h \
@@ -63,14 +64,6 @@ viking_SOURCES = main.c \
 	vikdemlayer_pixmap.h \
 	vikfilelist.c vikfilelist.h \
 	dems.c dems.h
-
-if LIBCURL
-viking_SOURCES += \
-	curl_download.c curl_download.h
-else
-viking_SOURCES += \
-	http.c http.h
-endif
 
 if GOOGLE
 viking_SOURCES += \

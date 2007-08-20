@@ -92,9 +92,7 @@ int main( int argc, char *argv[] )
 
   gtk_init (&argc, &argv);
 
-#ifdef HAVE_LIBCURL
   curl_download_init();
-#endif
 
   /* Init modules/plugins */
   modules_init();

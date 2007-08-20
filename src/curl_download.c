@@ -27,7 +27,6 @@
 
 #include <gtk/gtk.h>
 
-#ifdef HAVE_LIBCURL
 #include <curl/curl.h>
 
 #include "file.h"
@@ -112,4 +111,3 @@ int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, Down
 
   return (ret ? -2 : 0);   /* -2 HTTP error */
 }
-#endif /* HAVE_LIB_CURL */

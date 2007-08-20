@@ -34,11 +34,7 @@
 
 #include "download.h"
 
-#ifdef HAVE_LIBCURL
 #include "curl_download.h"
-#else
-#include "http.h"
-#endif
 
 #ifdef WINDOWS
 
@@ -141,11 +137,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   }
 
   /* Call the backend function */
-#ifdef HAVE_LIBCURL
   ret = curl_download_get_url ( hostname, uri, f, options );
-#else
-  ret = http_download_get_url ( hostname, uri, f, 0, options );
-#endif
 
   if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
   {

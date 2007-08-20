@@ -28,7 +28,7 @@ AC_CHECK_FUNCS([bzero floor gethostbyname memset mkdir pow realpath socket sqrt 
 AM_WITH_EXPAT
 
 # Curl
-LIBCURL_CHECK_CONFIG([yes],[],[AM_CONDITIONAL([LIBCURL],[true])],[AM_CONDITIONAL([LIBCURL],[false])])
+LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found])])
 
 AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
 if test $GDK_PIXBUF_CSOURCE != "yes"
