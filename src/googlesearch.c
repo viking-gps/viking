@@ -29,6 +29,7 @@
 #define GOOGLE_SEARCH_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
 #define GOOGLE_SEARCH_PATTERN_1 "{center:{lat:"
 #define GOOGLE_SEARCH_PATTERN_2 ",lng:"
+#define GOOGLE_SEARCH_NOT_FOUND "around this map area did not match any locations"
 
 static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
@@ -121,6 +122,11 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   len = g_mapped_file_get_length(mf);
   text = g_mapped_file_get_contents(mf);
 
+  if (g_strstr_len(text, len, GOOGLE_SEARCH_NOT_FOUND) != NULL) {
+    found = FALSE;
+    goto done;
+  }
+
   if ((pat = g_strstr_len(text, len, GOOGLE_SEARCH_PATTERN_1)) == NULL) {
     found = FALSE;
     goto done;
@@ -198,7 +204,7 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
 
   escaped_srch_str = uri_escape(srch_str);
 
-  if ((tmp_fd = g_file_open_tmp (NULL, &tmpname, NULL)) == -1) {
+  if ((tmp_fd = g_file_open_tmp ("vikgsearch.XXXXXX", &tmpname, NULL)) == -1) {
     g_critical("couldn't open temp file\n");
     exit(1);
   }
