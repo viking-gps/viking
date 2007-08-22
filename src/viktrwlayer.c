@@ -24,6 +24,10 @@
 /* WARNING: If you go beyond this point, we are NOT responsible for any ill effects on your sanity */
 /* viktrwlayer.c -- 2200 lines can make a difference in the state of things */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "viking.h"
 #include "vikmapslayer.h"
 #include "viktrwlayer_pixmap.h"
@@ -36,7 +40,9 @@
 #include "babel.h"
 #include "dem.h"
 #include "dems.h"
-
+#ifdef VIK_CONFIG_OPENSTREETMAP
+#include "osm-traces.h"
+#endif
 
 #include <math.h>
 #include <string.h>
@@ -1629,6 +1635,13 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
+
+#ifdef VIK_CONFIG_OPENSTREETMAP 
+  item = gtk_menu_item_new_with_label ( "Upload to OSM" );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+#endif
 }
 
 void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp )

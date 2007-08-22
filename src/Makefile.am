@@ -84,7 +84,8 @@ endif
 
 if OPENSTREETMAP
 viking_SOURCES += \
-	osm.c osm.h
+	osm.c osm.h \
+	osm-traces.c osm-traces.h
 endif
 
 
