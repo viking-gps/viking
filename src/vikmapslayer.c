@@ -1055,6 +1055,7 @@ static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
 {
   VikMapsLayer *vml = vml_vvp[0];
   VikViewport *vvp = vml_vvp[1];
+  VikViewportDrawMode vp_drawmode = vik_viewport_get_drawmode ( vvp );
 
   gdouble xzoom = vml->xmapzoom ? vml->xmapzoom : vik_viewport_get_xmpp ( vvp );
   gdouble yzoom = vml->ymapzoom ? vml->ymapzoom : vik_viewport_get_ympp ( vvp );
@@ -1066,12 +1067,17 @@ static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
   vik_viewport_screen_to_coord ( vvp, vik_viewport_get_width(vvp), vik_viewport_get_height(vvp), &br );
 
   VikMapsLayer_MapType *map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
-  if ( map_type->drawmode == vik_viewport_get_drawmode ( vvp ) &&
+  if ( map_type->drawmode == vp_drawmode &&
        map_type->coord_to_mapcoord ( &ul, xzoom, yzoom, &ulm ) &&
        map_type->coord_to_mapcoord ( &br, xzoom, yzoom, &brm ) )
     start_download_thread ( vml, vvp, &ul, &br, redownload );
+  else if (map_type->drawmode != vp_drawmode) {
+    gchar *err = g_strdup_printf("Wrong drawmode for this map.\nSelect \"%s Mode\" from View menu and try again.", vik_viewport_drawmode_name(map_type->drawmode));
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), err );
+    g_free(err);
+  }
   else
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), "Wrong drawmode / zoom level for this map." );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), "Wrong zoom level for this map." );
 
 }
 

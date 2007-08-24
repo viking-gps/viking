@@ -2,6 +2,8 @@
 Quy Tonthat <qtonthat@gmail.com>:
 	* New google version number.
 	* Better checking to detect downloaded text instead of images.
+	* Give more instructive message for attempting to download maps in
+	wrong mapmode.
 
 2007-08-20
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

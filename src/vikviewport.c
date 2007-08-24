@@ -1005,3 +1005,19 @@ static void viewport_google_rezoom ( VikViewport *vvp )
   vvp->google_calcx_rev_fact = 1 / vvp->google_calcx_fact;
   vvp->google_calcy_rev_fact = 1 / vvp->google_calcy_fact;
 }
+
+const gchar *vik_viewport_drawmode_name(VikViewportDrawMode mode)
+{
+  static gchar *names[] = {
+    "UTM",
+    "Expedia",
+    "Old Google",
+    "Old KH",
+    "Google"
+  };
+
+  if (mode < VIK_VIEWPORT_NUM_DRAWMODES)
+    return names[mode];
+  return NULL;
+
+}
