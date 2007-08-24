@@ -90,7 +90,7 @@ static int check_map_file(FILE* f)
   if ((bp >= (buf + sizeof(buf) -1)) || ((bp - buf) >= nr))
     return(res);
   for (s = html_str; *s; s++) {
-    if (strncmp(*s, bp, strlen(*s)) == 0)
+    if (strncasecmp(*s, bp, strlen(*s)) == 0)
       return(-1);
   }
   return(res);
