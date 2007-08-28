@@ -1072,7 +1072,8 @@ static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
        map_type->coord_to_mapcoord ( &br, xzoom, yzoom, &brm ) )
     start_download_thread ( vml, vvp, &ul, &br, redownload );
   else if (map_type->drawmode != vp_drawmode) {
-    gchar *err = g_strdup_printf("Wrong drawmode for this map.\nSelect \"%s Mode\" from View menu and try again.", vik_viewport_drawmode_name(map_type->drawmode));
+    gchar *drawmode_name = vik_viewport_get_drawmode_name (vvp, map_type->drawmode);
+    gchar *err = g_strdup_printf("Wrong drawmode for this map.\nSelect \"%s\" from View menu and try again.", drawmode_name);
     a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), err );
     g_free(err);
   }

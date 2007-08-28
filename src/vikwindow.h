@@ -27,6 +27,8 @@
 #include <glib-object.h>
 #include <gtk/gtkwindow.h>
 
+#include "vikviewport.h"
+
 G_BEGIN_DECLS
 
 #define VIK_WINDOW_TYPE            (vik_window_get_type ())
@@ -48,6 +50,7 @@ struct _VikWindowClass
 GType vik_window_get_type ();
 
 VikWindow *vik_window_new ();
+GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode );
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean changefilename );
 struct _VikLayer;
 void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);

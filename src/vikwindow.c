@@ -245,7 +245,7 @@ static void window_init ( VikWindow *vw )
 
   vw->action_group = NULL;
 
-  vw->viking_vvp = vik_viewport_new();
+  vw->viking_vvp = vik_viewport_new( vw );
   vw->viking_vlp = vik_layers_panel_new();
   vik_layers_panel_set_viewport ( vw->viking_vlp, vw->viking_vvp );
   vw->viking_vs = vik_statusbar_new();
@@ -1045,6 +1045,22 @@ static void window_set_filename ( VikWindow *vw, const gchar *filename )
   }
 }
 
+GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode )
+{
+  GtkWidget *mode_button;
+  gchar *buttonname;
+  switch ( mode ) {
+    case VIK_VIEWPORT_DRAWMODE_UTM: buttonname = "/ui/MainMenu/View/ModeUTM"; break;
+    case VIK_VIEWPORT_DRAWMODE_EXPEDIA: buttonname = "/ui/MainMenu/View/ModeExpedia"; break;
+    case VIK_VIEWPORT_DRAWMODE_GOOGLE: buttonname = "/ui/MainMenu/View/ModeGoogle"; break;
+    case VIK_VIEWPORT_DRAWMODE_MERCATOR: buttonname = "/ui/MainMenu/View/ModeMercator"; break;
+    default: buttonname = "/ui/MainMenu/View/ModeKH";
+  }
+  mode_button = gtk_ui_manager_get_widget ( vw->uim, buttonname );
+  g_assert ( mode_button );
+  return mode_button;
+}
+
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename )
 {
   switch ( a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename ) )
@@ -1055,18 +1071,9 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     case 1:
     {
       GtkWidget *mode_button;
-      gchar *buttonname;
       if ( change_filename )
         window_set_filename ( vw, filename );
-      switch ( vik_viewport_get_drawmode ( vw->viking_vvp ) ) {
-        case VIK_VIEWPORT_DRAWMODE_UTM: buttonname = "/ui/MainMenu/View/ModeUTM"; break;
-        case VIK_VIEWPORT_DRAWMODE_EXPEDIA: buttonname = "/ui/MainMenu/View/ModeExpedia"; break;
-        case VIK_VIEWPORT_DRAWMODE_GOOGLE: buttonname = "/ui/MainMenu/View/ModeGoogle"; break;
-        case VIK_VIEWPORT_DRAWMODE_MERCATOR: buttonname = "/ui/MainMenu/View/ModeMercator"; break;
-        default: buttonname = "/ui/MainMenu/View/ModeKH";
-      }
-      mode_button = gtk_ui_manager_get_widget ( vw->uim, buttonname );
-      g_assert ( mode_button );
+      mode_button = vik_window_get_drawmode_button ( vw, vik_viewport_get_drawmode ( vw->viking_vvp ) );
       vw->only_updating_coord_mode_ui = TRUE; /* if we don't set this, it will change the coord to UTM if we click Lat/Lon. I don't know why. */
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button), TRUE );
       vw->only_updating_coord_mode_ui = FALSE;
@@ -1084,7 +1091,6 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     default: draw_update ( vw );
   }
 }
-
 static void load_file ( GtkAction *a, VikWindow *vw )
 {
   gboolean newwindow;

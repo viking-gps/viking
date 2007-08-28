@@ -1012,18 +1012,20 @@ static void viewport_google_rezoom ( VikViewport *vvp )
   vvp->google_calcy_rev_fact = 1 / vvp->google_calcy_fact;
 }
 
-const gchar *vik_viewport_drawmode_name(VikViewportDrawMode mode)
-{
-  static gchar *names[] = {
-    "UTM",
-    "Expedia",
-    "Old Google",
-    "Old KH",
-    "Google"
-  };
 
-  if (mode < VIK_VIEWPORT_NUM_DRAWMODES)
-    return names[mode];
-  return NULL;
+const gchar *vik_viewport_get_drawmode_name(VikViewport *vv, VikViewportDrawMode mode)
+{
+  const gchar *name = NULL;
+  GtkWidget *mode_button;
+  GtkWidget *label;
+
+  mode_button = vik_window_get_drawmode_button(vv->vw, mode);
+  label = gtk_bin_get_child(GTK_BIN(mode_button));
+
+  name = gtk_label_get_text ( GTK_LABEL(label) );
+
+  return name;
 
 }
+
+
