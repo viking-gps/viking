@@ -296,8 +296,8 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
 {
   guint len;
   g_assert ( vml != NULL);
-  if ( vml->cache_dir )
-    g_free ( vml->cache_dir );
+  g_free ( vml->cache_dir );
+  vml->cache_dir = NULL;
 
   if ( dir == NULL || dir[0] == '\0' )
     vml->cache_dir = g_strdup ( MAPS_CACHE_DIR );
@@ -427,12 +427,12 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
 
 static void maps_layer_free ( VikMapsLayer *vml )
 {
-  if ( vml->cache_dir )
-    g_free ( vml->cache_dir );
+  g_free ( vml->cache_dir );
+  vml->cache_dir = NULL;
   if ( vml->dl_right_click_menu )
     gtk_object_sink ( GTK_OBJECT(vml->dl_right_click_menu) );
-  if (vml->last_center)
-    g_free(vml->last_center);
+  g_free(vml->last_center);
+  vml->last_center = NULL;
 }
 
 static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp )
@@ -715,7 +715,9 @@ static void mdi_free ( MapDownloadInfo *mdi )
 {
   g_mutex_free(mdi->mutex);
   g_free ( mdi->cache_dir );
+  mdi->cache_dir = NULL;
   g_free ( mdi->filename_buf );
+  mdi->filename_buf = NULL;
   g_free ( mdi );
 }
 
