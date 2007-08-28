@@ -140,11 +140,17 @@ GdkFunction vik_gc_get_function ( GdkGC *gc );
 
 void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off );
 
-typedef enum { VIK_VIEWPORT_DRAWMODE_UTM=0, VIK_VIEWPORT_DRAWMODE_EXPEDIA,
-  VIK_VIEWPORT_DRAWMODE_GOOGLE, VIK_VIEWPORT_DRAWMODE_KH, VIK_VIEWPORT_DRAWMODE_MERCATOR, VIK_VIEWPORT_NUM_DRAWMODES } VikViewportDrawMode;
+typedef enum {
+  VIK_VIEWPORT_DRAWMODE_UTM=0,
+  VIK_VIEWPORT_DRAWMODE_EXPEDIA,
+  VIK_VIEWPORT_DRAWMODE_GOOGLE,
+  VIK_VIEWPORT_DRAWMODE_KH,
+  VIK_VIEWPORT_DRAWMODE_MERCATOR,
+  VIK_VIEWPORT_NUM_DRAWMODES
+} VikViewportDrawMode;
 /* Do not forget to update vik_viewport_drawmode_name() if you modify VikViewportDrawMode */
 
-const gchar *vik_viewport_drawmode_name(VikViewportDrawMode mode);
+const gchar *vik_viewport_get_drawmode_name(VikViewport *vv, VikViewportDrawMode mode);
 
 void vik_viewport_set_drawmode ( VikViewport *vvp, VikViewportDrawMode drawmode );
 VikViewportDrawMode vik_viewport_get_drawmode ( VikViewport *vvp );
