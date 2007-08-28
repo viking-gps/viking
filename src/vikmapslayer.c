@@ -80,6 +80,7 @@ static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.
 
 
 static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp );
+static void maps_layer_post_read (VikMapsLayer *vml, gpointer vp);
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp );
@@ -131,7 +132,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   (VikLayerFuncCreate)                  maps_layer_new,
   (VikLayerFuncRealize)                 NULL,
-  (VikLayerFuncPostRead)                NULL,
+  (VikLayerFuncPostRead)                maps_layer_post_read,
   (VikLayerFuncFree)                    maps_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -433,6 +434,21 @@ static void maps_layer_free ( VikMapsLayer *vml )
     gtk_object_sink ( GTK_OBJECT(vml->dl_right_click_menu) );
   g_free(vml->last_center);
   vml->last_center = NULL;
+}
+
+static void maps_layer_post_read (VikMapsLayer *vml, gpointer vp)
+{
+  VikViewportDrawMode vp_drawmode;
+  VikMapsLayer_MapType *map_type = NULL;
+ 
+  vp_drawmode = vik_viewport_get_drawmode ( VIK_VIEWPORT(vp) );
+  map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
+  if (map_type->drawmode != vp_drawmode) {
+    gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), map_type->drawmode);
+    gchar *msg = g_strdup_printf("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it.", drawmode_name);
+    a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
+    g_free(msg);
+  }
 }
 
 static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp )

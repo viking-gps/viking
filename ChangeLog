@@ -1,3 +1,7 @@
+2007-08-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Check current drawmode after creating a new MapsLayer.
+
 2007-08-25
 Quy Tonthat <qtonthat@gmail.com>:
 	* New google version number.

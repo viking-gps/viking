@@ -32,6 +32,7 @@
 /* most of this file is an architechtural flaw. */
 
 #define a_dialog_info_msg(win,info) a_dialog_msg(win,GTK_MESSAGE_INFO,info,NULL)
+#define a_dialog_warning_msg(win,info) a_dialog_msg(win,GTK_MESSAGE_WARNING,info,NULL)
 #define a_dialog_error_msg(win,info) a_dialog_msg(win,GTK_MESSAGE_ERROR,info,NULL)
 
 #define a_dialog_info_msg_extra(win,info,extra) a_dialog_msg(win,GTK_MESSAGE_INFO,info,extra)
