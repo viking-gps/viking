@@ -63,6 +63,7 @@ typedef struct _OsmTracesInfo {
   gchar *tags;
   gboolean public;
   VikTrwLayer *vtl;
+  gchar *track_name;
 } OsmTracesInfo;
 
 /**
@@ -75,6 +76,7 @@ static void oti_free(OsmTracesInfo *oti)
     g_free(oti->name); oti->name = NULL;
     g_free(oti->description); oti->description = NULL;
     g_free(oti->tags); oti->tags = NULL;
+    g_free(oti->track_name); oti->track_name = NULL;
     
     g_object_unref(oti->vtl); oti->vtl = NULL;
   }
@@ -142,7 +144,6 @@ void osm_traces_upload_file(const char *user,
   curl_formadd(&post, &last,
                CURLFORM_COPYNAME, "tags",
                CURLFORM_COPYCONTENTS, tags, CURLFORM_END);
-  /* Public field fixed to "1" actually */
   if (public)
     public_string = "1";
   else
@@ -220,7 +221,15 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   file = fdopen(fd, "w");
 
   /* writing gpx file */
-  a_gpx_write_file(oti->vtl, file);
+  if (oti->track_name != NULL)
+  {
+    /* Upload only the selected track */
+    VikTrack *track = vik_trw_layer_get_track(oti->vtl, oti->track_name);
+    a_gpx_write_track_file(oti->track_name, track, file);
+  }
+  else
+    /* Upload the whole VikTrwLayer */
+    a_gpx_write_file(oti->vtl, file);
   
   /* We can close the file */
   /* This also close the associated fd */
@@ -239,8 +248,11 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
 
 /**
  * Uploading a VikTrwLayer
+ *
+ * @param vtl VikTrwLayer
+ * @param track_name if not null, the name of the track to upload
  */
-static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl )
+static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track_name )
 {
   GtkWidget *dia = gtk_dialog_new_with_buttons ("OSM upload",
                                                  VIK_GTK_WINDOW_FROM_LAYER(vtl),
@@ -290,7 +302,10 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl )
 
   name_label = gtk_label_new("File's name:");
   name_entry = gtk_entry_new();
-  name = vik_layer_get_name(VIK_LAYER(vtl));
+  if (track_name != NULL)
+    name = track_name;
+  else
+    name = vik_layer_get_name(VIK_LAYER(vtl));
   gtk_entry_set_text(GTK_ENTRY(name_entry), name);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), name_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), name_entry, FALSE, FALSE, 0);
@@ -346,6 +361,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl )
     info->tags        = g_strdup(gtk_entry_get_text(GTK_ENTRY(tags_entry)));
     info->public      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(public));
     info->vtl         = VIK_TRW_LAYER(g_object_ref(vtl));
+    info->track_name  = (track_name == NULL) ? NULL : g_strdup(track_name);
 
     title = g_strdup_printf("Uploading %s to OSM", info->name);
 
@@ -363,9 +379,17 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl )
 }
 
 /**
- * Function called by the button
+ * Function called by the entry menu of a TrwLayer
  */
 void osm_traces_upload_cb ( gpointer layer_and_vlp[2], guint file_type )
 {
-  osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(layer_and_vlp[0]));
+  osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(layer_and_vlp[0]), NULL);
+}
+
+/**
+ * Function called by the entry menu of a single track
+ */
+void osm_traces_upload_track_cb ( gpointer pass_along[6] )
+{
+  osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(pass_along[0]), pass_along[3]);
 }

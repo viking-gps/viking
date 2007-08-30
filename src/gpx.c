@@ -643,16 +643,31 @@ static void gpx_write_track ( const gchar *name, VikTrack *t, FILE *f )
   fprintf ( f, "</trkseg>\n</trk>\n" );
 }
 
-void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
+static void gpx_write_header( FILE *f )
 {
   fprintf(f, "<?xml version=\"1.0\"?>\n"
           "<gpx version=\"1.0\" creator=\"Viking -- http://viking.sf.net/\"\n"
           "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
           "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
           "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
+}
+
+static void gpx_write_footer( FILE *f )
+{
+  fprintf(f, "</gpx>\n");
+}
+
+void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
+{
+  gpx_write_header ( f );
   g_hash_table_foreach ( vik_trw_layer_get_waypoints ( vtl ), (GHFunc) gpx_write_waypoint, f );
   g_hash_table_foreach ( vik_trw_layer_get_tracks ( vtl ), (GHFunc) gpx_write_track, f );
-  fprintf(f, "</gpx>\n");
+  gpx_write_footer ( f );
+}
 
-
+void a_gpx_write_track_file ( const gchar *name, VikTrack *t, FILE *f )
+{
+  gpx_write_header ( f );
+  gpx_write_track ( name, t, f );
+  gpx_write_footer ( f );
 }

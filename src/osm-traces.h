@@ -35,5 +35,6 @@ void osm_traces_upload_file(const char *user,
 		            gboolean public);
 
 void osm_traces_upload_cb(gpointer layer_and_vlp[2], guint file_type);
+void osm_traces_upload_track_cb(gpointer pass_along[6]);
 
 #endif

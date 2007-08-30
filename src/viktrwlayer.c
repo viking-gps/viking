@@ -2480,6 +2480,13 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_apply_dem_data), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+
+#ifdef VIK_CONFIG_OPENSTREETMAP
+    item = gtk_menu_item_new_with_label ( "Upload to OSM" );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_track_cb), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+#endif
   }
 
   if ( vlp && (subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) )

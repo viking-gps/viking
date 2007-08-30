@@ -1,3 +1,7 @@
+2007-08-30
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add ability to upload a single track.
+
 2007-08-28
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Check current drawmode after creating a new MapsLayer.

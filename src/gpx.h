@@ -26,5 +26,6 @@
 
 void a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f );
+void a_gpx_write_track_file ( const gchar *name, VikTrack *track, FILE *f );
 
 #endif
