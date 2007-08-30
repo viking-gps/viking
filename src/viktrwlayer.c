@@ -1592,7 +1592,7 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
 {
   static gpointer pass_along[2];
   GtkWidget *item;
-  GtkMenu *export_submenu;
+  GtkWidget *export_submenu;
   pass_along[0] = vtl;
   pass_along[1] = vlp;
 
@@ -1614,7 +1614,7 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   item = gtk_menu_item_new_with_label ( "Export layer" );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), export_submenu);
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), export_submenu );
   
   item = gtk_menu_item_new_with_label ( "Export as GPSPoint" );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpspoint), pass_along );
