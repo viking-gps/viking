@@ -28,6 +28,12 @@ typedef struct {
    * Could be NULL.
    */
   gchar *referer;
+
+  /**
+   * follow_location specifies the number of retries
+   * to follow a redirect while downloading a page.
+   */
+  glong follow_location;
 } DownloadOptions;
 
 /* TODO: convert to Glib */

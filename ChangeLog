@@ -1,4 +1,8 @@
 2007-08-30
+Bernd Zeimetz <bernd@bzed.de>:
+	* Add redirect support (for Expedia map layer).
+
+2007-08-30
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add ability to upload a single track.
 

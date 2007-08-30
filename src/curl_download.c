@@ -87,8 +87,14 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
     {
       curl_easy_setopt ( curl, CURLOPT_URL, uri );
       curl_easy_setopt ( curl, CURLOPT_FILE, f );
-      if (options != NULL && options->referer != NULL)
-        curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
+      if (options != NULL) {
+        if(options->referer != NULL)
+          curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
+        if(options->follow_location != 0) {
+          curl_easy_setopt ( curl, CURLOPT_FOLLOWLOCATION, 1);
+          curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location);
+        }
+      }
       curl_easy_setopt ( curl, CURLOPT_USERAGENT, "viking/" VERSION " libcurl/7.15.4" );
       if ((cookie_file = get_cookie_file(FALSE)) != NULL)
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
