@@ -1,3 +1,7 @@
+2007-09-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Disable Expedia map layer by default (as it is not working).
+
 2007-08-30
 Bernd Zeimetz <bernd@bzed.de>:
 	* Add redirect support (for Expedia map layer).

@@ -92,9 +92,9 @@ esac
 AM_CONDITIONAL([TERRASERVER], [test x$ac_cv_enable_terraserver = xyes])
 
 AC_ARG_ENABLE(expedia, AC_HELP_STRING([--enable-expedia],
-              [enable Expedia stuff (default is enable)]),
+              [enable Expedia stuff (default is disable)]),
               [ac_cv_enable_expedia=$enableval],
-              [ac_cv_enable_expedia=yes])
+              [ac_cv_enable_expedia=no])
 AC_CACHE_CHECK([whether to enable Expedia stuff],
                [ac_cv_enable_expedia], [ac_cv_enable_expedia=yes])
 case $ac_cv_enable_expedia in
