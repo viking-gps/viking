@@ -1,3 +1,28 @@
+Viking 0.9.1 (2007-09-02)
+New features since 0.9
+
+* Upload data (TrackWaypoint layer or single track) to OpenStreetMap.
+* Group "Export Layer..." entries in a sub-menu.
+* Added --enable-old-google to configure script. Old google modes are now disabled by default.
+* Default mode for new maps is Google Maps.
+* DEM module can now read hgt.zip files directly (no need to unzip them).
+* DEM module can now process 1 arc sec hgt(.zip) files (mainly for USA regions).
+* Display on status bar altitude at cursor using data from DEM layer(s). 
+
+Fixes since 0.9
+
+* Add redirect support.
+* Some improves to introduce the drawmode notion.
+* Better checking to detect downloaded text instead of images.
+* New google version number.
+* libcurl is a requirement.
+* Fix bugs that cause crashes on layers copy/paste/delete.
+* Fix bug in Google search that caused viking jump to wrong location when Google can not find the match.
+* Clean up and eliminate compiler warning.
+* Fix bug in creating temporary HOME when HOME is not set.
+* Disable GeoCache Acquire since it no longer works. Can be enabled again using configure --enable-geocaches.
+* Disable expedia map layer by default since it no longer works. Can be enabled again using configure --enable-expedia. 
+
 Viking 0.9 (2007-07-13)
 New Features since 0.1.3
 
