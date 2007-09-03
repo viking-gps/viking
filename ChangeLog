@@ -1,3 +1,7 @@
+2007-09-03
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix: crash when "applying" a map layer property dialog.
+
 2007-09-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Disable Expedia map layer by default (as it is not working).
