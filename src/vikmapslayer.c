@@ -80,7 +80,7 @@ static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.
 
 
 static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp );
-static void maps_layer_post_read (VikMapsLayer *vml, gpointer vp);
+static void maps_layer_post_read (VikLayer *vl, VikViewport *vp);
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp );
@@ -132,7 +132,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   (VikLayerFuncCreate)                  maps_layer_new,
   (VikLayerFuncRealize)                 NULL,
-  (VikLayerFuncPostRead)                maps_layer_post_read,
+                                        maps_layer_post_read,
   (VikLayerFuncFree)                    maps_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -436,15 +436,16 @@ static void maps_layer_free ( VikMapsLayer *vml )
   vml->last_center = NULL;
 }
 
-static void maps_layer_post_read (VikMapsLayer *vml, gpointer vp)
+static void maps_layer_post_read (VikLayer *vl, VikViewport *vp)
 {
   VikViewportDrawMode vp_drawmode;
+  VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
   VikMapsLayer_MapType *map_type = NULL;
  
   vp_drawmode = vik_viewport_get_drawmode ( VIK_VIEWPORT(vp) );
   map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
   if (map_type->drawmode != vp_drawmode) {
-    gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), map_type->drawmode);
+    const gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), map_type->drawmode);
     gchar *msg = g_strdup_printf("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it.", drawmode_name);
     a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
     g_free(msg);
@@ -1090,7 +1091,7 @@ static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
        map_type->coord_to_mapcoord ( &br, xzoom, yzoom, &brm ) )
     start_download_thread ( vml, vvp, &ul, &br, redownload );
   else if (map_type->drawmode != vp_drawmode) {
-    gchar *drawmode_name = vik_viewport_get_drawmode_name (vvp, map_type->drawmode);
+    const gchar *drawmode_name = vik_viewport_get_drawmode_name (vvp, map_type->drawmode);
     gchar *err = g_strdup_printf("Wrong drawmode for this map.\nSelect \"%s\" from View menu and try again.", drawmode_name);
     a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), err );
     g_free(err);

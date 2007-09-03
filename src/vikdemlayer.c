@@ -43,7 +43,7 @@ static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *v
 static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id );
 static void dem_layer_update_gc ( VikDEMLayer *vdl, VikViewport *vp, const gchar *color );
-static void dem_layer_post_read ( VikDEMLayer *vdl, VikViewport *vp );
+static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp );
 
 static VikLayerParamScale param_scales[] = {
   { 1, 10000, 10, 1 },
@@ -187,7 +187,7 @@ VikLayerInterface vik_dem_layer_interface = {
 
   (VikLayerFuncCreate)                  vik_dem_layer_create,
   (VikLayerFuncRealize)                 NULL,
-  (VikLayerFuncPostRead)                dem_layer_post_read,
+                                        dem_layer_post_read,
   (VikLayerFuncFree)                    vik_dem_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -306,8 +306,9 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id )
   return rv;
 }
 
-static void dem_layer_post_read ( VikDEMLayer *vdl, VikViewport *vp )
+static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp )
 {
+  VikDEMLayer *vdl = VIK_DEM_LAYER(vl);
   if ( vdl->gc )
     g_object_unref ( G_OBJECT(vdl->gc) );
 

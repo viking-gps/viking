@@ -46,7 +46,7 @@ static GObjectClass *parent_class;
 static void layer_class_init ( VikLayerClass *klass );
 static void layer_init ( VikLayer *vl );
 static void layer_finalize ( VikLayer *vl );
-static gboolean layer_properties_factory ( VikLayer *vl, gpointer vp );
+static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp );
 
 
 /* TODO longone: rename vik_layer_init -> set_type */
@@ -406,7 +406,7 @@ gboolean vik_layer_set_param ( VikLayer *layer, guint16 id, VikLayerParamData da
   return FALSE;
 }
 
-void vik_layer_post_read ( VikLayer *layer, gpointer vp )
+void vik_layer_post_read ( VikLayer *layer, VikViewport *vp )
 {
   if ( vik_layer_interfaces[layer->type]->post_read )
     vik_layer_interfaces[layer->type]->post_read ( layer, vp );
@@ -572,7 +572,7 @@ static VikLayerParamData properties_widget_get_value ( GtkWidget *widget, VikLay
 
 /* false if cancel, true if OK */
 /* some would claim this wasn't written to be human-readable. */
-static gboolean layer_properties_factory ( VikLayer *vl, gpointer vp )
+static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
 {
   VikLayerParam *params = vik_layer_interfaces[vl->type]->params;
   guint16 params_count = vik_layer_interfaces[vl->type]->params_count;

@@ -242,7 +242,7 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
   vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1] );
 }
 
-static void file_read ( VikAggregateLayer *top, FILE *f, gpointer vp )
+static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
 {
   Stack *stack;
   struct LatLon ll = { 0.0, 0.0 };
@@ -524,7 +524,7 @@ static void xfclose ( FILE *f )
 }
 
 /* 0 on failure, 1 on success (vik file) 2 on success (other file) */
-gshort a_file_load ( VikAggregateLayer *top, gpointer vp, const gchar *filename )
+gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename )
 {
   FILE *f = xfopen ( filename, "r" );
 

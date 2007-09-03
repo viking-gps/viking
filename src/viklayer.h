@@ -53,7 +53,7 @@ struct _VikLayer {
   gboolean visible;
 
   gboolean realized;
-  VikTreeview *vt; /* simply a refernce */
+  VikTreeview *vt; /* simply a reference */
   GtkTreeIter iter;
 
   /* for explicit "polymorphism" (function type switching) */
@@ -175,7 +175,7 @@ typedef void          (*VikLayerFuncRealize)               (VikLayer *,VikTreevi
 /* rarely used, this is called after a read operation or properties box is run.
  * usually used to create GC's that depend on params,
  * but GC's can also be created from create() or set_param() */
-typedef void          (*VikLayerFuncPostRead)              (VikLayer *,gpointer vp);
+typedef void          (*VikLayerFuncPostRead)              (VikLayer *,VikViewport *vp);
 
 typedef void          (*VikLayerFuncFree)                  (VikLayer *);
 
@@ -308,7 +308,7 @@ VikLayer *vik_layer_create ( gint type, gpointer vp, GtkWindow *w, gboolean inte
 gboolean vik_layer_properties ( VikLayer *layer, gpointer vp );
 
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter * layer_iter );
-void vik_layer_post_read ( VikLayer *layer, gpointer vp );
+void vik_layer_post_read ( VikLayer *layer, VikViewport *vp );
 
 gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 

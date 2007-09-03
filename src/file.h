@@ -26,6 +26,7 @@
 
 #include "vikaggregatelayer.h"
 #include "viktrwlayer.h"
+#include "vikviewport.h"
 
 #define FILE_TYPE_GPSPOINT 1
 #define FILE_TYPE_GPSMAPPER 2
@@ -34,7 +35,7 @@
 const gchar *a_file_basename ( const gchar *filename );
 
 /* 0 on failure, 1 on success (vik file) 2 on success (other file) */
-gshort a_file_load ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
+gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename );
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type );
 const gchar *a_get_viking_dir();

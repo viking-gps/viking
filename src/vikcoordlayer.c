@@ -29,7 +29,7 @@ static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewpor
 static gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id );
 static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp, const gchar *color );
-static void coord_layer_post_read ( VikCoordLayer *vcl, VikViewport *vp );
+static void coord_layer_post_read ( VikLayer *vl, VikViewport *vp );
 
 static VikLayerParamScale param_scales[] = {
   { 0.05, 60.0, 0.25, 10 },
@@ -61,7 +61,7 @@ VikLayerInterface vik_coord_layer_interface = {
 
   (VikLayerFuncCreate)                  vik_coord_layer_create,
   (VikLayerFuncRealize)                 NULL,
-  (VikLayerFuncPostRead)                coord_layer_post_read,
+                                        coord_layer_post_read,
   (VikLayerFuncFree)                    vik_coord_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -173,8 +173,9 @@ static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id 
   return rv;
 }
 
-static void coord_layer_post_read ( VikCoordLayer *vcl, VikViewport *vp )
+static void coord_layer_post_read ( VikLayer *vl, VikViewport *vp )
 {
+  VikCoordLayer *vcl = VIK_COORD_LAYER(vl);
   if ( vcl->gc )
     g_object_unref ( G_OBJECT(vcl->gc) );
 
