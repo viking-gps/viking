@@ -84,6 +84,16 @@ static void oti_free(OsmTracesInfo *oti)
   g_free(oti);
 }
 
+static gchar *get_default_user()
+{
+  const gchar *default_user = NULL;
+
+  /* Retrieve "standard" EMAIL varenv */
+  default_user = g_getenv("EMAIL");
+
+  return default_user;
+}
+
 static void set_login(const gchar *user_, const gchar *password_)
 {
   /* Allocate mutex */
@@ -278,6 +288,12 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   user_entry = gtk_entry_new();
   if (user != NULL)
     gtk_entry_set_text(GTK_ENTRY(user_entry), user);
+  else
+  {
+    const gchar *default_user = get_default_user();
+    if (default_user != NULL)
+      gtk_entry_set_text(GTK_ENTRY(user_entry), default_user);
+  }
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( user_label );

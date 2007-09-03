@@ -5,6 +5,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Preset filename when exporting a TrwLayer.
 	* Refactoring: retrieve the VikWindow from the VikViewport via its
 	GtkWidget nature.
+	* Use $EMAIL to initialise email field for OSM upload.
 
 2007-09-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
