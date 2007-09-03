@@ -2,6 +2,7 @@
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix: crash when "applying" a map layer property dialog.
 	* QA: strong type the second argument of the *_post_read functions.
+	* Preset filename when exporting a TrwLayer.
 
 2007-09-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
