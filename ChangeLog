@@ -7,6 +7,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	GtkWidget nature.
 	* Use $EMAIL to initialise email field for OSM upload.
 	* Do not warn about drawmode inconsistency while reading file.
+	* Hide Expedia view mode when expedia is not built in.
 
 2007-09-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

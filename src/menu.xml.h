@@ -34,7 +34,9 @@ static const char *menu_xml =
 	"    </menu>"
 	"    <menu action='View'>"
 	"      <menuitem action='ModeUTM'/>"
+#ifdef VIK_CONFIG_EXPEDIA
 	"      <menuitem action='ModeExpedia'/>"
+#endif
 #ifdef VIK_CONFIG_OLD_GOOGLE
 	"      <menuitem action='ModeGoogle'/>"
 	"      <menuitem action='ModeKH'/>"
