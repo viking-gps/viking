@@ -337,7 +337,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
           {
             if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_AGGREGATE) {
               vik_aggregate_layer_add_layer ( VIK_AGGREGATE_LAYER(stack->under->data), VIK_LAYER(stack->data) );
-              vik_layer_post_read ( VIK_LAYER(stack->data), vp );
+              vik_layer_post_read ( VIK_LAYER(stack->data), vp, TRUE );
             }
             else if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_GPS) {
               /* TODO: anything else needs to be done here ? */
@@ -477,7 +477,7 @@ name=this
     if ( stack->under && stack->under->data && stack->data )
     {
       vik_aggregate_layer_add_layer ( VIK_AGGREGATE_LAYER(stack->under->data), VIK_LAYER(stack->data) );
-      vik_layer_post_read ( VIK_LAYER(stack->data), vp );
+      vik_layer_post_read ( VIK_LAYER(stack->data), vp, TRUE );
     }
     pop(&stack);
   }
@@ -551,7 +551,7 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
     else
      a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
 
-    vik_layer_post_read ( vtl, vp );
+    vik_layer_post_read ( vtl, vp, TRUE );
 
     vik_aggregate_layer_add_layer ( top, vtl );
 
