@@ -406,10 +406,10 @@ gboolean vik_layer_set_param ( VikLayer *layer, guint16 id, VikLayerParamData da
   return FALSE;
 }
 
-void vik_layer_post_read ( VikLayer *layer, VikViewport *vp )
+void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file )
 {
   if ( vik_layer_interfaces[layer->type]->post_read )
-    vik_layer_interfaces[layer->type]->post_read ( layer, vp );
+    vik_layer_interfaces[layer->type]->post_read ( layer, vp, from_file );
 }
 
 static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerParamData data )
@@ -667,7 +667,7 @@ static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
           j++;
         }
       }
-      vik_layer_post_read ( vl, vp ); /* update any gc's */
+      vik_layer_post_read ( vl, vp, FALSE ); /* update any gc's */
 
       gtk_widget_destroy ( dialog ); /* hide before redrawing. */
       g_free ( widgets );

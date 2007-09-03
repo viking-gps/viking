@@ -6,6 +6,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Refactoring: retrieve the VikWindow from the VikViewport via its
 	GtkWidget nature.
 	* Use $EMAIL to initialise email field for OSM upload.
+	* Do not warn about drawmode inconsistency while reading file.
 
 2007-09-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

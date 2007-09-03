@@ -175,13 +175,13 @@ typedef void          (*VikLayerFuncRealize)               (VikLayer *,VikTreevi
 /* rarely used, this is called after a read operation or properties box is run.
  * usually used to create GC's that depend on params,
  * but GC's can also be created from create() or set_param() */
-typedef void          (*VikLayerFuncPostRead)              (VikLayer *,VikViewport *vp);
+typedef void          (*VikLayerFuncPostRead)              (VikLayer *,VikViewport *vp,gboolean from_file);
 
 typedef void          (*VikLayerFuncFree)                  (VikLayer *);
 
 /* do _not_ use this unless absolutely neccesary. Use the dynamic properties (see coordlayer for example)
   * returns TRUE if OK was pressed */
-typedef gboolean      (*VikLayerFuncProperties)            (VikLayer *,VikViewport *); /* gpointer is a VikViewport */
+typedef gboolean      (*VikLayerFuncProperties)            (VikLayer *,VikViewport *);
 
 typedef void          (*VikLayerFuncDraw)                  (VikLayer *,VikViewport *);
 typedef void          (*VikLayerFuncChangeCoordMode)       (VikLayer *,VikCoordMode);
@@ -308,7 +308,7 @@ VikLayer *vik_layer_create ( gint type, gpointer vp, GtkWindow *w, gboolean inte
 gboolean vik_layer_properties ( VikLayer *layer, gpointer vp );
 
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter * layer_iter );
-void vik_layer_post_read ( VikLayer *layer, VikViewport *vp );
+void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file );
 
 gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 

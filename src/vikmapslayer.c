@@ -80,7 +80,7 @@ static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.
 
 
 static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp );
-static void maps_layer_post_read (VikLayer *vl, VikViewport *vp);
+static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file);
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp );
@@ -436,19 +436,25 @@ static void maps_layer_free ( VikMapsLayer *vml )
   vml->last_center = NULL;
 }
 
-static void maps_layer_post_read (VikLayer *vl, VikViewport *vp)
+static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file)
 {
-  VikViewportDrawMode vp_drawmode;
-  VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
-  VikMapsLayer_MapType *map_type = NULL;
+  if (from_file != TRUE)
+  {
+    /* If this method is not called in file reading context
+     * it is called in GUI context.
+     * So, we can check if we have to inform the user about inconsistency */
+    VikViewportDrawMode vp_drawmode;
+    VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
+    VikMapsLayer_MapType *map_type = NULL;
  
-  vp_drawmode = vik_viewport_get_drawmode ( VIK_VIEWPORT(vp) );
-  map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
-  if (map_type->drawmode != vp_drawmode) {
-    const gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), map_type->drawmode);
-    gchar *msg = g_strdup_printf("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it.", drawmode_name);
-    a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
-    g_free(msg);
+    vp_drawmode = vik_viewport_get_drawmode ( VIK_VIEWPORT(vp) );
+    map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
+    if (map_type->drawmode != vp_drawmode) {
+      const gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), map_type->drawmode);
+      gchar *msg = g_strdup_printf("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it.", drawmode_name);
+      a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
+      g_free(msg);
+    }
   }
 }
 
