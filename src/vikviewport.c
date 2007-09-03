@@ -82,9 +82,6 @@ struct _VikViewport {
   gboolean draw_scale;
   gboolean draw_centermark;
 
-  /* Parent VikWindow */
-  VikWindow *vw;
-
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
 
@@ -150,10 +147,9 @@ static void viewport_class_init ( VikViewportClass *klass )
   parent_class = g_type_class_peek_parent (klass);
 }
 
-VikViewport *vik_viewport_new (VikWindow *vw)
+VikViewport *vik_viewport_new ()
 {
   VikViewport *vv = VIK_VIEWPORT ( g_object_new ( VIK_VIEWPORT_TYPE, NULL ) );
-  vv->vw = vw;
   return vv;
 }
 
@@ -1016,10 +1012,12 @@ static void viewport_google_rezoom ( VikViewport *vvp )
 const gchar *vik_viewport_get_drawmode_name(VikViewport *vv, VikViewportDrawMode mode)
 {
   const gchar *name = NULL;
+  VikWindow *vw = NULL;
   GtkWidget *mode_button;
   GtkWidget *label;
-
-  mode_button = vik_window_get_drawmode_button(vv->vw, mode);
+  
+  vw = VIK_WINDOW_FROM_WIDGET(vv);
+  mode_button = vik_window_get_drawmode_button(vw, mode);
   label = gtk_bin_get_child(GTK_BIN(mode_button));
 
   name = gtk_label_get_text ( GTK_LABEL(label) );

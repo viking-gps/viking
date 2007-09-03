@@ -58,4 +58,6 @@ struct _VikViewport * vik_window_viewport(VikWindow *vw);
 
 G_END_DECLS
 
+#define VIK_WINDOW_FROM_WIDGET(x) VIK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(x)))
+
 #endif

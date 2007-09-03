@@ -3,6 +3,8 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix: crash when "applying" a map layer property dialog.
 	* QA: strong type the second argument of the *_post_read functions.
 	* Preset filename when exporting a TrwLayer.
+	* Refactoring: retrieve the VikWindow from the VikViewport via its
+	GtkWidget nature.
 
 2007-09-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
