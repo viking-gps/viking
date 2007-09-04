@@ -1,3 +1,15 @@
+Viking 0.9.2 (2007-09-04)
+New features since 0.9.1
+
+* Use $EMAIL to initialise email field for OSM upload.
+* Preset filename when exporting a TrwLayer. 
+
+Fixes since 0.9.1
+
+* Fix: crash when "applying" a map layer property dialog.
+* Fix: Do not warn about drawmode inconsistency while reading file.
+* Fix: Hide Expedia view mode when expedia is not built in. 
+
 Viking 0.9.1 (2007-09-02)
 New features since 0.9
 
