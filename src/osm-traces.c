@@ -84,7 +84,7 @@ static void oti_free(OsmTracesInfo *oti)
   g_free(oti);
 }
 
-static gchar *get_default_user()
+static const gchar *get_default_user()
 {
   const gchar *default_user = NULL;
 
