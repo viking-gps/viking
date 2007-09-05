@@ -1,6 +1,8 @@
 2007-09-06
 Quy Tonthat <qtonthat@gmail.com>:
 	* Make viking's default start location somewhere more likely has maps.
+	* Fix crash when using "Maps Download" tools right after viking is
+	started (without a viking file).
 
 2007-09-05
 Quy Tonthat <qtonthat@gmail.com>:
