@@ -1,3 +1,11 @@
+2007-09-06
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make viking's default start location somewhere more likely has maps.
+
+2007-09-05
+Quy Tonthat <qtonthat@gmail.com>:
+	* Viking 0.9.2 (By Guilhem Bonnefille <guilhem.bonnefille@gmail.com>)
+
 2007-09-03
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix: crash when "applying" a map layer property dialog.

@@ -162,8 +162,8 @@ static void viewport_init ( VikViewport *vvp )
   vvp->ympp = 4.0;
   vvp->coord_mode = VIK_COORD_LATLON;
   vvp->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
-  vvp->center.north_south = 0;
-  vvp->center.east_west = -166021;
+  vvp->center.north_south = 40.714490;
+  vvp->center.east_west = -74.007130;
   vvp->center.utm_zone = 31;
   vvp->center.utm_letter = 'N';
   vvp->scr_buffer = NULL;
