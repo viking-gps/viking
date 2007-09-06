@@ -1,4 +1,8 @@
 2007-09-06
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Adding command line option framework.
+
+2007-09-06
 Quy Tonthat <qtonthat@gmail.com>:
 	* Make viking's default start location somewhere more likely has maps.
 	* Fix crash when using "Maps Download" tools right after viking is

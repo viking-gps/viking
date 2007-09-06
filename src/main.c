@@ -26,6 +26,7 @@
 #include "dems.h"
 #include "curl_download.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "modules.h"
@@ -80,17 +81,42 @@ static void open_window ( VikWindow *vw, const gchar **files )
     }
 }
 
+static GOptionEntry entries[] = 
+{
+  { NULL }
+};
+
 int main( int argc, char *argv[] )
 {
   VikWindow *first_window;
   GdkPixbuf *main_icon;
   gboolean dashdash_already = FALSE;
   int i = 0;
+  GError *error = NULL;
+  gboolean gui_initialized;
 
   g_thread_init ( NULL );
   gdk_threads_init ();
 
-  gtk_init (&argc, &argv);
+  gui_initialized = gtk_init_with_args (&argc, &argv, "files+", entries, NULL, &error);
+  if (!gui_initialized)
+  {
+    /* check if we have an error message */
+    if (error == NULL)
+    {
+      /* no error message, the GUI initialization failed */
+      const gchar *display_name = gdk_get_display_arg_name ();
+      g_fprintf (stderr, "Failed to open display: %s\n", (display_name != NULL) ? display_name : " ");
+    }
+    else
+    {
+      /* yep, there's an error, so print it */
+      g_fprintf (stderr, "Parsing command line options failed: %s\n", error->message);
+      g_error_free (error);
+      g_fprintf (stderr, "Run \"%s --help\" to see the list of recognized options.\n",argv[0]);
+    }
+    return EXIT_FAILURE;
+  }
 
   curl_download_init();
 
