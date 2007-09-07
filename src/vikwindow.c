@@ -1304,7 +1304,7 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
   {
     for ( x = 1; x <= tiles_w; x++ )
     {
-      g_snprintf ( name_of_file, size, "%s%cy%d-x%d.%s", fn, VIKING_FILE_SEP, y, x, save_as_png ? "png" : "jpg" );
+      g_snprintf ( name_of_file, size, "%s%cy%d-x%d.%s", fn, G_DIR_SEPARATOR, y, x, save_as_png ? "png" : "jpg" );
       utm = utm_orig;
       if ( tiles_w & 0x1 )
         utm.easting += ((gdouble)x - ceil(((gdouble)tiles_w)/2)) * (w*zoom);

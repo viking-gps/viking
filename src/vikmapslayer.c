@@ -239,42 +239,44 @@ gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
 /******** CACHE DIR STUFF ***************/
 /****************************************/
 
+#define DIRSTRUCTURE "%st%ds%dz%d" G_DIR_SEPARATOR_S "%d" G_DIR_SEPARATOR_S "%d"
 #ifdef WINDOWS
 #define MAPS_CACHE_DIR "C:\\VIKING-MAPS\\"
-#define DIRSTRUCTURE "%st%ds%dz%d\\%d\\%d"
 #else /* POSIX */
 
 #include <stdlib.h>
 
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 #define GLOBAL_MAPS_DIR "/var/cache/maps/"
-#define DIRSTRUCTURE "%st%ds%dz%d/%d/%d"
 
 static gchar *maps_layer_default_dir ()
 {
-  static gchar defaultdir[512];
-  static gboolean already_run = 0;
-  if ( ! already_run )
+  static gchar *defaultdir = NULL;
+  if ( ! defaultdir )
   {
     /* Thanks to Mike Davison for the $VIKING_MAPS usage */
-    gchar *mapdir = getenv("VIKING_MAPS");
-    if ( mapdir && strlen(mapdir) < 497 ) {
-      strcpy ( defaultdir, mapdir );
+    const gchar *mapdir = g_getenv("VIKING_MAPS");
+    if ( mapdir ) {
+      defaultdir = g_strdup ( mapdir );
     } else if ( access ( GLOBAL_MAPS_DIR, W_OK ) == 0 ) {
-      strcpy ( defaultdir, GLOBAL_MAPS_DIR );
+      defaultdir = g_strdup ( GLOBAL_MAPS_DIR );
     } else {
-      gchar *home = getenv("HOME");
-      if ( home && strlen(home) < 497 )
-      {
-        strcpy ( defaultdir, home );
-        strcat ( defaultdir, "/.viking-maps/" );
-      }
+      const gchar *home = g_getenv("HOME");
+      if (!home || access(home, W_OK))
+        home = g_get_home_dir ();
+      if ( home )
+        defaultdir = g_build_filename ( home, ".viking-maps", NULL );
       else
-      {
-        strcpy ( defaultdir, ".viking-maps/" );
-      }
+        defaultdir = g_strdup ( ".viking-maps" );
     }
-    already_run = 1;
+    if (defaultdir && (defaultdir[strlen(defaultdir)-1] != G_DIR_SEPARATOR))
+    {
+      /* Add the separator at the end */
+      gchar *tmp = defaultdir;
+      defaultdir = g_strconcat(tmp, G_DIR_SEPARATOR_S, NULL);
+      g_free(tmp);
+    }
+    g_debug("%s: defaultdir=%s", __FUNCTION__, defaultdir);
   }
   return defaultdir;
 }
@@ -305,11 +307,11 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
   else
   {
     len = strlen(dir);
-    if ( dir[len-1] != VIKING_FILE_SEP )
+    if ( dir[len-1] != G_DIR_SEPARATOR )
     {
       vml->cache_dir = g_malloc ( len+2 );
       strncpy ( vml->cache_dir, dir, len );
-      vml->cache_dir[len] = VIKING_FILE_SEP;
+      vml->cache_dir[len] = G_DIR_SEPARATOR;
       vml->cache_dir[len+1] = '\0';
     }
     else

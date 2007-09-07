@@ -29,10 +29,8 @@
 
 #ifdef WINDOWS
 #define access(a,b) _access(a,b)
-#define VIKING_FILE_SEP '\\'
 #else
 #include <unistd.h>
-#define VIKING_FILE_SEP '/'
 #define UNIX_WEB_BROWSER "galeon"
 #endif
 
