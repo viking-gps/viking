@@ -611,10 +611,14 @@ const gchar *a_get_viking_dir()
 
   if (!viking_dir) {
     static gchar temp[] = {"/tmp/vikXXXXXX"};
-    gchar *home = getenv("HOME");
+    const gchar *home = g_getenv("HOME");
+    if (!home || access(home, W_OK))
+      home = g_get_home_dir ();
     if (!home || access(home, W_OK))
       home = mkdtemp(temp);
-    viking_dir = g_strdup_printf("%s/%s", home, ".viking");
+
+    /* Build the name of the directory */
+    viking_dir = g_build_filename(home, ".viking", NULL);
     if (access(viking_dir, F_OK))
       g_mkdir(viking_dir, 0755);
   }
