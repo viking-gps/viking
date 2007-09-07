@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <glib/gprintf.h>
+
 #include "modules.h"
 
 #define MAX_WINDOWS 1024
