@@ -19,6 +19,9 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "viking.h"
 
 #include "gpx.h"
@@ -610,12 +613,19 @@ const gchar *a_get_viking_dir()
   static gchar *viking_dir = NULL;
 
   if (!viking_dir) {
-    static gchar temp[] = {"/tmp/vikXXXXXX"};
     const gchar *home = g_getenv("HOME");
     if (!home || access(home, W_OK))
       home = g_get_home_dir ();
+#ifdef HAVE_MKDTEMP
     if (!home || access(home, W_OK))
+    {
+      static gchar temp[] = {"/tmp/vikXXXXXX"};
       home = mkdtemp(temp);
+    }
+#endif
+    if (!home || access(home, W_OK))
+      /* Fatal error */
+      g_critical("Unable to find a base directory");
 
     /* Build the name of the directory */
     viking_dir = g_build_filename(home, ".viking", NULL);

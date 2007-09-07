@@ -1,3 +1,8 @@
+2007-09-07
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #1789550: mkdtemp usage is conditioned, so it is possible
+	to build viking on system not offering such feature.
+
 2007-09-06
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Adding command line option framework.
