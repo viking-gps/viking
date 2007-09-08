@@ -19,6 +19,8 @@
  *
  */
 
+#include <stdlib.h>
+#include <string.h>
 #include <gtk/gtk.h>
 #include <math.h>
 #include <string.h>
@@ -26,13 +28,11 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "download.h"
+#include "curl_download.h"
 #include "globals.h"
 #include "google.h"
 #include "vikmapslayer.h"
 
-#define GOOGLE_VERSION "w2.60"
-#define GOOGLE_TRANS_VERSION "w2t.60"
-#define GOOGLE_KH_VERSION "20"
 
 static int google_download ( MapCoord *src, const gchar *dest_fn );
 static int google_trans_download ( MapCoord *src, const gchar *dest_fn );
@@ -70,6 +70,120 @@ guint8 google_zoom ( gdouble mpp ) {
   return 255;
 }
 
+typedef enum {
+	TYPE_GOOGLE_MAPS = 0,
+	TYPE_GOOGLE_TRANS,
+	TYPE_GOOGLE_SAT,
+
+	TYPE_GOOGLE_NUM
+} GoogleType;
+
+static gchar *parse_version_number(gchar *text)
+{
+  int i;
+  gchar *vers;
+  gchar *s = text;
+
+  for (i = 0; (s[i] != '&') && (i < 8); i++)
+    ;
+  if (s[i] != '&') {
+    return NULL;
+  }
+
+  return vers = g_strndup(s, i);
+}
+
+static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_type)
+{
+  static gboolean first = TRUE;
+  static char *vers[] = { "w2.60", "w2t.60", "20" };
+  FILE *tmp_file;
+  int tmp_fd;
+  gchar *tmpname;
+  gchar *uri;
+  VikCoord coord;
+  gchar *text, *pat, *beg;
+  GMappedFile *mf;
+  gsize len;
+  gchar *gvers, *tvers, *kvers, *tmpvers;
+  static DownloadOptions dl_options = { "http://maps.google.com/", 0 };
+  static const char *gvers_pat = "http://mt0.google.com/mt?n=404&v=";
+  static const char *kvers_pat = "http://kh0.google.com/kh?n=404&v=";
+
+  g_assert(google_type < TYPE_GOOGLE_NUM);
+
+  if (!first)
+    return (vers[google_type]);
+
+
+  first = FALSE;
+  gvers = tvers = kvers = NULL;
+  if ((tmp_fd = g_file_open_tmp ("vikgvers.XXXXXX", &tmpname, NULL)) == -1) {
+    g_critical("couldn't open temp file %s\n", tmpname);
+    exit(1);
+  } 
+
+  google_mapcoord_to_center_coord(mapcoord, &coord);
+  uri = g_strdup_printf("http://maps.google.com/maps?f=q&hl=en&q=%f,%f", coord.north_south, coord.east_west);
+  tmp_file = fdopen(tmp_fd, "r+");
+
+  if (curl_download_uri(uri, tmp_file, &dl_options)) {  /* error */
+    g_warning("Failed downloading %s\n", tmpname);
+  } else {
+    if ((mf = g_mapped_file_new(tmpname, FALSE, NULL)) == NULL) {
+      g_critical("couldn't map temp file\n");
+      exit(1);
+    }
+    len = g_mapped_file_get_length(mf);
+    text = g_mapped_file_get_contents(mf);
+
+    if ((beg = g_strstr_len(text, len, "GLoadApi")) == NULL) {
+      g_warning("Failed fetching Google numbers (\"GLoadApi\" not found)\n");
+      goto failed;
+    }
+
+    pat = beg;
+    while (!gvers || !tvers) {
+      if ((pat = g_strstr_len(pat, &text[len] - pat, gvers_pat)) != NULL) {
+        pat += strlen(gvers_pat);
+        if ((tmpvers = parse_version_number(pat)) != NULL) {
+          if (strstr(tmpvers, "t."))
+            tvers = tmpvers;
+          else
+            gvers = tmpvers;
+        }
+      }
+      else
+        break;
+    }
+
+    if ((pat = g_strstr_len(beg, &text[len] - beg, kvers_pat)) != NULL)
+        kvers = parse_version_number(pat + strlen(kvers_pat));
+
+    if (gvers && tvers && kvers) {
+      vers[TYPE_GOOGLE_MAPS] = gvers;
+      vers[TYPE_GOOGLE_TRANS] = tvers;
+      vers[TYPE_GOOGLE_SAT] = kvers;
+    }
+    else
+      g_warning("Failed getting google version numbers");
+
+    if (gvers)
+      fprintf(stderr, "DEBUG gvers=%s\n", gvers);
+    if (tvers)
+      fprintf(stderr, "DEBUG tvers=%s\n", tvers);
+    if (kvers)
+      fprintf(stderr, "DEBUG kvers=%s\n", kvers);
+
+failed:
+    g_mapped_file_free(mf);
+  }
+
+  fclose(tmp_file);
+  g_free(tmpname);
+  return (vers[google_type]);
+}
+
 gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
 {
   g_assert ( src->mode == VIK_COORD_LATLON );
@@ -99,7 +213,7 @@ void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 static int real_google_download ( MapCoord *src, const gchar *dest_fn, const char *verstr )
 {
    int res;
-   gchar *uri = g_strdup_printf ( "/mt?v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
+   gchar *uri = g_strdup_printf ( "/mt?n=404&v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
    res = a_http_download_get_url ( "mt.google.com", uri, dest_fn, &google_options );
    g_free ( uri );
    return res;
@@ -107,12 +221,14 @@ static int real_google_download ( MapCoord *src, const gchar *dest_fn, const cha
 
 static int google_download ( MapCoord *src, const gchar *dest_fn )
 {
-   return(real_google_download ( src, dest_fn, GOOGLE_VERSION ));
+   const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_MAPS);
+   return(real_google_download ( src, dest_fn, vers_str ));
 }
 
 static int google_trans_download ( MapCoord *src, const gchar *dest_fn )
 {
-   return(real_google_download ( src, dest_fn, GOOGLE_TRANS_VERSION ));
+   const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_TRANS);
+   return(real_google_download ( src, dest_fn, vers_str ));
 }
 
 static char *kh_encode(guint32 x, guint32 y, guint8 scale)
@@ -160,7 +276,8 @@ static int google_kh_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res;
    gchar *khenc = kh_encode( src->x, src->y, src->scale );
-   gchar *uri = g_strdup_printf ( "/kh?v=%s&t=%s", GOOGLE_KH_VERSION, khenc );
+   const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_SAT);
+   gchar *uri = g_strdup_printf ( "/kh?n=404&v=%s&t=%s", vers_str, khenc );
    g_free ( khenc );
    res = a_http_download_get_url ( "kh.google.com", uri, dest_fn, &google_options );
    g_free ( uri );
