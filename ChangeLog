@@ -1,3 +1,7 @@
+2007-09-09
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Removing unused files (*.png.h).
+
 2007-09-08
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix #1789550: define MAX macro if not defined on ALL systems
