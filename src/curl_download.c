@@ -41,7 +41,7 @@ static gchar *get_cookie_file(gboolean init)
     mutex = g_mutex_new();
     static gchar *cookie_fn = "cookies.txt";
     const gchar *viking_dir = a_get_viking_dir();
-    cookie_file = g_strdup_printf("%s/%s", viking_dir, cookie_fn);
+    cookie_file = g_build_filename(viking_dir, cookie_fn, NULL);
     unlink(cookie_file);
     return NULL;
   }
