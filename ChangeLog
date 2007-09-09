@@ -1,4 +1,8 @@
 2007-09-08
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #1789550: define MAX macro if not defined on ALL systems
+
+2007-09-08
 Quy Tonthat <qtonthat@gmail.com>:
 	* AUtomatically fetching google version number.
 

@@ -48,13 +48,16 @@
 #undef MIN /* quit yer whining, gcc */
 #undef MAX
 #include <sys/param.h> /* for realpath() */
+#ifndef MAX
+/* We need MAX macro and some system does not offer it */
+#define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
 
 #ifdef WINDOWS
 #define HOME_DIR "C:\\VIKING"
 #define THUMB_DIR "\\THUMBNAILS\\" /* viking maps default viking\maps */
 #define THUMB_SUB_DIR "normal\\"
 #define mkdir(a,b) mkdir(a)
-#define MAX(a,b) (((a)>(b))?(a):(b))
 #define realpath(X,Y) _fullpath(Y,X,MAX_PATH)
 
 #else
