@@ -95,7 +95,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
           curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location);
         }
       }
-      curl_easy_setopt ( curl, CURLOPT_USERAGENT, "viking/" VERSION " libcurl/7.15.4" );
+      curl_easy_setopt ( curl, CURLOPT_USERAGENT, PACKAGE "/" VERSION " libcurl/7.15.4" );
       if ((cookie_file = get_cookie_file(FALSE)) != NULL)
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
       res = curl_easy_perform ( curl );
