@@ -22,7 +22,7 @@
 #include "viking.h"
 #include "gpx.h"
 #include "babel.h"
-#include "sys/wait.h"
+#include <sys/wait.h>
 
 /* in the future we could have support for other shells (change command strings), or not use a shell at all */
 #define BASH_LOCATION "/bin/bash"
@@ -138,7 +138,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
     ret = FALSE;
   } else {
     gchar *shell_command = g_strdup_printf("%s | gpsbabel -i %s -f - -o gpx -F %s", input_cmd, input_type, name_dst);
-    g_debug("%s", shell_command);
+    g_debug("%s: %s", __FUNCTION__, shell_command);
     close(fd_dst);
 
     args = g_malloc(sizeof(gchar *)*4);
@@ -164,7 +164,7 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
   gint babel_stdin, babel_stdout, babel_stderr;
 
   if (!a_file_export(vt, name_src, FILE_TYPE_GPX)) {
-    g_warning("babel_general_convert_to(): error exporting to %s\n", name_src);
+    g_warning("%s(): error exporting to %s", __FUNCTION__, name_src);
     return(FALSE);
   }
 
@@ -220,9 +220,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
 
       if ( unbuffer_loc )
         g_free ( unbuffer_loc );
-#ifdef DBG
-      fprintf(stderr, "cmd=%s\n", cmd);
-#endif /* DBG */
+      g_debug ( "%s: %s", __FUNCTION__, cmd );
       args = g_strsplit(cmd, " ", 0);
       ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
       g_strfreev(args);
