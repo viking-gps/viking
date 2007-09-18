@@ -22,20 +22,38 @@
 #include <gtk/gtk.h>
 
 #include "vikfilelist.h"
-#include "vikfileentry.h"
 
 struct _VikFileList {
   GtkVBox parent;
-  VikFileEntry *file_entry;
   GtkWidget *treeview;
+  GtkWidget *file_selector;
   GtkTreeModel *model;
 };
 
 static void file_list_add ( VikFileList *vfl )
 {
-  GtkTreeIter iter;
-  gtk_list_store_append ( GTK_LIST_STORE(vfl->model), &iter );
-  gtk_list_store_set ( GTK_LIST_STORE(vfl->model), &iter, 0, vik_file_entry_get_filename(vfl->file_entry), -1 );
+  if ( ! vfl->file_selector )
+  {
+    GtkWidget *win;
+    g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfl))) );
+    vfl->file_selector = gtk_file_selection_new ("Choose file(s)");
+    gtk_file_selection_set_select_multiple ( GTK_FILE_SELECTION(vfl->file_selector), TRUE );
+    gtk_window_set_transient_for ( GTK_WINDOW(vfl->file_selector), GTK_WINDOW(win) );
+    gtk_window_set_destroy_with_parent ( GTK_WINDOW(vfl->file_selector), TRUE );
+  }
+
+  if ( gtk_dialog_run ( GTK_DIALOG(vfl->file_selector) ) == GTK_RESPONSE_OK ) {
+    gchar **files = gtk_file_selection_get_selections ( GTK_FILE_SELECTION(vfl->file_selector) );
+    gchar **fiter = files;
+    GtkTreeIter iter;
+    while (*fiter) {
+      gtk_list_store_append ( GTK_LIST_STORE(vfl->model), &iter );
+      gtk_list_store_set ( GTK_LIST_STORE(vfl->model), &iter, 0, *fiter, -1 );
+      fiter++;
+    }
+    g_strfreev(files);
+  }
+    gtk_widget_hide ( vfl->file_selector );
 }
 
 static void file_list_del ( VikFileList *vfl )
@@ -87,8 +105,7 @@ GtkWidget *vik_file_list_new ( const gchar *title )
 
   gtk_widget_set_size_request ( vfl->treeview, 200, 100);
 
-  vfl->file_entry = VIK_FILE_ENTRY(vik_file_entry_new());
-  add_btn = gtk_button_new_with_label("Add");
+  add_btn = gtk_button_new_with_label("Add...");
   del_btn = gtk_button_new_with_label("Delete");
 
   g_signal_connect_swapped ( G_OBJECT(add_btn), "clicked", G_CALLBACK(file_list_add), vfl );
@@ -103,12 +120,12 @@ GtkWidget *vik_file_list_new ( const gchar *title )
   gtk_box_pack_start ( GTK_BOX(vfl), scrolledwindow, TRUE, TRUE, 3 );
 
 
-  gtk_box_pack_start ( GTK_BOX(hbox), GTK_WIDGET(vfl->file_entry), TRUE, TRUE, 3 );
   gtk_box_pack_start ( GTK_BOX(hbox), add_btn, TRUE, TRUE, 3 );
   gtk_box_pack_start ( GTK_BOX(hbox), del_btn, TRUE, TRUE, 3 );
   gtk_box_pack_start ( GTK_BOX(vfl), hbox, FALSE, FALSE, 3 );
   gtk_widget_show_all(GTK_WIDGET(vfl));
 
+  vfl->file_selector = NULL;
 
   return GTK_WIDGET(vfl);
 }
