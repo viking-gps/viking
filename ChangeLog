@@ -1,3 +1,7 @@
+2007-09-17
+Evan Battaglia <gtoevan@gmx.net>
+	* Draw lines to show file existence for MapsLayer for very zoomed out maps. It's faster that actually showing the maps but still gets slow at a certain level.
+
 2007-09-09
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Removing unused files (*.png.h).
