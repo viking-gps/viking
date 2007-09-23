@@ -26,7 +26,6 @@
 
 #define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
 
-static VikAggregateLayer *aggregate_layer_copy ( VikAggregateLayer *val, gpointer vp );
 static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, gint *len );
 static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
@@ -64,7 +63,6 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
-  (VikLayerFuncCopy)                    aggregate_layer_copy,
   (VikLayerFuncMarshall)		aggregate_layer_marshall,
   (VikLayerFuncUnmarshall)		aggregate_layer_unmarshall,
 
@@ -114,23 +112,6 @@ VikAggregateLayer *vik_aggregate_layer_create (VikViewport *vp)
 {
   VikAggregateLayer *rv = vik_aggregate_layer_new ();
   vik_layer_rename ( VIK_LAYER(rv), vik_aggregate_layer_interface.name );
-  return rv;
-}
-
-static VikAggregateLayer *aggregate_layer_copy ( VikAggregateLayer *val, gpointer vp )
-{
-  VikAggregateLayer *rv = vik_aggregate_layer_new ();
-  VikLayer *child_layer;
-  GList *child = val->children;
-  while ( child )
-  {
-    child_layer = vik_layer_copy ( VIK_LAYER(child->data), vp );
-    if ( child_layer ) {
-      rv->children = g_list_append ( rv->children, child_layer );
-      g_signal_connect_swapped ( G_OBJECT(child_layer), "update", G_CALLBACK(vik_layer_emit_update), rv );
-    }
-    child = child->next;
-  }
   return rv;
 }
 

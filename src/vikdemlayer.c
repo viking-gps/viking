@@ -56,7 +56,6 @@
 #endif
 
 
-static VikDEMLayer *dem_layer_copy ( VikDEMLayer *vdl, gpointer vp );
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp );
@@ -254,7 +253,6 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
-  (VikLayerFuncCopy)                    dem_layer_copy,
   (VikLayerFuncMarshall)		dem_layer_marshall,
   (VikLayerFuncUnmarshall)		dem_layer_unmarshall,
 
@@ -304,28 +302,6 @@ GType vik_dem_layer_get_type ()
   }
 
   return vdl_type;
-}
-
-static VikDEMLayer *dem_layer_copy ( VikDEMLayer *vdl, gpointer vp )
-{
-  VikDEMLayer *rv = vik_dem_layer_new ( );
-  gint i;
-
-  rv->files = a_dems_list_copy ( vdl->files );
-
-  for ( i = 0; i < DEM_N_COLORS; i++ ) {
-    rv->gcs[i] = vdl->gcs[i];
-    g_object_ref ( rv->gcs[i] );
-  }
-
-  rv->source = vdl->source;
-  rv->max_elev = vdl->max_elev;
-  rv->line_thickness = vdl->line_thickness;
-
-  rv->color = g_strdup ( vdl->color );
-  rv->gc = vdl->gc;
-  g_object_ref ( rv->gc );
-  return rv;
 }
 
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len )

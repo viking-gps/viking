@@ -23,7 +23,6 @@
 #include "viking.h"
 #include "vikcoordlayer_pixmap.h"
 
-static VikCoordLayer *coord_layer_copy ( VikCoordLayer *vcl, gpointer vp );
 static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len );
 static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp );
@@ -77,7 +76,6 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
-  (VikLayerFuncCopy)                    coord_layer_copy,
   (VikLayerFuncMarshall)		coord_layer_marshall,
   (VikLayerFuncUnmarshall)		coord_layer_unmarshall,
 
@@ -124,18 +122,6 @@ GType vik_coord_layer_get_type ()
   }
 
   return vcl_type;
-}
-
-static VikCoordLayer *coord_layer_copy ( VikCoordLayer *vcl, gpointer vp )
-{
-  VikCoordLayer *rv = vik_coord_layer_new ( );
-
-  rv->color = g_strdup ( vcl->color );
-  rv->deg_inc = vcl->deg_inc;
-  rv->line_thickness = vcl->line_thickness;
-  rv->gc = vcl->gc;
-  g_object_ref ( rv->gc );
-  return rv;
 }
 
 static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len )

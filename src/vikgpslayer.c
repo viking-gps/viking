@@ -34,7 +34,6 @@ static void vik_gps_layer_free ( VikGpsLayer *val );
 static void vik_gps_layer_draw ( VikGpsLayer *val, gpointer data );
 VikGpsLayer *vik_gps_layer_new ();
 
-static VikGpsLayer *gps_layer_copy ( VikGpsLayer *val, gpointer vp );
 static void gps_layer_marshall( VikGpsLayer *val, guint8 **data, gint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp );
@@ -118,7 +117,6 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
-  (VikLayerFuncCopy)                    gps_layer_copy,
   (VikLayerFuncMarshall)		gps_layer_marshall,
   (VikLayerFuncUnmarshall)		gps_layer_unmarshall,
 
@@ -179,19 +177,6 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
   vik_layer_set_menu_items_selection(VIK_LAYER(rv->trw_children[TRW_UPLOAD]), VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
   rv->trw_children[TRW_DOWNLOAD] = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE ));
   vik_layer_set_menu_items_selection(VIK_LAYER(rv->trw_children[TRW_DOWNLOAD]), VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
-  return rv;
-}
-
-static VikGpsLayer *gps_layer_copy ( VikGpsLayer *vgl, gpointer vp )
-{
-  VikGpsLayer *rv = vik_gps_layer_new ();
-  int i;
-
-  for (i = 0; i < NUM_TRW; i++) {
-    rv->trw_children[i] = (VikTrwLayer *)vik_layer_copy(VIK_LAYER(vgl->trw_children[i]), vp);
-    g_signal_connect_swapped ( G_OBJECT(rv->trw_children[i]), "update", G_CALLBACK(vik_layer_emit_update), rv );
-  }
-
   return rv;
 }
 

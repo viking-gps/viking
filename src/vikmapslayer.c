@@ -81,7 +81,6 @@ static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.
 /**************************/
 
 
-static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp );
 static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file);
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
@@ -150,7 +149,6 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
 
-  (VikLayerFuncCopy)                    maps_layer_copy,
   (VikLayerFuncMarshall)		maps_layer_marshall,
   (VikLayerFuncUnmarshall)		maps_layer_unmarshall,
 
@@ -460,15 +458,6 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
       g_free(msg);
     }
   }
-}
-
-static VikMapsLayer *maps_layer_copy ( VikMapsLayer *vml, VikViewport *vvp )
-{
-  VikMapsLayer *rv = maps_layer_new ( vvp );
-  *rv = *vml;
-  rv->cache_dir = g_strdup(rv->cache_dir);
-  VIK_LAYER(rv)->name = NULL;
-  return rv;
 }
 
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len )

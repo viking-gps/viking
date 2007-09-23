@@ -5,6 +5,7 @@ Evan Battaglia <gtoevan@gmx.net>
 		Although I really want to know what happened to "use the top visible layer",
 		and return TRUE if the tool "accepts" the use...
 		editing lots of TRWLayers was way easier that way...
+	* Remove unused vik_layer_copy() code
 
 2007-09-22
 Evan Battaglia <gtoevan@gmx.net>

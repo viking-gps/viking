@@ -211,7 +211,6 @@ static void trw_layer_realize_track ( gchar *name, VikTrack *track, gpointer pas
 static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
 
 
-static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp );
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len );
 static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *vvp );
 
@@ -386,7 +385,6 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   vik_trw_layer_sublayer_rename_request,
   (VikLayerFuncSublayerToggleVisible)   vik_trw_layer_sublayer_toggle_visible,
 
-  (VikLayerFuncCopy)                    trw_layer_copy,
   (VikLayerFuncMarshall)                trw_layer_marshall,
   (VikLayerFuncUnmarshall)              trw_layer_unmarshall,
 
@@ -536,11 +534,6 @@ static void trw_layer_free_copied_item ( gint subtype, gpointer item )
   }
 }
 
-static void waypoint_copy ( const gchar *name, VikWaypoint *wp, GHashTable *dest )
-{
-  g_hash_table_insert ( dest, g_strdup(name), vik_waypoint_copy(wp) );
-}
-
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp )
 {
   switch ( id )
@@ -634,11 +627,6 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
   return rv;
 }
 
-static void track_copy ( const gchar *name, VikTrack *tr, GHashTable *dest )
-{
-  g_hash_table_insert ( dest, g_strdup ( name ), vik_track_copy(tr) );
-}
-
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
 {
   guint8 *pd, *dd;
@@ -689,58 +677,6 @@ static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *
   fclose(f);
   remove(tmpname);
   g_free(tmpname);
-  return rv;
-}
-
-static VikTrwLayer *trw_layer_copy ( VikTrwLayer *vtl, gpointer vp )
-{
-  VikTrwLayer *rv = vik_trw_layer_new ( vtl->drawmode );
-  PangoFontDescription *pfd;
-  rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
-  pfd = pango_font_description_from_string (WAYPOINT_FONT);
-  pango_layout_set_font_description (rv->wplabellayout, pfd);
-  /* freeing PangoFontDescription, cause it has been copied by prev. call */
-  pango_font_description_free (pfd);
-
-  rv->tracks_visible = vtl->tracks_visible;
-  rv->waypoints_visible = vtl->waypoints_visible;
-  rv->drawpoints = vtl->drawpoints;
-  rv->drawstops = vtl->drawstops;
-  rv->drawelevation = vtl->drawelevation;
-  rv->elevation_factor = vtl->elevation_factor;
-  rv->drawlines = vtl->drawlines;
-  rv->stop_length = vtl->stop_length;
-  rv->line_thickness = vtl->line_thickness;
-  rv->bg_line_thickness = vtl->bg_line_thickness;
-  rv->velocity_min = vtl->velocity_min;
-  rv->velocity_max = vtl->velocity_max;
-  rv->drawlabels = vtl->drawlabels;
-  rv->drawimages = vtl->drawimages;
-  rv->image_size = vtl->image_size;
-  rv->image_alpha = vtl->image_alpha;
-  rv->image_cache_size = vtl->image_cache_size;
-  rv->has_verified_thumbnails = TRUE;
-  rv->coord_mode = vtl->coord_mode;
-  rv->wp_symbol = vtl->wp_symbol;
-  rv->wp_size = vtl->wp_size;
-  rv->wp_draw_symbols = vtl->wp_draw_symbols;
-
-  trw_layer_new_track_gcs ( rv, VIK_VIEWPORT(vp) );
-
-  rv->waypoint_gc = gdk_gc_new ( GTK_WIDGET(vp)->window );
-  gdk_gc_set_line_attributes ( rv->waypoint_gc, 2, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
-
-  rv->waypoint_text_gc = gdk_gc_new ( GTK_WIDGET(vp)->window );
-  rv->waypoint_bg_gc = gdk_gc_new ( GTK_WIDGET(vp)->window );
-  gdk_gc_copy ( rv->waypoint_gc, vtl->waypoint_gc );
-  gdk_gc_copy ( rv->waypoint_text_gc, vtl->waypoint_text_gc );
-  gdk_gc_copy ( rv->waypoint_bg_gc, vtl->waypoint_bg_gc );
-
-  rv->waypoint_font = gdk_font_load ( "-*-helvetica-bold-r-normal-*-*-100-*-*-p-*-iso8859-1" );
-
-  g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_copy, rv->waypoints );
-  g_hash_table_foreach ( vtl->tracks, (GHFunc) track_copy, rv->tracks );
-
   return rv;
 }
 

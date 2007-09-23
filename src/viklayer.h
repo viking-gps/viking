@@ -196,7 +196,6 @@ typedef const gchar * (*VikLayerFuncSublayerRenameRequest) (VikLayer *,const gch
                                                             gint,VikViewport *,GtkTreeIter *); /* first gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerToggleVisible) (VikLayer *,gint,gpointer);
 
-typedef VikLayer *    (*VikLayerFuncCopy)                  (VikLayer *,VikViewport *);
 typedef void          (*VikLayerFuncMarshall)              (VikLayer *, guint8 **, gint *);
 typedef VikLayer *    (*VikLayerFuncUnmarshall)            (guint8 *, gint, VikViewport *);
 
@@ -267,7 +266,6 @@ struct _VikLayerInterface {
   VikLayerFuncSublayerRenameRequest sublayer_rename_request;
   VikLayerFuncSublayerToggleVisible sublayer_toggle_visible;
 
-  VikLayerFuncCopy                  copy;
   VikLayerFuncMarshall              marshall;
   VikLayerFuncUnmarshall            unmarshall;
 

@@ -190,22 +190,6 @@ void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode )
     vik_layer_interfaces[l->type]->change_coord_mode ( l, mode );
 }
 
-VikLayer *vik_layer_copy ( VikLayer *vl, gpointer vp )
-{
-  if ( vik_layer_interfaces[vl->type]->copy )
-  {
-    VikLayer *rv = vik_layer_interfaces[vl->type]->copy ( vl, vp );
-    if ( rv )
-    {
-      vik_layer_rename ( rv, vl->name );
-      rv->visible = vl->visible;
-    }
-    return rv;
-  }
-  else
-    return NULL;
-}
-
 typedef struct {
   gint layer_type;
   gint len;
