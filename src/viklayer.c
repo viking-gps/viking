@@ -257,6 +257,24 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
       case VIK_LAYER_PARAM_STRING: 
 	vlm_append(d.s, strlen(d.s));
 	break;
+
+      /* print out the string list in the array */
+      case VIK_LAYER_PARAM_STRING_LIST: {
+        GList *list = d.sl;
+        
+        /* write length of list (# of strings) */
+        gint listlen = g_list_length ( list );
+        g_byte_array_append ( b, (guint8 *)&listlen, sizeof(listlen) );
+
+        /* write each string */
+        while ( list ) {
+          gchar *s = (gchar *) list->data;
+          vlm_append(s, strlen(s));
+          list = list->next;
+        }
+
+	break;
+      }
       default:
 	vlm_append(&d, sizeof(d));
 	break;
@@ -307,6 +325,24 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
 	set_param(vl, i, d, vvp);
 	g_free(s);
 	break;
+      case VIK_LAYER_PARAM_STRING_LIST:  {
+        gint listlen = vlm_size, j;
+        GList *list = NULL;
+        b += sizeof(gint); /* skip listlen */;
+
+        for ( j = 0; j < listlen; j++ ) {
+          /* get a string */
+          s = g_malloc(vlm_size + 1);
+	  s[vlm_size]=0;
+	  vlm_read(s);
+          list = g_list_append ( list, s );
+        }
+        d.sl = list;
+        set_param ( vl, i, d, vvp );
+        /* don't free -- string list is responsibility of the layer */
+
+        break;
+        }
       default:
 	vlm_read(&d);
 	set_param(vl, i, d, vvp);

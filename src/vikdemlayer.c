@@ -219,7 +219,7 @@ static gchar *dem_colors[] = {
 };
 */
 
-static const guint dem_n_colors = sizeof(dem_colors)/sizeof(dem_colors[0]);
+static const guint DEM_N_COLORS = sizeof(dem_colors)/sizeof(dem_colors[0]);
 
 
 VikLayerInterface vik_dem_layer_interface = {
@@ -309,13 +309,20 @@ GType vik_dem_layer_get_type ()
 static VikDEMLayer *dem_layer_copy ( VikDEMLayer *vdl, gpointer vp )
 {
   VikDEMLayer *rv = vik_dem_layer_new ( );
+  gint i;
 
+  rv->files = a_dems_list_copy ( vdl->files );
 
-  /* TODO -- FIX for files */
+  for ( i = 0; i < DEM_N_COLORS; i++ ) {
+    rv->gcs[i] = vdl->gcs[i];
+    g_object_ref ( rv->gcs[i] );
+  }
 
-  rv->color = g_strdup ( vdl->color );
+  rv->source = vdl->source;
   rv->max_elev = vdl->max_elev;
   rv->line_thickness = vdl->line_thickness;
+
+  rv->color = g_strdup ( vdl->color );
   rv->gc = vdl->gc;
   g_object_ref ( rv->gc );
   return rv;
@@ -328,7 +335,13 @@ static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len )
 
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikDEMLayer *rv = vik_dem_layer_new ( vvp );
+  VikDEMLayer *rv = vik_dem_layer_new ();
+  gint i;
+
+  /* TODO: share GCS between layers */
+  for ( i = 0; i < DEM_N_COLORS; i++ )
+    rv->gcs[i] = vik_viewport_new_gc ( vvp, dem_colors[i], rv->line_thickness );
+
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
   return rv;
 }
@@ -372,6 +385,7 @@ static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_f
 VikDEMLayer *vik_dem_layer_new ( )
 {
   VikDEMLayer *vdl = VIK_DEM_LAYER ( g_object_new ( VIK_DEM_LAYER_TYPE, NULL ) );
+
   vik_layer_init ( VIK_LAYER(vdl), VIK_LAYER_DEM );
 
   vdl->files = NULL;
@@ -379,7 +393,8 @@ VikDEMLayer *vik_dem_layer_new ( )
 
   vdl->gc = NULL;
 
-  vdl->gcs = g_malloc(sizeof(GdkGC *)*dem_n_colors);
+  vdl->gcs = g_malloc(sizeof(GdkGC *)*DEM_N_COLORS);
+  /* make new gcs only if we need it (copy layer -> use old) */
 
   vdl->max_elev = 1000.0;
   vdl->source = DEM_SOURCE_SRTM;
@@ -512,7 +527,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
             else if ( elev <= 0 )
               vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, a-2, b-2, 4, 4 );
             else
-              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(elev/vdl->max_elev*(dem_n_colors-2))+1], TRUE, a-2, b-2, 4, 4 );
+              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(elev/vdl->max_elev*(DEM_N_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
           }
         } /* for y= */
       }
@@ -592,7 +607,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
             else if ( elev <= 0 )
               vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, a-2, b-2, 4, 4 );
             else
-              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(elev/vdl->max_elev*(dem_n_colors-2))+1], TRUE, a-2, b-2, 4, 4 );
+              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(elev/vdl->max_elev*(DEM_N_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
           }
         } /* for y= */
       }
@@ -633,19 +648,23 @@ void vik_dem_layer_draw ( VikDEMLayer *vdl, gpointer data )
 
 void vik_dem_layer_free ( VikDEMLayer *vdl )
 {
+  gint i;
   if ( vdl->gc != NULL )
     g_object_unref ( G_OBJECT(vdl->gc) );
 
   if ( vdl->color != NULL )
     g_free ( vdl->color );
 
+  if ( vdl->gcs )
+    for ( i = 0; i < DEM_N_COLORS; i++ )
+      g_object_unref ( vdl->gcs[i] );
+  g_free ( vdl->gcs );
+
   a_dems_list_free ( vdl->files );
 }
 
 static void dem_layer_update_gc ( VikDEMLayer *vdl, VikViewport *vp, const gchar *color )
 {
-  guint i;
-
   if ( vdl->color )
     g_free ( vdl->color );
 
@@ -655,15 +674,17 @@ static void dem_layer_update_gc ( VikDEMLayer *vdl, VikViewport *vp, const gchar
     g_object_unref ( G_OBJECT(vdl->gc) );
 
   vdl->gc = vik_viewport_new_gc ( vp, vdl->color, vdl->line_thickness );
-
-  for ( i = 0 ; i < dem_n_colors; i++ )
-    vdl->gcs[i] = vik_viewport_new_gc ( vp, dem_colors[i], vdl->line_thickness );
-
 }
 
 VikDEMLayer *vik_dem_layer_create ( VikViewport *vp )
 {
   VikDEMLayer *vdl = vik_dem_layer_new ();
+  gint i;
+
+  /* TODO: share GCS between layers */
+  for ( i = 0; i < DEM_N_COLORS; i++ )
+    vdl->gcs[i] = vik_viewport_new_gc ( vp, dem_colors[i], vdl->line_thickness );
+
   dem_layer_update_gc ( vdl, vp, "red" );
   return vdl;
 }
