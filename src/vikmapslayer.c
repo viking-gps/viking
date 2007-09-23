@@ -251,7 +251,7 @@ gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 #define GLOBAL_MAPS_DIR "/var/cache/maps/"
 
-static gchar *maps_layer_default_dir ()
+gchar *maps_layer_default_dir ()
 {
   static gchar *defaultdir = NULL;
   if ( ! defaultdir )

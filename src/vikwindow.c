@@ -1821,6 +1821,7 @@ static struct {
   { &geozoom_18,	"Georef Zoom Tool"  },
   { &geomove_18,	"Georef Move Map"   },
   { &mapdl_18,		"Maps Download"     },
+  { &demdl_18,		"DEM Download/Import"     },
   { &showpic_18,	"Show Picture"      },
 };
  

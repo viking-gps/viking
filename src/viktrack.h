@@ -81,6 +81,7 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
 VikTrack *vik_track_unmarshall (guint8 *data, guint datalen);
 
 void vik_track_apply_dem_data ( VikTrack *tr);
+void vik_track_fill_in_points ( VikTrack *tr, gdouble min_diff_meters );
 
 
 #endif

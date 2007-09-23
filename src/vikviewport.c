@@ -1011,7 +1011,7 @@ static void viewport_google_rezoom ( VikViewport *vvp )
 
 
 const gchar *vik_viewport_get_drawmode_name(VikViewport *vv, VikViewportDrawMode mode)
-{
+ {
   const gchar *name = NULL;
   VikWindow *vw = NULL;
   GtkWidget *mode_button;
@@ -1027,4 +1027,22 @@ const gchar *vik_viewport_get_drawmode_name(VikViewport *vv, VikViewportDrawMode
 
 }
 
+void vik_viewport_get_min_max_lat_lon ( VikViewport *vp, gdouble *min_lat, gdouble *max_lat, gdouble *min_lon, gdouble *max_lon )
+{
+  VikCoord tleft, tright, bleft, bright;
 
+  vik_viewport_screen_to_coord ( vp, 0, 0, &tleft );
+  vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), 0, &tright );
+  vik_viewport_screen_to_coord ( vp, 0, vik_viewport_get_height(vp), &bleft );
+  vik_viewport_screen_to_coord ( vp, vp->width, vp->height, &bright );
+
+  vik_coord_convert(&tleft, VIK_COORD_LATLON);
+  vik_coord_convert(&tright, VIK_COORD_LATLON);
+  vik_coord_convert(&bleft, VIK_COORD_LATLON);
+  vik_coord_convert(&bright, VIK_COORD_LATLON);
+
+  *max_lat = MAX(tleft.north_south, tright.north_south);
+  *min_lat = MIN(bleft.north_south, bright.north_south);
+  *max_lon = MAX(tright.east_west, bright.east_west);
+  *min_lon = MIN(tleft.east_west, bleft.east_west);
+}

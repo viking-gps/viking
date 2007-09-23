@@ -19,11 +19,15 @@
  *
  */
 #include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
 
 #include "globals.h"
 #include "coords.h"
 #include "vikcoord.h"
 #include "download.h"
+#include "background.h"
 #include "vikwaypoint.h"
 #include "viktrack.h"
 #include "vikviewport.h"
@@ -33,9 +37,17 @@
 #include "viklayerspanel.h"
 #include "vikdemlayer.h"
 #include "vikdemlayer_pixmap.h"
+#include "vikmapslayer.h"
 
 #include "dem.h"
 #include "dems.h"
+
+#define SRTM_FTP_SITE "e0srp01u.ecs.nasa.gov"
+#define SRTM_FTP_URI  "/srtm/version2/SRTM3/North_America/"
+
+#define SRTM_CACHE_DIR maps_layer_default_dir()
+#define SRTM_CACHE_PREFIX "srtm3-"
+#define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%c%02d%c%03d.hgt.zip"
 
 static VikDEMLayer *dem_layer_copy ( VikDEMLayer *vdl, gpointer vp );
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
@@ -57,9 +69,18 @@ static VikLayerParam dem_layer_params[] = {
   { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Line Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
 };
 
+static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
+static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
+
+static VikToolInterface dem_tools[] = {
+  { "DEM Download/Import", (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
+    (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release },
+};
+
+
 /*
 */
-
 
 static gchar *dem_colors[] = {
 "#0000FF",
@@ -175,8 +196,8 @@ VikLayerInterface vik_dem_layer_interface = {
   "DEM",
   &demlayer_pixbuf,
 
-  NULL,
-  0,
+  dem_tools,
+  sizeof(dem_tools) / sizeof(dem_tools[0]),
 
   dem_layer_params,
   NUM_PARAMS,
@@ -334,32 +355,18 @@ VikDEMLayer *vik_dem_layer_new ( )
 }
 
 
+
 static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *dem )
 {
-  VikCoord tleft, tright, bleft, bright;
   VikDEMColumn *column;
 
   struct LatLon dem_northeast, dem_southwest;
   gdouble max_lat, max_lon, min_lat, min_lon;  
 
-
   /**** Check if viewport and DEM data overlap ****/
 
   /* get min, max lat/lon of viewport */
-  vik_viewport_screen_to_coord ( vp, 0, 0, &tleft );
-  vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), 0, &tright );
-  vik_viewport_screen_to_coord ( vp, 0, vik_viewport_get_height(vp), &bleft );
-  vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), vik_viewport_get_height(vp), &bright );
-
-  vik_coord_convert(&tleft, VIK_COORD_LATLON);
-  vik_coord_convert(&tright, VIK_COORD_LATLON);
-  vik_coord_convert(&bleft, VIK_COORD_LATLON);
-  vik_coord_convert(&bright, VIK_COORD_LATLON);
-
-  max_lat = MAX(tleft.north_south, tright.north_south);
-  min_lat = MIN(bleft.north_south, bright.north_south);
-  max_lon = MAX(tright.east_west, bright.east_west);
-  min_lon = MIN(tleft.east_west, bleft.east_west);
+  vik_viewport_get_min_max_lat_lon ( vp, &min_lat, &max_lat, &min_lon, &max_lon );
 
   /* get min, max lat/lon of DEM data */
   if ( dem->horiz_units == VIK_DEM_HORIZ_LL_ARCSECONDS ) {
@@ -389,6 +396,34 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
   /* else they overlap */
 
   /**** End Overlap Check ****/
+  /* boxes to show where we have DEM instead of actually drawing the DEM.
+   * useful if we want to see what areas we have coverage for (if we want
+   * to get elevation data for a track) but don't want to cover the map.
+   */
+
+  #if 0
+  /* draw a box if a DEM is loaded. in future I'd like to add an option for this
+   * this is useful if we want to see what areas we have dem for but don't want to
+   * cover the map (or maybe we just need translucent DEM?) */
+  {
+    VikCoord demne, demsw;
+    gint x1, y1, x2, y2;
+    vik_coord_load_from_latlon(&demne, vik_viewport_get_coord_mode(vp), &dem_northeast);
+    vik_coord_load_from_latlon(&demsw, vik_viewport_get_coord_mode(vp), &dem_southwest);
+
+    vik_viewport_coord_to_screen ( vp, &demne, &x1, &y1 );
+    vik_viewport_coord_to_screen ( vp, &demsw, &x2, &y2 );
+
+    if ( x1 > vik_viewport_get_width(vp) ) x1=vik_viewport_get_width(vp);
+    if ( y2 > vik_viewport_get_height(vp) ) y2=vik_viewport_get_height(vp);
+    if ( x2 < 0 ) x2 = 0;
+    if ( y1 < 0 ) y1 = 0;
+    vik_viewport_draw_rectangle ( vp, GTK_WIDGET(vp)->style->black_gc, 
+	FALSE, x2, y1, x1-x2, y2-y1 );
+    g_print("%d %d %d %d\n", x2, y1, x1-x2, y2-y1);
+    return;
+  }
+  #endif
 
   if ( dem->horiz_units == VIK_DEM_HORIZ_LL_ARCSECONDS ) {
     VikCoord tmp; /* TODO: don't use coord_load_from_latlon, especially if in latlon drawing mode */
@@ -462,6 +497,14 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 
     guint skip_factor = ceil ( vik_viewport_get_xmpp(vp) / 10 ); /* todo: smarter calculation. */
 
+    VikCoord tleft, tright, bleft, bright;
+
+    vik_viewport_screen_to_coord ( vp, 0, 0, &tleft );
+    vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), 0, &tright );
+    vik_viewport_screen_to_coord ( vp, 0, vik_viewport_get_height(vp), &bleft );
+    vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), vik_viewport_get_height(vp), &bright );
+
+
     vik_coord_convert(&tleft, VIK_COORD_UTM);
     vik_coord_convert(&tright, VIK_COORD_UTM);
     vik_coord_convert(&bleft, VIK_COORD_UTM);
@@ -524,11 +567,54 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
   }
 }
 
+/* return the continent for the specified lat, lon */
+/* TODO */
+const gchar *srtm_continent_dir ( gint lat, gint lon )
+{
+  return "North_America/";
+}
+
 void vik_dem_layer_draw ( VikDEMLayer *vdl, gpointer data )
 {
   VikViewport *vp = (VikViewport *) data;
   GList *dems_iter = vdl->files;
   VikDEM *dem;
+
+  gdouble max_lat, max_lon, min_lat, min_lon;  
+  gchar buf[strlen(SRTM_CACHE_DIR)+strlen(SRTM_CACHE_TEMPLATE)+30];
+  gint i, j;
+
+  /* search for SRTM3 90m */
+  vik_viewport_get_min_max_lat_lon ( vp, &min_lat, &max_lat, &min_lon, &max_lon );
+  g_print("%f %f %f %f", min_lat, max_lat, min_lon, max_lon);
+  for (i = floor(min_lat); i <= floor(max_lat); i++) {
+    for (j = floor(min_lon); j <= floor(max_lon); j++) {
+      g_snprintf(buf, sizeof(buf), SRTM_CACHE_TEMPLATE,
+                SRTM_CACHE_DIR,
+                srtm_continent_dir(i, j),
+		(i >= 0) ? 'N' : 'S',
+		ABS(i),
+		(j >= 0) ? 'E' : 'W',
+		ABS(j) );
+      if ( access(buf, F_OK ) == 0 ) {
+        VikCoord ne, sw;
+        gint x1, y1, x2, y2;
+        sw.north_south = i;
+        sw.east_west = j;
+        sw.mode = VIK_COORD_LATLON;
+        ne.north_south = i+1;
+        ne.east_west = j+1;
+        ne.mode = VIK_COORD_LATLON;
+        vik_viewport_coord_to_screen ( vp, &sw, &x1, &y1 );
+        vik_viewport_coord_to_screen ( vp, &ne, &x2, &y2 );
+        if ( x1 < 0 ) x1 = 0;
+        if ( y2 < 0 ) y2 = 0;
+        vik_viewport_draw_rectangle ( vp, GTK_WIDGET(vp)->style->black_gc, 
+		FALSE, x1, y2, x2-x1, y1-y2 );
+      }
+    }
+  }
+
   while ( dems_iter ) {
     dem = a_dems_get ( (const char *) (dems_iter->data) );
     if ( dem )
@@ -573,4 +659,92 @@ VikDEMLayer *vik_dem_layer_create ( VikViewport *vp )
   dem_layer_update_gc ( vdl, vp, "red" );
   return vdl;
 }
+
+/**************************************************
+ *   SOURCES -- DOWNLOADING & IMPORTING -- TOOL   *
+ **************************************************
+ */
+static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static void create_dem_download_thread ( gpointer *pass_along, gpointer threaddata )
+{
+  gchar *name_buf = pass_along[0];
+  gint lat = (gint) pass_along[1];
+  gint lon = (gint) pass_along[2];
+
+  gchar *full_uri = g_strdup_printf("%s%s%s", SRTM_FTP_URI, srtm_continent_dir(lat,lon), name_buf);
+  gchar *full_dest_fn = g_strdup_printf("%s%s%s%s", SRTM_CACHE_DIR, SRTM_CACHE_PREFIX, srtm_continent_dir(lat, lon), name_buf );
+  DownloadOptions options = { NULL, 0 };
+  a_ftp_download_get_url ( SRTM_FTP_SITE, full_uri, full_dest_fn, &options );
+}
+
+static void free_dem_download_pass_along ( gpointer *pass_along )
+{
+  g_free ( pass_along[0] ); /* name_buf */
+  g_free ( pass_along );
+}
+
+static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
+{
+  VikCoord coord;
+  struct LatLon ll;
+
+  gint intlat, intlon;
+
+  gchar *dem_path;
+  gchar name_buf[22];
+
+  vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
+  vik_coord_to_latlon ( &coord, &ll );
+  intlat = (int)floor(ll.lat);
+  intlon = (int)floor(ll.lon);
+
+  g_snprintf(name_buf, sizeof(name_buf), "%c%02d%c%03d.hgt.zip",
+		(intlat >= 0) ? 'N' : 'S',
+		ABS(intlat),
+		(intlon >= 0) ? 'E' : 'W',
+		ABS(intlon) );
+  dem_path = g_strdup_printf("%s%s",
+		"/home/tobias/.viking-maps/srtm3-North_America/",
+		name_buf );
+
+  g_warning(dem_path);
+
+  // check if already in filelist
+
+  if ( access(dem_path, F_OK ) == 0 ) {
+    /* only load if file size is not 0 (not in progress */
+    struct stat sb;
+    stat (dem_path, &sb);
+    if ( sb.st_size ) {
+      vdl->files = g_list_prepend ( vdl->files, dem_path );
+      a_dems_load ( dem_path );
+      g_warning(dem_path);
+    }
+    vik_layer_emit_update ( VIK_LAYER(vdl) );
+  } else {
+      gchar *tmp = g_strdup_printf ( "Downloading SRTM DEM %s ", name_buf );
+      gpointer *pass_along = g_malloc ( sizeof(gpointer) * 3 );
+      pass_along[0] = g_strdup(name_buf);
+      pass_along[1] = (gpointer) intlat;
+      pass_along[2] = (gpointer) intlat;
+      a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vdl), tmp,
+		(vik_thr_func) create_dem_download_thread, pass_along,
+		(vik_thr_free_func) free_dem_download_pass_along, NULL, 1 );
+  }
+
+  return TRUE;
+}
+
+static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
+{
+/* choose & keep track of cache dir
+ * download in background thread
+ * download over area */
+  return TRUE;
+}
+
 

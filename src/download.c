@@ -96,7 +96,7 @@ static int check_map_file(FILE* f)
   return(res);
 }
 
-static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options)
+static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp)
 {
   FILE *f;
   int ret;
@@ -137,7 +137,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   }
 
   /* Call the backend function */
-  ret = curl_download_get_url ( hostname, uri, f, options );
+  ret = curl_download_get_url ( hostname, uri, f, options, ftp );
 
   if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
   {
@@ -160,5 +160,10 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 /* only reason for the "wrapper" is so we can do redirects. */
 int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt )
 {
-  return download ( hostname, uri, fn, opt );
+  return download ( hostname, uri, fn, opt, FALSE );
+}
+
+int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt )
+{
+  return download ( hostname, uri, fn, opt, TRUE );
 }

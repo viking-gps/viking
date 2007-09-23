@@ -1,3 +1,8 @@
+2007-09-21
+Evan Battaglia <gtoevan@gmx.net>
+	* Fix right-click on geocache to work with new geocache names.
+	* Download & import SRTM 90m DEM data (still working on US 10m)
+
 2007-09-17
 Evan Battaglia <gtoevan@gmx.net>
 	* Draw lines to show file existence for MapsLayer for very zoomed out maps. It's faster that actually showing the maps but still gets slow at a certain level.

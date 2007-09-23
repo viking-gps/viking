@@ -31,7 +31,7 @@
 #define access(a,b) _access(a,b)
 #else
 #include <unistd.h>
-#define UNIX_WEB_BROWSER "galeon"
+#define UNIX_WEB_BROWSER "firefox"
 #endif
 
 #define ALTI_TO_MPP 1.4017295

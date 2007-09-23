@@ -156,6 +156,7 @@ void vik_viewport_set_drawmode ( VikViewport *vvp, VikViewportDrawMode drawmode 
 VikViewportDrawMode vik_viewport_get_drawmode ( VikViewport *vvp );
 void vik_viewport_corners_for_zonen ( VikViewport *vvp, int zone, VikCoord *ul, VikCoord *br );
 
+void vik_viewport_get_min_max_lat_lon ( VikViewport *vp, gdouble *min_lat, gdouble *max_lat, gdouble *min_lon, gdouble *max_lon );
 
 G_END_DECLS
 

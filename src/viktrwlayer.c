@@ -2017,7 +2017,6 @@ static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
   vik_track_apply_dem_data ( track );
 }
 
-
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
 {
   GList *trps = ((VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ))->trackpoints;
@@ -2378,7 +2377,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
 static gboolean is_valid_geocache_name ( gchar *str )
 {
   gint len = strlen ( str );
-  return len >= 3 && len <= 6 && str[0] == 'G' && str[1] == 'C' && isalnum(str[2]) && (len < 4 || isalnum(str[3])) && (len < 5 || isalnum(str[4])) && (len < 6 || isalnum(str[5]));
+  return len >= 3 && len <= 7 && str[0] == 'G' && str[1] == 'C' && isalnum(str[2]) && (len < 4 || isalnum(str[3])) && (len < 5 || isalnum(str[4])) && (len < 6 || isalnum(str[5])) && (len < 7 || isalnum(str[6]));
 }
 
 /* vlp can be NULL if necessary - i.e. right-click from a tool -- but be careful, some functions may try to use it */
@@ -3228,6 +3227,7 @@ static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp)
 static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   VikCoord tmp;
+  if ( !vtl ) return FALSE;
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &tmp );
   if ( vtl->magic_scissors_started ) {
     struct LatLon start, end;
@@ -3621,3 +3621,4 @@ done:
   g_list_free(vmls);
 
 }
+

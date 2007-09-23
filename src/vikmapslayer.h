@@ -58,5 +58,7 @@ void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapTyp
 void maps_layer_download_section_without_redraw ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom);
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);
+gchar *maps_layer_default_dir ();
+
 
 #endif
