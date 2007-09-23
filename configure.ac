@@ -131,6 +131,20 @@ case $ac_cv_enable_geocaches in
 esac
 AM_CONDITIONAL([GEOCACHES], [test x$ac_cv_enable_geocaches = xyes])
 
+
+AC_ARG_ENABLE(dem24k, AC_HELP_STRING([--enable-dem24k],
+	      [enable USGS 24k DEM (default is disable) download source. Requires dem24k.pl script in path.]),
+              [ac_cv_enable_dem24k=$enableval],
+              [ac_cv_enable_dem24k=no])
+AC_CACHE_CHECK([whether to enable USGS DEM 24k download source],
+               [ac_cv_enable_dem24k], [ac_cv_enable_dem24k=yes])
+case $ac_cv_enable_dem24k in
+  yes)
+    AC_DEFINE(VIK_CONFIG_DEM24K, [], [DEM24K STUFF])
+    ;;
+esac
+AM_CONDITIONAL([DEM24K], [test x$ac_cv_enable_dem24k = xyes])
+
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
                             [specify the size of the map cache (default is 50331648)])],

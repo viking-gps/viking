@@ -1,3 +1,13 @@
+2007-09-22
+Evan Battaglia <gtoevan@gmx.net>
+        * Pan Accelerators (Ctrl+Left, etc)
+        * Ctrl-Scroll and Ctrl-Shift-Scroll to pan, kind of like Gimp.
+        * Add a RADIOGROUP_STATIC properties factory type to make it easy
+                for new layers. Uses an array list (like before)
+                instead of a GList.
+        * DEM US 10m (dem24k) source! Option in DEM Layer & ./configure
+        * (copying & pasting DEM layers is broken, will fix later)
+
 2007-09-21
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix right-click on geocache to work with new geocache names.

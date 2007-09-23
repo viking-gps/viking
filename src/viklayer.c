@@ -472,6 +472,24 @@ static GtkWidget *properties_widget_new_widget ( VikLayerParam *param, VikLayerP
           vik_radio_group_set_selected ( VIK_RADIO_GROUP(rv), data.u );
       }
       break;
+    case VIK_LAYER_WIDGET_RADIOGROUP_STATIC:
+      if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
+      {
+        rv = vik_radio_group_new_static ( (const gchar **) param->widget_data );
+        if ( param->extra_widget_data ) /* map of alternate uint values for options */
+        {
+          int i;
+          for ( i = 0; ((const char **)param->widget_data)[i]; i++ )
+            if ( ((guint *)param->extra_widget_data)[i] == data.u )
+            {
+              vik_radio_group_set_selected ( VIK_RADIO_GROUP(rv), i );
+              break;
+            }
+        }
+        else if ( data.u ) /* zero is already default */
+          vik_radio_group_set_selected ( VIK_RADIO_GROUP(rv), data.u );
+      }
+      break;
     case VIK_LAYER_WIDGET_SPINBUTTON:
       if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT
            || param->type == VIK_LAYER_PARAM_INT)  && param->widget_data )
@@ -537,6 +555,7 @@ static VikLayerParamData properties_widget_get_value ( GtkWidget *widget, VikLay
       break;
 #endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
+    case VIK_LAYER_WIDGET_RADIOGROUP_STATIC:
       rv.u = vik_radio_group_get_selected(VIK_RADIO_GROUP(widget));
       if ( param->extra_widget_data )
         rv.u = (guint32)g_list_nth_data(param->extra_widget_data, rv.u);

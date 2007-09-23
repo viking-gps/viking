@@ -1,0 +1,12 @@
+To install
+1) Download & compile sdts2dem from
+	http://www.cs.arizona.edu/projects/topovista/sdts2dem/
+2) Copy sdts2dem to somewhere in your path
+3) Make sure you have the Perl module WWW::Mechanize
+4) Keep the three files -- dem24k.pl, dem24k.dat, and repackage.sh
+	together in the same directory and add this directory to your path.
+	Then try downloading DEM tiles in Viking (they take a while to download)
+	(TODO: easier way)
+
+TODO: download in appropriate dir (nto always ~/.viking_maps)
+	need to pass along dir from Viking and escape special chars

@@ -447,10 +447,25 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
 
 static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
-  if ( event->direction == GDK_SCROLL_UP )
-    vik_viewport_zoom_in (vw->viking_vvp);
-  else
-    vik_viewport_zoom_out(vw->viking_vvp);
+  if ( event->state == 4 ) {
+    /* control == pan up & down */
+    if ( event->direction == GDK_SCROLL_UP )
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)/3 );
+    else
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*2/3 );
+  } else if ( event->state == 5 ) {
+    /* control-shift == pan left & right */
+    if ( event->direction == GDK_SCROLL_UP )
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/3, vik_viewport_get_height(vw->viking_vvp)/2 );
+    else
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*2/3, vik_viewport_get_height(vw->viking_vvp)/2 );
+  } else {
+    if ( event->direction == GDK_SCROLL_UP )
+      vik_viewport_zoom_in (vw->viking_vvp);
+    else
+      vik_viewport_zoom_out(vw->viking_vvp);
+  }
+
   draw_update(vw);
 }
 
@@ -783,6 +798,19 @@ static VikToolInterface zoom_tool =
     (VikToolMouseFunc) zoomtool_release };
 /*** end ruler code ********************************************************/
 
+static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
+{
+  if (!strcmp(gtk_action_get_name(a), "PanNorth")) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, 0 );
+  } else if (!strcmp(gtk_action_get_name(a), "PanEast")) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp), vik_viewport_get_height(vw->viking_vvp)/2 );
+  } else if (!strcmp(gtk_action_get_name(a), "PanSouth")) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp) );
+  } else if (!strcmp(gtk_action_get_name(a), "PanWest")) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, 0, vik_viewport_get_height(vw->viking_vvp)/2 );
+  }
+  draw_update ( vw );
+}
 
 
 static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
@@ -1624,6 +1652,7 @@ static GtkActionEntry entries[] = {
   { "Edit", NULL, "_Edit", 0, 0, 0 },
   { "View", NULL, "_View", 0, 0, 0 },
   { "SetZoom", NULL, "_Zoom", 0, 0, 0 },
+  { "SetPan", NULL, "_Pan", 0, 0, 0 },
   { "Layers", NULL, "_Layers", 0, 0, 0 },
   { "Tools", NULL, "_Tools", 0, 0, 0 },
   { "Help", NULL, "_Help", 0, 0, 0 },
@@ -1661,6 +1690,10 @@ static GtkActionEntry entries[] = {
   { "Zoom32",    NULL,                   "32",                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom64",    NULL,                   "64",                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom128",   NULL,                   "128",                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "PanNorth",  NULL,                   "Pan North",                  "<control>Up", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanEast",  NULL,                    "Pan East",                   "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanSouth",  NULL,                   "Pan South",                  "<control>Down", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanWest",  NULL,                    "Pan West",                   "<control>Left", NULL,                                           (GCallback)draw_pan_cb },
   { "BGJobs",    GTK_STOCK_EXECUTE,      "Background _Jobs",              NULL,         NULL,                                           (GCallback)a_background_show_window },
 
   { "Cut",       GTK_STOCK_CUT,          "Cu_t",                          NULL,         NULL,                                           (GCallback)menu_cut_layer_cb     },
