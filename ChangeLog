@@ -6,6 +6,7 @@ Evan Battaglia <gtoevan@gmx.net>
 		and return TRUE if the tool "accepts" the use...
 		editing lots of TRWLayers was way easier that way...
 	* Remove unused vik_layer_copy() code
+	* Add Magic Scissors icon (from GIMP)
 
 2007-09-22
 Evan Battaglia <gtoevan@gmx.net>

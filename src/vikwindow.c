@@ -1858,6 +1858,7 @@ static struct {
   { &edtr_18,		"Edit Trackpoint"   },
   { &addwp_18,		"Create Waypoint"   },
   { &edwp_18,		"Edit Waypoint"     },
+  { &iscissors_18,	"Magic Scissors"   },
   { &zoom_18,		"vik-icon-zoom"     },
   { &ruler_18,		"vik-icon-ruler"    },
   { &geozoom_18,	"Georef Zoom Tool"  },

@@ -92,8 +92,8 @@ ICONS = \
   demdl_18.png \
   ruler_18.png \
   showpic_18.png \
-  zoom_18.png
-
+  zoom_18.png \
+  iscissors_18.png
 
 ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS)
 EXTRA_DIST = $(ALL_ICONS)
