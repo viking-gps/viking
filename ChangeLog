@@ -1,6 +1,10 @@
 2007-09-23
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix copy & pasting DEM layers -- new serializing string list code.
+	* Don't crash if using tool on wrong type of layer / no layer.
+		Although I really want to know what happened to "use the top visible layer",
+		and return TRUE if the tool "accepts" the use...
+		editing lots of TRWLayers was way easier that way...
 
 2007-09-22
 Evan Battaglia <gtoevan@gmx.net>

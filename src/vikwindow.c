@@ -83,7 +83,9 @@ static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw );
 typedef struct {
   VikToolInterface ti;
   gpointer state;
+  gint layer_type;
 } toolbox_tool_t;
+#define TOOL_LAYER_TYPE_NONE -1
 
 typedef struct {
   int 			active_tool;
@@ -94,7 +96,7 @@ typedef struct {
 
 static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw );
 static toolbox_tools_t* toolbox_create(VikWindow *vw);
-static void toolbox_add_tool(toolbox_tools_t *vt, VikToolInterface *vti);
+static void toolbox_add_tool(toolbox_tools_t *vt, VikToolInterface *vti, gint layer_type );
 static int toolbox_get_tool(toolbox_tools_t *vt, const gchar *tool_name);
 static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name);
 static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event);
@@ -948,10 +950,11 @@ static toolbox_tools_t* toolbox_create(VikWindow *vw)
   return vt;
 }
 
-static void toolbox_add_tool(toolbox_tools_t *vt, VikToolInterface *vti)
+static void toolbox_add_tool(toolbox_tools_t *vt, VikToolInterface *vti, gint layer_type )
 {
   vt->tools = g_renew(toolbox_tool_t, vt->tools, vt->n_tools+1);
   vt->tools[vt->n_tools].ti = *vti;
+  vt->tools[vt->n_tools].layer_type = layer_type;
   if (vti->create) {
     vt->tools[vt->n_tools].state = vti->create(vt->vw, vt->vw->viking_vvp);
   } 
@@ -1002,7 +1005,9 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event)
 {
   VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
   if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.click) {
-    vt->tools[vt->active_tool].ti.click(vl, event, vt->tools[vt->active_tool].state);
+    gint ltype = vt->tools[vt->active_tool].layer_type;
+    if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
+      vt->tools[vt->active_tool].ti.click(vl, event, vt->tools[vt->active_tool].state);
   }
 }
 
@@ -1010,15 +1015,19 @@ static void toolbox_move (toolbox_tools_t *vt, GdkEventButton *event)
 {
   VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
   if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.move) {
-    vt->tools[vt->active_tool].ti.move(vl, event, vt->tools[vt->active_tool].state);
+    gint ltype = vt->tools[vt->active_tool].layer_type;
+    if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
+      vt->tools[vt->active_tool].ti.move(vl, event, vt->tools[vt->active_tool].state);
   }
 }
 
 static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event)
 {
   VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
-  if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.release) {
-    vt->tools[vt->active_tool].ti.release(vl, event, vt->tools[vt->active_tool].state);
+  if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.release ) {
+    gint ltype = vt->tools[vt->active_tool].layer_type;
+    if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
+      vt->tools[vt->active_tool].ti.release(vl, event, vt->tools[vt->active_tool].state);
   }
 }
 /** End tool management ************************************/
@@ -1741,8 +1750,8 @@ static void window_create_ui( VikWindow *window )
   uim = gtk_ui_manager_new ();
   window->uim = uim;
 
-  toolbox_add_tool(window->vt, &ruler_tool);
-  toolbox_add_tool(window->vt, &zoom_tool);
+  toolbox_add_tool(window->vt, &ruler_tool, TOOL_LAYER_TYPE_NONE);
+  toolbox_add_tool(window->vt, &zoom_tool, TOOL_LAYER_TYPE_NONE);
 
   error = NULL;
   if (!(mid = gtk_ui_manager_add_ui_from_string (uim, menu_xml, -1, &error))) {
@@ -1807,7 +1816,7 @@ static void window_create_ui( VikWindow *window )
 			    vik_layer_get_interface(i)->tools[j].name,
 			    GTK_UI_MANAGER_TOOLITEM, FALSE);
 
-      toolbox_add_tool(window->vt, &(vik_layer_get_interface(i)->tools[j]));
+      toolbox_add_tool(window->vt, &(vik_layer_get_interface(i)->tools[j]), i);
 
       radio->name = vik_layer_get_interface(i)->tools[j].name;
       radio->stock_id = vik_layer_get_interface(i)->tools[j].name,

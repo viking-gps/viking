@@ -933,8 +933,6 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
   gchar *full_path;
   gchar *dem_file = NULL;
 
-  if ( !vdl) return FALSE;
-
   if ( vdl->source == DEM_SOURCE_NONE )
     a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vdl), "No download source selected. Edit layer properties." );
 
