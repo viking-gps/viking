@@ -7,6 +7,9 @@ Evan Battaglia <gtoevan@gmx.net>
 		editing lots of TRWLayers was way easier that way...
 	* Remove unused vik_layer_copy() code
 	* Add Magic Scissors icon (from GIMP)
+	* Add comment when making a Google Route.
+	* Continue a magic scissors route by holding down control. Continue the comment too.
+	* Right-click a route created by google route (multiple or single) to see the Google directions web page which created it. Useful for creating a route w/ Viking, then seeing the verbal directions (left here, right there)
 
 2007-09-22
 Evan Battaglia <gtoevan@gmx.net>

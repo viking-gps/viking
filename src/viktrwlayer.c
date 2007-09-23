@@ -136,6 +136,10 @@ struct _VikTrwLayer {
   /* magic scissors tool */
   gboolean magic_scissors_started;
   VikCoord magic_scissors_coord;
+  gboolean magic_scissors_check_added_track;
+  gchar *magic_scissors_added_track_name;
+  VikTrack *magic_scissors_current_track;
+  gboolean magic_scissors_append;
 
   gboolean drawlabels;
   gboolean drawimages;
@@ -732,6 +736,10 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   rv->moving_wp = FALSE;
 
   rv->magic_scissors_started = FALSE;
+  rv->magic_scissors_check_added_track = FALSE;
+  rv->magic_scissors_added_track_name = NULL;
+  rv->magic_scissors_current_track = NULL;
+  rv->magic_scissors_append = FALSE;
 
   rv->waypoint_rightclick = FALSE;
   rv->last_tpl = NULL;
@@ -1681,9 +1689,20 @@ void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypo
 }
 void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *tr )
 {
-  vik_trw_layer_add_track ( vtl,
-                        get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, name),
-                        tr );
+  if ( vtl->magic_scissors_append && vtl->magic_scissors_current_track ) {
+    vik_track_steal_and_append_trackpoints ( vtl->magic_scissors_current_track, tr );
+    vik_track_free ( tr );
+    vtl->magic_scissors_append = FALSE; /* this means we have added it */
+  } else {
+    gchar *new_name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, name);
+    vik_trw_layer_add_track ( vtl, new_name, tr );
+
+    if ( vtl->magic_scissors_check_added_track ) {
+      if ( vtl->magic_scissors_added_track_name ) /* for google routes */
+        g_free ( vtl->magic_scissors_added_track_name );
+      vtl->magic_scissors_added_track_name = g_strdup(new_name);
+    }
+  }
 }
 
 static void trw_layer_enum_item ( const gchar *name, GList **tr, GList **l )
@@ -1752,6 +1771,8 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name )
     was_visible = t->visible;
     if ( t == vtl->current_track )
       vtl->current_track = NULL;
+    if ( t == vtl->magic_scissors_current_track )
+      vtl->magic_scissors_current_track = NULL;
 
     /* could be current_tp, so we have to check */
     trw_layer_cancel_tps_of_track ( vtl, trk_name );
@@ -1800,6 +1821,7 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
 {
 
   vtl->current_track = NULL;
+  vtl->magic_scissors_current_track = NULL;
   if (vtl->current_tp_track_name)
     trw_layer_cancel_current_tp(vtl, FALSE);
   if (vtl->last_tp_track_name)
@@ -2316,6 +2338,33 @@ static gboolean is_valid_geocache_name ( gchar *str )
   return len >= 3 && len <= 7 && str[0] == 'G' && str[1] == 'C' && isalnum(str[2]) && (len < 4 || isalnum(str[3])) && (len < 5 || isalnum(str[4])) && (len < 6 || isalnum(str[5])) && (len < 7 || isalnum(str[6]));
 }
 
+static gboolean is_valid_google_route ( VikTrwLayer *vtl, const gchar *track_name )
+{
+  VikTrack *tr = g_hash_table_lookup ( vtl->tracks, track_name );
+  return ( tr && tr->comment && strlen(tr->comment) > 7 && !strncmp(tr->comment, "from:", 5) );
+}
+
+static void trw_layer_track_google_route_webpage( gpointer *pass_along )
+{
+  gchar *track_name = (gchar *) pass_along[3];
+  VikTrack *tr = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, track_name );
+  if ( tr ) {
+    gchar *escaped = uri_escape ( tr->comment );
+    gchar *webpage = g_strdup_printf("http://maps.google.com/maps?f=q&hl=en&q=%s", escaped );
+    GError *err = NULL;
+    gchar *cmd = g_strdup_printf ( "%s %s", UNIX_WEB_BROWSER, webpage );
+
+    if ( ! g_spawn_command_line_async ( cmd, &err ) )
+    {
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), "Could not launch web browser." );
+      g_error_free ( err );
+    }
+    g_free ( escaped );
+    g_free ( cmd );
+    g_free ( webpage );
+  }
+}
+
 /* vlp can be NULL if necessary - i.e. right-click from a tool -- but be careful, some functions may try to use it */
 gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter )
 {
@@ -2423,6 +2472,15 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 #endif
+
+    if ( is_valid_google_route ( l, (gchar *) sublayer ) )
+    {
+      item = gtk_menu_item_new_with_label ( "View Google Directions" );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_google_route_webpage), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+    }
+
   }
 
   if ( vlp && (subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) )
@@ -3165,19 +3223,53 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
   VikCoord tmp;
   if ( !vtl ) return FALSE;
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &tmp );
-  if ( vtl->magic_scissors_started ) {
+  if ( vtl->magic_scissors_started || (event->state & GDK_CONTROL_MASK && vtl->magic_scissors_current_track) ) {
     struct LatLon start, end;
     gchar *cmd;
+
     vik_coord_to_latlon ( &(vtl->magic_scissors_coord), &start );
     vik_coord_to_latlon ( &(tmp), &end );
     cmd = g_strdup_printf(GOOGLE_DIRECTIONS_STRING, start.lat, start.lon, end.lat, end.lon );
+    vtl->magic_scissors_coord = tmp; /* for continuations */
+
+    /* these are checked when adding a track from a file (vik_trw_layer_filein_add_track) */
+    if ( event->state & GDK_CONTROL_MASK && vtl->magic_scissors_current_track ) {
+      vtl->magic_scissors_append = TRUE;  // merge tracks. keep started true.
+    } else {
+      vtl->magic_scissors_check_added_track = TRUE;
+      vtl->magic_scissors_started = FALSE;
+    }
+
     a_babel_convert_from_shellcommand ( vtl, cmd, "google", NULL, NULL );
     g_free ( cmd );
+
+    /* see if anything was done -- a track was added or appended to */
+    if ( vtl->magic_scissors_check_added_track && vtl->magic_scissors_added_track_name ) {
+      VikTrack *tr;
+
+      tr = g_hash_table_lookup ( vtl->tracks, vtl->magic_scissors_added_track_name );
+
+      if ( tr )
+        vik_track_set_comment_no_copy ( tr, g_strdup_printf("from: %f,%f to: %f%f", start.lat, start.lon, end.lat, end.lon ) ); 
+ 
+      vtl->magic_scissors_current_track = tr;
+
+      g_free ( vtl->magic_scissors_added_track_name );
+      vtl->magic_scissors_added_track_name = NULL;
+    } else if ( vtl->magic_scissors_append == FALSE && vtl->magic_scissors_current_track ) {
+      /* magic_scissors_append was originally TRUE but set to FALSE by filein_add_track */
+      gchar *new_comment = g_strdup_printf("%s to: %f,%f", vtl->magic_scissors_current_track->comment, end.lat, end.lon );
+      vik_track_set_comment_no_copy ( vtl->magic_scissors_current_track, new_comment );
+    }
+    vtl->magic_scissors_check_added_track = FALSE;
+    vtl->magic_scissors_append = FALSE;
+
     vik_layer_emit_update ( VIK_LAYER(vtl) );
   } else {
+    vtl->magic_scissors_started = TRUE;
     vtl->magic_scissors_coord = tmp;
+    vtl->magic_scissors_current_track = NULL;
   }
-  vtl->magic_scissors_started = !vtl->magic_scissors_started;
   return TRUE;
 }
 
