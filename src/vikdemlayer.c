@@ -47,7 +47,7 @@
 
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 
-#define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%c%02d%c%03d.hgt.zip"
+#define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
 #define SRTM_FTP_SITE "e0srp01u.ecs.nasa.gov"
 #define SRTM_FTP_URI  "/srtm/version2/SRTM3/"
 
@@ -593,9 +593,32 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 
 /* return the continent for the specified lat, lon */
 /* TODO */
-const gchar *srtm_continent_dir ( gint lat, gint lon )
+static const gchar *srtm_continent_dir ( gint lat, gint lon )
 {
-  return "North_America/";
+  extern const char *_srtm_continent_data[];
+  static GHashTable *srtm_continent = NULL;
+  const gchar *continent;
+  gchar name[16];
+
+  if (!srtm_continent) {
+    const gchar **s;
+
+    srtm_continent = g_hash_table_new(g_str_hash, g_str_equal);
+    s = _srtm_continent_data;
+    while (*s != (gchar *)-1) {
+      continent = *s++;
+      while (*s) {
+        g_hash_table_insert(srtm_continent, *s, continent);
+        s++;
+      }
+      s++;
+    }
+  }
+  g_snprintf(name, sizeof(name), "%c%02d%c%03d",
+                  (lat >= 0) ? 'N' : 'S', ABS(lat),
+		  (lon >= 0) ? 'E' : 'W', ABS(lon));
+
+  return(g_hash_table_lookup(srtm_continent, name));
 }
 
 void vik_dem_layer_draw ( VikDEMLayer *vdl, gpointer data )
@@ -685,12 +708,21 @@ typedef struct {
 static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
 {
   gint intlat, intlon;
+  const gchar *continent_dir;
 
   intlat = (int)floor(p->lat);
   intlon = (int)floor(p->lon);
-  gchar *src_fn = g_strdup_printf("%s%s%c%02d%c%03d.hgt.zip",
+  continent_dir = srtm_continent_dir(intlat, intlon);
+
+  if (!continent_dir) {
+    g_warning("No SRTM data available for %f, %f\n", p->lat, p->lon);
+    return;
+  }
+
+  gchar *src_fn = g_strdup_printf("%s%s%s%c%02d%c%03d.hgt.zip",
                 SRTM_FTP_URI,
-                srtm_continent_dir(intlat, intlon),
+                continent_dir,
+                G_DIR_SEPARATOR_S,
 		(intlat >= 0) ? 'N' : 'S',
 		ABS(intlat),
 		(intlon >= 0) ? 'E' : 'W',
@@ -704,10 +736,18 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 static gchar *srtm_lat_lon_to_dest_fn ( gdouble lat, gdouble lon )
 {
   gint intlat, intlon;
+  const gchar *continent_dir;
+
   intlat = (int)floor(lat);
   intlon = (int)floor(lon);
-  return g_strdup_printf("srtm3-%s%c%02d%c%03d.hgt.zip",
-                srtm_continent_dir(intlat, intlon),
+  continent_dir = srtm_continent_dir(intlat, intlon);
+
+  if (!continent_dir)
+    continent_dir = "nowhere";
+
+  return g_strdup_printf("srtm3-%s%s%c%02d%c%03d.hgt.zip",
+                continent_dir,
+                G_DIR_SEPARATOR_S,
 		(intlat >= 0) ? 'N' : 'S',
 		ABS(intlat),
 		(intlon >= 0) ? 'E' : 'W',
@@ -726,9 +766,13 @@ static void srtm_draw_existence ( VikViewport *vp )
 
   for (i = floor(min_lat); i <= floor(max_lat); i++) {
     for (j = floor(min_lon); j <= floor(max_lon); j++) {
+      const gchar *continent_dir;
+      if ((continent_dir = srtm_continent_dir(i, j)) == NULL)
+        continue;
       g_snprintf(buf, sizeof(buf), SRTM_CACHE_TEMPLATE,
                 MAPS_CACHE_DIR,
-                srtm_continent_dir(i, j),
+                continent_dir,
+                G_DIR_SEPARATOR_S,
 		(i >= 0) ? 'N' : 'S',
 		ABS(i),
 		(j >= 0) ? 'E' : 'W',

@@ -63,7 +63,8 @@ viking_SOURCES = main.c \
 	vikdemlayer.h vikdemlayer.c \
 	vikdemlayer_pixmap.h \
 	vikfilelist.c vikfilelist.h \
-	dems.c dems.h
+	dems.c dems.h \
+	srtm_continent.c
 
 if GOOGLE
 viking_SOURCES += \
