@@ -21,6 +21,8 @@
 #include <math.h>
 #include <gps.h>
 
+#include "globals.h"
+#include "dialog.h"
 #include "vikgpsdlayer.h"
 #include "viklayer.h"
 #include "vikgpsdlayer_pixmap.h"
@@ -99,7 +101,7 @@ struct _VikGpsdLayer {
   GdkGC *gc;
   struct LatLon ll;
   gdouble course;
-  FakeGpsData fgd;
+  FakeGpsData *fgd;
   gint timeout;
 };
 
@@ -189,9 +191,17 @@ static void vik_gpsd_layer_draw ( VikGpsdLayer *vgl, gpointer data )
 
 static void vik_gpsd_layer_free ( VikGpsdLayer *vgl )
 {
+  /* we already free'd the original gps_data,
+   * and the current one lives in the VikGpsdLayer and would be freed twice.
+   * so we malloc one, copy the data, and close/free it.
+   */
+  if ( vgl->fgd ) {
+    gps_close ( (struct gps_data_t *) vgl->fgd );
+    gtk_timeout_remove ( vgl->timeout );
+  }
+
   if ( vgl->gc != NULL )
     g_object_unref ( G_OBJECT(vgl->gc) );
-  gtk_timeout_remove ( vgl->timeout );
 }
 
 void gpsd_hook(FakeGpsData *fgd, gchar *data)
@@ -213,8 +223,10 @@ void gpsd_hook(FakeGpsData *fgd, gchar *data)
 
 static gboolean gpsd_timeout(VikGpsdLayer *vgl)
 {
-  gps_query(&(vgl->fgd), "o");
-  vik_layer_emit_update ( VIK_LAYER(vgl) );
+  if ( vgl->fgd ) {
+    gps_query( (struct gps_data_t *) vgl->fgd, "o");
+    vik_layer_emit_update ( VIK_LAYER(vgl) );
+  }
   return TRUE;
 }
 
@@ -225,15 +237,19 @@ static VikGpsdLayer *vik_gpsd_layer_new ( VikViewport *vp )
   vik_layer_init ( VIK_LAYER(vgl), VIK_LAYER_GPSD );
 
   struct gps_data_t *orig_data = gps_open ("localhost", DEFAULT_GPSD_PORT);
-  vgl->fgd.data = *orig_data;
-  vgl->fgd.vgl = vgl;
-  g_free ( orig_data );
-  gps_set_raw_hook(&(vgl->fgd), gpsd_hook); /* pass along vgl in fgd */
+  if ( orig_data ) {
+    vgl->fgd = g_realloc ( orig_data, sizeof(FakeGpsData) );
+    vgl->fgd->vgl = vgl;
+
+    gps_set_raw_hook( (struct gps_data_t *) vgl->fgd, gpsd_hook ); /* pass along vgl in fgd */
+
+    vgl->timeout = gtk_timeout_add ( 1000, (GtkFunction)gpsd_timeout, vgl);
+  } else {
+    a_dialog_warning_msg(VIK_GTK_WINDOW_FROM_WIDGET(vp), "No Gpsd found! Right-click layer and click 'Enable GPSD' (not yet implemented) once daemon is started.");
+  }
 
   vgl->gc = vik_viewport_new_gc ( vp, "red", 2 );
   vgl->ll.lat = vgl->ll.lon = vgl->course = 0;
-
-  gtk_timeout_add ( 1000, (GtkFunction)gpsd_timeout, vgl);
 
   return vgl;
 }
