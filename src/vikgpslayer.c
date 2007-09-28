@@ -305,6 +305,7 @@ static void vik_gps_layer_draw ( VikGpsLayer *vgl, gpointer data )
 {
   gint i;
 
+  /* TODO: half-drawn hack -- see vik_aggregate_layer_draw */
   for (i = 0; i < NUM_TRW; i++) {
     vik_layer_draw((VikLayer*)(vgl->trw_children[i]), data);
   }

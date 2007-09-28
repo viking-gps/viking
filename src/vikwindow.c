@@ -369,10 +369,23 @@ static void draw_status ( VikWindow *vw )
 
 static void draw_redraw ( VikWindow *vw )
 {
+  VikLayer *new_trigger = vik_layer_get_and_reset_trigger();
+  VikLayer *old_trigger = VIK_LAYER(vik_viewport_get_trigger(vw->viking_vvp));
+
+  if ( ! new_trigger )
+    ; /* do nothing -- have to redraw everything. */
+  else if ( old_trigger != new_trigger )
+    vik_viewport_set_trigger ( vw->viking_vvp, new_trigger ); /* todo: set to half_drawn mode if new trigger is above old */
+  else
+    vik_viewport_set_half_drawn ( vw->viking_vvp, TRUE );
+
+  /* actually draw */
   vik_viewport_clear ( vw->viking_vvp);
   vik_layers_panel_draw_all ( vw->viking_vlp );
   vik_viewport_draw_scale ( vw->viking_vvp );
   vik_viewport_draw_centermark ( vw->viking_vvp );
+
+  vik_viewport_set_half_drawn ( vw->viking_vvp, FALSE ); /* just in case. */
 }
 
 gboolean draw_buf_done = TRUE;

@@ -24,6 +24,8 @@
 #include "vikfilelist.h"
 #include <string.h>
 
+static VikLayer *trigger = NULL;
+
 /* functions common to all layers. */
 /* TODO longone: rename interface free -> finalize */
 
@@ -91,6 +93,31 @@ static void layer_class_init (VikLayerClass *klass)
 }
 
 void vik_layer_emit_update ( VikLayer *vl )
+{
+  if ( vl->visible ) {
+    trigger = vl;
+    g_signal_emit ( G_OBJECT(vl), layer_signals[VL_UPDATE_SIGNAL], 0 );
+  }
+}
+
+/* should only be done by VikLayersPanel -- need to redraw and record trigger
+ * when we make a layer invisible.
+ */
+void vik_layer_emit_update_although_invisible ( VikLayer *vl )
+{
+  trigger = vl;
+  g_signal_emit ( G_OBJECT(vl), layer_signals[VL_UPDATE_SIGNAL], 0 );
+}
+
+VikLayer *vik_layer_get_and_reset_trigger()
+{
+  VikLayer *rv = trigger;
+  trigger = NULL;
+  return rv;
+}
+
+/* doesn't set the trigger. should be done by aggregate layer when child emits update. */
+void vik_layer_emit_update_secondary ( VikLayer *vl )
 {
   if ( vl->visible )
     g_signal_emit ( G_OBJECT(vl), layer_signals[VL_UPDATE_SIGNAL], 0 );

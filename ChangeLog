@@ -2,6 +2,8 @@
 Evan Battaglia <gtoevan@gmx.net>
 	* GPSD Layer -- draw an arrow.
 	* Minimum elevation for DEM layer.
+	* Half-drawn hack to only draw layers on top of the one that has
+		recently changed. A must for realtime GPS.
 
 2007-09-25
 Quy Tonthat <qtonthat@gmail.com>:

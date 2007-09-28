@@ -165,7 +165,7 @@ static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, Vi
     child_layer = vik_layer_unmarshall ( data + sizeof(gint), alm_size, vvp );
     if (child_layer) {
       rv->children = g_list_append ( rv->children, child_layer );
-      g_signal_connect_swapped ( G_OBJECT(child_layer), "update", G_CALLBACK(vik_layer_emit_update), rv );
+      g_signal_connect_swapped ( G_OBJECT(child_layer), "update", G_CALLBACK(vik_layer_emit_update_secondary), rv );
     }
     alm_next;
   }
@@ -204,7 +204,7 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
   } else {
     val->children = g_list_append ( val->children, l );
   }
-  g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update), val );
+  g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update_secondary), val );
 }
 
 void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l )
@@ -223,7 +223,7 @@ void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l )
   }
 
   val->children = g_list_append ( val->children, l );
-  g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update), val );
+  g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update_secondary), val );
 }
 
 void vik_aggregate_layer_move_layer ( VikAggregateLayer *val, GtkTreeIter *child_iter, gboolean up )
@@ -265,9 +265,34 @@ void vik_aggregate_layer_move_layer ( VikAggregateLayer *val, GtkTreeIter *child
     val->children = second;
 }
 
+/* Draw the aggregate layer. If vik viewport is in half_drawn mode, this means we are only
+ * to draw the layers above and including the trigger layer.
+ * To do this we don't draw any layers if in half drawn mode, unless we find the
+ * trigger layer, in which case we pull up the saved pixmap, turn off half drawn mode and
+ * start drawing layers.
+ * Also, if we were never in half drawn mode, we save a snapshot
+ * of the pixmap before drawing the trigger layer so we can use it again
+ * later.
+ */
 void vik_aggregate_layer_draw ( VikAggregateLayer *val, gpointer data )
 {
-  g_list_foreach ( val->children, (GFunc)(vik_layer_draw), data );
+  GList *iter = val->children;
+  VikLayer *vl;
+  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( VIK_VIEWPORT(data) ));
+  while ( iter ) {
+    vl = VIK_LAYER(iter->data);
+    if ( vl == trigger ) {
+      if ( vik_viewport_get_half_drawn ( VIK_VIEWPORT(data) ) ) {
+        vik_viewport_set_half_drawn ( VIK_VIEWPORT(data), FALSE );
+        vik_viewport_snapshot_load( VIK_VIEWPORT(data) );
+      } else {
+        vik_viewport_snapshot_save( VIK_VIEWPORT(data) );
+      }
+    }
+    if ( vl->type == VIK_LAYER_AGGREGATE || ! vik_viewport_get_half_drawn( VIK_VIEWPORT(data) ) )
+      vik_layer_draw ( vl, data );
+    iter = iter->next;
+  }
 }
 
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode )

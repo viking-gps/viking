@@ -206,14 +206,19 @@ static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
 
   switch ( type )
   {
-    case VIK_TREEVIEW_TYPE_LAYER: visible = (VIK_LAYER(p)->visible ^= 1); break;
-    case VIK_TREEVIEW_TYPE_SUBLAYER: visible = vik_layer_sublayer_toggle_visible ( VIK_LAYER(vik_treeview_item_get_parent(vlp->vt, iter)), vik_treeview_item_get_data(vlp->vt, iter), p); break;
+    case VIK_TREEVIEW_TYPE_LAYER:
+      visible = (VIK_LAYER(p)->visible ^= 1);
+      vik_layer_emit_update_although_invisible ( VIK_LAYER(p) ); /* set trigger for half-drawn */
+      break;
+    case VIK_TREEVIEW_TYPE_SUBLAYER:
+      visible = vik_layer_sublayer_toggle_visible ( VIK_LAYER(vik_treeview_item_get_parent(vlp->vt, iter)),
+						vik_treeview_item_get_data(vlp->vt, iter), p);
+      vik_layer_emit_update_although_invisible ( VIK_LAYER(vik_treeview_item_get_parent(vlp->vt, iter)) );
+      break;
     default: return;
   }
 
   vik_treeview_item_set_visible ( vlp->vt, iter, visible );
-
-  vik_layers_panel_emit_update ( vlp );
 }
 
 static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text)
@@ -455,8 +460,14 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
   if ( type == VIK_TREEVIEW_TYPE_LAYER )
   {
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
+
     if ( parent )
     {
+
+      /* reset trigger if trigger deleted */
+      if ( vik_layers_panel_get_selected ( vlp ) == vik_viewport_get_trigger ( vlp->vvp ) )
+        vik_viewport_set_trigger ( vlp->vvp, NULL );
+
       a_clipboard_copy_selected ( vlp );
       if ( vik_aggregate_layer_delete ( parent, &iter ) )
         vik_layers_panel_emit_update ( vlp );
@@ -501,6 +512,10 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
     if ( parent )
     {
+      /* reset trigger if trigger deleted */
+      if ( vik_layers_panel_get_selected ( vlp ) == vik_viewport_get_trigger ( vlp->vvp ) )
+        vik_viewport_set_trigger ( vlp->vvp, NULL );
+
       if (IS_VIK_AGGREGATE_LAYER(parent)) {
         if ( vik_aggregate_layer_delete ( parent, &iter ) )
 	  vik_layers_panel_emit_update ( vlp );
