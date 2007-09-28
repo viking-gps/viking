@@ -1,3 +1,8 @@
+2007-09-28
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bug that caused Elevation graph not working properly with some
+	tracks.
+
 2007-09-27
 Evan Battaglia <gtoevan@gmx.net>
 	* GPSD Layer -- draw an arrow.
