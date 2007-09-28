@@ -70,6 +70,7 @@ static void dem24k_draw_existence ( VikViewport *vp );
 
 static VikLayerParamScale param_scales[] = {
   { 1, 10000, 10, 1 },
+  { 1, 10000, 10, 1 },
   { 1, 10, 1, 0 },
 };
 
@@ -92,12 +93,13 @@ static VikLayerParam dem_layer_params[] = {
   { "files", VIK_LAYER_PARAM_STRING_LIST, VIK_LAYER_GROUP_NONE, "DEM Files:", VIK_LAYER_WIDGET_FILELIST },
   { "source", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Download Source:", VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL },
   { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, "Color:", VIK_LAYER_WIDGET_ENTRY },
+  { "min_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, "Min Elev:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
   { "max_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, "Max Elev:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
   { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Line Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
 };
 
 
-enum { PARAM_FILES=0, PARAM_SOURCE, PARAM_COLOR, PARAM_MAX_ELEV, PARAM_LINE_THICKNESS, NUM_PARAMS };
+enum { PARAM_FILES=0, PARAM_SOURCE, PARAM_COLOR, PARAM_MIN_ELEV, PARAM_MAX_ELEV, PARAM_LINE_THICKNESS, NUM_PARAMS };
 
 static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
@@ -274,6 +276,7 @@ struct _VikDEMLayer {
   GdkGC *gc;
   GdkGC **gcs;
   GList *files;
+  gdouble min_elev;
   gdouble max_elev;
   guint8 line_thickness;
   gchar *color;
@@ -328,6 +331,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
   {
     case PARAM_COLOR: if ( vdl->color ) g_free ( vdl->color ); vdl->color = g_strdup ( data.s ); break;
     case PARAM_SOURCE: vdl->source = data.u; break;
+    case PARAM_MIN_ELEV: vdl->min_elev = data.d; break;
     case PARAM_MAX_ELEV: vdl->max_elev = data.d; break;
     case PARAM_LINE_THICKNESS: if ( data.u >= 1 && data.u <= 15 ) vdl->line_thickness = data.u; break;
     case PARAM_FILES: a_dems_load_list ( &(data.sl) ); a_dems_list_free ( vdl->files ); vdl->files = data.sl; break;
@@ -343,6 +347,7 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id )
     case PARAM_FILES: rv.sl = vdl->files; break;
     case PARAM_SOURCE: rv.u = vdl->source; break;
     case PARAM_COLOR: rv.s = vdl->color ? vdl->color : ""; break;
+    case PARAM_MIN_ELEV: rv.d = vdl->min_elev; break;
     case PARAM_MAX_ELEV: rv.d = vdl->max_elev; break;
     case PARAM_LINE_THICKNESS: rv.i = vdl->line_thickness; break;
   }
@@ -372,6 +377,7 @@ VikDEMLayer *vik_dem_layer_new ( )
   vdl->gcs = g_malloc(sizeof(GdkGC *)*DEM_N_COLORS);
   /* make new gcs only if we need it (copy layer -> use old) */
 
+  vdl->min_elev = 0.0;
   vdl->max_elev = 1000.0;
   vdl->source = DEM_SOURCE_SRTM;
   vdl->line_thickness = 3;
@@ -485,6 +491,10 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 
     vik_dem_east_north_to_xy ( dem, start_lon_as, start_lat_as, &start_x, &start_y );
 
+    /* verify sane elev interval */
+    if ( vdl->max_elev <= vdl->min_elev )
+      vdl->max_elev = vdl->min_elev + 1;
+
     for ( x=start_x, counter.lon = start_lon; counter.lon <= end_lon; counter.lon += escale_deg * skip_factor, x += skip_factor ) {
       if ( x > 0 && x < dem->n_columns ) {
         column = g_ptr_array_index ( dem->columns, x );
@@ -492,7 +502,13 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
           if ( y > column->n_points )
             break;
           elev = column->points[y];
-          if ( elev > vdl->max_elev ) elev=vdl->max_elev;
+
+          if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev )
+            elev=vdl->min_elev;
+          if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
+            elev=vdl->max_elev;
+
+
           {
             gint a, b;
 
@@ -503,7 +519,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
             else if ( elev <= 0 )
               vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, a-2, b-2, 4, 4 );
             else
-              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(elev/vdl->max_elev*(DEM_N_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
+              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
           }
         } /* for y= */
       }
@@ -573,7 +589,11 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
           if ( y > column->n_points )
             continue;
           elev = column->points[y];
-          if ( elev > vdl->max_elev ) elev=vdl->max_elev;
+          if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev )
+            elev=vdl->min_elev;
+          if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
+            elev=vdl->max_elev;
+
           {
             gint a, b;
             vik_coord_load_from_utm(&tmp, vik_viewport_get_coord_mode(vp), &counter);
@@ -583,7 +603,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
             else if ( elev <= 0 )
               vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, a-2, b-2, 4, 4 );
             else
-              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(elev/vdl->max_elev*(DEM_N_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
+              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
           }
         } /* for y= */
       }

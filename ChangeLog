@@ -1,3 +1,8 @@
+2007-09-27
+Evan Battaglia <gtoevan@gmx.net>
+	* GPSD Layer -- draw an arrow.
+	* Minimum elevation for DEM layer.
+
 2007-09-25
 Quy Tonthat <qtonthat@gmail.com>:
 	* SRTM download now works for regions outside North_America too.
@@ -14,6 +19,7 @@ Evan Battaglia <gtoevan@gmx.net>
 	* Add comment when making a Google Route.
 	* Continue a magic scissors route by holding down control. Continue the comment too.
 	* Right-click a route created by google route (multiple or single) to see the Google directions web page which created it. Useful for creating a route w/ Viking, then seeing the verbal directions (left here, right there)
+        * Experimental GPSD support (VikGpsdLayer)
 
 2007-09-22
 Evan Battaglia <gtoevan@gmx.net>

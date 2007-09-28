@@ -98,7 +98,7 @@ typedef struct {
 
 struct _VikGpsdLayer {
   VikLayer vl;
-  GdkGC *gc;
+  GdkGC *gc, *pt_gc;
   struct LatLon ll;
   gdouble course;
   FakeGpsData *fgd;
@@ -175,17 +175,30 @@ static void vik_gpsd_layer_draw ( VikGpsdLayer *vgl, gpointer data )
        vgl->ll.lon < lse.lon ) {
     VikCoord gps;
     gint x, y;
+    gint half_back_x, half_back_y;
     gint pt_x, pt_y;
+    gint side1_x, side1_y, side2_x, side2_y;
 
     vik_coord_load_from_latlon ( &gps, vik_viewport_get_coord_mode(vp), &(vgl->ll) );
     vik_viewport_coord_to_screen ( vp, &gps, &x, &y );
-    vik_viewport_draw_rectangle ( vp, vgl->gc, TRUE, x-2, y-2, 4, 4 );
 
-    pt_y = y-20*cos(M_PI/180*vgl->course);
-    pt_x = x+20*sin(M_PI/180*vgl->course);
+    half_back_y = y+8*cos(M_PI/180*vgl->course);
+    half_back_x = x-8*sin(M_PI/180*vgl->course);
+
+    pt_y = half_back_y-24*cos(M_PI/180*vgl->course);
+    pt_x = half_back_x+24*sin(M_PI/180*vgl->course);
+
+    side1_y = half_back_y+9*sin(M_PI/180*vgl->course);
+    side1_x = half_back_x+9*cos(M_PI/180*vgl->course);
+
+    side2_y = half_back_y-9*sin(M_PI/180*vgl->course);
+    side2_x = half_back_x-9*cos(M_PI/180*vgl->course);
+
+    GdkPoint trian[3] = { { pt_x, pt_y }, {side1_x, side1_y}, {side2_x, side2_y} };
 
     g_print("%d %d %d %d\n", x, y, pt_x, pt_y);
-    vik_viewport_draw_line ( vp, vgl->gc, x, y, pt_x, pt_y );
+    vik_viewport_draw_polygon ( vp, vgl->gc, TRUE, trian, 3 );
+    vik_viewport_draw_rectangle ( vp, vgl->pt_gc, TRUE, x-2, y-2, 4, 4 );
   }
 }
 
@@ -202,10 +215,13 @@ static void vik_gpsd_layer_free ( VikGpsdLayer *vgl )
 
   if ( vgl->gc != NULL )
     g_object_unref ( G_OBJECT(vgl->gc) );
+  if ( vgl->pt_gc != NULL )
+    g_object_unref ( G_OBJECT(vgl->pt_gc) );
 }
 
-void gpsd_hook(FakeGpsData *fgd, gchar *data)
+void gpsd_hook(struct gps_data_t *gps_data, char *data)
 {
+  FakeGpsData *fgd = (FakeGpsData *) gps_data;
   gdouble lat, lon, alt, herror, verror, course, speed;
   /* skip thru three spaces */
   while (*data && *data != ' ') data++; if (*data) data++;
@@ -248,7 +264,8 @@ static VikGpsdLayer *vik_gpsd_layer_new ( VikViewport *vp )
     a_dialog_warning_msg(VIK_GTK_WINDOW_FROM_WIDGET(vp), "No Gpsd found! Right-click layer and click 'Enable GPSD' (not yet implemented) once daemon is started.");
   }
 
-  vgl->gc = vik_viewport_new_gc ( vp, "red", 2 );
+  vgl->gc = vik_viewport_new_gc ( vp, "#203070", 2 );
+  vgl->pt_gc = vik_viewport_new_gc ( vp, "red", 2 );
   vgl->ll.lat = vgl->ll.lon = vgl->course = 0;
 
   return vgl;
