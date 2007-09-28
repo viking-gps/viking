@@ -342,7 +342,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
       return NULL;
   }
 
-
+  iter = tr->trackpoints;
 
   g_assert ( num_chunks < 16000 );
 
