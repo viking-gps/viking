@@ -1,3 +1,7 @@
+2007-10-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix crashes caused by emitting update too early at layer creation.
+
 2007-10-01
 Quy Tonthat <qtonthat@gmail.com>:
 	* Disable half-drawn update when the center is moved. Avoid using

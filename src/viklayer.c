@@ -729,8 +729,10 @@ static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
       gtk_widget_destroy ( dialog ); /* hide before redrawing. */
       g_free ( widgets );
 
+#ifdef XXXXXXXXXXXXXXXXXXXX
       if ( must_redraw )
         vik_layer_emit_update ( vl ); /* if this is a new layer, it won't redraw twice because no on'es listening to this signal. */
+#endif /*XXXXXXXXXXXXXXXXXXXXX*/
       return TRUE; /* user clicked OK */
     }
 
