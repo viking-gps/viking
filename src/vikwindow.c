@@ -146,6 +146,10 @@ struct _VikWindow {
 
   gboolean only_updating_coord_mode_ui; /* hack for a bug in GTK */
   GtkUIManager *uim;
+
+  /* half-drawn update */
+  VikLayer *trigger;
+  VikCoord trigger_center;
 };
 
 enum {
@@ -367,14 +371,23 @@ static void draw_status ( VikWindow *vw )
   vik_statusbar_set_message ( vw->viking_vs, 2, zoom_level );
 }
 
+void vik_window_set_redraw_trigger(VikLayer *vl)
+{
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl));
+  vw->trigger = vl;
+}
+
 static void draw_redraw ( VikWindow *vw )
 {
-  VikLayer *new_trigger = vik_layer_get_and_reset_trigger();
+  VikCoord old_center = vw->trigger_center;
+  vw->trigger_center = *(vik_viewport_get_center(vw->viking_vvp));
+  VikLayer *new_trigger = vw->trigger;
+  vw->trigger = NULL;
   VikLayer *old_trigger = VIK_LAYER(vik_viewport_get_trigger(vw->viking_vvp));
 
   if ( ! new_trigger )
     ; /* do nothing -- have to redraw everything. */
-  else if ( old_trigger != new_trigger )
+  else if ( (old_trigger != new_trigger) || !vik_coord_equals(&old_center, &vw->trigger_center) )
     vik_viewport_set_trigger ( vw->viking_vvp, new_trigger ); /* todo: set to half_drawn mode if new trigger is above old */
   else
     vik_viewport_set_half_drawn ( vw->viking_vvp, TRUE );

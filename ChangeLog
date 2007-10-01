@@ -1,3 +1,9 @@
+2007-10-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Disable half-drawn update when the center is moved. Avoid using
+	static "trigger" in viklayer.c which causes problems when viking
+	has more than one windows.
+
 2007-09-28
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix bug that caused Elevation graph not working properly with some
