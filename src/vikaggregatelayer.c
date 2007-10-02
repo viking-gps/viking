@@ -289,7 +289,7 @@ void vik_aggregate_layer_draw ( VikAggregateLayer *val, gpointer data )
         vik_viewport_snapshot_save( VIK_VIEWPORT(data) );
       }
     }
-    if ( vl->type == VIK_LAYER_AGGREGATE || ! vik_viewport_get_half_drawn( VIK_VIEWPORT(data) ) )
+    if ( vl->type == VIK_LAYER_AGGREGATE || vl->type == VIK_LAYER_GPS || ! vik_viewport_get_half_drawn( VIK_VIEWPORT(data) ) )
       vik_layer_draw ( vl, data );
     iter = iter->next;
   }
