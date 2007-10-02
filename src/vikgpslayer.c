@@ -1068,19 +1068,15 @@ void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
     vgl->realtime_fix.heading = vgpsd->gpsd.fix.track;
     vgl->realtime_fix.dirty = TRUE;
 
-    // fprintf(stderr, "%f %f\n", vgl->realtime_fix.alt, vgl->realtime_fix.speed * MPS_TO_KPH);
-
     create_realtime_trackpoint(vgl, FALSE);
     g_mutex_unlock(vgl->realtime_tracking_mutex);
 
-    vik_layer_emit_update ( VIK_LAYER(vgl) );
+    vik_layer_emit_update ( VIK_LAYER(vgl) ); /* passing vgl to make sure layers underneath are updated */
   }
 }
 
 static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, gpointer data)
 {
-  // fprintf(stderr, "gpsd_data_available called\n");
-
   VikGpsLayer *vgl = data;
   gps_poll(&vgl->vgpsd->gpsd);
   return TRUE;
