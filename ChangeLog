@@ -1,3 +1,7 @@
+2007-10-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Improvements for GPS layer's "realtime tracking".
+
 2007-10-02
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix crashes caused by emitting update too early at layer creation.

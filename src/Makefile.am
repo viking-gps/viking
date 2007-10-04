@@ -94,4 +94,4 @@ INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
 LDADD           += -lgps
 #LDADD           = -lz @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
-AM_CFLAGS		= -Wall -g
+AM_CFLAGS		= -Wall -g -D_GNU_SOURCE
