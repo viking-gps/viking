@@ -1014,6 +1014,16 @@ static void create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forced)
 {
     struct LatLon ll;
     GList *last_tp;
+
+    /* Note that fix.time is a double, but it should not affect the precision
+       for most GPS */
+    time_t cur_timestamp = vgl->realtime_fix.fix.time;
+    time_t last_timestamp = vgl->last_fix.fix.time;
+
+    if (cur_timestamp < last_timestamp) {
+      return;
+    }
+
     if (vgl->realtime_record && vgl->realtime_fix.dirty) {
       gboolean replace = FALSE;
       int heading = (int)floor(vgl->realtime_fix.fix.track);
@@ -1023,15 +1033,17 @@ static void create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forced)
       if (((last_tp = g_list_last(vgl->realtime_track->trackpoints)) != NULL) &&
           (vgl->realtime_fix.fix.mode > MODE_2D) &&
           (vgl->last_fix.fix.mode <= MODE_2D) &&
-          (1.0 > vgl->realtime_fix.fix.time - vgl->last_fix.fix.time)) {
+          ((cur_timestamp - last_timestamp) < 2)) {
         g_free(last_tp->data);
         vgl->realtime_track->trackpoints = g_list_delete_link(vgl->realtime_track->trackpoints, last_tp);
         replace = TRUE;
       }
-      if (forced || replace ||
-          ((heading < last_heading) && (heading < (last_heading - 3))) || 
-          ((heading > last_heading) && (heading > (last_heading + 3))) ||
-          ((alt != VIK_DEFAULT_ALTITUDE) && (alt != last_alt))) {
+      if (replace ||
+          ((cur_timestamp != last_timestamp) &&
+          ((forced || 
+            ((heading < last_heading) && (heading < (last_heading - 3))) || 
+            ((heading > last_heading) && (heading > (last_heading + 3))) ||
+            ((alt != VIK_DEFAULT_ALTITUDE) && (alt != last_alt)))))) {
         /* TODO: check for new segments */
         VikTrackpoint *tp = vik_trackpoint_new();
         tp->newsegment = FALSE;

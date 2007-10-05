@@ -2,6 +2,7 @@
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a segfault caused by (mistakenly) adding a new layer to gps
 	layer.
+	* Be more selective in collecting realtime trackpoints.
 
 2007-10-04
 Quy Tonthat <qtonthat@gmail.com>:
