@@ -389,7 +389,13 @@ void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
       VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &iter ));
       replace_iter = &(vl->iter);
       g_assert ( vl->realized );
-      addtoagg = VIK_AGGREGATE_LAYER(vik_treeview_item_get_parent ( vlp->vt, &(vl->iter) ) );
+      VikLayer *grandpa = (vik_treeview_item_get_parent ( vlp->vt, &(vl->iter) ) );
+      if (IS_VIK_AGGREGATE_LAYER(grandpa))
+        addtoagg = VIK_AGGREGATE_LAYER(grandpa);
+      else {
+        addtoagg = vlp->toplayer;
+        replace_iter = &grandpa->iter;
+      }
     }
     if ( replace_iter )
       vik_aggregate_layer_insert_layer ( addtoagg, l, replace_iter );
