@@ -61,22 +61,40 @@ static GtkWidget *label_date;
 
 #define MARGIN 50
 #define LINES 5
-void track_profile_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_along )
+static void set_center_at_graph_position(gdouble event_x, gint img_width, VikLayersPanel *vlp, VikTrack *tr, gboolean time_base)
 {
-  gdouble x = event->x - image->allocation.width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
+  VikTrackpoint *trackpoint;
+  gdouble x = event_x - img_width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > PROFILE_WIDTH)
     x = PROFILE_WIDTH;
-  VikTrack *tr = pass_along[0];
-  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH );
+
+  if (time_base)
+    trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH );
+  else
+    trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH );
+
   if ( trackpoint ) {
     VikCoord coord = trackpoint->coord;
-    VikLayersPanel *vlp = pass_along[1];
     vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord );
     vik_layers_panel_emit_update ( vlp );
   }
 }
+void track_profile_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_along )
+{
+  VikTrack *tr = pass_along[0];
+  VikLayersPanel *vlp = pass_along[1];
+  set_center_at_graph_position(event->x, image->allocation.width, vlp, tr, FALSE);
+}
+
+void track_vt_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_along )
+{
+  VikTrack *tr = pass_along[0];
+  VikLayersPanel *vlp = pass_along[1];
+  set_center_at_graph_position(event->x, image->allocation.width, vlp, tr, TRUE);
+}
+
 void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
 {
   VikTrack *tr = pass_along[0];
@@ -198,7 +216,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 
 #define METRIC 1
 #ifdef METRIC 
-#define MTOK(v) ( (v)*3600.0/1000.0) /* m/s to km/h */
+#define MTOK(v) ( (v)*3.6) /* m/s to km/h */
 #else
 #define MTOK(v) ( (v)*3600.0/1000.0 * 0.6214) /* m/s to mph - we'll handle this globally eventually but for now ...*/
 #endif
@@ -295,7 +313,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   g_free ( speeds );
 
   eventbox = gtk_event_box_new ();
-  g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
+  g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_vt_click), pass_along );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_profile_move), pass_along );
   g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
   gtk_container_add ( GTK_CONTAINER(eventbox), image );
@@ -340,7 +358,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   int i;
 
   static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>", "<b>Selected date</b>" };
-  static gchar tmp_buf[25];
+  static gchar tmp_buf[50];
   gdouble tmp_speed;
 
   cnt = 0;
@@ -369,14 +387,14 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   if ( tmp_speed == 0 )
     g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
   else
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s   (%.0f km/h)", tmp_speed, MTOK(tmp_speed) );
   content[cnt++] = gtk_label_new ( tmp_buf );
 
   tmp_speed = vik_track_get_average_speed(tr);
   if ( tmp_speed == 0 )
     g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
   else
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s   (%.0f km/h)", tmp_speed, MTOK(tmp_speed) );
   content[cnt++] = gtk_label_new ( tmp_buf );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count ) );
@@ -418,10 +436,12 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
 
     strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
     tmp_buf[sizeof(tmp_buf)-1] = 0;
+    g_strchomp(tmp_buf);
     content[cnt++] = gtk_label_new(tmp_buf);
 
     strncpy(tmp_buf, ctime(&t2), sizeof(tmp_buf));
     tmp_buf[sizeof(tmp_buf)-1] = 0;
+    g_strchomp(tmp_buf);
     content[cnt++] = gtk_label_new(tmp_buf);
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%d minutes", (int)(t2-t1)/60);

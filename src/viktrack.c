@@ -661,6 +661,42 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdoub
   return NULL;
 }
 
+VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reltime )
+{
+  time_t t_pos, t_start, t_end, t_total;
+  t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  t_end = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  t_total = t_end - t_start;
+
+  t_pos = t_start + t_total * reltime;
+
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints;
+    GList *last_iter = NULL;
+
+    while (iter) {
+      if (VIK_TRACKPOINT(iter->data)->timestamp == t_pos)
+        return VIK_TRACKPOINT(iter->data);
+      if (VIK_TRACKPOINT(iter->data)->timestamp < t_pos) {
+        last_iter = iter;
+        if ((iter->next == NULL) && (t_pos < (VIK_TRACKPOINT(iter->data)->timestamp + 3)))
+          return VIK_TRACKPOINT(iter->data);
+      }
+      if (VIK_TRACKPOINT(iter->data)->timestamp > t_pos) {
+        if (last_iter == NULL)
+          return VIK_TRACKPOINT(iter->data);
+        time_t t_before = t_pos - VIK_TRACKPOINT(last_iter->data)->timestamp;
+        time_t t_after = VIK_TRACKPOINT(iter->data)->timestamp - t_pos;
+        return (t_before <= t_after) ?
+          VIK_TRACKPOINT(last_iter->data) :
+          VIK_TRACKPOINT(iter->data);
+      }
+      iter = iter->next;
+    }
+  }
+  return NULL;
+}
+
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
   *min_alt = 25000;

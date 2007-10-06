@@ -1,3 +1,9 @@
+2007-10-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Correctly calculate position (based on time instead of distance)
+	when clicking on speed-time graph.
+	* Added km/h to speed entries of the track properties dialog.
+
 2007-10-06
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix bugs that caused odd display of time on track properties dialog.
