@@ -1,6 +1,7 @@
 2007-10-06
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix bugs that caused odd display of time on track properties dialog.
+	* Pop a message when failed to connect to gpsd.
 
 2007-10-05
 Quy Tonthat <qtonthat@gmail.com>:

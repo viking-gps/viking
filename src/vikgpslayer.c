@@ -1141,7 +1141,15 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
   if (vgl->realtime_tracking) {
     struct gps_data_t *gpsd = gps_open(vgl->gpsd_host, vgl->gpsd_port);
     if (gpsd == NULL) {
-      fprintf(stderr, "DEBUG: %s(): gps_open failed\n", __PRETTY_FUNCTION__);
+      GtkWidget *dialog = gtk_message_dialog_new (VIK_GTK_WINDOW_FROM_LAYER(vgl),
+                                  GTK_DIALOG_DESTROY_WITH_PARENT,
+                                  GTK_MESSAGE_ERROR,
+                                  GTK_BUTTONS_CLOSE,
+                                  "Failed to connect to gpsd at %s (port %s)",
+                                  vgl->gpsd_host, vgl->gpsd_port);
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+
       vgl->realtime_tracking = FALSE;
       return;
     }
