@@ -417,11 +417,11 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
     t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
 
     strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
-    tmp_buf[strlen(tmp_buf)-1] = 0;
+    tmp_buf[sizeof(tmp_buf)-1] = 0;
     content[cnt++] = gtk_label_new(tmp_buf);
 
     strncpy(tmp_buf, ctime(&t2), sizeof(tmp_buf));
-    tmp_buf[strlen(tmp_buf)-1] = 0;
+    tmp_buf[sizeof(tmp_buf)-1] = 0;
     content[cnt++] = gtk_label_new(tmp_buf);
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%d minutes", (int)(t2-t1)/60);
