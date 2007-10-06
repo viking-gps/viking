@@ -3,6 +3,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Correctly calculate position (based on time instead of distance)
 	when clicking on speed-time graph.
 	* Added km/h to speed entries of the track properties dialog.
+	* The "Selected Time" on track properties dialog is now correct.
 
 2007-10-06
 Quy Tonthat <qtonthat@gmail.com>:

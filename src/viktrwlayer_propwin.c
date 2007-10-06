@@ -112,11 +112,12 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
   if (x > PROFILE_WIDTH)
     x = PROFILE_WIDTH;
 
-  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH );
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH );
   if (trackpoint) {
     time_t t1 = trackpoint->timestamp;
-    static gchar tmp_buf[25];
+    static gchar tmp_buf[50];
     strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
+    tmp_buf[sizeof(tmp_buf) -1] = '\0';
     tmp_buf[strlen(tmp_buf)-1] = 0;
 
     gtk_label_set_text(GTK_LABEL(label_date), tmp_buf);
@@ -357,7 +358,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   int cnt;
   int i;
 
-  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>", "<b>Selected date</b>" };
+  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>", "<b>Selected Time:</b>" };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 
