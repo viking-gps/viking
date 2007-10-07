@@ -127,6 +127,8 @@ int main( int argc, char *argv[] )
 
   a_mapcache_init ();
   a_background_init ();
+  vik_layer_cursors_init ();
+  vik_window_cursors_init ();
 
   /* Set the icon */
   main_icon = gdk_pixbuf_from_pixdata(&viking_icon, FALSE, NULL);
@@ -148,6 +150,8 @@ int main( int argc, char *argv[] )
 
   a_mapcache_uninit ();
   a_dems_uninit ();
+  vik_layer_cursors_uninit ();
+  vik_window_cursors_uninit ();
 
   return 0;
 }

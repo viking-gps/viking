@@ -62,6 +62,7 @@ static void newwindow_cb ( GtkAction *a, VikWindow *vw );
 
 static gboolean delete_event( VikWindow *vw );
 
+static void window_configure_event ( VikWindow *vw );
 static void draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
 static void draw_scroll  ( VikWindow *vw, GdkEventScroll *event );
@@ -169,6 +170,9 @@ static guint window_signals[VW_LAST_SIGNAL] = { 0 };
 
 static gchar *tool_names[NUMBER_OF_TOOLS] = { "Zoom", "Ruler", "Pan" };
 
+GdkCursor *vw_cursor_zoom = NULL;
+GdkCursor *vw_cursor_ruler = NULL;
+
 GType vik_window_get_type (void)
 {
   static GType vw_type = 0;
@@ -228,6 +232,7 @@ static void window_finalize ( GObject *gob )
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
+
 static void window_class_init ( VikWindowClass *klass )
 {
   /* destructor */
@@ -285,7 +290,7 @@ static void window_init ( VikWindow *vw )
   g_signal_connect (G_OBJECT (vw), "delete_event", G_CALLBACK (delete_event), NULL);
 
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
-  g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(draw_redraw), vw);
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
   gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK );
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "scroll_event", G_CALLBACK(draw_scroll), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_press_event", G_CALLBACK(draw_click), vw);
@@ -375,6 +380,13 @@ void vik_window_set_redraw_trigger(VikLayer *vl)
 {
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl));
   vw->trigger = vl;
+}
+
+static void window_configure_event ( VikWindow *vw )
+{
+  g_print ("debug\n");
+  draw_redraw ( vw );
+  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
 }
 
 static void draw_redraw ( VikWindow *vw )
@@ -1089,9 +1101,11 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 
   if (!strcmp(gtk_action_get_name(a), "Zoom")) {
     vw->current_tool = TOOL_ZOOM;
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
   } 
   else if (!strcmp(gtk_action_get_name(a), "Ruler")) {
     vw->current_tool = TOOL_RULER;
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_ruler );
   }
   else {
     /* TODO: only enable tools from active layer */
@@ -1101,6 +1115,7 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 	  vw->current_tool = TOOL_LAYER;
 	  vw->tool_layer_id = i;
 	  vw->tool_tool_id = j;
+          gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vik_layer_get_tool_cursor ( i, j ) );
 	}
       }
     }
@@ -1927,4 +1942,26 @@ register_vik_icons (GtkIconFactory *icon_factory)
     gtk_icon_factory_add (icon_factory, stock_icons[i].stock_id, icon_set);
     gtk_icon_set_unref (icon_set);
   }
+}
+
+void vik_window_cursors_init()
+{
+  GdkPixbuf *cursor_pixbuf;
+  GError *cursor_load_err;
+
+  cursor_pixbuf = gdk_pixbuf_from_pixdata (&cursor_zoom, FALSE, &cursor_load_err);
+  vw_cursor_zoom = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 6, 6 );
+
+  g_object_unref ( G_OBJECT(cursor_pixbuf) );
+
+  cursor_pixbuf = gdk_pixbuf_from_pixdata (&cursor_ruler, FALSE, &cursor_load_err);
+  vw_cursor_ruler = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 6, 6 );
+
+  g_object_unref ( G_OBJECT(cursor_pixbuf) );
+}
+
+void vik_window_cursors_uninit()
+{
+  gdk_cursor_unref ( vw_cursor_zoom );
+  gdk_cursor_unref ( vw_cursor_ruler );
 }

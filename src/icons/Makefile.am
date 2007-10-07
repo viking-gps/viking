@@ -95,7 +95,20 @@ ICONS = \
   zoom_18.png \
   iscissors_18.png
 
-ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS)
+CURSORS = \
+  cursor_addtr.png \
+  cursor_edtr.png \
+  cursor_geozoom.png \
+  cursor_ruler.png \
+  cursor_addwp.png \
+  cursor_edwp.png \
+  cursor_iscissors.png \
+  cursor_showpic.png \
+  cursor_demdl.png \
+  cursor_geomove.png \
+  cursor_mapdl.png
+
+ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS) $(CURSORS)
 EXTRA_DIST = $(ALL_ICONS)
 
 BUILT_SOURCES = $(EXTRA_DIST:%.png=%.png_h) icons.h

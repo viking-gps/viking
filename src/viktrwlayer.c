@@ -44,6 +44,8 @@
 #include "osm-traces.h"
 #endif
 
+#include "icons/icons.h"
+
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -268,26 +270,26 @@ static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_
 
 static VikToolInterface trw_layer_tools[] = {
   { "Create Waypoint", (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL },
+    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, &cursor_addwp },
 
   { "Create Track",    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_new_track_click,       NULL, NULL },
+    (VikToolMouseFunc) tool_new_track_click,       NULL, NULL, &cursor_addtr },
 
   { "Edit Waypoint",   (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_waypoint_click,   
     (VikToolMouseFunc) tool_edit_waypoint_move,
-    (VikToolMouseFunc) tool_edit_waypoint_release },
+    (VikToolMouseFunc) tool_edit_waypoint_release, &cursor_edwp },
 
   { "Edit Trackpoint", (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_trackpoint_click,
     (VikToolMouseFunc) tool_edit_trackpoint_move,
-    (VikToolMouseFunc) tool_edit_trackpoint_release },
+    (VikToolMouseFunc) tool_edit_trackpoint_release, &cursor_edtr },
 
   { "Show Picture",    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL },
+    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, &cursor_showpic },
 
   { "Magic Scissors",  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL },
+    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, &cursor_iscissors },
 };
 
 /****** PARAMETERS ******/

@@ -45,6 +45,8 @@
 #include "dem.h"
 #include "dems.h"
 
+#include "icons/icons.h"
+
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
@@ -107,7 +109,8 @@ static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *eve
 
 static VikToolInterface dem_tools[] = {
   { "DEM Download/Import", (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
-    (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release },
+    (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release,
+    &cursor_demdl },
 };
 
 

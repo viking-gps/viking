@@ -743,3 +743,55 @@ static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
     return FALSE;
   }
 }
+
+static GdkCursor ***layers_cursors;
+
+GdkCursor *vik_layer_get_tool_cursor ( gint layer_id, gint tool_id )
+{
+  if ( layer_id >= VIK_LAYER_NUM_TYPES )
+    return NULL;
+  if ( tool_id >= vik_layer_interfaces[layer_id]->tools_count )
+    return NULL;
+  return layers_cursors[layer_id][tool_id];
+}
+
+void vik_layer_cursors_init()
+{
+  gint i, j;
+  layers_cursors = g_malloc ( sizeof(GdkCursor **) * VIK_LAYER_NUM_TYPES );
+  for ( i = 0 ; i < VIK_LAYER_NUM_TYPES; i++ ) {
+    if ( vik_layer_interfaces[i]->tools_count ) {
+      layers_cursors[i] = g_malloc ( sizeof(GdkCursor *) *  vik_layer_interfaces[i]->tools_count );
+      for ( j = 0; j < vik_layer_interfaces[i]->tools_count; j++ ) {
+        if ( vik_layer_interfaces[i]->tools[j].cursor ) {
+          const GdkPixdata *cursor_pixdata = vik_layer_interfaces[i]->tools[j].cursor;
+          GError *cursor_load_err = NULL;
+          GdkPixbuf *cursor_pixbuf = gdk_pixbuf_from_pixdata (cursor_pixdata, FALSE, &cursor_load_err);
+          /* TODO: settable offeset */
+          GdkCursor *cursor = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 3, 3 );
+          layers_cursors[i][j] = cursor;
+
+          g_object_unref ( G_OBJECT(cursor_pixbuf) );
+        }
+        else
+          layers_cursors[i][j] = NULL;
+      }
+    } else
+      layers_cursors[i] = NULL;
+  }
+}
+
+void vik_layer_cursors_uninit()
+{
+  gint i, j;
+  for ( i = 0 ; i < VIK_LAYER_NUM_TYPES; i++ ) {
+    if ( vik_layer_interfaces[i]->tools_count ) {
+      for ( j = 0; j < vik_layer_interfaces[i]->tools_count; j++ ) {
+        if ( layers_cursors[i][j] )
+          gdk_cursor_unref ( layers_cursors[i][j] );
+      }
+      g_free ( layers_cursors[i] );
+    }
+  }
+  g_free ( layers_cursors );
+}

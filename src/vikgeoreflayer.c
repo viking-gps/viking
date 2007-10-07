@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "icons/icons.h"
+
 VikLayerParam georef_layer_params[] = {
   { "image", VIK_LAYER_PARAM_STRING, VIK_LAYER_NOT_IN_PROPERTIES },
   { "corner_easting", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES },
@@ -57,10 +59,12 @@ static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *e
 
 static VikToolInterface georef_tools[] = {
   { "Georef Move Map", (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
-    (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release },
+    (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release,
+    &cursor_geomove },
 
   { "Georef Zoom Tool", (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
-    (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL },
+    (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL,
+    &cursor_geozoom },
 };
 
 VikLayerInterface vik_georef_layer_interface = {

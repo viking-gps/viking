@@ -57,6 +57,10 @@ void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);
 struct _VikViewport * vik_window_viewport(VikWindow *vw);
 void vik_window_set_redraw_trigger(struct _VikLayer *vl);
 
+void vik_window_cursors_init();
+void vik_window_cursors_uninit();
+
+
 G_END_DECLS
 
 #define VIK_WINDOW_FROM_WIDGET(x) VIK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(x)))
