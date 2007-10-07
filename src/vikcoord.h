@@ -43,7 +43,6 @@ typedef struct {
 /* possible more modes to come? xy? we'll leave that as an option */
 
 VikCoord *vik_coord_new();
-void vik_coord_free(VikCoord *coord);
 
 void vik_coord_convert(VikCoord *coord, VikCoordMode dest_mode);
 void vik_coord_copy_convert(const VikCoord *coord, VikCoordMode dest_mode, VikCoord *dest);

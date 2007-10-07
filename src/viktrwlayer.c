@@ -1692,6 +1692,7 @@ void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypo
 void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *tr )
 {
   if ( vtl->magic_scissors_append && vtl->magic_scissors_current_track ) {
+    vik_track_remove_dup_points ( tr ); /* make "double point" track work to undo */
     vik_track_steal_and_append_trackpoints ( vtl->magic_scissors_current_track, tr );
     vik_track_free ( tr );
     vtl->magic_scissors_append = FALSE; /* this means we have added it */
@@ -1700,6 +1701,7 @@ void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t
     vik_trw_layer_add_track ( vtl, new_name, tr );
 
     if ( vtl->magic_scissors_check_added_track ) {
+      vik_track_remove_dup_points ( tr ); /* make "double point" track work to undo */
       if ( vtl->magic_scissors_added_track_name ) /* for google routes */
         g_free ( vtl->magic_scissors_added_track_name );
       vtl->magic_scissors_added_track_name = g_strdup(new_name);
@@ -3225,7 +3227,25 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
   VikCoord tmp;
   if ( !vtl ) return FALSE;
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &tmp );
-  if ( vtl->magic_scissors_started || (event->state & GDK_CONTROL_MASK && vtl->magic_scissors_current_track) ) {
+  if ( event->button == 3 && vtl->magic_scissors_current_track ) {
+    VikCoord *new_end;
+    new_end = vik_track_cut_back_to_double_point ( vtl->magic_scissors_current_track );
+    if ( new_end ) {
+      vtl->magic_scissors_coord = *new_end;
+      g_free ( new_end );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      /* remove last ' to:...' */
+      if ( vtl->magic_scissors_current_track->comment ) {
+        gchar *last_to = strrchr ( vtl->magic_scissors_current_track->comment, 't' );
+        if ( last_to && (last_to - vtl->magic_scissors_current_track->comment > 1) ) {
+          gchar *new_comment = g_strndup ( vtl->magic_scissors_current_track->comment,
+                                           last_to - vtl->magic_scissors_current_track->comment - 1);
+          vik_track_set_comment_no_copy ( vtl->magic_scissors_current_track, new_comment );
+        }
+      }
+    }
+  }
+  else if ( vtl->magic_scissors_started || (event->state & GDK_CONTROL_MASK && vtl->magic_scissors_current_track) ) {
     struct LatLon start, end;
     gchar *cmd;
 

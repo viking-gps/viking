@@ -2,6 +2,7 @@
 Evan Battaglia <gtoevan@gmx.net>:
 	* Scroll zoom keeps cursor over same spot on map (like Google, QLandKarte)
 	* Cursors for tools.
+	* Undo magic scissors by right-clicking.
 
 Quy Tonthat <qtonthat@gmail.com>:
 	* Correctly calculate position (based on time instead of distance)

@@ -326,7 +326,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
 
   GList *iter = tr->trackpoints;
 
-  if (!iter->next) /* one-point track */
+  if (!iter || !iter->next) /* zero- or one-point track */
 	  return NULL;
 
   { /* test if there's anything worth calculating */
@@ -825,3 +825,48 @@ void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
     t1->trackpoints = t2->trackpoints;
   t2->trackpoints = NULL;
 }
+
+/* starting at the end, looks backwards for the last "double point", a duplicate trackpoint.
+ * this is indicative of magic scissors continued use. If there is no double point,
+ * deletes all the trackpoints. Returns the new end of the track (or the start if
+ * there are no double points
+ */
+VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr )
+{
+  GList *iter = tr->trackpoints;
+  VikCoord *rv;
+
+  if ( !iter )
+    return NULL;
+  while ( iter->next )
+    iter = iter->next;
+
+
+  while ( iter->prev ) {
+    if ( vik_coord_equals((VikCoord *)iter->data, (VikCoord *)iter->prev->data) ) {
+      GList *prev = iter->prev;
+
+      rv = g_malloc(sizeof(VikCoord));
+      *rv = *((VikCoord *) iter->data);
+
+      /* truncate trackpoint list */
+      iter->prev = NULL; /* pretend it's the end */
+      g_list_foreach ( iter, (GFunc) g_free, NULL );
+      g_list_free( iter );
+
+      prev->next = NULL;
+
+      return rv;
+    }
+    iter = iter->prev;
+  }
+
+  /* no double point found! */
+  rv = g_malloc(sizeof(VikCoord));
+  *rv = *((VikCoord *) tr->trackpoints->data);
+  g_list_foreach ( tr->trackpoints, (GFunc) g_free, NULL );
+  g_list_free( tr->trackpoints );
+  tr->trackpoints = NULL;
+  return rv;
+}
+
