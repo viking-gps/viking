@@ -629,7 +629,7 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
 }
 
 /* by Alex Foobarian */
-VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist )
+VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start )
 {
   gdouble dist = vik_track_get_length_including_gaps(tr) * reldist;
   gdouble current_dist = 0.0;
@@ -638,22 +638,37 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdoub
   {
     GList *iter = tr->trackpoints->next;
     GList *last_iter = NULL;
+    gdouble last_dist = 0.0;
     while (iter)
     {
       current_inc = vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
                                      &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+      last_dist = current_dist;
       current_dist += current_inc;
       if ( current_dist >= dist )
         break;
       last_iter = iter;
       iter = iter->next;
     }
-    if (!iter) /* passing the end the track */
-      return (last_iter ? last_iter->data : NULL);
+    if (!iter) { /* passing the end the track */
+      if (last_iter) {
+        if (meters_from_start)
+          *meters_from_start = last_dist;
+        return(VIK_TRACKPOINT(last_iter->data));
+      }
+      else
+        return NULL;
+    }
     /* we've gone past the dist already, was prev trackpoint closer? */
     /* should do a vik_coord_average_weighted() thingy. */
-    if ( iter->prev && abs(current_dist-current_inc-dist) < abs(current_dist-dist) )
+    if ( iter->prev && abs(current_dist-current_inc-dist) < abs(current_dist-dist) ) {
+      if (meters_from_start)
+        *meters_from_start = last_dist;
       iter = iter->prev;
+    }
+    else
+      if (meters_from_start)
+        *meters_from_start = current_dist;
 
     return VIK_TRACKPOINT(iter->data);
 
@@ -661,7 +676,7 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdoub
   return NULL;
 }
 
-VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reltime )
+VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reltime, time_t *seconds_from_start )
 {
   time_t t_pos, t_start, t_end, t_total;
   t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
@@ -670,31 +685,33 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdoub
 
   t_pos = t_start + t_total * reltime;
 
-  if ( tr->trackpoints ) {
-    GList *iter = tr->trackpoints;
-    GList *last_iter = NULL;
+  if ( !tr->trackpoints )
+    return NULL;
 
-    while (iter) {
-      if (VIK_TRACKPOINT(iter->data)->timestamp == t_pos)
-        return VIK_TRACKPOINT(iter->data);
-      if (VIK_TRACKPOINT(iter->data)->timestamp < t_pos) {
-        last_iter = iter;
-        if ((iter->next == NULL) && (t_pos < (VIK_TRACKPOINT(iter->data)->timestamp + 3)))
-          return VIK_TRACKPOINT(iter->data);
-      }
-      if (VIK_TRACKPOINT(iter->data)->timestamp > t_pos) {
-        if (last_iter == NULL)
-          return VIK_TRACKPOINT(iter->data);
-        time_t t_before = t_pos - VIK_TRACKPOINT(last_iter->data)->timestamp;
-        time_t t_after = VIK_TRACKPOINT(iter->data)->timestamp - t_pos;
-        return (t_before <= t_after) ?
-          VIK_TRACKPOINT(last_iter->data) :
-          VIK_TRACKPOINT(iter->data);
-      }
-      iter = iter->next;
+  GList *iter = tr->trackpoints;
+
+  while (iter) {
+    if (VIK_TRACKPOINT(iter->data)->timestamp == t_pos)
+      break;
+    if (VIK_TRACKPOINT(iter->data)->timestamp > t_pos) {
+      if (iter->prev == NULL)  /* first trackpoint */
+        break;
+      time_t t_before = t_pos - VIK_TRACKPOINT(iter->prev)->timestamp;
+      time_t t_after = VIK_TRACKPOINT(iter->data)->timestamp - t_pos;
+      if (t_before <= t_after)
+        iter = iter->prev;
+      break;
     }
+    else if ((iter->next == NULL) && (t_pos < (VIK_TRACKPOINT(iter->data)->timestamp + 3))) /* last trackpoint: accommodate for round-off */
+      break;
+    iter = iter->next;
   }
-  return NULL;
+
+  if (!iter)
+    return NULL;
+  if (seconds_from_start)
+    *seconds_from_start = VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  return VIK_TRACKPOINT(iter->data);
 }
 
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )

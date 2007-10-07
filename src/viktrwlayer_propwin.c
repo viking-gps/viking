@@ -71,9 +71,9 @@ static void set_center_at_graph_position(gdouble event_x, gint img_width, VikLay
     x = PROFILE_WIDTH;
 
   if (time_base)
-    trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH );
+    trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH, NULL );
   else
-    trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH );
+    trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH, NULL );
 
   if ( trackpoint ) {
     VikCoord coord = trackpoint->coord;
@@ -112,13 +112,41 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
   if (x > PROFILE_WIDTH)
     x = PROFILE_WIDTH;
 
-  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH );
+  gdouble meters_from_start;
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH, &meters_from_start );
   if (trackpoint) {
-    time_t t1 = trackpoint->timestamp;
-    static gchar tmp_buf[50];
-    strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
-    tmp_buf[sizeof(tmp_buf) -1] = '\0';
-    tmp_buf[strlen(tmp_buf)-1] = 0;
+    static gchar tmp_buf[20];
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m", meters_from_start);
+    gtk_label_set_text(GTK_LABEL(label_date), tmp_buf);
+  }
+}
+
+void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
+{
+  VikTrack *tr = pass_along[0];
+  int mouse_x, mouse_y;
+  GdkModifierType state;
+
+  if (event->is_hint)
+    gdk_window_get_pointer (event->window, &mouse_x, &mouse_y, &state);
+  else
+    mouse_x = event->x;
+
+  gdouble x = mouse_x - image->allocation.width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
+  if (x < 0)
+    x = 0;
+  if (x > PROFILE_WIDTH)
+    x = PROFILE_WIDTH;
+
+  time_t seconds_from_start;
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH, &seconds_from_start );
+  if (trackpoint) {
+    static gchar tmp_buf[20];
+    guint h, m, s;
+    h = seconds_from_start/3600;
+    m = (seconds_from_start - h*3600)/60;
+    s = seconds_from_start - (3600*h) - (60*m);
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
 
     gtk_label_set_text(GTK_LABEL(label_date), tmp_buf);
   }
@@ -315,7 +343,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_vt_click), pass_along );
-  g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_profile_move), pass_along );
+  g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_vt_move), pass_along );
   g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
   gtk_container_add ( GTK_CONTAINER(eventbox), image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK
@@ -358,7 +386,7 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   int cnt;
   int i;
 
-  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>", "<b>Selected Time:</b>" };
+  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>", "<b>Track Distance/Time:</b>" };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 

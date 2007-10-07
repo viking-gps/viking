@@ -4,6 +4,8 @@ Quy Tonthat <qtonthat@gmail.com>:
 	when clicking on speed-time graph.
 	* Added km/h to speed entries of the track properties dialog.
 	* The "Selected Time" on track properties dialog is now correct.
+	* Track Properties: now displays track distance/time instead of
+	"Selected Time".
 
 2007-10-06
 Quy Tonthat <qtonthat@gmail.com>:
