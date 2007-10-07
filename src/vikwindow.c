@@ -1917,6 +1917,7 @@ static struct {
   gchar *stock_id;
 } stock_icons[] = {
   { &addtr_18,		"Create Track"      },
+  { &begintr_18,	"Begin Track"      },
   { &edtr_18,		"Edit Trackpoint"   },
   { &addwp_18,		"Create Waypoint"   },
   { &edwp_18,		"Edit Waypoint"     },

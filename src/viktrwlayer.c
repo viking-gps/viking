@@ -245,6 +245,8 @@ static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
+static gpointer tool_begin_track_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
@@ -275,6 +277,9 @@ static VikToolInterface trw_layer_tools[] = {
   { "Create Track",    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_new_track_click,       NULL, NULL, &cursor_addtr },
 
+  { "Begin Track",    (VikToolConstructorFunc) tool_begin_track_create,       NULL, NULL, NULL, 
+    (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, &cursor_begintr },
+
   { "Edit Waypoint",   (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_waypoint_click,   
     (VikToolMouseFunc) tool_edit_waypoint_move,
@@ -291,7 +296,7 @@ static VikToolInterface trw_layer_tools[] = {
   { "Magic Scissors",  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, &cursor_iscissors },
 };
-static enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
+static enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
 /****** PARAMETERS ******/
 
@@ -2995,6 +3000,18 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
   return FALSE;
 }
 
+/**** Begin track ***/
+static gpointer tool_begin_track_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  vtl->current_track = NULL;
+  return tool_new_track_click ( vtl, event, vvp );
+}
+
 /*** New track ****/
 
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp)
@@ -3044,6 +3061,9 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
       vtl->current_track = vik_track_new();
       vtl->current_track->visible = TRUE;
       vik_trw_layer_add_track ( vtl, name, vtl->current_track );
+
+      /* incase it was created by begin track */
+      vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );
     }
     else
       return TRUE;

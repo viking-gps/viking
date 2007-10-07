@@ -83,6 +83,7 @@ WAYPOINT_ICONS = \
 ICONS = \
   viking_icon.png \
   addtr_18.png \
+  begintr_18.png \
   addwp_18.png \
   edtr_18.png \
   edwp_18.png \
@@ -97,6 +98,7 @@ ICONS = \
 
 CURSORS = \
   cursor_addtr.png \
+  cursor_begintr.png \
   cursor_edtr.png \
   cursor_geozoom.png \
   cursor_ruler.png \
