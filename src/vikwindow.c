@@ -384,7 +384,6 @@ void vik_window_set_redraw_trigger(VikLayer *vl)
 
 static void window_configure_event ( VikWindow *vw )
 {
-  g_print ("debug\n");
   draw_redraw ( vw );
   gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
 }
