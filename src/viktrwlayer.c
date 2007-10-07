@@ -291,6 +291,7 @@ static VikToolInterface trw_layer_tools[] = {
   { "Magic Scissors",  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, &cursor_iscissors },
 };
+static enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
 /****** PARAMETERS ******/
 
@@ -1957,6 +1958,7 @@ static void trw_layer_goto_track_startpoint ( gpointer pass_along[5] )
 
 static void trw_layer_goto_track_center ( gpointer pass_along[5] )
 {
+  /* FIXME: get this into viktrack.c, and should be ->trackpoints right? */
   GList **trps = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
   if ( trps && *trps )
   {
@@ -1968,6 +1970,18 @@ static void trw_layer_goto_track_center ( gpointer pass_along[5] )
     vik_coord_load_from_latlon ( &coord, VIK_TRW_LAYER(pass_along[0])->coord_mode, &average );
     goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &coord);
   }
+}
+
+static void trw_layer_extend_track_end ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+
+  vtl->current_track = track;
+  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );
+
+  if ( track->trackpoints )
+    goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
 }
 
 static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
@@ -2467,6 +2481,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_label ( "Apply DEM Data" );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_apply_dem_data), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_label ( "Extend track end" );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 

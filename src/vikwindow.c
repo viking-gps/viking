@@ -1088,13 +1088,16 @@ static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event)
 }
 /** End tool management ************************************/
 
-
+void vik_window_enable_layer_tool ( VikWindow *vw, gint layer_id, gint tool_id )
+{
+  gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, vik_layer_get_interface(layer_id)->tools[tool_id].name ) );
+}
 
 /* this function gets called whenever a toolbar tool is clicked */
 static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 {
   /* White Magic, my friends ... White Magic... */
-  int i, j;
+  int layer_id, tool_id;
 
   toolbox_activate(vw->vt, gtk_action_get_name(a));
 
@@ -1108,13 +1111,13 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
   }
   else {
     /* TODO: only enable tools from active layer */
-    for (i=0; i<VIK_LAYER_NUM_TYPES; i++) {
-      for ( j = 0; j < vik_layer_get_interface(i)->tools_count; j++ ) {
-	if (!strcmp(vik_layer_get_interface(i)->tools[j].name, gtk_action_get_name(a))) {
-	  vw->current_tool = TOOL_LAYER;
-	  vw->tool_layer_id = i;
-	  vw->tool_tool_id = j;
-          gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vik_layer_get_tool_cursor ( i, j ) );
+    for (layer_id=0; layer_id<VIK_LAYER_NUM_TYPES; layer_id++) {
+      for ( tool_id = 0; tool_id < vik_layer_get_interface(layer_id)->tools_count; tool_id++ ) {
+	if (!strcmp(vik_layer_get_interface(layer_id)->tools[tool_id].name, gtk_action_get_name(a))) {
+           vw->current_tool = TOOL_LAYER;
+           vw->tool_layer_id = layer_id;
+           vw->tool_tool_id = tool_id;
+           gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vik_layer_get_tool_cursor ( layer_id, tool_id ) );
 	}
       }
     }
