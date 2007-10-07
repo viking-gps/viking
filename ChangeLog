@@ -1,4 +1,7 @@
 2007-10-07
+Evan Battaglia <gtoevan@gmx.net>:
+	* Scroll zoom keeps cursor over same spot on map (like Google, QLandKarte)
+
 Quy Tonthat <qtonthat@gmail.com>:
 	* Correctly calculate position (based on time instead of distance)
 	when clicking on speed-time graph.
