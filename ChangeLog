@@ -1,3 +1,7 @@
+2007-10-08
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix compiling breakage caused by missing icon file from the list.
+
 2007-10-07
 Evan Battaglia <gtoevan@gmx.net>:
 	* Scroll zoom keeps cursor over same spot on map (like Google, QLandKarte)

@@ -108,7 +108,8 @@ CURSORS = \
   cursor_showpic.png \
   cursor_demdl.png \
   cursor_geomove.png \
-  cursor_mapdl.png
+  cursor_mapdl.png \
+  cursor_zoom.png
 
 ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS) $(CURSORS)
 EXTRA_DIST = $(ALL_ICONS)
