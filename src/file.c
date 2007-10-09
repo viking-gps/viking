@@ -31,6 +31,12 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
+/* Relax some dependencies */
+#if ! GLIB_CHECK_VERSION(2,12,0)
+static gboolean return_true (gpointer a, gpointer b, gpointer c) { return TRUE; }
+static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove ( ght, (GHRFunc) return_true, FALSE ); }
+#endif
+
 #define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 #define VIK_MAGIC "#VIK"
 #define GPX_MAGIC "<?xm"
