@@ -664,7 +664,7 @@ static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
     GtkWidget *notebook = NULL;
     GtkWidget **widgets = g_malloc ( sizeof(GtkWidget *) * widget_count );
 
-    if ( groups && groups_count )
+    if ( groups && groups_count > 1 )
     {
       guint8 current_group;
       guint16 tab_widget_count;

@@ -31,7 +31,8 @@ AM_WITH_EXPAT
 LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found])])
 
 # libgps
-AC_CHECK_LIB(gps,gps_poll,,AC_MSG_ERROR([libgps is needed but not found]))
+AC_CHECK_LIB(gps,gps_poll,AC_DEFINE(HAVE_LIBGPS,[],[libgps to connect to gpsd]),)
+AM_CONDITIONAL([LIBGPS], [test x$ac_cv_lib_gps_gps_poll = xyes])
 
 AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
 if test $GDK_PIXBUF_CSOURCE != "yes"

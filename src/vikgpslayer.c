@@ -19,6 +19,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <math.h>
 #include "viking.h"
@@ -28,7 +32,11 @@
 #include <string.h>
 #include <glib.h>
 #include <glib/gprintf.h>
+#ifdef HAVE_LIBGPS
 #include <gps.h>
+#else
+#define DEFAULT_GPSD_PORT "0"
+#endif
 
 #define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
@@ -46,14 +54,18 @@ static void gps_layer_change_coord_mode ( VikGpsLayer *val, VikCoordMode mode );
 static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
 static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
+#ifdef HAVE_LIBGPS
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp);
+#endif
 
 static void gps_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_download_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_download_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_all_cb( gpointer layer_and_vlp[2] );
+#ifdef HAVE_LIBGPS
 static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2] );
+#endif
 
 typedef enum {GARMIN_P = 0, MAGELLAN_P, NUM_PROTOCOLS} vik_gps_proto;
 static gchar * params_protocols[] = {"Garmin", "Magellan", NULL};
@@ -84,20 +96,33 @@ typedef struct {
 } GpsSession;
 static void gps_session_delete(GpsSession *sess);
 
-static gchar *params_groups[] = {"Data Mode", "Realtime Tracking Mode"};
+static gchar *params_groups[] = {
+  "Data Mode",
+#ifdef HAVE_LIBGPS
+  "Realtime Tracking Mode",
+#endif
+};
+
 enum {GROUP_DATA_MODE, GROUP_REALTIME_MODE};
 
 static VikLayerParam gps_layer_params[] = {
   { "gps_protocol", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, "GPS Protocol:", VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
   { "gps_port", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, "Serial Port:", VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
 
+#ifdef HAVE_LIBGPS
   { "record_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, "Recording tracks", VIK_LAYER_WIDGET_CHECKBUTTON},
   { "center_start_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, "Jump to current position on start", VIK_LAYER_WIDGET_CHECKBUTTON},
   { "centered_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, "Keep current position at center", VIK_LAYER_WIDGET_CHECKBUTTON},
   { "gpsd_host", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, "Gpsd Host:", VIK_LAYER_WIDGET_ENTRY},
   { "gpsd_port", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, "Gpsd Port:", VIK_LAYER_WIDGET_ENTRY},
+#endif
 };
-enum {PARAM_PROTOCOL=0, PARAM_PORT, PARAM_REALTIME_REC, PARAM_REALTIME_CENTER_START, PARAM_REALTIME_CENTERED, PARAM_GPSD_HOST, PARAM_GPSD_PORT, NUM_PARAMS};
+enum {
+  PARAM_PROTOCOL=0, PARAM_PORT,
+#ifdef HAVE_LIBGPS
+  PARAM_REALTIME_REC, PARAM_REALTIME_CENTER_START, PARAM_REALTIME_CENTERED, PARAM_GPSD_HOST, PARAM_GPSD_PORT,
+#endif
+  NUM_PARAMS};
 
 VikLayerInterface vik_gps_layer_interface = {
   "GPS",
@@ -147,24 +172,38 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncDragDropRequest)		gps_layer_drag_drop_request,
 };
 
-enum {TRW_DOWNLOAD=0, TRW_UPLOAD, TRW_REALTIME, NUM_TRW};
-static gchar * trw_names[] = {"GPS Download", "GPS Upload", "GPS Realtime Tracking"};
+enum {TRW_DOWNLOAD=0, TRW_UPLOAD,
+#ifdef HAVE_LIBGPS
+  TRW_REALTIME,
+#endif
+  NUM_TRW};
+static gchar * trw_names[] = {
+  "GPS Download", "GPS Upload",
+#ifdef HAVE_LIBGPS
+  "GPS Realtime Tracking",
+#endif
+};
 
+#ifdef HAVE_LIBGPS
 typedef struct {
   struct gps_data_t gpsd;
   VikGpsLayer *vgl;
 } VglGpsd;
+#endif
 
+#ifdef HAVE_LIBGPS
 typedef struct {
   struct gps_fix_t fix;
   gboolean dirty;   /* needs to be saved */
 } GpsFix;
+#endif
 
 struct _VikGpsLayer {
   VikLayer vl;
   VikTrwLayer * trw_children[NUM_TRW];
   GList * children;	/* used only for writing file */
   int cur_read_child;   /* used only for reading file */
+#ifdef HAVE_LIBGPS
   VglGpsd *vgpsd;
   gboolean realtime_tracking;
   GMutex *realtime_tracking_mutex;
@@ -183,6 +222,7 @@ struct _VikGpsLayer {
   GdkGC *realtime_track_pt_gc;
   GdkGC *realtime_track_pt1_gc;
   GdkGC *realtime_track_pt2_gc;
+#endif
 
   /* params */
   guint protocol_id;
@@ -314,6 +354,7 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
       else
         g_warning("Unknown serial port device");
       break;
+#ifdef HAVE_LIBGPS
     case PARAM_GPSD_HOST:
       if (vgl->gpsd_host)
         g_free(vgl->gpsd_host);
@@ -333,6 +374,7 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
     case PARAM_REALTIME_CENTERED:
       vgl->realtime_keep_at_center = data.b;
       break;
+#endif
     default:
       g_warning("gps_layer_set_param(): unknown parameter");
   }
@@ -352,6 +394,7 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
     case PARAM_PORT:
       rv.u = vgl->serial_port_id;
       break;
+#ifdef HAVE_LIBGPS
     case PARAM_GPSD_HOST:
       rv.s = vgl->gpsd_host ? vgl->gpsd_host : "";
       break;
@@ -367,6 +410,7 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
     case PARAM_REALTIME_CENTERED:
       rv.b = vgl->realtime_keep_at_center;
       break;
+#endif
     default:
       g_warning("gps_layer_get_param(): unknown parameter");
   }
@@ -385,6 +429,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->children = NULL;
   vgl->cur_read_child = 0;
 
+#ifdef HAVE_LIBGPS
   vgl->realtime_tracking_mutex = g_mutex_new();
   vgl->realtime_tracking = FALSE;
   vgl->vgpsd = NULL;
@@ -396,6 +441,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->realtime_gpsd_unit = gpsd_units();
   // fprintf(stderr, "DEBUG: gpsd_unit = %d\n", vgl->realtime_gpsd_unit);
   vgl->realtime_track = NULL;
+#endif
 
   /* Setting params here */
   vgl->protocol_id = 0;
@@ -428,6 +474,7 @@ static void vik_gps_layer_draw ( VikGpsLayer *vgl, gpointer data )
     if (!vik_viewport_get_half_drawn( VIK_VIEWPORT(data)))
       vik_layer_draw ( vl, data );
   }
+#ifdef HAVE_LIBGPS
   if (vgl->realtime_tracking) {
     if (VIK_LAYER(vgl) == trigger) {
       if ( vik_viewport_get_half_drawn ( VIK_VIEWPORT(data) ) ) {
@@ -440,6 +487,7 @@ static void vik_gps_layer_draw ( VikGpsLayer *vgl, gpointer data )
     if (!vik_viewport_get_half_drawn( VIK_VIEWPORT(data)))
       realtime_tracking_draw(vgl, VIK_VIEWPORT(data));
   }
+#endif
 }
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode )
@@ -471,6 +519,7 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
+#ifdef HAVE_LIBGPS
   item = gtk_menu_item_new_with_label ( vgl->realtime_tracking  ?
                                        "Stop realtime tracking" :
                                        "Start realtime tracking" );
@@ -481,6 +530,7 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
   item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
+#endif
 
   item = gtk_menu_item_new_with_label ( "Empty Upload" );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_upload_cb), pass_along );
@@ -512,6 +562,7 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
       disconnect_layer_signal(VIK_LAYER(vgl->trw_children[i]), vgl);
     g_object_unref(vgl->trw_children[i]);
   }
+#ifdef HAVE_LIBGPS
   if (vgl->realtime_track_gc != NULL)
     g_object_unref(vgl->realtime_track_gc);
   if (vgl->realtime_track_bg_gc != NULL)
@@ -522,6 +573,7 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
     g_object_unref(vgl->realtime_track_pt2_gc);
   if (vgl->realtime_tracking_mutex != NULL)
    g_mutex_free(vgl->realtime_tracking_mutex);
+#endif
 }
 
 gboolean vik_gps_layer_delete ( VikGpsLayer *vgl, GtkTreeIter *iter )
@@ -947,6 +999,7 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
 }
 
+#ifdef HAVE_LIBGPS
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
 {
   struct LatLon ll;
@@ -1116,6 +1169,7 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
   gps_poll(&vgl->vgpsd->gpsd);
   return TRUE;
 }
+#endif
 
 static gchar *make_track_name(VikTrwLayer *vtl)
 {
@@ -1133,6 +1187,7 @@ static gchar *make_track_name(VikTrwLayer *vtl)
 
 }
 
+#ifdef HAVE_LIBGPS
 static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
@@ -1194,4 +1249,5 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
     g_mutex_unlock(vgl->realtime_tracking_mutex);
   }
 }
+#endif
 

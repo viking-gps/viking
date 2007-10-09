@@ -11,6 +11,10 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Fix compiling breakage caused by missing icon file from the list.
 
 2007-10-07
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* libgps is no more mandatory
+
+2007-10-07
 Evan Battaglia <gtoevan@gmx.net>:
 	* Scroll zoom keeps cursor over same spot on map (like Google, QLandKarte)
 	* Cursors for tools.
@@ -18,6 +22,7 @@ Evan Battaglia <gtoevan@gmx.net>:
 	* Extend a track by right-clicking on it.
 	* Experiment: "Begin track" tool
 
+2007-10-07
 Quy Tonthat <qtonthat@gmail.com>:
 	* Correctly calculate position (based on time instead of distance)
 	when clicking on speed-time graph.

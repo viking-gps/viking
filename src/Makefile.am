@@ -92,6 +92,8 @@ endif
 
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
+if LIBGPS
 LDADD           += -lgps
+endif
 #LDADD           = -lz @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE
