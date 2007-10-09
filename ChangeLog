@@ -1,6 +1,7 @@
 2007-10-09
 Evan Battaglia <gtoevan@gmx.net>
 	* Ctrl-shift-scroll to zoom like Google. Just scroll zooms like before.
+	* Show currently edited track in red-dashed line. This makes it easier to tell if we've ended the track.
 
 2007-10-08
 Quy Tonthat <qtonthat@gmail.com>:

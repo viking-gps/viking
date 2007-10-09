@@ -107,6 +107,7 @@ struct _VikTrwLayer {
   gdouble velocity_min, velocity_max;
   GArray *track_gc;
   guint16 track_gc_iter;
+  GdkGC *current_track_gc;
   GdkGC *track_bg_gc;
   GdkGC *waypoint_gc;
   GdkGC *waypoint_text_gc;
@@ -296,7 +297,7 @@ static VikToolInterface trw_layer_tools[] = {
   { "Magic Scissors",  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, &cursor_iscissors },
 };
-static enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
+enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
 /****** PARAMETERS ******/
 
@@ -868,6 +869,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 {
   /* TODO: this function is a mess, get rid of any redundancy */
   GList *list = track->trackpoints;
+  GdkGC *main_gc;
   gboolean useoldvals = TRUE;
 
   gboolean drawpoints;
@@ -900,6 +902,11 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     drawstops = dp->vtl->drawstops;
   }
 
+  if ( track == dp->vtl->current_track )
+    main_gc = dp->vtl->current_track_gc;
+  else
+    main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+
   if (list) {
     int x, y, oldx, oldy;
     VikTrackpoint *tp = VIK_TRACKPOINT(list->data);
@@ -911,7 +918,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     if ( (drawpoints) && dp->track_gc_iter < VIK_TRW_LAYER_TRACK_GC )
     {
       GdkPoint trian[3] = { { x, y-(3*tp_size) }, { x-(2*tp_size), y+(2*tp_size) }, {x+(2*tp_size), y+(2*tp_size)} };
-      vik_viewport_draw_polygon ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, trian, 3 );
+      vik_viewport_draw_polygon ( dp->vp, main_gc, TRUE, trian, 3 );
     }
 
     oldx = x;
@@ -936,16 +943,16 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
         if ( drawpoints && ! drawing_white_background )
         {
           if ( list->next ) {
-            vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
+            vik_viewport_draw_rectangle ( dp->vp, main_gc, TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
 
-            vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
+            vik_viewport_draw_rectangle ( dp->vp, main_gc, TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
 
             /* stops */
             if ( drawstops && VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > dp->vtl->stop_length )
               vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, 11), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
           }
           else
-            vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), TRUE, x-(2*tp_size), y-(2*tp_size), 4*tp_size, 4*tp_size, 0, 360*64 );
+            vik_viewport_draw_arc ( dp->vp, main_gc, TRUE, x-(2*tp_size), y-(2*tp_size), 4*tp_size, 4*tp_size, 0, 360*64 );
         }
 
         if ((!tp->newsegment) && (dp->vtl->drawlines))
@@ -954,7 +961,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 
           /* UTM only: zone check */
           if ( drawpoints && dp->vtl->coord_mode == VIK_COORD_UTM && tp->coord.utm_zone != dp->center->utm_zone )
-            draw_utm_skip_insignia (  dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), x, y);
+            draw_utm_skip_insignia (  dp->vp, main_gc, x, y);
 
           if ( dp->vtl->drawmode == DRAWMODE_BY_VELOCITY )
             dp->track_gc_iter = calculate_velocity ( dp->vtl, tp, tp2 );
@@ -967,7 +974,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           }
           else {
 
-            vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), oldx, oldy, x, y);
+            vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
             if ( dp->vtl->drawelevation && list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
               GdkPoint tmp[4];
               #define FIXALTITUDE(what) ((VIK_TRACKPOINT((what))->altitude-min_alt)/alt_diff*DRAW_ELEVATION_FACTOR*dp->vtl->elevation_factor/dp->xmpp)
@@ -988,7 +995,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
                   tmp_gc = GTK_WIDGET(dp->vp)->style->dark_gc[0];
                 vik_viewport_draw_polygon ( dp->vp, tmp_gc, TRUE, tmp, 4);
               }
-              vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), oldx, oldy-FIXALTITUDE(list->data), x, y-FIXALTITUDE(list->next->data));
+              vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy-FIXALTITUDE(list->data), x, y-FIXALTITUDE(list->next->data));
             }
           }
         }
@@ -1010,12 +1017,12 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
             if ( drawing_white_background )
               vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
             else
-              vik_viewport_draw_line ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), oldx, oldy, x, y);
+              vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
           }
           else 
           {
             vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &x, &y );
-            draw_utm_skip_insignia ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter), x, y );
+            draw_utm_skip_insignia ( dp->vp, main_gc, x, y );
           }
         }
         useoldvals = FALSE;
@@ -1182,6 +1189,11 @@ static void trw_layer_free_track_gcs ( VikTrwLayer *vtl )
     g_object_unref ( vtl->track_bg_gc );
     vtl->track_bg_gc = NULL;
   }
+  if ( vtl->current_track_gc ) 
+  {
+    g_object_unref ( vtl->current_track_gc );
+    vtl->current_track_gc = NULL;
+  }
 
   if ( ! vtl->track_gc )
     return;
@@ -1202,6 +1214,11 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
   if ( vtl->track_bg_gc )
     g_object_unref ( vtl->track_bg_gc );
   vtl->track_bg_gc = vik_viewport_new_gc ( vp, "#FFFFFF", width + vtl->bg_line_thickness );
+
+  if ( vtl->current_track_gc )
+    g_object_unref ( vtl->current_track_gc );
+  vtl->current_track_gc = vik_viewport_new_gc ( vp, "#FF0000", 2 );
+  gdk_gc_set_line_attributes ( vtl->current_track_gc, 2, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
 
   vtl->track_gc = g_array_sized_new ( FALSE, FALSE, sizeof ( GdkGC * ), VIK_TRW_LAYER_TRACK_GC );
 
@@ -3050,6 +3067,7 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
       /* undo last, then end */
       vtl->current_track = NULL;
     }
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
 
