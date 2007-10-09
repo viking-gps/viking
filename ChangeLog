@@ -1,3 +1,7 @@
+2007-10-09
+Evan Battaglia <gtoevan@gmx.net>
+	* Ctrl-shift-scroll to zoom like Google. Just scroll zooms like before.
+
 2007-10-08
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix compiling breakage caused by missing icon file from the list.
