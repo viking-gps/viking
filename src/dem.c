@@ -365,7 +365,8 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zi
   int ent = 0;
   for ( i = (num_rows - 1); i >= 0; i-- ) {
     for ( j = 0; j < num_rows; j++ ) {
-      GET_COLUMN(dem,j)->points[i] = GINT16_FROM_BE(dem_mem[ent++]);
+      GET_COLUMN(dem,j)->points[i] = GINT16_FROM_BE(dem_mem[ent]);
+      ent++;
     }
 
   }
