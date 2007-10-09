@@ -121,6 +121,8 @@ struct _VikTrwLayer {
   GdkFont *waypoint_font;
   VikTrack *current_track;
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
+  gboolean ct_sync_done;
+
 
   VikCoordMode coord_mode;
 
@@ -256,6 +258,7 @@ static gpointer tool_begin_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static gboolean tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp);
@@ -282,7 +285,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, &cursor_addwp },
 
   { "Create Track",    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_new_track_click,       NULL, NULL, &cursor_addtr },
+    (VikToolMouseFunc) tool_new_track_click,      tool_new_track_move, NULL, &cursor_addtr },
 
   { "Begin Track",    (VikToolConstructorFunc) tool_begin_track_create,       NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, &cursor_begintr },
@@ -749,6 +752,8 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   rv->current_tp_track_name = NULL;
   rv->moving_tp = FALSE;
   rv->moving_wp = FALSE;
+
+  rv->ct_sync_done = TRUE;
 
   rv->magic_scissors_started = FALSE;
   rv->magic_scissors_check_added_track = FALSE;
@@ -2844,6 +2849,7 @@ static void marker_moveto ( tool_ed_t *t, gint x, gint y )
   vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, x-3, y-3, 6, 6 );
   t->oldx = x;
   t->oldy = y;
+
   if (tool_sync_done) {
     g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, tool_sync, vvp, NULL);
     tool_sync_done = FALSE;
@@ -2968,6 +2974,7 @@ static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventButton *even
     { 
       gint x, y;
       vik_viewport_coord_to_screen ( vvp, &new_coord, &x, &y );
+
       marker_moveto ( t, x, y );
     } 
     return TRUE;
@@ -3040,6 +3047,55 @@ static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp)
 {
   return vvp;
+}
+
+typedef struct {
+  VikTrwLayer *vtl;
+  VikViewport *vvp;
+  gint x1,y1,x2,y2;
+} new_track_move_passalong_t;
+
+/* sync and undraw, but only when we have time */
+static gboolean ct_sync ( gpointer passalong )
+{
+  new_track_move_passalong_t *p = (new_track_move_passalong_t *) passalong;
+  vik_viewport_sync ( p->vvp );
+  gdk_gc_set_function ( p->vtl->current_track_gc, GDK_INVERT );
+  vik_viewport_draw_line ( p->vvp, p->vtl->current_track_gc, p->x1, p->y1, p->x2, p->y2 );
+  gdk_gc_set_function ( p->vtl->current_track_gc, GDK_COPY );
+  p->vtl->ct_sync_done = TRUE;
+  g_free ( p );
+  return FALSE;
+}
+
+static gboolean tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  /* if we haven't sync'ed yet, we don't have time to do more. */
+  if ( vtl->ct_sync_done && vtl->current_track && vtl->current_track->trackpoints ) {
+    GList *iter = vtl->current_track->trackpoints;
+    new_track_move_passalong_t *passalong;
+    gint x1, y1;
+
+    while ( iter->next )
+      iter = iter->next;
+    gdk_gc_set_function ( vtl->current_track_gc, GDK_INVERT );
+    vik_viewport_coord_to_screen ( vvp, &(VIK_TRACKPOINT(iter->data)->coord), &x1, &y1 );
+    vik_viewport_draw_line ( vvp, vtl->current_track_gc, x1, y1, event->x, event->y );
+    gdk_gc_set_function ( vtl->current_track_gc, GDK_COPY );
+
+    passalong = g_new(new_track_move_passalong_t,1); /* freed by sync */
+    passalong->vtl = vtl;
+    passalong->vvp = vvp;
+    passalong->x1 = x1;
+    passalong->y1 = y1;
+    passalong->x2 = event->x;
+    passalong->y2 = event->y;
+
+    /* this will sync and undraw when we have time to */
+    g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, ct_sync, passalong, NULL);
+    vtl->ct_sync_done = FALSE;
+  }
+  return TRUE;
 }
 
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
