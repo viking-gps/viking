@@ -45,6 +45,11 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* fix half-drawn problems for GPS layer.
 
 2007-10-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Relax dependencies about glib by implementing
+	g_hash_table_remove_all ourselves (Evan's patch)
+
+2007-10-01
 Quy Tonthat <qtonthat@gmail.com>:
 	* Disable half-drawn update when the center is moved. Avoid using
 	static "trigger" in viklayer.c which causes problems when viking

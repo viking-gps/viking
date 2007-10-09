@@ -51,6 +51,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+/* Relax some dependencies */
+#if ! GLIB_CHECK_VERSION(2,12,0)
+static gboolean return_true (gpointer a, gpointer b, gpointer c) { return TRUE; }
+static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove ( ght, (GHRFunc) return_true, FALSE ); }
+#endif
+
 #define GOOGLE_DIRECTIONS_STRING "(wget -O - \"http://maps.google.com/maps?q=%f,%f to %f,%f&output=js\" 2>/dev/null)"
 #define VIK_TRW_LAYER_TRACK_GC 13
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
