@@ -1,3 +1,13 @@
+2007-10-11
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make Realtime Tracking a feature that can be disabled at configure
+	time. Do not quietly disable it beacause libgps is not available
+	at compiling time.
+
+2007-10-10
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a crash bug caused by operation on variable inside a macro.
+
 2007-10-09
 Evan Battaglia <gtoevan@gmx.net>
 	* Ctrl-shift-scroll to zoom like Google. Just scroll zooms like before.

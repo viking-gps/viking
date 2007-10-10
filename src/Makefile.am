@@ -92,7 +92,7 @@ endif
 
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
-if LIBGPS
+if REALTIME_GPS_TRACKING
 LDADD           += -lgps
 endif
 #LDADD           = -lz @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
