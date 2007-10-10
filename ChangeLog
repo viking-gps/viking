@@ -5,6 +5,7 @@ Evan Battaglia <gtoevan@gmx.net>
 	to tell if we've ended the track.
 	* When using new track tool, draw a line before making a point to
 	preview the new point.
+	* Use $BROWSER environment variable (for viewing geocache pages)
 
 2007-10-08
 Quy Tonthat <qtonthat@gmail.com>:
