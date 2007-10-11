@@ -1,4 +1,8 @@
 2007-10-11
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Upgrading to API 0.5 of OSM
+
+2007-10-11
 Quy Tonthat <qtonthat@gmail.com>:
 	* Make Realtime Tracking a feature that can be disabled at configure
 	time. Do not quietly disable it beacause libgps is not available
