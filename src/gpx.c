@@ -54,6 +54,11 @@ typedef enum {
         tt_trk_trkseg_trkpt,
         tt_trk_trkseg_trkpt_ele,
         tt_trk_trkseg_trkpt_time,
+	/* extended */
+        tt_trk_trkseg_trkpt_course,
+        tt_trk_trkseg_trkpt_speed,
+        tt_trk_trkseg_trkpt_fix,
+        tt_trk_trkseg_trkpt_sat,
 
         tt_waypoint,
         tt_waypoint_coord,
@@ -95,6 +100,11 @@ tag_mapping tag_path_map[] = {
         { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/trk/trkseg/trkpt/ele" },
         { tt_trk_trkseg_trkpt_time, "/gpx/trk/trkseg/trkpt/time" },
+	/* extended */
+	{ tt_trk_trkseg_trkpt_course, "/gpx/trk/trkseg/trkpt/course" },
+        { tt_trk_trkseg_trkpt_speed, "/gpx/trk/trkseg/trkpt/speed" },
+        { tt_trk_trkseg_trkpt_fix, "/gpx/trk/trkseg/trkpt/fix" },
+        { tt_trk_trkseg_trkpt_sat, "/gpx/trk/trkseg/trkpt/sat" },
 
         {0}
 };
@@ -314,6 +324,35 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_trk_trkseg_trkpt_course:
+       c_tp->extended = TRUE;
+       c_tp->course = g_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_trkseg_trkpt_speed:
+       c_tp->extended = TRUE;
+       c_tp->speed = g_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_trkseg_trkpt_fix:
+       c_tp->extended = TRUE;
+       if (!strcmp("2d", c_cdata->str))
+         c_tp->fix_mode = VIK_GPS_MODE_2D;
+       else if (!strcmp("3d", c_cdata->str))
+         c_tp->fix_mode = VIK_GPS_MODE_3D;
+       else  /* TODO: more fix modes here */
+         c_tp->fix_mode = VIK_GPS_MODE_NOT_SEEN;
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_trkseg_trkpt_sat:
+       c_tp->extended = TRUE;
+       c_tp->nsats = atoi ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      default: break;
   }
 
@@ -332,6 +371,10 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_wpt_link:
     case tt_trk_desc:
     case tt_trk_trkseg_trkpt_time:
+    case tt_trk_trkseg_trkpt_course:
+    case tt_trk_trkseg_trkpt_speed:
+    case tt_trk_trkseg_trkpt_fix:
+    case tt_trk_trkseg_trkpt_sat:
     case tt_waypoint_name: /* .loc name is really description. */
       g_string_append_len ( c_cdata, s, len );
       break;
@@ -611,6 +654,25 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
     time_buf [ strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&(tp->timestamp)) ) ] = '\0';
     fprintf ( f, "    <time>%s</time>\n", time_buf );
   }
+  if (tp->extended && (tp->fix_mode >= VIK_GPS_MODE_2D)) {
+    if (!isnan(tp->course)) {
+      gchar *s_course = a_coords_dtostr(tp->course);
+      fprintf ( f, "    <course>%s</course>\n", s_course );
+      g_free(s_course);
+    }
+    if (!isnan(tp->speed)) {
+      gchar *s_speed = a_coords_dtostr(tp->speed);
+      fprintf ( f, "    <speed>%s</speed>\n", s_speed );
+      g_free(s_speed);
+    }
+    if (tp->fix_mode == VIK_GPS_MODE_2D)
+      fprintf ( f, "    <fix>2d</fix>\n");
+    if (tp->fix_mode == VIK_GPS_MODE_3D)
+      fprintf ( f, "    <fix>3d</fix>\n");
+    if (tp->nsats > 0)
+      fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
+  }
+
   fprintf ( f, "  </trkpt>\n" );
 }
 

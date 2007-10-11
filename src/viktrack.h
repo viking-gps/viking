@@ -38,7 +38,17 @@ struct _VikTrackpoint {
   gboolean newsegment;
   gboolean has_timestamp;
   time_t timestamp;
-  gdouble altitude;
+  gdouble altitude;	/* only in 3D fixes */
+  /* Most GPSs provide this in realtime mode (NMEA) but not in data mode */
+  gboolean extended;
+  gdouble speed;  	/* only in 3D fixes */
+  gdouble course;
+  guint nsats;		/* number of satellites used */
+#define VIK_GPS_MODE_NOT_SEEN	0	/* mode update not seen yet */
+#define VIK_GPS_MODE_NO_FIX	1	/* none */
+#define VIK_GPS_MODE_2D  	2	/* good for latitude/longitude */
+#define VIK_GPS_MODE_3D  	3	/* good for altitude/climb too */
+  gint fix_mode;
 };
 
 typedef struct _VikTrack VikTrack;

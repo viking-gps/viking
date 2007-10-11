@@ -19,6 +19,7 @@
  *
  */
 
+#include <math.h>
 #include "viking.h"
 
 #include <ctype.h>
@@ -70,6 +71,12 @@ static gboolean line_has_timestamp = FALSE;
 static time_t line_timestamp = 0;
 static gdouble line_altitude = VIK_DEFAULT_ALTITUDE;
 static gboolean line_visible = TRUE;
+
+static gboolean line_extended = FALSE;
+static gdouble line_speed = NAN;
+static gdouble line_course = NAN;
+static gint line_sat = 0;
+static gint line_fix = 0;
 /* other possible properties go here */
 
 
@@ -245,12 +252,22 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     }
     else if (line_type == GPSPOINT_TYPE_TRACKPOINT && current_track)
     {
-      VikTrackpoint *tp = g_malloc ( sizeof ( VikTrackpoint ) );
+      VikTrackpoint *tp = vik_trackpoint_new();
       vik_coord_load_from_latlon ( &(tp->coord), coord_mode, &line_latlon );
       tp->newsegment = line_newsegment;
       tp->has_timestamp = line_has_timestamp;
       tp->timestamp = line_timestamp;
       tp->altitude = line_altitude;
+      if (line_extended) {
+        tp->extended = TRUE;
+        tp->speed = line_speed;
+        tp->course = line_course;
+        tp->nsats = line_sat;
+        tp->fix_mode = line_fix;
+      }
+      else {
+        tp->extended = FALSE;
+      }
       current_track->trackpoints = g_list_append ( current_track->trackpoints, tp );
     }
 
@@ -273,6 +290,12 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     line_altitude = VIK_DEFAULT_ALTITUDE;
     line_visible = TRUE;
     line_symbol = NULL;
+
+    line_extended = FALSE;
+    line_speed = NAN;
+    line_course = NAN;
+    line_sat = 0;
+    line_fix = 0;
   }
 }
 
@@ -390,6 +413,26 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   {
     line_newsegment = TRUE;
   }
+  else if (key_len == 8 && strncasecmp( key, "extended", key_len ) == 0 && value != NULL)
+  {
+    line_extended = TRUE;
+  }
+  else if (key_len == 5 && strncasecmp( key, "speed", key_len ) == 0 && value != NULL)
+  {
+    line_speed = g_strtod(value, NULL);
+  }
+  else if (key_len == 6 && strncasecmp( key, "course", key_len ) == 0 && value != NULL)
+  {
+    line_course = g_strtod(value, NULL);
+  }
+  else if (key_len == 3 && strncasecmp( key, "sat", key_len ) == 0 && value != NULL)
+  {
+    line_sat = atoi(value);
+  }
+  else if (key_len == 3 && strncasecmp( key, "fix", key_len ) == 0 && value != NULL)
+  {
+    line_fix = atoi(value);
+  }
 }
 
 static void a_gpspoint_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
@@ -435,6 +478,8 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
   gchar *s_lat, *s_lon;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
+  /* TODO: modify a_coords_dtostr() to accept (optional) buffer
+   * instead of doing malloc/free everytime */
   s_lat = a_coords_dtostr(ll.lat);
   s_lon = a_coords_dtostr(ll.lon);
   fprintf ( f, "type=\"trackpoint\" latitude=\"%s\" longitude=\"%s\"", s_lat, s_lon );
@@ -450,6 +495,24 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
     fprintf ( f, " unixtime=\"%ld\"", tp->timestamp );
   if ( tp->newsegment )
     fprintf ( f, " newsegment=\"yes\"" );
+
+  if (tp->extended) {
+    fprintf ( f, " extended=\"yes\"" );
+    if (!isnan(tp->speed)) {
+      gchar *s_speed = a_coords_dtostr(tp->speed);
+      fprintf ( f, " speed=\"%s\"", s_speed );
+      g_free(s_speed);
+    }
+    if (!isnan(tp->course)) {
+      gchar *s_course = a_coords_dtostr(tp->course);
+      fprintf ( f, " course=\"%s\"", s_course );
+      g_free(s_course);
+    }
+    if (tp->nsats > 0)
+      fprintf ( f, " sat=\"%d\"", tp->nsats );
+    if (tp->fix_mode > 0)
+      fprintf ( f, " fix=\"%d\"", tp->fix_mode );
+  }
   fprintf ( f, "\n" );
 }
 

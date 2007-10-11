@@ -3,6 +3,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Make Realtime Tracking a feature that can be disabled at configure
 	time. Do not quietly disable it beacause libgps is not available
 	at compiling time.
+	* Extra data from GPS in realtime mode are now stored in trackpoints.
 
 2007-10-10
 Quy Tonthat <qtonthat@gmail.com>:

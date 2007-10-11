@@ -187,6 +187,7 @@ typedef struct {
 
 typedef struct {
   struct gps_fix_t fix;
+  gint satellites_used;
   gboolean dirty;   /* needs to be saved */
 } GpsFix;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
@@ -1092,10 +1093,15 @@ static void create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forced)
         /* TODO: check for new segments */
         VikTrackpoint *tp = vik_trackpoint_new();
         tp->newsegment = FALSE;
-        // tp->altitude = isnan(vgl->realtime_fix.fix.altitude) ? VIK_DEFAULT_ALTITUDE : vgl->realtime_fix.fix.altitude;
-        tp->altitude = alt;
         tp->has_timestamp = TRUE;
         tp->timestamp = vgl->realtime_fix.fix.time;
+        tp->altitude = alt;
+        /* speed only available for 3D fix. Check for NAN when use this speed */
+        tp->speed = vgl->realtime_fix.fix.speed;  
+        tp->course = vgl->realtime_fix.fix.track;
+        tp->nsats = vgl->realtime_fix.satellites_used;
+        tp->fix_mode = vgl->realtime_fix.fix.mode;
+        tp->extended = TRUE;
 
         ll.lat = vgl->realtime_fix.fix.latitude;
         ll.lon = vgl->realtime_fix.fix.longitude;
@@ -1104,6 +1110,7 @@ static void create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forced)
 
         vgl->realtime_track->trackpoints = g_list_append(vgl->realtime_track->trackpoints, tp);
         vgl->realtime_fix.dirty = FALSE;
+        vgl->realtime_fix.satellites_used = 0;
         vgl->last_fix = vgl->realtime_fix;
       }
     }
@@ -1120,17 +1127,13 @@ void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
     return;
   }
 
-#ifdef XXXXXXXXXXXXX
-  if ((time_t)vgl->realtime_fix.fix.time == (time_t)vgpsd->gpsd.fix.time)
-    return;
-#endif /*XXXXXXXXXXXX*/
-
   if ((vgpsd->gpsd.fix.mode >= MODE_2D) &&
       !isnan(vgpsd->gpsd.fix.latitude) &&
       !isnan(vgpsd->gpsd.fix.longitude) &&
       !isnan(vgpsd->gpsd.fix.track)) {
     g_mutex_lock(vgl->realtime_tracking_mutex);
     vgl->realtime_fix.fix = vgpsd->gpsd.fix;
+    vgl->realtime_fix.satellites_used = vgpsd->gpsd.satellites_used;
     vgl->realtime_fix.dirty = TRUE;
 
     if (vgl->realtime_keep_at_center ||
@@ -1182,6 +1185,9 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   vgl->realtime_tracking = (vgl->realtime_tracking == FALSE);
+
+  /* Make sure we are still in the boat with libgps */
+  g_assert((VIK_GPS_MODE_2D == MODE_2D) && (VIK_GPS_MODE_3D == MODE_3D));
 
   if (vgl->realtime_tracking) {
     struct gps_data_t *gpsd = gps_open(vgl->gpsd_host, vgl->gpsd_port);

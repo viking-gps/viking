@@ -94,7 +94,11 @@ VikTrack *vik_track_copy ( const VikTrack *tr )
 
 VikTrackpoint *vik_trackpoint_new()
 {
-  return g_malloc0(sizeof(VikTrackpoint));
+  VikTrackpoint *tp = g_malloc0(sizeof(VikTrackpoint));
+  tp->extended = FALSE;
+  tp->speed = NAN;
+  tp->course = NAN;
+  return tp;
 }
 
 void vik_trackpoint_free(VikTrackpoint *tp)
