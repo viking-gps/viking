@@ -51,6 +51,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <gdk/gdkkeysyms.h>
+
 /* Relax some dependencies */
 #if ! GLIB_CHECK_VERSION(2,12,0)
 static gboolean return_true (gpointer a, gpointer b, gpointer c) { return TRUE; }
@@ -259,6 +261,7 @@ static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gboolean tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp);
@@ -282,29 +285,30 @@ static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_
 
 static VikToolInterface trw_layer_tools[] = {
   { "Create Waypoint", (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, &cursor_addwp },
+    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, (VikToolKeyFunc) NULL, &cursor_addwp },
 
   { "Create Track",    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_new_track_click,      tool_new_track_move, NULL, &cursor_addtr },
+    (VikToolMouseFunc) tool_new_track_click, (VikToolMouseFunc) tool_new_track_move, NULL,
+    (VikToolKeyFunc) tool_new_track_key_press, &cursor_addtr },
 
   { "Begin Track",    (VikToolConstructorFunc) tool_begin_track_create,       NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, &cursor_begintr },
+    (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, (VikToolKeyFunc) NULL, &cursor_begintr },
 
   { "Edit Waypoint",   (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_waypoint_click,   
     (VikToolMouseFunc) tool_edit_waypoint_move,
-    (VikToolMouseFunc) tool_edit_waypoint_release, &cursor_edwp },
+    (VikToolMouseFunc) tool_edit_waypoint_release, (VikToolKeyFunc) NULL, &cursor_edwp },
 
   { "Edit Trackpoint", (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_trackpoint_click,
     (VikToolMouseFunc) tool_edit_trackpoint_move,
-    (VikToolMouseFunc) tool_edit_trackpoint_release, &cursor_edtr },
+    (VikToolMouseFunc) tool_edit_trackpoint_release, (VikToolKeyFunc) NULL, &cursor_edtr },
 
   { "Show Picture",    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, &cursor_showpic },
+    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL, &cursor_showpic },
 
   { "Magic Scissors",  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, &cursor_iscissors },
+    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, (VikToolKeyFunc) NULL, &cursor_iscissors },
 };
 enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
@@ -3096,6 +3100,26 @@ static gboolean tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, V
     vtl->ct_sync_done = FALSE;
   }
   return TRUE;
+}
+
+static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
+{
+  if ( vtl->current_track && event->keyval == GDK_Escape ) {
+    vtl->current_track = NULL;
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  } else if ( vtl->current_track && event->keyval == GDK_BackSpace ) {
+    /* undo */
+    if ( vtl->current_track->trackpoints )
+    {
+      GList *last = g_list_last(vtl->current_track->trackpoints);
+      g_free ( last->data );
+      vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
+    }
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+  return FALSE;
 }
 
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )

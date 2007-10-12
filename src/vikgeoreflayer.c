@@ -60,11 +60,11 @@ static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *e
 static VikToolInterface georef_tools[] = {
   { "Georef Move Map", (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release,
-    &cursor_geomove },
+    (VikToolKeyFunc) NULL, &cursor_geomove },
 
   { "Georef Zoom Tool", (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL,
-    &cursor_geozoom },
+    (VikToolKeyFunc) NULL, &cursor_geozoom },
 };
 
 VikLayerInterface vik_georef_layer_interface = {

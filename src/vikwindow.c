@@ -62,6 +62,8 @@ static void newwindow_cb ( GtkAction *a, VikWindow *vw );
 
 static gboolean delete_event( VikWindow *vw );
 
+static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer data );
+
 static void window_configure_event ( VikWindow *vw );
 static void draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
@@ -287,16 +289,19 @@ static void window_init ( VikWindow *vw )
   gtk_toolbar_set_icon_size(GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_toolbar_set_style (GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_TOOLBAR_ICONS);
 
+
   g_signal_connect (G_OBJECT (vw), "delete_event", G_CALLBACK (delete_event), NULL);
 
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
-  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK );
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK );
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "scroll_event", G_CALLBACK(draw_scroll), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_press_event", G_CALLBACK(draw_click), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_release_event", G_CALLBACK(draw_release), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "motion_notify_event", G_CALLBACK(draw_mouse_motion), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "update", G_CALLBACK(draw_update), vw);
+
+  g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
 
   gtk_window_set_default_size ( GTK_WINDOW(vw), VIKING_WINDOW_WIDTH, VIKING_WINDOW_HEIGHT);
 
@@ -320,6 +325,17 @@ static void window_init ( VikWindow *vw )
 VikWindow *vik_window_new ()
 {
   return VIK_WINDOW ( g_object_new ( VIK_WINDOW_TYPE, NULL ) );
+}
+
+static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer data )
+{
+  VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
+  if (vl && vw->vt->active_tool != -1 && vw->vt->tools[vw->vt->active_tool].ti.key_press ) {
+    gint ltype = vw->vt->tools[vw->vt->active_tool].layer_type;
+    if ( vl && ltype == vl->type )
+      return vw->vt->tools[vw->vt->active_tool].ti.key_press(vl, event, vw->vt->tools[vw->vt->active_tool].state);
+  }
+  return FALSE; /* don't handle the keypress */
 }
 
 static gboolean delete_event( VikWindow *vw )

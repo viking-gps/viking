@@ -1,4 +1,8 @@
 2007-10-11
+Evan Battaglia
+	* Key press framework for tools. Esc to stop track. Backspace to end track.
+
+2007-10-11
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Upgrading to API 0.5 of OSM
 

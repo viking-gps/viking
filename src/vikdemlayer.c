@@ -110,7 +110,7 @@ static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *eve
 static VikToolInterface dem_tools[] = {
   { "DEM Download/Import", (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
     (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release,
-    &cursor_demdl },
+    (VikToolKeyFunc) NULL, &cursor_demdl },
 };
 
 

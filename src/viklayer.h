@@ -86,6 +86,7 @@ typedef gpointer (*VikToolConstructorFunc) (VikWindow *, VikViewport *);
 typedef void (*VikToolDestructorFunc) (gpointer);
 typedef VikLayerToolFuncStatus (*VikToolMouseFunc) (VikLayer *, GdkEventButton *, gpointer);
 typedef void (*VikToolActivationFunc) (VikLayer *, gpointer);
+typedef gboolean (*VikToolKeyFunc) (VikLayer *, GdkEventKey *, gpointer);
 
 typedef struct _VikToolInterface VikToolInterface;
 struct _VikToolInterface {
@@ -97,6 +98,7 @@ struct _VikToolInterface {
   VikToolMouseFunc click;
   VikToolMouseFunc move;
   VikToolMouseFunc release;
+  VikToolKeyFunc key_press; /* return FALSE if we don't use the key press -- should return AFLSE most of the time if we want any shortcuts / UI keybindings to work! use sparingly. */
   const GdkPixdata *cursor;
 };
 

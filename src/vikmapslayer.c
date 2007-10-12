@@ -117,7 +117,7 @@ enum { PARAM_MAPTYPE=0, PARAM_CACHE_DIR, PARAM_ALPHA, PARAM_AUTODOWNLOAD, PARAM_
 static VikToolInterface maps_tools[] = {
   { "Maps Download", (VikToolConstructorFunc) maps_layer_download_create, NULL, NULL, NULL,  
     (VikToolMouseFunc) maps_layer_download_click, NULL,  (VikToolMouseFunc) maps_layer_download_release,
-    &cursor_mapdl },
+    (VikToolKeyFunc) NULL, &cursor_mapdl },
 };
 
 VikLayerInterface vik_maps_layer_interface = {
