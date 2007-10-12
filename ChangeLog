@@ -1,3 +1,7 @@
+2007-10-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make use of DEM elevation data and GPS speed for track graphs.
+
 2007-10-11
 Evan Battaglia
 	* Key press framework for tools. Esc to stop track. Backspace to end track.

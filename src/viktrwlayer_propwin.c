@@ -19,6 +19,7 @@
  *
  */
 
+#include <math.h>
 #include <gtk/gtk.h>
 #include <time.h>
 #include <string.h>
@@ -29,6 +30,7 @@
 #include "vikwaypoint.h"
 #include "dialog.h"
 #include "globals.h"
+#include "dems.h"
 
 #include "vikviewport.h" /* ugh */
 #include "viktreeview.h" /* ugh */
@@ -152,6 +154,35 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
   }
 }
 
+static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_gc, GdkGC *speed_gc, gdouble alt_diff, gint width, gint height, gint margin)
+{
+  GList *iter;
+  gdouble dist = 0;
+  gdouble max_speed = 0;
+  gdouble total_length = vik_track_get_length_including_gaps(tr);
+
+  for (iter = tr->trackpoints->next; iter; iter = iter->next) {
+    if (!isnan(VIK_TRACKPOINT(iter->data)->speed))
+      max_speed = MAX(max_speed, VIK_TRACKPOINT(iter->data)->speed);
+  }
+
+  for (iter = tr->trackpoints->next; iter; iter = iter->next) {
+    int x, y_alt, y_speed;
+    gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord));
+    dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
+      &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+    x = (width * dist)/total_length + margin;
+    if ( elev != VIK_DEM_INVALID_ELEVATION ) {
+      y_alt = height - (height * elev)/alt_diff;
+      gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
+    }
+    if (!isnan(VIK_TRACKPOINT(iter->data)->speed)) {
+      y_speed = height - (height * VIK_TRACKPOINT(iter->data)->speed)/max_speed;
+      gdk_draw_rectangle(GDK_DRAWABLE(pix), speed_gc, TRUE, x-2, y_speed-2, 4, 4);
+    }
+  }
+}
+
 GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdouble *min_alt, gdouble *max_alt, gpointer vlp )
 {
   GdkPixmap *pix;
@@ -171,10 +202,16 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
   GdkGC *no_alt_info = gdk_gc_new ( window->window );
+  GdkGC *dem_alt_gc = gdk_gc_new ( window->window );
+  GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
   GdkColor color;
 
-  gdk_color_parse ( "red", &color );
+  gdk_color_parse ( "yellow", &color );
   gdk_gc_set_rgb_fg_color ( no_alt_info, &color);
+  gdk_color_parse ( "green", &color );
+  gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
+  gdk_color_parse ( "red", &color );
+  gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
 
   minmax_alt(altitudes, min_alt, max_alt);
@@ -218,6 +255,8 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-mina)/(maxa-mina) );
 
+  draw_dem_alt_speed_dist(tr, GDK_DRAWABLE(pix), dem_alt_gc, gps_speed_gc, maxa - mina, PROFILE_WIDTH, PROFILE_HEIGHT, MARGIN);
+
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
 
@@ -226,6 +265,8 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
   g_object_unref ( G_OBJECT(pix) );
   g_free ( altitudes );
   g_object_unref ( G_OBJECT(no_alt_info) );
+  g_object_unref ( G_OBJECT(dem_alt_gc) );
+  g_object_unref ( G_OBJECT(gps_speed_gc) );
 
   pass_along = g_malloc ( sizeof(gpointer) * 2 );
   pass_along[0] = tr;
@@ -335,10 +376,31 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(speeds[i]-mins)/(maxs-mins) );
 #endif
+
+
+  GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
+  GdkColor color;
+
+  gdk_color_parse ( "red", &color );
+  gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
+
+  time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  time_t dur =  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp - beg_time;
+  GList *iter;
+  for (iter = tr->trackpoints; iter; iter = iter->next) {
+    gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
+    if (isnan(gps_speed))
+        continue;
+    int x = MARGIN + PROFILE_WIDTH * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
+    int y = PROFILE_HEIGHT - PROFILE_HEIGHT*(MTOK(gps_speed) - mins)/(maxs - mins);
+    gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
+  }
+
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
 
   g_object_unref ( G_OBJECT(pix) );
+  g_object_unref ( G_OBJECT(gps_speed_gc) );
   g_free ( speeds );
 
   eventbox = gtk_event_box_new ();
