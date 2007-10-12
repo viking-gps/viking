@@ -186,6 +186,8 @@ static void viewport_init ( VikViewport *vvp )
   vvp->half_drawn = FALSE;
 
   g_signal_connect (G_OBJECT(vvp), "configure_event", G_CALLBACK(vik_viewport_configure), NULL);
+
+  GTK_WIDGET_SET_FLAGS(vvp, GTK_CAN_FOCUS); /* allow VVP to have focus -- enabling key events, etc */
 }
 
 GdkColor *vik_viewport_get_background_gdkcolor ( VikViewport *vvp )

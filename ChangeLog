@@ -1,4 +1,10 @@
-2007-10-13
+2007-10-12
+Evan Battaglia <gtoevan@gmx.net>
+	* Fix Esc and Backspace to work only when VikViewport has focus.
+	* VikViewport grabs focus on click or release events, or when a
+	tool move event returns VIK_LAYER_TOOL_ACK_GRAB_FOCUS.
+
+2007-10-12
 Quy Tonthat <qtonthat@gmail.com>:
 	* Make use of DEM elevation data and GPS speed for track graphs.
 

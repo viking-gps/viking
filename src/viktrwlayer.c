@@ -260,7 +260,7 @@ static gpointer tool_begin_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
-static gboolean tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
@@ -3072,7 +3072,7 @@ static gboolean ct_sync ( gpointer passalong )
   return FALSE;
 }
 
-static gboolean tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   /* if we haven't sync'ed yet, we don't have time to do more. */
   if ( vtl->ct_sync_done && vtl->current_track && vtl->current_track->trackpoints ) {
@@ -3098,8 +3098,9 @@ static gboolean tool_new_track_move ( VikTrwLayer *vtl, GdkEventButton *event, V
     /* this will sync and undraw when we have time to */
     g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, ct_sync, passalong, NULL);
     vtl->ct_sync_done = FALSE;
+    return VIK_LAYER_TOOL_ACK_GRAB_FOCUS;
   }
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )

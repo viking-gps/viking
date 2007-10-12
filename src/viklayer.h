@@ -73,12 +73,21 @@ enum {
   VIK_LAYER_NUM_TYPES
 };
 
+/* I think most of these are ignored,
+ * returning GRAB_FOCUS grabs the focus for mouse move,
+ * mouse click, release always grabs focus. Focus allows key presses
+ * to be handled.
+ * It used to be that, if ignored, Viking could look for other layers.
+ * this was useful for clicking a way/trackpoint in any layer,
+ * if no layer was selected (find way/trackpoint)
+ */
 typedef enum { 
   VIK_LAYER_TOOL_IGNORED=0,
   VIK_LAYER_TOOL_ACK,
   VIK_LAYER_TOOL_ACK_REDRAW_ABOVE,
   VIK_LAYER_TOOL_ACK_REDRAW_ALL,
-  VIK_LAYER_TOOL_ACK_REDRAW_IF_VISIBLE 
+  VIK_LAYER_TOOL_ACK_REDRAW_IF_VISIBLE,
+  VIK_LAYER_TOOL_ACK_GRAB_FOCUS, /* only for move */
 } VikLayerToolFuncStatus;
 
 /* gpointer is tool-specific state created in the constructor */

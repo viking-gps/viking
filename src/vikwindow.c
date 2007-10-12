@@ -301,7 +301,7 @@ static void window_init ( VikWindow *vw )
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "motion_notify_event", G_CALLBACK(draw_mouse_motion), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "update", G_CALLBACK(draw_update), vw);
 
-  g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
+  g_signal_connect_swapped (G_OBJECT (vw->viking_vvp), "key_press_event", G_CALLBACK (key_press_event), vw);
 
   gtk_window_set_default_size ( GTK_WINDOW(vw), VIKING_WINDOW_WIDTH, VIKING_WINDOW_HEIGHT);
 
@@ -446,6 +446,7 @@ static gboolean draw_buf(gpointer data)
 
 static void draw_click (VikWindow *vw, GdkEventButton *event)
 {
+  gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
 
   /* middle button pressed.  we reserve all middle button and scroll events
    * for panning and zooming; tools only get left/right/movement 
@@ -486,6 +487,8 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 
 static void draw_release ( VikWindow *vw, GdkEventButton *event )
 {
+  gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
+
   if ( event->button == 2 ) {  /* move / pan */
     if ( ABS(vw->pan_x - event->x) <= 1 && ABS(vw->pan_y - event->y) <= 1 )
         vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
@@ -1094,7 +1097,8 @@ static void toolbox_move (toolbox_tools_t *vt, GdkEventButton *event)
   if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.move) {
     gint ltype = vt->tools[vt->active_tool].layer_type;
     if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
-      vt->tools[vt->active_tool].ti.move(vl, event, vt->tools[vt->active_tool].state);
+      if ( VIK_LAYER_TOOL_ACK_GRAB_FOCUS == vt->tools[vt->active_tool].ti.move(vl, event, vt->tools[vt->active_tool].state) )
+        gtk_widget_grab_focus ( GTK_WIDGET(vt->vw->viking_vvp) );
   }
 }
 
