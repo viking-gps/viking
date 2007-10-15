@@ -502,24 +502,23 @@ static gboolean dem_get_ref_points_elev_dist(VikDEM *dem,
   pos.lat = north/3600;
 
   /* order of the data: sw, nw, ne, se */
-  cols[0] = (gint) floor((east - dem->min_east) / dem->east_scale);  /* sw */
+  /* sw */
+  cols[0] = (gint) floor((east - dem->min_east) / dem->east_scale);
   rows[0] = (gint) floor((north - dem->min_north) / dem->north_scale);
-  //ll[0].lon = (east - fabs(fmod(east, dem->east_scale)))/3600;
-  //ll[0].lat = (north - fabs(fmod(north, dem->north_scale)))/3600;
   ll[0].lon = (dem->min_east + dem->east_scale*cols[0])/3600;
   ll[0].lat = (dem->min_north + dem->north_scale*rows[0])/3600;
-
-  cols[1] = cols[0];         /*nw*/
+  /* nw */
+  cols[1] = cols[0];
   rows[1] = rows[0] + 1;
   ll[1].lon = ll[0].lon;
   ll[1].lat = ll[0].lat + (gdouble)dem->north_scale/3600;
-
-  cols[2] = cols[0] + 1;     /*ne*/
+  /* ne */
+  cols[2] = cols[0] + 1;
   rows[2] = rows[0] + 1;
   ll[2].lon = ll[0].lon + (gdouble)dem->east_scale/3600;
   ll[2].lat = ll[0].lat + (gdouble)dem->north_scale/3600;
-
-  cols[3] = cols[0] + 1;     /*se*/
+  /* se */
+  cols[3] = cols[0] + 1;
   rows[3] = rows[0];
   ll[3].lon = ll[0].lon + (gdouble)dem->east_scale/3600;
   ll[3].lat = ll[0].lat;
