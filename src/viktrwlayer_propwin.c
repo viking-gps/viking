@@ -154,7 +154,7 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
   }
 }
 
-static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_gc, GdkGC *speed_gc, gdouble alt_diff, gint width, gint height, gint margin)
+static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_gc, GdkGC *speed_gc, gdouble alt_offset, gdouble alt_diff, gint width, gint height, gint margin)
 {
   GList *iter;
   gdouble dist = 0;
@@ -169,6 +169,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_g
   for (iter = tr->trackpoints->next; iter; iter = iter->next) {
     int x, y_alt, y_speed;
     gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord));
+    elev -= alt_offset;
     dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
       &(VIK_TRACKPOINT(iter->prev->data)->coord) );
     x = (width * dist)/total_length + margin;
@@ -255,7 +256,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-mina)/(maxa-mina) );
 
-  draw_dem_alt_speed_dist(tr, GDK_DRAWABLE(pix), dem_alt_gc, gps_speed_gc, maxa - mina, PROFILE_WIDTH, PROFILE_HEIGHT, MARGIN);
+  draw_dem_alt_speed_dist(tr, GDK_DRAWABLE(pix), dem_alt_gc, gps_speed_gc, mina, maxa - mina, PROFILE_WIDTH, PROFILE_HEIGHT, MARGIN);
 
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);

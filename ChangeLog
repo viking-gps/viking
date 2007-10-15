@@ -1,3 +1,7 @@
+2007-10-14
+Evan Battaglia <gtoevan@gmx.net>
+	* Fix plotting of DEM elevation data (subtract min altitude)
+
 2007-10-12
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix Esc and Backspace to work only when VikViewport has focus.
