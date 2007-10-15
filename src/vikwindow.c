@@ -468,14 +468,23 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   static struct LatLon ll;
   static char pointer_buf[36];
   gint16 alt;
+  gdouble zoom;
+  VikDemInterpol interpol_method;
 
   toolbox_move(vw->vt, (GdkEventButton *)event);
 
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
   a_coords_utm_to_latlon ( &utm, &ll );
-  /* TODO: Change interpolate method according to scale */
-  if ((alt = a_dems_get_elev_by_coord(&coord, VIK_DEM_INTERPOL_SIMPLE)) != VIK_DEM_INVALID_ELEVATION)
+  /* Change interpolate method according to scale */
+  zoom = vik_viewport_get_zoom(vw->viking_vvp);
+  if (zoom > 2.0)
+    interpol_method = VIK_DEM_INTERPOL_NONE;
+  else if (zoom >= 1.0)
+    interpol_method = VIK_DEM_INTERPOL_SIMPLE;
+  else
+    interpol_method = VIK_DEM_INTERPOL_BEST;
+  if ((alt = a_dems_get_elev_by_coord(&coord, interpol_method)) != VIK_DEM_INVALID_ELEVATION)
     g_snprintf ( pointer_buf, 36, "Cursor: %f %f %dm", ll.lat, ll.lon, alt );
   else
     g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );

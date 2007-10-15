@@ -169,7 +169,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_g
 
   for (iter = tr->trackpoints->next; iter; iter = iter->next) {
     int x, y_alt, y_speed;
-    gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord), VIK_DEM_INTERPOL_SIMPLE);
+    gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord), VIK_DEM_INTERPOL_BEST);
     elev -= alt_offset;
     dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
       &(VIK_TRACKPOINT(iter->prev->data)->coord) );

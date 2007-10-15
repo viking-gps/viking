@@ -504,8 +504,10 @@ static gboolean dem_get_ref_points_elev_dist(VikDEM *dem,
   /* order of the data: sw, nw, ne, se */
   cols[0] = (gint) floor((east - dem->min_east) / dem->east_scale);  /* sw */
   rows[0] = (gint) floor((north - dem->min_north) / dem->north_scale);
-  ll[0].lon = (east - fabs(fmod(east, dem->east_scale)))/3600;
-  ll[0].lat = (north - fabs(fmod(north, dem->north_scale)))/3600;
+  //ll[0].lon = (east - fabs(fmod(east, dem->east_scale)))/3600;
+  //ll[0].lat = (north - fabs(fmod(north, dem->north_scale)))/3600;
+  ll[0].lon = (dem->min_east + dem->east_scale*cols[0])/3600;
+  ll[0].lat = (dem->min_north + dem->north_scale*rows[0])/3600;
 
   cols[1] = cols[0];         /*nw*/
   rows[1] = rows[0] + 1;
@@ -527,6 +529,12 @@ static gboolean dem_get_ref_points_elev_dist(VikDEM *dem,
       return FALSE;
     dists[i] = a_coords_latlon_diff(&pos, &ll[i]);
   }
+
+#if 0  /* debug */
+  for (i = 0; i < 4; i++)
+    fprintf(stderr, "%f:%f:%d:%d  ", ll[i].lat, ll[i].lon, dists[i], elevs[i]);
+  fprintf(stderr, "   north_scale=%f\n", dem->north_scale);
+#endif
 
   return TRUE;  /* all OK */
 }
@@ -553,7 +561,43 @@ gint16 vik_dem_get_simple_interpol ( VikDEM *dem, gdouble east, gdouble north )
 
 gint16 vik_dem_get_shepard_interpol ( VikDEM *dem, gdouble east, gdouble north )
 {
-  return vik_dem_get_simple_interpol(dem, east, north);
+  int i;
+  gint16 elevs[4], dists[4];
+  gint16 max_dist;
+  gdouble t = 0.0;
+  gdouble b = 0.0;
+
+  if (!dem_get_ref_points_elev_dist(dem, east, north, elevs, dists))
+    return VIK_DEM_INVALID_ELEVATION;
+
+  max_dist = 0;
+  for (i = 0; i < 4; i++) {
+    if (dists[i] < 1) {
+      return(elevs[i]);
+    }
+    if (dists[i] > max_dist)
+      max_dist = dists[i];
+  }
+
+  gdouble tmp;
+#if 0 /* derived method by Franke & Nielson. Does not seem to work too well here */
+  for (i = 0; i < 4; i++) {
+    tmp = pow((1.0*(max_dist - dists[i])/max_dist*dists[i]), 2);
+    t += tmp*elevs[i];
+    b += tmp;
+  }
+#endif
+
+  for (i = 0; i < 4; i++) {
+    tmp = pow((1.0/dists[i]), 2);
+    t += tmp*elevs[i];
+    b += tmp;
+  }
+
+  // fprintf(stderr, "DEBUG: tmp=%f t=%f b=%f %f\n", tmp, t, b, t/b);
+
+  return(t/b);
+
 }
 
 void vik_dem_east_north_to_xy ( VikDEM *dem, gdouble east, gdouble north, guint *col, guint *row )
