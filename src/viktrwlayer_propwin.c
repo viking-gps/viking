@@ -165,6 +165,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_g
     if (!isnan(VIK_TRACKPOINT(iter->data)->speed))
       max_speed = MAX(max_speed, VIK_TRACKPOINT(iter->data)->speed);
   }
+  max_speed = max_speed * 110 / 100;
 
   for (iter = tr->trackpoints->next; iter; iter = iter->next) {
     int x, y_alt, y_speed;
@@ -216,8 +217,8 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 
 
   minmax_alt(altitudes, min_alt, max_alt);
-  mina = *min_alt; 
-  maxa = *max_alt;
+  mina = *min_alt;
+  maxa = *max_alt * 110 / 100;
   if  (maxa-mina < MIN_ALT_DIFF) {
     maxa = mina + MIN_ALT_DIFF;
   }

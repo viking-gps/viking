@@ -1,3 +1,7 @@
+2007-10-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add more room to the top of elevation-distance graph.
+
 2007-10-14
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix plotting of DEM elevation data (subtract min altitude)
