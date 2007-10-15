@@ -45,6 +45,8 @@ void vik_dem_free ( VikDEM *dem );
 gint16 vik_dem_get_xy ( VikDEM *dem, guint x, guint y );
 
 gint16 vik_dem_get_east_north ( VikDEM *dem, gdouble east, gdouble north );
+gint16 vik_dem_get_simple_interpol ( VikDEM *dem, gdouble east, gdouble north );
+gint16 vik_dem_get_best_interpol ( VikDEM *dem, gdouble east, gdouble north );
 
 void vik_dem_east_north_to_xy ( VikDEM *dem, gdouble east, gdouble north, guint *col, guint *row );
 

@@ -809,7 +809,7 @@ void vik_track_apply_dem_data ( VikTrack *tr )
     /* TODO: of the 4 possible choices we have for choosing an elevation
      * (trackpoint in between samples), choose the one with the least elevation change
      * as the last */
-    elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(tp_iter->data)->coord) );
+    elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(tp_iter->data)->coord), VIK_DEM_INTERPOL_BEST );
     if ( elev != VIK_DEM_INVALID_ELEVATION )
       VIK_TRACKPOINT(tp_iter->data)->altitude = elev;
     tp_iter = tp_iter->next;

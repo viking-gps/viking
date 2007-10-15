@@ -161,32 +161,46 @@ gint16 a_dems_list_get_elev_by_coord ( GList *dems, const VikCoord *coord )
 
 typedef struct {
   const VikCoord *coord;
+  VikDemInterpol method;
   gint elev;
 } CoordElev;
 
 static gboolean get_elev_by_coord(gpointer key, LoadedDEM *ldem, CoordElev *ce)
 {
   VikDEM *dem = ldem->dem;
+  gdouble lat, lon;
 
   if ( dem->horiz_units == VIK_DEM_HORIZ_LL_ARCSECONDS ) {
     struct LatLon ll_tmp;
     vik_coord_to_latlon (ce->coord, &ll_tmp );
-    ll_tmp.lat *= 3600;
-    ll_tmp.lon *= 3600;
-    ce->elev = vik_dem_get_east_north(dem, ll_tmp.lon, ll_tmp.lat);
-    return (ce->elev != VIK_DEM_INVALID_ELEVATION);
+    lat = ll_tmp.lat * 3600;
+    lon = ll_tmp.lon * 3600;
   } else if (dem->horiz_units == VIK_DEM_HORIZ_UTM_METERS) {
     static struct UTM utm_tmp;
+    if (utm_tmp.zone != dem->utm_zone)
+      return FALSE;
     vik_coord_to_utm (ce->coord, &utm_tmp);
-    if ( utm_tmp.zone == dem->utm_zone &&
-             (ce->elev = vik_dem_get_east_north(dem, utm_tmp.easting, utm_tmp.northing)) != VIK_DEM_INVALID_ELEVATION )
-      return TRUE;
+    lat = utm_tmp.northing;
+    lon = utm_tmp.easting;
+  } else
+    return FALSE;
+
+  switch (ce->method) {
+    case VIK_DEM_INTERPOL_NONE:
+      ce->elev = vik_dem_get_east_north(dem, lon, lat);
+      break;
+    case VIK_DEM_INTERPOL_SIMPLE:
+      ce->elev = vik_dem_get_simple_interpol(dem, lon, lat);
+      break;
+    case VIK_DEM_INTERPOL_BEST:
+      ce->elev = vik_dem_get_shepard_interpol(dem, lon, lat);
+      break;
   }
-  return FALSE;
+  return (ce->elev != VIK_DEM_INVALID_ELEVATION);
 }
 
 /* TODO: keep a (sorted) linked list of DEMs and select the best resolution one */
-gint16 a_dems_get_elev_by_coord ( const VikCoord *coord )
+gint16 a_dems_get_elev_by_coord ( const VikCoord *coord, VikDemInterpol method )
 {
   CoordElev ce;
 
@@ -194,6 +208,7 @@ gint16 a_dems_get_elev_by_coord ( const VikCoord *coord )
     return VIK_DEM_INVALID_ELEVATION;
 
   ce.coord = coord;
+  ce.method = method;
   ce.elev = VIK_DEM_INVALID_ELEVATION;
 
   if(!g_hash_table_find(loaded_dems, get_elev_by_coord, &ce))

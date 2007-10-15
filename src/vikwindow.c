@@ -474,7 +474,8 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
   a_coords_utm_to_latlon ( &utm, &ll );
-  if ((alt = a_dems_get_elev_by_coord(&coord)) != VIK_DEM_INVALID_ELEVATION)
+  /* TODO: Change interpolate method according to scale */
+  if ((alt = a_dems_get_elev_by_coord(&coord, VIK_DEM_INTERPOL_SIMPLE)) != VIK_DEM_INVALID_ELEVATION)
     g_snprintf ( pointer_buf, 36, "Cursor: %f %f %dm", ll.lat, ll.lon, alt );
   else
     g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );

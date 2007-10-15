@@ -485,6 +485,77 @@ gint16 vik_dem_get_east_north ( VikDEM *dem, gdouble east, gdouble north )
   return vik_dem_get_xy ( dem, col, row );
 }
 
+static gboolean dem_get_ref_points_elev_dist(VikDEM *dem,
+    gdouble east, gdouble north, /* in seconds */
+    gint16 *elevs, gint16 *dists)
+{
+  int i;
+  int cols[4], rows[4];
+  struct LatLon ll[4];
+  struct LatLon pos;
+
+  if ( east > dem->max_east || east < dem->min_east ||
+      north > dem->max_north || north < dem->min_north )
+    return FALSE;  /* got nothing */
+
+  pos.lon = east/3600;
+  pos.lat = north/3600;
+
+  /* order of the data: sw, nw, ne, se */
+  cols[0] = (gint) floor((east - dem->min_east) / dem->east_scale);  /* sw */
+  rows[0] = (gint) floor((north - dem->min_north) / dem->north_scale);
+  ll[0].lon = (east - fabs(fmod(east, dem->east_scale)))/3600;
+  ll[0].lat = (north - fabs(fmod(north, dem->north_scale)))/3600;
+
+  cols[1] = cols[0];         /*nw*/
+  rows[1] = rows[0] + 1;
+  ll[1].lon = ll[0].lon;
+  ll[1].lat = ll[0].lat + (gdouble)dem->north_scale/3600;
+
+  cols[2] = cols[0] + 1;     /*ne*/
+  rows[2] = rows[0] + 1;
+  ll[2].lon = ll[0].lon + (gdouble)dem->east_scale/3600;
+  ll[2].lat = ll[0].lat + (gdouble)dem->north_scale/3600;
+
+  cols[3] = cols[0] + 1;     /*se*/
+  rows[3] = rows[0];
+  ll[3].lon = ll[0].lon + (gdouble)dem->east_scale/3600;
+  ll[3].lat = ll[0].lat;
+
+  for (i = 0; i < 4; i++) {
+    if ((elevs[i] = vik_dem_get_xy(dem, cols[i], rows[i])) == VIK_DEM_INVALID_ELEVATION)
+      return FALSE;
+    dists[i] = a_coords_latlon_diff(&pos, &ll[i]);
+  }
+
+  return TRUE;  /* all OK */
+}
+
+gint16 vik_dem_get_simple_interpol ( VikDEM *dem, gdouble east, gdouble north )
+{
+  int i;
+  gint16 elevs[4], dists[4];
+
+  if (!dem_get_ref_points_elev_dist(dem, east, north, elevs, dists))
+    return VIK_DEM_INVALID_ELEVATION;
+
+  for (i = 0; i < 4; i++) {
+    if (dists[i] < 1) {
+      return(elevs[i]);
+    }
+  }
+
+  gdouble t = (gdouble)elevs[0]/dists[0] + (gdouble)elevs[1]/dists[1] + (gdouble)elevs[2]/dists[2] + (gdouble)elevs[3]/dists[3];
+  gdouble b = 1.0/dists[0] + 1.0/dists[1] + 1.0/dists[2] + 1.0/dists[3];
+
+  return(t/b);
+}
+
+gint16 vik_dem_get_shepard_interpol ( VikDEM *dem, gdouble east, gdouble north )
+{
+  return vik_dem_get_simple_interpol(dem, east, north);
+}
+
 void vik_dem_east_north_to_xy ( VikDEM *dem, gdouble east, gdouble north, guint *col, guint *row )
 {
   *col = (gint) floor((east - dem->min_east) / dem->east_scale);
