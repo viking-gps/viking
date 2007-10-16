@@ -84,9 +84,9 @@ static gchar *parse_version_number(gchar *text)
   gchar *vers;
   gchar *s = text;
 
-  for (i = 0; (s[i] != '&') && (i < 8); i++)
+  for (i = 0; (s[i] != '\\') && (i < 8); i++)
     ;
-  if (s[i] != '&') {
+  if (s[i] != '\\') {
     return NULL;
   }
 
@@ -107,8 +107,8 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   gsize len;
   gchar *gvers, *tvers, *kvers, *tmpvers;
   static DownloadOptions dl_options = { "http://maps.google.com/", 0 };
-  static const char *gvers_pat = "http://mt0.google.com/mt?n=404&v=";
-  static const char *kvers_pat = "http://kh0.google.com/kh?n=404&v=";
+  static const char *gvers_pat = "http://mt0.google.com/mt?n\\x3d404\\x26v\\x3d";
+  static const char *kvers_pat = "http://kh0.google.com/kh?n\\x3d404\\x26v\\x3d";
 
   g_assert(google_type < TYPE_GOOGLE_NUM);
 

@@ -1,4 +1,8 @@
 2007-10-16
+Evan Battaglia <gtoevan@gmx.net>
+	* Fix Google version parsing. Google no longer uses '=' and '&' but hex equivalents to describe the URI. Not sure if this will last :/
+
+2007-10-16
 Quy Tonthat <qtonthat@gmail.com>:
 	* Interpolating DEM data in 3 different methods. Track data,
 	elevation-distance graph and elevation info on status bar now make use
