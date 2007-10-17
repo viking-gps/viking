@@ -1,3 +1,7 @@
+2007-10-17
+Evan Battaglia <gtoevan@gmx.net>
+	* Fix problem with extraneous waypoints being plotted (wrap around problem). May still be problems in UTM mode.
+
 2007-10-16
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix Google version parsing. Google no longer uses '=' and '&' but hex equivalents to describe the URI. Not sure if this will last :/

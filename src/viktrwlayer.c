@@ -1069,7 +1069,7 @@ static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name )
 static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct DrawingParams *dp )
 {
   if ( wp->visible )
-  if ( (!dp->one_zone) || ( wp->coord.utm_zone == dp->center->utm_zone && 
+  if ( (!dp->one_zone && !dp->lat_lon) || ( ( dp->lat_lon || wp->coord.utm_zone == dp->center->utm_zone ) && 
              wp->coord.east_west < dp->ce2 && wp->coord.east_west > dp->ce1 && 
              wp->coord.north_south > dp->cn1 && wp->coord.north_south < dp->cn2 ) )
   {
