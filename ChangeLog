@@ -3,6 +3,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Track Properties Dialog no longer blocks interaction of the main
 	window.
 	* Draw position marker on track elev/speed graphs at mouse click.
+	* Diasable buttons on Track Properties Dialog when not needed.
 
 2007-10-17
 Evan Battaglia <gtoevan@gmx.net>
