@@ -4,6 +4,8 @@ Quy Tonthat <qtonthat@gmail.com>:
 	window.
 	* Draw position marker on track elev/speed graphs at mouse click.
 	* Diasable buttons on Track Properties Dialog when not needed.
+	* Display track name on title of track property dialog. Now that
+	viking allows multiple dialogs displayed simultaneously.
 
 2007-10-17
 Evan Battaglia <gtoevan@gmx.net>

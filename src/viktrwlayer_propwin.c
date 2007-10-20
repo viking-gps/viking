@@ -599,7 +599,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->tr = tr;
   widgets->vlp = vlp;
   widgets->track_name = track_name;
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ("Track Properties",
+  gchar *title = g_strdup_printf("%s - Track Properties", track_name);
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                          parent,
                          GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
                          GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
@@ -608,6 +609,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
                          "Delete Dupl.",   VIK_TRW_LAYER_PROPWIN_DEL_DUP,
                          GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
                          NULL);
+  g_free(title);
   g_signal_connect_swapped(dialog, "response", G_CALLBACK(propwin_response_cb), widgets);
   //fprintf(stderr, "DEBUG: dialog=0x%p\n", dialog);
   GtkTable *table;
