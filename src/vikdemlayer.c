@@ -82,6 +82,7 @@ static gchar *params_source[] = {
 	"USA 10m (USGS 24k)",
 #endif
         "None",
+	NULL
 	};
 
 enum { DEM_SOURCE_SRTM,

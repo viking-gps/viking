@@ -1,4 +1,8 @@
 2007-10-20
+Evan Battaglia <gtoevan@gmx.net>
+	* Fixing minor typo in vikdemlayer.c which could cause crashes
+
+2007-10-20
 Quy Tonthat <qtonthat@gmail.com>:
 	* Track Properties Dialog no longer blocks interaction of the main
 	window.
