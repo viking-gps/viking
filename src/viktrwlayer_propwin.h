@@ -31,6 +31,6 @@
 #define VIK_TRW_LAYER_PROPWIN_REVERSE 2
 #define VIK_TRW_LAYER_PROPWIN_DEL_DUP 3
 
-gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp );
+void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *trackname );
 
 #endif

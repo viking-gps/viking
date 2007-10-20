@@ -26,6 +26,7 @@
 #include "coords.h"
 #include "vikcoord.h"
 #include "viktrack.h"
+#include "viktrwlayer.h"
 #include "viktrwlayer_propwin.h"
 #include "vikwaypoint.h"
 #include "dialog.h"
@@ -44,6 +45,27 @@
 #define MIN_ALT_DIFF 100.0
 #define MIN_SPEED_DIFF 20.0
 
+typedef struct _propwidgets {
+  VikTrwLayer *vtl;
+  VikTrack *tr;
+  VikLayersPanel *vlp;
+  gchar *track_name;
+  GtkWidget *w_comment;
+  GtkWidget *w_track_length;
+  GtkWidget *w_tp_count;
+  GtkWidget *w_segment_count;
+  GtkWidget *w_duptp_count;
+  GtkWidget *w_max_speed;
+  GtkWidget *w_avg_speed;
+  GtkWidget *w_avg_dist;
+  GtkWidget *w_elev_range;
+  GtkWidget *w_elev_gain;
+  GtkWidget *w_time_start;
+  GtkWidget *w_time_end;
+  GtkWidget *w_time_dur;
+  GtkWidget *w_dist_time;
+} PropWidgets;
+
 static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 {
   *max = -1000;
@@ -58,8 +80,6 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
     }
   }
 }
-
-static GtkWidget *label_date;
 
 #define MARGIN 50
 #define LINES 5
@@ -100,6 +120,7 @@ void track_vt_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_alo
 void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
 {
   VikTrack *tr = pass_along[0];
+  PropWidgets *widgets = pass_along[2];
   int mouse_x, mouse_y;
   GdkModifierType state;
 
@@ -116,16 +137,17 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
 
   gdouble meters_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH, &meters_from_start );
-  if (trackpoint) {
+  if (trackpoint && widgets->w_dist_time) {
     static gchar tmp_buf[20];
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m", meters_from_start);
-    gtk_label_set_text(GTK_LABEL(label_date), tmp_buf);
+    gtk_label_set_text(GTK_LABEL(widgets->w_dist_time), tmp_buf);
   }
 }
 
 void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
 {
   VikTrack *tr = pass_along[0];
+  PropWidgets *widgets = pass_along[2];
   int mouse_x, mouse_y;
   GdkModifierType state;
 
@@ -142,7 +164,7 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
 
   time_t seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH, &seconds_from_start );
-  if (trackpoint) {
+  if (trackpoint && widgets->w_dist_time) {
     static gchar tmp_buf[20];
     guint h, m, s;
     h = seconds_from_start/3600;
@@ -150,7 +172,7 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
     s = seconds_from_start - (3600*h) - (60*m);
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
 
-    gtk_label_set_text(GTK_LABEL(label_date), tmp_buf);
+    gtk_label_set_text(GTK_LABEL(widgets->w_dist_time), tmp_buf);
   }
 }
 
@@ -185,7 +207,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_g
   }
 }
 
-GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdouble *min_alt, gdouble *max_alt, gpointer vlp )
+GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpointer vlp, PropWidgets *widgets, gdouble *min_alt, gdouble *max_alt)
 {
   GdkPixmap *pix;
   GtkWidget *image;
@@ -270,9 +292,10 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
   g_object_unref ( G_OBJECT(dem_alt_gc) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
 
-  pass_along = g_malloc ( sizeof(gpointer) * 2 );
+  pass_along = g_malloc ( sizeof(gpointer) * 3 ); /* FIXME: mem leak -- never be freed */
   pass_along[0] = tr;
   pass_along[1] = vlp;
+  pass_along[2] = widgets;
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
@@ -293,7 +316,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gdoub
 #define MTOK(v) ( (v)*3600.0/1000.0 * 0.6214) /* m/s to mph - we'll handle this globally eventually but for now ...*/
 #endif
 
-GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp)
+GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp, PropWidgets *widgets)
 {
   GdkPixmap *pix;
   GtkWidget *image;
@@ -302,9 +325,10 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   GtkWidget *eventbox;
   gpointer *pass_along;
 
-  pass_along = g_malloc ( sizeof(gpointer) * 2 );
+  pass_along = g_malloc ( sizeof(gpointer) * 3 ); /* FIXME: mem leak -- never be freed */
   pass_along[0] = tr;
   pass_along[1] = vlp;
+  pass_along[2] = widgets;
 
   gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
   if ( speeds == NULL )
@@ -419,31 +443,111 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
 #undef MARGIN
 #undef LINES
 
-gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
+/* Notes: first and third arguments are swapped around compared to the manuals */
+//static void propwin_response_cb( GtkDialog *widgets, gint resp, PropWidgets *widgets)
+static void propwin_response_cb( gpointer p_widgets, gint resp, gpointer p_dialog)
 {
+  PropWidgets *widgets = (PropWidgets *) p_widgets;
+  GtkDialog * dialog = p_dialog;
+
+  VikTrack *tr = widgets->tr;
+  VikTrwLayer *vtl = widgets->vtl;
+
+  /* FIXME: check and make sure the track still exists before doing anything to it */
+  /* Note: destroying diaglog (eg, parent window exit) won't give "response" */
+  switch (resp) {
+    case GTK_RESPONSE_DELETE_EVENT: /* received delete event (not from buttons) */
+    case GTK_RESPONSE_REJECT:
+      break;
+    case GTK_RESPONSE_ACCEPT:
+      vik_track_set_comment(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_comment)));
+      break;
+    case VIK_TRW_LAYER_PROPWIN_REVERSE:
+      vik_track_reverse(tr);
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      break;
+    case VIK_TRW_LAYER_PROPWIN_DEL_DUP:
+      vik_track_remove_dup_points(tr);
+      /* above operation could have deleted current_tp or last_tp */
+      trw_layer_cancel_tps_of_track ( vtl, widgets->track_name );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      break;
+    case VIK_TRW_LAYER_PROPWIN_SPLIT:
+      {
+        /* get new tracks, add them, resolve naming conflicts (free if cancel), and delete old. old can still exist on clipboard. */
+        guint ntracks;
+        VikTrack **tracks = vik_track_split_into_segments(tr, &ntracks);
+        gchar *new_tr_name;
+        guint i;
+        for ( i = 0; i < ntracks; i++ )
+        {
+          g_assert ( tracks[i] );
+          new_tr_name = g_strdup_printf("%s #%d", widgets->track_name, i+1);
+          /* if ( (wp_exists) && (! overwrite) ) */
+          /* don't need to upper case new_tr_name because old tr name was uppercase */
+          if ( vik_trw_layer_get_track(vtl, new_tr_name ) && 
+             ( ! a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "The track \"%s\" exists, do you wish to overwrite it?", new_tr_name ) ) )
+          {
+            gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl) );
+            g_free ( new_tr_name );
+            if (new_new_tr_name)
+              new_tr_name = new_new_tr_name;
+            else
+            {
+              new_tr_name = NULL;
+              vik_track_free ( tracks[i] );
+            }
+          }
+          if ( new_tr_name )
+            vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
+        }
+        if ( tracks )
+        {
+          g_free ( tracks );
+          /* Don't let track destroy this dialog */
+          vik_track_clear_property_dialog(tr);
+          vik_trw_layer_delete_track ( vtl, widgets->track_name );
+          vik_layer_emit_update ( VIK_LAYER(vtl) ); /* chase thru the hoops */
+        }
+      }
+      break;
+    default:
+      fprintf(stderr, "DEBUG: unknown response\n");
+      return;
+  }
+
+  /* Keep same behaviour for now: destroy dialog if click on any button */
+  g_free(widgets);
+  vik_track_clear_property_dialog(tr);
+  gtk_widget_destroy ( GTK_WIDGET(dialog) );
+}
+
+void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *track_name )
+{
+  /* FIXME: free widgets when destroy signal received */
+  PropWidgets *widgets = g_malloc0(sizeof(PropWidgets));
+  widgets->vtl = vtl;
+  widgets->tr = tr;
+  widgets->vlp = vlp;
+  widgets->track_name = track_name;
   GtkWidget *dialog = gtk_dialog_new_with_buttons ("Track Properties",
-                                                  parent,
-                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
-                                                  GTK_STOCK_CANCEL,
-                                                  GTK_RESPONSE_REJECT,
-                                                  "Split Segments",
-                                                  VIK_TRW_LAYER_PROPWIN_SPLIT,
-                                                  "Reverse",
-                                                  VIK_TRW_LAYER_PROPWIN_REVERSE,
-                                                  "Delete Dupl.",
-                                                  VIK_TRW_LAYER_PROPWIN_DEL_DUP,
-                                                  GTK_STOCK_OK,
-                                                  GTK_RESPONSE_ACCEPT,
-                                                  NULL);
+                         parent,
+                         GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
+                         GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+                         "Split Segments", VIK_TRW_LAYER_PROPWIN_SPLIT,
+                         "Reverse",        VIK_TRW_LAYER_PROPWIN_REVERSE,
+                         "Delete Dupl.",   VIK_TRW_LAYER_PROPWIN_DEL_DUP,
+                         GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
+                         NULL);
+  g_signal_connect_swapped(dialog, "response", G_CALLBACK(propwin_response_cb), widgets);
+  //fprintf(stderr, "DEBUG: dialog=0x%p\n", dialog);
   GtkTable *table;
-  GtkWidget *e_cmt;
   gdouble tr_len;
   guint32 tp_count, seg_count;
-  gint resp;
 
   gdouble min_alt, max_alt;
-  GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr,&min_alt,&max_alt,vlp);
-  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp);
+  GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr, vlp, widgets, &min_alt,&max_alt);
+  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp, widgets);
   GtkWidget *graphs = gtk_notebook_new();
 
   GtkWidget *content[20];
@@ -455,56 +559,56 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
   gdouble tmp_speed;
 
   cnt = 0;
-  e_cmt = gtk_entry_new ();
+  widgets->w_comment = gtk_entry_new ();
   if ( tr->comment )
-    gtk_entry_set_text ( GTK_ENTRY(e_cmt), tr->comment );
-  g_signal_connect_swapped ( e_cmt, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
-  content[cnt++] = e_cmt;
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_comment), tr->comment );
+  g_signal_connect_swapped ( widgets->w_comment, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
+  content[cnt++] = widgets->w_comment;
 
   tr_len = vik_track_get_length(tr);
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", tr_len );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_track_length = content[cnt++] = gtk_label_new ( tmp_buf );
 
   tp_count = vik_track_get_tp_count(tr);
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", tp_count );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_tp_count = content[cnt++] = gtk_label_new ( tmp_buf );
 
   seg_count = vik_track_get_segment_count(tr) ;
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", seg_count );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_segment_count = content[cnt++] = gtk_label_new ( tmp_buf );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", vik_track_get_dup_point_count(tr) );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_duptp_count = content[cnt++] = gtk_label_new ( tmp_buf );
 
   tmp_speed = vik_track_get_max_speed(tr);
   if ( tmp_speed == 0 )
     g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s   (%.0f km/h)", tmp_speed, MTOK(tmp_speed) );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_max_speed = content[cnt++] = gtk_label_new ( tmp_buf );
 
   tmp_speed = vik_track_get_average_speed(tr);
   if ( tmp_speed == 0 )
     g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s   (%.0f km/h)", tmp_speed, MTOK(tmp_speed) );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_avg_speed = content[cnt++] = gtk_label_new ( tmp_buf );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count ) );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_avg_dist = content[cnt++] = gtk_label_new ( tmp_buf );
 
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
     g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_elev_range = content[cnt++] = gtk_label_new ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
     g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
-  content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_elev_gain = content[cnt++] = gtk_label_new ( tmp_buf );
 
 #if 0
 #define PACK(w) gtk_box_pack_start (GTK_BOX(right_vbox), w, FALSE, FALSE, 0);
@@ -530,22 +634,21 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
     strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
     tmp_buf[sizeof(tmp_buf)-1] = 0;
     g_strchomp(tmp_buf);
-    content[cnt++] = gtk_label_new(tmp_buf);
+    widgets->w_time_start = content[cnt++] = gtk_label_new(tmp_buf);
 
     strncpy(tmp_buf, ctime(&t2), sizeof(tmp_buf));
     tmp_buf[sizeof(tmp_buf)-1] = 0;
     g_strchomp(tmp_buf);
-    content[cnt++] = gtk_label_new(tmp_buf);
+    widgets->w_time_end = content[cnt++] = gtk_label_new(tmp_buf);
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%d minutes", (int)(t2-t1)/60);
-    content[cnt++] = gtk_label_new(tmp_buf);
+    widgets->w_time_dur = content[cnt++] = gtk_label_new(tmp_buf);
   } else {
-    content[cnt++] = gtk_label_new("No Data");
-    content[cnt++] = gtk_label_new("No Data");
-    content[cnt++] = gtk_label_new("No Data");
+    widgets->w_time_start = content[cnt++] = gtk_label_new("No Data");
+    widgets->w_time_end = content[cnt++] = gtk_label_new("No Data");
+    widgets->w_time_dur = content[cnt++] = gtk_label_new("No Data");
   }
-  label_date = gtk_label_new("No Data");
-  content[cnt++] = label_date;
+  widgets->w_dist_time = content[cnt++] = gtk_label_new("No Data");
 
   table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
@@ -572,11 +675,6 @@ gint vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrack *tr, gpointer vlp )
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
   
+  vik_track_set_property_dialog(tr, dialog);
   gtk_widget_show_all ( dialog );
-  resp = gtk_dialog_run (GTK_DIALOG (dialog));
-  if ( resp == GTK_RESPONSE_ACCEPT )
-    vik_track_set_comment ( tr, gtk_entry_get_text ( GTK_ENTRY(e_cmt) ) );
-
-  gtk_widget_destroy ( dialog );
-  return resp;
 }

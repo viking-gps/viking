@@ -240,7 +240,6 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
-static void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name );
 static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
@@ -1699,7 +1698,7 @@ static gboolean uppercase_exists_in_hash ( GHashTable *hash, const gchar *str )
 }
 
 /* to be called whenever a track has been deleted or may have been changed. */
-static void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name )
+void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name )
 {
   if (vtl->current_tp_track_name && g_strcasecmp(trk_name, vtl->current_tp_track_name) == 0)
     trw_layer_cancel_current_tp ( vtl, FALSE );
@@ -1927,55 +1926,10 @@ static void trw_layer_properties_item ( gpointer pass_along[5] )
     VikTrack *tr = g_hash_table_lookup ( vtl->tracks, pass_along[3] );
     if ( tr )
     {
-      gint resp = vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl), tr, pass_along[1] /* vlp */ );
-      if ( resp == VIK_TRW_LAYER_PROPWIN_DEL_DUP )
-      {
-        vik_track_remove_dup_points(tr);
-        /* above operation could have deleted current_tp or last_tp */
-        trw_layer_cancel_tps_of_track ( vtl, (gchar *) pass_along[3] );
-        vik_layer_emit_update ( VIK_LAYER(vtl) );
-      }
-      if ( resp == VIK_TRW_LAYER_PROPWIN_REVERSE )
-      {
-        vik_track_reverse(tr);
-        vik_layer_emit_update ( VIK_LAYER(vtl) );
-      }
-      else if ( resp == VIK_TRW_LAYER_PROPWIN_SPLIT )
-      {
-        /* get new tracks, add them, resolve naming conflicts (free if cancel), and delete old. old can still exist on clipboard. */
-        guint ntracks;
-        VikTrack **tracks = vik_track_split_into_segments(tr, &ntracks);
-        gchar *new_tr_name;
-        guint i;
-        for ( i = 0; i < ntracks; i++ )
-        {
-          g_assert ( tracks[i] );
-          new_tr_name = g_strdup_printf("%s #%d", (gchar *) pass_along[3], i+1);
-          /* if ( (wp_exists) && (! overwrite) ) */
-          /* don't need to upper case new_tr_name because old tr name was uppercase */
-          if ( g_hash_table_lookup ( vtl->tracks, new_tr_name ) && 
-             ( ! a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "The track \"%s\" exists, do you wish to overwrite it?", new_tr_name ) ) )
-          {
-            gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks );
-            g_free ( new_tr_name );
-            if (new_new_tr_name)
-              new_tr_name = new_new_tr_name;
-            else
-            {
-              new_tr_name = NULL;
-              vik_track_free ( tracks[i] );
-            }
-          }
-          if ( new_tr_name )
-            vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
-        }
-        if ( tracks )
-        {
-          g_free ( tracks );
-          vik_trw_layer_delete_track ( vtl, (gchar *) pass_along[3] );
-          vik_layer_emit_update ( VIK_LAYER(vtl) ); /* chase thru the hoops */
-        }
-      }
+      vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+		      vtl, tr,
+		      pass_along[1], /* vlp */ 
+		      pass_along[3]  /* track name */);
     }
   }
 }
@@ -2443,6 +2397,13 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_properties_item), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+
+    if (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) {
+      VikTrwLayer *vtl = l;
+      VikTrack *tr = g_hash_table_lookup ( vtl->tracks, sublayer );
+      if (tr && tr->property_dialog)
+        gtk_widget_set_sensitive(GTK_WIDGET(item), FALSE );
+    }
 
     item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_CUT, NULL );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_cut_item_cb), pass_along );

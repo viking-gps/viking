@@ -80,5 +80,6 @@ VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl );
 
 void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl );
 void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl );
+void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name );
 
 #endif

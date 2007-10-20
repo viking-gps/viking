@@ -24,6 +24,7 @@
 
 #include <time.h>
 #include <glib.h>
+#include <gtk/gtk.h>
 
 #include "vikcoord.h"
 
@@ -57,6 +58,7 @@ struct _VikTrack {
   gboolean visible;
   gchar *comment;
   guint8 ref_count;
+  GtkWidget *property_dialog;
 };
 
 VikTrack *vik_track_new();
@@ -103,5 +105,7 @@ void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 );
  */
 VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr );
 
+void vik_track_set_property_dialog(VikTrack *tr, GtkWidget *dialog);
+void vik_track_clear_property_dialog(VikTrack *tr);
 
 #endif

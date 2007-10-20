@@ -62,6 +62,17 @@ void vik_track_ref(VikTrack *tr)
   tr->ref_count++;
 }
 
+void vik_track_set_property_dialog(VikTrack *tr, GtkWidget *dialog)
+{
+  /* Warning: does not check for existing dialog */
+  tr->property_dialog = dialog;
+}
+
+void vik_track_clear_property_dialog(VikTrack *tr)
+{
+  tr->property_dialog = NULL;
+}
+
 void vik_track_free(VikTrack *tr)
 {
   if ( tr->ref_count-- > 1 )
@@ -71,6 +82,8 @@ void vik_track_free(VikTrack *tr)
     g_free ( tr->comment );
   g_list_foreach ( tr->trackpoints, (GFunc) g_free, NULL );
   g_list_free( tr->trackpoints );
+  if (tr->property_dialog)
+    gtk_widget_destroy ( GTK_WIDGET(tr->property_dialog) );
   g_free ( tr );
 }
 

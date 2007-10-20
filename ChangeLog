@@ -1,3 +1,8 @@
+2007-10-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Track Properties Dialog no longer blocks interaction of the main
+	window.
+
 2007-10-17
 Evan Battaglia <gtoevan@gmx.net>
 	* Fix problem with extraneous waypoints being plotted (wrap around problem). May still be problems in UTM mode.
