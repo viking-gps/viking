@@ -45,6 +45,12 @@
 #define MIN_ALT_DIFF 100.0
 #define MIN_SPEED_DIFF 20.0
 
+typedef struct _propsaved {
+  gboolean saved;
+  gint pos;
+  GdkImage *img;
+} PropSaved;
+
 typedef struct _propwidgets {
   VikTrwLayer *vtl;
   VikTrack *tr;
@@ -64,7 +70,26 @@ typedef struct _propwidgets {
   GtkWidget *w_time_end;
   GtkWidget *w_time_dur;
   GtkWidget *w_dist_time;
+  PropSaved elev_graph_saved_img;
+  PropSaved speed_graph_saved_img;
 } PropWidgets;
+
+static PropWidgets *prop_widgets_new()
+{
+  PropWidgets *widgets = g_malloc0(sizeof(PropWidgets));
+
+  return widgets;
+}
+
+static void prop_widgets_free(PropWidgets *widgets)
+{
+
+  if (widgets->elev_graph_saved_img.img)
+    g_object_unref(widgets->elev_graph_saved_img.img);
+  if (widgets->speed_graph_saved_img.img)
+    g_object_unref(widgets->speed_graph_saved_img.img);
+  g_free(widgets);
+}
 
 static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 {
@@ -103,18 +128,62 @@ static void set_center_at_graph_position(gdouble event_x, gint img_width, VikLay
     vik_layers_panel_emit_update ( vlp );
   }
 }
-void track_profile_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_along )
+
+static void draw_graph_mark(GtkWidget *image, gdouble x, GdkGC *gc, PropSaved *saved_img)
 {
-  VikTrack *tr = pass_along[0];
-  VikLayersPanel *vlp = pass_along[1];
-  set_center_at_graph_position(event->x, image->allocation.width, vlp, tr, FALSE);
+  GdkPixmap *pix;
+  const int saved_width = 5;
+
+  gtk_image_get_pixmap(GTK_IMAGE(image), &pix, NULL);
+  if (saved_img->saved) {
+    gdk_draw_image(GDK_DRAWABLE(pix), gc, saved_img->img, 0, 0,
+        saved_img->pos, 0, -1, -1);
+    saved_img->saved = FALSE;
+    gtk_widget_queue_draw_area(image, saved_img->pos, 0,
+        saved_img->img->width, saved_img->img->height);
+  }
+  if ((x >= MARGIN) && (x < (PROFILE_WIDTH + MARGIN))) {
+    if (saved_img->img)
+      gdk_drawable_copy_to_image(GDK_DRAWABLE(pix), saved_img->img,
+          x - (saved_width/2), 0, 0, 0, saved_img->img->width, saved_img->img->height);
+    else
+      saved_img->img = gdk_drawable_copy_to_image(GDK_DRAWABLE(pix),
+          saved_img->img, x - (saved_width/2), 0, 0, 0, saved_width, PROFILE_HEIGHT);
+    saved_img->pos = x - (saved_width/2);
+    saved_img->saved = TRUE;
+    gdk_draw_line (GDK_DRAWABLE(pix), gc, x, 0, x, image->allocation.height);
+    /* redraw the area which contains the line, saved_width is just convenient */
+    gtk_widget_queue_draw_area(image, x - saved_width/2, 0, saved_width, PROFILE_HEIGHT);
+  }
 }
 
-void track_vt_click( GtkWidget *image, GdkEventButton *event, gpointer *pass_along )
+static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpointer *pass_along, gboolean is_vt_graph )
 {
   VikTrack *tr = pass_along[0];
   VikLayersPanel *vlp = pass_along[1];
-  set_center_at_graph_position(event->x, image->allocation.width, vlp, tr, TRUE);
+  PropWidgets *widgets = pass_along[2];
+  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
+  GtkWidget *image = GTK_WIDGET(child->data);
+  GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
+
+
+  set_center_at_graph_position(event->x, event_box->allocation.width, vlp, tr, is_vt_graph);
+  draw_graph_mark(image, event->x, window->style->black_gc,
+      is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img);
+  g_list_free(child);
+
+}
+
+static gboolean track_profile_click( GtkWidget *event_box, GdkEventButton *event, gpointer *pass_along )
+{
+  track_graph_click(event_box, event, pass_along, FALSE);
+  return TRUE;  /* don't call other (further) callbacks */
+}
+
+static gboolean track_vt_click( GtkWidget *event_box, GdkEventButton *event, gpointer *pass_along )
+{
+  track_graph_click(event_box, event, pass_along, TRUE);
+  return TRUE;  /* don't call other (further) callbacks */
 }
 
 void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
@@ -517,7 +586,7 @@ static void propwin_response_cb( gpointer p_widgets, gint resp, gpointer p_dialo
   }
 
   /* Keep same behaviour for now: destroy dialog if click on any button */
-  g_free(widgets);
+  prop_widgets_free(widgets);
   vik_track_clear_property_dialog(tr);
   gtk_widget_destroy ( GTK_WIDGET(dialog) );
 }
@@ -525,7 +594,7 @@ static void propwin_response_cb( gpointer p_widgets, gint resp, gpointer p_dialo
 void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *track_name )
 {
   /* FIXME: free widgets when destroy signal received */
-  PropWidgets *widgets = g_malloc0(sizeof(PropWidgets));
+  PropWidgets *widgets = prop_widgets_new();
   widgets->vtl = vtl;
   widgets->tr = tr;
   widgets->vlp = vlp;
