@@ -83,8 +83,12 @@ static void open_window ( VikWindow *vw, const gchar **files )
     }
 }
 
+/* Options */
+static gboolean version = FALSE;
+
 static GOptionEntry entries[] = 
 {
+  { "version", 'v', 0, G_OPTION_ARG_NONE, &version, "Show version", NULL },
   { NULL }
 };
 
@@ -118,6 +122,12 @@ int main( int argc, char *argv[] )
       g_fprintf (stderr, "Run \"%s --help\" to see the list of recognized options.\n",argv[0]);
     }
     return EXIT_FAILURE;
+  }
+   
+  if (version)
+  {
+    g_printf ("%s %s, Copyright (c) 2003-2007 Evan Battaglia\n", PACKAGE_NAME, PACKAGE_VERSION);
+    return EXIT_SUCCESS;
   }
 
   curl_download_init();
