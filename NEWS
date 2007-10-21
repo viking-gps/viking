@@ -1,3 +1,47 @@
+Viking 0.9.3 (2007-10-21)
+New features since 0.9.2
+
+* Half-drawn redraw for faster refreshing display of viewport (Maps, tracks, waypoints...)
+* Allow multiple selections when adding DEM files.
+* (Semi) auto downloading and importing for SRTM 90m DEM file (worldwide).
+* Indicating areas which have DEM file download but not imported.
+* "Minimum elevation" is now configurable for DEM layer. It can be used together with the existing "Max Elev" to make DEM display more distinguish colors for a particular area of interest.
+* Interpolating DEM data.
+* Add realtime tracking to GPS layer with track recording.
+* Trackpoints acquired in realtime mode store extra information of speed, course, fix mode and number of satellites.
+* Track properties dialog no longer blocks user interaction on main window. Using multiple track dialogs (simultaneously for different tracks) is now allowed.
+* Make use of DEM elevation data and GPS speed data for track graphs (Properties Dialog).
+* Track Properties: now displays track distance/time instead of "Selected Time".
+* Marker for selected position on track graphs.
+* Various enhancement to improve usability of track dialog.
+* Mouse cursor is now changed accordingly to tool currently in used.
+* Magic Scissors (Automatically drawing track between points) can now be undone using right click, and extended via Ctrl-click.
+* Shortcuts for panning: Ctrl-arrow key, and Shift-scroll and Ctrl-scroll.
+* Extend track.
+* Ctrl-shift-scroll to zoom like google, scroll to zoom w/o changing center.
+* Preview adding a trackpoint by drawing a line when moving mouse.
+* Esc key used to stop track edition.
+* Backspace key used to remove last added point.
+* Use $BROWSER environment variable (for viewing geocache pages).
+* Automatically fetching google version numbers.
+* Upgrading to API 0.5 of OSM.
+
+Fixes since 0.9.2
+
+* Fix: Make viking's default start location somewhere more likely has maps.
+* Fix: bug that causes crashes when using "Maps Download" tool.
+* Fix: Adding command line option framework (--help & --version).
+* Fix #1789550: mkdtemp usage is conditioned.
+* Fix #1789550: define MAX macro if not defined on ALL systems.
+* Fix: optional geocaching -- include config.h to compile.
+* Fix: DEM Layer copy/paste.
+* Fix: crashes on using wrong tools.
+* Fix: bugs that caused odd display of date/time on track properties dialog.
+* Fix: Correctly calculate position when click on speed-time graph.
+* Fix: Relax dependencies about glib.
+* Fix: Upgrading to API 0.5 of OSM.
+* Fix: plotting of DEM data on elevation graph.
+
 Viking 0.9.2 (2007-09-04)
 New features since 0.9.1
 

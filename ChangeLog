@@ -1,4 +1,8 @@
 2007-10-20
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Releasing 0.9.3
+
+2007-10-20
 Evan Battaglia <gtoevan@gmx.net>
 	* Fixing minor typo in vikdemlayer.c which could cause crashes
 
