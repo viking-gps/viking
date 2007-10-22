@@ -40,6 +40,7 @@
 #include "babel.h"
 #include "dem.h"
 #include "dems.h"
+#include "googlesearch.h"
 #ifdef VIK_CONFIG_OPENSTREETMAP
 #include "osm-traces.h"
 #endif
