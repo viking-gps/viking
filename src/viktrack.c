@@ -368,6 +368,10 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
   total_length = vik_track_get_length_including_gaps ( tr );
   chunk_length = total_length / num_chunks;
 
+  /* Zero chunk_length (eg, track of 2 tp with the same loc) will cause crash */
+  if (chunk_length <= 0)
+    return NULL;
+
   current_dist = 0.0;
   current_area_under_curve = 0;
   current_chunk = 0;
