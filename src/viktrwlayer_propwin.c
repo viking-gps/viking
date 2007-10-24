@@ -309,10 +309,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
 
   minmax_alt(altitudes, min_alt, max_alt);
   mina = *min_alt;
-  maxa = *max_alt * 110 / 100;
-  if  (maxa-mina < MIN_ALT_DIFF) {
-    maxa = mina + MIN_ALT_DIFF;
-  }
+  maxa = *max_alt * 125 / 100;
   
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
