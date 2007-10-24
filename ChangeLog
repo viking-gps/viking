@@ -1,3 +1,9 @@
+2007-10-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix crashes on elev graph for some tracks.
+	* Make low alt tracks look more visible on elev graph.
+	* Fix "incompatible pointer type" warnings.
+
 2007-10-23
 Quy Tonthat <qtonthat@gmail.com>:
 	* Missing declaration. Thanks to Bernd Zeimetz <bernd@bzed.de>

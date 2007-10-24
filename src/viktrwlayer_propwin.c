@@ -744,9 +744,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
 
   if (seg_count <= 1)
-    gtk_dialog_set_response_sensitive(dialog, VIK_TRW_LAYER_PROPWIN_SPLIT, FALSE);
+    gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT, FALSE);
   if (vik_track_get_dup_point_count(tr) <= 0)
-    gtk_dialog_set_response_sensitive(dialog, VIK_TRW_LAYER_PROPWIN_DEL_DUP, FALSE);
+    gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_DEL_DUP, FALSE);
 
   vik_track_set_property_dialog(tr, dialog);
   gtk_widget_show_all ( dialog );
