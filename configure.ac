@@ -75,7 +75,7 @@ AC_ARG_ENABLE(oldgoogle, AC_HELP_STRING([--enable-old-google],
               [ac_cv_enable_old_google=no])
 AC_CACHE_CHECK([whether to enable Old Google stuff],
                [ac_cv_enable_old_google], [ac_cv_enable_old_google=yes])
-case $ac_cv_enable_google in
+case $ac_cv_enable_old_google in
   yes)
     AC_DEFINE(VIK_CONFIG_OLD_GOOGLE, [], [OLD GOOGLE STUFF])
     ;;

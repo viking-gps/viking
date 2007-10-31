@@ -1,3 +1,7 @@
+2007-11-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bug that caused Old Google maps not being disabled by default.
+
 2007-10-24
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix crashes on elev graph for some tracks.
