@@ -509,13 +509,8 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
 #undef MARGIN
 #undef LINES
 
-/* Notes: first and third arguments are swapped around compared to the manuals */
-//static void propwin_response_cb( GtkDialog *widgets, gint resp, PropWidgets *widgets)
-static void propwin_response_cb( gpointer p_widgets, gint resp, gpointer p_dialog)
+static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widgets)
 {
-  PropWidgets *widgets = (PropWidgets *) p_widgets;
-  GtkDialog * dialog = p_dialog;
-
   VikTrack *tr = widgets->tr;
   VikTrwLayer *vtl = widgets->vtl;
 
@@ -607,7 +602,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
                          GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
                          NULL);
   g_free(title);
-  g_signal_connect_swapped(dialog, "response", G_CALLBACK(propwin_response_cb), widgets);
+  g_signal_connect(dialog, "response", G_CALLBACK(propwin_response_cb), widgets);
   //fprintf(stderr, "DEBUG: dialog=0x%p\n", dialog);
   GtkTable *table;
   gdouble tr_len;
