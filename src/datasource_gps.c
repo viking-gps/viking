@@ -44,6 +44,8 @@ VikDataSourceInterface vik_datasource_gps_interface = {
   "Acquired from GPS",
   VIK_DATASOURCE_GPSBABEL_DIRECT,
   VIK_DATASOURCE_CREATENEWLAYER,
+  VIK_DATASOURCE_INPUTTYPE_NONE,
+  TRUE,
   (VikDataSourceInitFunc)		datasource_gps_init_func,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_gps_add_setup_widgets,

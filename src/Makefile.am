@@ -57,6 +57,7 @@ viking_SOURCES = main.c \
 	datasource_gps.c \
 	datasource_google.c \
 	datasource_gc.c \
+	datasource_bfilter.c \
 	datasources.h \
 	googlesearch.c googlesearch.h \
 	dem.c dem.h \
@@ -65,6 +66,7 @@ viking_SOURCES = main.c \
 	vikfilelist.c vikfilelist.h \
 	dems.c dems.h \
 	srtm_continent.c \
+	uibuilder.c uibuilder.h \
 	print-preview.c print-preview.h \
 	print.c print.h
 

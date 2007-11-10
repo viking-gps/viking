@@ -42,8 +42,23 @@ typedef struct {
   gpointer user_data;
 } acq_dialog_widgets_t;
 
-typedef enum { VIK_DATASOURCE_GPSBABEL_DIRECT, VIK_DATASOURCE_SHELL_CMD } vik_datasource_type_t;
-typedef enum { VIK_DATASOURCE_CREATENEWLAYER, VIK_DATASOURCE_ADDTOLAYER } vik_datasource_mode_t;
+typedef enum {
+  VIK_DATASOURCE_GPSBABEL_DIRECT,
+  VIK_DATASOURCE_SHELL_CMD
+} vik_datasource_type_t;
+
+typedef enum {
+  VIK_DATASOURCE_CREATENEWLAYER,
+  VIK_DATASOURCE_ADDTOLAYER
+} vik_datasource_mode_t;
+/* TODO: replace track/layer? */
+
+typedef enum {
+  VIK_DATASOURCE_INPUTTYPE_NONE = 0,
+  VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
+  VIK_DATASOURCE_INPUTTYPE_TRACK,
+  VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK
+} vik_datasource_inputtype_t;
 
 
 /* returns pointer to state if OK, otherwise NULL */
@@ -60,6 +75,9 @@ typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewpor
    set both to NULL to signal refusal (ie already downloading) */
 typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
 
+typedef void (*VikDataSourceGetCmdStringFuncWithInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name );
+typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name, const gchar *input_track_file_name );
+
 /* */
 typedef void  (*VikDataSourceProgressFunc)  (gpointer c, gpointer data, acq_dialog_widgets_t *w);
 
@@ -74,19 +92,56 @@ struct _VikDataSourceInterface {
   const gchar *window_title;
   const gchar *layer_title;
   vik_datasource_type_t type;
-  vik_datasource_type_t mode;
+  vik_datasource_mode_t mode;
+  vik_datasource_inputtype_t inputtype;
+  gboolean keep_dialog_open; /* when done */
 
+
+  /*** Manual UI Building ***/
   VikDataSourceInitFunc init_func;
   VikDataSourceCheckExistenceFunc check_existence_func;
   VikDataSourceAddSetupWidgetsFunc add_setup_widgets_func;      
+  /***                    ***/
+
+  /* or VikDataSourceGetCmdStringFuncWithInput, if inputtype is not NONE */
   VikDataSourceGetCmdStringFunc get_cmd_string_func; 
 
   VikDataSourceProgressFunc progress_func;
   VikDataSourceAddProgressWidgetsFunc add_progress_widgets_func;
   VikDataSourceCleanupFunc cleanup_func;
+
+
+  /*** UI Building        ***/
+  VikLayerParam *                   params;
+  guint16                           params_count;
+  VikLayerParamData *               params_defaults;
+  gchar **                          params_groups;
+  guint8                            params_groups_count;
+
 };
 
+/**********************************/
+/**********************************/
+/**********************************/
 
+/* for sources with no input data */
 void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *interface );
+
+/* Create a sub menu intended for rightclicking on a TRWLayer. menu called "Filter"
+ * returns NULL if no filters */
+GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl);
+
+/* Create a sub menu intended for rightclicking on a TRWLayer. menu called "Filter with Track "TRACKNAME"..."
+ * returns NULL if no filters or no filter track has been set
+ */
+GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl);
+
+/* Create a sub menu intended for rightclicking on a track. menu called "Filter"
+ * returns NULL if no applicable filters */
+GtkWidget *a_acquire_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrack *tr);
+
+/* sets aplication-wide track to use with filter. references the track. */
+void a_acquire_set_filter_track ( VikTrack *tr, const gchar *name );
+
 
 #endif

@@ -1,122 +1,121 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
+
 #
-# gcget 34.25,-118.25 100 > yeah.loc
-# ./gcget "Johnstown,CA" 10|gc2gpspoint - -|viking -
+# gcget -- screen scrape Geocaching.com's annoying web interface
+# 	   aka SHOW ME THE CACHE!!!
 #
-# have to make viking-remote allow multiple points. maybe just regular input + maps ?
+# Copyright 2007, Evan Battaglia
+# Distributed under the terms of the GPS v2.
+#
+#
+# requires module mechanize
+#
 
-$USERNAME="username";
-$PASSWORD="password";
+USER="username"
+PASS="password"
 
-$what = $ARGV[0];
-if (!$what) {
-  print "Nothing to do!\nUsage: gcget zip/lat,lon/lat.mm.mmm,lon.mm.mmm/address [max]";
-  exit(0);
-}
+# docs needed!
+# this has some extra args in:
+# gcget lat,lon maxnumgcs [maxdist] [threshold]
+# threshold -- if find more than this # of geocaches, don't get ANY,
+# instead give warning and quit
 
+import sys
+ll = sys.argv[1].split(",")
+lat = ll[0]
+lon = ll[1]
 
-$zip = $lat = $lon = "";
-if ( $what =~ /^(-?[0-9]{0,3}(\.[0-9]{0,9})?),(-?[0-9]{0,3}(\.[0-9]{0,9})?)$/ ) {
-  ($lat,$lon) = ($1,$3);
-} elsif ( $what =~ /^(-?[0-9]{1,3})\.([0-9]{1,2}\.[0-9]{0,3}),(-?[0-9]{1,3})\.([0-9]{1,2}\.[0-9]{0,3})$/ ) {
-  $lat = $1 + ($1 < 0 ? -1 : 1) * $2 / 60;
-  $lon = $3 + ($3 < 0 ? -1 : 1) * $4 / 60;
-} elsif ( $what =~ /^[0-9]{5}$/ ) {
-  $zip = $what;
-} else {
-  $address = `gpsaddress.pl "$what"`;
-  if (not (($address) and $address =~ /^(-?[0-9]{1,3}(\.[0-9]{1,9})?) (-?[0-9]{1,3}(\.[0-9]{1,9})?)$/ )) {
-    die "gpsaddress failed looking up address '$what'\n"
-  } else {
-    ($lat,$lon) = ($1,$3);
-  }
-}
+if len(sys.argv) >= 4:
+  maxdist = sys.argv[3]
+else:
+  maxdist = "999"
+if len(sys.argv) >= 5:
+  threshold = int(sys.argv[4])
+else:
+  threshold = 1000000;
 
-# turn on perl's safety features
-use warnings;
-use WWW::Mechanize;
-use HTML::TableContentParser;
-$browser = WWW::Mechanize->new();
+# rounds up to multiples of 20. 20
+n = int((int(sys.argv[2])+19)/20)
 
-$browser->get("http://www.geocaching.com/seek/");
-$browser->follow("log in");
-print STDERR $browser->title() . "\n";
-$browser->form_number(1);
-$browser->field("myUsername", $USERNAME);
-$browser->field("myPassword", $PASSWORD);
-$browser->click();
-print STDERR $browser->title() . "\n\n";
+import re
+from mechanize import Browser
+import ClientForm
 
-if ( $zip ) {
-  $browser->form(1);
-  $browser->field("zip", $zip);
-} else {
-  $browser->form(6);
-  $browser->field("origin_lat", $lat);
-  $browser->field("origin_long", $lon);
-}
-$browser->click();
+def getmagicnumber(b):
+  for i in range(16,0,-1):
+    if re.compile("pgrBottom..ctl%d" % i).search(b.response().get_data()):
+      return i
+  return 0
 
-$gcsdone = 0;
-$maxgcs = $ARGV[1] ? $ARGV[1] : 1000000;
+b=Browser()
+b.open("http://geocaching.com/seek/")
+b.follow_link(text_regex="log in")
+b.select_form(nr=0)
+b["myUsername"] = USER
+b["myPassword"] = PASS
+b.submit()
 
-print STDERR "\nPages: ";
+magicnumber = 0 # the ctl number of Next. get only once
 
-print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<loc version=\"1.0\" src=\"Groundspeak\">\n";
+try: b.select_form("form4")
+except: pass
+b.select_form("form4")
+b["origin_lat"] = lat
+b["origin_long"] = lon
+b["dist"] = maxdist
+b.submit()
 
+thresholdre = re.compile("Total Records: <b>([0-9]*)</b>")
+m = thresholdre.search(b.response().get_data())
+if m:
+  if int(m.group(1)) > threshold:
+    sys.stderr.write("THRESHOLD %d > %d\n" % (int(m.group(1)), threshold))
+    sys.exit(4)
+  else:
+    records = int(m.group(1))
+    sys.stderr.write("ok found %d, getting min(%d,%d) gcs\n" % (int(m.group(1)), int(records), int(sys.argv[2])))
+else:
+  print "can't find total records"
+  sys.exit(0)
 
-while ( $gcsdone < $maxgcs ) {
+pages = 0
+# (records+19)/20 is the max pages
+for ii in range(min(n,(records+19)/20)):
+  try:
+    b.select_form(nr=0)
+    b['CID'] = [i.name for i in b.find_control('CID').items]
+    b.submit()
+  except:
+    break
 
-$p = HTML::TableContentParser->new();
-$tables = $p->parse($browser->content());
+  # only print one header, start of xml file
+  lines = b.response().get_data().split("\n")
+  if ii == 0:
+    print "\n".join(lines[0:2])
 
-$t = ${$tables}[10];
-@rows = @{$t->{rows}};
-$r = $rows[8];
+  # core
+  print "\n".join(lines[2:-1])
 
-@cs = @{$r->{cells}};
+  print "</waypoint>"
 
-$browser->form_number(1);
+  pages += 1
+  sys.stderr.write("i")
+  sys.stderr.flush()
 
-for ( $i = 0; $i < 20; $i++ ) {
-  $r = $rows[4+(2*$i)];
-  @cs = @{$r->{cells}};
-  if ( $gcsdone < $maxgcs && (! $cs[1]->{data}) ) {
-    if ( $cs[7]->{data} =~ /name='CID' value='(.*)'>/ ) {
-      $browser->tick("CID", $1);
-      $gcsdone++;
-    }
-  }
-}
+  b.back()
 
-$browser->click("Download");
-@lines = split "\n", $browser->content();
-shift @lines; shift @lines; pop @lines;
-print join "\n", @lines;
-print "</waypoint>\n";
+  if not magicnumber:
+    magicnumber = getmagicnumber(b)
 
-$browser->back();
-$form = $browser->form_name("Form1");
-$nextlink = $browser->find_link( text => "Next" );
-if ( $nextlink ) {
-  if ( ($nextlink->url()) =~ /_ctl([0-9]+)/ ) {
-    $form->push_input("hidden", {"name" => "ResultsPager:_ctl$1", value => ""});
-  } else {
-    print STDERR "\n\nERROR\n\n";
-    print "</loc>\n";
-    exit(0);
-  }
-} else {
-  print STDERR "\n\nDONE\n\n";
-  print "</loc>\n";
-  exit(0);
-}
-$browser->submit();
+  b.select_form(nr=0)
+  [f for f in b.forms()][0].new_control("hidden", "pgrBottom$_ctl%d" % magicnumber, {})
+  b.submit()
 
-print STDERR "i";
+sys.stderr.write("\n")
 
-}
+if pages:
+  print "</loc>"
 
-print STDERR "\n\nREACHED MAX\n\n";
-print "</loc>\n";
-
+#  f=open("delmeNOW","w")
+#  f.write(b.response().get_data())
+#  f.close()

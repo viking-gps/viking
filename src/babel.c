@@ -19,6 +19,12 @@
  *
  */
 
+/* babel.c: running external programs and redirecting to TRWLayers.
+ * GPSBabel may not be necessary for everything -- for instance,
+ *   use a_babel_convert_from_shellcommand with input_file_type == NULL
+ *   for an external program that outputs GPX.
+ */
+
 #include "viking.h"
 #include "gpx.h"
 #include "babel.h"
@@ -50,6 +56,17 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   return ret;
 }
 
+/* Runs args[0] with the arguments and uses the GPX module
+ * to import the GPX data into layer vt. Assumes that upon
+ * running the command, the data will appear in the (usually
+ * temporary) file name_dst.
+ *
+ * cb: callback that is run upon new data from STDOUT (?)
+ *     (TODO: STDERR would be nice since we usually redirect STDOUT)
+ * user_data: passed along to cb
+ *
+ * returns TRUE on success
+ */
 gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
 {
   gboolean ret;
@@ -127,7 +144,13 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
   return ret;
 }
 
-gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_type, BabelStatusFunc cb, gpointer user_data )
+/* Runs the input command in a shell (bash) and optionally uses GPSBabel to convert from input_file_type.
+ * If input_file_type is NULL, doesn't use GPSBabel. Input must be GPX (or Geocaching *.loc)
+ *
+ * Uses babel_general_convert_from to actually run the command. This function
+ * prepares the command and temporary file, and sets up the arguments for bash.
+ */
+gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_file_type, BabelStatusFunc cb, gpointer user_data )
 {
   int fd_dst;
   gchar *name_dst;
@@ -137,7 +160,12 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) < 0) {
     ret = FALSE;
   } else {
-    gchar *shell_command = g_strdup_printf("%s | gpsbabel -i %s -f - -o gpx -F %s", input_cmd, input_type, name_dst);
+    gchar *shell_command;
+    if ( input_file_type )
+      shell_command = g_strdup_printf("%s | gpsbabel -i %s -f - -o gpx -F %s", input_cmd, input_file_type, name_dst);
+    else
+      shell_command = g_strdup_printf("%s > %s", input_cmd, name_dst);
+
     g_debug("%s: %s", __FUNCTION__, shell_command);
     close(fd_dst);
 

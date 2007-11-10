@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 
+#include "uibuilder.h"
 #include "vikwindow.h"
 #include "viktreeview.h"
 #include "vikviewport.h"
@@ -112,69 +113,8 @@ struct _VikToolInterface {
 };
 
 /* Parameters (for I/O and Properties) */
+/* --> moved to uibuilder.h */
 
-typedef union {
-  gdouble d;
-  guint32 u;
-  gint32 i;
-  gboolean b;
-  const gchar *s;
-  GdkColor c;
-  GList *sl;
-} VikLayerParamData;
-
-typedef struct {
-  const gchar *name;
-  guint8 type;
-  gint16 group;
-  const gchar *title;
-  guint8 widget_type;
-  gpointer widget_data;
-  gpointer extra_widget_data;
-} VikLayerParam;
-
-enum {
-VIK_LAYER_NOT_IN_PROPERTIES=-2,
-VIK_LAYER_GROUP_NONE=-1
-};
-
-enum {
-VIK_LAYER_WIDGET_CHECKBUTTON=0,
-VIK_LAYER_WIDGET_RADIOGROUP,
-VIK_LAYER_WIDGET_RADIOGROUP_STATIC,
-VIK_LAYER_WIDGET_SPINBUTTON,
-VIK_LAYER_WIDGET_ENTRY,
-VIK_LAYER_WIDGET_FILEENTRY,
-VIK_LAYER_WIDGET_HSCALE,
-VIK_LAYER_WIDGET_COLOR,
-VIK_LAYER_WIDGET_COMBOBOX,
-VIK_LAYER_WIDGET_FILELIST,
-};
-
-typedef struct {
-  gdouble min;
-  gdouble max;
-  gdouble step;
-  guint8 digits;
-} VikLayerParamScale;
-
-/* id is index */
-enum {
-VIK_LAYER_PARAM_DOUBLE=1,
-VIK_LAYER_PARAM_UINT,
-VIK_LAYER_PARAM_INT,
-VIK_LAYER_PARAM_STRING,
-VIK_LAYER_PARAM_BOOLEAN,
-VIK_LAYER_PARAM_COLOR,
-
-/* NOTE: string layer works auniquely: data.sl should NOT be free'd when
- * the internals call get_param -- i.e. it should be managed w/in the layer.
- * The value passed by the internals into set_param should also be managed
- * by the layer -- i.e. free'd by the layer.
- */
-
-VIK_LAYER_PARAM_STRING_LIST,
-};
 
 /* layer interface functions */
 

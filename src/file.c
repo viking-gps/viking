@@ -236,12 +236,13 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
 
 static void string_list_delete ( gpointer key, gpointer l, gpointer user_data )
 {
-  GList *iter = (GList *) iter;
+  /* 20071021 bugfix */
+  GList *iter = (GList *) l;
   while ( iter ) {
     g_free ( iter->data );
     iter = iter->next;
   }
-  g_list_free ( (GList *) iter );
+  g_list_free ( (GList *) l );
 }
 
 static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
