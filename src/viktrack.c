@@ -434,6 +434,12 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
       dist_along_seg = chunk_length - current_dist;
       if ( ignore_it || !iter->next ) {
         pts[current_chunk] = current_area_under_curve / current_dist;
+        if (!iter->next) {
+          int i;
+          for (i = current_chunk + 1; i < num_chunks; i++)
+            pts[i] = pts[current_chunk];
+          break;
+        }
       } 
       else {
         current_area_under_curve += dist_along_seg * (altitude1 + (altitude2 - altitude1)*dist_along_seg/current_seg_length);

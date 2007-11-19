@@ -1,3 +1,7 @@
+2007-11-20:
+Qut Tonthat <qtonthat@gmail.com>:
+	* Fix a bug that can potentially cause segfault.
+
 2007-11-19:
 Qut Tonthat <qtonthat@gmail.com>:
 	* Improve track graphs. Some tracks looked too flat.
