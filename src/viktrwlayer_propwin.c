@@ -266,7 +266,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_g
       &(VIK_TRACKPOINT(iter->prev->data)->coord) );
     x = (width * dist)/total_length + margin;
     if ( elev != VIK_DEM_INVALID_ELEVATION ) {
-      y_alt = height - (height * elev)/alt_diff;
+      y_alt = height - ((height * elev)/alt_diff);
       gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
     }
     if (!isnan(VIK_TRACKPOINT(iter->data)->speed)) {
@@ -309,7 +309,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
 
   minmax_alt(altitudes, min_alt, max_alt);
   mina = *min_alt;
-  maxa = *max_alt * 125 / 100;
+  maxa = *max_alt + ((*max_alt - *min_alt) * 0.25);
   
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
@@ -408,8 +408,9 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   }
 
   minmax_alt(speeds, &mins, &maxs);
-  mins = 0; /* splines sometimes give negative speeds */
-  maxs = maxs * 110 / 100;
+  if (mins < 0.0)
+    mins = 0; /* splines sometimes give negative speeds */
+  maxs = maxs + ((maxs - mins) * 0.1);
   if  (maxs-mins < MIN_SPEED_DIFF) {
     maxs = mins + MIN_SPEED_DIFF;
   }
