@@ -19,6 +19,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG
+#include "config.h"
+#endif /* HAVE_CONFIG */
+
 #include "viking.h"
 #include "icons/viking_icon.png_h"
 #include "mapcache.h"
@@ -30,6 +34,7 @@
 #include <string.h>
 
 #include <glib/gprintf.h>
+#include <glib/gi18n.h>
 
 #include "modules.h"
 
@@ -100,6 +105,10 @@ int main( int argc, char *argv[] )
   int i = 0;
   GError *error = NULL;
   gboolean gui_initialized;
+	
+  bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);  
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+  textdomain (GETTEXT_PACKAGE);
 
   g_thread_init ( NULL );
   gdk_threads_init ();

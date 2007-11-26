@@ -19,6 +19,8 @@ TEST_TYPE=-f
 FILE=src/main.c
 CONFIGURE=configure.ac
 
+ACLOCAL_FLAGS="-I m4"
+
 DIE=0
 
 ($AUTOCONF --version) < /dev/null > /dev/null 2>&1 || {

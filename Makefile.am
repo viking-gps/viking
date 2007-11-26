@@ -1,4 +1,9 @@
-SUBDIRS = src test doc
+SUBDIRS = src test doc po
+
+INTLTOOL = \
+	intltool-extract.in \
+	intltool-merge.in \
+	intltool-update.in
 
 full:
 	./autogen.sh
@@ -9,9 +14,13 @@ bin_SCRIPTS = viking-remote
 
 EXTRA_DIST = \
 	     viking-remote \
-	     viking.spec
+	     viking.spec \
+	     $(INTLTOOL)
 
 dist-hook: viking.spec
 	cp $(top_builddir)/viking.spec $(distdir)
 
-ACLOCAL_AMFLAGS = -I m4
+DISTCLEANFILES = \
+	intltool-extract \
+	intltool-merge \
+	intltool-update

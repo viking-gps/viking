@@ -11,6 +11,23 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
+# I18N
+GETTEXT_PACKAGE=viking
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Gettext package name])
+
+AM_GLIB_DEFINE_LOCALEDIR(LOCALEDIR)
+
+AM_GLIB_GNU_GETTEXT
+AC_PROG_INTLTOOL([0.35.0])
+
+AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/po/LINGUAS'])
+
+dnl This will cause the automake generated makefiles to pass the
+dnl correct flags to aclocal.
+ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
+AC_SUBST(ACLOCAL_AMFLAGS)
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([malloc.h netdb.h netinet/in.h stdlib.h string.h sys/param.h sys/socket.h unistd.h math.h])
@@ -178,10 +195,16 @@ AC_ARG_WITH(mapcache,
 AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
                    [Size of the map cache])
 
+dnl This will cause the automake generated makefiles to pass the
+dnl correct flags to aclocal.
+ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
+AC_SUBST(ACLOCAL_AMFLAGS)
+
 # Configuration
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/icons/Makefile
+		 po/Makefile.in
                  test/Makefile
                  doc/Makefile
                  doc/dev/Makefile])
