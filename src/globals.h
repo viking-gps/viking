@@ -31,7 +31,6 @@
 #define access(a,b) _access(a,b)
 #else
 #include <unistd.h>
-#define UNIX_WEB_BROWSER (g_getenv("BROWSER") ? g_getenv("BROWSER") : "firefox")
 #endif
 
 #define ALTI_TO_MPP 1.4017295

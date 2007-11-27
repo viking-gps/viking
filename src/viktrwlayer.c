@@ -45,6 +45,7 @@
 #include "osm-traces.h"
 #endif
 #include "acquire.h"
+#include "util.h"
 
 #include "icons/icons.h"
 
@@ -2248,18 +2249,7 @@ static void trw_layer_goto_waypoint ( gpointer pass_along[5] )
 static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[5] )
 {
   gchar *webpage = g_strdup_printf("http://www.geocaching.com/seek/cache_details.aspx?wp=%s", (gchar *) pass_along[3] );
-#ifdef WINDOWS
-  ShellExecute(NULL, NULL, (char *) webpage, NULL, ".\\", 0);
-#else /* WINDOWS */
-  GError *err = NULL;
-  gchar *cmd = g_strdup_printf ( "%s %s", UNIX_WEB_BROWSER, webpage );
-  if ( ! g_spawn_command_line_async ( cmd, &err ) )
-  {
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), "Could not launch web browser." );
-    g_error_free ( err );
-  }
-  g_free ( cmd );
-#endif /* WINDOWS */
+  open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), webpage);
   g_free ( webpage );
 }
 
@@ -2383,16 +2373,8 @@ static void trw_layer_track_google_route_webpage( gpointer *pass_along )
   if ( tr ) {
     gchar *escaped = uri_escape ( tr->comment );
     gchar *webpage = g_strdup_printf("http://maps.google.com/maps?f=q&hl=en&q=%s", escaped );
-    GError *err = NULL;
-    gchar *cmd = g_strdup_printf ( "%s %s", UNIX_WEB_BROWSER, webpage );
-
-    if ( ! g_spawn_command_line_async ( cmd, &err ) )
-    {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), "Could not launch web browser." );
-      g_error_free ( err );
-    }
+    open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), webpage);
     g_free ( escaped );
-    g_free ( cmd );
     g_free ( webpage );
   }
 }
