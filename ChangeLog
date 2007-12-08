@@ -1,3 +1,8 @@
+2007-12-07
+Evan Battaglia <gtoevan@gmx.net>:
+	* BlueMarble tiles: http://mike.teczno.com/notes/blue-marble-tiles.html
+	* Google Terrain maps
+
 2007-11-27:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* util.c: Use a list of possible browsers.
