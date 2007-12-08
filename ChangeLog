@@ -2,6 +2,7 @@
 Evan Battaglia <gtoevan@gmx.net>:
 	* BlueMarble tiles: http://mike.teczno.com/notes/blue-marble-tiles.html
 	* Google Terrain maps
+	* Disable printing to make Viking compile for GTK < 2.10
 
 2007-11-27:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

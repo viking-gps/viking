@@ -21,7 +21,9 @@ static const char *menu_xml =
 	"      <separator/>"
 	"      <menuitem action='GenImg'/>"
 	"      <menuitem action='GenImgDir'/>"
+#if GTK_CHECK_VERSION(2,10,0)
 	"      <menuitem action='Print'/>"
+#endif
 	"      <separator/>"
 	"      <menuitem action='SaveExit'/>"
 	"      <menuitem action='Exit'/>"
@@ -93,7 +95,9 @@ static const char *menu_xml =
 	"      <toolitem name='New' action='New'/>"
 	"      <toolitem name='Open' action='Open'/>"
 	"      <toolitem name='Save' action='Save'/>"
+#if GTK_CHECK_VERSION(2,10,0)
 	"      <toolitem name='Print' action='Print'/>"
+#endif
 	"      <toolitem name='Exit' action='Exit'/>"
 	"      <separator/>"
 	"    </placeholder>"

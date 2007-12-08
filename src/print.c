@@ -21,9 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <gtk/gtk.h>
+
+#if GTK_CHECK_VERSION(2,10,0)
+
 #include <string.h>
 #include <glib/gprintf.h>
-#include <gtk/gtk.h>
 
 #include "viking.h"
 #include "print.h"
@@ -664,3 +667,5 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   
   return layout;
 }
+
+#endif

@@ -1673,10 +1673,12 @@ static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
   gtk_widget_hide ( vw->save_img_dir_dia );
 }
 
+#if GTK_CHECK_VERSION(2,10,0)
 static void print_cb ( GtkAction *a, VikWindow *vw )
 {
   a_print(vw, vw->viking_vvp);
 }
+#endif
 
 /* really a misnomer: changes coord mode (actual coordinates) AND/OR draw mode (viewport only) */
 static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWindow *vw )
@@ -1782,7 +1784,11 @@ static GtkActionEntry entries[] = {
   { "SaveAs",    GTK_STOCK_SAVE_AS,      "Save _As",                      NULL,         "Save the file under different name",           (GCallback)save_file_as          },
   { "GenImg",    GTK_STOCK_CLEAR,        "_Generate Image File",          NULL,         "Save a snapshot of the workspace into a file", (GCallback)draw_to_image_file_cb },
   { "GenImgDir", GTK_STOCK_DND_MULTIPLE, "Generate _Directory of Images", NULL,         "FIXME:IMGDIR",                                 (GCallback)draw_to_image_dir_cb  },
+
+#if GTK_CHECK_VERSION(2,10,0)
   { "Print",    GTK_STOCK_PRINT,        "_Print...",          NULL,         "Print maps", (GCallback)print_cb },
+#endif
+
   { "Exit",      GTK_STOCK_QUIT,         "E_xit",                         "<control>W", "Exit the program",                             (GCallback)window_close          },
   { "SaveExit",  GTK_STOCK_QUIT,         "Save and Exit",                 NULL, "Save and Exit the program",                             (GCallback)save_file_and_exit          },
 

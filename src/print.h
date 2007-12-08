@@ -21,9 +21,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#if GTK_CHECK_VERSION(2,10,0)
+
 #ifndef __VIKING_PRINT_H
 #define __VIKING_PRINT_H
 
 void a_print(VikWindow *vw, VikViewport *vvp);
 
 #endif /*__VIKING_PRINT_H*/
+
+#endif
