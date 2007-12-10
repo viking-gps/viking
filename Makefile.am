@@ -7,7 +7,6 @@ INTLTOOL = \
 
 full:
 	./autogen.sh
-	if [ -x config.status ] ; then ./config.status --recheck ; else ./configure ; fi
 	make
 
 bin_SCRIPTS = viking-remote
