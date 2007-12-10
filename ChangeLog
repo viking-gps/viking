@@ -1,4 +1,9 @@
 2007-12-07
+Qut Tonthat <qtonthat@gmail.com>:
+	* Fix autogen.sh to remove the assumption that version 1.9 of automake
+	is available on all systems.
+
+2007-12-07
 Evan Battaglia <gtoevan@gmx.net>:
 	* BlueMarble tiles: http://mike.teczno.com/notes/blue-marble-tiles.html
 	* Google Terrain maps
