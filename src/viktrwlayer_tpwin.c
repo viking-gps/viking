@@ -19,7 +19,12 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <time.h>
 
 #include "coords.h"
@@ -93,10 +98,15 @@ static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
 
 VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
 {
-  static gchar *left_label_texts[] = { "<b>Part of Track:</b>", "<b>Latitude:</b>",
-                                      "<b>Longitude:</b>", "<b>Altitude:</b>", "<b>Timestamp:</b>", "<b>Time:</b>" };
-  static gchar *right_label_texts[] = { "<b>Distance Difference:</b>",
-                                      "<b>Time Difference:</b>", "<b>\"Speed\" Between:</b>" };
+  static gchar *left_label_texts[] = { N_("<b>Part of Track:</b>"),
+	                               N_("<b>Latitude:</b>"),
+                                       N_("<b>Longitude:</b>"),
+				       N_("<b>Altitude:</b>"),
+				       N_("<b>Timestamp:</b>"),
+				       N_("<b>Time:</b>") };
+  static gchar *right_label_texts[] = { N_("<b>Distance Difference:</b>"),
+                                        N_("<b>Time Difference:</b>"),
+					N_("<b>\"Speed\" Between:</b>") };
 
   VikTrwLayerTpwin *tpwin = VIK_TRW_LAYER_TPWIN ( g_object_new ( VIK_TRW_LAYER_TPWIN_TYPE, NULL ) );
   GtkWidget *main_hbox, *left_vbox, *right_vbox;
@@ -104,13 +114,13 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   
 
   gtk_window_set_transient_for ( GTK_WINDOW(tpwin), parent );
-  gtk_window_set_title ( GTK_WINDOW(tpwin), "Trackpoint" );
+  gtk_window_set_title ( GTK_WINDOW(tpwin), _("Trackpoint") );
 
   gtk_dialog_add_buttons ( GTK_DIALOG(tpwin),
       GTK_STOCK_CLOSE, VIK_TRW_LAYER_TPWIN_CLOSE,
       GTK_STOCK_DELETE, VIK_TRW_LAYER_TPWIN_DELETE,
-      "Split Here", VIK_TRW_LAYER_TPWIN_SPLIT,
-      "Join With Last", VIK_TRW_LAYER_TPWIN_JOIN,
+      _("Split Here"), VIK_TRW_LAYER_TPWIN_SPLIT,
+      _("Join With Last"), VIK_TRW_LAYER_TPWIN_JOIN,
       GTK_STOCK_GO_BACK, VIK_TRW_LAYER_TPWIN_BACK,
       GTK_STOCK_GO_FORWARD, VIK_TRW_LAYER_TPWIN_FORWARD,
       NULL );

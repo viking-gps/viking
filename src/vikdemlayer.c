@@ -18,11 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
+#include <glib/gi18n.h>
 
 #include "config.h"
 #include "globals.h"
@@ -93,12 +97,12 @@ enum { DEM_SOURCE_SRTM,
      };
 
 static VikLayerParam dem_layer_params[] = {
-  { "files", VIK_LAYER_PARAM_STRING_LIST, VIK_LAYER_GROUP_NONE, "DEM Files:", VIK_LAYER_WIDGET_FILELIST },
-  { "source", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Download Source:", VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL },
-  { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, "Color:", VIK_LAYER_WIDGET_ENTRY },
-  { "min_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, "Min Elev:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
-  { "max_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, "Max Elev:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
-  { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Line Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
+  { "files", VIK_LAYER_PARAM_STRING_LIST, VIK_LAYER_GROUP_NONE, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST },
+  { "source", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Download Source:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL },
+  { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Color:"), VIK_LAYER_WIDGET_ENTRY },
+  { "min_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Min Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
+  { "max_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Max Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
+  { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Line Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
 };
 
 
@@ -109,7 +113,7 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
 static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
 
 static VikToolInterface dem_tools[] = {
-  { "DEM Download/Import", (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
+  { N_("DEM Download/Import"), (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
     (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release,
     (VikToolKeyFunc) NULL, &cursor_demdl },
 };
@@ -739,7 +743,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
   continent_dir = srtm_continent_dir(intlat, intlon);
 
   if (!continent_dir) {
-    g_warning("No SRTM data available for %f, %f\n", p->lat, p->lon);
+    g_warning(N_("No SRTM data available for %f, %f\n"), p->lat, p->lon);
     return;
   }
 
@@ -978,7 +982,7 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
   gchar *dem_file = NULL;
 
   if ( vdl->source == DEM_SOURCE_NONE )
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vdl), "No download source selected. Edit layer properties." );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vdl), _("No download source selected. Edit layer properties.") );
 
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
   vik_coord_to_latlon ( &coord, &ll );
@@ -1001,7 +1005,7 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
   // TODO: check if already in filelist
 
   if ( ! dem_layer_add_file(vdl, full_path) ) {
-    gchar *tmp = g_strdup_printf ( "Downloading DEM %s ", dem_file );
+    gchar *tmp = g_strdup_printf ( _("Downloading DEM %s"), dem_file );
     DEMDownloadParams *p = g_malloc(sizeof(DEMDownloadParams));
     p->dest = g_strdup(full_path);
     p->lat = ll.lat;

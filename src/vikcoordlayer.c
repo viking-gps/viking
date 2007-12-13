@@ -18,7 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include <math.h>
+#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "vikcoordlayer_pixmap.h"
@@ -36,9 +40,9 @@ static VikLayerParamScale param_scales[] = {
 };
 
 static VikLayerParam coord_layer_params[] = {
-  { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, "Color:", VIK_LAYER_WIDGET_ENTRY },
-  { "min_inc", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, "Minutes Width:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
-  { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Line Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
+  { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Color:"), VIK_LAYER_WIDGET_ENTRY },
+  { "min_inc", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Minutes Width:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
+  { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Line Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
 };
 
 

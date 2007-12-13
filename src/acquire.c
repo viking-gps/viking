@@ -18,8 +18,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <string.h>
 #include <glib/gprintf.h>
+#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "babel.h"
@@ -108,8 +113,8 @@ static void get_from_anything ( w_and_interface_t *wi )
   }
   if ( creating_new_layer ) {
     vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, NULL, FALSE ) );
-    vik_layer_rename ( VIK_LAYER ( vtl ), interface->layer_title );
-    gtk_label_set_text ( GTK_LABEL(w->status), "Working..." );
+    vik_layer_rename ( VIK_LAYER ( vtl ), _(interface->layer_title) );
+    gtk_label_set_text ( GTK_LABEL(w->status), _("Working...") );
   }
   gdk_threads_leave();
 
@@ -123,7 +128,7 @@ static void get_from_anything ( w_and_interface_t *wi )
 
   if (!result) {
     gdk_threads_enter();
-    gtk_label_set_text ( GTK_LABEL(w->status), "Error: couldn't find gpsbabel." );
+    gtk_label_set_text ( GTK_LABEL(w->status), _("Error: couldn't find gpsbabel.") );
     if ( creating_new_layer )
       g_object_unref ( G_OBJECT ( vtl ) );
     gdk_threads_leave();
@@ -131,7 +136,7 @@ static void get_from_anything ( w_and_interface_t *wi )
   else {
     gdk_threads_enter();
     if (w->ok) {
-      gtk_label_set_text ( GTK_LABEL(w->status), "Done." );
+      gtk_label_set_text ( GTK_LABEL(w->status), _("Done.") );
       if ( creating_new_layer )
 	vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
       if ( interface->keep_dialog_open ) {
@@ -230,7 +235,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
     dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
 
     interface->add_setup_widgets_func(dialog, vvp, user_data);
-    gtk_window_set_title ( GTK_WINDOW(dialog), interface->window_title );
+    gtk_window_set_title ( GTK_WINDOW(dialog), _(interface->window_title) );
 
     if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
       interface->cleanup_func(user_data);
@@ -301,12 +306,12 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
 
   dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_dialog_set_response_sensitive ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT, FALSE );
-  gtk_window_set_title ( GTK_WINDOW(dialog), interface->window_title );
+  gtk_window_set_title ( GTK_WINDOW(dialog), _(interface->window_title) );
 
 
   w->dialog = dialog;
   w->ok = TRUE;
-  status = gtk_label_new ("Status: detecting gpsbabel");
+  status = gtk_label_new (_("Status: detecting gpsbabel"));
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), status, FALSE, FALSE, 5 );
   gtk_widget_show_all(status);
   w->status = status;

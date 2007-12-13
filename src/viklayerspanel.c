@@ -19,9 +19,15 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "viking.h"
 
 #include <string.h>
+
+#include <glib/gi18n.h>
 
 enum {
   VLP_UPDATE_SIGNAL,
@@ -50,11 +56,11 @@ struct _VikLayersPanel {
 };
 
 static GtkItemFactoryEntry base_entries[] = {
- { "/C_ut", NULL, (GtkItemFactoryCallback) vik_layers_panel_cut_selected, -1, "<StockItem>", GTK_STOCK_CUT },
- { "/_Copy", NULL, (GtkItemFactoryCallback) vik_layers_panel_copy_selected, -1, "<StockItem>", GTK_STOCK_COPY },
- { "/_Paste", NULL, (GtkItemFactoryCallback) vik_layers_panel_paste_selected, -1, "<StockItem>", GTK_STOCK_PASTE },
- { "/_Delete", NULL, (GtkItemFactoryCallback) vik_layers_panel_delete_selected, -1, "<StockItem>", GTK_STOCK_DELETE },
- { "/New Layer", NULL, NULL, -1, "<Branch>" },
+ { N_("/C_ut"), NULL, (GtkItemFactoryCallback) vik_layers_panel_cut_selected, -1, "<StockItem>", GTK_STOCK_CUT },
+ { N_("/_Copy"), NULL, (GtkItemFactoryCallback) vik_layers_panel_copy_selected, -1, "<StockItem>", GTK_STOCK_COPY },
+ { N_("/_Paste"), NULL, (GtkItemFactoryCallback) vik_layers_panel_paste_selected, -1, "<StockItem>", GTK_STOCK_PASTE },
+ { N_("/_Delete"), NULL, (GtkItemFactoryCallback) vik_layers_panel_delete_selected, -1, "<StockItem>", GTK_STOCK_DELETE },
+ { N_("/New Layer"), NULL, NULL, -1, "<Branch>" },
 };
 
 #define NUM_BASE_ENTRIES 5
@@ -136,7 +142,7 @@ static void layers_panel_init ( VikLayersPanel *vlp )
   vlp->vt = vik_treeview_new ( );
 
   vlp->toplayer = vik_aggregate_layer_new ();
-  vik_layer_rename ( VIK_LAYER(vlp->toplayer), "Top Layer");
+  vik_layer_rename ( VIK_LAYER(vlp->toplayer), _("Top Layer"));
   g_signal_connect_swapped ( G_OBJECT(vlp->toplayer), "update", G_CALLBACK(vik_layers_panel_emit_update), vlp );
 
   vik_treeview_add_layer ( vlp->vt, NULL, &(vlp->toplayer_iter), VIK_LAYER(vlp->toplayer)->name, NULL, vlp->toplayer, VIK_LAYER_AGGREGATE, VIK_LAYER_AGGREGATE );
@@ -434,7 +440,7 @@ gboolean vik_layers_panel_properties ( VikLayersPanel *vlp )
   if ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) && vik_treeview_item_get_type ( vlp->vt, &iter ) == VIK_TREEVIEW_TYPE_LAYER )
   {
     if ( vik_treeview_item_get_data ( vlp->vt, &iter ) == VIK_LAYER_AGGREGATE )
-      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), "Aggregate Layers have no settable properties." );
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Aggregate Layers have no settable properties.") );
     vik_layer_properties ( VIK_LAYER( vik_treeview_item_get_pointer ( vlp->vt, &iter ) ), vlp->vvp );
     return TRUE;
   }
@@ -479,7 +485,7 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
         vik_layers_panel_emit_update ( vlp );
     }
     else
-      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), "You cannot cut the Top Layer." );
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("You cannot cut the Top Layer.") );
   }
 }
 
@@ -528,7 +534,7 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
       }
     }
     else
-      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), "You cannot delete the Top Layer." );
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("You cannot delete the Top Layer.") );
   }
   else if (type == VIK_TREEVIEW_TYPE_SUBLAYER) {
     VikLayer *sel = vik_layers_panel_get_selected ( vlp );
@@ -612,7 +618,7 @@ VikAggregateLayer *vik_layers_panel_get_top_layer ( VikLayersPanel *vlp )
 
 void vik_layers_panel_clear ( VikLayersPanel *vlp )
 {
-  if ( (! vik_aggregate_layer_is_empty(vlp->toplayer)) && a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), "Are you sure you wish to delete all layers?", NULL ) )
+  if ( (! vik_aggregate_layer_is_empty(vlp->toplayer)) && a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Are you sure you wish to delete all layers?"), NULL ) )
     vik_aggregate_layer_clear ( vlp->toplayer ); /* simply deletes all layers */
 }
 

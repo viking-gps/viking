@@ -18,7 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <math.h>
 #include "viking.h"
@@ -35,7 +39,7 @@ static DownloadOptions googlemaps_options = { "http://maps.google.com/", 0 };
 /* initialisation */
 void googlemaps_init () {
   VikMapsLayer_MapType map_type = { 9, 128, 128, VIK_VIEWPORT_DRAWMODE_GOOGLE, googlemaps_coord_to_mapcoord, googlemaps_mapcoord_to_center_coord, googlemaps_download };
-  maps_layer_register_type("Old Google Maps", 9, &map_type);
+  maps_layer_register_type(_("Old Google Maps"), 9, &map_type);
 }
 
 /* 1 << (x-1) is like a 2**(x-1) */

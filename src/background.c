@@ -20,6 +20,8 @@
  */
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
+
 #include "vikstatus.h"
 #include "background.h"
 #include "gtkcellrendererprogress.h"
@@ -50,7 +52,7 @@ void a_background_update_status ( VikStatusbar *vs, gchar *str )
 static void background_thread_update ()
 {
   static gchar buf[20];
-  g_snprintf(buf, sizeof(buf), "%d items", bgitemcount);
+  g_snprintf(buf, sizeof(buf), _("%d items"), bgitemcount);
   g_slist_foreach ( statusbars_to_update, (GFunc) a_background_update_status, buf );
 }
 
@@ -195,11 +197,11 @@ void a_background_init()
 
   /* add columns */
   renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ( "Job", renderer, "text", TITLE_COLUMN, NULL );
+  column = gtk_tree_view_column_new_with_attributes ( _("Job"), renderer, "text", TITLE_COLUMN, NULL );
   gtk_tree_view_append_column ( GTK_TREE_VIEW(bgtreeview), column );
 
   renderer = gtk_cell_renderer_progress_new ();
-  column = gtk_tree_view_column_new_with_attributes ( "Progress", renderer, "percentage", PROGRESS_COLUMN, NULL );
+  column = gtk_tree_view_column_new_with_attributes ( _("Progress"), renderer, "percentage", PROGRESS_COLUMN, NULL );
   gtk_tree_view_append_column ( GTK_TREE_VIEW(bgtreeview), column );
 
   /* setup window */
@@ -210,7 +212,7 @@ void a_background_init()
   bgwindow = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_DELETE, 1, GTK_STOCK_CLEAR, 2, NULL );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(bgwindow)->vbox), scrolled_window, TRUE, TRUE, 0 );
   gtk_window_set_default_size ( GTK_WINDOW(bgwindow), 400, 400 );
-  gtk_window_set_title ( GTK_WINDOW(bgwindow), "Viking Background Jobs" );
+  gtk_window_set_title ( GTK_WINDOW(bgwindow), _("Viking Background Jobs") );
   /* don't destroy win */
   g_signal_connect ( G_OBJECT(bgwindow), "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL );
 

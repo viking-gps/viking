@@ -19,7 +19,9 @@
  *
  */
 #include <string.h>
+
 #include <glib/gprintf.h>
+#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "babel.h"
@@ -40,8 +42,8 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 static void datasource_gps_add_progress_widgets ( GtkWidget *dialog, gpointer user_data );
 
 VikDataSourceInterface vik_datasource_gps_interface = {
-  "Acquire from GPS",
-  "Acquired from GPS",
+  N_("Acquire from GPS"),
+  N_("Acquired from GPS"),
   VIK_DATASOURCE_GPSBABEL_DIRECT,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
@@ -125,7 +127,7 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
 #endif
   *input_file = g_strdup(ser);
 
-  g_debug("using cmdline '%s' and file '%s'\n", *babelargs, *input_file);
+  g_debug(_("using cmdline '%s' and file '%s'\n"), *babelargs, *input_file);
 }
 
 static void datasource_gps_cleanup ( gpointer user_data )
@@ -140,7 +142,7 @@ static void set_total_count(gint cnt, acq_dialog_widgets_t *w)
   gdk_threads_enter();
   if (w->ok) {
     gps_user_data_t *gps_data = (gps_user_data_t *)w->user_data;
-    s = g_strdup_printf("Downloading %d %s...", cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
+    s = g_strdup_printf(_("Downloading %d %s..."), cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
     gtk_label_set_text ( GTK_LABEL(gps_data->progress_label), s );
     gtk_widget_show ( gps_data->progress_label );
     gps_data->total_count = cnt;
@@ -157,9 +159,9 @@ static void set_current_count(gint cnt, acq_dialog_widgets_t *w)
     gps_user_data_t *gps_data = (gps_user_data_t *)w->user_data;
 
     if (cnt < gps_data->total_count) {
-      s = g_strdup_printf("Downloaded %d out of %d %s...", cnt, gps_data->total_count, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
+      s = g_strdup_printf(_("Downloaded %d out of %d %s..."), cnt, gps_data->total_count, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
     } else {
-      s = g_strdup_printf("Downloaded %d %s.", cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
+      s = g_strdup_printf(_("Downloaded %d %s."), cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
     }	  
     gtk_label_set_text ( GTK_LABEL(gps_data->progress_label), s );
   }
@@ -172,7 +174,7 @@ static void set_gps_info(const gchar *info, acq_dialog_widgets_t *w)
   gchar *s = NULL;
   gdk_threads_enter();
   if (w->ok) {
-    s = g_strdup_printf("GPS Device: %s", info);
+    s = g_strdup_printf(_("GPS Device: %s"), info);
     gtk_label_set_text ( GTK_LABEL(((gps_user_data_t *)w->user_data)->gps_label), s );
   }
   g_free(s); s = NULL;
@@ -249,14 +251,14 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   gps_user_data_t *w = (gps_user_data_t *)user_data;
   GtkTable*  box;
 
-  w->proto_l = gtk_label_new ("GPS Protocol:");
+  w->proto_l = gtk_label_new (_("GPS Protocol:"));
   w->proto_b = GTK_COMBO_BOX(gtk_combo_box_new_text ());
   gtk_combo_box_append_text (w->proto_b, "Garmin");
   gtk_combo_box_append_text (w->proto_b, "Magellan");
   gtk_combo_box_set_active (w->proto_b, 0);
   g_object_ref(w->proto_b);
 
-  w->ser_l = gtk_label_new ("Serial Port:");
+  w->ser_l = gtk_label_new (_("Serial Port:"));
   w->ser_b = GTK_COMBO_BOX(gtk_combo_box_entry_new_text ());
   gtk_combo_box_append_text (w->ser_b, "/dev/ttyS0");
   gtk_combo_box_append_text (w->ser_b, "/dev/ttyS1");
@@ -282,7 +284,7 @@ void datasource_gps_add_progress_widgets ( GtkWidget *dialog, gpointer user_data
 
   gps_user_data_t *w_gps = (gps_user_data_t *)user_data;
 
-  gpslabel = gtk_label_new ("GPS device: N/A");
+  gpslabel = gtk_label_new (_("GPS device: N/A"));
   verlabel = gtk_label_new ("");
   idlabel = gtk_label_new ("");
   wplabel = gtk_label_new ("");

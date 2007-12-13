@@ -21,12 +21,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <gtk/gtk.h>
-
-#if GTK_CHECK_VERSION(2,10,0)
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <string.h>
 #include <glib/gprintf.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
+#if GTK_CHECK_VERSION(2,10,0)
 
 #include "viking.h"
 #include "print.h"
@@ -46,10 +50,10 @@ typedef struct {
 } PrintCenterName;
 
 static const PrintCenterName center_modes[] = {
-  {"None",          VIK_PRINT_CENTER_NONE},
-  {"Horizontally",  VIK_PRINT_CENTER_HORIZONTALLY},
-  {"Vertically",    VIK_PRINT_CENTER_VERTICALLY},
-  {"Both",          VIK_PRINT_CENTER_BOTH},
+  {N_("None"),          VIK_PRINT_CENTER_NONE},
+  {N_("Horizontally"),  VIK_PRINT_CENTER_HORIZONTALLY},
+  {N_("Vertically"),    VIK_PRINT_CENTER_VERTICALLY},
+  {N_("Both"),          VIK_PRINT_CENTER_BOTH},
   {NULL,            -1}
 };
 
@@ -595,7 +599,7 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
 
   combo = gtk_combo_box_new_text ();
   for (center = center_modes; center->name; center++) {
-    gtk_combo_box_append_text(GTK_COMBO_BOX(combo), center->name);
+    gtk_combo_box_append_text(GTK_COMBO_BOX(combo), _(center->name));
   }
   gtk_combo_box_set_active(GTK_COMBO_BOX(combo), VIK_PRINT_CENTER_BOTH);
   gtk_box_pack_start (GTK_BOX (hbox), combo, TRUE, TRUE, 0);

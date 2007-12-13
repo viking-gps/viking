@@ -17,6 +17,11 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <glib/gi18n.h>
 
 #include "dialog.h"
 
@@ -53,6 +58,6 @@ void open_url(GtkWindow *parent, const gchar * url)
     browser = browsers[i++];
   } while(browser);
   
-  a_dialog_error_msg ( parent, "Could not launch web browser." );
+  a_dialog_error_msg ( parent, _("Could not launch web browser.") );
 #endif /* WINDOWS */
 }

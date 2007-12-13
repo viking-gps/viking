@@ -21,7 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <math.h>
 #include "globals.h"
@@ -41,7 +45,7 @@ static DownloadOptions expedia_options = { NULL, 2 };
 
 void expedia_init() {
   VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download };
-  maps_layer_register_type("Expedia Street Maps", 5, &map_type);
+  maps_layer_register_type(_("Expedia Street Maps"), 5, &map_type);
 }
 
 #define EXPEDIA_SITE "expedia.com"
@@ -69,7 +73,7 @@ gdouble expedia_altis_freq ( gint alti )
     if ( expedia_altis[i] == alti )
       return expedia_altis_degree_freq [ i ];
 
-  g_error ( "Invalid expedia altitude" );
+  g_error ( _("Invalid expedia altitude") );
   return 0;
 }
 
@@ -100,7 +104,7 @@ void expedia_snip ( const gchar *file )
   old = gdk_pixbuf_new_from_file ( file, &gx );
   if (gx)
   {
-    g_warning ( "Couldn't open EXPEDIA image file (right after successful download! Please report and delete image file!): %s", gx->message );
+    g_warning ( _("Couldn't open EXPEDIA image file (right after successful download! Please report and delete image file!): %s"), gx->message );
     g_error_free ( gx );
     return;
   }
@@ -113,7 +117,7 @@ void expedia_snip ( const gchar *file )
 
   gdk_pixbuf_save ( cropped, file, "png", &gx, NULL );
   if ( gx ) {
-    g_warning ( "Couldn't save EXPEDIA image file (right after successful download! Please report and delete image file!): %s", gx->message );
+    g_warning ( _("Couldn't save EXPEDIA image file (right after successful download! Please report and delete image file!): %s"), gx->message );
     g_error_free ( gx );
   }
 
@@ -178,9 +182,8 @@ static int expedia_download ( MapCoord *src, const gchar *dest_fn )
   uri = g_strdup_printf ( "/pub/agent.dll?qscr=mrdt&ID=3XNsF.&CenP=%lf,%lf&Lang=%s&Alti=%d&Size=%d,%d&Offs=0.000000,0.000000&BCheck&tpid=1",
                ll.lat, ll.lon, (ll.lon > -30) ? "EUR0809" : "USA0409", src->scale, width, height );
 
-  if ((res = a_http_download_get_url ( "expedia.com", uri, dest_fn, &expedia_options )) == 0)	/* All OK */
+  if ((res = a_http_download_get_url ( EXPEDIA_SITE, uri, dest_fn, &expedia_options )) == 0)	/* All OK */
   	expedia_snip ( dest_fn );
   return(res);
 }
-
 

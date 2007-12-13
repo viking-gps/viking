@@ -19,6 +19,12 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <glib/gi18n.h>
+
 #include "viking.h"
 #include <string.h>
 
@@ -175,7 +181,9 @@ VikLayer *vik_layer_create ( gint type, gpointer vp, GtkWindow *w, gboolean inte
   if ( interactive )
   {
     if ( vik_layer_properties ( new_layer, vp ) )
-      vik_layer_rename ( VIK_LAYER(new_layer), vik_layer_interfaces[type]->name );
+      /* We translate the name here */
+      /* in order to avoid translating name set by user */
+      vik_layer_rename ( VIK_LAYER(new_layer), _(vik_layer_interfaces[type]->name) );
     else
     {
       g_object_unref ( G_OBJECT(new_layer) ); /* cancel that */

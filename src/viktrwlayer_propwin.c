@@ -19,8 +19,14 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <math.h>
+
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <time.h>
 #include <string.h>
 #include "coords.h"
@@ -592,7 +598,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->tr = tr;
   widgets->vlp = vlp;
   widgets->track_name = track_name;
-  gchar *title = g_strdup_printf("%s - Track Properties", track_name);
+  gchar *title = g_strdup_printf(_("%s - Track Properties"), track_name);
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                          parent,
                          GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
@@ -618,7 +624,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   int cnt;
   int i;
 
-  static gchar *label_texts[] = { "<b>Comment:</b>", "<b>Track Length:</b>", "<b>Trackpoints:</b>", "<b>Segments:</b>", "<b>Duplicate Points:</b>", "<b>Max Speed:</b>", "<b>Avg. Speed:</b>", "<b>Avg. Dist. Between TPs:</b>", "<b>Elevation Range:</b>", "<b>Total Elevation Gain/Loss:</b>", "<b>Start:</b>",  "<b>End:</b>",  "<b>Duration:</b>", "<b>Track Distance/Time:</b>" };
+  static gchar *label_texts[] = { N_("<b>Comment:</b>"), N_("<b>Track Length:</b>"), N_("<b>Trackpoints:</b>"), N_("<b>Segments:</b>"), N_("<b>Duplicate Points:</b>"), N_("<b>Max Speed:</b>"), N_("<b>Avg. Speed:</b>"), N_("<b>Avg. Dist. Between TPs:</b>"), N_("<b>Elevation Range:</b>"), N_("<b>Total Elevation Gain/Loss:</b>"), N_("<b>Start:</b>"), N_("<b>End:</b>"), N_("<b>Duration:</b>"), N_("<b>Track Distance/Time:</b>") };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 
@@ -646,14 +652,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
 
   tmp_speed = vik_track_get_max_speed(tr);
   if ( tmp_speed == 0 )
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s   (%.0f km/h)", tmp_speed, MTOK(tmp_speed) );
   widgets->w_max_speed = content[cnt++] = gtk_label_new ( tmp_buf );
 
   tmp_speed = vik_track_get_average_speed(tr);
   if ( tmp_speed == 0 )
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s   (%.0f km/h)", tmp_speed, MTOK(tmp_speed) );
   widgets->w_avg_speed = content[cnt++] = gtk_label_new ( tmp_buf );
@@ -662,14 +668,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->w_avg_dist = content[cnt++] = gtk_label_new ( tmp_buf );
 
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
   widgets->w_elev_range = content[cnt++] = gtk_label_new ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "No Data");
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
   widgets->w_elev_gain = content[cnt++] = gtk_label_new ( tmp_buf );
@@ -705,14 +711,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     g_strchomp(tmp_buf);
     widgets->w_time_end = content[cnt++] = gtk_label_new(tmp_buf);
 
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%d minutes", (int)(t2-t1)/60);
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes"), (int)(t2-t1)/60);
     widgets->w_time_dur = content[cnt++] = gtk_label_new(tmp_buf);
   } else {
-    widgets->w_time_start = content[cnt++] = gtk_label_new("No Data");
-    widgets->w_time_end = content[cnt++] = gtk_label_new("No Data");
-    widgets->w_time_dur = content[cnt++] = gtk_label_new("No Data");
+    widgets->w_time_start = content[cnt++] = gtk_label_new(_("No Data"));
+    widgets->w_time_end = content[cnt++] = gtk_label_new(_("No Data"));
+    widgets->w_time_dur = content[cnt++] = gtk_label_new(_("No Data"));
   }
-  widgets->w_dist_time = content[cnt++] = gtk_label_new("No Data");
+  widgets->w_dist_time = content[cnt++] = gtk_label_new(_("No Data"));
 
   table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
@@ -721,7 +727,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
 
     label = gtk_label_new(NULL);
     gtk_misc_set_alignment ( GTK_MISC(label), 1, 0 );
-    gtk_label_set_markup ( GTK_LABEL(label), label_texts[i] );
+    gtk_label_set_markup ( GTK_LABEL(label), _(label_texts[i]) );
     gtk_table_attach_defaults ( table, label, 0, 1, i, i+1 );
     if (GTK_IS_MISC(content[i])) {
       gtk_misc_set_alignment ( GTK_MISC(content[i]), 0, 0 );
@@ -732,10 +738,10 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(table), FALSE, FALSE, 0);
 
   if ( profile )
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), profile, gtk_label_new("Elevation-distance"));
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), profile, gtk_label_new(_("Elevation-distance")));
 
   if ( vtdiag )
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), vtdiag, gtk_label_new("Speed-time"));
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), vtdiag, gtk_label_new(_("Speed-time")));
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
 

@@ -19,7 +19,12 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include "vikfileentry.h"
 
@@ -59,7 +64,7 @@ GtkWidget *vik_file_entry_new ()
 {
   VikFileEntry *vfe = VIK_FILE_ENTRY ( g_object_new ( VIK_FILE_ENTRY_TYPE, NULL ) );
   vfe->entry = gtk_entry_new ();
-  vfe->button = gtk_button_new_with_label ( "Browse..." );
+  vfe->button = gtk_button_new_with_label ( _("Browse...") );
   g_signal_connect_swapped ( G_OBJECT(vfe->button), "clicked", G_CALLBACK(choose_file), vfe );
 
   gtk_box_pack_start ( GTK_BOX(vfe), vfe->entry, TRUE, TRUE, 3 );
@@ -86,7 +91,7 @@ static void choose_file ( VikFileEntry *vfe )
   {
     GtkWidget *win;
     g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfe))) );
-    vfe->file_selector = gtk_file_selection_new ("Choose file");
+    vfe->file_selector = gtk_file_selection_new (_("Choose file"));
     gtk_window_set_transient_for ( GTK_WINDOW(vfe->file_selector), GTK_WINDOW(win) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vfe->file_selector), TRUE );
   }

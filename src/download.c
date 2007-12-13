@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <glib/gi18n.h>
 
 #include "download.h"
 
@@ -141,7 +142,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 
   if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
   {
-    g_warning("Download error: %s\n", fn);
+    g_warning(_("Download error: %s\n"), fn);
     fclose ( f );
     remove ( tmpfilename );
     g_free ( tmpfilename );

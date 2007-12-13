@@ -10,6 +10,8 @@
 #include <sys/mman.h>
 
 
+#include <glib/gi18n.h>
+
 #include "dem.h"
 #include "file.h"
 
@@ -22,7 +24,7 @@ static gboolean get_double_and_continue ( gchar **buffer, gdouble *tmp, gboolean
   *tmp = g_strtod(*buffer, &endptr);
   if ( endptr == NULL|| endptr == *buffer ) {
     if ( warn )
-      g_warning("Invalid DEM");
+      g_warning(_("Invalid DEM"));
     return FALSE;
   }
   *buffer=endptr;
@@ -36,7 +38,7 @@ static gboolean get_int_and_continue ( gchar **buffer, gint *tmp, gboolean warn 
   *tmp = strtol(*buffer, &endptr, 10);
   if ( endptr == NULL|| endptr == *buffer ) {
     if ( warn )
-      g_warning("Invalid DEM");
+      g_warning(_("Invalid DEM"));
     return FALSE;
   }
   *buffer=endptr;
@@ -78,7 +80,7 @@ static gboolean dem_parse_header ( gchar *buffer, VikDEM *dem )
   /* skip numbers 5-19  */
   for ( i = 0; i < 15; i++ ) {
     if ( ! get_double_and_continue(&buffer, &val, FALSE) ) {
-      g_warning ("Invalid DEM header");
+      g_warning (_("Invalid DEM header"));
       return FALSE;
     }
   }
@@ -147,7 +149,7 @@ static void dem_parse_block_as_header ( gchar *buffer, VikDEM *dem, gint *cur_co
   /* 1 x n_rows 1 east_west south x x x DATA */
 
   if ( (!get_double_and_continue(&buffer, &tmp, TRUE)) || tmp != 1 ) {
-    g_warning("Incorrect DEM Class B record: expected 1");
+    g_warning(_("Incorrect DEM Class B record: expected 1"));
     return;
   }
 
@@ -160,7 +162,7 @@ static void dem_parse_block_as_header ( gchar *buffer, VikDEM *dem, gint *cur_co
   n_rows = (guint) tmp;
 
   if ( (!get_double_and_continue(&buffer, &tmp, TRUE)) || tmp != 1 ) {
-    g_warning("Incorrect DEM Class B record: expected 1");
+    g_warning(_("Incorrect DEM Class B record: expected 1"));
     return;
   }
   

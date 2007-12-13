@@ -19,7 +19,13 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
+
 #include <string.h>
 
 #include "viking.h"
@@ -194,7 +200,7 @@ static void treeview_add_columns ( VikTreeview *vt )
   g_object_set (G_OBJECT (renderer), "xalign", 0.0, NULL);
 
   col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (vt),
-							    -1, "Layer Name",
+							    -1, _("Layer Name"),
 							    renderer, "text",
 							    NAME_COLUMN,
 							    "editable", EDITABLE_COLUMN,
@@ -600,7 +606,7 @@ static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTree
 static gboolean treeview_drag_data_delete ( GtkTreeDragSource *drag_source, GtkTreePath *path )
 {
   gchar *s_dest = gtk_tree_path_to_string(path);
-  g_print("delete data from %s\n", s_dest);
+  g_print(_("delete data from %s\n"), s_dest);
   g_free(s_dest);
   return FALSE;
 }

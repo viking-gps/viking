@@ -19,9 +19,13 @@
  *
  * Created by Quy Tonthat <qtonthat@gmail.com>
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <glib/gprintf.h>
+#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "curl_download.h"
@@ -57,9 +61,9 @@ static gboolean prompt_try_again(VikWindow *vw)
   gboolean ret = TRUE;
 
   dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_window_set_title(GTK_WINDOW(dialog), "Search");
+  gtk_window_set_title(GTK_WINDOW(dialog), _("Search"));
 
-  GtkWidget *search_label = gtk_label_new("I don't know that place. Do you want another search?");
+  GtkWidget *search_label = gtk_label_new(_("I don't know that place. Do you want another search?"));
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
 
@@ -75,9 +79,9 @@ static gchar *  a_prompt_for_search_string(VikWindow *vw)
   GtkWidget *dialog = NULL;
 
   dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_window_set_title(GTK_WINDOW(dialog), "Search");
+  gtk_window_set_title(GTK_WINDOW(dialog), _("Search"));
 
-  GtkWidget *search_label = gtk_label_new("Enter address or place name:");
+  GtkWidget *search_label = gtk_label_new(_("Enter address or place name:"));
   GtkWidget *search_entry = gtk_entry_new();
   if (last_search_str)
     gtk_entry_set_text(GTK_ENTRY(search_entry), last_search_str);
@@ -116,7 +120,7 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   lat_buf[0] = lon_buf[0] = '\0';
 
   if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
-    g_critical("couldn't map temp file\n");
+    g_critical(_("couldn't map temp file\n"));
     exit(1);
   }
   len = g_mapped_file_get_length(mf);
@@ -205,7 +209,7 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
   escaped_srch_str = uri_escape(srch_str);
 
   if ((tmp_fd = g_file_open_tmp ("vikgsearch.XXXXXX", &tmpname, NULL)) == -1) {
-    g_critical("couldn't open temp file\n");
+    g_critical(_("couldn't open temp file\n"));
     exit(1);
   }
 

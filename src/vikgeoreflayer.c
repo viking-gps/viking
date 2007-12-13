@@ -19,10 +19,15 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "viking.h"
 #include "vikgeoreflayer_pixmap.h"
 #include <stdlib.h>
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "icons/icons.h"
 
@@ -58,11 +63,11 @@ static gpointer georef_layer_zoom_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
 
 static VikToolInterface georef_tools[] = {
-  { "Georef Move Map", (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
+  { N_("Georef Move Map"), (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release,
     (VikToolKeyFunc) NULL, &cursor_geomove },
 
-  { "Georef Zoom Tool", (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
+  { N_("Georef Zoom Tool"), (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL,
     (VikToolKeyFunc) NULL, &cursor_geozoom },
 };
@@ -260,7 +265,7 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl )
 
   if (gx)
   {
-    g_warning ( "Couldn't open image file: %s", gx->message );
+    g_warning ( _("Couldn't open image file: %s"), gx->message );
     g_error_free ( gx );
   }
   else
@@ -285,7 +290,7 @@ static gboolean world_file_read_line ( gchar *buffer, gint size, FILE *f, GtkWid
 {
   if (!fgets ( buffer, 1024, f ))
   {
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(widget), "Unexpected end of file reading World file." );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(widget), _("Unexpected end of file reading World file.") );
     g_free ( buffer );
     fclose ( f );
     return FALSE;
@@ -300,7 +305,7 @@ static gboolean world_file_read_line ( gchar *buffer, gint size, FILE *f, GtkWid
 
 static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
 {
-  GtkWidget *file_selector = gtk_file_selection_new ("Choose World file");
+  GtkWidget *file_selector = gtk_file_selection_new (_("Choose World file"));
 
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_OK )
   {
@@ -308,7 +313,7 @@ static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
     gtk_widget_destroy ( file_selector ); 
     if ( !f )
     {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(pass_along[0]), "The World file you requested could not be opened for reading." );
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(pass_along[0]), _("The World file you requested could not be opened for reading.") );
       return;
     }
     else
@@ -339,7 +344,7 @@ We need a
 static void georef_layer_export_params ( gpointer *pass_along[2] )
 {
   VikGeorefLayer *vgl = VIK_GEOREF_LAYER(pass_along[0]);
-  GtkWidget *file_selector = gtk_file_selection_new ("Choose World file");
+  GtkWidget *file_selector = gtk_file_selection_new (_("Choose World file"));
 
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_OK )
   {
@@ -347,7 +352,7 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
     gtk_widget_destroy ( file_selector ); 
     if ( !f )
     {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(pass_along[0]), "The file you requested could not be opened for writing." );
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(pass_along[0]), _("The file you requested could not be opened for writing.") );
       return;
     }
     else
@@ -363,7 +368,7 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
 /* returns TRUE if OK was pressed. */
 static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWindow *w )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ("Layer Properties",
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Layer Properties"),
                                                   w,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -379,25 +384,25 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
 
   wfp_hbox = gtk_hbox_new ( FALSE, 0 );
-  wfp_label = gtk_label_new ( "World File Parameters:" );
-  wfp_button = gtk_button_new_with_label ( "Load From File..." );
+  wfp_label = gtk_label_new ( _("World File Parameters:") );
+  wfp_button = gtk_button_new_with_label ( _("Load From File...") );
 
   gtk_box_pack_start ( GTK_BOX(wfp_hbox), wfp_label, TRUE, TRUE, 0 );
   gtk_box_pack_start ( GTK_BOX(wfp_hbox), wfp_button, FALSE, FALSE, 3 );
 
-  ce_label = gtk_label_new ( "Corner pixel easting:" );
+  ce_label = gtk_label_new ( _("Corner pixel easting:") );
   ce_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 1500000.0, 1, 5, 5 ), 1, 4 );
 
-  cn_label = gtk_label_new ( "Corner pixel northing:" );
+  cn_label = gtk_label_new ( _("Corner pixel northing:") );
   cn_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 9000000.0, 1, 5, 5 ), 1, 4 );
 
-  xlabel = gtk_label_new ( "X (easting) scale (mpp): ");
-  ylabel = gtk_label_new ( "Y (northing) scale (mpp): ");
+  xlabel = gtk_label_new ( _("X (easting) scale (mpp): "));
+  ylabel = gtk_label_new ( _("Y (northing) scale (mpp): "));
 
   xspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 5 ), 1, 8 );
   yspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 5 ), 1, 8 );
 
-  imagelabel = gtk_label_new ( "Map Image:" );
+  imagelabel = gtk_label_new ( _("Map Image:") );
   imageentry = vik_file_entry_new ();
 
   if (*vgl)
@@ -501,17 +506,17 @@ static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gp
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Zoom to Fit Map" );
+  item = gtk_menu_item_new_with_label ( _("Zoom to Fit Map") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(georef_layer_zoom_to_fit), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Goto Map Center" );
+  item = gtk_menu_item_new_with_label ( _("Goto Map Center") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(georef_layer_goto_center), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Export to World File" );
+  item = gtk_menu_item_new_with_label ( _("Export to World File") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(georef_layer_export_params), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );

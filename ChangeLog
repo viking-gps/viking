@@ -1,5 +1,9 @@
 2007-12-12:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Marking translatable strings
+
+2007-12-12:
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix warning: underquoted definition of AM_WITH_EXPAT
 	* Fix bug: "config.status: error: cannot find input file: Makefile.in"
 

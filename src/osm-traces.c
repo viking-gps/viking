@@ -18,6 +18,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -32,6 +35,7 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "viktrwlayer.h"
@@ -188,14 +192,14 @@ void osm_traces_upload_file(const char *user,
     {
       g_debug("received valid curl response: %ld", code);
       if (code != 200)
-        g_warning("failed to upload data: HTTP response is %ld", code);
+        g_warning(_("failed to upload data: HTTP response is %ld"), code);
     }
     else
-      g_error("curl_easy_getinfo failed: %d", res);
+      g_error(_("curl_easy_getinfo failed: %d"), res);
   }
   else
     {
-      g_warning("curl request failed: %s", curl_error_buffer);
+      g_warning(_("curl request failed: %s"), curl_error_buffer);
     }
 
   /* Memory */
@@ -221,7 +225,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   /* Opening temporary file */
   fd = g_file_open_tmp("viking_osm_upload_XXXXXX.gpx", &filename, &error);
   if (fd < 0) {
-    g_error("failed to open temporary file: %s", strerror(errno));
+    g_error(_("failed to open temporary file: %s"), strerror(errno));
     return;
   }
   g_clear_error(&error);
@@ -252,7 +256,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   /* Removing temporary file */
   ret = g_unlink(filename);
   if (ret != 0) {
-    g_error("failed to unlink temporary file: %s", strerror(errno));
+    g_error(_("failed to unlink temporary file: %s"), strerror(errno));
   }
 }
 
@@ -264,7 +268,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
  */
 static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track_name )
 {
-  GtkWidget *dia = gtk_dialog_new_with_buttons ("OSM upload",
+  GtkWidget *dia = gtk_dialog_new_with_buttons (_("OSM upload"),
                                                  VIK_GTK_WINDOW_FROM_LAYER(vtl),
                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                  GTK_STOCK_CANCEL,
@@ -284,7 +288,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
 
   dialog_tips = gtk_tooltips_new();
 
-  user_label = gtk_label_new("Email:");
+  user_label = gtk_label_new(_("Email:"));
   user_entry = gtk_entry_new();
   if (user != NULL)
     gtk_entry_set_text(GTK_ENTRY(user_entry), user);
@@ -299,10 +303,10 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_widget_show_all ( user_label );
   gtk_widget_show_all ( user_entry );
   gtk_tooltips_set_tip (dialog_tips, user_entry,
-                        "The email used as login",
-                        "Enter the email you use to login into www.openstreetmap.org.");
+                        _("The email used as login"),
+                        _("Enter the email you use to login into www.openstreetmap.org."));
 
-  password_label = gtk_label_new("Password:");
+  password_label = gtk_label_new(_("Password:"));
   password_entry = gtk_entry_new();
   if (password != NULL)
     gtk_entry_set_text(GTK_ENTRY(password_entry), password);
@@ -313,10 +317,10 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_widget_show_all ( password_label );
   gtk_widget_show_all ( password_entry );
   gtk_tooltips_set_tip (dialog_tips, password_entry,
-                        "The password used to login",
-                        "Enter the password you use to login into www.openstreetmap.org.");
+                        _("The password used to login"),
+                        _("Enter the password you use to login into www.openstreetmap.org."));
 
-  name_label = gtk_label_new("File's name:");
+  name_label = gtk_label_new(_("File's name:"));
   name_entry = gtk_entry_new();
   if (track_name != NULL)
     name = track_name;
@@ -328,37 +332,37 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_widget_show_all ( name_label );
   gtk_widget_show_all ( name_entry );
   gtk_tooltips_set_tip (dialog_tips, name_entry,
-                        "The name of the file on OSM",
-                        "This is the name of the file created on the server. "
-			"This is not the name of the local file.");
+                        _("The name of the file on OSM"),
+                        _("This is the name of the file created on the server. "
+			"This is not the name of the local file."));
 
-  description_label = gtk_label_new("Description:");
+  description_label = gtk_label_new(_("Description:"));
   description_entry = gtk_entry_new();
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), description_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), description_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( description_label );
   gtk_widget_show_all ( description_entry );
   gtk_tooltips_set_tip (dialog_tips, description_entry,
-                        "The description of the trace",
+                        _("The description of the trace"),
                         "");
 
-  tags_label = gtk_label_new("Tags:");
+  tags_label = gtk_label_new(_("Tags:"));
   tags_entry = gtk_entry_new();
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), tags_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), tags_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( tags_label );
   gtk_widget_show_all ( tags_entry );
   gtk_tooltips_set_tip (dialog_tips, tags_entry,
-                        "The tags associated to the trace",
+                        _("The tags associated to the trace"),
                         "");
 
-  public = gtk_check_button_new_with_label("Public");
+  public = gtk_check_button_new_with_label(_("Public"));
   /* Set public by default */
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(public), TRUE);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), public, FALSE, FALSE, 0);
   gtk_widget_show_all ( public );
   gtk_tooltips_set_tip (dialog_tips, public,
-                        "Indicates if the trace is public or not",
+                        _("Indicates if the trace is public or not"),
                         "");
 
   if ( gtk_dialog_run ( GTK_DIALOG(dia) ) == GTK_RESPONSE_ACCEPT )
@@ -379,7 +383,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
     info->vtl         = VIK_TRW_LAYER(g_object_ref(vtl));
     info->track_name  = (track_name == NULL) ? NULL : g_strdup(track_name);
 
-    title = g_strdup_printf("Uploading %s to OSM", info->name);
+    title = g_strdup_printf(_("Uploading %s to OSM"), info->name);
 
     /* launch the thread */
     a_background_thread(VIK_GTK_WINDOW_FROM_LAYER(vtl),          /* parent window */

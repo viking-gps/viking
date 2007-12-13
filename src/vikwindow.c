@@ -18,6 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "viking.h"
 #include "background.h"
 #include "acquire.h"
@@ -26,14 +31,12 @@
 #include "dems.h"
 #include "print.h"
 
-#define VIKING_TITLE " - Viking"
-
-#include <glib/gprintf.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
 #include <glib/gprintf.h>
+#include <glib/gi18n.h>
 #ifdef WINDOWS
 /* TODO IMPORTANT: mkdir for windows header? is it called 'mkdir' */
 #define make_dir(dir) mkdir(dir)
@@ -54,6 +57,7 @@ static GObjectClass *parent_class;
 
 static void window_init ( VikWindow *vw );
 static void window_class_init ( VikWindowClass *klass );
+static void window_set_filename ( VikWindow *vw, const gchar *filename );
 
 static void draw_update ( VikWindow *vw );
 
@@ -171,7 +175,7 @@ enum {
 
 static guint window_signals[VW_LAST_SIGNAL] = { 0 };
 
-static gchar *tool_names[NUMBER_OF_TOOLS] = { "Zoom", "Ruler", "Pan" };
+static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Zoom"), N_("Ruler"), N_("Pan") };
 
 GdkCursor *vw_cursor_zoom = NULL;
 GdkCursor *vw_cursor_ruler = NULL;
@@ -266,7 +270,7 @@ static void window_init ( VikWindow *vw )
 
   vw->vt = toolbox_create(vw);
   window_create_ui(vw);
-  gtk_window_set_title ( GTK_WINDOW(vw), "Untitled" VIKING_TITLE );
+  window_set_filename (vw, NULL);
   
   toolbox_activate(vw->vt, "Zoom");
 
@@ -349,9 +353,11 @@ static gboolean delete_event( VikWindow *vw )
   {
     GtkDialog *dia;
     dia = GTK_DIALOG ( gtk_message_dialog_new ( GTK_WINDOW(vw), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
-      "Do you want to save the changes you made to the document \"%s\"?\n\nYour changes will be lost if you don't save them.",
-      vw->filename ? a_file_basename ( vw->filename ) : "Untitled" ) );
-    gtk_dialog_add_buttons ( dia, "Don't Save", GTK_RESPONSE_NO, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_YES, NULL );
+      _("Do you want to save the changes you made to the document \"%s\"?\n"
+	"\n"
+	"Your changes will be lost if you don't save them."),
+      vw->filename ? a_file_basename ( vw->filename ) : _("Untitled") ) );
+    gtk_dialog_add_buttons ( dia, _("Don't Save"), GTK_RESPONSE_NO, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_YES, NULL );
     switch ( gtk_dialog_run ( dia ) )
     {
       case GTK_RESPONSE_NO: gtk_widget_destroy ( GTK_WIDGET(dia) ); return FALSE;
@@ -384,11 +390,11 @@ static void draw_sync ( VikWindow *vw )
 static void draw_status ( VikWindow *vw )
 {
   static gchar zoom_level[22];
-  g_snprintf ( zoom_level, 22, "%.3f/%.3f %s", vik_viewport_get_xmpp (vw->viking_vvp), vik_viewport_get_ympp(vw->viking_vvp), vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ? "mpp" : "pixelfact" );
+  g_snprintf ( zoom_level, 22, "%.3f/%.3f %s", vik_viewport_get_xmpp (vw->viking_vvp), vik_viewport_get_ympp(vw->viking_vvp), vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ? _("mpp") : _("pixelfact") );
   if ( vw->current_tool == TOOL_LAYER )
     vik_statusbar_set_message ( vw->viking_vs, 0, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].name );
   else
-    vik_statusbar_set_message ( vw->viking_vs, 0, tool_names[vw->current_tool] );
+    vik_statusbar_set_message ( vw->viking_vs, 0, _(tool_names[vw->current_tool]) );
 
   vik_statusbar_set_message ( vw->viking_vs, 2, zoom_level );
 }
@@ -486,9 +492,9 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   else
     interpol_method = VIK_DEM_INTERPOL_BEST;
   if ((alt = a_dems_get_elev_by_coord(&coord, interpol_method)) != VIK_DEM_INVALID_ELEVATION)
-    g_snprintf ( pointer_buf, 36, "Cursor: %f %f %dm", ll.lat, ll.lon, alt );
+    g_snprintf ( pointer_buf, 36, _("Cursor: %f %f %dm"), ll.lat, ll.lon, alt );
   else
-    g_snprintf ( pointer_buf, 36, "Cursor: %f %f", ll.lat, ll.lon );
+    g_snprintf ( pointer_buf, 36, _("Cursor: %f %f"), ll.lat, ll.lon );
   vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
 
   if ( vw->pan_x != -1 ) {
@@ -1003,7 +1009,7 @@ static void menu_paste_layer_cb ( GtkAction *a, VikWindow *vw )
 static void menu_properties_cb ( GtkAction *a, VikWindow *vw )
 {
   if ( ! vik_layers_panel_properties ( vw->viking_vlp ) )
-    a_dialog_info_msg ( GTK_WINDOW(vw), "You must select a layer to show its properties." );
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("You must select a layer to show its properties.") );
 }
 
 static void help_about_cb ( GtkAction *a, VikWindow *vw )
@@ -1019,7 +1025,7 @@ static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
     vw->modified = TRUE;
   }
   else
-    a_dialog_info_msg ( GTK_WINDOW(vw), "You must select a layer to delete." );
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("You must select a layer to delete.") );
 }
 
 /***************************************
@@ -1164,20 +1170,22 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 static void window_set_filename ( VikWindow *vw, const gchar *filename )
 {
   gchar *title;
+  const gchar *file;
   if ( vw->filename )
     g_free ( vw->filename );
   if ( filename == NULL )
   {
     vw->filename = NULL;
-    gtk_window_set_title ( GTK_WINDOW(vw), "Untitled" VIKING_TITLE );
+    file = _("Untitled");
   }
   else
   {
     vw->filename = g_strdup(filename);
-    title = g_strconcat ( a_file_basename ( filename ), VIKING_TITLE, NULL );
-    gtk_window_set_title ( GTK_WINDOW(vw), title );
-    g_free ( title );
+    file = a_file_basename ( filename );
   }
+  title = g_strdup_printf( "%s - Viking", file );
+  gtk_window_set_title ( GTK_WINDOW(vw), title );
+  g_free ( title );
 }
 
 GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode )
@@ -1201,7 +1209,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   switch ( a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename ) )
   {
     case 0:
-      a_dialog_error_msg ( GTK_WINDOW(vw), "The file you requested could not be opened." );
+      a_dialog_error_msg ( GTK_WINDOW(vw), _("The file you requested could not be opened.") );
       break;
     case 1:
     {
@@ -1242,7 +1250,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     
   if ( ! vw->open_dia )
   {
-    vw->open_dia = gtk_file_selection_new ("Please select a GPS data file to open. " );
+    vw->open_dia = gtk_file_selection_new ( _("Please select a GPS data file to open. ") );
     gtk_file_selection_set_select_multiple ( GTK_FILE_SELECTION(vw->open_dia), TRUE );
     gtk_window_set_transient_for ( GTK_WINDOW(vw->open_dia), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->open_dia), TRUE );
@@ -1275,7 +1283,7 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
   const gchar *fn;
   if ( ! vw->save_dia )
   {
-    vw->save_dia = gtk_file_selection_new ("Save as Viking File. " );
+    vw->save_dia = gtk_file_selection_new ( _("Save as Viking File.") );
     gtk_window_set_transient_for ( GTK_WINDOW(vw->save_dia), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_dia), TRUE );
   }
@@ -1283,7 +1291,7 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
   while ( gtk_dialog_run ( GTK_DIALOG(vw->save_dia) ) == GTK_RESPONSE_OK )
   {
     fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(vw->save_dia) );
-    if ( access ( fn, F_OK ) != 0 || a_dialog_overwrite ( GTK_WINDOW(vw->save_dia), "The file \"%s\" exists, do you wish to overwrite it?", a_file_basename ( fn ) ) )
+    if ( access ( fn, F_OK ) != 0 || a_dialog_overwrite ( GTK_WINDOW(vw->save_dia), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
     {
       window_set_filename ( vw, fn );
       rv = window_save ( vw );
@@ -1301,7 +1309,7 @@ static gboolean window_save ( VikWindow *vw )
     return TRUE;
   else
   {
-    a_dialog_error_msg ( GTK_WINDOW(vw), "The filename you requested could not be opened for writing." );
+    a_dialog_error_msg ( GTK_WINDOW(vw), _("The filename you requested could not be opened for writing.") );
     return FALSE;
   }
 }
@@ -1493,7 +1501,7 @@ static void draw_to_image_file_current_window_cb(GtkWidget* widget,GdkEventButto
   height = vik_viewport_get_height ( vw->viking_vvp ) * vik_viewport_get_xmpp ( vw->viking_vvp ) / gtk_spin_button_get_value ( zoom_spin );
 
   if ( width > width_max || width < width_min || height > height_max || height < height_min )
-    a_dialog_info_msg ( GTK_WINDOW(vw), "Viewable region outside allowable pixel size bounds for image. Clipping width/height values." );
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("Viewable region outside allowable pixel size bounds for image. Clipping width/height values.") );
 
   gtk_spin_button_set_value ( width_spin, width );
   gtk_spin_button_set_value ( height_spin, height );
@@ -1512,7 +1520,7 @@ static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointe
     w *= gtk_spin_button_get_value(GTK_SPIN_BUTTON(pass_along[4]));
     h *= gtk_spin_button_get_value(GTK_SPIN_BUTTON(pass_along[5]));
   }
-  label_text = g_strdup_printf ( "Total area: %ldm x %ldm (%.3f sq. km)", (glong)w, (glong)h, (w*h/1000000));
+  label_text = g_strdup_printf ( _("Total area: %ldm x %ldm (%.3f sq. km)"), (glong)w, (glong)h, (w*h/1000000));
   gtk_label_set_text(GTK_LABEL(pass_along[6]), label_text);
   g_free ( label_text );
 }
@@ -1520,7 +1528,7 @@ static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointe
 static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_image_only )
 {
   /* todo: default for answers inside VikWindow or static (thruout instance) */
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ( "Save to Image File", GTK_WINDOW(vw),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Save to Image File"), GTK_WINDOW(vw),
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
                                                   GTK_RESPONSE_REJECT,
@@ -1538,18 +1546,18 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
   GtkWidget *tiles_width_spin = NULL, *tiles_height_spin = NULL;
 
 
-  width_label = gtk_label_new ( "Width (pixels):" );
+  width_label = gtk_label_new ( _("Width (pixels):") );
   width_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vw->draw_image_width, 10, 5000, 10, 100, 0 )), 10, 0 );
-  height_label = gtk_label_new ( "Height (pixels):" );
+  height_label = gtk_label_new ( _("Height (pixels):") );
   height_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vw->draw_image_height, 10, 5000, 10, 100, 0 )), 10, 0 );
 
-  zoom_label = gtk_label_new ( "Zoom (meters per pixel):" );
+  zoom_label = gtk_label_new ( _("Zoom (meters per pixel):") );
   /* TODO: separate xzoom and yzoom factors */
   zoom_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vik_viewport_get_xmpp(vw->viking_vvp), VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM/2.0, 1, 100, 3 )), 16, 3);
 
   total_size_label = gtk_label_new ( NULL );
 
-  current_window_button = gtk_button_new_with_label ( "Area in current viewable window" );
+  current_window_button = gtk_button_new_with_label ( _("Area in current viewable window") );
   current_window_pass_along [0] = vw;
   current_window_pass_along [1] = width_spin;
   current_window_pass_along [2] = height_spin;
@@ -1559,8 +1567,8 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
   current_window_pass_along [6] = total_size_label;
   g_signal_connect ( G_OBJECT(current_window_button), "button_press_event", G_CALLBACK(draw_to_image_file_current_window_cb), current_window_pass_along );
 
-  png_radio = gtk_radio_button_new_with_label ( NULL, "Save as PNG" );
-  jpeg_radio = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(png_radio), "Save as JPEG" );
+  png_radio = gtk_radio_button_new_with_label ( NULL, _("Save as PNG") );
+  jpeg_radio = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(png_radio), _("Save as JPEG") );
 
   if ( ! vw->draw_image_save_as_png )
     gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(jpeg_radio), TRUE );
@@ -1580,9 +1588,9 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
     GtkWidget *tiles_width_label, *tiles_height_label;
 
 
-    tiles_width_label = gtk_label_new ( "East-west image tiles:" );
+    tiles_width_label = gtk_label_new ( _("East-west image tiles:") );
     tiles_width_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( 5, 1, 10, 1, 100, 0 )), 1, 0 );
-    tiles_height_label = gtk_label_new ( "North-south image tiles:" );
+    tiles_height_label = gtk_label_new ( _("North-south image tiles:") );
     tiles_height_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( 5, 1, 10, 1, 100, 0 )), 1, 0 );
     gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), tiles_width_label, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), tiles_width_spin, FALSE, FALSE, 0);
@@ -1622,7 +1630,7 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_width_spin) ),
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_height_spin) ) );
       else
-        a_dialog_error_msg ( GTK_WINDOW(vw), "You must be in UTM mode to use this feature" );
+        a_dialog_error_msg ( GTK_WINDOW(vw), _("You must be in UTM mode to use this feature") );
     }
   }
   gtk_widget_destroy ( GTK_WIDGET(dialog) );
@@ -1633,7 +1641,7 @@ static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
 {
   const gchar *fn;
   if (!vw->save_img_dia) {
-    vw->save_img_dia = gtk_file_selection_new ("Save Image");
+    vw->save_img_dia = gtk_file_selection_new ( _("Save Image") );
     gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dia), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dia), TRUE );
   }
@@ -1641,7 +1649,7 @@ static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
   while ( gtk_dialog_run ( GTK_DIALOG(vw->save_img_dia) ) == GTK_RESPONSE_OK )
   {
     fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(vw->save_img_dia) );
-    if ( access ( fn, F_OK ) != 0 || a_dialog_overwrite ( GTK_WINDOW(vw->save_img_dia), "The file \"%s\" exists, do you wish to overwrite it?", a_file_basename ( fn ) ) )
+    if ( access ( fn, F_OK ) != 0 || a_dialog_overwrite ( GTK_WINDOW(vw->save_img_dia), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
     {
       draw_to_image_file ( vw, fn, TRUE );
       break;
@@ -1654,7 +1662,7 @@ static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
 {
   const gchar *fn;
   if (!vw->save_img_dir_dia) {
-    vw->save_img_dir_dia = gtk_file_selection_new ("Choose a name for a new directory to hold images");
+    vw->save_img_dir_dia = gtk_file_selection_new ( _("Choose a name for a new directory to hold images"));
     gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dir_dia), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dir_dia), TRUE );
   }
@@ -1663,7 +1671,7 @@ static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
   {
     fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(vw->save_img_dir_dia) );
     if ( access ( fn, F_OK ) == 0 )
-      a_dialog_info_msg_extra ( GTK_WINDOW(vw->save_img_dir_dia), "The file %s exists. Please choose a name for a new directory to hold images in that does not exist.", a_file_basename(fn) );
+      a_dialog_info_msg_extra ( GTK_WINDOW(vw->save_img_dir_dia), _("The file %s exists. Please choose a name for a new directory to hold images in that does not exist."), a_file_basename(fn) );
     else
     {
       draw_to_image_file ( vw, fn, FALSE );
@@ -1741,7 +1749,7 @@ static void set_draw_centermark ( GtkAction *a, VikWindow *vw )
 
 static void set_bg_color ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *colorsd = gtk_color_selection_dialog_new ("Choose a background color");
+  GtkWidget *colorsd = gtk_color_selection_dialog_new ( _("Choose a background color") );
   GdkColor *color = vik_viewport_get_background_gdkcolor ( vw->viking_vvp );
   gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
   gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
@@ -1901,7 +1909,7 @@ static void window_create_ui( VikWindow *window )
 
     action.name = vik_layer_get_interface(i)->name;
     action.stock_id = vik_layer_get_interface(i)->name;
-    action.label = g_strdup_printf("New %s Layer", vik_layer_get_interface(i)->name);
+    action.label = g_strdup_printf( _("New %s Layer"), vik_layer_get_interface(i)->name);
     action.accelerator = NULL;
     action.tooltip = NULL;
     action.callback = (GCallback)menu_addlayer_cb;
@@ -1918,11 +1926,11 @@ static void window_create_ui( VikWindow *window )
       ntools++;
       
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Tools", 
-			    vik_layer_get_interface(i)->tools[j].name,
+			    _(vik_layer_get_interface(i)->tools[j].name),
 			    vik_layer_get_interface(i)->tools[j].name,
 			    GTK_UI_MANAGER_MENUITEM, FALSE);
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainToolbar/ToolItems", 
-			    vik_layer_get_interface(i)->tools[j].name,
+			    _(vik_layer_get_interface(i)->tools[j].name),
 			    vik_layer_get_interface(i)->tools[j].name,
 			    GTK_UI_MANAGER_TOOLITEM, FALSE);
 
@@ -1930,9 +1938,9 @@ static void window_create_ui( VikWindow *window )
 
       radio->name = vik_layer_get_interface(i)->tools[j].name;
       radio->stock_id = vik_layer_get_interface(i)->tools[j].name,
-      radio->label = vik_layer_get_interface(i)->tools[j].name;
+      radio->label = _(vik_layer_get_interface(i)->tools[j].name);
       radio->accelerator = NULL;
-      radio->tooltip = vik_layer_get_interface(i)->tools[j].name;
+      radio->tooltip = _(vik_layer_get_interface(i)->tools[j].name);
       radio->value = ntools;
     }
   }

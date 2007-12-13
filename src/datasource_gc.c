@@ -22,6 +22,7 @@
 #ifdef VIK_CONFIG_GEOCACHES
 #include <string.h>
 
+#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "babel.h"
@@ -49,8 +50,8 @@ static gchar *datasource_gc_check_existence ();
 #define METERSPERMILE 1609.344
 
 VikDataSourceInterface vik_datasource_gc_interface = {
-  "Download Geocaches",
-  "Geocaching.com Caches",
+  N_("Download Geocaches"),
+  N_("Geocaching.com Caches"),
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
@@ -77,7 +78,7 @@ static gchar *datasource_gc_check_existence ()
     g_free(gcget_location);
     return NULL;
   }
-  return g_strdup("Can't find gcget in path! Check that you have installed gcget correctly.");
+  return g_strdup(_("Can't find gcget in path! Check that you have installed gcget correctly."));
 }
 
 static void datasource_gc_draw_circle ( datasource_gc_widgets_t *widgets )
@@ -139,9 +140,9 @@ static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vv
   struct LatLon ll;
   gchar *s_ll;
 
-  num_label = gtk_label_new ("Max number geocaches:");
+  num_label = gtk_label_new (_("Number geocaches:"));
   widgets->num_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new( 100, 1, 1000, 10, 20, 50 )), 25, 0 );
-  center_label = gtk_label_new ("Centered around:");
+  center_label = gtk_label_new (_("Centered around:"));
   widgets->center_entry = gtk_entry_new();
   miles_radius_label = gtk_label_new ("Miles Radius:");
   widgets->miles_radius_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new( 100, 1, 1000, 5, 20, 50 )), 25, 2 );

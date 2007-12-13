@@ -21,6 +21,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #define MAX_SHRINKFACTOR 8.0000001 /* zoom 1 viewing 8-tiles */
 #define MIN_SHRINKFACTOR 0.0312499 /* zoom 32 viewing 1-tiles */
 
@@ -28,6 +32,8 @@
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
+#include <glib/gi18n.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -74,7 +80,7 @@ static GList *params_maptypes_ids = NULL;
 
 /******** MAPZOOMS *********/
 
-static gchar *params_mapzooms[] = { "Use Viking Zoom Level", "0.25", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "USGS 10k", "USGS 24k", "USGS 25k", "USGS 50k", "USGS 100k", "USGS 200k", "USGS 250k", NULL };
+static gchar *params_mapzooms[] = { N_("Use Viking Zoom Level"), "0.25", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "USGS 10k", "USGS 24k", "USGS 25k", "USGS 50k", "USGS 100k", "USGS 200k", "USGS 250k", NULL };
 static gdouble __mapzooms_x[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 1.016, 2.4384, 2.54, 5.08, 10.16, 20.32, 25.4 };
 static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 1.016, 2.4384, 2.54, 5.08, 10.16, 20.32, 25.4 };
 
@@ -105,23 +111,23 @@ static VikLayerParamScale params_scales[] = {
 };
 
 VikLayerParam maps_layer_params[] = {
-  { "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Map Type:", VIK_LAYER_WIDGET_RADIOGROUP, NULL, NULL },
-  { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, "Maps Directory (Optional):", VIK_LAYER_WIDGET_FILEENTRY },
-  { "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Alpha:", VIK_LAYER_WIDGET_HSCALE, params_scales },
-  { "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, "Autodownload maps:", VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Zoom Level:", VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms },
+  { "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL, NULL },
+  { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory (Optional):"), VIK_LAYER_WIDGET_FILEENTRY },
+  { "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales },
+  { "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms },
 };
 
 enum { PARAM_MAPTYPE=0, PARAM_CACHE_DIR, PARAM_ALPHA, PARAM_AUTODOWNLOAD, PARAM_MAPZOOM, NUM_PARAMS };
 
 static VikToolInterface maps_tools[] = {
-  { "Maps Download", (VikToolConstructorFunc) maps_layer_download_create, NULL, NULL, NULL,  
+  { N_("Maps Download"), (VikToolConstructorFunc) maps_layer_download_create, NULL, NULL, NULL,  
     (VikToolMouseFunc) maps_layer_download_click, NULL,  (VikToolMouseFunc) maps_layer_download_release,
     (VikToolKeyFunc) NULL, &cursor_mapdl },
 };
 
 VikLayerInterface vik_maps_layer_interface = {
-  "Map",
+  N_("Map"),
   &mapslayer_pixbuf,
 
   maps_tools,
@@ -377,7 +383,7 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerPa
     case PARAM_CACHE_DIR: maps_layer_set_cache_dir ( vml, data.s ); break;
     case PARAM_MAPTYPE: {
       gint maptype = map_uniq_id_to_index(data.u);
-      if ( maptype == NUM_MAP_TYPES ) g_warning("Unknown map type");
+      if ( maptype == NUM_MAP_TYPES ) g_warning(_("Unknown map type"));
       else vml->maptype = maptype;
       break;
     }
@@ -387,7 +393,7 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerPa
                           vml->mapzoom_id = data.u;
                           vml->xmapzoom = __mapzooms_x [data.u];
                           vml->ymapzoom = __mapzooms_y [data.u];
-                        }else g_warning ("Unknown Map Zoom"); break;
+                        }else g_warning (_("Unknown Map Zoom")); break;
   }
   return TRUE;
 }
@@ -456,7 +462,7 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
     map_type = MAPS_LAYER_NTH_TYPE(vml->maptype);
     if (map_type->drawmode != vp_drawmode) {
       const gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), map_type->drawmode);
-      gchar *msg = g_strdup_printf("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it.", drawmode_name);
+      gchar *msg = g_strdup_printf(_("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it."), drawmode_name);
       a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
       g_free(msg);
     }
@@ -533,7 +539,7 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
       if (gx)
       {
         if ( gx->domain != GDK_PIXBUF_ERROR || gx->code != GDK_PIXBUF_ERROR_CORRUPT_IMAGE )
-          g_warning ( "Couldn't open image file: %s", gx->message );
+          g_warning ( _("Couldn't open image file: %s"), gx->message );
 
           g_error_free ( gx );
           if ( pixbuf )
@@ -598,7 +604,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
       if ( xshrinkfactor > REAL_MIN_SHRINKFACTOR && yshrinkfactor > REAL_MIN_SHRINKFACTOR )
         existence_only = TRUE;
       else {
-        g_warning ( "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out factor", (int)( 1.0/REAL_MIN_SHRINKFACTOR));
+        g_warning ( _("Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out factor"), (int)( 1.0/REAL_MIN_SHRINKFACTOR));
         return;
       }
     }
@@ -907,7 +913,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
 
     if ( mdi->mapstoget )
     {
-      gchar *tmp = g_strdup_printf ( "%s %s%d %s %s...", redownload ? "Redownloading" : "Downloading", redownload == REDOWNLOAD_BAD ? "up to " : "", mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype), (mdi->mapstoget == 1) ? "map" : "maps" );
+      gchar *tmp = g_strdup_printf ( "%s %s%d %s %s...", redownload ? _("Redownloading") : _("Downloading"), redownload == REDOWNLOAD_BAD ? _("up to ") : "", mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype), ngettext("map", "maps", mdi->mapstoget) );
 
       g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
       /* launch the thread */
@@ -974,7 +980,13 @@ void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport 
   mdi->mapcoord.x = mdi->mapcoord.y = 0; /* for cleanup -- no current map */
 
   if (mdi->mapstoget) {
-    gchar *tmp = g_strdup_printf ( "%s %d %s %s...", "Downloading", mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype), (mdi->mapstoget == 1) ? "map" : "maps" );
+    gchar *tmp;
+    const gchar *fmt;
+    if (mdi->mapstoget == 1)
+      fmt = _("Downloading %d %s map...");
+    else
+      fmt = _("Downloading %d %s maps...");
+    tmp = g_strdup_printf ( fmt, mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype) );
 
     g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
       /* launch the thread */
@@ -1028,11 +1040,11 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
         GtkWidget *item;
         vml->dl_right_click_menu = GTK_MENU ( gtk_menu_new () );
 
-        item = gtk_menu_item_new_with_label ( "Redownload bad map(s)" );
+        item = gtk_menu_item_new_with_label ( _("Redownload bad map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
-        item = gtk_menu_item_new_with_label ( "Redownload all map(s)" );
+        item = gtk_menu_item_new_with_label ( _("Redownload all map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
       }
@@ -1112,12 +1124,12 @@ static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
     start_download_thread ( vml, vvp, &ul, &br, redownload );
   else if (map_type->drawmode != vp_drawmode) {
     const gchar *drawmode_name = vik_viewport_get_drawmode_name (vvp, map_type->drawmode);
-    gchar *err = g_strdup_printf("Wrong drawmode for this map.\nSelect \"%s\" from View menu and try again.", drawmode_name);
+    gchar *err = g_strdup_printf(_("Wrong drawmode for this map.\nSelect \"%s\" from View menu and try again."), _(drawmode_name));
     a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), err );
     g_free(err);
   }
   else
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), "Wrong zoom level for this map." );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), _("Wrong zoom level for this map.") );
 
 }
 
@@ -1142,12 +1154,12 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Download Onscreen Maps" );
+  item = gtk_menu_item_new_with_label ( _("Download Onscreen Maps") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_onscreen_maps), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Refresh Onscreen Tiles" );
+  item = gtk_menu_item_new_with_label ( _("Refresh Onscreen Tiles") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );

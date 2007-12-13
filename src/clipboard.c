@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include <glib/gi18n.h>
+
 #include "viking.h"
 
 
@@ -69,7 +72,7 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
   VikLayersPanel *vlp = p;
   vik_clipboard_t *vc;
   if (sd->length == -1) {
-    g_warning ( "paste failed" );
+    g_warning ( _("paste failed") );
     return;
   } 
   //  g_print("clip receive: target = %s, type = %s\n", gdk_atom_name(sd->target), gdk_atom_name(sd->type));
@@ -79,7 +82,7 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
   //  g_print("  sd->data = %p, sd->length = %d, vc->len = %d\n", sd->data, sd->length, vc->len);
 
   if (sd->length != sizeof(*vc) + vc->len) {
-    g_warning ( "wrong clipboard data size" );
+    g_warning ( _("wrong clipboard data size") );
     return;
   }
 
@@ -97,7 +100,10 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
         vik_layer_get_interface(vc->layer_type)->paste_item ( sel, vc->subtype, vc->data, vc->len);
     }
     else
-      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vlp)), "The clipboard contains sublayer data for a %s layers. You must select a layer of this type to paste the clipboard data.", vik_layer_get_interface(vc->layer_type)->name );
+      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vlp)),
+				 _("The clipboard contains sublayer data for a %s layers."
+				   "You must select a layer of this type to paste the clipboard data."),
+				 vik_layer_get_interface(vc->layer_type)->name );
   }
 }
 
@@ -201,7 +207,7 @@ static void clip_add_wp(VikLayersPanel *vlp, struct LatLon *coord)
   if (sel && sel->type == VIK_LAYER_TRW) {
     vik_trw_layer_new_waypoint ( VIK_TRW_LAYER(sel), VIK_GTK_WINDOW_FROM_LAYER(sel), &vc );
   } else {
-    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vlp)), "In order to paste a waypoint, please select an appropriate layer to paste into.", NULL);
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vlp)), _("In order to paste a waypoint, please select an appropriate layer to paste into."), NULL);
   }
 }
 

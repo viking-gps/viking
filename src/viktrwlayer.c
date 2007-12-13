@@ -55,6 +55,7 @@
 #include <ctype.h>
 
 #include <gdk/gdkkeysyms.h>
+#include <glib/gi18n.h>
 
 /* Relax some dependencies */
 #if ! GLIB_CHECK_VERSION(2,12,0)
@@ -286,41 +287,41 @@ static void waypoint_convert ( const gchar *name, VikWaypoint *wp, VikCoordMode 
 static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_mode );
 
 static VikToolInterface trw_layer_tools[] = {
-  { "Create Waypoint", (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL, 
+  { N_("Create Waypoint"), (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, (VikToolKeyFunc) NULL, &cursor_addwp },
 
-  { "Create Track",    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
+  { N_("Create Track"),    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_new_track_click, (VikToolMouseFunc) tool_new_track_move, NULL,
     (VikToolKeyFunc) tool_new_track_key_press, &cursor_addtr },
 
-  { "Begin Track",    (VikToolConstructorFunc) tool_begin_track_create,       NULL, NULL, NULL, 
+  { N_("Begin Track"),    (VikToolConstructorFunc) tool_begin_track_create,       NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, (VikToolKeyFunc) NULL, &cursor_begintr },
 
-  { "Edit Waypoint",   (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL, 
+  { N_("Edit Waypoint"),   (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_waypoint_click,   
     (VikToolMouseFunc) tool_edit_waypoint_move,
     (VikToolMouseFunc) tool_edit_waypoint_release, (VikToolKeyFunc) NULL, &cursor_edwp },
 
-  { "Edit Trackpoint", (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL, 
+  { N_("Edit Trackpoint"), (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_trackpoint_click,
     (VikToolMouseFunc) tool_edit_trackpoint_move,
     (VikToolMouseFunc) tool_edit_trackpoint_release, (VikToolKeyFunc) NULL, &cursor_edtr },
 
-  { "Show Picture",    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
+  { N_("Show Picture"),    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL, &cursor_showpic },
 
-  { "Magic Scissors",  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
+  { N_("Magic Scissors"),  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, (VikToolKeyFunc) NULL, &cursor_iscissors },
 };
 enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
 /****** PARAMETERS ******/
 
-static gchar *params_groups[] = { "Waypoints", "Tracks", "Waypoint Images" };
+static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images") };
 enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES };
 
-static gchar *params_drawmodes[] = { "Draw by Track", "Draw by Velocity", "All Tracks Black", 0 };
-static gchar *params_wpsymbols[] = { "Filled Square", "Square", "Circle", "X", 0 };
+static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Velocity"), N_("All Tracks Black"), 0 };
+static gchar *params_wpsymbols[] = { N_("Filled Square"), N_("Square"), N_("Circle"), N_("X"), 0 };
 
 
 static VikLayerParamScale params_scales[] = {
@@ -342,34 +343,34 @@ VikLayerParam trw_layer_params[] = {
   { "tracks_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES },
   { "waypoints_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES },
 
-  { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track Drawing Mode:", VIK_LAYER_WIDGET_RADIOGROUP, NULL },
-  { "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Track Lines", VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "drawpoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Trackpoints", VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "drawelevation", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Elevation", VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "elevation_factor", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Draw Elevation Height %:", VIK_LAYER_WIDGET_HSCALE, params_scales + 9 },
+  { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Drawing Mode:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL },
+  { "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Lines"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "drawpoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Trackpoints"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "drawelevation", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Elevation"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "elevation_factor", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Draw Elevation Height %:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 9 },
 
-  { "drawstops", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, "Draw Stops", VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "stop_length", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Min Stop Length (seconds):", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 8 },
+  { "drawstops", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Stops"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "stop_length", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Min Stop Length (seconds):"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 8 },
 
-  { "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0 },
-  { "bg_line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, "Track BG Thickness:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 6 },
-  { "trackbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, "Track Background Color", VIK_LAYER_WIDGET_COLOR, 0 },
-  { "velocity_min", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, "Min Track Velocity:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 1 },
-  { "velocity_max", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, "Max Track Velocity:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 2 },
+  { "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0 },
+  { "bg_line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track BG Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 6 },
+  { "trackbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, N_("Track Background Color"), VIK_LAYER_WIDGET_COLOR, 0 },
+  { "velocity_min", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Min Track Velocity:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 1 },
+  { "velocity_max", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Max Track Velocity:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 2 },
 
-  { "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, "Draw Labels", VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, "Waypoint Color:", VIK_LAYER_WIDGET_COLOR, 0 },
-  { "wptextcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, "Waypoint Text:", VIK_LAYER_WIDGET_COLOR, 0 },
-  { "wpbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, "Background:", VIK_LAYER_WIDGET_COLOR, 0 },
-  { "wpbgand", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, "Fake BG Color Translucency:", VIK_LAYER_WIDGET_CHECKBUTTON, 0 },
-  { "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint marker:", VIK_LAYER_WIDGET_RADIOGROUP, NULL },
-  { "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, "Waypoint size:", VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 7 },
-  { "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, "Draw Waypoint Symbols:", VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, 0 },
+  { "wptextcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Text:"), VIK_LAYER_WIDGET_COLOR, 0 },
+  { "wpbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Background:"), VIK_LAYER_WIDGET_COLOR, 0 },
+  { "wpbgand", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Fake BG Color Translucency:"), VIK_LAYER_WIDGET_CHECKBUTTON, 0 },
+  { "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint marker:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL },
+  { "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint size:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 7 },
+  { "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Symbols:"), VIK_LAYER_WIDGET_CHECKBUTTON },
 
-  { "drawimages", VIK_LAYER_PARAM_BOOLEAN, GROUP_IMAGES, "Draw Waypoint Images", VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "image_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Size (pixels):", VIK_LAYER_WIDGET_HSCALE, params_scales + 3 },
-  { "image_alpha", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Alpha:", VIK_LAYER_WIDGET_HSCALE, params_scales + 4 },
-  { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, "Image Memory Cache Size:", VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
+  { "drawimages", VIK_LAYER_PARAM_BOOLEAN, GROUP_IMAGES, N_("Draw Waypoint Images"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "image_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Size (pixels):"), VIK_LAYER_WIDGET_HSCALE, params_scales + 3 },
+  { "image_alpha", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 4 },
+  { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Memory Cache Size:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
 };
 
 enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
@@ -1332,9 +1333,9 @@ void vik_trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *lay
   gpointer pass_along[5] = { &(vtl->tracks_iter), &iter2, vtl, vt, (gpointer) VIK_TRW_LAYER_SUBLAYER_TRACK };
 
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
-  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), "Tracks", vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
 #else
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), "Tracks", vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
 #endif
   if ( ! vtl->tracks_visible )
     vik_treeview_item_set_visible ( (VikTreeview *) vt, &(vtl->tracks_iter), FALSE ); 
@@ -1342,9 +1343,9 @@ void vik_trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *lay
   g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_realize_track, pass_along );
 
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
-  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), "Waypoints", vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
 #else
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), "Waypoints", vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
 #endif
 
   if ( ! vtl->waypoints_visible )
@@ -1450,7 +1451,7 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] )
   if ( vik_trw_layer_find_center ( VIK_TRW_LAYER(layer_and_vlp[0]), &coord ) )
     goto_coord ( VIK_LAYERS_PANEL(layer_and_vlp[1]), &coord );
   else
-    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), "This layer has no waypoints or trackpoints." );
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("This layer has no waypoints or trackpoints.") );
 }
 
 static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
@@ -1458,7 +1459,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
   GtkWidget *file_selector;
   const gchar *fn;
   gboolean failed = FALSE;
-  file_selector = gtk_file_selection_new ("Export Layer");
+  file_selector = gtk_file_selection_new (_("Export Layer"));
   gtk_file_selection_set_filename (GTK_FILE_SELECTION(file_selector), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])));
 
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_OK )
@@ -1472,7 +1473,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
     }
     else
     {
-      if ( a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), "The file \"%s\" exists, do you wish to overwrite it?", a_file_basename ( fn ) ) )
+      if ( a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
       {
         gtk_widget_hide ( file_selector );
         failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type );
@@ -1482,7 +1483,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
   }
   gtk_widget_destroy ( file_selector );
   if ( failed )
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), "The filename you requested could not be opened for writing." );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("The filename you requested could not be opened for writing.") );
 }
 
 static void trw_layer_export_gpspoint ( gpointer layer_and_vlp[2] )
@@ -1503,7 +1504,7 @@ static void trw_layer_export_gpx ( gpointer layer_and_vlp[2] )
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
 {
   GHashTable *wps = vik_trw_layer_get_waypoints ( VIK_TRW_LAYER(layer_and_vlp[0]) );
-  GtkWidget *dia = gtk_dialog_new_with_buttons ("Create",
+  GtkWidget *dia = gtk_dialog_new_with_buttons (_("Create"),
                                                  VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]),
                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                  GTK_STOCK_CANCEL,
@@ -1513,7 +1514,7 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
                                                  NULL);
 
   GtkWidget *label, *entry;
-  label = gtk_label_new("Waypoint Name:");
+  label = gtk_label_new(_("Waypoint Name:"));
   entry = gtk_entry_new();
 
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), label, FALSE, FALSE, 0);
@@ -1533,7 +1534,7 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
     wp = g_hash_table_lookup ( wps, upname );
 
     if (!wp)
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), "Waypoint not found in this layer." );
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("Waypoint not found in this layer.") );
     else
     {
       vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(layer_and_vlp[1])), &(wp->coord) );
@@ -1587,44 +1588,44 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Goto Center of Layer" );
+  item = gtk_menu_item_new_with_label ( _("Goto Center of Layer") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_centerize), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Goto Waypoint" );
+  item = gtk_menu_item_new_with_label ( _("Goto Waypoint") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
   export_submenu = gtk_menu_new ();
-  item = gtk_menu_item_new_with_label ( "Export layer" );
+  item = gtk_menu_item_new_with_label ( _("Export layer") );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), export_submenu );
   
-  item = gtk_menu_item_new_with_label ( "Export as GPSPoint" );
+  item = gtk_menu_item_new_with_label ( _("Export as GPSPoint") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpspoint), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Export as GPSMapper" );
+  item = gtk_menu_item_new_with_label ( _("Export as GPSMapper") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpsmapper), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "Export as GPX" );
+  item = gtk_menu_item_new_with_label ( _("Export as GPX") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpx), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( "New Waypoint" );
+  item = gtk_menu_item_new_with_label ( _("New Waypoint") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_OPENSTREETMAP 
-  item = gtk_menu_item_new_with_label ( "Upload to OSM" );
+  item = gtk_menu_item_new_with_label ( _("Upload to OSM") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
@@ -2088,8 +2089,8 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   gchar *orig_track_name = strdup(pass_along[3]);
 
   if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(pass_along[0]), 
-			       "Merge Threshold...", 
-			       "Merge when time between trackpoints less than:", 
+			       _("Merge Threshold..."), 
+			       _("Merge when time between trackpoints less than:"), 
 			       &thr)) {
     return;
   }
@@ -2182,8 +2183,8 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
     return;
 
   if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(pass_along[0]), 
-			       "Split Threshold...", 
-			       "Split when time between trackpoints exceeds:", 
+			       _("Split Threshold..."), 
+			       _("Split when time between trackpoints exceeds:"), 
 			       &thr)) {
     return;
   }
@@ -2266,7 +2267,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
 
     if ( uppercase_exists_in_hash ( l->waypoints, newname ) )
     {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), "Waypoint Already Exists" );
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Waypoint Already Exists") );
       return NULL;
     }
 
@@ -2306,7 +2307,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
 
     if ( uppercase_exists_in_hash ( l->tracks, newname ) )
     {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), "Track Already Exists" );
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Track Already Exists") );
       return NULL;
     }
 
@@ -2429,7 +2430,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     {
       /* could be a right-click using the tool */
       if ( vlp != NULL ) {
-        item = gtk_menu_item_new_with_label ( "Goto" );
+        item = gtk_menu_item_new_with_label ( _("Goto") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_waypoint), pass_along );
         gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
         gtk_widget_show ( item );
@@ -2437,7 +2438,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
       if ( is_valid_geocache_name ( (gchar *) sublayer ) )
       {
-        item = gtk_menu_item_new_with_label ( "Visit Geocache Webpage" );
+        item = gtk_menu_item_new_with_label ( _("Visit Geocache Webpage") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_gc_webpage), pass_along );
         gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
         gtk_widget_show ( item );
@@ -2452,37 +2453,37 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Goto Startpoint" );
+    item = gtk_menu_item_new_with_label ( _("Goto Startpoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_startpoint), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Goto \"Center\"" );
+    item = gtk_menu_item_new_with_label ( _("Goto \"Center\"") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_center), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Goto Endpoint" );
+    item = gtk_menu_item_new_with_label ( _("Goto Endpoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_endpoint), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Merge By Time" );
+    item = gtk_menu_item_new_with_label ( _("Merge By Time") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_by_timestamp), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Split By Time" );
+    item = gtk_menu_item_new_with_label ( _("Split By Time") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_timestamp), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Download maps along track..." );
+    item = gtk_menu_item_new_with_label ( _("Download maps along track...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_download_map_along_track_cb), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Apply DEM Data" );
+    item = gtk_menu_item_new_with_label ( _("Apply DEM Data") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_apply_dem_data), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
@@ -2493,7 +2494,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
-    item = gtk_menu_item_new_with_label ( "Upload to OSM" );
+    item = gtk_menu_item_new_with_label ( _("Upload to OSM") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_track_cb), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
@@ -2527,7 +2528,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "New Waypoint" );
+    item = gtk_menu_item_new_with_label ( _("New Waypoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
@@ -3463,7 +3464,7 @@ static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *even
     g_free ( quoted_file );
     if ( ! g_spawn_command_line_async ( cmd, &err ) )
     {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "Could not launch eog to open file." );
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch eog to open file.") );
       g_error_free ( err );
     }
     g_free ( cmd );
@@ -3517,7 +3518,7 @@ static void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
     if ( pics )
     {
       gint len = g_slist_length ( pics );
-      gchar *tmp = g_strdup_printf ( "Creating %d Image Thumbnails...", len );
+      gchar *tmp = g_strdup_printf ( _("Creating %d Image Thumbnails..."), len );
       a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vtl), tmp, (vik_thr_func) create_thumbnails_thread, pics, (vik_thr_free_func) free_pics_slist, NULL, len );
       g_free ( tmp );
     }
@@ -3737,7 +3738,7 @@ static void trw_layer_download_map_along_track_cb(gpointer pass_along[6])
   int num_maps = g_list_length(vmls);
 
   if (!num_maps) {
-    a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_ERROR,"No map layer in use. Create one first", NULL);
+    a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_ERROR, _("No map layer in use. Create one first"), NULL);
     return;
   }
 

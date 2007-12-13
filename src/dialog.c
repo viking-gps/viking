@@ -19,12 +19,18 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "viking.h"
 #include "thumbnails.h"
 #include "garminsymbols.h"
 #include "degrees_converters.h"
 #include "authors.h"
 #include "googlesearch.h"
+
+#include <glib/gi18n.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -420,7 +426,7 @@ GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count )
   for ( i = 0; i < label_count; i++ )
   {
     label = gtk_label_new(NULL);
-    gtk_label_set_markup ( GTK_LABEL(label), texts[i] );
+    gtk_label_set_markup ( GTK_LABEL(label), _(texts[i]) );
     gtk_box_pack_start ( GTK_BOX(vbox), label, FALSE, TRUE, 5 );
   }
   return vbox;
@@ -574,10 +580,10 @@ void a_dialog_about ( GtkWindow *parent )
 {
   int re;
   char *msg = g_markup_printf_escaped (
-    "<span font_desc='20' weight='bold'>Viking %s</span>\n\n"
+    _("<span font_desc='20' weight='bold'>Viking %s</span>\n\n"
     "GPS Data and Topo Analyzer, Explorer, and Manager.\n\n"
     "<small>(C) 2003-2007, Evan Battaglia</small>\n\n"
-    "<small>Web site: %s</small>",
+    "<small>Web site: %s</small>"),
     VIKING_VERSION, VIKING_URL);
   GtkWidget *msgbox = gtk_message_dialog_new_with_markup ( parent, 
 							   GTK_DIALOG_DESTROY_WITH_PARENT, 

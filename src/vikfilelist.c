@@ -19,7 +19,12 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include "vikfilelist.h"
 
@@ -36,7 +41,7 @@ static void file_list_add ( VikFileList *vfl )
   {
     GtkWidget *win;
     g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfl))) );
-    vfl->file_selector = gtk_file_selection_new ("Choose file(s)");
+    vfl->file_selector = gtk_file_selection_new (_("Choose file(s)"));
     gtk_file_selection_set_select_multiple ( GTK_FILE_SELECTION(vfl->file_selector), TRUE );
     gtk_window_set_transient_for ( GTK_WINDOW(vfl->file_selector), GTK_WINDOW(win) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vfl->file_selector), TRUE );
@@ -105,8 +110,8 @@ GtkWidget *vik_file_list_new ( const gchar *title )
 
   gtk_widget_set_size_request ( vfl->treeview, 200, 100);
 
-  add_btn = gtk_button_new_with_label("Add...");
-  del_btn = gtk_button_new_with_label("Delete");
+  add_btn = gtk_button_new_with_label(_("Add..."));
+  del_btn = gtk_button_new_with_label(_("Delete"));
 
   g_signal_connect_swapped ( G_OBJECT(add_btn), "clicked", G_CALLBACK(file_list_add), vfl );
   g_signal_connect_swapped ( G_OBJECT(del_btn), "clicked", G_CALLBACK(file_list_del), vfl );
@@ -134,7 +139,7 @@ static gboolean get_file_name(GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
 {
   gchar *str;
   gtk_tree_model_get ( model, iter, 0, &str, -1 );
-  g_debug("get_file_name: %s", str);
+  g_debug ("%s: %s", __FUNCTION__, str);
   (*list) = g_list_append((*list), g_strdup(str));
   return FALSE;
 }

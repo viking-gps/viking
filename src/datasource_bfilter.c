@@ -18,8 +18,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "babel.h"
@@ -40,7 +43,7 @@ VikLayerParamScale simplify_params_scales[] = {
 };
 
 VikLayerParam bfilter_simplify_params[] = {
-  { "numberofpoints", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, "Max number of points:", VIK_LAYER_WIDGET_SPINBUTTON, simplify_params_scales + 0 },
+  { "numberofpoints", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Max number of points:"), VIK_LAYER_WIDGET_SPINBUTTON, simplify_params_scales + 0 },
 };
 
 VikLayerParamData bfilter_simplify_params_defaults[] = {
@@ -48,8 +51,8 @@ VikLayerParamData bfilter_simplify_params_defaults[] = {
 };
 
 VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
-  "Simplify All Tracks",
-  "Simplified Tracks",
+  N_("Simplify All Tracks"),
+  N_("Simplified Tracks"),
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
@@ -81,8 +84,8 @@ static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdata
 
 
 VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
-  "Remove Duplicate Waypoints",
-  "Remove Duplicate Waypoints",
+  N_("Remove Duplicate Waypoints"),
+  N_("Remove Duplicate Waypoints"),
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
@@ -111,8 +114,8 @@ static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *param
 
 
 VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
-  "Waypoints Inside This",
-  "Polygonzied Layer",
+  N_("Waypoints Inside This"),
+  N_("Polygonzied Layer"),
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,
@@ -144,8 +147,8 @@ static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamDat
 
 
 VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
-  "Waypoints Outside This",
-  "Polygonzied Layer",
+  N_("Waypoints Outside This"),
+  N_("Polygonzied Layer"),
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,
