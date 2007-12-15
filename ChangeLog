@@ -1,4 +1,8 @@
 2007-12-12:
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+	* Make menu entries translatable
+
+2007-12-12:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Marking translatable strings
 	* First french translation (incomplete)

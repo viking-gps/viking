@@ -1770,86 +1770,86 @@ static void set_bg_color ( GtkAction *a, VikWindow *vw )
  ***********************************************************************************************/
 
 static GtkActionEntry entries[] = {
-  { "File", NULL, "_File", 0, 0, 0 },
-  { "Edit", NULL, "_Edit", 0, 0, 0 },
-  { "View", NULL, "_View", 0, 0, 0 },
-  { "SetZoom", NULL, "_Zoom", 0, 0, 0 },
-  { "SetPan", NULL, "_Pan", 0, 0, 0 },
-  { "Layers", NULL, "_Layers", 0, 0, 0 },
-  { "Tools", NULL, "_Tools", 0, 0, 0 },
-  { "Help", NULL, "_Help", 0, 0, 0 },
+  { "File", NULL, N_("_File"), 0, 0, 0 },
+  { "Edit", NULL, N_("_Edit"), 0, 0, 0 },
+  { "View", NULL, N_("_View"), 0, 0, 0 },
+  { "SetZoom", NULL, N_("_Zoom"), 0, 0, 0 },
+  { "SetPan", NULL, N_("_Pan"), 0, 0, 0 },
+  { "Layers", NULL, N_("_Layers"), 0, 0, 0 },
+  { "Tools", NULL, N_("_Tools"), 0, 0, 0 },
+  { "Help", NULL, N_("_Help"), 0, 0, 0 },
 
-  { "New",       GTK_STOCK_NEW,          "_New",                          "<control>N", "New file",                                     (GCallback)newwindow_cb          },
-  { "Open",      GTK_STOCK_OPEN,         "_Open",                         "<control>O", "Open a file",                                  (GCallback)load_file             },
-  { "Append",    GTK_STOCK_ADD,          "A_ppend File",                  NULL,         "Append data from a different file",            (GCallback)load_file             },
-  { "Acquire", NULL, "A_cquire", 0, 0, 0 },
-  { "AcquireGPS",   NULL,                "From _GPS",            	  NULL,         "Transfer data from a GPS device",              (GCallback)acquire_from_gps      },
-  { "AcquireGoogle",   NULL,             "Google _Directions",    	  NULL,         "Get driving directions from Google",           (GCallback)acquire_from_google   },
+  { "New",       GTK_STOCK_NEW,          N_("_New"),                          "<control>N", N_("New file"),                                     (GCallback)newwindow_cb          },
+  { "Open",      GTK_STOCK_OPEN,         N_("_Open"),                         "<control>O", N_("Open a file"),                                  (GCallback)load_file             },
+  { "Append",    GTK_STOCK_ADD,          N_("A_ppend File"),                  NULL,         N_("Append data from a different file"),            (GCallback)load_file             },
+  { "Acquire", NULL, N_("A_cquire"), 0, 0, 0 },
+  { "AcquireGPS",   NULL,                N_("From _GPS"),            	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
+  { "AcquireGoogle",   NULL,             N_("Google _Directions"),    	  NULL,         N_("Get driving directions from Google"),           (GCallback)acquire_from_google   },
 #ifdef VIK_CONFIG_GEOCACHES
-  { "AcquireGC",   NULL,                 "Geo_caches",    	  	  NULL,         "Get Geocaches from geocaching.com",            (GCallback)acquire_from_gc       },
+  { "AcquireGC",   NULL,                 N_("Geo_caches"),    	  	  NULL,         N_("Get Geocaches from geocaching.com"),            (GCallback)acquire_from_gc       },
 #endif
-  { "Save",      GTK_STOCK_SAVE,         "_Save",                         "<control>S", "Save the file",                                (GCallback)save_file             },
-  { "SaveAs",    GTK_STOCK_SAVE_AS,      "Save _As",                      NULL,         "Save the file under different name",           (GCallback)save_file_as          },
-  { "GenImg",    GTK_STOCK_CLEAR,        "_Generate Image File",          NULL,         "Save a snapshot of the workspace into a file", (GCallback)draw_to_image_file_cb },
-  { "GenImgDir", GTK_STOCK_DND_MULTIPLE, "Generate _Directory of Images", NULL,         "FIXME:IMGDIR",                                 (GCallback)draw_to_image_dir_cb  },
+  { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
+  { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As"),                      NULL,         N_("Save the file under different name"),           (GCallback)save_file_as          },
+  { "GenImg",    GTK_STOCK_CLEAR,        N_("_Generate Image File"),          NULL,         N_("Save a snapshot of the workspace into a file"), (GCallback)draw_to_image_file_cb },
+  { "GenImgDir", GTK_STOCK_DND_MULTIPLE, N_("Generate _Directory of Images"), NULL,         N_("FIXME:IMGDIR"),                                 (GCallback)draw_to_image_dir_cb  },
 
 #if GTK_CHECK_VERSION(2,10,0)
-  { "Print",    GTK_STOCK_PRINT,        "_Print...",          NULL,         "Print maps", (GCallback)print_cb },
+  { "Print",    GTK_STOCK_PRINT,        N_("_Print..."),          NULL,         N_("Print maps"), (GCallback)print_cb },
 #endif
 
-  { "Exit",      GTK_STOCK_QUIT,         "E_xit",                         "<control>W", "Exit the program",                             (GCallback)window_close          },
-  { "SaveExit",  GTK_STOCK_QUIT,         "Save and Exit",                 NULL, "Save and Exit the program",                             (GCallback)save_file_and_exit          },
+  { "Exit",      GTK_STOCK_QUIT,         N_("E_xit"),                         "<control>W", N_("Exit the program"),                             (GCallback)window_close          },
+  { "SaveExit",  GTK_STOCK_QUIT,         N_("Save and Exit"),                 NULL, N_("Save and Exit the program"),                             (GCallback)save_file_and_exit          },
 
-  { "GoogleMapsSearch",   GTK_STOCK_GO_FORWARD,                 "Go To Google Maps location",    	  	  NULL,         "Go to address/place using Google Maps search",            (GCallback)goto_address       },
-  { "GotoLL",    GTK_STOCK_QUIT,         "_Go to Lat\\/Lon...",           NULL,         "Go to arbitrary lat\\/lon coordinate",         (GCallback)draw_goto_cb          },
-  { "GotoUTM",   GTK_STOCK_QUIT,         "Go to UTM...",                  NULL,         "Go to arbitrary UTM coordinate",               (GCallback)draw_goto_cb          },
-  { "SetBGColor",GTK_STOCK_SELECT_COLOR, "Set Background Color...",       NULL,         NULL,                                           (GCallback)set_bg_color          },
-  { "ZoomIn",    GTK_STOCK_ZOOM_IN,      "Zoom _In",                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
-  { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     "Zoom _Out",                 "<control>minus", NULL,                                           (GCallback)draw_zoom_cb          },
-  { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     "Zoom _To",               "<control><shift>Z", NULL,                                           (GCallback)zoom_to_cb            },
-  { "Zoom0.25",  NULL,                   "0.25",                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom0.5",   NULL,                   "0.5",                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom1",     NULL,                   "1",                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom2",     NULL,                   "2",                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom4",     NULL,                   "4",                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom8",     NULL,                   "8",                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom16",    NULL,                   "16",                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom32",    NULL,                   "32",                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom64",    NULL,                   "64",                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom128",   NULL,                   "128",                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "PanNorth",  NULL,                   "Pan North",                  "<control>Up", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanEast",  NULL,                    "Pan East",                   "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanSouth",  NULL,                   "Pan South",                  "<control>Down", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanWest",  NULL,                    "Pan West",                   "<control>Left", NULL,                                           (GCallback)draw_pan_cb },
-  { "BGJobs",    GTK_STOCK_EXECUTE,      "Background _Jobs",              NULL,         NULL,                                           (GCallback)a_background_show_window },
+  { "GoogleMapsSearch",   GTK_STOCK_GO_FORWARD,                 N_("Go To Google Maps location"),    	  	  NULL,         N_("Go to address/place using Google Maps search"),            (GCallback)goto_address       },
+  { "GotoLL",    GTK_STOCK_QUIT,         N_("_Go to Lat\\/Lon..."),           NULL,         N_("Go to arbitrary lat\\/lon coordinate"),         (GCallback)draw_goto_cb          },
+  { "GotoUTM",   GTK_STOCK_QUIT,         N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
+  { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Background Color..."),       NULL,         NULL,                                           (GCallback)set_bg_color          },
+  { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
+  { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", NULL,                                           (GCallback)draw_zoom_cb          },
+  { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To"),               "<control><shift>Z", NULL,                                           (GCallback)zoom_to_cb            },
+  { "Zoom0.25",  NULL,                   N_("0.25"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom0.5",   NULL,                   N_("0.5"),                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom1",     NULL,                   N_("1"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom2",     NULL,                   N_("2"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom4",     NULL,                   N_("4"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom8",     NULL,                   N_("8"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom16",    NULL,                   N_("16"),                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom32",    NULL,                   N_("32"),                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom64",    NULL,                   N_("64"),                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "Zoom128",   NULL,                   N_("128"),                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
+  { "PanNorth",  NULL,                   N_("Pan North"),                  "<control>Up", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanEast",  NULL,                    N_("Pan East"),                   "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanSouth",  NULL,                   N_("Pan South"),                  "<control>Down", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanWest",  NULL,                    N_("Pan West"),                   "<control>Left", NULL,                                           (GCallback)draw_pan_cb },
+  { "BGJobs",    GTK_STOCK_EXECUTE,      N_("Background _Jobs"),              NULL,         NULL,                                           (GCallback)a_background_show_window },
 
-  { "Cut",       GTK_STOCK_CUT,          "Cu_t",                          NULL,         NULL,                                           (GCallback)menu_cut_layer_cb     },
-  { "Copy",      GTK_STOCK_COPY,         "_Copy",                         NULL,         NULL,                                           (GCallback)menu_copy_layer_cb    },
-  { "Paste",     GTK_STOCK_PASTE,        "_Paste",                        NULL,         NULL,                                           (GCallback)menu_paste_layer_cb   },
-  { "Delete",    GTK_STOCK_DELETE,       "_Delete",                       NULL,         NULL,                                           (GCallback)menu_delete_layer_cb  },
-  { "DeleteAll", NULL,                   "Delete All",                    NULL,         NULL,                                           (GCallback)clear_cb              },
-  { "Properties",GTK_STOCK_PROPERTIES,   "_Properties",                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
+  { "Cut",       GTK_STOCK_CUT,          N_("Cu_t"),                          NULL,         NULL,                                           (GCallback)menu_cut_layer_cb     },
+  { "Copy",      GTK_STOCK_COPY,         N_("_Copy"),                         NULL,         NULL,                                           (GCallback)menu_copy_layer_cb    },
+  { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         NULL,                                           (GCallback)menu_paste_layer_cb   },
+  { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         NULL,                                           (GCallback)menu_delete_layer_cb  },
+  { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
+  { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
 
-  { "About",     GTK_STOCK_ABOUT,        "_About",                        NULL,         NULL,                                           (GCallback)help_about_cb    },
+  { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         NULL,                                           (GCallback)help_about_cb    },
 };
 
 /* Radio items */
 static GtkRadioActionEntry mode_entries[] = {
-  { "ModeUTM",         NULL,         "_UTM Mode",               "<control>u", NULL, 0 },
-  { "ModeExpedia",     NULL,         "_Expedia Mode",           "<control>e", NULL, 1 },
-  { "ModeGoogle",      NULL,         "_Old Google Mode",        "<control>o", NULL, 2 },
-  { "ModeKH",          NULL,         "Old _KH Mode",            "<control>k", NULL, 3 },
-  { "ModeMercator",    NULL,         "_Google Mode",            "<control>g", NULL, 4 }
+  { "ModeUTM",         NULL,         N_("_UTM Mode"),               "<control>u", NULL, 0 },
+  { "ModeExpedia",     NULL,         N_("_Expedia Mode"),           "<control>e", NULL, 1 },
+  { "ModeGoogle",      NULL,         N_("_Old Google Mode"),        "<control>o", NULL, 2 },
+  { "ModeKH",          NULL,         N_("Old _KH Mode"),            "<control>k", NULL, 3 },
+  { "ModeMercator",    NULL,         N_("_Google Mode"),            "<control>g", NULL, 4 }
 };
 
 static GtkRadioActionEntry tool_entries[] = {
-  { "Zoom",      "vik-icon-zoom",        "_Zoom",                         "<control><shift>Z", "Zoom Tool",  0 },
-  { "Ruler",     "vik-icon-ruler",       "_Ruler",                        "<control><shift>R", "Ruler Tool", 1 }
+  { "Zoom",      "vik-icon-zoom",        N_("_Zoom"),                         "<control><shift>Z", N_("Zoom Tool"),  0 },
+  { "Ruler",     "vik-icon-ruler",       N_("_Ruler"),                        "<control><shift>R", N_("Ruler Tool"), 1 }
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ShowScale", NULL,                   "Show Scale",                    NULL,         NULL,                                           (GCallback)set_draw_scale, TRUE   },
-  { "ShowCenterMark", NULL,                   "Show Center Mark",                    NULL,         NULL,                                           (GCallback)set_draw_centermark, TRUE   },
+  { "ShowScale", NULL,                   N_("Show Scale"),                    NULL,         NULL,                                           (GCallback)set_draw_scale, TRUE   },
+  { "ShowCenterMark", NULL,                   N_("Show Center Mark"),                    NULL,         NULL,                                           (GCallback)set_draw_centermark, TRUE   },
 };
 
 #include "menu.xml.h"
@@ -1878,6 +1878,7 @@ static void window_create_ui( VikWindow *window )
   }
 
   action_group = gtk_action_group_new ("MenuActions");
+  gtk_action_group_set_translation_domain(action_group, PACKAGE_NAME);
   gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), window);
   gtk_action_group_add_toggle_actions (action_group, toggle_entries, G_N_ELEMENTS (toggle_entries), window);
   gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 4, (GCallback)window_change_coord_mode_cb, window);
