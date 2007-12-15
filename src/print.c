@@ -117,7 +117,7 @@ void a_print(VikWindow *vw, VikViewport *vvp)
   g_signal_connect (print_oper, "end-print", G_CALLBACK (end_print), &data);
   g_signal_connect (print_oper, "create-custom-widget", G_CALLBACK (create_custom_widget_cb), &data);
 
-  gtk_print_operation_set_custom_tab_label (print_oper, "Image Settings");
+  gtk_print_operation_set_custom_tab_label (print_oper, _("Image Settings"));
 
   res = gtk_print_operation_run (print_oper,
                                  GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
@@ -547,7 +547,7 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   GtkPageSetup *setup;
 
   CustomWidgetInfo  *info = g_malloc0(sizeof(CustomWidgetInfo));
-  g_signal_connect_swapped (data->operation, "done", G_CALLBACK (custom_widgets_cleanup), info);
+  g_signal_connect_swapped (data->operation, _("done"), G_CALLBACK (custom_widgets_cleanup), info);
 
 
   info->data = data;
@@ -576,8 +576,8 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   gtk_widget_show (vbox);
 
   /* Page Size */
-  button = gtk_button_new_with_mnemonic ("_Adjust Page Size "
-                                           "and Orientation");
+  button = gtk_button_new_with_mnemonic (_("_Adjust Page Size "
+                                           "and Orientation"));
   gtk_box_pack_start (GTK_BOX (main_vbox), button, FALSE, FALSE, 0);
   g_signal_connect (G_OBJECT (button), "clicked",
                     G_CALLBACK (page_setup_cb),
@@ -592,7 +592,7 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   gtk_box_pack_start (GTK_BOX (main_vbox), hbox, FALSE, FALSE, 0);
   gtk_widget_show (hbox);
 
-  label = gtk_label_new_with_mnemonic ("C_enter:");
+  label = gtk_label_new_with_mnemonic (_("C_enter:"));
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
@@ -610,7 +610,7 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   info->center_combo = combo;
 
   /* ignore page margins */
-  button = gtk_check_button_new_with_mnemonic ("Ignore Page _Margins");
+  button = gtk_check_button_new_with_mnemonic (_("Ignore Page _Margins"));
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button),
                                 data->use_full_page);
@@ -629,7 +629,7 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   gtk_widget_show (hbox);
 
-  label = gtk_label_new_with_mnemonic ("Image S_ize:");
+  label = gtk_label_new_with_mnemonic (_("Image S_ize:"));
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);

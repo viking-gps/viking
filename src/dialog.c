@@ -45,7 +45,7 @@ void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar
 
 gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const struct LatLon *old )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ("Go to Lat/Lon",
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to Lat/Lon"),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -57,13 +57,13 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
   GtkWidget *lat, *lon;
   gchar *tmp_lat, *tmp_lon;
 
-  latlabel = gtk_label_new ("Latitude:");
+  latlabel = gtk_label_new (_("Latitude:"));
   lat = gtk_entry_new ();
   tmp_lat = g_strdup_printf ( "%f", old->lat );
   gtk_entry_set_text ( GTK_ENTRY(lat), tmp_lat );
   g_free ( tmp_lat );
 
-  lonlabel = gtk_label_new ("Longitude:");
+  lonlabel = gtk_label_new (_("Longitude:"));
   lon = gtk_entry_new ();
   tmp_lon = g_strdup_printf ( "%f", old->lon );
   gtk_entry_set_text ( GTK_ENTRY(lon), tmp_lon );
@@ -93,7 +93,7 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
 
 gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UTM *old )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ("Go to Lat/Lon",
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to Lat/Lon"),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -106,23 +106,23 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
   gchar *tmp_eas, *tmp_nor;
   gchar tmp_letter[2];
 
-  norlabel = gtk_label_new ("Northing:");
+  norlabel = gtk_label_new (_("Northing:"));
   nor = gtk_entry_new ();
   tmp_nor = g_strdup_printf("%ld", (long) old->northing );
   gtk_entry_set_text ( GTK_ENTRY(nor), tmp_nor );
   g_free ( tmp_nor );
 
-  easlabel = gtk_label_new ("Easting:");
+  easlabel = gtk_label_new (_("Easting:"));
   eas = gtk_entry_new ();
   tmp_eas = g_strdup_printf("%ld", (long) old->easting );
   gtk_entry_set_text ( GTK_ENTRY(eas), tmp_eas );
   g_free ( tmp_eas );
 
   zonehbox = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(zonehbox), gtk_label_new ( "Zone:" ), FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(zonehbox), gtk_label_new ( _("Zone:") ), FALSE, FALSE, 5 );
   zonespin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( old->zone, 1, 60, 1, 5, 5 ), 1, 0 );
   gtk_box_pack_start ( GTK_BOX(zonehbox), zonespin, TRUE, TRUE, 5 );
-  gtk_box_pack_start ( GTK_BOX(zonehbox), gtk_label_new ( "Letter:" ), FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(zonehbox), gtk_label_new ( _("Letter:") ), FALSE, FALSE, 5 );
   letterentry = gtk_entry_new ();
   gtk_entry_set_max_length ( GTK_ENTRY(letterentry), 1 );
   gtk_entry_set_width_chars ( GTK_ENTRY(letterentry), 2 );
@@ -169,7 +169,7 @@ void a_dialog_response_accept ( GtkDialog *dialog )
 /* todo: less on this side, like add track */
 gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ("Create",
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Create"),
                                                    parent,
                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                    GTK_STOCK_CANCEL,
@@ -195,47 +195,47 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
   if ( dest != NULL )
   {
-    namelabel = gtk_label_new ("Name:");
+    namelabel = gtk_label_new (_("Name:"));
     nameentry = gtk_entry_new ();
     g_signal_connect_swapped ( nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
     gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), namelabel, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), nameentry, FALSE, FALSE, 0);
   }
 
-  latlabel = gtk_label_new ("Latitude:");
+  latlabel = gtk_label_new (_("Latitude:"));
   latentry = gtk_entry_new ();
   gtk_entry_set_text ( GTK_ENTRY(latentry), lat );
   g_free ( lat );
 
-  lonlabel = gtk_label_new ("Longitude:");
+  lonlabel = gtk_label_new (_("Longitude:"));
   lonentry = gtk_entry_new ();
   gtk_entry_set_text ( GTK_ENTRY(lonentry), lon );
   g_free ( lon );
 
-  altlabel = gtk_label_new ("Altitude:");
+  altlabel = gtk_label_new (_("Altitude:"));
   altentry = gtk_entry_new ();
   gtk_entry_set_text ( GTK_ENTRY(altentry), alt );
   g_free ( alt );
 
-  commentlabel = gtk_label_new ("Comment:");
+  commentlabel = gtk_label_new (_("Comment:"));
   commententry = gtk_entry_new ();
   gchar *cmt =  a_googlesearch_get_search_string_for_this_place(VIK_WINDOW(parent));
   if (cmt)
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 
-  imagelabel = gtk_label_new ("Image:");
+  imagelabel = gtk_label_new (_("Image:"));
   imageentry = vik_file_entry_new ();
 
   {
     GtkCellRenderer *r;
-    symbollabel = gtk_label_new ("Symbol:");
+    symbollabel = gtk_label_new (_("Symbol:"));
     GtkTreeIter iter;
 
     store = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
     symbolentry = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
     gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(symbolentry), 3);
     gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter, 0, NULL, 1, NULL, 2, "(none)", -1);
+    gtk_list_store_set (store, &iter, 0, NULL, 1, NULL, 2, _("(none)"), -1);
     a_populate_sym_list(store);
 
     r = gtk_cell_renderer_pixbuf_new ();
@@ -290,7 +290,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     {
       const gchar *constname = gtk_entry_get_text ( GTK_ENTRY(nameentry) );
       if ( strlen(constname) == 0 ) /* TODO: other checks (isalpha or whatever ) */
-        a_dialog_info_msg ( parent, "Please enter a name for the waypoint." );
+        a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
       else {
         int i;
         gchar *name = g_strdup ( constname );
@@ -298,7 +298,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
         for ( i = strlen ( name ) - 1; i >= 0; i-- )
           name[i] = toupper(name[i]); /* all caps for stardandization */
 
-        if ( g_hash_table_lookup ( waypoints, name ) && !a_dialog_overwrite ( parent, "The waypoint \"%s\" exists, do you want to overwrite it?", name ) )
+        if ( g_hash_table_lookup ( waypoints, name ) && !a_dialog_overwrite ( parent, _("The waypoint \"%s\" exists, do you want to overwrite it?"), name ) )
           g_free ( name );
         else
         {
@@ -370,7 +370,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
 gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ("Add Track",
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Track"),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -378,7 +378,7 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL);
-  GtkWidget *label = gtk_label_new ( "Track Name:" );
+  GtkWidget *label = gtk_label_new ( _("Track Name:") );
   GtkWidget *entry = gtk_entry_new ();
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
@@ -393,7 +393,7 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
   {
     const gchar *constname = gtk_entry_get_text ( GTK_ENTRY(entry) );
     if ( *constname == '\0' )
-      a_dialog_info_msg ( parent, "Please enter a name for the track." );
+      a_dialog_info_msg ( parent, _("Please enter a name for the track.") );
     else {
       gchar *name = g_strdup ( constname );
       gint i;
@@ -401,7 +401,7 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
       for ( i = strlen ( name ) - 1; i >= 0; i-- )
         name[i] = toupper(name[i]); /* all caps for stardandization */
 
-      if ( g_hash_table_lookup( tracks, name ) && !a_dialog_overwrite ( parent, "The track \"%s\" exists, do you want to overwrite it?", gtk_entry_get_text ( GTK_ENTRY(entry) ) ) )
+      if ( g_hash_table_lookup( tracks, name ) && !a_dialog_overwrite ( parent, _("The track \"%s\" exists, do you want to overwrite it?"), gtk_entry_get_text ( GTK_ENTRY(entry) ) ) )
       {
         g_free ( name );
       }
@@ -463,7 +463,7 @@ static void zoom_spin_changed ( GtkSpinButton *spin, GtkWidget *pass_along[3] )
 
 gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ("Zoom Factors...",
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Zoom Factors..."),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -477,14 +477,14 @@ gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp 
   table = gtk_table_new ( 4, 2, FALSE );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
 
-  label = gtk_label_new ( "Zoom factor (in meters per pixel:" );
-  xlabel = gtk_label_new ( "X (easting): ");
-  ylabel = gtk_label_new ( "Y (northing): ");
+  label = gtk_label_new ( _("Zoom factor (in meters per pixel:") );
+  xlabel = gtk_label_new ( _("X (easting): "));
+  ylabel = gtk_label_new ( _("Y (northing): "));
 
   pass_along[0] = xspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *xmpp, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 5 ), 1, 8 );
   pass_along[1] = yspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *ympp, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 5 ), 1, 8 );
 
-  pass_along[2] = samecheck = gtk_check_button_new_with_label ( "X and Y zoom factors must be equal" );
+  pass_along[2] = samecheck = gtk_check_button_new_with_label ( _("X and Y zoom factors must be equal") );
   /* TODO -- same factor */
   /*  samecheck = gtk_check_button_new_with_label ( "Same x/y zoom factor" ); */
 
@@ -537,10 +537,10 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
 
   label = gtk_label_new (label_text);
 
-  t1 = gtk_radio_button_new_with_label ( NULL, "1 min" );
-  t2 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t1), "1 hour" );
-  t3 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t2), "1 day" );
-  t4 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t3), "Custom (in minutes):" );
+  t1 = gtk_radio_button_new_with_label ( NULL, _("1 min") );
+  t2 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t1), _("1 hour") );
+  t3 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t2), _("1 day") );
+  t4 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t3), _("Custom (in minutes):") );
 
   pass_along[0] = t4;
 
@@ -580,10 +580,10 @@ void a_dialog_about ( GtkWindow *parent )
 {
   int re;
   char *msg = g_markup_printf_escaped (
-    _("<span font_desc='20' weight='bold'>Viking %s</span>\n\n"
+    _(_("<span font_desc='20' weight='bold'>Viking %s</span>\n\n"
     "GPS Data and Topo Analyzer, Explorer, and Manager.\n\n"
     "<small>(C) 2003-2007, Evan Battaglia</small>\n\n"
-    "<small>Web site: %s</small>"),
+    "<small>Web site: %s</small>")),
     VIKING_VERSION, VIKING_URL);
   GtkWidget *msgbox = gtk_message_dialog_new_with_markup ( parent, 
 							   GTK_DIALOG_DESTROY_WITH_PARENT, 
@@ -591,7 +591,7 @@ void a_dialog_about ( GtkWindow *parent )
 							   GTK_BUTTONS_NONE,
 							   msg);
 
-  gtk_dialog_add_buttons (GTK_DIALOG(msgbox), "Credits", 1, "License", 2, "Close", 3, NULL, NULL);
+  gtk_dialog_add_buttons (GTK_DIALOG(msgbox), _("Credits"), 1, _("License"), 2, _("Close"), 3, NULL, NULL);
   
   while ((re = gtk_dialog_run ( GTK_DIALOG(msgbox))) != 3) {
     if (re==1) {
@@ -599,7 +599,7 @@ void a_dialog_about ( GtkWindow *parent )
       a_dialog_info_msg(parent, AUTHORS);
     }
     if (re==2) {
-      a_dialog_info_msg(parent, "\n\n"
+      a_dialog_info_msg(parent, _("\n\n"
 			"This program is free software; you can redistribute it and/or modify "
 			"it under the terms of the GNU General Public License as published by "
 			"the Free Software Foundation; either version 2 of the License, or "
@@ -612,7 +612,7 @@ void a_dialog_about ( GtkWindow *parent )
 			"\n\n"
 			"You should have received a copy of the GNU General Public License "
 			"along with this program; if not, write to the Free Software "
-			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA");
+			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA"));
     }
   }
   gtk_widget_destroy ( msgbox );
@@ -622,14 +622,14 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
 {
   gchar **s;
 
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ( "Download along track", parent, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Download along track"), parent, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
 
-  GtkWidget *map_label = gtk_label_new("Map type:");
+  GtkWidget *map_label = gtk_label_new(_("Map type:"));
   GtkComboBox *map_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
   for (s = mapnames; *s; s++)
     gtk_combo_box_append_text(map_combo, *s);
   gtk_combo_box_set_active (map_combo, default_map);
-  GtkWidget *zoom_label = gtk_label_new("Zoom level:");
+  GtkWidget *zoom_label = gtk_label_new(_("Zoom level:"));
   GtkComboBox *zoom_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
   for (s = zoom_list; *s; s++)
     gtk_combo_box_append_text(zoom_combo, *s);
