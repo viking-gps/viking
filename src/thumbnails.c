@@ -68,6 +68,10 @@
 
 #define PIXMAP_THUMB_SIZE  128
 
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 1024
+#endif
+
 static char *md5_hash(const char *message);
 static char *pathdup(const char *path);
 static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full);
