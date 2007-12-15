@@ -47,10 +47,6 @@ AM_WITH_EXPAT
 # Curl
 LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found])])
 
-# libgps
-#AC_CHECK_LIB(gps,gps_poll,AC_DEFINE(HAVE_LIBGPS,[],[libgps to connect to gpsd]),)
-#AM_CONDITIONAL([LIBGPS], [test x$ac_cv_lib_gps_gps_poll = xyes])
-
 AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
 if test $GDK_PIXBUF_CSOURCE != "yes"
 then
@@ -175,8 +171,14 @@ AC_CACHE_CHECK([whether to enable Realtime GPS Tracking stuff],
                [ac_cv_enable_realtimegpstracking], [ac_cv_enable_realtimegpstracking=yes])
 case $ac_cv_enable_realtimegpstracking in
   yes)
-    AC_CHECK_LIB(gps,gps_poll,,AC_MSG_ERROR([libgps is needed for Realtime GPS Tracking feature[,] but not found. The feature can be disable with --disable-realtime-gps-tracking]))
-    AC_DEFINE(VIK_CONFIG_REALTIME_GPS_TRACKING, [], [REALTIME GPS TRACKING STUFF])
+# libgps
+    AC_CHECK_LIB(gps,gps_poll,,AC_MSG_WARN([libgps is needed for Realtime GPS Tracking feature[,] but not found. The feature is disabled.]))
+    if test x$ac_cv_lib_gps_gps_poll = xyes
+    then
+      AC_DEFINE(VIK_CONFIG_REALTIME_GPS_TRACKING, [], [REALTIME GPS TRACKING STUFF])
+    else
+      ac_cv_enable_realtimegpstracking=no
+    fi
     ;;
 esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])

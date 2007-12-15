@@ -1,6 +1,7 @@
 2007-12-12:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix compilation under HURD (missing MAXPATHLEN macro)
+	* Fix: if libgps is missing, Realtime GPS Tracking is disabled
 
 2007-12-12:
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
