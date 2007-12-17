@@ -50,6 +50,7 @@ void a_dialog_about ( GtkWindow *parent );
 gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const struct LatLon *old );
 gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UTM *old );
 
+/* if *dest is non-null, uses it as a default and frees it */
 gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode );
 
 gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks );

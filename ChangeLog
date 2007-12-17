@@ -1,5 +1,7 @@
 2007-12-16:
+Evan Battaglia <gtoevan@gmx.net>
 	* Sort waypoints in GPX output.
+	* Use the "next unused" (not really) waypoint number as default.
 
 2007-12-12:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

@@ -175,6 +175,7 @@ struct _VikTrwLayer {
   /* menu */
   VikStdLayerMenuItem menu_selection;
 
+  gint highest_wp_number;
 };
 
 /* A caached waypoint image. */
@@ -285,6 +286,12 @@ static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mo
 static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name);
 static void waypoint_convert ( const gchar *name, VikWaypoint *wp, VikCoordMode *dest_mode );
 static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_mode );
+
+static gchar *highest_wp_number_get(VikTrwLayer *vtl);
+static void highest_wp_number_reset(VikTrwLayer *vtl);
+static void highest_wp_number_add_wp(VikTrwLayer *vtl, const gchar *new_wp_name);
+static void highest_wp_number_remove_wp(VikTrwLayer *vtl, const gchar *old_wp_name);
+
 
 static VikToolInterface trw_layer_tools[] = {
   { N_("Create Waypoint"), (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL, 
@@ -1551,7 +1558,7 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
 
 gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikCoord *def_coord )
 {
-  gchar *name;
+  gchar *name = highest_wp_number_get(vtl);
   VikWaypoint *wp = vik_waypoint_new();
   wp->coord = *def_coord;
   wp->altitude = VIK_DEFAULT_ALTITUDE;
@@ -1669,6 +1676,7 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
   else
     wp->visible = TRUE;
 
+  highest_wp_number_add_wp(vtl, name);
   g_hash_table_insert ( vtl->waypoints, name, wp );
  
 }
@@ -1865,6 +1873,8 @@ gboolean vik_trw_layer_delete_waypoint ( VikTrwLayer *vtl, const gchar *wp_name 
     g_assert ( ( it = g_hash_table_lookup ( vtl->waypoints_iters, (gchar *) wp_name ) ) );
     vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
     g_hash_table_remove ( vtl->waypoints_iters, (gchar *) wp_name );
+
+    highest_wp_number_remove_wp(vtl, wp_name);
     g_hash_table_remove ( vtl->waypoints, wp_name ); /* last because this frees name */
   }
 
@@ -1899,6 +1909,8 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
   vtl->current_wp = NULL;
   vtl->current_wp_name = NULL;
   vtl->moving_wp = FALSE;
+
+  highest_wp_number_reset(vtl);
 
   g_hash_table_foreach(vtl->waypoints_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
   g_hash_table_remove_all(vtl->waypoints_iters);
@@ -2275,6 +2287,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
     g_hash_table_steal ( l->waypoints_iters, sublayer );
 
     wp = vik_waypoint_copy ( VIK_WAYPOINT(g_hash_table_lookup ( l->waypoints, sublayer )) );
+    highest_wp_number_remove_wp(l, sublayer);
     g_hash_table_remove ( l->waypoints, sublayer );
 
     rv = g_strdup(newname);
@@ -2283,6 +2296,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
 
     vik_treeview_item_set_pointer ( VIK_LAYER(l)->vt, iter, rv );
 
+    highest_wp_number_add_wp(l, rv);
     g_hash_table_insert ( l->waypoints, rv, wp );
     g_hash_table_insert ( l->waypoints_iters, rv, iter );
 
@@ -3795,3 +3809,57 @@ done:
 
 }
 
+/**** lowest waypoint number calculation ***/
+static gint highest_wp_number_name_to_number(const gchar *name) {
+  if ( strlen(name) == 3 ) {
+    int n = atoi(name);
+    if ( n < 100 && name[0] != '0' )
+      return -1;
+    if ( n < 10 && name[0] != '0' )
+      return -1;
+    return n;
+  }
+  return -1;
+}
+
+
+static void highest_wp_number_reset(VikTrwLayer *vtl)
+{
+  vtl->highest_wp_number = -1;
+}
+
+static void highest_wp_number_add_wp(VikTrwLayer *vtl, const gchar *new_wp_name)
+{
+  /* if is bigger that top, add it */
+  gint new_wp_num = highest_wp_number_name_to_number(new_wp_name);
+  if ( new_wp_num > vtl->highest_wp_number )
+    vtl->highest_wp_number = new_wp_num;
+}
+
+static void highest_wp_number_remove_wp(VikTrwLayer *vtl, const gchar *old_wp_name)
+{
+  /* if wasn't top, do nothing. if was top, count backwards until we find one used */
+  gint old_wp_num = highest_wp_number_name_to_number(old_wp_name);
+  if ( vtl->highest_wp_number == old_wp_num ) {
+    gchar buf[4];
+    vtl->highest_wp_number --;
+
+    g_snprintf(buf,4,"%03d", vtl->highest_wp_number );
+    /* search down until we find something that *does* exist */
+
+    while ( vtl->highest_wp_number >= 0 && ! g_hash_table_lookup ( vtl->waypoints, buf ) ) {
+      vtl->highest_wp_number --;
+      g_snprintf(buf,4,"%03d", vtl->highest_wp_number );
+    }
+  }
+}
+
+/* get lowest unused number */
+static gchar *highest_wp_number_get(VikTrwLayer *vtl)
+{
+  gchar buf[4];
+  if ( vtl->highest_wp_number < 0 || vtl->highest_wp_number >= 999 )
+    return "";
+  g_snprintf(buf,4,"%03d", vtl->highest_wp_number+1 );
+  return g_strdup(buf);
+}

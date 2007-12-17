@@ -197,6 +197,11 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   {
     namelabel = gtk_label_new (_("Name:"));
     nameentry = gtk_entry_new ();
+    if ( *dest ) {
+      gtk_entry_set_text( GTK_ENTRY(nameentry), *dest );
+      g_free ( *dest );
+      *dest = NULL;
+    }
     g_signal_connect_swapped ( nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
     gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), namelabel, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), nameentry, FALSE, FALSE, 0);
