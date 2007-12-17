@@ -1,3 +1,7 @@
+2007-12-17:
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+	* Use specific gettext call for plural form
+
 2007-12-16:
 Evan Battaglia <gtoevan@gmx.net>
 	* Sort waypoints in GPX output.

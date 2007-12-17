@@ -982,10 +982,9 @@ void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport 
   if (mdi->mapstoget) {
     gchar *tmp;
     const gchar *fmt;
-    if (mdi->mapstoget == 1)
-      fmt = _("Downloading %d %s map...");
-    else
-      fmt = _("Downloading %d %s maps...");
+    fmt = ngettext("Downloading %d %s map...",
+                   "Downloading %d %s maps...",
+		   mdi->mapstoget);
     tmp = g_strdup_printf ( fmt, mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype) );
 
     g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
