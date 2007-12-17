@@ -719,11 +719,54 @@ static void gpx_write_footer( FILE *f )
   fprintf(f, "</gpx>\n");
 }
 
+
+
+typedef struct {
+  VikWaypoint *wp;
+  const gchar *name;
+} gpx_waypoint_and_name;
+
+typedef struct {
+  gpx_waypoint_and_name *wps;
+  guint i;
+  guint n_wps;
+} gpx_gather_waypoints_passalong_t;
+
+static void gpx_collect_waypoint ( const gchar *name, VikWaypoint *wp, gpx_gather_waypoints_passalong_t *passalong )
+{
+  if ( passalong->i < passalong->n_wps ) {
+    passalong->wps[passalong->i].name = name;
+    passalong->wps[passalong->i].wp = wp;
+    passalong->i++;
+  }
+}
+
+static int gpx_waypoint_and_name_compar(const void *x, const void *y)
+{
+  gpx_waypoint_and_name *a = (gpx_waypoint_and_name *)x;
+  gpx_waypoint_and_name *b = (gpx_waypoint_and_name *)y;
+  return strcmp(a->name,b->name);
+}
+
 void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
 {
+  int i;
+
   gpx_write_header ( f );
-  g_hash_table_foreach ( vik_trw_layer_get_waypoints ( vtl ), (GHFunc) gpx_write_waypoint, f );
+
+  gpx_gather_waypoints_passalong_t passalong;
+  passalong.n_wps = g_hash_table_size ( vik_trw_layer_get_waypoints ( vtl ) );
+  passalong.i = 0;
+  passalong.wps = g_new(gpx_waypoint_and_name,passalong.n_wps);
+  g_hash_table_foreach ( vik_trw_layer_get_waypoints ( vtl ), (GHFunc) gpx_collect_waypoint, &passalong );
+  /* gather waypoints in a list, then sort */
+  qsort(passalong.wps, passalong.n_wps, sizeof(gpx_waypoint_and_name), gpx_waypoint_and_name_compar);
+  for ( i = 0; i < passalong.n_wps; i++ )
+    gpx_write_waypoint ( passalong.wps[i].name, passalong.wps[i].wp, f);
+  g_free ( passalong.wps );
+
   g_hash_table_foreach ( vik_trw_layer_get_tracks ( vtl ), (GHFunc) gpx_write_track, f );
+
   gpx_write_footer ( f );
 }
 
