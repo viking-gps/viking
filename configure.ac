@@ -171,14 +171,8 @@ AC_CACHE_CHECK([whether to enable Realtime GPS Tracking stuff],
                [ac_cv_enable_realtimegpstracking], [ac_cv_enable_realtimegpstracking=yes])
 case $ac_cv_enable_realtimegpstracking in
   yes)
-# libgps
-    AC_CHECK_LIB(gps,gps_poll,,AC_MSG_WARN([libgps is needed for Realtime GPS Tracking feature[,] but not found. The feature is disabled.]))
-    if test x$ac_cv_lib_gps_gps_poll = xyes
-    then
-      AC_DEFINE(VIK_CONFIG_REALTIME_GPS_TRACKING, [], [REALTIME GPS TRACKING STUFF])
-    else
-      ac_cv_enable_realtimegpstracking=no
-    fi
+    AC_CHECK_LIB(gps,gps_poll,,AC_MSG_ERROR([libgps is needed for Realtime GPS Tracking feature[,] but not found. The feature can be disable with --disable-realtime-gps-tracking]))
+    AC_DEFINE(VIK_CONFIG_REALTIME_GPS_TRACKING, [], [REALTIME GPS TRACKING STUFF])
     ;;
 esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])

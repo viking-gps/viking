@@ -1,3 +1,8 @@
+2007-12-20
+Qut Tonthat <qtonthat@gmail.com>:
+	* Revert a previous change that disabled realtime tracking if libgps
+	does not exist.
+
 2007-12-17:
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
 	* Use specific gettext call for plural form
