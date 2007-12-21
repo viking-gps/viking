@@ -121,8 +121,8 @@ static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn )
 static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
-   gchar *uri = g_strdup_printf ( "/~ojw/Tiles/tile.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn, &osm_options );
+   gchar *uri = g_strdup_printf ( "/Tiles/tile/%d/%d/%d.png", 17-src->scale, src->x, src->y );
+   res = a_http_download_get_url ( "tah.openstreetmap.org", uri, dest_fn, &osm_options );
    g_free ( uri );
    return res;
 }

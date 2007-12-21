@@ -1,3 +1,7 @@
+2007-12-21:
+Christoph Eckert <ce@christeck.de>
+	* Update source for OSM/Osmarender tiles
+
 2007-12-20:
 Evan Battaglia <gtoevan@gmx.net>
 	* Preferences in ~/.viking/viking.prefs, this will soon allow geocaching support to go mainstream, (hopefully)
