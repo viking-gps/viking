@@ -10,7 +10,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: French\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
 
 #: ../src/acquire.c:117
 msgid "Working..."
@@ -58,13 +58,13 @@ msgstr ""
 msgid ""
 "The clipboard contains sublayer data for a %s layers.You must select a layer "
 "of this type to paste the clipboard data."
-msgstr ""
+msgstr "Le presse-papier contient des données pour un calque %s. Vous devez sélectionner un calque de ce type pour y coller ces données."
 
 #: ../src/clipboard.c:210
 msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
 "into."
-msgstr ""
+msgstr "Pour copier un waypoint, sélectionner un calque approprié."
 
 #: ../src/curl_download.c:62
 #, c-format
@@ -85,11 +85,11 @@ msgstr "Longitude :"
 
 #: ../src/dialog.c:109
 msgid "Northing:"
-msgstr ""
+msgstr "Northing :"
 
 #: ../src/dialog.c:115
 msgid "Easting:"
-msgstr ""
+msgstr "Easting :"
 
 #: ../src/dialog.c:122
 msgid "Zone:"
@@ -130,35 +130,35 @@ msgstr "(aucun)"
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:293
 msgid "Please enter a name for the waypoint."
-msgstr ""
+msgstr "Entrez un nom pour le waypoint."
 
 #. all caps for stardandization
 #: ../src/dialog.c:301
 #, c-format
 msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr ""
+msgstr "Le waypoint \"%s\" existe déjà. Voulez-vous le remplacer ?"
 
 #: ../src/dialog.c:373
 msgid "Add Track"
-msgstr ""
+msgstr "Ajout d'un chemin"
 
 #: ../src/dialog.c:381
 msgid "Track Name:"
-msgstr ""
+msgstr "Nom du chemin :"
 
 #: ../src/dialog.c:396
 msgid "Please enter a name for the track."
-msgstr ""
+msgstr "Entrez un nom pour le chemin."
 
 #. all caps for stardandization
 #: ../src/dialog.c:404
 #, c-format
 msgid "The track \"%s\" exists, do you want to overwrite it?"
-msgstr ""
+msgstr "Le chemin \"%s\" existe déjà. Voulez-vous le remplacer ?"
 
 #: ../src/dialog.c:466
 msgid "Zoom Factors..."
-msgstr ""
+msgstr "Facteur de zoom"
 
 #: ../src/dialog.c:480
 msgid "Zoom factor (in meters per pixel:"
@@ -174,7 +174,7 @@ msgstr ""
 
 #: ../src/dialog.c:487
 msgid "X and Y zoom factors must be equal"
-msgstr ""
+msgstr "Les facteurs X et Y doivent être égaux"
 
 #: ../src/dialog.c:540
 msgid "1 min"
@@ -335,11 +335,11 @@ msgstr "Impossible d'ouvrir le fichier temporaire %s\n"
 
 #: ../src/datasource_gc.c:53
 msgid "Download Geocaches"
-msgstr ""
+msgstr "Télécharger des Geocaches"
 
 #: ../src/datasource_gc.c:54
 msgid "Geocaching.com Caches"
-msgstr ""
+msgstr "Caches geocaching.com"
 
 #: ../src/datasource_gc.c:81
 msgid ""
@@ -491,7 +491,7 @@ msgstr "Mot de passe utilisé pour la connexion"
 
 #: ../src/osm-traces.c:321
 msgid "Enter the password you use to login into www.openstreetmap.org."
-msgstr ""
+msgstr "Entrer le mot de passe utilisé pour se connecter sur www.openstreetmap.org"
 "Entrer le mot de passe utilisé pour se connecter sur www.openstreetmap.org"
 
 #: ../src/osm-traces.c:323
@@ -506,7 +506,7 @@ msgstr "Nom du fichier sur OSM"
 msgid ""
 "This is the name of the file created on the server. This is not the name of "
 "the local file."
-msgstr ""
+msgstr "Nom du fichier créé sur le serveur. Ce n'est pas le nom du fichier local."
 
 #: ../src/osm-traces.c:339
 msgid "Description:"
@@ -514,7 +514,7 @@ msgstr "Description :"
 
 #: ../src/osm-traces.c:346
 msgid "The description of the trace"
-msgstr ""
+msgstr "Description de la trace"
 
 #: ../src/osm-traces.c:349
 msgid "Tags:"
@@ -522,7 +522,7 @@ msgstr "Étiquettes :"
 
 #: ../src/osm-traces.c:356
 msgid "The tags associated to the trace"
-msgstr ""
+msgstr "Tags associés à la trace"
 
 #: ../src/osm-traces.c:359
 msgid "Public"
@@ -530,7 +530,7 @@ msgstr "Public"
 
 #: ../src/osm-traces.c:365
 msgid "Indicates if the trace is public or not"
-msgstr ""
+msgstr "Spécifie si cette trace est publique ou privée"
 
 #: ../src/osm-traces.c:386
 #, c-format
@@ -866,15 +866,15 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:488
 msgid "You cannot cut the Top Layer."
-msgstr ""
+msgstr "Impossible de couper le calque maître"
 
 #: ../src/viklayerspanel.c:537
 msgid "You cannot delete the Top Layer."
-msgstr ""
+msgstr "Impossible de supprimer le calque maître"
 
 #: ../src/viklayerspanel.c:621
 msgid "Are you sure you wish to delete all layers?"
-msgstr ""
+msgstr "Voulez-vous vraiment supprimer tous les calques ?"
 
 #. ******* MAPZOOMS ********
 #: ../src/vikmapslayer.c:83
@@ -948,20 +948,20 @@ msgstr[1] ""
 #: ../src/vikmapslayer.c:986
 #, c-format
 msgid "Downloading %d %s map..."
-msgstr ""
+msgstr "Téléchargement de %d carte %s..."
 
 #: ../src/vikmapslayer.c:988
 #, c-format
 msgid "Downloading %d %s maps..."
-msgstr ""
+msgstr "Téléchargement de %d cartes %s..."
 
 #: ../src/vikmapslayer.c:1043
 msgid "Redownload bad map(s)"
-msgstr ""
+msgstr "Retélécharger les mauvaises cartes"
 
 #: ../src/vikmapslayer.c:1047
 msgid "Redownload all map(s)"
-msgstr ""
+msgstr "Retélécharger toutes les cartes"
 
 #: ../src/vikmapslayer.c:1127
 #, c-format
