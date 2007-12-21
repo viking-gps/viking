@@ -1,3 +1,7 @@
+2007-12-20:
+Evan Battaglia <gtoevan@gmx.net>
+	* Preferences in ~/.viking/viking.prefs, this will soon allow geocaching support to go mainstream, (hopefully)
+
 2007-12-20
 Qut Tonthat <qtonthat@gmail.com>:
 	* Revert a previous change that disabled realtime tracking if libgps
