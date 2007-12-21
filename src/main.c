@@ -29,6 +29,7 @@
 #include "background.h"
 #include "dems.h"
 #include "curl_download.h"
+#include "preferences.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -146,6 +147,7 @@ int main( int argc, char *argv[] )
 
   a_mapcache_init ();
   a_background_init ();
+  a_preferences_init ();
   vik_layer_cursors_init ();
   vik_window_cursors_init ();
 
@@ -169,6 +171,7 @@ int main( int argc, char *argv[] )
 
   a_mapcache_uninit ();
   a_dems_uninit ();
+  a_preferences_uninit ();
   vik_layer_cursors_uninit ();
   vik_window_cursors_uninit ();
 

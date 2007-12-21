@@ -75,11 +75,14 @@ enum {
 VIK_LAYER_PARAM_DOUBLE=1,
 VIK_LAYER_PARAM_UINT,
 VIK_LAYER_PARAM_INT,
+
+/* in my_layer_set_param, if you want to use the string, you should dup it
+ * in my_layer_get_param, the string returned will NOT be free'd, you are responsible for managing it (I think) */
 VIK_LAYER_PARAM_STRING,
 VIK_LAYER_PARAM_BOOLEAN,
 VIK_LAYER_PARAM_COLOR,
 
-/* NOTE: string layer works auniquely: data.sl should NOT be free'd when
+/* NOTE: string list works uniquely: data.sl should NOT be free'd when
  * the internals call get_param -- i.e. it should be managed w/in the layer.
  * The value passed by the internals into set_param should also be managed
  * by the layer -- i.e. free'd by the layer.

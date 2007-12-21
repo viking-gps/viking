@@ -30,6 +30,7 @@
 #include "googlesearch.h"
 #include "dems.h"
 #include "print.h"
+#include "preferences.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -1347,6 +1348,11 @@ static void goto_address( GtkAction *a, VikWindow *vw)
   a_google_search(vw, vw->viking_vlp, vw->viking_vvp);
 }
 
+static void preferences_cb ( GtkAction *a, VikWindow *vw )
+{
+  a_preferences_show_window ( GTK_WINDOW(vw) );
+}
+
 static void clear_cb ( GtkAction *a, VikWindow *vw )
 {
   vik_layers_panel_clear ( vw->viking_vlp );
@@ -1828,6 +1834,7 @@ static GtkActionEntry entries[] = {
   { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         NULL,                                           (GCallback)menu_paste_layer_cb   },
   { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         NULL,                                           (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
+  { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences..."),                    NULL,         NULL,                                           (GCallback)preferences_cb              },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
 
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         NULL,                                           (GCallback)help_about_cb    },

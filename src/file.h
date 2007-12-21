@@ -40,4 +40,7 @@ gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filenam
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type );
 const gchar *a_get_viking_dir();
 
+void file_write_layer_param ( FILE *f, const gchar *name, guint8 type, VikLayerParamData data );
+
+
 #endif

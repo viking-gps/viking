@@ -98,6 +98,40 @@ static guint16 layer_type_from_string ( const gchar *str )
   return -1;
 }
 
+void file_write_layer_param ( FILE *f, const gchar *name, guint8 type, VikLayerParamData data ) {
+      /* string lists are handled differently. We get a GList (that shouldn't
+       * be freed) back for get_param and if it is null we shouldn't write
+       * anything at all (otherwise we'd read in a list with an empty string,
+       * not an empty string list.
+       */
+      if ( type == VIK_LAYER_PARAM_STRING_LIST ) {
+        if ( data.sl ) {
+          GList *iter = (GList *)data.sl;
+          while ( iter ) {
+            fprintf ( f, "%s=", name );
+            fprintf ( f, "%s\n", (gchar *)(iter->data) );
+            iter = iter->next;
+          }
+        }
+      } else {
+        fprintf ( f, "%s=", name );
+        switch ( type )
+        {
+          case VIK_LAYER_PARAM_DOUBLE: {
+  //          char buf[15]; /* locale independent */
+  //          fprintf ( f, "%s\n", (char *) g_dtostr (data.d, buf, sizeof (buf)) ); break;
+              fprintf ( f, "%f\n", data.d );
+              break;
+         }
+          case VIK_LAYER_PARAM_UINT: fprintf ( f, "%d\n", data.u ); break;
+          case VIK_LAYER_PARAM_INT: fprintf ( f, "%d\n", data.i ); break;
+          case VIK_LAYER_PARAM_BOOLEAN: fprintf ( f, "%c\n", data.b ? 't' : 'f' ); break;
+          case VIK_LAYER_PARAM_STRING: fprintf ( f, "%s\n", data.s ); break;
+          case VIK_LAYER_PARAM_COLOR: fprintf ( f, "#%.2x%.2x%.2x\n", (int)(data.c.red/256),(int)(data.c.green/256),(int)(data.c.blue/256)); break;
+        }
+      }
+}
+
 static void write_layer_params_and_data ( VikLayer *l, FILE *f )
 {
   VikLayerParam *params = vik_layer_get_interface(l->type)->params;
@@ -114,38 +148,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
     for ( i = 0; i < params_count; i++ )
     {
       data = get_param(l,i);
-
-      /* string lists are handled differently. We get a GList (that shouldn't
-       * be freed) back for get_param and if it is null we shouldn't write
-       * anything at all (otherwise we'd read in a list with an empty string,
-       * not an empty string list.
-       */
-      if ( params[i].type == VIK_LAYER_PARAM_STRING_LIST ) {
-        if ( data.sl ) {
-          GList *iter = (GList *)data.sl;
-          while ( iter ) {
-            fprintf ( f, "%s=", params[i].name );
-            fprintf ( f, "%s\n", (gchar *)(iter->data) );
-            iter = iter->next;
-          }
-        }
-      } else {
-        fprintf ( f, "%s=", params[i].name );
-        switch ( params[i].type )
-        {
-          case VIK_LAYER_PARAM_DOUBLE: {
-  //          char buf[15]; /* locale independent */
-  //          fprintf ( f, "%s\n", (char *) g_dtostr (data.d, buf, sizeof (buf)) ); break;
-              fprintf ( f, "%f\n", data.d );
-              break;
-         }
-          case VIK_LAYER_PARAM_UINT: fprintf ( f, "%d\n", data.u ); break;
-          case VIK_LAYER_PARAM_INT: fprintf ( f, "%d\n", data.i ); break;
-          case VIK_LAYER_PARAM_BOOLEAN: fprintf ( f, "%c\n", data.b ? 't' : 'f' ); break;
-          case VIK_LAYER_PARAM_STRING: fprintf ( f, "%s\n", data.s ); break;
-          case VIK_LAYER_PARAM_COLOR: fprintf ( f, "#%.2x%.2x%.2x\n", (int)(data.c.red/256),(int)(data.c.green/256),(int)(data.c.blue/256)); break;
-        }
-      }
+      file_write_layer_param(f, params[i].name, params[i].type, data);
     }
   }
   if ( vik_layer_get_interface(l->type)->write_file_data )
@@ -618,6 +621,8 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_ty
 const gchar *a_get_viking_dir()
 {
   static gchar *viking_dir = NULL;
+
+  // TODO: use g_get_user_config_dir ?
 
   if (!viking_dir) {
     const gchar *home = g_getenv("HOME");

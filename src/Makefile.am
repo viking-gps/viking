@@ -69,7 +69,8 @@ viking_SOURCES = main.c \
 	srtm_continent.c \
 	uibuilder.c uibuilder.h \
 	print-preview.c print-preview.h \
-	print.c print.h
+	print.c print.h \
+	preferences.c preferences.h
 
 if GOOGLE
 viking_SOURCES += \
