@@ -1,3 +1,9 @@
+2007-12-21
+Evan Battaglia <gtoevan@gmx.net>
+	* Preferences groups/tabs
+	* Fix gcget to accept username and password. Pass this in to gcget.
+	* Oops! Reading preferences from the file wasn't working. Fixed.
+
 2007-12-21:
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
 	* Update French translation

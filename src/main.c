@@ -31,6 +31,10 @@
 #include "curl_download.h"
 #include "preferences.h"
 
+#ifdef VIK_CONFIG_GEOCACHES
+void a_datasource_gc_init();
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -148,6 +152,11 @@ int main( int argc, char *argv[] )
   a_mapcache_init ();
   a_background_init ();
   a_preferences_init ();
+
+#ifdef VIK_CONFIG_GEOCACHES
+  a_datasource_gc_init();
+#endif
+
   vik_layer_cursors_init ();
   vik_window_cursors_init ();
 

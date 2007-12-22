@@ -5,11 +5,13 @@
 # 	   aka SHOW ME THE CACHE!!!
 #
 # Copyright 2007, Evan Battaglia
-# Distributed under the terms of the GPS v2.
+# Distributed under the terms of the GPL v2.
 #
 #
 # requires module mechanize
 #
+
+# DEFAULT USERNAME AND PASSWORD: THESE ARE OVERWRITTEN BY COMMAND-LINE OPTIONS
 
 USER="username"
 PASS="password"
@@ -21,21 +23,65 @@ PASS="password"
 # instead give warning and quit
 
 import sys
-ll = sys.argv[1].split(",")
+import getopt
+
+def help():
+   print """gcget v0.1
+This program is free software, distributed under the terms of the GNU GPL v2.
+
+Usage: gcget [-u username] [-p password] lat,lon maxnumberofgcs [maxdistance] [threshold]
+Downloads up to maxnumberofgcs at a distance of up to maxdistance from lat,lon.
+If we number of geocaches within maxdistance is above threshold, don't download any
+  geocaches, just give a warning and quit.
+
+If username and password are not given, will use default values hard-coded in script.
+
+Happy caching!!!
+"""
+
+#
+# PARSE OPTIONS: USERNAME AND PASSWORD
+#
+#
+#
+try:
+  opts, args = getopt.gnu_getopt(sys.argv[1:], "u:p:", ["help"])
+except getopt.GetoptError:
+  # print help information and exit:
+  help()
+  sys.exit(2)
+
+for o, a in opts:
+  if o == "-p":
+    PASS = a
+  if o == "-u":
+    USER = a
+  if o == "--help" or o == "-h":
+    help()
+    sys.exit()
+
+if len(args) < 2:
+  help()
+  sys.exit()
+
+#########################
+
+ll = args[0].split(",")
 lat = ll[0]
 lon = ll[1]
 
-if len(sys.argv) >= 4:
-  maxdist = sys.argv[3]
+if len(args) >= 3:
+  maxdist = args[2]
 else:
   maxdist = "999"
-if len(sys.argv) >= 5:
-  threshold = int(sys.argv[4])
+
+if len(args) >= 4:
+  threshold = int(args[3])
 else:
   threshold = 1000000;
 
 # rounds up to multiples of 20. 20
-n = int((int(sys.argv[2])+19)/20)
+n = int((int(args[1])+19)/20)
 
 import re
 from mechanize import Browser
@@ -73,7 +119,7 @@ if m:
     sys.exit(4)
   else:
     records = int(m.group(1))
-    sys.stderr.write("ok found %d, getting min(%d,%d) gcs\n" % (int(m.group(1)), int(records), int(sys.argv[2])))
+    sys.stderr.write("ok found %d, getting min(%d,%d) gcs\n" % (int(m.group(1)), int(records), int(args[1])))
 else:
   print "can't find total records"
   sys.exit(0)

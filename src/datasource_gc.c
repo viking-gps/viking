@@ -30,6 +30,13 @@
 #include "babel.h"
 #include "gpx.h"
 #include "acquire.h"
+#include "preferences.h"
+
+/* params will be geocaching.username, geocaching.password */
+/* we have to make sure these don't collide. */
+#define VIKING_GC_PARAMS_GROUP_KEY "geocaching"
+#define VIKING_GC_PARAMS_NAMESPACE "geocaching."
+
 
 typedef struct {
   GtkWidget *num_spin;
@@ -66,6 +73,23 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_gc_cleanup
 };
+
+static VikLayerParam prefs[] = {
+  { VIKING_GC_PARAMS_NAMESPACE "username", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("geocaching.com username:"), VIK_LAYER_WIDGET_ENTRY },
+  { VIKING_GC_PARAMS_NAMESPACE "password", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("geocaching.com password:"), VIK_LAYER_WIDGET_ENTRY },
+};
+
+void a_datasource_gc_init()
+{
+  a_preferences_register_group ( VIKING_GC_PARAMS_GROUP_KEY, "Geocaching" );
+
+  VikLayerParamData tmp;
+  tmp.s = "username";
+  a_preferences_register(prefs, tmp, VIKING_GC_PARAMS_GROUP_KEY);
+  tmp.s = "password";
+  a_preferences_register(prefs+1, tmp, VIKING_GC_PARAMS_GROUP_KEY);
+}
+
 
 static gpointer datasource_gc_init ( )
 {
@@ -176,11 +200,15 @@ static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vv
 static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type )
 {
   gchar *safe_string = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ) );
-  *cmd = g_strdup_printf( "gcget %s %d %.2lf", safe_string, 
+  gchar *safe_user = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "username")->s );
+  gchar *safe_pass = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "password")->s );
+  *cmd = g_strdup_printf( "gcget -u %s -p %s %s %d %.2lf", safe_user, safe_pass, safe_string, 
 	gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->num_spin) ),
 	gtk_spin_button_get_value_as_float ( GTK_SPIN_BUTTON(widgets->miles_radius_spin) ) );
   *input_file_type = NULL;
   g_free ( safe_string );
+  g_free ( safe_user );
+  g_free ( safe_pass );
 }
 
 static void datasource_gc_cleanup ( datasource_gc_widgets_t *widgets )
