@@ -945,15 +945,12 @@ msgid_plural "maps"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/vikmapslayer.c:986
+#: ../src/vikmapslayer.c:985
 #, c-format
 msgid "Downloading %d %s map..."
-msgstr "Téléchargement de %d carte %s..."
-
-#: ../src/vikmapslayer.c:988
-#, c-format
-msgid "Downloading %d %s maps..."
-msgstr "Téléchargement de %d cartes %s..."
+msgid_plural "Downloading %d %s maps..."
+msgstr[0] "Téléchargement de %d carte %s..."
+msgstr[1] "Téléchargement de %d cartes %s..."
 
 #: ../src/vikmapslayer.c:1043
 msgid "Redownload bad map(s)"
