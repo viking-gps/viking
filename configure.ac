@@ -136,7 +136,7 @@ esac
 AM_CONDITIONAL([OPENSTREETMAP], [test x$ac_cv_enable_openstreetmap = xyes])
 
 AC_ARG_ENABLE(geocaches, AC_HELP_STRING([--enable-geocaches],
-	      [enable Geocaches Acquire (default is disable). WARNING: Broken, do not enable]),
+	      [enable Geocaches Acquire (default is disable).]),
               [ac_cv_enable_geocaches=$enableval],
               [ac_cv_enable_geocaches=no])
 AC_CACHE_CHECK([whether to enable Geocaches Acquire],
