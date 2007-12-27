@@ -24,8 +24,18 @@
 
 #include "viktrwlayer.h"
 
+/**
+ * Options adapting GPX writing.
+ */
+typedef struct {
+	gboolean force_ele; /// Force ele field
+	gboolean force_time; /// Force time field
+} GpxWritingOptions;
+
 void a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f );
+void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *trw, FILE *f );
 void a_gpx_write_track_file ( const gchar *name, VikTrack *track, FILE *f );
+void a_gpx_write_track_file_options ( GpxWritingOptions *options, const gchar *name, VikTrack *t, FILE *f );
 
 #endif

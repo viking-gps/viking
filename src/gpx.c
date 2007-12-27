@@ -26,6 +26,7 @@
 
 #define _XOPEN_SOURCE /* glibc2 needs this */
 
+#include "gpx.h"
 #include "viking.h"
 #include <expat.h>
 #include <string.h>
@@ -69,6 +70,11 @@ typedef struct tag_mapping {
         tag_type tag_type;              /* enum from above for this tag */
         const char *tag_name;           /* xpath-ish tag name */
 } tag_mapping;
+
+typedef struct {
+	GpxWritingOptions *options;
+	FILE *file;
+} GpxWritingContext;
 
 /*
  * xpath(ish) mappings between full tag paths and internal identifers.
@@ -583,8 +589,9 @@ entitize(const char * str)
 
 /* export GPX */
 
-static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f ) 
+static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, GpxWritingContext *context ) 
 {
+  FILE *f = context->file;
   static struct LatLon ll;
   gchar *s_lat,*s_lon;
   gchar *tmp;
@@ -628,8 +635,9 @@ static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
   fprintf ( f, "</wpt>\n" );
 }
 
-static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
+static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context )
 {
+  FILE *f = context->file;
   static struct LatLon ll;
   gchar *s_lat,*s_lon, *s_alt;
   static gchar time_buf[30];
@@ -641,31 +649,35 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
   s_lat = a_coords_dtostr( ll.lat );
   s_lon = a_coords_dtostr( ll.lon );
   fprintf ( f, "  <trkpt lat=\"%s\" lon=\"%s\">\n", s_lat, s_lon );
-  g_free ( s_lat );
-  g_free ( s_lon );
+  g_free ( s_lat ); s_lat = NULL;
+  g_free ( s_lon ); s_lon = NULL;
 
+  s_alt = NULL;
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
   {
     s_alt = a_coords_dtostr ( tp->altitude );
   }
-  else /* Modified to always include altitude, needed for OSM export */
+  else if ( context->options != NULL && context->options->force_ele )
   {
     s_alt = a_coords_dtostr ( 0 );
   }
-  fprintf ( f, "    <ele>%s</ele>\n", s_alt );
-  g_free ( s_alt );
+  if (s_alt != NULL)
+    fprintf ( f, "    <ele>%s</ele>\n", s_alt );
+  g_free ( s_alt ); s_alt = NULL;
   
+  time_buf[0] = '\0';
   if ( tp->has_timestamp ) {
     time_buf [ strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&(tp->timestamp)) ) ] = '\0';
   }
-  else /* Modified to always include time, needed for OSM export */
+  else if ( context->options != NULL && context->options->force_time )
   {
     time_t rawtime;
     time ( &rawtime );
   
     time_buf [strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&rawtime)) ] ='\0';
   }
-  fprintf ( f, "    <time>%s</time>\n", time_buf );
+  if ( time_buf[0] != '\0' )
+    fprintf ( f, "    <time>%s</time>\n", time_buf );
   
   if (tp->extended && (tp->fix_mode >= VIK_GPS_MODE_2D)) {
     if (!isnan(tp->course)) {
@@ -690,8 +702,9 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
 }
 
 
-static void gpx_write_track ( const gchar *name, VikTrack *t, FILE *f )
+static void gpx_write_track ( const gchar *name, VikTrack *t, GpxWritingContext *context )
 {
+  FILE *f = context->file;
   gchar *tmp;
   gboolean first_tp_is_newsegment = FALSE; /* must temporarily make it not so, but we want to restore state. not that it matters. */
 
@@ -711,7 +724,7 @@ static void gpx_write_track ( const gchar *name, VikTrack *t, FILE *f )
   if ( t->trackpoints && t->trackpoints->data ) {
     first_tp_is_newsegment = VIK_TRACKPOINT(t->trackpoints->data)->newsegment;
     VIK_TRACKPOINT(t->trackpoints->data)->newsegment = FALSE; /* so we won't write </trkseg><trkseg> already */
-    g_list_foreach ( t->trackpoints, (GFunc) gpx_write_trackpoint, f );
+    g_list_foreach ( t->trackpoints, (GFunc) gpx_write_trackpoint, context );
     VIK_TRACKPOINT(t->trackpoints->data)->newsegment = first_tp_is_newsegment; /* restore state */
   }
 
@@ -763,9 +776,16 @@ static int gpx_waypoint_and_name_compar(const void *x, const void *y)
 
 void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
 {
+	a_gpx_write_file_options(NULL, vtl, f);
+}
+
+void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *vtl, FILE *f )
+{
+  GpxWritingContext context = { options, f };
   int i;
 
   gpx_write_header ( f );
+
 
   gpx_gather_waypoints_passalong_t passalong;
   passalong.n_wps = g_hash_table_size ( vik_trw_layer_get_waypoints ( vtl ) );
@@ -775,17 +795,23 @@ void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
   /* gather waypoints in a list, then sort */
   qsort(passalong.wps, passalong.n_wps, sizeof(gpx_waypoint_and_name), gpx_waypoint_and_name_compar);
   for ( i = 0; i < passalong.n_wps; i++ )
-    gpx_write_waypoint ( passalong.wps[i].name, passalong.wps[i].wp, f);
+    gpx_write_waypoint ( passalong.wps[i].name, passalong.wps[i].wp, &context);
   g_free ( passalong.wps );
 
-  g_hash_table_foreach ( vik_trw_layer_get_tracks ( vtl ), (GHFunc) gpx_write_track, f );
+  g_hash_table_foreach ( vik_trw_layer_get_tracks ( vtl ), (GHFunc) gpx_write_track, &context );
 
   gpx_write_footer ( f );
 }
 
 void a_gpx_write_track_file ( const gchar *name, VikTrack *t, FILE *f )
 {
+  a_gpx_write_track_file_options ( NULL, name, t, f );
+}
+
+void a_gpx_write_track_file_options ( GpxWritingOptions *options, const gchar *name, VikTrack *t, FILE *f )
+{
+  GpxWritingContext context = {options, f};
   gpx_write_header ( f );
-  gpx_write_track ( name, t, f );
+  gpx_write_track ( name, t, &context );
   gpx_write_footer ( f );
 }

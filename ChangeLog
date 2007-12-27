@@ -1,3 +1,7 @@
+2007-12-27:
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add GpxWritingOptions to control GPX file writing
+
 2007-12-23
 Oddgeir Kvien <oddgeir@oddgeirkvien.com>
 	* Add default values to ele and time fields (due to OSM)
