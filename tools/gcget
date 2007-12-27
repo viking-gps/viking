@@ -95,7 +95,7 @@ def getmagicnumber(b):
 
 b=Browser()
 b.open("http://geocaching.com/seek/")
-b.follow_link(text_regex="log in")
+b.follow_link(text="log in")
 b.select_form(nr=0)
 b["myUsername"] = USER
 b["myPassword"] = PASS
@@ -105,7 +105,11 @@ magicnumber = 0 # the ctl number of Next. get only once
 
 try: b.select_form("form4")
 except: pass
-b.select_form("form4")
+try:
+  b.select_form("form4")
+except:
+  print >> sys.stderr, "Invalid username/password"
+  sys.exit()
 b["origin_lat"] = lat
 b["origin_long"] = lon
 b["dist"] = maxdist
