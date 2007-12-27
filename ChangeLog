@@ -1,4 +1,9 @@
 2007-12-27:
+Evan Battaglia <gtoevan@gmx.net>
+	* Minor fixes/debugging to gcget. Add gcget-perl
+	* Full screen mode.
+
+2007-12-27:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add GpxWritingOptions to control GPX file writing
 

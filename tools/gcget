@@ -45,11 +45,13 @@ Happy caching!!!
 #
 #
 try:
-  opts, args = getopt.gnu_getopt(sys.argv[1:], "u:p:", ["help"])
+  opts, args = getopt.gnu_getopt(sys.argv[1:], "u:p:d", ["help"])
 except getopt.GetoptError:
   # print help information and exit:
   help()
   sys.exit(2)
+
+DEBUG = False
 
 for o, a in opts:
   if o == "-p":
@@ -59,6 +61,8 @@ for o, a in opts:
   if o == "--help" or o == "-h":
     help()
     sys.exit()
+  if o == "-d":
+    DEBUG = True
 
 if len(args) < 2:
   help()
@@ -109,7 +113,13 @@ try:
   b.select_form("form4")
 except:
   print >> sys.stderr, "Invalid username/password"
+  if DEBUG:
+    f=open("gcget.badlogin.html","w")
+    f.write(b.response().get_data())
+    f.close()
+    print >> sys.stderr, "Dumping last HTML page recieved into gcget.badlogin.html"
   sys.exit()
+
 b["origin_lat"] = lat
 b["origin_long"] = lon
 b["dist"] = maxdist
