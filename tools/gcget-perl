@@ -1,0 +1,122 @@
+#!/usr/bin/perl
+#
+# gcget 34.25,-118.25 100 > yeah.loc
+# ./gcget "Johnstown,CA" 10|gc2gpspoint - -|viking -
+#
+# have to make viking-remote allow multiple points. maybe just regular input + maps ?
+
+$USERNAME="username";
+$PASSWORD="password";
+
+$what = $ARGV[0];
+if (!$what) {
+  print "Nothing to do!\nUsage: gcget zip/lat,lon/lat.mm.mmm,lon.mm.mmm/address [max]";
+  exit(0);
+}
+
+
+$zip = $lat = $lon = "";
+if ( $what =~ /^(-?[0-9]{0,3}(\.[0-9]{0,9})?),(-?[0-9]{0,3}(\.[0-9]{0,9})?)$/ ) {
+  ($lat,$lon) = ($1,$3);
+} elsif ( $what =~ /^(-?[0-9]{1,3})\.([0-9]{1,2}\.[0-9]{0,3}),(-?[0-9]{1,3})\.([0-9]{1,2}\.[0-9]{0,3})$/ ) {
+  $lat = $1 + ($1 < 0 ? -1 : 1) * $2 / 60;
+  $lon = $3 + ($3 < 0 ? -1 : 1) * $4 / 60;
+} elsif ( $what =~ /^[0-9]{5}$/ ) {
+  $zip = $what;
+} else {
+  $address = `gpsaddress.pl "$what"`;
+  if (not (($address) and $address =~ /^(-?[0-9]{1,3}(\.[0-9]{1,9})?) (-?[0-9]{1,3}(\.[0-9]{1,9})?)$/ )) {
+    die "gpsaddress failed looking up address '$what'\n"
+  } else {
+    ($lat,$lon) = ($1,$3);
+  }
+}
+
+# turn on perl's safety features
+use warnings;
+use WWW::Mechanize;
+use HTML::TableContentParser;
+$browser = WWW::Mechanize->new();
+
+$browser->get("http://www.geocaching.com/seek/");
+$browser->follow("log in");
+print STDERR $browser->title() . "\n";
+$browser->form_number(1);
+$browser->field("myUsername", $USERNAME);
+$browser->field("myPassword", $PASSWORD);
+$browser->click();
+print STDERR $browser->title() . "\n\n";
+
+if ( $zip ) {
+  $browser->form(1);
+  $browser->field("zip", $zip);
+} else {
+  $browser->form(6);
+  $browser->field("origin_lat", $lat);
+  $browser->field("origin_long", $lon);
+}
+$browser->click();
+
+$gcsdone = 0;
+$maxgcs = $ARGV[1] ? $ARGV[1] : 1000000;
+
+print STDERR "\nPages: ";
+
+print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<loc version=\"1.0\" src=\"Groundspeak\">\n";
+
+
+while ( $gcsdone < $maxgcs ) {
+
+$p = HTML::TableContentParser->new();
+$tables = $p->parse($browser->content());
+
+$t = ${$tables}[10];
+@rows = @{$t->{rows}};
+$r = $rows[8];
+
+@cs = @{$r->{cells}};
+
+$browser->form_number(1);
+
+for ( $i = 0; $i < 20; $i++ ) {
+  $r = $rows[4+(2*$i)];
+  @cs = @{$r->{cells}};
+  if ( $gcsdone < $maxgcs && (! $cs[1]->{data}) ) {
+    if ( $cs[7]->{data} =~ /name='CID' value='(.*)'>/ ) {
+      $browser->tick("CID", $1);
+      $gcsdone++;
+    }
+  }
+}
+
+$browser->click("Download");
+@lines = split "\n", $browser->content();
+shift @lines; shift @lines; pop @lines;
+print join "\n", @lines;
+print "</waypoint>\n";
+
+$browser->back();
+$form = $browser->form_name("Form1");
+$nextlink = $browser->find_link( text => "Next" );
+if ( $nextlink ) {
+  if ( ($nextlink->url()) =~ /_ctl([0-9]+)/ ) {
+    $form->push_input("hidden", {"name" => "ResultsPager:_ctl$1", value => ""});
+  } else {
+    print STDERR "\n\nERROR\n\n";
+    print "</loc>\n";
+    exit(0);
+  }
+} else {
+  print STDERR "\n\nDONE\n\n";
+  print "</loc>\n";
+  exit(0);
+}
+$browser->submit();
+
+print STDERR "i";
+
+}
+
+print STDERR "\n\nREACHED MAX\n\n";
+print "</loc>\n";
+
