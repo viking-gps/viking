@@ -1,3 +1,7 @@
+2007-12-23
+Oddgeir Kvien <oddgeir@oddgeirkvien.com>
+	* Add default values to ele and time fields (due to OSM)
+
 2007-12-21
 Evan Battaglia <gtoevan@gmx.net>
 	* Preferences groups/tabs

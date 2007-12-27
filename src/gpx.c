@@ -647,13 +647,26 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, FILE *f )
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
   {
     s_alt = a_coords_dtostr ( tp->altitude );
-    fprintf ( f, "    <ele>%s</ele>\n", s_alt );
-    g_free ( s_alt );
   }
+  else /* Modified to always include altitude, needed for OSM export */
+  {
+    s_alt = a_coords_dtostr ( 0 );
+  }
+  fprintf ( f, "    <ele>%s</ele>\n", s_alt );
+  g_free ( s_alt );
+  
   if ( tp->has_timestamp ) {
     time_buf [ strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&(tp->timestamp)) ) ] = '\0';
-    fprintf ( f, "    <time>%s</time>\n", time_buf );
   }
+  else /* Modified to always include time, needed for OSM export */
+  {
+    time_t rawtime;
+    time ( &rawtime );
+  
+    time_buf [strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&rawtime)) ] ='\0';
+  }
+  fprintf ( f, "    <time>%s</time>\n", time_buf );
+  
   if (tp->extended && (tp->fix_mode >= VIK_GPS_MODE_2D)) {
     if (!isnan(tp->course)) {
       gchar *s_course = a_coords_dtostr(tp->course);
