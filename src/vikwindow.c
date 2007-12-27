@@ -281,7 +281,6 @@ static void window_init ( VikWindow *vw )
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
   
-
   vw->pan_x = vw->pan_y = -1;
   vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
   vw->draw_image_height = DRAW_IMAGE_DEFAULT_HEIGHT;
@@ -912,6 +911,16 @@ static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
   draw_update ( vw );
 }
 
+static void full_screen_cb ( GtkAction *a, VikWindow *vw )
+{
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/FullScreen" );
+  g_assert(check_box);
+  gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
+  if ( state )
+    gtk_window_fullscreen ( GTK_WINDOW(vw) );
+  else
+    gtk_window_unfullscreen ( GTK_WINDOW(vw) );
+}
 
 static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
 {
@@ -1857,6 +1866,7 @@ static GtkRadioActionEntry tool_entries[] = {
 static GtkToggleActionEntry toggle_entries[] = {
   { "ShowScale", NULL,                   N_("Show Scale"),                    NULL,         NULL,                                           (GCallback)set_draw_scale, TRUE   },
   { "ShowCenterMark", NULL,                   N_("Show Center Mark"),                    NULL,         NULL,                                           (GCallback)set_draw_centermark, TRUE   },
+  { "FullScreen",    NULL,      N_("Full Screen"),                   "F11", NULL,                                           (GCallback)full_screen_cb, FALSE },
 };
 
 #include "menu.xml.h"

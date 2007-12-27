@@ -101,7 +101,7 @@ VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
 static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename )
 {
   *input_file_type = NULL;
-  *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -x dup,loc -o gpx -F -", input_filename );
+  *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -x duplicate,location -o gpx -F -", input_filename );
 }
 
 
