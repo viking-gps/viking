@@ -2,6 +2,7 @@
 Evan Battaglia <gtoevan@gmx.net>
 	* Minor fixes/debugging to gcget. Add gcget-perl
 	* Full screen mode.
+	* Bugfix for prefernces -- don't cut off last character of password
 
 2007-12-27:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

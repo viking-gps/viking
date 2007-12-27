@@ -151,7 +151,8 @@ static gboolean preferences_load_parse_param(gchar *buf, gchar **key, gchar **va
   *val = eq_pos + 1;
   len = strlen(*val);
   if ( len > 0 )
-    (*val) [ len - 1 ] = '\0'; /* cut off newline */
+    if ( (*val)[len - 1] == '\n' )
+      (*val) [ len - 1 ] = '\0'; /* cut off newline */
   return TRUE;
 }
 
