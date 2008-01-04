@@ -112,7 +112,7 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
   }
 }
 
-#define MARGIN 50
+#define MARGIN 70
 #define LINES 5
 static void set_center_at_graph_position(gdouble event_x, gint img_width, VikLayersPanel *vlp, VikTrack *tr, gboolean time_base)
 {
@@ -324,19 +324,22 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
 		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
 
   /* draw grid */
-#define LABEL_FONT "Sans 8"
+#define LABEL_FONT "Sans 7"
   for (i=0; i<=LINES; i++) {
     PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
+    int w, h;
 
+    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
     pfd = pango_font_description_from_string (LABEL_FONT);
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
     sprintf(s, "%8dm", (int)(mina + (LINES-i)*(maxa-mina)/LINES));
     pango_layout_set_text(pl, s, -1);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], 0, 
-		    CLAMP((int)i*PROFILE_HEIGHT/LINES - 5, 0, PROFILE_HEIGHT-15), pl);
+    pango_layout_get_pixel_size (pl, &w, &h);
+    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
+		    CLAMP((int)i*PROFILE_HEIGHT/LINES - h/2, 0, PROFILE_HEIGHT-h), pl);
 
     gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
 		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
@@ -448,12 +451,14 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
 #else
 
   /* draw grid */
-#define LABEL_FONT "Sans 8"
+#define LABEL_FONT "Sans 7"
   for (i=0; i<=LINES; i++) {
     PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
+    int w, h;
 
+    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
     pfd = pango_font_description_from_string (LABEL_FONT);
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
@@ -463,12 +468,14 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
     sprintf(s, "%8dmph", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
 #endif
     pango_layout_set_text(pl, s, -1);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], 0, 
-		    CLAMP((int)i*PROFILE_HEIGHT/LINES - 5, 0, PROFILE_HEIGHT-15), pl);
+    pango_layout_get_pixel_size (pl, &w, &h);
+    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
+		    CLAMP((int)i*PROFILE_HEIGHT/LINES - h/2, 0, PROFILE_HEIGHT-h), pl);
 
     gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
 		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
   }
+  
 
   /* draw speeds */
   for ( i = 0; i < PROFILE_WIDTH; i++ )
