@@ -207,7 +207,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
 
   /* for UI builder */
   gpointer pass_along_data;
-  VikLayerParamData *paramdatas;
+  VikLayerParamData *paramdatas = NULL;
 
   w_and_interface_t *wi;
 
@@ -357,11 +357,9 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
 				const gchar *menu_title, vik_datasource_inputtype_t inputtype )
 {
   static gpointer pass_along[4];
-  GtkWidget *menu_item, *menu;
-  GtkWidget *item;
+  GtkWidget *menu_item=NULL, *menu=NULL;
+  GtkWidget *item=NULL;
   int i;
-
-  menu_item = NULL;
 
   pass_along[0] = vw;
   pass_along[1] = vlp;
