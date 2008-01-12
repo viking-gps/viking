@@ -35,7 +35,6 @@ typedef struct _List {
 static List *queue_tail = NULL;
 static int queue_count = 0;
 
-#define VIK_CONFIG_MAPCACHE_MAX_SIZE 50331648 /* 48 meggerbytes */
 static guint32 queue_size = 0;
 
 
