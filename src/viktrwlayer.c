@@ -3847,7 +3847,7 @@ static void highest_wp_number_remove_wp(VikTrwLayer *vtl, const gchar *old_wp_na
     g_snprintf(buf,4,"%03d", vtl->highest_wp_number );
     /* search down until we find something that *does* exist */
 
-    while ( vtl->highest_wp_number >= 0 && ! g_hash_table_lookup ( vtl->waypoints, buf ) ) {
+    while ( vtl->highest_wp_number > 0 && ! g_hash_table_lookup ( vtl->waypoints, buf ) ) {
       vtl->highest_wp_number --;
       g_snprintf(buf,4,"%03d", vtl->highest_wp_number );
     }
@@ -3859,7 +3859,7 @@ static gchar *highest_wp_number_get(VikTrwLayer *vtl)
 {
   gchar buf[4];
   if ( vtl->highest_wp_number < 0 || vtl->highest_wp_number >= 999 )
-    return "";
+    return NULL;
   g_snprintf(buf,4,"%03d", vtl->highest_wp_number+1 );
   return g_strdup(buf);
 }
