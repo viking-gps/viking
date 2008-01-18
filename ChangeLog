@@ -1,3 +1,8 @@
+2008-1-18
+Qut Tonthat <qtonthat@gmail.com>:
+	* Fix a crash bug in mapcache reported by Jocelyn <jocelyn.jaubert@gmail.com>
+	* Added mutex to protect mapcache from being corrupted by threads.
+
 2008-01-04:
 Alex Foobarian <foobarian@gmail.com>:
 	* Tuned the v-t diagram drawing

@@ -40,11 +40,14 @@ static guint32 queue_size = 0;
 
 static GHashTable *cache = NULL;
 
+static GMutex *mc_mutex = NULL;
+
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%.3f-%.3f"
 #define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-"
 
 void a_mapcache_init ()
 {
+  mc_mutex = g_mutex_new();
   cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, g_object_unref );
 }
 
@@ -106,6 +109,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, x, y, z, type, zoom, alpha, xshrinkfactor, yshrinkfactor );
   static int tmp = 0;
 
+  g_mutex_lock(mc_mutex);
   cache_add(key, pixbuf);
 
   if ( queue_size > VIK_CONFIG_MAPCACHE_SIZE ) {
@@ -123,6 +127,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
     list_add_entry ( key );
     /* business as usual */
   }
+  g_mutex_unlock(mc_mutex);
 
   if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d %u\n", queue_count, queue_size ); tmp=0; }
 }
@@ -147,6 +152,7 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint8 type, 
   g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, x, y, z, type, zoom );
   len = strlen(key);
 
+  g_mutex_lock(mc_mutex);
   /* TODO: check logic here */
   do {
     tmp = loop->next;
@@ -170,6 +176,7 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint8 type, 
 
   /* loop thru list, looking for the one, compare first whatever chars */
   cache_remove(key);
+  g_mutex_unlock(mc_mutex);
 }
 
 void a_mapcache_uninit ()
