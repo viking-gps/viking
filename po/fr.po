@@ -637,6 +637,10 @@ msgstr ""
 msgid "Waypoints Outside This"
 msgstr ""
 
+#: ../src/main.c:97
+msgid "Show version"
+msgstr "Affiche la version"
+
 #: ../src/vikdemlayer.c:100
 msgid "DEM Files:"
 msgstr "Fichiers DEM :"
