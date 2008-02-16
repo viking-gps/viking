@@ -145,7 +145,12 @@ static void set_total_count(gint cnt, acq_dialog_widgets_t *w)
   gdk_threads_enter();
   if (w->ok) {
     gps_user_data_t *gps_data = (gps_user_data_t *)w->user_data;
-    s = g_strdup_printf(_("Downloading %d %s..."), cnt, (gps_data->progress_label == gps_data->wp_label) ? _("waypoints") : _("trackpoints"));
+    const gchar *tmp_str;
+    if (gps_data->progress_label == gps_data->wp_label)
+      tmp_str = ngettext("Downloading %d waypoint...", "Downloading %d waypoints...", cnt);
+    else
+      tmp_str = ngettext("Downloading %d trackpoint...", "Downloading %d trackpoints...", cnt);
+    s = g_strdup_printf(tmp_str, cnt);
     gtk_label_set_text ( GTK_LABEL(gps_data->progress_label), s );
     gtk_widget_show ( gps_data->progress_label );
     gps_data->total_count = cnt;

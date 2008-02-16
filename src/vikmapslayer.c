@@ -913,8 +913,22 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
 
     if ( mdi->mapstoget )
     {
-      gchar *tmp = g_strdup_printf ( "%s %s%d %s %s...", redownload ? _("Redownloading") : _("Downloading"), redownload == REDOWNLOAD_BAD ? _("up to ") : "", mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype), ngettext("map", "maps", mdi->mapstoget) );
+      const gchar *tmp_str;
+      gchar *tmp;
 
+      if (redownload) 
+      {
+        if (redownload == REDOWNLOAD_BAD)
+          tmp_str = ngettext("Redownloading up to %d %s map...", "Redownloading up to %d %s maps...", mdi->mapstoget);
+        else
+          tmp_str = ngettext("Redownloading %d %s map...", "Redownloading %d %s maps...", mdi->mapstoget);
+      } 
+      else 
+      {
+        tmp_str = ngettext("Downloading %d %s map...", "Downloading %d %s maps...", mdi->mapstoget);
+      }
+      tmp = g_strdup_printf ( tmp_str, mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype));
+ 
       g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
       /* launch the thread */
       a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */

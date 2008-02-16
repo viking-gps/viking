@@ -667,9 +667,23 @@ static void set_total_count(gint cnt, GpsSession *sess)
   gdk_threads_enter();
   g_mutex_lock(sess->mutex);
   if (sess->ok) {
-    g_sprintf(s, "%s %d %s...",
-        (sess->direction == GPS_DOWN) ? _("Downloading") : _("Uploading"), cnt,
-        (sess->progress_label == sess->wp_label) ? _("waypoints") : _("trackpoints"));
+    const gchar *tmp_str;
+    if (sess->direction == GPS_DOWN)
+    {
+      if (sess->progress_label == sess->wp_label)
+        tmp_str = ngettext("Downloading %d waypoint", "Downloading %d waypoints", cnt);
+      else
+        tmp_str = ngettext("Downloading %d trackpoint", "Downloading %d trackpoints", cnt);
+    }
+    else 
+    {
+      if (sess->progress_label == sess->wp_label)
+        tmp_str = ngettext("Uploading %d waypoint", "Uploading %d waypoints", cnt);
+      else
+        tmp_str = ngettext("Uploading %d trackpoint", "Uploading %d trackpoints", cnt);
+    }
+
+    g_snprintf(s, 128, tmp_str, cnt);
     gtk_label_set_text ( GTK_LABEL(sess->progress_label), s );
     gtk_widget_show ( sess->progress_label );
     sess->total_count = cnt;
@@ -681,15 +695,41 @@ static void set_total_count(gint cnt, GpsSession *sess)
 static void set_current_count(gint cnt, GpsSession *sess)
 {
   gchar s[128];
-  const gchar *dir_str = (sess->direction == GPS_DOWN) ? _("Downloaded") : _("Uploaded");
+  const gchar *tmp_str;
 
   gdk_threads_enter();
   g_mutex_lock(sess->mutex);
   if (sess->ok) {
     if (cnt < sess->total_count) {
-      g_sprintf(s, _("%s %d out of %d %s..."), dir_str, cnt, sess->total_count, (sess->progress_label == sess->wp_label) ? _("waypoints") : _("trackpoints"));
+      if (sess->direction == GPS_DOWN)
+      {
+        if (sess->progress_label == sess->wp_label)
+          tmp_str = ngettext("Downloaded %d out of %d waypoint...", "Downloaded %d out of %d waypoints...", sess->total_count);
+        else
+          tmp_str = ngettext("Downloaded %d out of %d trackpoint...", "Downloaded %d out of %d trackpoints...", sess->total_count);
+      }
+      else {
+        if (sess->progress_label == sess->wp_label)
+          tmp_str = ngettext("Uploaded %d out of %d waypoint...", "Uploaded %d out of %d waypoints...", sess->total_count);
+        else
+          tmp_str = ngettext("Uploaded %d out of %d trackpoint...", "Uploaded %d out of %d trackpoints...", sess->total_count);
+      }
+      g_snprintf(s, 128, tmp_str, cnt, sess->total_count);
     } else {
-      g_sprintf(s, "%s %d %s.", dir_str, cnt, (sess->progress_label == sess->wp_label) ? _("waypoints") : _("trackpoints"));
+      if (sess->direction == GPS_DOWN)
+      {
+        if (sess->progress_label == sess->wp_label)
+          tmp_str = ngettext("Downloaded %d waypoint.", "Downloaded %d waypoints...", cnt);
+        else
+          tmp_str = ngettext("Downloaded %d trackpoint.", "Downloaded %d trackpoints...", cnt);
+      }
+      else {
+        if (sess->progress_label == sess->wp_label)
+          tmp_str = ngettext("Uploaded %d waypoint.", "Uploaded %d waypoints...", cnt);
+        else
+          tmp_str = ngettext("Uploaded %d trackpoint.", "Uploaded %d trackpoints...", cnt);
+      }
+      g_snprintf(s, 128, tmp_str, cnt);
     }	  
     gtk_label_set_text ( GTK_LABEL(sess->progress_label), s );
   }
@@ -703,7 +743,7 @@ static void set_gps_info(const gchar *info, GpsSession *sess)
   gdk_threads_enter();
   g_mutex_lock(sess->mutex);
   if (sess->ok) {
-    g_sprintf(s, _("GPS Device: %s"), info);
+    g_snprintf(s, 256, _("GPS Device: %s"), info);
     gtk_label_set_text ( GTK_LABEL(sess->gps_label), s );
   }
   g_mutex_unlock(sess->mutex);

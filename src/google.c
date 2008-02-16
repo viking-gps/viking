@@ -194,6 +194,7 @@ failed:
 
   fclose(tmp_file);
   g_free(tmpname);
+  g_free (uri);
   return (vers[google_type]);
 }
 

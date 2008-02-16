@@ -184,6 +184,7 @@ static int expedia_download ( MapCoord *src, const gchar *dest_fn )
 
   if ((res = a_http_download_get_url ( EXPEDIA_SITE, uri, dest_fn, &expedia_options )) == 0)	/* All OK */
   	expedia_snip ( dest_fn );
+  g_free(uri);
   return(res);
 }
 
