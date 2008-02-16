@@ -98,7 +98,7 @@ static gboolean version = FALSE;
 
 static GOptionEntry entries[] = 
 {
-  { "version", 'v', 0, G_OPTION_ARG_NONE, &version, "Show version", NULL },
+  { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Show version"), NULL },
   { NULL }
 };
 

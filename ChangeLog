@@ -1,4 +1,8 @@
 2008-02-16:
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* main.c: I18N improvements
+
+2008-02-16:
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
 	* I18N improvements
 	* French translation update
