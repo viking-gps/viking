@@ -127,7 +127,7 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   first = FALSE;
   gvers = tvers = kvers = terrvers = NULL;
   if ((tmp_fd = g_file_open_tmp ("vikgvers.XXXXXX", &tmpname, NULL)) == -1) {
-    g_critical(_("couldn't open temp file %s\n"), tmpname);
+    g_critical(_("couldn't open temp file %s"), tmpname);
     exit(1);
   } 
 
@@ -136,17 +136,17 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   tmp_file = fdopen(tmp_fd, "r+");
 
   if (curl_download_uri(uri, tmp_file, &dl_options)) {  /* error */
-    g_warning(_("Failed downloading %s\n"), tmpname);
+    g_warning(_("Failed downloading %s"), tmpname);
   } else {
     if ((mf = g_mapped_file_new(tmpname, FALSE, NULL)) == NULL) {
-      g_critical(_("couldn't map temp file\n"));
+      g_critical(_("couldn't map temp file"));
       exit(1);
     }
     len = g_mapped_file_get_length(mf);
     text = g_mapped_file_get_contents(mf);
 
     if ((beg = g_strstr_len(text, len, "GLoadApi")) == NULL) {
-      g_warning(_("Failed fetching Google numbers (\"GLoadApi\" not found)\n"));
+      g_warning(_("Failed fetching Google numbers (\"GLoadApi\" not found)"));
       goto failed;
     }
 

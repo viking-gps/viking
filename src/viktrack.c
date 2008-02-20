@@ -498,7 +498,7 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
     return NULL;
 
   if (duration < 0) {
-    g_warning("negative duration: unsorted trackpoint timestamps?\n");
+    g_warning("negative duration: unsorted trackpoint timestamps?");
     return NULL;
   }
   pt_count = vik_track_get_tp_count(tr);

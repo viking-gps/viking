@@ -266,7 +266,7 @@ static void *unzip_hgt_file(gchar *zip_file, gulong *unzip_size)
 
 	local_file_header = (struct _lfh *) zip_file;
 	if (local_file_header->sig != 0x04034b50) {
-		g_warning("%s(): wrong format\n", __PRETTY_FUNCTION__);
+		g_warning("%s(): wrong format", __PRETTY_FUNCTION__);
 		g_free(unzip_data);
 		goto end;
 	}
@@ -345,7 +345,7 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zi
   else if (file_size == (num_rows_1sec * num_rows_1sec * sizeof(gint16)))
     arcsec = 1;
   else {
-    g_warning("%s(): file %s does not have right size\n", __PRETTY_FUNCTION__, basename);
+    g_warning("%s(): file %s does not have right size", __PRETTY_FUNCTION__, basename);
     munmap(dem_file, file_size);
     g_ptr_array_free(dem->columns, TRUE);
     g_free(dem);

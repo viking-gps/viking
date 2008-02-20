@@ -975,7 +975,7 @@ void draw_goto_cb ( GtkAction *a, VikWindow *vw )
      return;
   }
   else {
-    g_critical("Houston we have a problem\n");
+    g_critical("Houston we have a problem");
     return;
   }
 
@@ -1254,7 +1254,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     newwindow = FALSE;
   } 
   else {
-    g_critical("Houston we got a problem\n");
+    g_critical("Houston we got a problem");
     return;
   }
     
@@ -1723,7 +1723,7 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
     drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   }
   else {
-    g_critical("Houston, we got a problem!\n");
+    g_critical("Houston, we got a problem!");
     return;
   }
 

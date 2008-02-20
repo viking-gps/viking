@@ -704,7 +704,7 @@ static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *
   data += pl;
 
   if (!(f = fdopen(g_file_open_tmp (NULL, &tmpname, NULL), "r+"))) {
-    g_critical("couldn't open temp file\n");
+    g_critical("couldn't open temp file");
     exit(1);
   }
   fwrite(data, len - pl - sizeof(pl), 1, f);

@@ -120,7 +120,7 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   lat_buf[0] = lon_buf[0] = '\0';
 
   if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
-    g_critical(_("couldn't map temp file\n"));
+    g_critical(_("couldn't map temp file"));
     exit(1);
   }
   len = g_mapped_file_get_length(mf);
@@ -209,7 +209,7 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
   escaped_srch_str = uri_escape(srch_str);
 
   if ((tmp_fd = g_file_open_tmp ("vikgsearch.XXXXXX", &tmpname, NULL)) == -1) {
-    g_critical(_("couldn't open temp file\n"));
+    g_critical(_("couldn't open temp file"));
     exit(1);
   }
 

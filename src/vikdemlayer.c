@@ -743,7 +743,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
   continent_dir = srtm_continent_dir(intlat, intlon);
 
   if (!continent_dir) {
-    g_warning(N_("No SRTM data available for %f, %f\n"), p->lat, p->lon);
+    g_warning(N_("No SRTM data available for %f, %f"), p->lat, p->lon);
     return;
   }
 

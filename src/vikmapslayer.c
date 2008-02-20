@@ -952,7 +952,7 @@ void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport 
 
   if (!map_type->coord_to_mapcoord(ul, zoom, zoom, &ulm) 
     || !map_type->coord_to_mapcoord(br, zoom, zoom, &brm)) {
-    g_warning("%s() coord_to_mapcoord() failed\n", __PRETTY_FUNCTION__);
+    g_warning("%s() coord_to_mapcoord() failed", __PRETTY_FUNCTION__);
     return;
   }
 

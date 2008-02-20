@@ -316,7 +316,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
           push(&stack);
           if ( type == -1 )
           {
-            g_warning ( "Line %ld: Unknown type %s\n", line_num, line+6 );
+            g_warning ( "Line %ld: Unknown type %s", line_num, line+6 );
             stack->data = NULL;
           }
           else if (parent_type == VIK_LAYER_GPS)
