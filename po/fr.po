@@ -1521,7 +1521,7 @@ msgstr "Règle"
 msgid "Pan"
 msgstr "Déplacer"
 
-#: ../src/vikwindow.c:357
+#: ../src/vikwindow.c:356
 #, c-format
 msgid ""
 "Do you want to save the changes you made to the document \"%s\"?\n"
@@ -1533,24 +1533,24 @@ msgstr ""
 msgid "Untitled"
 msgstr "SansTitre"
 
-#: ../src/vikwindow.c:361
+#: ../src/vikwindow.c:360
 msgid "Don't Save"
 msgstr ""
 
-#: ../src/vikwindow.c:394
+#: ../src/vikwindow.c:393
 msgid "mpp"
 msgstr ""
 
-#: ../src/vikwindow.c:394
+#: ../src/vikwindow.c:393
 msgid "pixelfact"
 msgstr ""
 
-#: ../src/vikwindow.c:496
+#: ../src/vikwindow.c:495
 #, c-format
 msgid "Cursor: %f %f %dm"
 msgstr ""
 
-#: ../src/vikwindow.c:498
+#: ../src/vikwindow.c:497
 #, c-format
 msgid "Cursor: %f %f"
 msgstr ""
