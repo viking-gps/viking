@@ -394,14 +394,14 @@ msgstr "Acquis depuis le GPS"
 msgid "using cmdline '%s' and file '%s'\n"
 msgstr ""
 
-#: ../src/datasource_gps.c:150
+#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:674
 #, fuzzy, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
 msgstr[0] "Téléchargement de %d position..."
 msgstr[1] "Téléchargement de %d positions..."
 
-#: ../src/datasource_gps.c:152
+#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:676
 #, fuzzy, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
@@ -834,87 +834,73 @@ msgstr "Réception vide"
 msgid "Empty All"
 msgstr "Tout effacer"
 
-#: ../src/vikgpslayer.c:674
-#, fuzzy, c-format
-msgid "Downloading %d waypoint"
-msgid_plural "Downloading %d waypoints"
-msgstr[0] "Téléchargement de %d position..."
-msgstr[1] "Téléchargement de %d positions..."
-
-#: ../src/vikgpslayer.c:676
-#, fuzzy, c-format
-msgid "Downloading %d trackpoint"
-msgid_plural "Downloading %d trackpoints"
-msgstr[0] "Téléchargement de %d point de trace"
-msgstr[1] "Téléchargement de %d points de trace"
-
 #: ../src/vikgpslayer.c:681
 #, fuzzy, c-format
-msgid "Uploading %d waypoint"
-msgid_plural "Uploading %d waypoints"
-msgstr[0] "Émission de %d position"
-msgstr[1] "Émission de %d positions"
+msgid "Uploading %d waypoint..."
+msgid_plural "Uploading %d waypoints..."
+msgstr[0] "Émission de %d position..."
+msgstr[1] "Émission de %d positions..."
 
 #: ../src/vikgpslayer.c:683
 #, fuzzy, c-format
-msgid "Uploading %d trackpoint"
-msgid_plural "Uploading %d trackpoints"
-msgstr[0] "Émission de %d point de trace"
-msgstr[1] "Émission de %d points de trace"
+msgid "Uploading %d trackpoint..."
+msgid_plural "Uploading %d trackpoints..."
+msgstr[0] "Émission de %d point de trace..."
+msgstr[1] "Émission de %d points de trace..."
 
 #: ../src/vikgpslayer.c:707
 #, fuzzy, c-format
-msgid "Downloaded %d out of %d waypoint..."
-msgid_plural "Downloaded %d out of %d waypoints..."
-msgstr[0] "%d sur %d position téléchargée"
-msgstr[1] "%d sur %d positions téléchargées"
+msgid "Downloaded %d out of %d waypoint."
+msgid_plural "Downloaded %d out of %d waypoints."
+msgstr[0] "%d sur %d position téléchargée."
+msgstr[1] "%d sur %d positions téléchargées."
 
 #: ../src/vikgpslayer.c:709
 #, fuzzy, c-format
-msgid "Downloaded %d out of %d trackpoint..."
-msgid_plural "Downloaded %d out of %d trackpoints..."
-msgstr[0] "%d sur %d point de trace téléchargé"
-msgstr[1] "%d sur %d points de trace téléchargés"
+msgid "Downloaded %d out of %d trackpoint."
+msgid_plural "Downloaded %d out of %d trackpoints."
+msgstr[0] "%d sur %d point de trace téléchargé."
+msgstr[1] "%d sur %d points de trace téléchargés."
 
 #: ../src/vikgpslayer.c:713
 #, fuzzy, c-format
-msgid "Uploaded %d out of %d waypoint..."
-msgid_plural "Uploaded %d out of %d waypoints..."
-msgstr[0] "%d sur %d position émise"
-msgstr[1] "%d sur %d positions émises"
+msgid "Uploaded %d out of %d waypoint."
+msgid_plural "Uploaded %d out of %d waypoints."
+msgstr[0] "%d sur %d position émise."
+msgstr[1] "%d sur %d positions émises."
 
 #: ../src/vikgpslayer.c:715
 #, fuzzy, c-format
-msgid "Uploaded %d out of %d trackpoint..."
-msgid_plural "Uploaded %d out of %d trackpoints..."
-msgstr[0] "%d sur %d point de trace émis"
-msgstr[1] "%d sur %d points de trace émis"
+msgid "Uploaded %d out of %d trackpoint."
+msgid_plural "Uploaded %d out of %d trackpoints."
+msgstr[0] "%d sur %d point de trace émis."
+msgstr[1] "%d sur %d points de trace émis."
 
 #: ../src/vikgpslayer.c:722
 #, fuzzy, c-format
 msgid "Downloaded %d waypoint."
-msgid_plural "Downloaded %d waypoints..."
-msgstr[0] "%d position téléchargée"
-msgstr[1] "%d positions téléchargées"
+msgid_plural "Downloaded %d waypoints."
+msgstr[0] "%d position téléchargée."
+msgstr[1] "%d positions téléchargées."
 
 #: ../src/vikgpslayer.c:724
 #, fuzzy, c-format
 msgid "Downloaded %d trackpoint."
-msgid_plural "Downloaded %d trackpoints..."
-msgstr[0] "%d point de trace téléchargé"
-msgstr[1] "%d points de trace téléchargés"
+msgid_plural "Downloaded %d trackpoints."
+msgstr[0] "%d point de trace téléchargé."
+msgstr[1] "%d points de trace téléchargés."
 
 #: ../src/vikgpslayer.c:728
 #, c-format
 msgid "Uploaded %d waypoint."
-msgid_plural "Uploaded %d waypoints..."
+msgid_plural "Uploaded %d waypoints."
 msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/vikgpslayer.c:730
 #, c-format
 msgid "Uploaded %d trackpoint."
-msgid_plural "Uploaded %d trackpoints..."
+msgid_plural "Uploaded %d trackpoints."
 msgstr[0] ""
 msgstr[1] ""
 
