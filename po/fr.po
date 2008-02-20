@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-12 14:54+0100\n"
+"POT-Creation-Date: 2008-02-20 15:27+0100\n"
 "PO-Revision-Date: 2008-01-12 10:03+0000\n"
 "Last-Translator: Jocelyn Jaubert <jocelyn.jaubert@gmail.com>\n"
 "Language-Team: \n"
@@ -295,24 +295,23 @@ msgstr "Cartes de terrain Google"
 
 #: ../src/google.c:130
 #, c-format
-msgid "couldn't open temp file %s\n"
-msgstr "Impossible d'ouvrir le fichier temporaire %s\n"
+msgid "couldn't open temp file %s"
+msgstr "Impossible d'ouvrir le fichier temporaire %s"
 
 #. error
 #: ../src/google.c:139
 #, c-format
-msgid "Failed downloading %s\n"
-msgstr "Échec du téléchargement de %s\n"
+msgid "Failed downloading %s"
+msgstr "Échec du téléchargement de %s"
 
 #: ../src/google.c:142 ../src/googlesearch.c:123
-#, fuzzy
-msgid "couldn't map temp file\n"
-msgstr "Impossible d'ouvrir le fichier de carte\n"
+msgid "couldn't map temp file"
+msgstr "Impossible d'ouvrir le fichier de carte"
 
 #: ../src/google.c:149
-msgid "Failed fetching Google numbers (\"GLoadApi\" not found)\n"
+msgid "Failed fetching Google numbers (\"GLoadApi\" not found)"
 msgstr ""
-"Échec lors de la récupération des nombres Google (\"GLoadApi\" not found)\n"
+"Échec lors de la récupération des nombres Google (\"GLoadApi\" not found)"
 
 #: ../src/google.c:180
 msgid "Failed getting google version numbers"
@@ -336,8 +335,8 @@ msgid "Enter address or place name:"
 msgstr "Saisir une adresse ou un nom de lieu :"
 
 #: ../src/googlesearch.c:212
-msgid "couldn't open temp file\n"
-msgstr "Impossible d'ouvrir le fichier temporaire\n"
+msgid "couldn't open temp file"
+msgstr "Impossible d'ouvrir le fichier temporaire"
 
 #: ../src/datasource_gc.c:62
 msgid "Download Geocaches"
@@ -450,8 +449,8 @@ msgstr ""
 
 #: ../src/download.c:145
 #, c-format
-msgid "Download error: %s\n"
-msgstr "Erreur de téléchargement: %s\n"
+msgid "Download error: %s"
+msgstr "Erreur de téléchargement: %s"
 
 #: ../src/osm-traces.c:195
 #, c-format
@@ -637,7 +636,7 @@ msgstr ""
 msgid "Waypoints Outside This"
 msgstr ""
 
-#: ../src/main.c:97
+#: ../src/main.c:101
 msgid "Show version"
 msgstr "Affiche la version"
 
@@ -663,8 +662,8 @@ msgstr "Téléchargement/Importation de DEM"
 
 #: ../src/vikdemlayer.c:746
 #, c-format
-msgid "No SRTM data available for %f, %f\n"
-msgstr "Aucune donnée SRTM disponible pour %f, %f\n"
+msgid "No SRTM data available for %f, %f"
+msgstr "Aucune donnée SRTM disponible pour %f, %f"
 
 #: ../src/vikdemlayer.c:985
 msgid "No download source selected. Edit layer properties."
@@ -1287,84 +1286,84 @@ msgstr "Exporter en tant que GPSMapper"
 msgid "Export as GPX"
 msgstr "Exporter en tant que GPX"
 
-#: ../src/viktrwlayer.c:1629 ../src/viktrwlayer.c:2545
+#: ../src/viktrwlayer.c:1629 ../src/viktrwlayer.c:2554
 msgid "New Waypoint"
 msgstr ""
 
-#: ../src/viktrwlayer.c:1635 ../src/viktrwlayer.c:2511
+#: ../src/viktrwlayer.c:1635 ../src/viktrwlayer.c:2520
 msgid "Upload to OSM"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2104
+#: ../src/viktrwlayer.c:2115
 msgid "Merge Threshold..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2105
-msgid "Merge when time between trackpoints less than:"
+#: ../src/viktrwlayer.c:2116
+msgid "Merge when time between tracks less than:"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2198
+#: ../src/viktrwlayer.c:2207
 msgid "Split Threshold..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2199
+#: ../src/viktrwlayer.c:2208
 msgid "Split when time between trackpoints exceeds:"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2282
+#: ../src/viktrwlayer.c:2291
 msgid "Waypoint Already Exists"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2324
+#: ../src/viktrwlayer.c:2333
 msgid "Track Already Exists"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2447
+#: ../src/viktrwlayer.c:2456
 msgid "Goto"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2455
+#: ../src/viktrwlayer.c:2464
 msgid "Visit Geocache Webpage"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2470
+#: ../src/viktrwlayer.c:2479
 msgid "Goto Startpoint"
 msgstr "Aller au premier point"
 
-#: ../src/viktrwlayer.c:2475
+#: ../src/viktrwlayer.c:2484
 msgid "Goto \"Center\""
 msgstr ""
 
-#: ../src/viktrwlayer.c:2480
+#: ../src/viktrwlayer.c:2489
 msgid "Goto Endpoint"
 msgstr "Aller au dernier point"
 
-#: ../src/viktrwlayer.c:2485
+#: ../src/viktrwlayer.c:2494
 msgid "Merge By Time"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2490
+#: ../src/viktrwlayer.c:2499
 msgid "Split By Time"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2495
+#: ../src/viktrwlayer.c:2504
 msgid "Download maps along track..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2500
+#: ../src/viktrwlayer.c:2509
 msgid "Apply DEM Data"
 msgstr ""
 
-#: ../src/viktrwlayer.c:3481
+#: ../src/viktrwlayer.c:3490
 msgid "Could not launch eog to open file."
 msgstr ""
 
-#: ../src/viktrwlayer.c:3535
+#: ../src/viktrwlayer.c:3544
 #, c-format
 msgid "Creating %d Image Thumbnails..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:3755
+#: ../src/viktrwlayer.c:3764
 msgid "No map layer in use. Create one first"
 msgstr ""
 
@@ -1572,7 +1571,7 @@ msgstr "Le fichier choisi ne peut être ouvert."
 msgid "Please select a GPS data file to open. "
 msgstr "Sélectionner un fichier GPS à ouvrir. "
 
-#: ../src/vikwindow.c:1286
+#: ../src/vikwindow.c:1296
 msgid "Save as Viking File."
 msgstr "Enregistrer en tant que fichier Viking."
 
@@ -1832,7 +1831,7 @@ msgstr "Zoom a_rrière"
 msgid "Zoom _To"
 msgstr "Zoom _optimal"
 
-#: ../src/vikwindow.c:1810
+#: ../src/vikwindow.c:1825
 msgid "0.25"
 msgstr "0.25"
 
@@ -1914,7 +1913,7 @@ msgstr "Tout effacer"
 
 #: ../src/vikwindow.c:1846
 msgid "_Preferences..."
-msgstr "_Préférences"
+msgstr "_Préférences..."
 
 #: ../src/vikwindow.c:1847
 msgid "_Properties"
