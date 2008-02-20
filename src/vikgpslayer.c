@@ -704,30 +704,30 @@ static void set_current_count(gint cnt, GpsSession *sess)
       if (sess->direction == GPS_DOWN)
       {
         if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Downloaded %d out of %d waypoint.", "Downloaded %d out of %d waypoints.", sess->total_count);
+          tmp_str = ngettext("Downloaded %d out of %d waypoint...", "Downloaded %d out of %d waypoints...", sess->total_count);
         else
-          tmp_str = ngettext("Downloaded %d out of %d trackpoint.", "Downloaded %d out of %d trackpoints.", sess->total_count);
+          tmp_str = ngettext("Downloaded %d out of %d trackpoint...", "Downloaded %d out of %d trackpoints...", sess->total_count);
       }
       else {
         if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Uploaded %d out of %d waypoint.", "Uploaded %d out of %d waypoints.", sess->total_count);
+          tmp_str = ngettext("Uploaded %d out of %d waypoint...", "Uploaded %d out of %d waypoints...", sess->total_count);
         else
-          tmp_str = ngettext("Uploaded %d out of %d trackpoint.", "Uploaded %d out of %d trackpoints.", sess->total_count);
+          tmp_str = ngettext("Uploaded %d out of %d trackpoint...", "Uploaded %d out of %d trackpoints...", sess->total_count);
       }
       g_snprintf(s, 128, tmp_str, cnt, sess->total_count);
     } else {
       if (sess->direction == GPS_DOWN)
       {
         if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Downloaded %d waypoint.", "Downloaded %d waypoints.", cnt);
+          tmp_str = ngettext("Downloaded %d waypoint", "Downloaded %d waypoints", cnt);
         else
-          tmp_str = ngettext("Downloaded %d trackpoint.", "Downloaded %d trackpoints.", cnt);
+          tmp_str = ngettext("Downloaded %d trackpoint", "Downloaded %d trackpoints", cnt);
       }
       else {
         if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Uploaded %d waypoint.", "Uploaded %d waypoints.", cnt);
+          tmp_str = ngettext("Uploaded %d waypoint", "Uploaded %d waypoints", cnt);
         else
-          tmp_str = ngettext("Uploaded %d trackpoint.", "Uploaded %d trackpoints.", cnt);
+          tmp_str = ngettext("Uploaded %d trackpoint", "Uploaded %d trackpoints", cnt);
       }
       g_snprintf(s, 128, tmp_str, cnt);
     }	  
