@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-20 16:25+0100\n"
+"POT-Creation-Date: 2008-02-20 16:55+0100\n"
 "PO-Revision-Date: 2008-01-12 10:03+0000\n"
 "Last-Translator: Jocelyn Jaubert <jocelyn.jaubert@gmail.com>\n"
 "Language-Team: \n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2008-01-12 13:08+0000\n"
+"X-Launchpad-Export-Date: 2008-02-11 21:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: French\n"
 
@@ -348,11 +348,11 @@ msgstr "Caches geocaching.com"
 
 #: ../src/datasource_gc.c:78
 msgid "geocaching.com username:"
-msgstr ""
+msgstr "Nom d'utilisateur geocaching.com :"
 
 #: ../src/datasource_gc.c:79
 msgid "geocaching.com password:"
-msgstr ""
+msgstr "Mot de passe geocaching.com :"
 
 #: ../src/datasource_gc.c:107
 msgid ""
@@ -901,7 +901,7 @@ msgstr[1] "%d positions émises"
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
-msgstr[0] "%d point de trace émi"
+msgstr[0] "%d point de trace émis"
 msgstr[1] "%d points de trace émis"
 
 #: ../src/viklayerspanel.c:59
@@ -1376,7 +1376,7 @@ msgstr "<b>Commentaire :</b>"
 
 #: ../src/viktrwlayer_propwin.c:634
 msgid "<b>Track Length:</b>"
-msgstr "<b>Longueur :</b> "
+msgstr "<b>Longueur :</b>"
 
 #: ../src/viktrwlayer_propwin.c:634
 msgid "<b>Trackpoints:</b>"
