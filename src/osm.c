@@ -103,8 +103,8 @@ static void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
-   gchar *uri = g_strdup_printf ( "/~ojw/Tiles/maplint.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
-   res = a_http_download_get_url ( "dev.openstreetmap.org", uri, dest_fn, &osm_options );
+   gchar *uri = g_strdup_printf ( "/Tiles/maplint.php/%d/%d/%d.png", 17-src->scale, src->x, src->y );
+   res = a_http_download_get_url ( "tah.openstreetmap.org", uri, dest_fn, &osm_options );
    g_free ( uri );
    return res;
 }
@@ -112,7 +112,7 @@ static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn )
 static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
-   gchar *uri = g_strdup_printf ( "/osamrender/%d/%d/%d.png", 17-src->scale, src->x, src->y );
+   gchar *uri = g_strdup_printf ( "/%d/%d/%d.png", 17-src->scale, src->x, src->y );
    res = a_http_download_get_url ( "tile.openstreetmap.org", uri, dest_fn, &osm_options );
    g_free ( uri );
    return res;
