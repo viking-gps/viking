@@ -716,7 +716,7 @@ static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *
   return rv;
 }
 
-static GList * a_array_to_glist(gchar* data[])
+static GList * str_array_to_glist(gchar* data[])
 {
   GList *gl = NULL;
   gpointer * p;
@@ -728,9 +728,9 @@ static GList * a_array_to_glist(gchar* data[])
 VikTrwLayer *vik_trw_layer_new ( gint drawmode )
 {
   if (trw_layer_params[PARAM_DM].widget_data == NULL)
-    trw_layer_params[PARAM_DM].widget_data = a_array_to_glist(params_drawmodes);
+    trw_layer_params[PARAM_DM].widget_data = str_array_to_glist(params_drawmodes);
   if (trw_layer_params[PARAM_WPSYM].widget_data == NULL)
-    trw_layer_params[PARAM_WPSYM].widget_data = a_array_to_glist(params_wpsymbols);
+    trw_layer_params[PARAM_WPSYM].widget_data = str_array_to_glist(params_wpsymbols);
 
   VikTrwLayer *rv = VIK_TRW_LAYER ( g_object_new ( VIK_TRW_LAYER_TYPE, NULL ) );
   vik_layer_init ( VIK_LAYER(rv), VIK_LAYER_TRW );
