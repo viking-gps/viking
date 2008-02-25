@@ -31,7 +31,7 @@ DIE=0
 	DIE=1
 }
 
-(grep "^AC_PROG_INTLTOOL" $srcdir/$CONFIGURE >/dev/null) && {
+(grep "^IT_PROG_INTLTOOL" $srcdir/$CONFIGURE >/dev/null) && {
   ($INTLTOOLIZE --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "You must have \`intltoolize' installed to compile $PROJECT."
@@ -131,8 +131,8 @@ do
       fi
       if grep "^AC_PROG_INTLTOOL" $CONFIGURE >/dev/null ||
          grep "^IT_PROG_INTLTOOL" $CONFIGURE >/dev/null; then
-        echo "Running intltoolize..."
-	intltoolize --copy --force --automake
+        echo "Running $INTLTOOLIZE..."
+	$INTLTOOLIZE --copy --force --automake
       fi
       if grep "^AM_PROG_LIBTOOL" $CONFIGURE >/dev/null; then
 	echo "Running $LIBTOOLIZE..."
