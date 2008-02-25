@@ -480,7 +480,7 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
 {
   gdouble *v, *s, *t;
-  gdouble duration, chunk_dur, T, s_prev, s_now;
+  gdouble duration, chunk_dur;
   time_t t1, t2;
   int i, pt_count, numpts, index;
   GList *iter;

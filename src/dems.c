@@ -211,7 +211,7 @@ gint16 a_dems_get_elev_by_coord ( const VikCoord *coord, VikDemInterpol method )
   ce.method = method;
   ce.elev = VIK_DEM_INVALID_ELEVATION;
 
-  if(!g_hash_table_find(loaded_dems, get_elev_by_coord, &ce))
+  if(!g_hash_table_find(loaded_dems, (GHRFunc)get_elev_by_coord, &ce))
     return VIK_DEM_INVALID_ELEVATION;
   return ce.elev;
 }

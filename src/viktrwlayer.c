@@ -716,11 +716,11 @@ static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *
   return rv;
 }
 
-static GList * a_array_to_glist(gpointer data[])
+static GList * a_array_to_glist(gchar* data[])
 {
   GList *gl = NULL;
   gpointer * p;
-  for (p = data; *p; p++)
+  for (p = (gpointer)data; *p; p++)
     gl = g_list_prepend(gl, *p);
   return(g_list_reverse(gl));
 }
@@ -2184,7 +2184,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   } while (track_count > 1);
   g_list_free(nearby_tracks);
   free(orig_track_name);
-  vik_layer_emit_update(vtl);
+  vik_layer_emit_update( VIK_LAYER(vtl) );
 }
 
 /* split by time routine */

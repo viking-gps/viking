@@ -40,7 +40,7 @@ void open_url(GtkWindow *parent, const gchar * url)
   gint i=0;
   gchar *cmdline = NULL;
   
-  gchar *browser = g_getenv("BROWSER");
+  const gchar *browser = g_getenv("BROWSER");
   if (browser == NULL || browser[0] == '\0') {
     /* $BROWSER not set -> use first entry */
     browser = browsers[i++];

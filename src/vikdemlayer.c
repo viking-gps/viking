@@ -636,7 +636,7 @@ static const gchar *srtm_continent_dir ( gint lat, gint lon )
     while (*s != (gchar *)-1) {
       continent = *s++;
       while (*s) {
-        g_hash_table_insert(srtm_continent, *s, continent);
+        g_hash_table_insert(srtm_continent, (gpointer) *s, (gpointer) continent);
         s++;
       }
       s++;

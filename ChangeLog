@@ -1,6 +1,7 @@
 2008-02-25:
-Rob Norris <  	 robbieonsea at users.sourceforge.net>
-	* Fix 1881475 autogen can generate broken configure file
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix: autogen can generate broken configure file (SF#1881475)
+	* Fix some compiler warnings (SF#1888407)
 
 2008-02-24:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
