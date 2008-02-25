@@ -1,4 +1,8 @@
 2008-02-25:
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* po/ChangeLog: needed file for distribution
+
+2008-02-25:
 Rob Norris <robbieonsea@users.sourceforge.net>:
 	* Fix: autogen can generate broken configure file (SF#1881475)
 	* Fix some compiler warnings (SF#1888407)
