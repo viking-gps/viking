@@ -1,3 +1,33 @@
+Viking 0.9.4 (2008-02-25)
+New features since 0.9.3
+
+* Make elev graph show better graph for low altitude tracks.
+* Printing support
+* Draw circle for downloading geocaches.
+* Improve track graphs. Some tracks looked too flat.
+* Internationalization (I18N)
+* Localization (L10N): Czech, Danish, German, Spanish, French, Brazilian Portuguese, Swedish
+* Use a list of possible browsers.
+* New map source: BlueMarble tiles (http://mike.teczno.com/notes/blue-marble-tiles.html)
+* New map source: Google Terrain
+* Use the "next unused" (not really) waypoint number as default.
+* Sort waypoints in GPX output.
+* Preferences support in ~/.viking/viking.prefs
+* Update source for OSM/Osmarender tiles
+* Full screen mode.
+* Tuned the v-t diagram drawing
+
+Fixes since 0.9.3
+
+* Many fixes around compilation warnings
+* Fix a bug that caused crashes when displaying elev graph for some track.
+* Fix bug that caused Old Google maps not being disabled by default.
+* Fix a bug that can potentially cause segfault.
+* Fix compilation under HURD (missing MAXPATHLEN macro)
+* Fix: ensure config.h is included conditionnaly
+* Fix a crash bug in mapcache
+* Fix a crash bug in merge-by-time
+
 Viking 0.9.3 (2007-10-21)
 New features since 0.9.2
 
