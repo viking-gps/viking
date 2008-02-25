@@ -131,7 +131,6 @@ static int bluemarble_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
    gchar *uri = g_strdup_printf ( "/com.modestmaps.bluemarble/%d-r%d-c%d.jpg", 17-src->scale, src->y, src->x );
-   g_print("s3.amazonaws.com/%s\n", uri);
    res = a_http_download_get_url ( "s3.amazonaws.com", uri, dest_fn, &osm_options );
 
    g_free ( uri );
