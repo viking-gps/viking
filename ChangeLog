@@ -12,7 +12,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Change OSM's tiles URL
 
 2008-02-22:
-Michael A. Peter <mpeters@mac.com>:
+Michael A. Peters <mpeters@mac.com>:
 	* viking.spec: Correct license, required packages and local.
 
 2008-02-20:
@@ -25,7 +25,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* French translation update
 
 2008-02-16:
-Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* I18N improvements
 	* French translation update
 	(both submitted the 2008-01-12 on mailing-list)
@@ -35,7 +35,7 @@ Alex Foobarian <foobarian@gmail.com>:
 	* Fix a crash bug in merge-by-time reported by Evan <gtoevan@gmx.net>
 
 2008-01-18
-Qut Tonthat <qtonthat@gmail.com>:
+Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a crash bug in mapcache reported by Jocelyn <jocelyn.jaubert@gmail.com>
 	* Added mutex to protect mapcache from being corrupted by threads.
 
@@ -44,7 +44,7 @@ Alex Foobarian <foobarian@gmail.com>:
 	* Tuned the v-t diagram drawing
 	
 2007-12-27:
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Minor fixes/debugging to gcget. Add gcget-perl
 	* Full screen mode.
 	* Bugfix for prefernces -- don't cut off last character of password
@@ -54,38 +54,38 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add GpxWritingOptions to control GPX file writing
 
 2007-12-23
-Oddgeir Kvien <oddgeir@oddgeirkvien.com>
+Oddgeir Kvien <oddgeir@oddgeirkvien.com>:
 	* Add default values to ele and time fields (due to OSM)
 
 2007-12-21
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Preferences groups/tabs
 	* Fix gcget to accept username and password. Pass this in to gcget.
 	* Oops! Reading preferences from the file wasn't working. Fixed.
 
 2007-12-21:
-Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Update French translation
 
 2007-12-21:
-Christoph Eckert <ce@christeck.de>
+Christoph Eckert <ce@christeck.de>:
 	* Update source for OSM/Osmarender tiles
 
 2007-12-20:
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Preferences in ~/.viking/viking.prefs, this will soon allow geocaching support to go mainstream, (hopefully)
 
 2007-12-20
-Qut Tonthat <qtonthat@gmail.com>:
+Quy Tonthat <qtonthat@gmail.com>:
 	* Revert a previous change that disabled realtime tracking if libgps
 	does not exist.
 
 2007-12-17:
-Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Use specific gettext call for plural form
 
 2007-12-16:
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Sort waypoints in GPX output.
 	* Use the "next unused" (not really) waypoint number as default.
 
@@ -95,7 +95,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix: if libgps is missing, Realtime GPS Tracking is disabled
 
 2007-12-15:
-Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Make menu entries translatable
 	* Mark many strings translatable
 	* Update french translation
@@ -111,7 +111,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix bug: "config.status: error: cannot find input file: Makefile.in"
 
 2007-12-07
-Qut Tonthat <qtonthat@gmail.com>:
+Quy Tonthat <qtonthat@gmail.com>:
 	* Fix autogen.sh to remove the assumption that version 1.9 of automake
 	is available on all systems.
 	* Now that autogen.sh runs configure, "make full" should not.
@@ -127,20 +127,20 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* util.c: Use a list of possible browsers.
 
 2007-11-20:
-Qut Tonthat <qtonthat@gmail.com>:
+Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a bug that can potentially cause segfault.
 
 2007-11-19:
-Qut Tonthat <qtonthat@gmail.com>:
+Quy Tonthat <qtonthat@gmail.com>:
 	* Improve track graphs. Some tracks looked too flat.
 
 2007-11-09:
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* GPSBabel filter work I've been sitting on for a while now.
 	* Draw circle for downloading geocaches. Constrain by maximum distance.
 
 2007-11-08:
-Qut Tonthat <qtonthat@gmail.com>:
+Quy Tonthat <qtonthat@gmail.com>:
 	* Printing support
 
 2007-11-01
@@ -162,7 +162,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Releasing 0.9.3
 
 2007-10-20
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fixing minor typo in vikdemlayer.c which could cause crashes
 
 2007-10-20
@@ -175,11 +175,11 @@ Quy Tonthat <qtonthat@gmail.com>:
 	viking allows multiple dialogs displayed simultaneously.
 
 2007-10-17
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix problem with extraneous waypoints being plotted (wrap around problem). May still be problems in UTM mode.
 
 2007-10-16
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix Google version parsing. Google no longer uses '=' and '&' but hex equivalents to describe the URI. Not sure if this will last :/
 
 2007-10-16
@@ -193,11 +193,11 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Add more room to the top of elevation-distance graph.
 
 2007-10-14
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix plotting of DEM elevation data (subtract min altitude)
 
 2007-10-12
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix Esc and Backspace to work only when VikViewport has focus.
 	* VikViewport grabs focus on click or release events, or when a
 	tool move event returns VIK_LAYER_TOOL_ACK_GRAB_FOCUS.
@@ -226,7 +226,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a crash bug caused by operation on variable inside a macro.
 
 2007-10-09
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Ctrl-shift-scroll to zoom like Google. Just scroll zooms like before.
 	* Show currently edited track in red-dashed line. This makes it easier
 	to tell if we've ended the track.
@@ -297,7 +297,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	tracks.
 
 2007-09-27
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* GPSD Layer -- draw an arrow.
 	* Minimum elevation for DEM layer.
 	* Half-drawn hack to only draw layers on top of the one that has
@@ -308,7 +308,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* SRTM download now works for regions outside North_America too.
 
 2007-09-23
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix copy & pasting DEM layers -- new serializing string list code.
 	* Don't crash if using tool on wrong type of layer / no layer.
 		Although I really want to know what happened to "use the top visible layer",
@@ -322,7 +322,7 @@ Evan Battaglia <gtoevan@gmx.net>
         * Experimental GPSD support (VikGpsdLayer)
 
 2007-09-22
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
         * Pan Accelerators (Ctrl+Left, etc)
         * Ctrl-Scroll and Ctrl-Shift-Scroll to pan, kind of like Gimp.
         * Add a RADIOGROUP_STATIC properties factory type to make it easy
@@ -332,12 +332,12 @@ Evan Battaglia <gtoevan@gmx.net>
         * (copying & pasting DEM layers is broken, will fix later)
 
 2007-09-21
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix right-click on geocache to work with new geocache names.
 	* Download & import SRTM 90m DEM data (still working on US 10m)
 
 2007-09-17
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Draw lines to show file existence for MapsLayer for very zoomed out maps. It's faster that actually showing the maps but still gets slow at a certain level.
 
 2007-09-09
@@ -490,7 +490,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	consistent among View menu, viewport and loaded files.
 
 2007-07-02
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
         * DEM Branch: Trying to fix/cleanup various DEM things
         * DEM Branch: Support for SRTM 3 arcsecond _global_ DEM data from http://www2.jpl.nasa.gov/srtm/ 
 
@@ -556,7 +556,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	create waypoint).
 
 2007-05-26
-Mark Coulter <i_offroad@yahoo.com>
+Mark Coulter <i_offroad@yahoo.com>:
 	* new waypoint symbols.
 
 2007-05-26
@@ -590,7 +590,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Add "Save and Exit" to File menu.
 
 2007-05-20
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
         * DEM Branch
 
 2007-05-20
@@ -615,11 +615,11 @@ Quy Tonthat <qtonthat@gmail.com>:
 by mapslayer's weak_ref not being unref'ed in some cases.
 
 2007-05-13
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix problem of "bad" tiles showing up when downloading. The problem was loading of incomplete tiles. Fixed this by first downloading to a temporary file, then moving when complete.
 
 2007-05-11
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix removal of redownloaded tiles from memory cache.
 	* Fix a stupid segfault in main.c (opening new files)
 
@@ -628,32 +628,32 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* New Google version numbers.
 
 2007-05-08
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* New "Refresh onscreen tiles" menu entry
 
 2007-05-04
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* debian/: debianization
 
 2007-04-29
-Reid Priedhorsky <reid@reidster.net>
+Reid Priedhorsky <reid@reidster.net>:
 	* libusb support
 
 2007-04-28
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* OpenSourceMap slippy maps (in osm.c) -- Maplink tiles
 	* Add configuration option for OpenStreetMap sources
 
 2007-04-23
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* OpenSourceMap slippy maps (in osm.c) -- Osmarender and Mapnik
 
 2007-04-21
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* OpenSourceMap slippy maps (in google.c) -- identical to google maps except zoom numbering
 
 2007-04-16
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Adding libcurl support
 
 2007-04-04
@@ -676,15 +676,15 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Added viking.spec.in to autoconf files.
 
 2007-02-15
-Michael A Peters <mpeters@mac.com>:
+Michael A. Peters <mpeters@mac.com>:
 	* Added viking.spec
 
 2007-02-14
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* NEWS, configure.ac: preparing 0.1.2
 
 2007-02-13
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* src/vikwindow.c: remove URL and version number from window title
 	* src/dialog.c: add URL and use dynamic information for version
 	* AUTHORS, src/dialog.c: update contributors list
@@ -697,7 +697,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	of the track graph area in the Track Poperties window. 
 
 2007-02-06
-Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Add new information to Track Properties. Postion in time will be
 	tracked and display when moving mouse cursor around the track graph.
 
@@ -761,7 +761,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Layers now can have their say on what pop up menu items they want.
 
 2007-01-02
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add ability to disable Terraserver stuff
 	* Add ability to disable Expedia stuff
 
@@ -771,7 +771,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 	creation dialog.
 
 2007-01-01
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Make all .h self sufficient
 	* Add ability to disable Google stuff
 	
@@ -780,12 +780,12 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Added gps layer
 
 2007-01-02
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add ability to disable Terraserver stuff
 	* Add ability to disable Expedia stuff
 
 2007-01-01
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Make all .h self sufficient
 	* Add ability to disable Google stuff
 	
@@ -810,7 +810,7 @@ Alex Foobarian <foobarian@gmail.com>:
 	* Added patch by Quy Tonthat <qtonthat@gmail.com> to fix a crash bug
 	
 2006-11-12
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add expat explicit dependency
 
 2006-10-31
@@ -837,11 +837,11 @@ Alex Foobarian <foobarian@gmail.com>:
 	* Sped up ruler drawing by increasing the redraw priority
 
 2006-08-15
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
     * Add implicit DMS->DDD conversions in waypoints dialogs
 
 2006-07-26
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* src/degrees_converters.c, src/degrees_converters.h,
 	  test/degrees_converter.c: add dec -> DDD conversion
 	* src/degrees_converters.c, src/degrees_converters.h,
@@ -849,11 +849,11 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
 	* src/degrees_converters.c: refactor dms conversions
 
 2006-07-24
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
     * Add patch for GoogleMaps from Reid Priedhorsky
 
 2006-07-22
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Makefile.am, configure.ac, src/Makefile.am,
 	  src/degrees_converters.c, src/degrees_converters.h,
 	  test/Makefile.am, test/check_degrees_conversions.sh,
@@ -861,7 +861,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
 	  (DDD/DMM/DMS)
 
 2006-07-06
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* ChangeLog, src/google.c: Upgrade Google Maps -- Europe
 
 2006-07-01
@@ -869,7 +869,7 @@ Evan Battaglia <gtoevan@gmx.net>:
 	* Upgrade Google Maps version (yay Europe!)
 
 2006-06-11
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* NEWS, configure.ac: Preparing 0.1.1
 
 2006-05-25
@@ -881,21 +881,23 @@ Alex Foobarian <foobarian@gmail.com>:
 Alex Foobarian <foobarian@gmail.com>:
 	* Small fixes in Acquire from GPS code
 
-2006-05-08  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+2006-05-08
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* autogen.sh: simpler method to start from CVS
 
 2005-12-03
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Data sources -- check for existence of necessary things
 
 2005-11-25
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Created "data sources" structure to easily add new data sources via GPS babel.
           It's ugly now and there's a lot to be done, but I think 79-line datasources_google.c
           shows the power of the approach.
 	* Data sources: Google & Geocaches
 
-2005-11-23  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+2005-11-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* src/gpx.c (gpx_dtostr): add better GPX export
 Evan Battaglia <gtoevan@gmx.net>:
 	* dtostr -> coords.c; use in gpsmapper.c and gpspoint.c (locale-independent output)
@@ -917,7 +919,8 @@ Alex Foobarian <foobarian@gmail.com>:
         * Copy/paste between viking processes
 	* Layer marshalling support
 
-2005-10-28  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+2005-10-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* configure.ac: Adding --with-mapcache configure option
 	* src/config.h: Removed because no more used (generated)
 
@@ -925,13 +928,14 @@ Alex Foobarian <foobarian@gmail.com>:
 Alex Foobarian <foobarian@gmail.com>:
         * Fix ruler declination in UTM mode
 
-2005-10-17  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+2005-10-17
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* src/icons/Makefile.am: assumes the creation of icons.h
 	* src/garminsymbols.c, src/vikwindow.c: icons.h re-located
 	* src/Makefile.am: no more icons.h production
 
 2005-10-16
-Evan Battaglia <gtoevan@gmx.net>
+Evan Battaglia <gtoevan@gmx.net>:
 	* Fix ruler: show angle, distance even when compass off-screen.
 	* Fix bgitemcount. Background items status bar "should" be accurate now.
 
@@ -966,7 +970,8 @@ Evan Battaglia <gtoevan@gmx.net>:
 	* make symbols work for geocaching .loc files (and case-insensitive symbol names)
 	* Option as to whether or not to show unit scale (esp for exporting images)
 
-2005-09-30  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+2005-09-30
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* configure.ac, src/Makefile.am (SUBDIRS): added auto-tools support for src/icons
 Alex Foobarian <foobarian@gmail.com>:
 	* Added a drag_drop_request method to layer interface, updated DnD to use it
@@ -992,7 +997,8 @@ Alex Foobarian <foobarian@gmail.com>:
 Evan:
 	* strtod -> g_strtod (i18n glitch)
 
-2005-09-25  Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>
+2005-09-25
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* src/globals.h (VIKING_VERSION): uses the PACKAGE_VERSION macro
 	* Makefile.am (EXTRA_DIST): handles viking-remote
 	* src/Makefile.am (AM_CFLAGS): substitution of CFLAGS by AM_CFLAGS
@@ -1020,7 +1026,7 @@ Me (Evan) again:
 	* Don't crash on track properties of an empty track.
 
 2005-09-13
-Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>:
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
        * bootstrap: new file to bootstrap auto-tools
        * src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
        * Makefile.am (bin_SCRIPTS): viking-remote added
@@ -1040,7 +1046,7 @@ Alex Foobarian <foobarian@gmail.com>'s changes
 My (Evan's) changes:
 * Fix above v-vs-t patch to not crash on tracks without timestamp.
 * Not show v-vs-t graph and/or elevation map if the necessary data isn't there.
-Guilhem BONNEFILLE  <guilhem.bonnefille@gmail.com>'s changes
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>'s changes
 	* bootstrap: new file to bootstrap auto-tools
 	* src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
 	* Makefile.am (bin_SCRIPTS): viking-remote added
