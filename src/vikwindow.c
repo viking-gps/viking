@@ -895,7 +895,7 @@ static VikToolInterface zoom_tool =
     (VikToolMouseFunc) zoomtool_click, 
     (VikToolMouseFunc) zoomtool_move,
     (VikToolMouseFunc) zoomtool_release };
-/*** end ruler code ********************************************************/
+/*** end zoom code ********************************************************/
 
 static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
 {
