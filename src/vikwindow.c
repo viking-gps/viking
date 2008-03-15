@@ -407,8 +407,14 @@ void vik_window_set_redraw_trigger(VikLayer *vl)
 
 static void window_configure_event ( VikWindow *vw )
 {
+  static first = 1;
   draw_redraw ( vw );
-  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
+  if (first) {
+    // This is a hack to set the cursor corresponding to the first tool
+    // FIXME find the correct way to initialize both tool and its cursor
+    first = 0;
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
+  }
 }
 
 static void draw_redraw ( VikWindow *vw )
