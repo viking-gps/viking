@@ -457,6 +457,13 @@ static gboolean draw_buf(gpointer data)
 
 /* Mouse event handlers ************************************************************************/
 
+static void vik_window_pan_click (VikWindow *vw, GdkEventButton *event)
+{
+  /* set panning origin */
+  vw->pan_x = (gint) event->x;
+  vw->pan_y = (gint) event->y;
+}
+
 static void draw_click (VikWindow *vw, GdkEventButton *event)
 {
   gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
@@ -465,12 +472,17 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
    * for panning and zooming; tools only get left/right/movement 
    */
   if ( event->button == 2) {
-    /* set panning origin */
-    vw->pan_x = (gint) event->x;
-    vw->pan_y = (gint) event->y;
+    vik_window_pan_click ( vw, event );
   } 
   else {
     toolbox_click(vw->vt, event);
+  }
+}
+
+static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
+{
+  if ( vw->pan_x != -1 ) {
+    vik_viewport_pan_sync ( vw->viking_vvp, event->x - vw->pan_x, event->y - vw->pan_y );
   }
 }
 
@@ -503,9 +515,18 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
     g_snprintf ( pointer_buf, 36, _("Cursor: %f %f"), ll.lat, ll.lon );
   vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
 
-  if ( vw->pan_x != -1 ) {
-    vik_viewport_pan_sync ( vw->viking_vvp, event->x - vw->pan_x, event->y - vw->pan_y );
-  }
+  vik_window_pan_move ( vw, event );
+}
+
+static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
+{
+  if ( ABS(vw->pan_x - event->x) <= 1 && ABS(vw->pan_y - event->y) <= 1 )
+    vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
+  else
+     vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
+                                      vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
+  draw_update ( vw );
+  vw->pan_x = vw->pan_y = -1;
 }
 
 static void draw_release ( VikWindow *vw, GdkEventButton *event )
@@ -513,13 +534,7 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
   gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
 
   if ( event->button == 2 ) {  /* move / pan */
-    if ( ABS(vw->pan_x - event->x) <= 1 && ABS(vw->pan_y - event->y) <= 1 )
-        vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
-      else
-         vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
-                                         vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
-      draw_update ( vw );
-      vw->pan_x = vw->pan_y = -1;
+    vik_window_pan_release(vw, event);
   }
   else {
     toolbox_release(vw->vt, event);
