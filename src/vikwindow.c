@@ -162,7 +162,8 @@ struct _VikWindow {
 };
 
 enum {
- TOOL_ZOOM = 0,
+ TOOL_PAN = 0,
+ TOOL_ZOOM,
  TOOL_RULER,
  TOOL_LAYER,
  NUMBER_OF_TOOLS
@@ -176,8 +177,9 @@ enum {
 
 static guint window_signals[VW_LAST_SIGNAL] = { 0 };
 
-static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Zoom"), N_("Ruler"), N_("Pan") };
+static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Pan"), N_("Zoom"), N_("Ruler") };
 
+GdkCursor *vw_cursor_pan = NULL;
 GdkCursor *vw_cursor_zoom = NULL;
 GdkCursor *vw_cursor_ruler = NULL;
 
@@ -273,7 +275,7 @@ static void window_init ( VikWindow *vw )
   window_create_ui(vw);
   window_set_filename (vw, NULL);
   
-  toolbox_activate(vw->vt, "Zoom");
+  toolbox_activate(vw->vt, "Pan");
 
   vw->filename = NULL;
   vw->item_factory = NULL;
@@ -413,7 +415,7 @@ static void window_configure_event ( VikWindow *vw )
     // This is a hack to set the cursor corresponding to the first tool
     // FIXME find the correct way to initialize both tool and its cursor
     first = 0;
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_pan );
   }
 }
 
@@ -496,7 +498,7 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   gdouble zoom;
   VikDemInterpol interpol_method;
 
-  toolbox_move(vw->vt, (GdkEventButton *)event);
+  toolbox_move(vw->vt, event);
 
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
@@ -918,6 +920,47 @@ static VikToolInterface zoom_tool =
     (VikToolMouseFunc) zoomtool_release };
 /*** end zoom code ********************************************************/
 
+/********************************************************************************
+ ** Pan tool code
+ ********************************************************************************/
+static gpointer pantool_create (VikWindow *vw, VikViewport *vvp)
+{
+  return vw;
+}
+
+static VikLayerToolFuncStatus pantool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+{
+  vw->modified = TRUE;
+  if ( event->button == 1 )
+    vik_window_pan_click ( vw, event );
+  draw_update ( vw );
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static VikLayerToolFuncStatus pantool_move (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+{
+  vik_window_pan_move ( vw, event );
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static VikLayerToolFuncStatus pantool_release (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+{
+  if ( event->button == 1 )
+    vik_window_pan_release ( vw, event );
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static VikToolInterface pan_tool = 
+  { "Pan", 
+    (VikToolConstructorFunc) pantool_create,
+    (VikToolDestructorFunc) NULL,
+    (VikToolActivationFunc) NULL,
+    (VikToolActivationFunc) NULL,
+    (VikToolMouseFunc) pantool_click, 
+    (VikToolMouseFunc) pantool_move,
+    (VikToolMouseFunc) pantool_release };
+/*** end pan code ********************************************************/
+
 static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
 {
   if (!strcmp(gtk_action_get_name(a), "PanNorth")) {
@@ -1174,7 +1217,11 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 
   toolbox_activate(vw->vt, gtk_action_get_name(a));
 
-  if (!strcmp(gtk_action_get_name(a), "Zoom")) {
+  if (!strcmp(gtk_action_get_name(a), "Pan")) {
+    vw->current_tool = TOOL_PAN;
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_pan );
+  } 
+  else if (!strcmp(gtk_action_get_name(a), "Zoom")) {
     vw->current_tool = TOOL_ZOOM;
     gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
   } 
@@ -1880,8 +1927,9 @@ static GtkRadioActionEntry mode_entries[] = {
 };
 
 static GtkRadioActionEntry tool_entries[] = {
-  { "Zoom",      "vik-icon-zoom",        N_("_Zoom"),                         "<control><shift>Z", N_("Zoom Tool"),  0 },
-  { "Ruler",     "vik-icon-ruler",       N_("_Ruler"),                        "<control><shift>R", N_("Ruler Tool"), 1 }
+  { "Pan",      "vik-icon-pan",        N_("_Pan"),                         "<control><shift>P", N_("Pan Tool"),  0 },
+  { "Zoom",      "vik-icon-zoom",        N_("_Zoom"),                         "<control><shift>Z", N_("Zoom Tool"),  1 },
+  { "Ruler",     "vik-icon-ruler",       N_("_Ruler"),                        "<control><shift>R", N_("Ruler Tool"), 2 }
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
@@ -1908,6 +1956,7 @@ static void window_create_ui( VikWindow *window )
 
   toolbox_add_tool(window->vt, &ruler_tool, TOOL_LAYER_TYPE_NONE);
   toolbox_add_tool(window->vt, &zoom_tool, TOOL_LAYER_TYPE_NONE);
+  toolbox_add_tool(window->vt, &pan_tool, TOOL_LAYER_TYPE_NONE);
 
   error = NULL;
   if (!(mid = gtk_ui_manager_add_ui_from_string (uim, menu_xml, -1, &error))) {
@@ -2017,6 +2066,7 @@ static struct {
   { &addwp_18,		"Create Waypoint"   },
   { &edwp_18,		"Edit Waypoint"     },
   { &iscissors_18,	"Magic Scissors"   },
+  { &mover_22,		"vik-icon-pan"     },
   { &zoom_18,		"vik-icon-zoom"     },
   { &ruler_18,		"vik-icon-ruler"    },
   { &geozoom_18,	"Georef Zoom Tool"  },
@@ -2047,6 +2097,8 @@ void vik_window_cursors_init()
   GdkPixbuf *cursor_pixbuf;
   GError *cursor_load_err;
 
+  vw_cursor_pan = gdk_cursor_new(GDK_FLEUR);
+
   cursor_pixbuf = gdk_pixbuf_from_pixdata (&cursor_zoom, FALSE, &cursor_load_err);
   vw_cursor_zoom = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 6, 6 );
 
@@ -2060,6 +2112,7 @@ void vik_window_cursors_init()
 
 void vik_window_cursors_uninit()
 {
+  gdk_cursor_unref ( vw_cursor_pan );
   gdk_cursor_unref ( vw_cursor_zoom );
   gdk_cursor_unref ( vw_cursor_ruler );
 }

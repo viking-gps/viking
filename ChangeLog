@@ -1,6 +1,7 @@
 2008-03-15:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix: [ 1839948 ] Maximize/Restore changes current cursor
+	* Add panning tool as default
 
 2008-02-25:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

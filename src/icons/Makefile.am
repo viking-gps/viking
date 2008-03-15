@@ -91,6 +91,7 @@ ICONS = \
   geozoom_18.png \
   mapdl_18.png \
   demdl_18.png \
+  mover_22.png \
   ruler_18.png \
   showpic_18.png \
   zoom_18.png \
