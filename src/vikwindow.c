@@ -31,6 +31,7 @@
 #include "dems.h"
 #include "print.h"
 #include "preferences.h"
+#include "icons/icons.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -108,6 +109,7 @@ static toolbox_tools_t* toolbox_create(VikWindow *vw);
 static void toolbox_add_tool(toolbox_tools_t *vt, VikToolInterface *vti, gint layer_type );
 static int toolbox_get_tool(toolbox_tools_t *vt, const gchar *tool_name);
 static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name);
+static const GdkCursor *toolbox_get_cursor(toolbox_tools_t *vt, const gchar *tool_name);
 static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event);
 static void toolbox_move (toolbox_tools_t *vt, GdkEventButton *event);
 static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event);
@@ -178,10 +180,6 @@ enum {
 static guint window_signals[VW_LAST_SIGNAL] = { 0 };
 
 static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Pan"), N_("Zoom"), N_("Ruler") };
-
-GdkCursor *vw_cursor_pan = NULL;
-GdkCursor *vw_cursor_zoom = NULL;
-GdkCursor *vw_cursor_ruler = NULL;
 
 GType vik_window_get_type (void)
 {
@@ -409,13 +407,16 @@ void vik_window_set_redraw_trigger(VikLayer *vl)
 
 static void window_configure_event ( VikWindow *vw )
 {
-  static first = 1;
+  static int first = 1;
   draw_redraw ( vw );
   if (first) {
     // This is a hack to set the cursor corresponding to the first tool
     // FIXME find the correct way to initialize both tool and its cursor
+    const GdkCursor *cursor = NULL;
     first = 0;
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_pan );
+    cursor = toolbox_get_cursor(vw->vt, "Pan");
+    /* We set cursor, even if it is NULL: it resets to default */
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, cursor );
   }
 }
 
@@ -874,7 +875,10 @@ static VikToolInterface ruler_tool =
     (VikToolActivationFunc) ruler_deactivate, 
     (VikToolMouseFunc) ruler_click, 
     (VikToolMouseFunc) ruler_move, 
-    (VikToolMouseFunc) ruler_release };
+    (VikToolMouseFunc) ruler_release,
+    NULL,
+    GDK_CURSOR_IS_PIXMAP,
+    &cursor_ruler };
 /*** end ruler code ********************************************************/
 
 
@@ -917,7 +921,10 @@ static VikToolInterface zoom_tool =
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) zoomtool_click, 
     (VikToolMouseFunc) zoomtool_move,
-    (VikToolMouseFunc) zoomtool_release };
+    (VikToolMouseFunc) zoomtool_release,
+    NULL,
+    GDK_CURSOR_IS_PIXMAP,
+    &cursor_zoom };
 /*** end zoom code ********************************************************/
 
 /********************************************************************************
@@ -958,7 +965,9 @@ static VikToolInterface pan_tool =
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) pantool_click, 
     (VikToolMouseFunc) pantool_move,
-    (VikToolMouseFunc) pantool_release };
+    (VikToolMouseFunc) pantool_release,
+    NULL,
+    GDK_FLEUR };
 /*** end pan code ********************************************************/
 
 static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
@@ -1172,6 +1181,24 @@ static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name)
   vt->active_tool = tool;
 }
 
+static const GdkCursor *toolbox_get_cursor(toolbox_tools_t *vt, const gchar *tool_name)
+{
+  int tool = toolbox_get_tool(vt, tool_name);
+  toolbox_tool_t *t = &vt->tools[tool];
+  if (t->ti.cursor == NULL) {
+    if (t->ti.cursor_type == GDK_CURSOR_IS_PIXMAP && t->ti.cursor_data != NULL) {
+      GError *cursor_load_err = NULL;
+      GdkPixbuf *cursor_pixbuf = gdk_pixbuf_from_pixdata (t->ti.cursor_data, FALSE, &cursor_load_err);
+      /* TODO: settable offeset */
+      t->ti.cursor = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 3, 3 );
+      g_object_unref ( G_OBJECT(cursor_pixbuf) );
+    } else {
+      t->ti.cursor = gdk_cursor_new ( t->ti.cursor_type );
+    }
+  }
+  return t->ti.cursor;
+}
+
 static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event)
 {
   VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
@@ -1214,20 +1241,22 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 {
   /* White Magic, my friends ... White Magic... */
   int layer_id, tool_id;
+  const GdkCursor *cursor = NULL;
 
   toolbox_activate(vw->vt, gtk_action_get_name(a));
 
+  cursor = toolbox_get_cursor(vw->vt, gtk_action_get_name(a));
+  /* We set cursor, even if it is NULL: it resets to default */
+  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, cursor );
+
   if (!strcmp(gtk_action_get_name(a), "Pan")) {
     vw->current_tool = TOOL_PAN;
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_pan );
   } 
   else if (!strcmp(gtk_action_get_name(a), "Zoom")) {
     vw->current_tool = TOOL_ZOOM;
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_zoom );
   } 
   else if (!strcmp(gtk_action_get_name(a), "Ruler")) {
     vw->current_tool = TOOL_RULER;
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw_cursor_ruler );
   }
   else {
     /* TODO: only enable tools from active layer */
@@ -1237,7 +1266,6 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
            vw->current_tool = TOOL_LAYER;
            vw->tool_layer_id = layer_id;
            vw->tool_tool_id = tool_id;
-           gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vik_layer_get_tool_cursor ( layer_id, tool_id ) );
 	}
       }
     }
@@ -2055,7 +2083,6 @@ static void window_create_ui( VikWindow *window )
 
 
 
-#include "icons/icons.h"
 static struct { 
   const GdkPixdata *data;
   gchar *stock_id;
@@ -2092,27 +2119,3 @@ register_vik_icons (GtkIconFactory *icon_factory)
   }
 }
 
-void vik_window_cursors_init()
-{
-  GdkPixbuf *cursor_pixbuf;
-  GError *cursor_load_err;
-
-  vw_cursor_pan = gdk_cursor_new(GDK_FLEUR);
-
-  cursor_pixbuf = gdk_pixbuf_from_pixdata (&cursor_zoom, FALSE, &cursor_load_err);
-  vw_cursor_zoom = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 6, 6 );
-
-  g_object_unref ( G_OBJECT(cursor_pixbuf) );
-
-  cursor_pixbuf = gdk_pixbuf_from_pixdata (&cursor_ruler, FALSE, &cursor_load_err);
-  vw_cursor_ruler = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 6, 6 );
-
-  g_object_unref ( G_OBJECT(cursor_pixbuf) );
-}
-
-void vik_window_cursors_uninit()
-{
-  gdk_cursor_unref ( vw_cursor_pan );
-  gdk_cursor_unref ( vw_cursor_zoom );
-  gdk_cursor_unref ( vw_cursor_ruler );
-}

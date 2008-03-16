@@ -109,7 +109,9 @@ struct _VikToolInterface {
   VikToolMouseFunc move;
   VikToolMouseFunc release;
   VikToolKeyFunc key_press; /* return FALSE if we don't use the key press -- should return AFLSE most of the time if we want any shortcuts / UI keybindings to work! use sparingly. */
-  const GdkPixdata *cursor;
+  GdkCursorType cursor_type;
+  const GdkPixdata *cursor_data;
+  const GdkCursor *cursor;
 };
 
 /* Parameters (for I/O and Properties) */
@@ -279,12 +281,5 @@ GdkPixbuf *vik_layer_load_icon ( gint type );
 VikLayer *vik_layer_get_and_reset_trigger();
 void vik_layer_emit_update_secondary ( VikLayer *vl ); /* to be called by aggregate layer only. doesn't set the trigger */
 void vik_layer_emit_update_although_invisible ( VikLayer *vl );
-
-GdkCursor *vik_layer_get_tool_cursor ( gint layer_id, gint tool_id );
-void vik_layer_cursors_init();
-void vik_layer_cursors_uninit();
-
-
-
 
 #endif

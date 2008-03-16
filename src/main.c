@@ -157,9 +157,6 @@ int main( int argc, char *argv[] )
   a_datasource_gc_init();
 #endif
 
-  vik_layer_cursors_init ();
-  vik_window_cursors_init ();
-
   /* Set the icon */
   main_icon = gdk_pixbuf_from_pixdata(&viking_icon, FALSE, NULL);
   gtk_window_set_default_icon(main_icon);
@@ -181,8 +178,6 @@ int main( int argc, char *argv[] )
   a_mapcache_uninit ();
   a_dems_uninit ();
   a_preferences_uninit ();
-  vik_layer_cursors_uninit ();
-  vik_window_cursors_uninit ();
 
   return 0;
 }

@@ -57,9 +57,6 @@ void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);
 struct _VikViewport * vik_window_viewport(VikWindow *vw);
 void vik_window_set_redraw_trigger(struct _VikLayer *vl);
 
-void vik_window_cursors_init();
-void vik_window_cursors_uninit();
-
 void vik_window_enable_layer_tool ( VikWindow *vw, gint layer_id, gint tool_id );
 
 G_END_DECLS
