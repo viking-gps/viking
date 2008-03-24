@@ -10,6 +10,7 @@ AC_CONFIG_HEADERS([src/config.h])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
+AC_PROG_RANLIB
 
 # I18N
 GETTEXT_PACKAGE=viking

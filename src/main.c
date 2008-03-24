@@ -24,7 +24,7 @@
 #endif /* HAVE_CONFIG */
 
 #include "viking.h"
-#include "icons/viking_icon.png_h"
+#include "icons/icons.h"
 #include "mapcache.h"
 #include "background.h"
 #include "dems.h"

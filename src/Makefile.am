@@ -12,6 +12,7 @@ authors.h: ../AUTHORS
 	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/\\n"\\/' -e '$$s/\\$$//' $< >> $@
 
 BUILT_SOURCES = authors.h
+CLEANFILES = $(BUILT_SOURCES)
 
 viking_SOURCES = main.c \
 	modules.h modules.c \
@@ -94,10 +95,8 @@ viking_SOURCES += \
 	osm.c osm.h \
 	osm-traces.c osm-traces.h
 endif
-
-
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
-LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
+LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
 if REALTIME_GPS_TRACKING
 LDADD           += -lgps
 endif
