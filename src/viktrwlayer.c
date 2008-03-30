@@ -53,6 +53,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include <gdk/gdkkeysyms.h>
 #include <glib/gi18n.h>
@@ -1466,12 +1467,17 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
   GtkWidget *file_selector;
   const gchar *fn;
   gboolean failed = FALSE;
-  file_selector = gtk_file_selection_new (_("Export Layer"));
-  gtk_file_selection_set_filename (GTK_FILE_SELECTION(file_selector), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])));
+  file_selector = gtk_file_chooser_dialog_new (_("Export Layer"),
+				      NULL,
+				      GTK_FILE_CHOOSER_ACTION_SAVE,
+				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+				      NULL);
+  gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(file_selector), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])));
 
-  while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_OK )
+  while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {
-    fn = gtk_file_selection_get_filename (GTK_FILE_SELECTION(file_selector) );
+    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(file_selector) );
     if ( access ( fn, F_OK ) != 0 )
     {
       gtk_widget_hide ( file_selector );

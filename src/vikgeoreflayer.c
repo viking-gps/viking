@@ -305,11 +305,16 @@ static gboolean world_file_read_line ( gchar *buffer, gint size, FILE *f, GtkWid
 
 static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
 {
-  GtkWidget *file_selector = gtk_file_selection_new (_("Choose World file"));
+  GtkWidget *file_selector = gtk_file_chooser_dialog_new (_("Choose World file"),
+				      NULL,
+				      GTK_FILE_CHOOSER_ACTION_OPEN,
+				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				      NULL);
 
-  if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_OK )
+  if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
-    FILE *f = fopen ( gtk_file_selection_get_filename ( GTK_FILE_SELECTION(file_selector) ), "r" );
+    FILE *f = fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "r" );
     gtk_widget_destroy ( file_selector ); 
     if ( !f )
     {
@@ -344,11 +349,16 @@ We need a
 static void georef_layer_export_params ( gpointer *pass_along[2] )
 {
   VikGeorefLayer *vgl = VIK_GEOREF_LAYER(pass_along[0]);
-  GtkWidget *file_selector = gtk_file_selection_new (_("Choose World file"));
-
-  if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_OK )
+  GtkWidget *file_selector = gtk_file_chooser_dialog_new (_("Choose World file"),
+				      NULL,
+				      GTK_FILE_CHOOSER_ACTION_SAVE,
+				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				      NULL);
+  if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
-    FILE *f = fopen ( gtk_file_selection_get_filename ( GTK_FILE_SELECTION(file_selector) ), "w" );
+    FILE *f = fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "w" );
+    
     gtk_widget_destroy ( file_selector ); 
     if ( !f )
     {

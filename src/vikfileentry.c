@@ -91,13 +91,18 @@ static void choose_file ( VikFileEntry *vfe )
   {
     GtkWidget *win;
     g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfe))) );
-    vfe->file_selector = gtk_file_selection_new (_("Choose file"));
+    vfe->file_selector = gtk_file_chooser_dialog_new (_("Choose file"),
+				      GTK_WINDOW(win),
+				      GTK_FILE_CHOOSER_ACTION_OPEN,
+				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				      NULL);
     gtk_window_set_transient_for ( GTK_WINDOW(vfe->file_selector), GTK_WINDOW(win) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vfe->file_selector), TRUE );
   }
 
-  if ( gtk_dialog_run ( GTK_DIALOG(vfe->file_selector) ) == GTK_RESPONSE_OK )
-    gtk_entry_set_text ( GTK_ENTRY (vfe->entry), gtk_file_selection_get_filename ( GTK_FILE_SELECTION(vfe->file_selector) ) );
+  if ( gtk_dialog_run ( GTK_DIALOG(vfe->file_selector) ) == GTK_RESPONSE_ACCEPT )
+    gtk_entry_set_text ( GTK_ENTRY (vfe->entry), gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(vfe->file_selector) ) );
   gtk_widget_hide ( vfe->file_selector );
 }
 

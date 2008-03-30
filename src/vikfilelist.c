@@ -37,26 +37,39 @@ struct _VikFileList {
 
 static void file_list_add ( VikFileList *vfl )
 {
+  GSList *files = NULL;
+  GSList *fiter = NULL;
+  
   if ( ! vfl->file_selector )
   {
     GtkWidget *win;
     g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfl))) );
-    vfl->file_selector = gtk_file_selection_new (_("Choose file(s)"));
-    gtk_file_selection_set_select_multiple ( GTK_FILE_SELECTION(vfl->file_selector), TRUE );
+    vfl->file_selector = gtk_file_chooser_dialog_new (_("Choose file(s)"),
+				      GTK_WINDOW(win),
+				      GTK_FILE_CHOOSER_ACTION_OPEN,
+				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				      NULL);
+    gtk_file_chooser_set_select_multiple ( GTK_FILE_CHOOSER(vfl->file_selector), TRUE );
     gtk_window_set_transient_for ( GTK_WINDOW(vfl->file_selector), GTK_WINDOW(win) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vfl->file_selector), TRUE );
   }
 
-  if ( gtk_dialog_run ( GTK_DIALOG(vfl->file_selector) ) == GTK_RESPONSE_OK ) {
-    gchar **files = gtk_file_selection_get_selections ( GTK_FILE_SELECTION(vfl->file_selector) );
-    gchar **fiter = files;
+  if ( gtk_dialog_run ( GTK_DIALOG(vfl->file_selector) ) == GTK_RESPONSE_ACCEPT ) {
+    files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(vfl->file_selector) );
+    fiter = files;
     GtkTreeIter iter;
-    while (*fiter) {
+    while ( fiter ) {
+      gchar *file_name = fiter->data;
+      
       gtk_list_store_append ( GTK_LIST_STORE(vfl->model), &iter );
-      gtk_list_store_set ( GTK_LIST_STORE(vfl->model), &iter, 0, *fiter, -1 );
-      fiter++;
+      gtk_list_store_set ( GTK_LIST_STORE(vfl->model), &iter, 0, file_name, -1 );
+      
+      g_free (file_name);
+      
+      fiter = g_slist_next (fiter);
     }
-    g_strfreev(files);
+    g_slist_free (files);
   }
     gtk_widget_hide ( vfl->file_selector );
 }
