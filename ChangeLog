@@ -2,10 +2,6 @@
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Replace GtkFileSelection by GtkFileChooser
 
-2008-03-25:
-Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
-	* Fix: NAN support on solaris
-
 2008-03-24:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Merge icons in a single binary object
