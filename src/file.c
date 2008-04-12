@@ -28,6 +28,9 @@
 
 #include <string.h>
 #include <stdlib.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 #include <glib.h>
 #include <glib/gstdio.h>
 
@@ -626,22 +629,22 @@ const gchar *a_get_viking_dir()
 
   if (!viking_dir) {
     const gchar *home = g_getenv("HOME");
-    if (!home || access(home, W_OK))
+    if (!home || g_access(home, W_OK))
       home = g_get_home_dir ();
 #ifdef HAVE_MKDTEMP
-    if (!home || access(home, W_OK))
+    if (!home || g_access(home, W_OK))
     {
       static gchar temp[] = {"/tmp/vikXXXXXX"};
       home = mkdtemp(temp);
     }
 #endif
-    if (!home || access(home, W_OK))
+    if (!home || g_access(home, W_OK))
       /* Fatal error */
       g_critical("Unable to find a base directory");
 
     /* Build the name of the directory */
     viking_dir = g_build_filename(home, ".viking", NULL);
-    if (access(viking_dir, F_OK))
+    if (g_file_test(viking_dir, G_FILE_TEST_EXISTS) == FALSE)
       g_mkdir(viking_dir, 0755);
   }
 

@@ -25,10 +25,19 @@
  *   for an external program that outputs GPX.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "viking.h"
 #include "gpx.h"
 #include "babel.h"
 #include <sys/wait.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#include <glib.h>
+#include <glib/gstdio.h>
 
 /* in the future we could have support for other shells (change command strings), or not use a shell at all */
 #define BASH_LOCATION "/bin/bash"

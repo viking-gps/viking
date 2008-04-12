@@ -30,8 +30,6 @@
 #ifdef WINDOWS
 #include <io.h>
 #include <winsock.h>
-#else
-#include <unistd.h>
 #endif
 
 #include "config.h"

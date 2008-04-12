@@ -40,7 +40,6 @@
 #ifdef WINDOWS
 
 #include <io.h>
-#define access(a,b) _access(a,b)
 #define close(a) closesocket(a)
 
 char *dirname ( char * dir )
@@ -54,7 +53,6 @@ char *dirname ( char * dir )
 
 #else
 
-#include <unistd.h>
 #include <sys/types.h>
 
 /* dirname */
@@ -104,7 +102,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   char *tmpfilename;
 
   /* Check file */
-  if ( access ( fn, F_OK ) == 0 )
+  if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
   {
     /* File exists: return */
     return -3;

@@ -19,12 +19,12 @@
  *
  */
 
-#include <unistd.h>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
@@ -43,14 +43,14 @@ static gchar *get_cookie_file(gboolean init)
     static gchar *cookie_fn = "cookies.txt";
     const gchar *viking_dir = a_get_viking_dir();
     cookie_file = g_build_filename(viking_dir, cookie_fn, NULL);
-    unlink(cookie_file);
+    g_unlink(cookie_file);
     return NULL;
   }
 
   g_assert(cookie_file != NULL);
 
   g_mutex_lock(mutex);
-  if (access(cookie_file, F_OK)) {  /* file not there */
+  if (g_file_test(cookie_file, G_FILE_TEST_EXISTS) == FALSE) {  /* file not there */
     FILE * out_file = fopen("/dev/null", "w");
     CURLcode res;
     CURL *curl = curl_easy_init();
@@ -61,7 +61,7 @@ static gchar *get_cookie_file(gboolean init)
     if (res != CURLE_OK) {
       g_warning(_("%s() Curl perform failed: %s"), __PRETTY_FUNCTION__,
           curl_easy_strerror(res));
-      unlink(cookie_file);
+      g_unlink(cookie_file);
     }
     curl_easy_cleanup(curl);
   }

@@ -27,12 +27,6 @@
 #define VIKING_VERSION_NAME "This Name For Rent"
 #define VIKING_URL "http://viking.sf.net/"
 
-#ifdef WINDOWS
-#define access(a,b) _access(a,b)
-#else
-#include <unistd.h>
-#endif
-
 #define ALTI_TO_MPP 1.4017295
 #define MPP_TO_ALTI 0.7134044
 
