@@ -32,6 +32,7 @@
 #include "viking.h"
 #include "gpx.h"
 #include "babel.h"
+#include <stdio.h>
 #include <sys/wait.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -56,11 +57,12 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
     f = fdopen(fd_src, "w");
     a_gpx_write_file(vt, f);
     fclose(f);
+    f = NULL;
     ret = a_babel_convert_from ( vt, bargs, cb, name_src, user_data );
   }
 
   g_free(bargs);
-  remove(name_src);
+  g_remove(name_src);
   g_free(name_src);
   return ret;
 }
@@ -100,13 +102,18 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
     if ( cb )
       cb(BABEL_DONE, NULL, user_data);
     fclose(diag);
+    diag = NULL;
     waitpid(pid, NULL, 0);
     g_spawn_close_pid(pid);
 
-    f = fopen(name_dst, "r");
-    a_gpx_read_file ( vt, f );
-     fclose(f);
-    ret = TRUE;
+    f = g_fopen(name_dst, "r");
+    if (f) {
+      a_gpx_read_file ( vt, f );
+      fclose(f);
+      f = NULL;
+      ret = TRUE;
+    } else
+      ret = FALSE;
   }
     
   return ret;
@@ -148,7 +155,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
     }
   }
 
-  remove(name_dst);
+  g_remove(name_dst);
   g_free(name_dst);
   return ret;
 }
@@ -189,7 +196,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
     g_free ( shell_command );
   }
 
-  remove(name_dst);
+  g_remove(name_dst);
   g_free(name_dst);
   return ret;
 }
@@ -220,6 +227,7 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
     if ( cb )
       cb(BABEL_DONE, NULL, user_data);
     fclose(diag);
+    diag = NULL;
     waitpid(pid, NULL, 0);
     g_spawn_close_pid(pid);
 
@@ -265,7 +273,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
     }
   }
 
-  remove(name_src);
+  g_remove(name_src);
   g_free(name_src);
   return ret;
 }

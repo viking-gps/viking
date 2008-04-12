@@ -23,6 +23,8 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
+
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
@@ -51,7 +53,7 @@ static gchar *get_cookie_file(gboolean init)
 
   g_mutex_lock(mutex);
   if (g_file_test(cookie_file, G_FILE_TEST_EXISTS) == FALSE) {  /* file not there */
-    FILE * out_file = fopen("/dev/null", "w");
+    FILE * out_file = g_fopen("/dev/null", "w");
     CURLcode res;
     CURL *curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_URL, "http://maps.google.com/"); /* google.com sets "PREF" cookie */
@@ -64,6 +66,8 @@ static gchar *get_cookie_file(gboolean init)
       g_unlink(cookie_file);
     }
     curl_easy_cleanup(curl);
+    fclose(out_file);
+    out_file = NULL;
   }
   g_mutex_unlock(mutex);
 

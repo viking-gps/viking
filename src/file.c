@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -530,13 +531,15 @@ static FILE *xfopen ( const char *fn, const char *mode )
   if ( strcmp(fn,"-") == 0 )
     return stdin;
   else
-    return fopen(fn, "r");
+    return g_fopen(fn, "r");
 }
 
 static void xfclose ( FILE *f )
 {
-  if ( f != stdin && f != stdout )
+  if ( f != stdin && f != stdout ) {
     fclose ( f );
+    f = NULL;
+  }
 }
 
 /* 0 on failure, 1 on success (vik file) 2 on success (other file) */
@@ -580,7 +583,7 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
 
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename )
 {
-  FILE *f = fopen(filename, "w");
+  FILE *f = g_fopen(filename, "w");
 
   if ( ! f )
     return FALSE;
@@ -588,6 +591,7 @@ gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filenam
   file_write ( top, f, vp );
 
   fclose(f);
+  f = NULL;
 
   return TRUE;
 }
@@ -606,7 +610,7 @@ const gchar *a_file_basename ( const gchar *filename )
 
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type )
 {
-  FILE *f = fopen ( filename, "w" );
+  FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {
     if ( file_type == FILE_TYPE_GPSMAPPER )
@@ -616,6 +620,7 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_ty
     else
       a_gpspoint_write_file ( vtl, f );
     fclose ( f );
+    f = NULL;
     return TRUE;
   }
   return FALSE;

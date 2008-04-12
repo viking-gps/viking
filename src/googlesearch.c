@@ -23,7 +23,10 @@
 #include "config.h"
 #endif
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
 
@@ -220,11 +223,13 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
   /* TODO: curl may not be available */
   if (curl_download_uri(uri, tmp_file, &googlesearch_options)) {  /* error */
     fclose(tmp_file);
+    tmp_file = NULL;
     ret = -1;
     goto done;
   }
 
   fclose(tmp_file);
+  tmp_file = NULL;
   if (!parse_file_for_latlon(tmpname, &ll)) {
     ret = -1;
     goto done;
@@ -243,7 +248,7 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
 done:
   g_free(escaped_srch_str);
   g_free(uri);
-  remove(tmpname);
+  g_remove(tmpname);
   g_free(tmpname);
   return ret;
 }

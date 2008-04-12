@@ -36,7 +36,6 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
-#include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include "globals.h"
@@ -788,7 +787,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
 
       if ( mdi->redownload == REDOWNLOAD_ALL)
-        remove ( mdi->filename_buf );
+        g_remove ( mdi->filename_buf );
 
       else if ( (mdi->redownload == REDOWNLOAD_BAD) && (g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == TRUE) )
       {
@@ -796,7 +795,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         GError *gx = NULL;
         GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( mdi->filename_buf, &gx );
         if (gx || (!pixbuf))
-          remove ( mdi->filename_buf );
+          g_remove ( mdi->filename_buf );
         if ( pixbuf )
           g_object_unref ( pixbuf );
         if ( gx )
@@ -850,7 +849,7 @@ static void mdi_cancel_cleanup ( MapDownloadInfo *mdi )
                      mdi->mapcoord.scale, mdi->mapcoord.z, mdi->mapcoord.x, mdi->mapcoord.y );
     if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == TRUE)
     {
-      remove ( mdi->filename_buf );
+      g_remove ( mdi->filename_buf );
     }
   }
 }

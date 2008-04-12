@@ -2,6 +2,7 @@
 #include <glib/gi18n.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "preferences.h"
 #include "file.h"
 
@@ -159,7 +160,7 @@ static gboolean preferences_load_parse_param(gchar *buf, gchar **key, gchar **va
 static gboolean preferences_load_from_file()
 {
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
-  FILE *f = fopen(fn, "r");
+  FILE *f = g_fopen(fn, "r");
   g_free ( fn );
 
   if ( f ) {
@@ -190,6 +191,7 @@ static gboolean preferences_load_from_file()
       }
     }
     fclose(f);
+    f = NULL;
     return TRUE;
   }
   return FALSE;
@@ -217,7 +219,7 @@ static gboolean preferences_save_to_file()
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
 
   // TODO: error checking
-  FILE *f = fopen(fn, "w");
+  FILE *f = g_fopen(fn, "w");
   g_free ( fn );
 
   if ( f ) {
@@ -231,6 +233,7 @@ static gboolean preferences_save_to_file()
       file_write_layer_param ( f, param->name, val->type, val->data );
     }
     fclose(f);
+    f = NULL;
     return TRUE;
   }
 

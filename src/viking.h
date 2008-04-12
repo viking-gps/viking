@@ -24,7 +24,6 @@
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
-#include <stdio.h>
 #include <time.h>
 
 #ifdef WINDOWS

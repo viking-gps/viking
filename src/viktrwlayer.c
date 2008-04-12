@@ -52,9 +52,12 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <ctype.h>
 
 #include <gdk/gdkkeysyms.h>
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
 /* Relax some dependencies */
@@ -676,6 +679,7 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
     a_gpx_write_file(vtl, f);
     vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
     fclose(f);
+    f = NULL;
     g_file_get_contents(tmpname, (void *)&dd, (void *)&dl, NULL);
     *len = sizeof(pl) + pl + dl;
     *data = g_malloc(*len);
@@ -685,7 +689,7 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
     
     g_free(pd);
     g_free(dd);
-    remove(tmpname);
+    g_remove(tmpname);
     g_free(tmpname);
   }
 }
@@ -711,7 +715,8 @@ static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *
   rewind(f);
   a_gpx_read_file(rv, f);
   fclose(f);
-  remove(tmpname);
+  f = NULL;
+  g_remove(tmpname);
   g_free(tmpname);
   return rv;
 }

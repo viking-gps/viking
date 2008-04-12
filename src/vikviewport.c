@@ -28,7 +28,6 @@
 
 #include <gtk/gtk.h>
 #include <math.h>
-#include <stdio.h>
 
 #include "coords.h"
 #include "vikcoord.h"

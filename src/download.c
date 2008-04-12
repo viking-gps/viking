@@ -115,16 +115,17 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       g_free ( tmp );
     }
     /* create placeholder file */
-    if ( ! (f = fopen ( fn, "w+b" )) ) /* immediately open file so other threads won't -- prevents race condition */
+    if ( ! (f = g_fopen ( fn, "w+b" )) ) /* immediately open file so other threads won't -- prevents race condition */
       return -4;
     fclose ( f );
+    f = NULL;
   }
 
   tmpfilename = g_strdup_printf("%s.tmp", fn);
-  f = fopen ( tmpfilename, "w+b" );
+  f = g_fopen ( tmpfilename, "w+b" );
   if ( ! f ) {
     g_free ( tmpfilename );
-    remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
+    g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -4;
   }
 
@@ -135,13 +136,15 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   {
     g_warning(_("Download error: %s"), fn);
     fclose ( f );
-    remove ( tmpfilename );
+    f = NULL;
+    g_remove ( tmpfilename );
     g_free ( tmpfilename );
-    remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
+    g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
   }
 
   fclose ( f );
+  f = NULL;
   rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
   g_free ( tmpfilename );
   return ret;

@@ -22,7 +22,6 @@
 #ifndef __VIKING_OSM_TRACES_H
 #define __VIKING_OSM_TRACES_H
 
-#include <stdio.h>
 
 #include <glib.h>
 

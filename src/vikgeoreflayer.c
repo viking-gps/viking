@@ -26,6 +26,7 @@
 #include "viking.h"
 #include "vikgeoreflayer_pixmap.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -293,6 +294,7 @@ static gboolean world_file_read_line ( gchar *buffer, gint size, FILE *f, GtkWid
     a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(widget), _("Unexpected end of file reading World file.") );
     g_free ( buffer );
     fclose ( f );
+    f = NULL;
     return FALSE;
   }
   if ( use_value )
@@ -314,7 +316,7 @@ static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
 
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
-    FILE *f = fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "r" );
+    FILE *f = g_fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "r" );
     gtk_widget_destroy ( file_selector ); 
     if ( !f )
     {
@@ -330,6 +332,7 @@ static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
       {
         g_free ( buffer );
         fclose ( f );
+	f = NULL;
       }
     }
   }
@@ -357,7 +360,7 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
 				      NULL);
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
-    FILE *f = fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "w" );
+    FILE *f = g_fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "w" );
     
     gtk_widget_destroy ( file_selector ); 
     if ( !f )
@@ -369,6 +372,7 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
     {
       fprintf ( f, "%f\n%f\n%f\n%f\n%f\n%f\n", vgl->mpp_easting, vgl->mpp_northing, 0.0, 0.0, vgl->corner.easting, vgl->corner.northing );
       fclose ( f );
+      f = NULL;
     }
   }
   else

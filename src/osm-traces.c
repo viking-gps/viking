@@ -249,6 +249,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   /* We can close the file */
   /* This also close the associated fd */
   fclose(file);
+  file = NULL;
 
   /* finally, upload it */
   osm_traces_upload_file(user, password, filename,

@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <string.h>
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
@@ -174,6 +175,7 @@ static gchar *write_tmp_trwlayer ( VikTrwLayer *vtl )
   f = fdopen(fd_src, "w");
   a_gpx_write_file(vtl, f);
   fclose(f);
+  f = NULL;
   return name_src;
 }
 
@@ -187,6 +189,7 @@ static gchar *write_tmp_track ( VikTrack *track )
   f = fdopen(fd_src, "w");
   a_gpx_write_track_file("track", track, f); /* Thank you Guilhem! Just when I needed this function... -- Evan */
   fclose(f);
+  f = NULL;
   return name_src;
 }
 

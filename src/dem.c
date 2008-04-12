@@ -413,7 +413,7 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
   const gchar *basename = a_file_basename(file);
 
       /* FILE IO */
-  f = fopen(file, "r");
+  f = g_fopen(file, "r");
   if ( !f )
     return NULL;
 
@@ -423,6 +423,7 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
     gboolean is_zip_file = (strlen(basename) == 15);
     rv = vik_dem_read_srtm_hgt(f, basename, is_zip_file);
     fclose(f);
+    f = NULL;
     return(rv);
   }
 
@@ -461,6 +462,7 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
      /* TODO - class C records (right now says 'Invalid' and dies) */
 
   fclose(f);
+  f = NULL;
 
   /* 24k scale */
   if ( rv->horiz_units == VIK_DEM_HORIZ_UTM_METERS && rv->n_columns >= 2 )
