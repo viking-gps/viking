@@ -40,7 +40,7 @@ AC_TYPE_MODE_T
 # Checks for library functions.
 AC_FUNC_STAT
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([bzero floor gethostbyname memset mkdtemp pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
+AC_CHECK_FUNCS([floor gethostbyname memset mkdtemp pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
 
 # Expat
 AM_WITH_EXPAT

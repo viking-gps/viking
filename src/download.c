@@ -76,7 +76,7 @@ static int check_map_file(FILE* f)
   };
 
 
-  bzero(buf, sizeof(buf));
+  memset(buf, 0, sizeof(buf));
   fgetpos(f, &pos);
   rewind(f);
   nr = fread(buf, 1, sizeof(buf) - 1, f);
