@@ -24,11 +24,8 @@
 #endif
 
 #include <stdio.h>
-#include <errno.h>
 #include <ctype.h>
 #include <string.h>
-#include <strings.h>
-#include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
@@ -36,28 +33,6 @@
 #include "download.h"
 
 #include "curl_download.h"
-
-#ifdef WINDOWS
-
-#include <io.h>
-#define close(a) closesocket(a)
-
-char *dirname ( char * dir )
-{
-  char *tmp = dir + strlen(dir) - 1;
-  while ( tmp != dir && *tmp != '\\' )
-    tmp--;
-  *tmp = '\0';
-  return dir;
-}
-
-#else
-
-
-/* dirname */
-#include <libgen.h>
-
-#endif 
 
 static int check_map_file(FILE* f)
 {
@@ -106,14 +81,10 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     /* File exists: return */
     return -3;
   } else {
-    if ( errno == ENOENT)
-    {
-      char *tmp = g_strdup ( fn );
-      g_mkdir( dirname ( dirname ( tmp ) ), 0777 );
-      g_free ( tmp ); tmp = g_strdup ( fn );
-      g_mkdir( dirname ( tmp ), 0777 );
-      g_free ( tmp );
-    }
+    gchar *dir = g_path_get_dirname ( fn );
+    g_mkdir_with_parents ( dir , 0777 );
+    g_free ( dir );
+
     /* create placeholder file */
     if ( ! (f = g_fopen ( fn, "w+b" )) ) /* immediately open file so other threads won't -- prevents race condition */
       return -4;

@@ -4,6 +4,7 @@ Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: reduce unistd.h dependency
 	* Portability: replace mkdir by g_mkdir
 	* Portability: replace deprecated bzero function by memset
+	* Portability: remove dirname needs with g_mkdir_with_parents
 
 2008-03-27:
 Mathieu Albinet <mathieu17@gmail.com>:
