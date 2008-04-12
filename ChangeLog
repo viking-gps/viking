@@ -2,6 +2,7 @@
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: reduce unistd.h dependency
+	* Portability: replace mkdir by g_mkdir
 
 2008-03-27:
 Mathieu Albinet <mathieu17@gmail.com>:

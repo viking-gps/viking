@@ -51,8 +51,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #include "mapcache.h"
 /* only for dialog.h -- ugh */
@@ -300,11 +298,7 @@ static void maps_layer_mkdir_if_default_dir ( VikMapsLayer *vml )
 {
   if ( vml->cache_dir && strcmp ( vml->cache_dir, MAPS_CACHE_DIR ) == 0 && g_file_test ( vml->cache_dir, G_FILE_TEST_EXISTS ) == FALSE )
   {
-#ifdef WINDOWS
-    mkdir ( vml->cache_dir );
-#else
-    mkdir ( vml->cache_dir, 0777 );
-#endif
+    g_mkdir ( vml->cache_dir, 0777 );
   }
 }
 

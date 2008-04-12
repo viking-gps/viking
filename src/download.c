@@ -29,8 +29,8 @@
 #include <string.h>
 #include <strings.h>
 #include <gtk/gtk.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
 #include "download.h"
@@ -53,7 +53,6 @@ char *dirname ( char * dir )
 
 #else
 
-#include <sys/types.h>
 
 /* dirname */
 #include <libgen.h>
@@ -110,15 +109,9 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     if ( errno == ENOENT)
     {
       char *tmp = g_strdup ( fn );
-#ifdef WINDOWS
-      mkdir( dirname ( dirname ( tmp ) ) );
+      g_mkdir( dirname ( dirname ( tmp ) ), 0777 );
       g_free ( tmp ); tmp = g_strdup ( fn );
-      mkdir( dirname ( tmp ) );
-#else
-      mkdir( dirname ( dirname ( tmp ) ), 0777 );
-      g_free ( tmp ); tmp = g_strdup ( fn );
-      mkdir( dirname ( tmp ), 0777 );
-#endif
+      g_mkdir( dirname ( tmp ), 0777 );
       g_free ( tmp );
     }
     /* create placeholder file */

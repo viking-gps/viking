@@ -37,16 +37,10 @@
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
+#include <glib.h>
+#include <glib/gstdio.h>
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
-#ifdef WINDOWS
-/* TODO IMPORTANT: mkdir for windows header? is it called 'mkdir' */
-#define make_dir(dir) mkdir(dir)
-#else
-#include <sys/types.h>
-#include <sys/stat.h>
-#define make_dir(dir) mkdir(dir,0777)
-#endif
 
 #define VIKING_WINDOW_WIDTH      1000
 #define VIKING_WINDOW_HEIGHT     800
@@ -1567,7 +1561,7 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
 
   g_assert ( vik_viewport_get_coord_mode ( vw->viking_vvp ) == VIK_COORD_UTM );
 
-  make_dir(fn);
+  g_mkdir(fn,0777);
 
   utm_orig = *((const struct UTM *)vik_viewport_get_center ( vw->viking_vvp ));
 
