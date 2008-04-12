@@ -1,0 +1,1971 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Viking\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-04-07 16:55+0100\n"
+"PO-Revision-Date: 2008-01-12 10:03+0000\n"
+"Last-Translator: Zhang Jun <rocketman_gw@yahoo.com.cn>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Launchpad-Export-Date: 2008-02-11 21:12+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+"X-Poedit-Language: Traditional Chinese\n"
+
+#: ../src/acquire.c:117
+msgid "Working..."
+msgstr "工作中..."
+
+#: ../src/acquire.c:131 ../src/vikgpslayer.c:915
+msgid "Error: couldn't find gpsbabel."
+msgstr "錯誤: 没有發現 gpsbabel."
+
+#: ../src/acquire.c:139 ../src/vikgpslayer.c:920
+msgid "Done."
+msgstr "完成."
+
+#: ../src/acquire.c:314 ../src/vikgpslayer.c:959
+msgid "Status: detecting gpsbabel"
+msgstr "狀態 : 偵測  gpsbabel"
+
+#: ../src/background.c:55
+#, c-format
+msgid "%d items"
+msgstr "%d 項目"
+
+#: ../src/background.c:200
+msgid "Job"
+msgstr "工作"
+
+#: ../src/background.c:204
+msgid "Progress"
+msgstr "程式"
+
+#: ../src/background.c:215
+msgid "Viking Background Jobs"
+msgstr "Viking 背景工作"
+
+#: ../src/clipboard.c:75
+msgid "paste failed"
+msgstr "黏貼失敗"
+
+#: ../src/clipboard.c:85
+msgid "wrong clipboard data size"
+msgstr "剪貼版資料大小錯誤"
+
+#: ../src/clipboard.c:104
+#, c-format
+msgid ""
+"The clipboard contains sublayer data for a %s layers.You must select a layer "
+"of this type to paste the clipboard data."
+msgstr ""
+""
+
+#: ../src/clipboard.c:210
+msgid ""
+"In order to paste a waypoint, please select an appropriate layer to paste "
+"into."
+msgstr ""
+
+#: ../src/curl_download.c:62
+#, c-format
+msgid "%s() Curl perform failed: %s"
+msgstr ""
+
+#: ../src/dialog.c:48 ../src/dialog.c:96
+msgid "Go to Lat/Lon"
+msgstr ""
+
+#: ../src/dialog.c:60 ../src/dialog.c:210
+msgid "Latitude:"
+msgstr "緯度 :"
+
+#: ../src/dialog.c:66 ../src/dialog.c:215
+msgid "Longitude:"
+msgstr "經度 :"
+
+#: ../src/dialog.c:109
+msgid "Northing:"
+msgstr "Northing :"
+
+#: ../src/dialog.c:115
+msgid "Easting:"
+msgstr "Easting :"
+
+#: ../src/dialog.c:122
+msgid "Zone:"
+msgstr "Zone :"
+
+#: ../src/dialog.c:125
+msgid "Letter:"
+msgstr "Lettre :"
+
+#: ../src/dialog.c:172 ../src/viktrwlayer.c:1514
+msgid "Create"
+msgstr "建立"
+
+#: ../src/dialog.c:198
+msgid "Name:"
+msgstr "名稱:"
+
+#: ../src/dialog.c:220
+msgid "Altitude:"
+msgstr "海拔:"
+
+#: ../src/dialog.c:225
+msgid "Comment:"
+msgstr "註釋:"
+
+#: ../src/dialog.c:231
+msgid "Image:"
+msgstr "圖片:"
+
+#: ../src/dialog.c:236
+msgid "Symbol:"
+msgstr "象徵式:"
+
+#: ../src/dialog.c:243
+msgid "(none)"
+msgstr "(無)"
+
+#. TODO: other checks (isalpha or whatever )
+#: ../src/dialog.c:298
+msgid "Please enter a name for the waypoint."
+msgstr "請為該航點匯入一個名字."
+
+#. all caps for stardandization
+#: ../src/dialog.c:306
+#, c-format
+msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
+msgstr ""
+
+#: ../src/dialog.c:378
+msgid "Add Track"
+msgstr "添加軌迹:"
+
+#: ../src/dialog.c:386
+msgid "Track Name:"
+msgstr "軌迹名稱:"
+
+#: ../src/dialog.c:401
+msgid "Please enter a name for the track."
+msgstr "請為該軌迹匯入一個名字."
+
+#. all caps for stardandization
+#: ../src/dialog.c:409
+#, c-format
+msgid "The track \"%s\" exists, do you want to overwrite it?"
+msgstr ""
+
+#: ../src/dialog.c:471
+msgid "Zoom Factors..."
+msgstr "縮放引數..."
+
+#: ../src/dialog.c:485
+msgid "Zoom factor (in meters per pixel:"
+msgstr "縮放引數 (米／像素):"
+
+#: ../src/dialog.c:486
+msgid "X (easting): "
+msgstr "X (東方): "
+
+#: ../src/dialog.c:487
+msgid "Y (northing): "
+msgstr "Y (北方): "
+
+#: ../src/dialog.c:492
+msgid "X and Y zoom factors must be equal"
+msgstr "X和Y縮放引數必須相等"
+
+#: ../src/dialog.c:545
+msgid "1 min"
+msgstr "1 分鐘"
+
+#: ../src/dialog.c:546
+msgid "1 hour"
+msgstr "1 小時"
+
+#: ../src/dialog.c:547
+msgid "1 day"
+msgstr "1 天"
+
+#: ../src/dialog.c:548
+msgid "Custom (in minutes):"
+msgstr ""
+
+#: ../src/dialog.c:588
+#, c-format
+msgid ""
+"<span font_desc='20' weight='bold'>Viking %s</span>\n"
+"\n"
+"GPS Data and Topo Analyzer, Explorer, and Manager.\n"
+"\n"
+"<small>(C) 2003-2007, Evan Battaglia</small>\n"
+"\n"
+"<small>Web site: %s</small>"
+msgstr ""
+"<span font_desc='20' weight='bold'>Viking %s</span>\n"
+"\n"
+"GPS 資料和拓撲解析、瀏覧、管理工具.\n"
+"\n"
+"<small>(C) 2003-2007, Evan Battaglia</small>\n"
+"\n"
+"<small>網址: %s</small>"
+
+#: ../src/dialog.c:599
+msgid "Credits"
+msgstr "榮譽"
+
+#: ../src/dialog.c:599
+msgid "License"
+msgstr "版權"
+
+#: ../src/dialog.c:599
+msgid "Close"
+msgstr "關閉"
+
+#: ../src/dialog.c:607
+msgid ""
+"\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
+"Place, Suite 330, Boston, MA 02111-1307, USA"
+msgstr ""
+"\n"
+"\n"
+"這是一個自由軟體; 您可以在自由軟體基金會發布的GNU GPL版權協定條款下 "
+"重新發布或者修改它; 可以是GPL2的版本，或者您也可以選取更新的版本.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
+"Place, Suite 330, Boston, MA 02111-1307, USA"
+
+#: ../src/dialog.c:630
+msgid "Download along track"
+msgstr "沿着軌迹下載"
+
+#: ../src/dialog.c:632
+msgid "Map type:"
+msgstr "地圖類別:"
+
+#: ../src/dialog.c:637
+msgid "Zoom level:"
+msgstr "縮放程度:"
+
+#: ../src/expedia.c:48
+msgid "Expedia Street Maps"
+msgstr "Expedia 街道地圖"
+
+#: ../src/expedia.c:76
+msgid "Invalid expedia altitude"
+msgstr "無效的Expedia高度"
+
+#: ../src/expedia.c:107
+#, c-format
+msgid ""
+"Couldn't open EXPEDIA image file (right after successful download! Please "
+"report and delete image file!): %s"
+msgstr ""
+""
+
+#: ../src/expedia.c:120
+#, c-format
+msgid ""
+"Couldn't save EXPEDIA image file (right after successful download! Please "
+"report and delete image file!): %s"
+msgstr ""
+""
+
+#: ../src/google.c:56
+msgid "Google Maps"
+msgstr "榖歌地圖"
+
+#: ../src/google.c:57
+msgid "Transparent Google Maps"
+msgstr ""
+
+#: ../src/google.c:58
+msgid "Google Satellite Images"
+msgstr "榖歌衛星影象"
+
+#: ../src/google.c:59
+msgid "Google Terrain Maps"
+msgstr "榖歌地形地圖"
+
+#: ../src/google.c:130
+#, c-format
+msgid "couldn't open temp file %s"
+msgstr "無法開啟暫存檔 %s"
+
+#. error
+#: ../src/google.c:139
+#, c-format
+msgid "Failed downloading %s"
+msgstr "下載 %s 失敗"
+
+#: ../src/google.c:142 ../src/googlesearch.c:123
+msgid "couldn't map temp file"
+msgstr ""
+
+#: ../src/google.c:149
+msgid "Failed fetching Google numbers (\"GLoadApi\" not found)"
+msgstr ""
+""
+
+#: ../src/google.c:180
+msgid "Failed getting google version numbers"
+msgstr ""
+
+#: ../src/googlemaps.c:42
+msgid "Old Google Maps"
+msgstr "老的榖歌地圖"
+
+#: ../src/googlesearch.c:64 ../src/googlesearch.c:82
+msgid "Search"
+msgstr "搜索"
+
+#: ../src/googlesearch.c:66
+msgid "I don't know that place. Do you want another search?"
+msgstr ""
+""
+
+#: ../src/googlesearch.c:84
+msgid "Enter address or place name:"
+msgstr "匯入位址或者地點名稱:"
+
+#: ../src/googlesearch.c:212
+msgid "couldn't open temp file"
+msgstr "無法開啟暫存檔"
+
+#: ../src/datasource_gc.c:62
+msgid "Download Geocaches"
+msgstr "下載 Geocaches"
+
+#: ../src/datasource_gc.c:63
+msgid "Geocaching.com Caches"
+msgstr "Geocaching.com 緩衝區"
+
+#: ../src/datasource_gc.c:78
+msgid "geocaching.com username:"
+msgstr "geocaching.com 用户名:"
+
+#: ../src/datasource_gc.c:79
+msgid "geocaching.com password:"
+msgstr "geocaching.com 密碼:"
+
+#: ../src/datasource_gc.c:107
+msgid ""
+"Can't find gcget in path! Check that you have installed gcget correctly."
+msgstr ""
+""
+
+#: ../src/datasource_gc.c:169
+msgid "Number geocaches:"
+msgstr ""
+
+#: ../src/datasource_gc.c:171
+msgid "Centered around:"
+msgstr ""
+
+#: ../src/datasource_google.c:49 ../src/datasource_google.c:50
+msgid "Google Directions"
+msgstr "Google 方位"
+
+#: ../src/datasource_google.c:74
+msgid "From:"
+msgstr "從 :"
+
+#: ../src/datasource_google.c:76
+msgid "To:"
+msgstr "至 :"
+
+#: ../src/datasource_gps.c:48
+msgid "Acquire from GPS"
+msgstr "從GPS抓取"
+
+#: ../src/datasource_gps.c:49
+msgid "Acquired from GPS"
+msgstr "已從GPS抓取的"
+
+#: ../src/datasource_gps.c:133
+#, c-format
+msgid "using cmdline '%s' and file '%s'\n"
+msgstr "使用指令行 '%s' 和檔案 '%s'\n"
+
+#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:674
+#, fuzzy, c-format
+msgid "Downloading %d waypoint..."
+msgid_plural "Downloading %d waypoints..."
+msgstr[0] "正在下載 %d 航點..."
+msgstr[1] "正在下載 %d 航點..."
+
+#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:676
+#, fuzzy, c-format
+msgid "Downloading %d trackpoint..."
+msgid_plural "Downloading %d trackpoints..."
+msgstr[0] "正在下載 %d 軌迹點..."
+msgstr[1] "正在下載 %d 軌迹點..."
+
+#: ../src/datasource_gps.c:170
+#, c-format
+msgid "Downloaded %d out of %d %s..."
+msgstr ""
+
+#: ../src/datasource_gps.c:172
+#, c-format
+msgid "Downloaded %d %s."
+msgstr ""
+
+#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:746
+#, c-format
+msgid "GPS Device: %s"
+msgstr "GPS裝置: %s"
+
+#: ../src/datasource_gps.c:262 ../src/vikgpslayer.c:105
+msgid "GPS Protocol:"
+msgstr "GPS 協定:"
+
+#: ../src/datasource_gps.c:269 ../src/vikgpslayer.c:106
+msgid "Serial Port:"
+msgstr "序列埠:"
+
+#: ../src/datasource_gps.c:295 ../src/vikgpslayer.c:964
+msgid "GPS device: N/A"
+msgstr "GPS裝置: 無"
+
+#: ../src/dem.c:27 ../src/dem.c:41
+msgid "Invalid DEM"
+msgstr ""
+
+#: ../src/dem.c:83
+msgid "Invalid DEM header"
+msgstr ""
+
+#: ../src/dem.c:152 ../src/dem.c:165
+msgid "Incorrect DEM Class B record: expected 1"
+msgstr ""
+
+#: ../src/download.c:145
+#, c-format
+msgid "Download error: %s"
+msgstr "下載錯誤: %s"
+
+#: ../src/osm-traces.c:195
+#, c-format
+msgid "failed to upload data: HTTP response is %ld"
+msgstr ""
+
+#: ../src/osm-traces.c:198
+#, c-format
+msgid "curl_easy_getinfo failed: %d"
+msgstr ""
+
+#: ../src/osm-traces.c:202
+#, c-format
+msgid "curl request failed: %s"
+msgstr ""
+
+#: ../src/osm-traces.c:230
+#, c-format
+msgid "failed to open temporary file: %s"
+msgstr ""
+
+#: ../src/osm-traces.c:263
+#, c-format
+msgid "failed to unlink temporary file: %s"
+msgstr ""
+
+#: ../src/osm-traces.c:275
+msgid "OSM upload"
+msgstr ""
+
+#: ../src/osm-traces.c:295
+msgid "Email:"
+msgstr "電子郵箱 :"
+
+#: ../src/osm-traces.c:310
+msgid "The email used as login"
+msgstr ""
+
+#: ../src/osm-traces.c:311
+msgid "Enter the email you use to login into www.openstreetmap.org."
+msgstr ""
+
+#: ../src/osm-traces.c:313
+msgid "Password:"
+msgstr "密碼:"
+
+#: ../src/osm-traces.c:324
+msgid "The password used to login"
+msgstr "登入用的密碼"
+
+#: ../src/osm-traces.c:325
+msgid "Enter the password you use to login into www.openstreetmap.org."
+msgstr "請匯入您登入www.openstreetmap.org的密碼."
+""
+
+#: ../src/osm-traces.c:327
+msgid "File's name:"
+msgstr "檔名稱:"
+
+#: ../src/osm-traces.c:339
+msgid "The name of the file on OSM"
+msgstr "OSM上的檔名"
+
+#: ../src/osm-traces.c:340
+msgid ""
+"This is the name of the file created on the server. This is not the name of "
+"the local file."
+msgstr ""
+""
+
+#: ../src/osm-traces.c:343
+msgid "Description:"
+msgstr "Description :"
+
+#: ../src/osm-traces.c:350
+msgid "The description of the trace"
+msgstr ""
+
+#: ../src/osm-traces.c:353
+msgid "Tags:"
+msgstr ""
+
+#: ../src/osm-traces.c:360
+msgid "The tags associated to the trace"
+msgstr ""
+
+#: ../src/osm-traces.c:363
+msgid "Public"
+msgstr "Public"
+
+#: ../src/osm-traces.c:369
+msgid "Indicates if the trace is public or not"
+msgstr ""
+
+#: ../src/osm-traces.c:390
+#, c-format
+msgid "Uploading %s to OSM"
+msgstr "上傳 %s 到 OSM"
+
+#: ../src/print.c:53
+msgid "None"
+msgstr "無"
+
+#: ../src/print.c:54
+msgid "Horizontally"
+msgstr "水平的"
+
+#: ../src/print.c:55
+msgid "Vertically"
+msgstr "垂直的"
+
+#: ../src/print.c:56
+msgid "Both"
+msgstr ""
+
+#: ../src/print.c:120
+msgid "Image Settings"
+msgstr "影像設定"
+
+#: ../src/print.c:550
+msgid "done"
+msgstr "完成"
+
+#. Page Size
+#: ../src/print.c:579
+msgid "_Adjust Page Size and Orientation"
+msgstr ""
+
+#: ../src/print.c:595
+msgid "C_enter:"
+msgstr "C_entrer :"
+
+#. ignore page margins
+#: ../src/print.c:613
+msgid "Ignore Page _Margins"
+msgstr ""
+
+#: ../src/print.c:632
+msgid "Image S_ize:"
+msgstr ""
+
+#: ../src/util.c:61
+msgid "Could not launch web browser."
+msgstr ""
+
+#: ../src/vikcoordlayer.c:43 ../src/vikdemlayer.c:102
+msgid "Color:"
+msgstr ""
+
+#: ../src/vikcoordlayer.c:44
+msgid "Minutes Width:"
+msgstr ""
+
+#: ../src/vikcoordlayer.c:45 ../src/vikdemlayer.c:105
+msgid "Line Thickness:"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:46
+msgid "Max number of points:"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:54
+msgid "Simplify All Tracks"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:55
+msgid "Simplified Tracks"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:87 ../src/datasource_bfilter.c:88
+msgid "Remove Duplicate Waypoints"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:117
+msgid "Waypoints Inside This"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:118 ../src/datasource_bfilter.c:151
+msgid "Polygonzied Layer"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:150
+msgid "Waypoints Outside This"
+msgstr ""
+
+#: ../src/main.c:101
+msgid "Show version"
+msgstr "察看版本"
+
+#: ../src/vikdemlayer.c:100
+msgid "DEM Files:"
+msgstr "DEM 檔案:"
+
+#: ../src/vikdemlayer.c:101
+msgid "Download Source:"
+msgstr "下載源:"
+
+#: ../src/vikdemlayer.c:103
+msgid "Min Elev:"
+msgstr "最低高度:"
+
+#: ../src/vikdemlayer.c:104
+msgid "Max Elev:"
+msgstr "最高高度:"
+
+#: ../src/vikdemlayer.c:116
+msgid "DEM Download/Import"
+msgstr "DEM下載/導入"
+
+#: ../src/vikdemlayer.c:746
+#, c-format
+msgid "No SRTM data available for %f, %f"
+msgstr "没有可以的SRTM資料給 %f, %f"
+
+#: ../src/vikdemlayer.c:985
+msgid "No download source selected. Edit layer properties."
+msgstr "没有下載源被選. 編輯圖層屬性."
+
+#: ../src/vikdemlayer.c:1008
+#, c-format
+msgid "Downloading DEM %s"
+msgstr "正在下載 DEM %s"
+
+#: ../src/vikfileentry.c:67
+msgid "Browse..."
+msgstr "瀏覧 ..."
+
+#: ../src/vikfileentry.c:94
+msgid "Choose file"
+msgstr "選取一個檔案"
+
+#: ../src/vikfilelist.c:44
+msgid "Choose file(s)"
+msgstr "選取檔案"
+
+#: ../src/vikfilelist.c:113
+msgid "Add..."
+msgstr "添加 ..."
+
+#: ../src/vikfilelist.c:114
+msgid "Delete"
+msgstr "移除"
+
+#: ../src/vikgeoreflayer.c:66
+msgid "Georef Move Map"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:70
+msgid "Georef Zoom Tool"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:268 ../src/vikmapslayer.c:542
+#, c-format
+msgid "Couldn't open image file: %s"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:293
+msgid "Unexpected end of file reading World file."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:308 ../src/vikgeoreflayer.c:347
+msgid "Choose World file"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:316
+msgid "The World file you requested could not be opened for reading."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:355
+msgid "The file you requested could not be opened for writing."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:371
+msgid "Layer Properties"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:387
+msgid "World File Parameters:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:388
+msgid "Load From File..."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:393
+msgid "Corner pixel easting:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:396
+msgid "Corner pixel northing:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:399
+msgid "X (easting) scale (mpp): "
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:400
+msgid "Y (northing) scale (mpp): "
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:405
+msgid "Map Image:"
+msgstr "地圖圖片："
+
+#: ../src/vikgeoreflayer.c:509
+msgid "Zoom to Fit Map"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:514
+msgid "Goto Map Center"
+msgstr "前往地圖中心"
+
+#: ../src/vikgeoreflayer.c:519
+msgid "Export to World File"
+msgstr ""
+
+#: ../src/vikgpslayer.c:109
+msgid "Recording tracks"
+msgstr "正在紀録軌迹"
+
+#: ../src/vikgpslayer.c:110
+msgid "Jump to current position on start"
+msgstr "在開始時跳到目前位置"
+
+#: ../src/vikgpslayer.c:111
+msgid "Keep current position at center"
+msgstr "保持現有未知在中央"
+
+#: ../src/vikgpslayer.c:112
+msgid "Gpsd Host:"
+msgstr "Gpsd 主機:"
+
+#: ../src/vikgpslayer.c:113
+msgid "Gpsd Port:"
+msgstr "Gpsd 通訊埠:"
+
+#: ../src/vikgpslayer.c:177 ../src/vikgpslayer.c:952
+msgid "GPS Download"
+msgstr "GPS 下載"
+
+#: ../src/vikgpslayer.c:177 ../src/vikgpslayer.c:952
+msgid "GPS Upload"
+msgstr "GPS 上傳"
+
+#: ../src/vikgpslayer.c:179
+msgid "GPS Realtime Tracking"
+msgstr "GPS實時追蹤"
+
+#: ../src/vikgpslayer.c:343
+msgid "Unknown GPS Protocol"
+msgstr "未知的GPS協定"
+
+#: ../src/vikgpslayer.c:349
+msgid "Unknown serial port device"
+msgstr "未知的序列埠裝置"
+
+#: ../src/vikgpslayer.c:409
+#, c-format
+msgid "%s: unknown parameter"
+msgstr "%s: 未知的引數"
+
+#: ../src/vikgpslayer.c:506
+msgid "Upload to GPS"
+msgstr "上傳到GPS"
+
+#: ../src/vikgpslayer.c:511
+msgid "Download from GPS"
+msgstr "從GPS下載"
+
+#: ../src/vikgpslayer.c:529
+msgid "Empty Upload"
+msgstr "清空上傳"
+
+#: ../src/vikgpslayer.c:534
+msgid "Empty Download"
+msgstr "清空下載"
+
+#: ../src/vikgpslayer.c:539
+msgid "Empty All"
+msgstr "清空全部"
+
+#: ../src/vikgpslayer.c:681
+#, fuzzy, c-format
+msgid "Uploading %d waypoint..."
+msgid_plural "Uploading %d waypoints..."
+msgstr[0] "正在上傳 %d 航點..."
+msgstr[1] "正在上傳 %d 航點..."
+
+#: ../src/vikgpslayer.c:683
+#, fuzzy, c-format
+msgid "Uploading %d trackpoint..."
+msgid_plural "Uploading %d trackpoints..."
+msgstr[0] "正在上傳 %d 軌迹點..."
+msgstr[1] "正在上傳 %d 軌迹點..."
+
+#: ../src/vikgpslayer.c:707
+#, c-format
+msgid "Downloaded %d out of %d waypoint..."
+msgid_plural "Downloaded %d out of %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:709
+#, c-format
+msgid "Downloaded %d out of %d trackpoint..."
+msgid_plural "Downloaded %d out of %d trackpoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:713
+#, c-format
+msgid "Uploaded %d out of %d waypoint..."
+msgid_plural "Uploaded %d out of %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:715
+#, c-format
+msgid "Uploaded %d out of %d trackpoint..."
+msgid_plural "Uploaded %d out of %d trackpoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:722
+#, c-format
+msgid "Downloaded %d waypoint"
+msgid_plural "Downloaded %d waypoints"
+msgstr[0] "下載的 %d 航點"
+msgstr[1] "下載的 %d 航點"
+
+#: ../src/vikgpslayer.c:724
+#, c-format
+msgid "Downloaded %d trackpoint"
+msgid_plural "Downloaded %d trackpoints"
+msgstr[0] "下載的 %d 軌迹點"
+msgstr[1] "下載的 %d 軌迹點"
+
+#: ../src/vikgpslayer.c:728
+#, c-format
+msgid "Uploaded %d waypoint"
+msgid_plural "Uploaded %d waypoints"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:730
+#, c-format
+msgid "Uploaded %d trackpoint"
+msgid_plural "Uploaded %d trackpoints"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/viklayerspanel.c:59
+msgid "/C_ut"
+msgstr "/_u 剪取"
+
+#: ../src/viklayerspanel.c:60
+msgid "/_Copy"
+msgstr "/_C 拷貝"
+
+#: ../src/viklayerspanel.c:61
+msgid "/_Paste"
+msgstr "/_P 黏貼 "
+
+#: ../src/viklayerspanel.c:62
+msgid "/_Delete"
+msgstr "/_D 移除"
+
+#: ../src/viklayerspanel.c:63
+msgid "/New Layer"
+msgstr "/新圖層"
+
+#: ../src/viklayerspanel.c:145
+msgid "Top Layer"
+msgstr "頂層"
+
+#: ../src/viklayerspanel.c:443
+msgid "Aggregate Layers have no settable properties."
+msgstr ""
+
+#: ../src/viklayerspanel.c:488
+msgid "You cannot cut the Top Layer."
+msgstr "您無法剪取掉頂層"
+
+#: ../src/viklayerspanel.c:537
+msgid "You cannot delete the Top Layer."
+msgstr "您無法移除頂層"
+
+#: ../src/viklayerspanel.c:621
+msgid "Are you sure you wish to delete all layers?"
+msgstr "您真的確認要移除所有的圖層?"
+
+#. ******* MAPZOOMS ********
+#: ../src/vikmapslayer.c:83
+msgid "Use Viking Zoom Level"
+msgstr ""
+
+#: ../src/vikmapslayer.c:114
+msgid "Map Type:"
+msgstr "地圖類別:"
+
+#: ../src/vikmapslayer.c:115
+msgid "Maps Directory (Optional):"
+msgstr "地圖目録(可選):"
+
+#: ../src/vikmapslayer.c:116
+msgid "Alpha:"
+msgstr "Alpha:"
+
+#: ../src/vikmapslayer.c:117
+msgid "Autodownload maps:"
+msgstr "自動下載地圖:"
+
+#: ../src/vikmapslayer.c:118
+msgid "Zoom Level:"
+msgstr "縮放程度 :"
+
+#: ../src/vikmapslayer.c:124
+msgid "Maps Download"
+msgstr "地圖下載"
+
+#: ../src/vikmapslayer.c:130
+msgid "Map"
+msgstr "地圖"
+
+#: ../src/vikmapslayer.c:386
+msgid "Unknown map type"
+msgstr "未知的地圖類別"
+
+#: ../src/vikmapslayer.c:396
+msgid "Unknown Map Zoom"
+msgstr ""
+
+#: ../src/vikmapslayer.c:465
+#, c-format
+msgid ""
+"New map cannot be displayed in the current drawmode.\n"
+"Select \"%s\" from View menu to view it."
+msgstr ""
+
+#: ../src/vikmapslayer.c:607
+#, c-format
+msgid ""
+"Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
+"factor"
+msgstr ""
+
+#: ../src/vikmapslayer.c:922
+#, fuzzy, c-format
+msgid "Redownloading up to %d %s map..."
+msgid_plural "Redownloading up to %d %s maps..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikmapslayer.c:924
+#, fuzzy, c-format
+msgid "Redownloading %d %s map..."
+msgid_plural "Redownloading %d %s maps..."
+msgstr[0] "重新下載 %d %s 地圖..."
+msgstr[1] "重新下載 %d %s 地圖..."
+
+#: ../src/vikmapslayer.c:928 ../src/vikmapslayer.c:999
+#, c-format
+msgid "Downloading %d %s map..."
+msgid_plural "Downloading %d %s maps..."
+msgstr[0] "正在下載 %d %s 地圖..."
+msgstr[1] "正在下載 %d %s 地圖..."
+
+#: ../src/vikmapslayer.c:1056
+msgid "Redownload bad map(s)"
+msgstr "重新下載損壞的地圖"
+
+#: ../src/vikmapslayer.c:1060
+msgid "Redownload all map(s)"
+msgstr "重新下載所有地圖"
+
+#: ../src/vikmapslayer.c:1140
+#, c-format
+msgid ""
+"Wrong drawmode for this map.\n"
+"Select \"%s\" from View menu and try again."
+msgstr ""
+
+#: ../src/vikmapslayer.c:1145
+msgid "Wrong zoom level for this map."
+msgstr "此地圖無此縮放程度"
+
+#: ../src/vikmapslayer.c:1170
+msgid "Download Onscreen Maps"
+msgstr "下載螢幕地圖"
+
+#: ../src/vikmapslayer.c:1175
+msgid "Refresh Onscreen Tiles"
+msgstr ""
+
+#: ../src/viktreeview.c:203
+msgid "Layer Name"
+msgstr "圖層名字"
+
+#: ../src/viktreeview.c:609
+#, c-format
+msgid "delete data from %s\n"
+msgstr "從 %s 移除資料\n"
+
+#: ../src/viktrwlayer.c:297
+msgid "Create Waypoint"
+msgstr "建立航點"
+
+#: ../src/viktrwlayer.c:300
+msgid "Create Track"
+msgstr "建立軌迹"
+
+#: ../src/viktrwlayer.c:304
+msgid "Begin Track"
+msgstr "開始追蹤"
+
+#: ../src/viktrwlayer.c:307
+msgid "Edit Waypoint"
+msgstr "編輯航點"
+
+#: ../src/viktrwlayer.c:312
+msgid "Edit Trackpoint"
+msgstr "編輯軌迹點"
+
+#: ../src/viktrwlayer.c:317
+msgid "Show Picture"
+msgstr "察看圖片"
+
+#: ../src/viktrwlayer.c:320
+msgid "Magic Scissors"
+msgstr "魔術剪刀"
+
+#. ***** PARAMETERS *****
+#: ../src/viktrwlayer.c:327 ../src/viktrwlayer.c:1353
+#: ../src/viktrwlayer.c:1355
+msgid "Waypoints"
+msgstr "航點"
+
+#: ../src/viktrwlayer.c:327 ../src/viktrwlayer.c:1343
+#: ../src/viktrwlayer.c:1345
+msgid "Tracks"
+msgstr "軌迹"
+
+#: ../src/viktrwlayer.c:327
+msgid "Waypoint Images"
+msgstr "航點圖片"
+
+#: ../src/viktrwlayer.c:330
+msgid "Draw by Track"
+msgstr "以軌迹繪圖"
+
+#: ../src/viktrwlayer.c:330
+msgid "Draw by Velocity"
+msgstr "以速度繪圖"
+
+#: ../src/viktrwlayer.c:330
+msgid "All Tracks Black"
+msgstr ""
+
+#: ../src/viktrwlayer.c:331
+msgid "Filled Square"
+msgstr "實心方塊"
+
+#: ../src/viktrwlayer.c:331
+msgid "Square"
+msgstr "正方形"
+
+#: ../src/viktrwlayer.c:331
+msgid "Circle"
+msgstr "圓形"
+
+#: ../src/viktrwlayer.c:331
+msgid "X"
+msgstr "X"
+
+#: ../src/viktrwlayer.c:353
+msgid "Track Drawing Mode:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:354
+msgid "Draw Track Lines"
+msgstr ""
+
+#: ../src/viktrwlayer.c:355
+msgid "Draw Trackpoints"
+msgstr ""
+
+#: ../src/viktrwlayer.c:356
+msgid "Draw Elevation"
+msgstr ""
+
+#: ../src/viktrwlayer.c:357
+msgid "Draw Elevation Height %:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:359
+msgid "Draw Stops"
+msgstr ""
+
+#: ../src/viktrwlayer.c:360
+msgid "Min Stop Length (seconds):"
+msgstr ""
+
+#: ../src/viktrwlayer.c:362
+msgid "Track Thickness:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:363
+msgid "Track BG Thickness:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:364
+msgid "Track Background Color"
+msgstr ""
+
+#: ../src/viktrwlayer.c:365
+msgid "Min Track Velocity:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:366
+msgid "Max Track Velocity:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:368
+msgid "Draw Labels"
+msgstr "描繪圖層"
+
+#: ../src/viktrwlayer.c:369
+msgid "Waypoint Color:"
+msgstr "航點色彩"
+
+#: ../src/viktrwlayer.c:370
+msgid "Waypoint Text:"
+msgstr "航點文字:"
+
+#: ../src/viktrwlayer.c:371
+msgid "Background:"
+msgstr "背景:"
+
+#: ../src/viktrwlayer.c:372
+msgid "Fake BG Color Translucency:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:373
+msgid "Waypoint marker:"
+msgstr "航點標簽"
+
+#: ../src/viktrwlayer.c:374
+msgid "Waypoint size:"
+msgstr "航點大小"
+
+#: ../src/viktrwlayer.c:375
+msgid "Draw Waypoint Symbols:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:377
+msgid "Draw Waypoint Images"
+msgstr ""
+
+#: ../src/viktrwlayer.c:378
+msgid "Image Size (pixels):"
+msgstr "圖片大小 (像素):"
+
+#: ../src/viktrwlayer.c:379
+msgid "Image Alpha:"
+msgstr "圖片Alpha值:"
+
+#: ../src/viktrwlayer.c:380
+msgid "Image Memory Cache Size:"
+msgstr "圖片記憶體緩衝區大小:"
+
+#: ../src/viktrwlayer.c:1461
+msgid "This layer has no waypoints or trackpoints."
+msgstr ""
+
+#: ../src/viktrwlayer.c:1469
+msgid "Export Layer"
+msgstr "匯出圖層"
+
+#: ../src/viktrwlayer.c:1483 ../src/vikwindow.c:1304 ../src/vikwindow.c:1667
+#, c-format
+msgid "The file \"%s\" exists, do you wish to overwrite it?"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1493 ../src/vikwindow.c:1322
+msgid "The filename you requested could not be opened for writing."
+msgstr ""
+
+#: ../src/viktrwlayer.c:1524
+msgid "Waypoint Name:"
+msgstr "航點名稱:"
+
+#: ../src/viktrwlayer.c:1544
+msgid "Waypoint not found in this layer."
+msgstr "在此圖層中没有發現航點"
+
+#: ../src/viktrwlayer.c:1598
+msgid "Goto Center of Layer"
+msgstr "前往圖層中心"
+
+#: ../src/viktrwlayer.c:1603
+msgid "Goto Waypoint"
+msgstr "前往航點"
+
+#: ../src/viktrwlayer.c:1609
+msgid "Export layer"
+msgstr "匯出圖層"
+
+#: ../src/viktrwlayer.c:1614
+msgid "Export as GPSPoint"
+msgstr "匯出成GPS點"
+
+#: ../src/viktrwlayer.c:1619
+msgid "Export as GPSMapper"
+msgstr "匯出成GPS地圖"
+
+#: ../src/viktrwlayer.c:1624
+msgid "Export as GPX"
+msgstr "匯出成GPX檔案"
+
+#: ../src/viktrwlayer.c:1629 ../src/viktrwlayer.c:2554
+msgid "New Waypoint"
+msgstr "新航點"
+
+#: ../src/viktrwlayer.c:1635 ../src/viktrwlayer.c:2520
+msgid "Upload to OSM"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2115
+msgid "Merge Threshold..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:2116
+msgid "Merge when time between tracks less than:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2207
+msgid "Split Threshold..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:2208
+msgid "Split when time between trackpoints exceeds:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2291
+msgid "Waypoint Already Exists"
+msgstr "航點已經存在"
+
+#: ../src/viktrwlayer.c:2333
+msgid "Track Already Exists"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2456
+msgid "Goto"
+msgstr "前往"
+
+#: ../src/viktrwlayer.c:2464
+msgid "Visit Geocache Webpage"
+msgstr "存取Geocache網頁"
+
+#: ../src/viktrwlayer.c:2479
+msgid "Goto Startpoint"
+msgstr "Aller au premier point"
+
+#: ../src/viktrwlayer.c:2484
+msgid "Goto \"Center\""
+msgstr "前往“中間”"
+
+#: ../src/viktrwlayer.c:2489
+msgid "Goto Endpoint"
+msgstr "前往最後一點"
+
+#: ../src/viktrwlayer.c:2494
+msgid "Merge By Time"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2499
+msgid "Split By Time"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2504
+msgid "Download maps along track..."
+msgstr "沿着軌迹下載地圖..."
+
+#: ../src/viktrwlayer.c:2509
+msgid "Apply DEM Data"
+msgstr ""
+
+#: ../src/viktrwlayer.c:3490
+msgid "Could not launch eog to open file."
+msgstr ""
+
+#: ../src/viktrwlayer.c:3544
+#, c-format
+msgid "Creating %d Image Thumbnails..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:3764
+msgid "No map layer in use. Create one first"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:608
+#, c-format
+msgid "%s - Track Properties"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:613
+msgid "Split Segments"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:614
+msgid "Reverse"
+msgstr "反轉"
+
+#: ../src/viktrwlayer_propwin.c:615
+msgid "Delete Dupl."
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Comment:</b>"
+msgstr "<b>説明:</b>"
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Track Length:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Trackpoints:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Segments:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Duplicate Points:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Max Speed:</b>"
+msgstr "<b>最大速度:</b>"
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Avg. Speed:</b>"
+msgstr "<b>平均速度:</b>"
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Avg. Dist. Between TPs:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Elevation Range:</b>"
+msgstr "<b>高度範圍:</b>"
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Total Elevation Gain/Loss:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Start:</b>"
+msgstr "<b>開始:</b>"
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>End:</b>"
+msgstr "<b>結束:</b>"
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Duration:</b>"
+msgstr "<b>持續時間:</b>"
+
+#: ../src/viktrwlayer_propwin.c:634
+msgid "<b>Track Distance/Time:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:662 ../src/viktrwlayer_propwin.c:669
+#: ../src/viktrwlayer_propwin.c:678 ../src/viktrwlayer_propwin.c:685
+#: ../src/viktrwlayer_propwin.c:724 ../src/viktrwlayer_propwin.c:725
+#: ../src/viktrwlayer_propwin.c:726 ../src/viktrwlayer_propwin.c:728
+#, c-format
+msgid "No Data"
+msgstr "没有資料"
+
+#: ../src/viktrwlayer_propwin.c:721
+#, c-format
+msgid "%d minutes"
+msgstr "%d 分鐘"
+
+#: ../src/viktrwlayer_propwin.c:748
+msgid "Elevation-distance"
+msgstr "高度-距離"
+
+#: ../src/viktrwlayer_propwin.c:751
+msgid "Speed-time"
+msgstr "速度-時間"
+
+#: ../src/viktrwlayer_tpwin.c:101
+msgid "<b>Part of Track:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:102
+msgid "<b>Latitude:</b>"
+msgstr "<b>緯度 :</b>"
+
+#: ../src/viktrwlayer_tpwin.c:103
+msgid "<b>Longitude:</b>"
+msgstr "<b>經度 :</b>"
+
+#: ../src/viktrwlayer_tpwin.c:104
+msgid "<b>Altitude:</b>"
+msgstr "<b>高度 :</b>"
+
+#: ../src/viktrwlayer_tpwin.c:105
+msgid "<b>Timestamp:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:106
+msgid "<b>Time:</b>"
+msgstr "<b>時間 :</b>"
+
+#: ../src/viktrwlayer_tpwin.c:107
+msgid "<b>Distance Difference:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:108
+msgid "<b>Time Difference:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:109
+msgid "<b>\"Speed\" Between:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:117
+msgid "Trackpoint"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:122
+msgid "Split Here"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:123
+msgid "Join With Last"
+msgstr ""
+
+#: ../src/vikwindow.c:179
+msgid "Zoom"
+msgstr "縮放"
+
+#: ../src/vikwindow.c:179
+msgid "Ruler"
+msgstr "測距"
+
+#: ../src/vikwindow.c:179
+msgid "Pan"
+msgstr "移動"
+
+#: ../src/vikwindow.c:356
+#, c-format
+msgid ""
+"Do you want to save the changes you made to the document \"%s\"?\n"
+"\n"
+"Your changes will be lost if you don't save them."
+msgstr ""
+
+#: ../src/vikwindow.c:359 ../src/vikwindow.c:1189
+msgid "Untitled"
+msgstr "未命名的"
+
+#: ../src/vikwindow.c:360
+msgid "Don't Save"
+msgstr "不儲存"
+
+#: ../src/vikwindow.c:393
+msgid "mpp"
+msgstr "mpp"
+
+#: ../src/vikwindow.c:393
+msgid "pixelfact"
+msgstr "pixelfact"
+
+#: ../src/vikwindow.c:495
+#, c-format
+msgid "Cursor: %f %f %dm"
+msgstr "游標: %f %f %dm"
+
+#: ../src/vikwindow.c:497
+#, c-format
+msgid "Cursor: %f %f"
+msgstr "游標: %f %f"
+
+#: ../src/vikwindow.c:1022
+msgid "You must select a layer to show its properties."
+msgstr "您必須選一個層才能察看它的屬性"
+
+#: ../src/vikwindow.c:1038
+msgid "You must select a layer to delete."
+msgstr "您必須選一個層才可移除"
+
+#: ../src/vikwindow.c:1222
+msgid "The file you requested could not be opened."
+msgstr "您選的檔案無法被開啟"
+
+#: ../src/vikwindow.c:1263
+msgid "Please select a GPS data file to open. "
+msgstr "請選取一個GPS資料檔案來開啟"
+
+#: ../src/vikwindow.c:1296
+msgid "Save as Viking File."
+msgstr "另存新檔Viking檔案."
+
+#: ../src/vikwindow.c:1519
+msgid ""
+"Viewable region outside allowable pixel size bounds for image. Clipping "
+"width/height values."
+msgstr ""
+""
+
+#: ../src/vikwindow.c:1538
+#, c-format
+msgid "Total area: %ldm x %ldm (%.3f sq. km)"
+msgstr "全部區域: %ldm x %ldm (%.3f 平方公裡)"
+
+#. todo: default for answers inside VikWindow or static (thruout instance)
+#: ../src/vikwindow.c:1546
+msgid "Save to Image File"
+msgstr "儲存為圖片檔案"
+
+#: ../src/vikwindow.c:1564
+msgid "Width (pixels):"
+msgstr "寬度 (像素) :"
+
+#: ../src/vikwindow.c:1566
+msgid "Height (pixels):"
+msgstr "高度 (像素) :"
+
+#: ../src/vikwindow.c:1569
+msgid "Zoom (meters per pixel):"
+msgstr "縮放 (米／像素) :"
+
+#: ../src/vikwindow.c:1575
+msgid "Area in current viewable window"
+msgstr ""
+
+#: ../src/vikwindow.c:1585
+msgid "Save as PNG"
+msgstr "儲存為PNG"
+
+#: ../src/vikwindow.c:1586
+msgid "Save as JPEG"
+msgstr "儲存為JPEG"
+
+#: ../src/vikwindow.c:1606
+msgid "East-west image tiles:"
+msgstr ""
+
+#: ../src/vikwindow.c:1608
+msgid "North-south image tiles:"
+msgstr ""
+
+#: ../src/vikwindow.c:1648
+msgid "You must be in UTM mode to use this feature"
+msgstr "你必須在UTM型態中來使用這個特徴"
+
+#: ../src/vikwindow.c:1659
+msgid "Save Image"
+msgstr "儲存影像"
+
+#: ../src/vikwindow.c:1680
+msgid "Choose a name for a new directory to hold images"
+msgstr ""
+
+#: ../src/vikwindow.c:1689
+#, c-format
+msgid ""
+"The file %s exists. Please choose a name for a new directory to hold images "
+"in that does not exist."
+msgstr ""
+""
+
+#: ../src/vikwindow.c:1767
+msgid "Choose a background color"
+msgstr "選取一個背景色"
+
+#: ../src/vikwindow.c:1788
+msgid "_File"
+msgstr "_F 檔案"
+
+#: ../src/vikwindow.c:1789
+msgid "_Edit"
+msgstr "_E 編輯"
+
+#: ../src/vikwindow.c:1790
+msgid "_View"
+msgstr "_V 檢視"
+
+#: ../src/vikwindow.c:1791 ../src/vikwindow.c:1862
+msgid "_Zoom"
+msgstr "_Z 縮放"
+
+#: ../src/vikwindow.c:1792
+msgid "_Pan"
+msgstr "_P 平移"
+
+#: ../src/vikwindow.c:1793
+msgid "_Layers"
+msgstr "_L 圖層"
+
+#: ../src/vikwindow.c:1794
+msgid "_Tools"
+msgstr "_T 工具"
+
+#: ../src/vikwindow.c:1795
+msgid "_Help"
+msgstr "_H 輔助說明"
+
+#: ../src/vikwindow.c:1797
+msgid "_New"
+msgstr "_N 新建"
+
+#: ../src/vikwindow.c:1797
+msgid "New file"
+msgstr "新建檔案"
+
+#: ../src/vikwindow.c:1798
+msgid "_Open"
+msgstr "_O 開啟"
+
+#: ../src/vikwindow.c:1798
+msgid "Open a file"
+msgstr "開啟一個檔案"
+
+#: ../src/vikwindow.c:1799
+msgid "A_ppend File"
+msgstr "_p 增加檔案"
+
+#: ../src/vikwindow.c:1799
+msgid "Append data from a different file"
+msgstr "從不同的檔案中追加資料"
+
+#: ../src/vikwindow.c:1800
+msgid "A_cquire"
+msgstr "_c 抓取"
+
+#: ../src/vikwindow.c:1801
+msgid "From _GPS"
+msgstr "_G 從GPS"
+
+#: ../src/vikwindow.c:1801
+msgid "Transfer data from a GPS device"
+msgstr "從一個GPS接收器獲得資料"
+
+#: ../src/vikwindow.c:1802
+msgid "Google _Directions"
+msgstr "_D 榖歌方位"
+
+#: ../src/vikwindow.c:1802
+msgid "Get driving directions from Google"
+msgstr "從榖歌獲得駕駛方位"
+
+#: ../src/vikwindow.c:1804
+msgid "Geo_caches"
+msgstr "Geo_caches"
+
+#: ../src/vikwindow.c:1804
+msgid "Get Geocaches from geocaching.com"
+msgstr "從geocaching.com獲得地理緩衝區資料"
+
+#: ../src/vikwindow.c:1806
+msgid "_Save"
+msgstr "_S 儲存"
+
+#: ../src/vikwindow.c:1806
+msgid "Save the file"
+msgstr "儲存這個檔案"
+
+#: ../src/vikwindow.c:1807
+msgid "Save _As"
+msgstr "_A 另存新檔"
+
+#: ../src/vikwindow.c:1807
+msgid "Save the file under different name"
+msgstr "儲存為其他名字的檔案"
+
+#: ../src/vikwindow.c:1808
+msgid "_Generate Image File"
+msgstr "_G 生成圖形檔案"
+
+#: ../src/vikwindow.c:1808
+msgid "Save a snapshot of the workspace into a file"
+msgstr ""
+
+#: ../src/vikwindow.c:1809
+msgid "Generate _Directory of Images"
+msgstr "_D 建立圖片的目録"
+
+#: ../src/vikwindow.c:1809
+msgid "FIXME:IMGDIR"
+msgstr ""
+
+#: ../src/vikwindow.c:1812
+msgid "_Print..."
+msgstr "_P 列印"
+
+#: ../src/vikwindow.c:1812
+msgid "Print maps"
+msgstr "列印地圖"
+
+#: ../src/vikwindow.c:1815
+msgid "E_xit"
+msgstr "_x 結束"
+
+#: ../src/vikwindow.c:1815
+msgid "Exit the program"
+msgstr "結束程式"
+
+#: ../src/vikwindow.c:1816
+msgid "Save and Exit"
+msgstr "儲存并結束"
+
+#: ../src/vikwindow.c:1816
+msgid "Save and Exit the program"
+msgstr "儲存并結束程式"
+
+#: ../src/vikwindow.c:1818
+msgid "Go To Google Maps location"
+msgstr "前往榖歌地圖地點"
+
+#: ../src/vikwindow.c:1818
+msgid "Go to address/place using Google Maps search"
+msgstr ""
+
+#: ../src/vikwindow.c:1819
+msgid "_Go to Lat\\/Lon..."
+msgstr "_G 前往一個經緯度值..."
+
+#: ../src/vikwindow.c:1819
+msgid "Go to arbitrary lat\\/lon coordinate"
+msgstr "前往任意的經緯度座標"
+
+#: ../src/vikwindow.c:1820
+msgid "Go to UTM..."
+msgstr "前往UTM..."
+
+#: ../src/vikwindow.c:1820
+msgid "Go to arbitrary UTM coordinate"
+msgstr "前往任意的UTM座標"
+
+#: ../src/vikwindow.c:1821
+msgid "Set Background Color..."
+msgstr "設定背景色 ..."
+
+#: ../src/vikwindow.c:1822
+msgid "Zoom _In"
+msgstr "_I 縮小"
+
+#: ../src/vikwindow.c:1823
+msgid "Zoom _Out"
+msgstr "_O 放大"
+
+#: ../src/vikwindow.c:1824
+msgid "Zoom _To"
+msgstr "_T 縮放到"
+
+#: ../src/vikwindow.c:1825
+msgid "0.25"
+msgstr "0.25"
+
+#: ../src/vikwindow.c:1826
+msgid "0.5"
+msgstr "0.5"
+
+#: ../src/vikwindow.c:1827
+msgid "1"
+msgstr "1"
+
+#: ../src/vikwindow.c:1828
+msgid "2"
+msgstr "2"
+
+#: ../src/vikwindow.c:1829
+msgid "4"
+msgstr "4"
+
+#: ../src/vikwindow.c:1830
+msgid "8"
+msgstr "8"
+
+#: ../src/vikwindow.c:1831
+msgid "16"
+msgstr "16"
+
+#: ../src/vikwindow.c:1832
+msgid "32"
+msgstr "32"
+
+#: ../src/vikwindow.c:1833
+msgid "64"
+msgstr "64"
+
+#: ../src/vikwindow.c:1834
+msgid "128"
+msgstr "128"
+
+#: ../src/vikwindow.c:1835
+msgid "Pan North"
+msgstr "向北"
+
+#: ../src/vikwindow.c:1836
+msgid "Pan East"
+msgstr "向東"
+
+#: ../src/vikwindow.c:1837
+msgid "Pan South"
+msgstr "向南"
+
+#: ../src/vikwindow.c:1838
+msgid "Pan West"
+msgstr "向西"
+
+#: ../src/vikwindow.c:1839
+msgid "Background _Jobs"
+msgstr "_J 背景工作"
+
+#: ../src/vikwindow.c:1841
+msgid "Cu_t"
+msgstr "_t 剪取"
+
+#: ../src/vikwindow.c:1842
+msgid "_Copy"
+msgstr "_C 拷貝"
+
+#: ../src/vikwindow.c:1843
+msgid "_Paste"
+msgstr "_P 黏貼"
+
+#: ../src/vikwindow.c:1844
+msgid "_Delete"
+msgstr "_D 移除"
+
+#: ../src/vikwindow.c:1845
+msgid "Delete All"
+msgstr "全部移除"
+
+#: ../src/vikwindow.c:1846
+msgid "_Preferences..."
+msgstr "_P 個人偏好..."
+
+#: ../src/vikwindow.c:1847
+msgid "_Properties"
+msgstr "_P 屬性"
+
+#: ../src/vikwindow.c:1849
+msgid "_About"
+msgstr "_A 關于"
+
+#: ../src/vikwindow.c:1854
+msgid "_UTM Mode"
+msgstr "_UTM 型態"
+
+#: ../src/vikwindow.c:1855
+msgid "_Expedia Mode"
+msgstr "_Expedia 型態"
+
+#: ../src/vikwindow.c:1856
+msgid "_Old Google Mode"
+msgstr "_O 老的榖歌型態"
+
+#: ../src/vikwindow.c:1857
+msgid "Old _KH Mode"
+msgstr "_K 老的KH型態"
+
+#: ../src/vikwindow.c:1858
+msgid "_Google Mode"
+msgstr "_G 榖歌型態"
+
+#: ../src/vikwindow.c:1862
+msgid "Zoom Tool"
+msgstr "縮放工具"
+
+#: ../src/vikwindow.c:1863
+msgid "_Ruler"
+msgstr "_R 測距"
+
+#: ../src/vikwindow.c:1863
+msgid "Ruler Tool"
+msgstr "測距工具"
+
+#: ../src/vikwindow.c:1867
+msgid "Show Scale"
+msgstr "察看比例尺"
+
+#: ../src/vikwindow.c:1868
+msgid "Show Center Mark"
+msgstr "察看中心記號"
+
+#: ../src/vikwindow.c:1869
+msgid "Full Screen"
+msgstr "全屏"
+
+#: ../src/vikwindow.c:1930
+#, c-format
+msgid "New %s Layer"
+msgstr "新圖層 \"%s\""
+
