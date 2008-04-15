@@ -1,4 +1,8 @@
 2008-04-12:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* M_PI already defined
+
+2008-04-12:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: reduce unistd.h dependency

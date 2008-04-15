@@ -42,10 +42,6 @@ renaming functions and defining LatLon and UTM structs.
 
 #include "viking.h"
 
-#ifdef WINDOWS
-#define M_PI 3.14159265358979
-#endif
-
 /**
  * Convert a double to a string WITHOUT LOCALE.
  *
