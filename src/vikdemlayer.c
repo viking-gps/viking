@@ -866,7 +866,7 @@ static void dem24k_draw_existence ( VikViewport *vp )
     g_snprintf(buf, sizeof(buf), "%sdem24k/%d/",
         MAPS_CACHE_DIR,
 	(gint) i );
-    if ( g_file_test(buf, G_FILE_TEST_EXISTS) == false )
+    if ( g_file_test(buf, G_FILE_TEST_EXISTS) == FALSE )
       continue;
     for (j = floor(min_lon*8)/8; j <= floor(max_lon*8)/8; j+=0.125) {
       /* check lon dir first -- faster */
