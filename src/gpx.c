@@ -33,8 +33,6 @@
 #include <glib.h>
 #include <math.h>
 
-#define GPX_TIME_FORMAT "%Y-%m-%dT%H:%M:%SZ"
-
 typedef enum {
         tt_unknown = 0,
 
@@ -249,7 +247,8 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
 
 static void gpx_end(VikTrwLayer *vtl, const char *el)
 {
-  static struct tm tm;
+  static GTimeVal tp_time;
+
   g_string_truncate ( xpath, xpath->len - strlen(el) - 1 );
 
   switch ( current_tag ) {
@@ -322,9 +321,8 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk_trkseg_trkpt_time:
-
-       if ( strptime(c_cdata->str, GPX_TIME_FORMAT, &tm) != c_cdata->str ) { /* it read at least one char */
-         c_tp->timestamp = mktime(&tm);
+       if ( g_time_val_from_iso8601(c_cdata->str, &tp_time) ) {
+         c_tp->timestamp = tp_time.tv_sec;
          c_tp->has_timestamp = TRUE;
        }
        g_string_erase ( c_cdata, 0, -1 );
@@ -640,7 +638,7 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   FILE *f = context->file;
   static struct LatLon ll;
   gchar *s_lat,*s_lon, *s_alt;
-  static gchar time_buf[30];
+  gchar *time_iso8601;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
   if ( tp->newsegment )
@@ -665,19 +663,24 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
     fprintf ( f, "    <ele>%s</ele>\n", s_alt );
   g_free ( s_alt ); s_alt = NULL;
   
-  time_buf[0] = '\0';
+  time_iso8601 = NULL;
   if ( tp->has_timestamp ) {
-    time_buf [ strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&(tp->timestamp)) ) ] = '\0';
+    GTimeVal timestamp;
+    timestamp.tv_sec = tp->timestamp;
+  
+    time_iso8601 = g_time_val_to_iso8601 ( &timestamp );
   }
   else if ( context->options != NULL && context->options->force_time )
   {
-    time_t rawtime;
-    time ( &rawtime );
+    GTimeVal current;
+    g_get_current_time ( &current );
   
-    time_buf [strftime ( time_buf, sizeof(time_buf)-1, GPX_TIME_FORMAT, localtime(&rawtime)) ] ='\0';
+    time_iso8601 = g_time_val_to_iso8601 ( &current );
   }
-  if ( time_buf[0] != '\0' )
-    fprintf ( f, "    <time>%s</time>\n", time_buf );
+  if ( time_iso8601 != NULL )
+    fprintf ( f, "    <time>%s</time>\n", time_iso8601 );
+  g_free(time_iso8601);
+  time_iso8601 = NULL;
   
   if (tp->extended && (tp->fix_mode >= VIK_GPS_MODE_2D)) {
     if (!isnan(tp->course)) {

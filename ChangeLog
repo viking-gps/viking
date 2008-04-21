@@ -1,6 +1,7 @@
 2008-04-21:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Bug #1915121: add an utility to reproduce (test/gpx2gpx)
+	* Fix #1915121: use GLib functions to handle ISO8601 dates
 
 2008-04-16:
 Tim Scofield <nospam546@comcast.net>:
