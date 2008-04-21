@@ -5,6 +5,8 @@ SUBDIRS = icons
 
 bin_PROGRAMS = viking
 
+noinst_LIBRARIES = libviking.a
+
 authors.h: ../AUTHORS
 	rm -f $@
 	echo "/* Generated file. */" >> $@
@@ -14,7 +16,7 @@ authors.h: ../AUTHORS
 BUILT_SOURCES = authors.h
 CLEANFILES = $(BUILT_SOURCES)
 
-viking_SOURCES = main.c \
+libviking_a_SOURCES = \
 	modules.h modules.c \
 	curl_download.c curl_download.h \
 	menu.xml.h \
@@ -74,29 +76,32 @@ viking_SOURCES = main.c \
 	preferences.c preferences.h
 
 if GOOGLE
-viking_SOURCES += \
+libviking_a_SOURCES += \
 	khmaps.c khmaps.h \
 	google.c google.h \
 	googlemaps.c googlemaps.h
 endif
 
 if TERRASERVER
-viking_SOURCES += \
+libviking_a_SOURCES += \
 	terraserver.c terraserver.h
 endif
 
 if EXPEDIA
-viking_SOURCES += \
+libviking_a_SOURCES += \
 	expedia.c expedia.h
 endif
 
 if OPENSTREETMAP
-viking_SOURCES += \
+libviking_a_SOURCES += \
 	osm.c osm.h \
 	osm-traces.c osm-traces.h
 endif
+
+viking_SOURCES = main.c
+
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
-LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
+LDADD           = libviking.a @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
 if REALTIME_GPS_TRACKING
 LDADD           += -lgps
 endif
