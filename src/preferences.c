@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <glib/gstdio.h>
 #include "preferences.h"
 #include "file.h"
 

@@ -29,7 +29,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
 #include "dem.h"
