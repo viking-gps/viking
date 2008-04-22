@@ -667,6 +667,7 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   if ( tp->has_timestamp ) {
     GTimeVal timestamp;
     timestamp.tv_sec = tp->timestamp;
+    timestamp.tv_usec = 0;
   
     time_iso8601 = g_time_val_to_iso8601 ( &timestamp );
   }

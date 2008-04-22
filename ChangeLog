@@ -1,3 +1,7 @@
+2008-04-22:
+Robert Norris <rw_norris@hotmail.com>:
+	* Fix: Initalize tv_usec field.
+
 2008-04-21:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Bug #1915121: add an utility to reproduce (test/gpx2gpx)
