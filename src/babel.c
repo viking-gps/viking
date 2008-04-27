@@ -128,6 +128,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
   gchar *cmd;
   gboolean ret = FALSE;
   gchar **args;  
+  gint nb_args;
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) < 0) {
     ret = FALSE;
@@ -150,9 +151,10 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
       if ( unbuffer_loc )
         g_free ( unbuffer_loc );
 
-      args = g_strsplit(cmd, " ", 0);
-      ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
-      g_strfreev(args);
+      if ( g_shell_parse_argv(cmd, &nb_args, &args, NULL) ) {
+        ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
+        g_strfreev(args);
+      }
       g_free ( cmd );
     }
   }
@@ -249,6 +251,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
   gchar *cmd;
   gboolean ret = FALSE;
   gchar **args;  
+  gint nb_args;
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) < 0) {
     ret = FALSE;
@@ -271,9 +274,10 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
       if ( unbuffer_loc )
         g_free ( unbuffer_loc );
       g_debug ( "%s: %s", __FUNCTION__, cmd );
-      args = g_strsplit(cmd, " ", 0);
-      ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
-      g_strfreev(args);
+      if ( g_shell_parse_argv(cmd, &nb_args, &args, NULL) ) {
+        ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
+        g_strfreev(args);
+      }
       g_free ( cmd );
     }
   }
