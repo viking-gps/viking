@@ -51,9 +51,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   gboolean ret = FALSE;
   gchar *bargs = g_strconcat(babelargs, " -i gpx", NULL);
 
-  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) < 0) {
-    ret = FALSE;
-  } else {
+  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
     f = fdopen(fd_src, "w");
     a_gpx_write_file(vt, f);
     fclose(f);
@@ -80,7 +78,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
  */
 gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
 {
-  gboolean ret;
+  gboolean ret = FALSE;
   GPid pid;
   GError *error = NULL;
   gint babel_stdout;
@@ -114,8 +112,7 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
       fclose(f);
       f = NULL;
       ret = TRUE;
-    } else
-      ret = FALSE;
+    }
   }
     
   return ret;
@@ -130,9 +127,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
   gchar **args;  
   gint nb_args;
 
-  if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) < 0) {
-    ret = FALSE;
-  } else {
+  if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
     gchar *gpsbabel_loc;
     close(fd_dst);
 
@@ -177,9 +172,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
   gboolean ret = FALSE;
   gchar **args;  
 
-  if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) < 0) {
-    ret = FALSE;
-  } else {
+  if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
     gchar *shell_command;
     if ( input_file_type )
       shell_command = g_strdup_printf("%s | gpsbabel -i %s -f - -o gpx -F %s", input_cmd, input_file_type, name_dst);
@@ -207,7 +200,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
 
 gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
 {
-  gboolean ret;
+  gboolean ret = FALSE;
   GPid pid;
   GError *error = NULL;
   gint babel_stdout;
@@ -253,9 +246,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
   gchar **args;  
   gint nb_args;
 
-  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) < 0) {
-    ret = FALSE;
-  } else {
+  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
     gchar *gpsbabel_loc;
     close(fd_src);
 
