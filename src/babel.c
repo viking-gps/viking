@@ -82,12 +82,14 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
 {
   gboolean ret;
   GPid pid;
-  gint babel_stdin, babel_stdout, babel_stderr;
+  GError *error = NULL;
+  gint babel_stdout;
   FILE *f;
 
 
-  if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, &pid, &babel_stdin, &babel_stdout, &babel_stderr, NULL)) {
-    //    if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, NULL, &babel_stdin, &babel_stdout, NULL, NULL)) {
+  if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {
+    g_warning("Error : %s", error->message);
+    g_error_free(error);
     ret = FALSE;
   } else {
     gchar line[512];
@@ -205,14 +207,17 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
 {
   gboolean ret;
   GPid pid;
-  gint babel_stdin, babel_stdout, babel_stderr;
+  GError *error = NULL;
+  gint babel_stdout;
 
   if (!a_file_export(vt, name_src, FILE_TYPE_GPX)) {
     g_warning("%s(): error exporting to %s", __FUNCTION__, name_src);
     return(FALSE);
   }
 
-  if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, &pid, &babel_stdin, &babel_stdout, &babel_stderr, NULL)) {
+  if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {
+    g_warning("Error : %s", error->message);
+    g_error_free(error);
     ret = FALSE;
   } else {
     gchar line[512];
