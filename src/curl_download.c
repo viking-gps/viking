@@ -35,6 +35,17 @@
 #include "file.h"
 #include "curl_download.h"
 
+/*
+ * Even if writing to FILE* is supported by libcurl by default,
+ * it seems that it is non-portable (win32 DLL specific).
+ *
+ * So, we provide our own trivial CURLOPT_WRITEFUNCTION.
+ */
+static size_t curl_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
+{
+  return fwrite(ptr, size, nmemb, stream);
+}
+
 static gchar *get_cookie_file(gboolean init)
 {
   static gchar *cookie_file = NULL;
@@ -58,6 +69,7 @@ static gchar *get_cookie_file(gboolean init)
     CURL *curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_URL, "http://maps.google.com/"); /* google.com sets "PREF" cookie */
     curl_easy_setopt ( curl, CURLOPT_FILE, out_file );
+    curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
     curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookie_file);
     res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
@@ -92,6 +104,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
     {
       curl_easy_setopt ( curl, CURLOPT_URL, uri );
       curl_easy_setopt ( curl, CURLOPT_FILE, f );
+      curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
       if (options != NULL) {
         if(options->referer != NULL)
           curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);

@@ -1,3 +1,7 @@
+2008-04-26:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Portability: provide our own curl WRITE function
+
 2008-04-22:
 Robert Norris <rw_norris@hotmail.com>:
 	* Fix: Initalize tv_usec field.
