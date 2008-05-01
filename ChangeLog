@@ -1,4 +1,8 @@
 2008-05-01:
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add file content checking process
+
+2008-05-01:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Remove dependency to wget
 

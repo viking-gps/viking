@@ -31,7 +31,7 @@
 
 #include "khmaps.h"
 
-static DownloadOptions khmaps_options = { NULL, 0 };
+static DownloadOptions khmaps_options = { NULL, 0, a_check_map_file };
 
 void khmaps_init () {
   VikMapsLayer_MapType map_type = { 8, 256, 256, VIK_VIEWPORT_DRAWMODE_KH, khmaps_coord_to_mapcoord, khmaps_mapcoord_to_center_coord, khmaps_download };

@@ -38,7 +38,7 @@ static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
 static int bluemarble_download ( MapCoord *src, const gchar *dest_fn );
 
-static DownloadOptions osm_options = { NULL, 0 };
+static DownloadOptions osm_options = { NULL, 0, a_check_map_file };
 
 /* initialisation */
 void osm_init () {

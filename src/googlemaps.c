@@ -34,7 +34,7 @@
 
 #include "googlemaps.h"
 
-static DownloadOptions googlemaps_options = { "http://maps.google.com/", 0 };
+static DownloadOptions googlemaps_options = { "http://maps.google.com/", 0, a_check_map_file };
 
 /* initialisation */
 void googlemaps_init () {

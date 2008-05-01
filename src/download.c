@@ -34,11 +34,10 @@
 
 #include "curl_download.h"
 
-static int check_map_file(FILE* f)
+gboolean a_check_html_file(FILE* f)
 {
   gchar **s;
   gchar *bp;
-  gint res = 0;  /* good */
   fpos_t pos;
   gchar buf[33];
   size_t nr;
@@ -50,7 +49,6 @@ static int check_map_file(FILE* f)
     NULL
   };
 
-
   memset(buf, 0, sizeof(buf));
   fgetpos(f, &pos);
   rewind(f);
@@ -61,12 +59,17 @@ static int check_map_file(FILE* f)
       break;
   }
   if ((bp >= (buf + sizeof(buf) -1)) || ((bp - buf) >= nr))
-    return(res);
+    return FALSE;
   for (s = html_str; *s; s++) {
     if (strncasecmp(*s, bp, strlen(*s)) == 0)
-      return(-1);
+      return TRUE;
   }
-  return(res);
+  return FALSE;
+}
+
+gboolean a_check_map_file(FILE* f)
+{
+  return !a_check_html_file(f);
 }
 
 static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp)
@@ -74,6 +77,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   FILE *f;
   int ret;
   gchar *tmpfilename;
+  gboolean failure = FALSE;
 
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
@@ -102,9 +106,17 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 
   /* Call the backend function */
   ret = curl_download_get_url ( hostname, uri, f, options, ftp );
+  if (ret == -1 || ret == 1 || ret == -2) {
+    g_debug("%s: download failed: curl_download_get_url=%d", __FUNCTION__, ret);
+    failure = TRUE;
+  }
 
-  // FIXME if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
-  if (ret == -1 || ret == 1 || ret == -2)
+  if (!failure && options != NULL && options->check_file != NULL && ! options->check_file(f)) {
+    g_debug("%s: file content checking failed", __FUNCTION__);
+    failure = TRUE;
+  }
+
+  if (failure)
   {
     g_warning(_("Download error: %s"), fn);
     fclose ( f );

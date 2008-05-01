@@ -22,6 +22,13 @@
 #ifndef _VIKING_DOWNLOAD_H
 #define _VIKING_DOWNLOAD_H
 
+#include <stdio.h>
+
+/* File content check */
+typedef gboolean (*VikFileContentCheckerFunc) (FILE*);
+gboolean a_check_map_file(FILE*);
+gboolean a_check_html_file(FILE*);
+
 typedef struct {
   /**
    * The REFERER string to use.
@@ -34,6 +41,11 @@ typedef struct {
    * to follow a redirect while downloading a page.
    */
   glong follow_location;
+  
+  /**
+   * File content checker.
+   */
+  VikFileContentCheckerFunc check_file;
 } DownloadOptions;
 
 /* TODO: convert to Glib */

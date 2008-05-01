@@ -46,7 +46,7 @@ static int google_kh_download ( MapCoord *src, const gchar *dest_fn );
 static void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
 static gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 
-static DownloadOptions google_options = { "http://maps.google.com/", 0 };
+static DownloadOptions google_options = { "http://maps.google.com/", 0, a_check_map_file };
 
 void google_init () {
   VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };
@@ -115,7 +115,7 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   GMappedFile *mf;
   gsize len;
   gchar *gvers, *tvers, *kvers, *terrvers, *tmpvers;
-  static DownloadOptions dl_options = { "http://maps.google.com/", 0 };
+  static DownloadOptions dl_options = { "http://maps.google.com/", 0, a_check_map_file };
   static const char *gvers_pat = "http://mt0.google.com/mt?n\\x3d404\\x26v\\x3d";
   static const char *kvers_pat = "http://kh0.google.com/kh?n\\x3d404\\x26v\\x3d";
 

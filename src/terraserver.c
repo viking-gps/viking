@@ -41,7 +41,7 @@ static int terraserver_urban_download ( MapCoord *src, const gchar *dest_fn );
 
 static void terraserver_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
 
-static DownloadOptions terraserver_options = { NULL, 0 };
+static DownloadOptions terraserver_options = { NULL, 0, a_check_map_file };
 
 void terraserver_init () {
   VikMapsLayer_MapType map_type_1 = { 2, 200, 200, VIK_VIEWPORT_DRAWMODE_UTM, terraserver_topo_coord_to_mapcoord, terraserver_mapcoord_to_center_coord, terraserver_topo_download };

@@ -42,7 +42,7 @@ static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
 static gchar *last_successful_search_str = NULL;
 
-static DownloadOptions googlesearch_options = { "http://maps.google.com/", 0 };
+static DownloadOptions googlesearch_options = { "http://maps.google.com/", 0, a_check_map_file };
 
 gchar * a_googlesearch_get_search_string_for_this_place(VikWindow *vw)
 {
