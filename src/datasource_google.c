@@ -31,7 +31,7 @@
 #include "gpx.h"
 #include "acquire.h"
 
-#define GOOGLE_DIRECTIONS_STRING "(wget -O - \"http://maps.google.com/maps?q=%s to %s&output=js\" 2>/dev/null)"
+#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s+to:%s&output=js"
 
 typedef struct {
   GtkWidget *from_entry, *to_entry;
@@ -48,7 +48,7 @@ static void datasource_google_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_google_interface = {
   N_("Google Directions"),
   N_("Google Directions"),
-  VIK_DATASOURCE_SHELL_CMD,
+  VIK_DATASOURCE_URL,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
@@ -90,8 +90,14 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
 {
   /* TODO: special characters handling!!! */
   gchar *from_quoted, *to_quoted;
+  gchar **from_split, **to_split;
   from_quoted = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) ) );
   to_quoted = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) ) );
+
+  from_split = g_strsplit( from_quoted, " ", 0);
+  to_split = g_strsplit( to_quoted, " ", 0);
+  from_quoted = g_strjoinv( "%20", from_split);
+  to_quoted = g_strjoinv( "%20", to_split);
 
   *cmd = g_strdup_printf( GOOGLE_DIRECTIONS_STRING, from_quoted, to_quoted );
   *input_file_type = g_strdup("google");
@@ -99,11 +105,14 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
   g_free(last_from_str);
   g_free(last_to_str);
 
-  last_from_str = g_strdup(gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) ) );
-  last_to_str = g_strdup(gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) ) );
+  last_from_str = g_strdup( gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) ));
+  last_to_str = g_strdup( gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) ));
 
   g_free(from_quoted);
   g_free(to_quoted);
+  g_strfreev(from_split);
+  g_strfreev(to_split);
+
 }
 
 static void datasource_google_cleanup ( gpointer data )

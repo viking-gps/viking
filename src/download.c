@@ -36,13 +36,13 @@
 
 static int check_map_file(FILE* f)
 {
-  char **s;
-  char *bp;
-  int res = 0;  /* good */
+  gchar **s;
+  gchar *bp;
+  gint res = 0;  /* good */
   fpos_t pos;
-  char buf[33];
+  gchar buf[33];
   size_t nr;
-  char * html_str[] = {
+  gchar * html_str[] = {
     "<html",
     "<!DOCTYPE html",
     "<head",
@@ -73,7 +73,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 {
   FILE *f;
   int ret;
-  char *tmpfilename;
+  gchar *tmpfilename;
 
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
@@ -103,7 +103,8 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   /* Call the backend function */
   ret = curl_download_get_url ( hostname, uri, f, options, ftp );
 
-  if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
+  // FIXME if (ret == -1 || ret == 1 || ret == -2 || check_map_file(f))
+  if (ret == -1 || ret == 1 || ret == -2)
   {
     g_warning(_("Download error: %s"), fn);
     fclose ( f );
@@ -116,7 +117,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 
   fclose ( f );
   f = NULL;
-  rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
+  g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
   g_free ( tmpfilename );
   return ret;
 }

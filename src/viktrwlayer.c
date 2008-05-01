@@ -66,7 +66,7 @@ static gboolean return_true (gpointer a, gpointer b, gpointer c) { return TRUE; 
 static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove ( ght, (GHRFunc) return_true, FALSE ); }
 #endif
 
-#define GOOGLE_DIRECTIONS_STRING "(wget -O - \"http://maps.google.com/maps?q=%f,%f to %f,%f&output=js\" 2>/dev/null)"
+#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=js"
 #define VIK_TRW_LAYER_TRACK_GC 13
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
@@ -3403,11 +3403,12 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
   }
   else if ( vtl->magic_scissors_started || (event->state & GDK_CONTROL_MASK && vtl->magic_scissors_current_track) ) {
     struct LatLon start, end;
-    gchar *cmd;
+    gchar startlat[G_ASCII_DTOSTR_BUF_SIZE], startlon[G_ASCII_DTOSTR_BUF_SIZE];
+    gchar endlat[G_ASCII_DTOSTR_BUF_SIZE], endlon[G_ASCII_DTOSTR_BUF_SIZE];
+    gchar *url;
 
     vik_coord_to_latlon ( &(vtl->magic_scissors_coord), &start );
     vik_coord_to_latlon ( &(tmp), &end );
-    cmd = g_strdup_printf(GOOGLE_DIRECTIONS_STRING, start.lat, start.lon, end.lat, end.lon );
     vtl->magic_scissors_coord = tmp; /* for continuations */
 
     /* these are checked when adding a track from a file (vik_trw_layer_filein_add_track) */
@@ -3418,8 +3419,13 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
       vtl->magic_scissors_started = FALSE;
     }
 
-    a_babel_convert_from_shellcommand ( vtl, cmd, "google", NULL, NULL );
-    g_free ( cmd );
+    url = g_strdup_printf(GOOGLE_DIRECTIONS_STRING,
+                          g_ascii_dtostr (startlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) start.lat),
+                          g_ascii_dtostr (startlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) start.lon),
+                          g_ascii_dtostr (endlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lat),
+                          g_ascii_dtostr (endlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lon));
+    a_babel_convert_from_url ( vtl, url, "google", NULL, NULL );
+    g_free ( url );
 
     /* see if anything was done -- a track was added or appended to */
     if ( vtl->magic_scissors_check_added_track && vtl->magic_scissors_added_track_name ) {

@@ -119,10 +119,19 @@ static void get_from_anything ( w_and_interface_t *wi )
   }
   gdk_threads_leave();
 
-  if ( interface->type == VIK_DATASOURCE_GPSBABEL_DIRECT )
+  switch ( interface->type ) {
+  case VIK_DATASOURCE_GPSBABEL_DIRECT:
     result = a_babel_convert_from (vtl, cmd, (BabelStatusFunc) progress_func, extra, w);
-  else
+    break;
+  case VIK_DATASOURCE_URL:
+    result = a_babel_convert_from_url (vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
+    break;
+  case VIK_DATASOURCE_SHELL_CMD:
     result = a_babel_convert_from_shellcommand ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
+    break;
+  default:
+    g_critical("Houston, we've had a problem.");
+  }
 
   g_free ( cmd );
   g_free ( extra );

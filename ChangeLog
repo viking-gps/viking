@@ -1,4 +1,8 @@
 2008-05-01:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Remove dependency to wget
+
+2008-05-01:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Adding --debug and --verbose command line option
 

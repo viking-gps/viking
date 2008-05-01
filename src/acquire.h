@@ -44,6 +44,7 @@ typedef struct {
 
 typedef enum {
   VIK_DATASOURCE_GPSBABEL_DIRECT,
+  VIK_DATASOURCE_URL,
   VIK_DATASOURCE_SHELL_CMD
 } vik_datasource_type_t;
 
@@ -72,6 +73,7 @@ typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewpor
 
 /* if VIK_DATASOURCE_GPSBABEL_DIRECT, babelargs and inputfile.
    if VIK_DATASOURCE_SHELL_CMD, shellcmd and inputtype.
+   if VIK_DATASOURCE_URL, url and inputtype.
    set both to NULL to signal refusal (ie already downloading) */
 typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
 
