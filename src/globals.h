@@ -22,6 +22,8 @@
 #ifndef __VIKING_GLOBALS_H
 #define __VIKING_GLOBALS_H
 
+#include <glib.h>
+
 #define PROJECT "Viking"
 #define VIKING_VERSION PACKAGE_VERSION
 #define VIKING_VERSION_NAME "This Name For Rent"
@@ -41,5 +43,10 @@
 /* mercator projection, latitude conversion (degrees) */
 #define MERCLAT(x) (RAD2DEG * log(tan((0.25 * M_PI) + (0.5 * DEG2RAD * (x)))))
 #define DEMERCLAT(x) (RAD2DEG * atan(sinh(DEG2RAD * (x))))
+
+/* Some command line options */
+extern gboolean vik_debug;
+extern gboolean vik_verbose;
+extern gboolean vik_version;
 
 #endif

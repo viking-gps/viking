@@ -21,7 +21,8 @@ libviking_a_SOURCES = \
 	curl_download.c curl_download.h \
 	menu.xml.h \
     degrees_converters.c degrees_converters.h \
-	viking.h globals.h mapcoord.h config.h \
+	globals.c globals.h \
+	viking.h mapcoord.h config.h \
 	viktrack.c viktrack.h \
 	vikwaypoint.c vikwaypoint.h \
 	clipboard.c clipboard.h \

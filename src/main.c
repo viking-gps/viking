@@ -52,6 +52,14 @@ static void open_window ( VikWindow *vw, const gchar **files );
 static void destroy( GtkWidget *widget,
                      gpointer   data );
 
+/* Callback to mute log message */
+static void mute_log(const gchar *log_domain,
+                     GLogLevelFlags log_level,
+                     const gchar *message,
+                     gpointer user_data)
+{
+  /* Nothing to do, we just want to mute */
+}
 
 /* Another callback */
 static void destroy( GtkWidget *widget,
@@ -94,11 +102,11 @@ static void open_window ( VikWindow *vw, const gchar **files )
 }
 
 /* Options */
-static gboolean version = FALSE;
-
 static GOptionEntry entries[] = 
 {
-  { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Show version"), NULL },
+  { "debug", 'd', 0, G_OPTION_ARG_NONE, &vik_debug, N_("Enable debug output"), NULL },
+  { "verbose", 'V', 0, G_OPTION_ARG_NONE, &vik_verbose, N_("Enable verbose output"), NULL },
+  { "version", 'v', 0, G_OPTION_ARG_NONE, &vik_version, N_("Show version"), NULL },
   { NULL }
 };
 
@@ -138,11 +146,14 @@ int main( int argc, char *argv[] )
     return EXIT_FAILURE;
   }
    
-  if (version)
+  if (vik_version)
   {
     g_printf ("%s %s, Copyright (c) 2003-2007 Evan Battaglia\n", PACKAGE_NAME, PACKAGE_VERSION);
     return EXIT_SUCCESS;
   }
+
+  if (!vik_debug)
+    g_log_set_handler (NULL, G_LOG_LEVEL_DEBUG, mute_log, NULL);
 
   curl_download_init();
 

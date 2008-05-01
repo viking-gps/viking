@@ -33,6 +33,7 @@
 #include <curl/curl.h>
 
 #include "file.h"
+#include "globals.h"
 #include "curl_download.h"
 
 /*
@@ -67,6 +68,8 @@ static gchar *get_cookie_file(gboolean init)
     FILE * out_file = g_fopen("/dev/null", "w");
     CURLcode res;
     CURL *curl = curl_easy_init();
+    if (vik_verbose)
+      curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
     curl_easy_setopt(curl, CURLOPT_URL, "http://maps.google.com/"); /* google.com sets "PREF" cookie */
     curl_easy_setopt ( curl, CURLOPT_FILE, out_file );
     curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
@@ -99,9 +102,13 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
   CURLcode res = CURLE_FAILED_INIT;
   const gchar *cookie_file;
 
+  g_debug("%s: uri=%s", __PRETTY_FUNCTION__, uri);
+
   curl = curl_easy_init ();
   if ( curl )
     {
+      if (vik_verbose)
+        curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
       curl_easy_setopt ( curl, CURLOPT_URL, uri );
       curl_easy_setopt ( curl, CURLOPT_FILE, f );
       curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
