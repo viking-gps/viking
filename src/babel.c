@@ -203,22 +203,22 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data )
 {
   gint fd_src;
-  gboolean ret;
+  int fetch_ret;
+  gboolean ret = FALSE;
   gchar *name_src;
   gchar *babelargs;
 
   g_debug("%s: input_type=%s url=%s", __FUNCTION__, input_type, url);
 
-  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) < 0) {
-    g_warning("%s Error creating temp file", __FUNCTION__);
-  } else {
+  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
     close(fd_src);
     g_remove(name_src);
 
     babelargs = g_strdup_printf(" -i %s", input_type);
 
-    a_http_download_get_url(url, "", name_src, NULL);
-    a_babel_convert_from( vt, babelargs, NULL, name_src, NULL);
+    fetch_ret = a_http_download_get_url(url, "", name_src, NULL);
+    if (fetch_ret == 0)
+      ret = a_babel_convert_from( vt, babelargs, NULL, name_src, NULL);
  
     g_remove(name_src);
     g_free(babelargs);
