@@ -138,7 +138,7 @@ static void get_from_anything ( w_and_interface_t *wi )
 
   if (!result) {
     gdk_threads_enter();
-    gtk_label_set_text ( GTK_LABEL(w->status), _("Error: couldn't find gpsbabel.") );
+    gtk_label_set_text ( GTK_LABEL(w->status), _("Error: acquisition failed.") );
     if ( creating_new_layer )
       g_object_unref ( G_OBJECT ( vtl ) );
     gdk_threads_leave();
