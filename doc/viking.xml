@@ -30,7 +30,7 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY dhfirstname "<firstname>Ralf</firstname>">
   <!ENTITY dhsurname   "<surname>Meyer</surname>">
   <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>2007-05-24</date>">
+  <!ENTITY dhdate      "<date>2008-05-02</date>">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
        allowed: see man(7), man(1). -->
   <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
@@ -68,8 +68,29 @@ and docbook-xsl in your Build-Depends control field.
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>&dhpackage;</command>
-      <arg><replaceable>[file]</replaceable></arg>
-
+      <group choice="opt">
+        <arg choice="plain"><option>-d</option></arg>
+        <arg choice="plain"><option>--debug</option></arg>
+      </group>
+      <group choice="opt">
+        <arg choice="plain"><option>-V</option></arg>
+        <arg choice="plain"><option>--verbose</option></arg>
+      </group>
+      <arg rep="repeat"><replaceable>file</replaceable></arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="opt">
+        <arg choice="plain"><option>-h</option></arg>
+        <arg choice="plain"><option>--help</option></arg>
+      </group>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="opt">
+        <arg choice="plain"><option>-v</option></arg>
+        <arg choice="plain"><option>--version</option></arg>
+      </group>
     </cmdsynopsis>
   </refsynopsisdiv>
   <refsect1>
@@ -99,10 +120,37 @@ and docbook-xsl in your Build-Depends control field.
 
     <variablelist>
       <varlistentry>
-        <term><option>[file]</option>
-        </term>
+        <term><option>file</option></term>
         <listitem>
           <para>Specify file to load at start.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-d</option></term>
+        <term><option>--debug</option></term>
+        <listitem>
+          <para>Enable debug output.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-V</option></term>
+        <term><option>--verbose</option></term>
+        <listitem>
+          <para>Enable verbose output.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-?</option></term>
+        <term><option>--help</option></term>
+        <listitem>
+          <para>Show help options.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-v</option></term>
+        <term><option>--version</option></term>
+        <listitem>
+          <para>Show version.</para>
         </listitem>
       </varlistentry>
     </variablelist>
