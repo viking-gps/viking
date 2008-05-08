@@ -1,3 +1,7 @@
+2008-05-08:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: rename interface to source_interface
+
 2008-05-02:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Update man page

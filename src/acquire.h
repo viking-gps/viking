@@ -38,7 +38,7 @@ typedef struct {
   VikViewport *vvp;
   GtkWidget *dialog;
   gboolean ok; /* if OK is false when we exit, we MUST free w */
-  VikDataSourceInterface *interface;
+  VikDataSourceInterface *source_interface;
   gpointer user_data;
 } acq_dialog_widgets_t;
 
@@ -127,7 +127,7 @@ struct _VikDataSourceInterface {
 /**********************************/
 
 /* for sources with no input data */
-void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *interface );
+void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface );
 
 /* Create a sub menu intended for rightclicking on a TRWLayer. menu called "Filter"
  * returns NULL if no filters */
