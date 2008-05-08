@@ -319,6 +319,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
   gint num_rows;
   GMappedFile *mf;
   gint arcsec;
+  GError *error = NULL;
 
   dem = g_malloc(sizeof(VikDEM));
 
@@ -339,8 +340,9 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
   dem->columns = g_ptr_array_new();
   dem->n_columns = 0;
 
-  if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
-    g_error("%s(): couldn't map temp file\n", __PRETTY_FUNCTION__);
+  if ((mf = g_mapped_file_new(file_name, FALSE, &error)) == NULL) {
+    g_error(_("Couldn't map file %s: %s"), file_name, error->message);
+    g_error_free(error);
     g_free(dem);
     return NULL;
   }
