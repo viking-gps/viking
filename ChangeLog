@@ -1,6 +1,7 @@
 2008-05-08:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: rename interface to source_interface
+	* Portability: replace mmap functions by g_mapped_file*
 
 2008-05-02:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

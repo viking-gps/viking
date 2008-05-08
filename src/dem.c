@@ -27,7 +27,9 @@
 #include <zlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/mman.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
@@ -305,18 +307,17 @@ end:
 	return(unzip_data);
 }
 
-static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zip)
+static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basename, gboolean zip)
 {
   gint i, j;
   VikDEM *dem;
-  struct stat stat;
   off_t file_size;
   gint16 *dem_mem = NULL;
-  gint16 *dem_file = NULL;
+  gchar *dem_file = NULL;
   const gint num_rows_3sec = 1201;
   const gint num_rows_1sec = 3601;
   gint num_rows;
-  int fd = fileno(f);
+  GMappedFile *mf;
   gint arcsec;
 
   dem = g_malloc(sizeof(VikDEM));
@@ -338,19 +339,20 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zi
   dem->columns = g_ptr_array_new();
   dem->n_columns = 0;
 
-  if (fstat(fd, &stat) == -1)
-    g_error("%s(): fstat failed on %s\n", __PRETTY_FUNCTION__, basename);
-  if ((dem_file = mmap(NULL, stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == (void *) -1)
-    g_error("%s(): mmap failed on %s\n", __PRETTY_FUNCTION__, basename);
-
-  file_size = stat.st_size;
-  dem_mem = dem_file;
+  if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
+    g_error("%s(): couldn't map temp file\n", __PRETTY_FUNCTION__);
+    g_free(dem);
+    return NULL;
+  }
+  file_size = g_mapped_file_get_length(mf);
+  dem_file = g_mapped_file_get_contents(mf);
+  
   if (zip) {
     void *unzip_mem = NULL;
     gulong ucsize;
 
-    if ((unzip_mem = unzip_hgt_file((gchar *)dem_file, &ucsize)) == NULL) {
-      munmap(dem_file, file_size);
+    if ((unzip_mem = unzip_hgt_file(dem_file, &ucsize)) == NULL) {
+      g_mapped_file_free(mf);
       g_ptr_array_free(dem->columns, TRUE);
       g_free(dem);
       return NULL;
@@ -366,8 +368,7 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zi
     arcsec = 1;
   else {
     g_warning("%s(): file %s does not have right size", __PRETTY_FUNCTION__, basename);
-    munmap(dem_file, file_size);
-    g_ptr_array_free(dem->columns, TRUE);
+    g_mapped_file_free(mf);
     g_free(dem);
     return NULL;
   }
@@ -395,7 +396,7 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zi
 
   if (zip)
     g_free(dem_mem);
-  munmap(dem_file, stat.st_size);
+  g_mapped_file_free(mf);
   return dem;
 }
 
@@ -403,7 +404,7 @@ static VikDEM *vik_dem_read_srtm_hgt(FILE *f, const gchar *basename, gboolean zi
 
 VikDEM *vik_dem_new_from_file(const gchar *file)
 {
-  FILE *f;
+  FILE *f=NULL;
   VikDEM *rv;
   gchar buffer[DEM_BLOCK_SIZE+1];
 
@@ -412,18 +413,14 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
   gint cur_row = -1;
   const gchar *basename = a_file_basename(file);
 
-      /* FILE IO */
-  f = g_fopen(file, "r");
-  if ( !f )
+  if ( g_access ( file, R_OK ) != 0 )
     return NULL;
 
   if ( (strlen(basename)==11 || ((strlen(basename) == 15) && (basename[11] == '.' && basename[12] == 'z' && basename[13] == 'i' && basename[14] == 'p'))) &&
        basename[7]=='.' && basename[8]=='h' && basename[9]=='g' && basename[10]=='t' &&
        (basename[0] == 'N' || basename[0] == 'S') && (basename[3] == 'E' || basename[3] =='W')) {
     gboolean is_zip_file = (strlen(basename) == 15);
-    rv = vik_dem_read_srtm_hgt(f, basename, is_zip_file);
-    fclose(f);
-    f = NULL;
+    rv = vik_dem_read_srtm_hgt(file, basename, is_zip_file);
     return(rv);
   }
 
@@ -431,6 +428,9 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
   rv = g_malloc(sizeof(VikDEM));
 
       /* Header */
+  f = g_fopen(file, "r");
+  if ( !f )
+    return NULL;
   buffer[fread(buffer, 1, DEM_BLOCK_SIZE, f)] = '\0';
   if ( ! dem_parse_header ( buffer, rv ) ) {
     g_free ( rv );
