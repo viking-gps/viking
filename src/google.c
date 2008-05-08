@@ -111,6 +111,7 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   gchar *tmpname;
   gchar *uri;
   VikCoord coord;
+  gchar coord_north_south[G_ASCII_DTOSTR_BUF_SIZE], coord_east_west[G_ASCII_DTOSTR_BUF_SIZE];
   gchar *text, *pat, *beg;
   GMappedFile *mf;
   gsize len;
@@ -133,7 +134,9 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   } 
 
   google_mapcoord_to_center_coord(mapcoord, &coord);
-  uri = g_strdup_printf("http://maps.google.com/maps?f=q&hl=en&q=%f,%f", coord.north_south, coord.east_west);
+  uri = g_strdup_printf("http://maps.google.com/maps?f=q&hl=en&q=%s,%s",
+                        g_ascii_dtostr (coord_north_south, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) coord.north_south),
+                        g_ascii_dtostr (coord_east_west, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) coord.east_west));
   tmp_file = fdopen(tmp_fd, "r+");
 
   if (curl_download_uri(uri, tmp_file, &dl_options)) {  /* error */

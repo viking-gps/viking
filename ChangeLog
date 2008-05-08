@@ -2,6 +2,7 @@
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: rename interface to source_interface
 	* Portability: replace mmap functions by g_mapped_file*
+	* Portability: use of g_ascii_dtostr to format google url
 
 2008-05-02:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
