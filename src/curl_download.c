@@ -65,7 +65,7 @@ static gchar *get_cookie_file(gboolean init)
 
   g_mutex_lock(mutex);
   if (g_file_test(cookie_file, G_FILE_TEST_EXISTS) == FALSE) {  /* file not there */
-    FILE * out_file = g_fopen("/dev/null", "w");
+    FILE * out_file = tmpfile();
     CURLcode res;
     CURL *curl = curl_easy_init();
     if (vik_verbose)

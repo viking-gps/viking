@@ -1,3 +1,7 @@
+2008-06-02:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Portability: remove "/dev/null" use
+
 2008-05-08:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: rename interface to source_interface
