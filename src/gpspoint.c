@@ -194,11 +194,8 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     if (line_type == GPSPOINT_TYPE_WAYPOINT && line_name)
     {
       VikWaypoint *wp = vik_waypoint_new();
-      gint i = strlen(line_name);
       wp->visible = line_visible;
       wp->altitude = line_altitude;
-      while ( i-- )
-        line_name[i] = toupper(line_name[i]); /* TODO: check for acceptable chars */
 
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &line_latlon );
 
@@ -227,15 +224,11 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     else if (line_type == GPSPOINT_TYPE_TRACK && line_name)
     {
       VikTrack *pl = vik_track_new();
-      gint i = strlen(line_name);
 
       /* Thanks to Peter Jones for this Fix */
       if (!line_name) line_name = g_strdup("UNK");
 
       pl->visible = line_visible;
-
-      while ( i-- )
-        line_name[i] = toupper(line_name[i]);
 
       if ( line_comment )
       {

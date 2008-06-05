@@ -1,3 +1,8 @@
+2008-06-06
+Quy Tonthat <qtonthat@gmail.com>:
+	* viking no longer converts waypoint names to uppercase. Waypoint names
+	are now case insensitive.
+
 2008-06-02:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: remove "/dev/null" use

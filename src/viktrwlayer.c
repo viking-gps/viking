@@ -275,8 +275,6 @@ static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 
-static gboolean uppercase_exists_in_hash ( GHashTable *hash, const gchar *str );
-
 static void cached_pixbuf_free ( CachedPixbuf *cp );
 static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
 static void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
@@ -730,6 +728,33 @@ static GList * str_array_to_glist(gchar* data[])
   return(g_list_reverse(gl));
 }
 
+static gboolean strcase_equal(gconstpointer s1, gconstpointer s2)
+{
+  return (strcasecmp(s1, s2) == 0);
+}
+
+static guint strcase_hash(gconstpointer v)
+{
+  /* 31 bit hash function */
+  int i;
+  const gchar *t = v;
+  gchar s[128];   /* malloc is too slow for reading big files */
+  gchar *p = s;
+
+  for (i = 0; (i < (sizeof(s)- 1)) && t[i]; i++)
+      p[i] = toupper(t[i]);
+  p[i] = '\0';
+
+  p = s;
+  guint32 h = *p;
+  if (h) {
+    for (p += 1; *p != '\0'; p++)
+      h = (h << 5) - h + *p;
+  }
+
+  return h;  
+}
+
 VikTrwLayer *vik_trw_layer_new ( gint drawmode )
 {
   if (trw_layer_params[PARAM_DM].widget_data == NULL)
@@ -740,10 +765,10 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   VikTrwLayer *rv = VIK_TRW_LAYER ( g_object_new ( VIK_TRW_LAYER_TYPE, NULL ) );
   vik_layer_init ( VIK_LAYER(rv), VIK_LAYER_TRW );
 
-  rv->waypoints = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, (GDestroyNotify) vik_waypoint_free );
+  rv->waypoints = g_hash_table_new_full ( strcase_hash, strcase_equal, g_free, (GDestroyNotify) vik_waypoint_free );
   rv->tracks = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, (GDestroyNotify) vik_track_free );
   rv->tracks_iters = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, g_free );
-  rv->waypoints_iters = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, g_free );
+  rv->waypoints_iters = g_hash_table_new_full ( strcase_hash, strcase_equal, NULL, g_free );
 
   /* TODO: constants at top */
   rv->waypoints_visible = rv->tracks_visible = TRUE;
@@ -1718,21 +1743,6 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
  
 }
 
-static gboolean uppercase_exists_in_hash ( GHashTable *hash, const gchar *str )
-{
-  gchar *upp = g_strdup ( str );
-  gboolean rv;
-  char *tmp = upp;
-  while  ( *tmp )
-  {
-    *tmp = toupper(*tmp);
-    tmp++;
-  }
-  rv = g_hash_table_lookup ( hash, upp ) ? TRUE : FALSE;
-  g_free (upp);
-  return rv;
-}
-
 /* to be called whenever a track has been deleted or may have been changed. */
 void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name )
 {
@@ -2289,17 +2299,18 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
 {
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
   {
-    int i;
     gchar *rv;
     VikWaypoint *wp;
 
-    if ( strcasecmp ( newname, sublayer ) == 0 )
+    if (strcmp(newname, sublayer) == 0 )
       return NULL;
 
-    if ( uppercase_exists_in_hash ( l->waypoints, newname ) )
-    {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Waypoint Already Exists") );
-      return NULL;
+    if (strcasecmp(newname, sublayer)) { /* Not just changing case */
+      if (g_hash_table_lookup( l->waypoints, newname))
+      {
+        a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Waypoint Already Exists") );
+        return NULL;
+      }
     }
 
     iter = g_hash_table_lookup ( l->waypoints_iters, sublayer );
@@ -2310,8 +2321,6 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
     g_hash_table_remove ( l->waypoints, sublayer );
 
     rv = g_strdup(newname);
-    for ( i = strlen(rv) - 1; i >= 0; i-- )
-      rv[i] = toupper(rv[i]);
 
     vik_treeview_item_set_pointer ( VIK_LAYER(l)->vt, iter, rv );
 
@@ -2329,19 +2338,20 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
   }
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
   {
-    int i;
     gchar *rv;
     VikTrack *tr;
     GtkTreeIter *iter;
     gchar *orig_key;
 
-    if ( strcasecmp ( newname, sublayer ) == 0 )
+    if (strcmp(newname, sublayer) == 0)
       return NULL;
 
-    if ( uppercase_exists_in_hash ( l->tracks, newname ) )
-    {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Track Already Exists") );
-      return NULL;
+    if (strcasecmp(newname, sublayer)) { /* Not just changing case */
+      if (g_hash_table_lookup( l->waypoints, newname))
+      {
+        a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Track Already Exists") );
+        return NULL;
+      }
     }
 
     g_hash_table_lookup_extended ( l->tracks, sublayer, (void *)&orig_key, (void *)&tr );
@@ -2351,8 +2361,6 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
     g_hash_table_steal ( l->tracks_iters, sublayer );
 
     rv = g_strdup(newname);
-    for ( i = strlen(rv) - 1; i >= 0; i-- )
-      rv[i] = toupper(rv[i]);
 
     vik_treeview_item_set_pointer ( VIK_LAYER(l)->vt, iter, rv );
 

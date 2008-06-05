@@ -297,11 +297,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
       if ( strlen(constname) == 0 ) /* TODO: other checks (isalpha or whatever ) */
         a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
       else {
-        int i;
         gchar *name = g_strdup ( constname );
-
-        for ( i = strlen ( name ) - 1; i >= 0; i-- )
-          name[i] = toupper(name[i]); /* all caps for stardandization */
 
         if ( g_hash_table_lookup ( waypoints, name ) && !a_dialog_overwrite ( parent, _("The waypoint \"%s\" exists, do you want to overwrite it?"), name ) )
           g_free ( name );
@@ -401,10 +397,6 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
       a_dialog_info_msg ( parent, _("Please enter a name for the track.") );
     else {
       gchar *name = g_strdup ( constname );
-      gint i;
-
-      for ( i = strlen ( name ) - 1; i >= 0; i-- )
-        name[i] = toupper(name[i]); /* all caps for stardandization */
 
       if ( g_hash_table_lookup( tracks, name ) && !a_dialog_overwrite ( parent, _("The track \"%s\" exists, do you want to overwrite it?"), gtk_entry_get_text ( GTK_ENTRY(entry) ) ) )
       {
