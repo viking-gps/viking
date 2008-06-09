@@ -1,3 +1,7 @@
+2008-06-09:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: redefine LOCALEDIR
+
 2008-06-06
 Quy Tonthat <qtonthat@gmail.com>:
 	* viking no longer converts waypoint names to uppercase. Waypoint names

@@ -45,6 +45,14 @@ void a_datasource_gc_init();
 
 #define MAX_WINDOWS 1024
 
+/* FIXME LOCALEDIR must be configured by ./configure --localedir */
+/* But something does not work actually. */
+/* So, we need to redefine this variable on windows. */
+#ifdef WINDOWS
+#undef LOCALEDIR
+#define LOCALEDIR "locale"
+#endif
+
 static guint window_count = 0;
 
 static VikWindow *new_window ();
