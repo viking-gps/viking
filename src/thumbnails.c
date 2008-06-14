@@ -61,14 +61,14 @@
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #endif
 
+#define HOME_DIR g_get_home_dir()
+
 #ifdef WINDOWS
-#define HOME_DIR "C:\\VIKING"
 #define THUMB_DIR "\\THUMBNAILS\\" /* viking maps default viking\maps */
 #define THUMB_SUB_DIR "normal\\"
 #define realpath(X,Y) _fullpath(Y,X,MAX_PATH)
 
 #else
-#define HOME_DIR g_get_home_dir()
 #define THUMB_DIR "/.thumbnails/"
 #define THUMB_SUB_DIR "normal/"
 #endif
