@@ -268,10 +268,14 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
 
   w->ser_l = gtk_label_new (_("Serial Port:"));
   w->ser_b = GTK_COMBO_BOX(gtk_combo_box_entry_new_text ());
+#ifdef WINDOWS
+  gtk_combo_box_append_text (w->ser_b, "com1");
+#else
   gtk_combo_box_append_text (w->ser_b, "/dev/ttyS0");
   gtk_combo_box_append_text (w->ser_b, "/dev/ttyS1");
   gtk_combo_box_append_text (w->ser_b, "/dev/ttyUSB0");
   gtk_combo_box_append_text (w->ser_b, "/dev/ttyUSB1");
+#endif
   gtk_combo_box_append_text (w->ser_b, "usb:");
   gtk_combo_box_set_active (w->ser_b, 0);
   g_object_ref(w->ser_b);

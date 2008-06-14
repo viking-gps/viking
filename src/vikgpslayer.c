@@ -67,7 +67,11 @@ typedef enum {GARMIN_P = 0, MAGELLAN_P, NUM_PROTOCOLS} vik_gps_proto;
 static gchar * params_protocols[] = {"Garmin", "Magellan", NULL};
 static gchar * protocols_args[]   = {"garmin", "magellan"};
 /*#define NUM_PROTOCOLS (sizeof(params_protocols)/sizeof(params_protocols[0]) - 1) */
+#ifdef WINDOWS
+static gchar * params_ports[] = {"com1", "usb:", NULL};
+#else
 static gchar * params_ports[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0", "/dev/ttyUSB1", "usb:", NULL};
+#endif
 #define NUM_PORTS (sizeof(params_ports)/sizeof(params_ports[0]) - 1)
 typedef enum {GPS_DOWN=0, GPS_UP} gps_dir;
 
