@@ -78,6 +78,72 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
  *
  * returns TRUE on success
  */
+#ifdef WINDOWS
+gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
+{
+  gboolean ret;
+  FILE *f;
+  gchar *cmd;
+  gchar **args2;
+  
+  STARTUPINFO si;
+  PROCESS_INFORMATION pi;
+
+  
+  ZeroMemory( &si, sizeof(si) );
+  ZeroMemory( &pi, sizeof(pi) );
+  si.cb = sizeof(si);
+  si.dwFlags = STARTF_USESHOWWINDOW;
+  si.wShowWindow = SW_HIDE;
+  
+  cmd = g_strjoinv( " ", args);
+  args2 = g_strsplit(cmd, "\\", 0);
+  g_free(cmd);
+  cmd = g_strjoinv( "\\\\", args2);
+  g_free(args2);
+  args2 = g_strsplit(cmd, "/", 0);
+  g_free(cmd);
+  cmd = g_strjoinv( "\\\\", args2);
+
+  if( !CreateProcess(
+             NULL,                   // No module name (use command line).
+        (LPTSTR)cmd,           // Command line.
+        NULL,                   // Process handle not inheritable.
+        NULL,                   // Thread handle not inheritable.
+        FALSE,                  // Set handle inheritance to FALSE.
+        0,                      // No creation flags.
+        NULL,                   // Use parent's environment block.
+        NULL,                   // Use parent's starting directory.
+        &si,                    // Pointer to STARTUPINFO structure.
+        &pi )                   // Pointer to PROCESS_INFORMATION structure.
+    ){
+    g_warning( "CreateProcess failed");
+    ret = FALSE;
+  }
+  else {
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    WaitForSingleObject(pi.hThread, INFINITE);
+    
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    
+    if ( cb )
+      cb(BABEL_DONE, NULL, user_data);
+    
+    f = g_fopen(name_dst, "r");
+    a_gpx_read_file( vt, f );
+    fclose(f);
+    ret = TRUE;
+  }
+
+  g_strfreev( args2 );
+  g_free( cmd );
+ 
+  return ret;
+}
+/* Windows */
+#else
+/* Posix */
 gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
 {
   gboolean ret = FALSE;
@@ -119,6 +185,7 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
     
   return ret;
 }
+#endif /* Posix */
 
 gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *from, gpointer user_data )
 {
@@ -229,6 +296,73 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
   return ret;
 }
 
+#ifdef WINDOWS
+gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
+{
+  gboolean ret;
+  gchar *cmd;
+  gchar **args2;
+  
+  if (!a_file_export(vt, name_src, FILE_TYPE_GPX)) {
+    g_warning("%s(): error exporting to %s", __FUNCTION__, name_src);
+    return(FALSE);
+  }
+       
+  STARTUPINFO si;
+  PROCESS_INFORMATION pi;
+
+  ZeroMemory( &si, sizeof(si) );
+  ZeroMemory( &pi, sizeof(pi) );
+  si.cb = sizeof(si);
+  si.dwFlags = STARTF_USESHOWWINDOW;
+  si.wShowWindow = SW_HIDE;
+  
+  
+  cmd = g_strjoinv( " ", args);
+  args2 = g_strsplit(cmd, "\\", 0);
+  cmd = g_strjoinv( "\\\\", args2);
+  g_free(args2);
+       args2 = g_strsplit(cmd, "/", 0);
+       g_free(cmd);
+       cmd = g_strjoinv( "\\\\", args2);
+       
+  if( !CreateProcess(
+             NULL,                   // No module name (use command line).
+        (LPTSTR)cmd,           // Command line.
+        NULL,                   // Process handle not inheritable.
+        NULL,                   // Thread handle not inheritable.
+        FALSE,                  // Set handle inheritance to FALSE.
+        0,                      // No creation flags.
+        NULL,                   // Use parent's environment block.
+        NULL,                   // Use parent's starting directory.
+        &si,                    // Pointer to STARTUPINFO structure.
+        &pi )                   // Pointer to PROCESS_INFORMATION structure.
+    ){
+    g_warning( "CreateProcess failed" );
+    ret = FALSE;
+  }
+  else {
+    
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    WaitForSingleObject(pi.hThread, INFINITE);
+    
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+
+    if ( cb )
+      cb(BABEL_DONE, NULL, user_data);
+    
+    ret = TRUE;
+  }
+  
+  g_strfreev(args2);
+  g_free( cmd );
+  
+  return ret;
+}
+/* Windows */
+#else
+/* Posix */
 gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
 {
   gboolean ret = FALSE;
@@ -267,6 +401,7 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
     
   return ret;
 }
+#endif /* Posix */
 
 gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *to, gpointer user_data )
 {
