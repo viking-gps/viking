@@ -25,9 +25,7 @@
 
 #include "viking.h"
 #include "vikgeoreflayer_pixmap.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
@@ -300,7 +298,7 @@ static gboolean world_file_read_line ( gchar *buffer, gint size, FILE *f, GtkWid
   }
   if ( use_value )
   {
-    gdouble val = strtod ( buffer, NULL );
+    gdouble val = g_strtod ( buffer, NULL );
     gtk_spin_button_set_value ( GTK_SPIN_BUTTON(widget), val > 0 ? val : -val );
   }
   return TRUE;
