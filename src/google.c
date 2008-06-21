@@ -118,7 +118,7 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   gchar *gvers, *tvers, *kvers, *terrvers, *tmpvers;
   static DownloadOptions dl_options = { "http://maps.google.com/", 0, a_check_map_file };
   static const char *gvers_pat = "http://mt0.google.com/mt?n\\x3d404\\x26v\\x3d";
-  static const char *kvers_pat = "http://kh0.google.com/kh?n\\x3d404\\x26v\\x3d";
+  static const char *kvers_pat = "http://khm0.google.com/kh?n\\x3d404\\x26v\\x3d";
 
   g_assert(google_type < TYPE_GOOGLE_NUM);
 
@@ -304,7 +304,7 @@ static int google_kh_download ( MapCoord *src, const gchar *dest_fn )
    const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_SAT);
    gchar *uri = g_strdup_printf ( "/kh?n=404&v=%s&t=%s", vers_str, khenc );
    g_free ( khenc );
-   res = a_http_download_get_url ( "kh.google.com", uri, dest_fn, &google_options );
+   res = a_http_download_get_url ( "khm.google.com", uri, dest_fn, &google_options );
    g_free ( uri );
    return(res);
 }
