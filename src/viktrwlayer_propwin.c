@@ -135,17 +135,22 @@ static void set_center_at_graph_position(gdouble event_x, gint img_width, VikLay
   }
 }
 
-static void draw_graph_mark(GtkWidget *image, gdouble x, GdkGC *gc, PropSaved *saved_img)
+static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, GdkGC *gc, PropSaved *saved_img)
 {
   GdkPixmap *pix;
   const int saved_width = 5;
+  /* the pixmap = margin + graph area */
+  gdouble x = event_x - img_width/2 + PROFILE_WIDTH/2 + MARGIN/2;
+
+  fprintf(stderr, "event_x=%f img_width=%d x=%f\n", event_x, img_width, x);
 
   gtk_image_get_pixmap(GTK_IMAGE(image), &pix, NULL);
   if (saved_img->saved) {
     gdk_draw_image(GDK_DRAWABLE(pix), gc, saved_img->img, 0, 0,
         saved_img->pos, 0, -1, -1);
     saved_img->saved = FALSE;
-    gtk_widget_queue_draw_area(image, saved_img->pos, 0,
+    gtk_widget_queue_draw_area(image,
+        saved_img->pos + img_width/2 - PROFILE_WIDTH/2 - MARGIN/2, 0,
         saved_img->img->width, saved_img->img->height);
   }
   if ((x >= MARGIN) && (x < (PROFILE_WIDTH + MARGIN))) {
@@ -159,7 +164,7 @@ static void draw_graph_mark(GtkWidget *image, gdouble x, GdkGC *gc, PropSaved *s
     saved_img->saved = TRUE;
     gdk_draw_line (GDK_DRAWABLE(pix), gc, x, 0, x, image->allocation.height);
     /* redraw the area which contains the line, saved_width is just convenient */
-    gtk_widget_queue_draw_area(image, x - saved_width/2, 0, saved_width, PROFILE_HEIGHT);
+    gtk_widget_queue_draw_area(image, event_x - saved_width/2, 0, saved_width, PROFILE_HEIGHT);
   }
 }
 
@@ -174,7 +179,7 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
 
 
   set_center_at_graph_position(event->x, event_box->allocation.width, vlp, tr, is_vt_graph);
-  draw_graph_mark(image, event->x, window->style->black_gc,
+  draw_graph_mark(image, event->x, event_box->allocation.width, window->style->black_gc,
       is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img);
   g_list_free(child);
 
