@@ -65,7 +65,13 @@ static gchar *get_cookie_file(gboolean init)
 
   g_mutex_lock(mutex);
   if (g_file_test(cookie_file, G_FILE_TEST_EXISTS) == FALSE) {  /* file not there */
+    gchar * name_tmp = NULL;
     FILE * out_file = tmpfile();
+    if (out_file == NULL) {
+      // Something wrong with previous call (unsuported?)
+      name_tmp = g_strdup_printf("%s.tmp", cookie_file);
+      out_file = g_fopen(name_tmp, "w+b");
+    }
     CURLcode res;
     CURL *curl = curl_easy_init();
     if (vik_verbose)
@@ -83,6 +89,11 @@ static gchar *get_cookie_file(gboolean init)
     curl_easy_cleanup(curl);
     fclose(out_file);
     out_file = NULL;
+    if (name_tmp != NULL) {
+      g_remove(name_tmp);
+      g_free(name_tmp);
+      name_tmp = NULL;
+    }
   }
   g_mutex_unlock(mutex);
 

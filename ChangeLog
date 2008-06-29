@@ -1,4 +1,8 @@
 2008-06-29:
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Windows port: fallback temporary file
+
+2008-06-29:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: typo in util.c
 
