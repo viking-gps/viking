@@ -1,3 +1,8 @@
+2008-06-30
+Quy Tonthat <qtonthat@gmail.com>:
+	* Track properties: Keep markers of the graphs in sync with each
+	other.
+
 2008-06-29:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Windows port: fallback temporary file

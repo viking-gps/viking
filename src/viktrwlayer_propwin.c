@@ -76,8 +76,11 @@ typedef struct _propwidgets {
   GtkWidget *w_time_end;
   GtkWidget *w_time_dur;
   GtkWidget *w_dist_time;
+  gdouble   track_length;
   PropSaved elev_graph_saved_img;
   PropSaved speed_graph_saved_img;
+  GtkWidget *elev_box;
+  GtkWidget *speed_box;
 } PropWidgets;
 
 static PropWidgets *prop_widgets_new()
@@ -114,7 +117,7 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 
 #define MARGIN 70
 #define LINES 5
-static void set_center_at_graph_position(gdouble event_x, gint img_width, VikLayersPanel *vlp, VikTrack *tr, gboolean time_base)
+static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_width, VikLayersPanel *vlp, VikTrack *tr, gboolean time_base)
 {
   VikTrackpoint *trackpoint;
   gdouble x = event_x - img_width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
@@ -133,6 +136,7 @@ static void set_center_at_graph_position(gdouble event_x, gint img_width, VikLay
     vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord );
     vik_layers_panel_emit_update ( vlp );
   }
+  return trackpoint;
 }
 
 static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, GdkGC *gc, PropSaved *saved_img)
@@ -142,7 +146,7 @@ static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, G
   /* the pixmap = margin + graph area */
   gdouble x = event_x - img_width/2 + PROFILE_WIDTH/2 + MARGIN/2;
 
-  fprintf(stderr, "event_x=%f img_width=%d x=%f\n", event_x, img_width, x);
+  // fprintf(stderr, "event_x=%f img_width=%d x=%f\n", event_x, img_width, x);
 
   gtk_image_get_pixmap(GTK_IMAGE(image), &pix, NULL);
   if (saved_img->saved) {
@@ -178,10 +182,47 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
 
 
-  set_center_at_graph_position(event->x, event_box->allocation.width, vlp, tr, is_vt_graph);
+  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, vlp, tr, is_vt_graph);
   draw_graph_mark(image, event->x, event_box->allocation.width, window->style->black_gc,
       is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img);
   g_list_free(child);
+
+  /* draw on the other graph */
+  if (trackpoint == NULL || widgets->elev_box == NULL || widgets->speed_box == NULL)
+    /* This test assumes we have only 2 graphs */
+    return;
+
+  gdouble pc = NAN;
+  gdouble x2;
+  GList *other_child = gtk_container_get_children(GTK_CONTAINER(
+                         is_vt_graph ? widgets->elev_box : widgets->speed_box));
+  GtkWidget *other_image = GTK_WIDGET(other_child->data);
+  if (is_vt_graph) {
+    gdouble dist = 0.0;
+    GList *iter;
+    for (iter = tr->trackpoints->next; iter != NULL; iter = iter->next) {
+      dist += vik_coord_diff(&(VIK_TRACKPOINT(iter->data)->coord),
+                                 &(VIK_TRACKPOINT(iter->prev->data)->coord));
+      /* Assuming trackpoint is not a copy */
+      if (trackpoint == VIK_TRACKPOINT(iter->data))
+        break;
+    }
+    if (iter != NULL)
+      pc = dist/widgets->track_length;
+  } else {
+    time_t t_start, t_end, t_total;
+    t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+    t_end = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+    t_total = t_end - t_start;
+    pc = (gdouble)(trackpoint->timestamp - t_start)/t_total;
+  }
+  if (!isnan(pc)) {
+    x2 = pc * PROFILE_WIDTH + MARGIN + (event_box->allocation.width/2 - PROFILE_WIDTH/2 - MARGIN/2);
+    draw_graph_mark(other_image, x2, event_box->allocation.width, window->style->black_gc,
+      is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img);
+  }
+
+  g_list_free(other_child);
 
 }
 
@@ -632,6 +673,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp, widgets);
   GtkWidget *graphs = gtk_notebook_new();
 
+  widgets->elev_box = profile;
+  widgets->speed_box = vtdiag;
+
   GtkWidget *content[20];
   int cnt;
   int i;
@@ -647,7 +691,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   g_signal_connect_swapped ( widgets->w_comment, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
   content[cnt++] = widgets->w_comment;
 
-  tr_len = vik_track_get_length(tr);
+  tr_len = widgets->track_length = vik_track_get_length(tr);
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", tr_len );
   widgets->w_track_length = content[cnt++] = gtk_label_new ( tmp_buf );
 
