@@ -1,3 +1,7 @@
+2008-06-29:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: typo in util.c
+
 2008-06-24
 Quy Tonthat <qtonthat@gmail.com>:
 	* Track graph marker now works again.

@@ -21,6 +21,10 @@
 #include "config.h"
 #endif
 
+#ifdef WINDOWS
+#include <windows.h>
+#endif
+
 #include <glib/gi18n.h>
 
 #include "dialog.h"
@@ -28,7 +32,7 @@
 void open_url(GtkWindow *parent, const gchar * url)
 {
 #ifdef WINDOWS
-  ShellExecute(NULL, NULL, (char *) webpage, NULL, ".\\", 0);
+  ShellExecute(NULL, NULL, (char *) url, NULL, ".\\", 0);
 #else /* WINDOWS */
   const gchar *browsers[] = {
     "xdg-open", "gnome-open", "kfmclient openURL",
