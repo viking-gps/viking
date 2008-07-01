@@ -62,6 +62,7 @@ typedef struct _propwidgets {
   VikTrack *tr;
   VikLayersPanel *vlp;
   gchar *track_name;
+  GtkWidget *dialog;
   GtkWidget *w_comment;
   GtkWidget *w_track_length;
   GtkWidget *w_tp_count;
@@ -81,6 +82,7 @@ typedef struct _propwidgets {
   PropSaved speed_graph_saved_img;
   GtkWidget *elev_box;
   GtkWidget *speed_box;
+  VikTrackpoint *marker_tp;
 } PropWidgets;
 
 static PropWidgets *prop_widgets_new()
@@ -186,6 +188,8 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   draw_graph_mark(image, event->x, event_box->allocation.width, window->style->black_gc,
       is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img);
   g_list_free(child);
+  widgets->marker_tp = trackpoint;
+  gtk_dialog_set_response_sensitive(GTK_DIALOG(widgets->dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, TRUE);
 
   /* draw on the other graph */
   if (trackpoint == NULL || widgets->elev_box == NULL || widgets->speed_box == NULL)
@@ -573,6 +577,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
 {
   VikTrack *tr = widgets->tr;
   VikTrwLayer *vtl = widgets->vtl;
+  gboolean keep_dialog = FALSE;
 
   /* FIXME: check and make sure the track still exists before doing anything to it */
   /* Note: destroying diaglog (eg, parent window exit) won't give "response" */
@@ -632,15 +637,60 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
         }
       }
       break;
+    case VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER:
+      {
+        GList *iter = tr->trackpoints;
+        while ((iter = iter->next)) {
+          if (widgets->marker_tp == VIK_TRACKPOINT(iter->data))
+            break;
+        }
+        if (iter == NULL) {
+          a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_ERROR,
+                  _("Failed spliting track. Track unchanged"), NULL);
+          keep_dialog = TRUE;
+          break;
+        }
+
+        gchar *r_name = g_strdup_printf("%s #R", widgets->track_name);
+        if (vik_trw_layer_get_track(vtl, r_name ) && 
+             ( ! a_dialog_overwrite( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+              "The track \"%s\" exists, do you wish to overwrite it?", r_name)))
+        {
+            gchar *new_r_name = a_dialog_new_track( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl) );
+            if (new_r_name) {
+              g_free( r_name );
+              r_name = new_r_name;
+            }
+            else {
+              a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_WARNING,
+                  _("Operation Aborted. Track unchanged"), NULL);
+              keep_dialog = TRUE;
+              break;
+            }
+        }
+        iter->prev->next = NULL;
+        iter->prev = NULL;
+        VikTrack *tr_right = vik_track_new();
+        if ( tr->comment )
+          vik_track_set_comment ( tr_right, tr->comment );
+        tr_right->visible = tr->visible;
+        tr_right->trackpoints = iter;
+
+        vik_trw_layer_add_track(vtl, r_name, tr_right);
+        vik_layer_emit_update ( VIK_LAYER(vtl) );
+      }
+      break;
     default:
       fprintf(stderr, "DEBUG: unknown response\n");
       return;
   }
 
   /* Keep same behaviour for now: destroy dialog if click on any button */
-  prop_widgets_free(widgets);
-  vik_track_clear_property_dialog(tr);
-  gtk_widget_destroy ( GTK_WIDGET(dialog) );
+  if (!keep_dialog) {
+    prop_widgets_free(widgets);
+    vik_track_clear_property_dialog(tr);
+    gtk_widget_destroy ( GTK_WIDGET(dialog) );
+  }
 }
 
 void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *track_name )
@@ -656,11 +706,13 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
                          parent,
                          GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
                          GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+                         _("Split at Marker"), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER,
                          _("Split Segments"), VIK_TRW_LAYER_PROPWIN_SPLIT,
                          _("Reverse"),        VIK_TRW_LAYER_PROPWIN_REVERSE,
                          _("Delete Dupl."),   VIK_TRW_LAYER_PROPWIN_DEL_DUP,
                          GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
                          NULL);
+  widgets->dialog = dialog;
   g_free(title);
   g_signal_connect(dialog, "response", G_CALLBACK(propwin_response_cb), widgets);
   //fprintf(stderr, "DEBUG: dialog=0x%p\n", dialog);
@@ -801,6 +853,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
 
+  gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, FALSE);
   if (seg_count <= 1)
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT, FALSE);
   if (vik_track_get_dup_point_count(tr) <= 0)

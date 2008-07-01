@@ -30,6 +30,7 @@
 #define VIK_TRW_LAYER_PROPWIN_SPLIT 1
 #define VIK_TRW_LAYER_PROPWIN_REVERSE 2
 #define VIK_TRW_LAYER_PROPWIN_DEL_DUP 3
+#define VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER 4
 
 void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *trackname );
 
