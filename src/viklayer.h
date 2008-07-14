@@ -95,6 +95,7 @@ typedef enum {
 typedef gpointer (*VikToolConstructorFunc) (VikWindow *, VikViewport *);
 typedef void (*VikToolDestructorFunc) (gpointer);
 typedef VikLayerToolFuncStatus (*VikToolMouseFunc) (VikLayer *, GdkEventButton *, gpointer);
+typedef VikLayerToolFuncStatus (*VikToolMouseMoveFunc) (VikLayer *, GdkEventMotion *, gpointer);
 typedef void (*VikToolActivationFunc) (VikLayer *, gpointer);
 typedef gboolean (*VikToolKeyFunc) (VikLayer *, GdkEventKey *, gpointer);
 
@@ -106,7 +107,7 @@ struct _VikToolInterface {
   VikToolActivationFunc activate;
   VikToolActivationFunc deactivate;
   VikToolMouseFunc click;
-  VikToolMouseFunc move;
+  VikToolMouseMoveFunc move;
   VikToolMouseFunc release;
   VikToolKeyFunc key_press; /* return FALSE if we don't use the key press -- should return AFLSE most of the time if we want any shortcuts / UI keybindings to work! use sparingly. */
   GdkCursorType cursor_type;

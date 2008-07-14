@@ -308,7 +308,7 @@ static void init_icons() {
   icons = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, NULL);
   gint i;
   for (i=0; i<G_N_ELEMENTS(garmin_syms); i++) {
-    g_hash_table_insert(icons, garmin_syms[i].sym, (gpointer)i);
+    g_hash_table_insert(icons, garmin_syms[i].sym, GINT_TO_POINTER (i));
   }
 }
 
@@ -326,7 +326,7 @@ GdkPixbuf *a_get_wp_sym ( const gchar *sym ) {
   if (!icons) {
     init_icons();
   }
-  return get_wp_sym_from_index((gint)g_hash_table_lookup(icons, sym));
+  return get_wp_sym_from_index( GPOINTER_TO_INT ( g_hash_table_lookup (icons, sym) ) );
 }
 
 void a_populate_sym_list ( GtkListStore *list ) {

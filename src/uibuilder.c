@@ -74,7 +74,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
           int i;
 	  int nb_elem = g_list_length(param->widget_data);
           for ( i = 0; i < nb_elem; i++ )
-            if ( (guint32)g_list_nth_data(param->extra_widget_data, i) == data.u )
+            if ( GPOINTER_TO_UINT ( g_list_nth_data(param->extra_widget_data, i) ) == data.u )
             {
               vik_radio_group_set_selected ( VIK_RADIO_GROUP(rv), i );
               break;
@@ -170,7 +170,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
     case VIK_LAYER_WIDGET_RADIOGROUP_STATIC:
       rv.u = vik_radio_group_get_selected(VIK_RADIO_GROUP(widget));
       if ( param->extra_widget_data )
-        rv.u = (guint32)g_list_nth_data(param->extra_widget_data, rv.u);
+        rv.u = GPOINTER_TO_UINT ( g_list_nth_data(param->extra_widget_data, rv.u) );
       break;
     case VIK_LAYER_WIDGET_SPINBUTTON:
       if ( param->type == VIK_LAYER_PARAM_UINT )
@@ -337,9 +337,16 @@ VikLayerParamData *a_uibuilder_run_dialog ( GtkWindow *parent, VikLayerParam *pa
                         VikLayerParamData *params_defaults )
 {
     VikLayerParamData *paramdatas = g_new(VikLayerParamData, params_count);
-    if ( a_uibuilder_properties_factory ( parent, params, params_count, groups, groups_count,
-                                uibuilder_run_setparam, paramdatas, params,
-                                uibuilder_run_getparam, params_defaults ) > 0 ) {
+    if ( a_uibuilder_properties_factory ( parent, 
+					  params, 
+					  params_count, 
+					  groups, 
+					  groups_count,
+					  (gpointer) uibuilder_run_setparam, 
+					  paramdatas, 
+					  params,
+					  (gpointer) uibuilder_run_getparam, 
+					  params_defaults ) > 0 ) {
 
       return paramdatas;
     }

@@ -105,7 +105,7 @@ static int toolbox_get_tool(toolbox_tools_t *vt, const gchar *tool_name);
 static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name);
 static const GdkCursor *toolbox_get_cursor(toolbox_tools_t *vt, const gchar *tool_name);
 static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event);
-static void toolbox_move (toolbox_tools_t *vt, GdkEventButton *event);
+static void toolbox_move (toolbox_tools_t *vt, GdkEventMotion *event);
 static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event);
 
 
@@ -805,7 +805,7 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
   return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventButton *event, ruler_tool_state_t *s)
+static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, ruler_tool_state_t *s)
 {
   VikViewport *vvp = s->vvp;
   VikWindow *vw = s->vw;
@@ -868,7 +868,7 @@ static VikToolInterface ruler_tool =
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) ruler_deactivate, 
     (VikToolMouseFunc) ruler_click, 
-    (VikToolMouseFunc) ruler_move, 
+    (VikToolMouseMoveFunc) ruler_move, 
     (VikToolMouseFunc) ruler_release,
     NULL,
     GDK_CURSOR_IS_PIXMAP,
@@ -897,7 +897,7 @@ static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *even
   return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventButton *event, VikViewport *vvp)
+static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event, VikViewport *vvp)
 {
   return VIK_LAYER_TOOL_ACK;
 }
@@ -914,7 +914,7 @@ static VikToolInterface zoom_tool =
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) zoomtool_click, 
-    (VikToolMouseFunc) zoomtool_move,
+    (VikToolMouseMoveFunc) zoomtool_move,
     (VikToolMouseFunc) zoomtool_release,
     NULL,
     GDK_CURSOR_IS_PIXMAP,
@@ -938,7 +938,7 @@ static VikLayerToolFuncStatus pantool_click (VikLayer *vl, GdkEventButton *event
   return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus pantool_move (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+static VikLayerToolFuncStatus pantool_move (VikLayer *vl, GdkEventMotion *event, VikWindow *vw)
 {
   vik_window_pan_move ( vw, event );
   return VIK_LAYER_TOOL_ACK;
@@ -958,7 +958,7 @@ static VikToolInterface pan_tool =
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) pantool_click, 
-    (VikToolMouseFunc) pantool_move,
+    (VikToolMouseMoveFunc) pantool_move,
     (VikToolMouseFunc) pantool_release,
     NULL,
     GDK_FLEUR };
@@ -1203,7 +1203,7 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event)
   }
 }
 
-static void toolbox_move (toolbox_tools_t *vt, GdkEventButton *event)
+static void toolbox_move (toolbox_tools_t *vt, GdkEventMotion *event)
 {
   VikLayer *vl = vik_layers_panel_get_selected ( vt->vw->viking_vlp );
   if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.move) {

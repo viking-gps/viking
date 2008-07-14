@@ -216,8 +216,8 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   /* We can only split up a track if it's not an endpoint. Makes sense to me. */
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_SPLIT, tpl->next && tpl->prev );
 
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_FORWARD, (gboolean) tpl->next );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_BACK, (gboolean) tpl->prev );
+  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_FORWARD, (gboolean) GPOINTER_TO_INT (tpl->next) );
+  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_BACK, (gboolean) GPOINTER_TO_INT (tpl->prev) );
 
   /* we can only join tracks if there was a last tp, the last tp was an endpoint, _AND_ this tp is an endpoint */
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_JOIN, tpwin->cur_tp && tpwin->cur_tp_is_endpoint && (!(tpl->next && tpl->prev)) );

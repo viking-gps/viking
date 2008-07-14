@@ -459,12 +459,15 @@ void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file 
 static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
 {
   switch ( a_uibuilder_properties_factory ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
-		vik_layer_interfaces[vl->type]->params,
-		vik_layer_interfaces[vl->type]->params_count,
-		vik_layer_interfaces[vl->type]->params_groups,
-		vik_layer_interfaces[vl->type]->params_groups_count,
-		vik_layer_interfaces[vl->type]->set_param, vl, vp,
-		vik_layer_interfaces[vl->type]->get_param, vl) ) {
+					    vik_layer_interfaces[vl->type]->params,
+					    vik_layer_interfaces[vl->type]->params_count,
+					    vik_layer_interfaces[vl->type]->params_groups,
+					    vik_layer_interfaces[vl->type]->params_groups_count,
+					    (gpointer) vik_layer_interfaces[vl->type]->set_param, 
+					    vl, 
+					    vp,
+					    (gpointer) vik_layer_interfaces[vl->type]->get_param, 
+					    vl) ) {
     case 0:
       return FALSE;
     case 3:

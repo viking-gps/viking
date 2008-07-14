@@ -38,6 +38,6 @@ guint8 googlemaps_zoom ( gdouble mpp );
 
 gboolean googlemaps_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 void googlemaps_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-void googlemaps_download ( MapCoord *src, const gchar *dest_fn );
+int googlemaps_download ( MapCoord *src, const gchar *dest_fn );
 
 #endif

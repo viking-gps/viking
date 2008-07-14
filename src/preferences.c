@@ -45,14 +45,14 @@ void a_preferences_register_group ( const gchar *key, const gchar *name )
     g_error("Duplicate preferences group keys");
   else {
     g_ptr_array_add ( groups_names, g_strdup(name) );
-    g_hash_table_insert ( groups_keys_to_indices, g_strdup(key), (gpointer) ((gint) groups_names->len ) ); /* index + 1 */
+    g_hash_table_insert ( groups_keys_to_indices, g_strdup(key), GINT_TO_POINTER ( (gint) groups_names->len ) ); /* index + 1 */
   }
 }
 
 /* returns -1 if not found. */
 static gint16 preferences_groups_key_to_index( const gchar *key )
 {
-  gint index = (gint) g_hash_table_lookup ( groups_keys_to_indices, key );
+  gint index = GPOINTER_TO_INT ( g_hash_table_lookup ( groups_keys_to_indices, key ) );
   if ( ! index )
     return VIK_LAYER_GROUP_NONE; /* which should be -1 anyway */
   return (gint16) (index - 1);

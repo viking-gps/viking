@@ -212,7 +212,7 @@ void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapTyp
   params_maptypes = g_list_append(params_maptypes, g_strdup(label));
 
   /* Add the id */
-  params_maptypes_ids = g_list_append(params_maptypes_ids, (gpointer)id);
+  params_maptypes_ids = g_list_append(params_maptypes_ids, GUINT_TO_POINTER (id));
 
   /* We have to clone */
   VikMapsLayer_MapType *clone = g_memdup(map_type, sizeof(VikMapsLayer_MapType));

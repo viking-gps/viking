@@ -38,6 +38,6 @@ guint8 khmaps_zoom ( gdouble mpp );
 
 gboolean khmaps_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 void khmaps_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-void khmaps_download ( MapCoord *src, const gchar *dest_fn );
+int khmaps_download ( MapCoord *src, const gchar *dest_fn );
 
 #endif
