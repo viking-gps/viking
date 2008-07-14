@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-09 22:55+0200\n"
+"POT-Creation-Date: 2008-07-09 23:46+0200\n"
 "PO-Revision-Date: 2008-01-12 10:03+0000\n"
 "Last-Translator: Zhang Jun <rocketman_gw@yahoo.com.cn>\n"
 "Language-Team: \n"
@@ -1374,97 +1374,109 @@ msgstr ""
 msgid "No map layer in use. Create one first"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:654
+#: ../src/viktrwlayer_propwin.c:649
+msgid "Failed spliting track. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:666
+msgid "Operation Aborted. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:704
 #, c-format
 msgid "%s - Track Properties"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:659
+#: ../src/viktrwlayer_propwin.c:709
+msgid "Split at Marker"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:710
 msgid "Split Segments"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:660
+#: ../src/viktrwlayer_propwin.c:711
 msgid "Reverse"
 msgstr "反轉"
 
-#: ../src/viktrwlayer_propwin.c:661
+#: ../src/viktrwlayer_propwin.c:712
 msgid "Delete Dupl."
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Comment:</b>"
 msgstr "<b>説明:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Length:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Trackpoints:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Segments:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duplicate Points:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Max Speed:</b>"
 msgstr "<b>最大速度:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>平均速度:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Elevation Range:</b>"
 msgstr "<b>高度範圍:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Start:</b>"
 msgstr "<b>開始:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>End:</b>"
 msgstr "<b>結束:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duration:</b>"
 msgstr "<b>持續時間:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Distance/Time:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:711 ../src/viktrwlayer_propwin.c:718
-#: ../src/viktrwlayer_propwin.c:727 ../src/viktrwlayer_propwin.c:734
-#: ../src/viktrwlayer_propwin.c:773 ../src/viktrwlayer_propwin.c:774
-#: ../src/viktrwlayer_propwin.c:775 ../src/viktrwlayer_propwin.c:777
+#: ../src/viktrwlayer_propwin.c:763 ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:779 ../src/viktrwlayer_propwin.c:786
+#: ../src/viktrwlayer_propwin.c:825 ../src/viktrwlayer_propwin.c:826
+#: ../src/viktrwlayer_propwin.c:827 ../src/viktrwlayer_propwin.c:829
 #, c-format
 msgid "No Data"
 msgstr "没有資料"
 
-#: ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:822
 #, c-format
 msgid "%d minutes"
 msgstr "%d 分鐘"
 
-#: ../src/viktrwlayer_propwin.c:797
+#: ../src/viktrwlayer_propwin.c:849
 msgid "Elevation-distance"
 msgstr "高度-距離"
 
-#: ../src/viktrwlayer_propwin.c:800
+#: ../src/viktrwlayer_propwin.c:852
 msgid "Speed-time"
 msgstr "速度-時間"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-09 22:55+0200\n"
+"POT-Creation-Date: 2008-07-09 23:46+0200\n"
 "PO-Revision-Date: 2008-03-11 17:43+0000\n"
 "Last-Translator: Alessi Andrea <knukun@gmail.com>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -1415,103 +1415,116 @@ msgstr ""
 msgid "No map layer in use. Create one first"
 msgstr "Nessun livello di mappa in uno. Creane uno prima"
 
-#: ../src/viktrwlayer_propwin.c:654
+#: ../src/viktrwlayer_propwin.c:649
+msgid "Failed spliting track. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:666
+msgid "Operation Aborted. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:704
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - Proprietà della Traccia"
 
-#: ../src/viktrwlayer_propwin.c:659
+#: ../src/viktrwlayer_propwin.c:709
+#, fuzzy
+msgid "Split at Marker"
+msgstr "Suddividi qui"
+
+#: ../src/viktrwlayer_propwin.c:710
 msgid "Split Segments"
 msgstr "Suddividi segmenti"
 
-#: ../src/viktrwlayer_propwin.c:660
+#: ../src/viktrwlayer_propwin.c:711
 msgid "Reverse"
 msgstr "Inverti"
 
-#: ../src/viktrwlayer_propwin.c:661
+#: ../src/viktrwlayer_propwin.c:712
 msgid "Delete Dupl."
 msgstr "Elimina duplicato"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Comment:</b>"
 msgstr "<b>Commento:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Length:</b>"
 msgstr ""
 "Copy text   \t\r\n"
 "<b>Lunghezza della Traccia:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Trackpoints:</b>"
 msgstr ""
 "Copy text   \t\r\n"
 "<b>Trackpoints:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Segments:</b>"
 msgstr "<b>Segmenti:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duplicate Points:</b>"
 msgstr "<b>Punti duplicati:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Max Speed:</b>"
 msgstr "<b>Velocità Massima:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>Velocità Media:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr "<b>Distanza Media fra TrackPoint:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Elevation Range:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Start:</b>"
 msgstr ""
 "Copy text   \t\r\n"
 "<b>Inizio:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>End:</b>"
 msgstr "<b>Fine:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duration:</b>"
 msgstr "<b>Durata:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Distance/Time:</b>"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:711 ../src/viktrwlayer_propwin.c:718
-#: ../src/viktrwlayer_propwin.c:727 ../src/viktrwlayer_propwin.c:734
-#: ../src/viktrwlayer_propwin.c:773 ../src/viktrwlayer_propwin.c:774
-#: ../src/viktrwlayer_propwin.c:775 ../src/viktrwlayer_propwin.c:777
+#: ../src/viktrwlayer_propwin.c:763 ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:779 ../src/viktrwlayer_propwin.c:786
+#: ../src/viktrwlayer_propwin.c:825 ../src/viktrwlayer_propwin.c:826
+#: ../src/viktrwlayer_propwin.c:827 ../src/viktrwlayer_propwin.c:829
 #, c-format
 msgid "No Data"
 msgstr "Nessun dato"
 
-#: ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:822
 #, c-format
 msgid "%d minutes"
 msgstr "%d minuti"
 
-#: ../src/viktrwlayer_propwin.c:797
+#: ../src/viktrwlayer_propwin.c:849
 msgid "Elevation-distance"
 msgstr "Elevazione-distanza"
 
-#: ../src/viktrwlayer_propwin.c:800
+#: ../src/viktrwlayer_propwin.c:852
 msgid "Speed-time"
 msgstr "Velocità-tempo"
 

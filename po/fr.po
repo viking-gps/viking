@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-09 22:55+0200\n"
+"POT-Creation-Date: 2008-07-09 23:46+0200\n"
 "PO-Revision-Date: 2008-03-22 11:12+0000\n"
 "Last-Translator: Pierre Slamich <pierre.slamich@gmail.com>\n"
 "Language-Team: \n"
@@ -1368,97 +1368,109 @@ msgstr ""
 msgid "No map layer in use. Create one first"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:654
+#: ../src/viktrwlayer_propwin.c:649
+msgid "Failed spliting track. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:666
+msgid "Operation Aborted. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:704
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - Propriétés de la trace"
 
-#: ../src/viktrwlayer_propwin.c:659
+#: ../src/viktrwlayer_propwin.c:709
+msgid "Split at Marker"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:710
 msgid "Split Segments"
 msgstr ""
 
-#: ../src/viktrwlayer_propwin.c:660
+#: ../src/viktrwlayer_propwin.c:711
 msgid "Reverse"
 msgstr "Inverser"
 
-#: ../src/viktrwlayer_propwin.c:661
+#: ../src/viktrwlayer_propwin.c:712
 msgid "Delete Dupl."
 msgstr "Supprimer les doublons"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Comment:</b>"
 msgstr "<b>Commentaire :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Length:</b>"
 msgstr "<b>Longueur :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Trackpoints:</b>"
 msgstr "<b>Nombre de points :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Segments:</b>"
 msgstr "<b>Segments :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duplicate Points:</b>"
 msgstr "<b>Points dupliqués :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Max Speed:</b>"
 msgstr "<b>Vitesse maximale :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>Vitesse moyenne :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr "<b>Distance moyenne entre points :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Elevation Range:</b>"
 msgstr "<b>Altitudes atteintes :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr "<b>Dénivelé total :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Start:</b>"
 msgstr "<b>Départ :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>End:</b>"
 msgstr "<b>Arrivée :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duration:</b>"
 msgstr "<b>Durée :</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Distance/Time:</b>"
 msgstr "<b>Distance/Temps total :</b>"
 
-#: ../src/viktrwlayer_propwin.c:711 ../src/viktrwlayer_propwin.c:718
-#: ../src/viktrwlayer_propwin.c:727 ../src/viktrwlayer_propwin.c:734
-#: ../src/viktrwlayer_propwin.c:773 ../src/viktrwlayer_propwin.c:774
-#: ../src/viktrwlayer_propwin.c:775 ../src/viktrwlayer_propwin.c:777
+#: ../src/viktrwlayer_propwin.c:763 ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:779 ../src/viktrwlayer_propwin.c:786
+#: ../src/viktrwlayer_propwin.c:825 ../src/viktrwlayer_propwin.c:826
+#: ../src/viktrwlayer_propwin.c:827 ../src/viktrwlayer_propwin.c:829
 #, c-format
 msgid "No Data"
 msgstr "Pas de données"
 
-#: ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:822
 #, c-format
 msgid "%d minutes"
 msgstr "%d minutes"
 
-#: ../src/viktrwlayer_propwin.c:797
+#: ../src/viktrwlayer_propwin.c:849
 msgid "Elevation-distance"
 msgstr "Dénivelée/distance"
 
-#: ../src/viktrwlayer_propwin.c:800
+#: ../src/viktrwlayer_propwin.c:852
 msgid "Speed-time"
 msgstr "Vitesse/temps"
 

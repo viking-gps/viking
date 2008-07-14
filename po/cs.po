@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-09 22:55+0200\n"
+"POT-Creation-Date: 2008-07-09 23:46+0200\n"
 "PO-Revision-Date: 2008-03-04 22:16+0000\n"
 "Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1389,98 +1389,111 @@ msgstr "Vytvářím %d náhledy obrázků..."
 msgid "No map layer in use. Create one first"
 msgstr "Je třeba vytvořit mapovou vrstvu."
 
-#: ../src/viktrwlayer_propwin.c:654
+#: ../src/viktrwlayer_propwin.c:649
+msgid "Failed spliting track. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:666
+msgid "Operation Aborted. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:704
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - vlastnosti trasy"
 
-#: ../src/viktrwlayer_propwin.c:659
+#: ../src/viktrwlayer_propwin.c:709
+#, fuzzy
+msgid "Split at Marker"
+msgstr "Rozdělit zde"
+
+#: ../src/viktrwlayer_propwin.c:710
 msgid "Split Segments"
 msgstr "Rozdělit segmenty"
 
-#: ../src/viktrwlayer_propwin.c:660
+#: ../src/viktrwlayer_propwin.c:711
 msgid "Reverse"
 msgstr "Pozpátku"
 
-#: ../src/viktrwlayer_propwin.c:661
+#: ../src/viktrwlayer_propwin.c:712
 msgid "Delete Dupl."
 msgstr "Smazat zdvoj."
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Comment:</b>"
 msgstr "<b>Komentář:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Length:</b>"
 msgstr "<b>Délka trasy:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Trackpoints:</b>"
 msgstr "<b>Body:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Segments:</b>"
 msgstr "<b>Segmenty:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duplicate Points:</b>"
 msgstr "<b>Zdvojené body:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Max Speed:</b>"
 msgstr "<b>Nejvyšší rychlost:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>Průměrná rychlost:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr "<b>Průměrná vzdálenost mezi body:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Elevation Range:</b>"
 msgstr "<b>Rozsah nadmořské výšky:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr "<b>Celkové stoupání/klesání:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Start:</b>"
 msgstr "<b>Začátek:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>End:</b>"
 msgstr "<b>Konec:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Duration:</b>"
 msgstr "<b>Trvání:</b>"
 
-#: ../src/viktrwlayer_propwin.c:683
+#: ../src/viktrwlayer_propwin.c:735
 msgid "<b>Track Distance/Time:</b>"
 msgstr "<b>Vzdálenost trasy/čas:</b>"
 
-#: ../src/viktrwlayer_propwin.c:711 ../src/viktrwlayer_propwin.c:718
-#: ../src/viktrwlayer_propwin.c:727 ../src/viktrwlayer_propwin.c:734
-#: ../src/viktrwlayer_propwin.c:773 ../src/viktrwlayer_propwin.c:774
-#: ../src/viktrwlayer_propwin.c:775 ../src/viktrwlayer_propwin.c:777
+#: ../src/viktrwlayer_propwin.c:763 ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:779 ../src/viktrwlayer_propwin.c:786
+#: ../src/viktrwlayer_propwin.c:825 ../src/viktrwlayer_propwin.c:826
+#: ../src/viktrwlayer_propwin.c:827 ../src/viktrwlayer_propwin.c:829
 #, c-format
 msgid "No Data"
 msgstr "Žádná data"
 
-#: ../src/viktrwlayer_propwin.c:770
+#: ../src/viktrwlayer_propwin.c:822
 #, c-format
 msgid "%d minutes"
 msgstr "%d minut"
 
-#: ../src/viktrwlayer_propwin.c:797
+#: ../src/viktrwlayer_propwin.c:849
 #, fuzzy
 msgid "Elevation-distance"
 msgstr "Výška-vzdálenost"
 
-#: ../src/viktrwlayer_propwin.c:800
+#: ../src/viktrwlayer_propwin.c:852
 msgid "Speed-time"
 msgstr "Rychlost-čas"
 
