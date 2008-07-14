@@ -122,7 +122,7 @@ GtkWidget *vik_radio_group_new_static ( const gchar **options )
   for ( options++ ; *options ; options++ )
   {
     t = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(vrg->radios->data), *options );
-    g_slist_append( vrg->radios, t );
+    vrg->radios = g_slist_append( vrg->radios, t );
     gtk_box_pack_start ( GTK_BOX(vrg), GTK_WIDGET(t), FALSE, FALSE, 0 );
     vrg->options_count++;
   }
