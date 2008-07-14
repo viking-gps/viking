@@ -1,3 +1,7 @@
+2008-07-13:
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix #1947456: Compiler warning fixes
+
 2008-07-09:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Update translations
