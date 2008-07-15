@@ -1,3 +1,5 @@
+# French translation for viking
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
