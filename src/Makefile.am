@@ -108,3 +108,12 @@ LDADD           += -lgps
 endif
 #LDADD           = -lz @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE
+
+@INTLTOOL_DESKTOP_RULE@
+
+desktopdir = $(datadir)/applications
+desktop_in_files = viking.desktop.in
+desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+
+EXTRA_DIST = \
+	     viking.desktop.in

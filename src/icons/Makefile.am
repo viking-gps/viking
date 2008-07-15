@@ -139,3 +139,6 @@ icons.c: $(ALL_ICONS:%.png=%.png_h)
 
 INCLUDES        = @GTK_CFLAGS@
 AM_CFLAGS       = -Wall -g -D_GNU_SOURCE
+
+iconsdir = $(datadir)/icons
+icons_DATA = viking_icon.png
