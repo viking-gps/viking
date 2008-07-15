@@ -31,3 +31,4 @@ src/viktrwlayer.c
 src/viktrwlayer_propwin.c
 src/viktrwlayer_tpwin.c
 src/vikwindow.c
+src/viking.desktop.in

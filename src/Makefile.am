@@ -14,7 +14,6 @@ authors.h: ../AUTHORS
 	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/\\n"\\/' -e '$$s/\\$$//' $< >> $@
 
 BUILT_SOURCES = authors.h
-CLEANFILES = $(BUILT_SOURCES)
 
 libviking_a_SOURCES = \
 	modules.h modules.c \
@@ -114,6 +113,7 @@ AM_CFLAGS		= -Wall -g -D_GNU_SOURCE
 desktopdir = $(datadir)/applications
 desktop_in_files = viking.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+EXTRA_DIST=$(desktop_in_files)
+BUILT_SOURCES += viking.desktop
 
-EXTRA_DIST = \
-	     viking.desktop.in
+CLEANFILES = $(BUILT_SOURCES)
