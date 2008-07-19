@@ -192,6 +192,12 @@ AC_ARG_WITH(mapcache,
 AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
                    [Size of the map cache])
 
+dnl man pages processing
+DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
+AC_SUBST(DB2MAN_XSL)
+AC_PATH_PROG(XP,xsltproc)
+AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"])
+
 dnl This will cause the automake generated makefiles to pass the
 dnl correct flags to aclocal.
 ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
