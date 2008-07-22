@@ -2054,13 +2054,3 @@ msgstr ""
 msgid "Viking"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Downloading %d %s maps..."
-#~ msgstr "Stahuji %d %s mapu..."
-
-#~ msgid ""
-#~ "The file %s exists. Please choose a name for a new directory to hold "
-#~ "images in that does not exist."
-#~ msgstr ""
-#~ "Soubor %s existuje. Zvolte prosím jméno nového adresáře, který bude "
-#~ "obsahovat obrázky."
