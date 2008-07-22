@@ -7,16 +7,28 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-09 23:46+0200\n"
-"PO-Revision-Date: 2008-03-04 22:16+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"POT-Creation-Date: 2008-07-11 08:17+0200\n"
+"PO-Revision-Date: 2008-07-21 07:34+0000\n"
+"Last-Translator: Radek Stastny <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2008-06-18 02:44+0000\n"
+"X-Launchpad-Export-Date: 2008-07-21 20:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#, c-format
+#~ msgid ""
+#~ "The file %s exists. Please choose a name for a new directory to hold images "
+#~ "in that does not exist."
+#~ msgstr ""
+#~ "Soubor %s existuje. Zvolte prosím jméno nového adresáře, který bude "
+#~ "obsahovat obrázky."
+
+#, fuzzy, c-format
+#~ msgid "Downloading %d %s maps..."
+#~ msgstr "Stahuji %d %s mapu..."
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -24,7 +36,7 @@ msgstr "Pracuji..."
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
-msgstr ""
+msgstr "Chyba: stažení selhalo"
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:924
 msgid "Done."
@@ -85,11 +97,11 @@ msgstr "Jdi na souřadnice"
 
 #: ../src/dialog.c:60 ../src/dialog.c:210
 msgid "Latitude:"
-msgstr "Zeměpisná šířka:"
+msgstr "Šířka:"
 
 #: ../src/dialog.c:66 ../src/dialog.c:215
 msgid "Longitude:"
-msgstr "Zeměpisná délka:"
+msgstr "Délka:"
 
 #: ../src/dialog.c:109
 msgid "Northing:"
@@ -121,7 +133,7 @@ msgstr "Výška:"
 
 #: ../src/dialog.c:225
 msgid "Comment:"
-msgstr "Komentář:"
+msgstr "Poznámka:"
 
 #: ../src/dialog.c:231
 msgid "Image:"
@@ -211,7 +223,7 @@ msgid ""
 msgstr ""
 "<span font_desc='20' weight='bold'>Viking %s</span>\n"
 "\n"
-"Analyzátor, průzkumník a manager GPS a topologických dat.\n"
+"Analyzátor, průzkumník a správce GPS a topologických dat.\n"
 "\n"
 "<small>(C) 2003-2007, Evan Battaglia</small>\n"
 "\n"
@@ -230,6 +242,7 @@ msgid "Close"
 msgstr "Zavřít"
 
 #: ../src/dialog.c:599
+#, fuzzy
 msgid ""
 "\n"
 "\n"
@@ -247,10 +260,25 @@ msgid ""
 "this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
+"\n"
+"\n"
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
+"Place, Suite 330, Boston, MA 02111-1307, USA"
 
 #: ../src/dialog.c:622
 msgid "Download along track"
-msgstr "Stáhnout podél trasy"
+msgstr "Stáhnout mapy podél trasy"
 
 #: ../src/dialog.c:624
 msgid "Map type:"
@@ -274,6 +302,8 @@ msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
+"Nemohu otevřít soubor EXPEDIA (po úspěšném stažení, soubor smažte a chybu "
+"prosím nahlaste!): %s"
 
 #: ../src/expedia.c:120
 #, c-format
@@ -281,6 +311,8 @@ msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
+"Nemohu uložit soubor EXPEDIA (po úspěšném stažení, soubor smažte a chybu "
+"prosím nahlaste!): %s"
 
 #: ../src/google.c:57
 msgid "Google Maps"
@@ -288,11 +320,11 @@ msgstr "Google mapy"
 
 #: ../src/google.c:58
 msgid "Transparent Google Maps"
-msgstr "průhledné Google Mapy"
+msgstr "průhledné Google mapy"
 
 #: ../src/google.c:59
 msgid "Google Satellite Images"
-msgstr "Google satelitní Mapy"
+msgstr "Google satelitní mapy"
 
 #: ../src/google.c:60
 msgid "Google Terrain Maps"
@@ -315,7 +347,7 @@ msgstr "nelze zpracovat dočasný soubor"
 
 #: ../src/google.c:153
 msgid "Failed fetching Google numbers (\"GLoadApi\" not found)"
-msgstr ""
+msgstr "Chyba při stahování Google \"čísel\" (\"GLoadApi\" nenalezeno)"
 
 #: ../src/google.c:184
 msgid "Failed getting google version numbers"
@@ -347,20 +379,20 @@ msgstr "Stáhnout Geocache"
 
 #: ../src/datasource_gc.c:63
 msgid "Geocaching.com Caches"
-msgstr ""
+msgstr "Geocaching.com cache"
 
 #: ../src/datasource_gc.c:78
 msgid "geocaching.com username:"
-msgstr ""
+msgstr "geocaching.com uživatel:"
 
 #: ../src/datasource_gc.c:79
 msgid "geocaching.com password:"
-msgstr ""
+msgstr "geocaching.com heslo:"
 
 #: ../src/datasource_gc.c:107
 msgid ""
 "Can't find gcget in path! Check that you have installed gcget correctly."
-msgstr ""
+msgstr "Příkaz gcget nenalezen v PATH. Zkontrolujte zda je nainstalován."
 
 #: ../src/datasource_gc.c:169
 msgid "Number geocaches:"
@@ -400,15 +432,17 @@ msgstr "používám příkaz '%s' a soubor '%s'\n"
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Stahuji %d místo..."
+msgstr[1] "Stahuji %d místa..."
+msgstr[2] "Stahuji %d míst..."
 
 #: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:680
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Stahuji %d bod..."
+msgstr[1] "Stahuji %d body..."
+msgstr[2] "Stahuji %d bodů ..."
 
 #: ../src/datasource_gps.c:170
 #, c-format
@@ -447,7 +481,7 @@ msgstr "Špatná hlavička DEM"
 
 #: ../src/dem.c:178 ../src/dem.c:191
 msgid "Incorrect DEM Class B record: expected 1"
-msgstr ""
+msgstr "Špatný DEM Class B záznam: očekávám 1"
 
 #: ../src/dem.c:348
 #, fuzzy, c-format
@@ -467,7 +501,7 @@ msgstr "chyba při nahrávání dat: HTTP odpověď  %ld"
 #: ../src/osm-traces.c:197
 #, c-format
 msgid "curl_easy_getinfo failed: %d"
-msgstr ""
+msgstr "curl_easy_getinfo selhalo: %d"
 
 #: ../src/osm-traces.c:201
 #, c-format
@@ -490,11 +524,11 @@ msgstr "nahrání  do OSM"
 
 #: ../src/osm-traces.c:295
 msgid "Email:"
-msgstr "E-mail:"
+msgstr "email:"
 
 #: ../src/osm-traces.c:310
 msgid "The email used as login"
-msgstr "E-mail použitý jako login"
+msgstr "email použitý jako login"
 
 #: ../src/osm-traces.c:311
 msgid "Enter the email you use to login into www.openstreetmap.org."
@@ -534,15 +568,15 @@ msgstr "Popis:"
 
 #: ../src/osm-traces.c:350
 msgid "The description of the trace"
-msgstr "Popis záznamu trasy"
+msgstr "Popis logu trasy"
 
 #: ../src/osm-traces.c:353
 msgid "Tags:"
-msgstr "Značky:"
+msgstr "Tagy:"
 
 #: ../src/osm-traces.c:360
 msgid "The tags associated to the trace"
-msgstr "Źnačky přiřazené k trase"
+msgstr "Tagy přiřazené k trase"
 
 #: ../src/osm-traces.c:363
 msgid "Public"
@@ -550,7 +584,7 @@ msgstr "Veřejný"
 
 #: ../src/osm-traces.c:369
 msgid "Indicates if the trace is public or not"
-msgstr "Ukazuje zda je trace soubor veřejný"
+msgstr "Ukazuje zda je log trasy veřejný"
 
 #: ../src/osm-traces.c:390
 #, c-format
@@ -608,7 +642,6 @@ msgid "Color:"
 msgstr "Barva:"
 
 #: ../src/vikcoordlayer.c:44
-#, fuzzy
 msgid "Minutes Width:"
 msgstr "Šířka v minutách:"
 
@@ -647,15 +680,15 @@ msgstr "Místa mimo"
 
 #: ../src/main.c:115
 msgid "Enable debug output"
-msgstr ""
+msgstr "Povolit ladící výstup"
 
 #: ../src/main.c:116
 msgid "Enable verbose output"
-msgstr ""
+msgstr "Povolit podrobný výstup"
 
 #: ../src/main.c:117
 msgid "Show version"
-msgstr ""
+msgstr "Ukáže verzi"
 
 #: ../src/vikdemlayer.c:100
 msgid "DEM Files:"
@@ -681,7 +714,7 @@ msgstr "Stažení/import DEM"
 #: ../src/vikdemlayer.c:746
 #, c-format
 msgid "No SRTM data available for %f, %f"
-msgstr "Nejsou k dispozici žádná SRTM datapro %f,%f"
+msgstr "žádná dostupná SRTM data pro %f, %f"
 
 #: ../src/vikdemlayer.c:985
 msgid "No download source selected. Edit layer properties."
@@ -718,7 +751,7 @@ msgstr "Georef posun mapy"
 
 #: ../src/vikgeoreflayer.c:70
 msgid "Georef Zoom Tool"
-msgstr "Georef  přiblížení"
+msgstr "Georef přiblížení"
 
 #: ../src/vikgeoreflayer.c:268 ../src/vikmapslayer.c:540
 #, c-format
@@ -754,12 +787,10 @@ msgid "Load From File..."
 msgstr "Načíst ze souboru..."
 
 #: ../src/vikgeoreflayer.c:406
-#, fuzzy
 msgid "Corner pixel easting:"
 msgstr "Východní rohový bod:"
 
 #: ../src/vikgeoreflayer.c:409
-#, fuzzy
 msgid "Corner pixel northing:"
 msgstr "Severní rohový bod:"
 
@@ -829,7 +860,7 @@ msgstr "Neznámý GPS protokol"
 
 #: ../src/vikgpslayer.c:353
 msgid "Unknown serial port device"
-msgstr "Neznámé zařízení pro seriový port"
+msgstr "Neznámé zařízení pro sériový port"
 
 #: ../src/vikgpslayer.c:413
 #, c-format
@@ -861,71 +892,81 @@ msgstr "Smaž vše"
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nahrávám %d místo..."
+msgstr[1] "Nahrávám %d místa..."
+msgstr[2] "Nahrávám %d míst..."
 
 #: ../src/vikgpslayer.c:687
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nahrávám %d bod"
+msgstr[1] "Nahrávám %d body"
+msgstr[2] "Nahrávám %d bodů"
 
 #: ../src/vikgpslayer.c:711
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Staženo %d z %d místa..."
+msgstr[1] "Staženo %d z %d míst..."
+msgstr[2] "Staženo %d z %d míst..."
 
 #: ../src/vikgpslayer.c:713
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Stažen %d z %d bodu..."
+msgstr[1] "Staženo %d z %d bodů..."
+msgstr[2] "Staženo %d z %d bodů..."
 
 #: ../src/vikgpslayer.c:717
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nahráno %d z %d místa"
+msgstr[1] "Nahráno %d z %d míst"
+msgstr[2] "Nahráno %d z %d míst"
 
 #: ../src/vikgpslayer.c:719
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nahrán %d z %d bodu..."
+msgstr[1] "Nahráno %d z %d bodů..."
+msgstr[2] "Nahráno %d z %d bodů..."
 
 #: ../src/vikgpslayer.c:726
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Staženo %d místo"
+msgstr[1] "Stažena %d místa"
+msgstr[2] "Staženo %d míst"
 
 #: ../src/vikgpslayer.c:728
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Stažen %d bod"
+msgstr[1] "Staženy %d body"
+msgstr[2] "Staženo %d bodů"
 
 #: ../src/vikgpslayer.c:732
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nahráno %d místo"
+msgstr[1] "Nahrána %d místa"
+msgstr[2] "Nahráno %d míst"
 
 #: ../src/vikgpslayer.c:734
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nahrán %d bod"
+msgstr[1] "Nahrány %d body"
+msgstr[2] "Nahráno %d bodů"
 
 #: ../src/vikgpslayer.c:919
 msgid "Error: couldn't find gpsbabel."
@@ -1023,25 +1064,27 @@ msgstr ""
 "Vyberte \"%s\" z menu zobrazení."
 
 #: ../src/vikmapslayer.c:605
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
-msgstr ""
+msgstr "Nelze zobrazit mapu při oddálení za %d"
 
 #: ../src/vikmapslayer.c:920
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Opakované stažení %d %s mapy..."
+msgstr[1] "Opakované stažení %d %s map..."
+msgstr[2] "Opakované stažení %d %s map..."
 
 #: ../src/vikmapslayer.c:922
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Opakované stahování %d %s mapy..."
+msgstr[1] "Opakované stahování %d %s map..."
+msgstr[2] "Opakované stahování %d %s map..."
 
 #: ../src/vikmapslayer.c:926 ../src/vikmapslayer.c:997
 #, c-format
@@ -1269,11 +1312,11 @@ msgstr "Export vrstvy jako..."
 #: ../src/viktrwlayer.c:1518 ../src/vikwindow.c:1411 ../src/vikwindow.c:1779
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
-msgstr ""
+msgstr "Soubor \"%s\" existuje, přepsat?"
 
 #: ../src/viktrwlayer.c:1528 ../src/vikwindow.c:1429
 msgid "The filename you requested could not be opened for writing."
-msgstr ""
+msgstr "Soubor nemůže být otevřen k zápisu."
 
 #: ../src/viktrwlayer.c:1559
 msgid "Waypoint Name:"
@@ -1391,11 +1434,11 @@ msgstr "Je třeba vytvořit mapovou vrstvu."
 
 #: ../src/viktrwlayer_propwin.c:649
 msgid "Failed spliting track. Track unchanged"
-msgstr ""
+msgstr "Chyba při rozdělení trasy. Trasa nezměněna."
 
 #: ../src/viktrwlayer_propwin.c:666
 msgid "Operation Aborted. Track unchanged"
-msgstr ""
+msgstr "Operace zrušena. Trasa nezměněna."
 
 #: ../src/viktrwlayer_propwin.c:704
 #, c-format
@@ -1403,9 +1446,8 @@ msgid "%s - Track Properties"
 msgstr "%s - vlastnosti trasy"
 
 #: ../src/viktrwlayer_propwin.c:709
-#, fuzzy
 msgid "Split at Marker"
-msgstr "Rozdělit zde"
+msgstr "Rozdělit na označeném bodu"
 
 #: ../src/viktrwlayer_propwin.c:710
 msgid "Split Segments"
@@ -1581,7 +1623,7 @@ msgstr "mpp"
 
 #: ../src/vikwindow.c:387
 msgid "pixelfact"
-msgstr ""
+msgstr "pixelfact"
 
 #: ../src/vikwindow.c:510
 #, c-format
@@ -1617,7 +1659,7 @@ msgstr "Uložit jako soubor typu Viking."
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
-msgstr ""
+msgstr "Zobrazovaná oblast přesáhla okraje mapy. Upravuji zobrazení."
 
 #: ../src/vikwindow.c:1645
 #, c-format
@@ -1794,7 +1836,7 @@ msgstr "Vytvořit _adresář s obrázky"
 
 #: ../src/vikwindow.c:1927
 msgid "FIXME:IMGDIR"
-msgstr ""
+msgstr "FIXME:IMGDIR"
 
 #: ../src/vikwindow.c:1930
 msgid "_Print..."
@@ -1942,7 +1984,7 @@ msgstr "S_mazat vše"
 
 #: ../src/vikwindow.c:1964
 msgid "_Preferences..."
-msgstr ""
+msgstr "_Předvolby..."
 
 #: ../src/vikwindow.c:1965
 msgid "_Properties"
@@ -1974,7 +2016,7 @@ msgstr "_Google mód"
 
 #: ../src/vikwindow.c:1980
 msgid "Pan Tool"
-msgstr ""
+msgstr "Posun"
 
 #: ../src/vikwindow.c:1981
 msgid "Zoom Tool"
@@ -1998,20 +2040,9 @@ msgstr "Zobrazit _střed"
 
 #: ../src/vikwindow.c:1988
 msgid "Full Screen"
-msgstr ""
+msgstr "Celá obrazovka"
 
 #: ../src/vikwindow.c:2050
 #, c-format
 msgid "New %s Layer"
 msgstr "Nová %s vrstva"
-
-#, fuzzy
-#~ msgid "Downloading %d %s maps..."
-#~ msgstr "Stahuji %d %s mapu..."
-
-#~ msgid ""
-#~ "The file %s exists. Please choose a name for a new directory to hold "
-#~ "images in that does not exist."
-#~ msgstr ""
-#~ "Soubor %s existuje. Zvolte prosím jméno nového adresáře, který bude "
-#~ "obsahovat obrázky."
