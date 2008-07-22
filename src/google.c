@@ -117,8 +117,8 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   gsize len;
   gchar *gvers, *tvers, *kvers, *terrvers, *tmpvers;
   static DownloadOptions dl_options = { "http://maps.google.com/", 0, a_check_map_file };
-  static const char *gvers_pat = "http://mt0.google.com/mt?n\\x3d404\\x26v\\x3d";
-  static const char *kvers_pat = "http://khm0.google.com/kh?n\\x3d404\\x26v\\x3d";
+  static const char *gvers_pat = "http://mt0.google.com/mt?v\\x3d";
+  static const char *kvers_pat = "http://khm0.google.com/kh?v\\x3d";
 
   g_assert(google_type < TYPE_GOOGLE_NUM);
 
