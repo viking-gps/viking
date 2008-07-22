@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-09 23:46+0200\n"
+"POT-Creation-Date: 2008-07-18 23:11+0200\n"
 "PO-Revision-Date: 2008-05-24 12:27+0000\n"
 "Last-Translator: Emilio Gómez Fernández <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -730,76 +730,76 @@ msgstr "Añadir…"
 msgid "Delete"
 msgstr "Borrar"
 
-#: ../src/vikgeoreflayer.c:66
+#: ../src/vikgeoreflayer.c:67
 msgid "Georef Move Map"
 msgstr "Mover mapa Georef"
 
-#: ../src/vikgeoreflayer.c:70
+#: ../src/vikgeoreflayer.c:71
 msgid "Georef Zoom Tool"
 msgstr "Zoom Georef"
 
-#: ../src/vikgeoreflayer.c:268 ../src/vikmapslayer.c:540
+#: ../src/vikgeoreflayer.c:269 ../src/vikmapslayer.c:540
 #, c-format
 msgid "Couldn't open image file: %s"
 msgstr "No se ha podido abrir el fichero de imagen: %s"
 
-#: ../src/vikgeoreflayer.c:293
+#: ../src/vikgeoreflayer.c:294
 msgid "Unexpected end of file reading World file."
 msgstr "Final de fichero inesperado mientras se leía el fichero World."
 
-#: ../src/vikgeoreflayer.c:309 ../src/vikgeoreflayer.c:354
+#: ../src/vikgeoreflayer.c:310 ../src/vikgeoreflayer.c:355
 msgid "Choose World file"
 msgstr "Elegir fichero World"
 
-#: ../src/vikgeoreflayer.c:322
+#: ../src/vikgeoreflayer.c:323
 msgid "The World file you requested could not be opened for reading."
 msgstr "El fichero World seleccionado no se ha podido abrir para lectura."
 
-#: ../src/vikgeoreflayer.c:367
+#: ../src/vikgeoreflayer.c:368
 msgid "The file you requested could not be opened for writing."
 msgstr "El fichero seleccionado no se ha podido abrir para escritura."
 
-#: ../src/vikgeoreflayer.c:384
+#: ../src/vikgeoreflayer.c:385
 msgid "Layer Properties"
 msgstr "Propiedades de capa"
 
-#: ../src/vikgeoreflayer.c:400
+#: ../src/vikgeoreflayer.c:401
 msgid "World File Parameters:"
 msgstr "Parámetros de fichero World:"
 
-#: ../src/vikgeoreflayer.c:401
+#: ../src/vikgeoreflayer.c:402
 msgid "Load From File..."
 msgstr "Cargar desde archivo..."
 
-#: ../src/vikgeoreflayer.c:406
+#: ../src/vikgeoreflayer.c:407
 msgid "Corner pixel easting:"
 msgstr "Despl. E de la esquina"
 
-#: ../src/vikgeoreflayer.c:409
+#: ../src/vikgeoreflayer.c:410
 msgid "Corner pixel northing:"
 msgstr "Despl. N de la esquina"
 
-#: ../src/vikgeoreflayer.c:412
+#: ../src/vikgeoreflayer.c:413
 msgid "X (easting) scale (mpp): "
 msgstr "Escala X (desp. E, metros/píxel): "
 
-#: ../src/vikgeoreflayer.c:413
+#: ../src/vikgeoreflayer.c:414
 msgid "Y (northing) scale (mpp): "
 msgstr "Escala Y (desp. N, metros/píxel): "
 
-#: ../src/vikgeoreflayer.c:418
+#: ../src/vikgeoreflayer.c:419
 msgid "Map Image:"
 msgstr "Imagen de mapa:"
 
-#: ../src/vikgeoreflayer.c:522
+#: ../src/vikgeoreflayer.c:523
 msgid "Zoom to Fit Map"
 msgstr "Ajustar zoom al mapa"
 
-#: ../src/vikgeoreflayer.c:527
+#: ../src/vikgeoreflayer.c:528
 msgid "Goto Map Center"
 msgstr "Ir al centro del mapa"
 
-#: ../src/vikgeoreflayer.c:532
+#: ../src/vikgeoreflayer.c:533
 msgid "Export to World File"
 msgstr "Exportar a fichero World"
 
@@ -2013,6 +2013,14 @@ msgstr "Pantalla completa"
 #, c-format
 msgid "New %s Layer"
 msgstr "Nueva capa %s"
+
+#: ../src/viking.desktop.in.h:1
+msgid "Map Based GPS Data Manager (live data capable)."
+msgstr ""
+
+#: ../src/viking.desktop.in.h:2
+msgid "Viking"
+msgstr ""
 
 #~ msgid ""
 #~ "The file %s exists. Please choose a name for a new directory to hold "

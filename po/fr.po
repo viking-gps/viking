@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-11 08:17+0200\n"
+"POT-Creation-Date: 2008-07-18 23:11+0200\n"
 "PO-Revision-Date: 2008-07-11 22:42+0000\n"
 "Last-Translator: Jocelyn <Unknown>\n"
 "Language-Team: \n"
@@ -15,14 +15,6 @@ msgstr ""
 "X-Launchpad-Export-Date: 2008-07-18 19:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: French\n"
-
-#, c-format
-#~ msgid ""
-#~ "The file %s exists. Please choose a name for a new directory to hold images "
-#~ "in that does not exist."
-#~ msgstr ""
-#~ "Le fichier \"%s\" existe déjà. Choisissez un nouveau nom pour le répertoire "
-#~ "dans lequel stocker les images."
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -291,8 +283,8 @@ msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
-"Impossible d'ouvrir l'image EXPEDIA (juste après un téléchargement fructueux "
-"! Rapportez l'information et détruisez le fichier) : %s"
+"Impossible d'ouvrir l'image EXPEDIA (juste après un téléchargement "
+"fructueux ! Rapportez l'information et détruisez le fichier) : %s"
 
 #: ../src/expedia.c:120
 #, c-format
@@ -735,76 +727,76 @@ msgstr "Ajouter…"
 msgid "Delete"
 msgstr "Détruire"
 
-#: ../src/vikgeoreflayer.c:66
+#: ../src/vikgeoreflayer.c:67
 msgid "Georef Move Map"
 msgstr "Georef déplacer la carte"
 
-#: ../src/vikgeoreflayer.c:70
+#: ../src/vikgeoreflayer.c:71
 msgid "Georef Zoom Tool"
 msgstr "Georef zoom"
 
-#: ../src/vikgeoreflayer.c:268 ../src/vikmapslayer.c:540
+#: ../src/vikgeoreflayer.c:269 ../src/vikmapslayer.c:540
 #, c-format
 msgid "Couldn't open image file: %s"
 msgstr "Impossible d'ouvrir le fichier : %s"
 
-#: ../src/vikgeoreflayer.c:293
+#: ../src/vikgeoreflayer.c:294
 msgid "Unexpected end of file reading World file."
 msgstr "Fin de fichier World inattendue."
 
-#: ../src/vikgeoreflayer.c:309 ../src/vikgeoreflayer.c:354
+#: ../src/vikgeoreflayer.c:310 ../src/vikgeoreflayer.c:355
 msgid "Choose World file"
 msgstr "Sélectionner un fichier World"
 
-#: ../src/vikgeoreflayer.c:322
+#: ../src/vikgeoreflayer.c:323
 msgid "The World file you requested could not be opened for reading."
 msgstr "Le fichier choisi ne peut être ouvert en lecture."
 
-#: ../src/vikgeoreflayer.c:367
+#: ../src/vikgeoreflayer.c:368
 msgid "The file you requested could not be opened for writing."
 msgstr "Le fichier choisi ne peut être ouvert en écriture."
 
-#: ../src/vikgeoreflayer.c:384
+#: ../src/vikgeoreflayer.c:385
 msgid "Layer Properties"
 msgstr "Propriétés du calque"
 
-#: ../src/vikgeoreflayer.c:400
+#: ../src/vikgeoreflayer.c:401
 msgid "World File Parameters:"
 msgstr "Paramètres du fichier World :"
 
-#: ../src/vikgeoreflayer.c:401
+#: ../src/vikgeoreflayer.c:402
 msgid "Load From File..."
 msgstr "Chargement depuis un fichier…"
 
-#: ../src/vikgeoreflayer.c:406
+#: ../src/vikgeoreflayer.c:407
 msgid "Corner pixel easting:"
 msgstr ""
 
-#: ../src/vikgeoreflayer.c:409
+#: ../src/vikgeoreflayer.c:410
 msgid "Corner pixel northing:"
 msgstr ""
 
-#: ../src/vikgeoreflayer.c:412
+#: ../src/vikgeoreflayer.c:413
 msgid "X (easting) scale (mpp): "
 msgstr ""
 
-#: ../src/vikgeoreflayer.c:413
+#: ../src/vikgeoreflayer.c:414
 msgid "Y (northing) scale (mpp): "
 msgstr ""
 
-#: ../src/vikgeoreflayer.c:418
+#: ../src/vikgeoreflayer.c:419
 msgid "Map Image:"
 msgstr "Image carte :"
 
-#: ../src/vikgeoreflayer.c:522
+#: ../src/vikgeoreflayer.c:523
 msgid "Zoom to Fit Map"
 msgstr ""
 
-#: ../src/vikgeoreflayer.c:527
+#: ../src/vikgeoreflayer.c:528
 msgid "Goto Map Center"
 msgstr "Aller au centre de la carte"
 
-#: ../src/vikgeoreflayer.c:532
+#: ../src/vikgeoreflayer.c:533
 msgid "Export to World File"
 msgstr "Exporter en fichier World"
 
@@ -2017,3 +2009,18 @@ msgstr "Plein écran"
 #, c-format
 msgid "New %s Layer"
 msgstr "Nouveau calque \"%s\""
+
+#: ../src/viking.desktop.in.h:1
+msgid "Map Based GPS Data Manager (live data capable)."
+msgstr ""
+
+#: ../src/viking.desktop.in.h:2
+msgid "Viking"
+msgstr ""
+
+#~ msgid ""
+#~ "The file %s exists. Please choose a name for a new directory to hold "
+#~ "images in that does not exist."
+#~ msgstr ""
+#~ "Le fichier \"%s\" existe déjà. Choisissez un nouveau nom pour le "
+#~ "répertoire dans lequel stocker les images."
