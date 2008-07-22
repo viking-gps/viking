@@ -579,7 +579,7 @@ void a_dialog_about ( GtkWindow *parent )
   char *msg = g_markup_printf_escaped (
     _(_("<span font_desc='20' weight='bold'>Viking %s</span>\n\n"
     "GPS Data and Topo Analyzer, Explorer, and Manager.\n\n"
-    "<small>(C) 2003-2007, Evan Battaglia</small>\n\n"
+    "<small>(C) 2003-2008, Evan Battaglia</small>\n\n"
     "<small>Web site: %s</small>")),
     VIKING_VERSION, VIKING_URL);
   GtkWidget *msgbox = gtk_message_dialog_new_with_markup ( parent, 
