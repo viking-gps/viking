@@ -1,3 +1,29 @@
+Viking 0.9.5 (2008-07-21)
+New features since 0.9.4
+
+* Add panning tool as default.
+* Replace GtkFileSelection by GtkFileChooser.
+* No longer converts waypoint names to uppercase. Waypoint names are now case insensitive.
+* Windows port updated.
+* Track properties: Keep markers of the graphs in sync with each other.
+* Track properties: split track at marker.
+* New translations: el, it, ja, lt, nb, nl, pl, zh_CN, zh_TW
+* Added viking.desktop
+* Added --debug and --verbose command line options.
+* Updated man pages.
+
+Fixes since 0.9.4
+
+* Fix #1839948: Maximize/Restore changes current cursor.
+* Bug #1915121: add an utility to reproduce (test/gpx2gpx).
+* Fix #1915121: use GLib functions to handle ISO8601 dates.
+* Fix pipe leaks.
+* Remove dependency to wget.
+* Fix google version number.
+* Track graph marker now works again.
+* Fix #1947456: Compiler warning fixes
+
+
 Viking 0.9.4 (2008-02-25)
 New features since 0.9.3
 
