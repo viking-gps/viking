@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-18 23:11+0200\n"
+"POT-Creation-Date: 2008-07-21 23:24+0200\n"
 "PO-Revision-Date: 2008-05-24 12:27+0000\n"
 "Last-Translator: Emilio Gómez Fernández <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
@@ -205,7 +205,7 @@ msgid ""
 "\n"
 "GPS Data and Topo Analyzer, Explorer, and Manager.\n"
 "\n"
-"<small>(C) 2003-2007, Evan Battaglia</small>\n"
+"<small>(C) 2003-2008, Evan Battaglia</small>\n"
 "\n"
 "<small>Web site: %s</small>"
 msgstr ""
@@ -1396,6 +1396,7 @@ msgstr "Creando %d miniaturas..."
 #: ../src/viktrwlayer.c:3788
 msgid "No map layer in use. Create one first"
 msgstr "No hay una capa de mapa en uso. Cree una primero"
+
 #: ../src/viktrwlayer_propwin.c:649
 msgid "Failed spliting track. Track unchanged"
 msgstr ""
@@ -1495,11 +1496,11 @@ msgstr "Sin datos"
 msgid "%d minutes"
 msgstr "%d minutos"
 
-#: ../src/viktrwlayer_propwin.c:797
+#: ../src/viktrwlayer_propwin.c:849
 msgid "Elevation-distance"
 msgstr "Elevación-distancia"
 
-#: ../src/viktrwlayer_propwin.c:800
+#: ../src/viktrwlayer_propwin.c:852
 msgid "Speed-time"
 msgstr "Velocidad-tiempo"
 
