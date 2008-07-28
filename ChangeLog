@@ -1,3 +1,7 @@
+2008-07-28
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix gcget command line to accomodate negative coords.
+
 2008-07-22
 Quy Tonthat <qtonthat@gmail.com>:
 	* Google maps no longer worked due to changes made by Google.

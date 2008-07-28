@@ -202,7 +202,7 @@ static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gch
   gchar *safe_string = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ) );
   gchar *safe_user = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "username")->s );
   gchar *safe_pass = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "password")->s );
-  *cmd = g_strdup_printf( "gcget -u %s -p %s %s %d %.2lf", safe_user, safe_pass, safe_string, 
+  *cmd = g_strdup_printf( "gcget -u %s -p -- %s %s %d %.2lf", safe_user, safe_pass, safe_string, 
 	gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->num_spin) ),
 	gtk_spin_button_get_value_as_float ( GTK_SPIN_BUTTON(widgets->miles_radius_spin) ) );
   *input_file_type = NULL;
