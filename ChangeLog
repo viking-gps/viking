@@ -1,3 +1,8 @@
+2008-07-31
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Release Viking 0.9.6
+	* Fix unecessary (and probably) Makefile.am directive
+
 2008-07-28
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix gcget command line to accomodate negative coords.

@@ -1,3 +1,10 @@
+Viking 0.9.6 (2008-07-31)
+Fixes since 0.9.5
+
+* Fix Google maps' URL
+* Fix gcget command line to accomodate negative coords
+* Fix unecessary viking.desktop
+
 Viking 0.9.5 (2008-07-21)
 New features since 0.9.4
 
