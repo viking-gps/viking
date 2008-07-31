@@ -114,6 +114,5 @@ desktopdir = $(datadir)/applications
 desktop_in_files = viking.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 EXTRA_DIST=$(desktop_in_files)
-BUILT_SOURCES += viking.desktop
 
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES) $(desktop_DATA)
