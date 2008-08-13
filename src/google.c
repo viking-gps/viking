@@ -105,7 +105,7 @@ static gchar *parse_version_number(gchar *text)
 static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_type)
 {
   static gboolean first = TRUE;
-  static char *vers[] = { "w2.60", "w2t.60", "20", "w2p.60" };
+  static char *vers[] = { "w2.80", "w2t.80", "30", "w2p.81"};
   FILE *tmp_file;
   int tmp_fd;
   gchar *tmpname;
@@ -117,7 +117,8 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
   gsize len;
   gchar *gvers, *tvers, *kvers, *terrvers, *tmpvers;
   static DownloadOptions dl_options = { "http://maps.google.com/", 0, a_check_map_file };
-  static const char *gvers_pat = "http://mt0.google.com/mt?v\\x3d";
+  /* static const char *gvers_pat = "http://mt0.google.com/mt?v\\x3d"; */
+  static const char *gvers_pat = "http://mt0.google.com/mt";
   static const char *kvers_pat = "http://khm0.google.com/kh?v\\x3d";
 
   g_assert(google_type < TYPE_GOOGLE_NUM);
@@ -158,6 +159,11 @@ static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_
     while (!gvers || !tvers ||!terrvers) {
       if ((pat = g_strstr_len(pat, &text[len] - pat, gvers_pat)) != NULL) {
         pat += strlen(gvers_pat);
+	if ((pat[0] != '/' && pat[0] != '?') ||
+	     pat[1] != 'v' || pat[2] != '\\' ||
+	     pat[3] != 'x' || pat[4] != '3' || pat[5] != 'd')
+          continue;
+        pat += 6;
         if ((tmpvers = parse_version_number(pat)) != NULL) {
           if (strstr(tmpvers, "t."))
             tvers = tmpvers;
