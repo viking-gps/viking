@@ -1,3 +1,7 @@
+2008-08-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Ensure that confirmation dialog is over file selector
+
 2008-08-13
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fixed google map download problem.

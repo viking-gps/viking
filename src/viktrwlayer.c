@@ -1515,7 +1515,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
     }
     else
     {
-      if ( a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
+      if ( a_dialog_overwrite ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
       {
         gtk_widget_hide ( file_selector );
         failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type );
