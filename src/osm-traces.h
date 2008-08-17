@@ -25,6 +25,8 @@
 
 #include <glib.h>
 
+void osm_traces_init();
+
 void osm_traces_upload_file(const char *user,
 		            const char *password,
 		            const char *file,

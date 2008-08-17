@@ -39,6 +39,12 @@
 #include "osm-traces.h"
 #include "gpx.h"
 #include "background.h"
+#include "preferences.h"
+
+/* params will be geocaching.username, geocaching.password */
+/* we have to make sure these don't collide. */
+#define VIKING_OSM_TRACES_PARAMS_GROUP_KEY "osm_traces"
+#define VIKING_OSM_TRACES_PARAMS_NAMESPACE "osm_traces."
 
 /**
  * Login to use for OSM uploading.
@@ -66,6 +72,11 @@ typedef struct _OsmTracesInfo {
   VikTrwLayer *vtl;
   gchar *track_name;
 } OsmTracesInfo;
+
+static VikLayerParam prefs[] = {
+  { VIKING_OSM_TRACES_PARAMS_NAMESPACE "username", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM username:"), VIK_LAYER_WIDGET_ENTRY },
+  { VIKING_OSM_TRACES_PARAMS_NAMESPACE "password", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM password:"), VIK_LAYER_WIDGET_ENTRY },
+};
 
 /**
  * Free an OsmTracesInfo struct.
@@ -117,6 +128,19 @@ static gchar *get_login()
   user_pass = g_strdup_printf("%s:%s", user, password);
   g_mutex_unlock(login_mutex);
   return user_pass;
+}
+
+/* initialisation */
+void osm_traces_init () {
+  /* Preferences */
+  a_preferences_register_group ( VIKING_OSM_TRACES_PARAMS_GROUP_KEY, "OpenStreetMap traces" );
+
+  VikLayerParamData tmp;
+  tmp.s = "";
+  a_preferences_register(prefs, tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+  tmp.s = "";
+  a_preferences_register(prefs+1, tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+
 }
 
 /*
@@ -281,6 +305,9 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
                                                  GTK_RESPONSE_ACCEPT,
                                                  NULL);
 
+  const gchar *default_user = get_default_user();
+  const gchar *pref_user = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "username")->s;
+  const gchar *pref_password = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "password")->s;
   const gchar *name = NULL;
   GtkWidget *user_label, *user_entry;
   GtkWidget *password_label, *password_entry;
@@ -294,14 +321,12 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
 
   user_label = gtk_label_new(_("Email:"));
   user_entry = gtk_entry_new();
-  if (user != NULL)
+  if (user != NULL && user[0] != '\0')
     gtk_entry_set_text(GTK_ENTRY(user_entry), user);
-  else
-  {
-    const gchar *default_user = get_default_user();
-    if (default_user != NULL)
-      gtk_entry_set_text(GTK_ENTRY(user_entry), default_user);
-  }
+  else if (pref_user != NULL && pref_user[0] != '\0')
+    gtk_entry_set_text(GTK_ENTRY(user_entry), pref_user);
+  else if (default_user != NULL)
+    gtk_entry_set_text(GTK_ENTRY(user_entry), default_user);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( user_label );
@@ -312,8 +337,10 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
 
   password_label = gtk_label_new(_("Password:"));
   password_entry = gtk_entry_new();
-  if (password != NULL)
+  if (password != NULL && password[0] != '\0')
     gtk_entry_set_text(GTK_ENTRY(password_entry), password);
+  else if (pref_password != NULL)
+    gtk_entry_set_text(GTK_ENTRY(password_entry), pref_password);
   /* This is a password -> invisible */
   gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), password_label, FALSE, FALSE, 0);

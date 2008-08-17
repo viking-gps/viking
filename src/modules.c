@@ -31,6 +31,7 @@
 #include "khmaps.h"
 #include "expedia.h"
 #include "osm.h"
+#include "osm-traces.h"
 
 void modules_init()
 {
@@ -49,6 +50,7 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_OPENSTREETMAP
   osm_init();
+  osm_traces_init();
 #endif
 }
 

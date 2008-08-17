@@ -165,12 +165,13 @@ int main( int argc, char *argv[] )
 
   curl_download_init();
 
+  a_preferences_init ();
+
   /* Init modules/plugins */
   modules_init();
 
   a_mapcache_init ();
   a_background_init ();
-  a_preferences_init ();
 
 #ifdef VIK_CONFIG_GEOCACHES
   a_datasource_gc_init();
