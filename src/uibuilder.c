@@ -18,7 +18,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include "uibuilder.h"
 #include "vikradiogroup.h"
 #include "vikfileentry.h"
@@ -118,6 +123,18 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
       }
       break;
+    case VIK_LAYER_WIDGET_PASSWORD:
+      if ( param->type == VIK_LAYER_PARAM_STRING )
+      {
+        rv = gtk_entry_new ();
+        gtk_entry_set_visibility ( GTK_ENTRY(rv), FALSE );
+        gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
+#if GTK_CHECK_VERSION(2,12,0)
+	gtk_widget_set_tooltip_text ( GTK_WIDGET(rv),
+	                              _("Take care that this password will be stored clearly in a plain file.") );
+#endif
+      }
+      break;
     case VIK_LAYER_WIDGET_FILEENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
@@ -181,6 +198,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
         rv.d = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(widget) );
       break;
     case VIK_LAYER_WIDGET_ENTRY:
+    case VIK_LAYER_WIDGET_PASSWORD:
       rv.s = gtk_entry_get_text ( GTK_ENTRY(widget) );
       break;
     case VIK_LAYER_WIDGET_FILEENTRY:
