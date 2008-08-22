@@ -29,6 +29,7 @@
 #include "degrees_converters.h"
 #include "authors.h"
 #include "googlesearch.h"
+#include "util.h"
 
 #include <glib/gi18n.h>
 
@@ -572,32 +573,21 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
   return FALSE;
 }
 
+static void activate_url (GtkAboutDialog *about,
+                          const gchar    *link,
+                          gpointer        data)
+{
+  open_url(GTK_WINDOW(about), link);
+}
 
 void a_dialog_about ( GtkWindow *parent )
 {
-  int re;
-  char *msg = g_markup_printf_escaped (
-    _(_("<span font_desc='20' weight='bold'>Viking %s</span>\n\n"
-    "GPS Data and Topo Analyzer, Explorer, and Manager.\n\n"
-    "<small>(C) 2003-2008, Evan Battaglia</small>\n\n"
-    "<small>Web site: %s</small>")),
-    VIKING_VERSION, VIKING_URL);
-  GtkWidget *msgbox = gtk_message_dialog_new_with_markup ( parent, 
-							   GTK_DIALOG_DESTROY_WITH_PARENT, 
-							   GTK_MESSAGE_INFO, 
-							   GTK_BUTTONS_NONE,
-							   msg);
-
-  gtk_dialog_add_buttons (GTK_DIALOG(msgbox), _("Credits"), 1, _("License"), 2, _("Close"), 3, NULL, NULL);
-  
-  while ((re = gtk_dialog_run ( GTK_DIALOG(msgbox))) != 3) {
-    if (re==1) {
-      /* creds */
-      a_dialog_info_msg(parent, AUTHORS);
-    }
-    if (re==2) {
-      a_dialog_info_msg(parent, _("\n\n"
-			"This program is free software; you can redistribute it and/or modify "
+  const gchar *program_name = PACKAGE_NAME;
+  const gchar *version = VIKING_VERSION;
+  const gchar *website = VIKING_URL;
+  const gchar *copyright = "2003-2008, Evan Battaglia";
+  const gchar *comments = _("GPS Data and Topo Analyzer, Explorer, and Manager.");
+  const gchar *license = _("This program is free software; you can redistribute it and/or modify "
 			"it under the terms of the GNU General Public License as published by "
 			"the Free Software Foundation; either version 2 of the License, or "
 			"(at your option) any later version."
@@ -609,10 +599,21 @@ void a_dialog_about ( GtkWindow *parent )
 			"\n\n"
 			"You should have received a copy of the GNU General Public License "
 			"along with this program; if not, write to the Free Software "
-			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA"));
-    }
-  }
-  gtk_widget_destroy ( msgbox );
+			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA");
+
+  gtk_about_dialog_set_url_hook (activate_url, NULL, NULL);
+  gtk_show_about_dialog (parent,
+	/* TODO do not set program-name and correctly set info for g_get_application_name */
+  	"program-name", program_name,
+	"version", version,
+	"website", website,
+	"comments", comments,
+	"copyright", copyright,
+	"license", license,
+	"wrap-license", TRUE,
+	/* logo automatically retrieved via gtk_window_get_default_icon_list */
+	"authors", AUTHORS,
+	NULL);
 }
 
 gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_map, gchar *zoom_list[], gint default_zoom, gint *selected_map, gint *selected_zoom)

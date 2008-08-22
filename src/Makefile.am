@@ -10,8 +10,9 @@ noinst_LIBRARIES = libviking.a
 authors.h: ../AUTHORS
 	rm -f $@
 	echo "/* Generated file. */" >> $@
-	echo "#define AUTHORS \\" >> $@
-	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/\\n"\\/' -e '$$s/\\$$//' $< >> $@
+	echo "const gchar *AUTHORS[] = {\\" >> $@
+	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/",\\/' -e '$$s/\\$$//' $< >> $@
+	echo "NULL};" >> $@
 
 BUILT_SOURCES = authors.h
 
