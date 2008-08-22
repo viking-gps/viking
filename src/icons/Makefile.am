@@ -95,7 +95,15 @@ ICONS = \
   ruler_18.png \
   showpic_18.png \
   zoom_18.png \
-  iscissors_18.png
+  iscissors_18.png \
+  thumbnails.png \
+  vikaggregatelayer.png \
+  vikcoordlayer.png \
+  vikdemlayer.png \
+  vikgeoreflayer.png \
+  vikgpslayer.png \
+  vikmapslayer.png \
+  viktrwlayer.png
 
 CURSORS = \
   cursor_addtr.png \
@@ -114,27 +122,25 @@ CURSORS = \
 
 ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS) $(CURSORS)
 EXTRA_DIST = $(ALL_ICONS)
-ALL_ICONS_HEADER = $(ALL_ICONS:%.png=%.png_h)
+ALL_ICONS_HEADER = $(ALL_ICONS:%.png=%_pixmap.h)
 
 BUILT_SOURCES = $(ALL_ICONS_HEADER) icons.c icons.h
 CLEANFILES = $(BUILT_SOURCES)
-
-SUFFIXES = .png_h .png
 
 noinst_LIBRARIES = libicons.a
 libicons_a_SOURCES = icons.c icons.h
 
 icons.h: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
-	sed -n "s/^\(const.*\) = {/extern \1;/p" *_h >> $@
+	sed -n "s/^\(const.*\) = {/extern \1;/p" *_pixmap.h >> $@
 
 icons.c: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
 	echo "#include <gdk-pixbuf/gdk-pixdata.h>" >> $@
-	for file in *_h ; do echo "#include \"$$file\"" >> $@ ; done
+	for file in *_pixmap.h ; do echo "#include \"$$file\"" >> $@ ; done
 
-.png.png_h:
-	gdk-pixbuf-csource --name="`basename $< .png`" --struct --extern $< > $@
+%_pixmap.h: %.png
+	gdk-pixbuf-csource --name="`basename $< .png`_pixbuf" --struct --extern $< > $@
 	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp.h
 	mv temp.h $@
 

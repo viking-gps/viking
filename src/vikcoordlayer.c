@@ -25,7 +25,7 @@
 #include <glib/gi18n.h>
 
 #include "viking.h"
-#include "vikcoordlayer_pixmap.h"
+#include "icons/icons.h"
 
 static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len );
 static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
@@ -50,7 +50,7 @@ enum { PARAM_COLOR = 0, PARAM_MIN_INC, PARAM_LINE_THICKNESS, NUM_PARAMS };
 
 VikLayerInterface vik_coord_layer_interface = {
   "Coord",
-  &coordlayer_pixbuf,
+  &vikcoordlayer_pixbuf,
 
   NULL,
   0,

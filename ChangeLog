@@ -2,6 +2,7 @@
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Replace specific about dialog by GtkAboutDialog
 	* Replace some g_warning by g_debug
+	* Homogeneous icons management.
 
 2008-08-17
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

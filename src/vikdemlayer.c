@@ -42,8 +42,6 @@
 #include "vikaggregatelayer.h"
 #include "viklayerspanel.h"
 #include "vikdemlayer.h"
-#include "vikdemlayer_pixmap.h"
-#include "vikmapslayer.h"
 #include "dialog.h"
 
 #include "dem.h"
@@ -115,7 +113,7 @@ static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *eve
 static VikToolInterface dem_tools[] = {
   { N_("DEM Download/Import"), (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
     (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release,
-    (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_demdl },
+    (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_demdl_pixbuf },
 };
 
 
@@ -233,7 +231,7 @@ static const guint DEM_N_COLORS = sizeof(dem_colors)/sizeof(dem_colors[0]);
 
 VikLayerInterface vik_dem_layer_interface = {
   "DEM",
-  &demlayer_pixbuf,
+  &vikdemlayer_pixbuf,
 
   dem_tools,
   sizeof(dem_tools) / sizeof(dem_tools[0]),

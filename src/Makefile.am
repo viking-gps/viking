@@ -37,25 +37,25 @@ libviking_a_SOURCES = \
 	util.c util.h \
 	download.c download.h \
 	viktreeview.c viktreeview.h \
-	viktrwlayer.c viktrwlayer.h viktrwlayer_pixmap.h \
+	viktrwlayer.c viktrwlayer.h \
 	viklayer.c viklayer.h \
 	viklayerspanel.c viklayerspanel.h \
-	vikcoordlayer.c vikcoordlayer.h vikcoordlayer_pixmap.h \
+	vikcoordlayer.c vikcoordlayer.h \
 	vikstatus.c vikstatus.h \
 	vikwindow.c vikwindow.h \
 	vikviewport.c vikviewport.h \
-	vikaggregatelayer.c vikaggregatelayer.h vikaggregatelayer_pixmap.h \
-	vikgpslayer.c vikgpslayer.h vikgpslayer_pixmap.h \
-	vikgeoreflayer.c vikgeoreflayer.h vikgeoreflayer_pixmap.h \
+	vikaggregatelayer.c vikaggregatelayer.h \
+	vikgpslayer.c vikgpslayer.h \
+	vikgeoreflayer.c vikgeoreflayer.h \
 	vikfileentry.c vikfileentry.h \
 	viktrwlayer_tpwin.c viktrwlayer_tpwin.h \
 	viktrwlayer_propwin.c viktrwlayer_propwin.h \
-	thumbnails.c thumbnails.h thumbnails_pixbuf.h \
+	thumbnails.c thumbnails.h \
 	background.c background.h \
 	vikradiogroup.c vikradiogroup.h \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \
-	vikmapslayer.c vikmapslayer.h vikmapslayer_pixmap.h \
+	vikmapslayer.c vikmapslayer.h \
 	gtkcellrendererprogress.c gtkcellrendererprogress.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
@@ -69,7 +69,6 @@ libviking_a_SOURCES = \
 	googlesearch.c googlesearch.h \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
-	vikdemlayer_pixmap.h \
 	vikfilelist.c vikfilelist.h \
 	dems.c dems.h \
 	srtm_continent.c \

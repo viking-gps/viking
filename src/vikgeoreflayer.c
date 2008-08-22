@@ -24,7 +24,6 @@
 #endif
 
 #include "viking.h"
-#include "vikgeoreflayer_pixmap.h"
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
@@ -66,16 +65,16 @@ static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *e
 static VikToolInterface georef_tools[] = {
   { N_("Georef Move Map"), (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release,
-    (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_geomove },
+    (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_geomove_pixbuf },
 
   { N_("Georef Zoom Tool"), (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL,
-    (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_geozoom },
+    (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_geozoom_pixbuf },
 };
 
 VikLayerInterface vik_georef_layer_interface = {
   "GeoRef Map",
-  &georeflayer_pixbuf, /*icon */
+  &vikgeoreflayer_pixbuf, /*icon */
 
   georef_tools,
   sizeof(georef_tools) / sizeof(VikToolInterface),

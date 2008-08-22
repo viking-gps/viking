@@ -40,7 +40,7 @@
 #include <glib/gstdio.h>
 #include "viking.h"
 #include "thumbnails.h"
-#include "thumbnails_pixbuf.h"
+#include "icons/icons.h"
 
 #ifdef __CYGWIN__
 #ifdef __CYGWIN_USE_BIG_TYPES__
@@ -97,7 +97,7 @@ gboolean a_thumbnails_exists ( const gchar *filename )
 
 GdkPixbuf *a_thumbnails_get_default ()
 {
-  return gdk_pixbuf_from_pixdata ( &tnnyl_pixbuf, FALSE, NULL );
+  return gdk_pixbuf_from_pixdata ( &thumbnails_pixbuf, FALSE, NULL );
 }
 
 /* filename must be absolute. you could have a function to make sure it exists and absolutize it */

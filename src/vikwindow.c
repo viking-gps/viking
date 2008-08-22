@@ -872,7 +872,7 @@ static VikToolInterface ruler_tool =
     (VikToolMouseFunc) ruler_release,
     NULL,
     GDK_CURSOR_IS_PIXMAP,
-    &cursor_ruler };
+    &cursor_ruler_pixbuf };
 /*** end ruler code ********************************************************/
 
 
@@ -918,7 +918,7 @@ static VikToolInterface zoom_tool =
     (VikToolMouseFunc) zoomtool_release,
     NULL,
     GDK_CURSOR_IS_PIXMAP,
-    &cursor_zoom };
+    &cursor_zoom_pixbuf };
 /*** end zoom code ********************************************************/
 
 /********************************************************************************
@@ -2109,20 +2109,21 @@ static struct {
   const GdkPixdata *data;
   gchar *stock_id;
 } stock_icons[] = {
-  { &addtr_18,		"Create Track"      },
-  { &begintr_18,	"Begin Track"      },
-  { &edtr_18,		"Edit Trackpoint"   },
-  { &addwp_18,		"Create Waypoint"   },
-  { &edwp_18,		"Edit Waypoint"     },
-  { &iscissors_18,	"Magic Scissors"   },
-  { &mover_22,		"vik-icon-pan"     },
-  { &zoom_18,		"vik-icon-zoom"     },
-  { &ruler_18,		"vik-icon-ruler"    },
-  { &geozoom_18,	"Georef Zoom Tool"  },
-  { &geomove_18,	"Georef Move Map"   },
-  { &mapdl_18,		"Maps Download"     },
-  { &demdl_18,		"DEM Download/Import"     },
-  { &showpic_18,	"Show Picture"      },
+  { &begintr_18_pixbuf,		"Begin Track"      },
+  { &iscissors_18_pixbuf,	"Magic Scissors"   },
+  { &mover_22_pixbuf,		"vik-icon-pan"     },
+  { &demdl_18_pixbuf,		"DEM Download/Import"     },
+  { &showpic_18_pixbuf,		"Show Picture"      },
+  { &addtr_18_pixbuf,		"Create Track"      },
+  { &edtr_18_pixbuf,		"Edit Trackpoint"   },
+  { &addwp_18_pixbuf,		"Create Waypoint"   },
+  { &edwp_18_pixbuf,		"Edit Waypoint"     },
+  { &zoom_18_pixbuf,		"vik-icon-zoom"     },
+  { &ruler_18_pixbuf,		"vik-icon-ruler"    },
+  { &geozoom_18_pixbuf,		"Georef Zoom Tool"  },
+  { &geomove_18_pixbuf,		"Georef Move Map"   },
+  { &mapdl_18_pixbuf,		"Maps Download"     },
+  { &showpic_18_pixbuf,		"Show Picture"      },
 };
  
 static gint n_stock_icons = G_N_ELEMENTS (stock_icons);

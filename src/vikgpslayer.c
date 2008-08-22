@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "viking.h"
-#include "vikgpslayer_pixmap.h"
+#include "icons/icons.h"
 #include "babel.h"
 
 #include <string.h>
@@ -126,7 +126,7 @@ enum {
 
 VikLayerInterface vik_gps_layer_interface = {
   "GPS",
-  &gpslayer_pixbuf,
+  &vikgpslayer_pixbuf,
 
   NULL,
   0,

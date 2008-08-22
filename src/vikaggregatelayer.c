@@ -20,7 +20,7 @@
  */
 
 #include "viking.h"
-#include "vikaggregatelayer_pixmap.h"
+#include "icons/icons.h"
 
 #include <string.h>
 
@@ -33,7 +33,7 @@ static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikA
 
 VikLayerInterface vik_aggregate_layer_interface = {
   "Aggregate",
-  &aggregatelayer_pixbuf,
+  &vikaggregatelayer_pixbuf,
 
   NULL,
   0,
