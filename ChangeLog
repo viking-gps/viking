@@ -1,6 +1,7 @@
 2008-08-22
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Replace specific about dialog by GtkAboutDialog
+	* Replace some g_warning by g_debug
 
 2008-08-17
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
