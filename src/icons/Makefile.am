@@ -114,8 +114,9 @@ CURSORS = \
 
 ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS) $(CURSORS)
 EXTRA_DIST = $(ALL_ICONS)
+ALL_ICONS_HEADER = $(ALL_ICONS:%.png=%.png_h)
 
-BUILT_SOURCES = $(EXTRA_DIST:%.png=%.png_h) icons.c icons.h
+BUILT_SOURCES = $(ALL_ICONS_HEADER) icons.c icons.h
 CLEANFILES = $(BUILT_SOURCES)
 
 SUFFIXES = .png_h .png
@@ -123,11 +124,11 @@ SUFFIXES = .png_h .png
 noinst_LIBRARIES = libicons.a
 libicons_a_SOURCES = icons.c icons.h
 
-icons.h: $(ALL_ICONS:%.png=%.png_h)
+icons.h: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
 	sed -n "s/^\(const.*\) = {/extern \1;/p" *_h >> $@
 
-icons.c: $(ALL_ICONS:%.png=%.png_h)
+icons.c: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
 	echo "#include <gdk-pixbuf/gdk-pixdata.h>" >> $@
 	for file in *_h ; do echo "#include \"$$file\"" >> $@ ; done
@@ -136,6 +137,8 @@ icons.c: $(ALL_ICONS:%.png=%.png_h)
 	gdk-pixbuf-csource --name="`basename $< .png`" --struct --extern $< > $@
 	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp.h
 	mv temp.h $@
+
+$(BUILT_SOURCES): $(srcdir)/Makefile.am
 
 INCLUDES        = @GTK_CFLAGS@
 AM_CFLAGS       = -Wall -g -D_GNU_SOURCE

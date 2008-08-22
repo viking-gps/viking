@@ -15,6 +15,8 @@ authors.h: ../AUTHORS
 
 BUILT_SOURCES = authors.h
 
+$(BUILT_SOURCES): $(srcdir)/Makefile.am
+
 libviking_a_SOURCES = \
 	modules.h modules.c \
 	curl_download.c curl_download.h \
