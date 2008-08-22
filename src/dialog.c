@@ -573,11 +573,18 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
   return FALSE;
 }
 
-static void activate_url (GtkAboutDialog *about,
-                          const gchar    *link,
-                          gpointer        data)
+static void about_url_hook (GtkAboutDialog *about,
+                            const gchar    *link,
+                            gpointer        data)
 {
-  open_url(GTK_WINDOW(about), link);
+  open_url (GTK_WINDOW(about), link);
+}
+
+static void about_email_hook (GtkAboutDialog *about,
+                              const gchar    *email,
+                              gpointer        data)
+{
+  new_email (GTK_WINDOW(about), email);
 }
 
 void a_dialog_about ( GtkWindow *parent )
@@ -601,7 +608,8 @@ void a_dialog_about ( GtkWindow *parent )
 			"along with this program; if not, write to the Free Software "
 			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA");
 
-  gtk_about_dialog_set_url_hook (activate_url, NULL, NULL);
+  gtk_about_dialog_set_url_hook (about_url_hook, NULL, NULL);
+  gtk_about_dialog_set_email_hook (about_email_hook, NULL, NULL);
   gtk_show_about_dialog (parent,
 	/* TODO do not set program-name and correctly set info for g_get_application_name */
   	"program-name", program_name,

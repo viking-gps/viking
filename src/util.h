@@ -28,7 +28,7 @@
 #include <gtk/gtk.h>
 
 void open_url(GtkWindow *parent, const gchar * url);
+void new_email(GtkWindow *parent, const gchar * address);
 
 #endif
-
 
