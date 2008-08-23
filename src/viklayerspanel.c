@@ -509,7 +509,10 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
   gint type;
   GtkTreeIter iter;
   
-  g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
+  g_debug(__FUNCTION__);
+  if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
+    /* Nothing to do */
+    return;
 
   type = vik_treeview_item_get_type ( vlp->vt, &iter );
 
@@ -538,7 +541,9 @@ void vik_layers_panel_copy_selected ( VikLayersPanel *vlp )
   gint type;
   GtkTreeIter iter;
   
-  g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
+  if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
+    /* Nothing to do */
+    return;
 
   type = vik_treeview_item_get_type ( vlp->vt, &iter );
 
@@ -550,7 +555,9 @@ void vik_layers_panel_copy_selected ( VikLayersPanel *vlp )
 void vik_layers_panel_paste_selected ( VikLayersPanel *vlp )
 {
   GtkTreeIter iter;
-  g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
+  if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
+    /* Nothing to do */
+    return;
   a_clipboard_paste ( vlp );
 }
 
@@ -559,7 +566,9 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
   gint type;
   GtkTreeIter iter;
   
-  g_return_if_fail ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) );
+  if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
+    /* Nothing to do */
+    return;
 
   type = vik_treeview_item_get_type ( vlp->vt, &iter );
 

@@ -1,3 +1,7 @@
+2008-08-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Cut/Copy/Paste empty selection is not critical
+
 2008-06-23:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Layers panel UI improvements
