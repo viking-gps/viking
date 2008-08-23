@@ -305,8 +305,8 @@ static void window_init ( VikWindow *vw )
   gtk_window_set_default_size ( GTK_WINDOW(vw), VIKING_WINDOW_WIDTH, VIKING_WINDOW_HEIGHT);
 
   hpaned = gtk_hpaned_new ();
-  gtk_paned_add1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp) );
-  gtk_paned_add2 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vvp) );
+  gtk_paned_pack1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
+  gtk_paned_pack2 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vvp), TRUE, TRUE );
 
   /* This packs the button into the window (a gtk container). */
   gtk_box_pack_start (GTK_BOX(main_vbox), hpaned, TRUE, TRUE, 0);
@@ -1103,6 +1103,17 @@ static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
   }
   else
     a_dialog_info_msg ( GTK_WINDOW(vw), _("You must select a layer to delete.") );
+}
+
+static void view_side_panel_cb ( GtkAction *a, VikWindow *vw )
+{
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewSidePanel" );
+  g_assert(check_box);
+  gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
+  if ( state )
+    gtk_widget_show(GTK_WIDGET(vw->viking_vlp));
+  else
+    gtk_widget_hide(GTK_WIDGET(vw->viking_vlp));
 }
 
 /***************************************
@@ -1985,7 +1996,8 @@ static GtkRadioActionEntry tool_entries[] = {
 static GtkToggleActionEntry toggle_entries[] = {
   { "ShowScale", NULL,                   N_("Show Scale"),                    NULL,         NULL,                                           (GCallback)set_draw_scale, TRUE   },
   { "ShowCenterMark", NULL,                   N_("Show Center Mark"),                    NULL,         NULL,                                           (GCallback)set_draw_centermark, TRUE   },
-  { "FullScreen",    NULL,      N_("Full Screen"),                   "F11", NULL,                                           (GCallback)full_screen_cb, FALSE },
+  { "FullScreen",    GTK_STOCK_FULLSCREEN,      N_("Full Screen"),                   "F11", NULL,                                           (GCallback)full_screen_cb, FALSE },
+  { "ViewSidePanel", GTK_STOCK_INDEX,   N_("View Side Panel "),                   "F9",         NULL,                                           (GCallback)view_side_panel_cb, TRUE    },
 };
 
 #include "menu.xml.h"
