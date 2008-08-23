@@ -63,7 +63,7 @@ static GtkItemFactoryEntry base_entries[] = {
  { N_("/New Layer"), NULL, NULL, -1, "<Branch>" },
 };
 
-#define NUM_BASE_ENTRIES 5
+#define NUM_BASE_ENTRIES (sizeof(base_entries)/sizeof(base_entries[0]))
 
 static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter);
 static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text);
