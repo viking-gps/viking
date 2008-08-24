@@ -40,7 +40,7 @@ static VikLayerParamScale param_scales[] = {
 };
 
 static VikLayerParam coord_layer_params[] = {
-  { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Color:"), VIK_LAYER_WIDGET_ENTRY },
+  { "color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Color:"), VIK_LAYER_WIDGET_COLOR, 0 },
   { "min_inc", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Minutes Width:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
   { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Line Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
 };
@@ -101,7 +101,7 @@ struct _VikCoordLayer {
   GdkGC *gc;
   gdouble deg_inc;
   guint8 line_thickness;
-  gchar *color;
+  GdkColor *color;
 };
 
 GType vik_coord_layer_get_type ()
@@ -144,7 +144,7 @@ gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamDa
 {
   switch ( id )
   {
-    case PARAM_COLOR: if ( vcl->color ) g_free ( vcl->color ); vcl->color = g_strdup ( data.s ); break;
+    case PARAM_COLOR: if ( vcl->color ) gdk_color_free ( vcl->color ); vcl->color = gdk_color_copy( &(data.c)); break;
     case PARAM_MIN_INC: vcl->deg_inc = data.d / 60.0; break;
     case PARAM_LINE_THICKNESS: if ( data.u >= 1 && data.u <= 15 ) vcl->line_thickness = data.u; break;
   }
@@ -156,7 +156,15 @@ static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id 
   VikLayerParamData rv;
   switch ( id )
   {
-    case PARAM_COLOR: rv.s = vcl->color ? vcl->color : ""; break;
+    case PARAM_COLOR:
+      if (vcl->color)
+      {
+        rv.c.pixel = vcl->color->pixel;
+        rv.c.red = vcl->color->red;
+        rv.c.green = vcl->color->green;
+        rv.c.blue = vcl->color->blue;
+      }
+      break;
     case PARAM_MIN_INC: rv.d = vcl->deg_inc * 60.0; break;
     case PARAM_LINE_THICKNESS: rv.i = vcl->line_thickness; break;
   }
@@ -169,18 +177,26 @@ static void coord_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from
   if ( vcl->gc )
     g_object_unref ( G_OBJECT(vcl->gc) );
 
-  vcl->gc = vik_viewport_new_gc ( vp, vcl->color, vcl->line_thickness );
+  vcl->gc = vik_viewport_new_gc_from_color ( vp, vcl->color, vcl->line_thickness );
+
 }
 
 VikCoordLayer *vik_coord_layer_new ( )
 {
+  GdkColor InitColor;
+  
   VikCoordLayer *vcl = VIK_COORD_LAYER ( g_object_new ( VIK_COORD_LAYER_TYPE, NULL ) );
   vik_layer_init ( VIK_LAYER(vcl), VIK_LAYER_COORD );
+
+  InitColor.pixel = 0;
+	InitColor.red = 65535;
+	InitColor.green = 65535;
+	InitColor.blue = 65535;
 
   vcl->gc = NULL;
   vcl->deg_inc = 1.0/60.0;
   vcl->line_thickness = 3;
-  vcl->color = NULL;
+  vcl->color = gdk_color_copy (&InitColor);
   return vcl;
 }
 
@@ -198,9 +214,9 @@ void vik_coord_layer_draw ( VikCoordLayer *vcl, gpointer data )
     gdouble l, r, i, j;
     gint x1, y1, x2, y2, smod = 1, mmod = 1;
     gboolean mins = FALSE, secs = FALSE;
-    GdkGC *dgc = vik_viewport_new_gc(vp, vcl->color, vcl->line_thickness);
-    GdkGC *mgc = vik_viewport_new_gc(vp, vcl->color, MAX(vcl->line_thickness/2, 1));
-    GdkGC *sgc = vik_viewport_new_gc(vp, vcl->color, MAX(vcl->line_thickness/5, 1));
+    GdkGC *dgc = vik_viewport_new_gc_from_color(vp, vcl->color, vcl->line_thickness);
+    GdkGC *mgc = vik_viewport_new_gc_from_color(vp, vcl->color, MAX(vcl->line_thickness/2, 1));
+    GdkGC *sgc = vik_viewport_new_gc_from_color(vp, vcl->color, MAX(vcl->line_thickness/5, 1));
 
     vik_viewport_screen_to_coord ( vp, 0, 0, &left );
     vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), 0, &right );
@@ -355,20 +371,23 @@ void vik_coord_layer_free ( VikCoordLayer *vcl )
     g_object_unref ( G_OBJECT(vcl->gc) );
 
   if ( vcl->color != NULL )
-    g_free ( vcl->color );
+    gdk_color_free ( vcl->color );
 }
 
 static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp, const gchar *color )
 {
+  GdkColor InitColor;
+  
   if ( vcl->color )
-    g_free ( vcl->color );
+    gdk_color_free ( vcl->color );
 
-  vcl->color = g_strdup ( color );
+  gdk_color_parse( color, &InitColor);
+  vcl->color = gdk_color_copy( &InitColor );
 
   if ( vcl->gc )
     g_object_unref ( G_OBJECT(vcl->gc) );
 
-  vcl->gc = vik_viewport_new_gc ( vp, vcl->color, vcl->line_thickness );
+  vcl->gc = vik_viewport_new_gc_from_color ( vp, vcl->color, vcl->line_thickness );
 }
 
 VikCoordLayer *vik_coord_layer_create ( VikViewport *vp )
