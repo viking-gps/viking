@@ -1,0 +1,25 @@
+#VIKING GPS Data file http://viking.sf.net/
+
+xmpp=4096,000000
+ympp=4096,000000
+lat=38,822907
+lon=-104,901870
+mode=mercator
+color=#cccccc
+drawscale=t
+drawcentermark=t
+~Layer Coord
+name=BlueCoord
+color=blue
+min_inc=1,000000
+line_thickness=3
+~EndLayer
+
+
+~Layer Coord
+name=GreenCoord
+color=#00ff09
+min_inc=1,000000
+line_thickness=3
+~EndLayer
+

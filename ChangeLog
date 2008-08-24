@@ -1,3 +1,7 @@
+2008-06-24:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Color picker button for the Coordlayer properties dialog
+
 2008-08-23
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Cut/Copy/Paste empty selection is not critical

@@ -189,9 +189,9 @@ VikCoordLayer *vik_coord_layer_new ( )
   vik_layer_init ( VIK_LAYER(vcl), VIK_LAYER_COORD );
 
   InitColor.pixel = 0;
-	InitColor.red = 65535;
-	InitColor.green = 65535;
-	InitColor.blue = 65535;
+  InitColor.red = 65535;
+  InitColor.green = 65535;
+  InitColor.blue = 65535;
 
   vcl->gc = NULL;
   vcl->deg_inc = 1.0/60.0;
