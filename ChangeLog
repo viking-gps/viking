@@ -1,3 +1,7 @@
+2008-08-24
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix: update layer after applying properties
+
 2008-06-24:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Color picker button for the Coordlayer properties dialog

@@ -474,6 +474,7 @@ static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
       /* redraw (?) */
     case 2:
       vik_layer_post_read ( vl, vp, FALSE ); /* update any gc's */
+      vik_layer_emit_update ( vl );
     default:
       return TRUE;
   }
