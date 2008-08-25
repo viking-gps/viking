@@ -41,7 +41,7 @@
 #include "background.h"
 #include "preferences.h"
 
-/* params will be geocaching.username, geocaching.password */
+/* params will be osm_traces.username, osm_traces.password */
 /* we have to make sure these don't collide. */
 #define VIKING_OSM_TRACES_PARAMS_GROUP_KEY "osm_traces"
 #define VIKING_OSM_TRACES_PARAMS_NAMESPACE "osm_traces."
