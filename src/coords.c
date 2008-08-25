@@ -54,19 +54,9 @@ renaming functions and defining LatLon and UTM structs.
  */
 char *a_coords_dtostr ( double d )
 {
-  /* In order to ignore locale, we do all the stuff manually */
-  double integer, decimal;
-  integer = trunc(d);
-
-  /* 6 decimals are sufficient (~0,1m) */
-  /* Cf. http://www.tbs-sct.gc.ca/rpm-gbi/guides/Latlong_f.asp */
-  decimal = d - integer;
-  decimal = decimal * 1000000;
-  decimal = trunc ( decimal );
-  decimal = fabs ( decimal );
-
-  /* Format */
-  return g_strdup_printf ( "%g.%06g", integer, decimal );
+  gchar *buffer = g_malloc(G_ASCII_DTOSTR_BUF_SIZE*sizeof(gchar));
+  g_ascii_dtostr (buffer, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) d);
+  return buffer;
 }
 
 #define PIOVER180 0.01745329252
