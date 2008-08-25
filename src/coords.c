@@ -41,6 +41,8 @@ renaming functions and defining LatLon and UTM structs.
 #include <math.h>
 
 #include "viking.h"
+#include "globals.h"
+#include "degrees_converters.h"
 
 /**
  * Convert a double to a string WITHOUT LOCALE.
@@ -245,3 +247,29 @@ void a_coords_utm_to_latlon( const struct UTM *utm, struct LatLon *latlon )
     latlon->lon = longitude;
 
     }
+
+void a_coords_latlon_to_string ( const struct LatLon *latlon,
+				 gchar **lat,
+				 gchar **lon )
+{
+  g_return_if_fail ( latlon != NULL );
+
+  vik_degree_format_t format = a_vik_get_degree_format ();
+
+  switch (format) {
+  case VIK_DEGREE_FORMAT_DDD:
+    *lat = convert_lat_dec_to_ddd ( latlon->lat );
+    *lon = convert_lon_dec_to_ddd ( latlon->lon );
+    break;
+  case VIK_DEGREE_FORMAT_DMM:
+    *lat = convert_lat_dec_to_dmm ( latlon->lat );
+    *lon = convert_lon_dec_to_dmm ( latlon->lon );
+    break;
+  case VIK_DEGREE_FORMAT_DMS:
+    *lat = convert_lat_dec_to_dms ( latlon->lat );
+    *lon = convert_lon_dec_to_dms ( latlon->lon );
+    break;
+  default:
+    g_critical("Houston, we've had a problem. format=%d", format);
+  }
+}

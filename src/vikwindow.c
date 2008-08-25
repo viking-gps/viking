@@ -488,7 +488,9 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   static VikCoord coord;
   static struct UTM utm;
   static struct LatLon ll;
-  static char pointer_buf[36];
+  #define BUFFER_SIZE 50
+  static char pointer_buf[BUFFER_SIZE];
+  gchar *lat = NULL, *lon = NULL;
   gint16 alt;
   gdouble zoom;
   VikDemInterpol interpol_method;
@@ -498,6 +500,7 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
   a_coords_utm_to_latlon ( &utm, &ll );
+  a_coords_latlon_to_string ( &ll, &lat, &lon );
   /* Change interpolate method according to scale */
   zoom = vik_viewport_get_zoom(vw->viking_vvp);
   if (zoom > 2.0)
@@ -507,9 +510,13 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   else
     interpol_method = VIK_DEM_INTERPOL_BEST;
   if ((alt = a_dems_get_elev_by_coord(&coord, interpol_method)) != VIK_DEM_INVALID_ELEVATION)
-    g_snprintf ( pointer_buf, 36, _("Cursor: %f %f %dm"), ll.lat, ll.lon, alt );
+    g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dm"), lat, lon, alt );
   else
-    g_snprintf ( pointer_buf, 36, _("Cursor: %f %f"), ll.lat, ll.lon );
+    g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s"), lat, lon );
+  g_free (lat);
+  lat = NULL;
+  g_free (lon);
+  lon = NULL;
   vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
 
   vik_window_pan_move ( vw, event );
@@ -782,14 +789,16 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
   VikCoord coord;
   gchar *temp;
   if ( event->button == 1 ) {
+    gchar *lat=NULL, *lon=NULL;
     vik_viewport_screen_to_coord ( s->vvp, (gint) event->x, (gint) event->y, &coord );
     vik_coord_to_latlon ( &coord, &ll );
+    a_coords_latlon_to_string ( &ll, &lat, &lon );
     if ( s->has_oldcoord ) {
-      temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+      temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
       s->has_oldcoord = FALSE;
     }
     else {
-      temp = g_strdup_printf ( "%f %f", ll.lat, ll.lon );
+      temp = g_strdup_printf ( "%s %s", lat, lon );
       s->has_oldcoord = TRUE;
     }
 
@@ -817,6 +826,7 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
   if ( s->has_oldcoord ) {
     int oldx, oldy, w1, h1, w2, h2;
     static GdkPixmap *buf = NULL;
+    gchar *lat=NULL, *lon=NULL;
     w1 = vik_viewport_get_width(vvp); 
     h1 = vik_viewport_get_height(vvp);
     if (!buf) {
@@ -843,8 +853,8 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
     }
-
-    temp = g_strdup_printf ( "%f %f DIFF %f meters", ll.lat, ll.lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+    a_coords_latlon_to_string(&ll, &lat, &lon);
+    temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
     vik_statusbar_set_message ( vw->viking_vs, 3, temp );
     g_free ( temp );
   }

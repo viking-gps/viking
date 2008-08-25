@@ -49,4 +49,16 @@ extern gboolean vik_debug;
 extern gboolean vik_verbose;
 extern gboolean vik_version;
 
+/* Glbal preferences */
+void a_vik_preferences_init ();
+
+/* Coord display preferences */
+typedef enum {
+  VIK_DEGREE_FORMAT_DDD,
+  VIK_DEGREE_FORMAT_DMM,
+  VIK_DEGREE_FORMAT_DMS,
+} vik_degree_format_t;
+
+vik_degree_format_t a_vik_get_degree_format ( );
+
 #endif

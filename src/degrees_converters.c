@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <string.h>
 
+#define DEGREE_SYMBOL "\302\260"
+
 /**
  * @param pos_c char for positive value
  * @param neg_c char for negative value
@@ -44,8 +46,7 @@ static gchar *convert_dec_to_ddd(gdouble dec, gchar pos_c, gchar neg_c)
   val_d = fabs(dec);
 
   /* Format */
-  /* TODO : replace "°" as UTF-8 */
-  result = g_strdup_printf ( "%c%f°", sign_c, val_d );
+  result = g_strdup_printf ( "%c%f" DEGREE_SYMBOL, sign_c, val_d );
   return result;
 }
 
@@ -86,8 +87,7 @@ static gchar *convert_dec_to_dmm(gdouble dec, gchar pos_c, gchar neg_c)
   val_m = (tmp - val_d) * 60;
 
   /* Format */
-  /* TODO : replace "°" as UTF-8 */
-  result = g_strdup_printf ( "%c%d°%f'",
+  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%f'",
                              sign_c, val_d, val_m );
   return result;
 }
@@ -133,8 +133,7 @@ static gchar *convert_dec_to_dms(gdouble dec, gchar pos_c, gchar neg_c)
   val_s = (tmp - val_m) * 60;
 
   /* Format */
-  /* TODO : replace "°" as UTF-8 */
-  result = g_strdup_printf ( "%c%d°%d'%f\"",
+  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%d'%f\"",
                              sign_c, val_d, val_m, val_s );
   return result;
 }

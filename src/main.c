@@ -30,6 +30,7 @@
 #include "dems.h"
 #include "curl_download.h"
 #include "preferences.h"
+#include "globals.h"
 
 #ifdef VIK_CONFIG_GEOCACHES
 void a_datasource_gc_init();
@@ -166,6 +167,8 @@ int main( int argc, char *argv[] )
   curl_download_init();
 
   a_preferences_init ();
+
+  a_vik_preferences_init ();
 
   /* Init modules/plugins */
   modules_init();

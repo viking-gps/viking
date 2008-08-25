@@ -65,6 +65,11 @@ double a_coords_latlon_diff ( const struct LatLon *ll1, const struct LatLon *ll2
  */
 char *a_coords_dtostr ( double d );
 
-
+/**
+ * Convert a LatLon to strings.
+ *
+ * Use the prefered representation.
+ */
+void a_coords_latlon_to_string ( const struct LatLon *latlon, gchar **lat, gchar **lon );
 
 #endif
