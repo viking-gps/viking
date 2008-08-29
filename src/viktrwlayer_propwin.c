@@ -843,7 +843,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     gtk_table_attach_defaults ( table, content[i], 1, 2, i, i+1 );
   }
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(table), FALSE, FALSE, 0);
+  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Statistics")));
 
   if ( profile )
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), profile, gtk_label_new(_("Elevation-distance")));
