@@ -76,7 +76,8 @@ typedef struct _propwidgets {
   GtkWidget *w_time_start;
   GtkWidget *w_time_end;
   GtkWidget *w_time_dur;
-  GtkWidget *w_dist_time;
+  GtkWidget *w_cur_dist; /*< Current distance */
+  GtkWidget *w_cur_time; /*< Current time */
   gdouble   track_length;
   PropSaved elev_graph_saved_img;
   PropSaved speed_graph_saved_img;
@@ -262,10 +263,10 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
 
   gdouble meters_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH, &meters_from_start );
-  if (trackpoint && widgets->w_dist_time) {
+  if (trackpoint && widgets->w_cur_dist) {
     static gchar tmp_buf[20];
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m", meters_from_start);
-    gtk_label_set_text(GTK_LABEL(widgets->w_dist_time), tmp_buf);
+    gtk_label_set_text(GTK_LABEL(widgets->w_cur_dist), tmp_buf);
   }
 }
 
@@ -289,7 +290,7 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
 
   time_t seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH, &seconds_from_start );
-  if (trackpoint && widgets->w_dist_time) {
+  if (trackpoint && widgets->w_cur_time) {
     static gchar tmp_buf[20];
     guint h, m, s;
     h = seconds_from_start/3600;
@@ -297,7 +298,7 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
     s = seconds_from_start - (3600*h) - (60*m);
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
 
-    gtk_label_set_text(GTK_LABEL(widgets->w_dist_time), tmp_buf);
+    gtk_label_set_text(GTK_LABEL(widgets->w_cur_time), tmp_buf);
   }
 }
 
@@ -693,6 +694,22 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
   }
 }
 
+static GtkWidget *create_graph_page ( GtkWidget *graph,
+				      const gchar *markup,
+				      GtkWidget *value)
+{
+  GtkWidget *hbox = gtk_hbox_new ( FALSE, 10 );
+  GtkWidget *vbox = gtk_vbox_new ( FALSE, 10 );
+  GtkWidget *label = gtk_label_new (NULL);
+  gtk_box_pack_start (GTK_BOX(vbox), graph, FALSE, FALSE, 0);
+  gtk_label_set_markup ( GTK_LABEL(label), markup );
+  gtk_box_pack_start (GTK_BOX(hbox), label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(hbox), value, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+  
+  return vbox;
+}
+
 void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *track_name )
 {
   /* FIXME: free widgets when destroy signal received */
@@ -732,7 +749,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   int cnt;
   int i;
 
-  static gchar *label_texts[] = { N_("<b>Comment:</b>"), N_("<b>Track Length:</b>"), N_("<b>Trackpoints:</b>"), N_("<b>Segments:</b>"), N_("<b>Duplicate Points:</b>"), N_("<b>Max Speed:</b>"), N_("<b>Avg. Speed:</b>"), N_("<b>Avg. Dist. Between TPs:</b>"), N_("<b>Elevation Range:</b>"), N_("<b>Total Elevation Gain/Loss:</b>"), N_("<b>Start:</b>"), N_("<b>End:</b>"), N_("<b>Duration:</b>"), N_("<b>Track Distance/Time:</b>") };
+  static gchar *label_texts[] = { N_("<b>Comment:</b>"), N_("<b>Track Length:</b>"), N_("<b>Trackpoints:</b>"), N_("<b>Segments:</b>"), N_("<b>Duplicate Points:</b>"), N_("<b>Max Speed:</b>"), N_("<b>Avg. Speed:</b>"), N_("<b>Avg. Dist. Between TPs:</b>"), N_("<b>Elevation Range:</b>"), N_("<b>Total Elevation Gain/Loss:</b>"), N_("<b>Start:</b>"), N_("<b>End:</b>"), N_("<b>Duration:</b>") };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 
@@ -826,7 +843,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     widgets->w_time_end = content[cnt++] = gtk_label_new(_("No Data"));
     widgets->w_time_dur = content[cnt++] = gtk_label_new(_("No Data"));
   }
-  widgets->w_dist_time = content[cnt++] = gtk_label_new(_("No Data"));
 
   table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
@@ -845,11 +861,19 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
 
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Statistics")));
 
-  if ( profile )
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), profile, gtk_label_new(_("Elevation-distance")));
+  if ( profile ) {
+    GtkWidget *page = NULL;
+    widgets->w_cur_dist = gtk_label_new(_("No Data"));
+    page = create_graph_page (profile, _("<b>Track Distance:</b>"), widgets->w_cur_dist );
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
+  }
 
-  if ( vtdiag )
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), vtdiag, gtk_label_new(_("Speed-time")));
+  if ( vtdiag ) {
+    GtkWidget *page = NULL;
+    widgets->w_cur_time = gtk_label_new(_("No Data"));
+    page = create_graph_page (vtdiag, _("<b>Track Time:</b>"), widgets->w_cur_time );
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
+  }
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
 
