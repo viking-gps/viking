@@ -2,16 +2,16 @@
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* QA: removing specific GtkCellRenderer
 
-2008-08-30:
+2008-08-30
 Armin Moser <armin.moser@student.tugraz.at>:
 	* add osm cycle layer support
 	* add a menu entry to extend an existing track using magic scissors
 
-2008-08-30:
+2008-08-30
 anonymous:
 	* Patch #2009666: OpenAerialMap
 
-2008-08-30:
+2008-08-30
 Rob Norris <robbieonsea@users.sourceforge.net>:
 	* Fix #1952523: mode_button assertion loading old datafile
 
@@ -23,7 +23,7 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix: update layer after applying properties
 
-2008-06-24:
+2008-06-24
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Color picker button for the Coordlayer properties dialog
 
@@ -31,7 +31,7 @@ Mathieu Albinet <mathieu17@gmail.com>:
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Cut/Copy/Paste empty selection is not critical
 
-2008-06-23:
+2008-06-23
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Layers panel UI improvements
 
@@ -68,11 +68,11 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Google maps no longer worked due to changes made by Google.
 	  The Problems now fixed.
 
-2008-07-21:
+2008-07-21
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Release Viking 0.9.5
 
-2008-07-18:
+2008-07-18
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Install man pages
 	* Update translations
@@ -81,11 +81,11 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 Quy Tonthat <qtonthat@gmail.com>:
 	* Added viking.desktop
 
-2008-07-13:
+2008-07-13
 Rob Norris <robbieonsea@users.sourceforge.net>:
 	* Fix #1947456: Compiler warning fixes
 
-2008-07-09:
+2008-07-09
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Update translations
 
@@ -98,11 +98,11 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Track properties: Keep markers of the graphs in sync with each
 	other.
 
-2008-06-29:
+2008-06-29
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Windows port: fallback temporary file
 
-2008-06-29:
+2008-06-29
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: typo in util.c
 
@@ -118,7 +118,7 @@ Quy Tonthat <qtonthat@gmail.com>:
 Quy Tonthat <qtonthat@gmail.com>:
 	* RELEASE: Test release 0.9.4.20080614 (by Guilhem)
 
-2008-06-09:
+2008-06-09
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: redefine LOCALEDIR
 
@@ -127,59 +127,59 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* viking no longer converts waypoint names to uppercase. Waypoint names
 	are now case insensitive.
 
-2008-06-02:
+2008-06-02
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: remove "/dev/null" use
 
-2008-05-08:
+2008-05-08
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: rename interface to source_interface
 	* Portability: replace mmap functions by g_mapped_file*
 	* Portability: use of g_ascii_dtostr to format google url
 
-2008-05-02:
+2008-05-02
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Update man page
 
-2008-05-01:
+2008-05-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add file content checking process
 
-2008-05-01:
+2008-05-01
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Remove dependency to wget
 
-2008-05-01:
+2008-05-01
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Adding --debug and --verbose command line option
 
-2008-04-26:
+2008-04-26
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix pipe leaks
 
-2008-04-26:
+2008-04-26
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: provide our own curl WRITE function
 
-2008-04-22:
+2008-04-22
 Robert Norris <rw_norris@hotmail.com>:
 	* Fix: Initalize tv_usec field.
 	* Fix for implicit declaration of function 'g_fopen'
 
-2008-04-21:
+2008-04-21
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Bug #1915121: add an utility to reproduce (test/gpx2gpx)
 	* Fix #1915121: use GLib functions to handle ISO8601 dates
 
-2008-04-16:
+2008-04-16
 Tim Scofield <nospam546@comcast.net>:
 	* Fix: typo false -> FALSE
 
-2008-04-12:
+2008-04-12
 Mathieu Albinet <mathieu17@gmail.com>:
 	* M_PI already defined
 
-2008-04-12:
+2008-04-12
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: reduce unistd.h dependency
@@ -187,52 +187,52 @@ Mathieu Albinet <mathieu17@gmail.com>:
 	* Portability: replace deprecated bzero function by memset
 	* Portability: remove dirname needs with g_mkdir_with_parents
 
-2008-03-27:
+2008-03-27
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Replace GtkFileSelection by GtkFileChooser
 
-2008-03-24:
+2008-03-24
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Merge icons in a single binary object
 
-2008-03-15:
+2008-03-15
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix: [ 1839948 ] Maximize/Restore changes current cursor
 	* Add panning tool as default
 
-2008-02-25:
+2008-02-25
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* po/ChangeLog: needed file for distribution
 
-2008-02-25:
+2008-02-25
 Rob Norris <robbieonsea@users.sourceforge.net>:
 	* Fix: autogen can generate broken configure file (SF#1881475)
 	* Fix some compiler warnings (SF#1888407)
 
-2008-02-24:
+2008-02-24
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Change OSM's tiles URL
 
-2008-02-22:
+2008-02-22
 Michael A. Peters <mpeters@mac.com>:
 	* viking.spec: Correct license, required packages and local.
 
-2008-02-20:
+2008-02-20
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Update translations
 
-2008-02-16:
+2008-02-16
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* main.c: I18N improvements
 	* French translation update
 
-2008-02-16:
+2008-02-16
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* I18N improvements
 	* French translation update
 	(both submitted the 2008-01-12 on mailing-list)
 
-2008-01-22:
+2008-01-22
 Alex Foobarian <foobarian@gmail.com>:
 	* Fix a crash bug in merge-by-time reported by Evan <gtoevan@gmx.net>
 
@@ -241,17 +241,17 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a crash bug in mapcache reported by Jocelyn <jocelyn.jaubert@gmail.com>
 	* Added mutex to protect mapcache from being corrupted by threads.
 
-2008-01-04:
+2008-01-04
 Alex Foobarian <foobarian@gmail.com>:
 	* Tuned the v-t diagram drawing
 	
-2007-12-27:
+2007-12-27
 Evan Battaglia <gtoevan@gmx.net>:
 	* Minor fixes/debugging to gcget. Add gcget-perl
 	* Full screen mode.
 	* Bugfix for prefernces -- don't cut off last character of password
 
-2007-12-27:
+2007-12-27
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Add GpxWritingOptions to control GPX file writing
 
@@ -265,15 +265,15 @@ Evan Battaglia <gtoevan@gmx.net>:
 	* Fix gcget to accept username and password. Pass this in to gcget.
 	* Oops! Reading preferences from the file wasn't working. Fixed.
 
-2007-12-21:
+2007-12-21
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Update French translation
 
-2007-12-21:
+2007-12-21
 Christoph Eckert <ce@christeck.de>:
 	* Update source for OSM/Osmarender tiles
 
-2007-12-20:
+2007-12-20
 Evan Battaglia <gtoevan@gmx.net>:
 	* Preferences in ~/.viking/viking.prefs, this will soon allow geocaching support to go mainstream, (hopefully)
 
@@ -282,32 +282,32 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Revert a previous change that disabled realtime tracking if libgps
 	does not exist.
 
-2007-12-17:
+2007-12-17
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Use specific gettext call for plural form
 
-2007-12-16:
+2007-12-16
 Evan Battaglia <gtoevan@gmx.net>:
 	* Sort waypoints in GPX output.
 	* Use the "next unused" (not really) waypoint number as default.
 
-2007-12-15:
+2007-12-15
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix compilation under HURD (missing MAXPATHLEN macro)
 	* Fix: if libgps is missing, Realtime GPS Tracking is disabled
 
-2007-12-15:
+2007-12-15
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Make menu entries translatable
 	* Mark many strings translatable
 	* Update french translation
 
-2007-12-12:
+2007-12-12
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Marking translatable strings
 	* First french translation (incomplete)
 
-2007-12-12:
+2007-12-12
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix warning: underquoted definition of AM_WITH_EXPAT
 	* Fix bug: "config.status: error: cannot find input file: Makefile.in"
@@ -324,24 +324,24 @@ Evan Battaglia <gtoevan@gmx.net>:
 	* Google Terrain maps
 	* Disable printing to make Viking compile for GTK < 2.10
 
-2007-11-27:
+2007-11-27
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* util.c: Use a list of possible browsers.
 
-2007-11-20:
+2007-11-20
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix a bug that can potentially cause segfault.
 
-2007-11-19:
+2007-11-19
 Quy Tonthat <qtonthat@gmail.com>:
 	* Improve track graphs. Some tracks looked too flat.
 
-2007-11-09:
+2007-11-09
 Evan Battaglia <gtoevan@gmx.net>:
 	* GPSBabel filter work I've been sitting on for a while now.
 	* Draw circle for downloading geocaches. Constrain by maximum distance.
 
-2007-11-08:
+2007-11-08
 Quy Tonthat <qtonthat@gmail.com>:
 	* Printing support
 
