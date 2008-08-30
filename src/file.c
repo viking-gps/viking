@@ -172,6 +172,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
   Stack *stack = NULL;
   VikLayer *current_layer;
   struct LatLon ll;
+  VikViewportDrawMode mode;
   gchar *modestring;
 
   push(&stack);
@@ -181,12 +182,15 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
   /* crazhy CRAZHY */
   vik_coord_to_latlon ( vik_viewport_get_center ( VIK_VIEWPORT(vp) ), &ll );
 
-  switch ( vik_viewport_get_drawmode ( VIK_VIEWPORT(vp) ) ) {
+  mode = vik_viewport_get_drawmode ( VIK_VIEWPORT(vp) );
+  switch ( mode ) {
     case VIK_VIEWPORT_DRAWMODE_UTM: modestring = "utm"; break;
     case VIK_VIEWPORT_DRAWMODE_EXPEDIA: modestring = "expedia"; break;
     case VIK_VIEWPORT_DRAWMODE_GOOGLE: modestring = "google"; break;
     case VIK_VIEWPORT_DRAWMODE_KH: modestring = "kh"; break;
-    default: modestring = "mercator";
+    case VIK_VIEWPORT_DRAWMODE_MERCATOR: modestring = "mercator"; break;
+    default:
+      g_critical("Houston, we've had a problem. mode=%d", mode);
   }
 
   fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\ndrawscale=%s\ndrawcentermark=%s",
