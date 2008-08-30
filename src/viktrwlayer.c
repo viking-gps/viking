@@ -2018,11 +2018,28 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
   VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
 
   vtl->current_track = track;
-  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );
+  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK);
 
   if ( track->trackpoints )
     goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
 }
+
+/* schrodkatz extend a track using magic scissors */
+static void trw_layer_extend_track_end_ms ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  VikCoord last_coord = (((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord);
+
+  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, NUM_TOOLS );
+  vtl->magic_scissors_coord =  last_coord;
+  vtl->magic_scissors_current_track = track;
+
+  if ( track->trackpoints )
+    goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &last_coord) ;
+
+}
+/* end schrodkatz extend with magic scissors */
 
 static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
 {
@@ -2530,6 +2547,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_label ( "Extend track end" );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_label ( "Extend using magic scissors");
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end_ms), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
