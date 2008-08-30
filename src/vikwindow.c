@@ -1319,6 +1319,7 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
 #endif
 #ifdef VIK_CONFIG_OLD_GOOGLE
     case VIK_VIEWPORT_DRAWMODE_GOOGLE: buttonname = "/ui/MainMenu/View/ModeGoogle"; break;
+    case VIK_VIEWPORT_DRAWMODE_KH: buttonname = "/ui/MainMenu/View/ModeKH"; break;
 #endif
     case VIK_VIEWPORT_DRAWMODE_MERCATOR: buttonname = "/ui/MainMenu/View/ModeMercator"; break;
     default: buttonname = "/ui/MainMenu/View/ModeUTM";
