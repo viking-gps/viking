@@ -395,7 +395,9 @@ static void draw_status ( VikWindow *vw )
 
 void vik_window_set_redraw_trigger(VikLayer *vl)
 {
-  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl));
+  VikWindow *vw = NULL;
+  if (NULL != VIK_LAYER(vl)->vt)
+    VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl));
   if (NULL != vw)
     vw->trigger = vl;
 }
