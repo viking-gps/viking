@@ -1314,11 +1314,14 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
   GtkWidget *mode_button;
   gchar *buttonname;
   switch ( mode ) {
-    case VIK_VIEWPORT_DRAWMODE_UTM: buttonname = "/ui/MainMenu/View/ModeUTM"; break;
+#ifdef VIK_CONFIG_EXPEDIA
     case VIK_VIEWPORT_DRAWMODE_EXPEDIA: buttonname = "/ui/MainMenu/View/ModeExpedia"; break;
+#endif
+#ifdef VIK_CONFIG_OLD_GOOGLE
     case VIK_VIEWPORT_DRAWMODE_GOOGLE: buttonname = "/ui/MainMenu/View/ModeGoogle"; break;
+#endif
     case VIK_VIEWPORT_DRAWMODE_MERCATOR: buttonname = "/ui/MainMenu/View/ModeMercator"; break;
-    default: buttonname = "/ui/MainMenu/View/ModeKH";
+    default: buttonname = "/ui/MainMenu/View/ModeUTM";
   }
   mode_button = gtk_ui_manager_get_widget ( vw->uim, buttonname );
   g_assert ( mode_button );
