@@ -36,6 +36,7 @@ static void osm_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
 static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
+static int osm_cycle_download ( MapCoord *src, const gchar *dest_fn );
 static int bluemarble_download ( MapCoord *src, const gchar *dest_fn );
 static int openaerialmap_download ( MapCoord *src, const gchar *dest_fn );
 
@@ -45,6 +46,7 @@ static DownloadOptions osm_options = { NULL, 0, a_check_map_file };
 void osm_init () {
   VikMapsLayer_MapType osmarender_type = { 12, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_osmarender_download };
   VikMapsLayer_MapType mapnik_type = { 13, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_mapnik_download };  VikMapsLayer_MapType maplint_type = { 14, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_maplint_download };
+  VikMapsLayer_MapType cycle_type = { 17, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_cycle_download };
 
   VikMapsLayer_MapType bluemarble_type = { 15, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, bluemarble_download };
 
@@ -53,6 +55,7 @@ void osm_init () {
   maps_layer_register_type("OpenStreetMap (Osmarender)", 12, &osmarender_type);
   maps_layer_register_type("OpenStreetMap (Mapnik)", 13, &mapnik_type);
   maps_layer_register_type("OpenStreetMap (Maplint)", 14, &maplint_type);
+  maps_layer_register_type("OpenStreetMap (Cycle)", 17, &cycle_type);
 
   maps_layer_register_type("BlueMarble", 15, &bluemarble_type);
   maps_layer_register_type("OpenAerialMap", 20, &openaerialmap_type);
@@ -148,6 +151,15 @@ static int openaerialmap_download ( MapCoord *src, const gchar *dest_fn )
    gchar *uri = g_strdup_printf ( "/tiles/1.0.0/openaerialmap-900913/%d/%d/%d.jpg", 17-src->scale, src->x, src->y );
    res = a_http_download_get_url ( "tile.openaerialmap.org", uri, dest_fn, &osm_options );
 
+   g_free ( uri );
+   return res;
+}
+
+static int osm_cycle_download ( MapCoord *src, const gchar *dest_fn )
+{
+   int res = -1;
+   gchar *uri = g_strdup_printf ( "%d/%d/%d.png", 17-src->scale, src->x, src->y );
+   res = a_http_download_get_url ( "thunderflames.org/tiles/cycle/", uri, dest_fn, &osm_options );
    g_free ( uri );
    return res;
 }
