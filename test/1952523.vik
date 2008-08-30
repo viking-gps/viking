@@ -1,0 +1,10 @@
+#VIKING GPS Data file http://viking.sf.net/
+
+xmpp=0,125000
+ympp=0,125000
+lat=42,669448
+lon=-103,426767
+mode=expedia
+color=#cccccc
+drawscale=t
+drawcentermark=t
