@@ -1,4 +1,8 @@
 2008-08-30:
+anonymous:
+	* Patch #2009666: OpenAerialMap
+
+2008-08-30:
 Rob Norris <robbieonsea@users.sourceforge.net>:
 	* Fix #1952523: mode_button assertion loading old datafile
 

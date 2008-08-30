@@ -55,7 +55,7 @@ void osm_init () {
   maps_layer_register_type("OpenStreetMap (Maplint)", 14, &maplint_type);
 
   maps_layer_register_type("BlueMarble", 15, &bluemarble_type);
-  maps_layer_register_type("openarealmap", 20, &openarealmap_type);
+  maps_layer_register_type("OpenAerialMap", 20, &openarealmap_type);
 }
 
 /* 1 << (x) is like a 2**(x) */
