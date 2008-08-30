@@ -2024,7 +2024,9 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
     goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
 }
 
-/* schrodkatz extend a track using magic scissors */
+/**
+ * extend a track using magic scissors
+ */
 static void trw_layer_extend_track_end_ms ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
@@ -2039,7 +2041,6 @@ static void trw_layer_extend_track_end_ms ( gpointer pass_along[6] )
     goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &last_coord) ;
 
 }
-/* end schrodkatz extend with magic scissors */
 
 static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
 {
@@ -2545,12 +2546,12 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Extend track end" );
+    item = gtk_menu_item_new_with_label ( _("Extend track end") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( "Extend using magic scissors");
+    item = gtk_menu_item_new_with_label ( _("Extend using magic scissors") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end_ms), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
@@ -2564,13 +2565,13 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     if ( is_valid_google_route ( l, (gchar *) sublayer ) )
     {
-      item = gtk_menu_item_new_with_label ( "View Google Directions" );
+      item = gtk_menu_item_new_with_label ( _("View Google Directions") );
       g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_google_route_webpage), pass_along );
       gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
       gtk_widget_show ( item );
     }
 
-    item = gtk_menu_item_new_with_label ( "Use with filter" );
+    item = gtk_menu_item_new_with_label ( _("Use with filter") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_use_with_filter), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
