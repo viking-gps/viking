@@ -24,7 +24,6 @@
 
 #include "vikstatus.h"
 #include "background.h"
-#include "gtkcellrendererprogress.h"
 
 static GtkWidget *bgwindow = NULL;
 static GtkWidget *bgtreeview = NULL;
@@ -36,7 +35,7 @@ static gint bgitemcount = 0;
 
 enum
 {
-  TITLE_COLUMN,
+  TITLE_COLUMN = 0,
   PROGRESS_COLUMN,
   DATA_COLUMN,
   N_COLUMNS,
@@ -61,7 +60,7 @@ void a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
   gpointer *args = (gpointer *) callbackdata;
   a_background_testcancel ( callbackdata );
   gdk_threads_enter();
-  gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, fraction, -1 );
+  gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, fraction*100, -1 );
   gdk_threads_leave();
 
   args[6] = GINT_TO_POINTER(GPOINTER_TO_INT(args[6])-1);
@@ -105,6 +104,8 @@ void thread_helper ( gpointer args[6] )
   vik_thr_func func = args[1];
   gpointer userdata = args[2];
 
+  g_debug(__FUNCTION__);
+
   func ( userdata, args );
 
   gdk_threads_enter();
@@ -120,6 +121,8 @@ void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func
   GtkTreeIter *piter = g_malloc ( sizeof ( GtkTreeIter ) );
   gpointer *args = g_malloc ( sizeof(gpointer) * 7 );
 
+  g_debug(__FUNCTION__);
+
   args[0] = GINT_TO_POINTER(0);
   args[1] = func;
   args[2] = userdata;
@@ -131,7 +134,11 @@ void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func
   bgitemcount += number_items;
 
   gtk_list_store_append ( bgstore, piter );
-  gtk_list_store_set ( bgstore, piter, TITLE_COLUMN, message, PROGRESS_COLUMN, 0.0, DATA_COLUMN, args, -1 );
+  gtk_list_store_set ( bgstore, piter,
+		       TITLE_COLUMN, message,
+		       PROGRESS_COLUMN, 0.0,
+		       DATA_COLUMN, args,
+		       -1 );
 
   /* run the thread in the background */
   g_thread_create( (GThreadFunc) thread_helper, args, FALSE, NULL );
@@ -145,6 +152,9 @@ void a_background_show_window ()
 static void cancel_job_with_iter ( GtkTreeIter *piter )
 {
     gpointer *args;
+
+  g_debug(__FUNCTION__);
+
     gtk_tree_model_get( GTK_TREE_MODEL(bgstore), piter, DATA_COLUMN, &args, -1 );
 
     /* we know args still exists because it is free _after_ the list item is destroyed */
@@ -188,6 +198,8 @@ void a_background_init()
   GtkTreeViewColumn *column;
   GtkWidget *scrolled_window;
 
+  g_debug(__FUNCTION__);
+
   /* store & treeview */
   bgstore = gtk_list_store_new ( N_COLUMNS, G_TYPE_STRING, G_TYPE_DOUBLE, G_TYPE_POINTER );
   bgtreeview = gtk_tree_view_new_with_model ( GTK_TREE_MODEL(bgstore) );
@@ -201,7 +213,7 @@ void a_background_init()
   gtk_tree_view_append_column ( GTK_TREE_VIEW(bgtreeview), column );
 
   renderer = gtk_cell_renderer_progress_new ();
-  column = gtk_tree_view_column_new_with_attributes ( _("Progress"), renderer, "percentage", PROGRESS_COLUMN, NULL );
+  column = gtk_tree_view_column_new_with_attributes ( _("Progress"), renderer, "value", PROGRESS_COLUMN, NULL );
   gtk_tree_view_append_column ( GTK_TREE_VIEW(bgtreeview), column );
 
   /* setup window */

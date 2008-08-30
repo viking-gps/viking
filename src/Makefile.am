@@ -56,7 +56,6 @@ libviking_a_SOURCES = \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \
 	vikmapslayer.c vikmapslayer.h \
-	gtkcellrendererprogress.c gtkcellrendererprogress.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
