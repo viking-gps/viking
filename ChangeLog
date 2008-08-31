@@ -1,3 +1,7 @@
+2008-09-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed crashes when creating new layers.
+
 2008-08-30
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* QA: removing specific GtkCellRenderer
