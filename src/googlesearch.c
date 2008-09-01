@@ -36,7 +36,7 @@
 #define GOOGLE_SEARCH_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
 #define GOOGLE_SEARCH_PATTERN_1 "{center:{lat:"
 #define GOOGLE_SEARCH_PATTERN_2 ",lng:"
-#define GOOGLE_SEARCH_NOT_FOUND "around this map area did not match any locations"
+#define GOOGLE_SEARCH_NOT_FOUND "not understand the location"
 
 static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
