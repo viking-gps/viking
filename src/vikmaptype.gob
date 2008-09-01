@@ -1,0 +1,18 @@
+ class Vik:Map:Type from G:Object {
+  public guint8 uniq_id;
+  public guint16 tilesize_x;
+  public guint16 tilesize_y;
+  public guint drawmode;
+  public gboolean coord_to_mapcoord ( self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
+  {
+    return FALSE;
+  }
+  public void mapcoord_to_center_coord ( self, MapCoord *src, VikCoord *dest )
+  { }
+  public int download ( self, MapCoord *src, const gchar *dest_fn )
+  {
+    return 0;
+  }
+
+  }
+
