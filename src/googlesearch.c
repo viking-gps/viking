@@ -195,8 +195,9 @@ gchar *uri_escape(gchar *str)
       dst += 3;
     }
   }
+  *dst = '\0';
 
-    return(esc_str);
+  return(esc_str);
 }
 
 static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord)
@@ -209,7 +210,11 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
   int ret = 0;  /* OK */
   struct LatLon ll;
 
+  g_debug("%s: raw search: %s", __FUNCTION__, srch_str);
+
   escaped_srch_str = uri_escape(srch_str);
+
+  g_debug("%s: escaped search: %s", __FUNCTION__, escaped_srch_str);
 
   if ((tmp_fd = g_file_open_tmp ("vikgsearch.XXXXXX", &tmpname, NULL)) == -1) {
     g_critical(_("couldn't open temp file"));
