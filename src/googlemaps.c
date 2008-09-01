@@ -48,12 +48,12 @@ void googlemaps_init () {
 static const gdouble scale_mpps[] = { GZ(1)/2, GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), GZ(6), GZ(7), GZ(8), GZ(9),
                                            GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15) };
 
-static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0])) - 1;
+static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
 
 #define ERROR_MARGIN 0.01
 guint8 googlemaps_zoom ( gdouble mpp ) {
   gint i;
-  for ( i = 0; i <= num_scales; i++ ) {
+  for ( i = 0; i < num_scales; i++ ) {
     if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN )
       return i;
   }
