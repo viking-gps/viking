@@ -56,6 +56,7 @@ libviking_a_SOURCES = \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \
 	vikmapslayer.c vikmapslayer.h \
+	vik-map-type.c vik-map-type.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
@@ -100,6 +101,9 @@ libviking_a_SOURCES += \
 endif
 
 viking_SOURCES = main.c
+
+%.h %.c:%.gob
+	gob2 $<
 
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 LDADD           = libviking.a @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a

@@ -1,3 +1,12 @@
+%headertop{
+#ifdef HAVE_CONFIG
+#include "config.h"
+#endif
+
+#include "vikcoord.h"
+#include "mapcoord.h"
+%}
+
  class Vik:Map:Type from G:Object {
   public guint8 uniq_id;
   public guint16 tilesize_x;
