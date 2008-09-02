@@ -81,7 +81,8 @@ if GOOGLE
 libviking_a_SOURCES += \
 	khmaps.c khmaps.h \
 	google.c google.h \
-	googlemaps.c googlemaps.h
+	googlemaps.c googlemaps.h \
+	google-maps.c google-maps.h
 endif
 
 if TERRASERVER

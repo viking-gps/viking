@@ -1,5 +1,5 @@
 %headertop{
-#ifdef HAVE_CONFIG
+#ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
@@ -7,18 +7,18 @@
 #include "mapcoord.h"
 %}
 
- class Vik:Map:Type from G:Object {
+ class Vik:Map:Type from G:Object(abstract) {
   public guint8 uniq_id;
   public guint16 tilesize_x;
   public guint16 tilesize_y;
   public guint drawmode;
-  public gboolean coord_to_mapcoord ( self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
+  virtual public gboolean coord_to_mapcoord ( self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
   {
     return FALSE;
   }
-  public void mapcoord_to_center_coord ( self, MapCoord *src, VikCoord *dest )
+  virtual public void mapcoord_to_center_coord ( self, MapCoord *src, VikCoord *dest )
   { }
-  public int download ( self, MapCoord *src, const gchar *dest_fn )
+  virtual public int download ( self, MapCoord *src, const gchar *dest_fn )
   {
     return 0;
   }
