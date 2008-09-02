@@ -24,7 +24,11 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+
 #include "viking.h"
 #include "coords.h"
 #include "vikcoord.h"
