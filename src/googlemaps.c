@@ -55,7 +55,7 @@ static const gdouble scale_mpps[] = { GZ(1)/2, GZ(1), GZ(2), GZ(3), GZ(4), GZ(5)
 static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
 
 #define ERROR_MARGIN 0.01
-guint8 googlemaps_zoom ( gdouble mpp ) {
+static guint8 googlemaps_zoom ( gdouble mpp ) {
   gint i;
   for ( i = 0; i < num_scales; i++ ) {
     if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN )
