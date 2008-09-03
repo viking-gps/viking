@@ -78,8 +78,12 @@ libviking_a_SOURCES = \
 
 if GOOGLE
 libviking_a_SOURCES += \
+	google.c google.h
+endif
+
+if OLDGOOGLE
+libviking_a_SOURCES += \
 	khmaps.c khmaps.h \
-	google.c google.h \
 	googlemaps.c googlemaps.h
 endif
 
