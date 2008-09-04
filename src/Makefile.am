@@ -88,6 +88,7 @@ endif
 
 if TERRASERVER
 libviking_a_SOURCES += \
+	terraserver-map-type.c terraserver-map-type.h \
 	terraserver.c terraserver.h
 endif
 
