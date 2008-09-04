@@ -42,6 +42,8 @@ typedef enum {
 
 %{
 
+static DownloadOptions google_options = { "http://maps.google.com/", 0, a_check_map_file };
+
 /* 1 << (x) is like a 2**(x) */
 #define GZ(x) ((1<<x))
 
@@ -181,6 +183,15 @@ failed:
   g_free(tmpname);
   g_free (uri);
   return (vers[google_type]);
+}
+
+static int real_google_download ( MapCoord *src, const gchar *dest_fn, const char *verstr )
+{
+   int res;
+   gchar *uri = g_strdup_printf ( "/mt?n=404&v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
+   res = a_http_download_get_url ( "mt.google.com", uri, dest_fn, &google_options );
+   g_free ( uri );
+   return res;
 }
 
 %}
