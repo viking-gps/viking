@@ -99,6 +99,7 @@ endif
 if OPENSTREETMAP
 libviking_a_SOURCES += \
 	osm.c osm.h \
+	osm-map-type.c osm-map-type.h \
 	osm-traces.c osm-traces.h
 endif
 

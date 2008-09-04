@@ -1,0 +1,101 @@
+%headertop{
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "vikcoord.h"
+#include "mapcoord.h"
+#include "vik-map-type.h"
+%}
+
+%{
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <math.h>
+#include <string.h>
+#include "coords.h"
+#include "vikcoord.h"
+#include "mapcoord.h"
+#include "download.h"
+#include "curl_download.h"
+#include "globals.h"
+#include "google.h"
+#include "vikmapslayer.h"
+%}
+
+%h{
+
+%}
+
+%{
+
+static DownloadOptions osm_options = { NULL, 0, a_check_map_file };
+
+/* 1 << (x) is like a 2**(x) */
+#define GZ(x) (1<<(x))
+
+static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), GZ(6), GZ(7), GZ(8), GZ(9),
+                                      GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15), GZ(16), GZ(17) };
+
+static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
+
+#define ERROR_MARGIN 0.01
+guint8 osm_zoom ( gdouble mpp ) {
+  gint i;
+  for ( i = 0; i < num_scales; i++ ) {
+    if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN )
+      return i;
+  }
+  return 255;
+}
+
+%}
+
+class Osm:Map:Type from Vik:Map:Type {
+  private gchar *hostname;
+
+  private gchar *filename_format;
+
+  override (Vik:Map:Type) gboolean
+  coord_to_mapcoord ( Vik:Map:Type *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
+  {
+  g_assert ( src->mode == VIK_COORD_LATLON );
+
+  if ( xzoom != yzoom )
+    return FALSE;
+
+  dest->scale = osm_zoom ( xzoom );
+  if ( dest->scale == 255 )
+    return FALSE;
+
+  dest->x = (src->east_west + 180) / 360 * GZ(17) / xzoom;
+  dest->y = (180 - MERCLAT(src->north_south)) / 360 * GZ(17) / xzoom;
+  dest->z = 0;
+  return TRUE;
+  }
+
+  override (Vik:Map:Type) void
+  mapcoord_to_center_coord ( Vik:Map:Type *self, MapCoord *src, VikCoord *dest )
+  {
+  gdouble socalled_mpp = GZ(src->scale);
+  dest->mode = VIK_COORD_LATLON;
+  dest->east_west = ((src->x+0.5) / GZ(17) * socalled_mpp * 360) - 180;
+  dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));
+  }
+
+  override (Vik:Map:Type) int
+   download ( Vik:Map:Type *self, MapCoord *src, const gchar *dest_fn )
+  {
+   int res = -1;
+   gchar *uri = g_strdup_printf ( OSM_MAP_TYPE(self)->_priv->filename_format,
+   	      			  17 - src->scale, src->x, src->y );
+   res = a_http_download_get_url ( OSM_MAP_TYPE(self)->_priv->hostname,
+       	 			   uri, dest_fn, &osm_options );
+   g_free ( uri );
+   return res;
+  }
+}
