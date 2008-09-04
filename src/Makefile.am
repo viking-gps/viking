@@ -84,12 +84,17 @@ libviking_a_SOURCES += \
 	googlemaps.c googlemaps.h \
 	google-maps.c google-maps.h \
 	google-map-type.c google-map-type.h
+BUILT_SOURCES += \
+	google-maps.c google-maps.h \
+	google-map-type.c google-map-type.h
 endif
 
 if TERRASERVER
 libviking_a_SOURCES += \
 	terraserver-map-type.c terraserver-map-type.h \
 	terraserver.c terraserver.h
+BUILT_SOURCES += \
+	terraserver-map-type.c terraserver-map-type.h
 endif
 
 if EXPEDIA
@@ -102,6 +107,8 @@ libviking_a_SOURCES += \
 	osm.c osm.h \
 	osm-map-type.c osm-map-type.h \
 	osm-traces.c osm-traces.h
+BUILT_SOURCES += \
+	osm-map-type.c osm-map-type.h
 endif
 
 viking_SOURCES = main.c
