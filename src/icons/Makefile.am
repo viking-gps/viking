@@ -141,8 +141,8 @@ icons.c: $(ALL_ICONS_HEADER)
 
 %_pixmap.h: %.png
 	gdk-pixbuf-csource --name="`basename $< .png`_pixbuf" --struct --extern $< > $@
-	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp.h
-	mv temp.h $@
+	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp$@.h
+	mv temp$@.h $@
 
 $(BUILT_SOURCES): $(srcdir)/Makefile.am
 

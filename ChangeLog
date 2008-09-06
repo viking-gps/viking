@@ -1,3 +1,8 @@
+2008-09-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* fix parallel build (make -j8) on multi-processor machines. Based
+	on a patch from sbrabec. Thanks.
+
 2008-09-03
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* QA: cleanning old stuff
