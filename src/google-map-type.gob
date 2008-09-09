@@ -199,6 +199,26 @@ static int real_google_download ( MapCoord *src, const gchar *dest_fn, const cha
 class Google:Map:Type from Vik:Map:Type {
   private GoogleType type;
 
+  init (self) {
+          /* initialize the object here */
+          self->tilesize_x = 256;
+          self->tilesize_y = 256;
+          self->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
+  }
+
+  public GObject *
+  new_with_id (guint8 id) {
+	  GObject *ret = GET_NEW;
+	  VIK_MAP_TYPE(ret)->uniq_id = id;
+	  return G_OBJECT (ret);
+  }
+
+  public GObject *
+  new (void) {
+	  GObject *ret = GET_NEW;
+	  return G_OBJECT (ret);
+  }
+
   override (Vik:Map:Type) gboolean
   coord_to_mapcoord ( Vik:Map:Type *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
   {

@@ -36,6 +36,7 @@
 #include "curl_download.h"
 #include "globals.h"
 #include "google.h"
+#include "google-map-type.h"
 #include "vikmapslayer.h"
 
 
@@ -49,15 +50,18 @@ static gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, g
 static DownloadOptions google_options = { "http://maps.google.com/", 0, a_check_map_file };
 
 void google_init () {
-  VikMapsLayer_MapType google_1 = { 7, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_download };
-  VikMapsLayer_MapType google_2 = { 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download };
-  VikMapsLayer_MapType google_3 = { 11, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_kh_download };
-  VikMapsLayer_MapType google_4 = { 16, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_terrain_download };
+  VikMapType *google_1 = VIK_MAP_TYPE(google_map_type_new_with_id(7));
+  VikMapType *google_2 = VIK_MAP_TYPE(google_map_type_new_with_id(10));
+  //{ 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download };
+  VikMapType *google_3 = VIK_MAP_TYPE(google_map_type_new_with_id(11));
+  //{ 11, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_kh_download };
+  VikMapType *google_4 = VIK_MAP_TYPE(google_map_type_new_with_id(16));
+  //{ 16, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_terrain_download };
 
-  maps_layer_register_type(_("Google Maps"), 7, &google_1);
-  maps_layer_register_type(_("Transparent Google Maps"), 10, &google_2);
-  maps_layer_register_type(_("Google Satellite Images"), 11, &google_3);
-  maps_layer_register_type(_("Google Terrain Maps"), 16, &google_4);
+  maps_layer_register_type(_("Google Maps"), 7, google_1);
+  maps_layer_register_type(_("Transparent Google Maps"), 10, google_2);
+  maps_layer_register_type(_("Google Satellite Images"), 11, google_3);
+  maps_layer_register_type(_("Google Terrain Maps"), 16, google_4);
 }
 
 /* 1 << (x) is like a 2**(x) */
@@ -77,15 +81,6 @@ guint8 google_zoom ( gdouble mpp ) {
   }
   return 255;
 }
-
-typedef enum {
-	TYPE_GOOGLE_MAPS = 0,
-	TYPE_GOOGLE_TRANS,
-	TYPE_GOOGLE_SAT,
-	TYPE_GOOGLE_TERRAIN,
-
-	TYPE_GOOGLE_NUM
-} GoogleType;
 
 static gchar *parse_version_number(gchar *text)
 {
