@@ -40,23 +40,16 @@
 #include "vikmapslayer.h"
 
 
-static int google_download ( MapCoord *src, const gchar *dest_fn );
-static int google_trans_download ( MapCoord *src, const gchar *dest_fn );
-static int google_terrain_download ( MapCoord *src, const gchar *dest_fn );
 static int google_kh_download ( MapCoord *src, const gchar *dest_fn );
 static void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-static gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 
 static DownloadOptions google_options = { "http://maps.google.com/", 0, a_check_map_file };
 
 void google_init () {
-  VikMapType *google_1 = VIK_MAP_TYPE(google_map_type_new_with_id(7));
-  VikMapType *google_2 = VIK_MAP_TYPE(google_map_type_new_with_id(10));
-  //{ 10, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_trans_download };
-  VikMapType *google_3 = VIK_MAP_TYPE(google_map_type_new_with_id(11));
-  //{ 11, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_kh_download };
-  VikMapType *google_4 = VIK_MAP_TYPE(google_map_type_new_with_id(16));
-  //{ 16, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, google_coord_to_mapcoord, google_mapcoord_to_center_coord, google_terrain_download };
+  VikMapType *google_1 = VIK_MAP_TYPE(google_map_type_new_with_id(7, TYPE_GOOGLE_MAPS));
+  VikMapType *google_2 = VIK_MAP_TYPE(google_map_type_new_with_id(10, TYPE_GOOGLE_TRANS));
+  VikMapType *google_3 = VIK_MAP_TYPE(google_map_type_new_with_id(11, TYPE_GOOGLE_SAT));
+  VikMapType *google_4 = VIK_MAP_TYPE(google_map_type_new_with_id(16, TYPE_GOOGLE_TERRAIN));
 
   maps_layer_register_type(_("Google Maps"), 7, google_1);
   maps_layer_register_type(_("Transparent Google Maps"), 10, google_2);
@@ -73,7 +66,7 @@ static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), 
 static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
 
 #define ERROR_MARGIN 0.01
-guint8 google_zoom ( gdouble mpp ) {
+static guint8 google_zoom ( gdouble mpp ) {
   gint i;
   for ( i = 0; i < num_scales; i++ ) {
     if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN )
@@ -222,39 +215,12 @@ gboolean google_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble 
   return TRUE;
 }
 
-void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
+static void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
 {
   gdouble socalled_mpp = GZ(src->scale);
   dest->mode = VIK_COORD_LATLON;
   dest->east_west = ((src->x+0.5) / GZ(17) * socalled_mpp * 360) - 180;
   dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));
-}
-
-static int real_google_download ( MapCoord *src, const gchar *dest_fn, const char *verstr )
-{
-   int res;
-   gchar *uri = g_strdup_printf ( "/mt?n=404&v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
-   res = a_http_download_get_url ( "mt.google.com", uri, dest_fn, &google_options );
-   g_free ( uri );
-   return res;
-}
-
-static int google_download ( MapCoord *src, const gchar *dest_fn )
-{
-   const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_MAPS);
-   return(real_google_download ( src, dest_fn, vers_str ));
-}
-
-static int google_trans_download ( MapCoord *src, const gchar *dest_fn )
-{
-   const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_TRANS);
-   return(real_google_download ( src, dest_fn, vers_str ));
-}
-
-static int google_terrain_download ( MapCoord *src, const gchar *dest_fn )
-{
-   const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_TERRAIN);
-   return(real_google_download ( src, dest_fn, vers_str ));
 }
 
 static char *kh_encode(guint32 x, guint32 y, guint8 scale)

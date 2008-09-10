@@ -53,7 +53,7 @@ static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), 
 static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
 
 #define ERROR_MARGIN 0.01
-guint8 google_zoom ( gdouble mpp ) {
+static guint8 google_zoom ( gdouble mpp ) {
   gint i;
   for ( i = 0; i < num_scales; i++ ) {
     if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN )
@@ -62,6 +62,13 @@ guint8 google_zoom ( gdouble mpp ) {
   return 255;
 }
 
+static void google_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
+{
+  gdouble socalled_mpp = GZ(src->scale);
+  dest->mode = VIK_COORD_LATLON;
+  dest->east_west = ((src->x+0.5) / GZ(17) * socalled_mpp * 360) - 180;
+  dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));
+}
 
 static gchar *parse_version_number(gchar *text)
 {
@@ -201,15 +208,16 @@ class Google:Map:Type from Vik:Map:Type {
 
   init (self) {
           /* initialize the object here */
-          self->tilesize_x = 256;
-          self->tilesize_y = 256;
-          self->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
+          VIK_MAP_TYPE(self)->tilesize_x = 256;
+          VIK_MAP_TYPE(self)->tilesize_y = 256;
+          VIK_MAP_TYPE(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   }
 
   public GObject *
-  new_with_id (guint8 id) {
+  new_with_id (guint8 id, GoogleType type) {
 	  GObject *ret = GET_NEW;
 	  VIK_MAP_TYPE(ret)->uniq_id = id;
+	  GOOGLE_MAP_TYPE(ret)->_priv->type = type;
 	  return G_OBJECT (ret);
   }
 

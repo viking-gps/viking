@@ -29,8 +29,6 @@
 
 void google_init();
 
-guint8 google_zoom ( gdouble mpp );
-
 /* a bit misleading, this is the "mpp" (really just set zoom level, very
  * roughly equivalent so you can easily switch between maps) of
  * google maps 1, the second google maps level (1st is 0). */
