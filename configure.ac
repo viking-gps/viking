@@ -136,6 +136,34 @@ case $ac_cv_enable_openstreetmap in
 esac
 AM_CONDITIONAL([OPENSTREETMAP], [test x$ac_cv_enable_openstreetmap = xyes])
 
+# BlueMarble
+AC_ARG_ENABLE(bluemarble, AC_HELP_STRING([--enable-bluemarble],
+              [enable BlueMarble stuff (default is enable)]),
+              [ac_cv_enable_bluemarble=$enableval],
+              [ac_cv_enable_bluemarble=yes])
+AC_CACHE_CHECK([whether to enable BlueMarble stuff],
+               [ac_cv_enable_bluemarble], [ac_cv_enable_bluemarble=yes])
+case $ac_cv_enable_bluemarble in
+  yes)
+    AC_DEFINE(VIK_CONFIG_BLUEMARBLE, [], [BLUEMARBLE STUFF])
+    ;;
+esac
+AM_CONDITIONAL([BLUEMARBLE], [test x$ac_cv_enable_bluemarble = xyes])
+
+# OpenAerial
+AC_ARG_ENABLE(openaerial, AC_HELP_STRING([--enable-openaerial],
+              [enable OpenAerial stuff (default is enable)]),
+              [ac_cv_enable_openaerial=$enableval],
+              [ac_cv_enable_openaerial=yes])
+AC_CACHE_CHECK([whether to enable OpenAerial stuff],
+               [ac_cv_enable_openaerial], [ac_cv_enable_openaerial=yes])
+case $ac_cv_enable_openaerial in
+  yes)
+    AC_DEFINE(VIK_CONFIG_OPENAERIAL, [], [OPENAERIAL STUFF])
+    ;;
+esac
+AM_CONDITIONAL([OPENAERIAL], [test x$ac_cv_enable_openaerial = xyes])
+
 AC_ARG_ENABLE(geocaches, AC_HELP_STRING([--enable-geocaches],
 	      [enable Geocaches Acquire (default is disable).]),
               [ac_cv_enable_geocaches=$enableval],
@@ -226,6 +254,8 @@ echo "Google Maps                      : $ac_cv_enable_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 #echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
+echo "OpenAerial                       : $ac_cv_enable_openaerial"
+echo "BlueMarble                       : $ac_cv_enable_bluemarble"
 #echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"

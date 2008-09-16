@@ -111,6 +111,16 @@ BUILT_SOURCES += \
 	osm-map-type.c osm-map-type.h
 endif
 
+if BLUEMARBLE
+libviking_a_SOURCES += \
+	bluemarble.c bluemarble.h
+endif
+
+if OPENAERIAL
+libviking_a_SOURCES += \
+	openaerial.c openaerial.h
+endif
+
 viking_SOURCES = main.c
 
 %.h %.c:%.gob

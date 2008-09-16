@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2008, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +20,14 @@
  *
  */
 
-#include "osm.h"
+#include "openaerial.h"
 #include "vikmapslayer.h"
 #include "osm-map-type.h"
 
 /* initialisation */
-void osm_init () {
-  VikMapType *osmarender_type = VIK_MAP_TYPE(osm_map_type_new_with_id(12, "tah.openstreetmap.org", "/Tiles/tile/%d/%d/%d.png"));
-  VikMapType *mapnik_type = VIK_MAP_TYPE(osm_map_type_new_with_id( 13, "tile.openstreetmap.org", "/%d/%d/%d.png"));
-  VikMapType *maplint_type = VIK_MAP_TYPE(osm_map_type_new_with_id( 14, "tah.openstreetmap.org", "/Tiles/maplint.php/%d/%d/%d.png"));
-  VikMapType *cycle_type = VIK_MAP_TYPE(osm_map_type_new_with_id( 17, "thunderflames.org/tiles/cycle/", "%d/%d/%d.png" ));
+void openaerial_init () {
+  VikMapType *openaerialmap_type = VIK_MAP_TYPE(osm_map_type_new_with_id( 20, "tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%d/%d/%d.jpg" ));
 
-  maps_layer_register_type("OpenStreetMap (Osmarender)", 12, osmarender_type);
-  maps_layer_register_type("OpenStreetMap (Mapnik)", 13, mapnik_type);
-  maps_layer_register_type("OpenStreetMap (Maplint)", 14, maplint_type);
-  maps_layer_register_type("OpenStreetMap (Cycle)", 17, cycle_type);
+  maps_layer_register_type("OpenAerialMap", 20, openaerialmap_type);
 }
 
