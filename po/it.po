@@ -106,9 +106,6 @@ msgstr "Longitudine:"
 #: ../src/dialog.c:110
 msgid "Northing:"
 msgstr ""
-"Copy text   \t
-\n"
-"Northing:"
 
 #: ../src/dialog.c:116
 msgid "Easting:"
@@ -1466,17 +1463,11 @@ msgstr "<b>Commento:</b>"
 
 #: ../src/viktrwlayer_propwin.c:752
 msgid "<b>Track Length:</b>"
-msgstr ""
-"Copy text   \t
-\n"
-"<b>Lunghezza della Traccia:</b>"
+msgstr "<b>Lunghezza della Traccia:</b>"
 
 #: ../src/viktrwlayer_propwin.c:752
 msgid "<b>Trackpoints:</b>"
 msgstr ""
-"Copy text   \t
-\n"
-"<b>Trackpoints:</b>"
 
 #: ../src/viktrwlayer_propwin.c:752
 msgid "<b>Segments:</b>"
@@ -1508,10 +1499,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:752
 msgid "<b>Start:</b>"
-msgstr ""
-"Copy text   \t
-\n"
-"<b>Inizio:</b>"
+msgstr "<b>Inizio:</b>"
 
 #: ../src/viktrwlayer_propwin.c:752
 msgid "<b>End:</b>"
@@ -1540,11 +1528,8 @@ msgid "Statistics"
 msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:867
-#, fuzzy
 msgid "<b>Track Distance:</b>"
 msgstr ""
-"Copy text   \t\r\n"
-"<b>Trackpoints:</b>"
 
 #: ../src/viktrwlayer_propwin.c:868
 msgid "Elevation-distance"
@@ -1573,10 +1558,7 @@ msgstr "<b>Longitudine:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:104
 msgid "<b>Altitude:</b>"
-msgstr ""
-"Copy text   \t
-\n"
-"<b>Altitudine:</b>"
+msgstr "<b>Altitudine:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:105
 msgid "<b>Timestamp:</b>"
