@@ -8,23 +8,32 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-07-21 23:24+0200\n"
-"PO-Revision-Date: 2008-05-24 12:27+0000\n"
-"Last-Translator: Emilio Gómez Fernández <Unknown>\n"
+"PO-Revision-Date: 2008-09-06 22:59+0000\n"
+"Last-Translator: Tognu <jaalvarez@ipn.mx>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2008-06-18 02:44+0000\n"
+"X-Launchpad-Export-Date: 2008-09-10 21:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#, c-format
+#~ msgid ""
+#~ "The file %s exists. Please choose a name for a new directory to hold images "
+#~ "in that does not exist."
+#~ msgstr ""
+#~ "El directorio %s existe. Por favor, seleccione un nombre de directorio que "
+#~ "no exista."
 
 #: ../src/acquire.c:118
 msgid "Working..."
-msgstr "Trabajando..."
+msgstr ""
 
 #: ../src/acquire.c:141
+#, fuzzy
 msgid "Error: acquisition failed."
-msgstr ""
+msgstr "Error: Fallo la adquisición de datos"
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:924
 msgid "Done."
@@ -32,12 +41,12 @@ msgstr "Hecho."
 
 #: ../src/acquire.c:326 ../src/vikgpslayer.c:963
 msgid "Status: detecting gpsbabel"
-msgstr "Estado: buscando gpsbabel"
+msgstr "Conectando a gpsbabel"
 
 #: ../src/background.c:55
 #, c-format
 msgid "%d items"
-msgstr "%d items"
+msgstr "%d elementos"
 
 #: ../src/background.c:200
 msgid "Job"
@@ -45,15 +54,17 @@ msgstr "Tarea"
 
 #: ../src/background.c:204
 msgid "Progress"
-msgstr "Progreso"
+msgstr "En proceso"
 
 #: ../src/background.c:215
+#, fuzzy
 msgid "Viking Background Jobs"
-msgstr "Tareas de fondo de Viking"
+msgstr "Procesos Viking en transfondo"
 
 #: ../src/clipboard.c:84
+#, fuzzy
 msgid "paste failed"
-msgstr "ha fallado la operación de pegar"
+msgstr "Fallo al pegar"
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
@@ -65,8 +76,8 @@ msgid ""
 "The clipboard contains sublayer data for a %s layers.You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
-"El portapapeles contiene datos de subcapa para una capa de tipo %s. Debe "
-"seleccionar una capa de dicho tipo para pegarlos."
+"El portapapeles contiene subcapas de %s capas. Usted deberá seleccionar una "
+"capa de este tipo para copiarla"
 
 #: ../src/clipboard.c:219
 msgid ""
@@ -101,11 +112,11 @@ msgstr "Despl. E:"
 
 #: ../src/dialog.c:122
 msgid "Zone:"
-msgstr "Huso:"
+msgstr "Zona:"
 
 #: ../src/dialog.c:125
 msgid "Letter:"
-msgstr "Zona:"
+msgstr "Carta:"
 
 #: ../src/dialog.c:172 ../src/viktrwlayer.c:1549
 msgid "Create"
@@ -133,7 +144,7 @@ msgstr "Símbolo:"
 
 #: ../src/dialog.c:243
 msgid "(none)"
-msgstr "(ninguno)"
+msgstr "(nada)"
 
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:298
@@ -163,8 +174,9 @@ msgid "The track \"%s\" exists, do you want to overwrite it?"
 msgstr "La ruta \"%s\" existe. ¿Desea sobreescribirla?"
 
 #: ../src/dialog.c:463
+#, fuzzy
 msgid "Zoom Factors..."
-msgstr "Factor de zoom..."
+msgstr "Factores de Zoom"
 
 #: ../src/dialog.c:477
 msgid "Zoom factor (in meters per pixel:"
@@ -274,8 +286,9 @@ msgid "Zoom level:"
 msgstr "Nivel de zoom:"
 
 #: ../src/expedia.c:48
+#, fuzzy
 msgid "Expedia Street Maps"
-msgstr "Callejeros Expedia"
+msgstr "Mapas Expedia  de calles"
 
 #: ../src/expedia.c:76
 msgid "Invalid expedia altitude"
@@ -529,7 +542,8 @@ msgstr "Contraseña usada para acceder"
 
 #: ../src/osm-traces.c:325
 msgid "Enter the password you use to login into www.openstreetmap.org."
-msgstr "Introduzca la contraseña que usa para acceder a www.openstreetmap.org."
+msgstr ""
+"Introduzca la contraseña que usa para acceder a www.openstreetmap.org."
 
 #: ../src/osm-traces.c:327
 msgid "File's name:"
@@ -2022,10 +2036,3 @@ msgstr ""
 #: ../src/viking.desktop.in.h:2
 msgid "Viking"
 msgstr ""
-
-#~ msgid ""
-#~ "The file %s exists. Please choose a name for a new directory to hold "
-#~ "images in that does not exist."
-#~ msgstr ""
-#~ "El directorio %s existe. Por favor, seleccione un nombre de directorio "
-#~ "que no exista."

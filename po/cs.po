@@ -7,16 +7,34 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-11 08:17+0200\n"
-"PO-Revision-Date: 2008-07-21 07:34+0000\n"
+"POT-Creation-Date: 2008-07-21 23:24+0200\n"
+"PO-Revision-Date: 2008-07-25 07:12+0000\n"
 "Last-Translator: Radek Stastny <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2008-07-21 20:08+0000\n"
+"X-Launchpad-Export-Date: 2008-09-10 21:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#, c-format
+#~ msgid ""
+#~ "<span font_desc='20' weight='bold'>Viking %s</span>\n"
+#~ "\n"
+#~ "GPS Data and Topo Analyzer, Explorer, and Manager.\n"
+#~ "\n"
+#~ "<small>(C) 2003-2007, Evan Battaglia</small>\n"
+#~ "\n"
+#~ "<small>Web site: %s</small>"
+#~ msgstr ""
+#~ "<span font_desc='20' weight='bold'>Viking %s</span>\n"
+#~ "\n"
+#~ "Analyzátor, průzkumník a správce GPS a topologických dat.\n"
+#~ "\n"
+#~ "<small>(C) 2003-2007, Evan Battaglia</small>\n"
+#~ "\n"
+#~ "<small>Domovská stranka: %s</small>"
 
 #, c-format
 #~ msgid ""
@@ -217,7 +235,7 @@ msgid ""
 "\n"
 "GPS Data and Topo Analyzer, Explorer, and Manager.\n"
 "\n"
-"<small>(C) 2003-2007, Evan Battaglia</small>\n"
+"<small>(C) 2003-2008, Evan Battaglia</small>\n"
 "\n"
 "<small>Web site: %s</small>"
 msgstr ""
@@ -225,9 +243,9 @@ msgstr ""
 "\n"
 "Analyzátor, průzkumník a správce GPS a topologických dat.\n"
 "\n"
-"<small>(C) 2003-2007, Evan Battaglia</small>\n"
+"<small>(C) 2003-2008, Evan Battaglia</small>\n"
 "\n"
-"<small>Domovská stranka: %s</small>"
+"<small>Web site: %s</small>"
 
 #: ../src/dialog.c:591
 msgid "Credits"
@@ -786,11 +804,11 @@ msgstr "Parametry World souboru:"
 msgid "Load From File..."
 msgstr "Načíst ze souboru..."
 
-#: ../src/vikgeoreflayer.c:406
+#: ../src/vikgeoreflayer.c:407
 msgid "Corner pixel easting:"
 msgstr "Východní rohový bod:"
 
-#: ../src/vikgeoreflayer.c:409
+#: ../src/vikgeoreflayer.c:410
 msgid "Corner pixel northing:"
 msgstr "Severní rohový bod:"
 
@@ -2047,10 +2065,10 @@ msgstr "Celá obrazovka"
 msgid "New %s Layer"
 msgstr "Nová %s vrstva"
 #: ../src/viking.desktop.in.h:1
+#, fuzzy
 msgid "Map Based GPS Data Manager (live data capable)."
-msgstr ""
+msgstr "Správce GPS dat"
 
 #: ../src/viking.desktop.in.h:2
 msgid "Viking"
-msgstr ""
-
+msgstr "Viking"

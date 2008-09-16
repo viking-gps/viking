@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-07-21 23:24+0200\n"
-"PO-Revision-Date: 2008-01-12 10:03+0000\n"
-"Last-Translator: Zhang Jun <rocketman_gw@yahoo.com.cn>\n"
+"PO-Revision-Date: 2008-07-21 23:51+0000\n"
+"Last-Translator: Zhang Jun <Unknown>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2008-02-11 21:12+0000\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Launchpad-Export-Date: 2008-09-10 21:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Traditional Chinese\n"
 
@@ -243,8 +243,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"這是一個自由軟體; 您可以在自由軟體基金會發布的GNU GPL版權協定條款下 重新發布"
-"或者修改它; 可以是GPL2的版本，或者您也可以選取更新的版本.\n"
+"這是一個自由軟體; 您可以在自由軟體基金會發布的GNU GPL版權協定條款下 重新發布或者修改它; 可以是GPL2的版本，或者您也可以選取更新的版本.\n"
 "\n"
 "This program is distributed in the hope that it will be useful, but WITHOUT "
 "ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
@@ -407,14 +406,12 @@ msgstr "使用指令行 '%s' 和檔案 '%s'\n"
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
 msgstr[0] "正在下載 %d 航點..."
-msgstr[1] "正在下載 %d 航點..."
 
 #: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:680
 #, fuzzy, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
 msgstr[0] "正在下載 %d 軌迹點..."
-msgstr[1] "正在下載 %d 軌迹點..."
 
 #: ../src/datasource_gps.c:170
 #, c-format
@@ -856,14 +853,12 @@ msgstr "清空全部"
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
 msgstr[0] "正在上傳 %d 航點..."
-msgstr[1] "正在上傳 %d 航點..."
 
 #: ../src/vikgpslayer.c:687
 #, fuzzy, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
 msgstr[0] "正在上傳 %d 軌迹點..."
-msgstr[1] "正在上傳 %d 軌迹點..."
 
 #: ../src/vikgpslayer.c:711
 #, c-format
@@ -898,14 +893,12 @@ msgstr[1] ""
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
 msgstr[0] "下載的 %d 航點"
-msgstr[1] "下載的 %d 航點"
 
 #: ../src/vikgpslayer.c:728
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
 msgstr[0] "下載的 %d 軌迹點"
-msgstr[1] "下載的 %d 軌迹點"
 
 #: ../src/vikgpslayer.c:732
 #, c-format
@@ -935,7 +928,7 @@ msgstr "/_C 拷貝"
 
 #: ../src/viklayerspanel.c:61
 msgid "/_Paste"
-msgstr "/_P 黏貼 "
+msgstr "/_P 黏貼"
 
 #: ../src/viklayerspanel.c:62
 msgid "/_Delete"
@@ -1032,14 +1025,12 @@ msgstr[1] ""
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
 msgstr[0] "重新下載 %d %s 地圖..."
-msgstr[1] "重新下載 %d %s 地圖..."
 
 #: ../src/vikmapslayer.c:926 ../src/vikmapslayer.c:997
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
 msgstr[0] "正在下載 %d %s 地圖..."
-msgstr[1] "正在下載 %d %s 地圖..."
 
 #: ../src/vikmapslayer.c:1054
 msgid "Redownload bad map(s)"
@@ -1588,7 +1579,7 @@ msgstr "您選的檔案無法被開啟"
 
 #: ../src/vikwindow.c:1355
 msgid "Please select a GPS data file to open. "
-msgstr "請選取一個GPS資料檔案來開啟"
+msgstr "請選取一個GPS資料檔案來開啟 "
 
 #: ../src/vikwindow.c:1398
 msgid "Save as Viking File."
