@@ -1,3 +1,7 @@
+2008-09-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Update translations
+
 2008-09-07
 Quy Tonthat <qtonthat@gmail.com>:
 	* fix parallel build (make -j8) on multi-processor machines. Based
