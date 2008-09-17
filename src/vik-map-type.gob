@@ -3,6 +3,7 @@
 #include "config.h"
 #endif
 
+#include "vikviewport.h"
 #include "vikcoord.h"
 #include "mapcoord.h"
 %}
@@ -11,7 +12,7 @@
   public guint8 uniq_id;
   public guint16 tilesize_x;
   public guint16 tilesize_y;
-  public guint drawmode;
+  public VikViewportDrawMode drawmode;
   virtual public gboolean coord_to_mapcoord ( self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
   {
     return FALSE;

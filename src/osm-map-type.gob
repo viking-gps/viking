@@ -69,16 +69,10 @@ class Osm:Map:Type from Vik:Map:Type {
 
   public GObject *
   new_with_id (guint8 id, const gchar *hostname, const gchar *url) {
-	  GObject *ret = GET_NEW;
+	  OsmMapType *ret = GET_NEW;
 	  VIK_MAP_TYPE(ret)->uniq_id = id;
-	  OSM_MAP_TYPE(ret)->_priv->hostname = g_strdup(hostname);
-	  OSM_MAP_TYPE(ret)->_priv->url = g_strdup(url);
-	  return G_OBJECT (ret);
-  }
-
-  public GObject *
-  new (void) {
-	  GObject *ret = GET_NEW;
+	  ret->_priv->hostname = g_strdup(hostname);
+	  ret->_priv->url = g_strdup(url);
 	  return G_OBJECT (ret);
   }
 

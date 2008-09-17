@@ -71,9 +71,9 @@ class Terraserver:Map:Type from Vik:Map:Type {
 
   public GObject *
   new_with_id (guint8 id, int type) {
-	  GObject *ret = GET_NEW;
+	  TerraserverMapType *ret = GET_NEW;
 	  VIK_MAP_TYPE(ret)->uniq_id = id;
-	  TERRASERVER_MAP_TYPE(ret)->_priv->type = type;
+	  ret->_priv->type = type;
 	  return G_OBJECT (ret);
   }
 

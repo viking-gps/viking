@@ -215,15 +215,9 @@ class Google:Map:Type from Vik:Map:Type {
 
   public GObject *
   new_with_id (guint8 id, GoogleType type) {
-	  GObject *ret = GET_NEW;
+	  GoogleMapType *ret = GET_NEW;
 	  VIK_MAP_TYPE(ret)->uniq_id = id;
-	  GOOGLE_MAP_TYPE(ret)->_priv->type = type;
-	  return G_OBJECT (ret);
-  }
-
-  public GObject *
-  new (void) {
-	  GObject *ret = GET_NEW;
+	  ret->_priv->type = type;
 	  return G_OBJECT (ret);
   }
 
