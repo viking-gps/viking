@@ -14,6 +14,7 @@
 #endif
 
 #include "download.h"
+#include "vikviewport.h"
 %}
 
 %h{
@@ -60,6 +61,21 @@ static gdouble scale_to_mpp ( gint scale )
 
 class Terraserver:Map:Type from Vik:Map:Type {
   private int type;
+
+  init (self) {
+          /* initialize the object here */
+          VIK_MAP_TYPE(self)->tilesize_x = 200;
+          VIK_MAP_TYPE(self)->tilesize_y = 200;
+          VIK_MAP_TYPE(self)->drawmode = VIK_VIEWPORT_DRAWMODE_UTM;
+  }
+
+  public GObject *
+  new_with_id (guint8 id, int type) {
+	  GObject *ret = GET_NEW;
+	  VIK_MAP_TYPE(ret)->uniq_id = id;
+	  TERRASERVER_MAP_TYPE(ret)->_priv->type = type;
+	  return G_OBJECT (ret);
+  }
 
   override (Vik:Map:Type) gboolean
   coord_to_mapcoord ( Vik:Map:Type *self, const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
