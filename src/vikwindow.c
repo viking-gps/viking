@@ -1965,7 +1965,7 @@ static GtkActionEntry entries[] = {
   { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Background Color..."),       NULL,         NULL,                                           (GCallback)set_bg_color          },
   { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", NULL,                                           (GCallback)draw_zoom_cb          },
-  { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To"),               "<control><shift>Z", NULL,                                           (GCallback)zoom_to_cb            },
+  { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To"),               "<control>Z", NULL,                                           (GCallback)zoom_to_cb            },
   { "Zoom0.25",  NULL,                   N_("0.25"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom0.5",   NULL,                   N_("0.5"),                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom1",     NULL,                   N_("1"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
