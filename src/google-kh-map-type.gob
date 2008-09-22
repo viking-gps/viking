@@ -1,0 +1,107 @@
+%headertop{
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "vikcoord.h"
+#include "mapcoord.h"
+#include "google-map-type.h"
+#include "google-map-type-private.h"
+%}
+
+%{
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <math.h>
+#include <string.h>
+#include "coords.h"
+#include "vikcoord.h"
+#include "mapcoord.h"
+#include "download.h"
+#include "curl_download.h"
+#include "globals.h"
+#include "google.h"
+#include "vikmapslayer.h"
+%}
+
+%{
+
+static char *kh_encode(guint32 x, guint32 y, guint8 scale)
+{
+  gchar *buf = g_malloc ( (20-scale)*sizeof(gchar) );
+  guint32 ya = 1 << (17 - scale);
+  gint8 i, j;
+
+  if (y < 0 || (ya-1 < y)) {
+    strcpy(buf,"tqq"); /* BAD */
+    return buf;
+  }
+  if (x < 0 || ya-1 < x) {
+    x %= ya;
+    if (x < 0)
+      x += ya;
+  }
+
+  buf[0] = 't';
+  for (j = 1, i = 16; i >= scale; i--, j++) {
+    ya /= 2;
+    if (y < ya) {
+      if (x < ya)
+        buf[j]='q';
+      else {
+        buf[j]='r';
+        x -= ya;
+      }
+    } else {
+      if (x < ya) {
+        buf[j] = 't';
+        y -= ya;
+      } else {
+        buf[j] = 's';
+        x -= ya;
+        y -= ya;
+      }
+    }
+  }
+  buf[j] = '\0';
+  return buf;
+}
+
+%}
+
+class Google:Kh:Map:Type from Google:Map:Type {
+  init (self) {
+          /* initialize the object here */
+          VIK_MAP_TYPE(self)->tilesize_x = 256;
+          VIK_MAP_TYPE(self)->tilesize_y = 256;
+          VIK_MAP_TYPE(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
+  }
+
+  public GObject *
+  new_with_id (guint8 id) {
+	  GoogleKhMapType *ret = GET_NEW;
+	  VIK_MAP_TYPE(ret)->uniq_id = id;
+	  GOOGLE_MAP_TYPE(ret)->_priv->type = TYPE_GOOGLE_SAT;
+	  return G_OBJECT (ret);
+  }
+
+  override (Google:Map:Type) gchar *
+  get_uri( Google:Map:Type *self, MapCoord *src )
+  {
+     gchar *khenc = kh_encode( src->x, src->y, src->scale );
+     const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_SAT);
+     gchar *uri = g_strdup_printf ( "/kh?n=404&v=%s&t=%s", vers_str, khenc );
+     g_free ( khenc );
+     return uri;
+  }
+
+  override (Google:Map:Type) gchar *
+  get_hostname( Google:Map:Type *self )
+  {
+    return g_strdup("khm.google.com");
+  }
+}

@@ -38,6 +38,8 @@ typedef enum {
 	TYPE_GOOGLE_NUM
 } GoogleType;
 
+const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_type);
+
 %}
 
 %{
@@ -85,7 +87,7 @@ static gchar *parse_version_number(gchar *text)
   return vers = g_strndup(s, i);
 }
 
-static const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_type)
+const gchar *google_version_number(MapCoord *mapcoord, GoogleType google_type)
 {
   static gboolean first = TRUE;
   static char *vers[] = { "w2.80", "w2t.80", "30", "w2p.81"};
@@ -192,15 +194,6 @@ failed:
   return (vers[google_type]);
 }
 
-static int real_google_download ( MapCoord *src, const gchar *dest_fn, const char *verstr )
-{
-   int res;
-   gchar *uri = g_strdup_printf ( "/mt?n=404&v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
-   res = a_http_download_get_url ( "mt.google.com", uri, dest_fn, &google_options );
-   g_free ( uri );
-   return res;
-}
-
 %}
 
 class Google:Map:Type from Vik:Map:Type {
@@ -219,6 +212,20 @@ class Google:Map:Type from Vik:Map:Type {
 	  VIK_MAP_TYPE(ret)->uniq_id = id;
 	  ret->_priv->type = type;
 	  return G_OBJECT (ret);
+  }
+
+  virtual gchar *
+  get_uri( self, MapCoord *src )
+  {
+     const gchar *verstr = google_version_number(src, GOOGLE_MAP_TYPE(self)->_priv->type);
+     gchar *uri = g_strdup_printf ( "/mt?n=404&v=%s&x=%d&y=%d&zoom=%d", verstr, src->x, src->y, src->scale );
+     return uri;
+  }
+
+  virtual gchar *
+  get_hostname( self )
+  {
+    return g_strdup("mt.google.com");
   }
 
   override (Vik:Map:Type) gboolean
@@ -252,7 +259,12 @@ class Google:Map:Type from Vik:Map:Type {
   override (Vik:Map:Type) int
    download ( Vik:Map:Type *self, MapCoord *src, const gchar *dest_fn )
   {
-     const gchar *vers_str = google_version_number(src, GOOGLE_MAP_TYPE(self)->_priv->type);
-      return(real_google_download ( src, dest_fn, vers_str ));
+   int res;
+   gchar *uri = google_map_type_get_uri(GOOGLE_MAP_TYPE(self), src);
+   gchar *host = google_map_type_get_hostname(GOOGLE_MAP_TYPE(self));
+   res = a_http_download_get_url ( host, uri, dest_fn, &google_options );
+   g_free ( uri );
+   g_free ( host );
+   return res;
   }
 }

@@ -80,9 +80,11 @@ libviking_a_SOURCES = \
 if GOOGLE
 libviking_a_SOURCES += \
 	google.c google.h \
-	google-map-type.c google-map-type.h
+	google-map-type.c google-map-type.h \
+	google-kh-map-type.c google-kh-map-type.h
 BUILT_SOURCES += \
-	google-map-type.c google-map-type.h
+	google-map-type.c google-map-type.h \
+	google-kh-map-type.c google-kh-map-type.h
 endif
 
 if OLDGOOGLE
