@@ -6,6 +6,7 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "vik-map-type.h"
+#include "download.h"
 %}
 
 %{
@@ -20,7 +21,6 @@
 #include "coords.h"
 #include "vikcoord.h"
 #include "mapcoord.h"
-#include "download.h"
 #include "curl_download.h"
 #include "globals.h"
 #include "google.h"
@@ -33,18 +33,16 @@
 
 %{
 
-static DownloadOptions osm_options = { NULL, 0, a_check_map_file };
-
 /* 1 << (x) is like a 2**(x) */
-#define GZ(x) (1<<(x))
+#define GZ(x) ((1<<x))
 
 static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), GZ(6), GZ(7), GZ(8), GZ(9),
-                                      GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15), GZ(16), GZ(17) };
+                                           GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15), GZ(16), GZ(17) };
 
 static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
 
 #define ERROR_MARGIN 0.01
-guint8 osm_zoom ( gdouble mpp ) {
+static guint8 slippy_zoom ( gdouble mpp ) {
   gint i;
   for ( i = 0; i < num_scales; i++ ) {
     if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN )
@@ -55,10 +53,7 @@ guint8 osm_zoom ( gdouble mpp ) {
 
 %}
 
-class Osm:Map:Type from Vik:Map:Type {
-  private gchar *hostname;
-
-  private gchar *url;
+class Slippy:Map:Type:Abstract from Vik:Map:Type {
 
   init (self) {
           /* initialize the object here */
@@ -67,14 +62,14 @@ class Osm:Map:Type from Vik:Map:Type {
           VIK_MAP_TYPE(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   }
 
-  public GObject *
-  new_with_id (guint8 id, const gchar *hostname, const gchar *url) {
-	  OsmMapType *ret = GET_NEW;
-	  VIK_MAP_TYPE(ret)->uniq_id = id;
-	  ret->_priv->hostname = g_strdup(hostname);
-	  ret->_priv->url = g_strdup(url);
-	  return G_OBJECT (ret);
-  }
+  virtual gchar *
+  get_uri( self, MapCoord *src );
+
+  virtual gchar *
+  get_hostname( self );
+
+  virtual DownloadOptions *
+  get_download_options( self );
 
   override (Vik:Map:Type) gboolean
   coord_to_mapcoord ( Vik:Map:Type *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
@@ -84,13 +79,14 @@ class Osm:Map:Type from Vik:Map:Type {
   if ( xzoom != yzoom )
     return FALSE;
 
-  dest->scale = osm_zoom ( xzoom );
+  dest->scale = slippy_zoom ( xzoom );
   if ( dest->scale == 255 )
     return FALSE;
 
   dest->x = (src->east_west + 180) / 360 * GZ(17) / xzoom;
   dest->y = (180 - MERCLAT(src->north_south)) / 360 * GZ(17) / xzoom;
   dest->z = 0;
+
   return TRUE;
   }
 
@@ -106,12 +102,13 @@ class Osm:Map:Type from Vik:Map:Type {
   override (Vik:Map:Type) int
    download ( Vik:Map:Type *self, MapCoord *src, const gchar *dest_fn )
   {
-   int res = -1;
-   gchar *uri = g_strdup_printf ( OSM_MAP_TYPE(self)->_priv->url,
-   	      			  17 - src->scale, src->x, src->y );
-   res = a_http_download_get_url ( OSM_MAP_TYPE(self)->_priv->hostname,
-       	 			   uri, dest_fn, &osm_options );
+   int res;
+   gchar *uri = slippy_map_type_abstract_get_uri(SLIPPY_MAP_TYPE_ABSTRACT(self), src);
+   gchar *host = slippy_map_type_abstract_get_hostname(SLIPPY_MAP_TYPE_ABSTRACT(self));
+   DownloadOptions *options = slippy_map_type_abstract_get_download_options(SLIPPY_MAP_TYPE_ABSTRACT(self));
+   res = a_http_download_get_url ( host, uri, dest_fn, options );
    g_free ( uri );
+   g_free ( host );
    return res;
   }
 }

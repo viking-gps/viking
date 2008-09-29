@@ -57,6 +57,8 @@ libviking_a_SOURCES = \
 	mapcache.c mapcache.h \
 	vikmapslayer.c vikmapslayer.h \
 	vik-map-type.c vik-map-type.h \
+	slippy-map-type-abstract.c slippy-map-type-abstract.h \
+	slippy-map-type.c slippy-map-type.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
@@ -76,6 +78,10 @@ libviking_a_SOURCES = \
 	print-preview.c print-preview.h \
 	print.c print.h \
 	preferences.c preferences.h
+
+BUILT_SOURCES += \
+	slippy-map-type-abstract.c slippy-map-type-abstract.h \
+	slippy-map-type.c slippy-map-type.h
 
 if GOOGLE
 libviking_a_SOURCES += \
@@ -112,10 +118,7 @@ endif
 if OPENSTREETMAP
 libviking_a_SOURCES += \
 	osm.c osm.h \
-	osm-map-type.c osm-map-type.h \
 	osm-traces.c osm-traces.h
-BUILT_SOURCES += \
-	osm-map-type.c osm-map-type.h
 endif
 
 if BLUEMARBLE

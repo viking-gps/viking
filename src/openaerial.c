@@ -22,11 +22,11 @@
 
 #include "openaerial.h"
 #include "vikmapslayer.h"
-#include "osm-map-type.h"
+#include "slippy-map-type.h"
 
 /* initialisation */
 void openaerial_init () {
-  VikMapType *openaerialmap_type = VIK_MAP_TYPE(osm_map_type_new_with_id( 20, "tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%d/%d/%d.jpg" ));
+  VikMapType *openaerialmap_type = VIK_MAP_TYPE(slippy_map_type_new_with_id( 20, "tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%d/%d/%d.jpg" ));
 
   maps_layer_register_type("OpenAerialMap", 20, openaerialmap_type);
 }

@@ -1,0 +1,80 @@
+%headertop{
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "vikcoord.h"
+#include "mapcoord.h"
+#include "slippy-map-type-abstract.h"
+%}
+
+%{
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <math.h>
+#include <string.h>
+#include "coords.h"
+#include "vikcoord.h"
+#include "mapcoord.h"
+#include "download.h"
+#include "curl_download.h"
+#include "globals.h"
+#include "google.h"
+#include "vikmapslayer.h"
+%}
+
+%h{
+
+%}
+
+%{
+
+static DownloadOptions slippy_options = { NULL, 0, a_check_map_file };
+
+%}
+
+class Slippy:Map:Type from Slippy:Map:Type:Abstract {
+  private gchar *hostname;
+
+  private gchar *url;
+
+  init (self) {
+          /* initialize the object here */
+          VIK_MAP_TYPE(self)->tilesize_x = 256;
+          VIK_MAP_TYPE(self)->tilesize_y = 256;
+          VIK_MAP_TYPE(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
+  }
+
+  public GObject *
+  new_with_id (guint8 id, const gchar *hostname, const gchar *url) {
+	  SlippyMapType *ret = GET_NEW;
+	  VIK_MAP_TYPE(ret)->uniq_id = id;
+	  ret->_priv->hostname = g_strdup(hostname);
+	  ret->_priv->url = g_strdup(url);
+	  return G_OBJECT (ret);
+  }
+
+  override (Slippy:Map:Type:Abstract) gchar *
+  get_uri( Slippy:Map:Type:Abstract *self, MapCoord *src )
+  {
+    gchar *uri = g_strdup_printf ( SLIPPY_MAP_TYPE(self)->_priv->url,
+   	      			  17 - src->scale, src->x, src->y );
+    return uri;
+  } 
+
+  override (Slippy:Map:Type:Abstract) gchar *
+  get_hostname( Slippy:Map:Type:Abstract *self )
+  {
+    return g_strdup( SLIPPY_MAP_TYPE(self)->_priv->hostname );
+  }
+
+  override (Slippy:Map:Type:Abstract) DownloadOptions *
+  get_download_options( Slippy:Map:Type:Abstract *self )
+  {
+    return &slippy_options;
+  }
+}

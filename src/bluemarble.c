@@ -22,11 +22,11 @@
 
 #include "bluemarble.h"
 #include "vikmapslayer.h"
-#include "osm-map-type.h"
+#include "slippy-map-type.h"
 
 /* initialisation */
 void bluemarble_init () {
-  VikMapType *bluemarble_type = VIK_MAP_TYPE(osm_map_type_new_with_id( 15, "s3.amazonaws.com", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg" ));
+  VikMapType *bluemarble_type = VIK_MAP_TYPE(slippy_map_type_new_with_id( 15, "s3.amazonaws.com", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg" ));
 
   maps_layer_register_type("BlueMarble", 15, bluemarble_type);
 }
