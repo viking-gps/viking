@@ -16,6 +16,10 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* QA: cleanning old stuff
 
 2008-09-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #1947260: correct a corrupted escape
+
+2008-09-01
 Quy Tonthat <qtonthat@gmail.com>:
 	* Google search adapting changes from Google.
 
