@@ -181,7 +181,7 @@ int main( int argc, char *argv[] )
 #endif
 
   /* Set the icon */
-  main_icon = gdk_pixbuf_from_pixdata(&viking_icon_pixbuf, FALSE, NULL);
+  main_icon = gdk_pixbuf_from_pixdata(&viking_pixbuf, FALSE, NULL);
   gtk_window_set_default_icon(main_icon);
 
   /* Create the first window */

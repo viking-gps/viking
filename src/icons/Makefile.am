@@ -81,7 +81,7 @@ WAYPOINT_ICONS = \
   wp_airplane.png
 
 ICONS = \
-  viking_icon.png \
+  viking.png \
   addtr_18.png \
   begintr_18.png \
   addwp_18.png \
@@ -150,4 +150,4 @@ INCLUDES        = @GTK_CFLAGS@
 AM_CFLAGS       = -Wall -g -D_GNU_SOURCE
 
 iconsdir = $(datadir)/icons
-icons_DATA = viking_icon.png
+icons_DATA = viking.png

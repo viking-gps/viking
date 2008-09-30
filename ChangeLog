@@ -1,3 +1,7 @@
+2008-09-30
+Stanislav Brabec <sbrabec@users.sourceforge.net>
+	* Rename icon: viking_icon.png -> viking.png
+
 2008-09-22
 Quy Tonthat <qtonthat@gmail.com>:
 	* Change "Zoom To" short cut to avoid conflict with "Zoom Tool".
