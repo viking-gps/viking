@@ -149,5 +149,15 @@ $(BUILT_SOURCES): $(srcdir)/Makefile.am
 INCLUDES        = @GTK_CFLAGS@
 AM_CFLAGS       = -Wall -g -D_GNU_SOURCE
 
-iconsdir = $(datadir)/icons
+iconsdir = $(datadir)/icons/hicolor/48x48/apps
 icons_DATA = viking.png
+gtk_update_icon_cache = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor
+
+install-data-hook:
+	@-if test -z "$(DESTDIR)"; then \
+	        echo "Updating Gtk icon cache."; \
+	        $(gtk_update_icon_cache); \
+	else \
+	        echo "*** Icon cache not updated.  After install, run this:"; \
+	        echo "***   $(gtk_update_icon_cache)"; \
+	fi
