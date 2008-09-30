@@ -4,6 +4,7 @@ src/clipboard.c
 src/curl_download.c
 src/dialog.c
 src/expedia.c
+src/globals.c
 src/google.c
 src/googlemaps.c
 src/googlesearch.c
@@ -18,6 +19,7 @@ src/util.c
 src/vikcoordlayer.c
 src/datasource_bfilter.c
 src/main.c
+src/uibuilder.c
 src/vikdemlayer.c
 src/vikfileentry.c
 src/vikfilelist.c
