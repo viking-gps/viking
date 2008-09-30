@@ -2,6 +2,7 @@
 Stanislav Brabec <sbrabec@users.sourceforge.net>
 	* Rename icon: viking_icon.png -> viking.png
 	* Fix missing files in po/POTFILES.in
+	* src/viking.desktop.in: add GenericName and revise Categories
 
 2008-09-22
 Quy Tonthat <qtonthat@gmail.com>:
