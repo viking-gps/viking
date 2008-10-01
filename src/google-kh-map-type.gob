@@ -89,18 +89,18 @@ class Google:Kh:Map:Type from Google:Map:Type {
 	  return G_OBJECT (ret);
   }
 
-  override (Google:Map:Type) gchar *
-  get_uri( Google:Map:Type *self, MapCoord *src )
+  override (Slippy:Map:Type:Abstract) gchar *
+  get_uri( Slippy:Map:Type:Abstract *self, MapCoord *src )
   {
      gchar *khenc = kh_encode( src->x, src->y, src->scale );
-     const gchar *vers_str = google_version_number(src, TYPE_GOOGLE_SAT);
+     const gchar *vers_str = google_version_number(GOOGLE_MAP_TYPE(self), src, TYPE_GOOGLE_SAT);
      gchar *uri = g_strdup_printf ( "/kh?n=404&v=%s&t=%s", vers_str, khenc );
      g_free ( khenc );
      return uri;
   }
 
-  override (Google:Map:Type) gchar *
-  get_hostname( Google:Map:Type *self )
+  override (Slippy:Map:Type:Abstract) gchar *
+  get_hostname( Slippy:Map:Type:Abstract *self )
   {
     return g_strdup("khm.google.com");
   }
