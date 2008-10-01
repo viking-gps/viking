@@ -23,7 +23,6 @@
 #include "download.h"
 #include "curl_download.h"
 #include "globals.h"
-#include "google.h"
 #include "vikmapslayer.h"
 %}
 
