@@ -204,7 +204,8 @@ struct _VikGpsLayer {
   int cur_read_child;   /* used only for reading file */
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   VglGpsd *vgpsd;
-  gboolean realtime_tracking;
+  gboolean realtime_tracking;  /* set/reset only by the callback */
+  gboolean realtime_waiting;/* after activated, before first gps data arrives */
   GMutex *realtime_tracking_mutex;
   GpsFix realtime_fix;
   GpsFix last_fix;
@@ -430,6 +431,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   vgl->realtime_tracking_mutex = g_mutex_new();
   vgl->realtime_tracking = FALSE;
+  vgl->realtime_waiting = FALSE;
   vgl->vgpsd = NULL;
   vgl->realtime_track_gc = vik_viewport_new_gc ( vp, "#203070", 2 );
   vgl->realtime_track_bg_gc = vik_viewport_new_gc ( vp, "grey", 2 );
@@ -1182,7 +1184,7 @@ void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
     vgl->realtime_fix.dirty = TRUE;
 
     if (vgl->realtime_keep_at_center ||
-        (vgl->realtime_jump_to_start && !vgl->realtime_track->trackpoints)) {
+        (vgl->realtime_jump_to_start && vgl->realtime_waiting)) {
       struct LatLon ll;
       VikCoord center;
 
@@ -1196,6 +1198,7 @@ void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
       update_all = TRUE;
     }
 
+    vgl->realtime_waiting = FALSE;
     create_realtime_trackpoint(vgl, FALSE);
     g_mutex_unlock(vgl->realtime_tracking_mutex);
 
@@ -1265,6 +1268,7 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
       vik_trw_layer_add_track(vtl, vgl->realtime_track_name, vgl->realtime_track);
     }
 
+    vgl->realtime_waiting = TRUE;
     gps_set_raw_hook(&vgl->vgpsd->gpsd, gpsd_raw_hook);
     vgl->realtime_io_channel = g_io_channel_unix_new(vgl->vgpsd->gpsd.gps_fd);
     vgl->realtime_io_watch_id = g_io_add_watch( vgl->realtime_io_channel,
@@ -1276,6 +1280,7 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
   else {  /* stop realtime tracking */
     /* TODO: handle race condition here , make sure vgpsd is NULL */
     g_mutex_lock(vgl->realtime_tracking_mutex);
+    vgl->realtime_waiting = FALSE;
     gps_close(&vgl->vgpsd->gpsd);
     vgl->vgpsd = NULL;
     // g_source_remove(vgl->realtime_timeout);
