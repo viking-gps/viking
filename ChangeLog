@@ -1,3 +1,8 @@
+2008-10-11
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix segfault in realtime tracking.
+	* Add new moving map method for realtime tracking.
+
 2008-09-30
 Stanislav Brabec <sbrabec@users.sourceforge.net>
 	* Rename icon: viking_icon.png -> viking.png
