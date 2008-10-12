@@ -1,3 +1,37 @@
+Viking 0.9.7 (2008-10-12)
+New features since 0.9.6
+* Add new moving map method for realtime tracking.
+* Rename icon: viking_icon.png -> viking.png
+* src/viking.desktop.in: add GenericName and revise Categories
+* Change "Zoom To" short cut to avoid conflict with "Zoom Tool".
+* Update translations
+* Google search adapting changes from Google.
+* add osm cycle layer support
+* add a menu entry to extend an existing track using magic scissors
+* Patch #2009666: OpenAerialMap
+* Add preferences to select how degrees are displayed
+* Color picker button for the Coordlayer properties dialog
+* Cut/Copy/Paste empty selection is not critical
+* Layers panel UI improvements
+* Homogeneous icons management.
+* Add preferences to store OSM login/password
+* Add a password entry widget
+* Ensure that confirmation dialog is over file selector
+
+Fixes since 0.9.6
+* QA: cleanning old stuff
+* Fix segfault in realtime tracking.
+* Fix missing files in po/POTFILES.in
+* viking.spec.in, src/icons/Makefile.am: Fix icon target dir
+* fix parallel build (make -j8) on multi-processor machines.
+* Fix #1947260: correct a corrupted escape
+* Fixed crashes when creating new layers.
+* Fix #1952523: mode_button assertion loading old datafile
+* Fix: update layer after applying properties
+* Fixed google map download problem.
+* Replace specific About dialog by GtkAboutDialog
+* Replace some g_warning by g_debug
+
 Viking 0.9.6 (2008-07-31)
 Fixes since 0.9.5
 
