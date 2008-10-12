@@ -1,3 +1,7 @@
+2008-10-12
+Jon Burgess <jburgess777@users.sourceforge.net>
+	* Fix 2134452: Properties of some tracks show as NaN
+
 2008-10-11
 Quy Tonthat <qtonthat@gmail.com>:
 	* Fix segfault in realtime tracking.

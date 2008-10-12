@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<gpx version="1.0" creator="Viking -- http://viking.sf.net/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://www.topografix.com/GPX/1/0"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+<trk>
+  <name>ACTIVE LOG150702 #R</name>
+  <trkseg>
+  <trkpt lat="51.815308000000002" lon="-0.364981">
+    <ele>121.53100000000001</ele>
+    <time>2008-09-28T14:51:34Z</time>
+  </trkpt>
+  <trkpt lat="51.815381000000002" lon="-0.36506699999999997">
+    <ele>121.82299999999999</ele>
+    <time>2008-09-28T14:51:36Z</time>
+  </trkpt>
+  <trkpt lat="51.815446000000001" lon="-0.36513499999999999">
+    <ele>122.10299999999999</ele>
+    <time>2008-09-28T14:51:38Z</time>
+  </trkpt>
+  <trkpt lat="51.815502000000002" lon="-0.36518600000000001">
+    <ele>122.364</ele>
+    <time>2008-09-28T14:51:40Z</time>
+  </trkpt>
+  <trkpt lat="51.815536999999999" lon="-0.365228">
+    <ele>122.85599999999999</ele>
+    <time>2008-09-28T14:51:42Z</time>
+  </trkpt>
+  <trkpt lat="51.815551999999997" lon="-0.36524600000000002">
+    <ele>122.977</ele>
+    <time>2008-09-28T14:51:44Z</time>
+  </trkpt>
+  <trkpt lat="51.815548999999997" lon="-0.36524000000000001">
+    <ele>122.70999999999999</ele>
+    <time>2008-09-28T14:51:46Z</time>
+  </trkpt>
+  <trkpt lat="51.815547000000002" lon="-0.36524099999999998">
+    <ele>123.622</ele>
+    <time>2008-09-28T14:51:48Z</time>
+  </trkpt>
+  <trkpt lat="51.815545999999998" lon="-0.36524000000000001">
+    <ele>120.239</ele>
+    <time>2008-09-28T14:51:51Z</time>
+  </trkpt>
+  <trkpt lat="51.815545999999998" lon="-0.36524000000000001">
+    <ele>123.06</ele>
+    <time>2008-09-28T14:51:53Z</time>
+  </trkpt>
+  <trkpt lat="51.815545" lon="-0.36523899999999998">
+    <ele>122.949</ele>
+    <time>2008-09-28T14:51:55Z</time>
+  </trkpt>
+  <trkpt lat="51.815544000000003" lon="-0.36523800000000001">
+    <ele>122.839</ele>
+    <time>2008-09-28T14:51:57Z</time>
+  </trkpt>
+  <trkpt lat="51.815544000000003" lon="-0.36523800000000001">
+    <ele>122.72</ele>
+    <time>2008-09-28T14:51:59Z</time>
+  </trkpt>
+  <trkpt lat="51.815542999999998" lon="-0.36523800000000001">
+    <ele>122.72499999999999</ele>
+    <time>2008-09-28T14:52:01Z</time>
+  </trkpt>
+  <trkpt lat="51.815542999999998" lon="-0.36523699999999998">
+    <ele>123.009</ele>
+    <time>2008-09-28T14:52:03Z</time>
+  </trkpt>
+  <trkpt lat="51.815542000000001" lon="-0.36523600000000001">
+    <ele>122.965</ele>
+    <time>2008-09-28T14:52:05Z</time>
+  </trkpt>
+  <trkpt lat="51.815542999999998" lon="-0.36523699999999998">
+    <ele>122.905</ele>
+    <time>2008-09-28T14:52:07Z</time>
+  </trkpt>
+  <trkpt lat="51.815542999999998" lon="-0.36523699999999998">
+    <ele>122.715</ele>
+    <time>2008-09-28T14:52:09Z</time>
+  </trkpt>
+  <trkpt lat="51.815544000000003" lon="-0.36523800000000001">
+    <ele>122.79000000000001</ele>
+    <time>2008-09-28T14:52:11Z</time>
+  </trkpt>
+  <trkpt lat="51.815545" lon="-0.36523899999999998">
+    <ele>123.063</ele>
+    <time>2008-09-28T14:52:13Z</time>
+  </trkpt>
+  <trkpt lat="51.815545" lon="-0.36523899999999998">
+    <ele>122.871</ele>
+    <time>2008-09-28T14:52:15Z</time>
+  </trkpt>
+  <trkpt lat="51.815545999999998" lon="-0.36524000000000001">
+    <ele>122.55200000000001</ele>
+    <time>2008-09-28T14:52:17Z</time>
+  </trkpt>
+  <trkpt lat="51.815545999999998" lon="-0.36524000000000001">
+    <ele>123.015</ele>
+    <time>2008-09-28T14:52:19Z</time>
+  </trkpt>
+  <trkpt lat="51.815545999999998" lon="-0.36524099999999998">
+    <ele>122.773</ele>
+    <time>2008-09-28T14:52:21Z</time>
+  </trkpt>
+  <trkpt lat="51.815547000000002" lon="-0.36524099999999998">
+    <ele>122.94</ele>
+    <time>2008-09-28T14:52:23Z</time>
+  </trkpt>
+</trkseg>
+</trk>
+</gpx>
