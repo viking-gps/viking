@@ -1,4 +1,8 @@
 2008-10-12
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix 2161310: Fix some more compiler warnings
+
+2008-10-12
 Jon Burgess <jburgess777@users.sourceforge.net>
 	* Fix 2134452: Properties of some tracks show as NaN
 

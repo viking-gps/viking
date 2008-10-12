@@ -94,7 +94,7 @@ static void get_from_anything ( w_and_interface_t *wi )
 {
   gchar *cmd = wi->cmd;
   gchar *extra = wi->extra;
-  gboolean result;
+  gboolean result = TRUE;
   VikTrwLayer *vtl;
 
   gboolean creating_new_layer = TRUE;
@@ -368,7 +368,7 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
 				VikTrwLayer *vtl, VikTrack *track, /* both passed to acquire, although for many filters only one ness */
 				const gchar *menu_title, vik_datasource_inputtype_t inputtype )
 {
-  static gpointer pass_along[4];
+  static gpointer pass_along[5];
   GtkWidget *menu_item=NULL, *menu=NULL;
   GtkWidget *item=NULL;
   int i;
