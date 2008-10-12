@@ -1,6 +1,7 @@
 2008-10-12
 Jon Burgess <jburgess777@googlemail.com>:
 	* fix implicit declaration of maps_layer_default_dir()
+	* fix missing status return in spawn_command_line_async()
 
 2008-10-12
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:

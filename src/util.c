@@ -42,6 +42,7 @@ static gboolean spawn_command_line_async(const gchar * cmd,
 
   g_free(cmdline);
  
+  return status;
 }
 
 void open_url(GtkWindow *parent, const gchar * url)
