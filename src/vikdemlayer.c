@@ -41,6 +41,7 @@
 #include "viklayer.h"
 #include "vikaggregatelayer.h"
 #include "viklayerspanel.h"
+#include "vikmapslayer.h"
 #include "vikdemlayer.h"
 #include "dialog.h"
 
