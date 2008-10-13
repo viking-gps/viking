@@ -1,3 +1,9 @@
+2008-10-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* GPS realtime tracking: Keep retrying when fail to connect
+	to gpsd, either because gpsd is not (yet) running or gpsd
+	disconnect (eg. gps unplugged).
+
 2008-10-12
 Jon Burgess <jburgess777@googlemail.com>:
 	* fix implicit declaration of maps_layer_default_dir()
