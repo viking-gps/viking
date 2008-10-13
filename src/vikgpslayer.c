@@ -1263,7 +1263,7 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
     if (!gps_poll(&vgl->vgpsd->gpsd))
       return TRUE;
     else {
-      g_warning("gps_poll failed\n");
+      g_warning("Disconnected from gpsd. Trying to reconnect");
       rt_gpsd_disconnect(vgl);
       rt_gpsd_connect(vgl, FALSE);
     }
@@ -1293,8 +1293,8 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   struct gps_data_t *gpsd = gps_open(vgl->gpsd_host, vgl->gpsd_port);
 
   if (gpsd == NULL) {
-    g_warning("Failed to connect to gpsd at %s (port %s)",
-                                  vgl->gpsd_host, vgl->gpsd_port);
+    g_warning("Failed to connect to gpsd at %s (port %s). Will retry in %d seconds",
+                     vgl->gpsd_host, vgl->gpsd_port, vgl->gpsd_retry_interval);
     return TRUE;   /* keep timer running */
   }
 
