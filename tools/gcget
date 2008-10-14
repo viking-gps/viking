@@ -171,7 +171,7 @@ for ii in range(min(n,(records+19)/20)):
   if not magicnumber:
     magicnumber = getmagicnumber(b)
     if not magicnumber:
-      print "couldn't find magic number!"
+#      print "couldn't find magic number!" # why does this happen?
       break
 
   b.select_form(nr=0)
