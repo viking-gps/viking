@@ -1,3 +1,8 @@
+2008-10-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix compatibility problem for windows caused by
+	g_shell_parse_argv()
+
 2008-10-20
 Quy Tonthat <qtonthat@gmail.com>:
 	* New server for OSM cycle map.

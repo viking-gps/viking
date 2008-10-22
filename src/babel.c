@@ -189,12 +189,11 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
 
 gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *from, gpointer user_data )
 {
+  int i,j;
   int fd_dst;
   gchar *name_dst;
-  gchar *cmd;
   gboolean ret = FALSE;
-  gchar **args;  
-  gint nb_args;
+  gchar *args[64];
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
     gchar *gpsbabel_loc;
@@ -204,27 +203,31 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 
     if (gpsbabel_loc ) {
       gchar *unbuffer_loc = g_find_program_in_path("unbuffer");
-      cmd = g_strdup_printf ( "%s%s%s %s -o gpx %s %s",
-			      unbuffer_loc ? unbuffer_loc : "",
-			      unbuffer_loc ? " " : "",
-			      gpsbabel_loc,
-			      babelargs,
-			      from,
-			      name_dst );
+      gchar **sub_args = g_strsplit(babelargs, " ", 0);
 
-      if ( unbuffer_loc )
-        g_free ( unbuffer_loc );
+      i = 0;
+      if (unbuffer_loc)
+        args[i++] = unbuffer_loc;
+      args[i++] = gpsbabel_loc;
+      for (j = 0; sub_args[j]; j++)
+        args[i++] = sub_args[j];
+      args[i++] = "-o";
+      args[i++] = "gpx";
+      args[i++] = from;
+      args[i++] = name_dst;
+      args[i] = NULL;
 
-      if ( g_shell_parse_argv(cmd, &nb_args, &args, NULL) ) {
-        ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
-        g_strfreev(args);
-      }
-      g_free ( cmd );
+      ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
+
+      g_free ( unbuffer_loc );
+      g_strfreev(sub_args);
     }
+    g_free(gpsbabel_loc);
   }
 
   g_remove(name_dst);
   g_free(name_dst);
+  /* FIXME: free babelargs ? */
   return ret;
 }
 
@@ -405,12 +408,11 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
 
 gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *to, gpointer user_data )
 {
+  int i,j;
   int fd_src;
   gchar *name_src;
-  gchar *cmd;
   gboolean ret = FALSE;
-  gchar **args;  
-  gint nb_args;
+  gchar *args[64];  
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
     gchar *gpsbabel_loc;
@@ -420,26 +422,30 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
 
     if (gpsbabel_loc ) {
       gchar *unbuffer_loc = g_find_program_in_path("unbuffer");
-      cmd = g_strdup_printf ( "%s%s%s %s -i gpx %s %s",
-			      unbuffer_loc ? unbuffer_loc : "",
-			      unbuffer_loc ? " " : "",
-			      gpsbabel_loc,
-			      babelargs,
-			      name_src,
-			      to);
+      gchar **sub_args = g_strsplit(babelargs, " ", 0);
 
-      if ( unbuffer_loc )
-        g_free ( unbuffer_loc );
-      g_debug ( "%s: %s", __FUNCTION__, cmd );
-      if ( g_shell_parse_argv(cmd, &nb_args, &args, NULL) ) {
-        ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
-        g_strfreev(args);
-      }
-      g_free ( cmd );
+      i = 0;
+      if (unbuffer_loc)
+        args[i++] = unbuffer_loc;
+      args[i++] = gpsbabel_loc;
+      args[i++] = "-i";
+      args[i++] = "gpx";
+      for (j = 0; sub_args[j]; j++)
+        args[i++] = sub_args[j];
+      args[i++] = name_src;
+      args[i++] = to;
+      args[i] = NULL;
+
+      ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
+
+      g_free ( unbuffer_loc );
+      g_strfreev(sub_args);
     }
+    g_free(gpsbabel_loc);
   }
 
   g_remove(name_src);
   g_free(name_src);
+  /* FIXME: free babelargs ? */
   return ret;
 }
