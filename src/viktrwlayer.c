@@ -1113,7 +1113,7 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
              wp->coord.north_south > dp->cn1 && wp->coord.north_south < dp->cn2 ) )
   {
     gint x, y;
-    GdkPixbuf *sym;
+    GdkPixbuf *sym = NULL;
     vik_viewport_coord_to_screen ( dp->vp, &(wp->coord), &x, &y );
 
     /* if in shrunken_cache, get that. If not, get and add to shrunken_cache */
@@ -1211,11 +1211,18 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
     if ( dp->vtl->drawlabels )
     {
       /* thanks to the GPSDrive people (Fritz Ganter et al.) for hints on this part ... yah, I'm too lazy to study documentation */
+      gint label_x, label_y;
       gint width, height;
       pango_layout_set_text ( dp->vtl->wplabellayout, name, -1 );
       pango_layout_get_pixel_size ( dp->vtl->wplabellayout, &width, &height );
-      vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, x + dp->vtl->wp_size - 1, y-1,width+1,height-1);
-      vik_viewport_draw_layout ( dp->vp, dp->vtl->waypoint_text_gc, x + dp->vtl->wp_size, y, dp->vtl->wplabellayout );
+      label_x = x - width/2;
+      if (sym)
+        label_y = y - height - 2 - gdk_pixbuf_get_height(sym)/2;
+      else
+        label_y = y - dp->vtl->wp_size - height - 2;
+
+      vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
+      vik_viewport_draw_layout ( dp->vp, dp->vtl->waypoint_text_gc, label_x, label_y, dp->vtl->wplabellayout );
     }
   }
 }

@@ -9,6 +9,8 @@ Quy Tonthat <qtonthat@gmail.com>:
 	symbol.
 	* src/icons/Makefile.am: Make sure we won't pick up unwanted _pixmap.h
 	files
+	* Waypoint names are now displayed at the top of waypoint symbol
+	and no longer overlap symbols.
 
 2008-10-28
 Quy Tonthat <qtonthat@gmail.com>:
