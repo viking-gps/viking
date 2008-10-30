@@ -113,6 +113,7 @@ static void open_window ( VikWindow *vw, const gchar **files )
 /* Options */
 static GOptionEntry entries[] = 
 {
+  { "small_waypoint", 's', 0, G_OPTION_ARG_NONE, &vik_use_small_wp_icons, N_("Use smaller symbols for waypoints"), NULL },
   { "debug", 'd', 0, G_OPTION_ARG_NONE, &vik_debug, N_("Enable debug output"), NULL },
   { "verbose", 'V', 0, G_OPTION_ARG_NONE, &vik_verbose, N_("Enable verbose output"), NULL },
   { "version", 'v', 0, G_OPTION_ARG_NONE, &vik_version, N_("Show version"), NULL },

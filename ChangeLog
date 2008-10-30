@@ -1,6 +1,18 @@
+2008-10-30
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add larger size waypoint symbols (icons) that look similar to
+	the ones used in Garmin GPS.
+	* The larger symbols are now used by default. To switch back to the
+	old smaller icons, use command line option "-s" or "--small_waypoint".
+	* Waypoint Property Dialog: The combo box "symbol" (used for selecting
+	waypoint symbol) now has tooltip that shows the name of the selected
+	symbol.
+
 2008-10-28
 Quy Tonthat <qtonthat@gmail.com>:
-	* Waypoint icons are now compatible with GPS
+	* Waypoint symbols: Use Garmin waypoit names so that waypoint has
+	proper symbols on GPS after upload (and on Viking after download). 
+	Old viking files still works the way they did.
 
 2008-10-22
 Quy Tonthat <qtonthat@gmail.com>:
