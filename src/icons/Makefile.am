@@ -241,7 +241,7 @@ CURSORS = \
 
 ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS) $(WAYPOINT_ICONS_LARGE) $(CURSORS)
 EXTRA_DIST = $(ALL_ICONS)
-ALL_ICONS_HEADER = $(ALL_ICONS:%.png=%_pixmap.h)
+ALL_ICONS_HEADER = $(ALL_ICONS:.png=_pixmap.h)
 
 BUILT_SOURCES = $(ALL_ICONS_HEADER) icons.c icons.h
 CLEANFILES = $(BUILT_SOURCES)
@@ -251,7 +251,7 @@ libicons_a_SOURCES = icons.c icons.h
 
 icons.h: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
-	sed -n "s/^\(const.*\) = {/extern \1;/p" *_pixmap.h >> $@
+	sed -n "s/^\(const.*\) = {/extern \1;/p" $(ALL_ICONS_HEADER) >> $@
 
 icons.c: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@

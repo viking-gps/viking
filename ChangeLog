@@ -7,6 +7,8 @@ Quy Tonthat <qtonthat@gmail.com>:
 	* Waypoint Property Dialog: The combo box "symbol" (used for selecting
 	waypoint symbol) now has tooltip that shows the name of the selected
 	symbol.
+	* src/icons/Makefile.am: Make sure we won't pick up unwanted _pixmap.h
+	files
 
 2008-10-28
 Quy Tonthat <qtonthat@gmail.com>:
