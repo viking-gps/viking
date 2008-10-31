@@ -184,7 +184,7 @@ static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
 /* todo: less on this side, like add track */
 gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Create"),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Waypoint Properties"),
                                                    parent,
                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                    GTK_STOCK_CANCEL,
