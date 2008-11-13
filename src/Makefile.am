@@ -83,7 +83,6 @@ endif
 
 if OLDGOOGLE
 libviking_a_SOURCES += \
-	khmaps.c khmaps.h \
 	googlemaps.c googlemaps.h
 endif
 

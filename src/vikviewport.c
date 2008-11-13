@@ -39,7 +39,6 @@
 /* for ALTI_TO_MPP */
 #include "globals.h"
 #include "googlemaps.h"
-#include "khmaps.h"
 
 static gdouble EASTING_OFFSET = 500000.0;
 
