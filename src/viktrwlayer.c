@@ -224,6 +224,7 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
+static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 
 /* pop-up items */
 static void trw_layer_properties_item ( gpointer pass_along[5] );
@@ -2142,6 +2143,33 @@ static gint trackpoint_compare(gconstpointer a, gconstpointer b)
   return 0;
 }
 
+static void trw_layer_merge_with_other ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  gchar *orig_track_name = strdup(pass_along[3]);
+  gchar *merge_with;
+
+  merge_with = a_dialog_select_track(VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, orig_track_name);
+
+  if (merge_with)
+  {
+    VikTrack *track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, orig_track_name );
+    VikTrack *merge_track = (VikTrack *) g_hash_table_lookup (vtl->tracks, merge_with );
+    if (merge_track)
+    {
+      track->trackpoints = g_list_concat(track->trackpoints, merge_track->trackpoints);
+      merge_track->trackpoints = NULL;
+      vik_trw_layer_delete_track(vtl, merge_with);
+      track->trackpoints = g_list_sort(track->trackpoints, trackpoint_compare);
+    }
+    g_free(merge_with);
+  }
+  free(orig_track_name);
+  vik_layer_emit_update( VIK_LAYER(vtl) );
+
+  return;
+}
+
 /* merge by time routine */
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
 {
@@ -2535,6 +2563,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_label ( _("Merge By Time") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_by_timestamp), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_label ( _("Merge With Other Track") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_with_other), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 

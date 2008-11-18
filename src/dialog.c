@@ -386,6 +386,71 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   return FALSE;
 }
 
+gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, gchar *orig_track_name )
+{
+  GtkTreeIter iter;
+  GtkCellRenderer *renderer;
+  GtkWidget *view;
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Merge with..."),
+                                                  parent,
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_STOCK_CANCEL,
+                                                  GTK_RESPONSE_REJECT,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+  GtkWidget *label = gtk_label_new ( _("Select track to merge with") );
+  GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
+
+  GList *track_names = g_hash_table_get_keys(tracks);
+  GList *track_runner = track_names;
+  while (track_runner)
+  {
+    gchar *track_name = g_strdup(track_runner->data);
+    if (g_strcasecmp(track_name, orig_track_name) == 0)
+    {
+      g_free(track_name);
+    }
+    else
+    {
+      gtk_list_store_append(store, &iter);
+      gtk_list_store_set(store, &iter, 0, track_name,-1);
+    }
+    track_runner = g_list_next(track_runner);
+  }
+  g_list_free(track_names);
+
+  view = gtk_tree_view_new();
+  renderer = gtk_cell_renderer_text_new();
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, NULL, renderer, "text", 0, NULL);
+  gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
+  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), FALSE);
+  gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_BROWSE );
+  g_object_unref(store);
+
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
+  gtk_widget_show ( label );
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), view, FALSE, FALSE, 0);
+  gtk_widget_show ( view );
+
+  while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
+  {
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+    if (gtk_tree_selection_get_selected(selection, &store, &iter))
+    {
+      gchar *name;
+      gtk_tree_model_get (GTK_TREE_MODEL(store), &iter, 0, &name, -1);
+      gchar *ret = g_strdup ( name );
+      gtk_widget_destroy ( dialog );
+      g_free(name);
+      return (ret);
+    }
+  }
+  gtk_widget_destroy ( dialog );
+  return NULL;
+}
+
 gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Track"),
