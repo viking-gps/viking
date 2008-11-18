@@ -2073,6 +2073,39 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
  * merge/split by time routines 
  *************************************/
 
+/* called for each key in track hash table.
+ * If the current track has time stamp, add it to the result,
+ * except the one pointed by "exclude".
+ * set exclude to NULL if there is no exclude to check.
+ * Not that result is in reverse (for performance reason).
+ */
+typedef struct {
+  GList **result;
+  GList  *exclude;
+} twt_udata;
+static void find_tracks_with_timestamp(gpointer key, gpointer value, gpointer udata)
+{
+  twt_udata *user_data = udata;
+  VikTrackpoint *p1, *p2;
+
+  if (VIK_TRACK(value)->trackpoints == user_data->exclude) {
+    return;
+  }
+
+  if (VIK_TRACK(value)->trackpoints) {
+    p1 = VIK_TRACKPOINT(VIK_TRACK(value)->trackpoints->data);
+    p2 = VIK_TRACKPOINT(g_list_last(VIK_TRACK(value)->trackpoints)->data);
+
+    if (!p1->has_timestamp || !p2->has_timestamp) {
+      g_print("no timestamp\n");
+      return;
+    }
+
+  }
+
+  *(user_data->result) = g_list_prepend(*(user_data->result), key);
+}
+
 /* called for each key in track hash table. if original track user_data[1] is close enough
  * to the passed one, add it to list in user_data[0] 
  */
@@ -2146,14 +2179,36 @@ static gint trackpoint_compare(gconstpointer a, gconstpointer b)
 static void trw_layer_merge_with_other ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
-  gchar *orig_track_name = strdup(pass_along[3]);
+  gchar *orig_track_name = pass_along[3];
   gchar *merge_with;
+  GList *tracks_with_timestamp = NULL;
+  VikTrack *track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, orig_track_name );
 
-  merge_with = a_dialog_select_track(VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, orig_track_name);
+  if (track->trackpoints &&
+      !VIK_TRACKPOINT(track->trackpoints->data)->has_timestamp) {
+    a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. This track does not have timestamp"));
+    return;
+  }
+
+  if (1) {
+
+    twt_udata udata;
+    udata.result = &tracks_with_timestamp;
+    udata.exclude = track->trackpoints;
+    g_hash_table_foreach(vtl->tracks, find_tracks_with_timestamp, (gpointer)&udata);
+    tracks_with_timestamp = g_list_reverse(tracks_with_timestamp);
+  }
+
+  if (!tracks_with_timestamp) {
+    a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. No other track in this layer has timestamp"));
+    return;
+  }
+
+  merge_with = a_dialog_select_track(VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, tracks_with_timestamp);
+  g_list_free(tracks_with_timestamp);
 
   if (merge_with)
   {
-    VikTrack *track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, orig_track_name );
     VikTrack *merge_track = (VikTrack *) g_hash_table_lookup (vtl->tracks, merge_with );
     if (merge_track)
     {
@@ -2163,11 +2218,8 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
       track->trackpoints = g_list_sort(track->trackpoints, trackpoint_compare);
     }
     g_free(merge_with);
+    vik_layer_emit_update( VIK_LAYER(vtl) );
   }
-  free(orig_track_name);
-  vik_layer_emit_update( VIK_LAYER(vtl) );
-
-  return;
 }
 
 /* merge by time routine */

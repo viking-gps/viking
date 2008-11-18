@@ -1,6 +1,10 @@
 2008-11-19
 Quy Tonthat <qtonthat@gmail.com>:
 	* Merging tracks by name. As submitted by Hein Ragas <viking@ragas.nl>
+	* Merging tracks by name. Tracks can only be merged if they have
+	timestamps. Make sure users won't cause damage to themselves by
+	merging tracks without timestamps. Also a few bug fixes and
+	optimisation.
 
 2008-11-13
 Quy Tonthat <qtonthat@gmail.com>:

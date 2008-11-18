@@ -63,5 +63,5 @@ void a_dialog_choose_dir ( GtkWidget *entry );
 
 gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_map, gchar *zoom_list[], gint default_zoom, gint *selected_map, gint *selected_zoom);
 
-gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, gchar *orig_track_name );
+gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, const GList *track_names );
 #endif

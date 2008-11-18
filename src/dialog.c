@@ -386,7 +386,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   return FALSE;
 }
 
-gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, gchar *orig_track_name )
+gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, const GList *track_names )
 {
   GtkTreeIter iter;
   GtkCellRenderer *renderer;
@@ -403,23 +403,13 @@ gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, gchar *ori
   GtkWidget *label = gtk_label_new ( _("Select track to merge with") );
   GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
 
-  GList *track_names = g_hash_table_get_keys(tracks);
   GList *track_runner = track_names;
   while (track_runner)
   {
-    gchar *track_name = g_strdup(track_runner->data);
-    if (g_strcasecmp(track_name, orig_track_name) == 0)
-    {
-      g_free(track_name);
-    }
-    else
-    {
-      gtk_list_store_append(store, &iter);
-      gtk_list_store_set(store, &iter, 0, track_name,-1);
-    }
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 0, track_runner->data, -1);
     track_runner = g_list_next(track_runner);
   }
-  g_list_free(track_names);
 
   view = gtk_tree_view_new();
   renderer = gtk_cell_renderer_text_new();
@@ -437,14 +427,12 @@ gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, gchar *ori
   while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
   {
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
-    if (gtk_tree_selection_get_selected(selection, &store, &iter))
+    if (gtk_tree_selection_get_selected(selection, NULL, &iter))
     {
       gchar *name;
       gtk_tree_model_get (GTK_TREE_MODEL(store), &iter, 0, &name, -1);
-      gchar *ret = g_strdup ( name );
       gtk_widget_destroy ( dialog );
-      g_free(name);
-      return (ret);
+      return (name);
     }
   }
   gtk_widget_destroy ( dialog );
