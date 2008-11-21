@@ -386,13 +386,24 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   return FALSE;
 }
 
-gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, const GList *track_names )
+static void get_selected_foreach_func(GtkTreeModel *model,
+                                      GtkTreePath *path,
+                                      GtkTreeIter *iter,
+                                      gpointer data)
+{
+  GList **list = data;
+  gchar *name;
+  gtk_tree_model_get (model, iter, 0, &name, -1);
+  *list = g_list_prepend(*list, name);
+}
+
+GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList *track_names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg )
 {
   GtkTreeIter iter;
   GtkCellRenderer *renderer;
   GtkWidget *view;
 
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Merge with..."),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -400,7 +411,7 @@ gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, const GLis
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL);
-  GtkWidget *label = gtk_label_new ( _("Select track to merge with") );
+  GtkWidget *label = gtk_label_new ( msg );
   GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
 
   GList *track_runner = track_names;
@@ -416,7 +427,8 @@ gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, const GLis
   gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, NULL, renderer, "text", 0, NULL);
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
   gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), FALSE);
-  gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_BROWSE );
+  gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
+      multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
   g_object_unref(store);
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
@@ -426,14 +438,15 @@ gchar *a_dialog_select_track ( GtkWindow *parent, GHashTable *tracks, const GLis
 
   while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
   {
+    GList *names = NULL;
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
-    if (gtk_tree_selection_get_selected(selection, NULL, &iter))
+    gtk_tree_selection_selected_foreach(selection, get_selected_foreach_func, &names);
+    if (names)
     {
-      gchar *name;
-      gtk_tree_model_get (GTK_TREE_MODEL(store), &iter, 0, &name, -1);
       gtk_widget_destroy ( dialog );
-      return (name);
+      return (names);
     }
+    a_dialog_error_msg(parent, _("Nothing was selected"));
   }
   gtk_widget_destroy ( dialog );
   return NULL;

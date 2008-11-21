@@ -2180,7 +2180,6 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
   gchar *orig_track_name = pass_along[3];
-  gchar *merge_with;
   GList *tracks_with_timestamp = NULL;
   VikTrack *track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, orig_track_name );
 
@@ -2204,20 +2203,27 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
     return;
   }
 
-  merge_with = a_dialog_select_track(VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, tracks_with_timestamp);
+  GList *merge_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+      vtl->tracks, tracks_with_timestamp, TRUE,
+      _("Merge with..."), _("Select track to merge with"));
   g_list_free(tracks_with_timestamp);
 
-  if (merge_with)
+  if (merge_list)
   {
-    VikTrack *merge_track = (VikTrack *) g_hash_table_lookup (vtl->tracks, merge_with );
-    if (merge_track)
-    {
-      track->trackpoints = g_list_concat(track->trackpoints, merge_track->trackpoints);
-      merge_track->trackpoints = NULL;
-      vik_trw_layer_delete_track(vtl, merge_with);
-      track->trackpoints = g_list_sort(track->trackpoints, trackpoint_compare);
+    GList *l;
+    for (l = merge_list; l != NULL; l = g_list_next(l)) {
+      VikTrack *merge_track = (VikTrack *) g_hash_table_lookup (vtl->tracks, l->data );
+      if (merge_track) {
+        track->trackpoints = g_list_concat(track->trackpoints, merge_track->trackpoints);
+        merge_track->trackpoints = NULL;
+        vik_trw_layer_delete_track(vtl, l->data);
+        track->trackpoints = g_list_sort(track->trackpoints, trackpoint_compare);
+      }
     }
-    g_free(merge_with);
+    /* TODO: free data before free merge_list */
+    for (l = merge_list; l != NULL; l = g_list_next(l))
+      g_free(l->data);
+    g_list_free(merge_list);
     vik_layer_emit_update( VIK_LAYER(vtl) );
   }
 }
@@ -2618,7 +2624,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( _("Merge With Other Track") );
+    item = gtk_menu_item_new_with_label ( _("Merge With Other Tracks...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_with_other), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
