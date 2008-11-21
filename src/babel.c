@@ -209,11 +209,16 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
       if (unbuffer_loc)
         args[i++] = unbuffer_loc;
       args[i++] = gpsbabel_loc;
-      for (j = 0; sub_args[j]; j++)
-        args[i++] = sub_args[j];
+      for (j = 0; sub_args[j]; j++) {
+        /* some version of gpsbabel can not take extra blank arg */
+        if (sub_args[j][0] != '\0')
+          args[i++] = sub_args[j];
+      }
       args[i++] = "-o";
       args[i++] = "gpx";
+      args[i++] = "-f";
       args[i++] = from;
+      args[i++] = "-F";
       args[i++] = name_dst;
       args[i] = NULL;
 
@@ -227,7 +232,6 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 
   g_remove(name_dst);
   g_free(name_dst);
-  /* FIXME: free babelargs ? */
   return ret;
 }
 
@@ -431,8 +435,12 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
       args[i++] = "-i";
       args[i++] = "gpx";
       for (j = 0; sub_args[j]; j++)
-        args[i++] = sub_args[j];
+        /* some version of gpsbabel can not take extra blank arg */
+        if (sub_args[j][0] != '\0')
+          args[i++] = sub_args[j];
+      args[i++] = "-f";
       args[i++] = name_src;
+      args[i++] = "-F";
       args[i++] = to;
       args[i] = NULL;
 
@@ -446,6 +454,5 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
 
   g_remove(name_src);
   g_free(name_src);
-  /* FIXME: free babelargs ? */
   return ret;
 }
