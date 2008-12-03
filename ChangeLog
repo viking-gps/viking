@@ -1,3 +1,8 @@
+2008-12-03
+Hein Ragas <viking@ragas.nl>
+	* GPX export: sort track by time. Some application can make use
+	of this feature when reading gpx files.
+
 2008-11-22
 Quy Tonthat <qtonthat@gmail.com>:
 	* Merging tracks by name. Users can now select more than one tracks to
