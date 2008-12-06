@@ -1,3 +1,7 @@
+2008-12-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Clicking on "vivisble" tick no longer makes the layer selected.
+
 2008-12-03
 Hein Ragas <viking@ragas.nl>
 	* GPX export: sort track by time. Some application can make use

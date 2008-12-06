@@ -65,6 +65,8 @@ struct _VikTreeview {
   GtkTreeModel *model;
 
   GdkPixbuf *layer_type_icons[VIK_LAYER_NUM_TYPES];
+
+  gboolean was_a_toggle;
 };
 
 /* TODO: find, make "static" and put up here all non-"a_" functions */
@@ -135,6 +137,7 @@ static void treeview_toggled_cb (GtkCellRendererToggle *cell, gchar *path_str, V
 
   /* get type and data */
   vik_treeview_get_iter_from_path_str ( vt, &iter, path_str );
+  vt->was_a_toggle = TRUE;
 
   g_signal_emit ( G_OBJECT(vt), 
 treeview_signals[VT_ITEM_TOGGLED_SIGNAL], 0, &iter );
@@ -270,13 +273,29 @@ static void select_cb(GtkTreeSelection *selection, gpointer data)
   vik_window_selected_layer(vw, vl);
 }
 
+static gboolean treeview_selection_filter(GtkTreeSelection *selection, GtkTreeModel *model, GtkTreePath *path, gboolean path_currently_selected, gpointer data)
+{
+  VikTreeview *vt = data;
+
+  if (vt->was_a_toggle) {
+    vt->was_a_toggle = FALSE;
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 void treeview_init ( VikTreeview *vt )
 {
   guint16 i;
 
+  vt->was_a_toggle = FALSE;
+
   vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN ));
 
   /* create tree view */
+  gtk_tree_selection_set_select_function(gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), treeview_selection_filter, vt, NULL);
+
   gtk_tree_view_set_model ( GTK_TREE_VIEW(vt), vt->model );
   treeview_add_columns ( vt );
   g_object_unref (vt->model);
