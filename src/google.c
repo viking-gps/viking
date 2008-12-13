@@ -43,6 +43,8 @@
 #include "globals.h"
 #include "google.h"
 #include "vikmapslayer.h"
+#include "vikexttools.h"
+#include "vikwebtoolcenter.h"
 
 
 static int google_download ( MapCoord *src, const gchar *dest_fn );
@@ -61,6 +63,11 @@ void google_init () {
   maps_layer_register_type(_("Google Street Maps"), 7, &google_1);
   maps_layer_register_type(_("Transparent Google Maps"), 10, &google_2);
   maps_layer_register_type(_("Google Terrain Maps"), 16, &google_4);
+
+  // Webtools
+  VikWebtoolCenter *webtool = vik_webtool_center_new_with_members ( _("Google"), "http://maps.google.com/maps?f=q&hl=fr&geocode=&ie=UTF8&ll=%s,%s&z=%d&iwloc=addr" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
 }
 
 /* 1 << (x) is like a 2**(x) */

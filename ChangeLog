@@ -1,3 +1,8 @@
+2008-12-13
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add external tools framework
+	* Add OpenStreetMap and Google web tools 
+
 2008-12-07
 Quy Tonthat <qtonthat@gmail.com>:
 	* Clicking on "vivisble" tick no longer makes the layer selected.

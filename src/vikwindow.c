@@ -32,6 +32,7 @@
 #include "print.h"
 #include "preferences.h"
 #include "icons/icons.h"
+#include "vikexttools.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -294,6 +295,7 @@ static void window_init ( VikWindow *vw )
   gtk_toolbar_set_icon_size(GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_toolbar_set_style (GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_TOOLBAR_ICONS);
 
+  vik_ext_tools_add_menu_items ( vw, vw->uim );
 
   g_signal_connect (G_OBJECT (vw), "delete_event", G_CALLBACK (delete_event), NULL);
 
@@ -1942,6 +1944,7 @@ static GtkActionEntry entries[] = {
   { "SetPan", NULL, N_("_Pan"), 0, 0, 0 },
   { "Layers", NULL, N_("_Layers"), 0, 0, 0 },
   { "Tools", NULL, N_("_Tools"), 0, 0, 0 },
+  { "Exttools", NULL, N_("_Webtools"), 0, 0, 0 },
   { "Help", NULL, N_("_Help"), 0, 0, 0 },
 
   { "New",       GTK_STOCK_NEW,          N_("_New"),                          "<control>N", N_("New file"),                                     (GCallback)newwindow_cb          },

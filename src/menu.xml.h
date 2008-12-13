@@ -87,6 +87,7 @@ static const char *menu_xml =
 	"      <separator/>"
 	"    </menu>"
 	"    <menu action='Tools'>"
+	"      <menu action='Exttools'/>"
 	"      <menuitem action='Pan'/>"
 	"      <menuitem action='Zoom'/>"
 	"      <menuitem action='Ruler'/>"

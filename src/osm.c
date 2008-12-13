@@ -23,15 +23,17 @@
 #endif
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #ifdef HAVE_MATH_H
 #include <math.h>
 #endif
-
 #include "viking.h"
 #include "coords.h"
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "vikmapslayer.h"
+#include "vikwebtoolcenter.h"
+#include "vikexttools.h"
 
 #include "osm.h"
 
@@ -65,6 +67,20 @@ void osm_init () {
 
   maps_layer_register_type("BlueMarble", 15, &bluemarble_type);
   maps_layer_register_type("OpenAerialMap", 20, &openaerialmap_type);
+
+  // Webtools
+  VikWebtoolCenter *webtool = NULL;
+  webtool = vik_webtool_center_new_with_members ( _("OSM (view)"), "http://openstreetmap.org/?lat=%s&lon=%s&zoom=%d&layers=B000FTF" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
+
+  webtool = vik_webtool_center_new_with_members ( _("OSM (edit)"), "http://www.openstreetmap.org/edit?lat=%s&lon=%s&zoom=%d" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
+
+  webtool = vik_webtool_center_new_with_members ( _("OSM (render)"), "http://www.informationfreeway.org/?lat=%s&lon=%s&zoom=%d&layers=B0000F000F" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
 }
 
 /* 1 << (x) is like a 2**(x) */
