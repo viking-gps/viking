@@ -18,9 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <gtk/gtk.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+
 #include "viking.h"
 #include "coords.h"
 #include "vikcoord.h"

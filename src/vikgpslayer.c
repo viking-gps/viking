@@ -24,12 +24,16 @@
 #endif
 
 #include <stdlib.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
 #include "viking.h"
 #include "icons/icons.h"
 #include "babel.h"
 
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <glib.h>
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>

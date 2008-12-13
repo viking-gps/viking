@@ -23,12 +23,16 @@
 #include "config.h"
 #endif
 
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <time.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include "coords.h"
 #include "vikcoord.h"
 #include "viktrack.h"

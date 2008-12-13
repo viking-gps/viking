@@ -23,12 +23,18 @@
 #endif
 
 #include <stdio.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+#ifdef HAVE_MATH_H
+#include <math.h>
+#endif
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <math.h>
-#include <string.h>
+
 #include "coords.h"
 #include "vikcoord.h"
 #include "mapcoord.h"

@@ -22,16 +22,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #define _XOPEN_SOURCE /* glibc2 needs this */
 
 #include "gpx.h"
 #include "viking.h"
 #include <expat.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <glib.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
 #include <time.h>
 
 typedef enum {

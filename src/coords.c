@@ -35,10 +35,19 @@ renaming functions and defining LatLon and UTM structs.
 ** OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ** SUCH DAMAGE.
 */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
 
 #include "viking.h"
 #include "globals.h"
