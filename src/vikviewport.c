@@ -43,7 +43,6 @@
 
 /* for ALTI_TO_MPP */
 #include "globals.h"
-#include "googlemaps.h"
 
 static gdouble EASTING_OFFSET = 500000.0;
 
@@ -60,8 +59,6 @@ static double Radius[181];
 static void viewport_init_ra();
 
 static GObjectClass *parent_class;
-
-static void viewport_google_rezoom ( VikViewport *vvp );
 
 
 struct _VikViewport {
@@ -492,8 +489,6 @@ void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
 
   if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
     viewport_utm_zone_check(vvp);
-  else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE )
-    viewport_google_rezoom ( vvp );
 }
 
 /* or could do factor */
@@ -504,9 +499,6 @@ void vik_viewport_zoom_in ( VikViewport *vvp )
   {
     vvp->xmpp /= 2;
     vvp->ympp /= 2;
-
-    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE )
-      viewport_google_rezoom ( vvp );
 
     viewport_utm_zone_check(vvp);
   }
@@ -519,9 +511,6 @@ void vik_viewport_zoom_out ( VikViewport *vvp )
   {
     vvp->xmpp *= 2;
     vvp->ympp *= 2;
-
-    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE )
-      viewport_google_rezoom ( vvp );
 
     viewport_utm_zone_check(vvp);
   }
@@ -550,8 +539,6 @@ void vik_viewport_set_xmpp ( VikViewport *vvp, gdouble xmpp )
     vvp->xmpp = xmpp;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
       viewport_utm_zone_check(vvp);
-    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE )
-      viewport_google_rezoom ( vvp );
   }
 }
 
@@ -561,8 +548,6 @@ void vik_viewport_set_ympp ( VikViewport *vvp, gdouble ympp )
     vvp->ympp = ympp;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
       viewport_utm_zone_check(vvp);
-    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE )
-      viewport_google_rezoom ( vvp );
   }
 }
 
@@ -706,14 +691,7 @@ void vik_viewport_screen_to_coord ( VikViewport *vvp, int x, int y, VikCoord *co
     coord->mode = VIK_COORD_LATLON;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA )
       calcxy_rev(&(coord->east_west), &(coord->north_south), x, y, vvp->center.east_west, vvp->center.north_south, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width/2, vvp->height/2);
-    else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE ) {
-      /* google */
-      coord->east_west = (x - (vvp->width/2)) * vvp->google_calcx_rev_fact + vvp->center.east_west;
-      coord->north_south = ((vvp->height/2) - y) * vvp->google_calcy_rev_fact + vvp->center.north_south;
-    } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_KH ) {
-      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width/2));
-      coord->north_south = vvp->center.north_south + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height/2 - y));
-    } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
+    else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
       /* FIXMERCATOR */
       coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width/2));
       coord->north_south = DEMERCLAT ( MERCLAT(vvp->center.north_south) + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height/2 - y)) );
@@ -760,14 +738,6 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA ) {
       calcxy ( &xx, &yy, center->lon, center->lat, ll->lon, ll->lat, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width / 2, vvp->height / 2 );
       *x = xx; *y = yy;
-    } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE ) {
-      /* google */
-      *x = vvp->google_calcx_fact * (ll->lon - center->lon) + (vvp->width/2);
-      *y = vvp->google_calcy_fact * (center->lat - ll->lat) + (vvp->height/2);
-    } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_KH ) {
-      /* subtract, convert to KH coords; blow it up by 256 */
-      *x = vvp->width/2 + (65536.0 / 180 / vvp->xmpp * (ll->lon - center->lon))*256.0;
-      *y = vvp->height/2 + (65536.0 / 180 / vvp->ympp * (center->lat - ll->lat))*256.0;
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
       /* FIXMERCATOR: Optimize */
       *x = vvp->width/2 + (65536.0 / 180 / vvp->xmpp * (ll->lon - center->lon))*256.0;
@@ -1021,22 +991,12 @@ void vik_viewport_set_drawmode ( VikViewport *vvp, VikViewportDrawMode drawmode 
     viewport_set_coord_mode ( vvp, VIK_COORD_UTM );
   else {
     viewport_set_coord_mode ( vvp, VIK_COORD_LATLON );
-    if ( drawmode == VIK_VIEWPORT_DRAWMODE_GOOGLE )
-      viewport_google_rezoom ( vvp );
   }
 }
 
 VikViewportDrawMode vik_viewport_get_drawmode ( VikViewport *vvp )
 {
   return vvp->drawmode;
-}
-
-static void viewport_google_rezoom ( VikViewport *vvp )
-{
-  vvp->google_calcx_fact = (GOOGLEMAPS_ZOOM_ONE_MPP * 65536.0 * 0.7716245833877 / vvp->xmpp);
-  vvp->google_calcy_fact = (GOOGLEMAPS_ZOOM_ONE_MPP * 65536.0 / vvp->ympp);
-  vvp->google_calcx_rev_fact = 1 / vvp->google_calcx_fact;
-  vvp->google_calcy_rev_fact = 1 / vvp->google_calcy_fact;
 }
 
 /******** triggering *******/

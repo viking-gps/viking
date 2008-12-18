@@ -85,11 +85,6 @@ libviking_a_SOURCES += \
 	google.c google.h
 endif
 
-if OLDGOOGLE
-libviking_a_SOURCES += \
-	googlemaps.c googlemaps.h
-endif
-
 if TERRASERVER
 libviking_a_SOURCES += \
 	terraserver.c terraserver.h

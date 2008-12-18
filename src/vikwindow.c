@@ -1326,10 +1326,6 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
 #ifdef VIK_CONFIG_EXPEDIA
     case VIK_VIEWPORT_DRAWMODE_EXPEDIA: buttonname = "/ui/MainMenu/View/ModeExpedia"; break;
 #endif
-#ifdef VIK_CONFIG_OLD_GOOGLE
-    case VIK_VIEWPORT_DRAWMODE_GOOGLE: buttonname = "/ui/MainMenu/View/ModeGoogle"; break;
-    case VIK_VIEWPORT_DRAWMODE_KH: buttonname = "/ui/MainMenu/View/ModeKH"; break;
-#endif
     case VIK_VIEWPORT_DRAWMODE_MERCATOR: buttonname = "/ui/MainMenu/View/ModeMercator"; break;
     default: buttonname = "/ui/MainMenu/View/ModeUTM";
   }
@@ -1865,12 +1861,6 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
   else if (!strcmp(gtk_action_get_name(a), "ModeExpedia")) {
     drawmode = VIK_VIEWPORT_DRAWMODE_EXPEDIA;
   }
-  else if (!strcmp(gtk_action_get_name(a), "ModeGoogle")) {
-    drawmode = VIK_VIEWPORT_DRAWMODE_GOOGLE;
-  }
-  else if (!strcmp(gtk_action_get_name(a), "ModeKH")) {
-    drawmode = VIK_VIEWPORT_DRAWMODE_KH;
-  }
   else if (!strcmp(gtk_action_get_name(a), "ModeMercator")) {
     drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   }
@@ -2006,8 +1996,6 @@ static GtkActionEntry entries[] = {
 static GtkRadioActionEntry mode_entries[] = {
   { "ModeUTM",         NULL,         N_("_UTM Mode"),               "<control>u", NULL, 0 },
   { "ModeExpedia",     NULL,         N_("_Expedia Mode"),           "<control>e", NULL, 1 },
-  { "ModeGoogle",      NULL,         N_("_Old Google Mode"),        "<control>o", NULL, 2 },
-  { "ModeKH",          NULL,         N_("Old _KH Mode"),            "<control>k", NULL, 3 },
   { "ModeMercator",    NULL,         N_("_Google Mode"),            "<control>g", NULL, 4 }
 };
 

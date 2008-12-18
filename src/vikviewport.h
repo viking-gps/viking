@@ -97,8 +97,6 @@ void vik_viewport_get_min_max_lat_lon ( VikViewport *vp, gdouble *min_lat, gdoub
 typedef enum {
   VIK_VIEWPORT_DRAWMODE_UTM=0,
   VIK_VIEWPORT_DRAWMODE_EXPEDIA,
-  VIK_VIEWPORT_DRAWMODE_GOOGLE,
-  VIK_VIEWPORT_DRAWMODE_KH,
   VIK_VIEWPORT_DRAWMODE_MERCATOR,
   VIK_VIEWPORT_NUM_DRAWMODES
 } VikViewportDrawMode;
