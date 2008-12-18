@@ -45,8 +45,12 @@ static int osm_maplint_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_mapnik_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn );
 static int osm_cycle_download ( MapCoord *src, const gchar *dest_fn );
+#ifdef VIK_CONFIG_BLUEMARBLE
 static int bluemarble_download ( MapCoord *src, const gchar *dest_fn );
+#endif
+#ifdef VIK_CONFIG_OPENAERIAL
 static int openaerialmap_download ( MapCoord *src, const gchar *dest_fn );
+#endif
 
 static DownloadOptions osm_options = { NULL, 0, a_check_map_file };
 
@@ -56,17 +60,25 @@ void osm_init () {
   VikMapsLayer_MapType mapnik_type = { 13, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_mapnik_download };  VikMapsLayer_MapType maplint_type = { 14, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_maplint_download };
   VikMapsLayer_MapType cycle_type = { 17, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_cycle_download };
 
+#ifdef VIK_CONFIG_BLUEMARBLE
   VikMapsLayer_MapType bluemarble_type = { 15, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, bluemarble_download };
+#endif
 
+#ifdef VIK_CONFIG_OPENAERIAL
   VikMapsLayer_MapType openaerialmap_type = { 20, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, openaerialmap_download };
+#endif
 
   maps_layer_register_type("OpenStreetMap (Osmarender)", 12, &osmarender_type);
   maps_layer_register_type("OpenStreetMap (Mapnik)", 13, &mapnik_type);
   maps_layer_register_type("OpenStreetMap (Maplint)", 14, &maplint_type);
   maps_layer_register_type("OpenStreetMap (Cycle)", 17, &cycle_type);
 
+#ifdef VIK_CONFIG_BLUEMARBLE
   maps_layer_register_type("BlueMarble", 15, &bluemarble_type);
+#endif
+#ifdef VIK_CONFIG_OPENAERIAL
   maps_layer_register_type("OpenAerialMap", 20, &openaerialmap_type);
+#endif
 
   // Webtools
   VikWebtoolCenter *webtool = NULL;
@@ -156,6 +168,7 @@ static int osm_osmarender_download ( MapCoord *src, const gchar *dest_fn )
    return res;
 }
 
+#ifdef VIK_CONFIG_BLUEMARBLE
 static int bluemarble_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
@@ -166,7 +179,9 @@ static int bluemarble_download ( MapCoord *src, const gchar *dest_fn )
    return res;
 
 }
+#endif
    
+#ifdef VIK_CONFIG_OPENAERIAL
 static int openaerialmap_download ( MapCoord *src, const gchar *dest_fn )
 {
    int res = -1;
@@ -176,6 +191,7 @@ static int openaerialmap_download ( MapCoord *src, const gchar *dest_fn )
    g_free ( uri );
    return res;
 }
+#endif
 
 static int osm_cycle_download ( MapCoord *src, const gchar *dest_fn )
 {
