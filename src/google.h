@@ -22,19 +22,6 @@
 #ifndef __VIKING_GOOGLE_H
 #define __VIKING_GOOGLE_H
 
-#include <glib.h>
-
-#include "vikcoord.h"
-#include "mapcoord.h"
-
 void google_init();
-
-guint8 google_zoom ( gdouble mpp );
-
-/* a bit misleading, this is the "mpp" (really just set zoom level, very
- * roughly equivalent so you can easily switch between maps) of
- * google maps 1, the second google maps level (1st is 0). */
-#define GOOGLE_ZOOM_ONE_MPP 2.0
-
 
 #endif
