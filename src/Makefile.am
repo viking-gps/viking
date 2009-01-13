@@ -57,6 +57,7 @@ libviking_a_SOURCES = \
 	mapcache.c mapcache.h \
 	vikmapslayer.c vikmapslayer.h \
 	vik-map-type.c vik-map-type.h \
+	vik-map-type-default.c vik-map-type-default.h \
 	slippy-map-type-abstract.c slippy-map-type-abstract.h \
 	slippy-map-type.c slippy-map-type.h \
         gpx.c gpx.h \

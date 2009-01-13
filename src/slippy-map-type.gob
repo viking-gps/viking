@@ -43,15 +43,15 @@ class Slippy:Map:Type from Slippy:Map:Type:Abstract {
 
   init (self) {
           /* initialize the object here */
-          VIK_MAP_TYPE(self)->tilesize_x = 256;
-          VIK_MAP_TYPE(self)->tilesize_y = 256;
-          VIK_MAP_TYPE(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
+          VIK_MAP_TYPE_DEFAULT(self)->tilesize_x = 256;
+          VIK_MAP_TYPE_DEFAULT(self)->tilesize_y = 256;
+          VIK_MAP_TYPE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   }
 
   public GObject *
   new_with_id (guint8 id, const gchar *hostname, const gchar *url) {
 	  SlippyMapType *ret = GET_NEW;
-	  VIK_MAP_TYPE(ret)->uniq_id = id;
+	  VIK_MAP_TYPE_DEFAULT(ret)->uniq_id = id;
 	  ret->_priv->hostname = g_strdup(hostname);
 	  ret->_priv->url = g_strdup(url);
 	  return G_OBJECT (ret);

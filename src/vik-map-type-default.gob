@@ -1,0 +1,43 @@
+%headertop{
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "vik-map-type.h"
+#include "vikviewport.h"
+#include "vikcoord.h"
+#include "mapcoord.h"
+%}
+
+class Vik:Map:Type:Default from Vik:Map:Type(abstract) {
+  public guint8 uniq_id;
+  public guint16 tilesize_x;
+  public guint16 tilesize_y;
+  public VikViewportDrawMode drawmode;
+
+  override (Vik:Map:Type) guint8
+  get_uniq_id ( Vik:Map:Type *self )
+  {
+    return SELF(self)->uniq_id;
+  }
+  
+  override (Vik:Map:Type) guint16
+  get_tilesize_x ( Vik:Map:Type *self )
+  {
+    return SELF(self)->tilesize_x;
+  }
+
+  override (Vik:Map:Type) guint16
+  get_tilesize_y ( Vik:Map:Type *self )
+  {
+    return SELF(self)->tilesize_y;
+  }
+
+  override (Vik:Map:Type) VikViewportDrawMode
+  get_drawmode ( Vik:Map:Type *self )
+  {
+    return SELF(self)->drawmode;
+  }
+
+}
+
