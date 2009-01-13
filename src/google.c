@@ -25,19 +25,7 @@
 #include <glib/gi18n.h>
 
 #include "google.h"
-#include "google-map-type.h"
-#include "google-kh-map-type.h"
-#include "vikmapslayer.h"
 
 
 void google_init () {
-  VikMapType *google_1 = VIK_MAP_TYPE(google_map_type_new_with_id(7, TYPE_GOOGLE_MAPS));
-  VikMapType *google_2 = VIK_MAP_TYPE(google_map_type_new_with_id(10, TYPE_GOOGLE_TRANS));
-  VikMapType *google_3 = VIK_MAP_TYPE(google_kh_map_type_new_with_id(11));
-  VikMapType *google_4 = VIK_MAP_TYPE(google_map_type_new_with_id(16, TYPE_GOOGLE_TERRAIN));
-
-  maps_layer_register_type(_("Google Maps"), 7, google_1);
-  maps_layer_register_type(_("Transparent Google Maps"), 10, google_2);
-  maps_layer_register_type(_("Google Satellite Images"), 11, google_3);
-  maps_layer_register_type(_("Google Terrain Maps"), 16, google_4);
 }
