@@ -27,6 +27,7 @@
 #include "vikviewport.h"
 #include "vik-map-type.h"
 #include "mapcoord.h"
+#include "vikmapslayer_compat.h"
 
 #define VIK_MAPS_LAYER_TYPE            (vik_maps_layer_get_type ())
 #define VIK_MAPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_MAPS_LAYER_TYPE, VikMapsLayer))
@@ -44,7 +45,7 @@ GType vik_maps_layer_get_type ();
 
 typedef struct _VikMapsLayer VikMapsLayer;
 
-void maps_layer_register_type ( const char *label, guint id, VikMapType *map_type );
+void maps_layer_register_map_type ( const char *label, VikMapType *map_type );
 void maps_layer_download_section_without_redraw ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom);
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);

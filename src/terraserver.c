@@ -28,7 +28,7 @@ void terraserver_init () {
   VikMapType *map_type_2 = VIK_MAP_TYPE(terraserver_map_type_new_with_id( 1, 1 ));
   VikMapType *map_type_3 = VIK_MAP_TYPE(terraserver_map_type_new_with_id( 4, 4 ));
 
-  maps_layer_register_type("Terraserver Topos", 2, map_type_1);
-  maps_layer_register_type("Terraserver Aerials", 1, map_type_2);
-  maps_layer_register_type("Terraserver Urban Areas", 4, map_type_3);
+  maps_layer_register_map_type("Terraserver Topos", map_type_1);
+  maps_layer_register_map_type("Terraserver Aerials", map_type_2);
+  maps_layer_register_map_type("Terraserver Urban Areas", map_type_3);
 }

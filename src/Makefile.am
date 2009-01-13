@@ -56,8 +56,10 @@ libviking_a_SOURCES = \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \
 	vikmapslayer.c vikmapslayer.h \
+	vikmapslayer_compat.c vikmapslayer_compat.h \
 	vik-map-type.c vik-map-type.h \
 	vik-map-type-default.c vik-map-type-default.h \
+	old-vik-map-type.c old-vik-map-type.h \
 	slippy-map-type-abstract.c slippy-map-type-abstract.h \
 	slippy-map-type.c slippy-map-type.h \
         gpx.c gpx.h \
@@ -84,7 +86,8 @@ BUILT_SOURCES += \
 	vik-map-type.c vik-map-type.h \
 	vik-map-type-default.c vik-map-type-default.h \
 	slippy-map-type-abstract.c slippy-map-type-abstract.h \
-	slippy-map-type.c slippy-map-type.h
+	slippy-map-type.c slippy-map-type.h \
+	old-vik-map-type.c old-vik-map-type.h
 
 if GOOGLE
 libviking_a_SOURCES += \

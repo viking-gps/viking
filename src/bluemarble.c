@@ -28,6 +28,6 @@
 void bluemarble_init () {
   VikMapType *bluemarble_type = VIK_MAP_TYPE(slippy_map_type_new_with_id( 15, "s3.amazonaws.com", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg" ));
 
-  maps_layer_register_type("BlueMarble", 15, bluemarble_type);
+  maps_layer_register_map_type("BlueMarble", bluemarble_type);
 }
 

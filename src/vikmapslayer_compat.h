@@ -2,7 +2,6 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2008, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +19,24 @@
  *
  */
 
-#include "openaerial.h"
-#include "vikmapslayer.h"
-#include "slippy-map-type.h"
+#ifndef _VIKING_MAPSLAYER_COMPAT_H
+#define _VIKING_MAPSLAYER_COMPAT_H
 
-/* initialisation */
-void openaerial_init () {
-  VikMapType *openaerialmap_type = VIK_MAP_TYPE(slippy_map_type_new_with_id( 20, "tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%d/%d/%d.jpg" ));
+#include "vikcoord.h"
+#include "vikviewport.h"
+#include "mapcoord.h"
 
-  maps_layer_register_map_type("OpenAerialMap", openaerialmap_type);
-}
+typedef struct {
+  guint8 uniq_id;
+  guint16 tilesize_x;
+  guint16 tilesize_y;
+  guint drawmode;
+  gboolean (*coord_to_mapcoord) ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
+  void (*mapcoord_to_center_coord) ( MapCoord *src, VikCoord *dest );
+  int (*download) ( MapCoord *src, const gchar *dest_fn );
+  /* TODO: constant size (yay!) */
+} VikMapsLayer_MapType;
 
+void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapType *map_type );
+
+#endif

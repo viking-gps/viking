@@ -201,11 +201,12 @@ enum { REDOWNLOAD_NONE = 0, REDOWNLOAD_BAD, REDOWNLOAD_ALL, DOWNLOAD_OR_REFRESH 
 /******** MAPS LAYER TYPES **************/
 /****************************************/
 
-void maps_layer_register_type ( const char *label, guint id, VikMapType *map_type )
+void maps_layer_register_map_type ( const char *label, VikMapType *map_type )
 {
   g_assert(label != NULL);
   g_assert(map_type != NULL);
-  g_assert(id == vik_map_type_get_uniq_id(map_type));
+  
+  guint id = vik_map_type_get_uniq_id(map_type);
 
   /* Add the label */
   params_maptypes = g_list_append(params_maptypes, g_strdup(label));
