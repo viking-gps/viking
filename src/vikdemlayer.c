@@ -755,10 +755,9 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
     return;
   }
 
-  gchar *src_fn = g_strdup_printf("%s%s%s%c%02d%c%03d.hgt.zip",
+  gchar *src_fn = g_strdup_printf("%s%s/%c%02d%c%03d.hgt.zip",
                 SRTM_FTP_URI,
                 continent_dir,
-                G_DIR_SEPARATOR_S,
 		(intlat >= 0) ? 'N' : 'S',
 		ABS(intlat),
 		(intlon >= 0) ? 'E' : 'W',

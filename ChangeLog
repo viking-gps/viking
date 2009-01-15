@@ -1,3 +1,7 @@
+2009-01-15
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: avoid "\\" in URL
+
 2008-12-20
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Remove Google's map tiles
