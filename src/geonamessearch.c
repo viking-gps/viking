@@ -33,33 +33,65 @@
 #include "viking.h"
 #include "curl_download.h"
 
+#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%f&south=%f&east=%f&west=%f"
 #define GEONAMES_SEARCH_URL_FMT "http://ws.geonames.org/searchJSON?formatted=true&style=medium&maxRows=10&lang=en&q=%s"
-#define GEONAMES_SEARCH_PATTERN_2 "\"lat\": "
-#define GEONAMES_SEARCH_PATTERN_1 "\"lng\": "
 #define GEONAMES_COUNTRY_PATTERN "\"countryName\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
 #define GEONAMES_NAME_PATTERN "\"name\": \""
 #define GEONAMES_LATITUDE_PATTERN "\"lat\": "
+#define GEONAMES_TITLE_PATTERN "\"title\": \""
+#define GEONAMES_WIKIPEDIAURL_PATTERN "\"wikipediaUrl\": \""
+#define GEONAMES_THUMBNAILIMG_PATTERN "\"thumbnailImg\": \""
 #define GEONAMES_SEARCH_NOT_FOUND "not understand the location"
 
 static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
 static gchar *last_successful_search_str = NULL;
 
+/* found_geoname: Type to contain data returned from GeoNames.org */
+
 typedef struct {
   gchar *name;
   gchar *country;
   struct LatLon ll;
+  gchar *desc;
 } found_geoname;
+
+found_geoname *new_found_geoname()
+{
+  found_geoname *ret;
+
+  ret = (found_geoname *)g_malloc(sizeof(found_geoname));
+  ret->name = NULL;
+  ret->country = NULL;
+  ret->desc = NULL;
+  ret->ll.lat = 0.0;
+  ret->ll.lon = 0.0;
+  return(ret);
+}
 
 found_geoname *copy_found_geoname(found_geoname *src)
 {
-  found_geoname *dest = (found_geoname *)g_malloc(sizeof(found_geoname));
+  found_geoname *dest = new_found_geoname();
   dest->name = g_strdup(src->name);
   dest->country = g_strdup(src->country);
   dest->ll.lat = src->ll.lat;
   dest->ll.lon = src->ll.lon;
+  dest->desc = g_strdup(src->desc);
   return(dest);
+}
+
+static void free_list_geonames(found_geoname *geoname, gpointer userdata)
+{
+  g_free(geoname->name);
+  g_free(geoname->country);
+  g_free(geoname->desc);
+}
+
+void free_geoname_list(GList *found_places)
+{
+  g_list_foreach(found_places, (GFunc)free_list_geonames, NULL);
+  g_list_free(found_places);
 }
 
 gchar * a_geonamessearch_get_search_string_for_this_place(VikWindow *vw)
@@ -74,6 +106,21 @@ gchar * a_geonamessearch_get_search_string_for_this_place(VikWindow *vw)
   }
   else
     return NULL;
+}
+
+static void none_found(VikWindow *vw)
+{
+  GtkWidget *dialog = NULL;
+
+  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL );
+  gtk_window_set_title(GTK_WINDOW(dialog), _("Search"));
+
+  GtkWidget *search_label = gtk_label_new(_("No entries found!"));
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
+  gtk_widget_show_all(dialog);
+
+  gtk_dialog_run ( GTK_DIALOG(dialog) );
+  gtk_widget_destroy(dialog);
 }
 
 static gboolean prompt_try_again(VikWindow *vw)
@@ -129,11 +176,6 @@ static gchar *  a_prompt_for_search_string(VikWindow *vw)
   return(search_str);   /* search_str needs to be freed by caller */
 }
 
-static void free_list_geonames(found_geoname *geoname, gpointer userdata)
-{
-  g_free(geoname->name);
-  g_free(geoname->country);
-}
 
 void buttonToggled(GtkCellRendererToggle* renderer, gchar* pathStr, gpointer data)
 {
@@ -155,6 +197,8 @@ GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gboolean m
   found_geoname *geoname;
   gchar *latlon_string;
   int column_runner;
+  gboolean checked;
+  gboolean to_copy;
 
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                                                   parent,
@@ -226,17 +270,24 @@ GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gboolean m
     geoname_runner = geonames;
     while (geoname_runner)
     {
+      to_copy = FALSE;
       if (multiple_selection_allowed)
       {
-        // nop;
+        gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, 0, &checked, -1);
+        if (checked) {
+          to_copy = TRUE;
+        }
       }
       else
       {
         if (gtk_tree_selection_iter_is_selected(selection, &iter))
         {
-          found_geoname *copied = copy_found_geoname(geoname_runner->data);
-          selected_geonames = g_list_prepend(selected_geonames, copied);
+          to_copy = TRUE;
         }
+      }
+      if (to_copy) {
+        found_geoname *copied = copy_found_geoname(geoname_runner->data);
+        selected_geonames = g_list_prepend(selected_geonames, copied);
       }
       geoname_runner = g_list_next(geoname_runner);
       gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter);
@@ -252,13 +303,12 @@ GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gboolean m
   return NULL;
 }
 
-static gboolean parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct LatLon *ll)
+GList *get_entries_from_file(gchar *file_name)
 {
   gchar *text, *pat;
   GMappedFile *mf;
   gsize len;
   gboolean more = TRUE;
-  gboolean found = TRUE;
   gchar lat_buf[32], lon_buf[32];
   gchar *s;
   gint fragment_len;
@@ -267,6 +317,8 @@ static gboolean parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct La
   gchar **found_entries;
   gchar *entry;
   int entry_runner;
+  gchar *wikipedia_url = NULL;
+  gchar *thumbnail_url = NULL;
 
   lat_buf[0] = lon_buf[0] = '\0';
 
@@ -286,11 +338,8 @@ static gboolean parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct La
   while (entry)
   {
     more = TRUE;
-    geoname = (found_geoname *)g_malloc(sizeof(found_geoname));
-    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_COUNTRY_PATTERN)) == NULL) {
-      more = FALSE;
-    }
-    else {
+    geoname = new_found_geoname();
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_COUNTRY_PATTERN))) {
       pat += strlen(GEONAMES_COUNTRY_PATTERN);
       fragment_len = 0;
       s = pat;
@@ -317,10 +366,7 @@ static gboolean parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct La
       }
       geoname->ll.lon = g_ascii_strtod(lon_buf, NULL);
     }
-    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_NAME_PATTERN)) == NULL) {
-      more = FALSE;
-    }
-    else {
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_NAME_PATTERN))) {
       pat += strlen(GEONAMES_NAME_PATTERN);
       fragment_len = 0;
       s = pat;
@@ -329,6 +375,36 @@ static gboolean parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct La
         pat++;
       }
       geoname -> name = g_strndup(s, fragment_len);
+    }
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_TITLE_PATTERN))) {
+      pat += strlen(GEONAMES_TITLE_PATTERN);
+      fragment_len = 0;
+      s = pat;
+      while (*pat != '"') {
+        fragment_len++;
+        pat++;
+      }
+      geoname -> name = g_strndup(s, fragment_len);
+    }
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_WIKIPEDIAURL_PATTERN))) {
+      pat += strlen(GEONAMES_WIKIPEDIAURL_PATTERN);
+      fragment_len = 0;
+      s = pat;
+      while (*pat != '"') {
+        fragment_len++;
+        pat++;
+      }
+      wikipedia_url = g_strndup(s, fragment_len);
+    }
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_THUMBNAILIMG_PATTERN))) {
+      pat += strlen(GEONAMES_THUMBNAILIMG_PATTERN);
+      fragment_len = 0;
+      s = pat;
+      while (*pat != '"') {
+        fragment_len++;
+        pat++;
+      }
+      thumbnail_url = g_strndup(s, fragment_len);
     }
     if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_LATITUDE_PATTERN)) == NULL) {
       more = FALSE;
@@ -353,37 +429,72 @@ static gboolean parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct La
       }
     }
     else {
+      if (wikipedia_url) {
+        if (thumbnail_url) {
+          geoname -> desc = g_strdup_printf("<a href=\"http://%s\" target=\"_blank\"><img src=\"%s\" border=\"0\"/></a>", wikipedia_url, thumbnail_url);
+        }
+        else {
+          geoname -> desc = g_strdup_printf("<a href=\"http://%s\" target=\"_blank\">%s</a>", wikipedia_url, geoname->name);
+        }
+      }
+      if (wikipedia_url) {
+        g_free(wikipedia_url);
+        wikipedia_url = NULL;
+      }
+      if (thumbnail_url) {
+        g_free(thumbnail_url);
+        thumbnail_url = NULL;
+      }
       found_places = g_list_prepend(found_places, geoname);
     }
     entry_runner++;
     entry = found_entries[entry_runner];
   }
   g_strfreev(found_entries);
-  if (g_list_length(found_places) == 1)
-  {
-    geoname = (found_geoname *)found_places->data;
-    ll->lat = geoname->ll.lat;
-    ll->lon = geoname->ll.lon;
+  found_places = g_list_reverse(found_places);
+  g_mapped_file_free(mf);
+  return(found_places);
+}
+
+
+static int parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct LatLon *ll)
+{
+  /* return codes:
+    1 : All OK, position selected;
+    2 : No position selected;
+    3 : No places found. */
+  int found = 1;
+  found_geoname *geoname;
+  GList *found_places = get_entries_from_file(file_name);
+  int num_found_places;
+
+  num_found_places = g_list_length(found_places);
+  if (num_found_places == 0) {
+    found = 3;
   }
-  else
-  {
-    found_places = g_list_reverse(found_places);
-    GList *selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), found_places, FALSE, "Select place", "Select the place to go to");
-    if (selected)
-    {
-      geoname = (found_geoname *)selected->data;
+  else {
+    if (num_found_places == 1) {
+      geoname = (found_geoname *)found_places->data;
       ll->lat = geoname->ll.lat;
       ll->lon = geoname->ll.lon;
-      g_list_foreach(selected, (GFunc)free_list_geonames, NULL);
     }
     else
     {
-      found = FALSE;
+      GList *selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), found_places, FALSE, "Select place", "Select the place to go to");
+      if (selected)
+      {
+        geoname = (found_geoname *)selected->data;
+        ll->lat = geoname->ll.lat;
+        ll->lon = geoname->ll.lon;
+        g_list_foreach(selected, (GFunc)free_list_geonames, NULL);
+      }
+      else
+      {
+        found = 2;
+      }
     }
   }
-  g_list_foreach(found_places, (GFunc)free_list_geonames, NULL);
-  g_list_free(found_places);
-  g_mapped_file_free(mf);
+  free_geoname_list(found_places);
   return (found);
 }
 
@@ -408,44 +519,53 @@ gchar *uri_escape(gchar *str)
   return(esc_str);
 }
 
-static int geonames_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord)
+gchar *download_url(gchar *uri)
 {
   FILE *tmp_file;
   int tmp_fd;
   gchar *tmpname;
-  gchar *uri;
-  gchar *escaped_srch_str;
-  int ret = 0;  /* OK */
-  struct LatLon ll;
-
-  g_debug("%s: raw search: %s", __FUNCTION__, srch_str);
-
-  escaped_srch_str = uri_escape(srch_str);
-
-  g_debug("%s: escaped search: %s", __FUNCTION__, escaped_srch_str);
 
   if ((tmp_fd = g_file_open_tmp ("vikgsearch.XXXXXX", &tmpname, NULL)) == -1) {
     g_critical(_("couldn't open temp file"));
     exit(1);
   }
-
   tmp_file = fdopen(tmp_fd, "r+");
-  //uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, srch_str);
-  uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, escaped_srch_str);
 
   // TODO: curl may not be available
   if (curl_download_uri(uri, tmp_file, NULL)) {  // error
     fclose(tmp_file);
     tmp_file = NULL;
+    g_remove(tmpname);
+    g_free(tmpname);
+    return(NULL);
+  }
+  fclose(tmp_file);
+  tmp_file = NULL;
+  return(tmpname);
+}
+
+static int geonames_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord)
+{
+  gchar *uri;
+  gchar *escaped_srch_str;
+  int ret = 1;  /* OK */
+  struct LatLon ll;
+  gchar *tmpname;
+
+  g_debug("%s: raw search: %s", __FUNCTION__, srch_str);
+  escaped_srch_str = uri_escape(srch_str);
+  g_debug("%s: escaped search: %s", __FUNCTION__, escaped_srch_str);
+
+  //uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, srch_str);
+  uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, escaped_srch_str);
+
+  tmpname = download_url(uri);
+  if (!tmpname) {
     ret = -1;
     goto done;
   }
-
-  fclose(tmp_file);
-
-  tmp_file = NULL;
-  if (!parse_file_for_latlon(vw, tmpname, &ll)) {
-    ret = -1;
+  ret = parse_file_for_latlon(vw, tmpname, &ll);
+  if (ret == 3) {
     goto done;
   }
 
@@ -462,8 +582,10 @@ static int geonames_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *src
 done:
   g_free(escaped_srch_str);
   g_free(uri);
-  g_remove(tmpname);
-  g_free(tmpname);
+  if (tmpname) {
+    g_remove(tmpname);
+    g_free(tmpname);
+  }
   return ret;
 }
 
@@ -472,22 +594,72 @@ void a_geonames_search(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
   VikCoord new_center;
   gchar *s_str;
   gboolean more = TRUE;
+  int ret;
 
   do {
     s_str = a_prompt_for_search_string(vw);
     if ((!s_str) || (s_str[0] == 0)) {
       more = FALSE;
     }
-    else if (!geonames_search_get_coord(vw, vvp, s_str, &new_center)) {
-      vik_viewport_set_center_coord(vvp, &new_center);
-      vik_layers_panel_emit_update(vlp);
-      more = FALSE;
-    }
-/*
-    else if (!prompt_try_again(vw))
+    else {
+      ret = geonames_search_get_coord(vw, vvp, s_str, &new_center);
+      if (ret == 1) {
+        vik_viewport_set_center_coord(vvp, &new_center);
+        vik_layers_panel_emit_update(vlp);
         more = FALSE;
-*/
-    g_free(s_str);
+      }
+      else {
+        if (ret == 3) {
+          if (!prompt_try_again(vw)) {
+            more = FALSE;
+          }
+        }
+      }
+    }
+    if (s_str) {
+      g_free(s_str);
+    }
   } while (more);
 }
 
+void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *vlp, struct LatLon maxmin[2])
+{
+  gchar *uri;
+  gchar *tmpname;
+  GList *wiki_places;
+  GList *selected;
+  GList *wp_runner;
+  VikWaypoint *wiki_wp;
+  found_geoname *wiki_geoname;
+
+  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, maxmin[0].lat, maxmin[1].lat, maxmin[0].lon, maxmin[1].lon);
+  tmpname = download_url(uri);
+  if (!tmpname) {
+    none_found(vw);
+    return;
+  }
+  wiki_places = get_entries_from_file(tmpname);
+  if (g_list_length(wiki_places) == 0) {
+    none_found(vw);
+    return;
+  }
+  selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), wiki_places, TRUE, "Select articles", "Select the articles you want to add.");
+  wp_runner = selected;
+  while (wp_runner) {
+    wiki_geoname = (found_geoname *)wp_runner->data;
+    wiki_wp = vik_waypoint_new();
+    wiki_wp->altitude = VIK_DEFAULT_ALTITUDE;
+    wiki_wp->visible = TRUE;
+    vik_coord_load_from_latlon(&(wiki_wp->coord), vik_trw_layer_get_coord_mode ( vtl ), &(wiki_geoname->ll));
+    vik_waypoint_set_comment(wiki_wp, wiki_geoname->desc);
+    vik_trw_layer_filein_add_waypoint ( vtl, wiki_geoname->name, wiki_wp );
+    wp_runner = g_list_next(wp_runner);
+  }
+  free_geoname_list(wiki_places);
+  free_geoname_list(selected);
+  g_free(uri);
+  if (tmpname) {
+    g_free(tmpname);
+  }
+  vik_layers_panel_emit_update(vlp);
+}

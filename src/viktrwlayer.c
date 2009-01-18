@@ -39,7 +39,7 @@
 #include "babel.h"
 #include "dem.h"
 #include "dems.h"
-#include "googlesearch.h"
+#include "geonamessearch.h"
 #ifdef VIK_CONFIG_OPENSTREETMAP
 #include "osm-traces.h"
 #endif
@@ -212,6 +212,7 @@ static void trw_layer_cut_item_cb( gpointer *pass_along);
 
 static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct LatLon maxmin[2] );	
+static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2]);
 
 static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp );
 static void trw_layer_free_track_gcs ( VikTrwLayer *vtl );
@@ -230,6 +231,8 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
+static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
+static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 
 /* pop-up items */
@@ -1478,13 +1481,44 @@ static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct 
   }
 }
 
+static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2])
+{
+  struct LatLon wpt_maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  struct LatLon trk_maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_find_maxmin_waypoints, wpt_maxmin );
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_find_maxmin_tracks, trk_maxmin );
+  if ((wpt_maxmin[0].lat != 0.0 && wpt_maxmin[0].lat > trk_maxmin[0].lat) || trk_maxmin[0].lat == 0.0) {
+    maxmin[0].lat = wpt_maxmin[0].lat;
+  }
+  else {
+    maxmin[0].lat = trk_maxmin[0].lat;
+  }
+  if ((wpt_maxmin[0].lon != 0.0 && wpt_maxmin[0].lon > trk_maxmin[0].lon) || trk_maxmin[0].lon == 0.0) {
+    maxmin[0].lon = wpt_maxmin[0].lon;
+  }
+  else {
+    maxmin[0].lon = trk_maxmin[0].lon;
+  }
+  if ((wpt_maxmin[1].lat != 0.0 && wpt_maxmin[1].lat < trk_maxmin[1].lat) || trk_maxmin[1].lat == 0.0) {
+    maxmin[1].lat = wpt_maxmin[1].lat;
+  }
+  else {
+    maxmin[1].lat = trk_maxmin[1].lat;
+  }
+  if ((wpt_maxmin[1].lon != 0.0 && wpt_maxmin[1].lon < trk_maxmin[1].lon) || trk_maxmin[1].lon == 0.0) {
+    maxmin[1].lon = wpt_maxmin[1].lon;
+  }
+  else {
+    maxmin[1].lon = trk_maxmin[1].lon;
+  }
+}
 
 gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest )
 {
   /* TODO: what if there's only one waypoint @ 0,0, it will think nothing found. like I don't have more important things to worry about... */
   struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
-  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_find_maxmin_waypoints, maxmin );
-  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_find_maxmin_tracks, maxmin );
+  trw_layer_find_maxmin (vtl, maxmin);
   if (maxmin[0].lat == 0.0 && maxmin[0].lon == 0.0 && maxmin[1].lat == 0.0 && maxmin[1].lon == 0.0)
     return FALSE;
   else
@@ -1621,6 +1655,49 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
   return FALSE;
 }
 
+static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] )
+{
+  VikCoord one, two;
+  struct LatLon one_ll, two_ll;
+  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+  vik_viewport_screen_to_coord ( vvp, 0, 0, &one);
+  vik_viewport_screen_to_coord ( vvp, vik_viewport_get_width(vvp), vik_viewport_get_height(vvp), &two);
+  vik_coord_to_latlon(&one, &one_ll);
+  vik_coord_to_latlon(&two, &two_ll);
+  if (one_ll.lat > two_ll.lat) {
+    maxmin[0].lat = one_ll.lat;
+    maxmin[1].lat = two_ll.lat;
+  }
+  else {
+    maxmin[0].lat = two_ll.lat;
+    maxmin[1].lat = one_ll.lat;
+  }
+  if (one_ll.lon > two_ll.lon) {
+    maxmin[0].lon = one_ll.lon;
+    maxmin[1].lon = two_ll.lon;
+  }
+  else {
+    maxmin[0].lon = two_ll.lon;
+    maxmin[1].lon = one_ll.lon;
+  }
+  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
+}
+
+static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  
+  trw_layer_find_maxmin (vtl, maxmin);
+  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
+}
+
 static void trw_layer_new_wp ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
@@ -1636,6 +1713,7 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   static gpointer pass_along[2];
   GtkWidget *item;
   GtkWidget *export_submenu;
+  GtkWidget *wikipedia_submenu;
   pass_along[0] = vtl;
   pass_along[1] = vlp;
 
@@ -1677,6 +1755,22 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   item = gtk_menu_item_new_with_label ( _("New Waypoint") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  wikipedia_submenu = gtk_menu_new();
+  item = gtk_menu_item_new_with_label ( _("Add Wikipedia Waypoints") );
+  gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
+  gtk_widget_show(item);
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), wikipedia_submenu);
+
+  item = gtk_menu_item_new_with_label ( _("Within layer bounds") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_layer), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_label ( _("Within current view") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_OPENSTREETMAP 
