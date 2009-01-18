@@ -1,4 +1,8 @@
 2009-01-18
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* configure.ac: allow to enable/disable geonames and select the search method
+
+2009-01-18
 Hein Ragas <viking@ragas.nl>:
 	* Add GeoNames support (both for search and for POI import from Geonames+Wikipedia)
 
