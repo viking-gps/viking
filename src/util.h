@@ -30,5 +30,7 @@
 void open_url(GtkWindow *parent, const gchar * url);
 void new_email(GtkWindow *parent, const gchar * address);
 
+gchar *uri_escape(gchar *str);
+
 #endif
 

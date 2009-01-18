@@ -31,6 +31,7 @@
 #include <glib/gi18n.h>
 
 #include "viking.h"
+#include "util.h"
 #include "curl_download.h"
 
 #define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%f&south=%f&east=%f&west=%f"
@@ -496,27 +497,6 @@ static int parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct LatLon 
   }
   free_geoname_list(found_places);
   return (found);
-}
-
-gchar *uri_escape(gchar *str)
-{
-  gchar *esc_str = g_malloc(3*strlen(str));
-  gchar *dst = esc_str;
-  gchar *src;
-
-  for (src = str; *src; src++) {
-    if (*src == ' ')
-     *dst++ = '+';
-    else if (g_ascii_isalnum(*src))
-     *dst++ = *src;
-    else {
-      g_sprintf(dst, "%%%02X", *src);
-      dst += 3;
-    }
-  }
-  *dst = '\0';
-
-  return(esc_str);
 }
 
 gchar *download_url(gchar *uri)

@@ -88,3 +88,25 @@ void new_email(GtkWindow *parent, const gchar * address)
   g_free(uri);
   uri = NULL;
 }
+
+gchar *uri_escape(gchar *str)
+{
+  gchar *esc_str = g_malloc(3*strlen(str));
+  gchar *dst = esc_str;
+  gchar *src;
+
+  for (src = str; *src; src++) {
+    if (*src == ' ')
+     *dst++ = '+';
+    else if (g_ascii_isalnum(*src))
+     *dst++ = *src;
+    else {
+      g_sprintf(dst, "%%%02X", *src);
+      dst += 3;
+    }
+  }
+  *dst = '\0';
+
+  return(esc_str);
+}
+
