@@ -36,11 +36,31 @@
 #define GEONAMES_SEARCH_URL_FMT "http://ws.geonames.org/searchJSON?formatted=true&style=medium&maxRows=10&lang=en&q=%s"
 #define GEONAMES_SEARCH_PATTERN_2 "\"lat\": "
 #define GEONAMES_SEARCH_PATTERN_1 "\"lng\": "
+#define GEONAMES_COUNTRY_PATTERN "\"countryName\": \""
+#define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
+#define GEONAMES_NAME_PATTERN "\"name\": \""
+#define GEONAMES_LATITUDE_PATTERN "\"lat\": "
 #define GEONAMES_SEARCH_NOT_FOUND "not understand the location"
 
 static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
 static gchar *last_successful_search_str = NULL;
+
+typedef struct {
+  gchar *name;
+  gchar *country;
+  struct LatLon ll;
+} found_geoname;
+
+found_geoname *copy_found_geoname(found_geoname *src)
+{
+  found_geoname *dest = (found_geoname *)g_malloc(sizeof(found_geoname));
+  dest->name = g_strdup(src->name);
+  dest->country = g_strdup(src->country);
+  dest->ll.lat = src->ll.lat;
+  dest->ll.lon = src->ll.lon;
+  return(dest);
+}
 
 gchar * a_geonamessearch_get_search_string_for_this_place(VikWindow *vw)
 {
@@ -109,14 +129,144 @@ static gchar *  a_prompt_for_search_string(VikWindow *vw)
   return(search_str);   /* search_str needs to be freed by caller */
 }
 
-static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
+static void free_list_geonames(found_geoname *geoname, gpointer userdata)
+{
+  g_free(geoname->name);
+  g_free(geoname->country);
+}
+
+void buttonToggled(GtkCellRendererToggle* renderer, gchar* pathStr, gpointer data)
+{
+   GtkTreeIter iter;
+   gboolean enabled;
+   GtkTreePath* path = gtk_tree_path_new_from_string(pathStr);
+   gtk_tree_model_get_iter(GTK_TREE_MODEL (data), &iter, path);
+   gtk_tree_model_get(GTK_TREE_MODEL (data), &iter, 0, &enabled, -1);
+   enabled = !enabled;
+   gtk_tree_store_set(GTK_TREE_STORE (data), &iter, 0, enabled, -1);
+}
+
+GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg)
+{
+  GtkTreeIter iter;
+  GtkCellRenderer *renderer;
+  GtkCellRenderer *toggle_render;
+  GtkWidget *view;
+  found_geoname *geoname;
+  gchar *latlon_string;
+  int column_runner;
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
+                                                  parent,
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_STOCK_CANCEL,
+                                                  GTK_RESPONSE_REJECT,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+  GtkWidget *label = gtk_label_new ( msg );
+  GtkTreeStore *store;
+  if (multiple_selection_allowed)
+  {
+    store = gtk_tree_store_new(4, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+  }
+  else
+  {
+    store = gtk_tree_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+  }
+  GList *geoname_runner = geonames;
+  while (geoname_runner)
+  { 
+    geoname = (found_geoname *)geoname_runner->data;
+    latlon_string = g_strdup_printf("(%f,%f)", geoname->ll.lat, geoname->ll.lon);
+    gtk_tree_store_append(store, &iter, NULL);
+    if (multiple_selection_allowed)
+    {
+      gtk_tree_store_set(store, &iter, 0, FALSE, 1, geoname->name, 2, geoname->country, 3, latlon_string, -1);
+    }
+    else
+    {
+      gtk_tree_store_set(store, &iter, 0, geoname->name, 1, geoname->country, 2, latlon_string, -1);
+    }
+    geoname_runner = g_list_next(geoname_runner);
+    g_free(latlon_string);
+  }
+  view = gtk_tree_view_new();
+  renderer = gtk_cell_renderer_text_new();
+  column_runner = 0;
+  if (multiple_selection_allowed)
+  {
+    toggle_render = gtk_cell_renderer_toggle_new();
+    g_object_set(toggle_render, "activatable", TRUE, NULL);
+    g_signal_connect(toggle_render, "toggled", (GCallback) buttonToggled, GTK_TREE_MODEL(store));
+    gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Select", toggle_render, "active", column_runner, NULL);
+    column_runner++;
+  }
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Name", renderer, "text", column_runner, NULL);
+  column_runner++;
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Country", renderer, "text", column_runner, NULL);
+  column_runner++;
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Lat/Lon", renderer, "text", column_runner, NULL);
+  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), TRUE);
+  gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
+  gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
+      multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
+  g_object_unref(store);
+
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
+  gtk_widget_show ( label );
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), view, FALSE, FALSE, 0);
+  gtk_widget_show ( view );
+  while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
+  {
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+    GList *selected_geonames = NULL;
+
+    gtk_tree_model_get_iter_first( GTK_TREE_MODEL(store), &iter);
+    geoname_runner = geonames;
+    while (geoname_runner)
+    {
+      if (multiple_selection_allowed)
+      {
+        // nop;
+      }
+      else
+      {
+        if (gtk_tree_selection_iter_is_selected(selection, &iter))
+        {
+          found_geoname *copied = copy_found_geoname(geoname_runner->data);
+          selected_geonames = g_list_prepend(selected_geonames, copied);
+        }
+      }
+      geoname_runner = g_list_next(geoname_runner);
+      gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter);
+    }
+    if (selected_geonames)
+    { 
+      gtk_widget_destroy ( dialog );
+      return (selected_geonames);
+    }
+    a_dialog_error_msg(parent, _("Nothing was selected"));
+  }
+  gtk_widget_destroy ( dialog );
+  return NULL;
+}
+
+static gboolean parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct LatLon *ll)
 {
   gchar *text, *pat;
   GMappedFile *mf;
   gsize len;
+  gboolean more = TRUE;
   gboolean found = TRUE;
   gchar lat_buf[32], lon_buf[32];
   gchar *s;
+  gint fragment_len;
+  GList *found_places = NULL;
+  found_geoname *geoname = NULL;
+  gchar **found_entries;
+  gchar *entry;
+  int entry_runner;
 
   lat_buf[0] = lon_buf[0] = '\0';
 
@@ -128,53 +278,113 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   text = g_mapped_file_get_contents(mf);
 
   if (g_strstr_len(text, len, GEONAMES_SEARCH_NOT_FOUND) != NULL) {
-    found = FALSE;
-    goto done;
+    more = FALSE;
   }
-
-  if ((pat = g_strstr_len(text, len, GEONAMES_SEARCH_PATTERN_1)) == NULL) {
-    found = FALSE;
-    goto done;
+  found_entries = g_strsplit(text, "},", 0);
+  entry_runner = 0;
+  entry = found_entries[entry_runner];
+  while (entry)
+  {
+    more = TRUE;
+    geoname = (found_geoname *)g_malloc(sizeof(found_geoname));
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_COUNTRY_PATTERN)) == NULL) {
+      more = FALSE;
+    }
+    else {
+      pat += strlen(GEONAMES_COUNTRY_PATTERN);
+      fragment_len = 0;
+      s = pat;
+      while (*pat != '"') {
+        fragment_len++;
+        pat++;
+      }
+      geoname -> country = g_strndup(s, fragment_len);
+    }
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_LONGITUDE_PATTERN)) == NULL) {
+      more = FALSE;
+    }
+    else {
+      pat += strlen(GEONAMES_LONGITUDE_PATTERN);
+      s = lon_buf;
+      if (*pat == '-')
+        *s++ = *pat++;
+      while ((s < (lon_buf + sizeof(lon_buf))) && (pat < (text + len)) &&
+              (g_ascii_isdigit(*pat) || (*pat == '.')))
+        *s++ = *pat++;
+      *s = '\0';
+      if ((pat >= (text + len)) || (lon_buf[0] == '\0')) {
+        more = FALSE;
+      }
+      geoname->ll.lon = g_ascii_strtod(lon_buf, NULL);
+    }
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_NAME_PATTERN)) == NULL) {
+      more = FALSE;
+    }
+    else {
+      pat += strlen(GEONAMES_NAME_PATTERN);
+      fragment_len = 0;
+      s = pat;
+      while (*pat != '"') {
+        fragment_len++;
+        pat++;
+      }
+      geoname -> name = g_strndup(s, fragment_len);
+    }
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_LATITUDE_PATTERN)) == NULL) {
+      more = FALSE;
+    }
+    else {
+      pat += strlen(GEONAMES_LATITUDE_PATTERN);
+      s = lat_buf;
+      if (*pat == '-')
+        *s++ = *pat++;
+      while ((s < (lat_buf + sizeof(lat_buf))) && (pat < (text + len)) &&
+              (g_ascii_isdigit(*pat) || (*pat == '.')))
+        *s++ = *pat++;
+      *s = '\0';
+      if ((pat >= (text + len)) || (lat_buf[0] == '\0')) {
+        more = FALSE;
+      }
+      geoname->ll.lat = g_ascii_strtod(lat_buf, NULL);
+    }
+    if (!more) {
+      if (geoname) {
+        g_free(geoname);
+      }
+    }
+    else {
+      found_places = g_list_prepend(found_places, geoname);
+    }
+    entry_runner++;
+    entry = found_entries[entry_runner];
   }
-  pat += strlen(GEONAMES_SEARCH_PATTERN_1);
-  s = lon_buf;
-  if (*pat == '-')
-    *s++ = *pat++;
-  while ((s < (lon_buf + sizeof(lon_buf))) && (pat < (text + len)) &&
-          (g_ascii_isdigit(*pat) || (*pat == '.')))
-    *s++ = *pat++;
-  *s = '\0';
-  if ((pat >= (text + len)) || (lon_buf[0] == '\0')) {
-    found = FALSE;
-    goto done;
+  g_strfreev(found_entries);
+  if (g_list_length(found_places) == 1)
+  {
+    geoname = (found_geoname *)found_places->data;
+    ll->lat = geoname->ll.lat;
+    ll->lon = geoname->ll.lon;
   }
-
-  if ((pat = g_strstr_len(text, len, GEONAMES_SEARCH_PATTERN_2)) == NULL) {
+  else
+  {
+    found_places = g_list_reverse(found_places);
+    GList *selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), found_places, FALSE, "Select place", "Select the place to go to");
+    if (selected)
+    {
+      geoname = (found_geoname *)selected->data;
+      ll->lat = geoname->ll.lat;
+      ll->lon = geoname->ll.lon;
+      g_list_foreach(selected, (GFunc)free_list_geonames, NULL);
+    }
+    else
+    {
       found = FALSE;
-      goto done;
+    }
   }
-
-  pat += strlen(GEONAMES_SEARCH_PATTERN_2);
-  s = lat_buf;
-
-  if (*pat == '-')
-    *s++ = *pat++;
-  while ((s < (lat_buf + sizeof(lat_buf))) && (pat < (text + len)) &&
-          (g_ascii_isdigit(*pat) || (*pat == '.')))
-    *s++ = *pat++;
-  *s = '\0';
-  if ((pat >= (text + len)) || (lat_buf[0] == '\0')) {
-    found = FALSE;
-    goto done;
-  }
-
-  ll->lat = g_ascii_strtod(lat_buf, NULL);
-  ll->lon = g_ascii_strtod(lon_buf, NULL);
-
-done:
+  g_list_foreach(found_places, (GFunc)free_list_geonames, NULL);
+  g_list_free(found_places);
   g_mapped_file_free(mf);
   return (found);
-
 }
 
 gchar *uri_escape(gchar *str)
@@ -223,8 +433,8 @@ static int geonames_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *src
   //uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, srch_str);
   uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, escaped_srch_str);
 
-  /* TODO: curl may not be available */
-  if (curl_download_uri(uri, tmp_file, NULL)) {  /* error */
+  // TODO: curl may not be available
+  if (curl_download_uri(uri, tmp_file, NULL)) {  // error
     fclose(tmp_file);
     tmp_file = NULL;
     ret = -1;
@@ -232,8 +442,9 @@ static int geonames_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *src
   }
 
   fclose(tmp_file);
+
   tmp_file = NULL;
-  if (!parse_file_for_latlon(tmpname, &ll)) {
+  if (!parse_file_for_latlon(vw, tmpname, &ll)) {
     ret = -1;
     goto done;
   }
@@ -267,14 +478,15 @@ void a_geonames_search(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
     if ((!s_str) || (s_str[0] == 0)) {
       more = FALSE;
     }
-
     else if (!geonames_search_get_coord(vw, vvp, s_str, &new_center)) {
       vik_viewport_set_center_coord(vvp, &new_center);
       vik_layers_panel_emit_update(vlp);
       more = FALSE;
     }
+/*
     else if (!prompt_try_again(vw))
         more = FALSE;
+*/
     g_free(s_str);
   } while (more);
 }
