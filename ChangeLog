@@ -1,3 +1,7 @@
+2009-01-18
+Hein Ragas <viking@ragas.nl>:
+	* Add GeoNames support (both for search and for POI import from Geonames+Wikipedia)
+
 2009-01-15
 Mathieu Albinet <mathieu17@gmail.com>:
 	* Windows port: avoid "\\" in URL
