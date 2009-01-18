@@ -1757,6 +1757,7 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
+#ifdef VIK_CONFIG_GEONAMES
   wikipedia_submenu = gtk_menu_new();
   item = gtk_menu_item_new_with_label ( _("Add Wikipedia Waypoints") );
   gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
@@ -1772,6 +1773,7 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
   gtk_widget_show ( item );
+#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP 
   item = gtk_menu_item_new_with_label ( _("Upload to OSM") );

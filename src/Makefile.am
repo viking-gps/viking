@@ -65,7 +65,6 @@ libviking_a_SOURCES = \
 	datasource_gc.c \
 	datasource_bfilter.c \
 	datasources.h \
-	geonamessearch.c geonamessearch.h \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
 	vikfilelist.c vikfilelist.h \
@@ -99,6 +98,11 @@ if OPENSTREETMAP
 libviking_a_SOURCES += \
 	osm.c osm.h \
 	osm-traces.c osm-traces.h
+endif
+
+if GEONAMES
+libviking_a_SOURCES += \
+	geonamessearch.c geonamessearch.h
 endif
 
 viking_SOURCES = main.c

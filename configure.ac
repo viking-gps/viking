@@ -151,6 +151,20 @@ case $ac_cv_enable_openaerial in
 esac
 AM_CONDITIONAL([OPENAERIAL], [test x$ac_cv_enable_openaerial = xyes])
 
+# GeoNames http://www.geonames.org/
+AC_ARG_ENABLE(geonames, AC_HELP_STRING([--enable-geonames],
+              [enable Geonames stuff (default is enable)]),
+              [ac_cv_enable_geonames=$enableval],
+              [ac_cv_enable_geonames=yes])
+AC_CACHE_CHECK([whether to enable Geonames stuff],
+               [ac_cv_enable_geonames], [ac_cv_enable_geonames=yes])
+case $ac_cv_enable_geonames in
+  yes)
+    AC_DEFINE(VIK_CONFIG_GEONAMES, [], [GEONAMES STUFF])
+    ;;
+esac
+AM_CONDITIONAL([GEONAMES], [test x$ac_cv_enable_geonames = xyes])
+
 AC_ARG_ENABLE(geocaches, AC_HELP_STRING([--enable-geocaches],
 	      [enable Geocaches Acquire (default is disable).]),
               [ac_cv_enable_geocaches=$enableval],
@@ -240,6 +254,7 @@ echo "Google Maps                      : $ac_cv_enable_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 #echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
+echo "Geonames                         : $ac_cv_enable_geonames"
 #echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
