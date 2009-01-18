@@ -65,7 +65,7 @@ libviking_a_SOURCES = \
 	datasource_gc.c \
 	datasource_bfilter.c \
 	datasources.h \
-	googlesearch.c googlesearch.h \
+	geonamessearch.c geonamessearch.h \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
 	vikfilelist.c vikfilelist.h \

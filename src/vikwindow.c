@@ -27,7 +27,7 @@
 #include "background.h"
 #include "acquire.h"
 #include "datasources.h"
-#include "googlesearch.h"
+#include "geonamessearch.h"
 #include "dems.h"
 #include "print.h"
 #include "preferences.h"
@@ -1491,7 +1491,7 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
-  a_google_search(vw, vw->viking_vlp, vw->viking_vvp);
+  a_geonames_search(vw, vw->viking_vlp, vw->viking_vvp);
 }
 
 static void preferences_cb ( GtkAction *a, VikWindow *vw )
@@ -1958,7 +1958,7 @@ static GtkActionEntry entries[] = {
   { "Exit",      GTK_STOCK_QUIT,         N_("E_xit"),                         "<control>W", N_("Exit the program"),                             (GCallback)window_close          },
   { "SaveExit",  GTK_STOCK_QUIT,         N_("Save and Exit"),                 NULL, N_("Save and Exit the program"),                             (GCallback)save_file_and_exit          },
 
-  { "GoogleMapsSearch",   GTK_STOCK_JUMP_TO,                 N_("Go To Google Maps location"),    	  	  NULL,         N_("Go to address/place using Google Maps search"),            (GCallback)goto_address       },
+  { "GeoNamesSearch",   GTK_STOCK_JUMP_TO,                 N_("Go To GeoNames location"),    	  	  NULL,         N_("Go to address/place using GeoNames search"),            (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_QUIT,         N_("_Go to Lat\\/Lon..."),           NULL,         N_("Go to arbitrary lat\\/lon coordinate"),         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_QUIT,         N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
   { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Background Color..."),       NULL,         NULL,                                           (GCallback)set_bg_color          },

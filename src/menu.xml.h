@@ -44,7 +44,7 @@ static const char *menu_xml =
 #endif
 	"      <menuitem action='ModeMercator'/>"
 	"      <separator/>"
-	"      <menuitem action='GoogleMapsSearch'/>"
+	"      <menuitem action='GeoNamesSearch'/>"
 	"      <menuitem action='GotoLL'/>"
 	"      <menuitem action='GotoUTM'/>"
 	"      <separator/>"
@@ -109,7 +109,7 @@ static const char *menu_xml =
 	"      <separator/>"
 	"    </placeholder>"
 	"    <placeholder name='ViewToolItems'>"
-	"      <toolitem action='GoogleMapsSearch'/>"
+	"      <toolitem action='GeoNamesSearch'/>"
 	"      <separator/>"
 	"    </placeholder>"
 	"    <placeholder name='ToolItems'>"
