@@ -1,3 +1,7 @@
+2009-01-22
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix 2249398: Fix some memory leaks
+
 2009-01-18
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* configure.ac: allow to enable/disable geonames and select the search method

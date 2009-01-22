@@ -461,7 +461,7 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
 void vik_treeview_sublayer_realphabetize ( VikTreeview *vt, GtkTreeIter *iter, const gchar *newname )
 {
   GtkTreeIter search_iter, parent_iter;
-  gchar *search_name;
+  gchar *search_name = NULL;
   g_assert ( iter != NULL );
 
   gtk_tree_model_iter_parent ( vt->model, &parent_iter, iter );
@@ -473,8 +473,12 @@ void vik_treeview_sublayer_realphabetize ( VikTreeview *vt, GtkTreeIter *iter, c
     if ( strcmp ( search_name, newname ) > 0 ) /* not >= or would trip on itself */
     {
       gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, &search_iter );
+      g_free (search_name);
+      search_name = NULL;
       return;
     }
+    g_free (search_name);
+    search_name = NULL;
   } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
 
   gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, NULL );
@@ -485,7 +489,7 @@ void vik_treeview_add_sublayer_alphabetized
                    gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable )
 {
   GtkTreeIter search_iter;
-  gchar *search_name;
+  gchar *search_name = NULL;
   g_assert ( iter != NULL );
 
   if ( gtk_tree_model_iter_children ( vt->model, &search_iter, parent_iter ) )
@@ -497,10 +501,12 @@ void vik_treeview_add_sublayer_alphabetized
       {
         gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, &search_iter );
         found_greater_string = TRUE;
-	g_free (search_name);
+        g_free (search_name);
+        search_name = NULL;
         break;
       }
       g_free (search_name);
+      search_name = NULL;
     } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
 
     if ( ! found_greater_string )

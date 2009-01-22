@@ -399,6 +399,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
     gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
 		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
+    pl = NULL;
   }
 
   /* draw elevations */
@@ -531,6 +532,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
     gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
 		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
+    pl = NULL;
   }
   
 
