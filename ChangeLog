@@ -1,4 +1,8 @@
 2009-01-22
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Fix loading of world map file
+
+2009-01-22
 Rob Norris <robbieonsea@users.sourceforge.net>:
 	* Fix 2249398: Fix some memory leaks
 
