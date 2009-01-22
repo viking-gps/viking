@@ -421,6 +421,7 @@ void a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
     XML_Parse(parser, buf, len, done);
   }
  
+  XML_ParserFree (parser);
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
 }

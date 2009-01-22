@@ -413,6 +413,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     pango_layout_set_text(pl, s, -1);
     vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
 			   PAD + len + PAD, vvp->height - PAD - 10, pl);
+    g_object_unref(pl);
   }
 }
 

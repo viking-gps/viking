@@ -497,8 +497,10 @@ void vik_treeview_add_sublayer_alphabetized
       {
         gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, &search_iter );
         found_greater_string = TRUE;
+	g_free (search_name);
         break;
       }
+      g_free (search_name);
     } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
 
     if ( ! found_greater_string )
