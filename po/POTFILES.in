@@ -4,6 +4,7 @@ src/clipboard.c
 src/curl_download.c
 src/dialog.c
 src/expedia.c
+src/geonamessearch.c
 src/globals.c
 src/google.c
 src/googlesearch.c
@@ -13,12 +14,13 @@ src/datasource_gps.c
 src/dem.c
 src/download.c
 src/file.c
-src/osm-traces.c
 src/print.c
 src/util.c
 src/vikcoordlayer.c
 src/datasource_bfilter.c
 src/main.c
+src/osm.c
+src/osm-traces.c
 src/uibuilder.c
 src/vikdemlayer.c
 src/vikfileentry.c
