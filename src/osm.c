@@ -52,20 +52,21 @@ static int bluemarble_download ( MapCoord *src, const gchar *dest_fn );
 static int openaerialmap_download ( MapCoord *src, const gchar *dest_fn );
 #endif
 
-static DownloadOptions osm_options = { NULL, 0, a_check_map_file };
+static DownloadOptions osm_options = { TRUE, NULL, 0, a_check_map_file };
 
 /* initialisation */
 void osm_init () {
-  VikMapsLayer_MapType osmarender_type = { 12, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_osmarender_download };
-  VikMapsLayer_MapType mapnik_type = { 13, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_mapnik_download };  VikMapsLayer_MapType maplint_type = { 14, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_maplint_download };
-  VikMapsLayer_MapType cycle_type = { 17, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_cycle_download };
+  VikMapsLayer_MapType osmarender_type = { 12, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_osmarender_download, &osm_options };
+  VikMapsLayer_MapType mapnik_type = { 13, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_mapnik_download, &osm_options };
+  VikMapsLayer_MapType maplint_type = { 14, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_maplint_download, &osm_options };
+  VikMapsLayer_MapType cycle_type = { 17, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, osm_cycle_download, &osm_options };
 
 #ifdef VIK_CONFIG_BLUEMARBLE
-  VikMapsLayer_MapType bluemarble_type = { 15, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, bluemarble_download };
+  VikMapsLayer_MapType bluemarble_type = { 15, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, bluemarble_download, &osm_options };
 #endif
 
 #ifdef VIK_CONFIG_OPENAERIAL
-  VikMapsLayer_MapType openaerialmap_type = { 20, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, openaerialmap_download };
+  VikMapsLayer_MapType openaerialmap_type = { 20, 256, 256, VIK_VIEWPORT_DRAWMODE_MERCATOR, osm_coord_to_mapcoord, osm_mapcoord_to_center_coord, openaerialmap_download, &osm_options };
 #endif
 
   maps_layer_register_type("OpenStreetMap (Osmarender)", 12, &osmarender_type);

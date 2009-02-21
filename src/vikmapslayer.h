@@ -26,6 +26,7 @@
 #include "viklayer.h"
 #include "vikviewport.h"
 #include "mapcoord.h"
+#include "download.h"
 
 #define VIK_MAPS_LAYER_TYPE            (vik_maps_layer_get_type ())
 #define VIK_MAPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_MAPS_LAYER_TYPE, VikMapsLayer))
@@ -51,6 +52,7 @@ typedef struct {
   gboolean (*coord_to_mapcoord) ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
   void (*mapcoord_to_center_coord) ( MapCoord *src, VikCoord *dest );
   int (*download) ( MapCoord *src, const gchar *dest_fn );
+  DownloadOptions *options;
   /* TODO: constant size (yay!) */
 } VikMapsLayer_MapType;
 

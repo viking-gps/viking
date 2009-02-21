@@ -512,7 +512,7 @@ gchar *download_url(gchar *uri)
   tmp_file = fdopen(tmp_fd, "r+");
 
   // TODO: curl may not be available
-  if (curl_download_uri(uri, tmp_file, NULL)) {  // error
+  if (curl_download_uri(uri, tmp_file, NULL, 0)) {  // error
     fclose(tmp_file);
     tmp_file = NULL;
     g_remove(tmpname);

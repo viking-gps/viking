@@ -43,7 +43,7 @@ static gchar *last_search_str = NULL;
 static VikCoord *last_coord = NULL;
 static gchar *last_successful_search_str = NULL;
 
-static DownloadOptions googlesearch_options = { "http://maps.google.com/", 0, a_check_map_file };
+static DownloadOptions googlesearch_options = { FALSE, "http://maps.google.com/", 0, a_check_map_file };
 
 gchar * a_googlesearch_get_search_string_for_this_place(VikWindow *vw)
 {
@@ -206,7 +206,7 @@ static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_
   uri = g_strdup_printf(GOOGLE_SEARCH_URL_FMT, escaped_srch_str);
 
   /* TODO: curl may not be available */
-  if (curl_download_uri(uri, tmp_file, &googlesearch_options)) {  /* error */
+  if (curl_download_uri(uri, tmp_file, &googlesearch_options, 0)) {  /* error */
     fclose(tmp_file);
     tmp_file = NULL;
     ret = -1;
