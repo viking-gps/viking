@@ -77,8 +77,8 @@ class Terraserver:Map:Type from Vik:Map:Type:Default {
 	  return G_OBJECT (ret);
   }
 
-  override (Vik:Map:Type) gboolean
-  coord_to_mapcoord ( Vik:Map:Type *self, const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
+  override (Vik:Map:Source) gboolean
+  coord_to_mapcoord ( Vik:Map:Source *self, const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
   {
   int type = TERRASERVER_MAP_TYPE(self)->_priv->type;
   g_assert ( src->mode == VIK_COORD_UTM );
@@ -96,8 +96,8 @@ class Terraserver:Map:Type from Vik:Map:Type:Default {
   return TRUE;
   }
 
-  override (Vik:Map:Type) void
-  mapcoord_to_center_coord ( Vik:Map:Type *self, MapCoord *src, VikCoord *dest )
+  override (Vik:Map:Source) void
+  mapcoord_to_center_coord ( Vik:Map:Source *self, MapCoord *src, VikCoord *dest )
   {
   // FIXME: slowdown here!
   gdouble mpp = scale_to_mpp ( src->scale );
@@ -107,8 +107,8 @@ class Terraserver:Map:Type from Vik:Map:Type:Default {
   dest->north_south = ((src->y * 200) + 100) * mpp;
   }
 
-  override (Vik:Map:Type) int
-   download ( Vik:Map:Type *self, MapCoord *src, const gchar *dest_fn )
+  override (Vik:Map:Source) int
+   download ( Vik:Map:Source *self, MapCoord *src, const gchar *dest_fn )
   {
   int res = -1;
   int type = TERRASERVER_MAP_TYPE(self)->_priv->type;

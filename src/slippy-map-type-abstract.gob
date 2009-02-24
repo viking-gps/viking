@@ -71,8 +71,8 @@ class Slippy:Map:Type:Abstract from Vik:Map:Type:Default {
   virtual DownloadOptions *
   get_download_options( self );
 
-  override (Vik:Map:Type) gboolean
-  coord_to_mapcoord ( Vik:Map:Type *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
+  override (Vik:Map:Source) gboolean
+  coord_to_mapcoord ( Vik:Map:Source *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
   {
   g_assert ( src->mode == VIK_COORD_LATLON );
 
@@ -90,8 +90,8 @@ class Slippy:Map:Type:Abstract from Vik:Map:Type:Default {
   return TRUE;
   }
 
-  override (Vik:Map:Type) void
-  mapcoord_to_center_coord ( Vik:Map:Type *self, MapCoord *src, VikCoord *dest )
+  override (Vik:Map:Source) void
+  mapcoord_to_center_coord ( Vik:Map:Source *self, MapCoord *src, VikCoord *dest )
   {
   gdouble socalled_mpp = GZ(src->scale);
   dest->mode = VIK_COORD_LATLON;
@@ -99,8 +99,8 @@ class Slippy:Map:Type:Abstract from Vik:Map:Type:Default {
   dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));
   }
 
-  override (Vik:Map:Type) int
-   download ( Vik:Map:Type *self, MapCoord *src, const gchar *dest_fn )
+  override (Vik:Map:Source) int
+   download ( Vik:Map:Source *self, MapCoord *src, const gchar *dest_fn )
   {
    int res;
    gchar *uri = slippy_map_type_abstract_get_uri(SLIPPY_MAP_TYPE_ABSTRACT(self), src);

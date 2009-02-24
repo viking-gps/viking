@@ -25,14 +25,14 @@
 
 /* initialisation */
 void osm_init () {
-  VikMapType *osmarender_type = VIK_MAP_TYPE(slippy_map_type_new_with_id(12, "tah.openstreetmap.org", "/Tiles/tile/%d/%d/%d.png"));
-  VikMapType *mapnik_type = VIK_MAP_TYPE(slippy_map_type_new_with_id( 13, "tile.openstreetmap.org", "/%d/%d/%d.png"));
-  VikMapType *maplint_type = VIK_MAP_TYPE(slippy_map_type_new_with_id( 14, "tah.openstreetmap.org", "/Tiles/maplint.php/%d/%d/%d.png"));
-  VikMapType *cycle_type = VIK_MAP_TYPE(slippy_map_type_new_with_id( 17, "thunderflames.org/tiles/cycle/", "%d/%d/%d.png" ));
+  VikMapSource *osmarender_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id(12, "tah.openstreetmap.org", "/Tiles/tile/%d/%d/%d.png"));
+  VikMapSource *mapnik_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id( 13, "tile.openstreetmap.org", "/%d/%d/%d.png"));
+  VikMapSource *maplint_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id( 14, "tah.openstreetmap.org", "/Tiles/maplint.php/%d/%d/%d.png"));
+  VikMapSource *cycle_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id( 17, "thunderflames.org/tiles/cycle/", "%d/%d/%d.png" ));
 
-  maps_layer_register_map_type("OpenStreetMap (Osmarender)", osmarender_type);
-  maps_layer_register_map_type("OpenStreetMap (Mapnik)", mapnik_type);
-  maps_layer_register_map_type("OpenStreetMap (Maplint)", maplint_type);
-  maps_layer_register_map_type("OpenStreetMap (Cycle)", cycle_type);
+  maps_layer_register_map_source ("OpenStreetMap (Osmarender)", osmarender_type);
+  maps_layer_register_map_source ("OpenStreetMap (Mapnik)", mapnik_type);
+  maps_layer_register_map_source ("OpenStreetMap (Maplint)", maplint_type);
+  maps_layer_register_map_source ("OpenStreetMap (Cycle)", cycle_type);
 }
 

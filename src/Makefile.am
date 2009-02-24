@@ -55,9 +55,9 @@ libviking_a_SOURCES = \
 	vikradiogroup.c vikradiogroup.h \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \
+	vikmapsource.c vikmapsource.h \
 	vikmapslayer.c vikmapslayer.h \
 	vikmapslayer_compat.c vikmapslayer_compat.h \
-	vik-map-type.c vik-map-type.h \
 	vik-map-type-default.c vik-map-type-default.h \
 	old-vik-map-type.c old-vik-map-type.h \
 	slippy-map-type-abstract.c slippy-map-type-abstract.h \
@@ -83,7 +83,6 @@ libviking_a_SOURCES = \
 	preferences.c preferences.h
 
 BUILT_SOURCES += \
-	vik-map-type.c vik-map-type.h \
 	vik-map-type-default.c vik-map-type-default.h \
 	slippy-map-type-abstract.c slippy-map-type-abstract.h \
 	slippy-map-type.c slippy-map-type.h \
