@@ -28,11 +28,11 @@
 
 #include "vikmapslayer.h"
 #include "vikmapslayer_compat.h"
-#include "old-vik-map-type.h"
+#include "vikmaptype.h"
 
 void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapType *map_type )
 {
     g_assert(id == map_type->uniq_id);
-    GObject *object = old_vik_map_type_new_with_id (*map_type);
+    VikMapType *object = vik_map_type_new_with_id (*map_type);
     maps_layer_register_map_source ( label, VIK_MAP_SOURCE (object) );
 }
