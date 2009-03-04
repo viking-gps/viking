@@ -5,7 +5,7 @@
 
 #include "vikcoord.h"
 #include "mapcoord.h"
-#include "vik-map-type-default.h"
+#include "vikmapsourcedefault.h"
 %}
 
 %{
@@ -59,20 +59,20 @@ static gdouble scale_to_mpp ( gint scale )
 
 %}
 
-class Terraserver:Map:Type from Vik:Map:Type:Default {
+class Terraserver:Map:Type from Vik:Map:Source:Default {
   private int type;
 
   init (self) {
           /* initialize the object here */
-          VIK_MAP_TYPE_DEFAULT(self)->tilesize_x = 200;
-          VIK_MAP_TYPE_DEFAULT(self)->tilesize_y = 200;
-          VIK_MAP_TYPE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_UTM;
+          // FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_x = 200;
+          // FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_y = 200;
+          // FIXME VIK_MAP_SOURCE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_UTM;
   }
 
   public GObject *
   new_with_id (guint8 id, int type) {
 	  TerraserverMapType *ret = GET_NEW;
-	  VIK_MAP_TYPE_DEFAULT(ret)->uniq_id = id;
+	  // FIXME VIK_MAP_SOURCE_DEFAULT(ret)->uniq_id = id;
 	  ret->_priv->type = type;
 	  return G_OBJECT (ret);
   }

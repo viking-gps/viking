@@ -5,7 +5,7 @@
 
 #include "vikcoord.h"
 #include "mapcoord.h"
-#include "vik-map-type-default.h"
+#include "vikmapsourcedefault.h"
 #include "download.h"
 %}
 
@@ -53,13 +53,13 @@ static guint8 slippy_zoom ( gdouble mpp ) {
 
 %}
 
-class Slippy:Map:Type:Abstract from Vik:Map:Type:Default {
+class Slippy:Map:Type:Abstract from Vik:Map:Source:Default {
 
   init (self) {
           /* initialize the object here */
-          VIK_MAP_TYPE_DEFAULT(self)->tilesize_x = 256;
-          VIK_MAP_TYPE_DEFAULT(self)->tilesize_y = 256;
-          VIK_MAP_TYPE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
+          // FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_x = 256;
+          // FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_y = 256;
+          // FIXME VIK_MAP_SOURCE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   }
 
   virtual gchar *
