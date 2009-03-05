@@ -36,6 +36,7 @@ void a_background_thread_progress ( gpointer callbackdata, gdouble fraction );
 void a_background_testcancel ( gpointer callbackdata );
 void a_background_show_window ();
 void a_background_init ();
+void a_background_uninit ();
 void a_background_add_status(VikStatusbar *vs);
 void a_background_remove_status(VikStatusbar *vs);
 

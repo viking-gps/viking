@@ -25,6 +25,8 @@
 #include "vikstatus.h"
 #include "background.h"
 
+static GThreadPool *thread_pool = NULL;
+
 static GtkWidget *bgwindow = NULL;
 static GtkWidget *bgtreeview = NULL;
 static GtkListStore *bgstore = NULL;
@@ -55,7 +57,7 @@ static void background_thread_update ()
   g_slist_foreach ( statusbars_to_update, (GFunc) a_background_update_status, buf );
 }
 
-void a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
+int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
 {
   gpointer *args = (gpointer *) callbackdata;
   a_background_testcancel ( callbackdata );
@@ -65,7 +67,7 @@ void a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
 
   args[6] = GINT_TO_POINTER(GPOINTER_TO_INT(args[6])-1);
   bgitemcount--;
-  background_thread_update();
+  return background_thread_update();
 }
 
 static void thread_die ( gpointer args[6] )
@@ -82,11 +84,9 @@ static void thread_die ( gpointer args[6] )
 
   g_free ( args[5] ); /* free iter */
   g_free ( args );
-
-  g_thread_exit ( NULL );
 }
 
-void a_background_testcancel ( gpointer callbackdata )
+int a_background_testcancel ( gpointer callbackdata )
 {
   gpointer *args = (gpointer *) callbackdata;
   if ( args[0] )
@@ -94,11 +94,11 @@ void a_background_testcancel ( gpointer callbackdata )
     vik_thr_free_func cleanup = args[4];
     if ( cleanup )
       cleanup ( args[2] );
-    thread_die( args );
+    return -1;
   }
+  return 0;
 }
-
-void thread_helper ( gpointer args[6] )
+void thread_helper ( gpointer args[6], gpointer user_data )
 {
   /* unpack args */
   vik_thr_func func = args[1];
@@ -141,7 +141,7 @@ void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func
 		       -1 );
 
   /* run the thread in the background */
-  g_thread_create( (GThreadFunc) thread_helper, args, FALSE, NULL );
+  g_thread_pool_push( thread_pool, args, NULL );
 }
 
 void a_background_show_window ()
@@ -194,6 +194,10 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
 
 void a_background_init()
 {
+  /* initialize thread pool */
+  gint max_threads = 10;  /* limit maximum number of threads running at one time */
+  thread_pool = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
+
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
   GtkWidget *scrolled_window;
@@ -230,6 +234,12 @@ void a_background_init()
 
   g_signal_connect ( G_OBJECT(bgwindow), "response", G_CALLBACK(bgwindow_response), 0 );
 
+}
+
+void a_background_uninit()
+{
+  /* wait until all running threads stop */
+  g_thread_pool_free ( thread_pool, TRUE, TRUE );
 }
 
 void a_background_add_status(VikStatusbar *vs)
