@@ -5,7 +5,7 @@
 
 #include "vikcoord.h"
 #include "mapcoord.h"
-#include "slippy-map-type-abstract.h"
+#include "slippymapsourceabstract.h"
 %}
 
 %{
@@ -36,7 +36,7 @@ static DownloadOptions slippy_options = { NULL, 0, a_check_map_file };
 
 %}
 
-class Slippy:Map:Type from Slippy:Map:Type:Abstract {
+class Slippy:Map:Type from Slippy:Map:Source:Abstract {
   private gchar *hostname;
 
   private gchar *url;
@@ -57,22 +57,22 @@ class Slippy:Map:Type from Slippy:Map:Type:Abstract {
 	  return G_OBJECT (ret);
   }
 
-  override (Slippy:Map:Type:Abstract) gchar *
-  get_uri( Slippy:Map:Type:Abstract *self, MapCoord *src )
+  override (Slippy:Map:Source:Abstract) gchar *
+  get_uri( Slippy:Map:Source:Abstract *self, MapCoord *src )
   {
     gchar *uri = g_strdup_printf ( SLIPPY_MAP_TYPE(self)->_priv->url,
    	      			  17 - src->scale, src->x, src->y );
     return uri;
   } 
 
-  override (Slippy:Map:Type:Abstract) gchar *
-  get_hostname( Slippy:Map:Type:Abstract *self )
+  override (Slippy:Map:Source:Abstract) gchar *
+  get_hostname( Slippy:Map:Source:Abstract *self )
   {
     return g_strdup( SLIPPY_MAP_TYPE(self)->_priv->hostname );
   }
 
-  override (Slippy:Map:Type:Abstract) DownloadOptions *
-  get_download_options( Slippy:Map:Type:Abstract *self )
+  override (Slippy:Map:Source:Abstract) DownloadOptions *
+  get_download_options( Slippy:Map:Source:Abstract *self )
   {
     return &slippy_options;
   }
