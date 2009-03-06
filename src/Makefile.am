@@ -60,7 +60,7 @@ libviking_a_SOURCES = \
 	vikmapslayer.c vikmapslayer.h \
 	vikmapslayer_compat.c vikmapslayer_compat.h \
 	vikmaptype.c vikmaptype.h \
-	slippymapsourceabstract.c slippymapsourceabstract.h \
+	vikslippymapsourceabstract.c vikslippymapsourceabstract.h \
 	slippy-map-type.c slippy-map-type.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
