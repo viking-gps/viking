@@ -255,7 +255,7 @@ VikLayerInterface vik_dem_layer_interface = {
 
   (VikLayerFuncCreate)                  vik_dem_layer_create,
   (VikLayerFuncRealize)                 NULL,
-                                        dem_layer_post_read,
+  (VikLayerFuncPostRead)                dem_layer_post_read,
   (VikLayerFuncFree)                    vik_dem_layer_free,
 
   (VikLayerFuncProperties)              NULL,

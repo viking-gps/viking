@@ -147,7 +147,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   (VikLayerFuncCreate)                  maps_layer_new,
   (VikLayerFuncRealize)                 NULL,
-                                        maps_layer_post_read,
+  (VikLayerFuncPostRead)                maps_layer_post_read,
   (VikLayerFuncFree)                    maps_layer_free,
 
   (VikLayerFuncProperties)              NULL,
