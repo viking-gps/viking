@@ -163,7 +163,8 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response);
     if (response == 304) {         // 304 = Not Modified
       res = DOWNLOAD_NO_NEWER_FILE;
-    } else if (response == 200) {  // 200 = Ok
+    } else if (response == 200 ||  // http: 200 = Ok
+               response == 226) {  // ftp:  226 = sucess
       gdouble size;
       /* verify if curl sends us any data - this is a workaround on using CURLOPT_TIMECONDITION 
          when the server has a (incorrect) time earlier than the time on the file we already have */
