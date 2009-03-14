@@ -36,6 +36,7 @@ static List *queue_tail = NULL;
 static int queue_count = 0;
 
 static guint32 queue_size = 0;
+static guint32 max_queue_size = VIK_CONFIG_MAPCACHE_SIZE;
 
 
 static GHashTable *cache = NULL;
@@ -112,11 +113,11 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
   g_mutex_lock(mc_mutex);
   cache_add(key, pixbuf);
 
-  if ( queue_size > VIK_CONFIG_MAPCACHE_SIZE ) {
+  if ( queue_size > max_queue_size ) {
     gchar *oldkey = list_shift_add_entry ( key );
     cache_remove(oldkey);
 
-    while ( queue_size > VIK_CONFIG_MAPCACHE_SIZE &&
+    while ( queue_size > max_queue_size &&
         (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
       oldkey = list_shift ();
       cache_remove(oldkey);
