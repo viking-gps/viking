@@ -34,6 +34,7 @@ struct _VikFileEntry {
   GtkHBox parent;
   GtkWidget *entry, *button;
   GtkWidget *file_selector;
+  GtkFileChooserAction action;
 };
 
 GType vik_file_entry_get_type (void)
@@ -60,11 +61,12 @@ GType vik_file_entry_get_type (void)
   return vs_type;
 }
 
-GtkWidget *vik_file_entry_new ()
+GtkWidget *vik_file_entry_new (GtkFileChooserAction action)
 {
   VikFileEntry *vfe = VIK_FILE_ENTRY ( g_object_new ( VIK_FILE_ENTRY_TYPE, NULL ) );
   vfe->entry = gtk_entry_new ();
   vfe->button = gtk_button_new_with_label ( _("Browse...") );
+  vfe->action = action;
   g_signal_connect_swapped ( G_OBJECT(vfe->button), "clicked", G_CALLBACK(choose_file), vfe );
 
   gtk_box_pack_start ( GTK_BOX(vfe), vfe->entry, TRUE, TRUE, 3 );
@@ -93,7 +95,7 @@ static void choose_file ( VikFileEntry *vfe )
     g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfe))) );
     vfe->file_selector = gtk_file_chooser_dialog_new (_("Choose file"),
 				      GTK_WINDOW(win),
-				      GTK_FILE_CHOOSER_ACTION_OPEN,
+				      vfe->action,   /* open file or directory */
 				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 				      NULL);
