@@ -549,6 +549,6 @@ static char *md5_hash(const char *message)
 	MD5Context ctx;
 
 	MD5Init(&ctx);
-	MD5Update(&ctx, message, strlen(message));
+	MD5Update(&ctx, (md5byte *) message, strlen(message));
 	return MD5Final(&ctx);
 }
