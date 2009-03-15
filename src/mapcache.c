@@ -20,8 +20,10 @@
  */
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <string.h>
 #include "mapcache.h"
+#include "preferences.h"
 
 #include "config.h"
 
@@ -46,8 +48,24 @@ static GMutex *mc_mutex = NULL;
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%.3f-%.3f"
 #define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-"
 
+#define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
+#define VIKING_PREFERENCES_NAMESPACE "viking.globals."
+
+static VikLayerParamScale params_scales[] = {
+  /* min, max, step, digits (decimal places) */
+ { 1, 300, 1, 0 },
+};
+
+static VikLayerParam prefs[] = {
+  { VIKING_PREFERENCES_NAMESPACE "mapcache_size", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Mapcache memory size (MB):"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL },
+};
+
 void a_mapcache_init ()
 {
+  VikLayerParamData tmp;
+  tmp.u = VIK_CONFIG_MAPCACHE_SIZE / 1024 / 1024;
+  a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
   mc_mutex = g_mutex_new();
   cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, g_object_unref );
 }
@@ -112,6 +130,9 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
 
   g_mutex_lock(mc_mutex);
   cache_add(key, pixbuf);
+
+  // TODO: that should be done on preference change only...
+  max_queue_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
 
   if ( queue_size > max_queue_size ) {
     gchar *oldkey = list_shift_add_entry ( key );
