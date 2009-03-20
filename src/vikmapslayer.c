@@ -117,7 +117,7 @@ static VikLayerParamScale params_scales[] = {
 
 VikLayerParam maps_layer_params[] = {
   { "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL, NULL },
-  { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory (Optional):"), VIK_LAYER_WIDGET_FOLDERENTRY },
+  { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY },
   { "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales },
   { "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms },
@@ -405,7 +405,7 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id )
   VikLayerParamData rv;
   switch ( id )
   {
-    case PARAM_CACHE_DIR: rv.s = (vml->cache_dir && strcmp(vml->cache_dir, MAPS_CACHE_DIR) != 0) ? vml->cache_dir : ""; break;
+    case PARAM_CACHE_DIR: rv.s = vml->cache_dir ? vml->cache_dir : ""; break;
     case PARAM_MAPTYPE: rv.u = map_index_to_uniq_id ( vml->maptype ); break;
     case PARAM_ALPHA: rv.u = vml->alpha; break;
     case PARAM_AUTODOWNLOAD: rv.u = vml->autodownload; break;
