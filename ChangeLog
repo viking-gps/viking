@@ -1,3 +1,7 @@
+2009-04-04
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Include full libcurl version in user agent
+
 2009-02-08
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Update translations
