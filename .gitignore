@@ -1,0 +1,69 @@
+# git-ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+
+# /
+/Makefile.in
+/Makefile
+/aclocal.m4
+/autom4te.cache
+/configure
+/config.log
+/config.status
+/depcomp
+/install-sh
+/intltool-extract.in
+/intltool-merge.in
+/intltool-update.in
+/missing
+/mkinstalldirs
+/viking.spec
+
+# /doc/
+/doc/Makefile.in
+/doc/Makefile
+/doc/viking-remote.1
+/doc/viking.1
+
+# /doc/dev/
+/doc/dev/Makefile.in
+/doc/dev/Makefile
+
+# /src/
+/src/.deps
+/src/Makefile.in
+/src/Makefile
+/src/*.o
+/src/authors.h
+/src/config.h
+/src/config.h.in
+/src/libviking.a
+/src/stamp-h1
+/src/viking
+/src/viking.desktop
+
+# /src/icons/
+/src/icons/.deps
+/src/icons/Makefile.in
+/src/icons/Makefile
+/src/icons/*.h
+/src/icons/icons.c
+/src/icons/icons.o
+/src/icons/libicons.a
+
+# /test/
+/test/.deps
+/test/Makefile.in
+/test/Makefile
+
+# /po/
+/po/Makefile.in.in
+/po/Makefile.in
+/po/Makefile
+/po/*.gmo
+/po/POTFILES
+/po/.intltool-merge-cache
+/po/stamp-it
