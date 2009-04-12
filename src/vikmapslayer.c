@@ -60,6 +60,7 @@
 /* only for dialog.h -- ugh */
 #include "vikwaypoint.h"
 #include "dialog.h"
+#include "preferences.h"
 
 #include "vikstatus.h"
 #include "background.h"
@@ -206,6 +207,16 @@ enum { REDOWNLOAD_NONE = 0,    /* download only missing maps */
        REDOWNLOAD_ALL,         /* download all maps */
        DOWNLOAD_OR_REFRESH };  /* download missing maps and refresh cache */
 
+static VikLayerParam prefs[] = {
+  { VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default maplayer directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL },
+};
+
+void maps_layer_init ()
+{
+  VikLayerParamData tmp;
+  tmp.s = maps_layer_default_dir();
+  a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+}
 
 /****************************************/
 /******** MAPS LAYER TYPES **************/
@@ -328,7 +339,7 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
   vml->cache_dir = NULL;
 
   if ( dir == NULL || dir[0] == '\0' )
-    vml->cache_dir = g_strdup ( MAPS_CACHE_DIR );
+    vml->cache_dir = g_strdup ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s );
   else
   {
     len = strlen(dir);

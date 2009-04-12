@@ -31,6 +31,7 @@
 #include "curl_download.h"
 #include "preferences.h"
 #include "globals.h"
+#include "vikmapslayer.h"
 
 #ifdef VIK_CONFIG_GEOCACHES
 void a_datasource_gc_init();
@@ -175,6 +176,7 @@ int main( int argc, char *argv[] )
   /* Init modules/plugins */
   modules_init();
 
+  maps_layer_init ();
   a_mapcache_init ();
   a_background_init ();
 
