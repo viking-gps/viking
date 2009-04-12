@@ -32,9 +32,6 @@ gboolean vik_verbose = FALSE;
 gboolean vik_version = FALSE;
 gboolean vik_use_small_wp_icons = FALSE;
 
-#define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
-#define VIKING_PREFERENCES_NAMESPACE "viking.globals."
-
 static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", NULL};
 
 static VikLayerParam prefs[] = {
