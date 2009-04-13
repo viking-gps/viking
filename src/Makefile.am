@@ -108,13 +108,13 @@ endif
 
 viking_SOURCES = main.c
 
-INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
-LDADD           = libviking.a @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
+LDADD           = libviking.a $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
 if REALTIME_GPS_TRACKING
 LDADD           += -lgps
 endif
-#LDADD           = -lz @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@
-AM_CFLAGS		= -Wall -g -D_GNU_SOURCE
+AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
+	$(PACKAGE_CFLAGS) \
+	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 
 @INTLTOOL_DESKTOP_RULE@
 
