@@ -796,9 +796,16 @@ static void gpx_collect_track (const gchar *name, VikTrack *track, gpx_gather_tr
 {
   if (passalong->i < passalong->n_trks)
   {
-    VikTrackpoint *first_point = (VikTrackpoint *)track->trackpoints->data;
     passalong->trks[passalong->i].name = name;
-    passalong->trks[passalong->i].first_timestamp = first_point->timestamp;
+    if (track && track->trackpoints && track->trackpoints->data)
+    {
+      VikTrackpoint *first_point = (VikTrackpoint *)track->trackpoints->data;
+      passalong->trks[passalong->i].first_timestamp = first_point->timestamp;
+    }
+    else
+    {
+      passalong->trks[passalong->i].first_timestamp = 0;
+    }
     passalong->i++;
   }
 }
