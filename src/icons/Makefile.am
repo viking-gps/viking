@@ -265,8 +265,8 @@ icons.c: $(ALL_ICONS_HEADER)
 
 $(BUILT_SOURCES): $(srcdir)/Makefile.am
 
-INCLUDES        = @GTK_CFLAGS@
-AM_CFLAGS       = -Wall -g -D_GNU_SOURCE
+AM_CFLAGS       = -Wall -g -D_GNU_SOURCE \
+	$(PACKAGE_CFLAGS)
 
 iconsdir = $(datadir)/icons/hicolor/48x48/apps
 icons_DATA = viking.png
