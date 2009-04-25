@@ -26,6 +26,7 @@
 #include "background.h"
 
 static GThreadPool *thread_pool = NULL;
+static gboolean stop_all_threads = FALSE;
 
 static GtkWidget *bgwindow = NULL;
 static GtkWidget *bgtreeview = NULL;
@@ -60,14 +61,15 @@ static void background_thread_update ()
 int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
 {
   gpointer *args = (gpointer *) callbackdata;
-  a_background_testcancel ( callbackdata );
+  int res = a_background_testcancel ( callbackdata );
   gdk_threads_enter();
   gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, fraction*100, -1 );
   gdk_threads_leave();
 
   args[6] = GINT_TO_POINTER(GPOINTER_TO_INT(args[6])-1);
   bgitemcount--;
-  return background_thread_update();
+  background_thread_update();
+  return res;
 }
 
 static void thread_die ( gpointer args[6] )
@@ -89,7 +91,9 @@ static void thread_die ( gpointer args[6] )
 int a_background_testcancel ( gpointer callbackdata )
 {
   gpointer *args = (gpointer *) callbackdata;
-  if ( args[0] )
+  if ( stop_all_threads ) 
+    return -1;
+  if ( args && args[0] )
   {
     vik_thr_free_func cleanup = args[4];
     if ( cleanup )
@@ -239,6 +243,7 @@ void a_background_init()
 void a_background_uninit()
 {
   /* wait until all running threads stop */
+  stop_all_threads = TRUE;
   g_thread_pool_free ( thread_pool, TRUE, TRUE );
 }
 
