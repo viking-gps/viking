@@ -199,6 +199,7 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
 void a_background_init()
 {
   /* initialize thread pool */
+  /* TODO parametrize this via preference and/or command line arg */
   gint max_threads = 10;  /* limit maximum number of threads running at one time */
   thread_pool = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
 
