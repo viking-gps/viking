@@ -33,6 +33,7 @@
 
 #include <curl/curl.h>
 
+#include "background.h"
 #include "file.h"
 #include "globals.h"
 #include "curl_download.h"
@@ -48,6 +49,11 @@ gchar *curl_download_user_agent;
 static size_t curl_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
   return fwrite(ptr, size, nmemb, stream);
+}
+
+static int curl_progress_func(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+{
+  return a_background_testcancel(NULL);
 }
 
 static gchar *get_cookie_file(gboolean init)
@@ -127,6 +133,9 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
       curl_easy_setopt ( curl, CURLOPT_URL, uri );
       curl_easy_setopt ( curl, CURLOPT_WRITEDATA, f );
       curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
+      curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0 );
+      curl_easy_setopt ( curl, CURLOPT_PROGRESSDATA, NULL );
+      curl_easy_setopt ( curl, CURLOPT_PROGRESSFUNCTION, curl_progress_func);
       if (options != NULL) {
         if(options->referer != NULL)
           curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);

@@ -199,6 +199,7 @@ int main( int argc, char *argv[] )
   gtk_main ();
   gdk_threads_leave ();
 
+  a_background_uninit ();
   a_mapcache_uninit ();
   a_dems_uninit ();
   a_preferences_uninit ();

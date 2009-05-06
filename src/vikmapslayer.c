@@ -774,7 +774,7 @@ static void weak_ref_cb(gpointer ptr, GObject * dead_vml)
   g_mutex_unlock(mdi->mutex);
 }
 
-static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
+static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 {
   guint donemaps = 0;
   gint x, y;
@@ -789,7 +789,9 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
                      mdi->mapcoord.scale, mdi->mapcoord.z, x, y );
 
       donemaps++;
-      a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+      int res = a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+      if (res != 0)
+        return -1;
 
       if ( mdi->redownload == REDOWNLOAD_ALL)
         g_remove ( mdi->filename_buf );
@@ -843,6 +845,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
   if (mdi->map_layer_alive)
     g_object_weak_unref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
   g_mutex_unlock(mdi->mutex); 
+  return 0;
 }
 
 static void mdi_cancel_cleanup ( MapDownloadInfo *mdi )
