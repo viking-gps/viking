@@ -1,4 +1,9 @@
-2009-05-06
+2009-05-09
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Allow to flush memory consumed by map cache
+	* Add a preference to change the map cache size
+
+2009-05-09
 Tal <tal.bav@gmail.com>:
 	* Replace g_strtod by g_ascii_strtod
 
