@@ -1,4 +1,8 @@
 2009-05-06
+Tal <tal.bav@gmail.com>:
+	* Replace g_strtod by g_ascii_strtod
+
+2009-05-06
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Add a thread pool for downloading
 

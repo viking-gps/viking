@@ -166,8 +166,8 @@ static const char *get_attr ( const char **attr, const char *key )
 static gboolean set_c_ll ( const char **attr )
 {
   if ( (c_slat = get_attr ( attr, "lat" )) && (c_slon = get_attr ( attr, "lon" )) ) {
-    c_ll.lat = g_strtod(c_slat, NULL);
-    c_ll.lon = g_strtod(c_slon, NULL);
+    c_ll.lat = g_ascii_strtod(c_slat, NULL);
+    c_ll.lon = g_ascii_strtod(c_slon, NULL);
     return TRUE;
   }
   return FALSE;
@@ -294,12 +294,12 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_wpt_ele:
-       c_wp->altitude = g_strtod ( c_cdata->str, NULL );
+       c_wp->altitude = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_ele:
-       c_tp->altitude = g_strtod ( c_cdata->str, NULL );
+       c_tp->altitude = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
@@ -337,13 +337,13 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
 
      case tt_trk_trkseg_trkpt_course:
        c_tp->extended = TRUE;
-       c_tp->course = g_strtod ( c_cdata->str, NULL );
+       c_tp->course = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_speed:
        c_tp->extended = TRUE;
-       c_tp->speed = g_strtod ( c_cdata->str, NULL );
+       c_tp->speed = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 

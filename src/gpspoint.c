@@ -386,15 +386,15 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   }
   else if (key_len == 8 && strncasecmp( key, "latitude", key_len ) == 0 && value != NULL)
   {
-    line_latlon.lat = g_strtod(value, NULL);
+    line_latlon.lat = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 9 && strncasecmp( key, "longitude", key_len ) == 0 && value != NULL)
   {
-    line_latlon.lon = g_strtod(value, NULL);
+    line_latlon.lon = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 8 && strncasecmp( key, "altitude", key_len ) == 0 && value != NULL)
   {
-    line_altitude = g_strtod(value, NULL);
+    line_altitude = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 7 && strncasecmp( key, "visible", key_len ) == 0 && value[0] != 'y' && value[0] != 'Y' && value[0] != 't' && value[0] != 'T')
   {
@@ -406,7 +406,7 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   }
   else if (key_len == 8 && strncasecmp( key, "unixtime", key_len ) == 0 && value != NULL)
   {
-    line_timestamp = g_strtod(value, NULL);
+    line_timestamp = g_ascii_strtod(value, NULL);
     if ( line_timestamp != 0x80000000 )
       line_has_timestamp = TRUE;
   }
@@ -420,11 +420,11 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   }
   else if (key_len == 5 && strncasecmp( key, "speed", key_len ) == 0 && value != NULL)
   {
-    line_speed = g_strtod(value, NULL);
+    line_speed = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 6 && strncasecmp( key, "course", key_len ) == 0 && value != NULL)
   {
-    line_course = g_strtod(value, NULL);
+    line_course = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 3 && strncasecmp( key, "sat", key_len ) == 0 && value != NULL)
   {
