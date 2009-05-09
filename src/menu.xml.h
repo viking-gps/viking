@@ -35,6 +35,7 @@ static const char *menu_xml =
 	"      <menuitem action='Delete'/>"
 	"      <menuitem action='DeleteAll'/>"
 	"      <separator/>"
+	"      <menuitem action='MapCacheFlush'/>"
 	"      <menuitem action='Preferences'/>"
 	"    </menu>"
 	"    <menu action='View'>"
