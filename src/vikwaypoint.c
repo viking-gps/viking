@@ -29,6 +29,7 @@
 VikWaypoint *vik_waypoint_new()
 {
   VikWaypoint *wp = g_malloc ( sizeof ( VikWaypoint ) );
+  wp->altitude = VIK_DEFAULT_ALTITUDE;
   wp->comment = NULL;
   wp->image = NULL;
   wp->symbol = NULL;

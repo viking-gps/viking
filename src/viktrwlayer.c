@@ -1643,7 +1643,6 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
   gchar *name = highest_wp_number_get(vtl);
   VikWaypoint *wp = vik_waypoint_new();
   wp->coord = *def_coord;
-  wp->altitude = VIK_DEFAULT_ALTITUDE;
 
   if ( a_dialog_new_waypoint ( w, &name, wp, vik_trw_layer_get_waypoints ( vtl ), vtl->coord_mode ) )
   {
@@ -3429,7 +3428,6 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   tp->newsegment = FALSE;
   tp->has_timestamp = FALSE;
   tp->timestamp = 0;
-  tp->altitude = VIK_DEFAULT_ALTITUDE;
   vtl->current_track->trackpoints = g_list_append ( vtl->current_track->trackpoints, tp );
 
   vtl->ct_x1 = vtl->ct_x2;

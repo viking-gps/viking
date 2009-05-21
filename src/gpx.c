@@ -193,7 +193,6 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_wpt:
        if ( set_c_ll( attr ) ) {
          c_wp = vik_waypoint_new ();
-         c_wp->altitude = VIK_DEFAULT_ALTITUDE;
          if ( ! get_attr ( attr, "hidden" ) )
            c_wp->visible = TRUE;
 
@@ -214,10 +213,6 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_trk_trkseg_trkpt:
        if ( set_c_ll( attr ) ) {
          c_tp = vik_trackpoint_new ();
-         c_tp->altitude = VIK_DEFAULT_ALTITUDE;
-         c_tp->hdop = VIK_DEFAULT_DOP;
-         c_tp->vdop = VIK_DEFAULT_DOP;
-         c_tp->pdop = VIK_DEFAULT_DOP;
          vik_coord_load_from_latlon ( &(c_tp->coord), vik_trw_layer_get_coord_mode ( vtl ), &c_ll );
          if ( f_tr_newseg ) {
            c_tp->newsegment = TRUE;
@@ -240,7 +235,6 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
 
      case tt_waypoint:
        c_wp = vik_waypoint_new ();
-       c_wp->altitude = VIK_DEFAULT_ALTITUDE;
        c_wp->visible = TRUE;
        break;
 

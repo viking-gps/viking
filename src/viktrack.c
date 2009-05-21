@@ -117,6 +117,10 @@ VikTrackpoint *vik_trackpoint_new()
   VikTrackpoint *tp = g_malloc0(sizeof(VikTrackpoint));
   tp->speed = NAN;
   tp->course = NAN;
+  tp->altitude = VIK_DEFAULT_ALTITUDE;
+  tp->hdop = VIK_DEFAULT_DOP;
+  tp->vdop = VIK_DEFAULT_DOP;
+  tp->pdop = VIK_DEFAULT_DOP;
   return tp;
 }
 
