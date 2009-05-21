@@ -291,17 +291,16 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
       gtk_label_set_text ( tpwin->diff_time, NULL );
       gtk_label_set_text ( tpwin->diff_speed, NULL );
     }
-        g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
-        gtk_label_set_text ( tpwin->vdop, tmp_str );
-        g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->hdop );
-        gtk_label_set_text ( tpwin->hdop, tmp_str );
-        g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
-        gtk_label_set_text ( tpwin->pdop, tmp_str );
-        g_snprintf ( tmp_str, sizeof(tmp_str), "%d / %d", tp->nsats, tp->fix_mode );
-        gtk_label_set_text ( tpwin->sat, tmp_str );
-
   }
 
+  g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
+  gtk_label_set_text ( tpwin->vdop, tmp_str );
+  g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->hdop );
+  gtk_label_set_text ( tpwin->hdop, tmp_str );
+  g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
+  gtk_label_set_text ( tpwin->pdop, tmp_str );
+  g_snprintf ( tmp_str, sizeof(tmp_str), "%d / %d", tp->nsats, tp->fix_mode );
+  gtk_label_set_text ( tpwin->sat, tmp_str );
 
   tpwin->cur_tp = tp;
   tpwin->cur_tp_is_endpoint = ! (tpl->next && tpl->prev);
