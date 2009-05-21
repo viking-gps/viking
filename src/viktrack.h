@@ -40,8 +40,6 @@ struct _VikTrackpoint {
   gboolean has_timestamp;
   time_t timestamp;
   gdouble altitude;	/* VIK_DEFAULT_ALTITUDE if data unavailable */
-  /* Most GPSs provide this in realtime mode (NMEA) but not in data mode */
-  gboolean extended;
   gdouble speed;  	/* NAN if data unavailable */
   gdouble course;   /* NAN if data unavailable */
   guint nsats;      /* number of satellites used. 0 if data unavailable */

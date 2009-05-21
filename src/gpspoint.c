@@ -260,14 +260,10 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       tp->timestamp = line_timestamp;
       tp->altitude = line_altitude;
       if (line_extended) {
-        tp->extended = TRUE;
         tp->speed = line_speed;
         tp->course = line_course;
         tp->nsats = line_sat;
         tp->fix_mode = line_fix;
-      }
-      else {
-        tp->extended = FALSE;
       }
       current_track->trackpoints = g_list_append ( current_track->trackpoints, tp );
     }
@@ -497,7 +493,7 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
   if ( tp->newsegment )
     fprintf ( f, " newsegment=\"yes\"" );
 
-  if (tp->extended) {
+  if (!isnan(tp->speed) || !isnan(tp->course) || tp->nsats > 0) {
     fprintf ( f, " extended=\"yes\"" );
     if (!isnan(tp->speed)) {
       gchar *s_speed = a_coords_dtostr(tp->speed);

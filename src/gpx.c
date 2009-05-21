@@ -346,19 +346,16 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk_trkseg_trkpt_course:
-       c_tp->extended = TRUE;
        c_tp->course = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_speed:
-       c_tp->extended = TRUE;
        c_tp->speed = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_fix:
-       c_tp->extended = TRUE;
        if (!strcmp("2d", c_cdata->str))
          c_tp->fix_mode = VIK_GPS_MODE_2D;
        else if (!strcmp("3d", c_cdata->str))
@@ -369,25 +366,21 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk_trkseg_trkpt_sat:
-       c_tp->extended = TRUE;
        c_tp->nsats = atoi ( c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_hdop:
-       c_tp->extended = TRUE;
        c_tp->hdop = g_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_vdop:
-       c_tp->extended = TRUE;
        c_tp->vdop = g_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_pdop:
-       c_tp->extended = TRUE;
        c_tp->pdop = g_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;

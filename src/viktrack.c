@@ -115,7 +115,6 @@ VikTrack *vik_track_copy ( const VikTrack *tr )
 VikTrackpoint *vik_trackpoint_new()
 {
   VikTrackpoint *tp = g_malloc0(sizeof(VikTrackpoint));
-  tp->extended = FALSE;
   tp->speed = NAN;
   tp->course = NAN;
   return tp;
