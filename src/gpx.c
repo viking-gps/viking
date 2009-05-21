@@ -722,24 +722,22 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   g_free(time_iso8601);
   time_iso8601 = NULL;
   
-  if (tp->extended && (tp->fix_mode >= VIK_GPS_MODE_2D)) {
-    if (!isnan(tp->course)) {
-      gchar *s_course = a_coords_dtostr(tp->course);
-      fprintf ( f, "    <course>%s</course>\n", s_course );
-      g_free(s_course);
-    }
-    if (!isnan(tp->speed)) {
-      gchar *s_speed = a_coords_dtostr(tp->speed);
-      fprintf ( f, "    <speed>%s</speed>\n", s_speed );
-      g_free(s_speed);
-    }
-    if (tp->fix_mode == VIK_GPS_MODE_2D)
-      fprintf ( f, "    <fix>2d</fix>\n");
-    if (tp->fix_mode == VIK_GPS_MODE_3D)
-      fprintf ( f, "    <fix>3d</fix>\n");
-    if (tp->nsats > 0)
-      fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
+  if (!isnan(tp->course)) {
+    gchar *s_course = a_coords_dtostr(tp->course);
+    fprintf ( f, "    <course>%s</course>\n", s_course );
+    g_free(s_course);
   }
+  if (!isnan(tp->speed)) {
+    gchar *s_speed = a_coords_dtostr(tp->speed);
+    fprintf ( f, "    <speed>%s</speed>\n", s_speed );
+    g_free(s_speed);
+  }
+  if (tp->fix_mode == VIK_GPS_MODE_2D)
+    fprintf ( f, "    <fix>2d</fix>\n");
+  if (tp->fix_mode == VIK_GPS_MODE_3D)
+    fprintf ( f, "    <fix>3d</fix>\n");
+  if (tp->nsats > 0)
+    fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
 
   s_dop = NULL;
   if ( tp->hdop != VIK_DEFAULT_DOP )
