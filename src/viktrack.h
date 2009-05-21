@@ -50,6 +50,9 @@ struct _VikTrackpoint {
 #define VIK_GPS_MODE_2D  	2	/* good for latitude/longitude */
 #define VIK_GPS_MODE_3D  	3	/* good for altitude/climb too */
   gint fix_mode;
+  gdouble hdop;
+  gdouble vdop;
+  gdouble pdop;
 };
 
 typedef struct _VikTrack VikTrack;
