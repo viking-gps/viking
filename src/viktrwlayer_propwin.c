@@ -148,14 +148,14 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_wid
 
 static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, GdkGC *gc, PropSaved *saved_img)
 {
-  GdkPixmap *pix;
-  const int saved_width = 1;
+  GdkPixmap *pix = NULL;
   /* the pixmap = margin + graph area */
   gdouble x = event_x - img_width/2 + PROFILE_WIDTH/2 + MARGIN/2;
 
   // fprintf(stderr, "event_x=%f img_width=%d x=%f\n", event_x, img_width, x);
 
   gtk_image_get_pixmap(GTK_IMAGE(image), &pix, NULL);
+	/* Restore previously saved image */
   if (saved_img->saved) {
     gdk_draw_image(GDK_DRAWABLE(pix), gc, saved_img->img, 0, 0,
         saved_img->pos, 0, -1, -1);
@@ -165,17 +165,18 @@ static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, G
         saved_img->img->width, saved_img->img->height);
   }
   if ((x >= MARGIN) && (x < (PROFILE_WIDTH + MARGIN))) {
+		/* Save part of the image */
     if (saved_img->img)
       gdk_drawable_copy_to_image(GDK_DRAWABLE(pix), saved_img->img,
-          x - (saved_width/2), 0, 0, 0, saved_img->img->width, saved_img->img->height);
+          x, 0, 0, 0, saved_img->img->width, saved_img->img->height);
     else
       saved_img->img = gdk_drawable_copy_to_image(GDK_DRAWABLE(pix),
-          saved_img->img, x - (saved_width/2), 0, 0, 0, saved_width, PROFILE_HEIGHT);
-    saved_img->pos = x - (saved_width/2);
+          saved_img->img, x, 0, 0, 0, 1, PROFILE_HEIGHT);
+    saved_img->pos = x;
     saved_img->saved = TRUE;
     gdk_draw_line (GDK_DRAWABLE(pix), gc, x, 0, x, image->allocation.height);
     /* redraw the area which contains the line, saved_width is just convenient */
-    gtk_widget_queue_draw_area(image, event_x - saved_width/2, 0, saved_width, PROFILE_HEIGHT);
+    gtk_widget_queue_draw_area(image, event_x, 0, 1, PROFILE_HEIGHT);
   }
 }
 

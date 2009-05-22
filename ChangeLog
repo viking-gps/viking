@@ -1,3 +1,7 @@
+2009-05-22
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Fix #570956: change saved_width to 1
+
 2009-05-09
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Allow to flush memory consumed by map cache
