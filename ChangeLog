@@ -1,4 +1,8 @@
 2009-05-22
+Tal <tal.bav@gmail.com>:
+	* Add hdop,vdop,pdop,nsat support in GPX
+
+2009-05-22
 Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
 	* Fix #570956: change saved_width to 1
 
