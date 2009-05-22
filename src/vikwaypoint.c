@@ -24,6 +24,7 @@
 #include "coords.h"
 #include "vikcoord.h"
 #include "vikwaypoint.h"
+#include "globals.h"
 
 
 VikWaypoint *vik_waypoint_new()
