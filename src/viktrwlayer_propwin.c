@@ -149,7 +149,7 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_wid
 static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, GdkGC *gc, PropSaved *saved_img)
 {
   GdkPixmap *pix;
-  const int saved_width = 5;
+  const int saved_width = 1;
   /* the pixmap = margin + graph area */
   gdouble x = event_x - img_width/2 + PROFILE_WIDTH/2 + MARGIN/2;
 
