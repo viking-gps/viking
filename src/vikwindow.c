@@ -562,19 +562,20 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
 
 static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
-  if ( event->state == GDK_CONTROL_MASK ) {
+  guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
+  if ( modifiers == GDK_CONTROL_MASK ) {
     /* control == pan up & down */
     if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)/3 );
     else
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*2/3 );
-  } else if ( event->state == GDK_SHIFT_MASK ) {
-    /* control-shift == pan left & right */
+  } else if ( modifiers == GDK_SHIFT_MASK ) {
+    /* shift == pan left & right */
     if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/3, vik_viewport_get_height(vw->viking_vvp)/2 );
     else
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*2/3, vik_viewport_get_height(vw->viking_vvp)/2 );
-  } else if ( event->state == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
+  } else if ( modifiers == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
     if ( event->direction == GDK_SCROLL_UP ) {
       /* make sure mouse is still over the same point on the map when we zoom */
       VikCoord coord;
