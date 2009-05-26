@@ -62,9 +62,11 @@ int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
 {
   gpointer *args = (gpointer *) callbackdata;
   int res = a_background_testcancel ( callbackdata );
-  gdk_threads_enter();
-  gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, fraction*100, -1 );
-  gdk_threads_leave();
+  if (args[5] != NULL) {
+    gdk_threads_enter();
+    gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, fraction*100, -1 );
+    gdk_threads_leave();
+  }
 
   args[6] = GINT_TO_POINTER(GPOINTER_TO_INT(args[6])-1);
   bgitemcount--;
@@ -166,6 +168,7 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
     args[0] = GINT_TO_POINTER(1); /* set killswitch */
 
     gtk_list_store_remove ( bgstore, piter );
+    args[5] = NULL;
 }
 
 static void bgwindow_response (GtkDialog *dialog, gint arg1 )
