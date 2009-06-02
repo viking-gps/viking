@@ -1,3 +1,7 @@
+2009-06-02
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Upgrade OSM-traces support to 0.6 API
+
 2009-05-22
 Tal <tal.bav@gmail.com>:
 	* Add hdop,vdop,pdop,nsat support in GPX
