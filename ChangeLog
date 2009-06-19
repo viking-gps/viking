@@ -1,3 +1,9 @@
+2009-06-19
+Jonas Norling <norling@lysator.liu.se>
+	* Filters out irrelevant modifiers when using the scroll wheel
+	* Minor refactoring of the zooming code
+	* Fix #2796985: Crash when cancelling background job
+
 2009-06-02
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Upgrade OSM-traces support to 0.6 API
