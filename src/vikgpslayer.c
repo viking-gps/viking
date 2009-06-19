@@ -1181,7 +1181,6 @@ static void create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forced)
         tp->course = vgl->realtime_fix.fix.track;
         tp->nsats = vgl->realtime_fix.satellites_used;
         tp->fix_mode = vgl->realtime_fix.fix.mode;
-        tp->extended = TRUE;
 
         ll.lat = vgl->realtime_fix.fix.latitude;
         ll.lon = vgl->realtime_fix.fix.longitude;
