@@ -20,13 +20,13 @@
  */
 
 #include "terraserver.h"
-#include "terraserver-map-type.h"
+#include "terraservermapsource.h"
 #include "vikmapslayer.h"
 
 void terraserver_init () {
-  VikMapSource *map_type_1 = VIK_MAP_SOURCE(terraserver_map_type_new_with_id( 2, 2 ));
-  VikMapSource *map_type_2 = VIK_MAP_SOURCE(terraserver_map_type_new_with_id( 1, 1 ));
-  VikMapSource *map_type_3 = VIK_MAP_SOURCE(terraserver_map_type_new_with_id( 4, 4 ));
+  VikMapSource *map_type_1 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 2, 2 ));
+  VikMapSource *map_type_2 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 1, 1 ));
+  VikMapSource *map_type_3 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 4, 4 ));
 
   maps_layer_register_map_source ("Terraserver Topos", map_type_1);
   maps_layer_register_map_source ("Terraserver Aerials", map_type_2);

@@ -88,10 +88,8 @@ endif
 
 if TERRASERVER
 libviking_a_SOURCES += \
-	terraserver-map-type.c terraserver-map-type.h \
+	terraservermapsource.c terraservermapsource.h \
 	terraserver.c terraserver.h
-BUILT_SOURCES += \
-	terraserver-map-type.c terraserver-map-type.h
 endif
 
 if EXPEDIA
