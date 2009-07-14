@@ -1,11 +1,11 @@
 [Desktop Entry]
 Version=1.0
 _Name=Viking
+_GenericName=GPS Data Manager
 _Comment=Map Based GPS Data Manager (live data capable).
 Exec=viking %F
-Icon=viking_icon
+Icon=viking
 Terminal=false
 Type=Application
 StartupNotify=true
-Categories=Education;Science;Geography;Network;Graphics;GTK;
-
+Categories=Education;Science;Geography;GTK;

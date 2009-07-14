@@ -81,7 +81,7 @@ WAYPOINT_ICONS = \
   wp_airplane.png
 
 ICONS = \
-  viking_icon.png \
+  viking.png \
   addtr_18.png \
   begintr_18.png \
   addwp_18.png \
@@ -141,13 +141,23 @@ icons.c: $(ALL_ICONS_HEADER)
 
 %_pixmap.h: %.png
 	gdk-pixbuf-csource --name="`basename $< .png`_pixbuf" --struct --extern $< > $@
-	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp.h
-	mv temp.h $@
+	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp$@.h
+	mv temp$@.h $@
 
 $(BUILT_SOURCES): $(srcdir)/Makefile.am
 
 INCLUDES        = @GTK_CFLAGS@
 AM_CFLAGS       = -Wall -g -D_GNU_SOURCE
 
-iconsdir = $(datadir)/icons
-icons_DATA = viking_icon.png
+iconsdir = $(datadir)/icons/hicolor/48x48/apps
+icons_DATA = viking.png
+gtk_update_icon_cache = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor
+
+install-data-hook:
+	@-if test -z "$(DESTDIR)"; then \
+	        echo "Updating Gtk icon cache."; \
+	        $(gtk_update_icon_cache); \
+	else \
+	        echo "*** Icon cache not updated.  After install, run this:"; \
+	        echo "***   $(gtk_update_icon_cache)"; \
+	fi

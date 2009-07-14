@@ -105,6 +105,20 @@ static gchar *params_groups[] = {
 
 enum {GROUP_DATA_MODE, GROUP_REALTIME_MODE};
 
+#ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
+static gchar *params_vehicle_position[] = {
+  "Keep vehicle at center",
+  "Keep vehicle on screen",
+  "Disable",
+  NULL
+};
+enum {
+  VEHICLE_POSITION_CENTERED = 0,
+  VEHICLE_POSITION_ON_SCREEN,
+  VEHICLE_POSITION_NONE,
+};
+#endif
+
 static VikLayerParam gps_layer_params[] = {
   { "gps_protocol", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
   { "gps_port", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
@@ -112,7 +126,7 @@ static VikLayerParam gps_layer_params[] = {
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   { "record_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Recording tracks"), VIK_LAYER_WIDGET_CHECKBUTTON},
   { "center_start_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Jump to current position on start"), VIK_LAYER_WIDGET_CHECKBUTTON},
-  { "centered_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Keep current position at center"), VIK_LAYER_WIDGET_CHECKBUTTON},
+  { "moving_map_method", VIK_LAYER_PARAM_UINT, GROUP_REALTIME_MODE, N_("Moving Map Method:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_vehicle_position, NULL},
   { "gpsd_host", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Host:"), VIK_LAYER_WIDGET_ENTRY},
   { "gpsd_port", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Port:"), VIK_LAYER_WIDGET_ENTRY},
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
@@ -120,7 +134,7 @@ static VikLayerParam gps_layer_params[] = {
 enum {
   PARAM_PROTOCOL=0, PARAM_PORT,
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
-  PARAM_REALTIME_REC, PARAM_REALTIME_CENTER_START, PARAM_REALTIME_CENTERED, PARAM_GPSD_HOST, PARAM_GPSD_PORT,
+  PARAM_REALTIME_REC, PARAM_REALTIME_CENTER_START, PARAM_VEHICLE_POSITION, PARAM_GPSD_HOST, PARAM_GPSD_PORT,
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   NUM_PARAMS};
 
@@ -204,7 +218,8 @@ struct _VikGpsLayer {
   int cur_read_child;   /* used only for reading file */
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   VglGpsd *vgpsd;
-  gboolean realtime_tracking;
+  gboolean realtime_tracking;  /* set/reset only by the callback */
+  gboolean realtime_waiting;/* after activated, before first gps data arrives */
   GMutex *realtime_tracking_mutex;
   GpsFix realtime_fix;
   GpsFix last_fix;
@@ -227,7 +242,8 @@ struct _VikGpsLayer {
   gchar *gpsd_port;
   gboolean realtime_record;
   gboolean realtime_jump_to_start;
-  gboolean realtime_keep_at_center;
+//  gboolean realtime_keep_at_center;
+  guint vehicle_position;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   guint protocol_id;
   guint serial_port_id;
@@ -369,8 +385,8 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
     case PARAM_REALTIME_CENTER_START:
       vgl->realtime_jump_to_start = data.b;
       break;
-    case PARAM_REALTIME_CENTERED:
-      vgl->realtime_keep_at_center = data.b;
+    case PARAM_VEHICLE_POSITION:
+      vgl->vehicle_position = data.u;
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
     default:
@@ -405,8 +421,8 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
     case PARAM_REALTIME_CENTER_START:
       rv.b = vgl->realtime_jump_to_start;
       break;
-    case PARAM_REALTIME_CENTERED:
-      rv.b = vgl->realtime_keep_at_center;
+    case PARAM_VEHICLE_POSITION:
+      rv.u = vgl->vehicle_position;
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
     default:
@@ -430,6 +446,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   vgl->realtime_tracking_mutex = g_mutex_new();
   vgl->realtime_tracking = FALSE;
+  vgl->realtime_waiting = FALSE;
   vgl->vgpsd = NULL;
   vgl->realtime_track_gc = vik_viewport_new_gc ( vp, "#203070", 2 );
   vgl->realtime_track_bg_gc = vik_viewport_new_gc ( vp, "grey", 2 );
@@ -445,7 +462,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->gpsd_port = g_strdup(DEFAULT_GPSD_PORT);
   vgl->realtime_record = TRUE;
   vgl->realtime_jump_to_start = TRUE;
-  vgl->realtime_keep_at_center = FALSE;
+  vgl->vehicle_position = VEHICLE_POSITION_ON_SCREEN;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   vgl->protocol_id = 0;
   vgl->serial_port_id = 0;
@@ -1176,26 +1193,50 @@ void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
       !isnan(vgpsd->gpsd.fix.latitude) &&
       !isnan(vgpsd->gpsd.fix.longitude) &&
       !isnan(vgpsd->gpsd.fix.track)) {
+
+    VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
+    VikViewport *vvp = vik_window_viewport(vw);
     g_mutex_lock(vgl->realtime_tracking_mutex);
     vgl->realtime_fix.fix = vgpsd->gpsd.fix;
     vgl->realtime_fix.satellites_used = vgpsd->gpsd.satellites_used;
     vgl->realtime_fix.dirty = TRUE;
 
-    if (vgl->realtime_keep_at_center ||
-        (vgl->realtime_jump_to_start && !vgl->realtime_track->trackpoints)) {
-      struct LatLon ll;
-      VikCoord center;
+    struct LatLon ll;
+    VikCoord vehicle_coord;
 
-      ll.lat = vgl->realtime_fix.fix.latitude;
-      ll.lon = vgl->realtime_fix.fix.longitude;
-      vik_coord_load_from_latlon(&center,
-             vik_trw_layer_get_coord_mode(vgl->trw_children[TRW_REALTIME]), &ll);
-      VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
-      VikViewport *vvp = vik_window_viewport(vw);
-      vik_viewport_set_center_coord(vvp, &center);
+    ll.lat = vgl->realtime_fix.fix.latitude;
+    ll.lon = vgl->realtime_fix.fix.longitude;
+    vik_coord_load_from_latlon(&vehicle_coord,
+           vik_trw_layer_get_coord_mode(vgl->trw_children[TRW_REALTIME]), &ll);
+
+    if ((vgl->vehicle_position == VEHICLE_POSITION_CENTERED) ||
+        (vgl->realtime_jump_to_start && vgl->realtime_waiting)) {
+      vik_viewport_set_center_coord(vvp, &vehicle_coord);
       update_all = TRUE;
     }
+    else {
+      const int hdiv = 6;
+      const int vdiv = 6;
+      const int px = 20; /* adjust ment in pixels to make sure vehicle is inside the box */
+      gint width = vik_viewport_get_width(vvp);
+      gint height = vik_viewport_get_height(vvp);
+      gint vx, vy;
 
+      vik_viewport_coord_to_screen(vvp, &vehicle_coord, &vx, &vy);
+      update_all = TRUE;
+      if (vx < (width/hdiv))
+        vik_viewport_set_center_screen(vvp, vx - width/2 + width/hdiv + px, vy);
+      else if (vx > (width - width/hdiv))
+        vik_viewport_set_center_screen(vvp, vx + width/2 - width/hdiv - px, vy);
+      else if (vy < (height/vdiv))
+        vik_viewport_set_center_screen(vvp, vx, vy - height/2 + height/vdiv + px);
+      else if (vy > (height - height/vdiv))
+        vik_viewport_set_center_screen(vvp, vx, vy + height/2 - height/vdiv - px);
+      else
+        update_all = FALSE;
+    }
+
+    vgl->realtime_waiting = FALSE;
     create_realtime_trackpoint(vgl, FALSE);
     g_mutex_unlock(vgl->realtime_tracking_mutex);
 
@@ -1265,6 +1306,7 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
       vik_trw_layer_add_track(vtl, vgl->realtime_track_name, vgl->realtime_track);
     }
 
+    vgl->realtime_waiting = TRUE;
     gps_set_raw_hook(&vgl->vgpsd->gpsd, gpsd_raw_hook);
     vgl->realtime_io_channel = g_io_channel_unix_new(vgl->vgpsd->gpsd.gps_fd);
     vgl->realtime_io_watch_id = g_io_add_watch( vgl->realtime_io_channel,
@@ -1276,6 +1318,7 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
   else {  /* stop realtime tracking */
     /* TODO: handle race condition here , make sure vgpsd is NULL */
     g_mutex_lock(vgl->realtime_tracking_mutex);
+    vgl->realtime_waiting = FALSE;
     gps_close(&vgl->vgpsd->gpsd);
     vgl->vgpsd = NULL;
     // g_source_remove(vgl->realtime_timeout);

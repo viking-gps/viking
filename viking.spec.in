@@ -20,6 +20,8 @@ BuildRequires:	gtk2-devel >= 2.2.0
 BuildRequires:	pkgconfig
 BuildRequires:	gpsd-devel
 BuildRequires:	gettext perl(XML::Parser)
+BuildRequires:	intltool
+BuildRequires:	libxslt
 
 %description
 Viking is a free/open source program to manage GPS data. You can import and
@@ -52,6 +54,8 @@ rm -rf %{buildroot}
 %doc AUTHORS ChangeLog COPYING NEWS README TODO doc/
 %{_bindir}/viking
 %{_bindir}/viking-remote
+%{_datadir}/applications/viking.desktop
+%{_datadir}/icons/hicolor/48x48/apps/viking.png
 
 %changelog
 * Thu Feb 21 2008 Michael A. Peters <mpeters@mac.com> - 0.9.3.20080220-1
