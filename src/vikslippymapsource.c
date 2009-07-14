@@ -25,31 +25,49 @@
 #endif
 
 #include "globals.h"
-#include "vikslippymapsourceabstract.h"
+#include "vikslippymapsource.h"
 
 static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
 static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn );
 
+static gchar *_get_uri( VikSlippyMapSource *self, MapCoord *src );
+static gchar *_get_hostname( VikSlippyMapSource *self );
+static DownloadOptions *_get_download_options( VikSlippyMapSource *self );
 
-G_DEFINE_TYPE_EXTENDED (VikSlippyMapSourceAbstract, vik_slippy_map_source_abstract, VIK_TYPE_SLIPPY_MAP_SOURCE_ABSTRACT, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
+/* FIXME Huge gruik */
+static DownloadOptions slippy_options = { NULL, 0, a_check_map_file };
+
+typedef struct _VikSlippyMapSourcePrivate VikSlippyMapSourcePrivate;
+struct _VikSlippyMapSourcePrivate
+{
+  gchar *hostname;
+  gchar *url;
+};
+
+#define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_SLIPPY_MAP_SOURCE, VikSlippyMapSourcePrivate))
+
+G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
 
 static void
-vik_slippy_map_source_abstract_init (VikSlippyMapSourceAbstract *object)
+vik_slippy_map_source_init (VikSlippyMapSource *object)
 {
-	/* TODO: Add initialization code here */
+	/* initialize the object here */
+	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_x = 256;
+	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_y = 256;
+	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
 }
 
 static void
-vik_slippy_map_source_abstract_finalize (GObject *object)
+vik_slippy_map_source_finalize (GObject *object)
 {
 	/* TODO: Add deinitalization code here */
 
-	G_OBJECT_CLASS (vik_slippy_map_source_abstract_parent_class)->finalize (object);
+	G_OBJECT_CLASS (vik_slippy_map_source_parent_class)->finalize (object);
 }
 
 static void
-vik_slippy_map_source_abstract_class_init (VikSlippyMapSourceAbstractClass *klass)
+vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 	VikMapSourceClass* parent_class = VIK_MAP_SOURCE_CLASS (klass);
@@ -58,8 +76,15 @@ vik_slippy_map_source_abstract_class_init (VikSlippyMapSourceAbstractClass *klas
 	parent_class->coord_to_mapcoord =        _coord_to_mapcoord;
 	parent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	parent_class->download =                 _download;
-
-	object_class->finalize = vik_slippy_map_source_abstract_finalize;
+	
+	/* Default implementation of methods */
+	klass->get_uri = _get_uri;
+	klass->get_hostname = _get_hostname;
+	klass->get_download_options = _get_download_options;
+	
+	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
+	
+	object_class->finalize = vik_slippy_map_source_finalize;
 }
 
 /* 1 << (x) is like a 2**(x) */
@@ -81,12 +106,12 @@ static guint8 slippy_zoom ( gdouble mpp ) {
 }
 
 gchar *
-vik_slippy_map_source_abstract_get_uri( VikSlippyMapSourceAbstract *self, MapCoord *src )
+vik_slippy_map_source_get_uri( VikSlippyMapSource *self, MapCoord *src )
 {
-	VikSlippyMapSourceAbstractClass *klass;
+	VikSlippyMapSourceClass *klass;
 	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE_ABSTRACT (self), 0);
-	klass = VIK_SLIPPY_MAP_SOURCE_ABSTRACT_GET_CLASS(self);
+	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE (self), 0);
+	klass = VIK_SLIPPY_MAP_SOURCE_GET_CLASS(self);
 
 	g_return_val_if_fail (klass->get_uri != NULL, 0);
 
@@ -94,12 +119,12 @@ vik_slippy_map_source_abstract_get_uri( VikSlippyMapSourceAbstract *self, MapCoo
 }
 
 gchar *
-vik_slippy_map_source_abstract_get_hostname( VikSlippyMapSourceAbstract *self )
+vik_slippy_map_source_get_hostname( VikSlippyMapSource *self )
 {
-	VikSlippyMapSourceAbstractClass *klass;
+	VikSlippyMapSourceClass *klass;
 	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE_ABSTRACT (self), 0);
-	klass = VIK_SLIPPY_MAP_SOURCE_ABSTRACT_GET_CLASS(self);
+	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE (self), 0);
+	klass = VIK_SLIPPY_MAP_SOURCE_GET_CLASS(self);
 
 	g_return_val_if_fail (klass->get_hostname != NULL, 0);
 
@@ -107,12 +132,12 @@ vik_slippy_map_source_abstract_get_hostname( VikSlippyMapSourceAbstract *self )
 }
 
 DownloadOptions *
-vik_slippy_map_source_abstract_get_download_options( VikSlippyMapSourceAbstract *self )
+vik_slippy_map_source_get_download_options( VikSlippyMapSource *self )
 {
-	VikSlippyMapSourceAbstractClass *klass;
+	VikSlippyMapSourceClass *klass;
 	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE_ABSTRACT (self), 0);
-	klass = VIK_SLIPPY_MAP_SOURCE_ABSTRACT_GET_CLASS(self);
+	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE (self), 0);
+	klass = VIK_SLIPPY_MAP_SOURCE_GET_CLASS(self);
 
 	g_return_val_if_fail (klass->get_download_options != NULL, 0);
 
@@ -151,11 +176,50 @@ static int
 _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn )
 {
    int res;
-   gchar *uri = vik_slippy_map_source_abstract_get_uri(VIK_SLIPPY_MAP_SOURCE_ABSTRACT(self), src);
-   gchar *host = vik_slippy_map_source_abstract_get_hostname(VIK_SLIPPY_MAP_SOURCE_ABSTRACT(self));
-   DownloadOptions *options = vik_slippy_map_source_abstract_get_download_options(VIK_SLIPPY_MAP_SOURCE_ABSTRACT(self));
+   gchar *uri = vik_slippy_map_source_get_uri(VIK_SLIPPY_MAP_SOURCE(self), src);
+   gchar *host = vik_slippy_map_source_get_hostname(VIK_SLIPPY_MAP_SOURCE(self));
+   DownloadOptions *options = vik_slippy_map_source_get_download_options(VIK_SLIPPY_MAP_SOURCE(self));
    res = a_http_download_get_url ( host, uri, dest_fn, options );
    g_free ( uri );
    g_free ( host );
    return res;
+}
+
+static gchar *
+_get_uri( VikSlippyMapSource *self, MapCoord *src )
+{
+	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
+	
+    VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+	gchar *uri = g_strdup_printf (priv->url, 17 - src->scale, src->x, src->y);
+	return uri;
+} 
+
+static gchar *
+_get_hostname( VikSlippyMapSource *self )
+{
+	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
+	
+    VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+	return g_strdup( priv->hostname );
+}
+
+static DownloadOptions *
+_get_download_options( VikSlippyMapSource *self )
+{
+	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
+	
+	return &slippy_options;
+}
+
+VikSlippyMapSource *
+vik_slippy_map_source_new_with_id (guint8 id, const gchar *hostname, const gchar *url)
+{
+	VikSlippyMapSource *ret = g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE, NULL);
+	
+    VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(ret);
+	// FIXME VIK_MAP_SOURCE_DEFAULT(ret)->uniq_id = id;
+	priv->hostname = g_strdup(hostname);
+	priv->url = g_strdup(url);
+	return ret;
 }

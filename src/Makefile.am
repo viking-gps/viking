@@ -60,8 +60,7 @@ libviking_a_SOURCES = \
 	vikmapslayer.c vikmapslayer.h \
 	vikmapslayer_compat.c vikmapslayer_compat.h \
 	vikmaptype.c vikmaptype.h \
-	vikslippymapsourceabstract.c vikslippymapsourceabstract.h \
-	slippy-map-type.c slippy-map-type.h \
+	vikslippymapsource.c vikslippymapsource.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
@@ -81,9 +80,6 @@ libviking_a_SOURCES = \
 	print-preview.c print-preview.h \
 	print.c print.h \
 	preferences.c preferences.h
-
-BUILT_SOURCES += \
-	slippy-map-type.c slippy-map-type.h
 
 if GOOGLE
 libviking_a_SOURCES += \

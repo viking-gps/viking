@@ -21,14 +21,14 @@
 
 #include "osm.h"
 #include "vikmapslayer.h"
-#include "slippy-map-type.h"
+#include "vikslippymapsource.h"
 
 /* initialisation */
 void osm_init () {
-  VikMapSource *osmarender_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id(12, "tah.openstreetmap.org", "/Tiles/tile/%d/%d/%d.png"));
-  VikMapSource *mapnik_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id( 13, "tile.openstreetmap.org", "/%d/%d/%d.png"));
-  VikMapSource *maplint_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id( 14, "tah.openstreetmap.org", "/Tiles/maplint.php/%d/%d/%d.png"));
-  VikMapSource *cycle_type = VIK_MAP_SOURCE(slippy_map_type_new_with_id( 17, "thunderflames.org/tiles/cycle/", "%d/%d/%d.png" ));
+  VikMapSource *osmarender_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id(12, "tah.openstreetmap.org", "/Tiles/tile/%d/%d/%d.png"));
+  VikMapSource *mapnik_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 13, "tile.openstreetmap.org", "/%d/%d/%d.png"));
+  VikMapSource *maplint_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 14, "tah.openstreetmap.org", "/Tiles/maplint.php/%d/%d/%d.png"));
+  VikMapSource *cycle_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 17, "thunderflames.org/tiles/cycle/", "%d/%d/%d.png" ));
 
   maps_layer_register_map_source ("OpenStreetMap (Osmarender)", osmarender_type);
   maps_layer_register_map_source ("OpenStreetMap (Mapnik)", mapnik_type);
