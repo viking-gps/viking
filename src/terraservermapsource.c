@@ -45,12 +45,12 @@ struct _TerraserverMapSourcePrivate
 G_DEFINE_TYPE_EXTENDED (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
 
 static void
-terraserver_map_source_init (TerraserverMapSource *object)
+terraserver_map_source_init (TerraserverMapSource *self)
 {
 	/* initialize the object here */
-	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_x = 200;
-	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_y = 200;
-	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_UTM;
+	vik_map_source_default_set_tilesize_x (VIK_MAP_SOURCE_DEFAULT (self), 200);
+	vik_map_source_default_set_tilesize_y (VIK_MAP_SOURCE_DEFAULT (self), 200);
+	vik_map_source_default_set_drawmode   (VIK_MAP_SOURCE_DEFAULT (self), VIK_VIEWPORT_DRAWMODE_UTM);
 }
 
 static void
@@ -161,8 +161,10 @@ terraserver_map_source_new_with_id (guint8 id, int type)
 {
 	TerraserverMapSource *ret = g_object_new(TERRASERVER_TYPE_MAP_SOURCE, NULL);
 	
-    TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(ret);
-	// FIXME VIK_MAP_SOURCE_DEFAULT(ret)->uniq_id = id;
+	/* TODO use property */
+	vik_map_source_default_set_uniq_id(VIK_MAP_SOURCE_DEFAULT(ret), id);
+
+	TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(ret);
 	priv->type = type;
 	return ret;
 }

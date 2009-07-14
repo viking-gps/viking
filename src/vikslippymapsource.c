@@ -50,12 +50,12 @@ struct _VikSlippyMapSourcePrivate
 G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
 
 static void
-vik_slippy_map_source_init (VikSlippyMapSource *object)
+vik_slippy_map_source_init (VikSlippyMapSource *self)
 {
 	/* initialize the object here */
-	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_x = 256;
-	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->tilesize_y = 256;
-	// FIXME VIK_MAP_SOURCE_DEFAULT(self)->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
+	vik_map_source_default_set_tilesize_x (VIK_MAP_SOURCE_DEFAULT (self), 256);
+	vik_map_source_default_set_tilesize_y (VIK_MAP_SOURCE_DEFAULT (self), 256);
+	vik_map_source_default_set_drawmode   (VIK_MAP_SOURCE_DEFAULT (self), VIK_VIEWPORT_DRAWMODE_MERCATOR);
 }
 
 static void
@@ -217,8 +217,10 @@ vik_slippy_map_source_new_with_id (guint8 id, const gchar *hostname, const gchar
 {
 	VikSlippyMapSource *ret = g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE, NULL);
 	
-    VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(ret);
-	// FIXME VIK_MAP_SOURCE_DEFAULT(ret)->uniq_id = id;
+	/* TODO use property */
+	vik_map_source_default_set_uniq_id(VIK_MAP_SOURCE_DEFAULT(ret), id);
+
+	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(ret);
 	priv->hostname = g_strdup(hostname);
 	priv->url = g_strdup(url);
 	return ret;

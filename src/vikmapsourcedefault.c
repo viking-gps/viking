@@ -72,8 +72,9 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 static guint8
 map_source_get_uniq_id (VikMapSource *self)
 {
-    VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
-	g_return_val_if_fail (priv != NULL, (guint8 )0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (guint8)0);
+	
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->uniq_id;
 }
@@ -81,8 +82,9 @@ map_source_get_uniq_id (VikMapSource *self)
 static guint16
 map_source_get_tilesize_x (VikMapSource *self)
 {
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (guint16)0);
+
     VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
-	g_return_val_if_fail (self != NULL, (guint16 )0);
 
 	return priv->tilesize_x;
 }
@@ -90,8 +92,9 @@ map_source_get_tilesize_x (VikMapSource *self)
 static guint16
 map_source_get_tilesize_y (VikMapSource *self)
 {
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (guint16)0);
+
     VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
-	g_return_val_if_fail (self != NULL, (guint16 )0);
 
 	return priv->tilesize_y;
 }
@@ -99,8 +102,49 @@ map_source_get_tilesize_y (VikMapSource *self)
 static VikViewportDrawMode
 map_source_get_drawmode (VikMapSource *self)
 {
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (VikViewportDrawMode)0);
+
     VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
-	g_return_val_if_fail (self != NULL, (VikViewportDrawMode )0);
 
 	return priv->drawmode;
+}
+
+void
+vik_map_source_default_set_uniq_id (VikMapSourceDefault *self, guint8 id)
+{
+	g_return_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self));
+	
+	/* TODO use property */
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	priv->uniq_id = id;
+}
+
+void
+vik_map_source_default_set_tilesize_x (VikMapSourceDefault *self, guint16 tilesize_x)
+{
+	g_return_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self));
+
+	/* TODO use property */
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	priv->tilesize_x = tilesize_x;
+}
+
+void
+vik_map_source_default_set_tilesize_y (VikMapSourceDefault *self, guint16 tilesize_y)
+{
+	g_return_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self));
+
+	/* TODO use property */
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	priv->tilesize_y = tilesize_y;
+}
+
+void
+vik_map_source_default_set_drawmode (VikMapSourceDefault *self, VikViewportDrawMode drawmode)
+{
+	g_return_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self));
+
+	/* TODO use property */
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	priv->drawmode = drawmode;
 }
