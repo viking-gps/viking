@@ -115,9 +115,6 @@ endif
 
 viking_SOURCES = main.c
 
-%.h %.c:%.gob
-	gob2 $<
-
 INCLUDES        = @GTK_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 LDADD           = libviking.a @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
 if REALTIME_GPS_TRACKING
