@@ -34,6 +34,7 @@
 #endif
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n.h>
 
 /* Relax some dependencies */
 #if ! GLIB_CHECK_VERSION(2,12,0)
@@ -186,8 +187,6 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
   switch ( mode ) {
     case VIK_VIEWPORT_DRAWMODE_UTM: modestring = "utm"; break;
     case VIK_VIEWPORT_DRAWMODE_EXPEDIA: modestring = "expedia"; break;
-    case VIK_VIEWPORT_DRAWMODE_GOOGLE: modestring = "google"; break;
-    case VIK_VIEWPORT_DRAWMODE_KH: modestring = "kh"; break;
     case VIK_VIEWPORT_DRAWMODE_MERCATOR: modestring = "mercator"; break;
     default:
       g_critical("Houston, we've had a problem. mode=%d", mode);
@@ -423,9 +422,13 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "expedia" ) == 0)
         vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_EXPEDIA );
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "google" ) == 0)
-        vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_GOOGLE );
+      {
+        g_warning ( _("Draw mode '%s' no more supported"), "google" );
+      }
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "kh" ) == 0)
-        vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_KH );
+      {
+        g_warning ( _("Draw mode '%s' no more supported"), "kh" );
+      }
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "mercator" ) == 0)
         vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_MERCATOR );
       else if ( stack->under == NULL && eq_pos == 5 && strncasecmp ( line, "color", eq_pos ) == 0 )

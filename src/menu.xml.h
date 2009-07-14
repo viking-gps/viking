@@ -42,10 +42,6 @@ static const char *menu_xml =
 #ifdef VIK_CONFIG_EXPEDIA
 	"      <menuitem action='ModeExpedia'/>"
 #endif
-#ifdef VIK_CONFIG_OLD_GOOGLE
-	"      <menuitem action='ModeGoogle'/>"
-	"      <menuitem action='ModeKH'/>"
-#endif
 	"      <menuitem action='ModeMercator'/>"
 	"      <separator/>"
 	"      <menuitem action='GoogleMapsSearch'/>"

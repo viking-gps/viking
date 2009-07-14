@@ -4,7 +4,6 @@ call make coords.c
 call make dialog.c
 call make expedia.c
 call make file.c
-call make googlemaps.c
 call make gpsmapper.c
 call make gpspoint.c
 call make gtkcellrendererprogress.c

@@ -90,15 +90,6 @@ libviking_a_SOURCES += \
 	google.c google.h
 endif
 
-if OLDGOOGLE
-libviking_a_SOURCES += \
-	khmaps.c khmaps.h \
-	googlemaps.c googlemaps.h \
-	google-maps.c google-maps.h \
-BUILT_SOURCES += \
-	google-maps.c google-maps.h
-endif
-
 if TERRASERVER
 libviking_a_SOURCES += \
 	terraserver-map-type.c terraserver-map-type.h \

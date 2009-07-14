@@ -83,19 +83,6 @@ case $ac_cv_enable_google in
 esac
 AM_CONDITIONAL([GOOGLE], [test x$ac_cv_enable_google = xyes])
 
-AC_ARG_ENABLE(oldgoogle, AC_HELP_STRING([--enable-old-google],
-              [enable old Google stuff (default is disable)]),
-              [ac_cv_enable_old_google=$enableval],
-              [ac_cv_enable_old_google=no])
-AC_CACHE_CHECK([whether to enable Old Google stuff],
-               [ac_cv_enable_old_google], [ac_cv_enable_old_google=yes])
-case $ac_cv_enable_old_google in
-  yes)
-    AC_DEFINE(VIK_CONFIG_OLD_GOOGLE, [], [OLD GOOGLE STUFF])
-    ;;
-esac
-AM_CONDITIONAL([OLDGOOGLE], [test x$ac_cv_enable_old_google = xyes])
-
 AC_ARG_ENABLE(terraserver, AC_HELP_STRING([--enable-terraserver],
               [enable Terraserver stuff (default is enable)]),
               [ac_cv_enable_terraserver=$enableval],
@@ -250,7 +237,6 @@ echo "$PACKAGE $VERSION"
 echo "-------------------------------------------"
 echo "Alphabetized track & waypoints   : $ac_cv_enable_alpha_trw"
 echo "Google Maps                      : $ac_cv_enable_google"
-#echo "Old Google Maps                  : $ac_cv_enable_old_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 #echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
