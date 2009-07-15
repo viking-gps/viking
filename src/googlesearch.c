@@ -31,6 +31,7 @@
 #include <glib/gi18n.h>
 
 #include "viking.h"
+#include "util.h"
 #include "curl_download.h"
 
 #define GOOGLE_SEARCH_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
@@ -177,27 +178,6 @@ done:
   g_mapped_file_free(mf);
   return (found);
 
-}
-
-gchar *uri_escape(gchar *str)
-{
-  gchar *esc_str = g_malloc(3*strlen(str));
-  gchar *dst = esc_str;
-  gchar *src;
-
-  for (src = str; *src; src++) {
-    if (*src == ' ')
-     *dst++ = '+';
-    else if (g_ascii_isalnum(*src))
-     *dst++ = *src;
-    else {
-      g_sprintf(dst, "%%%02X", *src);
-      dst += 3;
-    }
-  }
-  *dst = '\0';
-
-  return(esc_str);
 }
 
 static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord)

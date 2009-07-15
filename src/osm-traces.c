@@ -201,7 +201,7 @@ void osm_traces_upload_file(const char *user,
   curl_easy_setopt(curl, CURLOPT_URL, base_url);
   curl_easy_setopt(curl, CURLOPT_USERPWD, user_pass);
   curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, &curl_error_buffer);
+  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_error_buffer);
   if (vik_verbose)
     curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
 

@@ -27,10 +27,11 @@
 
 #include "google.h"
 #include "terraserver.h"
-#include "khmaps.h"
 #include "expedia.h"
 #include "osm.h"
 #include "osm-traces.h"
+#include "bluemarble.h"
+#include "openaerial.h"
 
 void modules_init()
 {
@@ -46,6 +47,12 @@ void modules_init()
 #ifdef VIK_CONFIG_OPENSTREETMAP
   osm_init();
   osm_traces_init();
+#endif
+#ifdef VIK_CONFIG_BLUEMARBLE
+  bluemarble_init();
+#endif
+#ifdef VIK_CONFIG_OPENAERIAL
+  openaerial_init();
 #endif
 }
 

@@ -18,12 +18,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <glib.h>
 #include <time.h>
 #include <stdlib.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+
 #include "coords.h"
 #include "vikcoord.h"
 #include "viktrack.h"

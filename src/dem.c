@@ -24,10 +24,16 @@
 #endif
 
 #include <stdio.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <glib.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 #include <zlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>

@@ -24,8 +24,15 @@
 
 #include <glib/gi18n.h>
 
+#include "globals.h"
 #include "google.h"
-
+#include "vikexttools.h"
+#include "vikwebtoolcenter.h"
 
 void google_init () {
+  // Webtools
+  VikWebtoolCenter *webtool = vik_webtool_center_new_with_members ( _("Google"), "http://maps.google.com/maps?f=q&hl=fr&geocode=&ie=UTF8&ll=%s,%s&z=%d&iwloc=addr" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
 }
+

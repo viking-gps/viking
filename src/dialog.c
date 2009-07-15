@@ -28,7 +28,12 @@
 #include "garminsymbols.h"
 #include "degrees_converters.h"
 #include "authors.h"
+#ifdef VIK_CONFIG_GOOGLE
 #include "googlesearch.h"
+#endif
+#ifdef VIK_CONFIG_GEONAMES
+#include "geonamessearch.h"
+#endif
 #include "util.h"
 
 #include <glib/gi18n.h>
@@ -167,10 +172,24 @@ void a_dialog_response_accept ( GtkDialog *dialog )
   gtk_dialog_response ( dialog, GTK_RESPONSE_ACCEPT );
 }
 
+static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
+{
+  GtkTreeIter iter;
+  gchar *sym;
+
+  if (!gtk_combo_box_get_active_iter(GTK_COMBO_BOX(combo), &iter))
+    return;
+
+  gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
+  /* Note: symm is NULL when "(none)" is select (first cell is empty) */
+  gtk_widget_set_tooltip_text(combo, sym);
+  g_free(sym);
+}
+
 /* todo: less on this side, like add track */
 gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Create"),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Waypoint Properties"),
                                                    parent,
                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                    GTK_STOCK_CANCEL,
@@ -225,7 +244,15 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
   commentlabel = gtk_label_new (_("Comment:"));
   commententry = gtk_entry_new ();
-  gchar *cmt =  a_googlesearch_get_search_string_for_this_place(VIK_WINDOW(parent));
+  gchar *cmt =  NULL;
+#if defined(VIK_CONFIG_GOOGLE) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GOOGLE
+  //if (strcmp(VIK_CONFIG_SEARCH,"google"))
+    cmt =  a_googlesearch_get_search_string_for_this_place(VIK_WINDOW(parent));
+#endif
+#if defined(VIK_CONFIG_GEONAMES) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GEONAMES
+  //if (strcmp(VIK_CONFIG_SEARCH,"geonames"))
+    cmt =  a_geonamessearch_get_search_string_for_this_place(VIK_WINDOW(parent));
+#endif
   if (cmt)
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 
@@ -239,7 +266,9 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
     store = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
     symbolentry = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
-    gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(symbolentry), 3);
+    gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(symbolentry), 6);
+    g_signal_connect(symbolentry, "changed",
+                   G_CALLBACK(symbol_entry_changed_cb), store);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter, 0, NULL, 1, NULL, 2, _("(none)"), -1);
     a_populate_sym_list(store);
@@ -368,6 +397,72 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   }
   gtk_widget_destroy ( dialog );
   return FALSE;
+}
+
+static void get_selected_foreach_func(GtkTreeModel *model,
+                                      GtkTreePath *path,
+                                      GtkTreeIter *iter,
+                                      gpointer data)
+{
+  GList **list = data;
+  gchar *name;
+  gtk_tree_model_get (model, iter, 0, &name, -1);
+  *list = g_list_prepend(*list, name);
+}
+
+GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList *track_names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg )
+{
+  GtkTreeIter iter;
+  GtkCellRenderer *renderer;
+  GtkWidget *view;
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
+                                                  parent,
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_STOCK_CANCEL,
+                                                  GTK_RESPONSE_REJECT,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+  GtkWidget *label = gtk_label_new ( msg );
+  GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
+
+  GList *track_runner = track_names;
+  while (track_runner)
+  {
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 0, track_runner->data, -1);
+    track_runner = g_list_next(track_runner);
+  }
+
+  view = gtk_tree_view_new();
+  renderer = gtk_cell_renderer_text_new();
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, NULL, renderer, "text", 0, NULL);
+  gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
+  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), FALSE);
+  gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
+      multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
+  g_object_unref(store);
+
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
+  gtk_widget_show ( label );
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), view, FALSE, FALSE, 0);
+  gtk_widget_show ( view );
+
+  while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
+  {
+    GList *names = NULL;
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+    gtk_tree_selection_selected_foreach(selection, get_selected_foreach_func, &names);
+    if (names)
+    {
+      gtk_widget_destroy ( dialog );
+      return (names);
+    }
+    a_dialog_error_msg(parent, _("Nothing was selected"));
+  }
+  gtk_widget_destroy ( dialog );
+  return NULL;
 }
 
 gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )

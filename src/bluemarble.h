@@ -23,6 +23,6 @@
 #ifndef __VIKING_BLUEMARBLE_H
 #define __VIKING_BLUEMARBLE_H
 
-void osm_init ();
+void bluemarble_init ();
 
 #endif

@@ -325,8 +325,8 @@ static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
     else
     {
       gchar *buffer = g_malloc ( 1024 * sizeof(gchar) );
-      if ( world_file_read_line ( buffer, 1024, f, pass_along[0], TRUE ) && world_file_read_line ( buffer, 1024, f, pass_along[1], TRUE )
-        && world_file_read_line ( buffer, 1024, f, pass_along[0], FALSE ) && world_file_read_line ( buffer, 1024, f, pass_along[0], FALSE )
+      if ( world_file_read_line ( buffer, 1024, f, pass_along[0], TRUE ) && world_file_read_line ( buffer, 1024, f, pass_along[0], FALSE)
+        && world_file_read_line ( buffer, 1024, f, pass_along[0], FALSE ) && world_file_read_line ( buffer, 1024, f, pass_along[1], TRUE)
         && world_file_read_line ( buffer, 1024, f, pass_along[2], TRUE ) && world_file_read_line ( buffer, 1024, f, pass_along[3], TRUE ) )
       {
         g_free ( buffer );

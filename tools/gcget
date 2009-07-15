@@ -73,7 +73,7 @@ if len(args) < 2:
 ll = args[0].split(",")
 lat = ll[0]
 lon = ll[1]
-
+	
 if len(args) >= 3:
   maxdist = args[2]
 else:
@@ -91,15 +91,18 @@ import re
 from mechanize import Browser
 import ClientForm
 
+# get magic number for "Next" button.
+# this is normally 16 (link hidden is $ctl16), unless there are less than 10 pages of results,
+# in which case it will be less (e.g. 09 for 3 pages of results)
 def getmagicnumber(b):
   for i in range(16,0,-1):
-    if re.compile("pgrBottom..ctl%d" % i).search(b.response().get_data()):
+    if re.compile("pgrBottom.ctl%02d" % i).search(b.response().get_data()):
       return i
-  return 0
+  return None
 
 b=Browser()
 b.open("http://geocaching.com/seek/")
-b.follow_link(text="log in")
+b.follow_link(text="Log in")
 b.select_form(nr=0)
 b["myUsername"] = USER
 b["myPassword"] = PASS
@@ -112,6 +115,7 @@ except: pass
 try:
   b.select_form("form4")
 except:
+  b.select_form("form4")
   print >> sys.stderr, "Invalid username/password"
   if DEBUG:
     f=open("gcget.badlogin.html","w")
@@ -166,9 +170,12 @@ for ii in range(min(n,(records+19)/20)):
 
   if not magicnumber:
     magicnumber = getmagicnumber(b)
+    if not magicnumber:
+#      print "couldn't find magic number!" # why does this happen?
+      break
 
   b.select_form(nr=0)
-  [f for f in b.forms()][0].new_control("hidden", "pgrBottom$_ctl%d" % magicnumber, {})
+  [f for f in b.forms()][0].new_control("hidden", "ctl00$ContentBody$pgrBottom$ctl%02d" % magicnumber, {})
   b.submit()
 
 sys.stderr.write("\n")
@@ -179,3 +186,4 @@ if pages:
 #  f=open("delmeNOW","w")
 #  f.write(b.response().get_data())
 #  f.close()
+

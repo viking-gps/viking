@@ -18,10 +18,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <glib/gi18n.h>
 
 #include "osm.h"
 #include "vikmapslayer.h"
 #include "vikslippymapsource.h"
+#include "vikwebtoolcenter.h"
+#include "vikexttools.h"
 
 /* initialisation */
 void osm_init () {
@@ -34,5 +41,19 @@ void osm_init () {
   maps_layer_register_map_source ("OpenStreetMap (Mapnik)", mapnik_type);
   maps_layer_register_map_source ("OpenStreetMap (Maplint)", maplint_type);
   maps_layer_register_map_source ("OpenStreetMap (Cycle)", cycle_type);
+
+  // Webtools
+  VikWebtoolCenter *webtool = NULL;
+  webtool = vik_webtool_center_new_with_members ( _("OSM (view)"), "http://openstreetmap.org/?lat=%s&lon=%s&zoom=%d&layers=B000FTF" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
+
+  webtool = vik_webtool_center_new_with_members ( _("OSM (edit)"), "http://www.openstreetmap.org/edit?lat=%s&lon=%s&zoom=%d" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
+
+  webtool = vik_webtool_center_new_with_members ( _("OSM (render)"), "http://www.informationfreeway.org/?lat=%s&lon=%s&zoom=%d&layers=B0000F000F" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
 }
 

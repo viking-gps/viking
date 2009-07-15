@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.9.7)
+AC_INIT(viking, 0.9.8)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -151,6 +151,20 @@ case $ac_cv_enable_openaerial in
 esac
 AM_CONDITIONAL([OPENAERIAL], [test x$ac_cv_enable_openaerial = xyes])
 
+# GeoNames http://www.geonames.org/
+AC_ARG_ENABLE(geonames, AC_HELP_STRING([--enable-geonames],
+              [enable Geonames stuff (default is enable)]),
+              [ac_cv_enable_geonames=$enableval],
+              [ac_cv_enable_geonames=yes])
+AC_CACHE_CHECK([whether to enable Geonames stuff],
+               [ac_cv_enable_geonames], [ac_cv_enable_geonames=yes])
+case $ac_cv_enable_geonames in
+  yes)
+    AC_DEFINE(VIK_CONFIG_GEONAMES, [], [GEONAMES STUFF])
+    ;;
+esac
+AM_CONDITIONAL([GEONAMES], [test x$ac_cv_enable_geonames = xyes])
+
 AC_ARG_ENABLE(geocaches, AC_HELP_STRING([--enable-geocaches],
 	      [enable Geocaches Acquire (default is disable).]),
               [ac_cv_enable_geocaches=$enableval],
@@ -192,6 +206,28 @@ case $ac_cv_enable_realtimegpstracking in
     ;;
 esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])
+
+AC_ARG_WITH(search,
+            [AC_HELP_STRING([--with-search],
+                            [specify google or geonames for searching (default is google)])],
+            [case "x$withval" in
+               "xgoogle")
+                 VIK_CONFIG_SEARCH=VIK_CONFIG_SEARCH_GOOGLE
+                 ;;
+               "xgeonames")
+                 VIK_CONFIG_SEARCH=VIK_CONFIG_SEARCH_GEONAMES
+                 ;;
+               *)
+                AC_MSG_ERROR([Please, set a value for search method])
+             esac],
+             [VIK_CONFIG_SEARCH=VIK_CONFIG_SEARCH_GOOGLE])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_SEARCH_GOOGLE, 1,
+                   [Id. for searching via GOOGLE])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_SEARCH_GEONAMES, 2,
+                   [Id. for searching via GEONAMES])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_SEARCH, ${VIK_CONFIG_SEARCH},
+                   [Method for the search])
+
 
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
@@ -242,6 +278,7 @@ echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
 echo "OpenAerial                       : $ac_cv_enable_openaerial"
 echo "BlueMarble                       : $ac_cv_enable_bluemarble"
+echo "Geonames                         : $ac_cv_enable_geonames"
 #echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"

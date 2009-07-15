@@ -39,7 +39,7 @@
 #include "babel.h"
 #include "dem.h"
 #include "dems.h"
-#include "googlesearch.h"
+#include "geonamessearch.h"
 #ifdef VIK_CONFIG_OPENSTREETMAP
 #include "osm-traces.h"
 #endif
@@ -48,9 +48,15 @@
 
 #include "icons/icons.h"
 
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 #include <stdio.h>
 #include <ctype.h>
 
@@ -206,6 +212,7 @@ static void trw_layer_cut_item_cb( gpointer *pass_along);
 
 static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct LatLon maxmin[2] );	
+static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2]);
 
 static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp );
 static void trw_layer_free_track_gcs ( VikTrwLayer *vtl );
@@ -224,6 +231,9 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
+static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
+static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
+static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 
 /* pop-up items */
 static void trw_layer_properties_item ( gpointer pass_along[5] );
@@ -1113,7 +1123,7 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
              wp->coord.north_south > dp->cn1 && wp->coord.north_south < dp->cn2 ) )
   {
     gint x, y;
-    GdkPixbuf *sym;
+    GdkPixbuf *sym = NULL;
     vik_viewport_coord_to_screen ( dp->vp, &(wp->coord), &x, &y );
 
     /* if in shrunken_cache, get that. If not, get and add to shrunken_cache */
@@ -1211,11 +1221,18 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
     if ( dp->vtl->drawlabels )
     {
       /* thanks to the GPSDrive people (Fritz Ganter et al.) for hints on this part ... yah, I'm too lazy to study documentation */
+      gint label_x, label_y;
       gint width, height;
       pango_layout_set_text ( dp->vtl->wplabellayout, name, -1 );
       pango_layout_get_pixel_size ( dp->vtl->wplabellayout, &width, &height );
-      vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, x + dp->vtl->wp_size - 1, y-1,width+1,height-1);
-      vik_viewport_draw_layout ( dp->vp, dp->vtl->waypoint_text_gc, x + dp->vtl->wp_size, y, dp->vtl->wplabellayout );
+      label_x = x - width/2;
+      if (sym)
+        label_y = y - height - 2 - gdk_pixbuf_get_height(sym)/2;
+      else
+        label_y = y - dp->vtl->wp_size - height - 2;
+
+      vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
+      vik_viewport_draw_layout ( dp->vp, dp->vtl->waypoint_text_gc, label_x, label_y, dp->vtl->wplabellayout );
     }
   }
 }
@@ -1464,13 +1481,44 @@ static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct 
   }
 }
 
+static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2])
+{
+  struct LatLon wpt_maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  struct LatLon trk_maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_find_maxmin_waypoints, wpt_maxmin );
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_find_maxmin_tracks, trk_maxmin );
+  if ((wpt_maxmin[0].lat != 0.0 && wpt_maxmin[0].lat > trk_maxmin[0].lat) || trk_maxmin[0].lat == 0.0) {
+    maxmin[0].lat = wpt_maxmin[0].lat;
+  }
+  else {
+    maxmin[0].lat = trk_maxmin[0].lat;
+  }
+  if ((wpt_maxmin[0].lon != 0.0 && wpt_maxmin[0].lon > trk_maxmin[0].lon) || trk_maxmin[0].lon == 0.0) {
+    maxmin[0].lon = wpt_maxmin[0].lon;
+  }
+  else {
+    maxmin[0].lon = trk_maxmin[0].lon;
+  }
+  if ((wpt_maxmin[1].lat != 0.0 && wpt_maxmin[1].lat < trk_maxmin[1].lat) || trk_maxmin[1].lat == 0.0) {
+    maxmin[1].lat = wpt_maxmin[1].lat;
+  }
+  else {
+    maxmin[1].lat = trk_maxmin[1].lat;
+  }
+  if ((wpt_maxmin[1].lon != 0.0 && wpt_maxmin[1].lon < trk_maxmin[1].lon) || trk_maxmin[1].lon == 0.0) {
+    maxmin[1].lon = wpt_maxmin[1].lon;
+  }
+  else {
+    maxmin[1].lon = trk_maxmin[1].lon;
+  }
+}
 
 gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest )
 {
   /* TODO: what if there's only one waypoint @ 0,0, it will think nothing found. like I don't have more important things to worry about... */
   struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
-  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_find_maxmin_waypoints, maxmin );
-  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_find_maxmin_tracks, maxmin );
+  trw_layer_find_maxmin (vtl, maxmin);
   if (maxmin[0].lat == 0.0 && maxmin[0].lon == 0.0 && maxmin[1].lat == 0.0 && maxmin[1].lon == 0.0)
     return FALSE;
   else
@@ -1607,6 +1655,49 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
   return FALSE;
 }
 
+static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] )
+{
+  VikCoord one, two;
+  struct LatLon one_ll, two_ll;
+  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+  vik_viewport_screen_to_coord ( vvp, 0, 0, &one);
+  vik_viewport_screen_to_coord ( vvp, vik_viewport_get_width(vvp), vik_viewport_get_height(vvp), &two);
+  vik_coord_to_latlon(&one, &one_ll);
+  vik_coord_to_latlon(&two, &two_ll);
+  if (one_ll.lat > two_ll.lat) {
+    maxmin[0].lat = one_ll.lat;
+    maxmin[1].lat = two_ll.lat;
+  }
+  else {
+    maxmin[0].lat = two_ll.lat;
+    maxmin[1].lat = one_ll.lat;
+  }
+  if (one_ll.lon > two_ll.lon) {
+    maxmin[0].lon = one_ll.lon;
+    maxmin[1].lon = two_ll.lon;
+  }
+  else {
+    maxmin[0].lon = two_ll.lon;
+    maxmin[1].lon = one_ll.lon;
+  }
+  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
+}
+
+static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  
+  trw_layer_find_maxmin (vtl, maxmin);
+  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
+}
+
 static void trw_layer_new_wp ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
@@ -1622,6 +1713,7 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   static gpointer pass_along[2];
   GtkWidget *item;
   GtkWidget *export_submenu;
+  GtkWidget *wikipedia_submenu;
   pass_along[0] = vtl;
   pass_along[1] = vlp;
 
@@ -1664,6 +1756,24 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
+
+#ifdef VIK_CONFIG_GEONAMES
+  wikipedia_submenu = gtk_menu_new();
+  item = gtk_menu_item_new_with_label ( _("Add Wikipedia Waypoints") );
+  gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
+  gtk_widget_show(item);
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), wikipedia_submenu);
+
+  item = gtk_menu_item_new_with_label ( _("Within layer bounds") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_layer), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_label ( _("Within current view") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
+  gtk_widget_show ( item );
+#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP 
   item = gtk_menu_item_new_with_label ( _("Upload to OSM") );
@@ -2065,6 +2175,39 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
  * merge/split by time routines 
  *************************************/
 
+/* called for each key in track hash table.
+ * If the current track has time stamp, add it to the result,
+ * except the one pointed by "exclude".
+ * set exclude to NULL if there is no exclude to check.
+ * Not that result is in reverse (for performance reason).
+ */
+typedef struct {
+  GList **result;
+  GList  *exclude;
+} twt_udata;
+static void find_tracks_with_timestamp(gpointer key, gpointer value, gpointer udata)
+{
+  twt_udata *user_data = udata;
+  VikTrackpoint *p1, *p2;
+
+  if (VIK_TRACK(value)->trackpoints == user_data->exclude) {
+    return;
+  }
+
+  if (VIK_TRACK(value)->trackpoints) {
+    p1 = VIK_TRACKPOINT(VIK_TRACK(value)->trackpoints->data);
+    p2 = VIK_TRACKPOINT(g_list_last(VIK_TRACK(value)->trackpoints)->data);
+
+    if (!p1->has_timestamp || !p2->has_timestamp) {
+      g_print("no timestamp\n");
+      return;
+    }
+
+  }
+
+  *(user_data->result) = g_list_prepend(*(user_data->result), key);
+}
+
 /* called for each key in track hash table. if original track user_data[1] is close enough
  * to the passed one, add it to list in user_data[0] 
  */
@@ -2133,6 +2276,58 @@ static gint trackpoint_compare(gconstpointer a, gconstpointer b)
   if (t1 < t2) return -1;
   if (t1 > t2) return 1;
   return 0;
+}
+
+static void trw_layer_merge_with_other ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  gchar *orig_track_name = pass_along[3];
+  GList *tracks_with_timestamp = NULL;
+  VikTrack *track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, orig_track_name );
+
+  if (track->trackpoints &&
+      !VIK_TRACKPOINT(track->trackpoints->data)->has_timestamp) {
+    a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. This track does not have timestamp"));
+    return;
+  }
+
+  if (1) {
+
+    twt_udata udata;
+    udata.result = &tracks_with_timestamp;
+    udata.exclude = track->trackpoints;
+    g_hash_table_foreach(vtl->tracks, find_tracks_with_timestamp, (gpointer)&udata);
+    tracks_with_timestamp = g_list_reverse(tracks_with_timestamp);
+  }
+
+  if (!tracks_with_timestamp) {
+    a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. No other track in this layer has timestamp"));
+    return;
+  }
+
+  GList *merge_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+      vtl->tracks, tracks_with_timestamp, TRUE,
+      _("Merge with..."), _("Select track to merge with"));
+  g_list_free(tracks_with_timestamp);
+
+  if (merge_list)
+  {
+    GList *l;
+    for (l = merge_list; l != NULL; l = g_list_next(l)) {
+      VikTrack *merge_track = (VikTrack *) g_hash_table_lookup (vtl->tracks, l->data );
+      if (merge_track) {
+        track->trackpoints = g_list_concat(track->trackpoints, merge_track->trackpoints);
+        merge_track->trackpoints = NULL;
+        vik_trw_layer_delete_track(vtl, l->data);
+        track->trackpoints = g_list_sort(track->trackpoints, trackpoint_compare);
+      }
+    }
+    /* TODO: free data before free merge_list */
+    for (l = merge_list; l != NULL; l = g_list_next(l))
+      g_free(l->data);
+    g_list_free(merge_list);
+    vik_layer_emit_update( VIK_LAYER(vtl) );
+  }
 }
 
 /* merge by time routine */
@@ -2528,6 +2723,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_label ( _("Merge By Time") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_by_timestamp), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_label ( _("Merge With Other Tracks...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_with_other), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 

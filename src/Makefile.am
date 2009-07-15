@@ -74,6 +74,10 @@ libviking_a_SOURCES = \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
 	vikfilelist.c vikfilelist.h \
+	vikexttool.c vikexttool.h \
+	vikexttools.c vikexttools.h \
+	vikwebtool.c vikwebtool.h \
+	vikwebtoolcenter.c vikwebtoolcenter.h \
 	dems.c dems.h \
 	srtm_continent.c \
 	uibuilder.c uibuilder.h \
@@ -111,6 +115,11 @@ endif
 if OPENAERIAL
 libviking_a_SOURCES += \
 	openaerial.c openaerial.h
+endif
+
+if GEONAMES
+libviking_a_SOURCES += \
+	geonamessearch.c geonamessearch.h
 endif
 
 viking_SOURCES = main.c

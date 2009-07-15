@@ -22,16 +22,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #define _XOPEN_SOURCE /* glibc2 needs this */
 
 #include "gpx.h"
 #include "viking.h"
 #include <expat.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <glib.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+#include <time.h>
 
 typedef enum {
         tt_unknown = 0,
@@ -414,6 +421,7 @@ void a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
     XML_Parse(parser, buf, len, done);
   }
  
+  XML_ParserFree (parser);
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
 }
@@ -762,6 +770,18 @@ typedef struct {
   guint n_wps;
 } gpx_gather_waypoints_passalong_t;
 
+/* Type to hold name of track and timestamp of first trackpoint */
+typedef struct {
+  time_t first_timestamp;
+  const gchar *name;
+} gpx_track_and_timestamp;
+
+typedef struct {
+  gpx_track_and_timestamp *trks;
+  guint i;
+  guint n_trks;
+} gpx_gather_tracks_passalong_t;
+
 static void gpx_collect_waypoint ( const gchar *name, VikWaypoint *wp, gpx_gather_waypoints_passalong_t *passalong )
 {
   if ( passalong->i < passalong->n_wps ) {
@@ -771,11 +791,39 @@ static void gpx_collect_waypoint ( const gchar *name, VikWaypoint *wp, gpx_gathe
   }
 }
 
+/* Function to collect a track and the first timestamp in the list */
+static void gpx_collect_track (const gchar *name, VikTrack *track, gpx_gather_tracks_passalong_t *passalong)
+{
+  if (passalong->i < passalong->n_trks)
+  {
+    VikTrackpoint *first_point = (VikTrackpoint *)track->trackpoints->data;
+    passalong->trks[passalong->i].name = name;
+    passalong->trks[passalong->i].first_timestamp = first_point->timestamp;
+    passalong->i++;
+  }
+}
+
 static int gpx_waypoint_and_name_compar(const void *x, const void *y)
 {
   gpx_waypoint_and_name *a = (gpx_waypoint_and_name *)x;
   gpx_waypoint_and_name *b = (gpx_waypoint_and_name *)y;
   return strcmp(a->name,b->name);
+}
+
+/* Function to compare two tracks by their first timestamp */
+static int gpx_track_and_timestamp_compar(const void *x, const void *y)
+{
+  gpx_track_and_timestamp *a = (gpx_track_and_timestamp *)x;
+  gpx_track_and_timestamp *b = (gpx_track_and_timestamp *)y;
+  if (a->first_timestamp < b->first_timestamp)
+  {
+    return -1;
+  }
+  if (a->first_timestamp > b->first_timestamp)
+  {
+    return 1;
+  }
+  return 0;
 }
 
 void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
@@ -802,8 +850,18 @@ void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *vtl, FI
     gpx_write_waypoint ( passalong.wps[i].name, passalong.wps[i].wp, &context);
   g_free ( passalong.wps );
 
-  g_hash_table_foreach ( vik_trw_layer_get_tracks ( vtl ), (GHFunc) gpx_write_track, &context );
-
+  gpx_gather_tracks_passalong_t passalong_tracks;
+  passalong_tracks.n_trks = g_hash_table_size ( vik_trw_layer_get_tracks (vtl) );
+  passalong_tracks.i = 0;
+  passalong_tracks.trks = g_new(gpx_track_and_timestamp,passalong_tracks.n_trks);
+  g_hash_table_foreach (vik_trw_layer_get_tracks(vtl), (GHFunc) gpx_collect_track, &passalong_tracks);
+  /* Sort by timestamp */
+  qsort(passalong_tracks.trks, passalong_tracks.n_trks, sizeof(gpx_track_and_timestamp), gpx_track_and_timestamp_compar);
+  for (i=0;i<passalong_tracks.n_trks; i++)
+  {
+    gpx_write_track(passalong_tracks.trks[i].name, (VikTrack *)g_hash_table_lookup(vik_trw_layer_get_tracks(vtl), passalong_tracks.trks[i].name), &context);
+  }
+  g_free ( passalong_tracks.trks );
   gpx_write_footer ( f );
 }
 

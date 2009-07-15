@@ -45,6 +45,7 @@
 #define DEMERCLAT(x) (RAD2DEG * atan(sinh(DEG2RAD * (x))))
 
 /* Some command line options */
+extern gboolean vik_use_small_wp_icons;
 extern gboolean vik_debug;
 extern gboolean vik_verbose;
 extern gboolean vik_version;

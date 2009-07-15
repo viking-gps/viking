@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2008, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifndef _VIKING_EXT_TOOLS_H
+#define _VIKING_EXT_TOOLS_H
 
-#ifndef __VIKING_KHMAPS_H
-#define __VIKING_KHMAPS_H
+#include <gtk/gtk.h>
 
-#include <glib.h>
+#include "vikwindow.h"
 
-#include "vikcoord.h"
-#include "mapcoord.h"
+#include "vikexttool.h"
 
-void khmaps_init ();
-
-guint8 khmaps_zoom ( gdouble mpp );
-
-/* a bit misleading, this is the "mpp" (really just set zoom level, very
- * roughly equivalent so you can easily switch between maps) of
- * kh maps 1, the second kh maps level (1st is 0). */
-#define KHMAPS_ZOOM_ONE_MPP 0.00001
-
-gboolean khmaps_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
-void khmaps_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-int khmaps_download ( MapCoord *src, const gchar *dest_fn );
+void vik_ext_tools_register ( VikExtTool *tool );
+void vik_ext_tools_unregister_all ();
+void vik_ext_tools_add_menu_items ( VikWindow *vwindow, GtkUIManager *uim );
 
 #endif

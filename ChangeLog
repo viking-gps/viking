@@ -1,3 +1,28 @@
+2009-02-08
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Update translations
+	* Release 0.9.8
+
+2009-01-22
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Fix loading of world map file
+
+2009-01-22
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix 2249398: Fix some memory leaks
+
+2009-01-18
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* configure.ac: allow to enable/disable geonames and select the search method
+
+2009-01-18
+Hein Ragas <viking@ragas.nl>:
+	* Add GeoNames support (both for search and for POI import from Geonames+Wikipedia)
+
+2009-01-15
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: avoid "\\" in URL
+
 2008-12-20
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Remove Google's map tiles
@@ -5,6 +30,85 @@ Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 2008-12-17
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Remove old Google stuff
+
+2008-12-13
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add external tools framework
+	* Add OpenStreetMap and Google web tools 
+
+2008-12-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Clicking on "vivisble" tick no longer makes the layer selected.
+
+2008-12-03
+Hein Ragas <viking@ragas.nl>
+	* GPX export: sort track by time. Some application can make use
+	of this feature when reading gpx files.
+
+2008-11-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Merging tracks by name. Users can now select more than one tracks to
+	merge with.
+	* Fix bugs that caused magic scissors not working.
+
+2008-11-19
+Quy Tonthat <qtonthat@gmail.com>:
+	* Merging tracks by name. As submitted by Hein Ragas <viking@ragas.nl>
+	* Merging tracks by name. Tracks can only be merged if they have
+	timestamps. Make sure users won't cause damage to themselves by
+	merging tracks without timestamps. Also a few bug fixes and
+	optimisation.
+
+2008-11-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* Viking no longer support Google satellite maps due to requests
+	  from Google.
+
+2008-10-31
+Quy Tonthat <qtonthat@gmail.com>:
+	* Tittle waypoint properties dialog as "Waypoint Properties"
+	not "Create".
+
+2008-10-30
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add larger size waypoint symbols (icons) that look similar to
+	the ones used in Garmin GPS.
+	* The larger symbols are now used by default. To switch back to the
+	old smaller icons, use command line option "-s" or "--small_waypoint".
+	* Waypoint Property Dialog: The combo box "symbol" (used for selecting
+	waypoint symbol) now has tooltip that shows the name of the selected
+	symbol.
+	* src/icons/Makefile.am: Make sure we won't pick up unwanted _pixmap.h
+	files
+	* Waypoint names are now displayed at the top of waypoint symbol
+	and no longer overlap symbols.
+
+2008-10-28
+Quy Tonthat <qtonthat@gmail.com>:
+	* Waypoint symbols: Use Garmin waypoit names so that waypoint has
+	proper symbols on GPS after upload (and on Viking after download). 
+	Old viking files still works the way they did.
+
+2008-10-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix compatibility problem for windows caused by
+	g_shell_parse_argv()
+
+2008-10-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* New server for OSM cycle map.
+
+2008-10-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* GPS realtime tracking: Keep retrying when fail to connect
+	to gpsd, either because gpsd is not (yet) running or gpsd
+	disconnect (eg. gps unplugged).
+
+2008-10-12
+Jon Burgess <jburgess777@googlemail.com>:
+	* fix implicit declaration of maps_layer_default_dir()
+	* fix missing status return in spawn_command_line_async()
+	* fix curl error buffer usage
 
 2008-10-12
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
@@ -15,7 +119,7 @@ Rob Norris <robbieonsea@users.sourceforge.net>:
 	* Fix 2161310: Fix some more compiler warnings
 
 2008-10-12
-Jon Burgess <jburgess777@users.sourceforge.net>
+Jon Burgess <jburgess777@users.sourceforge.net>:
 	* Fix 2134452: Properties of some tracks show as NaN
 
 2008-10-11

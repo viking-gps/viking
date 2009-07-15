@@ -78,7 +78,126 @@ WAYPOINT_ICONS = \
   wp_building.png \
   wp_tunnel.png \
   wp_beach.png \
-  wp_airplane.png
+  wp_airplane.png \
+  wp_ice_skating.png
+
+WAYPOINT_ICONS_LARGE =
+WAYPOINT_ICONS_LARGE += wp_1st_aid_large.png
+WAYPOINT_ICONS_LARGE += wp_airplane_large.png
+WAYPOINT_ICONS_LARGE += wp_amuse_pk_large.png
+WAYPOINT_ICONS_LARGE += wp_anchor_large.png
+WAYPOINT_ICONS_LARGE += wp_ball_large.png
+WAYPOINT_ICONS_LARGE += wp_beach_large.png
+WAYPOINT_ICONS_LARGE += wp_bell_large.png
+WAYPOINT_ICONS_LARGE += wp_bike_trail_large.png
+WAYPOINT_ICONS_LARGE += wp_block_blue_large.png
+WAYPOINT_ICONS_LARGE += wp_block_green_large.png
+WAYPOINT_ICONS_LARGE += wp_block_red_large.png
+WAYPOINT_ICONS_LARGE += wp_boat_ramp_large.png
+WAYPOINT_ICONS_LARGE += wp_bowling_large.png
+WAYPOINT_ICONS_LARGE += wp_bridge_large.png
+WAYPOINT_ICONS_LARGE += wp_building_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_ambr_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_blck_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_blue_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_grn_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_grn_red_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_grn_wht_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_orng_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_red_grn_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_red_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_red_wht_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_violet_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_wht_grn_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_wht_large.png
+WAYPOINT_ICONS_LARGE += wp_buoy_wht_red_large.png
+WAYPOINT_ICONS_LARGE += wp_camp_large.png
+WAYPOINT_ICONS_LARGE += wp_car_large.png
+WAYPOINT_ICONS_LARGE += wp_car_rental_large.png
+WAYPOINT_ICONS_LARGE += wp_car_repair_large.png
+WAYPOINT_ICONS_LARGE += wp_cemetery_large.png
+WAYPOINT_ICONS_LARGE += wp_church_large.png
+WAYPOINT_ICONS_LARGE += wp_civil_large.png
+WAYPOINT_ICONS_LARGE += wp_controlled_large.png
+WAYPOINT_ICONS_LARGE += wp_conv_store_large.png
+WAYPOINT_ICONS_LARGE += wp_crossing_large.png
+WAYPOINT_ICONS_LARGE += wp_dam_large.png
+WAYPOINT_ICONS_LARGE += wp_danger_large.png
+WAYPOINT_ICONS_LARGE += wp_deer_large.png
+WAYPOINT_ICONS_LARGE += wp_dive1_large.png
+WAYPOINT_ICONS_LARGE += wp_dive2_large.png
+WAYPOINT_ICONS_LARGE += wp_dollar_large.png
+WAYPOINT_ICONS_LARGE += wp_drinking_wtr_large.png
+WAYPOINT_ICONS_LARGE += wp_fastfood_large.png
+WAYPOINT_ICONS_LARGE += wp_fhs_facility_large.png
+WAYPOINT_ICONS_LARGE += wp_fish_large.png
+WAYPOINT_ICONS_LARGE += wp_fitness_large.png
+WAYPOINT_ICONS_LARGE += wp_flag_blue_large.png
+WAYPOINT_ICONS_LARGE += wp_flag_green_large.png
+WAYPOINT_ICONS_LARGE += wp_flag_red_large.png
+WAYPOINT_ICONS_LARGE += wp_forest_large.png
+WAYPOINT_ICONS_LARGE += wp_fuel_large.png
+WAYPOINT_ICONS_LARGE += wp_geocache_fnd_large.png
+WAYPOINT_ICONS_LARGE += wp_geocache_large.png
+WAYPOINT_ICONS_LARGE += wp_glider_large.png
+WAYPOINT_ICONS_LARGE += wp_golf_large.png
+WAYPOINT_ICONS_LARGE += wp_grnd_trans_large.png
+WAYPOINT_ICONS_LARGE += wp_horn_large.png
+WAYPOINT_ICONS_LARGE += wp_house_large.png
+WAYPOINT_ICONS_LARGE += wp_ice_skating_large.png
+WAYPOINT_ICONS_LARGE += wp_info_large.png
+WAYPOINT_ICONS_LARGE += wp_knife_large.png
+WAYPOINT_ICONS_LARGE += wp_light_large.png
+WAYPOINT_ICONS_LARGE += wp_lodging_large.png
+WAYPOINT_ICONS_LARGE += wp_lrg_cty_large.png
+WAYPOINT_ICONS_LARGE += wp_med_cty_large.png
+WAYPOINT_ICONS_LARGE += wp_mine_large.png
+WAYPOINT_ICONS_LARGE += wp_mob_large.png
+WAYPOINT_ICONS_LARGE += wp_movie_large.png
+WAYPOINT_ICONS_LARGE += wp_mug_large.png
+WAYPOINT_ICONS_LARGE += wp_museum_large.png
+WAYPOINT_ICONS_LARGE += wp_oil_field_large.png
+WAYPOINT_ICONS_LARGE += wp_parachute_large.png
+WAYPOINT_ICONS_LARGE += wp_parking_large.png
+WAYPOINT_ICONS_LARGE += wp_park_large.png
+WAYPOINT_ICONS_LARGE += wp_pharmacy_large.png
+WAYPOINT_ICONS_LARGE += wp_phone_large.png
+WAYPOINT_ICONS_LARGE += wp_picnic_large.png
+WAYPOINT_ICONS_LARGE += wp_pin_blue_large.png
+WAYPOINT_ICONS_LARGE += wp_pin_green_large.png
+WAYPOINT_ICONS_LARGE += wp_pin_red_large.png
+WAYPOINT_ICONS_LARGE += wp_pizza_large.png
+WAYPOINT_ICONS_LARGE += wp_police_large.png
+WAYPOINT_ICONS_LARGE += wp_post_ofc_large.png
+WAYPOINT_ICONS_LARGE += wp_rbcn_large.png
+WAYPOINT_ICONS_LARGE += wp_restricted_large.png
+WAYPOINT_ICONS_LARGE += wp_restroom_large.png
+WAYPOINT_ICONS_LARGE += wp_rv_park_large.png
+WAYPOINT_ICONS_LARGE += wp_scenic_large.png
+WAYPOINT_ICONS_LARGE += wp_school_large.png
+WAYPOINT_ICONS_LARGE += wp_shopping_large.png
+WAYPOINT_ICONS_LARGE += wp_short_tower_large.png
+WAYPOINT_ICONS_LARGE += wp_shower_large.png
+WAYPOINT_ICONS_LARGE += wp_skiing_large.png
+WAYPOINT_ICONS_LARGE += wp_ski_resort_large.png
+WAYPOINT_ICONS_LARGE += wp_skull_large.png
+WAYPOINT_ICONS_LARGE += wp_sml_cty_large.png
+WAYPOINT_ICONS_LARGE += wp_stadium_large.png
+WAYPOINT_ICONS_LARGE += wp_store_large.png
+WAYPOINT_ICONS_LARGE += wp_summit_large.png
+WAYPOINT_ICONS_LARGE += wp_swimming_large.png
+WAYPOINT_ICONS_LARGE += wp_tall_tower_large.png
+WAYPOINT_ICONS_LARGE += wp_theater_large.png
+WAYPOINT_ICONS_LARGE += wp_toll_booth_large.png
+WAYPOINT_ICONS_LARGE += wp_trail_head_large.png
+WAYPOINT_ICONS_LARGE += wp_truck_stop_large.png
+WAYPOINT_ICONS_LARGE += wp_tunnel_large.png
+WAYPOINT_ICONS_LARGE += wp_ultralight_large.png
+WAYPOINT_ICONS_LARGE += wp_wbuoy_large.png
+WAYPOINT_ICONS_LARGE += wp_weigh_station_large.png
+WAYPOINT_ICONS_LARGE += wp_wrecker_large.png
+WAYPOINT_ICONS_LARGE += wp_wreck_large.png
+WAYPOINT_ICONS_LARGE += wp_zoo_large.png
 
 ICONS = \
   viking.png \
@@ -120,9 +239,9 @@ CURSORS = \
   cursor_mapdl.png \
   cursor_zoom.png
 
-ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS) $(CURSORS)
+ALL_ICONS = $(ICONS) $(WAYPOINT_ICONS) $(WAYPOINT_ICONS_LARGE) $(CURSORS)
 EXTRA_DIST = $(ALL_ICONS)
-ALL_ICONS_HEADER = $(ALL_ICONS:%.png=%_pixmap.h)
+ALL_ICONS_HEADER = $(ALL_ICONS:.png=_pixmap.h)
 
 BUILT_SOURCES = $(ALL_ICONS_HEADER) icons.c icons.h
 CLEANFILES = $(BUILT_SOURCES)
@@ -132,7 +251,7 @@ libicons_a_SOURCES = icons.c icons.h
 
 icons.h: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
-	sed -n "s/^\(const.*\) = {/extern \1;/p" *_pixmap.h >> $@
+	sed -n "s/^\(const.*\) = {/extern \1;/p" $(ALL_ICONS_HEADER) >> $@
 
 icons.c: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@

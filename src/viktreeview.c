@@ -65,6 +65,8 @@ struct _VikTreeview {
   GtkTreeModel *model;
 
   GdkPixbuf *layer_type_icons[VIK_LAYER_NUM_TYPES];
+
+  gboolean was_a_toggle;
 };
 
 /* TODO: find, make "static" and put up here all non-"a_" functions */
@@ -135,6 +137,7 @@ static void treeview_toggled_cb (GtkCellRendererToggle *cell, gchar *path_str, V
 
   /* get type and data */
   vik_treeview_get_iter_from_path_str ( vt, &iter, path_str );
+  vt->was_a_toggle = TRUE;
 
   g_signal_emit ( G_OBJECT(vt), 
 treeview_signals[VT_ITEM_TOGGLED_SIGNAL], 0, &iter );
@@ -270,13 +273,29 @@ static void select_cb(GtkTreeSelection *selection, gpointer data)
   vik_window_selected_layer(vw, vl);
 }
 
+static gboolean treeview_selection_filter(GtkTreeSelection *selection, GtkTreeModel *model, GtkTreePath *path, gboolean path_currently_selected, gpointer data)
+{
+  VikTreeview *vt = data;
+
+  if (vt->was_a_toggle) {
+    vt->was_a_toggle = FALSE;
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 void treeview_init ( VikTreeview *vt )
 {
   guint16 i;
 
+  vt->was_a_toggle = FALSE;
+
   vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN ));
 
   /* create tree view */
+  gtk_tree_selection_set_select_function(gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), treeview_selection_filter, vt, NULL);
+
   gtk_tree_view_set_model ( GTK_TREE_VIEW(vt), vt->model );
   treeview_add_columns ( vt );
   g_object_unref (vt->model);
@@ -442,7 +461,7 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
 void vik_treeview_sublayer_realphabetize ( VikTreeview *vt, GtkTreeIter *iter, const gchar *newname )
 {
   GtkTreeIter search_iter, parent_iter;
-  gchar *search_name;
+  gchar *search_name = NULL;
   g_assert ( iter != NULL );
 
   gtk_tree_model_iter_parent ( vt->model, &parent_iter, iter );
@@ -454,8 +473,12 @@ void vik_treeview_sublayer_realphabetize ( VikTreeview *vt, GtkTreeIter *iter, c
     if ( strcmp ( search_name, newname ) > 0 ) /* not >= or would trip on itself */
     {
       gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, &search_iter );
+      g_free (search_name);
+      search_name = NULL;
       return;
     }
+    g_free (search_name);
+    search_name = NULL;
   } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
 
   gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, NULL );
@@ -466,7 +489,7 @@ void vik_treeview_add_sublayer_alphabetized
                    gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable )
 {
   GtkTreeIter search_iter;
-  gchar *search_name;
+  gchar *search_name = NULL;
   g_assert ( iter != NULL );
 
   if ( gtk_tree_model_iter_children ( vt->model, &search_iter, parent_iter ) )
@@ -478,8 +501,12 @@ void vik_treeview_add_sublayer_alphabetized
       {
         gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, &search_iter );
         found_greater_string = TRUE;
+        g_free (search_name);
+        search_name = NULL;
         break;
       }
+      g_free (search_name);
+      search_name = NULL;
     } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
 
     if ( ! found_greater_string )

@@ -1,3 +1,29 @@
+Viking 0.9.8 (2009-01-31)
+New features since 0.9.7
+* Add GeoNames support (both for search and for POI import from Geonames+Wikipedia)
+* Remove Google's map tiles.
+* Add external tools framework.
+* Add OpenStreetMap and Google web tools.
+* Clicking on "visible" tick no longer makes the layer selected.
+* GPX export: sort track by time.
+* Merging tracks by name.
+* Tittle waypoint properties dialog as "Waypoint Properties".
+* Add larger size waypoint symbols (icons).
+* Waypoint names are now displayed at the top of waypoint symbol.
+* Waypoint symbols: Use Garmin waypoint.
+* New server for OSM cycle map.
+
+Fixes since 0.9.7
+* Fix loading of world map file.
+* Fix 2249398: Fix some memory leaks.
+* Fix bugs that caused magic scissors not working.
+* Fix compatibility problem for windows.
+* Fix implicit declaration of maps_layer_default_dir().
+* Fix missing status return in spawn_command_line_async().
+* Fix curl error buffer usage.
+* GPS realtime tracking: Keep retrying when fail to connect.
+* Windows port: avoid "\\" in URL.
+
 Viking 0.9.7 (2008-10-12)
 New features since 0.9.6
 * Add new moving map method for realtime tracking.
@@ -19,6 +45,8 @@ New features since 0.9.6
 * Ensure that confirmation dialog is over file selector
 
 Fixes since 0.9.6
+* Fix 2161310: Fix some more compiler warnings
+* Fix 2134452: Properties of some tracks show as NaN
 * QA: cleanning old stuff
 * Fix segfault in realtime tracking.
 * Fix missing files in po/POTFILES.in

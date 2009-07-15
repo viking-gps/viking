@@ -23,11 +23,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #define DEFAULT_BACKGROUND_COLOR "#CCCCCC"
 
 #include <gtk/gtk.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
 
 #include "coords.h"
 #include "vikcoord.h"
@@ -408,6 +413,8 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     pango_layout_set_text(pl, s, -1);
     vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
 			   PAD + len + PAD, vvp->height - PAD - 10, pl);
+    g_object_unref(pl);
+    pl = NULL;
   }
 }
 

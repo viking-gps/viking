@@ -27,7 +27,10 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+
 #include "globals.h"
 #include "coords.h"
 #include "vikcoord.h"

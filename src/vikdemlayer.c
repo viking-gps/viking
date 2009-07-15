@@ -21,10 +21,19 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#ifdef HAVE_MATH_H
 #include <math.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <stdlib.h>
 #include <glib/gi18n.h>
 
@@ -41,6 +50,7 @@
 #include "viklayer.h"
 #include "vikaggregatelayer.h"
 #include "viklayerspanel.h"
+#include "vikmapslayer.h"
 #include "vikdemlayer.h"
 #include "dialog.h"
 
@@ -745,10 +755,9 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
     return;
   }
 
-  gchar *src_fn = g_strdup_printf("%s%s%s%c%02d%c%03d.hgt.zip",
+  gchar *src_fn = g_strdup_printf("%s%s/%c%02d%c%03d.hgt.zip",
                 SRTM_FTP_URI,
                 continent_dir,
-                G_DIR_SEPARATOR_S,
 		(intlat >= 0) ? 'N' : 'S',
 		ABS(intlat),
 		(intlon >= 0) ? 'E' : 'W',
