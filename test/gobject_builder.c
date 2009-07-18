@@ -4,6 +4,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gtk/gtkbuilder.h>
+
 #include "vikwebtoolcenter.h"
 
 static gchar *class_name = NULL;
@@ -29,16 +31,30 @@ _start_element (GMarkupParseContext *context,
 	}
 	if (strcmp(element_name, "property") == 0)
 	{
-		if (attribute_values[0] && attribute_values[1])
+		if (attribute_values[0] && attribute_values[1] && gtype != 0)
 		{
-g_debug("%s=%s", attribute_values[0], attribute_values[1]);
+			g_debug("%s=%s", attribute_values[0], attribute_values[1]);
 			nb_parameters++;
 			parameters = g_realloc(parameters, sizeof(GParameter)*nb_parameters);
+			/* parameter name */
 			parameters[nb_parameters-1].name = g_strdup(attribute_values[0]);
+			/* parameter value */
+			GObjectClass *oclass;
+			oclass = g_type_class_ref (gtype);
+			g_assert (oclass != NULL);
+			GParamSpec *pspec;
+			pspec = g_object_class_find_property (G_OBJECT_CLASS (oclass),
+                                            parameters[nb_parameters-1].name);
+			if (!pspec)
+			{
+				g_warning ("Unknown property: %s.%s",
+				g_type_name (gtype), parameters[nb_parameters-1].name);
+				/* FIXME free unused array item */
+				return;
+			}
+			g_debug("Expected type: %s", g_type_name (pspec->value_type));
 			memset (&(parameters[nb_parameters-1].value), 0, sizeof(GValue));
-			g_value_init (&(parameters[nb_parameters-1].value), G_TYPE_STRING);
-			//g_value_reset (&(parameters[nb_parameters-1].value));
-			g_value_set_string (&(parameters[nb_parameters-1].value), attribute_values[1]);
+			gtk_builder_value_from_string_type(NULL, pspec->value_type, attribute_values[1], &(parameters[nb_parameters-1].value), NULL);
 		}
 	}
 }
@@ -75,41 +91,45 @@ _text (GMarkupParseContext *context,
 
 int parse(gchar *text)
 {
-
-GMarkupParser xml_parser;
-GMarkupParseContext *xml_context;
-GError *error;
-
-/* setup context parse (ie callbacks) */
-xml_parser.start_element = &_start_element;
-xml_parser.end_element = &_end_element;
-xml_parser.text = &_text;
-xml_parser.passthrough = NULL;
-xml_parser.error = NULL;
-
-xml_context = g_markup_parse_context_new(&xml_parser, 0, NULL, NULL);
-
-  
-if (!g_markup_parse_context_parse(xml_context, text, strlen(text), &error))
-    printf("read_xml() : parsing error.\n");
-/* cleanup */
-if (!g_markup_parse_context_end_parse(xml_context, &error))
-  printf("read_xml() : errors occurred reading file.\n");
-
-g_markup_parse_context_free(xml_context);
-
-  return EXIT_SUCCESS;
+	GMarkupParser xml_parser;
+	GMarkupParseContext *xml_context;
+	GError *error;
+	
+	/* setup context parse (ie callbacks) */
+	xml_parser.start_element = &_start_element;
+	xml_parser.end_element = &_end_element;
+	xml_parser.text = &_text;
+	xml_parser.passthrough = NULL;
+	xml_parser.error = NULL;
+	
+	xml_context = g_markup_parse_context_new(&xml_parser, 0, NULL, NULL);
+	
+	if (!g_markup_parse_context_parse(xml_context, text, strlen(text), &error))
+		printf("read_xml() : parsing error.\n");
+	/* cleanup */
+	if (!g_markup_parse_context_end_parse(xml_context, &error))
+		printf("read_xml() : errors occurred reading file.\n");
+	
+	g_markup_parse_context_free(xml_context);
+	
+	return EXIT_SUCCESS;
 }
 
 int main(int argc, char *argv[])
 {
-  g_type_init ();
+	g_type_init ();
 
-  VIK_WEBTOOL_CENTER_TYPE;
+	/* Load some specific types */
+	VIK_WEBTOOL_CENTER_TYPE;
 
-  parse ("<objects><object class=\"toto\"><property name=\"titi\" value=\"tutu\"/></object></objects>");
-  parse ("<objects><object class=\"GObject\"><property name=\"titi\" value=\"tutu\"/></object></objects>");
-  parse ("<objects><object class=\"VikWebtoolCenter\"><property name=\"label\" value=\"tutu\"/><property name=\"url\" value=\"tutu\"/></object></objects>");
+	/* Do some tests */
+	parse ("<objects><object class=\"toto\"><property name=\"titi\" value=\"tutu\"/></object></objects>");
+	parse ("<objects><object class=\"GObject\"><property name=\"titi\" value=\"tutu\"/></object></objects>");
+	parse ("<objects><object class=\"VikWebtoolCenter\">"
+	         "<property name=\"label\" value=\"Le label\"/>"
+	         "<property name=\"url\" value=\"http://url/\"/>"
+	         "<property name=\"id\" value=\"42\"/>"
+	       "</object></objects>");
 
-  return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
