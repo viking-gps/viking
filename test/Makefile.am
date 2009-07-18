@@ -6,7 +6,7 @@ endif
 
 TESTS = check_degrees_conversions.sh
 
-check_PROGRAMS = degrees_converter gpx2gpx gobject_builder
+check_PROGRAMS = degrees_converter gpx2gpx gobject_builder test_gvalues
 
 check_SCRIPTS = check_degrees_conversions.sh
 
@@ -25,4 +25,8 @@ gpx2gpx_LDADD = \
 gobject_builder_SOURCES = gobject_builder.c
 gobject_builder_LDADD = \
   $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+test_gvalues_SOURCES = test_gvalues.c
+test_gvalues_LDADD = \
   $(LDADD)
