@@ -53,9 +53,11 @@ static void
 vik_slippy_map_source_init (VikSlippyMapSource *self)
 {
 	/* initialize the object here */
-	vik_map_source_default_set_tilesize_x (VIK_MAP_SOURCE_DEFAULT (self), 256);
-	vik_map_source_default_set_tilesize_y (VIK_MAP_SOURCE_DEFAULT (self), 256);
-	vik_map_source_default_set_drawmode   (VIK_MAP_SOURCE_DEFAULT (self), VIK_VIEWPORT_DRAWMODE_MERCATOR);
+	g_object_set (G_OBJECT (self),
+	              "tilesize-x", 256,
+	              "tilesize-y", 256,
+	              "drawmode", VIK_VIEWPORT_DRAWMODE_MERCATOR,
+	              NULL);
 }
 
 static void
@@ -215,11 +217,8 @@ _get_download_options( VikSlippyMapSource *self )
 VikSlippyMapSource *
 vik_slippy_map_source_new_with_id (guint8 id, const gchar *hostname, const gchar *url)
 {
-	VikSlippyMapSource *ret = g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE, NULL);
+	VikSlippyMapSource *ret = g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE, "id", id, NULL);
 	
-	/* TODO use property */
-	vik_map_source_default_set_uniq_id(VIK_MAP_SOURCE_DEFAULT(ret), id);
-
 	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(ret);
 	priv->hostname = g_strdup(hostname);
 	priv->url = g_strdup(url);

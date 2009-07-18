@@ -48,9 +48,11 @@ static void
 terraserver_map_source_init (TerraserverMapSource *self)
 {
 	/* initialize the object here */
-	vik_map_source_default_set_tilesize_x (VIK_MAP_SOURCE_DEFAULT (self), 200);
-	vik_map_source_default_set_tilesize_y (VIK_MAP_SOURCE_DEFAULT (self), 200);
-	vik_map_source_default_set_drawmode   (VIK_MAP_SOURCE_DEFAULT (self), VIK_VIEWPORT_DRAWMODE_UTM);
+	g_object_set (G_OBJECT (self),
+	              "tilesize-x", 200,
+	              "tilesize-y", 200,
+	              "drawmode", VIK_VIEWPORT_DRAWMODE_UTM,
+	              NULL);
 }
 
 static void
@@ -159,10 +161,7 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn )
 TerraserverMapSource *
 terraserver_map_source_new_with_id (guint8 id, int type)
 {
-	TerraserverMapSource *ret = g_object_new(TERRASERVER_TYPE_MAP_SOURCE, NULL);
-	
-	/* TODO use property */
-	vik_map_source_default_set_uniq_id(VIK_MAP_SOURCE_DEFAULT(ret), id);
+	TerraserverMapSource *ret = g_object_new(TERRASERVER_TYPE_MAP_SOURCE, "id", id, NULL);
 
 	TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(ret);
 	priv->type = type;
