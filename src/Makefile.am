@@ -16,7 +16,22 @@ authors.h: ../AUTHORS
 
 BUILT_SOURCES = authors.h
 
+vikenumtypes.h: vikenumtypes.h.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.h.template $(ENUM_H_FILES)) > $@
+
+vikenumtypes.c: vikenumtypes.c.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.c.template $(ENUM_H_FILES)) > $@
+
+EXTRA_DIST =                         \
+        vikenumtypes.h.template      \
+        vikenumtypes.c.template
+
+BUILT_SOURCES += vikenumtypes.h vikenumtypes.c
+
 $(BUILT_SOURCES): $(srcdir)/Makefile.am
+
+ENUM_H_FILES = \
+	vikviewport.h
 
 libviking_a_SOURCES = \
 	modules.h modules.c \
@@ -36,6 +51,7 @@ libviking_a_SOURCES = \
 	dialog.c dialog.h \
 	util.c util.h \
 	download.c download.h \
+	vikenumtypes.c vikenumtypes.h \
 	viktreeview.c viktreeview.h \
 	viktrwlayer.c viktrwlayer.h \
 	viklayer.c viklayer.h \
@@ -137,6 +153,6 @@ AM_CFLAGS		= -Wall -g -D_GNU_SOURCE
 desktopdir = $(datadir)/applications
 desktop_in_files = viking.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
-EXTRA_DIST=$(desktop_in_files)
+EXTRA_DIST += $(desktop_in_files)
 
 CLEANFILES = $(BUILT_SOURCES) $(desktop_DATA)
