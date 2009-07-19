@@ -32,33 +32,6 @@ static void vik_map_source_class_init (VikMapSourceClass *klass);
 
 G_DEFINE_TYPE_EXTENDED (VikMapSource, vik_map_source, G_TYPE_OBJECT, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
 
-/*
-GType
-vik_map_source_get_type (void)
-{
-	static GType type = 0;
-
-	if (!type) {
-		static const GTypeInfo info = {
-			sizeof (VikMapSourceClass),
-			(GBaseInitFunc) NULL,
-			(GBaseFinalizeFunc) NULL,
-			(GClassInitFunc) vik_map_source_class_init,
-			(GClassFinalizeFunc) NULL,
-			NULL /* class_data * /,
-			sizeof (VikMapSource),
-			0 /* n_preallocs * /,
-			(GInstanceInitFunc) vik_map_source_init,
-			NULL
-		};
-
-		type = g_type_register_static (G_TYPE_OBJECT, "VikMapSource", &info, (GTypeFlags)G_TYPE_FLAG_ABSTRACT);
-	}
-
-	return type;
-}
-*/
-
 static void
 vik_map_source_init (VikMapSource *object)
 {
