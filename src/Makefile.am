@@ -45,6 +45,7 @@ libviking_a_SOURCES = \
 	vikwindow.c vikwindow.h \
 	vikviewport.c vikviewport.h \
 	vikaggregatelayer.c vikaggregatelayer.h \
+	vikgobjectbuilder.c vikgobjectbuilder.h \
 	vikgpslayer.c vikgpslayer.h \
 	vikgeoreflayer.c vikgeoreflayer.h \
 	vikfileentry.c vikfileentry.h \
