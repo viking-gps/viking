@@ -2346,6 +2346,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
 			       _("Merge Threshold..."), 
 			       _("Merge when time between tracks less than:"), 
 			       &thr)) {
+    free(orig_track_name);
     return;
   }
 

@@ -464,8 +464,10 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   pass_along[2] = widgets;
 
   gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
-  if ( speeds == NULL )
+  if ( speeds == NULL ) {
+    g_free(pass_along);
     return NULL;
+  }
 
   pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
