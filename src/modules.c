@@ -23,6 +23,12 @@
 #include "config.h"
 #endif
 
+#include <glib.h>
+#include <glib/gstdio.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include "modules.h"
 
 #include "google.h"
@@ -32,6 +38,33 @@
 #include "osm-traces.h"
 #include "bluemarble.h"
 #include "openaerial.h"
+#include "file.h"
+#include "vikexttools.h"
+#include "vikgobjectbuilder.h"
+
+#define VIKING_EXTTOOLS_FILE "external_tools.xml"
+
+static void
+modules_register_exttools(VikGobjectBuilder *self, GObject *object)
+{
+  g_debug (__FUNCTION__);
+  VikExtTool *tool = VIK_EXT_TOOL (object);
+  vik_ext_tools_register (tool);
+}
+
+static void
+modules_load_config(void)
+{
+  /* External tools */
+  gchar *tools = g_build_filename(a_get_viking_dir(), VIKING_EXTTOOLS_FILE, NULL);
+  if (g_access (tools, R_OK) == 0)
+  {
+	VikGobjectBuilder *builder = vik_gobject_builder_new ();
+	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_exttools), NULL);
+	vik_gobject_builder_parse (builder, tools);
+	g_object_unref (builder);
+  }
+}
 
 void modules_init()
 {
@@ -54,5 +87,8 @@ void modules_init()
 #ifdef VIK_CONFIG_OPENAERIAL
   openaerial_init();
 #endif
+  
+  /* As modules are loaded, we can load configuration files */
+  modules_load_config ();
 }
 
