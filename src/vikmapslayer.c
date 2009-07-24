@@ -206,12 +206,13 @@ enum { REDOWNLOAD_NONE = 0, REDOWNLOAD_BAD, REDOWNLOAD_ALL, DOWNLOAD_OR_REFRESH 
 /******** MAPS LAYER TYPES **************/
 /****************************************/
 
-void maps_layer_register_map_source ( const char *label, VikMapSource *map )
+void maps_layer_register_map_source ( VikMapSource *map )
 {
-  g_assert(label != NULL);
   g_assert(map != NULL);
   
   guint id = vik_map_source_get_uniq_id(map);
+  const char *label = vik_map_source_get_label(map);
+  g_assert(label != NULL);
 
   /* Add the label */
   params_maptypes = g_list_append(params_maptypes, g_strdup(label));

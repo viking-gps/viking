@@ -224,7 +224,7 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn )
 }
 
 TerraserverMapSource *
-terraserver_map_source_new_with_id (guint8 id, int type)
+terraserver_map_source_new_with_id (guint8 id, const char *label, int type)
 {
-	return g_object_new(TERRASERVER_TYPE_MAP_SOURCE, "id", id, "type", type, NULL);
+	return g_object_new(TERRASERVER_TYPE_MAP_SOURCE, "id", id, "label", label, "type", type, NULL);
 }

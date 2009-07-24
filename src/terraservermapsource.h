@@ -49,7 +49,7 @@ struct _TerraserverMapSource
 
 GType terraserver_map_source_get_type (void) G_GNUC_CONST;
 
-TerraserverMapSource * terraserver_map_source_new_with_id (guint8 id, int type);
+TerraserverMapSource * terraserver_map_source_new_with_id (guint8 id, const char *label, int type);
 
 G_END_DECLS
 

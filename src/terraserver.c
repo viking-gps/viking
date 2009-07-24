@@ -27,11 +27,11 @@
 #include "vikmapslayer.h"
 
 void terraserver_init () {
-  VikMapSource *map_type_1 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 2, 2 ));
-  VikMapSource *map_type_2 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 1, 1 ));
-  VikMapSource *map_type_3 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 4, 4 ));
+  VikMapSource *map_type_1 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 2, "Terraserver Topos", 2 ));
+  VikMapSource *map_type_2 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 1, "Terraserver Aerials", 1 ));
+  VikMapSource *map_type_3 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 4, "Terraserver Urban Areas", 4 ));
 
-  maps_layer_register_map_source ("Terraserver Topos", map_type_1);
-  maps_layer_register_map_source ("Terraserver Aerials", map_type_2);
-  maps_layer_register_map_source ("Terraserver Urban Areas", map_type_3);
+  maps_layer_register_map_source (map_type_1);
+  maps_layer_register_map_source (map_type_2);
+  maps_layer_register_map_source (map_type_3);
 }

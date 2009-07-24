@@ -27,8 +27,8 @@
 /* initialisation */
 void openaerial_init ()
 {
-  VikMapSource *openaerialmap_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 20, "tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%d/%d/%d.jpg" ));
+  VikMapSource *openaerialmap_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 20, "OpenAerialMap", "tile.openaerialmap.org", "/tiles/1.0.0/openaerialmap-900913/%d/%d/%d.jpg" ));
 
-  maps_layer_register_map_source ("OpenAerialMap", openaerialmap_type);
+  maps_layer_register_map_source (openaerialmap_type);
 }
 

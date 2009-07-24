@@ -48,7 +48,7 @@ struct _VikMapType
 };
 
 GType vik_map_type_get_type (void) G_GNUC_CONST;
-VikMapType *vik_map_type_new_with_id (VikMapsLayer_MapType map_type);
+VikMapType *vik_map_type_new_with_id (VikMapsLayer_MapType map_type, const char *label);
 
 G_END_DECLS
 
