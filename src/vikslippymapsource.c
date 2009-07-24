@@ -61,20 +61,31 @@ G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_
 static void
 vik_slippy_map_source_init (VikSlippyMapSource *self)
 {
-	/* initialize the object here */
-	g_object_set (G_OBJECT (self),
-	              "tilesize-x", 256,
-	              "tilesize-y", 256,
-	              "drawmode", VIK_VIEWPORT_DRAWMODE_MERCATOR,
-	              NULL);
+  /* initialize the object here */
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
+
+  priv->hostname = NULL;
+  priv->url = NULL;
+
+  g_object_set (G_OBJECT (self),
+                "tilesize-x", 256,
+                "tilesize-y", 256,
+                "drawmode", VIK_VIEWPORT_DRAWMODE_MERCATOR,
+                NULL);
 }
 
 static void
 vik_slippy_map_source_finalize (GObject *object)
 {
-	/* TODO: Add deinitalization code here */
+  VikSlippyMapSource *self = VIK_SLIPPY_MAP_SOURCE (object);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
 
-	G_OBJECT_CLASS (vik_slippy_map_source_parent_class)->finalize (object);
+  g_free (priv->hostname);
+  priv->hostname = NULL;
+  g_free (priv->url);
+  priv->url = NULL;
+
+  G_OBJECT_CLASS (vik_slippy_map_source_parent_class)->finalize (object);
 }
 
 static void
