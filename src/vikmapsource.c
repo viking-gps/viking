@@ -32,33 +32,6 @@ static void vik_map_source_class_init (VikMapSourceClass *klass);
 
 G_DEFINE_TYPE_EXTENDED (VikMapSource, vik_map_source, G_TYPE_OBJECT, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
 
-/*
-GType
-vik_map_source_get_type (void)
-{
-	static GType type = 0;
-
-	if (!type) {
-		static const GTypeInfo info = {
-			sizeof (VikMapSourceClass),
-			(GBaseInitFunc) NULL,
-			(GBaseFinalizeFunc) NULL,
-			(GClassInitFunc) vik_map_source_class_init,
-			(GClassFinalizeFunc) NULL,
-			NULL /* class_data * /,
-			sizeof (VikMapSource),
-			0 /* n_preallocs * /,
-			(GInstanceInitFunc) vik_map_source_init,
-			NULL
-		};
-
-		type = g_type_register_static (G_TYPE_OBJECT, "VikMapSource", &info, (GTypeFlags)G_TYPE_FLAG_ABSTRACT);
-	}
-
-	return type;
-}
-*/
-
 static void
 vik_map_source_init (VikMapSource *object)
 {
@@ -79,6 +52,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 
 	klass->get_uniq_id = NULL;
+	klass->get_label = NULL;
 	klass->get_tilesize_x = NULL;
 	klass->get_tilesize_y = NULL;
 	klass->get_drawmode = NULL;
@@ -101,6 +75,19 @@ vik_map_source_get_uniq_id (VikMapSource *self)
 	g_return_val_if_fail (klass->get_uniq_id != NULL, (guint8 )0);
 
 	return (*klass->get_uniq_id)(self);
+}
+
+const gchar *
+vik_map_source_get_label (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_label != NULL, NULL);
+
+	return (*klass->get_label)(self);
 }
 
 guint16

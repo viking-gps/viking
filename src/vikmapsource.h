@@ -43,6 +43,7 @@ struct _VikMapSourceClass
 	GObjectClass parent_class;
 	
 	guint8 (* get_uniq_id) (VikMapSource * self);
+	const gchar * (* get_label) (VikMapSource * self);
 	guint16 (* get_tilesize_x) (VikMapSource * self);
 	guint16 (* get_tilesize_y) (VikMapSource * self);
 	VikViewportDrawMode (* get_drawmode) (VikMapSource * self);
@@ -59,6 +60,7 @@ struct _VikMapSource
 GType vik_map_source_get_type (void) G_GNUC_CONST;
 
 guint8 vik_map_source_get_uniq_id (VikMapSource * self);
+const gchar *vik_map_source_get_label (VikMapSource * self);
 guint16 vik_map_source_get_tilesize_x (VikMapSource * self);
 guint16 vik_map_source_get_tilesize_y (VikMapSource * self);
 VikViewportDrawMode vik_map_source_get_drawmode (VikMapSource * self);

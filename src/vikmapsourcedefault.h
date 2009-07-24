@@ -48,12 +48,6 @@ struct _VikMapSourceDefault
 
 GType vik_map_source_default_get_type (void) G_GNUC_CONST;
 
-void vik_map_source_default_set_uniq_id    (VikMapSourceDefault *self, guint8 id);
-void vik_map_source_default_set_tilesize_x (VikMapSourceDefault *self, guint16 tilesize_x);
-void vik_map_source_default_set_tilesize_y (VikMapSourceDefault *self, guint16 tilesize_y);
-void vik_map_source_default_set_drawmode   (VikMapSourceDefault *self, VikViewportDrawMode drawmode);
-
-
 G_END_DECLS
 
 #endif /* _VIK_MAP_SOURCE_DEFAULT_H_ */

@@ -47,23 +47,99 @@ struct _VikSlippyMapSourcePrivate
 
 #define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_SLIPPY_MAP_SOURCE, VikSlippyMapSourcePrivate))
 
+/* properties */
+enum
+{
+  PROP_0,
+
+  PROP_HOSTNAME,
+  PROP_URL,
+};
+
 G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
 
 static void
 vik_slippy_map_source_init (VikSlippyMapSource *self)
 {
-	/* initialize the object here */
-	vik_map_source_default_set_tilesize_x (VIK_MAP_SOURCE_DEFAULT (self), 256);
-	vik_map_source_default_set_tilesize_y (VIK_MAP_SOURCE_DEFAULT (self), 256);
-	vik_map_source_default_set_drawmode   (VIK_MAP_SOURCE_DEFAULT (self), VIK_VIEWPORT_DRAWMODE_MERCATOR);
+  /* initialize the object here */
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
+
+  priv->hostname = NULL;
+  priv->url = NULL;
+
+  g_object_set (G_OBJECT (self),
+                "tilesize-x", 256,
+                "tilesize-y", 256,
+                "drawmode", VIK_VIEWPORT_DRAWMODE_MERCATOR,
+                NULL);
 }
 
 static void
 vik_slippy_map_source_finalize (GObject *object)
 {
-	/* TODO: Add deinitalization code here */
+  VikSlippyMapSource *self = VIK_SLIPPY_MAP_SOURCE (object);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
 
-	G_OBJECT_CLASS (vik_slippy_map_source_parent_class)->finalize (object);
+  g_free (priv->hostname);
+  priv->hostname = NULL;
+  g_free (priv->url);
+  priv->url = NULL;
+
+  G_OBJECT_CLASS (vik_slippy_map_source_parent_class)->finalize (object);
+}
+
+static void
+vik_slippy_map_source_set_property (GObject      *object,
+                                    guint         property_id,
+                                    const GValue *value,
+                                    GParamSpec   *pspec)
+{
+  VikSlippyMapSource *self = VIK_SLIPPY_MAP_SOURCE (object);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
+
+  switch (property_id)
+    {
+    case PROP_HOSTNAME:
+      g_free (priv->hostname);
+      priv->hostname = g_value_dup_string (value);
+      break;
+
+    case PROP_URL:
+      g_free (priv->url);
+      priv->url = g_value_dup_string (value);
+      break;
+
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+    }
+}
+
+static void
+vik_slippy_map_source_get_property (GObject    *object,
+                                    guint       property_id,
+                                    GValue     *value,
+                                    GParamSpec *pspec)
+{
+  VikSlippyMapSource *self = VIK_SLIPPY_MAP_SOURCE (object);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
+
+  switch (property_id)
+    {
+    case PROP_HOSTNAME:
+      g_value_set_string (value, priv->hostname);
+      break;
+
+    case PROP_URL:
+      g_value_set_string (value, priv->url);
+      break;
+
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+    }
 }
 
 static void
@@ -71,6 +147,10 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 	VikMapSourceClass* parent_class = VIK_MAP_SOURCE_CLASS (klass);
+	GParamSpec *pspec = NULL;
+		
+	object_class->set_property = vik_slippy_map_source_set_property;
+    object_class->get_property = vik_slippy_map_source_get_property;
 
 	/* Overiding methods */
 	parent_class->coord_to_mapcoord =        _coord_to_mapcoord;
@@ -81,6 +161,20 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	klass->get_uri = _get_uri;
 	klass->get_hostname = _get_hostname;
 	klass->get_download_options = _get_download_options;
+
+	pspec = g_param_spec_string ("hostname",
+	                             "Hostname",
+	                             "The hostname of the map server",
+	                             "<no-set>" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_HOSTNAME, pspec);
+
+	pspec = g_param_spec_string ("url",
+	                             "URL",
+	                             "The template of the tiles' URL",
+	                             "<no-set>" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_URL, pspec);
 	
 	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
 	
@@ -213,15 +307,8 @@ _get_download_options( VikSlippyMapSource *self )
 }
 
 VikSlippyMapSource *
-vik_slippy_map_source_new_with_id (guint8 id, const gchar *hostname, const gchar *url)
+vik_slippy_map_source_new_with_id (guint8 id, const gchar *label, const gchar *hostname, const gchar *url)
 {
-	VikSlippyMapSource *ret = g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE, NULL);
-	
-	/* TODO use property */
-	vik_map_source_default_set_uniq_id(VIK_MAP_SOURCE_DEFAULT(ret), id);
-
-	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(ret);
-	priv->hostname = g_strdup(hostname);
-	priv->url = g_strdup(url);
-	return ret;
+	return g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+	                    "id", id, "label", label, "hostname", hostname, "url", url, NULL);
 }

@@ -37,10 +37,18 @@ static DownloadOptions terraserver_options = { NULL, 0, a_check_map_file };
 typedef struct _TerraserverMapSourcePrivate TerraserverMapSourcePrivate;
 struct _TerraserverMapSourcePrivate
 {
-  int type;
+  guint8 type;
 };
 
 #define TERRASERVER_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), TERRASERVER_TYPE_MAP_SOURCE, TerraserverMapSourcePrivate))
+
+/* properties */
+enum
+{
+  PROP_0,
+
+  PROP_TYPE,
+};
 
 G_DEFINE_TYPE_EXTENDED (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
 
@@ -48,9 +56,11 @@ static void
 terraserver_map_source_init (TerraserverMapSource *self)
 {
 	/* initialize the object here */
-	vik_map_source_default_set_tilesize_x (VIK_MAP_SOURCE_DEFAULT (self), 200);
-	vik_map_source_default_set_tilesize_y (VIK_MAP_SOURCE_DEFAULT (self), 200);
-	vik_map_source_default_set_drawmode   (VIK_MAP_SOURCE_DEFAULT (self), VIK_VIEWPORT_DRAWMODE_UTM);
+	g_object_set (G_OBJECT (self),
+	              "tilesize-x", 200,
+	              "tilesize-y", 200,
+	              "drawmode", VIK_VIEWPORT_DRAWMODE_UTM,
+	              NULL);
 }
 
 static void
@@ -62,16 +72,73 @@ terraserver_map_source_finalize (GObject *object)
 }
 
 static void
+terraserver_map_source_set_property (GObject      *object,
+                                     guint         property_id,
+                                     const GValue *value,
+                                     GParamSpec   *pspec)
+{
+  TerraserverMapSource *self = TERRASERVER_MAP_SOURCE (object);
+  TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE (self);
+
+  switch (property_id)
+    {
+    case PROP_TYPE:
+      priv->type = g_value_get_uint (value);
+      break;
+
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+    }
+}
+
+static void
+terraserver_map_source_get_property (GObject    *object,
+                                     guint       property_id,
+                                     GValue     *value,
+                                     GParamSpec *pspec)
+{
+  TerraserverMapSource *self = TERRASERVER_MAP_SOURCE (object);
+  TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE (self);
+
+  switch (property_id)
+    {
+    case PROP_TYPE:
+      g_value_set_uint (value, priv->type);
+      break;
+
+    default:
+      /* We don't have any other property... */
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+    }
+}
+
+static void
 terraserver_map_source_class_init (TerraserverMapSourceClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 	VikMapSourceClass* parent_class = VIK_MAP_SOURCE_CLASS (klass);
-
+    GParamSpec *pspec = NULL;
+	
+	object_class->set_property = terraserver_map_source_set_property;
+    object_class->get_property = terraserver_map_source_get_property;
+	
 	/* Overiding methods */
 	parent_class->coord_to_mapcoord =        _coord_to_mapcoord;
 	parent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	parent_class->download =                 _download;
-		
+
+	pspec = g_param_spec_uint ("type",
+	                           "Type",
+                               "Type of Terraserver map",
+                               0  /* minimum value */,
+                               G_MAXUINT8 /* maximum value */,
+                               0  /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_TYPE, pspec);
+
 	g_type_class_add_private (klass, sizeof (TerraserverMapSourcePrivate));
 	
 	object_class->finalize = terraserver_map_source_finalize;
@@ -157,14 +224,7 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn )
 }
 
 TerraserverMapSource *
-terraserver_map_source_new_with_id (guint8 id, int type)
+terraserver_map_source_new_with_id (guint8 id, const char *label, int type)
 {
-	TerraserverMapSource *ret = g_object_new(TERRASERVER_TYPE_MAP_SOURCE, NULL);
-	
-	/* TODO use property */
-	vik_map_source_default_set_uniq_id(VIK_MAP_SOURCE_DEFAULT(ret), id);
-
-	TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(ret);
-	priv->type = type;
-	return ret;
+	return g_object_new(TERRASERVER_TYPE_MAP_SOURCE, "id", id, "label", label, "type", type, NULL);
 }

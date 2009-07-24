@@ -27,8 +27,8 @@
 /* initialisation */
 void bluemarble_init ()
 {
-  VikMapSource *bluemarble_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 15, "s3.amazonaws.com", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg" ));
+  VikMapSource *bluemarble_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 15, "BlueMarble", "s3.amazonaws.com", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg" ));
 
-  maps_layer_register_map_source ("BlueMarble", bluemarble_type);
+  maps_layer_register_map_source (bluemarble_type);
 }
 

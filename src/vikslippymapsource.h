@@ -53,7 +53,7 @@ struct _VikSlippyMapSource
 
 GType vik_slippy_map_source_get_type (void) G_GNUC_CONST;
 
-VikSlippyMapSource * vik_slippy_map_source_new_with_id (guint8 id, const gchar *hostname, const gchar *url);
+VikSlippyMapSource * vik_slippy_map_source_new_with_id (guint8 id, const gchar *label, const gchar *hostname, const gchar *url);
 
 gchar * vik_slippy_map_source_get_uri( VikSlippyMapSource *self, MapCoord *src );
 gchar * vik_slippy_map_source_get_hostname( VikSlippyMapSource *self );
