@@ -39,10 +39,21 @@
 #include "bluemarble.h"
 #include "openaerial.h"
 #include "file.h"
+#include "vikmapslayer.h"
 #include "vikexttools.h"
 #include "vikgobjectbuilder.h"
 
+#define VIKING_MAPS_FILE "maps.xml"
 #define VIKING_EXTTOOLS_FILE "external_tools.xml"
+
+static void
+modules_register_map_source(VikGobjectBuilder *self, GObject *object)
+{
+  g_debug (__FUNCTION__);
+  VikMapSource *mapsource = VIK_MAP_SOURCE (object);
+  /* FIXME label should be hosted by object */
+  maps_layer_register_map_source (mapsource);
+}
 
 static void
 modules_register_exttools(VikGobjectBuilder *self, GObject *object)
@@ -55,6 +66,16 @@ modules_register_exttools(VikGobjectBuilder *self, GObject *object)
 static void
 modules_load_config(void)
 {
+  /* Maps sources */
+  gchar *maps = g_build_filename(a_get_viking_dir(), VIKING_MAPS_FILE, NULL);
+  if (g_access (maps, R_OK) == 0)
+  {
+	VikGobjectBuilder *builder = vik_gobject_builder_new ();
+	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_map_source), NULL);
+	vik_gobject_builder_parse (builder, maps);
+	g_object_unref (builder);
+  }
+
   /* External tools */
   gchar *tools = g_build_filename(a_get_viking_dir(), VIKING_EXTTOOLS_FILE, NULL);
   if (g_access (tools, R_OK) == 0)
