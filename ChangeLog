@@ -1,3 +1,7 @@
+2009-07-26
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #2818818: unset langage preset while opening external Google
+
 2009-06-19
 Jonas Norling <norling@lysator.liu.se>
 	* Filters out irrelevant modifiers when using the scroll wheel
