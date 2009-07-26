@@ -63,7 +63,7 @@
 
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
 #define SRTM_HTTP_SITE "dds.cr.usgs.gov"
-#define SRTM_HTTP_URI  "/srtm/version2/SRTM3/"
+#define SRTM_HTTP_URI  "/srtm/version2_1/SRTM3/OLD/"
 
 #ifdef VIK_CONFIG_DEM24K
 #define DEM24K_DOWNLOAD_SCRIPT "dem24k.pl"

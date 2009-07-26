@@ -1,4 +1,8 @@
 2009-07-26
+Herm <hermk@users.sourceforge.net>:
+	* Fix #2812856: Change SRTM URL
+
+2009-07-26
 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
 	* Fix #2818818: unset langage preset while opening external Google
 
