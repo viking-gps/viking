@@ -234,8 +234,6 @@ struct _VikGpsLayer {
   GpsFix realtime_fix;
   GpsFix last_fix;
 
-  enum unit realtime_gpsd_unit;
-
   VikTrack *realtime_track;
   gchar *realtime_track_name;
 
@@ -470,8 +468,6 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->realtime_track_pt1_gc = vik_viewport_new_gc ( vp, "red", 2 );
   vgl->realtime_track_pt2_gc = vik_viewport_new_gc ( vp, "green", 2 );
   vgl->realtime_track_pt_gc = vgl->realtime_track_pt1_gc;
-  vgl->realtime_gpsd_unit = gpsd_units();
-  // fprintf(stderr, "DEBUG: gpsd_unit = %d\n", vgl->realtime_gpsd_unit);
   vgl->realtime_track = NULL;
 
   /* Setting params here */

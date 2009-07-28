@@ -1,3 +1,7 @@
+2009-07-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #2766609: Don't use gpsd_units()
+
 2009-07-26
 Herm <hermk@users.sourceforge.net>:
 	* Fix #2812856: Change SRTM URL
