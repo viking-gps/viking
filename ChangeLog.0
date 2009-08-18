@@ -1,0 +1,1939 @@
+2009-07-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #2766609: Don't use gpsd_units()
+
+2009-07-26
+Herm <hermk@users.sourceforge.net>:
+	* Fix #2812856: Change SRTM URL
+
+2009-07-26
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #2818818: unset langage preset while opening external Google
+
+2009-06-19
+Jonas Norling <norling@lysator.liu.se>
+	* Filters out irrelevant modifiers when using the scroll wheel
+	* Minor refactoring of the zooming code
+	* Fix #2796985: Crash when cancelling background job
+
+2009-06-02
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Upgrade OSM-traces support to 0.6 API
+
+2009-05-22
+Tal <tal.bav@gmail.com>:
+	* Add hdop,vdop,pdop,nsat support in GPX
+
+2009-05-22
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Fix #570956: change saved_width to 1
+
+2009-05-09
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Allow to flush memory consumed by map cache
+	* Add a preference to change the map cache size
+
+2009-05-09
+Tal <tal.bav@gmail.com>:
+	* Replace g_strtod by g_ascii_strtod
+
+2009-05-06
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Add a thread pool for downloading
+
+2009-04-04
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Include full libcurl version in user agent
+	* replace deprecated CURLOPT_FILE by CURLOPT_WRITEDATA
+	* Fix bug #2481237: Maps directory file chooser should look for directory
+
+2009-02-08
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Update translations
+	* Release 0.9.8
+
+2009-01-22
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Fix loading of world map file
+
+2009-01-22
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix 2249398: Fix some memory leaks
+
+2009-01-18
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* configure.ac: allow to enable/disable geonames and select the search method
+
+2009-01-18
+Hein Ragas <viking@ragas.nl>:
+	* Add GeoNames support (both for search and for POI import from Geonames+Wikipedia)
+
+2009-01-15
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: avoid "\\" in URL
+
+2008-12-20
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Remove Google's map tiles
+
+2008-12-17
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Remove old Google stuff
+
+2008-12-13
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add external tools framework
+	* Add OpenStreetMap and Google web tools 
+
+2008-12-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Clicking on "vivisble" tick no longer makes the layer selected.
+
+2008-12-03
+Hein Ragas <viking@ragas.nl>
+	* GPX export: sort track by time. Some application can make use
+	of this feature when reading gpx files.
+
+2008-11-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Merging tracks by name. Users can now select more than one tracks to
+	merge with.
+	* Fix bugs that caused magic scissors not working.
+
+2008-11-19
+Quy Tonthat <qtonthat@gmail.com>:
+	* Merging tracks by name. As submitted by Hein Ragas <viking@ragas.nl>
+	* Merging tracks by name. Tracks can only be merged if they have
+	timestamps. Make sure users won't cause damage to themselves by
+	merging tracks without timestamps. Also a few bug fixes and
+	optimisation.
+
+2008-11-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* Viking no longer support Google satellite maps due to requests
+	  from Google.
+
+2008-10-31
+Quy Tonthat <qtonthat@gmail.com>:
+	* Tittle waypoint properties dialog as "Waypoint Properties"
+	not "Create".
+
+2008-10-30
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add larger size waypoint symbols (icons) that look similar to
+	the ones used in Garmin GPS.
+	* The larger symbols are now used by default. To switch back to the
+	old smaller icons, use command line option "-s" or "--small_waypoint".
+	* Waypoint Property Dialog: The combo box "symbol" (used for selecting
+	waypoint symbol) now has tooltip that shows the name of the selected
+	symbol.
+	* src/icons/Makefile.am: Make sure we won't pick up unwanted _pixmap.h
+	files
+	* Waypoint names are now displayed at the top of waypoint symbol
+	and no longer overlap symbols.
+
+2008-10-28
+Quy Tonthat <qtonthat@gmail.com>:
+	* Waypoint symbols: Use Garmin waypoit names so that waypoint has
+	proper symbols on GPS after upload (and on Viking after download). 
+	Old viking files still works the way they did.
+
+2008-10-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix compatibility problem for windows caused by
+	g_shell_parse_argv()
+
+2008-10-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* New server for OSM cycle map.
+
+2008-10-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* GPS realtime tracking: Keep retrying when fail to connect
+	to gpsd, either because gpsd is not (yet) running or gpsd
+	disconnect (eg. gps unplugged).
+
+2008-10-12
+Jon Burgess <jburgess777@googlemail.com>:
+	* fix implicit declaration of maps_layer_default_dir()
+	* fix missing status return in spawn_command_line_async()
+	* fix curl error buffer usage
+
+2008-10-12
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Release 0.9.7
+
+2008-10-12
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix 2161310: Fix some more compiler warnings
+
+2008-10-12
+Jon Burgess <jburgess777@users.sourceforge.net>:
+	* Fix 2134452: Properties of some tracks show as NaN
+
+2008-10-11
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix segfault in realtime tracking.
+	* Add new moving map method for realtime tracking.
+
+2008-09-30
+Stanislav Brabec <sbrabec@users.sourceforge.net>:
+	* Rename icon: viking_icon.png -> viking.png
+	* Fix missing files in po/POTFILES.in
+	* src/viking.desktop.in: add GenericName and revise Categories
+	* viking.spec.in, src/icons/Makefile.am: Fix icon target dir
+
+2008-09-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Change "Zoom To" short cut to avoid conflict with "Zoom Tool".
+
+2008-09-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Update translations
+
+2008-09-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* fix parallel build (make -j8) on multi-processor machines. Based
+	on a patch from sbrabec. Thanks.
+
+2008-09-03
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* QA: cleanning old stuff
+
+2008-09-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #1947260: correct a corrupted escape
+
+2008-09-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Google search adapting changes from Google.
+
+2008-09-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed crashes when creating new layers.
+
+2008-08-30
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* QA: removing specific GtkCellRenderer
+
+2008-08-30
+Armin Moser <armin.moser@student.tugraz.at>:
+	* add osm cycle layer support
+	* add a menu entry to extend an existing track using magic scissors
+
+2008-08-30
+anonymous:
+	* Patch #2009666: OpenAerialMap
+
+2008-08-30
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix #1952523: mode_button assertion loading old datafile
+
+2008-08-25
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add preferences to select how degrees are displayed
+
+2008-08-24
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix: update layer after applying properties
+
+2008-06-24
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Color picker button for the Coordlayer properties dialog
+
+2008-08-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Cut/Copy/Paste empty selection is not critical
+
+2008-06-23
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Layers panel UI improvements
+
+2008-08-22
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Replace specific about dialog by GtkAboutDialog
+	* Replace some g_warning by g_debug
+	* Homogeneous icons management.
+
+2008-08-17
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add preferences to store OSM login/password
+	* Add a password entry widget
+
+2008-08-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Ensure that confirmation dialog is over file selector
+
+2008-08-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed google map download problem.
+
+2008-07-31
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Release Viking 0.9.6
+	* Fix unecessary (and probably) Makefile.am directive
+
+2008-07-28
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix gcget command line to accomodate negative coords.
+
+2008-07-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Google maps no longer worked due to changes made by Google.
+	  The Problems now fixed.
+
+2008-07-21
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Release Viking 0.9.5
+
+2008-07-18
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Install man pages
+	* Update translations
+
+2008-07-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Added viking.desktop
+
+2008-07-13
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix #1947456: Compiler warning fixes
+
+2008-07-09
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Update translations
+
+2008-07-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* Track properties: split track at marker.
+
+2008-06-30
+Quy Tonthat <qtonthat@gmail.com>:
+	* Track properties: Keep markers of the graphs in sync with each
+	other.
+
+2008-06-29
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Windows port: fallback temporary file
+
+2008-06-29
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: typo in util.c
+
+2008-06-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Track graph marker now works again.
+
+2008-06-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix google version number.
+
+2008-06-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* RELEASE: Test release 0.9.4.20080614 (by Guilhem)
+
+2008-06-09
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: redefine LOCALEDIR
+
+2008-06-06
+Quy Tonthat <qtonthat@gmail.com>:
+	* viking no longer converts waypoint names to uppercase. Waypoint names
+	are now case insensitive.
+
+2008-06-02
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Portability: remove "/dev/null" use
+
+2008-05-08
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Windows port: rename interface to source_interface
+	* Portability: replace mmap functions by g_mapped_file*
+	* Portability: use of g_ascii_dtostr to format google url
+
+2008-05-02
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Update man page
+
+2008-05-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add file content checking process
+
+2008-05-01
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Remove dependency to wget
+
+2008-05-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Adding --debug and --verbose command line option
+
+2008-04-26
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix pipe leaks
+
+2008-04-26
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Portability: provide our own curl WRITE function
+
+2008-04-22
+Robert Norris <rw_norris@hotmail.com>:
+	* Fix: Initalize tv_usec field.
+	* Fix for implicit declaration of function 'g_fopen'
+
+2008-04-21
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Bug #1915121: add an utility to reproduce (test/gpx2gpx)
+	* Fix #1915121: use GLib functions to handle ISO8601 dates
+
+2008-04-16
+Tim Scofield <nospam546@comcast.net>:
+	* Fix: typo false -> FALSE
+
+2008-04-12
+Mathieu Albinet <mathieu17@gmail.com>:
+	* M_PI already defined
+
+2008-04-12
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Portability: reduce unistd.h dependency
+	* Portability: replace mkdir by g_mkdir
+	* Portability: replace deprecated bzero function by memset
+	* Portability: remove dirname needs with g_mkdir_with_parents
+
+2008-03-27
+Mathieu Albinet <mathieu17@gmail.com>:
+	* Replace GtkFileSelection by GtkFileChooser
+
+2008-03-24
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Merge icons in a single binary object
+
+2008-03-15
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix: [ 1839948 ] Maximize/Restore changes current cursor
+	* Add panning tool as default
+
+2008-02-25
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* po/ChangeLog: needed file for distribution
+
+2008-02-25
+Rob Norris <robbieonsea@users.sourceforge.net>:
+	* Fix: autogen can generate broken configure file (SF#1881475)
+	* Fix some compiler warnings (SF#1888407)
+
+2008-02-24
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Change OSM's tiles URL
+
+2008-02-22
+Michael A. Peters <mpeters@mac.com>:
+	* viking.spec: Correct license, required packages and local.
+
+2008-02-20
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Update translations
+
+2008-02-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* main.c: I18N improvements
+	* French translation update
+
+2008-02-16
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* I18N improvements
+	* French translation update
+	(both submitted the 2008-01-12 on mailing-list)
+
+2008-01-22
+Alex Foobarian <foobarian@gmail.com>:
+	* Fix a crash bug in merge-by-time reported by Evan <gtoevan@gmx.net>
+
+2008-01-18
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a crash bug in mapcache reported by Jocelyn <jocelyn.jaubert@gmail.com>
+	* Added mutex to protect mapcache from being corrupted by threads.
+
+2008-01-04
+Alex Foobarian <foobarian@gmail.com>:
+	* Tuned the v-t diagram drawing
+	
+2007-12-27
+Evan Battaglia <gtoevan@gmx.net>:
+	* Minor fixes/debugging to gcget. Add gcget-perl
+	* Full screen mode.
+	* Bugfix for prefernces -- don't cut off last character of password
+
+2007-12-27
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add GpxWritingOptions to control GPX file writing
+
+2007-12-23
+Oddgeir Kvien <oddgeir@oddgeirkvien.com>:
+	* Add default values to ele and time fields (due to OSM)
+
+2007-12-21
+Evan Battaglia <gtoevan@gmx.net>:
+	* Preferences groups/tabs
+	* Fix gcget to accept username and password. Pass this in to gcget.
+	* Oops! Reading preferences from the file wasn't working. Fixed.
+
+2007-12-21
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Update French translation
+
+2007-12-21
+Christoph Eckert <ce@christeck.de>:
+	* Update source for OSM/Osmarender tiles
+
+2007-12-20
+Evan Battaglia <gtoevan@gmx.net>:
+	* Preferences in ~/.viking/viking.prefs, this will soon allow geocaching support to go mainstream, (hopefully)
+
+2007-12-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Revert a previous change that disabled realtime tracking if libgps
+	does not exist.
+
+2007-12-17
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Use specific gettext call for plural form
+
+2007-12-16
+Evan Battaglia <gtoevan@gmx.net>:
+	* Sort waypoints in GPX output.
+	* Use the "next unused" (not really) waypoint number as default.
+
+2007-12-15
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix compilation under HURD (missing MAXPATHLEN macro)
+	* Fix: if libgps is missing, Realtime GPS Tracking is disabled
+
+2007-12-15
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Make menu entries translatable
+	* Mark many strings translatable
+	* Update french translation
+
+2007-12-12
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Marking translatable strings
+	* First french translation (incomplete)
+
+2007-12-12
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix warning: underquoted definition of AM_WITH_EXPAT
+	* Fix bug: "config.status: error: cannot find input file: Makefile.in"
+
+2007-12-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix autogen.sh to remove the assumption that version 1.9 of automake
+	is available on all systems.
+	* Now that autogen.sh runs configure, "make full" should not.
+
+2007-12-07
+Evan Battaglia <gtoevan@gmx.net>:
+	* BlueMarble tiles: http://mike.teczno.com/notes/blue-marble-tiles.html
+	* Google Terrain maps
+	* Disable printing to make Viking compile for GTK < 2.10
+
+2007-11-27
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* util.c: Use a list of possible browsers.
+
+2007-11-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a bug that can potentially cause segfault.
+
+2007-11-19
+Quy Tonthat <qtonthat@gmail.com>:
+	* Improve track graphs. Some tracks looked too flat.
+
+2007-11-09
+Evan Battaglia <gtoevan@gmx.net>:
+	* GPSBabel filter work I've been sitting on for a while now.
+	* Draw circle for downloading geocaches. Constrain by maximum distance.
+
+2007-11-08
+Quy Tonthat <qtonthat@gmail.com>:
+	* Printing support
+
+2007-11-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bug that caused Old Google maps not being disabled by default.
+
+2007-10-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix crashes on elev graph for some tracks.
+	* Make low alt tracks look more visible on elev graph.
+	* Fix "incompatible pointer type" warnings.
+
+2007-10-23
+Quy Tonthat <qtonthat@gmail.com>:
+	* Missing declaration. Thanks to Bernd Zeimetz <bernd@bzed.de>
+
+2007-10-20
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Releasing 0.9.3
+
+2007-10-20
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fixing minor typo in vikdemlayer.c which could cause crashes
+
+2007-10-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Track Properties Dialog no longer blocks interaction of the main
+	window.
+	* Draw position marker on track elev/speed graphs at mouse click.
+	* Diasable buttons on Track Properties Dialog when not needed.
+	* Display track name on title of track property dialog. Now that
+	viking allows multiple dialogs displayed simultaneously.
+
+2007-10-17
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix problem with extraneous waypoints being plotted (wrap around problem). May still be problems in UTM mode.
+
+2007-10-16
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix Google version parsing. Google no longer uses '=' and '&' but hex equivalents to describe the URI. Not sure if this will last :/
+
+2007-10-16
+Quy Tonthat <qtonthat@gmail.com>:
+	* Interpolating DEM data in 3 different methods. Track data,
+	elevation-distance graph and elevation info on status bar now make use
+	of interpolation.
+
+2007-10-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add more room to the top of elevation-distance graph.
+
+2007-10-14
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix plotting of DEM elevation data (subtract min altitude)
+
+2007-10-12
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix Esc and Backspace to work only when VikViewport has focus.
+	* VikViewport grabs focus on click or release events, or when a
+	tool move event returns VIK_LAYER_TOOL_ACK_GRAB_FOCUS.
+
+2007-10-12
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make use of DEM elevation data and GPS speed for track graphs.
+
+2007-10-11
+Evan Battaglia
+	* Key press framework for tools. Esc to stop track. Backspace to end track.
+
+2007-10-11
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Upgrading to API 0.5 of OSM
+
+2007-10-11
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make Realtime Tracking a feature that can be disabled at configure
+	time. Do not quietly disable it beacause libgps is not available
+	at compiling time.
+	* Extra data from GPS in realtime mode are now stored in trackpoints.
+
+2007-10-10
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a crash bug caused by operation on variable inside a macro.
+
+2007-10-09
+Evan Battaglia <gtoevan@gmx.net>:
+	* Ctrl-shift-scroll to zoom like Google. Just scroll zooms like before.
+	* Show currently edited track in red-dashed line. This makes it easier
+	to tell if we've ended the track.
+	* When using new track tool, draw a line before making a point to
+	preview the new point.
+	* Use $BROWSER environment variable (for viewing geocache pages)
+
+2007-10-08
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix compiling breakage caused by missing icon file from the list.
+
+2007-10-07
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* libgps is no more mandatory
+
+2007-10-07
+Evan Battaglia <gtoevan@gmx.net>:
+	* Scroll zoom keeps cursor over same spot on map (like Google, QLandKarte)
+	* Cursors for tools.
+	* Undo magic scissors by right-clicking.
+	* Extend a track by right-clicking on it.
+	* Experiment: "Begin track" tool
+
+2007-10-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Correctly calculate position (based on time instead of distance)
+	when clicking on speed-time graph.
+	* Added km/h to speed entries of the track properties dialog.
+	* The "Selected Time" on track properties dialog is now correct.
+	* Track Properties: now displays track distance/time instead of
+	"Selected Time".
+
+2007-10-06
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bugs that caused odd display of time on track properties dialog.
+	* Pop a message when failed to connect to gpsd.
+
+2007-10-05
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a segfault caused by (mistakenly) adding a new layer to gps
+	layer.
+	* Be more selective in collecting realtime trackpoints.
+
+2007-10-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Improvements for GPS layer's "realtime tracking".
+
+2007-10-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix crashes caused by emitting update too early at layer creation.
+	* Add realtime tracking to GPS layer.
+	* fix half-drawn problems for GPS layer.
+
+2007-10-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Relax dependencies about glib by implementing
+	g_hash_table_remove_all ourselves (Evan's patch)
+
+2007-10-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Disable half-drawn update when the center is moved. Avoid using
+	static "trigger" in viklayer.c which causes problems when viking
+	has more than one windows.
+
+2007-09-28
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bug that caused Elevation graph not working properly with some
+	tracks.
+
+2007-09-27
+Evan Battaglia <gtoevan@gmx.net>:
+	* GPSD Layer -- draw an arrow.
+	* Minimum elevation for DEM layer.
+	* Half-drawn hack to only draw layers on top of the one that has
+		recently changed. A must for realtime GPS.
+
+2007-09-25
+Quy Tonthat <qtonthat@gmail.com>:
+	* SRTM download now works for regions outside North_America too.
+
+2007-09-23
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix copy & pasting DEM layers -- new serializing string list code.
+	* Don't crash if using tool on wrong type of layer / no layer.
+		Although I really want to know what happened to "use the top visible layer",
+		and return TRUE if the tool "accepts" the use...
+		editing lots of TRWLayers was way easier that way...
+	* Remove unused vik_layer_copy() code
+	* Add Magic Scissors icon (from GIMP)
+	* Add comment when making a Google Route.
+	* Continue a magic scissors route by holding down control. Continue the comment too.
+	* Right-click a route created by google route (multiple or single) to see the Google directions web page which created it. Useful for creating a route w/ Viking, then seeing the verbal directions (left here, right there)
+        * Experimental GPSD support (VikGpsdLayer)
+
+2007-09-22
+Evan Battaglia <gtoevan@gmx.net>:
+        * Pan Accelerators (Ctrl+Left, etc)
+        * Ctrl-Scroll and Ctrl-Shift-Scroll to pan, kind of like Gimp.
+        * Add a RADIOGROUP_STATIC properties factory type to make it easy
+                for new layers. Uses an array list (like before)
+                instead of a GList.
+        * DEM US 10m (dem24k) source! Option in DEM Layer & ./configure
+        * (copying & pasting DEM layers is broken, will fix later)
+
+2007-09-21
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix right-click on geocache to work with new geocache names.
+	* Download & import SRTM 90m DEM data (still working on US 10m)
+
+2007-09-17
+Evan Battaglia <gtoevan@gmx.net>:
+	* Draw lines to show file existence for MapsLayer for very zoomed out maps. It's faster that actually showing the maps but still gets slow at a certain level.
+
+2007-09-09
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Removing unused files (*.png.h).
+
+2007-09-08
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #1789550: define MAX macro if not defined on ALL systems
+
+2007-09-08
+Quy Tonthat <qtonthat@gmail.com>:
+	* AUtomatically fetching google version number.
+
+2007-09-07
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix #1789550: mkdtemp usage is conditioned, so it is possible
+	to build viking on system not offering such feature.
+
+2007-09-06
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Adding command line option framework.
+
+2007-09-06
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make viking's default start location somewhere more likely has maps.
+	* Fix crash when using "Maps Download" tools right after viking is
+	started (without a viking file).
+
+2007-09-05
+Quy Tonthat <qtonthat@gmail.com>:
+	* Viking 0.9.2 (By Guilhem Bonnefille <guilhem.bonnefille@gmail.com>)
+
+2007-09-03
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Fix: crash when "applying" a map layer property dialog.
+	* QA: strong type the second argument of the *_post_read functions.
+	* Preset filename when exporting a TrwLayer.
+	* Refactoring: retrieve the VikWindow from the VikViewport via its
+	GtkWidget nature.
+	* Use $EMAIL to initialise email field for OSM upload.
+	* Do not warn about drawmode inconsistency while reading file.
+	* Hide Expedia view mode when expedia is not built in.
+
+2007-09-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Disable Expedia map layer by default (as it is not working).
+
+2007-08-30
+Bernd Zeimetz <bernd@bzed.de>:
+	* Add redirect support (for Expedia map layer).
+
+2007-08-30
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add ability to upload a single track.
+
+2007-08-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Check current drawmode after creating a new MapsLayer.
+
+2007-08-25
+Quy Tonthat <qtonthat@gmail.com>:
+	* New google version number.
+	* Better checking to detect downloaded text instead of images.
+	* Give more instructive message for attempting to download maps in
+	wrong mapmode.
+
+2007-08-20
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* libcurl is a requirement
+
+2007-08-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bugs that cause crashes on layers copy/paste/delete.
+	* Fix bug in Google search that caused viking jump to wrong location
+	when Google can not find the match.
+
+2007-08-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Group "Export Layer..." entries in a sub-menu.
+
+2007-08-16
+Quy Tonthat <qtonthat@gmail.com>:
+	* Clean up and eliminate compiler warning.
+
+2007-08-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bug in creating temporary HOME when HOME is not set.
+	* Added --enable-old-google to configure script. Old google modes are
+	now disabled by default.
+	* Default mode for new maps is Google Maps.
+
+2007-08-09
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make Google Map default map type.
+
+2007-08-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* DEM module can now read hgt.zip files directly (no need to unzip
+	them).
+	* DEM module can now process 1 arc sec hgt(.zip) files (mainly for USA
+	regions).
+
+2007-07-27
+Quy Tonthat <qtonthat@gmail.com>:
+	* Plug filedescriptor leak in dem.c
+
+2007-07-26
+Quy Tonthat <qtonthat@gmail.com>:
+	* Display on status bar altitude at cursor using data from DEM layer(s).
+
+2007-07-25
+Quy Tonthat <qtonthat@gmail.com>:
+	* New google version numbers.
+
+2007-07-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Disable GeoCache Acquire since it nolonger works. Can be enabled
+	again using configure --enable-geocaches.
+
+2007-07-18
+Quy Tonthat <qtonthat@gmail.com>:
+	* Remove (my) debug messages which are no longer needed.
+
+2007-07-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Missing a few changes here.
+	* release 0.9 (by Guilhem)
+
+2007-07-13
+Quy Tonthat <qtonthat@gmail.com>:
+	* Eliminate the needs of entering DEM files for every single
+	track/waypoint layer.
+
+2007-07-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed typo in Makefile.am
+
+2007-07-06
+Evan Battaglia <gtoevan@gmx.net>:
+	* Merge DEM Branch
+
+2007-07-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Bug fix: View Mode displayed wrong setting on start up
+
+2007-07-03
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed bugs that caused draw_scale and draw_centermark status not being
+	consistent among View menu, viewport and loaded files.
+
+2007-07-02
+Evan Battaglia <gtoevan@gmx.net>:
+        * DEM Branch: Trying to fix/cleanup various DEM things
+        * DEM Branch: Support for SRTM 3 arcsecond _global_ DEM data from http://www2.jpl.nasa.gov/srtm/ 
+
+2007-07-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed bugs that caused crashes during GPS upload/download.
+
+2007-07-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Make "Save Image" and "Save Image Directory" dialogs reusable.
+
+2007-06-24
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Merging with Ralf's work around debianization
+	* INSTALL: refreshed
+
+2007-06-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Minor change to avoid SEGFAULT on x86_64
+	* Add DownloadOptions type to specify referer per map source
+
+2007-06-19
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bugs that causes "drawcentermark" not recognised when reading
+	from files.
+	* Fix a wild pointer bug that can cause crashes
+
+2007-06-18
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Copying libcurl.m4 as it is needed everywhere
+
+2007-06-18
+Quy Tonthat <qtonthat@gmail.com>:
+	* New google version numbers.
+	* Make scale more visible.
+	* Add center mark which can be turn on/off in View menu.
+	* Viking now uses cookies for http requests. Some server(s) is quite
+	picky about this. (With great help from Lixus <gps@muellers.ms>)
+	* Download maps along a track. Right click on a track layer, select map
+	type and zoom level, viking will do the rest.
+	* release 0.1.3-20070618
+
+2007-06-13
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Adding an icon (suggested by Ralf Meyer <ranfyy@gmail.com>)
+
+2007-06-8
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a bug that causes segfault when viewing properties of a
+	waypoint.
+
+2007-06-1
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a bug that causes segfault when viewing properties of a track
+	that has only one trackpoint with elevation information.
+	* Backport Evan's magic scissors from DEM branch.
+
+2007-05-31
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add Google Maps search to View menu and Toolbar
+	* Waypoint created right after the search will pick up the search
+	string as comment. (Use TrackWaypoint Layer menu, not toolbar, to
+	create waypoint).
+
+2007-05-26
+Mark Coulter <i_offroad@yahoo.com>:
+	* new waypoint symbols.
+
+2007-05-26
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix intermittent problem of map redraw.
+	* Mapslayer: Fixed bugs that cause in some cases, map display can not
+	be refreshed without downloading.
+
+2007-05-24
+Ralf Meyer <ranfyy@gmail.com>:
+	* Adding man pages.
+
+2007-05-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Maps layer: Improve performance for map autodownload.
+	* Make dimensions easier to be found and changed to suit own tastes.
+	* Small touches on the look.
+
+2007-05-23
+Quy Tonthat <qtonthat@gmail.com>:
+	* New GPS layer menu items: "empty upload", "empty download", "empty
+	all"
+	* acquire->Google Directions now record and display previous queries
+	fo "From"/"To" entries.
+	* Position Google Directions dialogs at the center of Viking window.
+
+2007-05-22
+Quy Tonthat <qtonthat@gmail.com>:
+	* GPS layer track and waypoint data can now be saved.
+	* Disable prompt for save before exit.
+	* Add "Save and Exit" to File menu.
+
+2007-05-20
+Evan Battaglia <gtoevan@gmx.net>:
+        * DEM Branch
+
+2007-05-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* Stop autodownload from running forever on map downloading errors.
+
+2007-05-18
+Quy Tonthat <qtonthat@gmail.com>:
+	* Add curl-devel to spec file.
+	* Map tool: Left click can now refresh display of map tiles.
+	* Check for non-displayable data after downloading map.
+
+2007-05-17
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix problems in map downloading caused by unreliable error
+	detection.
+	* Release 0.1.3
+
+2007-05-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed bugs that can cause segfault on exit. The problem was caused
+by mapslayer's weak_ref not being unref'ed in some cases.
+
+2007-05-13
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix problem of "bad" tiles showing up when downloading. The problem was loading of incomplete tiles. Fixed this by first downloading to a temporary file, then moving when complete.
+
+2007-05-11
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix removal of redownloaded tiles from memory cache.
+	* Fix a stupid segfault in main.c (opening new files)
+
+2007-05-09
+Quy Tonthat <qtonthat@gmail.com>:
+	* New Google version numbers.
+
+2007-05-08
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* New "Refresh onscreen tiles" menu entry
+
+2007-05-04
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* debian/: debianization
+
+2007-04-29
+Reid Priedhorsky <reid@reidster.net>:
+	* libusb support
+
+2007-04-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* OpenSourceMap slippy maps (in osm.c) -- Maplink tiles
+	* Add configuration option for OpenStreetMap sources
+
+2007-04-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* OpenSourceMap slippy maps (in osm.c) -- Osmarender and Mapnik
+
+2007-04-21
+Evan Battaglia <gtoevan@gmx.net>:
+	* OpenSourceMap slippy maps (in google.c) -- identical to google maps except zoom numbering
+
+2007-04-16
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Adding libcurl support
+
+2007-04-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* New Google version number.
+	* Fixed Google Directions
+
+2007-02-20
+Quy Tonthat <qtonthat@gmail.com>:
+	* GPS layer dialog now displayed at the center of the Viking main
+	window.
+
+2007-02-19
+Quy Tonthat <qtonthat@gmail.com>:
+	* New Google version numbers.
+
+2007-02-15
+Quy Tonthat <qtonthat@gmail.com>:
+	* Made viking.spec.in out of Michael's viking.spec
+	* Added viking.spec.in to autoconf files.
+
+2007-02-15
+Michael A. Peters <mpeters@mac.com>:
+	* Added viking.spec
+
+2007-02-14
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* NEWS, configure.ac: preparing 0.1.2
+
+2007-02-13
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* src/vikwindow.c: remove URL and version number from window title
+	* src/dialog.c: add URL and use dynamic information for version
+	* AUTHORS, src/dialog.c: update contributors list
+	* AUTHORS, src/dialog.c, src/Makefile.am: About dialog filled with
+	AUTHORS file
+
+2007-02-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix bug that causes crashes when click at the right side (outside)
+	of the track graph area in the Track Poperties window. 
+
+2007-02-06
+Jocelyn Jaubert <jocelyn.jaubert@gmail.com>:
+	* Add new information to Track Properties. Postion in time will be
+	tracked and display when moving mouse cursor around the track graph.
+
+2007-02-06
+Quy Tonthat <qtonthat@gmail.com>:
+	* New google version numbers.
+	* correct main window title and viking website.
+
+2007-02-05
+Quy Tonthat <qtonthat@gmail.com>:
+	* Cosmetic changes.
+
+2007-02-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Simplify tools enable/disable codes.
+
+2007-02-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* Only tools that work with current active layer are enable,
+	others are disable (fade out and does nothing when clicked on).
+
+2007-01-27
+Quy Tonthat <qtonthat@gmail.com>:
+	* Display map sections while downloading (bug 1303429)
+
+2007-01-25
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fixed bugs that caused crashes on creating new map layer or
+	  new track/waypoint layer.
+
+2007-01-24
+Quy Tonthat <qtonthat@gmail.com>:
+	* Updated google tranparent version number.
+	* Made it more convenient to update google version numbers.
+
+2007-01-23
+Quy Tonthat <qtonthat@gmail.com>:
+	* Merged branch modular to trunk.
+
+2007-01-05
+Quy Tonthat <qtonthat@gmail.com>:
+	* Bug fix: main menu edit->delete and edit->cut did not work with
+	waypoints and tracks.
+
+2007-01-04
+Quy Tonthat <qtonthat@gmail.com>:
+	* Added "Copy" and "Cut" to popup menus for track and waypoint (on the
+	layer panel).
+
+2007-01-03
+Quy Tonthat <qtonthat@gmail.com>:
+	* bug fix: crash on inserting aggregate layer if the selected layer's
+	parent is not an aggregate layer.
+	* bug fix: crash when delete a child layer whose parent is not
+	an aggregiate layer (eg gpslayer)
+	* Menu item selection for layer instances.
+
+2007-01-02
+Quy Tonthat <qtonthat@gmail.com>:
+	* gpslayer: Unexpose interface functions.
+	* Layers now can have their say on what pop up menu items they want.
+
+2007-01-02
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add ability to disable Terraserver stuff
+	* Add ability to disable Expedia stuff
+
+2007-01-01
+Quy Tonthat <qtonthat@gmail.com>:
+	* gpslayer: fix bugs that causes crashes when click "Cancel" on layer
+	creation dialog.
+
+2007-01-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Make all .h self sufficient
+	* Add ability to disable Google stuff
+	
+2006-12-31
+Quy Tonthat <qtonthat@gmail.com>:
+	* Added gps layer
+
+2007-01-02
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add ability to disable Terraserver stuff
+	* Add ability to disable Expedia stuff
+
+2007-01-01
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Make all .h self sufficient
+	* Add ability to disable Google stuff
+	
+2006-12-26
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix a google version number change (at least in Australia).
+
+2006-12-07
+Quy Tonthat <qtonthat@gmail.com>:
+	* Fix an array overflow bug in Map Layer Properties
+	
+2006-12-04
+Alex Foobarian <foobarian@gmail.com>:
+	* Added an "About" dialog
+	
+2006-11-30
+Alex Foobarian <foobarian@gmail.com>:
+	* Added Quy Tonthat's patch to fix a bug in Track Properties
+
+2006-11-29
+Alex Foobarian <foobarian@gmail.com>:
+	* Added patch by Quy Tonthat <qtonthat@gmail.com> to fix a crash bug
+	
+2006-11-12
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Add expat explicit dependency
+
+2006-10-31
+Alex Foobarian <foobarian@gmail.com>:
+	* Visual feedback for moving waypoints
+
+2006-10-30
+Alex Foobarian <foobarian@gmail.com>:
+	* Created standard Edit menu
+	* Implemented Cut for trackpoints and waypoints
+	* When moving trackpoints, we now draw one under the cursor for visual feedback
+
+2006-10-26
+Alex Foobarian <foobarian@gmail.com>:
+	* Cleared up the drawing modes and map type descriptions
+	* Updated google version string to make it work in Europe
+	* Added Cut/Copy/Paste shortcuts to right-click menus
+	* Compacted the track properties dialog
+
+2006-10-23
+Alex Foobarian <foobarian@gmail.com>:
+	* Introduced a toolbar tool interface, converted existing tools to use it
+	* As a result, ruler drawing bugs are gone
+	* Sped up ruler drawing by increasing the redraw priority
+
+2006-08-15
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+    * Add implicit DMS->DDD conversions in waypoints dialogs
+
+2006-07-26
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* src/degrees_converters.c, src/degrees_converters.h,
+	  test/degrees_converter.c: add dec -> DDD conversion
+	* src/degrees_converters.c, src/degrees_converters.h,
+	  test/degrees_converter.c: add dec -> DMM conversion
+	* src/degrees_converters.c: refactor dms conversions
+
+2006-07-24
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+    * Add patch for GoogleMaps from Reid Priedhorsky
+
+2006-07-22
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* Makefile.am, configure.ac, src/Makefile.am,
+	  src/degrees_converters.c, src/degrees_converters.h,
+	  test/Makefile.am, test/check_degrees_conversions.sh,
+	  test/degrees_converter.c: Adding degrees conversion functions
+	  (DDD/DMM/DMS)
+
+2006-07-06
+Evan Battaglia <gtoevan@gmx.net>:
+	* ChangeLog, src/google.c: Upgrade Google Maps -- Europe
+
+2006-07-01
+Evan Battaglia <gtoevan@gmx.net>:
+	* Upgrade Google Maps version (yay Europe!)
+
+2006-06-11
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* NEWS, configure.ac: Preparing 0.1.1
+
+2006-05-25
+Alex Foobarian <foobarian@gmail.com>:
+	* Cleaned up the data source interface
+	* Added a setup dialog to the GPS data source, with protocol type and serial port location
+
+2006-05-12
+Alex Foobarian <foobarian@gmail.com>:
+	* Small fixes in Acquire from GPS code
+
+2006-05-08
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* autogen.sh: simpler method to start from CVS
+
+2005-12-03
+Evan Battaglia <gtoevan@gmx.net>:
+	* Data sources -- check for existence of necessary things
+
+2005-11-25
+Evan Battaglia <gtoevan@gmx.net>:
+	* Created "data sources" structure to easily add new data sources via GPS babel.
+          It's ugly now and there's a lot to be done, but I think 79-line datasources_google.c
+          shows the power of the approach.
+	* Data sources: Google & Geocaches
+
+2005-11-23
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* src/gpx.c (gpx_dtostr): add better GPX export
+Evan Battaglia <gtoevan@gmx.net>:
+	* dtostr -> coords.c; use in gpsmapper.c and gpspoint.c (locale-independent output)
+
+2005-11-21
+Alex Foobarian <foobarian@gmail.com>:
+	* Fixed v-t diagram crash bug
+
+2005-11-19
+Alex Foobarian <foobarian@gmail.com>:
+	* GPSBabel acquire code
+
+2005-11-18
+Alex Foobarian <foobarian@gmail.com>:
+        * Copy/paste of individual track- and way-points updated to work between processes.
+
+2005-11-17
+Alex Foobarian <foobarian@gmail.com>:
+        * Copy/paste between viking processes
+	* Layer marshalling support
+
+2005-10-28
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* configure.ac: Adding --with-mapcache configure option
+	* src/config.h: Removed because no more used (generated)
+
+2005-10-18
+Alex Foobarian <foobarian@gmail.com>:
+        * Fix ruler declination in UTM mode
+
+2005-10-17
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* src/icons/Makefile.am: assumes the creation of icons.h
+	* src/garminsymbols.c, src/vikwindow.c: icons.h re-located
+	* src/Makefile.am: no more icons.h production
+
+2005-10-16
+Evan Battaglia <gtoevan@gmx.net>:
+	* Fix ruler: show angle, distance even when compass off-screen.
+	* Fix bgitemcount. Background items status bar "should" be accurate now.
+
+2005-10-13
+Alex Foobarian <foobarian@gmail.com>:
+        * Drag and drop whole track/waypoint lists
+
+2005-10-12
+Alex Foobarian <foobarian@gmail.com>:
+        * Coord layer drawing for lat/lon based projections
+
+2005-10-11
+Alex Foobarian <foobarian@gmail.com>:
+        * Draw a compass when using a ruler
+
+2005-10-07
+Alex Foobarian <foobarian@gmail.com>:
+        * Added ruler drawing to the ruler tool
+
+2005-10-06
+Alex Foobarian <foobarian@gmail.com>:
+        * Added support for pasting coordinates in lat/lon format
+
+2005-10-05
+Alex Foobarian <foobarian@gmail.com>:
+	* Change clipboard so as to use GTKClipboard. Prepare for support for pasting coordinates, etc.
+Evan Battaglia <gtoevan@gmx.net>:
+	* When pasting waypoints and tracks, do name resolution (add #2, etc)
+
+2005-10-01
+Evan Battaglia <gtoevan@gmx.net>:
+	* make symbols work for geocaching .loc files (and case-insensitive symbol names)
+	* Option as to whether or not to show unit scale (esp for exporting images)
+
+2005-09-30
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* configure.ac, src/Makefile.am (SUBDIRS): added auto-tools support for src/icons
+Alex Foobarian <foobarian@gmail.com>:
+	* Added a drag_drop_request method to layer interface, updated DnD to use it
+	* Updated DND to insert layers at the point of the drop, instead of front of list
+	* Added wp symbol support to gpx
+	* Fixed name collisions during track/wp DND
+	* Layer-wide option as to whether to show waypoint symbols	
+
+2005-09-29
+Alex Foobarian <foobarian@gmail.com>:
+	* Added support for waypoint symbols (changing, loading, saving), and a small number of icons.
+	* Added a scale ruler
+	* Changed panning to show less "garbage" in exposed areas
+	
+2005-09-28
+Evan:
+	* menu.xml & icons inline
+
+2005-09-27
+Alex Foobarian <foobarian@gmail.com>:
+	* GtkUIManager/Toolbar
+	* DND in the LayersPanel
+Evan:
+	* strtod -> g_strtod (i18n glitch)
+
+2005-09-25
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+	* src/globals.h (VIKING_VERSION): uses the PACKAGE_VERSION macro
+	* Makefile.am (EXTRA_DIST): handles viking-remote
+	* src/Makefile.am (AM_CFLAGS): substitution of CFLAGS by AM_CFLAGS
+	* doc/Makefile.am, doc/dev/Makefile.am: new files
+	* Makefile.am (SUBDIRS): handles doc directory
+	* configure.ac: handles doc and doc/dev directories
+
+2005-09-16
+Alex Foobarian <foobarian@gmail.com>: fix to v-vs-t (better drawing)
+Evan:	* GPX fixes
+	* So Geocaching .LOC _isn't_ GPX?!?!? Oh well, it's XML...
+	* GPX write, click v-vs-t diagram
+	* Option to show stops in TRWLayer options, and stop_length
+	* Elevation plotting relative to min and max elevation in track.
+	* Option to do elevation plotting, and controlling relative height
+
+2005-09-15
+	* 4+ hours later and voila, GPX read support
+	* Fixes in propwin if track doesn't have certain data, say so.
+
+2005-09-14
+Me (Evan) again:
+	* Fix USGS support
+	* Click on the elevation map to go there, so you can see where a mountain-top is etc.
+	* Don't crash on track properties of an empty track.
+
+2005-09-13
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>:
+       * bootstrap: new file to bootstrap auto-tools
+       * src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
+       * Makefile.am (bin_SCRIPTS): viking-remote added
+       * configure.ac: --enable-alphabetized-trw option added
+
+Evan Battaglia <gtoevan@gmx.net>:
+       * Experimental altitude funky plotting I'm working on
+
+2005-09-12
+Alex Foobarian <foobarian@gmail.com>'s changes
+* disable stops, for now (I forgot about those...)
+* Track elevation graph: minimum altitude difference for less jagged curves
+* Track elevation graph: gray background, blue foreground
+* Track elevation graph: lines to clearly show absolute elevation
+* New velocity-vs-time graph & calculating function
+* Notebook to hold this new graph with track elevation graph
+My (Evan's) changes:
+* Fix above v-vs-t patch to not crash on tracks without timestamp.
+* Not show v-vs-t graph and/or elevation map if the necessary data isn't there.
+Guilhem Bonnefille <guilhem.bonnefille@gmail.com>'s changes
+	* bootstrap: new file to bootstrap auto-tools
+	* src/config.h (VIK_CONFIG_ALPHABETIZED_TRW): no more set via this file
+	* Makefile.am (bin_SCRIPTS): viking-remote added
+	* configure.ac: --enable-alphabetized-trw option added
+
+2005-09-07
+Autotools support by Guilhem Bonnefille.
+
+2005-09-06
+Added Alex Foobarian's track duration patch.
+Added Alex Foobarian's track profile patch.
+Added Alex Foobarian's elevation map fix.
+
+2005-09-04
+Map cache fix: if only one map can fit / one map is bigger than cache size, then that's OK.
+Delete from cache when updating image.
+
+2005-08-18
+Map cache size based on memory usage, not number of images. Some flaws to be worked out still in this.
+
+2005-08-16
+Accepted USGS maps support from Clark McKines. Pretty slick, I'll have to take a look at it.
+
+2005-08-02
+Quite easily added support for Mercator projection & Google Mercator maps (regular, transparent etc)
+Chaned waypoint types a little bit (size of waypoint)
+
+2005-07-31
+Hopefully fixed background.c item # count
+Fixed KH Maps (v=2)
+
+2005-06-20
+A little research & added KH Maps support.
+
+2005-06-19
+Fixed right-click waypoint edit -> crash bug, hopefully.
+Fixed "everyone lives in zone 11" assumption for vikgeoreflayer.c; still monozone though ...
+Made it so when you paste or add a new layer, it pastes it before the selected layer, not to the top.
+Fixed the bug where pasting a map layer messed up the name.
+Made dragging middle mouse button pan. Removed pan tool. Thanks Reid for the idea.
+Made different options for drawing waypoint dots. Not very good but we can make better-looking ones later.
+Side view of tracks à la Garmin MapSource, nice ...
+Fixed Google street maps simply by changing "v=.1" to "v=.3" ; the newest version of gmaps is completely different, I'm unsure how long this will work for.
+
+2005-05-05
+Experimenting with stops
+
+2005-05-01
+Fixed cheap ruler bug (use ruler, change draw mode, use ruler, crash). That's really not good... but hey, it _is_ alpha software.
+
+2005-04-24
+Added "how many maps currently downloading" status bar hack
+
+2005-03-11
+What the heck? Viking-remote didn't work? Fixing --/- stuff. Also fixing hang if can't open. Did this by putting gdk_threads_enter() before file opening in main.c.
+Update viking-remote to work _right_ with maps, also geo://GC1234/ works, nice...
+
+2005-03-08
+Uffda, I forgot Oggdeir's gpsmapper.c patch.
+Also fixed Windows compiling.
+
+2005-02-28
+Fixed Windows compiling, hopefully.
+Removed TopoZone support per topozone.com request.
+
+2005-02-27
+Instituted a really nice background downloading system with a separate system, works like a charm.
+Fixed (hopefully) a bug where a download failed the filename wasn't deleted, leaving an empty file.
+Misc cleanups/testing surrounding downloading.
+Autodownload
+Fix other stuff, including moving a waypoint (delete while moving -> crash)
+
+2005-02-26
+X and Y zoom levels for maps so factors don't have to be equal.
+Fixed maps zoomed out, added an combo box for it by adding a combo box in viklayer.c, fixed maptype to use map id and not internal array index
+Changed VikTrwLayer properties dialog to add an image tab, fixed GtkTable layout so as not to stretch out stuff in the y direction.
+Fixed /var/cache/maps stuff
+Safety for maps zoomed out
+Fixed mapzoom for cases where factors aren't equal
+Got the basic download in background code on, now just minor nicities
+Got the genius idea that someone might want to open up more than one file at one time ;)
+
+2005-02-25
+No time tonight, gotta get some sleep. Did work on hooking up Google Maps with GPSBabel's module into viking with a wget & a sed command. Totally awesome.
+Also, added support for the highest google zoom level which I didn't know existed.
+
+2005-02-23
+I'm not really supposed to be working on this ... but it get's addictive, so close to a release...
+Added back alpha support. It works for all map types now. Mostly useless for other types, unless you want to see tracks under your map, since you can't show more than one non-Terraserver map at the same time.
+Started work on maps for different zoom levels. You can do all different maps at all different zoom levels, even zoom in. Don't zoom in with expedia maps though, it could create a 2000px x 3000px size image or so, and cache up to 10,000 of those. Yeah.
+
+2005-02-22
+Made it easier to use all these maps -- switching between them, correct zoom levels, etc.
+Expedia for Europe (thanks GPSDrive people again)
+Kit Transue's UTM zone patch is back in for the new MapLayer. This marks the first time I have seen cross-UTM zone Topozone maps. Interestingly enough it seems that they patch the maps together. Viking messes this up a little bit but in general it works fairly well. I'm still amazed it's possible ;)
+Minor cleanups etc.
+
+2005-02-21
+Tons of work today, too much to list really. Basicly I threw away VikMapLayer and started over. This one's nice, really easy to add new types. Google, Expedia, and Terraserver maps are now functioning, but the layer isn't completed yet, many things such as alpha, download in the background, etc. aren't quite there yet.
+Topozone support, heh ;) Of course none of these maps can be used together. Especially since scaling isn't done yet. I'm also going to have to create some handy ways to switch between layers.
+
+2005-02-20
+Finally got the brilliant notion that a GSList isn't the smartest way to do memory map caching. In fact it's probably one of the stupidest. Increased speed (when all maps loaded) by 30x or so by using a GHashTable shared between layers. How much of the slowdown was accumulated somehow since 0.0.8 is unknown.
+New map caching file naming scheme. Hierarchial directory structure for faster lookup.
+Tweaked the above memory caching scheme to use a linked list in conjunction with a hashtable to allow for a maximum size limit to the cache. Currently you have to edit the file to set this upper limit. And it's in tiles -- doesn't matter the size of the tiles.
+Added some code in http.c of all places to make 2 directories above if they don't exist (new caching filename scheme)
+
+2005-02-19
+Fixed params[3] -> params[2] l1738 to fix click image
+Fixed delete a waypoint->crash bug
+Fixed TOPLAYER_FROM_WIDGET() error on right click wp -> properties (no VLP to use this on; use FROM_LAYER())
+
+2005-02-18
+Wow, Haven't worked on this in a while...
+Sorry, just adding a hack to allow me use mapzoom at 0.25 quality.
+
+2005-02-02
+Changed pan, a little bit, to move the map. Not good enough though, it leaves behind stuff now. Couldn't get it to not flicker, and run at a decent speed.
+
+2005-01-29
+Fixed waypoint pango drawing.
+Compatibility layer for GtkColorButton to use an entry for GTK 2.2
+Move Waypoints by dragging
+Snap to WP (shift-) for TP & WP moving. Snap to TP (ctrl-) for WP moving and still TP moving.
+Select WP on the side when editing (if the layer is selected that is)
+
+2005-01-28
+Changed over to Pango, finally. Just experimentally so far, though; gotta cement it and fix it over.
+Changed the properties/parameters system to allow tabs (groups) in properties boxes.
+Tracks & waypoints now alphabetized! Three cheers! I can't believe how relatively easy that was. Two new functions in viktreewview.c and two more lines of code in viktrwlayer.c, I thought it was going to be hard for some reason...
+Added a GtkColorButton thing for layer properties. This officially boosts the minimum requirements to GTK+ 2.4. This shouldn't be too much of a problem since 2.6 is out already.
+Settable waypoint background & text colors. Different ones for different layers is incredibly snazzy.
+Settable track bg color. Also fix some switch/case stuff... forgot to break...
+So you can do plain transparent (no WP background) by choosing white and selecting color translucency... Not exactly clear. But wow, these colors are looking really awesome.
+
+2005-01-23
+Expedia maps working now. Don't *exactly* match up on the top and bottom sides, but I'm not sure I can get much better. Good enough. More fixes, added autodownload (thought that was already in here? maybe only in my topozone version).
+Fixes, lots of small stuff -- e.g. a bug I introduced where it wasn't getting the correct utm zone for terraserver maps when downloading.
+Fixed a weird GTK bug where updating the coord mode menu radio button would change the coord mode. See only_updating_coord_mode_ui
+Implemented "invisble auto-downloads". Thought up a new way of doing downloads -- a queue and only one other process -- but probably won't implement that for a while.
+Wow, auto-download + street maps is really neat!
+
+2005-01-22
+Working on implementing Expedia maps .. Lots of stuff, had to change HTTP to hande forwarding, that took a while just to test. Had to restructure some vikmaplayer code to know about expedia maps and download differently. LOTS more to go however. It now downloads maps, but that's about it. Lots of work to go.
+OK, now it cuts off the sides (ads) and stuff. Snazzy. I made a test "draw" function but it isn't working perfectly yet. It is working and piecing together maps though. They look OK pieced together but street names are messed up at borders sometimes to I'm going to make the pieces bigger.
+Did I mention it draws the maps in the wrong places?
+
+2005-01-21
+Many little things tonight:
+Much cleaner way of doing alpha/bleach. Slightly less functionality (can't do bleach and alpha) but cleaner and should be faster.
+Made it so it saves coordinate mode in the .vik file.
+Made it so you can change the background. Saves this to the .vik file.
+White background under tracks. Inefficient but it works.
+
+2005-01-20
+Added support for Urban Areas color photograph maps from TerraServer.
+Just a note: TopoZone isn't going to work. I had added support for it in my own prviate version, and used it happily for areas where TerraServer was messed up. But one day it didn't work. They changed their site so it's hard (if not impossible) to get to the image directly. I could always do indirect, though ...
+
+2005-01-17
+Made it so you can change modes
+Optimized a little tiny bit, drawing still slow
+GREATLY Improved UTM drawing speed by remember zone width in VikViewport. I think kit meant to do that, there was a zonie_width item in VikViewport; it went unused.
+Re-instituted UTM ce1, cn2, etc. checks that went out the door when multiple zones became available. It now does these checks only if UTM is used and there is one zone. Performance is now comparable to 0.0.5 speeds.
+Fixed minor UTM 2 zones bug I (apparently) introduced above where some things are on zoom.
+
+2005-01-16
+Added "Visit Geocache Webpage" right-click waypoint option. Not very useful until I can click on waypoints, though.
+
+2005-01-15
+Started massive UTM -> VikCoord abstraction project
+Wow.
+Biggest. Change. Ever.
+Worked on it about 5 hours. It seems to be going excellent! Most UTM's have been made into VikCoord's, except for some things like VikCoordLayer which I simply disabled. I just plugged in the Lat/Lon coord to screen code and it works! Now I have to work out all the bugs, add a change coordinate / conversion system, and fix a lot of stuff. WOO HOO!!!
+Update: added coord_to_screen and screen_to_coord for Lat/Lon. works FLAWLESSLY!!! AWESOME!!!
+
+--- viking 0.0.8 ---
+
+2004-12-25
+Added UTM zone glue-together by Kit Transue
+Fixed various things regarding this patch (distance, lines, etc.)
+Packages & uploaded changes
+
+2004-11-27
+Back, but not really ...
+Added a fix by Peter Jones (gpspoint.c glitch)
+Added CYGWIN/Makefile fixes by Alex Stohr
+
+--- viking 0.0.8 ---
+
+2004-04-13
+Back from a 3-day GPS data gathering mission.
+Fixed bug wherein track GC's weren't getting updated when line_thickness was updated.
+Only waypoints and trackpoints if they're in the right UTM zone.
+Use g_spawn_command_line_async for showing pictures; support for Windows for this too.
+Rather drastically changed background.c so as not to use pthread's detach() and cancel() functions which are strangely absent in gthread.
+Changed background.c to gthread.
+Auto-switch UTM if you go too far.
+Draw little star on tracks if it was cut off due to UTM zones.
+Show human-readable time in trackpoint window.
+Fix trackpoint window so as to not show time of '0' if the TP has no timestamp.
+I didn't want to take this long with 0.0.8. 0.0.7 was released in just 27 days but 0.0.8 took 50. Oh well, I'll have to work doubly hard for 0.0.9. Here is Viking 0.0.8 all. Enjoy.
+
+2004-04-09
+Prevent loading partially-downloaded file by first writing to a temp file and them writing that data to the image file.
+g_error_free () where neccessary.
+Changed "Map Download All" to clearer, more direct and generic code.
+Very easily used this code to make downloading lots of maps with the "map download" tool. Just drag over the square you want to download.
+Added map size parameter. Had to change viklayer.[ch], add an extra_widget_data field in the param struct and change viklayer.c to support different uint values for options
+
+2004-04-08
+Some experimental work with maps at a different zoom level (e.g. 4mpp maps viewed at 16mpp)
+
+2004-04-04
+Load thumbs in a background thread. Thumbs show up as soon as they are loaded and you redraw.
+Cleanup function for maps so incomplete map downloads will be deleted, woo hoo!
+Snap to TP for edit TP and new track. Hold down control.
+Added Max Speed, Average Speed, Average Dist Between Trackpoints in track property window.
+Added "Diff Speed" in TPWin so you can tell speed between one trackpoint to the next.
+
+2004-04-03
+Put maps in a background thread while updating the UI, but you can still use viking. I have to duplicate all necessary data passed to the thread (what threads to download and where) in case that layer is deleted. I still have to a couple things (actually canceling the download operation) but it works very nicely, I can download lots of maps at the same time! It feels very liberating...
+Right click to redownload a map. Regretably some messed up maps have been showing up with the above method, it's a big mystery how exactly...
+Did a little test: disconnected my Internet connection and tried to download a map. Viking hanged for 22 seconds. I consider that acceptable, for now at least.
+
+2004-04-02
+Fixed trw_layer_new_track_gcs getting called twice -- post_read link and in vik_trw_layer_create
+Just got finished loading thumbnails in the background. Aye, what a bother. But it works nice. (However once I got it to crash with an Xlib async error? Sigh, that's not good...)
+
+2004-03-31
+Added support for clicking images to show it, using eog -- this currently cannot be changed. (!)
+
+2004-03-23
+Fix crash on export code (Mike Davison)
+Use $VIKING_MAPS for default map directory if available (Mike Davison)
+
+2004-03-08
+Move image to use when alpha drawing to VikViewport. That simplifies a lot.
+Little changes, here and there. Lots of options for images.
+
+2004-03-07
+More work on dynamic Properties boxes, it will make adding new options _so_ much easier...
+A lot of work on this. Wow, Viking is getting big. And ugly.
+Also fixed a bug similar to another old bug -- forgot to copy waypoint image filename when a waypoint is copied.
+You can now choose the image size, via the new dynamic properties box.
+
+2004-03-06
+Fixed a dumb bug that prevented you from opening GPSPoint files after Viking files.
+Working on dynamic Properties boxes, getting nowhere fast...
+
+2004-03-05
+Wrote a tiny bit of code to further shrink and cache thumbnails.
+
+2004-02-29
+background.c to use pthread to run stuff in the background (think -- downloading maps) and give a dialog to cancel (d'uh!)
+The ability to use pthread opens up a lot of possibilities about how to handle map downloads. For instance, you could have a little dialog where you have different groups of maps downloading. Lots of possibilities, I just have to think about how I want to implement them.
+
+2004-02-28
+Lately I've been working on a GUI tool written in Python to link up pictures and track logs to figure out where a picture was taken. That's my excuse, anyways, for not working on Viking.
+Thought a little bit about how I'm going to do pictures in Viking. Looked over ROX-Filer's thumbnailing code.
+Added a bit of picture thumbnail code. You can now see photos in Viking.
+
+--- viking 0.0.7 ---
+
+2004-02-22
+Fixed edit TP, then rename track -> updates current_tp_track_name glitch.
+Took quite a bit of time to change the way tools work. Instead of returning TRUE to redraw, tools return TRUE if they "accept" the tool call. If they don't, then it will look for another layer that will accept the tool call. That way you can edit trackpoints on different layers. It's nice, actually.
+Fixed "edit layer name, then move it" bug the crept in somehow. It wasn't in 0.0.5-pre4, but I don't see any differences in the code, oh well, fixed it this time.
+One month and almost 4000 LOC later... Viking 0.0.7 "Gonna Move Those Mountains Aside"
+
+2004-02-21
+Fixed track join deleting problem mentioned yesterday by keeping track of individual GtkTreeIter's for all tracks in a hash_table. Whenever a track is added/realized it's iter is added to the hash. Actually a rather pleasant (and fairly easy) solution. This simplifies deleting tracks in other places too, since we now don't need to know the iter.
+Very easily made it so that when you edit a trackpoint it selects the appropriate track in the layers panel. Press Shift+10 for fast deleting. Evidently the tracks list must be expanded.
+Fixed last_tpl (VikTrwLayer) / cur_tp (VikTrwLayerTpwin) confusion.
+Changed split up track to change current tp to first of new track rather than last of old.
+For some reason I felt I needed to add a thing in track properties which would count the number of duplicate TPs (same coords, one after the other) and make a button to remove them.
+You can now change latitude, longitude, and altitude of each TP in the track window. Good for setting exact location rather then moving.
+Added _real_ transparency support. I've tried before, but this time it actually wasn't hard it all. It was harder adding the UI stuff and layer attribute and all that. Anyway it might be a tad slow wise but it looks FANTASTIC!
+Fixed open and save dialogs (including VikFileEntry, but excluding render to image and export as gps* dialogs) so that the dialogs are not deleted and created each time but the same one is used. This means that it will stay in the same directory.
+How does a release tomorrow sound?
+
+2004-02-20
+Can't seem to find the time for Viking these days. Today I managed to get a little work in.
+I did manage to add support for moving trackpoints. It's awesome. You just choose the edit TP tool, select a TP, and drag it.
+After experimenting with arcs (arrows) for TPs (it didn't work), I changed track drawing to draw a triangle for the startpoint and a circle for the endpoint.
+OK, So you can now join tracks (kind of ugly solution, but that was how it worked out), but the really ugly part is that it won't show up as deleted in the layers panel, and to make it do that, I need the track's layers panel Iter which I don't have from the tpwin. I sense major hackage ahead.
+
+2004-02-16
+Thursday through Sunday was another "data gathering mission". I also though up a _lot_ of great ideas for Viking. Now I just have to find the time to implement them all.
+Today I added support in file.c for opening from stdin, aka "-". I also changed the magic number determining code to use ungetc() rather than rewind() so it will work correctly with stdin.
+Not part of viking, but I wrote a quickie viking-remote script.
+
+2004-02-10
+Gotta get back to work. Sigh. Saturday and Sunday I went on a "data gathering mission", so there's my excuse. Yesterday I was away hacking on gpsbabel to support gpspoint (Viking) files.
+Fixing little tiny things, like making the tpwin not close when you delete a waypoint, fixing little mistakes in trwlayer, graying buttons, etc.
+Added little things to tpwin -- forward, previous, diff, makind diff work for delete button, etc.
+Added a_coord_utm_diff for tpwin diff & ruler tool & track length
+Added a_dialog_create_vbox_label function, converted vik_trw_layer_tpwin_new()
+Added track length, tp count, segment count in properties box
+Fixed if try to rename waypoint or track to one that already exists, crash bug (had to uppercase user input)
+Added split up into segments. Had to change a_dialog_new_track, do above change, and a million other things. Sigh.
+Fixed split up segments so it first makes a copy, then deletes the old copy. That way if the track was on the clipboard you can paste to get the original track again. Nifty eh?
+Added reverse track.
+That's all folks. I'm a-goin to bed.
+
+2004-02-06
+Just got through fixing the hardest-to-track-bug I've ever tackled. Viking would crash when I copied a 
+pasted a layer in a certain file, but it seemed fairly random and gdb's backtraces were no help because 
+it was crashing on totally unrelated things (free'ing memory twice does weird things). I finally narrowed 
+it down to do a certain sequence to give me the warning: viking in free() chunk already freed, etc. Then 
+I used step (starting from vik_trw_layer_free) to determine exactly where it was free'ing something 
+twice. It was the waypoint comment. I noticed comments were different from the original waypoint (on the 
+original layer that had been copied) so I tried stepping thru vik_waypoint_copy to see whether the 
+waypoint was being copied correctly. It was then when I something wrong. I had assigned one waypoint to 
+another, then called the function vik_waypoint_set_comment(), which, upon seeing that the comment of this 
+new waypoint was not null, proceeded to free it, whilst the old waypoint still carried that comment 
+pointer around. The ironic part is one line of code (new_wp->comment = NULL;) fixed everything.
+
+Well, glad to get that out of the way. Now I can proceed to work on new stuff.
+
+I also made sure to delete the trackpoint window if the track gets deleted.
+The long-awaited SPLIT UP TRACK is finally in Viking. Goodie.
+
+2004-02-03
+Set up signals for VikLayer. Constructed a super-cool yet slightly-slow chain of signals using VikAggregateLayer. It's wacky.
+All my hard internal work has finally payed off. I just added code for deleting trackpoints. It works, the signal is given to update and all is good. Yay.
+
+2004-02-02
+Back to work. I hit a snag and had to switch VikLayer to a GObject to give off signals for updating for the track editing tool.
+
+2004-01-30
+Very very small amount of code to report export image write errors to stderr.
+Some various work on track editing:
+  Made another file/class viktrwlayer_tpwin.c
+  Added labels to show info when you click a trackpoint
+  Made it draw a big TP for the current TP
+I don't know why it's not in this ChangeLog, but some experimental Track[point] "editing" (realling finding) support was already there: the tool, the code for finding the nearest TP, and a line of code showing a dialog with the buttons which would be useful (I obviously did some planning.)
+Oh, Also, cut and paste waypoints support has been in for quite a while, before September, I'd say, somehow that escaped this log.
+Anywho, the road looks clear as to how to procede with respect to track editing: make sure to reset current_tp if track is deleted, add on features, etc.
+
+2004-01-29
+Added a little thing to tell you how much are the map(s) will cover.
+FINALLY fixed coord layer so it shows ALL necessary coord lines (<sarcasm>it actually checks your zoom level now!!!</sarcasm>)
+
+2004-01-28
+Slowly added "Generate directory of Images" support.
+Fixed pan tool.
+
+2004-01-27
+You can now choose the name of the image to export to, choose the zoom level, and choose to get everything in the current viewing window.
+Also took 15 minutes to add a pan tool.
+Also made it remember your choices of width and height and image format for draw to image file.
+
+2004-01-26
+I'm celebrating Australia Day by working on the Vik for the first time in ... My fingers don't go up that high, anyway.
+Adding code for exporting to image.
+
+2003-9-22
+Took a short two month break. Hehe.
+Finally got around to checking whether server returns "200". Sometimes terraserver has erras.
+
+--- viking 0.0.5 --
+
+2003-7-15
+Simplified vikfileentry.c by using gtk_dialog_run
+Loading from World files
+Saving to World files
+
+2003-7-14
+Map Layer -- default cache directory ~/.viking-maps (on UNIX) or C:\VIKING-MAPS (on Windows). This way people don't have to worry at all about cache directories, they can just use the default and it will automatically be created.
+Create default cache directory if it doesn't exist. Automatically add file separator on cache directory name.
+Don't write cache directory name to Viking file if it is default; if no directory use default (that way people can share files without having to worry about someone elses cache directory)
+Readability/Naming: InitGcs -> PostRead
+
+2003-7-11
+More work on GeorefLayer. It's now pretty much working.
+Made vikfileentry.c, changed vikgeoreflayer and vikmaplayer to use it.
+
+2003-7-10
+Changed zoom to two variables -- xmpp and ympp and implemented necessary changes in the layers.
+Added a "Goto Any Zoom" kind of dialog/function.
+Changed status bar a tad to reflect this.
+Started some work (mainly UI/semantics/program interface) on GeorefLayer. Will make it actually do something later.
+
+2003-7-09
+Changed zoom limit from 32 mpp to 512 mpp.
+Changed zoom to a double to allow any zoom level.
+
+2003-7-07
+Sorry ... "Real Life" (tm) has been taking up a lot of time lately. Anyway today I managed to implement track visibility in Viking GPS files.
+
+2003-6-27
+Don't show an empty menu for a sublayer if it doesn't add anything to the empty menu
+Little bugfixes
+
+2003-6-26
+Put all file stuff in one file.
+Removed old binary fileformat support. 3 days of work deleted in no time.
+Track -> VikTrack, Waypoint -> VikWaypoint, Trackpoint -> VikTrackpoint, vikwaypoint.c, viktrack.c
+Comment support, comment support for gpsmapper export
+Comment for gpspoint, backslashed quotes, etc. in comment in gpspoint.c. Lot of work... I could easily backslash track/wp name, but they usually dont have quotes in
+OK, I've been programming for over 4 hours. Break time.
+OK, back to work. Comment support complete, I've also added altitude output support for gpspoint.
+Switched various button order around in dialog.c to comply with HIG
+Track undo support. Double-click to end, right click to undo. Crazy day, huh?
+
+2003-6-25
+Support for reading map and trackwaypoint layers. Also support for trackwaypoint data (in GPSPoint format)
+Whew! Write support is complete! Man, that's a lot of work. Now I just gotta iron out any wrinkles (such as getting rid of old file format support)
+
+2003-6-24
+Half hour's worth of coding has made copying and pasting TrackWaypoint layers a reality.
+Started working on FF2. TODO: implement individual layer getters/setters functions, write support
+I've done an incredible amount of work today.
+Mission: By the weekend I must have FF2 support out the door.
+
+2003-6-23
+Created Viking 0.0.5 branch.
+Started work on copy & paste layers. With just two hours or so worth of code, you can now cut, copy and paste coord and map layers and aggregate layers made up of these.
+You can even copy and paste between windows.
+Next up -- trackwaypoint layers, then we're off to copying items.
+Onward -- 0.0.5!
+
+--- viking 0.0.4 ---
+
+2003-6-23
+Viking 0.0.4 "Lame Duck Release"
+Alright, I haven't been doing anything for the last two days. Guess I'll just release what I have...
+
+2003-6-20
+Added GpsMapper export support to make it easy to make Garmin maps.
+Made it so you can now rename tracks.
+Implemented map fade into white (alpha)! This should help distinguish tracks while still seeing maps.
+
+2003-6-19
+Fixed a map caching problem that occurs when you lower the size of the memory cache (it won't really be lowered).
+Started experimenting with map semi-transparency. It's pretty cool.
+
+2003-6-18
+HIG document compliance (Open, New, Close, modified flag, etc.) I probably won't be making a "Exit" menu item, because that is the dumbest and most confusing aspect of the HIG.
+Tearoff item for tools.
+Made a_file_basename and replaced all places where I previously just copied and pasted the code.
+Fixed _another_ "forgot to initialize" bug (layer.realized)
+Simplified interface by having one Open menu item for opening any type of file and an Append menu item to do the same
+In doing this, "./viking my.vik my2.vik my.gps my2.gps" etc. now works (concatenates into an unamed file.)
+Removed "Properties" from Aggregate Layer popup, and added info message when running "Properties" from the Layers menu on an Aggregate
+Provided a info message that tells the user the Top Layer cannot be deleted.
+
+2003-6-17:
+Added error message for failed writes, fixed various bugs such as not free()ing any of the layers on exit (!)
+Also fixed some crashes such as when you try to export a trw layer and you can't write to it.
+Fixed button order in model dialogs to comply with GNOME HIG.
+Added a "Delete All Layers" item from the menu. Change menu names a little bit.
+Added "Save" support (current filename)
+Started thinking about HIG compliance in the way of documents. Will probably get rid of delete all layers and add new, open (in new window)
+
+2003-6-16:
+Added VikTrwLayer serialization support, added "open" and "save" dialog boxes.
+Added error messages for failed reads, etc.
+
+2003-6-15:
+More serialization work. The basics are now working, I have to add VikTrwlayer, maybe add some things in to make
+it less vulnerable to crashes and really big mallocs(), and maintain compatibility between versions.
+
+2003-6-14:
+Got some more sample data for Viking via motorcycle riding ;)
+
+2003-6-13:
+Fixed serious glitch that crashes on creating a new track. 
+Fixed viking crash that happens when a new track is being created, then deleted.
+Designed file format & started on serialization of layers.
+Moved Layer Icon loading stuff to VikTreeview, as poor designed as it sounds, to get ready for Serialization code.
+
+2003-6-12:
+Viking 0.0.3, first public release
