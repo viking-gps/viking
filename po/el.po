@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-04 22:27+0100\n"
+"POT-Creation-Date: 2009-02-04 22:47+0100\n"
 "PO-Revision-Date: 2008-09-17 04:02+0000\n"
 "Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
@@ -15,20 +15,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2009-02-04 21:00+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
 msgstr "Εργασία..."
 
-#: ../src/acquire.c:141
-msgid "Error: acquisition failed."
-msgstr ""
-
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:957
 msgid "Done."
 msgstr "Ολοκληρώθηκε."
+
+#: ../src/background.c:212
+msgid "Job"
+msgstr "Εργασία"
+
+#: ../src/background.c:216
+msgid "Progress"
+msgstr "Πρόοδος"
+
+#: ../src/dialog.c:66 ../src/dialog.c:230
+msgid "Latitude:"
+msgstr "Γεωγραφικό πλάτος:"
+
+#: ../src/dialog.c:72 ../src/dialog.c:235
+msgid "Longitude:"
+msgstr "Γεωγραφικό μήκος:"
+
+#: ../src/dialog.c:131
+msgid "Letter:"
+msgstr "Επιστολή:"
+
+#: ../src/dialog.c:218
+msgid "Name:"
+msgstr "Όνομα:"
+
+#: ../src/dialog.c:240
+msgid "Altitude:"
+msgstr "Υψόμετρο:"
+
+#: ../src/dialog.c:245
+msgid "Comment:"
+msgstr "Σχόλιο:"
+
+#: ../src/dialog.c:259
+msgid "Image:"
+msgstr "Εικόνα:"
+
+#: ../src/dialog.c:273
+msgid "(none)"
+msgstr "(κανένα)"
+
+#: ../src/acquire.c:141
+msgid "Error: acquisition failed."
+msgstr ""
 
 #: ../src/acquire.c:326 ../src/vikgpslayer.c:996
 msgid "Status: detecting gpsbabel"
@@ -38,14 +78,6 @@ msgstr ""
 #, c-format
 msgid "%d items"
 msgstr ""
-
-#: ../src/background.c:212
-msgid "Job"
-msgstr "Εργασία"
-
-#: ../src/background.c:216
-msgid "Progress"
-msgstr "Πρόοδος"
 
 #: ../src/background.c:227
 msgid "Viking Background Jobs"
@@ -81,14 +113,6 @@ msgstr ""
 msgid "Go to Lat/Lon"
 msgstr ""
 
-#: ../src/dialog.c:66 ../src/dialog.c:230
-msgid "Latitude:"
-msgstr "Γεωγραφικό πλάτος:"
-
-#: ../src/dialog.c:72 ../src/dialog.c:235
-msgid "Longitude:"
-msgstr "Γεωγραφικό μήκος:"
-
 #: ../src/dialog.c:115
 msgid "Northing:"
 msgstr ""
@@ -101,37 +125,13 @@ msgstr ""
 msgid "Zone:"
 msgstr ""
 
-#: ../src/dialog.c:131
-msgid "Letter:"
-msgstr "Επιστολή:"
-
 #: ../src/dialog.c:192
 msgid "Waypoint Properties"
 msgstr ""
 
-#: ../src/dialog.c:218
-msgid "Name:"
-msgstr "Όνομα:"
-
-#: ../src/dialog.c:240
-msgid "Altitude:"
-msgstr "Υψόμετρο:"
-
-#: ../src/dialog.c:245
-msgid "Comment:"
-msgstr "Σχόλιο:"
-
-#: ../src/dialog.c:259
-msgid "Image:"
-msgstr "Εικόνα:"
-
 #: ../src/dialog.c:264
 msgid "Symbol:"
 msgstr ""
-
-#: ../src/dialog.c:273
-msgid "(none)"
-msgstr "(κανένα)"
 
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:328

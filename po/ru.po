@@ -16,16 +16,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2009-02-08 13:36+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
 msgstr "Выполняется..."
-
-#: ../src/acquire.c:141
-msgid "Error: acquisition failed."
-msgstr ""
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:957
 msgid "Done."
@@ -34,11 +30,6 @@ msgstr "Готово."
 #: ../src/acquire.c:326 ../src/vikgpslayer.c:996
 msgid "Status: detecting gpsbabel"
 msgstr "Статус: обнаружение gpsbabel"
-
-#: ../src/background.c:54
-#, c-format
-msgid "%d items"
-msgstr ""
 
 #: ../src/background.c:212
 msgid "Job"
@@ -55,6 +46,352 @@ msgstr "Фоновые задачи"
 #: ../src/clipboard.c:84
 msgid "paste failed"
 msgstr "ошибка вставки"
+
+#: ../src/dialog.c:66 ../src/dialog.c:230
+msgid "Latitude:"
+msgstr "Широта:"
+
+#: ../src/dialog.c:72 ../src/dialog.c:235
+msgid "Longitude:"
+msgstr "Долгота:"
+
+#: ../src/dialog.c:128
+msgid "Zone:"
+msgstr "Зона:"
+
+#: ../src/dialog.c:218
+msgid "Name:"
+msgstr "Имя:"
+
+#: ../src/dialog.c:240
+msgid "Altitude:"
+msgstr "Высота:"
+
+#: ../src/dialog.c:245
+msgid "Comment:"
+msgstr "Комментарий:"
+
+#: ../src/dialog.c:259
+msgid "Image:"
+msgstr "Изображение:"
+
+#: ../src/dialog.c:264
+msgid "Symbol:"
+msgstr "Символ:"
+
+#: ../src/dialog.c:273
+msgid "(none)"
+msgstr "(нет)"
+
+#: ../src/dialog.c:332
+#, c-format
+msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
+msgstr "Путевая точка  \"%s\" уже существует, перезаписать?"
+
+#: ../src/dialog.c:470
+msgid "Add Track"
+msgstr "Добавить трек"
+
+#: ../src/dialog.c:478
+msgid "Track Name:"
+msgstr "Имя трека:"
+
+#: ../src/dialog.c:493
+msgid "Please enter a name for the track."
+msgstr "Введите имя трека"
+
+#: ../src/dialog.c:497
+#, c-format
+msgid "The track \"%s\" exists, do you want to overwrite it?"
+msgstr "Трек \"%s\" существует, перезаписать?"
+
+#: ../src/dialog.c:633
+msgid "1 min"
+msgstr "1 мин"
+
+#: ../src/dialog.c:634
+msgid "1 hour"
+msgstr "1 час"
+
+#: ../src/dialog.c:635
+msgid "1 day"
+msgstr "1 день"
+
+#: ../src/dialog.c:728
+msgid "Map type:"
+msgstr "Тип карты:"
+
+#: ../src/dialog.c:733
+msgid "Zoom level:"
+msgstr "Увеличение/уменьшение:"
+
+#: ../src/geonamessearch.c:117 ../src/geonamessearch.c:133
+#: ../src/geonamessearch.c:151 ../src/googlesearch.c:68
+#: ../src/googlesearch.c:86
+msgid "Search"
+msgstr "Поиск"
+
+#: ../src/geonamessearch.c:509 ../src/googlesearch.c:200
+msgid "couldn't open temp file"
+msgstr "невозможно открыть временный файл"
+
+#. Webtools
+#: ../src/google.c:34
+msgid "Google"
+msgstr "Google"
+
+#: ../src/datasource_gc.c:62
+msgid "Download Geocaches"
+msgstr "Загрузить Геокеши"
+
+#: ../src/datasource_gc.c:78
+msgid "geocaching.com username:"
+msgstr "Имя пользователя geocaching.com:"
+
+#: ../src/datasource_gc.c:79
+msgid "geocaching.com password:"
+msgstr "Пароль пользователя geocaching.com:"
+
+#: ../src/datasource_gc.c:169
+msgid "Number geocaches:"
+msgstr "Количество геокешей:"
+
+#: ../src/datasource_google.c:74
+msgid "From:"
+msgstr "От:"
+
+#: ../src/datasource_google.c:76
+msgid "To:"
+msgstr "К:"
+
+#: ../src/datasource_gps.c:48
+msgid "Acquire from GPS"
+msgstr "Получить из GPS"
+
+#: ../src/datasource_gps.c:49
+msgid "Acquired from GPS"
+msgstr "Получено из GPS"
+
+#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:783
+#, c-format
+msgid "GPS Device: %s"
+msgstr "GPS : %s"
+
+#: ../src/datasource_gps.c:262 ../src/vikgpslayer.c:133
+msgid "GPS Protocol:"
+msgstr "GPS протокол:"
+
+#: ../src/datasource_gps.c:269 ../src/vikgpslayer.c:134
+msgid "Serial Port:"
+msgstr "Последовательный порт:"
+
+#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:1001
+msgid "GPS device: N/A"
+msgstr "GPS устройство: необнаружено"
+
+#: ../src/dem.c:59 ../src/dem.c:73
+msgid "Invalid DEM"
+msgstr "Неправильный DEM"
+
+#: ../src/dem.c:115
+msgid "Invalid DEM header"
+msgstr "Неправильный DEM заголовок"
+
+#: ../src/download.c:121
+#, c-format
+msgid "Download error: %s"
+msgstr "Ошибка загрузки: %s"
+
+#: ../src/print.c:54
+msgid "Horizontally"
+msgstr "Горизонтально"
+
+#: ../src/print.c:55
+msgid "Vertically"
+msgstr "Вертикально"
+
+#: ../src/print.c:56
+msgid "Both"
+msgstr "Оба"
+
+#: ../src/print.c:120
+msgid "Image Settings"
+msgstr "Настройки изображения"
+
+#: ../src/print.c:550
+msgid "done"
+msgstr "завершено"
+
+#: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
+msgid "Color:"
+msgstr "Цвет:"
+
+#: ../src/vikcoordlayer.c:48 ../src/vikdemlayer.c:113
+msgid "Line Thickness:"
+msgstr "Толщина линий"
+
+#: ../src/datasource_bfilter.c:46
+msgid "Max number of points:"
+msgstr "Максимальное количество точек"
+
+#: ../src/main.c:117
+msgid "Enable debug output"
+msgstr "Включить отладочную выдачу"
+
+#: ../src/main.c:118
+msgid "Enable verbose output"
+msgstr "Включить подробную выдачу"
+
+#: ../src/osm-traces.c:322
+msgid "Email:"
+msgstr "Email:"
+
+#: ../src/osm-traces.c:338
+msgid "Password:"
+msgstr "Пароль:"
+
+#: ../src/osm-traces.c:352
+msgid "Enter the password you use to login into www.openstreetmap.org."
+msgstr "Введите пароль используемый для входа на www.openstreetmap.org."
+
+#: ../src/osm-traces.c:370
+msgid "Description:"
+msgstr "Описание:"
+
+#: ../src/osm-traces.c:380
+msgid "Tags:"
+msgstr "Тэги:"
+
+#: ../src/osm-traces.c:390
+msgid "Public"
+msgstr "Публичное"
+
+#: ../src/vikdemlayer.c:108
+msgid "DEM Files:"
+msgstr "DEM Файлы:"
+
+#: ../src/vikdemlayer.c:111
+msgid "Min Elev:"
+msgstr "Минимальная Высота:"
+
+#: ../src/vikdemlayer.c:112
+msgid "Max Elev:"
+msgstr "Максимальная Высота:"
+
+#: ../src/vikdemlayer.c:124
+msgid "DEM Download/Import"
+msgstr "DEM Загрузить/Импортировать"
+
+#: ../src/vikfileentry.c:67
+msgid "Browse..."
+msgstr "Обзор..."
+
+#: ../src/vikfileentry.c:94
+msgid "Choose file"
+msgstr "Выберите файл"
+
+#: ../src/vikfilelist.c:47
+msgid "Choose file(s)"
+msgstr "Выберите файл(ы)"
+
+#: ../src/vikfilelist.c:126
+msgid "Add..."
+msgstr "Добавить..."
+
+#: ../src/vikfilelist.c:127
+msgid "Delete"
+msgstr "Удалить"
+
+#: ../src/vikgeoreflayer.c:384
+msgid "Layer Properties"
+msgstr "Свойства слоя"
+
+#: ../src/vikgeoreflayer.c:401
+msgid "Load From File..."
+msgstr "Загрузить из файла..."
+
+#: ../src/vikgpslayer.c:140
+msgid "Gpsd Host:"
+msgstr "Gpsd хост:"
+
+#: ../src/vikgpslayer.c:141
+msgid "Gpsd Port:"
+msgstr "Gpsd портt:"
+
+#: ../src/vikgpslayer.c:373
+msgid "Unknown GPS Protocol"
+msgstr "Неизвестный GPS протокол"
+
+#: ../src/vikgpslayer.c:444
+#, c-format
+msgid "%s: unknown parameter"
+msgstr "%s: неизвестный параметр"
+
+#: ../src/vikgpslayer.c:952
+msgid "Error: couldn't find gpsbabel."
+msgstr "Ошибка: gpsbabel не найден."
+
+#: ../src/viklayerspanel.c:60
+msgid "/_Copy"
+msgstr "/_Копировать"
+
+#: ../src/viklayerspanel.c:61
+msgid "/_Paste"
+msgstr "/Вст_авить"
+
+#: ../src/viklayerspanel.c:62
+msgid "/_Delete"
+msgstr "/_Удалить"
+
+#: ../src/vikmapslayer.c:129
+msgid "Maps Download"
+msgstr "Загрузка карт"
+
+#: ../src/vikmapslayer.c:135
+msgid "Map"
+msgstr "Карта"
+
+#: ../src/vikmapslayer.c:1058
+msgid "Redownload bad map(s)"
+msgstr "Перезагрузить испорченные карты"
+
+#: ../src/vikmapslayer.c:1062
+msgid "Redownload all map(s)"
+msgstr "Перезагрузить все карты"
+
+#: ../src/viktreeview.c:203
+msgid "Layer Name"
+msgstr "Имя слоя"
+
+#: ../src/viktreeview.c:624
+#, c-format
+msgid "delete data from %s\n"
+msgstr "удалить данные %s\n"
+
+#: ../src/viktrwlayer.c:1596
+msgid "Create"
+msgstr "Создать"
+
+#: ../src/viktrwlayer.c:1745
+msgid "Export as GPSMapper"
+msgstr "Экспортировать в GPSMapper"
+
+#: ../src/viktrwlayer.c:1750
+msgid "Export as GPX"
+msgstr "Экспортировать в GPX"
+
+#: ../src/vikwindow.c:2022
+msgid "Full Screen"
+msgstr "Во весь экран"
+
+#: ../src/acquire.c:141
+msgid "Error: acquisition failed."
+msgstr ""
+
+#: ../src/background.c:54
+#, c-format
+msgid "%d items"
+msgstr ""
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
@@ -82,14 +419,6 @@ msgstr ""
 msgid "Go to Lat/Lon"
 msgstr ""
 
-#: ../src/dialog.c:66 ../src/dialog.c:230
-msgid "Latitude:"
-msgstr "Широта:"
-
-#: ../src/dialog.c:72 ../src/dialog.c:235
-msgid "Longitude:"
-msgstr "Долгота:"
-
 #: ../src/dialog.c:115
 msgid "Northing:"
 msgstr ""
@@ -97,10 +426,6 @@ msgstr ""
 #: ../src/dialog.c:121
 msgid "Easting:"
 msgstr ""
-
-#: ../src/dialog.c:128
-msgid "Zone:"
-msgstr "Зона:"
 
 #: ../src/dialog.c:131
 msgid "Letter:"
@@ -110,60 +435,14 @@ msgstr ""
 msgid "Waypoint Properties"
 msgstr ""
 
-#: ../src/dialog.c:218
-msgid "Name:"
-msgstr "Имя:"
-
-#: ../src/dialog.c:240
-msgid "Altitude:"
-msgstr "Высота:"
-
-#: ../src/dialog.c:245
-msgid "Comment:"
-msgstr "Комментарий:"
-
-#: ../src/dialog.c:259
-msgid "Image:"
-msgstr "Изображение:"
-
-#: ../src/dialog.c:264
-msgid "Symbol:"
-msgstr "Символ:"
-
-#: ../src/dialog.c:273
-msgid "(none)"
-msgstr "(нет)"
-
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:328
 msgid "Please enter a name for the waypoint."
 msgstr ""
 
-#: ../src/dialog.c:332
-#, c-format
-msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr "Путевая точка  \"%s\" уже существует, перезаписать?"
-
 #: ../src/dialog.c:462 ../src/geonamessearch.c:301
 msgid "Nothing was selected"
 msgstr ""
-
-#: ../src/dialog.c:470
-msgid "Add Track"
-msgstr "Добавить трек"
-
-#: ../src/dialog.c:478
-msgid "Track Name:"
-msgstr "Имя трека:"
-
-#: ../src/dialog.c:493
-msgid "Please enter a name for the track."
-msgstr "Введите имя трека"
-
-#: ../src/dialog.c:497
-#, c-format
-msgid "The track \"%s\" exists, do you want to overwrite it?"
-msgstr "Трек \"%s\" существует, перезаписать?"
 
 #: ../src/dialog.c:559
 msgid "Zoom Factors..."
@@ -184,18 +463,6 @@ msgstr ""
 #: ../src/dialog.c:580
 msgid "X and Y zoom factors must be equal"
 msgstr ""
-
-#: ../src/dialog.c:633
-msgid "1 min"
-msgstr "1 мин"
-
-#: ../src/dialog.c:634
-msgid "1 hour"
-msgstr "1 час"
-
-#: ../src/dialog.c:635
-msgid "1 day"
-msgstr "1 день"
 
 #: ../src/dialog.c:636
 msgid "Custom (in minutes):"
@@ -226,14 +493,6 @@ msgstr ""
 msgid "Download along track"
 msgstr ""
 
-#: ../src/dialog.c:728
-msgid "Map type:"
-msgstr "Тип карты:"
-
-#: ../src/dialog.c:733
-msgid "Zoom level:"
-msgstr "Увеличение/уменьшение:"
-
 #: ../src/expedia.c:51
 msgid "Expedia Street Maps"
 msgstr ""
@@ -256,12 +515,6 @@ msgid ""
 "report and delete image file!): %s"
 msgstr ""
 
-#: ../src/geonamessearch.c:117 ../src/geonamessearch.c:133
-#: ../src/geonamessearch.c:151 ../src/googlesearch.c:68
-#: ../src/googlesearch.c:86
-msgid "Search"
-msgstr "Поиск"
-
 #: ../src/geonamessearch.c:119
 msgid "No entries found!"
 msgstr ""
@@ -278,43 +531,18 @@ msgstr ""
 msgid "couldn't map temp file"
 msgstr ""
 
-#: ../src/geonamessearch.c:509 ../src/googlesearch.c:200
-msgid "couldn't open temp file"
-msgstr "невозможно открыть временный файл"
-
 #: ../src/globals.c:41
 msgid "Degree format:"
 msgstr ""
-
-#. Webtools
-#: ../src/google.c:34
-msgid "Google"
-msgstr "Google"
-
-#: ../src/datasource_gc.c:62
-msgid "Download Geocaches"
-msgstr "Загрузить Геокеши"
 
 #: ../src/datasource_gc.c:63
 msgid "Geocaching.com Caches"
 msgstr ""
 
-#: ../src/datasource_gc.c:78
-msgid "geocaching.com username:"
-msgstr "Имя пользователя geocaching.com:"
-
-#: ../src/datasource_gc.c:79
-msgid "geocaching.com password:"
-msgstr "Пароль пользователя geocaching.com:"
-
 #: ../src/datasource_gc.c:107
 msgid ""
 "Can't find gcget in path! Check that you have installed gcget correctly."
 msgstr ""
-
-#: ../src/datasource_gc.c:169
-msgid "Number geocaches:"
-msgstr "Количество геокешей:"
 
 #: ../src/datasource_gc.c:171
 msgid "Centered around:"
@@ -323,22 +551,6 @@ msgstr ""
 #: ../src/datasource_google.c:49 ../src/datasource_google.c:50
 msgid "Google Directions"
 msgstr ""
-
-#: ../src/datasource_google.c:74
-msgid "From:"
-msgstr "От:"
-
-#: ../src/datasource_google.c:76
-msgid "To:"
-msgstr "К:"
-
-#: ../src/datasource_gps.c:48
-msgid "Acquire from GPS"
-msgstr "Получить из GPS"
-
-#: ../src/datasource_gps.c:49
-msgid "Acquired from GPS"
-msgstr "Получено из GPS"
 
 #: ../src/datasource_gps.c:133
 #, c-format
@@ -369,31 +581,6 @@ msgstr ""
 msgid "Downloaded %d %s."
 msgstr ""
 
-#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:783
-#, c-format
-msgid "GPS Device: %s"
-msgstr "GPS : %s"
-
-#: ../src/datasource_gps.c:262 ../src/vikgpslayer.c:133
-msgid "GPS Protocol:"
-msgstr "GPS протокол:"
-
-#: ../src/datasource_gps.c:269 ../src/vikgpslayer.c:134
-msgid "Serial Port:"
-msgstr "Последовательный порт:"
-
-#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:1001
-msgid "GPS device: N/A"
-msgstr "GPS устройство: необнаружено"
-
-#: ../src/dem.c:59 ../src/dem.c:73
-msgid "Invalid DEM"
-msgstr "Неправильный DEM"
-
-#: ../src/dem.c:115
-msgid "Invalid DEM header"
-msgstr "Неправильный DEM заголовок"
-
 #: ../src/dem.c:184 ../src/dem.c:197
 msgid "Incorrect DEM Class B record: expected 1"
 msgstr ""
@@ -403,11 +590,6 @@ msgstr ""
 msgid "Couldn't map file %s: %s"
 msgstr ""
 
-#: ../src/download.c:121
-#, c-format
-msgid "Download error: %s"
-msgstr "Ошибка загрузки: %s"
-
 #: ../src/file.c:426 ../src/file.c:430
 #, c-format
 msgid "Draw mode '%s' no more supported"
@@ -416,26 +598,6 @@ msgstr ""
 #: ../src/print.c:53
 msgid "None"
 msgstr ""
-
-#: ../src/print.c:54
-msgid "Horizontally"
-msgstr "Горизонтально"
-
-#: ../src/print.c:55
-msgid "Vertically"
-msgstr "Вертикально"
-
-#: ../src/print.c:56
-msgid "Both"
-msgstr "Оба"
-
-#: ../src/print.c:120
-msgid "Image Settings"
-msgstr "Настройки изображения"
-
-#: ../src/print.c:550
-msgid "done"
-msgstr "завершено"
 
 #. Page Size
 #: ../src/print.c:579
@@ -463,21 +625,9 @@ msgstr ""
 msgid "Could not create new email."
 msgstr ""
 
-#: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
-msgid "Color:"
-msgstr "Цвет:"
-
 #: ../src/vikcoordlayer.c:47
 msgid "Minutes Width:"
 msgstr ""
-
-#: ../src/vikcoordlayer.c:48 ../src/vikdemlayer.c:113
-msgid "Line Thickness:"
-msgstr "Толщина линий"
-
-#: ../src/datasource_bfilter.c:46
-msgid "Max number of points:"
-msgstr "Максимальное количество точек"
 
 #: ../src/datasource_bfilter.c:54
 msgid "Simplify All Tracks"
@@ -506,14 +656,6 @@ msgstr ""
 #: ../src/main.c:116
 msgid "Use smaller symbols for waypoints"
 msgstr ""
-
-#: ../src/main.c:117
-msgid "Enable debug output"
-msgstr "Включить отладочную выдачу"
-
-#: ../src/main.c:118
-msgid "Enable verbose output"
-msgstr "Включить подробную выдачу"
 
 #: ../src/main.c:119
 msgid "Show version"
@@ -568,10 +710,6 @@ msgstr ""
 msgid "OSM upload"
 msgstr ""
 
-#: ../src/osm-traces.c:322
-msgid "Email:"
-msgstr "Email:"
-
 #: ../src/osm-traces.c:335
 msgid "The email used as login"
 msgstr ""
@@ -580,17 +718,9 @@ msgstr ""
 msgid "Enter the email you use to login into www.openstreetmap.org."
 msgstr ""
 
-#: ../src/osm-traces.c:338
-msgid "Password:"
-msgstr "Пароль:"
-
 #: ../src/osm-traces.c:351
 msgid "The password used to login"
 msgstr ""
-
-#: ../src/osm-traces.c:352
-msgid "Enter the password you use to login into www.openstreetmap.org."
-msgstr "Введите пароль используемый для входа на www.openstreetmap.org."
 
 #: ../src/osm-traces.c:354
 msgid "File's name:"
@@ -606,25 +736,13 @@ msgid ""
 "the local file."
 msgstr ""
 
-#: ../src/osm-traces.c:370
-msgid "Description:"
-msgstr "Описание:"
-
 #: ../src/osm-traces.c:377
 msgid "The description of the trace"
 msgstr ""
 
-#: ../src/osm-traces.c:380
-msgid "Tags:"
-msgstr "Тэги:"
-
 #: ../src/osm-traces.c:387
 msgid "The tags associated to the trace"
 msgstr ""
-
-#: ../src/osm-traces.c:390
-msgid "Public"
-msgstr "Публичное"
 
 #: ../src/osm-traces.c:396
 msgid "Indicates if the trace is public or not"
@@ -639,25 +757,9 @@ msgstr ""
 msgid "Take care that this password will be stored clearly in a plain file."
 msgstr ""
 
-#: ../src/vikdemlayer.c:108
-msgid "DEM Files:"
-msgstr "DEM Файлы:"
-
 #: ../src/vikdemlayer.c:109
 msgid "Download Source:"
 msgstr ""
-
-#: ../src/vikdemlayer.c:111
-msgid "Min Elev:"
-msgstr "Минимальная Высота:"
-
-#: ../src/vikdemlayer.c:112
-msgid "Max Elev:"
-msgstr "Максимальная Высота:"
-
-#: ../src/vikdemlayer.c:124
-msgid "DEM Download/Import"
-msgstr "DEM Загрузить/Импортировать"
 
 #: ../src/vikdemlayer.c:754
 #, c-format
@@ -672,26 +774,6 @@ msgstr ""
 #, c-format
 msgid "Downloading DEM %s"
 msgstr ""
-
-#: ../src/vikfileentry.c:67
-msgid "Browse..."
-msgstr "Обзор..."
-
-#: ../src/vikfileentry.c:94
-msgid "Choose file"
-msgstr "Выберите файл"
-
-#: ../src/vikfilelist.c:47
-msgid "Choose file(s)"
-msgstr "Выберите файл(ы)"
-
-#: ../src/vikfilelist.c:126
-msgid "Add..."
-msgstr "Добавить..."
-
-#: ../src/vikfilelist.c:127
-msgid "Delete"
-msgstr "Удалить"
 
 #: ../src/vikgeoreflayer.c:66
 msgid "Georef Move Map"
@@ -722,17 +804,9 @@ msgstr ""
 msgid "The file you requested could not be opened for writing."
 msgstr ""
 
-#: ../src/vikgeoreflayer.c:384
-msgid "Layer Properties"
-msgstr "Свойства слоя"
-
 #: ../src/vikgeoreflayer.c:400
 msgid "World File Parameters:"
 msgstr ""
-
-#: ../src/vikgeoreflayer.c:401
-msgid "Load From File..."
-msgstr "Загрузить из файла..."
 
 #: ../src/vikgeoreflayer.c:406
 msgid "Corner pixel easting:"
@@ -778,14 +852,6 @@ msgstr ""
 msgid "Moving Map Method:"
 msgstr ""
 
-#: ../src/vikgpslayer.c:140
-msgid "Gpsd Host:"
-msgstr "Gpsd хост:"
-
-#: ../src/vikgpslayer.c:141
-msgid "Gpsd Port:"
-msgstr "Gpsd портt:"
-
 #: ../src/vikgpslayer.c:142
 msgid "Gpsd Retry Interval (seconds):"
 msgstr ""
@@ -802,18 +868,9 @@ msgstr ""
 msgid "GPS Realtime Tracking"
 msgstr ""
 
-#: ../src/vikgpslayer.c:373
-msgid "Unknown GPS Protocol"
-msgstr "Неизвестный GPS протокол"
-
 #: ../src/vikgpslayer.c:379
 msgid "Unknown serial port device"
 msgstr ""
-
-#: ../src/vikgpslayer.c:444
-#, c-format
-msgid "%s: unknown parameter"
-msgstr "%s: неизвестный параметр"
 
 #: ../src/vikgpslayer.c:545
 msgid "Upload to GPS"
@@ -905,25 +962,9 @@ msgid_plural "Uploaded %d trackpoints"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/vikgpslayer.c:952
-msgid "Error: couldn't find gpsbabel."
-msgstr "Ошибка: gpsbabel не найден."
-
 #: ../src/viklayerspanel.c:59
 msgid "/C_ut"
 msgstr ""
-
-#: ../src/viklayerspanel.c:60
-msgid "/_Copy"
-msgstr "/_Копировать"
-
-#: ../src/viklayerspanel.c:61
-msgid "/_Paste"
-msgstr "/Вст_авить"
-
-#: ../src/viklayerspanel.c:62
-msgid "/_Delete"
-msgstr "/_Удалить"
 
 #: ../src/viklayerspanel.c:63
 msgid "/New Layer"
@@ -974,14 +1015,6 @@ msgstr ""
 msgid "Zoom Level:"
 msgstr ""
 
-#: ../src/vikmapslayer.c:129
-msgid "Maps Download"
-msgstr "Загрузка карт"
-
-#: ../src/vikmapslayer.c:135
-msgid "Map"
-msgstr "Карта"
-
 #: ../src/vikmapslayer.c:388
 msgid "Unknown map type"
 msgstr ""
@@ -1025,14 +1058,6 @@ msgid_plural "Downloading %d %s maps..."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/vikmapslayer.c:1058
-msgid "Redownload bad map(s)"
-msgstr "Перезагрузить испорченные карты"
-
-#: ../src/vikmapslayer.c:1062
-msgid "Redownload all map(s)"
-msgstr "Перезагрузить все карты"
-
 #: ../src/vikmapslayer.c:1142
 #, c-format
 msgid ""
@@ -1052,15 +1077,6 @@ msgstr ""
 #: ../src/vikmapslayer.c:1178
 msgid "Refresh Onscreen Tiles"
 msgstr ""
-
-#: ../src/viktreeview.c:203
-msgid "Layer Name"
-msgstr "Имя слоя"
-
-#: ../src/viktreeview.c:624
-#, c-format
-msgid "delete data from %s\n"
-msgstr "удалить данные %s\n"
 
 #: ../src/viktrwlayer.c:307
 msgid "Create Waypoint"
@@ -1246,10 +1262,6 @@ msgstr ""
 msgid "The filename you requested could not be opened for writing."
 msgstr ""
 
-#: ../src/viktrwlayer.c:1596
-msgid "Create"
-msgstr "Создать"
-
 #: ../src/viktrwlayer.c:1606
 msgid "Waypoint Name:"
 msgstr ""
@@ -1273,14 +1285,6 @@ msgstr ""
 #: ../src/viktrwlayer.c:1740
 msgid "Export as GPSPoint"
 msgstr ""
-
-#: ../src/viktrwlayer.c:1745
-msgid "Export as GPSMapper"
-msgstr "Экспортировать в GPSMapper"
-
-#: ../src/viktrwlayer.c:1750
-msgid "Export as GPX"
-msgstr "Экспортировать в GPX"
 
 #: ../src/viktrwlayer.c:1755 ../src/viktrwlayer.c:2794
 msgid "New Waypoint"
@@ -2017,10 +2021,6 @@ msgid "Show Center Mark"
 msgstr ""
 
 #: ../src/vikwindow.c:2022
-msgid "Full Screen"
-msgstr "Во весь экран"
-
-#: ../src/vikwindow.c:2022
 msgid "Activate full screen mode"
 msgstr ""
 
@@ -2044,20 +2044,3 @@ msgstr ""
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr ""
-
-#~ msgid "Transparent Google Maps"
-#~ msgstr "Прозрачные карты Google"
-
-#~ msgid "Google Satellite Images"
-#~ msgstr "Спутниковое изображение Google"
-
-#~ msgid "Old Google Maps"
-#~ msgstr "Старые карты Google"
-
-#, c-format
-#~ msgid "couldn't open temp file %s"
-#~ msgstr "невозможно открыть временный файл %s"
-
-#, c-format
-#~ msgid "Failed downloading %s"
-#~ msgstr "Ошибка загрузки %s"

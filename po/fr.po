@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2009-02-08 13:36+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: French\n"
 
@@ -72,11 +72,6 @@ msgid ""
 "into."
 msgstr "Pour copier un waypoint, sélectionner un calque approprié."
 
-#: ../src/curl_download.c:85
-#, c-format
-msgid "%s() Curl perform failed: %s"
-msgstr ""
-
 #: ../src/dialog.c:54 ../src/dialog.c:102
 msgid "Go to Lat/Lon"
 msgstr "Aller à Lat/Lon"
@@ -104,10 +99,6 @@ msgstr "Zone :"
 #: ../src/dialog.c:131
 msgid "Letter:"
 msgstr "Lettre :"
-
-#: ../src/dialog.c:192
-msgid "Waypoint Properties"
-msgstr ""
 
 #: ../src/dialog.c:218
 msgid "Name:"
@@ -200,27 +191,6 @@ msgstr "1 jour"
 msgid "Custom (in minutes):"
 msgstr "Personalisé (en minutes)"
 
-#: ../src/dialog.c:691
-msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr ""
-
-#: ../src/dialog.c:692
-msgid ""
-"This program is free software; you can redistribute it and/or modify it "
-"under the terms of the GNU General Public License as published by the Free "
-"Software Foundation; either version 2 of the License, or (at your option) "
-"any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful, but WITHOUT "
-"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
-"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
-"more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License along with "
-"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
-"Place, Suite 330, Boston, MA 02111-1307, USA"
-msgstr ""
-
 #: ../src/dialog.c:726
 msgid "Download along track"
 msgstr "Télécharger le long de la trace"
@@ -286,10 +256,6 @@ msgstr "Impossible d'ouvrir le fichier de carte"
 msgid "couldn't open temp file"
 msgstr "Impossible d'ouvrir le fichier temporaire"
 
-#: ../src/globals.c:41
-msgid "Degree format:"
-msgstr ""
-
 #. Webtools
 #: ../src/google.c:34
 msgid "Google"
@@ -351,20 +317,6 @@ msgstr "Acquis depuis le GPS"
 msgid "using cmdline '%s' and file '%s'\n"
 msgstr "exécute la commande '%s' avec le fichier '%s'\n"
 
-#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:711
-#, c-format
-msgid "Downloading %d waypoint..."
-msgid_plural "Downloading %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:713
-#, c-format
-msgid "Downloading %d trackpoint..."
-msgid_plural "Downloading %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
-
 #: ../src/datasource_gps.c:170
 #, c-format
 msgid "Downloaded %d out of %d %s..."
@@ -404,20 +356,10 @@ msgstr "Entête DEM invalide"
 msgid "Incorrect DEM Class B record: expected 1"
 msgstr "Enregistrement DEM Class B incorrect: la valeur devrait être 1"
 
-#: ../src/dem.c:354
-#, c-format
-msgid "Couldn't map file %s: %s"
-msgstr ""
-
 #: ../src/download.c:121
 #, c-format
 msgid "Download error: %s"
 msgstr "Erreur de téléchargement : %s"
-
-#: ../src/file.c:426 ../src/file.c:430
-#, c-format
-msgid "Draw mode '%s' no more supported"
-msgstr ""
 
 #: ../src/print.c:53
 msgid "None"
@@ -497,17 +439,9 @@ msgstr "Simplifier les traces"
 msgid "Remove Duplicate Waypoints"
 msgstr "Supprimer les waypoints dupliqués"
 
-#: ../src/datasource_bfilter.c:117
-msgid "Waypoints Inside This"
-msgstr ""
-
 #: ../src/datasource_bfilter.c:118 ../src/datasource_bfilter.c:151
 msgid "Polygonzied Layer"
 msgstr "Calque polygonial"
-
-#: ../src/datasource_bfilter.c:150
-msgid "Waypoints Outside This"
-msgstr ""
 
 #: ../src/main.c:116
 msgid "Use smaller symbols for waypoints"
@@ -745,29 +679,9 @@ msgstr "Paramètres du fichier World :"
 msgid "Load From File..."
 msgstr "Chargement depuis un fichier…"
 
-#: ../src/vikgeoreflayer.c:406
-msgid "Corner pixel easting:"
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:409
-msgid "Corner pixel northing:"
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:412
-msgid "X (easting) scale (mpp): "
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:413
-msgid "Y (northing) scale (mpp): "
-msgstr ""
-
 #: ../src/vikgeoreflayer.c:418
 msgid "Map Image:"
 msgstr "Image carte :"
-
-#: ../src/vikgeoreflayer.c:522
-msgid "Zoom to Fit Map"
-msgstr ""
 
 #: ../src/vikgeoreflayer.c:527
 msgid "Goto Map Center"
@@ -781,14 +695,6 @@ msgstr "Exporter en fichier World"
 msgid "Recording tracks"
 msgstr "Enregistrement des traces"
 
-#: ../src/vikgpslayer.c:138
-msgid "Jump to current position on start"
-msgstr ""
-
-#: ../src/vikgpslayer.c:139
-msgid "Moving Map Method:"
-msgstr ""
-
 #: ../src/vikgpslayer.c:140
 msgid "Gpsd Host:"
 msgstr "Hôte gpsd :"
@@ -796,10 +702,6 @@ msgstr "Hôte gpsd :"
 #: ../src/vikgpslayer.c:141
 msgid "Gpsd Port:"
 msgstr "Port gpsd :"
-
-#: ../src/vikgpslayer.c:142
-msgid "Gpsd Retry Interval (seconds):"
-msgstr ""
 
 #: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:989
 msgid "GPS Download"
@@ -845,20 +747,6 @@ msgstr "Réception vide"
 #: ../src/vikgpslayer.c:578
 msgid "Empty All"
 msgstr "Tout effacer"
-
-#: ../src/vikgpslayer.c:718
-#, c-format
-msgid "Uploading %d waypoint..."
-msgid_plural "Uploading %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:720
-#, c-format
-msgid "Uploading %d trackpoint..."
-msgid_plural "Uploading %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
 
 #: ../src/vikgpslayer.c:744
 #, c-format
@@ -1016,20 +904,6 @@ msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
 msgstr "Impossible d'afficher des cases en dessous du facteur de zoom %d."
-
-#: ../src/vikmapslayer.c:924
-#, c-format
-msgid "Redownloading up to %d %s map..."
-msgid_plural "Redownloading up to %d %s maps..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikmapslayer.c:926
-#, c-format
-msgid "Redownloading %d %s map..."
-msgid_plural "Redownloading %d %s maps..."
-msgstr[0] ""
-msgstr[1] ""
 
 #: ../src/vikmapslayer.c:930 ../src/vikmapslayer.c:1001
 #, c-format
@@ -1398,22 +1272,6 @@ msgstr "Télécharger les cartes le long de la trace…"
 msgid "Apply DEM Data"
 msgstr "Appliquer les altitudes du DEM"
 
-#: ../src/viktrwlayer.c:2749
-msgid "Extend track end"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2754
-msgid "Extend using magic scissors"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2768
-msgid "View Google Directions"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2774
-msgid "Use with filter"
-msgstr ""
-
 #: ../src/viktrwlayer.c:3736
 msgid "Could not launch eog to open file."
 msgstr "Impossible de lancer eog pour ouvrir ce fichier."
@@ -1526,17 +1384,9 @@ msgstr "%d minutes"
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: ../src/viktrwlayer_propwin.c:875
-msgid "<b>Track Distance:</b>"
-msgstr ""
-
 #: ../src/viktrwlayer_propwin.c:876
 msgid "Elevation-distance"
 msgstr "Dénivelée/distance"
-
-#: ../src/viktrwlayer_propwin.c:882
-msgid "<b>Track Time:</b>"
-msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:883
 msgid "Speed-time"
@@ -1578,10 +1428,6 @@ msgstr "<b>Temps :</b>"
 msgid "<b>\"Speed\" Between:</b>"
 msgstr "<b>Vitesse :</b>"
 
-#: ../src/viktrwlayer_tpwin.c:117
-msgid "Trackpoint"
-msgstr ""
-
 #: ../src/viktrwlayer_tpwin.c:122
 msgid "Split Here"
 msgstr "Découper ici"
@@ -1620,24 +1466,6 @@ msgstr "SansTitre"
 #: ../src/vikwindow.c:367
 msgid "Don't Save"
 msgstr "Ne pas enregistrer"
-
-#: ../src/vikwindow.c:400
-msgid "mpp"
-msgstr ""
-
-#: ../src/vikwindow.c:400
-msgid "pixelfact"
-msgstr ""
-
-#: ../src/vikwindow.c:527
-#, c-format
-msgid "%s %s %dm"
-msgstr ""
-
-#: ../src/vikwindow.c:529
-#, c-format
-msgid "%s %s"
-msgstr ""
 
 #: ../src/vikwindow.c:1113
 msgid "You must select a layer to show its properties."
@@ -1842,10 +1670,6 @@ msgstr "Enregistre une copie d'écran dans un fichier"
 msgid "Generate _Directory of Images"
 msgstr "Générer un _répertoire d'images"
 
-#: ../src/vikwindow.c:1963
-msgid "FIXME:IMGDIR"
-msgstr ""
-
 #: ../src/vikwindow.c:1966
 msgid "_Print..."
 msgstr "_Imprimer…"
@@ -1869,14 +1693,6 @@ msgstr "Enregistrer et quitter"
 #: ../src/vikwindow.c:1970
 msgid "Save and Exit the program"
 msgstr "Enregistrer et quitter le programme"
-
-#: ../src/vikwindow.c:1972
-msgid "Go To location"
-msgstr ""
-
-#: ../src/vikwindow.c:1972
-msgid "Go to address/place using text search"
-msgstr ""
 
 #: ../src/vikwindow.c:1973
 msgid "_Go to Lat\\/Lon..."
@@ -2055,10 +1871,6 @@ msgstr "Afficher le panneau latéral"
 msgid "New %s Layer"
 msgstr "Nouveau calque \"%s\""
 
-#: ../src/viking.desktop.in.h:1
-msgid "GPS Data Manager"
-msgstr ""
-
 #: ../src/viking.desktop.in.h:2
 msgid "Map Based GPS Data Manager (live data capable)."
 msgstr ""
@@ -2069,41 +1881,190 @@ msgstr ""
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Transparent Google Maps"
-#~ msgstr "Cartes Google (transparent)"
-
-#~ msgid "Google Satellite Images"
-#~ msgstr "Images Satellite Google"
-
-#~ msgid "Google Terrain Maps"
-#~ msgstr "Cartes de terrain Google"
-
-#~ msgid "Failed getting google version numbers"
-#~ msgstr "Échec lors de la récupération de la version de Google"
-
-#~ msgid "Old Google Maps"
-#~ msgstr "Anciennes cartes Google"
-
-#~ msgid "Keep current position at center"
-#~ msgstr "Toujours centrer sur la position courante"
-
-#~ msgid "_Old Google Mode"
-#~ msgstr "_Ancien mode Google"
-
-#~ msgid "Old _KH Mode"
-#~ msgstr "Ancien mode _KH"
-
-#~ msgid "_Google Mode"
-#~ msgstr "Mode _Google"
-
+#: ../src/curl_download.c:85
 #, c-format
-#~ msgid "couldn't open temp file %s"
-#~ msgstr "Impossible d'ouvrir le fichier temporaire %s"
+msgid "%s() Curl perform failed: %s"
+msgstr ""
 
+#: ../src/dialog.c:192
+msgid "Waypoint Properties"
+msgstr ""
+
+#: ../src/dialog.c:691
+msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
+msgstr ""
+
+#: ../src/dialog.c:692
+msgid ""
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
+"Place, Suite 330, Boston, MA 02111-1307, USA"
+msgstr ""
+
+#: ../src/globals.c:41
+msgid "Degree format:"
+msgstr ""
+
+#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:711
 #, c-format
-#~ msgid "Failed downloading %s"
-#~ msgstr "Échec du téléchargement de %s"
+msgid "Downloading %d waypoint..."
+msgid_plural "Downloading %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
 
-#~ msgid "Failed fetching Google numbers (\"GLoadApi\" not found)"
-#~ msgstr ""
-#~ "Échec lors de la récupération des nombres Google (\"GLoadApi\" not found)"
+#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:713
+#, c-format
+msgid "Downloading %d trackpoint..."
+msgid_plural "Downloading %d trackpoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/dem.c:354
+#, c-format
+msgid "Couldn't map file %s: %s"
+msgstr ""
+
+#: ../src/file.c:426 ../src/file.c:430
+#, c-format
+msgid "Draw mode '%s' no more supported"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:117
+msgid "Waypoints Inside This"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:150
+msgid "Waypoints Outside This"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:406
+msgid "Corner pixel easting:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:409
+msgid "Corner pixel northing:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:412
+msgid "X (easting) scale (mpp): "
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:413
+msgid "Y (northing) scale (mpp): "
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:522
+msgid "Zoom to Fit Map"
+msgstr ""
+
+#: ../src/vikgpslayer.c:138
+msgid "Jump to current position on start"
+msgstr ""
+
+#: ../src/vikgpslayer.c:139
+msgid "Moving Map Method:"
+msgstr ""
+
+#: ../src/vikgpslayer.c:142
+msgid "Gpsd Retry Interval (seconds):"
+msgstr ""
+
+#: ../src/vikgpslayer.c:718
+#, c-format
+msgid "Uploading %d waypoint..."
+msgid_plural "Uploading %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:720
+#, c-format
+msgid "Uploading %d trackpoint..."
+msgid_plural "Uploading %d trackpoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikmapslayer.c:924
+#, c-format
+msgid "Redownloading up to %d %s map..."
+msgid_plural "Redownloading up to %d %s maps..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikmapslayer.c:926
+#, c-format
+msgid "Redownloading %d %s map..."
+msgid_plural "Redownloading %d %s maps..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/viktrwlayer.c:2749
+msgid "Extend track end"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2754
+msgid "Extend using magic scissors"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2768
+msgid "View Google Directions"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2774
+msgid "Use with filter"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:875
+msgid "<b>Track Distance:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:882
+msgid "<b>Track Time:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:117
+msgid "Trackpoint"
+msgstr ""
+
+#: ../src/vikwindow.c:400
+msgid "mpp"
+msgstr ""
+
+#: ../src/vikwindow.c:400
+msgid "pixelfact"
+msgstr ""
+
+#: ../src/vikwindow.c:527
+#, c-format
+msgid "%s %s %dm"
+msgstr ""
+
+#: ../src/vikwindow.c:529
+#, c-format
+msgid "%s %s"
+msgstr ""
+
+#: ../src/vikwindow.c:1963
+msgid "FIXME:IMGDIR"
+msgstr ""
+
+#: ../src/vikwindow.c:1972
+msgid "Go To location"
+msgstr ""
+
+#: ../src/vikwindow.c:1972
+msgid "Go to address/place using text search"
+msgstr ""
+
+#: ../src/viking.desktop.in.h:1
+msgid "GPS Data Manager"
+msgstr ""

@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2009-02-08 13:36+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -2089,41 +2089,3 @@ msgstr "Správce GPS a mapových dat"
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr "Viking"
-
-#~ msgid "Transparent Google Maps"
-#~ msgstr "průhledné Google mapy"
-
-#~ msgid "Google Satellite Images"
-#~ msgstr "Google satelitní mapy"
-
-#~ msgid "Google Terrain Maps"
-#~ msgstr "Google terénní mapy"
-
-#~ msgid "Failed getting google version numbers"
-#~ msgstr "Chyba při získávaní verze google čísel"
-
-#~ msgid "Old Google Maps"
-#~ msgstr "staré Google mapy"
-
-#~ msgid "Keep current position at center"
-#~ msgstr "Aktuální pozice uprostřed"
-
-#~ msgid "_Old Google Mode"
-#~ msgstr "starý G_oogle mód"
-
-#~ msgid "Old _KH Mode"
-#~ msgstr "starý _KH mód"
-
-#~ msgid "_Google Mode"
-#~ msgstr "_Google mód"
-
-#, c-format
-#~ msgid "couldn't open temp file %s"
-#~ msgstr "nelze vytvořit dočasný soubor: %s"
-
-#, c-format
-#~ msgid "Failed downloading %s"
-#~ msgstr "Stažení selhalo %s"
-
-#~ msgid "Failed fetching Google numbers (\"GLoadApi\" not found)"
-#~ msgstr "Chyba při stahování Google \"čísel\" (\"GLoadApi\" nenalezeno)"

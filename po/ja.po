@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-04 22:27+0100\n"
-"PO-Revision-Date: 2008-10-19 22:20+0000\n"
-"Last-Translator: Katz Kawai <Unknown>\n"
+"POT-Creation-Date: 2009-02-04 22:47+0100\n"
+"PO-Revision-Date: 2009-02-04 22:18+0000\n"
+"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2009-02-04 21:00+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -55,6 +55,124 @@ msgstr "Viking バックグラウンドジョブ"
 msgid "paste failed"
 msgstr "貼り付け失敗"
 
+#: ../src/dialog.c:66 ../src/dialog.c:230
+msgid "Latitude:"
+msgstr "緯度:"
+
+#: ../src/dialog.c:72 ../src/dialog.c:235
+msgid "Longitude:"
+msgstr "経度:"
+
+#: ../src/dialog.c:131
+msgid "Letter:"
+msgstr "レター:"
+
+#: ../src/dialog.c:218
+msgid "Name:"
+msgstr "名前:"
+
+#: ../src/dialog.c:240
+msgid "Altitude:"
+msgstr "高度:"
+
+#: ../src/dialog.c:245
+msgid "Comment:"
+msgstr "コメント:"
+
+#: ../src/dialog.c:259
+msgid "Image:"
+msgstr "画像:"
+
+#: ../src/dialog.c:273
+msgid "(none)"
+msgstr "(なし)"
+
+#: ../src/dialog.c:633
+msgid "1 min"
+msgstr "1分"
+
+#: ../src/dialog.c:634
+msgid "1 hour"
+msgstr "1 時間"
+
+#: ../src/dialog.c:635
+msgid "1 day"
+msgstr "1日"
+
+#: ../src/dialog.c:728
+msgid "Map type:"
+msgstr "マップタイプ:"
+
+#: ../src/dialog.c:733
+msgid "Zoom level:"
+msgstr "ズームレベル:"
+
+#: ../src/geonamessearch.c:117 ../src/geonamessearch.c:133
+#: ../src/geonamessearch.c:151 ../src/googlesearch.c:68
+#: ../src/googlesearch.c:86
+msgid "Search"
+msgstr "検索"
+
+#: ../src/print.c:53
+msgid "None"
+msgstr "なし"
+
+#: ../src/print.c:54
+msgid "Horizontally"
+msgstr "水平方向"
+
+#: ../src/print.c:55
+msgid "Vertically"
+msgstr "垂直方向"
+
+#: ../src/print.c:56
+msgid "Both"
+msgstr "両方"
+
+#: ../src/print.c:120
+msgid "Image Settings"
+msgstr "画像の設定"
+
+#: ../src/print.c:550
+msgid "done"
+msgstr "完了"
+
+#: ../src/print.c:595
+msgid "C_enter:"
+msgstr "中央(_E):"
+
+#: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
+msgid "Color:"
+msgstr "色:"
+
+#: ../src/osm-traces.c:322
+msgid "Email:"
+msgstr "Eメール:"
+
+#: ../src/osm-traces.c:338
+msgid "Password:"
+msgstr "パスワード:"
+
+#: ../src/osm-traces.c:370
+msgid "Description:"
+msgstr "説明:"
+
+#: ../src/osm-traces.c:380
+msgid "Tags:"
+msgstr "タグ:"
+
+#: ../src/osm-traces.c:390
+msgid "Public"
+msgstr "公開"
+
+#: ../src/vikgpslayer.c:952
+msgid "Error: couldn't find gpsbabel."
+msgstr "エラー: gpsbabelを見つけることができませんでした。"
+
+#: ../src/viktrwlayer.c:1596
+msgid "Create"
+msgstr "作成"
+
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
 msgstr ""
@@ -81,14 +199,6 @@ msgstr ""
 msgid "Go to Lat/Lon"
 msgstr ""
 
-#: ../src/dialog.c:66 ../src/dialog.c:230
-msgid "Latitude:"
-msgstr "緯度:"
-
-#: ../src/dialog.c:72 ../src/dialog.c:235
-msgid "Longitude:"
-msgstr "経度:"
-
 #: ../src/dialog.c:115
 msgid "Northing:"
 msgstr ""
@@ -101,37 +211,13 @@ msgstr ""
 msgid "Zone:"
 msgstr ""
 
-#: ../src/dialog.c:131
-msgid "Letter:"
-msgstr "レター:"
-
 #: ../src/dialog.c:192
 msgid "Waypoint Properties"
 msgstr ""
 
-#: ../src/dialog.c:218
-msgid "Name:"
-msgstr "名前:"
-
-#: ../src/dialog.c:240
-msgid "Altitude:"
-msgstr "高度:"
-
-#: ../src/dialog.c:245
-msgid "Comment:"
-msgstr "コメント:"
-
-#: ../src/dialog.c:259
-msgid "Image:"
-msgstr "画像:"
-
 #: ../src/dialog.c:264
 msgid "Symbol:"
 msgstr ""
-
-#: ../src/dialog.c:273
-msgid "(none)"
-msgstr "(なし)"
 
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:328
@@ -184,18 +270,6 @@ msgstr ""
 msgid "X and Y zoom factors must be equal"
 msgstr ""
 
-#: ../src/dialog.c:633
-msgid "1 min"
-msgstr "1分"
-
-#: ../src/dialog.c:634
-msgid "1 hour"
-msgstr "1 時間"
-
-#: ../src/dialog.c:635
-msgid "1 day"
-msgstr "1日"
-
 #: ../src/dialog.c:636
 msgid "Custom (in minutes):"
 msgstr ""
@@ -225,14 +299,6 @@ msgstr ""
 msgid "Download along track"
 msgstr ""
 
-#: ../src/dialog.c:728
-msgid "Map type:"
-msgstr "マップタイプ:"
-
-#: ../src/dialog.c:733
-msgid "Zoom level:"
-msgstr "ズームレベル:"
-
 #: ../src/expedia.c:51
 msgid "Expedia Street Maps"
 msgstr ""
@@ -254,12 +320,6 @@ msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
-
-#: ../src/geonamessearch.c:117 ../src/geonamessearch.c:133
-#: ../src/geonamessearch.c:151 ../src/googlesearch.c:68
-#: ../src/googlesearch.c:86
-msgid "Search"
-msgstr "検索"
 
 #: ../src/geonamessearch.c:119
 msgid "No entries found!"
@@ -412,38 +472,10 @@ msgstr ""
 msgid "Draw mode '%s' no more supported"
 msgstr ""
 
-#: ../src/print.c:53
-msgid "None"
-msgstr "なし"
-
-#: ../src/print.c:54
-msgid "Horizontally"
-msgstr "水平方向"
-
-#: ../src/print.c:55
-msgid "Vertically"
-msgstr "垂直方向"
-
-#: ../src/print.c:56
-msgid "Both"
-msgstr "両方"
-
-#: ../src/print.c:120
-msgid "Image Settings"
-msgstr "画像の設定"
-
-#: ../src/print.c:550
-msgid "done"
-msgstr "完了"
-
 #. Page Size
 #: ../src/print.c:579
 msgid "_Adjust Page Size and Orientation"
 msgstr ""
-
-#: ../src/print.c:595
-msgid "C_enter:"
-msgstr "中央(_E):"
 
 #. ignore page margins
 #: ../src/print.c:613
@@ -461,10 +493,6 @@ msgstr ""
 #: ../src/util.c:86
 msgid "Could not create new email."
 msgstr ""
-
-#: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
-msgid "Color:"
-msgstr "色:"
 
 #: ../src/vikcoordlayer.c:47
 msgid "Minutes Width:"
@@ -567,10 +595,6 @@ msgstr ""
 msgid "OSM upload"
 msgstr ""
 
-#: ../src/osm-traces.c:322
-msgid "Email:"
-msgstr "Eメール:"
-
 #: ../src/osm-traces.c:335
 msgid "The email used as login"
 msgstr ""
@@ -578,10 +602,6 @@ msgstr ""
 #: ../src/osm-traces.c:336
 msgid "Enter the email you use to login into www.openstreetmap.org."
 msgstr ""
-
-#: ../src/osm-traces.c:338
-msgid "Password:"
-msgstr "パスワード:"
 
 #: ../src/osm-traces.c:351
 msgid "The password used to login"
@@ -605,25 +625,13 @@ msgid ""
 "the local file."
 msgstr ""
 
-#: ../src/osm-traces.c:370
-msgid "Description:"
-msgstr "説明:"
-
 #: ../src/osm-traces.c:377
 msgid "The description of the trace"
 msgstr ""
 
-#: ../src/osm-traces.c:380
-msgid "Tags:"
-msgstr "タグ:"
-
 #: ../src/osm-traces.c:387
 msgid "The tags associated to the trace"
 msgstr ""
-
-#: ../src/osm-traces.c:390
-msgid "Public"
-msgstr "公開"
 
 #: ../src/osm-traces.c:396
 msgid "Indicates if the trace is public or not"
@@ -903,10 +911,6 @@ msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
 msgstr[0] ""
 msgstr[1] ""
-
-#: ../src/vikgpslayer.c:952
-msgid "Error: couldn't find gpsbabel."
-msgstr "エラー: gpsbabelを見つけることができませんでした。"
 
 #: ../src/viklayerspanel.c:59
 msgid "/C_ut"
@@ -1244,10 +1248,6 @@ msgstr ""
 #: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1464
 msgid "The filename you requested could not be opened for writing."
 msgstr ""
-
-#: ../src/viktrwlayer.c:1596
-msgid "Create"
-msgstr "作成"
 
 #: ../src/viktrwlayer.c:1606
 msgid "Waypoint Name:"
