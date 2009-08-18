@@ -14,6 +14,7 @@ src/datasource_gps.c
 src/dem.c
 src/download.c
 src/file.c
+src/mapcache.c
 src/print.c
 src/util.c
 src/vikcoordlayer.c
