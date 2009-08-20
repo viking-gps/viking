@@ -8,23 +8,19 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-04 22:47+0100\n"
-"PO-Revision-Date: 2009-02-04 22:19+0000\n"
+"PO-Revision-Date: 2009-05-30 23:30+0000\n"
 "Last-Translator: Tognu <jaalvarez@ipn.mx>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2009-02-08 13:36+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
-
-#: ../src/acquire.c:118
-msgid "Working..."
-msgstr ""
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
-msgstr ""
+msgstr "Error: Fallo en la adquisión"
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:957
 msgid "Done."
@@ -46,14 +42,6 @@ msgstr "Tarea"
 #: ../src/background.c:216
 msgid "Progress"
 msgstr "En proceso"
-
-#: ../src/background.c:227
-msgid "Viking Background Jobs"
-msgstr ""
-
-#: ../src/clipboard.c:84
-msgid "paste failed"
-msgstr ""
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
@@ -107,10 +95,6 @@ msgstr "Zona:"
 msgid "Letter:"
 msgstr "Carta:"
 
-#: ../src/dialog.c:192
-msgid "Waypoint Properties"
-msgstr ""
-
 #: ../src/dialog.c:218
 msgid "Name:"
 msgstr "Nombre:"
@@ -145,10 +129,6 @@ msgstr "Por favor, introduzca el nombre del waypoint."
 msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
 msgstr "El waypoint \"%s\" ya existe. ¿Desea sobreescribirlo?"
 
-#: ../src/dialog.c:462 ../src/geonamessearch.c:301
-msgid "Nothing was selected"
-msgstr ""
-
 #: ../src/dialog.c:470
 msgid "Add Track"
 msgstr "Añadir ruta"
@@ -165,10 +145,6 @@ msgstr "Por favor, introduzca el nombre de la ruta."
 #, c-format
 msgid "The track \"%s\" exists, do you want to overwrite it?"
 msgstr "La ruta \"%s\" existe. ¿Desea sobreescribirla?"
-
-#: ../src/dialog.c:559
-msgid "Zoom Factors..."
-msgstr ""
 
 #: ../src/dialog.c:573
 msgid "Zoom factor (in meters per pixel:"
@@ -206,23 +182,6 @@ msgstr "Personalizado (minutos):"
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
 msgstr "Analizador, Explorador y Gestor de datos topológicos y GPS."
 
-#: ../src/dialog.c:692
-msgid ""
-"This program is free software; you can redistribute it and/or modify it "
-"under the terms of the GNU General Public License as published by the Free "
-"Software Foundation; either version 2 of the License, or (at your option) "
-"any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful, but WITHOUT "
-"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
-"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
-"more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License along with "
-"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
-"Place, Suite 330, Boston, MA 02111-1307, USA"
-msgstr ""
-
 #: ../src/dialog.c:726
 msgid "Download along track"
 msgstr "Descargar a lo largo de la ruta"
@@ -234,10 +193,6 @@ msgstr "Tipo de mapa:"
 #: ../src/dialog.c:733
 msgid "Zoom level:"
 msgstr "Nivel de zoom:"
-
-#: ../src/expedia.c:51
-msgid "Expedia Street Maps"
-msgstr ""
 
 #: ../src/expedia.c:79
 msgid "Invalid expedia altitude"
@@ -267,10 +222,6 @@ msgstr ""
 msgid "Search"
 msgstr "Buscar"
 
-#: ../src/geonamessearch.c:119
-msgid "No entries found!"
-msgstr ""
-
 #: ../src/geonamessearch.c:135 ../src/googlesearch.c:70
 msgid "I don't know that place. Do you want another search?"
 msgstr "Se desconoce ese lugar. ¿Desea efectuar otra búsqueda?"
@@ -286,10 +237,6 @@ msgstr "No se ha podido trazar el mapa del archivo temporal"
 #: ../src/geonamessearch.c:509 ../src/googlesearch.c:200
 msgid "couldn't open temp file"
 msgstr "No se ha podido abrir el archivo temporal"
-
-#: ../src/globals.c:41
-msgid "Degree format:"
-msgstr ""
 
 #. Webtools
 #: ../src/google.c:34
@@ -405,20 +352,10 @@ msgstr "Cabecera DEM no válida"
 msgid "Incorrect DEM Class B record: expected 1"
 msgstr "Registro DEM de clase B incorrecto: se esperaba 1"
 
-#: ../src/dem.c:354
-#, c-format
-msgid "Couldn't map file %s: %s"
-msgstr ""
-
 #: ../src/download.c:121
 #, c-format
 msgid "Download error: %s"
 msgstr "Error en descarga: %s"
-
-#: ../src/file.c:426 ../src/file.c:430
-#, c-format
-msgid "Draw mode '%s' no more supported"
-msgstr ""
 
 #: ../src/print.c:53
 msgid "None"
@@ -466,10 +403,6 @@ msgstr "_Tamaño de imagen"
 msgid "Could not launch web browser."
 msgstr "No se ha podido lanzar el navegador"
 
-#: ../src/util.c:86
-msgid "Could not create new email."
-msgstr ""
-
 #: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
 msgid "Color:"
 msgstr "Color:"
@@ -510,41 +443,9 @@ msgstr "Capa poligonal"
 msgid "Waypoints Outside This"
 msgstr "Waypoints en el exterior"
 
-#: ../src/main.c:116
-msgid "Use smaller symbols for waypoints"
-msgstr ""
-
-#: ../src/main.c:117
-msgid "Enable debug output"
-msgstr ""
-
-#: ../src/main.c:118
-msgid "Enable verbose output"
-msgstr ""
-
 #: ../src/main.c:119
 msgid "Show version"
 msgstr "Mostrar versión"
-
-#: ../src/osm.c:85
-msgid "OSM (view)"
-msgstr ""
-
-#: ../src/osm.c:89
-msgid "OSM (edit)"
-msgstr ""
-
-#: ../src/osm.c:93
-msgid "OSM (render)"
-msgstr ""
-
-#: ../src/osm-traces.c:77
-msgid "OSM username:"
-msgstr ""
-
-#: ../src/osm-traces.c:78
-msgid "OSM password:"
-msgstr ""
 
 #: ../src/osm-traces.c:218
 #, c-format
@@ -644,10 +545,6 @@ msgstr "Indica si la traza es pública o no"
 #, c-format
 msgid "Uploading %s to OSM"
 msgstr "Enviando %s a OSM"
-
-#: ../src/uibuilder.c:134
-msgid "Take care that this password will be stored clearly in a plain file."
-msgstr ""
 
 #: ../src/vikdemlayer.c:108
 msgid "DEM Files:"
@@ -786,10 +683,6 @@ msgstr "Grabando rutas"
 msgid "Jump to current position on start"
 msgstr "Saltar a la posición actual al comienzo"
 
-#: ../src/vikgpslayer.c:139
-msgid "Moving Map Method:"
-msgstr ""
-
 #: ../src/vikgpslayer.c:140
 msgid "Gpsd Host:"
 msgstr "Servidor gpsd:"
@@ -797,10 +690,6 @@ msgstr "Servidor gpsd:"
 #: ../src/vikgpslayer.c:141
 msgid "Gpsd Port:"
 msgstr "Puerto gpsd:"
-
-#: ../src/vikgpslayer.c:142
-msgid "Gpsd Retry Interval (seconds):"
-msgstr ""
 
 #: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:989
 msgid "GPS Download"
@@ -1019,13 +908,6 @@ msgid ""
 msgstr ""
 "Evitando pusilánimemente el dibujado de teselas o existencia de teselas mas "
 "alla del factor de zoom %d"
-
-#: ../src/vikmapslayer.c:924
-#, c-format
-msgid "Redownloading up to %d %s map..."
-msgid_plural "Redownloading up to %d %s maps..."
-msgstr[0] ""
-msgstr[1] ""
 
 #: ../src/vikmapslayer.c:926
 #, c-format
@@ -1304,37 +1186,9 @@ msgstr "Exportar como GPX"
 msgid "New Waypoint"
 msgstr "Nuevo waypoint"
 
-#: ../src/viktrwlayer.c:1762
-msgid "Add Wikipedia Waypoints"
-msgstr ""
-
-#: ../src/viktrwlayer.c:1767
-msgid "Within layer bounds"
-msgstr ""
-
-#: ../src/viktrwlayer.c:1772
-msgid "Within current view"
-msgstr ""
-
 #: ../src/viktrwlayer.c:1779 ../src/viktrwlayer.c:2760
 msgid "Upload to OSM"
 msgstr "Enviar a OSM"
-
-#: ../src/viktrwlayer.c:2290
-msgid "Failed. This track does not have timestamp"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2304
-msgid "Failed. No other track in this layer has timestamp"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2310
-msgid "Merge with..."
-msgstr ""
-
-#: ../src/viktrwlayer.c:2310
-msgid "Select track to merge with"
-msgstr ""
 
 #: ../src/viktrwlayer.c:2347
 msgid "Merge Threshold..."
@@ -1384,10 +1238,6 @@ msgstr "Ir al final"
 msgid "Merge By Time"
 msgstr "Fusionar por tiempo"
 
-#: ../src/viktrwlayer.c:2729
-msgid "Merge With Other Tracks..."
-msgstr ""
-
 #: ../src/viktrwlayer.c:2734
 msgid "Split By Time"
 msgstr "Dividir por tiempo"
@@ -1399,22 +1249,6 @@ msgstr "Descargar mapas a lo largo de la ruta..."
 #: ../src/viktrwlayer.c:2744
 msgid "Apply DEM Data"
 msgstr "Aplicar datos DEM"
-
-#: ../src/viktrwlayer.c:2749
-msgid "Extend track end"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2754
-msgid "Extend using magic scissors"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2768
-msgid "View Google Directions"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2774
-msgid "Use with filter"
-msgstr ""
 
 #: ../src/viktrwlayer.c:3736
 msgid "Could not launch eog to open file."
@@ -1429,22 +1263,10 @@ msgstr "Creando %d miniaturas..."
 msgid "No map layer in use. Create one first"
 msgstr "No hay una capa de mapa en uso. Cree una primero"
 
-#: ../src/viktrwlayer_propwin.c:658
-msgid "Failed spliting track. Track unchanged"
-msgstr ""
-
-#: ../src/viktrwlayer_propwin.c:675
-msgid "Operation Aborted. Track unchanged"
-msgstr ""
-
 #: ../src/viktrwlayer_propwin.c:729
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - Propiedades de ruta"
-
-#: ../src/viktrwlayer_propwin.c:734
-msgid "Split at Marker"
-msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:735
 msgid "Split Segments"
@@ -1524,21 +1346,9 @@ msgstr "Sin datos"
 msgid "%d minutes"
 msgstr "%d minutos"
 
-#: ../src/viktrwlayer_propwin.c:870
-msgid "Statistics"
-msgstr ""
-
-#: ../src/viktrwlayer_propwin.c:875
-msgid "<b>Track Distance:</b>"
-msgstr ""
-
 #: ../src/viktrwlayer_propwin.c:876
 msgid "Elevation-distance"
 msgstr "Elevación-distancia"
-
-#: ../src/viktrwlayer_propwin.c:882
-msgid "<b>Track Time:</b>"
-msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:883
 msgid "Speed-time"
@@ -1631,16 +1441,6 @@ msgstr "metros/pixel"
 msgid "pixelfact"
 msgstr "factor de pixel"
 
-#: ../src/vikwindow.c:527
-#, c-format
-msgid "%s %s %dm"
-msgstr ""
-
-#: ../src/vikwindow.c:529
-#, c-format
-msgid "%s %s"
-msgstr ""
-
 #: ../src/vikwindow.c:1113
 msgid "You must select a layer to show its properties."
 msgstr "Debe seleccionar una capa para mostrar sus propiedades."
@@ -1719,10 +1519,6 @@ msgstr "Debe estar en modo UTM para usar esta función"
 msgid "Save Image"
 msgstr "Guardar imagen"
 
-#: ../src/vikwindow.c:1834
-msgid "Choose a directory to hold images"
-msgstr ""
-
 #: ../src/vikwindow.c:1920
 msgid "Choose a background color"
 msgstr "Escoja un color de fondo"
@@ -1754,10 +1550,6 @@ msgstr "_Capas"
 #: ../src/vikwindow.c:1947
 msgid "_Tools"
 msgstr "_Herramientas"
-
-#: ../src/vikwindow.c:1948
-msgid "_Webtools"
-msgstr ""
 
 #: ../src/vikwindow.c:1949
 msgid "_Help"
@@ -1870,14 +1662,6 @@ msgstr "Guardar y salir"
 #: ../src/vikwindow.c:1970
 msgid "Save and Exit the program"
 msgstr "Guardar el fichero y salir de Viking"
-
-#: ../src/vikwindow.c:1972
-msgid "Go To location"
-msgstr ""
-
-#: ../src/vikwindow.c:1972
-msgid "Go to address/place using text search"
-msgstr ""
 
 #: ../src/vikwindow.c:1973
 msgid "_Go to Lat\\/Lon..."
@@ -2015,10 +1799,6 @@ msgstr "Modo _Expedia"
 msgid "_Mercator Mode"
 msgstr "Modo _Mercator"
 
-#: ../src/vikwindow.c:2014
-msgid "Pan Tool"
-msgstr ""
-
 #: ../src/vikwindow.c:2015
 msgid "Zoom Tool"
 msgstr "Herramienta zoom"
@@ -2043,66 +1823,263 @@ msgstr "Mostrar marca central"
 msgid "Full Screen"
 msgstr "Pantalla completa"
 
-#: ../src/vikwindow.c:2022
-msgid "Activate full screen mode"
-msgstr ""
-
-#: ../src/vikwindow.c:2023
-msgid "Show Side Panel"
-msgstr ""
-
 #: ../src/vikwindow.c:2085
 #, c-format
 msgid "New %s Layer"
 msgstr "Nueva capa %s"
 
+#: ../src/acquire.c:118
+msgid "Working..."
+msgstr "Trabajando..."
+
+#: ../src/background.c:227
+msgid "Viking Background Jobs"
+msgstr "Tareas en segundo plano de Viking"
+
+#: ../src/clipboard.c:84
+msgid "paste failed"
+msgstr "fallo el pegado"
+
+#: ../src/dialog.c:192
+msgid "Waypoint Properties"
+msgstr "Propiedades de recorrido"
+
+#: ../src/dialog.c:462 ../src/geonamessearch.c:301
+msgid "Nothing was selected"
+msgstr "Nada fue seleccionado"
+
+#: ../src/dialog.c:559
+msgid "Zoom Factors..."
+msgstr "Factor de acercamiento"
+
+#: ../src/dialog.c:692
+msgid ""
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
+"Place, Suite 330, Boston, MA 02111-1307, USA"
+msgstr ""
+"Este programa es software libre; puedes redistribuirlo , y / o modificarlo  "
+"bajo los terminos de la licencia Publica (GNU) publicada por la Free "
+"Software Foundation; la versión 2 de la licencia , o alguna version "
+"posterior.\n"
+"\n"
+"Este programa es distribuido con la esperanza de que pueda ser usado, PERO "
+"SIN NINGUNA GARANTIA;sin que se encuentre implicada garantias de MERCADEO "
+"para un proposito particular. Revisa la licencia publica GNU para mas "
+"detalles.\n"
+"\n"
+"Tu deberas de recibir una copia de la licencia publica general GNU General "
+"Public License en este programa; en caso contrario, escribe a la Free "
+"Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-"
+"1307, USA"
+
+#: ../src/expedia.c:51
+msgid "Expedia Street Maps"
+msgstr "Mapas de calles Expedia"
+
+#: ../src/geonamessearch.c:119
+msgid "No entries found!"
+msgstr "No se registro ninguna entrada"
+
+#: ../src/globals.c:41
+msgid "Degree format:"
+msgstr "Formato de aceptación"
+
+#: ../src/dem.c:354
+#, c-format
+msgid "Couldn't map file %s: %s"
+msgstr "No se encuentra el archivo de mapa %s:%s"
+
+#: ../src/file.c:426 ../src/file.c:430
+#, c-format
+msgid "Draw mode '%s' no more supported"
+msgstr "El modo de dibujo '%s' no es soportado ya"
+
+#: ../src/util.c:86
+msgid "Could not create new email."
+msgstr "No puedo crear un nuevo email"
+
+#: ../src/main.c:116
+msgid "Use smaller symbols for waypoints"
+msgstr "Usa simbolos pequellos para los indicadores"
+
+#: ../src/main.c:117
+msgid "Enable debug output"
+msgstr "no puedo activar la salida"
+
+#: ../src/main.c:118
+msgid "Enable verbose output"
+msgstr "salida verbosa activada"
+
+#: ../src/osm.c:85
+msgid "OSM (view)"
+msgstr "Vista OSM"
+
+#: ../src/osm.c:89
+msgid "OSM (edit)"
+msgstr "Edicion OSM"
+
+#: ../src/osm.c:93
+msgid "OSM (render)"
+msgstr "Renderizado OSM"
+
+#: ../src/osm-traces.c:77
+msgid "OSM username:"
+msgstr "usuario OSM:"
+
+#: ../src/osm-traces.c:78
+msgid "OSM password:"
+msgstr "Passeord OSM:"
+
+#: ../src/uibuilder.c:134
+msgid "Take care that this password will be stored clearly in a plain file."
+msgstr "verifica que este password se borre en el archivo plano"
+
+#: ../src/vikgpslayer.c:139
+msgid "Moving Map Method:"
+msgstr "Metodo de movimiento de mapas"
+
+#: ../src/vikgpslayer.c:142
+msgid "Gpsd Retry Interval (seconds):"
+msgstr "Intervalo de reconexión de Gpsd (segundos)"
+
+#: ../src/vikmapslayer.c:924
+#, c-format
+msgid "Redownloading up to %d %s map..."
+msgid_plural "Redownloading up to %d %s maps..."
+msgstr[0] "Descargando arriba de %d%s mapas"
+msgstr[1] "Descargando arriba de %d%s mapas"
+
+#: ../src/viktrwlayer.c:1762
+msgid "Add Wikipedia Waypoints"
+msgstr "Agregando señalizadores Wikipedia"
+
+#: ../src/viktrwlayer.c:1767
+msgid "Within layer bounds"
+msgstr "Limite de capas de marcaje"
+
+#: ../src/viktrwlayer.c:1772
+msgid "Within current view"
+msgstr "Vista Actual"
+
+#: ../src/viktrwlayer.c:2290
+msgid "Failed. This track does not have timestamp"
+msgstr "Fallo: Este track no tiene tiempo de registro"
+
+#: ../src/viktrwlayer.c:2304
+msgid "Failed. No other track in this layer has timestamp"
+msgstr "Fallo: no existe otro track con tiempo de registro"
+
+#: ../src/viktrwlayer.c:2310
+msgid "Merge with..."
+msgstr "Unido con..."
+
+#: ../src/viktrwlayer.c:2310
+msgid "Select track to merge with"
+msgstr "Track seleccionado unido con..."
+
+#: ../src/viktrwlayer.c:2729
+msgid "Merge With Other Tracks..."
+msgstr "Unido con otros tracks..."
+
+#: ../src/viktrwlayer.c:2749
+msgid "Extend track end"
+msgstr "fin del track Extend"
+
+#: ../src/viktrwlayer.c:2754
+msgid "Extend using magic scissors"
+msgstr "Extend esta usando las tijeras magicas"
+
+#: ../src/viktrwlayer.c:2768
+msgid "View Google Directions"
+msgstr "Vista de direcciones Google"
+
+#: ../src/viktrwlayer.c:2774
+msgid "Use with filter"
+msgstr "Usado con el filtro"
+
+#: ../src/viktrwlayer_propwin.c:658
+msgid "Failed spliting track. Track unchanged"
+msgstr "falla en la operacion del spliting . Track no modificado"
+
+#: ../src/viktrwlayer_propwin.c:675
+msgid "Operation Aborted. Track unchanged"
+msgstr "Operacion abortada. Track no modificado"
+
+#: ../src/viktrwlayer_propwin.c:734
+msgid "Split at Marker"
+msgstr "Colocando un marcador"
+
+#: ../src/viktrwlayer_propwin.c:870
+msgid "Statistics"
+msgstr "Estadisticas"
+
+#: ../src/viktrwlayer_propwin.c:875
+msgid "<b>Track Distance:</b>"
+msgstr "<b>Distancia del Track:</b>"
+
+#: ../src/viktrwlayer_propwin.c:882
+msgid "<b>Track Time:</b>"
+msgstr "<b>Tiempo del Track:</b>"
+
+#: ../src/vikwindow.c:527
+#, c-format
+msgid "%s %s %dm"
+msgstr "%s%s%dm"
+
+#: ../src/vikwindow.c:529
+#, c-format
+msgid "%s %s"
+msgstr "%s%s"
+
+#: ../src/vikwindow.c:1834
+msgid "Choose a directory to hold images"
+msgstr "Elije un directorio para colocar las imagenes"
+
+#: ../src/vikwindow.c:1948
+msgid "_Webtools"
+msgstr "_Herramientas WEB"
+
+#: ../src/vikwindow.c:1972
+msgid "Go To location"
+msgstr "Ir a la localidad"
+
+#: ../src/vikwindow.c:1972
+msgid "Go to address/place using text search"
+msgstr "Ir a la direccion/posición usada por la busqueda de texto"
+
+#: ../src/vikwindow.c:2014
+msgid "Pan Tool"
+msgstr "Herramienta de paneo"
+
+#: ../src/vikwindow.c:2022
+msgid "Activate full screen mode"
+msgstr "Activando el modo de pantalla completa"
+
+#: ../src/vikwindow.c:2023
+msgid "Show Side Panel"
+msgstr "Muestra el panel lateral"
+
 #: ../src/viking.desktop.in.h:1
 msgid "GPS Data Manager"
-msgstr ""
+msgstr "Administrador de datos GPS"
 
 #: ../src/viking.desktop.in.h:2
 msgid "Map Based GPS Data Manager (live data capable)."
 msgstr ""
+"Mapa basado en el administrador de datos GPS (Capacidad de datos en tiempo "
+"real)"
 
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
-msgstr ""
-
-#~ msgid "Transparent Google Maps"
-#~ msgstr "Mapas Google transparentes"
-
-#~ msgid "Google Satellite Images"
-#~ msgstr "Imágenes de satélite Google"
-
-#~ msgid "Google Terrain Maps"
-#~ msgstr "Mapas de terreno Google"
-
-#~ msgid "Failed getting google version numbers"
-#~ msgstr "Error al obtener el número de versión de Google"
-
-#~ msgid "Old Google Maps"
-#~ msgstr "Mapas Google (versión antigua)"
-
-#~ msgid "Keep current position at center"
-#~ msgstr "Mantener la posición actual en el centro"
-
-#~ msgid "_Old Google Mode"
-#~ msgstr "Modo Google (_antigua versión)"
-
-#~ msgid "Old _KH Mode"
-#~ msgstr "Modo _KH (antigua versión)"
-
-#~ msgid "_Google Mode"
-#~ msgstr "Modo _Google"
-
-#, c-format
-#~ msgid "couldn't open temp file %s"
-#~ msgstr "No se ha podido abrir el archivo temporal %s"
-
-#, c-format
-#~ msgid "Failed downloading %s"
-#~ msgstr "Error en la descarga %s"
-
-#~ msgid "Failed fetching Google numbers (\"GLoadApi\" not found)"
-#~ msgstr ""
-#~ "Error en la obtención de los números de Google (\"GLoadApi\" no encontrado)"
+msgstr "Vikingo"

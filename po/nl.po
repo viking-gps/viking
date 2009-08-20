@@ -15,16 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2009-02-08 13:36+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
 msgstr "Bezig…"
-
-#: ../src/acquire.c:141
-msgid "Error: acquisition failed."
-msgstr ""
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:957
 msgid "Done."
@@ -59,13 +55,6 @@ msgstr "plakken mislukt"
 msgid "wrong clipboard data size"
 msgstr "verkeerde bestandsgrootte op het klembord"
 
-#: ../src/clipboard.c:113
-#, c-format
-msgid ""
-"The clipboard contains sublayer data for a %s layers.You must select a layer "
-"of this type to paste the clipboard data."
-msgstr ""
-
 #: ../src/clipboard.c:219
 msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
@@ -73,11 +62,6 @@ msgid ""
 msgstr ""
 "Selecteert u alstublieft een passende laag om informatie in te plakken om "
 "een wegpunt te plakken."
-
-#: ../src/curl_download.c:85
-#, c-format
-msgid "%s() Curl perform failed: %s"
-msgstr ""
 
 #: ../src/dialog.c:54 ../src/dialog.c:102
 msgid "Go to Lat/Lon"
@@ -91,14 +75,6 @@ msgstr "Breedtegraad:"
 msgid "Longitude:"
 msgstr "Lengtegraad:"
 
-#: ../src/dialog.c:115
-msgid "Northing:"
-msgstr ""
-
-#: ../src/dialog.c:121
-msgid "Easting:"
-msgstr ""
-
 #: ../src/dialog.c:128
 msgid "Zone:"
 msgstr "Zone:"
@@ -106,10 +82,6 @@ msgstr "Zone:"
 #: ../src/dialog.c:131
 msgid "Letter:"
 msgstr "Brief:"
-
-#: ../src/dialog.c:192
-msgid "Waypoint Properties"
-msgstr ""
 
 #: ../src/dialog.c:218
 msgid "Name:"
@@ -140,15 +112,6 @@ msgstr "(geen)"
 msgid "Please enter a name for the waypoint."
 msgstr "Geef alstublieft een name op voor het wegpunt"
 
-#: ../src/dialog.c:332
-#, c-format
-msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr ""
-
-#: ../src/dialog.c:462 ../src/geonamessearch.c:301
-msgid "Nothing was selected"
-msgstr ""
-
 #: ../src/dialog.c:470
 msgid "Add Track"
 msgstr "Voeg route toe"
@@ -161,11 +124,6 @@ msgstr "Naam van de route:"
 msgid "Please enter a name for the track."
 msgstr "Geef alstublieft een naam op voor de route"
 
-#: ../src/dialog.c:497
-#, c-format
-msgid "The track \"%s\" exists, do you want to overwrite it?"
-msgstr ""
-
 #: ../src/dialog.c:559
 msgid "Zoom Factors..."
 msgstr "Vergrotingswaardes:"
@@ -173,14 +131,6 @@ msgstr "Vergrotingswaardes:"
 #: ../src/dialog.c:573
 msgid "Zoom factor (in meters per pixel:"
 msgstr "Vergrotingswaarde (im meters per pixel);"
-
-#: ../src/dialog.c:574
-msgid "X (easting): "
-msgstr ""
-
-#: ../src/dialog.c:575
-msgid "Y (northing): "
-msgstr ""
 
 #: ../src/dialog.c:580
 msgid "X and Y zoom factors must be equal"
@@ -201,6 +151,72 @@ msgstr "een dag"
 #: ../src/dialog.c:636
 msgid "Custom (in minutes):"
 msgstr "Anders (in minuten)"
+
+#: ../src/dialog.c:728
+msgid "Map type:"
+msgstr "Map type"
+
+#: ../src/dialog.c:733
+msgid "Zoom level:"
+msgstr "Zoomniveau:"
+
+#: ../src/vikgpslayer.c:952
+msgid "Error: couldn't find gpsbabel."
+msgstr "Fout: kon gpsbabel niet vinden"
+
+#: ../src/viktrwlayer.c:1596
+msgid "Create"
+msgstr "Aanmaken"
+
+#: ../src/acquire.c:141
+msgid "Error: acquisition failed."
+msgstr ""
+
+#: ../src/clipboard.c:113
+#, c-format
+msgid ""
+"The clipboard contains sublayer data for a %s layers.You must select a layer "
+"of this type to paste the clipboard data."
+msgstr ""
+
+#: ../src/curl_download.c:85
+#, c-format
+msgid "%s() Curl perform failed: %s"
+msgstr ""
+
+#: ../src/dialog.c:115
+msgid "Northing:"
+msgstr ""
+
+#: ../src/dialog.c:121
+msgid "Easting:"
+msgstr ""
+
+#: ../src/dialog.c:192
+msgid "Waypoint Properties"
+msgstr ""
+
+#: ../src/dialog.c:332
+#, c-format
+msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
+msgstr ""
+
+#: ../src/dialog.c:462 ../src/geonamessearch.c:301
+msgid "Nothing was selected"
+msgstr ""
+
+#: ../src/dialog.c:497
+#, c-format
+msgid "The track \"%s\" exists, do you want to overwrite it?"
+msgstr ""
+
+#: ../src/dialog.c:574
+msgid "X (easting): "
+msgstr ""
+
+#: ../src/dialog.c:575
+msgid "Y (northing): "
+msgstr ""
 
 #: ../src/dialog.c:691
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
@@ -226,14 +242,6 @@ msgstr ""
 #: ../src/dialog.c:726
 msgid "Download along track"
 msgstr ""
-
-#: ../src/dialog.c:728
-msgid "Map type:"
-msgstr "Map type"
-
-#: ../src/dialog.c:733
-msgid "Zoom level:"
-msgstr "Zoomniveau:"
 
 #: ../src/expedia.c:51
 msgid "Expedia Street Maps"
@@ -906,10 +914,6 @@ msgid_plural "Uploaded %d trackpoints"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/vikgpslayer.c:952
-msgid "Error: couldn't find gpsbabel."
-msgstr "Fout: kon gpsbabel niet vinden"
-
 #: ../src/viklayerspanel.c:59
 msgid "/C_ut"
 msgstr ""
@@ -1246,10 +1250,6 @@ msgstr ""
 #: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1464
 msgid "The filename you requested could not be opened for writing."
 msgstr ""
-
-#: ../src/viktrwlayer.c:1596
-msgid "Create"
-msgstr "Aanmaken"
 
 #: ../src/viktrwlayer.c:1606
 msgid "Waypoint Name:"

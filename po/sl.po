@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || "
 "n%100==4 ? 3 : 0);\n"
-"X-Launchpad-Export-Date: 2009-02-08 13:36+0000\n"
+"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -60,19 +60,6 @@ msgstr "lepljenje ni uspelo"
 msgid "wrong clipboard data size"
 msgstr "Napačna velikost podatkov na odložišču"
 
-#: ../src/clipboard.c:113
-#, c-format
-msgid ""
-"The clipboard contains sublayer data for a %s layers.You must select a layer "
-"of this type to paste the clipboard data."
-msgstr ""
-
-#: ../src/clipboard.c:219
-msgid ""
-"In order to paste a waypoint, please select an appropriate layer to paste "
-"into."
-msgstr ""
-
 #: ../src/curl_download.c:85
 #, c-format
 msgid "%s() Curl perform failed: %s"
@@ -89,26 +76,6 @@ msgstr "Geografska širina:"
 #: ../src/dialog.c:72 ../src/dialog.c:235
 msgid "Longitude:"
 msgstr "Geografska dolžina:"
-
-#: ../src/dialog.c:115
-msgid "Northing:"
-msgstr ""
-
-#: ../src/dialog.c:121
-msgid "Easting:"
-msgstr ""
-
-#: ../src/dialog.c:128
-msgid "Zone:"
-msgstr ""
-
-#: ../src/dialog.c:131
-msgid "Letter:"
-msgstr ""
-
-#: ../src/dialog.c:192
-msgid "Waypoint Properties"
-msgstr ""
 
 #: ../src/dialog.c:218
 msgid "Name:"
@@ -133,20 +100,6 @@ msgstr "Simbol:"
 #: ../src/dialog.c:273
 msgid "(none)"
 msgstr "(brez)"
-
-#. TODO: other checks (isalpha or whatever )
-#: ../src/dialog.c:328
-msgid "Please enter a name for the waypoint."
-msgstr ""
-
-#: ../src/dialog.c:332
-#, c-format
-msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr ""
-
-#: ../src/dialog.c:462 ../src/geonamessearch.c:301
-msgid "Nothing was selected"
-msgstr ""
 
 #: ../src/dialog.c:470
 msgid "Add Track"
@@ -173,18 +126,6 @@ msgstr "Faktorji povečave..."
 msgid "Zoom factor (in meters per pixel:"
 msgstr "Povečava (v metrih na slikovni element:"
 
-#: ../src/dialog.c:574
-msgid "X (easting): "
-msgstr ""
-
-#: ../src/dialog.c:575
-msgid "Y (northing): "
-msgstr ""
-
-#: ../src/dialog.c:580
-msgid "X and Y zoom factors must be equal"
-msgstr ""
-
 #: ../src/dialog.c:633
 msgid "1 min"
 msgstr "1 min"
@@ -200,27 +141,6 @@ msgstr "1 dan"
 #: ../src/dialog.c:636
 msgid "Custom (in minutes):"
 msgstr "Po meri (v minutah):"
-
-#: ../src/dialog.c:691
-msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr ""
-
-#: ../src/dialog.c:692
-msgid ""
-"This program is free software; you can redistribute it and/or modify it "
-"under the terms of the GNU General Public License as published by the Free "
-"Software Foundation; either version 2 of the License, or (at your option) "
-"any later version.\n"
-"\n"
-"This program is distributed in the hope that it will be useful, but WITHOUT "
-"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
-"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
-"more details.\n"
-"\n"
-"You should have received a copy of the GNU General Public License along with "
-"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
-"Place, Suite 330, Boston, MA 02111-1307, USA"
-msgstr ""
 
 #: ../src/dialog.c:726
 msgid "Download along track"
@@ -238,33 +158,11 @@ msgstr "Stopnja povečave:"
 msgid "Expedia Street Maps"
 msgstr "Cestni zemljevidi Expedia"
 
-#: ../src/expedia.c:79
-msgid "Invalid expedia altitude"
-msgstr ""
-
-#: ../src/expedia.c:110
-#, c-format
-msgid ""
-"Couldn't open EXPEDIA image file (right after successful download! Please "
-"report and delete image file!): %s"
-msgstr ""
-
-#: ../src/expedia.c:123
-#, c-format
-msgid ""
-"Couldn't save EXPEDIA image file (right after successful download! Please "
-"report and delete image file!): %s"
-msgstr ""
-
 #: ../src/geonamessearch.c:117 ../src/geonamessearch.c:133
 #: ../src/geonamessearch.c:151 ../src/googlesearch.c:68
 #: ../src/googlesearch.c:86
 msgid "Search"
 msgstr "Najdi"
-
-#: ../src/geonamessearch.c:119
-msgid "No entries found!"
-msgstr ""
 
 #: ../src/geonamessearch.c:135 ../src/googlesearch.c:70
 msgid "I don't know that place. Do you want another search?"
@@ -274,17 +172,9 @@ msgstr "Tega kraja ne poznam. Želite novo iskanje?"
 msgid "Enter address or place name:"
 msgstr "Vnesite naslov ali ime kraja:"
 
-#: ../src/geonamessearch.c:327 ../src/googlesearch.c:127
-msgid "couldn't map temp file"
-msgstr ""
-
 #: ../src/geonamessearch.c:509 ../src/googlesearch.c:200
 msgid "couldn't open temp file"
 msgstr "začasne datoteke ni bilo mogoče odpreti"
-
-#: ../src/globals.c:41
-msgid "Degree format:"
-msgstr ""
 
 #. Webtools
 #: ../src/google.c:34
@@ -307,31 +197,6 @@ msgstr "uporabniško ime za geocaching.com:"
 msgid "geocaching.com password:"
 msgstr "geslo za geocaching.com:"
 
-#: ../src/datasource_gc.c:107
-msgid ""
-"Can't find gcget in path! Check that you have installed gcget correctly."
-msgstr ""
-
-#: ../src/datasource_gc.c:169
-msgid "Number geocaches:"
-msgstr ""
-
-#: ../src/datasource_gc.c:171
-msgid "Centered around:"
-msgstr ""
-
-#: ../src/datasource_google.c:49 ../src/datasource_google.c:50
-msgid "Google Directions"
-msgstr ""
-
-#: ../src/datasource_google.c:74
-msgid "From:"
-msgstr ""
-
-#: ../src/datasource_google.c:76
-msgid "To:"
-msgstr ""
-
 #: ../src/datasource_gps.c:48
 msgid "Acquire from GPS"
 msgstr "Zajemi iz GPS naprave"
@@ -339,18 +204,6 @@ msgstr "Zajemi iz GPS naprave"
 #: ../src/datasource_gps.c:49
 msgid "Acquired from GPS"
 msgstr "Zajeto iz GPS naprave"
-
-#: ../src/datasource_gps.c:133
-#, c-format
-msgid "using cmdline '%s' and file '%s'\n"
-msgstr ""
-
-#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:711
-#, c-format
-msgid "Downloading %d waypoint..."
-msgid_plural "Downloading %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
 
 #: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:713
 #, c-format
@@ -388,32 +241,10 @@ msgstr "Zaporedni vmesnik:"
 msgid "GPS device: N/A"
 msgstr "Naprava GPS: ni na voljo"
 
-#: ../src/dem.c:59 ../src/dem.c:73
-msgid "Invalid DEM"
-msgstr ""
-
-#: ../src/dem.c:115
-msgid "Invalid DEM header"
-msgstr ""
-
-#: ../src/dem.c:184 ../src/dem.c:197
-msgid "Incorrect DEM Class B record: expected 1"
-msgstr ""
-
-#: ../src/dem.c:354
-#, c-format
-msgid "Couldn't map file %s: %s"
-msgstr ""
-
 #: ../src/download.c:121
 #, c-format
 msgid "Download error: %s"
 msgstr "Napaka prenosa: %s"
-
-#: ../src/file.c:426 ../src/file.c:430
-#, c-format
-msgid "Draw mode '%s' no more supported"
-msgstr ""
 
 #: ../src/print.c:53
 msgid "None"
@@ -461,10 +292,6 @@ msgstr "_Velikost slike:"
 msgid "Could not launch web browser."
 msgstr "Spletnega brskalnika ni bilo mogoče zagnati."
 
-#: ../src/util.c:86
-msgid "Could not create new email."
-msgstr ""
-
 #: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
 msgid "Color:"
 msgstr "Barva:"
@@ -493,26 +320,6 @@ msgstr "Poenostavljene sledi"
 msgid "Remove Duplicate Waypoints"
 msgstr "Odstrani podvojene točke"
 
-#: ../src/datasource_bfilter.c:117
-msgid "Waypoints Inside This"
-msgstr ""
-
-#: ../src/datasource_bfilter.c:118 ../src/datasource_bfilter.c:151
-msgid "Polygonzied Layer"
-msgstr ""
-
-#: ../src/datasource_bfilter.c:150
-msgid "Waypoints Outside This"
-msgstr ""
-
-#: ../src/main.c:116
-msgid "Use smaller symbols for waypoints"
-msgstr ""
-
-#: ../src/main.c:117
-msgid "Enable debug output"
-msgstr ""
-
 #: ../src/main.c:118
 msgid "Enable verbose output"
 msgstr "Vključi podroben izpis"
@@ -520,26 +327,6 @@ msgstr "Vključi podroben izpis"
 #: ../src/main.c:119
 msgid "Show version"
 msgstr "Prikaži različico"
-
-#: ../src/osm.c:85
-msgid "OSM (view)"
-msgstr ""
-
-#: ../src/osm.c:89
-msgid "OSM (edit)"
-msgstr ""
-
-#: ../src/osm.c:93
-msgid "OSM (render)"
-msgstr ""
-
-#: ../src/osm-traces.c:77
-msgid "OSM username:"
-msgstr ""
-
-#: ../src/osm-traces.c:78
-msgid "OSM password:"
-msgstr ""
 
 #: ../src/osm-traces.c:218
 #, c-format
@@ -555,16 +342,6 @@ msgstr "curl_easy_getinfo ni uspel: %d"
 #, c-format
 msgid "curl request failed: %s"
 msgstr "curl zahtevek ni uspel: %s"
-
-#: ../src/osm-traces.c:253
-#, c-format
-msgid "failed to open temporary file: %s"
-msgstr ""
-
-#: ../src/osm-traces.c:287
-#, c-format
-msgid "failed to unlink temporary file: %s"
-msgstr ""
 
 #: ../src/osm-traces.c:299
 msgid "OSM upload"
@@ -640,10 +417,6 @@ msgstr "Pove ali je sled javna ali ne"
 msgid "Uploading %s to OSM"
 msgstr "Prenašanje %s na OSM"
 
-#: ../src/uibuilder.c:134
-msgid "Take care that this password will be stored clearly in a plain file."
-msgstr ""
-
 #: ../src/vikdemlayer.c:108
 msgid "DEM Files:"
 msgstr "Datoteke DEM:"
@@ -668,10 +441,6 @@ msgstr "Prenos/uvoz DEM"
 #, c-format
 msgid "No SRTM data available for %f, %f"
 msgstr "SRTM podatkov za %f, %f ni na voljo"
-
-#: ../src/vikdemlayer.c:992
-msgid "No download source selected. Edit layer properties."
-msgstr ""
 
 #: ../src/vikdemlayer.c:1015
 #, c-format
@@ -698,30 +467,10 @@ msgstr "Dodaj..."
 msgid "Delete"
 msgstr "Zbriši"
 
-#: ../src/vikgeoreflayer.c:66
-msgid "Georef Move Map"
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:70
-msgid "Georef Zoom Tool"
-msgstr ""
-
 #: ../src/vikgeoreflayer.c:268 ../src/vikmapslayer.c:544
 #, c-format
 msgid "Couldn't open image file: %s"
 msgstr "Ni bilo mogoče odpreti datoteke s sliko: %s"
-
-#: ../src/vikgeoreflayer.c:293
-msgid "Unexpected end of file reading World file."
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:309 ../src/vikgeoreflayer.c:354
-msgid "Choose World file"
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:322
-msgid "The World file you requested could not be opened for reading."
-msgstr ""
 
 #: ../src/vikgeoreflayer.c:367
 msgid "The file you requested could not be opened for writing."
@@ -731,45 +480,17 @@ msgstr "V datoteko, ki ste jo izbrali ni mogoče pisati."
 msgid "Layer Properties"
 msgstr "Lastnosti plasti"
 
-#: ../src/vikgeoreflayer.c:400
-msgid "World File Parameters:"
-msgstr ""
-
 #: ../src/vikgeoreflayer.c:401
 msgid "Load From File..."
 msgstr "Naloži iz datoteke ..."
-
-#: ../src/vikgeoreflayer.c:406
-msgid "Corner pixel easting:"
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:409
-msgid "Corner pixel northing:"
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:412
-msgid "X (easting) scale (mpp): "
-msgstr ""
-
-#: ../src/vikgeoreflayer.c:413
-msgid "Y (northing) scale (mpp): "
-msgstr ""
 
 #: ../src/vikgeoreflayer.c:418
 msgid "Map Image:"
 msgstr "Slika zemljevida:"
 
-#: ../src/vikgeoreflayer.c:522
-msgid "Zoom to Fit Map"
-msgstr ""
-
 #: ../src/vikgeoreflayer.c:527
 msgid "Goto Map Center"
 msgstr "Pojdi na sredino zemljevida"
-
-#: ../src/vikgeoreflayer.c:532
-msgid "Export to World File"
-msgstr ""
 
 #: ../src/vikgpslayer.c:137
 msgid "Recording tracks"
@@ -779,10 +500,6 @@ msgstr "Snemanje sledi"
 msgid "Jump to current position on start"
 msgstr "Ob zagonu skoči na trenutni položaj"
 
-#: ../src/vikgpslayer.c:139
-msgid "Moving Map Method:"
-msgstr ""
-
 #: ../src/vikgpslayer.c:140
 msgid "Gpsd Host:"
 msgstr "Strežnik gpsd:"
@@ -790,10 +507,6 @@ msgstr "Strežnik gpsd:"
 #: ../src/vikgpslayer.c:141
 msgid "Gpsd Port:"
 msgstr "Vrata gpsd"
-
-#: ../src/vikgpslayer.c:142
-msgid "Gpsd Retry Interval (seconds):"
-msgstr ""
 
 #: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:989
 msgid "GPS Download"
@@ -810,10 +523,6 @@ msgstr "Sledenje v realnem času z GPS"
 #: ../src/vikgpslayer.c:373
 msgid "Unknown GPS Protocol"
 msgstr "Neznan protokol GPS"
-
-#: ../src/vikgpslayer.c:379
-msgid "Unknown serial port device"
-msgstr ""
 
 #: ../src/vikgpslayer.c:444
 #, c-format
@@ -839,76 +548,6 @@ msgstr "Prazen prenos"
 #: ../src/vikgpslayer.c:578
 msgid "Empty All"
 msgstr "Prazno vse"
-
-#: ../src/vikgpslayer.c:718
-#, c-format
-msgid "Uploading %d waypoint..."
-msgid_plural "Uploading %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:720
-#, c-format
-msgid "Uploading %d trackpoint..."
-msgid_plural "Uploading %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:744
-#, c-format
-msgid "Downloaded %d out of %d waypoint..."
-msgid_plural "Downloaded %d out of %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:746
-#, c-format
-msgid "Downloaded %d out of %d trackpoint..."
-msgid_plural "Downloaded %d out of %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:750
-#, c-format
-msgid "Uploaded %d out of %d waypoint..."
-msgid_plural "Uploaded %d out of %d waypoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:752
-#, c-format
-msgid "Uploaded %d out of %d trackpoint..."
-msgid_plural "Uploaded %d out of %d trackpoints..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:759
-#, c-format
-msgid "Downloaded %d waypoint"
-msgid_plural "Downloaded %d waypoints"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:761
-#, c-format
-msgid "Downloaded %d trackpoint"
-msgid_plural "Downloaded %d trackpoints"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:765
-#, c-format
-msgid "Uploaded %d waypoint"
-msgid_plural "Uploaded %d waypoints"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/vikgpslayer.c:767
-#, c-format
-msgid "Uploaded %d trackpoint"
-msgid_plural "Uploaded %d trackpoints"
-msgstr[0] ""
-msgstr[1] ""
 
 #: ../src/vikgpslayer.c:952
 msgid "Error: couldn't find gpsbabel."
@@ -938,10 +577,6 @@ msgstr "/Nova plast"
 msgid "Top Layer"
 msgstr "Vrhnja plast"
 
-#: ../src/viklayerspanel.c:487
-msgid "Aggregate Layers have no settable properties."
-msgstr ""
-
 #: ../src/viklayerspanel.c:537
 msgid "You cannot cut the Top Layer."
 msgstr "Ne morete izrezati vrhnje plasti."
@@ -954,18 +589,9 @@ msgstr "Ne morete izbrisati vrhnje plasti."
 msgid "Are you sure you wish to delete all layers?"
 msgstr "Ali res želite izbrisati vse plasti?"
 
-#. ******* MAPZOOMS ********
-#: ../src/vikmapslayer.c:88
-msgid "Use Viking Zoom Level"
-msgstr ""
-
 #: ../src/vikmapslayer.c:119
 msgid "Map Type:"
 msgstr "Vrsta zemljevida:"
-
-#: ../src/vikmapslayer.c:120
-msgid "Maps Directory (Optional):"
-msgstr ""
 
 #: ../src/vikmapslayer.c:121
 msgid "Alpha:"
@@ -974,10 +600,6 @@ msgstr "Prosojnost:"
 #: ../src/vikmapslayer.c:122
 msgid "Autodownload maps:"
 msgstr "Samodejen prenos zemljevidov:"
-
-#: ../src/vikmapslayer.c:123
-msgid "Zoom Level:"
-msgstr ""
 
 #: ../src/vikmapslayer.c:129
 msgid "Maps Download"
@@ -990,24 +612,6 @@ msgstr "Zemljevid"
 #: ../src/vikmapslayer.c:388
 msgid "Unknown map type"
 msgstr "Neznana vrsta zemljevida"
-
-#: ../src/vikmapslayer.c:398
-msgid "Unknown Map Zoom"
-msgstr ""
-
-#: ../src/vikmapslayer.c:467
-#, c-format
-msgid ""
-"New map cannot be displayed in the current drawmode.\n"
-"Select \"%s\" from View menu to view it."
-msgstr ""
-
-#: ../src/vikmapslayer.c:609
-#, c-format
-msgid ""
-"Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
-"factor"
-msgstr ""
 
 #: ../src/vikmapslayer.c:924
 #, c-format
@@ -1044,26 +648,6 @@ msgstr "Ponoven prenos slabih zemljevidov"
 msgid "Redownload all map(s)"
 msgstr "Ponoven prenos vseh zemljevidov"
 
-#: ../src/vikmapslayer.c:1142
-#, c-format
-msgid ""
-"Wrong drawmode for this map.\n"
-"Select \"%s\" from View menu and try again."
-msgstr ""
-
-#: ../src/vikmapslayer.c:1147
-msgid "Wrong zoom level for this map."
-msgstr ""
-
-#: ../src/vikmapslayer.c:1172
-msgid "Download Onscreen Maps"
-msgstr ""
-
-#. TODO Add GTK_STOCK_REFRESH icon
-#: ../src/vikmapslayer.c:1178
-msgid "Refresh Onscreen Tiles"
-msgstr ""
-
 #: ../src/viktreeview.c:203
 msgid "Layer Name"
 msgstr "Naziv plasti"
@@ -1073,10 +657,6 @@ msgstr "Naziv plasti"
 msgid "delete data from %s\n"
 msgstr "Izbriši podatke iz %s\n"
 
-#: ../src/viktrwlayer.c:307
-msgid "Create Waypoint"
-msgstr ""
-
 #: ../src/viktrwlayer.c:310
 msgid "Create Track"
 msgstr "Ustvari sled"
@@ -1084,10 +664,6 @@ msgstr "Ustvari sled"
 #: ../src/viktrwlayer.c:314
 msgid "Begin Track"
 msgstr "Začni sled"
-
-#: ../src/viktrwlayer.c:317
-msgid "Edit Waypoint"
-msgstr ""
 
 #: ../src/viktrwlayer.c:322
 msgid "Edit Trackpoint"
@@ -1101,20 +677,10 @@ msgstr "Prikaži sliko"
 msgid "Magic Scissors"
 msgstr "Čarobne škarje"
 
-#. ***** PARAMETERS *****
-#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1399
-#: ../src/viktrwlayer.c:1401
-msgid "Waypoints"
-msgstr ""
-
 #: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1389
 #: ../src/viktrwlayer.c:1391
 msgid "Tracks"
 msgstr "Sledi"
-
-#: ../src/viktrwlayer.c:337
-msgid "Waypoint Images"
-msgstr ""
 
 #: ../src/viktrwlayer.c:340
 msgid "Draw by Track"
@@ -1160,10 +726,6 @@ msgstr "Riši točke sledi"
 msgid "Draw Elevation"
 msgstr "Riši višino"
 
-#: ../src/viktrwlayer.c:367
-msgid "Draw Elevation Height %:"
-msgstr ""
-
 #: ../src/viktrwlayer.c:369
 msgid "Draw Stops"
 msgstr "Riši zaustavitve"
@@ -1196,37 +758,9 @@ msgstr "Najvišja hitrost sledi:"
 msgid "Draw Labels"
 msgstr "Nariši oznake"
 
-#: ../src/viktrwlayer.c:379
-msgid "Waypoint Color:"
-msgstr ""
-
-#: ../src/viktrwlayer.c:380
-msgid "Waypoint Text:"
-msgstr ""
-
 #: ../src/viktrwlayer.c:381
 msgid "Background:"
 msgstr "Ozadje:"
-
-#: ../src/viktrwlayer.c:382
-msgid "Fake BG Color Translucency:"
-msgstr ""
-
-#: ../src/viktrwlayer.c:383
-msgid "Waypoint marker:"
-msgstr ""
-
-#: ../src/viktrwlayer.c:384
-msgid "Waypoint size:"
-msgstr ""
-
-#: ../src/viktrwlayer.c:385
-msgid "Draw Waypoint Symbols:"
-msgstr ""
-
-#: ../src/viktrwlayer.c:387
-msgid "Draw Waypoint Images"
-msgstr ""
 
 #: ../src/viktrwlayer.c:388
 msgid "Image Size (pixels):"
@@ -1235,14 +769,6 @@ msgstr "Velikost slike (slikovnih točk):"
 #: ../src/viktrwlayer.c:389
 msgid "Image Alpha:"
 msgstr "Prosojnost slike:"
-
-#: ../src/viktrwlayer.c:390
-msgid "Image Memory Cache Size:"
-msgstr ""
-
-#: ../src/viktrwlayer.c:1538
-msgid "This layer has no waypoints or trackpoints."
-msgstr ""
 
 #: ../src/viktrwlayer.c:1546
 msgid "Export Layer"
@@ -1253,37 +779,17 @@ msgstr "Izvozi plast"
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Datoteka \"%s\" že obstaja. Ali jo želite prepisati?"
 
-#: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1464
-msgid "The filename you requested could not be opened for writing."
-msgstr ""
-
 #: ../src/viktrwlayer.c:1596
 msgid "Create"
 msgstr "Ustvari"
-
-#: ../src/viktrwlayer.c:1606
-msgid "Waypoint Name:"
-msgstr ""
-
-#: ../src/viktrwlayer.c:1626
-msgid "Waypoint not found in this layer."
-msgstr ""
 
 #: ../src/viktrwlayer.c:1724
 msgid "Goto Center of Layer"
 msgstr "Pojdi na središče plasti"
 
-#: ../src/viktrwlayer.c:1729
-msgid "Goto Waypoint"
-msgstr ""
-
 #: ../src/viktrwlayer.c:1735
 msgid "Export layer"
 msgstr "Izvozi plast"
-
-#: ../src/viktrwlayer.c:1740
-msgid "Export as GPSPoint"
-msgstr ""
 
 #: ../src/viktrwlayer.c:1745
 msgid "Export as GPSMapper"
@@ -1293,41 +799,9 @@ msgstr "Izvozi kot GPSMapper"
 msgid "Export as GPX"
 msgstr "Izvozi kot GPX"
 
-#: ../src/viktrwlayer.c:1755 ../src/viktrwlayer.c:2794
-msgid "New Waypoint"
-msgstr ""
-
-#: ../src/viktrwlayer.c:1762
-msgid "Add Wikipedia Waypoints"
-msgstr ""
-
-#: ../src/viktrwlayer.c:1767
-msgid "Within layer bounds"
-msgstr ""
-
-#: ../src/viktrwlayer.c:1772
-msgid "Within current view"
-msgstr ""
-
 #: ../src/viktrwlayer.c:1779 ../src/viktrwlayer.c:2760
 msgid "Upload to OSM"
 msgstr "Prenesi na OSM"
-
-#: ../src/viktrwlayer.c:2290
-msgid "Failed. This track does not have timestamp"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2304
-msgid "Failed. No other track in this layer has timestamp"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2310
-msgid "Merge with..."
-msgstr ""
-
-#: ../src/viktrwlayer.c:2310
-msgid "Select track to merge with"
-msgstr ""
 
 #: ../src/viktrwlayer.c:2347
 msgid "Merge Threshold..."
@@ -1337,17 +811,9 @@ msgstr "Meja za združevanje..."
 msgid "Merge when time between tracks less than:"
 msgstr "Združi, ko je čas med sledmi krajši kot:"
 
-#: ../src/viktrwlayer.c:2439
-msgid "Split Threshold..."
-msgstr ""
-
 #: ../src/viktrwlayer.c:2440
 msgid "Split when time between trackpoints exceeds:"
 msgstr "Razdeli, če je čas med točkama sledi večji kot:"
-
-#: ../src/viktrwlayer.c:2523
-msgid "Waypoint Already Exists"
-msgstr ""
 
 #: ../src/viktrwlayer.c:2564
 msgid "Track Already Exists"
@@ -1356,10 +822,6 @@ msgstr "Sled že obstaja"
 #: ../src/viktrwlayer.c:2686
 msgid "Goto"
 msgstr "Pojdi"
-
-#: ../src/viktrwlayer.c:2694
-msgid "Visit Geocache Webpage"
-msgstr ""
 
 #: ../src/viktrwlayer.c:2709
 msgid "Goto Startpoint"
@@ -1377,10 +839,6 @@ msgstr "Pojdi na konec"
 msgid "Merge By Time"
 msgstr "Združi po času"
 
-#: ../src/viktrwlayer.c:2729
-msgid "Merge With Other Tracks..."
-msgstr ""
-
 #: ../src/viktrwlayer.c:2734
 msgid "Split By Time"
 msgstr "Razdeli po času"
@@ -1388,43 +846,6 @@ msgstr "Razdeli po času"
 #: ../src/viktrwlayer.c:2739
 msgid "Download maps along track..."
 msgstr "Prenesi zemljevide ob sledi..."
-
-#: ../src/viktrwlayer.c:2744
-msgid "Apply DEM Data"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2749
-msgid "Extend track end"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2754
-msgid "Extend using magic scissors"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2768
-msgid "View Google Directions"
-msgstr ""
-
-#: ../src/viktrwlayer.c:2774
-msgid "Use with filter"
-msgstr ""
-
-#: ../src/viktrwlayer.c:3736
-msgid "Could not launch eog to open file."
-msgstr ""
-
-#: ../src/viktrwlayer.c:3790
-#, c-format
-msgid "Creating %d Image Thumbnails..."
-msgstr ""
-
-#: ../src/viktrwlayer.c:4010
-msgid "No map layer in use. Create one first"
-msgstr ""
-
-#: ../src/viktrwlayer_propwin.c:658
-msgid "Failed spliting track. Track unchanged"
-msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:675
 msgid "Operation Aborted. Track unchanged"
@@ -1434,14 +855,6 @@ msgstr "Operacija preklicana. Sled nespremenjena"
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - Lastnosti sledi"
-
-#: ../src/viktrwlayer_propwin.c:734
-msgid "Split at Marker"
-msgstr ""
-
-#: ../src/viktrwlayer_propwin.c:735
-msgid "Split Segments"
-msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:736
 msgid "Reverse"
@@ -1462,10 +875,6 @@ msgstr "<b>Dolžina sledi:</b>"
 #: ../src/viktrwlayer_propwin.c:760
 msgid "<b>Trackpoints:</b>"
 msgstr "<b>Točk sledi:</b>"
-
-#: ../src/viktrwlayer_propwin.c:760
-msgid "<b>Segments:</b>"
-msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:760
 msgid "<b>Duplicate Points:</b>"
@@ -1517,21 +926,9 @@ msgstr "Ni podatkov"
 msgid "%d minutes"
 msgstr "%d minut"
 
-#: ../src/viktrwlayer_propwin.c:870
-msgid "Statistics"
-msgstr ""
-
-#: ../src/viktrwlayer_propwin.c:875
-msgid "<b>Track Distance:</b>"
-msgstr ""
-
 #: ../src/viktrwlayer_propwin.c:876
 msgid "Elevation-distance"
 msgstr "Višina-razdalja"
-
-#: ../src/viktrwlayer_propwin.c:882
-msgid "<b>Track Time:</b>"
-msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:883
 msgid "Speed-time"
@@ -1552,10 +949,6 @@ msgstr "<b>Geografska dolžina:</b>"
 #: ../src/viktrwlayer_tpwin.c:104
 msgid "<b>Altitude:</b>"
 msgstr "<b>Višina:</b>"
-
-#: ../src/viktrwlayer_tpwin.c:105
-msgid "<b>Timestamp:</b>"
-msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:106
 msgid "<b>Time:</b>"
@@ -1586,24 +979,12 @@ msgid "Join With Last"
 msgstr "Združi z zadnjo"
 
 #: ../src/vikwindow.c:188
-msgid "Pan"
-msgstr ""
-
-#: ../src/vikwindow.c:188
 msgid "Zoom"
 msgstr "Povečava"
 
 #: ../src/vikwindow.c:188
 msgid "Ruler"
 msgstr "Merilo"
-
-#: ../src/vikwindow.c:363
-#, c-format
-msgid ""
-"Do you want to save the changes you made to the document \"%s\"?\n"
-"\n"
-"Your changes will be lost if you don't save them."
-msgstr ""
 
 #: ../src/vikwindow.c:366 ../src/vikwindow.c:1314
 msgid "Untitled"
@@ -1612,24 +993,6 @@ msgstr "Neimenovano"
 #: ../src/vikwindow.c:367
 msgid "Don't Save"
 msgstr "Ne shrani"
-
-#: ../src/vikwindow.c:400
-msgid "mpp"
-msgstr ""
-
-#: ../src/vikwindow.c:400
-msgid "pixelfact"
-msgstr ""
-
-#: ../src/vikwindow.c:527
-#, c-format
-msgid "%s %s %dm"
-msgstr ""
-
-#: ../src/vikwindow.c:529
-#, c-format
-msgid "%s %s"
-msgstr ""
 
 #: ../src/vikwindow.c:1113
 msgid "You must select a layer to show its properties."
@@ -1650,12 +1013,6 @@ msgstr "Prosimo, izberize datoteko s podatki GPS. "
 #: ../src/vikwindow.c:1433
 msgid "Save as Viking File."
 msgstr "Shrani kot datoteko Viking."
-
-#: ../src/vikwindow.c:1667
-msgid ""
-"Viewable region outside allowable pixel size bounds for image. Clipping "
-"width/height values."
-msgstr ""
 
 #: ../src/vikwindow.c:1686
 #, c-format
@@ -1691,18 +1048,6 @@ msgstr "Shrani kot PNG"
 msgid "Save as JPEG"
 msgstr "Shrani kot JPEG"
 
-#: ../src/vikwindow.c:1754
-msgid "East-west image tiles:"
-msgstr ""
-
-#: ../src/vikwindow.c:1756
-msgid "North-south image tiles:"
-msgstr ""
-
-#: ../src/vikwindow.c:1796
-msgid "You must be in UTM mode to use this feature"
-msgstr ""
-
 #: ../src/vikwindow.c:1807
 msgid "Save Image"
 msgstr "Shrani sliko"
@@ -1731,10 +1076,6 @@ msgstr "_Pogled"
 msgid "_Zoom"
 msgstr "_Povečava"
 
-#: ../src/vikwindow.c:1945 ../src/vikwindow.c:2014
-msgid "_Pan"
-msgstr ""
-
 #: ../src/vikwindow.c:1946
 msgid "_Layers"
 msgstr "_Plasti"
@@ -1742,10 +1083,6 @@ msgstr "_Plasti"
 #: ../src/vikwindow.c:1947
 msgid "_Tools"
 msgstr "_Orodja"
-
-#: ../src/vikwindow.c:1948
-msgid "_Webtools"
-msgstr ""
 
 #: ../src/vikwindow.c:1949
 msgid "_Help"
@@ -1787,14 +1124,6 @@ msgstr "Iz _GPS"
 msgid "Transfer data from a GPS device"
 msgstr "Prenos podatkov iz naprave GPS"
 
-#: ../src/vikwindow.c:1956
-msgid "Google _Directions"
-msgstr ""
-
-#: ../src/vikwindow.c:1956
-msgid "Get driving directions from Google"
-msgstr ""
-
 #: ../src/vikwindow.c:1958
 msgid "Geo_caches"
 msgstr "Geo_zakladi"
@@ -1818,22 +1147,6 @@ msgstr "Shrani _kot"
 #: ../src/vikwindow.c:1961
 msgid "Save the file under different name"
 msgstr "Shrani datoteko pod drugim imenom"
-
-#: ../src/vikwindow.c:1962
-msgid "_Generate Image File"
-msgstr ""
-
-#: ../src/vikwindow.c:1962
-msgid "Save a snapshot of the workspace into a file"
-msgstr ""
-
-#: ../src/vikwindow.c:1963
-msgid "Generate _Directory of Images"
-msgstr ""
-
-#: ../src/vikwindow.c:1963
-msgid "FIXME:IMGDIR"
-msgstr ""
 
 #: ../src/vikwindow.c:1966
 msgid "_Print..."
@@ -1859,30 +1172,6 @@ msgstr "Shrani in končaj"
 msgid "Save and Exit the program"
 msgstr "Shrani in končaj delo s programom"
 
-#: ../src/vikwindow.c:1972
-msgid "Go To location"
-msgstr ""
-
-#: ../src/vikwindow.c:1972
-msgid "Go to address/place using text search"
-msgstr ""
-
-#: ../src/vikwindow.c:1973
-msgid "_Go to Lat\\/Lon..."
-msgstr ""
-
-#: ../src/vikwindow.c:1973
-msgid "Go to arbitrary lat\\/lon coordinate"
-msgstr ""
-
-#: ../src/vikwindow.c:1974
-msgid "Go to UTM..."
-msgstr ""
-
-#: ../src/vikwindow.c:1974
-msgid "Go to arbitrary UTM coordinate"
-msgstr ""
-
 #: ../src/vikwindow.c:1975
 msgid "Set Background Color..."
 msgstr "Nastavi barvo ozadja..."
@@ -1894,10 +1183,6 @@ msgstr "Po_večaj"
 #: ../src/vikwindow.c:1977
 msgid "Zoom _Out"
 msgstr "Po_manjšaj"
-
-#: ../src/vikwindow.c:1978
-msgid "Zoom _To"
-msgstr ""
 
 #: ../src/vikwindow.c:1979
 msgid "0.25"
@@ -2015,10 +1300,6 @@ msgstr "Orodje za povečavo"
 msgid "_Ruler"
 msgstr "_Ravnilo"
 
-#: ../src/vikwindow.c:2016
-msgid "Ruler Tool"
-msgstr ""
-
 #: ../src/vikwindow.c:2020
 msgid "Show Scale"
 msgstr "Prikaži merilo"
@@ -2031,6 +1312,734 @@ msgstr "Prikaži oznako središča"
 msgid "Full Screen"
 msgstr "Celozaslonsko"
 
+#: ../src/vikwindow.c:2085
+#, c-format
+msgid "New %s Layer"
+msgstr "Nova plast %s"
+
+#: ../src/viking.desktop.in.h:3
+msgid "Viking"
+msgstr "Viking"
+
+#: ../src/clipboard.c:113
+#, c-format
+msgid ""
+"The clipboard contains sublayer data for a %s layers.You must select a layer "
+"of this type to paste the clipboard data."
+msgstr ""
+
+#: ../src/clipboard.c:219
+msgid ""
+"In order to paste a waypoint, please select an appropriate layer to paste "
+"into."
+msgstr ""
+
+#: ../src/dialog.c:115
+msgid "Northing:"
+msgstr ""
+
+#: ../src/dialog.c:121
+msgid "Easting:"
+msgstr ""
+
+#: ../src/dialog.c:128
+msgid "Zone:"
+msgstr ""
+
+#: ../src/dialog.c:131
+msgid "Letter:"
+msgstr ""
+
+#: ../src/dialog.c:192
+msgid "Waypoint Properties"
+msgstr ""
+
+#. TODO: other checks (isalpha or whatever )
+#: ../src/dialog.c:328
+msgid "Please enter a name for the waypoint."
+msgstr ""
+
+#: ../src/dialog.c:332
+#, c-format
+msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
+msgstr ""
+
+#: ../src/dialog.c:462 ../src/geonamessearch.c:301
+msgid "Nothing was selected"
+msgstr ""
+
+#: ../src/dialog.c:574
+msgid "X (easting): "
+msgstr ""
+
+#: ../src/dialog.c:575
+msgid "Y (northing): "
+msgstr ""
+
+#: ../src/dialog.c:580
+msgid "X and Y zoom factors must be equal"
+msgstr ""
+
+#: ../src/dialog.c:691
+msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
+msgstr ""
+
+#: ../src/dialog.c:692
+msgid ""
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
+"Place, Suite 330, Boston, MA 02111-1307, USA"
+msgstr ""
+
+#: ../src/expedia.c:79
+msgid "Invalid expedia altitude"
+msgstr ""
+
+#: ../src/expedia.c:110
+#, c-format
+msgid ""
+"Couldn't open EXPEDIA image file (right after successful download! Please "
+"report and delete image file!): %s"
+msgstr ""
+
+#: ../src/expedia.c:123
+#, c-format
+msgid ""
+"Couldn't save EXPEDIA image file (right after successful download! Please "
+"report and delete image file!): %s"
+msgstr ""
+
+#: ../src/geonamessearch.c:119
+msgid "No entries found!"
+msgstr ""
+
+#: ../src/geonamessearch.c:327 ../src/googlesearch.c:127
+msgid "couldn't map temp file"
+msgstr ""
+
+#: ../src/globals.c:41
+msgid "Degree format:"
+msgstr ""
+
+#: ../src/datasource_gc.c:107
+msgid ""
+"Can't find gcget in path! Check that you have installed gcget correctly."
+msgstr ""
+
+#: ../src/datasource_gc.c:169
+msgid "Number geocaches:"
+msgstr ""
+
+#: ../src/datasource_gc.c:171
+msgid "Centered around:"
+msgstr ""
+
+#: ../src/datasource_google.c:49 ../src/datasource_google.c:50
+msgid "Google Directions"
+msgstr ""
+
+#: ../src/datasource_google.c:74
+msgid "From:"
+msgstr ""
+
+#: ../src/datasource_google.c:76
+msgid "To:"
+msgstr ""
+
+#: ../src/datasource_gps.c:133
+#, c-format
+msgid "using cmdline '%s' and file '%s'\n"
+msgstr ""
+
+#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:711
+#, c-format
+msgid "Downloading %d waypoint..."
+msgid_plural "Downloading %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/dem.c:59 ../src/dem.c:73
+msgid "Invalid DEM"
+msgstr ""
+
+#: ../src/dem.c:115
+msgid "Invalid DEM header"
+msgstr ""
+
+#: ../src/dem.c:184 ../src/dem.c:197
+msgid "Incorrect DEM Class B record: expected 1"
+msgstr ""
+
+#: ../src/dem.c:354
+#, c-format
+msgid "Couldn't map file %s: %s"
+msgstr ""
+
+#: ../src/file.c:426 ../src/file.c:430
+#, c-format
+msgid "Draw mode '%s' no more supported"
+msgstr ""
+
+#: ../src/util.c:86
+msgid "Could not create new email."
+msgstr ""
+
+#: ../src/datasource_bfilter.c:117
+msgid "Waypoints Inside This"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:118 ../src/datasource_bfilter.c:151
+msgid "Polygonzied Layer"
+msgstr ""
+
+#: ../src/datasource_bfilter.c:150
+msgid "Waypoints Outside This"
+msgstr ""
+
+#: ../src/main.c:116
+msgid "Use smaller symbols for waypoints"
+msgstr ""
+
+#: ../src/main.c:117
+msgid "Enable debug output"
+msgstr ""
+
+#: ../src/osm.c:85
+msgid "OSM (view)"
+msgstr ""
+
+#: ../src/osm.c:89
+msgid "OSM (edit)"
+msgstr ""
+
+#: ../src/osm.c:93
+msgid "OSM (render)"
+msgstr ""
+
+#: ../src/osm-traces.c:77
+msgid "OSM username:"
+msgstr ""
+
+#: ../src/osm-traces.c:78
+msgid "OSM password:"
+msgstr ""
+
+#: ../src/osm-traces.c:253
+#, c-format
+msgid "failed to open temporary file: %s"
+msgstr ""
+
+#: ../src/osm-traces.c:287
+#, c-format
+msgid "failed to unlink temporary file: %s"
+msgstr ""
+
+#: ../src/uibuilder.c:134
+msgid "Take care that this password will be stored clearly in a plain file."
+msgstr ""
+
+#: ../src/vikdemlayer.c:992
+msgid "No download source selected. Edit layer properties."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:66
+msgid "Georef Move Map"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:70
+msgid "Georef Zoom Tool"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:293
+msgid "Unexpected end of file reading World file."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:309 ../src/vikgeoreflayer.c:354
+msgid "Choose World file"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:322
+msgid "The World file you requested could not be opened for reading."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:400
+msgid "World File Parameters:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:406
+msgid "Corner pixel easting:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:409
+msgid "Corner pixel northing:"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:412
+msgid "X (easting) scale (mpp): "
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:413
+msgid "Y (northing) scale (mpp): "
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:522
+msgid "Zoom to Fit Map"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:532
+msgid "Export to World File"
+msgstr ""
+
+#: ../src/vikgpslayer.c:139
+msgid "Moving Map Method:"
+msgstr ""
+
+#: ../src/vikgpslayer.c:142
+msgid "Gpsd Retry Interval (seconds):"
+msgstr ""
+
+#: ../src/vikgpslayer.c:379
+msgid "Unknown serial port device"
+msgstr ""
+
+#: ../src/vikgpslayer.c:718
+#, c-format
+msgid "Uploading %d waypoint..."
+msgid_plural "Uploading %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:720
+#, c-format
+msgid "Uploading %d trackpoint..."
+msgid_plural "Uploading %d trackpoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:744
+#, c-format
+msgid "Downloaded %d out of %d waypoint..."
+msgid_plural "Downloaded %d out of %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:746
+#, c-format
+msgid "Downloaded %d out of %d trackpoint..."
+msgid_plural "Downloaded %d out of %d trackpoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:750
+#, c-format
+msgid "Uploaded %d out of %d waypoint..."
+msgid_plural "Uploaded %d out of %d waypoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:752
+#, c-format
+msgid "Uploaded %d out of %d trackpoint..."
+msgid_plural "Uploaded %d out of %d trackpoints..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:759
+#, c-format
+msgid "Downloaded %d waypoint"
+msgid_plural "Downloaded %d waypoints"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:761
+#, c-format
+msgid "Downloaded %d trackpoint"
+msgid_plural "Downloaded %d trackpoints"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:765
+#, c-format
+msgid "Uploaded %d waypoint"
+msgid_plural "Uploaded %d waypoints"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/vikgpslayer.c:767
+#, c-format
+msgid "Uploaded %d trackpoint"
+msgid_plural "Uploaded %d trackpoints"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/viklayerspanel.c:487
+msgid "Aggregate Layers have no settable properties."
+msgstr ""
+
+#. ******* MAPZOOMS ********
+#: ../src/vikmapslayer.c:88
+msgid "Use Viking Zoom Level"
+msgstr ""
+
+#: ../src/vikmapslayer.c:120
+msgid "Maps Directory (Optional):"
+msgstr ""
+
+#: ../src/vikmapslayer.c:123
+msgid "Zoom Level:"
+msgstr ""
+
+#: ../src/vikmapslayer.c:398
+msgid "Unknown Map Zoom"
+msgstr ""
+
+#: ../src/vikmapslayer.c:467
+#, c-format
+msgid ""
+"New map cannot be displayed in the current drawmode.\n"
+"Select \"%s\" from View menu to view it."
+msgstr ""
+
+#: ../src/vikmapslayer.c:609
+#, c-format
+msgid ""
+"Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
+"factor"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1142
+#, c-format
+msgid ""
+"Wrong drawmode for this map.\n"
+"Select \"%s\" from View menu and try again."
+msgstr ""
+
+#: ../src/vikmapslayer.c:1147
+msgid "Wrong zoom level for this map."
+msgstr ""
+
+#: ../src/vikmapslayer.c:1172
+msgid "Download Onscreen Maps"
+msgstr ""
+
+#. TODO Add GTK_STOCK_REFRESH icon
+#: ../src/vikmapslayer.c:1178
+msgid "Refresh Onscreen Tiles"
+msgstr ""
+
+#: ../src/viktrwlayer.c:307
+msgid "Create Waypoint"
+msgstr ""
+
+#: ../src/viktrwlayer.c:317
+msgid "Edit Waypoint"
+msgstr ""
+
+#. ***** PARAMETERS *****
+#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1399
+#: ../src/viktrwlayer.c:1401
+msgid "Waypoints"
+msgstr ""
+
+#: ../src/viktrwlayer.c:337
+msgid "Waypoint Images"
+msgstr ""
+
+#: ../src/viktrwlayer.c:367
+msgid "Draw Elevation Height %:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:379
+msgid "Waypoint Color:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:380
+msgid "Waypoint Text:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:382
+msgid "Fake BG Color Translucency:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:383
+msgid "Waypoint marker:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:384
+msgid "Waypoint size:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:385
+msgid "Draw Waypoint Symbols:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:387
+msgid "Draw Waypoint Images"
+msgstr ""
+
+#: ../src/viktrwlayer.c:390
+msgid "Image Memory Cache Size:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1538
+msgid "This layer has no waypoints or trackpoints."
+msgstr ""
+
+#: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1464
+msgid "The filename you requested could not be opened for writing."
+msgstr ""
+
+#: ../src/viktrwlayer.c:1606
+msgid "Waypoint Name:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1626
+msgid "Waypoint not found in this layer."
+msgstr ""
+
+#: ../src/viktrwlayer.c:1729
+msgid "Goto Waypoint"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1740
+msgid "Export as GPSPoint"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1755 ../src/viktrwlayer.c:2794
+msgid "New Waypoint"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1762
+msgid "Add Wikipedia Waypoints"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1767
+msgid "Within layer bounds"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1772
+msgid "Within current view"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2290
+msgid "Failed. This track does not have timestamp"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2304
+msgid "Failed. No other track in this layer has timestamp"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2310
+msgid "Merge with..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:2310
+msgid "Select track to merge with"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2439
+msgid "Split Threshold..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:2523
+msgid "Waypoint Already Exists"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2694
+msgid "Visit Geocache Webpage"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2729
+msgid "Merge With Other Tracks..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:2744
+msgid "Apply DEM Data"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2749
+msgid "Extend track end"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2754
+msgid "Extend using magic scissors"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2768
+msgid "View Google Directions"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2774
+msgid "Use with filter"
+msgstr ""
+
+#: ../src/viktrwlayer.c:3736
+msgid "Could not launch eog to open file."
+msgstr ""
+
+#: ../src/viktrwlayer.c:3790
+#, c-format
+msgid "Creating %d Image Thumbnails..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:4010
+msgid "No map layer in use. Create one first"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:658
+msgid "Failed spliting track. Track unchanged"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:734
+msgid "Split at Marker"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:735
+msgid "Split Segments"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:760
+msgid "<b>Segments:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:870
+msgid "Statistics"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:875
+msgid "<b>Track Distance:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:882
+msgid "<b>Track Time:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:105
+msgid "<b>Timestamp:</b>"
+msgstr ""
+
+#: ../src/vikwindow.c:188
+msgid "Pan"
+msgstr ""
+
+#: ../src/vikwindow.c:363
+#, c-format
+msgid ""
+"Do you want to save the changes you made to the document \"%s\"?\n"
+"\n"
+"Your changes will be lost if you don't save them."
+msgstr ""
+
+#: ../src/vikwindow.c:400
+msgid "mpp"
+msgstr ""
+
+#: ../src/vikwindow.c:400
+msgid "pixelfact"
+msgstr ""
+
+#: ../src/vikwindow.c:527
+#, c-format
+msgid "%s %s %dm"
+msgstr ""
+
+#: ../src/vikwindow.c:529
+#, c-format
+msgid "%s %s"
+msgstr ""
+
+#: ../src/vikwindow.c:1667
+msgid ""
+"Viewable region outside allowable pixel size bounds for image. Clipping "
+"width/height values."
+msgstr ""
+
+#: ../src/vikwindow.c:1754
+msgid "East-west image tiles:"
+msgstr ""
+
+#: ../src/vikwindow.c:1756
+msgid "North-south image tiles:"
+msgstr ""
+
+#: ../src/vikwindow.c:1796
+msgid "You must be in UTM mode to use this feature"
+msgstr ""
+
+#: ../src/vikwindow.c:1945 ../src/vikwindow.c:2014
+msgid "_Pan"
+msgstr ""
+
+#: ../src/vikwindow.c:1948
+msgid "_Webtools"
+msgstr ""
+
+#: ../src/vikwindow.c:1956
+msgid "Google _Directions"
+msgstr ""
+
+#: ../src/vikwindow.c:1956
+msgid "Get driving directions from Google"
+msgstr ""
+
+#: ../src/vikwindow.c:1962
+msgid "_Generate Image File"
+msgstr ""
+
+#: ../src/vikwindow.c:1962
+msgid "Save a snapshot of the workspace into a file"
+msgstr ""
+
+#: ../src/vikwindow.c:1963
+msgid "Generate _Directory of Images"
+msgstr ""
+
+#: ../src/vikwindow.c:1963
+msgid "FIXME:IMGDIR"
+msgstr ""
+
+#: ../src/vikwindow.c:1972
+msgid "Go To location"
+msgstr ""
+
+#: ../src/vikwindow.c:1972
+msgid "Go to address/place using text search"
+msgstr ""
+
+#: ../src/vikwindow.c:1973
+msgid "_Go to Lat\\/Lon..."
+msgstr ""
+
+#: ../src/vikwindow.c:1973
+msgid "Go to arbitrary lat\\/lon coordinate"
+msgstr ""
+
+#: ../src/vikwindow.c:1974
+msgid "Go to UTM..."
+msgstr ""
+
+#: ../src/vikwindow.c:1974
+msgid "Go to arbitrary UTM coordinate"
+msgstr ""
+
+#: ../src/vikwindow.c:1978
+msgid "Zoom _To"
+msgstr ""
+
+#: ../src/vikwindow.c:2016
+msgid "Ruler Tool"
+msgstr ""
+
 #: ../src/vikwindow.c:2022
 msgid "Activate full screen mode"
 msgstr ""
@@ -2039,11 +2048,6 @@ msgstr ""
 msgid "Show Side Panel"
 msgstr ""
 
-#: ../src/vikwindow.c:2085
-#, c-format
-msgid "New %s Layer"
-msgstr "Nova plast %s"
-
 #: ../src/viking.desktop.in.h:1
 msgid "GPS Data Manager"
 msgstr ""
@@ -2051,42 +2055,3 @@ msgstr ""
 #: ../src/viking.desktop.in.h:2
 msgid "Map Based GPS Data Manager (live data capable)."
 msgstr ""
-
-#: ../src/viking.desktop.in.h:3
-msgid "Viking"
-msgstr "Viking"
-
-#~ msgid "Transparent Google Maps"
-#~ msgstr "Prosojni zemljevidi Google"
-
-#~ msgid "Google Satellite Images"
-#~ msgstr "Satelitski posnetki Google"
-
-#~ msgid "Google Terrain Maps"
-#~ msgstr "Reliefni zemljevidi Google"
-
-#~ msgid "Failed getting google version numbers"
-#~ msgstr "Ni bilo mogoče ugotoviti verzije zemljevidov Google"
-
-#~ msgid "Old Google Maps"
-#~ msgstr "Stari zemljevidi Google"
-
-#~ msgid "Keep current position at center"
-#~ msgstr "Ohrani trenutni položaj v središču"
-
-#~ msgid "_Old Google Mode"
-#~ msgstr "_Stari Google način"
-
-#~ msgid "Old _KH Mode"
-#~ msgstr "Stari _KH način"
-
-#~ msgid "_Google Mode"
-#~ msgstr "_Google način"
-
-#, c-format
-#~ msgid "couldn't open temp file %s"
-#~ msgstr "Začasne datoteke %s ni bilo mogoče odpreti"
-
-#, c-format
-#~ msgid "Failed downloading %s"
-#~ msgstr "Napaka pri prenosu %s"
