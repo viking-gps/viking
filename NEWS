@@ -1,3 +1,33 @@
+Viking 0.9.9 (2009-09-09)
+New features since 0.9.8
+* Filter out irrelevant key-modifiers.
+* Upgrade OSM-traces support to 0.6 API
+* Manage hdop,vdop,pdop,nsat
+* Remove unused (and buggy) feature
+* Document previous merge
+* Improvement of map cache
+* Add a viking parameter for mapcache memory size
+* Add menu option to flush mapcache, and reduce viking memory footprint
+* Use thread-pool to manage download
+* Show path used for map directory in options even when using default one
+* Include full libcurl version in user agent
+
+Fixes since 0.9.8
+* Don't crash when jobs are cancelled via the background jobs dialog.
+* Fix #2163652: GPX file with byte order mark not parsed
+* Fix #2766609: Don't use gpsd_units()
+* Fix #2812856: Change SRTM URL
+* Fix #2818818: unset langage preset while opening external Google
+* Fix copyright in --version output
+* Fix SRTM Server change
+* Fix memory leaks found with cppcheck
+* Fix warning in call to MD5Update() in function md5_hash()
+* Fix previous patch
+* vdop, hdop, pdop, nsats and fix_mode values were not shown
+* Fix #570956: change saved_width to 1
+* Fix build problem
+* Fix bug #2481237: Maps directory file chooser should look for directory
+
 Viking 0.9.8 (2009-01-31)
 New features since 0.9.7
 * Add GeoNames support (both for search and for POI import from Geonames+Wikipedia)
