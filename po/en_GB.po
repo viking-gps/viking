@@ -1,63 +1,63 @@
-# Latvian translation for viking
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# English (United Kingdom) translation for viking
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the viking package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-08-20 09:50+0200\n"
-"PO-Revision-Date: 2008-09-30 12:59+0000\n"
-"Last-Translator: Viesturs Zariņš <viesturs.zarins@mii.lu.lv>\n"
-"Language-Team: Latvian <lv@li.org>\n"
+"PO-Revision-Date: 2009-08-31 01:11+0000\n"
+"Last-Translator: EliotBlennerhassett <eliot@blennerhassett.gen.nz>\n"
+"Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2009-09-09 20:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
-msgstr "Strādā..."
+msgstr ""
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
-msgstr "Kļūda: iegūšana neizdevās."
+msgstr ""
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:953
 msgid "Done."
-msgstr "Gatavs."
+msgstr ""
 
 #: ../src/acquire.c:326 ../src/vikgpslayer.c:992
 msgid "Status: detecting gpsbabel"
-msgstr "Statuss: nosaka gpsbabel"
+msgstr ""
 
 #: ../src/background.c:57
 #, c-format
 msgid "%d items"
-msgstr "%d ieraksti"
+msgstr ""
 
 #: ../src/background.c:224
 msgid "Job"
-msgstr "Darbs"
+msgstr ""
 
 #: ../src/background.c:228
 msgid "Progress"
-msgstr "Progress"
+msgstr ""
 
 #: ../src/background.c:239
 msgid "Viking Background Jobs"
-msgstr "Viking fona darbi"
+msgstr ""
 
 #: ../src/clipboard.c:84
 msgid "paste failed"
-msgstr "neizdevās ielīmēt"
+msgstr ""
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
-msgstr "nepareizs starpliktuves datu izmērs"
+msgstr ""
 
 #: ../src/clipboard.c:113
 #, c-format
@@ -170,7 +170,7 @@ msgstr ""
 
 #: ../src/dialog.c:573
 msgid "Zoom factor (in meters per pixel:"
-msgstr ""
+msgstr "Zoom factor (in metres per pixel):"
 
 #: ../src/dialog.c:574
 msgid "X (easting): "
@@ -317,7 +317,7 @@ msgstr ""
 
 #: ../src/datasource_gc.c:171
 msgid "Centered around:"
-msgstr ""
+msgstr "Centred around:"
 
 #: ../src/datasource_google.c:49 ../src/datasource_google.c:50
 msgid "Google Directions"
@@ -468,7 +468,7 @@ msgstr ""
 
 #: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
 msgid "Color:"
-msgstr ""
+msgstr "Colour:"
 
 #: ../src/vikcoordlayer.c:47
 msgid "Minutes Width:"
@@ -731,7 +731,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:400
 msgid "World File Parameters:"
-msgstr ""
+msgstr "Zoom (metres per pixel):"
 
 #: ../src/vikgeoreflayer.c:401
 msgid "Load From File..."
@@ -763,7 +763,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:527
 msgid "Goto Map Center"
-msgstr ""
+msgstr "Go to Map Centre"
 
 #: ../src/vikgeoreflayer.c:532
 msgid "Export to World File"
@@ -1174,7 +1174,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:374
 msgid "Track Background Color"
-msgstr ""
+msgstr "Track Background Colour"
 
 #: ../src/viktrwlayer.c:375
 msgid "Min Track Velocity:"
@@ -1190,7 +1190,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:379
 msgid "Waypoint Color:"
-msgstr ""
+msgstr "Waypoint Colour:"
 
 #: ../src/viktrwlayer.c:380
 msgid "Waypoint Text:"
@@ -1202,7 +1202,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:382
 msgid "Fake BG Color Translucency:"
-msgstr ""
+msgstr "Fake BG Colour Translucency:"
 
 #: ../src/viktrwlayer.c:383
 msgid "Waypoint marker:"
@@ -1263,7 +1263,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:1723
 msgid "Goto Center of Layer"
-msgstr ""
+msgstr "Go to Centre of Layer"
 
 #: ../src/viktrwlayer.c:1728
 msgid "Goto Waypoint"
@@ -1359,7 +1359,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2714
 msgid "Goto \"Center\""
-msgstr ""
+msgstr "Go to \"Centre\""
 
 #: ../src/viktrwlayer.c:2719
 msgid "Goto Endpoint"
@@ -1685,7 +1685,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:1714
 msgid "Zoom (meters per pixel):"
-msgstr ""
+msgstr "Zoom (metres per pixel):"
 
 #: ../src/vikwindow.c:1720
 msgid "Area in current viewable window"
@@ -1721,7 +1721,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:1917
 msgid "Choose a background color"
-msgstr ""
+msgstr "Choose a background colour"
 
 #: ../src/vikwindow.c:1938
 msgid "_File"
@@ -1893,7 +1893,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:1972
 msgid "Set Background Color..."
-msgstr ""
+msgstr "Set Background Colour..."
 
 #: ../src/vikwindow.c:1973
 msgid "Zoom _In"
@@ -2037,7 +2037,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2019
 msgid "Show Center Mark"
-msgstr ""
+msgstr "Show Centre Mark"
 
 #: ../src/vikwindow.c:2020
 msgid "Full Screen"

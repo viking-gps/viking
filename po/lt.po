@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-04 22:47+0100\n"
-"PO-Revision-Date: 2009-04-04 11:46+0000\n"
-"Last-Translator: Tadas Masiulionis <Unknown>\n"
+"POT-Creation-Date: 2009-08-20 09:50+0200\n"
+"PO-Revision-Date: 2009-08-20 11:17+0000\n"
+"Last-Translator: Dainius Sakalinskas <dinuxlt@gmail.com>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "(n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2009-08-18 13:20+0000\n"
+"X-Launchpad-Export-Date: 2009-09-09 20:12+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -27,28 +27,28 @@ msgstr "Vykdoma..."
 msgid "Error: acquisition failed."
 msgstr "Klaida: pasiekti nepavyko."
 
-#: ../src/acquire.c:149 ../src/vikgpslayer.c:957
+#: ../src/acquire.c:149 ../src/vikgpslayer.c:953
 msgid "Done."
 msgstr "Baigta."
 
-#: ../src/acquire.c:326 ../src/vikgpslayer.c:996
+#: ../src/acquire.c:326 ../src/vikgpslayer.c:992
 msgid "Status: detecting gpsbabel"
 msgstr "Būsena: aptinkamas gpsbabel"
 
-#: ../src/background.c:54
+#: ../src/background.c:57
 #, c-format
 msgid "%d items"
 msgstr "%d dalykai"
 
-#: ../src/background.c:212
+#: ../src/background.c:224
 msgid "Job"
 msgstr "Užduotis"
 
-#: ../src/background.c:216
+#: ../src/background.c:228
 msgid "Progress"
 msgstr "Eiga"
 
-#: ../src/background.c:227
+#: ../src/background.c:239
 msgid "Viking Background Jobs"
 msgstr "Viking fono darbai"
 
@@ -75,7 +75,7 @@ msgid ""
 "into."
 msgstr "Pasirinkite tinkamą sluoksnį, kad įterptumėte maršruto tašką."
 
-#: ../src/curl_download.c:85
+#: ../src/curl_download.c:94
 #, c-format
 msgid "%s() Curl perform failed: %s"
 msgstr "%s() Curl įvykdymas nepavyko: %s"
@@ -363,7 +363,7 @@ msgstr "Gaunami duomenys iš GPS"
 msgid "using cmdline '%s' and file '%s'\n"
 msgstr "naudojant komantinę eilutę '%s' ir rinkmeną '%s'\n"
 
-#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:711
+#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:707
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
@@ -371,7 +371,7 @@ msgstr[0] "Atsiunčiamas %d maršruto taškas..."
 msgstr[1] "Atsiunčiami %d maršruto taškai..."
 msgstr[2] "Atsiunčiama %d maršruto taškų..."
 
-#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:713
+#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:709
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
@@ -389,7 +389,7 @@ msgstr "Atsiųsta %d iš %d %s..."
 msgid "Downloaded %d %s."
 msgstr "Atsiųsta %d %s."
 
-#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:783
+#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:779
 #, c-format
 msgid "GPS Device: %s"
 msgstr "GPS įrenginys: %s"
@@ -402,7 +402,7 @@ msgstr "GPS protokolas:"
 msgid "Serial Port:"
 msgstr "Nuoseklusis prievadas:"
 
-#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:1001
+#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:997
 msgid "GPS device: N/A"
 msgstr "GPS įrenginys: N/D"
 
@@ -432,6 +432,10 @@ msgstr "Atsiuntimo klaida: %s"
 #, c-format
 msgid "Draw mode '%s' no more supported"
 msgstr "Braižymo režimas '%s' daugiau nepalaikomas"
+
+#: ../src/mapcache.c:63
+msgid "Mapcache memory size (MB):"
+msgstr ""
 
 #: ../src/print.c:53
 msgid "None"
@@ -475,11 +479,11 @@ msgstr "Nepaisyti puslapio _paraščių"
 msgid "Image S_ize:"
 msgstr "Atvaizdo _dydis:"
 
-#: ../src/util.c:75
+#: ../src/util.c:76
 msgid "Could not launch web browser."
 msgstr "Neįmanoma paleisti web naršyklės."
 
-#: ../src/util.c:86
+#: ../src/util.c:87
 msgid "Could not create new email."
 msgstr "Neįmanoma sukurti naujo el. pašto."
 
@@ -698,11 +702,11 @@ msgstr "Nepasirinktas atsisiuntimo šaltinis. Keiskite sluoksnio ypatybes."
 msgid "Downloading DEM %s"
 msgstr "Atsiunčiamas DEM %s"
 
-#: ../src/vikfileentry.c:67
+#: ../src/vikfileentry.c:68
 msgid "Browse..."
 msgstr "Naršyti..."
 
-#: ../src/vikfileentry.c:94
+#: ../src/vikfileentry.c:96
 msgid "Choose file"
 msgstr "Pasirinkite rinkmeną"
 
@@ -815,11 +819,11 @@ msgstr "Gpsd prievadas:"
 msgid "Gpsd Retry Interval (seconds):"
 msgstr "Gpsd bandymų intervalas (sekundėmis):"
 
-#: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:989
+#: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:985
 msgid "GPS Download"
 msgstr "GPS atsiuntimas"
 
-#: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:989
+#: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:985
 msgid "GPS Upload"
 msgstr "GPS išsiuntimas"
 
@@ -827,40 +831,40 @@ msgstr "GPS išsiuntimas"
 msgid "GPS Realtime Tracking"
 msgstr "GPS realaus laiko sekimas"
 
-#: ../src/vikgpslayer.c:373
+#: ../src/vikgpslayer.c:371
 msgid "Unknown GPS Protocol"
 msgstr "Nežinomas GPS protokolas"
 
-#: ../src/vikgpslayer.c:379
+#: ../src/vikgpslayer.c:377
 msgid "Unknown serial port device"
 msgstr "Nežinomas įrenginio nuoseklusis prievadas"
 
-#: ../src/vikgpslayer.c:444
+#: ../src/vikgpslayer.c:442
 #, c-format
 msgid "%s: unknown parameter"
 msgstr "%s: nežinomas parametras"
 
-#: ../src/vikgpslayer.c:545
+#: ../src/vikgpslayer.c:541
 msgid "Upload to GPS"
 msgstr "Nusiųsti į GPS"
 
-#: ../src/vikgpslayer.c:550
+#: ../src/vikgpslayer.c:546
 msgid "Download from GPS"
 msgstr "Atsisiųsti iš GPS"
 
-#: ../src/vikgpslayer.c:568
+#: ../src/vikgpslayer.c:564
 msgid "Empty Upload"
 msgstr "Išvalyti išsiuntimus"
 
-#: ../src/vikgpslayer.c:573
+#: ../src/vikgpslayer.c:569
 msgid "Empty Download"
 msgstr "Išvalyti atsiuntimus"
 
-#: ../src/vikgpslayer.c:578
+#: ../src/vikgpslayer.c:574
 msgid "Empty All"
 msgstr "Išvalyti visus"
 
-#: ../src/vikgpslayer.c:718
+#: ../src/vikgpslayer.c:714
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
@@ -868,7 +872,7 @@ msgstr[0] "Išsiunčiamas %d maršruto taškas..."
 msgstr[1] "Išsiunčiami %d maršruto taškai..."
 msgstr[2] "Išsiunčiama %d maršruto taškų..."
 
-#: ../src/vikgpslayer.c:720
+#: ../src/vikgpslayer.c:716
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
@@ -876,7 +880,7 @@ msgstr[0] "Išsiunčiamas %d kelio taškas..."
 msgstr[1] "Išsiunčiami %d kelio taškai..."
 msgstr[2] "Išsiunčiama %d kelio taškų..."
 
-#: ../src/vikgpslayer.c:744
+#: ../src/vikgpslayer.c:740
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
@@ -884,7 +888,7 @@ msgstr[0] "Atsiųstas %d iš %d maršruto taškų..."
 msgstr[1] "Atsiųsti %d iš %d maršruto taškų..."
 msgstr[2] "Atsiųsta %d iš %d maršruto taškų..."
 
-#: ../src/vikgpslayer.c:746
+#: ../src/vikgpslayer.c:742
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
@@ -892,7 +896,7 @@ msgstr[0] "Atsiųstas %d iš %d kelio taškų..."
 msgstr[1] "Atsiųsti %d iš %d kelio taškų..."
 msgstr[2] "Atsiųsta %d iš %d kelio taškų..."
 
-#: ../src/vikgpslayer.c:750
+#: ../src/vikgpslayer.c:746
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
@@ -900,7 +904,7 @@ msgstr[0] "Išsiųstas %d iš %d maršruto taškų..."
 msgstr[1] "Išsiųsti %d iš %d maršruto taškų..."
 msgstr[2] "Išsiųsta %d iš %d maršruto taškų..."
 
-#: ../src/vikgpslayer.c:752
+#: ../src/vikgpslayer.c:748
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
@@ -908,7 +912,7 @@ msgstr[0] "Išsiųstas %d iš %d kelio taškų..."
 msgstr[1] "Išsiųsti %d iš %d kelio taškų..."
 msgstr[2] "Išsiųsta %d iš %d kelio taškų..."
 
-#: ../src/vikgpslayer.c:759
+#: ../src/vikgpslayer.c:755
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
@@ -916,7 +920,7 @@ msgstr[0] "Atsiųstas %d maršruto taškas"
 msgstr[1] "Atsiųsti %d maršruto taškai"
 msgstr[2] "Atsiųsta %d maršruto taškų"
 
-#: ../src/vikgpslayer.c:761
+#: ../src/vikgpslayer.c:757
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
@@ -924,7 +928,7 @@ msgstr[0] "Atsiųstas %d kelio taškas"
 msgstr[1] "Atsiųsti %d kelio taškai"
 msgstr[2] "Atsiųsta %d kelio taškų"
 
-#: ../src/vikgpslayer.c:765
+#: ../src/vikgpslayer.c:761
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
@@ -932,7 +936,7 @@ msgstr[0] "Išsiųstas %d maršruto taškas"
 msgstr[1] "Išsiųsti %d maršruto taškai"
 msgstr[2] "Išsiųsta %d maršruto taškų"
 
-#: ../src/vikgpslayer.c:767
+#: ../src/vikgpslayer.c:763
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
@@ -940,7 +944,7 @@ msgstr[0] "Išsiųstas %d kelio taškas"
 msgstr[1] "Išsiųsti %d kelio taškai"
 msgstr[2] "Išsiųsta %d kelio taškų"
 
-#: ../src/vikgpslayer.c:952
+#: ../src/vikgpslayer.c:948
 msgid "Error: couldn't find gpsbabel."
 msgstr "Klaida: neįmanoma surasti gpsbabel."
 
@@ -994,8 +998,8 @@ msgid "Map Type:"
 msgstr "Žemėlapio tipas:"
 
 #: ../src/vikmapslayer.c:120
-msgid "Maps Directory (Optional):"
-msgstr "Žemėlapių aplankalas (pasirinktinai):"
+msgid "Maps Directory:"
+msgstr "Žemėlapių katalogas:"
 
 #: ../src/vikmapslayer.c:121
 msgid "Alpha:"
@@ -1043,7 +1047,7 @@ msgstr ""
 "Bailiai atsisakyti brėžti kvadratus arba esančius kvadratų už %d mastelio "
 "faktoriaus"
 
-#: ../src/vikmapslayer.c:924
+#: ../src/vikmapslayer.c:927
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
@@ -1051,7 +1055,7 @@ msgstr[0] "Pakartotinai atsiunčiama iki %d %s žemėlapio..."
 msgstr[1] "Pakartotinai atsiunčiama iki %d %s žemėlapių..."
 msgstr[2] "Pakartotinai atsiunčiama iki %d %s žemėlapių..."
 
-#: ../src/vikmapslayer.c:926
+#: ../src/vikmapslayer.c:929
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
@@ -1059,7 +1063,7 @@ msgstr[0] "Pakartotinai atsiunčiamas %d %s žemėlapis..."
 msgstr[1] "Pakartotinai atsiunčiami %d %s žemėlapiai..."
 msgstr[2] "Pakartotinai atsiunčiama %d %s žemėlapių..."
 
-#: ../src/vikmapslayer.c:930 ../src/vikmapslayer.c:1001
+#: ../src/vikmapslayer.c:933 ../src/vikmapslayer.c:1004
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
@@ -1067,15 +1071,15 @@ msgstr[0] "Atsiunčiamas %d %s žemėlapis..."
 msgstr[1] "Atsiunčiami %d %s žemėlapiai..."
 msgstr[2] "Atsiunčiama %d %s žemėlapių..."
 
-#: ../src/vikmapslayer.c:1058
+#: ../src/vikmapslayer.c:1061
 msgid "Redownload bad map(s)"
 msgstr "Pakartotinai atsiųsti blogus žemėlapius"
 
-#: ../src/vikmapslayer.c:1062
+#: ../src/vikmapslayer.c:1065
 msgid "Redownload all map(s)"
 msgstr "Pakartotinai atsiųsti visus žemėlapius"
 
-#: ../src/vikmapslayer.c:1142
+#: ../src/vikmapslayer.c:1145
 #, c-format
 msgid ""
 "Wrong drawmode for this map.\n"
@@ -1084,16 +1088,16 @@ msgstr ""
 "Klaidingas šio žemėlapio braižymo režimas.\n"
 "Pasirinkite iš meniu \"%s\" ir bandykite dar kartą."
 
-#: ../src/vikmapslayer.c:1147
+#: ../src/vikmapslayer.c:1150
 msgid "Wrong zoom level for this map."
 msgstr "Klaidingas šio žemėlapio mastelio lygis."
 
-#: ../src/vikmapslayer.c:1172
+#: ../src/vikmapslayer.c:1175
 msgid "Download Onscreen Maps"
 msgstr "Atsiųsti matomus žemėlapius"
 
 #. TODO Add GTK_STOCK_REFRESH icon
-#: ../src/vikmapslayer.c:1178
+#: ../src/vikmapslayer.c:1181
 msgid "Refresh Onscreen Tiles"
 msgstr "Atnaujinti matomus kvadratus"
 
@@ -1281,12 +1285,12 @@ msgstr "Šis sluoksnis neturi maršruto ir kelio taškų."
 msgid "Export Layer"
 msgstr "Eksportavimo sluoksnis"
 
-#: ../src/viktrwlayer.c:1565 ../src/vikwindow.c:1446 ../src/vikwindow.c:1820
+#: ../src/viktrwlayer.c:1565 ../src/vikwindow.c:1438 ../src/vikwindow.c:1817
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Rinkmena \"%s\" jau yra, ar norite pakeisti?"
 
-#: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1464
+#: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1456
 msgid "The filename you requested could not be opened for writing."
 msgstr "Rinkmena, kurią užklausėte, negali būti atverta rašymui."
 
@@ -1302,71 +1306,71 @@ msgstr "Maršruto taško pavadinimas:"
 msgid "Waypoint not found in this layer."
 msgstr "Maršruto taškas nerastas šiame sluoksnyje."
 
-#: ../src/viktrwlayer.c:1724
+#: ../src/viktrwlayer.c:1723
 msgid "Goto Center of Layer"
 msgstr "Eiti į sluoksnio centrą"
 
-#: ../src/viktrwlayer.c:1729
+#: ../src/viktrwlayer.c:1728
 msgid "Goto Waypoint"
 msgstr "Eiti į maršruto tašką"
 
-#: ../src/viktrwlayer.c:1735
+#: ../src/viktrwlayer.c:1734
 msgid "Export layer"
 msgstr "Eksportuoti sluoksnį"
 
-#: ../src/viktrwlayer.c:1740
+#: ../src/viktrwlayer.c:1739
 msgid "Export as GPSPoint"
 msgstr "Eksportuoti kaip GPSPoint"
 
-#: ../src/viktrwlayer.c:1745
+#: ../src/viktrwlayer.c:1744
 msgid "Export as GPSMapper"
 msgstr "Eksportuoti kaip GPSMapper"
 
-#: ../src/viktrwlayer.c:1750
+#: ../src/viktrwlayer.c:1749
 msgid "Export as GPX"
 msgstr "Eksportuoti kaip GPX"
 
-#: ../src/viktrwlayer.c:1755 ../src/viktrwlayer.c:2794
+#: ../src/viktrwlayer.c:1754 ../src/viktrwlayer.c:2794
 msgid "New Waypoint"
 msgstr "Naujas maršruto taškas"
 
-#: ../src/viktrwlayer.c:1762
+#: ../src/viktrwlayer.c:1761
 msgid "Add Wikipedia Waypoints"
 msgstr "Pridėti Wikipedia maršruto taškus"
 
-#: ../src/viktrwlayer.c:1767
+#: ../src/viktrwlayer.c:1766
 msgid "Within layer bounds"
 msgstr "Be sluoksnio ribų"
 
-#: ../src/viktrwlayer.c:1772
+#: ../src/viktrwlayer.c:1771
 msgid "Within current view"
 msgstr "Be esamos peržiūros"
 
-#: ../src/viktrwlayer.c:1779 ../src/viktrwlayer.c:2760
+#: ../src/viktrwlayer.c:1778 ../src/viktrwlayer.c:2760
 msgid "Upload to OSM"
 msgstr "Išsiųsti į OSM"
 
-#: ../src/viktrwlayer.c:2290
+#: ../src/viktrwlayer.c:2289
 msgid "Failed. This track does not have timestamp"
 msgstr "Nepavyko. Šis kelias neturi laiko žymų"
 
-#: ../src/viktrwlayer.c:2304
+#: ../src/viktrwlayer.c:2303
 msgid "Failed. No other track in this layer has timestamp"
 msgstr "Nepavyko. Jokie kiti keliai neturi laiko žymų šiame sluoksnyje"
 
-#: ../src/viktrwlayer.c:2310
+#: ../src/viktrwlayer.c:2309
 msgid "Merge with..."
 msgstr "Sujungti su..."
 
-#: ../src/viktrwlayer.c:2310
+#: ../src/viktrwlayer.c:2309
 msgid "Select track to merge with"
 msgstr "Pasirinkite kelią sujungimui su"
 
-#: ../src/viktrwlayer.c:2347
+#: ../src/viktrwlayer.c:2346
 msgid "Merge Threshold..."
 msgstr "Sujungti slenkstį..."
 
-#: ../src/viktrwlayer.c:2348
+#: ../src/viktrwlayer.c:2347
 msgid "Merge when time between tracks less than:"
 msgstr "Sujungti, jei tarp laiko ir kelių mažiau negu:"
 
@@ -1442,131 +1446,131 @@ msgstr "Rodyti Google maršrutus"
 msgid "Use with filter"
 msgstr "Naudoti su filtru"
 
-#: ../src/viktrwlayer.c:3736
+#: ../src/viktrwlayer.c:3735
 msgid "Could not launch eog to open file."
 msgstr "Rinkmenos atverimui neįmanoma paleisti eog."
 
-#: ../src/viktrwlayer.c:3790
+#: ../src/viktrwlayer.c:3789
 #, c-format
 msgid "Creating %d Image Thumbnails..."
 msgstr "Sukūriamos %d atvaizdo miniatiūros..."
 
-#: ../src/viktrwlayer.c:4010
+#: ../src/viktrwlayer.c:4009
 msgid "No map layer in use. Create one first"
 msgstr "Nėra naudojamų žemėlapio sluoksnių. Sukurkite."
 
-#: ../src/viktrwlayer_propwin.c:658
+#: ../src/viktrwlayer_propwin.c:661
 msgid "Failed spliting track. Track unchanged"
 msgstr "Nepavyko atskirti kelio. Kelias liko nepakeistas."
 
-#: ../src/viktrwlayer_propwin.c:675
+#: ../src/viktrwlayer_propwin.c:678
 msgid "Operation Aborted. Track unchanged"
 msgstr "Veiksmas nutrauktas. Kelias liko nepakeistas."
 
-#: ../src/viktrwlayer_propwin.c:729
+#: ../src/viktrwlayer_propwin.c:732
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - Kelio ypatybės"
 
-#: ../src/viktrwlayer_propwin.c:734
+#: ../src/viktrwlayer_propwin.c:737
 msgid "Split at Marker"
 msgstr "Atskirti ties žymeliu"
 
-#: ../src/viktrwlayer_propwin.c:735
+#: ../src/viktrwlayer_propwin.c:738
 msgid "Split Segments"
 msgstr "Skaidyti atkarpomis"
 
-#: ../src/viktrwlayer_propwin.c:736
+#: ../src/viktrwlayer_propwin.c:739
 msgid "Reverse"
 msgstr "Atvirkštinis"
 
-#: ../src/viktrwlayer_propwin.c:737
+#: ../src/viktrwlayer_propwin.c:740
 msgid "Delete Dupl."
 msgstr "Ištrinti dublikatus"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Comment:</b>"
 msgstr "<b>Komentaras:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Track Length:</b>"
 msgstr "<b>Kelio ilgis:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Trackpoints:</b>"
 msgstr "<b>Kelio taškai:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Segments:</b>"
 msgstr "<b>Atkarpos:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Duplicate Points:</b>"
 msgstr "<b>Sudubliuoti taškai:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Max Speed:</b>"
 msgstr "<b>Didžiausias greitis:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>Vidutinis greitis:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr "<b>Vid. nuot. tarp :</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Elevation Range:</b>"
 msgstr "<b>Aukščio intervalas:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr "<b>Visas aukščio intervalas:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Start:</b>"
 msgstr "<b>Pradžia:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>End:</b>"
 msgstr "<b>Pabaiga:</b>"
 
-#: ../src/viktrwlayer_propwin.c:760
+#: ../src/viktrwlayer_propwin.c:763
 msgid "<b>Duration:</b>"
 msgstr "<b>Trukmė:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788 ../src/viktrwlayer_propwin.c:795
-#: ../src/viktrwlayer_propwin.c:804 ../src/viktrwlayer_propwin.c:811
-#: ../src/viktrwlayer_propwin.c:850 ../src/viktrwlayer_propwin.c:851
-#: ../src/viktrwlayer_propwin.c:852 ../src/viktrwlayer_propwin.c:874
-#: ../src/viktrwlayer_propwin.c:881
+#: ../src/viktrwlayer_propwin.c:791 ../src/viktrwlayer_propwin.c:798
+#: ../src/viktrwlayer_propwin.c:807 ../src/viktrwlayer_propwin.c:814
+#: ../src/viktrwlayer_propwin.c:853 ../src/viktrwlayer_propwin.c:854
+#: ../src/viktrwlayer_propwin.c:855 ../src/viktrwlayer_propwin.c:877
+#: ../src/viktrwlayer_propwin.c:884
 #, c-format
 msgid "No Data"
 msgstr "Nėra duomenų"
 
-#: ../src/viktrwlayer_propwin.c:847
+#: ../src/viktrwlayer_propwin.c:850
 #, c-format
 msgid "%d minutes"
 msgstr "%d minučių"
 
-#: ../src/viktrwlayer_propwin.c:870
+#: ../src/viktrwlayer_propwin.c:873
 msgid "Statistics"
 msgstr "Statistika"
 
-#: ../src/viktrwlayer_propwin.c:875
+#: ../src/viktrwlayer_propwin.c:878
 msgid "<b>Track Distance:</b>"
 msgstr "<b>Kelio nuotolis:</b>"
 
-#: ../src/viktrwlayer_propwin.c:876
+#: ../src/viktrwlayer_propwin.c:879
 msgid "Elevation-distance"
 msgstr "Aukštis-nuotolis"
 
-#: ../src/viktrwlayer_propwin.c:882
+#: ../src/viktrwlayer_propwin.c:885
 msgid "<b>Track Time:</b>"
 msgstr "<b>Kelio laikas:</b>"
 
-#: ../src/viktrwlayer_propwin.c:883
+#: ../src/viktrwlayer_propwin.c:886
 msgid "Speed-time"
 msgstr "Greitis-laikas"
 
@@ -1606,31 +1610,47 @@ msgstr "<b>Laiko skirtumas:</b>"
 msgid "<b>\"Speed\" Between:</b>"
 msgstr "<b>\"Greitis\" tarp:</b>"
 
-#: ../src/viktrwlayer_tpwin.c:117
+#: ../src/viktrwlayer_tpwin.c:110
+msgid "<b>VDOP:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:111
+msgid "<b>HDOP:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:112
+msgid "<b>PDOP:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:113
+msgid "<b>SAT/FIX:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:122
 msgid "Trackpoint"
 msgstr "Kelio taškas"
 
-#: ../src/viktrwlayer_tpwin.c:122
+#: ../src/viktrwlayer_tpwin.c:127
 msgid "Split Here"
 msgstr "Skaidyti čia"
 
-#: ../src/viktrwlayer_tpwin.c:123
+#: ../src/viktrwlayer_tpwin.c:128
 msgid "Join With Last"
 msgstr "Sujungti su paskutiniu"
 
-#: ../src/vikwindow.c:188
+#: ../src/vikwindow.c:189
 msgid "Pan"
 msgstr "Perkėlimas"
 
-#: ../src/vikwindow.c:188
+#: ../src/vikwindow.c:189
 msgid "Zoom"
 msgstr "Mastelis"
 
-#: ../src/vikwindow.c:188
+#: ../src/vikwindow.c:189
 msgid "Ruler"
 msgstr "Liniuotė"
 
-#: ../src/vikwindow.c:363
+#: ../src/vikwindow.c:364
 #, c-format
 msgid ""
 "Do you want to save the changes you made to the document \"%s\"?\n"
@@ -1641,53 +1661,53 @@ msgstr ""
 "\n"
 "Jūsų pakeitimai dings, jeigu jų neišsaugosite."
 
-#: ../src/vikwindow.c:366 ../src/vikwindow.c:1314
+#: ../src/vikwindow.c:367 ../src/vikwindow.c:1306
 msgid "Untitled"
 msgstr "Be pavadinimo"
 
-#: ../src/vikwindow.c:367
+#: ../src/vikwindow.c:368
 msgid "Don't Save"
 msgstr "Neišsaugoti"
 
-#: ../src/vikwindow.c:400
+#: ../src/vikwindow.c:401
 msgid "mpp"
 msgstr "mpp"
 
-#: ../src/vikwindow.c:400
+#: ../src/vikwindow.c:401
 msgid "pixelfact"
 msgstr "Tikrasis taškas"
 
-#: ../src/vikwindow.c:527
+#: ../src/vikwindow.c:528
 #, c-format
 msgid "%s %s %dm"
 msgstr "%s %s %dm"
 
-#: ../src/vikwindow.c:529
+#: ../src/vikwindow.c:530
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
-#: ../src/vikwindow.c:1113
+#: ../src/vikwindow.c:1105
 msgid "You must select a layer to show its properties."
 msgstr "Turite pasirinkti sluoksnį, kad pamatytumėte jo ypatybes."
 
-#: ../src/vikwindow.c:1129
+#: ../src/vikwindow.c:1121
 msgid "You must select a layer to delete."
 msgstr "Turite pasirinkti sluoksnį, kad ištrintumėte."
 
-#: ../src/vikwindow.c:1347
+#: ../src/vikwindow.c:1339
 msgid "The file you requested could not be opened."
 msgstr "Užklaustos rinkmenos neįmanoma atverti."
 
-#: ../src/vikwindow.c:1390
+#: ../src/vikwindow.c:1382
 msgid "Please select a GPS data file to open. "
 msgstr "Pasirinkite atverimui GPS duomenų rinkmeną. "
 
-#: ../src/vikwindow.c:1433
+#: ../src/vikwindow.c:1425
 msgid "Save as Viking File."
 msgstr "Išsaugoti kaip Viking rinkmeną"
 
-#: ../src/vikwindow.c:1667
+#: ../src/vikwindow.c:1664
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
@@ -1695,389 +1715,393 @@ msgstr ""
 "Matoma sritis už leidžiamo taško nustato atvaizdo ribas. Kerpamas "
 "pločio/aukščio vertės."
 
-#: ../src/vikwindow.c:1686
+#: ../src/vikwindow.c:1683
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. km)"
 msgstr "Visas plotas: %ldm x %ldm (%.3f kv. km)"
 
 #. todo: default for answers inside VikWindow or static (thruout instance)
-#: ../src/vikwindow.c:1694
+#: ../src/vikwindow.c:1691
 msgid "Save to Image File"
 msgstr "Išsaugoti atvaizdą į rinkmeną"
 
-#: ../src/vikwindow.c:1712
+#: ../src/vikwindow.c:1709
 msgid "Width (pixels):"
 msgstr "Plotis (taškais)"
 
-#: ../src/vikwindow.c:1714
+#: ../src/vikwindow.c:1711
 msgid "Height (pixels):"
 msgstr "Aukštis (taškais)"
 
-#: ../src/vikwindow.c:1717
+#: ../src/vikwindow.c:1714
 msgid "Zoom (meters per pixel):"
 msgstr "Mastelis (metrai į tašką):"
 
-#: ../src/vikwindow.c:1723
+#: ../src/vikwindow.c:1720
 msgid "Area in current viewable window"
 msgstr "Plotas matomame lange"
 
-#: ../src/vikwindow.c:1733
+#: ../src/vikwindow.c:1730
 msgid "Save as PNG"
 msgstr "Išsaugoti kaip PNG"
 
-#: ../src/vikwindow.c:1734
+#: ../src/vikwindow.c:1731
 msgid "Save as JPEG"
 msgstr "Išsaugoti kaip JPEG"
 
-#: ../src/vikwindow.c:1754
+#: ../src/vikwindow.c:1751
 msgid "East-west image tiles:"
 msgstr "Rytiniai-vakariniai atvaizdų kvadratai:"
 
-#: ../src/vikwindow.c:1756
+#: ../src/vikwindow.c:1753
 msgid "North-south image tiles:"
 msgstr "Šiauriniai-pietiniai atvaizdų kvadratai:"
 
-#: ../src/vikwindow.c:1796
+#: ../src/vikwindow.c:1793
 msgid "You must be in UTM mode to use this feature"
 msgstr "Jūs privalote būti UTM režime, kad galėtumėte naudoti šias ypatybes."
 
-#: ../src/vikwindow.c:1807
+#: ../src/vikwindow.c:1804
 msgid "Save Image"
 msgstr "Išsaugoti atvaizdą"
 
-#: ../src/vikwindow.c:1834
+#: ../src/vikwindow.c:1831
 msgid "Choose a directory to hold images"
 msgstr "Pasirinkite aplankalą atvaizdams saugoti"
 
-#: ../src/vikwindow.c:1920
+#: ../src/vikwindow.c:1917
 msgid "Choose a background color"
 msgstr "Keisti fono spalvą"
 
-#: ../src/vikwindow.c:1941
+#: ../src/vikwindow.c:1938
 msgid "_File"
 msgstr "_Rinkmena"
 
-#: ../src/vikwindow.c:1942
+#: ../src/vikwindow.c:1939
 msgid "_Edit"
 msgstr "_Keisti"
 
-#: ../src/vikwindow.c:1943
+#: ../src/vikwindow.c:1940
 msgid "_View"
 msgstr "_Rodymas"
 
-#: ../src/vikwindow.c:1944 ../src/vikwindow.c:2015
+#: ../src/vikwindow.c:1941 ../src/vikwindow.c:2013
 msgid "_Zoom"
 msgstr "_Mastelis"
 
-#: ../src/vikwindow.c:1945 ../src/vikwindow.c:2014
+#: ../src/vikwindow.c:1942 ../src/vikwindow.c:2012
 msgid "_Pan"
 msgstr "_Perkėlimas"
 
-#: ../src/vikwindow.c:1946
+#: ../src/vikwindow.c:1943
 msgid "_Layers"
 msgstr "_Sluoksniai"
 
-#: ../src/vikwindow.c:1947
+#: ../src/vikwindow.c:1944
 msgid "_Tools"
 msgstr "Į_rankiai"
 
-#: ../src/vikwindow.c:1948
+#: ../src/vikwindow.c:1945
 msgid "_Webtools"
 msgstr "_Web įrankiai"
 
-#: ../src/vikwindow.c:1949
+#: ../src/vikwindow.c:1946
 msgid "_Help"
 msgstr "_Pagalba"
 
-#: ../src/vikwindow.c:1951
+#: ../src/vikwindow.c:1948
 msgid "_New"
 msgstr "_Nauja"
 
-#: ../src/vikwindow.c:1951
+#: ../src/vikwindow.c:1948
 msgid "New file"
 msgstr "Nauja rinkmena"
 
-#: ../src/vikwindow.c:1952
+#: ../src/vikwindow.c:1949
 msgid "_Open"
 msgstr "_Atverti"
 
-#: ../src/vikwindow.c:1952
+#: ../src/vikwindow.c:1949
 msgid "Open a file"
 msgstr "Atverti rinkmeną"
 
-#: ../src/vikwindow.c:1953
+#: ../src/vikwindow.c:1950
 msgid "A_ppend File"
 msgstr "_Pridėti rinkmeną"
 
-#: ../src/vikwindow.c:1953
+#: ../src/vikwindow.c:1950
 msgid "Append data from a different file"
 msgstr "Pridėti duomenis iš kitos rinkmenos"
 
-#: ../src/vikwindow.c:1954
+#: ../src/vikwindow.c:1951
 msgid "A_cquire"
 msgstr "_Gauti duomenis"
 
-#: ../src/vikwindow.c:1955
+#: ../src/vikwindow.c:1952
 msgid "From _GPS"
 msgstr "Iš _GPS"
 
-#: ../src/vikwindow.c:1955
+#: ../src/vikwindow.c:1952
 msgid "Transfer data from a GPS device"
 msgstr "Perkelti duomenis iš GPS įrenginio"
 
-#: ../src/vikwindow.c:1956
+#: ../src/vikwindow.c:1953
 msgid "Google _Directions"
 msgstr "Google _maršrutai"
 
-#: ../src/vikwindow.c:1956
+#: ../src/vikwindow.c:1953
 msgid "Get driving directions from Google"
 msgstr "Gauti iš Google kelionės maršrutą"
 
-#: ../src/vikwindow.c:1958
+#: ../src/vikwindow.c:1955
 msgid "Geo_caches"
 msgstr "Geo_caches"
 
-#: ../src/vikwindow.c:1958
+#: ../src/vikwindow.c:1955
 msgid "Get Geocaches from geocaching.com"
 msgstr "Gauti Geocaches iš geocaching.com"
 
-#: ../src/vikwindow.c:1960
+#: ../src/vikwindow.c:1957
 msgid "_Save"
 msgstr "_Išsaugoti"
 
-#: ../src/vikwindow.c:1960
+#: ../src/vikwindow.c:1957
 msgid "Save the file"
 msgstr "Išsaugoti rinkmeną"
 
-#: ../src/vikwindow.c:1961
+#: ../src/vikwindow.c:1958
 msgid "Save _As"
 msgstr "Išsaugoti _kaip"
 
-#: ../src/vikwindow.c:1961
+#: ../src/vikwindow.c:1958
 msgid "Save the file under different name"
 msgstr "Išsaugoti rinkmeną kitu pavadinimu"
 
-#: ../src/vikwindow.c:1962
+#: ../src/vikwindow.c:1959
 msgid "_Generate Image File"
 msgstr "_Sukurti atvaizdo rinkmeną"
 
-#: ../src/vikwindow.c:1962
+#: ../src/vikwindow.c:1959
 msgid "Save a snapshot of the workspace into a file"
 msgstr "Išsaugoti darbo aplinkos atvaizdą į rinkmeną"
 
-#: ../src/vikwindow.c:1963
+#: ../src/vikwindow.c:1960
 msgid "Generate _Directory of Images"
 msgstr "Sukurti a_tvaizdų aplankalą"
 
-#: ../src/vikwindow.c:1963
+#: ../src/vikwindow.c:1960
 msgid "FIXME:IMGDIR"
 msgstr "FIXME:IMGDIR"
 
-#: ../src/vikwindow.c:1966
+#: ../src/vikwindow.c:1963
 msgid "_Print..."
 msgstr "_Spausdinti"
 
-#: ../src/vikwindow.c:1966
+#: ../src/vikwindow.c:1963
 msgid "Print maps"
 msgstr "Spausdinti žemėlapius"
 
-#: ../src/vikwindow.c:1969
+#: ../src/vikwindow.c:1966
 msgid "E_xit"
 msgstr "Iš_eiti"
 
-#: ../src/vikwindow.c:1969
+#: ../src/vikwindow.c:1966
 msgid "Exit the program"
 msgstr "Išeiti iš programos"
 
-#: ../src/vikwindow.c:1970
+#: ../src/vikwindow.c:1967
 msgid "Save and Exit"
 msgstr "Išsa_ugoti ir Išeiti"
 
-#: ../src/vikwindow.c:1970
+#: ../src/vikwindow.c:1967
 msgid "Save and Exit the program"
 msgstr "Išsaugoti ir Išeiti iš programos"
 
-#: ../src/vikwindow.c:1972
+#: ../src/vikwindow.c:1969
 msgid "Go To location"
 msgstr "Eiti į vietą"
 
-#: ../src/vikwindow.c:1972
+#: ../src/vikwindow.c:1969
 msgid "Go to address/place using text search"
 msgstr "Eiti į adresą/vietą naudojant tekstinę paiešką"
 
-#: ../src/vikwindow.c:1973
+#: ../src/vikwindow.c:1970
 msgid "_Go to Lat\\/Lon..."
 msgstr "Eiti į Platumą/Ilgumą..."
 
-#: ../src/vikwindow.c:1973
+#: ../src/vikwindow.c:1970
 msgid "Go to arbitrary lat\\/lon coordinate"
 msgstr "Eiti į pasirinktas pla\\/ilg koordinates"
 
-#: ../src/vikwindow.c:1974
+#: ../src/vikwindow.c:1971
 msgid "Go to UTM..."
 msgstr "Eiti į UTM..."
 
-#: ../src/vikwindow.c:1974
+#: ../src/vikwindow.c:1971
 msgid "Go to arbitrary UTM coordinate"
 msgstr "Eiti į pasirinktas UTM koordinates"
 
-#: ../src/vikwindow.c:1975
+#: ../src/vikwindow.c:1972
 msgid "Set Background Color..."
 msgstr "Nustatyti fono spalvą..."
 
-#: ../src/vikwindow.c:1976
+#: ../src/vikwindow.c:1973
 msgid "Zoom _In"
 msgstr "_Didinti"
 
-#: ../src/vikwindow.c:1977
+#: ../src/vikwindow.c:1974
 msgid "Zoom _Out"
 msgstr "M_ažinti"
 
-#: ../src/vikwindow.c:1978
+#: ../src/vikwindow.c:1975
 msgid "Zoom _To"
 msgstr "Didinti _iki"
 
-#: ../src/vikwindow.c:1979
+#: ../src/vikwindow.c:1976
 msgid "0.25"
 msgstr "0,25"
 
-#: ../src/vikwindow.c:1980
+#: ../src/vikwindow.c:1977
 msgid "0.5"
 msgstr "0,5"
 
-#: ../src/vikwindow.c:1981
+#: ../src/vikwindow.c:1978
 msgid "1"
 msgstr "1"
 
-#: ../src/vikwindow.c:1982
+#: ../src/vikwindow.c:1979
 msgid "2"
 msgstr "2"
 
-#: ../src/vikwindow.c:1983
+#: ../src/vikwindow.c:1980
 msgid "4"
 msgstr "4"
 
-#: ../src/vikwindow.c:1984
+#: ../src/vikwindow.c:1981
 msgid "8"
 msgstr "8"
 
-#: ../src/vikwindow.c:1985
+#: ../src/vikwindow.c:1982
 msgid "16"
 msgstr "16"
 
-#: ../src/vikwindow.c:1986
+#: ../src/vikwindow.c:1983
 msgid "32"
 msgstr "32"
 
-#: ../src/vikwindow.c:1987
+#: ../src/vikwindow.c:1984
 msgid "64"
 msgstr "64"
 
-#: ../src/vikwindow.c:1988
+#: ../src/vikwindow.c:1985
 msgid "128"
 msgstr "128"
 
-#: ../src/vikwindow.c:1989
+#: ../src/vikwindow.c:1986
 msgid "Pan North"
 msgstr "Šiaurinė pusė"
 
-#: ../src/vikwindow.c:1990
+#: ../src/vikwindow.c:1987
 msgid "Pan East"
 msgstr "Rytinė pusė"
 
-#: ../src/vikwindow.c:1991
+#: ../src/vikwindow.c:1988
 msgid "Pan South"
 msgstr "Pietinė pusė"
 
-#: ../src/vikwindow.c:1992
+#: ../src/vikwindow.c:1989
 msgid "Pan West"
 msgstr "Vakarinė pusė"
 
-#: ../src/vikwindow.c:1993
+#: ../src/vikwindow.c:1990
 msgid "Background _Jobs"
 msgstr "Fono _darbai"
 
-#: ../src/vikwindow.c:1995
+#: ../src/vikwindow.c:1992
 msgid "Cu_t"
 msgstr "_Iškirpti"
 
-#: ../src/vikwindow.c:1996
+#: ../src/vikwindow.c:1993
 msgid "_Copy"
 msgstr "_Kopijuoti"
 
-#: ../src/vikwindow.c:1997
+#: ../src/vikwindow.c:1994
 msgid "_Paste"
 msgstr "Į_terpti"
 
-#: ../src/vikwindow.c:1998
+#: ../src/vikwindow.c:1995
 msgid "_Delete"
 msgstr "_Ištrinti"
 
-#: ../src/vikwindow.c:1999
+#: ../src/vikwindow.c:1996
 msgid "Delete All"
 msgstr "Ištrinti visus"
 
-#: ../src/vikwindow.c:2000
+#: ../src/vikwindow.c:1997
+msgid "Flush Map cache"
+msgstr ""
+
+#: ../src/vikwindow.c:1998
 msgid "_Preferences..."
 msgstr "_Nustatymai"
 
-#: ../src/vikwindow.c:2001
+#: ../src/vikwindow.c:1999
 msgid "_Properties"
 msgstr "_Ypatybės"
 
-#: ../src/vikwindow.c:2003
+#: ../src/vikwindow.c:2001
 msgid "_About"
 msgstr "_Apie"
 
-#: ../src/vikwindow.c:2008
+#: ../src/vikwindow.c:2006
 msgid "_UTM Mode"
 msgstr "_UTM režimas"
 
-#: ../src/vikwindow.c:2009
+#: ../src/vikwindow.c:2007
 msgid "_Expedia Mode"
 msgstr "_Expedia režimas"
 
-#: ../src/vikwindow.c:2010
+#: ../src/vikwindow.c:2008
 msgid "_Mercator Mode"
 msgstr "_Merkatorinis režimas"
 
-#: ../src/vikwindow.c:2014
+#: ../src/vikwindow.c:2012
 msgid "Pan Tool"
 msgstr "Perkėlimo įrankis"
 
-#: ../src/vikwindow.c:2015
+#: ../src/vikwindow.c:2013
 msgid "Zoom Tool"
 msgstr "Mastelio įrankis"
 
-#: ../src/vikwindow.c:2016
+#: ../src/vikwindow.c:2014
 msgid "_Ruler"
 msgstr "_Liniuotė"
 
-#: ../src/vikwindow.c:2016
+#: ../src/vikwindow.c:2014
 msgid "Ruler Tool"
 msgstr "Matavimo įrankis"
 
-#: ../src/vikwindow.c:2020
+#: ../src/vikwindow.c:2018
 msgid "Show Scale"
 msgstr "Rodyti padalas"
 
-#: ../src/vikwindow.c:2021
+#: ../src/vikwindow.c:2019
 msgid "Show Center Mark"
 msgstr "Rodyti centrinį žymeklį"
 
-#: ../src/vikwindow.c:2022
+#: ../src/vikwindow.c:2020
 msgid "Full Screen"
 msgstr "Visas ekranas"
 
-#: ../src/vikwindow.c:2022
+#: ../src/vikwindow.c:2020
 msgid "Activate full screen mode"
 msgstr "Viso ekrano režimas"
 
-#: ../src/vikwindow.c:2023
+#: ../src/vikwindow.c:2021
 msgid "Show Side Panel"
 msgstr "Rodyti šoninį skydelį"
 
-#: ../src/vikwindow.c:2085
+#: ../src/vikwindow.c:2083
 #, c-format
 msgid "New %s Layer"
 msgstr "Naujas %s sluoksnis"
