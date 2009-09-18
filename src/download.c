@@ -72,6 +72,36 @@ gboolean a_check_map_file(FILE* f)
   return !a_check_html_file(f);
 }
 
+gboolean a_check_kml_file(FILE* f)
+{
+  gchar **s;
+  gchar *bp;
+  fpos_t pos;
+  gchar buf[33];
+  size_t nr;
+  gchar * html_str[] = {
+    "<?xml",
+    NULL
+  };
+
+  memset(buf, 0, sizeof(buf));
+  fgetpos(f, &pos);
+  rewind(f);
+  nr = fread(buf, 1, sizeof(buf) - 1, f);
+  fsetpos(f, &pos);
+  for (bp = buf; (bp < (buf + sizeof(buf) - 1)) && (nr > (bp - buf)); bp++) {
+    if (!(isspace(*bp)))
+      break;
+  }
+  if ((bp >= (buf + sizeof(buf) -1)) || ((bp - buf) >= nr))
+    return FALSE;
+  for (s = html_str; *s; s++) {
+    if (strncasecmp(*s, bp, strlen(*s)) == 0)
+      return TRUE;
+  }
+  return FALSE;
+}
+
 static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp)
 {
   FILE *f;

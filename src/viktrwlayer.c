@@ -71,7 +71,7 @@ static gboolean return_true (gpointer a, gpointer b, gpointer c) { return TRUE; 
 static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove ( ght, (GHRFunc) return_true, FALSE ); }
 #endif
 
-#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=js"
+#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=kml"
 #define VIK_TRW_LAYER_TRACK_GC 13
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
@@ -3653,7 +3653,7 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
                           g_ascii_dtostr (startlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) start.lon),
                           g_ascii_dtostr (endlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lat),
                           g_ascii_dtostr (endlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lon));
-    a_babel_convert_from_url ( vtl, url, "google", NULL, NULL );
+    a_babel_convert_from_url ( vtl, url, "kml", NULL, NULL );
     g_free ( url );
 
     /* see if anything was done -- a track was added or appended to */

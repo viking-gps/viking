@@ -28,6 +28,7 @@
 typedef gboolean (*VikFileContentCheckerFunc) (FILE*);
 gboolean a_check_map_file(FILE*);
 gboolean a_check_html_file(FILE*);
+gboolean a_check_kml_file(FILE*);
 
 typedef struct {
   /**
