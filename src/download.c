@@ -34,13 +34,34 @@
 
 #include "curl_download.h"
 
-gboolean a_check_html_file(FILE* f)
+static gboolean check_file_first_line(FILE* f, gchar *patterns[])
 {
   gchar **s;
   gchar *bp;
   fpos_t pos;
   gchar buf[33];
   size_t nr;
+
+  memset(buf, 0, sizeof(buf));
+  fgetpos(f, &pos);
+  rewind(f);
+  nr = fread(buf, 1, sizeof(buf) - 1, f);
+  fsetpos(f, &pos);
+  for (bp = buf; (bp < (buf + sizeof(buf) - 1)) && (nr > (bp - buf)); bp++) {
+    if (!(isspace(*bp)))
+      break;
+  }
+  if ((bp >= (buf + sizeof(buf) -1)) || ((bp - buf) >= nr))
+    return FALSE;
+  for (s = patterns; *s; s++) {
+    if (strncasecmp(*s, bp, strlen(*s)) == 0)
+      return TRUE;
+  }
+  return FALSE;
+}
+
+gboolean a_check_html_file(FILE* f)
+{
   gchar * html_str[] = {
     "<html",
     "<!DOCTYPE html",
@@ -49,57 +70,23 @@ gboolean a_check_html_file(FILE* f)
     NULL
   };
 
-  memset(buf, 0, sizeof(buf));
-  fgetpos(f, &pos);
-  rewind(f);
-  nr = fread(buf, 1, sizeof(buf) - 1, f);
-  fsetpos(f, &pos);
-  for (bp = buf; (bp < (buf + sizeof(buf) - 1)) && (nr > (bp - buf)); bp++) {
-    if (!(isspace(*bp)))
-      break;
-  }
-  if ((bp >= (buf + sizeof(buf) -1)) || ((bp - buf) >= nr))
-    return FALSE;
-  for (s = html_str; *s; s++) {
-    if (strncasecmp(*s, bp, strlen(*s)) == 0)
-      return TRUE;
-  }
-  return FALSE;
+  return check_file_first_line(f, html_str);
 }
 
 gboolean a_check_map_file(FILE* f)
 {
+  /* FIXME no more true since a_check_kml_file */
   return !a_check_html_file(f);
 }
 
 gboolean a_check_kml_file(FILE* f)
 {
-  gchar **s;
-  gchar *bp;
-  fpos_t pos;
-  gchar buf[33];
-  size_t nr;
-  gchar * html_str[] = {
+  gchar * kml_str[] = {
     "<?xml",
     NULL
   };
 
-  memset(buf, 0, sizeof(buf));
-  fgetpos(f, &pos);
-  rewind(f);
-  nr = fread(buf, 1, sizeof(buf) - 1, f);
-  fsetpos(f, &pos);
-  for (bp = buf; (bp < (buf + sizeof(buf) - 1)) && (nr > (bp - buf)); bp++) {
-    if (!(isspace(*bp)))
-      break;
-  }
-  if ((bp >= (buf + sizeof(buf) -1)) || ((bp - buf) >= nr))
-    return FALSE;
-  for (s = html_str; *s; s++) {
-    if (strncasecmp(*s, bp, strlen(*s)) == 0)
-      return TRUE;
-  }
-  return FALSE;
+  return check_file_first_line(f, kml_str);
 }
 
 static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp)
