@@ -516,7 +516,7 @@ static GdkPixbuf *pixbuf_shrink ( GdkPixbuf *pixbuf, gdouble xshrinkfactor, gdou
 {
   GdkPixbuf *tmp;
   guint16 width = gdk_pixbuf_get_width(pixbuf), height = gdk_pixbuf_get_height(pixbuf);
-  tmp = gdk_pixbuf_scale_simple(pixbuf, ceil(width * xshrinkfactor), ceil(height * yshrinkfactor), GDK_INTERP_BILINEAR);
+  tmp = gdk_pixbuf_scale_simple(pixbuf, ceil(width * xshrinkfactor), ceil(height * yshrinkfactor), GDK_INTERP_NEAREST);
   g_object_unref ( G_OBJECT(pixbuf) );
   return tmp;
 }
@@ -697,6 +697,24 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
             pixbuf = get_pixbuf ( vml, mode, &ulm, path_buf, max_path_len, xshrinkfactor, yshrinkfactor );
             if ( pixbuf )
               vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+            else {
+              /* retry with bigger shrinkfactor */
+              int scale_inc;
+              for (scale_inc = 1; scale_inc < 4; scale_inc ++) {
+                int scale_factor = 1 << scale_inc;  /*  2^scale_inc */
+                MapCoord ulm2 = ulm;
+                ulm2.x = ulm.x / scale_factor;
+                ulm2.y = ulm.y / scale_factor;
+                ulm2.scale = ulm.scale + scale_inc;
+                pixbuf = get_pixbuf ( vml, mode, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
+                if ( pixbuf ) {
+                  gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
+                  gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
+                  vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+                  break;
+                }
+              }
+            }
           }
 
           yy += tilesize_y;
