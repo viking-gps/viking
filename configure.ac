@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.9.8)
+AC_INIT(viking, 0.9.9)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -49,14 +49,26 @@ AM_WITH_EXPAT
 # Curl
 LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found])])
 
+# gdk-pixbuf-csource
 AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
 if test $GDK_PIXBUF_CSOURCE != "yes"
 then
   AC_MSG_ERROR([gdk-pixbuf-csource is needed but not found])
 fi
 
-# Checks for libraries.
-AM_PATH_GTK_2_0(2.2.0,,AC_MSG_ERROR(needs GTK+ 2.2.0),gthread)
+dnl  ------------------
+dnl | Pkgconfig checks |---------------------------------------
+dnl  ------------------
+
+PKG_CHECK_MODULES(PACKAGE, [
+        glib-2.0          >= 2.12
+        gthread-2.0       >= 2.2
+        gtk+-2.0          >= 2.8
+])
+
+AC_SUBST(PACKAGE_CFLAGS)
+AC_SUBST(PACKAGE_LIBS)
+
 
 # Options
 AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],

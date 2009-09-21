@@ -257,7 +257,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 
   imagelabel = gtk_label_new (_("Image:"));
-  imageentry = vik_file_entry_new ();
+  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
 
   {
     GtkCellRenderer *r;

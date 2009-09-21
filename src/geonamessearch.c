@@ -628,7 +628,6 @@ void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *v
   while (wp_runner) {
     wiki_geoname = (found_geoname *)wp_runner->data;
     wiki_wp = vik_waypoint_new();
-    wiki_wp->altitude = VIK_DEFAULT_ALTITUDE;
     wiki_wp->visible = TRUE;
     vik_coord_load_from_latlon(&(wiki_wp->coord), vik_trw_layer_get_coord_mode ( vtl ), &(wiki_geoname->ll));
     vik_waypoint_set_comment(wiki_wp, wiki_geoname->desc);

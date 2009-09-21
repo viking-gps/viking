@@ -416,7 +416,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
   yspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 5 ), 1, 8 );
 
   imagelabel = gtk_label_new ( _("Map Image:") );
-  imageentry = vik_file_entry_new ();
+  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
 
   if (*vgl)
   {

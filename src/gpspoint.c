@@ -260,14 +260,10 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       tp->timestamp = line_timestamp;
       tp->altitude = line_altitude;
       if (line_extended) {
-        tp->extended = TRUE;
         tp->speed = line_speed;
         tp->course = line_course;
         tp->nsats = line_sat;
         tp->fix_mode = line_fix;
-      }
-      else {
-        tp->extended = FALSE;
       }
       current_track->trackpoints = g_list_append ( current_track->trackpoints, tp );
     }
@@ -386,15 +382,15 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   }
   else if (key_len == 8 && strncasecmp( key, "latitude", key_len ) == 0 && value != NULL)
   {
-    line_latlon.lat = g_strtod(value, NULL);
+    line_latlon.lat = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 9 && strncasecmp( key, "longitude", key_len ) == 0 && value != NULL)
   {
-    line_latlon.lon = g_strtod(value, NULL);
+    line_latlon.lon = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 8 && strncasecmp( key, "altitude", key_len ) == 0 && value != NULL)
   {
-    line_altitude = g_strtod(value, NULL);
+    line_altitude = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 7 && strncasecmp( key, "visible", key_len ) == 0 && value[0] != 'y' && value[0] != 'Y' && value[0] != 't' && value[0] != 'T')
   {
@@ -406,7 +402,7 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   }
   else if (key_len == 8 && strncasecmp( key, "unixtime", key_len ) == 0 && value != NULL)
   {
-    line_timestamp = g_strtod(value, NULL);
+    line_timestamp = g_ascii_strtod(value, NULL);
     if ( line_timestamp != 0x80000000 )
       line_has_timestamp = TRUE;
   }
@@ -420,11 +416,11 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   }
   else if (key_len == 5 && strncasecmp( key, "speed", key_len ) == 0 && value != NULL)
   {
-    line_speed = g_strtod(value, NULL);
+    line_speed = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 6 && strncasecmp( key, "course", key_len ) == 0 && value != NULL)
   {
-    line_course = g_strtod(value, NULL);
+    line_course = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 3 && strncasecmp( key, "sat", key_len ) == 0 && value != NULL)
   {
@@ -497,7 +493,7 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
   if ( tp->newsegment )
     fprintf ( f, " newsegment=\"yes\"" );
 
-  if (tp->extended) {
+  if (!isnan(tp->speed) || !isnan(tp->course) || tp->nsats > 0) {
     fprintf ( f, " extended=\"yes\"" );
     if (!isnan(tp->speed)) {
       gchar *s_speed = a_coords_dtostr(tp->speed);

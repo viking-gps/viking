@@ -34,6 +34,7 @@
 #include "geonamessearch.h"
 #endif
 #include "dems.h"
+#include "mapcache.h"
 #include "print.h"
 #include "preferences.h"
 #include "icons/icons.h"
@@ -561,42 +562,33 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
 
 static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
-  if ( event->state == GDK_CONTROL_MASK ) {
+  guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
+  if ( modifiers == GDK_CONTROL_MASK ) {
     /* control == pan up & down */
     if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)/3 );
     else
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*2/3 );
-  } else if ( event->state == GDK_SHIFT_MASK ) {
-    /* control-shift == pan left & right */
+  } else if ( modifiers == GDK_SHIFT_MASK ) {
+    /* shift == pan left & right */
     if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/3, vik_viewport_get_height(vw->viking_vvp)/2 );
     else
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*2/3, vik_viewport_get_height(vw->viking_vvp)/2 );
-  } else if ( event->state == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
-    if ( event->direction == GDK_SCROLL_UP ) {
-      /* make sure mouse is still over the same point on the map when we zoom */
-      VikCoord coord;
-      gint x, y;
-      gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
-      gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
-      vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
+  } else if ( modifiers == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
+    /* control+shift == make sure mouse is still over the same point on the map when we zoom */
+    VikCoord coord;
+    gint x, y;
+    gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
+    gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
+    vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
+    if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_zoom_in (vw->viking_vvp);
-      vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
-      vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - event->x),
-				center_y + (y - event->y) );
-    }
-    else {
-      VikCoord coord;
-      gint x, y;
-      gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
-      gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
-      vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
+    else
       vik_viewport_zoom_out(vw->viking_vvp);
-      vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
-      vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - event->x),
-				center_y + (y - event->y) );
-    }
+    vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
+    vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - event->x),
+                                     center_y + (y - event->y) );
   } else {
     if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_zoom_in (vw->viking_vvp);
@@ -1505,6 +1497,11 @@ static void goto_address( GtkAction *a, VikWindow *vw)
 
 }
 
+static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
+{
+  a_mapcache_flush();
+}
+
 static void preferences_cb ( GtkAction *a, VikWindow *vw )
 {
   a_preferences_show_window ( GTK_WINDOW(vw) );
@@ -1997,7 +1994,8 @@ static GtkActionEntry entries[] = {
   { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         NULL,                                           (GCallback)menu_paste_layer_cb   },
   { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         NULL,                                           (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
-  { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences..."),                    NULL,         NULL,                                           (GCallback)preferences_cb              },
+  { "MapCacheFlush",NULL, N_("Flush Map cache"),                              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
+  { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences..."),               NULL,         NULL,                                           (GCallback)preferences_cb              },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
 
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         NULL,                                           (GCallback)help_about_cb    },

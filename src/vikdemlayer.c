@@ -62,8 +62,8 @@
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
-#define SRTM_FTP_SITE "e0srp01u.ecs.nasa.gov"
-#define SRTM_FTP_URI  "/srtm/version2/SRTM3/"
+#define SRTM_HTTP_SITE "dds.cr.usgs.gov"
+#define SRTM_HTTP_URI  "/srtm/version2_1/SRTM3/OLD/"
 
 #ifdef VIK_CONFIG_DEM24K
 #define DEM24K_DOWNLOAD_SCRIPT "dem24k.pl"
@@ -255,7 +255,7 @@ VikLayerInterface vik_dem_layer_interface = {
 
   (VikLayerFuncCreate)                  vik_dem_layer_create,
   (VikLayerFuncRealize)                 NULL,
-                                        dem_layer_post_read,
+  (VikLayerFuncPostRead)                dem_layer_post_read,
   (VikLayerFuncFree)                    vik_dem_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -756,7 +756,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
   }
 
   gchar *src_fn = g_strdup_printf("%s%s/%c%02d%c%03d.hgt.zip",
-                SRTM_FTP_URI,
+                SRTM_HTTP_URI,
                 continent_dir,
 		(intlat >= 0) ? 'N' : 'S',
 		ABS(intlat),
@@ -764,7 +764,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 		ABS(intlon) );
 
   static DownloadOptions options = { NULL, 0, a_check_map_file };
-  a_ftp_download_get_url ( SRTM_FTP_SITE, src_fn, p->dest, &options );
+  a_http_download_get_url ( SRTM_HTTP_SITE, src_fn, p->dest, &options );
   g_free ( src_fn );
 }
 

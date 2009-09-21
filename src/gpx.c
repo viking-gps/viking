@@ -66,6 +66,10 @@ typedef enum {
         tt_trk_trkseg_trkpt_fix,
         tt_trk_trkseg_trkpt_sat,
 
+        tt_trk_trkseg_trkpt_hdop,
+        tt_trk_trkseg_trkpt_vdop,
+        tt_trk_trkseg_trkpt_pdop,
+
         tt_waypoint,
         tt_waypoint_coord,
         tt_waypoint_name,
@@ -117,6 +121,9 @@ tag_mapping tag_path_map[] = {
         { tt_trk_trkseg_trkpt_fix, "/gpx/trk/trkseg/trkpt/fix" },
         { tt_trk_trkseg_trkpt_sat, "/gpx/trk/trkseg/trkpt/sat" },
 
+        { tt_trk_trkseg_trkpt_hdop, "/gpx/trk/trkseg/trkpt/hdop" },
+        { tt_trk_trkseg_trkpt_vdop, "/gpx/trk/trkseg/trkpt/vdop" },
+        { tt_trk_trkseg_trkpt_pdop, "/gpx/trk/trkseg/trkpt/pdop" },
         {0}
 };
 
@@ -166,8 +173,8 @@ static const char *get_attr ( const char **attr, const char *key )
 static gboolean set_c_ll ( const char **attr )
 {
   if ( (c_slat = get_attr ( attr, "lat" )) && (c_slon = get_attr ( attr, "lon" )) ) {
-    c_ll.lat = g_strtod(c_slat, NULL);
-    c_ll.lon = g_strtod(c_slon, NULL);
+    c_ll.lat = g_ascii_strtod(c_slat, NULL);
+    c_ll.lon = g_ascii_strtod(c_slon, NULL);
     return TRUE;
   }
   return FALSE;
@@ -186,7 +193,6 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_wpt:
        if ( set_c_ll( attr ) ) {
          c_wp = vik_waypoint_new ();
-         c_wp->altitude = VIK_DEFAULT_ALTITUDE;
          if ( ! get_attr ( attr, "hidden" ) )
            c_wp->visible = TRUE;
 
@@ -207,7 +213,6 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_trk_trkseg_trkpt:
        if ( set_c_ll( attr ) ) {
          c_tp = vik_trackpoint_new ();
-         c_tp->altitude = VIK_DEFAULT_ALTITUDE;
          vik_coord_load_from_latlon ( &(c_tp->coord), vik_trw_layer_get_coord_mode ( vtl ), &c_ll );
          if ( f_tr_newseg ) {
            c_tp->newsegment = TRUE;
@@ -230,7 +235,6 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
 
      case tt_waypoint:
        c_wp = vik_waypoint_new ();
-       c_wp->altitude = VIK_DEFAULT_ALTITUDE;
        c_wp->visible = TRUE;
        break;
 
@@ -294,12 +298,12 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_wpt_ele:
-       c_wp->altitude = g_strtod ( c_cdata->str, NULL );
+       c_wp->altitude = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_ele:
-       c_tp->altitude = g_strtod ( c_cdata->str, NULL );
+       c_tp->altitude = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
@@ -336,19 +340,16 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk_trkseg_trkpt_course:
-       c_tp->extended = TRUE;
-       c_tp->course = g_strtod ( c_cdata->str, NULL );
+       c_tp->course = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_speed:
-       c_tp->extended = TRUE;
-       c_tp->speed = g_strtod ( c_cdata->str, NULL );
+       c_tp->speed = g_ascii_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_trk_trkseg_trkpt_fix:
-       c_tp->extended = TRUE;
        if (!strcmp("2d", c_cdata->str))
          c_tp->fix_mode = VIK_GPS_MODE_2D;
        else if (!strcmp("3d", c_cdata->str))
@@ -359,8 +360,22 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk_trkseg_trkpt_sat:
-       c_tp->extended = TRUE;
        c_tp->nsats = atoi ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_trkseg_trkpt_hdop:
+       c_tp->hdop = g_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_trkseg_trkpt_vdop:
+       c_tp->vdop = g_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_trkseg_trkpt_pdop:
+       c_tp->pdop = g_strtod ( c_cdata->str, NULL );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
@@ -386,6 +401,9 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_trk_trkseg_trkpt_speed:
     case tt_trk_trkseg_trkpt_fix:
     case tt_trk_trkseg_trkpt_sat:
+    case tt_trk_trkseg_trkpt_hdop:
+    case tt_trk_trkseg_trkpt_vdop:
+    case tt_trk_trkseg_trkpt_pdop:
     case tt_waypoint_name: /* .loc name is really description. */
       g_string_append_len ( c_cdata, s, len );
       break;
@@ -645,7 +663,7 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
 {
   FILE *f = context->file;
   static struct LatLon ll;
-  gchar *s_lat,*s_lon, *s_alt;
+  gchar *s_lat,*s_lon, *s_alt, *s_dop;
   gchar *time_iso8601;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
@@ -691,24 +709,48 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   g_free(time_iso8601);
   time_iso8601 = NULL;
   
-  if (tp->extended && (tp->fix_mode >= VIK_GPS_MODE_2D)) {
-    if (!isnan(tp->course)) {
-      gchar *s_course = a_coords_dtostr(tp->course);
-      fprintf ( f, "    <course>%s</course>\n", s_course );
-      g_free(s_course);
-    }
-    if (!isnan(tp->speed)) {
-      gchar *s_speed = a_coords_dtostr(tp->speed);
-      fprintf ( f, "    <speed>%s</speed>\n", s_speed );
-      g_free(s_speed);
-    }
-    if (tp->fix_mode == VIK_GPS_MODE_2D)
-      fprintf ( f, "    <fix>2d</fix>\n");
-    if (tp->fix_mode == VIK_GPS_MODE_3D)
-      fprintf ( f, "    <fix>3d</fix>\n");
-    if (tp->nsats > 0)
-      fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
+  if (!isnan(tp->course)) {
+    gchar *s_course = a_coords_dtostr(tp->course);
+    fprintf ( f, "    <course>%s</course>\n", s_course );
+    g_free(s_course);
   }
+  if (!isnan(tp->speed)) {
+    gchar *s_speed = a_coords_dtostr(tp->speed);
+    fprintf ( f, "    <speed>%s</speed>\n", s_speed );
+    g_free(s_speed);
+  }
+  if (tp->fix_mode == VIK_GPS_MODE_2D)
+    fprintf ( f, "    <fix>2d</fix>\n");
+  if (tp->fix_mode == VIK_GPS_MODE_3D)
+    fprintf ( f, "    <fix>3d</fix>\n");
+  if (tp->nsats > 0)
+    fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
+
+  s_dop = NULL;
+  if ( tp->hdop != VIK_DEFAULT_DOP )
+  {
+    s_dop = a_coords_dtostr ( tp->hdop );
+  }
+  if (s_dop != NULL)
+    fprintf ( f, "    <hdop>%s</hdop>\n", s_dop );
+  g_free ( s_dop ); s_dop = NULL;
+
+  if ( tp->vdop != VIK_DEFAULT_DOP )
+  {
+    s_dop = a_coords_dtostr ( tp->vdop );
+  }
+  if (s_dop != NULL)
+    fprintf ( f, "    <vdop>%s</vdop>\n", s_dop );
+  g_free ( s_dop ); s_dop = NULL;
+
+  if ( tp->pdop != VIK_DEFAULT_DOP )
+  {
+    s_dop = a_coords_dtostr ( tp->pdop );
+  }
+  if (s_dop != NULL)
+    fprintf ( f, "    <pdop>%s</pdop>\n", s_dop );
+  g_free ( s_dop ); s_dop = NULL;
+
 
   fprintf ( f, "  </trkpt>\n" );
 }
@@ -796,9 +838,16 @@ static void gpx_collect_track (const gchar *name, VikTrack *track, gpx_gather_tr
 {
   if (passalong->i < passalong->n_trks)
   {
-    VikTrackpoint *first_point = (VikTrackpoint *)track->trackpoints->data;
     passalong->trks[passalong->i].name = name;
-    passalong->trks[passalong->i].first_timestamp = first_point->timestamp;
+    if (track && track->trackpoints && track->trackpoints->data)
+    {
+      VikTrackpoint *first_point = (VikTrackpoint *)track->trackpoints->data;
+      passalong->trks[passalong->i].first_timestamp = first_point->timestamp;
+    }
+    else
+    {
+      passalong->trks[passalong->i].first_timestamp = 0;
+    }
     passalong->i++;
   }
 }

@@ -33,6 +33,7 @@
 #define FILE_TYPE_GPX 3
 
 const gchar *a_file_basename ( const gchar *filename );
+gboolean check_file_ext ( const gchar *filename, const gchar *fileext );
 
 /* 0 on failure, 1 on success (vik file) 2 on success (other file) */
 gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename );

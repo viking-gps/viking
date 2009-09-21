@@ -28,13 +28,17 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
+#include <glib/gprintf.h>
 #include <gtk/gtk.h>
 
 #include <curl/curl.h>
 
+#include "background.h"
 #include "file.h"
 #include "globals.h"
 #include "curl_download.h"
+
+gchar *curl_download_user_agent;
 
 /*
  * Even if writing to FILE* is supported by libcurl by default,
@@ -45,6 +49,11 @@
 static size_t curl_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
   return fwrite(ptr, size, nmemb, stream);
+}
+
+static int curl_progress_func(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+{
+  return a_background_testcancel(NULL);
 }
 
 static gchar *get_cookie_file(gboolean init)
@@ -77,7 +86,7 @@ static gchar *get_cookie_file(gboolean init)
     if (vik_verbose)
       curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
     curl_easy_setopt(curl, CURLOPT_URL, "http://maps.google.com/"); /* google.com sets "PREF" cookie */
-    curl_easy_setopt ( curl, CURLOPT_FILE, out_file );
+    curl_easy_setopt ( curl, CURLOPT_WRITEDATA, out_file );
     curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
     curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookie_file);
     res = curl_easy_perform(curl);
@@ -105,6 +114,7 @@ void curl_download_init()
 {
   curl_global_init(CURL_GLOBAL_ALL);
   get_cookie_file(TRUE);
+  curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 }
 
 int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
@@ -121,8 +131,11 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
       if (vik_verbose)
         curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
       curl_easy_setopt ( curl, CURLOPT_URL, uri );
-      curl_easy_setopt ( curl, CURLOPT_FILE, f );
+      curl_easy_setopt ( curl, CURLOPT_WRITEDATA, f );
       curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
+      curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0 );
+      curl_easy_setopt ( curl, CURLOPT_PROGRESSDATA, NULL );
+      curl_easy_setopt ( curl, CURLOPT_PROGRESSFUNCTION, curl_progress_func);
       if (options != NULL) {
         if(options->referer != NULL)
           curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
@@ -131,7 +144,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
           curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location);
         }
       }
-      curl_easy_setopt ( curl, CURLOPT_USERAGENT, PACKAGE "/" VERSION " libcurl/7.15.4" );
+      curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
       if ((cookie_file = get_cookie_file(FALSE)) != NULL)
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
       res = curl_easy_perform ( curl );

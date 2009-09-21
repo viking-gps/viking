@@ -18,10 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <string.h>
 #include "mapcache.h"
+#include "preferences.h"
 
 #include "config.h"
 
@@ -36,6 +41,7 @@ static List *queue_tail = NULL;
 static int queue_count = 0;
 
 static guint32 queue_size = 0;
+static guint32 max_queue_size = VIK_CONFIG_MAPCACHE_SIZE;
 
 
 static GHashTable *cache = NULL;
@@ -45,8 +51,24 @@ static GMutex *mc_mutex = NULL;
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%.3f-%.3f"
 #define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-"
 
+#define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
+#define VIKING_PREFERENCES_NAMESPACE "viking.globals."
+
+static VikLayerParamScale params_scales[] = {
+  /* min, max, step, digits (decimal places) */
+ { 1, 300, 1, 0 },
+};
+
+static VikLayerParam prefs[] = {
+  { VIKING_PREFERENCES_NAMESPACE "mapcache_size", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Mapcache memory size (MB):"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL },
+};
+
 void a_mapcache_init ()
 {
+  VikLayerParamData tmp;
+  tmp.u = VIK_CONFIG_MAPCACHE_SIZE / 1024 / 1024;
+  a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
   mc_mutex = g_mutex_new();
   cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, g_object_unref );
 }
@@ -112,11 +134,14 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
   g_mutex_lock(mc_mutex);
   cache_add(key, pixbuf);
 
-  if ( queue_size > VIK_CONFIG_MAPCACHE_SIZE ) {
+  // TODO: that should be done on preference change only...
+  max_queue_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
+
+  if ( queue_size > max_queue_size ) {
     gchar *oldkey = list_shift_add_entry ( key );
     cache_remove(oldkey);
 
-    while ( queue_size > VIK_CONFIG_MAPCACHE_SIZE &&
+    while ( queue_size > max_queue_size &&
         (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
       oldkey = list_shift ();
       cache_remove(oldkey);
@@ -176,6 +201,29 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint8 type, 
 
   /* loop thru list, looking for the one, compare first whatever chars */
   cache_remove(key);
+  g_mutex_unlock(mc_mutex);
+}
+
+void a_mapcache_flush ()
+{
+  List *loop = queue_tail;
+  List *tmp;
+
+  if ( queue_tail == NULL )
+    return;
+
+  g_mutex_lock(mc_mutex);
+  do {
+    tmp = loop->next;
+    cache_remove(tmp->key);
+    if ( tmp == queue_tail ) /* we deleted the last thing in the queue */
+      loop = queue_tail = NULL;
+    else
+      loop->next = tmp->next;
+    g_free ( tmp );
+    tmp = NULL;
+  } while ( loop );
+
   g_mutex_unlock(mc_mutex);
 }
 

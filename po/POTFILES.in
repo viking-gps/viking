@@ -15,6 +15,7 @@ src/dem.c
 src/download.c
 src/file.c
 src/osm-traces.c
+src/mapcache.c
 src/print.c
 src/util.c
 src/vikcoordlayer.c

@@ -553,6 +553,7 @@ static void xfclose ( FILE *f )
 /* 0 on failure, 1 on success (vik file) 2 on success (other file) */
 gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename )
 {
+  gboolean is_gpx_file = check_file_ext ( filename, ".gpx" );
   FILE *f = xfopen ( filename, "r" );
 
   g_assert ( vp );
@@ -560,7 +561,7 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
   if ( ! f )
     return 0;
 
-  if ( check_magic ( f, VIK_MAGIC ) )
+  if ( !is_gpx_file && check_magic ( f, VIK_MAGIC ) )
   {
     file_read ( top, f, vp );
     if ( f != stdin )
@@ -573,7 +574,7 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
     vik_layer_rename ( vtl, a_file_basename ( filename ) );
 
-    if ( check_magic ( f, GPX_MAGIC ) )
+    if ( is_gpx_file || check_magic ( f, GPX_MAGIC ) )
       a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
     else
      a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
@@ -614,6 +615,24 @@ const gchar *a_file_basename ( const gchar *filename )
   if ( t >= filename )
     return t;
   return filename;
+}
+
+/* example: 
+     gboolean is_gpx = check_file_ext ( "a/b/c.gpx", ".gpx" );
+*/
+gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
+{
+  const gchar *basename = a_file_basename(filename);
+  g_assert( filename );
+  g_assert( fileext && fileext[0]=='.' );
+  if (!basename)
+    return FALSE;
+
+  const char * dot = strrchr(basename, '.');
+  if (dot && !strcmp(dot, fileext))
+    return TRUE;
+
+  return FALSE;
 }
 
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type )

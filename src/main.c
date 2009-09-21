@@ -158,7 +158,7 @@ int main( int argc, char *argv[] )
    
   if (vik_version)
   {
-    g_printf ("%s %s, Copyright (c) 2003-2007 Evan Battaglia\n", PACKAGE_NAME, PACKAGE_VERSION);
+    g_printf ("%s %s, Copyright (c) 2003-2008 Evan Battaglia\n", PACKAGE_NAME, PACKAGE_VERSION);
     return EXIT_SUCCESS;
   }
 
@@ -199,6 +199,7 @@ int main( int argc, char *argv[] )
   gtk_main ();
   gdk_threads_leave ();
 
+  a_background_uninit ();
   a_mapcache_uninit ();
   a_dems_uninit ();
   a_preferences_uninit ();

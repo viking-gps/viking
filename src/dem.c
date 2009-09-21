@@ -441,8 +441,10 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
 
       /* Header */
   f = g_fopen(file, "r");
-  if ( !f )
+  if ( !f ) {
+    g_free ( rv );
     return NULL;
+  }
   buffer[fread(buffer, 1, DEM_BLOCK_SIZE, f)] = '\0';
   if ( ! dem_parse_header ( buffer, rv ) ) {
     g_free ( rv );

@@ -117,7 +117,7 @@ static VikLayerParamScale params_scales[] = {
 
 VikLayerParam maps_layer_params[] = {
   { "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL, NULL },
-  { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory (Optional):"), VIK_LAYER_WIDGET_FILEENTRY },
+  { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY },
   { "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales },
   { "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms },
@@ -147,7 +147,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   (VikLayerFuncCreate)                  maps_layer_new,
   (VikLayerFuncRealize)                 NULL,
-                                        maps_layer_post_read,
+  (VikLayerFuncPostRead)                maps_layer_post_read,
   (VikLayerFuncFree)                    maps_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -407,7 +407,7 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id )
   VikLayerParamData rv;
   switch ( id )
   {
-    case PARAM_CACHE_DIR: rv.s = (vml->cache_dir && strcmp(vml->cache_dir, MAPS_CACHE_DIR) != 0) ? vml->cache_dir : ""; break;
+    case PARAM_CACHE_DIR: rv.s = vml->cache_dir ? vml->cache_dir : ""; break;
     case PARAM_MAPTYPE: rv.u = map_index_to_uniq_id ( vml->maptype ); break;
     case PARAM_ALPHA: rv.u = vml->alpha; break;
     case PARAM_AUTODOWNLOAD: rv.u = vml->autodownload; break;
@@ -776,7 +776,7 @@ static void weak_ref_cb(gpointer ptr, GObject * dead_vml)
   g_mutex_unlock(mdi->mutex);
 }
 
-static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
+static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 {
   guint donemaps = 0;
   gint x, y;
@@ -791,7 +791,9 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
                      mdi->mapcoord.scale, mdi->mapcoord.z, x, y );
 
       donemaps++;
-      a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+      int res = a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+      if (res != 0)
+        return -1;
 
       if ( mdi->redownload == REDOWNLOAD_ALL)
         g_remove ( mdi->filename_buf );
@@ -845,6 +847,7 @@ static void map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
   if (mdi->map_layer_alive)
     g_object_weak_unref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
   g_mutex_unlock(mdi->mutex); 
+  return 0;
 }
 
 static void mdi_cancel_cleanup ( MapDownloadInfo *mdi )

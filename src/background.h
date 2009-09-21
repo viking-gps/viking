@@ -32,10 +32,11 @@ typedef void(*vik_thr_func)(gpointer,gpointer);
 
 /* the new way */
 void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items );
-void a_background_thread_progress ( gpointer callbackdata, gdouble fraction );
-void a_background_testcancel ( gpointer callbackdata );
+int a_background_thread_progress ( gpointer callbackdata, gdouble fraction );
+int a_background_testcancel ( gpointer callbackdata );
 void a_background_show_window ();
 void a_background_init ();
+void a_background_uninit ();
 void a_background_add_status(VikStatusbar *vs);
 void a_background_remove_status(VikStatusbar *vs);
 

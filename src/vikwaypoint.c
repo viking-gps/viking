@@ -24,11 +24,13 @@
 #include "coords.h"
 #include "vikcoord.h"
 #include "vikwaypoint.h"
+#include "globals.h"
 
 
 VikWaypoint *vik_waypoint_new()
 {
   VikWaypoint *wp = g_malloc ( sizeof ( VikWaypoint ) );
+  wp->altitude = VIK_DEFAULT_ALTITUDE;
   wp->comment = NULL;
   wp->image = NULL;
   wp->symbol = NULL;

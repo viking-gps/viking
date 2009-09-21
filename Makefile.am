@@ -16,7 +16,14 @@ EXTRA_DIST = \
 	     viking.spec \
 	     $(INTLTOOL)
 
-dist-hook: viking.spec
+.PHONY: generate-changelog
+generate-changelog:
+	if test -d $(top_srcdir)/.git; then \
+          cd $(top_srcdir) ; sh $(top_srcdir)/maintainer/git2changelog.sh > $(distdir)/c-l; \
+          mv $(distdir)/c-l $(distdir)/ChangeLog; \
+        fi
+
+dist-hook: viking.spec generate-changelog
 	cp $(top_builddir)/viking.spec $(distdir)
 
 DISTCLEANFILES = \

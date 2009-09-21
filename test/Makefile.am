@@ -1,5 +1,6 @@
-INCLUDES        = -I$(top_srcdir)/src @GTK_CFLAGS@
-LDADD           = @GTK_LIBS@ @EXPAT_LIBS@ @LIBCURL@ $(top_builddir)/src/icons/libicons.a
+AM_CFLAGS        = -I$(top_srcdir)/src \
+	$(PACKAGE_CFLAGS)
+LDADD           = $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ $(top_builddir)/src/icons/libicons.a
 if REALTIME_GPS_TRACKING
 LDADD           += -lgps
 endif

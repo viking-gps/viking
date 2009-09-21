@@ -1,0 +1,39 @@
+#VIKING GPS Data file http://viking.sf.net/
+
+xmpp=8192,000000
+ympp=8192,000000
+lat=52,000000
+lon=7,000000
+mode=mercator
+color=#cccccc
+drawscale=t
+drawcentermark=t
+~Layer Map
+name=OSM Mapnik
+mode=13
+directory=
+alpha=255
+autodownload=t
+mapzoom=0
+~EndLayer
+
+
+~Layer Map
+name=OSM Cycle
+mode=17
+directory=
+alpha=255
+autodownload=t
+mapzoom=0
+~EndLayer
+
+
+~Layer Map
+name=OSM Osmarender
+mode=12
+directory=
+alpha=255
+autodownload=t
+mapzoom=0
+~EndLayer
+
