@@ -315,9 +315,6 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   GtkWidget *description_label, *description_entry;
   GtkWidget *tags_label, *tags_entry;
   GtkWidget *public;
-  GtkTooltips* dialog_tips;
-
-  dialog_tips = gtk_tooltips_new();
 
   user_label = gtk_label_new(_("Email:"));
   user_entry = gtk_entry_new();
@@ -331,9 +328,9 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( user_label );
   gtk_widget_show_all ( user_entry );
-  gtk_tooltips_set_tip (dialog_tips, user_entry,
-                        _("The email used as login"),
-                        _("Enter the email you use to login into www.openstreetmap.org."));
+  gtk_widget_set_tooltip_markup(GTK_WIDGET(user_entry),
+                        _("The email used as login\n"
+                        "<small>Enter the email you use to login into www.openstreetmap.org.</small>"));
 
   password_label = gtk_label_new(_("Password:"));
   password_entry = gtk_entry_new();
@@ -347,9 +344,9 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), password_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( password_label );
   gtk_widget_show_all ( password_entry );
-  gtk_tooltips_set_tip (dialog_tips, password_entry,
-                        _("The password used to login"),
-                        _("Enter the password you use to login into www.openstreetmap.org."));
+  gtk_widget_set_tooltip_markup(GTK_WIDGET(password_entry),
+                        _("The password used to login\n"
+                        "<small>Enter the password you use to login into www.openstreetmap.org.</small>"));
 
   name_label = gtk_label_new(_("File's name:"));
   name_entry = gtk_entry_new();
@@ -362,10 +359,10 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), name_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( name_label );
   gtk_widget_show_all ( name_entry );
-  gtk_tooltips_set_tip (dialog_tips, name_entry,
-                        _("The name of the file on OSM"),
-                        _("This is the name of the file created on the server. "
-			"This is not the name of the local file."));
+  gtk_widget_set_tooltip_markup(GTK_WIDGET(name_entry),
+                        _("The name of the file on OSM\n"
+                        "<small>This is the name of the file created on the server."
+			"This is not the name of the local file.</small>"));
 
   description_label = gtk_label_new(_("Description:"));
   description_entry = gtk_entry_new();
@@ -373,9 +370,8 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), description_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( description_label );
   gtk_widget_show_all ( description_entry );
-  gtk_tooltips_set_tip (dialog_tips, description_entry,
-                        _("The description of the trace"),
-                        "");
+  gtk_widget_set_tooltip_text(GTK_WIDGET(description_entry),
+                        _("The description of the trace"));
 
   tags_label = gtk_label_new(_("Tags:"));
   tags_entry = gtk_entry_new();
@@ -383,18 +379,16 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), tags_entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( tags_label );
   gtk_widget_show_all ( tags_entry );
-  gtk_tooltips_set_tip (dialog_tips, tags_entry,
-                        _("The tags associated to the trace"),
-                        "");
+  gtk_widget_set_tooltip_text(GTK_WIDGET(tags_entry),
+                        _("The tags associated to the trace"));
 
   public = gtk_check_button_new_with_label(_("Public"));
   /* Set public by default */
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(public), TRUE);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), public, FALSE, FALSE, 0);
   gtk_widget_show_all ( public );
-  gtk_tooltips_set_tip (dialog_tips, public,
-                        _("Indicates if the trace is public or not"),
-                        "");
+  gtk_widget_set_tooltip_text(GTK_WIDGET(public),
+                        _("Indicates if the trace is public or not"));
 
   if ( gtk_dialog_run ( GTK_DIALOG(dia) ) == GTK_RESPONSE_ACCEPT )
   {
