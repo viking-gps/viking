@@ -558,7 +558,7 @@ gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp 
   table = gtk_table_new ( 4, 2, FALSE );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
 
-  label = gtk_label_new ( _("Zoom factor (in meters per pixel:") );
+  label = gtk_label_new ( _("Zoom factor (in meters per pixel):") );
   xlabel = gtk_label_new ( _("X (easting): "));
   ylabel = gtk_label_new ( _("Y (northing): "));
 
