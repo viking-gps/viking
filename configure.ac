@@ -68,6 +68,10 @@ PKG_CHECK_MODULES(PACKAGE, [
 AC_SUBST(PACKAGE_CFLAGS)
 AC_SUBST(PACKAGE_LIBS)
 
+dnl  -------------
+dnl | User Manual |---------------------------------------
+dnl  -------------
+GNOME_DOC_INIT
 
 # Options
 AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],
@@ -272,6 +276,7 @@ AC_CONFIG_FILES([Makefile
                  src/icons/Makefile
 		 po/Makefile.in
                  test/Makefile
+                 help/Makefile
                  doc/Makefile
                  doc/dev/Makefile])
 AC_OUTPUT([

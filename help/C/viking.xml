@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+  <!ENTITY appname          "Viking">
+  <!ENTITY app "<application>Viking</application>">
+  <!ENTITY appversion   "0.9.9">
+  <!ENTITY manrevision  "0.1">
+  <!ENTITY date "Septembre 2009">
+]>
+<!--
+      (Do not remove this comment block.)
+  Maintained by the GNOME Documentation Project
+  http://live.gnome.org/DocumentationProject
+  Template version: 3.0 beta
+  Template last modified 2006-11-21
+
+-->
+<!-- =============Document Header ============================= -->
+<article id="index" lang="en">
+  <articleinfo>
+    <title>&app; Manual</title>
+    <abstract role="description">
+      <para>&app; is a free/open source program to manage GPS data.</para>
+    </abstract>
+
+    <copyright>
+      <year>2009</year>
+      <holder>Guilhem Bonnefille</holder>
+    </copyright>
+
+    <!-- An address can be added to the publisher information. -->
+    <publisher role="maintainer">
+      <publishername>GNOME Documentation Project</publishername>
+    </publisher>
+
+    <xi:include href="legal.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <!-- The file legal.xml contains link to license for the documentation,
+        and other legal stuff such as "NO WARRANTY" statement.
+        Please do not change any of this. -->
+
+    <authorgroup>
+      <author>
+        <firstname>Guilhem</firstname>
+        <surname>Bonnefille</surname>
+      </author>
+    </authorgroup>
+
+    <revhistory>
+      <revision>
+        <revnumber>&appname; Manual V&manrevision;</revnumber>
+        <date>&date;</date>
+        <revdescription>
+          <para role="author">Guilhem Bonnefille <email>guilhem.bonnefille@gmail.com</email></para>
+          <para role="publisher">GNOME Documentation Project</para>
+        </revdescription>
+      </revision> 
+    </revhistory>
+
+    <releaseinfo>This manual describes version &appversion; of &app;.</releaseinfo>
+
+    <legalnotice>
+      <title>Feedback</title>
+      <para>To report a bug or make a suggestion regarding the &app; application or
+      this manual, follow the directions in the
+      <ulink url="ghelp:user-guide?feedback-bugs" type="help">Feedback section of the GNOME User Guide</ulink>.
+      </para>
+    </legalnotice>
+  </articleinfo>
+
+  <indexterm zone="index">
+    <primary>&app;</primary>
+  </indexterm>
+<!-- ============= Document Body ============================= -->
+<sect1 id="introduction">
+  <title>Introduction</title>
+  <para>The <application>&app;</application> application enables you to import and plot tracks and waypoints, show Terraserver maps under it, add coordinate lines, make new tracks and waypoints, hide different things, etc.</para>
+</sect1>
+
+</article>
+

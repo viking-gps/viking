@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<omf>
+  <resource>
+    <subject category="Development"/>
+    <type>manual</type>
+    <relation seriesid="0a911bb1-720e-7e06-f641-708f94aba4c5e0"/>
+    <rights type="GNU FDL" license.version="1.1" holder="Guilhem Bonnefille"/>
+  </resource>
+</omf>
+
