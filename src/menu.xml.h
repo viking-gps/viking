@@ -90,6 +90,7 @@ static const char *menu_xml =
 	"      <menuitem action='Ruler'/>"
 	"    </menu>"
 	"    <menu action='Help'>"
+	"      <menuitem action='HelpEntry'/>"
 	"      <menuitem action='About'/>"
 	"    </menu>"
 	"  </menubar>"
