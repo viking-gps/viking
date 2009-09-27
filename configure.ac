@@ -11,6 +11,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_PROG_CC
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)
 
 # I18N
 GETTEXT_PACKAGE=viking
@@ -288,6 +289,8 @@ echo "Google Maps                      : $ac_cv_enable_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 #echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
+echo "OpenAerial                       : $ac_cv_enable_openaerial"
+echo "BlueMarble                       : $ac_cv_enable_bluemarble"
 echo "Geonames                         : $ac_cv_enable_geonames"
 #echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"

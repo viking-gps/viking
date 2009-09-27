@@ -22,11 +22,6 @@
 #ifndef __VIKING_OSMARENDER_H
 #define __VIKING_OSMARENDER_H
 
-#include <glib.h>
-
-#include "vikcoord.h"
-#include "mapcoord.h"
-
 void osm_init ();
 
 #endif

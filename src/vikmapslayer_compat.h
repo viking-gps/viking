@@ -18,20 +18,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+
+#ifndef _VIKING_MAPSLAYER_COMPAT_H
+#define _VIKING_MAPSLAYER_COMPAT_H
+
+#include "vikcoord.h"
+#include "vikviewport.h"
+#include "mapcoord.h"
+
+typedef struct {
+  guint8 uniq_id;
+  guint16 tilesize_x;
+  guint16 tilesize_y;
+  guint drawmode;
+  gboolean (*coord_to_mapcoord) ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
+  void (*mapcoord_to_center_coord) ( MapCoord *src, VikCoord *dest );
+  int (*download) ( MapCoord *src, const gchar *dest_fn );
+  /* TODO: constant size (yay!) */
+} VikMapsLayer_MapType;
+
+void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapType *map_type );
+
 #endif
-
-#include "terraserver.h"
-#include "terraservermapsource.h"
-#include "vikmapslayer.h"
-
-void terraserver_init () {
-  VikMapSource *map_type_1 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 2, "Terraserver Topos", 2 ));
-  VikMapSource *map_type_2 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 1, "Terraserver Aerials", 1 ));
-  VikMapSource *map_type_3 = VIK_MAP_SOURCE(terraserver_map_source_new_with_id( 4, "Terraserver Urban Areas", 4 ));
-
-  maps_layer_register_map_source (map_type_1);
-  maps_layer_register_map_source (map_type_2);
-  maps_layer_register_map_source (map_type_3);
-}

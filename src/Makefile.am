@@ -16,7 +16,22 @@ authors.h: ../AUTHORS
 
 BUILT_SOURCES = authors.h
 
+vikenumtypes.h: vikenumtypes.h.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.h.template $(ENUM_H_FILES)) > $@
+
+vikenumtypes.c: vikenumtypes.c.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
+	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.c.template $(ENUM_H_FILES)) > $@
+
+EXTRA_DIST =                         \
+        vikenumtypes.h.template      \
+        vikenumtypes.c.template
+
+BUILT_SOURCES += vikenumtypes.h vikenumtypes.c
+
 $(BUILT_SOURCES): $(srcdir)/Makefile.am
+
+ENUM_H_FILES = \
+	vikviewport.h
 
 libviking_a_SOURCES = \
 	modules.h modules.c \
@@ -36,6 +51,7 @@ libviking_a_SOURCES = \
 	dialog.c dialog.h \
 	util.c util.h \
 	download.c download.h \
+	vikenumtypes.c vikenumtypes.h \
 	viktreeview.c viktreeview.h \
 	viktrwlayer.c viktrwlayer.h \
 	viklayer.c viklayer.h \
@@ -45,6 +61,7 @@ libviking_a_SOURCES = \
 	vikwindow.c vikwindow.h \
 	vikviewport.c vikviewport.h \
 	vikaggregatelayer.c vikaggregatelayer.h \
+	vikgobjectbuilder.c vikgobjectbuilder.h \
 	vikgpslayer.c vikgpslayer.h \
 	vikgeoreflayer.c vikgeoreflayer.h \
 	vikfileentry.c vikfileentry.h \
@@ -55,7 +72,12 @@ libviking_a_SOURCES = \
 	vikradiogroup.c vikradiogroup.h \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \
+	vikmapsource.c vikmapsource.h \
+	vikmapsourcedefault.c vikmapsourcedefault.h \
 	vikmapslayer.c vikmapslayer.h \
+	vikmapslayer_compat.c vikmapslayer_compat.h \
+	vikmaptype.c vikmaptype.h \
+	vikslippymapsource.c vikslippymapsource.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
@@ -87,6 +109,7 @@ endif
 
 if TERRASERVER
 libviking_a_SOURCES += \
+	terraservermapsource.c terraservermapsource.h \
 	terraserver.c terraserver.h
 endif
 
@@ -99,6 +122,16 @@ if OPENSTREETMAP
 libviking_a_SOURCES += \
 	osm.c osm.h \
 	osm-traces.c osm-traces.h
+endif
+
+if BLUEMARBLE
+libviking_a_SOURCES += \
+	bluemarble.c bluemarble.h
+endif
+
+if OPENAERIAL
+libviking_a_SOURCES += \
+	openaerial.c openaerial.h
 endif
 
 if GEONAMES
@@ -121,6 +154,6 @@ AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
 desktopdir = $(datadir)/applications
 desktop_in_files = viking.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
-EXTRA_DIST=$(desktop_in_files)
+EXTRA_DIST += $(desktop_in_files)
 
 CLEANFILES = $(BUILT_SOURCES) $(desktop_DATA)

@@ -1,0 +1,12 @@
+<objects>
+  <object class="VikWebtoolCenter">
+    <property name="label">Letuffe (Hiking)</property>
+    <property name="url">http://beta.letuffe.org/?layers=0B000FFFFFFFFFFFF&amp;lat=%s&amp;lon=%s&amp;zoom=%d</property>
+    <property name="id">42</property>
+  </object>
+  <object class="VikWebtoolCenter">
+    <property name="label">Osmose</property>
+    <property name="url">http://osmose.openstreetmap.fr/map/cgi-bin/index.py?layers=B00000FFFFFFFFFFFFT&amp;lat=%s&amp;lon=%s&amp;zoom=%d</property>
+    <property name="id">43</property>
+  </object>
+</objects>
