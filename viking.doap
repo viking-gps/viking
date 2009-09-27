@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:gnome="http://api.gnome.org/doap-extensions#"
+         xmlns="http://usefulinc.com/ns/doap#">
+  <name xml:lang="en">viking</name>
+  <shortdesc xml:lang="en">GPS data manager</shortdesc>
+
+  <homepage rdf:resource="http://viking.sf.net/" />
+  <mailing-list rdf:resource="http://lists.sourceforge.net/mailman/listinfo/viking-devel" />
+  <download-page rdf:resource="http://sourceforge.net/projects/viking/files/" />
+  <bug-database rdf:resource="http://sourceforge.net/tracker/?group_id=83870" />
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Evan Battaglia</foaf:name>
+      <foaf:mbox rdf:resource="gtoevan@gmx.net" />
+    </foaf:Person>
+  </maintainer>
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Guilhem Bonnefille</foaf:name>
+      <foaf:mbox rdf:resource="guilhem.bonnefille@gmail.com" />
+    </foaf:Person>
+  </maintainer>
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Alex Foobarian</foaf:name>
+      <foaf:mbox rdf:resource="foobarian@gmail.com" />
+    </foaf:Person>
+  </maintainer>
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Quy Tonthat</foaf:name>
+      <foaf:mbox rdf:resource="qtonthat@gmail.com" />
+    </foaf:Person>
+  </maintainer>
+
+</Project>
+
