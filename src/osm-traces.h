@@ -26,15 +26,6 @@
 #include <glib.h>
 
 void osm_traces_init();
-
-void osm_traces_upload_file(const char *user,
-		            const char *password,
-		            const char *file,
-		            const char *filename,
-		            const char *description,
-		            const char *tags,
-		            gboolean public);
-
 void osm_traces_upload_cb(gpointer layer_and_vlp[2], guint file_type);
 void osm_traces_upload_track_cb(gpointer pass_along[6]);
 
