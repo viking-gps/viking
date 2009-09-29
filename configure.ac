@@ -69,6 +69,22 @@ PKG_CHECK_MODULES(PACKAGE, [
 AC_SUBST(PACKAGE_CFLAGS)
 AC_SUBST(PACKAGE_LIBS)
 
+###############
+# Depecations #
+###############
+AC_ARG_ENABLE(deprecations,
+              [AC_HELP_STRING([--enable-deprecations],
+                              [warn about deprecated usages [default=no]])],,
+              [enable_deprecations=no])
+
+if test "x$enable_deprecations" = "xyes"; then
+   DISABLE_DEPRECATED_CFLAGS="\
+-DG_DISABLE_DEPRECATED \
+-DGDK_DISABLE_DEPRECATED \
+-DGTK_DISABLE_DEPRECATED \
+-DGDK_PIXBUF_DISABLE_DEPRECATED"
+   AC_SUBST(DISABLE_DEPRECATED_CFLAGS)
+fi
 
 # Options
 AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],
