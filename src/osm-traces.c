@@ -70,10 +70,10 @@ typedef struct _OsmTraceVis_t {
 } OsmTraceVis_t;
 
 static const OsmTraceVis_t OsmTraceVis[] = {
-	{ "Identifiable (public w/ timestamps)",	"identifiable" },
-	{ "Trackable (private w/ timestamps)",		"trackable" },
-	{ "Public",					"public" },
-	{ "Private",					"private" },
+	{ N_("Identifiable (public w/ timestamps)"),	"identifiable" },
+	{ N_("Trackable (private w/ timestamps)"),	"trackable" },
+	{ N_("Public"),					"public" },
+	{ N_("Private"),				"private" },
 	{ NULL, NULL },
 };
 
