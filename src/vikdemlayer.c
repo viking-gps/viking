@@ -98,8 +98,8 @@ static gchar *params_source[] = {
 	};
 
 static gchar *params_type[] = {
-	"Absolute height",
-	"Height gradient",
+	N_("Absolute height"),
+	N_("Height gradient"),
 	NULL
 };
 
