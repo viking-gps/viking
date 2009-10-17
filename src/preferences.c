@@ -221,6 +221,10 @@ static gboolean preferences_save_to_file()
 
   // TODO: error checking
   FILE *f = g_fopen(fn, "w");
+  /* Since preferences files saves OSM login credentials,
+   * it'll be better to store it in secret.
+   */
+  g_chmod(fn, 0600);
   g_free ( fn );
 
   if ( f ) {
