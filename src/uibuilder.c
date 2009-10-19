@@ -120,7 +120,8 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
         rv = gtk_entry_new ();
-        gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
+        if (data.s)
+          gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
       }
       break;
     case VIK_LAYER_WIDGET_PASSWORD:
@@ -128,7 +129,8 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       {
         rv = gtk_entry_new ();
         gtk_entry_set_visibility ( GTK_ENTRY(rv), FALSE );
-        gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
+        if (data.s)
+          gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
 #if GTK_CHECK_VERSION(2,12,0)
 	gtk_widget_set_tooltip_text ( GTK_WIDGET(rv),
 	                              _("Take care that this password will be stored clearly in a plain file.") );
