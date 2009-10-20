@@ -21,3 +21,10 @@ object-oriented language.
 
 "xmpp" and "ympp" are really misnomers, as they only represent the Meters Per Pixel in UTM mode. Otherwise they are an artificial
 zooming system. In expedia mode it represents the "Alti", in Google mode it represents 2^(scale), e.g. 2^0 = 1, 2^8 = 256.
+
+---
+Implementing a MapSource
+
+VikMapSource is the "interface", the really base class of the MapSource tree.
+In order to implement a MapSource, you have to prefer to derive from VikMapSourceDefault, a less abstract class, adding a property based implementation for some aspects of the VikMapSource interface.
+Then, you have to provide implementation for coord_to_mapcoord, mapcoord_to_center_coord and download methods.
