@@ -34,8 +34,10 @@ typedef struct {
   /**
    * Check if the server has a more recent file than the one we have before downloading it
    * This uses http header If-Modified-Since
+   * Nevertheless, the current file cache must be older than the specified
+   * value.
    */
-  gboolean check_file_server_time;
+  time_t check_file_server_time;
 
   /**
    * The REFERER string to use.

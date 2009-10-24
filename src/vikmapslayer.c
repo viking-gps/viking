@@ -638,7 +638,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 #ifdef DEBUG
       fputs(stderr, "DEBUG: Starting autodownload\n");
 #endif
-      if ( map_type->options != NULL && map_type->options->check_file_server_time == TRUE )
+      if ( map_type->options != NULL && map_type->options->check_file_server_time )
         // Try to download newer tiles
         start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NEW );
       else

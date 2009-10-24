@@ -52,7 +52,7 @@ static int bluemarble_download ( MapCoord *src, const gchar *dest_fn );
 static int openaerialmap_download ( MapCoord *src, const gchar *dest_fn );
 #endif
 
-static DownloadOptions osm_options = { TRUE, NULL, 0, a_check_map_file };
+static DownloadOptions osm_options = { 30, NULL, 0, a_check_map_file };
 
 /* initialisation */
 void osm_init () {

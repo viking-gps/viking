@@ -138,6 +138,9 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       struct stat buf;
       g_stat ( fn, &buf );
       time_condition = buf.st_mtime;
+      if ( (time(NULL) - time_condition) < options->check_file_server_time )
+				/* File cache is too recent, so return */
+				return -3;
     } else {
       /* Nothing to do as file already exists, so return */
       return -3;
