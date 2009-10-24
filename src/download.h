@@ -56,6 +56,8 @@ typedef struct {
 
 } DownloadOptions;
 
+void a_download_init(void);
+
 /* TODO: convert to Glib */
 int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt );
 int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt );

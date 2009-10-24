@@ -93,6 +93,35 @@ gboolean a_check_kml_file(FILE* f)
   return check_file_first_line(f, kml_str);
 }
 
+static GList *file_list = NULL;
+static GMutex *file_list_mutex = NULL;
+
+void a_download_init (void)
+{
+	file_list_mutex = g_mutex_new();
+}
+
+static gboolean lock_file(const char *fn)
+{
+	gboolean locked = FALSE;
+	g_mutex_lock(file_list_mutex);
+	if (g_list_find(file_list, fn) == NULL)
+	{
+		// The filename is not yet locked
+		file_list = g_list_append(file_list, (gpointer)fn),
+		locked = TRUE;
+	}
+	g_mutex_unlock(file_list_mutex);
+	return locked;
+}
+
+static void unlock_file(const char *fn)
+{
+	g_mutex_lock(file_list_mutex);
+	file_list = g_list_remove(file_list, (gconstpointer)fn);
+	g_mutex_unlock(file_list_mutex);
+}
+
 static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp)
 {
   FILE *f;
@@ -120,10 +149,15 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   }
 
   tmpfilename = g_strdup_printf("%s.tmp", fn);
-  f = g_fopen ( tmpfilename, "w+bx" );  /* truncate file and open it in exclusive mode */
+  if (!lock_file ( tmpfilename ) )
+  {
+    g_debug("%s: Couldn't take lock on temporary file \"%s\"\n", __FUNCTION__, tmpfilename);
+    g_free ( tmpfilename );
+    return -4;
+  }
+  f = g_fopen ( tmpfilename, "w+b" );  /* truncate file and open it */
   if ( ! f ) {
-    if (errno == EEXIST)
-      g_debug("%s: Couldn't take lock on temporary file \"%s\"\n", __FUNCTION__, tmpfilename);
+    g_warning("Couldn't open temporary file \"%s\": %s", tmpfilename, g_strerror(errno));
     g_free ( tmpfilename );
     return -4;
   }
@@ -145,6 +179,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   {
     g_warning(_("Download error: %s"), fn);
     g_remove ( tmpfilename );
+    unlock_file ( tmpfilename );
     g_free ( tmpfilename );
     fclose ( f );
     f = NULL;
@@ -156,6 +191,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_remove ( tmpfilename );
   else
     g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
+  unlock_file ( tmpfilename );
   g_free ( tmpfilename );
   fclose ( f );
   f = NULL;
