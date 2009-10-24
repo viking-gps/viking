@@ -638,7 +638,12 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 #ifdef DEBUG
       fputs(stderr, "DEBUG: Starting autodownload\n");
 #endif
-      start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
+      if ( map_type->options != NULL && map_type->options->check_file_server_time == TRUE )
+        // Try to download newer tiles
+        start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NEW );
+      else
+        // Download only missing tiles
+        start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
     }
 
     if ( map_type->tilesize_x == 0 && !existence_only ) {
