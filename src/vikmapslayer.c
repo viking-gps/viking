@@ -1050,9 +1050,15 @@ static void maps_layer_redownload_bad ( VikMapsLayer *vml )
 {
   start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_BAD );
 }
+
 static void maps_layer_redownload_all ( VikMapsLayer *vml )
 {
   start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_ALL );
+}
+
+static void maps_layer_redownload_new ( VikMapsLayer *vml )
+{
+  start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_NEW );
 }
 
 static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
@@ -1085,6 +1091,10 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
 
         item = gtk_menu_item_new_with_label ( _("Redownload bad map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
+        gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+
+        item = gtk_menu_item_new_with_label ( _("Redownload new map(s)") );
+        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_new), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
         item = gtk_menu_item_new_with_label ( _("Redownload all map(s)") );
