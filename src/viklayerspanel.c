@@ -36,8 +36,6 @@ enum {
 
 static void layers_panel_class_init ( VikLayersPanelClass *klass );
 static void layers_panel_init ( VikLayersPanel *vlp );
-static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text);
-static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter);
 
 static guint layers_panel_signals[VLP_LAST_SIGNAL] = { 0 };
 
