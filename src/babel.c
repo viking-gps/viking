@@ -226,7 +226,8 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 
       g_free ( unbuffer_loc );
       g_strfreev(sub_args);
-    }
+    } else
+      g_warning("gpsbabel not found in PATH");
     g_free(gpsbabel_loc);
   }
 
@@ -448,7 +449,8 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
 
       g_free ( unbuffer_loc );
       g_strfreev(sub_args);
-    }
+    } else
+      g_warning("gpsbabel not found in PATH");
     g_free(gpsbabel_loc);
   }
 
