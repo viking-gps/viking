@@ -307,7 +307,7 @@ static void window_init ( VikWindow *vw )
 
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
-  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK );
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK );
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "scroll_event", G_CALLBACK(draw_scroll), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_press_event", G_CALLBACK(draw_click), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_release_event", G_CALLBACK(draw_release), vw);
@@ -510,6 +510,13 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   gdouble zoom;
   VikDemInterpol interpol_method;
 
+  /* This is a hack, but work far the best, at least for single pointer systems.
+   * See http://bugzilla.gnome.org/show_bug.cgi?id=587714 for more. */
+  gint x, y;
+  gdk_window_get_pointer (event->window, &x, &y, NULL);
+  event->x = x;
+  event->y = y;
+
   toolbox_move(vw->vt, event);
 
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
@@ -535,6 +542,12 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
 
   vik_window_pan_move ( vw, event );
+
+  /* This is recommended by the GTK+ documentation, but does not work properly.
+   * Use deprecated way until GTK+ gets a solution for correct motion hint handling:
+   * http://bugzilla.gnome.org/show_bug.cgi?id=587714
+  */
+  /* gdk_event_request_motions ( event ); */
 }
 
 static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
