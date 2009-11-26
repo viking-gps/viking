@@ -28,12 +28,7 @@
 #include "garminsymbols.h"
 #include "degrees_converters.h"
 #include "authors.h"
-#ifdef VIK_CONFIG_GOOGLE
-#include "googlesearch.h"
-#endif
-#ifdef VIK_CONFIG_GEONAMES
-#include "geonamessearch.h"
-#endif
+#include "viksearch.h"
 #include "util.h"
 
 #include <glib/gi18n.h>
@@ -245,14 +240,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   commentlabel = gtk_label_new (_("Comment:"));
   commententry = gtk_entry_new ();
   gchar *cmt =  NULL;
-#if defined(VIK_CONFIG_GOOGLE) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GOOGLE
-  //if (strcmp(VIK_CONFIG_SEARCH,"google"))
-    cmt =  a_googlesearch_get_search_string_for_this_place(VIK_WINDOW(parent));
-#endif
-#if defined(VIK_CONFIG_GEONAMES) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GEONAMES
-  //if (strcmp(VIK_CONFIG_SEARCH,"geonames"))
-    cmt =  a_geonamessearch_get_search_string_for_this_place(VIK_WINDOW(parent));
-#endif
+  cmt = a_vik_search_get_search_string_for_this_place(VIK_WINDOW(parent));
   if (cmt)
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 
