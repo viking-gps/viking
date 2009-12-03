@@ -34,6 +34,8 @@
 #include "util.h"
 #include "curl_download.h"
 
+#include "googlesearch.h"
+
 #define GOOGLE_SEARCH_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
 #define GOOGLE_SEARCH_PATTERN_1 "{center:{lat:"
 #define GOOGLE_SEARCH_PATTERN_2 ",lng:"
@@ -45,71 +47,63 @@ static gchar *last_successful_search_str = NULL;
 
 static DownloadOptions googlesearch_options = { "http://maps.google.com/", 0, a_check_map_file };
 
-gchar * a_googlesearch_get_search_string_for_this_place(VikWindow *vw)
-{
-  if (!last_coord)
-    return NULL;
+static void google_search_tool_class_init ( GoogleSearchToolClass *klass );
+static void google_search_tool_init ( GoogleSearchTool *vwd );
 
-  VikViewport *vvp = vik_window_viewport(vw);
-  const VikCoord *cur_center = vik_viewport_get_center(vvp);
-  if (vik_coord_equals(cur_center, last_coord)) {
-    return(last_successful_search_str);
+static void google_search_tool_finalize ( GObject *gob );
+
+static int google_search_tool_get_coord ( VikSearchTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
+
+GType google_search_tool_get_type()
+{
+  static GType w_type = 0;
+
+  if (!w_type)
+  {
+    static const GTypeInfo w_info = 
+    {
+      sizeof (GoogleSearchToolClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) google_search_tool_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (GoogleSearchTool),
+      0,
+      (GInstanceInitFunc) google_search_tool_init,
+    };
+    w_type = g_type_register_static ( VIK_SEARCH_TOOL_TYPE, "GoogleSearchTool", &w_info, 0 );
   }
-  else
-    return NULL;
+
+  return w_type;
 }
 
-static gboolean prompt_try_again(VikWindow *vw)
+static void google_search_tool_class_init ( GoogleSearchToolClass *klass )
 {
-  GtkWidget *dialog = NULL;
-  gboolean ret = TRUE;
+  GObjectClass *object_class;
+  VikSearchToolClass *parent_class;
 
-  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_window_set_title(GTK_WINDOW(dialog), _("Search"));
+  object_class = G_OBJECT_CLASS (klass);
 
-  GtkWidget *search_label = gtk_label_new(_("I don't know that place. Do you want another search?"));
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
-  gtk_widget_show_all(dialog);
+  object_class->finalize = google_search_tool_finalize;
 
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT )
-    ret = FALSE;
+  parent_class = VIK_SEARCH_TOOL_CLASS (klass);
 
-  gtk_widget_destroy(dialog);
-  return ret;
+  parent_class->get_coord = google_search_tool_get_coord;
 }
 
-static gchar *  a_prompt_for_search_string(VikWindow *vw)
+GoogleSearchTool *google_search_tool_new ()
 {
-  GtkWidget *dialog = NULL;
+  return GOOGLE_SEARCH_TOOL ( g_object_new ( GOOGLE_SEARCH_TOOL_TYPE, "label", "Google", NULL ) );
+}
 
-  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_window_set_title(GTK_WINDOW(dialog), _("Search"));
+static void google_search_tool_init ( GoogleSearchTool *vlp )
+{
+}
 
-  GtkWidget *search_label = gtk_label_new(_("Enter address or place name:"));
-  GtkWidget *search_entry = gtk_entry_new();
-  if (last_search_str)
-    gtk_entry_set_text(GTK_ENTRY(search_entry), last_search_str);
-
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_entry, FALSE, FALSE, 5 );
-  gtk_widget_show_all(dialog);
-
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
-    gtk_widget_destroy(dialog);
-    return NULL;
-  }
-
-  gchar *search_str = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(search_entry) ) );
-
-  gtk_widget_destroy(dialog);
-
-  if (search_str[0] != '\0') {
-    if (last_search_str)
-      g_free(last_search_str);
-    last_search_str = g_strdup(search_str);
-  }
-
-  return(search_str);   /* search_str needs to be freed by caller */
+static void google_search_tool_finalize ( GObject *gob )
+{
+  G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
 
 static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
@@ -180,7 +174,7 @@ done:
 
 }
 
-static int google_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord)
+static int google_search_tool_get_coord ( VikSearchTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
 {
   FILE *tmp_file;
   int tmp_fd;
@@ -237,27 +231,3 @@ done:
   g_free(tmpname);
   return ret;
 }
-
-void a_google_search(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
-{
-  VikCoord new_center;
-  gchar *s_str;
-  gboolean more = TRUE;
-
-  do {
-    s_str = a_prompt_for_search_string(vw);
-    if ((!s_str) || (s_str[0] == 0)) {
-      more = FALSE;
-    }
-
-    else if (!google_search_get_coord(vw, vvp, s_str, &new_center)) {
-      vik_viewport_set_center_coord(vvp, &new_center);
-      vik_layers_panel_emit_update(vlp);
-      more = FALSE;
-    }
-    else if (!prompt_try_again(vw))
-        more = FALSE;
-    g_free(s_str);
-  } while (more);
-}
-
