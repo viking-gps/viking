@@ -173,6 +173,13 @@ void a_vik_search(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
     }
 
     else if (!vik_search_tool_get_coord(g_list_nth_data (search_tools_list, last_search_tool), vw, vvp, s_str, &new_center)) {
+      if (last_coord)
+        g_free(last_coord);
+      last_coord = g_malloc(sizeof(VikCoord));
+      *last_coord = new_center;
+      if (last_successful_search_str)
+        g_free(last_successful_search_str);
+      last_successful_search_str = g_strdup(last_search_str);
       vik_viewport_set_center_coord(vvp, &new_center);
       vik_layers_panel_emit_update(vlp);
       more = FALSE;

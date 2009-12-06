@@ -41,10 +41,6 @@
 #define GOOGLE_SEARCH_PATTERN_2 ",lng:"
 #define GOOGLE_SEARCH_NOT_FOUND "not understand the location"
 
-static gchar *last_search_str = NULL;
-static VikCoord *last_coord = NULL;
-static gchar *last_successful_search_str = NULL;
-
 static DownloadOptions googlesearch_options = { "http://maps.google.com/", 0, a_check_map_file };
 
 static void google_search_tool_class_init ( GoogleSearchToolClass *klass );
@@ -215,14 +211,6 @@ static int google_search_tool_get_coord ( VikSearchTool *self, VikWindow *vw, Vi
   }
 
   vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
-
-  if (last_coord)
-    g_free(last_coord);
-  last_coord = g_malloc(sizeof(VikCoord));
-  *last_coord = *coord;
-  if (last_successful_search_str)
-    g_free(last_successful_search_str);
-  last_successful_search_str = g_strdup(last_search_str);
 
 done:
   g_free(escaped_srch_str);
