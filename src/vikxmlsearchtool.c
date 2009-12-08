@@ -26,6 +26,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef HAVE_MATH_H
+#include "math.h"
+#endif
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gprintf.h>
@@ -214,6 +217,9 @@ static void vik_xml_search_tool_init ( VikXmlSearchTool *self )
   priv->url_format = NULL;
   priv->lat_path = NULL;
   priv->lon_path = NULL;
+  // 
+  priv->ll.lat = NAN;
+  priv->ll.lon = NAN;
 }
 
 static void vik_xml_search_tool_finalize ( GObject *gob )
@@ -225,8 +231,28 @@ static gboolean
 stack_is_path (const GSList *stack,
                const gchar  *path)
 {
-  gboolean equal = FALSE;
-  // TODO
+  gboolean equal = TRUE;
+  int stack_len = g_list_length(stack);
+  int i = 0;
+  i = stack_len - 1;
+  while (equal == TRUE && i >= 0)
+  {
+    if (*path != '/')
+      equal = FALSE;
+    else
+      path++;
+    const gchar *current = g_list_nth_data(stack, i);
+    size_t len = strlen(current);
+    if (strncmp(path, current, len) != 0 )
+      equal = FALSE;
+    else
+    {
+      path += len;
+    }
+    i--;
+  }
+  if (*path != '\0')
+    equal = FALSE;
   return equal;
 }
 
@@ -242,14 +268,16 @@ _text (GMarkupParseContext *context,
   VikXmlSearchTool *self = VIK_XML_SEARCH_TOOL (user_data);
   VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
   const GSList *stack = g_markup_parse_context_get_element_stack (context);
+  gchar *textl = g_strndup(text, text_len);
 	if (stack_is_path (stack, priv->lat_path))
 	{
-    // TODO priv->ll.lat = g_ascii_strtod(text, NULL);
+    priv->ll.lat = g_ascii_strtod(textl, NULL);
 	}
 	if (stack_is_path (stack, priv->lon_path))
 	{
-    // TODO priv->ll.lon = g_ascii_strtod(text, NULL);
+    priv->ll.lon = g_ascii_strtod(textl, NULL);
 	}
+  g_free(textl);
 }
 
 static gboolean
@@ -258,6 +286,7 @@ parse_file_for_latlon(VikXmlSearchTool *self, gchar *filename, struct LatLon *ll
 	GMarkupParser xml_parser;
 	GMarkupParseContext *xml_context;
 	GError *error;
+	VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
 
 	FILE *file = g_fopen (filename, "r");
 	if (file == NULL)
@@ -272,6 +301,10 @@ parse_file_for_latlon(VikXmlSearchTool *self, gchar *filename, struct LatLon *ll
 	xml_parser.error = NULL;
 	
 	xml_context = g_markup_parse_context_new(&xml_parser, 0, self, NULL);
+
+	/* setup result */
+	priv->ll.lat = NAN;
+	priv->ll.lon = NAN;
 	
 	gchar buff[BUFSIZ];
 	size_t nb;
@@ -289,11 +322,14 @@ parse_file_for_latlon(VikXmlSearchTool *self, gchar *filename, struct LatLon *ll
   
   if (ll != NULL)
   {
-    VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
     *ll = priv->ll;
   }
   
-  return TRUE;
+  if (isnan(priv->ll.lat) || isnan(priv->ll.lat))
+		/* At least one coordinate not found */
+		return FALSE;
+	else
+		return TRUE;
 }
 
 static int vik_xml_search_tool_get_coord ( VikSearchTool *object, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
@@ -333,11 +369,11 @@ static int vik_xml_search_tool_get_coord ( VikSearchTool *object, VikWindow *vw,
 
   fclose(tmp_file);
   tmp_file = NULL;
+  g_debug("%s: %s", __FILE__, tmpname);
   if (!parse_file_for_latlon(self, tmpname, &ll)) {
     ret = -1;
     goto done;
   }
-
   vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
 
 done:
