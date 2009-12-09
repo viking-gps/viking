@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __VIKING_OSMARENDER_H
-#define __VIKING_OSMARENDER_H
+#ifndef __VIKING_OSM_H
+#define __VIKING_OSM_H
 
 void osm_init ();
 
