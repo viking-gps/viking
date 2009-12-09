@@ -139,6 +139,7 @@ endif
 
 if GEONAMES
 libviking_a_SOURCES += \
+	geonames.c geonames.h \
 	geonamessearch.c geonamessearch.h
 endif
 
