@@ -311,11 +311,11 @@ parse_file_for_latlon(VikXmlSearchTool *self, gchar *filename, struct LatLon *ll
 	while ((nb = fread (buff, sizeof(gchar), BUFSIZ, file)) > 0)
 	{
 		if (!g_markup_parse_context_parse(xml_context, buff, nb, &error))
-			printf("read_xml() : parsing error.\n");
+			fprintf(stderr, "%s: parsing error.\n", __FUNCTION__);
 	}
 	/* cleanup */
 	if (!g_markup_parse_context_end_parse(xml_context, &error))
-		printf("read_xml() : errors occurred reading file.\n");
+		fprintf(stderr, "%s: errors occurred reading file.\n", __FUNCTION__);
 	
 	g_markup_parse_context_free(xml_context);
 	fclose (file);
