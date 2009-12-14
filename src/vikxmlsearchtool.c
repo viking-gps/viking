@@ -269,11 +269,12 @@ _text (GMarkupParseContext *context,
   VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
   const GSList *stack = g_markup_parse_context_get_element_stack (context);
   gchar *textl = g_strndup(text, text_len);
-	if (stack_is_path (stack, priv->lat_path))
+  /* Store only first result */
+	if (isnan(priv->ll.lat) && stack_is_path (stack, priv->lat_path))
 	{
     priv->ll.lat = g_ascii_strtod(textl, NULL);
 	}
-	if (stack_is_path (stack, priv->lon_path))
+	if (isnan(priv->ll.lon) && stack_is_path (stack, priv->lon_path))
 	{
     priv->ll.lon = g_ascii_strtod(textl, NULL);
 	}
