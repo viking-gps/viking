@@ -34,7 +34,7 @@
 #include "util.h"
 #include "curl_download.h"
 
-#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%f&south=%f&east=%f&west=%f"
+#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s"
 #define GEONAMES_SEARCH_URL_FMT "http://ws.geonames.org/searchJSON?formatted=true&style=medium&maxRows=10&lang=en&q=%s"
 #define GEONAMES_COUNTRY_PATTERN "\"countryName\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
@@ -421,7 +421,16 @@ void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *v
   VikWaypoint *wiki_wp;
   found_geoname *wiki_geoname;
 
-  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, maxmin[0].lat, maxmin[1].lat, maxmin[0].lon, maxmin[1].lon);
+  /* encode doubles in a C locale */
+  gchar *north = a_coords_dtostr(maxmin[0].lat);
+  gchar *south = a_coords_dtostr(maxmin[1].lat);
+  gchar *east = a_coords_dtostr(maxmin[0].lon);
+  gchar *west = a_coords_dtostr(maxmin[1].lon);
+  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west);
+  g_free(north); north = NULL;
+  g_free(south); south = NULL;
+  g_free(east);  east = NULL;
+  g_free(west);  west = NULL;
   tmpname = download_url(uri);
   if (!tmpname) {
     none_found(vw);
