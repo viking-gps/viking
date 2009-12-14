@@ -38,19 +38,19 @@
 #include "util.h"
 #include "curl_download.h"
 
-#include "vikxmlsearchtool.h"
+#include "vikgotoxmltool.h"
 
 
-static void vik_xml_search_tool_class_init ( VikXmlSearchToolClass *klass );
-static void vik_xml_search_tool_init ( VikXmlSearchTool *vwd );
+static void vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass );
+static void vik_goto_xml_tool_init ( VikGotoXmlTool *vwd );
 
-static void vik_xml_search_tool_finalize ( GObject *gob );
+static void vik_goto_xml_tool_finalize ( GObject *gob );
 
-static int vik_xml_search_tool_get_coord ( VikSearchTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
+static int vik_goto_xml_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
 
-typedef struct _VikXmlSearchToolPrivate VikXmlSearchToolPrivate;
+typedef struct _VikGotoXmlToolPrivate VikGotoXmlToolPrivate;
 
-struct _VikXmlSearchToolPrivate
+struct _VikGotoXmlToolPrivate
 {
   gchar *url_format;
   gchar *lat_path;
@@ -59,11 +59,11 @@ struct _VikXmlSearchToolPrivate
   struct LatLon ll;
 };
 
-#define XML_SEARCH_TOOL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                        VIK_XML_SEARCH_TOOL_TYPE,          \
-                                        VikXmlSearchToolPrivate))
+#define GOTO_XML_TOOL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
+                                        VIK_GOTO_XML_TOOL_TYPE,          \
+                                        VikGotoXmlToolPrivate))
 
-GType vik_xml_search_tool_get_type()
+GType vik_goto_xml_tool_get_type()
 {
   static GType w_type = 0;
 
@@ -71,17 +71,17 @@ GType vik_xml_search_tool_get_type()
   {
     static const GTypeInfo w_info = 
     {
-      sizeof (VikXmlSearchToolClass),
+      sizeof (VikGotoXmlToolClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) vik_xml_search_tool_class_init,
+      (GClassInitFunc) vik_goto_xml_tool_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (VikXmlSearchTool),
+      sizeof (VikGotoXmlTool),
       0,
-      (GInstanceInitFunc) vik_xml_search_tool_init,
+      (GInstanceInitFunc) vik_goto_xml_tool_init,
     };
-    w_type = g_type_register_static ( VIK_SEARCH_TOOL_TYPE, "VikXmlSearchTool", &w_info, 0 );
+    w_type = g_type_register_static ( VIK_GOTO_TOOL_TYPE, "VikGotoXmlTool", &w_info, 0 );
   }
 
   return w_type;
@@ -97,13 +97,13 @@ enum
 };
 
 static void
-xml_search_tool_set_property (GObject      *object,
+xml_goto_tool_set_property (GObject      *object,
                               guint         property_id,
                               const GValue *value,
                               GParamSpec   *pspec)
 {
-  VikXmlSearchTool *self = VIK_XML_SEARCH_TOOL (object);
-  VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
+  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
 
   switch (property_id)
     {
@@ -130,13 +130,13 @@ xml_search_tool_set_property (GObject      *object,
 }
 
 static void
-xml_search_tool_get_property (GObject    *object,
+xml_goto_tool_get_property (GObject    *object,
                               guint       property_id,
                               GValue     *value,
                               GParamSpec *pspec)
 {
-  VikXmlSearchTool *self = VIK_XML_SEARCH_TOOL (object);
-  VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
+  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
 
   switch (property_id)
     {
@@ -159,17 +159,17 @@ xml_search_tool_get_property (GObject    *object,
     }
 }
 
-static void vik_xml_search_tool_class_init ( VikXmlSearchToolClass *klass )
+static void vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
 {
   GObjectClass *object_class;
-  VikSearchToolClass *parent_class;
+  VikGotoToolClass *parent_class;
   GParamSpec *pspec;
 
   object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = vik_xml_search_tool_finalize;
-  object_class->set_property = xml_search_tool_set_property;
-  object_class->get_property = xml_search_tool_get_property;
+  object_class->finalize = vik_goto_xml_tool_finalize;
+  object_class->set_property = xml_goto_tool_set_property;
+  object_class->get_property = xml_goto_tool_get_property;
 
 
   pspec = g_param_spec_string ("url-format",
@@ -199,21 +199,21 @@ static void vik_xml_search_tool_class_init ( VikXmlSearchToolClass *klass )
                                    PROP_LON_PATH,
                                    pspec);
 
-  parent_class = VIK_SEARCH_TOOL_CLASS (klass);
+  parent_class = VIK_GOTO_TOOL_CLASS (klass);
 
-  parent_class->get_coord = vik_xml_search_tool_get_coord;
+  parent_class->get_coord = vik_goto_xml_tool_get_coord;
 
-  g_type_class_add_private (klass, sizeof (VikXmlSearchToolPrivate));
+  g_type_class_add_private (klass, sizeof (VikGotoXmlToolPrivate));
 }
 
-VikXmlSearchTool *vik_xml_search_tool_new ()
+VikGotoXmlTool *vik_goto_xml_tool_new ()
 {
-  return VIK_XML_SEARCH_TOOL ( g_object_new ( VIK_XML_SEARCH_TOOL_TYPE, "label", "Google", NULL ) );
+  return VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "Google", NULL ) );
 }
 
-static void vik_xml_search_tool_init ( VikXmlSearchTool *self )
+static void vik_goto_xml_tool_init ( VikGotoXmlTool *self )
 {
-  VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   priv->url_format = NULL;
   priv->lat_path = NULL;
   priv->lon_path = NULL;
@@ -222,7 +222,7 @@ static void vik_xml_search_tool_init ( VikXmlSearchTool *self )
   priv->ll.lon = NAN;
 }
 
-static void vik_xml_search_tool_finalize ( GObject *gob )
+static void vik_goto_xml_tool_finalize ( GObject *gob )
 {
   G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
@@ -265,8 +265,8 @@ _text (GMarkupParseContext *context,
        gpointer             user_data,
        GError             **error)
 {
-  VikXmlSearchTool *self = VIK_XML_SEARCH_TOOL (user_data);
-  VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
+  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (user_data);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   const GSList *stack = g_markup_parse_context_get_element_stack (context);
   gchar *textl = g_strndup(text, text_len);
   /* Store only first result */
@@ -282,12 +282,12 @@ _text (GMarkupParseContext *context,
 }
 
 static gboolean
-parse_file_for_latlon(VikXmlSearchTool *self, gchar *filename, struct LatLon *ll)
+parse_file_for_latlon(VikGotoXmlTool *self, gchar *filename, struct LatLon *ll)
 {
 	GMarkupParser xml_parser;
 	GMarkupParseContext *xml_context;
 	GError *error;
-	VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
+	VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
 
 	FILE *file = g_fopen (filename, "r");
 	if (file == NULL)
@@ -333,7 +333,7 @@ parse_file_for_latlon(VikXmlSearchTool *self, gchar *filename, struct LatLon *ll
 		return TRUE;
 }
 
-static int vik_xml_search_tool_get_coord ( VikSearchTool *object, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
+static int vik_goto_xml_tool_get_coord ( VikGotoTool *object, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
 {
   FILE *tmp_file;
   int tmp_fd;
@@ -343,19 +343,19 @@ static int vik_xml_search_tool_get_coord ( VikSearchTool *object, VikWindow *vw,
   int ret = 0;  /* OK */
   struct LatLon ll;
 
-  g_debug("%s: raw search: %s", __FUNCTION__, srch_str);
+  g_debug("%s: raw goto: %s", __FUNCTION__, srch_str);
 
   escaped_srch_str = uri_escape(srch_str);
 
-  g_debug("%s: escaped search: %s", __FUNCTION__, escaped_srch_str);
+  g_debug("%s: escaped goto: %s", __FUNCTION__, escaped_srch_str);
 
-  if ((tmp_fd = g_file_open_tmp ("vikxmlsearch.XXXXXX", &tmpname, NULL)) == -1) {
+  if ((tmp_fd = g_file_open_tmp ("GOTO.XXXXXX", &tmpname, NULL)) == -1) {
     g_critical(_("couldn't open temp file"));
     exit(1);
   }
   
-  VikXmlSearchTool *self = VIK_XML_SEARCH_TOOL (object);
-  VikXmlSearchToolPrivate *priv = XML_SEARCH_TOOL_GET_PRIVATE (self);
+  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
 
   tmp_file = fdopen(tmp_fd, "r+");
   uri = g_strdup_printf(priv->url_format, escaped_srch_str);

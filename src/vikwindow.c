@@ -27,7 +27,7 @@
 #include "background.h"
 #include "acquire.h"
 #include "datasources.h"
-#include "viksearch.h"
+#include "vikgoto.h"
 #include "dems.h"
 #include "mapcache.h"
 #include "print.h"
@@ -1578,7 +1578,7 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
-  a_vik_search(vw, vw->viking_vlp, vw->viking_vvp);
+  a_vik_goto(vw, vw->viking_vlp, vw->viking_vvp);
 }
 
 static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )

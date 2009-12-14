@@ -65,9 +65,9 @@ libviking_a_SOURCES = \
 	vikgpslayer.c vikgpslayer.h \
 	vikgeoreflayer.c vikgeoreflayer.h \
 	vikfileentry.c vikfileentry.h \
-	viksearchtool.c viksearchtool.h \
-	vikxmlsearchtool.c vikxmlsearchtool.h \
-	viksearch.c viksearch.h \
+	vikgototool.c vikgototool.h \
+	vikgotoxmltool.c vikgotoxmltool.h \
+	vikgoto.c vikgoto.h \
 	viktrwlayer_tpwin.c viktrwlayer_tpwin.h \
 	viktrwlayer_propwin.c viktrwlayer_propwin.h \
 	thumbnails.c thumbnails.h \

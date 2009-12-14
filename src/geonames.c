@@ -26,18 +26,18 @@
 
 #include "geonames.h"
 
-#include "vikxmlsearchtool.h"
-#include "viksearch.h"
+#include "vikgotoxmltool.h"
+#include "vikgoto.h"
 
 /* initialisation */
 void geonames_init () {
-  // Searchtool
-  VikXmlSearchTool *geonames = VIK_XML_SEARCH_TOOL ( g_object_new ( VIK_XML_SEARCH_TOOL_TYPE, "label", "Geonames",
+  // Goto
+  VikGotoXmlTool *geonames = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "Geonames",
     "url-format", "http://ws.geonames.org/search?q=%s&maxRows=1&lang=es&style=short",
     "lat-path", "/geonames/geoname/lat",
     "lon-path", "/geonames/geoname/lng",
     NULL ) );
-    vik_search_register ( VIK_SEARCH_TOOL ( geonames ) );
+    vik_goto_register ( VIK_GOTO_TOOL ( geonames ) );
     g_object_unref ( geonames );
 }
 

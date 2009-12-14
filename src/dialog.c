@@ -28,7 +28,7 @@
 #include "garminsymbols.h"
 #include "degrees_converters.h"
 #include "authors.h"
-#include "viksearch.h"
+#include "vikgoto.h"
 #include "util.h"
 
 #include <glib/gi18n.h>
@@ -240,7 +240,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   commentlabel = gtk_label_new (_("Comment:"));
   commententry = gtk_entry_new ();
   gchar *cmt =  NULL;
-  cmt = a_vik_search_get_search_string_for_this_place(VIK_WINDOW(parent));
+  cmt = a_vik_goto_get_search_string_for_this_place(VIK_WINDOW(parent));
   if (cmt)
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 

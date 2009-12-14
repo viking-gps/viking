@@ -36,21 +36,21 @@
 
 #include "googlesearch.h"
 
-#define GOOGLE_SEARCH_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
-#define GOOGLE_SEARCH_PATTERN_1 "{center:{lat:"
-#define GOOGLE_SEARCH_PATTERN_2 ",lng:"
-#define GOOGLE_SEARCH_NOT_FOUND "not understand the location"
+#define GOOGLE_GOTO_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
+#define GOOGLE_GOTO_PATTERN_1 "{center:{lat:"
+#define GOOGLE_GOTO_PATTERN_2 ",lng:"
+#define GOOGLE_GOTO_NOT_FOUND "not understand the location"
 
 static DownloadOptions googlesearch_options = { "http://maps.google.com/", 0, a_check_map_file };
 
-static void google_search_tool_class_init ( GoogleSearchToolClass *klass );
-static void google_search_tool_init ( GoogleSearchTool *vwd );
+static void google_goto_tool_class_init ( GoogleGotoToolClass *klass );
+static void google_goto_tool_init ( GoogleGotoTool *vwd );
 
-static void google_search_tool_finalize ( GObject *gob );
+static void google_goto_tool_finalize ( GObject *gob );
 
-static int google_search_tool_get_coord ( VikSearchTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
+static int google_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
 
-GType google_search_tool_get_type()
+GType google_goto_tool_get_type()
 {
   static GType w_type = 0;
 
@@ -58,46 +58,46 @@ GType google_search_tool_get_type()
   {
     static const GTypeInfo w_info = 
     {
-      sizeof (GoogleSearchToolClass),
+      sizeof (GoogleGotoToolClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) google_search_tool_class_init,
+      (GClassInitFunc) google_goto_tool_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (GoogleSearchTool),
+      sizeof (GoogleGotoTool),
       0,
-      (GInstanceInitFunc) google_search_tool_init,
+      (GInstanceInitFunc) google_goto_tool_init,
     };
-    w_type = g_type_register_static ( VIK_SEARCH_TOOL_TYPE, "GoogleSearchTool", &w_info, 0 );
+    w_type = g_type_register_static ( VIK_GOTO_TOOL_TYPE, "GoogleGotoTool", &w_info, 0 );
   }
 
   return w_type;
 }
 
-static void google_search_tool_class_init ( GoogleSearchToolClass *klass )
+static void google_goto_tool_class_init ( GoogleGotoToolClass *klass )
 {
   GObjectClass *object_class;
-  VikSearchToolClass *parent_class;
+  VikGotoToolClass *parent_class;
 
   object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = google_search_tool_finalize;
+  object_class->finalize = google_goto_tool_finalize;
 
-  parent_class = VIK_SEARCH_TOOL_CLASS (klass);
+  parent_class = VIK_GOTO_TOOL_CLASS (klass);
 
-  parent_class->get_coord = google_search_tool_get_coord;
+  parent_class->get_coord = google_goto_tool_get_coord;
 }
 
-GoogleSearchTool *google_search_tool_new ()
+GoogleGotoTool *google_goto_tool_new ()
 {
-  return GOOGLE_SEARCH_TOOL ( g_object_new ( GOOGLE_SEARCH_TOOL_TYPE, "label", "Google", NULL ) );
+  return GOOGLE_GOTO_TOOL ( g_object_new ( GOOGLE_GOTO_TOOL_TYPE, "label", "Google", NULL ) );
 }
 
-static void google_search_tool_init ( GoogleSearchTool *vlp )
+static void google_goto_tool_init ( GoogleGotoTool *vlp )
 {
 }
 
-static void google_search_tool_finalize ( GObject *gob )
+static void google_goto_tool_finalize ( GObject *gob )
 {
   G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
@@ -120,16 +120,16 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
   len = g_mapped_file_get_length(mf);
   text = g_mapped_file_get_contents(mf);
 
-  if (g_strstr_len(text, len, GOOGLE_SEARCH_NOT_FOUND) != NULL) {
+  if (g_strstr_len(text, len, GOOGLE_GOTO_NOT_FOUND) != NULL) {
     found = FALSE;
     goto done;
   }
 
-  if ((pat = g_strstr_len(text, len, GOOGLE_SEARCH_PATTERN_1)) == NULL) {
+  if ((pat = g_strstr_len(text, len, GOOGLE_GOTO_PATTERN_1)) == NULL) {
     found = FALSE;
     goto done;
   }
-  pat += strlen(GOOGLE_SEARCH_PATTERN_1);
+  pat += strlen(GOOGLE_GOTO_PATTERN_1);
   s = lat_buf;
   if (*pat == '-')
     *s++ = *pat++;
@@ -142,12 +142,12 @@ static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
     goto done;
   }
 
-  if (strncmp(pat, GOOGLE_SEARCH_PATTERN_2, strlen(GOOGLE_SEARCH_PATTERN_2))) {
+  if (strncmp(pat, GOOGLE_GOTO_PATTERN_2, strlen(GOOGLE_GOTO_PATTERN_2))) {
       found = FALSE;
       goto done;
   }
 
-  pat += strlen(GOOGLE_SEARCH_PATTERN_2);
+  pat += strlen(GOOGLE_GOTO_PATTERN_2);
   s = lon_buf;
 
   if (*pat == '-')
@@ -170,7 +170,7 @@ done:
 
 }
 
-static int google_search_tool_get_coord ( VikSearchTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
+static int google_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
 {
   FILE *tmp_file;
   int tmp_fd;
@@ -192,8 +192,8 @@ static int google_search_tool_get_coord ( VikSearchTool *self, VikWindow *vw, Vi
   }
 
   tmp_file = fdopen(tmp_fd, "r+");
-  //uri = g_strdup_printf(GOOGLE_SEARCH_URL_FMT, srch_str);
-  uri = g_strdup_printf(GOOGLE_SEARCH_URL_FMT, escaped_srch_str);
+  //uri = g_strdup_printf(GOOGLE_GOTO_URL_FMT, srch_str);
+  uri = g_strdup_printf(GOOGLE_GOTO_URL_FMT, escaped_srch_str);
 
   /* TODO: curl may not be available */
   if (curl_download_uri(uri, tmp_file, &googlesearch_options)) {  /* error */
