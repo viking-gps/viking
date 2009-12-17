@@ -24,6 +24,7 @@
 #include <glib.h>
 
 #include "vikwindow.h"
+#include "download.h"
 
 #define VIK_GOTO_TOOL_TYPE            (vik_goto_tool_get_type ())
 #define VIK_GOTO_TOOL(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_GOTO_TOOL_TYPE, VikGotoTool))
@@ -40,7 +41,9 @@ struct _VikGotoToolClass
 {
   GObjectClass object_class;
   gchar *(* get_label) (VikGotoTool *self);
-  int (* get_coord) (VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord);
+  gchar *(* get_url_format) (VikGotoTool *self);
+  DownloadOptions *(* get_download_options) (VikGotoTool *self);
+  gboolean (* parse_file_for_latlon) (VikGotoTool *self, gchar *filename, struct LatLon *ll);
 };
 
 GType vik_goto_tool_get_type ();
@@ -50,6 +53,9 @@ struct _VikGotoTool {
 };
 
 gchar *vik_goto_tool_get_label ( VikGotoTool *self );
+gchar *vik_goto_tool_get_url_format ( VikGotoTool *self );
+DownloadOptions *vik_goto_tool_get_download_options ( VikGotoTool *self );
+gboolean vik_goto_tool_parse_file_for_latlon ( VikGotoTool *self, gchar *filename, struct LatLon *ll );
 int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
 
 #endif

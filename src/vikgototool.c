@@ -24,10 +24,14 @@
 #endif
 
 #include "vikgototool.h"
+#include "util.h"
+#include "curl_download.h"
 
 #include <string.h>
 
+#include <glib.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 
 static void goto_tool_class_init ( VikGotoToolClass *klass );
 static void goto_tool_init ( VikGotoTool *vlp );
@@ -36,6 +40,7 @@ static GObjectClass *parent_class;
 
 static void goto_tool_finalize ( GObject *gob );
 static gchar *goto_tool_get_label ( VikGotoTool *vw );
+static DownloadOptions *goto_tool_get_download_options ( VikGotoTool *self );
 
 typedef struct _VikGotoToolPrivate VikGotoToolPrivate;
 
@@ -167,6 +172,7 @@ static void goto_tool_class_init ( VikGotoToolClass *klass )
                                    pspec);
 
   klass->get_label = goto_tool_get_label;
+  klass->get_download_options = goto_tool_get_download_options;
 
   parent_class = g_type_class_peek_parent (klass);
 
@@ -198,12 +204,77 @@ static gchar *goto_tool_get_label ( VikGotoTool *self )
   return g_strdup ( priv->label );
 }
 
-gchar *vik_goto_tool_get_label ( VikGotoTool *w )
+static DownloadOptions *goto_tool_get_download_options ( VikGotoTool *self )
 {
-  return VIK_GOTO_TOOL_GET_CLASS( w )->get_label( w );
+  // Default: return NULL
+  return NULL;
+}
+
+gchar *vik_goto_tool_get_label ( VikGotoTool *self )
+{
+  return VIK_GOTO_TOOL_GET_CLASS( self )->get_label( self );
+}
+
+gchar *vik_goto_tool_get_url_format ( VikGotoTool *self )
+{
+  return VIK_GOTO_TOOL_GET_CLASS( self )->get_url_format( self );
+}
+
+DownloadOptions *vik_goto_tool_get_download_options ( VikGotoTool *self )
+{
+  return VIK_GOTO_TOOL_GET_CLASS( self )->get_download_options( self );
+}
+
+gboolean vik_goto_tool_parse_file_for_latlon (VikGotoTool *self, gchar *filename, struct LatLon *ll)
+{
+  return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_latlon( self, filename, ll );
 }
 
 int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
 {
-  return VIK_GOTO_TOOL_GET_CLASS( self )->get_coord( self, vw, vvp, srch_str, coord );
+  FILE *tmp_file;
+  int tmp_fd;
+  gchar *tmpname;
+  gchar *uri;
+  gchar *escaped_srch_str;
+  int ret = 0;  /* OK */
+  struct LatLon ll;
+
+  g_debug("%s: raw goto: %s", __FUNCTION__, srch_str);
+
+  escaped_srch_str = uri_escape(srch_str);
+
+  g_debug("%s: escaped goto: %s", __FUNCTION__, escaped_srch_str);
+
+  if ((tmp_fd = g_file_open_tmp ("vikgoto.XXXXXX", &tmpname, NULL)) == -1) {
+    g_critical(_("couldn't open temp file"));
+    return -1;
+  }
+  
+  tmp_file = fdopen(tmp_fd, "r+");
+  uri = g_strdup_printf(vik_goto_tool_get_url_format(self), escaped_srch_str);
+
+  /* TODO: curl may not be available */
+  if (curl_download_uri(uri, tmp_file, vik_goto_tool_get_download_options(self))) {  /* error */
+    fclose(tmp_file);
+    tmp_file = NULL;
+    ret = -1;
+    goto done;
+  }
+
+  fclose(tmp_file);
+  tmp_file = NULL;
+  g_debug("%s: %s", __FILE__, tmpname);
+  if (!vik_goto_tool_parse_file_for_latlon(self, tmpname, &ll)) {
+    ret = -1;
+    goto done;
+  }
+  vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
+
+done:
+  g_free(escaped_srch_str);
+  g_free(uri);
+  g_remove(tmpname);
+  g_free(tmpname);
+  return ret;
 }

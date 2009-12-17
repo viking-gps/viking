@@ -48,7 +48,9 @@ static void google_goto_tool_init ( GoogleGotoTool *vwd );
 
 static void google_goto_tool_finalize ( GObject *gob );
 
-static int google_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
+static gchar *google_goto_tool_get_url_format ( VikGotoTool *self );
+static DownloadOptions *google_goto_tool_get_download_options ( VikGotoTool *self );
+static gboolean google_goto_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
 
 GType google_goto_tool_get_type()
 {
@@ -85,7 +87,9 @@ static void google_goto_tool_class_init ( GoogleGotoToolClass *klass )
 
   parent_class = VIK_GOTO_TOOL_CLASS (klass);
 
-  parent_class->get_coord = google_goto_tool_get_coord;
+  parent_class->get_url_format = google_goto_tool_get_url_format;
+  parent_class->get_download_options = google_goto_tool_get_download_options;
+  parent_class->parse_file_for_latlon = google_goto_tool_parse_file_for_latlon;
 }
 
 GoogleGotoTool *google_goto_tool_new ()
@@ -102,7 +106,7 @@ static void google_goto_tool_finalize ( GObject *gob )
   G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
 
-static gboolean parse_file_for_latlon(gchar *file_name, struct LatLon *ll)
+static gboolean google_goto_tool_parse_file_for_latlon(VikGotoTool *self, gchar *file_name, struct LatLon *ll)
 {
   gchar *text, *pat;
   GMappedFile *mf;
@@ -170,52 +174,12 @@ done:
 
 }
 
-static int google_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
+static gchar *google_goto_tool_get_url_format ( VikGotoTool *self )
 {
-  FILE *tmp_file;
-  int tmp_fd;
-  gchar *tmpname;
-  gchar *uri;
-  gchar *escaped_srch_str;
-  int ret = 0;  /* OK */
-  struct LatLon ll;
+  return GOOGLE_GOTO_URL_FMT;
+}
 
-  g_debug("%s: raw search: %s", __FUNCTION__, srch_str);
-
-  escaped_srch_str = uri_escape(srch_str);
-
-  g_debug("%s: escaped search: %s", __FUNCTION__, escaped_srch_str);
-
-  if ((tmp_fd = g_file_open_tmp ("vikgsearch.XXXXXX", &tmpname, NULL)) == -1) {
-    g_critical(_("couldn't open temp file"));
-    exit(1);
-  }
-
-  tmp_file = fdopen(tmp_fd, "r+");
-  //uri = g_strdup_printf(GOOGLE_GOTO_URL_FMT, srch_str);
-  uri = g_strdup_printf(GOOGLE_GOTO_URL_FMT, escaped_srch_str);
-
-  /* TODO: curl may not be available */
-  if (curl_download_uri(uri, tmp_file, &googlesearch_options)) {  /* error */
-    fclose(tmp_file);
-    tmp_file = NULL;
-    ret = -1;
-    goto done;
-  }
-
-  fclose(tmp_file);
-  tmp_file = NULL;
-  if (!parse_file_for_latlon(tmpname, &ll)) {
-    ret = -1;
-    goto done;
-  }
-
-  vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
-
-done:
-  g_free(escaped_srch_str);
-  g_free(uri);
-  g_remove(tmpname);
-  g_free(tmpname);
-  return ret;
+DownloadOptions *google_goto_tool_get_download_options ( VikGotoTool *self )
+{
+  return &googlesearch_options;
 }

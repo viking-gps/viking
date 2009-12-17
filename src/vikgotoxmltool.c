@@ -35,18 +35,17 @@
 #include <glib/gi18n.h>
 
 #include "viking.h"
-#include "util.h"
-#include "curl_download.h"
 
 #include "vikgotoxmltool.h"
 
 
-static void vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass );
-static void vik_goto_xml_tool_init ( VikGotoXmlTool *vwd );
+static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass );
+static void _goto_xml_tool_init ( VikGotoXmlTool *self );
 
-static void vik_goto_xml_tool_finalize ( GObject *gob );
+static void _goto_xml_tool_finalize ( GObject *gob );
 
-static int vik_goto_xml_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
+static gchar *_goto_xml_tool_get_url_format ( VikGotoTool *self );
+static gboolean _goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
 
 typedef struct _VikGotoXmlToolPrivate VikGotoXmlToolPrivate;
 
@@ -74,12 +73,12 @@ GType vik_goto_xml_tool_get_type()
       sizeof (VikGotoXmlToolClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) vik_goto_xml_tool_class_init,
+      (GClassInitFunc) _goto_xml_tool_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
       sizeof (VikGotoXmlTool),
       0,
-      (GInstanceInitFunc) vik_goto_xml_tool_init,
+      (GInstanceInitFunc) _goto_xml_tool_init,
     };
     w_type = g_type_register_static ( VIK_GOTO_TOOL_TYPE, "VikGotoXmlTool", &w_info, 0 );
   }
@@ -97,10 +96,10 @@ enum
 };
 
 static void
-xml_goto_tool_set_property (GObject      *object,
-                              guint         property_id,
-                              const GValue *value,
-                              GParamSpec   *pspec)
+_goto_xml_tool_set_property (GObject      *object,
+                             guint         property_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
 {
   VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
@@ -130,10 +129,10 @@ xml_goto_tool_set_property (GObject      *object,
 }
 
 static void
-xml_goto_tool_get_property (GObject    *object,
-                              guint       property_id,
-                              GValue     *value,
-                              GParamSpec *pspec)
+_goto_xml_tool_get_property (GObject    *object,
+                             guint       property_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
 {
   VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
@@ -159,7 +158,7 @@ xml_goto_tool_get_property (GObject    *object,
     }
 }
 
-static void vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
+static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
 {
   GObjectClass *object_class;
   VikGotoToolClass *parent_class;
@@ -167,9 +166,9 @@ static void vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
 
   object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = vik_goto_xml_tool_finalize;
-  object_class->set_property = xml_goto_tool_set_property;
-  object_class->get_property = xml_goto_tool_get_property;
+  object_class->finalize = _goto_xml_tool_finalize;
+  object_class->set_property = _goto_xml_tool_set_property;
+  object_class->get_property = _goto_xml_tool_get_property;
 
 
   pspec = g_param_spec_string ("url-format",
@@ -201,7 +200,8 @@ static void vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
 
   parent_class = VIK_GOTO_TOOL_CLASS (klass);
 
-  parent_class->get_coord = vik_goto_xml_tool_get_coord;
+  parent_class->get_url_format = _goto_xml_tool_get_url_format;
+  parent_class->parse_file_for_latlon = _goto_xml_tool_parse_file_for_latlon;
 
   g_type_class_add_private (klass, sizeof (VikGotoXmlToolPrivate));
 }
@@ -211,7 +211,7 @@ VikGotoXmlTool *vik_goto_xml_tool_new ()
   return VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "Google", NULL ) );
 }
 
-static void vik_goto_xml_tool_init ( VikGotoXmlTool *self )
+static void _goto_xml_tool_init ( VikGotoXmlTool *self )
 {
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   priv->url_format = NULL;
@@ -222,7 +222,7 @@ static void vik_goto_xml_tool_init ( VikGotoXmlTool *self )
   priv->ll.lon = NAN;
 }
 
-static void vik_goto_xml_tool_finalize ( GObject *gob )
+static void _goto_xml_tool_finalize ( GObject *gob )
 {
   G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
@@ -282,12 +282,13 @@ _text (GMarkupParseContext *context,
 }
 
 static gboolean
-parse_file_for_latlon(VikGotoXmlTool *self, gchar *filename, struct LatLon *ll)
+_goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll)
 {
 	GMarkupParser xml_parser;
 	GMarkupParseContext *xml_context;
 	GError *error;
 	VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  g_return_val_if_fail(priv != NULL, FALSE);
 
 	FILE *file = g_fopen (filename, "r");
 	if (file == NULL)
@@ -333,54 +334,10 @@ parse_file_for_latlon(VikGotoXmlTool *self, gchar *filename, struct LatLon *ll)
 		return TRUE;
 }
 
-static int vik_goto_xml_tool_get_coord ( VikGotoTool *object, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
+static gchar *
+_goto_xml_tool_get_url_format ( VikGotoTool *self )
 {
-  FILE *tmp_file;
-  int tmp_fd;
-  gchar *tmpname;
-  gchar *uri;
-  gchar *escaped_srch_str;
-  int ret = 0;  /* OK */
-  struct LatLon ll;
-
-  g_debug("%s: raw goto: %s", __FUNCTION__, srch_str);
-
-  escaped_srch_str = uri_escape(srch_str);
-
-  g_debug("%s: escaped goto: %s", __FUNCTION__, escaped_srch_str);
-
-  if ((tmp_fd = g_file_open_tmp ("GOTO.XXXXXX", &tmpname, NULL)) == -1) {
-    g_critical(_("couldn't open temp file"));
-    exit(1);
-  }
-  
-  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
-
-  tmp_file = fdopen(tmp_fd, "r+");
-  uri = g_strdup_printf(priv->url_format, escaped_srch_str);
-
-  /* TODO: curl may not be available */
-  if (curl_download_uri(uri, tmp_file, NULL)) {  /* error */
-    fclose(tmp_file);
-    tmp_file = NULL;
-    ret = -1;
-    goto done;
-  }
-
-  fclose(tmp_file);
-  tmp_file = NULL;
-  g_debug("%s: %s", __FILE__, tmpname);
-  if (!parse_file_for_latlon(self, tmpname, &ll)) {
-    ret = -1;
-    goto done;
-  }
-  vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
-
-done:
-  g_free(escaped_srch_str);
-  g_free(uri);
-  g_remove(tmpname);
-  g_free(tmpname);
-  return ret;
+  g_return_val_if_fail(priv != NULL, NULL);
+  return priv->url_format;
 }
