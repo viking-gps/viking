@@ -232,7 +232,7 @@ stack_is_path (const GSList *stack,
                const gchar  *path)
 {
   gboolean equal = TRUE;
-  int stack_len = g_list_length(stack);
+  int stack_len = g_list_length((GList *)stack);
   int i = 0;
   i = stack_len - 1;
   while (equal == TRUE && i >= 0)
@@ -241,7 +241,7 @@ stack_is_path (const GSList *stack,
       equal = FALSE;
     else
       path++;
-    const gchar *current = g_list_nth_data(stack, i);
+    const gchar *current = g_list_nth_data((GList *)stack, i);
     size_t len = strlen(current);
     if (strncmp(path, current, len) != 0 )
       equal = FALSE;
