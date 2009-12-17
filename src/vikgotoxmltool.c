@@ -53,7 +53,9 @@ struct _VikGotoXmlToolPrivate
 {
   gchar *url_format;
   gchar *lat_path;
+  gchar *lat_attr;
   gchar *lon_path;
+  gchar *lon_attr;
   
   struct LatLon ll;
 };
@@ -92,7 +94,9 @@ enum
 
   PROP_URL_FORMAT,
   PROP_LAT_PATH,
+  PROP_LAT_ATTR,
   PROP_LON_PATH,
+  PROP_LON_ATTR,
 };
 
 static void
@@ -116,9 +120,19 @@ _goto_xml_tool_set_property (GObject      *object,
       priv->lat_path = g_value_dup_string (value);
       break;
 
+    case PROP_LAT_ATTR:
+      g_free (priv->lat_attr);
+      priv->lat_attr = g_value_dup_string (value);
+      break;
+
     case PROP_LON_PATH:
       g_free (priv->lon_path);
       priv->lon_path = g_value_dup_string (value);
+      break;
+
+    case PROP_LON_ATTR:
+      g_free (priv->lon_attr);
+      priv->lon_attr = g_value_dup_string (value);
       break;
 
     default:
@@ -147,8 +161,16 @@ _goto_xml_tool_get_property (GObject    *object,
       g_value_set_string (value, priv->lat_path);
       break;
 
+    case PROP_LAT_ATTR:
+      g_value_set_string (value, priv->lat_attr);
+      break;
+
     case PROP_LON_PATH:
       g_value_set_string (value, priv->lon_path);
+      break;
+
+    case PROP_LON_ATTR:
+      g_value_set_string (value, priv->lon_attr);
       break;
 
     default:
@@ -181,7 +203,7 @@ static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
                                    pspec);
 
   pspec = g_param_spec_string ("lat-path",
-                               "Lat path",
+                               "Latitude path",
                                "XPath of the latitude",
                                "<no-set>" /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
@@ -189,13 +211,31 @@ static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
                                    PROP_LAT_PATH,
                                    pspec);
 
+  pspec = g_param_spec_string ("lat-attr",
+                               "Latitude attribute",
+                               "XML attribute of the latitude",
+                               NULL /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class,
+                                   PROP_LAT_ATTR,
+                                   pspec);
+
   pspec = g_param_spec_string ("lon-path",
-                               "Lon path",
+                               "Longitude path",
                                "XPath of the longitude",
                                "<no-set>" /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class,
                                    PROP_LON_PATH,
+                                   pspec);
+
+  pspec = g_param_spec_string ("lon-attr",
+                               "Longitude attribute",
+                               "XML attribute of the longitude",
+                               NULL /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class,
+                                   PROP_LON_ATTR,
                                    pspec);
 
   parent_class = VIK_GOTO_TOOL_CLASS (klass);
@@ -216,7 +256,9 @@ static void _goto_xml_tool_init ( VikGotoXmlTool *self )
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   priv->url_format = NULL;
   priv->lat_path = NULL;
+  priv->lat_attr = NULL;
   priv->lon_path = NULL;
+  priv->lon_attr = NULL;
   // 
   priv->ll.lat = NAN;
   priv->ll.lon = NAN;
@@ -256,6 +298,46 @@ stack_is_path (const GSList *stack,
   return equal;
 }
 
+/* Called for open tags <foo bar="baz"> */
+static void
+_start_element (GMarkupParseContext *context,
+                const gchar         *element_name,
+                const gchar        **attribute_names,
+                const gchar        **attribute_values,
+                gpointer             user_data,
+                GError             **error)
+{
+  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (user_data);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  const GSList *stack = g_markup_parse_context_get_element_stack (context);
+  /* Longitude */
+  if (priv->lon_attr != NULL && isnan(priv->ll.lon) && stack_is_path (stack, priv->lon_path))
+	{
+		int i=0;
+		while (attribute_names[i] != NULL)
+		{
+			if (strcmp (attribute_names[i], priv->lon_attr) == 0)
+			{
+				priv->ll.lon = g_ascii_strtod(attribute_values[i], NULL);
+			}
+			i++;
+		}
+	}
+  /* Latitude */
+  if (priv->lat_attr != NULL && isnan(priv->ll.lat) && stack_is_path (stack, priv->lat_path))
+	{
+		int i=0;
+		while (attribute_names[i] != NULL)
+		{
+			if (strcmp (attribute_names[i], priv->lat_attr) == 0)
+			{
+				priv->ll.lat = g_ascii_strtod(attribute_values[i], NULL);
+			}
+			i++;
+		}
+	}
+}
+
 /* Called for character data */
 /* text is not nul-terminated */
 static void
@@ -270,11 +352,11 @@ _text (GMarkupParseContext *context,
   const GSList *stack = g_markup_parse_context_get_element_stack (context);
   gchar *textl = g_strndup(text, text_len);
   /* Store only first result */
-	if (isnan(priv->ll.lat) && stack_is_path (stack, priv->lat_path))
+	if (priv->lat_attr == NULL && isnan(priv->ll.lat) && stack_is_path (stack, priv->lat_path))
 	{
     priv->ll.lat = g_ascii_strtod(textl, NULL);
 	}
-	if (isnan(priv->ll.lon) && stack_is_path (stack, priv->lon_path))
+	if (priv->lon_attr == NULL && isnan(priv->ll.lon) && stack_is_path (stack, priv->lon_path))
 	{
     priv->ll.lon = g_ascii_strtod(textl, NULL);
 	}
@@ -296,9 +378,17 @@ _goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct 
 		return FALSE;
 	
 	/* setup context parse (ie callbacks) */
-	xml_parser.start_element = NULL;
+	if (priv->lat_attr != NULL || priv->lon_attr != NULL)
+    // At least one coordinate uses an attribute
+    xml_parser.start_element = &_start_element;
+  else
+    xml_parser.start_element = NULL;
 	xml_parser.end_element = NULL;
-	xml_parser.text = &_text;
+	if (priv->lat_attr == NULL || priv->lon_attr == NULL)
+    // At least one coordinate uses a raw element
+    xml_parser.text = &_text;
+  else
+    xml_parser.text = NULL;
 	xml_parser.passthrough = NULL;
 	xml_parser.error = NULL;
 	
