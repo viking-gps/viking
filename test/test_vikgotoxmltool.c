@@ -29,11 +29,18 @@ int main(int argc, char *argv[])
     "lon-path", "/geonames/geoname",
     "lon-attr", "lng",
     NULL ) );
+
+  VikGotoXmlTool *with_xpath = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM",
+    "url-format", "http://ws.geonames.org/search?q=%s&maxRows=1&lang=es&style=short",
+    "lat-path", "/geonames/geoname@lat",
+    "lon-path", "/geonames/geoname@lng",
+    NULL ) );
     
   int i;
   for (i = 1; i<argc ; i++)
   {
     parse(with_element, argv[i]);
     parse(with_attr, argv[i]);
+    parse(with_xpath, argv[i]);
   }
 }

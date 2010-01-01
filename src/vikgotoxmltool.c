@@ -107,6 +107,7 @@ _goto_xml_tool_set_property (GObject      *object,
 {
   VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  gchar **splitted = NULL;
 
   switch (property_id)
     {
@@ -116,23 +117,53 @@ _goto_xml_tool_set_property (GObject      *object,
       break;
 
     case PROP_LAT_PATH:
+      splitted = g_strsplit (g_value_get_string (value), "@", 2);
       g_free (priv->lat_path);
-      priv->lat_path = g_value_dup_string (value);
+      priv->lat_path = splitted[0];
+      if (splitted[1])
+      {
+        g_object_set (object, "lat-attr", splitted[1], NULL);
+        g_free (splitted[1]);
+      }
+      /* only free the tab, not the strings */
+      g_free (splitted);
+      splitted = NULL;
       break;
 
     case PROP_LAT_ATTR:
-      g_free (priv->lat_attr);
-      priv->lat_attr = g_value_dup_string (value);
+      /* Avoid to overwrite XPATH value */
+      /* NB: This disable future overwriting,
+         but as property is CONSTRUCT_ONLY there is no matter */
+      if (!priv->lat_attr || g_value_get_string (value))
+      {
+        g_free (priv->lat_attr);
+        priv->lat_attr = g_value_dup_string (value);
+      }
       break;
 
     case PROP_LON_PATH:
+      splitted = g_strsplit (g_value_get_string (value), "@", 2);
       g_free (priv->lon_path);
-      priv->lon_path = g_value_dup_string (value);
+      priv->lon_path = splitted[0];
+      if (splitted[1])
+      {
+        g_object_set (object, "lon-attr", splitted[1], NULL);
+        g_free (splitted[1]);
+      }
+      /* only free the tab, not the strings */
+      g_free (splitted);
+      splitted = NULL;
       break;
 
     case PROP_LON_ATTR:
-      g_free (priv->lon_attr);
-      priv->lon_attr = g_value_dup_string (value);
+      /* Avoid to overwrite XPATH value */
+      /* NB: This disable future overwriting,
+         but as property is CONSTRUCT_ONLY there is no matter */
+      if (!priv->lon_attr || g_value_get_string (value))
+      {
+        g_free (priv->lon_attr);
+        priv->lon_attr = g_value_dup_string (value);
+      }
       break;
 
     default:
@@ -371,6 +402,11 @@ _goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct 
 	GError *error;
 	VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   g_return_val_if_fail(priv != NULL, FALSE);
+
+  g_debug ("%s: %s@%s, %s@%s",
+           __FUNCTION__,
+           priv->lat_path, priv->lat_attr,
+           priv->lon_path, priv->lon_attr);
 
 	FILE *file = g_fopen (filename, "r");
 	if (file == NULL)
