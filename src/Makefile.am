@@ -65,6 +65,9 @@ libviking_a_SOURCES = \
 	vikgpslayer.c vikgpslayer.h \
 	vikgeoreflayer.c vikgeoreflayer.h \
 	vikfileentry.c vikfileentry.h \
+	vikgototool.c vikgototool.h \
+	vikgotoxmltool.c vikgotoxmltool.h \
+	vikgoto.c vikgoto.h \
 	viktrwlayer_tpwin.c viktrwlayer_tpwin.h \
 	viktrwlayer_propwin.c viktrwlayer_propwin.h \
 	thumbnails.c thumbnails.h \
@@ -136,6 +139,7 @@ endif
 
 if GEONAMES
 libviking_a_SOURCES += \
+	geonames.c geonames.h \
 	geonamessearch.c geonamessearch.h
 endif
 

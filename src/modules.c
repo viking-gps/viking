@@ -38,6 +38,7 @@
 #include "osm-traces.h"
 #include "bluemarble.h"
 #include "openaerial.h"
+#include "geonames.h"
 #include "file.h"
 #include "vikmapslayer.h"
 #include "vikexttools.h"
@@ -107,6 +108,9 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_OPENAERIAL
   openaerial_init();
+#endif
+#ifdef VIK_CONFIG_GEONAMES
+  geonames_init();
 #endif
   
   /* As modules are loaded, we can load configuration files */

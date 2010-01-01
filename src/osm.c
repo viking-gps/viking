@@ -29,6 +29,8 @@
 #include "vikslippymapsource.h"
 #include "vikwebtoolcenter.h"
 #include "vikexttools.h"
+#include "vikgotoxmltool.h"
+#include "vikgoto.h"
 
 /* initialisation */
 void osm_init () {
@@ -55,5 +57,26 @@ void osm_init () {
   webtool = vik_webtool_center_new_with_members ( _("OSM (render)"), "http://www.informationfreeway.org/?lat=%s&lon=%s&zoom=%d&layers=B0000F000F" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
+
+  // Goto
+  VikGotoXmlTool *nominatim = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM Nominatim",
+    "url-format", "http://nominatim.openstreetmap.org/search?q=%s&format=xml",
+    "lat-path", "/searchresults/place",
+    "lat-attr", "lat",
+    "lon-path", "/searchresults/place",
+    "lon-attr", "lon",
+    NULL ) );
+    vik_goto_register ( VIK_GOTO_TOOL ( nominatim ) );
+    g_object_unref ( nominatim );
+
+  VikGotoXmlTool *namefinder = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM Name finder",
+    "url-format", "http://gazetteer.openstreetmap.org/namefinder/search.xml?find=%s&max=1",
+    "lat-path", "/searchresults/named",
+    "lat-attr", "lat",
+    "lon-path", "/searchresults/named",
+    "lon-attr", "lon",
+    NULL ) );
+    vik_goto_register ( VIK_GOTO_TOOL ( namefinder ) );
+    g_object_unref ( namefinder );
 }
 

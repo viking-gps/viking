@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
  *
  */
 
-#ifndef __VIKING_OSM_H
-#define __VIKING_OSM_H
+#ifndef __GEONAMES_H
+#define __GEONAMES_H
 
-void osm_init ();
+void geonames_init ();
 
 #endif

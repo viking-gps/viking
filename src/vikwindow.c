@@ -27,12 +27,7 @@
 #include "background.h"
 #include "acquire.h"
 #include "datasources.h"
-#ifdef VIK_CONFIG_GOOGLE
-#include "googlesearch.h"
-#endif
-#ifdef VIK_CONFIG_GEONAMES
-#include "geonamessearch.h"
-#endif
+#include "vikgoto.h"
 #include "dems.h"
 #include "mapcache.h"
 #include "print.h"
@@ -1583,13 +1578,7 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
-#if defined(VIK_CONFIG_GOOGLE) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GOOGLE
-  a_google_search(vw, vw->viking_vlp, vw->viking_vvp);
-#endif
-#if defined(VIK_CONFIG_GEONAMES) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GEONAMES
-  a_geonames_search(vw, vw->viking_vlp, vw->viking_vvp);
-#endif
-
+  a_vik_goto(vw, vw->viking_vlp, vw->viking_vvp);
 }
 
 static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
