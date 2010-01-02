@@ -290,6 +290,7 @@ AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
                  test/Makefile
                  doc/Makefile
+                 doc/examples/Makefile
                  doc/dev/Makefile])
 AC_OUTPUT([
 	   viking.spec
