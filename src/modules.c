@@ -42,10 +42,12 @@
 #include "file.h"
 #include "vikmapslayer.h"
 #include "vikexttools.h"
+#include "vikgoto.h"
 #include "vikgobjectbuilder.h"
 
 #define VIKING_MAPS_FILE "maps.xml"
 #define VIKING_EXTTOOLS_FILE "external_tools.xml"
+#define VIKING_GOTOTOOLS_FILE "goto_tools.xml"
 
 static void
 modules_register_map_source(VikGobjectBuilder *self, GObject *object)
@@ -62,6 +64,14 @@ modules_register_exttools(VikGobjectBuilder *self, GObject *object)
   g_debug (__FUNCTION__);
   VikExtTool *tool = VIK_EXT_TOOL (object);
   vik_ext_tools_register (tool);
+}
+
+static void
+modules_register_gototools(VikGobjectBuilder *self, GObject *object)
+{
+  g_debug (__FUNCTION__);
+  VikGotoTool *tool = VIK_GOTO_TOOL (object);
+  vik_goto_register (tool);
 }
 
 static void
@@ -84,6 +94,16 @@ modules_load_config(void)
 	VikGobjectBuilder *builder = vik_gobject_builder_new ();
 	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_exttools), NULL);
 	vik_gobject_builder_parse (builder, tools);
+	g_object_unref (builder);
+  }
+
+  /* Go-to search engines */
+  gchar *go_to = g_build_filename(a_get_viking_dir(), VIKING_GOTOTOOLS_FILE, NULL);
+  if (g_access (go_to, R_OK) == 0)
+  {
+	VikGobjectBuilder *builder = vik_gobject_builder_new ();
+	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_gototools), NULL);
+	vik_gobject_builder_parse (builder, go_to);
 	g_object_unref (builder);
   }
 }
