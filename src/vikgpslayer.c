@@ -1226,7 +1226,7 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
       vik_viewport_set_center_coord(vvp, &vehicle_coord);
       update_all = TRUE;
     }
-    else {
+    else if (vgl->vehicle_position == VEHICLE_POSITION_ON_SCREEN) {
       const int hdiv = 6;
       const int vdiv = 6;
       const int px = 20; /* adjust ment in pixels to make sure vehicle is inside the box */
