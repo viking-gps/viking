@@ -1317,7 +1317,11 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   vgl->realtime_io_channel = g_io_channel_unix_new(vgl->vgpsd->gpsd.gps_fd);
   vgl->realtime_io_watch_id = g_io_add_watch( vgl->realtime_io_channel,
                     G_IO_IN | G_IO_ERR | G_IO_HUP, gpsd_data_available, vgl);
+#if HAVE_GPS_STREAM
   gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL);
+#else
+  gps_query(&vgl->vgpsd->gpsd, "w+x");
+#endif
   return FALSE;  /* no longer called by timeout */
 }
 
