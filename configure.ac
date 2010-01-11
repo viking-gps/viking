@@ -240,6 +240,7 @@ AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking
 if test x$ac_cv_enable_realtimegpstracking = xyes
 then
   AC_CHECK_FUNCS(gps_stream)
+  AC_CHECK_FUNCS(gps_open_r)
 fi
 
 AC_ARG_WITH(search,

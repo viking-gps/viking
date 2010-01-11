@@ -1289,15 +1289,23 @@ static gchar *make_track_name(VikTrwLayer *vtl)
 static gboolean rt_gpsd_try_connect(gpointer *data)
 {
   VikGpsLayer *vgl = (VikGpsLayer *)data;
+#ifndef HAVE_GPS_OPEN_R
   struct gps_data_t *gpsd = gps_open(vgl->gpsd_host, vgl->gpsd_port);
 
   if (gpsd == NULL) {
+#else
+  vgl->vgpsd = g_malloc(sizeof(VglGpsd));
+
+  if (gps_open_r(vgl->gpsd_host, vgl->gpsd_port, /*(struct gps_data_t *)*/vgl->vgpsd) != 0) {
+#endif
     g_warning("Failed to connect to gpsd at %s (port %s). Will retry in %d seconds",
                      vgl->gpsd_host, vgl->gpsd_port, vgl->gpsd_retry_interval);
     return TRUE;   /* keep timer running */
   }
 
-  vgl->vgpsd = g_realloc(gpsd, sizeof(VglGpsd));
+#ifndef HAVE_GPS_OPEN_R
+  vgl->vgpsd = realloc(gpsd, sizeof(VglGpsd));
+#endif
   vgl->vgpsd->vgl = vgl;
 
   vgl->realtime_fix.dirty = vgl->last_fix.dirty = FALSE;
@@ -1375,6 +1383,11 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
   }
   if (vgl->vgpsd) {
     gps_close(&vgl->vgpsd->gpsd);
+#ifdef HAVE_GPS_OPEN_R
+    g_free(vgl->vgpsd);
+#else
+    free(vgl->vgpsd);
+#endif
     vgl->vgpsd = NULL;
   }
 
