@@ -35,14 +35,12 @@ static gchar *_get_uri( VikSlippyMapSource *self, MapCoord *src );
 static gchar *_get_hostname( VikSlippyMapSource *self );
 static DownloadOptions *_get_download_options( VikSlippyMapSource *self );
 
-/* FIXME Huge gruik */
-static DownloadOptions slippy_options = { NULL, 0, a_check_map_file };
-
 typedef struct _VikSlippyMapSourcePrivate VikSlippyMapSourcePrivate;
 struct _VikSlippyMapSourcePrivate
 {
   gchar *hostname;
   gchar *url;
+  DownloadOptions options;
 };
 
 #define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_SLIPPY_MAP_SOURCE, VikSlippyMapSourcePrivate))
@@ -54,6 +52,8 @@ enum
 
   PROP_HOSTNAME,
   PROP_URL,
+  PROP_REFERER,
+  PROP_FOLLOW_LOCATION,
 };
 
 G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
@@ -66,6 +66,9 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
 
   priv->hostname = NULL;
   priv->url = NULL;
+  priv->options.referer = NULL;
+  priv->options.follow_location = 0;
+  priv->options.check_file = a_check_map_file;
 
   g_object_set (G_OBJECT (self),
                 "tilesize-x", 256,
@@ -84,6 +87,8 @@ vik_slippy_map_source_finalize (GObject *object)
   priv->hostname = NULL;
   g_free (priv->url);
   priv->url = NULL;
+  g_free (priv->options.referer);
+  priv->options.referer = NULL;
 
   G_OBJECT_CLASS (vik_slippy_map_source_parent_class)->finalize (object);
 }
@@ -107,6 +112,15 @@ vik_slippy_map_source_set_property (GObject      *object,
     case PROP_URL:
       g_free (priv->url);
       priv->url = g_value_dup_string (value);
+      break;
+
+    case PROP_REFERER:
+      g_free (priv->options.referer);
+      priv->options.referer = g_value_dup_string (value);
+      break;
+
+    case PROP_FOLLOW_LOCATION:
+      priv->options.follow_location = g_value_get_long (value);
       break;
 
     default:
@@ -133,6 +147,14 @@ vik_slippy_map_source_get_property (GObject    *object,
 
     case PROP_URL:
       g_value_set_string (value, priv->url);
+      break;
+
+    case PROP_REFERER:
+      g_value_set_string (value, priv->options.referer);
+      break;
+
+    case PROP_FOLLOW_LOCATION:
+      g_value_set_long (value, priv->options.follow_location);
       break;
 
     default:
@@ -175,7 +197,23 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                             "<no-set>" /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_URL, pspec);
+
+	pspec = g_param_spec_string ("referer",
+	                             "Referer",
+	                             "The REFERER string to use in HTTP request",
+	                             NULL /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_REFERER, pspec);
 	
+	pspec = g_param_spec_long ("follow-location",
+	                           "Follow location",
+                               "Specifies the number of retries to follow a redirect while downloading a page",
+                               0  /* minimum value */,
+                               G_MAXLONG /* maximum value */,
+                               0  /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
+
 	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
 	
 	object_class->finalize = vik_slippy_map_source_finalize;
@@ -303,7 +341,8 @@ _get_download_options( VikSlippyMapSource *self )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
 	
-	return &slippy_options;
+	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+	return &(priv->options);
 }
 
 VikSlippyMapSource *
