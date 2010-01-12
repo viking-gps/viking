@@ -199,7 +199,11 @@ struct _VikMapsLayer {
   VikViewport *redownload_vvp;
 };
 
-enum { REDOWNLOAD_NONE = 0, REDOWNLOAD_BAD, REDOWNLOAD_ALL, DOWNLOAD_OR_REFRESH };
+enum { REDOWNLOAD_NONE = 0,    /* download only missing maps */
+       REDOWNLOAD_BAD,         /* download missing and bad maps */
+       REDOWNLOAD_NEW,         /* download missing maps that are newer on server only */
+       REDOWNLOAD_ALL,         /* download all maps */
+       DOWNLOAD_OR_REFRESH };  /* download missing maps and refresh cache */
 
 
 /****************************************/
@@ -636,7 +640,12 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 #ifdef DEBUG
       fputs(stderr, "DEBUG: Starting autodownload\n");
 #endif
-      start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
+      if ( vik_map_source_supports_if_modified_since (map) )
+        // Try to download newer tiles
+        start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NEW );
+      else
+        // Download only missing tiles
+        start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
     }
 
     if ( vik_map_source_get_tilesize_x(map) == 0 && !existence_only ) {
@@ -836,6 +845,9 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
             ( mdi->redownload != DOWNLOAD_OR_REFRESH ))
           remove_mem_cache = TRUE;
       } else if ( mdi->redownload == DOWNLOAD_OR_REFRESH ) {
+        remove_mem_cache = TRUE;
+      } else if ( mdi->redownload == REDOWNLOAD_NEW) {
+        need_download = TRUE;
         remove_mem_cache = TRUE;
       } else
         continue;
@@ -1045,9 +1057,15 @@ static void maps_layer_redownload_bad ( VikMapsLayer *vml )
 {
   start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_BAD );
 }
+
 static void maps_layer_redownload_all ( VikMapsLayer *vml )
 {
   start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_ALL );
+}
+
+static void maps_layer_redownload_new ( VikMapsLayer *vml )
+{
+  start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_NEW );
 }
 
 static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
@@ -1080,6 +1098,10 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
 
         item = gtk_menu_item_new_with_label ( _("Redownload bad map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
+        gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+
+        item = gtk_menu_item_new_with_label ( _("Redownload new map(s)") );
+        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_new), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
         item = gtk_menu_item_new_with_label ( _("Redownload all map(s)") );
@@ -1171,9 +1193,14 @@ static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
 
 }
 
-static void maps_layer_download_onscreen_maps ( gpointer vml_vvp[2] )
+static void maps_layer_download_missing_onscreen_maps ( gpointer vml_vvp[2] )
 {
   download_onscreen_maps( vml_vvp, REDOWNLOAD_NONE);
+}
+
+static void maps_layer_download_new_onscreen_maps ( gpointer vml_vvp[2] )
+{
+  download_onscreen_maps( vml_vvp, REDOWNLOAD_NEW);
 }
 
 static void maps_layer_redownload_all_onscreen_maps ( gpointer vml_vvp[2] )
@@ -1192,10 +1219,17 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Download Onscreen Maps") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_onscreen_maps), pass_along );
+  item = gtk_menu_item_new_with_label ( _("Download missing Onscreen Maps") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_missing_onscreen_maps), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
+
+  if ( vik_map_source_supports_if_modified_since (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
+    item = gtk_menu_item_new_with_label ( _("Download new Onscreen Maps from server") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+  }
 
   /* TODO Add GTK_STOCK_REFRESH icon */
   item = gtk_menu_item_new_with_label ( _("Refresh Onscreen Tiles") );

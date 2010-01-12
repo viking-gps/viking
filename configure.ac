@@ -279,6 +279,21 @@ AC_ARG_WITH(mapcache,
 AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
                    [Size of the map cache])
 
+
+AC_ARG_WITH(tileage,
+            [AC_HELP_STRING([--with-tileage],
+                            [specify the age of a tile before checking it (default is 30 s)])],
+            [if test "x$withval" = "xno"; then
+                VIK_CONFIG_DEFAULT_TILE_AGE=0;
+             elif test "x$withval" = "xyes"; then
+                AC_MSG_ERROR([Please, set a value for age of tiles])
+             else
+                VIK_CONFIG_DEFAULT_TILE_AGE=${withval}
+             fi],
+             [VIK_CONFIG_DEFAULT_TILE_AGE=30])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
+                   [Age of tiles before cheking it (in seconds)])
+
 dnl man pages processing
 DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 AC_SUBST(DB2MAN_XSL)
@@ -320,6 +335,7 @@ echo "Geonames                         : $ac_cv_enable_geonames"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
+echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"
 echo "-------------------------------------------"
 echo ""
 echo "Configure finished, type 'make' to build."

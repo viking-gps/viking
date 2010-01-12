@@ -32,6 +32,14 @@ gboolean a_check_kml_file(FILE*);
 
 typedef struct {
   /**
+   * Check if the server has a more recent file than the one we have before downloading it
+   * This uses http header If-Modified-Since
+   * Nevertheless, the current file cache must be older than the specified
+   * value.
+   */
+  time_t check_file_server_time;
+
+  /**
    * The REFERER string to use.
    * Could be NULL.
    */
@@ -47,10 +55,18 @@ typedef struct {
    * File content checker.
    */
   VikFileContentCheckerFunc check_file;
+
 } DownloadOptions;
+
+void a_download_init(void);
 
 /* TODO: convert to Glib */
 int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt );
 int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt );
+
+/* Error messages returned by download functions */
+enum { DOWNLOAD_NO_ERROR = 0,
+       DOWNLOAD_NO_NEWER_FILE,
+       DOWNLOAD_ERROR };
 
 #endif

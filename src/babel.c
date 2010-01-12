@@ -277,7 +277,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
 
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data )
 {
-  static DownloadOptions options = {NULL, 0, a_check_kml_file};
+  static DownloadOptions options = { FALSE, NULL, 0, a_check_kml_file};
   gint fd_src;
   int fetch_ret;
   gboolean ret = FALSE;

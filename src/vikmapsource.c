@@ -30,6 +30,8 @@ static void vik_map_source_init (VikMapSource *object);
 static void vik_map_source_finalize (GObject *object);
 static void vik_map_source_class_init (VikMapSourceClass *klass);
 
+static void _supports_if_modified_since (VikMapSource *object);
+
 G_DEFINE_TYPE_EXTENDED (VikMapSource, vik_map_source, G_TYPE_OBJECT, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
 
 static void
@@ -56,6 +58,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->get_tilesize_x = NULL;
 	klass->get_tilesize_y = NULL;
 	klass->get_drawmode = NULL;
+	klass->supports_if_modified_since = _supports_if_modified_since;
 	klass->coord_to_mapcoord = NULL;
 	klass->mapcoord_to_center_coord = NULL;
 	klass->download = NULL;
@@ -63,6 +66,12 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	object_class->finalize = vik_map_source_finalize;
 }
 
+void
+_supports_if_modified_since (VikMapSource *self)
+{
+	// Default feature: does not support
+	return FALSE;
+}
 
 guint8
 vik_map_source_get_uniq_id (VikMapSource *self)
@@ -127,6 +136,19 @@ vik_map_source_get_drawmode (VikMapSource *self)
 	g_return_val_if_fail (klass->get_drawmode != NULL, (VikViewportDrawMode )0);
 
 	return (*klass->get_drawmode)(self);
+}
+
+gboolean
+vik_map_source_supports_if_modified_since (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->supports_if_modified_since != NULL, 0);
+
+	return (*klass->supports_if_modified_since)(self);
 }
 
 gboolean

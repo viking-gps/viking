@@ -25,10 +25,14 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <errno.h>
 #include <string.h>
+#include <sys/types.h>
+#include <utime.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
+
 
 #include "download.h"
 
@@ -89,41 +93,82 @@ gboolean a_check_kml_file(FILE* f)
   return check_file_first_line(f, kml_str);
 }
 
+static GList *file_list = NULL;
+static GMutex *file_list_mutex = NULL;
+
+void a_download_init (void)
+{
+	file_list_mutex = g_mutex_new();
+}
+
+static gboolean lock_file(const char *fn)
+{
+	gboolean locked = FALSE;
+	g_mutex_lock(file_list_mutex);
+	if (g_list_find(file_list, fn) == NULL)
+	{
+		// The filename is not yet locked
+		file_list = g_list_append(file_list, (gpointer)fn),
+		locked = TRUE;
+	}
+	g_mutex_unlock(file_list_mutex);
+	return locked;
+}
+
+static void unlock_file(const char *fn)
+{
+	g_mutex_lock(file_list_mutex);
+	file_list = g_list_remove(file_list, (gconstpointer)fn);
+	g_mutex_unlock(file_list_mutex);
+}
+
 static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp)
 {
   FILE *f;
   int ret;
   gchar *tmpfilename;
   gboolean failure = FALSE;
+  time_t time_condition = 0;
 
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
   {
-    /* File exists: return */
-    return -3;
+    if (options != NULL && options->check_file_server_time) {
+      /* Get the modified time of this file */
+      struct stat buf;
+      g_stat ( fn, &buf );
+      time_condition = buf.st_mtime;
+      if ( (time(NULL) - time_condition) < options->check_file_server_time )
+				/* File cache is too recent, so return */
+				return -3;
+    } else {
+      /* Nothing to do as file already exists, so return */
+      return -3;
+    }
   } else {
     gchar *dir = g_path_get_dirname ( fn );
     g_mkdir_with_parents ( dir , 0777 );
     g_free ( dir );
-
-    /* create placeholder file */
-    if ( ! (f = g_fopen ( fn, "w+b" )) ) /* immediately open file so other threads won't -- prevents race condition */
-      return -4;
-    fclose ( f );
-    f = NULL;
   }
 
   tmpfilename = g_strdup_printf("%s.tmp", fn);
-  f = g_fopen ( tmpfilename, "w+b" );
-  if ( ! f ) {
+  if (!lock_file ( tmpfilename ) )
+  {
+    g_debug("%s: Couldn't take lock on temporary file \"%s\"\n", __FUNCTION__, tmpfilename);
     g_free ( tmpfilename );
-    g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
+    return -4;
+  }
+  f = g_fopen ( tmpfilename, "w+b" );  /* truncate file and open it */
+  if ( ! f ) {
+    g_warning("Couldn't open temporary file \"%s\": %s", tmpfilename, g_strerror(errno));
+    g_free ( tmpfilename );
     return -4;
   }
 
   /* Call the backend function */
-  ret = curl_download_get_url ( hostname, uri, f, options, ftp );
-  if (ret == -1 || ret == 1 || ret == -2) {
+  ret = curl_download_get_url ( hostname, uri, f, options, ftp, time_condition );
+
+  if (ret != DOWNLOAD_NO_ERROR && ret != DOWNLOAD_NO_NEWER_FILE) {
     g_debug("%s: download failed: curl_download_get_url=%d", __FUNCTION__, ret);
     failure = TRUE;
   }
@@ -136,19 +181,24 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   if (failure)
   {
     g_warning(_("Download error: %s"), fn);
+    g_remove ( tmpfilename );
+    unlock_file ( tmpfilename );
+    g_free ( tmpfilename );
     fclose ( f );
     f = NULL;
-    g_remove ( tmpfilename );
-    g_free ( tmpfilename );
     g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
   }
 
+  if (ret == DOWNLOAD_NO_NEWER_FILE)
+    g_remove ( tmpfilename );
+  else
+    g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
+  unlock_file ( tmpfilename );
+  g_free ( tmpfilename );
   fclose ( f );
   f = NULL;
-  g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
-  g_free ( tmpfilename );
-  return ret;
+  return 0;
 }
 
 /* success = 0, -1 = couldn't connect, -2 HTTP error, -3 file exists, -4 couldn't write to file... */

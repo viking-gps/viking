@@ -30,6 +30,7 @@
 static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
 static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn );
+static gboolean _supports_if_modified_since (VikMapSource *self );
 
 static gchar *_get_uri( VikSlippyMapSource *self, MapCoord *src );
 static gchar *_get_hostname( VikSlippyMapSource *self );
@@ -54,6 +55,7 @@ enum
   PROP_URL,
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
+  PROP_CHECK_FILE_SERVER_TIME,
 };
 
 G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
@@ -69,6 +71,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
   priv->options.check_file = a_check_map_file;
+  priv->options.check_file_server_time = 0;
 
   g_object_set (G_OBJECT (self),
                 "tilesize-x", 256,
@@ -123,6 +126,10 @@ vik_slippy_map_source_set_property (GObject      *object,
       priv->options.follow_location = g_value_get_long (value);
       break;
 
+    case PROP_CHECK_FILE_SERVER_TIME:
+      priv->options.check_file_server_time = g_value_get_uint (value);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -157,6 +164,10 @@ vik_slippy_map_source_get_property (GObject    *object,
       g_value_set_long (value, priv->options.follow_location);
       break;
 
+    case PROP_CHECK_FILE_SERVER_TIME:
+      g_value_set_uint (value, priv->options.check_file_server_time);
+      break;
+	  
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -178,6 +189,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	parent_class->coord_to_mapcoord =        _coord_to_mapcoord;
 	parent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	parent_class->download =                 _download;
+	parent_class->supports_if_modified_since = _supports_if_modified_since;
 	
 	/* Default implementation of methods */
 	klass->get_uri = _get_uri;
@@ -213,6 +225,15 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
                                0  /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
+	
+	pspec = g_param_spec_uint ("check-file-server-time",
+	                           "Check file server time",
+                               "Age of current cache before redownloading tile",
+                               0  /* minimum value */,
+                               G_MAXUINT16 /* maximum value */,
+                               0  /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_CHECK_FILE_SERVER_TIME, pspec);
 
 	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
 	
@@ -276,6 +297,17 @@ vik_slippy_map_source_get_download_options( VikSlippyMapSource *self )
 	return (*klass->get_download_options)(self);
 }
 
+gboolean
+_supports_if_modified_since (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+	
+    VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+	
+	g_debug ("%s: priv->options.check_file_server_time = %d", __FUNCTION__, priv->options.check_file_server_time);
+	
+	return priv->options.check_file_server_time != 0;
+}
 static gboolean
 _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
 {
