@@ -131,7 +131,7 @@ enum {
 
 static VikLayerParam gps_layer_params[] = {
   { "gps_protocol", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
-  { "gps_port", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
+  { "gps_port", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
 
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   { "record_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Recording tracks"), VIK_LAYER_WIDGET_CHECKBUTTON},
@@ -255,7 +255,7 @@ struct _VikGpsLayer {
   guint vehicle_position;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   guint protocol_id;
-  guint serial_port_id;
+  gchar *serial_port;
 };
 
 GType vik_gps_layer_get_type ()
@@ -371,8 +371,12 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
         g_warning(_("Unknown GPS Protocol"));
       break;
     case PARAM_PORT:
-      if (data.u < NUM_PORTS)
-        vgl->serial_port_id = data.u;
+      if (data.s)
+{
+        g_free(vgl->serial_port);
+        vgl->serial_port = g_strdup(data.s);
+      g_debug("%s: %s", __FUNCTION__, data.s);
+}
       else
         g_warning(_("Unknown serial port device"));
       break;
@@ -416,7 +420,8 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
       rv.u = vgl->protocol_id;
       break;
     case PARAM_PORT:
-      rv.u = vgl->serial_port_id;
+      rv.s = vgl->serial_port;
+      g_debug("%s: %s", __FUNCTION__, rv.s);
       break;
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
     case PARAM_GPSD_HOST:
@@ -479,7 +484,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->gpsd_retry_interval = 10;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   vgl->protocol_id = 0;
-  vgl->serial_port_id = 0;
+  vgl->serial_port = NULL;
 
   return vgl;
 }
@@ -1033,14 +1038,14 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
-  gps_comm(vtl, GPS_UP, vgl->protocol_id, params_ports[vgl->serial_port_id]);
+  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   VikTrwLayer *vtl = vgl->trw_children[TRW_DOWNLOAD];
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, params_ports[vgl->serial_port_id]);
+  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port);
 }
 
 static void gps_empty_upload_cb( gpointer layer_and_vlp[2] )

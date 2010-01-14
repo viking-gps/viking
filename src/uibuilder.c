@@ -67,6 +67,17 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         }
         gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), data.u );
       }
+      else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data )
+      {
+        gchar **pstr = param->widget_data;
+        rv = GTK_COMBO_BOX ( gtk_combo_box_entry_new_text () );
+        if ( data.s )
+          gtk_combo_box_append_text ( GTK_COMBO_BOX ( rv ), data.s );
+        while ( *pstr )
+          gtk_combo_box_append_text ( GTK_COMBO_BOX ( rv ), *(pstr++) );
+        if ( data.s )
+          gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), 0 );
+      }
       break;
 #endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
@@ -186,11 +197,19 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
 #ifndef GTK_2_2
-      rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
-      if ( rv.i == -1 ) rv.i = 0;
-      rv.u = rv.i;
-      if ( param->extra_widget_data )
-        rv.u = ((guint *)param->extra_widget_data)[rv.u];
+      if ( param->type == VIK_LAYER_PARAM_UINT )
+      {
+        rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
+        if ( rv.i == -1 ) rv.i = 0;
+        rv.u = rv.i;
+        if ( param->extra_widget_data )
+          rv.u = ((guint *)param->extra_widget_data)[rv.u];
+      }
+      if ( param->type == VIK_LAYER_PARAM_STRING)
+      {
+        rv.s = gtk_combo_box_get_active_text ( GTK_COMBO_BOX(widget) );
+	g_debug("%s: %s", __FUNCTION__, rv.s);
+      }
       break;
 #endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
