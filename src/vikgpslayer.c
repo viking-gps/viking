@@ -83,6 +83,13 @@ static gchar * params_ports[] = {"com1", "usb:", NULL};
 static gchar * params_ports[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0", "/dev/ttyUSB1", "usb:", NULL};
 #endif
 #define NUM_PORTS (sizeof(params_ports)/sizeof(params_ports[0]) - 1)
+/* Compatibility with previous versions */
+#ifdef WINDOWS
+static gchar * old_params_ports[] = {"com1", "usb:", NULL};
+#else
+static gchar * old_params_ports[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0", "/dev/ttyUSB1", "usb:", NULL};
+#endif
+#define OLD_NUM_PORTS (sizeof(old_params_ports)/sizeof(old_params_ports[0]) - 1)
 typedef enum {GPS_DOWN=0, GPS_UP} gps_dir;
 
 typedef struct {
@@ -374,8 +381,17 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
       if (data.s)
 {
         g_free(vgl->serial_port);
-        vgl->serial_port = g_strdup(data.s);
-      g_debug("%s: %s", __FUNCTION__, data.s);
+        /* Compat: previous version stored serial_port as an array index */
+        int index = data.s[0] - '0';
+        if (data.s[0] != '\0' &&
+            g_ascii_isdigit (data.s[0]) &&
+            data.s[1] == '\0' &&
+            index < OLD_NUM_PORTS)
+          /* It is a single digit: activate compatibility */
+          vgl->serial_port = g_strdup(old_params_ports[index]);
+        else
+          vgl->serial_port = g_strdup(data.s);
+      g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
 }
       else
         g_warning(_("Unknown serial port device"));
