@@ -255,7 +255,7 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
   uri = g_strdup_printf(vik_goto_tool_get_url_format(self), escaped_srch_str);
 
   /* TODO: curl may not be available */
-  if (curl_download_uri(uri, tmp_file, vik_goto_tool_get_download_options(self), 0)) {  /* error */
+  if (curl_download_uri(uri, tmp_file, vik_goto_tool_get_download_options(self), 0, NULL)) {  /* error */
     fclose(tmp_file);
     tmp_file = NULL;
     ret = -1;

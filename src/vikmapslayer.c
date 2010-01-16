@@ -813,6 +813,7 @@ static void weak_ref_cb(gpointer ptr, GObject * dead_vml)
 
 static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 {
+  void *handle = vik_map_source_download_handle_init(MAPS_LAYER_NTH_TYPE(mdi->maptype));
   guint donemaps = 0;
   gint x, y;
   for ( x = mdi->x0; x <= mdi->xf; x++ )
@@ -827,8 +828,10 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
       donemaps++;
       int res = a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
-      if (res != 0)
+      if (res != 0) {
+        vik_map_source_download_handle_cleanup(MAPS_LAYER_NTH_TYPE(mdi->maptype), handle);
         return -1;
+      }
 
       if ( mdi->redownload == REDOWNLOAD_ALL)
         g_remove ( mdi->filename_buf );
@@ -863,7 +866,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       mdi->mapcoord.x = x; mdi->mapcoord.y = y;
 
       if (need_download) {
-        if ( vik_map_source_download( MAPS_LAYER_NTH_TYPE(mdi->maptype), &(mdi->mapcoord), mdi->filename_buf ))
+        if ( vik_map_source_download( MAPS_LAYER_NTH_TYPE(mdi->maptype), &(mdi->mapcoord), mdi->filename_buf, handle))
           continue;
       }
 
@@ -881,6 +884,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
     }
   }
+  vik_map_source_download_handle_cleanup(MAPS_LAYER_NTH_TYPE(mdi->maptype), handle);
   g_mutex_lock(mdi->mutex);
   if (mdi->map_layer_alive)
     g_object_weak_unref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);

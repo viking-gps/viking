@@ -30,7 +30,9 @@ static guint16 map_type_get_tilesize_y (VikMapSource *self);
 static VikViewportDrawMode map_type_get_drawmode (VikMapSource *self);
 static gboolean map_type_coord_to_mapcoord (VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void map_type_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikCoord *dest);
-static int map_type_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn);
+static int map_type_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle);
+static void * map_type_download_handle_init (VikMapSource * self);
+static void map_type_download_handle_cleanup (VikMapSource * self, void * handle);
 
 typedef struct _VikMapTypePrivate VikMapTypePrivate;
 struct _VikMapTypePrivate
@@ -86,6 +88,8 @@ vik_map_type_class_init (VikMapTypeClass *klass)
 	parent_class->coord_to_mapcoord =        map_type_coord_to_mapcoord;
 	parent_class->mapcoord_to_center_coord = map_type_mapcoord_to_center_coord;
 	parent_class->download =                 map_type_download;
+	parent_class->download_handle_init =    map_type_download_handle_init;
+	parent_class->download_handle_cleanup =     map_type_download_handle_cleanup;
 
 	g_type_class_add_private (klass, sizeof (VikMapTypePrivate));
 
@@ -156,11 +160,29 @@ map_type_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikCoord *
 }
 
 static int
-map_type_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn)
+map_type_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle)
 {
     VikMapTypePrivate *priv = VIK_MAP_TYPE_PRIVATE(self);
 	g_return_val_if_fail (priv != NULL, 0);
 
-	return (priv->map_type.download)(src, dest_fn);
+	return (priv->map_type.download)(src, dest_fn, handle);
+}
+
+static void *
+map_type_download_handle_init (VikMapSource * self)
+{
+    VikMapTypePrivate *priv = VIK_MAP_TYPE_PRIVATE(self);
+	g_return_val_if_fail (priv != NULL, 0);
+
+	return (priv->map_type.download_handle_init)();
+}
+
+static void
+map_type_download_handle_cleanup (VikMapSource * self, void * handle)
+{
+    VikMapTypePrivate *priv = VIK_MAP_TYPE_PRIVATE(self);
+	g_return_val_if_fail (priv != NULL, 0);
+
+	return (priv->map_type.download_handle_cleanup)(handle);
 }
 

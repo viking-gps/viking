@@ -29,7 +29,9 @@
 
 static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
-static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn );
+static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
+static void * _download_handle_init ( VikMapSource *self );
+static void _download_handle_cleanup ( VikMapSource *self, void *handle );
 
 /* FIXME Huge gruik */
 static DownloadOptions terraserver_options = { NULL, 0, a_check_map_file };
@@ -129,6 +131,8 @@ terraserver_map_source_class_init (TerraserverMapSourceClass *klass)
 	parent_class->coord_to_mapcoord =        _coord_to_mapcoord;
 	parent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	parent_class->download =                 _download;
+	parent_class->download_handle_init =     _download_handle_init;
+	parent_class->download_handle_cleanup =  _download_handle_cleanup;
 
 	pspec = g_param_spec_uint ("type",
 	                           "Type",
@@ -210,7 +214,7 @@ _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest )
 }
 
 static int
-_download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn )
+_download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle )
 {
 	g_return_val_if_fail(TERRASERVER_IS_MAP_SOURCE(self), FALSE);
 	
@@ -218,9 +222,22 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn )
 	int type = priv->type;
 	gchar *uri = g_strdup_printf ( "/tile.ashx?T=%d&S=%d&X=%d&Y=%d&Z=%d", type,
                                   src->scale, src->x, src->y, src->z );
-	res = a_http_download_get_url ( TERRASERVER_SITE, uri, dest_fn, &terraserver_options );
+	res = a_http_download_get_url ( TERRASERVER_SITE, uri, dest_fn, &terraserver_options, handle );
 	g_free ( uri );
 	return res;
+}
+
+static void *
+_download_handle_init ( VikMapSource *self )
+{
+	return a_download_handle_init ();
+}
+
+
+static void
+_download_handle_cleanup ( VikMapSource *self, void *handle )
+{
+	return a_download_handle_cleanup ( handle );
 }
 
 TerraserverMapSource *

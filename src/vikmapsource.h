@@ -50,7 +50,9 @@ struct _VikMapSourceClass
 	gboolean (* supports_if_modified_since) (VikMapSource * self);
 	gboolean (* coord_to_mapcoord) (VikMapSource * self, const VikCoord * src, gdouble xzoom, gdouble yzoom, MapCoord * dest);
 	void (* mapcoord_to_center_coord) (VikMapSource * self, MapCoord * src, VikCoord * dest);
-	int (* download) (VikMapSource * self, MapCoord * src, const gchar * dest_fn);
+	int (* download) (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle);
+	void * (* download_handle_init) (VikMapSource * self);
+	void (* download_handle_cleanup) (VikMapSource * self, void * handle);
 };
 
 struct _VikMapSource
@@ -68,7 +70,9 @@ VikViewportDrawMode vik_map_source_get_drawmode (VikMapSource * self);
 gboolean vik_map_source_supports_if_modified_since (VikMapSource * self);
 gboolean vik_map_source_coord_to_mapcoord (VikMapSource * self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 void vik_map_source_mapcoord_to_center_coord (VikMapSource * self, MapCoord *src, VikCoord *dest);
-int vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn);
+int vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle);
+void * vik_map_source_download_handle_init (VikMapSource * self);
+void vik_map_source_download_handle_cleanup (VikMapSource * self, void * handle);
 
 G_END_DECLS
 

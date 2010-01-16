@@ -62,6 +62,8 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->coord_to_mapcoord = NULL;
 	klass->mapcoord_to_center_coord = NULL;
 	klass->download = NULL;
+	klass->download_handle_init = NULL;
+	klass->download_handle_cleanup = NULL;
 	
 	object_class->finalize = vik_map_source_finalize;
 }
@@ -178,7 +180,7 @@ vik_map_source_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikC
 }
 
 int
-vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn)
+vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void *handle)
 {
 	VikMapSourceClass *klass;
 	g_return_val_if_fail (self != NULL, 0);
@@ -187,5 +189,31 @@ vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest
 
 	g_return_val_if_fail (klass->download != NULL, 0);
 
-	return (*klass->download)(self, src, dest_fn);
+	return (*klass->download)(self, src, dest_fn, handle);
+}
+
+void *
+vik_map_source_download_handle_init (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->download_handle_init != NULL, 0);
+
+	return (*klass->download_handle_init)(self);
+}
+
+void
+vik_map_source_download_handle_cleanup (VikMapSource * self, void * handle)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->download_handle_cleanup != NULL, 0);
+
+	return (*klass->download_handle_cleanup)(self, handle);
 }

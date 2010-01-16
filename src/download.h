@@ -61,8 +61,10 @@ typedef struct {
 void a_download_init(void);
 
 /* TODO: convert to Glib */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt );
-int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt );
+int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle );
+int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle );
+void *a_download_handle_init ();
+void a_download_handle_cleanup ( void *handle );
 
 /* Error messages returned by download functions */
 enum { DOWNLOAD_NO_ERROR = 0,

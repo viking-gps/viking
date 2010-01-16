@@ -33,7 +33,9 @@ typedef struct {
   guint drawmode;
   gboolean (*coord_to_mapcoord) ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
   void (*mapcoord_to_center_coord) ( MapCoord *src, VikCoord *dest );
-  int (*download) ( MapCoord *src, const gchar *dest_fn );
+  int (*download) ( MapCoord *src, const gchar *dest_fn, void *handle );
+  void *(*download_handle_init) ( );
+  void (*download_handle_cleanup) ( void *handle );
   /* TODO: constant size (yay!) */
 } VikMapsLayer_MapType;
 

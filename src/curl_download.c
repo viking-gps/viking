@@ -121,7 +121,7 @@ void curl_download_init()
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 }
 
-int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time_t time_condition )
+int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time_t time_condition, void *handle )
 {
   CURL *curl;
   CURLcode res = CURLE_FAILED_INIT;
@@ -129,7 +129,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time
 
   g_debug("%s: uri=%s", __PRETTY_FUNCTION__, uri);
 
-  curl = curl_easy_init ();
+  curl = handle ? handle : curl_easy_init ();
   if ( !curl ) {
     return DOWNLOAD_ERROR;
   }
@@ -180,20 +180,31 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time
   } else {
     res = DOWNLOAD_ERROR;
   }
-  curl_easy_cleanup ( curl );
+  if (!handle)
+     curl_easy_cleanup ( curl );
   return res;
 }
 
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadOptions *options, gboolean ftp, time_t time_condition )
+int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadOptions *options, gboolean ftp, time_t time_condition, void *handle )
 {
   int ret;
   gchar *full = NULL;
 
   /* Compose the full url */
   full = g_strdup_printf ( "%s://%s%s", (ftp?"ftp":"http"), hostname, uri );
-  ret = curl_download_uri ( full, f, options, time_condition );
+  ret = curl_download_uri ( full, f, options, time_condition, handle );
   g_free ( full );
   full = NULL;
 
   return ret;
+}
+
+void * curl_download_handle_init ()
+{
+  return curl_easy_init();
+}
+
+void curl_download_handle_cleanup ( void *handle )
+{
+  curl_easy_cleanup(handle);
 }

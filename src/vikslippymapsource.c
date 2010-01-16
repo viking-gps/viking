@@ -29,7 +29,9 @@
 
 static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
-static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn );
+static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
+static void * _download_handle_init ( VikMapSource *self);
+static void _download_handle_cleanup ( VikMapSource *self, void *handle);
 static gboolean _supports_if_modified_since (VikMapSource *self );
 
 static gchar *_get_uri( VikSlippyMapSource *self, MapCoord *src );
@@ -189,6 +191,8 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	parent_class->coord_to_mapcoord =        _coord_to_mapcoord;
 	parent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	parent_class->download =                 _download;
+	parent_class->download_handle_init =     _download_handle_init;
+	parent_class->download_handle_cleanup =  _download_handle_cleanup;
 	parent_class->supports_if_modified_since = _supports_if_modified_since;
 	
 	/* Default implementation of methods */
@@ -337,16 +341,29 @@ _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest )
 }
 
 static int
-_download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn )
+_download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle )
 {
    int res;
    gchar *uri = vik_slippy_map_source_get_uri(VIK_SLIPPY_MAP_SOURCE(self), src);
    gchar *host = vik_slippy_map_source_get_hostname(VIK_SLIPPY_MAP_SOURCE(self));
    DownloadOptions *options = vik_slippy_map_source_get_download_options(VIK_SLIPPY_MAP_SOURCE(self));
-   res = a_http_download_get_url ( host, uri, dest_fn, options );
+   res = a_http_download_get_url ( host, uri, dest_fn, options, handle );
    g_free ( uri );
    g_free ( host );
    return res;
+}
+
+static void *
+_download_handle_init ( VikMapSource *self )
+{
+   return a_download_handle_init ();
+}
+
+
+static void
+_download_handle_cleanup ( VikMapSource *self, void *handle )
+{
+   return a_download_handle_cleanup ( handle );
 }
 
 static gchar *

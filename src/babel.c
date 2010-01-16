@@ -292,7 +292,7 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
 
     babelargs = g_strdup_printf(" -i %s", input_type);
 
-    fetch_ret = a_http_download_get_url(url, "", name_src, &options);
+    fetch_ret = a_http_download_get_url(url, "", name_src, &options, NULL);
     if (fetch_ret == 0)
       ret = a_babel_convert_from( vt, babelargs, NULL, name_src, NULL);
  
