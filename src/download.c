@@ -190,9 +190,10 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     return -1;
   }
 
-  if (ret == DOWNLOAD_NO_NEWER_FILE)
+  if (ret == DOWNLOAD_NO_NEWER_FILE)  {
     g_remove ( tmpfilename );
-  else
+    utimes ( fn, NULL ); /* update mtime of local copy */
+  } else
     g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
   unlock_file ( tmpfilename );
   g_free ( tmpfilename );
