@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2005, Evan Battaglia <viking@greentorch.org>
+ * Copyright (C) 2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  * UTM multi-zone stuff by Kit Transue <notlostyet@didactek.com>
  * Dynamic map type by Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
@@ -78,10 +79,10 @@ static GList *__map_types = NULL;
 #define NUM_MAP_TYPES g_list_length(__map_types)
 
 /* List of label for each map type */
-static GList *params_maptypes = NULL;
+static gchar **params_maptypes = NULL;
 
 /* Corresponding IDS. (Cf. field uniq_id in VikMapsLayer struct) */
-static GList *params_maptypes_ids = NULL;
+static guint *params_maptypes_ids = NULL;
 
 /******** MAPZOOMS *********/
 
@@ -116,11 +117,11 @@ static VikLayerParamScale params_scales[] = {
 };
 
 VikLayerParam maps_layer_params[] = {
-  { "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL, NULL },
+  { "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL },
   { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY },
   { "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales },
   { "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON },
-  { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms },
+  { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms, NULL },
 };
 
 enum { PARAM_MAPTYPE=0, PARAM_CACHE_DIR, PARAM_ALPHA, PARAM_AUTODOWNLOAD, PARAM_MAPZOOM, NUM_PARAMS };
@@ -218,11 +219,18 @@ void maps_layer_register_map_source ( VikMapSource *map )
   const char *label = vik_map_source_get_label(map);
   g_assert(label != NULL);
 
+  gsize len = 0;
+  if (params_maptypes)
+    len = g_strv_length (params_maptypes);
   /* Add the label */
-  params_maptypes = g_list_append(params_maptypes, g_strdup(label));
+  params_maptypes = g_realloc (params_maptypes, (len+2)*sizeof(gchar*));
+  params_maptypes[len] = g_strdup (label);
+  params_maptypes[len+1] = NULL;
 
   /* Add the id */
-  params_maptypes_ids = g_list_append(params_maptypes_ids, GUINT_TO_POINTER (id));
+  params_maptypes_ids = g_realloc (params_maptypes_ids, (len+2)*sizeof(guint));
+  params_maptypes_ids[len] = id;
+  params_maptypes_ids[len+1] = 0;
 
   /* We have to clone */
   VikMapSource *clone = VIK_MAP_SOURCE(g_object_ref(map));
@@ -241,8 +249,8 @@ void maps_layer_register_map_source ( VikMapSource *map )
   maps_layer_params[0].extra_widget_data = params_maptypes_ids;
 }
 
-#define MAPS_LAYER_NTH_LABEL(n) ((gchar*)g_list_nth_data(params_maptypes, (n)))
-#define MAPS_LAYER_NTH_ID(n) ((guint)g_list_nth_data(params_maptypes_ids, (n)))
+#define MAPS_LAYER_NTH_LABEL(n) (params_maptypes[n])
+#define MAPS_LAYER_NTH_ID(n) (params_maptypes_ids[n])
 #define MAPS_LAYER_NTH_TYPE(n) (VIK_MAP_SOURCE(g_list_nth_data(__map_types, (n))))
 
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml)
