@@ -49,6 +49,7 @@
 #include <glib/gstdio.h>
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 
 #define VIKING_WINDOW_WIDTH      1000
 #define VIKING_WINDOW_HEIGHT     800
