@@ -724,24 +724,46 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
               vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil );
             }
           } else {
-            pixbuf = get_pixbuf ( vml, mode, &ulm, path_buf, max_path_len, xshrinkfactor, yshrinkfactor );
-            if ( pixbuf )
-              vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
-            else {
-              /* retry with bigger shrinkfactor */
-              int scale_inc;
-              for (scale_inc = 1; scale_inc < 4; scale_inc ++) {
-                int scale_factor = 1 << scale_inc;  /*  2^scale_inc */
+            int scale_inc;
+            for (scale_inc = 0; scale_inc < 4; scale_inc ++) {
+              /* try with correct then smaller zooms */
+              int scale_factor = 1 << scale_inc;  /*  2^scale_inc */
+              MapCoord ulm2 = ulm;
+              ulm2.x = ulm.x / scale_factor;
+              ulm2.y = ulm.y / scale_factor;
+              ulm2.scale = ulm.scale + scale_inc;
+              pixbuf = get_pixbuf ( vml, mode, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
+              if ( pixbuf ) {
+                gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
+                gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
+                vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+                break;
+              }
+            }
+            if ( !pixbuf ) {
+              /* retry with bigger zooms */
+              int scale_dec;
+              for (scale_dec = 1; scale_dec < 2; scale_dec ++) {
+                int pict_x, pict_y;
+                int scale_factor = 1 << scale_dec;  /*  2^scale_dec */
                 MapCoord ulm2 = ulm;
-                ulm2.x = ulm.x / scale_factor;
-                ulm2.y = ulm.y / scale_factor;
-                ulm2.scale = ulm.scale + scale_inc;
-                pixbuf = get_pixbuf ( vml, mode, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
-                if ( pixbuf ) {
-                  gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
-                  gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
-                  vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
-                  break;
+                ulm2.x = ulm.x * scale_factor;
+                ulm2.y = ulm.y * scale_factor;
+                ulm2.scale = ulm.scale - scale_dec;
+                for (pict_x = 0; pict_x < scale_factor; pict_x ++) {
+                  for (pict_y = 0; pict_y < scale_factor; pict_y ++) {
+                    MapCoord ulm3 = ulm2;
+                    ulm3.x += pict_x;
+                    ulm3.y += pict_y;
+                    pixbuf = get_pixbuf ( vml, mode, &ulm3, path_buf, max_path_len, xshrinkfactor / scale_factor, yshrinkfactor / scale_factor );
+                    if ( pixbuf ) {
+                      gint src_x = 0;
+                      gint src_y = 0;
+                      gint dest_x = xx + pict_x * (tilesize_x_ceil / scale_factor);
+                      gint dest_y = yy + pict_y * (tilesize_y_ceil / scale_factor);
+                      vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, dest_x, dest_y, tilesize_x_ceil / scale_factor, tilesize_y_ceil / scale_factor );
+                    }
+                  }
                 }
               }
             }
