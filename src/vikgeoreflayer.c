@@ -28,6 +28,8 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <string.h>
+#include <math.h>
+#include <stdlib.h>
 
 #include "icons/icons.h"
 
@@ -219,20 +221,39 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, gpointer data )
     VikViewport *vp = VIK_VIEWPORT(data);
     struct UTM utm_middle;
     gdouble xmpp = vik_viewport_get_xmpp(vp), ympp = vik_viewport_get_ympp(vp);
+    gboolean new_pixbuf = FALSE;
+    GdkPixbuf *pixbuf = vgl->pixbuf;
+    guint layer_width = vgl->width;
+    guint layer_height = vgl->height;
+
     vik_coord_to_utm ( vik_viewport_get_center ( vp ), &utm_middle );
 
-    if ( xmpp == vgl->mpp_easting && ympp == vgl->mpp_northing )
+    /* scale the pixbuf if it doesn't match our dimensions */
+    if ( xmpp != vgl->mpp_easting || ympp != vgl->mpp_northing )
     {
-      guint width = vik_viewport_get_width(vp), height = vik_viewport_get_height(vp);
-      gint32 x, y;
-      vgl->corner.zone = utm_middle.zone;
-      vgl->corner.letter = utm_middle.letter;
-      VikCoord corner_coord;
-      vik_coord_load_from_utm ( &corner_coord, vik_viewport_get_coord_mode(vp), &(vgl->corner) );
-      vik_viewport_coord_to_screen ( vp, &corner_coord, &x, &y );
-      if ( (x < 0 || x < width) && (y < 0 || y < height) && x+vgl->width > 0 && y+vgl->height > 0 )
-        vik_viewport_draw_pixbuf ( vp, vgl->pixbuf, 0, 0, x, y, vgl->width, vgl->height ); /* todo: draw only what we need to. */
+      new_pixbuf = TRUE;
+      layer_width = round(vgl->width * vgl->mpp_easting / xmpp);
+      layer_height = round(vgl->height * vgl->mpp_northing / ympp);
+      pixbuf = gdk_pixbuf_scale_simple(
+        vgl->pixbuf, 
+        layer_width,
+        layer_height,
+        GDK_INTERP_BILINEAR
+      );
     }
+
+    guint width = vik_viewport_get_width(vp), height = vik_viewport_get_height(vp);
+    gint32 x, y;
+    vgl->corner.zone = utm_middle.zone;
+    vgl->corner.letter = utm_middle.letter;
+    VikCoord corner_coord;
+    vik_coord_load_from_utm ( &corner_coord, vik_viewport_get_coord_mode(vp), &(vgl->corner) );
+    vik_viewport_coord_to_screen ( vp, &corner_coord, &x, &y );
+    if ( (x < 0 || x < width) && (y < 0 || y < height) && x+layer_width > 0 && y+layer_height > 0 )
+      vik_viewport_draw_pixbuf ( vp, pixbuf, 0, 0, x, y, layer_width, layer_height ); /* todo: draw only what we need to. */
+
+    if (new_pixbuf)
+        g_object_unref(pixbuf);
   }
 }
 
