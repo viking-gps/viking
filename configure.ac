@@ -32,7 +32,7 @@ AC_SUBST(ACLOCAL_AMFLAGS)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([malloc.h netdb.h netinet/in.h stdlib.h string.h sys/param.h sys/socket.h sys/types.h sys/wait.h unistd.h math.h])
+AC_CHECK_HEADERS([malloc.h netdb.h netinet/in.h stdlib.h string.h sys/param.h sys/socket.h sys/types.h sys/wait.h unistd.h math.h utime.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
