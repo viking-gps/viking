@@ -2559,7 +2559,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
       return NULL;
 
     if (strcasecmp(newname, sublayer)) { /* Not just changing case */
-      if (g_hash_table_lookup( l->waypoints, newname))
+      if (g_hash_table_lookup( l->tracks, newname))
       {
         a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Track Already Exists") );
         return NULL;
