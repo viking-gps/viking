@@ -130,6 +130,9 @@ struct _VikGeorefLayer {
   gdouble mpp_easting, mpp_northing;
   guint width, height;
 
+  GdkPixbuf *scaled;
+  guint32 scaled_width, scaled_height;
+
   gint click_x, click_y;
 };
 
@@ -210,6 +213,9 @@ VikGeorefLayer *georef_layer_new ( )
   vgl->pixbuf = NULL;
   vgl->click_x = -1;
   vgl->click_y = -1;
+  vgl->scaled = NULL;
+  vgl->scaled_width = 0;
+  vgl->scaled_height = 0;
   return vgl;
 }
 
@@ -221,7 +227,6 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, gpointer data )
     VikViewport *vp = VIK_VIEWPORT(data);
     struct UTM utm_middle;
     gdouble xmpp = vik_viewport_get_xmpp(vp), ympp = vik_viewport_get_ympp(vp);
-    gboolean new_pixbuf = FALSE;
     GdkPixbuf *pixbuf = vgl->pixbuf;
     guint layer_width = vgl->width;
     guint layer_height = vgl->height;
@@ -231,15 +236,28 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, gpointer data )
     /* scale the pixbuf if it doesn't match our dimensions */
     if ( xmpp != vgl->mpp_easting || ympp != vgl->mpp_northing )
     {
-      new_pixbuf = TRUE;
       layer_width = round(vgl->width * vgl->mpp_easting / xmpp);
       layer_height = round(vgl->height * vgl->mpp_northing / ympp);
-      pixbuf = gdk_pixbuf_scale_simple(
-        vgl->pixbuf, 
-        layer_width,
-        layer_height,
-        GDK_INTERP_BILINEAR
-      );
+
+      /* rescale if necessary */
+      if (layer_width == vgl->scaled_width && layer_height == vgl->scaled_height && vgl->scaled != NULL)
+        pixbuf = vgl->scaled;
+      else
+      {
+        pixbuf = gdk_pixbuf_scale_simple(
+          vgl->pixbuf, 
+          layer_width,
+          layer_height,
+          GDK_INTERP_BILINEAR
+        );
+
+        if (vgl->scaled != NULL)
+          g_object_unref(vgl->scaled);
+
+        vgl->scaled = pixbuf;
+        vgl->scaled_width = layer_width;
+        vgl->scaled_height = layer_height;
+      }
     }
 
     guint width = vik_viewport_get_width(vp), height = vik_viewport_get_height(vp);
@@ -251,9 +269,6 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, gpointer data )
     vik_viewport_coord_to_screen ( vp, &corner_coord, &x, &y );
     if ( (x < 0 || x < width) && (y < 0 || y < height) && x+layer_width > 0 && y+layer_height > 0 )
       vik_viewport_draw_pixbuf ( vp, pixbuf, 0, 0, x, y, layer_width, layer_height ); /* todo: draw only what we need to. */
-
-    if (new_pixbuf)
-        g_object_unref(pixbuf);
   }
 }
 
@@ -261,6 +276,8 @@ static void georef_layer_free ( VikGeorefLayer *vgl )
 {
   if ( vgl->image != NULL )
     g_free ( vgl->image );
+  if ( vgl->scaled != NULL )
+    g_object_unref ( vgl->scaled );
 }
 
 VikGeorefLayer *georef_layer_create ( VikViewport *vp )
@@ -281,6 +298,11 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl )
 
   if ( vgl->pixbuf )
     g_object_unref ( G_OBJECT(vgl->pixbuf) );
+  if ( vgl->scaled )
+  {
+    g_object_unref ( G_OBJECT(vgl->scaled) );
+    vgl->scaled = NULL;
+  }
 
   vgl->pixbuf = gdk_pixbuf_new_from_file ( vgl->image, &gx );
 
@@ -302,6 +324,11 @@ static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image )
 {
   if ( vgl->image )
     g_free ( vgl->image );
+  if ( vgl->scaled )
+  {
+    g_object_unref ( vgl->scaled );
+    vgl->scaled = NULL;
+  }
   if ( image == NULL )
     vgl->image = NULL;
   vgl->image = g_strdup ( image );
