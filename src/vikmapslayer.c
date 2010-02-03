@@ -547,21 +547,22 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
     g_snprintf ( filename_buf, buf_len, DIRSTRUCTURE,
                      vml->cache_dir, mode,
                      mapcoord->scale, mapcoord->z, mapcoord->x, mapcoord->y );
-    if ( g_file_test ( filename_buf, G_FILE_TEST_EXISTS ) == TRUE) {
+    if ( g_file_test ( filename_buf, G_FILE_TEST_EXISTS ) == TRUE)
     {
       GError *gx = NULL;
       pixbuf = gdk_pixbuf_new_from_file ( filename_buf, &gx );
 
+      /* free the pixbuf on error */
       if (gx)
       {
         if ( gx->domain != GDK_PIXBUF_ERROR || gx->code != GDK_PIXBUF_ERROR_CORRUPT_IMAGE )
           g_warning ( _("Couldn't open image file: %s"), gx->message );
 
-          g_error_free ( gx );
-          if ( pixbuf )
-            g_object_unref ( G_OBJECT(pixbuf) );
-          pixbuf = NULL;
-        } else {
+        g_error_free ( gx );
+        if ( pixbuf )
+          g_object_unref ( G_OBJECT(pixbuf) );
+        pixbuf = NULL;
+      } else {
           if ( vml->alpha < 255 )
             pixbuf = pixbuf_set_alpha ( pixbuf, vml->alpha );
           if ( xshrinkfactor != 1.0 || yshrinkfactor != 1.0 )
@@ -570,7 +571,6 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
           a_mapcache_add ( pixbuf, mapcoord->x, mapcoord->y, 
               mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
               mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
-        }
       }
     }
   }
