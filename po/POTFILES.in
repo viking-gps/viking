@@ -28,6 +28,8 @@ src/vikdemlayer.c
 src/vikfileentry.c
 src/vikfilelist.c
 src/vikgeoreflayer.c
+src/vikgoto.c
+src/vikgototool.c
 src/vikgpslayer.c
 src/viklayer.c
 src/viklayerspanel.c
