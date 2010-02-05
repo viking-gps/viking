@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-20 09:50+0200\n"
-"PO-Revision-Date: 2008-09-17 02:58+0000\n"
-"Last-Translator: Christian Reis <kiko@async.com.br>\n"
+"PO-Revision-Date: 2009-12-08 21:40+0000\n"
+"Last-Translator: Cadu <cadu.coelho@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2009-09-09 20:12+0000\n"
+"X-Launchpad-Export-Date: 2010-02-05 21:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -24,7 +24,7 @@ msgstr "Trabalhando..."
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
-msgstr ""
+msgstr "Erro: aquisição falhou."
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:953
 msgid "Done."
@@ -32,12 +32,12 @@ msgstr "Concluído."
 
 #: ../src/acquire.c:326 ../src/vikgpslayer.c:992
 msgid "Status: detecting gpsbabel"
-msgstr ""
+msgstr "Estado: detectando gpsbabel"
 
 #: ../src/background.c:57
 #, c-format
 msgid "%d items"
-msgstr ""
+msgstr "%d ítens"
 
 #: ../src/background.c:224
 msgid "Job"
@@ -49,15 +49,15 @@ msgstr "Progresso"
 
 #: ../src/background.c:239
 msgid "Viking Background Jobs"
-msgstr ""
+msgstr "Trabalhos em Segundo Plano do Viking"
 
 #: ../src/clipboard.c:84
 msgid "paste failed"
-msgstr ""
+msgstr "Colar falhou"
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
-msgstr ""
+msgstr "Tamanho da área de transferência incorreto."
 
 #: ../src/clipboard.c:113
 #, c-format
@@ -65,21 +65,25 @@ msgid ""
 "The clipboard contains sublayer data for a %s layers.You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
+"Esta área de transferência contém dados de subcamada para a %s camadas.Você "
+"deve selecionar uma camada deste tipo para colar os dados contidos na área "
+"de transferência."
 
 #: ../src/clipboard.c:219
 msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
 "into."
 msgstr ""
+"Por favor selecione uma camada apropriada para colar o Caminho (Waypoint)."
 
 #: ../src/curl_download.c:94
 #, c-format
 msgid "%s() Curl perform failed: %s"
-msgstr ""
+msgstr "%s() Curl falhou: %s"
 
 #: ../src/dialog.c:54 ../src/dialog.c:102
 msgid "Go to Lat/Lon"
-msgstr ""
+msgstr "Ir para Lat/Long"
 
 #: ../src/dialog.c:66 ../src/dialog.c:230
 msgid "Latitude:"

@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-20 09:50+0200\n"
-"PO-Revision-Date: 2009-09-07 07:26+0000\n"
-"Last-Translator: rainofchaos <rainofchaos@gmail.com>\n"
+"PO-Revision-Date: 2009-10-29 16:17+0000\n"
+"Last-Translator: shizhao <Unknown>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2009-09-09 20:12+0000\n"
+"X-Launchpad-Export-Date: 2010-02-05 21:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Simplified Chinese\n"
 
@@ -20,7 +20,7 @@ msgstr "工作中..."
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
-msgstr ""
+msgstr "错误: 接收失败。"
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:953
 msgid "Done."
@@ -28,12 +28,12 @@ msgstr "完成。"
 
 #: ../src/acquire.c:326 ../src/vikgpslayer.c:992
 msgid "Status: detecting gpsbabel"
-msgstr "状态 : 检测  gpsbabel"
+msgstr "状态: 检测  gpsbabel"
 
 #: ../src/background.c:57
 #, c-format
 msgid "%d items"
-msgstr "%d 条目"
+msgstr "%d 项目"
 
 #: ../src/background.c:224
 msgid "Job"
@@ -41,7 +41,7 @@ msgstr "任务"
 
 #: ../src/background.c:228
 msgid "Progress"
-msgstr "进程"
+msgstr "进度"
 
 #: ../src/background.c:239
 msgid "Viking Background Jobs"
@@ -79,11 +79,11 @@ msgstr ""
 
 #: ../src/dialog.c:66 ../src/dialog.c:230
 msgid "Latitude:"
-msgstr "纬度 :"
+msgstr "纬度："
 
 #: ../src/dialog.c:72 ../src/dialog.c:235
 msgid "Longitude:"
-msgstr "经度 :"
+msgstr "经度："
 
 #: ../src/dialog.c:115
 msgid "Northing:"
@@ -99,7 +99,7 @@ msgstr "Zone :"
 
 #: ../src/dialog.c:131
 msgid "Letter:"
-msgstr "Lettre :"
+msgstr "信函:"
 
 #: ../src/dialog.c:192
 msgid "Waypoint Properties"
@@ -1718,7 +1718,7 @@ msgstr "选择一个背景色"
 
 #: ../src/vikwindow.c:1938
 msgid "_File"
-msgstr "_F 文件"
+msgstr "文件(_F)"
 
 #: ../src/vikwindow.c:1939
 msgid "_Edit"
