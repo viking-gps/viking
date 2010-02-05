@@ -98,7 +98,7 @@ typedef enum {
   VIK_VIEWPORT_DRAWMODE_UTM=0,
   VIK_VIEWPORT_DRAWMODE_EXPEDIA,
   VIK_VIEWPORT_DRAWMODE_MERCATOR,
-  VIK_VIEWPORT_NUM_DRAWMODES
+  VIK_VIEWPORT_NUM_DRAWMODES      /*< skip >*/
 } VikViewportDrawMode;
 
 VikCoordMode vik_viewport_get_coord_mode ( const VikViewport *vvp );

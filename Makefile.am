@@ -12,6 +12,7 @@ full:
 bin_SCRIPTS = viking-remote
 
 EXTRA_DIST = \
+		 ChangeLog.0 \
 	     viking-remote \
 	     viking.spec \
 	     $(INTLTOOL)

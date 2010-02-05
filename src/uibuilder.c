@@ -65,7 +65,19 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
               break;
             }
         }
-        gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), data.u );
+        else
+          gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), data.u );
+      }
+      else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data )
+      {
+        gchar **pstr = param->widget_data;
+        rv = GTK_WIDGET ( gtk_combo_box_entry_new_text () );
+        if ( data.s )
+          gtk_combo_box_append_text ( GTK_COMBO_BOX ( rv ), data.s );
+        while ( *pstr )
+          gtk_combo_box_append_text ( GTK_COMBO_BOX ( rv ), *(pstr++) );
+        if ( data.s )
+          gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), 0 );
       }
       break;
 #endif
@@ -77,7 +89,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         if ( param->extra_widget_data ) /* map of alternate uint values for options */
         {
           int i;
-	  int nb_elem = g_list_length(param->widget_data);
+          int nb_elem = g_list_length(param->widget_data);
           for ( i = 0; i < nb_elem; i++ )
             if ( GPOINTER_TO_UINT ( g_list_nth_data(param->extra_widget_data, i) ) == data.u )
             {
@@ -120,7 +132,8 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
         rv = gtk_entry_new ();
-        gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
+        if (data.s)
+          gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
       }
       break;
     case VIK_LAYER_WIDGET_PASSWORD:
@@ -128,7 +141,8 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       {
         rv = gtk_entry_new ();
         gtk_entry_set_visibility ( GTK_ENTRY(rv), FALSE );
-        gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
+        if (data.s)
+          gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
 #if GTK_CHECK_VERSION(2,12,0)
 	gtk_widget_set_tooltip_text ( GTK_WIDGET(rv),
 	                              _("Take care that this password will be stored clearly in a plain file.") );
@@ -184,11 +198,19 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
 #ifndef GTK_2_2
-      rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
-      if ( rv.i == -1 ) rv.i = 0;
-      rv.u = rv.i;
-      if ( param->extra_widget_data )
-        rv.u = ((guint *)param->extra_widget_data)[rv.u];
+      if ( param->type == VIK_LAYER_PARAM_UINT )
+      {
+        rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
+        if ( rv.i == -1 ) rv.i = 0;
+        rv.u = rv.i;
+        if ( param->extra_widget_data )
+          rv.u = ((guint *)param->extra_widget_data)[rv.u];
+      }
+      if ( param->type == VIK_LAYER_PARAM_STRING)
+      {
+        rv.s = gtk_combo_box_get_active_text ( GTK_COMBO_BOX(widget) );
+	g_debug("%s: %s", __FUNCTION__, rv.s);
+      }
       break;
 #endif
     case VIK_LAYER_WIDGET_RADIOGROUP:

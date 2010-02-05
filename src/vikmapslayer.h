@@ -25,7 +25,9 @@
 #include "vikcoord.h"
 #include "viklayer.h"
 #include "vikviewport.h"
+#include "vikmapsource.h"
 #include "mapcoord.h"
+#include "vikmapslayer_compat.h"
 
 #define VIK_MAPS_LAYER_TYPE            (vik_maps_layer_get_type ())
 #define VIK_MAPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_MAPS_LAYER_TYPE, VikMapsLayer))
@@ -43,18 +45,7 @@ GType vik_maps_layer_get_type ();
 
 typedef struct _VikMapsLayer VikMapsLayer;
 
-typedef struct {
-  guint8 uniq_id;
-  guint16 tilesize_x;
-  guint16 tilesize_y;
-  guint drawmode;
-  gboolean (*coord_to_mapcoord) ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
-  void (*mapcoord_to_center_coord) ( MapCoord *src, VikCoord *dest );
-  int (*download) ( MapCoord *src, const gchar *dest_fn );
-  /* TODO: constant size (yay!) */
-} VikMapsLayer_MapType;
-
-void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapType *map_type );
+void maps_layer_register_map_source ( VikMapSource *map );
 void maps_layer_download_section_without_redraw ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom);
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);

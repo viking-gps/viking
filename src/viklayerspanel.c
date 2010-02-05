@@ -36,8 +36,6 @@ enum {
 
 static void layers_panel_class_init ( VikLayersPanelClass *klass );
 static void layers_panel_init ( VikLayersPanel *vlp );
-static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text);
-static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter);
 
 static guint layers_panel_signals[VLP_LAST_SIGNAL] = { 0 };
 
@@ -164,42 +162,49 @@ static void layers_panel_init ( VikLayersPanel *vlp )
   addimage = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_SMALL_TOOLBAR );
   addbutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(addbutton), addimage );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(addbutton), _("Add new layer"));
   gtk_box_pack_start ( GTK_BOX(hbox), addbutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(addbutton), "clicked", G_CALLBACK(layers_popup_cb), vlp );
   /* Remove button */
   removeimage = gtk_image_new_from_stock ( GTK_STOCK_REMOVE, GTK_ICON_SIZE_SMALL_TOOLBAR );
   removebutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(removebutton), removeimage );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(removebutton), _("Remove selected layer"));
   gtk_box_pack_start ( GTK_BOX(hbox), removebutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(removebutton), "clicked", G_CALLBACK(vik_layers_panel_delete_selected), vlp );
   /* Up button */
   upimage = gtk_image_new_from_stock ( GTK_STOCK_GO_UP, GTK_ICON_SIZE_SMALL_TOOLBAR );
   upbutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(upbutton), upimage );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(upbutton), _("Move selected layer up"));
   gtk_box_pack_start ( GTK_BOX(hbox), upbutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(upbutton), "clicked", G_CALLBACK(layers_move_item_up), vlp );
   /* Down button */
   downimage = gtk_image_new_from_stock ( GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_SMALL_TOOLBAR );
   downbutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(downbutton), downimage );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(downbutton), _("Move selected layer down"));
   gtk_box_pack_start ( GTK_BOX(hbox), downbutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(downbutton), "clicked", G_CALLBACK(layers_move_item_down), vlp );
   /* Cut button */
   cutimage = gtk_image_new_from_stock ( GTK_STOCK_CUT, GTK_ICON_SIZE_SMALL_TOOLBAR );
   cutbutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(cutbutton), cutimage );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(cutbutton), _("Cut selected layer"));
   gtk_box_pack_start ( GTK_BOX(hbox), cutbutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(cutbutton), "clicked", G_CALLBACK(vik_layers_panel_cut_selected), vlp );
   /* Copy button */
   copyimage = gtk_image_new_from_stock ( GTK_STOCK_COPY, GTK_ICON_SIZE_SMALL_TOOLBAR );
   copybutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(copybutton), copyimage );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(copybutton), _("Copy selected layer"));
   gtk_box_pack_start ( GTK_BOX(hbox), copybutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(copybutton), "clicked", G_CALLBACK(vik_layers_panel_copy_selected), vlp );
   /* Paste button */
   pasteimage = gtk_image_new_from_stock ( GTK_STOCK_PASTE, GTK_ICON_SIZE_SMALL_TOOLBAR );
   pastebutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(pastebutton),pasteimage );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(pastebutton), _("Paste layer below selected layer"));
   gtk_box_pack_start ( GTK_BOX(hbox), pastebutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(pastebutton), "clicked", G_CALLBACK(vik_layers_panel_paste_selected), vlp );
 

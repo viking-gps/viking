@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <string.h>
+#include "globals.h"
 #include "mapcache.h"
 #include "preferences.h"
 
@@ -50,9 +51,6 @@ static GMutex *mc_mutex = NULL;
 
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%.3f-%.3f"
 #define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-"
-
-#define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
-#define VIKING_PREFERENCES_NAMESPACE "viking.globals."
 
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */

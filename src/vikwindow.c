@@ -27,12 +27,7 @@
 #include "background.h"
 #include "acquire.h"
 #include "datasources.h"
-#ifdef VIK_CONFIG_GOOGLE
-#include "googlesearch.h"
-#endif
-#ifdef VIK_CONFIG_GEONAMES
-#include "geonamessearch.h"
-#endif
+#include "vikgoto.h"
 #include "dems.h"
 #include "mapcache.h"
 #include "print.h"
@@ -54,6 +49,7 @@
 #include <glib/gstdio.h>
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 
 #define VIKING_WINDOW_WIDTH      1000
 #define VIKING_WINDOW_HEIGHT     800
@@ -307,7 +303,7 @@ static void window_init ( VikWindow *vw )
 
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
-  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK );
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK );
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "scroll_event", G_CALLBACK(draw_scroll), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_press_event", G_CALLBACK(draw_click), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_release_event", G_CALLBACK(draw_release), vw);
@@ -510,6 +506,13 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   gdouble zoom;
   VikDemInterpol interpol_method;
 
+  /* This is a hack, but work far the best, at least for single pointer systems.
+   * See http://bugzilla.gnome.org/show_bug.cgi?id=587714 for more. */
+  gint x, y;
+  gdk_window_get_pointer (event->window, &x, &y, NULL);
+  event->x = x;
+  event->y = y;
+
   toolbox_move(vw->vt, event);
 
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
@@ -535,6 +538,12 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
 
   vik_window_pan_move ( vw, event );
+
+  /* This is recommended by the GTK+ documentation, but does not work properly.
+   * Use deprecated way until GTK+ gets a solution for correct motion hint handling:
+   * http://bugzilla.gnome.org/show_bug.cgi?id=587714
+  */
+  /* gdk_event_request_motions ( event ); */
 }
 
 static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
@@ -1331,6 +1340,82 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
   return mode_button;
 }
 
+static void on_activate_recent_item (GtkRecentChooser *chooser,
+                                     VikWindow *self)
+{
+  gchar *filename;
+
+  filename = gtk_recent_chooser_get_current_uri (chooser);
+  if (filename != NULL)
+  {
+    GFile *file = g_file_new_for_uri ( filename );
+    gchar *path = g_file_get_path ( file );
+    g_object_unref ( file );
+    if ( self->filename )
+    {
+      gchar *filenames[] = { path, NULL };
+      g_signal_emit ( G_OBJECT(self), window_signals[VW_OPENWINDOW_SIGNAL], 0, filenames );
+    }
+    else
+      vik_window_open_file ( self, filename, TRUE );
+    g_free ( path );
+  }
+
+  g_free (filename);
+}
+
+static void setup_recent_files (VikWindow *self)
+{
+  GtkRecentManager *manager;
+  GtkRecentFilter *filter;
+  GtkWidget *menu, *menu_item;
+
+  filter = gtk_recent_filter_new ();
+  /* gtk_recent_filter_add_application (filter, g_get_application_name()); */
+  gtk_recent_filter_add_group(filter, "viking");
+
+  manager = gtk_recent_manager_get_default ();
+  menu = gtk_recent_chooser_menu_new_for_manager (manager);
+  gtk_recent_chooser_set_sort_type (GTK_RECENT_CHOOSER (menu), GTK_RECENT_SORT_MRU);
+  gtk_recent_chooser_add_filter (GTK_RECENT_CHOOSER (menu), filter);
+
+  menu_item = gtk_ui_manager_get_widget (self->uim, "/ui/MainMenu/File/OpenRecentFile");
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), menu);
+
+  g_signal_connect (G_OBJECT (menu), "item-activated",
+                    G_CALLBACK (on_activate_recent_item), (gpointer) self);
+}
+
+static void update_recently_used_document(const gchar *filename)
+{
+  /* Update Recently Used Document framework */
+  GtkRecentManager *manager = gtk_recent_manager_get_default();
+  GtkRecentData *recent_data = g_slice_new (GtkRecentData);
+  gchar *groups[] = {"viking", NULL};
+  GFile *file = g_file_new_for_commandline_arg(filename);
+  gchar *uri = g_file_get_uri(file);
+  gchar *basename = g_path_get_basename(filename);
+  g_object_unref(file);
+  file = NULL;
+
+  recent_data->display_name   = basename;
+  recent_data->description    = NULL;
+  recent_data->mime_type      = "text/x-gps-data";
+  recent_data->app_name       = (gchar *) g_get_application_name ();
+  recent_data->app_exec       = g_strjoin (" ", g_get_prgname (), "%f", NULL);
+  recent_data->groups         = groups;
+  recent_data->is_private     = FALSE;
+  if (!gtk_recent_manager_add_full (manager, uri, recent_data))
+  {
+    g_warning (_("Unable to add '%s' to the list of recently used documents"), uri);
+  }
+
+  g_free (uri);
+  g_free (basename);
+  g_free (recent_data->app_exec);
+  g_slice_free (GtkRecentData, recent_data);
+}
+
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename )
 {
   switch ( a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename ) )
@@ -1341,6 +1426,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     case 1:
     {
       GtkWidget *mode_button;
+      /* Update UI */
       if ( change_filename )
         window_set_filename ( vw, filename );
       mode_button = vik_window_get_drawmode_button ( vw, vik_viewport_get_drawmode ( vw->viking_vvp ) );
@@ -1358,7 +1444,9 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_centermark(vw->viking_vvp) );
     }
-    default: draw_update ( vw );
+    default:
+      update_recently_used_document(filename);
+      draw_update ( vw );
   }
 }
 static void load_file ( GtkAction *a, VikWindow *vw )
@@ -1450,7 +1538,10 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
 static gboolean window_save ( VikWindow *vw )
 {
   if ( a_file_save ( vik_layers_panel_get_top_layer ( vw->viking_vlp ), vw->viking_vvp, vw->filename ) )
+  {
+    update_recently_used_document ( vw->filename );
     return TRUE;
+  }
   else
   {
     a_dialog_error_msg ( GTK_WINDOW(vw), _("The filename you requested could not be opened for writing.") );
@@ -1488,13 +1579,7 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
-#if defined(VIK_CONFIG_GOOGLE) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GOOGLE
-  a_google_search(vw, vw->viking_vlp, vw->viking_vvp);
-#endif
-#if defined(VIK_CONFIG_GEONAMES) && VIK_CONFIG_SEARCH==VIK_CONFIG_SEARCH_GEONAMES
-  a_geonames_search(vw, vw->viking_vlp, vw->viking_vvp);
-#endif
-
+  a_vik_goto(vw, vw->viking_vlp, vw->viking_vvp);
 }
 
 static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
@@ -1947,6 +2032,7 @@ static GtkActionEntry entries[] = {
 
   { "New",       GTK_STOCK_NEW,          N_("_New"),                          "<control>N", N_("New file"),                                     (GCallback)newwindow_cb          },
   { "Open",      GTK_STOCK_OPEN,         N_("_Open"),                         "<control>O", N_("Open a file"),                                  (GCallback)load_file             },
+  { "OpenRecentFile", NULL,         N_("Open _Recent file"),                         NULL, NULL,                                  (GCallback)NULL             },
   { "Append",    GTK_STOCK_ADD,          N_("A_ppend File"),                  NULL,         N_("Append data from a different file"),            (GCallback)load_file             },
   { "Acquire", NULL, N_("A_cquire"), 0, 0, 0 },
   { "AcquireGPS",   NULL,                N_("From _GPS"),            	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
@@ -1966,9 +2052,9 @@ static GtkActionEntry entries[] = {
   { "Exit",      GTK_STOCK_QUIT,         N_("E_xit"),                         "<control>W", N_("Exit the program"),                             (GCallback)window_close          },
   { "SaveExit",  GTK_STOCK_QUIT,         N_("Save and Exit"),                 NULL, N_("Save and Exit the program"),                             (GCallback)save_file_and_exit          },
 
-  { "GotoSearch",   GTK_STOCK_JUMP_TO,                 N_("Go To location"),    	  	  NULL,         N_("Go to address/place using text search"),            (GCallback)goto_address       },
-  { "GotoLL",    GTK_STOCK_QUIT,         N_("_Go to Lat\\/Lon..."),           NULL,         N_("Go to arbitrary lat\\/lon coordinate"),         (GCallback)draw_goto_cb          },
-  { "GotoUTM",   GTK_STOCK_QUIT,         N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
+  { "GotoSearch",   GTK_STOCK_JUMP_TO,   N_("Go To location"),    	  	      NULL,         N_("Go to address/place using text search"),            (GCallback)goto_address       },
+  { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat\\/Lon..."),           NULL,         N_("Go to arbitrary lat\\/lon coordinate"),         (GCallback)draw_goto_cb          },
+  { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
   { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Background Color..."),       NULL,         NULL,                                           (GCallback)set_bg_color          },
   { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", NULL,                                           (GCallback)draw_zoom_cb          },
@@ -2134,6 +2220,8 @@ static void window_create_ui( VikWindow *window )
   accel_group = gtk_ui_manager_get_accel_group (uim);
   gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
   gtk_ui_manager_ensure_update (uim);
+  
+  setup_recent_files(window);
 }
 
 

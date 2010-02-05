@@ -71,7 +71,7 @@ static gboolean return_true (gpointer a, gpointer b, gpointer c) { return TRUE; 
 static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove ( ght, (GHRFunc) return_true, FALSE ); }
 #endif
 
-#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=js"
+#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=kml"
 #define VIK_TRW_LAYER_TRACK_GC 13
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
@@ -1835,9 +1835,9 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
     {
       GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
-      vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
+      vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, t->visible, TRUE );
 #else
-      vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
+      vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, t->visible, TRUE );
 #endif
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter );
       g_hash_table_insert ( vtl->tracks_iters, name, iter );
@@ -2559,7 +2559,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
       return NULL;
 
     if (strcasecmp(newname, sublayer)) { /* Not just changing case */
-      if (g_hash_table_lookup( l->waypoints, newname))
+      if (g_hash_table_lookup( l->tracks, newname))
       {
         a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(l), _("Track Already Exists") );
         return NULL;
@@ -2854,6 +2854,8 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       vtl->current_tp_track_name = name;
 
       vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
+
+      tr->visible = TRUE;
 
       vik_trw_layer_add_track ( vtl, name, tr );
       vik_layer_emit_update(VIK_LAYER(vtl));
@@ -3653,7 +3655,7 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
                           g_ascii_dtostr (startlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) start.lon),
                           g_ascii_dtostr (endlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lat),
                           g_ascii_dtostr (endlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lon));
-    a_babel_convert_from_url ( vtl, url, "google", NULL, NULL );
+    a_babel_convert_from_url ( vtl, url, "kml", NULL, NULL );
     g_free ( url );
 
     /* see if anything was done -- a track was added or appended to */

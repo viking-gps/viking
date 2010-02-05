@@ -226,7 +226,8 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 
       g_free ( unbuffer_loc );
       g_strfreev(sub_args);
-    }
+    } else
+      g_warning("gpsbabel not found in PATH");
     g_free(gpsbabel_loc);
   }
 
@@ -276,7 +277,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
 
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data )
 {
-  static DownloadOptions options = {NULL, 0, a_check_html_file};
+  static DownloadOptions options = { FALSE, NULL, 0, a_check_kml_file};
   gint fd_src;
   int fetch_ret;
   gboolean ret = FALSE;
@@ -291,7 +292,7 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
 
     babelargs = g_strdup_printf(" -i %s", input_type);
 
-    fetch_ret = a_http_download_get_url(url, "", name_src, &options);
+    fetch_ret = a_http_download_get_url(url, "", name_src, &options, NULL);
     if (fetch_ret == 0)
       ret = a_babel_convert_from( vt, babelargs, NULL, name_src, NULL);
  
@@ -448,7 +449,8 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
 
       g_free ( unbuffer_loc );
       g_strfreev(sub_args);
-    }
+    } else
+      g_warning("gpsbabel not found in PATH");
     g_free(gpsbabel_loc);
   }
 
