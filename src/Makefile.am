@@ -132,11 +132,6 @@ libviking_a_SOURCES += \
 	bluemarble.c bluemarble.h
 endif
 
-if OPENAERIAL
-libviking_a_SOURCES += \
-	openaerial.c openaerial.h
-endif
-
 if GEONAMES
 libviking_a_SOURCES += \
 	geonames.c geonames.h \
