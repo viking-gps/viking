@@ -166,12 +166,12 @@ int main( int argc, char *argv[] )
   if (!vik_debug)
     g_log_set_handler (NULL, G_LOG_LEVEL_DEBUG, mute_log, NULL);
 
-  a_download_init();
-  curl_download_init();
-
   a_preferences_init ();
 
   a_vik_preferences_init ();
+
+  a_download_init();
+  curl_download_init();
 
   /* Init modules/plugins */
   modules_init();

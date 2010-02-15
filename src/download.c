@@ -41,6 +41,8 @@
 #include "download.h"
 
 #include "curl_download.h"
+#include "preferences.h"
+#include "globals.h"
 
 static gboolean check_file_first_line(FILE* f, gchar *patterns[])
 {
@@ -100,8 +102,21 @@ gboolean a_check_kml_file(FILE* f)
 static GList *file_list = NULL;
 static GMutex *file_list_mutex = NULL;
 
+/* spin button scales */
+VikLayerParamScale params_scales[] = {
+  {1, 10000, 10, 0},
+};
+
+static VikLayerParam prefs[] = {
+  { VIKING_PREFERENCES_NAMESPACE "download_tile_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Tile age (s):"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0, NULL },
+};
+
 void a_download_init (void)
 {
+	VikLayerParamData tmp;
+	tmp.u = VIK_CONFIG_DEFAULT_TILE_AGE;
+	a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
 	file_list_mutex = g_mutex_new();
 }
 
@@ -138,11 +153,12 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
   {
     if (options != NULL && options->check_file_server_time) {
+      time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
       /* Get the modified time of this file */
       struct stat buf;
       g_stat ( fn, &buf );
       time_condition = buf.st_mtime;
-      if ( (time(NULL) - time_condition) < options->check_file_server_time )
+      if ( (time(NULL) - time_condition) < tile_age )
 				/* File cache is too recent, so return */
 				return -3;
     } else {
