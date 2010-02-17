@@ -30,7 +30,7 @@
 typedef struct {
   gint x, y;
   gint z; /* zone or anything else */
-  guint scale;
+  gint scale;
 } MapCoord;
 
 #endif
