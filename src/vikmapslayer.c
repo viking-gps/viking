@@ -736,6 +736,9 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
               if ( pixbuf ) {
                 gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
                 gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
+#ifdef DEBUG
+                printf("maps_layer_draw_section - x=%d, y=%d, z=%d, src_x=%d, src_y=%d, xx=%d, yy=%d - %x\n", ulm.x, ulm.y, ulm.scale, src_x, src_y, (int)xx, (int)yy, vvp);
+#endif
                 vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
                 break;
               }
