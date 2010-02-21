@@ -61,6 +61,14 @@ typedef struct {
    * Time sent to server on header If-Modified-Since
    */
   time_t time_condition;
+  /**
+   * Etag sent by server on previous download
+   */
+  char *etag;
+  /**
+   * Etag sent by server on this download
+   */
+  char *new_etag;
 
 } DownloadFileOptions;
 

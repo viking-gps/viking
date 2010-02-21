@@ -147,7 +147,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   int ret;
   gchar *tmpfilename;
   gboolean failure = FALSE;
-  DownloadFileOptions file_options = {0};
+  DownloadFileOptions file_options = {0, NULL, NULL};
 
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
