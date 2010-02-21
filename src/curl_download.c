@@ -121,7 +121,7 @@ void curl_download_init()
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 }
 
-int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, time_t time_condition, void *handle )
+int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, DownloadFileOptions *file_options, void *handle )
 {
   CURL *curl;
   CURLcode res = CURLE_FAILED_INIT;
@@ -148,10 +148,12 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, t
       curl_easy_setopt ( curl, CURLOPT_FOLLOWLOCATION, 1);
       curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location);
     }
-    if(options->check_file_server_time && time_condition != 0) {
-      /* if file exists, check against server if file is recent enough */
-      curl_easy_setopt ( curl, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
-      curl_easy_setopt ( curl, CURLOPT_TIMEVALUE, time_condition);
+    if (file_options != NULL) {
+      if(options->check_file_server_time && file_options->time_condition != 0) {
+        /* if file exists, check against server if file is recent enough */
+        curl_easy_setopt ( curl, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+        curl_easy_setopt ( curl, CURLOPT_TIMEVALUE, file_options->time_condition);
+      }
     }
   }
   curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
@@ -174,7 +176,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, t
       else
         res = DOWNLOAD_NO_ERROR;
     } else {
-      g_warning("%s: http response: %ld for uri %s (time_condition = %ld)\n", __FUNCTION__, response, uri, time_condition);
+      g_warning("%s: http response: %ld for uri %s (time_condition = %ld)\n", __FUNCTION__, response, uri, file_options->time_condition);
       res = DOWNLOAD_ERROR;
     }
   } else {
@@ -185,14 +187,14 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, t
   return res;
 }
 
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadMapOptions *options, gboolean ftp, time_t time_condition, void *handle )
+int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadMapOptions *options, gboolean ftp, DownloadFileOptions *file_options, void *handle )
 {
   int ret;
   gchar *full = NULL;
 
   /* Compose the full url */
   full = g_strdup_printf ( "%s://%s%s", (ftp?"ftp":"http"), hostname, uri );
-  ret = curl_download_uri ( full, f, options, time_condition, handle );
+  ret = curl_download_uri ( full, f, options, file_options, handle );
   g_free ( full );
   full = NULL;
 

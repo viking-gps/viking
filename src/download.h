@@ -56,6 +56,14 @@ typedef struct {
 
 } DownloadMapOptions;
 
+typedef struct {
+  /**
+   * Time sent to server on header If-Modified-Since
+   */
+  time_t time_condition;
+
+} DownloadFileOptions;
+
 void a_download_init(void);
 
 /* TODO: convert to Glib */

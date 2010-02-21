@@ -147,7 +147,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   int ret;
   gchar *tmpfilename;
   gboolean failure = FALSE;
-  time_t time_condition = 0;
+  DownloadFileOptions file_options = {0};
 
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
@@ -157,8 +157,8 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       /* Get the modified time of this file */
       struct stat buf;
       g_stat ( fn, &buf );
-      time_condition = buf.st_mtime;
-      if ( (time(NULL) - time_condition) < tile_age )
+      file_options.time_condition = buf.st_mtime;
+      if ( (time(NULL) - file_options.time_condition) < tile_age )
 				/* File cache is too recent, so return */
 				return -3;
     } else {
@@ -186,7 +186,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   }
 
   /* Call the backend function */
-  ret = curl_download_get_url ( hostname, uri, f, options, ftp, time_condition, handle );
+  ret = curl_download_get_url ( hostname, uri, f, options, ftp, &file_options, handle );
 
   if (ret != DOWNLOAD_NO_ERROR && ret != DOWNLOAD_NO_NEWER_FILE) {
     g_debug("%s: download failed: curl_download_get_url=%d", __FUNCTION__, ret);
