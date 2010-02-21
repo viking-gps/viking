@@ -121,7 +121,7 @@ void curl_download_init()
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 }
 
-int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time_t time_condition, void *handle )
+int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, time_t time_condition, void *handle )
 {
   CURL *curl;
   CURLcode res = CURLE_FAILED_INIT;
@@ -185,7 +185,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time
   return res;
 }
 
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadOptions *options, gboolean ftp, time_t time_condition, void *handle )
+int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadMapOptions *options, gboolean ftp, time_t time_condition, void *handle )
 {
   int ret;
   gchar *full = NULL;

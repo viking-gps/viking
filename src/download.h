@@ -54,13 +54,13 @@ typedef struct {
    */
   VikFileContentCheckerFunc check_file;
 
-} DownloadOptions;
+} DownloadMapOptions;
 
 void a_download_init(void);
 
 /* TODO: convert to Glib */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle );
-int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle );
+int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
+int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
 void *a_download_handle_init ();
 void a_download_handle_cleanup ( void *handle );
 

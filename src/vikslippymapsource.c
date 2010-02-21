@@ -36,14 +36,14 @@ static gboolean _supports_if_modified_since (VikMapSource *self );
 
 static gchar *_get_uri( VikSlippyMapSource *self, MapCoord *src );
 static gchar *_get_hostname( VikSlippyMapSource *self );
-static DownloadOptions *_get_download_options( VikSlippyMapSource *self );
+static DownloadMapOptions *_get_download_options( VikSlippyMapSource *self );
 
 typedef struct _VikSlippyMapSourcePrivate VikSlippyMapSourcePrivate;
 struct _VikSlippyMapSourcePrivate
 {
   gchar *hostname;
   gchar *url;
-  DownloadOptions options;
+  DownloadMapOptions options;
 };
 
 #define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_SLIPPY_MAP_SOURCE, VikSlippyMapSourcePrivate))
@@ -296,7 +296,7 @@ vik_slippy_map_source_get_hostname( VikSlippyMapSource *self )
 	return (*klass->get_hostname)(self);
 }
 
-DownloadOptions *
+DownloadMapOptions *
 vik_slippy_map_source_get_download_options( VikSlippyMapSource *self )
 {
 	VikSlippyMapSourceClass *klass;
@@ -356,7 +356,7 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handl
    int res;
    gchar *uri = vik_slippy_map_source_get_uri(VIK_SLIPPY_MAP_SOURCE(self), src);
    gchar *host = vik_slippy_map_source_get_hostname(VIK_SLIPPY_MAP_SOURCE(self));
-   DownloadOptions *options = vik_slippy_map_source_get_download_options(VIK_SLIPPY_MAP_SOURCE(self));
+   DownloadMapOptions *options = vik_slippy_map_source_get_download_options(VIK_SLIPPY_MAP_SOURCE(self));
    res = a_http_download_get_url ( host, uri, dest_fn, options, handle );
    g_free ( uri );
    g_free ( host );
@@ -395,7 +395,7 @@ _get_hostname( VikSlippyMapSource *self )
 	return g_strdup( priv->hostname );
 }
 
-static DownloadOptions *
+static DownloadMapOptions *
 _get_download_options( VikSlippyMapSource *self )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);

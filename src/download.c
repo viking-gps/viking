@@ -141,7 +141,7 @@ static void unlock_file(const char *fn)
 	g_mutex_unlock(file_list_mutex);
 }
 
-static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp, void *handle)
+static int download( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *options, gboolean ftp, void *handle)
 {
   FILE *f;
   int ret;
@@ -229,12 +229,12 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 /* success = 0, -1 = couldn't connect, -2 HTTP error, -3 file exists, -4 couldn't write to file... */
 /* uri: like "/uri.html?whatever" */
 /* only reason for the "wrapper" is so we can do redirects. */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle )
+int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, FALSE, handle );
 }
 
-int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle )
+int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, TRUE, handle );
 }

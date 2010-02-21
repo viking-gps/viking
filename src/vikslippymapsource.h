@@ -43,7 +43,7 @@ struct _VikSlippyMapSourceClass
 
 	gchar * (*get_uri) ( VikSlippyMapSource *self, MapCoord *src );
 	gchar * (*get_hostname) ( VikSlippyMapSource *self );
-	DownloadOptions * (*get_download_options) ( VikSlippyMapSource *self );
+	DownloadMapOptions * (*get_download_options) ( VikSlippyMapSource *self );
 };
 
 struct _VikSlippyMapSource
@@ -57,7 +57,7 @@ VikSlippyMapSource * vik_slippy_map_source_new_with_id (guint8 id, const gchar *
 
 gchar * vik_slippy_map_source_get_uri( VikSlippyMapSource *self, MapCoord *src );
 gchar * vik_slippy_map_source_get_hostname( VikSlippyMapSource *self );
-DownloadOptions * vik_slippy_map_source_get_download_options( VikSlippyMapSource *self );
+DownloadMapOptions * vik_slippy_map_source_get_download_options( VikSlippyMapSource *self );
 
 G_END_DECLS
 

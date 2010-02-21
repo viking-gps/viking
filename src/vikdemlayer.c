@@ -813,7 +813,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 		(intlon >= 0) ? 'E' : 'W',
 		ABS(intlon) );
 
-  static DownloadOptions options = { 0, NULL, 0, a_check_map_file };
+  static DownloadMapOptions options = { 0, NULL, 0, a_check_map_file };
   a_http_download_get_url ( SRTM_HTTP_SITE, src_fn, p->dest, &options, NULL );
   g_free ( src_fn );
 }
