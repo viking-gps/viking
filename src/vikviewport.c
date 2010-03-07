@@ -357,7 +357,8 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       base = vik_coord_diff ( &left, &right ); // in meters
       break;
     case VIK_UNITS_DISTANCE_MILES:
-      base = vik_coord_diff ( &left, &right ) * 0.000621371192; // in miles
+      // in 0.1 miles (copes better when zoomed in as 1 mile can be too big)
+      base = vik_coord_diff ( &left, &right ) * 0.00621371192;
       break;
     default:
       base = 1; // Keep the compiler happy
@@ -425,11 +426,15 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       }
       break;
     case VIK_UNITS_DISTANCE_MILES:
-      if ((int)unit == 1) {
-	sprintf(s, "%d mile", (int)unit);
+      // Handle units in 0.1 miles
+      if (unit < 10.0) {
+	sprintf(s, "%0.1f miles", unit/10.0);
+      }
+      else if ((int)unit == 10.0) {
+	sprintf(s, "1 mile");
       }
       else {
-	sprintf(s, "%d miles", (int)unit);
+	sprintf(s, "%d miles", (int)(unit/10.0));
       }
       break;
     default:
