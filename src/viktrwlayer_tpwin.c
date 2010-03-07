@@ -33,6 +33,7 @@
 #include "viktrwlayer_tpwin.h"
 #include "vikwaypoint.h"
 #include "dialog.h"
+#include "globals.h"
 
 #define SET_BUTTON_SENSITIVE(tpwin,num,sens) gtk_widget_set_sensitive ( GTK_WIDGET(g_list_nth_data((tpwin->buttons),(num))), (sens));
 
@@ -270,9 +271,20 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
     gtk_label_set_text (tpwin->localtime, NULL );
   }
 
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
   if ( tpwin->cur_tp )
   {
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.3f m", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)));
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_KILOMETRES:
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)));
+      break;
+    case VIK_UNITS_DISTANCE_MILES:
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f yards", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord))*1.0936133);
+      break;
+    default:
+      g_critical("Houston, we've had a problem. distance=%d", dist_units);
+    }
+
     gtk_label_set_text ( tpwin->diff_dist, tmp_str );
     if ( tp->has_timestamp && tpwin->cur_tp->has_timestamp )
     {
@@ -293,12 +305,24 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
     }
   }
 
+  switch (dist_units) {
+  case VIK_UNITS_DISTANCE_KILOMETRES:
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->hdop );
+    gtk_label_set_text ( tpwin->hdop, tmp_str );
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
+    gtk_label_set_text ( tpwin->pdop, tmp_str );
+    break;
+  case VIK_UNITS_DISTANCE_MILES:
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->hdop*1.0936133 );
+    gtk_label_set_text ( tpwin->hdop, tmp_str );
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->pdop*1.0936133 );
+    gtk_label_set_text ( tpwin->pdop, tmp_str );
+    break;
+  default:
+    g_critical("Houston, we've had a problem. distance=%d", dist_units);
+  }
   g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
   gtk_label_set_text ( tpwin->vdop, tmp_str );
-  g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->hdop );
-  gtk_label_set_text ( tpwin->hdop, tmp_str );
-  g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
-  gtk_label_set_text ( tpwin->pdop, tmp_str );
   g_snprintf ( tmp_str, sizeof(tmp_str), "%d / %d", tp->nsats, tp->fix_mode );
   gtk_label_set_text ( tpwin->sat, tmp_str );
 

@@ -63,6 +63,14 @@ typedef enum {
 
 vik_degree_format_t a_vik_get_degree_format ( );
 
+/* Distance preferences */
+typedef enum {
+  VIK_UNITS_DISTANCE_KILOMETRES,
+  VIK_UNITS_DISTANCE_MILES,
+} vik_units_distance_t;
+
+vik_units_distance_t a_vik_get_units_distance ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."

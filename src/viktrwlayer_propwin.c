@@ -270,7 +270,17 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH, &meters_from_start );
   if (trackpoint && widgets->w_cur_dist) {
     static gchar tmp_buf[20];
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m", meters_from_start);
+    vik_units_distance_t dist_units = a_vik_get_units_distance ();
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_KILOMETRES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km", meters_from_start/1000.0);
+      break;
+    case VIK_UNITS_DISTANCE_MILES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", meters_from_start/1600.0);
+      break;
+    default:
+      g_critical("Houston, we've had a problem. distance=%d", dist_units);
+    }
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_dist), tmp_buf);
   }
 }
@@ -771,8 +781,19 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   g_signal_connect_swapped ( widgets->w_comment, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
   content[cnt++] = widgets->w_comment;
 
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+
   tr_len = widgets->track_length = vik_track_get_length(tr);
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", tr_len );
+  switch (dist_units) {
+  case VIK_UNITS_DISTANCE_KILOMETRES:
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km", tr_len/1000.0 );
+    break;
+  case VIK_UNITS_DISTANCE_MILES:
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", tr_len/1600.0 );
+    break;
+  default:
+    g_critical("Houston, we've had a problem. distance=%d", dist_units);
+  }
   widgets->w_track_length = content[cnt++] = gtk_label_new ( tmp_buf );
 
   tp_count = vik_track_get_tp_count(tr);
@@ -800,7 +821,17 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s   (%.0f km/h)", tmp_speed, MTOK(tmp_speed) );
   widgets->w_avg_speed = content[cnt++] = gtk_label_new ( tmp_buf );
 
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count ) );
+  switch (dist_units) {
+  case VIK_UNITS_DISTANCE_KILOMETRES:
+    // Even though kilometres, the average distance between points is going to be quite small so keep in metres
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count ) );
+    break;
+  case VIK_UNITS_DISTANCE_MILES:
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.3f miles", (tp_count - seg_count) == 0 ? 0 : (tr_len / ( tp_count - seg_count )) / 1600.0 );
+    break;
+  default:
+    g_critical("Houston, we've had a problem. distance=%d", dist_units);
+  }
   widgets->w_avg_dist = content[cnt++] = gtk_label_new ( tmp_buf );
 
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
