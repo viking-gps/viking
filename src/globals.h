@@ -71,6 +71,15 @@ typedef enum {
 
 vik_units_distance_t a_vik_get_units_distance ( );
 
+/* Speed preferences */
+typedef enum {
+  VIK_UNITS_SPEED_KILOMETRES_PER_HOUR,
+  VIK_UNITS_SPEED_MILES_PER_HOUR,
+  VIK_UNITS_SPEED_METRES_PER_SECOND,
+} vik_units_speed_t;
+
+vik_units_speed_t a_vik_get_units_speed ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."

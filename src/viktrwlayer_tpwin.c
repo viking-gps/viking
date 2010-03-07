@@ -294,7 +294,21 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
         gtk_label_set_text ( tpwin->diff_speed, "--" );
       else
       {
-        g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m/s", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / ABS(tp->timestamp - tpwin->cur_tp->timestamp) );
+	vik_units_speed_t speed_units = a_vik_get_units_speed ();
+	switch (speed_units) {
+	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f km/h", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp)) * 3.6 );
+	  break;
+	case VIK_UNITS_SPEED_MILES_PER_HOUR:
+	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f mph", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp)) * 2.23693629 );
+	  break;
+	case VIK_UNITS_SPEED_METRES_PER_SECOND:
+	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m/s", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / ABS(tp->timestamp - tpwin->cur_tp->timestamp) );
+	  break;
+	default:
+	  g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+	  g_critical("Houston, we've had a problem. speed=%d", speed_units);
+	}
         gtk_label_set_text ( tpwin->diff_speed, tmp_str );
       }
     }

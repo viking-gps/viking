@@ -34,6 +34,7 @@ gboolean vik_use_small_wp_icons = FALSE;
 
 static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", NULL};
 static gchar * params_units_distance[] = {"Kilometres", "Miles", NULL};
+static gchar * params_units_speed[] = {"km/h", "mph", "m/s", NULL};
 
 static VikLayerParam prefs1[] = {
   { VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_DEGREE_FORMAT_DMS, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL },
@@ -41,6 +42,10 @@ static VikLayerParam prefs1[] = {
 
 static VikLayerParam prefs2[] = {
   { VIKING_PREFERENCES_NAMESPACE "units_distance", VIK_LAYER_PARAM_UINT, VIK_UNITS_DISTANCE_KILOMETRES, N_("Distance units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_distance, NULL },
+};
+
+static VikLayerParam prefs3[] = {
+  { VIKING_PREFERENCES_NAMESPACE "units_speed", VIK_LAYER_PARAM_UINT, VIK_UNITS_SPEED_KILOMETRES_PER_HOUR, N_("Speed units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_speed, NULL },
 };
 
 void a_vik_preferences_init ()
@@ -53,6 +58,9 @@ void a_vik_preferences_init ()
 
   tmp.u = VIK_UNITS_DISTANCE_KILOMETRES;
   a_preferences_register(prefs2, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
+  tmp.u = VIK_UNITS_SPEED_KILOMETRES_PER_HOUR;
+  a_preferences_register(prefs3, tmp, VIKING_PREFERENCES_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -68,5 +76,12 @@ vik_units_distance_t a_vik_get_units_distance ( )
 {
   vik_units_distance_t units;
   units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "units_distance")->u;
+  return units;
+}
+
+vik_units_speed_t a_vik_get_units_speed ( )
+{
+  vik_units_speed_t units;
+  units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "units_speed")->u;
   return units;
 }
