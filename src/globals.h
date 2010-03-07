@@ -51,7 +51,7 @@ extern gboolean vik_debug;
 extern gboolean vik_verbose;
 extern gboolean vik_version;
 
-/* Glbal preferences */
+/* Global preferences */
 void a_vik_preferences_init ();
 
 /* Coord display preferences */

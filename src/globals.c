@@ -76,8 +76,6 @@ vik_degree_format_t a_vik_get_degree_format ( )
   vik_degree_format_t format;
   format = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "degree_format")->u;
   return format;
-  /* TODO use preferences */
-  return VIK_DEGREE_FORMAT_DMS;
 }
 
 vik_units_distance_t a_vik_get_units_distance ( )
