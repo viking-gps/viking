@@ -93,8 +93,21 @@ static void tpwin_sync_ll_to_tp ( VikTrwLayerTpwin *tpwin )
 
 static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
 {
-  if ( tpwin->cur_tp && (!tpwin->sync_to_tp_block) )
-    tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt );
+  if ( tpwin->cur_tp && (!tpwin->sync_to_tp_block) ) {
+    // Always store internally in metres
+    vik_units_height_t height_units = a_vik_get_units_height ();
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt );
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt ) / 3.2808399;
+      break;
+    default:
+      tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt );
+      g_critical("Houston, we've had a problem. height=%d", height_units);
+    }
+  }
 }
 
 VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
@@ -252,7 +265,19 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   vik_coord_to_latlon ( &(tp->coord), &ll );
   gtk_spin_button_set_value ( tpwin->lat, ll.lat );
   gtk_spin_button_set_value ( tpwin->lon, ll.lon );
-  gtk_spin_button_set_value ( tpwin->alt, tp->altitude );
+  vik_units_height_t height_units = a_vik_get_units_height ();
+  switch (height_units) {
+  case VIK_UNITS_HEIGHT_METRES:
+    gtk_spin_button_set_value ( tpwin->alt, tp->altitude );
+    break;
+  case VIK_UNITS_HEIGHT_FEET:
+    gtk_spin_button_set_value ( tpwin->alt, tp->altitude*3.2808399 );
+    break;
+  default:
+    gtk_spin_button_set_value ( tpwin->alt, tp->altitude );
+    g_critical("Houston, we've had a problem. height=%d", height_units);
+  }
+
 
   tpwin->sync_to_tp_block = FALSE; /* don't update whlie setting data. */
 
@@ -335,8 +360,20 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);
   }
-  g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
+
+  switch (height_units) {
+  case VIK_UNITS_HEIGHT_METRES:
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
+    break;
+  case VIK_UNITS_HEIGHT_FEET:
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f feet", tp->vdop*3.2808399 );
+    break;
+  default:
+    g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+    g_critical("Houston, we've had a problem. height=%d", height_units);
+  }
   gtk_label_set_text ( tpwin->vdop, tmp_str );
+
   g_snprintf ( tmp_str, sizeof(tmp_str), "%d / %d", tp->nsats, tp->fix_mode );
   gtk_label_set_text ( tpwin->sat, tmp_str );
 

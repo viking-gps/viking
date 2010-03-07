@@ -391,6 +391,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
 
   /* draw grid */
 #define LABEL_FONT "Sans 7"
+  vik_units_height_t height_units = a_vik_get_units_height ();
   for (i=0; i<=LINES; i++) {
     PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
@@ -401,7 +402,17 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
     pfd = pango_font_description_from_string (LABEL_FONT);
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
-    sprintf(s, "%8dm", (int)(mina + (LINES-i)*(maxa-mina)/LINES));
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      sprintf(s, "%8dm", (int)(mina + (LINES-i)*(maxa-mina)/LINES));
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      sprintf(s, "%8dft", (int)((mina + (LINES-i)*(maxa-mina)/LINES)*3.2808399));
+      break;
+    default:
+      sprintf(s, "--");
+      g_critical("Houston, we've had a problem. height=%d", height_units);
+    }
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
     gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
@@ -864,17 +875,40 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   }
   widgets->w_avg_dist = content[cnt++] = gtk_label_new ( tmp_buf );
 
+  vik_units_height_t height_units = a_vik_get_units_height ();
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
-  else
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
+  else {
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet - %.0f feet", min_alt*3.2808399, max_alt*3.2808399 );
+      break;
+    default:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );
+      g_critical("Houston, we've had a problem. height=%d", height_units);
+    }
+  }
   widgets->w_elev_range = content[cnt++] = gtk_label_new ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
-  else
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
+  else {
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet / %.0f feet", max_alt*3.2808399, min_alt*3.2808399 );
+      break;
+    default:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );
+      g_critical("Houston, we've had a problem. height=%d", height_units);
+    }
+  }
   widgets->w_elev_gain = content[cnt++] = gtk_label_new ( tmp_buf );
 
 #if 0

@@ -80,6 +80,14 @@ typedef enum {
 
 vik_units_speed_t a_vik_get_units_speed ( );
 
+/* Height (Depth) preferences */
+typedef enum {
+  VIK_UNITS_HEIGHT_METRES,
+  VIK_UNITS_HEIGHT_FEET,
+} vik_units_height_t;
+
+vik_units_height_t a_vik_get_units_height ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
