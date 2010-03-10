@@ -42,7 +42,7 @@ static gchar *last_successful_goto_str = NULL;
 
 static GList *goto_tools_list = NULL;
 
-int last_goto_tool = -1;
+int last_goto_tool = 0;
 
 void vik_goto_register ( VikGotoTool *tool )
 {
@@ -119,8 +119,8 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
     gtk_combo_box_append_text ( GTK_COMBO_BOX( tool_list ), label);
     current = g_list_next (current);
   }
-  /* Set the first provider as default */
-  gtk_combo_box_set_active ( GTK_COMBO_BOX( tool_list ), 0);
+  /* Set the previously selected provider as default */
+  gtk_combo_box_set_active ( GTK_COMBO_BOX( tool_list ), last_goto_tool);
 
   GtkWidget *goto_label = gtk_label_new(_("Enter address or place name:"));
   GtkWidget *goto_entry = gtk_entry_new();
