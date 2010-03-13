@@ -142,9 +142,12 @@ GdkPixbuf *a_thumbnails_scale_pixbuf(GdkPixbuf *src, int max_w, int max_h)
 
 static GdkPixbuf *child_create_thumbnail(const gchar *path)
 {
-	GdkPixbuf *image;
+	GdkPixbuf *image, *tmpbuf;
 
 	image = gdk_pixbuf_new_from_file(path, NULL);
+	tmpbuf = gdk_pixbuf_apply_embedded_orientation(image);
+	g_object_unref(G_OBJECT(image));
+	image = tmpbuf;
 
 	if (image)
         {
@@ -161,6 +164,7 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	struct stat info;
 	gchar *path;
 	int original_width, original_height;
+	const gchar* orientation;
 	GString *to;
 	char *md5, *swidth, *sheight, *ssize, *smtime, *uri;
 	mode_t old_mask;
@@ -171,6 +175,8 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 		return NULL;
 
 	thumb = a_thumbnails_scale_pixbuf(full, PIXMAP_THUMB_SIZE, PIXMAP_THUMB_SIZE);
+
+	orientation = gdk_pixbuf_get_option (full, "orientation");
 
 	original_width = gdk_pixbuf_get_width(full);
 	original_height = gdk_pixbuf_get_height(full);
@@ -208,6 +214,7 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 			"tEXt::Thumb::MTime", smtime,
 			"tEXt::Thumb::URI", uri,
 			"tEXt::Software", PROJECT,
+			"tEXt::Software::Orientation", orientation ? orientation : "0",
 			NULL);
 	umask(old_mask);
 
