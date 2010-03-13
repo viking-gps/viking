@@ -83,6 +83,13 @@ static gchar * params_ports[] = {"com1", "usb:", NULL};
 static gchar * params_ports[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0", "/dev/ttyUSB1", "usb:", NULL};
 #endif
 #define NUM_PORTS (sizeof(params_ports)/sizeof(params_ports[0]) - 1)
+/* Compatibility with previous versions */
+#ifdef WINDOWS
+static gchar * old_params_ports[] = {"com1", "usb:", NULL};
+#else
+static gchar * old_params_ports[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0", "/dev/ttyUSB1", "usb:", NULL};
+#endif
+#define OLD_NUM_PORTS (sizeof(old_params_ports)/sizeof(old_params_ports[0]) - 1)
 typedef enum {GPS_DOWN=0, GPS_UP} gps_dir;
 
 typedef struct {
@@ -131,7 +138,7 @@ enum {
 
 static VikLayerParam gps_layer_params[] = {
   { "gps_protocol", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
-  { "gps_port", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
+  { "gps_port", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
 
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   { "record_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Recording tracks"), VIK_LAYER_WIDGET_CHECKBUTTON},
@@ -255,7 +262,7 @@ struct _VikGpsLayer {
   guint vehicle_position;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   guint protocol_id;
-  guint serial_port_id;
+  gchar *serial_port;
 };
 
 GType vik_gps_layer_get_type ()
@@ -371,8 +378,21 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
         g_warning(_("Unknown GPS Protocol"));
       break;
     case PARAM_PORT:
-      if (data.u < NUM_PORTS)
-        vgl->serial_port_id = data.u;
+      if (data.s)
+{
+        g_free(vgl->serial_port);
+        /* Compat: previous version stored serial_port as an array index */
+        int index = data.s[0] - '0';
+        if (data.s[0] != '\0' &&
+            g_ascii_isdigit (data.s[0]) &&
+            data.s[1] == '\0' &&
+            index < OLD_NUM_PORTS)
+          /* It is a single digit: activate compatibility */
+          vgl->serial_port = g_strdup(old_params_ports[index]);
+        else
+          vgl->serial_port = g_strdup(data.s);
+      g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
+}
       else
         g_warning(_("Unknown serial port device"));
       break;
@@ -416,7 +436,8 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
       rv.u = vgl->protocol_id;
       break;
     case PARAM_PORT:
-      rv.u = vgl->serial_port_id;
+      rv.s = vgl->serial_port;
+      g_debug("%s: %s", __FUNCTION__, rv.s);
       break;
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
     case PARAM_GPSD_HOST:
@@ -479,7 +500,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->gpsd_retry_interval = 10;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   vgl->protocol_id = 0;
-  vgl->serial_port_id = 0;
+  vgl->serial_port = NULL;
 
   return vgl;
 }
@@ -1033,14 +1054,14 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
-  gps_comm(vtl, GPS_UP, vgl->protocol_id, params_ports[vgl->serial_port_id]);
+  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   VikTrwLayer *vtl = vgl->trw_children[TRW_DOWNLOAD];
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, params_ports[vgl->serial_port_id]);
+  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port);
 }
 
 static void gps_empty_upload_cb( gpointer layer_and_vlp[2] )
@@ -1226,7 +1247,7 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
       vik_viewport_set_center_coord(vvp, &vehicle_coord);
       update_all = TRUE;
     }
-    else {
+    else if (vgl->vehicle_position == VEHICLE_POSITION_ON_SCREEN) {
       const int hdiv = 6;
       const int vdiv = 6;
       const int px = 20; /* adjust ment in pixels to make sure vehicle is inside the box */
@@ -1289,15 +1310,23 @@ static gchar *make_track_name(VikTrwLayer *vtl)
 static gboolean rt_gpsd_try_connect(gpointer *data)
 {
   VikGpsLayer *vgl = (VikGpsLayer *)data;
+#ifndef HAVE_GPS_OPEN_R
   struct gps_data_t *gpsd = gps_open(vgl->gpsd_host, vgl->gpsd_port);
 
   if (gpsd == NULL) {
+#else
+  vgl->vgpsd = g_malloc(sizeof(VglGpsd));
+
+  if (gps_open_r(vgl->gpsd_host, vgl->gpsd_port, /*(struct gps_data_t *)*/vgl->vgpsd) != 0) {
+#endif
     g_warning("Failed to connect to gpsd at %s (port %s). Will retry in %d seconds",
                      vgl->gpsd_host, vgl->gpsd_port, vgl->gpsd_retry_interval);
     return TRUE;   /* keep timer running */
   }
 
-  vgl->vgpsd = g_realloc(gpsd, sizeof(VglGpsd));
+#ifndef HAVE_GPS_OPEN_R
+  vgl->vgpsd = realloc(gpsd, sizeof(VglGpsd));
+#endif
   vgl->vgpsd->vgl = vgl;
 
   vgl->realtime_fix.dirty = vgl->last_fix.dirty = FALSE;
@@ -1317,7 +1346,11 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   vgl->realtime_io_channel = g_io_channel_unix_new(vgl->vgpsd->gpsd.gps_fd);
   vgl->realtime_io_watch_id = g_io_add_watch( vgl->realtime_io_channel,
                     G_IO_IN | G_IO_ERR | G_IO_HUP, gpsd_data_available, vgl);
+#if HAVE_GPS_STREAM
+  gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL);
+#else
   gps_query(&vgl->vgpsd->gpsd, "w+x");
+#endif
   return FALSE;  /* no longer called by timeout */
 }
 
@@ -1371,6 +1404,11 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
   }
   if (vgl->vgpsd) {
     gps_close(&vgl->vgpsd->gpsd);
+#ifdef HAVE_GPS_OPEN_R
+    g_free(vgl->vgpsd);
+#else
+    free(vgl->vgpsd);
+#endif
     vgl->vgpsd = NULL;
   }
 

@@ -5,14 +5,14 @@ msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-20 09:50+0200\n"
-"PO-Revision-Date: 2009-09-02 11:20+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"PO-Revision-Date: 2009-10-08 13:27+0000\n"
+"Last-Translator: tonio_73 <Unknown>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2009-09-09 20:12+0000\n"
+"X-Launchpad-Export-Date: 2010-02-05 21:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: French\n"
 
@@ -174,11 +174,11 @@ msgstr "Facteur de zoom (en mètres par pixel) :"
 
 #: ../src/dialog.c:574
 msgid "X (easting): "
-msgstr ""
+msgstr "X (est) "
 
 #: ../src/dialog.c:575
 msgid "Y (northing): "
-msgstr ""
+msgstr "Y (nord) "
 
 #: ../src/dialog.c:580
 msgid "X and Y zoom factors must be equal"
@@ -202,7 +202,7 @@ msgstr "Personalisé (en minutes)"
 
 #: ../src/dialog.c:691
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr ""
+msgstr "Analyse de topo, gestion de données GPS"
 
 #: ../src/dialog.c:692
 msgid ""
@@ -220,6 +220,20 @@ msgid ""
 "this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
+"Ce programme est un logiciel libre: vous pouvez le redistribuer et/ou le "
+"modifier selon les termes de la \"GNU General Public License\", tels que "
+"publiés par la \"Free Software Foundation\"; soit la version 2 de cette "
+"licence ou (à votre choix) toute version ultérieure.\n"
+"\n"
+"Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE "
+"GARANTIE, ni explicite ni implicite; sans même les garanties de "
+"commercialisation ou d'adaptation dans un but spécifique.\n"
+"\n"
+"Se référer à la \"GNU General Public License\" pour plus de détails.\n"
+"\n"
+"Vous devriez avoir reçu une copie de la \"GNU General Public License\" en "
+"même temps que ce programme; sinon, écrivez a la \"Free Software Foundation, "
+"Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA\""
 
 #: ../src/dialog.c:726
 msgid "Download along track"
@@ -421,7 +435,7 @@ msgstr "Le mode d'affichage '%s' n'est plus supporté"
 
 #: ../src/mapcache.c:63
 msgid "Mapcache memory size (MB):"
-msgstr ""
+msgstr "Taille du cache des cartes (Mo):"
 
 #: ../src/print.c:53
 msgid "None"
@@ -759,7 +773,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:412
 msgid "X (easting) scale (mpp): "
-msgstr ""
+msgstr "Echelle X (est) (mpp) : "
 
 #: ../src/vikgeoreflayer.c:413
 msgid "Y (northing) scale (mpp): "
@@ -771,7 +785,7 @@ msgstr "Image carte :"
 
 #: ../src/vikgeoreflayer.c:522
 msgid "Zoom to Fit Map"
-msgstr ""
+msgstr "Zoomer sur la carte"
 
 #: ../src/vikgeoreflayer.c:527
 msgid "Goto Map Center"
@@ -787,7 +801,7 @@ msgstr "Enregistrement des traces"
 
 #: ../src/vikgpslayer.c:138
 msgid "Jump to current position on start"
-msgstr ""
+msgstr "Avancer à la position courante au démarrage"
 
 #: ../src/vikgpslayer.c:139
 msgid "Moving Map Method:"
@@ -803,7 +817,7 @@ msgstr "Port gpsd :"
 
 #: ../src/vikgpslayer.c:142
 msgid "Gpsd Retry Interval (seconds):"
-msgstr ""
+msgstr "Interval de recherche de GPSD (secondes) :"
 
 #: ../src/vikgpslayer.c:206 ../src/vikgpslayer.c:985
 msgid "GPS Download"
@@ -1404,19 +1418,19 @@ msgstr "Appliquer les altitudes du DEM"
 
 #: ../src/viktrwlayer.c:2749
 msgid "Extend track end"
-msgstr ""
+msgstr "Etendre l'extrémité de la trace"
 
 #: ../src/viktrwlayer.c:2754
 msgid "Extend using magic scissors"
-msgstr ""
+msgstr "Extension en utilisant les ciseaux magiques"
 
 #: ../src/viktrwlayer.c:2768
 msgid "View Google Directions"
-msgstr ""
+msgstr "Voir les indications de direction Google"
 
 #: ../src/viktrwlayer.c:2774
 msgid "Use with filter"
-msgstr ""
+msgstr "Utiliser avec un filtre"
 
 #: ../src/viktrwlayer.c:3735
 msgid "Could not launch eog to open file."
@@ -1429,7 +1443,7 @@ msgstr "Création de %d miniatures…"
 
 #: ../src/viktrwlayer.c:4009
 msgid "No map layer in use. Create one first"
-msgstr ""
+msgstr "Aucun calque de carte actif. Veuillez en créer un nouveau."
 
 #: ../src/viktrwlayer_propwin.c:661
 msgid "Failed spliting track. Track unchanged"
@@ -1586,19 +1600,19 @@ msgstr "<b>Vitesse :</b>"
 
 #: ../src/viktrwlayer_tpwin.c:110
 msgid "<b>VDOP:</b>"
-msgstr ""
+msgstr "<b>VDOP:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:111
 msgid "<b>HDOP:</b>"
-msgstr ""
+msgstr "<b>HDOP:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:112
 msgid "<b>PDOP:</b>"
-msgstr ""
+msgstr "<b>PDOP:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:113
 msgid "<b>SAT/FIX:</b>"
-msgstr ""
+msgstr "<b>SAT/FIX:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:122
 msgid "Trackpoint"
@@ -1654,12 +1668,12 @@ msgstr ""
 #: ../src/vikwindow.c:528
 #, c-format
 msgid "%s %s %dm"
-msgstr ""
+msgstr "%s %s %dm"
 
 #: ../src/vikwindow.c:530
 #, c-format
 msgid "%s %s"
-msgstr ""
+msgstr "%s %s"
 
 #: ../src/vikwindow.c:1105
 msgid "You must select a layer to show its properties."

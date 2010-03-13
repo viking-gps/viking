@@ -63,4 +63,8 @@ typedef enum {
 
 vik_degree_format_t a_vik_get_degree_format ( );
 
+/* Group for global preferences */
+#define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
+#define VIKING_PREFERENCES_NAMESPACE "viking.globals."
+
 #endif

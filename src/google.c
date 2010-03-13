@@ -28,11 +28,17 @@
 #include "google.h"
 #include "vikexttools.h"
 #include "vikwebtoolcenter.h"
+#include "vikgoto.h"
+#include "googlesearch.h"
 
 void google_init () {
   // Webtools
   VikWebtoolCenter *webtool = vik_webtool_center_new_with_members ( _("Google"), "http://maps.google.com/maps?f=q&geocode=&ie=UTF8&ll=%s,%s&z=%d&iwloc=addr" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
-}
 
+  // Goto
+  GoogleGotoTool *gototool = google_goto_tool_new (  );
+  vik_goto_register ( VIK_GOTO_TOOL ( gototool ) );
+  g_object_unref ( gototool );
+}

@@ -42,8 +42,6 @@ typedef struct {
 /* notice we can cast to either UTM or LatLon */
 /* possible more modes to come? xy? we'll leave that as an option */
 
-VikCoord *vik_coord_new();
-
 void vik_coord_convert(VikCoord *coord, VikCoordMode dest_mode);
 void vik_coord_copy_convert(const VikCoord *coord, VikCoordMode dest_mode, VikCoord *dest);
 gdouble vik_coord_diff(const VikCoord *c1, const VikCoord *c2);

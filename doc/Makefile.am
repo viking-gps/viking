@@ -1,4 +1,4 @@
-SUBDIRS = dev
+SUBDIRS = dev examples
 
 EXTRA_DIST = GEOCODED-PHOTOS GETTING-STARTED GPSMAPPER \
   viking.xml viking-remote.xml

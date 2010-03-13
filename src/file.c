@@ -551,8 +551,12 @@ static void xfclose ( FILE *f )
 }
 
 /* 0 on failure, 1 on success (vik file) 2 on success (other file) */
-gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename )
+gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename_or_uri )
 {
+  char *filename = filename_or_uri;
+  if (strncmp(filename, "file://", 7) == 0)
+    filename = filename + 7;
+
   gboolean is_gpx_file = check_file_ext ( filename, ".gpx" );
   FILE *f = xfopen ( filename, "r" );
 

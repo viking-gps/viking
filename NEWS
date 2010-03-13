@@ -1,3 +1,47 @@
+Viking 0.9.91 (2010-02-06)
+New features since 0.9.9
+* Interpolation for maps: use less precise images when wanted image is not present
+* GObjectify maps
+** Add compatibility facilities
+* GObjectify go-to/search feature
+** Add Name finder search engine
+** Add Nominatim search engine
+** Add Geonames search engine
+** Add generic XML search code
+* Add configuration file for map sources, goto and external tool
+  (See examples in distribution)
+* Add option to download only maps that are more recent on server
+** Try to download newer tiles when autodownload is set and server supports such check
+** Tiles must be older than a specified age before checking server
+* Add support for recently used files
+* Add DEM Gradient
+* Add DOAP file
+
+Fixes since 0.9.9
+* Fix: add GIO dependency and header for GFile
+* Fix #2946287: open a recent file
+* fix some confusing indentation and bracing
+* Fix #2881916: rename a track with c&p
+* Fix #2766373: Use a string as device path
+* Fix "Moving Map Method" cannot be disabled
+* Fix #2880741: replace gps_open with gps_open_r
+* Fix #2921899: uses conditional macro to support two versions of libgps
+* Fix warnings
+* Fix URL formatting issue
+* Fix error messages
+* Fix #2801874: keep second part of a splitted track visible
+* Fix #2838556: emit warning when gpsbabel is not found in PATH
+* Fix bashism in test script.
+* Merge branch 'fix-osm-api-0.6'
+* Fix magic scissors
+* Get rid deprecated GtkTooltips API.
+* Add configure option to track deprecated feature
+* Use motion hints to make map motion more responsive in slow environment.
+* Viking compatible with libgps >= 2.90
+* finish OSM 0.6 API support
+* Optimise bandwidth usage
+* keeping OSM password safe
+
 Viking 0.9.9 (2009-09-09)
 New features since 0.9.8
 * Filter out irrelevant key-modifiers.

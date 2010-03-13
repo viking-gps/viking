@@ -115,7 +115,7 @@ static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *param
 
 VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
   N_("Waypoints Inside This"),
-  N_("Polygonzied Layer"),
+  N_("Polygonized Layer"),
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,

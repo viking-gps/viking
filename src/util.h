@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2007 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2007-2009 Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  * Based on:
  * Copyright (C) 2003-2007 Leandro A. F. Pereira <leandro@linuxmag.com.br>
  *

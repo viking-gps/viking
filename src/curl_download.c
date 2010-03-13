@@ -25,6 +25,10 @@
 
 #include <stdio.h>
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
@@ -117,7 +121,7 @@ void curl_download_init()
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 }
 
-int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
+int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options, time_t time_condition, void *handle )
 {
   CURL *curl;
   CURLcode res = CURLE_FAILED_INIT;
@@ -125,44 +129,82 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadOptions *options )
 
   g_debug("%s: uri=%s", __PRETTY_FUNCTION__, uri);
 
-  curl = curl_easy_init ();
-  if ( curl )
-    {
-      if (vik_verbose)
-        curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
-      curl_easy_setopt ( curl, CURLOPT_URL, uri );
-      curl_easy_setopt ( curl, CURLOPT_WRITEDATA, f );
-      curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
-      curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0 );
-      curl_easy_setopt ( curl, CURLOPT_PROGRESSDATA, NULL );
-      curl_easy_setopt ( curl, CURLOPT_PROGRESSFUNCTION, curl_progress_func);
-      if (options != NULL) {
-        if(options->referer != NULL)
-          curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
-        if(options->follow_location != 0) {
-          curl_easy_setopt ( curl, CURLOPT_FOLLOWLOCATION, 1);
-          curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location);
-        }
-      }
-      curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
-      if ((cookie_file = get_cookie_file(FALSE)) != NULL)
-        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
-      res = curl_easy_perform ( curl );
-      curl_easy_cleanup ( curl );
+  curl = handle ? handle : curl_easy_init ();
+  if ( !curl ) {
+    return DOWNLOAD_ERROR;
+  }
+  if (vik_verbose)
+    curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
+  curl_easy_setopt ( curl, CURLOPT_URL, uri );
+  curl_easy_setopt ( curl, CURLOPT_WRITEDATA, f );
+  curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
+  curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0 );
+  curl_easy_setopt ( curl, CURLOPT_PROGRESSDATA, NULL );
+  curl_easy_setopt ( curl, CURLOPT_PROGRESSFUNCTION, curl_progress_func);
+  if (options != NULL) {
+    if(options->referer != NULL)
+      curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
+    if(options->follow_location != 0) {
+      curl_easy_setopt ( curl, CURLOPT_FOLLOWLOCATION, 1);
+      curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location);
     }
-  return(res);
+    if(options->check_file_server_time && time_condition != 0) {
+      /* if file exists, check against server if file is recent enough */
+      curl_easy_setopt ( curl, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
+      curl_easy_setopt ( curl, CURLOPT_TIMEVALUE, time_condition);
+    }
+  }
+  curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
+  if ((cookie_file = get_cookie_file(FALSE)) != NULL)
+    curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
+  res = curl_easy_perform ( curl );
+  if (res == 0) {
+    glong response;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response);
+    if (response == 304) {         // 304 = Not Modified
+      res = DOWNLOAD_NO_NEWER_FILE;
+    } else if (response == 200 ||  // http: 200 = Ok
+               response == 226) {  // ftp:  226 = sucess
+      gdouble size;
+      /* verify if curl sends us any data - this is a workaround on using CURLOPT_TIMECONDITION 
+         when the server has a (incorrect) time earlier than the time on the file we already have */
+      curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &size);
+      if (size == 0)
+        res = DOWNLOAD_ERROR;
+      else
+        res = DOWNLOAD_NO_ERROR;
+    } else {
+      g_warning("%s: http response: %ld for uri %s (time_condition = %ld)\n", __FUNCTION__, response, uri, time_condition);
+      res = DOWNLOAD_ERROR;
+    }
+  } else {
+    res = DOWNLOAD_ERROR;
+  }
+  if (!handle)
+     curl_easy_cleanup ( curl );
+  return res;
 }
 
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadOptions *options, gboolean ftp )
+int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadOptions *options, gboolean ftp, time_t time_condition, void *handle )
 {
   int ret;
   gchar *full = NULL;
 
   /* Compose the full url */
   full = g_strdup_printf ( "%s://%s%s", (ftp?"ftp":"http"), hostname, uri );
-  ret = curl_download_uri ( full, f, options );
+  ret = curl_download_uri ( full, f, options, time_condition, handle );
   g_free ( full );
   full = NULL;
 
-  return (ret ? -2 : 0);   /* -2 HTTP error */
+  return ret;
+}
+
+void * curl_download_handle_init ()
+{
+  return curl_easy_init();
+}
+
+void curl_download_handle_cleanup ( void *handle )
+{
+  curl_easy_cleanup(handle);
 }

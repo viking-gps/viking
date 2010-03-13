@@ -259,6 +259,7 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
     guint16 i, params_count = vik_layer_get_interface(vl->type)->params_count;
     for ( i = 0; i < params_count; i++ )
     {
+      g_debug("%s: %s", __FUNCTION__, params[i].name);
       d = get_param(vl, i);
       switch ( params[i].type )
       {
@@ -323,6 +324,7 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
     guint16 i, params_count = vik_layer_get_interface(vl->type)->params_count;
     for ( i = 0; i < params_count; i++ )
     {
+      g_debug("%s: %s", __FUNCTION__, params[i].name);
       switch ( params[i].type )
       {
       case VIK_LAYER_PARAM_STRING: 

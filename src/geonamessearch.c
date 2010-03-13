@@ -34,8 +34,7 @@
 #include "util.h"
 #include "curl_download.h"
 
-#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%f&south=%f&east=%f&west=%f"
-#define GEONAMES_SEARCH_URL_FMT "http://ws.geonames.org/searchJSON?formatted=true&style=medium&maxRows=10&lang=en&q=%s"
+#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s"
 #define GEONAMES_COUNTRY_PATTERN "\"countryName\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
 #define GEONAMES_NAME_PATTERN "\"name\": \""
@@ -44,10 +43,6 @@
 #define GEONAMES_WIKIPEDIAURL_PATTERN "\"wikipediaUrl\": \""
 #define GEONAMES_THUMBNAILIMG_PATTERN "\"thumbnailImg\": \""
 #define GEONAMES_SEARCH_NOT_FOUND "not understand the location"
-
-static gchar *last_search_str = NULL;
-static VikCoord *last_coord = NULL;
-static gchar *last_successful_search_str = NULL;
 
 /* found_geoname: Type to contain data returned from GeoNames.org */
 
@@ -95,20 +90,6 @@ void free_geoname_list(GList *found_places)
   g_list_free(found_places);
 }
 
-gchar * a_geonamessearch_get_search_string_for_this_place(VikWindow *vw)
-{
-  if (!last_coord)
-    return NULL;
-
-  VikViewport *vvp = vik_window_viewport(vw);
-  const VikCoord *cur_center = vik_viewport_get_center(vvp);
-  if (vik_coord_equals(cur_center, last_coord)) {
-    return(last_successful_search_str);
-  }
-  else
-    return NULL;
-}
-
 static void none_found(VikWindow *vw)
 {
   GtkWidget *dialog = NULL;
@@ -123,60 +104,6 @@ static void none_found(VikWindow *vw)
   gtk_dialog_run ( GTK_DIALOG(dialog) );
   gtk_widget_destroy(dialog);
 }
-
-static gboolean prompt_try_again(VikWindow *vw)
-{
-  GtkWidget *dialog = NULL;
-  gboolean ret = TRUE;
-
-  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_window_set_title(GTK_WINDOW(dialog), _("Search"));
-
-  GtkWidget *search_label = gtk_label_new(_("I don't know that place. Do you want another search?"));
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
-  gtk_widget_show_all(dialog);
-
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT )
-    ret = FALSE;
-
-  gtk_widget_destroy(dialog);
-  return ret;
-}
-
-static gchar *  a_prompt_for_search_string(VikWindow *vw)
-{
-  GtkWidget *dialog = NULL;
-
-  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_window_set_title(GTK_WINDOW(dialog), _("Search"));
-
-  GtkWidget *search_label = gtk_label_new(_("Enter address or place name:"));
-  GtkWidget *search_entry = gtk_entry_new();
-  if (last_search_str)
-    gtk_entry_set_text(GTK_ENTRY(search_entry), last_search_str);
-
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_entry, FALSE, FALSE, 5 );
-  gtk_widget_show_all(dialog);
-
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
-    gtk_widget_destroy(dialog);
-    return NULL;
-  }
-
-  gchar *search_str = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(search_entry) ) );
-
-  gtk_widget_destroy(dialog);
-
-  if (search_str[0] != '\0') {
-    if (last_search_str)
-      g_free(last_search_str);
-    last_search_str = g_strdup(search_str);
-  }
-
-  return(search_str);   /* search_str needs to be freed by caller */
-}
-
 
 void buttonToggled(GtkCellRendererToggle* renderer, gchar* pathStr, gpointer data)
 {
@@ -458,47 +385,6 @@ GList *get_entries_from_file(gchar *file_name)
 }
 
 
-static int parse_file_for_latlon(VikWindow *vw, gchar *file_name, struct LatLon *ll)
-{
-  /* return codes:
-    1 : All OK, position selected;
-    2 : No position selected;
-    3 : No places found. */
-  int found = 1;
-  found_geoname *geoname;
-  GList *found_places = get_entries_from_file(file_name);
-  int num_found_places;
-
-  num_found_places = g_list_length(found_places);
-  if (num_found_places == 0) {
-    found = 3;
-  }
-  else {
-    if (num_found_places == 1) {
-      geoname = (found_geoname *)found_places->data;
-      ll->lat = geoname->ll.lat;
-      ll->lon = geoname->ll.lon;
-    }
-    else
-    {
-      GList *selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), found_places, FALSE, "Select place", "Select the place to go to");
-      if (selected)
-      {
-        geoname = (found_geoname *)selected->data;
-        ll->lat = geoname->ll.lat;
-        ll->lon = geoname->ll.lon;
-        g_list_foreach(selected, (GFunc)free_list_geonames, NULL);
-      }
-      else
-      {
-        found = 2;
-      }
-    }
-  }
-  free_geoname_list(found_places);
-  return (found);
-}
-
 gchar *download_url(gchar *uri)
 {
   FILE *tmp_file;
@@ -512,7 +398,7 @@ gchar *download_url(gchar *uri)
   tmp_file = fdopen(tmp_fd, "r+");
 
   // TODO: curl may not be available
-  if (curl_download_uri(uri, tmp_file, NULL)) {  // error
+  if (curl_download_uri(uri, tmp_file, NULL, 0, NULL)) {  // error
     fclose(tmp_file);
     tmp_file = NULL;
     g_remove(tmpname);
@@ -522,84 +408,6 @@ gchar *download_url(gchar *uri)
   fclose(tmp_file);
   tmp_file = NULL;
   return(tmpname);
-}
-
-static int geonames_search_get_coord(VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord)
-{
-  gchar *uri;
-  gchar *escaped_srch_str;
-  int ret = 1;  /* OK */
-  struct LatLon ll;
-  gchar *tmpname;
-
-  g_debug("%s: raw search: %s", __FUNCTION__, srch_str);
-  escaped_srch_str = uri_escape(srch_str);
-  g_debug("%s: escaped search: %s", __FUNCTION__, escaped_srch_str);
-
-  //uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, srch_str);
-  uri = g_strdup_printf(GEONAMES_SEARCH_URL_FMT, escaped_srch_str);
-
-  tmpname = download_url(uri);
-  if (!tmpname) {
-    ret = -1;
-    goto done;
-  }
-  ret = parse_file_for_latlon(vw, tmpname, &ll);
-  if (ret == 3) {
-    goto done;
-  }
-
-  vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
-
-  if (last_coord)
-    g_free(last_coord);
-  last_coord = g_malloc(sizeof(VikCoord));
-  *last_coord = *coord;
-  if (last_successful_search_str)
-    g_free(last_successful_search_str);
-  last_successful_search_str = g_strdup(last_search_str);
-
-done:
-  g_free(escaped_srch_str);
-  g_free(uri);
-  if (tmpname) {
-    g_remove(tmpname);
-    g_free(tmpname);
-  }
-  return ret;
-}
-
-void a_geonames_search(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
-{
-  VikCoord new_center;
-  gchar *s_str;
-  gboolean more = TRUE;
-  int ret;
-
-  do {
-    s_str = a_prompt_for_search_string(vw);
-    if ((!s_str) || (s_str[0] == 0)) {
-      more = FALSE;
-    }
-    else {
-      ret = geonames_search_get_coord(vw, vvp, s_str, &new_center);
-      if (ret == 1) {
-        vik_viewport_set_center_coord(vvp, &new_center);
-        vik_layers_panel_emit_update(vlp);
-        more = FALSE;
-      }
-      else {
-        if (ret == 3) {
-          if (!prompt_try_again(vw)) {
-            more = FALSE;
-          }
-        }
-      }
-    }
-    if (s_str) {
-      g_free(s_str);
-    }
-  } while (more);
 }
 
 void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *vlp, struct LatLon maxmin[2])
@@ -612,7 +420,16 @@ void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *v
   VikWaypoint *wiki_wp;
   found_geoname *wiki_geoname;
 
-  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, maxmin[0].lat, maxmin[1].lat, maxmin[0].lon, maxmin[1].lon);
+  /* encode doubles in a C locale */
+  gchar *north = a_coords_dtostr(maxmin[0].lat);
+  gchar *south = a_coords_dtostr(maxmin[1].lat);
+  gchar *east = a_coords_dtostr(maxmin[0].lon);
+  gchar *west = a_coords_dtostr(maxmin[1].lon);
+  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west);
+  g_free(north); north = NULL;
+  g_free(south); south = NULL;
+  g_free(east);  east = NULL;
+  g_free(west);  west = NULL;
   tmpname = download_url(uri);
   if (!tmpname) {
     none_found(vw);

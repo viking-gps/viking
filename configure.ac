@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.9.9)
+AC_INIT(viking, 0.9.91)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -11,6 +11,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_PROG_CC
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)
 
 # I18N
 GETTEXT_PACKAGE=viking
@@ -31,7 +32,7 @@ AC_SUBST(ACLOCAL_AMFLAGS)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([malloc.h netdb.h netinet/in.h stdlib.h string.h sys/param.h sys/socket.h sys/types.h sys/wait.h unistd.h math.h])
+AC_CHECK_HEADERS([malloc.h netdb.h netinet/in.h stdlib.h string.h sys/param.h sys/socket.h sys/types.h sys/wait.h unistd.h math.h utime.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -63,6 +64,7 @@ PKG_CHECK_MODULES(PACKAGE, [
         glib-2.0          >= 2.12
         gthread-2.0       >= 2.2
         gtk+-2.0          >= 2.12
+        gio-2.0           >= 2.12
 ])
 
 AC_SUBST(PACKAGE_CFLAGS)
@@ -72,6 +74,23 @@ dnl  -------------
 dnl | User Manual |---------------------------------------
 dnl  -------------
 GNOME_DOC_INIT
+
+###############
+# Depecations #
+###############
+AC_ARG_ENABLE(deprecations,
+              [AC_HELP_STRING([--enable-deprecations],
+                              [warn about deprecated usages [default=no]])],,
+              [enable_deprecations=no])
+
+if test "x$enable_deprecations" = "xyes"; then
+   DISABLE_DEPRECATED_CFLAGS="\
+-DG_DISABLE_DEPRECATED \
+-DGDK_DISABLE_DEPRECATED \
+-DGTK_DISABLE_DEPRECATED \
+-DGDK_PIXBUF_DISABLE_DEPRECATED"
+   AC_SUBST(DISABLE_DEPRECATED_CFLAGS)
+fi
 
 # Options
 AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],
@@ -222,6 +241,13 @@ case $ac_cv_enable_realtimegpstracking in
     ;;
 esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])
+# Viking supports two incompatibles versions of GPSd: 2.39 and 2.90
+# But GPSd does not provides easy way to test features.
+if test x$ac_cv_enable_realtimegpstracking = xyes
+then
+  AC_CHECK_FUNCS(gps_stream)
+  AC_CHECK_FUNCS(gps_open_r)
+fi
 
 AC_ARG_WITH(search,
             [AC_HELP_STRING([--with-search],
@@ -259,6 +285,21 @@ AC_ARG_WITH(mapcache,
 AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
                    [Size of the map cache])
 
+
+AC_ARG_WITH(tileage,
+            [AC_HELP_STRING([--with-tileage],
+                            [specify the age of a tile before checking it (default is 30 s)])],
+            [if test "x$withval" = "xno"; then
+                VIK_CONFIG_DEFAULT_TILE_AGE=0;
+             elif test "x$withval" = "xyes"; then
+                AC_MSG_ERROR([Please, set a value for age of tiles])
+             else
+                VIK_CONFIG_DEFAULT_TILE_AGE=${withval}
+             fi],
+             [VIK_CONFIG_DEFAULT_TILE_AGE=30])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
+                   [Age of tiles before cheking it (in seconds)])
+
 dnl man pages processing
 DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 AC_SUBST(DB2MAN_XSL)
@@ -278,6 +319,7 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  help/Makefile
                  doc/Makefile
+                 doc/examples/Makefile
                  doc/dev/Makefile])
 AC_OUTPUT([
 	   viking.spec
@@ -293,11 +335,14 @@ echo "Google Maps                      : $ac_cv_enable_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 #echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
+echo "OpenAerial                       : $ac_cv_enable_openaerial"
+echo "BlueMarble                       : $ac_cv_enable_bluemarble"
 echo "Geonames                         : $ac_cv_enable_geonames"
 #echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
+echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"
 echo "-------------------------------------------"
 echo ""
 echo "Configure finished, type 'make' to build."

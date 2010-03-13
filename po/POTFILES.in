@@ -14,6 +14,7 @@ src/datasource_gps.c
 src/dem.c
 src/download.c
 src/file.c
+src/osm-traces.c
 src/mapcache.c
 src/print.c
 src/util.c
@@ -27,6 +28,8 @@ src/vikdemlayer.c
 src/vikfileentry.c
 src/vikfilelist.c
 src/vikgeoreflayer.c
+src/vikgoto.c
+src/vikgototool.c
 src/vikgpslayer.c
 src/viklayer.c
 src/viklayerspanel.c

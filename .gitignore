@@ -49,6 +49,8 @@ gnome-doc-utils.m4
 /src/stamp-h1
 /src/viking
 /src/viking.desktop
+/src/vikenumtypes.h
+/src/vikenumtypes.c
 
 # /src/icons/
 /src/icons/.deps

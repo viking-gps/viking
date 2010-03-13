@@ -1,0 +1,38 @@
+<objects>
+  <object class="VikSlippyMapSource">
+    <property name="label">Letuffe/hiking</property>
+    <property name="hostname">beta.letuffe.org</property>
+    <property name="url">/tiles/renderer.py/hiking/%d/%d/%d.png</property>
+    <property name="id">100</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Public Transport Map </property>
+    <property name="hostname">tile.xn--pnvkarte-m4a.de</property>
+    <property name="url">/tilegen/%0d/%d/%d.png</property>
+    <property name="id">101</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Cyclemap (Cloudmade)</property>
+    <property name="hostname">a.andy.sandbox.cloudmade.com</property>
+    <property name="url">/tiles/cycle/%d/%d/%d.png</property>
+    <property name="id">102</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Bridle Map</property>
+    <property name="hostname">opentiles.com</property>
+    <property name="url">/nop/tiles/%d/%d/%d.png</property>
+    <property name="id">103</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Yahoo Street</property>
+    <property name="hostname">us.maps1.yimg.com</property>
+    <property name="url">/us.tile.maps.yahoo.com/tl?v=4.1&amp;x=%d&amp;y=%-d&amp;z=%d</property>
+    <property name="id">104</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Yahoo Sat</property>
+    <property name="hostname">us.maps3.yimg.com</property>
+    <property name="url">/aerial.maps.yimg.com/ximg?v=1.7&amp;t=a&amp;s=256&amp;x=%d&amp;y=%-d&amp;z=%d</property>
+    <property name="id">105</property>
+  </object>
+</objects>

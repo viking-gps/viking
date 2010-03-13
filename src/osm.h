@@ -19,13 +19,8 @@
  *
  */
 
-#ifndef __VIKING_OSMARENDER_H
-#define __VIKING_OSMARENDER_H
-
-#include <glib.h>
-
-#include "vikcoord.h"
-#include "mapcoord.h"
+#ifndef __VIKING_OSM_H
+#define __VIKING_OSM_H
 
 void osm_init ();
 

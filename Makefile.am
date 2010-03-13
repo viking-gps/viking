@@ -13,6 +13,7 @@ bin_SCRIPTS = viking-remote
 
 EXTRA_DIST = \
 	     gnome-doc-utils.make \
+		 ChangeLog.0 \
 	     viking-remote \
 	     viking.spec \
 	     $(INTLTOOL)

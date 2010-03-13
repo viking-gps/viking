@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-20 09:50+0200\n"
-"PO-Revision-Date: 2008-09-17 04:02+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"PO-Revision-Date: 2009-10-02 12:52+0000\n"
+"Last-Translator: ΑναστόπουλοςΧάρης <harrisanasto@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2009-09-09 20:12+0000\n"
+"X-Launchpad-Export-Date: 2010-02-05 21:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -53,7 +53,7 @@ msgstr ""
 
 #: ../src/clipboard.c:84
 msgid "paste failed"
-msgstr ""
+msgstr "η επικόλληση απέτυχε"
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
@@ -145,7 +145,7 @@ msgstr ""
 
 #: ../src/dialog.c:462 ../src/geonamessearch.c:301
 msgid "Nothing was selected"
-msgstr ""
+msgstr "Δεν επιλέχθηκε τίποτα"
 
 #: ../src/dialog.c:470
 msgid "Add Track"
@@ -153,11 +153,11 @@ msgstr ""
 
 #: ../src/dialog.c:478
 msgid "Track Name:"
-msgstr ""
+msgstr "Όνομα Κομματιού"
 
 #: ../src/dialog.c:493
 msgid "Please enter a name for the track."
-msgstr ""
+msgstr "Παρακαλώ εισάγετε ένα όνομα για το κομμάτι"
 
 #: ../src/dialog.c:497
 #, c-format
@@ -235,7 +235,7 @@ msgstr ""
 
 #: ../src/expedia.c:51
 msgid "Expedia Street Maps"
-msgstr ""
+msgstr "Χάρτες Δρόμων Expedia"
 
 #: ../src/expedia.c:79
 msgid "Invalid expedia altitude"
@@ -263,23 +263,23 @@ msgstr ""
 
 #: ../src/geonamessearch.c:119
 msgid "No entries found!"
-msgstr ""
+msgstr "Δεν βρέθηκαν εγγραφές"
 
 #: ../src/geonamessearch.c:135 ../src/googlesearch.c:70
 msgid "I don't know that place. Do you want another search?"
-msgstr ""
+msgstr "Δεν γνωρίζω αυτο το μέρος.Θέλετε άλλη αναζήτηση;"
 
 #: ../src/geonamessearch.c:153 ../src/googlesearch.c:88
 msgid "Enter address or place name:"
-msgstr ""
+msgstr "Εισάγετε διεύθυνση ή όνομα μέρους:"
 
 #: ../src/geonamessearch.c:327 ../src/googlesearch.c:127
 msgid "couldn't map temp file"
-msgstr ""
+msgstr "Δεν μπορεί να χαρτογραφηθεί το αρχείο temp"
 
 #: ../src/geonamessearch.c:509 ../src/googlesearch.c:200
 msgid "couldn't open temp file"
-msgstr ""
+msgstr "Δεν μπορεί να ανοιχτεί το αρχείο temp"
 
 #: ../src/globals.c:41
 msgid "Degree format:"
@@ -300,11 +300,11 @@ msgstr ""
 
 #: ../src/datasource_gc.c:78
 msgid "geocaching.com username:"
-msgstr ""
+msgstr "geocachiing.com όνομα χρήστη:"
 
 #: ../src/datasource_gc.c:79
 msgid "geocaching.com password:"
-msgstr ""
+msgstr "geocaching.com κωδικός:"
 
 #: ../src/datasource_gc.c:107
 msgid ""
@@ -375,11 +375,11 @@ msgstr ""
 
 #: ../src/datasource_gps.c:262 ../src/vikgpslayer.c:133
 msgid "GPS Protocol:"
-msgstr ""
+msgstr "Πρωτόκολλο GPS:"
 
 #: ../src/datasource_gps.c:269 ../src/vikgpslayer.c:134
 msgid "Serial Port:"
-msgstr ""
+msgstr "Σειριακή Θύρα:"
 
 #: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:997
 msgid "GPS device: N/A"
@@ -387,7 +387,7 @@ msgstr ""
 
 #: ../src/dem.c:59 ../src/dem.c:73
 msgid "Invalid DEM"
-msgstr ""
+msgstr "Λανθασμένο DEM"
 
 #: ../src/dem.c:115
 msgid "Invalid DEM header"
@@ -447,7 +447,7 @@ msgstr ""
 
 #: ../src/print.c:595
 msgid "C_enter:"
-msgstr ""
+msgstr "Κ_έντρο"
 
 #. ignore page margins
 #: ../src/print.c:613
@@ -456,11 +456,11 @@ msgstr ""
 
 #: ../src/print.c:632
 msgid "Image S_ize:"
-msgstr ""
+msgstr "Μ_έγεθος Εικόνας:"
 
 #: ../src/util.c:76
 msgid "Could not launch web browser."
-msgstr ""
+msgstr "Δεν μπορεί να ανοιχτεί ο περιηγητής."
 
 #: ../src/util.c:87
 msgid "Could not create new email."
@@ -536,11 +536,11 @@ msgstr ""
 
 #: ../src/osm-traces.c:77
 msgid "OSM username:"
-msgstr ""
+msgstr "OSM όνομα χρήστη:"
 
 #: ../src/osm-traces.c:78
 msgid "OSM password:"
-msgstr ""
+msgstr "OSM κωδικός:"
 
 #: ../src/osm-traces.c:218
 #, c-format
@@ -597,11 +597,11 @@ msgstr ""
 
 #: ../src/osm-traces.c:354
 msgid "File's name:"
-msgstr ""
+msgstr "Όνομα αρχείου:"
 
 #: ../src/osm-traces.c:366
 msgid "The name of the file on OSM"
-msgstr ""
+msgstr "Το όνομα αρχείου στο OSM"
 
 #: ../src/osm-traces.c:367
 msgid ""
@@ -644,7 +644,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:108
 msgid "DEM Files:"
-msgstr ""
+msgstr "Αρχεία DEM"
 
 #: ../src/vikdemlayer.c:109
 msgid "Download Source:"
@@ -686,7 +686,7 @@ msgstr ""
 
 #: ../src/vikfilelist.c:47
 msgid "Choose file(s)"
-msgstr ""
+msgstr "Επιλογή αρχείου(ων)"
 
 #: ../src/vikfilelist.c:126
 msgid "Add..."
@@ -715,15 +715,15 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:309 ../src/vikgeoreflayer.c:354
 msgid "Choose World file"
-msgstr ""
+msgstr "Διαλέξτε αρχείο Κόσμου"
 
 #: ../src/vikgeoreflayer.c:322
 msgid "The World file you requested could not be opened for reading."
-msgstr ""
+msgstr "Το αρχείο Κόσμου που επιλέξατε δεν μπορεί να διαβαστεί."
 
 #: ../src/vikgeoreflayer.c:367
 msgid "The file you requested could not be opened for writing."
-msgstr ""
+msgstr "Το αρχείο που επιλέξατε δεν μπορεί να διαβαστεί."
 
 #: ../src/vikgeoreflayer.c:384
 msgid "Layer Properties"
@@ -755,7 +755,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:418
 msgid "Map Image:"
-msgstr ""
+msgstr "Εικόνα Χάρτη:"
 
 #: ../src/vikgeoreflayer.c:522
 msgid "Zoom to Fit Map"
@@ -767,7 +767,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:532
 msgid "Export to World File"
-msgstr ""
+msgstr "Εξαγωγή στο αρχείο Κόσμου"
 
 #: ../src/vikgpslayer.c:137
 msgid "Recording tracks"
@@ -787,7 +787,7 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:141
 msgid "Gpsd Port:"
-msgstr ""
+msgstr "Gpsd θύρα:"
 
 #: ../src/vikgpslayer.c:142
 msgid "Gpsd Retry Interval (seconds):"
@@ -807,11 +807,11 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:371
 msgid "Unknown GPS Protocol"
-msgstr ""
+msgstr "Άγνωστο Πρωτόκολλο GPS"
 
 #: ../src/vikgpslayer.c:377
 msgid "Unknown serial port device"
-msgstr ""
+msgstr "Άγνωστη συσκευή στην σειριακή θύρα"
 
 #: ../src/vikgpslayer.c:442
 #, c-format
@@ -918,11 +918,11 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:60
 msgid "/_Copy"
-msgstr ""
+msgstr "/_Αντιγραφή"
 
 #: ../src/viklayerspanel.c:61
 msgid "/_Paste"
-msgstr ""
+msgstr "/_Επικόλληση"
 
 #: ../src/viklayerspanel.c:62
 msgid "/_Delete"
@@ -959,7 +959,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:119
 msgid "Map Type:"
-msgstr ""
+msgstr "Τύπος Χάρτη:"
 
 #: ../src/vikmapslayer.c:120
 msgid "Maps Directory:"
@@ -1071,7 +1071,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:310
 msgid "Create Track"
-msgstr ""
+msgstr "Δημιουργία Κομματιού"
 
 #: ../src/viktrwlayer.c:314
 msgid "Begin Track"
@@ -1091,7 +1091,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:330
 msgid "Magic Scissors"
-msgstr ""
+msgstr "Μαγικά Ψαλίδια"
 
 #. ***** PARAMETERS *****
 #: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1399
@@ -1222,7 +1222,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:388
 msgid "Image Size (pixels):"
-msgstr ""
+msgstr "Μέγεθος Εικόνας (pixels):"
 
 #: ../src/viktrwlayer.c:389
 msgid "Image Alpha:"
