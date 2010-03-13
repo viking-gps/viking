@@ -725,13 +725,30 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     gdk_draw_layout(d, gc, x1-5, y1-CR-3*CW-8, pl);
 
     /* draw label with distance */
-    if (distance >= 1000 && distance < 100000) {
-      g_sprintf(str, "%3.2f km", distance/1000.0);
-    } else if (distance < 1000) {
-      g_sprintf(str, "%d m", (int)distance);
-    } else {
-      g_sprintf(str, "%d km", (int)distance/1000);
+    vik_units_distance_t dist_units = a_vik_get_units_distance ();
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_KILOMETRES:
+      if (distance >= 1000 && distance < 100000) {
+	g_sprintf(str, "%3.2f km", distance/1000.0);
+      } else if (distance < 1000) {
+	g_sprintf(str, "%d m", (int)distance);
+      } else {
+	g_sprintf(str, "%d km", (int)distance/1000);
+      }
+      break;
+    case VIK_UNITS_DISTANCE_MILES:
+      if (distance >= 1600 && distance < 160000) {
+	g_sprintf(str, "%3.2f miles", distance/1600.0);
+      } else if (distance < 1600) {
+	g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+      } else {
+	g_sprintf(str, "%d miles", (int)distance/1600);
+      }
+      break;
+    default:
+      g_critical("Houston, we've had a problem. distance=%d", dist_units);
     }
+
     pango_layout_set_text(pl, str, -1);
 
     pango_layout_get_pixel_size ( pl, &wd, &hd );
@@ -809,7 +826,19 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
     vik_coord_to_latlon ( &coord, &ll );
     a_coords_latlon_to_string ( &ll, &lat, &lon );
     if ( s->has_oldcoord ) {
-      temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+      vik_units_distance_t dist_units = a_vik_get_units_distance ();
+      switch (dist_units) {
+      case VIK_UNITS_DISTANCE_KILOMETRES:
+	temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+	break;
+      case VIK_UNITS_DISTANCE_MILES:
+	temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) )* 0.000621371192);
+	break;
+      default:
+	temp = g_strdup_printf ("Just to keep the compiler happy");
+	g_critical("Houston, we've had a problem. distance=%d", dist_units);
+      }
+
       s->has_oldcoord = FALSE;
     }
     else {
@@ -869,7 +898,18 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
       draw_buf_done = FALSE;
     }
     a_coords_latlon_to_string(&ll, &lat, &lon);
-    temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+    vik_units_distance_t dist_units = a_vik_get_units_distance ();
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_KILOMETRES:
+      temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+      break;
+    case VIK_UNITS_DISTANCE_MILES:
+      temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) )* 0.000621371192);
+      break;
+    default:
+      temp = g_strdup_printf ("Just to keep the compiler happy");
+      g_critical("Houston, we've had a problem. distance=%d", dist_units);
+    }
     vik_statusbar_set_message ( vw->viking_vs, 3, temp );
     g_free ( temp );
   }
@@ -1590,6 +1630,7 @@ static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
 static void preferences_cb ( GtkAction *a, VikWindow *vw )
 {
   a_preferences_show_window ( GTK_WINDOW(vw) );
+  draw_update ( vw );
 }
 
 static void clear_cb ( GtkAction *a, VikWindow *vw )
@@ -1765,7 +1806,19 @@ static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointe
     w *= gtk_spin_button_get_value(GTK_SPIN_BUTTON(pass_along[4]));
     h *= gtk_spin_button_get_value(GTK_SPIN_BUTTON(pass_along[5]));
   }
-  label_text = g_strdup_printf ( _("Total area: %ldm x %ldm (%.3f sq. km)"), (glong)w, (glong)h, (w*h/1000000));
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+  switch (dist_units) {
+  case VIK_UNITS_DISTANCE_KILOMETRES:
+    label_text = g_strdup_printf ( _("Total area: %ldm x %ldm (%.3f sq. km)"), (glong)w, (glong)h, (w*h/1000000));
+    break;
+  case VIK_UNITS_DISTANCE_MILES:
+    label_text = g_strdup_printf ( _("Total area: %ldm x %ldm (%.3f sq. miles)"), (glong)w, (glong)h, (w*h/2589988.11));
+    break;
+  default:
+    label_text = g_strdup_printf ("Just to keep the compiler happy");
+    g_critical("Houston, we've had a problem. distance=%d", dist_units);
+  }
+
   gtk_label_set_text(GTK_LABEL(pass_along[6]), label_text);
   g_free ( label_text );
 }

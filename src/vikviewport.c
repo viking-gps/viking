@@ -351,7 +351,19 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     vik_viewport_screen_to_coord ( vvp, 0, vvp->height, &left );
     vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height, &right );
 
-    base = vik_coord_diff ( &left, &right ); // in meters
+    vik_units_distance_t dist_units = a_vik_get_units_distance ();
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_KILOMETRES:
+      base = vik_coord_diff ( &left, &right ); // in meters
+      break;
+    case VIK_UNITS_DISTANCE_MILES:
+      // in 0.1 miles (copes better when zoomed in as 1 mile can be too big)
+      base = vik_coord_diff ( &left, &right ) * 0.00621371192;
+      break;
+    default:
+      base = 1; // Keep the compiler happy
+      g_critical("Houston, we've had a problem. distance=%d", dist_units);
+    }
     ratio = (vvp->width/SCSIZE)/base;
 
     unit = 1;
@@ -405,10 +417,28 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
 
-    if (unit >= 1000) {
-      sprintf(s, "%d km", (int)unit/1000);
-    } else {
-      sprintf(s, "%d m", (int)unit);
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_KILOMETRES:
+      if (unit >= 1000) {
+	sprintf(s, "%d km", (int)unit/1000);
+      } else {
+	sprintf(s, "%d m", (int)unit);
+      }
+      break;
+    case VIK_UNITS_DISTANCE_MILES:
+      // Handle units in 0.1 miles
+      if (unit < 10.0) {
+	sprintf(s, "%0.1f miles", unit/10.0);
+      }
+      else if ((int)unit == 10.0) {
+	sprintf(s, "1 mile");
+      }
+      else {
+	sprintf(s, "%d miles", (int)(unit/10.0));
+      }
+      break;
+    default:
+      g_critical("Houston, we've had a problem. distance=%d", dist_units);
     }
     pango_layout_set_text(pl, s, -1);
     vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,

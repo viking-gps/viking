@@ -51,7 +51,7 @@ extern gboolean vik_debug;
 extern gboolean vik_verbose;
 extern gboolean vik_version;
 
-/* Glbal preferences */
+/* Global preferences */
 void a_vik_preferences_init ();
 
 /* Coord display preferences */
@@ -62,6 +62,31 @@ typedef enum {
 } vik_degree_format_t;
 
 vik_degree_format_t a_vik_get_degree_format ( );
+
+/* Distance preferences */
+typedef enum {
+  VIK_UNITS_DISTANCE_KILOMETRES,
+  VIK_UNITS_DISTANCE_MILES,
+} vik_units_distance_t;
+
+vik_units_distance_t a_vik_get_units_distance ( );
+
+/* Speed preferences */
+typedef enum {
+  VIK_UNITS_SPEED_KILOMETRES_PER_HOUR,
+  VIK_UNITS_SPEED_MILES_PER_HOUR,
+  VIK_UNITS_SPEED_METRES_PER_SECOND,
+} vik_units_speed_t;
+
+vik_units_speed_t a_vik_get_units_speed ( );
+
+/* Height (Depth) preferences */
+typedef enum {
+  VIK_UNITS_HEIGHT_METRES,
+  VIK_UNITS_HEIGHT_FEET,
+} vik_units_height_t;
+
+vik_units_height_t a_vik_get_units_height ( );
 
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
