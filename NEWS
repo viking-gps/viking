@@ -1,3 +1,21 @@
+Viking 0.9.92 (2010-03-15)
+New features since 0.9.91
+* Memorize previously selected go-to service.
+* Better scale when zoomed close in and in miles distance mode.
+* Add and use preference for height units.
+* Add and use preference for speed units.
+* Add and use preference for distance units.
+* Use a preference to set the tiles age.
+* New preference for default maplayer cache.
+* Improve DEM-Layer.
+* Remove OpenAerial support.
+* Translation updates.
+
+Fixes since 0.9.91
+* Fix: Correctly rotate thumbnail images
+* Fix #2958601: Support for non ascii characters in "Go-to" search
+* Fix error handling in go-to feature
+
 Viking 0.9.91 (2010-02-06)
 New features since 0.9.9
 * Interpolation for maps: use less precise images when wanted image is not present
