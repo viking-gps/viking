@@ -8,56 +8,56 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-08-20 09:50+0200\n"
-"PO-Revision-Date: 2009-08-31 01:11+0000\n"
-"Last-Translator: EliotBlennerhassett <eliot@blennerhassett.gen.nz>\n"
+"PO-Revision-Date: 2010-02-25 20:15+0000\n"
+"Last-Translator: issyl0 <isabell121@gmail.com>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-02-05 21:08+0000\n"
+"X-Launchpad-Export-Date: 2010-03-15 19:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
-msgstr ""
+msgstr "Working…"
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
-msgstr ""
+msgstr "Error: acquisition failed."
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:953
 msgid "Done."
-msgstr ""
+msgstr "Done."
 
 #: ../src/acquire.c:326 ../src/vikgpslayer.c:992
 msgid "Status: detecting gpsbabel"
-msgstr ""
+msgstr "Status: detecting gpsbabel"
 
 #: ../src/background.c:57
 #, c-format
 msgid "%d items"
-msgstr ""
+msgstr "%d items"
 
 #: ../src/background.c:224
 msgid "Job"
-msgstr ""
+msgstr "Job"
 
 #: ../src/background.c:228
 msgid "Progress"
-msgstr ""
+msgstr "Progress"
 
 #: ../src/background.c:239
 msgid "Viking Background Jobs"
-msgstr ""
+msgstr "Viking Background Jobs"
 
 #: ../src/clipboard.c:84
 msgid "paste failed"
-msgstr ""
+msgstr "paste failed"
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
-msgstr ""
+msgstr "wrong clipboard data size"
 
 #: ../src/clipboard.c:113
 #, c-format
