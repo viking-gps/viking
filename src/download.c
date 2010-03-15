@@ -165,6 +165,9 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       /* Nothing to do as file already exists, so return */
       return -3;
     }
+    if (options->use_etag) {
+      file_options.etag = g_strdup_printf ("");
+    }
   } else {
     gchar *dir = g_path_get_dirname ( fn );
     g_mkdir_with_parents ( dir , 0777 );
@@ -207,8 +210,19 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_remove ( tmpfilename );
     unlock_file ( tmpfilename );
     g_free ( tmpfilename );
+    if (options->use_etag) {
+      g_free ( file_options.etag );
+      g_free ( file_options.new_etag );
+    }
     g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
+  }
+
+  if (options->use_etag) {
+    if (file_options.new_etag) {
+      /* server returned an etag value */
+      printf("got etag %s\n", file_options.new_etag);
+    }
   }
 
   if (ret == DOWNLOAD_NO_NEWER_FILE)  {
@@ -223,6 +237,10 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   unlock_file ( tmpfilename );
   g_free ( tmpfilename );
 
+  if (options->use_etag) {
+    g_free ( file_options.etag );
+    g_free ( file_options.new_etag );
+  }
   return 0;
 }
 
