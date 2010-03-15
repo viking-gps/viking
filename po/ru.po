@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-20 09:50+0200\n"
-"PO-Revision-Date: 2009-02-04 22:19+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"PO-Revision-Date: 2010-02-11 20:11+0000\n"
+"Last-Translator: Auduf <5097@mail.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2010-02-05 21:08+0000\n"
+"X-Launchpad-Export-Date: 2010-03-15 19:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -58,7 +58,7 @@ msgstr "ошибка вставки"
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
-msgstr ""
+msgstr "неправильный размер буфера обмена"
 
 #: ../src/clipboard.c:113
 #, c-format
@@ -72,11 +72,12 @@ msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
 "into."
 msgstr ""
+"Для того, чтобы вставить точку, выберите соответствующий слой для вставки."
 
 #: ../src/curl_download.c:94
 #, c-format
 msgid "%s() Curl perform failed: %s"
-msgstr ""
+msgstr "%s() Curl выполнить не удалось: %s"
 
 #: ../src/dialog.c:54 ../src/dialog.c:102
 msgid "Go to Lat/Lon"
@@ -104,7 +105,7 @@ msgstr "Зона:"
 
 #: ../src/dialog.c:131
 msgid "Letter:"
-msgstr ""
+msgstr "Письмо:"
 
 #: ../src/dialog.c:192
 msgid "Waypoint Properties"
@@ -146,7 +147,7 @@ msgstr "Путевая точка  \"%s\" уже существует, пере�
 
 #: ../src/dialog.c:462 ../src/geonamessearch.c:301
 msgid "Nothing was selected"
-msgstr ""
+msgstr "Ничего не выбрано"
 
 #: ../src/dialog.c:470
 msgid "Add Track"
@@ -199,7 +200,7 @@ msgstr "1 день"
 
 #: ../src/dialog.c:636
 msgid "Custom (in minutes):"
-msgstr ""
+msgstr "Произвольно (в минутах)"
 
 #: ../src/dialog.c:691
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
@@ -264,7 +265,7 @@ msgstr "Поиск"
 
 #: ../src/geonamessearch.c:119
 msgid "No entries found!"
-msgstr ""
+msgstr "Записи не найдены!"
 
 #: ../src/geonamessearch.c:135 ../src/googlesearch.c:70
 msgid "I don't know that place. Do you want another search?"
@@ -272,7 +273,7 @@ msgstr ""
 
 #: ../src/geonamessearch.c:153 ../src/googlesearch.c:88
 msgid "Enter address or place name:"
-msgstr ""
+msgstr "Введите адрес или названия места:"
 
 #: ../src/geonamessearch.c:327 ../src/googlesearch.c:127
 msgid "couldn't map temp file"
@@ -362,12 +363,12 @@ msgstr[1] ""
 #: ../src/datasource_gps.c:170
 #, c-format
 msgid "Downloaded %d out of %d %s..."
-msgstr ""
+msgstr "Скачано %d из %d %s..."
 
 #: ../src/datasource_gps.c:172
 #, c-format
 msgid "Downloaded %d %s."
-msgstr ""
+msgstr "Скачано %d %s."
 
 #: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:779
 #, c-format
@@ -411,15 +412,15 @@ msgstr "Ошибка загрузки: %s"
 #: ../src/file.c:426 ../src/file.c:430
 #, c-format
 msgid "Draw mode '%s' no more supported"
-msgstr ""
+msgstr "Режим отображения '%s' больше не поддерживается"
 
 #: ../src/mapcache.c:63
 msgid "Mapcache memory size (MB):"
-msgstr ""
+msgstr "Размер кэш-памяти карты (Мб):"
 
 #: ../src/print.c:53
 msgid "None"
-msgstr ""
+msgstr "Нет"
 
 #: ../src/print.c:54
 msgid "Horizontally"
@@ -461,11 +462,11 @@ msgstr ""
 
 #: ../src/util.c:76
 msgid "Could not launch web browser."
-msgstr ""
+msgstr "Не удалось запустить веб-браузер."
 
 #: ../src/util.c:87
 msgid "Could not create new email."
-msgstr ""
+msgstr "Не удалось создать новое эл. письмо."
 
 #: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:110
 msgid "Color:"
@@ -521,7 +522,7 @@ msgstr "Включить подробную выдачу"
 
 #: ../src/main.c:119
 msgid "Show version"
-msgstr ""
+msgstr "Показать версию"
 
 #: ../src/osm.c:85
 msgid "OSM (view)"
@@ -537,11 +538,11 @@ msgstr ""
 
 #: ../src/osm-traces.c:77
 msgid "OSM username:"
-msgstr ""
+msgstr "OSM имя:"
 
 #: ../src/osm-traces.c:78
 msgid "OSM password:"
-msgstr ""
+msgstr "OSM пароль:"
 
 #: ../src/osm-traces.c:218
 #, c-format
@@ -598,7 +599,7 @@ msgstr "Введите пароль используемый для входа �
 
 #: ../src/osm-traces.c:354
 msgid "File's name:"
-msgstr ""
+msgstr "Имя файла:"
 
 #: ../src/osm-traces.c:366
 msgid "The name of the file on OSM"
@@ -649,7 +650,7 @@ msgstr "DEM Файлы:"
 
 #: ../src/vikdemlayer.c:109
 msgid "Download Source:"
-msgstr ""
+msgstr "Источник загрузки:"
 
 #: ../src/vikdemlayer.c:111
 msgid "Min Elev:"
