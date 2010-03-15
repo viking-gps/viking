@@ -38,6 +38,11 @@ typedef struct {
   gboolean check_file_server_time;
 
   /**
+   * Set if the server handle ETag
+   */
+  gboolean use_etag;
+
+  /**
    * The REFERER string to use.
    * Could be NULL.
    */
