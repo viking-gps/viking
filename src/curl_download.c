@@ -55,6 +55,21 @@ static size_t curl_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream
   return fwrite(ptr, size, nmemb, stream);
 }
 
+static size_t curl_get_etag_func(void *ptr, size_t size, size_t nmemb, gchar **stream)
+{
+  size_t len = size*nmemb;
+  char *str = g_strstr_len(ptr, len, "ETag:");
+  if (str) {
+    char *etag_str = str + strlen("ETag: ");
+    char *end_str = g_strstr_len(etag_str, len, "\n");
+    if (etag_str && end_str) {
+      end_str = '\0';
+      *stream = g_strndup(etag_str, len);
+    }
+  }
+  return nmemb;
+}
+
 static int curl_progress_func(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
   return a_background_testcancel(NULL);
@@ -124,6 +139,7 @@ void curl_download_init()
 int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, DownloadFileOptions *file_options, void *handle )
 {
   CURL *curl;
+  struct curl_slist *curl_send_headers = NULL;
   CURLcode res = CURLE_FAILED_INIT;
   const gchar *cookie_file;
 
@@ -154,12 +170,29 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
         curl_easy_setopt ( curl, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE);
         curl_easy_setopt ( curl, CURLOPT_TIMEVALUE, file_options->time_condition);
       }
+      if (options->use_etag) {
+        if (file_options->etag != NULL) {
+          /* add an header on the HTTP request */
+          char str[50];
+          g_snprintf(str, 50, "If-None-Match: %s", file_options->etag);
+          curl_send_headers = curl_slist_append(curl_send_headers, str);
+          curl_easy_setopt ( curl, CURLOPT_HTTPHEADER , curl_send_headers);
+        }
+        /* store the new etag from the server in an option value */
+        curl_easy_setopt ( curl, CURLOPT_WRITEHEADER, &(file_options->new_etag));
+        curl_easy_setopt ( curl, CURLOPT_HEADERFUNCTION, curl_get_etag_func);
+      }
     }
   }
   curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
   if ((cookie_file = get_cookie_file(FALSE)) != NULL)
     curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
   res = curl_easy_perform ( curl );
+
+  if (file_options->new_etag) {
+    printf ("curl_download - %s", file_options->new_etag);
+  }
+
   if (res == 0) {
     glong response;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response);
@@ -184,6 +217,8 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
   }
   if (!handle)
      curl_easy_cleanup ( curl );
+  if (curl_send_headers)
+    curl_slist_free_all(curl_send_headers);
   return res;
 }
 
