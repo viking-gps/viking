@@ -152,7 +152,13 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
   {
-    if (options != NULL && options->check_file_server_time) {
+    if (options == NULL || (!options->check_file_server_time &&
+                            !options->use_etag)) {
+      /* Nothing to do as file already exists and we don't want to check server */
+      return -3;
+    }
+
+    if (options->check_file_server_time) {
       time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
       /* Get the modified time of this file */
       struct stat buf;
@@ -161,9 +167,6 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       if ( (time(NULL) - file_options.time_condition) < tile_age )
 				/* File cache is too recent, so return */
 				return -3;
-    } else {
-      /* Nothing to do as file already exists, so return */
-      return -3;
     }
     if (options->use_etag) {
       file_options.etag = g_strdup_printf ("");
