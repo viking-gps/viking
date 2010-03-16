@@ -158,15 +158,18 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       return -3;
     }
 
+    time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
+    /* Get the modified time of this file */
+    struct stat buf;
+    g_stat ( fn, &buf );
+    time_t file_time = buf.st_mtime;
+    if ( (time(NULL) - file_time) < tile_age ) {
+      /* File cache is too recent, so return */
+      return -3;
+    }
+
     if (options->check_file_server_time) {
-      time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
-      /* Get the modified time of this file */
-      struct stat buf;
-      g_stat ( fn, &buf );
-      file_options.time_condition = buf.st_mtime;
-      if ( (time(NULL) - file_options.time_condition) < tile_age )
-				/* File cache is too recent, so return */
-				return -3;
+      file_options.time_condition = file_time;
     }
     if (options->use_etag) {
       file_options.etag = g_strdup_printf ("");
