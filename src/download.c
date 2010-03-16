@@ -172,8 +172,17 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       file_options.time_condition = file_time;
     }
     if (options->use_etag) {
-      file_options.etag = g_strdup_printf ("");
+      gchar *etag_filename = g_strdup_printf("%s.etag", fn);
+      gsize etag_length;
+      g_file_get_contents (etag_filename, &(file_options.etag), &etag_length, NULL);
+
+      /* check if etag is short enough */
+      if (etag_length > 100)
+        g_free(file_options.etag);
+
+      /* TODO: should check that etag is a valid string */
     }
+
   } else {
     gchar *dir = g_path_get_dirname ( fn );
     g_mkdir_with_parents ( dir , 0777 );
@@ -228,6 +237,9 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     if (file_options.new_etag) {
       /* server returned an etag value */
       printf("got etag %s\n", file_options.new_etag);
+
+      gchar *etag_filename = g_strdup_printf("%s.etag", fn);
+      g_file_set_contents (etag_filename, file_options.new_etag, -1, NULL);
     }
   }
 
