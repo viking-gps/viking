@@ -58,6 +58,7 @@ enum
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
   PROP_CHECK_FILE_SERVER_TIME,
+  PROP_USE_ETAG,
 };
 
 G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
@@ -132,6 +133,10 @@ vik_slippy_map_source_set_property (GObject      *object,
       priv->options.check_file_server_time = g_value_get_boolean (value);
       break;
 
+    case PROP_USE_ETAG:
+      priv->options.use_etag = g_value_get_boolean (value);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -170,6 +175,10 @@ vik_slippy_map_source_get_property (GObject    *object,
       g_value_set_boolean (value, priv->options.check_file_server_time);
       break;
 	  
+    case PROP_USE_ETAG:
+      g_value_set_boolean (value, priv->options.use_etag);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -236,6 +245,13 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
                                   FALSE  /* default value */,
                                   G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_CHECK_FILE_SERVER_TIME, pspec);
+
+	pspec = g_param_spec_boolean ("use-etag",
+	                              "Use etag values with server",
+                                  "Store etag in a file, and send it to server to check if we have the latest file",
+                                  FALSE  /* default value */,
+                                  G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_USE_ETAG, pspec);
 
 	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
 	
