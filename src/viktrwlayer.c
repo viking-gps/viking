@@ -966,6 +966,9 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     drawstops = dp->vtl->drawstops;
   }
 
+  if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
+    dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_BLACK;
+
   if ( track == dp->vtl->current_track )
     main_gc = dp->vtl->current_track_gc;
   else
@@ -987,9 +990,6 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 
     oldx = x;
     oldy = y;
-
-    if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
-      dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_MAX + 1;
 
     while ((list = g_list_next(list)))
     {
