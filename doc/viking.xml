@@ -276,17 +276,35 @@ and docbook-xsl in your Build-Depends control field.
        </listitem>
       </varlistentry>
       <varlistentry>
+        <term><filename>~/.viking/goto_tools.xml</filename></term>
+        <listitem>
+          <para>File containing definition of "Go-to" services.</para>
+          <para>See previous section for details.</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>~/.viking/external_tools.xml</filename></term>
+        <listitem>
+          <para>File containing definition of external tools.</para>
+          <para>See previous section for details.</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>~/.viking/viking.prefs</filename></term>
+        <listitem>
+          <para>Preferences for &dhpackage;.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><filename>~/.viking/cookies.txt</filename></term>
         <listitem>
           <para>File hosting cookies used by &dhpackage;.</para>
-          <para>See previous section for details.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term><filename>~/.viking-maps/</filename></term>
         <listitem>
           <para>Map cache of tiles downloaded by &dhpackage;.</para>
-          <para>See previous section for details.</para>
         </listitem>
       </varlistentry>
     </variablelist>
