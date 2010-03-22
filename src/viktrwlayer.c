@@ -675,8 +675,10 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
 
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
 {
-  guint8 *pd, *dd;
-  gint pl, dl;
+  guint8 *pd;
+  gchar *dd;
+  gsize dl;
+  gint pl;
   gchar *tmpname;
   FILE *f;
 
@@ -687,7 +689,7 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
     vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
     fclose(f);
     f = NULL;
-    g_file_get_contents(tmpname, (void *)&dd, (void *)&dl, NULL);
+    g_file_get_contents(tmpname, &dd, &dl, NULL);
     *len = sizeof(pl) + pl + dl;
     *data = g_malloc(*len);
     memcpy(*data, &pl, sizeof(pl));
