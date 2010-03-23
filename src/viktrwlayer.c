@@ -246,7 +246,7 @@ static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
 
 
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len );
-static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *vvp );
+static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id );
@@ -703,10 +703,10 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
   }
 }
 
-static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *vvp )
+static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
   VikTrwLayer *rv = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, NULL, FALSE ));
-  guint pl;
+  gint pl;
   gchar *tmpname;
   FILE *f;
 
