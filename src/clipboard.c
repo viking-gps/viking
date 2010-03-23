@@ -110,7 +110,7 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
     }
     else
       a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vlp)),
-				 _("The clipboard contains sublayer data for a %s layers."
+				 _("The clipboard contains sublayer data for %s layers. "
 				   "You must select a layer of this type to paste the clipboard data."),
 				 vik_layer_get_interface(vc->layer_type)->name );
   }
@@ -321,10 +321,10 @@ void a_clipboard_copy_selected ( VikLayersPanel *vlp )
     return;
 
   vik_treeview_get_selected_iter ( sel->vt, &iter );
+  layer_type = sel->type;
 
   if ( vik_treeview_item_get_type ( sel->vt, &iter ) == VIK_TREEVIEW_TYPE_SUBLAYER ) {
     type = VIK_CLIPBOARD_DATA_SUBLAYER;
-    layer_type = sel->type;
     if ( vik_layer_get_interface(layer_type)->copy_item) {
       subtype = vik_treeview_item_get_data(sel->vt, &iter);
       vik_layer_get_interface(layer_type)->copy_item(sel, subtype, vik_treeview_item_get_pointer(sel->vt, &iter), &data, &len );
