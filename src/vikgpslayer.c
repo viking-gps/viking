@@ -168,7 +168,7 @@ VikLayerInterface vik_gps_layer_interface = {
   params_groups,
   sizeof(params_groups)/sizeof(params_groups[0]),
 
-  VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_COPY),
+  VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  vik_gps_layer_create,
   (VikLayerFuncRealize)                 vik_gps_layer_realize,
