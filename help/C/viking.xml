@@ -462,6 +462,22 @@ Click to download and import a DEM file.
 
 </section>
 
+<section><title>External tools</title>
+<para>
+Many services are available only via a web browser (Google Maps, OpenStreetMap Potlach editor, etc.).
+</para>
+<para>
+Jumping from &app; to such service can become annoying.
+</para>
+<para>
+Viking allows you to open such service directly at the position currently viewed in &app;.
+</para>
+<para>
+This feature is called <guilabel>External tools</guilabel>.
+</para>
+
+</section>
+
 </section>
 <section><title>Mini-Howto's</title>
 <section><title>Getting Started</title>
