@@ -1,4 +1,12 @@
 <objects>
+<!-- No more active
+  <object class="VikSlippyMapSource">
+    <property name="label">Letuffe/hiking</property>
+    <property name="hostname">beta.letuffe.org</property>
+    <property name="url">/tiles/renderer.py/hiking/%d/%d/%d.png</property>
+    <property name="id">20</property>
+  </object>
+-->
   <object class="VikSlippyMapSource">
     <property name="label">Letuffe/hiking</property>
     <property name="hostname">beta.letuffe.org</property>

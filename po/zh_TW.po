@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2010-02-05 21:08+0000\n"
+"X-Launchpad-Export-Date: 2010-03-15 19:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Traditional Chinese\n"
 

@@ -63,7 +63,7 @@
 
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
 #define SRTM_HTTP_SITE "dds.cr.usgs.gov"
-#define SRTM_HTTP_URI  "/srtm/version2_1/SRTM3/OLD/"
+#define SRTM_HTTP_URI  "/srtm/version2_1/SRTM3/"
 
 #ifdef VIK_CONFIG_DEM24K
 #define DEM24K_DOWNLOAD_SCRIPT "dem24k.pl"
@@ -352,14 +352,21 @@ VikDEMLayer *vik_dem_layer_new ( )
 }
 
 
+static inline guint16 get_height_difference(gint16 elev, gint16 new_elev)
+{
+  if(new_elev == VIK_DEM_INVALID_ELEVATION)
+    return 0;
+  else
+    return abs(new_elev - elev);
+}
+
 
 static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *dem )
 {
-  VikDEMColumn *column;
-  VikDEMColumn *nextcolumn;
+  VikDEMColumn *column, *prevcolumn, *nextcolumn;
 
   struct LatLon dem_northeast, dem_southwest;
-  gdouble max_lat, max_lon, min_lat, min_lon;  
+  gdouble max_lat, max_lon, min_lat, min_lon;
 
   /**** Check if viewport and DEM data overlap ****/
 
@@ -436,7 +443,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 
     gint16 elev;
 
-    guint skip_factor = ceil ( vik_viewport_get_xmpp(vp) / 40 ); /* todo: smarter calculation. */
+    guint skip_factor = ceil ( vik_viewport_get_xmpp(vp) / 80 ); /* todo: smarter calculation. */
 
     gdouble nscale_deg = dem->north_scale / ((gdouble) 3600);
     gdouble escale_deg = dem->east_scale / ((gdouble) 3600);
@@ -457,96 +464,120 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
     end_lon   = ceil (end_lon_as / dem->east_scale) * escale_deg;
 
     vik_dem_east_north_to_xy ( dem, start_lon_as, start_lat_as, &start_x, &start_y );
+    guint gradient_skip_factor = 1;
+    if(vdl->type == DEM_TYPE_GRADIENT)
+	    gradient_skip_factor = skip_factor;
 
     /* verify sane elev interval */
     if ( vdl->max_elev <= vdl->min_elev )
       vdl->max_elev = vdl->min_elev + 1;
 
-    for ( x=start_x, counter.lon = start_lon; counter.lon <= end_lon; counter.lon += escale_deg * skip_factor, x += skip_factor ) {
-      if ( x > 0 && x < dem->n_columns ) {
+    for ( x=start_x, counter.lon = start_lon; counter.lon <= end_lon+escale_deg*skip_factor; counter.lon += escale_deg * skip_factor, x += skip_factor ) {
+      // NOTE: ( counter.lon <= end_lon + ESCALE_DEG*SKIP_FACTOR ) is neccessary so in high zoom modes,
+      // the leftmost column does also get drawn, if the center point is out of viewport.
+      if ( x >= 0 && x < dem->n_columns ) {
         column = g_ptr_array_index ( dem->columns, x );
-	if(x+1 == dem->n_columns) {
-	  nextcolumn = g_ptr_array_index ( dem->columns, x-1);
-	} else {
-	  nextcolumn = g_ptr_array_index ( dem->columns, x+1);
-	}
+        // get previous and next column. catch out-of-bound.
+	gint32 new_x = x;
+	new_x -= gradient_skip_factor;
+        if(new_x < 1)
+          prevcolumn = g_ptr_array_index ( dem->columns, x+1);
+        else
+          prevcolumn = g_ptr_array_index ( dem->columns, new_x);
+	new_x = x;
+	new_x += gradient_skip_factor;
+        if(new_x >= dem->n_columns)
+          nextcolumn = g_ptr_array_index ( dem->columns, x-1);
+        else
+          nextcolumn = g_ptr_array_index ( dem->columns, new_x);
 
         for ( y=start_y, counter.lat = start_lat; counter.lat <= end_lat; counter.lat += nscale_deg * skip_factor, y += skip_factor ) {
           if ( y > column->n_points )
             break;
+
           elev = column->points[y];
 
-	  if(vdl->type == DEM_TYPE_HEIGHT) {
-		  if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev )
-		    elev=vdl->min_elev;
-		  if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
-		    elev=vdl->max_elev;
-	  }
+	  // calculate bounding box for drawing
+	  gint box_x, box_y, box_width, box_height;
+	  struct LatLon box_c;
+	  box_c = counter;
+	  box_c.lat += (nscale_deg * skip_factor)/2;
+          box_c.lon -= (escale_deg * skip_factor)/2;
+	  vik_coord_load_from_latlon(&tmp, vik_viewport_get_coord_mode(vp), &box_c);
+	  vik_viewport_coord_to_screen(vp, &tmp, &box_x, &box_y);
+	  // catch box at borders
+	  if(box_x < 0)
+	          box_x = 0;
+	  if(box_y < 0)
+	          box_y = 0;
+          box_c.lat -= nscale_deg * skip_factor;
+	  box_c.lon += escale_deg * skip_factor;
+	  vik_coord_load_from_latlon(&tmp, vik_viewport_get_coord_mode(vp), &box_c);
+	  vik_viewport_coord_to_screen(vp, &tmp, &box_width, &box_height);
+	  box_width -= box_x;
+	  box_height -= box_y;
+          // catch box at borders
+	  if(box_width < 0 || box_height < 0)
+		  continue; // skip this. this is out of our viewport anyway. FIXME: why?
+
+          if(vdl->type == DEM_TYPE_HEIGHT) {
+            if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev )
+              elev=vdl->min_elev;
+            if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
+              elev=vdl->max_elev;
+          }
 
           {
-            gint a, b;
+	    if(box_width < 0 || box_height < 0) // FIXME: why does this happen?
+              continue;
 
-            vik_coord_load_from_latlon(&tmp, vik_viewport_get_coord_mode(vp), &counter);
-            vik_viewport_coord_to_screen(vp, &tmp, &a, &b);
-	    if(vdl->type == DEM_TYPE_GRADIENT) {
-		    if( elev == VIK_DEM_INVALID_ELEVATION ) {
-			    /* don't draw it */
-		    } else {
-			    // calculate gradient, but only in two orthogonal directions.
-			    gint16 change = 0;
-			    gint16 newelev;
+            if(vdl->type == DEM_TYPE_GRADIENT) {
+              if( elev == VIK_DEM_INVALID_ELEVATION ) {
+                /* don't draw it */
+              } else {
+                // calculate and sum gradient in all directions
+                gint16 change = 0;
+		gint32 new_y;
 
-			    // down
-			    if(y+1 == column->n_points)
-				    newelev = column->points[y-1];
-			    else
-				    newelev = column->points[y+1];
-			    if(newelev != VIK_DEM_INVALID_ELEVATION)
-				    change += abs(newelev - elev);
+		// calculate gradient from height points all around the current one
+		new_y = y - gradient_skip_factor;
+		if(new_y < 0)
+			new_y = y;
+		change += get_height_difference(elev, prevcolumn->points[new_y]);
+		change += get_height_difference(elev, column->points[new_y]);
+		change += get_height_difference(elev, nextcolumn->points[new_y]);
 
-			    // down + right
-			    if(y+1 == nextcolumn->n_points)
-				    newelev = nextcolumn->points[y-1];
-			    else
-				    newelev = nextcolumn->points[y+1];
-			    if(newelev != VIK_DEM_INVALID_ELEVATION)
-				    change += abs(newelev - elev);
+		change += get_height_difference(elev, prevcolumn->points[y]);
+		change += get_height_difference(elev, nextcolumn->points[y]);
 
-			    // right
-			    newelev = nextcolumn->points[y];
-			    if(newelev != VIK_DEM_INVALID_ELEVATION)
-				    change += abs(newelev - elev);
+		new_y = y + gradient_skip_factor;
+		if(new_y >= column->n_points)
+			new_y = y;
+		change += get_height_difference(elev, prevcolumn->points[new_y]);
+		change += get_height_difference(elev, column->points[new_y]);
+		change += get_height_difference(elev, nextcolumn->points[new_y]);
 
-			    // up + right
-			    if(y <= 1)
-				    newelev = nextcolumn->points[y+1];
-			    else
-				    newelev = nextcolumn->points[y-1];
-			    if(newelev != VIK_DEM_INVALID_ELEVATION)
-				    change += abs(newelev - elev);
+		change = change / ((skip_factor > 1) ? log(skip_factor) : 0.55); // FIXME: better calc.
 
-			    change = log(change) * log(change) * log(change);
+                if(change < vdl->min_elev)
+                  change = vdl->min_elev;
 
-			    if(change < vdl->min_elev)
-				    change = vdl->min_elev;
+                if(change > vdl->max_elev)
+                  change = vdl->max_elev;
 
-			    if(change > vdl->max_elev)
-				    change = vdl->max_elev;
-
-			    // void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 );
-			    vik_viewport_draw_rectangle(vp, vdl->gcsgradient[(gint)floor((change - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_GRADIENT_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
-		    }
+                // void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 );
+                vik_viewport_draw_rectangle(vp, vdl->gcsgradient[(gint)floor((change - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_GRADIENT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
+              }
             } else {
-		    if(vdl->type == DEM_TYPE_HEIGHT) {
-			    if ( elev == VIK_DEM_INVALID_ELEVATION )
-			      ; /* don't draw it */
-			    else if ( elev <= 0 )
-			      vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, a-2, b-2, 4, 4 );
-			    else
-			      vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
-		    }
-	    }
-
+              if(vdl->type == DEM_TYPE_HEIGHT) {
+                if ( elev == VIK_DEM_INVALID_ELEVATION )
+                  ; /* don't draw it */
+                else if ( elev <= 0 )
+                  vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, box_x, box_y, box_width, box_height);
+                else
+                  vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
+              }
+            }
           }
         } /* for y= */
       }
@@ -628,9 +659,9 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
             if ( elev == VIK_DEM_INVALID_ELEVATION )
               ; /* don't draw it */
             else if ( elev <= 0 )
-              vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, a-2, b-2, 4, 4 );
+              vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, a-1, b-1, 2, 2 );
             else
-              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, a-2, b-2, 4, 4 );
+              vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, a-1, b-1, 2, 2 );
           }
         } /* for y= */
       }

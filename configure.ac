@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.9.91)
+AC_INIT(viking, 0.9.92)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -172,20 +172,6 @@ case $ac_cv_enable_bluemarble in
 esac
 AM_CONDITIONAL([BLUEMARBLE], [test x$ac_cv_enable_bluemarble = xyes])
 
-# OpenAerial
-AC_ARG_ENABLE(openaerial, AC_HELP_STRING([--enable-openaerial],
-              [enable OpenAerial stuff (default is enable)]),
-              [ac_cv_enable_openaerial=$enableval],
-              [ac_cv_enable_openaerial=yes])
-AC_CACHE_CHECK([whether to enable OpenAerial stuff],
-               [ac_cv_enable_openaerial], [ac_cv_enable_openaerial=yes])
-case $ac_cv_enable_openaerial in
-  yes)
-    AC_DEFINE(VIK_CONFIG_OPENAERIAL, [], [OPENAERIAL STUFF])
-    ;;
-esac
-AM_CONDITIONAL([OPENAERIAL], [test x$ac_cv_enable_openaerial = xyes])
-
 # GeoNames http://www.geonames.org/
 AC_ARG_ENABLE(geonames, AC_HELP_STRING([--enable-geonames],
               [enable Geonames stuff (default is enable)]),
@@ -335,7 +321,6 @@ echo "Google Maps                      : $ac_cv_enable_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 #echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
-echo "OpenAerial                       : $ac_cv_enable_openaerial"
 echo "BlueMarble                       : $ac_cv_enable_bluemarble"
 echo "Geonames                         : $ac_cv_enable_geonames"
 #echo "Geocaches Acquire                : $ac_cv_enable_geocaches"

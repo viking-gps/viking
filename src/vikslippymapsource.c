@@ -73,7 +73,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
   priv->options.check_file = a_check_map_file;
-  priv->options.check_file_server_time = 0;
+  priv->options.check_file_server_time = FALSE;
 
   g_object_set (G_OBJECT (self),
                 "tilesize-x", 256,
@@ -129,7 +129,7 @@ vik_slippy_map_source_set_property (GObject      *object,
       break;
 
     case PROP_CHECK_FILE_SERVER_TIME:
-      priv->options.check_file_server_time = g_value_get_uint (value);
+      priv->options.check_file_server_time = g_value_get_boolean (value);
       break;
 
     default:
@@ -167,7 +167,7 @@ vik_slippy_map_source_get_property (GObject    *object,
       break;
 
     case PROP_CHECK_FILE_SERVER_TIME:
-      g_value_set_uint (value, priv->options.check_file_server_time);
+      g_value_set_boolean (value, priv->options.check_file_server_time);
       break;
 	  
     default:
@@ -230,13 +230,11 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
 	
-	pspec = g_param_spec_uint ("check-file-server-time",
-	                           "Check file server time",
-                               "Age of current cache before redownloading tile",
-                               0  /* minimum value */,
-                               G_MAXUINT16 /* maximum value */,
-                               0  /* default value */,
-                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	pspec = g_param_spec_boolean ("check-file-server-time",
+	                              "Check file server time",
+                                  "Age of current cache before redownloading tile",
+                                  FALSE  /* default value */,
+                                  G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_CHECK_FILE_SERVER_TIME, pspec);
 
 	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
@@ -308,9 +306,7 @@ _supports_if_modified_since (VikMapSource *self)
 	
     VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 	
-	g_debug ("%s: priv->options.check_file_server_time = %d", __FUNCTION__, priv->options.check_file_server_time);
-	
-	return priv->options.check_file_server_time != 0;
+	return priv->options.check_file_server_time;
 }
 static gboolean
 _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )

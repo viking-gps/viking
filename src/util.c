@@ -102,7 +102,7 @@ gchar *uri_escape(gchar *str)
     else if (g_ascii_isalnum(*src))
      *dst++ = *src;
     else {
-      g_sprintf(dst, "%%%02X", *src);
+      g_sprintf(dst, "%%%02hhX", *src);
       dst += 3;
     }
   }

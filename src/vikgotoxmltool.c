@@ -398,8 +398,8 @@ static gboolean
 _goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll)
 {
 	GMarkupParser xml_parser;
-	GMarkupParseContext *xml_context;
-	GError *error;
+	GMarkupParseContext *xml_context = NULL;
+	GError *error = NULL;
 	VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   g_return_val_if_fail(priv != NULL, FALSE);
 
@@ -436,16 +436,28 @@ _goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct 
 	
 	gchar buff[BUFSIZ];
 	size_t nb;
-	while ((nb = fread (buff, sizeof(gchar), BUFSIZ, file)) > 0)
+	while (xml_context &&
+	       (nb = fread (buff, sizeof(gchar), BUFSIZ, file)) > 0)
 	{
 		if (!g_markup_parse_context_parse(xml_context, buff, nb, &error))
-			fprintf(stderr, "%s: parsing error.\n", __FUNCTION__);
+		{
+			fprintf(stderr, "%s: parsing error: %s.\n",
+				__FUNCTION__, error->message);
+			g_markup_parse_context_free(xml_context);
+			xml_context = NULL;
+		}
+		g_clear_error (&error);
 	}
 	/* cleanup */
-	if (!g_markup_parse_context_end_parse(xml_context, &error))
-		fprintf(stderr, "%s: errors occurred reading file.\n", __FUNCTION__);
+	if (xml_context &&
+	    !g_markup_parse_context_end_parse(xml_context, &error))
+		fprintf(stderr, "%s: errors occurred while reading file: %s.\n",
+			__FUNCTION__, error->message);
+	g_clear_error (&error);
 	
-	g_markup_parse_context_free(xml_context);
+	if (xml_context)
+		g_markup_parse_context_free(xml_context);
+	xml_context = NULL;
 	fclose (file);
   
   if (ll != NULL)

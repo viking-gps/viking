@@ -40,7 +40,7 @@ void osm_init () {
                                 "label", "OpenStreetMap (Osmarender)",
                                 "hostname", "tah.openstreetmap.org",
                                 "url", "/Tiles/tile/%d/%d/%d.png",
-                                "check-file-server-time", VIK_CONFIG_DEFAULT_TILE_AGE,
+                                "check-file-server-time", TRUE,
                                 NULL));
   VikMapSource *mapnik_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -48,7 +48,7 @@ void osm_init () {
                                 "label", "OpenStreetMap (Mapnik)",
                                 "hostname", "tile.openstreetmap.org",
                                 "url", "/%d/%d/%d.png",
-                                "check-file-server-time", VIK_CONFIG_DEFAULT_TILE_AGE,
+                                "check-file-server-time", TRUE,
                                 NULL));
   VikMapSource *maplint_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -56,7 +56,7 @@ void osm_init () {
                                 "label", "OpenStreetMap (Maplint)",
                                 "hostname", "tah.openstreetmap.org",
                                 "url", "/Tiles/maplint.php/%d/%d/%d.png",
-                                "check-file-server-time", VIK_CONFIG_DEFAULT_TILE_AGE,
+                                "check-file-server-time", TRUE,
                                 NULL));
   VikMapSource *cycle_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -64,7 +64,7 @@ void osm_init () {
                                 "label", "OpenStreetMap (Cycle)",
                                 "hostname", "thunderflames.org/tiles/cycle/",
                                 "url", "%d/%d/%d.png",
-                                "check-file-server-time", VIK_CONFIG_DEFAULT_TILE_AGE,
+                                "check-file-server-time", TRUE,
                                 NULL));
 
   maps_layer_register_map_source (osmarender_type);

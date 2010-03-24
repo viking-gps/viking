@@ -37,7 +37,6 @@
 #include "osm.h"
 #include "osm-traces.h"
 #include "bluemarble.h"
-#include "openaerial.h"
 #include "geonames.h"
 #include "file.h"
 #include "vikmapslayer.h"
@@ -125,9 +124,6 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_BLUEMARBLE
   bluemarble_init();
-#endif
-#ifdef VIK_CONFIG_OPENAERIAL
-  openaerial_init();
 #endif
 #ifdef VIK_CONFIG_GEONAMES
   geonames_init();
