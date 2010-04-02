@@ -1,6 +1,6 @@
 To compile:
 
-If you downloaded viking from CVS, you have to:
+If you downloaded viking from Git, you have to:
 $ autogen.sh
 
 Next, or if you downloaded a tarball, you have to:
