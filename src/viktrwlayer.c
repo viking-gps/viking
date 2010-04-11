@@ -1551,7 +1551,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
 				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 				      NULL);
-  gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(file_selector), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])));
+  gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(file_selector), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])));
 
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {
