@@ -275,10 +275,10 @@ gint a_uibuilder_properties_factory ( GtkWindow *parent, VikLayerParam *params,
   {
     /* create widgets and titles; place in table */
     GtkWidget *dialog = gtk_dialog_new_with_buttons ( "Layer Properties",
-                            parent,
-                            GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                            GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-                            GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL );
+						      parent,
+						      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+						      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+						      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL );
     gint resp;
 
 

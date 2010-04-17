@@ -34,6 +34,7 @@
 #include "preferences.h"
 #include "icons/icons.h"
 #include "vikexttools.h"
+#include "garminsymbols.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -1629,7 +1630,14 @@ static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
 
 static void preferences_cb ( GtkAction *a, VikWindow *vw )
 {
+  gboolean wp_icon_size = a_vik_get_use_large_waypoint_icons();
+
   a_preferences_show_window ( GTK_WINDOW(vw) );
+
+  // Delete icon indexing 'cache' and so automatically regenerates with the new setting when changed
+  if (wp_icon_size != a_vik_get_use_large_waypoint_icons())
+    clear_garmin_icon_syms ();
+
   draw_update ( vw );
 }
 

@@ -46,7 +46,6 @@
 #define DEMERCLAT(x) (RAD2DEG * atan(sinh(DEG2RAD * (x))))
 
 /* Some command line options */
-extern gboolean vik_use_small_wp_icons;
 extern gboolean vik_debug;
 extern gboolean vik_verbose;
 extern gboolean vik_version;
@@ -87,6 +86,8 @@ typedef enum {
 } vik_units_height_t;
 
 vik_units_height_t a_vik_get_units_height ( );
+
+gboolean a_vik_get_use_large_waypoint_icons ( );
 
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"

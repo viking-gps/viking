@@ -330,11 +330,11 @@ static void init_icons() {
 }
 
 static GdkPixbuf *get_wp_sym_from_index ( gint i ) {
-  if ( !garmin_syms[i].icon && 
-      ((vik_use_small_wp_icons && garmin_syms[i].data) ||
-       (!vik_use_small_wp_icons && garmin_syms[i].data_large))) {
+  if ( !garmin_syms[i].icon &&
+      ((!a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data) ||
+       (a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data_large))) {
     garmin_syms[i].icon = gdk_pixbuf_from_pixdata (
-       vik_use_small_wp_icons ? garmin_syms[i].data : garmin_syms[i].data_large,
+       a_vik_get_use_large_waypoint_icons() ? garmin_syms[i].data_large : garmin_syms[i].data,
        FALSE, NULL );
   }
   return garmin_syms[i].icon;
@@ -361,8 +361,8 @@ GdkPixbuf *a_get_wp_sym ( const gchar *sym ) {
 void a_populate_sym_list ( GtkListStore *list ) {
   gint i;
   for (i=0; i<G_N_ELEMENTS(garmin_syms); i++) {
-    if ((vik_use_small_wp_icons && garmin_syms[i].data) ||
-        (!vik_use_small_wp_icons && garmin_syms[i].data_large)) {
+    if ((!a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data) ||
+        (a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data_large)) {
       GtkTreeIter iter;
       gtk_list_store_append(list, &iter);
       gtk_list_store_set(list, &iter, 0, garmin_syms[i].sym, 1, get_wp_sym_from_index(i), -1);
@@ -371,3 +371,14 @@ void a_populate_sym_list ( GtkListStore *list ) {
 }
 
 
+/* Use when preferences have changed to reset icons*/
+void clear_garmin_icon_syms () {
+  g_debug("garminsymbols: clear_garmin_icon_syms");
+  gint i;
+  for (i=0; i<G_N_ELEMENTS(garmin_syms); i++) {
+    if (garmin_syms[i].icon) {
+      g_object_unref (garmin_syms[i].icon);
+      garmin_syms[i].icon = NULL;
+    }
+  }
+}

@@ -28,5 +28,7 @@
 
 GdkPixbuf *a_get_wp_sym ( const gchar *sym );
 void a_populate_sym_list ( GtkListStore *list );
+/* Use when preferences have changed to reload icons*/
+void clear_garmin_icon_syms ();
 
 #endif

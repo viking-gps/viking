@@ -30,7 +30,6 @@
 gboolean vik_debug = FALSE;
 gboolean vik_verbose = FALSE;
 gboolean vik_version = FALSE;
-gboolean vik_use_small_wp_icons = FALSE;
 
 static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", NULL};
 static gchar * params_units_distance[] = {"Kilometres", "Miles", NULL};
@@ -53,6 +52,10 @@ static VikLayerParam prefs4[] = {
   { VIKING_PREFERENCES_NAMESPACE "units_height", VIK_LAYER_PARAM_UINT, VIK_UNITS_HEIGHT_METRES, N_("Height units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_height, NULL },
 };
 
+static VikLayerParam prefs5[] = {
+  { VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, TRUE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL },
+};
+
 void a_vik_preferences_init ()
 {
   a_preferences_register_group ( VIKING_PREFERENCES_GROUP_KEY, "Global preferences" );
@@ -69,6 +72,9 @@ void a_vik_preferences_init ()
 
   tmp.u = VIK_UNITS_HEIGHT_METRES;
   a_preferences_register(prefs4, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
+  tmp.b = TRUE;
+  a_preferences_register(prefs5, tmp, VIKING_PREFERENCES_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -97,4 +103,11 @@ vik_units_height_t a_vik_get_units_height ( )
   vik_units_height_t units;
   units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "units_height")->u;
   return units;
+}
+
+gboolean a_vik_get_use_large_waypoint_icons ( )
+{
+  gboolean use_large_waypoint_icons;
+  use_large_waypoint_icons = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons")->b;
+  return use_large_waypoint_icons;
 }
