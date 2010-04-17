@@ -89,6 +89,7 @@ typedef void  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog, gpoint
 /* Frees any widgets created for the setup or progress dialogs, any allocated state, etc. */
 typedef void (*VikDataSourceCleanupFunc) ( gpointer user_data );
 
+typedef void (*VikDataSourceOffFunc) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );;
 
 struct _VikDataSourceInterface {
   const gchar *window_title;
@@ -111,7 +112,7 @@ struct _VikDataSourceInterface {
   VikDataSourceProgressFunc progress_func;
   VikDataSourceAddProgressWidgetsFunc add_progress_widgets_func;
   VikDataSourceCleanupFunc cleanup_func;
-
+  VikDataSourceOffFunc off_func;
 
   /*** UI Building        ***/
   VikLayerParam *                   params;

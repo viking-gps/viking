@@ -214,6 +214,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   GtkWidget *dialog = NULL;
   GtkWidget *status;
   gchar *cmd, *extra;
+  gchar *cmd_off, *extra_off;
   acq_dialog_widgets_t *w;
   gpointer user_data;
 
@@ -296,6 +297,11 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   } else
     source_interface->get_cmd_string_func ( pass_along_data, &cmd, &extra );
 
+  /* Get data for Off command */
+  if ( source_interface->off_func ) {
+    source_interface->off_func ( pass_along_data, &cmd_off, &extra_off );
+  }
+
   /* cleanup for option dialogs */
   if ( source_interface->add_setup_widgets_func ) {
     gtk_widget_destroy(dialog);
@@ -343,6 +349,10 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   if ( w->ok )
     w->ok = FALSE; /* tell thread to stop. TODO: add mutex */
   else {
+    if ( cmd_off ) {
+      /* Turn off */
+      a_babel_convert_from (NULL, cmd_off, NULL, extra_off, NULL);
+    }
     g_free ( w ); /* thread has finished; free w */
   }
   gtk_widget_destroy ( dialog );

@@ -43,6 +43,7 @@ static void datasource_gps_cleanup ( gpointer user_data );
 static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w );
 static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_gps_add_progress_widgets ( GtkWidget *dialog, gpointer user_data );
+static void datasource_gps_off ( gpointer add_widgets_data_not_used, gchar **babelargs, gchar **input_file );
 
 VikDataSourceInterface vik_datasource_gps_interface = {
   N_("Acquire from GPS"),
@@ -57,7 +58,8 @@ VikDataSourceInterface vik_datasource_gps_interface = {
   (VikDataSourceGetCmdStringFunc)	datasource_gps_get_cmd_string,
   (VikDataSourceProgressFunc)		datasource_gps_progress,
   (VikDataSourceAddProgressWidgetsFunc)	datasource_gps_add_progress_widgets,
-  (VikDataSourceCleanupFunc)		datasource_gps_cleanup
+  (VikDataSourceCleanupFunc)		datasource_gps_cleanup,
+  (VikDataSourceOffFunc)                datasource_gps_off
 };
 
 /*********************************************************
@@ -73,6 +75,8 @@ typedef struct {
   GtkComboBox *proto_b;
   GtkWidget *ser_l;
   GtkComboBox *ser_b;
+  GtkWidget *off_request_l;
+  GtkCheckButton *off_request_b;
 
   /* progress dialog */
   GtkWidget *gps_label;
@@ -118,6 +122,7 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   } else {
     device = "magellan";
   }
+
   *babelargs = g_strdup_printf("-D 9 -t -w -i %s", device);
   /* device points to static content => no free */
   device = NULL;
@@ -132,6 +137,51 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
 
   g_debug(_("using cmdline '%s' and file '%s'\n"), *babelargs, *input_file);
 }
+
+
+static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **input_file )
+{
+  char *proto = NULL;
+  char *ser = NULL;
+  char *device = NULL;
+#ifndef USE_NEW_COMBO_BOX
+  GtkTreeIter iter;
+#endif
+  gps_user_data_t *w = (gps_user_data_t *)user_data;
+
+  if (gps_acquire_in_progress) {
+    *babelargs = *input_file = NULL;
+  }
+
+  /* See if we should turn off the device */
+  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->off_request_b))) {
+    return;
+  }
+  
+#ifdef USE_NEW_COMBO_BOX
+  proto = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->proto_b));
+#else
+  proto = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->proto_b),&iter);
+#endif
+  if (!strcmp(proto, "Garmin")) {
+    device = "garmin,power_off";
+  } else {
+    return;
+  }
+
+  *babelargs = g_strdup_printf("-i %s", device);
+  /* device points to static content => no free */
+  device = NULL;
+  
+  /* Old stuff */
+#ifdef USE_NEW_COMBO_BOX
+  ser = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
+#else
+  ser = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter);
+#endif
+  *input_file = g_strdup(ser);
+}
+
 
 static void datasource_gps_cleanup ( gpointer user_data )
 {
@@ -280,11 +330,16 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   gtk_combo_box_set_active (w->ser_b, 0);
   g_object_ref(w->ser_b);
 
-  box = GTK_TABLE(gtk_table_new(2, 2, FALSE));
+  w->off_request_l = gtk_label_new (_("Turn Off After Transfer\n(Garmin Only)"));
+  w->off_request_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
+
+  box = GTK_TABLE(gtk_table_new(2, 3, FALSE));
   gtk_table_attach_defaults(box, GTK_WIDGET(w->proto_l), 0, 1, 0, 1);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->proto_b), 1, 2, 0, 1);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->ser_l), 0, 1, 1, 2);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->ser_b), 1, 2, 1, 2);
+  gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_l), 0, 1, 2, 3);
+  gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_b), 1, 3, 2, 3);
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(box), FALSE, FALSE, 5 );
 
   gtk_widget_show_all ( dialog );

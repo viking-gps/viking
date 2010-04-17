@@ -71,7 +71,8 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   (VikDataSourceGetCmdStringFunc)	datasource_gc_get_cmd_string,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
-  (VikDataSourceCleanupFunc)		datasource_gc_cleanup
+  (VikDataSourceCleanupFunc)		datasource_gc_cleanup,
+  (VikDataSourceOffFunc)                NULL,
 };
 
 static VikLayerParam prefs[] = {

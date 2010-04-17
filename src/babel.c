@@ -158,6 +158,10 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
     g_error_free(error);
     ret = FALSE;
   } else {
+    /* No data required */
+    if ( vt == NULL )
+      return TRUE;
+
     gchar line[512];
     FILE *diag;
     diag = fdopen(babel_stdout, "r");

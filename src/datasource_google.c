@@ -59,6 +59,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_google_cleanup,
+  (VikDataSourceOffFunc)                NULL,
 };
 
 static gpointer datasource_google_init ( )

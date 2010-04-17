@@ -60,6 +60,7 @@ VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_simplify_get_cmd_string,
   NULL, NULL, NULL,
+  (VikDataSourceOffFunc) NULL,
 
   bfilter_simplify_params,
   sizeof(bfilter_simplify_params)/sizeof(bfilter_simplify_params[0]),
@@ -93,6 +94,7 @@ VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_dup_get_cmd_string,
   NULL, NULL, NULL,
+  (VikDataSourceOffFunc) NULL,
 
   NULL, 0, NULL, NULL, 0
 };
@@ -123,6 +125,7 @@ VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_polygon_get_cmd_string,
   NULL, NULL, NULL,
+  (VikDataSourceOffFunc) NULL,
 
   NULL,
   0,
@@ -156,6 +159,7 @@ VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_exclude_polygon_get_cmd_string,
   NULL, NULL, NULL,
+  (VikDataSourceOffFunc) NULL,
 
   NULL,
   0,
