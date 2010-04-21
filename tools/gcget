@@ -69,10 +69,11 @@ if len(args) < 2:
   sys.exit()
 
 #########################
-
-ll = args[0].split(",")
-lat = ll[0]
-lon = ll[1]
+#ll = args[0].split(",")
+#lat = ll[0]
+#lon = ll[1]
+#The following line replaced the previous 3 lines.
+lat, lon = args[0].split(",")
 	
 if len(args) >= 3:
   maxdist = args[2]
@@ -104,8 +105,9 @@ b=Browser()
 b.open("http://geocaching.com/seek/")
 b.follow_link(text="Log in")
 b.select_form(nr=0)
-b["myUsername"] = USER
-b["myPassword"] = PASS
+# The Username and Password fields on the Login form changed
+b["ctl00$ContentBody$myUsername"] = USER
+b["ctl00$ContentBody$myPassword"] = PASS
 b.submit()
 
 magicnumber = 0 # the ctl number of Next. get only once
