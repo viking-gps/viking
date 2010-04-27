@@ -148,7 +148,7 @@ terraserver_map_source_class_init (TerraserverMapSourceClass *klass)
 	object_class->finalize = terraserver_map_source_finalize;
 }
 
-#define TERRASERVER_SITE "terraserver-usa.com"
+#define TERRASERVER_SITE "msrmaps.com"
 #define MARGIN_OF_ERROR 0.001
 
 static int mpp_to_scale ( gdouble mpp, guint8 type )
