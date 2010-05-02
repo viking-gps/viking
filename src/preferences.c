@@ -257,7 +257,7 @@ void a_preferences_show_window(GtkWindow *parent) {
     }
     loaded = TRUE;
     preferences_load_from_file();
-    if ( a_uibuilder_properties_factory ( parent, contiguous_params, params_count,
+    if ( a_uibuilder_properties_factory ( _("Preferences"), parent, contiguous_params, params_count,
 				(gchar **) groups_names->pdata, groups_names->len, // groups, groups_count, // groups? what groups?!
                                 (gboolean (*) (gpointer,guint16,VikLayerParamData,gpointer)) preferences_run_setparam,
 				NULL /* not used */, contiguous_params,

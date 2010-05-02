@@ -257,7 +257,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   }
   /* POSSIBILITY 2: UI BUILDER */
   else if ( source_interface->params ) {
-    paramdatas = a_uibuilder_run_dialog ( GTK_WINDOW(vw),
+    paramdatas = a_uibuilder_run_dialog ( source_interface->window_title, GTK_WINDOW(vw),
 			source_interface->params, source_interface->params_count,
 			source_interface->params_groups, source_interface->params_groups_count,
 			source_interface->params_defaults );

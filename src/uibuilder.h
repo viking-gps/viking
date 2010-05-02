@@ -95,7 +95,7 @@ VIK_LAYER_PARAM_STRING_LIST,
 
 GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data );
 VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerParam *param );
-gint a_uibuilder_properties_factory ( GtkWindow *parent, VikLayerParam *params,
+gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,
                         gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer),
                         gpointer pass_along1, gpointer pass_along2,
@@ -104,7 +104,7 @@ gint a_uibuilder_properties_factory ( GtkWindow *parent, VikLayerParam *params,
                                 /* pass_along1 and pass_along2 are for set_param first and last params */
 
 
-VikLayerParamData *a_uibuilder_run_dialog ( GtkWindow *parent, VikLayerParam *params,
+VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,
 			VikLayerParamData *params_defaults );
 

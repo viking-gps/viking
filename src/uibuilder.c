@@ -251,7 +251,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
 }
 
 
-gint a_uibuilder_properties_factory ( GtkWindow *parent, VikLayerParam *params,
+gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
 			guint16 params_count, gchar **groups, guint8 groups_count,
 			gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer),
 			gpointer pass_along1, gpointer pass_along2,
@@ -274,7 +274,7 @@ gint a_uibuilder_properties_factory ( GtkWindow *parent, VikLayerParam *params,
   else
   {
     /* create widgets and titles; place in table */
-    GtkWidget *dialog = gtk_dialog_new_with_buttons ( "Layer Properties",
+    GtkWidget *dialog = gtk_dialog_new_with_buttons ( dialog_name,
 						      parent,
 						      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 						      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
@@ -381,12 +381,13 @@ static VikLayerParamData uibuilder_run_getparam ( VikLayerParamData *params_defa
 }
 
 
-VikLayerParamData *a_uibuilder_run_dialog ( GtkWindow *parent, VikLayerParam *params,
+VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,
                         VikLayerParamData *params_defaults )
 {
     VikLayerParamData *paramdatas = g_new(VikLayerParamData, params_count);
-    if ( a_uibuilder_properties_factory ( parent, 
+    if ( a_uibuilder_properties_factory ( dialog_name,
+					  parent,
 					  params, 
 					  params_count, 
 					  groups, 
