@@ -596,7 +596,12 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
 
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename )
 {
-  FILE *f = g_fopen(filename, "w");
+  FILE *f;
+
+  if (strncmp(filename, "file://", 7) == 0)
+    filename = filename + 7;
+
+  f = g_fopen(filename, "w");
 
   if ( ! f )
     return FALSE;
