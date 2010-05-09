@@ -205,6 +205,12 @@ static void preferences_run_setparam ( gpointer notused, guint16 i, VikLayerPara
   g_hash_table_insert ( values, (gchar *)(params[i].name), layer_typed_param_data_copy_from_data(params[i].type, data) );
 }
 
+/* Allow preferences to be manipulated externally */
+void a_preferences_run_setparam ( VikLayerParamData data, VikLayerParam *params )
+{
+  preferences_run_setparam (NULL, 0, data, params);
+}
+
 static VikLayerParamData preferences_run_getparam ( gpointer notused, guint16 i )
 {
   VikLayerTypedParamData *val = (VikLayerTypedParamData *) g_hash_table_lookup ( values, ((VikLayerParam *)g_ptr_array_index(params,i))->name );
@@ -215,7 +221,7 @@ static VikLayerParamData preferences_run_getparam ( gpointer notused, guint16 i 
 }
 
 /* TRUE on success */
-static gboolean preferences_save_to_file()
+gboolean a_preferences_save_to_file()
 {
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
 
@@ -262,7 +268,7 @@ void a_preferences_show_window(GtkWindow *parent) {
                                 (gboolean (*) (gpointer,guint16,VikLayerParamData,gpointer)) preferences_run_setparam,
 				NULL /* not used */, contiguous_params,
                                 preferences_run_getparam, NULL /* not used */ ) ) {
-      preferences_save_to_file();
+      a_preferences_save_to_file();
     }
     g_free ( contiguous_params );
 }
