@@ -147,8 +147,14 @@ static void get_from_anything ( w_and_interface_t *wi )
     gdk_threads_enter();
     if (w->ok) {
       gtk_label_set_text ( GTK_LABEL(w->status), _("Done.") );
-      if ( creating_new_layer )
-	vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
+      if ( creating_new_layer ) {
+	/* Only create the layer if it actually contains anything useful */
+	if ( g_hash_table_size (vik_trw_layer_get_tracks(vtl)) ||
+	     g_hash_table_size (vik_trw_layer_get_waypoints(vtl)) )
+	  vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
+	else
+	  gtk_label_set_text ( GTK_LABEL(w->status), _("No data.") );
+      }
       if ( source_interface->keep_dialog_open ) {
         gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
         gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_REJECT, FALSE );
