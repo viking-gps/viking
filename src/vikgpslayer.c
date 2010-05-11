@@ -878,6 +878,18 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
       }
       g_strfreev(tokens);
     }
+    /* eg: "Unit:\teTrex Legend HCx Software Version 2.90\n" */
+    if (strstr(line, "Unit:")) {
+      gchar **tokens = g_strsplit(line, "\t", 0);
+      int n_tokens = 0;
+      while (tokens[n_tokens])
+        n_tokens++;
+
+      if (n_tokens > 1) {
+        set_gps_info(tokens[1], sess);
+      }
+      g_strfreev(tokens);
+    }
     if (strstr(line, "RECORD")) { 
       int lsb, msb, cnt;
 
