@@ -30,7 +30,7 @@ static void vik_map_source_init (VikMapSource *object);
 static void vik_map_source_finalize (GObject *object);
 static void vik_map_source_class_init (VikMapSourceClass *klass);
 
-static void _supports_if_modified_since (VikMapSource *object);
+static gboolean _supports_if_modified_since (VikMapSource *object);
 
 G_DEFINE_TYPE_EXTENDED (VikMapSource, vik_map_source, G_TYPE_OBJECT, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
 
@@ -68,7 +68,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	object_class->finalize = vik_map_source_finalize;
 }
 
-void
+gboolean
 _supports_if_modified_since (VikMapSource *self)
 {
 	// Default feature: does not support
