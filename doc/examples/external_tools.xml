@@ -9,4 +9,9 @@
     <property name="url">http://osmose.openstreetmap.fr/map/cgi-bin/index.py?layers=B00000FFFFFFFFFFFFT&amp;lat=%s&amp;lon=%s&amp;zoom=%d</property>
     <property name="id">43</property>
   </object>
+  <object class="VikWebtoolCenter">
+    <property name="label">NLS: Historic Map of GB</property>
+    <property name="url">http://nls.tileserver.com?lat=%s&amp;lng=%s&amp;zoom=%d</property>
+    <property name="id">44</property>
+  </object>
 </objects>
