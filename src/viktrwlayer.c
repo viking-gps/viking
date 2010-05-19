@@ -3667,7 +3667,7 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
       tr = g_hash_table_lookup ( vtl->tracks, vtl->magic_scissors_added_track_name );
 
       if ( tr )
-        vik_track_set_comment_no_copy ( tr, g_strdup_printf("from: %f,%f to: %f%f", start.lat, start.lon, end.lat, end.lon ) ); 
+        vik_track_set_comment_no_copy ( tr, g_strdup_printf("from: %f,%f to: %f,%f", start.lat, start.lon, end.lat, end.lon ) );
  
       vtl->magic_scissors_current_track = tr;
 
