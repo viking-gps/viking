@@ -158,7 +158,7 @@ int main( int argc, char *argv[] )
    
   if (vik_version)
   {
-    g_printf ("%s %s, Copyright (c) 2003-2008 Evan Battaglia\n", PACKAGE_NAME, PACKAGE_VERSION);
+    g_printf ("%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-2010 Viking's contributors\n", PACKAGE_NAME, PACKAGE_VERSION);
     return EXIT_SUCCESS;
   }
 
