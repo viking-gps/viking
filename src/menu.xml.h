@@ -37,6 +37,7 @@ static const char *menu_xml =
 	"      <menuitem action='DeleteAll'/>"
 	"      <separator/>"
 	"      <menuitem action='MapCacheFlush'/>"
+	"      <menuitem action='SetDefaultLocation'/>"
 	"      <menuitem action='Preferences'/>"
 	"    </menu>"
 	"    <menu action='View'>"
@@ -46,6 +47,7 @@ static const char *menu_xml =
 #endif
 	"      <menuitem action='ModeMercator'/>"
 	"      <separator/>"
+	"      <menuitem action='GotoDefaultLocation'/>"
 	"      <menuitem action='GotoSearch'/>"
 	"      <menuitem action='GotoLL'/>"
 	"      <menuitem action='GotoUTM'/>"
@@ -119,6 +121,7 @@ static const char *menu_xml =
 	"      <separator/>"
 	"    </placeholder>"
 	"    <placeholder name='ViewToolItems'>"
+	"      <toolitem action='GotoDefaultLocation'/>"
 	"      <toolitem action='GotoSearch'/>"
 	"      <separator/>"
 	"    </placeholder>"

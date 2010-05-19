@@ -89,6 +89,15 @@ vik_units_height_t a_vik_get_units_height ( );
 
 gboolean a_vik_get_use_large_waypoint_icons ( );
 
+/* Location preferences */
+typedef enum {
+  VIK_LOCATION_LAT,
+  VIK_LOCATION_LONG,
+} vik_location_t;
+
+gdouble a_vik_get_default_lat ( );
+gdouble a_vik_get_default_long ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."

@@ -1618,6 +1618,16 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 }
 #endif
 
+static void goto_default_location( GtkAction *a, VikWindow *vw)
+{
+  struct LatLon ll;
+  ll.lat = a_vik_get_default_lat();
+  ll.lon = a_vik_get_default_long();
+  vik_viewport_set_center_latlon(vw->viking_vvp, &ll);
+  vik_layers_panel_emit_update(vw->viking_vlp);
+}
+
+
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
   a_vik_goto(vw, vw->viking_vlp, vw->viking_vvp);
@@ -1639,6 +1649,43 @@ static void preferences_cb ( GtkAction *a, VikWindow *vw )
     clear_garmin_icon_syms ();
 
   draw_update ( vw );
+}
+
+static void default_location_cb ( GtkAction *a, VikWindow *vw )
+{
+  /* Simplistic repeat of preference setting
+     Only the name & type are important for setting the preference via this 'external' way */
+  VikLayerParam pref_lat[] = {
+    { VIKING_PREFERENCES_NAMESPACE "default_latitude",
+      VIK_LAYER_PARAM_DOUBLE,
+      VIK_LOCATION_LAT,
+      NULL,
+      VIK_LAYER_WIDGET_SPINBUTTON,
+      NULL,
+      NULL },
+  };
+  VikLayerParam pref_lon[] = {
+    { VIKING_PREFERENCES_NAMESPACE "default_longitude",
+      VIK_LAYER_PARAM_DOUBLE,
+      VIK_LOCATION_LONG,
+      NULL,
+      VIK_LAYER_WIDGET_SPINBUTTON,
+      NULL,
+      NULL },
+  };
+
+  /* Get current center */
+  struct LatLon ll;
+  vik_coord_to_latlon ( vik_viewport_get_center ( vw->viking_vvp ), &ll );
+
+  /* Apply to preferences */
+  VikLayerParamData vlp_data;
+  vlp_data.d = ll.lat;
+  a_preferences_run_setparam (vlp_data, pref_lat);
+  vlp_data.d = ll.lon;
+  a_preferences_run_setparam (vlp_data, pref_lon);
+  /* Remember to save */
+  a_preferences_save_to_file();
 }
 
 static void clear_cb ( GtkAction *a, VikWindow *vw )
@@ -2113,6 +2160,7 @@ static GtkActionEntry entries[] = {
   { "Exit",      GTK_STOCK_QUIT,         N_("E_xit"),                         "<control>W", N_("Exit the program"),                             (GCallback)window_close          },
   { "SaveExit",  GTK_STOCK_QUIT,         N_("Save and Exit"),                 NULL, N_("Save and Exit the program"),                             (GCallback)save_file_and_exit          },
 
+  { "GotoDefaultLocation", GTK_STOCK_HOME, N_("Go to the _Default Location"),  NULL,         N_("Go to the default location"),                     (GCallback)goto_default_location },
   { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to Location..."),    	      NULL,         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
@@ -2150,6 +2198,7 @@ static GtkActionEntry entries[] = {
   { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         NULL,                                           (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
+  { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         NULL,                                           (GCallback)preferences_cb              },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
 

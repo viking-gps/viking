@@ -162,16 +162,22 @@ static void viewport_init ( VikViewport *vvp )
 {
   viewport_init_ra();
 
+  struct UTM utm;
+  struct LatLon ll;
+  ll.lat = a_vik_get_default_lat();
+  ll.lon = a_vik_get_default_long();
+  a_coords_latlon_to_utm ( &ll, &utm );
+
   /* TODO: not static */
   vvp->xmpp = 4.0;
   vvp->ympp = 4.0;
   vvp->coord_mode = VIK_COORD_LATLON;
   vvp->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   vvp->center.mode = VIK_COORD_LATLON;
-  vvp->center.north_south = 40.714490;
-  vvp->center.east_west = -74.007130;
-  vvp->center.utm_zone = 31;
-  vvp->center.utm_letter = 'N';
+  vvp->center.north_south = ll.lat;
+  vvp->center.east_west = ll.lon;
+  vvp->center.utm_zone = (int)utm.zone;
+  vvp->center.utm_letter = utm.letter;
   vvp->scr_buffer = NULL;
   vvp->alpha_pixbuf = NULL;
   vvp->alpha_pixbuf_width = vvp->alpha_pixbuf_height = 0;
