@@ -198,14 +198,15 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     failure = TRUE;
   }
 
+  fclose ( f );
+  f = NULL;
+
   if (failure)
   {
     g_warning(_("Download error: %s"), fn);
     g_remove ( tmpfilename );
     unlock_file ( tmpfilename );
     g_free ( tmpfilename );
-    fclose ( f );
-    f = NULL;
     g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
   }
@@ -221,8 +222,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
   unlock_file ( tmpfilename );
   g_free ( tmpfilename );
-  fclose ( f );
-  f = NULL;
+
   return 0;
 }
 
