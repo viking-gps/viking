@@ -479,6 +479,36 @@ This feature is called <guilabel>External tools</guilabel>.
 </section>
 
 </section>
+<section><title>Preferences</title>
+<section><title>Localisation</title>
+<para>You can select units displayed by &appname; to best fit your usage.</para>
+<figure>
+<title>Properties dialog: units part</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/properties_units.png"/>
+</screenshot>
+</figure>
+<para>Concerning degrees, you can select the way to display them:
+<variablelist>
+<varlistentry>
+<term>DDD</term><listitem><para>decimal degree</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>DDD</term><listitem><para>partial sexagesimal display: degrees, minutes and décimal part of minutes</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>DMS</term><listitem><para>sexagesimal display: degrees, minutes and seconds</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+<figure>
+<title>Properties dialog: degree display options</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/properties_degree.png"/>
+</screenshot>
+</figure>
+</section>
+</section>
 <section><title>Mini-Howto's</title>
 <section><title>Getting Started</title>
 <para>

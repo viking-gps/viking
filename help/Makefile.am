@@ -4,7 +4,7 @@ dist-hook: doc-dist-hook
 DOC_MODULE = viking
 DOC_ENTITIES = legal.xml
 DOC_INCLUDES = 
-DOC_FIGURES = #figures/gnome-hello.png
+DOC_FIGURES = figures/properties_units.png figures/properties_degree.png
 
 DOC_LINGUAS = 
 
