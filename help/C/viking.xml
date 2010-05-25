@@ -513,6 +513,12 @@ This feature is called <guilabel>External tools</guilabel>.
 </para>
 <para>Changing this value, you will increase or decrese the network load.</para>
 </section>
+<section><title>Default maplayer directory</title>
+<para>This property sets the default directory of the tiles cache.
+This value is used when you create a new map layer.
+</para>
+<para>You are still able to change this value in each map layer properties.</para>
+</section>
 </section>
 <section><title>Mini-Howto's</title>
 <section><title>Getting Started</title>
