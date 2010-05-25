@@ -1,0 +1,1011 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+  <!ENTITY appname          "Viking">
+  <!ENTITY app "<application>Viking</application>">
+  <!ENTITY appversion   "0.9.9">
+  <!ENTITY manrevision  "0.1">
+  <!ENTITY date "Septembre 2009">
+]>
+<!--
+      (Do not remove this comment block.)
+  Maintained by the GNOME Documentation Project
+  http://live.gnome.org/DocumentationProject
+  Template version: 3.0 beta
+  Template last modified 2006-11-21
+
+-->
+<!-- =============Document Header ============================= -->
+<article id="index" lang="en">
+  <articleinfo>
+    <title>&app; Manual</title>
+    <abstract role="description">
+      <para>&app; is a free/open source program to manage GPS data.</para>
+    </abstract>
+
+    <copyright>
+      <year>2009</year>
+      <holder>Guilhem Bonnefille</holder>
+    </copyright>
+
+    <!-- An address can be added to the publisher information. -->
+    <publisher role="maintainer">
+      <publishername>GNOME Documentation Project</publishername>
+    </publisher>
+
+    <xi:include href="legal.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <!-- The file legal.xml contains link to license for the documentation,
+        and other legal stuff such as "NO WARRANTY" statement.
+        Please do not change any of this. -->
+
+    <authorgroup>
+      <author>
+        <firstname>Guilhem</firstname>
+        <surname>Bonnefille</surname>
+      </author>
+    </authorgroup>
+
+    <revhistory>
+      <revision>
+        <revnumber>&appname; Manual V&manrevision;</revnumber>
+        <date>&date;</date>
+        <revdescription>
+          <para role="author">Guilhem Bonnefille <email>guilhem.bonnefille@gmail.com</email></para>
+          <para role="publisher">GNOME Documentation Project</para>
+        </revdescription>
+      </revision> 
+    </revhistory>
+
+    <releaseinfo>This manual describes version &appversion; of &app;.</releaseinfo>
+
+    <legalnotice>
+      <title>Feedback</title>
+      <para>To report a bug or make a suggestion regarding the &app; application or
+      this manual, follow the directions in the
+      <ulink url="ghelp:user-guide?feedback-bugs" type="help">Feedback section of the GNOME User Guide</ulink>.
+      </para>
+    </legalnotice>
+  </articleinfo>
+
+  <indexterm zone="index">
+    <primary>&app;</primary>
+  </indexterm>
+<!-- ============= Document Body ============================= -->
+<sect1 id="introduction">
+  <title>Introduction</title>
+<para>
+Viking aims to be easy to use, yet powerful in accomplishing a wide
+variety of tasks. Some of the things you can now use Viking for are:
+</para>
+<itemizedlist mark="opencircle"><listitem>
+<para>
+Uploading and downloading waypoints, tracks to/from GPS.
+</para>
+</listitem>
+<listitem>
+<para>Preparing tracks and waypoints for trips using maps from services
+such as Googlemaps, Terrasever. The data is only needed to upload to
+your GPS before you leave. The maps together with your tracks and
+waypoints can also be printed and used during the trip.
+</para>
+</listitem>
+<listitem>
+<para>
+After trips, tracks and waypoints from GPS can be downloaded, stored, managed and reused in your (or your friends') later trips.
+</para>
+</listitem>
+<listitem>
+<para>
+Analyzing OHV and hiking trips, understanding where you went and how far you were from something.
+</para>
+</listitem>
+<listitem>
+<para>Making waypoints and tracks to follow to easily get someplace
+you've never been before or don't have GPS data for but Terraserver
+maps exist for it.
+</para>
+</listitem>
+<listitem>
+<para>
+Making maps with coordinate lines.
+</para>
+</listitem>
+<listitem>
+<para>
+Grouping data from multiple trips using a hierarchical data manager.
+</para>
+</listitem>
+<listitem>
+<para>
+Analyzing speed at different places (to some degree), adding waypoints where you forgot to mark one but did slow down or stop.
+</para>
+</listitem>
+<listitem>
+<para>
+Downloading and storing Terraserver maps on your hard drive and looking at them later.
+</para>
+</listitem>
+<listitem>
+<para>
+Editing tracks and trackpoints, joining and splitting up tracks 
+</para>
+</listitem>
+</itemizedlist>
+<para>
+Other things which Viking will be able to do in the future include:
+</para>
+<itemizedlist mark="opencircle">
+<listitem>
+<para>
+Show the live GPS position on the Topo or Ortho map (for use on a laptop)
+</para>
+</listitem>
+<listitem>
+<para>
+Preparing tracks and waypoints to be made into Garmin maps 
+</para>
+</listitem>
+</itemizedlist>
+</sect1>
+<section><title>General Concepts</title>
+<para>
+The panel on the left is called the <emphasis role="bold">layers panel</emphasis>.
+It determines which layers and sublayers (such as tracks and waypoints)
+are shown, and the order in which they are drawn. Layers list on the
+top of the layers panel are drawn last. You can change the order by
+drag and drop, or by selecting a layer and using the up and down
+buttons at the bottom of the layers panel.
+</para>
+<para>
+The main &appname; area where the layers are draw is called the <emphasis role="bold">viewport</emphasis>.
+</para>
+
+</section>
+<section><title>Layers</title>
+<section><title>TrackWaypoint Layer</title>
+<para>
+TrackWaypoint layers display GPS data (tracks and waypoints).
+</para>
+<para>An easy way to create new waypoints is to copy a
+latitude/longitude coordinate pair, such as the one shown on most
+geocaches, and paste it into an active TrackWaypoint layer. &appname; can
+automatically recognize several variations of the lat/lon format.
+</para>
+<para>
+By right-clicking tracks and waypoints in the layers panel, you can do
+many things with tracks and waypoints. You can easily find a specific
+track or waypoint by expanding the Tracks or Waypoints sublayers in the
+layers panel to show all tracks or waypoints, and typing the name of
+the track/waypoint.
+</para>
+<section><title>Layer Operations</title>
+<para>
+The layer has a context menu with several operations.
+</para>
+<section><title>Export</title>
+<para>
+The layer can be exported to a file GPX, GPSPoint or GPSMapper format. 
+</para>
+<note>
+<para>
+Only the entire layer can be exported, it is currently
+not possible to export an individual track.
+</para>
+</note>
+
+</section>
+
+</section>
+<section><title>Track Properties</title>
+<para>
+Show many useful statistics about a track, including a
+elevation-distance graph and a speed-time graph (if data is available).
+You can click these graphs to jump to the point in the track. You can
+also reverse a track, delete duplicates, and split a track from its
+component segments (discontinuous breaks in a track) into separate
+tracks.
+</para>
+<para>
+The following colors are used in the elevation-distance graph:
+</para>
+<variablelist>
+<varlistentry>
+<term>Brown profile</term>
+<listitem><para>elevation data in graph</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Yellow</term>
+<listitem>
+<para>no elevation data</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>Green</term>
+<listitem>
+<para>elevation data from DEM</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>Red</term>
+<listitem>
+<para>speed</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+</section>
+<section><title>Track Operations</title>
+<section><title>Merge by time</title>
+<para>
+This operation repeatedly tries to merge the right-clicked track
+with tracks in the same TrackWaypoint layer. The tracks which are
+merged are those which have at least one trackpoint less than some
+threshold time away. This way, if you somehow end up with lots of small
+segments (say, caused by turning the GPS on and off) you can merge them
+easily into one track.
+</para>
+
+</section>
+<section><title>Split by time</title>
+<para>
+This operation will split a single track into segments wherever the
+time interval between successive trackpoints is larger than some
+threshold. This is useful when processing raw NMEA GPS data, especially
+taken over a long time.
+</para>
+
+</section>
+<section><title>Apply DEM data</title>
+<para>
+If any DEM data is loaded, this will apply the DEM data to give the track elevation data.
+</para>
+
+</section>
+<section><title>Extend track end</title>
+<para>
+Change the current tool to add track and add points to the end of the track.
+</para>
+
+</section>
+<section><title>Upload to OSM</title>
+<para>
+Useful if you are an OpenStreetMap.org (OSM) contributor. Viking
+allowing you to import a track, edit it if you so wish to remove
+duplicate points, perhaps track points leading to your home, and then
+directly export the track to OSM
+</para>
+
+</section>
+<section><title>View Google Directions</title>
+<para>
+Launch a web browser to see the Google directions page which
+yielded the route.
+</para>
+<note>
+<para>
+The record of the Google route is stored in
+the track's comment, so if the comment is changed (or the route was
+created by something other than the Magic Scissors tool) this will not
+work correctly.
+</para>
+</note>
+
+</section>
+
+</section>
+<section><title>Waypoint Operations</title>
+<section><title>Goto Geocache page</title>
+<para>
+If the waypoint's name is in Geocache form (GCXXXXX) you can launch a web browser to go to the Geocache page.
+</para>
+
+</section>
+
+</section>
+
+</section>
+<section><title>GPSLayer</title>
+<para>
+GPSLayer is responsible for uploading and downloading GPS data
+from a GPS device. It also is responsible for realtime GPS tracking.
+Expand the GPSLayer in the layers panel to see the two TRWLayers it
+uses for uploading and downloading. To upload, download, or use
+realtime tracking, right-click the GPSLayer and click the appropiate
+menu item.
+</para>
+
+<section><title>Download</title>
+<para>
+To download data from the GPS, right-click the GPSLayer and click <guimenuitem>Download from GPS</guimenuitem>.
+</para>
+
+</section>
+<section><title>Upload</title>
+<para>
+To upload data to the GPS, first populate the GPS Upload child
+layer of the GPS layer (either by creating waypoints/tracks in it, or
+copying and pasting or dragging waypoints/tracks from another layer).
+Then right-click the GPSLayer and click <guimenuitem>Upload to GPS</guimenuitem>.
+</para>
+
+</section>
+<section><title>Realtime tracking</title>
+<para>
+You must set up gpsd correctly or use a GPSD server and put the
+correct information in the GPSLayer properties dialog. Then right-cilck
+the layer and select <guimenuitem>Start realtime tracking</guimenuitem>.
+</para>
+
+</section>
+
+</section>
+<section><title>DEM Layer (todo)</title>
+<para>
+current NASA SRTM server: http://dds.cr.usgs.gov/srtm/version2_1/
+</para>
+
+</section>
+
+</section>
+<section><title>Tools</title>
+<para>
+You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
+</para>
+<para>
+Scroll: zoom in and out without changing center (also Ctrl+, Ctrl-)
+</para>
+<para>
+Ctrl-scroll: pan north-south (also Ctrl-up, Ctrl-down)
+</para>
+<para>
+Shift-scroll: pan east-west (also Ctrl-left, Ctrl-right)
+</para>
+<para>
+Ctrl-shift-scroll: zoom in and out, keeping mouse over same location (like Google maps)
+</para>
+<para>
+Middle-click: make the clicked point on the map the center
+</para>
+<para>
+Middle-click and drag: pan
+</para>
+<section><title>Zoom</title>
+<para>
+Zooms in and out on the clicked part of the map.
+</para>
+
+</section>
+<section><title>Ruler</title>
+<para>Used to measure bearing distance between two point:Click on first
+point,click on second point - after few seconds the bearing distance
+between points will be displayed.
+</para>
+
+</section>
+<section><title>TrackWaypoint Layer Tools</title>
+<para>
+You must have a TrackWaypoint Layer selected to use these.
+</para>
+<section><title>New Waypoint</title>
+
+</section>
+<section><title>New Track</title>
+<para>
+Right-click: undo one point
+</para>
+<para>
+Ctrl: snap to trackpoint
+</para>
+<para>
+Shift: snap to waypoint
+</para>
+
+</section>
+<section><title>Edit Waypoint</title>
+<para>
+Click/drag: select/move a waypoint
+</para>
+<para>
+<KeyCap function="control">Ctrl</KeyCap>: snap to trackpoint
+</para>
+<para>
+Shift: snap to waypoint
+</para>
+<para>Right-click on waypoint: opens a menu with waypoint actions (the
+same menu accessed by right-clicking the waypoint in the layers panel)
+</para>
+
+</section>
+<section><title>Edit Trackpoint</title>
+<para>
+Ctrl: snap to trackpoint
+</para>
+<para>
+Shift: snap to waypoint
+</para>
+
+</section>
+<section><title>Show Picture</title>
+<para>
+Uses <application>eog</application> to open a picture shown as a picture waypoint.
+</para>
+
+</section>
+<section><title>Magic Scissors</title>
+<para>Creates a track using Google maps routing between two points.
+Requires internet connection. Click one point, then click another to
+create a track.
+</para>
+<para>
+Right-click: undo last routing
+</para>
+<para>
+Ctrl: continue previous track
+</para>
+
+</section>
+
+</section>
+<section><title>Georef Map Layer Tools</title>
+<para>
+You must have a Georef Map Layer selected to use these tools.
+</para>
+<section><title>Georef zoom</title>
+<para>Changes the zoom level of the georeferenced map and changes the
+Viking zoom level accordingly. Useful if you are trying to match GPS
+data to a georeferenced map.
+</para>
+
+</section>
+<section><title>Georef move</title>
+<para>
+Drag to move the georeferenced map.
+</para>
+
+</section>
+
+</section>
+<section><title>Map Download</title>
+<para>
+Click to download a single tile. Drag to download tiles in the dragged rectangle area.
+</para>
+<para>
+Right-click to redownload bad/all tiles. Right-click and drag to redownload bad/all tiles in the dragged rectangle area.
+</para>
+
+</section>
+<section><title>DEM Download</title>
+<para>
+Click to download and import a DEM file.
+</para>
+
+</section>
+
+<section><title>External tools</title>
+<para>
+Many services are available only via a web browser (Google Maps, OpenStreetMap Potlach editor, etc.).
+</para>
+<para>
+Jumping from &app; to such service can become annoying.
+</para>
+<para>
+&appname; allows you to open such service directly at the position currently viewed in &app;.
+</para>
+<para>
+This feature is called <guilabel>External tools</guilabel>.
+</para>
+
+</section>
+
+</section>
+<!-- Preferences -->
+<section><title>Preferences</title>
+<section><title>Localisation</title>
+<para>You can select units displayed by &appname; to best fit your usage.</para>
+<figure>
+<title>Properties dialog: units part</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/properties_units.png"/>
+</screenshot>
+</figure>
+<para>Concerning degrees, you can select the way to display them:
+<variablelist>
+<varlistentry>
+<term>DDD</term><listitem><para>decimal degree</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>DDD</term><listitem><para>partial sexagesimal display: degrees, minutes and décimal part of minutes</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>DMS</term><listitem><para>sexagesimal display: degrees, minutes and seconds</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+<figure>
+<title>Properties dialog: degree display options</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/properties_degree.png"/>
+</screenshot>
+</figure>
+</section>
+<section><title>Tile's age</title>
+<para>This age is used to decided wether or not a new request to tile server must be done.
+</para>
+<para>Changing this value, you will increase or decrese the network load.</para>
+</section>
+<section><title>Default maplayer directory</title>
+<para>This property sets the default directory of the tiles cache.
+This value is used when you create a new map layer.
+</para>
+<para>You are still able to change this value in each map layer properties.</para>
+</section>
+</section>
+<section><title>Mini-Howto's</title>
+<section><title>Getting Started</title>
+<para>
+To quickly get started using &appname;, follow these instructions.
+</para>
+<section><title>Go to an area of interest</title>
+<para>
+&appname;'s default location is a 0 latitude and longitude, so you need to pick a place that interests you.
+</para>
+<procedure>
+<title>Method A</title>
+<step>
+<para>
+Use View - Go to to move to a coordinate of interest. 
+</para>
+</step>
+</procedure>
+<procedure>
+<title>Method B</title>
+<step>
+<para>Use GPS Layer or File - Acquire - From GPS to load data
+directly from your GPS into Viking. Currently Garmin and Magellan are
+supported.
+</para>
+<note><para>You must have write permission to the port used.
+/dev/ttyS0 is the first serial port</para></note>
+</step>
+</procedure>
+<procedure>
+<title>Method C</title>
+<step>
+<para>Get data from files in GPX format. For other formats (kml,
+ozi...), use a converter such as GPSBabel to convert the files to GPX
+format first.
+</para>
+</step>
+<step>
+<para>
+Open up viking and use File - Open or File - Append
+file to open the file.
+</para>
+</step>
+<step>
+<para>
+Expand Tracks or Waypoints. Right-click on the
+track or waypoint of interest and select <guimenuitem>Goto</guimenuitem>.
+</para>
+</step>
+</procedure>
+<procedure>
+<title>Method D</title>
+<step>
+<para>
+Use File - Append File to add your track and waypoint data to
+Viking. This has been tested with Geocaching.com's *.loc format,
+(others(?)).
+</para>
+</step>
+<step>
+<para>
+Expand Tracks or Waypoints. Right-click on the tack or
+point of interest and select <guimenuitem>Goto</guimenuitem>.
+</para>
+</step>
+</procedure>
+</section>
+<section><title>Add a map layer</title>
+<para>
+1. Use Layers - New Map Layer, and choose a suitable cache directory
+where you would like to store your tracks and click <guilabel>OK</guilabel>. Zoom to a
+comfortable level (I suggest 4 mpp) by clicking the left and right
+mouse buttons on the gray area where your tracks are. Now from the menu
+choose Tools - Map Download, Click where you would like to download a
+map. Regardless of what tool you are using, the middle mouse button
+always pans. </para>
+<note>
+<para>
+You MUST have an open internet connection when you are downloading maps. If not, &app; will likely hang.
+</para>
+</note>
+<para>
+1. You will notice the maps are being drawn on top of the tracks, which
+is probably not what you want. Look at the Layers Panel to the left.
+Notice how the layer named Map is ABOVE your TrackWaypoint layer that
+your GPS data is in. This means that it will be drawn last, or on top
+of the other layers. Select the Map layer from the list and click the
+down arrow button beneath the list. Your tracks will now be drawn over
+the map. </para>
+
+</section>
+
+</section>
+<section><title>From 1st startup to gps track (including offline maps)</title>
+<section><title>Prerequistites</title>
+<para>
+The following refers to the version 0.9.8 from the git repository
+(26.07.2009).In the source, check in vikdemlayer.c around line 66 to
+have the correct address for the SRTM3 database. For the version
+referenced above, you should change <programlisting>#define SRTM_HTTP_URI /srtm/version2/SRTM3/</programlisting>
+to <programlisting>#define SRTM_HTTP_URI /srtm/version2_1/SRTM3/</programlisting>
+</para>
+<para>
+For further information, see this <ulink url="https://sourceforge.net/tracker/?func=detail&amp;amp;aid=2812856&amp;amp;group_id=83870&amp;amp;atid=570954"><citetitle>discussion</citetitle></ulink>.
+</para>
+
+</section>
+<section><title>Start in verbose debug mode</title>
+<para>
+In order to get some informations about not functioning modules, start viking in verbose debug mode:
+<programlisting>viking -dV</programlisting>
+</para>
+<para>
+The first you'll see is an empty map, because viking in its default
+configurations will download maps only on demand. Before fetching
+unneeded data, we position to a location of interest, e.g. Stuttgart: <menuchoice><guimenu>view</guimenu><guimenuitem>goto location</guimenuitem></menuchoice>, enter 'Stuttgart'.
+</para>
+
+</section>
+<section><title>Fetching the maps</title>
+<para>
+<emphasis role="bold">Map</emphasis>
+</para>
+<procedure>
+<step>layers new map layer</step>
+<step>in the layer properties dialogue choose e.g. <guilabel>OpenStreetMap (Mapnik)</guilabel>.</step>
+<step>
+For the moment, we keep the default <guilabel>Maps Directory</guilabel> (the directory in
+which the maps will be stored and can be used for offline usage).
+</step>
+<step>
+<para>Check <guilabel>Autodownload maps</guilabel> and keep the zoom level as <guilabel>Use Viking
+Zoom Level</guilabel>.</para>
+<note>
+<para>
+however, that these settings will play an important
+role in the pre-fetch for offline usage discussed later
+</para>
+</note>
+</step>
+</procedure>
+<para>You'll see a map of Stuttgart. Using the mouse wheel, you can
+zoom in and out. The maps for the choosen resoltion will be downloaded
+automatically.
+</para>
+<para>
+<emphasis role="bold">DEM Layer (height map)</emphasis>
+<procedure>
+<step>Zoom out to 512/512.</step>
+<step><menuchoice><guimenu>layers</guimenu><guimenuitem>new DEM layer</guimenuitem></menuchoice></step>
+<step>Keep the download source as is (SRTM Global 90m), hit <guilabel>OK</guilabel>. </step>
+</procedure>
+</para>
+<para>In the layer listing on the left, the DEM layer should reside
+above the map layer. If this is not the case, highlight the DEM layer
+an shift it one up (using the arrow up button).
+<procedure>
+<step>highlight the DEM layer in the layer listing on the left</step>
+<step>in the toolbar, check DEM layer download/import (the last symbol)</step>
+<step>a left-click in the map window should then fetch the DEM data</step>
+</procedure>
+</para>
+<para>
+This might take some time. You can check the correct source in the verbose debug output: it should look something like:
+<screen>
+** (viking:28778): DEBUG: curl_download_uri: uri=http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip
+* About to connect() to dds.cr.usgs.gov port 80 (#0)
+* Trying 152.61.128.95... * connected
+* Connected to dds.cr.usgs.gov (152.61.128.95) port 80 (#0)
+ GET /srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip HTTP/1.1
+User-Agent: viking/0.9.8 libcurl/7.18.2 GnuTLS/2.4.2 zlib/1.2.3.3 libidn/1.8
+Host: dds.cr.usgs.gov
+Accept: */*
+ HTTP/1.1 200 OK
+ Date: Sun, 26 Jul 2009 18:13:38 GMT
+ Server: Apache
+ Last-Modified: Tue, 21 Jul 2009 19:57:35 GMT
+ ETag: eac3f8-1828f5-46f3caa76070a
+ Accept-Ranges: bytes
+ Content-Length: 1583349
+ Content-Type: application/zip
+
+* Connection #0 to host dds.cr.usgs.gov left intact
+* Closing connection #0
+** (viking:28778): DEBUG: dem_layer_add_file: /home/username/.viking-maps/srtm3-Eurasia/N48E008.hgt.zip
+</screen>
+</para>
+<para>
+Sometimes, a tile does not show up correctly (you might see only a
+black frame in the map window) because it got corrupted during
+transfer. In order to correct this, you can delete the corresponding
+datafile in the cache. <programlisting> right-click the DEM layer  properties</programlisting>
+</para>
+<para>
+The <guilabel>DEM Files</guilabel> listing allows you to delete the specific tiles (alternatively do this from the command line).
+</para>
+<para>
+You can also alter the Min. and Max. elevation in this dialogue.
+</para>
+
+</section>
+<section><title>GPS Track with height profile</title>
+<procedure>
+<step><para>uncheck the DEM layer (the map show up again)</para></step>
+<step><para><menuchoice><guimenu>layers</guimenu><guimenuitem>new trackwaypoint layer</guimenuitem></menuchoice></para></step>
+</procedure>
+<para>
+Check to have the new track layer above the map layer.
+<procedure>
+<step><para>expand trackwaypointlayer, select <guimenuitem>Tracks</guimenuitem></para></step>
+<step><para>in the tools menu choose <guimenuitem>begin track</guimenuitem> (red cross)<!-- TODO insert icon --></para></step>
+<step><para>leftclick in the map window, enter a name</para></step>
+<step><para>click several times to generate a track (a right-click removes the last point)</para></step>
+<step><para>expand tracks in the layer menu, your track should show up, select it</para></step>
+<step><para>right click your track, select <guimenuitem>apply DEM data</guimenuitem></para></step>
+<step><para>right click your track again, select <guimenuitem>properies</guimenuitem></para></step>
+<step><para>click the tab <guilabel>elevation distance</guilabel> - enjoy the plot</para></step>
+</procedure>
+</para>
+<para>
+In order to save this setting for later usage
+<procedure>
+<step><para>click <guilabel>OK</guilabel> in the <guilabel>track properties</guilabel> dialog</para></step>
+<step><para><menuchoice><guimenu>file</guimenu><guimenuitem>save as</guimenuitem></menuchoice>, choose a name (you can open this <emphasis>view</emphasis> later via <menuchoice><guimenu>file</guimenu><guimenuitem>open</guimenuitem></menuchoice>).</para></step>
+</procedure>
+</para>
+
+</section>
+<section><title>Usecase: offline data for holiday</title>
+<para>
+Suppose you want to have the map and DEM data offline for your holiday in Italy near Bologna.
+</para>
+<procedure>
+<step>Start a new viking session.</step>
+<step><menuchoice><guimenu>view</guimenu><guimenuitem>goto location</guimenuitem></menuchoice>, enter Bologna</step>
+<step><menuchoice><guimenu>layers</guimenu><guimenuitem>new map layer</guimenuitem></menuchoice></step>
+<step>Choose e.g. <guilabel>OpenStreetMap (mapnik)</guilabel>.</step>
+<step>adapt the <guilabel>maps directory</guilabel> e.g. to <filename>/home/user/.viking-map-holiday/</filename>.
+This allows you to delete the map stuff after holiday without purging the rest of your maps.
+</step>
+<step>check <guilabel>autodownload map</guilabel></step>
+<step>keep <guilabel>viking zoom level</guilabel></step>
+<step>zoom out to 1024/1024</step>
+<step>add a DEM layer (as discussed above)</step>
+<step>download the DEM data</step>
+</procedure>
+<para>In the &app; version discussed here, the DEM data automatically
+are stored in <filename>/home/user/.viking-maps/</filename>. You can move the corresponding
+tiles into <filename>.viking-map-holiday/</filename> if you like.
+</para>
+<para>
+<emphasis role="bold">Download map data for all zoom levels</emphasis>
+</para>
+<procedure>
+<step>uncheck the DEM layer for the map to show up</step>
+<step>navigate the map to be centered at Bologna</step>
+<step>choose the zoom such, that all regions of interest are displayed in the map window (e.g. 1024/1024)</step>
+<step>
+<para>follow this sequence until you have all tiles for all zoom levels you need</para>
+<substeps>
+<step>right-click the map layer  properties</step>
+<step>set the zoomlevel explicitely one below the last (in the first cycle 512), hit OK</step>
+<step>right click the map layer  <guimenuitem>download onscreen maps</guimenuitem></step>
+<step>wait untill all tiles for that resolution have been downloaded</step>
+</substeps>
+</step>
+</procedure>
+<para>This may take some time and hd capacity. Lixus wrote a set of
+scripts which allow to download the map tiles for several zoom-level in
+parallel from the command line.
+</para>
+<para>
+Do not forget to save your configuration (as discussed above).
+</para>
+
+</section>
+
+</section>
+<section><title>Uploading data to OpenStreetMap</title>
+<para>
+It is possible to upload data directly from Viking to OpenStreetMap.
+</para>
+<formalpara>
+<title>Upload a layer</title>
+<para>
+One solution is to upload whole a TrackWaypoint layer. To do this,
+simply select the layer and right click on it. Then, select <guimenuitem>Upload to
+OSM</guimenuitem>.
+</para>
+</formalpara>
+<formalpara>
+<title>Upload a single track</title>
+<para>One solution is to upload whole a TrackWaypoint layer. To do
+this, simply select the layer and right click on it. Then, select
+<guimenuitem>Upload to OSM</guimenuitem>.
+</para>
+</formalpara>
+<formalpara>
+<title>Fill in the form</title>
+<para>
+On both case, Viking will reclaim some informations.
+The email field is the email you used to subscribed into OSM.
+The password field is the password you used with this account.
+The filename is the name you want your upload has on the server. This information is displayed by the osm server.
+The description is some descriptive information.
+The tags field is a white separated list of tag.
+</para> 
+</formalpara>
+
+</section>
+<section><title>Geocoded Photo</title>
+<para>
+HOWTO GEOCODE YOUR PHOTOS AND SEE THEM IN VIKING 
+</para>
+<para>1) Synchronize your camera's clock with your GPS clock. If your
+camera's clock doesn't have a seconds value you can change, you might
+try setting the minute value just when the minute changes.
+</para>
+<para>
+2) Activate the track log on your GPS.
+</para>
+<para>3) Get outside and take some pictures with your camera while
+making sure your GPS has reception. If you forgot to turn your GPS on
+or forgot to bring it when you took a picture but you know where you
+took the picture, you can make a waypoint with a name of the format
+YYMMDDhhmm, representing the time the picture was taken, to record
+where you were at that time.
+</para>
+<para>4) Get home and download your pictures and GPS data. You can
+download the GPS data several ways. The first is using gpspoint to
+download from a Garmin GPS: <programlisting>gpspoint -p /dev/ttyS0 -dw -dt -of 2004-04-02-trip1</programlisting>
+</para>
+<para>
+Where /dev/ttyS0 is the serial port the GPS is connected to. If you
+don't have a Garmin GPS, or if you don't feel like install gpspoint,
+you can use my version of gpsbabel with support for gpspoint files. You
+can use gpsbabel to either translate the GPS data from a format you
+already have the data in or download it directly from your GPS
+reciever. A typical command line would something like this:<programlisting>gpsbabel -i garmin -f /dev/ttyS0 -o gpspoint -F 2004-04-02-trip1</programlisting>
+</para>
+<para>
+5) Launch GPSPhoto.
+</para>
+<para>
+6) You must now bring your photos into GPSPhoto. Either drag them (or
+the directory containing them) from your favorite file manager to the
+list on the left of the GPSPhoto window, or use the buttons below the
+list to find them.
+</para>
+<para>
+7) Do the same for your GPS data file(s), dragging them to the list on the right of the GPSPhoto Window.
+</para>
+<para>8) Click the Execute button, and choose a location to save the
+gpspoint file containing the waypoints for your photos. Then click OK
+to write the waypoints to this file.
+</para>
+<para>
+9) Open Viking and open both your original GPS data file and your image waypoint file just created.
+</para>
+</section>
+
+<section>
+    <title>Extending Viking</title>
+
+      <para>Currently, &app; has some extention points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
+      <para>Here is an example:
+<programlisting><![CDATA[
+<objects>
+  <object class="ClassName">
+    <property name="property_name1">Property value</property>
+    <property name="property_name2">Property value</property>
+  </object>
+  ...
+<objects>
+]]>
+</programlisting>
+</para>
+      <para>You can find more examples in the documentation part of the distribution.</para>
+      <formalpara>
+        <title>Map Source</title>
+        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/maps.xml</filename>.</para>
+        <para>Currently, there is a single object class available: VikSlippyMapSource. Such feature allows to declare any map's source working like OpenStreetMap.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>hostname</term>
+              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </formalpara>
+
+      <formalpara>
+        <title>Go-to search engines</title>
+        <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
+        <para>Currently, there is a single object class available: VikGotoXmlTool. Such feature allows to declare any search engine using a XML format as result.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the <guilabel>Go-To</guilabel> dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-format</term>
+              <listitem><para>the parametrized address of the query, in the spirit of C <function>printf</function> format, with a single "%s" field (replaced by the query string)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-path</term>
+              <listitem><para>XML path of the latitude (eg. <literal>/root/parent/elem</literal>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-attr (optional)</term>
+              <listitem><para>name of the attribute (of previous element) containing the latitude</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-path</term>
+              <listitem><para>XML path of the longitude (eg. <literal>/root/parent/elem</literal>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-attr (optional)</term>
+              <listitem><para>name of the attribute (of previous element) containing the longiude</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para>As a facility (or readability) it is possible to set both path and attribute name in a single property, like an XPath expression. To do so, simply set both info in lat-path (or lon-path) in the following format: <literal>/root/parent/elem@attribute</literal>.</para>
+      </formalpara>
+
+      <formalpara>
+        <title>External tools</title>
+        <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
+        <para>Currently, there is a single object class available: VikWebtoolCenter. Such feature allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "http://hostname/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </formalpara>
+
+</section>
+
+</section>
+
+</article>
+

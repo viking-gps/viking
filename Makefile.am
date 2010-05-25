@@ -1,4 +1,4 @@
-SUBDIRS = src test doc po
+SUBDIRS = src test doc po help
 
 INTLTOOL = \
 	intltool-extract.in \
@@ -12,6 +12,7 @@ full:
 bin_SCRIPTS = viking-remote
 
 EXTRA_DIST = \
+	     gnome-doc-utils.make \
 		 ChangeLog.0 \
 	     viking-remote \
 	     viking.spec \
@@ -28,8 +29,12 @@ dist-hook: viking.spec generate-changelog
 	cp $(top_builddir)/viking.spec $(distdir)
 
 DISTCLEANFILES = \
+	gnome-doc-utils.make \
 	intltool-extract \
 	intltool-merge \
 	intltool-update
 
 ACLOCAL_AMFLAGS = -I m4
+
+DISTCHECK_CONFIGURE_FLAGS = \
+	--disable-scrollkeeper

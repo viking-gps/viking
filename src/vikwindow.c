@@ -1155,6 +1155,16 @@ static void menu_properties_cb ( GtkAction *a, VikWindow *vw )
     a_dialog_info_msg ( GTK_WINDOW(vw), _("You must select a layer to show its properties.") );
 }
 
+static void help_help_cb ( GtkAction *a, VikWindow *vw )
+{
+#if GTK_CHECK_VERSION (2, 14, 0)
+  gchar *uri;
+  uri = g_strdup_printf("ghelp:%s", PACKAGE);
+  gtk_show_uri(NULL, uri, GDK_CURRENT_TIME, NULL);
+  g_free(uri);
+#endif
+}
+
 static void help_about_cb ( GtkAction *a, VikWindow *vw )
 {
   a_dialog_about(GTK_WINDOW(vw));
@@ -2202,6 +2212,7 @@ static GtkActionEntry entries[] = {
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         NULL,                                           (GCallback)preferences_cb              },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
 
+  { "HelpEntry", GTK_STOCK_HELP,         N_("_Help"),                         "F1",         NULL,                                           (GCallback)help_help_cb     },
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         NULL,                                           (GCallback)help_about_cb    },
 };
 
