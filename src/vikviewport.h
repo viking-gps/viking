@@ -39,7 +39,7 @@ G_BEGIN_DECLS
 #define IS_VIK_VIEWPORT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_VIEWPORT_TYPE))
 #define IS_VIK_VIEWPORT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), VIK_VIEWPORT_TYPE))
 
-#define VIK_VIEWPORT_MAX_ZOOM 8192.0
+#define VIK_VIEWPORT_MAX_ZOOM 32768.0
 #define VIK_VIEWPORT_MIN_ZOOM 0.125
 
 /* used for coord to screen etc, screen to coord */

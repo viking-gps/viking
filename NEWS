@@ -1,3 +1,21 @@
+Viking 0.9.93 (2010-04-11)
+New features since 0.9.92
+* Allow overriding map source
+* Make GPS layer cut/copy available from popup menu.
+* [DOC] Document new files in viking's manpage
+* Increase possible smaller zoom
+* Add negative scales so that we can have bigger zoom on maps
+* Allow images from bigger and smaller zoom to be selected if current zoom has no image
+
+Fixes since 0.9.92
+* Fix: set a default filename while exporting
+* [DOC] Fix: Viking's sources are hosted by Git now
+* Further variable type corrections.
+* Fix GPS layer copy.
+* Fix Track/Waypoint Layer Paste on 64bit systems.
+* [DOC] Fix FILES section of manpage.
+* Fix: First Track not Black in Draw All Tracks Black Mode.
+
 Viking 0.9.92 (2010-03-15)
 New features since 0.9.91
 * Memorize previously selected go-to service.

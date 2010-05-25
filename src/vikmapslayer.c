@@ -110,6 +110,7 @@ static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp );
 static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir );
 static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const VikCoord *ul, const VikCoord *br, gint redownload );
 static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp );
+static guint map_uniq_id_to_index ( guint uniq_id );
 
 
 static VikLayerParamScale params_scales[] = {
@@ -222,14 +223,20 @@ void maps_layer_init ()
 /******** MAPS LAYER TYPES **************/
 /****************************************/
 
-void maps_layer_register_map_source ( VikMapSource *map )
+int _get_index_for_id ( guint id )
 {
-  g_assert(map != NULL);
-  
-  guint id = vik_map_source_get_uniq_id(map);
-  const char *label = vik_map_source_get_label(map);
-  g_assert(label != NULL);
+  int index = 0 ;
+  while (params_maptypes_ids[index] != 0)
+  {
+    if (params_maptypes_ids[index] == id)
+      return index;
+    index++;
+  }
+  return -1;
+}
 
+void _add_map_source ( guint id, const char *label, VikMapSource *map )
+{
   gsize len = 0;
   if (params_maptypes)
     len = g_strv_length (params_maptypes);
@@ -249,7 +256,7 @@ void maps_layer_register_map_source ( VikMapSource *map )
   __map_types = g_list_append(__map_types, clone);
 
   /* Hack
-     We have to ensure the mode LayerParam reference the up-to-date
+     We have to ensure the mode LayerParam references the up-to-date
      GLists.
   */
   /*
@@ -258,6 +265,35 @@ void maps_layer_register_map_source ( VikMapSource *map )
   */
   maps_layer_params[0].widget_data = params_maptypes;
   maps_layer_params[0].extra_widget_data = params_maptypes_ids;
+}
+
+void _update_map_source ( const char *label, VikMapSource *map, int index )
+{
+  GList *item = g_list_nth (__map_types, index);
+  g_object_unref (item->data);
+  item->data = g_object_ref (map);
+  /* Change previous data */
+  g_free (params_maptypes[index]);
+  params_maptypes[index] = g_strdup (label);
+}
+
+void maps_layer_register_map_source ( VikMapSource *map )
+{
+  g_assert(map != NULL);
+  
+  guint id = vik_map_source_get_uniq_id(map);
+  const char *label = vik_map_source_get_label(map);
+  g_assert(label != NULL);
+
+  int previous = map_uniq_id_to_index (id);
+  if (previous != NUM_MAP_TYPES)
+  {
+    _update_map_source (label, map, previous);
+  }
+  else
+  {
+    _add_map_source (id, label, map);
+  }
 }
 
 #define MAPS_LAYER_NTH_LABEL(n) (params_maptypes[n])
@@ -724,24 +760,49 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
               vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil );
             }
           } else {
-            pixbuf = get_pixbuf ( vml, mode, &ulm, path_buf, max_path_len, xshrinkfactor, yshrinkfactor );
-            if ( pixbuf )
-              vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
-            else {
-              /* retry with bigger shrinkfactor */
-              int scale_inc;
-              for (scale_inc = 1; scale_inc < 4; scale_inc ++) {
-                int scale_factor = 1 << scale_inc;  /*  2^scale_inc */
+            int scale_inc;
+            for (scale_inc = 0; scale_inc < 4; scale_inc ++) {
+              /* try with correct then smaller zooms */
+              int scale_factor = 1 << scale_inc;  /*  2^scale_inc */
+              MapCoord ulm2 = ulm;
+              ulm2.x = ulm.x / scale_factor;
+              ulm2.y = ulm.y / scale_factor;
+              ulm2.scale = ulm.scale + scale_inc;
+              pixbuf = get_pixbuf ( vml, mode, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
+              if ( pixbuf ) {
+                gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
+                gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
+#ifdef DEBUG
+                printf("maps_layer_draw_section - x=%d, y=%d, z=%d, src_x=%d, src_y=%d, xx=%d, yy=%d - %x\n", ulm.x, ulm.y, ulm.scale, src_x, src_y, (int)xx, (int)yy, vvp);
+#endif
+                vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+                break;
+              }
+            }
+            if ( !pixbuf ) {
+              /* retry with bigger zooms */
+              int scale_dec;
+              for (scale_dec = 1; scale_dec < 2; scale_dec ++) {
+                int pict_x, pict_y;
+                int scale_factor = 1 << scale_dec;  /*  2^scale_dec */
                 MapCoord ulm2 = ulm;
-                ulm2.x = ulm.x / scale_factor;
-                ulm2.y = ulm.y / scale_factor;
-                ulm2.scale = ulm.scale + scale_inc;
-                pixbuf = get_pixbuf ( vml, mode, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
-                if ( pixbuf ) {
-                  gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
-                  gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
-                  vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
-                  break;
+                ulm2.x = ulm.x * scale_factor;
+                ulm2.y = ulm.y * scale_factor;
+                ulm2.scale = ulm.scale - scale_dec;
+                for (pict_x = 0; pict_x < scale_factor; pict_x ++) {
+                  for (pict_y = 0; pict_y < scale_factor; pict_y ++) {
+                    MapCoord ulm3 = ulm2;
+                    ulm3.x += pict_x;
+                    ulm3.y += pict_y;
+                    pixbuf = get_pixbuf ( vml, mode, &ulm3, path_buf, max_path_len, xshrinkfactor / scale_factor, yshrinkfactor / scale_factor );
+                    if ( pixbuf ) {
+                      gint src_x = 0;
+                      gint src_y = 0;
+                      gint dest_x = xx + pict_x * (tilesize_x_ceil / scale_factor);
+                      gint dest_y = yy + pict_y * (tilesize_y_ceil / scale_factor);
+                      vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, dest_x, dest_y, tilesize_x_ceil / scale_factor, tilesize_y_ceil / scale_factor );
+                    }
+                  }
                 }
               }
             }

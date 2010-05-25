@@ -250,13 +250,23 @@ static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), 
 
 static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
 
+static const gdouble scale_neg_mpps[] = { 1.0/GZ(0), 1.0/GZ(1), 1.0/GZ(2), 1.0/GZ(3) };
+static const gint num_scales_neg = (sizeof(scale_neg_mpps) / sizeof(scale_neg_mpps[0]));
+
 #define ERROR_MARGIN 0.01
-static guint8 slippy_zoom ( gdouble mpp ) {
+static gint slippy_zoom ( gdouble mpp ) {
   gint i;
   for ( i = 0; i < num_scales; i++ ) {
-    if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN )
+    if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN ) {
       return i;
+    }
   }
+  for ( i = 0; i < num_scales_neg; i++ ) {
+    if ( ABS(scale_neg_mpps[i] - mpp) < 0.000001 ) {
+      return -i;
+    }
+  }
+
   return 255;
 }
 
@@ -330,7 +340,11 @@ _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdo
 static void
 _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest )
 {
-  gdouble socalled_mpp = GZ(src->scale);
+  gdouble socalled_mpp;
+  if (src->scale >= 0)
+    socalled_mpp = GZ(src->scale);
+  else
+    socalled_mpp = 1.0/GZ(-src->scale);
   dest->mode = VIK_COORD_LATLON;
   dest->east_west = ((src->x+0.5) / GZ(17) * socalled_mpp * 360) - 180;
   dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));

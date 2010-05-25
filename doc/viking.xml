@@ -53,6 +53,10 @@ and docbook-xsl in your Build-Depends control field.
       <year>2007</year>
       <holder>&dhusername;</holder>
     </copyright>
+    <copyright>
+      <year>2010</year>
+      <holder>Guilhem Bonnefille</holder>
+    </copyright>
     &dhdate;
   </refentryinfo>
   <refmeta>
@@ -105,7 +109,7 @@ and docbook-xsl in your Build-Depends control field.
   operating systems, and Windows, and is licensed under the GNU GPL. 
     </para>
     <para>  
-  Homepage: http://viking.sf.net
+  Homepage: <ulink type="http" url="http://viking.sf.net">http://viking.sf.net</ulink>
     </para>
 
     <para>This manual page was written for the &debian; distribution
@@ -151,6 +155,156 @@ and docbook-xsl in your Build-Depends control field.
         <term><option>--version</option></term>
         <listitem>
           <para>Show version.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+  </refsect1>
+  <refsect1>
+    <title>Extending Viking</title>
+
+      <para>Currently, &dhpackage; has some extention points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
+      <para>Here is an example:
+<literallayout><![CDATA[
+<objects>
+  <object class="ClassName">
+    <property name="property_name1">Property value</property>
+    <property name="property_name2">Property value</property>
+  </object>
+  ...
+<objects>
+]]>
+</literallayout>
+</para>
+      <para>You can find more examples in the documentation part of the distribution.</para>
+      <formalpara>
+        <title>Map Source</title>
+        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/maps.xml</filename>.</para>
+        <para>Currently, there is a single object class available: VikSlippyMapSource. Such feature allows to declare any map's source working like OpenStreetMap.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>hostname</term>
+              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </formalpara>
+
+      <formalpara>
+        <title>Go-to search engines</title>
+        <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
+        <para>Currently, there is a single object class available: VikGotoXmlTool. Such feature allows to declare any search engine using a XML format as result.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the <guilabel>Go-To</guilabel> dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-format</term>
+              <listitem><para>the parametrized address of the query, in the spirit of C <function>printf</function> format, with a single "%s" field (replaced by the query string)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-path</term>
+              <listitem><para>XML path of the latitude (eg. <literal>/root/parent/elem</literal>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-attr (optional)</term>
+              <listitem><para>name of the attribute (of previous element) containing the latitude</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-path</term>
+              <listitem><para>XML path of the longitude (eg. <literal>/root/parent/elem</literal>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-attr (optional)</term>
+              <listitem><para>name of the attribute (of previous element) containing the longiude</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para>As a facility (or readability) it is possible to set both path and attribute name in a single property, like an XPath expression. To do so, simply set both info in lat-path (or lon-path) in the following format: <literal>/root/parent/elem@attribute</literal>.</para>
+      </formalpara>
+
+      <formalpara>
+        <title>External tools</title>
+        <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
+        <para>Currently, there is a single object class available: VikWebtoolCenter. Such feature allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "http://hostname/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </formalpara>
+
+  </refsect1>
+  <refsect1>
+    <title>FILES</title>
+
+    <variablelist>
+      <varlistentry>
+        <term><filename>~/.viking/maps.xml</filename></term>
+        <listitem>
+          <para>File containing definition of map sources.</para>
+          <para>See previous section for details.</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>~/.viking/goto_tools.xml</filename></term>
+        <listitem>
+          <para>File containing definition of "Go-to" services.</para>
+          <para>See previous section for details.</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>~/.viking/external_tools.xml</filename></term>
+        <listitem>
+          <para>File containing definition of external tools.</para>
+          <para>See previous section for details.</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>~/.viking/viking.prefs</filename></term>
+        <listitem>
+          <para>Preferences for &dhpackage;.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>~/.viking/cookies.txt</filename></term>
+        <listitem>
+          <para>File hosting cookies used by &dhpackage;.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><filename>~/.viking-maps/</filename></term>
+        <listitem>
+          <para>Map cache of tiles downloaded by &dhpackage;.</para>
         </listitem>
       </varlistentry>
     </variablelist>

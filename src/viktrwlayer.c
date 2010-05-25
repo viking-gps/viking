@@ -246,7 +246,7 @@ static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
 
 
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len );
-static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *vvp );
+static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id );
@@ -675,8 +675,10 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
 
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
 {
-  guint8 *pd, *dd;
-  gint pl, dl;
+  guint8 *pd;
+  gchar *dd;
+  gsize dl;
+  gint pl;
   gchar *tmpname;
   FILE *f;
 
@@ -687,7 +689,7 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
     vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
     fclose(f);
     f = NULL;
-    g_file_get_contents(tmpname, (void *)&dd, (void *)&dl, NULL);
+    g_file_get_contents(tmpname, &dd, &dl, NULL);
     *len = sizeof(pl) + pl + dl;
     *data = g_malloc(*len);
     memcpy(*data, &pl, sizeof(pl));
@@ -701,10 +703,10 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
   }
 }
 
-static VikTrwLayer *trw_layer_unmarshall( gpointer data, gint len, VikViewport *vvp )
+static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
   VikTrwLayer *rv = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, NULL, FALSE ));
-  guint pl;
+  gint pl;
   gchar *tmpname;
   FILE *f;
 
@@ -966,6 +968,9 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     drawstops = dp->vtl->drawstops;
   }
 
+  if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
+    dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_BLACK;
+
   if ( track == dp->vtl->current_track )
     main_gc = dp->vtl->current_track_gc;
   else
@@ -987,9 +992,6 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 
     oldx = x;
     oldy = y;
-
-    if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
-      dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_MAX + 1;
 
     while ((list = g_list_next(list)))
     {
@@ -1549,7 +1551,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], guint file_type )
 				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 				      NULL);
-  gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(file_selector), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])));
+  gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(file_selector), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])));
 
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {

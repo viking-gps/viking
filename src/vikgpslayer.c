@@ -52,7 +52,7 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
 static void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void vik_gps_layer_free ( VikGpsLayer *val );
 static void vik_gps_layer_draw ( VikGpsLayer *val, gpointer data );
-VikGpsLayer *vik_gps_layer_new ();
+static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
 
 static void gps_layer_marshall( VikGpsLayer *val, guint8 **data, gint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
@@ -168,7 +168,7 @@ VikLayerInterface vik_gps_layer_interface = {
   params_groups,
   sizeof(params_groups)/sizeof(params_groups[0]),
 
-  VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_COPY),
+  VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  vik_gps_layer_create,
   (VikLayerFuncRealize)                 vik_gps_layer_realize,
@@ -344,7 +344,7 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
   len -= sizeof(gint) + alm_size; \
   data += sizeof(gint) + alm_size;
   
-  VikGpsLayer *rv = vik_gps_layer_new();
+  VikGpsLayer *rv = vik_gps_layer_new(vvp);
   VikLayer *child_layer;
   gint i;
 
@@ -601,7 +601,15 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
 
 static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
 {
-  g_assert(DISCONNECT_UPDATE_SIGNAL(vl,vgl)==1);
+  guint number_handlers = DISCONNECT_UPDATE_SIGNAL(vl,vgl);
+  if ( number_handlers != 1 ) {
+    /*
+      NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
+      This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
+      I don't think there's any side effects and certainly better than the program just aborting
+    */
+    g_warning(_("Unexpected number of disconnected handlers: %d"), number_handlers);
+  }
 }
 
 static void vik_gps_layer_free ( VikGpsLayer *vgl )
