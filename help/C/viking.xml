@@ -508,6 +508,11 @@ This feature is called <guilabel>External tools</guilabel>.
 </screenshot>
 </figure>
 </section>
+<section><title>Tile's age</title>
+<para>This age is used to decided wether or not a new request to tile server must be done.
+</para>
+<para>Changing this value, you will increase or decrese the network load.</para>
+</section>
 </section>
 <section><title>Mini-Howto's</title>
 <section><title>Getting Started</title>
