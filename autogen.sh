@@ -15,7 +15,8 @@ PKG_NAME="viking"
 }
 
 which gnome-autogen.sh || {
-    echo "You need to install gnome-common from the GNOME CVS"
+    echo "You need to install gnome-common module and make"
+    echo "sure the gnome-autogen.sh script is in your \$PATH."
     exit 1
 }
 
