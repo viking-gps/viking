@@ -1,26 +1,33 @@
-To compile:
+Viking is a free/open source program to manage GPS data. You can import and plot tracks and waypoints, show Terraserver maps under it, add coordinate lines, make new tracks and waypoints, hide different things, etc. It is written in C with the GTK+ 2.
+
+Website: http://viking.sf.net/
+
+
+Installing Viking
+=================
 
 If you downloaded viking from Git, you have to:
-$ autogen.sh
+  $ autogen.sh
 
 Next, or if you downloaded a tarball, you have to:
-$ ./configure
-$ make
+  $ ./configure
+  $ make
 
 Check output of "./configure --help" for configuration options.
 In particular, it is possible to disable some features, like --disable-google in order to disable any Google stuff.
 
 If you whish to install viking, you have to (as root):
-# make install
+  # make install
 
+For detailled explaination on install, see INSTALL file.
 
-Viking needs documentation! Any volunteers?
-After I get some core features down I'll start on documentation. I promise.
+Examples
+========
 
-To export as GPSMapper, the track/waypoint name should be in the format of:
+See test/ subdirectory for examples.
 
-Name RGN## 0x####
+Documentation
+=============
 
-or
-
-Name RGN## 0x##
+See doc/ and help/ subdirectories for documentation.
+You can also access user manual via Help menu entry.
