@@ -106,7 +106,7 @@ Uploading and downloading waypoints, tracks to/from GPS.
 </listitem>
 <listitem>
 <para>Preparing tracks and waypoints for trips using maps from services
-such as Googlemaps, Terrasever. The data is only needed to upload to
+such as OpenStreetMap (OSM) and/or Terrasever. The data is only needed to upload to
 your GPS before you leave. The maps together with your tracks and
 waypoints can also be printed and used during the trip.
 </para>
@@ -118,12 +118,12 @@ After trips, tracks and waypoints from GPS can be downloaded, stored, managed an
 </listitem>
 <listitem>
 <para>
-Analyzing OHV and hiking trips, understanding where you went and how far you were from something.
+Analyzing Off Highway Vehicle (OHV) and hiking trips, understanding where you went and how far you were from something.
 </para>
 </listitem>
 <listitem>
 <para>Making waypoints and tracks to follow to easily get someplace
-you've never been before or don't have GPS data for but Terraserver
+you've never been before or don't have GPS data for but online
 maps exist for it.
 </para>
 </listitem>
@@ -144,7 +144,7 @@ Analyzing speed at different places (to some degree), adding waypoints where you
 </listitem>
 <listitem>
 <para>
-Downloading and storing Terraserver maps on your hard drive and looking at them later.
+Downloading and storing OSM and/or Terraserver maps on your hard drive and looking at them later.
 </para>
 </listitem>
 <listitem>
@@ -152,22 +152,17 @@ Downloading and storing Terraserver maps on your hard drive and looking at them 
 Editing tracks and trackpoints, joining and splitting up tracks 
 </para>
 </listitem>
-</itemizedlist>
-<para>
-Other things which Viking will be able to do in the future include:
-</para>
-<itemizedlist mark="opencircle">
 <listitem>
 <para>
-Show the live GPS position on the Topo or Ortho map (for use on a laptop)
-</para>
-</listitem>
-<listitem>
-<para>
-Preparing tracks and waypoints to be made into Garmin maps 
+Show the live GPS position on the map (for use on a mobile device - e.g. a laptop)
 </para>
 </listitem>
 </itemizedlist>
+<note>
+<para>
+&appname; is under continual improvement: see the potential areas in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Main_Page#TODO_.2F_Ideas"><citetitle>Roadmap / Wishlist</citetitle></ulink>:
+</para>
+</note>
 </section>
 <section><title>General Concepts</title>
 <para>
@@ -291,10 +286,10 @@ Change the current tool to add track and add points to the end of the track.
 </section>
 <section><title>Upload to OSM</title>
 <para>
-Useful if you are an OpenStreetMap.org (OSM) contributor. Viking
-allowing you to import a track, edit it if you so wish to remove
+Useful if you are an OSM contributor. Viking
+allows you to import a track, edit it if you so wish to remove
 duplicate points, perhaps track points leading to your home, and then
-directly export the track to OSM
+directly export the track to OSM.
 </para>
 
 </section>
@@ -398,9 +393,9 @@ Zooms in and out on the clicked part of the map.
 
 </section>
 <section><title>Ruler</title>
-<para>Used to measure bearing distance between two point:Click on first
-point,click on second point - after few seconds the bearing distance
-between points will be displayed.
+<para>
+The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
+A second click will 'freeze' the ruler at that point.
 </para>
 
 </section>
@@ -569,7 +564,7 @@ To quickly get started using &appname;, follow these instructions.
 </para>
 <section><title>Go to an area of interest</title>
 <para>
-&appname;'s default location is a 0 latitude and longitude, so you need to pick a place that interests you.
+&appname;'s default location is a Manhatten, New York, USA, so you may need to pick another place that interests you.
 </para>
 <procedure>
 <title>Method A</title>
@@ -639,7 +634,7 @@ map. Regardless of what tool you are using, the middle mouse button
 always pans. </para>
 <note>
 <para>
-You MUST have an open internet connection when you are downloading maps. If not, &app; will likely hang.
+You need an open internet connection when you are downloading maps.
 </para>
 </note>
 <para>
