@@ -43,6 +43,28 @@
         <firstname>Guilhem</firstname>
         <surname>Bonnefille</surname>
       </author>
+      <!-- Contributors from the Wiki history -->
+      <author>
+        <firstname>username:</firstname>
+        <surname>Alexxy</surname>
+      </author>
+      <author>
+        <firstname>username:</firstname>
+        <surname>Vikingis</surname>
+      </author>
+      <author>
+        <firstname>username:</firstname>
+        <surname>Tallguy</surname>
+      </author>
+      <author>
+        <firstname>username:</firstname>
+        <surname>EliotB</surname>
+      </author>
+      <author>
+        <firstname>Alex</firstname>
+        <surname>Foobarian</surname>
+      </author>
+      <!-- END -->
     </authorgroup>
 
     <revhistory>
