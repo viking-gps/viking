@@ -75,6 +75,7 @@ typedef enum {
   VIK_UNITS_SPEED_KILOMETRES_PER_HOUR,
   VIK_UNITS_SPEED_MILES_PER_HOUR,
   VIK_UNITS_SPEED_METRES_PER_SECOND,
+  VIK_UNITS_SPEED_KNOTS,
 } vik_units_speed_t;
 
 vik_units_speed_t a_vik_get_units_speed ( );

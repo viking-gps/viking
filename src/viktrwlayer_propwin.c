@@ -544,6 +544,9 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       sprintf(s, "%8dm/s", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
+    case VIK_UNITS_SPEED_KNOTS:
+      sprintf(s, "%8dknots", (int)((mins + (LINES-i)*(maxs-mins)/LINES)*1.94384449));
+      break;
     default:
       sprintf(s, "--");
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
@@ -834,6 +837,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
       break;
+    case VIK_UNITS_SPEED_KNOTS:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", tmp_speed*1.94384449 );
+      break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
@@ -854,6 +860,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
+      break;
+    case VIK_UNITS_SPEED_KNOTS:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", tmp_speed*1.94384449 );
       break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );

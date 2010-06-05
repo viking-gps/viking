@@ -330,6 +330,9 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
 	case VIK_UNITS_SPEED_METRES_PER_SECOND:
 	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m/s", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / ABS(tp->timestamp - tpwin->cur_tp->timestamp) );
 	  break;
+	case VIK_UNITS_SPEED_KNOTS:
+	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f knots", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp)) * 1.94384449 );
+	  break;
 	default:
 	  g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
 	  g_critical("Houston, we've had a problem. speed=%d", speed_units);

@@ -33,7 +33,7 @@ gboolean vik_version = FALSE;
 
 static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", NULL};
 static gchar * params_units_distance[] = {"Kilometres", "Miles", NULL};
-static gchar * params_units_speed[] = {"km/h", "mph", "m/s", NULL};
+static gchar * params_units_speed[] = {"km/h", "mph", "m/s", "knots", NULL};
 static gchar * params_units_height[] = {"Metres", "Feet", NULL};
 static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
