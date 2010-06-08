@@ -23,6 +23,7 @@ src/datasource_bfilter.c
 src/main.c
 src/osm.c
 src/osm-traces.c
+src/preferences.c
 src/uibuilder.c
 src/vikdemlayer.c
 src/vikfileentry.c
