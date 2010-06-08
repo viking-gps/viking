@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-15 21:55+0100\n"
+"POT-Creation-Date: 2010-04-12 08:15+0200\n"
 "PO-Revision-Date: 2010-03-16 22:19+0000\n"
 "Last-Translator: Radek Stastny <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2010-04-11 20:32+0000\n"
+"X-Launchpad-Export-Date: 2010-06-07 21:07+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -26,11 +26,11 @@ msgstr "Pracuji..."
 msgid "Error: acquisition failed."
 msgstr "Chyba: stažení selhalo"
 
-#: ../src/acquire.c:149 ../src/vikgpslayer.c:974
+#: ../src/acquire.c:149 ../src/vikgpslayer.c:982
 msgid "Done."
 msgstr "Hotovo."
 
-#: ../src/acquire.c:326 ../src/vikgpslayer.c:1013
+#: ../src/acquire.c:326 ../src/vikgpslayer.c:1021
 msgid "Status: detecting gpsbabel"
 msgstr "Status: hledám gpsbabel"
 
@@ -62,11 +62,9 @@ msgstr "špatná velikost dat ve schránce"
 #: ../src/clipboard.c:113
 #, c-format
 msgid ""
-"The clipboard contains sublayer data for a %s layers.You must select a layer "
+"The clipboard contains sublayer data for %s layers. You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
-"Schránka obsahuje data pro %s vrstev. K vložení ze schránky je třeba vybrat "
-"vrstvu stejného typu."
 
 #: ../src/clipboard.c:219
 msgid ""
@@ -369,7 +367,7 @@ msgstr "Staženo z GPS"
 msgid "using cmdline '%s' and file '%s'\n"
 msgstr "používám příkaz '%s' a soubor '%s'\n"
 
-#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:728
+#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:736
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
@@ -377,7 +375,7 @@ msgstr[0] "Stahuji %d místo..."
 msgstr[1] "Stahuji %d místa..."
 msgstr[2] "Stahuji %d míst..."
 
-#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:730
+#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:738
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
@@ -395,7 +393,7 @@ msgstr "Staženo %d z %d %s..."
 msgid "Downloaded %d %s."
 msgstr "Staženo %d %s."
 
-#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:800
+#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:808
 #, c-format
 msgid "GPS Device: %s"
 msgstr "GPS zařízení: %s"
@@ -408,7 +406,7 @@ msgstr "GPS protokol:"
 msgid "Serial Port:"
 msgstr "Sériový port:"
 
-#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:1018
+#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:1026
 msgid "GPS device: N/A"
 msgstr "GPS zařízení: N/A"
 
@@ -759,7 +757,7 @@ msgstr "Georef posun mapy"
 msgid "Georef Zoom Tool"
 msgstr "Georef přiblížení"
 
-#: ../src/vikgeoreflayer.c:311 ../src/vikmapslayer.c:570
+#: ../src/vikgeoreflayer.c:311 ../src/vikmapslayer.c:606
 #, c-format
 msgid "Couldn't open image file: %s"
 msgstr "Nelze otevřít soubor s obrázkem: %s"
@@ -884,11 +882,11 @@ msgstr "Gpsd port:"
 msgid "Gpsd Retry Interval (seconds):"
 msgstr "Opakovat připojení k gpsd po (s):"
 
-#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1006
+#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1014
 msgid "GPS Download"
 msgstr "Stažení z GPS"
 
-#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1006
+#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1014
 msgid "GPS Upload"
 msgstr "Nahrání do GPS"
 
@@ -929,7 +927,17 @@ msgstr "Nic ke stažení"
 msgid "Empty All"
 msgstr "Sm_azat vše"
 
-#: ../src/vikgpslayer.c:735
+#. 
+#. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
+#. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
+#. I don't think there's any side effects and certainly better than the program just aborting
+#. 
+#: ../src/vikgpslayer.c:611
+#, c-format
+msgid "Unexpected number of disconnected handlers: %d"
+msgstr ""
+
+#: ../src/vikgpslayer.c:743
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
@@ -937,7 +945,7 @@ msgstr[0] "Nahrávám %d místo..."
 msgstr[1] "Nahrávám %d místa..."
 msgstr[2] "Nahrávám %d míst..."
 
-#: ../src/vikgpslayer.c:737
+#: ../src/vikgpslayer.c:745
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
@@ -945,7 +953,7 @@ msgstr[0] "Nahrávám %d bod"
 msgstr[1] "Nahrávám %d body"
 msgstr[2] "Nahrávám %d bodů"
 
-#: ../src/vikgpslayer.c:761
+#: ../src/vikgpslayer.c:769
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
@@ -953,7 +961,7 @@ msgstr[0] "Staženo %d z %d místa..."
 msgstr[1] "Staženy %d ze %d míst..."
 msgstr[2] "Staženo %d z %d míst..."
 
-#: ../src/vikgpslayer.c:763
+#: ../src/vikgpslayer.c:771
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
@@ -961,7 +969,7 @@ msgstr[0] "Stažen %d z %d bodu..."
 msgstr[1] "Staženy %d ze %d bodů..."
 msgstr[2] "Staženo %d z %d bodů..."
 
-#: ../src/vikgpslayer.c:767
+#: ../src/vikgpslayer.c:775
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
@@ -969,7 +977,7 @@ msgstr[0] "Nahráno %d z %d místa"
 msgstr[1] "Nahráno %d z %d míst"
 msgstr[2] "Nahráno %d z %d míst"
 
-#: ../src/vikgpslayer.c:769
+#: ../src/vikgpslayer.c:777
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
@@ -977,7 +985,7 @@ msgstr[0] "Nahrán %d z %d bodu..."
 msgstr[1] "Nahráno %d z %d bodů..."
 msgstr[2] "Nahráno %d z %d bodů..."
 
-#: ../src/vikgpslayer.c:776
+#: ../src/vikgpslayer.c:784
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
@@ -985,7 +993,7 @@ msgstr[0] "Staženo %d místo"
 msgstr[1] "Stažena %d místa"
 msgstr[2] "Staženo %d míst"
 
-#: ../src/vikgpslayer.c:778
+#: ../src/vikgpslayer.c:786
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
@@ -993,7 +1001,7 @@ msgstr[0] "Stažen %d bod"
 msgstr[1] "Staženy %d body"
 msgstr[2] "Staženo %d bodů"
 
-#: ../src/vikgpslayer.c:782
+#: ../src/vikgpslayer.c:790
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
@@ -1001,7 +1009,7 @@ msgstr[0] "Nahráno %d místo"
 msgstr[1] "Nahrána %d místa"
 msgstr[2] "Nahráno %d míst"
 
-#: ../src/vikgpslayer.c:784
+#: ../src/vikgpslayer.c:792
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
@@ -1009,7 +1017,7 @@ msgstr[0] "Nahrán %d bod"
 msgstr[1] "Nahrány %d body"
 msgstr[2] "Nahráno %d bodů"
 
-#: ../src/vikgpslayer.c:969
+#: ../src/vikgpslayer.c:977
 msgid "Error: couldn't find gpsbabel."
 msgstr "Chyba: gpsbabel nenalezen"
 
@@ -1086,47 +1094,47 @@ msgstr "Opravdu smazat všechny vrstvy?"
 msgid "Use Viking Zoom Level"
 msgstr "použít aktuální přiblížení mapy"
 
-#: ../src/vikmapslayer.c:121
+#: ../src/vikmapslayer.c:122
 msgid "Map Type:"
 msgstr "Typ mapy:"
 
-#: ../src/vikmapslayer.c:122
+#: ../src/vikmapslayer.c:123
 msgid "Maps Directory:"
 msgstr "Adresář pro mapy:"
 
-#: ../src/vikmapslayer.c:123
+#: ../src/vikmapslayer.c:124
 msgid "Alpha:"
 msgstr "Alfa:"
 
-#: ../src/vikmapslayer.c:124
+#: ../src/vikmapslayer.c:125
 msgid "Autodownload maps:"
 msgstr "Stahovat mapy automaticky:"
 
-#: ../src/vikmapslayer.c:125
+#: ../src/vikmapslayer.c:126
 msgid "Zoom Level:"
 msgstr "Stupeň přiblížení:"
 
-#: ../src/vikmapslayer.c:131
+#: ../src/vikmapslayer.c:132
 msgid "Maps Download"
 msgstr "Stažení map"
 
-#: ../src/vikmapslayer.c:137
+#: ../src/vikmapslayer.c:138
 msgid "Map"
 msgstr "Mapa"
 
-#: ../src/vikmapslayer.c:211
+#: ../src/vikmapslayer.c:212
 msgid "Default maplayer directory:"
 msgstr "Výchozí složka mapové vrstvy:"
 
-#: ../src/vikmapslayer.c:413
+#: ../src/vikmapslayer.c:449
 msgid "Unknown map type"
 msgstr "Neznámý typ mapy"
 
-#: ../src/vikmapslayer.c:423
+#: ../src/vikmapslayer.c:459
 msgid "Unknown Map Zoom"
 msgstr "Neznámé přiblížení mapy"
 
-#: ../src/vikmapslayer.c:492
+#: ../src/vikmapslayer.c:528
 #, c-format
 msgid ""
 "New map cannot be displayed in the current drawmode.\n"
@@ -1135,14 +1143,14 @@ msgstr ""
 "Nová mapa nemůže být zobrazena v tomto režimu.\n"
 "Vyberte \"%s\" z menu zobrazení."
 
-#: ../src/vikmapslayer.c:634
+#: ../src/vikmapslayer.c:670
 #, c-format
 msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
 msgstr "Zbaběle odmítá vykreslit mapové podklady nad stupeň přiblížení %d"
 
-#: ../src/vikmapslayer.c:982
+#: ../src/vikmapslayer.c:1043
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
@@ -1150,7 +1158,7 @@ msgstr[0] "Opakované stažení %d %s mapy..."
 msgstr[1] "Opakované stažení %d %s map..."
 msgstr[2] "Opakované stažení %d %s map..."
 
-#: ../src/vikmapslayer.c:984
+#: ../src/vikmapslayer.c:1045
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
@@ -1158,7 +1166,7 @@ msgstr[0] "Opakované stahování %d %s mapy..."
 msgstr[1] "Opakované stahování %d %s map..."
 msgstr[2] "Opakované stahování %d %s map..."
 
-#: ../src/vikmapslayer.c:988 ../src/vikmapslayer.c:1059
+#: ../src/vikmapslayer.c:1049 ../src/vikmapslayer.c:1120
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
@@ -1166,19 +1174,19 @@ msgstr[0] "Stahuji %d %s mapu..."
 msgstr[1] "Stahuji %d %s mapu..."
 msgstr[2] "Stahuji %d %s mapu..."
 
-#: ../src/vikmapslayer.c:1122
+#: ../src/vikmapslayer.c:1183
 msgid "Redownload bad map(s)"
 msgstr "Znovu stáhnout špatné mapy"
 
-#: ../src/vikmapslayer.c:1126
+#: ../src/vikmapslayer.c:1187
 msgid "Redownload new map(s)"
 msgstr "Znovu stáhnout aktualizované mapy"
 
-#: ../src/vikmapslayer.c:1130
+#: ../src/vikmapslayer.c:1191
 msgid "Redownload all map(s)"
 msgstr "Znovy stáhnout všechny mapy"
 
-#: ../src/vikmapslayer.c:1210
+#: ../src/vikmapslayer.c:1271
 #, c-format
 msgid ""
 "Wrong drawmode for this map.\n"
@@ -1187,20 +1195,20 @@ msgstr ""
 "špatný zobrazovací režim pro tento druh mapy.\n"
 "Vyberte \"%s\" z menu Zobrazení a zkuste znovu."
 
-#: ../src/vikmapslayer.c:1215
+#: ../src/vikmapslayer.c:1276
 msgid "Wrong zoom level for this map."
 msgstr "Špatný stupeň přiblížení pro tuto mapu."
 
-#: ../src/vikmapslayer.c:1245
+#: ../src/vikmapslayer.c:1306
 msgid "Download missing Onscreen Maps"
 msgstr "Stáhnout chybějící viditelné mapy"
 
-#: ../src/vikmapslayer.c:1251
+#: ../src/vikmapslayer.c:1312
 msgid "Download new Onscreen Maps from server"
 msgstr "Stáhnout aktualizované viditelné mapy"
 
 #. TODO Add GTK_STOCK_REFRESH icon
-#: ../src/vikmapslayer.c:1258
+#: ../src/vikmapslayer.c:1319
 msgid "Refresh Onscreen Tiles"
 msgstr "Obnovit viditelné mapy"
 
@@ -1242,13 +1250,13 @@ msgid "Magic Scissors"
 msgstr "Magické nůžky"
 
 #. ***** PARAMETERS *****
-#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1399
-#: ../src/viktrwlayer.c:1401
+#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1401
+#: ../src/viktrwlayer.c:1403
 msgid "Waypoints"
 msgstr "Místa"
 
-#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1389
-#: ../src/viktrwlayer.c:1391
+#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1391
+#: ../src/viktrwlayer.c:1393
 msgid "Tracks"
 msgstr "Trasy"
 
@@ -1380,185 +1388,185 @@ msgstr "Alfa obrázku:"
 msgid "Image Memory Cache Size:"
 msgstr "Velikost cache paměti obrázků:"
 
-#: ../src/viktrwlayer.c:1538
+#: ../src/viktrwlayer.c:1540
 msgid "This layer has no waypoints or trackpoints."
 msgstr "Ve vrstvě nejsou body ani místa."
 
-#: ../src/viktrwlayer.c:1546
+#: ../src/viktrwlayer.c:1548
 msgid "Export Layer"
 msgstr "Export vrstvy jako..."
 
-#: ../src/viktrwlayer.c:1565 ../src/vikwindow.c:1566 ../src/vikwindow.c:1955
+#: ../src/viktrwlayer.c:1567 ../src/vikwindow.c:1566 ../src/vikwindow.c:1955
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Soubor \"%s\" existuje, přepsat?"
 
-#: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1587
+#: ../src/viktrwlayer.c:1577 ../src/vikwindow.c:1587
 msgid "The filename you requested could not be opened for writing."
 msgstr "Soubor nemůže být otevřen k zápisu."
 
-#: ../src/viktrwlayer.c:1596
+#: ../src/viktrwlayer.c:1598
 msgid "Create"
 msgstr "Vytvořit"
 
-#: ../src/viktrwlayer.c:1606
+#: ../src/viktrwlayer.c:1608
 msgid "Waypoint Name:"
 msgstr "Jméno místa:"
 
-#: ../src/viktrwlayer.c:1626
+#: ../src/viktrwlayer.c:1628
 msgid "Waypoint not found in this layer."
 msgstr "Místo není v této vrstvě"
 
-#: ../src/viktrwlayer.c:1723
+#: ../src/viktrwlayer.c:1725
 msgid "Goto Center of Layer"
 msgstr "Jít na střed vrstvy"
 
-#: ../src/viktrwlayer.c:1728
+#: ../src/viktrwlayer.c:1730
 msgid "Goto Waypoint"
 msgstr "Jít na místo"
 
-#: ../src/viktrwlayer.c:1734
+#: ../src/viktrwlayer.c:1736
 msgid "Export layer"
 msgstr "Export vrstvy"
 
-#: ../src/viktrwlayer.c:1739
+#: ../src/viktrwlayer.c:1741
 msgid "Export as GPSPoint"
 msgstr "Export jako GPSPoint"
 
-#: ../src/viktrwlayer.c:1744
+#: ../src/viktrwlayer.c:1746
 msgid "Export as GPSMapper"
 msgstr "Export jako GPSMapper"
 
-#: ../src/viktrwlayer.c:1749
+#: ../src/viktrwlayer.c:1751
 msgid "Export as GPX"
 msgstr "Export jako GPX"
 
-#: ../src/viktrwlayer.c:1754 ../src/viktrwlayer.c:2794
+#: ../src/viktrwlayer.c:1756 ../src/viktrwlayer.c:2796
 msgid "New Waypoint"
 msgstr "Nové místo"
 
-#: ../src/viktrwlayer.c:1761
+#: ../src/viktrwlayer.c:1763
 msgid "Add Wikipedia Waypoints"
 msgstr "Najít místa na Wikipedii"
 
-#: ../src/viktrwlayer.c:1766
+#: ../src/viktrwlayer.c:1768
 msgid "Within layer bounds"
 msgstr "Uvnitř hranic vrstvy"
 
-#: ../src/viktrwlayer.c:1771
+#: ../src/viktrwlayer.c:1773
 msgid "Within current view"
 msgstr "Uvnitř aktuálního pohledu"
 
-#: ../src/viktrwlayer.c:1778 ../src/viktrwlayer.c:2760
+#: ../src/viktrwlayer.c:1780 ../src/viktrwlayer.c:2762
 msgid "Upload to OSM"
 msgstr "Nahraj na OSM"
 
-#: ../src/viktrwlayer.c:2289
+#: ../src/viktrwlayer.c:2291
 msgid "Failed. This track does not have timestamp"
 msgstr "Selhalo. Trasa neobsahuje časové údaje"
 
-#: ../src/viktrwlayer.c:2303
+#: ../src/viktrwlayer.c:2305
 msgid "Failed. No other track in this layer has timestamp"
 msgstr "Selhalo. Žádná trasa v této vstvě neobsahuje časové údaje"
 
-#: ../src/viktrwlayer.c:2309
+#: ../src/viktrwlayer.c:2311
 msgid "Merge with..."
 msgstr "Připojit s ..,"
 
-#: ../src/viktrwlayer.c:2309
+#: ../src/viktrwlayer.c:2311
 msgid "Select track to merge with"
 msgstr "Vybrat trasu k připojení"
 
-#: ../src/viktrwlayer.c:2346
+#: ../src/viktrwlayer.c:2348
 msgid "Merge Threshold..."
 msgstr "Práh pro spojování..."
 
-#: ../src/viktrwlayer.c:2347
+#: ../src/viktrwlayer.c:2349
 msgid "Merge when time between tracks less than:"
 msgstr "Připojit trasy pokud je dělí méně než:"
 
-#: ../src/viktrwlayer.c:2439
+#: ../src/viktrwlayer.c:2441
 msgid "Split Threshold..."
 msgstr "Práh pro rozdělování..."
 
-#: ../src/viktrwlayer.c:2440
+#: ../src/viktrwlayer.c:2442
 msgid "Split when time between trackpoints exceeds:"
 msgstr "Rozdělit pokud je čas mezi body delší než:"
 
-#: ../src/viktrwlayer.c:2523
+#: ../src/viktrwlayer.c:2525
 msgid "Waypoint Already Exists"
 msgstr "Místo již existuje"
 
-#: ../src/viktrwlayer.c:2564
+#: ../src/viktrwlayer.c:2566
 msgid "Track Already Exists"
 msgstr "Trasa již existuje"
 
-#: ../src/viktrwlayer.c:2686
+#: ../src/viktrwlayer.c:2688
 msgid "Goto"
 msgstr "Jít na"
 
-#: ../src/viktrwlayer.c:2694
+#: ../src/viktrwlayer.c:2696
 msgid "Visit Geocache Webpage"
 msgstr "zobrazit na Geocache"
 
-#: ../src/viktrwlayer.c:2709
+#: ../src/viktrwlayer.c:2711
 msgid "Goto Startpoint"
 msgstr "Jít na začátek"
 
-#: ../src/viktrwlayer.c:2714
+#: ../src/viktrwlayer.c:2716
 msgid "Goto \"Center\""
 msgstr "Jít do \"středu\""
 
-#: ../src/viktrwlayer.c:2719
+#: ../src/viktrwlayer.c:2721
 msgid "Goto Endpoint"
 msgstr "Jít na konec"
 
-#: ../src/viktrwlayer.c:2724
+#: ../src/viktrwlayer.c:2726
 msgid "Merge By Time"
 msgstr "Spojit dle času"
 
-#: ../src/viktrwlayer.c:2729
+#: ../src/viktrwlayer.c:2731
 msgid "Merge With Other Tracks..."
 msgstr "Připojit další trasy ..."
 
-#: ../src/viktrwlayer.c:2734
+#: ../src/viktrwlayer.c:2736
 msgid "Split By Time"
 msgstr "Rozdělit dle času"
 
-#: ../src/viktrwlayer.c:2739
+#: ../src/viktrwlayer.c:2741
 msgid "Download maps along track..."
 msgstr "Stáhnot mapy podél trasy..."
 
-#: ../src/viktrwlayer.c:2744
+#: ../src/viktrwlayer.c:2746
 msgid "Apply DEM Data"
 msgstr "Přidat výšku z DEM"
 
-#: ../src/viktrwlayer.c:2749
+#: ../src/viktrwlayer.c:2751
 msgid "Extend track end"
 msgstr "Rozšířit konec trasy"
 
-#: ../src/viktrwlayer.c:2754
+#: ../src/viktrwlayer.c:2756
 msgid "Extend using magic scissors"
 msgstr "Rozšířit pomocí magických nůžek"
 
-#: ../src/viktrwlayer.c:2768
+#: ../src/viktrwlayer.c:2770
 msgid "View Google Directions"
 msgstr "Vyhledat trasu Google"
 
-#: ../src/viktrwlayer.c:2774
+#: ../src/viktrwlayer.c:2776
 msgid "Use with filter"
 msgstr "Použít jako filtr"
 
-#: ../src/viktrwlayer.c:3737
+#: ../src/viktrwlayer.c:3739
 msgid "Could not launch eog to open file."
 msgstr "Nelze spustit \"eog\""
 
-#: ../src/viktrwlayer.c:3791
+#: ../src/viktrwlayer.c:3793
 #, c-format
 msgid "Creating %d Image Thumbnails..."
 msgstr "Vytvářím %d náhledy obrázků..."
 
-#: ../src/viktrwlayer.c:4011
+#: ../src/viktrwlayer.c:4013
 msgid "No map layer in use. Create one first"
 msgstr "Je třeba vytvořit mapovou vrstvu."
 
@@ -2231,6 +2239,14 @@ msgstr "Správce GPS a mapových dat"
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr "Viking"
+
+#, c-format
+#~ msgid ""
+#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
+#~ "of this type to paste the clipboard data."
+#~ msgstr ""
+#~ "Schránka obsahuje data pro %s vrstev. K vložení ze schránky je třeba vybrat "
+#~ "vrstvu stejného typu."
 
 #~ msgid "Zoom factor (in meters per pixel:"
 #~ msgstr "Stupeň přiblížení (metr na pixel):"

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-15 21:55+0100\n"
-"PO-Revision-Date: 2009-05-01 17:36+0000\n"
-"Last-Translator: Mikael Olofsson <michlos@1vb.us>\n"
+"POT-Creation-Date: 2010-04-12 08:15+0200\n"
+"PO-Revision-Date: 2010-05-01 17:56+0000\n"
+"Last-Translator: Erik Simmesgård <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-04-11 20:32+0000\n"
+"X-Launchpad-Export-Date: 2010-06-07 21:07+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -26,18 +26,18 @@ msgstr "Arbetar..."
 msgid "Error: acquisition failed."
 msgstr ""
 
-#: ../src/acquire.c:149 ../src/vikgpslayer.c:974
+#: ../src/acquire.c:149 ../src/vikgpslayer.c:982
 msgid "Done."
 msgstr "Färdig."
 
-#: ../src/acquire.c:326 ../src/vikgpslayer.c:1013
+#: ../src/acquire.c:326 ../src/vikgpslayer.c:1021
 msgid "Status: detecting gpsbabel"
 msgstr ""
 
 #: ../src/background.c:57
 #, c-format
 msgid "%d items"
-msgstr ""
+msgstr "%d föremål"
 
 #: ../src/background.c:224
 msgid "Job"
@@ -53,7 +53,7 @@ msgstr ""
 
 #: ../src/clipboard.c:84
 msgid "paste failed"
-msgstr ""
+msgstr "inklistring misslyckades"
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
@@ -62,7 +62,7 @@ msgstr ""
 #: ../src/clipboard.c:113
 #, c-format
 msgid ""
-"The clipboard contains sublayer data for a %s layers.You must select a layer "
+"The clipboard contains sublayer data for %s layers. You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
 
@@ -247,6 +247,8 @@ msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
+"Kunde inte öppna EXPEDIA-bildfil (Direkt efter lyckad nedladdning! Vänligen "
+"rapportera och ta bort bildfil!): %s"
 
 #: ../src/expedia.c:123
 #, c-format
@@ -254,6 +256,8 @@ msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
+"Kunde inte spara EXPEDIA-bildfil (Direkt efter lyckad nedladdning! Vänligen "
+"rapportera och ta bort bildfil!): %s"
 
 #: ../src/geonamessearch.c:98
 msgid "Search"
@@ -261,7 +265,7 @@ msgstr "Sök"
 
 #: ../src/geonamessearch.c:100
 msgid "No entries found!"
-msgstr ""
+msgstr "Inga inlägg hittades!"
 
 #: ../src/geonamessearch.c:254 ../src/googlesearch.c:121
 msgid "couldn't map temp file"
@@ -319,7 +323,7 @@ msgstr "Antal cahar:"
 
 #: ../src/datasource_gc.c:171
 msgid "Centered around:"
-msgstr ""
+msgstr "Centrera runt:"
 
 #: ../src/datasource_google.c:49 ../src/datasource_google.c:50
 msgid "Google Directions"
@@ -346,14 +350,14 @@ msgstr ""
 msgid "using cmdline '%s' and file '%s'\n"
 msgstr ""
 
-#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:728
+#: ../src/datasource_gps.c:150 ../src/vikgpslayer.c:736
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
 msgstr[0] "Laddar ned %d waypoint..."
 msgstr[1] "Laddar ned %d waypoints..."
 
-#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:730
+#: ../src/datasource_gps.c:152 ../src/vikgpslayer.c:738
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
@@ -370,7 +374,7 @@ msgstr "Laddade ned %d av %d %s..."
 msgid "Downloaded %d %s."
 msgstr "Laddade ned %d %s."
 
-#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:800
+#: ../src/datasource_gps.c:185 ../src/vikgpslayer.c:808
 #, c-format
 msgid "GPS Device: %s"
 msgstr "GPS enhet: %s"
@@ -383,9 +387,9 @@ msgstr "GPS protokoll"
 msgid "Serial Port:"
 msgstr "Seriell Port:"
 
-#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:1018
+#: ../src/datasource_gps.c:299 ../src/vikgpslayer.c:1026
 msgid "GPS device: N/A"
-msgstr ""
+msgstr "GPS-enhet: Inte tillgänglig"
 
 #: ../src/dem.c:59 ../src/dem.c:73
 msgid "Invalid DEM"
@@ -450,12 +454,12 @@ msgstr "kunde inte ladda upp data: HTTP svar är %ld"
 #: ../src/osm-traces.c:232
 #, c-format
 msgid "curl_easy_getinfo failed: %d"
-msgstr ""
+msgstr "curl_easy_getinfo misslyckades: %d"
 
 #: ../src/osm-traces.c:236
 #, c-format
 msgid "curl request failed: %s"
-msgstr ""
+msgstr "curlförfrågan misslyckades: %s"
 
 #: ../src/osm-traces.c:264
 #, c-format
@@ -588,7 +592,7 @@ msgstr ""
 
 #: ../src/vikcoordlayer.c:48 ../src/vikdemlayer.c:125
 msgid "Line Thickness:"
-msgstr ""
+msgstr "Linjens tjocklek:"
 
 #: ../src/datasource_bfilter.c:46
 msgid "Max number of points:"
@@ -656,7 +660,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:101
 msgid "Absolute height"
-msgstr ""
+msgstr "Absolut höjd"
 
 #: ../src/vikdemlayer.c:102
 msgid "Height gradient"
@@ -672,7 +676,7 @@ msgstr "Ladda ned källa:"
 
 #: ../src/vikdemlayer.c:122
 msgid "Type:"
-msgstr ""
+msgstr "Typ:"
 
 #: ../src/vikdemlayer.c:123
 msgid "Min Elev:"
@@ -728,14 +732,14 @@ msgstr ""
 msgid "Georef Zoom Tool"
 msgstr ""
 
-#: ../src/vikgeoreflayer.c:311 ../src/vikmapslayer.c:570
+#: ../src/vikgeoreflayer.c:311 ../src/vikmapslayer.c:606
 #, c-format
 msgid "Couldn't open image file: %s"
-msgstr ""
+msgstr "Kunde inte öppna bildfil: %s"
 
 #: ../src/vikgeoreflayer.c:341
 msgid "Unexpected end of file reading World file."
-msgstr ""
+msgstr "Oväntat slut på filen vid läsning av World-filen."
 
 #: ../src/vikgeoreflayer.c:357 ../src/vikgeoreflayer.c:402
 msgid "Choose World file"
@@ -795,7 +799,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:470
 msgid "Map Image:"
-msgstr ""
+msgstr "Kartbild:"
 
 #: ../src/vikgeoreflayer.c:574
 msgid "Zoom to Fit Map"
@@ -835,7 +839,7 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:145
 msgid "Jump to current position on start"
-msgstr ""
+msgstr "Hoppa till nuvarande position vid start"
 
 #: ../src/vikgpslayer.c:146
 msgid "Moving Map Method:"
@@ -853,11 +857,11 @@ msgstr "Gpsd Port:"
 msgid "Gpsd Retry Interval (seconds):"
 msgstr ""
 
-#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1006
+#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1014
 msgid "GPS Download"
 msgstr "GPS nedladdning"
 
-#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1006
+#: ../src/vikgpslayer.c:213 ../src/vikgpslayer.c:1014
 msgid "GPS Upload"
 msgstr "GPS uppladdning"
 
@@ -871,7 +875,7 @@ msgstr "Okänt GPS Protokoll"
 
 #: ../src/vikgpslayer.c:397
 msgid "Unknown serial port device"
-msgstr ""
+msgstr "Okänd serialportsenhet"
 
 #: ../src/vikgpslayer.c:463
 #, c-format
@@ -898,83 +902,93 @@ msgstr "Tom nedladdning"
 msgid "Empty All"
 msgstr "Töm alla"
 
-#: ../src/vikgpslayer.c:735
+#. 
+#. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
+#. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
+#. I don't think there's any side effects and certainly better than the program just aborting
+#. 
+#: ../src/vikgpslayer.c:611
+#, c-format
+msgid "Unexpected number of disconnected handlers: %d"
+msgstr ""
+
+#: ../src/vikgpslayer.c:743
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
 msgstr[0] "Laddar upp %d waypoint..."
 msgstr[1] "Laddar upp %d waypoints..."
 
-#: ../src/vikgpslayer.c:737
+#: ../src/vikgpslayer.c:745
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
 msgstr[0] "Laddar upp %d trackpoint..."
 msgstr[1] "Laddar upp %d trackpoints..."
 
-#: ../src/vikgpslayer.c:761
+#: ../src/vikgpslayer.c:769
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
 msgstr[0] "Laddade ned %d av %d waypoint..."
 msgstr[1] "Laddade ned %d av %d waypoints..."
 
-#: ../src/vikgpslayer.c:763
+#: ../src/vikgpslayer.c:771
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
 msgstr[0] "Laddade ned %d av %d trackpoint..."
 msgstr[1] "Laddade ned %d av %d trackpoints..."
 
-#: ../src/vikgpslayer.c:767
+#: ../src/vikgpslayer.c:775
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
 msgstr[0] "Laddade upp %d av %d waypoint..."
 msgstr[1] "Laddade upp %d av %d waypoints..."
 
-#: ../src/vikgpslayer.c:769
+#: ../src/vikgpslayer.c:777
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
 msgstr[0] "Laddade upp %d av %d trackpoint..."
 msgstr[1] "Laddade upp %d av %d trackpoints..."
 
-#: ../src/vikgpslayer.c:776
+#: ../src/vikgpslayer.c:784
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
 msgstr[0] "Laddade ned %d waypoint"
 msgstr[1] "Laddade ned %d waypoints"
 
-#: ../src/vikgpslayer.c:778
+#: ../src/vikgpslayer.c:786
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
 msgstr[0] "Laddade ned %d trackpoint"
 msgstr[1] "Laddade ned %d trackpoints"
 
-#: ../src/vikgpslayer.c:782
+#: ../src/vikgpslayer.c:790
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
 msgstr[0] "Laddade upp %d waypoint"
 msgstr[1] "Laddade upp %d waypoints"
 
-#: ../src/vikgpslayer.c:784
+#: ../src/vikgpslayer.c:792
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
 msgstr[0] "Laddade upp %d trackpoint"
 msgstr[1] "Laddade upp %d trackpoints"
 
-#: ../src/vikgpslayer.c:969
+#: ../src/vikgpslayer.c:977
 msgid "Error: couldn't find gpsbabel."
 msgstr "Fel: kunde inte hitta gpsbabel."
 
 #: ../src/viklayerspanel.c:57
 msgid "/C_ut"
-msgstr ""
+msgstr "/C_ut"
 
 #: ../src/viklayerspanel.c:58
 msgid "/_Copy"
@@ -1045,114 +1059,114 @@ msgstr "Är du säker på att du vill ta bort alla lager?"
 msgid "Use Viking Zoom Level"
 msgstr ""
 
-#: ../src/vikmapslayer.c:121
+#: ../src/vikmapslayer.c:122
 msgid "Map Type:"
 msgstr ""
 
-#: ../src/vikmapslayer.c:122
+#: ../src/vikmapslayer.c:123
 msgid "Maps Directory:"
 msgstr ""
 
-#: ../src/vikmapslayer.c:123
+#: ../src/vikmapslayer.c:124
 msgid "Alpha:"
 msgstr "Alfa:"
 
-#: ../src/vikmapslayer.c:124
+#: ../src/vikmapslayer.c:125
 msgid "Autodownload maps:"
 msgstr ""
 
-#: ../src/vikmapslayer.c:125
+#: ../src/vikmapslayer.c:126
 msgid "Zoom Level:"
 msgstr ""
 
-#: ../src/vikmapslayer.c:131
+#: ../src/vikmapslayer.c:132
 msgid "Maps Download"
 msgstr ""
 
-#: ../src/vikmapslayer.c:137
+#: ../src/vikmapslayer.c:138
 msgid "Map"
 msgstr "Karta"
 
-#: ../src/vikmapslayer.c:211
+#: ../src/vikmapslayer.c:212
 msgid "Default maplayer directory:"
 msgstr ""
 
-#: ../src/vikmapslayer.c:413
+#: ../src/vikmapslayer.c:449
 msgid "Unknown map type"
 msgstr "Okänd karttyp"
 
-#: ../src/vikmapslayer.c:423
+#: ../src/vikmapslayer.c:459
 msgid "Unknown Map Zoom"
 msgstr ""
 
-#: ../src/vikmapslayer.c:492
+#: ../src/vikmapslayer.c:528
 #, c-format
 msgid ""
 "New map cannot be displayed in the current drawmode.\n"
 "Select \"%s\" from View menu to view it."
 msgstr ""
 
-#: ../src/vikmapslayer.c:634
+#: ../src/vikmapslayer.c:670
 #, c-format
 msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
 msgstr ""
 
-#: ../src/vikmapslayer.c:982
+#: ../src/vikmapslayer.c:1043
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/vikmapslayer.c:984
+#: ../src/vikmapslayer.c:1045
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/vikmapslayer.c:988 ../src/vikmapslayer.c:1059
+#: ../src/vikmapslayer.c:1049 ../src/vikmapslayer.c:1120
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/vikmapslayer.c:1122
+#: ../src/vikmapslayer.c:1183
 msgid "Redownload bad map(s)"
 msgstr ""
 
-#: ../src/vikmapslayer.c:1126
+#: ../src/vikmapslayer.c:1187
 msgid "Redownload new map(s)"
 msgstr ""
 
-#: ../src/vikmapslayer.c:1130
+#: ../src/vikmapslayer.c:1191
 msgid "Redownload all map(s)"
 msgstr ""
 
-#: ../src/vikmapslayer.c:1210
+#: ../src/vikmapslayer.c:1271
 #, c-format
 msgid ""
 "Wrong drawmode for this map.\n"
 "Select \"%s\" from View menu and try again."
 msgstr ""
 
-#: ../src/vikmapslayer.c:1215
+#: ../src/vikmapslayer.c:1276
 msgid "Wrong zoom level for this map."
 msgstr ""
 
-#: ../src/vikmapslayer.c:1245
+#: ../src/vikmapslayer.c:1306
 msgid "Download missing Onscreen Maps"
 msgstr ""
 
-#: ../src/vikmapslayer.c:1251
+#: ../src/vikmapslayer.c:1312
 msgid "Download new Onscreen Maps from server"
 msgstr ""
 
 #. TODO Add GTK_STOCK_REFRESH icon
-#: ../src/vikmapslayer.c:1258
+#: ../src/vikmapslayer.c:1319
 msgid "Refresh Onscreen Tiles"
 msgstr ""
 
@@ -1194,13 +1208,13 @@ msgid "Magic Scissors"
 msgstr ""
 
 #. ***** PARAMETERS *****
-#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1399
-#: ../src/viktrwlayer.c:1401
+#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1401
+#: ../src/viktrwlayer.c:1403
 msgid "Waypoints"
 msgstr "Waypoints"
 
-#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1389
-#: ../src/viktrwlayer.c:1391
+#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1391
+#: ../src/viktrwlayer.c:1393
 msgid "Tracks"
 msgstr ""
 
@@ -1332,185 +1346,185 @@ msgstr ""
 msgid "Image Memory Cache Size:"
 msgstr ""
 
-#: ../src/viktrwlayer.c:1538
+#: ../src/viktrwlayer.c:1540
 msgid "This layer has no waypoints or trackpoints."
 msgstr "Detta lager har inga waypoints eller trackpoints."
 
-#: ../src/viktrwlayer.c:1546
+#: ../src/viktrwlayer.c:1548
 msgid "Export Layer"
 msgstr "Exportera lager"
 
-#: ../src/viktrwlayer.c:1565 ../src/vikwindow.c:1566 ../src/vikwindow.c:1955
+#: ../src/viktrwlayer.c:1567 ../src/vikwindow.c:1566 ../src/vikwindow.c:1955
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Filen \"%s\" finns redan, vill du skriva över den?"
 
-#: ../src/viktrwlayer.c:1575 ../src/vikwindow.c:1587
+#: ../src/viktrwlayer.c:1577 ../src/vikwindow.c:1587
 msgid "The filename you requested could not be opened for writing."
 msgstr ""
 
-#: ../src/viktrwlayer.c:1596
+#: ../src/viktrwlayer.c:1598
 msgid "Create"
 msgstr "Skapa"
 
-#: ../src/viktrwlayer.c:1606
+#: ../src/viktrwlayer.c:1608
 msgid "Waypoint Name:"
 msgstr "Waypoint namn:"
 
-#: ../src/viktrwlayer.c:1626
+#: ../src/viktrwlayer.c:1628
 msgid "Waypoint not found in this layer."
 msgstr "Waypoint hittades inte i detta lager."
 
-#: ../src/viktrwlayer.c:1723
+#: ../src/viktrwlayer.c:1725
 msgid "Goto Center of Layer"
 msgstr ""
 
-#: ../src/viktrwlayer.c:1728
+#: ../src/viktrwlayer.c:1730
 msgid "Goto Waypoint"
 msgstr "Gå till waypoint"
 
-#: ../src/viktrwlayer.c:1734
+#: ../src/viktrwlayer.c:1736
 msgid "Export layer"
 msgstr "Exportera lager"
 
-#: ../src/viktrwlayer.c:1739
+#: ../src/viktrwlayer.c:1741
 msgid "Export as GPSPoint"
 msgstr "Exportera som GPSPoint"
 
-#: ../src/viktrwlayer.c:1744
+#: ../src/viktrwlayer.c:1746
 msgid "Export as GPSMapper"
 msgstr "Exportera som GPSMapper"
 
-#: ../src/viktrwlayer.c:1749
+#: ../src/viktrwlayer.c:1751
 msgid "Export as GPX"
 msgstr "Exportera som GPX"
 
-#: ../src/viktrwlayer.c:1754 ../src/viktrwlayer.c:2794
+#: ../src/viktrwlayer.c:1756 ../src/viktrwlayer.c:2796
 msgid "New Waypoint"
 msgstr "Ny waypoint"
 
-#: ../src/viktrwlayer.c:1761
+#: ../src/viktrwlayer.c:1763
 msgid "Add Wikipedia Waypoints"
 msgstr ""
 
-#: ../src/viktrwlayer.c:1766
+#: ../src/viktrwlayer.c:1768
 msgid "Within layer bounds"
 msgstr ""
 
-#: ../src/viktrwlayer.c:1771
+#: ../src/viktrwlayer.c:1773
 msgid "Within current view"
 msgstr ""
 
-#: ../src/viktrwlayer.c:1778 ../src/viktrwlayer.c:2760
+#: ../src/viktrwlayer.c:1780 ../src/viktrwlayer.c:2762
 msgid "Upload to OSM"
 msgstr "Ladda upp till OSM"
 
-#: ../src/viktrwlayer.c:2289
+#: ../src/viktrwlayer.c:2291
 msgid "Failed. This track does not have timestamp"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2303
+#: ../src/viktrwlayer.c:2305
 msgid "Failed. No other track in this layer has timestamp"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2309
+#: ../src/viktrwlayer.c:2311
 msgid "Merge with..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2309
+#: ../src/viktrwlayer.c:2311
 msgid "Select track to merge with"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2346
+#: ../src/viktrwlayer.c:2348
 msgid "Merge Threshold..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2347
+#: ../src/viktrwlayer.c:2349
 msgid "Merge when time between tracks less than:"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2439
+#: ../src/viktrwlayer.c:2441
 msgid "Split Threshold..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2440
+#: ../src/viktrwlayer.c:2442
 msgid "Split when time between trackpoints exceeds:"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2523
+#: ../src/viktrwlayer.c:2525
 msgid "Waypoint Already Exists"
 msgstr "Waypoint finns redan"
 
-#: ../src/viktrwlayer.c:2564
+#: ../src/viktrwlayer.c:2566
 msgid "Track Already Exists"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2686
+#: ../src/viktrwlayer.c:2688
 msgid "Goto"
 msgstr "Gå till"
 
-#: ../src/viktrwlayer.c:2694
+#: ../src/viktrwlayer.c:2696
 msgid "Visit Geocache Webpage"
 msgstr "Besök Geocache webbplats"
 
-#: ../src/viktrwlayer.c:2709
+#: ../src/viktrwlayer.c:2711
 msgid "Goto Startpoint"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2714
+#: ../src/viktrwlayer.c:2716
 msgid "Goto \"Center\""
 msgstr ""
 
-#: ../src/viktrwlayer.c:2719
+#: ../src/viktrwlayer.c:2721
 msgid "Goto Endpoint"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2724
+#: ../src/viktrwlayer.c:2726
 msgid "Merge By Time"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2729
+#: ../src/viktrwlayer.c:2731
 msgid "Merge With Other Tracks..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2734
+#: ../src/viktrwlayer.c:2736
 msgid "Split By Time"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2739
+#: ../src/viktrwlayer.c:2741
 msgid "Download maps along track..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:2744
+#: ../src/viktrwlayer.c:2746
 msgid "Apply DEM Data"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2749
+#: ../src/viktrwlayer.c:2751
 msgid "Extend track end"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2754
+#: ../src/viktrwlayer.c:2756
 msgid "Extend using magic scissors"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2768
+#: ../src/viktrwlayer.c:2770
 msgid "View Google Directions"
 msgstr ""
 
-#: ../src/viktrwlayer.c:2774
+#: ../src/viktrwlayer.c:2776
 msgid "Use with filter"
 msgstr "Använd med filter"
 
-#: ../src/viktrwlayer.c:3737
+#: ../src/viktrwlayer.c:3739
 msgid "Could not launch eog to open file."
 msgstr ""
 
-#: ../src/viktrwlayer.c:3791
+#: ../src/viktrwlayer.c:3793
 #, c-format
 msgid "Creating %d Image Thumbnails..."
 msgstr ""
 
-#: ../src/viktrwlayer.c:4011
+#: ../src/viktrwlayer.c:4013
 msgid "No map layer in use. Create one first"
 msgstr ""
 
@@ -1557,7 +1571,7 @@ msgstr "<b>Trackpoints:</b>"
 
 #: ../src/viktrwlayer_propwin.c:785
 msgid "<b>Segments:</b>"
-msgstr ""
+msgstr "<b>Segment:</b>"
 
 #: ../src/viktrwlayer_propwin.c:785
 msgid "<b>Duplicate Points:</b>"
@@ -1569,7 +1583,7 @@ msgstr "<b>Max hastighet:</b>"
 
 #: ../src/viktrwlayer_propwin.c:785
 msgid "<b>Avg. Speed:</b>"
-msgstr ""
+msgstr "<b>Medelhastighet:</b>"
 
 #: ../src/viktrwlayer_propwin.c:785
 msgid "<b>Avg. Dist. Between TPs:</b>"
@@ -1589,7 +1603,7 @@ msgstr "<b>Start:</b>"
 
 #: ../src/viktrwlayer_propwin.c:785
 msgid "<b>End:</b>"
-msgstr ""
+msgstr "<b>Slut:</b>"
 
 #: ../src/viktrwlayer_propwin.c:785
 msgid "<b>Duration:</b>"
@@ -1776,7 +1790,7 @@ msgstr ""
 #: ../src/vikwindow.c:1812
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. km)"
-msgstr ""
+msgstr "Total area: %ldm x %ldm (%.3f kvadrat kilometer)"
 
 #: ../src/vikwindow.c:1815
 #, c-format
@@ -1966,7 +1980,7 @@ msgstr "Skriv _ut..."
 
 #: ../src/vikwindow.c:2102
 msgid "Print maps"
-msgstr ""
+msgstr "Skriv ut kartor"
 
 #: ../src/vikwindow.c:2105
 msgid "E_xit"
