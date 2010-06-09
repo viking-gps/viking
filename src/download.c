@@ -104,7 +104,7 @@ static GMutex *file_list_mutex = NULL;
 
 /* spin button scales */
 VikLayerParamScale params_scales[] = {
-  {1, 10000, 10, 0},
+  {1, 86400*7, 10, 0},		/* download_tile_age */
 };
 
 static VikLayerParam prefs[] = {
