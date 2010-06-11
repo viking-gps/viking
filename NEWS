@@ -1,3 +1,38 @@
+Viking 0.9.94 (2010-06-10)
+New features since 0.9.93
+* Add knots as a speed unit option.
+* Detect USB Garmin eTrex HCx Legend devices (and maybe others).
+* Auto use of /dev/ttyUSB type device if available on Unix systems.
+* Add ability to turn off Garmin GPS after transfer.
+* Add a 'home' default location preference.
+* Add ability to changes preferences outside of the preferences.c file.
+* NLS Maps API: Historic map of Great Britain
+* Change GUI related command line parameter for Waypoint symbol size into run time preference.
+* Support All Zoom Levels in Zoom Menu
+* [DOC] Import User Manual from wiki
+* Add menu item for help contents
+
+Fixes since 0.9.93
+* Add Viking's contributors as copyright holders
+* Remove unecessary '\' from the View Menu
+* Better Preferences Dialog Title
+* More Menu Improvements
+* Replace autogen.sh
+* On GPS data acquire, only create a layer if it contains something.
+* Fix POTFILES with new source file
+* Fix OMF category
+* Fix Filter->Simplify All Tracks default.
+* [DOC] Fix Gnome's menu entry category for viking
+* [DOC] Fix erroneous warning
+* Fix compiler warning.
+* Fix #2977752: win-gtk: osm tiles don't show up
+* Fix Track -> View Google Directions URL
+* Fix function's return value
+* Fix compilation warnings
+* Fix #2988574: Can't save files opened via recent file menu
+* Fix #2991657: Terraserver downloads fail
+* Fix geocaching
+
 Viking 0.9.93 (2010-04-11)
 New features since 0.9.92
 * Allow overriding map source
