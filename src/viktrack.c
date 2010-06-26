@@ -650,6 +650,38 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdoub
   return VIK_TRACKPOINT(iter->data);
 }
 
+VikTrackpoint* vik_track_get_tp_by_max_speed ( const VikTrack *tr )
+{
+  gdouble maxspeed = 0.0, speed = 0.0;
+
+  if ( !tr->trackpoints )
+    return NULL;
+
+  GList *iter = tr->trackpoints;
+  VikTrackpoint *max_speed_tp = NULL;
+
+  while (iter) {
+    if (!iter->prev == NULL) {
+      if ( VIK_TRACKPOINT(iter->data)->has_timestamp &&
+	   VIK_TRACKPOINT(iter->prev->data)->has_timestamp &&
+	   (! VIK_TRACKPOINT(iter->data)->newsegment) ) {
+	speed =  vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord), &(VIK_TRACKPOINT(iter->prev->data)->coord) )
+	  / ABS(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
+	if ( speed > maxspeed ) {
+	  maxspeed = speed;
+	  max_speed_tp = VIK_TRACKPOINT(iter->data);
+	}
+      }
+    }
+    iter = iter->next;
+  }
+  
+  if (!max_speed_tp)
+    return NULL;
+
+  return max_speed_tp;
+}
+
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
   *min_alt = 25000;

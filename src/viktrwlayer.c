@@ -227,6 +227,7 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
 static void goto_coord ( VikLayersPanel *vlp, const VikCoord *coord );
 static void trw_layer_goto_track_startpoint ( gpointer pass_along[5] );
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] );
+static void trw_layer_goto_track_max_speed ( gpointer pass_along[5] );
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb(gpointer pass_along[6]);
@@ -2262,6 +2263,14 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
   goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *) trps->data)->coord));
 }
 
+static void trw_layer_goto_track_max_speed ( gpointer pass_along[5] )
+{
+  VikTrackpoint* vtp = vik_track_get_tp_by_max_speed ( g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ) );
+  if ( !vtp )
+    return;
+  goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(vtp->coord));
+}
+
 
 /*************************************
  * merge/split by time routines 
@@ -2818,6 +2827,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Endpoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_endpoint), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("_Maximum Speed") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_max_speed), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
     gtk_widget_show ( item );
 

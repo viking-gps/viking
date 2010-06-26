@@ -89,6 +89,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
 void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble *down);
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start );
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reldist, time_t *seconds_from_start );
+VikTrackpoint *vik_track_get_tp_by_max_speed ( const VikTrack *tr );
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks );
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt );
 void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
