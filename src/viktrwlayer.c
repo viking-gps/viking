@@ -2795,23 +2795,30 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
   {
+    GtkWidget *goto_submenu;
     item = gtk_menu_item_new ();
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_mnemonic ( _("_Goto Startpoint") );
+    goto_submenu = gtk_menu_new ();
+    item = gtk_menu_item_new_with_mnemonic ( _("_Goto") );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), goto_submenu );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("_Startpoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_startpoint), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_mnemonic ( _("Goto \"_Center\"") );
+    item = gtk_menu_item_new_with_mnemonic ( _("\"_Center\"") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_center), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_mnemonic ( _("Goto _Endpoint") );
+    item = gtk_menu_item_new_with_mnemonic ( _("_Endpoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_endpoint), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
     gtk_widget_show ( item );
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Merge By Time") );
