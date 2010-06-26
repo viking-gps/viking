@@ -661,7 +661,7 @@ VikTrackpoint* vik_track_get_tp_by_max_speed ( const VikTrack *tr )
   VikTrackpoint *max_speed_tp = NULL;
 
   while (iter) {
-    if (!iter->prev == NULL) {
+    if (iter->prev) {
       if ( VIK_TRACKPOINT(iter->data)->has_timestamp &&
 	   VIK_TRACKPOINT(iter->prev->data)->has_timestamp &&
 	   (! VIK_TRACKPOINT(iter->data)->newsegment) ) {
