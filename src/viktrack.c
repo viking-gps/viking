@@ -682,6 +682,52 @@ VikTrackpoint* vik_track_get_tp_by_max_speed ( const VikTrack *tr )
   return max_speed_tp;
 }
 
+VikTrackpoint* vik_track_get_tp_by_max_alt ( const VikTrack *tr )
+{
+  gdouble maxalt = -5000.0;
+  if ( !tr->trackpoints )
+    return NULL;
+
+  GList *iter = tr->trackpoints;
+  VikTrackpoint *max_alt_tp = NULL;
+
+  while (iter) {
+    if ( VIK_TRACKPOINT(iter->data)->altitude > maxalt ) {
+      maxalt = VIK_TRACKPOINT(iter->data)->altitude;
+      max_alt_tp = VIK_TRACKPOINT(iter->data);
+    }
+    iter = iter->next;
+  }
+
+  if (!max_alt_tp)
+    return NULL;
+
+  return max_alt_tp;
+}
+
+VikTrackpoint* vik_track_get_tp_by_min_alt ( const VikTrack *tr )
+{
+  gdouble minalt = 25000.0;
+  if ( !tr->trackpoints )
+    return NULL;
+
+  GList *iter = tr->trackpoints;
+  VikTrackpoint *min_alt_tp = NULL;
+
+  while (iter) {
+    if ( VIK_TRACKPOINT(iter->data)->altitude < minalt ) {
+      minalt = VIK_TRACKPOINT(iter->data)->altitude;
+      min_alt_tp = VIK_TRACKPOINT(iter->data);
+    }
+    iter = iter->next;
+  }
+
+  if (!min_alt_tp)
+    return NULL;
+
+  return min_alt_tp;
+}
+
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
   *min_alt = 25000;
