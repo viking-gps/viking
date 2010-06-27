@@ -1595,7 +1595,7 @@ static void trw_layer_export_gpx ( gpointer layer_and_vlp[2] )
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
 {
   GHashTable *wps = vik_trw_layer_get_waypoints ( VIK_TRW_LAYER(layer_and_vlp[0]) );
-  GtkWidget *dia = gtk_dialog_new_with_buttons (_("Create"),
+  GtkWidget *dia = gtk_dialog_new_with_buttons (_("Find"),
                                                  VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]),
                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                  GTK_STOCK_CANCEL,
