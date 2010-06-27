@@ -189,10 +189,6 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
     curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
   res = curl_easy_perform ( curl );
 
-  if (file_options->new_etag) {
-    printf ("curl_download - %s", file_options->new_etag);
-  }
-
   if (res == 0) {
     glong response;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response);

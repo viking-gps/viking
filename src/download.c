@@ -236,8 +236,6 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   if (options->use_etag) {
     if (file_options.new_etag) {
       /* server returned an etag value */
-      printf("got etag %s\n", file_options.new_etag);
-
       gchar *etag_filename = g_strdup_printf("%s.etag", fn);
       g_file_set_contents (etag_filename, file_options.new_etag, -1, NULL);
     }
