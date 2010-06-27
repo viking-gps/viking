@@ -695,7 +695,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 #ifdef DEBUG
       fputs(stderr, "DEBUG: Starting autodownload\n");
 #endif
-      if ( vik_map_source_supports_if_modified_since (map) )
+      if ( vik_map_source_supports_download_only_new (map) )
         // Try to download newer tiles
         start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NEW );
       else
@@ -1308,7 +1308,7 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  if ( vik_map_source_supports_if_modified_since (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
+  if ( vik_map_source_supports_download_only_new (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
     item = gtk_menu_item_new_with_label ( _("Download new Onscreen Maps from server") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);

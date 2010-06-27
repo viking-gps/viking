@@ -32,7 +32,7 @@ static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCo
 static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
 static void * _download_handle_init ( VikMapSource *self);
 static void _download_handle_cleanup ( VikMapSource *self, void *handle);
-static gboolean _supports_if_modified_since (VikMapSource *self );
+static gboolean _supports_download_only_new (VikMapSource *self );
 
 static gchar *_get_uri( VikSlippyMapSource *self, MapCoord *src );
 static gchar *_get_hostname( VikSlippyMapSource *self );
@@ -202,7 +202,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	parent_class->download =                 _download;
 	parent_class->download_handle_init =     _download_handle_init;
 	parent_class->download_handle_cleanup =  _download_handle_cleanup;
-	parent_class->supports_if_modified_since = _supports_if_modified_since;
+	parent_class->supports_download_only_new = _supports_download_only_new;
 	
 	/* Default implementation of methods */
 	klass->get_uri = _get_uri;
@@ -326,13 +326,13 @@ vik_slippy_map_source_get_download_options( VikSlippyMapSource *self )
 }
 
 gboolean
-_supports_if_modified_since (VikMapSource *self)
+_supports_download_only_new (VikMapSource *self)
 {
-	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
 	
-    VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 	
-	return priv->options.check_file_server_time;
+  return priv->options.check_file_server_time || priv->options.use_etag;
 }
 static gboolean
 _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
