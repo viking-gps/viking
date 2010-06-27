@@ -4,8 +4,10 @@
 int main(int argc, char *argv[])
 {
   VikTrwLayer *trw = NULL;
-  gtk_init (&argc, &argv);
+  g_type_init ();
   trw = vik_trw_layer_new(0);
   a_gpx_read_file(trw, stdin);
   a_gpx_write_file(trw, stdout);
+  vik_trw_layer_free (trw);
+  return 0;
 }

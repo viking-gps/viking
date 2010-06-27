@@ -69,6 +69,10 @@ doc/examples/Makefile.in
 /test/.deps
 /test/Makefile.in
 /test/Makefile
+/test/*.o
+/test/gpx2gpx
+/test/degrees_converter
+/test/test_vikgotoxmltool
 
 # /po/
 /po/Makefile.in.in

@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "degrees_converters.h"
 
 int main(int argc, char *argv[]) {
@@ -16,8 +18,9 @@ int main(int argc, char *argv[]) {
 		lonDMS = convert_lon_dec_to_dms(value);
 		printf("'%s' -> %f %s %s %s %s %s %s\n", argv[i], value,
 			   latDDD, lonDDD, latDMM, lonDMM, latDMS, lonDMS);
-		free(latDMS); free(lonDMS); 
-		free(latDMM); free(lonDMM); 
-		free(latDDD); free(lonDDD); 
+		free(latDMS); free(lonDMS);
+		free(latDMM); free(lonDMM);
+		free(latDDD); free(lonDDD);
 	}
+	return 0;
 }

@@ -39,8 +39,9 @@ int main(int argc, char *argv[])
   int i;
   for (i = 1; i<argc ; i++)
   {
-    parse(with_element, argv[i]);
-    parse(with_attr, argv[i]);
-    parse(with_xpath, argv[i]);
+    parse(VIK_GOTO_TOOL(with_element), argv[i]);
+    parse(VIK_GOTO_TOOL(with_attr), argv[i]);
+    parse(VIK_GOTO_TOOL(with_xpath), argv[i]);
   }
+  return 0;
 }
