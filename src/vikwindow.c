@@ -1408,7 +1408,7 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
       g_signal_emit ( G_OBJECT(self), window_signals[VW_OPENWINDOW_SIGNAL], 0, filenames );
     }
     else
-      vik_window_open_file ( self, filename, TRUE );
+      vik_window_open_file ( self, path, TRUE );
     g_free ( path );
   }
 
