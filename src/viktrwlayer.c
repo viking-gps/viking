@@ -230,6 +230,7 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] );
 static void trw_layer_goto_track_max_speed ( gpointer pass_along[5] );
 static void trw_layer_goto_track_max_alt ( gpointer pass_along[5] );
 static void trw_layer_goto_track_min_alt ( gpointer pass_along[5] );
+static void trw_layer_auto_track_view ( gpointer pass_along[5] );
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb(gpointer pass_along[6]);
@@ -2342,6 +2343,7 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
   goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *) trps->data)->coord));
 }
 
+<<<<<<< HEAD
 static void trw_layer_goto_track_max_speed ( gpointer pass_along[5] )
 {
   VikTrackpoint* vtp = vik_track_get_tp_by_max_speed ( g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ) );
@@ -2364,6 +2366,22 @@ static void trw_layer_goto_track_min_alt ( gpointer pass_along[5] )
   if ( !vtp )
     return;
   goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(vtp->coord));
+}
+
+/* 
+ * Automatically change the viewport to center on the track and zoom to see the extent of the track
+ */ 
+static void trw_layer_auto_track_view ( gpointer pass_along[5] )
+{
+  GList **trps = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  if ( trps && *trps )
+  {
+    struct LatLon maxmin[2] = { {0,0}, {0,0} };
+    trw_layer_find_maxmin_tracks ( NULL, trps, maxmin );
+
+    trw_layer_zoom_to_show_latlons ( VIK_TRW_LAYER(pass_along[0]), vik_layers_panel_get_viewport (VIK_LAYERS_PANEL(pass_along[1])), maxmin );
+    vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(pass_along[1]) );
+  }
 }
 
 /*************************************
@@ -2937,6 +2955,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     item = gtk_menu_item_new_with_mnemonic ( _("_Maximum Speed") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_max_speed), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("_View Track") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_track_view), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Merge By Time") );
