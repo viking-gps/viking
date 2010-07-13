@@ -234,6 +234,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb(gpointer pass_along[6]);
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
+static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, const gchar* default_name, const gchar* trackname, guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
@@ -1677,6 +1678,15 @@ gboolean vik_trw_layer_auto_set_view ( VikTrwLayer *vtl, VikViewport *vvp )
   }
 }
 
+static void trw_layer_auto_view ( gpointer layer_and_vlp[2] )
+{
+  if ( vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(layer_and_vlp[0]), vik_layers_panel_get_viewport (VIK_LAYERS_PANEL(layer_and_vlp[1])) ) ) {
+    vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(layer_and_vlp[1]) );
+  }
+  else
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("This layer has no waypoints or trackpoints.") );
+}
+
 static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, const gchar* default_name, const gchar* trackname, guint file_type )
 {
   GtkWidget *file_selector;
@@ -1875,6 +1885,11 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
 
   item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("_View Layer") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_view), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
   item = gtk_menu_item_new_with_mnemonic ( _("_Goto Center of Layer") );
