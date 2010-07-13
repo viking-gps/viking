@@ -69,6 +69,7 @@ const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar
 gboolean vik_trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 void vik_trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter );
 
+gboolean vik_trw_layer_auto_set_view ( VikTrwLayer *vtl, VikViewport *vvp );
 gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest );
 GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l );
 GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l );

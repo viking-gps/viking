@@ -1615,6 +1615,68 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] )
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("This layer has no waypoints or trackpoints.") );
 }
 
+static void trw_layer_zoom_to_show_latlons ( VikTrwLayer *vtl, VikViewport *vvp, struct LatLon maxmin[2] )
+{
+  /* First set the center [in case previously viewing from elsewhere] */
+  /* Then loop through zoom levels until provided positions are in view */
+  /* This method is not particularly fast - but should work well enough */
+  struct LatLon average = { (maxmin[0].lat+maxmin[1].lat)/2, (maxmin[0].lon+maxmin[1].lon)/2 };
+  VikCoord coord;
+  vik_coord_load_from_latlon ( &coord, vtl->coord_mode, &average );
+  vik_viewport_set_center_coord ( vvp, &coord );
+
+  /* Convert into definite 'smallest' and 'largest' positions */
+  struct LatLon minmin;
+  if ( maxmin[0].lat < maxmin[1].lat )
+    minmin.lat = maxmin[0].lat;
+  else
+    minmin.lat = maxmin[1].lat;
+
+  struct LatLon maxmax;
+  if ( maxmin[0].lon > maxmin[1].lon )
+    maxmax.lon = maxmin[0].lon;
+  else
+    maxmax.lon = maxmin[1].lon;
+
+  /* Never zoom in too far - generally not that useful, as too close ! */
+  /* Always recalculate the 'best' zoom level */
+  gdouble zoom = 1.0;
+  vik_viewport_set_zoom ( vvp, zoom );
+
+  gdouble min_lat, max_lat, min_lon, max_lon;
+  /* Should only be a maximum of about 18 iterations from min to max zoom levels */
+  while ( zoom <= VIK_VIEWPORT_MAX_ZOOM ) {
+    vik_viewport_get_min_max_lat_lon ( vvp, &min_lat, &max_lat, &min_lon, &max_lon );
+    /* NB I think the logic used in this test to determine if the bounds is within view
+       fails if track goes across 180 degrees longitude.
+       Hopefully that situation is not too common...
+       Mind you viking doesn't really do edge locations to well anyway */
+    if ( min_lat < minmin.lat &&
+	 max_lat > minmin.lat &&
+	 min_lon < maxmax.lon &&
+	 max_lon > maxmax.lon )
+      /* Found within zoom level */
+      break;
+
+    /* Try next */
+    zoom = zoom * 2;
+    vik_viewport_set_zoom ( vvp, zoom );
+  }
+}
+
+gboolean vik_trw_layer_auto_set_view ( VikTrwLayer *vtl, VikViewport *vvp )
+{
+  /* TODO: what if there's only one waypoint @ 0,0, it will think nothing found. */
+  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  trw_layer_find_maxmin (vtl, maxmin);
+  if (maxmin[0].lat == 0.0 && maxmin[0].lon == 0.0 && maxmin[1].lat == 0.0 && maxmin[1].lon == 0.0)
+    return FALSE;
+  else {
+    trw_layer_zoom_to_show_latlons ( vtl, vvp, maxmin );
+    return TRUE;
+  }
+}
+
 static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, const gchar* default_name, const gchar* trackname, guint file_type )
 {
   GtkWidget *file_selector;
