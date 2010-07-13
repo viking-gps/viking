@@ -239,6 +239,7 @@ static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, const gchar* default_name, const gchar* trackname, guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
+static void trw_layer_auto_waypoints_view ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
@@ -1875,6 +1876,33 @@ static void trw_layer_new_wp ( gpointer lav[2] )
     vik_layers_panel_emit_update ( vlp );
 }
 
+static void trw_layer_single_waypoint_jump ( const gchar *name, const VikWaypoint *wp, gpointer vvp )
+{
+  /* NB do not care if wp is visible or not */
+  vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), &(wp->coord) );
+}
+
+static void trw_layer_auto_waypoints_view ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+
+  /* Only 1 waypoint - jump straight to it */
+  if ( g_hash_table_size (vtl->waypoints) == 1 ) {
+    VikViewport *vvp = vik_layers_panel_get_viewport (vlp);
+    g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_single_waypoint_jump, (gpointer) vvp );
+  }
+  /* If at least 2 waypoints - find center and then zoom to fit */
+  else if ( g_hash_table_size (vtl->waypoints) > 1 )
+  {
+    struct LatLon maxmin[2] = { {0,0}, {0,0} };
+    g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_find_maxmin_waypoints, maxmin );
+    trw_layer_zoom_to_show_latlons ( vtl, vik_layers_panel_get_viewport (vlp), maxmin );
+  }
+
+  vik_layers_panel_emit_update ( vlp );
+}
+
 void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp )
 {
   static gpointer pass_along[2];
@@ -1890,6 +1918,11 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
 
   item = gtk_menu_item_new_with_mnemonic ( _("_View Layer") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_view), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("V_iew All Waypoints") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_waypoints_view), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
