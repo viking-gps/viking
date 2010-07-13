@@ -577,7 +577,6 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
   }
   else
   {
-    VikCoord new_center;
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
     vik_layer_rename ( vtl, a_file_basename ( filename ) );
 
@@ -590,8 +589,8 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
 
     vik_aggregate_layer_add_layer ( top, vtl );
 
-    if ( vik_trw_layer_find_center ( VIK_TRW_LAYER(vtl), &new_center ) )
-      vik_viewport_set_center_coord ( VIK_VIEWPORT(vp), &new_center );
+    vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
+
     xfclose(f);
     return 2;
   }
