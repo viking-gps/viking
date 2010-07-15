@@ -240,6 +240,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, co
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
 static void trw_layer_auto_waypoints_view ( gpointer lav[2] );
+static void trw_layer_auto_tracks_view ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
@@ -1876,6 +1877,19 @@ static void trw_layer_new_wp ( gpointer lav[2] )
     vik_layers_panel_emit_update ( vlp );
 }
 
+static void trw_layer_auto_tracks_view ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+
+  if ( g_hash_table_size (vtl->tracks) > 0 ) {
+    struct LatLon maxmin[2] = { {0,0}, {0,0} };
+    g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_find_maxmin_tracks, maxmin );
+    trw_layer_zoom_to_show_latlons ( vtl, vik_layers_panel_get_viewport (vlp), maxmin );
+    vik_layers_panel_emit_update ( vlp );
+  }
+}
+
 static void trw_layer_single_waypoint_jump ( const gchar *name, const VikWaypoint *wp, gpointer vvp )
 {
   /* NB do not care if wp is visible or not */
@@ -1918,6 +1932,11 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
 
   item = gtk_menu_item_new_with_mnemonic ( _("_View Layer") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_view), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("View All Trac_ks") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_tracks_view), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
