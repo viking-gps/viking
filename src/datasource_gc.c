@@ -64,6 +64,7 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
+  FALSE,
   TRUE,
   (VikDataSourceInitFunc)		datasource_gc_init,
   (VikDataSourceCheckExistenceFunc)	datasource_gc_check_existence,

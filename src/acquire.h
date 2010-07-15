@@ -61,7 +61,6 @@ typedef enum {
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK
 } vik_datasource_inputtype_t;
 
-
 /* returns pointer to state if OK, otherwise NULL */
 typedef gpointer (*VikDataSourceInitFunc) ();
 
@@ -97,6 +96,7 @@ struct _VikDataSourceInterface {
   vik_datasource_type_t type;
   vik_datasource_mode_t mode;
   vik_datasource_inputtype_t inputtype;
+  gboolean autoview;
   gboolean keep_dialog_open; /* when done */
 
 

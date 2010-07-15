@@ -52,6 +52,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
+  TRUE,
   (VikDataSourceInitFunc)		datasource_google_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_google_add_setup_widgets,

@@ -95,7 +95,7 @@ static void get_from_anything ( w_and_interface_t *wi )
   gchar *cmd = wi->cmd;
   gchar *extra = wi->extra;
   gboolean result = TRUE;
-  VikTrwLayer *vtl;
+  VikTrwLayer *vtl = NULL;
 
   gboolean creating_new_layer = TRUE;
 
@@ -154,6 +154,11 @@ static void get_from_anything ( w_and_interface_t *wi )
 	  vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
 	else
 	  gtk_label_set_text ( GTK_LABEL(w->status), _("No data.") );
+      }
+      /* View this data if available and is desired */
+      if ( vtl && source_interface->autoview ) {
+	vik_trw_layer_auto_set_view ( vtl, vik_layers_panel_get_viewport(w->vlp) );
+	vik_layers_panel_emit_update (w->vlp);
       }
       if ( source_interface->keep_dialog_open ) {
         gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
