@@ -148,6 +148,7 @@ struct _VikWindow {
 
   GtkActionGroup *action_group;
 
+  gboolean pan_move;
   gint pan_x, pan_y;
 
   guint draw_image_width, draw_image_height;
@@ -284,7 +285,8 @@ static void window_init ( VikWindow *vw )
 
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
-  
+ 
+  vw->pan_move = FALSE; 
   vw->pan_x = vw->pan_y = -1;
   vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
   vw->draw_image_height = DRAW_IMAGE_DEFAULT_HEIGHT;
@@ -469,6 +471,7 @@ static gboolean draw_buf(gpointer data)
 static void vik_window_pan_click (VikWindow *vw, GdkEventButton *event)
 {
   /* set panning origin */
+  vw->pan_move = FALSE;
   vw->pan_x = (gint) event->x;
   vw->pan_y = (gint) event->y;
 }
@@ -491,7 +494,12 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
 static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
 {
   if ( vw->pan_x != -1 ) {
-    vik_viewport_pan_sync ( vw->viking_vvp, event->x - vw->pan_x, event->y - vw->pan_y );
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
+                                     vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
+    draw_update ( vw );
+    vw->pan_move = TRUE;
+    vw->pan_x = event->x;
+    vw->pan_y = event->y;
   }
 }
 
@@ -549,7 +557,7 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 
 static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
 {
-  if ( ABS(vw->pan_x - event->x) <= 1 && ABS(vw->pan_y - event->y) <= 1 )
+  if ( vw->pan_move == FALSE )
     vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
   else
      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
