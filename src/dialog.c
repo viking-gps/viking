@@ -94,7 +94,7 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
 
 gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UTM *old )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to Lat/Lon"),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to UTM"),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
