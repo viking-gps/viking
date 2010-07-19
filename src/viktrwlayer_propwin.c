@@ -651,7 +651,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           if ( vik_trw_layer_get_track(vtl, new_tr_name ) && 
              ( ! a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "The track \"%s\" exists, do you wish to overwrite it?", new_tr_name ) ) )
           {
-            gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl) );
+            gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );
             g_free ( new_tr_name );
             if (new_new_tr_name)
               new_tr_name = new_new_tr_name;
@@ -693,7 +693,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
              ( ! a_dialog_overwrite( VIK_GTK_WINDOW_FROM_LAYER(vtl),
               "The track \"%s\" exists, do you wish to overwrite it?", r_name)))
         {
-            gchar *new_r_name = a_dialog_new_track( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl) );
+	  gchar *new_r_name = a_dialog_new_track( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );
             if (new_r_name) {
               g_free( r_name );
               r_name = new_r_name;

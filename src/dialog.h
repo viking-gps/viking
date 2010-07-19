@@ -53,7 +53,7 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
 /* if *dest is non-null, uses it as a default and frees it */
 gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode );
 
-gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks );
+gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name );
 
 gboolean a_dialog_overwrite ( GtkWindow *parent, const gchar *message, const gchar *extra );
 gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp );

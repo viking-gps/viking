@@ -487,7 +487,7 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList 
   return NULL;
 }
 
-gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
+gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Track"),
                                                   parent,
@@ -499,6 +499,9 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
                                                   NULL);
   GtkWidget *label = gtk_label_new ( _("Track Name:") );
   GtkWidget *entry = gtk_entry_new ();
+
+  if (default_name)
+    gtk_entry_set_text ( GTK_ENTRY(entry), default_name );
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), entry, FALSE, FALSE, 0);

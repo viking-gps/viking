@@ -2840,7 +2840,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   else if ( response == VIK_TRW_LAYER_TPWIN_SPLIT && vtl->current_tpl->next && vtl->current_tpl->prev )
   {
     gchar *name;
-    if ( ( name = a_dialog_new_track ( GTK_WINDOW(vtl->tpwin), vtl->tracks ) ) )
+    if ( ( name = a_dialog_new_track ( GTK_WINDOW(vtl->tpwin), vtl->tracks, NULL ) ) )
     {
       VikTrack *tr = vik_track_new ();
       GList *newglist = g_list_alloc ();
@@ -3406,8 +3406,8 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
 
   if ( ! vtl->current_track )
   {
-    gchar *name;
-    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks ) ) )
+    gchar *name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track"));
+    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name ) ) )
     {
       vtl->current_track = vik_track_new();
       vtl->current_track->visible = TRUE;
