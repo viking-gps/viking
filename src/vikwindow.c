@@ -2066,6 +2066,8 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
 
   draw_to_image_file_total_area_cb ( NULL, current_window_pass_along ); /* set correct size info now */
 
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
   gtk_widget_show_all ( GTK_DIALOG(dialog)->vbox );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
