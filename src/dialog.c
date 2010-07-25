@@ -774,7 +774,11 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
   gchar **s;
 
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Download along track"), parent, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
   GtkWidget *map_label = gtk_label_new(_("Map type:"));
   GtkComboBox *map_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
   for (s = mapnames; *s; s++)
@@ -793,6 +797,9 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
   gtk_table_attach_defaults(box, GTK_WIDGET(zoom_combo), 1, 2, 1, 2);
 
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(box), FALSE, FALSE, 5 );
+
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
 
   gtk_widget_show_all ( dialog );
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
