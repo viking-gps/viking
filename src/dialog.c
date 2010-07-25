@@ -323,6 +323,8 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), symbollabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
   gtk_widget_show_all ( GTK_DIALOG(dialog)->vbox );
 
   while ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
