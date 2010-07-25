@@ -453,6 +453,13 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList 
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL);
+  /* When something is selected then OK */
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  /* Default to not apply - as initially nothing is selected! */
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+#endif
   GtkWidget *label = gtk_label_new ( msg );
   GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
 
@@ -477,6 +484,9 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList 
   gtk_widget_show ( label );
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), view, FALSE, FALSE, 0);
   gtk_widget_show ( view );
+
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
 
   while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
   {
