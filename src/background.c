@@ -235,9 +235,16 @@ void a_background_init()
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
 
   bgwindow = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_DELETE, 1, GTK_STOCK_CLEAR, 2, NULL );
+  gtk_dialog_set_default_response ( GTK_DIALOG(bgwindow), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(bgwindow), GTK_RESPONSE_ACCEPT );
+#endif
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(bgwindow)->vbox), scrolled_window, TRUE, TRUE, 0 );
   gtk_window_set_default_size ( GTK_WINDOW(bgwindow), 400, 400 );
   gtk_window_set_title ( GTK_WINDOW(bgwindow), _("Viking Background Jobs") );
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
   /* don't destroy win */
   g_signal_connect ( G_OBJECT(bgwindow), "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL );
 
