@@ -83,6 +83,8 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), lonlabel,  FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), lon,  FALSE, FALSE, 0);
 
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
     ll->lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lat) ) );
@@ -147,6 +149,8 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), easlabel,  FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), eas,  FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), zonehbox,  FALSE, FALSE, 0);
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
