@@ -391,6 +391,9 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
   gtk_combo_box_set_active(visibility, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), GTK_WIDGET(visibility), FALSE, FALSE, 0);
 
+  /* User should think about it first... */
+  gtk_dialog_set_default_response ( GTK_DIALOG(dia), GTK_RESPONSE_REJECT );
+
   gtk_widget_show_all ( dia );
   gtk_widget_grab_focus ( description_entry );
 
