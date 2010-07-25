@@ -279,8 +279,12 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
 						      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 						      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
 						      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL );
+    gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+    GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+    response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
     gint resp;
-
 
     GtkWidget *table = NULL;
     GtkWidget **tables = NULL; /* for more than one group */
@@ -331,6 +335,9 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
         j++;
       }
     }
+
+    if ( response_w )
+      gtk_widget_grab_focus ( response_w );
 
     gtk_widget_show_all ( dialog );
 
