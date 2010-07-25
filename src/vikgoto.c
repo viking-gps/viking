@@ -91,6 +91,7 @@ static gboolean prompt_try_again(VikWindow *vw)
 
   GtkWidget *goto_label = gtk_label_new(_("I don't know that place. Do you want another goto?"));
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_label, FALSE, FALSE, 5 );
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all(dialog);
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT )
@@ -131,6 +132,7 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), tool_list, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_entry, FALSE, FALSE, 5 );
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all(dialog);
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
