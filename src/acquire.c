@@ -254,8 +254,17 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   if ( source_interface->add_setup_widgets_func ) {
     dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
 
+    gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+    GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+    response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
+
     source_interface->add_setup_widgets_func(dialog, vvp, user_data);
     gtk_window_set_title ( GTK_WINDOW(dialog), _(source_interface->window_title) );
+
+    if ( response_w )
+      gtk_widget_grab_focus ( response_w );
 
     if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
       source_interface->cleanup_func(user_data);
@@ -338,6 +347,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   w->ok = TRUE;
   status = gtk_label_new (_("Status: detecting gpsbabel"));
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), status, FALSE, FALSE, 5 );
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all(status);
   w->status = status;
 
