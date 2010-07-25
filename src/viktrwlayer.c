@@ -1678,6 +1678,8 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
   gtk_widget_show_all ( label );
   gtk_widget_show_all ( entry );
 
+  gtk_dialog_set_default_response ( GTK_DIALOG(dia), GTK_RESPONSE_ACCEPT );
+
   while ( gtk_dialog_run ( GTK_DIALOG(dia) ) == GTK_RESPONSE_ACCEPT )
   {
     VikWaypoint *wp;
