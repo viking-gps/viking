@@ -1079,6 +1079,7 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
   /* TODO: starting gps read/write thread here */
   g_thread_create((GThreadFunc)gps_comm_thread, sess, FALSE, NULL );
 
+  gtk_dialog_set_default_response ( GTK_DIALOG(sess->dialog), GTK_RESPONSE_ACCEPT );
   gtk_dialog_run(GTK_DIALOG(sess->dialog));
 
   gtk_widget_destroy(sess->dialog);
