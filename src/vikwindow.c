@@ -217,6 +217,11 @@ VikViewport * vik_window_viewport(VikWindow *vw)
   return(vw->viking_vvp);
 }
 
+VikLayersPanel * vik_window_layers_panel(VikWindow *vw)
+{
+  return(vw->viking_vlp);
+}
+
 void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
 {
   int i, j, tool_count;

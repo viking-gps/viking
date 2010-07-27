@@ -56,6 +56,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
 struct _VikLayer;
 void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);
 struct _VikViewport * vik_window_viewport(VikWindow *vw);
+struct _VikLayersPanel * vik_window_layers_panel(VikWindow *vw);
 void vik_window_set_redraw_trigger(struct _VikLayer *vl);
 
 void vik_window_enable_layer_tool ( VikWindow *vw, gint layer_id, gint tool_id );
