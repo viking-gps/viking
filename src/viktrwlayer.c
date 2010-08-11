@@ -260,6 +260,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
+static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
@@ -2891,6 +2892,58 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
   return rv;
 }
 
+static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl )
+{
+  /* sanity checks */
+  if (!vtl->current_tpl)
+    return;
+  if (!vtl->current_tpl->next)
+    return;
+
+  VikTrackpoint *tp_current = VIK_TRACKPOINT(vtl->current_tpl->data);
+  VikTrackpoint *tp_next = VIK_TRACKPOINT(vtl->current_tpl->next->data);
+
+  /* Use current and next trackpoints to form a new track point which is inserted into the tracklist */
+  if ( tp_next ) {
+
+    VikTrackpoint *tp_new = vik_trackpoint_new();
+    struct LatLon ll_current, ll_next;
+    vik_coord_to_latlon ( &tp_current->coord, &ll_current );
+    vik_coord_to_latlon ( &tp_next->coord, &ll_next );
+
+    /* main positional interpolation */
+    struct LatLon ll_new = { (ll_current.lat+ll_next.lat)/2, (ll_current.lon+ll_next.lon)/2 };
+    vik_coord_load_from_latlon ( &(tp_new->coord), vtl->coord_mode, &ll_new );
+
+    /* Now other properties that can be interpolated */
+    tp_new->altitude = (tp_current->altitude + tp_next->altitude) / 2;
+
+    if (tp_current->has_timestamp && tp_next->has_timestamp) {
+      /* Note here the division is applied to each part, then added
+	 This is to avoid potential overflow issues with a 32 time_t for dates after midpoint of this Unix time on 2004/01/04 */
+      tp_new->timestamp = (tp_current->timestamp/2) + (tp_next->timestamp/2);
+      tp_new->has_timestamp = TRUE;
+    }
+
+    if (tp_current->speed != NAN && tp_next->speed != NAN)
+      tp_new->speed = (tp_current->speed + tp_next->speed)/2;
+
+    /* TODO - improve interpolation of course, as it may not be correct.
+       if courses in degrees are 350 + 020, the mid course more likely to be 005 (not 185)
+       [similar applies if value is in radians] */
+    if (tp_current->course != NAN && tp_next->course != NAN)
+      tp_new->speed = (tp_current->course + tp_next->course)/2;
+
+    /* DOP / sat values remain at defaults as not they do not seem applicable to a dreamt up point */
+
+    /* Insert new point into the trackpoints list after the current TP */
+    VikTrack *tr = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_track_name );
+    gint index =  g_list_index ( tr->trackpoints, tp_current );
+    if ( index > -1 ) {
+      tr->trackpoints = g_list_insert (tr->trackpoints, tp_new, index+1 );
+    }
+  }
+}
 
 /* to be called when last_tpl no long exists. */
 static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl )
