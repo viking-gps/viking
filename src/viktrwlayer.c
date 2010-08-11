@@ -3089,6 +3089,11 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
     trw_layer_cancel_last_tp ( vtl ); /* same TP, can't join. */
     vik_layer_emit_update(VIK_LAYER(vtl));
   }
+  else if ( response == VIK_TRW_LAYER_TPWIN_INSERT && vtl->current_tpl->next )
+  {
+    trw_layer_insert_tp_after_current_tp ( vtl );
+    vik_layer_emit_update(VIK_LAYER(vtl));
+  }
   else if ( response == VIK_TRW_LAYER_TPWIN_DATA_CHANGED )
     vik_layer_emit_update (VIK_LAYER(vtl));
 }

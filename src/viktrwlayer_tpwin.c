@@ -137,6 +137,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
 
   gtk_dialog_add_buttons ( GTK_DIALOG(tpwin),
       GTK_STOCK_CLOSE, VIK_TRW_LAYER_TPWIN_CLOSE,
+      _("_Insert After"), VIK_TRW_LAYER_TPWIN_INSERT,
       GTK_STOCK_DELETE, VIK_TRW_LAYER_TPWIN_DELETE,
       _("Split Here"), VIK_TRW_LAYER_TPWIN_SPLIT,
       _("Join With Last"), VIK_TRW_LAYER_TPWIN_JOIN,
@@ -218,6 +219,7 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), FALSE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), FALSE );
 
+  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_INSERT, FALSE );
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_SPLIT, FALSE );
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_DELETE, FALSE );
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_FORWARD, FALSE );
@@ -243,6 +245,9 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   static char tmp_str[25];
   static struct LatLon ll;
   VikTrackpoint *tp = VIK_TRACKPOINT(tpl->data);
+
+  /* Only can insert if not at the end (otherwise use extend track) */
+  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_INSERT, (gboolean) GPOINTER_TO_INT (tpl->next) );
 
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_DELETE, TRUE );
 
