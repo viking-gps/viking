@@ -58,6 +58,7 @@ static const char *menu_xml =
 	"      <menu action='SetShow'>"
 	"          <menuitem action='ShowScale'/>"
 	"          <menuitem action='ShowCenterMark'/>"
+	"          <menuitem action='ShowHighlight'/>"
 	"          <menuitem action='ViewSidePanel'/>"
 	"          <menuitem action='ViewStatusBar'/>"
 	"          <menuitem action='ViewToolbar'/>"

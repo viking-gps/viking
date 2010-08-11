@@ -91,6 +91,7 @@ struct _VikViewport {
   /* Wether or not display OSD info */
   gboolean draw_scale;
   gboolean draw_centermark;
+  gboolean draw_highlight;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
@@ -199,6 +200,7 @@ static void viewport_init ( VikViewport *vvp )
 
   vvp->draw_scale = TRUE;
   vvp->draw_centermark = TRUE;
+  vvp->draw_highlight = TRUE;
 
   vvp->trigger = NULL;
   vvp->snapshot_buffer = NULL;
@@ -587,7 +589,16 @@ void vik_viewport_draw_logo ( VikViewport *vvp )
     vik_viewport_draw_pixbuf ( vvp, logo, 0, 0, x - width, y, width, height );
     x = x - width - PAD;
   }
+}
 
+void vik_viewport_set_draw_highlight ( VikViewport *vvp, gboolean draw_highlight )
+{
+  vvp->draw_highlight = draw_highlight;
+}
+
+gboolean vik_viewport_get_draw_highlight ( VikViewport *vvp )
+{
+  return vvp->draw_highlight;
 }
 
 void vik_viewport_sync ( VikViewport *vvp )

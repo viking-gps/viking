@@ -150,6 +150,8 @@ void vik_viewport_draw_centermark ( VikViewport *vvp );
 void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark );
 gboolean vik_viewport_get_draw_centermark ( VikViewport *vvp );
 void vik_viewport_draw_logo ( VikViewport *vvp );
+void vik_viewport_set_draw_highlight ( VikViewport *vvp, gboolean draw_highlight );
+gboolean vik_viewport_get_draw_highlight ( VikViewport *vvp );
 
 /* Color/graphics context management */
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *color );

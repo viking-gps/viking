@@ -1587,7 +1587,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       vw->only_updating_coord_mode_ui = FALSE;
 
       vik_layers_panel_change_coord_mode ( vw->viking_vlp, vik_viewport_get_coord_mode ( vw->viking_vvp ) );
-
+      
       mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowScale" );
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_scale(vw->viking_vvp) );
@@ -1595,6 +1595,10 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCenterMark" );
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_centermark(vw->viking_vvp) );
+      
+      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowHighlight" );
+      g_assert ( mode_button );
+      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_highlight (vw->viking_vvp) );
     }
     default:
       update_recently_used_document(filename);
@@ -2223,6 +2227,15 @@ static void set_draw_centermark ( GtkAction *a, VikWindow *vw )
   draw_update ( vw );
 }
 
+static void set_draw_highlight ( GtkAction *a, VikWindow *vw )
+{
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowHighlight" );
+  g_assert(check_box);
+  gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
+  vik_viewport_set_draw_highlight (  vw->viking_vvp, state );
+  draw_update ( vw );
+}
+
 static void set_bg_color ( GtkAction *a, VikWindow *vw )
 {
   GtkWidget *colorsd = gtk_color_selection_dialog_new ( _("Choose a background color") );
@@ -2343,6 +2356,7 @@ static GtkRadioActionEntry tool_entries[] = {
 static GtkToggleActionEntry toggle_entries[] = {
   { "ShowScale",      NULL,                 N_("Show _Scale"),               "F5",         N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
   { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)set_draw_centermark, TRUE },
+  { "ShowHighlight",  GTK_STOCK_UNDERLINE,  N_("Show _Highlight"),           "F7",         N_("Show Highlight"),                          (GCallback)set_draw_highlight, TRUE },
   { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },
   { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side _Panel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
   { "ViewStatusBar",  NULL,                 N_("Show Status_bar"),           "F12",        N_("Show Statusbar"),                          (GCallback)view_statusbar_cb, TRUE },
