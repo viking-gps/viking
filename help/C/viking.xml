@@ -56,7 +56,7 @@
       </revision> 
     </revhistory>
 
-    <releaseinfo>This manual describes version &appversion; of &app;.</releaseinfo>
+    <releaseinfo>This manual describes version &appversion; of &appname;.</releaseinfo>
 
     <legalnotice>
       <title>Feedback</title>
@@ -71,7 +71,7 @@
     <primary>&app;</primary>
   </indexterm>
 <!-- ============= Document Body ============================= -->
-<sect1 id="introduction">
+<section id="introduction">
   <title>Introduction</title>
 <para>
 Viking aims to be easy to use, yet powerful in accomplishing a wide
@@ -146,7 +146,7 @@ Preparing tracks and waypoints to be made into Garmin maps
 </para>
 </listitem>
 </itemizedlist>
-</sect1>
+</section>
 <section><title>General Concepts</title>
 <para>
 The panel on the left is called the <emphasis role="bold">layers panel</emphasis>.
@@ -387,7 +387,7 @@ between points will be displayed.
 You must have a TrackWaypoint Layer selected to use these.
 </para>
 <section><title>New Waypoint</title>
-
+<para></para>
 </section>
 <section><title>New Track</title>
 <para>
@@ -406,7 +406,7 @@ Shift: snap to waypoint
 Click/drag: select/move a waypoint
 </para>
 <para>
-<KeyCap function="control">Ctrl</KeyCap>: snap to trackpoint
+<keycap>Ctrl</keycap>: snap to trackpoint
 </para>
 <para>
 Shift: snap to waypoint
@@ -663,11 +663,11 @@ unneeded data, we position to a location of interest, e.g. Stuttgart: <menuchoic
 <emphasis role="bold">Map</emphasis>
 </para>
 <procedure>
-<step>layers new map layer</step>
-<step>in the layer properties dialogue choose e.g. <guilabel>OpenStreetMap (Mapnik)</guilabel>.</step>
+<step><para>layers new map layer</para></step>
+<step><para>in the layer properties dialogue choose e.g. <guilabel>OpenStreetMap (Mapnik)</guilabel>.</para></step>
 <step>
-For the moment, we keep the default <guilabel>Maps Directory</guilabel> (the directory in
-which the maps will be stored and can be used for offline usage).
+<para>For the moment, we keep the default <guilabel>Maps Directory</guilabel> (the directory in
+which the maps will be stored and can be used for offline usage).</para>
 </step>
 <step>
 <para>Check <guilabel>Autodownload maps</guilabel> and keep the zoom level as <guilabel>Use Viking
@@ -686,21 +686,22 @@ automatically.
 </para>
 <para>
 <emphasis role="bold">DEM Layer (height map)</emphasis>
-<procedure>
-<step>Zoom out to 512/512.</step>
-<step><menuchoice><guimenu>layers</guimenu><guimenuitem>new DEM layer</guimenuitem></menuchoice></step>
-<step>Keep the download source as is (SRTM Global 90m), hit <guilabel>OK</guilabel>. </step>
-</procedure>
 </para>
+<procedure>
+<step><para>Zoom out to 512/512.</para></step>
+<step><para><menuchoice><guimenu>layers</guimenu><guimenuitem>new DEM layer</guimenuitem></menuchoice></para></step>
+<step><para>Keep the download source as is (SRTM Global 90m), hit <guilabel>OK</guilabel>.</para></step>
+</procedure>
+
 <para>In the layer listing on the left, the DEM layer should reside
 above the map layer. If this is not the case, highlight the DEM layer
 an shift it one up (using the arrow up button).
-<procedure>
-<step>highlight the DEM layer in the layer listing on the left</step>
-<step>in the toolbar, check DEM layer download/import (the last symbol)</step>
-<step>a left-click in the map window should then fetch the DEM data</step>
-</procedure>
 </para>
+<procedure>
+<step><para>highlight the DEM layer in the layer listing on the left</para></step>
+<step><para>in the toolbar, check DEM layer download/import (the last symbol)</para></step>
+<step><para>a left-click in the map window should then fetch the DEM data</para></step>
+</procedure>
 <para>
 This might take some time. You can check the correct source in the verbose debug output: it should look something like:
 <screen>
@@ -747,6 +748,7 @@ You can also alter the Min. and Max. elevation in this dialogue.
 </procedure>
 <para>
 Check to have the new track layer above the map layer.
+</para>
 <procedure>
 <step><para>expand trackwaypointlayer, select <guimenuitem>Tracks</guimenuitem></para></step>
 <step><para>in the tools menu choose <guimenuitem>begin track</guimenuitem> (red cross)<!-- TODO insert icon --></para></step>
@@ -757,14 +759,13 @@ Check to have the new track layer above the map layer.
 <step><para>right click your track again, select <guimenuitem>properies</guimenuitem></para></step>
 <step><para>click the tab <guilabel>elevation distance</guilabel> - enjoy the plot</para></step>
 </procedure>
-</para>
 <para>
 In order to save this setting for later usage
+</para>
 <procedure>
 <step><para>click <guilabel>OK</guilabel> in the <guilabel>track properties</guilabel> dialog</para></step>
 <step><para><menuchoice><guimenu>file</guimenu><guimenuitem>save as</guimenuitem></menuchoice>, choose a name (you can open this <emphasis>view</emphasis> later via <menuchoice><guimenu>file</guimenu><guimenuitem>open</guimenuitem></menuchoice>).</para></step>
 </procedure>
-</para>
 
 </section>
 <section><title>Usecase: offline data for holiday</title>
@@ -772,18 +773,18 @@ In order to save this setting for later usage
 Suppose you want to have the map and DEM data offline for your holiday in Italy near Bologna.
 </para>
 <procedure>
-<step>Start a new viking session.</step>
-<step><menuchoice><guimenu>view</guimenu><guimenuitem>goto location</guimenuitem></menuchoice>, enter Bologna</step>
-<step><menuchoice><guimenu>layers</guimenu><guimenuitem>new map layer</guimenuitem></menuchoice></step>
-<step>Choose e.g. <guilabel>OpenStreetMap (mapnik)</guilabel>.</step>
-<step>adapt the <guilabel>maps directory</guilabel> e.g. to <filename>/home/user/.viking-map-holiday/</filename>.
+<step><para>Start a new viking session.</para></step>
+<step><para><menuchoice><guimenu>view</guimenu><guimenuitem>goto location</guimenuitem></menuchoice>, enter Bologna</para></step>
+<step><para><menuchoice><guimenu>layers</guimenu><guimenuitem>new map layer</guimenuitem></menuchoice></para></step>
+<step><para>Choose e.g. <guilabel>OpenStreetMap (mapnik)</guilabel>.</para></step>
+<step><para>adapt the <guilabel>maps directory</guilabel> e.g. to <filename>/home/user/.viking-map-holiday/</filename>.
 This allows you to delete the map stuff after holiday without purging the rest of your maps.
-</step>
-<step>check <guilabel>autodownload map</guilabel></step>
-<step>keep <guilabel>viking zoom level</guilabel></step>
-<step>zoom out to 1024/1024</step>
-<step>add a DEM layer (as discussed above)</step>
-<step>download the DEM data</step>
+</para></step>
+<step><para>check <guilabel>autodownload map</guilabel></para></step>
+<step><para>keep <guilabel>viking zoom level</guilabel></para></step>
+<step><para>zoom out to 1024/1024</para></step>
+<step><para>add a DEM layer (as discussed above)</para></step>
+<step><para>download the DEM data</para></step>
 </procedure>
 <para>In the &app; version discussed here, the DEM data automatically
 are stored in <filename>/home/user/.viking-maps/</filename>. You can move the corresponding
@@ -793,16 +794,16 @@ tiles into <filename>.viking-map-holiday/</filename> if you like.
 <emphasis role="bold">Download map data for all zoom levels</emphasis>
 </para>
 <procedure>
-<step>uncheck the DEM layer for the map to show up</step>
-<step>navigate the map to be centered at Bologna</step>
-<step>choose the zoom such, that all regions of interest are displayed in the map window (e.g. 1024/1024)</step>
+<step><para>uncheck the DEM layer for the map to show up</para></step>
+<step><para>navigate the map to be centered at Bologna</para></step>
+<step><para>choose the zoom such, that all regions of interest are displayed in the map window (e.g. 1024/1024)</para></step>
 <step>
 <para>follow this sequence until you have all tiles for all zoom levels you need</para>
 <substeps>
-<step>right-click the map layer  properties</step>
-<step>set the zoomlevel explicitely one below the last (in the first cycle 512), hit OK</step>
-<step>right click the map layer  <guimenuitem>download onscreen maps</guimenuitem></step>
-<step>wait untill all tiles for that resolution have been downloaded</step>
+<step><para>right-click the map layer  properties</para></step>
+<step><para>set the zoomlevel explicitely one below the last (in the first cycle 512), hit OK</para></step>
+<step><para>right click the map layer  <guimenuitem>download onscreen maps</guimenuitem></para></step>
+<step><para>wait untill all tiles for that resolution have been downloaded</para></step>
 </substeps>
 </step>
 </procedure>
@@ -917,7 +918,7 @@ to write the waypoints to this file.
 </programlisting>
 </para>
       <para>You can find more examples in the documentation part of the distribution.</para>
-      <formalpara>
+      <section>
         <title>Map Source</title>
         <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/maps.xml</filename>.</para>
@@ -942,9 +943,9 @@ to write the waypoints to this file.
             </varlistentry>
           </variablelist>
         </para>
-      </formalpara>
+      </section>
 
-      <formalpara>
+      <section>
         <title>Go-to search engines</title>
         <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
@@ -978,9 +979,9 @@ to write the waypoints to this file.
           </variablelist>
         </para>
         <para>As a facility (or readability) it is possible to set both path and attribute name in a single property, like an XPath expression. To do so, simply set both info in lat-path (or lon-path) in the following format: <literal>/root/parent/elem@attribute</literal>.</para>
-      </formalpara>
+      </section>
 
-      <formalpara>
+      <section>
         <title>External tools</title>
         <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
@@ -1001,7 +1002,7 @@ to write the waypoints to this file.
             </varlistentry>
           </variablelist>
         </para>
-      </formalpara>
+      </section>
 
 </section>
 
