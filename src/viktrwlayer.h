@@ -67,6 +67,7 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name );
 const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 
 gboolean vik_trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer );
+gboolean vik_trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
 void vik_trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter );
 
 gboolean vik_trw_layer_auto_set_view ( VikTrwLayer *vtl, VikViewport *vvp );

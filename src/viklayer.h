@@ -153,6 +153,7 @@ typedef const gchar * (*VikLayerFuncSublayerRenameRequest) (VikLayer *,const gch
 typedef gboolean      (*VikLayerFuncSublayerToggleVisible) (VikLayer *,gint,gpointer);
 typedef const gchar * (*VikLayerFuncSublayerTooltip)       (VikLayer *,gint,gpointer);
 typedef const gchar * (*VikLayerFuncLayerTooltip)          (VikLayer *);
+typedef gboolean      (*VikLayerFuncLayerSelected)         (VikLayer *,gint,gpointer,gint,gpointer); /* 2nd gpointer is a VikLayersPanel */
 
 typedef void          (*VikLayerFuncMarshall)              (VikLayer *, guint8 **, gint *);
 typedef VikLayer *    (*VikLayerFuncUnmarshall)            (guint8 *, gint, VikViewport *);
@@ -228,6 +229,7 @@ struct _VikLayerInterface {
   VikLayerFuncSublayerToggleVisible sublayer_toggle_visible;
   VikLayerFuncSublayerTooltip       sublayer_tooltip;
   VikLayerFuncLayerTooltip          layer_tooltip;
+  VikLayerFuncLayerSelected         layer_selected;
 
   VikLayerFuncMarshall              marshall;
   VikLayerFuncUnmarshall            unmarshall;
@@ -288,6 +290,8 @@ gboolean vik_layer_sublayer_toggle_visible ( VikLayer *l, gint subtype, gpointer
 const gchar* vik_layer_sublayer_tooltip ( VikLayer *l, gint subtype, gpointer sublayer );
 
 const gchar* vik_layer_layer_tooltip ( VikLayer *l );
+
+gboolean vik_layer_selected ( VikLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
 
 /* TODO: put in layerspanel */
 GdkPixbuf *vik_layer_load_icon ( gint type );

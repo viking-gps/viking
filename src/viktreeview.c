@@ -327,9 +327,29 @@ static void select_cb(GtkTreeSelection *selection, gpointer data)
   VikLayer *vl;
   VikWindow * vw;
 
+  gpointer tmp_layer;
+  VikLayer *tmp_vl = NULL;
+  gint tmp_subtype = 0;
+  gint tmp_type = VIK_TREEVIEW_TYPE_LAYER;
+
   if (!gtk_tree_selection_get_selected(selection, NULL, &iter)) return;
   type = vik_treeview_item_get_type( vt, &iter);
 
+  /* Find the Sublayer type if possible */
+  tmp_layer = vik_treeview_item_get_pointer ( vt, &iter );
+  if (tmp_layer) {
+    if (type == VIK_TREEVIEW_TYPE_SUBLAYER) {
+      tmp_vl = VIK_LAYER(vik_treeview_item_get_parent(vt, &iter));
+      tmp_subtype = vik_treeview_item_get_data(vt, &iter);
+      tmp_type = VIK_TREEVIEW_TYPE_SUBLAYER;
+    }
+  }
+  else {
+    tmp_subtype = vik_treeview_item_get_data(vt, &iter);
+    tmp_type = VIK_TREEVIEW_TYPE_SUBLAYER;
+  }
+
+  /* Go up the tree to find the Vik Layer */
   while ( type != VIK_TREEVIEW_TYPE_LAYER ) {
     if ( ! vik_treeview_item_get_parent_iter ( vt, &iter, &parent ) )
       return;
@@ -341,6 +361,19 @@ static void select_cb(GtkTreeSelection *selection, gpointer data)
 
   vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl));
   vik_window_selected_layer(vw, vl);
+
+  if (tmp_vl == NULL)
+    tmp_vl = vl;
+  /* Apply settings now we have the all details  */
+  if ( vik_layer_selected ( tmp_vl,
+			    tmp_subtype,
+			    tmp_layer,
+			    tmp_type,
+			    vik_window_layers_panel(vw) ) ) {
+    /* Redraw required */
+    vik_layers_panel_emit_update ( vik_window_layers_panel(vw) );
+  }
+
 }
 
 static gboolean treeview_selection_filter(GtkTreeSelection *selection, GtkTreeModel *model, GtkTreePath *path, gboolean path_currently_selected, gpointer data)

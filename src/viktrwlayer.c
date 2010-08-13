@@ -75,11 +75,12 @@ static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove (
 #endif
 
 #define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=kml"
-#define VIK_TRW_LAYER_TRACK_GC 13
+#define VIK_TRW_LAYER_TRACK_GC 14
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
 #define VIK_TRW_LAYER_TRACK_GC_MAX 11
 #define VIK_TRW_LAYER_TRACK_GC_BLACK 12
+#define VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT 13
 
 #define DRAWMODE_BY_TRACK 0
 #define DRAWMODE_BY_VELOCITY 1
@@ -449,6 +450,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   vik_trw_layer_sublayer_toggle_visible,
   (VikLayerFuncSublayerTooltip)         trw_layer_sublayer_tooltip,
   (VikLayerFuncLayerTooltip)            trw_layer_layer_tooltip,
+  (VikLayerFuncLayerSelected)           vik_trw_layer_selected,
 
   (VikLayerFuncMarshall)                trw_layer_marshall,
   (VikLayerFuncUnmarshall)              trw_layer_unmarshall,
@@ -1071,13 +1073,34 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     drawstops = dp->vtl->drawstops;
   }
 
-  if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
-    dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_BLACK;
-
+  /* Current track - used for creation */
   if ( track == dp->vtl->current_track )
     main_gc = dp->vtl->current_track_gc;
-  else
-    main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+  else {
+    if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
+      /* Draw all tracks of the layer in special colour */
+      /* if track is member of selected layer or is the current selected track
+	 then draw in the highlight colour.
+	 NB this supercedes the drawmode */
+      if ( dp->vtl && ( ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ||
+			( dp->vtl->tracks == vik_window_get_selected_tracks ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ||
+			track == vik_window_get_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ) {
+	main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT);
+      }
+      else {
+	if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
+	  dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_BLACK;
+
+	main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+      }
+    }
+    else {
+      if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
+	dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_BLACK;
+	  
+      main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+    }
+  }
 
   if (list) {
     int x, y, oldx, oldy;
@@ -1201,7 +1224,8 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     }
   }
   if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
-    if ( ++(dp->track_gc_iter) >= VIK_TRW_LAYER_TRACK_GC )
+    /* NB Don't draw in the highlight colour gc */
+    if ( ++(dp->track_gc_iter) >= VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT )
       dp->track_gc_iter = 0;
 }
 
@@ -1293,6 +1317,19 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
 
         if ( x+(w/2) > 0 && y+(h/2) > 0 && x-(w/2) < dp->width && y-(h/2) < dp->height ) /* always draw within boundaries */
         {
+	  if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
+	    if ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
+		 dp->vtl->waypoints == vik_window_get_selected_waypoints ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
+		 wp == vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) {
+	      // Highlighted - so draw a little border around the chosen one
+	      // single line seems a little weak so draw 2 of them
+	      // Reuse track highlight ATM
+	      vik_viewport_draw_rectangle (dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT), FALSE,
+					   x - (w/2) - 1, y - (h/2) - 1, w + 2, h + 2 );
+	      vik_viewport_draw_rectangle (dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT), FALSE,
+					   x - (w/2) - 2, y - (h/2) - 2, w + 4, h + 4 );
+	    }
+	  }
           if ( dp->vtl->image_alpha == 255 )
             vik_viewport_draw_pixbuf ( dp->vp, pixbuf, 0, 0, x - (w/2), y - (h/2), w, h );
           else
@@ -1338,7 +1375,18 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
       else
         label_y = y - dp->vtl->wp_size - height - 2;
 
-      vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
+      if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
+	if ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
+	     dp->vtl->waypoints == vik_window_get_selected_waypoints ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
+	     wp == vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) )
+	  // Reuse track highlight ATM
+	  vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT), TRUE, label_x - 1, label_y-1,width+2,height+2);
+	else
+	  vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
+      }
+      else {
+	vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
+      }
       vik_viewport_draw_layout ( dp->vp, dp->vtl->waypoint_text_gc, label_x, label_y, dp->vtl->wplabellayout );
     }
   }
@@ -1416,6 +1464,8 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
   gc[11] = vik_viewport_new_gc ( vp, "#874200", width ); /* above range */
 
   gc[12] = vik_viewport_new_gc ( vp, "#000000", width ); /* black / no speed data */
+
+  gc[VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT] = vik_viewport_new_gc ( vp, "#EEA500", width ); /* Highlight colour (orange)*/
 
   g_array_append_vals ( vtl->track_gc, gc, VIK_TRW_LAYER_TRACK_GC );
 }
@@ -1728,6 +1778,68 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
   return NULL;
 }
 
+/**
+ * General layer selection function, find out which bit is selected and take appropriate action
+ */
+gboolean vik_trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp )
+{
+  switch ( type )
+    {
+    case VIK_TREEVIEW_TYPE_LAYER:
+      {
+	vik_window_set_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), l );
+	/* Mark for redraw */
+	return TRUE;
+      }
+      break;
+
+    case VIK_TREEVIEW_TYPE_SUBLAYER:
+      {
+	switch ( subtype )
+	  {
+	  case VIK_TRW_LAYER_SUBLAYER_TRACKS:
+	    {
+	      vik_window_set_selected_tracks ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), l->tracks );
+	      /* Mark for redraw */
+	      return TRUE;
+	    }
+	    break;
+	  case VIK_TRW_LAYER_SUBLAYER_TRACK:
+	    {
+	      vik_window_set_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->tracks, sublayer ) );
+	      /* Mark for redraw */
+	      return TRUE;
+	    }
+	    break;
+	  case VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
+	    {
+	      vik_window_set_selected_waypoints ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), l->waypoints );
+	      /* Mark for redraw */
+	      return TRUE;
+	    }
+	    break;
+	  case VIK_TRW_LAYER_SUBLAYER_WAYPOINT:
+	    {
+	      vik_window_set_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->waypoints, sublayer ) );
+	      /* Mark for redraw */
+	      return TRUE;
+	    }
+	    break;
+	  default:
+	    {
+	      return vik_window_clear_highlight ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l) );
+	    }
+	    break;
+	  }
+	return FALSE;
+      }
+      break;
+
+    default:
+      return vik_window_clear_highlight ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l) );
+      break;
+    }
+}
 
 GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l )
 {

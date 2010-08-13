@@ -201,6 +201,7 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncSublayerToggleVisible)   NULL,
   (VikLayerFuncSublayerTooltip)         NULL,
   (VikLayerFuncLayerTooltip)            gps_layer_tooltip,
+  (VikLayerFuncLayerSelected)           NULL,
 
   (VikLayerFuncMarshall)		gps_layer_marshall,
   (VikLayerFuncUnmarshall)		gps_layer_unmarshall,
