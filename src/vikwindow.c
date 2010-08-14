@@ -438,7 +438,7 @@ static void draw_redraw ( VikWindow *vw )
 
   if ( ! new_trigger )
     ; /* do nothing -- have to redraw everything. */
-  else if ( (old_trigger != new_trigger) || !vik_coord_equals(&old_center, &vw->trigger_center) )
+  else if ( (old_trigger != new_trigger) || !vik_coord_equals(&old_center, &vw->trigger_center) || (new_trigger->type == VIK_LAYER_AGGREGATE) )
     vik_viewport_set_trigger ( vw->viking_vvp, new_trigger ); /* todo: set to half_drawn mode if new trigger is above old */
   else
     vik_viewport_set_half_drawn ( vw->viking_vvp, TRUE );
