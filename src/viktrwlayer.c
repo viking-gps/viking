@@ -603,7 +603,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
                      trw_layer_new_track_gcs ( vtl, vp );
                    }
                    break;
-    case PARAM_BLT: if ( data.u > 0 && data.u <= 8 && data.u != vtl->bg_line_thickness )
+    case PARAM_BLT: if ( data.u >= 0 && data.u <= 8 && data.u != vtl->bg_line_thickness )
                    {
                      vtl->bg_line_thickness = data.u;
                      trw_layer_new_track_gcs ( vtl, vp );
