@@ -152,7 +152,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
   }
   g_mutex_unlock(mc_mutex);
 
-  if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d %u\n", queue_count, queue_size ); tmp=0; }
+  if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d size=%u\n", queue_count, queue_size ); tmp=0; }
 }
 
 GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint8 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
