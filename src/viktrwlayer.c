@@ -1412,7 +1412,7 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
   gc[9] = vik_viewport_new_gc ( vp, "#96059f", width );
   gc[10] = vik_viewport_new_gc ( vp, "#f22ef2", width );
 
-  gc[11] = vik_viewport_new_gc ( vp, "#ff0000", width ); /* above range */
+  gc[11] = vik_viewport_new_gc ( vp, "#874200", width ); /* above range */
 
   gc[12] = vik_viewport_new_gc ( vp, "#000000", width ); /* black / no speed data */
 
