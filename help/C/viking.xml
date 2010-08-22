@@ -43,6 +43,10 @@
         <firstname>Guilhem</firstname>
         <surname>Bonnefille</surname>
       </author>
+      <author>
+        <firstname>Rob</firstname>
+        <surname>Norris</surname>
+      </author>
       <!-- Contributors from the Wiki history -->
       <author>
         <firstname>username:</firstname>
@@ -174,7 +178,7 @@ drag and drop, or by selecting a layer and using the up and down
 buttons at the bottom of the layers panel.
 </para>
 <para>
-The main &appname; area where the layers are draw is called the <emphasis role="bold">viewport</emphasis>.
+The main &appname; area where the layers are drawn is called the <emphasis role="bold">viewport</emphasis>.
 </para>
 
 </section>
