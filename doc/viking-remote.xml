@@ -75,7 +75,7 @@ and docbook-xsl in your Build-Depends control field.
 
     <para>
   Viking is a free/open source program to manage GPS data. You can 
-  import and plot tracks and waypoints, show Google maps and/or 
+  import and plot tracks and waypoints, show OpenStreetMap (OSM) maps and/or 
   Terraserver maps under it, add coordinate lines, make new tracks 
   and waypoints, hide different things, etc. It is written in C 
   with the GTK+ 2 toolkit, available for Linux, other POSIX 
