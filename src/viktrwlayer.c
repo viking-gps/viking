@@ -4840,17 +4840,22 @@ static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp)
 typedef struct {
   VikTrwLayer *vtl;
   VikViewport *vvp;
-  gint x1,y1,x2,y2;
+  gint x1,y1,x2,y2,x3,y3;
+  gchar* str;
 } new_track_move_passalong_t;
 
 /* sync and undraw, but only when we have time */
 static gboolean ct_sync ( gpointer passalong )
 {
   new_track_move_passalong_t *p = (new_track_move_passalong_t *) passalong;
+
   vik_viewport_sync ( p->vvp );
   gdk_gc_set_function ( p->vtl->current_track_gc, GDK_INVERT );
   vik_viewport_draw_line ( p->vvp, p->vtl->current_track_gc, p->x1, p->y1, p->x2, p->y2 );
+  vik_viewport_draw_string (p->vvp, gdk_font_from_description (pango_font_description_from_string ("Sans 8")), p->vtl->current_track_gc, p->x3, p->y3, p->str);
   gdk_gc_set_function ( p->vtl->current_track_gc, GDK_COPY );
+
+  g_free ( p->str ) ;
   p->vtl->ct_sync_done = TRUE;
   g_free ( p );
   return FALSE;
@@ -4869,6 +4874,50 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     gdk_gc_set_function ( vtl->current_track_gc, GDK_INVERT );
     vik_viewport_coord_to_screen ( vvp, &(VIK_TRACKPOINT(iter->data)->coord), &x1, &y1 );
     vik_viewport_draw_line ( vvp, vtl->current_track_gc, x1, y1, event->x, event->y );
+
+    gchar str[128];
+
+    /* Find out actual distance of current track */
+    gdouble distance = vik_track_get_length (vtl->current_track);
+
+    // Now add distance to where the pointer is //
+    VikCoord coord;
+    struct LatLon ll;
+    vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
+    vik_coord_to_latlon ( &coord, &ll );
+    distance = distance + vik_coord_diff( &coord, &(VIK_TRACKPOINT(iter->data)->coord));
+
+    /* draw label with distance */
+    vik_units_distance_t dist_units = a_vik_get_units_distance ();
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_MILES:
+      if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
+	g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
+      } else if (distance < 1609.4) {
+	g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+      } else {
+	g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
+      }
+      break;
+    default:
+      // VIK_UNITS_DISTANCE_KILOMETRES
+      if (distance >= 1000 && distance < 100000) {
+	g_sprintf(str, "%3.2f km", distance/1000.0);
+      } else if (distance < 1000) {
+	g_sprintf(str, "%d m", (int)distance);
+      } else {
+	g_sprintf(str, "%d km", (int)distance/1000);
+      }
+      break;
+    }
+
+    gint xd,yd;
+    /* offset from cursor a bit */
+    xd = event->x + 10;
+    yd = event->y - 10;
+    /* note attempted setting text using pango layouts - but the 'undraw' technique didn't work */
+    vik_viewport_draw_string (vvp, gdk_font_from_description (pango_font_description_from_string ("Sans 8")), vtl->current_track_gc, xd, yd, str);
+
     gdk_gc_set_function ( vtl->current_track_gc, GDK_COPY );
 
     passalong = g_new(new_track_move_passalong_t,1); /* freed by sync */
@@ -4878,6 +4927,9 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     passalong->y1 = y1;
     passalong->x2 = event->x;
     passalong->y2 = event->y;
+    passalong->x3 = xd;
+    passalong->y3 = yd;
+    passalong->str = g_strdup (str);
 
     /* this will sync and undraw when we have time to */
     g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, ct_sync, passalong, NULL);
