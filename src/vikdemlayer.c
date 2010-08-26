@@ -83,7 +83,7 @@ static void dem24k_draw_existence ( VikViewport *vp );
 #endif
 
 static VikLayerParamScale param_scales[] = {
-  { 1, 10000, 10, 1 },
+  { 0, 10000, 10, 1 },
   { 1, 10000, 10, 1 },
   { 1, 10, 1, 0 },
 };
