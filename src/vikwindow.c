@@ -2238,8 +2238,8 @@ static GtkRadioActionEntry tool_entries[] = {
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ShowScale", NULL,                        N_("_Show Scale"),               NULL,         N_("Show Scale"),                                           (GCallback)set_draw_scale, TRUE   },
-  { "ShowCenterMark", NULL,                   N_("Show _Center Mark"),         NULL,         N_("Show Center Mark"),                                           (GCallback)set_draw_centermark, TRUE   },
+  { "ShowScale", NULL,                        N_("_Show Scale"),               "F5",         N_("Show Scale"),                                           (GCallback)set_draw_scale, TRUE   },
+  { "ShowCenterMark", NULL,                   N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                                           (GCallback)set_draw_centermark, TRUE   },
   { "FullScreen",    GTK_STOCK_FULLSCREEN,    N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),                                           (GCallback)full_screen_cb, FALSE },
   { "ViewSidePanel", GTK_STOCK_INDEX,   N_("Show Side Panel"),                 "F9",         N_("Show Side Panel"),                                           (GCallback)view_side_panel_cb, TRUE    },
 };
