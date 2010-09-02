@@ -522,9 +522,10 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 
           if(vdl->type == DEM_TYPE_HEIGHT) {
             if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev )
-              elev=vdl->min_elev;
+              // Prevent 'elev - vdl->min_elev' from being negative so can safely use as array index
+              elev = ceil ( vdl->min_elev );
             if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
-              elev=vdl->max_elev;
+              elev = vdl->max_elev;
           }
 
           {
@@ -560,13 +561,14 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 		change = change / ((skip_factor > 1) ? log(skip_factor) : 0.55); // FIXME: better calc.
 
                 if(change < vdl->min_elev)
-                  change = vdl->min_elev;
+                  // Prevent 'change - vdl->min_elev' from being negative so can safely use as array index
+                  change = ceil ( vdl->min_elev );
 
                 if(change > vdl->max_elev)
                   change = vdl->max_elev;
 
                 // void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 );
-                vik_viewport_draw_rectangle(vp, vdl->gcsgradient[(gint)floor((change - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_GRADIENT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
+                vik_viewport_draw_rectangle(vp, vdl->gcsgradient[(gint)floor(((change - vdl->min_elev)/(vdl->max_elev - vdl->min_elev))*(DEM_N_GRADIENT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
               }
             } else {
               if(vdl->type == DEM_TYPE_HEIGHT) {
@@ -575,7 +577,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
                 else if ( elev <= 0 )
                   vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, box_x, box_y, box_width, box_height);
                 else
-                  vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
+                  vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev))*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
               }
             }
           }
