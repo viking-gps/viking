@@ -526,17 +526,18 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
   if ( type == VIK_TREEVIEW_TYPE_LAYER )
   {
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
-
     if ( parent )
     {
-
       /* reset trigger if trigger deleted */
       if ( vik_layers_panel_get_selected ( vlp ) == vik_viewport_get_trigger ( vlp->vvp ) )
         vik_viewport_set_trigger ( vlp->vvp, NULL );
 
       a_clipboard_copy_selected ( vlp );
-      if ( vik_aggregate_layer_delete ( parent, &iter ) )
-        vik_layers_panel_emit_update ( vlp );
+
+      if (IS_VIK_AGGREGATE_LAYER(parent)) {
+	if ( vik_aggregate_layer_delete ( parent, &iter ) )
+	  vik_layers_panel_emit_update ( vlp );
+      }
     }
     else
       a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("You cannot cut the Top Layer.") );
