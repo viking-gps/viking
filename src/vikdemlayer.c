@@ -82,9 +82,10 @@ static void srtm_draw_existence ( VikViewport *vp );
 static void dem24k_draw_existence ( VikViewport *vp );
 #endif
 
+/* Upped upper limit incase units are feet */
 static VikLayerParamScale param_scales[] = {
-  { 0, 10000, 10, 1 },
-  { 1, 10000, 10, 1 },
+  { 0, 30000, 10, 1 },
+  { 1, 30000, 10, 1 },
   { 1, 10, 1, 0 },
 };
 
@@ -294,8 +295,22 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
     case PARAM_COLOR: if ( vdl->color ) g_free ( vdl->color ); vdl->color = g_strdup ( data.s ); break;
     case PARAM_SOURCE: vdl->source = data.u; break;
     case PARAM_TYPE: vdl->type = data.u; break;
-    case PARAM_MIN_ELEV: vdl->min_elev = data.d; break;
-    case PARAM_MAX_ELEV: vdl->max_elev = data.d; break;
+    case PARAM_MIN_ELEV:
+      /* Convert to store internally
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        vdl->min_elev = data.d / 3.2808399;
+      else
+        vdl->min_elev = data.d;
+      break;
+    case PARAM_MAX_ELEV:
+      /* Convert to store internally
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+         vdl->max_elev = data.d / 3.2808399;
+      else
+        vdl->max_elev = data.d;
+      break;
     case PARAM_LINE_THICKNESS: if ( data.u >= 1 && data.u <= 15 ) vdl->line_thickness = data.u; break;
     case PARAM_FILES: a_dems_load_list ( &(data.sl) ); a_dems_list_free ( vdl->files ); vdl->files = data.sl; break;
   }
@@ -311,8 +326,22 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gbo
     case PARAM_SOURCE: rv.u = vdl->source; break;
     case PARAM_TYPE: rv.u = vdl->type; break;
     case PARAM_COLOR: rv.s = vdl->color ? vdl->color : ""; break;
-    case PARAM_MIN_ELEV: rv.d = vdl->min_elev; break;
-    case PARAM_MAX_ELEV: rv.d = vdl->max_elev; break;
+    case PARAM_MIN_ELEV:
+      /* Convert for display in desired units
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        rv.d = vdl->min_elev * 3.2808399;
+      else
+        rv.d = vdl->min_elev;
+      break;
+    case PARAM_MAX_ELEV:
+      /* Convert for display in desired units
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        rv.d = vdl->max_elev * 3.2808399;
+      else
+        rv.d = vdl->max_elev;
+      break;
     case PARAM_LINE_THICKNESS: rv.i = vdl->line_thickness; break;
   }
   return rv;
