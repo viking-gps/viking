@@ -61,6 +61,19 @@ void vik_window_set_redraw_trigger(struct _VikLayer *vl);
 
 void vik_window_enable_layer_tool ( VikWindow *vw, gint layer_id, gint tool_id );
 
+gpointer vik_window_get_selected_trw_layer ( VikWindow *vw ); /* return type VikTrwLayer */
+void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl ); /* input VikTrwLayer */
+gpointer vik_window_get_selected_tracks ( VikWindow *vw ); /* return type GList */
+void vik_window_set_selected_tracks ( VikWindow *vw, gpointer gl ); /* input GList */
+gpointer vik_window_get_selected_track ( VikWindow *vw ); /* return type VikTrack */
+void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt ); /* input VikTrack */
+gpointer vik_window_get_selected_waypoints ( VikWindow *vw ); /* return type GList */
+void vik_window_set_selected_waypoints ( VikWindow *vw, gpointer gl ); /* input GList */
+gpointer vik_window_get_selected_waypoint ( VikWindow *vw ); /* return type VikWaypoint */
+void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp ); /* input VikWaypoint */
+/* return indicates if a redraw is necessary */
+gboolean vik_window_clear_highlight ( VikWindow *vw );
+
 G_END_DECLS
 
 #define VIK_WINDOW_FROM_WIDGET(x) VIK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(x)))

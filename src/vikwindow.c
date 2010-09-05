@@ -168,6 +168,14 @@ struct _VikWindow {
   /* half-drawn update */
   VikLayer *trigger;
   VikCoord trigger_center;
+
+  /* Store at this level for highlighted selection drawing since it applies to the viewport and the layers panel */
+  /* Only one of these items can be selected at the same time */
+  gpointer selected_vtl; /* notionally VikTrwLayer */
+  gpointer selected_tracks; /* notionally GList */
+  gpointer selected_track; /* notionally VikTrack */
+  gpointer selected_waypoints; /* notionally GList */
+  gpointer selected_waypoint; /* notionally VikWaypoint */
 };
 
 enum {
@@ -2524,3 +2532,102 @@ register_vik_icons (GtkIconFactory *icon_factory)
   }
 }
 
+gpointer vik_window_get_selected_trw_layer ( VikWindow *vw )
+{
+  return vw->selected_vtl;
+}
+
+void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
+{
+  vw->selected_vtl = vtl;
+  /* Clear others */
+  vw->selected_track     = NULL;
+  vw->selected_tracks    = NULL;
+  vw->selected_waypoint  = NULL;
+  vw->selected_waypoints = NULL;
+}
+
+gpointer vik_window_get_selected_tracks ( VikWindow *vw )
+{
+  return vw->selected_tracks;
+}
+
+void vik_window_set_selected_tracks ( VikWindow *vw, gpointer gl )
+{
+  vw->selected_tracks = gl;
+  /* Clear others */
+  vw->selected_vtl       = NULL;
+  vw->selected_track     = NULL;
+  vw->selected_waypoint  = NULL;
+  vw->selected_waypoints = NULL;
+}
+
+gpointer vik_window_get_selected_track ( VikWindow *vw )
+{
+  return vw->selected_track;
+}
+
+void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt )
+{
+  vw->selected_track = vt;
+  /* Clear others */
+  vw->selected_vtl       = NULL;
+  vw->selected_tracks    = NULL;
+  vw->selected_waypoint  = NULL;
+  vw->selected_waypoints = NULL;
+}
+gpointer vik_window_get_selected_waypoints ( VikWindow *vw )
+{
+  return vw->selected_waypoints;
+}
+
+void vik_window_set_selected_waypoints ( VikWindow *vw, gpointer gl )
+{
+  vw->selected_waypoints = gl;
+  /* Clear others */
+  vw->selected_vtl       = NULL;
+  vw->selected_track     = NULL;
+  vw->selected_tracks    = NULL;
+  vw->selected_waypoint  = NULL;
+}
+
+gpointer vik_window_get_selected_waypoint ( VikWindow *vw )
+{
+  return vw->selected_waypoint;
+}
+
+void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp )
+{
+  vw->selected_waypoint = vwp;
+  /* Clear others */
+  vw->selected_vtl       = NULL;
+  vw->selected_track     = NULL;
+  vw->selected_tracks    = NULL;
+  vw->selected_waypoints = NULL;
+}
+
+gboolean vik_window_clear_highlight ( VikWindow *vw )
+{
+  gboolean need_redraw = FALSE;
+  if ( vw->selected_vtl != NULL ) {
+    vw->selected_vtl = NULL;
+    need_redraw = TRUE;
+  }
+  if ( vw->selected_track != NULL ) {
+    vw->selected_track = NULL;
+    need_redraw = TRUE;
+  }
+  if ( vw->selected_tracks != NULL ) {
+    vw->selected_tracks = NULL;
+    need_redraw = TRUE;
+  }
+  if ( vw->selected_waypoint != NULL ) {
+    vw->selected_waypoint = NULL;
+    need_redraw = TRUE;
+  }
+  if ( vw->selected_waypoints != NULL ) {
+    vw->selected_waypoints = NULL;
+    need_redraw = TRUE;
+  }
+  return need_redraw;
+}
