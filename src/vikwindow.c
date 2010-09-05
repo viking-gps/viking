@@ -536,8 +536,12 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
     interpol_method = VIK_DEM_INTERPOL_SIMPLE;
   else
     interpol_method = VIK_DEM_INTERPOL_BEST;
-  if ((alt = a_dems_get_elev_by_coord(&coord, interpol_method)) != VIK_DEM_INVALID_ELEVATION)
-    g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dm"), lat, lon, alt );
+  if ((alt = a_dems_get_elev_by_coord(&coord, interpol_method)) != VIK_DEM_INVALID_ELEVATION) {
+    if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_METRES )
+      g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dm"), lat, lon, alt );
+    else
+      g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dft"), lat, lon, (int)(alt*3.2808399) );
+  }
   else
     g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s"), lat, lon );
   g_free (lat);
