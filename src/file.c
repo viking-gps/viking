@@ -152,7 +152,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
     guint16 i, params_count = vik_layer_get_interface(l->type)->params_count;
     for ( i = 0; i < params_count; i++ )
     {
-      data = get_param(l,i);
+      data = get_param(l, i, TRUE);
       file_write_layer_param(f, params[i].name, params[i].type, data);
     }
   }
@@ -259,7 +259,7 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
 {
   VikLayerParamData x;
   x.sl = list;
-  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1] );
+  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1], TRUE );
 }
 
 static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
@@ -477,7 +477,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
                 /* STRING or STRING_LIST -- if STRING_LIST, just set param to add a STRING */
                 default: x.s = line;
               }
-              vik_layer_set_param ( VIK_LAYER(stack->data), i, x, vp );
+              vik_layer_set_param ( VIK_LAYER(stack->data), i, x, vp, TRUE );
             }
             found_match = TRUE;
             break;

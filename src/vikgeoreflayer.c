@@ -45,8 +45,8 @@ enum { PARAM_IMAGE = 0, PARAM_CE, PARAM_CN, PARAM_ME, PARAM_MN, NUM_PARAMS };
 
 static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len );
 static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp );
-static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id );
+static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id, gboolean is_file_operation );
 VikGeorefLayer *georef_layer_new ( );
 VikGeorefLayer *georef_layer_create ( VikViewport *vp );
 static void georef_layer_free ( VikGeorefLayer *vgl );
@@ -177,7 +177,7 @@ static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewp
   return rv;
 }
 
-static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp )
+static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
   {
@@ -190,7 +190,7 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLay
   return TRUE;
 }
 
-static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id )
+static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )

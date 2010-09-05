@@ -59,8 +59,8 @@ static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
 
 static void gps_layer_marshall( VikGpsLayer *val, guint8 **data, gint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp );
-static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id );
+static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation );
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *val, VikCoordMode mode );
 static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
@@ -371,7 +371,7 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
 #undef alm_next
 }
 
-static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp )
+static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
   {
@@ -431,7 +431,7 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
   return TRUE;
 }
 
-static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
+static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )

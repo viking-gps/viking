@@ -32,8 +32,8 @@
 
 static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len );
 static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp );
-static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id );
+static gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id, gboolean is_file_operation );
 static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp, const gchar *color );
 static void coord_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
 
@@ -143,7 +143,7 @@ static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewpor
   return rv;
 }
 
-gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp )
+gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
   {
@@ -154,7 +154,7 @@ gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamDa
   return TRUE;
 }
 
-static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id )
+static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )

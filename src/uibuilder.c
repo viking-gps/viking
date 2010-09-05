@@ -252,12 +252,12 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
 
 
 gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
-			guint16 params_count, gchar **groups, guint8 groups_count,
-			gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer),
-			gpointer pass_along1, gpointer pass_along2,
-			VikLayerParamData (*getparam) (gpointer,guint16),
-			gpointer pass_along_getparam )
-				/* pass_along1 and pass_along2 are for set_param first and last params */
+				      guint16 params_count, gchar **groups, guint8 groups_count,
+				      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
+				      gpointer pass_along1, gpointer pass_along2,
+				      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
+				      gpointer pass_along_getparam )
+				      /* pass_along1 and pass_along2 are for set_param first and last params */
 {
   guint16 i, j, widget_count = 0;
   gboolean must_redraw = FALSE;
@@ -322,7 +322,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
         if ( tables )
           table = tables[MAX(0, params[i].group)]; /* round up NOT_IN_GROUP, that's not reasonable here */
 
-        widgets[j] = a_uibuilder_new_widget ( &(params[i]), getparam ( pass_along_getparam, i ) );
+        widgets[j] = a_uibuilder_new_widget ( &(params[i]), getparam ( pass_along_getparam, i, FALSE ) );
 
         g_assert ( widgets[j] != NULL );
 
@@ -341,8 +341,11 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
       {
         if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES )
         {
-          if ( setparam ( pass_along1, i,
-              a_uibuilder_widget_get_value ( widgets[j], &(params[i]) ), pass_along2 ) )
+          if ( setparam ( pass_along1,
+			  i,
+			  a_uibuilder_widget_get_value ( widgets[j], &(params[i]) ),
+			  pass_along2,
+			  FALSE ) )
             must_redraw = TRUE;
           j++;
         }

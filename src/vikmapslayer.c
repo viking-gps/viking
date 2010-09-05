@@ -99,8 +99,8 @@ static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.
 static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file);
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp );
-static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id );
+static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation );
+static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, gboolean is_file_operation );
 static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp );
 static VikMapsLayer *maps_layer_new ( VikViewport *vvp );
 static void maps_layer_free ( VikMapsLayer *vml );
@@ -439,7 +439,7 @@ static guint map_uniq_id_to_index ( guint uniq_id )
   return NUM_MAP_TYPES; /* no such thing */
 }
 
-static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp )
+static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation )
 {
   switch ( id )
   {
@@ -461,7 +461,7 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerPa
   return TRUE;
 }
 
-static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id )
+static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )

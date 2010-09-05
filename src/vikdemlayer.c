@@ -72,8 +72,8 @@
 
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp );
-static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id );
+static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation );
 static void dem_layer_update_gc ( VikDEMLayer *vdl, VikViewport *vp, const gchar *color );
 static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
 static void srtm_draw_existence ( VikViewport *vp );
@@ -287,7 +287,7 @@ static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *v
   return rv;
 }
 
-gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp )
+gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
   {
@@ -302,7 +302,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
   return TRUE;
 }
 
-static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id )
+static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )

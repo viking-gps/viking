@@ -248,8 +248,8 @@ static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len );
 static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 
-static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp );
-static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id );
+static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gboolean is_file_operation );
 
 static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len );
@@ -580,7 +580,7 @@ static void trw_layer_free_copied_item ( gint subtype, gpointer item )
   }
 }
 
-static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp )
+static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
   {
@@ -638,7 +638,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
   return TRUE;
 }
 
-static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id )
+static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )
