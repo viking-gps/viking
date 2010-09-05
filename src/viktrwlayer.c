@@ -209,9 +209,9 @@ struct DrawingParams {
 static void vik_trw_layer_set_menu_selection(VikTrwLayer *vtl, guint16);
 static guint16 vik_trw_layer_get_menu_selection(VikTrwLayer *vtl);
 
-static void trw_layer_delete_item ( gpointer *pass_along );
-static void trw_layer_copy_item_cb( gpointer *pass_along);
-static void trw_layer_cut_item_cb( gpointer *pass_along);
+static void trw_layer_delete_item ( gpointer pass_along[6] );
+static void trw_layer_copy_item_cb ( gpointer pass_along[6] );
+static void trw_layer_cut_item_cb ( gpointer pass_along[6] );
 
 static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct LatLon maxmin[2] );	
@@ -227,17 +227,18 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
 static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl );
 static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 
-static void goto_coord ( VikLayersPanel *vlp, const VikCoord *coord );
-static void trw_layer_goto_track_startpoint ( gpointer pass_along[5] );
+static void goto_coord ( gpointer *vlp, gpointer vvp, gpointer vl, const VikCoord *coord );
+static void trw_layer_goto_track_startpoint ( gpointer pass_along[6] );
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] );
-static void trw_layer_goto_track_max_speed ( gpointer pass_along[5] );
-static void trw_layer_goto_track_max_alt ( gpointer pass_along[5] );
-static void trw_layer_goto_track_min_alt ( gpointer pass_along[5] );
-static void trw_layer_auto_track_view ( gpointer pass_along[5] );
+static void trw_layer_goto_track_max_speed ( gpointer pass_along[6] );
+static void trw_layer_goto_track_max_alt ( gpointer pass_along[6] );
+static void trw_layer_goto_track_min_alt ( gpointer pass_along[6] );
+static void trw_layer_goto_track_center ( gpointer pass_along[6] );
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
+static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
-static void trw_layer_download_map_along_track_cb(gpointer pass_along[6]);
+static void trw_layer_download_map_along_track_cb (gpointer pass_along[6]);
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, const gchar* default_name, const gchar* trackname, guint file_type );
@@ -247,15 +248,14 @@ static void trw_layer_auto_waypoints_view ( gpointer lav[2] );
 static void trw_layer_auto_tracks_view ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
-static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 
 /* pop-up items */
-static void trw_layer_properties_item ( gpointer pass_along[5] );
-static void trw_layer_goto_waypoint ( gpointer pass_along[5] );
-static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[5] );
+static void trw_layer_properties_item ( gpointer pass_along[6] );
+static void trw_layer_goto_waypoint ( gpointer pass_along[6] );
+static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[6] );
 
-static void trw_layer_realize_waypoint ( gchar *name, VikWaypoint *wp, gpointer pass_along[4] );
-static void trw_layer_realize_track ( gchar *name, VikTrack *track, gpointer pass_along[4] );
+static void trw_layer_realize_waypoint ( gchar *name, VikWaypoint *wp, gpointer pass_along[5] );
+static void trw_layer_realize_track ( gchar *name, VikTrack *track, gpointer pass_along[5] );
 static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
 
 
@@ -503,7 +503,7 @@ GType vik_trw_layer_get_type ()
 
 static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer )
 {
-  static gpointer pass_along[5];
+  static gpointer pass_along[6];
   if (!sublayer) {
     return;
   }
@@ -513,13 +513,14 @@ static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublay
   pass_along[2] = GINT_TO_POINTER (subtype);
   pass_along[3] = sublayer;
   pass_along[4] = NULL;
+  pass_along[5] = NULL;
 
   trw_layer_delete_item ( pass_along );
 }
 
 static void trw_layer_cut_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer )
 {
-  static gpointer pass_along[5];
+  static gpointer pass_along[6];
   if (!sublayer) {
     return;
   }
@@ -529,12 +530,13 @@ static void trw_layer_cut_item ( VikTrwLayer *vtl, gint subtype, gpointer sublay
   pass_along[2] = GINT_TO_POINTER (subtype);
   pass_along[3] = sublayer;
   pass_along[4] = NULL;
+  pass_along[5] = NULL;
 
   trw_layer_copy_item_cb(pass_along);
   trw_layer_cut_item_cb(pass_along);
 }
 
-static void trw_layer_copy_item_cb( gpointer pass_along[5])
+static void trw_layer_copy_item_cb ( gpointer pass_along[6])
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
   gint subtype = GPOINTER_TO_INT (pass_along[2]);
@@ -550,7 +552,7 @@ static void trw_layer_copy_item_cb( gpointer pass_along[5])
   }
 }
 
-static void trw_layer_cut_item_cb( gpointer pass_along[5])
+static void trw_layer_cut_item_cb ( gpointer pass_along[6])
 {
   trw_layer_copy_item_cb(pass_along);
   trw_layer_delete_item(pass_along);
@@ -1498,7 +1500,7 @@ VikTrwLayer *vik_trw_layer_create ( VikViewport *vp )
   return rv;
 }
 
-static void trw_layer_realize_track ( gchar *name, VikTrack *track, gpointer pass_along[4] )
+static void trw_layer_realize_track ( gchar *name, VikTrack *track, gpointer pass_along[5] )
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
@@ -1515,7 +1517,7 @@ static void trw_layer_realize_track ( gchar *name, VikTrack *track, gpointer pas
     vik_treeview_item_set_visible ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[1], FALSE );
 }
 
-static void trw_layer_realize_waypoint ( gchar *name, VikWaypoint *wp, gpointer pass_along[4] )
+static void trw_layer_realize_waypoint ( gchar *name, VikWaypoint *wp, gpointer pass_along[5] )
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
@@ -1932,7 +1934,7 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] )
 {
   VikCoord coord;
   if ( vik_trw_layer_find_center ( VIK_TRW_LAYER(layer_and_vlp[0]), &coord ) )
-    goto_coord ( VIK_LAYERS_PANEL(layer_and_vlp[1]), &coord );
+    goto_coord ( layer_and_vlp[1], NULL, NULL, &coord );
   else
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("This layer has no waypoints or trackpoints.") );
 }
@@ -2595,7 +2597,7 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
-static void trw_layer_delete_item ( gpointer pass_along[5] )
+static void trw_layer_delete_item ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
   gboolean was_visible = FALSE;
@@ -2612,7 +2614,7 @@ static void trw_layer_delete_item ( gpointer pass_along[5] )
 }
 
 
-static void trw_layer_properties_item ( gpointer pass_along[5] )
+static void trw_layer_properties_item ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
   if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
@@ -2633,27 +2635,42 @@ static void trw_layer_properties_item ( gpointer pass_along[5] )
     if ( tr )
     {
       vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-		      vtl, tr,
-		      pass_along[1], /* vlp */ 
-		      pass_along[3]  /* track name */);
+				  vtl, tr,
+				  pass_along[1], /* vlp */
+				  pass_along[3],  /* track name */
+				  pass_along[5] );  /* vvp */
     }
   }
 }
 
-static void goto_coord ( VikLayersPanel *vlp, const VikCoord *coord )
+/*
+   Parameter 1 -> VikLayersPanel
+   Parameter 2 -> VikLayer
+   Parameter 3 -> VikViewport
+*/
+static void goto_coord ( gpointer *vlp, gpointer vl, gpointer vvp, const VikCoord *coord )
 {
-  vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), coord );
-  vik_layers_panel_emit_update ( vlp );
+  if ( vlp ) {
+    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport (VIK_LAYERS_PANEL(vlp)), coord );
+    vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vlp) );
+  }
+  else {
+    /* since vlp not set, vl & vvp should be valid instead! */
+    if ( vl && vvp ) {
+      vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), coord );
+      vik_layer_emit_update ( VIK_LAYER(vl) );
+    }
+  }
 }
 
-static void trw_layer_goto_track_startpoint ( gpointer pass_along[5] )
+static void trw_layer_goto_track_startpoint ( gpointer pass_along[6] )
 {
   GList *trps = ((VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ))->trackpoints;
   if ( trps && trps->data )
-    goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *) trps->data)->coord));
+    goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(((VikTrackpoint *) trps->data)->coord));
 }
 
-static void trw_layer_goto_track_center ( gpointer pass_along[5] )
+static void trw_layer_goto_track_center ( gpointer pass_along[6] )
 {
   /* FIXME: get this into viktrack.c, and should be ->trackpoints right? */
   GList **trps = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
@@ -2665,7 +2682,7 @@ static void trw_layer_goto_track_center ( gpointer pass_along[5] )
     average.lat = (maxmin[0].lat+maxmin[1].lat)/2;
     average.lon = (maxmin[0].lon+maxmin[1].lon)/2;
     vik_coord_load_from_latlon ( &coord, VIK_TRW_LAYER(pass_along[0])->coord_mode, &average );
-    goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &coord);
+    goto_coord ( pass_along[1], pass_along[0], pass_along[5], &coord);
   }
 }
 
@@ -2678,7 +2695,7 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
   vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK);
 
   if ( track->trackpoints )
-    goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
+    goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
 }
 
 /**
@@ -2696,7 +2713,7 @@ static void trw_layer_extend_track_end_ms ( gpointer pass_along[6] )
   vtl->magic_scissors_started = TRUE;
 
   if ( track->trackpoints )
-    goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &last_coord) ;
+    goto_coord ( pass_along[1], pass_along[0], pass_along[5], &last_coord) ;
 
 }
 
@@ -2715,31 +2732,31 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
   if ( !trps )
     return;
   trps = g_list_last(trps);
-  goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *) trps->data)->coord));
+  goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(((VikTrackpoint *) trps->data)->coord));
 }
 
-static void trw_layer_goto_track_max_speed ( gpointer pass_along[5] )
+static void trw_layer_goto_track_max_speed ( gpointer pass_along[6] )
 {
   VikTrackpoint* vtp = vik_track_get_tp_by_max_speed ( g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ) );
   if ( !vtp )
     return;
-  goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(vtp->coord));
+  goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(vtp->coord));
 }
 
-static void trw_layer_goto_track_max_alt ( gpointer pass_along[5] )
+static void trw_layer_goto_track_max_alt ( gpointer pass_along[6] )
 {
   VikTrackpoint* vtp = vik_track_get_tp_by_max_alt ( g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ) );
   if ( !vtp )
     return;
-  goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(vtp->coord));
+  goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(vtp->coord));
 }
 
-static void trw_layer_goto_track_min_alt ( gpointer pass_along[5] )
+static void trw_layer_goto_track_min_alt ( gpointer pass_along[6] )
 {
   VikTrackpoint* vtp = vik_track_get_tp_by_min_alt ( g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ) );
   if ( !vtp )
     return;
-  goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(vtp->coord));
+  goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(vtp->coord));
 }
 
 /* 
@@ -2752,9 +2769,11 @@ static void trw_layer_auto_track_view ( gpointer pass_along[5] )
   {
     struct LatLon maxmin[2] = { {0,0}, {0,0} };
     trw_layer_find_maxmin_tracks ( NULL, trps, maxmin );
-
-    trw_layer_zoom_to_show_latlons ( VIK_TRW_LAYER(pass_along[0]), vik_layers_panel_get_viewport (VIK_LAYERS_PANEL(pass_along[1])), maxmin );
-    vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(pass_along[1]) );
+    trw_layer_zoom_to_show_latlons ( VIK_TRW_LAYER(pass_along[0]), pass_along[5], maxmin );
+    if ( pass_along[1] )
+      vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(pass_along[1]) );
+    else
+      vik_layer_emit_update ( VIK_LAYER(pass_along[0]) );
   }
 }
 
@@ -3177,14 +3196,14 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
 /* end of split/merge routines */
 
 
-static void trw_layer_goto_waypoint ( gpointer pass_along[5] )
+static void trw_layer_goto_waypoint ( gpointer pass_along[6] )
 {
   VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->waypoints, pass_along[3] );
   if ( wp )
-    goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(wp->coord) );
+    goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(wp->coord) );
 }
 
-static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[5] )
+static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[6] )
 {
   gchar *webpage = g_strdup_printf("http://www.geocaching.com/seek/cache_details.aspx?wp=%s", (gchar *) pass_along[3] );
   open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), webpage);
@@ -3291,7 +3310,7 @@ static gboolean is_valid_geocache_name ( gchar *str )
   return len >= 3 && len <= 7 && str[0] == 'G' && str[1] == 'C' && isalnum(str[2]) && (len < 4 || isalnum(str[3])) && (len < 5 || isalnum(str[4])) && (len < 6 || isalnum(str[5])) && (len < 7 || isalnum(str[6]));
 }
 
-static void trw_layer_track_use_with_filter ( gpointer *pass_along )
+static void trw_layer_track_use_with_filter ( gpointer pass_along[6] )
 {
   gchar *track_name = (gchar *) pass_along[3];
   VikTrack *tr = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, track_name );
@@ -3304,7 +3323,7 @@ static gboolean is_valid_google_route ( VikTrwLayer *vtl, const gchar *track_nam
   return ( tr && tr->comment && strlen(tr->comment) > 7 && !strncmp(tr->comment, "from:", 5) );
 }
 
-static void trw_layer_track_google_route_webpage( gpointer *pass_along )
+static void trw_layer_track_google_route_webpage ( gpointer pass_along[6] )
 {
   gchar *track_name = (gchar *) pass_along[3];
   VikTrack *tr = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, track_name );
@@ -3322,7 +3341,7 @@ static void trw_layer_track_google_route_webpage( gpointer *pass_along )
 gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp )
 {
   static GtkTreeIter staticiter;
-  static gpointer pass_along[5];
+  static gpointer pass_along[6];
   GtkWidget *item;
   gboolean rv = FALSE;
 
@@ -3330,8 +3349,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
   pass_along[1] = vlp;
   pass_along[2] = GINT_TO_POINTER (subtype);
   pass_along[3] = sublayer;
-  staticiter = *iter; /* will exist after function has ended */
-  pass_along[4] = &staticiter;
+  if ( iter ) {
+    staticiter = *iter; /* will exist after function has ended */
+    pass_along[4] = &staticiter;
+  }
+  pass_along[5] = vvp;
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT || subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
   {
@@ -3476,10 +3498,13 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_mnemonic ( _("Down_load Maps Along Track...") );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_download_map_along_track_cb), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-    gtk_widget_show ( item );
+    /* ATM This function is only available via the layers panel, due to the method in finding out the maps in use */
+    if ( vlp ) {
+      item = gtk_menu_item_new_with_mnemonic ( _("Down_load Maps Along Track...") );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_download_map_along_track_cb), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+    }
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Apply DEM Data") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_apply_dem_data), pass_along );
@@ -3521,13 +3546,16 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = a_acquire_track_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(l)), vlp,
-				  vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)),
-				  g_hash_table_lookup ( l->tracks, (gchar *) sublayer ) );
-    if ( item ) {
-      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-      gtk_widget_show ( item );
-    }  
+    /* ATM This function is only available via the layers panel, due to needing a vlp */
+    if ( vlp ) {
+      item = a_acquire_track_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(l)), vlp,
+				    vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)),
+				    g_hash_table_lookup ( l->tracks, (gchar *) sublayer ) );
+      if ( item ) {
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show ( item );
+      }
+    }
   }
 
   return rv;
@@ -4817,7 +4845,7 @@ void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, g
   }
 }
 
-static void trw_layer_download_map_along_track_cb(gpointer pass_along[6])
+static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] )
 {
   VikMapsLayer *vml;
   gint selected_map, default_map;

@@ -126,7 +126,7 @@ static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
 
 #define MARGIN 70
 #define LINES 5
-static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_width, VikLayersPanel *vlp, VikTrack *tr, gboolean time_base)
+static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_width,  VikTrwLayer *vtl, VikLayersPanel *vlp, VikViewport *vvp, VikTrack *tr, gboolean time_base)
 {
   VikTrackpoint *trackpoint;
   gdouble x = event_x - img_width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
@@ -142,8 +142,16 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_wid
 
   if ( trackpoint ) {
     VikCoord coord = trackpoint->coord;
-    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord );
-    vik_layers_panel_emit_update ( vlp );
+    if ( vlp ) {
+      vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord );
+      vik_layers_panel_emit_update ( vlp );
+    }
+    else {
+      /* since vlp not set, vvp should be valid instead! */
+      if ( vvp )
+	vik_viewport_set_center_coord ( vvp, &coord );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+    }
   }
   return trackpoint;
 }
@@ -186,13 +194,13 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
 {
   VikTrack *tr = pass_along[0];
   VikLayersPanel *vlp = pass_along[1];
-  PropWidgets *widgets = pass_along[2];
+  VikViewport *vvp = pass_along[2];
+  PropWidgets *widgets = pass_along[3];
   GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
   GtkWidget *image = GTK_WIDGET(child->data);
   GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
 
-
-  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, vlp, tr, is_vt_graph);
+  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, widgets->vtl, vlp, vvp, tr, is_vt_graph);
   draw_graph_mark(image, event->x, event_box->allocation.width, window->style->black_gc,
       is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img);
   g_list_free(child);
@@ -253,7 +261,7 @@ static gboolean track_vt_click( GtkWidget *event_box, GdkEventButton *event, gpo
 void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
 {
   VikTrack *tr = pass_along[0];
-  PropWidgets *widgets = pass_along[2];
+  PropWidgets *widgets = pass_along[3];
   int mouse_x, mouse_y;
   GdkModifierType state;
 
@@ -290,7 +298,7 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
 void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
 {
   VikTrack *tr = pass_along[0];
-  PropWidgets *widgets = pass_along[2];
+  PropWidgets *widgets = pass_along[3];
   int mouse_x, mouse_y;
   GdkModifierType state;
 
@@ -350,7 +358,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_g
   }
 }
 
-GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpointer vlp, PropWidgets *widgets, gdouble *min_alt, gdouble *max_alt)
+GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpointer vlp, VikViewport *vvp, PropWidgets *widgets, gdouble *min_alt, gdouble *max_alt)
 {
   GdkPixmap *pix;
   GtkWidget *image;
@@ -448,10 +456,11 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
   g_object_unref ( G_OBJECT(dem_alt_gc) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
 
-  pass_along = g_malloc ( sizeof(gpointer) * 3 ); /* FIXME: mem leak -- never be freed */
+  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
   pass_along[0] = tr;
   pass_along[1] = vlp;
-  pass_along[2] = widgets;
+  pass_along[2] = vvp;
+  pass_along[3] = widgets;
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
@@ -466,7 +475,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
 }
 
 
-GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp, PropWidgets *widgets)
+GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp, VikViewport *vvp, PropWidgets *widgets)
 {
   GdkPixmap *pix;
   GtkWidget *image;
@@ -475,10 +484,11 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   GtkWidget *eventbox;
   gpointer *pass_along;
 
-  pass_along = g_malloc ( sizeof(gpointer) * 3 ); /* FIXME: mem leak -- never be freed */
+  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
   pass_along[0] = tr;
   pass_along[1] = vlp;
-  pass_along[2] = widgets;
+  pass_along[2] = vvp;
+  pass_along[3] = widgets;
 
   gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
   if ( speeds == NULL ) {
@@ -748,7 +758,7 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
   return vbox;
 }
 
-void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *track_name )
+void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *track_name, VikViewport *vvp )
 {
   /* FIXME: free widgets when destroy signal received */
   PropWidgets *widgets = prop_widgets_new();
@@ -776,8 +786,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   guint32 tp_count, seg_count;
 
   gdouble min_alt, max_alt;
-  GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr, vlp, widgets, &min_alt,&max_alt);
-  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp, widgets);
+  GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr, vlp, vvp, widgets, &min_alt, &max_alt);
+  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp, vvp, widgets);
   GtkWidget *graphs = gtk_notebook_new();
 
   widgets->elev_box = profile;
