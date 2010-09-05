@@ -182,6 +182,7 @@ struct _VikTrwLayer {
   gboolean has_verified_thumbnails;
 
   GtkMenu *wp_right_click_menu;
+  GtkMenu *track_right_click_menu;
 
   /* menu */
   VikStdLayerMenuItem menu_selection;
@@ -898,6 +899,7 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
   rv->drawlines = TRUE;
   rv->wplabellayout = NULL;
   rv->wp_right_click_menu = NULL;
+  rv->track_right_click_menu = NULL;
   rv->waypoint_gc = NULL;
   rv->waypoint_text_gc = NULL;
   rv->waypoint_bg_gc = NULL;
@@ -946,6 +948,9 @@ void vik_trw_layer_free ( VikTrwLayer *trwlayer )
 
   if ( trwlayer->wp_right_click_menu )
     g_object_ref_sink ( G_OBJECT(trwlayer->wp_right_click_menu) );
+
+  if ( trwlayer->track_right_click_menu )
+    gtk_object_sink ( GTK_OBJECT(trwlayer->track_right_click_menu) );
 
   if ( trwlayer->wplabellayout != NULL)
     g_object_unref ( G_OBJECT ( trwlayer->wplabellayout ) );
