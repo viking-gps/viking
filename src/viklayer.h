@@ -147,7 +147,7 @@ typedef guint16          (*VikLayerFuncGetMenuItemsSelection)          (VikLayer
 
 typedef void          (*VikLayerFuncAddMenuItems)          (VikLayer *,GtkMenu *,gpointer); /* gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerAddMenuItems)  (VikLayer *,GtkMenu *,gpointer, /* first gpointer is a VikLayersPanel */
-                                                            gint,gpointer,GtkTreeIter *);
+                                                            gint,gpointer,GtkTreeIter *,VikViewport *);
 typedef const gchar * (*VikLayerFuncSublayerRenameRequest) (VikLayer *,const gchar *,gpointer,
                                                             gint,VikViewport *,GtkTreeIter *); /* first gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerToggleVisible) (VikLayer *,gint,gpointer);
@@ -275,7 +275,7 @@ gboolean vik_layer_properties ( VikLayer *layer, gpointer vp );
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter * layer_iter );
 void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file );
 
-gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
+gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp );
 
 VikLayer *vik_layer_copy ( VikLayer *vl, gpointer vp );
 void      vik_layer_marshall ( VikLayer *vl, guint8 **data, gint *len );

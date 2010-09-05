@@ -431,10 +431,10 @@ void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp )
     vik_layer_interfaces[l->type]->add_menu_items ( l, menu, vlp );
 }
 
-gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter )
+gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp )
 {
   if ( vik_layer_interfaces[l->type]->sublayer_add_menu_items )
-    return vik_layer_interfaces[l->type]->sublayer_add_menu_items ( l, menu, vlp, subtype, sublayer, iter );
+    return vik_layer_interfaces[l->type]->sublayer_add_menu_items ( l, menu, vlp, subtype, sublayer, iter, vvp );
   return FALSE;
 }
 

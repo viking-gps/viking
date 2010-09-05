@@ -3317,8 +3317,9 @@ static void trw_layer_track_google_route_webpage( gpointer *pass_along )
   }
 }
 
-/* vlp can be NULL if necessary - i.e. right-click from a tool -- but be careful, some functions may try to use it */
-gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter )
+/* vlp can be NULL if necessary - i.e. right-click from a tool */
+/* viewpoint is now available instead */
+gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp )
 {
   static GtkTreeIter staticiter;
   static gpointer pass_along[5];
@@ -4063,7 +4064,7 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
     if ( vtl->wp_right_click_menu )
       g_object_ref_sink ( G_OBJECT(vtl->wp_right_click_menu) );
     vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
-    vik_trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_name, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name  ) );
+    vik_trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_name, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name ), vvp );
     gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
     vtl->waypoint_rightclick = FALSE;
   }
