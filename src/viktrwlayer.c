@@ -2118,7 +2118,7 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
     {
       vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(layer_and_vlp[1])), &(wp->coord) );
       vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(layer_and_vlp[1]) );
-      vik_treeview_select_iter ( VIK_LAYER(layer_and_vlp[0])->vt, g_hash_table_lookup ( VIK_TRW_LAYER(layer_and_vlp[0])->waypoints_iters, upname ) );
+      vik_treeview_select_iter ( VIK_LAYER(layer_and_vlp[0])->vt, g_hash_table_lookup ( VIK_TRW_LAYER(layer_and_vlp[0])->waypoints_iters, upname ), TRUE );
       break;
     }
 
@@ -2363,7 +2363,7 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
 #endif
       // Actual setting of visibility dependent on the waypoint
       vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
-      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter );
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter, TRUE );
       g_hash_table_insert ( vtl->waypoints_iters, name, iter );
     }
   }
@@ -2391,7 +2391,7 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 #endif
       // Actual setting of visibility dependent on the track
       vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
-      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter );
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter, TRUE );
       g_hash_table_insert ( vtl->tracks_iters, name, iter );
     }
   }
@@ -3998,7 +3998,7 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     vtl->current_wp_name = params.closest_wp_name;
 
     if ( params.closest_wp )
-      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name ) );
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name ), TRUE );
 
     /* could make it so don't update if old WP is off screen and new is null but oh well */
     vik_layer_emit_update ( VIK_LAYER(vtl) );
@@ -4347,7 +4347,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   {
     vtl->current_tpl = params.closest_tpl;
     vtl->current_tp_track_name = params.closest_track_name;
-    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, vtl->current_tp_track_name ) );
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, vtl->current_tp_track_name ), TRUE );
     trw_layer_tpwin_init ( vtl );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;

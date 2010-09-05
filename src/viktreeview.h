@@ -65,7 +65,7 @@ void vik_treeview_item_set_pointer ( VikTreeview *vt, GtkTreeIter *iter, gpointe
 
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter );
 
-void vik_treeview_select_iter ( VikTreeview *vt, GtkTreeIter *iter );
+void vik_treeview_select_iter ( VikTreeview *vt, GtkTreeIter *iter, gboolean view_all );
 gboolean vik_treeview_get_selected_iter ( VikTreeview *vt, GtkTreeIter *iter );
 
 void vik_treeview_item_set_name ( VikTreeview *vt, GtkTreeIter *iter, const gchar *to );

@@ -471,7 +471,7 @@ static void layers_move_item ( VikLayersPanel *vlp, gboolean up )
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
     return;
 
-  vik_treeview_select_iter ( vlp->vt, &iter ); /* cancel any layer-name editing going on... */
+  vik_treeview_select_iter ( vlp->vt, &iter, FALSE ); /* cancel any layer-name editing going on... */
 
   if ( vik_treeview_item_get_type ( vlp->vt, &iter ) == VIK_TREEVIEW_TYPE_LAYER )
   {

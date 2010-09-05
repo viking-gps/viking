@@ -478,9 +478,26 @@ gboolean vik_treeview_get_iter_at_pos ( VikTreeview *vt, GtkTreeIter *iter, gint
   return TRUE;
 }
 
-void vik_treeview_select_iter ( VikTreeview *vt, GtkTreeIter *iter )
+/* Option to ensure visible */
+void vik_treeview_select_iter ( VikTreeview *vt, GtkTreeIter *iter, gboolean view_all )
 {
-  gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( vt ) ), iter );
+  GtkTreeView *tree_view = GTK_TREE_VIEW ( vt );
+  GtkTreePath *path;
+
+  if ( view_all ) {
+    path = gtk_tree_model_get_path ( gtk_tree_view_get_model (tree_view), iter );
+    gtk_tree_view_expand_to_path ( tree_view, path );
+  }
+
+  gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( tree_view ), iter );
+
+  if ( view_all ) {
+    gtk_tree_view_scroll_to_cell  ( tree_view,
+				    path,
+				    gtk_tree_view_get_expander_column (tree_view),
+				    FALSE,
+				    0.0, 0.0 );
+  }
 }
 
 gboolean vik_treeview_get_selected_iter ( VikTreeview *vt, GtkTreeIter *iter )
