@@ -193,9 +193,10 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
       g_critical("Houston, we've had a problem. mode=%d", mode);
   }
 
-  fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\ndrawscale=%s\ndrawcentermark=%s\ndrawhighlight=%s\n",
+  fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\nhighlightcolor=%s\ndrawscale=%s\ndrawcentermark=%s\ndrawhighlight=%s\n",
       vik_viewport_get_xmpp ( VIK_VIEWPORT(vp) ), vik_viewport_get_ympp ( VIK_VIEWPORT(vp) ), ll.lat, ll.lon,
       modestring, vik_viewport_get_background_color(VIK_VIEWPORT(vp)),
+      vik_viewport_get_highlight_color(VIK_VIEWPORT(vp)),
       vik_viewport_get_draw_scale(VIK_VIEWPORT(vp)) ? "t" : "f",
       vik_viewport_get_draw_centermark(VIK_VIEWPORT(vp)) ? "t" : "f",
       vik_viewport_get_draw_highlight(VIK_VIEWPORT(vp)) ? "t" : "f" );
@@ -437,6 +438,8 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
         vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_LATLON );
       else if ( stack->under == NULL && eq_pos == 5 && strncasecmp ( line, "color", eq_pos ) == 0 )
         vik_viewport_set_background_color ( VIK_VIEWPORT(vp), line+6 );
+      else if ( stack->under == NULL && eq_pos == 14 && strncasecmp ( line, "highlightcolor", eq_pos ) == 0 )
+        vik_viewport_set_highlight_color ( VIK_VIEWPORT(vp), line+15 );
       else if ( stack->under == NULL && eq_pos == 9 && strncasecmp ( line, "drawscale", eq_pos ) == 0 )
         vik_viewport_set_draw_scale ( VIK_VIEWPORT(vp), TEST_BOOLEAN(line+10) );
       else if ( stack->under == NULL && eq_pos == 14 && strncasecmp ( line, "drawcentermark", eq_pos ) == 0 )

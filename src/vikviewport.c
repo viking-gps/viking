@@ -28,6 +28,8 @@
 #endif
 
 #define DEFAULT_BACKGROUND_COLOR "#CCCCCC"
+#define DEFAULT_HIGHLIGHT_COLOR "#EEA500"
+/* Default highlight in orange */
 
 #include <gtk/gtk.h>
 #ifdef HAVE_MATH_H
@@ -92,6 +94,8 @@ struct _VikViewport {
   gboolean draw_scale;
   gboolean draw_centermark;
   gboolean draw_highlight;
+  GdkGC *highlight_gc;
+  GdkColor highlight_color;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
@@ -194,6 +198,7 @@ static void viewport_init ( VikViewport *vvp )
   vvp->alpha_pixbuf_width = vvp->alpha_pixbuf_height = 0;
   vvp->utm_zone_width = 0.0;
   vvp->background_gc = NULL;
+  vvp->highlight_gc = NULL;
   vvp->scale_bg_gc = NULL;
 
   vvp->copyrights = NULL;
@@ -242,6 +247,39 @@ void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
   gdk_gc_set_rgb_fg_color ( vvp->background_gc, color );
 }
 
+GdkColor *vik_viewport_get_highlight_gdkcolor ( VikViewport *vvp )
+{
+  GdkColor *rv = g_malloc ( sizeof ( GdkColor ) );
+  *rv = vvp->highlight_color;
+  return rv;
+}
+
+/* returns pointer to internal static storage, changes next time function called, use quickly */
+const gchar *vik_viewport_get_highlight_color ( VikViewport *vvp )
+{
+  static gchar color[8];
+  g_snprintf(color, sizeof(color), "#%.2x%.2x%.2x", (int)(vvp->highlight_color.red/256),(int)(vvp->highlight_color.green/256),(int)(vvp->highlight_color.blue/256));
+  return color;
+}
+
+void vik_viewport_set_highlight_color ( VikViewport *vvp, const gchar *colorname )
+{
+  g_assert ( vvp->highlight_gc );
+  gdk_color_parse ( colorname, &(vvp->highlight_color) );
+  gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, &(vvp->highlight_color) );
+}
+
+void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor *color )
+{
+  g_assert ( vvp->highlight_gc );
+  vvp->highlight_color = *color;
+  gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, color );
+}
+
+GdkGC *vik_viewport_get_gc_highlight ( VikViewport *vvp )
+{
+  return vvp->highlight_gc;
+}
 
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness )
 {
@@ -312,6 +350,11 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
     vvp->background_gc = vik_viewport_new_gc ( vvp, DEFAULT_BACKGROUND_COLOR, 1 );
     vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR );
   }
+  if ( ! vvp->highlight_gc )
+  {
+    vvp->highlight_gc = vik_viewport_new_gc ( vvp, DEFAULT_HIGHLIGHT_COLOR, 1 );
+    vik_viewport_set_highlight_color ( vvp, DEFAULT_HIGHLIGHT_COLOR );
+  }
   if ( !vvp->scale_bg_gc) {
     vvp->scale_bg_gc = vik_viewport_new_gc(vvp, "grey", 3);
   }
@@ -336,6 +379,9 @@ static void viewport_finalize ( GObject *gob )
 
   if ( vvp->background_gc )
     g_object_unref ( G_OBJECT ( vvp->background_gc ) );
+
+  if ( vvp->highlight_gc )
+    g_object_unref ( G_OBJECT ( vvp->highlight_gc ) );
 
   if ( vvp->scale_bg_gc ) {
     g_object_unref ( G_OBJECT ( vvp->scale_bg_gc ) );

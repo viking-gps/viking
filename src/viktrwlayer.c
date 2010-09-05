@@ -75,12 +75,11 @@ static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove (
 #endif
 
 #define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=kml"
-#define VIK_TRW_LAYER_TRACK_GC 14
+#define VIK_TRW_LAYER_TRACK_GC 13
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
 #define VIK_TRW_LAYER_TRACK_GC_MAX 11
 #define VIK_TRW_LAYER_TRACK_GC_BLACK 12
-#define VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT 13
 
 #define DRAWMODE_BY_TRACK 0
 #define DRAWMODE_BY_VELOCITY 1
@@ -1085,7 +1084,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
       if ( dp->vtl && ( ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ||
 			( dp->vtl->tracks == vik_window_get_selected_tracks ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ||
 			track == vik_window_get_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ) {
-	main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT);
+	main_gc = vik_viewport_get_gc_highlight (dp->vp);
       }
       else {
 	if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
@@ -1224,8 +1223,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     }
   }
   if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
-    /* NB Don't draw in the highlight colour gc */
-    if ( ++(dp->track_gc_iter) >= VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT )
+    if ( ++(dp->track_gc_iter) >= VIK_TRW_LAYER_TRACK_GC )
       dp->track_gc_iter = 0;
 }
 
@@ -1323,10 +1321,9 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
 		 wp == vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) {
 	      // Highlighted - so draw a little border around the chosen one
 	      // single line seems a little weak so draw 2 of them
-	      // Reuse track highlight ATM
-	      vik_viewport_draw_rectangle (dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT), FALSE,
+	      vik_viewport_draw_rectangle (dp->vp, vik_viewport_get_gc_highlight (dp->vp), FALSE,
 					   x - (w/2) - 1, y - (h/2) - 1, w + 2, h + 2 );
-	      vik_viewport_draw_rectangle (dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT), FALSE,
+	      vik_viewport_draw_rectangle (dp->vp, vik_viewport_get_gc_highlight (dp->vp), FALSE,
 					   x - (w/2) - 2, y - (h/2) - 2, w + 4, h + 4 );
 	    }
 	  }
@@ -1375,12 +1372,12 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
       else
         label_y = y - dp->vtl->wp_size - height - 2;
 
+      /* if highlight mode on, then draw background text in highlight colour */
       if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
 	if ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
 	     dp->vtl->waypoints == vik_window_get_selected_waypoints ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
 	     wp == vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) )
-	  // Reuse track highlight ATM
-	  vik_viewport_draw_rectangle ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT), TRUE, label_x - 1, label_y-1,width+2,height+2);
+	  vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, label_x - 1, label_y-1,width+2,height+2);
 	else
 	  vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
       }
@@ -1464,8 +1461,6 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
   gc[11] = vik_viewport_new_gc ( vp, "#874200", width ); /* above range */
 
   gc[12] = vik_viewport_new_gc ( vp, "#000000", width ); /* black / no speed data */
-
-  gc[VIK_TRW_LAYER_TRACK_GC_HIGHLIGHT] = vik_viewport_new_gc ( vp, "#EEA500", width ); /* Highlight colour (orange)*/
 
   g_array_append_vals ( vtl->track_gc, gc, VIK_TRW_LAYER_TRACK_GC );
 }
