@@ -275,6 +275,7 @@ static void trw_layer_free_copied_item ( gint subtype, gpointer item );
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
 static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl );
@@ -472,6 +473,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncDragDropRequest)         trw_layer_drag_drop_request,
 
   (VikLayerFuncSelectClick)             trw_layer_select_click,
+  (VikLayerFuncSelectedViewportMenu)    trw_layer_show_selected_viewport_menu,
 };
 
 /* for copy & paste (I think?) */
@@ -3938,6 +3940,69 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   }
 
   /* these aren't the droids you're looking for */
+  return FALSE;
+}
+
+static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  if ( event->button != 3 )
+    return FALSE;
+
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+
+  if ( !vtl->tracks_visible && !vtl->waypoints_visible )
+    return FALSE;
+
+  /* Post menu for the currently selected item */
+
+  /* See if a track is selected */
+  VikTrack *track = (VikTrack*)vik_window_get_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) );
+  if ( track && track->visible ) {
+
+    if ( vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ) {
+
+      if ( vtl->track_right_click_menu )
+	gtk_object_sink ( GTK_OBJECT(vtl->track_right_click_menu) );
+
+      vtl->track_right_click_menu = GTK_MENU ( gtk_menu_new () );
+      
+      vik_trw_layer_sublayer_add_menu_items ( vtl,
+					      vtl->track_right_click_menu,
+					      NULL,
+					      VIK_TRW_LAYER_SUBLAYER_TRACK,
+					      vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ),
+					      g_hash_table_lookup ( vtl->tracks_iters, vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ),
+					      vvp);
+
+      gtk_menu_popup ( vtl->track_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+	
+      return TRUE;
+    }
+  }
+
+  /* See if a waypoint is selected */
+  VikWaypoint *waypoint = (VikWaypoint*)vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) );
+  if ( waypoint && waypoint->visible ) {
+    if ( vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ) {
+
+      if ( vtl->wp_right_click_menu )
+	gtk_object_sink ( GTK_OBJECT(vtl->wp_right_click_menu) );
+
+      vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
+      vik_trw_layer_sublayer_add_menu_items ( vtl,
+					      vtl->wp_right_click_menu,
+					      NULL,
+					      VIK_TRW_LAYER_SUBLAYER_WAYPOINT,
+					      vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ),
+					      g_hash_table_lookup ( vtl->waypoints_iters, vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ),
+					      vvp);
+      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+
+      return TRUE;
+    }
+  }
+
   return FALSE;
 }
 

@@ -234,6 +234,7 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncDragDropRequest)		NULL,
 
   (VikLayerFuncSelectClick)             NULL,
+  (VikLayerFuncSelectedViewportMenu)    NULL,
 };
 
 struct _VikDEMLayer {
