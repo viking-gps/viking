@@ -180,6 +180,8 @@ struct _VikWindow {
   gpointer selected_name; /* notionally gchar */
   ////// NEED TO THINK ABOUT VALIDITY OF THESE             //////
   ////// i.e. what happens when stuff is deleted elsewhere //////
+  ////// Generally seems alright as can not access them    //////
+  ////// containing_vtl now seems unecessary               //////
   /* For track(s) & waypoint(s) it is the layer they are in - this helps refering to the individual item easier */
   gpointer containing_vtl; /* notionally VikTrwLayer */
 };
@@ -188,6 +190,7 @@ enum {
  TOOL_PAN = 0,
  TOOL_ZOOM,
  TOOL_RULER,
+ TOOL_SELECT,
  TOOL_LAYER,
  NUMBER_OF_TOOLS
 };
@@ -200,7 +203,7 @@ enum {
 
 static guint window_signals[VW_LAST_SIGNAL] = { 0 };
 
-static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Pan"), N_("Zoom"), N_("Ruler") };
+static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Pan"), N_("Zoom"), N_("Ruler"), N_("Select") };
 
 GType vik_window_get_type (void)
 {
@@ -1092,6 +1095,88 @@ static VikToolInterface pan_tool =
     GDK_FLEUR };
 /*** end pan code ********************************************************/
 
+/********************************************************************************
+ ** Select tool code
+ ********************************************************************************/
+static gpointer selecttool_create (VikWindow *vw, VikViewport *vvp)
+{
+  return vw;
+}
+
+typedef struct {
+  gboolean cont;
+  VikViewport *vvp;
+  GdkEventButton *event;
+} clicker;
+
+static void click_layer_selected (VikLayer *vl, clicker *ck)
+{
+  /* Do nothing when function call returns true; */
+  /* i.e. stop on first found item */
+  if ( ck->cont )
+    if ( vl->visible )
+      if ( vik_layer_get_interface(vl->type)->select_request )
+	ck->cont = !vik_layer_get_interface(vl->type)->select_request ( vl, ck->event, ck->vvp );
+}
+
+static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+{
+  /* Only allow selection on primary button */
+  if ( event->button == 1 ) {
+    /* Enable click to apply callback to potentially all track/waypoint layers */
+    /* Useful as we can find things that aren't necessarily in the currently selected layer */
+    GList* gl = vik_layers_panel_get_all_layers_of_type ( vw->viking_vlp, VIK_LAYER_TRW );
+    clicker ck;
+    ck.cont = TRUE;
+    ck.vvp = vw->viking_vvp;
+    ck.event = event;
+    g_list_foreach ( gl, (GFunc) click_layer_selected, &ck );
+    g_list_free ( gl );
+
+    // If nothing found then deselect & redraw screen if necessary to remove the highlight
+    if ( ck.cont ) {
+      GtkTreeIter iter;
+      VikTreeview *vtv = vik_layers_panel_get_treeview ( vw->viking_vlp );
+
+      if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
+	// Only clear if selected thing is a TrackWaypoint layer or a sublayer
+	gint type = vik_treeview_item_get_type ( vtv, &iter );
+	if ( type == VIK_TREEVIEW_TYPE_SUBLAYER ||
+	     VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ))->type == VIK_LAYER_TRW ) {
+   
+	  vik_treeview_item_unselect ( vtv, &iter );
+	  if ( vik_window_clear_highlight ( vw ) )
+	    draw_update ( vw );
+	}
+      }
+    }
+  }
+  else if ( ( event->button == 3 ) && ( vl && ( vl->type == VIK_LAYER_TRW ) ) ) {
+    if ( vl->visible )
+      /* Act on currently selected item to show menu */
+      if ( ( vw->selected_track || vw->selected_waypoint ) && vw->selected_name )
+	if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
+	  vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, vw->viking_vvp );
+  }
+
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static VikToolInterface select_tool =
+  { "Select",
+    (VikToolConstructorFunc) selecttool_create,
+    (VikToolDestructorFunc) NULL,
+    (VikToolActivationFunc) NULL,
+    (VikToolActivationFunc) NULL,
+    (VikToolMouseFunc) selecttool_click,
+    (VikToolMouseMoveFunc) NULL,
+    (VikToolMouseFunc) NULL,
+    (VikToolKeyFunc) NULL,
+    GDK_LEFT_PTR,
+    NULL,
+    NULL };
+/*** end select tool code ********************************************************/
+
 static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
 {
   if (!strcmp(gtk_action_get_name(a), "PanNorth")) {
@@ -1440,6 +1525,9 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
   } 
   else if (!strcmp(gtk_action_get_name(a), "Ruler")) {
     vw->current_tool = TOOL_RULER;
+  }
+  else if (!strcmp(gtk_action_get_name(a), "Select")) {
+    vw->current_tool = TOOL_SELECT;
   }
   else {
     /* TODO: only enable tools from active layer */
@@ -2386,7 +2474,8 @@ static GtkRadioActionEntry mode_entries[] = {
 static GtkRadioActionEntry tool_entries[] = {
   { "Pan",      "vik-icon-pan",        N_("_Pan"),                         "<control><shift>P", N_("Pan Tool"),  0 },
   { "Zoom",      "vik-icon-zoom",        N_("_Zoom"),                         "<control><shift>Z", N_("Zoom Tool"),  1 },
-  { "Ruler",     "vik-icon-ruler",       N_("_Ruler"),                        "<control><shift>R", N_("Ruler Tool"), 2 }
+  { "Ruler",     "vik-icon-ruler",       N_("_Ruler"),                        "<control><shift>R", N_("Ruler Tool"), 2 },
+  { "Select",    "vik-icon-select",      N_("_Select"),                       "<control><shift>S", N_("Select Tool"), 3 }
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
@@ -2419,6 +2508,7 @@ static void window_create_ui( VikWindow *window )
   toolbox_add_tool(window->vt, &ruler_tool, TOOL_LAYER_TYPE_NONE);
   toolbox_add_tool(window->vt, &zoom_tool, TOOL_LAYER_TYPE_NONE);
   toolbox_add_tool(window->vt, &pan_tool, TOOL_LAYER_TYPE_NONE);
+  toolbox_add_tool(window->vt, &select_tool, TOOL_LAYER_TYPE_NONE);
 
   error = NULL;
   if (!(mid = gtk_ui_manager_add_ui_from_string (uim, menu_xml, -1, &error))) {
@@ -2534,6 +2624,7 @@ static struct {
   { &edwp_18_pixbuf,		"Edit Waypoint"     },
   { &zoom_18_pixbuf,		"vik-icon-zoom"     },
   { &ruler_18_pixbuf,		"vik-icon-ruler"    },
+  { &select_18_pixbuf,		"vik-icon-select"   },
   { &geozoom_18_pixbuf,		"Georef Zoom Tool"  },
   { &geomove_18_pixbuf,		"Georef Move Map"   },
   { &mapdl_18_pixbuf,		"Maps Download"     },

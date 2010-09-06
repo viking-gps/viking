@@ -216,6 +216,7 @@ ICONS = \
   showpic_18.png \
   zoom_18.png \
   iscissors_18.png \
+  select_18.png \
   thumbnails.png \
   vikaggregatelayer.png \
   vikcoordlayer.png \
