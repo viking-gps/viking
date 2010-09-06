@@ -176,6 +176,10 @@ struct _VikWindow {
   gpointer selected_track; /* notionally VikTrack */
   gpointer selected_waypoints; /* notionally GList */
   gpointer selected_waypoint; /* notionally VikWaypoint */
+  /* only use for individual track or waypoint */
+  gpointer selected_name; /* notionally gchar */
+  ////// NEED TO THINK ABOUT VALIDITY OF THESE             //////
+  ////// i.e. what happens when stuff is deleted elsewhere //////
   /* For track(s) & waypoint(s) it is the layer they are in - this helps refering to the individual item easier */
   gpointer containing_vtl; /* notionally VikTrwLayer */
 };
@@ -2565,6 +2569,7 @@ void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
+  vw->selected_name      = NULL;
 }
 
 gpointer vik_window_get_selected_tracks ( VikWindow *vw )
@@ -2581,6 +2586,7 @@ void vik_window_set_selected_tracks ( VikWindow *vw, gpointer gl, gpointer vtl )
   vw->selected_track     = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
+  vw->selected_name      = NULL;
 }
 
 gpointer vik_window_get_selected_track ( VikWindow *vw )
@@ -2588,10 +2594,11 @@ gpointer vik_window_get_selected_track ( VikWindow *vw )
   return vw->selected_track;
 }
 
-void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl )
+void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl, gpointer name )
 {
   vw->selected_track = vt;
   vw->containing_vtl = vtl;
+  vw->selected_name  = name;
   /* Clear others */
   vw->selected_vtl       = NULL;
   vw->selected_tracks    = NULL;
@@ -2612,6 +2619,7 @@ void vik_window_set_selected_waypoints ( VikWindow *vw, gpointer gl, gpointer vt
   vw->selected_track     = NULL;
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
+  vw->selected_name      = NULL;
 }
 
 gpointer vik_window_get_selected_waypoint ( VikWindow *vw )
@@ -2619,15 +2627,21 @@ gpointer vik_window_get_selected_waypoint ( VikWindow *vw )
   return vw->selected_waypoint;
 }
 
-void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer vtl )
+void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer vtl, gpointer name )
 {
   vw->selected_waypoint = vwp;
   vw->containing_vtl    = vtl;
+  vw->selected_name     = name;
   /* Clear others */
   vw->selected_vtl       = NULL;
   vw->selected_track     = NULL;
   vw->selected_tracks    = NULL;
   vw->selected_waypoints = NULL;
+}
+
+gpointer vik_window_get_selected_name ( VikWindow *vw )
+{
+  return vw->selected_name;
 }
 
 gboolean vik_window_clear_highlight ( VikWindow *vw )

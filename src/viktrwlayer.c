@@ -1812,7 +1812,7 @@ gboolean vik_trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublaye
 	    break;
 	  case VIK_TRW_LAYER_SUBLAYER_TRACK:
 	    {
-	      vik_window_set_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->tracks, sublayer ), l );
+	      vik_window_set_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->tracks, sublayer ), l, sublayer );
 	      /* Mark for redraw */
 	      return TRUE;
 	    }
@@ -1826,7 +1826,7 @@ gboolean vik_trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublaye
 	    break;
 	  case VIK_TRW_LAYER_SUBLAYER_WAYPOINT:
 	    {
-	      vik_window_set_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->waypoints, sublayer ), l );
+	      vik_window_set_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->waypoints, sublayer ), l, sublayer );
 	      /* Mark for redraw */
 	      return TRUE;
 	    }
