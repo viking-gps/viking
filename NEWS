@@ -1,3 +1,28 @@
+Viking 0.9.95 (2010-09-07)
+New features since 0.9.94
+* Add some function short cut key definitions to control showing of the center mark and scale viewport features.
+* [DOC] Replace Google with OSM capability in man pages.
+* When manually creating a track, automatically give it a default name.
+* [DOC] Add contributors from the Wiki(s) history.
+* Better dialog name when searching for a waypoint.
+* Change max cache time to 1 week.
+
+Fixes since 0.9.94
+* Prevent "Gtk-WARNING **: GtkSpinButton: setting an adjustment with non-zero page size is deprecated" messages.
+* Invalid number of arguments in call to a_http_download_get_u
+* Prevent crash when cut of a GPS track/waypoint layer is attempted via the layers buttons.
+* Prevent DEM layer colour indexing going negative and can crash on gradient view.
+* Fix DEM layer to show default sea level.
+* Fix track background thickness being able to set back to zero.
+* Fix internal tile locking
+* Fix top layer not drawn after made invisible and then back to being visible.
+* Fix impaired (drawcentermark setting bodged) vik file if saved with the top layer visibility turned off.
+* Fix syntax errors in help manual
+* Fix map drag and drop to show the correct whole map
+* Fix "Go to UTM" dialog title.
+* Fix first opening of a file which has spaces (or other interesting characters) via the recent files menu.
+* Fix unnamed_tracks / unnamed_waypoints misuse.
+
 Viking 0.9.94 (2010-06-10)
 New features since 0.9.93
 * Add knots as a speed unit option.
