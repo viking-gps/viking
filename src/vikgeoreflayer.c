@@ -125,6 +125,8 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
   (VikLayerFuncDragDropRequest)		NULL,
+
+  (VikLayerFuncSelectClick)             NULL,
 };
 
 struct _VikGeorefLayer {

@@ -81,6 +81,8 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
   (VikLayerFuncDragDropRequest)		aggregate_layer_drag_drop_request,
+
+  (VikLayerFuncSelectClick)             NULL,
 };
 
 struct _VikAggregateLayer {

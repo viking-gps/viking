@@ -101,6 +101,8 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
   (VikLayerFuncDragDropRequest)		NULL,
+
+  (VikLayerFuncSelectClick)             NULL,
 };
 
 struct _VikCoordLayer {

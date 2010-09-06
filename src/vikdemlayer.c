@@ -232,6 +232,8 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
   (VikLayerFuncDragDropRequest)		NULL,
+
+  (VikLayerFuncSelectClick)             NULL,
 };
 
 struct _VikDEMLayer {

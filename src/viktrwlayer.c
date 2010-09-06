@@ -274,6 +274,8 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
+static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+
 static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
@@ -468,6 +470,8 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncFreeCopiedItem)          trw_layer_free_copied_item,
   
   (VikLayerFuncDragDropRequest)         trw_layer_drag_drop_request,
+
+  (VikLayerFuncSelectClick)             trw_layer_select_click,
 };
 
 /* for copy & paste (I think?) */
@@ -2509,7 +2513,6 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
   }
 }
 
-
 gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name )
 {
   VikTrack *t = g_hash_table_lookup ( vtl->tracks, trk_name );
@@ -2518,11 +2521,11 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name )
   {
     GtkTreeIter *it;
     was_visible = t->visible;
-    if ( t == vtl->current_track )
+    if ( t == vtl->current_track ) {
       vtl->current_track = NULL;
+    }
     if ( t == vtl->magic_scissors_current_track )
       vtl->magic_scissors_current_track = NULL;
-
     /* could be current_tp, so we have to check */
     trw_layer_cancel_tps_of_track ( vtl, trk_name );
 
@@ -3882,6 +3885,62 @@ static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikVie
   return params.closest_wp;
 }
 
+/*
+  Returns true if a waypoint or track is found near the requested event position for this particular layer
+  The item found is automatically selected
+  This is a tool like feature but routed via the layer interface, since it's instigated by a 'global' layer tool in vikwindow.c
+ */
+static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  if ( event->button != 1 )
+    return FALSE;
+
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+
+  if ( !vtl->tracks_visible && !vtl->waypoints_visible )
+    return FALSE;
+
+  /* Go for waypoints first as these often will be near a track, but it's likely the wp is wanted rather then the track */
+
+  if (vtl->waypoints_visible) {
+    WPSearchParams wp_params;
+    wp_params.vvp = vvp;
+    wp_params.x = event->x;
+    wp_params.y = event->y;
+    wp_params.closest_wp_name = NULL;
+    wp_params.closest_wp = NULL;
+
+    g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &wp_params);
+
+    if ( wp_params.closest_wp )  {
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->waypoints_iters, wp_params.closest_wp_name ), TRUE );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      return TRUE;
+    }
+  }
+
+  if (vtl->tracks_visible) {
+    TPSearchParams tp_params;
+    tp_params.vvp = vvp;
+    tp_params.x = event->x;
+    tp_params.y = event->y;
+    tp_params.closest_track_name = NULL;
+    tp_params.closest_tp = NULL;
+
+    g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &tp_params);
+
+    if ( tp_params.closest_tp )  {
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, tp_params.closest_track_name ), TRUE );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      return TRUE;
+    }
+  }
+
+  /* these aren't the droids you're looking for */
+  return FALSE;
+}
+
 /* background drawing hook, to be passed the viewport */
 static gboolean tool_sync_done = TRUE;
 
@@ -4267,7 +4326,6 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
   return TRUE;
 }
-
 
 /*** New waypoint ****/
 

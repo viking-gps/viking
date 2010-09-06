@@ -218,6 +218,8 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
   (VikLayerFuncDragDropRequest)		gps_layer_drag_drop_request,
+
+  (VikLayerFuncSelectClick)             NULL,
 };
 
 enum {TRW_DOWNLOAD=0, TRW_UPLOAD,
