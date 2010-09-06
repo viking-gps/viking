@@ -1930,7 +1930,7 @@ msgstr "Neue Datei"
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
-msgstr ""
+msgstr "_Öffnen..."
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
@@ -1942,7 +1942,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2154
 msgid "Append _File..."
-msgstr ""
+msgstr "Datei a_nfügen..."
 
 #: ../src/vikwindow.c:2154
 msgid "Append data from a different file"
@@ -1954,7 +1954,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "Von _GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -1962,7 +1962,7 @@ msgstr "Daten von GPS-Gerät übertragen"
 
 #: ../src/vikwindow.c:2157
 msgid "Google _Directions..."
-msgstr ""
+msgstr "Google-_Verzeichnisse..."
 
 #: ../src/vikwindow.c:2157
 msgid "Get driving directions from Google"
@@ -1970,7 +1970,7 @@ msgstr "Fahrtrichtung von Google beziehen"
 
 #: ../src/vikwindow.c:2159
 msgid "Geo_caches..."
-msgstr ""
+msgstr "Geo_caches..."
 
 #: ../src/vikwindow.c:2159
 msgid "Get Geocaches from geocaching.com"
@@ -1986,7 +1986,7 @@ msgstr "Datei speichern"
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
-msgstr ""
+msgstr "Speichern _unter..."
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"
@@ -1994,7 +1994,7 @@ msgstr "Datei unter anderem Namen Speichern"
 
 #: ../src/vikwindow.c:2163
 msgid "_Generate Image File..."
-msgstr ""
+msgstr "Bild-Datei _erzeugen..."
 
 #: ../src/vikwindow.c:2163
 msgid "Save a snapshot of the workspace into a file"
@@ -2002,7 +2002,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2164
 msgid "Generate _Directory of Images..."
-msgstr ""
+msgstr "Bild-_Verzeichnis erzeugen..."
 
 #: ../src/vikwindow.c:2164
 msgid "FIXME:IMGDIR"
@@ -2050,7 +2050,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "_Gehe zu Lat/Lon ..."
 
 #: ../src/vikwindow.c:2175
 msgid "Go to arbitrary lat/lon coordinate"

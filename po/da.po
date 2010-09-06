@@ -1906,7 +1906,7 @@ msgstr "Ny fil"
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
-msgstr ""
+msgstr "_Åbn..."
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
@@ -1930,7 +1930,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "Fra _GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -1946,7 +1946,7 @@ msgstr "Få kørselsanvisninger fra Google"
 
 #: ../src/vikwindow.c:2159
 msgid "Geo_caches..."
-msgstr ""
+msgstr "Geo_caches..."
 
 #: ../src/vikwindow.c:2159
 msgid "Get Geocaches from geocaching.com"
@@ -1962,7 +1962,7 @@ msgstr "Gem filen"
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
-msgstr ""
+msgstr "Gem _som..."
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"
@@ -2054,7 +2054,7 @@ msgstr "Zoom _ud"
 
 #: ../src/vikwindow.c:2180
 msgid "Zoom _To..."
-msgstr ""
+msgstr "Zoom _til..."
 
 #: ../src/vikwindow.c:2181
 msgid "0.25"

@@ -1916,7 +1916,7 @@ msgstr "Nova datoteka"
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
-msgstr ""
+msgstr "_Odpri..."
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
@@ -1928,7 +1928,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2154
 msgid "Append _File..."
-msgstr ""
+msgstr "_Pripni datoteko..."
 
 #: ../src/vikwindow.c:2154
 msgid "Append data from a different file"
@@ -1940,7 +1940,7 @@ msgstr "_Zajemi"
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "Iz _GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -1956,7 +1956,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2159
 msgid "Geo_caches..."
-msgstr ""
+msgstr "Geo_zakladi..."
 
 #: ../src/vikwindow.c:2159
 msgid "Get Geocaches from geocaching.com"
@@ -1972,7 +1972,7 @@ msgstr "Shrani datoteko"
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
-msgstr ""
+msgstr "Shrani _kot..."
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"
@@ -2192,7 +2192,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2212
 msgid "_Preferences"
-msgstr ""
+msgstr "_Nastavitve"
 
 #: ../src/vikwindow.c:2213
 msgid "_Properties"
@@ -2248,7 +2248,7 @@ msgstr "Prikaži oznako središča"
 
 #: ../src/vikwindow.c:2235
 msgid "_Full Screen"
-msgstr ""
+msgstr "Celozaslonsko"
 
 #: ../src/vikwindow.c:2235
 msgid "Activate full screen mode"

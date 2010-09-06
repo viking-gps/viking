@@ -2240,7 +2240,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2235
 msgid "_Full Screen"
-msgstr ""
+msgstr "Во весь экран"
 
 #: ../src/vikwindow.c:2235
 msgid "Activate full screen mode"

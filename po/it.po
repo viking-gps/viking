@@ -1947,7 +1947,7 @@ msgstr "Nuovo file"
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
-msgstr ""
+msgstr "_Apri..."
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
@@ -1959,7 +1959,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2154
 msgid "Append _File..."
-msgstr ""
+msgstr "A_ppendi File..."
 
 #: ../src/vikwindow.c:2154
 msgid "Append data from a different file"
@@ -1971,7 +1971,7 @@ msgstr "A_cquisisci"
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "Da _GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -1979,7 +1979,7 @@ msgstr "Trasferisci dati da un dispositivo GPS"
 
 #: ../src/vikwindow.c:2157
 msgid "Google _Directions..."
-msgstr ""
+msgstr "Percorsi _di Google..."
 
 #: ../src/vikwindow.c:2157
 msgid "Get driving directions from Google"
@@ -2003,7 +2003,7 @@ msgstr "Salva il file"
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
-msgstr ""
+msgstr "S_alva con nome..."
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"
@@ -2011,7 +2011,7 @@ msgstr "Sala il file con un nome differente"
 
 #: ../src/vikwindow.c:2163
 msgid "_Generate Image File..."
-msgstr ""
+msgstr "_Genera File Immagine..."
 
 #: ../src/vikwindow.c:2163
 msgid "Save a snapshot of the workspace into a file"
@@ -2019,7 +2019,7 @@ msgstr "Salva una schermata della pagina in un file"
 
 #: ../src/vikwindow.c:2164
 msgid "Generate _Directory of Images..."
-msgstr ""
+msgstr "Genera _Cartella di Immagini..."
 
 #: ../src/vikwindow.c:2164
 msgid "FIXME:IMGDIR"
@@ -2059,7 +2059,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2174
 msgid "Go to Location..."
-msgstr ""
+msgstr "Vai Alla posizione..."
 
 #: ../src/vikwindow.c:2174
 msgid "Go to address/place using text search"
@@ -2067,11 +2067,11 @@ msgstr "Vai all'indirizzo/posizione usando la ricerca testuale"
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "_Vai a Lat/Lon..."
 
 #: ../src/vikwindow.c:2175
 msgid "Go to arbitrary lat/lon coordinate"
-msgstr ""
+msgstr "Vai a coordinate lat/lon arbitrarie"
 
 #: ../src/vikwindow.c:2176
 msgid "Go to UTM..."
@@ -2211,7 +2211,7 @@ msgstr "Elimina Tutto"
 
 #: ../src/vikwindow.c:2210
 msgid "_Flush Map Cache"
-msgstr ""
+msgstr "Aggiorna la cache della mappe"
 
 #: ../src/vikwindow.c:2211
 msgid "_Set the Default Location"
@@ -2223,7 +2223,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2212
 msgid "_Preferences"
-msgstr ""
+msgstr "_Preferenze"
 
 #: ../src/vikwindow.c:2213
 msgid "_Properties"
@@ -2279,7 +2279,7 @@ msgstr "Mostra segnale centrale"
 
 #: ../src/vikwindow.c:2235
 msgid "_Full Screen"
-msgstr ""
+msgstr "Schermo intero"
 
 #: ../src/vikwindow.c:2235
 msgid "Activate full screen mode"

@@ -1907,7 +1907,7 @@ msgstr "Νέο αρχείο"
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
-msgstr ""
+msgstr "Άν_οιγμα..."
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
@@ -1963,7 +1963,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
-msgstr ""
+msgstr "Αποθήκευση _Ως..."
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"

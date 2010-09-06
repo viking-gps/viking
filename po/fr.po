@@ -1980,7 +1980,7 @@ msgstr "_Récupérer"
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "À partir d'un _GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -2020,7 +2020,7 @@ msgstr "Enregistrer le fichier sous un nom différent"
 
 #: ../src/vikwindow.c:2163
 msgid "_Generate Image File..."
-msgstr ""
+msgstr "Enregistrer dans un fichier _image..."
 
 #: ../src/vikwindow.c:2163
 msgid "Save a snapshot of the workspace into a file"
@@ -2028,7 +2028,7 @@ msgstr "Enregistre une copie d'écran dans un fichier"
 
 #: ../src/vikwindow.c:2164
 msgid "Generate _Directory of Images..."
-msgstr ""
+msgstr "Générer un _répertoire d'images..."
 
 #: ../src/vikwindow.c:2164
 msgid "FIXME:IMGDIR"
@@ -2076,7 +2076,7 @@ msgstr "Aller à une adresse/lieu en utilisant une recherche textuelle"
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "Choisir la _latitude/longitude…"
 
 #: ../src/vikwindow.c:2175
 msgid "Go to arbitrary lat/lon coordinate"

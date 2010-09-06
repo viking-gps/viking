@@ -1900,7 +1900,7 @@ msgstr "新建檔案"
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
-msgstr ""
+msgstr "_O 開啟..."
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
@@ -1912,7 +1912,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2154
 msgid "Append _File..."
-msgstr ""
+msgstr "_p 增加檔案..."
 
 #: ../src/vikwindow.c:2154
 msgid "Append data from a different file"
@@ -1924,7 +1924,7 @@ msgstr "_c 抓取"
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "_G 從GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -1932,7 +1932,7 @@ msgstr "從一個GPS接收器獲得資料"
 
 #: ../src/vikwindow.c:2157
 msgid "Google _Directions..."
-msgstr ""
+msgstr "_D 榖歌方位..."
 
 #: ../src/vikwindow.c:2157
 msgid "Get driving directions from Google"
@@ -1956,7 +1956,7 @@ msgstr "儲存這個檔案"
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
-msgstr ""
+msgstr "_A 另存新檔..."
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"
@@ -1964,7 +1964,7 @@ msgstr "儲存為其他名字的檔案"
 
 #: ../src/vikwindow.c:2163
 msgid "_Generate Image File..."
-msgstr ""
+msgstr "_G 生成圖形檔案..."
 
 #: ../src/vikwindow.c:2163
 msgid "Save a snapshot of the workspace into a file"
@@ -1972,7 +1972,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2164
 msgid "Generate _Directory of Images..."
-msgstr ""
+msgstr "_D 建立圖片的目録..."
 
 #: ../src/vikwindow.c:2164
 msgid "FIXME:IMGDIR"
@@ -2020,11 +2020,11 @@ msgstr ""
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "_G 前往一個經緯度值..."
 
 #: ../src/vikwindow.c:2175
 msgid "Go to arbitrary lat/lon coordinate"
-msgstr ""
+msgstr "前往任意的經緯度座標"
 
 #: ../src/vikwindow.c:2176
 msgid "Go to UTM..."
@@ -2048,7 +2048,7 @@ msgstr "_O 放大"
 
 #: ../src/vikwindow.c:2180
 msgid "Zoom _To..."
-msgstr ""
+msgstr "_T 縮放到..."
 
 #: ../src/vikwindow.c:2181
 msgid "0.25"
@@ -2176,7 +2176,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2212
 msgid "_Preferences"
-msgstr ""
+msgstr "_P 個人偏好"
 
 #: ../src/vikwindow.c:2213
 msgid "_Properties"
@@ -2232,7 +2232,7 @@ msgstr "察看中心記號"
 
 #: ../src/vikwindow.c:2235
 msgid "_Full Screen"
-msgstr ""
+msgstr "全屏"
 
 #: ../src/vikwindow.c:2235
 msgid "Activate full screen mode"

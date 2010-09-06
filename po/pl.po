@@ -1989,7 +1989,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2164
 msgid "Generate _Directory of Images..."
-msgstr ""
+msgstr "Generuj _katalog ze zdjęciami..."
 
 #: ../src/vikwindow.c:2164
 msgid "FIXME:IMGDIR"
@@ -2037,7 +2037,7 @@ msgstr "Idź do adresu/miejsca używając wyszukiwarki"
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "_Idź do szer/dług..."
 
 #: ../src/vikwindow.c:2175
 msgid "Go to arbitrary lat/lon coordinate"

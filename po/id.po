@@ -1908,7 +1908,7 @@ msgstr "Berkas baru"
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
-msgstr ""
+msgstr "Buka..."
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
@@ -1920,7 +1920,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2154
 msgid "Append _File..."
-msgstr ""
+msgstr "Tambahi Berkas..."
 
 #: ../src/vikwindow.c:2154
 msgid "Append data from a different file"
@@ -1932,7 +1932,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "Dari _GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -1964,7 +1964,7 @@ msgstr "Simpan berkas"
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
-msgstr ""
+msgstr "Simpan Seb_agai..."
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"
@@ -2028,11 +2028,11 @@ msgstr "Ke alamat/tempat memakai pencarian teks"
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "Pergi ke Lintang/Bujur..."
 
 #: ../src/vikwindow.c:2175
 msgid "Go to arbitrary lat/lon coordinate"
-msgstr ""
+msgstr "Pergi ke sebarang koordinat lintang/bujur"
 
 #: ../src/vikwindow.c:2176
 msgid "Go to UTM..."
@@ -2056,7 +2056,7 @@ msgstr "Perkecil"
 
 #: ../src/vikwindow.c:2180
 msgid "Zoom _To..."
-msgstr ""
+msgstr "Pembesaran Ke..."
 
 #: ../src/vikwindow.c:2181
 msgid "0.25"
@@ -2240,7 +2240,7 @@ msgstr "Tampilkan Tanda Pusat"
 
 #: ../src/vikwindow.c:2235
 msgid "_Full Screen"
-msgstr ""
+msgstr "Layar Penuh"
 
 #: ../src/vikwindow.c:2235
 msgid "Activate full screen mode"

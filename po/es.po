@@ -1981,7 +1981,7 @@ msgstr "A_dquirir"
 
 #: ../src/vikwindow.c:2156
 msgid "From _GPS..."
-msgstr ""
+msgstr "Desde _GPS..."
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
@@ -2021,7 +2021,7 @@ msgstr "Guardar el fichero con otro nombre"
 
 #: ../src/vikwindow.c:2163
 msgid "_Generate Image File..."
-msgstr ""
+msgstr "Generar i_magen..."
 
 #: ../src/vikwindow.c:2163
 msgid "Save a snapshot of the workspace into a file"
@@ -2029,7 +2029,7 @@ msgstr "Guardar una imagen del area de trabajo en un fichero"
 
 #: ../src/vikwindow.c:2164
 msgid "Generate _Directory of Images..."
-msgstr ""
+msgstr "Generar _directorio de imágenes..."
 
 #: ../src/vikwindow.c:2164
 msgid "FIXME:IMGDIR"
@@ -2077,11 +2077,11 @@ msgstr "Ir a la direccion/posición usada por la busqueda de texto"
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "_Ir a Lat/Lon..."
 
 #: ../src/vikwindow.c:2175
 msgid "Go to arbitrary lat/lon coordinate"
-msgstr ""
+msgstr "Ir a una lat/lon arbitraria"
 
 #: ../src/vikwindow.c:2176
 msgid "Go to UTM..."
