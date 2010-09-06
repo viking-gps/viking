@@ -1,66 +1,68 @@
-# Indonesian translation for viking
-# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# Ukrainian translation for viking
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the viking package.
-# Andika Triwidada <andika@gmail.com>, 2009.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-06-08 22:39+0200\n"
-"PO-Revision-Date: 2010-08-02 06:26+0000\n"
-"Last-Translator: Arief Setiadi Wibowo <q_thrynx@yahoo.com>\n"
-"Language-Team: Indonesian <id@li.org>\n"
+"PO-Revision-Date: 2010-08-21 15:47+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Launchpad-Export-Date: 2010-09-06 20:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
-msgstr "Sedang Bekerja..."
+msgstr ""
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
-msgstr "Galat: akuisisi gagal."
+msgstr ""
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:1013
 msgid "Done."
-msgstr "Selesai."
+msgstr ""
 
 #: ../src/acquire.c:156
 msgid "No data."
-msgstr "Tidak ada data"
+msgstr ""
 
 #: ../src/acquire.c:338 ../src/vikgpslayer.c:1052
 msgid "Status: detecting gpsbabel"
-msgstr "Status: mendeteksi gpsbabel"
+msgstr ""
 
 #: ../src/background.c:57
 #, c-format
 msgid "%d items"
-msgstr "%d objek"
+msgstr ""
 
 #: ../src/background.c:224
 msgid "Job"
-msgstr "Tugas"
+msgstr ""
 
 #: ../src/background.c:228
 msgid "Progress"
-msgstr "Kemajuan"
+msgstr ""
 
 #: ../src/background.c:239
 msgid "Viking Background Jobs"
-msgstr "Viking Background Jobs"
+msgstr ""
 
 #: ../src/clipboard.c:84
 msgid "paste failed"
-msgstr "tempel gagal"
+msgstr ""
 
 #: ../src/clipboard.c:94
 msgid "wrong clipboard data size"
-msgstr "ukuran data papan tempel salah"
+msgstr ""
 
 #: ../src/clipboard.c:113
 #, c-format
@@ -82,15 +84,15 @@ msgstr ""
 
 #: ../src/dialog.c:49 ../src/dialog.c:97
 msgid "Go to Lat/Lon"
-msgstr "Ke Lintang/Bujur"
+msgstr ""
 
 #: ../src/dialog.c:61 ../src/dialog.c:236
 msgid "Latitude:"
-msgstr "Lintang:"
+msgstr ""
 
 #: ../src/dialog.c:67 ../src/dialog.c:241
 msgid "Longitude:"
-msgstr "Bujur:"
+msgstr ""
 
 #: ../src/dialog.c:110
 msgid "Northing:"
@@ -102,74 +104,74 @@ msgstr ""
 
 #: ../src/dialog.c:123
 msgid "Zone:"
-msgstr "Zona:"
+msgstr ""
 
 #: ../src/dialog.c:126
 msgid "Letter:"
-msgstr "Huruf:"
+msgstr ""
 
 #: ../src/dialog.c:187
 msgid "Waypoint Properties"
-msgstr "Sifat Waypoint"
+msgstr ""
 
 #: ../src/dialog.c:224
 msgid "Name:"
-msgstr "Nama:"
+msgstr ""
 
 #: ../src/dialog.c:246
 msgid "Altitude:"
-msgstr "Ketinggian:"
+msgstr ""
 
 #: ../src/dialog.c:251
 msgid "Comment:"
-msgstr "Komentar:"
+msgstr ""
 
 #: ../src/dialog.c:258
 msgid "Image:"
-msgstr "Citra:"
+msgstr ""
 
 #: ../src/dialog.c:263
 msgid "Symbol:"
-msgstr "Simbol:"
+msgstr ""
 
 #: ../src/dialog.c:272
 msgid "(none)"
-msgstr "(tak ada)"
+msgstr ""
 
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:327
 msgid "Please enter a name for the waypoint."
-msgstr "Silahkan masukkan nama bagi waypoint."
+msgstr ""
 
 #: ../src/dialog.c:331
 #, c-format
 msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr "Waypoint \"%s\" telah ada, akan ditimpa?"
+msgstr ""
 
 #: ../src/dialog.c:484 ../src/geonamessearch.c:228
 msgid "Nothing was selected"
-msgstr "Tak ada yang dipilih"
+msgstr ""
 
 #: ../src/dialog.c:492
 msgid "Add Track"
-msgstr "Tambah Trek"
+msgstr ""
 
 #: ../src/dialog.c:500
 msgid "Track Name:"
-msgstr "Nama Trek:"
+msgstr ""
 
 #: ../src/dialog.c:515
 msgid "Please enter a name for the track."
-msgstr "Silahkan masukkan nama bagi trek."
+msgstr ""
 
 #: ../src/dialog.c:519
 #, c-format
 msgid "The track \"%s\" exists, do you want to overwrite it?"
-msgstr "Trek \"%s\" telah ada, anda ingin menimpanya?"
+msgstr ""
 
 #: ../src/dialog.c:581
 msgid "Zoom Factors..."
-msgstr "Faktor Pembesaran..."
+msgstr ""
 
 #: ../src/dialog.c:595
 msgid "Zoom factor (in meters per pixel):"
@@ -185,19 +187,19 @@ msgstr ""
 
 #: ../src/dialog.c:602
 msgid "X and Y zoom factors must be equal"
-msgstr "Faktor pembesaran X dan Y mesti sama"
+msgstr ""
 
 #: ../src/dialog.c:655
 msgid "1 min"
-msgstr "1 menit"
+msgstr ""
 
 #: ../src/dialog.c:656
 msgid "1 hour"
-msgstr "1 jam"
+msgstr ""
 
 #: ../src/dialog.c:657
 msgid "1 day"
-msgstr "1 hari"
+msgstr ""
 
 #: ../src/dialog.c:658
 msgid "Custom (in minutes):"
@@ -205,7 +207,7 @@ msgstr ""
 
 #: ../src/dialog.c:713
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr "Penganalisis, Penjelajah, dan Pengelola Data dan Topo GPS."
+msgstr ""
 
 #: ../src/dialog.c:714
 msgid ""
@@ -230,11 +232,11 @@ msgstr ""
 
 #: ../src/dialog.c:750
 msgid "Map type:"
-msgstr "Tipe peta:"
+msgstr ""
 
 #: ../src/dialog.c:755
 msgid "Zoom level:"
-msgstr "Tingkat pembesaran:"
+msgstr ""
 
 #: ../src/expedia.c:51
 msgid "Expedia Street Maps"
@@ -242,7 +244,7 @@ msgstr ""
 
 #: ../src/expedia.c:79
 msgid "Invalid expedia altitude"
-msgstr "Ketinggian expedia tak valid"
+msgstr ""
 
 #: ../src/expedia.c:110
 #, c-format
@@ -250,8 +252,6 @@ msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
-"Tak bisa membuka berkas citra EXPEDIA (tepat setelah pengunduhan yang "
-"sukses! Silahkan laporkan dan hapus berkas citra!): %s"
 
 #: ../src/expedia.c:123
 #, c-format
@@ -259,28 +259,26 @@ msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
-"Tak bisa menyimpan berkas citra EXPEDIA (tepat setelah pengunduhan yang "
-"sukses! Silahkan laporkan dan hapus berkas citra!): %s"
 
 #: ../src/geonamessearch.c:98
 msgid "Search"
-msgstr "Cari"
+msgstr ""
 
 #: ../src/geonamessearch.c:100
 msgid "No entries found!"
-msgstr "Tak ada entri ditemukan!"
+msgstr ""
 
 #: ../src/geonamessearch.c:254 ../src/googlesearch.c:121
 msgid "couldn't map temp file"
-msgstr "tak bisa memetakan berkas temp"
+msgstr ""
 
 #: ../src/geonamessearch.c:395 ../src/vikgototool.c:250
 msgid "couldn't open temp file"
-msgstr "tak bisa membuka berkas temp"
+msgstr ""
 
 #: ../src/globals.c:42
 msgid "Degree format:"
-msgstr "Format derajat:"
+msgstr ""
 
 #: ../src/globals.c:46
 msgid "Distance units:"
@@ -309,7 +307,7 @@ msgstr ""
 #. Webtools
 #: ../src/google.c:36
 msgid "Google"
-msgstr "Google"
+msgstr ""
 
 #: ../src/datasource_gc.c:62
 msgid "Download Geocaches"
@@ -321,11 +319,11 @@ msgstr ""
 
 #: ../src/datasource_gc.c:79
 msgid "geocaching.com username:"
-msgstr "nama pengguna geocaching.com:"
+msgstr ""
 
 #: ../src/datasource_gc.c:80
 msgid "geocaching.com password:"
-msgstr "kata sandi geocaching.com:"
+msgstr ""
 
 #: ../src/datasource_gc.c:108
 msgid ""
@@ -338,7 +336,7 @@ msgstr ""
 
 #: ../src/datasource_gc.c:172
 msgid "Centered around:"
-msgstr "Berpusat di sekitar:"
+msgstr ""
 
 #: ../src/datasource_google.c:49 ../src/datasource_google.c:50
 msgid "Google Directions"
@@ -346,59 +344,61 @@ msgstr ""
 
 #: ../src/datasource_google.c:75
 msgid "From:"
-msgstr "Dari:"
+msgstr ""
 
 #: ../src/datasource_google.c:77
 msgid "To:"
-msgstr "Ke:"
+msgstr ""
 
 #: ../src/datasource_gps.c:53
 msgid "Acquire from GPS"
-msgstr "Ambil dari GPS"
+msgstr ""
 
 #: ../src/datasource_gps.c:54
 msgid "Acquired from GPS"
-msgstr "Diperoleh dari GPS"
+msgstr ""
 
 #: ../src/datasource_gps.c:142
 #, c-format
 msgid "using cmdline '%s' and file '%s'\n"
-msgstr "memakai cmdline '%s' dan berkas '%s'\n"
+msgstr ""
 
 #: ../src/datasource_gps.c:204 ../src/vikgpslayer.c:755
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
-msgstr[0] "Mengunduh %d waypoint..."
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../src/datasource_gps.c:206 ../src/vikgpslayer.c:757
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
-msgstr[0] "Mengunduh %d trackpoint..."
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../src/datasource_gps.c:224
 #, c-format
 msgid "Downloaded %d out of %d %s..."
-msgstr "Diunduh %d dari %d %s..."
+msgstr ""
 
 #: ../src/datasource_gps.c:226
 #, c-format
 msgid "Downloaded %d %s."
-msgstr "Diunduh %d %s."
+msgstr ""
 
 #: ../src/datasource_gps.c:239 ../src/vikgpslayer.c:827
 #, c-format
 msgid "GPS Device: %s"
-msgstr "Perangkat GPS: %s"
+msgstr ""
 
 #: ../src/datasource_gps.c:328 ../src/vikgpslayer.c:144
 msgid "GPS Protocol:"
-msgstr "Protokol GPS:"
+msgstr ""
 
 #: ../src/datasource_gps.c:335 ../src/vikgpslayer.c:145
 msgid "Serial Port:"
-msgstr "Port Serial:"
+msgstr ""
 
 #: ../src/datasource_gps.c:356
 msgid ""
@@ -408,7 +408,7 @@ msgstr ""
 
 #: ../src/datasource_gps.c:377 ../src/vikgpslayer.c:1057
 msgid "GPS device: N/A"
-msgstr "Perangkat GPS: N/A"
+msgstr ""
 
 #: ../src/dem.c:59 ../src/dem.c:73
 msgid "Invalid DEM"
@@ -434,7 +434,7 @@ msgstr ""
 #: ../src/download.c:206
 #, c-format
 msgid "Download error: %s"
-msgstr "Galat pengunduhan: %s"
+msgstr ""
 
 #: ../src/file.c:426 ../src/file.c:430
 #, c-format
@@ -451,7 +451,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:75
 msgid "Public"
-msgstr "Publik"
+msgstr ""
 
 #: ../src/osm-traces.c:76
 msgid "Private"
@@ -459,16 +459,16 @@ msgstr ""
 
 #: ../src/osm-traces.c:93
 msgid "OSM username:"
-msgstr "Nama pengguna OSM:"
+msgstr ""
 
 #: ../src/osm-traces.c:94
 msgid "OSM password:"
-msgstr "Kata sandi OSM:"
+msgstr ""
 
 #: ../src/osm-traces.c:229
 #, c-format
 msgid "failed to upload data: HTTP response is %ld"
-msgstr "gagal mengunggah data: jawaban HTTP adalah %ld"
+msgstr ""
 
 #: ../src/osm-traces.c:232
 #, c-format
@@ -492,11 +492,11 @@ msgstr ""
 
 #: ../src/osm-traces.c:310
 msgid "OSM upload"
-msgstr "Unggah OSM"
+msgstr ""
 
 #: ../src/osm-traces.c:331
 msgid "Email:"
-msgstr "Email:"
+msgstr ""
 
 #: ../src/osm-traces.c:342
 msgid ""
@@ -506,7 +506,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:345
 msgid "Password:"
-msgstr "Kata sandi:"
+msgstr ""
 
 #: ../src/osm-traces.c:356
 msgid ""
@@ -517,7 +517,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
-msgstr "Nama berkas:"
+msgstr ""
 
 #: ../src/osm-traces.c:369
 msgid ""
@@ -528,7 +528,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:373
 msgid "Description:"
-msgstr "Keterangan:"
+msgstr ""
 
 #: ../src/osm-traces.c:378
 msgid "The description of the trace"
@@ -536,7 +536,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:380
 msgid "Tags:"
-msgstr "Tag:"
+msgstr ""
 
 #: ../src/osm-traces.c:385
 msgid "The tags associated to the trace"
@@ -553,27 +553,27 @@ msgstr ""
 
 #: ../src/print.c:53
 msgid "None"
-msgstr "Tak Satupun"
+msgstr ""
 
 #: ../src/print.c:54
 msgid "Horizontally"
-msgstr "Arah Datar"
+msgstr ""
 
 #: ../src/print.c:55
 msgid "Vertically"
-msgstr "Arah Tegak"
+msgstr ""
 
 #: ../src/print.c:56
 msgid "Both"
-msgstr "Keduanya"
+msgstr ""
 
 #: ../src/print.c:120
 msgid "Image Settings"
-msgstr "Tatanan Citra"
+msgstr ""
 
 #: ../src/print.c:550
 msgid "done"
-msgstr "beres"
+msgstr ""
 
 #. Page Size
 #: ../src/print.c:579
@@ -582,7 +582,7 @@ msgstr ""
 
 #: ../src/print.c:595
 msgid "C_enter:"
-msgstr "Pusa_t:"
+msgstr ""
 
 #. ignore page margins
 #: ../src/print.c:613
@@ -591,19 +591,19 @@ msgstr ""
 
 #: ../src/print.c:632
 msgid "Image S_ize:"
-msgstr "U_kuran Citra:"
+msgstr ""
 
 #: ../src/util.c:76
 msgid "Could not launch web browser."
-msgstr "Tak bisa luncurkan peramban web."
+msgstr ""
 
 #: ../src/util.c:87
 msgid "Could not create new email."
-msgstr "Tak bisa buat email baru."
+msgstr ""
 
 #: ../src/vikcoordlayer.c:46 ../src/vikdemlayer.c:121
 msgid "Color:"
-msgstr "Warna:"
+msgstr ""
 
 #: ../src/vikcoordlayer.c:47
 msgid "Minutes Width:"
@@ -611,7 +611,7 @@ msgstr ""
 
 #: ../src/vikcoordlayer.c:48 ../src/vikdemlayer.c:125
 msgid "Line Thickness:"
-msgstr "Tebal Garis:"
+msgstr ""
 
 #: ../src/datasource_bfilter.c:46
 msgid "Max number of points:"
@@ -619,11 +619,11 @@ msgstr ""
 
 #: ../src/datasource_bfilter.c:60
 msgid "Simplify All Tracks"
-msgstr "Sederhanakan Semua Lintasan"
+msgstr ""
 
 #: ../src/datasource_bfilter.c:61
 msgid "Simplified Tracks"
-msgstr "Lintasan Yang Disederhanakan"
+msgstr ""
 
 #: ../src/datasource_bfilter.c:94 ../src/datasource_bfilter.c:95
 msgid "Remove Duplicate Waypoints"
@@ -655,19 +655,19 @@ msgstr ""
 
 #: ../src/main.c:119
 msgid "Show version"
-msgstr "Tampilkan versi"
+msgstr ""
 
 #: ../src/osm.c:77
 msgid "OSM (view)"
-msgstr "OSM (tilik)"
+msgstr ""
 
 #: ../src/osm.c:81
 msgid "OSM (edit)"
-msgstr "OSM (sunting)"
+msgstr ""
 
 #: ../src/osm.c:85
 msgid "OSM (render)"
-msgstr "OSM (render)"
+msgstr ""
 
 #: ../src/uibuilder.c:148
 msgid "Take care that this password will be stored clearly in a plain file."
@@ -687,7 +687,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:120
 msgid "Download Source:"
-msgstr "Sumber Unduh:"
+msgstr ""
 
 #: ../src/vikdemlayer.c:122
 msgid "Type:"
@@ -695,11 +695,11 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:123
 msgid "Min Elev:"
-msgstr "Tinggi Min:"
+msgstr ""
 
 #: ../src/vikdemlayer.c:124
 msgid "Max Elev:"
-msgstr "Tinggi Maks:"
+msgstr ""
 
 #: ../src/vikdemlayer.c:136
 msgid "DEM Download/Import"
@@ -721,23 +721,23 @@ msgstr ""
 
 #: ../src/vikfileentry.c:68
 msgid "Browse..."
-msgstr "Ramban..."
+msgstr ""
 
 #: ../src/vikfileentry.c:96
 msgid "Choose file"
-msgstr "Pilih berkas"
+msgstr ""
 
 #: ../src/vikfilelist.c:47
 msgid "Choose file(s)"
-msgstr "Pilih berkas-berkas"
+msgstr ""
 
 #: ../src/vikfilelist.c:126
 msgid "Add..."
-msgstr "Tambah..."
+msgstr ""
 
 #: ../src/vikfilelist.c:127
 msgid "Delete"
-msgstr "Hapus"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:68
 msgid "Georef Move Map"
@@ -778,7 +778,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:449
 msgid "Load From File..."
-msgstr "Muat Dari Berkas..."
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:454
 msgid "Corner pixel easting:"
@@ -814,7 +814,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:470
 msgid "Map Image:"
-msgstr "Citra Peta:"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:574
 msgid "Zoom to Fit Map"
@@ -846,11 +846,11 @@ msgstr ""
 
 #: ../src/vikgoto.c:125
 msgid "Enter address or place name:"
-msgstr "Masukkan alamat atau nama tempat:"
+msgstr ""
 
 #: ../src/vikgpslayer.c:148
 msgid "Recording tracks"
-msgstr "Mencatat jejak"
+msgstr ""
 
 #: ../src/vikgpslayer.c:149
 msgid "Jump to current position on start"
@@ -862,23 +862,23 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:151
 msgid "Gpsd Host:"
-msgstr "Host Gpsd:"
+msgstr ""
 
 #: ../src/vikgpslayer.c:152
 msgid "Gpsd Port:"
-msgstr "Port Gpsd:"
+msgstr ""
 
 #: ../src/vikgpslayer.c:153
 msgid "Gpsd Retry Interval (seconds):"
-msgstr "Selang Coba Ulang Gpsd (detik):"
+msgstr ""
 
 #: ../src/vikgpslayer.c:217 ../src/vikgpslayer.c:1045
 msgid "GPS Download"
-msgstr "Unduhan GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:217 ../src/vikgpslayer.c:1045
 msgid "GPS Upload"
-msgstr "Unggahan GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:219
 msgid "GPS Realtime Tracking"
@@ -886,24 +886,24 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:382
 msgid "Unknown GPS Protocol"
-msgstr "Protokol GPS Tak Dikenal"
+msgstr ""
 
 #: ../src/vikgpslayer.c:401
 msgid "Unknown serial port device"
-msgstr "Perangkat port serial tak dikenal"
+msgstr ""
 
 #: ../src/vikgpslayer.c:467
 #, c-format
 msgid "%s: unknown parameter"
-msgstr "%s: parameter tak dikenal"
+msgstr ""
 
 #: ../src/vikgpslayer.c:581
 msgid "Upload to GPS"
-msgstr "Unggah ke GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:586
 msgid "Download from GPS"
-msgstr "Unduh dari GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty Upload"
@@ -1003,27 +1003,27 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:57
 msgid "/C_ut"
-msgstr "/_Potong"
+msgstr ""
 
 #: ../src/viklayerspanel.c:58
 msgid "/_Copy"
-msgstr "/_Salin"
+msgstr ""
 
 #: ../src/viklayerspanel.c:59
 msgid "/_Paste"
-msgstr "/_Tempel"
+msgstr ""
 
 #: ../src/viklayerspanel.c:60
 msgid "/_Delete"
-msgstr "/_Hapus"
+msgstr ""
 
 #: ../src/viklayerspanel.c:61
 msgid "/New Layer"
-msgstr "/Lapis Baru"
+msgstr ""
 
 #: ../src/viklayerspanel.c:150
 msgid "Top Layer"
-msgstr "Lapis Puncak"
+msgstr ""
 
 #: ../src/viklayerspanel.c:165
 msgid "Add new layer"
@@ -1076,7 +1076,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:122
 msgid "Map Type:"
-msgstr "Tipe Peta:"
+msgstr ""
 
 #: ../src/vikmapslayer.c:123
 msgid "Maps Directory:"
@@ -1092,7 +1092,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:126
 msgid "Zoom Level:"
-msgstr "Tingkat Zum:"
+msgstr ""
 
 #: ../src/vikmapslayer.c:132
 msgid "Maps Download"
@@ -1100,7 +1100,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:138
 msgid "Map"
-msgstr "Peta"
+msgstr ""
 
 #: ../src/vikmapslayer.c:212
 msgid "Default maplayer directory:"
@@ -1187,7 +1187,7 @@ msgstr ""
 
 #: ../src/viktreeview.c:203
 msgid "Layer Name"
-msgstr "Nama Lapisan"
+msgstr ""
 
 #: ../src/viktreeview.c:624
 #, c-format
@@ -1255,15 +1255,15 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:341
 msgid "Square"
-msgstr "Kotak"
+msgstr ""
 
 #: ../src/viktrwlayer.c:341
 msgid "Circle"
-msgstr "Bulat"
+msgstr ""
 
 #: ../src/viktrwlayer.c:341
 msgid "X"
-msgstr "X"
+msgstr ""
 
 #: ../src/viktrwlayer.c:363
 msgid "Track Drawing Mode:"
@@ -1380,7 +1380,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:1598
 msgid "Create"
-msgstr "Buat"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1608
 msgid "Waypoint Name:"
@@ -1574,11 +1574,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Comment:</b>"
-msgstr "<b>Komentar:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Track Length:</b>"
-msgstr "<b>Panjang Lintasan:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Trackpoints:</b>"
@@ -1594,11 +1594,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Max Speed:</b>"
-msgstr "<b>Laju Maks:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Avg. Speed:</b>"
-msgstr "<b>Laju Rerata:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Avg. Dist. Between TPs:</b>"
@@ -1614,15 +1614,15 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Start:</b>"
-msgstr "<b>Awal:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>End:</b>"
-msgstr "<b>Akhir:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:788
 msgid "<b>Duration:</b>"
-msgstr "<b>Durasi:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:828 ../src/viktrwlayer_propwin.c:852
 #: ../src/viktrwlayer_propwin.c:889 ../src/viktrwlayer_propwin.c:907
@@ -1631,20 +1631,20 @@ msgstr "<b>Durasi:</b>"
 #: ../src/viktrwlayer_propwin.c:988
 #, c-format
 msgid "No Data"
-msgstr "Tiada Data"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:954
 #, c-format
 msgid "%d minutes"
-msgstr "%d menit"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:977
 msgid "Statistics"
-msgstr "Statistik"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:982
 msgid "<b>Track Distance:</b>"
-msgstr "<b>Jarak Lintasan:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:983
 msgid "Elevation-distance"
@@ -1664,15 +1664,15 @@ msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:116
 msgid "<b>Latitude:</b>"
-msgstr "<b>Lintang:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:117
 msgid "<b>Longitude:</b>"
-msgstr "<b>Bujur:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:118
 msgid "<b>Altitude:</b>"
-msgstr "<b>Ketinggian:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:119
 msgid "<b>Timestamp:</b>"
@@ -1680,15 +1680,15 @@ msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:120
 msgid "<b>Time:</b>"
-msgstr "<b>Waktu:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:121
 msgid "<b>Distance Difference:</b>"
-msgstr "<b>Beda Jarak:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:122
 msgid "<b>Time Difference:</b>"
-msgstr "<b>Beda Waktu:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:123
 msgid "<b>\"Speed\" Between:</b>"
@@ -1696,15 +1696,15 @@ msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:124
 msgid "<b>VDOP:</b>"
-msgstr "<b>VDOP:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:125
 msgid "<b>HDOP:</b>"
-msgstr "<b>HDOP:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:126
 msgid "<b>PDOP:</b>"
-msgstr "<b>PDOP:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:127
 msgid "<b>SAT/FIX:</b>"
@@ -1728,7 +1728,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:186
 msgid "Zoom"
-msgstr "Zum"
+msgstr ""
 
 #: ../src/vikwindow.c:186
 msgid "Ruler"
@@ -1748,7 +1748,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:365
 msgid "Don't Save"
-msgstr "Jangan Simpan"
+msgstr ""
 
 #: ../src/vikwindow.c:398
 msgid "mpp"
@@ -1761,12 +1761,12 @@ msgstr ""
 #: ../src/vikwindow.c:532
 #, c-format
 msgid "%s %s %dm"
-msgstr "%s %s %dm"
+msgstr ""
 
 #: ../src/vikwindow.c:534
 #, c-format
 msgid "%s %s"
-msgstr "%s %s"
+msgstr ""
 
 #: ../src/vikwindow.c:1155
 msgid "You must select a layer to show its properties."
@@ -1812,31 +1812,31 @@ msgstr ""
 #. todo: default for answers inside VikWindow or static (thruout instance)
 #: ../src/vikwindow.c:1894
 msgid "Save to Image File"
-msgstr "Simpan ke Berkas Citra"
+msgstr ""
 
 #: ../src/vikwindow.c:1912
 msgid "Width (pixels):"
-msgstr "Lebar (piksel):"
+msgstr ""
 
 #: ../src/vikwindow.c:1914
 msgid "Height (pixels):"
-msgstr "Tinggi (piksel):"
+msgstr ""
 
 #: ../src/vikwindow.c:1917
 msgid "Zoom (meters per pixel):"
-msgstr "Zum (meter per piksel):"
+msgstr ""
 
 #: ../src/vikwindow.c:1923
 msgid "Area in current viewable window"
-msgstr "Wilayah di jendela yang kini terlihat"
+msgstr ""
 
 #: ../src/vikwindow.c:1933
 msgid "Save as PNG"
-msgstr "Simpan sebagai PNG"
+msgstr ""
 
 #: ../src/vikwindow.c:1934
 msgid "Save as JPEG"
-msgstr "Simpan sebagai JPEG"
+msgstr ""
 
 #: ../src/vikwindow.c:1954
 msgid "East-west image tiles:"
@@ -1852,7 +1852,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2007
 msgid "Save Image"
-msgstr "Simpan Citra"
+msgstr ""
 
 #: ../src/vikwindow.c:2034
 msgid "Choose a directory to hold images"
@@ -1864,19 +1864,19 @@ msgstr ""
 
 #: ../src/vikwindow.c:2141
 msgid "_File"
-msgstr "Berkas"
+msgstr ""
 
 #: ../src/vikwindow.c:2142
 msgid "_Edit"
-msgstr "_Edit"
+msgstr ""
 
 #: ../src/vikwindow.c:2143
 msgid "_View"
-msgstr "_Tilik"
+msgstr ""
 
 #: ../src/vikwindow.c:2144 ../src/vikwindow.c:2228
 msgid "_Zoom"
-msgstr "_Zum"
+msgstr ""
 
 #: ../src/vikwindow.c:2145 ../src/vikwindow.c:2227
 msgid "_Pan"
@@ -1884,11 +1884,11 @@ msgstr ""
 
 #: ../src/vikwindow.c:2146
 msgid "_Layers"
-msgstr "_Lapisan"
+msgstr ""
 
 #: ../src/vikwindow.c:2147
 msgid "_Tools"
-msgstr "_Perkakas"
+msgstr ""
 
 #: ../src/vikwindow.c:2148
 msgid "_Webtools"
@@ -1896,15 +1896,15 @@ msgstr ""
 
 #: ../src/vikwindow.c:2149 ../src/vikwindow.c:2215
 msgid "_Help"
-msgstr "Bantuan"
+msgstr ""
 
 #: ../src/vikwindow.c:2151
 msgid "_New"
-msgstr "Baru"
+msgstr ""
 
 #: ../src/vikwindow.c:2151
 msgid "New file"
-msgstr "Berkas baru"
+msgstr ""
 
 #: ../src/vikwindow.c:2152
 msgid "_Open..."
@@ -1912,7 +1912,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2152
 msgid "Open a file"
-msgstr "Buka berkas"
+msgstr ""
 
 #: ../src/vikwindow.c:2153
 msgid "Open _Recent File"
@@ -1924,7 +1924,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2154
 msgid "Append data from a different file"
-msgstr "Tambahkan data dari berkas berbeda"
+msgstr ""
 
 #: ../src/vikwindow.c:2155
 msgid "A_cquire"
@@ -1936,7 +1936,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2156
 msgid "Transfer data from a GPS device"
-msgstr "Ambil data dari perangkat GPS"
+msgstr ""
 
 #: ../src/vikwindow.c:2157
 msgid "Google _Directions..."
@@ -1944,7 +1944,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2157
 msgid "Get driving directions from Google"
-msgstr "Dapatkan arah mengemudi dari Google"
+msgstr ""
 
 #: ../src/vikwindow.c:2159
 msgid "Geo_caches..."
@@ -1956,11 +1956,11 @@ msgstr ""
 
 #: ../src/vikwindow.c:2161
 msgid "_Save"
-msgstr "_Simpan"
+msgstr ""
 
 #: ../src/vikwindow.c:2161
 msgid "Save the file"
-msgstr "Simpan berkas"
+msgstr ""
 
 #: ../src/vikwindow.c:2162
 msgid "Save _As..."
@@ -1968,7 +1968,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2162
 msgid "Save the file under different name"
-msgstr "Simpan berkas dengan nama berbeda"
+msgstr ""
 
 #: ../src/vikwindow.c:2163
 msgid "_Generate Image File..."
@@ -1988,27 +1988,27 @@ msgstr ""
 
 #: ../src/vikwindow.c:2167
 msgid "_Print..."
-msgstr "Cetak..."
+msgstr ""
 
 #: ../src/vikwindow.c:2167
 msgid "Print maps"
-msgstr "Cetak peta"
+msgstr ""
 
 #: ../src/vikwindow.c:2170
 msgid "E_xit"
-msgstr "Keluar"
+msgstr ""
 
 #: ../src/vikwindow.c:2170
 msgid "Exit the program"
-msgstr "Keluar dari program"
+msgstr ""
 
 #: ../src/vikwindow.c:2171
 msgid "Save and Exit"
-msgstr "Simpan dan Keluar"
+msgstr ""
 
 #: ../src/vikwindow.c:2171
 msgid "Save and Exit the program"
-msgstr "Simpan lalu keluar dari program"
+msgstr ""
 
 #: ../src/vikwindow.c:2173
 msgid "Go to the _Default Location"
@@ -2024,7 +2024,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2174
 msgid "Go to address/place using text search"
-msgstr "Ke alamat/tempat memakai pencarian teks"
+msgstr ""
 
 #: ../src/vikwindow.c:2175
 msgid "_Go to Lat/Lon..."
@@ -2036,23 +2036,23 @@ msgstr ""
 
 #: ../src/vikwindow.c:2176
 msgid "Go to UTM..."
-msgstr "Pergi ke UTM..."
+msgstr ""
 
 #: ../src/vikwindow.c:2176
 msgid "Go to arbitrary UTM coordinate"
-msgstr "Pergi ke sebarang koordinat UTM"
+msgstr ""
 
 #: ../src/vikwindow.c:2177
 msgid "Set Background Color..."
-msgstr "Atur Warna Latar..."
+msgstr ""
 
 #: ../src/vikwindow.c:2178
 msgid "Zoom _In"
-msgstr "Perbesar"
+msgstr ""
 
 #: ../src/vikwindow.c:2179
 msgid "Zoom _Out"
-msgstr "Perkecil"
+msgstr ""
 
 #: ../src/vikwindow.c:2180
 msgid "Zoom _To..."
@@ -2060,43 +2060,43 @@ msgstr ""
 
 #: ../src/vikwindow.c:2181
 msgid "0.25"
-msgstr "1/4"
+msgstr ""
 
 #: ../src/vikwindow.c:2182
 msgid "0.5"
-msgstr "1/2"
+msgstr ""
 
 #: ../src/vikwindow.c:2183
 msgid "1"
-msgstr "1"
+msgstr ""
 
 #: ../src/vikwindow.c:2184
 msgid "2"
-msgstr "2"
+msgstr ""
 
 #: ../src/vikwindow.c:2185
 msgid "4"
-msgstr "4"
+msgstr ""
 
 #: ../src/vikwindow.c:2186
 msgid "8"
-msgstr "8"
+msgstr ""
 
 #: ../src/vikwindow.c:2187
 msgid "16"
-msgstr "16"
+msgstr ""
 
 #: ../src/vikwindow.c:2188
 msgid "32"
-msgstr "32"
+msgstr ""
 
 #: ../src/vikwindow.c:2189
 msgid "64"
-msgstr "64"
+msgstr ""
 
 #: ../src/vikwindow.c:2190
 msgid "128"
-msgstr "128"
+msgstr ""
 
 #: ../src/vikwindow.c:2191
 msgid "256"
@@ -2132,19 +2132,19 @@ msgstr ""
 
 #: ../src/vikwindow.c:2199
 msgid "Pan North"
-msgstr "Geser Utara"
+msgstr ""
 
 #: ../src/vikwindow.c:2200
 msgid "Pan East"
-msgstr "Geser Timur"
+msgstr ""
 
 #: ../src/vikwindow.c:2201
 msgid "Pan South"
-msgstr "Geser Selatan"
+msgstr ""
 
 #: ../src/vikwindow.c:2202
 msgid "Pan West"
-msgstr "Geser Barat"
+msgstr ""
 
 #: ../src/vikwindow.c:2203
 msgid "Background _Jobs"
@@ -2152,23 +2152,23 @@ msgstr ""
 
 #: ../src/vikwindow.c:2205
 msgid "Cu_t"
-msgstr "Potong"
+msgstr ""
 
 #: ../src/vikwindow.c:2206
 msgid "_Copy"
-msgstr "Salin"
+msgstr ""
 
 #: ../src/vikwindow.c:2207
 msgid "_Paste"
-msgstr "Tempel"
+msgstr ""
 
 #: ../src/vikwindow.c:2208
 msgid "_Delete"
-msgstr "Hapus"
+msgstr ""
 
 #: ../src/vikwindow.c:2209
 msgid "Delete All"
-msgstr "Hapus Semua"
+msgstr ""
 
 #: ../src/vikwindow.c:2210
 msgid "_Flush Map Cache"
@@ -2188,39 +2188,39 @@ msgstr ""
 
 #: ../src/vikwindow.c:2213
 msgid "_Properties"
-msgstr "_Properti"
+msgstr ""
 
 #: ../src/vikwindow.c:2216
 msgid "_About"
-msgstr "Ihw_al"
+msgstr ""
 
 #: ../src/vikwindow.c:2221
 msgid "_UTM Mode"
-msgstr "Mode _UTM"
+msgstr ""
 
 #: ../src/vikwindow.c:2222
 msgid "_Expedia Mode"
-msgstr "Mode _Expedia"
+msgstr ""
 
 #: ../src/vikwindow.c:2223
 msgid "_Mercator Mode"
-msgstr "Mode _Mercator"
+msgstr ""
 
 #: ../src/vikwindow.c:2227
 msgid "Pan Tool"
-msgstr "Penggeseran"
+msgstr ""
 
 #: ../src/vikwindow.c:2228
 msgid "Zoom Tool"
-msgstr "Pembesaran"
+msgstr ""
 
 #: ../src/vikwindow.c:2229
 msgid "_Ruler"
-msgstr "Pengga_ris"
+msgstr ""
 
 #: ../src/vikwindow.c:2229
 msgid "Ruler Tool"
-msgstr "Penggaris"
+msgstr ""
 
 #: ../src/vikwindow.c:2233
 msgid "_Show Scale"
@@ -2228,7 +2228,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2233
 msgid "Show Scale"
-msgstr "Tampilkan Skala"
+msgstr ""
 
 #: ../src/vikwindow.c:2234
 msgid "Show _Center Mark"
@@ -2236,7 +2236,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2234
 msgid "Show Center Mark"
-msgstr "Tampilkan Tanda Pusat"
+msgstr ""
 
 #: ../src/vikwindow.c:2235
 msgid "_Full Screen"
@@ -2244,25 +2244,25 @@ msgstr ""
 
 #: ../src/vikwindow.c:2235
 msgid "Activate full screen mode"
-msgstr "Aktifkan mode layar penuh"
+msgstr ""
 
 #: ../src/vikwindow.c:2236
 msgid "Show Side Panel"
-msgstr "Tampilkan Panel Sisi"
+msgstr ""
 
 #: ../src/vikwindow.c:2298
 #, c-format
 msgid "New %s Layer"
-msgstr "Lapis %s Baru"
+msgstr ""
 
 #: ../src/viking.desktop.in.h:1
 msgid "GPS Data Manager"
-msgstr "Pengelola Data GPS"
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "Map Based GPS Data Manager (live data capable)."
-msgstr "Pengelola Data GPS Berbasis Peta (mampu menangani data live)."
+msgstr ""
 
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
-msgstr "Viking"
+msgstr ""
