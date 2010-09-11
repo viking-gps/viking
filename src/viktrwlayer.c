@@ -3136,6 +3136,9 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     return TRUE;
   }
 
+  if ( !vtl->vl.visible || !vtl->waypoints_visible )
+    return FALSE;
+
   if ( vtl->current_wp && vtl->current_wp->visible )
   {
     /* first check if current WP is within area (other may be 'closer', but we want to move the current) */
@@ -3496,6 +3499,9 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     return FALSE;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+
+  if ( !vtl->vl.visible || !vtl->tracks_visible )
     return FALSE;
 
   if ( vtl->current_tpl )
