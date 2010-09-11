@@ -107,6 +107,11 @@ _start_element (GMarkupParseContext *context,
 	{
 		class_name = g_strdup(attribute_values[0]);
 		gtype = g_type_from_name (class_name);
+		if (gtype == 0)
+		{
+			g_warning("Unknown GObject type '%s'", class_name);
+			return;
+		}
 	}
 	if (strcmp(element_name, "property") == 0 && gtype != 0)
 	{
