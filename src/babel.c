@@ -316,7 +316,7 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
   gchar *cmd;
   gchar **args2;
   
-  if (!a_file_export(vt, name_src, FILE_TYPE_GPX)) {
+  if (!a_file_export(vt, name_src, FILE_TYPE_GPX, NULL, NULL)) {
     g_warning("%s(): error exporting to %s", __FUNCTION__, name_src);
     return(FALSE);
   }
@@ -383,7 +383,7 @@ gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **
   GError *error = NULL;
   gint babel_stdout;
 
-  if (!a_file_export(vt, name_src, FILE_TYPE_GPX)) {
+  if (!a_file_export(vt, name_src, FILE_TYPE_GPX, NULL, NULL)) {
     g_warning("%s(): error exporting to %s", __FUNCTION__, name_src);
     return(FALSE);
   }

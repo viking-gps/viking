@@ -644,7 +644,7 @@ gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
   return FALSE;
 }
 
-gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type )
+gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type, VikTrack *vt, const gchar *trackname )
 {
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
@@ -653,6 +653,9 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_ty
       a_gpsmapper_write_file ( vtl, f );
     else if ( file_type == FILE_TYPE_GPX )
       a_gpx_write_file ( vtl, f );
+    else if ( file_type == FILE_TYPE_GPX_TRACK ) {
+      a_gpx_write_track_file ( trackname, vt, f );
+    }
     else
       a_gpspoint_write_file ( vtl, f );
     fclose ( f );
