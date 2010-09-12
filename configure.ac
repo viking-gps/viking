@@ -42,6 +42,8 @@ AC_TYPE_MODE_T
 AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([floor gethostbyname memset mkdtemp pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
+AC_CHECK_LIB(m, tan)
+AC_CHECK_LIB(z, inflate)
 
 # Expat
 AM_WITH_EXPAT
