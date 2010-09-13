@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-function check_success()
+check_success ()
 {
   expected=$1
   shift
@@ -16,7 +16,7 @@ function check_success()
   done
 }
 
-function check_failure()
+check_failure ()
 {
   expected=$1
   shift
