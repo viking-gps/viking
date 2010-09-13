@@ -207,7 +207,6 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_remove ( tmpfilename );
     unlock_file ( tmpfilename );
     g_free ( tmpfilename );
-    g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
   }
 
@@ -218,8 +217,9 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 #else
     utimes ( fn, NULL ); /* update mtime of local copy */
 #endif
-  } else
+  } else {
     g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
+  }
   unlock_file ( tmpfilename );
   g_free ( tmpfilename );
 
