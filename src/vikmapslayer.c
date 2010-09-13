@@ -905,35 +905,52 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         return -1;
       }
 
-      if ( mdi->redownload == REDOWNLOAD_ALL)
-        g_remove ( mdi->filename_buf );
+      if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == FALSE ) {
+        need_download = TRUE;
+        remove_mem_cache = TRUE;
 
-      else if ( (mdi->redownload == REDOWNLOAD_BAD) && (g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == TRUE) )
-      {
-        /* see if this one is bad or what */
-        GError *gx = NULL;
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( mdi->filename_buf, &gx );
-        if (gx || (!pixbuf))
-          g_remove ( mdi->filename_buf );
-        if ( pixbuf )
-          g_object_unref ( pixbuf );
-        if ( gx )
-          g_error_free ( gx );
+      } else {  /* in case map file already exists */
+        switch (mdi->redownload) {
+          case REDOWNLOAD_NONE:
+            continue;
+
+          case REDOWNLOAD_BAD:
+          {
+            /* see if this one is bad or what */
+            GError *gx = NULL;
+            GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( mdi->filename_buf, &gx );
+            if (gx || (!pixbuf)) {
+              g_remove ( mdi->filename_buf );
+              need_download = TRUE;
+              remove_mem_cache = TRUE;
+              g_error_free ( gx );
+
+            } else {
+              g_object_unref ( pixbuf );
+            }
+            break;
+          }
+
+          case REDOWNLOAD_NEW:
+            need_download = TRUE;
+            remove_mem_cache = TRUE;
+            break;
+
+          case REDOWNLOAD_ALL:
+            /* FIXME: need a better way than to erase file in case of server/network problem */
+            g_remove ( mdi->filename_buf );
+            need_download = TRUE;
+            remove_mem_cache = TRUE;
+            break;
+
+          case DOWNLOAD_OR_REFRESH:
+            remove_mem_cache = TRUE;
+            break;
+
+          default:
+            g_warning ( "redownload state %d unknown\n", mdi->redownload);
+        }
       }
-
-      if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == FALSE )
-      {
-        need_download = TRUE;
-        if (( mdi->redownload != REDOWNLOAD_NONE ) &&
-            ( mdi->redownload != DOWNLOAD_OR_REFRESH ))
-          remove_mem_cache = TRUE;
-      } else if ( mdi->redownload == DOWNLOAD_OR_REFRESH ) {
-        remove_mem_cache = TRUE;
-      } else if ( mdi->redownload == REDOWNLOAD_NEW) {
-        need_download = TRUE;
-        remove_mem_cache = TRUE;
-      } else
-        continue;
 
       mdi->mapcoord.x = x; mdi->mapcoord.y = y;
 
