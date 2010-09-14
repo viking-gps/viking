@@ -16,6 +16,31 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+ /**
+  * SECTION:vikslippymapsource
+  * @short_description: the class for SlippyMap oriented map sources
+  * 
+  * The #VikSlippyMapSource class handles slippy map oriented map sources.
+  * The related service is tile oriented, à la Google.
+  * 
+  * The tiles are in 'google spherical mercator', which is
+  * basically a mercator projection that assumes a spherical earth.
+  * http://docs.openlayers.org/library/spherical_mercator.html
+  * 
+  * Such service is also a type of TMS (Tile Map Service) as defined in
+  * OSGeo's wiki.
+  * http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
+  * But take care that the Y axis is inverted, ie the origin is at top-left
+  * corner.
+  * Following this specification, the protocol handled by this class
+  * follows the global-mercator profile.
+  * 
+  * You can also find many interesting information on the OSM's wiki.
+  * http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+  * http://wiki.openstreetmap.org/wiki/Setting_up_TMS
+  */
+  
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
