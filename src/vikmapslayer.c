@@ -526,7 +526,7 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
     if (vik_map_source_get_drawmode(map) != vp_drawmode) {
       const gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), vik_map_source_get_drawmode(map));
       gchar *msg = g_strdup_printf(_("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it."), drawmode_name);
-      a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
+      a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vp), msg );
       g_free(msg);
     }
   }
