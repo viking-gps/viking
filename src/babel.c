@@ -221,7 +221,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
       args[i++] = "-o";
       args[i++] = "gpx";
       args[i++] = "-f";
-      args[i++] = from;
+      args[i++] = (char *)from;
       args[i++] = "-F";
       args[i++] = name_dst;
       args[i] = NULL;
@@ -446,7 +446,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
       args[i++] = "-f";
       args[i++] = name_src;
       args[i++] = "-F";
-      args[i++] = to;
+      args[i++] = (char *)to;
       args[i] = NULL;
 
       ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
