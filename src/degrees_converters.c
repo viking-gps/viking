@@ -178,7 +178,7 @@ gdouble convert_dms_to_dec(const gchar *dms)
 			gdouble value;
 			ptr = strpbrk (endptr, "0123456789,.");
 			if (ptr != NULL) {
-				value = g_strtod(ptr, &endptr);
+			  value = g_strtod((const gchar *)ptr, (gchar **)&endptr);
       			nbFloat++;
       		switch(nbFloat) {
       			case 1:
