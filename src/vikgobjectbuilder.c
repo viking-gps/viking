@@ -77,7 +77,6 @@ static void
 vik_gobject_builder_class_init (VikGobjectBuilderClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
-	GObjectClass* parent_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = vik_gobject_builder_finalize;
 
@@ -150,7 +149,7 @@ _end_element (GMarkupParseContext *context,
 		int i = 0;
 		for (i = 0 ; i < nb_parameters ; i++)
 		{
-			g_free (parameters[i].name);
+			g_free ((gchar *)parameters[i].name);
 			g_value_unset (&(parameters[i].value));
 		}
 		g_free (parameters);
@@ -201,7 +200,7 @@ _text (GMarkupParseContext *context,
 		{
 			/* store new parameter */
 			g_debug("VikGobjectBuilder: store new GParameter for %s: (%s)%s=%*s",
-			        g_type_name(gtype), g_type_name(G_VALUE_TYPE(&gvalue)), property_name, text_len, text);
+			        g_type_name(gtype), g_type_name(G_VALUE_TYPE(&gvalue)), property_name, (gint)text_len, text);
 			nb_parameters++;
 			parameters = g_realloc(parameters, sizeof(GParameter)*nb_parameters);
 			/* parameter name */
