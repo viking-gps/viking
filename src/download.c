@@ -124,7 +124,7 @@ static gboolean lock_file(const char *fn)
 {
 	gboolean locked = FALSE;
 	g_mutex_lock(file_list_mutex);
-	if (g_list_find_custom(file_list, fn, g_strcmp0) == NULL)
+	if (g_list_find_custom(file_list, fn, (GCompareFunc)g_strcmp0) == NULL)
 	{
 		// The filename is not yet locked
 		file_list = g_list_append(file_list, (gpointer)fn),
