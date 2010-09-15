@@ -156,7 +156,7 @@ map_type_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikCoord *
     VikMapTypePrivate *priv = VIK_MAP_TYPE_PRIVATE(self);
 	g_return_if_fail (self != NULL);
 
-	return (priv->map_type.mapcoord_to_center_coord)(src, dest);
+	(priv->map_type.mapcoord_to_center_coord)(src, dest);
 }
 
 static int
@@ -181,8 +181,8 @@ static void
 map_type_download_handle_cleanup (VikMapSource * self, void * handle)
 {
     VikMapTypePrivate *priv = VIK_MAP_TYPE_PRIVATE(self);
-	g_return_val_if_fail (priv != NULL, 0);
+	g_return_if_fail ( priv != NULL );
 
-	return (priv->map_type.download_handle_cleanup)(handle);
+	(priv->map_type.download_handle_cleanup)(handle);
 }
 
