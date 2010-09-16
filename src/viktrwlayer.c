@@ -1029,8 +1029,10 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           if ( drawpoints && dp->vtl->coord_mode == VIK_COORD_UTM && tp->coord.utm_zone != dp->center->utm_zone )
             draw_utm_skip_insignia (  dp->vp, main_gc, x, y);
 
-          if ( dp->vtl->drawmode == DRAWMODE_BY_VELOCITY )
+          if ( dp->vtl->drawmode == DRAWMODE_BY_VELOCITY ) {
             dp->track_gc_iter = calculate_velocity ( dp->vtl, tp, tp2 );
+            main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+          }
 
           if (!useoldvals)
             vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &oldx, &oldy );
@@ -1077,8 +1079,10 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           if ( dp->vtl->coord_mode != VIK_COORD_UTM || tp->coord.utm_zone == dp->center->utm_zone )
           {
             vik_viewport_coord_to_screen ( dp->vp, &(tp->coord), &x, &y );
-            if ( dp->vtl->drawmode == DRAWMODE_BY_VELOCITY )
+            if ( dp->vtl->drawmode == DRAWMODE_BY_VELOCITY ) {
               dp->track_gc_iter = calculate_velocity ( dp->vtl, tp, tp2 );
+              main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+            }
 
             if ( drawing_white_background )
               vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
