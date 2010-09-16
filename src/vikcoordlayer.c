@@ -332,6 +332,17 @@ void vik_coord_layer_draw ( VikCoordLayer *vcl, gpointer data )
       max.lat = (topleft.lat > topright.lat) ? topleft.lat : topright.lat;
     }
 
+    /* Can zoom out more than whole world and so the above can give invalid positions */
+    /* Restrict values properly so drawing doesn't go into a near 'infinite' loop */
+    if ( min.lon < -180.0 )
+      min.lon = -180.0;
+    if ( max.lon > 180.0 )
+      max.lon = 180.0;
+    if ( min.lat < -90.0 )
+      min.lat = -90.0;
+    if ( max.lat > 90.0 )
+      max.lat = 90.0;
+
     lon = ((double) ((long) ((min.lon)/ vcl->deg_inc))) * vcl->deg_inc;
     ll.lon = ll2.lon = lon;
 
