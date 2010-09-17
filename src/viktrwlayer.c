@@ -3955,15 +3955,19 @@ void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, g
       new_map = TRUE;
   }
 
-  /* fill-ins for far apart points */
-  GList *cur_rect, *next_rect;
   GList *fillins = NULL;
-  for (cur_rect = rects_to_download;
-      (next_rect = cur_rect->next) != NULL;
-      cur_rect = cur_rect->next) {
-    if ((wh.lon < ABS(GLRECT(cur_rect)->center.east_west - GLRECT(next_rect)->center.east_west)) ||
-        (wh.lat < ABS(GLRECT(cur_rect)->center.north_south - GLRECT(next_rect)->center.north_south))) {
-      fillins = add_fillins(fillins, &GLRECT(cur_rect)->center, &GLRECT(next_rect)->center, &wh);
+  /* 'fillin' doesn't work in UTM mode - potentially ending up in massive loop continually allocating memory - hence don't do it */
+  /* seems that ATM the function get_next_coord works only for LATLON */
+  if ( cur_coord->mode == VIK_COORD_LATLON ) {
+    /* fill-ins for far apart points */
+    GList *cur_rect, *next_rect;
+    for (cur_rect = rects_to_download;
+	 (next_rect = cur_rect->next) != NULL;
+	 cur_rect = cur_rect->next) {
+      if ((wh.lon < ABS(GLRECT(cur_rect)->center.east_west - GLRECT(next_rect)->center.east_west)) ||
+	  (wh.lat < ABS(GLRECT(cur_rect)->center.north_south - GLRECT(next_rect)->center.north_south))) {
+	fillins = add_fillins(fillins, &GLRECT(cur_rect)->center, &GLRECT(next_rect)->center, &wh);
+      }
     }
   }
 
