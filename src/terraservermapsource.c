@@ -187,7 +187,8 @@ _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xmpp, gdou
 	
 	TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(self);
 	int type = priv->type;
-	g_assert ( src->mode == VIK_COORD_UTM );
+	if ( src->mode == VIK_COORD_UTM )
+		return FALSE;
 
 	if ( xmpp != ympp )
 		return FALSE;
