@@ -3969,7 +3969,8 @@ void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, g
 	fillins = add_fillins(fillins, &GLRECT(cur_rect)->center, &GLRECT(next_rect)->center, &wh);
       }
     }
-  }
+  } else
+    g_message("%s: this feature works only in Mercator mode", __FUNCTION__);
 
   if (fillins) {
     GList *iter = fillins;
