@@ -1726,76 +1726,76 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Goto Center of Layer") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_Goto Center of Layer") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_centerize), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Goto Waypoint") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Goto _Waypoint") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
   export_submenu = gtk_menu_new ();
-  item = gtk_menu_item_new_with_label ( _("Export layer") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_Export Layer") );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), export_submenu );
   
-  item = gtk_menu_item_new_with_label ( _("Export as GPSPoint") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Export as GPS_Point") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpspoint), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Export as GPSMapper") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Export as GPS_Mapper") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpsmapper), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Export as GPX") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Export as _GPX") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpx), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("New Waypoint") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_New Waypoint") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_GEONAMES
   wikipedia_submenu = gtk_menu_new();
-  item = gtk_menu_item_new_with_label ( _("Add Wikipedia Waypoints") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_Add Wikipedia Waypoints") );
   gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
   gtk_widget_show(item);
   gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), wikipedia_submenu);
 
-  item = gtk_menu_item_new_with_label ( _("Within layer bounds") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Within _Layer Bounds") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_layer), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Within current view") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Within _Current View") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
   gtk_widget_show ( item );
 #endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP 
-  item = gtk_menu_item_new_with_label ( _("Upload to OSM") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Upload to _OSM") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 #endif
 
   item = a_acquire_trwlayer_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vlp,
-	vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
+				   vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
   if ( item ) {
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
   }  
 
   item = a_acquire_trwlayer_track_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vlp,
-	vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
+					 vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
   if ( item ) {
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
