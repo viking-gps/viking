@@ -62,8 +62,8 @@ void osm_init () {
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", 17,
                                 "label", "OpenStreetMap (Cycle)",
-                                "hostname", "thunderflames.org/tiles/cycle/",
-                                "url", "%d/%d/%d.png",
+                                "hostname", "b.tile.opencyclemap.org",
+                                "url", "/cycle/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
                                 NULL));
 
