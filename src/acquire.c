@@ -399,7 +399,7 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
     if ( filters[i]->inputtype == inputtype ) {
       if ( ! menu_item ) { /* do this just once, but return NULL if no filters */
         menu = gtk_menu_new();
-        menu_item = gtk_menu_item_new_with_label ( menu_title );
+        menu_item = gtk_menu_item_new_with_mnemonic ( menu_title );
         gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), menu );
       }
 
@@ -416,7 +416,7 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
 
 GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
 {
-  return acquire_build_menu ( vw, vlp, vvp, vtl, NULL, "Filter", VIK_DATASOURCE_INPUTTYPE_TRWLAYER );
+  return acquire_build_menu ( vw, vlp, vvp, vtl, NULL, "_Filter", VIK_DATASOURCE_INPUTTYPE_TRWLAYER );
 }
 
 GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
