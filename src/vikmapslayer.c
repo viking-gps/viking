@@ -1197,15 +1197,15 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
         GtkWidget *item;
         vml->dl_right_click_menu = GTK_MENU ( gtk_menu_new () );
 
-        item = gtk_menu_item_new_with_label ( _("Redownload bad map(s)") );
+        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _Bad Map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
-        item = gtk_menu_item_new_with_label ( _("Redownload new map(s)") );
+        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _New Map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_new), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
-        item = gtk_menu_item_new_with_label ( _("Redownload all map(s)") );
+        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _All Map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
       }
