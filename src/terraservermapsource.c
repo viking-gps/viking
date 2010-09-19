@@ -52,7 +52,7 @@ enum
   PROP_TYPE,
 };
 
-G_DEFINE_TYPE_EXTENDED (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
+G_DEFINE_TYPE (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
 
 static void
 terraserver_map_source_init (TerraserverMapSource *self)

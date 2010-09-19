@@ -85,7 +85,7 @@ enum
   PROP_CHECK_FILE_SERVER_TIME,
 };
 
-G_DEFINE_TYPE_EXTENDED (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
+G_DEFINE_TYPE (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
 
 static void
 vik_slippy_map_source_init (VikSlippyMapSource *self)
