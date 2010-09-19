@@ -2689,7 +2689,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     {
       /* could be a right-click using the tool */
       if ( vlp != NULL ) {
-        item = gtk_menu_item_new_with_label ( _("Goto") );
+        item = gtk_menu_item_new_with_mnemonic ( _("_Goto") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_waypoint), pass_along );
         gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
         gtk_widget_show ( item );
@@ -2697,7 +2697,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
       if ( is_valid_geocache_name ( (gchar *) sublayer ) )
       {
-        item = gtk_menu_item_new_with_label ( _("Visit Geocache Webpage") );
+        item = gtk_menu_item_new_with_mnemonic ( _("_Visit Geocache Webpage") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_gc_webpage), pass_along );
         gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
         gtk_widget_show ( item );
@@ -2797,7 +2797,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-    item = gtk_menu_item_new_with_label ( _("New Waypoint") );
+    item = gtk_menu_item_new_with_mnemonic ( _("_New Waypoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
