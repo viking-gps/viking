@@ -578,20 +578,20 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Upload to GPS") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_Upload to GPS") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_upload_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Download from GPS") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Download from _GPS") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_download_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
-  item = gtk_menu_item_new_with_label ( vgl->realtime_tracking  ?
-                                       "Stop realtime tracking" :
-                                       "Start realtime tracking" );
+  item = gtk_menu_item_new_with_mnemonic ( vgl->realtime_tracking  ?
+                                           "_Stop Realtime Tracking" :
+                                           "_Start Realtime Tracking" );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_start_stop_tracking_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
@@ -601,17 +601,17 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
   gtk_widget_show ( item );
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 
-  item = gtk_menu_item_new_with_label ( _("Empty Upload") );
+  item = gtk_menu_item_new_with_mnemonic ( _("E_mpty Upload") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_upload_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Empty Download") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_Empty Download") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_download_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Empty All") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Empty _All") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_all_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
