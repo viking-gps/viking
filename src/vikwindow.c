@@ -540,7 +540,7 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
     if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_METRES )
       g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dm"), lat, lon, alt );
     else
-      g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dft"), lat, lon, (int)FEET_TO_METERS(alt) );
+      g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dft"), lat, lon, (int)VIK_METERS_TO_FEET(alt) );
   }
   else
     g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s"), lat, lon );

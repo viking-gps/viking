@@ -101,7 +101,7 @@ static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
       tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt );
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt ) / FEET_IN_METER;
+      tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt ) / VIK_FEET_IN_METER;
       break;
     default:
       tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt );
@@ -271,7 +271,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
     gtk_spin_button_set_value ( tpwin->alt, tp->altitude );
     break;
   case VIK_UNITS_HEIGHT_FEET:
-    gtk_spin_button_set_value ( tpwin->alt, tp->altitude*FEET_IN_METER );
+    gtk_spin_button_set_value ( tpwin->alt, VIK_METERS_TO_FEET(tp->altitude) );
     break;
   default:
     gtk_spin_button_set_value ( tpwin->alt, tp->altitude );
@@ -369,7 +369,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
     g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
     break;
   case VIK_UNITS_HEIGHT_FEET:
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f feet", FEET_TO_METERS(tp->vdop) );
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f feet", VIK_METERS_TO_FEET(tp->vdop) );
     break;
   default:
     g_snprintf ( tmp_str, sizeof(tmp_str), "--" );

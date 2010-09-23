@@ -407,7 +407,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
       sprintf(s, "%8dm", (int)(mina + (LINES-i)*(maxa-mina)/LINES));
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      sprintf(s, "%8dft", (int)((mina + (LINES-i)*(maxa-mina)/LINES)*FEET_IN_METER));
+      sprintf(s, "%8dft", (int)VIK_METERS_TO_FEET(mina + (LINES-i)*(maxa-mina)/LINES));
       break;
     default:
       sprintf(s, "--");
@@ -893,7 +893,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet - %.0f feet", FEET_TO_METERS(min_alt), FEET_TO_METERS(max_alt) );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet - %.0f feet", VIK_METERS_TO_FEET(min_alt), VIK_METERS_TO_FEET(max_alt) );
       break;
     default:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );
@@ -911,7 +911,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet / %.0f feet", FEET_TO_METERS(max_alt), FEET_TO_METERS(min_alt) );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet / %.0f feet", VIK_METERS_TO_FEET(max_alt), VIK_METERS_TO_FEET(min_alt) );
       break;
     default:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );
