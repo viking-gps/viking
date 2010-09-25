@@ -397,7 +397,13 @@ static void draw_sync ( VikWindow *vw )
 static void draw_status ( VikWindow *vw )
 {
   static gchar zoom_level[22];
-  g_snprintf ( zoom_level, 22, "%.3f/%.3f %s", vik_viewport_get_xmpp (vw->viking_vvp), vik_viewport_get_ympp(vw->viking_vvp), vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ? _("mpp") : _("pixelfact") );
+  gdouble xmpp = vik_viewport_get_xmpp (vw->viking_vvp);
+  gdouble ympp = vik_viewport_get_ympp(vw->viking_vvp);
+  gchar *unit = vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ? _("mpp") : _("pixelfact");
+  if (xmpp != ympp)
+    g_snprintf ( zoom_level, 22, "%.3f/%.3f %s", xmpp, ympp, unit );
+  else
+    g_snprintf ( zoom_level, 22, "%.3f %s", xmpp, unit );
   if ( vw->current_tool == TOOL_LAYER )
     vik_statusbar_set_message ( vw->viking_vs, 0, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].name );
   else
