@@ -692,9 +692,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     gchar *path_buf = g_malloc ( max_path_len * sizeof(char) );
 
     if ( (!existence_only) && vml->autodownload  && should_start_autodownload(vml, vvp)) {
-#ifdef DEBUG
-      fputs(stderr, "DEBUG: Starting autodownload\n");
-#endif
+      g_debug("%s: Starting autodownload", __FUNCTION__);
       if ( vik_map_source_supports_if_modified_since (map) )
         // Try to download newer tiles
         start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NEW );
