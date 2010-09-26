@@ -609,8 +609,38 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
                      trw_layer_new_track_gcs ( vtl, vp );
                    }
                    break;
-    case PARAM_VMIN: vtl->velocity_min = data.d; break;
-    case PARAM_VMAX: vtl->velocity_max = data.d; break;
+    case PARAM_VMIN:
+    {
+      /* Convert to store internally
+         NB file operation always in internal units (metres per second) */
+      vik_units_speed_t speed_units = a_vik_get_units_speed ();
+      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
+	vtl->velocity_min = data.d;
+      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
+	vtl->velocity_min = VIK_KPH_TO_MPS(data.d);
+      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
+	vtl->velocity_min = VIK_MPH_TO_MPS(data.d);
+      else
+	/* Knots */
+	vtl->velocity_min = VIK_KNOTS_TO_MPS(data.d);
+      break;
+    }
+    case PARAM_VMAX:
+    {
+      /* Convert to store internally
+         NB file operation always in internal units (metres per second) */
+      vik_units_speed_t speed_units = a_vik_get_units_speed ();
+      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
+	vtl->velocity_max = data.d;
+      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
+	vtl->velocity_max = VIK_KPH_TO_MPS(data.d);
+      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
+	vtl->velocity_max = VIK_MPH_TO_MPS(data.d);
+      else
+	/* Knots */
+	vtl->velocity_max = VIK_KNOTS_TO_MPS(data.d);
+      break;
+    }
     case PARAM_TBGC: gdk_gc_set_rgb_fg_color(vtl->track_bg_gc, &(data.c)); break;
     case PARAM_DLA: vtl->drawlabels = data.b; break;
     case PARAM_DI: vtl->drawimages = data.b; break;
@@ -654,8 +684,38 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_DL: rv.b = vtl->drawlines; break;
     case PARAM_LT: rv.u = vtl->line_thickness; break;
     case PARAM_BLT: rv.u = vtl->bg_line_thickness; break;
-    case PARAM_VMIN: rv.d = vtl->velocity_min; break;
-    case PARAM_VMAX: rv.d = vtl->velocity_max; break;
+    case PARAM_VMIN:
+    {
+      /* Convert to store internally
+         NB file operation always in internal units (metres per second) */
+      vik_units_speed_t speed_units = a_vik_get_units_speed ();
+      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
+	rv.d = vtl->velocity_min;
+      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
+	rv.d = VIK_MPS_TO_KPH(vtl->velocity_min);
+      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
+	rv.d = VIK_MPS_TO_MPH(vtl->velocity_min);
+      else
+	/* Knots */
+	rv.d = VIK_MPS_TO_KNOTS(vtl->velocity_min);
+      break;
+    }
+    case PARAM_VMAX:
+    {
+      /* Convert to store internally
+         NB file operation always in internal units (metres per second) */
+      vik_units_speed_t speed_units = a_vik_get_units_speed ();
+      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
+	rv.d = vtl->velocity_max;
+      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
+	rv.d = VIK_MPS_TO_KPH(vtl->velocity_max);
+      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
+	rv.d = VIK_MPS_TO_MPH(vtl->velocity_max);
+      else
+	/* Knots */
+	rv.d = VIK_MPS_TO_KNOTS(vtl->velocity_max);
+      break;
+    }
     case PARAM_DLA: rv.b = vtl->drawlabels; break;
     case PARAM_DI: rv.b = vtl->drawimages; break;
     case PARAM_TBGC: vik_gc_get_fg_color(vtl->track_bg_gc, &(rv.c)); break;
