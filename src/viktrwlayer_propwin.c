@@ -53,7 +53,7 @@
 #define PROFILE_WIDTH 600
 #define PROFILE_HEIGHT 300
 #define MIN_ALT_DIFF 100.0
-#define MIN_SPEED_DIFF 20.0
+#define MIN_SPEED_DIFF 5.0
 
 typedef struct _propsaved {
   gboolean saved;
