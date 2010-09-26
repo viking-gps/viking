@@ -213,8 +213,10 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
   }
   if (!handle)
      curl_easy_cleanup ( curl );
-  if (curl_send_headers)
+  if (curl_send_headers) {
     curl_slist_free_all(curl_send_headers);
+    curl_easy_setopt ( curl, CURLOPT_HTTPHEADER , NULL);
+  }
   return res;
 }
 
