@@ -173,12 +173,16 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     }
     if (options->use_etag) {
       gchar *etag_filename = g_strdup_printf("%s.etag", fn);
-      gsize etag_length;
+      gsize etag_length = 0;
       g_file_get_contents (etag_filename, &(file_options.etag), &etag_length, NULL);
+      g_free (etag_filename);
+      etag_filename = NULL;
 
       /* check if etag is short enough */
-      if (etag_length > 100)
+      if (etag_length > 100) {
         g_free(file_options.etag);
+        file_options.etag = NULL;
+      }
 
       /* TODO: should check that etag is a valid string */
     }
@@ -194,12 +198,16 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   {
     g_debug("%s: Couldn't take lock on temporary file \"%s\"\n", __FUNCTION__, tmpfilename);
     g_free ( tmpfilename );
+    if (options->use_etag)
+      g_free ( file_options.etag );
     return -4;
   }
   f = g_fopen ( tmpfilename, "w+b" );  /* truncate file and open it */
   if ( ! f ) {
     g_warning("Couldn't open temporary file \"%s\": %s", tmpfilename, g_strerror(errno));
     g_free ( tmpfilename );
+    if (options->use_etag)
+      g_free ( file_options.etag );
     return -4;
   }
 
@@ -238,6 +246,8 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       /* server returned an etag value */
       gchar *etag_filename = g_strdup_printf("%s.etag", fn);
       g_file_set_contents (etag_filename, file_options.new_etag, -1, NULL);
+      g_free (etag_filename);
+      etag_filename = NULL;
     }
   }
 
