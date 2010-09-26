@@ -343,7 +343,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
 	    break;
 	  case VIK_UNITS_HEIGHT_FEET:
-	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ) / VIK_FEET_IN_METER;
+	    wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
 	    break;
 	  default:
 	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
@@ -382,7 +382,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
 	break;
       case VIK_UNITS_HEIGHT_FEET:
-	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ) / VIK_FEET_IN_METER;
+	wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
 	break;
       default:
 	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );

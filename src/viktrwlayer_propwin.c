@@ -536,16 +536,16 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      sprintf(s, "%8dkm/h", (int)((mins + (LINES-i)*(maxs-mins)/LINES)*3.6));
+      sprintf(s, "%8dkm/h", (int)(VIK_MPS_TO_KPH((mins + (LINES-i)*(maxs-mins)/LINES))));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      sprintf(s, "%8dmph", (int)((mins + (LINES-i)*(maxs-mins)/LINES)*2.23693629));
+      sprintf(s, "%8dmph", (int)(VIK_MPS_TO_MPH(mins + (LINES-i)*(maxs-mins)/LINES)));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       sprintf(s, "%8dm/s", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      sprintf(s, "%8dknots", (int)((mins + (LINES-i)*(maxs-mins)/LINES)*1.94384449));
+      sprintf(s, "%8dknots", (int)(VIK_MPS_TO_KNOTS(mins + (LINES-i)*(maxs-mins)/LINES)));
       break;
     default:
       sprintf(s, "--");
@@ -829,16 +829,16 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   else {
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", tmp_speed*3.6 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", tmp_speed*2.23693629 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", tmp_speed*1.94384449 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
       break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
@@ -853,16 +853,16 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   else {
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", tmp_speed*3.6 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", tmp_speed* 2.23693629 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", tmp_speed*1.94384449 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
       break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );

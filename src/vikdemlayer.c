@@ -297,7 +297,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
       /* Convert to store internally
          NB file operation always in internal units (metres) */
       if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
-        vdl->min_elev = data.d / VIK_FEET_IN_METER;
+        vdl->min_elev = VIK_FEET_TO_METERS(data.d);
       else
         vdl->min_elev = data.d;
       break;
@@ -305,7 +305,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
       /* Convert to store internally
          NB file operation always in internal units (metres) */
       if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
-         vdl->max_elev = data.d / VIK_FEET_IN_METER;
+        vdl->max_elev = VIK_FEET_TO_METERS(data.d);
       else
         vdl->max_elev = data.d;
       break;
