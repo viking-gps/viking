@@ -42,7 +42,7 @@
 #include "globals.h"
 #include "curl_download.h"
 
-gchar *curl_download_user_agent;
+gchar *curl_download_user_agent = NULL;
 
 /*
  * Even if writing to FILE* is supported by libcurl by default,
@@ -215,6 +215,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
      curl_easy_cleanup ( curl );
   if (curl_send_headers) {
     curl_slist_free_all(curl_send_headers);
+    curl_send_headers = NULL;
     curl_easy_setopt ( curl, CURLOPT_HTTPHEADER , NULL);
   }
   return res;
