@@ -169,7 +169,8 @@ static gboolean preferences_load_from_file()
     gchar *key, *val;
     VikLayerTypedParamData *oldval, *newval;
     while ( ! feof (f) ) {
-      fgets(buf,sizeof(buf),f);
+      if (fgets(buf,sizeof(buf),f) == NULL)
+        break;
       if ( preferences_load_parse_param(buf, &key, &val ) ) {
         // if it's not in there, ignore it
         oldval = g_hash_table_lookup ( values, key );
