@@ -173,8 +173,8 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
       if (options->use_etag) {
         if (file_options->etag != NULL) {
           /* add an header on the HTTP request */
-          char str[50];
-          g_snprintf(str, 50, "If-None-Match: %s", file_options->etag);
+          char str[60];
+          g_snprintf(str, 60, "If-None-Match: %s", file_options->etag);
           curl_send_headers = curl_slist_append(curl_send_headers, str);
           curl_easy_setopt ( curl, CURLOPT_HTTPHEADER , curl_send_headers);
         }
