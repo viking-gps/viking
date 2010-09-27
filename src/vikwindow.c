@@ -2189,10 +2189,10 @@ static GtkActionEntry entries[] = {
   { "SaveExit",  GTK_STOCK_QUIT,         N_("Save and Exit"),                 NULL, N_("Save and Exit the program"),                             (GCallback)save_file_and_exit          },
 
   { "GotoDefaultLocation", GTK_STOCK_HOME, N_("Go to the _Default Location"),  NULL,         N_("Go to the default location"),                     (GCallback)goto_default_location },
-  { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to Location..."),    	      NULL,         N_("Go to address/place using text search"),        (GCallback)goto_address       },
+  { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to _Location..."),    	      NULL,         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
-  { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Background Color..."),       NULL,         NULL,                                           (GCallback)set_bg_color          },
+  { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Bac_kground Color..."),      NULL,         NULL,                                           (GCallback)set_bg_color          },
   { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To..."),               "<control>Z", NULL,                                           (GCallback)zoom_to_cb            },
@@ -2214,10 +2214,10 @@ static GtkActionEntry entries[] = {
   { "Zoom8192",  NULL,                   N_("8192"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom16384", NULL,                   N_("16384"),                         NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom32768", NULL,                   N_("32768"),                         NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "PanNorth",  NULL,                   N_("Pan North"),                  "<control>Up", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanEast",  NULL,                    N_("Pan East"),                   "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanSouth",  NULL,                   N_("Pan South"),                  "<control>Down", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanWest",  NULL,                    N_("Pan West"),                   "<control>Left", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanNorth",  NULL,                   N_("Pan _North"),                "<control>Up",    NULL,                                           (GCallback)draw_pan_cb },
+  { "PanEast",   NULL,                   N_("Pan _East"),                 "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanSouth",  NULL,                   N_("Pan _South"),                "<control>Down",  NULL,                                           (GCallback)draw_pan_cb },
+  { "PanWest",   NULL,                   N_("Pan _West"),                 "<control>Left",  NULL,                                           (GCallback)draw_pan_cb },
   { "BGJobs",    GTK_STOCK_EXECUTE,      N_("Background _Jobs"),              NULL,         NULL,                                           (GCallback)a_background_show_window },
 
   { "Cut",       GTK_STOCK_CUT,          N_("Cu_t"),                          NULL,         NULL,                                           (GCallback)menu_cut_layer_cb     },
@@ -2248,10 +2248,10 @@ static GtkRadioActionEntry tool_entries[] = {
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ShowScale", NULL,                        N_("_Show Scale"),               "F5",         N_("Show Scale"),                                           (GCallback)set_draw_scale, TRUE   },
-  { "ShowCenterMark", NULL,                   N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                                           (GCallback)set_draw_centermark, TRUE   },
-  { "FullScreen",    GTK_STOCK_FULLSCREEN,    N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),                                           (GCallback)full_screen_cb, FALSE },
-  { "ViewSidePanel", GTK_STOCK_INDEX,   N_("Show Side Panel"),                 "F9",         N_("Show Side Panel"),                                           (GCallback)view_side_panel_cb, TRUE    },
+  { "ShowScale",      NULL,                 N_("_Show Scale"),               "F5",         N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
+  { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)set_draw_centermark, TRUE },
+  { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },
+  { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side Pa_nel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
 };
 
 #include "menu.xml.h"
