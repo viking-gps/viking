@@ -268,7 +268,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 }
 
 /* 1 << (x) is like a 2**(x) */
-#define GZ(x) ((1<<x))
+#define GZ(x) ((1<<(x)))
 
 static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), GZ(6), GZ(7), GZ(8), GZ(9),
                                            GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15), GZ(16), GZ(17) };
