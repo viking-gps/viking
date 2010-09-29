@@ -1080,6 +1080,8 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
     a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vdl), tmp,
 		(vik_thr_func) dem_download_thread, p,
 		(vik_thr_free_func) free_dem_download_params, NULL, 1 );
+
+    g_free ( tmp );
   }
 
   g_free ( dem_file );
