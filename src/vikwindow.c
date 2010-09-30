@@ -403,7 +403,11 @@ static void draw_status ( VikWindow *vw )
   if (xmpp != ympp)
     g_snprintf ( zoom_level, 22, "%.3f/%.3f %s", xmpp, ympp, unit );
   else
-    g_snprintf ( zoom_level, 22, "%.3f %s", xmpp, unit );
+    if ( (int)xmpp - xmpp < 0.0 )
+      g_snprintf ( zoom_level, 22, "%.3f %s", xmpp, unit );
+    else
+      /* xmpp should be a whole number so don't show useless .000 bit */
+      g_snprintf ( zoom_level, 22, "%d %s", (int)xmpp, unit );
   if ( vw->current_tool == TOOL_LAYER )
     vik_statusbar_set_message ( vw->viking_vs, 0, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].name );
   else
