@@ -12,7 +12,7 @@ drawcentermark=t
 ~Layer Map
 name=Terraserver Topo
 mode=2
-directory=/home/bonnefil/.viking-maps/
+directory=
 alpha=255
 autodownload=t
 mapzoom=0
@@ -22,7 +22,7 @@ mapzoom=0
 ~Layer Map
 name=Terraserver Aerial
 mode=1
-directory=/home/bonnefil/.viking-maps/
+directory=
 alpha=255
 autodownload=t
 mapzoom=0
@@ -32,7 +32,7 @@ mapzoom=0
 ~Layer Map
 name=Terraserver Urban Area
 mode=4
-directory=/home/bonnefil/.viking-maps/
+directory=
 alpha=255
 autodownload=t
 mapzoom=0
