@@ -536,16 +536,16 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      sprintf(s, "%8dkm/h", (int)(VIK_MPS_TO_KPH((mins + (LINES-i)*(maxs-mins)/LINES))));
+      sprintf(s, "%6.1fkm/h", VIK_MPS_TO_KPH(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      sprintf(s, "%8dmph", (int)(VIK_MPS_TO_MPH(mins + (LINES-i)*(maxs-mins)/LINES)));
+      sprintf(s, "%6.1fmph", VIK_MPS_TO_MPH(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       sprintf(s, "%8dm/s", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      sprintf(s, "%8dknots", (int)(VIK_MPS_TO_KNOTS(mins + (LINES-i)*(maxs-mins)/LINES)));
+      sprintf(s, "%6.1fknots", VIK_MPS_TO_KNOTS(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     default:
       sprintf(s, "--");
