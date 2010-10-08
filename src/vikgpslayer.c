@@ -72,6 +72,7 @@ static void gps_empty_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_download_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_all_cb( gpointer layer_and_vlp[2] );
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
+static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] );
 static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2] );
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp);
 #endif
@@ -599,6 +600,11 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
   item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("Empty _Realtime") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_realtime_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 
   item = gtk_menu_item_new_with_mnemonic ( _("E_mpty Upload") );
@@ -1116,6 +1122,15 @@ static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
 }
+
+#ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
+static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] )
+{
+  VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);
+}
+#endif
 
 static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
 {
