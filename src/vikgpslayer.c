@@ -1124,6 +1124,10 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
+#ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);
+#endif
 }
 
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
