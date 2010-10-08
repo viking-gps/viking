@@ -1311,7 +1311,9 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
     vgl->first_realtime_trackpoint = FALSE;
     create_realtime_trackpoint(vgl, FALSE);
 
+    gdk_threads_enter();
     vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw_children[TRW_REALTIME]));
+    gdk_threads_leave();
   }
 }
 
