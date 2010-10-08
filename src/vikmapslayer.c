@@ -1203,15 +1203,15 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
         GtkWidget *item;
         vml->dl_right_click_menu = GTK_MENU ( gtk_menu_new () );
 
-        item = gtk_menu_item_new_with_label ( _("Redownload bad map(s)") );
+        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _Bad Map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
-        item = gtk_menu_item_new_with_label ( _("Redownload new map(s)") );
+        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _New Map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_new), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
-        item = gtk_menu_item_new_with_label ( _("Redownload all map(s)") );
+        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _All Map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
       }
@@ -1326,20 +1326,20 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Download missing Onscreen Maps") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Download _Missing Onscreen Maps") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_missing_onscreen_maps), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
   if ( vik_map_source_supports_if_modified_since (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
-    item = gtk_menu_item_new_with_label ( _("Download new Onscreen Maps") );
+    item = gtk_menu_item_new_with_mnemonic ( _("Download _New Onscreen Maps") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
   }
 
   /* TODO Add GTK_STOCK_REFRESH icon */
-  item = gtk_menu_item_new_with_label ( _("Reload all Onscreen Maps") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Reload _All Onscreen Maps") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
