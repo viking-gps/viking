@@ -358,7 +358,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf },
 
   { N_("Route Finder"),  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_iscissors_pixbuf },
+    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
 };
 enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 

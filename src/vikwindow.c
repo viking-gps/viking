@@ -2656,7 +2656,7 @@ static struct {
   gchar *stock_id;
 } stock_icons[] = {
   { &begintr_18_pixbuf,		"Begin Track"      },
-  { &iscissors_18_pixbuf,	"Route Finder"     },
+  { &route_finder_18_pixbuf,	"Route Finder"     },
   { &mover_22_pixbuf,		"vik-icon-pan"     },
   { &demdl_18_pixbuf,		"DEM Download/Import"     },
   { &showpic_18_pixbuf,		"Show Picture"      },
