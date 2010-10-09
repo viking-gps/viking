@@ -161,13 +161,13 @@ struct _VikTrwLayer {
   /* track editing tool -- more specifically, moving tps */
   gboolean moving_tp;
 
-  /* magic scissors tool */
-  gboolean magic_scissors_started;
-  VikCoord magic_scissors_coord;
-  gboolean magic_scissors_check_added_track;
-  gchar *magic_scissors_added_track_name;
-  VikTrack *magic_scissors_current_track;
-  gboolean magic_scissors_append;
+  /* route finder tool */
+  gboolean route_finder_started;
+  VikCoord route_finder_coord;
+  gboolean route_finder_check_added_track;
+  gchar *route_finder_added_track_name;
+  VikTrack *route_finder_current_track;
+  gboolean route_finder_append;
 
   gboolean drawlabels;
   gboolean drawimages;
@@ -310,8 +310,8 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gpointer tool_route_finder_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 
 static void cached_pixbuf_free ( CachedPixbuf *cp );
@@ -357,8 +357,8 @@ static VikToolInterface trw_layer_tools[] = {
   { N_("Show Picture"),    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf },
 
-  { N_("Route Finder"),  (VikToolConstructorFunc) tool_magic_scissors_create,  NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_magic_scissors_click, NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
+  { N_("Route Finder"),  (VikToolConstructorFunc) tool_route_finder_create,  NULL, NULL, NULL,
+    (VikToolMouseFunc) tool_route_finder_click, NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
 };
 enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
@@ -936,11 +936,11 @@ VikTrwLayer *vik_trw_layer_new ( gint drawmode )
 
   rv->ct_sync_done = TRUE;
 
-  rv->magic_scissors_started = FALSE;
-  rv->magic_scissors_check_added_track = FALSE;
-  rv->magic_scissors_added_track_name = NULL;
-  rv->magic_scissors_current_track = NULL;
-  rv->magic_scissors_append = FALSE;
+  rv->route_finder_started = FALSE;
+  rv->route_finder_check_added_track = FALSE;
+  rv->route_finder_added_track_name = NULL;
+  rv->route_finder_current_track = NULL;
+  rv->route_finder_append = FALSE;
 
   rv->waypoint_rightclick = FALSE;
   rv->last_tpl = NULL;
@@ -2500,20 +2500,20 @@ void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypo
 }
 void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *tr )
 {
-  if ( vtl->magic_scissors_append && vtl->magic_scissors_current_track ) {
+  if ( vtl->route_finder_append && vtl->route_finder_current_track ) {
     vik_track_remove_dup_points ( tr ); /* make "double point" track work to undo */
-    vik_track_steal_and_append_trackpoints ( vtl->magic_scissors_current_track, tr );
+    vik_track_steal_and_append_trackpoints ( vtl->route_finder_current_track, tr );
     vik_track_free ( tr );
-    vtl->magic_scissors_append = FALSE; /* this means we have added it */
+    vtl->route_finder_append = FALSE; /* this means we have added it */
   } else {
     gchar *new_name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, name);
     vik_trw_layer_add_track ( vtl, new_name, tr );
 
-    if ( vtl->magic_scissors_check_added_track ) {
+    if ( vtl->route_finder_check_added_track ) {
       vik_track_remove_dup_points ( tr ); /* make "double point" track work to undo */
-      if ( vtl->magic_scissors_added_track_name ) /* for google routes */
-        g_free ( vtl->magic_scissors_added_track_name );
-      vtl->magic_scissors_added_track_name = g_strdup(new_name);
+      if ( vtl->route_finder_added_track_name ) /* for google routes */
+        g_free ( vtl->route_finder_added_track_name );
+      vtl->route_finder_added_track_name = g_strdup(new_name);
     }
   }
 }
@@ -2584,8 +2584,9 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name )
     if ( t == vtl->current_track ) {
       vtl->current_track = NULL;
     }
-    if ( t == vtl->magic_scissors_current_track )
-      vtl->magic_scissors_current_track = NULL;
+    if ( t == vtl->route_finder_current_track )
+      vtl->route_finder_current_track = NULL;
+
     /* could be current_tp, so we have to check */
     trw_layer_cancel_tps_of_track ( vtl, trk_name );
 
@@ -2635,7 +2636,7 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
 {
 
   vtl->current_track = NULL;
-  vtl->magic_scissors_current_track = NULL;
+  vtl->route_finder_current_track = NULL;
   if (vtl->current_tp_track_name)
     trw_layer_cancel_current_tp(vtl, FALSE);
   if (vtl->last_tp_track_name)
@@ -2800,18 +2801,18 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
 }
 
 /**
- * extend a track using magic scissors
+ * extend a track using route finder
  */
-static void trw_layer_extend_track_end_ms ( gpointer pass_along[6] )
+static void trw_layer_extend_track_end_route_finder ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
   VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
   VikCoord last_coord = (((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord);
 
   vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, NUM_TOOLS );
-  vtl->magic_scissors_coord =  last_coord;
-  vtl->magic_scissors_current_track = track;
-  vtl->magic_scissors_started = TRUE;
+  vtl->route_finder_coord =  last_coord;
+  vtl->route_finder_current_track = track;
+  vtl->route_finder_started = TRUE;
 
   if ( track->trackpoints )
     goto_coord ( pass_along[1], pass_along[0], pass_along[5], &last_coord) ;
@@ -3777,7 +3778,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_widget_show ( item );
 
     item = gtk_menu_item_new_with_mnemonic ( _("Extend _Using Route Finder") );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end_ms), pass_along );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end_route_finder), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
@@ -4964,51 +4965,51 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
 }
 
 
-/*** Magic Scissors ***/
-static gpointer tool_magic_scissors_create ( VikWindow *vw, VikViewport *vvp)
+/*** Route Finder ***/
+static gpointer tool_route_finder_create ( VikWindow *vw, VikViewport *vvp)
 {
   return vvp;
 }
 
-static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   VikCoord tmp;
   if ( !vtl ) return FALSE;
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &tmp );
-  if ( event->button == 3 && vtl->magic_scissors_current_track ) {
+  if ( event->button == 3 && vtl->route_finder_current_track ) {
     VikCoord *new_end;
-    new_end = vik_track_cut_back_to_double_point ( vtl->magic_scissors_current_track );
+    new_end = vik_track_cut_back_to_double_point ( vtl->route_finder_current_track );
     if ( new_end ) {
-      vtl->magic_scissors_coord = *new_end;
+      vtl->route_finder_coord = *new_end;
       g_free ( new_end );
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       /* remove last ' to:...' */
-      if ( vtl->magic_scissors_current_track->comment ) {
-        gchar *last_to = strrchr ( vtl->magic_scissors_current_track->comment, 't' );
-        if ( last_to && (last_to - vtl->magic_scissors_current_track->comment > 1) ) {
-          gchar *new_comment = g_strndup ( vtl->magic_scissors_current_track->comment,
-                                           last_to - vtl->magic_scissors_current_track->comment - 1);
-          vik_track_set_comment_no_copy ( vtl->magic_scissors_current_track, new_comment );
+      if ( vtl->route_finder_current_track->comment ) {
+        gchar *last_to = strrchr ( vtl->route_finder_current_track->comment, 't' );
+        if ( last_to && (last_to - vtl->route_finder_current_track->comment > 1) ) {
+          gchar *new_comment = g_strndup ( vtl->route_finder_current_track->comment,
+                                           last_to - vtl->route_finder_current_track->comment - 1);
+          vik_track_set_comment_no_copy ( vtl->route_finder_current_track, new_comment );
         }
       }
     }
   }
-  else if ( vtl->magic_scissors_started || (event->state & GDK_CONTROL_MASK && vtl->magic_scissors_current_track) ) {
+  else if ( vtl->route_finder_started || (event->state & GDK_CONTROL_MASK && vtl->route_finder_current_track) ) {
     struct LatLon start, end;
     gchar startlat[G_ASCII_DTOSTR_BUF_SIZE], startlon[G_ASCII_DTOSTR_BUF_SIZE];
     gchar endlat[G_ASCII_DTOSTR_BUF_SIZE], endlon[G_ASCII_DTOSTR_BUF_SIZE];
     gchar *url;
 
-    vik_coord_to_latlon ( &(vtl->magic_scissors_coord), &start );
+    vik_coord_to_latlon ( &(vtl->route_finder_coord), &start );
     vik_coord_to_latlon ( &(tmp), &end );
-    vtl->magic_scissors_coord = tmp; /* for continuations */
+    vtl->route_finder_coord = tmp; /* for continuations */
 
     /* these are checked when adding a track from a file (vik_trw_layer_filein_add_track) */
-    if ( event->state & GDK_CONTROL_MASK && vtl->magic_scissors_current_track ) {
-      vtl->magic_scissors_append = TRUE;  // merge tracks. keep started true.
+    if ( event->state & GDK_CONTROL_MASK && vtl->route_finder_current_track ) {
+      vtl->route_finder_append = TRUE;  // merge tracks. keep started true.
     } else {
-      vtl->magic_scissors_check_added_track = TRUE;
-      vtl->magic_scissors_started = FALSE;
+      vtl->route_finder_check_added_track = TRUE;
+      vtl->route_finder_started = FALSE;
     }
 
     url = g_strdup_printf(GOOGLE_DIRECTIONS_STRING,
@@ -5020,31 +5021,31 @@ static gboolean tool_magic_scissors_click ( VikTrwLayer *vtl, GdkEventButton *ev
     g_free ( url );
 
     /* see if anything was done -- a track was added or appended to */
-    if ( vtl->magic_scissors_check_added_track && vtl->magic_scissors_added_track_name ) {
+    if ( vtl->route_finder_check_added_track && vtl->route_finder_added_track_name ) {
       VikTrack *tr;
 
-      tr = g_hash_table_lookup ( vtl->tracks, vtl->magic_scissors_added_track_name );
+      tr = g_hash_table_lookup ( vtl->tracks, vtl->route_finder_added_track_name );
 
       if ( tr )
         vik_track_set_comment_no_copy ( tr, g_strdup_printf("from: %f,%f to: %f,%f", start.lat, start.lon, end.lat, end.lon ) );
  
-      vtl->magic_scissors_current_track = tr;
+      vtl->route_finder_current_track = tr;
 
-      g_free ( vtl->magic_scissors_added_track_name );
-      vtl->magic_scissors_added_track_name = NULL;
-    } else if ( vtl->magic_scissors_append == FALSE && vtl->magic_scissors_current_track ) {
-      /* magic_scissors_append was originally TRUE but set to FALSE by filein_add_track */
-      gchar *new_comment = g_strdup_printf("%s to: %f,%f", vtl->magic_scissors_current_track->comment, end.lat, end.lon );
-      vik_track_set_comment_no_copy ( vtl->magic_scissors_current_track, new_comment );
+      g_free ( vtl->route_finder_added_track_name );
+      vtl->route_finder_added_track_name = NULL;
+    } else if ( vtl->route_finder_append == FALSE && vtl->route_finder_current_track ) {
+      /* route_finder_append was originally TRUE but set to FALSE by filein_add_track */
+      gchar *new_comment = g_strdup_printf("%s to: %f,%f", vtl->route_finder_current_track->comment, end.lat, end.lon );
+      vik_track_set_comment_no_copy ( vtl->route_finder_current_track, new_comment );
     }
-    vtl->magic_scissors_check_added_track = FALSE;
-    vtl->magic_scissors_append = FALSE;
+    vtl->route_finder_check_added_track = FALSE;
+    vtl->route_finder_append = FALSE;
 
     vik_layer_emit_update ( VIK_LAYER(vtl) );
   } else {
-    vtl->magic_scissors_started = TRUE;
-    vtl->magic_scissors_coord = tmp;
-    vtl->magic_scissors_current_track = NULL;
+    vtl->route_finder_started = TRUE;
+    vtl->route_finder_coord = tmp;
+    vtl->route_finder_current_track = NULL;
   }
   return TRUE;
 }

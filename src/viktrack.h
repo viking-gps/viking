@@ -106,9 +106,8 @@ void vik_track_apply_dem_data ( VikTrack *tr);
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 );
 
 /* starting at the end, looks backwards for the last "double point", a duplicate trackpoint.
- * this is indicative of magic scissors continued use. If there is no double point,
- * deletes all the trackpoints. returns new end of the track (or the start if
- * there are no double points)
+ * If there is no double point, deletes all the trackpoints.
+ * Returns the new end of the track (or the start if there are no double points
  */
 VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr );
 
