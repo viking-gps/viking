@@ -507,9 +507,9 @@ Changes the current tool to add trackpoints to the end of the track.
 </para>
 </section>
 
-<section><title>Extend Using Magic Scissors</title>
+<section><title>Extend Using Route Finder</title>
 <para>
-Enables the Magic Scissors tool. Thus on a subsequent left click in the viewport, a route is calculated from the end of track to that point using Google's route service and applied to the track.
+Enables the Route Finder tool. Thus on a subsequent left click in the viewport, a route is calculated from the end of track to that point using Google's route service and applied to the track.
 </para>
 </section>
 
@@ -527,14 +527,14 @@ This selects the track to be used in the <link linkend="filter_with_track">Filte
 
 <section><title>View Google Directions</title>
 <para>
-This option is only available on a track created using the Magic Scissors tool.
+This option is only available on a track created using the Route Finder tool.
 </para>
 <para>
 Launch a web browser to see the Google directions page which yielded the route.
 </para>
 <note>
 <para>
-The record of the Google route is stored in the track's comment, so if the comment is changed (or the route was created by something other than the Magic Scissors tool) this will not work correctly.
+The record of the Google route is stored in the track's comment, so if the comment is changed (or the route was created by something other than the Route Finder tool) this will not work correctly.
 </para>
 </note>
 </section>
@@ -849,7 +849,7 @@ On Windows this uses the default system image viewer.
 </para>
 </section>
 
-<section><title>Magic Scissors</title>
+<section><title>Route Finder</title>
 <para>Creates a track using Google maps routing between two points.
 Requires an internet connection. Click one point, then click another to
 create a track.
