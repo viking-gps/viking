@@ -213,14 +213,14 @@ const gchar *vik_viewport_get_background_color ( VikViewport *vvp )
 
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colorname )
 {
-  g_assert ( vvp->background_gc );
+  g_assert ( vvp && vvp->background_gc );
   gdk_color_parse ( colorname, &(vvp->background_color) );
   gdk_gc_set_rgb_fg_color ( vvp->background_gc, &(vvp->background_color) );
 }
 
 void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
 {
-  g_assert ( vvp->background_gc );
+  g_assert ( vvp && vvp->background_gc );
   vvp->background_color = *color;
   gdk_gc_set_rgb_fg_color ( vvp->background_gc, color );
 }
