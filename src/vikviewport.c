@@ -214,8 +214,10 @@ const gchar *vik_viewport_get_background_color ( VikViewport *vvp )
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colorname )
 {
   g_assert ( vvp && vvp->background_gc );
-  gdk_color_parse ( colorname, &(vvp->background_color) );
-  gdk_gc_set_rgb_fg_color ( vvp->background_gc, &(vvp->background_color) );
+  if ( gdk_color_parse ( colorname, &(vvp->background_color) ) )
+    gdk_gc_set_rgb_fg_color ( vvp->background_gc, &(vvp->background_color) );
+  else
+    g_warning("%s: Failed to parse color '%s'", __FUNCTION__, colorname);
 }
 
 void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
@@ -228,12 +230,14 @@ void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
 
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness )
 {
-  GdkGC *rv;
+  GdkGC *rv = NULL;
   GdkColor color;
 
   rv = gdk_gc_new ( GTK_WIDGET(vvp)->window );
-  gdk_color_parse ( colorname, &color );
-  gdk_gc_set_rgb_fg_color ( rv, &color );
+  if ( gdk_color_parse ( colorname, &color ) )
+    gdk_gc_set_rgb_fg_color ( rv, &color );
+  else
+    g_warning("%s: Failed to parse color '%s'", __FUNCTION__, colorname);
   gdk_gc_set_line_attributes ( rv, thickness, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
   return rv;
 }
