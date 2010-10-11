@@ -1,3 +1,32 @@
+Viking 0.9.96 (2010-10-11)
+New features since 0.9.95
+* Use ETag to detect fresh tiles on servers
+* Add new menu entry in GPS Layer to delete the realtime information.
+* Ensure GPS realtime information deleted when GPS Layer -->Empty All is called.
+* Prevent zoom factor string displaying unnecessary .0s when it's a whole number.
+* Improve Track Properties speed profile display for low speed difference (e.g. walking) tracks.
+* Use speed units in display of Track/Waypoint layer draw by velocity config values, but maintain units as metres per second when read from/saved to files.
+* Add keyboard accelerators for as many as possible View Menu entries.
+* Simplify zoom status when xmpp and ympp are equal
+* Use height units in the altitude readout for the cursor position on the status bar.
+* Use height units in display of DEM min / max elevation values, but maintain units as metres when read from/saved to files.
+
+Fixes since 0.9.95
+* Fix many memory leaks
+* DEM layer properties tidy up.
+* Prevent getting stuck in a near infinite loop when using Coord layer, UTM mode and zoomed out to see the whole world.
+* Prevent lock up in attempt to download maps along a track in UTM mode.
+* Launchpad Bug #445374: Prevent crash when downloading maps along a track, with Terraserver maps when in Mercator mode.
+* Add explicit linking against libz and libm
+* Fix SF#3009431: Prevent Crash in Real Time Tracking GPS Mode & Autodownload Maps.
+* Fix display of rounded speed units scale markers in the speed profile.
+* Fix cycle map URL
+* Fix compiler warnings
+* Fix Track Draw by Velocity mode, so that individual track points are coloured (as was the intention).
+* Fix bug where older file was removed when network not present
+* Fix: warning 'draw-mode' message does not display
+* Fix incorrect limitation on source map id
+
 Viking 0.9.95 (2010-09-07)
 New features since 0.9.94
 * Add some function short cut key definitions to control showing of the center mark and scale viewport features.
