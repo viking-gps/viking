@@ -57,14 +57,16 @@ static size_t curl_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream
 
 static size_t curl_get_etag_func(void *ptr, size_t size, size_t nmemb, gchar **stream)
 {
+#define ETAG_KEYWORD "ETag: "
+#define ETAG_LEN (sizeof(ETAG_KEYWORD)-1)
   size_t len = size*nmemb;
-  char *str = g_strstr_len(ptr, len, "ETag:");
+  char *str = g_strstr_len(ptr, len, ETAG_KEYWORD);
   if (str) {
-    char *etag_str = str + strlen("ETag: ");
-    char *end_str = g_strstr_len(etag_str, len, "\n");
+    char *etag_str = str + ETAG_LEN;
+    char *end_str = g_strstr_len(etag_str, len - ETAG_LEN, "\r\n");
     if (etag_str && end_str) {
-      end_str = '\0';
-      *stream = g_strndup(etag_str, len);
+      *stream = g_strndup(etag_str, end_str - etag_str);
+      g_debug("%s: ETAG found: %s", __FUNCTION__, *stream);
     }
   }
   return nmemb;
