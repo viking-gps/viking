@@ -1413,6 +1413,11 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
   return mode_button;
 }
 
+gboolean vik_window_get_pan_move ( VikWindow *vw )
+{
+  return vw->pan_move;
+}
+
 static void on_activate_recent_item (GtkRecentChooser *chooser,
                                      VikWindow *self)
 {

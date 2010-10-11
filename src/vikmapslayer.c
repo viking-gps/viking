@@ -628,6 +628,9 @@ gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
 {
   const VikCoord *center = vik_viewport_get_center ( vvp );
 
+  if (!vik_window_get_pan_move (VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vvp))))
+    return FALSE;
+
   if (vml->last_center == NULL) {
     VikCoord *new_center = g_malloc(sizeof(VikCoord));
     *new_center = *center;
