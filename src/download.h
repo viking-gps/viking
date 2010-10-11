@@ -38,6 +38,11 @@ typedef struct {
   gboolean check_file_server_time;
 
   /**
+   * Set if the server handle ETag
+   */
+  gboolean use_etag;
+
+  /**
    * The REFERER string to use.
    * Could be NULL.
    */
@@ -54,13 +59,29 @@ typedef struct {
    */
   VikFileContentCheckerFunc check_file;
 
-} DownloadOptions;
+} DownloadMapOptions;
+
+typedef struct {
+  /**
+   * Time sent to server on header If-Modified-Since
+   */
+  time_t time_condition;
+  /**
+   * Etag sent by server on previous download
+   */
+  char *etag;
+  /**
+   * Etag sent by server on this download
+   */
+  char *new_etag;
+
+} DownloadFileOptions;
 
 void a_download_init(void);
 
 /* TODO: convert to Glib */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle );
-int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle );
+int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
+int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
 void *a_download_handle_init ();
 void a_download_handle_cleanup ( void *handle );
 

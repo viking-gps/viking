@@ -34,7 +34,7 @@ static void * _download_handle_init ( VikMapSource *self );
 static void _download_handle_cleanup ( VikMapSource *self, void *handle );
 
 /* FIXME Huge gruik */
-static DownloadOptions terraserver_options = { 0, NULL, 0, a_check_map_file };
+static DownloadMapOptions terraserver_options = { FALSE, FALSE, NULL, 0, a_check_map_file };
 
 typedef struct _TerraserverMapSourcePrivate TerraserverMapSourcePrivate;
 struct _TerraserverMapSourcePrivate
