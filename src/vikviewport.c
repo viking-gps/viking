@@ -347,6 +347,8 @@ gboolean vik_viewport_get_draw_scale ( VikViewport *vvp )
 
 void vik_viewport_draw_scale ( VikViewport *vvp )
 {
+  g_return_if_fail ( vvp != NULL );
+
   if ( vvp->draw_scale ) {
     VikCoord left, right;
     gdouble unit, base, diff, old_unit, old_diff, ratio;
@@ -354,8 +356,6 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     PangoFontDescription *pfd;
     PangoLayout *pl;
     gchar s[128];
-
-    g_return_if_fail ( vvp != NULL );
 
     vik_viewport_screen_to_coord ( vvp, 0, vvp->height, &left );
     vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height, &right );
@@ -469,6 +469,8 @@ gboolean vik_viewport_get_draw_centermark ( VikViewport *vvp )
 
 void vik_viewport_draw_centermark ( VikViewport *vvp )
 {
+  g_return_if_fail ( vvp != NULL );
+
   if ( !vvp->draw_centermark )
     return;
 
@@ -714,12 +716,12 @@ gint vik_viewport_get_height( VikViewport *vvp )
 
 void vik_viewport_screen_to_coord ( VikViewport *vvp, int x, int y, VikCoord *coord )
 {
+  g_return_if_fail ( vvp != NULL );
+
   if ( vvp->coord_mode == VIK_COORD_UTM ) {
     int zone_delta;
     struct UTM *utm = (struct UTM *) coord;
     coord->mode = VIK_COORD_UTM;
-
-    g_return_if_fail ( vvp != NULL );
 
     utm->zone = vvp->center.utm_zone;
     utm->letter = vvp->center.utm_letter;
