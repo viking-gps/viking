@@ -1413,6 +1413,18 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
   return mode_button;
 }
 
+/**
+ * vik_window_get_pan_move:
+ * @vw: some VikWindow
+ *
+ * Retrieves @vw's pan_move.
+ *
+ * Should be removed as soon as possible.
+ *
+ * Returns: @vw's pan_move
+ *
+ * Since: 0.9.96
+ **/
 gboolean vik_window_get_pan_move ( VikWindow *vw )
 {
   return vw->pan_move;
