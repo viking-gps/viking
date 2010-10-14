@@ -612,13 +612,14 @@ Use View - Go to to move to a coordinate of interest.
 <step>
 <para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
 to load data directly from your GPS into &appname;.
-Currently Garmin and Magellan are supported.
+Currently Garmin, Magellan and DeLorme are supported.
 </para>
 <note>
 <para>You must have write permission to the port used. For Unix like OS:</para>
 <para>/dev/ttyS0 is the first serial port</para>
 <para>/dev/ttyUSB0 is the first USB port</para>
 </note>
+<note><para>For DeLorme device support you will need GPSBabel v1.4.0+ installed</para></note>
 </step>
 </procedure>
 <procedure>

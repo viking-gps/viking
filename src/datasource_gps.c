@@ -125,8 +125,11 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
 #endif
   if (!strcmp(proto, "Garmin")) {
     device = "garmin";
-  } else {
+  } else if (!strcmp(proto, "Magellan")) {
     device = "magellan";
+  }
+  else {
+    device = "delbin";
   }
 
   *babelargs = g_strdup_printf("-D 9 -t -w -i %s", device);
@@ -331,6 +334,7 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   w->proto_b = GTK_COMBO_BOX(gtk_combo_box_new_text ());
   gtk_combo_box_append_text (w->proto_b, "Garmin");
   gtk_combo_box_append_text (w->proto_b, "Magellan");
+  gtk_combo_box_append_text (w->proto_b, "DeLorme");
   gtk_combo_box_set_active (w->proto_b, 0);
   g_object_ref(w->proto_b);
 

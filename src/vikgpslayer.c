@@ -78,9 +78,9 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2] );
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp);
 #endif
 
-typedef enum {GARMIN_P = 0, MAGELLAN_P, NUM_PROTOCOLS} vik_gps_proto;
-static gchar * params_protocols[] = {"Garmin", "Magellan", NULL};
-static gchar * protocols_args[]   = {"garmin", "magellan"};
+typedef enum {GARMIN_P = 0, MAGELLAN_P, DELORME_P, NUM_PROTOCOLS} vik_gps_proto;
+static gchar * params_protocols[] = {"Garmin", "Magellan", "DeLorme", NULL};
+static gchar * protocols_args[]   = {"garmin", "magellan", "delbin"};
 /*#define NUM_PROTOCOLS (sizeof(params_protocols)/sizeof(params_protocols[0]) - 1) */
 #ifdef WINDOWS
 static gchar * params_ports[] = {"com1", "usb:", NULL};
