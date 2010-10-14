@@ -128,8 +128,11 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   } else if (!strcmp(proto, "Magellan")) {
     device = "magellan";
   }
-  else {
+  else if (!strcmp(proto, "DeLorme")) {
     device = "delbin";
+  }
+  else {
+    device = "navilink";
   }
 
   *babelargs = g_strdup_printf("-D 9 -t -w -i %s", device);
@@ -174,7 +177,11 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
 #endif
   if (!strcmp(proto, "Garmin")) {
     device = "garmin,power_off";
-  } else {
+  }
+  else if (!strcmp(proto, "NAViLink")) {
+    device = "navilink,power_off";
+  }
+  else {
     return;
   }
 
@@ -335,6 +342,7 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   gtk_combo_box_append_text (w->proto_b, "Garmin");
   gtk_combo_box_append_text (w->proto_b, "Magellan");
   gtk_combo_box_append_text (w->proto_b, "DeLorme");
+  gtk_combo_box_append_text (w->proto_b, "NAViLink");
   gtk_combo_box_set_active (w->proto_b, 0);
   g_object_ref(w->proto_b);
 
@@ -359,7 +367,7 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   gtk_combo_box_set_active (w->ser_b, 0);
   g_object_ref(w->ser_b);
 
-  w->off_request_l = gtk_label_new (_("Turn Off After Transfer\n(Garmin Only)"));
+  w->off_request_l = gtk_label_new (_("Turn Off After Transfer\n(Garmin/NAViLink Only)"));
   w->off_request_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 
   box = GTK_TABLE(gtk_table_new(2, 3, FALSE));
