@@ -506,10 +506,10 @@ static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
   if ( vw->pan_x != -1 ) {
     vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
                                      vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
-    draw_update ( vw );
     vw->pan_move = TRUE;
     vw->pan_x = event->x;
     vw->pan_y = event->y;
+    draw_update ( vw );
   }
 }
 
@@ -576,8 +576,9 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
   else
      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
                                       vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
-  draw_update ( vw );
+  vw->pan_move = FALSE;
   vw->pan_x = vw->pan_y = -1;
+  draw_update ( vw );
 }
 
 static void draw_release ( VikWindow *vw, GdkEventButton *event )
