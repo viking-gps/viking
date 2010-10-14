@@ -94,7 +94,6 @@ static gchar *params_source[] = {
 #ifdef VIK_CONFIG_DEM24K
 	"USA 10m (USGS 24k)",
 #endif
-        "None",
 	NULL
 	};
 
@@ -108,7 +107,6 @@ enum { DEM_SOURCE_SRTM,
 #ifdef VIK_CONFIG_DEM24K
        DEM_SOURCE_DEM24K,
 #endif
-       DEM_SOURCE_NONE,
      };
 
 enum { DEM_TYPE_HEIGHT = 0,
@@ -1085,6 +1083,8 @@ static void dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
   else if ( p->source == DEM_SOURCE_DEM24K )
     dem24k_dem_download_thread ( p, threaddata );
 #endif
+  else
+    return;
 
   gdk_threads_enter();
   g_mutex_lock ( p->mutex );
@@ -1119,9 +1119,6 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
 
   gchar *full_path;
   gchar *dem_file = NULL;
-
-  if ( vdl->source == DEM_SOURCE_NONE )
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vdl), _("No download source selected. Edit layer properties.") );
 
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
   vik_coord_to_latlon ( &coord, &ll );
