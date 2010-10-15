@@ -3,9 +3,9 @@
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
   <!ENTITY appname          "Viking">
   <!ENTITY app "<application>Viking</application>">
-  <!ENTITY appversion   "0.9.9">
+  <!ENTITY appversion   "0.9.96">
   <!ENTITY manrevision  "0.1">
-  <!ENTITY date "Septembre 2009">
+  <!ENTITY date "October 2010">
 ]>
 <!--
       (Do not remove this comment block.)
@@ -100,8 +100,8 @@
 <section id="introduction">
   <title>Introduction</title>
 <para>
-Viking aims to be easy to use, yet powerful in accomplishing a wide
-variety of tasks. Some of the things you can now use Viking for are:
+&appname; aims to be easy to use, yet powerful in accomplishing a wide
+variety of tasks. Some of the things you can use &appname; for are:
 </para>
 <itemizedlist mark="opencircle"><listitem>
 <para>
@@ -110,7 +110,7 @@ Uploading and downloading waypoints, tracks to/from GPS.
 </listitem>
 <listitem>
 <para>Preparing tracks and waypoints for trips using maps from services
-such as OpenStreetMap (OSM) and/or Terrasever. The data is only needed to upload to
+such as OpenStreetMap (OSM) and/or Terrasever. The data is only needed to be uploaded to
 your GPS before you leave. The maps together with your tracks and
 waypoints can also be printed and used during the trip.
 </para>
@@ -168,7 +168,24 @@ Show the live GPS position on the map (for use on a mobile device - e.g. a lapto
 </para>
 </note>
 </section>
+
 <section><title>General Concepts</title>
+<section><title>Layers</title>
+<para>
+'Layers' is concept one may know from powerful graphics editors such as Photoshop or GIMP.
+Instead of putting all the data on the same level, it is stacked (i.e. layered) with different data over one another.
+This can make useful for analysis and general handling of various sets of data.
+</para>
+<para>
+Unfortunately the downside of this complexity is remembering how differing layers of data can obscure other data.
+</para>
+<para>
+The Map layers have <ulink url="http://en.wikipedia.org/wiki/Alpha_compositing"><citetitle>Alpha Compositing</citetitle></ulink>,
+to create the appearance of partial transparency.
+By controlling this value one can see data below it in the layer heirarchy for interesting effects.
+</para>
+</section>
+<section><title>Layers Panel</title>
 <para>
 The panel on the left is called the <emphasis role="bold">layers panel</emphasis>.
 It determines which layers and sublayers (such as tracks and waypoints)
@@ -177,17 +194,29 @@ top of the layers panel are drawn last. You can change the order by
 drag and drop, or by selecting a layer and using the up and down
 buttons at the bottom of the layers panel.
 </para>
-<para>
-The main &appname; area where the layers are drawn is called the <emphasis role="bold">viewport</emphasis>.
-</para>
-
 </section>
+<section><title>Viewport</title>
+<para>
+The main &appname; area where the layer data is drawn, is called the <emphasis role="bold">viewport</emphasis>.
+</para>
+</section>
+<section><title>Statusbar</title>
+<procedure>
+<para>This provides a readout of various information:</para>
+<step><para>The currently selected (mouse pointer) tool</para></step>
+<step><para>The number of items to process in the background - normally this the number in the map tile download queue</para></step>
+<step><para>The zoom factor</para></step>
+<step><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></step>
+</procedure>
+</section>
+</section>
+
 <section><title>Layers</title>
 <section><title>TrackWaypoint Layer</title>
 <para>
 TrackWaypoint layers display GPS data (tracks and waypoints).
 </para>
-<para>An easy way to create new waypoints is to copy a
+<para>One way to create new waypoints is to copy a
 latitude/longitude coordinate pair, such as the one shown on most
 geocaches, and paste it into an active TrackWaypoint layer. &appname; can
 automatically recognize several variations of the lat/lon format.
@@ -231,7 +260,7 @@ The following colors are used in the elevation-distance graph:
 </para>
 <variablelist>
 <varlistentry>
-<term>Brown profile</term>
+<term>'Main' colour - this is dependent on your Desktop theme - often blue by default</term>
 <listitem><para>elevation data in graph</para></listitem>
 </varlistentry>
 <varlistentry>
@@ -290,7 +319,7 @@ Change the current tool to add track and add points to the end of the track.
 </section>
 <section><title>Upload to OSM</title>
 <para>
-Useful if you are an OSM contributor. Viking
+Useful if you are an OSM contributor. &appname;
 allows you to import a track, edit it if you so wish to remove
 duplicate points, perhaps track points leading to your home, and then
 directly export the track to OSM.
@@ -325,19 +354,19 @@ If the waypoint's name is in Geocache form (GCXXXXX) you can launch a web browse
 </section>
 
 </section>
-<section><title>GPSLayer</title>
+<section><title>GPS Layer</title>
 <para>
-GPSLayer is responsible for uploading and downloading GPS data
+The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
-Expand the GPSLayer in the layers panel to see the two TRWLayers it
+Expand the GP SLayer in the layers panel to see the two TRWLayers it
 uses for uploading and downloading. To upload, download, or use
-realtime tracking, right-click the GPSLayer and click the appropiate
+realtime tracking, right-click the GPS layer and click the appropiate
 menu item.
 </para>
 
 <section><title>Download</title>
 <para>
-To download data from the GPS, right-click the GPSLayer and click <guimenuitem>Download from GPS</guimenuitem>.
+To download data from the GPS, right-click the GPS layer and click <guimenuitem>Download from GPS</guimenuitem>.
 </para>
 
 </section>
@@ -346,23 +375,23 @@ To download data from the GPS, right-click the GPSLayer and click <guimenuitem>D
 To upload data to the GPS, first populate the GPS Upload child
 layer of the GPS layer (either by creating waypoints/tracks in it, or
 copying and pasting or dragging waypoints/tracks from another layer).
-Then right-click the GPSLayer and click <guimenuitem>Upload to GPS</guimenuitem>.
+Then right-click the GPS layer and click <guimenuitem>Upload to GPS</guimenuitem>.
 </para>
 
 </section>
-<section><title>Realtime tracking</title>
+<section><title>Realtime Tracking</title>
 <para>
 You must set up gpsd correctly or use a GPSD server and put the
-correct information in the GPSLayer properties dialog. Then right-cilck
-the layer and select <guimenuitem>Start realtime tracking</guimenuitem>.
+correct information in the GPS layer properties dialog. Then right-click
+the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
 </para>
 
 </section>
 
 </section>
-<section><title>DEM Layer (todo)</title>
+<section><title>(Digital Elevation Model) DEM Layer (todo)</title>
 <para>
-current NASA SRTM server: http://dds.cr.usgs.gov/srtm/version2_1/
+The current NASA SRTM server is: http://dds.cr.usgs.gov/srtm/version2_1/
 </para>
 
 </section>
@@ -473,7 +502,7 @@ You must have a Georef Map Layer selected to use these tools.
 </para>
 <section><title>Georef zoom</title>
 <para>Changes the zoom level of the georeferenced map and changes the
-Viking zoom level accordingly. Useful if you are trying to match GPS
+&appname; zoom level accordingly. Useful if you are trying to match GPS
 data to a georeferenced map.
 </para>
 
@@ -502,7 +531,7 @@ Click to download and import a DEM file.
 
 </section>
 
-<section><title>External tools</title>
+<section><title>Webtools</title>
 <para>
 Many services are available only via a web browser (Google Maps, OpenStreetMap Potlach editor, etc.).
 </para>
@@ -513,7 +542,7 @@ Jumping from &app; to such service can become annoying.
 &appname; allows you to open such service directly at the position currently viewed in &app;.
 </para>
 <para>
-This feature is called <guilabel>External tools</guilabel>.
+This feature is called <guilabel>Webtools</guilabel>. It is also known as External Tools.
 </para>
 
 </section>
@@ -581,12 +610,15 @@ Use View - Go to to move to a coordinate of interest.
 <procedure>
 <title>Method B</title>
 <step>
-<para>Use GPS Layer or File - Acquire - From GPS to load data
-directly from your GPS into Viking. Currently Garmin and Magellan are
-supported.
+<para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
+to load data directly from your GPS into &appname;.
+Currently Garmin and Magellan are supported.
 </para>
-<note><para>You must have write permission to the port used.
-/dev/ttyS0 is the first serial port</para></note>
+<note>
+<para>You must have write permission to the port used. For Unix like OS:</para>
+<para>/dev/ttyS0 is the first serial port</para>
+<para>/dev/ttyUSB0 is the first USB port</para>
+</note>
 </step>
 </procedure>
 <procedure>
@@ -599,14 +631,14 @@ format first.
 </step>
 <step>
 <para>
-Open up viking and use File - Open or File - Append
+Open up &appname; and use File - Open or File - Append
 file to open the file.
 </para>
 </step>
 <step>
 <para>
 Expand Tracks or Waypoints. Right-click on the
-track or waypoint of interest and select <guimenuitem>Goto</guimenuitem>.
+track or waypoint of interest and select <guimenuitem>Goto "Center"</guimenuitem>.
 </para>
 </step>
 </procedure>
@@ -615,14 +647,14 @@ track or waypoint of interest and select <guimenuitem>Goto</guimenuitem>.
 <step>
 <para>
 Use File - Append File to add your track and waypoint data to
-Viking. This has been tested with Geocaching.com's *.loc format,
+&appname;. This has been tested with Geocaching.com's *.loc format,
 (others(?)).
 </para>
 </step>
 <step>
 <para>
 Expand Tracks or Waypoints. Right-click on the tack or
-point of interest and select <guimenuitem>Goto</guimenuitem>.
+point of interest and select <guimenuitem>Goto "Center"</guimenuitem>.
 </para>
 </step>
 </procedure>
@@ -653,38 +685,18 @@ the map. </para>
 </section>
 
 </section>
-<section><title>From 1st startup to gps track (including offline maps)</title>
-<section><title>Prerequistites</title>
+<section><title>From 1st startup to GPS track (including offline maps)</title>
 <para>
-The following refers to the version 0.9.8 from the git repository
-(26.07.2009).In the source, check in vikdemlayer.c around line 66 to
-have the correct address for the SRTM3 database. For the version
-referenced above, you should change <programlisting>#define SRTM_HTTP_URI /srtm/version2/SRTM3/</programlisting>
-to <programlisting>#define SRTM_HTTP_URI /srtm/version2_1/SRTM3/</programlisting>
-</para>
-<para>
-For further information, see this <ulink url="https://sourceforge.net/tracker/?func=detail&amp;amp;aid=2812856&amp;amp;group_id=83870&amp;amp;atid=570954"><citetitle>discussion</citetitle></ulink>.
+The first you'll see is an empty map, because &appname; in its default configuration will download maps only on demand.
+Before fetching unneeded data, one can position to a location of interest, e.g. Stuttgart: <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>, enter 'Stuttgart'.
 </para>
 
-</section>
-<section><title>Start in verbose debug mode</title>
-<para>
-In order to get some informations about not functioning modules, start viking in verbose debug mode:
-<programlisting>viking -dV</programlisting>
-</para>
-<para>
-The first you'll see is an empty map, because viking in its default
-configurations will download maps only on demand. Before fetching
-unneeded data, we position to a location of interest, e.g. Stuttgart: <menuchoice><guimenu>view</guimenu><guimenuitem>goto location</guimenuitem></menuchoice>, enter 'Stuttgart'.
-</para>
-
-</section>
 <section><title>Fetching the maps</title>
 <para>
 <emphasis role="bold">Map</emphasis>
 </para>
 <procedure>
-<step><para>layers new map layer</para></step>
+<step><para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New Map Layer</guimenuitem></menuchoice></para></step>
 <step><para>in the layer properties dialogue choose e.g. <guilabel>OpenStreetMap (Mapnik)</guilabel>.</para></step>
 <step>
 <para>For the moment, we keep the default <guilabel>Maps Directory</guilabel> (the directory in
@@ -706,11 +718,11 @@ zoom in and out. The maps for the choosen resoltion will be downloaded
 automatically.
 </para>
 <para>
-<emphasis role="bold">DEM Layer (height map)</emphasis>
+<emphasis role="bold">DEM Layer (Height Map)</emphasis>
 </para>
 <procedure>
-<step><para>Zoom out to 512/512.</para></step>
-<step><para><menuchoice><guimenu>layers</guimenu><guimenuitem>new DEM layer</guimenuitem></menuchoice></para></step>
+<step><para>Zoom out to 512.</para></step>
+<step><para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New DEM Layer</guimenuitem></menuchoice></para></step>
 <step><para>Keep the download source as is (SRTM Global 90m), hit <guilabel>OK</guilabel>.</para></step>
 </procedure>
 
@@ -724,35 +736,13 @@ an shift it one up (using the arrow up button).
 <step><para>a left-click in the map window should then fetch the DEM data</para></step>
 </procedure>
 <para>
-This might take some time. You can check the correct source in the verbose debug output: it should look something like:
-<screen>
-** (viking:28778): DEBUG: curl_download_uri: uri=http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip
-* About to connect() to dds.cr.usgs.gov port 80 (#0)
-* Trying 152.61.128.95... * connected
-* Connected to dds.cr.usgs.gov (152.61.128.95) port 80 (#0)
- GET /srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip HTTP/1.1
-User-Agent: viking/0.9.8 libcurl/7.18.2 GnuTLS/2.4.2 zlib/1.2.3.3 libidn/1.8
-Host: dds.cr.usgs.gov
-Accept: */*
- HTTP/1.1 200 OK
- Date: Sun, 26 Jul 2009 18:13:38 GMT
- Server: Apache
- Last-Modified: Tue, 21 Jul 2009 19:57:35 GMT
- ETag: eac3f8-1828f5-46f3caa76070a
- Accept-Ranges: bytes
- Content-Length: 1583349
- Content-Type: application/zip
-
-* Connection #0 to host dds.cr.usgs.gov left intact
-* Closing connection #0
-** (viking:28778): DEBUG: dem_layer_add_file: /home/username/.viking-maps/srtm3-Eurasia/N48E008.hgt.zip
-</screen>
+This might take some time.
 </para>
 <para>
 Sometimes, a tile does not show up correctly (you might see only a
 black frame in the map window) because it got corrupted during
 transfer. In order to correct this, you can delete the corresponding
-datafile in the cache. <programlisting> right-click the DEM layer  properties</programlisting>
+datafile in the cache. <programlisting> right-click the DEM layer properties</programlisting>
 </para>
 <para>
 The <guilabel>DEM Files</guilabel> listing allows you to delete the specific tiles (alternatively do this from the command line).
@@ -762,30 +752,39 @@ You can also alter the Min. and Max. elevation in this dialogue.
 </para>
 
 </section>
-<section><title>GPS Track with height profile</title>
+<section><title>GPS Track with Height Profile</title>
 <procedure>
 <step><para>uncheck the DEM layer (the map show up again)</para></step>
-<step><para><menuchoice><guimenu>layers</guimenu><guimenuitem>new trackwaypoint layer</guimenuitem></menuchoice></para></step>
+<step><para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New TrackWaypoint Layer</guimenuitem></menuchoice></para></step>
 </procedure>
 <para>
-Check to have the new track layer above the map layer.
+Ensure the new track layer is above the map layer.
 </para>
 <procedure>
 <step><para>expand trackwaypointlayer, select <guimenuitem>Tracks</guimenuitem></para></step>
-<step><para>in the tools menu choose <guimenuitem>begin track</guimenuitem> (red cross)<!-- TODO insert icon --></para></step>
+<step>
+<para>
+in the tools menu choose <guimenuitem>Begin Track</guimenuitem> which looks like this:
+<figure>
+<title>Begin Track Icon</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/begintr_18.png"/>
+</screenshot>
+</figure>
+</para></step>
 <step><para>leftclick in the map window, enter a name</para></step>
 <step><para>click several times to generate a track (a right-click removes the last point)</para></step>
 <step><para>expand tracks in the layer menu, your track should show up, select it</para></step>
-<step><para>right click your track, select <guimenuitem>apply DEM data</guimenuitem></para></step>
-<step><para>right click your track again, select <guimenuitem>properies</guimenuitem></para></step>
-<step><para>click the tab <guilabel>elevation distance</guilabel> - enjoy the plot</para></step>
+<step><para>right click your track, select <guimenuitem>Apply DEM data</guimenuitem></para></step>
+<step><para>right click your track again, select <guimenuitem>Properies</guimenuitem></para></step>
+<step><para>click the tab <guilabel>Elevation-distance</guilabel> - enjoy the plot</para></step>
 </procedure>
 <para>
 In order to save this setting for later usage
 </para>
 <procedure>
-<step><para>click <guilabel>OK</guilabel> in the <guilabel>track properties</guilabel> dialog</para></step>
-<step><para><menuchoice><guimenu>file</guimenu><guimenuitem>save as</guimenuitem></menuchoice>, choose a name (you can open this <emphasis>view</emphasis> later via <menuchoice><guimenu>file</guimenu><guimenuitem>open</guimenuitem></menuchoice>).</para></step>
+<step><para>click <guilabel>OK</guilabel> in the <guilabel>Track Properties</guilabel> dialog</para></step>
+<step><para><menuchoice><guimenu>File</guimenu><guimenuitem>Save As</guimenuitem></menuchoice>, choose a name (you can open this <emphasis>view</emphasis> later via <menuchoice><guimenu>file</guimenu><guimenuitem>Open</guimenuitem></menuchoice>).</para></step>
 </procedure>
 
 </section>
@@ -794,16 +793,16 @@ In order to save this setting for later usage
 Suppose you want to have the map and DEM data offline for your holiday in Italy near Bologna.
 </para>
 <procedure>
-<step><para>Start a new viking session.</para></step>
-<step><para><menuchoice><guimenu>view</guimenu><guimenuitem>goto location</guimenuitem></menuchoice>, enter Bologna</para></step>
-<step><para><menuchoice><guimenu>layers</guimenu><guimenuitem>new map layer</guimenuitem></menuchoice></para></step>
+<step><para>Start a new &appname; session.</para></step>
+<step><para><menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>, enter Bologna</para></step>
+<step><para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New Map Layer</guimenuitem></menuchoice></para></step>
 <step><para>Choose e.g. <guilabel>OpenStreetMap (mapnik)</guilabel>.</para></step>
 <step><para>adapt the <guilabel>maps directory</guilabel> e.g. to <filename>/home/user/.viking-map-holiday/</filename>.
 This allows you to delete the map stuff after holiday without purging the rest of your maps.
 </para></step>
 <step><para>check <guilabel>autodownload map</guilabel></para></step>
 <step><para>keep <guilabel>viking zoom level</guilabel></para></step>
-<step><para>zoom out to 1024/1024</para></step>
+<step><para>zoom out to 1024</para></step>
 <step><para>add a DEM layer (as discussed above)</para></step>
 <step><para>download the DEM data</para></step>
 </procedure>
@@ -817,14 +816,14 @@ tiles into <filename>.viking-map-holiday/</filename> if you like.
 <procedure>
 <step><para>uncheck the DEM layer for the map to show up</para></step>
 <step><para>navigate the map to be centered at Bologna</para></step>
-<step><para>choose the zoom such, that all regions of interest are displayed in the map window (e.g. 1024/1024)</para></step>
+<step><para>choose the zoom such, that all regions of interest are displayed in the map window (e.g. 1024)</para></step>
 <step>
 <para>follow this sequence until you have all tiles for all zoom levels you need</para>
 <substeps>
-<step><para>right-click the map layer  properties</para></step>
+<step><para>right-click the map layer properties</para></step>
 <step><para>set the zoomlevel explicitely one below the last (in the first cycle 512), hit OK</para></step>
-<step><para>right click the map layer  <guimenuitem>download onscreen maps</guimenuitem></para></step>
-<step><para>wait untill all tiles for that resolution have been downloaded</para></step>
+<step><para>right click the map layer  <guimenuitem>Download Missing Onscreen Maps</guimenuitem></para></step>
+<step><para>wait until all tiles for that resolution have been downloaded</para></step>
 </substeps>
 </step>
 </procedure>
@@ -841,7 +840,7 @@ Do not forget to save your configuration (as discussed above).
 </section>
 <section><title>Uploading data to OpenStreetMap</title>
 <para>
-It is possible to upload data directly from Viking to OpenStreetMap.
+It is possible to upload data directly from &appname; to OpenStreetMap.
 </para>
 <formalpara>
 <title>Upload a layer</title>
@@ -861,7 +860,7 @@ this, simply select the layer and right click on it. Then, select
 <formalpara>
 <title>Fill in the form</title>
 <para>
-On both case, Viking will reclaim some informations.
+In both cases, &appname; will retain some information.
 The email field is the email you used to subscribed into OSM.
 The password field is the password you used with this account.
 The filename is the name you want your upload has on the server. This information is displayed by the osm server.
@@ -1003,7 +1002,7 @@ to write the waypoints to this file.
       </section>
 
       <section>
-        <title>External tools</title>
+        <title>Webtools</title>
         <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
         <para>Currently, there is a single object class available: VikWebtoolCenter. Such feature allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
@@ -1027,7 +1026,98 @@ to write the waypoints to this file.
 
 </section>
 
+<section><title>What to Do if &appname; Does Not Seem to Work</title>
+<para>
+In order to get some information about what &appname; is doing, start it in verbose debug mode via the command line:
+<programlisting>viking -dV</programlisting>
+</para>
+<para>
+For instance you can check the correct URLs &appname; is using in requesting remote data for DEMs or map tiles in the verbose debug output.
+E.g. Something like this for DEMs:
+<screen>
+** (viking:28778): DEBUG: curl_download_uri: uri=http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip
+* About to connect() to dds.cr.usgs.gov port 80 (#0)
+* Trying 152.61.128.95... * connected
+* Connected to dds.cr.usgs.gov (152.61.128.95) port 80 (#0)
+ GET /srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip HTTP/1.1
+User-Agent: viking/0.9.8 libcurl/7.18.2 GnuTLS/2.4.2 zlib/1.2.3.3 libidn/1.8
+Host: dds.cr.usgs.gov
+Accept: */*
+ HTTP/1.1 200 OK
+ Date: Sun, 26 Jul 2009 18:13:38 GMT
+ Server: Apache
+ Last-Modified: Tue, 21 Jul 2009 19:57:35 GMT
+ ETag: eac3f8-1828f5-46f3caa76070a
+ Accept-Ranges: bytes
+ Content-Length: 1583349
+ Content-Type: application/zip
+
+* Connection #0 to host dds.cr.usgs.gov left intact
+* Closing connection #0
+** (viking:28778): DEBUG: dem_layer_add_file: /home/username/.viking-maps/srtm3-Eurasia/N48E008.hgt.zip
+</screen>
+Or for OSM Mapnik tile server:
+<screen>
+* About to connect() to tile.openstreetmap.org port 80 (#0)
+*   Trying 193.63.75.28... * connected
+* Connected to tile.openstreetmap.org (193.63.75.28) port 80 (#0)
+ GET /13/4065/2748.png HTTP/1.1
+User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
+Host: tile.openstreetmap.org
+Accept: */*
+
+* HTTP 1.0, assume close after body
+ HTTP/1.0 200 OK
+ Date: Thu, 14 Oct 2010 22:18:42 GMT
+ Server: Apache/2.2.8 (Ubuntu)
+ ETag: "b66ff9d46474bab68262a3483428a232"
+** (viking:16704): DEBUG: curl_get_etag_func: ETAG found: "b66ff9d46474bab68262a3483428a232"
+ Content-Length: 17194
+ Cache-Control: max-age=94805
+ Expires: Sat, 16 Oct 2010 00:38:47 GMT
+ Content-Type: image/png
+ Age: 5153
+ X-Cache: HIT from konqi.openstreetmap.org
+ X-Cache-Lookup: HIT from konqi.openstreetmap.org:3128
+ Via: 1.1 konqi.openstreetmap.org:3128 (squid/2.7.STABLE7)
+ Connection: close
+ 
+* Closing connection #0
+* About to connect() to a.andy.sandbox.cloudmade.com port 80 (#0)
+*   Trying 178.63.75.195... ** (viking:16704): DEBUG: curl_download_uri: uri=http://tile.openstreetmap.org/13/4065/2749.png
+* About to connect() to tile.openstreetmap.org port 80 (#0)
+*   Trying 193.63.75.28... * connected
+* Connected to a.andy.sandbox.cloudmade.com (178.63.75.195) port 80 (#0)
+ GET /tiles/cycle/13/4065/2747.png HTTP/1.1
+User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
+Host: a.andy.sandbox.cloudmade.com
+Accept: */*
+
+* connected
+* Connected to tile.openstreetmap.org (193.63.75.28) port 80 (#0)
+ GET /13/4065/2749.png HTTP/1.1
+User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
+Host: tile.openstreetmap.org
+Accept: */*
+
+* HTTP 1.0, assume close after body
+ HTTP/1.0 200 OK
+ Date: Thu, 14 Oct 2010 23:44:35 GMT
+ Server: Apache/2.2.8 (Ubuntu)
+ ETag: "8e520ad47ce9c1b63430554886eb5fab"
+** (viking:16704): DEBUG: curl_get_etag_func: ETAG found: "8e520ad47ce9c1b63430554886eb5fab"
+ Content-Length: 18094
+ Cache-Control: max-age=87742
+ Expires: Sat, 16 Oct 2010 00:06:57 GMT
+ Content-Type: image/png
+ X-Cache: MISS from konqi.openstreetmap.org
+ X-Cache-Lookup: MISS from konqi.openstreetmap.org:3128
+ Via: 1.1 konqi.openstreetmap.org:3128 (squid/2.7.STABLE7)
+ Connection: close
+</screen>
+</para>
+</section>
+
 </section>
 
 </article>
-
