@@ -220,7 +220,8 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   GtkWidget *dialog = NULL;
   GtkWidget *status;
   gchar *cmd, *extra;
-  gchar *cmd_off, *extra_off;
+  gchar *cmd_off = NULL;
+  gchar *extra_off = NULL;
   acq_dialog_widgets_t *w;
   gpointer user_data;
 
