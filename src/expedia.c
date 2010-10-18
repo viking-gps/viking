@@ -42,12 +42,14 @@
 
 static gboolean expedia_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-static int expedia_download ( MapCoord *src, const gchar *dest_fn );
+static int expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle );
+static void * expedia_handle_init ( );
+static void expedia_handle_cleanup ( void *handle );
 
 static DownloadMapOptions expedia_options = { FALSE, FALSE, NULL, 2, a_check_map_file };
 
 void expedia_init() {
-  VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download, &expedia_options };
+  VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download, expedia_handle_init, expedia_handle_cleanup };
   maps_layer_register_type(_("Expedia Street Maps"), 5, &map_type);
 }
 
@@ -167,7 +169,7 @@ static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
   dest->north_south = (((gdouble)src->y) / expedia_altis_freq(src->scale)) - 90;
 }
 
-static int expedia_download ( MapCoord *src, const gchar *dest_fn )
+static int expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle )
 {
   gint height, width;
   struct LatLon ll;
@@ -191,3 +193,13 @@ static int expedia_download ( MapCoord *src, const gchar *dest_fn )
   return(res);
 }
 
+static void * expedia_handle_init ( )
+{
+  // Not much going on here
+  return 0;
+}
+
+static void expedia_handle_cleanup ( void *handle )
+{
+  // Even less here!
+}
