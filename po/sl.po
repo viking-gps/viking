@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-08 22:39+0200\n"
-"PO-Revision-Date: 2009-02-04 22:19+0000\n"
+"POT-Creation-Date: 2010-09-07 07:37+0200\n"
+"PO-Revision-Date: 2010-09-07 09:07+0000\n"
 "Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || "
 "n%100==4 ? 3 : 0);\n"
-"X-Launchpad-Export-Date: 2010-09-06 20:48+0000\n"
+"X-Launchpad-Export-Date: 2010-10-23 17:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../src/acquire.c:118
@@ -82,7 +82,7 @@ msgstr ""
 msgid "%s() Curl perform failed: %s"
 msgstr "%s() Izvajanje Curl ni uspelo: %s"
 
-#: ../src/dialog.c:49 ../src/dialog.c:97
+#: ../src/dialog.c:49
 msgid "Go to Lat/Lon"
 msgstr "Pojdi na šir./dolž."
 
@@ -93,6 +93,10 @@ msgstr "Geografska širina:"
 #: ../src/dialog.c:67 ../src/dialog.c:241
 msgid "Longitude:"
 msgstr "Geografska dolžina:"
+
+#: ../src/dialog.c:97
+msgid "Go to UTM"
+msgstr ""
 
 #: ../src/dialog.c:110
 msgid "Northing:"
@@ -160,56 +164,56 @@ msgstr "Dodaj sled"
 msgid "Track Name:"
 msgstr "Ime sledi:"
 
-#: ../src/dialog.c:515
+#: ../src/dialog.c:518
 msgid "Please enter a name for the track."
 msgstr "Vnesite ime sledi:"
 
-#: ../src/dialog.c:519
+#: ../src/dialog.c:522
 #, c-format
 msgid "The track \"%s\" exists, do you want to overwrite it?"
 msgstr "Sled \"%s\" že obstaja. Jo želite prepisati?"
 
-#: ../src/dialog.c:581
+#: ../src/dialog.c:584
 msgid "Zoom Factors..."
 msgstr "Faktorji povečave..."
 
-#: ../src/dialog.c:595
+#: ../src/dialog.c:598
 msgid "Zoom factor (in meters per pixel):"
 msgstr ""
 
-#: ../src/dialog.c:596
+#: ../src/dialog.c:599
 msgid "X (easting): "
 msgstr ""
 
-#: ../src/dialog.c:597
+#: ../src/dialog.c:600
 msgid "Y (northing): "
 msgstr ""
 
-#: ../src/dialog.c:602
+#: ../src/dialog.c:605
 msgid "X and Y zoom factors must be equal"
 msgstr ""
 
-#: ../src/dialog.c:655
+#: ../src/dialog.c:658
 msgid "1 min"
 msgstr "1 min"
 
-#: ../src/dialog.c:656
+#: ../src/dialog.c:659
 msgid "1 hour"
 msgstr "1 ura"
 
-#: ../src/dialog.c:657
+#: ../src/dialog.c:660
 msgid "1 day"
 msgstr "1 dan"
 
-#: ../src/dialog.c:658
+#: ../src/dialog.c:661
 msgid "Custom (in minutes):"
 msgstr "Po meri (v minutah):"
 
-#: ../src/dialog.c:713
+#: ../src/dialog.c:716
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
 msgstr ""
 
-#: ../src/dialog.c:714
+#: ../src/dialog.c:717
 msgid ""
 "This program is free software; you can redistribute it and/or modify it "
 "under the terms of the GNU General Public License as published by the Free "
@@ -226,15 +230,15 @@ msgid ""
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
 
-#: ../src/dialog.c:748
+#: ../src/dialog.c:751
 msgid "Download along track"
 msgstr "Prenos po sledi"
 
-#: ../src/dialog.c:750
+#: ../src/dialog.c:753
 msgid "Map type:"
 msgstr "Vrsta zemljevida:"
 
-#: ../src/dialog.c:755
+#: ../src/dialog.c:758
 msgid "Zoom level:"
 msgstr "Stopnja povečave:"
 
@@ -671,6 +675,10 @@ msgstr ""
 msgid "OSM (render)"
 msgstr ""
 
+#: ../src/preferences.c:266
+msgid "Preferences"
+msgstr ""
+
 #: ../src/uibuilder.c:148
 msgid "Take care that this password will be stored clearly in a plain file."
 msgstr ""
@@ -707,16 +715,16 @@ msgstr "Največja višina:"
 msgid "DEM Download/Import"
 msgstr "Prenos/uvoz DEM"
 
-#: ../src/vikdemlayer.c:804
+#: ../src/vikdemlayer.c:806
 #, c-format
 msgid "No SRTM data available for %f, %f"
 msgstr "SRTM podatkov za %f, %f ni na voljo"
 
-#: ../src/vikdemlayer.c:1042
+#: ../src/vikdemlayer.c:1044
 msgid "No download source selected. Edit layer properties."
 msgstr ""
 
-#: ../src/vikdemlayer.c:1065
+#: ../src/vikdemlayer.c:1067
 #, c-format
 msgid "Downloading DEM %s"
 msgstr "Prenašanje DEM %s"
@@ -1059,15 +1067,15 @@ msgstr ""
 msgid "Aggregate Layers have no settable properties."
 msgstr ""
 
-#: ../src/viklayerspanel.c:542
+#: ../src/viklayerspanel.c:543
 msgid "You cannot cut the Top Layer."
 msgstr "Ne morete izrezati vrhnje plasti."
 
-#: ../src/viklayerspanel.c:597
+#: ../src/viklayerspanel.c:598
 msgid "You cannot delete the Top Layer."
 msgstr "Ne morete izbrisati vrhnje plasti."
 
-#: ../src/viklayerspanel.c:681
+#: ../src/viklayerspanel.c:682
 msgid "Are you sure you wish to delete all layers?"
 msgstr "Ali res želite izbrisati vse plasti?"
 
@@ -1377,18 +1385,18 @@ msgstr ""
 msgid "Export Layer"
 msgstr "Izvozi plast"
 
-#: ../src/viktrwlayer.c:1567 ../src/vikwindow.c:1577 ../src/vikwindow.c:2020
+#: ../src/viktrwlayer.c:1567 ../src/vikwindow.c:1585 ../src/vikwindow.c:2028
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Datoteka \"%s\" že obstaja. Ali jo želite prepisati?"
 
-#: ../src/viktrwlayer.c:1577 ../src/vikwindow.c:1598
+#: ../src/viktrwlayer.c:1577 ../src/vikwindow.c:1606
 msgid "The filename you requested could not be opened for writing."
 msgstr ""
 
 #: ../src/viktrwlayer.c:1598
-msgid "Create"
-msgstr "Ustvari"
+msgid "Find"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1608
 msgid "Waypoint Name:"
@@ -1536,6 +1544,10 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2776
 msgid "Use with filter"
+msgstr ""
+
+#: ../src/viktrwlayer.c:3409
+msgid "Track"
 msgstr ""
 
 #: ../src/viktrwlayer.c:3739
@@ -1730,19 +1742,19 @@ msgstr "Razdeli tu"
 msgid "Join With Last"
 msgstr "Združi z zadnjo"
 
-#: ../src/vikwindow.c:186
+#: ../src/vikwindow.c:187
 msgid "Pan"
 msgstr ""
 
-#: ../src/vikwindow.c:186
+#: ../src/vikwindow.c:187
 msgid "Zoom"
 msgstr "Povečava"
 
-#: ../src/vikwindow.c:186
+#: ../src/vikwindow.c:187
 msgid "Ruler"
 msgstr "Merilo"
 
-#: ../src/vikwindow.c:361
+#: ../src/vikwindow.c:363
 #, c-format
 msgid ""
 "Do you want to save the changes you made to the document \"%s\"?\n"
@@ -1750,515 +1762,515 @@ msgid ""
 "Your changes will be lost if you don't save them."
 msgstr ""
 
-#: ../src/vikwindow.c:364 ../src/vikwindow.c:1366
+#: ../src/vikwindow.c:366 ../src/vikwindow.c:1374
 msgid "Untitled"
 msgstr "Neimenovano"
 
-#: ../src/vikwindow.c:365
+#: ../src/vikwindow.c:367
 msgid "Don't Save"
 msgstr "Ne shrani"
 
-#: ../src/vikwindow.c:398
+#: ../src/vikwindow.c:400
 msgid "mpp"
 msgstr ""
 
-#: ../src/vikwindow.c:398
+#: ../src/vikwindow.c:400
 msgid "pixelfact"
 msgstr ""
 
-#: ../src/vikwindow.c:532
+#: ../src/vikwindow.c:540
 #, c-format
 msgid "%s %s %dm"
 msgstr ""
 
-#: ../src/vikwindow.c:534
+#: ../src/vikwindow.c:542
 #, c-format
 msgid "%s %s"
 msgstr ""
 
-#: ../src/vikwindow.c:1155
+#: ../src/vikwindow.c:1163
 msgid "You must select a layer to show its properties."
 msgstr "Izbrati morate plast, katere lastnosti želite prikazati."
 
-#: ../src/vikwindow.c:1181
+#: ../src/vikwindow.c:1189
 msgid "You must select a layer to delete."
 msgstr "Izbrati morate plast, ki jo želite izbrisati."
 
-#: ../src/vikwindow.c:1461
+#: ../src/vikwindow.c:1469
 #, c-format
 msgid "Unable to add '%s' to the list of recently used documents"
 msgstr ""
 
-#: ../src/vikwindow.c:1475
+#: ../src/vikwindow.c:1483
 msgid "The file you requested could not be opened."
 msgstr "Datoteke, ki ste jo želeli, ni mogoče odpreti"
 
-#: ../src/vikwindow.c:1521
+#: ../src/vikwindow.c:1529
 msgid "Please select a GPS data file to open. "
 msgstr "Prosimo, izberize datoteko s podatki GPS. "
 
-#: ../src/vikwindow.c:1564
+#: ../src/vikwindow.c:1572
 msgid "Save as Viking File."
 msgstr "Shrani kot datoteko Viking."
 
-#: ../src/vikwindow.c:1855
+#: ../src/vikwindow.c:1863
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
 msgstr ""
 
-#: ../src/vikwindow.c:1877
+#: ../src/vikwindow.c:1885
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. km)"
 msgstr "Skupna površina: %ldm x %ldm (%.3f km2)"
 
-#: ../src/vikwindow.c:1880
+#: ../src/vikwindow.c:1888
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. miles)"
 msgstr ""
 
 #. todo: default for answers inside VikWindow or static (thruout instance)
-#: ../src/vikwindow.c:1894
+#: ../src/vikwindow.c:1902
 msgid "Save to Image File"
 msgstr "Shrani v slikovno datoteko"
 
-#: ../src/vikwindow.c:1912
+#: ../src/vikwindow.c:1920
 msgid "Width (pixels):"
 msgstr "Širina (slikovnih točk):"
 
-#: ../src/vikwindow.c:1914
+#: ../src/vikwindow.c:1922
 msgid "Height (pixels):"
 msgstr "Višina (slikovnih točk):"
 
-#: ../src/vikwindow.c:1917
+#: ../src/vikwindow.c:1925
 msgid "Zoom (meters per pixel):"
 msgstr "Povečava (metrov na slikovno točko)"
 
-#: ../src/vikwindow.c:1923
+#: ../src/vikwindow.c:1931
 msgid "Area in current viewable window"
 msgstr "Površina v trenutno vidnem oknu"
 
-#: ../src/vikwindow.c:1933
+#: ../src/vikwindow.c:1941
 msgid "Save as PNG"
 msgstr "Shrani kot PNG"
 
-#: ../src/vikwindow.c:1934
+#: ../src/vikwindow.c:1942
 msgid "Save as JPEG"
 msgstr "Shrani kot JPEG"
 
-#: ../src/vikwindow.c:1954
+#: ../src/vikwindow.c:1962
 msgid "East-west image tiles:"
 msgstr ""
 
-#: ../src/vikwindow.c:1956
+#: ../src/vikwindow.c:1964
 msgid "North-south image tiles:"
 msgstr ""
 
-#: ../src/vikwindow.c:1996
+#: ../src/vikwindow.c:2004
 msgid "You must be in UTM mode to use this feature"
 msgstr ""
 
-#: ../src/vikwindow.c:2007
+#: ../src/vikwindow.c:2015
 msgid "Save Image"
 msgstr "Shrani sliko"
 
-#: ../src/vikwindow.c:2034
+#: ../src/vikwindow.c:2042
 msgid "Choose a directory to hold images"
 msgstr "Izberite mapo za shranjevanje slik"
 
-#: ../src/vikwindow.c:2120
+#: ../src/vikwindow.c:2128
 msgid "Choose a background color"
 msgstr "Izberite barvo ozadja"
 
-#: ../src/vikwindow.c:2141
+#: ../src/vikwindow.c:2149
 msgid "_File"
 msgstr "_Datoteka"
 
-#: ../src/vikwindow.c:2142
+#: ../src/vikwindow.c:2150
 msgid "_Edit"
 msgstr "Ur_ejanje"
 
-#: ../src/vikwindow.c:2143
+#: ../src/vikwindow.c:2151
 msgid "_View"
 msgstr "_Pogled"
 
-#: ../src/vikwindow.c:2144 ../src/vikwindow.c:2228
+#: ../src/vikwindow.c:2152 ../src/vikwindow.c:2236
 msgid "_Zoom"
 msgstr "_Povečava"
 
-#: ../src/vikwindow.c:2145 ../src/vikwindow.c:2227
+#: ../src/vikwindow.c:2153 ../src/vikwindow.c:2235
 msgid "_Pan"
 msgstr ""
 
-#: ../src/vikwindow.c:2146
+#: ../src/vikwindow.c:2154
 msgid "_Layers"
 msgstr "_Plasti"
 
-#: ../src/vikwindow.c:2147
+#: ../src/vikwindow.c:2155
 msgid "_Tools"
 msgstr "_Orodja"
 
-#: ../src/vikwindow.c:2148
+#: ../src/vikwindow.c:2156
 msgid "_Webtools"
 msgstr ""
 
-#: ../src/vikwindow.c:2149 ../src/vikwindow.c:2215
+#: ../src/vikwindow.c:2157 ../src/vikwindow.c:2223
 msgid "_Help"
 msgstr "Po_moč"
 
-#: ../src/vikwindow.c:2151
+#: ../src/vikwindow.c:2159
 msgid "_New"
 msgstr "_Novo"
 
-#: ../src/vikwindow.c:2151
+#: ../src/vikwindow.c:2159
 msgid "New file"
 msgstr "Nova datoteka"
 
-#: ../src/vikwindow.c:2152
+#: ../src/vikwindow.c:2160
 msgid "_Open..."
 msgstr "_Odpri..."
 
-#: ../src/vikwindow.c:2152
+#: ../src/vikwindow.c:2160
 msgid "Open a file"
 msgstr "Odpri datoteko"
 
-#: ../src/vikwindow.c:2153
+#: ../src/vikwindow.c:2161
 msgid "Open _Recent File"
 msgstr ""
 
-#: ../src/vikwindow.c:2154
+#: ../src/vikwindow.c:2162
 msgid "Append _File..."
 msgstr "_Pripni datoteko..."
 
-#: ../src/vikwindow.c:2154
+#: ../src/vikwindow.c:2162
 msgid "Append data from a different file"
 msgstr "Pripni podatke iz druge datoteke"
 
-#: ../src/vikwindow.c:2155
+#: ../src/vikwindow.c:2163
 msgid "A_cquire"
 msgstr "_Zajemi"
 
-#: ../src/vikwindow.c:2156
+#: ../src/vikwindow.c:2164
 msgid "From _GPS..."
 msgstr "Iz _GPS..."
 
-#: ../src/vikwindow.c:2156
+#: ../src/vikwindow.c:2164
 msgid "Transfer data from a GPS device"
 msgstr "Prenos podatkov iz naprave GPS"
 
-#: ../src/vikwindow.c:2157
+#: ../src/vikwindow.c:2165
 msgid "Google _Directions..."
 msgstr ""
 
-#: ../src/vikwindow.c:2157
+#: ../src/vikwindow.c:2165
 msgid "Get driving directions from Google"
 msgstr ""
 
-#: ../src/vikwindow.c:2159
+#: ../src/vikwindow.c:2167
 msgid "Geo_caches..."
 msgstr "Geo_zakladi..."
 
-#: ../src/vikwindow.c:2159
+#: ../src/vikwindow.c:2167
 msgid "Get Geocaches from geocaching.com"
 msgstr "Pridobi podatke o Geozakladih iz geocaching.com"
 
-#: ../src/vikwindow.c:2161
+#: ../src/vikwindow.c:2169
 msgid "_Save"
 msgstr "_Shrani"
 
-#: ../src/vikwindow.c:2161
+#: ../src/vikwindow.c:2169
 msgid "Save the file"
 msgstr "Shrani datoteko"
 
-#: ../src/vikwindow.c:2162
+#: ../src/vikwindow.c:2170
 msgid "Save _As..."
 msgstr "Shrani _kot..."
 
-#: ../src/vikwindow.c:2162
+#: ../src/vikwindow.c:2170
 msgid "Save the file under different name"
 msgstr "Shrani datoteko pod drugim imenom"
 
-#: ../src/vikwindow.c:2163
+#: ../src/vikwindow.c:2171
 msgid "_Generate Image File..."
 msgstr ""
 
-#: ../src/vikwindow.c:2163
+#: ../src/vikwindow.c:2171
 msgid "Save a snapshot of the workspace into a file"
 msgstr ""
 
-#: ../src/vikwindow.c:2164
+#: ../src/vikwindow.c:2172
 msgid "Generate _Directory of Images..."
 msgstr ""
 
-#: ../src/vikwindow.c:2164
+#: ../src/vikwindow.c:2172
 msgid "FIXME:IMGDIR"
 msgstr ""
 
-#: ../src/vikwindow.c:2167
+#: ../src/vikwindow.c:2175
 msgid "_Print..."
 msgstr "_Natisni..."
 
-#: ../src/vikwindow.c:2167
+#: ../src/vikwindow.c:2175
 msgid "Print maps"
 msgstr "Natisni zemljevide"
 
-#: ../src/vikwindow.c:2170
+#: ../src/vikwindow.c:2178
 msgid "E_xit"
 msgstr "_Izhod"
 
-#: ../src/vikwindow.c:2170
+#: ../src/vikwindow.c:2178
 msgid "Exit the program"
 msgstr "Izhod iz programa"
 
-#: ../src/vikwindow.c:2171
+#: ../src/vikwindow.c:2179
 msgid "Save and Exit"
 msgstr "Shrani in končaj"
 
-#: ../src/vikwindow.c:2171
+#: ../src/vikwindow.c:2179
 msgid "Save and Exit the program"
 msgstr "Shrani in končaj delo s programom"
 
-#: ../src/vikwindow.c:2173
+#: ../src/vikwindow.c:2181
 msgid "Go to the _Default Location"
 msgstr ""
 
-#: ../src/vikwindow.c:2173
+#: ../src/vikwindow.c:2181
 msgid "Go to the default location"
 msgstr ""
 
-#: ../src/vikwindow.c:2174
+#: ../src/vikwindow.c:2182
 msgid "Go to Location..."
 msgstr ""
 
-#: ../src/vikwindow.c:2174
+#: ../src/vikwindow.c:2182
 msgid "Go to address/place using text search"
 msgstr ""
 
-#: ../src/vikwindow.c:2175
+#: ../src/vikwindow.c:2183
 msgid "_Go to Lat/Lon..."
 msgstr ""
 
-#: ../src/vikwindow.c:2175
+#: ../src/vikwindow.c:2183
 msgid "Go to arbitrary lat/lon coordinate"
 msgstr ""
 
-#: ../src/vikwindow.c:2176
+#: ../src/vikwindow.c:2184
 msgid "Go to UTM..."
 msgstr ""
 
-#: ../src/vikwindow.c:2176
+#: ../src/vikwindow.c:2184
 msgid "Go to arbitrary UTM coordinate"
 msgstr ""
 
-#: ../src/vikwindow.c:2177
+#: ../src/vikwindow.c:2185
 msgid "Set Background Color..."
 msgstr "Nastavi barvo ozadja..."
 
-#: ../src/vikwindow.c:2178
+#: ../src/vikwindow.c:2186
 msgid "Zoom _In"
 msgstr "Po_večaj"
 
-#: ../src/vikwindow.c:2179
+#: ../src/vikwindow.c:2187
 msgid "Zoom _Out"
 msgstr "Po_manjšaj"
 
-#: ../src/vikwindow.c:2180
+#: ../src/vikwindow.c:2188
 msgid "Zoom _To..."
 msgstr ""
 
-#: ../src/vikwindow.c:2181
+#: ../src/vikwindow.c:2189
 msgid "0.25"
 msgstr "0,25"
 
-#: ../src/vikwindow.c:2182
+#: ../src/vikwindow.c:2190
 msgid "0.5"
 msgstr "0,5"
 
-#: ../src/vikwindow.c:2183
+#: ../src/vikwindow.c:2191
 msgid "1"
 msgstr "1"
 
-#: ../src/vikwindow.c:2184
+#: ../src/vikwindow.c:2192
 msgid "2"
 msgstr "2"
 
-#: ../src/vikwindow.c:2185
+#: ../src/vikwindow.c:2193
 msgid "4"
 msgstr "4"
 
-#: ../src/vikwindow.c:2186
+#: ../src/vikwindow.c:2194
 msgid "8"
 msgstr "8"
 
-#: ../src/vikwindow.c:2187
+#: ../src/vikwindow.c:2195
 msgid "16"
 msgstr "16"
 
-#: ../src/vikwindow.c:2188
+#: ../src/vikwindow.c:2196
 msgid "32"
 msgstr "32"
 
-#: ../src/vikwindow.c:2189
+#: ../src/vikwindow.c:2197
 msgid "64"
 msgstr "64"
 
-#: ../src/vikwindow.c:2190
+#: ../src/vikwindow.c:2198
 msgid "128"
 msgstr "128"
 
-#: ../src/vikwindow.c:2191
+#: ../src/vikwindow.c:2199
 msgid "256"
 msgstr ""
 
-#: ../src/vikwindow.c:2192
+#: ../src/vikwindow.c:2200
 msgid "512"
 msgstr ""
 
-#: ../src/vikwindow.c:2193
+#: ../src/vikwindow.c:2201
 msgid "1024"
 msgstr ""
 
-#: ../src/vikwindow.c:2194
+#: ../src/vikwindow.c:2202
 msgid "2048"
 msgstr ""
 
-#: ../src/vikwindow.c:2195
+#: ../src/vikwindow.c:2203
 msgid "4096"
 msgstr ""
 
-#: ../src/vikwindow.c:2196
+#: ../src/vikwindow.c:2204
 msgid "8192"
 msgstr ""
 
-#: ../src/vikwindow.c:2197
+#: ../src/vikwindow.c:2205
 msgid "16384"
 msgstr ""
 
-#: ../src/vikwindow.c:2198
+#: ../src/vikwindow.c:2206
 msgid "32768"
 msgstr ""
 
-#: ../src/vikwindow.c:2199
+#: ../src/vikwindow.c:2207
 msgid "Pan North"
 msgstr "Premakni na sever"
 
-#: ../src/vikwindow.c:2200
+#: ../src/vikwindow.c:2208
 msgid "Pan East"
 msgstr "Premakni na vzhod"
 
-#: ../src/vikwindow.c:2201
+#: ../src/vikwindow.c:2209
 msgid "Pan South"
 msgstr "Premakni na jug"
 
-#: ../src/vikwindow.c:2202
+#: ../src/vikwindow.c:2210
 msgid "Pan West"
 msgstr "Premakni na zahod"
 
-#: ../src/vikwindow.c:2203
+#: ../src/vikwindow.c:2211
 msgid "Background _Jobs"
 msgstr "Opravila v _ozadju"
 
-#: ../src/vikwindow.c:2205
+#: ../src/vikwindow.c:2213
 msgid "Cu_t"
 msgstr "_Izreži"
 
-#: ../src/vikwindow.c:2206
+#: ../src/vikwindow.c:2214
 msgid "_Copy"
 msgstr "_Kopiraj"
 
-#: ../src/vikwindow.c:2207
+#: ../src/vikwindow.c:2215
 msgid "_Paste"
 msgstr "_Prilepi"
 
-#: ../src/vikwindow.c:2208
+#: ../src/vikwindow.c:2216
 msgid "_Delete"
 msgstr "I_zbriši"
 
-#: ../src/vikwindow.c:2209
+#: ../src/vikwindow.c:2217
 msgid "Delete All"
 msgstr "Izbriši vse"
 
-#: ../src/vikwindow.c:2210
+#: ../src/vikwindow.c:2218
 msgid "_Flush Map Cache"
 msgstr ""
 
-#: ../src/vikwindow.c:2211
+#: ../src/vikwindow.c:2219
 msgid "_Set the Default Location"
 msgstr ""
 
-#: ../src/vikwindow.c:2211
+#: ../src/vikwindow.c:2219
 msgid "Set the Default Location to the current position"
 msgstr ""
 
-#: ../src/vikwindow.c:2212
+#: ../src/vikwindow.c:2220
 msgid "_Preferences"
 msgstr "_Nastavitve"
 
-#: ../src/vikwindow.c:2213
+#: ../src/vikwindow.c:2221
 msgid "_Properties"
 msgstr "_Lastnosti"
 
-#: ../src/vikwindow.c:2216
+#: ../src/vikwindow.c:2224
 msgid "_About"
 msgstr "_O programu"
 
-#: ../src/vikwindow.c:2221
+#: ../src/vikwindow.c:2229
 msgid "_UTM Mode"
 msgstr "_UTM način"
 
-#: ../src/vikwindow.c:2222
+#: ../src/vikwindow.c:2230
 msgid "_Expedia Mode"
 msgstr "_Expedia način"
 
-#: ../src/vikwindow.c:2223
+#: ../src/vikwindow.c:2231
 msgid "_Mercator Mode"
 msgstr "_Mercator način"
 
-#: ../src/vikwindow.c:2227
+#: ../src/vikwindow.c:2235
 msgid "Pan Tool"
 msgstr "Orodje za premikanje"
 
-#: ../src/vikwindow.c:2228
+#: ../src/vikwindow.c:2236
 msgid "Zoom Tool"
 msgstr "Orodje za povečavo"
 
-#: ../src/vikwindow.c:2229
+#: ../src/vikwindow.c:2237
 msgid "_Ruler"
 msgstr "_Ravnilo"
 
-#: ../src/vikwindow.c:2229
+#: ../src/vikwindow.c:2237
 msgid "Ruler Tool"
 msgstr ""
 
-#: ../src/vikwindow.c:2233
+#: ../src/vikwindow.c:2241
 msgid "_Show Scale"
 msgstr ""
 
-#: ../src/vikwindow.c:2233
+#: ../src/vikwindow.c:2241
 msgid "Show Scale"
 msgstr "Prikaži merilo"
 
-#: ../src/vikwindow.c:2234
+#: ../src/vikwindow.c:2242
 msgid "Show _Center Mark"
 msgstr ""
 
-#: ../src/vikwindow.c:2234
+#: ../src/vikwindow.c:2242
 msgid "Show Center Mark"
 msgstr "Prikaži oznako središča"
 
-#: ../src/vikwindow.c:2235
+#: ../src/vikwindow.c:2243
 msgid "_Full Screen"
 msgstr "Celozaslonsko"
 
-#: ../src/vikwindow.c:2235
+#: ../src/vikwindow.c:2243
 msgid "Activate full screen mode"
 msgstr ""
 
-#: ../src/vikwindow.c:2236
+#: ../src/vikwindow.c:2244
 msgid "Show Side Panel"
 msgstr ""
 
-#: ../src/vikwindow.c:2298
+#: ../src/vikwindow.c:2306
 #, c-format
 msgid "New %s Layer"
 msgstr "Nova plast %s"
@@ -2274,6 +2286,9 @@ msgstr ""
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr "Viking"
+
+#~ msgid "Create"
+#~ msgstr "Ustvari"
 
 #~ msgid "I don't know that place. Do you want another search?"
 #~ msgstr "Tega kraja ne poznam. Želite novo iskanje?"
