@@ -2209,6 +2209,7 @@ static void trw_layer_extend_track_end_ms ( gpointer pass_along[6] )
   vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, NUM_TOOLS );
   vtl->magic_scissors_coord =  last_coord;
   vtl->magic_scissors_current_track = track;
+  vtl->magic_scissors_started = TRUE;
 
   if ( track->trackpoints )
     goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &last_coord) ;
