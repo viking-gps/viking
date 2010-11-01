@@ -155,10 +155,12 @@ typedef void          (*VikLayerFuncMarshall)              (VikLayer *, guint8 *
 typedef VikLayer *    (*VikLayerFuncUnmarshall)            (guint8 *, gint, VikViewport *);
 
 /* returns TRUE if needs to redraw due to changed param */
-typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, guint16, VikLayerParamData, VikViewport *);
+/* in parameter gboolean denotes if for file I/O, as opposed to display/cut/copy etc... operations */
+typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, guint16, VikLayerParamData, VikViewport *, gboolean);
 
+/* in parameter gboolean denotes if for file I/O, as opposed to display/cut/copy etc... operations */
 typedef VikLayerParamData
-                      (*VikLayerFuncGetParam)              (VikLayer *, guint16);
+                      (*VikLayerFuncGetParam)              (VikLayer *, guint16, gboolean);
 
 typedef void          (*VikLayerFuncReadFileData)          (VikLayer *, FILE *);
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *);
@@ -250,7 +252,7 @@ void vik_layer_rename ( VikLayer *l, const gchar *new_name );
 void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name );
 const gchar *vik_layer_get_name ( VikLayer *l );
 
-gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp);
+gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation);
 
 void vik_layer_emit_update ( VikLayer *vl );
 

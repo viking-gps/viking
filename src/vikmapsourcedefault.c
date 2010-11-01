@@ -171,7 +171,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	                           "Id of the tool",
                                "Set the id",
                                0  /* minimum value */,
-                               G_MAXUINT8 /* maximum value */,
+                               G_MAXUINT /* maximum value */,
                                0  /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_ID, pspec);

@@ -34,7 +34,7 @@ static void * _download_handle_init ( VikMapSource *self );
 static void _download_handle_cleanup ( VikMapSource *self, void *handle );
 
 /* FIXME Huge gruik */
-static DownloadOptions terraserver_options = { 0, NULL, 0, a_check_map_file };
+static DownloadMapOptions terraserver_options = { FALSE, FALSE, NULL, 0, a_check_map_file };
 
 typedef struct _TerraserverMapSourcePrivate TerraserverMapSourcePrivate;
 struct _TerraserverMapSourcePrivate
@@ -52,7 +52,7 @@ enum
   PROP_TYPE,
 };
 
-G_DEFINE_TYPE_EXTENDED (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT, (GTypeFlags)0,);
+G_DEFINE_TYPE (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
 
 static void
 terraserver_map_source_init (TerraserverMapSource *self)
@@ -187,7 +187,8 @@ _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xmpp, gdou
 	
 	TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(self);
 	int type = priv->type;
-	g_assert ( src->mode == VIK_COORD_UTM );
+	if ( src->mode != VIK_COORD_UTM )
+		return FALSE;
 
 	if ( xmpp != ympp )
 		return FALSE;

@@ -59,8 +59,8 @@ static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
 
 static void gps_layer_marshall( VikGpsLayer *val, guint8 **data, gint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp );
-static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id );
+static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation );
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *val, VikCoordMode mode );
 static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
@@ -72,6 +72,7 @@ static void gps_empty_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_download_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_all_cb( gpointer layer_and_vlp[2] );
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
+static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] );
 static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2] );
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp);
 #endif
@@ -371,7 +372,7 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
 #undef alm_next
 }
 
-static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp )
+static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
   {
@@ -431,7 +432,7 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
   return TRUE;
 }
 
-static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id )
+static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )
@@ -578,20 +579,20 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Upload to GPS") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_Upload to GPS") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_upload_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Download from GPS") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Download from _GPS") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_download_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
-  item = gtk_menu_item_new_with_label ( vgl->realtime_tracking  ?
-                                       "Stop realtime tracking" :
-                                       "Start realtime tracking" );
+  item = gtk_menu_item_new_with_mnemonic ( vgl->realtime_tracking  ?
+                                           "_Stop Realtime Tracking" :
+                                           "_Start Realtime Tracking" );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_start_stop_tracking_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
@@ -599,19 +600,24 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
   item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("Empty _Realtime") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_realtime_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 
-  item = gtk_menu_item_new_with_label ( _("Empty Upload") );
+  item = gtk_menu_item_new_with_mnemonic ( _("E_mpty Upload") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_upload_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Empty Download") );
+  item = gtk_menu_item_new_with_mnemonic ( _("_Empty Download") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_download_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_label ( _("Empty All") );
+  item = gtk_menu_item_new_with_mnemonic ( _("Empty _All") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_all_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
@@ -1117,6 +1123,15 @@ static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
 }
 
+#ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
+static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] )
+{
+  VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);
+}
+#endif
+
 static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
@@ -1124,6 +1139,10 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
+#ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
+  vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
+  vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);
+#endif
 }
 
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
@@ -1311,7 +1330,9 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
     vgl->first_realtime_trackpoint = FALSE;
     create_realtime_trackpoint(vgl, FALSE);
 
+    gdk_threads_enter();
     vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw_children[TRW_REALTIME]));
+    gdk_threads_leave();
   }
 }
 

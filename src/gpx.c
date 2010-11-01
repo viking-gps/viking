@@ -276,7 +276,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
 
      case tt_trk:
        if ( ! c_tr_name )
-         c_tr_name = g_strdup_printf("VIKING_TR%d", unnamed_waypoints++);
+         c_tr_name = g_strdup_printf("VIKING_TR%d", unnamed_tracks++);
        vik_trw_layer_filein_add_track ( vtl, c_tr_name, c_tr );
        g_free ( c_tr_name );
        c_tr = NULL;

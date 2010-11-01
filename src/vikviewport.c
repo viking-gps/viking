@@ -213,14 +213,16 @@ const gchar *vik_viewport_get_background_color ( VikViewport *vvp )
 
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colorname )
 {
-  g_assert ( vvp->background_gc );
-  gdk_color_parse ( colorname, &(vvp->background_color) );
-  gdk_gc_set_rgb_fg_color ( vvp->background_gc, &(vvp->background_color) );
+  g_assert ( vvp && vvp->background_gc );
+  if ( gdk_color_parse ( colorname, &(vvp->background_color) ) )
+    gdk_gc_set_rgb_fg_color ( vvp->background_gc, &(vvp->background_color) );
+  else
+    g_warning("%s: Failed to parse color '%s'", __FUNCTION__, colorname);
 }
 
 void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
 {
-  g_assert ( vvp->background_gc );
+  g_assert ( vvp && vvp->background_gc );
   vvp->background_color = *color;
   gdk_gc_set_rgb_fg_color ( vvp->background_gc, color );
 }
@@ -228,12 +230,14 @@ void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
 
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness )
 {
-  GdkGC *rv;
+  GdkGC *rv = NULL;
   GdkColor color;
 
   rv = gdk_gc_new ( GTK_WIDGET(vvp)->window );
-  gdk_color_parse ( colorname, &color );
-  gdk_gc_set_rgb_fg_color ( rv, &color );
+  if ( gdk_color_parse ( colorname, &color ) )
+    gdk_gc_set_rgb_fg_color ( rv, &color );
+  else
+    g_warning("%s: Failed to parse color '%s'", __FUNCTION__, colorname);
   gdk_gc_set_line_attributes ( rv, thickness, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
   return rv;
 }
@@ -290,8 +294,7 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
   /* this is down here so it can get a GC (necessary?) */
   if ( ! vvp->background_gc )
   {
-    vvp->background_gc = vik_viewport_new_gc ( vvp, "", 1 );
-    vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR ); /* set to "backup" color in vvp->background_color */
+    vvp->background_gc = vik_viewport_new_gc ( vvp, DEFAULT_BACKGROUND_COLOR, 1 );
   }
   if ( !vvp->scale_bg_gc) {
     vvp->scale_bg_gc = vik_viewport_new_gc(vvp, "grey", 3);
@@ -344,6 +347,8 @@ gboolean vik_viewport_get_draw_scale ( VikViewport *vvp )
 
 void vik_viewport_draw_scale ( VikViewport *vvp )
 {
+  g_return_if_fail ( vvp != NULL );
+
   if ( vvp->draw_scale ) {
     VikCoord left, right;
     gdouble unit, base, diff, old_unit, old_diff, ratio;
@@ -351,8 +356,6 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     PangoFontDescription *pfd;
     PangoLayout *pl;
     gchar s[128];
-
-    g_return_if_fail ( vvp != NULL );
 
     vik_viewport_screen_to_coord ( vvp, 0, vvp->height, &left );
     vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height, &right );
@@ -466,6 +469,8 @@ gboolean vik_viewport_get_draw_centermark ( VikViewport *vvp )
 
 void vik_viewport_draw_centermark ( VikViewport *vvp )
 {
+  g_return_if_fail ( vvp != NULL );
+
   if ( !vvp->draw_centermark )
     return;
 
@@ -711,12 +716,12 @@ gint vik_viewport_get_height( VikViewport *vvp )
 
 void vik_viewport_screen_to_coord ( VikViewport *vvp, int x, int y, VikCoord *coord )
 {
+  g_return_if_fail ( vvp != NULL );
+
   if ( vvp->coord_mode == VIK_COORD_UTM ) {
     int zone_delta;
     struct UTM *utm = (struct UTM *) coord;
     coord->mode = VIK_COORD_UTM;
-
-    g_return_if_fail ( vvp != NULL );
 
     utm->zone = vvp->center.utm_zone;
     utm->letter = vvp->center.utm_letter;

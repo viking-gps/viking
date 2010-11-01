@@ -42,12 +42,14 @@
 
 static gboolean expedia_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-static int expedia_download ( MapCoord *src, const gchar *dest_fn );
+static int expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle );
+static void * expedia_handle_init ( );
+static void expedia_handle_cleanup ( void *handle );
 
-static DownloadOptions expedia_options = { 0, NULL, 2, a_check_map_file };
+static DownloadMapOptions expedia_options = { FALSE, FALSE, NULL, 2, a_check_map_file };
 
 void expedia_init() {
-  VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download, &expedia_options };
+  VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download, expedia_handle_init, expedia_handle_cleanup };
   maps_layer_register_type(_("Expedia Street Maps"), 5, &map_type);
 }
 
@@ -167,7 +169,7 @@ static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
   dest->north_south = (((gdouble)src->y) / expedia_altis_freq(src->scale)) - 90;
 }
 
-static int expedia_download ( MapCoord *src, const gchar *dest_fn )
+static int expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle )
 {
   gint height, width;
   struct LatLon ll;
@@ -185,9 +187,19 @@ static int expedia_download ( MapCoord *src, const gchar *dest_fn )
   uri = g_strdup_printf ( "/pub/agent.dll?qscr=mrdt&ID=3XNsF.&CenP=%lf,%lf&Lang=%s&Alti=%d&Size=%d,%d&Offs=0.000000,0.000000&BCheck&tpid=1",
                ll.lat, ll.lon, (ll.lon > -30) ? "EUR0809" : "USA0409", src->scale, width, height );
 
-  if ((res = a_http_download_get_url ( EXPEDIA_SITE, uri, dest_fn, &expedia_options )) == 0)	/* All OK */
+  if ((res = a_http_download_get_url ( EXPEDIA_SITE, uri, dest_fn, &expedia_options, NULL )) == 0)	/* All OK */
   	expedia_snip ( dest_fn );
   g_free(uri);
   return(res);
 }
 
+static void * expedia_handle_init ( )
+{
+  // Not much going on here
+  return 0;
+}
+
+static void expedia_handle_cleanup ( void *handle )
+{
+  // Even less here!
+}

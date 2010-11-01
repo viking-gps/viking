@@ -41,6 +41,7 @@ void osm_init () {
                                 "hostname", "tah.openstreetmap.org",
                                 "url", "/Tiles/tile/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
+                                "use-etag", FALSE,
                                 NULL));
   VikMapSource *mapnik_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -48,7 +49,8 @@ void osm_init () {
                                 "label", "OpenStreetMap (Mapnik)",
                                 "hostname", "tile.openstreetmap.org",
                                 "url", "/%d/%d/%d.png",
-                                "check-file-server-time", TRUE,
+                                "check-file-server-time", FALSE,
+                                "use-etag", TRUE,
                                 NULL));
   VikMapSource *maplint_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -57,14 +59,16 @@ void osm_init () {
                                 "hostname", "tah.openstreetmap.org",
                                 "url", "/Tiles/maplint.php/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
+                                "use-etag", FALSE,
                                 NULL));
   VikMapSource *cycle_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", 17,
                                 "label", "OpenStreetMap (Cycle)",
-                                "hostname", "thunderflames.org/tiles/cycle/",
-                                "url", "%d/%d/%d.png",
+                                "hostname", "b.tile.opencyclemap.org",
+                                "url", "/cycle/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
+                                "use-etag", FALSE,
                                 NULL));
 
   maps_layer_register_map_source (osmarender_type);

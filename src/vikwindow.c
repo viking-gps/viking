@@ -148,6 +148,7 @@ struct _VikWindow {
 
   GtkActionGroup *action_group;
 
+  gboolean pan_move;
   gint pan_x, pan_y;
 
   guint draw_image_width, draw_image_height;
@@ -284,7 +285,8 @@ static void window_init ( VikWindow *vw )
 
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
-  
+ 
+  vw->pan_move = FALSE; 
   vw->pan_x = vw->pan_y = -1;
   vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
   vw->draw_image_height = DRAW_IMAGE_DEFAULT_HEIGHT;
@@ -395,7 +397,17 @@ static void draw_sync ( VikWindow *vw )
 static void draw_status ( VikWindow *vw )
 {
   static gchar zoom_level[22];
-  g_snprintf ( zoom_level, 22, "%.3f/%.3f %s", vik_viewport_get_xmpp (vw->viking_vvp), vik_viewport_get_ympp(vw->viking_vvp), vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ? _("mpp") : _("pixelfact") );
+  gdouble xmpp = vik_viewport_get_xmpp (vw->viking_vvp);
+  gdouble ympp = vik_viewport_get_ympp(vw->viking_vvp);
+  gchar *unit = vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ? _("mpp") : _("pixelfact");
+  if (xmpp != ympp)
+    g_snprintf ( zoom_level, 22, "%.3f/%.3f %s", xmpp, ympp, unit );
+  else
+    if ( (int)xmpp - xmpp < 0.0 )
+      g_snprintf ( zoom_level, 22, "%.3f %s", xmpp, unit );
+    else
+      /* xmpp should be a whole number so don't show useless .000 bit */
+      g_snprintf ( zoom_level, 22, "%d %s", (int)xmpp, unit );
   if ( vw->current_tool == TOOL_LAYER )
     vik_statusbar_set_message ( vw->viking_vs, 0, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].name );
   else
@@ -422,7 +434,7 @@ static void window_configure_event ( VikWindow *vw )
     first = 0;
     cursor = toolbox_get_cursor(vw->vt, "Pan");
     /* We set cursor, even if it is NULL: it resets to default */
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, cursor );
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, (GdkCursor *)cursor );
   }
 }
 
@@ -436,7 +448,7 @@ static void draw_redraw ( VikWindow *vw )
 
   if ( ! new_trigger )
     ; /* do nothing -- have to redraw everything. */
-  else if ( (old_trigger != new_trigger) || !vik_coord_equals(&old_center, &vw->trigger_center) )
+  else if ( (old_trigger != new_trigger) || !vik_coord_equals(&old_center, &vw->trigger_center) || (new_trigger->type == VIK_LAYER_AGGREGATE) )
     vik_viewport_set_trigger ( vw->viking_vvp, new_trigger ); /* todo: set to half_drawn mode if new trigger is above old */
   else
     vik_viewport_set_half_drawn ( vw->viking_vvp, TRUE );
@@ -469,6 +481,7 @@ static gboolean draw_buf(gpointer data)
 static void vik_window_pan_click (VikWindow *vw, GdkEventButton *event)
 {
   /* set panning origin */
+  vw->pan_move = FALSE;
   vw->pan_x = (gint) event->x;
   vw->pan_y = (gint) event->y;
 }
@@ -491,7 +504,12 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
 static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
 {
   if ( vw->pan_x != -1 ) {
-    vik_viewport_pan_sync ( vw->viking_vvp, event->x - vw->pan_x, event->y - vw->pan_y );
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
+                                     vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
+    vw->pan_move = TRUE;
+    vw->pan_x = event->x;
+    vw->pan_y = event->y;
+    draw_update ( vw );
   }
 }
 
@@ -528,8 +546,12 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
     interpol_method = VIK_DEM_INTERPOL_SIMPLE;
   else
     interpol_method = VIK_DEM_INTERPOL_BEST;
-  if ((alt = a_dems_get_elev_by_coord(&coord, interpol_method)) != VIK_DEM_INVALID_ELEVATION)
-    g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dm"), lat, lon, alt );
+  if ((alt = a_dems_get_elev_by_coord(&coord, interpol_method)) != VIK_DEM_INVALID_ELEVATION) {
+    if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_METRES )
+      g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dm"), lat, lon, alt );
+    else
+      g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s %dft"), lat, lon, (int)VIK_METERS_TO_FEET(alt) );
+  }
   else
     g_snprintf ( pointer_buf, BUFFER_SIZE, _("%s %s"), lat, lon );
   g_free (lat);
@@ -549,13 +571,14 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 
 static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
 {
-  if ( ABS(vw->pan_x - event->x) <= 1 && ABS(vw->pan_y - event->y) <= 1 )
+  if ( vw->pan_move == FALSE )
     vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
   else
      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
                                       vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
-  draw_update ( vw );
+  vw->pan_move = FALSE;
   vw->pan_x = vw->pan_y = -1;
+  draw_update ( vw );
 }
 
 static void draw_release ( VikWindow *vw, GdkEventButton *event )
@@ -1328,7 +1351,7 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 
   cursor = toolbox_get_cursor(vw->vt, gtk_action_get_name(a));
   /* We set cursor, even if it is NULL: it resets to default */
-  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, cursor );
+  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, (GdkCursor *)cursor );
 
   if (!strcmp(gtk_action_get_name(a), "Pan")) {
     vw->current_tool = TOOL_PAN;
@@ -1391,6 +1414,23 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
   return mode_button;
 }
 
+/**
+ * vik_window_get_pan_move:
+ * @vw: some VikWindow
+ *
+ * Retrieves @vw's pan_move.
+ *
+ * Should be removed as soon as possible.
+ *
+ * Returns: @vw's pan_move
+ *
+ * Since: 0.9.96
+ **/
+gboolean vik_window_get_pan_move ( VikWindow *vw )
+{
+  return vw->pan_move;
+}
+
 static void on_activate_recent_item (GtkRecentChooser *chooser,
                                      VikWindow *self)
 {
@@ -1408,7 +1448,7 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
       g_signal_emit ( G_OBJECT(self), window_signals[VW_OPENWINDOW_SIGNAL], 0, filenames );
     }
     else
-      vik_window_open_file ( self, filename, TRUE );
+      vik_window_open_file ( self, path, TRUE );
     g_free ( path );
   }
 
@@ -1916,7 +1956,7 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
 
   zoom_label = gtk_label_new ( _("Zoom (meters per pixel):") );
   /* TODO: separate xzoom and yzoom factors */
-  zoom_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vik_viewport_get_xmpp(vw->viking_vvp), VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM/2.0, 1, 100, 3 )), 16, 3);
+  zoom_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vik_viewport_get_xmpp(vw->viking_vvp), VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM/2.0, 1, 100, 0 )), 16, 0);
 
   total_size_label = gtk_label_new ( NULL );
 
@@ -2171,10 +2211,10 @@ static GtkActionEntry entries[] = {
   { "SaveExit",  GTK_STOCK_QUIT,         N_("Save and Exit"),                 NULL, N_("Save and Exit the program"),                             (GCallback)save_file_and_exit          },
 
   { "GotoDefaultLocation", GTK_STOCK_HOME, N_("Go to the _Default Location"),  NULL,         N_("Go to the default location"),                     (GCallback)goto_default_location },
-  { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to Location..."),    	      NULL,         N_("Go to address/place using text search"),        (GCallback)goto_address       },
+  { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to _Location..."),    	      NULL,         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
-  { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Background Color..."),       NULL,         NULL,                                           (GCallback)set_bg_color          },
+  { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Bac_kground Color..."),      NULL,         NULL,                                           (GCallback)set_bg_color          },
   { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To..."),               "<control>Z", NULL,                                           (GCallback)zoom_to_cb            },
@@ -2196,10 +2236,10 @@ static GtkActionEntry entries[] = {
   { "Zoom8192",  NULL,                   N_("8192"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom16384", NULL,                   N_("16384"),                         NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "Zoom32768", NULL,                   N_("32768"),                         NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "PanNorth",  NULL,                   N_("Pan North"),                  "<control>Up", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanEast",  NULL,                    N_("Pan East"),                   "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanSouth",  NULL,                   N_("Pan South"),                  "<control>Down", NULL,                                           (GCallback)draw_pan_cb },
-  { "PanWest",  NULL,                    N_("Pan West"),                   "<control>Left", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanNorth",  NULL,                   N_("Pan _North"),                "<control>Up",    NULL,                                           (GCallback)draw_pan_cb },
+  { "PanEast",   NULL,                   N_("Pan _East"),                 "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
+  { "PanSouth",  NULL,                   N_("Pan _South"),                "<control>Down",  NULL,                                           (GCallback)draw_pan_cb },
+  { "PanWest",   NULL,                   N_("Pan _West"),                 "<control>Left",  NULL,                                           (GCallback)draw_pan_cb },
   { "BGJobs",    GTK_STOCK_EXECUTE,      N_("Background _Jobs"),              NULL,         NULL,                                           (GCallback)a_background_show_window },
 
   { "Cut",       GTK_STOCK_CUT,          N_("Cu_t"),                          NULL,         NULL,                                           (GCallback)menu_cut_layer_cb     },
@@ -2230,10 +2270,10 @@ static GtkRadioActionEntry tool_entries[] = {
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ShowScale", NULL,                        N_("_Show Scale"),               NULL,         N_("Show Scale"),                                           (GCallback)set_draw_scale, TRUE   },
-  { "ShowCenterMark", NULL,                   N_("Show _Center Mark"),         NULL,         N_("Show Center Mark"),                                           (GCallback)set_draw_centermark, TRUE   },
-  { "FullScreen",    GTK_STOCK_FULLSCREEN,    N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),                                           (GCallback)full_screen_cb, FALSE },
-  { "ViewSidePanel", GTK_STOCK_INDEX,   N_("Show Side Panel"),                 "F9",         N_("Show Side Panel"),                                           (GCallback)view_side_panel_cb, TRUE    },
+  { "ShowScale",      NULL,                 N_("_Show Scale"),               "F5",         N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
+  { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)set_draw_centermark, TRUE },
+  { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },
+  { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side Pa_nel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
 };
 
 #include "menu.xml.h"

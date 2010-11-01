@@ -1,0 +1,40 @@
+#VIKING GPS Data file http://viking.sf.net/
+
+xmpp=64,000000
+ympp=64,000000
+lat=38,582631
+lon=-89,512096
+mode=utm
+color=#cccccc
+drawscale=t
+drawcentermark=t
+
+~Layer Map
+name=Terraserver Topo
+mode=2
+directory=
+alpha=255
+autodownload=t
+mapzoom=0
+~EndLayer
+
+
+~Layer Map
+name=Terraserver Aerial
+mode=1
+directory=
+alpha=255
+autodownload=t
+mapzoom=0
+~EndLayer
+
+
+~Layer Map
+name=Terraserver Urban Area
+mode=4
+directory=
+alpha=255
+autodownload=t
+mapzoom=0
+~EndLayer
+

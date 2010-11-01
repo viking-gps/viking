@@ -28,6 +28,7 @@
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 
+#include "util.h"
 #include "dialog.h"
 
 static gboolean spawn_command_line_async(const gchar * cmd,

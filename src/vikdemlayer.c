@@ -69,12 +69,12 @@
 #define DEM24K_DOWNLOAD_SCRIPT "dem24k.pl"
 #endif
 
+#define UNUSED_LINE_THICKNESS 3
 
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp );
-static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id );
-static void dem_layer_update_gc ( VikDEMLayer *vdl, VikViewport *vp, const gchar *color );
+static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation );
 static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
 static void srtm_draw_existence ( VikViewport *vp );
 
@@ -82,10 +82,10 @@ static void srtm_draw_existence ( VikViewport *vp );
 static void dem24k_draw_existence ( VikViewport *vp );
 #endif
 
+/* Upped upper limit incase units are feet */
 static VikLayerParamScale param_scales[] = {
-  { 1, 10000, 10, 1 },
-  { 1, 10000, 10, 1 },
-  { 1, 10, 1, 0 },
+  { 0, 30000, 10, 1 },
+  { 1, 30000, 10, 1 },
 };
 
 static gchar *params_source[] = {
@@ -118,15 +118,14 @@ enum { DEM_TYPE_HEIGHT = 0,
 static VikLayerParam dem_layer_params[] = {
   { "files", VIK_LAYER_PARAM_STRING_LIST, VIK_LAYER_GROUP_NONE, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST },
   { "source", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Download Source:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL },
-  { "color", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Color:"), VIK_LAYER_WIDGET_ENTRY },
+  { "color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Min Elev Color:"), VIK_LAYER_WIDGET_COLOR, 0 },
   { "type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Type:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_type, NULL },
   { "min_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Min Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
   { "max_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Max Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0 },
-  { "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Line Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 1 },
 };
 
 
-enum { PARAM_FILES=0, PARAM_SOURCE, PARAM_COLOR, PARAM_TYPE, PARAM_MIN_ELEV, PARAM_MAX_ELEV, PARAM_LINE_THICKNESS, NUM_PARAMS };
+enum { PARAM_FILES=0, PARAM_SOURCE, PARAM_COLOR, PARAM_TYPE, PARAM_MIN_ELEV, PARAM_MAX_ELEV, NUM_PARAMS };
 
 static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
@@ -139,9 +138,11 @@ static VikToolInterface dem_tools[] = {
 };
 
 
-/*
+/* HEIGHT COLORS
+   The first entry is blue for a default 'sea' colour,
+   however the value used by the corresponding gc can be configured as part of the DEM layer properties.
+   The other colours, shaded from brown to white are used to give an indication of height.
 */
-
 static gchar *dem_height_colors[] = {
 "#0000FF",
 "#9b793c", "#9c7d40", "#9d8144", "#9e8549", "#9f894d", "#a08d51", "#a29156", "#a3955a", "#a4995e", "#a69d63",
@@ -164,7 +165,7 @@ static const guint DEM_N_HEIGHT_COLORS = sizeof(dem_height_colors)/sizeof(dem_he
 */
 
 static gchar *dem_gradient_colors[] = {
-"#AAAAAA"
+"#AAAAAA",
 "#000000", "#000011", "#000022", "#000033", "#000044", "#00004c", "#000055", "#00005d", "#000066", "#00006e",
 "#000077", "#00007f", "#000088", "#000090", "#000099", "#0000a1", "#0000aa", "#0000b2", "#0000bb", "#0000c3",
 "#0000cc", "#0000d4", "#0000dd", "#0000e5", "#0000ee", "#0000f6", "#0000ff", "#0008f7", "#0011ee", "#0019e6",
@@ -230,14 +231,12 @@ VikLayerInterface vik_dem_layer_interface = {
 
 struct _VikDEMLayer {
   VikLayer vl;
-  GdkGC *gc;
   GdkGC **gcs;
   GdkGC **gcsgradient;
   GList *files;
   gdouble min_elev;
   gdouble max_elev;
-  guint8 line_thickness;
-  gchar *color;
+  GdkGC *color;
   guint source;
   guint type;
 };
@@ -278,31 +277,44 @@ static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *v
 
   /* TODO: share GCS between layers */
   for ( i = 0; i < DEM_N_HEIGHT_COLORS; i++ )
-    rv->gcs[i] = vik_viewport_new_gc ( vvp, dem_height_colors[i], rv->line_thickness );
+    rv->gcs[i] = vik_viewport_new_gc ( vvp, dem_height_colors[i], UNUSED_LINE_THICKNESS );
 
   for ( i = 0; i < DEM_N_GRADIENT_COLORS; i++ )
-    rv->gcsgradient[i] = vik_viewport_new_gc ( vvp, dem_gradient_colors[i], rv->line_thickness );
+    rv->gcsgradient[i] = vik_viewport_new_gc ( vvp, dem_gradient_colors[i], UNUSED_LINE_THICKNESS );
 
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
   return rv;
 }
 
-gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp )
+gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
   {
-    case PARAM_COLOR: if ( vdl->color ) g_free ( vdl->color ); vdl->color = g_strdup ( data.s ); break;
+    case PARAM_COLOR: gdk_gc_set_rgb_fg_color ( vdl->gcs[0], &(data.c) ); break;
     case PARAM_SOURCE: vdl->source = data.u; break;
     case PARAM_TYPE: vdl->type = data.u; break;
-    case PARAM_MIN_ELEV: vdl->min_elev = data.d; break;
-    case PARAM_MAX_ELEV: vdl->max_elev = data.d; break;
-    case PARAM_LINE_THICKNESS: if ( data.u >= 1 && data.u <= 15 ) vdl->line_thickness = data.u; break;
+    case PARAM_MIN_ELEV:
+      /* Convert to store internally
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        vdl->min_elev = VIK_FEET_TO_METERS(data.d);
+      else
+        vdl->min_elev = data.d;
+      break;
+    case PARAM_MAX_ELEV:
+      /* Convert to store internally
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        vdl->max_elev = VIK_FEET_TO_METERS(data.d);
+      else
+        vdl->max_elev = data.d;
+      break;
     case PARAM_FILES: a_dems_load_list ( &(data.sl) ); a_dems_list_free ( vdl->files ); vdl->files = data.sl; break;
   }
   return TRUE;
 }
 
-static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id )
+static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
   switch ( id )
@@ -310,21 +322,30 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id )
     case PARAM_FILES: rv.sl = vdl->files; break;
     case PARAM_SOURCE: rv.u = vdl->source; break;
     case PARAM_TYPE: rv.u = vdl->type; break;
-    case PARAM_COLOR: rv.s = vdl->color ? vdl->color : ""; break;
-    case PARAM_MIN_ELEV: rv.d = vdl->min_elev; break;
-    case PARAM_MAX_ELEV: rv.d = vdl->max_elev; break;
-    case PARAM_LINE_THICKNESS: rv.i = vdl->line_thickness; break;
+    case PARAM_COLOR: vik_gc_get_fg_color ( vdl->gcs[0], &(rv.c) ); break;
+    case PARAM_MIN_ELEV:
+      /* Convert for display in desired units
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        rv.d = VIK_METERS_TO_FEET(vdl->min_elev);
+      else
+        rv.d = vdl->min_elev;
+      break;
+    case PARAM_MAX_ELEV:
+      /* Convert for display in desired units
+         NB file operation always in internal units (metres) */
+      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        rv.d = VIK_METERS_TO_FEET(vdl->max_elev);
+      else
+        rv.d = vdl->max_elev;
+      break;
   }
   return rv;
 }
 
 static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file )
 {
-  VikDEMLayer *vdl = VIK_DEM_LAYER(vl);
-  if ( vdl->gc )
-    g_object_unref ( G_OBJECT(vdl->gc) );
-
-  vdl->gc = vik_viewport_new_gc ( vp, vdl->color, vdl->line_thickness );
+  /* nothing ATM, but keep in case it's needed the future */
 }
 
 VikDEMLayer *vik_dem_layer_new ( )
@@ -335,9 +356,6 @@ VikDEMLayer *vik_dem_layer_new ( )
 
   vdl->files = NULL;
 
-
-  vdl->gc = NULL;
-
   vdl->gcs = g_malloc(sizeof(GdkGC *)*DEM_N_HEIGHT_COLORS);
   vdl->gcsgradient = g_malloc(sizeof(GdkGC *)*DEM_N_GRADIENT_COLORS);
   /* make new gcs only if we need it (copy layer -> use old) */
@@ -346,8 +364,6 @@ VikDEMLayer *vik_dem_layer_new ( )
   vdl->max_elev = 1000.0;
   vdl->source = DEM_SOURCE_SRTM;
   vdl->type = DEM_TYPE_HEIGHT;
-  vdl->line_thickness = 3;
-  vdl->color = NULL;
   return vdl;
 }
 
@@ -520,11 +536,15 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 	  if(box_width < 0 || box_height < 0)
 		  continue; // skip this. this is out of our viewport anyway. FIXME: why?
 
+	  gboolean below_minimum = FALSE;
           if(vdl->type == DEM_TYPE_HEIGHT) {
-            if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev )
-              elev=vdl->min_elev;
+            if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev ) {
+              // Prevent 'elev - vdl->min_elev' from being negative so can safely use as array index
+              elev = ceil ( vdl->min_elev );
+	      below_minimum = TRUE;
+	    }
             if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
-              elev=vdl->max_elev;
+              elev = vdl->max_elev;
           }
 
           {
@@ -560,22 +580,24 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 		change = change / ((skip_factor > 1) ? log(skip_factor) : 0.55); // FIXME: better calc.
 
                 if(change < vdl->min_elev)
-                  change = vdl->min_elev;
+                  // Prevent 'change - vdl->min_elev' from being negative so can safely use as array index
+                  change = ceil ( vdl->min_elev );
 
                 if(change > vdl->max_elev)
                   change = vdl->max_elev;
 
                 // void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 );
-                vik_viewport_draw_rectangle(vp, vdl->gcsgradient[(gint)floor((change - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_GRADIENT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
+                vik_viewport_draw_rectangle(vp, vdl->gcsgradient[(gint)floor(((change - vdl->min_elev)/(vdl->max_elev - vdl->min_elev))*(DEM_N_GRADIENT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
               }
             } else {
               if(vdl->type == DEM_TYPE_HEIGHT) {
                 if ( elev == VIK_DEM_INVALID_ELEVATION )
                   ; /* don't draw it */
-                else if ( elev <= 0 )
+                else if ( elev <= 0 || below_minimum )
+		  /* If 'sea' colour or below the defined mininum draw in the configurable colour */
                   vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, box_x, box_y, box_width, box_height);
                 else
-                  vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev)*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
+                  vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev))*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
               }
             }
           }
@@ -726,11 +748,8 @@ void vik_dem_layer_draw ( VikDEMLayer *vdl, gpointer data )
 void vik_dem_layer_free ( VikDEMLayer *vdl )
 {
   gint i;
-  if ( vdl->gc != NULL )
-    g_object_unref ( G_OBJECT(vdl->gc) );
-
   if ( vdl->color != NULL )
-    g_free ( vdl->color );
+    g_object_unref ( vdl->color );
 
   if ( vdl->gcs )
     for ( i = 0; i < DEM_N_HEIGHT_COLORS; i++ )
@@ -745,19 +764,6 @@ void vik_dem_layer_free ( VikDEMLayer *vdl )
   a_dems_list_free ( vdl->files );
 }
 
-static void dem_layer_update_gc ( VikDEMLayer *vdl, VikViewport *vp, const gchar *color )
-{
-  if ( vdl->color )
-    g_free ( vdl->color );
-
-  vdl->color = g_strdup ( color );
-
-  if ( vdl->gc )
-    g_object_unref ( G_OBJECT(vdl->gc) );
-
-  vdl->gc = vik_viewport_new_gc ( vp, vdl->color, vdl->line_thickness );
-}
-
 VikDEMLayer *vik_dem_layer_create ( VikViewport *vp )
 {
   VikDEMLayer *vdl = vik_dem_layer_new ();
@@ -765,12 +771,11 @@ VikDEMLayer *vik_dem_layer_create ( VikViewport *vp )
 
   /* TODO: share GCS between layers */
   for ( i = 0; i < DEM_N_HEIGHT_COLORS; i++ )
-    vdl->gcs[i] = vik_viewport_new_gc ( vp, dem_height_colors[i], vdl->line_thickness );
+    vdl->gcs[i] = vik_viewport_new_gc ( vp, dem_height_colors[i], UNUSED_LINE_THICKNESS );
 
   for ( i = 0; i < DEM_N_GRADIENT_COLORS; i++ )
-    vdl->gcsgradient[i] = vik_viewport_new_gc ( vp, dem_gradient_colors[i], vdl->line_thickness );
+    vdl->gcsgradient[i] = vik_viewport_new_gc ( vp, dem_gradient_colors[i], UNUSED_LINE_THICKNESS );
 
-  dem_layer_update_gc ( vdl, vp, "red" );
   return vdl;
 }
 /**************************************************************
@@ -813,7 +818,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 		(intlon >= 0) ? 'E' : 'W',
 		ABS(intlon) );
 
-  static DownloadOptions options = { 0, NULL, 0, a_check_map_file };
+  static DownloadMapOptions options = { FALSE, FALSE, NULL, 0, a_check_map_file };
   a_http_download_get_url ( SRTM_HTTP_SITE, src_fn, p->dest, &options, NULL );
   g_free ( src_fn );
 }
@@ -1075,6 +1080,8 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
     a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vdl), tmp,
 		(vik_thr_func) dem_download_thread, p,
 		(vik_thr_free_func) free_dem_download_params, NULL, 1 );
+
+    g_free ( tmp );
   }
 
   g_free ( dem_file );

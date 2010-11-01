@@ -260,7 +260,7 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
     for ( i = 0; i < params_count; i++ )
     {
       g_debug("%s: %s", __FUNCTION__, params[i].name);
-      d = get_param(vl, i);
+      d = get_param(vl, i, FALSE);
       switch ( params[i].type )
       {
       case VIK_LAYER_PARAM_STRING: 
@@ -332,7 +332,7 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
 	s[vlm_size]=0;
 	vlm_read(s);
 	d.s = s;
-	set_param(vl, i, d, vvp);
+	set_param(vl, i, d, vvp, FALSE);
 	g_free(s);
 	break;
       case VIK_LAYER_PARAM_STRING_LIST:  {
@@ -348,14 +348,14 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
           list = g_list_append ( list, s );
         }
         d.sl = list;
-        set_param ( vl, i, d, vvp );
+        set_param(vl, i, d, vvp, FALSE);
         /* don't free -- string list is responsibility of the layer */
 
         break;
         }
       default:
 	vlm_read(&d);
-	set_param(vl, i, d, vvp);
+	set_param(vl, i, d, vvp, FALSE);
 	break;
       }
     }
@@ -445,10 +445,10 @@ GdkPixbuf *vik_layer_load_icon ( gint type )
   return NULL;
 }
 
-gboolean vik_layer_set_param ( VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp )
+gboolean vik_layer_set_param ( VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation )
 {
   if ( vik_layer_interfaces[layer->type]->set_param )
-    return vik_layer_interfaces[layer->type]->set_param ( layer, id, data, vp );
+    return vik_layer_interfaces[layer->type]->set_param ( layer, id, data, vp, is_file_operation );
   return FALSE;
 }
 

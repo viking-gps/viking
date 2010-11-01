@@ -104,7 +104,8 @@ int a_background_testcancel ( gpointer callbackdata )
   }
   return 0;
 }
-void thread_helper ( gpointer args[6], gpointer user_data )
+
+static void thread_helper ( gpointer args[6], gpointer user_data )
 {
   /* unpack args */
   vik_thr_func func = args[1];

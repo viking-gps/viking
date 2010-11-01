@@ -152,7 +152,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
     guint16 i, params_count = vik_layer_get_interface(l->type)->params_count;
     for ( i = 0; i < params_count; i++ )
     {
-      data = get_param(l,i);
+      data = get_param(l, i, TRUE);
       file_write_layer_param(f, params[i].name, params[i].type, data);
     }
   }
@@ -192,7 +192,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
       g_critical("Houston, we've had a problem. mode=%d", mode);
   }
 
-  fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\ndrawscale=%s\ndrawcentermark=%s",
+  fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\ndrawscale=%s\ndrawcentermark=%s\n",
       vik_viewport_get_xmpp ( VIK_VIEWPORT(vp) ), vik_viewport_get_ympp ( VIK_VIEWPORT(vp) ), ll.lat, ll.lon,
       modestring, vik_viewport_get_background_color(VIK_VIEWPORT(vp)),
       vik_viewport_get_draw_scale(VIK_VIEWPORT(vp)) ? "t" : "f",
@@ -259,7 +259,7 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
 {
   VikLayerParamData x;
   x.sl = list;
-  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1] );
+  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1], TRUE );
 }
 
 static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
@@ -477,7 +477,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
                 /* STRING or STRING_LIST -- if STRING_LIST, just set param to add a STRING */
                 default: x.s = line;
               }
-              vik_layer_set_param ( VIK_LAYER(stack->data), i, x, vp );
+              vik_layer_set_param ( VIK_LAYER(stack->data), i, x, vp, TRUE );
             }
             found_match = TRUE;
             break;
@@ -553,7 +553,7 @@ static void xfclose ( FILE *f )
 /* 0 on failure, 1 on success (vik file) 2 on success (other file) */
 gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename_or_uri )
 {
-  char *filename = filename_or_uri;
+  char *filename = (char *)filename_or_uri;
   if (strncmp(filename, "file://", 7) == 0)
     filename = filename + 7;
 

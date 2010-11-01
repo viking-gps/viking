@@ -32,6 +32,25 @@
 #define ALTI_TO_MPP 1.4017295
 #define MPP_TO_ALTI 0.7134044
 
+#define VIK_FEET_IN_METER 3.2808399
+#define VIK_METERS_TO_FEET(X) ((X)*VIK_FEET_IN_METER)
+#define VIK_FEET_TO_METERS(X) ((X)/VIK_FEET_IN_METER)
+
+/* MPS - Metres Per Second */
+/* MPH - Metres Per Hour */
+#define VIK_MPH_IN_MPS 2.23693629
+#define VIK_MPS_TO_MPH(X) ((X)*VIK_MPH_IN_MPS)
+#define VIK_MPH_TO_MPS(X) ((X)/VIK_MPH_IN_MPS)
+
+/* KPH - Kilometres Per Hour */
+#define VIK_KPH_IN_MPS 3.6
+#define VIK_MPS_TO_KPH(X) ((X)*VIK_KPH_IN_MPS)
+#define VIK_KPH_TO_MPS(X) ((X)/VIK_KPH_IN_MPS)
+
+#define VIK_KNOTS_IN_MPS 1.94384449
+#define VIK_MPS_TO_KNOTS(X) ((X)*VIK_KNOTS_IN_MPS)
+#define VIK_KNOTS_TO_MPS(X) ((X)/VIK_KNOTS_IN_MPS)
+
 #define VIK_DEFAULT_ALTITUDE 0.0
 #define VIK_DEFAULT_DOP 0.0
 

@@ -221,7 +221,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
       args[i++] = "-o";
       args[i++] = "gpx";
       args[i++] = "-f";
-      args[i++] = from;
+      args[i++] = (char *)from;
       args[i++] = "-F";
       args[i++] = name_dst;
       args[i] = NULL;
@@ -281,7 +281,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
 
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data )
 {
-  static DownloadOptions options = { FALSE, NULL, 0, a_check_kml_file};
+  static DownloadMapOptions options = { FALSE, FALSE, NULL, 0, a_check_kml_file};
   gint fd_src;
   int fetch_ret;
   gboolean ret = FALSE;
@@ -446,7 +446,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
       args[i++] = "-f";
       args[i++] = name_src;
       args[i++] = "-F";
-      args[i++] = to;
+      args[i++] = (char *)to;
       args[i] = NULL;
 
       ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );

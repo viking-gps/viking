@@ -1,0 +1,7 @@
+To create the test programs in this directory:
+
+make check
+
+To run memory checks eg:
+
+valgrind --leak-check=full ./gpx2gpx < file.gpx > /dev/null

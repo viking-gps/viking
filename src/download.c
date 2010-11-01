@@ -104,7 +104,7 @@ static GMutex *file_list_mutex = NULL;
 
 /* spin button scales */
 VikLayerParamScale params_scales[] = {
-  {1, 10000, 10, 0},
+  {1, 86400*7, 10, 0},		/* download_tile_age */
 };
 
 static VikLayerParam prefs[] = {
@@ -124,7 +124,7 @@ static gboolean lock_file(const char *fn)
 {
 	gboolean locked = FALSE;
 	g_mutex_lock(file_list_mutex);
-	if (g_list_find(file_list, fn) == NULL)
+	if (g_list_find_custom(file_list, fn, (GCompareFunc)g_strcmp0) == NULL)
 	{
 		// The filename is not yet locked
 		file_list = g_list_append(file_list, (gpointer)fn),
@@ -141,30 +141,52 @@ static void unlock_file(const char *fn)
 	g_mutex_unlock(file_list_mutex);
 }
 
-static int download( const char *hostname, const char *uri, const char *fn, DownloadOptions *options, gboolean ftp, void *handle)
+static int download( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *options, gboolean ftp, void *handle)
 {
   FILE *f;
   int ret;
   gchar *tmpfilename;
   gboolean failure = FALSE;
-  time_t time_condition = 0;
+  DownloadFileOptions file_options = {0, NULL, NULL};
 
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
   {
-    if (options != NULL && options->check_file_server_time) {
-      time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
-      /* Get the modified time of this file */
-      struct stat buf;
-      g_stat ( fn, &buf );
-      time_condition = buf.st_mtime;
-      if ( (time(NULL) - time_condition) < tile_age )
-				/* File cache is too recent, so return */
-				return -3;
-    } else {
-      /* Nothing to do as file already exists, so return */
+    if (options == NULL || (!options->check_file_server_time &&
+                            !options->use_etag)) {
+      /* Nothing to do as file already exists and we don't want to check server */
       return -3;
     }
+
+    time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
+    /* Get the modified time of this file */
+    struct stat buf;
+    g_stat ( fn, &buf );
+    time_t file_time = buf.st_mtime;
+    if ( (time(NULL) - file_time) < tile_age ) {
+      /* File cache is too recent, so return */
+      return -3;
+    }
+
+    if (options->check_file_server_time) {
+      file_options.time_condition = file_time;
+    }
+    if (options->use_etag) {
+      gchar *etag_filename = g_strdup_printf("%s.etag", fn);
+      gsize etag_length = 0;
+      g_file_get_contents (etag_filename, &(file_options.etag), &etag_length, NULL);
+      g_free (etag_filename);
+      etag_filename = NULL;
+
+      /* check if etag is short enough */
+      if (etag_length > 100) {
+        g_free(file_options.etag);
+        file_options.etag = NULL;
+      }
+
+      /* TODO: should check that etag is a valid string */
+    }
+
   } else {
     gchar *dir = g_path_get_dirname ( fn );
     g_mkdir_with_parents ( dir , 0777 );
@@ -176,17 +198,21 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
   {
     g_debug("%s: Couldn't take lock on temporary file \"%s\"\n", __FUNCTION__, tmpfilename);
     g_free ( tmpfilename );
+    if (options->use_etag)
+      g_free ( file_options.etag );
     return -4;
   }
   f = g_fopen ( tmpfilename, "w+b" );  /* truncate file and open it */
   if ( ! f ) {
     g_warning("Couldn't open temporary file \"%s\": %s", tmpfilename, g_strerror(errno));
     g_free ( tmpfilename );
+    if (options->use_etag)
+      g_free ( file_options.etag );
     return -4;
   }
 
   /* Call the backend function */
-  ret = curl_download_get_url ( hostname, uri, f, options, ftp, time_condition, handle );
+  ret = curl_download_get_url ( hostname, uri, f, options, ftp, &file_options, handle );
 
   if (ret != DOWNLOAD_NO_ERROR && ret != DOWNLOAD_NO_NEWER_FILE) {
     g_debug("%s: download failed: curl_download_get_url=%d", __FUNCTION__, ret);
@@ -207,8 +233,22 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_remove ( tmpfilename );
     unlock_file ( tmpfilename );
     g_free ( tmpfilename );
+    if (options->use_etag) {
+      g_free ( file_options.etag );
+      g_free ( file_options.new_etag );
+    }
     g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
+  }
+
+  if (options->use_etag) {
+    if (file_options.new_etag) {
+      /* server returned an etag value */
+      gchar *etag_filename = g_strdup_printf("%s.etag", fn);
+      g_file_set_contents (etag_filename, file_options.new_etag, -1, NULL);
+      g_free (etag_filename);
+      etag_filename = NULL;
+    }
   }
 
   if (ret == DOWNLOAD_NO_NEWER_FILE)  {
@@ -218,23 +258,28 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
 #else
     utimes ( fn, NULL ); /* update mtime of local copy */
 #endif
-  } else
+  } else {
     g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
+  }
   unlock_file ( tmpfilename );
   g_free ( tmpfilename );
 
+  if (options->use_etag) {
+    g_free ( file_options.etag );
+    g_free ( file_options.new_etag );
+  }
   return 0;
 }
 
 /* success = 0, -1 = couldn't connect, -2 HTTP error, -3 file exists, -4 couldn't write to file... */
 /* uri: like "/uri.html?whatever" */
 /* only reason for the "wrapper" is so we can do redirects. */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle )
+int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, FALSE, handle );
 }
 
-int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadOptions *opt, void *handle )
+int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, TRUE, handle );
 }

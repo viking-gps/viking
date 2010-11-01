@@ -51,6 +51,7 @@ GType vik_window_get_type ();
 
 VikWindow *vik_window_new ();
 GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode );
+gboolean vik_window_get_pan_move ( VikWindow *vw );
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean changefilename );
 struct _VikLayer;
 void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);

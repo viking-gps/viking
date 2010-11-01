@@ -1,3 +1,92 @@
+Viking 0.9.96 (2010-10-11)
+New features since 0.9.95
+* Use ETag to detect fresh tiles on servers
+* Add new menu entry in GPS Layer to delete the realtime information.
+* Ensure GPS realtime information deleted when GPS Layer -->Empty All is called.
+* Prevent zoom factor string displaying unnecessary .0s when it's a whole number.
+* Improve Track Properties speed profile display for low speed difference (e.g. walking) tracks.
+* Use speed units in display of Track/Waypoint layer draw by velocity config values, but maintain units as metres per second when read from/saved to files.
+* Add keyboard accelerators for as many as possible View Menu entries.
+* Simplify zoom status when xmpp and ympp are equal
+* Use height units in the altitude readout for the cursor position on the status bar.
+* Use height units in display of DEM min / max elevation values, but maintain units as metres when read from/saved to files.
+
+Fixes since 0.9.95
+* Fix many memory leaks
+* DEM layer properties tidy up.
+* Prevent getting stuck in a near infinite loop when using Coord layer, UTM mode and zoomed out to see the whole world.
+* Prevent lock up in attempt to download maps along a track in UTM mode.
+* Launchpad Bug #445374: Prevent crash when downloading maps along a track, with Terraserver maps when in Mercator mode.
+* Add explicit linking against libz and libm
+* Fix SF#3009431: Prevent Crash in Real Time Tracking GPS Mode & Autodownload Maps.
+* Fix display of rounded speed units scale markers in the speed profile.
+* Fix cycle map URL
+* Fix compiler warnings
+* Fix Track Draw by Velocity mode, so that individual track points are coloured (as was the intention).
+* Fix bug where older file was removed when network not present
+* Fix: warning 'draw-mode' message does not display
+* Fix incorrect limitation on source map id
+
+Viking 0.9.95 (2010-09-07)
+New features since 0.9.94
+* Add some function short cut key definitions to control showing of the center mark and scale viewport features.
+* [DOC] Replace Google with OSM capability in man pages.
+* When manually creating a track, automatically give it a default name.
+* [DOC] Add contributors from the Wiki(s) history.
+* Better dialog name when searching for a waypoint.
+* Change max cache time to 1 week.
+
+Fixes since 0.9.94
+* Prevent "Gtk-WARNING **: GtkSpinButton: setting an adjustment with non-zero page size is deprecated" messages.
+* Invalid number of arguments in call to a_http_download_get_u
+* Prevent crash when cut of a GPS track/waypoint layer is attempted via the layers buttons.
+* Prevent DEM layer colour indexing going negative and can crash on gradient view.
+* Fix DEM layer to show default sea level.
+* Fix track background thickness being able to set back to zero.
+* Fix internal tile locking
+* Fix top layer not drawn after made invisible and then back to being visible.
+* Fix impaired (drawcentermark setting bodged) vik file if saved with the top layer visibility turned off.
+* Fix syntax errors in help manual
+* Fix map drag and drop to show the correct whole map
+* Fix "Go to UTM" dialog title.
+* Fix first opening of a file which has spaces (or other interesting characters) via the recent files menu.
+* Fix unnamed_tracks / unnamed_waypoints misuse.
+
+Viking 0.9.94 (2010-06-10)
+New features since 0.9.93
+* Add knots as a speed unit option.
+* Detect USB Garmin eTrex HCx Legend devices (and maybe others).
+* Auto use of /dev/ttyUSB type device if available on Unix systems.
+* Add ability to turn off Garmin GPS after transfer.
+* Add a 'home' default location preference.
+* Add ability to changes preferences outside of the preferences.c file.
+* NLS Maps API: Historic map of Great Britain
+* Change GUI related command line parameter for Waypoint symbol size into run time preference.
+* Support All Zoom Levels in Zoom Menu
+* [DOC] Import User Manual from wiki
+* Add menu item for help contents
+
+Fixes since 0.9.93
+* Add Viking's contributors as copyright holders
+* Remove unecessary '\' from the View Menu
+* Better Preferences Dialog Title
+* More Menu Improvements
+* Replace autogen.sh
+* On GPS data acquire, only create a layer if it contains something.
+* Fix POTFILES with new source file
+* Fix OMF category
+* Fix Filter->Simplify All Tracks default.
+* [DOC] Fix Gnome's menu entry category for viking
+* [DOC] Fix erroneous warning
+* Fix compiler warning.
+* Fix #2977752: win-gtk: osm tiles don't show up
+* Fix Track -> View Google Directions URL
+* Fix function's return value
+* Fix compilation warnings
+* Fix #2988574: Can't save files opened via recent file menu
+* Fix #2991657: Terraserver downloads fail
+* Fix geocaching
+
 Viking 0.9.93 (2010-04-11)
 New features since 0.9.92
 * Allow overriding map source

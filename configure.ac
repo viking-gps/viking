@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 0.9.93)
+AC_INIT(viking, 0.9.96)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -42,6 +42,8 @@ AC_TYPE_MODE_T
 AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([floor gethostbyname memset mkdtemp pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
+AC_CHECK_LIB(m, tan)
+AC_CHECK_LIB(z, inflate)
 
 # Expat
 AM_WITH_EXPAT
@@ -319,7 +321,7 @@ echo "-------------------------------------------"
 echo "Alphabetized track & waypoints   : $ac_cv_enable_alpha_trw"
 echo "Google Maps                      : $ac_cv_enable_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
-#echo "Expedia Maps                     : $ac_cv_enable_expedia"
+echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
 echo "BlueMarble                       : $ac_cv_enable_bluemarble"
 echo "Geonames                         : $ac_cv_enable_geonames"

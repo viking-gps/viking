@@ -53,7 +53,7 @@
 #define PROFILE_WIDTH 600
 #define PROFILE_HEIGHT 300
 #define MIN_ALT_DIFF 100.0
-#define MIN_SPEED_DIFF 20.0
+#define MIN_SPEED_DIFF 5.0
 
 typedef struct _propsaved {
   gboolean saved;
@@ -407,7 +407,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
       sprintf(s, "%8dm", (int)(mina + (LINES-i)*(maxa-mina)/LINES));
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      sprintf(s, "%8dft", (int)((mina + (LINES-i)*(maxa-mina)/LINES)*3.2808399));
+      sprintf(s, "%8dft", (int)VIK_METERS_TO_FEET(mina + (LINES-i)*(maxa-mina)/LINES));
       break;
     default:
       sprintf(s, "--");
@@ -536,16 +536,16 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      sprintf(s, "%8dkm/h", (int)((mins + (LINES-i)*(maxs-mins)/LINES)*3.6));
+      sprintf(s, "%6.1fkm/h", VIK_MPS_TO_KPH(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      sprintf(s, "%8dmph", (int)((mins + (LINES-i)*(maxs-mins)/LINES)*2.23693629));
+      sprintf(s, "%6.1fmph", VIK_MPS_TO_MPH(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       sprintf(s, "%8dm/s", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      sprintf(s, "%8dknots", (int)((mins + (LINES-i)*(maxs-mins)/LINES)*1.94384449));
+      sprintf(s, "%6.1fknots", VIK_MPS_TO_KNOTS(mins + (LINES-i)*(maxs-mins)/LINES));
       break;
     default:
       sprintf(s, "--");
@@ -651,7 +651,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           if ( vik_trw_layer_get_track(vtl, new_tr_name ) && 
              ( ! a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "The track \"%s\" exists, do you wish to overwrite it?", new_tr_name ) ) )
           {
-            gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl) );
+            gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );
             g_free ( new_tr_name );
             if (new_new_tr_name)
               new_tr_name = new_new_tr_name;
@@ -693,7 +693,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
              ( ! a_dialog_overwrite( VIK_GTK_WINDOW_FROM_LAYER(vtl),
               "The track \"%s\" exists, do you wish to overwrite it?", r_name)))
         {
-            gchar *new_r_name = a_dialog_new_track( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl) );
+	  gchar *new_r_name = a_dialog_new_track( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );
             if (new_r_name) {
               g_free( r_name );
               r_name = new_r_name;
@@ -829,16 +829,16 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   else {
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", tmp_speed*3.6 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", tmp_speed*2.23693629 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", tmp_speed*1.94384449 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
       break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
@@ -853,16 +853,16 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   else {
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", tmp_speed*3.6 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", tmp_speed* 2.23693629 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", tmp_speed*1.94384449 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
       break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
@@ -893,7 +893,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m - %.0f m", min_alt, max_alt );
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet - %.0f feet", min_alt*3.2808399, max_alt*3.2808399 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet - %.0f feet", VIK_METERS_TO_FEET(min_alt), VIK_METERS_TO_FEET(max_alt) );
       break;
     default:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );
@@ -911,7 +911,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f m / %.0f m", max_alt, min_alt );
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet / %.0f feet", max_alt*3.2808399, min_alt*3.2808399 );
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f feet / %.0f feet", VIK_METERS_TO_FEET(max_alt), VIK_METERS_TO_FEET(min_alt) );
       break;
     default:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );

@@ -94,7 +94,7 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
 
 gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UTM *old )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to Lat/Lon"),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to UTM"),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -121,7 +121,7 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
 
   zonehbox = gtk_hbox_new ( FALSE, 0 );
   gtk_box_pack_start ( GTK_BOX(zonehbox), gtk_label_new ( _("Zone:") ), FALSE, FALSE, 5 );
-  zonespin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( old->zone, 1, 60, 1, 5, 5 ), 1, 0 );
+  zonespin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( old->zone, 1, 60, 1, 5, 0 ), 1, 0 );
   gtk_box_pack_start ( GTK_BOX(zonehbox), zonespin, TRUE, TRUE, 5 );
   gtk_box_pack_start ( GTK_BOX(zonehbox), gtk_label_new ( _("Letter:") ), FALSE, FALSE, 5 );
   letterentry = gtk_entry_new ();
@@ -212,7 +212,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     alt = g_strdup_printf ( "%f", wp->altitude );
     break;
   case VIK_UNITS_HEIGHT_FEET:
-    alt = g_strdup_printf ( "%f", wp->altitude*3.2808399 );
+    alt = g_strdup_printf ( "%f", VIK_METERS_TO_FEET(wp->altitude) );
     break;
   default:
     alt = g_strdup_printf ( "%f", wp->altitude );
@@ -341,10 +341,9 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 	  switch (height_units) {
 	  case VIK_UNITS_HEIGHT_METRES:
 	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	    alt = g_strdup_printf ( "%f", wp->altitude );
 	    break;
 	  case VIK_UNITS_HEIGHT_FEET:
-	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ) / 3.2808399;
+	    wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
 	    break;
 	  default:
 	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
@@ -381,10 +380,9 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
       switch (height_units) {
       case VIK_UNITS_HEIGHT_METRES:
 	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	alt = g_strdup_printf ( "%f", wp->altitude );
 	break;
       case VIK_UNITS_HEIGHT_FEET:
-	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ) / 3.2808399;
+	wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
 	break;
       default:
 	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
@@ -487,7 +485,7 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList 
   return NULL;
 }
 
-gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
+gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Track"),
                                                   parent,
@@ -499,6 +497,9 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks )
                                                   NULL);
   GtkWidget *label = gtk_label_new ( _("Track Name:") );
   GtkWidget *entry = gtk_entry_new ();
+
+  if (default_name)
+    gtk_entry_set_text ( GTK_ENTRY(entry), default_name );
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), entry, FALSE, FALSE, 0);
@@ -596,8 +597,8 @@ gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp 
   xlabel = gtk_label_new ( _("X (easting): "));
   ylabel = gtk_label_new ( _("Y (northing): "));
 
-  pass_along[0] = xspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *xmpp, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 5 ), 1, 8 );
-  pass_along[1] = yspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *ympp, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 5 ), 1, 8 );
+  pass_along[0] = xspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *xmpp, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
+  pass_along[1] = yspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *ympp, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
 
   pass_along[2] = samecheck = gtk_check_button_new_with_label ( _("X and Y zoom factors must be equal") );
   /* TODO -- same factor */
@@ -659,7 +660,7 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
 
   pass_along[0] = t4;
 
-  spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *thr, 0, 65536, 1, 5, 5 ), 1, 0 );
+  spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *thr, 0, 65536, 1, 5, 0 ), 1, 0 );
 
   gtk_table_attach_defaults ( GTK_TABLE(table), label, 0, 2, 0, 1 );
   gtk_table_attach_defaults ( GTK_TABLE(table), t1, 0, 1, 1, 2 );
