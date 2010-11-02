@@ -1,4 +1,32 @@
 <objects>
+<!-- Built in -->
+  <object class="VikSlippyMapSource">
+    <property name="label">OpenStreetMap (Osmarender)</property>
+    <property name="hostname">tah.openstreetmap.org</property>
+    <property name="url">/Tiles/tile/%d/%d/%d.png</property>
+    <property name="id">12</property>
+  </object>
+<!-- Built in -->
+  <object class="VikSlippyMapSource">
+    <property name="label">OpenStreetMap (Mapnik)</property>
+    <property name="hostname">tile.openstreetmap.org</property>
+    <property name="url">/%d/%d/%d.png</property>
+    <property name="id">13</property>
+  </object>
+<!-- Built in -->
+  <object class="VikSlippyMapSource">
+    <property name="label">OpenStreetMap (Maplint)</property>
+    <property name="hostname">tah.openstreetmap.org</property>
+    <property name="url">/Tiles/maplint.php/%d/%d/%d.png</property>
+    <property name="id">14</property>
+  </object>
+<!-- Built in -->
+  <object class="VikSlippyMapSource">
+    <property name="label">OpenStreetMap (Cycle)</property>
+    <property name="hostname">b.tile.opencyclemap.org</property>
+    <property name="url">/cycle/%d/%d/%d.png</property>
+    <property name="id">17</property>
+  </object>
 <!-- No more active
   <object class="VikSlippyMapSource">
     <property name="label">Letuffe/hiking</property>
