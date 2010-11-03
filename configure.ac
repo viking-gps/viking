@@ -77,21 +77,28 @@ dnl | User Manual |---------------------------------------
 dnl  -------------
 GNOME_DOC_INIT
 
-###############
-# Depecations #
-###############
+dnl ---------------------------------------------------------------------------
+dnl - Use deprecated options (default enabled for devs, disabled in releases) 
+dnl ---------------------------------------------------------------------------
+
 AC_ARG_ENABLE(deprecations,
               [AC_HELP_STRING([--enable-deprecations],
-                              [warn about deprecated usages [default=no]])],,
-              [enable_deprecations=no])
+                              [warn about deprecated usages [default=no]])],
+                              [ac_cv_enable_deprecations=$enableval],
+                              [ac_cv_enable_deprecations=no])
+AC_CACHE_CHECK([whether to enable deprecated features],
+               [ac_cv_enable_deprecations], [ac_cv_enable_deprecations=no])
 
-if test "x$enable_deprecations" = "xyes"; then
+if test "x$ac_cv_enable_deprecations" = "xyes"; then
    DISABLE_DEPRECATED_CFLAGS="\
+-DG_DISABLE_SINGLE_INCLUDES \
+-DGSEAL_ENABLE \
 -DG_DISABLE_DEPRECATED \
 -DGDK_DISABLE_DEPRECATED \
--DGTK_DISABLE_DEPRECATED \
--DGDK_PIXBUF_DISABLE_DEPRECATED"
-   AC_SUBST(DISABLE_DEPRECATED_CFLAGS)
+-DGDK_PIXBUF_DISABLE_DEPRECATED \
+-DGTK_DISABLE_SINGLE_INCLUDES \
+-DGTK_DISABLE_DEPRECATED"
+   CPPFLAGS="$CPPFLAGS $DISABLE_DEPRECATED_CFLAGS"
 fi
 
 # Options
