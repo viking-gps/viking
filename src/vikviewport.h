@@ -25,7 +25,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtkdrawingarea.h>
+#include <gtk/gtk.h>
 
 #include "vikcoord.h"
 

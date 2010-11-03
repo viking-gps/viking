@@ -29,7 +29,7 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include <gtk/gtkbuilder.h>
+#include <gtk/gtk.h>
 
 #include "vikgobjectbuilder.h"
 

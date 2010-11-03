@@ -24,7 +24,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtkvbox.h>
+#include <gtk/gtk.h>
 
 #include "viklayer.h"
 #include "vikaggregatelayer.h"

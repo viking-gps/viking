@@ -25,7 +25,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtkwindow.h>
+#include <gtk/gtk.h>
 
 #include "vikviewport.h"
 
