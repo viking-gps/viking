@@ -201,13 +201,13 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </para>
 </section>
 <section><title>Statusbar</title>
-<procedure>
 <para>This provides a readout of various information:</para>
-<step><para>The currently selected (mouse pointer) tool</para></step>
-<step><para>The number of items to process in the background - normally this the number in the map tile download queue</para></step>
-<step><para>The zoom factor</para></step>
-<step><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></step>
-</procedure>
+<itemizedlist>
+<listitem><para>The currently selected (mouse pointer) tool</para></listitem>
+<listitem><para>The number of items to process in the background - normally this the number in the map tile download queue</para></listitem>
+<listitem><para>The zoom factor</para></listitem>
+<listitem><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></listitem>
+</itemizedlist>
 </section>
 </section>
 
