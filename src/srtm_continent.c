@@ -1,4 +1,5 @@
 /* Generated file -- Do not edit */
+/* Generated from directory listing of the server. */
 
 const char *_srtm_continent_data[] = {
   "Africa",
