@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking
- * Copyright (C) Guilhem Bonnefille 2009 <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  * 
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the

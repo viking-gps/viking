@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2003-2007, Evan Battaglia <gtoevan@gmx.net>
  *
  * Lat/Lon plotting functions calcxy* are from GPSDrive
  * GPSDrive Copyright (C) 2001-2004 Fritz Ganter <ganter@ganter.at>

@@ -1,7 +1,10 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2007, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2007, Quy Tonthat <qtonthat@gmail.com>
+ * Copyright (C) 2009-2010, Jocelyn Jaubert <jocelyn.jaubert@gmail.com>
+ * Copyright (C) 2010, Sven Wegener <sven.wegener@stealer.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

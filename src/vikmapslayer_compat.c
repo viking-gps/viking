@@ -2,7 +2,8 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2005, Evan Battaglia <viking@greentorch.org>
- * Copyright (C) 2008-2009, Guilhem Bonnefille <guilem.bonnefille@gmail.com>
+ * Copyright (C) 2008-2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ *
  * UTM multi-zone stuff by Kit Transue <notlostyet@didactek.com>
  * Dynamic map type by Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
