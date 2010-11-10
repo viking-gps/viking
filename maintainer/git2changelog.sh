@@ -5,7 +5,8 @@
 # This script parse the git history and format it like a ChangeLog file.
 # This script is called at distribution tile (see "make dist").
 #
-# =-=-=-=-=
+
+#
 # viking -- GPS Data and Topo Analyzer, Explorer, and Manager
 #
 # Copyright (C) 2009-2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
