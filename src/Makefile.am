@@ -7,7 +7,7 @@ bin_PROGRAMS = viking
 
 noinst_LIBRARIES = libviking.a
 
-authors.h: ../AUTHORS
+authors.h: $(top_srcdir)/AUTHORS
 	rm -f $@
 	echo "/* Generated file. */" >> $@
 	echo "const gchar *AUTHORS[] = {\\" >> $@
