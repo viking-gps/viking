@@ -30,6 +30,7 @@
 #include "garminsymbols.h"
 #include "degrees_converters.h"
 #include "authors.h"
+#include "documenters.h"
 #include "vikgoto.h"
 #include "util.h"
 
@@ -741,6 +742,7 @@ void a_dialog_about ( GtkWindow *parent )
 	"wrap-license", TRUE,
 	/* logo automatically retrieved via gtk_window_get_default_icon_list */
 	"authors", AUTHORS,
+	"documenters", DOCUMENTERS,
 	NULL);
 }
 

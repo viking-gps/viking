@@ -14,7 +14,19 @@ authors.h: ../AUTHORS
 	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/",\\/' -e '$$s/\\$$//' $< >> $@
 	echo "NULL};" >> $@
 
-BUILT_SOURCES = authors.h
+if HAVE_XSLTPROC
+XP=@XP@
+documenters.h: $(top_srcdir)/help/C/viking.xml
+	$(XP) $(srcdir)/docbook2documenters.xsl $(top_srcdir)/help/C/viking.xml > $@
+else
+documenters.h:
+	rm -f $@
+	echo "/* Generated file. */" >> $@
+	echo "const gchar *DOCUMENTERS[] = {\\" >> $@
+	echo "NULL};" >> $@
+endif
+
+BUILT_SOURCES = authors.h documenters.h
 
 vikenumtypes.h: vikenumtypes.h.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
 	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.h.template $(ENUM_H_FILES)) > $@
@@ -23,6 +35,7 @@ vikenumtypes.c: vikenumtypes.c.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
 	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.c.template $(ENUM_H_FILES)) > $@
 
 EXTRA_DIST =                         \
+        docbook2documenters.xsl      \
         vikenumtypes.h.template      \
         vikenumtypes.c.template
 
@@ -48,6 +61,7 @@ libviking_a_SOURCES = \
 	gpspoint.c gpspoint.h \
 	file.c file.h \
 	authors.h \
+	documenters.h \
 	dialog.c dialog.h \
 	util.c util.h \
 	download.c download.h \

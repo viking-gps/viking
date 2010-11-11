@@ -299,6 +299,7 @@ dnl man pages processing
 DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 AC_SUBST(DB2MAN_XSL)
 AC_PATH_PROG(XP,xsltproc)
+AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
 AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"])
 
 dnl This will cause the automake generated makefiles to pass the
