@@ -743,6 +743,7 @@ void a_dialog_about ( GtkWindow *parent )
 	/* logo automatically retrieved via gtk_window_get_default_icon_list */
 	"authors", AUTHORS,
 	"documenters", DOCUMENTERS,
+	"translator-credits", _("Translation is coordinated on http://launchpad.net/viking"),
 	NULL);
 }
 
