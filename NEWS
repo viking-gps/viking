@@ -1,3 +1,17 @@
+Viking 1.0 (2010-11-14)
+New features since 0.9.96
+* Add minimal translator-credits in About dialog
+* Add documenters to About dialog
+
+Fixes since 0.9.96
+* Improve copyright holders
+* Prevent crashes when downloading Expedia Maps.
+* Fix extend track using magic scissors.
+* Fix autodownloading while panning
+* Fix Debian #599048: Segmentation fault when using gpsbabel
+* Fix dem_gradient_colors allocation.
+* Fix compiler warnings in preferences.c
+
 Viking 0.9.96 (2010-10-11)
 New features since 0.9.95
 * Use ETag to detect fresh tiles on servers
