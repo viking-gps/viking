@@ -2371,9 +2371,6 @@ msgstr "Viking"
 #~ msgid "The name of the file on OSM"
 #~ msgstr "Name der Datei auf OSM"
 
-#~ msgid "Export layer"
-#~ msgstr "Ebene exportieren"
-
 #~ msgid "Goto"
 #~ msgstr "Gehe zu"
 

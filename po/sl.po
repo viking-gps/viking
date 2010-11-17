@@ -2331,9 +2331,6 @@ msgstr ""
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Export layer"
-#~ msgstr "Izvozi plast"
-
 #~ msgid "Create"
 #~ msgstr "Ustvari"
 

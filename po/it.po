@@ -2384,12 +2384,6 @@ msgstr "Gestore Dati GPS Basato su Mappa (dati in tempo reale)."
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Refresh Onscreen Tiles"
-#~ msgstr "Aggiorna celle Onscreen"
-
-#~ msgid "Export layer"
-#~ msgstr "Esporta livello"
-
 #~ msgid "Create"
 #~ msgstr "Crea"
 

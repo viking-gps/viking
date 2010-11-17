@@ -2384,12 +2384,6 @@ msgstr "Žemėlapiais paremtas GPS duomenų vedlys (duomenys realiu laiku)."
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Refresh Onscreen Tiles"
-#~ msgstr "Atnaujinti matomus kvadratus"
-
-#~ msgid "Export layer"
-#~ msgstr "Eksportuoti sluoksnį"
-
 #~ msgid "Create"
 #~ msgstr "Sukurti"
 

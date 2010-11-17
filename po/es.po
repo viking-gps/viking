@@ -2392,15 +2392,6 @@ msgstr ""
 msgid "Viking"
 msgstr "Vikingo"
 
-#~ msgid "Download new Onscreen Maps from server"
-#~ msgstr "Descargar Mapas Onscreen faltantes"
-
-#~ msgid "Refresh Onscreen Tiles"
-#~ msgstr "Refrescar teselas en pantalla"
-
-#~ msgid "Export layer"
-#~ msgstr "Exportar capa"
-
 #~ msgid "Create"
 #~ msgstr "Crear"
 

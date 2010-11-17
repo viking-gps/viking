@@ -2325,9 +2325,6 @@ msgstr ""
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Export layer"
-#~ msgstr "Exportera lager"
-
 #~ msgid "Create"
 #~ msgstr "Skapa"
 

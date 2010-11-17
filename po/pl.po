@@ -2329,12 +2329,6 @@ msgstr ""
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Download new Onscreen Maps from server"
-#~ msgstr "Pobierz nowe mapy Onscreen z serwera"
-
-#~ msgid "Export layer"
-#~ msgstr "Eksportuj warstwę"
-
 #~ msgid "Create"
 #~ msgstr "Utwórz"
 

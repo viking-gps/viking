@@ -2315,9 +2315,6 @@ msgstr ""
 msgid "Viking"
 msgstr ""
 
-#~ msgid "Export layer"
-#~ msgstr "匯出圖層"
-
 #~ msgid "Create"
 #~ msgstr "建立"
 

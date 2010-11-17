@@ -2331,10 +2331,6 @@ msgstr ""
 msgid "Viking"
 msgstr ""
 
-# typo?
-#~ msgid "Export layer"
-#~ msgstr "Экспортировать слой"
-
 #~ msgid "Create"
 #~ msgstr "Создать"
 
