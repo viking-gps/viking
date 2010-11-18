@@ -1229,6 +1229,18 @@ static void view_statusbar_cb ( GtkAction *a, VikWindow *vw )
     gtk_widget_hide ( GTK_WIDGET(vw->viking_vs) );
 }
 
+static void view_toolbar_cb ( GtkAction *a, VikWindow *vw )
+{
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewToolbar" );
+  if ( !check_box )
+    return;
+  gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( state )
+    gtk_widget_show ( GTK_WIDGET(vw->toolbar) );
+  else
+    gtk_widget_hide ( GTK_WIDGET(vw->toolbar) );
+}
+
 /***************************************
  ** tool management routines
  **
@@ -2289,6 +2301,7 @@ static GtkToggleActionEntry toggle_entries[] = {
   { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },
   { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side Pa_nel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
   { "ViewStatusBar",  NULL,                 N_("Show Status_bar"),           "F12",        N_("Show Statusbar"),                          (GCallback)view_statusbar_cb, TRUE },
+  { "ViewToolbar",    NULL,                 N_("Show Toolb_ar"),             "F3",         N_("Show Toolbar"),                            (GCallback)view_toolbar_cb, TRUE },
 };
 
 #include "menu.xml.h"

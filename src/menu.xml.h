@@ -58,6 +58,7 @@ static const char *menu_xml =
 	"      <menuitem action='FullScreen'/>"
 	"      <menuitem action='ViewSidePanel'/>"
 	"      <menuitem action='ViewStatusBar'/>"
+	"      <menuitem action='ViewToolbar'/>"
 	"      <separator/>"
 	"      <menuitem action='ZoomIn'/>"
 	"      <menuitem action='ZoomOut'/>"
