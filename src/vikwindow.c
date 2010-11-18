@@ -52,6 +52,7 @@
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
+#include <gdk/gdkkeysyms.h>
 
 #define VIKING_WINDOW_WIDTH      1000
 #define VIKING_WINDOW_HEIGHT     800
@@ -349,6 +350,21 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
     if ( vl && ltype == vl->type )
       return vw->vt->tools[vw->vt->active_tool].ti.key_press(vl, event, vw->vt->tools[vw->vt->active_tool].state);
   }
+
+  /* Restore Main Menu via Escape key if the user has hidden it */
+  /* This key is more likely to be used as they may not remember the function key */
+  if ( event->keyval == GDK_Escape ) {
+    GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewMainMenu" );
+    if ( check_box ) {
+      gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+      if ( !state ) {
+	gtk_widget_show ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
+	gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
+	return TRUE; /* handled keypress */
+      }
+    }
+  }
+
   return FALSE; /* don't handle the keypress */
 }
 
@@ -1239,6 +1255,18 @@ static void view_toolbar_cb ( GtkAction *a, VikWindow *vw )
     gtk_widget_show ( GTK_WIDGET(vw->toolbar) );
   else
     gtk_widget_hide ( GTK_WIDGET(vw->toolbar) );
+}
+
+static void view_main_menu_cb ( GtkAction *a, VikWindow *vw )
+{
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewMainMenu" );
+  if ( !check_box )
+    return;
+  gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( !state )
+    gtk_widget_hide ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
+  else
+    gtk_widget_show ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
 }
 
 /***************************************
@@ -2302,6 +2330,7 @@ static GtkToggleActionEntry toggle_entries[] = {
   { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side Pa_nel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
   { "ViewStatusBar",  NULL,                 N_("Show Status_bar"),           "F12",        N_("Show Statusbar"),                          (GCallback)view_statusbar_cb, TRUE },
   { "ViewToolbar",    NULL,                 N_("Show Toolb_ar"),             "F3",         N_("Show Toolbar"),                            (GCallback)view_toolbar_cb, TRUE },
+  { "ViewMainMenu",   NULL,                 N_("Sho_w Menu"),                "F4",         N_("Show Menu"),                               (GCallback)view_main_menu_cb, TRUE },
 };
 
 #include "menu.xml.h"
