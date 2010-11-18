@@ -278,7 +278,8 @@ static void window_init ( VikWindow *vw )
   vw->vt = toolbox_create(vw);
   window_create_ui(vw);
   window_set_filename (vw, NULL);
-  
+  vw->toolbar = GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar"));
+
   toolbox_activate(vw->vt, "Pan");
 
   vw->filename = NULL;
@@ -297,9 +298,9 @@ static void window_init ( VikWindow *vw )
   gtk_container_add (GTK_CONTAINER (vw), main_vbox);
 
   gtk_box_pack_start (GTK_BOX(main_vbox), gtk_ui_manager_get_widget (vw->uim, "/MainMenu"), FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX(main_vbox), gtk_ui_manager_get_widget (vw->uim, "/MainToolbar"), FALSE, TRUE, 0);
-  gtk_toolbar_set_icon_size(GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_ICON_SIZE_SMALL_TOOLBAR);
-  gtk_toolbar_set_style (GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar")), GTK_TOOLBAR_ICONS);
+  gtk_box_pack_start (GTK_BOX(main_vbox), GTK_WIDGET(vw->toolbar), FALSE, TRUE, 0);
+  gtk_toolbar_set_icon_size (vw->toolbar, GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_toolbar_set_style (vw->toolbar, GTK_TOOLBAR_ICONS);
 
   vik_ext_tools_add_menu_items ( vw, vw->uim );
 
