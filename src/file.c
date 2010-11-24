@@ -644,7 +644,7 @@ gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
   return FALSE;
 }
 
-gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type, const gchar *trackname )
+gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, const gchar *trackname )
 {
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
