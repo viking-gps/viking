@@ -231,7 +231,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb(gpointer pass_along[6]);
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
-static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, const gchar* default_name, VikTrack *track, const gchar* trackname, guint file_type );
+static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, const gchar* default_name, const gchar* trackname, guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
@@ -1605,7 +1605,7 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] )
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("This layer has no waypoints or trackpoints.") );
 }
 
-static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, const gchar* default_name, VikTrack *track, const gchar* trackname, guint file_type )
+static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, const gchar* default_name, const gchar* trackname, guint file_type )
 {
   GtkWidget *file_selector;
   const gchar *fn;
@@ -1624,7 +1624,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, co
     if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE )
     {
       gtk_widget_hide ( file_selector );
-      failed = ! a_file_export ( (track) ? NULL : VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, (track) ? track : NULL, trackname);
+      failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trackname);
       break;
     }
     else
@@ -1632,7 +1632,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, co
       if ( a_dialog_overwrite ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
       {
         gtk_widget_hide ( file_selector );
-	failed = ! a_file_export ( (track) ? NULL : VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, (track) ? track : NULL, trackname);
+	failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trackname);
         break;
       }
     }
@@ -1644,22 +1644,21 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, co
 
 static void trw_layer_export_gpspoint ( gpointer layer_and_vlp[2] )
 {
-  trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, NULL, FILE_TYPE_GPSPOINT );
+  trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, FILE_TYPE_GPSPOINT );
 }
 
 static void trw_layer_export_gpsmapper ( gpointer layer_and_vlp[2] )
 {
-  trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, NULL, FILE_TYPE_GPSMAPPER );
+  trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, FILE_TYPE_GPSMAPPER );
 }
 
 static void trw_layer_export_gpx ( gpointer layer_and_vlp[2] )
 {
-  trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, NULL, FILE_TYPE_GPX );
+  trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, FILE_TYPE_GPX );
 }
 
 static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
 {
-  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
   gpointer layer_and_vlp[2];
   layer_and_vlp[0] = pass_along[0];
   layer_and_vlp[1] = pass_along[1];
@@ -1669,7 +1668,7 @@ static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
   if ( ! check_file_ext ( auto_save_name, ".gpx" ) )
     auto_save_name = g_strconcat ( auto_save_name, ".gpx", NULL );
 
-  trw_layer_export ( layer_and_vlp, _("Export Track as GPX"), auto_save_name, track, pass_along[3], FILE_TYPE_GPX_TRACK );
+  trw_layer_export ( layer_and_vlp, _("Export Track as GPX"), auto_save_name, pass_along[3], FILE_TYPE_GPX );
 
   g_free ( auto_save_name );
 }
@@ -3925,7 +3924,7 @@ VikWaypoint *vik_trw_layer_get_waypoint ( VikTrwLayer *vtl, gchar *name )
   return g_hash_table_lookup ( vtl->waypoints, name );
 }
 
-VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, gchar *name )
+VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, const gchar *name )
 {
   return g_hash_table_lookup ( vtl->tracks, name );
 }

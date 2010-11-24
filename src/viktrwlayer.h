@@ -61,7 +61,7 @@ gboolean vik_trw_layer_properties ( VikTrwLayer *vtl, gpointer vp );
 void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
 void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t );
 VikWaypoint *vik_trw_layer_get_waypoint ( VikTrwLayer *vtl, gchar *name );
-VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, gchar *name );
+VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, const gchar *name );
 gboolean vik_trw_layer_delete_waypoint ( VikTrwLayer *vtl, const gchar *wp_name );
 gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name );
 const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );

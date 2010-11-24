@@ -644,20 +644,35 @@ gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
   return FALSE;
 }
 
-gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type, VikTrack *vt, const gchar *trackname )
+gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type, const gchar *trackname )
 {
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {
-    if ( file_type == FILE_TYPE_GPSMAPPER )
-      a_gpsmapper_write_file ( vtl, f );
-    else if ( file_type == FILE_TYPE_GPX )
-      a_gpx_write_file ( vtl, f );
-    else if ( file_type == FILE_TYPE_GPX_TRACK ) {
-      a_gpx_write_track_file ( trackname, vt, f );
+    if (trackname) {
+      VikTrack *vt = vik_trw_layer_get_track ( vtl, trackname );
+      switch ( file_type ) {
+        case FILE_TYPE_GPX:
+          a_gpx_write_track_file ( trackname, vt, f );
+          break;
+        default:
+          g_critical("Houston, we've had a problem. file_type=%d", file_type);
+      }
+    } else {
+      switch ( file_type ) {
+        case FILE_TYPE_GPSMAPPER:
+          a_gpsmapper_write_file ( vtl, f );
+          break;
+        case FILE_TYPE_GPX:
+          a_gpx_write_file ( vtl, f );
+          break;
+        case FILE_TYPE_GPSPOINT:
+          a_gpspoint_write_file ( vtl, f );
+          break;
+        default:
+          g_critical("Houston, we've had a problem. file_type=%d", file_type);
+      }
     }
-    else
-      a_gpspoint_write_file ( vtl, f );
     fclose ( f );
     f = NULL;
     return TRUE;

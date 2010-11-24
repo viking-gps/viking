@@ -31,7 +31,6 @@
 #define FILE_TYPE_GPSPOINT 1
 #define FILE_TYPE_GPSMAPPER 2
 #define FILE_TYPE_GPX 3
-#define FILE_TYPE_GPX_TRACK 4
 
 const gchar *a_file_basename ( const gchar *filename );
 gboolean check_file_ext ( const gchar *filename, const gchar *fileext );
@@ -40,7 +39,7 @@ gboolean check_file_ext ( const gchar *filename, const gchar *fileext );
 gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename );
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 /* Only need to define VikTrack and trackname if the file type is FILE_TYPE_GPX_TRACK */
-gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type, VikTrack *vt, const gchar *trackname );
+gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, gshort file_type, const gchar *trackname );
 const gchar *a_get_viking_dir();
 
 void file_write_layer_param ( FILE *f, const gchar *name, guint8 type, VikLayerParamData data );
