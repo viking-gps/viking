@@ -221,7 +221,10 @@ static void layers_panel_init ( VikLayersPanel *vlp )
   {
     /* TODO: FIXME: if name has a '/' in it it will get all messed up. why not have an itemfactory field with
                     name, icon, shortcut, etc.? */
-    entry.path = g_strdup_printf("%s/New %s Layer", base_entries[NUM_BASE_ENTRIES-1].path, vik_layer_get_interface(i)->name );
+    /* Note: we use a temporary label in order to share translation with other codde */
+    gchar *label = g_strdup_printf(_("New %s Layer"), vik_layer_get_interface(i)->name );
+    entry.path = g_strdup_printf("%s/%s", base_entries[NUM_BASE_ENTRIES-1].path, label );
+    g_free ( label );
     entry.accelerator = NULL;
     entry.callback = (GtkItemFactoryCallback) vik_layers_panel_new_layer;
     entry.callback_action = i;
