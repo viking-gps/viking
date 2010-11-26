@@ -167,7 +167,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_FILELIST:
       if ( param->type == VIK_LAYER_PARAM_STRING_LIST )
       {
-        rv = vik_file_list_new ( param->title );
+        rv = vik_file_list_new ( _(param->title) );
         vik_file_list_set_files ( VIK_FILE_LIST(rv), data.sl );
       }
       break;
@@ -330,7 +330,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
 
         g_assert ( widgets[j] != NULL );
 
-        gtk_table_attach ( GTK_TABLE(table), gtk_label_new(params[i].title), 0, 1, j, j+1, 0, 0, 0, 0 );
+        gtk_table_attach ( GTK_TABLE(table), gtk_label_new(_(params[i].title)), 0, 1, j, j+1, 0, 0, 0, 0 );
         gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL, 0, 2, 2 );
         j++;
       }
