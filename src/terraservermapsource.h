@@ -23,7 +23,6 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "vikmapsourcedefault.h"
-#include "download.h"
 
 G_BEGIN_DECLS
 

@@ -23,6 +23,7 @@
 #include <glib-object.h>
 
 #include "vikmapsource.h"
+#include "download.h"
 
 G_BEGIN_DECLS
 
@@ -39,6 +40,10 @@ typedef struct _VikMapSourceDefault VikMapSourceDefault;
 struct _VikMapSourceDefaultClass
 {
 	VikMapSourceClass parent_class;
+
+	gchar * (*get_uri) ( VikMapSourceDefault *self, MapCoord *src );
+	gchar * (*get_hostname) ( VikMapSourceDefault *self );
+	DownloadMapOptions * (*get_download_options) ( VikMapSourceDefault *self );
 };
 
 struct _VikMapSourceDefault
@@ -47,6 +52,9 @@ struct _VikMapSourceDefault
 };
 
 GType vik_map_source_default_get_type (void) G_GNUC_CONST;
+gchar * vik_map_source_default_get_uri( VikMapSourceDefault *self, MapCoord *src );
+gchar * vik_map_source_default_get_hostname( VikMapSourceDefault *self );
+DownloadMapOptions * vik_map_source_default_get_download_options( VikMapSourceDefault *self );
 
 G_END_DECLS
 

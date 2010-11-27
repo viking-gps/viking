@@ -19,12 +19,17 @@
 
 #include "vikmapsourcedefault.h"
 #include "vikenumtypes.h"
+#include "download.h"
 
 static guint8 map_source_get_uniq_id (VikMapSource *self);
 static const gchar *map_source_get_label (VikMapSource *self);
 static guint16 map_source_get_tilesize_x (VikMapSource *self);
 static guint16 map_source_get_tilesize_y (VikMapSource *self);
 static VikViewportDrawMode map_source_get_drawmode (VikMapSource *self);
+
+static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
+static void * _download_handle_init ( VikMapSource *self );
+static void _download_handle_cleanup ( VikMapSource *self, void *handle );
 
 typedef struct _VikMapSourceDefaultPrivate VikMapSourceDefaultPrivate;
 struct _VikMapSourceDefaultPrivate
@@ -166,6 +171,14 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
 	parent_class->get_tilesize_y = map_source_get_tilesize_y;
 	parent_class->get_drawmode =   map_source_get_drawmode;
+	parent_class->download =                 _download;
+	parent_class->download_handle_init =     _download_handle_init;
+	parent_class->download_handle_cleanup =  _download_handle_cleanup;
+
+	/* Default implementation of methods */
+	klass->get_uri = NULL;
+	klass->get_hostname = NULL;
+	klass->get_download_options = NULL;
 
 	pspec = g_param_spec_uint ("id",
 	                           "Id of the tool",
@@ -262,4 +275,69 @@ map_source_get_drawmode (VikMapSource *self)
     VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->drawmode;
+}
+
+static int
+_download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle )
+{
+   int res;
+   gchar *uri = vik_map_source_default_get_uri(VIK_MAP_SOURCE_DEFAULT(self), src);
+   gchar *host = vik_map_source_default_get_hostname(VIK_MAP_SOURCE_DEFAULT(self));
+   DownloadMapOptions *options = vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self));
+   res = a_http_download_get_url ( host, uri, dest_fn, options, handle );
+   g_free ( uri );
+   g_free ( host );
+   return res;
+}
+
+static void *
+_download_handle_init ( VikMapSource *self )
+{
+   return a_download_handle_init ();
+}
+
+
+static void
+_download_handle_cleanup ( VikMapSource *self, void *handle )
+{
+   return a_download_handle_cleanup ( handle );
+}
+
+gchar *
+vik_map_source_default_get_uri( VikMapSourceDefault *self, MapCoord *src )
+{
+	VikMapSourceDefaultClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_uri != NULL, 0);
+
+	return (*klass->get_uri)(self, src);
+}
+
+gchar *
+vik_map_source_default_get_hostname( VikMapSourceDefault *self )
+{
+	VikMapSourceDefaultClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_hostname != NULL, 0);
+
+	return (*klass->get_hostname)(self);
+}
+
+DownloadMapOptions *
+vik_map_source_default_get_download_options( VikMapSourceDefault *self )
+{
+	VikMapSourceDefaultClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_download_options != NULL, 0);
+
+	return (*klass->get_download_options)(self);
 }
