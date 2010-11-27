@@ -35,6 +35,13 @@
     <property name="id">20</property>
   </object>
 -->
+  <object class="VikWmscMapSource">
+    <property name="id">18</property>
+    <property name="label">OpenStreetMap (WMS)</property>
+    <property name="hostname">full.wms.geofabrik.de</property>
+    <property name="url">/std/demo_key?LAYERS=osm-full&amp;FORMAT=image/png&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=&amp;SRS=EPSG:4326&amp;BBOX=%s,%s,%s,%s&amp;WIDTH=256&amp;HEIGHT=256</property>
+    <property name="check-file-server-time">FALSE</property>
+  </object>
   <object class="VikSlippyMapSource">
     <property name="label">Letuffe/hiking</property>
     <property name="hostname">beta.letuffe.org</property>
