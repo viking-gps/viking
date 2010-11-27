@@ -375,7 +375,10 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
   vml->cache_dir = NULL;
 
   if ( dir == NULL || dir[0] == '\0' )
-    vml->cache_dir = g_strdup ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s );
+  {
+    if ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir") )
+      vml->cache_dir = g_strdup ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s );
+  }
   else
   {
     len = strlen(dir);
