@@ -95,6 +95,7 @@ libviking_a_SOURCES = \
 	vikmapslayer_compat.c vikmapslayer_compat.h \
 	vikmaptype.c vikmaptype.h \
 	vikslippymapsource.c vikslippymapsource.h \
+	vikwmscmapsource.c vikwmscmapsource.h \
 	viktmsmapsource.c viktmsmapsource.h \
         gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
