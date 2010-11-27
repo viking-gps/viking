@@ -28,6 +28,7 @@
 #include "osm.h"
 #include "vikmapslayer.h"
 #include "vikslippymapsource.h"
+#include "vikwmscmapsource.h"
 #include "vikwebtoolcenter.h"
 #include "vikexttools.h"
 #include "vikgotoxmltool.h"
@@ -71,11 +72,20 @@ void osm_init () {
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 NULL));
+  VikWmscMapSource *wms_type =
+    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_WMSC_MAP_SOURCE,
+                                "id", 18,
+                                "label", "OpenStreetMap (WMS)",
+                                "hostname", "full.wms.geofabrik.de",
+                                "url", "/std/demo_key?LAYERS=osm-full&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=&SRS=EPSG:4326&BBOX=%s,%s,%s,%s&WIDTH=256&HEIGHT=256",
+                                "check-file-server-time", FALSE,
+                                NULL));
 
   maps_layer_register_map_source (osmarender_type);
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (maplint_type);
   maps_layer_register_map_source (cycle_type);
+  maps_layer_register_map_source (wms_type);
 
   // Webtools
   VikWebtoolCenter *webtool = NULL;
