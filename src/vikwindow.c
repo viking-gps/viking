@@ -1461,6 +1461,7 @@ GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode m
     case VIK_VIEWPORT_DRAWMODE_EXPEDIA: buttonname = "/ui/MainMenu/View/ModeExpedia"; break;
 #endif
     case VIK_VIEWPORT_DRAWMODE_MERCATOR: buttonname = "/ui/MainMenu/View/ModeMercator"; break;
+    case VIK_VIEWPORT_DRAWMODE_LATLON: buttonname = "/ui/MainMenu/View/ModeLatLon"; break;
     default: buttonname = "/ui/MainMenu/View/ModeUTM";
   }
   mode_button = gtk_ui_manager_get_widget ( vw->uim, buttonname );
@@ -2165,6 +2166,9 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
   if (!strcmp(gtk_action_get_name(a), "ModeUTM")) {
     drawmode = VIK_VIEWPORT_DRAWMODE_UTM;
   }
+  else if (!strcmp(gtk_action_get_name(a), "ModeLatLon")) {
+    drawmode = VIK_VIEWPORT_DRAWMODE_LATLON;
+  }
   else if (!strcmp(gtk_action_get_name(a), "ModeExpedia")) {
     drawmode = VIK_VIEWPORT_DRAWMODE_EXPEDIA;
   }
@@ -2313,10 +2317,12 @@ static GtkActionEntry entries[] = {
 };
 
 /* Radio items */
+/* FIXME use VIEWPORT_DRAWMODE values */
 static GtkRadioActionEntry mode_entries[] = {
   { "ModeUTM",         NULL,         N_("_UTM Mode"),               "<control>u", NULL, 0 },
   { "ModeExpedia",     NULL,         N_("_Expedia Mode"),           "<control>e", NULL, 1 },
-  { "ModeMercator",    NULL,         N_("_Mercator Mode"),            "<control>g", NULL, 4 }
+  { "ModeMercator",    NULL,         N_("_Mercator Mode"),            "<control>g", NULL, 4 },
+  { "ModeLatLon",     NULL,         N_("_Lat/Lon Mode"),           NULL, NULL, 5 },
 };
 
 static GtkRadioActionEntry tool_entries[] = {

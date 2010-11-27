@@ -732,7 +732,10 @@ void vik_viewport_screen_to_coord ( VikViewport *vvp, int x, int y, VikCoord *co
     utm->northing = ( ( ( vvp->height / 2) - y ) * vvp->ympp ) + vvp->center.north_south;
   } else if ( vvp->coord_mode == VIK_COORD_LATLON ) {
     coord->mode = VIK_COORD_LATLON;
-    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA )
+    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
+      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width/2));
+      coord->north_south = vvp->center.north_south + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height/2 - y));
+    } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA )
       calcxy_rev(&(coord->east_west), &(coord->north_south), x, y, vvp->center.east_west, vvp->center.north_south, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width/2, vvp->height/2);
     else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
       /* FIXMERCATOR */
@@ -778,7 +781,11 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
     struct LatLon *center = (struct LatLon *) &(vvp->center);
     struct LatLon *ll = (struct LatLon *) coord;
     double xx,yy;
-    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA ) {
+    if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
+      /* FIXMERCATOR: Optimize */
+      *x = vvp->width/2 + (65536.0 / 180 / vvp->xmpp * (ll->lon - center->lon))*256.0;
+      *y = vvp->height/2 + (65536.0 / 180 / vvp->ympp * (center->lat - ll->lat))*256.0;
+    } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA ) {
       calcxy ( &xx, &yy, center->lon, center->lat, ll->lon, ll->lat, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width / 2, vvp->height / 2 );
       *x = xx; *y = yy;
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {

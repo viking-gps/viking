@@ -188,6 +188,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
     case VIK_VIEWPORT_DRAWMODE_UTM: modestring = "utm"; break;
     case VIK_VIEWPORT_DRAWMODE_EXPEDIA: modestring = "expedia"; break;
     case VIK_VIEWPORT_DRAWMODE_MERCATOR: modestring = "mercator"; break;
+    case VIK_VIEWPORT_DRAWMODE_LATLON: modestring = "latlon"; break;
     default:
       g_critical("Houston, we've had a problem. mode=%d", mode);
   }
@@ -431,6 +432,8 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
       }
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "mercator" ) == 0)
         vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_MERCATOR );
+      else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "latlon" ) == 0)
+        vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_LATLON );
       else if ( stack->under == NULL && eq_pos == 5 && strncasecmp ( line, "color", eq_pos ) == 0 )
         vik_viewport_set_background_color ( VIK_VIEWPORT(vp), line+6 );
       else if ( stack->under == NULL && eq_pos == 9 && strncasecmp ( line, "drawscale", eq_pos ) == 0 )

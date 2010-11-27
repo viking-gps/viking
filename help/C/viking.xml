@@ -209,6 +209,23 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 <listitem><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></listitem>
 </itemizedlist>
 </section>
+
+<section><title>Projections</title>
+<para>
+&appname; supports differents projections:
+<itemizedlist>
+<listitem>
+<para>UTM</para>
+</listitem>
+<listitem>
+<para>LatLon (also called EPSG:4326)</para>
+</listitem>
+<listitem>
+<para>Mercator (also called Spherical Mercator)</para>
+</listitem>
+</itemizedlist>
+</para>
+</section>
 </section>
 
 <section><title>Layers</title>
