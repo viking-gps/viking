@@ -55,6 +55,7 @@ doc/examples/Makefile.in
 /src/viking.desktop
 /src/vikenumtypes.h
 /src/vikenumtypes.c
+/src/documenters.h
 
 # /src/icons/
 /src/icons/.deps
