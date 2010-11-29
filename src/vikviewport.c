@@ -292,9 +292,10 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
   /* TODO trigger */
 
   /* this is down here so it can get a GC (necessary?) */
-  if ( ! vvp->background_gc )
+  if ( !vvp->background_gc )
   {
     vvp->background_gc = vik_viewport_new_gc ( vvp, DEFAULT_BACKGROUND_COLOR, 1 );
+    vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR );
   }
   if ( !vvp->scale_bg_gc) {
     vvp->scale_bg_gc = vik_viewport_new_gc(vvp, "grey", 3);
