@@ -86,6 +86,10 @@ typedef struct {
   GtkComboBox *ser_b;
   GtkWidget *off_request_l;
   GtkCheckButton *off_request_b;
+  GtkWidget *get_tracks_l;
+  GtkCheckButton *get_tracks_b;
+  GtkWidget *get_waypoints_l;
+  GtkCheckButton *get_waypoints_b;
 
   /* progress dialog */
   GtkWidget *gps_label;
@@ -109,6 +113,8 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
 {
   char *ser = NULL;
   char *device = NULL;
+  char *tracks = NULL;
+  char *waypoints = NULL;
 #ifndef USE_NEW_COMBO_BOX
   GtkTreeIter iter;
 #endif
@@ -123,10 +129,21 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
   device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
 
-  *babelargs = g_strdup_printf("-D 9 -t -w -i %s", device);
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_tracks_b)))
+    tracks = "-t";
+  else
+    tracks = "";
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b)))
+    waypoints = "-w";
+  else
+    waypoints = "";
+
+  *babelargs = g_strdup_printf("-D 9 %s %s -i %s", tracks, waypoints, device);
   /* device points to static content => no free */
   device = NULL;
-  
+  tracks = NULL;
+  waypoints = NULL;
+
   /* Old stuff */
 #ifdef USE_NEW_COMBO_BOX
   ser = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
@@ -326,7 +343,7 @@ void append_element (gpointer elem, gpointer user_data)
 void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
 {
   gps_user_data_t *w = (gps_user_data_t *)user_data;
-  GtkTable*  box;
+  GtkTable *box, *data_type_box;
 
   w->proto_l = gtk_label_new (_("GPS Protocol:"));
   w->proto_b = GTK_COMBO_BOX(gtk_combo_box_new_text ());
@@ -358,13 +375,28 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   w->off_request_l = gtk_label_new (_("Turn Off After Transfer\n(Garmin/NAViLink Only)"));
   w->off_request_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 
-  box = GTK_TABLE(gtk_table_new(2, 3, FALSE));
+  w->get_tracks_l = gtk_label_new (_("Tracks:"));
+  w->get_tracks_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_tracks_b), TRUE);
+
+  w->get_waypoints_l = gtk_label_new (_("Waypoints:"));
+  w->get_waypoints_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b), TRUE);
+
+  box = GTK_TABLE(gtk_table_new(2, 4, FALSE));
+  data_type_box = GTK_TABLE(gtk_table_new(4, 1, FALSE));
+
   gtk_table_attach_defaults(box, GTK_WIDGET(w->proto_l), 0, 1, 0, 1);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->proto_b), 1, 2, 0, 1);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->ser_l), 0, 1, 1, 2);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->ser_b), 1, 2, 1, 2);
-  gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_l), 0, 1, 2, 3);
-  gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_b), 1, 3, 2, 3);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_tracks_l), 0, 1, 0, 1);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_tracks_b), 1, 2, 0, 1);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_waypoints_l), 2, 3, 0, 1);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_waypoints_b), 3, 4, 0, 1);
+  gtk_table_attach_defaults(box, GTK_WIDGET(data_type_box), 0, 2, 2, 3);
+  gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_l), 0, 1, 3, 4);
+  gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_b), 1, 3, 3, 4);
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(box), FALSE, FALSE, 5 );
 
   gtk_widget_show_all ( dialog );

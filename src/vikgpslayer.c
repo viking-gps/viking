@@ -151,7 +151,10 @@ enum {
 static VikLayerParam gps_layer_params[] = {
   { "gps_protocol", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
   { "gps_port", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
-
+  { "gps_download_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Download Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
+  { "gps_upload_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Upload Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
+  { "gps_download_waypoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Download Waypoints:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
+  { "gps_upload_waypoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Upload Waypoints:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   { "record_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Recording tracks"), VIK_LAYER_WIDGET_CHECKBUTTON},
   { "center_start_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Jump to current position on start"), VIK_LAYER_WIDGET_CHECKBUTTON},
@@ -163,6 +166,8 @@ static VikLayerParam gps_layer_params[] = {
 };
 enum {
   PARAM_PROTOCOL=0, PARAM_PORT,
+  PARAM_DOWNLOAD_TRACKS, PARAM_UPLOAD_TRACKS,
+  PARAM_DOWNLOAD_WAYPOINTS, PARAM_UPLOAD_WAYPOINTS,
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   PARAM_REALTIME_REC, PARAM_REALTIME_CENTER_START, PARAM_VEHICLE_POSITION, PARAM_GPSD_HOST, PARAM_GPSD_PORT, PARAM_GPSD_RETRY_INTERVAL,
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
@@ -284,6 +289,10 @@ struct _VikGpsLayer {
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   guint protocol_id;
   gchar *serial_port;
+  gboolean download_tracks;
+  gboolean download_waypoints;
+  gboolean upload_tracks;
+  gboolean upload_waypoints;
 };
 
 GType vik_gps_layer_get_type ()
@@ -422,6 +431,18 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
       else
         g_warning(_("Unknown serial port device"));
       break;
+    case PARAM_DOWNLOAD_TRACKS:
+      vgl->download_tracks = data.b;
+      break;
+    case PARAM_UPLOAD_TRACKS:
+      vgl->upload_tracks = data.b;
+      break;
+    case PARAM_DOWNLOAD_WAYPOINTS:
+      vgl->download_waypoints = data.b;
+      break;
+    case PARAM_UPLOAD_WAYPOINTS:
+      vgl->upload_waypoints = data.b;
+      break;
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
     case PARAM_GPSD_HOST:
       if (vgl->gpsd_host)
@@ -464,6 +485,18 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
     case PARAM_PORT:
       rv.s = vgl->serial_port;
       g_debug("%s: %s", __FUNCTION__, rv.s);
+      break;
+    case PARAM_DOWNLOAD_TRACKS:
+      rv.b = vgl->download_tracks;
+      break;
+    case PARAM_UPLOAD_TRACKS:
+      rv.b = vgl->upload_tracks;
+      break;
+    case PARAM_DOWNLOAD_WAYPOINTS:
+      rv.b = vgl->download_waypoints;
+      break;
+    case PARAM_UPLOAD_WAYPOINTS:
+      rv.b = vgl->upload_waypoints;
       break;
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
     case PARAM_GPSD_HOST:
@@ -527,6 +560,10 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
   vgl->protocol_id = 0;
   vgl->serial_port = NULL;
+  vgl->download_tracks = TRUE;
+  vgl->download_waypoints = TRUE;
+  vgl->upload_tracks = TRUE;
+  vgl->upload_waypoints = TRUE;
 
 #ifndef WINDOWS
   /* Attempt to auto set default USB serial port entry */
@@ -1078,21 +1115,36 @@ static void gps_comm_thread(GpsSession *sess)
   g_thread_exit(NULL);
 }
 
-static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *port, gboolean tracking, VikViewport *vvp) {
+static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *port, gboolean tracking, VikViewport *vvp, gboolean do_tracks, gboolean do_waypoints) {
   GpsSession *sess = g_malloc(sizeof(GpsSession));
+  char *tracks = NULL;
+  char *waypoints = NULL;
 
   sess->mutex = g_mutex_new();
   sess->direction = dir;
   sess->vtl = vtl;
   sess->port = g_strdup(port);
   sess->ok = TRUE;
-  sess->cmd_args = g_strdup_printf("-D 9 -t -w -%c %s",
-      (dir == GPS_DOWN) ? 'i' : 'o', protocols_args[proto]);
   sess->window_title = (dir == GPS_DOWN) ? _("GPS Download") : _("GPS Upload");
   sess->vvp = vvp;
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
   sess->realtime_tracking = tracking;
 #endif
+
+  if (do_tracks)
+    tracks = "-t";
+  else
+    tracks = "";
+  if (do_waypoints)
+    waypoints = "-w";
+  else
+    waypoints = "";
+
+  sess->cmd_args = g_strdup_printf("-D 9 %s %s -%c %s",
+				   tracks, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocols_args[proto]);
+  tracks = NULL;
+  waypoints = NULL;
+
   sess->dialog = gtk_dialog_new_with_buttons ( "", VIK_GTK_WINDOW_FROM_LAYER(vtl), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_dialog_set_response_sensitive ( GTK_DIALOG(sess->dialog),
       GTK_RESPONSE_ACCEPT, FALSE );
@@ -1143,7 +1195,7 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
-  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, NULL);
+  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, NULL, vgl->upload_tracks, vgl->upload_waypoints);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
@@ -1153,9 +1205,9 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, vgl->realtime_tracking, vvp);
+  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, vgl->realtime_tracking, vvp, vgl->download_tracks, vgl->download_waypoints);
 #else
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, FALSE, vvp);
+  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, FALSE, vvp, vgl->download_tracks, vgl->download_waypoints);
 #endif
 }
 
