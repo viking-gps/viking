@@ -2322,7 +2322,7 @@ static GtkRadioActionEntry mode_entries[] = {
   { "ModeUTM",         NULL,         N_("_UTM Mode"),               "<control>u", NULL, 0 },
   { "ModeExpedia",     NULL,         N_("_Expedia Mode"),           "<control>e", NULL, 1 },
   { "ModeMercator",    NULL,         N_("_Mercator Mode"),            "<control>g", NULL, 4 },
-  { "ModeLatLon",     NULL,         N_("_Lat/Lon Mode"),           NULL, NULL, 5 },
+  { "ModeLatLon",      NULL,         N_("Lat_/Lon Mode"),           "<control>l", NULL, 5 },
 };
 
 static GtkRadioActionEntry tool_entries[] = {
