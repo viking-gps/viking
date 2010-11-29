@@ -74,6 +74,7 @@ doc/examples/Makefile.in
 /test/gpx2gpx
 /test/degrees_converter
 /test/test_vikgotoxmltool
+/test/test_coord_conversion
 
 # /po/
 /po/Makefile.in.in
