@@ -44,7 +44,7 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
 ]>
 
-<refentry>
+<refentry xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
     <address>
       &dhemail;
@@ -182,6 +182,26 @@ and docbook-xsl in your Build-Depends control field.
         <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/maps.xml</filename>.</para>
         <para>The VikSlippyMapSource allows to declare any map's source working like OpenStreetMap. It supports the following properties:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>hostname</term>
+              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para>The VikTmsMapSource allows to declare any TMS service. It supports the following properties:
           <variablelist>
             <varlistentry>
               <term>id</term>

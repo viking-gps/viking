@@ -980,6 +980,26 @@ to write the waypoints to this file.
             </varlistentry>
           </variablelist>
         </para>
+        <para>The VikTmsMapSource allows to declare any TMS service. It supports the following properties:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>hostname</term>
+              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
         <para>The VikWmscMapSource allows to declare any WMS or WMS-C service. It supports the following properties:
           <variablelist>
             <varlistentry>
