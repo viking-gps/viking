@@ -98,6 +98,7 @@ static gdouble __mapzooms_y[] = { 0.0, 0.25, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.
 
 
 static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file);
+static const gchar* maps_layer_tooltip ( VikMapsLayer *vml );
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation );
@@ -167,7 +168,7 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
   (VikLayerFuncSublayerTooltip)         NULL,
-  (VikLayerFuncLayerTooltip)            NULL,
+  (VikLayerFuncLayerTooltip)            maps_layer_tooltip,
 
   (VikLayerFuncMarshall)		maps_layer_marshall,
   (VikLayerFuncUnmarshall)		maps_layer_unmarshall,
@@ -541,6 +542,11 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
                         vik_map_source_get_license (map), vik_map_source_get_license_url (map) );
     }
   }
+}
+
+static const gchar* maps_layer_tooltip ( VikMapsLayer *vml )
+{
+  return vik_maps_layer_get_map_label ( vml );
 }
 
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len )
