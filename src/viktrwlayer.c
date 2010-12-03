@@ -562,6 +562,9 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
     w = vik_waypoint_unmarshall(fi->data + fi->len, len - sizeof(*fi) - fi->len);
     vik_trw_layer_add_waypoint ( vtl, name, w );
     waypoint_convert(name, w, &vtl->coord_mode);
+    // Consider if redraw necessary for the new item
+    if ( vtl->vl.visible && vtl->waypoints_visible && w->visible )
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && fi )
@@ -572,6 +575,9 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
     t = vik_track_unmarshall(fi->data + fi->len, len - sizeof(*fi) - fi->len);
     vik_trw_layer_add_track ( vtl, name, t );
     track_convert(name, t, &vtl->coord_mode);
+    // Consider if redraw necessary for the new item
+    if ( vtl->vl.visible && vtl->tracks_visible && t->visible )
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
   return FALSE;
@@ -1892,18 +1898,18 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
     else
     {
       GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
+      // Visibility column always needed for waypoints
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
       vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, NULL, TRUE, TRUE );
 #else
       vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, NULL, TRUE, TRUE );
 #endif
+      // Actual setting of visibility dependent on the waypoint
+      vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter );
       g_hash_table_insert ( vtl->waypoints_iters, name, iter );
-      wp->visible = TRUE;
     }
   }
-  else
-    wp->visible = TRUE;
 
   highest_wp_number_add_wp(vtl, name);
   g_hash_table_insert ( vtl->waypoints, name, wp );
@@ -1920,18 +1926,18 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
     else
     {
       GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
+      // Visibility column always needed for tracks
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
-      vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, t->visible, TRUE );
+      vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
 #else
-      vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, t->visible, TRUE );
+      vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, name, VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
 #endif
+      // Actual setting of visibility dependent on the track
+      vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter );
       g_hash_table_insert ( vtl->tracks_iters, name, iter );
-      /* t->visible = TRUE; */
     }
   }
-  else
-    ; /* t->visible = TRUE; // this is now used by file input functions */
 
   g_hash_table_insert ( vtl->tracks, name, t );
  
