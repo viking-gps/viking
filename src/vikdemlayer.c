@@ -71,6 +71,7 @@
 
 #define UNUSED_LINE_THICKNESS 3
 
+static const gchar* dem_layer_tooltip( VikDEMLayer *vdl );
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
@@ -213,7 +214,7 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
   (VikLayerFuncSublayerTooltip)         NULL,
-  (VikLayerFuncLayerTooltip)            NULL,
+  (VikLayerFuncLayerTooltip)            dem_layer_tooltip,
 
   (VikLayerFuncMarshall)		dem_layer_marshall,
   (VikLayerFuncUnmarshall)		dem_layer_unmarshall,
@@ -265,6 +266,13 @@ GType vik_dem_layer_get_type ()
   }
 
   return vdl_type;
+}
+
+static const gchar* dem_layer_tooltip( VikDEMLayer *vdl )
+{
+  static gchar tmp_buf[100];
+  g_snprintf (tmp_buf, sizeof(tmp_buf), _("Number of files: %d"), g_list_length (vdl->files));
+  return tmp_buf;
 }
 
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len )
