@@ -224,6 +224,8 @@ static gint calculate_velocity ( VikTrwLayer *vtl, VikTrackpoint *tp1, VikTrackp
 static void trw_layer_draw_track_cb ( const gchar *name, VikTrack *track, struct DrawingParams *dp );
 static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct DrawingParams *dp );
 
+static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer );
+
 static void goto_coord ( VikLayersPanel *vlp, const VikCoord *coord );
 static void trw_layer_goto_track_startpoint ( gpointer pass_along[5] );
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] );
@@ -441,7 +443,7 @@ VikLayerInterface vik_trw_layer_interface = {
 
   (VikLayerFuncSublayerRenameRequest)   vik_trw_layer_sublayer_rename_request,
   (VikLayerFuncSublayerToggleVisible)   vik_trw_layer_sublayer_toggle_visible,
-  (VikLayerFuncSublayerTooltip)         NULL,
+  (VikLayerFuncSublayerTooltip)         trw_layer_sublayer_tooltip,
   (VikLayerFuncLayerTooltip)            NULL,
 
   (VikLayerFuncMarshall)                trw_layer_marshall,
@@ -1519,6 +1521,63 @@ gboolean vik_trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, g
   }
   return TRUE;
 }
+
+static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer )
+{
+  switch ( subtype )
+  {
+    case VIK_TRW_LAYER_SUBLAYER_TRACKS: return NULL;
+    case VIK_TRW_LAYER_SUBLAYER_WAYPOINTS: return NULL;
+    case VIK_TRW_LAYER_SUBLAYER_TRACK:
+    {
+      VikTrack *tr = g_hash_table_lookup ( l->tracks, sublayer );
+      if ( tr ) {
+	// Could be a better way of handling strings - but this works...
+	gchar time_buf1[20];
+	gchar time_buf2[20];
+	time_buf1[0] = '\0';
+	time_buf2[0] = '\0';
+	static gchar tmp_buf[100];
+	// Compact info: Short date eg (11/20/99), duration and length
+	// Hopefully these are the things that are most useful and so promoted into the tooltip
+	if ( tr->trackpoints && VIK_TRACKPOINT(tr->trackpoints->data)->has_timestamp ) {
+	  // %x     The preferred date representation for the current locale without the time.
+	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&(VIK_TRACKPOINT(tr->trackpoints->data)->timestamp)));
+	  if ( VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->has_timestamp ) {
+	    gint dur = ( (VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp) - (VIK_TRACKPOINT(tr->trackpoints->data)->timestamp) );
+	    if ( dur > 0 )
+	      g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)round(dur/3600), (int)round(dur%60) );
+	  }
+	}
+	// Get length and consider the appropriate distance units
+	gdouble tr_len = vik_track_get_length(tr);
+	vik_units_distance_t dist_units = a_vik_get_units_distance ();
+	switch (dist_units) {
+	case VIK_UNITS_DISTANCE_KILOMETRES:
+	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f km %s"), time_buf1, tr_len/1000.0, time_buf2);
+	  break;
+	case VIK_UNITS_DISTANCE_MILES:
+	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f miles %s"), time_buf1, tr_len/1600.0, time_buf2);
+	  break;
+	default:
+	  break;
+	}
+	return tmp_buf;
+      }
+    }
+    break;
+    case VIK_TRW_LAYER_SUBLAYER_WAYPOINT:
+    {
+      VikWaypoint *w = g_hash_table_lookup ( l->waypoints, sublayer );
+      // NB It's OK to return NULL
+      return w->comment;
+    }
+    break;
+    default: break;
+  }
+  return NULL;
+}
+
 
 GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l )
 {
