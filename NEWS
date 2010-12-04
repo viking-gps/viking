@@ -1,3 +1,9 @@
+Viking 1.0.1 (2010-12-04)
+Fixes since 1.0
+* Fix Waypoint & Track visibility issues.
+* Fix SF#3104028: Default Color Background is incorrectly saved as black into a new .vik file.
+* Fix some translated strings
+
 Viking 1.0 (2010-11-14)
 New features since 0.9.96
 * Add minimal translator-credits in About dialog
