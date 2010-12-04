@@ -631,7 +631,7 @@ gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
 {
   const VikCoord *center = vik_viewport_get_center ( vvp );
 
-  if (vik_window_get_pan_move (VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vvp))))
+  if (vik_window_get_pan_move (VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vvp)))))
     /* D'n'D pan in action: do not download */
     return FALSE;
 
