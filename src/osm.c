@@ -72,7 +72,7 @@ void osm_init () {
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 NULL));
-  VikWmscMapSource *wms_type =
+  VikMapSource *wms_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_WMSC_MAP_SOURCE,
                                 "id", 18,
                                 "label", "OpenStreetMap (WMS)",
