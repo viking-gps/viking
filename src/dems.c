@@ -22,6 +22,7 @@
 #include <glib.h>
 
 #include "dems.h"
+#include "background.h"
 
 typedef struct {
   VikDEM *dem;
@@ -73,8 +74,11 @@ VikDEM *a_dems_load(const gchar *filename)
 void a_dems_unref(const gchar *filename)
 {
   LoadedDEM *ldem = (LoadedDEM *) g_hash_table_lookup ( loaded_dems, filename );
-  g_assert ( ldem );
-  ldem->ref_count --;
+  if ( !ldem ) {
+    /* This is fine - probably means the loaded list was aborted / not completed for some reason */
+    return;
+  }
+  ldem->ref_count--;
   if ( ldem->ref_count == 0 )
     g_hash_table_remove ( loaded_dems, filename );
 }
@@ -103,9 +107,11 @@ VikDEM *a_dems_get(const gchar *filename)
  * we need to know that they weren't referenced though when we
  * do the a_dems_list_free().
  */
-void a_dems_load_list ( GList **dems )
+int a_dems_load_list ( GList **dems, gpointer threaddata )
 {
   GList *iter = *dems;
+  guint dem_count = 0;
+  const guint dem_total = g_list_length ( *dems );
   while ( iter ) {
     if ( ! a_dems_load((const gchar *) (iter->data)) ) {
       GList *iter_temp = iter->next;
@@ -115,7 +121,16 @@ void a_dems_load_list ( GList **dems )
     } else {
       iter = iter->next;
     }
+    /* When running a thread - inform of progress */
+    if ( threaddata ) {
+      dem_count++;
+      /* NB Progress also detects abort request via the returned value */
+      int result = a_background_thread_progress ( threaddata, ((gdouble)dem_count) / dem_total );
+      if ( result != 0 )
+	return -1; /* Abort thread */
+    }
   }
+  return 0;
 }
 
 /* Takes a string list (GList of strings) of dems (filenames).

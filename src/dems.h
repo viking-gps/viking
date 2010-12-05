@@ -34,7 +34,7 @@ void a_dems_uninit ();
 VikDEM *a_dems_load(const gchar *filename);
 void a_dems_unref(const gchar *filename);
 VikDEM *a_dems_get(const gchar *filename);
-void a_dems_load_list ( GList **dems );
+int a_dems_load_list ( GList **dems, gpointer threaddata );
 void a_dems_list_free ( GList *dems );
 GList *a_dems_list_copy ( GList *dems );
 gint16 a_dems_list_get_elev_by_coord ( GList *dems, const VikCoord *coord );
