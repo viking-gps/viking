@@ -224,6 +224,7 @@ static gint calculate_velocity ( VikTrwLayer *vtl, VikTrackpoint *tp1, VikTrackp
 static void trw_layer_draw_track_cb ( const gchar *name, VikTrack *track, struct DrawingParams *dp );
 static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct DrawingParams *dp );
 
+static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl );
 static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 
 static void goto_coord ( VikLayersPanel *vlp, const VikCoord *coord );
@@ -444,7 +445,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   vik_trw_layer_sublayer_rename_request,
   (VikLayerFuncSublayerToggleVisible)   vik_trw_layer_sublayer_toggle_visible,
   (VikLayerFuncSublayerTooltip)         trw_layer_sublayer_tooltip,
-  (VikLayerFuncLayerTooltip)            NULL,
+  (VikLayerFuncLayerTooltip)            trw_layer_layer_tooltip,
 
   (VikLayerFuncMarshall)                trw_layer_marshall,
   (VikLayerFuncUnmarshall)              trw_layer_unmarshall,
@@ -1522,6 +1523,134 @@ gboolean vik_trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, g
   return TRUE;
 }
 
+// Structure to hold multiple track information for a layer
+typedef struct {
+  gdouble length;
+  time_t  start_time;
+  time_t  end_time;
+  gint    duration;
+} tooltip_tracks;
+
+/*
+ * Build up layer multiple track information via updating the tooltip_tracks structure
+ */
+static void trw_layer_tracks_tooltip ( const gchar *name, VikTrack *tr, tooltip_tracks *tt )
+{
+  tt->length = tt->length + vik_track_get_length (tr);
+
+  // Ensure times are available
+  if ( tr->trackpoints &&
+       VIK_TRACKPOINT(tr->trackpoints->data)->has_timestamp &&
+       VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->has_timestamp ) {
+
+    time_t t1, t2;
+    t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+    t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+
+    // Assume never actually have a track with a time of 0 (1st Jan 1970)
+    // Hence initialize to the first 'proper' value
+    if ( tt->start_time == 0 )
+	tt->start_time = t1;
+    if ( tt->end_time == 0 )
+	tt->end_time = t2;
+
+    // Update find the earliest / last times
+    if ( t1 < tt->start_time )
+	tt->start_time = t1;
+    if ( t2 > tt->end_time )
+	tt->end_time = t2;
+
+    // Keep track of total time
+    //  there maybe gaps within a track (eg segments)
+    //  but this should be generally good enough for a simple indicator
+    tt->duration = tt->duration + (int)(t2-t1);
+  }
+}
+
+/*
+ * Generate tooltip text for the layer.
+ * This is relatively complicated as it considers information for
+ *   no tracks, a single track or multiple tracks
+ *     (which may or may not have timing information)
+ */
+static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
+{
+  gchar tbuf1[32];
+  gchar tbuf2[64];
+  gchar tbuf3[64];
+  gchar tbuf4[10];
+  tbuf1[0] = '\0';
+  tbuf2[0] = '\0';
+  tbuf3[0] = '\0';
+  tbuf4[0] = '\0';
+
+  static gchar tmp_buf[128];
+  tmp_buf[0] = '\0';
+
+  // For compact date format I'm using '%x'     [The preferred date representation for the current locale without the time.]
+
+  // Safety check - I think these should always be valid
+  if ( vtl->tracks && vtl->waypoints ) {
+    tooltip_tracks tt = { 0.0, 0, 0 };
+    g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_tracks_tooltip, &tt );
+
+    GDate* gdate_start = g_date_new ();
+    g_date_set_time_t (gdate_start, tt.start_time);
+
+    GDate* gdate_end = g_date_new ();
+    g_date_set_time_t (gdate_end, tt.end_time);
+
+    if ( g_date_compare (gdate_start, gdate_end) ) {
+      // Dates differ so print range on separate line
+      g_date_strftime (tbuf1, sizeof(tbuf1), "%x", gdate_start);
+      g_date_strftime (tbuf2, sizeof(tbuf2), "%x", gdate_end);
+      g_snprintf (tbuf3, sizeof(tbuf3), "%s to %s\n", tbuf1, tbuf2);
+    }
+    else {
+      // Same date so just show it and keep rest of text on the same line - provided it's a valid time!
+      if ( tt.start_time != 0 )
+	g_date_strftime (tbuf3, sizeof(tbuf3), "%x: ", gdate_start);
+    }
+
+    tbuf2[0] = '\0';
+    if ( tt.length > 0.0 ) {
+      gdouble len_in_units;
+
+      // Setup info dependent on distance units
+      if ( a_vik_get_units_distance() == VIK_UNITS_DISTANCE_MILES ) {
+	g_snprintf (tbuf4, sizeof(tbuf4), "miles");
+	len_in_units = tt.length/1600.0;
+      }
+      else {
+	g_snprintf (tbuf4, sizeof(tbuf4), "kms");
+	len_in_units = tt.length/1000.0;
+      }
+
+      // Timing information if available
+      tbuf1[0] = '\0';
+      if ( tt.duration > 0 ) {
+	g_snprintf (tbuf1, sizeof(tbuf1),
+		    _(" in %d:%02d hrs:mins"),
+		    (int)round(tt.duration/3600), (int)round((tt.duration/60)%60));
+      }
+      g_snprintf (tbuf2, sizeof(tbuf2),
+		  _("\n%sTotal Length %.1f %s%s"),
+		  tbuf3, len_in_units, tbuf4, tbuf1);
+    }
+
+    // Put together all the elements to form compact tooltip text
+    g_snprintf (tmp_buf, sizeof(tmp_buf),
+		_("Tracks: %d - Waypoints: %d%s"),
+		g_hash_table_size (vtl->tracks), g_hash_table_size (vtl->waypoints), tbuf2);
+
+    g_date_free (gdate_start);
+    g_date_free (gdate_end);
+
+  }
+
+  return tmp_buf;
+}
+
 static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer )
 {
   switch ( subtype )
@@ -1546,7 +1675,7 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	  if ( VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->has_timestamp ) {
 	    gint dur = ( (VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp) - (VIK_TRACKPOINT(tr->trackpoints->data)->timestamp) );
 	    if ( dur > 0 )
-	      g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)round(dur/3600), (int)round(dur%60) );
+	      g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)round(dur/3600), (int)round((dur/60)%60) );
 	  }
 	}
 	// Get length and consider the appropriate distance units
