@@ -63,6 +63,8 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
 static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
 static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation );
 
+static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl );
+
 static void gps_layer_change_coord_mode ( VikGpsLayer *val, VikCoordMode mode );
 static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
 static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
@@ -198,7 +200,7 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
   (VikLayerFuncSublayerTooltip)         NULL,
-  (VikLayerFuncLayerTooltip)            NULL,
+  (VikLayerFuncLayerTooltip)            gps_layer_tooltip,
 
   (VikLayerFuncMarshall)		gps_layer_marshall,
   (VikLayerFuncUnmarshall)		gps_layer_unmarshall,
@@ -313,6 +315,11 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
     vik_layer_set_menu_items_selection(VIK_LAYER(rv->trw_children[i]), VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE));
   }
   return rv;
+}
+
+static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
+{
+  return params_protocols[vgl->protocol_id];
 }
 
 /* "Copy" */
