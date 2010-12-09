@@ -107,12 +107,18 @@ static VikWindow *new_window ()
 
 static void open_window ( VikWindow *vw, const gchar **files )
 {
-  VikWindow *newvw = new_window();
   gboolean change_fn = (!files[1]); /* only change fn if one file */
-  if ( newvw )
-    while ( *files ) {
-      vik_window_open_file ( newvw, *(files++), change_fn );
+  while ( *files ) {
+    // Only open a new window if a viking file
+    if (vw != NULL && check_file_magic_vik ( *(files) ) ) {
+      VikWindow *newvw = new_window();
+      if (newvw)
+	vik_window_open_file ( newvw, *(files++), change_fn );
     }
+    else {
+      vik_window_open_file ( vw, *(files++), change_fn );
+    }
+  }
 }
 
 /* Options */
