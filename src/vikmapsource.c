@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking
- * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2009-2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  * 
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -53,6 +53,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 
+	klass->get_copyright = NULL;
 	klass->get_uniq_id = NULL;
 	klass->get_label = NULL;
 	klass->get_tilesize_x = NULL;
@@ -73,6 +74,19 @@ _supports_download_only_new (VikMapSource *self)
 {
 	// Default feature: does not support
 	return FALSE;
+}
+
+const gchar *
+vik_map_source_get_copyright (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_copyright != NULL, NULL);
+
+	return (*klass->get_copyright)(self);
 }
 
 guint8

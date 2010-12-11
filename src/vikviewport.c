@@ -33,6 +33,9 @@
 #ifdef HAVE_MATH_H
 #include <math.h>
 #endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "coords.h"
 #include "vikcoord.h"
@@ -79,7 +82,12 @@ struct _VikViewport {
   GdkGC *background_gc;
   GdkColor background_color;
   GdkGC *scale_bg_gc;
+
+  GSList *copyrights;
+
+  /* Wether or not display OSD info */
   gboolean draw_scale;
+  gboolean draw_copyright;
   gboolean draw_centermark;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
@@ -184,7 +192,11 @@ static void viewport_init ( VikViewport *vvp )
   vvp->utm_zone_width = 0.0;
   vvp->background_gc = NULL;
   vvp->scale_bg_gc = NULL;
+
+  vvp->copyrights = NULL;
+
   vvp->draw_scale = TRUE;
+  vvp->draw_copyright = TRUE;
   vvp->draw_centermark = TRUE;
 
   vvp->trigger = NULL;
@@ -334,6 +346,7 @@ void vik_viewport_clear ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
   gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
+  vik_viewport_reset_copyrights ( vvp );
 }
 
 void vik_viewport_set_draw_scale ( VikViewport *vvp, gboolean draw_scale )
@@ -456,6 +469,61 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     g_object_unref(pl);
     pl = NULL;
   }
+}
+
+void vik_viewport_set_draw_copyright ( VikViewport *vvp, gboolean draw_copyright )
+{
+  vvp->draw_copyright = draw_copyright;
+}
+
+gboolean vik_viewport_get_draw_copyright ( VikViewport *vvp )
+{
+  return vvp->draw_copyright;
+}
+
+void vik_viewport_draw_copyright ( VikViewport *vvp )
+{
+  g_return_if_fail ( vvp != NULL );
+
+  if ( !vvp->draw_copyright )
+    return;
+
+  gint PAD = 10;
+  PangoFontDescription *pfd;
+  PangoLayout *pl;
+  PangoRectangle ink_rect, logical_rect;
+  gchar s[128] = "";
+
+  /* compute copyrights string */
+  guint len = g_slist_length ( vvp->copyrights );
+  int i;
+  for (i = 0 ; i < len ; i++)
+  {
+    gchar *copyright = g_slist_nth_data ( vvp->copyrights, i );
+    strcat ( s, copyright );
+    strcat ( s, " " );
+  }
+
+  /* create pango layout */
+  pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
+  pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
+  pango_layout_set_font_description (pl, pfd);
+  pango_font_description_free (pfd);
+  pfd = NULL;
+  pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
+
+  /* Set the text */
+  pango_layout_set_text(pl, s, -1);
+
+  /* Use maximum of half the viewport width */
+  pango_layout_set_width ( pl, ( vvp->width / 2 - PAD ) * PANGO_SCALE );
+  pango_layout_get_pixel_extents(pl, &ink_rect, &logical_rect);
+  vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
+			   vvp->width / 2, vvp->height - PAD - logical_rect.height, pl);
+
+  /* Free memory */
+  g_object_unref(pl);
+  pl = NULL;		
 }
 
 void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark )
@@ -1117,4 +1185,26 @@ void vik_viewport_get_min_max_lat_lon ( VikViewport *vp, gdouble *min_lat, gdoub
   *min_lat = MIN(bleft.north_south, bright.north_south);
   *max_lon = MAX(tright.east_west, bright.east_west);
   *min_lon = MIN(tleft.east_west, bleft.east_west);
+}
+
+void vik_viewport_reset_copyrights ( VikViewport *vp ) 
+{
+  g_return_if_fail ( vp != NULL );
+  g_slist_foreach ( vp->copyrights, (GFunc)g_free, NULL );
+  g_slist_free ( vp->copyrights );
+  vp->copyrights = NULL;
+}
+
+void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright ) 
+{
+  g_return_if_fail ( vp != NULL );
+  if ( copyright )
+  {
+    gchar *found = (gchar*)g_slist_find_custom ( vp->copyrights, copyright, (GCompareFunc)strcmp );
+    if ( found == NULL )
+    {
+      gchar *duple = g_strdup ( copyright );
+      vp->copyrights = g_slist_prepend ( vp->copyrights, duple );
+    }
+  }
 }

@@ -248,5 +248,24 @@ _get_download_options( VikMapSourceDefault *self )
 TerraserverMapSource *
 terraserver_map_source_new_with_id (guint8 id, const char *label, int type)
 {
-	return g_object_new(TERRASERVER_TYPE_MAP_SOURCE, "id", id, "label", label, "type", type, NULL);
+	char *copyright = NULL;
+	switch (type)
+	{
+	case 1:
+		copyright = "© DigitalGlobe";
+		break;
+	case 2:
+		copyright = "© LandVoyage";
+		break;
+	case 4:
+		copyright = "© DigitalGlobe";
+		break;
+	default:
+		g_critical("Houston, we've had a problem. type=%d", type);
+	}
+
+	return g_object_new(TERRASERVER_TYPE_MAP_SOURCE,
+	                    "id", id, "label", label, "type", type,
+	                    "copyright", copyright,
+	                    NULL);
 }

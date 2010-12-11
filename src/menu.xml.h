@@ -54,6 +54,7 @@ static const char *menu_xml =
 	"      <menuitem action='GotoUTM'/>"
 	"      <separator/>"
 	"      <menuitem action='ShowScale'/>"
+	"      <menuitem action='ShowCopyright'/>"
 	"      <menuitem action='ShowCenterMark'/>"
 	"      <menuitem action='SetBGColor'/>"
 	"      <menuitem action='FullScreen'/>"

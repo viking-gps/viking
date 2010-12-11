@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking
- * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2009-2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  * 
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -41,7 +41,10 @@ typedef struct _VikMapSource VikMapSource;
 struct _VikMapSourceClass
 {
 	GObjectClass parent_class;
-	
+
+	/* Legal info */
+	const gchar *(* get_copyright) (VikMapSource * self);
+
 	guint8 (* get_uniq_id) (VikMapSource * self);
 	const gchar * (* get_label) (VikMapSource * self);
 	guint16 (* get_tilesize_x) (VikMapSource * self);
@@ -61,6 +64,8 @@ struct _VikMapSource
 };
 
 GType vik_map_source_get_type (void) G_GNUC_CONST;
+
+const gchar *vik_map_source_get_copyright (VikMapSource * self);
 
 guint8 vik_map_source_get_uniq_id (VikMapSource * self);
 const gchar *vik_map_source_get_label (VikMapSource * self);

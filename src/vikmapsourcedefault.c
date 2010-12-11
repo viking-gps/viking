@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking
- * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2009-2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  * 
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,6 +21,8 @@
 #include "vikenumtypes.h"
 #include "download.h"
 
+static const gchar *map_source_get_copyright (VikMapSource *self);
+
 static guint8 map_source_get_uniq_id (VikMapSource *self);
 static const gchar *map_source_get_label (VikMapSource *self);
 static guint16 map_source_get_tilesize_x (VikMapSource *self);
@@ -34,6 +36,9 @@ static void _download_handle_cleanup ( VikMapSource *self, void *handle );
 typedef struct _VikMapSourceDefaultPrivate VikMapSourceDefaultPrivate;
 struct _VikMapSourceDefaultPrivate
 {
+	/* legal stuff */
+	gchar *copyright;
+	
 	guint8 uniq_id;
 	gchar *label;
 	guint16 tilesize_x;
@@ -53,6 +58,7 @@ enum
   PROP_TILESIZE_X,
   PROP_TILESIZE_Y,
   PROP_DRAWMODE,
+  PROP_COPYRIGHT,
 };
 
 G_DEFINE_TYPE_EXTENDED (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
@@ -64,6 +70,7 @@ vik_map_source_default_init (VikMapSourceDefault *object)
   VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (self);
 
   priv->label = NULL;
+  priv->copyright = NULL;
 }
 
 static void
@@ -74,6 +81,8 @@ vik_map_source_default_finalize (GObject *object)
 
   g_free (priv->label);
   priv->label = NULL;
+  g_free (priv->copyright);
+  priv->copyright = NULL;
 	
   G_OBJECT_CLASS (vik_map_source_default_parent_class)->finalize (object);
 }
@@ -108,6 +117,11 @@ vik_map_source_default_set_property (GObject      *object,
 
     case PROP_DRAWMODE:
       priv->drawmode = g_value_get_enum(value);
+      break;
+
+    case PROP_COPYRIGHT:
+      g_free (priv->copyright);
+      priv->copyright = g_strdup(g_value_get_string (value));
       break;
 
     default:
@@ -148,6 +162,10 @@ vik_map_source_default_get_property (GObject    *object,
       g_value_set_enum (value, priv->drawmode);
       break;
 
+    case PROP_COPYRIGHT:
+      g_value_set_string (value, priv->copyright);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -166,6 +184,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
     object_class->get_property = vik_map_source_default_get_property;
 	
 	/* Overiding methods */
+	parent_class->get_copyright =   map_source_get_copyright;
 	parent_class->get_uniq_id =    map_source_get_uniq_id;
 	parent_class->get_label =      map_source_get_label;
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
@@ -222,9 +241,26 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
                               G_PARAM_READWRITE);
     g_object_class_install_property(object_class, PROP_DRAWMODE, pspec);                                    
 
+	pspec = g_param_spec_string ("copyright",
+	                             "Copyright",
+	                             "The copyright of the map source",
+	                             NULL,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_COPYRIGHT, pspec);
+
 	g_type_class_add_private (klass, sizeof (VikMapSourceDefaultPrivate));
 
 	object_class->finalize = vik_map_source_default_finalize;
+}
+
+static const gchar *
+map_source_get_copyright (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+	
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+
+	return priv->copyright;
 }
 
 static guint8

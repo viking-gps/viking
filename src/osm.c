@@ -44,6 +44,7 @@ void osm_init () {
                                 "url", "/Tiles/tile/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
+                                "copyright", "© OpenStreetMap contributors",
                                 NULL));
   VikMapSource *mapnik_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -53,6 +54,7 @@ void osm_init () {
                                 "url", "/%d/%d/%d.png",
                                 "check-file-server-time", FALSE,
                                 "use-etag", TRUE,
+                                "copyright", "© OpenStreetMap contributors",
                                 NULL));
   VikMapSource *maplint_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -62,6 +64,7 @@ void osm_init () {
                                 "url", "/Tiles/maplint.php/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
+                                "copyright", "© OpenStreetMap contributors",
                                 NULL));
   VikMapSource *cycle_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -71,6 +74,7 @@ void osm_init () {
                                 "url", "/cycle/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
+                                "copyright", "© OpenStreetMap contributors",
                                 NULL));
   VikMapSource *wms_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_WMSC_MAP_SOURCE,
@@ -79,6 +83,7 @@ void osm_init () {
                                 "hostname", "full.wms.geofabrik.de",
                                 "url", "/std/demo_key?LAYERS=osm-full&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=&SRS=EPSG:4326&BBOX=%s,%s,%s,%s&WIDTH=256&HEIGHT=256",
                                 "check-file-server-time", FALSE,
+                                "copyright", "© OpenStreetMap contributors",
                                 NULL));
 
   maps_layer_register_map_source (osmarender_type);
