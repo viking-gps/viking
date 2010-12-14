@@ -22,6 +22,8 @@
 #include "download.h"
 
 static const gchar *map_source_get_copyright (VikMapSource *self);
+static const gchar *map_source_get_license (VikMapSource *self);
+static const gchar *map_source_get_license_url (VikMapSource *self);
 
 static guint8 map_source_get_uniq_id (VikMapSource *self);
 static const gchar *map_source_get_label (VikMapSource *self);
@@ -38,6 +40,8 @@ struct _VikMapSourceDefaultPrivate
 {
 	/* legal stuff */
 	gchar *copyright;
+	gchar *license;
+	gchar *license_url;
 	
 	guint8 uniq_id;
 	gchar *label;
@@ -59,6 +63,8 @@ enum
   PROP_TILESIZE_Y,
   PROP_DRAWMODE,
   PROP_COPYRIGHT,
+  PROP_LICENSE,
+  PROP_LICENSE_URL,
 };
 
 G_DEFINE_TYPE_EXTENDED (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
@@ -71,6 +77,8 @@ vik_map_source_default_init (VikMapSourceDefault *object)
 
   priv->label = NULL;
   priv->copyright = NULL;
+  priv->license = NULL;
+  priv->license_url = NULL;
 }
 
 static void
@@ -83,6 +91,10 @@ vik_map_source_default_finalize (GObject *object)
   priv->label = NULL;
   g_free (priv->copyright);
   priv->copyright = NULL;
+  g_free (priv->license);
+  priv->license = NULL;
+  g_free (priv->license_url);
+  priv->license_url = NULL;
 	
   G_OBJECT_CLASS (vik_map_source_default_parent_class)->finalize (object);
 }
@@ -122,6 +134,16 @@ vik_map_source_default_set_property (GObject      *object,
     case PROP_COPYRIGHT:
       g_free (priv->copyright);
       priv->copyright = g_strdup(g_value_get_string (value));
+      break;
+
+    case PROP_LICENSE:
+      g_free (priv->license);
+      priv->license = g_strdup(g_value_get_string (value));
+      break;
+
+    case PROP_LICENSE_URL:
+      g_free (priv->license_url);
+      priv->license_url = g_strdup(g_value_get_string (value));
       break;
 
     default:
@@ -166,6 +188,14 @@ vik_map_source_default_get_property (GObject    *object,
       g_value_set_string (value, priv->copyright);
       break;
 
+    case PROP_LICENSE:
+      g_value_set_string (value, priv->license);
+      break;
+
+    case PROP_LICENSE_URL:
+      g_value_set_string (value, priv->license_url);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -185,6 +215,8 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	
 	/* Overiding methods */
 	parent_class->get_copyright =   map_source_get_copyright;
+	parent_class->get_license =     map_source_get_license;
+	parent_class->get_license_url = map_source_get_license_url;
 	parent_class->get_uniq_id =    map_source_get_uniq_id;
 	parent_class->get_label =      map_source_get_label;
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
@@ -248,6 +280,20 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_COPYRIGHT, pspec);
 
+	pspec = g_param_spec_string ("license",
+	                             "License",
+	                             "The license of the map source",
+	                             NULL,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LICENSE, pspec);
+
+	pspec = g_param_spec_string ("license-url",
+	                             "License URL",
+	                             "The URL of the license of the map source",
+	                             NULL,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LICENSE_URL, pspec);
+
 	g_type_class_add_private (klass, sizeof (VikMapSourceDefaultPrivate));
 
 	object_class->finalize = vik_map_source_default_finalize;
@@ -261,6 +307,26 @@ map_source_get_copyright (VikMapSource *self)
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->copyright;
+}
+
+static const gchar *
+map_source_get_license (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+	
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+
+	return priv->license;
+}
+
+static const gchar *
+map_source_get_license_url (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+	
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+
+	return priv->license_url;
 }
 
 static guint8

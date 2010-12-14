@@ -6,6 +6,8 @@
     <property name="url">/Tiles/tile/%d/%d/%d.png</property>
     <property name="id">12</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
 <!-- Built in -->
   <object class="VikSlippyMapSource">
@@ -14,6 +16,8 @@
     <property name="url">/%d/%d/%d.png</property>
     <property name="id">13</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
 <!-- Built in -->
   <object class="VikSlippyMapSource">
@@ -22,6 +26,8 @@
     <property name="url">/Tiles/maplint.php/%d/%d/%d.png</property>
     <property name="id">14</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
 <!-- Built in -->
   <object class="VikSlippyMapSource">
@@ -30,6 +36,8 @@
     <property name="url">/cycle/%d/%d/%d.png</property>
     <property name="id">17</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
 <!-- No more active
   <object class="VikSlippyMapSource">
@@ -38,6 +46,8 @@
     <property name="url">/tiles/renderer.py/hiking/%d/%d/%d.png</property>
     <property name="id">20</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
 -->
   <object class="VikWmscMapSource">
@@ -47,6 +57,8 @@
     <property name="url">/std/demo_key?LAYERS=osm-full&amp;FORMAT=image/png&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=&amp;SRS=EPSG:4326&amp;BBOX=%s,%s,%s,%s&amp;WIDTH=256&amp;HEIGHT=256</property>
     <property name="check-file-server-time">FALSE</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <object class="VikSlippyMapSource">
     <property name="label">Letuffe/hiking</property>
@@ -54,6 +66,8 @@
     <property name="url">/tiles/renderer.py/hiking/%d/%d/%d.png</property>
     <property name="id">100</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <object class="VikSlippyMapSource">
     <property name="label">Public Transport Map </property>
@@ -61,6 +75,8 @@
     <property name="url">/tilegen/%0d/%d/%d.png</property>
     <property name="id">101</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <object class="VikSlippyMapSource">
     <property name="label">Cyclemap (Cloudmade)</property>
@@ -68,6 +84,8 @@
     <property name="url">/tiles/cycle/%d/%d/%d.png</property>
     <property name="id">102</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <object class="VikSlippyMapSource">
     <property name="label">Bridle Map</property>
@@ -75,6 +93,8 @@
     <property name="url">/nop/tiles/%d/%d/%d.png</property>
     <property name="id">103</property>
     <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <object class="VikSlippyMapSource">
     <property name="label">Yahoo Street</property>

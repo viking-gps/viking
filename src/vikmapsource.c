@@ -54,6 +54,8 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 
 	klass->get_copyright = NULL;
+	klass->get_license = NULL;
+	klass->get_license_url = NULL;
 	klass->get_uniq_id = NULL;
 	klass->get_label = NULL;
 	klass->get_tilesize_x = NULL;
@@ -87,6 +89,32 @@ vik_map_source_get_copyright (VikMapSource *self)
 	g_return_val_if_fail (klass->get_copyright != NULL, NULL);
 
 	return (*klass->get_copyright)(self);
+}
+
+const gchar *
+vik_map_source_get_license (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_license != NULL, NULL);
+
+	return (*klass->get_license)(self);
+}
+
+const gchar *
+vik_map_source_get_license_url (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_license_url != NULL, NULL);
+
+	return (*klass->get_license_url)(self);
 }
 
 guint8

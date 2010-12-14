@@ -45,6 +45,8 @@ void osm_init () {
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "copyright", "© OpenStreetMap contributors",
+                                "license", "CC-BY-SA",
+                                "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
   VikMapSource *mapnik_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -55,6 +57,8 @@ void osm_init () {
                                 "check-file-server-time", FALSE,
                                 "use-etag", TRUE,
                                 "copyright", "© OpenStreetMap contributors",
+                                "license", "CC-BY-SA",
+                                "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
   VikMapSource *maplint_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -65,6 +69,8 @@ void osm_init () {
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "copyright", "© OpenStreetMap contributors",
+                                "license", "CC-BY-SA",
+                                "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
   VikMapSource *cycle_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -75,6 +81,8 @@ void osm_init () {
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "copyright", "© OpenStreetMap contributors",
+                                "license", "CC-BY-SA",
+                                "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
   VikMapSource *wms_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_WMSC_MAP_SOURCE,
@@ -84,6 +92,8 @@ void osm_init () {
                                 "url", "/std/demo_key?LAYERS=osm-full&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=&SRS=EPSG:4326&BBOX=%s,%s,%s,%s&WIDTH=256&HEIGHT=256",
                                 "check-file-server-time", FALSE,
                                 "copyright", "© OpenStreetMap contributors",
+                                "license", "CC-BY-SA",
+                                "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
 
   maps_layer_register_map_source (osmarender_type);

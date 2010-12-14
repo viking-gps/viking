@@ -45,6 +45,7 @@
 #endif
 
 #include "globals.h"
+#include "util.h"
 #include "coords.h"
 #include "vikcoord.h"
 #include "viktreeview.h"
@@ -531,6 +532,11 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
       gchar *msg = g_strdup_printf(_("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it."), drawmode_name);
       a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vp), msg );
       g_free(msg);
+    }
+
+    if (vik_map_source_get_license (map) != NULL) {
+      a_dialog_license (VIK_GTK_WINDOW_FROM_WIDGET(vp), vik_map_source_get_label (map),
+                        vik_map_source_get_license (map), vik_map_source_get_license_url (map) );
     }
   }
 }

@@ -813,3 +813,33 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
   gtk_widget_destroy(dialog);
   return TRUE;
 }
+
+/**
+ * Display a dialog presenting the license of a map.
+ * Allow to read the license by launching a web browser.
+ */
+void a_dialog_license ( GtkWidget *parent, const gchar *map, const gchar *license, const gchar *url)
+{
+  GtkWidget *dialog = gtk_message_dialog_new (parent,
+                                 GTK_DIALOG_DESTROY_WITH_PARENT,
+                                 GTK_MESSAGE_INFO,
+                                 GTK_BUTTONS_OK,
+                                 _("The map data is licensed: %s."),
+                                 license);
+  gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+    _("The data provided by '<b>%s</b>' are licensed under the following license: <b>%s</b>.\n"
+    "Please, read the license before continuing."),
+    map, license);
+#define RESPONSE_OPEN_LICENSE 600
+  if (url != NULL) {
+    gtk_dialog_add_button (GTK_DIALOG (dialog), _("Open license"), RESPONSE_OPEN_LICENSE);
+  }
+  gint response;
+  do {
+    response = gtk_dialog_run (GTK_DIALOG (dialog));
+    if (response == RESPONSE_OPEN_LICENSE) {
+      open_url (parent, url);
+    }
+  } while (response != GTK_RESPONSE_DELETE_EVENT && response != GTK_RESPONSE_OK);
+  gtk_widget_destroy (dialog);
+}
