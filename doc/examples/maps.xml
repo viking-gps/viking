@@ -60,6 +60,16 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
+  <object class="VikTmsMapSource">
+    <property name="id">50</property>
+    <property name="label">SPOTMaps</property>
+    <property name="hostname">spotmaps.youmapps.org</property>
+    <property name="url">/spotmaps4osm/1.0.0/spotmaps4osm/%d/%d/%d.jpg</property>
+    <property name="check-file-server-time">FALSE</property>
+    <property name="copyright">© Cnes/Spot Image</property>
+    <property name="license">CC-by-SA 2.0 / ODBl</property>
+    <property name="license-url">http://www.youmapps.org/licenses/EULA-OSM-en.html</property>
+  </object>
   <object class="VikSlippyMapSource">
     <property name="label">Letuffe/hiking</property>
     <property name="hostname">beta.letuffe.org</property>

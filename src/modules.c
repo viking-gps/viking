@@ -31,6 +31,7 @@
 
 #include "modules.h"
 
+#include "spotmaps.h"
 #include "google.h"
 #include "terraserver.h"
 #include "expedia.h"
@@ -128,7 +129,10 @@ void modules_init()
 #ifdef VIK_CONFIG_GEONAMES
   geonames_init();
 #endif
-  
+#ifdef VIK_CONFIG_SPOTMAPS
+  spotmaps_init();
+#endif
+
   /* As modules are loaded, we can load configuration files */
   modules_load_config ();
 }
