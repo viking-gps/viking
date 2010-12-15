@@ -222,7 +222,7 @@ vik_gobject_builder_parse (VikGobjectBuilder *self, const gchar *filename)
 {
 	GMarkupParser xml_parser;
 	GMarkupParseContext *xml_context;
-	GError *error;
+	GError *error = NULL;
 
 	FILE *file = g_fopen (filename, "r");
 	if (file == NULL)
@@ -243,11 +243,13 @@ vik_gobject_builder_parse (VikGobjectBuilder *self, const gchar *filename)
 	while ((nb = fread (buff, sizeof(gchar), BUFSIZ, file)) > 0)
 	{
 		if (!g_markup_parse_context_parse(xml_context, buff, nb, &error))
-			printf("read_xml() : parsing error.\n");
+			g_warning("%s: parsing error: %s", __FUNCTION__,
+			          error != NULL ? error->message : "???");
 	}
 	/* cleanup */
 	if (!g_markup_parse_context_end_parse(xml_context, &error))
-		printf("read_xml() : errors occurred reading file.\n");
+		g_warning("%s: errors occurred reading file '%s': %s", __FUNCTION__, filename,
+		          error != NULL ? error->message : "???");
 	
 	g_markup_parse_context_free(xml_context);
 	fclose (file);
