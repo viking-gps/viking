@@ -2124,6 +2124,8 @@ static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
       draw_to_image_file ( vw, fn, TRUE );
       break;
     }
+    g_free(fn);
+    fn = NULL;
   }
   gtk_widget_hide ( vw->save_img_dia );
 }
