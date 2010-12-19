@@ -33,7 +33,7 @@ void spotmaps_init () {
                                  "hostname", "spotmaps.youmapps.org",
                                  "url", "/spotmaps4osm/1.0.0/spotmaps4osm/%d/%d/%d.jpg",
                                  "copyright", "© Cnes/Spot Image",
-                                 "license", "CC-by-SA 2.0 / ODBl",
+                                 "license", "Specific license",
                                  "license-url", "http://www.youmapps.org/licenses/EULA-OSM-en.html",
                                  NULL));
 
