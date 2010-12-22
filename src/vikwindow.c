@@ -2104,7 +2104,7 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
 
 static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
 {
-  const gchar *fn;
+  gchar *fn;
   if (!vw->save_img_dia) {
     vw->save_img_dia = gtk_file_chooser_dialog_new (_("Save Image"),
 				      GTK_WINDOW(vw),
