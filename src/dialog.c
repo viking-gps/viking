@@ -818,7 +818,7 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
  * Display a dialog presenting the license of a map.
  * Allow to read the license by launching a web browser.
  */
-void a_dialog_license ( GtkWidget *parent, const gchar *map, const gchar *license, const gchar *url)
+void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *license, const gchar *url)
 {
   GtkWidget *dialog = gtk_message_dialog_new (parent,
                                  GTK_DIALOG_DESTROY_WITH_PARENT,

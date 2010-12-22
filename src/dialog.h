@@ -65,5 +65,5 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
 
 GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList *track_names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg );
 
-void a_dialog_license ( GtkWidget *parent, const gchar *map, const gchar *license, const gchar *url);
+void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *license, const gchar *url);
 #endif
