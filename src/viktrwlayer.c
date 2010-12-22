@@ -3143,24 +3143,27 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
   /* put lists of trackpoints into tracks */
   iter = newlists;
   i = 1;
-  while (iter) {
-    gchar *new_tr_name;
-    VikTrack *tr;
+  // Only bother updating if the split results in new tracks
+  if (g_list_length (newlists) > 1) {
+    while (iter) {
+      gchar *new_tr_name;
+      VikTrack *tr;
 
-    tr = vik_track_new();
-    tr->visible = track->visible;
-    tr->trackpoints = (GList *)(iter->data);
+      tr = vik_track_new();
+      tr->visible = track->visible;
+      tr->trackpoints = (GList *)(iter->data);
 
-    new_tr_name = g_strdup_printf("%s #%d", (gchar *) pass_along[3], i++);
-    vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), new_tr_name, tr);
-    /*    g_print("adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
+      new_tr_name = g_strdup_printf("%s #%d", (gchar *) pass_along[3], i++);
+      vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), new_tr_name, tr);
+      /*    g_print("adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
 	  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp);*/
 
-    iter = g_list_next(iter);
+      iter = g_list_next(iter);
+    }
+    vik_trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
+    vik_layer_emit_update(VIK_LAYER(pass_along[0]));
   }
   g_list_free(newlists);
-  vik_trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
-  vik_layer_emit_update(VIK_LAYER(pass_along[0]));
 }
 
 /**
