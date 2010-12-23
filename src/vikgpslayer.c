@@ -198,6 +198,7 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
   (VikLayerFuncSublayerTooltip)         NULL,
+  (VikLayerFuncLayerTooltip)            NULL,
 
   (VikLayerFuncMarshall)		gps_layer_marshall,
   (VikLayerFuncUnmarshall)		gps_layer_unmarshall,

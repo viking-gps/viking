@@ -106,6 +106,7 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
   (VikLayerFuncSublayerTooltip)         NULL,
+  (VikLayerFuncLayerTooltip)            NULL,
 
   (VikLayerFuncMarshall)		georef_layer_marshall,
   (VikLayerFuncUnmarshall)		georef_layer_unmarshall,

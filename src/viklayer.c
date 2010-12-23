@@ -445,6 +445,13 @@ const gchar* vik_layer_sublayer_tooltip ( VikLayer *l, gint subtype, gpointer su
   return NULL;
 }
 
+const gchar* vik_layer_layer_tooltip ( VikLayer *l )
+{
+  if ( vik_layer_interfaces[l->type]->layer_tooltip )
+    return vik_layer_interfaces[l->type]->layer_tooltip ( l );
+  return NULL;
+}
+
 GdkPixbuf *vik_layer_load_icon ( gint type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );
