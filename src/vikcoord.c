@@ -27,7 +27,7 @@
 
 void vik_coord_convert(VikCoord *coord, VikCoordMode dest_mode)
 {
-  static VikCoord tmp;
+  VikCoord tmp;
   if ( coord->mode != dest_mode )
   {
     if ( dest_mode == VIK_COORD_LATLON ) {
@@ -56,7 +56,7 @@ void vik_coord_copy_convert(const VikCoord *coord, VikCoordMode dest_mode, VikCo
 
 static gdouble vik_coord_diff_safe(const VikCoord *c1, const VikCoord *c2)
 {
-  static struct LatLon a, b;
+  struct LatLon a, b;
   vik_coord_to_latlon ( c1, &a );
   vik_coord_to_latlon ( c2, &b );
   return a_coords_latlon_diff ( &a, &b );
