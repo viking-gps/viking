@@ -143,6 +143,71 @@ static void treeview_toggled_cb (GtkCellRendererToggle *cell, gchar *path_str, V
 treeview_signals[VT_ITEM_TOGGLED_SIGNAL], 0, &iter );
 }
 
+/* Inspired by GTK+ test
+ * http://git.gnome.org/browse/gtk+/tree/tests/testtooltips.c
+ */
+static gboolean
+treeview_tooltip_cb (GtkWidget  *widget,
+		     gint        x,
+		     gint        y,
+		     gboolean    keyboard_tip,
+		     GtkTooltip *tooltip,
+		     gpointer    data)
+{
+  GtkTreeIter iter;
+  GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
+  GtkTreeModel *model = gtk_tree_view_get_model (tree_view);
+  GtkTreePath *path = NULL;
+
+  char buffer[256];
+
+  if (!gtk_tree_view_get_tooltip_context (tree_view, &x, &y,
+					  keyboard_tip,
+					  &model, &path, &iter))
+    return FALSE;
+
+  /* ATM normally treeview doesn't call into layers - maybe another level of redirection required? */
+  gint rv;
+  gtk_tree_model_get (model, &iter, TYPE_COLUMN, &rv, -1);
+  if ( rv == VIK_TREEVIEW_TYPE_SUBLAYER ) {
+
+    gtk_tree_model_get (model, &iter, ITEM_DATA_COLUMN, &rv, -1);
+    // No tooltips ATM for the immediate Tracks / Waypoints tree list
+    if ( rv == 0 || rv == 1 )
+      // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS or VIK_TRW_LAYER_SUBLAYER_TRACKS
+      return FALSE;
+
+    gpointer sublayer;
+    gtk_tree_model_get (model, &iter, ITEM_POINTER_COLUMN, &sublayer, -1);
+
+    gpointer parent;
+    gtk_tree_model_get (model, &iter, ITEM_PARENT_COLUMN, &parent, -1);
+
+    g_snprintf (buffer, sizeof(buffer), "%s", vik_layer_sublayer_tooltip (VIK_LAYER(parent), rv, sublayer));
+  }
+  else if ( rv == VIK_TREEVIEW_TYPE_LAYER ) {
+    gpointer layer;
+    gtk_tree_model_get (model, &iter, ITEM_POINTER_COLUMN, &layer, -1);
+    g_snprintf (buffer, sizeof(buffer), "%s", vik_layer_layer_tooltip (VIK_LAYER(layer)));
+  }
+  else
+    return FALSE;
+
+  // Don't display null strings :)
+  if ( strncmp (buffer, "(null)", 6) == 0 ) {
+    return FALSE;
+  }
+  else {
+    gtk_tooltip_set_markup (tooltip, buffer);
+  }
+
+  gtk_tree_view_set_tooltip_row (tree_view, tooltip, path);
+
+  gtk_tree_path_free (path);
+
+  return TRUE;
+}
+
 VikTreeview *vik_treeview_new ()
 {
   return VIK_TREEVIEW ( g_object_new ( VIK_TREEVIEW_TYPE, NULL ) );
@@ -247,6 +312,9 @@ static void treeview_add_columns ( VikTreeview *vt )
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
                                    GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 
+
+  g_object_set (GTK_TREE_VIEW (vt), "has-tooltip", TRUE, NULL);
+  g_signal_connect (GTK_TREE_VIEW (vt), "query-tooltip", G_CALLBACK (treeview_tooltip_cb), vt);
 }
 
 static void select_cb(GtkTreeSelection *selection, gpointer data)
