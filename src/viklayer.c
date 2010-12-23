@@ -438,6 +438,13 @@ const gchar *vik_layer_sublayer_rename_request ( VikLayer *l, const gchar *newna
   return NULL;
 }
 
+const gchar* vik_layer_sublayer_tooltip ( VikLayer *l, gint subtype, gpointer sublayer )
+{
+  if ( vik_layer_interfaces[l->type]->sublayer_tooltip )
+    return vik_layer_interfaces[l->type]->sublayer_tooltip ( l, subtype, sublayer );
+  return NULL;
+}
+
 GdkPixbuf *vik_layer_load_icon ( gint type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );

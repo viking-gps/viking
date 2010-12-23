@@ -441,6 +441,7 @@ VikLayerInterface vik_trw_layer_interface = {
 
   (VikLayerFuncSublayerRenameRequest)   vik_trw_layer_sublayer_rename_request,
   (VikLayerFuncSublayerToggleVisible)   vik_trw_layer_sublayer_toggle_visible,
+  (VikLayerFuncSublayerTooltip)         NULL,
 
   (VikLayerFuncMarshall)                trw_layer_marshall,
   (VikLayerFuncUnmarshall)              trw_layer_unmarshall,

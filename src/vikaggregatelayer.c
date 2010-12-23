@@ -62,6 +62,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
 
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
+  (VikLayerFuncSublayerTooltip)         NULL,
 
   (VikLayerFuncMarshall)		aggregate_layer_marshall,
   (VikLayerFuncUnmarshall)		aggregate_layer_unmarshall,

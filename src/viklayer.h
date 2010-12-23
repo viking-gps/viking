@@ -144,12 +144,14 @@ typedef void          (*VikLayerFuncChangeCoordMode)       (VikLayer *,VikCoordM
 
 typedef void          (*VikLayerFuncSetMenuItemsSelection)          (VikLayer *,guint16);
 typedef guint16          (*VikLayerFuncGetMenuItemsSelection)          (VikLayer *);
+
 typedef void          (*VikLayerFuncAddMenuItems)          (VikLayer *,GtkMenu *,gpointer); /* gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerAddMenuItems)  (VikLayer *,GtkMenu *,gpointer, /* first gpointer is a VikLayersPanel */
                                                             gint,gpointer,GtkTreeIter *);
 typedef const gchar * (*VikLayerFuncSublayerRenameRequest) (VikLayer *,const gchar *,gpointer,
                                                             gint,VikViewport *,GtkTreeIter *); /* first gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerToggleVisible) (VikLayer *,gint,gpointer);
+typedef const gchar * (*VikLayerFuncSublayerTooltip)       (VikLayer *,gint,gpointer);
 
 typedef void          (*VikLayerFuncMarshall)              (VikLayer *, guint8 **, gint *);
 typedef VikLayer *    (*VikLayerFuncUnmarshall)            (guint8 *, gint, VikViewport *);
@@ -222,6 +224,7 @@ struct _VikLayerInterface {
   VikLayerFuncSublayerAddMenuItems  sublayer_add_menu_items;
   VikLayerFuncSublayerRenameRequest sublayer_rename_request;
   VikLayerFuncSublayerToggleVisible sublayer_toggle_visible;
+  VikLayerFuncSublayerTooltip       sublayer_tooltip;
 
   VikLayerFuncMarshall              marshall;
   VikLayerFuncUnmarshall            unmarshall;
@@ -277,6 +280,8 @@ void      vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint len, Vi
 const gchar *vik_layer_sublayer_rename_request ( VikLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 
 gboolean vik_layer_sublayer_toggle_visible ( VikLayer *l, gint subtype, gpointer sublayer );
+
+const gchar* vik_layer_sublayer_tooltip ( VikLayer *l, gint subtype, gpointer sublayer );
 
 /* TODO: put in layerspanel */
 GdkPixbuf *vik_layer_load_icon ( gint type );
