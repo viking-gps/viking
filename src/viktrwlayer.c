@@ -4841,7 +4841,7 @@ typedef struct {
   VikTrwLayer *vtl;
   VikViewport *vvp;
   gint x1,y1,x2,y2,x3,y3;
-  gchar* str;
+  const gchar* str;
 } new_track_move_passalong_t;
 
 /* sync and undraw, but only when we have time */
@@ -4855,11 +4855,82 @@ static gboolean ct_sync ( gpointer passalong )
   vik_viewport_draw_string (p->vvp, gdk_font_from_description (pango_font_description_from_string ("Sans 8")), p->vtl->current_track_gc, p->x3, p->y3, p->str);
   gdk_gc_set_function ( p->vtl->current_track_gc, GDK_COPY );
 
-  g_free ( p->str ) ;
+  g_free ( (gpointer) p->str ) ;
   p->vtl->ct_sync_done = TRUE;
   g_free ( p );
   return FALSE;
 }
+
+static const gchar* distance_string (gdouble distance)
+{
+  gchar str[128];
+
+  /* draw label with distance */
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+  switch (dist_units) {
+  case VIK_UNITS_DISTANCE_MILES:
+    if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
+      g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
+    } else if (distance < 1609.4) {
+      g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+    } else {
+      g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
+    }
+    break;
+  default:
+    // VIK_UNITS_DISTANCE_KILOMETRES
+    if (distance >= 1000 && distance < 100000) {
+      g_sprintf(str, "%3.2f km", distance/1000.0);
+    } else if (distance < 1000) {
+      g_sprintf(str, "%d m", (int)distance);
+    } else {
+      g_sprintf(str, "%d km", (int)distance/1000);
+    }
+    break;
+  }
+  return g_strdup (str);
+}
+
+/*
+ * Actually set the message in statusbar
+ */
+static void statusbar_write (const gchar *distance_string, gdouble elev_gain, gdouble elev_loss, VikTrwLayer *vtl )
+{
+  // Only show elevation data when track has some elevation properties
+  gchar str_gain_loss[64];
+  str_gain_loss[0] = '\0';
+  
+  if ( (elev_gain > 0.1) || (elev_loss > 0.1) ) {
+    if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_METRES )
+      g_sprintf(str_gain_loss, _(" - Gain %dm:Loss %dm"), (int)elev_gain, (int)elev_loss);
+    else
+      g_sprintf(str_gain_loss, _(" - Gain %dft:Loss %dft"), (int)VIK_METERS_TO_FEET(elev_gain), (int)VIK_METERS_TO_FEET(elev_loss));
+  }
+
+  // Write with full gain/loss information
+  gchar *msg = g_strdup_printf ( "%s%s", distance_string, str_gain_loss);
+  vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, msg );
+  g_free ( msg );
+}
+
+/*
+ * Figure out what information should be set in the statusbar and then write it
+ */
+static void update_statusbar ( VikTrwLayer *vtl )
+{
+  // Get elevation data
+  gdouble elev_gain, elev_loss;
+  vik_track_get_total_elevation_gain ( vtl->current_track, &elev_gain, &elev_loss);
+
+  /* Find out actual distance of current track */
+  gdouble distance = vik_track_get_length (vtl->current_track);
+  const gchar *str = distance_string (distance);
+
+  statusbar_write (str, elev_gain, elev_loss, vtl);
+
+  g_free ((gpointer)str);
+}
+
 
 static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp )
 {
@@ -4875,8 +4946,6 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     vik_viewport_coord_to_screen ( vvp, &(VIK_TRACKPOINT(iter->data)->coord), &x1, &y1 );
     vik_viewport_draw_line ( vvp, vtl->current_track_gc, x1, y1, event->x, event->y );
 
-    gchar str[128];
-
     /* Find out actual distance of current track */
     gdouble distance = vik_track_get_length (vtl->current_track);
 
@@ -4887,30 +4956,26 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     vik_coord_to_latlon ( &coord, &ll );
     distance = distance + vik_coord_diff( &coord, &(VIK_TRACKPOINT(iter->data)->coord));
 
-    /* draw label with distance */
-    vik_units_distance_t dist_units = a_vik_get_units_distance ();
-    switch (dist_units) {
-    case VIK_UNITS_DISTANCE_MILES:
-      if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
-	g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
-      } else if (distance < 1609.4) {
-	g_sprintf(str, "%d yards", (int)(distance*1.0936133));
-      } else {
-	g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
-      }
-      break;
-    default:
-      // VIK_UNITS_DISTANCE_KILOMETRES
-      if (distance >= 1000 && distance < 100000) {
-	g_sprintf(str, "%3.2f km", distance/1000.0);
-      } else if (distance < 1000) {
-	g_sprintf(str, "%d m", (int)distance);
-      } else {
-	g_sprintf(str, "%d km", (int)distance/1000);
-      }
-      break;
-    }
+    // Get elevation data
+    gdouble elev_gain, elev_loss;
+    vik_track_get_total_elevation_gain ( vtl->current_track, &elev_gain, &elev_loss);
 
+    // Adjust elevation data (if available) for the current pointer position
+    gdouble elev_new;
+    elev_new = (gdouble) a_dems_get_elev_by_coord ( &coord, VIK_DEM_INTERPOL_BEST );
+    if ( elev_new != VIK_DEM_INVALID_ELEVATION ) {
+      if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+	// Adjust elevation of last track point
+	if ( elev_new > VIK_TRACKPOINT(iter->data)->altitude )
+	  // Going up
+	  elev_gain += elev_new - VIK_TRACKPOINT(iter->data)->altitude;
+	else
+	  // Going down
+	  elev_loss += VIK_TRACKPOINT(iter->data)->altitude - elev_new;
+      }
+    }
+      
+    const gchar *str = distance_string (distance);
     gint xd,yd;
     /* offset from cursor a bit */
     xd = event->x + 10;
@@ -4929,7 +4994,10 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     passalong->y2 = event->y;
     passalong->x3 = xd;
     passalong->y3 = yd;
-    passalong->str = g_strdup (str);
+    passalong->str = str;
+
+    // Update statusbar with full gain/loss information
+    statusbar_write (str, elev_gain, elev_loss, vtl);
 
     /* this will sync and undraw when we have time to */
     g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, ct_sync, passalong, NULL);
@@ -4953,6 +5021,9 @@ static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event,
       g_free ( last->data );
       vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
     }
+    
+    update_statusbar ( vtl );
+
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
@@ -4975,6 +5046,8 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
       g_free ( last->data );
       vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
     }
+    update_statusbar ( vtl );
+
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
