@@ -379,7 +379,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       break;
     case VIK_UNITS_DISTANCE_MILES:
       // in 0.1 miles (copes better when zoomed in as 1 mile can be too big)
-      base = vik_coord_diff ( &left, &right ) * 0.00621371192;
+      base = VIK_METERS_TO_MILES(vik_coord_diff ( &left, &right )) * 10.0;
       break;
     default:
       base = 1; // Keep the compiler happy

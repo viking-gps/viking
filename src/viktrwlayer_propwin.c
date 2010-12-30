@@ -278,7 +278,7 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km", meters_from_start/1000.0);
       break;
     case VIK_UNITS_DISTANCE_MILES:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", meters_from_start/1600.0);
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", VIK_METERS_TO_MILES(meters_from_start) );
       break;
     default:
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
@@ -806,7 +806,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km", tr_len/1000.0 );
     break;
   case VIK_UNITS_DISTANCE_MILES:
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", tr_len/1600.0 );
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", VIK_METERS_TO_MILES(tr_len) );
     break;
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);
@@ -879,7 +879,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m", (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count ) );
     break;
   case VIK_UNITS_DISTANCE_MILES:
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.3f miles", (tp_count - seg_count) == 0 ? 0 : (tr_len / ( tp_count - seg_count )) / 1600.0 );
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.3f miles", (tp_count - seg_count) == 0 ? 0 : VIK_METERS_TO_MILES(tr_len / ( tp_count - seg_count )) );
     break;
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);

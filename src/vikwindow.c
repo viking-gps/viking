@@ -780,12 +780,12 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
       }
       break;
     case VIK_UNITS_DISTANCE_MILES:
-      if (distance >= 1600 && distance < 160000) {
-	g_sprintf(str, "%3.2f miles", distance/1600.0);
-      } else if (distance < 1600) {
+      if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
+	g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
+      } else if (distance < VIK_MILES_TO_METERS(1)) {
 	g_sprintf(str, "%d yards", (int)(distance*1.0936133));
       } else {
-	g_sprintf(str, "%d miles", (int)distance/1600);
+	g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
       }
       break;
     default:
@@ -875,7 +875,7 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
 	temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
 	break;
       case VIK_UNITS_DISTANCE_MILES:
-	temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) )* 0.000621371192);
+	temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, VIK_METERS_TO_MILES(vik_coord_diff( &coord, &(s->oldcoord) )) );
 	break;
       default:
 	temp = g_strdup_printf ("Just to keep the compiler happy");
@@ -947,7 +947,7 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
       temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
       break;
     case VIK_UNITS_DISTANCE_MILES:
-      temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) )* 0.000621371192);
+      temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, VIK_METERS_TO_MILES (vik_coord_diff( &coord, &(s->oldcoord) )) );
       break;
     default:
       temp = g_strdup_printf ("Just to keep the compiler happy");
