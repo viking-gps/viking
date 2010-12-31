@@ -236,6 +236,7 @@ static void trw_layer_goto_track_min_alt ( gpointer pass_along[5] );
 static void trw_layer_auto_track_view ( gpointer pass_along[5] );
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
+static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb(gpointer pass_along[6]);
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
@@ -2991,6 +2992,81 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
   vik_layer_emit_update(VIK_LAYER(pass_along[0]));
 }
 
+/**
+ * Split a track by the number of points as specified by the user
+ */
+static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track = (VikTrack *)g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  // Check valid track
+  GList *trps = track->trackpoints;
+  if ( !trps )
+    return;
+
+  gint points = a_dialog_get_positive_number(VIK_GTK_WINDOW_FROM_LAYER(pass_along[0]),
+					     _("Split Every Nth Point"),
+					     _("Split on every Nth point:"),
+					     250,   // Default value as per typical limited track capacity of various GPS devices
+					     2,     // Min
+					     65536, // Max
+					     5);    // Step
+  // Was a valid number returned?
+  if (!points)
+    return;
+
+  // Now split...
+  GList *iter;
+  GList *newlists = NULL;
+  GList *newtps = NULL;
+  gint count = 0;
+  iter = trps;
+
+  while (iter) {
+    /* accumulate trackpoint copies in newtps, in reverse order */
+    newtps = g_list_prepend(newtps, vik_trackpoint_copy(VIK_TRACKPOINT(iter->data)));
+    count++;
+    if (count >= points) {
+      /* flush accumulated trackpoints into new list */
+      newlists = g_list_append(newlists, g_list_reverse(newtps));
+      newtps = NULL;
+      count = 0;
+    }
+    iter = g_list_next(iter);
+  }
+
+  // If there is a remaining chunk put that into the new split list
+  // This may well be the whole track if no split points were encountered
+  if (newtps) {
+      newlists = g_list_append(newlists, g_list_reverse(newtps));
+  }
+
+  /* put lists of trackpoints into tracks */
+  iter = newlists;
+  guint i = 1;
+  // Only bother updating if the split results in new tracks
+  if (g_list_length (newlists) > 1) {
+    while (iter) {
+      gchar *new_tr_name;
+      VikTrack *tr;
+
+      tr = vik_track_new();
+      tr->visible = track->visible;
+      tr->trackpoints = (GList *)(iter->data);
+
+      new_tr_name = g_strdup_printf("%s #%d", (gchar *) pass_along[3], i++);
+      vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), new_tr_name, tr);
+
+      iter = g_list_next(iter);
+    }
+    // Remove original track and then update the display
+    vik_trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
+    vik_layer_emit_update(VIK_LAYER(pass_along[0]));
+  }
+  g_list_free(newlists);
+}
+
 /* end of split/merge routines */
 
 
@@ -3283,6 +3359,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Split By Time") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_timestamp), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Split By _Number of Points") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_n_points), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
