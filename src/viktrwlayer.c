@@ -3127,7 +3127,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
     }
     if (ts - prev_ts > thr*60) {
       /* flush accumulated trackpoints into new list */
-      newlists = g_list_prepend(newlists, g_list_reverse(newtps));
+      newlists = g_list_append(newlists, g_list_reverse(newtps));
       newtps = NULL;
     }
 
@@ -3137,7 +3137,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
     iter = g_list_next(iter);
   }
   if (newtps) {
-      newlists = g_list_prepend(newlists, g_list_reverse(newtps));
+      newlists = g_list_append(newlists, g_list_reverse(newtps));
   }
 
   /* put lists of trackpoints into tracks */
