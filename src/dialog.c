@@ -737,6 +737,55 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
   return FALSE;
 }
 
+/**
+ * Dialog to return a positive number via a spinbox within the supplied limits
+ * A return value of zero indicates the dialog was cancelled
+ */
+guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint default_num, guint min, guint max, guint step )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title_text,
+						   parent,
+						   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+						   GTK_STOCK_CANCEL,
+						   GTK_RESPONSE_REJECT,
+						   GTK_STOCK_OK,
+						   GTK_RESPONSE_ACCEPT,
+						   NULL);
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
+
+  GtkWidget *table, *spin, *label;
+  guint result = default_num;
+
+  table = gtk_table_new ( 2, 1, FALSE );
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
+
+  label = gtk_label_new (label_text);
+  spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( default_num, min, max, step, 5, 0 ), 1, 0 );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table), label, 0, 1, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), spin, 0, 1, 1, 2 );
+
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  gtk_widget_show_all ( table );
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
+  {
+    result = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(spin) );
+    gtk_widget_destroy ( dialog );
+    return result;
+  }
+
+  // Dialog cancelled
+  gtk_widget_destroy ( dialog );
+  return 0;
+}
+
 static void about_url_hook (GtkAboutDialog *about,
                             const gchar    *link,
                             gpointer        data)
