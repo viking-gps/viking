@@ -27,7 +27,17 @@
 /* initialisation */
 void bluemarble_init ()
 {
-  VikMapSource *bluemarble_type = VIK_MAP_SOURCE(vik_slippy_map_source_new_with_id( 15, "BlueMarble", "s3.amazonaws.com", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg" ));
+  VikMapSource *bluemarble_type = VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+							      "id", 15,
+							      "label", "BlueMarble",
+							      "hostname", "s3.amazonaws.com",
+							      "url", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg",
+							      "copyright", "© NASA's Earth Observatory",
+							      "license", "NASA Terms of Use",
+							      "license-url", "http://visibleearth.nasa.gov/useterms.php",
+							      NULL));
+  /* Credit/Copyright from: http://earthobservatory.nasa.gov/Features/BlueMarble/ */
+  /* BlueMarble image hosting is courtesy of the Modest Maps project: http://modestmaps.com/ */
 
   maps_layer_register_map_source (bluemarble_type);
 }
