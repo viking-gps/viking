@@ -206,5 +206,7 @@ int main( int argc, char *argv[] )
   a_dems_uninit ();
   a_preferences_uninit ();
 
+  curl_download_uninit();
+
   return 0;
 }

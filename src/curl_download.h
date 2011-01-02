@@ -27,6 +27,7 @@
 #include "download.h"
 
 void curl_download_init ();
+void curl_download_uninit ();
 int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadMapOptions *options, gboolean ftp, DownloadFileOptions *file_options, void *handle );
 int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, DownloadFileOptions *file_options, void *handle );
 void * curl_download_handle_init ();

@@ -141,6 +141,12 @@ void curl_download_init()
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 }
 
+/* This should to be called from main() to make sure thread safe */
+void curl_download_uninit()
+{
+  curl_global_cleanup();
+}
+
 int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, DownloadFileOptions *file_options, void *handle )
 {
   CURL *curl;
