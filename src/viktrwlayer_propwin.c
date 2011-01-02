@@ -89,7 +89,9 @@ typedef struct _propwidgets {
   GtkWidget *w_time_end;
   GtkWidget *w_time_dur;
   GtkWidget *w_cur_dist; /*< Current distance */
+  GtkWidget *w_cur_elevation;
   GtkWidget *w_cur_time; /*< Current time */
+  GtkWidget *w_cur_speed;
   gdouble   track_length;
   PropSaved elev_graph_saved_img;
   PropSaved speed_graph_saved_img;
@@ -361,6 +363,16 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
     }
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_dist), tmp_buf);
   }
+
+  // Show track elevation for this position - to the nearest whole number
+  if (trackpoint && widgets->w_cur_elevation) {
+    static gchar tmp_buf[20];
+    if (a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET)
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%d ft", (int)VIK_METERS_TO_FEET(trackpoint->altitude));
+    else
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%d m", (int)trackpoint->altitude);
+    gtk_label_set_text(GTK_LABEL(widgets->w_cur_elevation), tmp_buf);
+  }
 }
 
 void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
@@ -392,6 +404,35 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
 
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_time), tmp_buf);
+  }
+
+  // Show track speed for this position
+  if (trackpoint && widgets->w_cur_speed) {
+    static gchar tmp_buf[20];
+    // Even if GPS speed available (trackpoint->speed), the text will correspond to the speed map shown
+    gint ix = (gint)x;
+    // Ensure ix is inbounds
+    if (ix == widgets->profile_width)
+      ix--;
+
+    vik_units_speed_t speed_units = a_vik_get_units_speed ();
+    switch (speed_units) {
+    case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f kph"), VIK_MPS_TO_KPH(widgets->speeds[ix]));
+      break;
+    case VIK_UNITS_SPEED_MILES_PER_HOUR:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f mph"), VIK_MPS_TO_MPH(widgets->speeds[ix]));
+      break;
+    case VIK_UNITS_SPEED_KNOTS:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f knots"), VIK_MPS_TO_KNOTS(widgets->speeds[ix]));
+      break;
+    default:
+      // VIK_UNITS_SPEED_METRES_PER_SECOND:
+      // No need to convert as already in m/s
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f m/s"), widgets->speeds[ix]);
+      break;
+    }
+    gtk_label_set_text(GTK_LABEL(widgets->w_cur_speed), tmp_buf);
   }
 }
 
@@ -903,17 +944,26 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
   }
 }
 
+/**
+ *  Create the widgets for the given graph tab
+ */
 static GtkWidget *create_graph_page ( GtkWidget *graph,
 				      const gchar *markup,
-				      GtkWidget *value)
+				      GtkWidget *value,
+				      const gchar *markup2,
+				      GtkWidget *value2)
 {
   GtkWidget *hbox = gtk_hbox_new ( FALSE, 10 );
   GtkWidget *vbox = gtk_vbox_new ( FALSE, 10 );
   GtkWidget *label = gtk_label_new (NULL);
+  GtkWidget *label2 = gtk_label_new (NULL);
   gtk_box_pack_start (GTK_BOX(vbox), graph, FALSE, FALSE, 0);
   gtk_label_set_markup ( GTK_LABEL(label), markup );
+  gtk_label_set_markup ( GTK_LABEL(label2), markup2 );
   gtk_box_pack_start (GTK_BOX(hbox), label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), value, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(hbox), label2, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(hbox), value2, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
   
   return vbox;
@@ -1150,14 +1200,20 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   if ( widgets->elev_box ) {
     GtkWidget *page = NULL;
     widgets->w_cur_dist = gtk_label_new(_("No Data"));
-    page = create_graph_page (widgets->elev_box, _("<b>Track Distance:</b>"), widgets->w_cur_dist );
+    widgets->w_cur_elevation = gtk_label_new(_("No Data"));
+    page = create_graph_page (widgets->elev_box,
+			      _("<b>Track Distance:</b>"), widgets->w_cur_dist,
+			      _("<b>Track Height:</b>"), widgets->w_cur_elevation);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
   }
 
   if ( widgets->speed_box ) {
     GtkWidget *page = NULL;
     widgets->w_cur_time = gtk_label_new(_("No Data"));
-    page = create_graph_page (widgets->speed_box, _("<b>Track Time:</b>"), widgets->w_cur_time );
+    widgets->w_cur_speed = gtk_label_new(_("No Data"));
+    page = create_graph_page (widgets->speed_box,
+			      _("<b>Track Time:</b>"), widgets->w_cur_time,
+			      _("<b>Track Speed:</b>"), widgets->w_cur_speed);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
   }
 
