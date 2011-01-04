@@ -54,6 +54,9 @@
 
 #define PROFILE_WIDTH 600
 #define PROFILE_HEIGHT 300
+
+#define PROPWIN_LABEL_FONT "Sans 7"
+
 #define MIN_ALT_DIFF 100.0
 #define MIN_SPEED_DIFF 5.0
 
@@ -64,6 +67,7 @@ typedef struct _propsaved {
 } PropSaved;
 
 typedef struct _propwidgets {
+  gboolean  configure_dialog;
   VikTrwLayer *vtl;
   VikTrack *tr;
   VikLayersPanel *vlp;
@@ -358,49 +362,56 @@ static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_g
   }
 }
 
-GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpointer vlp, VikViewport *vvp, PropWidgets *widgets, gdouble *min_alt, gdouble *max_alt)
+/**
+ * Draw just the height profile image
+ */
+static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 {
+  GtkWidget *window;
   GdkPixmap *pix;
-  GtkWidget *image;
-  gdouble *altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+  gdouble *altitudes;
   gdouble mina, maxa;
-  GtkWidget *eventbox;
-  gpointer *pass_along;
   guint i;
 
-  if ( altitudes == NULL ) {
-    *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
-    return NULL;
-  }
+  GdkGC *no_alt_info;
+  GdkGC *dem_alt_gc;
+  GdkGC *gps_speed_gc;
 
-  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
-
-  GdkGC *no_alt_info = gdk_gc_new ( window->window );
-  GdkGC *dem_alt_gc = gdk_gc_new ( window->window );
-  GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
   GdkColor color;
 
+  altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+
+  if ( altitudes == NULL )
+    return;
+
+  minmax_array(altitudes, &mina, &maxa, TRUE);
+  maxa = maxa + ((maxa - mina) * 0.25); // Make visible window a bit bigger than highest point
+
+  window = gtk_widget_get_toplevel (widgets->elev_box);
+
+  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+
+  gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
+
+  no_alt_info = gdk_gc_new ( window->window );
   gdk_color_parse ( "yellow", &color );
   gdk_gc_set_rgb_fg_color ( no_alt_info, &color);
+
+  dem_alt_gc = gdk_gc_new ( window->window );
   gdk_color_parse ( "green", &color );
   gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
+
+  gps_speed_gc = gdk_gc_new ( window->window );
   gdk_color_parse ( "red", &color );
   gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
-
-  minmax_array(altitudes, min_alt, max_alt, TRUE);
-  mina = *min_alt;
-  maxa = *max_alt + ((*max_alt - *min_alt) * 0.25);
-  
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
 		     TRUE, 0, 0, MARGIN, PROFILE_HEIGHT);
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
 		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
-
+  
   /* draw grid */
-#define LABEL_FONT "Sans 7"
   vik_units_height_t height_units = a_vik_get_units_height ();
   for (i=0; i<=LINES; i++) {
     PangoFontDescription *pfd;
@@ -409,7 +420,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (LABEL_FONT);
+    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
     switch (height_units) {
@@ -448,56 +459,40 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
 
-
-
   g_object_unref ( G_OBJECT(pix) );
-  g_free ( altitudes );
   g_object_unref ( G_OBJECT(no_alt_info) );
   g_object_unref ( G_OBJECT(dem_alt_gc) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
+  g_free ( altitudes );
 
-  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
-  pass_along[0] = tr;
-  pass_along[1] = vlp;
-  pass_along[2] = vvp;
-  pass_along[3] = widgets;
-
-  eventbox = gtk_event_box_new ();
-  g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
-  g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_profile_move), pass_along );
-  g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
-  gtk_container_add ( GTK_CONTAINER(eventbox), image );
-  gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK
-                         | GDK_POINTER_MOTION_MASK
-                         | GDK_POINTER_MOTION_HINT_MASK);
-
-  return eventbox;
 }
 
-
-GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp, VikViewport *vvp, PropWidgets *widgets)
+/**
+ * Draw just the speed (velocity)/time image
+ */
+static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 {
+  GtkWidget *window;
   GdkPixmap *pix;
-  GtkWidget *image;
   gdouble mins, maxs;
   guint i;
-  GtkWidget *eventbox;
-  gpointer *pass_along;
-
-  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
-  pass_along[0] = tr;
-  pass_along[1] = vlp;
-  pass_along[2] = vvp;
-  pass_along[3] = widgets;
 
   gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
-  if ( speeds == NULL ) {
-    g_free(pass_along);
-    return NULL;
-  }
+  if ( speeds == NULL )
+    return;
+
+  GdkGC *gps_speed_gc;
+  GdkColor color;
+
+  window = gtk_widget_get_toplevel (widgets->speed_box);
 
   pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
+
+  gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
+
+  gps_speed_gc = gdk_gc_new ( window->window );
+  gdk_color_parse ( "red", &color );
+  gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
   minmax_array(speeds, &mins, &maxs, FALSE);
   if (mins < 0.0)
@@ -513,28 +508,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
 		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
 
-#if 0
-  /* XXX this can go out, it's just a helpful dev tool */
-  {
-    int j;
-    GdkGC **colors[8] = { window->style->bg_gc, window->style->fg_gc, 
-			 window->style->light_gc, 
-			 window->style->dark_gc, window->style->mid_gc, 
-			 window->style->text_gc, window->style->base_gc,
-			 window->style->text_aa_gc };
-    for (i=0; i<5; i++) {
-      for (j=0; j<8; j++) {
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), colors[j][i],
-			   TRUE, i*20, j*20, 20, 20);
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc,
-			   FALSE, i*20, j*20, 20, 20);
-      }
-    }
-  }
-#else
-
   /* draw grid */
-#define LABEL_FONT "Sans 7"
   for (i=0; i<=LINES; i++) {
     PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
@@ -542,7 +516,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (LABEL_FONT);
+    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
@@ -580,14 +554,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   for ( i = 0; i < PROFILE_WIDTH; i++ )
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(speeds[i]-mins)/(maxs-mins) );
-#endif
 
-
-  GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
-  GdkColor color;
-
-  gdk_color_parse ( "red", &color );
-  gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
   time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   time_t dur =  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp - beg_time;
@@ -608,19 +575,143 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   g_object_unref ( G_OBJECT(gps_speed_gc) );
   g_free ( speeds );
 
+}
+#undef LINES
+
+
+/**
+ * Configure the profile & speed/time images
+ */
+static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, gpointer *pass_along )
+{
+  VikTrack *tr = pass_along[0];
+  PropWidgets *widgets = pass_along[2];
+
+  // ATM we receive configure_events when the dialog is moved and so no further action is necessary
+  if ( !widgets->configure_dialog )
+    return FALSE;
+
+  widgets->configure_dialog = FALSE;
+
+  // Draw graphs even if they are not visible
+
+  GList *child = NULL;
+  // Draw elevations
+  if (widgets->elev_box != NULL) {
+    child = gtk_container_get_children(GTK_CONTAINER(widgets->elev_box));
+    draw_elevations (GTK_WIDGET(child->data), tr, widgets );
+    g_list_free(child);
+  }
+
+  // Draw speeds
+  if (widgets->speed_box != NULL) {
+    child = gtk_container_get_children(GTK_CONTAINER(widgets->speed_box));
+    draw_vt (GTK_WIDGET(child->data), tr, widgets );
+    g_list_free(child);
+  }
+    
+  return FALSE;
+}
+
+/**
+ * Create height profile widgets including the image and callbacks
+ */
+GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpointer vlp, VikViewport *vvp, PropWidgets *widgets, gdouble *min_alt, gdouble *max_alt)
+{
+  GdkPixmap *pix;
+  GtkWidget *image;
+  gdouble *altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+  GtkWidget *eventbox;
+  gpointer *pass_along;
+
+  if ( altitudes == NULL ) {
+    *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
+    return NULL;
+  }
+
+  minmax_array(altitudes, min_alt, max_alt, TRUE);
+  
+  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  image = gtk_image_new_from_pixmap ( pix, NULL );
+
+  g_free ( altitudes );
+  g_object_unref ( G_OBJECT(pix) );
+
+  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
+  pass_along[0] = tr;
+  pass_along[1] = vlp;
+  pass_along[2] = vvp;
+  pass_along[3] = widgets;
+
+  eventbox = gtk_event_box_new ();
+  g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), pass_along );
+  g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_profile_move), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
+  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_STRUCTURE_MASK);
+
+  return eventbox;
+}
+
+/**
+ * Create speed/time widgets including the image and callbacks
+ */
+GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp, VikViewport *vvp, PropWidgets *widgets)
+{
+  GdkPixmap *pix;
+  GtkWidget *image;
+  GtkWidget *eventbox;
+  gpointer *pass_along;
+
+  gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  if ( speeds == NULL )
+    return NULL;
+
+  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
+  pass_along[0] = tr;
+  pass_along[1] = vlp;
+  pass_along[2] = vvp;
+  pass_along[3] = widgets;
+
+  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  image = gtk_image_new_from_pixmap ( pix, NULL );
+
+#if 0
+  /* XXX this can go out, it's just a helpful dev tool */
+  {
+    int j;
+    GdkGC **colors[8] = { window->style->bg_gc,
+			  window->style->fg_gc,
+			  window->style->light_gc,
+			  window->style->dark_gc,
+			  window->style->mid_gc,
+			  window->style->text_gc,
+			  window->style->base_gc,
+			  window->style->text_aa_gc };
+    for (i=0; i<5; i++) {
+      for (j=0; j<8; j++) {
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), colors[j][i],
+			   TRUE, i*20, j*20, 20, 20);
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc,
+			   FALSE, i*20, j*20, 20, 20);
+      }
+    }
+  }
+#endif
+
+  g_free ( speeds );
+  g_object_unref ( G_OBJECT(pix) );
+
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_vt_click), pass_along );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_vt_move), pass_along );
   g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
   gtk_container_add ( GTK_CONTAINER(eventbox), image );
-  gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK
-                         | GDK_POINTER_MOTION_MASK
-                         | GDK_POINTER_MOTION_HINT_MASK);
+  gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
 
   return eventbox;
 }
 #undef MARGIN
-#undef LINES
 
 static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widgets)
 {
@@ -780,18 +871,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->dialog = dialog;
   g_free(title);
   g_signal_connect(dialog, "response", G_CALLBACK(propwin_response_cb), widgets);
-  //fprintf(stderr, "DEBUG: dialog=0x%p\n", dialog);
   GtkTable *table;
   gdouble tr_len;
   guint32 tp_count, seg_count;
 
   gdouble min_alt, max_alt;
-  GtkWidget *profile = vik_trw_layer_create_profile(GTK_WIDGET(parent),tr, vlp, vvp, widgets, &min_alt, &max_alt);
-  GtkWidget *vtdiag = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp, vvp, widgets);
+  widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), tr, vlp, vvp, widgets, &min_alt, &max_alt);
+  widgets->speed_box = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp, vvp, widgets);
   GtkWidget *graphs = gtk_notebook_new();
-
-  widgets->elev_box = profile;
-  widgets->speed_box = vtdiag;
 
   GtkWidget *content[20];
   int cnt;
@@ -988,17 +1075,17 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
 
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Statistics")));
 
-  if ( profile ) {
+  if ( widgets->elev_box ) {
     GtkWidget *page = NULL;
     widgets->w_cur_dist = gtk_label_new(_("No Data"));
-    page = create_graph_page (profile, _("<b>Track Distance:</b>"), widgets->w_cur_dist );
+    page = create_graph_page (widgets->elev_box, _("<b>Track Distance:</b>"), widgets->w_cur_dist );
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
   }
 
-  if ( vtdiag ) {
+  if ( widgets->speed_box ) {
     GtkWidget *page = NULL;
     widgets->w_cur_time = gtk_label_new(_("No Data"));
-    page = create_graph_page (vtdiag, _("<b>Track Time:</b>"), widgets->w_cur_time );
+    page = create_graph_page (widgets->speed_box, _("<b>Track Time:</b>"), widgets->w_cur_time );
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
   }
 
@@ -1009,6 +1096,16 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT, FALSE);
   if (vik_track_get_dup_point_count(tr) <= 0)
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_DEL_DUP, FALSE);
+
+  gpointer *pass_along;
+  pass_along = g_malloc ( sizeof(gpointer) * 3 ); /* FIXME: mem leak -- never be freed */
+  pass_along[0] = tr;
+  pass_along[1] = vlp;
+  pass_along[2] = widgets;
+
+  // On dialog realization configure_event casues the graphs to be initially drawn
+  widgets->configure_dialog = TRUE;
+  g_signal_connect ( G_OBJECT(dialog), "configure-event", G_CALLBACK (configure_event), pass_along);
 
   vik_track_set_property_dialog(tr, dialog);
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
