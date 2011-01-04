@@ -109,17 +109,17 @@ static void prop_widgets_free(PropWidgets *widgets)
   g_free(widgets);
 }
 
-static void minmax_alt(const gdouble *altitudes, gdouble *min, gdouble *max)
+static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gboolean NO_ALT_TEST)
 {
   *max = -1000;
   *min = 20000;
   guint i;
   for ( i=0; i < PROFILE_WIDTH; i++ ) {
-    if ( altitudes[i] != VIK_DEFAULT_ALTITUDE ) {
-      if ( altitudes[i] > *max )
-        *max = altitudes[i];
-      if ( altitudes[i] < *min )
-        *min = altitudes[i];
+    if ( NO_ALT_TEST || (array[i] != VIK_DEFAULT_ALTITUDE) ) {
+      if ( array[i] > *max )
+        *max = array[i];
+      if ( array[i] < *min )
+        *min = array[i];
     }
   }
 }
@@ -389,7 +389,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
   gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
 
-  minmax_alt(altitudes, min_alt, max_alt);
+  minmax_array(altitudes, min_alt, max_alt, TRUE);
   mina = *min_alt;
   maxa = *max_alt + ((*max_alt - *min_alt) * 0.25);
   
@@ -499,7 +499,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
-  minmax_alt(speeds, &mins, &maxs);
+  minmax_array(speeds, &mins, &maxs, FALSE);
   if (mins < 0.0)
     mins = 0; /* splines sometimes give negative speeds */
   maxs = maxs + ((maxs - mins) * 0.1);
