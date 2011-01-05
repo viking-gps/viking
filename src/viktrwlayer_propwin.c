@@ -94,6 +94,7 @@ typedef struct _propwidgets {
   GtkWidget *elev_box;
   GtkWidget *speed_box;
   VikTrackpoint *marker_tp;
+  gboolean  is_marker_drawn;
 } PropWidgets;
 
 static PropWidgets *prop_widgets_new()
@@ -160,7 +161,15 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_wid
   return trackpoint;
 }
 
-static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, GdkGC *gc, PropSaved *saved_img)
+/**
+ * Returns whether the marker was drawn or not
+ */
+static void draw_graph_mark (GtkWidget *image,
+			     gdouble event_x,
+			     gint img_width,
+			     GdkGC *gc,
+			     PropSaved *saved_img,
+			     gboolean *marker_drawn)
 {
   GdkPixmap *pix = NULL;
   /* the pixmap = margin + graph area */
@@ -169,7 +178,7 @@ static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, G
   // fprintf(stderr, "event_x=%f img_width=%d x=%f\n", event_x, img_width, x);
 
   gtk_image_get_pixmap(GTK_IMAGE(image), &pix, NULL);
-	/* Restore previously saved image */
+  /* Restore previously saved image */
   if (saved_img->saved) {
     gdk_draw_image(GDK_DRAWABLE(pix), gc, saved_img->img, 0, 0,
         saved_img->pos, 0, -1, -1);
@@ -179,7 +188,7 @@ static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, G
         saved_img->img->width, saved_img->img->height);
   }
   if ((x >= MARGIN) && (x < (PROFILE_WIDTH + MARGIN))) {
-		/* Save part of the image */
+    /* Save part of the image */
     if (saved_img->img)
       gdk_drawable_copy_to_image(GDK_DRAWABLE(pix), saved_img->img,
           x, 0, 0, 0, saved_img->img->width, saved_img->img->height);
@@ -191,7 +200,10 @@ static void draw_graph_mark(GtkWidget *image, gdouble event_x, gint img_width, G
     gdk_draw_line (GDK_DRAWABLE(pix), gc, x, 0, x, image->allocation.height);
     /* redraw the area which contains the line, saved_width is just convenient */
     gtk_widget_queue_draw_area(image, event_x, 0, 1, PROFILE_HEIGHT);
+    *marker_drawn = TRUE;
   }
+  else
+    *marker_drawn = FALSE;
 }
 
 static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpointer *pass_along, gboolean is_vt_graph )
@@ -205,11 +217,15 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
 
   VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, widgets->vtl, vlp, vvp, tr, is_vt_graph);
-  draw_graph_mark(image, event->x, event_box->allocation.width, window->style->black_gc,
-      is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img);
+  draw_graph_mark(image,
+		  event->x,
+		  event_box->allocation.width,
+		  window->style->black_gc,
+		  is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img,
+		  &widgets->is_marker_drawn);
   g_list_free(child);
   widgets->marker_tp = trackpoint;
-  gtk_dialog_set_response_sensitive(GTK_DIALOG(widgets->dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, TRUE);
+  gtk_dialog_set_response_sensitive(GTK_DIALOG(widgets->dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, widgets->is_marker_drawn);
 
   /* draw on the other graph */
   if (trackpoint == NULL || widgets->elev_box == NULL || widgets->speed_box == NULL)
@@ -242,8 +258,12 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   }
   if (!isnan(pc)) {
     x2 = pc * PROFILE_WIDTH + MARGIN + (event_box->allocation.width/2 - PROFILE_WIDTH/2 - MARGIN/2);
-    draw_graph_mark(other_image, x2, event_box->allocation.width, window->style->black_gc,
-      is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img);
+    draw_graph_mark(other_image,
+		    x2,
+		    event_box->allocation.width,
+		    window->style->black_gc,
+		    is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img,
+		    &widgets->is_marker_drawn);
   }
 
   g_list_free(other_child);
