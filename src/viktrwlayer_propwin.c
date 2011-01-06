@@ -93,6 +93,8 @@ typedef struct _propwidgets {
   PropSaved speed_graph_saved_img;
   GtkWidget *elev_box;
   GtkWidget *speed_box;
+  gdouble   *altitudes;
+  gdouble   *speeds;
   VikTrackpoint *marker_tp;
   gboolean  is_marker_drawn;
 } PropWidgets;
@@ -106,11 +108,14 @@ static PropWidgets *prop_widgets_new()
 
 static void prop_widgets_free(PropWidgets *widgets)
 {
-
   if (widgets->elev_graph_saved_img.img)
     g_object_unref(widgets->elev_graph_saved_img.img);
   if (widgets->speed_graph_saved_img.img)
     g_object_unref(widgets->speed_graph_saved_img.img);
+  if (widgets->altitudes)
+    g_free(widgets->altitudes);
+  if (widgets->speeds)
+    g_free(widgets->speeds);
   g_free(widgets);
 }
 
@@ -389,7 +394,6 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 {
   GtkWidget *window;
   GdkPixmap *pix;
-  gdouble *altitudes;
   gdouble mina, maxa;
   guint i;
 
@@ -399,12 +403,16 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
   GdkColor color;
 
-  altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+  // Free previous allocation
+  if ( widgets->altitudes )
+    g_free ( widgets->altitudes );
 
-  if ( altitudes == NULL )
+  widgets->altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+
+  if ( widgets->altitudes == NULL )
     return;
 
-  minmax_array(altitudes, &mina, &maxa, TRUE);
+  minmax_array(widgets->altitudes, &mina, &maxa, TRUE);
   maxa = maxa + ((maxa - mina) * 0.25); // Make visible window a bit bigger than highest point
 
   window = gtk_widget_get_toplevel (widgets->elev_box);
@@ -467,12 +475,12 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
   /* draw elevations */
   for ( i = 0; i < PROFILE_WIDTH; i++ )
-    if ( altitudes[i] == VIK_DEFAULT_ALTITUDE ) 
+    if ( widgets->altitudes[i] == VIK_DEFAULT_ALTITUDE )
       gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, 
 		      i + MARGIN, 0, i + MARGIN, PROFILE_HEIGHT );
     else 
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
-		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(altitudes[i]-mina)/(maxa-mina) );
+		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(widgets->altitudes[i]-mina)/(maxa-mina) );
 
   draw_dem_alt_speed_dist(tr, GDK_DRAWABLE(pix), dem_alt_gc, gps_speed_gc, mina, maxa - mina, PROFILE_WIDTH, PROFILE_HEIGHT, MARGIN);
 
@@ -483,7 +491,6 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   g_object_unref ( G_OBJECT(no_alt_info) );
   g_object_unref ( G_OBJECT(dem_alt_gc) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
-  g_free ( altitudes );
 
 }
 
@@ -497,8 +504,12 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   gdouble mins, maxs;
   guint i;
 
-  gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
-  if ( speeds == NULL )
+  // Free previous allocation
+  if ( widgets->speeds )
+    g_free ( widgets->speeds );
+
+  widgets->speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  if ( widgets->speeds == NULL )
     return;
 
   GdkGC *gps_speed_gc;
@@ -514,7 +525,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   gdk_color_parse ( "red", &color );
   gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
-  minmax_array(speeds, &mins, &maxs, FALSE);
+  minmax_array(widgets->speeds, &mins, &maxs, FALSE);
   if (mins < 0.0)
     mins = 0; /* splines sometimes give negative speeds */
   maxs = maxs + ((maxs - mins) * 0.1);
@@ -573,7 +584,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   /* draw speeds */
   for ( i = 0; i < PROFILE_WIDTH; i++ )
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
-		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(speeds[i]-mins)/(maxs-mins) );
+		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(widgets->speeds[i]-mins)/(maxs-mins) );
 
 
   time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
@@ -593,7 +604,6 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   g_object_unref ( G_OBJECT(pix) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
-  g_free ( speeds );
 
 }
 #undef LINES
@@ -640,21 +650,22 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
 {
   GdkPixmap *pix;
   GtkWidget *image;
-  gdouble *altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
   GtkWidget *eventbox;
   gpointer *pass_along;
 
-  if ( altitudes == NULL ) {
+  // First allocation
+  widgets->altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+
+  if ( widgets->altitudes == NULL ) {
     *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
     return NULL;
   }
 
-  minmax_array(altitudes, min_alt, max_alt, TRUE);
+  minmax_array(widgets->altitudes, min_alt, max_alt, TRUE);
   
   pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
-  g_free ( altitudes );
   g_object_unref ( G_OBJECT(pix) );
 
   pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
@@ -683,8 +694,9 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   GtkWidget *eventbox;
   gpointer *pass_along;
 
-  gdouble *speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
-  if ( speeds == NULL )
+  // First allocation
+  widgets->speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  if ( widgets->speeds == NULL )
     return NULL;
 
   pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
@@ -719,7 +731,6 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   }
 #endif
 
-  g_free ( speeds );
   g_object_unref ( G_OBJECT(pix) );
 
   eventbox = gtk_event_box_new ();
