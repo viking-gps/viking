@@ -87,7 +87,6 @@ struct _VikViewport {
 
   /* Wether or not display OSD info */
   gboolean draw_scale;
-  gboolean draw_copyright;
   gboolean draw_centermark;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
@@ -196,7 +195,6 @@ static void viewport_init ( VikViewport *vvp )
   vvp->copyrights = NULL;
 
   vvp->draw_scale = TRUE;
-  vvp->draw_copyright = TRUE;
   vvp->draw_centermark = TRUE;
 
   vvp->trigger = NULL;
@@ -471,22 +469,9 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
   }
 }
 
-void vik_viewport_set_draw_copyright ( VikViewport *vvp, gboolean draw_copyright )
-{
-  vvp->draw_copyright = draw_copyright;
-}
-
-gboolean vik_viewport_get_draw_copyright ( VikViewport *vvp )
-{
-  return vvp->draw_copyright;
-}
-
 void vik_viewport_draw_copyright ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
-
-  if ( !vvp->draw_copyright )
-    return;
 
   gint PAD = 10;
   PangoFontDescription *pfd;

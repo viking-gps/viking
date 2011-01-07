@@ -142,8 +142,6 @@ void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright );
 void vik_viewport_draw_scale ( VikViewport *vvp );
 void vik_viewport_set_draw_scale ( VikViewport *vvp, gboolean draw_scale );
 gboolean vik_viewport_get_draw_scale ( VikViewport *vvp );
-void vik_viewport_set_draw_copyright ( VikViewport *vvp, gboolean draw_copyright );
-gboolean vik_viewport_get_draw_copyright ( VikViewport *vvp );
 void vik_viewport_draw_copyright ( VikViewport *vvp );
 void vik_viewport_draw_centermark ( VikViewport *vvp );
 void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark );
