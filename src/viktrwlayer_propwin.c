@@ -52,8 +52,8 @@
 #include "vikaggregatelayer.h"
 #include "viklayerspanel.h" /* ugh */
 
-#define PROFILE_WIDTH 600
-#define PROFILE_HEIGHT 300
+#define PROPWIN_PROFILE_WIDTH 600
+#define PROPWIN_PROFILE_HEIGHT 300
 
 #define PROPWIN_LABEL_FONT "Sans 7"
 
@@ -72,6 +72,8 @@ typedef struct _propwidgets {
   VikTrack *tr;
   VikLayersPanel *vlp;
   gchar *track_name;
+  gint      profile_width;
+  gint      profile_height;
   GtkWidget *dialog;
   GtkWidget *w_comment;
   GtkWidget *w_track_length;
@@ -119,7 +121,7 @@ static void prop_widgets_free(PropWidgets *widgets)
   g_free(widgets);
 }
 
-static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gboolean NO_ALT_TEST)
+static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gboolean NO_ALT_TEST, gint PROFILE_WIDTH)
 {
   *max = -1000;
   *min = 20000;
@@ -136,7 +138,14 @@ static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gbool
 
 #define MARGIN 70
 #define LINES 5
-static VikTrackpoint *set_center_at_graph_position(gdouble event_x, gint img_width,  VikTrwLayer *vtl, VikLayersPanel *vlp, VikViewport *vvp, VikTrack *tr, gboolean time_base)
+static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
+						   gint img_width,
+						   VikTrwLayer *vtl,
+						   VikLayersPanel *vlp,
+						   VikViewport *vvp,
+						   VikTrack *tr,
+						   gboolean time_base,
+						   gint PROFILE_WIDTH)
 {
   VikTrackpoint *trackpoint;
   gdouble x = event_x - img_width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
@@ -174,6 +183,8 @@ static void draw_graph_mark (GtkWidget *image,
 			     gint img_width,
 			     GdkGC *gc,
 			     PropSaved *saved_img,
+			     gint PROFILE_WIDTH,
+			     gint PROFILE_HEIGHT,
 			     gboolean *marker_drawn)
 {
   GdkPixmap *pix = NULL;
@@ -221,12 +232,14 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   GtkWidget *image = GTK_WIDGET(child->data);
   GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
 
-  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, widgets->vtl, vlp, vvp, tr, is_vt_graph);
+  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, widgets->vtl, vlp, vvp, tr, is_vt_graph, widgets->profile_width);
   draw_graph_mark(image,
 		  event->x,
 		  event_box->allocation.width,
 		  window->style->black_gc,
 		  is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img,
+		  widgets->profile_width,
+		  widgets->profile_height,
 		  &widgets->is_marker_drawn);
   g_list_free(child);
   widgets->marker_tp = trackpoint;
@@ -262,12 +275,14 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
     pc = (gdouble)(trackpoint->timestamp - t_start)/t_total;
   }
   if (!isnan(pc)) {
-    x2 = pc * PROFILE_WIDTH + MARGIN + (event_box->allocation.width/2 - PROFILE_WIDTH/2 - MARGIN/2);
+    x2 = pc * widgets->profile_width + MARGIN + (event_box->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
     draw_graph_mark(other_image,
 		    x2,
 		    event_box->allocation.width,
 		    window->style->black_gc,
 		    is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img,
+		    widgets->profile_width,
+		    widgets->profile_height,
 		    &widgets->is_marker_drawn);
   }
 
@@ -299,14 +314,14 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - image->allocation.width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
+  gdouble x = mouse_x - image->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
-  if (x > PROFILE_WIDTH)
-    x = PROFILE_WIDTH;
+  if (x > widgets->profile_width)
+    x = widgets->profile_width;
 
   gdouble meters_from_start;
-  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / PROFILE_WIDTH, &meters_from_start );
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( tr, (gdouble) x / widgets->profile_width, &meters_from_start );
   if (trackpoint && widgets->w_cur_dist) {
     static gchar tmp_buf[20];
     vik_units_distance_t dist_units = a_vik_get_units_distance ();
@@ -336,14 +351,14 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - image->allocation.width / 2 + PROFILE_WIDTH / 2 - MARGIN / 2;
+  gdouble x = mouse_x - image->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
-  if (x > PROFILE_WIDTH)
-    x = PROFILE_WIDTH;
+  if (x > widgets->profile_width)
+    x = widgets->profile_width;
 
   time_t seconds_from_start;
-  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / PROFILE_WIDTH, &seconds_from_start );
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_time) {
     static gchar tmp_buf[20];
     guint h, m, s;
@@ -407,17 +422,17 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   if ( widgets->altitudes )
     g_free ( widgets->altitudes );
 
-  widgets->altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+  widgets->altitudes = vik_track_make_elevation_map ( tr, widgets->profile_width );
 
   if ( widgets->altitudes == NULL )
     return;
 
-  minmax_array(widgets->altitudes, &mina, &maxa, TRUE);
+  minmax_array(widgets->altitudes, &mina, &maxa, TRUE, widgets->profile_width);
   maxa = maxa + ((maxa - mina) * 0.25); // Make visible window a bit bigger than highest point
 
   window = gtk_widget_get_toplevel (widgets->elev_box);
 
-  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
@@ -435,9 +450,9 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
-		     TRUE, 0, 0, MARGIN, PROFILE_HEIGHT);
+		     TRUE, 0, 0, MARGIN, widgets->profile_height);
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
-		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
+		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
   
   /* draw grid */
   vik_units_height_t height_units = a_vik_get_units_height ();
@@ -465,27 +480,27 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
     gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
-		    CLAMP((int)i*PROFILE_HEIGHT/LINES - h/2, 0, PROFILE_HEIGHT-h), pl);
+		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
     gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
-		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
+		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
   }
 
   /* draw elevations */
-  for ( i = 0; i < PROFILE_WIDTH; i++ )
+  for ( i = 0; i < widgets->profile_width; i++ )
     if ( widgets->altitudes[i] == VIK_DEFAULT_ALTITUDE )
       gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, 
-		      i + MARGIN, 0, i + MARGIN, PROFILE_HEIGHT );
+		      i + MARGIN, 0, i + MARGIN, widgets->profile_height );
     else 
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
-		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(widgets->altitudes[i]-mina)/(maxa-mina) );
+		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->altitudes[i]-mina)/(maxa-mina) );
 
-  draw_dem_alt_speed_dist(tr, GDK_DRAWABLE(pix), dem_alt_gc, gps_speed_gc, mina, maxa - mina, PROFILE_WIDTH, PROFILE_HEIGHT, MARGIN);
+  draw_dem_alt_speed_dist(tr, GDK_DRAWABLE(pix), dem_alt_gc, gps_speed_gc, mina, maxa - mina, widgets->profile_width, widgets->profile_height, MARGIN);
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
   g_object_unref ( G_OBJECT(no_alt_info) );
@@ -508,7 +523,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   if ( widgets->speeds )
     g_free ( widgets->speeds );
 
-  widgets->speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  widgets->speeds = vik_track_make_speed_map ( tr, widgets->profile_width );
   if ( widgets->speeds == NULL )
     return;
 
@@ -517,7 +532,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   window = gtk_widget_get_toplevel (widgets->speed_box);
 
-  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
@@ -525,7 +540,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   gdk_color_parse ( "red", &color );
   gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
-  minmax_array(widgets->speeds, &mins, &maxs, FALSE);
+  minmax_array(widgets->speeds, &mins, &maxs, FALSE, widgets->profile_width);
   if (mins < 0.0)
     mins = 0; /* splines sometimes give negative speeds */
   maxs = maxs + ((maxs - mins) * 0.1);
@@ -535,9 +550,9 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
-		     TRUE, 0, 0, MARGIN, PROFILE_HEIGHT);
+		     TRUE, 0, 0, MARGIN, widgets->profile_height);
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
-		     TRUE, MARGIN, 0, PROFILE_WIDTH, PROFILE_HEIGHT);
+		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
@@ -572,19 +587,19 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
     gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
-		    CLAMP((int)i*PROFILE_HEIGHT/LINES - h/2, 0, PROFILE_HEIGHT-h), pl);
+		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
     gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
-		   MARGIN, PROFILE_HEIGHT/LINES * i, MARGIN + PROFILE_WIDTH, PROFILE_HEIGHT/LINES * i);
+		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
   }
   
 
   /* draw speeds */
-  for ( i = 0; i < PROFILE_WIDTH; i++ )
+  for ( i = 0; i < widgets->profile_width; i++ )
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
-		      i + MARGIN, PROFILE_HEIGHT, i + MARGIN, PROFILE_HEIGHT-PROFILE_HEIGHT*(widgets->speeds[i]-mins)/(maxs-mins) );
+		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->speeds[i]-mins)/(maxs-mins) );
 
 
   time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
@@ -594,13 +609,13 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
     if (isnan(gps_speed))
         continue;
-    int x = MARGIN + PROFILE_WIDTH * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
-    int y = PROFILE_HEIGHT - PROFILE_HEIGHT*(gps_speed - mins)/(maxs - mins);
+    int x = MARGIN + widgets->profile_width * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
+    int y = widgets->profile_height - widgets->profile_height*(gps_speed - mins)/(maxs - mins);
     gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
   }
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, PROFILE_WIDTH-1, PROFILE_HEIGHT-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
@@ -654,16 +669,16 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, VikTrack *tr, gpoin
   gpointer *pass_along;
 
   // First allocation
-  widgets->altitudes = vik_track_make_elevation_map ( tr, PROFILE_WIDTH );
+  widgets->altitudes = vik_track_make_elevation_map ( tr, widgets->profile_width );
 
   if ( widgets->altitudes == NULL ) {
     *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
     return NULL;
   }
 
-  minmax_array(widgets->altitudes, min_alt, max_alt, TRUE);
+  minmax_array(widgets->altitudes, min_alt, max_alt, TRUE, widgets->profile_width);
   
-  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
   g_object_unref ( G_OBJECT(pix) );
@@ -695,7 +710,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   gpointer *pass_along;
 
   // First allocation
-  widgets->speeds = vik_track_make_speed_map ( tr, PROFILE_WIDTH );
+  widgets->speeds = vik_track_make_speed_map ( tr, widgets->profile_width );
   if ( widgets->speeds == NULL )
     return NULL;
 
@@ -705,7 +720,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   pass_along[2] = vvp;
   pass_along[3] = widgets;
 
-  pix = gdk_pixmap_new( window->window, PROFILE_WIDTH + MARGIN, PROFILE_HEIGHT, -1 );
+  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
 #if 0
@@ -887,6 +902,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->vtl = vtl;
   widgets->tr = tr;
   widgets->vlp = vlp;
+  widgets->profile_width  = PROPWIN_PROFILE_WIDTH;
+  widgets->profile_height = PROPWIN_PROFILE_HEIGHT;
   widgets->track_name = track_name;
   gchar *title = g_strdup_printf(_("%s - Track Properties"), track_name);
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
