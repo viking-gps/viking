@@ -354,7 +354,7 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
   /* Restore Main Menu via Escape key if the user has hidden it */
   /* This key is more likely to be used as they may not remember the function key */
   if ( event->keyval == GDK_Escape ) {
-    GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewMainMenu" );
+    GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
     if ( check_box ) {
       gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
       if ( !state ) {
@@ -1225,7 +1225,7 @@ static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
 
 static void view_side_panel_cb ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewSidePanel" );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanel" );
   g_assert(check_box);
   gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
   if ( state )
@@ -1236,7 +1236,7 @@ static void view_side_panel_cb ( GtkAction *a, VikWindow *vw )
 
 static void view_statusbar_cb ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewStatusBar" );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewStatusBar" );
   if ( !check_box )
     return;
   gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
@@ -1248,7 +1248,7 @@ static void view_statusbar_cb ( GtkAction *a, VikWindow *vw )
 
 static void view_toolbar_cb ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewToolbar" );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewToolbar" );
   if ( !check_box )
     return;
   gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
@@ -1260,7 +1260,7 @@ static void view_toolbar_cb ( GtkAction *a, VikWindow *vw )
 
 static void view_main_menu_cb ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ViewMainMenu" );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
   if ( !check_box )
     return;
   gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
@@ -1583,15 +1583,15 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
 
       vik_layers_panel_change_coord_mode ( vw->viking_vlp, vik_viewport_get_coord_mode ( vw->viking_vvp ) );
 
-      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowScale" );
+      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowScale" );
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_scale(vw->viking_vvp) );
 
-      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowCopyright" );
+      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCopyright" );
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_copyright(vw->viking_vvp) );
 
-      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowCenterMark" );
+      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCenterMark" );
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_centermark(vw->viking_vvp) );
     }
@@ -2206,7 +2206,7 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
 
 static void set_draw_scale ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowScale" );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowScale" );
   g_assert(check_box);
   gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
   vik_viewport_set_draw_scale ( vw->viking_vvp, state );
@@ -2215,7 +2215,7 @@ static void set_draw_scale ( GtkAction *a, VikWindow *vw )
 
 static void set_draw_copyright ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowCopyright" );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCopyright" );
   g_assert(check_box);
   gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
   vik_viewport_set_draw_copyright ( vw->viking_vvp, state );
@@ -2224,7 +2224,7 @@ static void set_draw_copyright ( GtkAction *a, VikWindow *vw )
 
 static void set_draw_centermark ( GtkAction *a, VikWindow *vw )
 {
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/ShowCenterMark" );
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCenterMark" );
   g_assert(check_box);
   gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box));
   vik_viewport_set_draw_centermark ( vw->viking_vvp, state );
@@ -2257,6 +2257,7 @@ static GtkActionEntry entries[] = {
   { "File", NULL, N_("_File"), 0, 0, 0 },
   { "Edit", NULL, N_("_Edit"), 0, 0, 0 },
   { "View", NULL, N_("_View"), 0, 0, 0 },
+  { "SetShow", NULL, N_("_Show"), 0, 0, 0 },
   { "SetZoom", NULL, N_("_Zoom"), 0, 0, 0 },
   { "SetPan", NULL, N_("_Pan"), 0, 0, 0 },
   { "Layers", NULL, N_("_Layers"), 0, 0, 0 },
@@ -2348,14 +2349,14 @@ static GtkRadioActionEntry tool_entries[] = {
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ShowScale",      NULL,                 N_("_Show Scale"),               "F5",         N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
-  { "ShowCopyright",  NULL,                 N_("_Show Copyright"),           "F7",         N_("Show Copyright notice(s)"),                (GCallback)set_draw_copyright, TRUE },
+  { "ShowScale",      NULL,                 N_("Show _Scale"),               "F5",         N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
+  { "ShowCopyright",  NULL,                 N_("Show Copy_right"),           "F7",         N_("Show Copyright notice(s)"),                (GCallback)set_draw_copyright, TRUE },
   { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)set_draw_centermark, TRUE },
   { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },
-  { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side Pa_nel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
+  { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side _Panel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
   { "ViewStatusBar",  NULL,                 N_("Show Status_bar"),           "F12",        N_("Show Statusbar"),                          (GCallback)view_statusbar_cb, TRUE },
-  { "ViewToolbar",    NULL,                 N_("Show Toolb_ar"),             "F3",         N_("Show Toolbar"),                            (GCallback)view_toolbar_cb, TRUE },
-  { "ViewMainMenu",   NULL,                 N_("Sho_w Menu"),                "F4",         N_("Show Menu"),                               (GCallback)view_main_menu_cb, TRUE },
+  { "ViewToolbar",    NULL,                 N_("Show _Toolbar"),             "F3",         N_("Show Toolbar"),                            (GCallback)view_toolbar_cb, TRUE },
+  { "ViewMainMenu",   NULL,                 N_("Show _Menu"),                "F4",         N_("Show Menu"),                               (GCallback)view_main_menu_cb, TRUE },
 };
 
 #include "menu.xml.h"
