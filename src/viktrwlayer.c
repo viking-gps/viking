@@ -2395,7 +2395,6 @@ static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
   goto_coord ( VIK_LAYERS_PANEL(pass_along[1]), &(((VikTrackpoint *) trps->data)->coord));
 }
 
-<<<<<<< HEAD
 static void trw_layer_goto_track_max_speed ( gpointer pass_along[5] )
 {
   VikTrackpoint* vtp = vik_track_get_tp_by_max_speed ( g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] ) );
