@@ -222,6 +222,44 @@ static void draw_graph_mark (GtkWidget *image,
     *marker_drawn = FALSE;
 }
 
+/**
+ * Return the percentage of how far a trackpoint is a long a track via the time method
+ */
+static gdouble tp_percentage_by_time ( VikTrack *tr, VikTrackpoint *trackpoint )
+{
+  gdouble pc = NAN;
+  if (trackpoint == NULL)
+    return pc;
+  time_t t_start, t_end, t_total;
+  t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  t_end = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  t_total = t_end - t_start;
+  pc = (gdouble)(trackpoint->timestamp - t_start)/t_total;
+  return pc;
+}
+
+/**
+ * Return the percentage of how far a trackpoint is a long a track via the distance method
+ */
+static gdouble tp_percentage_by_distance ( VikTrack *tr, VikTrackpoint *trackpoint, gdouble track_length )
+{
+  gdouble pc = NAN;
+  if (trackpoint == NULL)
+    return pc;
+  gdouble dist = 0.0;
+  GList *iter;
+  for (iter = tr->trackpoints->next; iter != NULL; iter = iter->next) {
+    dist += vik_coord_diff(&(VIK_TRACKPOINT(iter->data)->coord),
+			   &(VIK_TRACKPOINT(iter->prev->data)->coord));
+    /* Assuming trackpoint is not a copy */
+    if (trackpoint == VIK_TRACKPOINT(iter->data))
+      break;
+  }
+  if (iter != NULL)
+    pc = dist/track_length;
+  return pc;
+}
+
 static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpointer *pass_along, gboolean is_vt_graph )
 {
   VikTrack *tr = pass_along[0];
@@ -256,23 +294,9 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
                          is_vt_graph ? widgets->elev_box : widgets->speed_box));
   GtkWidget *other_image = GTK_WIDGET(other_child->data);
   if (is_vt_graph) {
-    gdouble dist = 0.0;
-    GList *iter;
-    for (iter = tr->trackpoints->next; iter != NULL; iter = iter->next) {
-      dist += vik_coord_diff(&(VIK_TRACKPOINT(iter->data)->coord),
-                                 &(VIK_TRACKPOINT(iter->prev->data)->coord));
-      /* Assuming trackpoint is not a copy */
-      if (trackpoint == VIK_TRACKPOINT(iter->data))
-        break;
-    }
-    if (iter != NULL)
-      pc = dist/widgets->track_length;
+    pc = tp_percentage_by_distance ( tr, trackpoint, widgets->track_length );
   } else {
-    time_t t_start, t_end, t_total;
-    t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
-    t_end = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
-    t_total = t_end - t_start;
-    pc = (gdouble)(trackpoint->timestamp - t_start)/t_total;
+    pc = tp_percentage_by_time ( tr, trackpoint );
   }
   if (!isnan(pc)) {
     x2 = pc * widgets->profile_width + MARGIN + (event_box->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
