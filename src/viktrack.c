@@ -90,7 +90,8 @@ void vik_track_free(VikTrack *tr)
   g_list_foreach ( tr->trackpoints, (GFunc) g_free, NULL );
   g_list_free( tr->trackpoints );
   if (tr->property_dialog)
-    gtk_widget_destroy ( GTK_WIDGET(tr->property_dialog) );
+    if ( GTK_IS_WIDGET(tr->property_dialog) )
+      gtk_widget_destroy ( GTK_WIDGET(tr->property_dialog) );
   g_free ( tr );
 }
 
