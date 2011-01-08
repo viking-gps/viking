@@ -57,8 +57,13 @@
 
 #define PROPWIN_LABEL_FONT "Sans 7"
 
-#define MIN_ALT_DIFF 100.0
 #define MIN_SPEED_DIFF 5.0
+
+/* (Hopefully!) Human friendly altitude grid sizes - note no fixed 'ratio' just numbers that look nice...*/
+static const gdouble chunksa[] = {2.0, 5.0, 10.0, 15.0, 20.0,
+				  25.0, 50.0, 75.0, 100.0,
+				  150.0, 200.0, 250.0, 375.0, 500.0,
+				  750.0, 1000.0, 2000.0, 5000.0, 10000.0, 100000.0};
 
 typedef struct _propsaved {
   gboolean saved;
@@ -106,6 +111,8 @@ typedef struct _propwidgets {
   gdouble   *altitudes;
   gdouble   min_altitude;
   gdouble   max_altitude;
+  gdouble   draw_min_altitude;
+  gint      cia; // Chunk size Index into Altitudes
   gdouble   *speeds;
   gdouble   min_speed;
   gdouble   max_speed;
@@ -152,6 +159,44 @@ static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gbool
 
 #define MARGIN 70
 #define LINES 5
+/**
+ * Returns via pointers:
+ *   the new minimum value to be used for the altitude graph
+ *   the index in to the altitudes chunk sizes array (ci = Chunk Index)
+ */
+static void get_new_min_and_chunk_index_altitude (gdouble mina, gdouble maxa, gdouble *new_min, gint *ci)
+{
+  /* Get unitized chunk */
+  /* Find suitable chunk index */
+  *ci = 0;
+  gdouble diffa_chunk = (maxa - mina)/LINES;
+
+  /* Loop through to find best match */
+  while (diffa_chunk > chunksa[*ci]) {
+    (*ci)++;
+    /* Last Resort Check */
+    if ( *ci == sizeof(chunksa)/sizeof(chunksa[0]) )
+      break;
+  }
+
+  /* Ensure adjusted minimum .. maximum covers mina->maxa */
+
+  // Now work out adjusted minimum point to the nearest lowest chunk divisor value
+  // When negative ensure logic uses lowest value
+  if ( mina < 0 )
+    *new_min = (gdouble) ( ( (gint)(mina - chunksa[*ci]) / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
+  else
+    *new_min = (gdouble) ( ( (gint)mina / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
+
+  // Range not big enough - as new minimum has lowered
+  if ((*new_min + (chunksa[*ci] * LINES) < maxa)) {
+    // Next chunk should cover it
+    if ( *ci < sizeof(chunksa)/sizeof(chunksa[0]) ) {
+      (*ci)++;
+    }
+  }
+}
+
 static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
 						   gint img_width,
 						   VikTrwLayer *vtl,
@@ -358,11 +403,7 @@ static gint blobby_altitude ( gdouble x_blob, PropWidgets *widgets )
   if (ix == widgets->profile_width)
     ix--;
 
-  gdouble diff = widgets->max_altitude - widgets->min_altitude;
-  gint y_blob = 0;
-  // Ensure no divide by zero
-  if (diff > 0.0)
-    y_blob = widgets->profile_height-widgets->profile_height*(widgets->altitudes[ix]-widgets->min_altitude)/(widgets->max_altitude-widgets->min_altitude);
+  gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->altitudes[ix]-widgets->draw_min_altitude)/(chunksa[widgets->cia]*LINES);
 
   return y_blob;
 }
@@ -569,6 +610,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
 				    gdouble alt_offset,
 				    gdouble alt_diff,
 				    gdouble max_speed_in,
+				    gint cia,
 				    gint width,
 				    gint height,
 				    gint margin,
@@ -593,7 +635,13 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
       gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord), VIK_DEM_INTERPOL_BEST);
       elev -= alt_offset;
       if ( elev != VIK_DEM_INVALID_ELEVATION ) {
-	int y_alt = height - ((height * elev)/alt_diff);
+	// Convert into height units
+	if (a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET)
+	  elev =  VIK_METERS_TO_FEET(elev);
+	// No conversion needed if already in metres
+
+	// consider chunk size
+	int y_alt = height - ((height * (elev-alt_offset))/(chunksa[cia]*LINES) );
 	gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
       }
     }
@@ -632,10 +680,22 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   if ( widgets->altitudes == NULL )
     return;
 
+  // Convert into appropriate units
+  vik_units_height_t height_units = a_vik_get_units_height ();
+  if ( height_units == VIK_UNITS_HEIGHT_FEET ) {
+    // Convert altitudes into feet units
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->altitudes[i] = VIK_METERS_TO_FEET(widgets->altitudes[i]);
+    }
+  }
+  // Otherwise leave in metres
+
   minmax_array(widgets->altitudes, &widgets->min_altitude, &widgets->max_altitude, TRUE, widgets->profile_width);
-  widgets->max_altitude = widgets->max_altitude + ((widgets->max_altitude - widgets->min_altitude) * 0.25); // Make visible window a bit bigger than highest point
+
+  get_new_min_and_chunk_index_altitude (widgets->min_altitude, widgets->max_altitude, &widgets->draw_min_altitude, &widgets->cia);
+
   // Assign locally
-  mina = widgets->min_altitude;
+  mina = widgets->draw_min_altitude;
   maxa = widgets->max_altitude;
 
   window = gtk_widget_get_toplevel (widgets->elev_box);
@@ -663,7 +723,6 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
   
   /* draw grid */
-  vik_units_height_t height_units = a_vik_get_units_height ();
   for (i=0; i<=LINES; i++) {
     PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
@@ -676,10 +735,11 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
     pango_font_description_free (pfd);
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
-      sprintf(s, "%8dm", (int)(mina + (LINES-i)*(maxa-mina)/LINES));
+      sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
       break;
     case VIK_UNITS_HEIGHT_FEET:
-      sprintf(s, "%8dft", (int)VIK_METERS_TO_FEET(mina + (LINES-i)*(maxa-mina)/LINES));
+      // NB values already converted into feet
+      sprintf(s, "%8dft", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
       break;
     default:
       sprintf(s, "--");
@@ -703,7 +763,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 		      i + MARGIN, 0, i + MARGIN, widgets->profile_height );
     else 
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
-		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->altitudes[i]-mina)/(maxa-mina) );
+		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->altitudes[i]-mina)/(chunksa[widgets->cia]*LINES) );
 
   // Ensure somekind of max speed when not set
   if ( widgets->max_speed < 0.01 )
@@ -716,6 +776,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 			  mina,
 			  maxa - mina,
 			  widgets->max_speed,
+			  widgets->cia,
 			  widgets->profile_width,
 			  widgets->profile_height,
 			  MARGIN,
