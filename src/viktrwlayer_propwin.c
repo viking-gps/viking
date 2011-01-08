@@ -105,7 +105,11 @@ typedef struct _propwidgets {
   GtkWidget *elev_box;
   GtkWidget *speed_box;
   gdouble   *altitudes;
+  gdouble   min_altitude;
+  gdouble   max_altitude;
   gdouble   *speeds;
+  gdouble   min_speed;
+  gdouble   max_speed;
   VikTrackpoint *marker_tp;
   gboolean  is_marker_drawn;
 } PropWidgets;
@@ -453,6 +457,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
 				    GdkGC *speed_gc,
 				    gdouble alt_offset,
 				    gdouble alt_diff,
+				    gdouble max_speed_in,
 				    gint width,
 				    gint height,
 				    gint margin,
@@ -463,13 +468,9 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
   gdouble max_speed = 0;
   gdouble total_length = vik_track_get_length_including_gaps(tr);
 
-  if (do_speed) {
-    for (iter = tr->trackpoints->next; iter; iter = iter->next) {
-      if (!isnan(VIK_TRACKPOINT(iter->data)->speed))
-	max_speed = MAX(max_speed, VIK_TRACKPOINT(iter->data)->speed);
-    }
-    max_speed = max_speed * 110 / 100;
-  }
+  // Calculate the max speed factor
+  if (do_speed)
+    max_speed = max_speed_in * 110 / 100;
 
   gdouble dist = 0;
   for (iter = tr->trackpoints->next; iter; iter = iter->next) {
@@ -520,8 +521,11 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   if ( widgets->altitudes == NULL )
     return;
 
-  minmax_array(widgets->altitudes, &mina, &maxa, TRUE, widgets->profile_width);
-  maxa = maxa + ((maxa - mina) * 0.25); // Make visible window a bit bigger than highest point
+  minmax_array(widgets->altitudes, &widgets->min_altitude, &widgets->max_altitude, TRUE, widgets->profile_width);
+  widgets->max_altitude = widgets->max_altitude + ((widgets->max_altitude - widgets->min_altitude) * 0.25); // Make visible window a bit bigger than highest point
+  // Assign locally
+  mina = widgets->min_altitude;
+  maxa = widgets->max_altitude;
 
   window = gtk_widget_get_toplevel (widgets->elev_box);
 
@@ -590,12 +594,17 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->altitudes[i]-mina)/(maxa-mina) );
 
+  // Ensure somekind of max speed when not set
+  if ( widgets->max_speed < 0.01 )
+    widgets->max_speed = vik_track_get_max_speed(tr);
+
   draw_dem_alt_speed_dist(tr,
 			  GDK_DRAWABLE(pix),
 			  dem_alt_gc,
 			  gps_speed_gc,
 			  mina,
 			  maxa - mina,
+			  widgets->max_speed,
 			  widgets->profile_width,
 			  widgets->profile_height,
 			  MARGIN,
@@ -643,13 +652,16 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   gdk_color_parse ( "red", &color );
   gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
-  minmax_array(widgets->speeds, &mins, &maxs, FALSE, widgets->profile_width);
-  if (mins < 0.0)
-    mins = 0; /* splines sometimes give negative speeds */
-  maxs = maxs + ((maxs - mins) * 0.1);
-  if  (maxs-mins < MIN_SPEED_DIFF) {
-    maxs = mins + MIN_SPEED_DIFF;
+  minmax_array(widgets->speeds, &widgets->min_speed, &widgets->max_speed, FALSE, widgets->profile_width);
+  if (widgets->min_speed < 0.0)
+    widgets->min_speed = 0; /* splines sometimes give negative speeds */
+  widgets->max_speed = widgets->max_speed + ((widgets->max_speed - widgets->min_speed) * 0.1);
+  if  (widgets->max_speed-widgets->min_speed < MIN_SPEED_DIFF) {
+    widgets->max_speed = widgets->min_speed + MIN_SPEED_DIFF;
   }
+  // Assign locally
+  mins = widgets->min_speed;
+  maxs = widgets->max_speed;
   
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
