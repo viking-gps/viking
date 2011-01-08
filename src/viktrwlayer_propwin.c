@@ -96,6 +96,9 @@ typedef struct _propwidgets {
   GtkWidget *w_cur_elevation;
   GtkWidget *w_cur_time; /*< Current time */
   GtkWidget *w_cur_speed;
+  GtkWidget *w_show_dem;
+  GtkWidget *w_show_alt_gps_speed;
+  GtkWidget *w_show_gps_speed;
   gdouble   track_length;
   PropSaved elev_graph_saved_img;
   PropSaved speed_graph_saved_img;
@@ -596,8 +599,8 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 			  widgets->profile_width,
 			  widgets->profile_height,
 			  MARGIN,
-			  TRUE,
-			  TRUE);
+			  gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_dem)),
+			  gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed)));
 
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
@@ -704,14 +707,17 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   time_t dur =  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp - beg_time;
-  GList *iter;
-  for (iter = tr->trackpoints; iter; iter = iter->next) {
-    gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
-    if (isnan(gps_speed))
+
+  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_gps_speed)) ) {
+    GList *iter;
+    for (iter = tr->trackpoints; iter; iter = iter->next) {
+      gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
+      if (isnan(gps_speed))
         continue;
-    int x = MARGIN + widgets->profile_width * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
-    int y = widgets->profile_height - widgets->profile_height*(gps_speed - mins)/(maxs - mins);
-    gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
+      int x = MARGIN + widgets->profile_width * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
+      int y = widgets->profile_height - widgets->profile_height*(gps_speed - mins)/(maxs - mins);
+      gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
+    }
   }
 
   /* draw border */
@@ -729,7 +735,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean resized )
 {
   VikTrack *tr = pass_along[0];
-  PropWidgets *widgets = pass_along[2];
+  PropWidgets *widgets = pass_along[3];
 
   // Draw graphs even if they are not visible
 
@@ -815,7 +821,7 @@ static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean 
  */
 static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, gpointer *pass_along )
 {
-  PropWidgets *widgets = pass_along[2];
+  PropWidgets *widgets = pass_along[3];
 
   if (widgets->configure_dialog) {
     // Determine size offsets between dialog size and size for images
@@ -1070,13 +1076,28 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
 }
 
 /**
+ * Force a redraw when checkbutton has been toggled to show/hide that information
+ */
+static void checkbutton_toggle_cb ( GtkToggleButton *togglebutton, gpointer *pass_along, gpointer dummy)
+{
+  PropWidgets *widgets = pass_along[3];
+  // Even though not resized, we'll pretend it is -
+  //  as this invalidates the saved images (since the image may have changed)
+  draw_all_graphs ( widgets->dialog, pass_along, TRUE);
+}
+
+/**
  *  Create the widgets for the given graph tab
  */
 static GtkWidget *create_graph_page ( GtkWidget *graph,
 				      const gchar *markup,
 				      GtkWidget *value,
 				      const gchar *markup2,
-				      GtkWidget *value2)
+				      GtkWidget *value2,
+				      GtkWidget *checkbutton1,
+				      gboolean checkbutton1_default,
+				      GtkWidget *checkbutton2,
+				      gboolean checkbutton2_default )
 {
   GtkWidget *hbox = gtk_hbox_new ( FALSE, 10 );
   GtkWidget *vbox = gtk_vbox_new ( FALSE, 10 );
@@ -1089,8 +1110,16 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
   gtk_box_pack_start (GTK_BOX(hbox), value, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), label2, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), value2, FALSE, FALSE, 0);
+  if (checkbutton2) {
+    gtk_box_pack_end (GTK_BOX(hbox), checkbutton2, FALSE, FALSE, 0);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbutton2), checkbutton2_default);
+  }
+  if (checkbutton1) {
+    gtk_box_pack_end (GTK_BOX(hbox), checkbutton1, FALSE, FALSE, 0);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbutton1), checkbutton1_default);
+  }
   gtk_box_pack_start (GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
-  
+
   return vbox;
 }
 
@@ -1324,13 +1353,26 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
 
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Statistics")));
 
+  gpointer *pass_along;
+  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
+  pass_along[0] = tr;
+  pass_along[1] = vlp;
+  pass_along[2] = vvp;
+  pass_along[3] = widgets;
+
   if ( widgets->elev_box ) {
     GtkWidget *page = NULL;
     widgets->w_cur_dist = gtk_label_new(_("No Data"));
     widgets->w_cur_elevation = gtk_label_new(_("No Data"));
+    widgets->w_show_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
+    widgets->w_show_alt_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->elev_box,
 			      _("<b>Track Distance:</b>"), widgets->w_cur_dist,
-			      _("<b>Track Height:</b>"), widgets->w_cur_elevation);
+			      _("<b>Track Height:</b>"), widgets->w_cur_elevation,
+			      widgets->w_show_dem, TRUE,
+			      widgets->w_show_alt_gps_speed, TRUE);
+    g_signal_connect (widgets->w_show_dem, "toggled", G_CALLBACK (checkbutton_toggle_cb), pass_along);
+    g_signal_connect (widgets->w_show_alt_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), pass_along);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
   }
 
@@ -1338,9 +1380,13 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     GtkWidget *page = NULL;
     widgets->w_cur_time = gtk_label_new(_("No Data"));
     widgets->w_cur_speed = gtk_label_new(_("No Data"));
+    widgets->w_show_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->speed_box,
 			      _("<b>Track Time:</b>"), widgets->w_cur_time,
-			      _("<b>Track Speed:</b>"), widgets->w_cur_speed);
+			      _("<b>Track Speed:</b>"), widgets->w_cur_speed,
+			      widgets->w_show_gps_speed, TRUE,
+			      NULL, FALSE);
+    g_signal_connect (widgets->w_show_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), pass_along);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
   }
 
@@ -1351,12 +1397,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT, FALSE);
   if (vik_track_get_dup_point_count(tr) <= 0)
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_DEL_DUP, FALSE);
-
-  gpointer *pass_along;
-  pass_along = g_malloc ( sizeof(gpointer) * 3 ); /* FIXME: mem leak -- never be freed */
-  pass_along[0] = tr;
-  pass_along[1] = vlp;
-  pass_along[2] = widgets;
 
   // On dialog realization configure_event casues the graphs to be initially drawn
   widgets->configure_dialog = TRUE;
