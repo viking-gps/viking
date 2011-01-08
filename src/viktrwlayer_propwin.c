@@ -2364,7 +2364,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           break;
         }
 
-        gchar *r_name = g_strdup_printf("%s #R", widgets->track_name);
+        gchar *r_name = g_strdup_printf("%s #2", widgets->track_name);
         if (vik_trw_layer_get_track(vtl, r_name ) && 
              ( ! a_dialog_yes_or_no( VIK_GTK_WINDOW_FROM_LAYER(vtl),
               "The track \"%s\" exists, do you wish to overwrite it?", r_name)))
