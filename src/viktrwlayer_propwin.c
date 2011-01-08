@@ -57,13 +57,18 @@
 
 #define PROPWIN_LABEL_FONT "Sans 7"
 
-#define MIN_SPEED_DIFF 5.0
-
 /* (Hopefully!) Human friendly altitude grid sizes - note no fixed 'ratio' just numbers that look nice...*/
 static const gdouble chunksa[] = {2.0, 5.0, 10.0, 15.0, 20.0,
 				  25.0, 50.0, 75.0, 100.0,
 				  150.0, 200.0, 250.0, 375.0, 500.0,
 				  750.0, 1000.0, 2000.0, 5000.0, 10000.0, 100000.0};
+
+/* (Hopefully!) Human friendly grid sizes - note no fixed 'ratio' just numbers that look nice...*/
+/* As need to cover walking speeds - have many low numbers (but also may go up to airplane speeds!) */
+static const gdouble chunkss[] = {1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 10.0,
+				  15.0, 20.0, 25.0, 40.0, 50.0, 75.0,
+				  100.0, 150.0, 200.0, 250.0, 375.0, 500.0,
+				  750.0, 1000.0, 10000.0};
 
 typedef struct _propsaved {
   gboolean saved;
@@ -116,6 +121,8 @@ typedef struct _propwidgets {
   gdouble   *speeds;
   gdouble   min_speed;
   gdouble   max_speed;
+  gdouble   draw_min_speed;
+  gint      cis; // Chunk size Index into Speeds
   VikTrackpoint *marker_tp;
   gboolean  is_marker_drawn;
   VikTrackpoint *blob_tp;
@@ -195,6 +202,28 @@ static void get_new_min_and_chunk_index_altitude (gdouble mina, gdouble maxa, gd
       (*ci)++;
     }
   }
+}
+
+/**
+ * Returns via pointers:
+ *   the new minimum value to be used for the appropriate graph
+ *   the index in to that array (ci = Chunk Index)
+ */
+static void get_new_min_and_chunk_index (gdouble mins, gdouble maxs, const gdouble *chunks, size_t chunky, gdouble *new_min, gint *ci)
+{
+  *ci = 0;
+  gdouble diff_chunk = (maxs - mins)/LINES;
+
+  /* Loop through to find best match */
+  while (diff_chunk > chunks[*ci]) {
+    (*ci)++;
+    /* Last Resort Check */
+    if ( *ci == chunky )
+      break;
+  }
+  *new_min = (gdouble) ( (gint)((mins / chunks[*ci] ) * chunks[*ci]) );
+
+  // Speeds are never negative so don't need to worry about a negative new minimum
 }
 
 static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
@@ -418,11 +447,7 @@ static gint blobby_speed ( gdouble x_blob, PropWidgets *widgets )
   if (ix == widgets->profile_width)
     ix--;
 
-  gdouble diff = widgets->max_speed - widgets->min_speed;
-  gint y_blob = 0;
-  // Ensure no divide by zero
-  if (diff > 0.0)
-    y_blob = widgets->profile_height-widgets->profile_height*(widgets->speeds[ix]-widgets->min_speed)/(widgets->max_speed-widgets->min_speed);
+  gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->speeds[ix]-widgets->draw_min_speed)/(chunkss[widgets->cis]*LINES);
 
   return y_blob;
 }
@@ -546,20 +571,20 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *pass_
   if (trackpoint && widgets->w_cur_speed) {
     static gchar tmp_buf[20];
     // Even if GPS speed available (trackpoint->speed), the text will correspond to the speed map shown
+    // No conversions needed as already in appropriate units
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f kph"), VIK_MPS_TO_KPH(widgets->speeds[ix]));
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f kph"), widgets->speeds[ix]);
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f mph"), VIK_MPS_TO_MPH(widgets->speeds[ix]));
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f mph"), widgets->speeds[ix]);
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f knots"), VIK_MPS_TO_KNOTS(widgets->speeds[ix]));
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f knots"), widgets->speeds[ix]);
       break;
     default:
       // VIK_UNITS_SPEED_METRES_PER_SECOND:
-      // No need to convert as already in m/s
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f m/s"), widgets->speeds[ix]);
       break;
     }
@@ -811,6 +836,30 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   if ( widgets->speeds == NULL )
     return;
 
+  // Convert into appropriate units
+  vik_units_speed_t speed_units = a_vik_get_units_speed ();
+  switch (speed_units) {
+  case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds[i] = VIK_MPS_TO_KPH(widgets->speeds[i]);
+    }
+    break;
+  case VIK_UNITS_SPEED_MILES_PER_HOUR:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds[i] = VIK_MPS_TO_MPH(widgets->speeds[i]);
+    }
+    break;
+  case VIK_UNITS_SPEED_KNOTS:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds[i] = VIK_MPS_TO_KNOTS(widgets->speeds[i]);
+    }
+    break;
+  default:
+    // VIK_UNITS_SPEED_METRES_PER_SECOND:
+    // No need to convert as already in m/s
+    break;
+  }
+
   GdkGC *gps_speed_gc;
   GdkColor color;
 
@@ -827,12 +876,12 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   minmax_array(widgets->speeds, &widgets->min_speed, &widgets->max_speed, FALSE, widgets->profile_width);
   if (widgets->min_speed < 0.0)
     widgets->min_speed = 0; /* splines sometimes give negative speeds */
-  widgets->max_speed = widgets->max_speed + ((widgets->max_speed - widgets->min_speed) * 0.1);
-  if  (widgets->max_speed-widgets->min_speed < MIN_SPEED_DIFF) {
-    widgets->max_speed = widgets->min_speed + MIN_SPEED_DIFF;
-  }
+
+  /* Find suitable chunk index */
+  get_new_min_and_chunk_index (widgets->min_speed, widgets->max_speed, chunkss, sizeof(chunkss)/sizeof(chunkss[0]), &widgets->draw_min_speed, &widgets->cis);
+
   // Assign locally
-  mins = widgets->min_speed;
+  mins = widgets->draw_min_speed;
   maxs = widgets->max_speed;
   
   /* clear the image */
@@ -852,19 +901,19 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
-    vik_units_speed_t speed_units = a_vik_get_units_speed ();
+    // NB: No need to convert here anymore as numbers are in the appropriate units
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      sprintf(s, "%6.1fkm/h", VIK_MPS_TO_KPH(mins + (LINES-i)*(maxs-mins)/LINES));
+      sprintf(s, "%8dkm/h", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
       break;
     case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      sprintf(s, "%6.1fmph", VIK_MPS_TO_MPH(mins + (LINES-i)*(maxs-mins)/LINES));
+      sprintf(s, "%8dmph", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
       break;
     case VIK_UNITS_SPEED_METRES_PER_SECOND:
-      sprintf(s, "%8dm/s", (int)(mins + (LINES-i)*(maxs-mins)/LINES));
+      sprintf(s, "%8dm/s", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
       break;
     case VIK_UNITS_SPEED_KNOTS:
-      sprintf(s, "%6.1fknots", VIK_MPS_TO_KNOTS(mins + (LINES-i)*(maxs-mins)/LINES));
+      sprintf(s, "%8dknots", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
       break;
     default:
       sprintf(s, "--");
@@ -886,7 +935,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   /* draw speeds */
   for ( i = 0; i < widgets->profile_width; i++ )
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
-		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->speeds[i]-mins)/(maxs-mins) );
+		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->speeds[i]-mins)/(chunkss[widgets->cis]*LINES) );
 
 
   time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
@@ -898,8 +947,23 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
       gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
       if (isnan(gps_speed))
         continue;
+      switch (speed_units) {
+      case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+	gps_speed = VIK_MPS_TO_KPH(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_MILES_PER_HOUR:
+	gps_speed = VIK_MPS_TO_MPH(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_KNOTS:
+	gps_speed = VIK_MPS_TO_KNOTS(gps_speed);
+	break;
+      default:
+	// VIK_UNITS_SPEED_METRES_PER_SECOND:
+	// No need to convert as already in m/s
+	break;
+      }
       int x = MARGIN + widgets->profile_width * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
-      int y = widgets->profile_height - widgets->profile_height*(gps_speed - mins)/(maxs - mins);
+      int y = widgets->profile_height - widgets->profile_height*(gps_speed - mins)/(chunkss[widgets->cis]*LINES);
       gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
     }
   }
