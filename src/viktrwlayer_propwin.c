@@ -62,7 +62,6 @@
 
 typedef struct _propsaved {
   gboolean saved;
-  gint pos;
   GdkImage *img;
 } PropSaved;
 
@@ -112,6 +111,8 @@ typedef struct _propwidgets {
   gdouble   max_speed;
   VikTrackpoint *marker_tp;
   gboolean  is_marker_drawn;
+  VikTrackpoint *blob_tp;
+  gboolean  is_blob_drawn;
 } PropWidgets;
 
 static PropWidgets *prop_widgets_new()
@@ -189,50 +190,54 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
 }
 
 /**
- * Returns whether the marker was drawn or not
+ * Returns whether the marker was drawn or not and whether the blob was drawn or not
  */
-static void save_image_and_draw_graph_mark (GtkWidget *image,
-					    gdouble event_x,
-					    gint img_width,
-					    GdkGC *gc,
-					    PropSaved *saved_img,
-					    gint PROFILE_WIDTH,
-					    gint PROFILE_HEIGHT,
-					    gboolean *marker_drawn)
+static void save_image_and_draw_graph_marks (GtkWidget *image,
+					     gdouble marker_x,
+					     GdkGC *gc,
+					     gint blob_x,
+					     gint blob_y,
+					     PropSaved *saved_img,
+					     gint PROFILE_WIDTH,
+					     gint PROFILE_HEIGHT,
+					     gboolean *marker_drawn,
+					     gboolean *blob_drawn)
 {
   GdkPixmap *pix = NULL;
   /* the pixmap = margin + graph area */
-  gdouble x = event_x - img_width/2 + PROFILE_WIDTH/2 + MARGIN/2;
-
-  // fprintf(stderr, "event_x=%f img_width=%d x=%f\n", event_x, img_width, x);
-
   gtk_image_get_pixmap(GTK_IMAGE(image), &pix, NULL);
+
   /* Restore previously saved image */
   if (saved_img->saved) {
-    gdk_draw_image(GDK_DRAWABLE(pix), gc, saved_img->img, 0, 0,
-        saved_img->pos, 0, -1, -1);
+    gdk_draw_image(GDK_DRAWABLE(pix), gc, saved_img->img, 0, 0, 0, 0, MARGIN+PROFILE_WIDTH, PROFILE_HEIGHT);
     saved_img->saved = FALSE;
-    gtk_widget_queue_draw_area(image,
-        saved_img->pos + img_width/2 - PROFILE_WIDTH/2 - MARGIN/2, 0,
-        saved_img->img->width, saved_img->img->height);
   }
-  if ((x >= MARGIN) && (x < (PROFILE_WIDTH + MARGIN))) {
-    /* Save part of the image */
-    if (saved_img->img)
-      gdk_drawable_copy_to_image(GDK_DRAWABLE(pix), saved_img->img,
-          x, 0, 0, 0, saved_img->img->width, saved_img->img->height);
-    else
-      saved_img->img = gdk_drawable_copy_to_image(GDK_DRAWABLE(pix),
-          saved_img->img, x, 0, 0, 0, 1, PROFILE_HEIGHT);
-    saved_img->pos = x;
-    saved_img->saved = TRUE;
-    gdk_draw_line (GDK_DRAWABLE(pix), gc, x, 0, x, image->allocation.height);
-    /* redraw the area which contains the line, saved_width is just convenient */
-    gtk_widget_queue_draw_area(image, event_x, 0, 1, PROFILE_HEIGHT);
+
+  // ATM always save whole image - as anywhere could have changed
+  if (saved_img->img)
+    gdk_drawable_copy_to_image(GDK_DRAWABLE(pix), saved_img->img, 0, 0, 0, 0, MARGIN+PROFILE_WIDTH, PROFILE_HEIGHT);
+  else
+    saved_img->img = gdk_drawable_copy_to_image(GDK_DRAWABLE(pix), saved_img->img, 0, 0, 0, 0, MARGIN+PROFILE_WIDTH, PROFILE_HEIGHT);
+  saved_img->saved = TRUE;
+
+  if ((marker_x >= MARGIN) && (marker_x < (PROFILE_WIDTH + MARGIN))) {
+    gdk_draw_line (GDK_DRAWABLE(pix), gc, marker_x, 0, marker_x, image->allocation.height);
     *marker_drawn = TRUE;
   }
   else
     *marker_drawn = FALSE;
+
+  // Draw a square blob to indicate where we are on track for this graph
+  if ( (blob_x >= MARGIN) && (blob_x < (PROFILE_WIDTH + MARGIN)) && (blob_y < PROFILE_HEIGHT) ) {
+    gdk_draw_rectangle (GDK_DRAWABLE(pix), gc, TRUE, blob_x-3, blob_y-3, 6, 6);
+    *blob_drawn = TRUE;
+  }
+  else
+    *blob_drawn = FALSE;
+  
+  // Anywhere on image could have changed
+  if (*marker_drawn || *blob_drawn)
+    gtk_widget_queue_draw(image);
 }
 
 /**
@@ -284,14 +289,17 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
 
   VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, widgets->vtl, vlp, vvp, tr, is_vt_graph, widgets->profile_width);
-  save_image_and_draw_graph_mark(image,
-				 event->x,
-				 event_box->allocation.width,
-				 window->style->black_gc,
-				 is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img,
-				 widgets->profile_width,
-				 widgets->profile_height,
-				 &widgets->is_marker_drawn);
+  gdouble xm = event->x - event_box->allocation.width/2 + widgets->profile_width/2 + MARGIN/2;
+  save_image_and_draw_graph_marks(image,
+				  xm,
+				  window->style->black_gc,
+				  -1, // Don't draw blob on clicks
+				  0,
+				  is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img,
+				  widgets->profile_width,
+				  widgets->profile_height,
+				  &widgets->is_marker_drawn,
+				  &widgets->is_blob_drawn);
   g_list_free(child);
   widgets->marker_tp = trackpoint;
   gtk_dialog_set_response_sensitive(GTK_DIALOG(widgets->dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, widgets->is_marker_drawn);
@@ -302,7 +310,6 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
     return;
 
   gdouble pc = NAN;
-  gdouble x2;
   GList *other_child = gtk_container_get_children(GTK_CONTAINER(
                          is_vt_graph ? widgets->elev_box : widgets->speed_box));
   GtkWidget *other_image = GTK_WIDGET(other_child->data);
@@ -312,15 +319,17 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
     pc = tp_percentage_by_time ( tr, trackpoint );
   }
   if (!isnan(pc)) {
-    x2 = pc * widgets->profile_width + MARGIN + (event_box->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
-    save_image_and_draw_graph_mark(other_image,
-				   x2,
-				   event_box->allocation.width,
-				   window->style->black_gc,
-				   is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img,
-				   widgets->profile_width,
-				   widgets->profile_height,
-				   &widgets->is_marker_drawn);
+    gdouble x2 = pc * widgets->profile_width + MARGIN;
+    save_image_and_draw_graph_marks(other_image,
+				    x2,
+				    window->style->black_gc,
+				    -1, // Don't draw blob on clicks
+				    0,
+				    is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img,
+				    widgets->profile_width,
+				    widgets->profile_height,
+				    &widgets->is_marker_drawn,
+				    &widgets->is_blob_drawn);
   }
 
   g_list_free(other_child);
@@ -339,7 +348,45 @@ static gboolean track_vt_click( GtkWidget *event_box, GdkEventButton *event, gpo
   return TRUE;  /* don't call other (further) callbacks */
 }
 
-void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
+/**
+ * Calculate y position for blob on elevation graph
+ */
+static gint blobby_altitude ( gdouble x_blob, PropWidgets *widgets )
+{
+  gint ix = (gint)x_blob;
+  // Ensure ix is inbounds
+  if (ix == widgets->profile_width)
+    ix--;
+
+  gdouble diff = widgets->max_altitude - widgets->min_altitude;
+  gint y_blob = 0;
+  // Ensure no divide by zero
+  if (diff > 0.0)
+    y_blob = widgets->profile_height-widgets->profile_height*(widgets->altitudes[ix]-widgets->min_altitude)/(widgets->max_altitude-widgets->min_altitude);
+
+  return y_blob;
+}
+
+/**
+ * Calculate y position for blob on speed graph
+ */
+static gint blobby_speed ( gdouble x_blob, PropWidgets *widgets )
+{
+  gint ix = (gint)x_blob;
+  // Ensure ix is inbounds
+  if (ix == widgets->profile_width)
+    ix--;
+
+  gdouble diff = widgets->max_speed - widgets->min_speed;
+  gint y_blob = 0;
+  // Ensure no divide by zero
+  if (diff > 0.0)
+    y_blob = widgets->profile_height-widgets->profile_height*(widgets->speeds[ix]-widgets->min_speed)/(widgets->max_speed-widgets->min_speed);
+
+  return y_blob;
+}
+
+void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *pass_along )
 {
   VikTrack *tr = pass_along[0];
   PropWidgets *widgets = pass_along[3];
@@ -351,7 +398,7 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - image->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
@@ -384,9 +431,41 @@ void track_profile_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%d m", (int)trackpoint->altitude);
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_elevation), tmp_buf);
   }
+
+  widgets->blob_tp = trackpoint;
+
+  if ( widgets->altitudes == NULL )
+    return;
+
+  GtkWidget *window = gtk_widget_get_toplevel (event_box);
+  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
+  GtkWidget *image = GTK_WIDGET(child->data);
+
+  gint y_blob = blobby_altitude (x, widgets);
+
+  gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
+  if (widgets->is_marker_drawn) {
+    gdouble pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length );
+    if (!isnan(pc)) {
+      marker_x = (pc * widgets->profile_width) + MARGIN;
+    }
+  }
+
+  save_image_and_draw_graph_marks (image,
+				   marker_x,
+				   window->style->black_gc,
+				   MARGIN+x,
+				   y_blob,
+				   &widgets->elev_graph_saved_img,
+				   widgets->profile_width,
+				   widgets->profile_height,
+				   &widgets->is_marker_drawn,
+				   &widgets->is_blob_drawn);
+
+  g_list_free(child);
 }
 
-void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_along )
+void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *pass_along )
 {
   VikTrack *tr = pass_along[0];
   PropWidgets *widgets = pass_along[3];
@@ -398,7 +477,7 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - image->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
@@ -417,15 +496,15 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_time), tmp_buf);
   }
 
+  gint ix = (gint)x;
+  // Ensure ix is inbounds
+  if (ix == widgets->profile_width)
+    ix--;
+
   // Show track speed for this position
   if (trackpoint && widgets->w_cur_speed) {
     static gchar tmp_buf[20];
     // Even if GPS speed available (trackpoint->speed), the text will correspond to the speed map shown
-    gint ix = (gint)x;
-    // Ensure ix is inbounds
-    if (ix == widgets->profile_width)
-      ix--;
-
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
@@ -445,6 +524,38 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
     }
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_speed), tmp_buf);
   }
+
+  widgets->blob_tp = trackpoint;
+
+  if ( widgets->speeds == NULL )
+    return;
+
+  GtkWidget *window = gtk_widget_get_toplevel (event_box);
+  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
+  GtkWidget *image = GTK_WIDGET(child->data);
+
+  gint y_blob = blobby_speed (x, widgets);
+
+  gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
+  if (widgets->is_marker_drawn) {
+    gdouble pc = tp_percentage_by_time ( tr, widgets->marker_tp );
+    if (!isnan(pc)) {
+      marker_x = (pc * widgets->profile_width) + MARGIN;
+    }
+  }
+
+  save_image_and_draw_graph_marks (image,
+				   marker_x,
+				   window->style->black_gc,
+				   MARGIN+x,
+				   y_blob,
+				   &widgets->speed_graph_saved_img,
+				   widgets->profile_width,
+				   widgets->profile_height,
+				   &widgets->is_marker_drawn,
+				   &widgets->is_blob_drawn);
+
+  g_list_free(child);
 }
 
 /**
@@ -755,6 +866,7 @@ static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean 
   GtkWidget *image = NULL;
   GtkWidget *window = gtk_widget_get_toplevel(widget);
   gdouble pc = NAN;
+  gdouble pc_blob = NAN;
 
   // Draw elevations
   if (widgets->elev_box != NULL) {
@@ -772,22 +884,35 @@ static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean 
     image = GTK_WIDGET(child->data);
     g_list_free(child);
 
-    // Ensure marker is redrawn if necessary
-    if (widgets->is_marker_drawn) {
+    // Ensure marker or blob are redrawn if necessary
+    if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
 
       pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length );
-      gdouble marker_x = 0.0;
+      gdouble x_blob = -MARGIN - 1.0; // i.e. Don't draw unless we get a valid value
+      gint y_blob = 0;
+      if (widgets->is_blob_drawn) {
+	pc_blob = tp_percentage_by_distance ( tr, widgets->blob_tp, widgets->track_length );
+	if (!isnan(pc_blob)) {
+	  x_blob = (pc_blob * widgets->profile_width);
+	}
+	y_blob = blobby_altitude (x_blob, widgets);
+      }
+
+      gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
       if (!isnan(pc)) {
-	marker_x = (pc * widgets->profile_width) + MARGIN + (image->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
-	save_image_and_draw_graph_mark(image,
+	marker_x = (pc * widgets->profile_width) + MARGIN;
+      }
+
+      save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       image->allocation.width,
 				       window->style->black_gc,
+				       x_blob+MARGIN,
+				       y_blob,
 				       &widgets->elev_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
-				       &widgets->is_marker_drawn);
-      }
+				       &widgets->is_marker_drawn,
+				       &widgets->is_blob_drawn);
     }
   }
 
@@ -807,23 +932,37 @@ static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean 
     image = GTK_WIDGET(child->data);
     g_list_free(child);
 
-    // Ensure marker is redrawn if necessary
-    if (widgets->is_marker_drawn) {
+    // Ensure marker or blob are redrawn if necessary
+    if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
 
       pc = tp_percentage_by_time ( tr, widgets->marker_tp );
 
-      gdouble marker_x = 0.0;
+      gdouble x_blob = -MARGIN - 1.0; // i.e. Don't draw unless we get a valid value
+      gint    y_blob = 0;
+      if (widgets->is_blob_drawn) {
+	pc_blob = tp_percentage_by_time ( tr, widgets->blob_tp );
+	if (!isnan(pc_blob)) {
+	  x_blob = (pc_blob * widgets->profile_width);
+	}
+	 
+	y_blob = blobby_speed (x_blob, widgets);
+      }
+
+      gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
       if (!isnan(pc)) {
-	marker_x = (pc * widgets->profile_width) + MARGIN + (image->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
-	save_image_and_draw_graph_mark(image,
+	marker_x = (pc * widgets->profile_width) + MARGIN;
+      }
+
+      save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       image->allocation.width,
 				       window->style->black_gc,
+				       x_blob+MARGIN,
+				       y_blob,
 				       &widgets->speed_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
-				       &widgets->is_marker_drawn);
-      }
+				       &widgets->is_marker_drawn,
+				       &widgets->is_blob_drawn);
     }
   }
 }
