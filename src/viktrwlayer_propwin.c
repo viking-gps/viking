@@ -74,6 +74,10 @@ typedef struct _propwidgets {
   gchar *track_name;
   gint      profile_width;
   gint      profile_height;
+  gint      profile_width_old;
+  gint      profile_height_old;
+  gint      profile_width_offset;
+  gint      profile_height_offset;
   GtkWidget *dialog;
   GtkWidget *w_comment;
   GtkWidget *w_track_length;
@@ -688,38 +692,128 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 }
 #undef LINES
 
-
 /**
- * Configure the profile & speed/time images
+ * Draw all graphs
  */
-static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, gpointer *pass_along )
+static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean resized )
 {
   VikTrack *tr = pass_along[0];
   PropWidgets *widgets = pass_along[2];
 
-  // ATM we receive configure_events when the dialog is moved and so no further action is necessary
-  if ( !widgets->configure_dialog )
-    return FALSE;
-
-  widgets->configure_dialog = FALSE;
-
   // Draw graphs even if they are not visible
 
   GList *child = NULL;
+  GtkWidget *image = NULL;
+  GtkWidget *window = gtk_widget_get_toplevel(widget);
+  gdouble pc = NAN;
+
   // Draw elevations
   if (widgets->elev_box != NULL) {
+
+    // Saved image no longer any good as we've resized, so we remove it here
+    if (resized && widgets->elev_graph_saved_img.img) {
+      g_object_unref(widgets->elev_graph_saved_img.img);
+      widgets->elev_graph_saved_img.img = NULL;
+      widgets->elev_graph_saved_img.saved = FALSE;
+    }
+
     child = gtk_container_get_children(GTK_CONTAINER(widgets->elev_box));
     draw_elevations (GTK_WIDGET(child->data), tr, widgets );
+
+    image = GTK_WIDGET(child->data);
     g_list_free(child);
+
+    // Ensure marker is redrawn if necessary
+    if (widgets->is_marker_drawn) {
+
+      pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length );
+      gdouble marker_x = 0.0;
+      if (!isnan(pc)) {
+	marker_x = (pc * widgets->profile_width) + MARGIN + (image->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
+	save_image_and_draw_graph_mark(image,
+				       marker_x,
+				       image->allocation.width,
+				       window->style->black_gc,
+				       &widgets->elev_graph_saved_img,
+				       widgets->profile_width,
+				       widgets->profile_height,
+				       &widgets->is_marker_drawn);
+      }
+    }
   }
 
   // Draw speeds
   if (widgets->speed_box != NULL) {
+
+    // Saved image no longer any good as we've resized
+    if (resized && widgets->speed_graph_saved_img.img) {
+      g_object_unref(widgets->speed_graph_saved_img.img);
+      widgets->speed_graph_saved_img.img = NULL;
+      widgets->speed_graph_saved_img.saved = FALSE;
+    }
+
     child = gtk_container_get_children(GTK_CONTAINER(widgets->speed_box));
     draw_vt (GTK_WIDGET(child->data), tr, widgets );
+
+    image = GTK_WIDGET(child->data);
     g_list_free(child);
+
+    // Ensure marker is redrawn if necessary
+    if (widgets->is_marker_drawn) {
+
+      pc = tp_percentage_by_time ( tr, widgets->marker_tp );
+
+      gdouble marker_x = 0.0;
+      if (!isnan(pc)) {
+	marker_x = (pc * widgets->profile_width) + MARGIN + (image->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
+	save_image_and_draw_graph_mark(image,
+				       marker_x,
+				       image->allocation.width,
+				       window->style->black_gc,
+				       &widgets->speed_graph_saved_img,
+				       widgets->profile_width,
+				       widgets->profile_height,
+				       &widgets->is_marker_drawn);
+      }
+    }
   }
-    
+}
+
+/**
+ * Configure/Resize the profile & speed/time images
+ */
+static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, gpointer *pass_along )
+{
+  PropWidgets *widgets = pass_along[2];
+
+  if (widgets->configure_dialog) {
+    // Determine size offsets between dialog size and size for images
+    // Only on the initialisation of the dialog
+    widgets->profile_width_offset = event->width - widgets->profile_width;
+    widgets->profile_height_offset = event->height - widgets->profile_height;
+    widgets->configure_dialog = FALSE;
+
+    // Without this the settting, the dialog will only grow in vertical size - one can not then make it smaller!
+    gtk_widget_set_size_request ( widget, widgets->profile_width+widgets->profile_width_offset, widgets->profile_height );
+    // In fact this allows one to compress it a bit more vertically as I don't add on the height offset
+  }
+  else {
+    widgets->profile_width_old = widgets->profile_width;
+    widgets->profile_height_old = widgets->profile_height;
+  }
+
+  // Now adjust From Dialog size to get image size
+  widgets->profile_width = event->width - widgets->profile_width_offset;
+  widgets->profile_height = event->height - widgets->profile_height_offset;
+
+  // ATM we receive configure_events when the dialog is moved and so no further action is necessary
+  if ( !widgets->configure_dialog &&
+       (widgets->profile_width_old == widgets->profile_width) && (widgets->profile_height_old == widgets->profile_height) )
+    return FALSE;
+
+  // Draw stuff
+  draw_all_graphs ( widget, pass_along, TRUE );
+
   return FALSE;
 }
 
@@ -1185,12 +1279,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   for (i=0; i<cnt; i++) {
     GtkWidget *label;
 
+    // Settings so the text positioning only moves around vertically when the dialog is resized
+    // This also gives more room to see the track comment
     label = gtk_label_new(NULL);
-    gtk_misc_set_alignment ( GTK_MISC(label), 1, 0 );
+    gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
     gtk_label_set_markup ( GTK_LABEL(label), _(label_texts[i]) );
-    gtk_table_attach_defaults ( table, label, 0, 1, i, i+1 );
+    gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
     if (GTK_IS_MISC(content[i])) {
-      gtk_misc_set_alignment ( GTK_MISC(content[i]), 0, 0 );
+      gtk_misc_set_alignment ( GTK_MISC(content[i]), 0, 0.5 );
     }
     gtk_table_attach_defaults ( table, content[i], 1, 2, i, i+1 );
   }
