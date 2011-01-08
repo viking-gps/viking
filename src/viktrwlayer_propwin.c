@@ -1078,10 +1078,10 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
                          parent,
                          GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
                          GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-                         _("Split at Marker"), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER,
-                         _("Split Segments"), VIK_TRW_LAYER_PROPWIN_SPLIT,
-                         _("Reverse"),        VIK_TRW_LAYER_PROPWIN_REVERSE,
-                         _("Delete Dupl."),   VIK_TRW_LAYER_PROPWIN_DEL_DUP,
+                         _("Split at _Marker"), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER,
+                         _("Split _Segments"), VIK_TRW_LAYER_PROPWIN_SPLIT,
+                         _("_Reverse"),        VIK_TRW_LAYER_PROPWIN_REVERSE,
+                         _("_Delete Dupl."),   VIK_TRW_LAYER_PROPWIN_DEL_DUP,
                          GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
                          NULL);
   widgets->dialog = dialog;
