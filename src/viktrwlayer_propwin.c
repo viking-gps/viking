@@ -440,33 +440,54 @@ void track_vt_move( GtkWidget *image, GdkEventMotion *event, gpointer *pass_alon
   }
 }
 
-static void draw_dem_alt_speed_dist(VikTrack *tr, GdkDrawable *pix, GdkGC *alt_gc, GdkGC *speed_gc, gdouble alt_offset, gdouble alt_diff, gint width, gint height, gint margin)
+/**
+ * Draws DEM points and a respresentative speed on the supplied pixmap
+ *   (which is the elevations graph)
+ */
+static void draw_dem_alt_speed_dist(VikTrack *tr,
+				    GdkDrawable *pix,
+				    GdkGC *alt_gc,
+				    GdkGC *speed_gc,
+				    gdouble alt_offset,
+				    gdouble alt_diff,
+				    gint width,
+				    gint height,
+				    gint margin,
+				    gboolean do_dem,
+				    gboolean do_speed)
 {
   GList *iter;
-  gdouble dist = 0;
   gdouble max_speed = 0;
   gdouble total_length = vik_track_get_length_including_gaps(tr);
 
-  for (iter = tr->trackpoints->next; iter; iter = iter->next) {
-    if (!isnan(VIK_TRACKPOINT(iter->data)->speed))
-      max_speed = MAX(max_speed, VIK_TRACKPOINT(iter->data)->speed);
-  }
-  max_speed = max_speed * 110 / 100;
-
-  for (iter = tr->trackpoints->next; iter; iter = iter->next) {
-    int x, y_alt, y_speed;
-    gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord), VIK_DEM_INTERPOL_BEST);
-    elev -= alt_offset;
-    dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
-      &(VIK_TRACKPOINT(iter->prev->data)->coord) );
-    x = (width * dist)/total_length + margin;
-    if ( elev != VIK_DEM_INVALID_ELEVATION ) {
-      y_alt = height - ((height * elev)/alt_diff);
-      gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
+  if (do_speed) {
+    for (iter = tr->trackpoints->next; iter; iter = iter->next) {
+      if (!isnan(VIK_TRACKPOINT(iter->data)->speed))
+	max_speed = MAX(max_speed, VIK_TRACKPOINT(iter->data)->speed);
     }
-    if (!isnan(VIK_TRACKPOINT(iter->data)->speed)) {
-      y_speed = height - (height * VIK_TRACKPOINT(iter->data)->speed)/max_speed;
-      gdk_draw_rectangle(GDK_DRAWABLE(pix), speed_gc, TRUE, x-2, y_speed-2, 4, 4);
+    max_speed = max_speed * 110 / 100;
+  }
+
+  gdouble dist = 0;
+  for (iter = tr->trackpoints->next; iter; iter = iter->next) {
+    int x;
+    dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
+			     &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+    x = (width * dist)/total_length + margin;
+    if (do_dem) {
+      gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord), VIK_DEM_INTERPOL_BEST);
+      elev -= alt_offset;
+      if ( elev != VIK_DEM_INVALID_ELEVATION ) {
+	int y_alt = height - ((height * elev)/alt_diff);
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
+      }
+    }
+    if (do_speed) {
+      // This is just a speed indicator - no actual values can be inferred by user
+      if (!isnan(VIK_TRACKPOINT(iter->data)->speed)) {
+	int y_speed = height - (height * VIK_TRACKPOINT(iter->data)->speed)/max_speed;
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), speed_gc, TRUE, x-2, y_speed-2, 4, 4);
+      }
     }
   }
 }
@@ -566,7 +587,17 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->altitudes[i]-mina)/(maxa-mina) );
 
-  draw_dem_alt_speed_dist(tr, GDK_DRAWABLE(pix), dem_alt_gc, gps_speed_gc, mina, maxa - mina, widgets->profile_width, widgets->profile_height, MARGIN);
+  draw_dem_alt_speed_dist(tr,
+			  GDK_DRAWABLE(pix),
+			  dem_alt_gc,
+			  gps_speed_gc,
+			  mina,
+			  maxa - mina,
+			  widgets->profile_width,
+			  widgets->profile_height,
+			  MARGIN,
+			  TRUE,
+			  TRUE);
 
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
