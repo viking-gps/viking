@@ -180,14 +180,14 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
 /**
  * Returns whether the marker was drawn or not
  */
-static void draw_graph_mark (GtkWidget *image,
-			     gdouble event_x,
-			     gint img_width,
-			     GdkGC *gc,
-			     PropSaved *saved_img,
-			     gint PROFILE_WIDTH,
-			     gint PROFILE_HEIGHT,
-			     gboolean *marker_drawn)
+static void save_image_and_draw_graph_mark (GtkWidget *image,
+					    gdouble event_x,
+					    gint img_width,
+					    GdkGC *gc,
+					    PropSaved *saved_img,
+					    gint PROFILE_WIDTH,
+					    gint PROFILE_HEIGHT,
+					    gboolean *marker_drawn)
 {
   GdkPixmap *pix = NULL;
   /* the pixmap = margin + graph area */
@@ -273,14 +273,14 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
 
   VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, widgets->vtl, vlp, vvp, tr, is_vt_graph, widgets->profile_width);
-  draw_graph_mark(image,
-		  event->x,
-		  event_box->allocation.width,
-		  window->style->black_gc,
-		  is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img,
-		  widgets->profile_width,
-		  widgets->profile_height,
-		  &widgets->is_marker_drawn);
+  save_image_and_draw_graph_mark(image,
+				 event->x,
+				 event_box->allocation.width,
+				 window->style->black_gc,
+				 is_vt_graph ? &widgets->speed_graph_saved_img : &widgets->elev_graph_saved_img,
+				 widgets->profile_width,
+				 widgets->profile_height,
+				 &widgets->is_marker_drawn);
   g_list_free(child);
   widgets->marker_tp = trackpoint;
   gtk_dialog_set_response_sensitive(GTK_DIALOG(widgets->dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, widgets->is_marker_drawn);
@@ -302,14 +302,14 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
   }
   if (!isnan(pc)) {
     x2 = pc * widgets->profile_width + MARGIN + (event_box->allocation.width/2 - widgets->profile_width/2 - MARGIN/2);
-    draw_graph_mark(other_image,
-		    x2,
-		    event_box->allocation.width,
-		    window->style->black_gc,
-		    is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img,
-		    widgets->profile_width,
-		    widgets->profile_height,
-		    &widgets->is_marker_drawn);
+    save_image_and_draw_graph_mark(other_image,
+				   x2,
+				   event_box->allocation.width,
+				   window->style->black_gc,
+				   is_vt_graph ? &widgets->elev_graph_saved_img : &widgets->speed_graph_saved_img,
+				   widgets->profile_width,
+				   widgets->profile_height,
+				   &widgets->is_marker_drawn);
   }
 
   g_list_free(other_child);
