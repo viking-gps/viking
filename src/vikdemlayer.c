@@ -316,7 +316,9 @@ static int dem_layer_load_list_thread ( dem_load_thread_data *dltd, gpointer thr
   // ATM as each file is processed the screen is not updated (no mechanism exposed to a_dems_load_list)
   // Thus force draw only at the end, as loading is complete/aborted
   gdk_threads_enter();
-  vik_layer_emit_update ( VIK_LAYER(dltd->vdl) );
+  // Test is helpful to prevent Gtk-CRITICAL warnings if the program is exitted whilst loading
+  if ( IS_VIK_LAYER(dltd->vdl) )
+    vik_layer_emit_update ( VIK_LAYER(dltd->vdl) );
   gdk_threads_leave();
 
   return result;
