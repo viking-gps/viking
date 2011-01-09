@@ -449,6 +449,7 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
   buffer[fread(buffer, 1, DEM_BLOCK_SIZE, f)] = '\0';
   if ( ! dem_parse_header ( buffer, rv ) ) {
     g_free ( rv );
+    fclose(f);
     return NULL;
   }
   /* TODO: actually use header -- i.e. GET # OF COLUMNS EXPECTED */
