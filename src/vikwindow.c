@@ -239,6 +239,14 @@ VikLayersPanel * vik_window_layers_panel(VikWindow *vw)
   return(vw->viking_vlp);
 }
 
+/**
+ *  Returns the statusbar for the window
+ */
+VikStatusbar * vik_window_get_statusbar ( VikWindow *vw )
+{
+  return vw->viking_vs;
+}
+
 void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
 {
   int i, j, tool_count;
