@@ -79,7 +79,6 @@ typedef struct _propwidgets {
   gboolean  configure_dialog;
   VikTrwLayer *vtl;
   VikTrack *tr;
-  VikLayersPanel *vlp;
   gchar *track_name;
   gint      profile_width;
   gint      profile_height;
@@ -1405,7 +1404,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   PropWidgets *widgets = prop_widgets_new();
   widgets->vtl = vtl;
   widgets->tr = tr;
-  widgets->vlp = vlp;
   widgets->profile_width  = PROPWIN_PROFILE_WIDTH;
   widgets->profile_height = PROPWIN_PROFILE_HEIGHT;
   widgets->track_name = track_name;
