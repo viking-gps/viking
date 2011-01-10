@@ -2020,16 +2020,20 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
 
 gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikCoord *def_coord )
 {
-  gchar *name = highest_wp_number_get(vtl);
+  gchar *default_name = highest_wp_number_get(vtl);
   VikWaypoint *wp = vik_waypoint_new();
+  gchar *returned_name;
+  gboolean updated;
   wp->coord = *def_coord;
 
-  if ( a_dialog_new_waypoint ( w, &name, wp, vik_trw_layer_get_waypoints ( vtl ), vtl->coord_mode ) )
+  if ( ( returned_name = a_dialog_waypoint ( w, default_name, wp, vik_trw_layer_get_waypoints ( vtl ), vtl->coord_mode, TRUE, &updated ) ) )
   {
     wp->visible = TRUE;
-    vik_trw_layer_add_waypoint ( vtl, name, wp );
+    vik_trw_layer_add_waypoint ( vtl, returned_name, wp );
+    g_free (default_name);
     return TRUE;
   }
+  g_free (default_name);
   vik_waypoint_free(wp);
   return FALSE;
 }
@@ -2508,10 +2512,11 @@ static void trw_layer_properties_item ( gpointer pass_along[5] )
     VikWaypoint *wp = g_hash_table_lookup ( vtl->waypoints, pass_along[3] );
     if ( wp )
     {
-      if ( a_dialog_new_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), NULL, wp, NULL, vtl->coord_mode ) )
+      gboolean updated = FALSE;
+      a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), pass_along[3], wp, NULL, vtl->coord_mode, FALSE, &updated );
 
-      if ( VIK_LAYER(vtl)->visible )
-        vik_layer_emit_update ( VIK_LAYER(vtl) );
+      if ( updated && VIK_LAYER(vtl)->visible )
+	vik_layer_emit_update ( VIK_LAYER(vtl) );
     }
   }
   else

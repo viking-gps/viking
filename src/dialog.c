@@ -188,8 +188,13 @@ static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
   g_free(sym);
 }
 
+/* Specify if a new waypoint or not */
+/* If a new waypoint then it uses the default_name for the suggested name allowing the user to change it.
+    The name to use is returned
+   When an existing waypoint the default name is shown but is not allowed to be changed and NULL is returned
+ */
 /* todo: less on this side, like add track */
-gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode )
+gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode, gboolean is_new, gboolean *updated )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Waypoint Properties"),
                                                    parent,
@@ -203,9 +208,6 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
   GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL, *commentlabel, 
     *commententry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
   GtkListStore *store;
-
-
-
 
   gchar *lat, *lon, *alt;
 
@@ -226,19 +228,25 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     g_critical("Houston, we've had a problem. height=%d", height_units);
   }
 
-  if ( dest != NULL )
+  *updated = FALSE;
+
+  namelabel = gtk_label_new (_("Name:"));
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), namelabel, FALSE, FALSE, 0);
+  if ( is_new )
   {
-    namelabel = gtk_label_new (_("Name:"));
+    // New waypoint, so name is still changeable
     nameentry = gtk_entry_new ();
-    if ( *dest ) {
-      gtk_entry_set_text( GTK_ENTRY(nameentry), *dest );
-      g_free ( *dest );
-      *dest = NULL;
-    }
+    if ( default_name )
+      gtk_entry_set_text( GTK_ENTRY(nameentry), default_name );
     g_signal_connect_swapped ( nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
-    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), namelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), nameentry, FALSE, FALSE, 0);
   }
+  else {
+    // Existing waypoint - so can not change the name this way - but at least can see it
+    if ( default_name )
+      nameentry = gtk_label_new ( default_name );
+  }
+  if ( nameentry )
+    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), nameentry, FALSE, FALSE, 0);
 
   latlabel = gtk_label_new (_("Latitude:"));
   latentry = gtk_entry_new ();
@@ -287,7 +295,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (symbolentry), r, FALSE);
     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (symbolentry), r, "text", 2, NULL);
 
-    if ( dest == NULL && wp->symbol ) {
+    if ( !is_new && wp->symbol ) {
       gboolean ok;
       gchar *sym;
       for (ok = gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &iter ); ok; ok = gtk_tree_model_iter_next ( GTK_TREE_MODEL(store), &iter)) {
@@ -307,10 +315,10 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
     }
   }
 
-  if ( dest == NULL && wp->comment )
+  if ( !is_new && wp->comment )
     gtk_entry_set_text ( GTK_ENTRY(commententry), wp->comment );
 
-  if ( dest == NULL && wp->image )
+  if ( !is_new && wp->image )
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
 
@@ -333,20 +341,20 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
   while ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
-    if ( dest )
+    if ( is_new )
     {
-      const gchar *constname = gtk_entry_get_text ( GTK_ENTRY(nameentry) );
-      if ( strlen(constname) == 0 ) /* TODO: other checks (isalpha or whatever ) */
+      const gchar *entered_name = gtk_entry_get_text ( GTK_ENTRY(nameentry) );
+      if ( strlen(entered_name) == 0 ) /* TODO: other checks (isalpha or whatever ) */
         a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
       else {
-        gchar *name = g_strdup ( constname );
 
-        if ( g_hash_table_lookup ( waypoints, name ) && !a_dialog_yes_or_no ( parent, _("The waypoint \"%s\" exists, do you want to overwrite it?"), name ) )
-          g_free ( name );
+        gchar *use_name = g_strdup ( entered_name );
+
+        if ( g_hash_table_lookup ( waypoints, use_name ) && !a_dialog_yes_or_no ( parent, _("The waypoint \"%s\" exists, do you want to overwrite it?"), use_name ) )
+          g_free ( use_name );
         else
         {
           /* Do It */
-          *dest = name;
           ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
           ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
           vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
@@ -381,7 +389,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 	  }		
 
           gtk_widget_destroy ( dialog );
-          return TRUE;
+          return use_name;
         }
       } /* else (valid name) */
     }
@@ -424,12 +432,13 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
       }		
 
       gtk_widget_destroy ( dialog );
-
-      return TRUE;
+      
+      *updated = TRUE;
+      return NULL;
     }
   }
   gtk_widget_destroy ( dialog );
-  return FALSE;
+  return NULL;
 }
 
 static void get_selected_foreach_func(GtkTreeModel *model,

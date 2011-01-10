@@ -50,8 +50,12 @@ void a_dialog_about ( GtkWindow *parent );
 gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const struct LatLon *old );
 gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UTM *old );
 
-/* if *dest is non-null, uses it as a default and frees it */
-gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode );
+/* Specify if a new waypoint or not */
+/* If a new waypoint then it uses the default_name for the suggested name allowing the user to change it.
+    The name to use is returned
+   When an existing waypoint the name is shown but is not allowed to be changed and NULL is returned
+ */
+gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode, gboolean is_new, gboolean *updated );
 
 gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name );
 
