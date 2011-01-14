@@ -262,7 +262,7 @@ static void treeview_add_columns ( VikTreeview *vt )
   g_signal_connect (renderer, "edited",
 		    G_CALLBACK (treeview_edited_cb), vt);
 
-  g_object_set (G_OBJECT (renderer), "xalign", 0.0, NULL);
+  g_object_set (G_OBJECT (renderer), "xalign", 0.0, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 
   col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (vt),
 							    -1, _("Layer Name"),
@@ -271,9 +271,11 @@ static void treeview_add_columns ( VikTreeview *vt )
 							    "editable", EDITABLE_COLUMN,
 							    NULL);
 
+  /* ATM the minimum overall width (and starting default) of the treeview size is determined
+     by the buttons added to the bottom of the layerspanel */
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (vt), col_offset - 1);
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
-                                   GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+                                   GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), TRUE);
 
   /* Layer type */
