@@ -57,7 +57,7 @@ VikLayerParamData bfilter_simplify_params_defaults[] = {
 };
 
 VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
-  N_("Simplify All Tracks"),
+  N_("Simplify All Tracks..."),
   N_("Simplified Tracks"),
   VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
