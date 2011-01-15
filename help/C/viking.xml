@@ -510,12 +510,13 @@ The current NASA SRTM server is: http://dds.cr.usgs.gov/srtm/version2_1/
 </section>
 
 </section>
+
 <section><title>Tools</title>
 <para>
 You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
 </para>
 <para>
-Scroll: zoom in and out without changing center (also Ctrl+, Ctrl-)
+Scroll: zoom in and out without changing the center (also Ctrl+, Ctrl- [*not* KeyPad +/-])
 </para>
 <para>
 Ctrl-scroll: pan north-south (also Ctrl-up, Ctrl-down)
@@ -527,88 +528,91 @@ Shift-scroll: pan east-west (also Ctrl-left, Ctrl-right)
 Ctrl-shift-scroll: zoom in and out, keeping mouse over same location (like Google maps)
 </para>
 <para>
-Middle-click: make the clicked point on the map the center
+Left or Middle-click: make the clicked point on the map the center
 </para>
 <para>
 Middle-click and drag: pan
 </para>
+
 <section><title>Zoom</title>
 <para>
 Zooms in and out on the clicked part of the map.
 </para>
-
 </section>
+
 <section><title>Ruler</title>
 <para>
 The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
 A second click will 'freeze' the ruler at that point.
 </para>
-
 </section>
+
 <section><title>TrackWaypoint Layer Tools</title>
 <para>
-You must have a TrackWaypoint Layer selected to use these.
+You must have a TrackWaypoint Layer selected to use these tools.
 </para>
-<section><title>New Waypoint</title>
-<para></para>
+<section><title>Create Waypoint</title>
+<para>
+Left click will open the new waypoint dialog using the specified position.
+</para>
 </section>
-<section><title>New Track</title>
-<para>
-Right-click: undo one point
-</para>
-<para>
-Ctrl: snap to trackpoint
-</para>
-<para>
-Shift: snap to waypoint
-</para>
 
+<section><title>Create/Begin Track</title>
+<para>
+Left click to create a new trackpoint. If it's the initial trackpoint you will be asked to enter a name for the track.
+If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoint position to a nearby existing trackpoint.
+Right click or <keycap>Backspace</keycap> : undo one point.
+</para>
+<para>
+Double click or <keycap>Escape</keycap> : finish track creation.
+</para>
 </section>
+
 <section><title>Edit Waypoint</title>
 <para>
-Click/drag: select/move a waypoint
-</para>
-<para>
-<keycap>Ctrl</keycap>: snap to trackpoint
-</para>
-<para>
-Shift: snap to waypoint
+Left Click/drag: select/move a waypoint.
+If <keycap>Ctrl</keycap> is held at the same time, it will jump the waypoint position to a nearby existing trackpoint.
+If <keycap>Shift</keycap> is held at the same time, it will jump the waypoint position to a nearby existing waypoint.
 </para>
 <para>Right-click on waypoint: opens a menu with waypoint actions (the
 same menu accessed by right-clicking the waypoint in the layers panel)
 </para>
-
 </section>
+
 <section><title>Edit Trackpoint</title>
 <para>
-Ctrl: snap to trackpoint
+Left click near a trackpoint (in screen pixel terms) to bring up the Track Point Edit dialog on that trackpoint.
+Whilst the edit dialog is already open, left click again and drag enables moving of the trackpoint.
+If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoint position to a nearby existing trackpoint.
 </para>
 <para>
-Shift: snap to waypoint
+Options in the Track Point Edit dialog include: change position, go to next, go to previous, delete, insert (halfway to next trackpoint) and splitting the track.
 </para>
-
 </section>
+
 <section><title>Show Picture</title>
 <para>
-Uses <application>eog</application> to open a picture shown as a picture waypoint.
+Opens an image viewer with the picture associated with the waypoint.
+On Linux this uses <application>eog</application>.
+On Windows this uses the default system image viewer.
 </para>
-
 </section>
+
 <section><title>Magic Scissors</title>
 <para>Creates a track using Google maps routing between two points.
-Requires internet connection. Click one point, then click another to
+Requires an internet connection. Click one point, then click another to
 create a track.
 </para>
 <para>
-Right-click: undo last routing
+Right-click: undo last routing (only track removed - not any waypoints)
 </para>
 <para>
-Ctrl: continue previous track
+<keycap>Ctrl</keycap>: continue previous track
 </para>
-
 </section>
 
 </section>
+
 <section><title>Georef Map Layer Tools</title>
 <para>
 You must have a Georef Map Layer selected to use these tools.
@@ -618,30 +622,34 @@ You must have a Georef Map Layer selected to use these tools.
 &appname; zoom level accordingly. Useful if you are trying to match GPS
 data to a georeferenced map.
 </para>
-
 </section>
+
 <section><title>Georef move</title>
 <para>
 Drag to move the georeferenced map.
 </para>
-
+</section>
 </section>
 
-</section>
 <section><title>Map Download</title>
+<para>
+You must have a Map Layer selected to use this.
+</para>
 <para>
 Click to download a single tile. Drag to download tiles in the dragged rectangle area.
 </para>
 <para>
 Right-click to redownload bad/all tiles. Right-click and drag to redownload bad/all tiles in the dragged rectangle area.
 </para>
-
 </section>
+
 <section><title>DEM Download</title>
+<para>
+You must have a DEM Layer selected to use this.
+</para>
 <para>
 Click to download and import a DEM file.
 </para>
-
 </section>
 
 <section><title>Webtools</title>
@@ -657,10 +665,10 @@ Jumping from &app; to such service can become annoying.
 <para>
 This feature is called <guilabel>Webtools</guilabel>. It is also known as External Tools.
 </para>
-
 </section>
 
 </section>
+
 <!-- Preferences -->
 <section><title>Preferences</title>
 <section><title>Localisation</title>
