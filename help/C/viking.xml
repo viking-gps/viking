@@ -297,7 +297,7 @@ Version1.1+: An individual track can be exported to a GPX file via the track men
 </para>
 </section>
 
-<section><title>New Waypoint</title>
+<section id="new_wp"><title>New Waypoint</title>
 <para>
 This opens a dialog box to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
 </para>
@@ -455,15 +455,28 @@ work correctly.
 </section>
 
 </section>
+
 <section><title>Waypoint Operations</title>
-<section><title>Goto Geocache page</title>
+
+<section><title>Goto</title>
+<para>
+This centers the viewport on the selected waypoint.
+</para>
+</section>
+
+<section><title>Visit Geocache Webpage</title>
 <para>
 If the waypoint's name is in Geocache form (GCXXXXX) you can launch a web browser to go to the Geocache page.
 </para>
-
 </section>
 
+<section><title>New Waypoint</title>
+<para>
+Same as the layer <link linkend="new_wp">New Waypoint</link>.
+</para>
 </section>
+
+</section><!-- WP END -->
 
 </section><!-- TRW Layer END -->
 
