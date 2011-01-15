@@ -229,6 +229,7 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </section>
 
 <section><title>Layers</title>
+
 <section><title>TrackWaypoint Layer</title>
 <para>
 TrackWaypoint layers display GPS data (tracks and waypoints).
@@ -245,24 +246,118 @@ track or waypoint by expanding the Tracks or Waypoints sublayers in the
 layers panel to show all tracks or waypoints, and typing the name of
 the track/waypoint.
 </para>
+
 <section><title>Layer Operations</title>
 <para>
 The layer has a context menu with several operations.
 </para>
-<section><title>Export</title>
+
+<section><title>View Layer</title>
 <para>
-The layer can be exported to a file GPX, GPSPoint or GPSMapper format. 
+Version1.1+: This will automatically move the viewport and select the best zoom level to see the whole layer (i.e. tracks and waypoints).
+</para>
+</section>
+
+<section><title>View All Tracks</title>
+<para>
+Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the tracks in the layer (ignoring positions of any waypoints).
+</para>
+</section>
+
+<section><title>View All Waypoints</title>
+<para>
+Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the waypoints in the layer (ignoring positions of any tracks).
+</para>
+</section>
+
+<section><title>Goto Center of Layer</title>
+<para>
+This will automatically move the viewport to see the whole layer (i.e. tracks and waypoints). It does not adjust the zoom level.
+</para>
+</section>
+
+<section><title>Goto Waypoint</title>
+<para>
+This opens a dialog box to enter a name of waypoint to search for. If it is found the viewport is centred on it.
 </para>
 <note>
 <para>
-Only the entire layer can be exported, it is currently
-not possible to export an individual track.
+Note this search is not very clever and only finds exact matches.
+You are probably better off expanding the waypoint list and directly start typing, as mentioned above, which finds a match based on each letter typed.
 </para>
 </note>
-
 </section>
 
+<section><title>Export Layer</title>
+<para>
+The layer (all tracks and waypoints) can be exported to a file GPX, GPSPoint or GPSMapper format.
+</para>
+<para>
+Version1.1+: An individual track can be exported to a GPX file via the track menu.
+</para>
 </section>
+
+<section><title>New Waypoint</title>
+<para>
+This opens a dialog box to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
+</para>
+</section>
+
+<section><title>Add Wikipedia Waypoints</title>
+<para>
+This gets 'interesting' points from Wikipedia for the specified view: either within the extent of layer bounds or within the current viewport boundary.
+</para>
+</section>
+
+<section id="osm_upload"><title>Upload To OSM</title>
+<para>
+This opens a dialog to upload all tracks and waypoints to OSM traces.
+Useful if you are an OSM contributor (you will need an OSM account), these details can be stored in &appname; preferences.
+</para>
+<para>
+ &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OSM.
+</para>
+<note>
+<para>
+ <emphasis role="bold">Warning!</emphasis>
+The password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OSM server. This is due to OSM's basic authentication method.
+</para>
+</note>
+</section>
+
+<section><title>Filter</title>
+<section><title>Simplify All Tracks</title>
+<para>
+This opens dialog to request the number of points each track will be simplified using <application>GPSBabel</application>. The result is put into a new layer. The simplification method removes points considered to be in a 'near straight line', thus reducing the number of points and attempting to keep the most important turning points.
+</para>
+</section>
+<section><title>Remove Duplicate Waypoints</title>
+<para>
+Remove Duplicate Waypoints - fairly self explainatory, with the results created in a new layer.
+</para>
+<note>
+<para>
+However it only considers a precise position (waypoints only 1 metre away from each other are considered different) and also doesn't consider if the waypoints have different comments, symbols or images.
+</para>
+</note>
+</section>
+</section>
+
+<section id="filter_with_track"><title>Filter With <emphasis>Trackname</emphasis></title>
+<para>
+This runs <application>GPSBabel</application> on the layer using information from a previously selected track (select via the track menu "Use With Filter" option) with the following command types:
+</para>
+<itemizedlist>
+<listitem><para>Waypoints Inside This</para></listitem>
+<listitem><para>Waypoints Outside This</para></listitem>
+</itemizedlist>
+<para>
+The result is generated in a new Track/Waypoint layer.
+</para>
+</section>
+
+</section><!-- End TRW Layer Options -->
+
 <section><title>Track Properties</title>
 <para>
 Show many useful statistics about a track, including a
@@ -370,7 +465,8 @@ If the waypoint's name is in Geocache form (GCXXXXX) you can launch a web browse
 
 </section>
 
-</section>
+</section><!-- TRW Layer END -->
+
 <section><title>GPS Layer</title>
 <para>
 The GPS layer is responsible for uploading and downloading GPS data
