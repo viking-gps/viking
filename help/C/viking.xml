@@ -497,6 +497,14 @@ The record of the Google route is stored in the track's comment, so if the comme
 
 </section><!-- End Track Options -->
 
+<section><title>Waypoint Properties</title>
+
+<para>
+This shows a dialog with detailed information for the waypoint. Many properties of the waypoint can changed here, such as the comment, the symbol used in drawing or the image (normally a photograph taken at this position) assiocated with it. When a waypoint has an image, a thumbnail of it is drawn in the viewport for the waypoint (in preference to the symbol).
+</para>
+
+</section><!-- WP Prop END -->
+
 <section><title>Waypoint Operations</title>
 
 <section><title>Goto</title>
