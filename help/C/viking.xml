@@ -637,6 +637,57 @@ Using many DEMs is CPU/memory intensive. Depending on your computer's capability
 
 </section><!-- End DEM -->
 
+
+<section><title>Maps Layer</title>
+<para>
+This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible.
+You will need an open internet connection when you are downloading maps, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
+</para>
+<para>
+Some maps are continually improving over time (e.g. OSM) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - 'Tile Age' to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
+</para>
+<para>
+Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServer-USA">Terraserver</ulink> (Primarily USA coverage) and <ulink url="http://en.wikipedia.org/wiki/OpenStreetMap">OpenStreetMap (OSM)</ulink> ones and more:
+</para>
+<itemizedlist>
+<listitem><para>Terraserver Topos</para></listitem>
+<listitem><para>Terraserver Aerials</para></listitem>
+<listitem><para>Terraserver Urban Areas</para></listitem>
+<listitem><para>OpenStreetMap (Osmarender)</para></listitem>
+<listitem><para>OpenStreetMap (Mapnik) - This is the default</para></listitem>
+<listitem><para>OpenStreetMap (Maplint)</para></listitem>
+<listitem><para>OpenStreetMap (Cycle)</para></listitem>
+<listitem><para>NASA BlueMarble</para></listitem>
+<listitem><para>SpotMap (&appname; Version1.1+)</para></listitem>
+</itemizedlist>
+
+<para>
+&appname; can be configured to handle additional maps. See <link linkend="extend_viking">Extending &appname;</link> for further detail.
+</para>
+
+<section><title>Layer Operations</title>
+<section><title>Download Missing Onscreen Maps</title>
+<para>
+This requests map tiles for areas of the viewport that do not currently have one.
+</para>
+</section>
+
+<section><title>Download New Onscreen Maps</title>
+<para>
+This requests map tiles only if the maps are older than the Tile Age preference.
+</para>
+</section>
+
+<section><title>Reload All Onscreen Maps</title>
+<para>
+Force a refresh of all visible map tiles.
+</para>
+</section>
+</section>
+
+
+</section><!-- End Maps -->
+
 <section><title>Tools</title>
 <para>
 You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
@@ -1169,7 +1220,7 @@ to write the waypoints to this file.
 </para>
 </section>
 
-<section>
+<section id="extend_viking">
     <title>Extending Viking</title>
 
       <para>Currently, &app; has some extention points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
@@ -1189,7 +1240,8 @@ to write the waypoints to this file.
       <section>
         <title>Map Source</title>
         <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
-        <para>An example of the file in the distribution <filename>doc/examples/maps.xml</filename>.</para>
+        <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Maps">Maps Wiki</ulink></para>
+
         <para>The VikSlippyMapSource allows to declare any map's source working like OpenStreetMap. It supports the following properties:
           <variablelist>
             <varlistentry>
