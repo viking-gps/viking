@@ -525,7 +525,7 @@ Same as the layer <link linkend="new_wp">New Waypoint</link>.
 <para>
 The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
-Expand the GP SLayer in the layers panel to see the two TRWLayers it
+Expand the GPS layer in the layers panel to see the two TrackWaypoint layers it
 uses for uploading and downloading. To upload, download, or use
 realtime tracking, right-click the GPS layer and click the appropiate
 menu item.
@@ -535,8 +535,8 @@ menu item.
 <para>
 To download data from the GPS, right-click the GPS layer and click <guimenuitem>Download from GPS</guimenuitem>.
 </para>
-
 </section>
+
 <section><title>Upload</title>
 <para>
 To upload data to the GPS, first populate the GPS Upload child
@@ -544,18 +544,30 @@ layer of the GPS layer (either by creating waypoints/tracks in it, or
 copying and pasting or dragging waypoints/tracks from another layer).
 Then right-click the GPS layer and click <guimenuitem>Upload to GPS</guimenuitem>.
 </para>
-
 </section>
+
 <section><title>Realtime Tracking</title>
 <para>
 You must set up gpsd correctly or use a GPSD server and put the
 correct information in the GPS layer properties dialog. Then right-click
 the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
 </para>
-
 </section>
 
+<section><title>Empty <emphasis>Item</emphasis></title>
+<para>
+There are several options to quickly delete a subsection of data:
+</para>
+<itemizedlist>
+<listitem><para>Empty Realtime</para></listitem>
+<listitem><para>Empty Upload</para></listitem>
+<listitem><para>Empty Download</para></listitem>
+<listitem><para>Empty All</para></listitem>
+</itemizedlist>
 </section>
+
+</section><!-- End GPS -->
+
 <section><title>(Digital Elevation Model) DEM Layer (todo)</title>
 <para>
 The current NASA SRTM server is: http://dds.cr.usgs.gov/srtm/version2_1/
