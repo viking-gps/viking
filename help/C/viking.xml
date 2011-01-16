@@ -396,8 +396,30 @@ The following colors are used in the elevation-distance graph:
 </variablelist>
 
 </section>
+
 <section><title>Track Operations</title>
-<section><title>Merge by time</title>
+
+<section><title>Goto</title>
+<para>
+This centers the viewport on the selected position on the track:
+</para>
+<itemizedlist>
+<listitem><para>Startpoint</para></listitem>
+<listitem><para>"Center" - the notional center from the bounds of the track</para></listitem>
+<listitem><para>Endpoint</para></listitem>
+<listitem><para>Version1.1+: Highest Altitude</para></listitem>
+<listitem><para>Version1.1+: Lowest Altitude</para></listitem>
+<listitem><para>Version1.1+: Maximum Speed</para></listitem>
+</itemizedlist>
+</section>
+
+<section><title>View</title>
+<para>
+Version1.1+: This centers the viewport on the track and selects the best zoom level to see it.
+</para>
+</section>
+
+<section><title>Merge By Time</title>
 <para>
 This operation repeatedly tries to merge the right-clicked track
 with tracks in the same TrackWaypoint layer. The tracks which are
@@ -406,55 +428,74 @@ threshold time away. This way, if you somehow end up with lots of small
 segments (say, caused by turning the GPS on and off) you can merge them
 easily into one track.
 </para>
-
 </section>
-<section><title>Split by time</title>
+
+<section><title>Merge With Other Tracks</title>
+<para>
+This opens a dialog listing the other tracks in the same TrackWaypoint layer, from which one can select the other tracks to merge with.
+</para>
+</section>
+
+<section><title>Split By Time</title>
 <para>
 This operation will split a single track into segments wherever the
 time interval between successive trackpoints is larger than some
 threshold. This is useful when processing raw NMEA GPS data, especially
 taken over a long time.
 </para>
-
 </section>
+
 <section><title>Apply DEM data</title>
 <para>
 If any DEM data is loaded, this will apply the DEM data to give the track elevation data.
 </para>
-
 </section>
-<section><title>Extend track end</title>
+
+<section><title>Export Track as GPX</title>
 <para>
-Change the current tool to add track and add points to the end of the track.
+Version1.1+: This allows exporting the track as a GPX file by opening a file save dialog.
 </para>
-
 </section>
+
+<section><title>Extend Track End</title>
+<para>
+Changes the current tool to add trackpoints to the end of the track.
+</para>
+</section>
+
+<section><title>Extend Using Magic Scissors</title>
+<para>
+Enables the Magic Scissors tool. Thus on a subsequent left click in the viewport, a route is calculated from the end of track to that point using Google's route service and applied to the track.
+</para>
+</section>
+
 <section><title>Upload to OSM</title>
 <para>
-Useful if you are an OSM contributor. &appname;
-allows you to import a track, edit it if you so wish to remove
-duplicate points, perhaps track points leading to your home, and then
-directly export the track to OSM.
+Same as the layer <link linkend="osm_upload">Upload to OSM</link>, but only applies to the track.
 </para>
-
 </section>
+
+<section><title>Use With Filter</title>
+<para>
+This selects the track to be used in the <link linkend="filter_with_track">Filter With <emphasis>Trackname</emphasis></link> feature.
+</para>
+</section>
+
 <section><title>View Google Directions</title>
 <para>
-Launch a web browser to see the Google directions page which
-yielded the route.
+This option is only available on a track created using the Magic Scissors tool.
+</para>
+<para>
+Launch a web browser to see the Google directions page which yielded the route.
 </para>
 <note>
 <para>
-The record of the Google route is stored in
-the track's comment, so if the comment is changed (or the route was
-created by something other than the Magic Scissors tool) this will not
-work correctly.
+The record of the Google route is stored in the track's comment, so if the comment is changed (or the route was created by something other than the Magic Scissors tool) this will not work correctly.
 </para>
 </note>
-
 </section>
 
-</section>
+</section><!-- End Track Options -->
 
 <section><title>Waypoint Operations</title>
 
