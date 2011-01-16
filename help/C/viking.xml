@@ -230,6 +230,43 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 
 <section><title>Layers</title>
 
+<para>
+Layers supported by &appname; are:
+</para>
+<itemizedlist>
+<listitem><para>Aggregate</para></listitem>
+<listitem><para>TrackWaypoint</para></listitem>
+<listitem><para>GPS</para></listitem>
+<listitem><para>DEM</para></listitem>
+<listitem><para>Coord</para></listitem>
+<listitem><para>GeoRef</para></listitem>
+</itemizedlist>
+<para>
+For each layer there are a few standard options:
+</para>
+<itemizedlist>
+<listitem><para>Properties - Layer setup / configuration settings</para></listitem>
+<listitem><para>Cut</para></listitem>
+<listitem><para>Copy</para></listitem>
+<listitem><para>Paste</para></listitem>
+<listitem><para>Delete</para></listitem>
+<listitem><para>Visibility - This checkbox on the Layers Panel controls whether the layer is shown in the viewport or not</para></listitem>
+</itemizedlist>
+<para>
+The cut/copy/paste options can be accessed in a variety of ways once the layer has been selected:
+</para>
+<itemizedlist>
+<listitem><para>Standard keys: <keycap>Ctrl+x|c|v</keycap></para></listitem>
+<listitem><para>Main menu <guimenuitem>Edit</guimenuitem></para></listitem>
+<listitem><para>From the right click menu</para></listitem>
+<listitem><para>Buttons at the bottom of the Layers Panel</para></listitem>
+</itemizedlist>
+<para>
+See the individual section for detail about each layer.
+</para>
+
+</section>
+
 <section><title>TrackWaypoint Layer</title>
 <para>
 TrackWaypoint layers display GPS data (tracks and waypoints).
@@ -599,8 +636,6 @@ Using many DEMs is CPU/memory intensive. Depending on your computer's capability
 </note>
 
 </section><!-- End DEM -->
-
-</section>
 
 <section><title>Tools</title>
 <para>
