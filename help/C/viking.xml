@@ -688,6 +688,73 @@ Force a refresh of all visible map tiles.
 
 </section><!-- End Maps -->
 
+<section><title>Aggregrate Layer</title>
+<para>
+This layer is a container layer to hold other layers. There is always an initial and controlling 'Top Layer' that can not be removed, although it can be renamed.
+</para>
+<para>
+This layer type is useful for grouping other layers, especially TrackWaypoint layers, in whatever categories are relevant to you: such as by activity, location or date.
+Here are some suggestions:
+<itemizedlist>
+<listitem><para>Hiking</para></listitem>
+<listitem><para>Mountain Biking</para></listitem>
+<listitem><para>Road Cycling</para></listitem>
+<listitem><para>Car Trips</para></listitem>
+<listitem><para>Sailing</para></listitem>
+<listitem><para>Holidays</para></listitem>
+<listitem><para>UK Points of Interest</para></listitem>
+<listitem><para>USA Points of Interest</para></listitem>
+<listitem><para>etc...</para></listitem>
+</itemizedlist>
+</para>
+<para>
+Thus one can have a list of all your tracks, but groups can be shown or not using the relevant layers visibility checkbox.
+</para>
+
+<para>
+This layer only has one operation: <guilabel>New Layer</guilabel>
+</para>
+
+<section><title>New Layer</title>
+<para>
+Add a new layer of the selected type.
+</para>
+</section>
+
+</section><!-- End Agg -->
+
+<section><title>GeoRef Layer</title>
+<para>
+This layer allows one to use any image as a map. You will need to tell it how to align the map to a position in the world and the scale of map.
+</para>
+<section><title>Layer Operations</title>
+<section><title>Zoom to Fit Map</title>
+<para>
+Automatically set a zoom level to see the entire map coverage.
+</para>
+</section>
+
+<section><title>Goto Map Center</title>
+<para>
+Center the viewport on this map.
+</para>
+
+</section>
+<section><title>Export to World File</title>
+<para>
+Opens a file save dialog to save the scale and position information as a <ulink url="http://en.wikipedia.org/wiki/World_file">World File</ulink>.
+</para>
+</section>
+</section>
+
+</section><!-- End GeoRef -->
+
+<section><title>Coord Layer</title>
+<para>
+This layer is allows drawing of grid lines on the viewport.
+</para>
+</section><!-- End Coord -->
+
 <section><title>Tools</title>
 <para>
 You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
