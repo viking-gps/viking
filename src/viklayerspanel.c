@@ -585,6 +585,12 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
 
   if ( type == VIK_TREEVIEW_TYPE_LAYER )
   {
+    // Get confirmation from the user
+    if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(vlp),
+				_("Are you sure you want to delete %s?"),
+				vik_layer_get_name ( VIK_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter )) ) ) )
+      return;
+
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
     if ( parent )
     {
