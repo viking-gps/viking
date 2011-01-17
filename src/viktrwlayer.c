@@ -528,7 +528,7 @@ static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublay
   pass_along[1] = NULL;
   pass_along[2] = GINT_TO_POINTER (subtype);
   pass_along[3] = sublayer;
-  pass_along[4] = NULL;
+  pass_along[4] = GINT_TO_POINTER (1); // Confirm delete request
   pass_along[5] = NULL;
 
   trw_layer_delete_item ( pass_along );
@@ -545,7 +545,7 @@ static void trw_layer_cut_item ( VikTrwLayer *vtl, gint subtype, gpointer sublay
   pass_along[1] = NULL;
   pass_along[2] = GINT_TO_POINTER (subtype);
   pass_along[3] = sublayer;
-  pass_along[4] = NULL;
+  pass_along[4] = GINT_TO_POINTER (0); // No delete confirmation needed for auto delete
   pass_along[5] = NULL;
 
   trw_layer_copy_item_cb(pass_along);
@@ -571,6 +571,7 @@ static void trw_layer_copy_item_cb ( gpointer pass_along[6])
 static void trw_layer_cut_item_cb ( gpointer pass_along[6])
 {
   trw_layer_copy_item_cb(pass_along);
+  pass_along[4] = GINT_TO_POINTER (0); // Never need to confirm automatic delete
   trw_layer_delete_item(pass_along);
 }
 
@@ -2680,10 +2681,23 @@ static void trw_layer_delete_item ( gpointer pass_along[6] )
   gboolean was_visible = FALSE;
   if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
   {
+    if ( GPOINTER_TO_INT ( pass_along[4]) )
+      // Get confirmation from the user
+      // Maybe this Waypoint Delete should be optional as is it could get annoying...
+      if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+				  _("Are you sure you want to delete the waypoint \"%s\""),
+				  pass_along[3] ) )
+	return;
     was_visible = vik_trw_layer_delete_waypoint ( vtl, (gchar *) pass_along[3] );
   }
   else
   {
+    if ( GPOINTER_TO_INT ( pass_along[4]) )
+      // Get confirmation from the user
+      if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+				  _("Are you sure you want to delete the track \"%s\""),
+				  pass_along[3] ) )
+	return;
     was_visible = vik_trw_layer_delete_track ( vtl, (gchar *) pass_along[3] );
   }
   if ( was_visible )
@@ -3426,7 +3440,6 @@ static void trw_layer_track_google_route_webpage ( gpointer pass_along[6] )
 /* viewpoint is now available instead */
 gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp )
 {
-  static GtkTreeIter staticiter;
   static gpointer pass_along[6];
   GtkWidget *item;
   gboolean rv = FALSE;
@@ -3435,10 +3448,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
   pass_along[1] = vlp;
   pass_along[2] = GINT_TO_POINTER (subtype);
   pass_along[3] = sublayer;
-  if ( iter ) {
-    staticiter = *iter; /* will exist after function has ended */
-    pass_along[4] = &staticiter;
-  }
+  pass_along[4] = GINT_TO_POINTER (1); // Confirm delete request
   pass_along[5] = vvp;
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT || subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
