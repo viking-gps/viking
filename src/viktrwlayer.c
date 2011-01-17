@@ -250,6 +250,8 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
 static void trw_layer_auto_waypoints_view ( gpointer lav[2] );
 static void trw_layer_auto_tracks_view ( gpointer lav[2] );
+static void trw_layer_delete_all_tracks ( gpointer lav[2] );
+static void trw_layer_delete_all_waypoints ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
 
@@ -2370,6 +2372,22 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   gtk_widget_show ( item );
 #endif
 
+  GtkWidget *delete_submenu = gtk_menu_new ();
+  item = gtk_menu_item_new_with_mnemonic ( _("De_lete") );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), delete_submenu );
+  
+  item = gtk_menu_item_new_with_mnemonic ( _("Delete All _Tracks") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_tracks), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+  
+  item = gtk_menu_item_new_with_mnemonic ( _("Delete All _Waypoints") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_waypoints), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+  
   item = a_acquire_trwlayer_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vlp,
 				   vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
   if ( item ) {
@@ -2634,6 +2652,26 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
 
   /* TODO: only update if the layer is visible (ticked) */
   vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+static void trw_layer_delete_all_tracks ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  // Get confirmation from the user
+  if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			    _("Are you sure you want to delete all tracks in %s?"),
+			    vik_layer_get_name ( VIK_LAYER(vtl) ) ) )
+    vik_trw_layer_delete_all_tracks (vtl);
+}
+
+static void trw_layer_delete_all_waypoints ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  // Get confirmation from the user
+  if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			    _("Are you sure you want to delete all waypoints in %s?"),
+			    vik_layer_get_name ( VIK_LAYER(vtl) ) ) )
+    vik_trw_layer_delete_all_waypoints (vtl);
 }
 
 static void trw_layer_delete_item ( gpointer pass_along[6] )
@@ -3510,6 +3548,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_wp), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Delete _All Waypoints") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_waypoints), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
   }
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS )
@@ -3519,6 +3562,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     item = gtk_menu_item_new_with_mnemonic ( _("_View All Tracks") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_tracks_view), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Delete _All Tracks") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_tracks), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
   }
 
