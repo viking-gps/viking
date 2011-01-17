@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
+#include <gdk/gdkkeysyms.h>
 
 enum {
   VLP_UPDATE_SIGNAL,
@@ -69,6 +70,7 @@ static void menu_popup_cb (VikLayersPanel *vlp);
 static void layers_popup_cb (VikLayersPanel *vlp);
 static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_button );
 static gboolean layers_button_press_cb (VikLayersPanel *vlp, GdkEventButton *event);
+static gboolean layers_key_press_cb (VikLayersPanel *vlp, GdkEventKey *event);
 static void layers_move_item ( VikLayersPanel *vlp, gboolean up );
 static void layers_move_item_up ( VikLayersPanel *vlp );
 static void layers_move_item_down ( VikLayersPanel *vlp );
@@ -157,6 +159,7 @@ static void layers_panel_init ( VikLayersPanel *vlp )
   g_signal_connect_swapped ( vlp->vt, "button_press_event", G_CALLBACK(layers_button_press_cb), vlp);
   g_signal_connect_swapped ( vlp->vt, "item_toggled", G_CALLBACK(layers_item_toggled), vlp);
   g_signal_connect_swapped ( vlp->vt, "item_edited", G_CALLBACK(layers_item_edited), vlp);
+  g_signal_connect_swapped ( vlp->vt, "key_press_event", G_CALLBACK(layers_key_press_cb), vlp);
 
   /* Add button */
   addimage = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_SMALL_TOOLBAR );
@@ -312,6 +315,16 @@ static gboolean layers_button_press_cb ( VikLayersPanel *vlp, GdkEventButton *ev
     return TRUE;
   }
   return FALSE;
+}
+
+static gboolean layers_key_press_cb ( VikLayersPanel *vlp, GdkEventKey *event )
+{
+  // Accept all forms of delete keys
+  if (event->keyval == GDK_Delete || event->keyval == GDK_KP_Delete || event->keyval == GDK_BackSpace) {
+    vik_layers_panel_delete_selected (vlp);
+    return TRUE;
+ }
+ return FALSE;
 }
 
 static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_button )
