@@ -1715,10 +1715,13 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
 {
   switch ( a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename ) )
   {
-    case 0:
+    case LOAD_TYPE_READ_FAILURE:
       a_dialog_error_msg ( GTK_WINDOW(vw), _("The file you requested could not be opened.") );
       break;
-    case 1:
+    case LOAD_TYPE_GPSBABEL_FAILURE:
+      a_dialog_error_msg ( GTK_WINDOW(vw), _("GPSBabel is required to load files of this type or GPSBabel encountered problems.") );
+      break;
+    case LOAD_TYPE_VIK_SUCCESS:
     {
       GtkWidget *mode_button;
       /* Update UI */
@@ -1743,9 +1746,11 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_highlight (vw->viking_vvp) );
     }
+    //case LOAD_TYPE_OTHER_SUCCESS:
     default:
       update_recently_used_document(filename);
       draw_update ( vw );
+      break;
   }
 }
 static void load_file ( GtkAction *a, VikWindow *vw )

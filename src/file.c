@@ -25,6 +25,7 @@
 #include "viking.h"
 
 #include "gpx.h"
+#include "babel.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -559,8 +560,19 @@ static void xfclose ( FILE *f )
   }
 }
 
-/* 0 on failure, 1 on success (vik file) 2 on success (other file) */
-gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename_or_uri )
+/*
+ * Function to determine if a filename is a 'viking' type file
+ */
+gboolean check_file_magic_vik ( const gchar *filename )
+{
+  gboolean result;
+  FILE *ff = xfopen ( filename, "r" );
+  result = check_magic ( ff, VIK_MAGIC );
+  xfclose ( ff );
+  return result;
+}
+
+VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename_or_uri )
 {
   char *filename = (char *)filename_or_uri;
   if (strncmp(filename, "file://", 7) == 0)
@@ -572,24 +584,34 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
   g_assert ( vp );
 
   if ( ! f )
-    return 0;
+    return LOAD_TYPE_READ_FAILURE;
 
   if ( !is_gpx_file && check_magic ( f, VIK_MAGIC ) )
   {
     file_read ( top, f, vp );
     if ( f != stdin )
       xfclose(f);
-    return 1;
+    return LOAD_TYPE_VIK_SUCCESS;
   }
   else
   {
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
     vik_layer_rename ( vtl, a_file_basename ( filename ) );
 
-    if ( is_gpx_file || check_magic ( f, GPX_MAGIC ) )
+    // In fact both kml & gpx files start the same as they are in xml
+    if ( check_file_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
+      // Implicit Conversion
+      if ( ! a_babel_convert_from ( VIK_TRW_LAYER(vtl), "-i kml", NULL, filename, NULL ) ) {
+	// Probably want to remove the vtl, but I'm not sure how yet...
+	xfclose(f);
+	return LOAD_TYPE_GPSBABEL_FAILURE;
+      }
+    }
+    else if ( is_gpx_file || check_magic ( f, GPX_MAGIC ) ) {
       a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
+    }
     else
-     a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
+      a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
 
     vik_layer_post_read ( vtl, vp, TRUE );
 
@@ -598,7 +620,7 @@ gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filen
     vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
 
     xfclose(f);
-    return 2;
+    return LOAD_TYPE_OTHER_SUCCESS;
   }
 }
 
@@ -676,6 +698,11 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
           break;
         case FILE_TYPE_GPSPOINT:
           a_gpspoint_write_file ( vtl, f );
+          break;
+        case FILE_TYPE_KML:
+	  fclose ( f );
+	  f = NULL;
+          return a_babel_convert_to ( vtl, "-o kml", NULL, filename, NULL );
           break;
         default:
           g_critical("Houston, we've had a problem. file_type=%d", file_type);

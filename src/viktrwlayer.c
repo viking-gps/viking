@@ -2085,6 +2085,18 @@ static void trw_layer_export_gpx ( gpointer layer_and_vlp[2] )
   trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, FILE_TYPE_GPX );
 }
 
+static void trw_layer_export_kml ( gpointer layer_and_vlp[2] )
+{
+  /* Auto append '.kml' to the name (providing it's not already there) for the default filename */
+  gchar *auto_save_name = g_strdup ( vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])) );
+  if ( ! check_file_ext ( auto_save_name, ".kml" ) )
+    auto_save_name = g_strconcat ( auto_save_name, ".kml", NULL );
+
+  trw_layer_export ( layer_and_vlp, _("Export Layer"), auto_save_name, NULL, FILE_TYPE_KML );
+
+  g_free ( auto_save_name );
+}
+
 static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
 {
   gpointer layer_and_vlp[2];
@@ -2320,6 +2332,11 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
 
   item = gtk_menu_item_new_with_mnemonic ( _("Export as _GPX...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_gpx), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("Export as _KML...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_kml), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 

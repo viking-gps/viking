@@ -32,13 +32,25 @@ typedef enum {
 FILE_TYPE_GPSPOINT=1,
 FILE_TYPE_GPSMAPPER=2,
 FILE_TYPE_GPX=3,
+FILE_TYPE_KML=4,
 } VikFileType_t;
 
 const gchar *a_file_basename ( const gchar *filename );
 gboolean check_file_ext ( const gchar *filename, const gchar *fileext );
 
-/* 0 on failure, 1 on success (vik file) 2 on success (other file) */
-gshort a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename );
+/*
+ * Function to determine if a filename is a 'viking' type file
+ */
+gboolean check_file_magic_vik ( const gchar *filename );
+
+typedef enum {
+  LOAD_TYPE_READ_FAILURE,
+  LOAD_TYPE_GPSBABEL_FAILURE,
+  LOAD_TYPE_VIK_SUCCESS,
+  LOAD_TYPE_OTHER_SUCCESS,
+} VikLoadType_t;
+
+VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename );
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 /* Only need to define VikTrack and trackname if the file type is FILE_TYPE_GPX_TRACK */
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, const gchar *trackname );
