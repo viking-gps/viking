@@ -2902,16 +2902,17 @@ static void trw_layer_edit_trackpoint ( gpointer pass_along[6] )
  *************************************/
 
 /* called for each key in track hash table.
- * If the current track has time stamp, add it to the result,
+ * If the current track has the same time stamp type, add it to the result,
  * except the one pointed by "exclude".
  * set exclude to NULL if there is no exclude to check.
- * Not that result is in reverse (for performance reason).
+ * Note that the result is in reverse (for performance reasons).
  */
 typedef struct {
   GList **result;
   GList  *exclude;
+  gboolean with_timestamps;
 } twt_udata;
-static void find_tracks_with_timestamp(gpointer key, gpointer value, gpointer udata)
+static void find_tracks_with_timestamp_type(gpointer key, gpointer value, gpointer udata)
 {
   twt_udata *user_data = udata;
   VikTrackpoint *p1, *p2;
@@ -2924,11 +2925,17 @@ static void find_tracks_with_timestamp(gpointer key, gpointer value, gpointer ud
     p1 = VIK_TRACKPOINT(VIK_TRACK(value)->trackpoints->data);
     p2 = VIK_TRACKPOINT(g_list_last(VIK_TRACK(value)->trackpoints)->data);
 
-    if (!p1->has_timestamp || !p2->has_timestamp) {
-      g_print("no timestamp\n");
-      return;
+    if ( user_data->with_timestamps ) {
+      if (!p1->has_timestamp || !p2->has_timestamp) {
+	return;
+      }
     }
-
+    else {
+      // Don't add tracks with timestamps when getting non timestamp tracks
+      if (p1->has_timestamp || p2->has_timestamp) {
+	return;
+      }
+    }
   }
 
   *(user_data->result) = g_list_prepend(*(user_data->result), key);
@@ -3022,39 +3029,48 @@ static gint sort_alphabetically (gconstpointer a, gconstpointer b, gpointer user
 }
 #endif
 
+/**
+ * Attempt to merge selected track with other tracks specified by the user
+ * Tracks to merge with must be of the same 'type' as the selected track -
+ *  either all with timestamps, or all without timestamps
+ */
 static void trw_layer_merge_with_other ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
   gchar *orig_track_name = pass_along[3];
-  GList *tracks_with_timestamp = NULL;
+  GList *other_tracks = NULL;
   VikTrack *track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, orig_track_name );
 
-  if (track->trackpoints &&
-      !VIK_TRACKPOINT(track->trackpoints->data)->has_timestamp) {
-    a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. This track does not have timestamp"));
+  if ( !track->trackpoints )
     return;
-  }
 
   twt_udata udata;
-  udata.result = &tracks_with_timestamp;
+  udata.result = &other_tracks;
   udata.exclude = track->trackpoints;
-  g_hash_table_foreach(vtl->tracks, find_tracks_with_timestamp, (gpointer)&udata);
-  tracks_with_timestamp = g_list_reverse(tracks_with_timestamp);
+  // Allow merging with 'similar' time type time tracks
+  // i.e. either those times, or those without
+  udata.with_timestamps = (VIK_TRACKPOINT(track->trackpoints->data)->has_timestamp);
 
-  if (!tracks_with_timestamp) {
-    a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. No other track in this layer has timestamp"));
+  g_hash_table_foreach(vtl->tracks, find_tracks_with_timestamp_type, (gpointer)&udata);
+  other_tracks = g_list_reverse(other_tracks);
+
+  if ( !other_tracks ) {
+    if ( udata.with_timestamps )
+      a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. No other tracks with timestamps in this layer found"));
+    else
+      a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. No other tracks without timestamps in this layer found"));
     return;
   }
 
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
   // Sort alphabetically for user presentation
-  tracks_with_timestamp = g_list_sort_with_data (tracks_with_timestamp, sort_alphabetically, NULL);
+  other_tracks = g_list_sort_with_data (other_tracks, sort_alphabetically, NULL);
 #endif
 
   GList *merge_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
-      tracks_with_timestamp, TRUE,
+      other_tracks, TRUE,
       _("Merge with..."), _("Select track to merge with"));
-  g_list_free(tracks_with_timestamp);
+  g_list_free(other_tracks);
 
   if (merge_list)
   {
@@ -3101,7 +3117,8 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   twt_udata udata;
   udata.result = &tracks_with_timestamp;
   udata.exclude = track->trackpoints;
-  g_hash_table_foreach(vtl->tracks, find_tracks_with_timestamp, (gpointer)&udata);
+  udata.with_timestamps = TRUE;
+  g_hash_table_foreach(vtl->tracks, find_tracks_with_timestamp_type, (gpointer)&udata);
   tracks_with_timestamp = g_list_reverse(tracks_with_timestamp);
 
   if (!tracks_with_timestamp) {
