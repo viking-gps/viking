@@ -2760,7 +2760,7 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
   }
 
   GList *merge_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
-      vtl->tracks, tracks_with_timestamp, TRUE,
+      tracks_with_timestamp, TRUE,
       _("Merge with..."), _("Select track to merge with"));
   g_list_free(tracks_with_timestamp);
 

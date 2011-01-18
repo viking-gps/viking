@@ -439,7 +439,7 @@ static void get_selected_foreach_func(GtkTreeModel *model,
   *list = g_list_prepend(*list, name);
 }
 
-GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList *track_names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg )
+GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg )
 {
   GtkTreeIter iter;
   GtkCellRenderer *renderer;
@@ -463,12 +463,12 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GHashTable *tracks, GList 
   GtkWidget *label = gtk_label_new ( msg );
   GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
 
-  GList *track_runner = track_names;
-  while (track_runner)
+  GList *runner = names;
+  while (runner)
   {
     gtk_list_store_append(store, &iter);
-    gtk_list_store_set(store, &iter, 0, track_runner->data, -1);
-    track_runner = g_list_next(track_runner);
+    gtk_list_store_set(store, &iter, 0, runner->data, -1);
+    runner = g_list_next(runner);
   }
 
   view = gtk_tree_view_new();
