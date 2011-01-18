@@ -2752,6 +2752,22 @@ static gint trackpoint_compare(gconstpointer a, gconstpointer b)
   return 0;
 }
 
+#ifdef VIK_CONFIG_ALPHABETIZED_TRW
+/**
+ * comparison function which can be used to sort tracks or waypoints by name
+ */
+static gint sort_alphabetically (gconstpointer a, gconstpointer b, gpointer user_data)
+{
+  const gchar* namea = (const gchar*) a;
+  const gchar* nameb = (const gchar*) b;
+  if ( namea == NULL || nameb == NULL)
+    return 0;
+  else
+    // Same sort method as used in the vik_treeview_*_alphabetize functions
+    return strcmp ( namea, nameb );
+}
+#endif
+
 static void trw_layer_merge_with_other ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
