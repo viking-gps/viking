@@ -251,7 +251,9 @@ static void trw_layer_new_wp ( gpointer lav[2] );
 static void trw_layer_auto_waypoints_view ( gpointer lav[2] );
 static void trw_layer_auto_tracks_view ( gpointer lav[2] );
 static void trw_layer_delete_all_tracks ( gpointer lav[2] );
+static void trw_layer_delete_tracks_from_selection ( gpointer lav[2] );
 static void trw_layer_delete_all_waypoints ( gpointer lav[2] );
+static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
 
@@ -2384,8 +2386,18 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
   
+  item = gtk_menu_item_new_with_mnemonic ( _("Delete Tracks _From Selection...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_tracks_from_selection), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+  
   item = gtk_menu_item_new_with_mnemonic ( _("Delete All _Waypoints") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_waypoints), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+  
+  item = gtk_menu_item_new_with_mnemonic ( _("Delete Waypoints From _Selection...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_waypoints_from_selection), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
   
@@ -3295,6 +3307,89 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
 
 /* end of split/merge routines */
 
+/**
+ * Similar to trw_layer_enum_item, but this uses a sorted method
+ */
+static void trw_layer_sorted_name_list(gpointer key, gpointer value, gpointer udata)
+{
+  GList **list = (GList**)udata;
+  //*list = g_list_prepend(*all, key); //unsorted method
+  // Sort named list alphabetically
+  *list = g_list_insert_sorted_with_data (*list, key, sort_alphabetically, NULL);
+}
+
+/**
+ *
+ */
+static void trw_layer_delete_tracks_from_selection ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  GList *all = NULL;
+  // Sort list alphabetically for better presentation
+  g_hash_table_foreach(vtl->tracks, trw_layer_sorted_name_list, &all);
+
+  if ( ! all ) {
+    a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl),	_("No tracks found"));
+    return;
+  }
+
+  // Get list of items to delete from the user
+  GList *delete_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+						 all,
+						 TRUE,
+						 _("Delete Selection"),
+						 _("Select tracks to delete"));
+  g_list_free(all);
+
+  // Delete requested tracks
+  // since specificly requested, IMHO no need for extra confirmation
+  if ( delete_list ) {
+    GList *l;
+    for (l = delete_list; l != NULL; l = g_list_next(l)) {
+      vik_trw_layer_delete_track(vtl, l->data);
+    }
+    g_list_free(delete_list);
+    vik_layer_emit_update( VIK_LAYER(vtl) );
+  }
+}
+
+/**
+ *
+ */
+static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  GList *all = NULL;
+
+  // Sort list alphabetically for better presentation
+  g_hash_table_foreach ( vtl->waypoints, trw_layer_sorted_name_list, &all);
+  if ( ! all ) {
+    a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl),	_("No waypoints found"));
+    return;
+  }
+
+  all = g_list_sort_with_data(all, sort_alphabetically, NULL);
+
+  // Get list of items to delete from the user
+  GList *delete_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+						 all,
+						 TRUE,
+						 _("Delete Selection"),
+						 _("Select waypoints to delete"));
+  g_list_free(all);
+
+  // Delete requested waypoints
+  // since specificly requested, IMHO no need for extra confirmation
+  if ( delete_list ) {
+    GList *l;
+    for (l = delete_list; l != NULL; l = g_list_next(l)) {
+      vik_trw_layer_delete_waypoint(vtl, l->data);
+    }
+    g_list_free(delete_list);
+    vik_layer_emit_update( VIK_LAYER(vtl) );
+  }
+
+}
 
 static void trw_layer_goto_waypoint ( gpointer pass_along[6] )
 {
@@ -3563,6 +3658,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_waypoints), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("_Delete Waypoints From Selection...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_waypoints_from_selection), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
   }
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS )
@@ -3576,6 +3676,11 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
     item = gtk_menu_item_new_with_mnemonic ( _("Delete _All Tracks") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_tracks), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("_Delete Tracks From Selection...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_tracks_from_selection), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
   }
