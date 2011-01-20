@@ -75,6 +75,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncWriteFileData)           NULL,
 
   (VikLayerFuncDeleteItem)              NULL,
+  (VikLayerFuncCutItem)                 NULL,
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,

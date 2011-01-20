@@ -519,7 +519,6 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
   gint type;
   GtkTreeIter iter;
   
-  g_debug(__FUNCTION__);
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
     /* Nothing to do */
     return;
@@ -545,22 +544,23 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
     else
       a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("You cannot cut the Top Layer.") );
   }
+  else if (type == VIK_TREEVIEW_TYPE_SUBLAYER) {
+    VikLayer *sel = vik_layers_panel_get_selected ( vlp );
+    if ( vik_layer_get_interface(sel->type)->cut_item ) {
+      gint subtype = vik_treeview_item_get_data( vlp->vt, &iter);
+      vik_layer_get_interface(sel->type)->cut_item ( sel, subtype, vik_treeview_item_get_pointer(sel->vt, &iter) );
+    }
+  }
 }
 
 void vik_layers_panel_copy_selected ( VikLayersPanel *vlp )
 {
-  gint type;
   GtkTreeIter iter;
-  
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
     /* Nothing to do */
     return;
-
-  type = vik_treeview_item_get_type ( vlp->vt, &iter );
-
-  if ( type == VIK_TREEVIEW_TYPE_LAYER ) {
-    a_clipboard_copy_selected ( vlp );
-  }
+  // NB clipboard contains layer vs sublayer logic, so don't need to do it here
+  a_clipboard_copy_selected ( vlp );
 }
 
 void vik_layers_panel_paste_selected ( VikLayersPanel *vlp )

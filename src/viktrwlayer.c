@@ -265,6 +265,8 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gboolean is_file_operation );
 
 static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
+static void trw_layer_cut_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
+
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len );
 static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *item, guint len );
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
@@ -457,6 +459,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncWriteFileData)           a_gpspoint_write_file,
 
   (VikLayerFuncDeleteItem)              trw_layer_del_item,
+  (VikLayerFuncCutItem)                 trw_layer_cut_item,
   (VikLayerFuncCopyItem)                trw_layer_copy_item,
   (VikLayerFuncPasteItem)               trw_layer_paste_item,
   (VikLayerFuncFreeCopiedItem)          trw_layer_free_copied_item,
@@ -510,6 +513,23 @@ static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublay
   pass_along[4] = NULL;
 
   trw_layer_delete_item ( pass_along );
+}
+
+static void trw_layer_cut_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer )
+{
+  static gpointer pass_along[5];
+  if (!sublayer) {
+    return;
+  }
+
+  pass_along[0] = vtl;
+  pass_along[1] = NULL;
+  pass_along[2] = GINT_TO_POINTER (subtype);
+  pass_along[3] = sublayer;
+  pass_along[4] = NULL;
+
+  trw_layer_copy_item_cb(pass_along);
+  trw_layer_cut_item_cb(pass_along);
 }
 
 static void trw_layer_copy_item_cb( gpointer pass_along[5])
