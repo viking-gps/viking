@@ -299,7 +299,11 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 	  g_free(sym);
 	}
       }
-      gtk_combo_box_set_active_iter(GTK_COMBO_BOX(symbolentry), &iter);
+      // Ensure is it a valid symbol in the given symbol set (large vs small)
+      // Not all symbols are available in both
+      // The check prevents a Gtk Critical message
+      if ( iter.stamp )
+	gtk_combo_box_set_active_iter(GTK_COMBO_BOX(symbolentry), &iter);
     }
   }
 
