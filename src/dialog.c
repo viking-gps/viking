@@ -460,8 +460,9 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
   /* Default to not apply - as initially nothing is selected! */
   response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
 #endif
-  GtkWidget *label = gtk_label_new ( msg );
   GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
+
+  GtkWidget *scrolledwindow;
 
   GList *runner = names;
   while (runner)
@@ -473,17 +474,24 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
 
   view = gtk_tree_view_new();
   renderer = gtk_cell_renderer_text_new();
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, NULL, renderer, "text", 0, NULL);
+  // Use the column header to display the message text,
+  // this makes the overall widget allocation simple as treeview takes up all the space
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, msg, renderer, "text", 0, NULL);
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
-  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), FALSE);
+  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), TRUE);
   gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
       multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
   g_object_unref(store);
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
-  gtk_widget_show ( label );
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), view, FALSE, FALSE, 0);
-  gtk_widget_show ( view );
+  scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+  gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
+
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolledwindow, TRUE, TRUE, 0 );
+  // Ensure a reasonable number of items are shown, but let the width be automatically sized
+  gtk_widget_set_size_request ( dialog, -1, 400) ;
+
+  gtk_widget_show_all ( dialog );
 
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
