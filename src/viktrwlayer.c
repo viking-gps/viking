@@ -2795,6 +2795,11 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
     return;
   }
 
+#ifdef VIK_CONFIG_ALPHABETIZED_TRW
+  // Sort alphabetically for user presentation
+  tracks_with_timestamp = g_list_sort_with_data (tracks_with_timestamp, sort_alphabetically, NULL);
+#endif
+
   GList *merge_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
       tracks_with_timestamp, TRUE,
       _("Merge with..."), _("Select track to merge with"));
