@@ -566,7 +566,7 @@ static void trw_layer_copy_item_cb ( gpointer pass_along[6])
 
   if (data) {
     a_clipboard_copy( VIK_CLIPBOARD_DATA_SUBLAYER, VIK_LAYER_TRW,
-	subtype, len, data);
+		      subtype, len, (const gchar*) sublayer, data);
   }
 }
 
