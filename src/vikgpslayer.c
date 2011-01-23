@@ -1155,6 +1155,11 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
 static void gps_empty_upload_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  // Get confirmation from the user
+  if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(layer_and_vlp[1]),
+			      _("Are you sure you want to delete GPS Upload data?"),
+			      NULL ) )
+    return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
 }
@@ -1162,6 +1167,11 @@ static void gps_empty_upload_cb( gpointer layer_and_vlp[2] )
 static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  // Get confirmation from the user
+  if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(layer_and_vlp[1]),
+			      _("Are you sure you want to delete GPS Download data?"),
+			      NULL ) )
+    return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
 }
@@ -1170,6 +1180,11 @@ static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
 static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  // Get confirmation from the user
+  if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(layer_and_vlp[1]),
+			      _("Are you sure you want to delete GPS Realtime data?"),
+			      NULL ) )
+    return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);
 }
@@ -1178,6 +1193,11 @@ static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] )
 static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  // Get confirmation from the user
+  if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(layer_and_vlp[1]),
+			      _("Are you sure you want to delete All GPS data?"),
+			      NULL ) )
+    return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
