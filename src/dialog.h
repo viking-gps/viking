@@ -55,7 +55,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
 
 gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name );
 
-gboolean a_dialog_overwrite ( GtkWindow *parent, const gchar *message, const gchar *extra );
+gboolean a_dialog_yes_or_no ( GtkWindow *parent, const gchar *message, const gchar *extra );
 gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp );
 gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint *thr );
 

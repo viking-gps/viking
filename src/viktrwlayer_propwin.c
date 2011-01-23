@@ -651,7 +651,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           /* if ( (wp_exists) && (! overwrite) ) */
           /* don't need to upper case new_tr_name because old tr name was uppercase */
           if ( vik_trw_layer_get_track(vtl, new_tr_name ) && 
-             ( ! a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "The track \"%s\" exists, do you wish to overwrite it?", new_tr_name ) ) )
+             ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "The track \"%s\" exists, do you wish to overwrite it?", new_tr_name ) ) )
           {
             gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );
             g_free ( new_tr_name );
@@ -692,7 +692,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
 
         gchar *r_name = g_strdup_printf("%s #R", widgets->track_name);
         if (vik_trw_layer_get_track(vtl, r_name ) && 
-             ( ! a_dialog_overwrite( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+             ( ! a_dialog_yes_or_no( VIK_GTK_WINDOW_FROM_LAYER(vtl),
               "The track \"%s\" exists, do you wish to overwrite it?", r_name)))
         {
 	  gchar *new_r_name = a_dialog_new_track( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );

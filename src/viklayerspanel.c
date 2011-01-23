@@ -682,7 +682,7 @@ VikAggregateLayer *vik_layers_panel_get_top_layer ( VikLayersPanel *vlp )
 
 void vik_layers_panel_clear ( VikLayersPanel *vlp )
 {
-  if ( (! vik_aggregate_layer_is_empty(vlp->toplayer)) && a_dialog_overwrite ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Are you sure you wish to delete all layers?"), NULL ) )
+  if ( (! vik_aggregate_layer_is_empty(vlp->toplayer)) && a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Are you sure you wish to delete all layers?"), NULL ) )
     vik_aggregate_layer_clear ( vlp->toplayer ); /* simply deletes all layers */
 }
 

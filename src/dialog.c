@@ -341,7 +341,7 @@ gboolean a_dialog_new_waypoint ( GtkWindow *parent, gchar **dest, VikWaypoint *w
       else {
         gchar *name = g_strdup ( constname );
 
-        if ( g_hash_table_lookup ( waypoints, name ) && !a_dialog_overwrite ( parent, _("The waypoint \"%s\" exists, do you want to overwrite it?"), name ) )
+        if ( g_hash_table_lookup ( waypoints, name ) && !a_dialog_yes_or_no ( parent, _("The waypoint \"%s\" exists, do you want to overwrite it?"), name ) )
           g_free ( name );
         else
         {
@@ -550,7 +550,7 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *defaul
     else {
       gchar *name = g_strdup ( constname );
 
-      if ( g_hash_table_lookup( tracks, name ) && !a_dialog_overwrite ( parent, _("The track \"%s\" exists, do you want to overwrite it?"), gtk_entry_get_text ( GTK_ENTRY(entry) ) ) )
+      if ( g_hash_table_lookup( tracks, name ) && !a_dialog_yes_or_no ( parent, _("The track \"%s\" exists, do you want to overwrite it?"), gtk_entry_get_text ( GTK_ENTRY(entry) ) ) )
       {
         g_free ( name );
       }
@@ -581,7 +581,7 @@ GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count )
   return vbox;
 }
 
-gboolean a_dialog_overwrite ( GtkWindow *parent, const gchar *message, const gchar *extra )
+gboolean a_dialog_yes_or_no ( GtkWindow *parent, const gchar *message, const gchar *extra )
 {
   GtkWidget *dia;
   dia = gtk_message_dialog_new ( parent,
