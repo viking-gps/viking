@@ -122,7 +122,7 @@ static void
 terraserver_map_source_class_init (TerraserverMapSourceClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
-	VikMapSourceClass* granparent_class = VIK_MAP_SOURCE_CLASS (klass);
+	VikMapSourceClass* grandparent_class = VIK_MAP_SOURCE_CLASS (klass);
 	VikMapSourceDefaultClass* parent_class = VIK_MAP_SOURCE_DEFAULT_CLASS (klass);
     GParamSpec *pspec = NULL;
 	
@@ -130,8 +130,8 @@ terraserver_map_source_class_init (TerraserverMapSourceClass *klass)
     object_class->get_property = terraserver_map_source_get_property;
 	
 	/* Overiding methods */
-	granparent_class->coord_to_mapcoord =        _coord_to_mapcoord;
-	granparent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
+	grandparent_class->coord_to_mapcoord =        _coord_to_mapcoord;
+	grandparent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	
 	parent_class->get_uri = _get_uri;
 	parent_class->get_hostname = _get_hostname;
