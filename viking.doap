@@ -40,5 +40,12 @@
     </foaf:Person>
   </maintainer>
 
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Rob Norris</foaf:name>
+      <foaf:mbox rdf:resource="rw_norris@hotmail.com" />
+    </foaf:Person>
+  </maintainer>
+
 </Project>
 
