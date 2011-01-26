@@ -3499,6 +3499,19 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
     gtk_widget_show ( item );
   }
 
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS )
+  {
+    item = gtk_menu_item_new_with_mnemonic ( _("_View All Waypoints") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_waypoints_view), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Goto _Waypoint...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_wp), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+  }
+
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
   {
     GtkWidget *goto_submenu;
