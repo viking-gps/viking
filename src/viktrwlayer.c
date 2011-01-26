@@ -3293,6 +3293,7 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 
   if ( vlp && (subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) )
   {
+    rv = TRUE;
     item = gtk_menu_item_new_with_mnemonic ( _("_New Waypoint") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
