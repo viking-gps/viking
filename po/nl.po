@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2008-09-17 06:21+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-12-19 18:41+0000\n"
+"Last-Translator: asphyxia <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
-"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
+"Language: nl\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -102,11 +102,11 @@ msgstr ""
 
 #: ../src/dialog.c:110
 msgid "Northing:"
-msgstr ""
+msgstr "Naar het noorden richten:"
 
 #: ../src/dialog.c:116
 msgid "Easting:"
-msgstr ""
+msgstr "Naar het Oosten richten:"
 
 #: ../src/dialog.c:123
 msgid "Zone:"
@@ -152,7 +152,7 @@ msgstr "Geef alstublieft een name op voor het wegpunt"
 #: ../src/dialog.c:331
 #, c-format
 msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr ""
+msgstr "Het waypoint \"%s\" bestaat, wilt U het overschrijven?"
 
 #: ../src/dialog.c:482 ../src/geonamessearch.c:228
 msgid "Nothing was selected"
@@ -185,11 +185,11 @@ msgstr ""
 
 #: ../src/dialog.c:597
 msgid "X (easting): "
-msgstr ""
+msgstr "X (richten naar het oosten) "
 
 #: ../src/dialog.c:598
 msgid "Y (northing): "
-msgstr ""
+msgstr "Y (richten naar het noorden) "
 
 #: ../src/dialog.c:603
 msgid "X and Y zoom factors must be equal"
@@ -517,8 +517,8 @@ msgstr ""
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 
 #: ../src/osm-traces.c:359
@@ -935,11 +935,11 @@ msgstr ""
 msgid "Empty _All"
 msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"

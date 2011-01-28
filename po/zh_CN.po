@@ -2,17 +2,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-09-07 09:04+0000\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-11-17 22:52+0000\n"
 "Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: \n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Language: Simplified Chinese\n"
 
 #: ../src/acquire.c:118
@@ -511,8 +510,8 @@ msgstr "密码:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 
 #: ../src/osm-traces.c:359
@@ -829,9 +828,8 @@ msgid "_Zoom to Fit Map"
 msgstr ""
 
 #: ../src/vikgeoreflayer.c:579
-#, fuzzy
 msgid "_Goto Map Center"
-msgstr "前往地图中心"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:584
 msgid "_Export to World File"
@@ -907,39 +905,34 @@ msgid "%s: unknown parameter"
 msgstr "%s: 未知的参数"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "上传到GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "从GPS下载"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
 msgstr ""
 
 #: ../src/vikgpslayer.c:610
-#, fuzzy
 msgid "E_mpty Upload"
-msgstr "清空上传"
+msgstr ""
 
 #: ../src/vikgpslayer.c:615
-#, fuzzy
 msgid "_Empty Download"
-msgstr "清空下载"
+msgstr ""
 
 #: ../src/vikgpslayer.c:620
-#, fuzzy
 msgid "Empty _All"
-msgstr "清空全部"
+msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1165,19 +1158,16 @@ msgid_plural "Downloading %d %s maps..."
 msgstr[0] "正在下载 %d %s 地图..."
 
 #: ../src/vikmapslayer.c:1202
-#, fuzzy
 msgid "Redownload _Bad Map(s)"
-msgstr "重新下载损坏的地图"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1206
-#, fuzzy
 msgid "Redownload _New Map(s)"
 msgstr ""
 
 #: ../src/vikmapslayer.c:1210
-#, fuzzy
 msgid "Redownload _All Map(s)"
-msgstr "重新下载所有地图"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1290
 #, c-format
@@ -1409,39 +1399,32 @@ msgid "Waypoint not found in this layer."
 msgstr "在此图层中没有发现航点"
 
 #: ../src/viktrwlayer.c:1787
-#, fuzzy
 msgid "_Goto Center of Layer"
-msgstr "前往图层中心"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1792
-#, fuzzy
 msgid "Goto _Waypoint"
-msgstr "前往航点"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "输出图层"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
-msgstr "输出成GPS点"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "输出成GPS地图"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "输出成GPX文件"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
-#, fuzzy
 msgid "_New Waypoint"
-msgstr "新航点"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1825
 msgid "_Add Wikipedia Waypoints"
@@ -1500,28 +1483,24 @@ msgid "Track Already Exists"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "前往"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
-#, fuzzy
 msgid "_Visit Geocache Webpage"
-msgstr "访问Geocache网页"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2773
 msgid "_Goto Startpoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2778
-#, fuzzy
 msgid "Goto \"_Center\""
-msgstr "前往“中间”"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2783
-#, fuzzy
 msgid "Goto _Endpoint"
-msgstr "前往最后一点"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2788
 msgid "_Merge By Time"
@@ -1536,9 +1515,8 @@ msgid "_Split By Time"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2803
-#, fuzzy
 msgid "Down_load Maps Along Track..."
-msgstr "沿着轨迹下载地图..."
+msgstr ""
 
 #: ../src/viktrwlayer.c:2808
 msgid "_Apply DEM Data"
@@ -2082,9 +2060,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "前往任意的UTM座标"
 
 #: ../src/vikwindow.c:2217
-#, fuzzy
 msgid "Set Bac_kground Color..."
-msgstr "设置背景色 ..."
+msgstr ""
 
 #: ../src/vikwindow.c:2218
 msgid "Zoom _In"
@@ -2171,24 +2148,20 @@ msgid "32768"
 msgstr ""
 
 #: ../src/vikwindow.c:2239
-#, fuzzy
 msgid "Pan _North"
-msgstr "向北"
+msgstr ""
 
 #: ../src/vikwindow.c:2240
-#, fuzzy
 msgid "Pan _East"
-msgstr "向东"
+msgstr ""
 
 #: ../src/vikwindow.c:2241
-#, fuzzy
 msgid "Pan _South"
-msgstr "向南"
+msgstr ""
 
 #: ../src/vikwindow.c:2242
-#, fuzzy
 msgid "Pan _West"
-msgstr "向西"
+msgstr ""
 
 #: ../src/vikwindow.c:2243
 msgid "Background _Jobs"
@@ -2314,9 +2287,6 @@ msgstr ""
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr ""
-
-#~ msgid "Export layer"
-#~ msgstr "输出图层"
 
 #~ msgid "Create"
 #~ msgstr "创建"

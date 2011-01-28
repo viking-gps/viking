@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-11-01 10:43+0000\n"
-"Last-Translator: Radek Stastny <Unknown>\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-11-16 03:14+0000\n"
+"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
-"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
+"Language: cs\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -232,8 +232,8 @@ msgid ""
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
 "Program je šířen pod následující licencí. Oficiální překlad neexistuje, "
-"podrobnosti a vysvětlení lze nalézt například zde http://www.gnu.org/"
-"copyleft/copyleft.cs.html.\n"
+"podrobnosti a vysvětlení lze nalézt například zde "
+"http://www.gnu.org/copyleft/copyleft.cs.html.\n"
 "\n"
 "This program is free software; you can redistribute it and/or modify it "
 "under the terms of the GNU General Public License as published by the Free "
@@ -544,8 +544,8 @@ msgstr "Heslo:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 "Heslo\n"
 "<small>Zadejte heslo pro přihlášení na www.openstreetmap.org.</small>"
@@ -966,11 +966,11 @@ msgstr "Smazat _Download"
 msgid "Empty _All"
 msgstr "Smazat _vše"
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -2387,12 +2387,13 @@ msgstr "Viking"
 #~ msgid "_Open"
 #~ msgstr "_Otevřít"
 
+#, c-format
 #~ msgid ""
-#~ "The clipboard contains sublayer data for a %s layers.You must select a "
-#~ "layer of this type to paste the clipboard data."
+#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
+#~ "of this type to paste the clipboard data."
 #~ msgstr ""
-#~ "Schránka obsahuje data pro %s vrstev. K vložení ze schránky je třeba "
-#~ "vybrat vrstvu stejného typu."
+#~ "Schránka obsahuje data pro %s vrstev. K vložení ze schránky je třeba vybrat "
+#~ "vrstvu stejného typu."
 
 #~ msgid "Zoom factor (in meters per pixel:"
 #~ msgstr "Stupeň přiblížení (metr na pixel):"
@@ -2401,8 +2402,8 @@ msgstr "Viking"
 #~ msgstr "Jméno souboru na OSM"
 
 #~ msgid ""
-#~ "This is the name of the file created on the server. This is not the name "
-#~ "of the local file."
+#~ "This is the name of the file created on the server. This is not the name of "
+#~ "the local file."
 #~ msgstr ""
 #~ "Jméno souboru vytvořeného na serveru. Liší se od jména lokálního souboru."
 
@@ -2527,6 +2528,9 @@ msgstr "Viking"
 #~ msgid "Indicates if the trace is public or not"
 #~ msgstr "Ukazuje zda je log trasy veřejný"
 
+#~ msgid "Use smaller symbols for waypoints"
+#~ msgstr "Požít menší symboly pro místa"
+
 #~ msgid "Merge With Other Tracks..."
 #~ msgstr "Připojit další trasy ..."
 
@@ -2545,6 +2549,9 @@ msgstr "Viking"
 #~ msgid "Within current view"
 #~ msgstr "Uvnitř aktuálního pohledu"
 
+#~ msgid "Go To location"
+#~ msgstr "Jít na místo..."
+
 #~ msgid "Export to World File"
 #~ msgstr "Export World souboru"
 
@@ -2557,11 +2564,17 @@ msgstr "Viking"
 #~ msgid "Empty All"
 #~ msgstr "Sm_azat vše"
 
+#~ msgid "Flush Map cache"
+#~ msgstr "Smazání cache:"
+
 #~ msgid "Download new Onscreen Maps from server"
 #~ msgstr "Stáhnout aktualizované viditelné mapy"
 
 #~ msgid "Redownload new map(s)"
 #~ msgstr "Znovu stáhnout aktualizované mapy"
+
+#~ msgid "Open _Recent file"
+#~ msgstr "Ot_evřít nedávný"
 
 #~ msgid "Download missing Onscreen Maps"
 #~ msgstr "Stáhnout chybějící viditelné mapy"

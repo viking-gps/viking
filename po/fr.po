@@ -4,17 +4,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-11-12 07:56+0000\n"
-"Last-Translator: Jean-Paul GERST <Unknown>\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-11-16 03:03+0000\n"
+"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: \n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
+"Language: \n"
 "X-Poedit-Language: French\n"
 
 #: ../src/acquire.c:118
@@ -268,8 +268,8 @@ msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
-"Impossible d'ouvrir l'image EXPEDIA (juste après un téléchargement "
-"fructueux ! Rapportez l'information et détruisez le fichier) : %s"
+"Impossible d'ouvrir l'image EXPEDIA (juste après un téléchargement fructueux "
+"! Rapportez l'information et détruisez le fichier) : %s"
 
 #: ../src/expedia.c:125
 #, c-format
@@ -541,12 +541,12 @@ msgstr "Mot de passe :"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 "Mot de passe\n"
-"<small>Entrer le mot de passe que vous utilisez sur www.openstreetmap.org.</"
-"small>"
+"<small>Entrer le mot de passe que vous utilisez sur "
+"www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
@@ -711,7 +711,8 @@ msgstr "Préférences"
 
 #: ../src/uibuilder.c:148
 msgid "Take care that this password will be stored clearly in a plain file."
-msgstr "Attention, ce mot de passe sera stocké en clair dans un fichier teste."
+msgstr ""
+"Attention, ce mot de passe sera stocké en clair dans un fichier teste."
 
 #: ../src/vikdemlayer.c:101
 msgid "Absolute height"
@@ -968,11 +969,11 @@ msgstr "Ré_ception vide"
 msgid "Empty _All"
 msgstr "_Tout vider"
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -2390,8 +2391,8 @@ msgstr "Viking"
 
 #, c-format
 #~ msgid ""
-#~ "The clipboard contains sublayer data for a %s layers.You must select a "
-#~ "layer of this type to paste the clipboard data."
+#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
+#~ "of this type to paste the clipboard data."
 #~ msgstr ""
 #~ "Le presse-papier contient des données pour un calque %s. Vous devez "
 #~ "sélectionner un calque de ce type pour y coller ces données."
@@ -2420,8 +2421,8 @@ msgstr "Viking"
 #~ msgstr "Nom du fichier sur OSM"
 
 #~ msgid ""
-#~ "This is the name of the file created on the server. This is not the name "
-#~ "of the local file."
+#~ "This is the name of the file created on the server. This is not the name of "
+#~ "the local file."
 #~ msgstr ""
 #~ "Nom du fichier créé sur le serveur. Ce n'est pas le nom du fichier local."
 
@@ -2530,6 +2531,9 @@ msgstr "Viking"
 #~ msgid "_Preferences..."
 #~ msgstr "_Préférences…"
 
+#~ msgid "Use smaller symbols for waypoints"
+#~ msgstr "Utiliser des symboles plus petits pour les waypoints"
+
 #~ msgid "Add Wikipedia Waypoints"
 #~ msgstr "Ajouter les waypoints Wikipedia"
 
@@ -2541,6 +2545,12 @@ msgstr "Viking"
 
 #~ msgid "Within current view"
 #~ msgstr "A l'intérieur de la vue courrante"
+
+#~ msgid "Go To location"
+#~ msgstr "Aller à une position"
+
+#~ msgid "Flush Map cache"
+#~ msgstr "Purger le cache des cartes"
 
 #~ msgid "Extend track end"
 #~ msgstr "Etendre l'extrémité de la trace"
@@ -2556,6 +2566,9 @@ msgstr "Viking"
 
 #~ msgid "Use with filter"
 #~ msgstr "Utiliser avec un filtre"
+
+#~ msgid "Open _Recent file"
+#~ msgstr "Ouvrir un fichier _récent"
 
 #~ msgid "Download missing Onscreen Maps"
 #~ msgstr "Télécharger les cartes manquantes à l'écran"

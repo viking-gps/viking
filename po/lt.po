@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
 "PO-Revision-Date: 2010-09-07 09:20+0000\n"
 "Last-Translator: Dainius Sakalinskas <dinuxlt@gmail.com>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
-"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "(n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -230,8 +229,8 @@ msgid ""
 "this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
-"Ši programa yra laisva programinė įranga; ją galite pakartotinai platinti ir/"
-"arba keisti pagal GNU General Public License kaippaskelbė Free Software "
+"Ši programa yra laisva programinė įranga; ją galite pakartotinai platinti "
+"ir/arba keisti pagal GNU General Public License kaippaskelbė Free Software "
 "Foundation; arba bet kuri 2 licencijosversija, arba (Jūsų pasirinkimu) bet "
 "kuri vėlesnė versija.\n"
 "\n"
@@ -534,8 +533,8 @@ msgstr "Slaptažodis:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 
 #: ../src/osm-traces.c:359
@@ -850,19 +849,16 @@ msgid "Map Image:"
 msgstr "Žemėlapio atvaizdas:"
 
 #: ../src/vikgeoreflayer.c:574
-#, fuzzy
 msgid "_Zoom to Fit Map"
-msgstr "Žemėlapio mastelio pritaikymas"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:579
-#, fuzzy
 msgid "_Goto Map Center"
-msgstr "Eiti į žemėlapio centrą"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:584
-#, fuzzy
 msgid "_Export to World File"
-msgstr "Eksportuoti į pasaulinę rinkmeną"
+msgstr ""
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
@@ -934,39 +930,34 @@ msgid "%s: unknown parameter"
 msgstr "%s: nežinomas parametras"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "Nusiųsti į GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "Atsisiųsti iš GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
 msgstr ""
 
 #: ../src/vikgpslayer.c:610
-#, fuzzy
 msgid "E_mpty Upload"
-msgstr "Išvalyti išsiuntimus"
+msgstr ""
 
 #: ../src/vikgpslayer.c:615
-#, fuzzy
 msgid "_Empty Download"
-msgstr "Išvalyti atsiuntimus"
+msgstr ""
 
 #: ../src/vikgpslayer.c:620
-#, fuzzy
 msgid "Empty _All"
-msgstr "Išvalyti visus"
+msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1212,19 +1203,16 @@ msgstr[1] "Atsiunčiami %d %s žemėlapiai..."
 msgstr[2] "Atsiunčiama %d %s žemėlapių..."
 
 #: ../src/vikmapslayer.c:1202
-#, fuzzy
 msgid "Redownload _Bad Map(s)"
-msgstr "Pakartotinai atsiųsti blogus žemėlapius"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1206
-#, fuzzy
 msgid "Redownload _New Map(s)"
-msgstr "Pakartotinai atsiųsti blogus žemėlapius"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1210
-#, fuzzy
 msgid "Redownload _All Map(s)"
-msgstr "Pakartotinai atsiųsti visus žemėlapius"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1290
 #, c-format
@@ -1458,59 +1446,48 @@ msgid "Waypoint not found in this layer."
 msgstr "Maršruto taškas nerastas šiame sluoksnyje."
 
 #: ../src/viktrwlayer.c:1787
-#, fuzzy
 msgid "_Goto Center of Layer"
-msgstr "Eiti į sluoksnio centrą"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1792
-#, fuzzy
 msgid "Goto _Waypoint"
-msgstr "Eiti į maršruto tašką"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Eksportavimo sluoksnis"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
-msgstr "Eksportuoti kaip GPSPoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Eksportuoti kaip GPSMapper"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Eksportuoti kaip GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
-#, fuzzy
 msgid "_New Waypoint"
-msgstr "Naujas maršruto taškas"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1825
-#, fuzzy
 msgid "_Add Wikipedia Waypoints"
-msgstr "Pridėti Wikipedia maršruto taškus"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1830
-#, fuzzy
 msgid "Within _Layer Bounds"
-msgstr "Be sluoksnio ribų"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1835
-#, fuzzy
 msgid "Within _Current View"
-msgstr "Be esamos peržiūros"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1842 ../src/viktrwlayer.c:2824
-#, fuzzy
 msgid "Upload to _OSM"
-msgstr "Išsiųsti į OSM"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2353
 msgid "Failed. This track does not have timestamp"
@@ -1553,74 +1530,60 @@ msgid "Track Already Exists"
 msgstr "Kelias jau yra"
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "Eiti į"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
-#, fuzzy
 msgid "_Visit Geocache Webpage"
-msgstr "Aplankykite Geocache tinklapį"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2773
-#, fuzzy
 msgid "_Goto Startpoint"
-msgstr "Eiti į pradinį tašką"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2778
-#, fuzzy
 msgid "Goto \"_Center\""
-msgstr "Eiti į \"centrą\""
+msgstr ""
 
 #: ../src/viktrwlayer.c:2783
-#, fuzzy
 msgid "Goto _Endpoint"
-msgstr "Eiti į galinį tašką"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2788
-#, fuzzy
 msgid "_Merge By Time"
-msgstr "Sujungti pagal laiką"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2793
-#, fuzzy
 msgid "Merge _With Other Tracks..."
-msgstr "Sujungti su kitais keliais..."
+msgstr ""
 
 #: ../src/viktrwlayer.c:2798
-#, fuzzy
 msgid "_Split By Time"
-msgstr "Išskaidyti pagal laiką"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2803
-#, fuzzy
 msgid "Down_load Maps Along Track..."
-msgstr "Atsiųsti žemėlapius išilgai kelio..."
+msgstr ""
 
 #: ../src/viktrwlayer.c:2808
-#, fuzzy
 msgid "_Apply DEM Data"
-msgstr "Pritaikyti DEM duomenis"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2813
-#, fuzzy
 msgid "E_xtend Track End"
-msgstr "Praplėsti kelio galą"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2818
-#, fuzzy
 msgid "Extend _Using Magic Scissors"
-msgstr "Praplėsti naudojantis stebuklingomis žirklėmis"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2832
-#, fuzzy
 msgid "_View Google Directions"
-msgstr "Rodyti Google maršrutus"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2838
-#, fuzzy
 msgid "Use with _Filter"
-msgstr "Naudoti su filtru"
+msgstr ""
 
 #: ../src/viktrwlayer.c:3474
 msgid "Track"
@@ -1902,8 +1865,8 @@ msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
 msgstr ""
-"Matoma sritis už leidžiamo taško nustato atvaizdo ribas. Kerpamas pločio/"
-"aukščio vertės."
+"Matoma sritis už leidžiamo taško nustato atvaizdo ribas. Kerpamas "
+"pločio/aukščio vertės."
 
 #: ../src/vikwindow.c:1917
 #, c-format
@@ -2125,9 +2088,8 @@ msgid "Go to the default location"
 msgstr ""
 
 #: ../src/vikwindow.c:2214
-#, fuzzy
 msgid "Go to _Location..."
-msgstr "Eiti į vietą..."
+msgstr ""
 
 #: ../src/vikwindow.c:2214
 msgid "Go to address/place using text search"
@@ -2150,9 +2112,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Eiti į pasirinktas UTM koordinates"
 
 #: ../src/vikwindow.c:2217
-#, fuzzy
 msgid "Set Bac_kground Color..."
-msgstr "Nustatyti fono spalvą..."
+msgstr ""
 
 #: ../src/vikwindow.c:2218
 msgid "Zoom _In"
@@ -2239,24 +2200,20 @@ msgid "32768"
 msgstr ""
 
 #: ../src/vikwindow.c:2239
-#, fuzzy
 msgid "Pan _North"
-msgstr "Šiaurinė pusė"
+msgstr ""
 
 #: ../src/vikwindow.c:2240
-#, fuzzy
 msgid "Pan _East"
-msgstr "Rytinė pusė"
+msgstr ""
 
 #: ../src/vikwindow.c:2241
-#, fuzzy
 msgid "Pan _South"
-msgstr "Pietinė pusė"
+msgstr ""
 
 #: ../src/vikwindow.c:2242
-#, fuzzy
 msgid "Pan _West"
-msgstr "Vakarinė pusė"
+msgstr ""
 
 #: ../src/vikwindow.c:2243
 msgid "Background _Jobs"
@@ -2359,9 +2316,8 @@ msgid "Activate full screen mode"
 msgstr "Viso ekrano režimas"
 
 #: ../src/vikwindow.c:2276
-#, fuzzy
 msgid "Show Side Pa_nel"
-msgstr "Rodyti šoninį skydelį"
+msgstr ""
 
 #: ../src/vikwindow.c:2276
 msgid "Show Side Panel"
@@ -2384,17 +2340,54 @@ msgstr "Žemėlapiais paremtas GPS duomenų vedlys (duomenys realiu laiku)."
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Refresh Onscreen Tiles"
-#~ msgstr "Atnaujinti matomus kvadratus"
-
-#~ msgid "Export layer"
-#~ msgstr "Eksportuoti sluoksnį"
-
 #~ msgid "Create"
 #~ msgstr "Sukurti"
 
 #~ msgid "Goto Map Center"
 #~ msgstr "Eiti į žemėlapio centrą"
+
+#~ msgid "I don't know that place. Do you want another search?"
+#~ msgstr "Aš nežinau šios vietovės. Ar norėsite kitos paieškos?"
+
+#, c-format
+#~ msgid ""
+#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
+#~ "of this type to paste the clipboard data."
+#~ msgstr ""
+#~ "Iškarpą sudaro posluoksniniai duomenys sluoksnyje %s. Jūs privalote "
+#~ "pasirinkti šio tipo sluoksnį, kad galėtumėte įterpti iškarpos duomenis."
+
+#~ msgid "Zoom factor (in meters per pixel:"
+#~ msgstr "Mastelio veiksnys (metrais į tašką):"
+
+#~ msgid "Use smaller symbols for waypoints"
+#~ msgstr "Naudoti mažesnius maršruto taškų simbolius"
+
+#~ msgid "The email used as login"
+#~ msgstr "El. paštas naudojamas prisijungimui"
+
+#~ msgid "Enter the email you use to login into www.openstreetmap.org."
+#~ msgstr ""
+#~ "Įveskite el. paštą, kurį naudojate jungiantis prie www.openstreetmap.org."
+
+#~ msgid "The password used to login"
+#~ msgstr "Slaptažodis naudojamas prisijungimui"
+
+#~ msgid "Enter the password you use to login into www.openstreetmap.org."
+#~ msgstr ""
+#~ "Įveskite slaptažodį, kurį naudojate junkdamiesi prie www.openstreetmap.org."
+
+#~ msgid "The name of the file on OSM"
+#~ msgstr "OSM rinkmenos pavadinimas"
+
+#~ msgid ""
+#~ "This is the name of the file created on the server. This is not the name of "
+#~ "the local file."
+#~ msgstr ""
+#~ "Šis rinkmenos vardas sukurtas serveryje. Tai nėra vietinės rinkmenos vardas."
+
+#~ msgid "Indicates if the trace is public or not"
+#~ msgstr "Rodo, ar takelis yra viešas ar ne"
 
 #~ msgid "Zoom to Fit Map"
 #~ msgstr "Žemėlapio mastelio pritaikymas"
@@ -2417,11 +2410,17 @@ msgstr "Viking"
 #~ msgid "Empty All"
 #~ msgstr "Išvalyti visus"
 
+#~ msgid "Maps Directory (Optional):"
+#~ msgstr "Žemėlapių aplankalas (pasirinktinai):"
+
 #~ msgid "Redownload bad map(s)"
 #~ msgstr "Pakartotinai atsiųsti blogus žemėlapius"
 
 #~ msgid "Redownload all map(s)"
 #~ msgstr "Pakartotinai atsiųsti visus žemėlapius"
+
+#~ msgid "Download Onscreen Maps"
+#~ msgstr "Atsiųsti matomus žemėlapius"
 
 #~ msgid "Refresh Onscreen Tiles"
 #~ msgstr "Atnaujinti matomus kvadratus"
@@ -2501,8 +2500,44 @@ msgstr "Viking"
 #~ msgid "Use with filter"
 #~ msgstr "Naudoti su filtru"
 
+#~ msgid "_Open"
+#~ msgstr "_Atverti"
+
+#~ msgid "A_ppend File"
+#~ msgstr "_Pridėti rinkmeną"
+
+#~ msgid "From _GPS"
+#~ msgstr "Iš _GPS"
+
+#~ msgid "Google _Directions"
+#~ msgstr "Google _maršrutai"
+
+#~ msgid "Geo_caches"
+#~ msgstr "Geo_caches"
+
+#~ msgid "Save _As"
+#~ msgstr "Išsaugoti _kaip"
+
+#~ msgid "_Generate Image File"
+#~ msgstr "_Sukurti atvaizdo rinkmeną"
+
+#~ msgid "Generate _Directory of Images"
+#~ msgstr "Sukurti a_tvaizdų aplankalą"
+
+#~ msgid "Go To location"
+#~ msgstr "Eiti į vietą"
+
+#~ msgid "_Go to Lat\\/Lon..."
+#~ msgstr "Eiti į Platumą/Ilgumą..."
+
+#~ msgid "Go to arbitrary lat\\/lon coordinate"
+#~ msgstr "Eiti į pasirinktas pla\\/ilg koordinates"
+
 #~ msgid "Set Background Color..."
 #~ msgstr "Nustatyti fono spalvą..."
+
+#~ msgid "Zoom _To"
+#~ msgstr "Didinti _iki"
 
 #~ msgid "Pan North"
 #~ msgstr "Šiaurinė pusė"
@@ -2515,6 +2550,12 @@ msgstr "Viking"
 
 #~ msgid "Pan West"
 #~ msgstr "Vakarinė pusė"
+
+#~ msgid "_Preferences..."
+#~ msgstr "_Nustatymai"
+
+#~ msgid "Full Screen"
+#~ msgstr "Visas ekranas"
 
 #~ msgid "Go to Location..."
 #~ msgstr "Eiti į vietą..."
