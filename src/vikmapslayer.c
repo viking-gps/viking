@@ -1151,7 +1151,6 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
     mdi->maptype = vml->maptype;
 
     mdi->mapcoord = ulm;
-
     mdi->redownload = redownload;
 
     mdi->x0 = MIN(ulm.x, brm.x);
@@ -1214,7 +1213,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
   }
 }
 
-void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom)
+static void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom, gint download_method )
 {
   MapCoord ulm, brm;
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
@@ -1244,8 +1243,7 @@ void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord
   mdi->maptype = vml->maptype;
 
   mdi->mapcoord = ulm;
-
-  mdi->redownload = REDOWNLOAD_NONE;
+  mdi->redownload = download_method;
 
   mdi->x0 = MIN(ulm.x, brm.x);
   mdi->xf = MAX(ulm.x, brm.x);
@@ -1287,6 +1285,21 @@ void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord
   }
   else
     mdi_free ( mdi );
+}
+
+/**
+ * vik_maps_layer_download_section:
+ * @vml:  The Map Layer
+ * @vvp:  The Viewport that the map is on
+ * @ul:   Upper left coordinate of the area to be downloaded
+ * @br:   Bottom right coordinate of the area to be downloaded
+ * @zoom: The zoom level at which the maps are to be download
+ *
+ * Download a specified map area at a certain zoom level
+ */
+void vik_maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom )
+{
+  maps_layer_download_section (vml, vvp, ul, br, zoom, REDOWNLOAD_NONE);
 }
 
 static void maps_layer_redownload_bad ( VikMapsLayer *vml )
@@ -1499,6 +1512,266 @@ static void maps_layer_redownload_all_onscreen_maps ( gpointer vml_vvp[2] )
   download_onscreen_maps( vml_vvp, REDOWNLOAD_ALL);
 }
 
+/**
+ * maps_layer_how_many_maps:
+ * Copied from maps_layer_download_section but without the actual download and this returns a value
+ */
+static gint maps_layer_how_many_maps ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom, gint redownload )
+{
+  MapCoord ulm, brm;
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  if ( vik_map_source_is_direct_file_access ( map ) )
+    return 0;
+
+  if (!vik_map_source_coord_to_mapcoord(map, ul, zoom, zoom, &ulm)
+    || !vik_map_source_coord_to_mapcoord(map, br, zoom, zoom, &brm)) {
+    g_warning("%s() coord_to_mapcoord() failed", __PRETTY_FUNCTION__);
+    return 0;
+  }
+
+  MapDownloadInfo *mdi = g_malloc(sizeof(MapDownloadInfo));
+  gint i, j;
+
+  mdi->vml = vml;
+  mdi->vvp = vvp;
+  mdi->map_layer_alive = TRUE;
+  mdi->mutex = g_mutex_new();
+  mdi->refresh_display = FALSE;
+
+  mdi->cache_dir = g_strdup ( vml->cache_dir );
+  mdi->maxlen = strlen ( vml->cache_dir ) + 40;
+  mdi->filename_buf = g_malloc ( mdi->maxlen * sizeof(gchar) );
+  mdi->maptype = vml->maptype;
+
+  mdi->mapcoord = ulm;
+  mdi->redownload = redownload;
+
+  mdi->x0 = MIN(ulm.x, brm.x);
+  mdi->xf = MAX(ulm.x, brm.x);
+  mdi->y0 = MIN(ulm.y, brm.y);
+  mdi->yf = MAX(ulm.y, brm.y);
+
+  mdi->mapstoget = 0;
+
+  if ( mdi->redownload == REDOWNLOAD_ALL ) {
+    mdi->mapstoget = (mdi->xf - mdi->x0 + 1) * (mdi->yf - mdi->y0 + 1);
+  }
+  else {
+    /* calculate how many we need */
+    for (i = mdi->x0; i <= mdi->xf; i++) {
+      for (j = mdi->y0; j <= mdi->yf; j++) {
+        g_snprintf ( mdi->filename_buf, mdi->maxlen, DIRSTRUCTURE,
+                     vml->cache_dir, vik_map_source_get_uniq_id(map), ulm.scale,
+                     ulm.z, i, j );
+        if ( mdi->redownload == REDOWNLOAD_NEW ) {
+          // Assume the worst - always a new file
+          // Absolute value would requires server lookup - but that is too slow
+          mdi->mapstoget++;
+	}
+        else {
+          if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == FALSE ) {
+            // Missing
+            mdi->mapstoget++;
+          }
+          else {
+            if ( mdi->redownload == REDOWNLOAD_BAD ) {
+              /* see if this one is bad or what */
+              GError *gx = NULL;
+              GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( mdi->filename_buf, &gx );
+              if (gx || (!pixbuf)) {
+                mdi->mapstoget++;
+              }
+              break;
+              // Other download cases already considered or just ignored
+            }
+          }
+        }
+      }
+    }
+  }
+
+  gint rv = mdi->mapstoget;
+
+  mdi_free ( mdi );
+
+  return rv;
+}
+
+/**
+ * maps_dialog_zoom_between:
+ * This dialog is specific to the map layer, so it's here rather than in dialog.c
+ */
+gboolean maps_dialog_zoom_between ( GtkWindow *parent,
+                                    gchar *title,
+                                    gchar *zoom_list[],
+                                    gint default_zoom1,
+                                    gint default_zoom2,
+                                    gint *selected_zoom1,
+                                    gint *selected_zoom2,
+                                    gchar *download_list[],
+                                    gint default_download,
+                                    gint *selected_download )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( title,
+                                                    parent,
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+                                                    GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+                                                    NULL );
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
+  GtkWidget *zoom_label1 = gtk_label_new ( _("Zoom Start:") );
+  GtkWidget *zoom_combo1 = vik_combo_box_text_new();
+  gchar **s;
+  for (s = zoom_list; *s; s++)
+    vik_combo_box_text_append ( zoom_combo1, *s );
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(zoom_combo1), default_zoom1 );
+
+  GtkWidget *zoom_label2 = gtk_label_new ( _("Zoom End:") );
+  GtkWidget *zoom_combo2 = vik_combo_box_text_new();
+  for (s = zoom_list; *s; s++)
+    vik_combo_box_text_append ( zoom_combo2, *s );
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(zoom_combo2), default_zoom2 );
+
+  GtkWidget *download_label = gtk_label_new(_("Download Maps Method:"));
+  GtkWidget *download_combo = vik_combo_box_text_new();
+  for (s = download_list; *s; s++)
+    vik_combo_box_text_append ( download_combo, *s );
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(download_combo), default_download );
+
+  GtkTable *box = GTK_TABLE(gtk_table_new(3, 2, FALSE));
+  gtk_table_attach_defaults (box, GTK_WIDGET(zoom_label1), 0, 1, 0, 1);
+  gtk_table_attach_defaults (box, GTK_WIDGET(zoom_combo1), 1, 2, 0, 1);
+  gtk_table_attach_defaults (box, GTK_WIDGET(zoom_label2), 0, 1, 1, 2);
+  gtk_table_attach_defaults (box, GTK_WIDGET(zoom_combo2), 1, 2, 1, 2);
+  gtk_table_attach_defaults (box, GTK_WIDGET(download_label), 0, 1, 2, 3);
+  gtk_table_attach_defaults (box, GTK_WIDGET(download_combo), 1, 2, 2, 3);
+
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(box), FALSE, FALSE, 5 );
+
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  gtk_widget_show_all ( dialog );
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
+    gtk_widget_destroy(dialog);
+    return FALSE;
+  }
+
+  // Return selected options
+  *selected_zoom1 = gtk_combo_box_get_active ( GTK_COMBO_BOX(zoom_combo1) );
+  *selected_zoom2 = gtk_combo_box_get_active ( GTK_COMBO_BOX(zoom_combo2) );
+  *selected_download = gtk_combo_box_get_active ( GTK_COMBO_BOX(download_combo) );
+
+  gtk_widget_destroy(dialog);
+  return TRUE;
+}
+
+// My best guess of sensible limits
+#define REALLY_LARGE_AMOUNT_OF_TILES 5000
+#define CONFIRM_LARGE_AMOUNT_OF_TILES 500
+
+/**
+ * Get all maps in the region for zoom levels specified by the user
+ * Sort of similar to trw_layer_download_map_along_track_cb function
+ */
+static void maps_layer_download_all ( gpointer vml_vvp[2] )
+{
+  VikMapsLayer *vml = vml_vvp[0];
+  VikViewport *vvp = vml_vvp[1];
+
+  // I don't think we should allow users to hammer the servers too much...
+  // Delibrately not allowing lowest zoom levels
+  // Still can give massive numbers to download
+  // A screen size of 1600x1200 gives around 300,000 tiles between 1..128 when none exist before !!
+  gchar *zoom_list[] = {"1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", NULL };
+  gdouble zoom_vals[] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+
+  gint selected_zoom1, selected_zoom2, default_zoom, lower_zoom;
+  gint selected_download_method;
+  
+  gdouble cur_zoom = vik_viewport_get_zoom(vvp);
+
+  for (default_zoom = 0; default_zoom < sizeof(zoom_vals)/sizeof(gdouble); default_zoom++) {
+    if (cur_zoom == zoom_vals[default_zoom])
+      break;
+  }
+  default_zoom = (default_zoom == sizeof(zoom_vals)/sizeof(gdouble)) ? sizeof(zoom_vals)/sizeof(gdouble) - 1 : default_zoom;
+
+  // Default to only 2 zoom levels below the current one
+  if (default_zoom > 1 )
+    lower_zoom = default_zoom - 2;
+  else
+    lower_zoom = default_zoom;
+
+  // redownload method - needs to align with REDOWNLOAD* macro values
+  gchar *download_list[] = { _("Missing"), _("Bad"), _("New"), _("Reload All"), NULL };
+
+  gchar *title = g_strdup_printf ( ("%s: %s"), vik_maps_layer_get_map_label (vml), _("Download for Zoom Levels") );
+
+  if ( ! maps_dialog_zoom_between ( VIK_GTK_WINDOW_FROM_LAYER(vml),
+                                    title,
+                                    zoom_list,
+                                    lower_zoom,
+                                    default_zoom,
+                                    &selected_zoom1,
+                                    &selected_zoom2,
+                                    download_list,
+                                    REDOWNLOAD_NONE, // AKA Missing
+                                    &selected_download_method ) ) {
+    // Cancelled
+    g_free ( title );
+    return;
+  }
+  g_free ( title );
+
+  // Find out new current positions
+  gdouble min_lat, max_lat, min_lon, max_lon;
+  VikCoord vc_ul, vc_br;
+  vik_viewport_get_min_max_lat_lon ( vvp, &min_lat, &max_lat, &min_lon, &max_lon );
+  struct LatLon ll_ul = { max_lat, min_lon };
+  struct LatLon ll_br = { min_lat, max_lon };
+  vik_coord_load_from_latlon ( &vc_ul, vik_viewport_get_coord_mode (vvp), &ll_ul );
+  vik_coord_load_from_latlon ( &vc_br, vik_viewport_get_coord_mode (vvp), &ll_br );
+
+  // Get Maps Count - call for each zoom level (in reverse)
+  // With REDOWNLOAD_NEW this is a possible maximum
+  // With REDOWNLOAD_NONE this only missing ones - however still has a server lookup per tile
+  gint map_count = 0;
+  gint zz;
+  for ( zz = selected_zoom2; zz >= selected_zoom1; zz-- ) {
+    map_count = map_count + maps_layer_how_many_maps ( vml, vvp, &vc_ul, &vc_br, zoom_vals[zz], selected_download_method );
+  }
+
+  g_debug ("vikmapslayer: download request map count %d for method %d", map_count, selected_download_method);
+
+  // Absolute protection of hammering a map server
+  if ( map_count > REALLY_LARGE_AMOUNT_OF_TILES ) {
+    gchar *str = g_strdup_printf (_("You are not allowed to download more than %d tiles in one go (requested %d)"), REALLY_LARGE_AMOUNT_OF_TILES, map_count);
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), str );
+    g_free (str);
+    return;
+  }
+
+  // Confirm really want to do this
+  if ( map_count > CONFIRM_LARGE_AMOUNT_OF_TILES ) {
+    gchar *str = g_strdup_printf (_("Do you really want to download %d tiles?"), map_count);
+    gboolean ans = a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vml), str, NULL );
+    g_free (str);
+    if ( ! ans )
+      return;
+  }
+
+  // Get Maps - call for each zoom level (in reverse)
+  for ( zz = selected_zoom2; zz >= selected_zoom1; zz-- ) {
+    maps_layer_download_section ( vml, vvp, &vc_ul, &vc_br, zoom_vals[zz], selected_download_method );
+  }
+}
+
 static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp )
 {
   static gpointer pass_along[2];
@@ -1528,6 +1801,12 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   item = gtk_image_menu_item_new_with_mnemonic ( _("Reload _All Onscreen Maps") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Download Maps in _Zoom Levels...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DND_MULTIPLE, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 }

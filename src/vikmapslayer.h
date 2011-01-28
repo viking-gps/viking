@@ -49,7 +49,7 @@ typedef struct _VikMapsLayer VikMapsLayer;
 
 void maps_layer_init ();
 void maps_layer_register_map_source ( VikMapSource *map );
-void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom);
+void vik_maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom );
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);
 gchar *maps_layer_default_dir ();
