@@ -93,6 +93,7 @@ VikTrackpoint *vik_track_get_tp_by_max_speed ( const VikTrack *tr );
 VikTrackpoint *vik_track_get_tp_by_max_alt ( const VikTrack *tr );
 VikTrackpoint *vik_track_get_tp_by_min_alt ( const VikTrack *tr );
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks );
+gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks );
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt );
 void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
 VikTrack *vik_track_unmarshall (guint8 *data, guint datalen);

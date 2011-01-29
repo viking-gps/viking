@@ -565,6 +565,80 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   return v;
 }
 
+/**
+ * Make a distance/time map, heavily based on the vik_track_make_speed_map method
+ */
+gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks )
+{
+  gdouble *v, *s, *t;
+  gdouble duration, chunk_dur;
+  time_t t1, t2;
+  int i, pt_count, numpts, index;
+  GList *iter;
+
+  if ( ! tr->trackpoints )
+    return NULL;
+
+  t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  duration = t2 - t1;
+
+  if ( !t1 || !t2 || !duration )
+    return NULL;
+
+  if (duration < 0) {
+    g_warning("negative duration: unsorted trackpoint timestamps?");
+    return NULL;
+  }
+  pt_count = vik_track_get_tp_count(tr);
+
+  v = g_malloc ( sizeof(gdouble) * num_chunks );
+  chunk_dur = duration / num_chunks;
+
+  s = g_malloc(sizeof(double) * pt_count);
+  t = g_malloc(sizeof(double) * pt_count);
+
+  iter = tr->trackpoints->next;
+  numpts = 0;
+  s[0] = 0;
+  t[0] = VIK_TRACKPOINT(iter->prev->data)->timestamp;
+  numpts++;
+  while (iter) {
+    s[numpts] = s[numpts-1] + vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord), &(VIK_TRACKPOINT(iter->data)->coord) );
+    t[numpts] = VIK_TRACKPOINT(iter->data)->timestamp;
+    numpts++;
+    iter = iter->next;
+  }
+
+  /* In the following computation, we iterate through periods of time of duration chunk_dur.
+   * The first period begins at the beginning of the track.  The last period ends at the end of the track.
+   */
+  index = 0; /* index of the current trackpoint. */
+  for (i = 0; i < num_chunks; i++) {
+    /* we are now covering the interval from t[0] + i*chunk_dur to t[0] + (i+1)*chunk_dur.
+     * find the first trackpoint outside the current interval, averaging the distance between intermediate trackpoints.
+     */
+    if (t[0] + i*chunk_dur >= t[index]) {
+      gdouble acc_s = 0; // No need for acc_t
+      while (t[0] + i*chunk_dur >= t[index]) {
+	acc_s += (s[index+1]-s[index]);
+	index++;
+      }
+      // The only bit that's really different from the speed map - just keep an accululative record distance
+      v[i] = i ? v[i-1]+acc_s : acc_s;
+    }
+    else if (i) {
+      v[i] = v[i-1];
+    }
+    else {
+      v[i] = 0;
+    }
+  }
+  g_free(s);
+  g_free(t);
+  return v;
+}
+
 /* by Alex Foobarian */
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start )
 {
