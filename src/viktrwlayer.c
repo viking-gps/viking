@@ -1639,7 +1639,7 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
       // Setup info dependent on distance units
       if ( a_vik_get_units_distance() == VIK_UNITS_DISTANCE_MILES ) {
 	g_snprintf (tbuf4, sizeof(tbuf4), "miles");
-	len_in_units = tt.length/1600.0;
+	len_in_units = VIK_METERS_TO_MILES(tt.length);
       }
       else {
 	g_snprintf (tbuf4, sizeof(tbuf4), "kms");
@@ -1706,7 +1706,7 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f km %s"), time_buf1, tr_len/1000.0, time_buf2);
 	  break;
 	case VIK_UNITS_DISTANCE_MILES:
-	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f miles %s"), time_buf1, tr_len/1600.0, time_buf2);
+	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f miles %s"), time_buf1, VIK_METERS_TO_MILES(tr_len), time_buf2);
 	  break;
 	default:
 	  break;
