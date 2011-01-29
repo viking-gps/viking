@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-10-11 17:22+0000\n"
-"Last-Translator: aitolos <Unknown>\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-11-16 03:07+0000\n"
+"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
-"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
+"Language: el\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -515,8 +515,8 @@ msgstr "Κωδικός:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 
 #: ../src/osm-traces.c:359
@@ -837,9 +837,8 @@ msgid "_Goto Map Center"
 msgstr ""
 
 #: ../src/vikgeoreflayer.c:584
-#, fuzzy
 msgid "_Export to World File"
-msgstr "Εξαγωγή στο αρχείο Κόσμου"
+msgstr ""
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
@@ -934,11 +933,11 @@ msgstr ""
 msgid "Empty _All"
 msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1416,24 +1415,20 @@ msgid "Goto _Waypoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Εξαγωγή Επιπέδου"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
-msgstr "Εξαγωγή ως GPSPoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Εξαγωγή ως GPSMapper"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Εξαγωγή ως GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
 msgid "_New Waypoint"
@@ -1496,9 +1491,8 @@ msgid "Track Already Exists"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "Μετάβαση"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
 msgid "_Visit Geocache Webpage"
@@ -1541,9 +1535,8 @@ msgid "E_xtend Track End"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2818
-#, fuzzy
 msgid "Extend _Using Magic Scissors"
-msgstr "Μαγικά Ψαλίδια"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2832
 msgid "_View Google Directions"
@@ -2303,6 +2296,12 @@ msgstr ""
 msgid "Viking"
 msgstr ""
 
+#~ msgid "I don't know that place. Do you want another search?"
+#~ msgstr "Δεν γνωρίζω αυτο το μέρος.Θέλετε άλλη αναζήτηση;"
+
+#~ msgid "The name of the file on OSM"
+#~ msgstr "Το όνομα αρχείου στο OSM"
+
 #~ msgid "Export to World File"
 #~ msgstr "Εξαγωγή στο αρχείο Κόσμου"
 
@@ -2323,3 +2322,15 @@ msgstr ""
 
 #~ msgid "Goto"
 #~ msgstr "Μετάβαση"
+
+#~ msgid "_Open"
+#~ msgstr "Άν_οιγμα"
+
+#~ msgid "Save _As"
+#~ msgstr "Αποθήκευση _Ως"
+
+#~ msgid "_Preferences..."
+#~ msgstr "_Προτιμήσεις..."
+
+#~ msgid "Full Screen"
+#~ msgstr "Πλήρης Οθόνη"

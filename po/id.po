@@ -6,17 +6,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-09-07 10:56+0000\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2011-01-10 15:38+0000\n"
 "Last-Translator: Arief Setiadi Wibowo <q_thrynx@yahoo.com>\n"
 "Language-Team: Indonesian <id@li.org>\n"
-"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
+"Language: id\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -79,7 +79,7 @@ msgstr ""
 #: ../src/curl_download.c:115
 #, c-format
 msgid "%s() Curl perform failed: %s"
-msgstr ""
+msgstr "%s() Curl perform failed: %s"
 
 #: ../src/dialog.c:49
 msgid "Go to Lat/Lon"
@@ -95,7 +95,7 @@ msgstr "Bujur:"
 
 #: ../src/dialog.c:97
 msgid "Go to UTM"
-msgstr ""
+msgstr "Ke UTM"
 
 #: ../src/dialog.c:110
 msgid "Northing:"
@@ -206,7 +206,7 @@ msgstr "1 hari"
 
 #: ../src/dialog.c:659
 msgid "Custom (in minutes):"
-msgstr ""
+msgstr "Kustom (dalam menit):"
 
 #: ../src/dialog.c:714
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
@@ -243,7 +243,7 @@ msgstr "Tingkat pembesaran:"
 
 #: ../src/expedia.c:53
 msgid "Expedia Street Maps"
-msgstr ""
+msgstr "Peta Jalan Expedia"
 
 #: ../src/expedia.c:81
 msgid "Invalid expedia altitude"
@@ -289,15 +289,15 @@ msgstr "Format derajat:"
 
 #: ../src/globals.c:46
 msgid "Distance units:"
-msgstr ""
+msgstr "Jarak unit:"
 
 #: ../src/globals.c:50
 msgid "Speed units:"
-msgstr ""
+msgstr "Kecepatan unit:"
 
 #: ../src/globals.c:54
 msgid "Height units:"
-msgstr ""
+msgstr "Tinggi unit:"
 
 #: ../src/globals.c:58
 msgid "Use large waypoint icons:"
@@ -516,8 +516,8 @@ msgstr "Kata sandi:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 
 #: ../src/osm-traces.c:359
@@ -911,14 +911,12 @@ msgid "%s: unknown parameter"
 msgstr "%s: parameter tak dikenal"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "Unggah ke GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "Unduh dari GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
@@ -936,11 +934,11 @@ msgstr ""
 msgid "Empty _All"
 msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -2071,9 +2069,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Pergi ke sebarang koordinat UTM"
 
 #: ../src/vikwindow.c:2217
-#, fuzzy
 msgid "Set Bac_kground Color..."
-msgstr "Atur Warna Latar..."
+msgstr ""
 
 #: ../src/vikwindow.c:2218
 msgid "Zoom _In"
@@ -2160,24 +2157,20 @@ msgid "32768"
 msgstr ""
 
 #: ../src/vikwindow.c:2239
-#, fuzzy
 msgid "Pan _North"
-msgstr "Geser Utara"
+msgstr ""
 
 #: ../src/vikwindow.c:2240
-#, fuzzy
 msgid "Pan _East"
-msgstr "Geser Timur"
+msgstr ""
 
 #: ../src/vikwindow.c:2241
-#, fuzzy
 msgid "Pan _South"
-msgstr "Geser Selatan"
+msgstr ""
 
 #: ../src/vikwindow.c:2242
-#, fuzzy
 msgid "Pan _West"
-msgstr "Geser Barat"
+msgstr ""
 
 #: ../src/vikwindow.c:2243
 msgid "Background _Jobs"
@@ -2280,9 +2273,8 @@ msgid "Activate full screen mode"
 msgstr "Aktifkan mode layar penuh"
 
 #: ../src/vikwindow.c:2276
-#, fuzzy
 msgid "Show Side Pa_nel"
-msgstr "Tampilkan Panel Sisi"
+msgstr ""
 
 #: ../src/vikwindow.c:2276
 msgid "Show Side Panel"
@@ -2305,6 +2297,26 @@ msgstr "Pengelola Data GPS Berbasis Peta (mampu menangani data live)."
 msgid "Viking"
 msgstr "Viking"
 
+#~ msgid "Zoom factor (in meters per pixel:"
+#~ msgstr "Faktor pembesaran (dalam meter per pixel):"
+
+#~ msgid "I don't know that place. Do you want another search?"
+#~ msgstr "Aku tak tahu tempat itu. Anda ingin pencarian lain?"
+
+#~ msgid "The email used as login"
+#~ msgstr "Email yang dipakai untuk log masuk"
+
+#~ msgid "Enter the email you use to login into www.openstreetmap.org."
+#~ msgstr ""
+#~ "Masukkan email yang Anda pakai untuk log masuk ke www.openstreetmap.org."
+
+#~ msgid "The password used to login"
+#~ msgstr "Kata sandi untuk log masuk"
+
+#~ msgid "Enter the password you use to login into www.openstreetmap.org."
+#~ msgstr ""
+#~ "Masukkan kata sandi yang Anda pakai untuk log masuk ke www.openstreetmap.org."
+
 #~ msgid "Upload to GPS"
 #~ msgstr "Unggah ke GPS"
 
@@ -2314,8 +2326,32 @@ msgstr "Viking"
 #~ msgid "Create"
 #~ msgstr "Buat"
 
+#~ msgid "_Open"
+#~ msgstr "Buka"
+
+#~ msgid "A_ppend File"
+#~ msgstr "Tambahi Berkas"
+
+#~ msgid "From _GPS"
+#~ msgstr "Dari _GPS"
+
+#~ msgid "Save _As"
+#~ msgstr "Simpan Seb_agai"
+
+#~ msgid "Go To location"
+#~ msgstr "Ke lokasi"
+
+#~ msgid "_Go to Lat\\/Lon..."
+#~ msgstr "Pergi ke Lintang/Bujur..."
+
+#~ msgid "Go to arbitrary lat\\/lon coordinate"
+#~ msgstr "Pergi ke sebarang koordinat lintang/bujur"
+
 #~ msgid "Set Background Color..."
 #~ msgstr "Atur Warna Latar..."
+
+#~ msgid "Zoom _To"
+#~ msgstr "Pembesaran Ke"
 
 #~ msgid "Pan North"
 #~ msgstr "Geser Utara"
@@ -2328,3 +2364,30 @@ msgstr "Viking"
 
 #~ msgid "Pan West"
 #~ msgstr "Geser Barat"
+
+#~ msgid "_Preferences..."
+#~ msgstr "_Preferensi..."
+
+#~ msgid "Full Screen"
+#~ msgstr "Layar Penuh"
+
+#~ msgid "Google Street Maps"
+#~ msgstr "Peta Jalan Google"
+
+#~ msgid "Transparent Google Maps"
+#~ msgstr "Peta Google Transparan"
+
+#~ msgid "Google Terrain Maps"
+#~ msgstr "Peta Medan Google"
+
+#~ msgid "couldn't open temp file %s"
+#~ msgstr "tak bisa membuka berkas temp %s"
+
+#~ msgid "Failed downloading %s"
+#~ msgstr "Gagal mengunduh %s"
+
+#~ msgid "Failed fetching Google numbers (\"GLoadApi\" not found)"
+#~ msgstr "Gagal mengambil nomor Google (\"GLoadApi\" tak ditemukan)"
+
+#~ msgid "Failed getting google version numbers"
+#~ msgstr "Gagal mengambil nomor versi Google"

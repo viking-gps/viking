@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-09-07 09:26+0000\n"
-"Last-Translator: Jonay <jonay.santana@gmail.com>\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-11-21 10:18+0000\n"
+"Last-Translator: Patricio Carreño Mancilla <patriciologico@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
-"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -98,7 +97,7 @@ msgstr "Longitud:"
 
 #: ../src/dialog.c:97
 msgid "Go to UTM"
-msgstr ""
+msgstr "Ir hacia UTM"
 
 #: ../src/dialog.c:110
 msgid "Northing:"
@@ -243,8 +242,8 @@ msgstr ""
 "\n"
 "Tu deberas de recibir una copia de la licencia publica general GNU General "
 "Public License en este programa; en caso contrario, escribe a la Free "
-"Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA "
-"02111-1307, USA"
+"Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-"
+"1307, USA"
 
 #: ../src/dialog.c:749
 msgid "Download along track"
@@ -532,8 +531,8 @@ msgid ""
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
 "El correo electronico usado para el login\n"
-"<small>Introduzca el correo electronico usado para iniciar sesión en www."
-"openstreetmap.org.</small>"
+"<small>Introduzca el correo electronico usado para iniciar sesión en "
+"www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:345
 msgid "Password:"
@@ -542,12 +541,12 @@ msgstr "Contraseña:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 "La clave usada para login\n"
-"<small>Introduzca la clave usada para iniciar sesión en www.openstreetmap."
-"org.</small>"
+"<small>Introduzca la clave usada para iniciar sesión en "
+"www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
@@ -708,7 +707,7 @@ msgstr "Renderizado OSM"
 
 #: ../src/preferences.c:267
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: ../src/uibuilder.c:148
 msgid "Take care that this password will be stored clearly in a plain file."
@@ -842,7 +841,8 @@ msgstr "Despl. N de la esquina"
 
 #: ../src/vikgeoreflayer.c:460
 msgid "the UTM \"northing\" value of the upper-right corner pixel of the map"
-msgstr "the UTM \"northing\" value of the upper-right corner pixel of the map"
+msgstr ""
+"the UTM \"northing\" value of the upper-right corner pixel of the map"
 
 #: ../src/vikgeoreflayer.c:462
 msgid "X (easting) scale (mpp): "
@@ -865,19 +865,16 @@ msgid "Map Image:"
 msgstr "Imagen de mapa:"
 
 #: ../src/vikgeoreflayer.c:574
-#, fuzzy
 msgid "_Zoom to Fit Map"
-msgstr "Ajustar zoom al mapa"
+msgstr "_Zoom para ajustar mapa"
 
 #: ../src/vikgeoreflayer.c:579
-#, fuzzy
 msgid "_Goto Map Center"
-msgstr "Ir al centro del mapa"
+msgstr "_Ir al centro del mapa"
 
 #: ../src/vikgeoreflayer.c:584
-#, fuzzy
 msgid "_Export to World File"
-msgstr "Exportar a fichero World"
+msgstr "_Exportar hacia Archivo Mundial"
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
@@ -949,39 +946,34 @@ msgid "%s: unknown parameter"
 msgstr "Parámetro desconocido: %s"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "Envío al GPS"
+msgstr "_Subir a GPS"
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "Descarga del GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
-msgstr ""
+msgstr "Vaciar en tiempo real"
 
 #: ../src/vikgpslayer.c:610
-#, fuzzy
 msgid "E_mpty Upload"
-msgstr "Vaciar zona de envío"
+msgstr ""
 
 #: ../src/vikgpslayer.c:615
-#, fuzzy
 msgid "_Empty Download"
-msgstr "Vaciar zona de descarga"
+msgstr ""
 
 #: ../src/vikgpslayer.c:620
-#, fuzzy
 msgid "Empty _All"
-msgstr "Vaciar todo"
+msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1214,19 +1206,16 @@ msgstr[0] "Descargando mapa %d (%s)..."
 msgstr[1] "Descargando mapas %d (%s)..."
 
 #: ../src/vikmapslayer.c:1202
-#, fuzzy
 msgid "Redownload _Bad Map(s)"
-msgstr "Redescargar mapa(s) corrupto(s)"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1206
-#, fuzzy
 msgid "Redownload _New Map(s)"
-msgstr "Repetir descarga de nuevos mapas"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1210
-#, fuzzy
 msgid "Redownload _All Map(s)"
-msgstr "Redescargar todos los mapas"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1290
 #, c-format
@@ -1242,20 +1231,17 @@ msgid "Wrong zoom level for this map."
 msgstr "Nivel de zoom incorrecto para este mapa."
 
 #: ../src/vikmapslayer.c:1325
-#, fuzzy
 msgid "Download _Missing Onscreen Maps"
-msgstr "Descargar Mapas Onscreen faltantes"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1331
-#, fuzzy
 msgid "Download _New Onscreen Maps"
-msgstr "Descargar mapas en pantalla"
+msgstr ""
 
 #. TODO Add GTK_STOCK_REFRESH icon
 #: ../src/vikmapslayer.c:1338
-#, fuzzy
 msgid "Reload _All Onscreen Maps"
-msgstr "Descargar mapas en pantalla"
+msgstr ""
 
 #: ../src/viktreeview.c:203
 msgid "Layer Name"
@@ -1463,59 +1449,48 @@ msgid "Waypoint not found in this layer."
 msgstr "Waypoint no encontrado en esta capa."
 
 #: ../src/viktrwlayer.c:1787
-#, fuzzy
 msgid "_Goto Center of Layer"
-msgstr "Ir al centro de la capa"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1792
-#, fuzzy
 msgid "Goto _Waypoint"
-msgstr "Ir a waypoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Exportar capa"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
-msgstr "Exportar como GPSPoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Exportar como GPSMapper"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Exportar como GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
-#, fuzzy
 msgid "_New Waypoint"
-msgstr "Nuevo waypoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1825
-#, fuzzy
 msgid "_Add Wikipedia Waypoints"
-msgstr "Agregando señalizadores Wikipedia"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1830
-#, fuzzy
 msgid "Within _Layer Bounds"
-msgstr "Limite de capas de marcaje"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1835
-#, fuzzy
 msgid "Within _Current View"
-msgstr "Vista Actual"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1842 ../src/viktrwlayer.c:2824
-#, fuzzy
 msgid "Upload to _OSM"
-msgstr "Enviar a OSM"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2353
 msgid "Failed. This track does not have timestamp"
@@ -1558,74 +1533,60 @@ msgid "Track Already Exists"
 msgstr "La ruta ya existe"
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "Ir a"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
-#, fuzzy
 msgid "_Visit Geocache Webpage"
-msgstr "Visitar web Geochache"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2773
-#, fuzzy
 msgid "_Goto Startpoint"
-msgstr "Ir al comienzo"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2778
-#, fuzzy
 msgid "Goto \"_Center\""
-msgstr "Ir al centro"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2783
-#, fuzzy
 msgid "Goto _Endpoint"
-msgstr "Ir al final"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2788
-#, fuzzy
 msgid "_Merge By Time"
-msgstr "Fusionar por tiempo"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2793
-#, fuzzy
 msgid "Merge _With Other Tracks..."
-msgstr "Unido con otros tracks..."
+msgstr ""
 
 #: ../src/viktrwlayer.c:2798
-#, fuzzy
 msgid "_Split By Time"
-msgstr "Dividir por tiempo"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2803
-#, fuzzy
 msgid "Down_load Maps Along Track..."
-msgstr "Descargar mapas a lo largo de la ruta..."
+msgstr ""
 
 #: ../src/viktrwlayer.c:2808
-#, fuzzy
 msgid "_Apply DEM Data"
-msgstr "Aplicar datos DEM"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2813
-#, fuzzy
 msgid "E_xtend Track End"
-msgstr "fin del track Extend"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2818
-#, fuzzy
 msgid "Extend _Using Magic Scissors"
-msgstr "Extend esta usando las tijeras magicas"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2832
-#, fuzzy
 msgid "_View Google Directions"
-msgstr "Vista de direcciones Google"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2838
-#, fuzzy
 msgid "Use with _Filter"
-msgstr "Usado con el filtro"
+msgstr ""
 
 #: ../src/viktrwlayer.c:3474
 msgid "Track"
@@ -1868,9 +1829,9 @@ msgid "%s %s %dm"
 msgstr "%s%s%dm"
 
 #: ../src/vikwindow.c:553
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s %dft"
-msgstr "%s%s%dft"
+msgstr ""
 
 #: ../src/vikwindow.c:556
 #, c-format
@@ -2156,9 +2117,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Ir a una coordenada UTM arbitraria"
 
 #: ../src/vikwindow.c:2217
-#, fuzzy
 msgid "Set Bac_kground Color..."
-msgstr "Fijar color de fondo..."
+msgstr ""
 
 #: ../src/vikwindow.c:2218
 msgid "Zoom _In"
@@ -2245,24 +2205,20 @@ msgid "32768"
 msgstr ""
 
 #: ../src/vikwindow.c:2239
-#, fuzzy
 msgid "Pan _North"
-msgstr "Desplazar al N"
+msgstr ""
 
 #: ../src/vikwindow.c:2240
-#, fuzzy
 msgid "Pan _East"
-msgstr "Desplazar al E"
+msgstr ""
 
 #: ../src/vikwindow.c:2241
-#, fuzzy
 msgid "Pan _South"
-msgstr "Desplazar al S"
+msgstr ""
 
 #: ../src/vikwindow.c:2242
-#, fuzzy
 msgid "Pan _West"
-msgstr "Desplazar al W"
+msgstr ""
 
 #: ../src/vikwindow.c:2243
 msgid "Background _Jobs"
@@ -2365,9 +2321,8 @@ msgid "Activate full screen mode"
 msgstr "Activando el modo de pantalla completa"
 
 #: ../src/vikwindow.c:2276
-#, fuzzy
 msgid "Show Side Pa_nel"
-msgstr "Muestra el panel lateral"
+msgstr ""
 
 #: ../src/vikwindow.c:2276
 msgid "Show Side Panel"
@@ -2399,8 +2354,8 @@ msgstr "Vikingo"
 #~ msgstr "El nombre del fichero en OSM"
 
 #~ msgid ""
-#~ "This is the name of the file created on the server. This is not the name "
-#~ "of the local file."
+#~ "This is the name of the file created on the server. This is not the name of "
+#~ "the local file."
 #~ msgstr ""
 #~ "Este es el nombre del fichero creado en el servidor. No es el nombre del "
 #~ "fichero local."
@@ -2571,12 +2526,16 @@ msgstr "Vikingo"
 #~ msgid "Full Screen"
 #~ msgstr "Pantalla completa"
 
+#, c-format
 #~ msgid ""
-#~ "The clipboard contains sublayer data for a %s layers.You must select a "
-#~ "layer of this type to paste the clipboard data."
+#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
+#~ "of this type to paste the clipboard data."
 #~ msgstr ""
 #~ "El portapapeles contiene subcapas de %s capas. Usted deberá seleccionar una "
 #~ "capa de este tipo para copiarla"
+
+#~ msgid "Use smaller symbols for waypoints"
+#~ msgstr "Usa simbolos pequellos para los indicadores"
 
 #~ msgid "Add Wikipedia Waypoints"
 #~ msgstr "Agregando señalizadores Wikipedia"
@@ -2599,14 +2558,23 @@ msgstr "Vikingo"
 #~ msgid "Use with filter"
 #~ msgstr "Usado con el filtro"
 
+#~ msgid "Go To location"
+#~ msgstr "Ir a la localidad"
+
 #~ msgid "Within layer bounds"
 #~ msgstr "Limite de capas de marcaje"
+
+#~ msgid "Flush Map cache"
+#~ msgstr "Limpiar cache de Mapas"
 
 #~ msgid "Download missing Onscreen Maps"
 #~ msgstr "Descargar Mapas Onscreen faltantes"
 
 #~ msgid "Download new Onscreen Maps from server"
 #~ msgstr "Descargar Mapas Onscreen faltantes"
+
+#~ msgid "Open _Recent file"
+#~ msgstr "Open _Recent file"
 
 #~ msgid "Redownload new map(s)"
 #~ msgstr "Repetir descarga de nuevos mapas"

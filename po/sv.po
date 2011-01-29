@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-09-07 09:06+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-12-30 21:34+0000\n"
+"Last-Translator: Erik Simmesgård <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
-"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -33,11 +32,11 @@ msgstr "Färdig."
 
 #: ../src/acquire.c:156
 msgid "No data."
-msgstr ""
+msgstr "Ingen data."
 
 #: ../src/acquire.c:339 ../src/vikgpslayer.c:1058
 msgid "Status: detecting gpsbabel"
-msgstr ""
+msgstr "Status: letar efter gpsbabel"
 
 #: ../src/background.c:57
 #, c-format
@@ -154,7 +153,7 @@ msgstr "Waypointen \"%s\" finns redan, vill du skriva över den?"
 
 #: ../src/dialog.c:482 ../src/geonamessearch.c:228
 msgid "Nothing was selected"
-msgstr ""
+msgstr "Inget markerat"
 
 #: ../src/dialog.c:490
 msgid "Add Track"
@@ -179,7 +178,7 @@ msgstr ""
 
 #: ../src/dialog.c:596
 msgid "Zoom factor (in meters per pixel):"
-msgstr ""
+msgstr "Zoomfaktor (i meter per pixlar)"
 
 #: ../src/dialog.c:597
 msgid "X (easting): "
@@ -191,7 +190,7 @@ msgstr "Y (norrvärde): "
 
 #: ../src/dialog.c:603
 msgid "X and Y zoom factors must be equal"
-msgstr ""
+msgstr "X och Y zoomfaktorerna måste vara unika"
 
 #: ../src/dialog.c:656
 msgid "1 min"
@@ -348,7 +347,7 @@ msgstr "Centrera runt:"
 
 #: ../src/datasource_google.c:49 ../src/datasource_google.c:50
 msgid "Google Directions"
-msgstr ""
+msgstr "Google Vägvisning"
 
 #: ../src/datasource_google.c:75
 msgid "From:"
@@ -451,11 +450,11 @@ msgstr ""
 
 #: ../src/osm-traces.c:73
 msgid "Identifiable (public w/ timestamps)"
-msgstr ""
+msgstr "Indentifierbar (publik med tidsstämpel)"
 
 #: ../src/osm-traces.c:74
 msgid "Trackable (private w/ timestamps)"
-msgstr ""
+msgstr "Spårbar (privat med tidsstämpel)"
 
 #: ../src/osm-traces.c:75
 msgid "Public"
@@ -463,7 +462,7 @@ msgstr "Publik"
 
 #: ../src/osm-traces.c:76
 msgid "Private"
-msgstr ""
+msgstr "Privat"
 
 #: ../src/osm-traces.c:93
 msgid "OSM username:"
@@ -500,7 +499,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:310
 msgid "OSM upload"
-msgstr ""
+msgstr "OSM-uppladdning"
 
 #: ../src/osm-traces.c:331
 msgid "Email:"
@@ -519,9 +518,12 @@ msgstr "Lösenord:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
+"Lösenord för att logga in\n"
+"<small>Skriv in lösenordet du använder för att logga in till "
+"www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
@@ -533,6 +535,9 @@ msgid ""
 "<small>This is the name of the file created on the server.This is not the "
 "name of the local file.</small>"
 msgstr ""
+"Namnet på filen hos OSM\n"
+"<small>Namnet på filen hos servern. Det är inte samma som namnet på den "
+"lokala filen.</small>"
 
 #: ../src/osm-traces.c:373
 msgid "Description:"
@@ -540,7 +545,7 @@ msgstr "Beskrivning :"
 
 #: ../src/osm-traces.c:378
 msgid "The description of the trace"
-msgstr ""
+msgstr "Beskrivningen utav spåret"
 
 #: ../src/osm-traces.c:380
 msgid "Tags:"
@@ -607,7 +612,7 @@ msgstr "Kunde inte starta webbläsare."
 
 #: ../src/util.c:88
 msgid "Could not create new email."
-msgstr ""
+msgstr "Kunde inte skapa nytt e-postmeddelande."
 
 #: ../src/vikcoordlayer.c:46
 msgid "Color:"
@@ -627,11 +632,11 @@ msgstr "Max antal punkter:"
 
 #: ../src/datasource_bfilter.c:60
 msgid "Simplify All Tracks"
-msgstr ""
+msgstr "Förenkla alla spår"
 
 #: ../src/datasource_bfilter.c:61
 msgid "Simplified Tracks"
-msgstr ""
+msgstr "Förenklade spår"
 
 #: ../src/datasource_bfilter.c:94 ../src/datasource_bfilter.c:95
 msgid "Remove Duplicate Waypoints"
@@ -655,11 +660,11 @@ msgstr "Polygoniserade lager"
 
 #: ../src/main.c:117
 msgid "Enable debug output"
-msgstr ""
+msgstr "Aktivera felsökningsutskrifter"
 
 #: ../src/main.c:118
 msgid "Enable verbose output"
-msgstr ""
+msgstr "Aktivera utförlig utskrift"
 
 #: ../src/main.c:119
 msgid "Show version"
@@ -679,11 +684,11 @@ msgstr "OSM (rendera)"
 
 #: ../src/preferences.c:267
 msgid "Preferences"
-msgstr ""
+msgstr "Inställningar"
 
 #: ../src/uibuilder.c:148
 msgid "Take care that this password will be stored clearly in a plain file."
-msgstr ""
+msgstr "Notera att detta lösenord kommer sparas i klartext."
 
 #: ../src/vikdemlayer.c:101
 msgid "Absolute height"
@@ -728,7 +733,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:1047
 msgid "No download source selected. Edit layer properties."
-msgstr ""
+msgstr "Ingen nedladdningskälla vald. Ändra lagerinställningar"
 
 #: ../src/vikdemlayer.c:1070
 #, c-format
@@ -841,9 +846,8 @@ msgid "_Goto Map Center"
 msgstr ""
 
 #: ../src/vikgeoreflayer.c:584
-#, fuzzy
 msgid "_Export to World File"
-msgstr "Exportera till World fil"
+msgstr ""
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
@@ -867,7 +871,7 @@ msgstr "Ange adress eller platsnamn:"
 
 #: ../src/vikgpslayer.c:149
 msgid "Recording tracks"
-msgstr ""
+msgstr "Spelar in spår"
 
 #: ../src/vikgpslayer.c:150
 msgid "Jump to current position on start"
@@ -875,7 +879,7 @@ msgstr "Hoppa till nuvarande position vid start"
 
 #: ../src/vikgpslayer.c:151
 msgid "Moving Map Method:"
-msgstr ""
+msgstr "Kartflyttningsläge:"
 
 #: ../src/vikgpslayer.c:152
 msgid "Gpsd Host:"
@@ -899,7 +903,7 @@ msgstr "GPS uppladdning"
 
 #: ../src/vikgpslayer.c:220
 msgid "GPS Realtime Tracking"
-msgstr ""
+msgstr "GPS Realtidsspårning"
 
 #: ../src/vikgpslayer.c:383
 msgid "Unknown GPS Protocol"
@@ -915,39 +919,34 @@ msgid "%s: unknown parameter"
 msgstr "%s: okänd parameter"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "Ladda upp till GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "Ladda ned från GPS"
+msgstr "Ladda ned från _GPS"
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
 msgstr ""
 
 #: ../src/vikgpslayer.c:610
-#, fuzzy
 msgid "E_mpty Upload"
-msgstr "Tom uppladdning"
+msgstr ""
 
 #: ../src/vikgpslayer.c:615
-#, fuzzy
 msgid "_Empty Download"
-msgstr "Tom nedladdning"
+msgstr ""
 
 #: ../src/vikgpslayer.c:620
-#, fuzzy
 msgid "Empty _All"
-msgstr "Töm alla"
+msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1053,31 +1052,31 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:165
 msgid "Add new layer"
-msgstr ""
+msgstr "Lägg till ett nytt lager"
 
 #: ../src/viklayerspanel.c:172
 msgid "Remove selected layer"
-msgstr ""
+msgstr "Ta bort valt lager"
 
 #: ../src/viklayerspanel.c:179
 msgid "Move selected layer up"
-msgstr ""
+msgstr "Flytta upp valt lager"
 
 #: ../src/viklayerspanel.c:186
 msgid "Move selected layer down"
-msgstr ""
+msgstr "Flytta ned valt lager"
 
 #: ../src/viklayerspanel.c:193
 msgid "Cut selected layer"
-msgstr ""
+msgstr "Skär valt lager"
 
 #: ../src/viklayerspanel.c:200
 msgid "Copy selected layer"
-msgstr ""
+msgstr "Kopiera valt lager"
 
 #: ../src/viklayerspanel.c:207
 msgid "Paste layer below selected layer"
-msgstr ""
+msgstr "Klistra in lager under valt lager"
 
 #: ../src/viklayerspanel.c:492
 msgid "Aggregate Layers have no settable properties."
@@ -1102,7 +1101,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:122
 msgid "Map Type:"
-msgstr ""
+msgstr "Karttyp:"
 
 #: ../src/vikmapslayer.c:123
 msgid "Maps Directory:"
@@ -1226,7 +1225,7 @@ msgstr "Skapa waypoint"
 
 #: ../src/viktrwlayer.c:310
 msgid "Create Track"
-msgstr ""
+msgstr "Skapa spår"
 
 #: ../src/viktrwlayer.c:314
 msgid "Begin Track"
@@ -1257,7 +1256,7 @@ msgstr "Waypoints"
 #: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1453
 #: ../src/viktrwlayer.c:1455
 msgid "Tracks"
-msgstr ""
+msgstr "Spår"
 
 #: ../src/viktrwlayer.c:337
 msgid "Waypoint Images"
@@ -1421,34 +1420,28 @@ msgid "_Goto Center of Layer"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1792
-#, fuzzy
 msgid "Goto _Waypoint"
-msgstr "Gå till waypoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Exportera lager"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
-msgstr "Exportera som GPSPoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Exportera som GPSMapper"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Exportera som GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
-#, fuzzy
 msgid "_New Waypoint"
-msgstr "Ny waypoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1825
 msgid "_Add Wikipedia Waypoints"
@@ -1463,9 +1456,8 @@ msgid "Within _Current View"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1842 ../src/viktrwlayer.c:2824
-#, fuzzy
 msgid "Upload to _OSM"
-msgstr "Ladda upp till OSM"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2353
 msgid "Failed. This track does not have timestamp"
@@ -1508,17 +1500,14 @@ msgid "Track Already Exists"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "Gå till"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
-#, fuzzy
 msgid "_Visit Geocache Webpage"
-msgstr "Besök Geocache webbplats"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2773
-#, fuzzy
 msgid "_Goto Startpoint"
 msgstr ""
 
@@ -1563,9 +1552,8 @@ msgid "_View Google Directions"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2838
-#, fuzzy
 msgid "Use with _Filter"
-msgstr "Använd med filter"
+msgstr ""
 
 #: ../src/viktrwlayer.c:3474
 msgid "Track"
@@ -2092,9 +2080,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr ""
 
 #: ../src/vikwindow.c:2217
-#, fuzzy
 msgid "Set Bac_kground Color..."
-msgstr "Välj bakgrundsfärg"
+msgstr ""
 
 #: ../src/vikwindow.c:2218
 msgid "Zoom _In"
@@ -2181,24 +2168,20 @@ msgid "32768"
 msgstr ""
 
 #: ../src/vikwindow.c:2239
-#, fuzzy
 msgid "Pan _North"
-msgstr "Panorera norrut"
+msgstr ""
 
 #: ../src/vikwindow.c:2240
-#, fuzzy
 msgid "Pan _East"
-msgstr "Panorera österut"
+msgstr ""
 
 #: ../src/vikwindow.c:2241
-#, fuzzy
 msgid "Pan _South"
-msgstr "Panorera söderut"
+msgstr ""
 
 #: ../src/vikwindow.c:2242
-#, fuzzy
 msgid "Pan _West"
-msgstr "Panorera västerut"
+msgstr ""
 
 #: ../src/vikwindow.c:2243
 msgid "Background _Jobs"
@@ -2346,8 +2329,7 @@ msgstr "Viking"
 
 #~ msgid "Enter the email you use to login into www.openstreetmap.org."
 #~ msgstr ""
-#~ "Ange den e-post adress du använder för att logga in på www.openstreetmap."
-#~ "org."
+#~ "Ange den e-post adress du använder för att logga in på www.openstreetmap.org."
 
 #~ msgid "Export to World File"
 #~ msgstr "Exportera till World fil"
@@ -2421,5 +2403,18 @@ msgstr "Viking"
 #~ msgid "Full Screen"
 #~ msgstr "Fullskärm"
 
+#~ msgid "Use smaller symbols for waypoints"
+#~ msgstr "Använd mindre symboler för waypoints"
+
 #~ msgid "Use with filter"
 #~ msgstr "Använd med filter"
+
+#~ msgid "I don't know that place. Do you want another search?"
+#~ msgstr "Jag känner inte till den platsen. Vill du göra en ny sökning?"
+
+#~ msgid ""
+#~ "This is the name of the file created on the server. This is not the name of "
+#~ "the local file."
+#~ msgstr ""
+#~ "Det här är namnet på den fil som skapats på servern. Det är inte namnet på "
+#~ "den lokala filen."

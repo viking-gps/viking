@@ -1,27 +1,26 @@
-# Hebrew translation for viking
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Javanese translation for viking
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the viking package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-11-15 21:56+0100\n"
-"PO-Revision-Date: 2008-08-18 20:47+0000\n"
-"Last-Translator: Krylov Ilya <Unknown>\n"
-"Language-Team: Hebrew <he@li.org>\n"
+"PO-Revision-Date: 2011-01-10 15:37+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Javanese <jv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural=n != 0;\n"
 "X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
 "X-Generator: Launchpad (build 12274)\n"
-"Language: he\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
-msgstr "עובד..."
+msgstr ""
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."

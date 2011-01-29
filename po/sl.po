@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
 "PO-Revision-Date: 2010-09-07 09:07+0000\n"
 "Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
-"Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || "
 "n%100==4 ? 3 : 0);\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -518,8 +517,8 @@ msgstr "Geslo:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 
 #: ../src/osm-traces.c:359
@@ -836,9 +835,8 @@ msgid "_Zoom to Fit Map"
 msgstr ""
 
 #: ../src/vikgeoreflayer.c:579
-#, fuzzy
 msgid "_Goto Map Center"
-msgstr "Pojdi na sredino zemljevida"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:584
 msgid "_Export to World File"
@@ -914,39 +912,34 @@ msgid "%s: unknown parameter"
 msgstr "%s: neznan parameter"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "Prenos na GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "Prenos iz GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
 msgstr ""
 
 #: ../src/vikgpslayer.c:610
-#, fuzzy
 msgid "E_mpty Upload"
-msgstr "Prazen prenos"
+msgstr ""
 
 #: ../src/vikgpslayer.c:615
-#, fuzzy
 msgid "_Empty Download"
-msgstr "Prazen prenos"
+msgstr ""
 
 #: ../src/vikgpslayer.c:620
-#, fuzzy
 msgid "Empty _All"
-msgstr "Prazno vse"
+msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1181,18 +1174,16 @@ msgstr[2] "Prenos %d %s zemljevidov..."
 msgstr[3] "Prenos %d %s zemljevidov..."
 
 #: ../src/vikmapslayer.c:1202
-#, fuzzy
 msgid "Redownload _Bad Map(s)"
-msgstr "Ponoven prenos slabih zemljevidov"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1206
 msgid "Redownload _New Map(s)"
 msgstr ""
 
 #: ../src/vikmapslayer.c:1210
-#, fuzzy
 msgid "Redownload _All Map(s)"
-msgstr "Ponoven prenos vseh zemljevidov"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1290
 #, c-format
@@ -1424,33 +1415,28 @@ msgid "Waypoint not found in this layer."
 msgstr ""
 
 #: ../src/viktrwlayer.c:1787
-#, fuzzy
 msgid "_Goto Center of Layer"
-msgstr "Pojdi na središče plasti"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1792
 msgid "Goto _Waypoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Izvozi plast"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Izvozi kot GPSMapper"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Izvozi kot GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
 msgid "_New Waypoint"
@@ -1469,9 +1455,8 @@ msgid "Within _Current View"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1842 ../src/viktrwlayer.c:2824
-#, fuzzy
 msgid "Upload to _OSM"
-msgstr "Prenesi na OSM"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2353
 msgid "Failed. This track does not have timestamp"
@@ -1514,47 +1499,40 @@ msgid "Track Already Exists"
 msgstr "Sled že obstaja"
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "Pojdi"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
 msgid "_Visit Geocache Webpage"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2773
-#, fuzzy
 msgid "_Goto Startpoint"
-msgstr "Pojdi na začetek"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2778
-#, fuzzy
 msgid "Goto \"_Center\""
-msgstr "Pojdi na sredino"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2783
-#, fuzzy
 msgid "Goto _Endpoint"
-msgstr "Pojdi na konec"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2788
-#, fuzzy
 msgid "_Merge By Time"
-msgstr "Združi po času"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2793
 msgid "Merge _With Other Tracks..."
 msgstr ""
 
 #: ../src/viktrwlayer.c:2798
-#, fuzzy
 msgid "_Split By Time"
-msgstr "Razdeli po času"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2803
-#, fuzzy
 msgid "Down_load Maps Along Track..."
-msgstr "Prenesi zemljevide ob sledi..."
+msgstr ""
 
 #: ../src/viktrwlayer.c:2808
 msgid "_Apply DEM Data"
@@ -2098,9 +2076,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr ""
 
 #: ../src/vikwindow.c:2217
-#, fuzzy
 msgid "Set Bac_kground Color..."
-msgstr "Nastavi barvo ozadja..."
+msgstr ""
 
 #: ../src/vikwindow.c:2218
 msgid "Zoom _In"
@@ -2187,24 +2164,20 @@ msgid "32768"
 msgstr ""
 
 #: ../src/vikwindow.c:2239
-#, fuzzy
 msgid "Pan _North"
-msgstr "Premakni na sever"
+msgstr ""
 
 #: ../src/vikwindow.c:2240
-#, fuzzy
 msgid "Pan _East"
-msgstr "Premakni na vzhod"
+msgstr ""
 
 #: ../src/vikwindow.c:2241
-#, fuzzy
 msgid "Pan _South"
-msgstr "Premakni na jug"
+msgstr ""
 
 #: ../src/vikwindow.c:2242
-#, fuzzy
 msgid "Pan _West"
-msgstr "Premakni na zahod"
+msgstr ""
 
 #: ../src/vikwindow.c:2243
 msgid "Background _Jobs"
@@ -2381,8 +2354,8 @@ msgstr "Viking"
 #~ msgstr "Ime datoteke na OSM"
 
 #~ msgid ""
-#~ "This is the name of the file created on the server. This is not the name "
-#~ "of the local file."
+#~ "This is the name of the file created on the server. This is not the name of "
+#~ "the local file."
 #~ msgstr ""
 #~ "To je ime datoteke, kakor bo poimenovana na strežniku. To ni ime lokalne "
 #~ "datoteke."

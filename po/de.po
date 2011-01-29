@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-11-03 22:34+0000\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-11-17 23:01+0000\n"
 "Last-Translator: eknus <michael.sunke@gmx.de>\n"
 "Language-Team: German <de@li.org>\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -531,8 +530,8 @@ msgid ""
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
 "Die e-Mail-Adresse zum Einloggen\n"
-"<small>Geben sie die e-Mailadresse ein, die sie zum Einloggen auf www."
-"openstreetmap.org verwenden.</small>"
+"<small>Geben sie die e-Mailadresse ein, die sie zum Einloggen auf "
+"www.openstreetmap.org verwenden.</small>"
 
 #: ../src/osm-traces.c:345
 msgid "Password:"
@@ -541,12 +540,12 @@ msgstr "Passwort:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 "Das Passwort zum Einloggen\n"
-"<small>Geben sie das Passwort ein, das sie zum Einloggen auf www."
-"openstreetmap.org verwenden.</small>"
+"<small>Geben sie das Passwort ein, das sie zum Einloggen auf "
+"www.openstreetmap.org verwenden.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
@@ -968,11 +967,11 @@ msgstr "_Empty (Lösche  Herunterladen)"
 msgid "Empty _All"
 msgstr "Empty _All (Lösche alles)"
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1201,19 +1200,16 @@ msgstr[0] "Herunterladen der %d %s Karte ..."
 msgstr[1] "Erneutes Herunterladen der %d %s Karten ..."
 
 #: ../src/vikmapslayer.c:1202
-#, fuzzy
 msgid "Redownload _Bad Map(s)"
-msgstr "Schlechte Karte(n) erneut herunterladen"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1206
-#, fuzzy
 msgid "Redownload _New Map(s)"
-msgstr "Neue Karte(n) erneut herunterladen"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1210
-#, fuzzy
 msgid "Redownload _All Map(s)"
-msgstr "Alle Karte(n) erneut herunterladen"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1290
 #, c-format
@@ -1445,59 +1441,48 @@ msgid "Waypoint not found in this layer."
 msgstr "Wegpunkt nicht in dieser Ebene gefunden"
 
 #: ../src/viktrwlayer.c:1787
-#, fuzzy
 msgid "_Goto Center of Layer"
-msgstr "Gehe zur Mitte der Ebene"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1792
-#, fuzzy
 msgid "Goto _Waypoint"
-msgstr "Gehe zu Wegpunkt:"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Ebene exportieren"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
-msgstr "Als GPSPoint exportieren"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Als GPSMapper exportieren"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Als GPX exportieren"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
-#, fuzzy
 msgid "_New Waypoint"
-msgstr "Neuer Wegpunkt"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1825
-#, fuzzy
 msgid "_Add Wikipedia Waypoints"
-msgstr "Wikipedia-Wegpunkt hinzufügen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1830
-#, fuzzy
 msgid "Within _Layer Bounds"
-msgstr "Innerhalb der Ebenen-Grenzen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1835
-#, fuzzy
 msgid "Within _Current View"
-msgstr "Innerhalb der aktuellen Ansicht"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1842 ../src/viktrwlayer.c:2824
-#, fuzzy
 msgid "Upload to _OSM"
-msgstr "Zur OSM hinaufladen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2353
 msgid "Failed. This track does not have timestamp"
@@ -1540,73 +1525,60 @@ msgid "Track Already Exists"
 msgstr "Spur bereits vorhanden"
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "Gehe zu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
-#, fuzzy
 msgid "_Visit Geocache Webpage"
-msgstr "Geocache-Webseite besuchen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2773
-#, fuzzy
 msgid "_Goto Startpoint"
-msgstr "Gehe zum Startpunkt"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2778
-#, fuzzy
 msgid "Goto \"_Center\""
-msgstr "Gehe zu \"Mittelpunkt\""
+msgstr ""
 
 #: ../src/viktrwlayer.c:2783
-#, fuzzy
 msgid "Goto _Endpoint"
-msgstr "Gehe zum Endpunkt"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2788
-#, fuzzy
 msgid "_Merge By Time"
-msgstr "Nach Zeit zusammenfassen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2793
-#, fuzzy
 msgid "Merge _With Other Tracks..."
-msgstr "Mit anderen Spuren zusammenfassen ..."
+msgstr ""
 
 #: ../src/viktrwlayer.c:2798
-#, fuzzy
 msgid "_Split By Time"
-msgstr "Nach Zeit aufteilen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2803
-#, fuzzy
 msgid "Down_load Maps Along Track..."
-msgstr "Karte entlang der Spur herunterladen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2808
-#, fuzzy
 msgid "_Apply DEM Data"
-msgstr "DEM-Daten übernehmen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2813
 msgid "E_xtend Track End"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2818
-#, fuzzy
 msgid "Extend _Using Magic Scissors"
-msgstr "Magische Schere"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2832
-#, fuzzy
 msgid "_View Google Directions"
-msgstr "Google-Verzeichnis anzeigen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2838
-#, fuzzy
 msgid "Use with _Filter"
-msgstr "Mit Filtern benutzen"
+msgstr ""
 
 #: ../src/viktrwlayer.c:3474
 msgid "Track"
@@ -2108,9 +2080,8 @@ msgid "Go to the default location"
 msgstr "Gehe zum Ausgangsstandort"
 
 #: ../src/vikwindow.c:2214
-#, fuzzy
 msgid "Go to _Location..."
-msgstr "Gehe zu Standort..."
+msgstr ""
 
 #: ../src/vikwindow.c:2214
 msgid "Go to address/place using text search"
@@ -2221,24 +2192,20 @@ msgid "32768"
 msgstr "32768"
 
 #: ../src/vikwindow.c:2239
-#, fuzzy
 msgid "Pan _North"
-msgstr "nach Norden verschieben"
+msgstr ""
 
 #: ../src/vikwindow.c:2240
-#, fuzzy
 msgid "Pan _East"
-msgstr "nach Osten verschieben"
+msgstr ""
 
 #: ../src/vikwindow.c:2241
-#, fuzzy
 msgid "Pan _South"
-msgstr "nach Süden verschieben"
+msgstr ""
 
 #: ../src/vikwindow.c:2242
-#, fuzzy
 msgid "Pan _West"
-msgstr "nach Westen verschieben"
+msgstr ""
 
 #: ../src/vikwindow.c:2243
 msgid "Background _Jobs"
@@ -2365,9 +2332,6 @@ msgstr "Kartenbasierter GPS Daten-Manager (Live-Daten fähig)"
 msgid "Viking"
 msgstr "Viking"
 
-#~ msgid "Export layer"
-#~ msgstr "Ebene exportieren"
-
 #~ msgid "The name of the file on OSM"
 #~ msgstr "Name der Datei auf OSM"
 
@@ -2385,6 +2349,48 @@ msgstr "Viking"
 
 #~ msgid "Create"
 #~ msgstr "Anlegen"
+
+#~ msgid "I don't know that place. Do you want another search?"
+#~ msgstr "Ort unbekannt. Wünschen sie eine andere Suche?"
+
+#~ msgid ""
+#~ "This is the name of the file created on the server. This is not the name of "
+#~ "the local file."
+#~ msgstr ""
+#~ "Dies ist der Name der auf dem Server erstellten Datei. Das ist nicht der "
+#~ "Name der lokalen Datei."
+
+#~ msgid "Indicates if the trace is public or not"
+#~ msgstr ""
+#~ "Zeigt an, ob die Aufzeichnung öffentlich sichtbar sein soll  oder nicht"
+
+#, c-format
+#~ msgid ""
+#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
+#~ "of this type to paste the clipboard data."
+#~ msgstr ""
+#~ "Die Zwischenablage enthält Daten für eine Unterebene einer %s-Ebene. Diese "
+#~ "Art von Ebene muss ausgewählt werden, um den Inhalt der Zwischenablage "
+#~ "einfügen zu können."
+
+#~ msgid "Zoom factor (in meters per pixel:"
+#~ msgstr "Zoom-Faktor (Meter pro Pixel)"
+
+#~ msgid "Use smaller symbols for waypoints"
+#~ msgstr "Kleiner Symbole für Wegpunkte benutzen"
+
+#~ msgid "The email used as login"
+#~ msgstr "E-Mail als Anmeldung"
+
+#~ msgid "Enter the email you use to login into www.openstreetmap.org."
+#~ msgstr "Ihre E-Mailadresse für die Anmeldung bei www.openstreetmap.org."
+
+#~ msgid "The password used to login"
+#~ msgstr "Das Passwort für die Anmeldung"
+
+#~ msgid "Enter the password you use to login into www.openstreetmap.org."
+#~ msgstr ""
+#~ "Bitte geben Sie das Passwort für die Anmeldung bei www.openstreetmap.org ein"
 
 #~ msgid "Goto Map Center"
 #~ msgstr "Zur Karten-Mitte gehen"
@@ -2406,6 +2412,9 @@ msgstr "Viking"
 
 #~ msgid "Empty Upload"
 #~ msgstr "Leerer Upload"
+
+#~ msgid "Full Screen"
+#~ msgstr "Vollbild"
 
 #~ msgid "Goto Waypoint"
 #~ msgstr "Gehe zu Wegpunkt:"
@@ -2443,8 +2452,26 @@ msgstr "Viking"
 #~ msgid "Use with filter"
 #~ msgstr "Mit Filtern benutzen"
 
+#~ msgid "Google _Directions"
+#~ msgstr "Google-_Verzeichnisse"
+
+#~ msgid "Geo_caches"
+#~ msgstr "Geo_caches"
+
+#~ msgid "From _GPS"
+#~ msgstr "Von _GPS"
+
+#~ msgid "Save _As"
+#~ msgstr "Speichern _unter"
+
+#~ msgid "_Go to Lat\\/Lon..."
+#~ msgstr "_Gehe zu Lat\\/Lon ..."
+
 #~ msgid "Set Background Color..."
 #~ msgstr "Hintergrundfarbe setzen ..."
+
+#~ msgid "_Preferences..."
+#~ msgstr "_Einstellungen …"
 
 #~ msgid "Zoom to Fit Map"
 #~ msgstr "Vergrösserung an Karte anpassen"
@@ -2467,8 +2494,44 @@ msgstr "Viking"
 #~ msgid "View Google Directions"
 #~ msgstr "Google-Verzeichnis anzeigen"
 
+#~ msgid "A_ppend File"
+#~ msgstr "Datei a_nfügen"
+
+#~ msgid "_Generate Image File"
+#~ msgstr "Bild-Datei _erzeugen"
+
+#~ msgid "Go To location"
+#~ msgstr "Gehe zu Posistion"
+
+#~ msgid "Generate _Directory of Images"
+#~ msgstr "Bild-_Verzeichnis erzeugen"
+
+#~ msgid "Flush Map cache"
+#~ msgstr "Karten-Zwischenspeicher leeren"
+
 #~ msgid "Merge By Time"
 #~ msgstr "Nach Zeit zusammenfassen"
 
 #~ msgid "Merge With Other Tracks..."
 #~ msgstr "Mit anderen Spuren zusammenfassen ..."
+
+#~ msgid "Redownload new map(s)"
+#~ msgstr "Neue Karte(n) erneut herunterladen"
+
+#~ msgid "Go to Location..."
+#~ msgstr "Gehe zu Standort..."
+
+#~ msgid "Pan South"
+#~ msgstr "nach Süden verschieben"
+
+#~ msgid "Pan East"
+#~ msgstr "nach Osten verschieben"
+
+#~ msgid "Pan North"
+#~ msgstr "nach Norden verschieben"
+
+#~ msgid "Pan West"
+#~ msgstr "nach Westen verschieben"
+
+#~ msgid "Goto Center of Layer"
+#~ msgstr "Gehe zur Mitte der Ebene"

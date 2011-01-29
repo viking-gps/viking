@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
-"PO-Revision-Date: 2010-09-07 09:27+0000\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
+"PO-Revision-Date: 2010-11-17 23:14+0000\n"
 "Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
-"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
+"Language: da\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -515,8 +515,8 @@ msgstr "Adgangskode:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 
 #: ../src/osm-traces.c:359
@@ -833,14 +833,12 @@ msgid "_Zoom to Fit Map"
 msgstr ""
 
 #: ../src/vikgeoreflayer.c:579
-#, fuzzy
 msgid "_Goto Map Center"
-msgstr "Gå til korts centrum"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:584
-#, fuzzy
 msgid "_Export to World File"
-msgstr "Vælg World fil"
+msgstr ""
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
@@ -912,39 +910,34 @@ msgid "%s: unknown parameter"
 msgstr "%s: ukendt parameter"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "Upload til GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "Download fra GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
 msgstr ""
 
 #: ../src/vikgpslayer.c:610
-#, fuzzy
 msgid "E_mpty Upload"
-msgstr "Tom upload"
+msgstr ""
 
 #: ../src/vikgpslayer.c:615
-#, fuzzy
 msgid "_Empty Download"
-msgstr "Tom download"
+msgstr ""
 
 #: ../src/vikgpslayer.c:620
-#, fuzzy
 msgid "Empty _All"
-msgstr "Tøm alt"
+msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1172,19 +1165,16 @@ msgid_plural "Downloading %d %s maps..."
 msgstr[0] "Downloader %d %s kort..."
 
 #: ../src/vikmapslayer.c:1202
-#, fuzzy
 msgid "Redownload _Bad Map(s)"
-msgstr "Gendownload alle kort"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1206
-#, fuzzy
 msgid "Redownload _New Map(s)"
-msgstr "Gendownload alle kort"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1210
-#, fuzzy
 msgid "Redownload _All Map(s)"
-msgstr "Gendownload alle kort"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1290
 #, c-format
@@ -1416,34 +1406,28 @@ msgid "Waypoint not found in this layer."
 msgstr ""
 
 #: ../src/viktrwlayer.c:1787
-#, fuzzy
 msgid "_Goto Center of Layer"
-msgstr "Gå til korts centrum"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1792
-#, fuzzy
 msgid "Goto _Waypoint"
-msgstr "Gå til korts centrum"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Eksportér lag"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
-msgstr "Ekspotér som GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Ekspotér som GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Ekspotér som GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
 msgid "_New Waypoint"
@@ -1462,9 +1446,8 @@ msgid "Within _Current View"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1842 ../src/viktrwlayer.c:2824
-#, fuzzy
 msgid "Upload to _OSM"
-msgstr "Upload til GPS"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2353
 msgid "Failed. This track does not have timestamp"
@@ -1507,23 +1490,20 @@ msgid "Track Already Exists"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2750
-#, fuzzy
 msgid "_Goto"
-msgstr "Gå til"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2758
-#, fuzzy
 msgid "_Visit Geocache Webpage"
-msgstr "Besøg Geocache's hjemmeside"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2773
 msgid "_Goto Startpoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2778
-#, fuzzy
 msgid "Goto \"_Center\""
-msgstr "Gå til korts centrum"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2783
 msgid "Goto _Endpoint"
@@ -1554,9 +1534,8 @@ msgid "E_xtend Track End"
 msgstr ""
 
 #: ../src/viktrwlayer.c:2818
-#, fuzzy
 msgid "Extend _Using Magic Scissors"
-msgstr "Magisk saks"
+msgstr ""
 
 #: ../src/viktrwlayer.c:2832
 msgid "_View Google Directions"
@@ -2064,9 +2043,8 @@ msgid "Go to the default location"
 msgstr ""
 
 #: ../src/vikwindow.c:2214
-#, fuzzy
 msgid "Go to _Location..."
-msgstr "Gå til UTM..."
+msgstr ""
 
 #: ../src/vikwindow.c:2214
 msgid "Go to address/place using text search"
@@ -2089,9 +2067,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr ""
 
 #: ../src/vikwindow.c:2217
-#, fuzzy
 msgid "Set Bac_kground Color..."
-msgstr "Sæt baggrundsfarve..."
+msgstr ""
 
 #: ../src/vikwindow.c:2218
 msgid "Zoom _In"
@@ -2294,9 +2271,8 @@ msgid "Activate full screen mode"
 msgstr ""
 
 #: ../src/vikwindow.c:2276
-#, fuzzy
 msgid "Show Side Pa_nel"
-msgstr "Vis skala"
+msgstr ""
 
 #: ../src/vikwindow.c:2276
 msgid "Show Side Panel"

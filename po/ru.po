@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 23:39+0200\n"
+"POT-Creation-Date: 2010-11-15 21:56+0100\n"
 "PO-Revision-Date: 2010-09-07 09:10+0000\n"
 "Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
-"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-28 03:23+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -519,8 +518,8 @@ msgid ""
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
 "Email используется как имя для входа\n"
-"<small>Введите email, который вы используете для www.openstreetmap.org.</"
-"small>"
+"<small>Введите email, который вы используете для "
+"www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:345
 msgid "Password:"
@@ -529,12 +528,12 @@ msgstr "Пароль:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 "Для входа нужен пароль\n"
-"<small>Введите пароль, который вы используете для www.openstreetmap.org.</"
-"small>"
+"<small>Введите пароль, который вы используете для "
+"www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
@@ -851,9 +850,8 @@ msgid "_Zoom to Fit Map"
 msgstr ""
 
 #: ../src/vikgeoreflayer.c:579
-#, fuzzy
 msgid "_Goto Map Center"
-msgstr "В центр карты"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:584
 msgid "_Export to World File"
@@ -929,14 +927,12 @@ msgid "%s: unknown parameter"
 msgstr "%s: неизвестный параметр"
 
 #: ../src/vikgpslayer.c:582
-#, fuzzy
 msgid "_Upload to GPS"
-msgstr "Загрузить в GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:587
-#, fuzzy
 msgid "Download from _GPS"
-msgstr "Выгрузить из GPS"
+msgstr ""
 
 #: ../src/vikgpslayer.c:604
 msgid "Empty _Realtime"
@@ -954,11 +950,11 @@ msgstr ""
 msgid "Empty _All"
 msgstr ""
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
+#. 
 #: ../src/vikgpslayer.c:636
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
@@ -1189,19 +1185,16 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/vikmapslayer.c:1202
-#, fuzzy
 msgid "Redownload _Bad Map(s)"
-msgstr "Перезагрузить испорченные карты"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1206
-#, fuzzy
 msgid "Redownload _New Map(s)"
-msgstr "Перезагрузить испорченные карты"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1210
-#, fuzzy
 msgid "Redownload _All Map(s)"
-msgstr "Перезагрузить все карты"
+msgstr ""
 
 #: ../src/vikmapslayer.c:1290
 #, c-format
@@ -1435,39 +1428,32 @@ msgid "Waypoint not found in this layer."
 msgstr "Пункт не найден в этом слое."
 
 #: ../src/viktrwlayer.c:1787
-#, fuzzy
 msgid "_Goto Center of Layer"
-msgstr "Переместиться в центр слоя"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1792
-#, fuzzy
 msgid "Goto _Waypoint"
-msgstr "Переместиться в пункт"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1798
-#, fuzzy
 msgid "_Export Layer"
-msgstr "Экспортировать слой"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1803
-#, fuzzy
 msgid "Export as GPS_Point"
 msgstr ""
 
 #: ../src/viktrwlayer.c:1808
-#, fuzzy
 msgid "Export as GPS_Mapper"
-msgstr "Экспортировать в GPSMapper"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1813
-#, fuzzy
 msgid "Export as _GPX"
-msgstr "Экспортировать в GPX"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
-#, fuzzy
 msgid "_New Waypoint"
-msgstr "Новый пункт"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1825
 msgid "_Add Wikipedia Waypoints"
