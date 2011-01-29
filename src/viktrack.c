@@ -637,6 +637,96 @@ gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks )
   return v;
 }
 
+/**
+ * This uses the 'time' based method to make the graph, (which is a simpler compared to the elevation/distance)
+ * This results in a slightly blocky graph when it does not have many trackpoints: <60
+ * NB Somehow the elevation/distance applies some kind of smoothing algorithm,
+ *   but I don't think any one understands it any more (I certainly don't ATM)
+ */
+gdouble *vik_track_make_elevation_time_map ( const VikTrack *tr, guint16 num_chunks )
+{
+  time_t t1, t2;
+  gdouble duration, chunk_dur;
+  GList *iter = tr->trackpoints;
+
+  if (!iter || !iter->next) /* zero- or one-point track */
+    return NULL;
+
+  /* test if there's anything worth calculating */
+  gboolean okay = FALSE;
+  while ( iter ) {
+    if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+      okay = TRUE;
+      break;
+    }
+    iter = iter->next;
+  }
+  if ( ! okay )
+    return NULL;
+
+  t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  duration = t2 - t1;
+
+  if ( !t1 || !t2 || !duration )
+    return NULL;
+
+  if (duration < 0) {
+    g_warning("negative duration: unsorted trackpoint timestamps?");
+    return NULL;
+  }
+  gint pt_count = vik_track_get_tp_count(tr);
+
+  // Reset iterator back to the beginning
+  iter = tr->trackpoints;
+
+  gdouble *pts = g_malloc ( sizeof(gdouble) * num_chunks ); // The return altitude values
+  gdouble *s = g_malloc(sizeof(double) * pt_count); // calculation altitudes
+  gdouble *t = g_malloc(sizeof(double) * pt_count); // calculation times
+
+  chunk_dur = duration / num_chunks;
+
+  s[0] = VIK_TRACKPOINT(iter->data)->altitude;
+  t[0] = VIK_TRACKPOINT(iter->data)->timestamp;
+  iter = tr->trackpoints->next;
+  gint numpts = 1;
+  while (iter) {
+    s[numpts] = VIK_TRACKPOINT(iter->data)->altitude;
+    t[numpts] = VIK_TRACKPOINT(iter->data)->timestamp;
+    numpts++;
+    iter = iter->next;
+  }
+
+ /* In the following computation, we iterate through periods of time of duration chunk_dur.
+   * The first period begins at the beginning of the track.  The last period ends at the end of the track.
+   */
+  gint index = 0; /* index of the current trackpoint. */
+  gint i;
+  for (i = 0; i < num_chunks; i++) {
+    /* we are now covering the interval from t[0] + i*chunk_dur to t[0] + (i+1)*chunk_dur.
+     * find the first trackpoint outside the current interval, averaging the heights between intermediate trackpoints.
+     */
+    if (t[0] + i*chunk_dur >= t[index]) {
+      gdouble acc_s = s[index]; // initialise to first point
+      while (t[0] + i*chunk_dur >= t[index]) {
+	acc_s += (s[index+1]-s[index]);
+	index++;
+      }
+      pts[i] = acc_s;
+    }
+    else if (i) {
+      pts[i] = pts[i-1];
+    }
+    else {
+      pts[i] = 0;
+    }
+  }
+  g_free(s);
+  g_free(t);
+
+  return pts;
+}
+
 /* by Alex Foobarian */
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start )
 {

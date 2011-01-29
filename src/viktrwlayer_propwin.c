@@ -62,6 +62,7 @@ typedef enum {
   PROPWIN_GRAPH_TYPE_ELEVATION_DISTANCE,
   PROPWIN_GRAPH_TYPE_SPEED_TIME,
   PROPWIN_GRAPH_TYPE_DISTANCE_TIME,
+  PROPWIN_GRAPH_TYPE_ELEVATION_TIME,
   PROPWIN_GRAPH_TYPE_END,
 } VikPropWinGraphType_t;
 
@@ -120,18 +121,24 @@ typedef struct _propwidgets {
   GtkWidget *w_cur_speed;
   GtkWidget *w_cur_dist_dist; /*< Current distance on distance graph */
   GtkWidget *w_cur_dist_time; /*< Current time on distance graph */
+  GtkWidget *w_cur_elev_elev;
+  GtkWidget *w_cur_elev_time;
   GtkWidget *w_show_dem;
   GtkWidget *w_show_alt_gps_speed;
   GtkWidget *w_show_gps_speed;
   GtkWidget *w_show_dist_speed;
+  GtkWidget *w_show_elev_speed;
   gdouble   track_length;
   PropSaved elev_graph_saved_img;
   PropSaved speed_graph_saved_img;
   PropSaved dist_graph_saved_img;
+  PropSaved elev_time_graph_saved_img;
   GtkWidget *elev_box;
   GtkWidget *speed_box;
   GtkWidget *dist_box;
+  GtkWidget *elev_time_box;
   gdouble   *altitudes;
+  gdouble   *ats; // altitudes in time
   gdouble   min_altitude;
   gdouble   max_altitude;
   gdouble   draw_min_altitude;
@@ -164,12 +171,16 @@ static void prop_widgets_free(PropWidgets *widgets)
     g_object_unref(widgets->speed_graph_saved_img.img);
   if (widgets->dist_graph_saved_img.img)
     g_object_unref(widgets->dist_graph_saved_img.img);
+  if (widgets->elev_time_graph_saved_img.img)
+    g_object_unref(widgets->elev_time_graph_saved_img.img);
   if (widgets->altitudes)
     g_free(widgets->altitudes);
   if (widgets->speeds)
     g_free(widgets->speeds);
   if (widgets->distances)
     g_free(widgets->distances);
+  if (widgets->ats)
+    g_free(widgets->ats);
   g_free(widgets);
 }
 
@@ -425,6 +436,11 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
       graph_saved_img = &widgets->dist_graph_saved_img;
       is_time_graph   = TRUE;
       break;
+    case PROPWIN_GRAPH_TYPE_ELEVATION_TIME:
+      graph_box       = widgets->elev_time_box;
+      graph_saved_img = &widgets->elev_time_graph_saved_img;
+      is_time_graph   = TRUE;
+      break;
     }
 
     // Commonal method of redrawing marker
@@ -476,6 +492,12 @@ static gboolean track_dt_click( GtkWidget *event_box, GdkEventButton *event, gpo
   return TRUE;  /* don't call other (further) callbacks */
 }
 
+static gboolean track_et_click( GtkWidget *event_box, GdkEventButton *event, gpointer *pass_along )
+{
+  track_graph_click(event_box, event, pass_along, PROPWIN_GRAPH_TYPE_ELEVATION_TIME);
+  return TRUE;  /* don't call other (further) callbacks */
+}
+
 /**
  * Calculate y position for blob on elevation graph
  */
@@ -521,6 +543,22 @@ static gint blobby_distance ( gdouble x_blob, PropWidgets *widgets )
 
   return y_blob;
 }
+
+/**
+ * Calculate y position for blob on elevation/time graph
+ */
+static gint blobby_altitude_time ( gdouble x_blob, PropWidgets *widgets )
+{
+  gint ix = (gint)x_blob;
+  // Ensure ix is inbounds
+  if (ix == widgets->profile_width)
+    ix--;
+
+  gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->ats[ix]-widgets->draw_min_altitude)/(chunksa[widgets->cia]*LINES);
+  // only difference here [could refactor]?          _____________________/
+  return y_blob;
+}
+
 
 void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *pass_along )
 {
@@ -767,6 +805,87 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *pass_
 				   MARGIN+x,
 				   y_blob,
 				   &widgets->dist_graph_saved_img,
+				   widgets->profile_width,
+				   widgets->profile_height,
+				   &widgets->is_marker_drawn,
+				   &widgets->is_blob_drawn);
+
+  g_list_free(child);
+}
+
+/**
+ * Update labels and blob marker on mouse moves in the elevation/time graph
+ */
+void track_et_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *pass_along )
+{
+  VikTrack *tr = pass_along[0];
+  PropWidgets *widgets = pass_along[3];
+  int mouse_x, mouse_y;
+  GdkModifierType state;
+
+  if (event->is_hint)
+    gdk_window_get_pointer (event->window, &mouse_x, &mouse_y, &state);
+  else
+    mouse_x = event->x;
+
+  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  if (x < 0)
+    x = 0;
+  if (x > widgets->profile_width)
+    x = widgets->profile_width;
+
+  time_t seconds_from_start;
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
+  if (trackpoint && widgets->w_cur_elev_time) {
+    static gchar tmp_buf[20];
+    guint h, m, s;
+    h = seconds_from_start/3600;
+    m = (seconds_from_start - h*3600)/60;
+    s = seconds_from_start - (3600*h) - (60*m);
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
+
+    gtk_label_set_text(GTK_LABEL(widgets->w_cur_elev_time), tmp_buf);
+  }
+
+  gint ix = (gint)x;
+  // Ensure ix is inbounds
+  if (ix == widgets->profile_width)
+    ix--;
+
+  if (trackpoint && widgets->w_cur_elev_elev) {
+    static gchar tmp_buf[20];
+    if (a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET)
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%d ft", (int)VIK_METERS_TO_FEET(trackpoint->altitude));
+    else
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%d m", (int)trackpoint->altitude);
+    gtk_label_set_text(GTK_LABEL(widgets->w_cur_elev_elev), tmp_buf);
+  }
+
+  widgets->blob_tp = trackpoint;
+
+  if ( widgets->ats == NULL )
+    return;
+
+  GtkWidget *window = gtk_widget_get_toplevel (event_box);
+  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
+  GtkWidget *image = GTK_WIDGET(child->data);
+
+  gint y_blob = blobby_altitude_time (x, widgets);
+
+  gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
+  if (widgets->is_marker_drawn) {
+    gdouble pc = tp_percentage_by_time ( tr, widgets->marker_tp );
+    if (!isnan(pc)) {
+      marker_x = (pc * widgets->profile_width) + MARGIN;
+    }
+  }
+
+  save_image_and_draw_graph_marks (image,
+				   marker_x,
+				   window->style->black_gc,
+				   MARGIN+x,
+				   y_blob,
+				   &widgets->elev_time_graph_saved_img,
 				   widgets->profile_width,
 				   widgets->profile_height,
 				   &widgets->is_marker_drawn,
@@ -1240,6 +1359,120 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   g_object_unref ( G_OBJECT(pix) );
 
 }
+
+/**
+ * Draw just the elevation/time image
+ */
+static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
+{
+  GtkWidget *window;
+  GdkPixmap *pix;
+  gdouble mina,maxa;
+  guint i;
+
+  // Free previous allocation
+  if ( widgets->ats )
+    g_free ( widgets->ats );
+
+  widgets->ats = vik_track_make_elevation_time_map ( tr, widgets->profile_width );
+
+  if ( widgets->ats == NULL )
+    return;
+
+  // Convert into appropriate units
+  vik_units_height_t height_units = a_vik_get_units_height ();
+  if ( height_units == VIK_UNITS_HEIGHT_FEET ) {
+    // Convert altitudes into feet units
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->ats[i] = VIK_METERS_TO_FEET(widgets->ats[i]);
+    }
+  }
+  // Otherwise leave in metres
+
+  minmax_array(widgets->ats, &widgets->min_altitude, &widgets->max_altitude, TRUE, widgets->profile_width);
+
+  get_new_min_and_chunk_index_altitude (widgets->min_altitude, widgets->max_altitude, &widgets->draw_min_altitude, &widgets->cia);
+
+  // Assign locally
+  mina = widgets->draw_min_altitude;
+  maxa = widgets->max_altitude;
+
+  window = gtk_widget_get_toplevel (widgets->elev_time_box);
+
+  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+
+  gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
+
+  /* clear the image */
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0],
+		     TRUE, 0, 0, MARGIN, widgets->profile_height);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0],
+		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
+
+  /* draw grid */
+  for (i=0; i<=LINES; i++) {
+    PangoFontDescription *pfd;
+    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
+    gchar s[32];
+    int w, h;
+
+    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
+    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
+    pango_layout_set_font_description (pl, pfd);
+    pango_font_description_free (pfd);
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      // NB values already converted into feet
+      sprintf(s, "%8dft", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
+      break;
+    default:
+      sprintf(s, "--");
+      g_critical("Houston, we've had a problem. height=%d", height_units);
+    }
+    pango_layout_set_text(pl, s, -1);
+    pango_layout_get_pixel_size (pl, &w, &h);
+    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3,
+		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
+
+    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0],
+		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
+    g_object_unref ( G_OBJECT ( pl ) );
+    pl = NULL;
+  }
+
+  /* draw elevations */
+  for ( i = 0; i < widgets->profile_width; i++ )
+      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3],
+		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->ats[i]-mina)/(chunksa[widgets->cia]*LINES) );
+
+  // Show speed indicator
+  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed)) ) {
+    GdkGC *elev_speed_gc = gdk_gc_new ( window->window );
+    GdkColor color;
+    gdk_color_parse ( "red", &color );
+    gdk_gc_set_rgb_fg_color ( elev_speed_gc, &color);
+
+    gdouble max_speed = 0;
+    max_speed = widgets->max_speed * 110 / 100;
+
+    // This is just an indicator - no actual values can be inferred by user
+    gint i;
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      int y_speed = widgets->profile_height - (widgets->profile_height * widgets->speeds[i])/max_speed;
+      gdk_draw_rectangle(GDK_DRAWABLE(pix), elev_speed_gc, TRUE, i+MARGIN-2, y_speed-2, 4, 4);
+    }
+    g_object_unref ( G_OBJECT(elev_speed_gc) );
+  }
+
+  /* draw border */
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
+
+  g_object_unref ( G_OBJECT(pix) );
+
+}
 #undef LINES
 
 /**
@@ -1399,6 +1632,55 @@ static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean 
 				       x_blob+MARGIN,
 				       y_blob,
 				       &widgets->dist_graph_saved_img,
+				       widgets->profile_width,
+				       widgets->profile_height,
+				       &widgets->is_marker_drawn,
+				       &widgets->is_blob_drawn);
+    }
+  }
+
+  // Draw Elevations in timely manner
+  if (widgets->elev_time_box != NULL) {
+
+    // Saved image no longer any good as we've resized
+    if (resized && widgets->elev_time_graph_saved_img.img) {
+      g_object_unref(widgets->elev_time_graph_saved_img.img);
+      widgets->elev_time_graph_saved_img.img = NULL;
+      widgets->elev_time_graph_saved_img.saved = FALSE;
+    }
+
+    child = gtk_container_get_children(GTK_CONTAINER(widgets->elev_time_box));
+    draw_et (GTK_WIDGET(child->data), tr, widgets );
+
+    image = GTK_WIDGET(child->data);
+    g_list_free(child);
+
+    // Ensure marker or blob are redrawn if necessary
+    if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
+
+      pc = tp_percentage_by_time ( tr, widgets->marker_tp );
+
+      gdouble x_blob = -MARGIN - 1.0; // i.e. Don't draw unless we get a valid value
+      gint    y_blob = 0;
+      if (widgets->is_blob_drawn) {
+	pc_blob = tp_percentage_by_time ( tr, widgets->blob_tp );
+	if (!isnan(pc_blob)) {
+	  x_blob = (pc_blob * widgets->profile_width);
+	}
+	y_blob = blobby_altitude_time (x_blob, widgets);
+      }
+
+      gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
+      if (!isnan(pc)) {
+	marker_x = (pc * widgets->profile_width) + MARGIN;
+      }
+
+      save_image_and_draw_graph_marks (image,
+				       marker_x,
+				       window->style->black_gc,
+				       x_blob+MARGIN,
+				       y_blob,
+				       &widgets->elev_time_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
 				       &widgets->is_marker_drawn,
@@ -1575,6 +1857,42 @@ GtkWidget *vik_trw_layer_create_dtdiag ( GtkWidget *window, VikTrack *tr, gpoint
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_dt_click), pass_along );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_dt_move), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
+  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
+
+  return eventbox;
+}
+
+/**
+ * Create elevation / time widgets including the image and callbacks
+ */
+GtkWidget *vik_trw_layer_create_etdiag ( GtkWidget *window, VikTrack *tr, gpointer vlp, VikViewport *vvp, PropWidgets *widgets)
+{
+  GdkPixmap *pix;
+  GtkWidget *image;
+  GtkWidget *eventbox;
+  gpointer *pass_along;
+
+  // First allocation
+  widgets->ats = vik_track_make_elevation_time_map ( tr, widgets->profile_width );
+  if ( widgets->ats == NULL )
+    return NULL;
+
+  pass_along = g_malloc ( sizeof(gpointer) * 4 ); /* FIXME: mem leak -- never be freed */
+  pass_along[0] = tr;
+  pass_along[1] = vlp;
+  pass_along[2] = vvp;
+  pass_along[3] = widgets;
+
+  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  image = gtk_image_new_from_pixmap ( pix, NULL );
+
+  g_object_unref ( G_OBJECT(pix) );
+
+  eventbox = gtk_event_box_new ();
+  g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_et_click), pass_along );
+  g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_et_move), pass_along );
   g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), pass_along );
   gtk_container_add ( GTK_CONTAINER(eventbox), image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
@@ -1782,6 +2100,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), tr, vlp, vvp, widgets, &min_alt, &max_alt);
   widgets->speed_box = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), tr, vlp, vvp, widgets);
   widgets->dist_box = vik_trw_layer_create_dtdiag(GTK_WIDGET(parent), tr, vlp, vvp, widgets);
+  widgets->elev_time_box = vik_trw_layer_create_etdiag(GTK_WIDGET(parent), tr, vlp, vvp, widgets);
   GtkWidget *graphs = gtk_notebook_new();
 
   GtkWidget *content[20];
@@ -2030,6 +2349,20 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
 			      NULL, FALSE);
     g_signal_connect (widgets->w_show_dist_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), pass_along);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Distance-time")));
+  }
+
+  if ( widgets->elev_time_box ) {
+    GtkWidget *page = NULL;
+    widgets->w_cur_elev_time = gtk_label_new(_("No Data"));
+    widgets->w_cur_elev_elev = gtk_label_new(_("No Data"));
+    widgets->w_show_elev_speed = gtk_check_button_new_with_mnemonic(_("Show S_peed"));
+    page = create_graph_page (widgets->elev_time_box,
+			      _("<b>Track Time:</b>"), widgets->w_cur_elev_time,
+			      _("<b>Track Height:</b>"), widgets->w_cur_elev_elev,
+			      widgets->w_show_elev_speed, FALSE,
+			      NULL, FALSE);
+    g_signal_connect (widgets->w_show_elev_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), pass_along);
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-time")));
   }
 
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
