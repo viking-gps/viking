@@ -544,12 +544,10 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
      */
     if (t[0] + i*chunk_dur >= t[index]) {
       gdouble acc_t = 0, acc_s = 0;
-      numpts = 0;
       while (t[0] + i*chunk_dur >= t[index]) {
 	acc_s += (s[index+1]-s[index]);
 	acc_t += (t[index+1]-t[index]);
 	index++;
-	numpts++;
       }
       v[i] = acc_s/acc_t;
     } 
