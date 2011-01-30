@@ -961,9 +961,6 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   guint i;
 
   GdkGC *no_alt_info;
-  GdkGC *dem_alt_gc;
-  GdkGC *gps_speed_gc;
-
   GdkColor color;
 
   // Free previous allocation
@@ -1002,14 +999,6 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   no_alt_info = gdk_gc_new ( window->window );
   gdk_color_parse ( "yellow", &color );
   gdk_gc_set_rgb_fg_color ( no_alt_info, &color);
-
-  dem_alt_gc = gdk_gc_new ( window->window );
-  gdk_color_parse ( "green", &color );
-  gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
-
-  gps_speed_gc = gdk_gc_new ( window->window );
-  gdk_color_parse ( "red", &color );
-  gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
@@ -1060,32 +1049,45 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->altitudes[i]-mina)/(chunksa[widgets->cia]*LINES) );
 
-  // Ensure somekind of max speed when not set
-  if ( widgets->max_speed < 0.01 )
-    widgets->max_speed = vik_track_get_max_speed(tr);
+  if ( gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_dem)) ||
+       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed)) ) {
 
-  draw_dem_alt_speed_dist(tr,
-			  GDK_DRAWABLE(pix),
-			  dem_alt_gc,
-			  gps_speed_gc,
-			  mina,
-			  maxa - mina,
-			  widgets->max_speed,
-			  widgets->cia,
-			  widgets->profile_width,
-			  widgets->profile_height,
-			  MARGIN,
-			  gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_dem)),
-			  gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed)));
+    GdkGC *dem_alt_gc = gdk_gc_new ( window->window );
+    GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
+
+    gdk_color_parse ( "green", &color );
+    gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
+
+    gdk_color_parse ( "red", &color );
+    gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
+
+    // Ensure somekind of max speed when not set
+    if ( widgets->max_speed < 0.01 )
+      widgets->max_speed = vik_track_get_max_speed(tr);
+
+    draw_dem_alt_speed_dist(tr,
+			    GDK_DRAWABLE(pix),
+			    dem_alt_gc,
+			    gps_speed_gc,
+			    mina,
+			    maxa - mina,
+			    widgets->max_speed,
+			    widgets->cia,
+			    widgets->profile_width,
+			    widgets->profile_height,
+			    MARGIN,
+			    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_dem)),
+			    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed)));
+    
+    g_object_unref ( G_OBJECT(dem_alt_gc) );
+    g_object_unref ( G_OBJECT(gps_speed_gc) );
+  }
 
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
   g_object_unref ( G_OBJECT(no_alt_info) );
-  g_object_unref ( G_OBJECT(dem_alt_gc) );
-  g_object_unref ( G_OBJECT(gps_speed_gc) );
-
 }
 
 /**
@@ -1130,18 +1132,11 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     break;
   }
 
-  GdkGC *gps_speed_gc;
-  GdkColor color;
-
   window = gtk_widget_get_toplevel (widgets->speed_box);
 
   pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
-
-  gps_speed_gc = gdk_gc_new ( window->window );
-  gdk_color_parse ( "red", &color );
-  gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
   minmax_array(widgets->speeds, &widgets->min_speed, &widgets->max_speed, FALSE, widgets->profile_width);
   if (widgets->min_speed < 0.0)
@@ -1208,10 +1203,16 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->speeds[i]-mins)/(chunkss[widgets->cis]*LINES) );
 
 
-  time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
-  time_t dur =  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp - beg_time;
-
   if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_gps_speed)) ) {
+
+    GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
+    GdkColor color;
+    gdk_color_parse ( "red", &color );
+    gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
+
+    time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+    time_t dur =  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp - beg_time;
+
     GList *iter;
     for (iter = tr->trackpoints; iter; iter = iter->next) {
       gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
@@ -1236,14 +1237,13 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
       int y = widgets->profile_height - widgets->profile_height*(gps_speed - mins)/(chunkss[widgets->cis]*LINES);
       gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
     }
+    g_object_unref ( G_OBJECT(gps_speed_gc) );
   }
 
   /* draw border */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
-  g_object_unref ( G_OBJECT(gps_speed_gc) );
-
 }
 
 /**
