@@ -727,6 +727,83 @@ gdouble *vik_track_make_elevation_time_map ( const VikTrack *tr, guint16 num_chu
   return pts;
 }
 
+/**
+ * Make a speed/distance map
+ */
+gdouble *vik_track_make_speed_dist_map ( const VikTrack *tr, guint16 num_chunks )
+{
+  gdouble *v, *s, *t;
+  time_t t1, t2;
+  gint i, pt_count, numpts, index;
+  GList *iter;
+  gdouble duration, total_length, chunk_length;
+
+  if ( ! tr->trackpoints )
+    return NULL;
+
+  t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  duration = t2 - t1;
+
+  if ( !t1 || !t2 || !duration )
+    return NULL;
+
+  if (duration < 0) {
+    g_warning("negative duration: unsorted trackpoint timestamps?");
+    return NULL;
+  }
+
+  total_length = vik_track_get_length_including_gaps ( tr );
+  chunk_length = total_length / num_chunks;
+  pt_count = vik_track_get_tp_count(tr);
+
+  if (chunk_length <= 0) {
+    return NULL;
+  }
+
+  v = g_malloc ( sizeof(gdouble) * num_chunks );
+  s = g_malloc ( sizeof(double) * pt_count );
+  t = g_malloc ( sizeof(double) * pt_count );
+
+  // No special handling of segments ATM...
+  iter = tr->trackpoints->next;
+  numpts = 0;
+  s[0] = 0;
+  t[0] = VIK_TRACKPOINT(iter->prev->data)->timestamp;
+  numpts++;
+  while (iter) {
+    s[numpts] = s[numpts-1] + vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord), &(VIK_TRACKPOINT(iter->data)->coord) );
+    t[numpts] = VIK_TRACKPOINT(iter->data)->timestamp;
+    numpts++;
+    iter = iter->next;
+  }
+
+  // Iterate through a portion of the track to get an average speed for that part
+  // This will essentially interpolate between segments, which I think is right given the usage of 'get_length_including_gaps'
+  index = 0; /* index of the current trackpoint. */
+  for (i = 0; i < num_chunks; i++) {
+    // Similar to the make_speed_map, but instead of using a time chunk, use a distance chunk
+    if (s[0] + i*chunk_length >= s[index]) {
+      gdouble acc_t = 0, acc_s = 0;
+      while (s[0] + i*chunk_length >= s[index]) {
+	acc_s += (s[index+1]-s[index]);
+	acc_t += (t[index+1]-t[index]);
+	index++;
+      }
+      v[i] = acc_s/acc_t;
+    }
+    else if (i) {
+      v[i] = v[i-1];
+    }
+    else {
+      v[i] = 0;
+    }
+  }
+  g_free(s);
+  g_free(t);
+  return v;
+}
+
 /* by Alex Foobarian */
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start )
 {
