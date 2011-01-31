@@ -373,6 +373,11 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
       return vw->vt->tools[vw->vt->active_tool].ti.key_press(vl, event, vw->vt->tools[vw->vt->active_tool].state);
   }
 
+  // No layer - but enable window tool keypress processing - these should be able to handle a NULL layer
+  if ( vw->vt->tools[vw->vt->active_tool].ti.key_press ) {
+    return vw->vt->tools[vw->vt->active_tool].ti.key_press ( vl, event, vw->vt->tools[vw->vt->active_tool].state );
+  }
+
   /* Restore Main Menu via Escape key if the user has hidden it */
   /* This key is more likely to be used as they may not remember the function key */
   if ( event->keyval == GDK_Escape ) {
