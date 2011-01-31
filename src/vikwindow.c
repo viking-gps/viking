@@ -997,6 +997,16 @@ static void ruler_deactivate (VikLayer *vl, ruler_tool_state_t *s)
   draw_update ( s->vw );
 }
 
+static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, ruler_tool_state_t *s)
+{
+  if (event->keyval == GDK_Escape) {
+    s->has_oldcoord = FALSE;
+    ruler_deactivate ( vl, s );
+    return TRUE;
+  }
+  return FALSE;
+}
+
 static VikToolInterface ruler_tool = 
   { "Ruler", 
     (VikToolConstructorFunc) ruler_create,
@@ -1006,7 +1016,7 @@ static VikToolInterface ruler_tool =
     (VikToolMouseFunc) ruler_click, 
     (VikToolMouseMoveFunc) ruler_move, 
     (VikToolMouseFunc) ruler_release,
-    NULL,
+    (VikToolKeyFunc) ruler_key_press,
     GDK_CURSOR_IS_PIXMAP,
     &cursor_ruler_pixbuf };
 /*** end ruler code ********************************************************/
