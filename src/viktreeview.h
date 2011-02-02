@@ -77,6 +77,7 @@ gboolean vik_treeview_get_iter_at_pos ( VikTreeview *vt, GtkTreeIter *iter, gint
 gboolean vik_treeview_get_iter_from_path_str ( VikTreeview *vt, GtkTreeIter *iter, const gchar *path_str );
 gboolean vik_treeview_move_item ( VikTreeview *vt, GtkTreeIter *iter, gboolean up );
 void vik_treeview_item_select ( VikTreeview *vt, GtkTreeIter *iter );
+void vik_treeview_item_unselect ( VikTreeview *vt, GtkTreeIter *iter );
 
 gboolean vik_treeview_item_get_parent_iter ( VikTreeview *vt, GtkTreeIter *iter,  GtkTreeIter *parent );
 void vik_treeview_expand_toplevel ( VikTreeview *vt );

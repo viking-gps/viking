@@ -537,6 +537,11 @@ void vik_treeview_item_select ( VikTreeview *vt, GtkTreeIter *iter )
   gtk_tree_selection_select_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( vt ) ), iter );
 }
 
+void vik_treeview_item_unselect ( VikTreeview *vt, GtkTreeIter *iter )
+{
+  gtk_tree_selection_unselect_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( vt ) ), iter );
+}
+
 void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent,
                               gpointer item, gint data, gint icon_type )
 {
