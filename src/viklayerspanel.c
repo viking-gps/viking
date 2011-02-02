@@ -699,3 +699,7 @@ static void layers_panel_finalize ( GObject *gob )
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
+VikTreeview *vik_layers_panel_get_treeview ( VikLayersPanel *vlp )
+{
+  return vlp->vt;
+}
