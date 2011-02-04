@@ -262,6 +262,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
 
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lat), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), TRUE );
+  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), TRUE );
 
   gtk_label_set_text ( tpwin->track_name, track_name );
 
