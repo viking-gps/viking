@@ -274,7 +274,9 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
-static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
+static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
+static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl );
@@ -473,6 +475,8 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncDragDropRequest)         trw_layer_drag_drop_request,
 
   (VikLayerFuncSelectClick)             trw_layer_select_click,
+  (VikLayerFuncSelectMove)              trw_layer_select_move,
+  (VikLayerFuncSelectRelease)           trw_layer_select_release,
   (VikLayerFuncSelectedViewportMenu)    trw_layer_show_selected_viewport_menu,
 };
 
@@ -3887,12 +3891,106 @@ static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikVie
   return params.closest_wp;
 }
 
+// Some forward declarations
+static void marker_begin_move ( tool_ed_t *t, gint x, gint y );
+static void marker_moveto ( tool_ed_t *t, gint x, gint y );
+static void marker_end_move ( tool_ed_t *t );
+//
+
+static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t* t )
+{
+  if ( t->holding ) {
+    VikCoord new_coord;
+    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
+
+    // Here always allow snapping back to the original location
+    //  this is useful when one decides not to move the thing afterall
+    // If one wants to move the item only a little bit then don't hold down the 'snap' key!
+ 
+    // snap to TP
+    if ( event->state & GDK_CONTROL_MASK )
+    {
+      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( tp )
+        new_coord = tp->coord;
+    }
+
+    // snap to WP
+    if ( event->state & GDK_SHIFT_MASK )
+    {
+      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( wp )
+        new_coord = wp->coord;
+    }
+    
+    gint x, y;
+    vik_viewport_coord_to_screen ( vvp, &new_coord, &x, &y );
+
+    marker_moveto ( t, x, y );
+
+    return TRUE;
+  }
+  return FALSE;
+}
+
+static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t* t )
+{
+  if ( t->holding && event->button == 1 )
+  {
+    VikCoord new_coord;
+    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
+
+    // snap to TP
+    if ( event->state & GDK_CONTROL_MASK )
+    {
+      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( tp )
+        new_coord = tp->coord;
+    }
+
+    // snap to WP
+    if ( event->state & GDK_SHIFT_MASK )
+    {
+      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      if ( wp )
+        new_coord = wp->coord;
+    }
+
+    marker_end_move ( t );
+
+    // Determine if working on a waypoint or a trackpoint
+    if ( t->is_waypoint )
+      vtl->current_wp->coord = new_coord;
+    else {
+      if ( vtl->current_tpl ) {
+	VIK_TRACKPOINT(vtl->current_tpl->data)->coord = new_coord;
+      
+	if ( vtl->tpwin )
+	  vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
+
+	// Don't really know what this is for but seems like it might be handy...
+	/* can't join with itself! */
+	trw_layer_cancel_last_tp ( vtl );
+      }
+    }
+
+    // Reset
+    vtl->current_wp      = NULL;
+    vtl->current_wp_name = NULL;
+    trw_layer_cancel_current_tp ( vtl, FALSE );
+
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+  return FALSE;
+}
+
 /*
   Returns true if a waypoint or track is found near the requested event position for this particular layer
   The item found is automatically selected
   This is a tool like feature but routed via the layer interface, since it's instigated by a 'global' layer tool in vikwindow.c
  */
-static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t* tet )
 {
   if ( event->button != 1 )
     return FALSE;
@@ -3903,7 +4001,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   if ( !vtl->tracks_visible && !vtl->waypoints_visible )
     return FALSE;
 
-  /* Go for waypoints first as these often will be near a track, but it's likely the wp is wanted rather then the track */
+  // Go for waypoints first as these often will be near a track, but it's likely the wp is wanted rather then the track
 
   if (vtl->waypoints_visible) {
     WPSearchParams wp_params;
@@ -3916,8 +4014,27 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
     g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &wp_params);
 
     if ( wp_params.closest_wp )  {
+
+      // Select
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->waypoints_iters, wp_params.closest_wp_name ), TRUE );
+
+      // Too easy to move it so must be holding shift to start immediately moving it
+      //   or otherwise be previously selected
+      if ( event->state & GDK_SHIFT_MASK ||
+	   vtl->current_wp == wp_params.closest_wp ) {
+	// Put into 'move buffer'
+	// NB vvp & vw already set in tet
+	tet->vtl = (gpointer)vtl;
+	tet->is_waypoint = TRUE;
+      
+	marker_begin_move (tet, event->x, event->y);
+      }
+
+      vtl->current_wp =      wp_params.closest_wp;
+      vtl->current_wp_name = wp_params.closest_wp_name;
+
       vik_layer_emit_update ( VIK_LAYER(vtl) );
+
       return TRUE;
     }
   }
@@ -3933,13 +4050,38 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
     g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &tp_params);
 
     if ( tp_params.closest_tp )  {
+
+      // Always select + highlight the track
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, tp_params.closest_track_name ), TRUE );
+
+      tet->is_waypoint = FALSE;
+
+      // Select the Trackpoint
+      // Can move it immediately when control held or it's the previously selected tp
+      if ( event->state & GDK_CONTROL_MASK ||
+	   vtl->current_tpl == tp_params.closest_tpl ) {
+	// Put into 'move buffer'
+	// NB vvp & vw already set in tet
+	tet->vtl = (gpointer)vtl;
+	marker_begin_move (tet, event->x, event->y);
+      }
+
+      vtl->current_tpl = tp_params.closest_tpl;
+      vtl->current_tp_track_name = tp_params.closest_track_name;
+
+      if ( vtl->tpwin )
+	vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
+
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       return TRUE;
     }
   }
 
   /* these aren't the droids you're looking for */
+  vtl->current_wp      = NULL;
+  vtl->current_wp_name = NULL;
+  trw_layer_cancel_current_tp ( vtl, FALSE );
+
   return FALSE;
 }
 
@@ -4018,13 +4160,6 @@ static gboolean tool_sync(gpointer data)
   gdk_threads_leave();
   return FALSE;
 }
-
-typedef struct {
-  VikViewport *vvp;
-  gboolean holding;
-  GdkGC *gc;
-  int oldx, oldy;
-} tool_ed_t;
 
 static void marker_begin_move ( tool_ed_t *t, gint x, gint y )
 {

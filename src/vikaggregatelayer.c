@@ -83,6 +83,8 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncDragDropRequest)		aggregate_layer_drag_drop_request,
 
   (VikLayerFuncSelectClick)             NULL,
+  (VikLayerFuncSelectMove)              NULL,
+  (VikLayerFuncSelectRelease)           NULL,
   (VikLayerFuncSelectedViewportMenu)    NULL,
 };
 

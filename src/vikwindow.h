@@ -77,6 +77,16 @@ gpointer vik_window_get_selected_name ( VikWindow *vw );
 /* return indicates if a redraw is necessary */
 gboolean vik_window_clear_highlight ( VikWindow *vw );
 
+typedef struct {
+  VikWindow *vw;
+  VikViewport *vvp;
+  gpointer *vtl; // VikTrwlayer
+  gboolean holding;
+  gboolean is_waypoint; // otherwise a track
+  GdkGC *gc;
+  int oldx, oldy;
+} tool_ed_t;
+
 G_END_DECLS
 
 #define VIK_WINDOW_FROM_WIDGET(x) VIK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(x)))

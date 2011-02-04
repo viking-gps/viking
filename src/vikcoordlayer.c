@@ -103,6 +103,8 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncDragDropRequest)		NULL,
 
   (VikLayerFuncSelectClick)             NULL,
+  (VikLayerFuncSelectMove)              NULL,
+  (VikLayerFuncSelectRelease)           NULL,
   (VikLayerFuncSelectedViewportMenu)    NULL,
 };
 

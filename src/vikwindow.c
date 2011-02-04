@@ -1100,13 +1100,24 @@ static VikToolInterface pan_tool =
  ********************************************************************************/
 static gpointer selecttool_create (VikWindow *vw, VikViewport *vvp)
 {
-  return vw;
+  tool_ed_t *t = g_new(tool_ed_t, 1);
+  t->vw = vw;
+  t->vvp = vvp;
+  t->vtl = NULL;
+  t->is_waypoint = FALSE;
+  return t;
+}
+
+static void selecttool_destroy (tool_ed_t *t)
+{
+  g_free(t);
 }
 
 typedef struct {
   gboolean cont;
   VikViewport *vvp;
   GdkEventButton *event;
+  tool_ed_t *tool_edit;
 } clicker;
 
 static void click_layer_selected (VikLayer *vl, clicker *ck)
@@ -1115,28 +1126,29 @@ static void click_layer_selected (VikLayer *vl, clicker *ck)
   /* i.e. stop on first found item */
   if ( ck->cont )
     if ( vl->visible )
-      if ( vik_layer_get_interface(vl->type)->select_request )
-	ck->cont = !vik_layer_get_interface(vl->type)->select_request ( vl, ck->event, ck->vvp );
+      if ( vik_layer_get_interface(vl->type)->select_click )
+	ck->cont = !vik_layer_get_interface(vl->type)->select_click ( vl, ck->event, ck->vvp, ck->tool_edit );
 }
 
-static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
   /* Only allow selection on primary button */
   if ( event->button == 1 ) {
     /* Enable click to apply callback to potentially all track/waypoint layers */
     /* Useful as we can find things that aren't necessarily in the currently selected layer */
-    GList* gl = vik_layers_panel_get_all_layers_of_type ( vw->viking_vlp, VIK_LAYER_TRW );
+    GList* gl = vik_layers_panel_get_all_layers_of_type ( t->vw->viking_vlp, VIK_LAYER_TRW );
     clicker ck;
     ck.cont = TRUE;
-    ck.vvp = vw->viking_vvp;
+    ck.vvp = t->vw->viking_vvp;
     ck.event = event;
+    ck.tool_edit = t;
     g_list_foreach ( gl, (GFunc) click_layer_selected, &ck );
     g_list_free ( gl );
 
     // If nothing found then deselect & redraw screen if necessary to remove the highlight
     if ( ck.cont ) {
       GtkTreeIter iter;
-      VikTreeview *vtv = vik_layers_panel_get_treeview ( vw->viking_vlp );
+      VikTreeview *vtv = vik_layers_panel_get_treeview ( t->vw->viking_vlp );
 
       if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
 	// Only clear if selected thing is a TrackWaypoint layer or a sublayer
@@ -1145,8 +1157,8 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
 	     VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ))->type == VIK_LAYER_TRW ) {
    
 	  vik_treeview_item_unselect ( vtv, &iter );
-	  if ( vik_window_clear_highlight ( vw ) )
-	    draw_update ( vw );
+	  if ( vik_window_clear_highlight ( t->vw ) )
+	    draw_update ( t->vw );
 	}
       }
     }
@@ -1154,23 +1166,47 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
   else if ( ( event->button == 3 ) && ( vl && ( vl->type == VIK_LAYER_TRW ) ) ) {
     if ( vl->visible )
       /* Act on currently selected item to show menu */
-      if ( ( vw->selected_track || vw->selected_waypoint ) && vw->selected_name )
+      if ( ( t->vw->selected_track || t->vw->selected_waypoint ) && t->vw->selected_name )
 	if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
-	  vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, vw->viking_vvp );
+	  vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, t->vw->viking_vvp );
   }
 
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
+{
+  /* Only allow selection on primary button */
+  if ( event->button == 1 ) {
+    // Don't care about vl here
+    if ( t->vtl )
+      if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_move )
+	vik_layer_get_interface(VIK_LAYER_TRW)->select_move ( vl, event, t->vvp, t );
+  }
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
+{
+  /* Only allow selection on primary button */
+  if ( event->button == 1 ) {
+    // Don't care about vl here
+    if ( t->vtl )
+      if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_release )
+	vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
+  }
   return VIK_LAYER_TOOL_ACK;
 }
 
 static VikToolInterface select_tool =
   { "Select",
     (VikToolConstructorFunc) selecttool_create,
-    (VikToolDestructorFunc) NULL,
+    (VikToolDestructorFunc) selecttool_destroy,
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) selecttool_click,
-    (VikToolMouseMoveFunc) NULL,
-    (VikToolMouseFunc) NULL,
+    (VikToolMouseMoveFunc) selecttool_move,
+    (VikToolMouseFunc) selecttool_release,
     (VikToolKeyFunc) NULL,
     GDK_LEFT_PTR,
     NULL,

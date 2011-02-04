@@ -183,7 +183,9 @@ typedef void          (*VikLayerFuncFreeCopiedItem)        (gint, gpointer);
  */
 typedef void 	      (*VikLayerFuncDragDropRequest)       (VikLayer *, VikLayer *, GtkTreeIter *, GtkTreePath *);
 
-typedef gboolean      (*VikLayerFuncSelectClick)           (VikLayer *, GdkEventButton *, VikViewport *);
+typedef gboolean      (*VikLayerFuncSelectClick)           (VikLayer *, GdkEventButton *, VikViewport *, tool_ed_t*);
+typedef gboolean      (*VikLayerFuncSelectMove)            (VikLayer *, GdkEventButton *, VikViewport *, tool_ed_t*);
+typedef gboolean      (*VikLayerFuncSelectRelease)         (VikLayer *, GdkEventButton *, VikViewport *, tool_ed_t*);
 typedef gboolean      (*VikLayerFuncSelectedViewportMenu)  (VikLayer *, GdkEventButton *, VikViewport *);
 
 typedef enum {
@@ -254,6 +256,8 @@ struct _VikLayerInterface {
   VikLayerFuncDragDropRequest       drag_drop_request;
 
   VikLayerFuncSelectClick           select_click;
+  VikLayerFuncSelectMove            select_move;
+  VikLayerFuncSelectRelease         select_release;
   VikLayerFuncSelectedViewportMenu  show_viewport_menu;
 };
 
