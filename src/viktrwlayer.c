@@ -239,7 +239,9 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
-static void trw_layer_download_map_along_track_cb (gpointer pass_along[6]);
+static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] );
+static void trw_layer_edit_trackpoint ( gpointer pass_along[6] );
+
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, const gchar* default_name, const gchar* trackname, guint file_type );
@@ -1795,6 +1797,11 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
  */
 gboolean vik_trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp )
 {
+  // Reset
+  l->current_wp      = NULL;
+  l->current_wp_name = NULL;
+  trw_layer_cancel_current_tp ( l, FALSE );
+
   switch ( type )
     {
     case VIK_TREEVIEW_TYPE_LAYER:
@@ -2791,6 +2798,12 @@ static void trw_layer_auto_track_view ( gpointer pass_along[5] )
   }
 }
 
+static void trw_layer_edit_trackpoint ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  trw_layer_tpwin_init ( vtl );
+}
+
 /*************************************
  * merge/split by time routines 
  *************************************/
@@ -3570,6 +3583,21 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 	gtk_widget_show ( item );
       }
     }
+
+    // Only show on viewport popmenu when a trackpoint is selected
+    if ( ! vlp && l->current_tpl ) {
+      // Add separator
+      item = gtk_menu_item_new ();
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Edit Trackpoint") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_PROPERTIES, GTK_ICON_SIZE_MENU) );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_edit_trackpoint), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+    }
+
   }
 
   return rv;
