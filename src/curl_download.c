@@ -216,7 +216,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
       else
         res = DOWNLOAD_NO_ERROR;
     } else {
-      g_warning("%s: http response: %ld for uri %s (time_condition = %ld)\n", __FUNCTION__, response, uri, file_options->time_condition);
+      g_warning("%s: http response: %ld for uri %s\n", __FUNCTION__, response, uri);
       res = DOWNLOAD_ERROR;
     }
   } else {
