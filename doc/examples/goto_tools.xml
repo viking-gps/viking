@@ -22,4 +22,12 @@
     <property name="lat-path">/searchresults/place@lat</property>
     <property name="lon-path">/searchresults/place@lon</property>
   </object>
+  <object class="VikGotoXmlTool">
+    <property name="label">Mapquest Nominatim</property>
+    <property name="url-format">http://open.mapquestapi.com/nominatim/v1/search?format=xml&amp;limit=1&amp;q=%s</property>
+    <property name="lat-path">/searchresults/place</property>
+    <property name="lat-attr">lat</property>
+    <property name="lon-path">/searchresults/place</property>
+    <property name="lon-attr">lon</property>
+  </object>
 </objects>
