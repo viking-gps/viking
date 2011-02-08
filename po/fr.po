@@ -275,7 +275,7 @@ msgstr ""
 
 #: ../src/dialog.c:847
 msgid "Open license"
-msgstr "Licence libre"
+msgstr "Ouvrir la licence"
 
 #: ../src/expedia.c:53
 msgid "Expedia Street Maps"
