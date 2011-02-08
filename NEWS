@@ -1,3 +1,90 @@
+Viking 1.1 (2011-02-08)
+New features since 1.0
+* [DOC] Add MapQuest Nominating search service in examples
+* Adjust colour of last auto track colour to not clash with default create track colour.
+* Add menu icons for the maps layer menu.
+* Make the selection list in Merge With Other Tracks sorted alphabetically.
+* Add sort list by name function. Will be useful for track and waypoint list ordering.
+* [DOC] Mark ready for 1.1 release. Update help manual version to 0.2.
+* [DOC] Add layer information for Aggregates, Coords and GeoRefs in help.
+* [DOC] Add Maps layer help information.
+* [DOC] Add overall layer information and promote each layer to be a top level section in help.
+* [DOC] Add DEM layer help information.
+* [DOC] Mention waypoint properties in help information.
+* [DOC] Update GPS layer help information.
+* [DOC] Update track operations help information.
+* [DOC] Update waypoint operations help information.
+* [DOC] Update Tools help section
+* [DOC] Update TrackWaypoint layer menu help Information
+* Improve positioning of the menu separator on waypoint menus.
+* Add GeoRef layer tooltip to show the file name in use.
+* Add GPS Layer tooltip to say the protocol (aka device manufacturer) type.
+* TrackWaypoint Layer tooltip featuring summaries for tracks and waypoints.
+* Add maps layer tooltip to show the map name(type).
+* Add DEM layer tooltip to show the number of DEM files in use.
+* Add Track and waypoint sublayer tooltip information.
+* Add treeview use and display of layers tooltip.
+* Add Layer Tooltip callback definition
+* Add sublayer tooltip callback definition.
+* When getting data via the GPS layer automatically set the view to see it, unless the realtime tracking mode is on.
+* On acquiring data from sources (inc. GPS) automatically set the view to see it. Except for GeoCaches; as it's likely you're requesting data for the current area, so no point in trying to change the view.
+* On opening GPX files automatically view all the data.
+* Add 'View All Tracks' option to the panel Layer menu options, which sets the view (center & zoom) to see all the tracks of that layer.
+* Add 'View Waypoints' option to the TrackWaypoint layer menu options, which sets the view (center & zoom) to see all the Waypoints.
+* Add 'View Track' option to the Track sublayer menu options, which sets the view (center & zoom) to see the track.
+* Add 'View Layer' option to the TrackWaypoint Layer menu options, which sets the view (center & zoom) to see the entire layer.
+* Add the ability to 'autozoom' to view an area specified by maximum and minimum lat/longs for a TrackWaypoint layer.
+* Create a new 'Show' submenu entry
+* Improve curl usage as should call cleanup on application exit.
+* Add copyright and license properties for NASA BlueMarble data.
+* Add background thread loading of DEM files.
+* Add Track->Goto Highest and Lowest points features.
+* Add Track->Goto Maximum Speed feature.
+* Rework Track->Goto menu options.
+* Add support for the TMS interface provided by SPOTMaps
+* Add license related properties
+* Add copyright property
+* Improve key binding for Mercator Mode -> ctrl+m
+* Add documentation for generic TMS map source
+* Improve key bindings for ModeLatLon.
+* Add OSM WMS Server
+* Add support for WMS-C
+* Add support for more standard TMS
+* Move-up download methods
+* Add LatLon projection
+* Better safety checking code
+* Add support for Locosys devices via GPSBabel's navilink device protocol.
+* Add support for DeLorme devices via GPSBabel's delbin device protocol.
+* Add the ability to insert a trackpoint into a track via the Edit Trackpoint dialog.
+* Add internal function to insert a trackpoint after the currently selected trackpoint.
+* Add license notice to new file
+* Enable individual track to GPX export via the Track sublayer menu.
+* Set default action on dialogs.
+* Add a perl script to auto generate basic Viking .vik files for directories containing images.
+* Enable control of the visibility of the menubar [including keyboard shortcut - F4]. Also enable panic key 'Escape' to restore menubar if hidden and no tool uses it.
+* Enable control of the visibility of the toolbar [including keyboard shortcut - F3].
+* Make use of the vikwindow toolbar variable.
+* Enable control of the visibility of the statusbar [including keyboard shortcut - F12].
+
+Fixes since 1.0
+* Prevent Gtk-CRITICAL assertion when the application is closed with a Track Property window on display.
+* Prevent Gtk-CRITICAL assertion when the application is closed whilst loading DEMs.
+* Fix trackpoint edit altitude sensitivity to be re-enabled after it has been disabled.
+* Fix incorrect cut/copy of sublayers when accessed via the layers panel buttons.
+* Fix the List Dialog so that it does not become taller than the screen when there are lots of entries.
+* Fix some compiler warnings in viktrwlayer.c when configured to build with --disable-alphabetized-trw
+* Fix Resource leak detected by cppcheck 1.46
+* Fix compiler warning in curl_download.c
+* Fix compiler warning in vikmapslayer.c
+* Fix compiler warning in vikwindow.c - use correct const typing.
+* Fix compiler warnings - correct Widget / Window type.
+* Fix memory leak when generating image file
+* Fix: Improve XML reading error reporting
+* Fix compiler warnings in osm.c
+* Fix compiler warning in vikmapslayer.c
+* Fix Waypoint & Track visibility issues.
+* Fix SF#3104028: Default Color Background is incorrectly saved as black into a new .vik file.
+
 Viking 1.0 (2010-11-14)
 New features since 0.9.96
 * Add minimal translator-credits in About dialog
