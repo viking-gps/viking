@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-15 21:56+0100\n"
-"PO-Revision-Date: 2010-10-29 21:20+0000\n"
+"POT-Creation-Date: 2011-01-29 14:38+0100\n"
+"PO-Revision-Date: 2011-02-03 14:16+0000\n"
 "Last-Translator: György Balló <ballogy@freestart.hu>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
-"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2010-11-14 21:36+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-02-08 20:52+0000\n"
+"X-Generator: Launchpad (build 12335)\n"
+"Language: hu\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -27,7 +27,7 @@ msgstr "Dolgozom…"
 msgid "Error: acquisition failed."
 msgstr "Hiba: beszerzés sikertelen."
 
-#: ../src/acquire.c:149 ../src/vikgpslayer.c:1019
+#: ../src/acquire.c:149 ../src/vikgpslayer.c:1034
 msgid "Done."
 msgstr "Kész."
 
@@ -35,7 +35,7 @@ msgstr "Kész."
 msgid "No data."
 msgstr "Nincs adat."
 
-#: ../src/acquire.c:339 ../src/vikgpslayer.c:1058
+#: ../src/acquire.c:353 ../src/vikgpslayer.c:1088
 msgid "Status: detecting gpsbabel"
 msgstr "Állapot: gpsbabel detektálása"
 
@@ -52,19 +52,19 @@ msgstr "Munka"
 msgid "Progress"
 msgstr "Folyamat"
 
-#: ../src/background.c:240
+#: ../src/background.c:245
 msgid "Viking Background Jobs"
 msgstr "Viking háttérmunkák"
 
-#: ../src/clipboard.c:84
+#: ../src/clipboard.c:85
 msgid "paste failed"
 msgstr "beillesztés sikertelen"
 
-#: ../src/clipboard.c:94
+#: ../src/clipboard.c:95
 msgid "wrong clipboard data size"
 msgstr "rossz vágólap adatméret"
 
-#: ../src/clipboard.c:113
+#: ../src/clipboard.c:114
 #, c-format
 msgid ""
 "The clipboard contains sublayer data for %s layers. You must select a layer "
@@ -73,149 +73,149 @@ msgstr ""
 "A vágólap alréteg adatokat tartalmaz a(z) %s réteghez. A vágólapon található "
 "adatok beillesztéséhez ki kell választania egy ilyen típusú réteget."
 
-#: ../src/clipboard.c:219
+#: ../src/clipboard.c:220
 msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
 "into."
 msgstr "Útpont beillesztéséhez ki kell választania egy megfelelő réteget."
 
-#: ../src/curl_download.c:115
+#: ../src/curl_download.c:118
 #, c-format
 msgid "%s() Curl perform failed: %s"
 msgstr "%s() Curl végrehajtása sikertelen: %s"
 
-#: ../src/dialog.c:49
+#: ../src/dialog.c:52
 msgid "Go to Lat/Lon"
 msgstr "Ugrás Szél./Hossz.-ra"
 
-#: ../src/dialog.c:61 ../src/dialog.c:236
+#: ../src/dialog.c:64 ../src/dialog.c:243
 msgid "Latitude:"
 msgstr "Földrajzi szélesség:"
 
-#: ../src/dialog.c:67 ../src/dialog.c:241
+#: ../src/dialog.c:70 ../src/dialog.c:248
 msgid "Longitude:"
 msgstr "Földrajzi hosszúság:"
 
-#: ../src/dialog.c:97
+#: ../src/dialog.c:102
 msgid "Go to UTM"
 msgstr "Ugrás UTM-re"
 
-#: ../src/dialog.c:110
+#: ../src/dialog.c:115
 msgid "Northing:"
 msgstr "Északi:"
 
-#: ../src/dialog.c:116
+#: ../src/dialog.c:121
 msgid "Easting:"
 msgstr "Keleti:"
 
-#: ../src/dialog.c:123
+#: ../src/dialog.c:128
 msgid "Zone:"
 msgstr "Zóna:"
 
-#: ../src/dialog.c:126
+#: ../src/dialog.c:131
 msgid "Letter:"
 msgstr "Betű:"
 
-#: ../src/dialog.c:187
+#: ../src/dialog.c:194
 msgid "Waypoint Properties"
 msgstr "Útpont tulajdonságai"
 
-#: ../src/dialog.c:224
+#: ../src/dialog.c:231
 msgid "Name:"
 msgstr "Név:"
 
-#: ../src/dialog.c:246
+#: ../src/dialog.c:253
 msgid "Altitude:"
 msgstr "Magasság:"
 
-#: ../src/dialog.c:251
+#: ../src/dialog.c:258
 msgid "Comment:"
 msgstr "Megjegyzés:"
 
-#: ../src/dialog.c:258
+#: ../src/dialog.c:265
 msgid "Image:"
 msgstr "Kép:"
 
-#: ../src/dialog.c:263
+#: ../src/dialog.c:270
 msgid "Symbol:"
 msgstr "Szimbólum:"
 
-#: ../src/dialog.c:272
+#: ../src/dialog.c:279
 msgid "(none)"
 msgstr "(nincs)"
 
 #. TODO: other checks (isalpha or whatever )
-#: ../src/dialog.c:327
+#: ../src/dialog.c:340
 msgid "Please enter a name for the waypoint."
 msgstr "Adjon meg egy nevet az útpontnak."
 
-#: ../src/dialog.c:331
+#: ../src/dialog.c:344
 #, c-format
 msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
 msgstr "Az útpont \"%s\" már létezik. Szeretné felülírni?"
 
-#: ../src/dialog.c:482 ../src/geonamessearch.c:228
+#: ../src/dialog.c:513 ../src/geonamessearch.c:237
 msgid "Nothing was selected"
 msgstr "Nincs kiválasztva semmi"
 
-#: ../src/dialog.c:490
+#: ../src/dialog.c:521
 msgid "Add Track"
 msgstr "Nyomvonal hozzáadása"
 
-#: ../src/dialog.c:498
+#: ../src/dialog.c:529
 msgid "Track Name:"
 msgstr "Nyomvonal neve:"
 
-#: ../src/dialog.c:516
+#: ../src/dialog.c:549
 msgid "Please enter a name for the track."
 msgstr "Adjon meg egy nevet a nyomvonalnak."
 
-#: ../src/dialog.c:520
+#: ../src/dialog.c:553
 #, c-format
 msgid "The track \"%s\" exists, do you want to overwrite it?"
 msgstr "Az nyomvonal \"%s\" már létezik. Szeretné felülírni?"
 
-#: ../src/dialog.c:582
+#: ../src/dialog.c:615
 msgid "Zoom Factors..."
 msgstr "Nagyítási tényezők..."
 
-#: ../src/dialog.c:596
+#: ../src/dialog.c:629
 msgid "Zoom factor (in meters per pixel):"
 msgstr "Nagyítási tényező (méter/képpontban)"
 
-#: ../src/dialog.c:597
+#: ../src/dialog.c:630
 msgid "X (easting): "
 msgstr "X (keleti): "
 
-#: ../src/dialog.c:598
+#: ../src/dialog.c:631
 msgid "Y (northing): "
 msgstr "Y (északi): "
 
-#: ../src/dialog.c:603
+#: ../src/dialog.c:636
 msgid "X and Y zoom factors must be equal"
 msgstr "Az X és Y nagyítási tényezők legyenek egyenlők"
 
-#: ../src/dialog.c:656
+#: ../src/dialog.c:691
 msgid "1 min"
 msgstr "1 perc"
 
-#: ../src/dialog.c:657
+#: ../src/dialog.c:692
 msgid "1 hour"
 msgstr "1 óra"
 
-#: ../src/dialog.c:658
+#: ../src/dialog.c:693
 msgid "1 day"
 msgstr "1 nap"
 
-#: ../src/dialog.c:659
+#: ../src/dialog.c:694
 msgid "Custom (in minutes):"
 msgstr "Egyéni (percben):"
 
-#: ../src/dialog.c:714
+#: ../src/dialog.c:751
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
 msgstr "GPS adat- és topográfiai elemző, böngésző és kezelő."
 
-#: ../src/dialog.c:715
+#: ../src/dialog.c:752
 msgid ""
 "This program is free software; you can redistribute it and/or modify it "
 "under the terms of the GNU General Public License as published by the Free "
@@ -244,17 +244,42 @@ msgstr ""
 "License egy példányát; ha nem, írjon a Free Software Foundation, Inc.-nek, "
 "59 Temple Place, Suite 330, Boston, MA 02111-1307, USA"
 
-#: ../src/dialog.c:749
+#: ../src/dialog.c:780
+msgid "Translation is coordinated on http://launchpad.net/viking"
+msgstr ""
+"A fordítás koordinálása a http://launchpad.net/viking weboldalon történik"
+
+#: ../src/dialog.c:788
 msgid "Download along track"
 msgstr "Letöltés a nyomvonal mentén"
 
-#: ../src/dialog.c:751
+#: ../src/dialog.c:794
 msgid "Map type:"
 msgstr "Térképtípus:"
 
-#: ../src/dialog.c:756
+#: ../src/dialog.c:799
 msgid "Zoom level:"
 msgstr "Nagyítási szint:"
+
+#: ../src/dialog.c:839
+#, c-format
+msgid "The map data is licensed: %s."
+msgstr "A térképadatokra a következő licenc vonatkozik: %s."
+
+#: ../src/dialog.c:842
+#, c-format
+msgid ""
+"The data provided by '<b>%s</b>' are licensed under the following license: "
+"<b>%s</b>.\n"
+"Please, read the license before continuing."
+msgstr ""
+"Az adatokat a(z) „<b>%s</b>” szolgáltatja, és a következő licenc vonatkozik "
+"azokra: <b>%s</b>.\n"
+"Kérjük, olvassa el a licencet, mielőtt továbblép."
+
+#: ../src/dialog.c:847
+msgid "Open license"
+msgstr "Szabad licenc"
 
 #: ../src/expedia.c:53
 msgid "Expedia Street Maps"
@@ -282,47 +307,47 @@ msgstr ""
 "Az EXPEDIA képfájl nem menthető (közvetlenül sikeres letöltés után! Jelentse "
 "és törölje a képfájlt!): %s"
 
-#: ../src/geonamessearch.c:98
+#: ../src/geonamessearch.c:97
 msgid "Search"
 msgstr "Keresés"
 
-#: ../src/geonamessearch.c:100
+#: ../src/geonamessearch.c:99
 msgid "No entries found!"
 msgstr "Nem található bejegyzés!"
 
-#: ../src/geonamessearch.c:254 ../src/googlesearch.c:121
+#: ../src/geonamessearch.c:263 ../src/googlesearch.c:120
 msgid "couldn't map temp file"
 msgstr "az átmeneti fájl nem található"
 
-#: ../src/geonamessearch.c:395 ../src/vikgototool.c:250
+#: ../src/geonamessearch.c:404 ../src/vikgototool.c:250
 msgid "couldn't open temp file"
 msgstr "az átmeneti fájl nem nyitható meg"
 
-#: ../src/globals.c:42
+#: ../src/globals.c:44
 msgid "Degree format:"
 msgstr "Fok formátuma:"
 
-#: ../src/globals.c:46
+#: ../src/globals.c:48
 msgid "Distance units:"
 msgstr "Távolság egysége:"
 
-#: ../src/globals.c:50
+#: ../src/globals.c:52
 msgid "Speed units:"
 msgstr "Sebesség egysége:"
 
-#: ../src/globals.c:54
+#: ../src/globals.c:56
 msgid "Height units:"
 msgstr "Magasság egysége:"
 
-#: ../src/globals.c:58
+#: ../src/globals.c:60
 msgid "Use large waypoint icons:"
 msgstr "Nagy útpontikonok használata:"
 
-#: ../src/globals.c:62
+#: ../src/globals.c:64
 msgid "Default latitude:"
 msgstr "Alapértelmezett szélesség:"
 
-#: ../src/globals.c:65
+#: ../src/globals.c:67
 msgid "Default longitude:"
 msgstr "Alapértelmezett hosszúság:"
 
@@ -339,26 +364,26 @@ msgstr "Geoládák letöltése"
 msgid "Geocaching.com Caches"
 msgstr "Geocaching.com ládák"
 
-#: ../src/datasource_gc.c:79
+#: ../src/datasource_gc.c:80
 msgid "geocaching.com username:"
 msgstr "geocaching.com felhasználónév:"
 
-#: ../src/datasource_gc.c:80
+#: ../src/datasource_gc.c:81
 msgid "geocaching.com password:"
 msgstr "geocaching.com jelszó:"
 
-#: ../src/datasource_gc.c:108
+#: ../src/datasource_gc.c:109
 msgid ""
 "Can't find gcget in path! Check that you have installed gcget correctly."
 msgstr ""
 "A gcget nem található a path-ban! Ellenőrizze, hogy a gcget megfelelően "
 "települt-e."
 
-#: ../src/datasource_gc.c:170
+#: ../src/datasource_gc.c:171
 msgid "Number geocaches:"
 msgstr "Geoládák száma:"
 
-#: ../src/datasource_gc.c:172
+#: ../src/datasource_gc.c:173
 msgid "Centered around:"
 msgstr "Középre igazítva:"
 
@@ -366,103 +391,103 @@ msgstr "Középre igazítva:"
 msgid "Google Directions"
 msgstr "Google útvonalkereső"
 
-#: ../src/datasource_google.c:75
+#: ../src/datasource_google.c:76
 msgid "From:"
 msgstr "Innen:"
 
-#: ../src/datasource_google.c:77
+#: ../src/datasource_google.c:78
 msgid "To:"
 msgstr "Ide:"
 
-#: ../src/datasource_gps.c:53
+#: ../src/datasource_gps.c:55
 msgid "Acquire from GPS"
 msgstr "Beszerzés GPS-ről"
 
-#: ../src/datasource_gps.c:54
+#: ../src/datasource_gps.c:56
 msgid "Acquired from GPS"
 msgstr "GPS-ről beszerezve"
 
-#: ../src/datasource_gps.c:142
+#: ../src/datasource_gps.c:151
 #, c-format
 msgid "using cmdline '%s' and file '%s'\n"
 msgstr "'%s' parancssor és '%s' fájl használata\n"
 
-#: ../src/datasource_gps.c:204 ../src/vikgpslayer.c:761
+#: ../src/datasource_gps.c:217 ../src/vikgpslayer.c:776
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
 msgstr[0] "%d útpont letöltése..."
 msgstr[1] "%d útpont letöltése..."
 
-#: ../src/datasource_gps.c:206 ../src/vikgpslayer.c:763
+#: ../src/datasource_gps.c:219 ../src/vikgpslayer.c:778
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
 msgstr[0] "%d nyompont letöltése..."
 msgstr[1] "%d nyompont letöltése..."
 
-#: ../src/datasource_gps.c:224
+#: ../src/datasource_gps.c:237
 #, c-format
 msgid "Downloaded %d out of %d %s..."
 msgstr "A(z) %d-ból %d %s letöltve..."
 
-#: ../src/datasource_gps.c:226
+#: ../src/datasource_gps.c:239
 #, c-format
 msgid "Downloaded %d %s."
 msgstr "%d %s letöltve."
 
-#: ../src/datasource_gps.c:239 ../src/vikgpslayer.c:833
+#: ../src/datasource_gps.c:252 ../src/vikgpslayer.c:848
 #, c-format
 msgid "GPS Device: %s"
 msgstr "GPS eszköz: %s"
 
-#: ../src/datasource_gps.c:328 ../src/vikgpslayer.c:145
+#: ../src/datasource_gps.c:341 ../src/vikgpslayer.c:152
 msgid "GPS Protocol:"
 msgstr "GPS protokoll:"
 
-#: ../src/datasource_gps.c:335 ../src/vikgpslayer.c:146
+#: ../src/datasource_gps.c:350 ../src/vikgpslayer.c:153
 msgid "Serial Port:"
 msgstr "Soros port:"
 
-#: ../src/datasource_gps.c:356
+#: ../src/datasource_gps.c:371
 msgid ""
 "Turn Off After Transfer\n"
-"(Garmin Only)"
+"(Garmin/NAViLink Only)"
 msgstr ""
 "Kikapcsolás átvitel után\n"
-"(csak Garmin esetén)"
+"(csak Garmin/NAViLink esetén)"
 
-#: ../src/datasource_gps.c:377 ../src/vikgpslayer.c:1063
+#: ../src/datasource_gps.c:392 ../src/vikgpslayer.c:1093
 msgid "GPS device: N/A"
 msgstr "GPS eszköz: N/A"
 
-#: ../src/dem.c:59 ../src/dem.c:73
+#: ../src/dem.c:60 ../src/dem.c:74
 msgid "Invalid DEM"
 msgstr "DEM érvénytelen"
 
-#: ../src/dem.c:115
+#: ../src/dem.c:116
 msgid "Invalid DEM header"
 msgstr "Érvénytelen DEM fejléc"
 
-#: ../src/dem.c:184 ../src/dem.c:197
+#: ../src/dem.c:185 ../src/dem.c:198
 msgid "Incorrect DEM Class B record: expected 1"
 msgstr "Hibás DEM Class B rekord: a várt érték: 1"
 
-#: ../src/dem.c:354
+#: ../src/dem.c:355
 #, c-format
 msgid "Couldn't map file %s: %s"
 msgstr "A(z) %s fájl nem található: %s"
 
-#: ../src/download.c:111
+#: ../src/download.c:112
 msgid "Tile age (s):"
 msgstr "Csempe kora (mp):"
 
-#: ../src/download.c:232
+#: ../src/download.c:233
 #, c-format
 msgid "Download error: %s"
 msgstr "Letöltési hiba: %s"
 
-#: ../src/file.c:426 ../src/file.c:430
+#: ../src/file.c:427 ../src/file.c:431
 #, c-format
 msgid "Draw mode '%s' no more supported"
 msgstr "A(z) '%s' rajzolási mód nem támogatott többé"
@@ -530,8 +555,8 @@ msgid ""
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
 "A bejelentkezéshez használt e-mail\n"
-"<small>Adja meg az e-mail címét, amelyet a bejelentkezéshez használ a www."
-"openstreetmap.org webhelyen.</small>"
+"<small>Adja meg az e-mail címét, amelyet a bejelentkezéshez használ a "
+"www.openstreetmap.org webhelyen.</small>"
 
 #: ../src/osm-traces.c:345
 msgid "Password:"
@@ -540,12 +565,12 @@ msgstr "Jelszó:"
 #: ../src/osm-traces.c:356
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into www.openstreetmap.org.</"
-"small>"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
 msgstr ""
 "A bejelentkezéshez használt jelszó\n"
-"<small>Adja meg a jelszavát, amelyet a bejelentkezéshez használ a www."
-"openstreetmap.org webhelyen.</small>"
+"<small>Adja meg a jelszavát, amelyet a bejelentkezéshez használ a "
+"www.openstreetmap.org webhelyen.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
@@ -576,7 +601,7 @@ msgstr "Címkék:"
 msgid "The tags associated to the trace"
 msgstr "A nyomvonalhoz társított címkék"
 
-#: ../src/osm-traces.c:415
+#: ../src/osm-traces.c:418
 #, c-format
 msgid "Uploading %s to OSM"
 msgstr "%s feltöltése az OSM-re"
@@ -659,23 +684,23 @@ msgstr "Összes nyomvonal egyszerűsítése"
 msgid "Simplified Tracks"
 msgstr "Egyszerűsített nyomvonalak"
 
-#: ../src/datasource_bfilter.c:94 ../src/datasource_bfilter.c:95
+#: ../src/datasource_bfilter.c:95 ../src/datasource_bfilter.c:96
 msgid "Remove Duplicate Waypoints"
 msgstr "Kettőzött útpontok eltávolítása"
 
-#: ../src/datasource_bfilter.c:125
+#: ../src/datasource_bfilter.c:127
 msgid "Waypoints Inside This"
 msgstr "Útpontok ezen belül"
 
-#: ../src/datasource_bfilter.c:126
+#: ../src/datasource_bfilter.c:128
 msgid "Polygonized Layer"
 msgstr "Poligonizált réteg"
 
-#: ../src/datasource_bfilter.c:159
+#: ../src/datasource_bfilter.c:162
 msgid "Waypoints Outside This"
 msgstr "Útpontok ezen kívül"
 
-#: ../src/datasource_bfilter.c:160
+#: ../src/datasource_bfilter.c:163
 msgid "Polygonzied Layer"
 msgstr "Poligonizált réteg"
 
@@ -691,19 +716,19 @@ msgstr "Részletes üzenetek bekapcsolása"
 msgid "Show version"
 msgstr "Verziószám megjelenítése"
 
-#: ../src/osm.c:81
+#: ../src/osm.c:107
 msgid "OSM (view)"
 msgstr "OSM (megtekintés)"
 
-#: ../src/osm.c:85
+#: ../src/osm.c:111
 msgid "OSM (edit)"
 msgstr "OSM (szerkesztés)"
 
-#: ../src/osm.c:89
+#: ../src/osm.c:115
 msgid "OSM (render)"
 msgstr "OSM (renderelés)"
 
-#: ../src/preferences.c:267
+#: ../src/preferences.c:287
 msgid "Preferences"
 msgstr "Beállítások"
 
@@ -711,52 +736,62 @@ msgstr "Beállítások"
 msgid "Take care that this password will be stored clearly in a plain file."
 msgstr "Ügyeljen arra, hogy ez a jelszó egy sima fájlban kerül eltárolásra."
 
-#: ../src/vikdemlayer.c:101
+#: ../src/vikdemlayer.c:102
 msgid "Absolute height"
 msgstr "Abszolút magasság"
 
-#: ../src/vikdemlayer.c:102
+#: ../src/vikdemlayer.c:103
 msgid "Height gradient"
 msgstr "Magassági grádiens"
 
-#: ../src/vikdemlayer.c:119
+#: ../src/vikdemlayer.c:120
 msgid "DEM Files:"
 msgstr "DEM fájlok:"
 
-#: ../src/vikdemlayer.c:120
+#: ../src/vikdemlayer.c:121
 msgid "Download Source:"
 msgstr "Forrás letöltése:"
 
-#: ../src/vikdemlayer.c:121
+#: ../src/vikdemlayer.c:122
 msgid "Min Elev Color:"
 msgstr "Min. magasság színe:"
 
-#: ../src/vikdemlayer.c:122
+#: ../src/vikdemlayer.c:123
 msgid "Type:"
 msgstr "Típus:"
 
-#: ../src/vikdemlayer.c:123
+#: ../src/vikdemlayer.c:124
 msgid "Min Elev:"
 msgstr "Min. magasság:"
 
-#: ../src/vikdemlayer.c:124
+#: ../src/vikdemlayer.c:125
 msgid "Max Elev:"
 msgstr "Max. magasság:"
 
-#: ../src/vikdemlayer.c:135
+#: ../src/vikdemlayer.c:136
 msgid "DEM Download/Import"
 msgstr "DEM letöltés/importálás"
 
-#: ../src/vikdemlayer.c:809
+#: ../src/vikdemlayer.c:275
+#, c-format
+msgid "Number of files: %d"
+msgstr "Fájlok száma: %d"
+
+#: ../src/vikdemlayer.c:376
+msgid "DEM Loading"
+msgstr "DEM betöltése"
+
+#: ../src/vikdemlayer.c:880
 #, c-format
 msgid "No SRTM data available for %f, %f"
 msgstr "Nem érhető el SRTM adat a következőhöz: %f, %f"
 
-#: ../src/vikdemlayer.c:1047
+#: ../src/vikdemlayer.c:1118
 msgid "No download source selected. Edit layer properties."
-msgstr "Nincs letöltési forrás kiválasztva. Szerkessze a réteg tulajdonságait."
+msgstr ""
+"Nincs letöltési forrás kiválasztva. Szerkessze a réteg tulajdonságait."
 
-#: ../src/vikdemlayer.c:1070
+#: ../src/vikdemlayer.c:1141
 #, c-format
 msgid "Downloading DEM %s"
 msgstr "%s DEM letöltése"
@@ -781,95 +816,92 @@ msgstr "Hozzáadás..."
 msgid "Delete"
 msgstr "Törlés"
 
-#: ../src/vikgeoreflayer.c:68
+#: ../src/vikgeoreflayer.c:69
 msgid "Georef Move Map"
 msgstr "Georef térkép mozgatása"
 
-#: ../src/vikgeoreflayer.c:72
+#: ../src/vikgeoreflayer.c:73
 msgid "Georef Zoom Tool"
 msgstr "Georef nagyítóeszköz"
 
-#: ../src/vikgeoreflayer.c:311 ../src/vikmapslayer.c:606
+#: ../src/vikgeoreflayer.c:320 ../src/vikmapslayer.c:624
 #, c-format
 msgid "Couldn't open image file: %s"
 msgstr "A képfájl nem nyitható meg: %s"
 
-#: ../src/vikgeoreflayer.c:341
+#: ../src/vikgeoreflayer.c:350
 msgid "Unexpected end of file reading World file."
 msgstr "Váratlan fájlvége a világfájl olvasásakor."
 
-#: ../src/vikgeoreflayer.c:357 ../src/vikgeoreflayer.c:402
+#: ../src/vikgeoreflayer.c:366 ../src/vikgeoreflayer.c:411
 msgid "Choose World file"
 msgstr "Világfájl kiválasztása"
 
-#: ../src/vikgeoreflayer.c:370
+#: ../src/vikgeoreflayer.c:379
 msgid "The World file you requested could not be opened for reading."
 msgstr "A kért világfájl nem nyitható meg olvasásra."
 
-#: ../src/vikgeoreflayer.c:415
+#: ../src/vikgeoreflayer.c:424
 msgid "The file you requested could not be opened for writing."
 msgstr "A kért fájl nem nyitható meg írásra."
 
-#: ../src/vikgeoreflayer.c:432 ../src/viklayer.c:463
+#: ../src/vikgeoreflayer.c:441 ../src/viklayer.c:478
 msgid "Layer Properties"
 msgstr "Réteg tulajdonságai"
 
-#: ../src/vikgeoreflayer.c:448
+#: ../src/vikgeoreflayer.c:463
 msgid "World File Parameters:"
 msgstr "Világfájl paraméterei:"
 
-#: ../src/vikgeoreflayer.c:449
+#: ../src/vikgeoreflayer.c:464
 msgid "Load From File..."
 msgstr "Betöltés fájlból..."
 
-#: ../src/vikgeoreflayer.c:454
+#: ../src/vikgeoreflayer.c:469
 msgid "Corner pixel easting:"
 msgstr "Sarokképpont keleti:"
 
-#: ../src/vikgeoreflayer.c:456
+#: ../src/vikgeoreflayer.c:471
 msgid "the UTM \"easting\" value of the upper-right corner pixel of the map"
 msgstr "a térkép jobb-felső sarkában lévő képpontjának UTM \"keleti\" értéke"
 
-#: ../src/vikgeoreflayer.c:458
+#: ../src/vikgeoreflayer.c:473
 msgid "Corner pixel northing:"
 msgstr "Sarokképpont északi:"
 
-#: ../src/vikgeoreflayer.c:460
+#: ../src/vikgeoreflayer.c:475
 msgid "the UTM \"northing\" value of the upper-right corner pixel of the map"
 msgstr "a térkép jobb-felső sarkában lévő képpontjának UTM \"északi\" értéke"
 
-#: ../src/vikgeoreflayer.c:462
+#: ../src/vikgeoreflayer.c:477
 msgid "X (easting) scale (mpp): "
 msgstr "X (keleti) méretarány (mpp): "
 
-#: ../src/vikgeoreflayer.c:463
+#: ../src/vikgeoreflayer.c:478
 msgid "Y (northing) scale (mpp): "
 msgstr "Y (északi) méretarány (mpp): "
 
-#: ../src/vikgeoreflayer.c:466
+#: ../src/vikgeoreflayer.c:481
 msgid "the scale of the map in the X direction (meters per pixel)"
 msgstr "a térkép méretaránya X irányban (méter/képpontban)"
 
-#: ../src/vikgeoreflayer.c:468
+#: ../src/vikgeoreflayer.c:483
 msgid "the scale of the map in the Y direction (meters per pixel)"
 msgstr "a térkép méretaránya Y irányban (méter/képpontban)"
 
-#: ../src/vikgeoreflayer.c:470
+#: ../src/vikgeoreflayer.c:485
 msgid "Map Image:"
 msgstr "Térkép:"
 
-#: ../src/vikgeoreflayer.c:574
-#, fuzzy
+#: ../src/vikgeoreflayer.c:592
 msgid "_Zoom to Fit Map"
 msgstr "_Nézet illesztése a térképhez"
 
-#: ../src/vikgeoreflayer.c:579
-#, fuzzy
+#: ../src/vikgeoreflayer.c:597
 msgid "_Goto Map Center"
 msgstr "_Ugrás a térkép közepére"
 
-#: ../src/vikgeoreflayer.c:584
-#, fuzzy
+#: ../src/vikgeoreflayer.c:602
 msgid "_Export to World File"
 msgstr "_Exportálás a világfájlba"
 
@@ -877,7 +909,7 @@ msgstr "_Exportálás a világfájlba"
 msgid "No goto tool available."
 msgstr "Nem érhető el ugró eszköz."
 
-#: ../src/vikgoto.c:90 ../src/vikgoto.c:108
+#: ../src/vikgoto.c:90 ../src/vikgoto.c:109
 msgid "goto"
 msgstr "ugrás"
 
@@ -885,173 +917,168 @@ msgstr "ugrás"
 msgid "I don't know that place. Do you want another goto?"
 msgstr "Nem ismerem ezt a helyet. Szeretne másik ugrást?"
 
-#: ../src/vikgoto.c:110
+#: ../src/vikgoto.c:111
 msgid "goto provider:"
 msgstr "ugrás nyújtója:"
 
-#: ../src/vikgoto.c:125
+#: ../src/vikgoto.c:126
 msgid "Enter address or place name:"
 msgstr "Adja meg a cím vagy hely nevét:"
 
-#: ../src/vikgpslayer.c:149
+#: ../src/vikgpslayer.c:156
 msgid "Recording tracks"
 msgstr "Nyomvonalak rögzítése"
 
-#: ../src/vikgpslayer.c:150
+#: ../src/vikgpslayer.c:157
 msgid "Jump to current position on start"
 msgstr "Ugrás a jelenlegi pozícióra indításkor"
 
-#: ../src/vikgpslayer.c:151
+#: ../src/vikgpslayer.c:158
 msgid "Moving Map Method:"
 msgstr "Térképmozgatási módszer"
 
-#: ../src/vikgpslayer.c:152
+#: ../src/vikgpslayer.c:159
 msgid "Gpsd Host:"
 msgstr "Gpsd gazda:"
 
-#: ../src/vikgpslayer.c:153
+#: ../src/vikgpslayer.c:160
 msgid "Gpsd Port:"
 msgstr "Gpsd port:"
 
-#: ../src/vikgpslayer.c:154
+#: ../src/vikgpslayer.c:161
 msgid "Gpsd Retry Interval (seconds):"
 msgstr "Gpsd újrapróbálkozás intervalluma (másodperc):"
 
-#: ../src/vikgpslayer.c:218 ../src/vikgpslayer.c:1051
+#: ../src/vikgpslayer.c:228 ../src/vikgpslayer.c:1078
 msgid "GPS Download"
 msgstr "GPS letöltés"
 
-#: ../src/vikgpslayer.c:218 ../src/vikgpslayer.c:1051
+#: ../src/vikgpslayer.c:228 ../src/vikgpslayer.c:1078
 msgid "GPS Upload"
 msgstr "GPS feltöltés"
 
-#: ../src/vikgpslayer.c:220
+#: ../src/vikgpslayer.c:230
 msgid "GPS Realtime Tracking"
 msgstr "GPS valós idejű nyomkövetés"
 
-#: ../src/vikgpslayer.c:383
+#: ../src/vikgpslayer.c:398
 msgid "Unknown GPS Protocol"
 msgstr "Ismeretlen GPS protokoll"
 
-#: ../src/vikgpslayer.c:402
+#: ../src/vikgpslayer.c:417
 msgid "Unknown serial port device"
 msgstr "Ismeretlen soros port eszköz"
 
-#: ../src/vikgpslayer.c:468
+#: ../src/vikgpslayer.c:483
 #, c-format
 msgid "%s: unknown parameter"
 msgstr "%s: ismeretlen paraméter"
 
-#: ../src/vikgpslayer.c:582
-#, fuzzy
+#: ../src/vikgpslayer.c:597
 msgid "_Upload to GPS"
 msgstr "_Feltöltés GPS-re"
 
-#: ../src/vikgpslayer.c:587
-#, fuzzy
+#: ../src/vikgpslayer.c:602
 msgid "Download from _GPS"
 msgstr "Letöltés _GPS-ről"
 
-#: ../src/vikgpslayer.c:604
+#: ../src/vikgpslayer.c:619
 msgid "Empty _Realtime"
 msgstr "_Valós idő ürítése"
 
-#: ../src/vikgpslayer.c:610
-#, fuzzy
+#: ../src/vikgpslayer.c:625
 msgid "E_mpty Upload"
 msgstr "Feltöltés ürí_tése"
 
-#: ../src/vikgpslayer.c:615
-#, fuzzy
+#: ../src/vikgpslayer.c:630
 msgid "_Empty Download"
 msgstr "Letöltés ü_rítése"
 
-#: ../src/vikgpslayer.c:620
-#, fuzzy
+#: ../src/vikgpslayer.c:635
 msgid "Empty _All"
 msgstr "Ö_sszes ürítése"
 
-#.
+#. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
-#.
-#: ../src/vikgpslayer.c:636
+#. 
+#: ../src/vikgpslayer.c:651
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
 msgstr "Váratlan számú szétkapcsolódott kezelő: %d"
 
-#: ../src/vikgpslayer.c:768
+#: ../src/vikgpslayer.c:783
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
 msgstr[0] "%d útpont feltöltése..."
 msgstr[1] "%d útpont feltöltése..."
 
-#: ../src/vikgpslayer.c:770
+#: ../src/vikgpslayer.c:785
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
 msgstr[0] "%d nyompont feltöltése..."
 msgstr[1] "%d nyompont feltöltése..."
 
-#: ../src/vikgpslayer.c:794
+#: ../src/vikgpslayer.c:809
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
 msgstr[0] "%d útpont letöltve a(z) %d-ból..."
 msgstr[1] "%d útpont letöltve a(z) %d-ból..."
 
-#: ../src/vikgpslayer.c:796
+#: ../src/vikgpslayer.c:811
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
 msgstr[0] "%d nyompont letöltve a(z) %d-ból..."
 msgstr[1] "%d nyompont letöltve a(z) %d-ból..."
 
-#: ../src/vikgpslayer.c:800
+#: ../src/vikgpslayer.c:815
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
 msgstr[0] "%d útpont feltöltve a(z) %d-ból..."
 msgstr[1] "%d útpont feltöltve a(z) %d-ból..."
 
-#: ../src/vikgpslayer.c:802
+#: ../src/vikgpslayer.c:817
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
 msgstr[0] "%d nyompont feltöltve a(z) %d-ból..."
 msgstr[1] "%d nyompont feltöltve a(z) %d-ból..."
 
-#: ../src/vikgpslayer.c:809
+#: ../src/vikgpslayer.c:824
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
 msgstr[0] "%d útpont letöltve"
 msgstr[1] "%d útpont letöltve"
 
-#: ../src/vikgpslayer.c:811
+#: ../src/vikgpslayer.c:826
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
 msgstr[0] "%d nyompont letöltve"
 msgstr[1] "%d nyompont letöltve"
 
-#: ../src/vikgpslayer.c:815
+#: ../src/vikgpslayer.c:830
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
 msgstr[0] "%d útpont feltöltve"
 msgstr[1] "%d útpont feltöltve"
 
-#: ../src/vikgpslayer.c:817
+#: ../src/vikgpslayer.c:832
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
 msgstr[0] "%d nyompont feltöltve"
 msgstr[1] "%d nyompont feltöltve"
 
-#: ../src/vikgpslayer.c:1014
+#: ../src/vikgpslayer.c:1029
 msgid "Error: couldn't find gpsbabel."
 msgstr "Hiba: a gpsbabel nem található."
 
@@ -1107,68 +1134,76 @@ msgstr "Kiválasztott réteg másolása"
 msgid "Paste layer below selected layer"
 msgstr "Réteg beillesztése a kiválasztott réteg alá"
 
-#: ../src/viklayerspanel.c:492
+#. TODO: FIXME: if name has a '/' in it it will get all messed up. why not have an itemfactory field with
+#. name, icon, shortcut, etc.?
+#. Note: we use a temporary label in order to share translation with other codde
+#: ../src/viklayerspanel.c:225 ../src/vikwindow.c:2407
+#, c-format
+msgid "New %s Layer"
+msgstr "Új %s réteg"
+
+#: ../src/viklayerspanel.c:495
 msgid "Aggregate Layers have no settable properties."
 msgstr "A csoportosító rétegeknek nincs beállítható tulajdonsága."
 
-#: ../src/viklayerspanel.c:543
+#: ../src/viklayerspanel.c:545
 msgid "You cannot cut the Top Layer."
 msgstr "A legfelső réteg nem vágható ki."
 
-#: ../src/viklayerspanel.c:598
+#: ../src/viklayerspanel.c:601
 msgid "You cannot delete the Top Layer."
 msgstr "A legfelső réteg nem törölhető."
 
-#: ../src/viklayerspanel.c:682
+#: ../src/viklayerspanel.c:685
 msgid "Are you sure you wish to delete all layers?"
 msgstr "Biztosan törölni szeretné az összes réteget?"
 
 #. ******* MAPZOOMS ********
-#: ../src/vikmapslayer.c:90
+#: ../src/vikmapslayer.c:91
 msgid "Use Viking Zoom Level"
 msgstr "Viking nagyítási szint használata"
 
-#: ../src/vikmapslayer.c:122
+#: ../src/vikmapslayer.c:124
 msgid "Map Type:"
 msgstr "Térképtípus:"
 
-#: ../src/vikmapslayer.c:123
+#: ../src/vikmapslayer.c:125
 msgid "Maps Directory:"
 msgstr "Térkép könyvtára:"
 
-#: ../src/vikmapslayer.c:124
+#: ../src/vikmapslayer.c:126
 msgid "Alpha:"
 msgstr "Alfa:"
 
-#: ../src/vikmapslayer.c:125
+#: ../src/vikmapslayer.c:127
 msgid "Autodownload maps:"
 msgstr "Térkép automatikus letöltése:"
 
-#: ../src/vikmapslayer.c:126
+#: ../src/vikmapslayer.c:128
 msgid "Zoom Level:"
 msgstr "Nagyítási szint:"
 
-#: ../src/vikmapslayer.c:132
+#: ../src/vikmapslayer.c:134
 msgid "Maps Download"
 msgstr "Térkép letöltése"
 
-#: ../src/vikmapslayer.c:138
+#: ../src/vikmapslayer.c:140
 msgid "Map"
 msgstr "Térkép"
 
-#: ../src/vikmapslayer.c:212
+#: ../src/vikmapslayer.c:217
 msgid "Default maplayer directory:"
 msgstr "Alapértelmezett térképréteg könyvtára:"
 
-#: ../src/vikmapslayer.c:449
+#: ../src/vikmapslayer.c:457
 msgid "Unknown map type"
 msgstr "Ismeretlen térképtípus"
 
-#: ../src/vikmapslayer.c:459
+#: ../src/vikmapslayer.c:467
 msgid "Unknown Map Zoom"
 msgstr "Ismeretlen térképnagyítás"
 
-#: ../src/vikmapslayer.c:528
+#: ../src/vikmapslayer.c:536
 #, c-format
 msgid ""
 "New map cannot be displayed in the current drawmode.\n"
@@ -1177,7 +1212,7 @@ msgstr ""
 "Az új térkép nem jeleníthető meg a jelenlegi rajzolási módban.\n"
 "Megtekintéséhez válassza a(z) \"%s\" módot a Nézet menüből."
 
-#: ../src/vikmapslayer.c:674
+#: ../src/vikmapslayer.c:692
 #, c-format
 msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
@@ -1186,43 +1221,40 @@ msgstr ""
 "Gyáván megtagadta, hogy rajzoljon csempéket, vagy hogy létezik csempe %d "
 "kicsinyítési tényezőn túl"
 
-#: ../src/vikmapslayer.c:1062
+#: ../src/vikmapslayer.c:1084
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
 msgstr[0] "Legfeljebb %d %s térkép újbóli letöltése..."
 msgstr[1] "Legfeljebb %d %s térkép újbóli letöltése..."
 
-#: ../src/vikmapslayer.c:1064
+#: ../src/vikmapslayer.c:1086
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
 msgstr[0] "%d %s térkép újbóli letöltése..."
 msgstr[1] "%d %s térkép újbóli letöltése..."
 
-#: ../src/vikmapslayer.c:1068 ../src/vikmapslayer.c:1139
+#: ../src/vikmapslayer.c:1090 ../src/vikmapslayer.c:1161
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
 msgstr[0] "%d %s térkép letöltése..."
 msgstr[1] "%d %s térkép letöltése..."
 
-#: ../src/vikmapslayer.c:1202
-#, fuzzy
+#: ../src/vikmapslayer.c:1224
 msgid "Redownload _Bad Map(s)"
 msgstr "_Rossz térkép(ek) újbóli letöltése"
 
-#: ../src/vikmapslayer.c:1206
-#, fuzzy
+#: ../src/vikmapslayer.c:1228
 msgid "Redownload _New Map(s)"
 msgstr "Ú_j térkép(ek) újbóli letöltése"
 
-#: ../src/vikmapslayer.c:1210
-#, fuzzy
+#: ../src/vikmapslayer.c:1232
 msgid "Redownload _All Map(s)"
 msgstr "Ö_sszes térkép újbóli letöltése"
 
-#: ../src/vikmapslayer.c:1290
+#: ../src/vikmapslayer.c:1312
 #, c-format
 msgid ""
 "Wrong drawmode for this map.\n"
@@ -1231,524 +1263,569 @@ msgstr ""
 "Rossz rajzolási mód a térképhez.\n"
 "Válassza a(z) \"%s\" módot a Nézet menüből, és próbálja újra."
 
-#: ../src/vikmapslayer.c:1295
+#: ../src/vikmapslayer.c:1317
 msgid "Wrong zoom level for this map."
 msgstr "Rossz nagyítási szint a térképhez."
 
-#: ../src/vikmapslayer.c:1325
-#, fuzzy
+#: ../src/vikmapslayer.c:1347
 msgid "Download _Missing Onscreen Maps"
 msgstr "Képernyőről _hiányzó térképrészletek letöltése"
 
-#: ../src/vikmapslayer.c:1331
-#, fuzzy
+#: ../src/vikmapslayer.c:1353
 msgid "Download _New Onscreen Maps"
-msgstr "Képernyőről _hiányzó térképrészletek letöltése"
+msgstr "Képernyőn lévő ú_j térképrészletek letöltése"
 
 #. TODO Add GTK_STOCK_REFRESH icon
-#: ../src/vikmapslayer.c:1338
+#: ../src/vikmapslayer.c:1360
 msgid "Reload _All Onscreen Maps"
 msgstr "Képernyőn lévő ö_sszes térképrészlet újratöltése"
 
-#: ../src/viktreeview.c:203
+#: ../src/viktreeview.c:268
 msgid "Layer Name"
 msgstr "Réteg neve"
 
-#: ../src/viktreeview.c:624
+#: ../src/viktreeview.c:692
 #, c-format
 msgid "delete data from %s\n"
 msgstr "adatok törlése innen: %s\n"
 
-#: ../src/viktrwlayer.c:307
+#: ../src/viktrwlayer.c:323
 msgid "Create Waypoint"
 msgstr "Útpont létrehozása"
 
-#: ../src/viktrwlayer.c:310
+#: ../src/viktrwlayer.c:326
 msgid "Create Track"
 msgstr "Nyomvonal létrehozása"
 
-#: ../src/viktrwlayer.c:314
+#: ../src/viktrwlayer.c:330
 msgid "Begin Track"
 msgstr "Nyomvonal kezdése"
 
-#: ../src/viktrwlayer.c:317
+#: ../src/viktrwlayer.c:333
 msgid "Edit Waypoint"
 msgstr "Útpont szerkesztése"
 
-#: ../src/viktrwlayer.c:322
+#: ../src/viktrwlayer.c:338
 msgid "Edit Trackpoint"
 msgstr "Nyompont szerkesztése"
 
-#: ../src/viktrwlayer.c:327
+#: ../src/viktrwlayer.c:343
 msgid "Show Picture"
 msgstr "Kép megjelenítése"
 
-#: ../src/viktrwlayer.c:330
+#: ../src/viktrwlayer.c:346
 msgid "Magic Scissors"
 msgstr "Mágikus olló"
 
 #. ***** PARAMETERS *****
-#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1463
-#: ../src/viktrwlayer.c:1465
+#: ../src/viktrwlayer.c:353 ../src/viktrwlayer.c:1505
+#: ../src/viktrwlayer.c:1507
 msgid "Waypoints"
 msgstr "Útpontok"
 
-#: ../src/viktrwlayer.c:337 ../src/viktrwlayer.c:1453
-#: ../src/viktrwlayer.c:1455
+#: ../src/viktrwlayer.c:353 ../src/viktrwlayer.c:1495
+#: ../src/viktrwlayer.c:1497
 msgid "Tracks"
 msgstr "Nyomvonalak"
 
-#: ../src/viktrwlayer.c:337
+#: ../src/viktrwlayer.c:353
 msgid "Waypoint Images"
 msgstr "Útpont képek"
 
-#: ../src/viktrwlayer.c:340
+#: ../src/viktrwlayer.c:356
 msgid "Draw by Track"
 msgstr "Rajzolás nyomvonal szerint"
 
-#: ../src/viktrwlayer.c:340
+#: ../src/viktrwlayer.c:356
 msgid "Draw by Velocity"
 msgstr "Rajzolás sebesség szerint"
 
-#: ../src/viktrwlayer.c:340
+#: ../src/viktrwlayer.c:356
 msgid "All Tracks Black"
 msgstr "Minden nyomvonal fekete"
 
-#: ../src/viktrwlayer.c:341
+#: ../src/viktrwlayer.c:357
 msgid "Filled Square"
 msgstr "Kitöltött négyzet"
 
-#: ../src/viktrwlayer.c:341
+#: ../src/viktrwlayer.c:357
 msgid "Square"
 msgstr "Négyzet"
 
-#: ../src/viktrwlayer.c:341
+#: ../src/viktrwlayer.c:357
 msgid "Circle"
 msgstr "Kör"
 
-#: ../src/viktrwlayer.c:341
+#: ../src/viktrwlayer.c:357
 msgid "X"
 msgstr "X"
 
-#: ../src/viktrwlayer.c:363
+#: ../src/viktrwlayer.c:379
 msgid "Track Drawing Mode:"
 msgstr "Nyomvonal rajzolási módja:"
 
-#: ../src/viktrwlayer.c:364
+#: ../src/viktrwlayer.c:380
 msgid "Draw Track Lines"
 msgstr "Nyomvonal vonalainak rajzolása"
 
-#: ../src/viktrwlayer.c:365
+#: ../src/viktrwlayer.c:381
 msgid "Draw Trackpoints"
 msgstr "Nyompontok rajzolása"
 
-#: ../src/viktrwlayer.c:366
+#: ../src/viktrwlayer.c:382
 msgid "Draw Elevation"
 msgstr "Magasság rajzolása"
 
-#: ../src/viktrwlayer.c:367
+#: ../src/viktrwlayer.c:383
 msgid "Draw Elevation Height %:"
 msgstr "Magasság rajzolása %:"
 
-#: ../src/viktrwlayer.c:369
+#: ../src/viktrwlayer.c:385
 msgid "Draw Stops"
 msgstr "Rajzolás megállítása"
 
-#: ../src/viktrwlayer.c:370
+#: ../src/viktrwlayer.c:386
 msgid "Min Stop Length (seconds):"
 msgstr "Minimális megállítási hossz (másodperc):"
 
-#: ../src/viktrwlayer.c:372
+#: ../src/viktrwlayer.c:388
 msgid "Track Thickness:"
 msgstr "Nyomvonal vastagsága:"
 
-#: ../src/viktrwlayer.c:373
+#: ../src/viktrwlayer.c:389
 msgid "Track BG Thickness:"
 msgstr "Nyomvonal hátterének vastagsága"
 
-#: ../src/viktrwlayer.c:374
+#: ../src/viktrwlayer.c:390
 msgid "Track Background Color"
 msgstr "Nyomvonal háttérszíne"
 
-#: ../src/viktrwlayer.c:375
+#: ../src/viktrwlayer.c:391
 msgid "Min Track Velocity:"
 msgstr "Minimális nyomvonal-sebesség:"
 
-#: ../src/viktrwlayer.c:376
+#: ../src/viktrwlayer.c:392
 msgid "Max Track Velocity:"
 msgstr "Maximális nyomvonal-sebesség:"
 
-#: ../src/viktrwlayer.c:378
+#: ../src/viktrwlayer.c:394
 msgid "Draw Labels"
 msgstr "Címkék rajzolása"
 
-#: ../src/viktrwlayer.c:379
+#: ../src/viktrwlayer.c:395
 msgid "Waypoint Color:"
 msgstr "Útpont színe:"
 
-#: ../src/viktrwlayer.c:380
+#: ../src/viktrwlayer.c:396
 msgid "Waypoint Text:"
 msgstr "Útpont szövege:"
 
-#: ../src/viktrwlayer.c:381
+#: ../src/viktrwlayer.c:397
 msgid "Background:"
 msgstr "Háttér:"
 
-#: ../src/viktrwlayer.c:382
+#: ../src/viktrwlayer.c:398
 msgid "Fake BG Color Translucency:"
 msgstr "Hamis háttérszín-átlátszóság:"
 
-#: ../src/viktrwlayer.c:383
+#: ../src/viktrwlayer.c:399
 msgid "Waypoint marker:"
 msgstr "Útpont-jelölő:"
 
-#: ../src/viktrwlayer.c:384
+#: ../src/viktrwlayer.c:400
 msgid "Waypoint size:"
 msgstr "Útpont mérete:"
 
-#: ../src/viktrwlayer.c:385
+#: ../src/viktrwlayer.c:401
 msgid "Draw Waypoint Symbols:"
 msgstr "Útpont-szimbólumok rajzolása"
 
-#: ../src/viktrwlayer.c:387
+#: ../src/viktrwlayer.c:403
 msgid "Draw Waypoint Images"
 msgstr "Útpont-képek rajzolása"
 
-#: ../src/viktrwlayer.c:388
+#: ../src/viktrwlayer.c:404
 msgid "Image Size (pixels):"
 msgstr "Képméret (képpont):"
 
-#: ../src/viktrwlayer.c:389
+#: ../src/viktrwlayer.c:405
 msgid "Image Alpha:"
 msgstr "Kép alfa:"
 
-#: ../src/viktrwlayer.c:390
+#: ../src/viktrwlayer.c:406
 msgid "Image Memory Cache Size:"
 msgstr "Képmemória-gyorsítótár mérete:"
 
-#: ../src/viktrwlayer.c:1602
+#: ../src/viktrwlayer.c:1653
+#, c-format
+msgid " in %d:%02d hrs:mins"
+msgstr " ezen belül: %d:%02d óra:perc"
+
+#: ../src/viktrwlayer.c:1657
+#, c-format
+msgid ""
+"\n"
+"%sTotal Length %.1f %s%s"
+msgstr ""
+"\n"
+"%sTeljes hossz %.1f %s%s"
+
+#: ../src/viktrwlayer.c:1663
+#, c-format
+msgid "Tracks: %d - Waypoints: %d%s"
+msgstr "Nyomvonalak: %d - Útpontok: %d%s"
+
+#: ../src/viktrwlayer.c:1698
+#, c-format
+msgid "- %d:%02d hrs:mins"
+msgstr "- %d:%02d óra:perc"
+
+#: ../src/viktrwlayer.c:1706
+#, c-format
+msgid "%s%.1f km %s"
+msgstr "%s%.1f km %s"
+
+#: ../src/viktrwlayer.c:1709
+#, c-format
+msgid "%s%.1f miles %s"
+msgstr "%s%.1f mérföld %s"
+
+#: ../src/viktrwlayer.c:1829 ../src/viktrwlayer.c:1900
 msgid "This layer has no waypoints or trackpoints."
 msgstr "Ez a réteg nem tartalmaz útpontot vagy nyompontot."
 
-#: ../src/viktrwlayer.c:1610
-msgid "Export Layer"
-msgstr "Réteg exportálása"
-
-#: ../src/viktrwlayer.c:1629 ../src/vikwindow.c:1617 ../src/vikwindow.c:2060
+#: ../src/viktrwlayer.c:1927 ../src/vikwindow.c:1673 ../src/vikwindow.c:2118
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "A(z) \"%s\" fájl már létezik. Kívánja felülírni?"
 
-#: ../src/viktrwlayer.c:1639 ../src/vikwindow.c:1638
+#: ../src/viktrwlayer.c:1937 ../src/vikwindow.c:1694
 msgid "The filename you requested could not be opened for writing."
 msgstr "A megadott fájlnév nem nyitható meg olvasásra."
 
-#: ../src/viktrwlayer.c:1660
+#: ../src/viktrwlayer.c:1942 ../src/viktrwlayer.c:1947
+#: ../src/viktrwlayer.c:1952
+msgid "Export Layer"
+msgstr "Réteg exportálása"
+
+#: ../src/viktrwlayer.c:1966
+msgid "Export Track as GPX"
+msgstr "Nyomvonal exportálása GPX-be"
+
+#: ../src/viktrwlayer.c:1974
 msgid "Find"
 msgstr "Keresés"
 
-#: ../src/viktrwlayer.c:1670
+#: ../src/viktrwlayer.c:1984
 msgid "Waypoint Name:"
 msgstr "Útpont neve:"
 
-#: ../src/viktrwlayer.c:1690
+#: ../src/viktrwlayer.c:2006
 msgid "Waypoint not found in this layer."
 msgstr "Nem található útpont ezen a rétegen."
 
-#: ../src/viktrwlayer.c:1787
-#, fuzzy
+#: ../src/viktrwlayer.c:2143
+msgid "_View Layer"
+msgstr "_Réteg megjelenítése"
+
+#: ../src/viktrwlayer.c:2148
+msgid "View All Trac_ks"
+msgstr "_Az összes nyomvonal megjelenítése"
+
+#: ../src/viktrwlayer.c:2153
+msgid "V_iew All Waypoints"
+msgstr "A_z összes nyompont megjelenítése"
+
+#: ../src/viktrwlayer.c:2158
 msgid "_Goto Center of Layer"
 msgstr "_Ugrás a réteg közepére"
 
-#: ../src/viktrwlayer.c:1792
-#, fuzzy
+#: ../src/viktrwlayer.c:2163
 msgid "Goto _Waypoint"
 msgstr "Ugrás ú_tpontra"
 
-#: ../src/viktrwlayer.c:1798
+#: ../src/viktrwlayer.c:2169
 msgid "_Export Layer"
 msgstr "Réteg _exportálása"
 
-#: ../src/viktrwlayer.c:1803
-#, fuzzy
+#: ../src/viktrwlayer.c:2174
 msgid "Export as GPS_Point"
 msgstr "Exportálás mint GPS_Point"
 
-#: ../src/viktrwlayer.c:1808
-#, fuzzy
+#: ../src/viktrwlayer.c:2179
 msgid "Export as GPS_Mapper"
 msgstr "Exportálás mint GPS_Mapper"
 
-#: ../src/viktrwlayer.c:1813
-#, fuzzy
+#: ../src/viktrwlayer.c:2184
 msgid "Export as _GPX"
 msgstr "Exportálás mint _GPX"
 
-#: ../src/viktrwlayer.c:1818 ../src/viktrwlayer.c:2858
-#, fuzzy
+#: ../src/viktrwlayer.c:2189 ../src/viktrwlayer.c:3215
 msgid "_New Waypoint"
 msgstr "Ú_j útpont"
 
-#: ../src/viktrwlayer.c:1825
-#, fuzzy
+#: ../src/viktrwlayer.c:2196
 msgid "_Add Wikipedia Waypoints"
 msgstr "Wikipédia útpontok _hozzáadása"
 
-#: ../src/viktrwlayer.c:1830
-#, fuzzy
+#: ../src/viktrwlayer.c:2201
 msgid "Within _Layer Bounds"
 msgstr "_Réteg határain belül"
 
-#: ../src/viktrwlayer.c:1835
-#, fuzzy
+#: ../src/viktrwlayer.c:2206
 msgid "Within _Current View"
 msgstr "_Jelenlegi nézeten belül"
 
-#: ../src/viktrwlayer.c:1842 ../src/viktrwlayer.c:2824
-#, fuzzy
+#: ../src/viktrwlayer.c:2213 ../src/viktrwlayer.c:3310
 msgid "Upload to _OSM"
 msgstr "Feltöltés _OSM-re"
 
-#: ../src/viktrwlayer.c:2353
+#: ../src/viktrwlayer.c:2780
 msgid "Failed. This track does not have timestamp"
 msgstr "Sikertelen. Ez a nyomvonal nem tartalmaz időbélyeget"
 
-#: ../src/viktrwlayer.c:2367
+#: ../src/viktrwlayer.c:2794
 msgid "Failed. No other track in this layer has timestamp"
 msgstr ""
 "Sikertelen. Nincs más nyomvonal ezen a rétegen, amely tartalmaz időbélyeget"
 
-#: ../src/viktrwlayer.c:2373
+#: ../src/viktrwlayer.c:2805
 msgid "Merge with..."
 msgstr "Egyesítés..."
 
-#: ../src/viktrwlayer.c:2373
+#: ../src/viktrwlayer.c:2805
 msgid "Select track to merge with"
 msgstr "Nyomvonal kiválasztása az egyesítéshez"
 
-#: ../src/viktrwlayer.c:2410
+#: ../src/viktrwlayer.c:2842
 msgid "Merge Threshold..."
 msgstr "Egyesítési küszöb..."
 
-#: ../src/viktrwlayer.c:2411
+#: ../src/viktrwlayer.c:2843
 msgid "Merge when time between tracks less than:"
 msgstr "Egyesítés, ha az időeltérés a nyomvonalak között kevesebb mint:"
 
-#: ../src/viktrwlayer.c:2503
+#: ../src/viktrwlayer.c:2935
 msgid "Split Threshold..."
 msgstr "Vágási küszöb..."
 
-#: ../src/viktrwlayer.c:2504
+#: ../src/viktrwlayer.c:2936
 msgid "Split when time between trackpoints exceeds:"
 msgstr "Kettévágás, ha az időeltérés a nyompontok között meghaladja:"
 
-#: ../src/viktrwlayer.c:2587
+#: ../src/viktrwlayer.c:3019
 msgid "Waypoint Already Exists"
 msgstr "Az útpont már létezik"
 
-#: ../src/viktrwlayer.c:2628
+#: ../src/viktrwlayer.c:3060
 msgid "Track Already Exists"
 msgstr "A nyomvonal már létezik"
 
-#: ../src/viktrwlayer.c:2750
-#, fuzzy
+#: ../src/viktrwlayer.c:3190 ../src/viktrwlayer.c:3229
 msgid "_Goto"
 msgstr "_Ugrás"
 
-#: ../src/viktrwlayer.c:2758
-#, fuzzy
+#: ../src/viktrwlayer.c:3204
 msgid "_Visit Geocache Webpage"
 msgstr "Geocache weboldal _meglátogatása"
 
-#: ../src/viktrwlayer.c:2773
-#, fuzzy
-msgid "_Goto Startpoint"
-msgstr "_Ugrás a kezdőpontra"
+#: ../src/viktrwlayer.c:3234
+msgid "_Startpoint"
+msgstr "_Kezdőpont"
 
-#: ../src/viktrwlayer.c:2778
-#, fuzzy
-msgid "Goto \"_Center\""
-msgstr "Ugrás \"_középre\""
+#: ../src/viktrwlayer.c:3239
+msgid "\"_Center\""
+msgstr "\"_Középpont\""
 
-#: ../src/viktrwlayer.c:2783
-#, fuzzy
-msgid "Goto _Endpoint"
-msgstr "Ugrás a _végpontra"
+#: ../src/viktrwlayer.c:3244
+msgid "_Endpoint"
+msgstr "_Végpont"
 
-#: ../src/viktrwlayer.c:2788
-#, fuzzy
+#: ../src/viktrwlayer.c:3249
+msgid "_Highest Altitude"
+msgstr "_Legnagyobb magasság"
+
+#: ../src/viktrwlayer.c:3254
+msgid "_Lowest Altitude"
+msgstr "L_egalacsonyabb magasság"
+
+#: ../src/viktrwlayer.c:3259
+msgid "_Maximum Speed"
+msgstr "_Maximális sebesség"
+
+#: ../src/viktrwlayer.c:3264
+msgid "_View Track"
+msgstr "_Nyomvonal megjelenítése"
+
+#: ../src/viktrwlayer.c:3269
 msgid "_Merge By Time"
 msgstr "_Egyesítés idő szerint"
 
-#: ../src/viktrwlayer.c:2793
-#, fuzzy
+#: ../src/viktrwlayer.c:3274
 msgid "Merge _With Other Tracks..."
 msgstr "Egyesítés _más nyomvonalakkal..."
 
-#: ../src/viktrwlayer.c:2798
-#, fuzzy
+#: ../src/viktrwlayer.c:3279
 msgid "_Split By Time"
 msgstr "_Kettévágás idő szerint"
 
-#: ../src/viktrwlayer.c:2803
-#, fuzzy
+#: ../src/viktrwlayer.c:3284
 msgid "Down_load Maps Along Track..."
 msgstr "Térképek le_töltése a nyomvonal mentén..."
 
-#: ../src/viktrwlayer.c:2808
-#, fuzzy
+#: ../src/viktrwlayer.c:3289
 msgid "_Apply DEM Data"
 msgstr "DEM adatok _alkalmazása"
 
-#: ../src/viktrwlayer.c:2813
-#, fuzzy
+#: ../src/viktrwlayer.c:3294
+msgid "Export Trac_k as GPX"
+msgstr "_Nyomvonal exportálása GPX-be"
+
+#: ../src/viktrwlayer.c:3299
 msgid "E_xtend Track End"
 msgstr "Nyomvonal végének ki_bővítése"
 
-#: ../src/viktrwlayer.c:2818
-#, fuzzy
+#: ../src/viktrwlayer.c:3304
 msgid "Extend _Using Magic Scissors"
 msgstr "Kibővítés mágikus olló _használatával"
 
-#: ../src/viktrwlayer.c:2832
-#, fuzzy
+#: ../src/viktrwlayer.c:3318
 msgid "_View Google Directions"
 msgstr "Google útvonaltervező _megjelenítése"
 
-#: ../src/viktrwlayer.c:2838
-#, fuzzy
+#: ../src/viktrwlayer.c:3324
 msgid "Use with _Filter"
 msgstr "Használat _szűrővel"
 
-#: ../src/viktrwlayer.c:3474
+#: ../src/viktrwlayer.c:4005
 msgid "Track"
 msgstr "Nyomvonal"
 
-#: ../src/viktrwlayer.c:3807
+#: ../src/viktrwlayer.c:4338
 msgid "Could not launch eog to open file."
 msgstr "Az eog nem indítható a fájl megnyitásához"
 
-#: ../src/viktrwlayer.c:3861
+#: ../src/viktrwlayer.c:4392
 #, c-format
 msgid "Creating %d Image Thumbnails..."
 msgstr "%d kép-miniatűr létrehozása..."
 
-#: ../src/viktrwlayer.c:4086
+#: ../src/viktrwlayer.c:4617
 msgid "No map layer in use. Create one first"
 msgstr "Nincs térképréteg használatban. Először hozzon létre egyet"
 
-#: ../src/viktrwlayer_propwin.c:686
+#: ../src/viktrwlayer_propwin.c:688
 msgid "Failed spliting track. Track unchanged"
 msgstr "Nyomvonal kettévágása sikertelen. A nyomvonal nem módosult"
 
-#: ../src/viktrwlayer_propwin.c:703
+#: ../src/viktrwlayer_propwin.c:705
 msgid "Operation Aborted. Track unchanged"
 msgstr "Művelet megszakítva. A nyomvonal nem módosult"
 
-#: ../src/viktrwlayer_propwin.c:757
+#: ../src/viktrwlayer_propwin.c:759
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - Nyomvonal tulajdonságai"
 
-#: ../src/viktrwlayer_propwin.c:762
+#: ../src/viktrwlayer_propwin.c:764
 msgid "Split at Marker"
 msgstr "Kettévágás jelölőnél"
 
-#: ../src/viktrwlayer_propwin.c:763
+#: ../src/viktrwlayer_propwin.c:765
 msgid "Split Segments"
 msgstr "Szakaszok kettévágása"
 
-#: ../src/viktrwlayer_propwin.c:764
+#: ../src/viktrwlayer_propwin.c:766
 msgid "Reverse"
 msgstr "Megfordítás"
 
-#: ../src/viktrwlayer_propwin.c:765
+#: ../src/viktrwlayer_propwin.c:767
 msgid "Delete Dupl."
 msgstr "Kettőzöttek törlése"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Comment:</b>"
 msgstr "<b>Megjegyzés:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Track Length:</b>"
 msgstr "<b>Nyomvonal hossza:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Trackpoints:</b>"
 msgstr "<b>Nyompontok:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Segments:</b>"
 msgstr "<b>Szakaszok:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Duplicate Points:</b>"
 msgstr "<b>Kettőzött pontok:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Max Speed:</b>"
 msgstr "<b>Max. sebesség:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>Átlagsebesség:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr "<b>Átlagos távolság nyompontok között:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Elevation Range:</b>"
 msgstr "<b>Magassági szintkülönbség:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr "<b>Teljes magassági szintnyereség/-veszteség:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Start:</b>"
 msgstr "<b>Kezdet:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>End:</b>"
 msgstr "<b>Vége:</b>"
 
-#: ../src/viktrwlayer_propwin.c:788
+#: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Duration:</b>"
 msgstr "<b>Időtartam:</b>"
 
-#: ../src/viktrwlayer_propwin.c:828 ../src/viktrwlayer_propwin.c:852
-#: ../src/viktrwlayer_propwin.c:889 ../src/viktrwlayer_propwin.c:907
-#: ../src/viktrwlayer_propwin.c:957 ../src/viktrwlayer_propwin.c:958
-#: ../src/viktrwlayer_propwin.c:959 ../src/viktrwlayer_propwin.c:981
-#: ../src/viktrwlayer_propwin.c:988
+#: ../src/viktrwlayer_propwin.c:830 ../src/viktrwlayer_propwin.c:854
+#: ../src/viktrwlayer_propwin.c:891 ../src/viktrwlayer_propwin.c:909
+#: ../src/viktrwlayer_propwin.c:959 ../src/viktrwlayer_propwin.c:960
+#: ../src/viktrwlayer_propwin.c:961 ../src/viktrwlayer_propwin.c:983
+#: ../src/viktrwlayer_propwin.c:990
 #, c-format
 msgid "No Data"
 msgstr "Nincs adat"
 
-#: ../src/viktrwlayer_propwin.c:954
+#: ../src/viktrwlayer_propwin.c:956
 #, c-format
 msgid "%d minutes"
 msgstr "%d perc"
 
-#: ../src/viktrwlayer_propwin.c:977
+#: ../src/viktrwlayer_propwin.c:979
 msgid "Statistics"
 msgstr "Statisztika"
 
-#: ../src/viktrwlayer_propwin.c:982
+#: ../src/viktrwlayer_propwin.c:984
 msgid "<b>Track Distance:</b>"
 msgstr "<b>Nyomvonal távolsága:</b>"
 
-#: ../src/viktrwlayer_propwin.c:983
+#: ../src/viktrwlayer_propwin.c:985
 msgid "Elevation-distance"
 msgstr "Magasság-távolság"
 
-#: ../src/viktrwlayer_propwin.c:989
+#: ../src/viktrwlayer_propwin.c:991
 msgid "<b>Track Time:</b>"
 msgstr "<b>Nyomvonal időtartama:</b>"
 
-#: ../src/viktrwlayer_propwin.c:990
+#: ../src/viktrwlayer_propwin.c:992
 msgid "Speed-time"
 msgstr "Sebesség-idő"
 
@@ -1808,27 +1885,31 @@ msgstr "<b>SAT/FIX:</b>"
 msgid "Trackpoint"
 msgstr "Nyompont"
 
-#: ../src/viktrwlayer_tpwin.c:141
+#: ../src/viktrwlayer_tpwin.c:140
+msgid "_Insert After"
+msgstr "_Beszúrás utána"
+
+#: ../src/viktrwlayer_tpwin.c:142
 msgid "Split Here"
 msgstr "Kettévágás itt"
 
-#: ../src/viktrwlayer_tpwin.c:142
+#: ../src/viktrwlayer_tpwin.c:143
 msgid "Join With Last"
 msgstr "Csatlakoztatás"
 
-#: ../src/vikwindow.c:187
+#: ../src/vikwindow.c:189
 msgid "Pan"
 msgstr "Elmozdítás"
 
-#: ../src/vikwindow.c:187
+#: ../src/vikwindow.c:189
 msgid "Zoom"
 msgstr "Nagyítás"
 
-#: ../src/vikwindow.c:187
+#: ../src/vikwindow.c:189
 msgid "Ruler"
 msgstr "Vonalzó"
 
-#: ../src/vikwindow.c:363
+#: ../src/vikwindow.c:381
 #, c-format
 msgid ""
 "Do you want to save the changes you made to the document \"%s\"?\n"
@@ -1839,64 +1920,64 @@ msgstr ""
 "\n"
 "Módosításai elvesznek, ha nem menti el azokat."
 
-#: ../src/vikwindow.c:366 ../src/vikwindow.c:1389
+#: ../src/vikwindow.c:384 ../src/vikwindow.c:1444
 msgid "Untitled"
 msgstr "Névtelen"
 
-#: ../src/vikwindow.c:367
+#: ../src/vikwindow.c:385
 msgid "Don't Save"
 msgstr "Ne mentse"
 
-#: ../src/vikwindow.c:402
+#: ../src/vikwindow.c:420
 msgid "mpp"
 msgstr "mpp"
 
-#: ../src/vikwindow.c:402
+#: ../src/vikwindow.c:420
 msgid "pixelfact"
 msgstr "pixelfact"
 
-#: ../src/vikwindow.c:551
+#: ../src/vikwindow.c:570
 #, c-format
 msgid "%s %s %dm"
 msgstr "%s %s %dm"
 
-#: ../src/vikwindow.c:553
+#: ../src/vikwindow.c:572
 #, c-format
 msgid "%s %s %dft"
 msgstr "%s %s %dft"
 
-#: ../src/vikwindow.c:556
+#: ../src/vikwindow.c:575
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
-#: ../src/vikwindow.c:1178
+#: ../src/vikwindow.c:1197
 msgid "You must select a layer to show its properties."
 msgstr "Ki kell választania egy réteget tulajdonságai megtekintéséhez."
 
-#: ../src/vikwindow.c:1204
+#: ../src/vikwindow.c:1223
 msgid "You must select a layer to delete."
 msgstr "A törléshez ki kell választania egy réteget"
 
-#: ../src/vikwindow.c:1501
+#: ../src/vikwindow.c:1557
 #, c-format
 msgid "Unable to add '%s' to the list of recently used documents"
 msgstr ""
 "A(z) \"%s\" nem adható hozzá a legutóbb megnyitott dokumentumok listájához."
 
-#: ../src/vikwindow.c:1515
+#: ../src/vikwindow.c:1571
 msgid "The file you requested could not be opened."
 msgstr "A megadott fájl nem nyitható meg."
 
-#: ../src/vikwindow.c:1561
+#: ../src/vikwindow.c:1617
 msgid "Please select a GPS data file to open. "
 msgstr "A megnyitáshoz válasszon egy GPS adatfájlt. "
 
-#: ../src/vikwindow.c:1604
+#: ../src/vikwindow.c:1660
 msgid "Save as Viking File."
 msgstr "Mentés mint Viking fájl."
 
-#: ../src/vikwindow.c:1895
+#: ../src/vikwindow.c:1951
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
@@ -1904,471 +1985,492 @@ msgstr ""
 "A látható terület meghaladja a képhez megengedett pixelméret határait. "
 "Szélesség/magasság értékek csökkentése."
 
-#: ../src/vikwindow.c:1917
+#: ../src/vikwindow.c:1973
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. km)"
 msgstr "Teljes terület: %ldm x %ldm (%.3f négyzetkm)"
 
-#: ../src/vikwindow.c:1920
+#: ../src/vikwindow.c:1976
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. miles)"
 msgstr "Total area: %ldm x %ldm (%.3f négyzetmérföld)"
 
 #. todo: default for answers inside VikWindow or static (thruout instance)
-#: ../src/vikwindow.c:1934
+#: ../src/vikwindow.c:1990
 msgid "Save to Image File"
 msgstr "Mentés képfájlba"
 
-#: ../src/vikwindow.c:1952
+#: ../src/vikwindow.c:2008
 msgid "Width (pixels):"
 msgstr "Szélesség (képpont):"
 
-#: ../src/vikwindow.c:1954
+#: ../src/vikwindow.c:2010
 msgid "Height (pixels):"
 msgstr "Magasság (képpont):"
 
-#: ../src/vikwindow.c:1957
+#: ../src/vikwindow.c:2013
 msgid "Zoom (meters per pixel):"
 msgstr "Nagyítás (méter/képpont):"
 
-#: ../src/vikwindow.c:1963
+#: ../src/vikwindow.c:2019
 msgid "Area in current viewable window"
 msgstr "Terület a jelenleg látható ablakban"
 
-#: ../src/vikwindow.c:1973
+#: ../src/vikwindow.c:2029
 msgid "Save as PNG"
 msgstr "Mentés mint PNG"
 
-#: ../src/vikwindow.c:1974
+#: ../src/vikwindow.c:2030
 msgid "Save as JPEG"
 msgstr "Mentés mint JPEG"
 
-#: ../src/vikwindow.c:1994
+#: ../src/vikwindow.c:2050
 msgid "East-west image tiles:"
 msgstr "Kelet-nyugat képcsempék:"
 
-#: ../src/vikwindow.c:1996
+#: ../src/vikwindow.c:2052
 msgid "North-south image tiles:"
 msgstr "Észak-dél képcsempék:"
 
-#: ../src/vikwindow.c:2036
+#: ../src/vikwindow.c:2094
 msgid "You must be in UTM mode to use this feature"
 msgstr "A funkció használatához UTM módban kell lennie"
 
-#: ../src/vikwindow.c:2047
+#: ../src/vikwindow.c:2105
 msgid "Save Image"
 msgstr "Kép mentése"
 
-#: ../src/vikwindow.c:2074
+#: ../src/vikwindow.c:2134
 msgid "Choose a directory to hold images"
 msgstr "Válasszon egy könyvtárat a képek tárolásához"
 
-#: ../src/vikwindow.c:2160
+#: ../src/vikwindow.c:2223
 msgid "Choose a background color"
 msgstr "Háttérszín választása"
 
-#: ../src/vikwindow.c:2181
+#: ../src/vikwindow.c:2244
 msgid "_File"
 msgstr "_Fájl"
 
-#: ../src/vikwindow.c:2182
+#: ../src/vikwindow.c:2245
 msgid "_Edit"
 msgstr "S_zerkesztés"
 
-#: ../src/vikwindow.c:2183
+#: ../src/vikwindow.c:2246
 msgid "_View"
 msgstr "_Nézet"
 
-#: ../src/vikwindow.c:2184 ../src/vikwindow.c:2268
+#: ../src/vikwindow.c:2247
+msgid "_Show"
+msgstr "_Megjelenítés"
+
+#: ../src/vikwindow.c:2248 ../src/vikwindow.c:2334
 msgid "_Zoom"
 msgstr "Na_gyítási szint"
 
-#: ../src/vikwindow.c:2185 ../src/vikwindow.c:2267
+#: ../src/vikwindow.c:2249 ../src/vikwindow.c:2333
 msgid "_Pan"
 msgstr "_Mozgatás"
 
-#: ../src/vikwindow.c:2186
+#: ../src/vikwindow.c:2250
 msgid "_Layers"
 msgstr "_Rétegek"
 
-#: ../src/vikwindow.c:2187
+#: ../src/vikwindow.c:2251
 msgid "_Tools"
 msgstr "_Eszközök"
 
-#: ../src/vikwindow.c:2188
+#: ../src/vikwindow.c:2252
 msgid "_Webtools"
 msgstr "_Webes eszközök"
 
-#: ../src/vikwindow.c:2189 ../src/vikwindow.c:2255
+#: ../src/vikwindow.c:2253 ../src/vikwindow.c:2319
 msgid "_Help"
 msgstr "_Súgó"
 
-#: ../src/vikwindow.c:2191
+#: ../src/vikwindow.c:2255
 msgid "_New"
 msgstr "Ú_j"
 
-#: ../src/vikwindow.c:2191
+#: ../src/vikwindow.c:2255
 msgid "New file"
 msgstr "Új fájl"
 
-#: ../src/vikwindow.c:2192
+#: ../src/vikwindow.c:2256
 msgid "_Open..."
 msgstr "_Megnyitás..."
 
-#: ../src/vikwindow.c:2192
+#: ../src/vikwindow.c:2256
 msgid "Open a file"
 msgstr "Fájl megnyitása"
 
-#: ../src/vikwindow.c:2193
+#: ../src/vikwindow.c:2257
 msgid "Open _Recent File"
 msgstr "_Legutóbbi fájl megnyitása"
 
-#: ../src/vikwindow.c:2194
+#: ../src/vikwindow.c:2258
 msgid "Append _File..."
 msgstr "_Fájl hozzáfűzése..."
 
-#: ../src/vikwindow.c:2194
+#: ../src/vikwindow.c:2258
 msgid "Append data from a different file"
 msgstr "Adatok hozzáfűzése egy másik fájlból"
 
-#: ../src/vikwindow.c:2195
+#: ../src/vikwindow.c:2259
 msgid "A_cquire"
 msgstr "_Beszerzés"
 
-#: ../src/vikwindow.c:2196
+#: ../src/vikwindow.c:2260
 msgid "From _GPS..."
 msgstr "_GPS-ről..."
 
-#: ../src/vikwindow.c:2196
+#: ../src/vikwindow.c:2260
 msgid "Transfer data from a GPS device"
 msgstr "Adatok áttöltése GPS eszközről"
 
-#: ../src/vikwindow.c:2197
+#: ../src/vikwindow.c:2261
 msgid "Google _Directions..."
 msgstr "Google ú_tvonaltervező..."
 
-#: ../src/vikwindow.c:2197
+#: ../src/vikwindow.c:2261
 msgid "Get driving directions from Google"
 msgstr "Útvonaljavaslat kérése Google-től"
 
-#: ../src/vikwindow.c:2199
+#: ../src/vikwindow.c:2263
 msgid "Geo_caches..."
 msgstr "Geo_ládák..."
 
-#: ../src/vikwindow.c:2199
+#: ../src/vikwindow.c:2263
 msgid "Get Geocaches from geocaching.com"
 msgstr "Geoládák lekérése a geocaching.com webhelyről"
 
-#: ../src/vikwindow.c:2201
+#: ../src/vikwindow.c:2265
 msgid "_Save"
 msgstr "M_entés"
 
-#: ../src/vikwindow.c:2201
+#: ../src/vikwindow.c:2265
 msgid "Save the file"
 msgstr "A fájl mentése"
 
-#: ../src/vikwindow.c:2202
+#: ../src/vikwindow.c:2266
 msgid "Save _As..."
 msgstr "Men_tés másként..."
 
-#: ../src/vikwindow.c:2202
+#: ../src/vikwindow.c:2266
 msgid "Save the file under different name"
 msgstr "A fájl mentése más néven"
 
-#: ../src/vikwindow.c:2203
+#: ../src/vikwindow.c:2267
 msgid "_Generate Image File..."
 msgstr "Képfájl _generálása..."
 
-#: ../src/vikwindow.c:2203
+#: ../src/vikwindow.c:2267
 msgid "Save a snapshot of the workspace into a file"
 msgstr "Pillanatkép mentése a munkaterületről fájlba"
 
-#: ../src/vikwindow.c:2204
+#: ../src/vikwindow.c:2268
 msgid "Generate _Directory of Images..."
 msgstr "Ké_pek könyvtárának generálása..."
 
-#: ../src/vikwindow.c:2204
+#: ../src/vikwindow.c:2268
 msgid "FIXME:IMGDIR"
 msgstr "FIXME:IMGDIR"
 
-#: ../src/vikwindow.c:2207
+#: ../src/vikwindow.c:2271
 msgid "_Print..."
 msgstr "_Nyomtatás..."
 
-#: ../src/vikwindow.c:2207
+#: ../src/vikwindow.c:2271
 msgid "Print maps"
 msgstr "Térkép nyomtatása"
 
-#: ../src/vikwindow.c:2210
+#: ../src/vikwindow.c:2274
 msgid "E_xit"
 msgstr "_Kilépés"
 
-#: ../src/vikwindow.c:2210
+#: ../src/vikwindow.c:2274
 msgid "Exit the program"
 msgstr "Kilépés a programból"
 
-#: ../src/vikwindow.c:2211
+#: ../src/vikwindow.c:2275
 msgid "Save and Exit"
 msgstr "Mentés és kilépés"
 
-#: ../src/vikwindow.c:2211
+#: ../src/vikwindow.c:2275
 msgid "Save and Exit the program"
 msgstr "Mentés és kilépés a programból"
 
-#: ../src/vikwindow.c:2213
+#: ../src/vikwindow.c:2277
 msgid "Go to the _Default Location"
 msgstr "Ugrás az _alapértelmezett helyre"
 
-#: ../src/vikwindow.c:2213
+#: ../src/vikwindow.c:2277
 msgid "Go to the default location"
 msgstr "Ugrás az alapértelmezett helyre"
 
-#: ../src/vikwindow.c:2214
-#, fuzzy
+#: ../src/vikwindow.c:2278
 msgid "Go to _Location..."
 msgstr "Ugrás _helyre..."
 
-#: ../src/vikwindow.c:2214
+#: ../src/vikwindow.c:2278
 msgid "Go to address/place using text search"
 msgstr "Ugrás címre/helyre szöveges kereső használatával"
 
-#: ../src/vikwindow.c:2215
+#: ../src/vikwindow.c:2279
 msgid "_Go to Lat/Lon..."
 msgstr "Ugrás _szél./hossz.-ra..."
 
-#: ../src/vikwindow.c:2215
+#: ../src/vikwindow.c:2279
 msgid "Go to arbitrary lat/lon coordinate"
 msgstr "Ugrás egy megadott földrajzi szélességi/hosszúsági koordinátára"
 
-#: ../src/vikwindow.c:2216
+#: ../src/vikwindow.c:2280
 msgid "Go to UTM..."
 msgstr "Ugrás U_TM-re..."
 
-#: ../src/vikwindow.c:2216
+#: ../src/vikwindow.c:2280
 msgid "Go to arbitrary UTM coordinate"
 msgstr "Ugrás egy megadott UTM koordinátára"
 
-#: ../src/vikwindow.c:2217
-#, fuzzy
+#: ../src/vikwindow.c:2281
 msgid "Set Bac_kground Color..."
 msgstr "_Háttérszín beállítása..."
 
-#: ../src/vikwindow.c:2218
+#: ../src/vikwindow.c:2282
 msgid "Zoom _In"
 msgstr "_Nagyítás"
 
-#: ../src/vikwindow.c:2219
+#: ../src/vikwindow.c:2283
 msgid "Zoom _Out"
 msgstr "_Kicsinyítés"
 
-#: ../src/vikwindow.c:2220
+#: ../src/vikwindow.c:2284
 msgid "Zoom _To..."
 msgstr "N_agyítás..."
 
-#: ../src/vikwindow.c:2221
+#: ../src/vikwindow.c:2285
 msgid "0.25"
 msgstr "0,25"
 
-#: ../src/vikwindow.c:2222
+#: ../src/vikwindow.c:2286
 msgid "0.5"
 msgstr "0,5"
 
-#: ../src/vikwindow.c:2223
+#: ../src/vikwindow.c:2287
 msgid "1"
 msgstr "1"
 
-#: ../src/vikwindow.c:2224
+#: ../src/vikwindow.c:2288
 msgid "2"
 msgstr "2"
 
-#: ../src/vikwindow.c:2225
+#: ../src/vikwindow.c:2289
 msgid "4"
 msgstr "4"
 
-#: ../src/vikwindow.c:2226
+#: ../src/vikwindow.c:2290
 msgid "8"
 msgstr "8"
 
-#: ../src/vikwindow.c:2227
+#: ../src/vikwindow.c:2291
 msgid "16"
 msgstr "16"
 
-#: ../src/vikwindow.c:2228
+#: ../src/vikwindow.c:2292
 msgid "32"
 msgstr "32"
 
-#: ../src/vikwindow.c:2229
+#: ../src/vikwindow.c:2293
 msgid "64"
 msgstr "64"
 
-#: ../src/vikwindow.c:2230
+#: ../src/vikwindow.c:2294
 msgid "128"
 msgstr "128"
 
-#: ../src/vikwindow.c:2231
+#: ../src/vikwindow.c:2295
 msgid "256"
 msgstr "256"
 
-#: ../src/vikwindow.c:2232
+#: ../src/vikwindow.c:2296
 msgid "512"
 msgstr "512"
 
-#: ../src/vikwindow.c:2233
+#: ../src/vikwindow.c:2297
 msgid "1024"
 msgstr "1024"
 
-#: ../src/vikwindow.c:2234
+#: ../src/vikwindow.c:2298
 msgid "2048"
 msgstr "2048"
 
-#: ../src/vikwindow.c:2235
+#: ../src/vikwindow.c:2299
 msgid "4096"
 msgstr "4096"
 
-#: ../src/vikwindow.c:2236
+#: ../src/vikwindow.c:2300
 msgid "8192"
 msgstr "8192"
 
-#: ../src/vikwindow.c:2237
+#: ../src/vikwindow.c:2301
 msgid "16384"
 msgstr "16384"
 
-#: ../src/vikwindow.c:2238
+#: ../src/vikwindow.c:2302
 msgid "32768"
 msgstr "32768"
 
-#: ../src/vikwindow.c:2239
-#, fuzzy
+#: ../src/vikwindow.c:2303
 msgid "Pan _North"
 msgstr "Mozgatás é_szak felé"
 
-#: ../src/vikwindow.c:2240
-#, fuzzy
+#: ../src/vikwindow.c:2304
 msgid "Pan _East"
 msgstr "Mozgatás _kelet felé"
 
-#: ../src/vikwindow.c:2241
-#, fuzzy
+#: ../src/vikwindow.c:2305
 msgid "Pan _South"
 msgstr "Mozgatás _dél felé"
 
-#: ../src/vikwindow.c:2242
-#, fuzzy
+#: ../src/vikwindow.c:2306
 msgid "Pan _West"
 msgstr "Mozgatás _nyugat felé"
 
-#: ../src/vikwindow.c:2243
+#: ../src/vikwindow.c:2307
 msgid "Background _Jobs"
 msgstr "_Háttérmunkák"
 
-#: ../src/vikwindow.c:2245
+#: ../src/vikwindow.c:2309
 msgid "Cu_t"
 msgstr "_Kivágás"
 
-#: ../src/vikwindow.c:2246
+#: ../src/vikwindow.c:2310
 msgid "_Copy"
 msgstr "_Másolás"
 
-#: ../src/vikwindow.c:2247
+#: ../src/vikwindow.c:2311
 msgid "_Paste"
 msgstr "_Beillesztés"
 
-#: ../src/vikwindow.c:2248
+#: ../src/vikwindow.c:2312
 msgid "_Delete"
 msgstr "_Törlés"
 
-#: ../src/vikwindow.c:2249
+#: ../src/vikwindow.c:2313
 msgid "Delete All"
 msgstr "Összes törlése"
 
-#: ../src/vikwindow.c:2250
+#: ../src/vikwindow.c:2314
 msgid "_Flush Map Cache"
 msgstr "Térkép-_gyorsítótár kiürítése"
 
-#: ../src/vikwindow.c:2251
+#: ../src/vikwindow.c:2315
 msgid "_Set the Default Location"
 msgstr "_Alapértelmezett hely beállítása"
 
-#: ../src/vikwindow.c:2251
+#: ../src/vikwindow.c:2315
 msgid "Set the Default Location to the current position"
 msgstr "Alapértelmezett hely beállítása a jelenlegi pozícióra"
 
-#: ../src/vikwindow.c:2252
+#: ../src/vikwindow.c:2316
 msgid "_Preferences"
 msgstr "B_eállítások"
 
-#: ../src/vikwindow.c:2253
+#: ../src/vikwindow.c:2317
 msgid "_Properties"
 msgstr "_Tulajdonságok"
 
-#: ../src/vikwindow.c:2256
+#: ../src/vikwindow.c:2320
 msgid "_About"
 msgstr "_Névjegy"
 
-#: ../src/vikwindow.c:2261
+#: ../src/vikwindow.c:2326
 msgid "_UTM Mode"
 msgstr "_UTM mód"
 
-#: ../src/vikwindow.c:2262
+#: ../src/vikwindow.c:2327
 msgid "_Expedia Mode"
 msgstr "_Expedia mód"
 
-#: ../src/vikwindow.c:2263
+#: ../src/vikwindow.c:2328
 msgid "_Mercator Mode"
 msgstr "_Mercator mód"
 
-#: ../src/vikwindow.c:2267
+#: ../src/vikwindow.c:2329
+msgid "Lat_/Lon Mode"
+msgstr "Szél._/Hossz. mód"
+
+#: ../src/vikwindow.c:2333
 msgid "Pan Tool"
 msgstr "Mozgató eszköz"
 
-#: ../src/vikwindow.c:2268
+#: ../src/vikwindow.c:2334
 msgid "Zoom Tool"
 msgstr "Nagyító eszköz"
 
-#: ../src/vikwindow.c:2269
+#: ../src/vikwindow.c:2335
 msgid "_Ruler"
 msgstr "_Vonalzó"
 
-#: ../src/vikwindow.c:2269
+#: ../src/vikwindow.c:2335
 msgid "Ruler Tool"
 msgstr "Vonalzó eszköz"
 
-#: ../src/vikwindow.c:2273
-msgid "_Show Scale"
-msgstr "_Aránymérték megjelenítése"
+#: ../src/vikwindow.c:2339
+msgid "Show _Scale"
+msgstr "_Méretarány megjelenítése"
 
-#: ../src/vikwindow.c:2273
+#: ../src/vikwindow.c:2339
 msgid "Show Scale"
 msgstr "Aránymérték megjelenítése"
 
-#: ../src/vikwindow.c:2274
+#: ../src/vikwindow.c:2340
 msgid "Show _Center Mark"
 msgstr "_Középjelölő megjelenítése"
 
-#: ../src/vikwindow.c:2274
+#: ../src/vikwindow.c:2340
 msgid "Show Center Mark"
 msgstr "Középjelölő megjelenítése"
 
-#: ../src/vikwindow.c:2275
+#: ../src/vikwindow.c:2341
 msgid "_Full Screen"
 msgstr "_Teljes képernyő"
 
-#: ../src/vikwindow.c:2275
+#: ../src/vikwindow.c:2341
 msgid "Activate full screen mode"
 msgstr "Teljes képernyő mód aktiválása"
 
-#: ../src/vikwindow.c:2276
-msgid "Show Side Pa_nel"
+#: ../src/vikwindow.c:2342
+msgid "Show Side _Panel"
 msgstr "_Oldalpanel megjelenítése"
 
-#: ../src/vikwindow.c:2276
+#: ../src/vikwindow.c:2342
 msgid "Show Side Panel"
 msgstr "Oldalpanel megjelenítése"
 
-#: ../src/vikwindow.c:2338
-#, c-format
-msgid "New %s Layer"
-msgstr "Új %s réteg"
+#: ../src/vikwindow.c:2343
+msgid "Show Status_bar"
+msgstr "Á_llapotsor megjelenítése"
+
+#: ../src/vikwindow.c:2343
+msgid "Show Statusbar"
+msgstr "Állapotsor megjelenítése"
+
+#: ../src/vikwindow.c:2344
+msgid "Show _Toolbar"
+msgstr "_Eszköztár megjelenítése"
+
+#: ../src/vikwindow.c:2344
+msgid "Show Toolbar"
+msgstr "Eszköztár megjelenítése"
+
+#: ../src/vikwindow.c:2345
+msgid "Show _Menu"
+msgstr "_Menü megjelenítése"
+
+#: ../src/vikwindow.c:2345
+msgid "Show Menu"
+msgstr "Menü megjelenítése"
 
 #: ../src/viking.desktop.in.h:1
 msgid "GPS Data Manager"
@@ -2382,14 +2484,24 @@ msgstr "Térképalapú GPS adatkezelő (élő adatátvitelre képes)."
 msgid "Viking"
 msgstr "Viking"
 
-#, fuzzy
-#~ msgid "Download new Onscreen Maps from server"
-#~ msgstr "Képernyőn lévő ú_j térképrészletek letöltése"
+#~ msgid ""
+#~ "Turn Off After Transfer\n"
+#~ "(Garmin Only)"
+#~ msgstr ""
+#~ "Kikapcsolás átvitel után\n"
+#~ "(csak Garmin esetén)"
 
-#, fuzzy
-#~ msgid "Create"
-#~ msgstr "Nyomvonal létrehozása"
+#~ msgid "_Goto Startpoint"
+#~ msgstr "_Ugrás a kezdőpontra"
 
-#, fuzzy
-#~ msgid "Export layer"
-#~ msgstr "Réteg exportálása"
+#~ msgid "Goto \"_Center\""
+#~ msgstr "Ugrás \"_középre\""
+
+#~ msgid "Goto _Endpoint"
+#~ msgstr "Ugrás a _végpontra"
+
+#~ msgid "Show Side Pa_nel"
+#~ msgstr "_Oldalpanel megjelenítése"
+
+#~ msgid "_Show Scale"
+#~ msgstr "_Aránymérték megjelenítése"
