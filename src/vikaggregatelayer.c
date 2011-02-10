@@ -189,20 +189,21 @@ VikAggregateLayer *vik_aggregate_layer_new ()
 void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, GtkTreeIter *replace_iter )
 {
   GtkTreeIter iter;
+  VikLayer *vl = VIK_LAYER(val);
 
-  if ( VIK_LAYER(val)->realized )
+  if ( vl->realized )
   {
-    vik_treeview_insert_layer ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), &iter, l->name, val, l, l->type, l->type, replace_iter );
+    vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, l, l->type, l->type, replace_iter );
     if ( ! l->visible )
-      vik_treeview_item_set_visible ( VIK_LAYER(val)->vt, &iter, FALSE );
-    vik_layer_realize ( l, VIK_LAYER(val)->vt, &iter );
+      vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
+    vik_layer_realize ( l, vl->vt, &iter );
 
     if ( val->children == NULL )
-      vik_treeview_expand ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter) );
+      vik_treeview_expand ( vl->vt, &(vl->iter) );
   }
 
   if (replace_iter) {
-    GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( VIK_LAYER(val)->vt, replace_iter ) );
+    GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( vl->vt, replace_iter ) );
     val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone)+1 );
   } else {
     val->children = g_list_append ( val->children, l );
@@ -213,16 +214,17 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
 void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l )
 {
   GtkTreeIter iter;
+  VikLayer *vl = VIK_LAYER(val);
 
-  if ( VIK_LAYER(val)->realized )
+  if ( vl->realized )
   {
-    vik_treeview_add_layer ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), &iter, l->name, val, l, l->type, l->type);
+    vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, l, l->type, l->type);
     if ( ! l->visible )
-      vik_treeview_item_set_visible ( VIK_LAYER(val)->vt, &iter, FALSE );
-    vik_layer_realize ( l, VIK_LAYER(val)->vt, &iter );
+      vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
+    vik_layer_realize ( l, vl->vt, &iter );
 
     if ( val->children == NULL )
-      vik_treeview_expand ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter) );
+      vik_treeview_expand ( vl->vt, &(vl->iter) );
   }
 
   val->children = g_list_append ( val->children, l );
@@ -232,9 +234,10 @@ void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l )
 void vik_aggregate_layer_move_layer ( VikAggregateLayer *val, GtkTreeIter *child_iter, gboolean up )
 {
   GList *theone, *first, *second;
-  vik_treeview_move_item ( VIK_LAYER(val)->vt, child_iter, up );
+  VikLayer *vl = VIK_LAYER(val);
+  vik_treeview_move_item ( vl->vt, child_iter, up );
 
-  theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( VIK_LAYER(val)->vt, child_iter ) );
+  theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( vl->vt, child_iter ) );
 
   g_assert ( theone != NULL );
 
@@ -281,18 +284,19 @@ void vik_aggregate_layer_draw ( VikAggregateLayer *val, gpointer data )
 {
   GList *iter = val->children;
   VikLayer *vl;
-  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( VIK_VIEWPORT(data) ));
+  VikViewport *viewport = VIK_VIEWPORT(data);
+  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( viewport ));
   while ( iter ) {
     vl = VIK_LAYER(iter->data);
     if ( vl == trigger ) {
-      if ( vik_viewport_get_half_drawn ( VIK_VIEWPORT(data) ) ) {
-        vik_viewport_set_half_drawn ( VIK_VIEWPORT(data), FALSE );
-        vik_viewport_snapshot_load( VIK_VIEWPORT(data) );
+      if ( vik_viewport_get_half_drawn ( viewport ) ) {
+        vik_viewport_set_half_drawn ( viewport, FALSE );
+        vik_viewport_snapshot_load( viewport );
       } else {
-        vik_viewport_snapshot_save( VIK_VIEWPORT(data) );
+        vik_viewport_snapshot_save( viewport );
       }
     }
-    if ( vl->type == VIK_LAYER_AGGREGATE || vl->type == VIK_LAYER_GPS || ! vik_viewport_get_half_drawn( VIK_VIEWPORT(data) ) )
+    if ( vl->type == VIK_LAYER_AGGREGATE || vl->type == VIK_LAYER_GPS || ! vik_viewport_get_half_drawn( viewport ) )
       vik_layer_draw ( vl, data );
     iter = iter->next;
   }
@@ -396,11 +400,12 @@ VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer 
 
   while ( ls )
   {
-    if ( VIK_LAYER(ls->data)->visible && VIK_LAYER(ls->data)->type == type )
-      return VIK_LAYER(ls->data);
-    else if ( VIK_LAYER(ls->data)->visible && VIK_LAYER(ls->data)->type == VIK_LAYER_AGGREGATE )
+    VikLayer *vl = VIK_LAYER(ls->data);
+    if ( vl->visible && vl->type == type )
+      return vl;
+    else if ( vl->visible && vl->type == VIK_LAYER_AGGREGATE )
     {
-      rv = vik_aggregate_layer_get_top_visible_layer_of_type(VIK_AGGREGATE_LAYER(ls->data), type);
+      rv = vik_aggregate_layer_get_top_visible_layer_of_type(VIK_AGGREGATE_LAYER(vl), type);
       if ( rv )
         return rv;
     }
@@ -413,12 +418,14 @@ GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList 
 {
   GList *l = layers;
   GList *children = val->children;
+  VikLayer *vl;
   if (!children)
     return layers;
   while (children) {
-    if (VIK_LAYER(children->data)->type == VIK_LAYER_AGGREGATE)
+    vl = VIK_LAYER(children->data);
+    if (vl->type == VIK_LAYER_AGGREGATE)
       l = vik_aggregate_layer_get_all_layers_of_type(VIK_AGGREGATE_LAYER(children->data), l, type); 
-    else if (VIK_LAYER(children->data)->type == type)
+    else if (vl->type == type)
       l = g_list_prepend(l, children->data); /* now in top down order */
     children = children->next;
   }
@@ -429,13 +436,16 @@ void vik_aggregate_layer_realize ( VikAggregateLayer *val, VikTreeview *vt, GtkT
 {
   GList *i = val->children;
   GtkTreeIter iter;
+  VikLayer *vl = VIK_LAYER(val);
+  VikLayer *vli;
   while ( i )
   {
-    vik_treeview_add_layer ( VIK_LAYER(val)->vt, layer_iter, &iter, VIK_LAYER(i->data)->name, val, 
-        VIK_LAYER(i->data), VIK_LAYER(i->data)->type, VIK_LAYER(i->data)->type );
-    if ( ! VIK_LAYER(i->data)->visible )
-      vik_treeview_item_set_visible ( VIK_LAYER(val)->vt, &iter, FALSE );
-    vik_layer_realize ( VIK_LAYER(i->data), VIK_LAYER(val)->vt, &iter );
+    vli = VIK_LAYER(i->data);
+    vik_treeview_add_layer ( vl->vt, layer_iter, &iter, vli->name, val, 
+        vli, vli->type, vli->type );
+    if ( ! vli->visible )
+      vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
+    vik_layer_realize ( vli, vl->vt, &iter );
     i = i->next;
   }
 }

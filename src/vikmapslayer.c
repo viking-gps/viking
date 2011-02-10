@@ -529,10 +529,10 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
     VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
     VikMapSource *map = NULL;
  
-    vp_drawmode = vik_viewport_get_drawmode ( VIK_VIEWPORT(vp) );
+    vp_drawmode = vik_viewport_get_drawmode ( vp );
     map = MAPS_LAYER_NTH_TYPE(vml->maptype);
     if (vik_map_source_get_drawmode(map) != vp_drawmode) {
-      const gchar *drawmode_name = vik_viewport_get_drawmode_name (VIK_VIEWPORT(vp), vik_map_source_get_drawmode(map));
+      const gchar *drawmode_name = vik_viewport_get_drawmode_name (vp, vik_map_source_get_drawmode(map));
       gchar *msg = g_strdup_printf(_("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it."), drawmode_name);
       a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vp), msg );
       g_free(msg);
