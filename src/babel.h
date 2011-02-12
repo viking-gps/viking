@@ -50,7 +50,7 @@ typedef void (*BabelStatusFunc)(BabelProgressCode, gpointer, gpointer);
  *                   BABEL_DIAG_DONE: gpsbabel finished,
  *                 or NULL if no callback is needed.
  */
-int a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data );
+gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data );
 
 /*
  * a_babel_convert_from loads data into a trw layer from a file, using gpsbabel.  This routine is synchronous;
@@ -64,10 +64,10 @@ int a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb,
  * 
  * cb		   Optional callback function. Same usage as in a_babel_convert.
  */
-int a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *file, gpointer user_data );
+gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *file, gpointer user_data );
 gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_file_type, BabelStatusFunc cb, gpointer user_data );
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data );
-int a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *file, gpointer user_data );
+gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *file, gpointer user_data );
 
 
 #endif
