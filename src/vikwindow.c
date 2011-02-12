@@ -2482,7 +2482,6 @@ static struct {
   { &geozoom_18_pixbuf,		"Georef Zoom Tool"  },
   { &geomove_18_pixbuf,		"Georef Move Map"   },
   { &mapdl_18_pixbuf,		"Maps Download"     },
-  { &showpic_18_pixbuf,		"Show Picture"      },
 };
  
 static gint n_stock_icons = G_N_ELEMENTS (stock_icons);
