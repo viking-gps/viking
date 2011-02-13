@@ -3854,16 +3854,30 @@ static void waypoint_search_closest_tp ( gchar *name, VikWaypoint *wp, WPSearchP
     return;
 
   vik_viewport_coord_to_screen ( params->vvp, &(wp->coord), &x, &y );
- 
-  if ( abs (x - params->x) <= WAYPOINT_SIZE_APPROX && abs (y - params->y) <= WAYPOINT_SIZE_APPROX &&
-      ((!params->closest_wp) ||        /* was the old waypoint we already found closer than this one? */
-        abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
-  {
-    params->closest_wp_name = name;
-    params->closest_wp = wp;
-    params->closest_x = x;
-    params->closest_y = y;
+
+  // If waypoint has an image then use the image size to select
+  if ( wp->image ) {
+    gint slackx, slacky;
+    slackx = wp->image_width / 2;
+    slacky = wp->image_height / 2;
+
+    if (    x <= params->x + slackx && x >= params->x - slackx
+         && y <= params->y + slacky && y >= params->y - slacky ) {
+      params->closest_wp_name = name;
+      params->closest_wp = wp;
+      params->closest_x = x;
+      params->closest_y = y;
+    }
   }
+  else if ( abs (x - params->x) <= WAYPOINT_SIZE_APPROX && abs (y - params->y) <= WAYPOINT_SIZE_APPROX &&
+	    ((!params->closest_wp) ||        /* was the old waypoint we already found closer than this one? */
+	     abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
+    {
+      params->closest_wp_name = name;
+      params->closest_wp = wp;
+      params->closest_x = x;
+      params->closest_y = y;
+    }
 }
 
 static void track_search_closest_tp ( gchar *name, VikTrack *t, TPSearchParams *params )
