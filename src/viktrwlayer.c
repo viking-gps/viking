@@ -241,6 +241,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] );
 static void trw_layer_edit_trackpoint ( gpointer pass_along[6] );
+static void trw_layer_show_picture ( gpointer pass_along[6] );
 
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
@@ -3437,10 +3438,31 @@ gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, 
 	  item = gtk_menu_item_new ();
 	  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
 	  gtk_widget_show ( item );
+	  separator_created = TRUE;
 	}
 
         item = gtk_menu_item_new_with_mnemonic ( _("_Visit Geocache Webpage") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_gc_webpage), pass_along );
+        gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+        gtk_widget_show ( item );
+      }
+
+      VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(l)->waypoints, sublayer );
+
+      if ( wp && wp->image )
+      {
+	if ( !separator_created ) {
+	  item = gtk_menu_item_new ();
+	  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+	  gtk_widget_show ( item );
+	  separator_created = TRUE;
+	}
+
+	// Set up image paramater
+	pass_along[5] = wp->image;
+
+        item = gtk_menu_item_new_with_mnemonic ( _("_Show Picture...") );
+        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_show_picture), pass_along );
         gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
         gtk_widget_show ( item );
       }
@@ -4845,6 +4867,25 @@ static void tool_show_picture_wp ( char *name, VikWaypoint *wp, gpointer params[
   }
 }
 
+static void trw_layer_show_picture ( gpointer pass_along[6] )
+{
+  /* thanks to the Gaim people for showing me ShellExecute and g_spawn_command_line_async */
+#ifdef WINDOWS
+  ShellExecute(NULL, NULL, (char *) pass_along[2], NULL, ".\\", 0);
+#else /* WINDOWS */
+  GError *err = NULL;
+  gchar *quoted_file = g_shell_quote ( (gchar *) pass_along[5] );
+  gchar *cmd = g_strdup_printf ( "eog %s", quoted_file );
+  g_free ( quoted_file );
+  if ( ! g_spawn_command_line_async ( cmd, &err ) )
+    {
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER( pass_along[0]), _("Could not launch eog to open file.") );
+      g_error_free ( err );
+    }
+  g_free ( cmd );
+#endif /* WINDOWS */
+}
+
 static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   gpointer params[3] = { vvp, event, NULL };
@@ -4853,21 +4894,10 @@ static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *even
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) tool_show_picture_wp, params );
   if ( params[2] )
   {
-    /* thanks to the Gaim people for showing me ShellExecute and g_spawn_command_line_async */
-#ifdef WINDOWS
-    ShellExecute(NULL, NULL, (char *) params[2], NULL, ".\\", 0);
-#else /* WINDOWS */
-    GError *err = NULL;
-    gchar *quoted_file = g_shell_quote ( (gchar *) params[2] );
-    gchar *cmd = g_strdup_printf ( "eog %s", quoted_file );
-    g_free ( quoted_file );
-    if ( ! g_spawn_command_line_async ( cmd, &err ) )
-    {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch eog to open file.") );
-      g_error_free ( err );
-    }
-    g_free ( cmd );
-#endif /* WINDOWS */
+    static gpointer pass_along[6];
+    pass_along[0] = vtl;
+    pass_along[5] = params[2];
+    trw_layer_show_picture ( pass_along );
     return TRUE; /* found a match */
   }
   else
