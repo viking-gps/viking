@@ -2175,6 +2175,11 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
   gchar *returned_name;
   gboolean updated;
   wp->coord = *def_coord;
+  
+  // Attempt to auto set height if DEM data is available
+  gint16 elev = a_dems_get_elev_by_coord ( &(wp->coord), VIK_DEM_INTERPOL_BEST );
+  if ( elev != VIK_DEM_INVALID_ELEVATION )
+    wp->altitude = (gdouble)elev;
 
   if ( ( returned_name = a_dialog_waypoint ( w, default_name, wp, vik_trw_layer_get_waypoints ( vtl ), vtl->coord_mode, TRUE, &updated ) ) )
   {
