@@ -205,6 +205,9 @@ struct _VikMapsLayer {
   GtkMenu *dl_right_click_menu;
   VikCoord redownload_ul, redownload_br; /* right click menu only */
   VikViewport *redownload_vvp;
+
+  gboolean license_notice_shown; // FALSE for new maps only, otherwise
+                                 // TRUE for saved maps & other layer changes as we don't need to show it again
 };
 
 enum { REDOWNLOAD_NONE = 0,    /* download only missing maps */
@@ -449,6 +452,10 @@ static guint map_uniq_id_to_index ( guint uniq_id )
 
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation )
 {
+  // When loading from a file don't need the license reminder
+  if ( is_file_operation )
+    vml->license_notice_shown = TRUE;
+
   switch ( id )
   {
     case PARAM_CACHE_DIR: maps_layer_set_cache_dir ( vml, data.s ); break;
@@ -504,6 +511,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   vml->last_ympp = 0.0;
 
   vml->dl_right_click_menu = NULL;
+  vml->license_notice_shown = FALSE;
 
   return vml;
 }
@@ -539,8 +547,11 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
     }
 
     if (vik_map_source_get_license (map) != NULL) {
-      a_dialog_license (VIK_GTK_WINDOW_FROM_WIDGET(vp), vik_map_source_get_label (map),
-                        vik_map_source_get_license (map), vik_map_source_get_license_url (map) );
+      if ( ! vml->license_notice_shown ) {
+	a_dialog_license (VIK_GTK_WINDOW_FROM_WIDGET(vp), vik_map_source_get_label (map),
+			  vik_map_source_get_license (map), vik_map_source_get_license_url (map) );
+	vml->license_notice_shown = TRUE;
+      }
     }
   }
 }
