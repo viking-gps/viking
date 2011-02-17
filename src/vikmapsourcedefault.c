@@ -402,7 +402,7 @@ _download_handle_init ( VikMapSource *self )
 static void
 _download_handle_cleanup ( VikMapSource *self, void *handle )
 {
-   return a_download_handle_cleanup ( handle );
+   a_download_handle_cleanup ( handle );
 }
 
 gchar *

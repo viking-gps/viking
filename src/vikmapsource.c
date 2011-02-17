@@ -218,7 +218,7 @@ vik_map_source_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikC
 
 	g_return_if_fail (klass->mapcoord_to_center_coord != NULL);
 
-	return (*klass->mapcoord_to_center_coord)(self, src, dest);
+	(*klass->mapcoord_to_center_coord)(self, src, dest);
 }
 
 int
