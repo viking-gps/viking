@@ -178,7 +178,7 @@ static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len
 
 static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikGeorefLayer *rv = georef_layer_new ( vvp );
+  VikGeorefLayer *rv = georef_layer_new ();
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
   if (rv->image) {
     georef_layer_load_image ( rv );

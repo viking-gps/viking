@@ -141,7 +141,7 @@ static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len )
 
 static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikCoordLayer *rv = vik_coord_layer_new ( vvp );
+  VikCoordLayer *rv = vik_coord_layer_new ();
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
   return rv;
 }

@@ -55,7 +55,7 @@ struct _VikTrwLayerTpwinClass
 
 GType vik_trw_layer_tpwin_get_type ();
 
-VikTrwLayerTpwin *vik_trw_layer_tpwin_new ();
+VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent );
 void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin );
 void vik_trw_layer_tpwin_disable_join ( VikTrwLayerTpwin *tpwin );
 void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *track_name );
