@@ -4371,7 +4371,10 @@ static void create_thumbnails_thread ( GSList *pics, gpointer threaddata )
   while ( pics )
   {
     a_thumbnails_create ( (gchar *) pics->data );
-    a_background_thread_progress ( threaddata, ((gdouble) ++done) / total );
+    int result = a_background_thread_progress ( threaddata, ((gdouble) ++done) / total );
+    if ( result != 0 )
+      return -1; /* Abort thread */
+
     pics = pics->next;
   }
 }
