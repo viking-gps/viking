@@ -78,7 +78,8 @@ static void thread_die ( gpointer args[6] )
 {
   vik_thr_free_func userdata_free_func = args[3];
 
-  userdata_free_func ( args[2] );
+  if ( userdata_free_func != NULL )
+    userdata_free_func ( args[2] );
 
   if ( GPOINTER_TO_INT(args[6]) )
   {
