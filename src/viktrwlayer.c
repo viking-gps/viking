@@ -4446,7 +4446,7 @@ static void image_wp_make_list ( char *name, VikWaypoint *wp, GSList **pics )
     *pics = g_slist_append ( *pics, (gpointer) g_strdup ( wp->image ) );
 }
 
-static void create_thumbnails_thread ( GSList *pics, gpointer threaddata )
+static int create_thumbnails_thread ( GSList *pics, gpointer threaddata )
 {
   guint total = g_slist_length(pics), done = 0;
   while ( pics )
@@ -4458,6 +4458,7 @@ static void create_thumbnails_thread ( GSList *pics, gpointer threaddata )
 
     pics = pics->next;
   }
+  return 0;
 }
 
 static void free_pics_slist ( GSList *pics )
