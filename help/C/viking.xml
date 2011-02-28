@@ -482,6 +482,13 @@ taken over a long time.
 </para>
 </section>
 
+<section><title>Split By Number of Points</title>
+<para>
+Version1.2+: This operation will split a single track into segments by the number of points specified.
+This can be useful with devices which may have limits on the number of points it supports.
+</para>
+</section>
+
 <section><title>Apply DEM data</title>
 <para>
 If any DEM data is loaded, this will apply the DEM data to give the track elevation data.
