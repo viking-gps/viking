@@ -5195,7 +5195,7 @@ static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] )
   VikTrack *tr = (VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
   VikViewport *vvp = vik_window_viewport((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)));
 
-  GList *vmls = vik_layers_panel_get_all_layers_of_type(vlp, VIK_LAYER_MAPS);
+  GList *vmls = vik_layers_panel_get_all_layers_of_type(vlp, VIK_LAYER_MAPS, TRUE); // Includes hidden map layer types
   int num_maps = g_list_length(vmls);
 
   if (!num_maps) {

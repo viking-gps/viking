@@ -420,36 +420,45 @@ VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer 
   return NULL;
 }
 
-GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, gint type)
+GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, gint type, gboolean include_invisible)
 {
   GList *l = layers;
   GList *children = val->children;
   VikLayer *vl;
   if (!children)
     return layers;
+
+  // Where appropriate *don't* include non-visible layers
   while (children) {
     vl = VIK_LAYER(children->data);
-    if (vl->type == VIK_LAYER_AGGREGATE)
-      l = vik_aggregate_layer_get_all_layers_of_type(VIK_AGGREGATE_LAYER(children->data), l, type); 
-    else if (vl->type == type)
-      l = g_list_prepend(l, children->data); /* now in top down order */
+    if (vl->type == VIK_LAYER_AGGREGATE ) {
+      // Don't even consider invisible aggregrates, unless told to
+      if (vl->visible || include_invisible)
+	l = vik_aggregate_layer_get_all_layers_of_type(VIK_AGGREGATE_LAYER(children->data), l, type, include_invisible);
+    }
+    else if (vl->type == type) {
+      if (vl->visible || include_invisible)
+	l = g_list_prepend(l, children->data); /* now in top down order */
+    }
     else if (type == VIK_LAYER_TRW) {
       /* GPS layers contain TRW layers. cf with usage in file.c */
       if (VIK_LAYER(children->data)->type == VIK_LAYER_GPS) {
-	if (!vik_gps_layer_is_empty(VIK_GPS_LAYER(children->data))) {
-	  /*
-	    can not use g_list_concat due to wrong copy method - crashes if used a couple times !!
-	    l = g_list_concat (l, vik_gps_layer_get_children (VIK_GPS_LAYER(children->data)));
-	  */
-	  /* create owm copy method instead :( */
-	  GList *gps_trw_layers = (GList *)vik_gps_layer_get_children (VIK_GPS_LAYER(children->data));
-	  int n_layers = g_list_length (gps_trw_layers);
-	  int layer = 0;
-	  for ( layer = 0; layer < n_layers; layer++) {
-	    l = g_list_prepend(l, gps_trw_layers->data);
-	    gps_trw_layers = gps_trw_layers->next;
+	if (VIK_LAYER(children->data)->visible || include_invisible) {
+	  if (!vik_gps_layer_is_empty(VIK_GPS_LAYER(children->data))) {
+	    /*
+	      can not use g_list_concat due to wrong copy method - crashes if used a couple times !!
+	      l = g_list_concat (l, vik_gps_layer_get_children (VIK_GPS_LAYER(children->data)));
+	    */
+	    /* create own copy method instead :( */
+	    GList *gps_trw_layers = (GList *)vik_gps_layer_get_children (VIK_GPS_LAYER(children->data));
+	    int n_layers = g_list_length (gps_trw_layers);
+	    int layer = 0;
+	    for ( layer = 0; layer < n_layers; layer++) {
+	      l = g_list_prepend(l, gps_trw_layers->data);
+	      gps_trw_layers = gps_trw_layers->next;
+	    }
+	    g_list_free(gps_trw_layers);
 	  }
-	  g_list_free(gps_trw_layers);
 	}
       }
     }

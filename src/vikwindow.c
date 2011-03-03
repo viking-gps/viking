@@ -1136,7 +1136,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
   if ( event->button == 1 ) {
     /* Enable click to apply callback to potentially all track/waypoint layers */
     /* Useful as we can find things that aren't necessarily in the currently selected layer */
-    GList* gl = vik_layers_panel_get_all_layers_of_type ( t->vw->viking_vlp, VIK_LAYER_TRW );
+    GList* gl = vik_layers_panel_get_all_layers_of_type ( t->vw->viking_vlp, VIK_LAYER_TRW, FALSE ); // Don't get invisible layers
     clicker ck;
     ck.cont = TRUE;
     ck.vvp = t->vw->viking_vvp;

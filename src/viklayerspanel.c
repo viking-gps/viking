@@ -668,11 +668,11 @@ VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, gint type )
     return rv;
 }
 
-GList *vik_layers_panel_get_all_layers_of_type(VikLayersPanel *vlp, gint type)
+GList *vik_layers_panel_get_all_layers_of_type(VikLayersPanel *vlp, gint type, gboolean include_invisible)
 {
   GList *layers = NULL;
 
-  return (vik_aggregate_layer_get_all_layers_of_type ( vlp->toplayer, layers, type ));
+  return (vik_aggregate_layer_get_all_layers_of_type ( vlp->toplayer, layers, type, include_invisible));
 }
 
 VikAggregateLayer *vik_layers_panel_get_top_layer ( VikLayersPanel *vlp )

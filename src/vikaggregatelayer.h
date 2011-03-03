@@ -61,7 +61,7 @@ gboolean vik_aggregate_layer_load_layers ( VikAggregateLayer *val, FILE *f, gpoi
 gboolean vik_aggregate_layer_is_empty ( VikAggregateLayer *val );
 
 const GList *vik_aggregate_layer_get_children ( VikAggregateLayer *val );
-GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, gint type);
+GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, gint type, gboolean include_invisible);
 
 
 #endif
