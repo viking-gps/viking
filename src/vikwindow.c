@@ -1199,12 +1199,16 @@ static void menu_properties_cb ( GtkAction *a, VikWindow *vw )
 
 static void help_help_cb ( GtkAction *a, VikWindow *vw )
 {
+#ifdef WINDOWS
+  ShellExecute(NULL, "open", ""PACKAGE".pdf", NULL, NULL, SW_SHOWNORMAL);
+#else /* WINDOWS */
 #if GTK_CHECK_VERSION (2, 14, 0)
   gchar *uri;
   uri = g_strdup_printf("ghelp:%s", PACKAGE);
   gtk_show_uri(NULL, uri, GDK_CURRENT_TIME, NULL);
   g_free(uri);
 #endif
+#endif /* WINDOWS */
 }
 
 static void help_about_cb ( GtkAction *a, VikWindow *vw )
