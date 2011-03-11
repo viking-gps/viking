@@ -348,9 +348,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_wpt_sym: {
-       gchar *tmp_lower = g_utf8_strdown(c_cdata->str, -1); /* for things like <type>Geocache</type> */
-       vik_waypoint_set_symbol ( c_wp, tmp_lower );
-       g_free ( tmp_lower );
+       vik_waypoint_set_symbol ( c_wp, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
        break;
        }

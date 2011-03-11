@@ -88,13 +88,18 @@ void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image)
 
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname)
 {
+  const gchar *hashed_symname;
+
   if ( wp->symbol )
     g_free ( wp->symbol );
 
   // NB symbol_pixbuf is just a reference, so no need to free it
 
   if ( symname && symname[0] != '\0' ) {
-    wp->symbol = g_strdup(symname);
+    hashed_symname = a_get_hashed_sym ( symname );
+    if ( hashed_symname )
+      symname = hashed_symname;
+    wp->symbol = g_strdup ( symname );
     wp->symbol_pixbuf = a_get_wp_sym ( wp->symbol );
   }
   else {
