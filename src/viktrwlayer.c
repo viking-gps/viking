@@ -4447,28 +4447,42 @@ static void image_wp_make_list ( char *name, VikWaypoint *wp, GSList **pics )
     *pics = g_slist_append ( *pics, (gpointer) g_strdup ( wp->image ) );
 }
 
-static int create_thumbnails_thread ( GSList *pics, gpointer threaddata )
+/* Structure for thumbnail creating data used in the background thread */
+typedef struct {
+  VikTrwLayer *vtl; // Layer needed for redrawing
+  GSList *pics;     // Image list
+} thumbnail_create_thread_data;
+
+static int create_thumbnails_thread ( thumbnail_create_thread_data *tctd, gpointer threaddata )
 {
-  guint total = g_slist_length(pics), done = 0;
-  while ( pics )
+  guint total = g_slist_length(tctd->pics), done = 0;
+  while ( tctd->pics )
   {
-    a_thumbnails_create ( (gchar *) pics->data );
+    a_thumbnails_create ( (gchar *) tctd->pics->data );
     int result = a_background_thread_progress ( threaddata, ((gdouble) ++done) / total );
     if ( result != 0 )
       return -1; /* Abort thread */
 
-    pics = pics->next;
+    tctd->pics = tctd->pics->next;
   }
+
+  // Redraw to show the thumbnails as they are now created
+  gdk_threads_enter();
+  if ( IS_VIK_LAYER(tctd->vtl) )
+    vik_layer_emit_update ( VIK_LAYER(tctd->vtl) );
+  gdk_threads_leave();
+
   return 0;
 }
 
-static void free_pics_slist ( GSList *pics )
+static void thumbnail_create_thread_free ( thumbnail_create_thread_data *tctd )
 {
-  while ( pics )
+  while ( tctd->pics )
   {
-    g_free ( pics->data );
-    pics = g_slist_delete_link ( pics, pics );
+    g_free ( tctd->pics->data );
+    tctd->pics = g_slist_delete_link ( tctd->pics, tctd->pics );
   }
+  g_free ( tctd );
 }
 
 static void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
@@ -4481,7 +4495,16 @@ static void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
     {
       gint len = g_slist_length ( pics );
       gchar *tmp = g_strdup_printf ( _("Creating %d Image Thumbnails..."), len );
-      a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vtl), tmp, (vik_thr_func) create_thumbnails_thread, pics, (vik_thr_free_func) free_pics_slist, NULL, len );
+      thumbnail_create_thread_data *tctd = g_malloc ( sizeof(thumbnail_create_thread_data) );
+      tctd->vtl = vtl;
+      tctd->pics = pics;
+      a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			    tmp,
+			    (vik_thr_func) create_thumbnails_thread,
+			    tctd,
+			    (vik_thr_free_func) thumbnail_create_thread_free,
+			    NULL,
+			    len );
       g_free ( tmp );
     }
   }
