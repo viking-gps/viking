@@ -1,3 +1,16 @@
+This file is meant to summarize the Viking development policies.
+
+
+Clean commits
+=============
+
+Commits/patches should be as fine-grained as possible (and no finer). Every
+distinct change should be in its own commit and every commit should be a
+meaningful change on its own.
+
+Coding style
+============
+
 Naming:
 A "module" is a .c file.
 
@@ -7,7 +20,8 @@ Both are followed by the module name. Unless of course the function is static, i
 
 All (well, practically all) global constants and macros start with "VIK_" and then the module name.
 
-----
+Technical notices
+=================
 
 The layers panel holds all the layers. Layers connect to the layers panel via what I call "interfaces" which are really just a 
 structure of function pointers and pointers to other bits such as icons. viklayer.c switches between the layers like 
