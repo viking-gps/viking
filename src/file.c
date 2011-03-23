@@ -737,7 +737,11 @@ const gchar *a_get_viking_dir()
       g_critical("Unable to find a base directory");
 
     /* Build the name of the directory */
+#ifdef __APPLE__
+    viking_dir = g_build_filename(home, "/Library/Application Support/Viking", NULL);
+#else
     viking_dir = g_build_filename(home, ".viking", NULL);
+#endif
     if (g_file_test(viking_dir, G_FILE_TEST_EXISTS) == FALSE)
       g_mkdir(viking_dir, 0755);
   }

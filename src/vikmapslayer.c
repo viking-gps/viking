@@ -335,6 +335,10 @@ gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
 #include <io.h>
 #define GLOBAL_MAPS_DIR "C:\\VIKING-MAPS\\"
 #define LOCAL_MAPS_DIR "VIKING-MAPS"
+#elif defined __APPLE__
+#include <stdlib.h>
+#define GLOBAL_MAPS_DIR "/Library/cache/Viking/maps/"
+#define LOCAL_MAPS_DIR "/Library/Application Support/Viking/viking-maps"
 #else /* POSIX */
 #include <stdlib.h>
 #define GLOBAL_MAPS_DIR "/var/cache/maps/"
