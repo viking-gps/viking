@@ -16,6 +16,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+ /**
+  * SECTION:vikmapsource
+  * @short_description: the base class to describe map source
+  * 
+  * The #VikMapSource class is both the interface and the base class
+  * for the hierarchie of map source.
+  */
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif

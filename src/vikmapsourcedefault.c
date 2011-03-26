@@ -17,6 +17,15 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ /**
+  * SECTION:vikmapsourcedefault
+  * @short_description: the base class implementing most of generic features
+  * 
+  * The #VikMapSourceDefault class is the base class implementing most of
+  * generic feature, using properties or reducing complexity of some
+  * functions.
+  */
+
 #include "vikmapsourcedefault.h"
 #include "vikenumtypes.h"
 #include "download.h"

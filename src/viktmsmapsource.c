@@ -16,6 +16,22 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+ /**
+  * SECTION:viktmsmapsource
+  * @short_description: the class for TMS oriented map sources
+  * 
+  * The #VikTmsMapSource class handles TMS oriented map sources.
+  * 
+  * The tiles are in 'equirectangular'.
+  * http://en.wikipedia.org/wiki/Equirectangular_projection
+  * 
+  * Such service is also a type of TMS (Tile Map Service) as defined in
+  * OSGeo's wiki.
+  * http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
+  * Following this specification, the protocol handled by this class
+  * follows the global-geodetic profile.
+  */
   
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -18,6 +18,11 @@
  */
  
  /**
+  * SECTION:vikwmscmapsource
+  * @short_description: the class for WMS/WMS-C oriented map sources
+  * 
+  * The #VikWmscMapSource class handles WMS/WMS-C oriented map sources.
+  * 
   * http://wiki.osgeo.org/wiki/WMS_Tile_Caching
   */
  
