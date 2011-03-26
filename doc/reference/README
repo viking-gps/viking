@@ -1,0 +1,9 @@
+In order to activate reference documentation, you have to specify
+the following configure command line:
+$ ./configure --enable-gtk-doc --enable-gtk-doc-html
+
+Then, cd to doc/reference and launch make command.
+
+(This directory is not recursively make when launching make from top
+directory. So, this avoid spending time in reference documentation
+computation when not really needed.)

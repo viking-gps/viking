@@ -6,6 +6,7 @@ AC_INIT(viking, 1.1)
 AM_INIT_AUTOMAKE()
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
+GTK_DOC_CHECK(1.0)
 
 # Checks for programs.
 AC_PROG_CC
@@ -328,6 +329,7 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  help/Makefile
                  doc/Makefile
+                 doc/reference/Makefile
                  doc/examples/Makefile
                  doc/dev/Makefile])
 AC_OUTPUT([

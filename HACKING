@@ -23,6 +23,13 @@ All (well, practically all) global constants and macros start with "VIK_" and th
 Technical notices
 =================
 
+In order to activate reference documentation, you have to specify the following configure command line:
+$ ./configure --enable-gtk-doc --enable-gtk-doc-html
+
+Then, cd to doc/reference and launch make command.
+
+---
+
 The layers panel holds all the layers. Layers connect to the layers panel via what I call "interfaces" which are really just a 
 structure of function pointers and pointers to other bits such as icons. viklayer.c switches between the layers like 
 polymorhpism. Anything specific to the layer should (in theory) be found solely in that layer's source file.
