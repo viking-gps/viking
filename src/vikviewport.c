@@ -340,6 +340,12 @@ static void viewport_finalize ( GObject *gob )
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
+/**
+ * vik_viewport_clear:
+ * @vvp: self object
+ * 
+ * Clear the whole viewport.
+ */
 void vik_viewport_clear ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
@@ -347,6 +353,13 @@ void vik_viewport_clear ( VikViewport *vvp )
   vik_viewport_reset_copyrights ( vvp );
 }
 
+/**
+ * vik_viewport_set_draw_scale:
+ * @vvp: self
+ * @draw_scale: new value
+ * 
+ * Enable/Disable display of scale.
+ */
 void vik_viewport_set_draw_scale ( VikViewport *vvp, gboolean draw_scale )
 {
   vvp->draw_scale = draw_scale;
@@ -511,6 +524,13 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
   pl = NULL;		
 }
 
+/**
+ * vik_viewport_set_draw_centermark:
+ * @vvp: self object
+ * @draw_centermark: new value
+ * 
+ * Enable/Disable display of center mark.
+ */
 void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark )
 {
   vvp->draw_centermark = draw_centermark;
@@ -1179,6 +1199,13 @@ void vik_viewport_reset_copyrights ( VikViewport *vp )
   vp->copyrights = NULL;
 }
 
+/**
+ * vik_viewport_add_copyright:
+ * @vp: self object
+ * @copyright: new copyright to display
+ * 
+ * Add a copyright to display on viewport.
+ */
 void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright ) 
 {
   g_return_if_fail ( vp != NULL );
