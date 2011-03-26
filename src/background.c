@@ -124,6 +124,18 @@ static void thread_helper ( gpointer args[6], gpointer user_data )
   thread_die ( args );
 }
 
+/**
+ * a_background_thread:
+ * @parent:
+ * @message:
+ * @func: worker function
+ * @userdata:
+ * @userdata_free_func: free function for userdata
+ * @userdata_cancel_cleanup_func:
+ * @number_items:
+ *
+ * Function to enlist new background function.
+ */
 void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items )
 {
   GtkTreeIter *piter = g_malloc ( sizeof ( GtkTreeIter ) );
@@ -152,6 +164,11 @@ void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func
   g_thread_pool_push( thread_pool, args, NULL );
 }
 
+/**
+ * a_background_show_window:
+ *
+ * Display the background window.
+ */
 void a_background_show_window ()
 {
   gtk_widget_show_all ( bgwindow );
@@ -161,7 +178,7 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
 {
     gpointer *args;
 
-  g_debug(__FUNCTION__);
+    g_debug(__FUNCTION__);
 
     gtk_tree_model_get( GTK_TREE_MODEL(bgstore), piter, DATA_COLUMN, &args, -1 );
 
@@ -201,6 +218,11 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
     gtk_widget_hide ( bgwindow );
 }
 
+/**
+ * a_background_init:
+ *
+ * Initialize background feature.
+ */
 void a_background_init()
 {
   /* initialize thread pool */
@@ -253,6 +275,11 @@ void a_background_init()
 
 }
 
+/**
+ * a_background_uninit:
+ *
+ * Uninitialize background feature.
+ */
 void a_background_uninit()
 {
   /* wait until all running threads stop */
