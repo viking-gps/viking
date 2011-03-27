@@ -859,6 +859,10 @@ static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp )
     const gchar *copyright = vik_map_source_get_copyright ( MAPS_LAYER_NTH_TYPE(vml->maptype) );
     vik_viewport_add_copyright ( vvp, copyright );
 
+    /* Logo */
+    const GdkPixbuf *logo = vik_map_source_get_logo ( MAPS_LAYER_NTH_TYPE(vml->maptype) );
+    vik_viewport_add_logo ( vvp, logo );
+
     /* get corner coords */
     if ( vik_viewport_get_coord_mode ( vvp ) == VIK_COORD_UTM && ! vik_viewport_is_one_zone ( vvp ) ) {
       /* UTM multi-zone stuff by Kit Transue */

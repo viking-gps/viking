@@ -49,6 +49,8 @@
 
 static gdouble EASTING_OFFSET = 500000.0;
 
+static gint PAD = 10;
+
 static void viewport_class_init ( VikViewportClass *klass );
 static void viewport_init ( VikViewport *vvp );
 static void viewport_finalize ( GObject *gob );
@@ -84,6 +86,7 @@ struct _VikViewport {
   GdkGC *scale_bg_gc;
 
   GSList *copyrights;
+  GSList *logos;
 
   /* Wether or not display OSD info */
   gboolean draw_scale;
@@ -351,6 +354,7 @@ void vik_viewport_clear ( VikViewport *vvp )
   g_return_if_fail ( vvp != NULL );
   gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
   vik_viewport_reset_copyrights ( vvp );
+  vik_viewport_reset_logos ( vvp );
 }
 
 /**
@@ -377,7 +381,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
   if ( vvp->draw_scale ) {
     VikCoord left, right;
     gdouble unit, base, diff, old_unit, old_diff, ratio;
-    gint odd, len, PAD = 10, SCSIZE = 5, HEIGHT=10;
+    gint odd, len, SCSIZE = 5, HEIGHT=10;
     PangoFontDescription *pfd;
     PangoLayout *pl;
     gchar s[128];
@@ -486,7 +490,6 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
 
-  gint PAD = 10;
   PangoFontDescription *pfd;
   PangoLayout *pl;
   PangoRectangle ink_rect, logical_rect;
@@ -565,6 +568,26 @@ void vik_viewport_draw_centermark ( VikViewport *vvp )
   vik_viewport_draw_line(vvp, black_gc, center_x, center_y - len, center_x, center_y - gap);
   vik_viewport_draw_line(vvp, black_gc, center_x, center_y + gap, center_x, center_y + len);
   
+}
+
+void vik_viewport_draw_logo ( VikViewport *vvp )
+{
+  g_return_if_fail ( vvp != NULL );
+
+  /* compute copyrights string */
+  guint len = g_slist_length ( vvp->logos );
+  gint x = vvp->width - PAD;
+  gint y = PAD;
+  int i;
+  for (i = 0 ; i < len ; i++)
+  {
+    GdkPixbuf *logo = g_slist_nth_data ( vvp->logos, i );
+    gint width = gdk_pixbuf_get_width ( logo );
+    gint height = gdk_pixbuf_get_height ( logo );
+    vik_viewport_draw_pixbuf ( vvp, logo, 0, 0, x - width, y, width, height );
+    x = x - width - PAD;
+  }
+
 }
 
 void vik_viewport_sync ( VikViewport *vvp )
@@ -1216,6 +1239,27 @@ void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright )
     {
       gchar *duple = g_strdup ( copyright );
       vp->copyrights = g_slist_prepend ( vp->copyrights, duple );
+    }
+  }
+}
+
+void vik_viewport_reset_logos ( VikViewport *vp )
+{
+  g_return_if_fail ( vp != NULL );
+  /* do not free elem */
+  g_slist_free ( vp->logos );
+  vp->logos = NULL;
+}
+
+void vik_viewport_add_logo ( VikViewport *vp, const GdkPixbuf *logo )
+{
+  g_return_if_fail ( vp != NULL );
+  if ( logo )
+  {
+    GdkPixbuf *found = NULL; /* FIXME (GdkPixbuf*)g_slist_find_custom ( vp->logos, logo, (GCompareFunc)== ); */
+    if ( found == NULL )
+    {
+      vp->logos = g_slist_prepend ( vp->logos, (gpointer)logo );
     }
   }
 }

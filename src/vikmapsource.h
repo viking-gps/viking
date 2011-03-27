@@ -46,6 +46,7 @@ struct _VikMapSourceClass
 	const gchar *(* get_copyright) (VikMapSource * self);
 	const gchar *(* get_license) (VikMapSource * self);
 	const gchar *(* get_license_url) (VikMapSource * self);
+	const GdkPixbuf *(* get_logo) (VikMapSource * self);
 
 	guint8 (* get_uniq_id) (VikMapSource * self);
 	const gchar * (* get_label) (VikMapSource * self);
@@ -70,6 +71,7 @@ GType vik_map_source_get_type (void) G_GNUC_CONST;
 const gchar *vik_map_source_get_copyright (VikMapSource * self);
 const gchar *vik_map_source_get_license (VikMapSource * self);
 const gchar *vik_map_source_get_license_url (VikMapSource * self);
+const GdkPixbuf *vik_map_source_get_logo (VikMapSource * self);
 
 guint8 vik_map_source_get_uniq_id (VikMapSource * self);
 const gchar *vik_map_source_get_label (VikMapSource * self);

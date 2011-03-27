@@ -477,6 +477,7 @@ static void draw_redraw ( VikWindow *vw )
   vik_viewport_draw_scale ( vw->viking_vvp );
   vik_viewport_draw_copyright ( vw->viking_vvp );
   vik_viewport_draw_centermark ( vw->viking_vvp );
+  vik_viewport_draw_logo ( vw->viking_vvp );
 
   vik_viewport_set_half_drawn ( vw->viking_vvp, FALSE ); /* just in case. */
 }

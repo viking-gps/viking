@@ -64,6 +64,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->get_copyright = NULL;
 	klass->get_license = NULL;
 	klass->get_license_url = NULL;
+	klass->get_logo = NULL;
 	klass->get_uniq_id = NULL;
 	klass->get_label = NULL;
 	klass->get_tilesize_x = NULL;
@@ -123,6 +124,19 @@ vik_map_source_get_license_url (VikMapSource *self)
 	g_return_val_if_fail (klass->get_license_url != NULL, NULL);
 
 	return (*klass->get_license_url)(self);
+}
+
+const GdkPixbuf *
+vik_map_source_get_logo (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_logo != NULL, NULL);
+
+	return (*klass->get_logo)(self);
 }
 
 guint8

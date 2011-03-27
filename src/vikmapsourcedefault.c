@@ -33,6 +33,7 @@
 static const gchar *map_source_get_copyright (VikMapSource *self);
 static const gchar *map_source_get_license (VikMapSource *self);
 static const gchar *map_source_get_license_url (VikMapSource *self);
+static const GdkPixbuf *map_source_get_logo (VikMapSource *self);
 
 static guint8 map_source_get_uniq_id (VikMapSource *self);
 static const gchar *map_source_get_label (VikMapSource *self);
@@ -51,7 +52,8 @@ struct _VikMapSourceDefaultPrivate
 	gchar *copyright;
 	gchar *license;
 	gchar *license_url;
-	
+	GdkPixbuf *logo;
+
 	guint8 uniq_id;
 	gchar *label;
 	guint16 tilesize_x;
@@ -88,6 +90,7 @@ vik_map_source_default_init (VikMapSourceDefault *object)
   priv->copyright = NULL;
   priv->license = NULL;
   priv->license_url = NULL;
+  priv->logo = NULL;
 }
 
 static void
@@ -103,6 +106,8 @@ vik_map_source_default_finalize (GObject *object)
   g_free (priv->license);
   priv->license = NULL;
   g_free (priv->license_url);
+  priv->license_url = NULL;
+  g_free (priv->logo);
   priv->license_url = NULL;
 	
   G_OBJECT_CLASS (vik_map_source_default_parent_class)->finalize (object);
@@ -226,6 +231,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	parent_class->get_copyright =   map_source_get_copyright;
 	parent_class->get_license =     map_source_get_license;
 	parent_class->get_license_url = map_source_get_license_url;
+	parent_class->get_logo =        map_source_get_logo;
 	parent_class->get_uniq_id =    map_source_get_uniq_id;
 	parent_class->get_label =      map_source_get_label;
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
@@ -336,6 +342,16 @@ map_source_get_license_url (VikMapSource *self)
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->license_url;
+}
+
+static const GdkPixbuf *
+map_source_get_logo (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+
+	return priv->logo;
 }
 
 static guint8

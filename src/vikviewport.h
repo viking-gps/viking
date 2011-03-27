@@ -138,6 +138,9 @@ gint vik_viewport_get_height ( VikViewport *vvp );
 void vik_viewport_reset_copyrights ( VikViewport *vp );
 void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright );
 
+void vik_viewport_reset_logos ( VikViewport *vp );
+void vik_viewport_add_logo ( VikViewport *vp, const GdkPixbuf *logo );
+
 /* Viewport features */
 void vik_viewport_draw_scale ( VikViewport *vvp );
 void vik_viewport_set_draw_scale ( VikViewport *vvp, gboolean draw_scale );
@@ -146,6 +149,7 @@ void vik_viewport_draw_copyright ( VikViewport *vvp );
 void vik_viewport_draw_centermark ( VikViewport *vvp );
 void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark );
 gboolean vik_viewport_get_draw_centermark ( VikViewport *vvp );
+void vik_viewport_draw_logo ( VikViewport *vvp );
 
 /* Color/graphics context management */
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *color );
