@@ -128,7 +128,7 @@ vik_map_source_default_set_property (GObject      *object,
       priv->uniq_id = g_value_get_uint (value);
       break;
 
-	case PROP_LABEL:
+    case PROP_LABEL:
       g_free (priv->label);
       priv->label = g_strdup(g_value_get_string (value));
       break;
@@ -268,7 +268,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
                                0  /* minimum value */,
                                G_MAXUINT16 /* maximum value */,
                                0  /* default value */,
-                               G_PARAM_READWRITE);
+                               G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_TILESIZE_X, pspec);
 
 	pspec = g_param_spec_uint ("tilesize-y",
@@ -277,7 +277,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
                                0  /* minimum value */,
                                G_MAXUINT16 /* maximum value */,
                                0  /* default value */,
-                               G_PARAM_READWRITE);
+                               G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_TILESIZE_Y, pspec);
 
 	pspec = g_param_spec_enum("drawmode",
@@ -292,7 +292,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	                             "Copyright",
 	                             "The copyright of the map source",
 	                             NULL,
-	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	                             G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_COPYRIGHT, pspec);
 
 	pspec = g_param_spec_string ("license",

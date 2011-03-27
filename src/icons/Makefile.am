@@ -201,6 +201,7 @@ WAYPOINT_ICONS_LARGE += wp_zoo_large.png
 
 ICONS = \
   viking.png \
+  bing_maps.png \
   addtr_18.png \
   begintr_18.png \
   addwp_18.png \

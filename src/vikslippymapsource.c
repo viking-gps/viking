@@ -233,14 +233,14 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                             "Hostname",
 	                             "The hostname of the map server",
 	                             "<no-set>" /* default value */,
-	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	                             G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_HOSTNAME, pspec);
 
 	pspec = g_param_spec_string ("url",
 	                             "URL",
 	                             "The template of the tiles' URL",
 	                             "<no-set>" /* default value */,
-	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	                             G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_URL, pspec);
 
 	pspec = g_param_spec_string ("referer",
@@ -290,7 +290,8 @@ static const gdouble scale_neg_mpps[] = { 1.0/GZ(0), 1.0/GZ(1), 1.0/GZ(2), 1.0/G
 static const gint num_scales_neg = (sizeof(scale_neg_mpps) / sizeof(scale_neg_mpps[0]));
 
 #define ERROR_MARGIN 0.01
-static gint slippy_zoom ( gdouble mpp ) {
+gint
+vik_slippy_map_source_zoom_to_scale ( gdouble mpp ) {
   gint i;
   for ( i = 0; i < num_scales; i++ ) {
     if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN ) {
@@ -324,7 +325,7 @@ _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdo
   if ( xzoom != yzoom )
     return FALSE;
 
-  dest->scale = slippy_zoom ( xzoom );
+  dest->scale = vik_slippy_map_source_zoom_to_scale ( xzoom );
   if ( dest->scale == 255 )
     return FALSE;
 

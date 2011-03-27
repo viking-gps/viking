@@ -49,6 +49,8 @@ struct _VikSlippyMapSource
 GType vik_slippy_map_source_get_type (void) G_GNUC_CONST;
 
 VikSlippyMapSource * vik_slippy_map_source_new_with_id (guint8 id, const gchar *label, const gchar *hostname, const gchar *url);
+gint vik_slippy_map_source_zoom_to_scale ( gdouble mpp );
+
 
 G_END_DECLS
 

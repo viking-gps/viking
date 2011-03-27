@@ -122,6 +122,12 @@ libviking_a_SOURCES = \
 	print.c print.h \
 	preferences.c preferences.h
 
+if BING
+libviking_a_SOURCES += \
+	bingmapsource.c bingmapsource.h \
+	bing.c bing.h
+endif
+
 if GOOGLE
 libviking_a_SOURCES += \
 	google.c google.h

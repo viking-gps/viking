@@ -31,6 +31,7 @@
 
 #include "modules.h"
 
+#include "bing.h"
 #include "spotmaps.h"
 #include "google.h"
 #include "terraserver.h"
@@ -110,6 +111,9 @@ modules_load_config(void)
 
 void modules_init()
 {
+#ifdef VIK_CONFIG_BING
+  bing_init();
+#endif
 #ifdef VIK_CONFIG_GOOGLE 
   google_init();
 #endif

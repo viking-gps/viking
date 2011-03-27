@@ -115,6 +115,19 @@ case $ac_cv_enable_alpha_trw in
     ;;
 esac
 
+AC_ARG_ENABLE(bing, AC_HELP_STRING([--enable-bing],
+              [enable Bing stuff (default is enable)]),
+              [ac_cv_enable_bing=$enableval],
+              [ac_cv_enable_bing=yes])
+AC_CACHE_CHECK([whether to enable Bing stuff],
+               [ac_cv_enable_bing], [ac_cv_enable_bing=yes])
+case $ac_cv_enable_bing in
+  yes)
+    AC_DEFINE(VIK_CONFIG_BING, [], [BING STUFF])
+    ;;
+esac
+AM_CONDITIONAL([BING], [test x$ac_cv_enable_bing = xyes])
+
 AC_ARG_ENABLE(google, AC_HELP_STRING([--enable-google],
               [enable Google stuff (default is enable)]),
               [ac_cv_enable_google=$enableval],
@@ -342,6 +355,7 @@ echo "==========================================="
 echo "$PACKAGE $VERSION"
 echo "-------------------------------------------"
 echo "Alphabetized track & waypoints   : $ac_cv_enable_alpha_trw"
+echo "Bing Maps                        : $ac_cv_enable_bing"
 echo "Google Maps                      : $ac_cv_enable_google"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 echo "Expedia Maps                     : $ac_cv_enable_expedia"
