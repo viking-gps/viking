@@ -856,8 +856,10 @@ static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp )
     VikCoord ul, br;
 
     /* Copyright */
-    const gchar *copyright = vik_map_source_get_copyright ( MAPS_LAYER_NTH_TYPE(vml->maptype) );
-    vik_viewport_add_copyright ( vvp, copyright );
+    gdouble level = vik_viewport_get_zoom ( vvp );
+    LatLonBBox bbox;
+    vik_viewport_get_min_max_lat_lon ( vvp, &bbox.south, &bbox.north, &bbox.west, &bbox.east );
+    vik_map_source_get_copyright ( MAPS_LAYER_NTH_TYPE(vml->maptype), bbox, level, vik_viewport_add_copyright, vvp );
 
     /* Logo */
     const GdkPixbuf *logo = vik_map_source_get_logo ( MAPS_LAYER_NTH_TYPE(vml->maptype) );

@@ -47,6 +47,7 @@ ENUM_H_FILES = \
 	vikviewport.h
 
 libviking_a_SOURCES = \
+	bbox.h \
 	modules.h modules.c \
 	curl_download.c curl_download.h \
 	menu.xml.h \
