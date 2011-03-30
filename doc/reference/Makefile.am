@@ -68,7 +68,7 @@ expand_content_files=
 # e.g. INCLUDES=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 INCLUDES        = @PACKAGE_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
-GTKDOC_LIBS     =  -L$(top_srcdir)/src -lviking -L$(top_srcdir)/src/icons -licons @PACKAGE_LIBS@ @EXPAT_LIBS@ @LIBCURL@ 
+GTKDOC_LIBS     =  -L$(top_srcdir)/src -lviking -L$(top_srcdir)/src/icons -licons @PACKAGE_LIBS@ @EXPAT_LIBS@ @LIBCURL@ -lz
 if REALTIME_GPS_TRACKING
 GTKDOC_LIBS     += -lgps
 endif
