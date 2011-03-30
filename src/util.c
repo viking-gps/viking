@@ -58,6 +58,7 @@ void open_url(GtkWindow *parent, const gchar * url)
     "iceweasel", "seamonkey", "galeon", "mozilla",
     "opera", "konqueror", "netscape", "links -g",
     "chromium-browser", "chromium", "chrome",
+    "safari", "camino", "omniweb", "icab",
     NULL
   };
   gint i=0;
