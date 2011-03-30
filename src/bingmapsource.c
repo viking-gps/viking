@@ -56,7 +56,7 @@
 #define URL_ATTR_FMT "http://dev.virtualearth.net/REST/v1/Imagery/Metadata/Aerial/0,0?zl=1&mapVersion=v1&key=%s&include=ImageryProviders&output=xml"
 
 static gchar *_get_uri ( VikMapSourceDefault *self, MapCoord *src );
-static void _get_copyright (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(void*,const gchar*), void *data);
+static void _get_copyright (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 static const GdkPixbuf *_get_logo ( VikMapSource *self );
 static int _load_attributions ( BingMapSource *self );
 static void _async_load_attributions ( BingMapSource *self );
@@ -232,7 +232,7 @@ _get_logo( VikMapSource *self )
 }
 
 static void
-_get_copyright(VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(void*,const gchar*), void *data)
+_get_copyright(VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data)
 {
 	g_return_if_fail (BING_IS_MAP_SOURCE(self));
 	g_debug("%s: looking for %g %g %g %g at %g", __FUNCTION__, bbox.south, bbox.north, bbox.east, bbox.west, zoom);
