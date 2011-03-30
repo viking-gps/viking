@@ -942,7 +942,7 @@ void vik_trw_layer_free ( VikTrwLayer *trwlayer )
   trw_layer_free_track_gcs ( trwlayer );
 
   if ( trwlayer->wp_right_click_menu )
-    gtk_object_sink ( GTK_OBJECT(trwlayer->wp_right_click_menu) );
+    g_object_ref_sink ( G_OBJECT(trwlayer->wp_right_click_menu) );
 
   if ( trwlayer->wplabellayout != NULL)
     g_object_unref ( G_OBJECT ( trwlayer->wplabellayout ) );
@@ -3954,7 +3954,7 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
   if ( event->button == 3 && vtl->waypoint_rightclick )
   {
     if ( vtl->wp_right_click_menu )
-      gtk_object_sink ( GTK_OBJECT(vtl->wp_right_click_menu) );
+      g_object_ref_sink ( G_OBJECT(vtl->wp_right_click_menu) );
     vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
     vik_trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_name, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name  ) );
     gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );

@@ -521,7 +521,7 @@ static void maps_layer_free ( VikMapsLayer *vml )
   g_free ( vml->cache_dir );
   vml->cache_dir = NULL;
   if ( vml->dl_right_click_menu )
-    gtk_object_sink ( GTK_OBJECT(vml->dl_right_click_menu) );
+    g_object_ref_sink ( G_OBJECT(vml->dl_right_click_menu) );
   g_free(vml->last_center);
   vml->last_center = NULL;
 }
