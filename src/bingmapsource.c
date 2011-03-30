@@ -439,6 +439,7 @@ _emit_update ( gpointer data )
 	vik_layers_panel_emit_update ( VIK_LAYERS_PANEL (data) );
 	*/
 	gdk_threads_leave();
+	return 0;
 }
 
 static int
