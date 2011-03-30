@@ -30,7 +30,7 @@
 #include "vikenumtypes.h"
 #include "download.h"
 
-static void map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(void*,const gchar*), void *data);
+static void map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 static const gchar *map_source_get_license (VikMapSource *self);
 static const gchar *map_source_get_license_url (VikMapSource *self);
 static const GdkPixbuf *map_source_get_logo (VikMapSource *self);
@@ -315,7 +315,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 }
 
 static void
-map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(void*,const gchar*), void *data)
+map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data)
 {
 	/* Just ignore bbox and zoom level */
 	g_return_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self));

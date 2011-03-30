@@ -98,7 +98,7 @@ _supports_download_only_new (VikMapSource *self)
  * retreive copyright(s) for the corresponding bounding box and zoom level.
  */
 void
-vik_map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(void*,const gchar*), void *data)
+vik_map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data)
 {
 	VikMapSourceClass *klass;
 	g_return_if_fail (self != NULL);

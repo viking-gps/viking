@@ -44,7 +44,7 @@ struct _VikMapSourceClass
 	GObjectClass parent_class;
 
 	/* Legal info */
-	void (* get_copyright) (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(void*,const gchar*), void *data);
+	void (* get_copyright) (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 	const gchar *(* get_license) (VikMapSource * self);
 	const gchar *(* get_license_url) (VikMapSource * self);
 	const GdkPixbuf *(* get_logo) (VikMapSource * self);
@@ -69,7 +69,7 @@ struct _VikMapSource
 
 GType vik_map_source_get_type (void) G_GNUC_CONST;
 
-void vik_map_source_get_copyright (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(void*,const gchar*), void *data);
+void vik_map_source_get_copyright (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 const gchar *vik_map_source_get_license (VikMapSource * self);
 const gchar *vik_map_source_get_license_url (VikMapSource * self);
 const GdkPixbuf *vik_map_source_get_logo (VikMapSource * self);
