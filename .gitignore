@@ -41,6 +41,16 @@ gnome-doc-utils.m4
 doc/examples/Makefile
 doc/examples/Makefile.in
 
+# doc/reference/
+doc/reference/Makefile
+doc/reference/Makefile.in
+doc/reference/xml
+doc/reference/html*
+doc/reference/tmpl*
+doc/reference/viking*
+doc/reference/sgml*
+doc/reference/*stamp
+
 # /src/
 /src/.deps
 /src/Makefile.in
