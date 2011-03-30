@@ -57,6 +57,7 @@ void open_url(GtkWindow *parent, const gchar * url)
     "sensible-browser", "firefox", "epiphany",
     "iceweasel", "seamonkey", "galeon", "mozilla",
     "opera", "konqueror", "netscape", "links -g",
+    "chromium-browser", "chromium", "chrome",
     NULL
   };
   gint i=0;
