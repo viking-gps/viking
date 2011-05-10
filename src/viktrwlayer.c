@@ -1171,6 +1171,12 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
       {
         vik_viewport_coord_to_screen ( dp->vp, &(tp->coord), &x, &y );
 
+	/*
+	 * If points are the same in display coordinates, don't draw.
+	 */
+	if ( useoldvals && x == oldx && y == oldy )
+	  goto skip;
+
         if ( drawpoints && ! drawing_white_background )
         {
           if ( list->next ) {
@@ -1231,6 +1237,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           }
         }
 
+      skip:
         oldx = x;
         oldy = y;
         useoldvals = TRUE;
@@ -1247,15 +1254,27 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
               main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
             }
 
-            if ( drawing_white_background )
-              vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
-            else
-              vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
+	    /*
+	     * If points are the same in display coordinates, don't draw.
+	     */
+	    if ( x != oldx || y != oldy )
+	      {
+		if ( drawing_white_background )
+		  vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
+		else
+		  vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
+	      }
           }
           else 
           {
-            vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &x, &y );
-            draw_utm_skip_insignia ( dp->vp, main_gc, x, y );
+	    /*
+	     * If points are the same in display coordinates, don't draw.
+	     */
+	    if ( x != oldx && y != oldy )
+	      {
+		vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &x, &y );
+		draw_utm_skip_insignia ( dp->vp, main_gc, x, y );
+	      }
           }
         }
         useoldvals = FALSE;
