@@ -342,9 +342,11 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  help/Makefile
                  doc/Makefile
-                 doc/reference/Makefile
                  doc/examples/Makefile
                  doc/dev/Makefile])
+if test x$enable_gtk_doc = xyes; then
+AC_CONFIG_FILES([doc/reference/Makefile])
+fi
 AC_OUTPUT([
 	   viking.spec
 	   ])
