@@ -54,7 +54,7 @@ LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found]
 
 # gdk-pixbuf-csource
 AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
-if test $GDK_PIXBUF_CSOURCE != "yes"
+if test "x$GDK_PIXBUF_CSOURCE" != "xyes"
 then
   AC_MSG_ERROR([gdk-pixbuf-csource is needed but not found])
 fi
