@@ -2434,7 +2434,6 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
 #endif
       // Actual setting of visibility dependent on the waypoint
       vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
-      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter, TRUE );
       g_hash_table_insert ( vtl->waypoints_iters, name, iter );
     }
   }
@@ -2462,7 +2461,6 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 #endif
       // Actual setting of visibility dependent on the track
       vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
-      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, iter, TRUE );
       g_hash_table_insert ( vtl->tracks_iters, name, iter );
     }
   }
