@@ -3,6 +3,16 @@ Viking is a free/open source program to manage GPS data. You can import, plot an
 Website: http://viking.sf.net/
 
 
+Obtaining Viking
+================
+
+You can download tarball of latest released version at
+http://sourceforge.net/projects/viking/files
+
+You can also retrieve the latest development version on the official
+Git repo:
+  $ git clone git://viking.git.sourceforge.net/gitroot/viking/viking
+
 Installing Viking
 =================
 

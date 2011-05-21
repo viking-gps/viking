@@ -47,5 +47,13 @@
     </foaf:Person>
   </maintainer>
 
+  <download-page rdf:resource="http://sourceforge.net/projects/viking/files" />
+
+  <repository>
+    <GitRepository>
+      <location rdf:resource="git://viking.git.sourceforge.net/gitroot/viking/viking" />
+      <browse rdf:resource="http://viking.git.sourceforge.net/" />
+    </SVNRepository>
+  </repository>
 </Project>
 
