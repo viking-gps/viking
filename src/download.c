@@ -260,6 +260,106 @@ void a_try_decompress_file (gchar *name)
 #endif
 }
 
+#define VIKING_ETAG_XATTR "xattr::viking.etag"
+
+static gboolean get_etag_xattr(const char *fn, DownloadFileOptions *file_options)
+{
+  gboolean result = FALSE;
+  GFileInfo *fileinfo;
+  GFile *file;
+
+  file = g_file_new_for_path(fn);
+  fileinfo = g_file_query_info(file, VIKING_ETAG_XATTR, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+  if (fileinfo) {
+    const char *etag = g_file_info_get_attribute_string(fileinfo, VIKING_ETAG_XATTR);
+    if (etag) {
+      file_options->etag = g_strdup(etag);
+      result = !!file_options->etag;
+    }
+    g_object_unref(fileinfo);
+  }
+  g_object_unref(file);
+
+  if (result)
+    g_debug("%s: Get etag (xattr) from %s: %s", __FUNCTION__, fn, file_options->etag);
+
+  return result;
+}
+
+static gboolean get_etag_file(const char *fn, DownloadFileOptions *file_options)
+{
+  gboolean result = FALSE;
+  gchar *etag_filename;
+
+  etag_filename = g_strdup_printf("%s.etag", fn);
+  if (etag_filename) {
+    result = g_file_get_contents(etag_filename, &file_options->etag, NULL, NULL);
+    g_free(etag_filename);
+  }
+
+  if (result)
+    g_debug("%s: Get etag (file) from %s: %s", __FUNCTION__, fn, file_options->etag);
+
+  return result;
+}
+
+static void get_etag(const char *fn, DownloadFileOptions *file_options)
+{
+  /* first try to get etag from xattr, then fall back to plain file  */
+  if (!get_etag_xattr(fn, file_options) && !get_etag_file(fn, file_options)) {
+    g_debug("%s: Failed to get etag from %s", __FUNCTION__, fn);
+    return;
+  }
+
+  /* check if etag is short enough */
+  if (strlen(file_options->etag) > 100) {
+    g_free(file_options->etag);
+    file_options->etag = NULL;
+  }
+
+  /* TODO: should check that etag is a valid string */
+}
+
+static gboolean set_etag_xattr(const char *fn, DownloadFileOptions *file_options)
+{
+  gboolean result = FALSE;
+  GFile *file;
+
+  file = g_file_new_for_path(fn);
+  result = g_file_set_attribute_string(file, VIKING_ETAG_XATTR, file_options->new_etag, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+  g_object_unref(file);
+
+  if (result)
+    g_debug("%s: Set etag (xattr) on %s: %s", __FUNCTION__, fn, file_options->new_etag);
+
+  return result;
+}
+
+static gboolean set_etag_file(const char *fn, DownloadFileOptions *file_options)
+{
+  gboolean result = FALSE;
+  gchar *etag_filename;
+
+  etag_filename = g_strdup_printf("%s.etag", fn);
+  if (etag_filename) {
+    result = g_file_set_contents(etag_filename, file_options->new_etag, -1, NULL);
+    g_free(etag_filename);
+  }
+
+  if (result)
+    g_debug("%s: Set etag (file) on %s: %s", __FUNCTION__, fn, file_options->new_etag);
+
+  return result;
+}
+
+static void set_etag(const char *fn, const char *fntmp, DownloadFileOptions *file_options)
+{
+  /* first try to store etag in extended attribute, then fall back to plain file */
+  if (!set_etag_xattr(fntmp, file_options) && !set_etag_file(fn, file_options)) {
+    g_debug("%s: Failed to set etag on %s", __FUNCTION__, fn);
+  }
+}
+
 static DownloadResult_t download( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *options, gboolean ftp, void *handle)
 {
   FILE *f;
@@ -291,19 +391,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
       file_options.time_condition = file_time;
     }
     if (options != NULL && options->use_etag) {
-      gchar *etag_filename = g_strdup_printf("%s.etag", fn);
-      gsize etag_length = 0;
-      g_file_get_contents (etag_filename, &(file_options.etag), &etag_length, NULL);
-      g_free (etag_filename);
-      etag_filename = NULL;
-
-      /* check if etag is short enough */
-      if (etag_length > 100) {
-        g_free(file_options.etag);
-        file_options.etag = NULL;
-      }
-
-      /* TODO: should check that etag is a valid string */
+      get_etag(fn, &file_options);
     }
 
   } else {
@@ -371,10 +459,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   if ( options != NULL && options->use_etag ) {
     if (file_options.new_etag) {
       /* server returned an etag value */
-      gchar *etag_filename = g_strdup_printf("%s.etag", fn);
-      g_file_set_contents (etag_filename, file_options.new_etag, -1, NULL);
-      g_free (etag_filename);
-      etag_filename = NULL;
+      set_etag(fn, tmpfilename, &file_options);
     }
   }
 
