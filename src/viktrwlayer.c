@@ -3916,7 +3916,11 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   g_assert ( vtl->tpwin != NULL );
   if ( response == VIK_TRW_LAYER_TPWIN_CLOSE )
     trw_layer_cancel_current_tp ( vtl, TRUE );
-  else if ( response == VIK_TRW_LAYER_TPWIN_SPLIT && vtl->current_tpl->next && vtl->current_tpl->prev )
+
+  if ( vtl->current_tpl == NULL )
+    return;
+
+  if ( response == VIK_TRW_LAYER_TPWIN_SPLIT && vtl->current_tpl->next && vtl->current_tpl->prev )
   {
     gchar *name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, vtl->current_tp_track_name);
     if ( ( name = a_dialog_new_track ( GTK_WINDOW(vtl->tpwin), vtl->tracks, name ) ) )
