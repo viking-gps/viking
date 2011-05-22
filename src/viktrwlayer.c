@@ -47,6 +47,7 @@
 #include "osm-traces.h"
 #endif
 #include "acquire.h"
+#include "datasources.h"
 #include "util.h"
 
 #include "icons/icons.h"
@@ -256,6 +257,11 @@ static void trw_layer_delete_all_waypoints ( gpointer lav[2] );
 static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
+static void trw_layer_acquire_gps_cb ( gpointer lav[2] );
+static void trw_layer_acquire_google_cb ( gpointer lav[2] );
+#ifdef VIK_CONFIG_GEOCACHES
+static void trw_layer_acquire_geocache_cb ( gpointer lav[2] );
+#endif
 
 /* pop-up items */
 static void trw_layer_properties_item ( gpointer pass_along[6] );
@@ -2243,6 +2249,50 @@ static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] )
   a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
 }
 
+// 'Acquires' - Same as in File Menu -> Acquire - applies into the selected TRW Layer //
+
+/*
+ * Acquire into this TRW Layer straight from GPS Device
+ */
+static void trw_layer_acquire_gps_cb ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+
+  vik_datasource_gps_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
+  a_acquire ( vw, vlp, vvp, &vik_datasource_gps_interface );
+}
+
+/*
+ * Acquire into this TRW Layer from Google Directions
+ */
+static void trw_layer_acquire_google_cb ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+
+  a_acquire ( vw, vlp, vvp, &vik_datasource_google_interface );
+}
+
+#ifdef VIK_CONFIG_GEOCACHES
+/*
+ * Acquire into this TRW Layer from Geocaching.com
+ */
+static void trw_layer_acquire_geocache_cb ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+
+  a_acquire ( vw, vlp, vvp, &vik_datasource_gc_interface );
+}
+#endif
+
 static void trw_layer_new_wp ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
@@ -2377,6 +2427,29 @@ void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vl
   item = gtk_menu_item_new_with_mnemonic ( _("Within _Current View") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
+  gtk_widget_show ( item );
+#endif
+
+  GtkWidget *acquire_submenu = gtk_menu_new ();
+  item = gtk_menu_item_new_with_mnemonic ( _("Ac_quire") );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), acquire_submenu );
+  
+  item = gtk_menu_item_new_with_mnemonic ( _("From _GPS...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_gps_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("From G_oogle Directions...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_google_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show ( item );
+
+#ifdef VIK_CONFIG_GEOCACHES
+  item = gtk_menu_item_new_with_mnemonic ( _("From Geo_caching...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_geocache_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
 #endif
 

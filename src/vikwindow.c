@@ -1890,6 +1890,11 @@ static gboolean save_file ( GtkAction *a, VikWindow *vw )
 
 static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
 {
+  // Via the file menu, acquiring from a GPS makes a new layer
+  //  this has always been the way (not entirely sure if this was the real intention!)
+  //  thus maintain the behaviour ATM.
+  // Hence explicit setting here (as the value may be changed elsewhere)
+  vik_datasource_gps_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface );
 }
 
