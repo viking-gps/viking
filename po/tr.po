@@ -1,27 +1,26 @@
-# Danish translation for viking
-# Copyright (c) 2007 Rosetta Contributors and Canonical Ltd 2007
+# Turkish translation for viking
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the viking package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-04-20 21:11+0200\n"
-"PO-Revision-Date: 2010-11-17 23:14+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
-"Language-Team: Danish <da@li.org>\n"
+"PO-Revision-Date: 2011-05-09 14:15+0000\n"
+"Last-Translator: sezaiyeniay <Unknown>\n"
+"Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2011-05-11 16:00+0000\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Launchpad-Export-Date: 2011-05-11 16:01+0000\n"
 "X-Generator: Launchpad (build 13014)\n"
-"Language: da\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
-msgstr "Arbejder..."
+msgstr "Çalışılıyor..."
 
 #: ../src/acquire.c:141
 msgid "Error: acquisition failed."
@@ -29,36 +28,36 @@ msgstr ""
 
 #: ../src/acquire.c:149 ../src/vikgpslayer.c:1034
 msgid "Done."
-msgstr "Færdig."
+msgstr "Bitti."
 
 #: ../src/acquire.c:156
 msgid "No data."
-msgstr ""
+msgstr "Veri yok."
 
 #: ../src/acquire.c:353 ../src/vikgpslayer.c:1088
 msgid "Status: detecting gpsbabel"
-msgstr ""
+msgstr "Durum: gpsbabel tespit ediliyor"
 
 #: ../src/background.c:57
 #, c-format
 msgid "%d items"
-msgstr "%d emner"
+msgstr "%d parça"
 
 #: ../src/background.c:248
 msgid "Job"
-msgstr "Opgave"
+msgstr "Görev"
 
 #: ../src/background.c:252
 msgid "Progress"
-msgstr "Fremdrift"
+msgstr "İlerleme"
 
 #: ../src/background.c:268
 msgid "Viking Background Jobs"
-msgstr "Viking baggrundsjob"
+msgstr ""
 
 #: ../src/clipboard.c:85
 msgid "paste failed"
-msgstr ""
+msgstr "yapıştırma başarısız"
 
 #: ../src/clipboard.c:95
 msgid "wrong clipboard data size"
@@ -84,31 +83,31 @@ msgstr ""
 
 #: ../src/dialog.c:52
 msgid "Go to Lat/Lon"
-msgstr ""
+msgstr "Enlem/Boylama git"
 
 #: ../src/dialog.c:64 ../src/dialog.c:251
 msgid "Latitude:"
-msgstr "Breddegrad:"
+msgstr "Enlem:"
 
 #: ../src/dialog.c:70 ../src/dialog.c:256
 msgid "Longitude:"
-msgstr "Længdegrad:"
+msgstr "Boylam:"
 
 #: ../src/dialog.c:102
 msgid "Go to UTM"
-msgstr ""
+msgstr "UTM Git"
 
 #: ../src/dialog.c:115
 msgid "Northing:"
-msgstr ""
+msgstr "Kuzeye:"
 
 #: ../src/dialog.c:121
 msgid "Easting:"
-msgstr ""
+msgstr "Doğuya:"
 
 #: ../src/dialog.c:128
 msgid "Zone:"
-msgstr "Zone:"
+msgstr "Bölge:"
 
 #: ../src/dialog.c:131
 msgid "Letter:"
@@ -116,66 +115,66 @@ msgstr ""
 
 #: ../src/dialog.c:199
 msgid "Waypoint Properties"
-msgstr ""
+msgstr "Yol işareti Özellikleri"
 
 #: ../src/dialog.c:233
 msgid "Name:"
-msgstr "Navn:"
+msgstr "Adı:"
 
 #: ../src/dialog.c:261
 msgid "Altitude:"
-msgstr "Højde:"
+msgstr "Rakım:"
 
 #: ../src/dialog.c:266
 msgid "Comment:"
-msgstr "Kommentar:"
+msgstr "Yorum:"
 
 #: ../src/dialog.c:273
 msgid "Image:"
-msgstr "Billede:"
+msgstr "Görüntü:"
 
 #: ../src/dialog.c:278
 msgid "Symbol:"
-msgstr "Symbol:"
+msgstr "Sembol:"
 
 #: ../src/dialog.c:287
 msgid "(none)"
-msgstr "(ingen)"
+msgstr "(yok)"
 
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:348
 msgid "Please enter a name for the waypoint."
-msgstr ""
+msgstr "Yol işareti için bir ad girin."
 
 #: ../src/dialog.c:353
 #, c-format
 msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr ""
+msgstr "Yol işareti var. \"%s\" Üzerine yazmak ister misiniz?"
 
 #: ../src/dialog.c:522 ../src/geonamessearch.c:237
 msgid "Nothing was selected"
-msgstr ""
+msgstr "Hiçbir şey seçilmedi"
 
 #: ../src/dialog.c:530
 msgid "Add Track"
-msgstr "Tilføj spor"
+msgstr "İz ekle"
 
 #: ../src/dialog.c:538
 msgid "Track Name:"
-msgstr "Spornavn:"
+msgstr "İz Adı:"
 
 #: ../src/dialog.c:558
 msgid "Please enter a name for the track."
-msgstr "Indtast venligst et navn for sporet."
+msgstr "İz için bir ad girin"
 
 #: ../src/dialog.c:562
 #, c-format
 msgid "The track \"%s\" exists, do you want to overwrite it?"
-msgstr "Sporet \"%s\" eksisterer, ønsker du at overskrive det?"
+msgstr "İz zaten var. \"%s\" üzerine yazmak ister misiniz?"
 
 #: ../src/dialog.c:624
 msgid "Zoom Factors..."
-msgstr "Zoom faktor..."
+msgstr ""
 
 #: ../src/dialog.c:638
 msgid "Zoom factor (in meters per pixel):"
@@ -183,11 +182,11 @@ msgstr ""
 
 #: ../src/dialog.c:639
 msgid "X (easting): "
-msgstr ""
+msgstr "X (doğuya): "
 
 #: ../src/dialog.c:640
 msgid "Y (northing): "
-msgstr ""
+msgstr "Y (kuzeye): "
 
 #: ../src/dialog.c:645
 msgid "X and Y zoom factors must be equal"
@@ -195,23 +194,23 @@ msgstr ""
 
 #: ../src/dialog.c:700
 msgid "1 min"
-msgstr "1 min"
+msgstr "1 dk"
 
 #: ../src/dialog.c:701
 msgid "1 hour"
-msgstr "1 time"
+msgstr "1 saat"
 
 #: ../src/dialog.c:702
 msgid "1 day"
-msgstr "1 dag"
+msgstr "1 gün"
 
 #: ../src/dialog.c:703
 msgid "Custom (in minutes):"
-msgstr ""
+msgstr "Özel(dakika)"
 
 #: ../src/dialog.c:809
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr ""
+msgstr "GPS Veri ve Topo Analizi, Gezgin ve Yöneticisi"
 
 #: ../src/dialog.c:810
 msgid ""
@@ -232,7 +231,7 @@ msgstr ""
 
 #: ../src/dialog.c:838
 msgid "Translation is coordinated on http://launchpad.net/viking"
-msgstr ""
+msgstr "Çeviri  http: http://launchpad.net/viking/ den koordine edilir"
 
 #: ../src/dialog.c:846
 msgid "Download along track"
@@ -240,16 +239,16 @@ msgstr ""
 
 #: ../src/dialog.c:852
 msgid "Map type:"
-msgstr "Korttype:"
+msgstr "Harita türü:"
 
 #: ../src/dialog.c:857
 msgid "Zoom level:"
-msgstr "Zoom niveau:"
+msgstr "Yakınlaştırma seviyesi"
 
 #: ../src/dialog.c:897
 #, c-format
 msgid "The map data is licensed: %s."
-msgstr ""
+msgstr "Harita verileri lisanslanmıştır:  %s."
 
 #: ../src/dialog.c:900
 #, c-format
@@ -261,11 +260,11 @@ msgstr ""
 
 #: ../src/dialog.c:905
 msgid "Open license"
-msgstr ""
+msgstr "Lisansı aç"
 
 #: ../src/expedia.c:53
 msgid "Expedia Street Maps"
-msgstr "Expedia vejkort"
+msgstr "Expedia Sokak Haritaları"
 
 #: ../src/expedia.c:81
 msgid "Invalid expedia altitude"
@@ -287,11 +286,11 @@ msgstr ""
 
 #: ../src/geonamessearch.c:97
 msgid "Search"
-msgstr "Søgning"
+msgstr "Ara"
 
 #: ../src/geonamessearch.c:99
 msgid "No entries found!"
-msgstr ""
+msgstr "Hiçbir kayıt bulunamadı!"
 
 #: ../src/geonamessearch.c:263 ../src/googlesearch.c:120
 msgid "couldn't map temp file"
@@ -299,7 +298,7 @@ msgstr ""
 
 #: ../src/geonamessearch.c:404 ../src/vikgototool.c:250
 msgid "couldn't open temp file"
-msgstr "kunne ikke åbne midlertidig fil"
+msgstr "Geçici dosya açılamadı"
 
 #: ../src/globals.c:44
 msgid "Degree format:"
@@ -307,27 +306,27 @@ msgstr ""
 
 #: ../src/globals.c:48
 msgid "Distance units:"
-msgstr ""
+msgstr "Mesafe birimleri:"
 
 #: ../src/globals.c:52
 msgid "Speed units:"
-msgstr ""
+msgstr "Hız birimleri:"
 
 #: ../src/globals.c:56
 msgid "Height units:"
-msgstr ""
+msgstr "Yükseklik birimleri:"
 
 #: ../src/globals.c:60
 msgid "Use large waypoint icons:"
-msgstr ""
+msgstr "Yol işaretleri için büyük simge kullan:"
 
 #: ../src/globals.c:64
 msgid "Default latitude:"
-msgstr ""
+msgstr "Varsayılan enlem:"
 
 #: ../src/globals.c:67
 msgid "Default longitude:"
-msgstr ""
+msgstr "Varsayılan boylam:"
 
 #. Webtools
 #: ../src/google.c:36
@@ -336,19 +335,19 @@ msgstr "Google"
 
 #: ../src/datasource_gc.c:62
 msgid "Download Geocaches"
-msgstr "Download Geocashes"
+msgstr ""
 
 #: ../src/datasource_gc.c:63
 msgid "Geocaching.com Caches"
-msgstr ""
+msgstr "Geocaching.com Önbellekleri"
 
 #: ../src/datasource_gc.c:80
 msgid "geocaching.com username:"
-msgstr ""
+msgstr "geocaching.com kullanıcı adı:"
 
 #: ../src/datasource_gc.c:81
 msgid "geocaching.com password:"
-msgstr ""
+msgstr "geocaching.com parola:"
 
 #: ../src/datasource_gc.c:109
 msgid ""
@@ -369,19 +368,19 @@ msgstr ""
 
 #: ../src/datasource_google.c:76
 msgid "From:"
-msgstr "Fra:"
+msgstr "Nereden:"
 
 #: ../src/datasource_google.c:78
 msgid "To:"
-msgstr "Til:"
+msgstr "Nereye:"
 
 #: ../src/datasource_gps.c:55
 msgid "Acquire from GPS"
-msgstr "Hent fra GPS"
+msgstr "GPS den elde et"
 
 #: ../src/datasource_gps.c:56
 msgid "Acquired from GPS"
-msgstr "Hentet fra GPS"
+msgstr "GPS den elde edildi"
 
 #: ../src/datasource_gps.c:151
 #, c-format
@@ -405,25 +404,25 @@ msgstr[1] ""
 #: ../src/datasource_gps.c:237
 #, c-format
 msgid "Downloaded %d out of %d %s..."
-msgstr "Downloadet %d ud af %d %s..."
+msgstr ""
 
 #: ../src/datasource_gps.c:239
 #, c-format
 msgid "Downloaded %d %s."
-msgstr "Downloaded %d %s."
+msgstr "İndirilen  %d %s."
 
 #: ../src/datasource_gps.c:252 ../src/vikgpslayer.c:848
 #, c-format
 msgid "GPS Device: %s"
-msgstr "GPS udstyr: %s"
+msgstr "GPS Cihazı: %s"
 
 #: ../src/datasource_gps.c:341 ../src/vikgpslayer.c:152
 msgid "GPS Protocol:"
-msgstr "GPS protekol:"
+msgstr "GPS Protokolü:"
 
 #: ../src/datasource_gps.c:350 ../src/vikgpslayer.c:153
 msgid "Serial Port:"
-msgstr ""
+msgstr "Seri Port:"
 
 #: ../src/datasource_gps.c:371
 msgid ""
@@ -433,11 +432,11 @@ msgstr ""
 
 #: ../src/datasource_gps.c:392 ../src/vikgpslayer.c:1093
 msgid "GPS device: N/A"
-msgstr "GPS udstyr: N/A"
+msgstr "GPS cihazı: yok"
 
 #: ../src/dem.c:60 ../src/dem.c:74
 msgid "Invalid DEM"
-msgstr ""
+msgstr "Geçersiz DEM"
 
 #: ../src/dem.c:116
 msgid "Invalid DEM header"
@@ -459,7 +458,7 @@ msgstr ""
 #: ../src/download.c:233
 #, c-format
 msgid "Download error: %s"
-msgstr ""
+msgstr "İndirme hatası: %s"
 
 #: ../src/file.c:427 ../src/file.c:431
 #, c-format
@@ -476,19 +475,19 @@ msgstr ""
 
 #: ../src/osm-traces.c:75
 msgid "Public"
-msgstr "Offentlig"
+msgstr "Genel"
 
 #: ../src/osm-traces.c:76
 msgid "Private"
-msgstr ""
+msgstr "Özel"
 
 #: ../src/osm-traces.c:93
 msgid "OSM username:"
-msgstr ""
+msgstr "OSM kullanıcı adı:"
 
 #: ../src/osm-traces.c:94
 msgid "OSM password:"
-msgstr ""
+msgstr "OSM parola:"
 
 #: ../src/osm-traces.c:229
 #, c-format
@@ -508,7 +507,7 @@ msgstr ""
 #: ../src/osm-traces.c:264
 #, c-format
 msgid "failed to open temporary file: %s"
-msgstr "det mislykkedes at åbne midlertidig fil: %s"
+msgstr ""
 
 #: ../src/osm-traces.c:298
 #, c-format
@@ -517,21 +516,24 @@ msgstr ""
 
 #: ../src/osm-traces.c:310
 msgid "OSM upload"
-msgstr ""
+msgstr "OSM yükle"
 
 #: ../src/osm-traces.c:331
 msgid "Email:"
-msgstr "E-mail:"
+msgstr "E-posta:"
 
 #: ../src/osm-traces.c:342
 msgid ""
 "The email used as login\n"
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
+"Giriş e-posta\n"
+"<small>www.openstreetmap.org a giriş için kullandığınız e-posta adresini "
+"yazın.</small>"
 
 #: ../src/osm-traces.c:345
 msgid "Password:"
-msgstr "Adgangskode:"
+msgstr "Parola :"
 
 #: ../src/osm-traces.c:356
 msgid ""
@@ -539,10 +541,13 @@ msgid ""
 "<small>Enter the password you use to login into "
 "www.openstreetmap.org.</small>"
 msgstr ""
+"Giriş parola\n"
+"<small>www.openstreetmap.org a giriş için kullandığınız parolayı "
+"yazın.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
-msgstr "Filens navn:"
+msgstr "Dosya adı:"
 
 #: ../src/osm-traces.c:369
 msgid ""
@@ -553,7 +558,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:373
 msgid "Description:"
-msgstr "Beskrivelse:"
+msgstr "Açıklama:"
 
 #: ../src/osm-traces.c:378
 msgid "The description of the trace"
@@ -561,7 +566,7 @@ msgstr ""
 
 #: ../src/osm-traces.c:380
 msgid "Tags:"
-msgstr "Mærker:"
+msgstr "Etiketler:"
 
 #: ../src/osm-traces.c:385
 msgid "The tags associated to the trace"
@@ -570,35 +575,35 @@ msgstr ""
 #: ../src/osm-traces.c:418
 #, c-format
 msgid "Uploading %s to OSM"
-msgstr ""
+msgstr "OSM den %s  yükleniyor"
 
 #: ../src/mapcache.c:61
 msgid "Mapcache memory size (MB):"
-msgstr ""
+msgstr "Harita önbellek boyutu (MB):"
 
 #: ../src/print.c:53
 msgid "None"
-msgstr "Ingen"
+msgstr "Hiçbiri"
 
 #: ../src/print.c:54
 msgid "Horizontally"
-msgstr "Vandret"
+msgstr "Yatay olarak"
 
 #: ../src/print.c:55
 msgid "Vertically"
-msgstr "Lodret"
+msgstr "Dikey olarak"
 
 #: ../src/print.c:56
 msgid "Both"
-msgstr "Begge"
+msgstr "Her ikisi de"
 
 #: ../src/print.c:120
 msgid "Image Settings"
-msgstr "Billedindstillinger"
+msgstr "Görüntü Ayarları"
 
 #: ../src/print.c:550
 msgid "done"
-msgstr "færdig"
+msgstr "bitti"
 
 #. Page Size
 #: ../src/print.c:579
@@ -607,28 +612,28 @@ msgstr ""
 
 #: ../src/print.c:595
 msgid "C_enter:"
-msgstr "C_entrum:"
+msgstr "_Merkez:"
 
 #. ignore page margins
 #: ../src/print.c:613
 msgid "Ignore Page _Margins"
-msgstr ""
+msgstr "Sayfa _Kenarlarını Yoksay"
 
 #: ../src/print.c:632
 msgid "Image S_ize:"
-msgstr "B_illed størrelse:"
+msgstr "Resim B_oyutu"
 
 #: ../src/util.c:79
 msgid "Could not launch web browser."
-msgstr "Kunne ikke starte web browser."
+msgstr "Web tarayıcısı başlatılamadı"
 
 #: ../src/util.c:90
 msgid "Could not create new email."
-msgstr ""
+msgstr "Yeni e-posta yaratılamadı."
 
 #: ../src/vikcoordlayer.c:46
 msgid "Color:"
-msgstr "Farve:"
+msgstr "Renk :"
 
 #: ../src/vikcoordlayer.c:47
 msgid "Minutes Width:"
@@ -636,7 +641,7 @@ msgstr ""
 
 #: ../src/vikcoordlayer.c:48
 msgid "Line Thickness:"
-msgstr "Linjetykkelse:"
+msgstr ""
 
 #: ../src/datasource_bfilter.c:46
 msgid "Max number of points:"
@@ -672,31 +677,31 @@ msgstr ""
 
 #: ../src/main.c:121
 msgid "Enable debug output"
-msgstr ""
+msgstr "Hata ayıklama çıktısını etkinleştir"
 
 #: ../src/main.c:122
 msgid "Enable verbose output"
-msgstr ""
+msgstr "Detaylı çıktıyı etkinleştir"
 
 #: ../src/main.c:123
 msgid "Show version"
-msgstr ""
+msgstr "Sürümü göster"
 
 #: ../src/osm.c:107
 msgid "OSM (view)"
-msgstr ""
+msgstr "OSM (görünüm)"
 
 #: ../src/osm.c:111
 msgid "OSM (edit)"
-msgstr ""
+msgstr "OSM (düzenle)"
 
 #: ../src/osm.c:115
 msgid "OSM (render)"
-msgstr ""
+msgstr "OSM (tara)"
 
 #: ../src/preferences.c:287
 msgid "Preferences"
-msgstr ""
+msgstr "Tercihler"
 
 #: ../src/uibuilder.c:148
 msgid "Take care that this password will be stored clearly in a plain file."
@@ -704,7 +709,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:102
 msgid "Absolute height"
-msgstr ""
+msgstr "Mutlak yükseklik"
 
 #: ../src/vikdemlayer.c:103
 msgid "Height gradient"
@@ -712,11 +717,11 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:120
 msgid "DEM Files:"
-msgstr ""
+msgstr "DEM Dosyalar:"
 
 #: ../src/vikdemlayer.c:121
 msgid "Download Source:"
-msgstr "Download kilde:"
+msgstr "İndirme Kaynağı"
 
 #: ../src/vikdemlayer.c:122
 msgid "Min Elev Color:"
@@ -724,7 +729,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:123
 msgid "Type:"
-msgstr ""
+msgstr "Tür:"
 
 #: ../src/vikdemlayer.c:124
 msgid "Min Elev:"
@@ -745,7 +750,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:376
 msgid "DEM Loading"
-msgstr ""
+msgstr "DEM Yükleniyor"
 
 #: ../src/vikdemlayer.c:880
 #, c-format
@@ -759,27 +764,27 @@ msgstr ""
 #: ../src/vikdemlayer.c:1141
 #, c-format
 msgid "Downloading DEM %s"
-msgstr ""
+msgstr "DEM %s indiriliyor"
 
 #: ../src/vikfileentry.c:68
 msgid "Browse..."
-msgstr "Gennemse..."
+msgstr "Göz at..."
 
 #: ../src/vikfileentry.c:96
 msgid "Choose file"
-msgstr "Vælg fil"
+msgstr "Dosya seç"
 
 #: ../src/vikfilelist.c:47
 msgid "Choose file(s)"
-msgstr "Vælg fil(er)"
+msgstr "Dosya seçin"
 
 #: ../src/vikfilelist.c:126
 msgid "Add..."
-msgstr "Tilføj..."
+msgstr "Ekle..."
 
 #: ../src/vikfilelist.c:127
 msgid "Delete"
-msgstr "Slet"
+msgstr "Sil"
 
 #: ../src/vikgeoreflayer.c:69
 msgid "Georef Move Map"
@@ -792,7 +797,7 @@ msgstr ""
 #: ../src/vikgeoreflayer.c:320 ../src/vikmapslayer.c:635
 #, c-format
 msgid "Couldn't open image file: %s"
-msgstr "Kunne ikke åbne billedfil: %s"
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:350
 msgid "Unexpected end of file reading World file."
@@ -800,27 +805,27 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:366 ../src/vikgeoreflayer.c:411
 msgid "Choose World file"
-msgstr "Vælg World fil"
+msgstr "Dünya dosyası seçin"
 
 #: ../src/vikgeoreflayer.c:379
 msgid "The World file you requested could not be opened for reading."
-msgstr "Den World fil som du valgte kunne ikke åbnes og læses."
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:424
 msgid "The file you requested could not be opened for writing."
-msgstr "Den World fil som du valgte kunne ider ikke skives til."
+msgstr ""
 
 #: ../src/vikgeoreflayer.c:441 ../src/viklayer.c:478
 msgid "Layer Properties"
-msgstr "Lag-egenskaber"
+msgstr "Katman Özellikleri"
 
 #: ../src/vikgeoreflayer.c:463
 msgid "World File Parameters:"
-msgstr "World fil parametre:"
+msgstr "Dünya Dosya Parametreleri:"
 
 #: ../src/vikgeoreflayer.c:464
 msgid "Load From File..."
-msgstr "Indlæs fra fil..."
+msgstr "Dosyadan Yükle..."
 
 #: ../src/vikgeoreflayer.c:469
 msgid "Corner pixel easting:"
@@ -856,7 +861,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:485
 msgid "Map Image:"
-msgstr "Kort billed:"
+msgstr "Harita Görüntüsü:"
 
 #: ../src/vikgeoreflayer.c:592
 msgid "_Zoom to Fit Map"
@@ -864,7 +869,7 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:597
 msgid "_Goto Map Center"
-msgstr ""
+msgstr "_Harite Merkezine Git"
 
 #: ../src/vikgeoreflayer.c:602
 msgid "_Export to World File"
@@ -876,7 +881,7 @@ msgstr ""
 
 #: ../src/vikgoto.c:90 ../src/vikgoto.c:109
 msgid "goto"
-msgstr ""
+msgstr "git"
 
 #: ../src/vikgoto.c:92
 msgid "I don't know that place. Do you want another goto?"
@@ -884,11 +889,11 @@ msgstr ""
 
 #: ../src/vikgoto.c:111
 msgid "goto provider:"
-msgstr ""
+msgstr "sağlayıcıya git:"
 
 #: ../src/vikgoto.c:126
 msgid "Enter address or place name:"
-msgstr "Angiv adresse eller stedets navn:"
+msgstr "Adres veya yer adı girin:"
 
 #: ../src/vikgpslayer.c:156
 msgid "Recording tracks"
@@ -908,27 +913,27 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:160
 msgid "Gpsd Port:"
-msgstr "Gpsd port:"
+msgstr ""
 
 #: ../src/vikgpslayer.c:161
 msgid "Gpsd Retry Interval (seconds):"
-msgstr ""
+msgstr "Gpsd Yeniden Deneme Aralığı (saniye):"
 
 #: ../src/vikgpslayer.c:228 ../src/vikgpslayer.c:1078
 msgid "GPS Download"
-msgstr "GPS download"
+msgstr "GPS İndir"
 
 #: ../src/vikgpslayer.c:228 ../src/vikgpslayer.c:1078
 msgid "GPS Upload"
-msgstr "GPS upload"
+msgstr "GPS Yükle"
 
 #: ../src/vikgpslayer.c:230
 msgid "GPS Realtime Tracking"
-msgstr ""
+msgstr "GPS Gerçek zamanlı izleme"
 
 #: ../src/vikgpslayer.c:398
 msgid "Unknown GPS Protocol"
-msgstr "Ukendt GPS protekol"
+msgstr "Bilinmeyen GPS Protokolü"
 
 #: ../src/vikgpslayer.c:417
 msgid "Unknown serial port device"
@@ -937,7 +942,7 @@ msgstr ""
 #: ../src/vikgpslayer.c:483
 #, c-format
 msgid "%s: unknown parameter"
-msgstr "%s: ukendt parameter"
+msgstr "%s: bilinmeyen parametre"
 
 #: ../src/vikgpslayer.c:597
 msgid "_Upload to GPS"
@@ -1019,8 +1024,7 @@ msgstr[1] ""
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Yol işaretleri Yükleniyor %d"
 
 #: ../src/vikgpslayer.c:826
 #, c-format
@@ -1033,51 +1037,49 @@ msgstr[1] ""
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Yol işaretleri Yükleniyor %d"
 
 #: ../src/vikgpslayer.c:832
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Güzergah Yükleniyor %d"
 
 #: ../src/vikgpslayer.c:1029
 msgid "Error: couldn't find gpsbabel."
-msgstr ""
+msgstr "Hata: gpsbabel bulunamadı."
 
 #: ../src/viklayerspanel.c:57
 msgid "/C_ut"
-msgstr ""
+msgstr "/_Kes"
 
 #: ../src/viklayerspanel.c:58
 msgid "/_Copy"
-msgstr ""
+msgstr "/_Kopyala"
 
 #: ../src/viklayerspanel.c:59
 msgid "/_Paste"
-msgstr ""
+msgstr "/_Yapıştır"
 
 #: ../src/viklayerspanel.c:60
 msgid "/_Delete"
-msgstr "/_Slet"
+msgstr "/_Sil"
 
 #: ../src/viklayerspanel.c:61
 msgid "/New Layer"
-msgstr "/Nyt lag"
+msgstr "/Yeni Katman"
 
 #: ../src/viklayerspanel.c:150
 msgid "Top Layer"
-msgstr "Øverste lag"
+msgstr "Üst Katman"
 
 #: ../src/viklayerspanel.c:165
 msgid "Add new layer"
-msgstr ""
+msgstr "Yeni katman ekle"
 
 #: ../src/viklayerspanel.c:172
 msgid "Remove selected layer"
-msgstr ""
+msgstr "Seçilen katmanı kaldır"
 
 #: ../src/viklayerspanel.c:179
 msgid "Move selected layer up"
@@ -1089,11 +1091,11 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:193
 msgid "Cut selected layer"
-msgstr ""
+msgstr "Seçilen katmanı kes"
 
 #: ../src/viklayerspanel.c:200
 msgid "Copy selected layer"
-msgstr ""
+msgstr "Seçilen katmanı kopyala"
 
 #: ../src/viklayerspanel.c:207
 msgid "Paste layer below selected layer"
@@ -1105,7 +1107,7 @@ msgstr ""
 #: ../src/viklayerspanel.c:225 ../src/vikwindow.c:2412
 #, c-format
 msgid "New %s Layer"
-msgstr "Ny %s lag"
+msgstr "%s Yeni  katman"
 
 #: ../src/viklayerspanel.c:495
 msgid "Aggregate Layers have no settable properties."
@@ -1117,11 +1119,11 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:601
 msgid "You cannot delete the Top Layer."
-msgstr "Du kan ikke slette øverste lag"
+msgstr ""
 
 #: ../src/viklayerspanel.c:685
 msgid "Are you sure you wish to delete all layers?"
-msgstr "er du sikker på at du vil slette alle lag?"
+msgstr ""
 
 #. ******* MAPZOOMS ********
 #: ../src/vikmapslayer.c:91
@@ -1130,11 +1132,11 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:124
 msgid "Map Type:"
-msgstr "Kort type:"
+msgstr "Harita Türü:"
 
 #: ../src/vikmapslayer.c:125
 msgid "Maps Directory:"
-msgstr ""
+msgstr "Haritalar Dizini:"
 
 #: ../src/vikmapslayer.c:126
 msgid "Alpha:"
@@ -1142,31 +1144,31 @@ msgstr "Alfa:"
 
 #: ../src/vikmapslayer.c:127
 msgid "Autodownload maps:"
-msgstr "Autodownload kort:"
+msgstr "Haritaları otomatik indir:"
 
 #: ../src/vikmapslayer.c:128
 msgid "Zoom Level:"
-msgstr "Zoom niveau:"
+msgstr "Yakınlaştırma Seviyesi"
 
 #: ../src/vikmapslayer.c:134
 msgid "Maps Download"
-msgstr "Kort downloaded"
+msgstr "Harita İndir"
 
 #: ../src/vikmapslayer.c:140
 msgid "Map"
-msgstr "Kort"
+msgstr "Harita"
 
 #: ../src/vikmapslayer.c:220
 msgid "Default maplayer directory:"
-msgstr ""
+msgstr "Öntanımlı harita katman dizini:"
 
 #: ../src/vikmapslayer.c:464
 msgid "Unknown map type"
-msgstr "Ukendt korttype"
+msgstr "Bilinmeyen harita türü:"
 
 #: ../src/vikmapslayer.c:474
 msgid "Unknown Map Zoom"
-msgstr "Ukendt kort zoom"
+msgstr ""
 
 #: ../src/vikmapslayer.c:544
 #, c-format
@@ -1186,21 +1188,19 @@ msgstr ""
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d %s Harita yeniden indiriliyor..."
 
 #: ../src/vikmapslayer.c:1103
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d %s Harita yeniden indiriliyor..."
 
 #: ../src/vikmapslayer.c:1107 ../src/vikmapslayer.c:1178
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
-msgstr[0] "Downloader %d %s kort..."
+msgstr[0] "Harita %d %s indiriliyor..."
 
 #: ../src/vikmapslayer.c:1241
 msgid "Redownload _Bad Map(s)"
@@ -1223,7 +1223,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:1334
 msgid "Wrong zoom level for this map."
-msgstr "Forkert zoom niveau for dette kort."
+msgstr ""
 
 #. Now with icons
 #: ../src/vikmapslayer.c:1365
@@ -1240,16 +1240,16 @@ msgstr ""
 
 #: ../src/viktreeview.c:268
 msgid "Layer Name"
-msgstr "Navn på lag"
+msgstr "Katman Adı"
 
 #: ../src/viktreeview.c:694
 #, c-format
 msgid "delete data from %s\n"
-msgstr "slet data fra %s\n"
+msgstr "veri %s silindi\n"
 
 #: ../src/viktrwlayer.c:324
 msgid "Create Waypoint"
-msgstr ""
+msgstr "Yol işareti oluştur"
 
 #: ../src/viktrwlayer.c:327
 msgid "Create Track"
@@ -1261,7 +1261,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:334
 msgid "Edit Waypoint"
-msgstr ""
+msgstr "Yol işaretini düzenle"
 
 #: ../src/viktrwlayer.c:339
 msgid "Edit Trackpoint"
@@ -1269,26 +1269,26 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:344
 msgid "Show Picture"
-msgstr "Vis billed"
+msgstr "Resim Göster"
 
 #: ../src/viktrwlayer.c:347
 msgid "Magic Scissors"
-msgstr "Magisk saks"
+msgstr ""
 
 #. ***** PARAMETERS *****
 #: ../src/viktrwlayer.c:354 ../src/viktrwlayer.c:1506
 #: ../src/viktrwlayer.c:1508
 msgid "Waypoints"
-msgstr ""
+msgstr "Yol işareti"
 
 #: ../src/viktrwlayer.c:354 ../src/viktrwlayer.c:1496
 #: ../src/viktrwlayer.c:1498
 msgid "Tracks"
-msgstr "Spor"
+msgstr ""
 
 #: ../src/viktrwlayer.c:354
 msgid "Waypoint Images"
-msgstr ""
+msgstr "Yol işareti Görüntüleri"
 
 #: ../src/viktrwlayer.c:357
 msgid "Draw by Track"
@@ -1308,11 +1308,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:358
 msgid "Square"
-msgstr "Kvadrat"
+msgstr ""
 
 #: ../src/viktrwlayer.c:358
 msgid "Circle"
-msgstr "Cirkel"
+msgstr ""
 
 #: ../src/viktrwlayer.c:358
 msgid "X"
@@ -1348,7 +1348,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:389
 msgid "Track Thickness:"
-msgstr "Spor tykkelse:"
+msgstr ""
 
 #: ../src/viktrwlayer.c:390
 msgid "Track BG Thickness:"
@@ -1356,7 +1356,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:391
 msgid "Track Background Color"
-msgstr "Spor baggrundsfarve"
+msgstr ""
 
 #: ../src/viktrwlayer.c:392
 msgid "Min Track Velocity:"
@@ -1372,15 +1372,15 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:396
 msgid "Waypoint Color:"
-msgstr ""
+msgstr "Yol işareti Rengi:"
 
 #: ../src/viktrwlayer.c:397
 msgid "Waypoint Text:"
-msgstr ""
+msgstr "Yol işareti metni:"
 
 #: ../src/viktrwlayer.c:398
 msgid "Background:"
-msgstr "Baggrund:"
+msgstr "Arka Plan:"
 
 #: ../src/viktrwlayer.c:399
 msgid "Fake BG Color Translucency:"
@@ -1392,11 +1392,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:401
 msgid "Waypoint size:"
-msgstr ""
+msgstr "Yol işareti boyutu:"
 
 #: ../src/viktrwlayer.c:402
 msgid "Draw Waypoint Symbols:"
-msgstr ""
+msgstr "Yol işareti simgesi çiz"
 
 #: ../src/viktrwlayer.c:404
 msgid "Draw Waypoint Images"
@@ -1404,11 +1404,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:405
 msgid "Image Size (pixels):"
-msgstr "Billed størrelse (pixels):Alfa billed:"
+msgstr "Görüntü boyutu (piksel):"
 
 #: ../src/viktrwlayer.c:406
 msgid "Image Alpha:"
-msgstr ""
+msgstr "Alfa Görüntü:"
 
 #: ../src/viktrwlayer.c:407
 msgid "Image Memory Cache Size:"
@@ -1434,7 +1434,7 @@ msgstr ""
 #: ../src/viktrwlayer.c:1699
 #, c-format
 msgid "- %d:%02d hrs:mins"
-msgstr ""
+msgstr "- %d:%02d saat:dak"
 
 #: ../src/viktrwlayer.c:1707
 #, c-format
@@ -1444,7 +1444,7 @@ msgstr ""
 #: ../src/viktrwlayer.c:1710
 #, c-format
 msgid "%s%.1f miles %s"
-msgstr ""
+msgstr "%s%.1f  %s mil"
 
 #: ../src/viktrwlayer.c:1830 ../src/viktrwlayer.c:1901
 msgid "This layer has no waypoints or trackpoints."
@@ -1453,16 +1453,16 @@ msgstr ""
 #: ../src/viktrwlayer.c:1928 ../src/vikwindow.c:1678 ../src/vikwindow.c:2123
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
-msgstr "Filen \"%s\" eksisterer, ønsker du at overskrive den?"
+msgstr ""
 
 #: ../src/viktrwlayer.c:1938 ../src/vikwindow.c:1699
 msgid "The filename you requested could not be opened for writing."
-msgstr "Filnavnet du anmodede om kunne ikke åbnes til skrivning."
+msgstr ""
 
 #: ../src/viktrwlayer.c:1943 ../src/viktrwlayer.c:1948
 #: ../src/viktrwlayer.c:1953
 msgid "Export Layer"
-msgstr "Eksportér lag"
+msgstr "Katmanı Dışa Ver"
 
 #: ../src/viktrwlayer.c:1967
 msgid "Export Track as GPX"
@@ -1470,11 +1470,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:1975
 msgid "Find"
-msgstr ""
+msgstr "Bul"
 
 #: ../src/viktrwlayer.c:1985
 msgid "Waypoint Name:"
-msgstr ""
+msgstr "Yol işareti Adı:"
 
 #: ../src/viktrwlayer.c:2007
 msgid "Waypoint not found in this layer."
@@ -1490,7 +1490,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2158
 msgid "V_iew All Waypoints"
-msgstr ""
+msgstr "Tüm Yol işaretlerini görüntüle"
 
 #: ../src/viktrwlayer.c:2163
 msgid "_Goto Center of Layer"
@@ -1498,7 +1498,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2168
 msgid "Goto _Waypoint"
-msgstr ""
+msgstr "_Yol işaretine git"
 
 #: ../src/viktrwlayer.c:2174
 msgid "_Export Layer"
@@ -1518,11 +1518,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2194 ../src/viktrwlayer.c:3297
 msgid "_New Waypoint"
-msgstr ""
+msgstr "_Yeni Yol işareti"
 
 #: ../src/viktrwlayer.c:2201
 msgid "_Add Wikipedia Waypoints"
-msgstr ""
+msgstr "Yol işaretini  Wikipedia _ekle"
 
 #: ../src/viktrwlayer.c:2206
 msgid "Within _Layer Bounds"
@@ -1534,7 +1534,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2218 ../src/viktrwlayer.c:3397
 msgid "Upload to _OSM"
-msgstr ""
+msgstr "_OSM den yükle"
 
 #: ../src/viktrwlayer.c:2786
 msgid "Failed. This track does not have timestamp"
@@ -1578,7 +1578,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:3100
 msgid "Waypoint Already Exists"
-msgstr ""
+msgstr "Yol işareti zaten var"
 
 #: ../src/viktrwlayer.c:3141
 msgid "Track Already Exists"
@@ -1586,35 +1586,35 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:3271 ../src/viktrwlayer.c:3311
 msgid "_Goto"
-msgstr ""
+msgstr "_Git"
 
 #: ../src/viktrwlayer.c:3285
 msgid "_Visit Geocache Webpage"
-msgstr ""
+msgstr "_Geocache Web sayfasını ziyaret et"
 
 #: ../src/viktrwlayer.c:3316
 msgid "_Startpoint"
-msgstr ""
+msgstr "_Başlangıç noktası"
 
 #: ../src/viktrwlayer.c:3321
 msgid "\"_Center\""
-msgstr ""
+msgstr "\"_Merkez\""
 
 #: ../src/viktrwlayer.c:3326
 msgid "_Endpoint"
-msgstr ""
+msgstr "_Son nokta"
 
 #: ../src/viktrwlayer.c:3331
 msgid "_Highest Altitude"
-msgstr ""
+msgstr "_En yüksek Rakım"
 
 #: ../src/viktrwlayer.c:3336
 msgid "_Lowest Altitude"
-msgstr ""
+msgstr "_En düşük Rakım"
 
 #: ../src/viktrwlayer.c:3341
 msgid "_Maximum Speed"
-msgstr ""
+msgstr "_Azami Hız"
 
 #: ../src/viktrwlayer.c:3346
 msgid "_View Track"
@@ -1662,24 +1662,24 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:3411
 msgid "Use with _Filter"
-msgstr ""
+msgstr "_Filtre kullan"
 
 #: ../src/viktrwlayer.c:4092
 msgid "Track"
-msgstr ""
+msgstr "İz"
 
 #: ../src/viktrwlayer.c:4425
 msgid "Could not launch eog to open file."
-msgstr ""
+msgstr "eog başlatılamadığı için dosya açılamadı."
 
 #: ../src/viktrwlayer.c:4497
 #, c-format
 msgid "Creating %d Image Thumbnails..."
-msgstr ""
+msgstr "önizleme resmi oluşturuluyor... %d"
 
 #: ../src/viktrwlayer.c:4731
 msgid "No map layer in use. Create one first"
-msgstr "Ingen kortlag i brug. Skab en først"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:688
 msgid "Failed spliting track. Track unchanged"
@@ -1692,7 +1692,7 @@ msgstr ""
 #: ../src/viktrwlayer_propwin.c:759
 #, c-format
 msgid "%s - Track Properties"
-msgstr ""
+msgstr "%s - İz Özellikleri"
 
 #: ../src/viktrwlayer_propwin.c:764
 msgid "Split at Marker"
@@ -1704,7 +1704,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:766
 msgid "Reverse"
-msgstr "Omvendt"
+msgstr "Tersine çevir"
 
 #: ../src/viktrwlayer_propwin.c:767
 msgid "Delete Dupl."
@@ -1712,11 +1712,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Comment:</b>"
-msgstr "<b>Kommentar:</b>"
+msgstr "<b>Açıklama:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Track Length:</b>"
-msgstr "<b>Spor længde:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Trackpoints:</b>"
@@ -1724,7 +1724,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Segments:</b>"
-msgstr ""
+msgstr "<b>Bölümler:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Duplicate Points:</b>"
@@ -1732,11 +1732,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Max Speed:</b>"
-msgstr "<b>Max hastighed:</b>"
+msgstr "<b>Azami Hız:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Avg. Speed:</b>"
-msgstr "<b>Gennemsnitlig hastighed:</b>"
+msgstr "<b>Ort. Hız:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Avg. Dist. Between TPs:</b>"
@@ -1752,15 +1752,15 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Start:</b>"
-msgstr "<b>Start:</b>"
+msgstr "<b>Başlangıç:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>End:</b>"
-msgstr "<b>Slut:</b>"
+msgstr "<b>Son:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Duration:</b>"
-msgstr "<b>Varighed:</b>"
+msgstr "<b>Süre:</b>"
 
 #: ../src/viktrwlayer_propwin.c:830 ../src/viktrwlayer_propwin.c:854
 #: ../src/viktrwlayer_propwin.c:891 ../src/viktrwlayer_propwin.c:909
@@ -1769,16 +1769,16 @@ msgstr "<b>Varighed:</b>"
 #: ../src/viktrwlayer_propwin.c:990
 #, c-format
 msgid "No Data"
-msgstr "Ingen data"
+msgstr "Veri Yok"
 
 #: ../src/viktrwlayer_propwin.c:956
 #, c-format
 msgid "%d minutes"
-msgstr "%d minutter"
+msgstr "%d dakika"
 
 #: ../src/viktrwlayer_propwin.c:979
 msgid "Statistics"
-msgstr ""
+msgstr "İstatistikler"
 
 #: ../src/viktrwlayer_propwin.c:984
 msgid "<b>Track Distance:</b>"
@@ -1794,55 +1794,55 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:992
 msgid "Speed-time"
-msgstr "Hastighed-tid"
+msgstr "Hız-zaman"
 
 #: ../src/viktrwlayer_tpwin.c:115
 msgid "<b>Part of Track:</b>"
-msgstr "<b>Del af spor:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:116
 msgid "<b>Latitude:</b>"
-msgstr ""
+msgstr "<b>Enlem:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:117
 msgid "<b>Longitude:</b>"
-msgstr ""
+msgstr "<b>Boylam:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:118
 msgid "<b>Altitude:</b>"
-msgstr ""
+msgstr "<b>Rakım:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:119
 msgid "<b>Timestamp:</b>"
-msgstr "<b>Tidsstempel:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:120
 msgid "<b>Time:</b>"
-msgstr "<b>Tid:</b>"
+msgstr "<b>Zaman:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:121
 msgid "<b>Distance Difference:</b>"
-msgstr "<b>Afstandsforskel:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:122
 msgid "<b>Time Difference:</b>"
-msgstr "<b>Tidsforskel:</b>"
+msgstr "<b>Saat Farkı:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:123
 msgid "<b>\"Speed\" Between:</b>"
-msgstr "<b>\"Hastighed\" mellem:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:124
 msgid "<b>VDOP:</b>"
-msgstr ""
+msgstr "<b>VDOP:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:125
 msgid "<b>HDOP:</b>"
-msgstr ""
+msgstr "<b>HDOP:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:126
 msgid "<b>PDOP:</b>"
-msgstr ""
+msgstr "<b>PDOP:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:127
 msgid "<b>SAT/FIX:</b>"
@@ -1858,7 +1858,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:142
 msgid "Split Here"
-msgstr "Opdel her"
+msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:143
 msgid "Join With Last"
@@ -1866,15 +1866,15 @@ msgstr ""
 
 #: ../src/vikwindow.c:189
 msgid "Pan"
-msgstr ""
+msgstr "Kaydırma"
 
 #: ../src/vikwindow.c:189
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Yakınlaştır"
 
 #: ../src/vikwindow.c:189
 msgid "Ruler"
-msgstr "Lineal"
+msgstr "Cetvel"
 
 #: ../src/vikwindow.c:381
 #, c-format
@@ -1886,11 +1886,11 @@ msgstr ""
 
 #: ../src/vikwindow.c:384 ../src/vikwindow.c:1449
 msgid "Untitled"
-msgstr "Uden navn"
+msgstr "İsimsiz"
 
 #: ../src/vikwindow.c:385
 msgid "Don't Save"
-msgstr "Gem ikke"
+msgstr "Kaydetme"
 
 #: ../src/vikwindow.c:420
 msgid "mpp"
@@ -1898,26 +1898,26 @@ msgstr ""
 
 #: ../src/vikwindow.c:420
 msgid "pixelfact"
-msgstr ""
+msgstr "piksel durumu"
 
 #: ../src/vikwindow.c:571
 #, c-format
 msgid "%s %s %dm"
-msgstr ""
+msgstr "%s %s %dm"
 
 #: ../src/vikwindow.c:573
 #, c-format
 msgid "%s %s %dft"
-msgstr ""
+msgstr "%s %s %dft"
 
 #: ../src/vikwindow.c:576
 #, c-format
 msgid "%s %s"
-msgstr ""
+msgstr "%s %s"
 
 #: ../src/vikwindow.c:1198
 msgid "You must select a layer to show its properties."
-msgstr ""
+msgstr "Özelliklerini görüntülemek için bir katman seçmelisiniz."
 
 #: ../src/vikwindow.c:1228
 msgid "You must select a layer to delete."
@@ -1930,15 +1930,15 @@ msgstr ""
 
 #: ../src/vikwindow.c:1576
 msgid "The file you requested could not be opened."
-msgstr "Den fil du anmodede om kunne ikke åbnes."
+msgstr ""
 
 #: ../src/vikwindow.c:1622
 msgid "Please select a GPS data file to open. "
-msgstr "Vælg venligst en GPS data fil. "
+msgstr ""
 
 #: ../src/vikwindow.c:1665
 msgid "Save as Viking File."
-msgstr "Gem som Viking fil."
+msgstr ""
 
 #: ../src/vikwindow.c:1956
 msgid ""
@@ -1959,19 +1959,19 @@ msgstr ""
 #. todo: default for answers inside VikWindow or static (thruout instance)
 #: ../src/vikwindow.c:1995
 msgid "Save to Image File"
-msgstr "Gem til billedfil"
+msgstr "Görüntü dosyasını kaydet."
 
 #: ../src/vikwindow.c:2013
 msgid "Width (pixels):"
-msgstr "Bredde (pixels):"
+msgstr "Genişlik (piksel) :"
 
 #: ../src/vikwindow.c:2015
 msgid "Height (pixels):"
-msgstr "Højde (pixels):"
+msgstr "Yükseklik (piksel) :"
 
 #: ../src/vikwindow.c:2018
 msgid "Zoom (meters per pixel):"
-msgstr "Zoom (meter pr pixel):"
+msgstr ""
 
 #: ../src/vikwindow.c:2024
 msgid "Area in current viewable window"
@@ -1979,11 +1979,11 @@ msgstr ""
 
 #: ../src/vikwindow.c:2034
 msgid "Save as PNG"
-msgstr "Gem som PNG"
+msgstr "PNG olarak kaydet"
 
 #: ../src/vikwindow.c:2035
 msgid "Save as JPEG"
-msgstr "Gem som JPEG"
+msgstr "JPEG olarak kaydet"
 
 #: ../src/vikwindow.c:2055
 msgid "East-west image tiles:"
@@ -1995,75 +1995,75 @@ msgstr ""
 
 #: ../src/vikwindow.c:2099
 msgid "You must be in UTM mode to use this feature"
-msgstr "Du skal være i UTM mode for at bruge denne facilitet"
+msgstr ""
 
 #: ../src/vikwindow.c:2110
 msgid "Save Image"
-msgstr "Gem billede"
+msgstr "Resmi Kaydet"
 
 #: ../src/vikwindow.c:2139
 msgid "Choose a directory to hold images"
-msgstr ""
+msgstr "Görüntüleri kaydetmek için dizin seç"
 
 #: ../src/vikwindow.c:2228
 msgid "Choose a background color"
-msgstr "Vælg en baggrundsfarve"
+msgstr "Bir arka plan rengi seçiniz"
 
 #: ../src/vikwindow.c:2249
 msgid "_File"
-msgstr "_Fil"
+msgstr "_Dosya"
 
 #: ../src/vikwindow.c:2250
 msgid "_Edit"
-msgstr "_Redigér"
+msgstr "_Düzenle"
 
 #: ../src/vikwindow.c:2251
 msgid "_View"
-msgstr "_Vis"
+msgstr "_Görünüm"
 
 #: ../src/vikwindow.c:2252
 msgid "_Show"
-msgstr ""
+msgstr "_Göster"
 
 #: ../src/vikwindow.c:2253 ../src/vikwindow.c:2339
 msgid "_Zoom"
-msgstr "_Zoom"
+msgstr "_Yakınlaş"
 
 #: ../src/vikwindow.c:2254 ../src/vikwindow.c:2338
 msgid "_Pan"
-msgstr ""
+msgstr "_Kaydırma"
 
 #: ../src/vikwindow.c:2255
 msgid "_Layers"
-msgstr "_Lag"
+msgstr "_Katmanlar"
 
 #: ../src/vikwindow.c:2256
 msgid "_Tools"
-msgstr "Værk_tøjer"
+msgstr "_Araçlar"
 
 #: ../src/vikwindow.c:2257
 msgid "_Webtools"
-msgstr ""
+msgstr "_Web araçları"
 
 #: ../src/vikwindow.c:2258 ../src/vikwindow.c:2324
 msgid "_Help"
-msgstr "_Hjælp"
+msgstr "_Yardım"
 
 #: ../src/vikwindow.c:2260
 msgid "_New"
-msgstr "_Ny"
+msgstr "_Yeni"
 
 #: ../src/vikwindow.c:2260
 msgid "New file"
-msgstr "Ny fil"
+msgstr "Yeni dosya"
 
 #: ../src/vikwindow.c:2261
 msgid "_Open..."
-msgstr "_Åbn..."
+msgstr "_Aç..."
 
 #: ../src/vikwindow.c:2261
 msgid "Open a file"
-msgstr "Åbn en fil"
+msgstr "Bir dosya aç"
 
 #: ../src/vikwindow.c:2262
 msgid "Open _Recent File"
@@ -2083,47 +2083,47 @@ msgstr ""
 
 #: ../src/vikwindow.c:2265
 msgid "From _GPS..."
-msgstr "Fra _GPS..."
+msgstr ""
 
 #: ../src/vikwindow.c:2265
 msgid "Transfer data from a GPS device"
-msgstr "Overfør data fra GPS udstyr"
+msgstr "Bir GPS cihazından veri transferi"
 
 #: ../src/vikwindow.c:2266
 msgid "Google _Directions..."
-msgstr ""
+msgstr "Google _Tarifleri..."
 
 #: ../src/vikwindow.c:2266
 msgid "Get driving directions from Google"
-msgstr "Få kørselsanvisninger fra Google"
+msgstr "Google'dan tarif al"
 
 #: ../src/vikwindow.c:2268
 msgid "Geo_caches..."
-msgstr "Geo_caches..."
+msgstr ""
 
 #: ../src/vikwindow.c:2268
 msgid "Get Geocaches from geocaching.com"
-msgstr "Få Geocaches fra geocaching.com"
+msgstr ""
 
 #: ../src/vikwindow.c:2270
 msgid "_Save"
-msgstr "_Gem"
+msgstr "_Kaydet"
 
 #: ../src/vikwindow.c:2270
 msgid "Save the file"
-msgstr "Gem filen"
+msgstr "Dosyayı kaydet"
 
 #: ../src/vikwindow.c:2271
 msgid "Save _As..."
-msgstr "Gem _som..."
+msgstr "Farklı Kaydet..."
 
 #: ../src/vikwindow.c:2271
 msgid "Save the file under different name"
-msgstr "Gem filen under et andet navn"
+msgstr ""
 
 #: ../src/vikwindow.c:2272
 msgid "_Generate Image File..."
-msgstr ""
+msgstr "_Görüntü dosyası oluştur..."
 
 #: ../src/vikwindow.c:2272
 msgid "Save a snapshot of the workspace into a file"
@@ -2139,39 +2139,39 @@ msgstr ""
 
 #: ../src/vikwindow.c:2276
 msgid "_Print..."
-msgstr "_Udskriv..."
+msgstr "_Yazdır..."
 
 #: ../src/vikwindow.c:2276
 msgid "Print maps"
-msgstr "Udskriv kort"
+msgstr "Haritaları yazdır"
 
 #: ../src/vikwindow.c:2279
 msgid "E_xit"
-msgstr "A_fslut"
+msgstr "_Çıkış"
 
 #: ../src/vikwindow.c:2279
 msgid "Exit the program"
-msgstr "Afslut programmet"
+msgstr "Programdan çık"
 
 #: ../src/vikwindow.c:2280
 msgid "Save and Exit"
-msgstr "Gem og afslut"
+msgstr "Kaydet ve Çık"
 
 #: ../src/vikwindow.c:2280
 msgid "Save and Exit the program"
-msgstr "Gem og afslut programmet"
+msgstr "Programdan çık ve kaydet"
 
 #: ../src/vikwindow.c:2282
 msgid "Go to the _Default Location"
-msgstr ""
+msgstr "_Varsayılan konuma git"
 
 #: ../src/vikwindow.c:2282
 msgid "Go to the default location"
-msgstr ""
+msgstr "Varsayılan konuma git"
 
 #: ../src/vikwindow.c:2283
 msgid "Go to _Location..."
-msgstr ""
+msgstr "Bulunduğum yere git..."
 
 #: ../src/vikwindow.c:2283
 msgid "Go to address/place using text search"
@@ -2179,7 +2179,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2284
 msgid "_Go to Lat/Lon..."
-msgstr ""
+msgstr "_Enlem/Boylama git..."
 
 #: ../src/vikwindow.c:2284
 msgid "Go to arbitrary lat/lon coordinate"
@@ -2187,7 +2187,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2285
 msgid "Go to UTM..."
-msgstr "Gå til UTM..."
+msgstr "UTM ye git..."
 
 #: ../src/vikwindow.c:2285
 msgid "Go to arbitrary UTM coordinate"
@@ -2195,27 +2195,27 @@ msgstr ""
 
 #: ../src/vikwindow.c:2286
 msgid "Set Bac_kground Color..."
-msgstr ""
+msgstr "Arkaplan rengini seç..."
 
 #: ../src/vikwindow.c:2287
 msgid "Zoom _In"
-msgstr "Zoom _ind"
+msgstr "_Yakınlaş"
 
 #: ../src/vikwindow.c:2288
 msgid "Zoom _Out"
-msgstr "Zoom _ud"
+msgstr "_Uzaklaş"
 
 #: ../src/vikwindow.c:2289
 msgid "Zoom _To..."
-msgstr "Zoom _til..."
+msgstr ""
 
 #: ../src/vikwindow.c:2290
 msgid "0.25"
-msgstr "0,25"
+msgstr "0.25"
 
 #: ../src/vikwindow.c:2291
 msgid "0.5"
-msgstr "0,5"
+msgstr "0.5"
 
 #: ../src/vikwindow.c:2292
 msgid "1"
@@ -2251,75 +2251,75 @@ msgstr "128"
 
 #: ../src/vikwindow.c:2300
 msgid "256"
-msgstr ""
+msgstr "256"
 
 #: ../src/vikwindow.c:2301
 msgid "512"
-msgstr ""
+msgstr "512"
 
 #: ../src/vikwindow.c:2302
 msgid "1024"
-msgstr ""
+msgstr "1024"
 
 #: ../src/vikwindow.c:2303
 msgid "2048"
-msgstr ""
+msgstr "2048"
 
 #: ../src/vikwindow.c:2304
 msgid "4096"
-msgstr ""
+msgstr "4096"
 
 #: ../src/vikwindow.c:2305
 msgid "8192"
-msgstr ""
+msgstr "8192"
 
 #: ../src/vikwindow.c:2306
 msgid "16384"
-msgstr ""
+msgstr "16384"
 
 #: ../src/vikwindow.c:2307
 msgid "32768"
-msgstr ""
+msgstr "32768"
 
 #: ../src/vikwindow.c:2308
 msgid "Pan _North"
-msgstr ""
+msgstr "Kuzeye _Kaydır"
 
 #: ../src/vikwindow.c:2309
 msgid "Pan _East"
-msgstr ""
+msgstr "Doğuya _Kaydır"
 
 #: ../src/vikwindow.c:2310
 msgid "Pan _South"
-msgstr ""
+msgstr "Güneye _Kaydır"
 
 #: ../src/vikwindow.c:2311
 msgid "Pan _West"
-msgstr ""
+msgstr "Batıya _Kaydır"
 
 #: ../src/vikwindow.c:2312
 msgid "Background _Jobs"
-msgstr "Baggrunds_job"
+msgstr ""
 
 #: ../src/vikwindow.c:2314
 msgid "Cu_t"
-msgstr "K_lip"
+msgstr "_Kes"
 
 #: ../src/vikwindow.c:2315
 msgid "_Copy"
-msgstr "_Kopiér"
+msgstr "_Kopyala"
 
 #: ../src/vikwindow.c:2316
 msgid "_Paste"
-msgstr "_Sæt ind"
+msgstr "_Yapıştır"
 
 #: ../src/vikwindow.c:2317
 msgid "_Delete"
-msgstr "_Slet"
+msgstr "_Sil"
 
 #: ../src/vikwindow.c:2318
 msgid "Delete All"
-msgstr "Slet alle"
+msgstr "Tümünü Sil"
 
 #: ../src/vikwindow.c:2319
 msgid "_Flush Map Cache"
@@ -2327,7 +2327,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:2320
 msgid "_Set the Default Location"
-msgstr ""
+msgstr "_Varsayılan konumu ayarla"
 
 #: ../src/vikwindow.c:2320
 msgid "Set the Default Location to the current position"
@@ -2335,55 +2335,55 @@ msgstr ""
 
 #: ../src/vikwindow.c:2321
 msgid "_Preferences"
-msgstr ""
+msgstr "_Tercihler"
 
 #: ../src/vikwindow.c:2322
 msgid "_Properties"
-msgstr "_Egenskaber"
+msgstr "_Özellikler"
 
 #: ../src/vikwindow.c:2325
 msgid "_About"
-msgstr "_Om"
+msgstr "_Hakkında"
 
 #: ../src/vikwindow.c:2331
 msgid "_UTM Mode"
-msgstr ""
+msgstr "_UTM Modu"
 
 #: ../src/vikwindow.c:2332
 msgid "_Expedia Mode"
-msgstr ""
+msgstr "_Expedia Modu"
 
 #: ../src/vikwindow.c:2333
 msgid "_Mercator Mode"
-msgstr ""
+msgstr "_Mercator Modu"
 
 #: ../src/vikwindow.c:2334
 msgid "Lat_/Lon Mode"
-msgstr ""
+msgstr "Enlem_/Boylam Modu"
 
 #: ../src/vikwindow.c:2338
 msgid "Pan Tool"
-msgstr ""
+msgstr "Kaydırma"
 
 #: ../src/vikwindow.c:2339
 msgid "Zoom Tool"
-msgstr "Zoomværktøj"
+msgstr "Yakınlaştırma Aracı"
 
 #: ../src/vikwindow.c:2340
 msgid "_Ruler"
-msgstr ""
+msgstr "_Cetvel"
 
 #: ../src/vikwindow.c:2340
 msgid "Ruler Tool"
-msgstr ""
+msgstr "Cetvel Aracı"
 
 #: ../src/vikwindow.c:2344
 msgid "Show _Scale"
-msgstr ""
+msgstr "Ölçeği _Göster"
 
 #: ../src/vikwindow.c:2344
 msgid "Show Scale"
-msgstr "Vis skala"
+msgstr "Ölçeği Göster"
 
 #: ../src/vikwindow.c:2345
 msgid "Show _Center Mark"
@@ -2395,119 +2395,52 @@ msgstr ""
 
 #: ../src/vikwindow.c:2346
 msgid "_Full Screen"
-msgstr ""
+msgstr "_Tam Ekran"
 
 #: ../src/vikwindow.c:2346
 msgid "Activate full screen mode"
-msgstr ""
+msgstr "Tam ekran modunu etkinleştir"
 
 #: ../src/vikwindow.c:2347
 msgid "Show Side _Panel"
-msgstr ""
+msgstr "Yan Paneli _Göster"
 
 #: ../src/vikwindow.c:2347
 msgid "Show Side Panel"
-msgstr ""
+msgstr "Yan Paneli Göster"
 
 #: ../src/vikwindow.c:2348
 msgid "Show Status_bar"
-msgstr ""
+msgstr "Durum çubuğunu göster"
 
 #: ../src/vikwindow.c:2348
 msgid "Show Statusbar"
-msgstr ""
+msgstr "Durum çubuğunu Göster"
 
 #: ../src/vikwindow.c:2349
 msgid "Show _Toolbar"
-msgstr ""
+msgstr "_Araç Çubuğunu Göster"
 
 #: ../src/vikwindow.c:2349
 msgid "Show Toolbar"
-msgstr ""
+msgstr "Araç Çubuğunu Göster"
 
 #: ../src/vikwindow.c:2350
 msgid "Show _Menu"
-msgstr ""
+msgstr "_Menü Göster"
 
 #: ../src/vikwindow.c:2350
 msgid "Show Menu"
-msgstr ""
+msgstr "Menü Göster"
 
 #: ../src/viking.desktop.in.h:1
 msgid "GPS Data Manager"
-msgstr ""
+msgstr "GPS Veri Yöneticisi"
 
 #: ../src/viking.desktop.in.h:2
 msgid "Map Based GPS Data Manager (live data capable)."
-msgstr ""
+msgstr "Harita Tabanlı GPS Veri Yöneticisi (canlı veri kapasiteli)."
 
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
-msgstr ""
-
-#~ msgid "Create"
-#~ msgstr "Opret"
-
-#~ msgid "Set Background Color..."
-#~ msgstr "Sæt baggrundsfarve..."
-
-#~ msgid "Save _As"
-#~ msgstr "Gem _som"
-
-#~ msgid "_Open"
-#~ msgstr "_Åbn"
-
-#~ msgid "From _GPS"
-#~ msgstr "Fra _GPS"
-
-#~ msgid "Goto Map Center"
-#~ msgstr "Gå til korts centrum"
-
-#~ msgid "Empty Upload"
-#~ msgstr "Tom upload"
-
-#~ msgid "Download from GPS"
-#~ msgstr "Download fra GPS"
-
-#~ msgid "Upload to GPS"
-#~ msgstr "Upload til GPS"
-
-#~ msgid "Goto"
-#~ msgstr "Gå til"
-
-#~ msgid "Zoom factor (in meters per pixel:"
-#~ msgstr "Zoom faktor (i meter pr pixel):"
-
-#~ msgid "I don't know that place. Do you want another search?"
-#~ msgstr "Jeg kender ikke stedet. Ønsker du en ny søgning?"
-
-#~ msgid "Enter the email you use to login into www.openstreetmap.org."
-#~ msgstr "Indtast den e-mail du bruger til at logge på www.openstreetmap.org."
-
-#~ msgid "The password used to login"
-#~ msgstr "Den adgangskode der bruges til at logge på"
-
-#~ msgid "Enter the password you use to login into www.openstreetmap.org."
-#~ msgstr ""
-#~ "Indtast den adgangskode du bruger til at logge på www.openstreetmap.org."
-
-#~ msgid "Empty All"
-#~ msgstr "Tøm alt"
-
-#~ msgid "Empty Download"
-#~ msgstr "Tom download"
-
-#~ msgid "Export as GPX"
-#~ msgstr "Ekspotér som GPX"
-
-#~ msgid "Visit Geocache Webpage"
-#~ msgstr "Besøg Geocache's hjemmeside"
-
-#~ msgid "Geo_caches"
-#~ msgstr "Geo_caches"
-
-#~ msgid "Zoom _To"
-#~ msgstr "Zoom _til"
-
-#~ msgid "Redownload all map(s)"
-#~ msgstr "Gendownload alle kort"
+msgstr "Viking"
