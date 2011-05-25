@@ -263,13 +263,6 @@ case $ac_cv_enable_realtimegpstracking in
     ;;
 esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])
-# Viking supports two incompatibles versions of GPSd: 2.39 and 2.90
-# But GPSd does not provides easy way to test features.
-if test x$ac_cv_enable_realtimegpstracking = xyes
-then
-  AC_CHECK_FUNCS(gps_stream)
-  AC_CHECK_FUNCS(gps_open_r)
-fi
 
 AC_ARG_WITH(search,
             [AC_HELP_STRING([--with-search],
