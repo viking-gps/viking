@@ -1,6 +1,23 @@
 #!/usr/bin/env python
 
 #
+# THIS IS NO LONGER SUPPORTED
+#
+print """
+This script no longer works after the geocaching.com website update see:
+ http://blog.geocaching.com/2011/05/preview-of-geocaching-com-may-4th-website-release/
+
+It is now recommended to use the geo-* tools instead:
+ http://geo.rkkda.com/
+"""
+import sys
+sys.exit(1)
+
+#
+# One day this script could be resurrected, as the geo-* tools are not perhaps the fastest...
+#
+
+#
 # gcget -- screen scrape Geocaching.com's annoying web interface
 # 	   aka SHOW ME THE CACHE!!!
 #
