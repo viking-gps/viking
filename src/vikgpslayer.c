@@ -1400,8 +1400,17 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
 {
   VikGpsLayer *vgl = data;
   if (condition == G_IO_IN) {
-    if (!gps_poll(&vgl->vgpsd->gpsd))
+#if GPSD_API_MAJOR_VERSION == 3 || GPSD_API_MAJOR_VERSION == 4
+    if (!gps_poll(&vgl->vgpsd->gpsd)) {
+#elif GPSD_API_MAJOR_VERSION == 5
+    if (gps_read(&vgl->vgpsd->gpsd) > -1) {
+      // Reuse old function to perform operations on the new GPS data
+      gpsd_raw_hook(vgl->vgpsd, NULL);
+#else
+      // Broken compile
+#endif
       return TRUE;
+    }
     else {
       g_warning("Disconnected from gpsd. Trying to reconnect");
       rt_gpsd_disconnect(vgl);
@@ -1438,8 +1447,11 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   vgl->vgpsd = g_malloc(sizeof(VglGpsd));
 
   if (gps_open_r(vgl->gpsd_host, vgl->gpsd_port, /*(struct gps_data_t *)*/vgl->vgpsd) != 0) {
+#elif GPSD_API_MAJOR_VERSION == 5
+  vgl->vgpsd = g_malloc(sizeof(VglGpsd));
+  if (gps_open(vgl->gpsd_host, vgl->gpsd_port, &vgl->vgpsd->gpsd) != 0) {
 #else
-    // Delibrately break compilation...
+// Delibrately break compilation...
 #endif
     g_warning("Failed to connect to gpsd at %s (port %s). Will retry in %d seconds",
                      vgl->gpsd_host, vgl->gpsd_port, vgl->gpsd_retry_interval);
@@ -1464,7 +1476,10 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
     vik_trw_layer_add_track(vtl, vgl->realtime_track_name, vgl->realtime_track);
   }
 
+#if GPSD_API_MAJOR_VERSION == 3 || GPSD_API_MAJOR_VERSION == 4
   gps_set_raw_hook(&vgl->vgpsd->gpsd, gpsd_raw_hook);
+#endif
+
   vgl->realtime_io_channel = g_io_channel_unix_new(vgl->vgpsd->gpsd.gps_fd);
   vgl->realtime_io_watch_id = g_io_add_watch( vgl->realtime_io_channel,
                     G_IO_IN | G_IO_ERR | G_IO_HUP, gpsd_data_available, vgl);
@@ -1472,7 +1487,7 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
 #if GPSD_API_MAJOR_VERSION == 3
   gps_query(&vgl->vgpsd->gpsd, "w+x");
 #endif
-#if GPSD_API_MAJOR_VERSION == 4
+#if GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5
   gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL);
 #endif
 
@@ -1514,13 +1529,13 @@ static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed)
 
 static void rt_gpsd_disconnect(VikGpsLayer *vgl)
 {
-  if (vgl->realtime_io_watch_id) {
-    g_source_remove(vgl->realtime_io_watch_id);
-    vgl->realtime_io_watch_id = 0;
-  }
   if (vgl->realtime_retry_timer) {
     g_source_remove(vgl->realtime_retry_timer);
     vgl->realtime_retry_timer = 0;
+  }
+  if (vgl->realtime_io_watch_id) {
+    g_source_remove(vgl->realtime_io_watch_id);
+    vgl->realtime_io_watch_id = 0;
   }
   if (vgl->realtime_io_channel) {
     GError *error = NULL;
@@ -1528,10 +1543,13 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
     vgl->realtime_io_channel = NULL;
   }
   if (vgl->vgpsd) {
+#if GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5
+    gps_stream(&vgl->vgpsd->gpsd, WATCH_DISABLE, NULL);
+#endif
     gps_close(&vgl->vgpsd->gpsd);
 #if GPSD_API_MAJOR_VERSION == 3
     free(vgl->vgpsd);
-#elif GPSD_API_MAJOR_VERSION == 4
+#elif GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5
     g_free(vgl->vgpsd);
 #endif
     vgl->vgpsd = NULL;
