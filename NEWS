@@ -1,3 +1,76 @@
+Viking 1.2 (2011-05-24)
+New features since 1.1
+* Remove unecessary treeview item selection.
+* Add zoom level 0.5 to map layer
+* [DOC] Add links to access Viking's source code
+* Rename file to prevent any case-insensitive issues.
+* Add getting the users confirmation when deleting (emptying) data from the GPS layer.
+* Enable keypad delete to remove layers in the layers panel.
+* Enable deleting multiple tracks or waypoints within a layer by selecting them from a list.
+* Add getting the users confirmation when deleting an individual track or waypoint.
+* Add the ability to delete all waypoints or tracks in the layer.
+* Add getting the users confirmation when deleting a layer.
+* Start a new 'Tracks' treeview menu, similar to the 'new' Waypoints treeview menu.
+* Add operations on waypoints into the 'new' Waypoints treeview menu.
+* Add new graph type Speed/Distance in the track properties window.
+* Add new graph type Elevation/Time in the track properties window.
+* Add new graph type Distance/Time in the track properties window.
+* Improve Track Properties speed/time drawing to display in nice human friendly whole number scaled units.
+* Improve Track Properties elevation drawing to display in nice human friendly whole number scaled units.
+* On the Track Properties Window draw an always updating indicator of where the readings are taken from.
+* Enable controls of drawing DEM data and GPS speeds on the Track Properties Window.
+* Add keyboard accelerators for the Track Properties Window.
+* Add ability to resize the Track Properties window.
+* On the Track Properties Window, also show the elevation or speed for the current track position as indicated by the mouse pointer.
+* Add support for kml files.
+* Add ... where necessary to track & waypoint menu entries.
+* Enable Open Waypoint Image via right click menu entry.
+* Use ability to select a waypoint given the thumbnail image size.
+* Add ability to open the trackpoint edit dialog via the viewport right click menu when a trackpoint is selected.
+* Add ability to move selected trackpoint or waypoint by the mouse within the select tool.
+* Add a new select tool at the window level to enable/disbale item selection of the a track or a waypoint.
+* Enable to unselect treeview item
+* Add Select Request layer interface and use within the track/waypoint layer to select an item.
+* Add internal track right click menu variable.
+* Tidy up track/waypoint sublayer callbacks to only use the layers panel if it available.
+* Add viewport to sublayer add menu items callback.
+* Make the highlight colour configurable and use as appropriate for the selected track/waypoint drawing.
+* Add track and waypoint highlight for the selected layer or individual item.
+* Add the storage and retrieval of any kind of track or waypoint selected item (either an individual item, list (i.e. a sublayer) or layer) at the window level.
+* Add viewport property to control the display of the track / waypoint item highlight.
+* Add backup support for launching URLs with Mac OS based browsers.
+* Add backup support for launching URLs with Google Chrome based browsers.
+* Add support for Bing maps
+* Add support for dynamic copyright
+* Add map's logo support
+* Add support for reference documentation
+* Generate a trackwaypoint layer update on the finish creatiing of the thumbnails so the images are shown.
+* Enable the tree view panel to be more usefully resized smaller than the text names.
+* Windows: Open help pdf file when when clicked on Help->help
+* [DOC] Split By Number of Points
+* Add Track->Split by Number of Points (as per SF#2847587 request).
+* Add a new dialog to return positive number.
+* SF#2844872: Suggest name for the new track when splitting the track via the trackpoint edit dialog.
+
+Fixes since 1.1
+* Better safety checking to prevent crash due to null variable reference in use of the current trackpoint.
+* Fix: Reduce GObject cast
+* Fix etag handling
+* Fix: generate doc/reference/Makefile when needed
+* Fix Track -> Split by Timestamp such that newly created tracks are ordered correctly.
+* Fix sensitivity of the track properties window split marker to be disabled when the track marker is not drawn.
+* Fix crashing due to incorrect usage of libcurl - SF#3206628.
+* Fix non-void function should return a value.
+* Fix reference documentation generation - some systems need explicit mention of libz.
+* Fix displaying of 'Waypoints' treeview menu.
+* Fix vik_aggregate_layer_get_all_layers_of_type for track/waypoint layer types, since these may also be stored under GPS layers.
+* Improve previous fix: background calling code should control return value
+* Fix: background calling code should control return value
+* Fix: enforce background feature
+* Fix compiler warnings from gcc 4.5.4
+* SF#3178554: Fix Sun Studio build
+* gtk_object_sink has been deprecated since gtk version 2.10, use g_object_ref_sink() instead.
+
 Viking 1.1 (2011-02-08)
 New features since 1.0
 * [DOC] Add MapQuest Nominating search service in examples
