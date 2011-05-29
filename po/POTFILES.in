@@ -1,5 +1,6 @@
 src/acquire.c
 src/background.c
+src/bingmapsource.c
 src/clipboard.c
 src/curl_download.c
 src/dialog.c
