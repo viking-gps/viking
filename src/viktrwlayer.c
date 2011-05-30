@@ -2968,6 +2968,7 @@ static void find_nearby_track(gpointer key, gpointer value, gpointer user_data)
 }
 
 /* comparison function used to sort tracks; a and b are hash table keys */
+/* Not actively used - can be restored if needed
 static gint track_compare(gconstpointer a, gconstpointer b, gpointer user_data)
 {
   GHashTable *tracks = user_data;
@@ -2980,6 +2981,7 @@ static gint track_compare(gconstpointer a, gconstpointer b, gpointer user_data)
   if (t1 > t2) return 1;
   return 0;
 }
+*/
 
 /* comparison function used to sort trackpoints */
 static gint trackpoint_compare(gconstpointer a, gconstpointer b)
@@ -3070,7 +3072,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
   gchar *orig_track_name = strdup(pass_along[3]);
 
-  time_t t1, t2;
+  //time_t t1, t2;
   GList *nearby_tracks;
   VikTrack *track;
   GList *trps;
@@ -3101,8 +3103,8 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
       nearby_tracks = NULL;
     }
 
-    t1 = ((VikTrackpoint *)trps->data)->timestamp;
-    t2 = ((VikTrackpoint *)g_list_last(trps)->data)->timestamp;
+    //t1 = ((VikTrackpoint *)trps->data)->timestamp;
+    //t2 = ((VikTrackpoint *)g_list_last(trps)->data)->timestamp;
     
     /*    g_print("Original track times: %d and %d\n", t1, t2);  */
     params[0] = &nearby_tracks;
