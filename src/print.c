@@ -199,8 +199,6 @@ static void draw_page_cairo(GtkPrintContext *context, PrintData *data)
   gint             stride;
   gint             pixbuf_stride;
   gint             pixbuf_n_channels;
-  gdouble          cr_width;
-  gdouble          cr_height;
   gdouble          cr_dpi_x;
   gdouble          cr_dpi_y;
   gdouble          scale_x;
@@ -214,8 +212,6 @@ static void draw_page_cairo(GtkPrintContext *context, PrintData *data)
   surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
                                        data->width, data->height);
   
-  cr_width  = gtk_print_context_get_width  (context);
-  cr_height = gtk_print_context_get_height (context);
   cr_dpi_x  = gtk_print_context_get_dpi_x  (context);
   cr_dpi_y  = gtk_print_context_get_dpi_y  (context);
 
