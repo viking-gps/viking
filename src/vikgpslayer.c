@@ -744,12 +744,9 @@ static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val
 {
   VikTreeview *vt = VIK_LAYER(val_src)->vt;
   VikLayer *vl = vik_treeview_item_get_pointer(vt, src_item_iter);
-  GtkTreeIter dest_iter;
   gchar *dp;
-  gboolean target_exists;
 
   dp = gtk_tree_path_to_string(dest_path);
-  target_exists = vik_treeview_get_iter_from_path_str(vt, &dest_iter, dp);
 
   /* vik_gps_layer_delete unrefs, but we don't want that here.
    * we're still using the layer. */
@@ -1230,7 +1227,7 @@ static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
     gint half_back_x, half_back_y;
     gint half_back_bg_x, half_back_bg_y;
     gint pt_x, pt_y;
-    gint ptbg_x, ptbg_y;
+    gint ptbg_x;
     gint side1_x, side1_y, side2_x, side2_y;
     gint side1bg_x, side1bg_y, side2bg_x, side2bg_y;
 
@@ -1249,7 +1246,7 @@ static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
 
     pt_y = half_back_y-24*heading_cos;
     pt_x = half_back_x+24*heading_sin;
-    ptbg_y = half_back_bg_y-28*heading_cos;
+    //ptbg_y = half_back_bg_y-28*heading_cos;
     ptbg_x = half_back_bg_x+28*heading_sin;
 
     side1_y = half_back_y+9*heading_sin;
