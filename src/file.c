@@ -175,7 +175,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
   VikLayer *current_layer;
   struct LatLon ll;
   VikViewportDrawMode mode;
-  gchar *modestring;
+  gchar *modestring = NULL;
 
   push(&stack);
   stack->data = (gpointer) vik_aggregate_layer_get_children(VIK_AGGREGATE_LAYER(top));
