@@ -660,19 +660,16 @@ static void treeview_finalize ( GObject *gob )
 static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTreePath *dest, GtkSelectionData *selection_data)
 {
   GtkTreeModel *tree_model;
-  GtkTreeStore *tree_store;
   GtkTreeModel *src_model = NULL;
   GtkTreePath *src_path = NULL, *dest_cp = NULL;
   gboolean retval = FALSE;
-  GtkTreeIter src_iter, root_iter, dest_iter, dest_parent;
-  gint *i_src = NULL;
+  GtkTreeIter src_iter, root_iter, dest_parent;
   VikTreeview *vt;
   VikLayer *vl;
 
   g_return_val_if_fail (GTK_IS_TREE_STORE (drag_dest), FALSE);
 
   tree_model = GTK_TREE_MODEL (drag_dest);
-  tree_store = GTK_TREE_STORE (drag_dest);
 
   if (gtk_tree_get_row_drag_data (selection_data, &src_model, &src_path) && src_model == tree_model) {
     /* 
@@ -696,7 +693,6 @@ static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTree
       goto out;
     }
 
-    i_src = gtk_tree_path_get_indices (src_path);
     dest_cp = gtk_tree_path_copy (dest);
 
     gtk_tree_model_get_iter_first(tree_model, &root_iter);
@@ -707,13 +703,9 @@ static gboolean treeview_drag_data_received (GtkTreeDragDest *drag_dest, GtkTree
     if (gtk_tree_path_get_depth(dest_cp)>1) { /* can't be sibling of top layer */
       VikLayer *vl_src, *vl_dest;
 
-      /* Find the first ancestor that is a full layer, and store in dest_parent. 
-       * In addition, put in dest_iter where Gtk wants us to insert the dragged object.
-       * (Note that this may end up being an invalid iter). 
-       */
+      /* Find the first ancestor that is a full layer, and store in dest_parent. */
       do {
 	gtk_tree_path_up(dest_cp);
-	dest_iter = dest_parent;
 	gtk_tree_model_get_iter (src_model, &dest_parent, dest_cp);
       } while (gtk_tree_path_get_depth(dest_cp)>1 &&
 	       vik_treeview_item_get_type(vt, &dest_parent) != VIK_TREEVIEW_TYPE_LAYER);
