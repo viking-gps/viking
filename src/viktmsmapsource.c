@@ -341,11 +341,6 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), NULL);
 	
     VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
-	gdouble socalled_mpp;
-	if (src->scale >= 0)
-		socalled_mpp = GZ(src->scale);
-	else
-		socalled_mpp = 1.0/GZ(-src->scale);
 	/* We should restore logic of viking:
      * tile index on Y axis follow a screen logic (top -> down)
      */
