@@ -1243,7 +1243,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 {
   GtkWidget *window;
   GdkPixmap *pix;
-  gdouble mins, maxs;
+  gdouble mins;
   guint i;
 
   // Free previous allocation
@@ -1293,7 +1293,6 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   // Assign locally
   mins = widgets->draw_min_speed;
-  maxs = widgets->max_speed;
   
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
@@ -1513,7 +1512,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 {
   GtkWidget *window;
   GdkPixmap *pix;
-  gdouble mina,maxa;
+  gdouble mina;
   guint i;
 
   // Free previous allocation
@@ -1541,7 +1540,6 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   // Assign locally
   mina = widgets->draw_min_altitude;
-  maxa = widgets->max_altitude;
 
   window = gtk_widget_get_toplevel (widgets->elev_time_box);
 
@@ -1627,7 +1625,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 {
   GtkWidget *window;
   GdkPixmap *pix;
-  gdouble mins, maxs;
+  gdouble mins;
   guint i;
 
   // Free previous allocation
@@ -1678,7 +1676,6 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   // Assign locally
   mins = widgets->draw_min_speed;
-  maxs = widgets->max_speed_dist;
   
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0],
