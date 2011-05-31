@@ -1,3 +1,7 @@
+Viking 1.0.2 (2010-12-14)
+Fixes since 1.0.1
+* Add undeclared translations
+
 Viking 1.0.1 (2010-12-04)
 Fixes since 1.0
 * Fix Waypoint & Track visibility issues.
