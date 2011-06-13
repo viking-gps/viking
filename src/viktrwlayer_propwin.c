@@ -133,6 +133,7 @@ typedef struct _propwidgets {
   GtkWidget *w_show_elev_speed;
   GtkWidget *w_show_sd_gps_speed;
   gdouble   track_length;
+  gdouble   track_length_inc_gaps;
   PropSaved elev_graph_saved_img;
   PropSaved speed_graph_saved_img;
   PropSaved dist_graph_saved_img;
@@ -478,7 +479,7 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, gpoi
       if (is_time_graph)
 	pc = tp_percentage_by_time ( tr, trackpoint );
       else
-	pc = tp_percentage_by_distance ( tr, trackpoint, widgets->track_length );
+	pc = tp_percentage_by_distance ( tr, trackpoint, widgets->track_length_inc_gaps );
 
       if (!isnan(pc)) {
 	gdouble marker_x = (pc * widgets->profile_width) + MARGIN;
@@ -666,7 +667,7 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
   if (widgets->is_marker_drawn) {
-    gdouble pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length );
+    gdouble pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length_inc_gaps );
     if (!isnan(pc)) {
       marker_x = (pc * widgets->profile_width) + MARGIN;
     }
@@ -1019,7 +1020,7 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, gpointer *pass_
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
   if (widgets->is_marker_drawn) {
-    gdouble pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length );
+    gdouble pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length_inc_gaps );
     if (!isnan(pc)) {
       marker_x = (pc * widgets->profile_width) + MARGIN;
     }
@@ -1813,11 +1814,11 @@ static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
 
-      pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length );
+      pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length_inc_gaps );
       gdouble x_blob = -MARGIN - 1.0; // i.e. Don't draw unless we get a valid value
       gint y_blob = 0;
       if (widgets->is_blob_drawn) {
-	pc_blob = tp_percentage_by_distance ( tr, widgets->blob_tp, widgets->track_length );
+	pc_blob = tp_percentage_by_distance ( tr, widgets->blob_tp, widgets->track_length_inc_gaps );
 	if (!isnan(pc_blob)) {
 	  x_blob = (pc_blob * widgets->profile_width);
 	}
@@ -2010,11 +2011,11 @@ static void draw_all_graphs ( GtkWidget *widget, gpointer *pass_along, gboolean 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
 
-      pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length );
+      pc = tp_percentage_by_distance ( tr, widgets->marker_tp, widgets->track_length_inc_gaps );
       gdouble x_blob = -MARGIN - 1.0; // i.e. Don't draw unless we get a valid value
       gint y_blob = 0;
       if (widgets->is_blob_drawn) {
-	pc_blob = tp_percentage_by_distance ( tr, widgets->blob_tp, widgets->track_length );
+	pc_blob = tp_percentage_by_distance ( tr, widgets->blob_tp, widgets->track_length_inc_gaps );
 	if (!isnan(pc_blob)) {
 	  x_blob = (pc_blob * widgets->profile_width);
 	}
@@ -2507,6 +2508,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   content[cnt++] = widgets->w_comment;
 
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
+
+  // NB This value not shown yet - but is used by internal calculations
+  widgets->track_length_inc_gaps = vik_track_get_length_including_gaps(tr);
 
   tr_len = widgets->track_length = vik_track_get_length(tr);
   switch (dist_units) {
