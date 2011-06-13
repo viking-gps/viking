@@ -248,6 +248,11 @@ static void get_new_min_and_chunk_index_altitude (gdouble mina, gdouble maxa, gd
     // Next chunk should cover it
     if ( *ci < sizeof(chunksa)/sizeof(chunksa[0]) ) {
       (*ci)++;
+      // Remember to adjust the minimum too...
+      if ( mina < 0 )
+	*new_min = (gdouble) ( ( (gint)(mina - chunksa[*ci]) / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
+      else
+	*new_min = (gdouble) ( ( (gint)mina / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
     }
   }
 }
