@@ -1,3 +1,9 @@
+Viking 1.2.1 (2011-06-16)
+Fixes since 1.2
+* Support proper MAC OS file locations.
+* Fix incorrect track property line marker positioning when the track has gaps.
+* Fix track property point marker drawing error - sometimes draws dot marker too low.
+
 Viking 1.2 (2011-05-24)
 New features since 1.1
 * Remove unecessary treeview item selection.

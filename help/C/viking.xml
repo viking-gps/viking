@@ -3,9 +3,9 @@
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
   <!ENTITY appname          "Viking">
   <!ENTITY app "<application>Viking</application>">
-  <!ENTITY appversion   "1.1">
+  <!ENTITY appversion   "1.2">
   <!ENTITY manrevision  "0.2">
-  <!ENTITY date "January 2011">
+  <!ENTITY date "June 2011">
 ]>
 <!--
       (Do not remove this comment block.)
