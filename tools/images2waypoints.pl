@@ -249,10 +249,10 @@ sub My_Process_File {
 		my ($abs_path) = File::Spec->rel2abs("$path", "$dir");
 		$filename = "$abs_path/$file";
 	    }
-	    return "type=\"waypoint\" latitude=\"$waypoint[0]\" longitude=\"$waypoint[2]\" name=\"$name\" altitude=\"$waypoint[4]\" comment=\"$waypoint[5]\" image=\"$filename\" symbol=\"scenic\"\n";
+	    return "type=\"waypoint\" latitude=\"$waypoint[0]\" longitude=\"$waypoint[2]\" name=\"$name\" altitude=\"$waypoint[4]\" comment=\"$waypoint[5]\" image=\"$filename\" symbol=\"scenic area\"\n";
 	}
 	else {
-	    return "<wpt lat=\"$waypoint[0]\" lon=\"$waypoint[2]\">\n  <name>$name</name>\n  <ele>$waypoint[4]</ele>\n  <desc>$waypoint[5]</desc>\n  <sym>secenic</sym>\n</wpt>";
+	    return "<wpt lat=\"$waypoint[0]\" lon=\"$waypoint[2]\">\n  <name>$name</name>\n  <ele>$waypoint[4]</ele>\n  <desc>$waypoint[5]</desc>\n  <sym>scenic area</sym>\n</wpt>";
 	}
 
     }
