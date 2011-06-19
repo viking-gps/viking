@@ -128,6 +128,7 @@ WAYPOINT_ICONS_LARGE += wp_dive1_large.png
 WAYPOINT_ICONS_LARGE += wp_dive2_large.png
 WAYPOINT_ICONS_LARGE += wp_dollar_large.png
 WAYPOINT_ICONS_LARGE += wp_drinking_wtr_large.png
+WAYPOINT_ICONS_LARGE += wp_exit_large.png
 WAYPOINT_ICONS_LARGE += wp_fastfood_large.png
 WAYPOINT_ICONS_LARGE += wp_fhs_facility_large.png
 WAYPOINT_ICONS_LARGE += wp_fish_large.png

@@ -114,7 +114,7 @@ static struct {
   { "Mine",                  "mine",           174,   "mine symbol",                       &wp_mine_pixbuf,            &wp_mine_large_pixbuf,            NULL },
   { "Trail Head",            "trail_head",     175,   "trail head symbol",                 NULL,                &wp_trail_head_large_pixbuf,            NULL },
   { "Truck Stop",            "truck_stop",     176,   "truck stop symbol",                 NULL,                &wp_truck_stop_large_pixbuf,            NULL },
-  { "Exit",                  "user_exit",      177,   "user exit symbol",                  NULL,                NULL,            NULL },
+  { "Exit",                  "user_exit",      177,   "user exit symbol",                  NULL,                       &wp_exit_large_pixbuf,            NULL },
   { "Flag",                  "flag",           178,   "flag symbol",                       &wp_flag_pixbuf,            NULL,            NULL },
   { "Circle with X",         "circle_x",       179,   "circle with x in the center",       NULL,                NULL,            NULL },
   { "Open 24 Hours",          "open_24hr",      180,   "open 24 hours symbol",              NULL,                NULL,            NULL },
