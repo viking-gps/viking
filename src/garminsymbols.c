@@ -299,7 +299,7 @@ static struct {
   { "Intersection",           "int",            16385, "intersection symbol",               NULL,                NULL,            NULL },
   { "Non-directional beacon", "ndb",            16386, "non-directional beacon symbol",     NULL,                NULL,            NULL },
   { "VHF Omni-range",         "vor",            16387, "VHF omni-range symbol",             NULL,                NULL,            NULL },
-  { "Heliport",               "heliport",       16388, "heliport symbol",                   NULL,                NULL,            NULL },
+  { "Heliport",               "heliport",       16388, "heliport symbol",                   NULL,                       &wp_helipad_large_pixbuf,         NULL },
   { "Private Field",          "private",        16389, "private field symbol",              NULL,                NULL,            NULL },
   { "Soft Field",             "soft_fld",       16390, "soft field symbol",                 NULL,                NULL,            NULL },
   { "Tall Tower",             "tall_tower",     16391, "tall tower symbol",                 NULL,                &wp_tall_tower_large_pixbuf,           NULL },

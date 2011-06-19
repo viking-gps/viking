@@ -143,6 +143,7 @@ WAYPOINT_ICONS_LARGE += wp_geocache_large.png
 WAYPOINT_ICONS_LARGE += wp_glider_large.png
 WAYPOINT_ICONS_LARGE += wp_golf_large.png
 WAYPOINT_ICONS_LARGE += wp_grnd_trans_large.png
+WAYPOINT_ICONS_LARGE += wp_helipad_large.png
 WAYPOINT_ICONS_LARGE += wp_horn_large.png
 WAYPOINT_ICONS_LARGE += wp_house_large.png
 WAYPOINT_ICONS_LARGE += wp_ice_skating_large.png
