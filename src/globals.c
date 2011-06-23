@@ -92,6 +92,9 @@ void a_vik_preferences_init ()
   a_preferences_register(prefs6, tmp, VIKING_PREFERENCES_GROUP_KEY);
   tmp.d = -74.007130;
   a_preferences_register(prefs7, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
+  // New Tab
+  a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )

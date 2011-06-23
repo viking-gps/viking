@@ -126,4 +126,10 @@ gdouble a_vik_get_default_long ( );
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
 
+/* Another group of global preferences,
+  but in a separate section to try to keep things organized */
+/* AKA Export/External Prefs */
+#define VIKING_PREFERENCES_IO_GROUP_KEY "viking.io"
+#define VIKING_PREFERENCES_IO_NAMESPACE "viking.io."
+
 #endif
