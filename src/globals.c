@@ -69,7 +69,7 @@ static VikLayerParam prefs7[] = {
 
 void a_vik_preferences_init ()
 {
-  a_preferences_register_group ( VIKING_PREFERENCES_GROUP_KEY, "Global preferences" );
+  a_preferences_register_group ( VIKING_PREFERENCES_GROUP_KEY, _("General") );
 
   VikLayerParamData tmp;
   tmp.u = VIK_DEGREE_FORMAT_DMS;
