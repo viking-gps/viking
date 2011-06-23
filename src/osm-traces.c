@@ -149,7 +149,7 @@ static gchar *get_login()
 /* initialisation */
 void osm_traces_init () {
   /* Preferences */
-  a_preferences_register_group ( VIKING_OSM_TRACES_PARAMS_GROUP_KEY, "OpenStreetMap traces" );
+  a_preferences_register_group ( VIKING_OSM_TRACES_PARAMS_GROUP_KEY, _("OpenStreetMap Traces") );
 
   VikLayerParamData tmp;
   tmp.s = "";
