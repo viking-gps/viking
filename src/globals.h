@@ -122,6 +122,15 @@ typedef enum {
 gdouble a_vik_get_default_lat ( );
 gdouble a_vik_get_default_long ( );
 
+/* KML export preferences */
+typedef enum {
+  VIK_KML_EXPORT_UNITS_METRIC,
+  VIK_KML_EXPORT_UNITS_STATUTE,
+  VIK_KML_EXPORT_UNITS_NAUTICAL,
+} vik_kml_export_units_t;
+
+vik_kml_export_units_t a_vik_get_kml_export_units ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."

@@ -67,6 +67,16 @@ static VikLayerParam prefs7[] = {
   { VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LOCATION_LONG, N_("Default longitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL },
 };
 
+/* External/Export Options */
+
+static gchar * params_kml_export_units[] = {"Metric", "Statute", "Nautical", NULL};
+
+static VikLayerParam io_prefs[] = {
+  { VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("KML File Export Units:"), VIK_LAYER_WIDGET_COMBOBOX, params_kml_export_units, NULL },
+};
+
+/* End of Options static stuff */
+
 void a_vik_preferences_init ()
 {
   a_preferences_register_group ( VIKING_PREFERENCES_GROUP_KEY, _("General") );
@@ -95,6 +105,9 @@ void a_vik_preferences_init ()
 
   // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
+
+  tmp.u = VIK_KML_EXPORT_UNITS_METRIC;
+  a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -144,4 +157,13 @@ gdouble a_vik_get_default_long ( )
   gdouble data;
   data = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "default_longitude")->d;
   return data;
+}
+
+/* External/Export Options */
+
+vik_kml_export_units_t a_vik_get_kml_export_units ( )
+{
+  vik_kml_export_units_t units;
+  units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "kml_export_units")->u;
+  return units;
 }

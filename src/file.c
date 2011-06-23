@@ -711,8 +711,19 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
         case FILE_TYPE_KML:
 	  fclose ( f );
 	  f = NULL;
-          return a_babel_convert_to ( vtl, "-o kml", NULL, filename, NULL );
-          break;
+	  switch ( a_vik_get_kml_export_units () ) {
+	    case VIK_KML_EXPORT_UNITS_STATUTE:
+	      return a_babel_convert_to ( vtl, "-o kml", NULL, filename, NULL );
+	      break;
+	    case VIK_KML_EXPORT_UNITS_NAUTICAL:
+	      return a_babel_convert_to ( vtl, "-o kml,units=n", NULL, filename, NULL );
+	      break;
+	    default:
+	      // VIK_KML_EXPORT_UNITS_METRIC:
+	      return a_babel_convert_to ( vtl, "-o kml,units=m", NULL, filename, NULL );
+	      break;
+	  }
+	  break;
         default:
           g_critical("Houston, we've had a problem. file_type=%d", file_type);
       }
