@@ -116,7 +116,7 @@ void a_vik_preferences_init ()
   a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 
 #ifndef WINDOWS
-  tmp.s = "eog";
+  tmp.s = "xdg-open";
   a_preferences_register(&io_prefs_non_windows[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 #endif
 }
