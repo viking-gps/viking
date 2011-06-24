@@ -69,7 +69,7 @@ typedef enum {
 
 /* (Hopefully!) Human friendly altitude grid sizes - note no fixed 'ratio' just numbers that look nice...*/
 static const gdouble chunksa[] = {2.0, 5.0, 10.0, 15.0, 20.0,
-				  25.0, 50.0, 75.0, 100.0,
+				  25.0, 40.0, 50.0, 75.0, 100.0,
 				  150.0, 200.0, 250.0, 375.0, 500.0,
 				  750.0, 1000.0, 2000.0, 5000.0, 10000.0, 100000.0};
 
