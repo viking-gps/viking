@@ -41,30 +41,30 @@ static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
  
 static VikLayerParam prefs1[] = {
-  { VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_DEGREE_FORMAT_DMS, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL },
 };
 
 static VikLayerParam prefs2[] = {
-  { VIKING_PREFERENCES_NAMESPACE "units_distance", VIK_LAYER_PARAM_UINT, VIK_UNITS_DISTANCE_KILOMETRES, N_("Distance units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_distance, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "units_distance", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Distance units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_distance, NULL },
 };
 
 static VikLayerParam prefs3[] = {
-  { VIKING_PREFERENCES_NAMESPACE "units_speed", VIK_LAYER_PARAM_UINT, VIK_UNITS_SPEED_KILOMETRES_PER_HOUR, N_("Speed units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_speed, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "units_speed", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Speed units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_speed, NULL },
 };
 
 static VikLayerParam prefs4[] = {
-  { VIKING_PREFERENCES_NAMESPACE "units_height", VIK_LAYER_PARAM_UINT, VIK_UNITS_HEIGHT_METRES, N_("Height units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_height, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "units_height", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Height units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_height, NULL },
 };
 
 static VikLayerParam prefs5[] = {
-  { VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, TRUE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL },
 };
 
 static VikLayerParam prefs6[] = {
-  { VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LOCATION_LAT, N_("Default latitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default latitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL },
 };
 static VikLayerParam prefs7[] = {
-  { VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LOCATION_LONG, N_("Default longitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default longitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL },
 };
 
 /* External/Export Options */
@@ -85,6 +85,7 @@ static VikLayerParam io_prefs_non_windows[] = {
 
 void a_vik_preferences_init ()
 {
+  // Defaults for the options are setup here
   a_preferences_register_group ( VIKING_PREFERENCES_GROUP_KEY, _("General") );
 
   VikLayerParamData tmp;
