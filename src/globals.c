@@ -75,6 +75,12 @@ static VikLayerParam io_prefs[] = {
   { VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("KML File Export Units:"), VIK_LAYER_WIDGET_COMBOBOX, params_kml_export_units, NULL },
 };
 
+#ifndef WINDOWS
+static VikLayerParam io_prefs_non_windows[] = {
+  { VIKING_PREFERENCES_IO_NAMESPACE "image_viewer", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Image Viewer:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL },
+};
+#endif
+
 /* End of Options static stuff */
 
 void a_vik_preferences_init ()
@@ -108,6 +114,11 @@ void a_vik_preferences_init ()
 
   tmp.u = VIK_KML_EXPORT_UNITS_METRIC;
   a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+
+#ifndef WINDOWS
+  tmp.s = "eog";
+  a_preferences_register(&io_prefs_non_windows[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+#endif
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -167,3 +178,10 @@ vik_kml_export_units_t a_vik_get_kml_export_units ( )
   units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "kml_export_units")->u;
   return units;
 }
+
+#ifndef WINDOWS
+const gchar* a_vik_get_image_viewer ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "image_viewer")->s;
+}
+#endif

@@ -131,6 +131,12 @@ typedef enum {
 
 vik_kml_export_units_t a_vik_get_kml_export_units ( );
 
+#ifndef WINDOWS
+/* Windows automatically uses the system defined viewer
+   ATM for other systems need to specify the program to use */
+const gchar* a_vik_get_image_viewer ( );
+#endif
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
