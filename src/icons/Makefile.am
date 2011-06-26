@@ -215,7 +215,6 @@ ICONS = \
   ruler_18.png \
   showpic_18.png \
   zoom_18.png \
-  iscissors_18.png \
   route_finder_18.png \
   select_18.png \
   thumbnails.png \
