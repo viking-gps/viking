@@ -119,9 +119,15 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
 
 
 
-/*
- * utility func to handle pasted text:
- * search for N dd.dddddd W dd.dddddd, N dd° dd.dddd W dd° dd.ddddd and so forth
+/**
+ * clip_parse_latlon:
+ * @text: text containing LatLon data.
+ * @coord: computed coordinates.
+ *
+ * Utility func to handle pasted text:
+ * search for N dd.dddddd W dd.dddddd, N dd° dd.dddd W dd° dd.ddddd and so forth.
+ *
+ * Returns: TRUE if coordinates are set.
  */
 static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord ) 
 {
@@ -275,8 +281,10 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
   g_free(s);
 }
 
-/*
- * deal with various data types a clipboard may hold 
+/**
+ * clip_receive_targets:
+ *
+ * Deal with various data types a clipboard may hold.
  */
 void clip_receive_targets ( GtkClipboard *c, GdkAtom *a, gint n, gpointer p )
 {
@@ -305,8 +313,10 @@ void clip_receive_targets ( GtkClipboard *c, GdkAtom *a, gint n, gpointer p )
  ** public functions                                                            **
  *********************************************************************************/
 
-/* 
- * make a copy of selected object and associate ourselves with the clipboard
+/**
+ * a_clipboard_copy_selected:
+ *
+ * Make a copy of selected object and associate ourselves with the clipboard.
  */
 void a_clipboard_copy_selected ( VikLayersPanel *vlp )
 {
@@ -359,9 +369,11 @@ void a_clipboard_copy( VikClipboardDataType type, guint16 layer_type, gint subty
   gtk_clipboard_set_with_data ( c, target_table, G_N_ELEMENTS(target_table), clip_get, clip_clear, vc );
 }
 
-/*
- * to deal with multiple data types, we first request the type of data on the clipboard,
- * and handle them in the callback
+/**
+ * a_clipboard_paste:
+ *
+ * To deal with multiple data types, we first request the type of data on the clipboard,
+ * and handle them in the callback.
  */
 gboolean a_clipboard_paste ( VikLayersPanel *vlp )
 {
