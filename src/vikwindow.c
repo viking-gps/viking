@@ -454,11 +454,11 @@ static void draw_status ( VikWindow *vw )
       /* xmpp should be a whole number so don't show useless .000 bit */
       g_snprintf ( zoom_level, 22, "%d %s", (int)xmpp, unit );
   if ( vw->current_tool == TOOL_LAYER )
-    vik_statusbar_set_message ( vw->viking_vs, 0, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].name );
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].name );
   else
-    vik_statusbar_set_message ( vw->viking_vs, 0, _(tool_names[vw->current_tool]) );
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, _(tool_names[vw->current_tool]) );
 
-  vik_statusbar_set_message ( vw->viking_vs, 2, zoom_level );
+  vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_ZOOM, zoom_level );
 }
 
 void vik_window_set_redraw_trigger(VikLayer *vl)
@@ -605,7 +605,7 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   lat = NULL;
   g_free (lon);
   lon = NULL;
-  vik_statusbar_set_message ( vw->viking_vs, 4, pointer_buf );
+  vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_POSITION, pointer_buf );
 
   vik_window_pan_move ( vw, event );
 
@@ -917,7 +917,7 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
       s->has_oldcoord = TRUE;
     }
 
-    vik_statusbar_set_message ( s->vw->viking_vs, 3, temp );
+    vik_statusbar_set_message ( s->vw->viking_vs, VIK_STATUSBAR_INFO, temp );
     g_free ( temp );
 
     s->oldcoord = coord;
@@ -981,7 +981,7 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
       temp = g_strdup_printf ("Just to keep the compiler happy");
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
     }
-    vik_statusbar_set_message ( vw->viking_vs, 3, temp );
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, temp );
     g_free ( temp );
   }
   return VIK_LAYER_TOOL_ACK;

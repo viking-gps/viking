@@ -44,8 +44,18 @@ struct _VikStatusbarClass
 
 GType vik_statusbar_get_type ();
 
+
+typedef enum {
+  VIK_STATUSBAR_TOOL,
+  VIK_STATUSBAR_ITEMS,
+  VIK_STATUSBAR_ZOOM,
+  VIK_STATUSBAR_INFO,
+  VIK_STATUSBAR_POSITION,
+  VIK_STATUSBAR_NUM_TYPES
+} vik_statusbar_type_t;
+
 VikStatusbar *vik_statusbar_new ();
-void vik_statusbar_set_message ( VikStatusbar *vs, gint field, const gchar *message );
+void vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const gchar *message );
 
 
 #endif

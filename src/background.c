@@ -47,7 +47,7 @@ enum
 void a_background_update_status ( VikStatusbar *vs, gchar *str )
 {
   gdk_threads_enter ();
-  vik_statusbar_set_message ( vs, 1, str );
+  vik_statusbar_set_message ( vs, VIK_STATUSBAR_ITEMS, str );
   gdk_threads_leave ();
 }
 

@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,19 +20,16 @@
  *
  */
 
-/* gtk status bars: just plain dumb. this file 
-shouldn't have to exist. */
+/* gtk status bars: just plain dumb. this file shouldn't have to exist.
+   NB as of gtk 2.18 there are 'info bars' that could be useful... */
 #include <gtk/gtk.h>
 
 #include "vikstatus.h"
 
-#define STATUS_COUNT 5
-
 struct _VikStatusbar {
-  GtkStatusbar parent;
-  gint num_extra_bars;
-  GtkWidget *status[STATUS_COUNT-1];
-  gboolean empty[STATUS_COUNT];
+  GtkHBox hbox;
+  GtkWidget *status[VIK_STATUSBAR_NUM_TYPES];
+  gboolean empty[VIK_STATUSBAR_NUM_TYPES];
 };
 
 GType vik_statusbar_get_type (void)
@@ -52,7 +50,7 @@ GType vik_statusbar_get_type (void)
       0,
       NULL /* instance init */
     };
-    vs_type = g_type_register_static ( GTK_TYPE_STATUSBAR, "VikStatusbar", &vs_info, 0 );
+    vs_type = g_type_register_static ( GTK_TYPE_HBOX, "VikStatusbar", &vs_info, 0 );
   }
 
   return vs_type;
@@ -63,41 +61,39 @@ VikStatusbar *vik_statusbar_new ()
   VikStatusbar *vs = VIK_STATUSBAR ( g_object_new ( VIK_STATUSBAR_TYPE, NULL ) );
   gint i;
 
-  gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs), FALSE );
-
-  vs->status[0] = gtk_statusbar_new();
-  gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[0]), FALSE );
-  gtk_box_pack_start ( GTK_BOX(vs), vs->status[0], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[0], 100, -1 );
-
-  vs->status[1] = gtk_statusbar_new();
-  gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[1]), FALSE );
-  gtk_box_pack_start ( GTK_BOX(vs), vs->status[1], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[1], 100, -1 );
-
-  vs->status[2] = gtk_statusbar_new();
-  gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[2]), FALSE );
-  gtk_box_pack_end ( GTK_BOX(vs), vs->status[2], TRUE, TRUE, 1);
-
-  vs->status[3] = gtk_statusbar_new();
-  gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[3]), FALSE );
-  gtk_box_pack_end ( GTK_BOX(vs), vs->status[3], TRUE, TRUE, 1);
-
-  for ( i = 0; i < STATUS_COUNT; i++ )
+  for ( i = 0; i < VIK_STATUSBAR_NUM_TYPES; i++ ) {
     vs->empty[i] = TRUE;
+    vs->status[i] = gtk_statusbar_new();
+    gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[i]), FALSE );
+  }
+
+  gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_TOOL], FALSE, FALSE, 1);
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_TOOL], 150, -1 );
+
+  gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ITEMS], FALSE, FALSE, 1);
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ITEMS], 100, -1 );
+
+  gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ZOOM], FALSE, FALSE, 1);
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ZOOM], 100, -1 );
+
+  gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_POSITION], FALSE, FALSE, 1);
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_POSITION], 250, -1 );
+
+  gtk_box_pack_end ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_INFO], TRUE, TRUE, 1);
+
+  // Set minimum overall size
+  //  otherwise the individual size_requests above create an implicit overall size,
+  //  and so one can't downsize horizontally as much as may be desired when the statusbar is on
+  gtk_widget_set_size_request ( GTK_WIDGET(vs), 50, -1 );
 
   return vs;
 }
 
-void vik_statusbar_set_message ( VikStatusbar *vs, gint field, const gchar *message )
+void vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const gchar *message )
 {
-  if ( field >= 0 && field < STATUS_COUNT )
+  if ( field >= 0 && field < VIK_STATUSBAR_NUM_TYPES )
   {
-    GtkStatusbar *gsb;
-    if ( field == 0 )
-      gsb = GTK_STATUSBAR(vs);
-    else
-      gsb = GTK_STATUSBAR(vs->status[field-1]);
+    GtkStatusbar *gsb = GTK_STATUSBAR(vs->status[field]);
 
     if ( !vs->empty[field] )
       gtk_statusbar_pop ( gsb, 0 );
