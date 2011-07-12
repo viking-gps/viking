@@ -2087,7 +2087,14 @@ static void trw_layer_export_gpsmapper ( gpointer layer_and_vlp[2] )
 
 static void trw_layer_export_gpx ( gpointer layer_and_vlp[2] )
 {
-  trw_layer_export ( layer_and_vlp, _("Export Layer"), vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])), NULL, FILE_TYPE_GPX );
+  /* Auto append '.gpx' to track name (providing it's not already there) for the default filename */
+  gchar *auto_save_name = g_strdup ( vik_layer_get_name(VIK_LAYER(layer_and_vlp[0])) );
+  if ( ! check_file_ext ( auto_save_name, ".gpx" ) )
+    auto_save_name = g_strconcat ( auto_save_name, ".gpx", NULL );
+
+  trw_layer_export ( layer_and_vlp, _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPX );
+
+  g_free ( auto_save_name );
 }
 
 static void trw_layer_export_kml ( gpointer layer_and_vlp[2] )
