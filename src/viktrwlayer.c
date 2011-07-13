@@ -4959,7 +4959,8 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
     marker_end_move ( t );
 
     /* diff dist is diff from orig */
-    vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
+    if ( vtl->tpwin )
+      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
     /* can't join with itself! */
     trw_layer_cancel_last_tp ( vtl );
 
