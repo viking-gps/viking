@@ -4635,9 +4635,11 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
   {
     if ( vtl->wp_right_click_menu )
       g_object_ref_sink ( G_OBJECT(vtl->wp_right_click_menu) );
-    vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
-    vik_trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_name, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name ), vvp );
-    gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+    if ( vtl->current_wp ) {
+      vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
+      vik_trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_name, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name ), vvp );
+      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+    }
     vtl->waypoint_rightclick = FALSE;
   }
   return FALSE;
