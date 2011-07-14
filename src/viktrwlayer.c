@@ -1820,6 +1820,90 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
   return NULL;
 }
 
+/*
+ * Function to show basic track point information on the statusbar
+ */
+static void set_statusbar_msg_info_trkpt ( VikTrwLayer *vtl, VikTrackpoint *trkpt )
+{
+  gchar tmp_buf1[64];
+  switch (a_vik_get_units_height ()) {
+  case VIK_UNITS_HEIGHT_FEET:
+    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Trkpt: Alt %dft"), (int)round(VIK_METERS_TO_FEET(trkpt->altitude)));
+    break;
+  default:
+    //VIK_UNITS_HEIGHT_METRES:
+    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Trkpt: Alt %dm"), (int)round(trkpt->altitude));
+  }
+  
+  gchar tmp_buf2[64];
+  tmp_buf2[0] = '\0';
+  if ( trkpt->has_timestamp ) {
+    // Compact date time format
+    strftime (tmp_buf2, sizeof(tmp_buf2), _(" | Time %x %X"), localtime(&(trkpt->timestamp)));
+  }
+
+  // Position part
+  // Position is put later on, as this bit may not be seen if the display is not big enough,
+  //   one can easily use the current pointer position to see this if needed
+  gchar *lat = NULL, *lon = NULL;
+  static struct LatLon ll;
+  vik_coord_to_latlon (&(trkpt->coord), &ll);
+  a_coords_latlon_to_string ( &ll, &lat, &lon );
+
+  // Track name
+  // Again is put later on, as this bit may not be seen if the display is not big enough
+  //  trackname can be seen from the treeview (when enabled)
+  // Also name could be very long to not leave room for anything else
+  gchar tmp_buf3[64];
+  tmp_buf3[0] = '\0';
+  if ( vtl->current_tp_track_name ) {
+    g_snprintf(tmp_buf3, sizeof(tmp_buf3),  _(" | Track: %s"), vtl->current_tp_track_name );
+  }
+
+  // Combine parts to make overall message
+  gchar *msg = g_strdup_printf (_("%s%s | %s %s %s"), tmp_buf1, tmp_buf2, lat, lon, tmp_buf3);
+  vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, msg );
+  g_free ( lat );
+  g_free ( lon );
+  g_free ( msg );
+}
+
+/*
+ * Function to show basic waypoint information on the statusbar
+ */
+static void set_statusbar_msg_info_wpt ( VikTrwLayer *vtl, VikWaypoint *wpt )
+{
+  gchar tmp_buf1[64];
+  switch (a_vik_get_units_height ()) {
+  case VIK_UNITS_HEIGHT_FEET:
+    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt %dft"), (int)round(VIK_METERS_TO_FEET(wpt->altitude)));
+    break;
+  default:
+    //VIK_UNITS_HEIGHT_METRES:
+    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt %dm"), (int)round(wpt->altitude));
+  }
+  
+  // Position part
+  // Position is put last, as this bit is most likely not to be seen if the display is not big enough,
+  //   one can easily use the current pointer position to see this if needed
+  gchar *lat = NULL, *lon = NULL;
+  static struct LatLon ll;
+  vik_coord_to_latlon (&(wpt->coord), &ll);
+  a_coords_latlon_to_string ( &ll, &lat, &lon );
+
+  // Combine parts to make overall message
+  gchar *msg;
+  if ( wpt->comment )
+    // Add comment if available
+    msg = g_strdup_printf ( _("%s | %s %s | Comment: %s"), tmp_buf1, lat, lon, wpt->comment );
+  else
+    msg = g_strdup_printf ( _("%s | %s %s"), tmp_buf1, lat, lon );
+  vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, msg );
+  g_free ( lat );
+  g_free ( lon );
+  g_free ( msg );
+}
+
 /**
  * General layer selection function, find out which bit is selected and take appropriate action
  */
@@ -1829,6 +1913,9 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
   l->current_wp      = NULL;
   l->current_wp_name = NULL;
   trw_layer_cancel_current_tp ( l, FALSE );
+
+  // Clear statusbar
+  vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(l))), VIK_STATUSBAR_INFO, "" );
 
   switch ( type )
     {
@@ -1853,7 +1940,8 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	    break;
 	  case VIK_TRW_LAYER_SUBLAYER_TRACK:
 	    {
-	      vik_window_set_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->tracks, sublayer ), l, sublayer );
+	      VikTrack *track = g_hash_table_lookup ( l->tracks, sublayer );
+	      vik_window_set_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), (gpointer)track, l, sublayer );
 	      /* Mark for redraw */
 	      return TRUE;
 	    }
@@ -1867,7 +1955,10 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	    break;
 	  case VIK_TRW_LAYER_SUBLAYER_WAYPOINT:
 	    {
-	      vik_window_set_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), g_hash_table_lookup ( l->waypoints, sublayer ), l, sublayer );
+	      VikWaypoint *wpt = g_hash_table_lookup ( l->waypoints, sublayer );
+	      vik_window_set_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), (gpointer)wpt, l, sublayer );
+	      // Show some waypoint info
+	      set_statusbar_msg_info_wpt ( l, wpt );
 	      /* Mark for redraw */
 	      return TRUE;
 	    }
@@ -4370,6 +4461,7 @@ static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikVie
   return params.closest_wp;
 }
 
+
 // Some forward declarations
 static void marker_begin_move ( tool_ed_t *t, gint x, gint y );
 static void marker_moveto ( tool_ed_t *t, gint x, gint y );
@@ -4548,6 +4640,8 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       vtl->current_tpl = tp_params.closest_tpl;
       vtl->current_tp_track_name = tp_params.closest_track_name;
 
+      set_statusbar_msg_info_trkpt ( vtl, tp_params.closest_tp );
+
       if ( vtl->tpwin )
 	vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
 
@@ -4560,6 +4654,9 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   vtl->current_wp      = NULL;
   vtl->current_wp_name = NULL;
   trw_layer_cancel_current_tp ( vtl, FALSE );
+
+  // Blank info
+  vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, "" );
 
   return FALSE;
 }
@@ -5219,6 +5316,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     vtl->current_tpl = params.closest_tpl;
     vtl->current_tp_track_name = params.closest_track_name;
     trw_layer_tpwin_init ( vtl );
+    set_statusbar_msg_info_trkpt ( vtl, params.closest_tp );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
