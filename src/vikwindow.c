@@ -1745,6 +1745,9 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     case LOAD_TYPE_GPSBABEL_FAILURE:
       a_dialog_error_msg ( GTK_WINDOW(vw), _("GPSBabel is required to load files of this type or GPSBabel encountered problems.") );
       break;
+    case LOAD_TYPE_UNSUPPORTED_FAILURE:
+      a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unsupported file type for %s"), filename );
+      break;
     case LOAD_TYPE_VIK_SUCCESS:
     {
       GtkWidget *mode_button;
