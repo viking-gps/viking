@@ -320,7 +320,7 @@ AC_ARG_WITH(tileage,
              fi],
              [VIK_CONFIG_DEFAULT_TILE_AGE=30])
 AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
-                   [Age of tiles before cheking it (in seconds)])
+                   [Age of tiles before checking it (in seconds)])
 
 dnl man pages processing
 DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
