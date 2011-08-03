@@ -2278,16 +2278,14 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
                       gtk_spin_button_get_value ( GTK_SPIN_BUTTON(zoom_spin) ), /* do not save this value, default is current zoom */
                       vw->draw_image_save_as_png = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(png_radio) ) );
     else {
-      if ( vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM )
-        save_image_dir ( vw, fn, 
+      // NB is in UTM mode ATM
+      save_image_dir ( vw, fn,
                        vw->draw_image_width = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(width_spin) ),
                        vw->draw_image_height = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(height_spin) ),
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(zoom_spin) ), /* do not save this value, default is current zoom */
                        vw->draw_image_save_as_png = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(png_radio) ),
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_width_spin) ),
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_height_spin) ) );
-      else
-        a_dialog_error_msg ( GTK_WINDOW(vw), _("You must be in UTM mode to use this feature") );
     }
   }
   gtk_widget_destroy ( GTK_WIDGET(dialog) );
@@ -2326,6 +2324,11 @@ static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
 {
   gchar *fn = NULL;
   
+  if ( vik_viewport_get_coord_mode(vw->viking_vvp) != VIK_COORD_UTM ) {
+    a_dialog_error_msg ( GTK_WINDOW(vw), _("You must be in UTM mode to use this feature") );
+    return;
+  }
+
   if (!vw->save_img_dir_dia) {
     vw->save_img_dir_dia = gtk_file_chooser_dialog_new (_("Choose a directory to hold images"),
 				      GTK_WINDOW(vw),
