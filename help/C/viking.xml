@@ -148,7 +148,7 @@ Analyzing speed at different places (to some degree), adding waypoints where you
 </listitem>
 <listitem>
 <para>
-Downloading and storing OSM and/or Terraserver maps on your hard drive and looking at them later.
+Downloading and storing OpenStreetMap and/or Terraserver maps on your hard drive and looking at them later.
 </para>
 </listitem>
 <listitem>
@@ -347,16 +347,16 @@ This gets 'interesting' points from Wikipedia for the specified view: either wit
 
 <section id="osm_upload"><title>Upload To OSM</title>
 <para>
-This opens a dialog to upload all tracks and waypoints to OSM traces.
-Useful if you are an OSM contributor (you will need an OSM account), these details can be stored in &appname; preferences.
+This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
+Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap account), these details can be stored in &appname; preferences.
 </para>
 <para>
- &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OSM.
+ &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
 </para>
 <note>
 <para>
  <emphasis role="bold">Warning!</emphasis>
-The password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OSM server. This is due to OSM's basic authentication method.
+The password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OpenStreetMap server. This is due to OpenStreetMap's basic authentication method.
 </para>
 </note>
 </section>
@@ -650,10 +650,10 @@ This layer provides a single map resource, you may have multiple map layers but 
 You will need an open internet connection when you are downloading maps, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
 </para>
 <para>
-Some maps are continually improving over time (e.g. OSM) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - 'Tile Age' to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
+Some maps are continually improving over time (e.g. OpenStreetMap) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - 'Tile Age' to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
 </para>
 <para>
-Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServer-USA">Terraserver</ulink> (Primarily USA coverage) and <ulink url="http://en.wikipedia.org/wiki/OpenStreetMap">OpenStreetMap (OSM)</ulink> ones and more:
+Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServer-USA">Terraserver</ulink> (Primarily USA coverage) and <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
 <itemizedlist>
 <listitem><para>Terraserver Topos</para></listitem>
@@ -1235,7 +1235,7 @@ this, simply select the layer and right click on it. Then, select
 <title>Fill in the form</title>
 <para>
 In both cases, &appname; will retain some information.
-The email field is the email you used to subscribed into OSM.
+The email field is the email you used to subscribed into OpenStreetMap.
 The password field is the password you used with this account.
 The filename is the name you want your upload has on the server. This information is displayed by the osm server.
 The description is some descriptive information.
