@@ -79,7 +79,7 @@
           <para role="author">Guilhem Bonnefille <email>guilhem.bonnefille@gmail.com</email></para>
           <para role="publisher">GNOME Documentation Project</para>
         </revdescription>
-      </revision> 
+      </revision>
     </revhistory>
 
     <releaseinfo>This manual describes version &appversion; of &appname;.</releaseinfo>
@@ -239,6 +239,7 @@ Layers supported by &appname; are:
 <listitem><para>GPS</para></listitem>
 <listitem><para>DEM</para></listitem>
 <listitem><para>Coord</para></listitem>
+<listitem><para>Map</para></listitem>
 <listitem><para>GeoRef</para></listitem>
 </itemizedlist>
 <para>
@@ -264,8 +265,6 @@ The cut/copy/paste options can be accessed in a variety of ways once the layer h
 <para>
 See the individual section for detail about each layer.
 </para>
-
-</section>
 
 <section><title>TrackWaypoint Layer</title>
 <para>
@@ -620,7 +619,7 @@ There are several options to quickly delete a subsection of data:
 
 </section><!-- End GPS -->
 
-<section><title> DEM (Digital Elevation Model) Layer</title>
+<section><title>DEM (Digital Elevation Model) Layer</title>
 <para>
 This layer provides elevation data from the <ulink url="http://www2.jpl.nasa.gov/srtm/">Shuttle Radar Topography Mission (SRTM)</ulink>
 </para>
@@ -762,6 +761,8 @@ This layer is allows drawing of grid lines on the viewport.
 </para>
 </section><!-- End Coord -->
 
+</section>
+
 <section><title>Tools</title>
 <para>
 You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
@@ -812,10 +813,10 @@ Left click will open the new waypoint dialog using the specified position.
 <para>
 Left click to create a new trackpoint. If it's the initial trackpoint you will be asked to enter a name for the track.
 If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoint position to a nearby existing trackpoint.
-Right click or <keycap>Backspace</keycap> : undo one point.
+Right click or <keycap>Backspace</keycap>: undo one point.
 </para>
 <para>
-Double click or <keycap>Escape</keycap> : finish track creation.
+Double click or <keycap>Escape</keycap>: finish track creation.
 </para>
 </section>
 
