@@ -20,9 +20,12 @@
  *
  */
 
-/* babel.c: running external programs and redirecting to TRWLayers.
+/**
+ * SECTION:babel
+ * @short_description: running external programs and redirecting to TRWLayers.
+ *
  * GPSBabel may not be necessary for everything -- for instance,
- *   use a_babel_convert_from_shellcommand with input_file_type == NULL
+ *   use a_babel_convert_from_shellcommand() with input_file_type == %NULL
  *   for an external program that outputs GPX.
  */
 
@@ -43,9 +46,22 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-/* in the future we could have support for other shells (change command strings), or not use a shell at all */
+/* TODO in the future we could have support for other shells (change command strings), or not use a shell at all */
 #define BASH_LOCATION "/bin/bash"
 
+/**
+ * a_babel_convert:
+ * @vt:        The TRW layer to modify. All data will be deleted, and replaced by what gpsbabel outputs.
+ * @babelargs: A string containing gpsbabel command line filter options. No file types or names should
+ *             be specified.
+ * @cb:        A callback function.
+ *
+ * This function modifies data in a trw layer using gpsbabel filters.  This routine is synchronous;
+ * that is, it will block the calling program until the conversion is done. To avoid blocking, call
+ * this routine from a worker thread.
+ *
+ * Returns: %TRUE on success
+ */
 gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data )
 {
   int fd_src;
@@ -68,16 +84,18 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   return ret;
 }
 
-/* Runs args[0] with the arguments and uses the GPX module
+/**
+ * babel_general_convert_from:
+ * @cb: callback that is run upon new data from STDOUT (?)
+ *     (TODO: STDERR would be nice since we usually redirect STDOUT)
+ * @user_data: passed along to cb
+ *
+ * Runs args[0] with the arguments and uses the GPX module
  * to import the GPX data into layer vt. Assumes that upon
  * running the command, the data will appear in the (usually
  * temporary) file name_dst.
  *
- * cb: callback that is run upon new data from STDOUT (?)
- *     (TODO: STDERR would be nice since we usually redirect STDOUT)
- * user_data: passed along to cb
- *
- * returns TRUE on success
+ * Returns: %TRUE on success
  */
 #ifdef WINDOWS
 gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
@@ -192,6 +210,19 @@ gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb, gchar 
 }
 #endif /* Posix */
 
+/**
+ * a_babel_convert_from:
+ * @vt:        The TRW layer to place data into. Duplicate items will be overwritten.
+ * @babelargs: A string containing gpsbabel command line options. In addition to any filters, this string
+ *             must include the input file type (-i) option.
+ * @cb:	       Optional callback function. Same usage as in a_babel_convert().
+ *
+ * Loads data into a trw layer from a file, using gpsbabel.  This routine is synchronous;
+ * that is, it will block the calling program until the conversion is done. To avoid blocking, call
+ * this routine from a worker thread.
+ *
+ * Returns: %TRUE on success
+ */
 gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *from, gpointer user_data )
 {
   int i,j;
@@ -241,10 +272,13 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
   return ret;
 }
 
-/* Runs the input command in a shell (bash) and optionally uses GPSBabel to convert from input_file_type.
- * If input_file_type is NULL, doesn't use GPSBabel. Input must be GPX (or Geocaching *.loc)
+/**
+ * a_babel_convert_from_shellcommand:
  *
- * Uses babel_general_convert_from to actually run the command. This function
+ * Runs the input command in a shell (bash) and optionally uses GPSBabel to convert from input_file_type.
+ * If input_file_type is %NULL, doesn't use GPSBabel. Input must be GPX (or Geocaching *.loc)
+ *
+ * Uses babel_general_convert_from() to actually run the command. This function
  * prepares the command and temporary file, and sets up the arguments for bash.
  */
 gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_file_type, BabelStatusFunc cb, gpointer user_data )
