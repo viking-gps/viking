@@ -1804,6 +1804,42 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 				      NULL);
+    GtkFileFilter *filter;
+    // NB file filters are listed this way for alphabetical ordering
+#ifdef VIK_CONFIG_GEOCACHES
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Geocaching") );
+    gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
+#endif
+
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Google Earth") );
+    gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
+
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("GPX") );
+    gtk_file_filter_add_pattern ( filter, "*.gpx" ); // No MIME type available
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
+
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Viking") );
+    gtk_file_filter_add_pattern ( filter, "*.vik" );
+    gtk_file_filter_add_pattern ( filter, "*.viking" );
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
+
+    // NB could have filters for gpspoint (*.gps,*.gpsoint?) + gpsmapper (*.gsm,*.gpsmapper?)
+    // However assume this are barely used and thus not worthy of inclusion
+    //   as they'll just make the options too many and have no clear file pattern
+    //   one can always use the all option
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("All") );
+    gtk_file_filter_add_pattern ( filter, "*" );
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
+    // Default to any file - same as before open filters were added
+    gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
+
     gtk_file_chooser_set_select_multiple ( GTK_FILE_CHOOSER(vw->open_dia), TRUE );
     gtk_window_set_transient_for ( GTK_WINDOW(vw->open_dia), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->open_dia), TRUE );
