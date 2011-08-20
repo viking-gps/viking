@@ -310,7 +310,7 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
 
 AC_ARG_WITH(tileage,
             [AC_HELP_STRING([--with-tileage],
-                            [specify the age of a tile before checking it (default is 30 s)])],
+                            [specify the age of a tile before checking it (default is 7 days)])],
             [if test "x$withval" = "xno"; then
                 VIK_CONFIG_DEFAULT_TILE_AGE=0;
              elif test "x$withval" = "xyes"; then
@@ -318,7 +318,7 @@ AC_ARG_WITH(tileage,
              else
                 VIK_CONFIG_DEFAULT_TILE_AGE=${withval}
              fi],
-             [VIK_CONFIG_DEFAULT_TILE_AGE=30])
+             [VIK_CONFIG_DEFAULT_TILE_AGE=604800])
 AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
                    [Age of tiles before cheking it (in seconds)])
 
