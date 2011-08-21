@@ -1898,6 +1898,13 @@ static void acquire_from_google ( GtkAction *a, VikWindow *vw )
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface );
 }
 
+#ifdef VIK_CONFIG_OPENSTREETMAP
+static void acquire_from_osm ( GtkAction *a, VikWindow *vw )
+{
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_interface );
+}
+#endif
+
 #ifdef VIK_CONFIG_GEOCACHES
 static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 {
@@ -2465,6 +2472,9 @@ static GtkActionEntry entries[] = {
   { "Acquire", NULL, N_("A_cquire"), 0, 0, 0 },
   { "AcquireGPS",   NULL,                N_("From _GPS..."),           	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
   { "AcquireGoogle",   NULL,             N_("Google _Directions..."),     NULL,         N_("Get driving directions from Google"),           (GCallback)acquire_from_google   },
+#ifdef VIK_CONFIG_OPENSTREETMAP
+  { "AcquireOSM",   NULL,                 N_("_OSM Traces..."),    	  NULL,         N_("Get traces from OpenStreetMap"),            (GCallback)acquire_from_osm       },
+#endif
 #ifdef VIK_CONFIG_GEOCACHES
   { "AcquireGC",   NULL,                 N_("Geo_caches..."),    	  NULL,         N_("Get Geocaches from geocaching.com"),            (GCallback)acquire_from_gc       },
 #endif

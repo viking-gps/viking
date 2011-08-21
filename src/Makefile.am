@@ -147,7 +147,8 @@ endif
 if OPENSTREETMAP
 libviking_a_SOURCES += \
 	osm.c osm.h \
-	osm-traces.c osm-traces.h
+	osm-traces.c osm-traces.h \
+	datasource_osm.c
 endif
 
 if BLUEMARBLE

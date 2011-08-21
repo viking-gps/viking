@@ -1212,6 +1212,12 @@ Do not forget to save your configuration (as discussed above).
 </section>
 
 </section>
+<section><title>OpenStreetMap project</title>
+<para>
+<ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> is a collaborative project to create a free editable map of the world.
+One of sources of data for this project is GPS tracks.
+&appname; supports this project via the GPS Traces methods, both uploading and downloading such data.
+</para>
 <section><title>Uploading data to OpenStreetMap</title>
 <para>
 It is possible to upload data directly from &appname; to OpenStreetMap.
@@ -1242,8 +1248,29 @@ The description is some descriptive information.
 The tags field is a white separated list of tag.
 </para> 
 </formalpara>
-
 </section>
+<section><title>Downloading traces from OpenStreetMap</title>
+<para>
+It is possible to download GPS traces directly from OpenStreetMap into &appname;.
+This feature can be really useful for checking existing data before uploading new ones.
+</para>
+<formalpara>
+<title>Download all visible tracks</title>
+<para>One solution is to select
+<menuchoice>
+<guimenu>File</guimenu>
+<guisubmenu>Acquire</guisubmenu>
+<guimenuitem>OSM traces...</guimenuitem>
+</menuchoice>.
+Each request can get up to 5,000 points.
+The dialog box allows setting which group of 5,000 points to get. These groups are known as 'Page Numbers' which start at 0.
+Increasing the page number parameter allows one to request the subsequent sets of point groups.
+See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for further detail.
+</para>
+</formalpara>
+</section>
+</section>
+
 <section><title>Geocoded Photo</title>
 <para>
 HOWTO GEOCODE YOUR PHOTOS AND SEE THEM IN VIKING 
