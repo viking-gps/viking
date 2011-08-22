@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2011, Guilhem Bonnefille <guilhe.bonnefillee@gmail.com>
+ * Copyright (C) 2011, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,7 +95,7 @@ static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, g
   gchar sminlat[G_ASCII_DTOSTR_BUF_SIZE];
   gchar smaxlat[G_ASCII_DTOSTR_BUF_SIZE];
 
-  /* TODO get Viewport bounding box vik_viewport_get_min_max_lat_lon */
+  /* get Viewport bounding box */
   vik_viewport_get_min_max_lat_lon ( widgets->vvp, &min_lat, &max_lat, &min_lon, &max_lon );
 
   /* Convert as LANG=C double representation */
