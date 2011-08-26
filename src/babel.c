@@ -85,7 +85,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
 }
 
 #ifdef WINDOWS
-static gboolean babel_general_convert( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
+static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointer user_data )
 {
   gboolean ret;
   FILE *f;
@@ -146,7 +146,7 @@ static gboolean babel_general_convert( VikTrwLayer *vt, BabelStatusFunc cb, gcha
 /* Windows */
 #else
 /* Posix */
-static gboolean babel_general_convert( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_dst, gpointer user_data )
+static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointer user_data )
 {
   gboolean ret = FALSE;
   GPid pid;
@@ -204,7 +204,7 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
   if ( vt == NULL )
     return TRUE;
 
-  if (babel_general_convert(vt, cb, args, name_dst, user_data)) {
+  if (babel_general_convert(cb, args, user_data)) {
 
     f = g_fopen(name_dst, "r");
     if (f) {
@@ -358,7 +358,7 @@ static gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, g
     return(FALSE);
   }
        
-  return babel_general_convert (vt, cb, args, name_src, user_data);
+  return babel_general_convert (cb, args, user_data);
 }
 
 gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *to, gpointer user_data )
