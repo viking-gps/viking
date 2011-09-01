@@ -550,7 +550,7 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
   gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
-    ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, TRUE,
+    ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
     ICON_COLUMN, icon_type >= 0 ? vt->layer_type_icons[icon_type] : NULL, -1 );
 }
 
