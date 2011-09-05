@@ -1561,4 +1561,13 @@ Accept: */*
 
 </section>
 
+<section><title>Dependencies</title>
+<formalpara><title>gpsbabel</title>
+<para>&appname; uses <ulink url="http://gpsbabel.org/">GPSBabel</ulink> to convert data.</para>
+</formalpara>
+<formalpara><title>unbuffer (optional)</title>
+<para>&appname; uses unbuffer command to optimize conversion calls.</para>
+</formalpara>
+</section>
+
 </article>
