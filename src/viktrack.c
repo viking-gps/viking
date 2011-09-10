@@ -1067,6 +1067,20 @@ void vik_track_apply_dem_data ( VikTrack *tr )
   }
 }
 
+/*
+ * Apply DEM data (if available) - to only the last trackpoint
+ */
+void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
+{
+  gint16 elev;
+  if ( tr->trackpoints ) {
+    /* As in vik_track_apply_dem_data above - use 'best' interpolation method */
+    elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->coord), VIK_DEM_INTERPOL_BEST );
+    if ( elev != VIK_DEM_INVALID_ELEVATION )
+      VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->altitude = elev;
+  }
+}
+
 /* appends t2 to t1, leaving t2 with no trackpoints */
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
 {

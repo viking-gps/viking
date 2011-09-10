@@ -5024,6 +5024,8 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   tp->has_timestamp = FALSE;
   tp->timestamp = 0;
   vtl->current_track->trackpoints = g_list_append ( vtl->current_track->trackpoints, tp );
+  /* Auto attempt to get elevation from DEM data (if it's available) */
+  vik_track_apply_dem_data_last_trackpoint ( vtl->current_track );
 
   vtl->ct_x1 = vtl->ct_x2;
   vtl->ct_y1 = vtl->ct_y2;

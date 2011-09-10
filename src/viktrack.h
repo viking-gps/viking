@@ -101,6 +101,10 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
 VikTrack *vik_track_unmarshall (guint8 *data, guint datalen);
 
 void vik_track_apply_dem_data ( VikTrack *tr);
+/*
+ * Apply DEM data (if available) - to only the last trackpoint
+ */
+void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr );
 
 /* appends t2 to t1, leaving t2 with no trackpoints */
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 );
