@@ -1,4 +1,8 @@
-I don't think you need to use this anymore (just use the regular makefile), but I'm leaving it in so I know how to compile Viking on Windows ;)
+Files of this directory are probably not needed anymore (just use the regular makefile),
+but are left as reference for the old compile method on Windows ;)
+
+However the installer directory is used for the named purpose.
+Instructions on how to use the installer will follow in due course (probably on the Wiki first).
 
 ----
 If your GTK path isn't c:\gtk and/or your mingw path isn't c:\mingw, you will have to edit the scripts to compile.

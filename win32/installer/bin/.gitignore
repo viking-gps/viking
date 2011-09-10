@@ -1,0 +1,6 @@
+# This directory is delibrately 'empty'
+# It possibly could be created by the installation but ATM it's not.
+#
+# This where all the viking+gtk binaries (exe, dll, ...) go (it's exactly what  will be copied to your installation directory)
+*
+!.gitignore
