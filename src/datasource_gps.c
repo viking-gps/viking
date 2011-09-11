@@ -43,6 +43,8 @@
 
 static gboolean gps_acquire_in_progress = FALSE;
 
+static gint last_active = 0;
+
 static gpointer datasource_gps_init_func ( );
 static void datasource_gps_get_cmd_string ( gpointer add_widgets_data_not_used, gchar **babelargs, gchar **input_file );
 static void datasource_gps_cleanup ( gpointer user_data );
@@ -105,7 +107,6 @@ static gpointer datasource_gps_init_func ()
 
 static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file )
 {
-  char *proto = NULL;
   char *ser = NULL;
   char *device = NULL;
 #ifndef USE_NEW_COMBO_BOX
@@ -119,22 +120,8 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   
   gps_acquire_in_progress = TRUE;
 
-#ifdef USE_NEW_COMBO_BOX
-  proto = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->proto_b));
-#else
-  proto = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->proto_b),&iter);
-#endif
-  if (!strcmp(proto, "Garmin")) {
-    device = "garmin";
-  } else if (!strcmp(proto, "Magellan")) {
-    device = "magellan";
-  }
-  else if (!strcmp(proto, "DeLorme")) {
-    device = "delbin";
-  }
-  else {
-    device = "navilink";
-  }
+  last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
+  device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
 
   *babelargs = g_strdup_printf("-D 9 -t -w -i %s", device);
   /* device points to static content => no free */
@@ -154,7 +141,6 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
 
 static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **input_file )
 {
-  char *proto = NULL;
   char *ser = NULL;
   char *device = NULL;
 #ifndef USE_NEW_COMBO_BOX
@@ -171,15 +157,12 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
     return;
   }
   
-#ifdef USE_NEW_COMBO_BOX
-  proto = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->proto_b));
-#else
-  proto = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->proto_b),&iter);
-#endif
-  if (!strcmp(proto, "Garmin")) {
+  last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
+  device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+  if (!strcmp(device, "garmin")) {
     device = "garmin,power_off";
   }
-  else if (!strcmp(proto, "NAViLink")) {
+  else if (!strcmp(device, "navilink")) {
     device = "navilink,power_off";
   }
   else {
@@ -333,6 +316,13 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
   }
 }
 
+void append_element (gpointer elem, gpointer user_data)
+{
+  GtkComboBox *combo = GTK_COMBO_BOX (user_data);
+  const gchar *text = ((BabelDevice*)elem)->label;
+  gtk_combo_box_append_text (combo, text);
+}
+
 void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
 {
   gps_user_data_t *w = (gps_user_data_t *)user_data;
@@ -340,11 +330,8 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
 
   w->proto_l = gtk_label_new (_("GPS Protocol:"));
   w->proto_b = GTK_COMBO_BOX(gtk_combo_box_new_text ());
-  gtk_combo_box_append_text (w->proto_b, "Garmin");
-  gtk_combo_box_append_text (w->proto_b, "Magellan");
-  gtk_combo_box_append_text (w->proto_b, "DeLorme");
-  gtk_combo_box_append_text (w->proto_b, "NAViLink");
-  gtk_combo_box_set_active (w->proto_b, 0);
+  g_list_foreach (a_babel_device_list, append_element, w->proto_b);
+  gtk_combo_box_set_active (w->proto_b, last_active);
   g_object_ref(w->proto_b);
 
   w->ser_l = gtk_label_new (_("Serial Port:"));
