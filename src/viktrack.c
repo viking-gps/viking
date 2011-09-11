@@ -412,7 +412,8 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
        **/
 
       if ( ignore_it )
-        pts[current_chunk] = VIK_DEFAULT_ALTITUDE;
+	// Seemly can't determine average for this section - so use last known good value (much better than just sticking in zero)
+        pts[current_chunk] = altitude1;
       else
         pts[current_chunk] = altitude1 + (altitude2-altitude1)*((dist_along_seg - (chunk_length/2))/current_seg_length);
 
