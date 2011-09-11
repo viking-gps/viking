@@ -47,6 +47,51 @@ typedef enum {
  */
 typedef void (*BabelStatusFunc)(BabelProgressCode, gpointer, gpointer);
 
+/**
+ * BabelMode:
+ * 
+ * Store the Read/Write support offered by gpsbabel for a given format.
+ */
+typedef struct {
+    unsigned waypointsRead : 1;
+    unsigned waypointsWrite : 1;
+    unsigned tracksRead : 1;
+    unsigned tracksWrite : 1;
+    unsigned routesRead : 1;
+    unsigned routesWrite : 1;
+} BabelMode;
+
+/**
+ * BabelDevice:
+ * @name: gpsbabel's identifier of the device
+ * @label: human readable label
+ * 
+ * Representation of a supported device.
+ */
+typedef struct {
+    BabelMode mode;
+    gchar *name;
+    gchar *label;
+} BabelDevice;
+
+/**
+ * BabelFile:
+ * @name: gpsbabel's identifier of the device
+ * @ext: file's extension for this format
+ * @label: human readable label
+ * 
+ * Representation of a supported file format.
+ */
+typedef struct {
+    BabelMode mode;
+    gchar *name;
+    gchar *ext;
+    gchar *label;
+} BabelFile;
+
+GList *a_babel_file_list;
+GList *a_babel_device_list;
+
 gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data );
 gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *file, gpointer user_data );
 gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_file_type, BabelStatusFunc cb, gpointer user_data );

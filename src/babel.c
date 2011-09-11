@@ -43,6 +43,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <string.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 
@@ -58,6 +59,16 @@ static gchar *gpsbabel_loc = NULL;
  * Path to unbuffer
  */
 static gchar *unbuffer_loc = NULL;
+
+/**
+ * List of file formats supported by gpsbabel.
+ */
+GList *a_babel_file_list;
+
+/**
+ * List of device supported by gpsbabel.
+ */
+GList *a_babel_device_list;
 
 /**
  * a_babel_convert:
@@ -408,6 +419,88 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
   return ret;
 }
 
+static void set_mode(BabelMode mode, gchar *smode)
+{
+  mode.waypointsRead  = smode[0] == 'r';
+  mode.waypointsWrite = smode[1] == 'w';
+  mode.tracksRead     = smode[2] == 'r';
+  mode.tracksWrite    = smode[3] == 'w';
+  mode.routesRead     = smode[4] == 'r';
+  mode.routesWrite    = smode[5] == 'w';
+}
+
+/**
+ * load_feature:
+ * 
+ * Load a single feature stored in the given line.
+ */
+static void load_feature_parse_line (gchar *line)
+{
+  gchar **tokens = g_strsplit ( line, "\t", 0 );
+  if ( tokens != NULL
+       && tokens[0] != NULL ) {
+    if ( strcmp("serial", tokens[0]) == 0 ) {
+      if ( tokens[1] != NULL
+           && tokens[2] != NULL
+           && tokens[3] != NULL
+           && tokens[4] != NULL ) {
+        BabelDevice *device = g_malloc ( sizeof (BabelDevice) );
+        set_mode (device->mode, tokens[1]);
+        device->name = g_strdup (tokens[2]);
+        device->label = g_strdup (tokens[4]);
+        a_babel_device_list = g_list_append (a_babel_device_list, device);
+        g_debug ("New gpsbabel device: %s", device->name);
+      } else {
+        g_warning ( "Unexpected gpsbabel format string: %s", line);
+      }
+    } else if ( strcmp("file", tokens[0]) == 0 ) {
+      if ( tokens[1] != NULL
+           && tokens[2] != NULL
+           && tokens[3] != NULL
+           && tokens[4] != NULL ) {
+        BabelFile *file = g_malloc ( sizeof (BabelFile) );
+        set_mode (file->mode, tokens[1]);
+        file->name = g_strdup (tokens[2]);
+        file->ext = g_strdup (tokens[3]);
+        file->label = g_strdup (tokens[4]);
+        a_babel_file_list = g_list_append (a_babel_file_list, file);
+        g_debug ("New gpsbabel file: %s", file->name);
+      } else {
+        g_warning ( "Unexpected gpsbabel format string: %s", line);
+      }
+    } /* else: ignore */
+  } else {
+    g_warning ( "Unexpected gpsbabel format string: %s", line);
+  }
+  g_strfreev ( tokens );
+}
+
+static void load_feature_cb (BabelProgressCode code, gpointer line, gpointer user_data)
+{
+  if (line != NULL)
+    load_feature_parse_line (line);
+}
+
+static gboolean load_feature ()
+{
+  int i;
+  gboolean ret = FALSE;
+  gchar *args[4];  
+
+  if ( gpsbabel_loc ) {
+    i = 0;
+    if ( unbuffer_loc )
+      args[i++] = unbuffer_loc;
+    args[i++] = gpsbabel_loc;
+    args[i++] = "-^3";
+    args[i] = NULL;
+
+    ret = babel_general_convert (load_feature_cb, args, NULL);
+  } else
+    g_error("gpsbabel not found in PATH");
+
+  return ret;
+}
 
 void a_babel_init ()
 {
@@ -419,6 +512,7 @@ void a_babel_init ()
   if ( !unbuffer_loc )
     g_warning( "unbuffer not found in PATH" );
 
+  load_feature ();
 }
 
 void a_babel_uninit ()
