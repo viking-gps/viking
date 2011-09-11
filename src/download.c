@@ -238,7 +238,6 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       g_free ( file_options.etag );
       g_free ( file_options.new_etag );
     }
-    g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
   }
 
