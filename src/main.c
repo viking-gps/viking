@@ -28,6 +28,7 @@
 #include "mapcache.h"
 #include "background.h"
 #include "dems.h"
+#include "babel.h"
 #include "curl_download.h"
 #include "preferences.h"
 #include "globals.h"
@@ -182,6 +183,8 @@ int main( int argc, char *argv[] )
   a_download_init();
   curl_download_init();
 
+  a_babel_init ();
+
   /* Init modules/plugins */
   modules_init();
 
@@ -210,6 +213,8 @@ int main( int argc, char *argv[] )
 
   gtk_main ();
   gdk_threads_leave ();
+
+  a_babel_uninit ();
 
   a_background_uninit ();
   a_mapcache_uninit ();

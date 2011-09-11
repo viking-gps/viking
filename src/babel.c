@@ -50,6 +50,16 @@
 #define BASH_LOCATION "/bin/bash"
 
 /**
+ * Path to gpsbabel
+ */
+static gchar *gpsbabel_loc = NULL;
+
+/**
+ * Path to unbuffer
+ */
+static gchar *unbuffer_loc = NULL;
+
+/**
  * a_babel_convert:
  * @vt:        The TRW layer to modify. All data will be deleted, and replaced by what gpsbabel outputs.
  * @babelargs: A string containing gpsbabel command line filter options. No file types or names should
@@ -66,7 +76,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
 {
   int fd_src;
   FILE *f;
-  gchar *name_src;
+  gchar *name_src = NULL;
   gboolean ret = FALSE;
   gchar *bargs = g_strconcat(babelargs, " -i gpx", NULL);
 
@@ -76,11 +86,11 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
     fclose(f);
     f = NULL;
     ret = a_babel_convert_from ( vt, bargs, cb, name_src, user_data );
+    g_remove(name_src);
+    g_free(name_src);
   }
 
   g_free(bargs);
-  g_remove(name_src);
-  g_free(name_src);
   return ret;
 }
 
@@ -122,7 +132,7 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
         &si,                    // Pointer to STARTUPINFO structure.
         &pi )                   // Pointer to PROCESS_INFORMATION structure.
     ){
-    g_warning( "CreateProcess failed");
+    g_error ( "CreateProcess failed" );
     ret = FALSE;
   }
   else {
@@ -154,7 +164,7 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
   gint babel_stdout;
 
   if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {
-    g_warning("Error : %s", error->message);
+    g_error("Async command failed: %s", error->message);
     g_error_free(error);
     ret = FALSE;
   } else {
@@ -235,18 +245,14 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 {
   int i,j;
   int fd_dst;
-  gchar *name_dst;
+  gchar *name_dst = NULL;
   gboolean ret = FALSE;
   gchar *args[64];
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
-    gchar *gpsbabel_loc;
     close(fd_dst);
 
-    gpsbabel_loc = g_find_program_in_path("gpsbabel");
-
     if (gpsbabel_loc ) {
-      gchar *unbuffer_loc = g_find_program_in_path("unbuffer");
       gchar **sub_args = g_strsplit(babelargs, " ", 0);
 
       i = 0;
@@ -268,15 +274,13 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 
       ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
 
-      g_free ( unbuffer_loc );
       g_strfreev(sub_args);
     } else
-      g_warning("gpsbabel not found in PATH");
-    g_free(gpsbabel_loc);
+      g_error("gpsbabel not found in PATH");
+    g_remove(name_dst);
+    g_free(name_dst);
   }
 
-  g_remove(name_dst);
-  g_free(name_dst);
   return ret;
 }
 
@@ -292,14 +296,15 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStat
 gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_file_type, BabelStatusFunc cb, gpointer user_data )
 {
   int fd_dst;
-  gchar *name_dst;
+  gchar *name_dst = NULL;
   gboolean ret = FALSE;
   gchar **args;  
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
     gchar *shell_command;
     if ( input_file_type )
-      shell_command = g_strdup_printf("%s | gpsbabel -i %s -f - -o gpx -F %s", input_cmd, input_file_type, name_dst);
+      shell_command = g_strdup_printf("%s | %s -i %s -f - -o gpx -F %s",
+        input_cmd, gpsbabel_loc, input_file_type, name_dst);
     else
       shell_command = g_strdup_printf("%s > %s", input_cmd, name_dst);
 
@@ -315,10 +320,10 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
     ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
     g_free ( args );
     g_free ( shell_command );
+    g_remove(name_dst);
+    g_free(name_dst);
   }
 
-  g_remove(name_dst);
-  g_free(name_dst);
   return ret;
 }
 
@@ -328,8 +333,8 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
   gint fd_src;
   int fetch_ret;
   gboolean ret = FALSE;
-  gchar *name_src;
-  gchar *babelargs;
+  gchar *name_src = NULL;
+  gchar *babelargs = NULL;
 
   g_debug("%s: input_type=%s url=%s", __FUNCTION__, input_type, url);
 
@@ -354,8 +359,8 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
 static gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
 {
   if (!a_file_export(vt, name_src, FILE_TYPE_GPX, NULL)) {
-    g_warning("%s(): error exporting to %s", __FUNCTION__, name_src);
-    return(FALSE);
+    g_error("Error exporting to %s", name_src);
+    return FALSE;
   }
        
   return babel_general_convert (cb, args, user_data);
@@ -365,18 +370,14 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
 {
   int i,j;
   int fd_src;
-  gchar *name_src;
+  gchar *name_src = NULL;
   gboolean ret = FALSE;
   gchar *args[64];  
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
-    gchar *gpsbabel_loc;
     close(fd_src);
 
-    gpsbabel_loc = g_find_program_in_path("gpsbabel");
-
     if (gpsbabel_loc ) {
-      gchar *unbuffer_loc = g_find_program_in_path("unbuffer");
       gchar **sub_args = g_strsplit(babelargs, " ", 0);
 
       i = 0;
@@ -397,14 +398,31 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatus
 
       ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
 
-      g_free ( unbuffer_loc );
       g_strfreev(sub_args);
     } else
-      g_warning("gpsbabel not found in PATH");
-    g_free(gpsbabel_loc);
+      g_error("gpsbabel not found in PATH");
+    g_remove(name_src);
+    g_free(name_src);
   }
 
-  g_remove(name_src);
-  g_free(name_src);
   return ret;
+}
+
+
+void a_babel_init ()
+{
+  /* TODO allow to set gpsbabel path via command line */
+  gpsbabel_loc = g_find_program_in_path( "gpsbabel" );
+  if ( !gpsbabel_loc )
+    g_error( "gpsbabel not found in PATH" );
+  unbuffer_loc = g_find_program_in_path( "unbuffer" );
+  if ( !unbuffer_loc )
+    g_warning( "unbuffer not found in PATH" );
+
+}
+
+void a_babel_uninit ()
+{
+  g_free ( gpsbabel_loc );
+  g_free ( unbuffer_loc );
 }
