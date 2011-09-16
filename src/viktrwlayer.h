@@ -58,6 +58,8 @@ void vik_trw_layer_free ( VikTrwLayer *trwlayer );
 VikTrwLayer *vik_trw_layer_create ( VikViewport *vp );
 gboolean vik_trw_layer_properties ( VikTrwLayer *vtl, gpointer vp );
 
+gint vik_trw_layer_get_property_tracks_line_thickness ( VikTrwLayer *vtl );
+
 void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
 void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t );
 VikWaypoint *vik_trw_layer_get_waypoint ( VikTrwLayer *vtl, gchar *name );

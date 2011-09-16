@@ -1620,6 +1620,14 @@ gboolean vik_trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, g
   return TRUE;
 }
 
+/*
+ * Return a property about tracks for this layer
+ */
+gint vik_trw_layer_get_property_tracks_line_thickness ( VikTrwLayer *vtl )
+{
+  return vtl->line_thickness;
+}
+
 // Structure to hold multiple track information for a layer
 typedef struct {
   gdouble length;

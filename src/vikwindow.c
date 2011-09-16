@@ -2789,6 +2789,8 @@ void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
   vw->selected_name      = NULL;
+  // Set highlight thickness
+  vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
 
 gpointer vik_window_get_selected_tracks ( VikWindow *vw )
@@ -2806,6 +2808,8 @@ void vik_window_set_selected_tracks ( VikWindow *vw, gpointer gl, gpointer vtl )
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
   vw->selected_name      = NULL;
+  // Set highlight thickness
+  vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
 
 gpointer vik_window_get_selected_track ( VikWindow *vw )
@@ -2823,7 +2827,10 @@ void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl, 
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
+  // Set highlight thickness
+  vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
+
 gpointer vik_window_get_selected_waypoints ( VikWindow *vw )
 {
   return vw->selected_waypoints;

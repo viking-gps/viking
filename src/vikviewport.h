@@ -168,6 +168,7 @@ const gchar *vik_viewport_get_highlight_color ( VikViewport *vvp );
 GdkColor *vik_viewport_get_highlight_gdkcolor ( VikViewport *vvp );
 void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor * );
 GdkGC* vik_viewport_get_gc_highlight ( VikViewport *vvp );
+void vik_viewport_set_highlight_thickness ( VikViewport *vvp, gint thickness );
 
 /* Drawing primitives */
 void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 ); /* run this before drawing a line. vik_viewport_draw_line runs it for you */
