@@ -205,6 +205,10 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
 
 /**
  * babel_general_convert_from:
+ * @vtl: The TrackWaypoint Layer to save the data into
+ *   If it is null it signifies that no data is to be processed,
+ *    however the gpsbabel command is still ran as it can be for non-data related options eg:
+ *    for use with the power off command - 'command_off'
  * @cb: callback that is run upon new data from STDOUT (?)
  *     (TODO: STDERR would be nice since we usually redirect STDOUT)
  * @user_data: passed along to cb
@@ -221,11 +225,12 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
   gboolean ret = FALSE;
   FILE *f = NULL;
     
-  /* No data required */
-  if ( vt == NULL )
-    return TRUE;
-
   if (babel_general_convert(cb, args, user_data)) {
+
+    /* No data actually required but still need to have run gpsbabel anyway
+       - eg using the device power command_off */
+    if ( vt == NULL )
+      return TRUE;
 
     f = g_fopen(name_dst, "r");
     if (f) {
