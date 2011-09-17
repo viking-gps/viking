@@ -59,7 +59,7 @@ static GtkItemFactoryEntry base_entries[] = {
  { N_("/_Copy"), NULL, (GtkItemFactoryCallback) vik_layers_panel_copy_selected, -1, "<StockItem>", GTK_STOCK_COPY },
  { N_("/_Paste"), NULL, (GtkItemFactoryCallback) vik_layers_panel_paste_selected, -1, "<StockItem>", GTK_STOCK_PASTE },
  { N_("/_Delete"), NULL, (GtkItemFactoryCallback) vik_layers_panel_delete_selected, -1, "<StockItem>", GTK_STOCK_DELETE },
- { N_("/New Layer"), NULL, NULL, -1, "<Branch>" },
+ { N_("/_New Layer"), NULL, NULL, -1, "<Branch>" },
 };
 
 #define NUM_BASE_ENTRIES (sizeof(base_entries)/sizeof(base_entries[0]))
