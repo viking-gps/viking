@@ -56,7 +56,6 @@ void vik_trw_layer_draw ( VikTrwLayer *l, gpointer data );
 void vik_trw_layer_free ( VikTrwLayer *trwlayer );
 
 VikTrwLayer *vik_trw_layer_create ( VikViewport *vp );
-gboolean vik_trw_layer_properties ( VikTrwLayer *vtl, gpointer vp );
 
 gint vik_trw_layer_get_property_tracks_line_thickness ( VikTrwLayer *vtl );
 
