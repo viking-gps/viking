@@ -4707,11 +4707,10 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     else
       vtl->waypoint_rightclick = FALSE;
 
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->waypoints_iters, params.closest_wp_name ), TRUE );
+
     vtl->current_wp = params.closest_wp;
     vtl->current_wp_name = params.closest_wp_name;
-
-    if ( params.closest_wp )
-      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_name ), TRUE );
 
     /* could make it so don't update if old WP is off screen and new is null but oh well */
     vik_layer_emit_update ( VIK_LAYER(vtl) );
@@ -5059,9 +5058,9 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
 
   if ( params.closest_tp )
   {
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, params.closest_track_name ), TRUE );
     vtl->current_tpl = params.closest_tpl;
     vtl->current_tp_track_name = params.closest_track_name;
-    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, vtl->current_tp_track_name ), TRUE );
     trw_layer_tpwin_init ( vtl );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
