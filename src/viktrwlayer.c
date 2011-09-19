@@ -4168,6 +4168,10 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_JOIN )
   {
+    // Check tracks exist and are different before joining
+    if ( ! vtl->last_tp_track_name || ! vtl->current_tp_track_name || vtl->last_tp_track_name == vtl->current_tp_track_name )
+      return;
+
     VikTrack *tr1 = g_hash_table_lookup ( vtl->tracks, vtl->last_tp_track_name );
     VikTrack *tr2 = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_track_name );
 
