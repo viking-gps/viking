@@ -32,6 +32,8 @@ static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, Vi
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
+static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp );
+
 VikLayerInterface vik_aggregate_layer_interface = {
   "Aggregate",
   N_("Aggregate"),
@@ -60,7 +62,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncSetMenuItemsSelection)	NULL,
   (VikLayerFuncGetMenuItemsSelection)	NULL,
 
-  (VikLayerFuncAddMenuItems)            NULL,
+  (VikLayerFuncAddMenuItems)            aggregate_layer_add_menu_items,
   (VikLayerFuncSublayerAddMenuItems)    NULL,
 
   (VikLayerFuncSublayerRenameRequest)   NULL,
@@ -352,6 +354,19 @@ static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoord
     vik_layer_change_coord_mode ( VIK_LAYER(iter->data), mode );
     iter = iter->next;
   }
+}
+
+static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp )
+{
+  // Data to pass on in menu functions
+  static gpointer data[2];
+  data[0] = val;
+  data[1] = vlp;
+
+  GtkWidget *item = gtk_menu_item_new();
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+
 }
 
 static void disconnect_layer_signal ( VikLayer *vl, VikAggregateLayer *val )

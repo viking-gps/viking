@@ -403,9 +403,8 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
 	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
 	  gtk_widget_show ( del );
 	}
-
-        vik_layer_add_menu_items ( layer, menu, vlp );
-      } 
+      }
+      vik_layer_add_menu_items ( layer, menu, vlp );
     }
     else
     {
