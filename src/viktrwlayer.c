@@ -5987,6 +5987,168 @@ static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] )
 
 }
 
+/**
+ *
+ */
+static void trw_layer_iter_visibility_toggle ( gpointer id, GtkTreeIter *it, VikTreeview *vt )
+{
+  vik_treeview_item_toggle_visible ( vt, it );
+}
+
+/**
+ *
+ */
+static void trw_layer_iter_visibility ( gpointer id, GtkTreeIter *it, gpointer vis_data[2] )
+{
+  vik_treeview_item_set_visible ( (VikTreeview*)vis_data[0], it, GPOINTER_TO_INT (vis_data[1]) );
+}
+
+/**
+ *
+ */
+static void trw_layer_waypoints_visibility ( gpointer id, VikWaypoint *wp, gpointer on_off )
+{
+  wp->visible = GPOINTER_TO_INT (on_off);
+}
+
+/**
+ *
+ */
+static void trw_layer_waypoints_toggle_visibility ( gpointer id, VikWaypoint *wp )
+{
+  wp->visible = !wp->visible;
+}
+
+/**
+ *
+ */
+static void trw_layer_waypoints_visibility_off ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  gpointer vis_data[2] = { VIK_LAYER(vtl)->vt, GINT_TO_POINTER(FALSE) };
+  g_hash_table_foreach ( vtl->waypoints_iters, (GHFunc) trw_layer_iter_visibility, vis_data );
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_waypoints_visibility, vis_data[1] );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_waypoints_visibility_on ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  gpointer vis_data[2] = { VIK_LAYER(vtl)->vt, GINT_TO_POINTER(TRUE) };
+  g_hash_table_foreach ( vtl->waypoints_iters, (GHFunc) trw_layer_iter_visibility, vis_data );
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_waypoints_visibility, vis_data[1] );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_waypoints_visibility_toggle ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  g_hash_table_foreach ( vtl->waypoints_iters, (GHFunc) trw_layer_iter_visibility_toggle, VIK_LAYER(vtl)->vt );
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_waypoints_toggle_visibility, NULL );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_tracks_visibility ( gpointer id, VikTrack *trk, gpointer on_off )
+{
+  trk->visible = GPOINTER_TO_INT (on_off);
+}
+
+/**
+ *
+ */
+static void trw_layer_tracks_toggle_visibility ( gpointer id, VikTrack *trk )
+{
+  trk->visible = !trk->visible;
+}
+
+/**
+ *
+ */
+static void trw_layer_tracks_visibility_off ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  gpointer vis_data[2] = { VIK_LAYER(vtl)->vt, GINT_TO_POINTER(FALSE) };
+  g_hash_table_foreach ( vtl->tracks_iters, (GHFunc) trw_layer_iter_visibility, vis_data );
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_tracks_visibility, vis_data[1] );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_tracks_visibility_on ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  gpointer vis_data[2] = { VIK_LAYER(vtl)->vt, GINT_TO_POINTER(TRUE) };
+  g_hash_table_foreach ( vtl->tracks_iters, (GHFunc) trw_layer_iter_visibility, vis_data );
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_tracks_visibility, vis_data[1] );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_tracks_visibility_toggle ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  g_hash_table_foreach ( vtl->tracks_iters, (GHFunc) trw_layer_iter_visibility_toggle, VIK_LAYER(vtl)->vt );
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_tracks_toggle_visibility, NULL );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_routes_visibility_off ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  gpointer vis_data[2] = { VIK_LAYER(vtl)->vt, GINT_TO_POINTER(FALSE) };
+  g_hash_table_foreach ( vtl->routes_iters, (GHFunc) trw_layer_iter_visibility, vis_data );
+  g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_tracks_visibility, vis_data[1] );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_routes_visibility_on ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  gpointer vis_data[2] = { VIK_LAYER(vtl)->vt, GINT_TO_POINTER(TRUE) };
+  g_hash_table_foreach ( vtl->routes_iters, (GHFunc) trw_layer_iter_visibility, vis_data );
+  g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_tracks_visibility, vis_data[1] );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_routes_visibility_toggle ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  g_hash_table_foreach ( vtl->routes_iters, (GHFunc) trw_layer_iter_visibility_toggle, VIK_LAYER(vtl)->vt );
+  g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_tracks_toggle_visibility, NULL );
+  // Redraw
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
 static void trw_layer_goto_waypoint ( gpointer pass_along[6] )
 {
   VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->waypoints, pass_along[3] );
@@ -6354,6 +6516,30 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_waypoints_from_selection), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+
+    GtkWidget *vis_submenu = gtk_menu_new ();
+    item = gtk_menu_item_new_with_mnemonic ( _("_Visibility") );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), vis_submenu );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Show All Waypoints") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoints_visibility_on), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Hide All Waypoints") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoints_visibility_off), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Toggle") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoints_visibility_toggle), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
   }
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS )
@@ -6395,6 +6581,30 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_tracks_from_selection), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    GtkWidget *vis_submenu = gtk_menu_new ();
+    item = gtk_menu_item_new_with_mnemonic ( _("_Visibility") );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), vis_submenu );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Show All Tracks") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_tracks_visibility_on), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Hide All Tracks") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_tracks_visibility_off), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Toggle") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_tracks_visibility_toggle), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
     gtk_widget_show ( item );
   }
 
@@ -6438,6 +6648,30 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_routes_from_selection), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    GtkWidget *vis_submenu = gtk_menu_new ();
+    item = gtk_menu_item_new_with_mnemonic ( _("_Visibility") );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), vis_submenu );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Show All Routes") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_routes_visibility_on), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Hide All Routes") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_routes_visibility_off), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Toggle") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_routes_visibility_toggle), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
     gtk_widget_show ( item );
   }
 

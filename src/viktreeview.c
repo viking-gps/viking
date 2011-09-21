@@ -580,6 +580,15 @@ void vik_treeview_item_set_visible ( VikTreeview *vt, GtkTreeIter *iter, gboolea
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, VISIBLE_COLUMN, to, -1 );
 }
 
+void vik_treeview_item_toggle_visible ( VikTreeview *vt, GtkTreeIter *iter )
+{
+  g_return_if_fail ( iter != NULL );
+  gboolean to;
+  TREEVIEW_GET ( vt->model, iter, VISIBLE_COLUMN, &to );
+  to = !to;
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, VISIBLE_COLUMN, to, -1 );
+}
+
 void vik_treeview_expand ( VikTreeview *vt, GtkTreeIter *iter )
 {
   GtkTreePath *path;
