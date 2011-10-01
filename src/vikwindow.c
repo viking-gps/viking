@@ -1937,6 +1937,11 @@ static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface );
 }
 
+static void acquire_from_file ( GtkAction *a, VikWindow *vw )
+{
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface );
+}
+
 static void acquire_from_google ( GtkAction *a, VikWindow *vw )
 {
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface );
@@ -2518,6 +2523,7 @@ static GtkActionEntry entries[] = {
   { "Append",    GTK_STOCK_ADD,          N_("Append _File..."),           NULL,         N_("Append data from a different file"),            (GCallback)load_file             },
   { "Acquire", NULL, N_("A_cquire"), 0, 0, 0 },
   { "AcquireGPS",   NULL,                N_("From _GPS..."),           	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
+  { "AcquireGPSBabel",   NULL,                N_("Import File With GPS_Babel..."),           	  NULL,         N_("Import file via GPSBabel converter"),              (GCallback)acquire_from_file      },
   { "AcquireGoogle",   NULL,             N_("Google _Directions..."),     NULL,         N_("Get driving directions from Google"),           (GCallback)acquire_from_google   },
 #ifdef VIK_CONFIG_OPENSTREETMAP
   { "AcquireOSM",   NULL,                 N_("_OSM Traces..."),    	  NULL,         N_("Get traces from OpenStreetMap"),            (GCallback)acquire_from_osm       },

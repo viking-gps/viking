@@ -102,6 +102,7 @@ libviking_a_SOURCES = \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
 	babel.c babel.h \
+	datasource_file.c \
 	datasource_gps.c \
 	datasource_google.c \
 	datasource_gc.c \

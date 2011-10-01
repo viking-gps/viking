@@ -24,6 +24,7 @@
 #include "acquire.h"
 
 extern VikDataSourceInterface vik_datasource_gps_interface;
+extern VikDataSourceInterface vik_datasource_file_interface;
 extern VikDataSourceInterface vik_datasource_google_interface;
 #ifdef VIK_CONFIG_OPENSTREETMAP
 extern VikDataSourceInterface vik_datasource_osm_interface;
