@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -160,14 +161,18 @@ void osm_traces_init () {
 
 /*
  * Upload a file
- */
-void osm_traces_upload_file(const char *user,
-		            const char *password,
-		            const char *file,
-		            const char *filename,
-		            const char *description,
-		            const char *tags,
-		            const OsmTraceVis_t *vistype)
+ * returns a basic status:
+ *   < 0  : curl error
+ *   == 0 : OK
+ *   > 0  : HTTP error
+  */
+static gint osm_traces_upload_file(const char *user,
+				   const char *password,
+				   const char *file,
+				   const char *filename,
+				   const char *description,
+				   const char *tags,
+				   const OsmTraceVis_t *vistype)
 {
   CURL *curl;
   CURLcode res;
@@ -179,6 +184,8 @@ void osm_traces_upload_file(const char *user,
   char *base_url = "http://www.openstreetmap.org/api/0.6/gpx/create";
 
   gchar *user_pass = get_login();
+
+  gint result = 0; // Default to it worked!
 
   g_debug("%s: %s %s %s %s %s %s", __FUNCTION__,
   	  user, password, file, filename, description, tags);
@@ -224,22 +231,27 @@ void osm_traces_upload_file(const char *user,
     if (res == CURLE_OK)
     {
       g_debug("received valid curl response: %ld", code);
-      if (code != 200)
+      if (code != 200) {
         g_warning(_("failed to upload data: HTTP response is %ld"), code);
+	result = code;
+      }
     }
-    else
+    else {
       g_error(_("curl_easy_getinfo failed: %d"), res);
-  }
-  else
-    {
-      g_warning(_("curl request failed: %s"), curl_error_buffer);
+      result = -1;
     }
+  }
+  else {
+    g_warning(_("curl request failed: %s"), curl_error_buffer);
+    result = -2;
+  }
 
   /* Memory */
   g_free(user_pass); user_pass = NULL;
   
   curl_formfree(post);
-  curl_easy_cleanup(curl); 
+  curl_easy_cleanup(curl);
+  return result;
 }
 
 /**
@@ -288,9 +300,50 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   file = NULL;
 
   /* finally, upload it */
-  osm_traces_upload_file(user, password, filename,
-                         oti->name, oti->description, oti->tags, oti->vistype);
+  gint ans = osm_traces_upload_file(user, password, filename,
+                   oti->name, oti->description, oti->tags, oti->vistype);
 
+  //
+  // Show result in statusbar or failure in dialog for user feedback
+  //
+
+  // Get current time to put into message to show when result was generated
+  //  since need to show difference between operations (when displayed on statusbar)
+  // NB If on dialog then don't need time.
+  time_t timenow;
+  struct tm* timeinfo;
+  time ( &timenow );
+  timeinfo = localtime ( &timenow );
+  gchar timestr[80];
+  // Compact time only - as days/date isn't very useful here
+  strftime ( timestr, sizeof(timestr), "%X)", timeinfo );
+
+  //
+  // Test to see if window it was invoked on is still valid
+  // Not sure if this test really works! (i.e. if the window was closed in the mean time)
+  //
+  if ( IS_VIK_WINDOW ((VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl)) ) {
+    gchar* msg;
+    if ( ans == 0 ) {
+      // Success
+      msg = g_strdup_printf ( "%s (@%s)", _("Uploaded to OSM"), timestr );
+      vik_statusbar_set_message ( vik_window_get_statusbar ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl) ), VIK_STATUSBAR_INFO, msg );
+    }
+    // Use UPPER CASE for bad news :(
+    else if ( ans < 0 ) {
+      msg = g_strdup_printf ( "%s (@%s)", _("FAILED TO UPLOAD DATA TO OSM - CURL PROBLEM"), timestr );
+      vik_statusbar_set_message ( vik_window_get_statusbar ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl) ), VIK_STATUSBAR_INFO, msg );
+      //a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(oti->vtl), msg );
+    }
+    else {
+      msg = g_strdup_printf ( "%s : %s %d (@%s)", _("FAILED TO UPLOAD DATA TO OSM"), _("HTTP response code"), ans, timestr );
+      vik_statusbar_set_message ( vik_window_get_statusbar ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl) ), VIK_STATUSBAR_INFO, msg );
+      VikTrwLayer *vtl = oti->vtl;
+      // Crashes here - multi-thread issue...
+      //a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), msg );
+    }
+    g_free (msg);
+  }
   /* Removing temporary file */
   ret = g_unlink(filename);
   if (ret != 0) {
