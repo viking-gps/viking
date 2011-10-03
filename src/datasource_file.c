@@ -82,11 +82,12 @@ static gpointer datasource_file_init ( )
 
 static void fill_combo_box (gpointer data, gpointer user_data)
 {
-  GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT (user_data);
   const gchar *label = ((BabelFile*) data)->label;
 #if GTK_CHECK_VERSION (2,24,0)
+  GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT (user_data);
   gtk_combo_box_text_append_text (combo, label);
 #else
+  GtkComboBox *combo = GTK_COMBO_BOX (user_data);
   gtk_combo_box_append_text (combo, label);
 #endif
 }
