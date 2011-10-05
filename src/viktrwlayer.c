@@ -261,6 +261,9 @@ static void trw_layer_acquire_osm_cb ( gpointer lav[2] );
 #ifdef VIK_CONFIG_GEOCACHES
 static void trw_layer_acquire_geocache_cb ( gpointer lav[2] );
 #endif
+#ifdef VIK_CONFIG_GEOTAG
+static void trw_layer_acquire_geotagged_cb ( gpointer lav[2] );
+#endif
 
 /* pop-up items */
 static void trw_layer_properties_item ( gpointer pass_along[6] );
@@ -2416,6 +2419,26 @@ static void trw_layer_acquire_geocache_cb ( gpointer lav[2] )
 }
 #endif
 
+#ifdef VIK_CONFIG_GEOTAG
+/*
+ * Acquire into this TRW Layer from images
+ */
+static void trw_layer_acquire_geotagged_cb ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+
+  vik_datasource_geotag_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
+  a_acquire ( vw, vlp, vvp, &vik_datasource_geotag_interface );
+
+  // Reverify thumbnails as they may have changed
+  vtl->has_verified_thumbnails = FALSE;
+  trw_layer_verify_thumbnails ( vtl, NULL );
+}
+#endif
+
 static void trw_layer_new_wp ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
@@ -2588,6 +2611,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
 #ifdef VIK_CONFIG_GEOCACHES
   item = gtk_menu_item_new_with_mnemonic ( _("From Geo_caching...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_geocache_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show ( item );
+#endif
+
+#ifdef VIK_CONFIG_GEOTAG
+  item = gtk_menu_item_new_with_mnemonic ( _("From Geotagged _Images...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_geotagged_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
 #endif
