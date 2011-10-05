@@ -1962,6 +1962,14 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 }
 #endif
 
+#ifdef VIK_CONFIG_GEOTAG
+static void acquire_from_geotag ( GtkAction *a, VikWindow *vw )
+{
+  vik_datasource_geotag_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_geotag_interface );
+}
+#endif
+
 static void goto_default_location( GtkAction *a, VikWindow *vw)
 {
   struct LatLon ll;
@@ -2531,6 +2539,9 @@ static GtkActionEntry entries[] = {
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
   { "AcquireGC",   NULL,                 N_("Geo_caches..."),    	  NULL,         N_("Get Geocaches from geocaching.com"),            (GCallback)acquire_from_gc       },
+#endif
+#ifdef VIK_CONFIG_GEOTAG
+  { "AcquireGeotag", NULL,               N_("From Geotagged _Images..."), NULL,         N_("Create waypoints from geotagged images"),       (GCallback)acquire_from_geotag   },
 #endif
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },

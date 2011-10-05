@@ -169,6 +169,12 @@ libviking_a_SOURCES += \
 	spotmaps.c spotmaps.h
 #endif
 
+if GEOTAG
+libviking_a_SOURCES += \
+	datasource_geotag.c \
+	geotag_exif.c geotag_exif.h
+endif
+
 viking_SOURCES = main.c
 
 LDADD           = libviking.a $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
