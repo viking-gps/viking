@@ -84,52 +84,16 @@ static int curl_progress_func(void *clientp, double dltotal, double dlnow, doubl
 static gchar *get_cookie_file(gboolean init)
 {
   static gchar *cookie_file = NULL;
-  static GMutex *mutex = NULL;
 
-  if (init) { /* to make sure  it's thread safe */
-    mutex = g_mutex_new();
+  // Wipe any previous cookies set on startup (for some reason??)
+  // Startup is single threaded so don't care about mutexes
+  if (init) {
     static gchar *cookie_fn = "cookies.txt";
     const gchar *viking_dir = a_get_viking_dir();
     cookie_file = g_build_filename(viking_dir, cookie_fn, NULL);
     g_unlink(cookie_file);
     return NULL;
   }
-
-  g_assert(cookie_file != NULL);
-
-  g_mutex_lock(mutex);
-  if (g_file_test(cookie_file, G_FILE_TEST_EXISTS) == FALSE) {  /* file not there */
-    gchar * name_tmp = NULL;
-    FILE * out_file = tmpfile();
-    if (out_file == NULL) {
-      // Something wrong with previous call (unsuported?)
-      name_tmp = g_strdup_printf("%s.tmp", cookie_file);
-      out_file = g_fopen(name_tmp, "w+b");
-    }
-    CURLcode res;
-    CURL *curl = curl_easy_init();
-    if (vik_verbose)
-      curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
-    curl_easy_setopt(curl, CURLOPT_URL, "http://maps.google.com/"); /* google.com sets "PREF" cookie */
-    curl_easy_setopt ( curl, CURLOPT_WRITEDATA, out_file );
-    curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
-    curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookie_file);
-    res = curl_easy_perform(curl);
-    if (res != CURLE_OK) {
-      g_warning(_("%s() Curl perform failed: %s"), __PRETTY_FUNCTION__,
-          curl_easy_strerror(res));
-      g_unlink(cookie_file);
-    }
-    curl_easy_cleanup(curl);
-    fclose(out_file);
-    out_file = NULL;
-    if (name_tmp != NULL) {
-      g_remove(name_tmp);
-      g_free(name_tmp);
-      name_tmp = NULL;
-    }
-  }
-  g_mutex_unlock(mutex);
 
   return(cookie_file);
 }
