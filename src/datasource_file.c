@@ -67,6 +67,7 @@ VikDataSourceInterface vik_datasource_file_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_file_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_file_get_cmd_string,
+  (VikDataSourceProcessFunc)		NULL,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_file_cleanup,

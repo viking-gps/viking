@@ -60,6 +60,7 @@ VikDataSourceInterface vik_datasource_osm_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_osm_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_osm_get_cmd_string,
+  (VikDataSourceProcessFunc)		NULL,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_osm_cleanup,
