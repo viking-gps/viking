@@ -1068,11 +1068,11 @@ static void gps_comm_thread(GpsSession *sess)
   gboolean result;
 
   if (sess->direction == GPS_DOWN)
-    result = a_babel_convert_from (sess->vtl, sess->cmd_args,
-        (BabelStatusFunc) gps_download_progress_func, sess->port, sess);
+    result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
+        (BabelStatusFunc) gps_download_progress_func, sess);
   else
-    result = a_babel_convert_to (sess->vtl, sess->cmd_args,
-        (BabelStatusFunc) gps_upload_progress_func, sess->port, sess);
+    result = a_babel_convert_to (sess->vtl, sess->cmd_args, sess->port,
+        (BabelStatusFunc) gps_upload_progress_func, sess);
 
   if (!result) {
     gtk_label_set_text ( GTK_LABEL(sess->status_label), _("Error: couldn't find gpsbabel.") );

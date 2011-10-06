@@ -122,7 +122,7 @@ static void get_from_anything ( w_and_interface_t *wi )
   // TODO consider removing 'type' and make everything run via the specficied process function
   switch ( source_interface->type ) {
   case VIK_DATASOURCE_GPSBABEL_DIRECT:
-    result = a_babel_convert_from (vtl, cmd, (BabelStatusFunc) progress_func, extra, w);
+    result = a_babel_convert_from (vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
     break;
   case VIK_DATASOURCE_URL:
     result = a_babel_convert_from_url (vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
@@ -379,7 +379,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   else {
     if ( cmd_off ) {
       /* Turn off */
-      a_babel_convert_from (NULL, cmd_off, NULL, extra_off, NULL);
+      a_babel_convert_from (NULL, cmd_off, extra_off, NULL, NULL);
     }
     g_free ( w ); /* thread has finished; free w */
   }

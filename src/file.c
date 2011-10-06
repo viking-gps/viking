@@ -603,7 +603,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     // In fact both kml & gpx files start the same as they are in xml
     if ( check_file_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
       // Implicit Conversion
-      if ( ! a_babel_convert_from ( VIK_TRW_LAYER(vtl), "-i kml", NULL, filename, NULL ) ) {
+      if ( ! a_babel_convert_from ( VIK_TRW_LAYER(vtl), "-i kml", filename, NULL, NULL ) ) {
 	// Probably want to remove the vtl, but I'm not sure how yet...
 	xfclose(f);
 	return LOAD_TYPE_GPSBABEL_FAILURE;
@@ -711,7 +711,7 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
         case FILE_TYPE_KML:
 	  fclose ( f );
 	  f = NULL;
-          return a_babel_convert_to ( vtl, "-o kml", NULL, filename, NULL );
+          return a_babel_convert_to ( vtl, "-o kml", filename, NULL, NULL );
           break;
         default:
           g_critical("Houston, we've had a problem. file_type=%d", file_type);
