@@ -155,8 +155,10 @@ static void get_from_anything ( w_and_interface_t *wi )
       if ( creating_new_layer ) {
 	/* Only create the layer if it actually contains anything useful */
 	if ( g_hash_table_size (vik_trw_layer_get_tracks(vtl)) ||
-	     g_hash_table_size (vik_trw_layer_get_waypoints(vtl)) )
+	     g_hash_table_size (vik_trw_layer_get_waypoints(vtl)) ) {
+	  vik_layer_post_read ( VIK_LAYER(vtl), w->vvp, TRUE );
 	  vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
+	}
 	else
 	  gtk_label_set_text ( GTK_LABEL(w->status), _("No data.") );
       }
