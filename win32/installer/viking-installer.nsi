@@ -121,6 +121,7 @@ VIAddVersionKey "FileDescription" "Viking Installer"
 
   !insertmacro VIKING_MACRO_INCLUDE_LANGFILE "ENGLISH"		"${VIKING_NSIS_INCLUDE_PATH}\translations\english.nsh"
   !insertmacro VIKING_MACRO_INCLUDE_LANGFILE "FRENCH"		"${VIKING_NSIS_INCLUDE_PATH}\translations\french.nsh"
+  !insertmacro VIKING_MACRO_INCLUDE_LANGFILE "SPANISH"		"${VIKING_NSIS_INCLUDE_PATH}\translations\spanish.nsh"
 
 ;--------------------------------
 ;Reserve Files
