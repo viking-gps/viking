@@ -226,9 +226,11 @@ static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
   coord = vik_viewport_get_center ( viewport );
   vik_coord_to_latlon ( coord, &ll );
 
-  // zoom
-  g_assert ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) );
-  zoom = vik_webtool_center_mpp_to_zoom ( self, vik_viewport_get_zoom ( viewport ) );
+  // zoom - ideally x & y factors need to be the same otherwise use a default
+  if ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) )
+    zoom = vik_webtool_center_mpp_to_zoom ( self, vik_viewport_get_zoom ( viewport ) );
+  else
+    zoom = 1.0;
 
   // Cannot simply use g_strdup_printf and gdouble due to locale.
   // As we compute an URL, we have to think in C locale.
