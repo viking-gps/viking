@@ -29,6 +29,8 @@
 #include "bing.h"
 #include "vikmapslayer.h"
 #include "bingmapsource.h"
+#include "vikwebtoolcenter.h"
+#include "vikexttools.h"
 
 /** API key registered by Guilhem Bonnefille */
 #define API_KEY "AqsTAipaBBpKLXhcaGgP8kceYukatmtDLS1x0CXEhRZnpl1RELF9hlI8j4mNIkrE"
@@ -39,5 +41,10 @@ void bing_init () {
 	  (bing_map_source_new_with_id (212, "Bing Bird's Eye Maps", API_KEY));
 
 	maps_layer_register_map_source (bing_aerial);
-}
 
+	// Allow opening web location
+	VikWebtoolCenter *webtool = NULL;
+	webtool = vik_webtool_center_new_with_members ( _("Bing"), "http://www.bing.com/maps/?v=2&cp=%s~%s&lvl=%d" );
+	vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+	g_object_unref ( webtool );
+}
