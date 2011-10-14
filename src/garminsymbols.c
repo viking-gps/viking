@@ -332,12 +332,24 @@ static void init_icons() {
 }
 
 static GdkPixbuf *get_wp_sym_from_index ( gint i ) {
-  if ( !garmin_syms[i].icon &&
-      ((!a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data) ||
-       (a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data_large))) {
-    garmin_syms[i].icon = gdk_pixbuf_from_pixdata (
-       a_vik_get_use_large_waypoint_icons() ? garmin_syms[i].data_large : garmin_syms[i].data,
-       FALSE, NULL );
+  // Ensure data exists to either directly load icon or scale from the other set
+  if ( !garmin_syms[i].icon && ( garmin_syms[i].data || garmin_syms[i].data_large) ) {
+    if ( a_vik_get_use_large_waypoint_icons() ) {
+      if ( garmin_syms[i].data_large )
+	// Directly load icon
+	garmin_syms[i].icon = gdk_pixbuf_from_pixdata ( garmin_syms[i].data_large, FALSE, NULL );
+      else
+	// Up sample from small image
+	garmin_syms[i].icon = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata ( garmin_syms[i].data, FALSE, NULL ), 30, 30, GDK_INTERP_BILINEAR );
+    }
+    else {
+      if ( garmin_syms[i].data )
+	// Directly use small symbol
+	garmin_syms[i].icon = gdk_pixbuf_from_pixdata ( garmin_syms[i].data, FALSE, NULL );
+      else
+	// Down size large image
+	garmin_syms[i].icon = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata ( garmin_syms[i].data_large, FALSE, NULL ), 18, 18, GDK_INTERP_BILINEAR );
+    }
   }
   return garmin_syms[i].icon;
 }
@@ -363,8 +375,8 @@ GdkPixbuf *a_get_wp_sym ( const gchar *sym ) {
 void a_populate_sym_list ( GtkListStore *list ) {
   gint i;
   for (i=0; i<G_N_ELEMENTS(garmin_syms); i++) {
-    if ((!a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data) ||
-        (a_vik_get_use_large_waypoint_icons() && garmin_syms[i].data_large)) {
+    // Ensure at least one symbol available - the other can be auto generated
+    if ( garmin_syms[i].data || garmin_syms[i].data_large ) {
       GtkTreeIter iter;
       gtk_list_store_append(list, &iter);
       gtk_list_store_set(list, &iter, 0, garmin_syms[i].sym, 1, get_wp_sym_from_index(i), -1);
