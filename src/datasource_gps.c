@@ -43,7 +43,7 @@
 
 static gboolean gps_acquire_in_progress = FALSE;
 
-static gint last_active = 0;
+static gint last_active = -1;
 static gboolean last_get_tracks = TRUE;
 static gboolean last_get_waypoints = TRUE;
 
@@ -344,6 +344,18 @@ void append_element (gpointer elem, gpointer user_data)
   gtk_combo_box_append_text (combo, text);
 }
 
+static gint find_entry = -1;
+static gint garmin_entry = -1;
+
+static void find_garmin (gpointer elem, gpointer user_data)
+{
+  const gchar *name = ((BabelDevice*)elem)->name;
+  find_entry++;
+  if (!strcmp(name, "garmin")) {
+    garmin_entry = find_entry;
+  }
+}
+
 void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
 {
   gps_user_data_t *w = (gps_user_data_t *)user_data;
@@ -352,6 +364,19 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   w->proto_l = gtk_label_new (_("GPS Protocol:"));
   w->proto_b = GTK_COMBO_BOX(gtk_combo_box_new_text ());
   g_list_foreach (a_babel_device_list, append_element, w->proto_b);
+
+  // Maintain default to Garmin devices (assumed most popular/numerous device)
+  if ( last_active < 0 ) {
+    find_entry = -1;
+    g_list_foreach (a_babel_device_list, find_garmin, NULL);
+    if ( garmin_entry < 0 )
+      // Not found - so set it to the first entry
+      last_active = 0;
+    else
+      // Found
+      last_active = garmin_entry;
+  }
+
   gtk_combo_box_set_active (w->proto_b, last_active);
   g_object_ref(w->proto_b);
 
