@@ -1341,7 +1341,7 @@ to write the waypoints to this file.
       <para>You can find more examples in the documentation part of the distribution.</para>
       <section>
         <title>Map Source</title>
-        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
+        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems and <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark>.</para>
         <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Maps">Maps Wiki</ulink></para>
 
         <para>The VikSlippyMapSource allows to declare any map's source working like OpenStreetMap. It supports the following properties:
