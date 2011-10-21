@@ -412,6 +412,12 @@ static void layers_popup_cb ( VikLayersPanel *vlp )
   layers_popup ( vlp, NULL, 0 );
 }
 
+/**
+ * vik_layers_panel_new_layer:
+ * @type: type of the new layer
+ * 
+ * Create a new layer and add to panel.
+ */
 gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, gint type )
 {
   VikLayer *l;
@@ -420,12 +426,17 @@ gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, gint type )
   if ( l )
   {
     vik_layers_panel_add_layer ( vlp, l );
-    vik_layers_panel_emit_update ( vlp );
     return TRUE;
   }
   return FALSE;
 }
 
+/**
+ * vik_layers_panel_add_layer:
+ * @l: existing layer
+ * 
+ * Add an existing layer to panel.
+ */
 void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
 {
   GtkTreeIter iter;
@@ -473,6 +484,8 @@ void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
     else
       vik_aggregate_layer_add_layer ( addtoagg, l );
   }
+
+  vik_layers_panel_emit_update ( vlp );
 }
 
 static void layers_move_item ( VikLayersPanel *vlp, gboolean up )
