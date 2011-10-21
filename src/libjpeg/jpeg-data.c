@@ -24,11 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-/* This refers to the exif-i18n.h file from the "exif" package and is
- * NOT to be confused with the libexif/i18n.h file.
- */
-#include "exif/exif-i18n.h"
+#include <glib/gi18n.h>
 
 /* realloc that cleans up on memory failure and returns to caller */
 #define CLEANUP_REALLOC(p,s) { \
