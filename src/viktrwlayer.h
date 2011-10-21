@@ -71,4 +71,8 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl );
 void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl );
 void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name );
 
+/* Exposed Layer Interface function definitions */
+// Intended only for use by other trw_layer subwindows
+void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
+
 #endif

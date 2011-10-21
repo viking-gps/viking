@@ -19,19 +19,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifndef _VIKING_TRWLAYER_GEOTAG_H
+#define _VIKING_TRWLAYER_GEOTAG_H
 
-#ifndef _VIKING_GEOTAG_EXIF_H
-#define _VIKING_GEOTAG_EXIF_H
+#include <glib.h>
+#include <gtk/gtk.h>
+#include "viktrwlayer.h"
 
-#include "vikwaypoint.h"
-#include "vikcoord.h"
+// To be only called from within viktrwlayer
+void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *track, const gchar *track_name );
 
-VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoordMode vcmode, gchar **name );
-
-VikWaypoint* a_geotag_create_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name );
-
-gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_GPS_info );
-
-gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble alt, gboolean no_change_mtime );
-
-#endif // _VIKING_GEOTAG_EXIF_H
+#endif

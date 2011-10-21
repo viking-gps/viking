@@ -172,7 +172,10 @@ libviking_a_SOURCES += \
 if GEOTAG
 libviking_a_SOURCES += \
 	datasource_geotag.c \
-	geotag_exif.c geotag_exif.h
+	geotag_exif.c geotag_exif.h \
+	viktrwlayer_geotag.c viktrwlayer_geotag.h \
+	libjpeg/jpeg-data.c libjpeg/jpeg-data.h \
+	libjpeg/jpeg-marker.c libjpeg/jpeg-marker.h
 endif
 
 viking_SOURCES = main.c

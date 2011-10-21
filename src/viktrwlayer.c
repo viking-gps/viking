@@ -36,6 +36,10 @@
 #include "vikmapslayer.h"
 #include "viktrwlayer_tpwin.h"
 #include "viktrwlayer_propwin.h"
+#ifdef VIK_CONFIG_GEOTAG
+#include "viktrwlayer_geotag.h"
+#include "geotag_exif.h"
+#endif
 #include "garminsymbols.h"
 #include "thumbnails.h"
 #include "background.h"
@@ -253,6 +257,12 @@ static void trw_layer_delete_all_waypoints ( gpointer lav[2] );
 static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] );
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] );
+#ifdef VIK_CONFIG_GEOTAG
+static void trw_layer_geotagging_waypoint_mtime_keep ( gpointer pass_along[6] );
+static void trw_layer_geotagging_waypoint_mtime_update ( gpointer pass_along[6] );
+static void trw_layer_geotagging_track ( gpointer pass_along[6] );
+static void trw_layer_geotagging ( gpointer lav[2] );
+#endif
 static void trw_layer_acquire_gps_cb ( gpointer lav[2] );
 static void trw_layer_acquire_google_cb ( gpointer lav[2] );
 #ifdef VIK_CONFIG_OPENSTREETMAP
@@ -418,7 +428,6 @@ static VikTrwLayer* trw_layer_new ( gint drawmode );
 /* Layer Interface function definitions */
 static VikTrwLayer* trw_layer_create ( VikViewport *vp );
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter );
-static void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
 static void trw_layer_free ( VikTrwLayer *trwlayer );
 static void trw_layer_draw ( VikTrwLayer *l, gpointer data );
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
@@ -2360,6 +2369,52 @@ static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] )
   a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
 }
 
+#ifdef VIK_CONFIG_GEOTAG
+static void trw_layer_geotagging_waypoint_mtime_keep ( gpointer pass_along[6] )
+{
+  VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->waypoints, pass_along[3] );
+  if ( wp )
+    // Update directly - not changing the mtime
+    a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, TRUE );
+}
+
+static void trw_layer_geotagging_waypoint_mtime_update ( gpointer pass_along[6] )
+{
+  VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->waypoints, pass_along[3] );
+  if ( wp )
+    // Update directly
+    a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, FALSE );
+}
+
+/*
+ * Use code in separate file for this feature as reasonably complex
+ */
+static void trw_layer_geotagging_track ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  // Unset so can be reverified later if necessary
+  vtl->has_verified_thumbnails = FALSE;
+
+  trw_layer_geotag_dialog ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			    vtl,
+			    track,
+			    pass_along[3] );
+}
+
+static void trw_layer_geotagging ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  // Unset so can be reverified later if necessary
+  vtl->has_verified_thumbnails = FALSE;
+
+  trw_layer_geotag_dialog ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			    vtl,
+			    NULL,
+			    NULL);
+}
+#endif
+
 // 'Acquires' - Same as in File Menu -> Acquire - applies into the selected TRW Layer //
 
 /*
@@ -2581,6 +2636,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_100, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
+  gtk_widget_show ( item );
+#endif
+
+#ifdef VIK_CONFIG_GEOTAG
+  item = gtk_menu_item_new_with_mnemonic ( _("Geotag _Images...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_geotagging), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 #endif
 
@@ -3943,6 +4005,25 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_show_picture), pass_along );
         gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
         gtk_widget_show ( item );
+
+#ifdef VIK_CONFIG_GEOTAG
+	GtkWidget *geotag_submenu = gtk_menu_new ();
+	item = gtk_image_menu_item_new_with_mnemonic ( _("Update Geotag on _Image") );
+	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show ( item );
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), geotag_submenu );
+  
+	item = gtk_menu_item_new_with_mnemonic ( _("_Update") );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_geotagging_waypoint_mtime_update), pass_along );
+	gtk_menu_shell_append (GTK_MENU_SHELL (geotag_submenu), item);
+	gtk_widget_show ( item );
+
+	item = gtk_menu_item_new_with_mnemonic ( _("Update and _Keep File Timestamp") );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_geotagging_waypoint_mtime_keep), pass_along );
+	gtk_menu_shell_append (GTK_MENU_SHELL (geotag_submenu), item);
+	gtk_widget_show ( item );
+#endif
       }
 
     }
@@ -4156,6 +4237,13 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 	gtk_widget_show ( item );
       }
     }
+
+#ifdef VIK_CONFIG_GEOTAG
+  item = gtk_menu_item_new_with_mnemonic ( _("Geotag _Images...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_geotagging_track), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+#endif
 
     // Only show on viewport popmenu when a trackpoint is selected
     if ( ! vlp && l->current_tpl ) {
@@ -5649,7 +5737,7 @@ static void thumbnail_create_thread_free ( thumbnail_create_thread_data *tctd )
   g_free ( tctd );
 }
 
-static void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
+void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
 {
   if ( ! vtl->has_verified_thumbnails )
   {
