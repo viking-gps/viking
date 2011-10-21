@@ -1343,7 +1343,6 @@ static void menu_copy_layer_cb ( GtkAction *a, VikWindow *vw )
 static void menu_cut_layer_cb ( GtkAction *a, VikWindow *vw )
 {
   vik_layers_panel_cut_selected ( vw->viking_vlp );
-  draw_update ( vw );
   vw->modified = TRUE;
 }
 
@@ -1351,7 +1350,6 @@ static void menu_paste_layer_cb ( GtkAction *a, VikWindow *vw )
 {
   if ( a_clipboard_paste ( vw->viking_vlp ) )
   {
-    draw_update ( vw );
     vw->modified = TRUE;
   }
 }
