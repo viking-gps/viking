@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,12 +75,55 @@ static void file_list_add ( VikFileList *vfl )
     gtk_widget_hide ( vfl->file_selector );
 }
 
+
+static GtkTreeRowReference** file_list_get_selected_refs (GtkTreeModel *model,
+							  GList *list)
+{
+  GtkTreeRowReference **arr;
+  GList *iter;
+    
+  arr = g_new (GtkTreeRowReference *, g_list_length (list) + 1);
+    
+  gint pos = 0;
+  for (iter = g_list_first (list); iter != NULL; iter = g_list_next (iter)) {
+    GtkTreePath *path = (GtkTreePath *)(iter->data);
+    arr[pos] = gtk_tree_row_reference_new (model, path);
+    pos++;
+  }
+  arr[pos] = NULL;
+    
+  return arr;
+}
+
+static void file_list_store_delete_refs (GtkTreeModel *model,
+					 GtkTreeRowReference * const *rrefs)
+{
+    GtkTreePath *path;
+    GtkTreeIter iter;
+
+    gint rr;
+    for ( rr = 0; rrefs[rr] != NULL; rr++ ) {
+      path = gtk_tree_row_reference_get_path (rrefs[rr]);
+      gtk_tree_model_get_iter (model, &iter, path);
+      gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+    }
+}
+
+
 static void file_list_del ( VikFileList *vfl )
 {
   GtkTreeSelection *ts = gtk_tree_view_get_selection (GTK_TREE_VIEW(vfl->treeview));
-  GtkTreeIter iter;
-  if ( gtk_tree_selection_get_selected(ts, NULL, &iter) )
-    gtk_list_store_remove(GTK_LIST_STORE(vfl->model), &iter);
+  GList *list = gtk_tree_selection_get_selected_rows ( ts, &(vfl->model) );
+
+  // For multi delete need to store references to selected rows
+  GtkTreeRowReference **rrefs = file_list_get_selected_refs ( vfl->model, list );
+  // And then delete each one individually as the path will have changed
+  file_list_store_delete_refs ( vfl->model, rrefs );
+
+  // Cleanup
+  g_list_foreach ( list, (GFunc) gtk_tree_path_free, NULL );
+  g_list_free ( list );
+  g_free (rrefs);
 }
 
 GType vik_file_list_get_type (void)
@@ -120,6 +164,8 @@ GtkWidget *vik_file_list_new ( const gchar *title )
   gtk_tree_view_set_model ( GTK_TREE_VIEW(vfl->treeview), vfl->model );
   column = gtk_tree_view_column_new_with_attributes ( title, gtk_cell_renderer_text_new (), "text", 0, NULL);
   gtk_tree_view_append_column (GTK_TREE_VIEW (vfl->treeview), column);
+
+  gtk_tree_selection_set_mode ( gtk_tree_view_get_selection (GTK_TREE_VIEW(vfl->treeview)), GTK_SELECTION_MULTIPLE );
 
   gtk_widget_set_size_request ( vfl->treeview, 200, 100);
 
