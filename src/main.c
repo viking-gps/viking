@@ -63,7 +63,7 @@ void a_datasource_gc_init();
 static guint window_count = 0;
 
 static VikWindow *new_window ();
-static void open_window ( VikWindow *vw, const gchar **files );
+static void open_window ( VikWindow *vw, GSList *files );
 static void destroy( GtkWidget *widget,
                      gpointer   data );
 
@@ -106,20 +106,25 @@ static VikWindow *new_window ()
   return NULL;
 }
 
-static void open_window ( VikWindow *vw, const gchar **files )
+static void open_window ( VikWindow *vw, GSList *files )
 {
-  gboolean change_fn = (!files[1]); /* only change fn if one file */
-  while ( *files ) {
+  gboolean change_fn = (g_slist_length(files) == 1); /* only change fn if one file */
+  GSList *cur_file = files;
+  while ( cur_file ) {
     // Only open a new window if a viking file
-    if (vw != NULL && check_file_magic_vik ( *(files) ) ) {
+    gchar *file_name = cur_file->data;
+    if (vw != NULL && check_file_magic_vik ( file_name ) ) {
       VikWindow *newvw = new_window();
       if (newvw)
-	vik_window_open_file ( newvw, *(files++), change_fn );
+	vik_window_open_file ( newvw, file_name, change_fn );
     }
     else {
-      vik_window_open_file ( vw, *(files++), change_fn );
+      vik_window_open_file ( vw, file_name, change_fn );
     }
+    g_free (file_name);
+    cur_file = g_slist_next (cur_file);
   }
+  g_slist_free (files);
 }
 
 /* Options */
