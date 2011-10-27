@@ -246,9 +246,6 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   static struct LatLon ll;
   VikTrackpoint *tp = VIK_TRACKPOINT(tpl->data);
 
-  tpwin->cur_tp = tp;
-  tpwin->cur_tp_is_endpoint = ! (tpl->next && tpl->prev);
-
   /* Only can insert if not at the end (otherwise use extend track) */
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_INSERT, (gboolean) GPOINTER_TO_INT (tpl->next) );
 
@@ -388,6 +385,9 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
 
   g_snprintf ( tmp_str, sizeof(tmp_str), "%d / %d", tp->nsats, tp->fix_mode );
   gtk_label_set_text ( tpwin->sat, tmp_str );
+
+  tpwin->cur_tp = tp;
+  tpwin->cur_tp_is_endpoint = ! (tpl->next && tpl->prev);
 }
 
 void vik_trw_layer_tpwin_set_track_name ( VikTrwLayerTpwin *tpwin, const gchar *track_name )
