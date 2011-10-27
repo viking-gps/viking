@@ -565,10 +565,12 @@ static void xfclose ( FILE *f )
  */
 gboolean check_file_magic_vik ( const gchar *filename )
 {
-  gboolean result;
+  gboolean result = FALSE;
   FILE *ff = xfopen ( filename, "r" );
-  result = check_magic ( ff, VIK_MAGIC );
-  xfclose ( ff );
+  if ( ff ) {
+    result = check_magic ( ff, VIK_MAGIC );
+    xfclose ( ff );
+  }
   return result;
 }
 
