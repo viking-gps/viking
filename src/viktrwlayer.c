@@ -4498,9 +4498,9 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->waypoints_iters, wp_params.closest_wp_name ), TRUE );
 
       // Too easy to move it so must be holding shift to start immediately moving it
-      //   or otherwise be previously selected
+      //   or otherwise be previously selected but not have an image (otherwise clicking within image bounds (again) moves it)
       if ( event->state & GDK_SHIFT_MASK ||
-	   vtl->current_wp == wp_params.closest_wp ) {
+	   ( vtl->current_wp == wp_params.closest_wp && !vtl->current_wp->image ) ) {
 	// Put into 'move buffer'
 	// NB vvp & vw already set in tet
 	tet->vtl = (gpointer)vtl;
