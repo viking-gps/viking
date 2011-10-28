@@ -33,6 +33,8 @@ VikWaypoint *vik_waypoint_new()
   wp->altitude = VIK_DEFAULT_ALTITUDE;
   wp->comment = NULL;
   wp->image = NULL;
+  wp->image_width = 0;
+  wp->image_height = 0;
   wp->symbol = NULL;
   return wp;
 }
@@ -64,6 +66,7 @@ void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image)
     wp->image = g_strdup(image);
   else
     wp->image = NULL;
+  // NOTE - ATM the image (thumbnail) size is calculated on demand when needed to be first drawn
 }
 
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname)
