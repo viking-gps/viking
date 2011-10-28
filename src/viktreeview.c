@@ -133,14 +133,27 @@ static void treeview_edited_cb (GtkCellRendererText *cell, gchar *path_str, cons
 
 static void treeview_toggled_cb (GtkCellRendererToggle *cell, gchar *path_str, VikTreeview *vt)
 {
-  GtkTreeIter iter;
+  GtkTreeIter iter_toggle;
+  GtkTreeIter iter_selected;
 
   /* get type and data */
-  vik_treeview_get_iter_from_path_str ( vt, &iter, path_str );
-  vt->was_a_toggle = TRUE;
+  vik_treeview_get_iter_from_path_str ( vt, &iter_toggle, path_str );
 
-  g_signal_emit ( G_OBJECT(vt), 
-treeview_signals[VT_ITEM_TOGGLED_SIGNAL], 0, &iter );
+  GtkTreePath *tp_toggle = gtk_tree_model_get_path ( vt->model, &iter_toggle );
+
+  if ( gtk_tree_selection_get_selected ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( vt ) ), NULL, &iter_selected ) ) {
+    GtkTreePath *tp_selected = gtk_tree_model_get_path ( vt->model, &iter_selected );
+    if ( gtk_tree_path_compare ( tp_toggle, tp_selected ) )
+      // Toggle set on different path
+      // therefore prevent subsequent auto selection (otherwise no action needed)
+      vt->was_a_toggle = TRUE;
+  }
+  else
+    // Toggle set on new path
+    // therefore prevent subsequent auto selection
+    vt->was_a_toggle = TRUE;
+
+  g_signal_emit ( G_OBJECT(vt), treeview_signals[VT_ITEM_TOGGLED_SIGNAL], 0, &iter_toggle );
 }
 
 /* Inspired by GTK+ test
