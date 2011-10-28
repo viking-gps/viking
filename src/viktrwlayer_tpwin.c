@@ -232,7 +232,6 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_label_set_text ( tpwin->hdop, NULL );
   gtk_label_set_text ( tpwin->pdop, NULL );
   gtk_label_set_text ( tpwin->sat, NULL );
-  tpwin->cur_tp = NULL;
 }
 
 void vik_trw_layer_tpwin_disable_join ( VikTrwLayerTpwin *tpwin )
