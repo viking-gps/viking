@@ -44,6 +44,8 @@
 static gboolean gps_acquire_in_progress = FALSE;
 
 static gint last_active = 0;
+static gboolean last_get_tracks = TRUE;
+static gboolean last_get_waypoints = TRUE;
 
 static gpointer datasource_gps_init_func ( );
 static void datasource_gps_get_cmd_string ( gpointer add_widgets_data_not_used, gchar **babelargs, gchar **input_file );
@@ -129,11 +131,13 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
   device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_tracks_b)))
+  last_get_tracks = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_tracks_b));
+  if (last_get_tracks)
     tracks = "-t";
   else
     tracks = "";
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b)))
+  last_get_waypoints = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b));
+  if (last_get_waypoints)
     waypoints = "-w";
   else
     waypoints = "";
@@ -377,11 +381,11 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
 
   w->get_tracks_l = gtk_label_new (_("Tracks:"));
   w->get_tracks_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_tracks_b), TRUE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_tracks_b), last_get_tracks);
 
   w->get_waypoints_l = gtk_label_new (_("Waypoints:"));
   w->get_waypoints_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b), TRUE);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b), last_get_waypoints);
 
   box = GTK_TABLE(gtk_table_new(2, 4, FALSE));
   data_type_box = GTK_TABLE(gtk_table_new(4, 1, FALSE));
