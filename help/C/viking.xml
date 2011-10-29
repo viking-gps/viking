@@ -661,6 +661,7 @@ Some maps are continually improving over time (e.g. OpenStreetMap) and so in ord
 Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServer-USA">Terraserver</ulink> (Primarily USA coverage) and <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
 <itemizedlist>
+<listitem><para>Bing Bird's Eye (Aerial) Maps (&appname; Version1.2+)</para></listitem>
 <listitem><para>Terraserver Topos</para></listitem>
 <listitem><para>Terraserver Aerials</para></listitem>
 <listitem><para>Terraserver Urban Areas</para></listitem>
@@ -791,6 +792,13 @@ Left or Middle-click: make the clicked point on the map the center
 Middle-click and drag: pan
 </para>
 
+<section><title>Pan</title>
+<para>
+Pan moves the viewpoint. A single click centers the viewport at that point, whereas click and drag dynamically moves the view around.
+This is the default tool.
+</para>
+</section>
+
 <section><title>Zoom</title>
 <para>
 Zooms in and out on the clicked part of the map.
@@ -801,6 +809,15 @@ Zooms in and out on the clicked part of the map.
 <para>
 The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
 A second click will 'freeze' the ruler at that point.
+</para>
+</section>
+
+<section><title>Version1.1+: Select</title>
+<para>
+The select tool allows one to choose any waypoint or track by clicking on it (or reasonably near) in the viewpoint.
+</para>
+<para>
+ATM to select a track one must actually click on a trackpoint, which is also selected.
 </para>
 </section>
 
