@@ -14,4 +14,8 @@
     <property name="url">http://nls.tileserver.com?lat=%s&amp;lng=%s&amp;zoom=%d</property>
     <property name="id">44</property>
   </object>
+  <object class="VikWebtoolCenter">
+    <property name="label">Yahoo! Maps</property>
+    <property name="url">http://maps.yahoo.com/#lat=%s&amp;lon=%s&amp;zoom=%d</property>
+  </object>
 </objects>
