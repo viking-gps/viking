@@ -30,6 +30,7 @@
 #include "vikslippymapsource.h"
 #include "vikwmscmapsource.h"
 #include "vikwebtoolcenter.h"
+#include "vikwebtoolbounds.h"
 #include "vikexttools.h"
 #include "vikgotoxmltool.h"
 #include "vikgoto.h"
@@ -115,6 +116,13 @@ void osm_init () {
   webtool = vik_webtool_center_new_with_members ( _("OSM (render)"), "http://www.informationfreeway.org/?lat=%s&lon=%s&zoom=%d&layers=B0000F000F" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
+
+  VikWebtoolBounds *webtoolbounds = NULL;
+  // Example: http://127.0.0.1:8111/load_and_zoom?left=8.19&right=8.20&top=48.605&bottom=48.590&select=node413602999
+  // JOSM or merkaartor must already be running with remote interface enabled
+  webtoolbounds = vik_webtool_bounds_new_with_members ( _("Local port 8111 (eg JOSM)"), "http://localhost:8111/load_and_zoom?left=%s&right=%s&bottom=%s&top=%s" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtoolbounds ) );
+  g_object_unref ( webtoolbounds );
 
   // Goto
   VikGotoXmlTool *nominatim = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM Nominatim",
