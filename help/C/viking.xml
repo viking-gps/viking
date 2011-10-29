@@ -166,6 +166,11 @@ Show the live GPS position on the map (for use on a mobile device - e.g. a lapto
 Import track+waypoint files of various types via GPSBabel
 </para>
 </listitem>
+<listitem>
+<para>
+View, create and update Geotagged Images (using EXIF data).
+</para>
+</listitem>
 </itemizedlist>
 <note>
 <para>
@@ -350,6 +355,13 @@ This gets 'interesting' points from Wikipedia for the specified view: either wit
 </para>
 </section>
 
+<section><title>Geotag Images</title>
+<para>
+This starts the Geotagging Images dialog against all tracks in the layer.
+See <link linkend="geotagging">Geotagging</link> for further detail.
+</para>
+</section>
+
 <section id="osm_upload"><title>Upload To OSM</title>
 <para>
 This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
@@ -394,6 +406,13 @@ This runs <application>GPSBabel</application> on the layer using information fro
 </itemizedlist>
 <para>
 The result is generated in a new Track/Waypoint layer.
+</para>
+</section>
+
+<section><title>Geotag Images</title>
+<para>
+This starts the Geotagging Images dialog using the specific track.
+See <link linkend="geotagging">Geotagging</link> for further detail.
 </para>
 </section>
 
@@ -550,6 +569,10 @@ The record of the Google route is stored in the track's comment, so if the comme
 <para>
 This shows a dialog with detailed information for the waypoint. Many properties of the waypoint can changed here, such as the comment, the symbol used in drawing or the image (normally a photograph taken at this position) assiocated with it. When a waypoint has an image, a thumbnail of it is drawn in the viewport for the waypoint (in preference to the symbol).
 </para>
+<para>
+If the waypoint has an associated image, then the Geotag information may be updated, either with updating the file's modification timestamp or not.
+This can be useful when the waypoint has been moved.
+</para>
 
 </section><!-- WP Prop END -->
 
@@ -574,6 +597,32 @@ Same as the layer <link linkend="new_wp">New Waypoint</link>.
 </section>
 
 </section><!-- WP END -->
+
+<section id="geotagging"><title>Version1.3+: Geotag Images</title>
+<para>
+This dialog allows geotagging images (normally taken with a digital camera) via interpolation against a specific track or all tracks in the TrackWaypoint layer - depending on how it is invoked.
+</para>
+<para>
+Images need to have an EXIF DATE_TIME_ORIGINAL (nearly always set by a camera). This timestamp is then used to find the location when the image(s) was taken by searching through the track(s) to find the nearest time - interpolating between points if necessary to set the location.
+</para>
+<note>
+<para>
+Generally it is good policy to synchronize your camera's clock with your GPS clock before taking photographs. However the times can be adjusted afterwards (if necessary) to take into consideration clock differences.
+</para>
+</note>
+<para>
+Various options allow control of how the geotagging process is performed:
+</para>
+<itemizedlist>
+<listitem><para>Images - Add the images used for geotagging</para></listitem>
+<listitem><para>Create Waypoints</para></listitem>
+<listitem><para>Write EXIF</para></listitem>
+<listitem><para>Overwrite Existing GPS Information</para></listitem>
+<listitem><para>Interpolate Between Track Segments</para></listitem>
+<listitem><para>Image Time Offset - The number of seconds to ADD to the photos time to make it match the GPS data. Calculate this with (GPS - Photo). Can be negative or positive. Useful to adjust times when a camera's timestamp was incorrect.</para></listitem>
+<listitem><para>Image Timezone - The timezone that the used when the images were created. For example, if a camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct adjustment to the images' time can be made. GPS data is always in UTC.</para></listitem>
+</itemizedlist>
+</section>
 
 </section><!-- TRW Layer END -->
 
@@ -1273,57 +1322,6 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 </para>
 </formalpara>
 </section>
-</section>
-
-<section><title>Geocoded Photo</title>
-<para>
-HOWTO GEOCODE YOUR PHOTOS AND SEE THEM IN VIKING 
-</para>
-<para>1) Synchronize your camera's clock with your GPS clock. If your
-camera's clock doesn't have a seconds value you can change, you might
-try setting the minute value just when the minute changes.
-</para>
-<para>
-2) Activate the track log on your GPS.
-</para>
-<para>3) Get outside and take some pictures with your camera while
-making sure your GPS has reception. If you forgot to turn your GPS on
-or forgot to bring it when you took a picture but you know where you
-took the picture, you can make a waypoint with a name of the format
-YYMMDDhhmm, representing the time the picture was taken, to record
-where you were at that time.
-</para>
-<para>4) Get home and download your pictures and GPS data. You can
-download the GPS data several ways. The first is using gpspoint to
-download from a Garmin GPS: <programlisting>gpspoint -p /dev/ttyS0 -dw -dt -of 2004-04-02-trip1</programlisting>
-</para>
-<para>
-Where /dev/ttyS0 is the serial port the GPS is connected to. If you
-don't have a Garmin GPS, or if you don't feel like install gpspoint,
-you can use my version of gpsbabel with support for gpspoint files. You
-can use gpsbabel to either translate the GPS data from a format you
-already have the data in or download it directly from your GPS
-reciever. A typical command line would something like this:<programlisting>gpsbabel -i garmin -f /dev/ttyS0 -o gpspoint -F 2004-04-02-trip1</programlisting>
-</para>
-<para>
-5) Launch GPSPhoto.
-</para>
-<para>
-6) You must now bring your photos into GPSPhoto. Either drag them (or
-the directory containing them) from your favorite file manager to the
-list on the left of the GPSPhoto window, or use the buttons below the
-list to find them.
-</para>
-<para>
-7) Do the same for your GPS data file(s), dragging them to the list on the right of the GPSPhoto Window.
-</para>
-<para>8) Click the Execute button, and choose a location to save the
-gpspoint file containing the waypoints for your photos. Then click OK
-to write the waypoints to this file.
-</para>
-<para>
-9) Open Viking and open both your original GPS data file and your image waypoint file just created.
-</para>
 </section>
 
 <section id="extend_viking">
