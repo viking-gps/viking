@@ -212,7 +212,12 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
     GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( vl->vt, replace_iter ) );
     val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone)+1 );
   } else {
-    val->children = g_list_append ( val->children, l );
+    // Effectively insert at 'end' of the list to match how displayed in the treeview
+    //  - but since it is drawn from 'bottom first' it is actually the first in the child list
+    // This ordering is especially important if it is a map or similar type,
+    //  which needs be drawn first for the layering draw method to work properly.
+    // ATM this only happens when a layer is drag/dropped to the end of an aggregate layer
+    val->children = g_list_prepend ( val->children, l );
   }
   g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update_secondary), val );
 }

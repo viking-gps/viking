@@ -161,6 +161,11 @@ Editing tracks and trackpoints, joining and splitting up tracks
 Show the live GPS position on the map (for use on a mobile device - e.g. a laptop)
 </para>
 </listitem>
+<listitem>
+<para>
+Import track+waypoint files of various types via GPSBabel
+</para>
+</listitem>
 </itemizedlist>
 <note>
 <para>
@@ -998,37 +1003,19 @@ Currently Garmin, Magellan, DeLorme and Navilink protocols are supported.
 <procedure>
 <title>Method C</title>
 <step>
-<para>Get data from files in GPX format. For other formats (kml,
-ozi...), use a converter such as GPSBabel to convert the files to GPX
-format first.
-</para>
-</step>
-<step>
 <para>
-Open up &appname; and use File - Open or File - Append
-file to open the file.
+Get data from files in GPX or KML format, which can be opened directly.
+Use <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>
+</para>
+<para>
+Other formats can be imported that are supported by GPSBabel.
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>Import File With GPSBabel...</guimenuitem></menuchoice>
 </para>
 </step>
 <step>
 <para>
 Expand Tracks or Waypoints. Right-click on the
 track or waypoint of interest and select <guimenuitem>Goto "Center"</guimenuitem>.
-</para>
-</step>
-</procedure>
-<procedure>
-<title>Method D</title>
-<step>
-<para>
-Use File - Append File to add your track and waypoint data to
-&appname;. This has been tested with Geocaching.com's *.loc format,
-(others(?)).
-</para>
-</step>
-<step>
-<para>
-Expand Tracks or Waypoints. Right-click on the tack or
-point of interest and select <guimenuitem>Goto "Center"</guimenuitem>.
 </para>
 </step>
 </procedure>
@@ -1341,7 +1328,7 @@ to write the waypoints to this file.
       <para>You can find more examples in the documentation part of the distribution.</para>
       <section>
         <title>Map Source</title>
-        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
+        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems and <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark>.</para>
         <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Maps">Maps Wiki</ulink></para>
 
         <para>The VikSlippyMapSource allows to declare any map's source working like OpenStreetMap. It supports the following properties:

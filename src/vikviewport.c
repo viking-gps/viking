@@ -281,6 +281,12 @@ GdkGC *vik_viewport_get_gc_highlight ( VikViewport *vvp )
   return vvp->highlight_gc;
 }
 
+void vik_viewport_set_highlight_thickness ( VikViewport *vvp, gint thickness )
+{
+  // Otherwise same GDK_* attributes as in vik_viewport_new_gc
+  gdk_gc_set_line_attributes ( vvp->highlight_gc, thickness, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+}
+
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness )
 {
   GdkGC *rv = NULL;

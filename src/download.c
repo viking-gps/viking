@@ -105,7 +105,7 @@ static GMutex *file_list_mutex = NULL;
 
 /* spin button scales */
 VikLayerParamScale params_scales[] = {
-  {1, 86400*7, 10, 0},		/* download_tile_age */
+  {1, 86400*7, 60, 0},		/* download_tile_age */
 };
 
 static VikLayerParam prefs[] = {
@@ -238,7 +238,6 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       g_free ( file_options.etag );
       g_free ( file_options.new_etag );
     }
-    g_remove ( fn ); /* couldn't create temporary. delete 0-byte file. */
     return -1;
   }
 

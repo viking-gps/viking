@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2011, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,14 +50,7 @@ typedef struct _VikTrwLayer VikTrwLayer;
 void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
 void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *tr );
 
-
-/* TODO 0.0.8: _none_ of this should be here... interfaces, remember... */
-VikTrwLayer *vik_trw_layer_new ( gint drawmode );
-void vik_trw_layer_draw ( VikTrwLayer *l, gpointer data );
-void vik_trw_layer_free ( VikTrwLayer *trwlayer );
-
-VikTrwLayer *vik_trw_layer_create ( VikViewport *vp );
-gboolean vik_trw_layer_properties ( VikTrwLayer *vtl, gpointer vp );
+gint vik_trw_layer_get_property_tracks_line_thickness ( VikTrwLayer *vtl );
 
 void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
 void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t );
@@ -64,18 +58,11 @@ VikWaypoint *vik_trw_layer_get_waypoint ( VikTrwLayer *vtl, gchar *name );
 VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, const gchar *name );
 gboolean vik_trw_layer_delete_waypoint ( VikTrwLayer *vtl, const gchar *wp_name );
 gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name );
-const gchar *vik_trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
-
-gboolean vik_trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer );
-gboolean vik_trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
-void vik_trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter );
 
 gboolean vik_trw_layer_auto_set_view ( VikTrwLayer *vtl, VikViewport *vvp );
 gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest );
 GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l );
 GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l );
-void vik_trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp );
-gboolean vik_trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp );
 gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikCoord *def_coord );
 
 VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl );

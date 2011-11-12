@@ -24,7 +24,7 @@
 
 #include "viktrwlayer.h"
 
-void a_gpspoint_read_file ( VikTrwLayer *trw, FILE *f );
+gboolean a_gpspoint_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpspoint_write_file ( VikTrwLayer *trw, FILE *f );
 
 #endif

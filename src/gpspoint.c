@@ -144,7 +144,12 @@ static gchar *deslashndup ( const gchar *str, guint16 len )
   return rv;
 }
 
-void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
+/*
+ * Returns whether file read was a success
+ * No obvious way to test for a 'gpspoint' file,
+ *  thus set a flag if any actual tag found during processing of the file
+ */
+gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
   VikCoordMode coord_mode = vik_trw_layer_get_coord_mode ( trw );
   gchar *tag_start, *tag_end;
   g_assert ( f != NULL && trw != NULL );
@@ -153,8 +158,9 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
   line_newsegment = FALSE;
   line_image = NULL;
   line_symbol = NULL;
-
   current_track = NULL;
+  gboolean have_read_something = FALSE;
+
   while (fgets(line_buffer, 2048, f))
   {
     gboolean inside_quote = 0;
@@ -166,7 +172,7 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     if ( strlen(line_buffer) >= 13 && strncmp ( line_buffer, "~EndLayerData", 13 ) == 0 )
       break;
 
-/* each line: nullify stuff, make thing if nes, free name if ness */
+    /* each line: nullify stuff, make thing if nes, free name if ness */
     tag_start = line_buffer;
     for (;;)
     {
@@ -201,6 +207,7 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     }
     if (line_type == GPSPOINT_TYPE_WAYPOINT && line_name)
     {
+      have_read_something = TRUE;
       VikWaypoint *wp = vik_waypoint_new();
       wp->visible = line_visible;
       wp->altitude = line_altitude;
@@ -231,6 +238,7 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     }
     else if (line_type == GPSPOINT_TYPE_TRACK && line_name)
     {
+      have_read_something = TRUE;
       VikTrack *pl = vik_track_new();
 
       /* Thanks to Peter Jones for this Fix */
@@ -253,6 +261,7 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     }
     else if (line_type == GPSPOINT_TYPE_TRACKPOINT && current_track)
     {
+      have_read_something = TRUE;
       VikTrackpoint *tp = vik_trackpoint_new();
       vik_coord_load_from_latlon ( &(tp->coord), coord_mode, &line_latlon );
       tp->newsegment = line_newsegment;
@@ -294,6 +303,8 @@ void a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     line_sat = 0;
     line_fix = 0;
   }
+
+  return have_read_something;
 }
 
 /* Tag will be of a few defined forms:

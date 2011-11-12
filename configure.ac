@@ -303,7 +303,7 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
 
 AC_ARG_WITH(tileage,
             [AC_HELP_STRING([--with-tileage],
-                            [specify the age of a tile before checking it (default is 30 s)])],
+                            [specify the age of a tile before checking it (default is 7 days)])],
             [if test "x$withval" = "xno"; then
                 VIK_CONFIG_DEFAULT_TILE_AGE=0;
              elif test "x$withval" = "xyes"; then
@@ -311,9 +311,9 @@ AC_ARG_WITH(tileage,
              else
                 VIK_CONFIG_DEFAULT_TILE_AGE=${withval}
              fi],
-             [VIK_CONFIG_DEFAULT_TILE_AGE=30])
+             [VIK_CONFIG_DEFAULT_TILE_AGE=604800])
 AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
-                   [Age of tiles before cheking it (in seconds)])
+                   [Age of tiles before checking it (in seconds)])
 
 dnl man pages processing
 DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
@@ -358,7 +358,7 @@ echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
 echo "BlueMarble                       : $ac_cv_enable_bluemarble"
 echo "SPOTMaps                         : $ac_cv_enable_spotmaps"
 echo "Geonames                         : $ac_cv_enable_geonames"
-#echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
+echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"

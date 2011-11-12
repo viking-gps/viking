@@ -412,7 +412,8 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
        **/
 
       if ( ignore_it )
-        pts[current_chunk] = VIK_DEFAULT_ALTITUDE;
+	// Seemly can't determine average for this section - so use last known good value (much better than just sticking in zero)
+        pts[current_chunk] = altitude1;
       else
         pts[current_chunk] = altitude1 + (altitude2-altitude1)*((dist_along_seg - (chunk_length/2))/current_seg_length);
 
@@ -1063,6 +1064,20 @@ void vik_track_apply_dem_data ( VikTrack *tr )
     if ( elev != VIK_DEM_INVALID_ELEVATION )
       VIK_TRACKPOINT(tp_iter->data)->altitude = elev;
     tp_iter = tp_iter->next;
+  }
+}
+
+/*
+ * Apply DEM data (if available) - to only the last trackpoint
+ */
+void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
+{
+  gint16 elev;
+  if ( tr->trackpoints ) {
+    /* As in vik_track_apply_dem_data above - use 'best' interpolation method */
+    elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->coord), VIK_DEM_INTERPOL_BEST );
+    if ( elev != VIK_DEM_INVALID_ELEVATION )
+      VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->altitude = elev;
   }
 }
 

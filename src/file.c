@@ -565,10 +565,12 @@ static void xfclose ( FILE *f )
  */
 gboolean check_file_magic_vik ( const gchar *filename )
 {
-  gboolean result;
+  gboolean result = FALSE;
   FILE *ff = xfopen ( filename, "r" );
-  result = check_magic ( ff, VIK_MAGIC );
-  xfclose ( ff );
+  if ( ff ) {
+    result = check_magic ( ff, VIK_MAGIC );
+    xfclose ( ff );
+  }
   return result;
 }
 
@@ -595,8 +597,8 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
   }
   else
   {
+    gboolean success = TRUE;
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
-    vik_layer_rename ( vtl, a_file_basename ( filename ) );
 
     // In fact both kml & gpx files start the same as they are in xml
     if ( check_file_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
@@ -611,12 +613,19 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
       a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
     }
     else
-      a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
+      success = a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
 
+    // Refuse to load file types not supported
+    if ( ! success ) {
+      // free up layer
+      g_object_unref ( vtl );
+      xfclose(f);
+      return LOAD_TYPE_UNSUPPORTED_FAILURE;
+    }
+
+    vik_layer_rename ( vtl, a_file_basename ( filename ) );
     vik_layer_post_read ( vtl, vp, TRUE );
-
     vik_aggregate_layer_add_layer ( top, vtl );
-
     vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
 
     xfclose(f);
