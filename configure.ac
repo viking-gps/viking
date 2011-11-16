@@ -258,18 +258,11 @@ AC_CACHE_CHECK([whether to enable Realtime GPS Tracking stuff],
                [ac_cv_enable_realtimegpstracking], [ac_cv_enable_realtimegpstracking=yes])
 case $ac_cv_enable_realtimegpstracking in
   yes)
-    AC_CHECK_LIB(gps,gps_poll,,AC_MSG_ERROR([libgps is needed for Realtime GPS Tracking feature[,] but not found. The feature can be disable with --disable-realtime-gps-tracking]))
+    AC_CHECK_LIB(gps,gps_close,,AC_MSG_ERROR([libgps is needed for Realtime GPS Tracking feature[,] but not found. The feature can be disable with --disable-realtime-gps-tracking]))
     AC_DEFINE(VIK_CONFIG_REALTIME_GPS_TRACKING, [], [REALTIME GPS TRACKING STUFF])
     ;;
 esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])
-# Viking supports two incompatibles versions of GPSd: 2.39 and 2.90
-# But GPSd does not provides easy way to test features.
-if test x$ac_cv_enable_realtimegpstracking = xyes
-then
-  AC_CHECK_FUNCS(gps_stream)
-  AC_CHECK_FUNCS(gps_open_r)
-fi
 
 AC_ARG_WITH(search,
             [AC_HELP_STRING([--with-search],
