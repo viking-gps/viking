@@ -207,7 +207,11 @@ static guint8 webtool_center_mpp_to_zoom ( VikWebtool *self, gdouble mpp ) {
       return i;
     }
   }
-  return 255;
+  // Handle mpp smaller than 1
+  // return a useful value such that '17 - this number' gives a natural number.
+  // Ideally should return '-1' or '0.5' but that's tricky with an unsigned int type!
+  // (i.e. should rework to support zoom levels of 18 or 19)
+  return 0;
 }
 
 static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
