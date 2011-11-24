@@ -311,7 +311,7 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
       /* since vlp not set, vvp should be valid instead! */
       if ( vvp )
 	vik_viewport_set_center_coord ( vvp, &coord );
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     }
   }
   return trackpoint;
@@ -2303,13 +2303,13 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       break;
     case VIK_TRW_LAYER_PROPWIN_REVERSE:
       vik_track_reverse(tr);
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       break;
     case VIK_TRW_LAYER_PROPWIN_DEL_DUP:
       vik_track_remove_dup_points(tr);
       /* above operation could have deleted current_tp or last_tp */
       trw_layer_cancel_tps_of_track ( vtl, widgets->track_name );
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       break;
     case VIK_TRW_LAYER_PROPWIN_SPLIT:
       {
@@ -2346,7 +2346,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           /* Don't let track destroy this dialog */
           vik_track_clear_property_dialog(tr);
           vik_trw_layer_delete_track ( vtl, widgets->track_name );
-          vik_layer_emit_update ( VIK_LAYER(vtl) ); /* chase thru the hoops */
+          vik_layer_emit_update ( VIK_LAYER(vtl), FALSE ); /* chase thru the hoops */
         }
       }
       break;
@@ -2390,7 +2390,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
         tr_right->trackpoints = iter;
 
         vik_trw_layer_add_track(vtl, r_name, tr_right);
-        vik_layer_emit_update ( VIK_LAYER(vtl) );
+        vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       }
       break;
     default:

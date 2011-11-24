@@ -95,28 +95,49 @@ static void layer_class_init (VikLayerClass *klass)
       g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
-void vik_layer_emit_update ( VikLayer *vl )
+/**
+ * Invoke the actual drawing via signal method
+ */
+static gboolean idle_draw ( VikLayer *vl )
+{
+  g_signal_emit ( G_OBJECT(vl), layer_signals[VL_UPDATE_SIGNAL], 0 );
+  return FALSE; // Nothing else to do
+}
+
+/**
+ * Draw specified layer
+ */
+void vik_layer_emit_update ( VikLayer *vl, gboolean from_background )
 {
   if ( vl->visible ) {
     vik_window_set_redraw_trigger(vl);
-    g_signal_emit ( G_OBJECT(vl), layer_signals[VL_UPDATE_SIGNAL], 0 );
+
+    // Only ever draw when there is time to do so
+    if ( from_background )
+      // Drawing requested from background thread, so handle via the gdk thread method
+      gdk_threads_add_idle ( (GSourceFunc) idle_draw, vl );
+    else
+      g_idle_add ( (GSourceFunc) idle_draw, vl );
   }
 }
 
-/* should only be done by VikLayersPanel -- need to redraw and record trigger
- * when we make a layer invisible.
+/**
+ * should only be done by VikLayersPanel (hence never used from the background)
+ * need to redraw and record trigger when we make a layer invisible.
  */
 void vik_layer_emit_update_although_invisible ( VikLayer *vl )
 {
   vik_window_set_redraw_trigger(vl);
-  g_signal_emit ( G_OBJECT(vl), layer_signals[VL_UPDATE_SIGNAL], 0 );
+  g_idle_add ( (GSourceFunc) idle_draw, vl );
 }
 
 /* doesn't set the trigger. should be done by aggregate layer when child emits update. */
 void vik_layer_emit_update_secondary ( VikLayer *vl )
 {
   if ( vl->visible )
-    g_signal_emit ( G_OBJECT(vl), layer_signals[VL_UPDATE_SIGNAL], 0 );
+    // TODO: this can used from the background - eg in acquire
+    //       so will need to flow background update status through too
+    g_idle_add ( (GSourceFunc) idle_draw, vl );
 }
 
 static VikLayerInterface *vik_layer_interfaces[VIK_LAYER_NUM_TYPES] = {

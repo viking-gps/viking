@@ -1074,7 +1074,6 @@ static void gps_comm_thread(GpsSession *sess)
     result = a_babel_convert_to (sess->vtl, sess->cmd_args,
         (BabelStatusFunc) gps_upload_progress_func, sess->port, sess);
 
-  gdk_threads_enter();
   if (!result) {
     gtk_label_set_text ( GTK_LABEL(sess->status_label), _("Error: couldn't find gpsbabel.") );
   } 
@@ -1093,7 +1092,7 @@ static void gps_comm_thread(GpsSession *sess)
 	if (sess->vvp) {
 	  /* View the data available */
 	  vik_trw_layer_auto_set_view ( sess->vtl, sess->vvp) ;
-	  vik_layer_emit_update ( VIK_LAYER(sess->vtl) );
+	  vik_layer_emit_update ( VIK_LAYER(sess->vtl), TRUE ); // Yes update from background thread
 	}
       }
     } else {
@@ -1111,7 +1110,6 @@ static void gps_comm_thread(GpsSession *sess)
     g_mutex_unlock(sess->mutex);
     gps_session_delete(sess);
   }
-  gdk_threads_leave();
   g_thread_exit(NULL);
 }
 
@@ -1452,9 +1450,7 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
     vgl->first_realtime_trackpoint = FALSE;
     create_realtime_trackpoint(vgl, FALSE);
 
-    gdk_threads_enter();
-    vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw_children[TRW_REALTIME]));
-    gdk_threads_leave();
+    vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw_children[TRW_REALTIME]), TRUE); // Yes update from background thread
   }
 }
 

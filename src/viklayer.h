@@ -273,7 +273,7 @@ const gchar *vik_layer_get_name ( VikLayer *l );
 
 gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation);
 
-void vik_layer_emit_update ( VikLayer *vl );
+void vik_layer_emit_update ( VikLayer *vl, gboolean from_background );
 
 /* GUI */
 void vik_layer_set_menu_items_selection(VikLayer *l, guint16 selection);

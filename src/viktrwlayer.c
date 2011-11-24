@@ -633,7 +633,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
     waypoint_convert(name, w, &vtl->coord_mode);
     // Consider if redraw necessary for the new item
     if ( vtl->vl.visible && vtl->waypoints_visible && w->visible )
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && fi )
@@ -646,7 +646,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
     track_convert(name, t, &vtl->coord_mode);
     // Consider if redraw necessary for the new item
     if ( vtl->vl.visible && vtl->tracks_visible && t->visible )
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
   return FALSE;
@@ -2875,8 +2875,7 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
   g_hash_table_remove_all(vtl->tracks_iters);
   g_hash_table_remove_all(vtl->tracks);
 
-  /* TODO: only update if the layer is visible (ticked) */
-  vik_layer_emit_update ( VIK_LAYER(vtl) );
+  vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
 }
 
 void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
@@ -2891,8 +2890,7 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
   g_hash_table_remove_all(vtl->waypoints_iters);
   g_hash_table_remove_all(vtl->waypoints);
 
-  /* TODO: only update if the layer is visible (ticked) */
-  vik_layer_emit_update ( VIK_LAYER(vtl) );
+  vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
 }
 
 static void trw_layer_delete_all_tracks ( gpointer lav[2] )
@@ -2941,7 +2939,7 @@ static void trw_layer_delete_item ( gpointer pass_along[6] )
     was_visible = vik_trw_layer_delete_track ( vtl, (gchar *) pass_along[3] );
   }
   if ( was_visible )
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
 }
 
 
@@ -2957,7 +2955,7 @@ static void trw_layer_properties_item ( gpointer pass_along[6] )
       a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), pass_along[3], wp, NULL, vtl->coord_mode, FALSE, &updated );
 
       if ( updated && VIK_LAYER(vtl)->visible )
-	vik_layer_emit_update ( VIK_LAYER(vtl) );
+	vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     }
   }
   else
@@ -2989,7 +2987,7 @@ static void goto_coord ( gpointer *vlp, gpointer vl, gpointer vvp, const VikCoor
     /* since vlp not set, vl & vvp should be valid instead! */
     if ( vl && vvp ) {
       vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), coord );
-      vik_layer_emit_update ( VIK_LAYER(vl) );
+      vik_layer_emit_update ( VIK_LAYER(vl), FALSE );
     }
   }
 }
@@ -3104,7 +3102,7 @@ static void trw_layer_auto_track_view ( gpointer pass_along[5] )
     if ( pass_along[1] )
       vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(pass_along[1]) );
     else
-      vik_layer_emit_update ( VIK_LAYER(pass_along[0]) );
+      vik_layer_emit_update ( VIK_LAYER(pass_along[0]), FALSE );
   }
 }
 
@@ -3305,7 +3303,7 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
     for (l = merge_list; l != NULL; l = g_list_next(l))
       g_free(l->data);
     g_list_free(merge_list);
-    vik_layer_emit_update( VIK_LAYER(vtl) );
+    vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
   }
 }
 
@@ -3419,7 +3417,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   } while (track_count > 1);
   g_list_free(nearby_tracks);
   free(orig_track_name);
-  vik_layer_emit_update( VIK_LAYER(vtl) );
+  vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
 }
 
 /* split by time routine */
@@ -3491,7 +3489,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
       iter = g_list_next(iter);
     }
     vik_trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
-    vik_layer_emit_update(VIK_LAYER(pass_along[0]));
+    vik_layer_emit_update(VIK_LAYER(pass_along[0]), FALSE);
   }
   g_list_free(newlists);
 }
@@ -3566,7 +3564,7 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
     }
     // Remove original track and then update the display
     vik_trw_layer_delete_track(VIK_TRW_LAYER(pass_along[0]), (gchar *)pass_along[3]);
-    vik_layer_emit_update(VIK_LAYER(pass_along[0]));
+    vik_layer_emit_update(VIK_LAYER(pass_along[0]), FALSE);
   }
   g_list_free(newlists);
 }
@@ -3615,7 +3613,7 @@ static void trw_layer_delete_tracks_from_selection ( gpointer lav[2] )
       vik_trw_layer_delete_track(vtl, l->data);
     }
     g_list_free(delete_list);
-    vik_layer_emit_update( VIK_LAYER(vtl) );
+    vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
   }
 }
 
@@ -3652,7 +3650,7 @@ static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] )
       vik_trw_layer_delete_waypoint(vtl, l->data);
     }
     g_list_free(delete_list);
-    vik_layer_emit_update( VIK_LAYER(vtl) );
+    vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
   }
 
 }
@@ -4201,7 +4199,7 @@ static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy )
   {
     vtl->current_tpl = NULL;
     vtl->current_tp_track_name = NULL;
-    vik_layer_emit_update(VIK_LAYER(vtl));
+    vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
   }
 }
 
@@ -4237,7 +4235,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       tr->visible = TRUE;
 
       vik_trw_layer_add_track ( vtl, name, tr );
-      vik_layer_emit_update(VIK_LAYER(vtl));
+      vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
     }
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DELETE )
@@ -4265,7 +4263,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       g_free ( vtl->current_tpl->data ); /* TODO: vik_trackpoint_free() */
       g_list_free_1 ( vtl->current_tpl );
       vtl->current_tpl = new_tpl;
-      vik_layer_emit_update(VIK_LAYER(vtl));
+      vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
     }
     else
     {
@@ -4279,13 +4277,13 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   {
     vtl->last_tpl = vtl->current_tpl;
     vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->next, vtl->current_tp_track_name );
-    vik_layer_emit_update(VIK_LAYER(vtl)); /* TODO longone: either move or only update if tp is inside drawing window */
+    vik_layer_emit_update(VIK_LAYER(vtl), FALSE); /* TODO longone: either move or only update if tp is inside drawing window */
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_BACK && vtl->current_tpl->prev )
   {
     vtl->last_tpl = vtl->current_tpl;
     vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->prev, vtl->current_tp_track_name );
-    vik_layer_emit_update(VIK_LAYER(vtl));
+    vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_JOIN )
   {
@@ -4326,15 +4324,15 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
     vik_trw_layer_delete_track ( vtl, tmp );
 
     trw_layer_cancel_last_tp ( vtl ); /* same TP, can't join. */
-    vik_layer_emit_update(VIK_LAYER(vtl));
+    vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_INSERT && vtl->current_tpl->next )
   {
     trw_layer_insert_tp_after_current_tp ( vtl );
-    vik_layer_emit_update(VIK_LAYER(vtl));
+    vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DATA_CHANGED )
-    vik_layer_emit_update (VIK_LAYER(vtl));
+    vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
 }
 
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
@@ -4550,7 +4548,7 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
     vtl->current_wp_name = NULL;
     trw_layer_cancel_current_tp ( vtl, FALSE );
 
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
   return FALSE;
@@ -4604,7 +4602,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       vtl->current_wp =      wp_params.closest_wp;
       vtl->current_wp_name = wp_params.closest_wp_name;
 
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
 
       return TRUE;
     }
@@ -4645,7 +4643,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       if ( vtl->tpwin )
 	vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track_name );
 
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       return TRUE;
     }
   }
@@ -4840,14 +4838,14 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     vtl->current_wp_name = params.closest_wp_name;
 
     /* could make it so don't update if old WP is off screen and new is null but oh well */
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
 
   vtl->current_wp = NULL;
   vtl->current_wp_name = NULL;
   vtl->waypoint_rightclick = FALSE;
-  vik_layer_emit_update ( VIK_LAYER(vtl) );
+  vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
   return FALSE;
 }
 
@@ -4922,7 +4920,7 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
     marker_end_move ( t );
 
     vtl->current_wp->coord = new_coord;
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
   /* PUT IN RIGHT PLACE!!! */
@@ -5133,7 +5131,7 @@ static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event,
 {
   if ( vtl->current_track && event->keyval == GDK_Escape ) {
     vtl->current_track = NULL;
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   } else if ( vtl->current_track && event->keyval == GDK_BackSpace ) {
     /* undo */
@@ -5146,7 +5144,7 @@ static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event,
     
     update_statusbar ( vtl );
 
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
   return FALSE;
@@ -5170,7 +5168,7 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
     }
     update_statusbar ( vtl );
 
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
 
@@ -5185,7 +5183,7 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
       /* undo last, then end */
       vtl->current_track = NULL;
     }
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
 
@@ -5227,7 +5225,7 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   vtl->ct_x2 = event->x;
   vtl->ct_y2 = event->y;
 
-  vik_layer_emit_update ( VIK_LAYER(vtl) );
+  vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
   return TRUE;
 }
 
@@ -5245,7 +5243,7 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
     return FALSE;
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
   if (vik_trw_layer_new_waypoint ( vtl, VIK_GTK_WINDOW_FROM_LAYER(vtl), &coord ) && VIK_LAYER(vtl)->visible)
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
   return TRUE;
 }
 
@@ -5317,7 +5315,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     vtl->current_tp_track_name = params.closest_track_name;
     trw_layer_tpwin_init ( vtl );
     set_statusbar_msg_info_trkpt ( vtl, params.closest_tp );
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
 
@@ -5389,7 +5387,7 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
     /* can't join with itself! */
     trw_layer_cancel_last_tp ( vtl );
 
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
   return FALSE;
@@ -5413,7 +5411,7 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
     if ( new_end ) {
       vtl->route_finder_coord = *new_end;
       g_free ( new_end );
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       /* remove last ' to:...' */
       if ( vtl->route_finder_current_track->comment ) {
         gchar *last_to = strrchr ( vtl->route_finder_current_track->comment, 't' );
@@ -5472,7 +5470,7 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
     vtl->route_finder_check_added_track = FALSE;
     vtl->route_finder_append = FALSE;
 
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
   } else {
     vtl->route_finder_started = TRUE;
     vtl->route_finder_coord = tmp;
@@ -5580,10 +5578,8 @@ static int create_thumbnails_thread ( thumbnail_create_thread_data *tctd, gpoint
   }
 
   // Redraw to show the thumbnails as they are now created
-  gdk_threads_enter();
   if ( IS_VIK_LAYER(tctd->vtl) )
-    vik_layer_emit_update ( VIK_LAYER(tctd->vtl) );
-  gdk_threads_leave();
+    vik_layer_emit_update ( VIK_LAYER(tctd->vtl), TRUE ); // Yes update from background thread
 
   return 0;
 }

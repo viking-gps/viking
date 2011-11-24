@@ -320,11 +320,11 @@ static int dem_layer_load_list_thread ( dem_load_thread_data *dltd, gpointer thr
 
   // ATM as each file is processed the screen is not updated (no mechanism exposed to a_dems_load_list)
   // Thus force draw only at the end, as loading is complete/aborted
-  gdk_threads_enter();
+  //gdk_threads_enter();
   // Test is helpful to prevent Gtk-CRITICAL warnings if the program is exitted whilst loading
   if ( IS_VIK_LAYER(dltd->vdl) )
-    vik_layer_emit_update ( VIK_LAYER(dltd->vdl) );
-  gdk_threads_leave();
+    vik_layer_emit_update ( VIK_LAYER(dltd->vdl), TRUE ); // Yes update from background thread
+  //gdk_threads_leave();
 
   return result;
 }
@@ -1068,7 +1068,6 @@ static gboolean dem_layer_add_file ( VikDEMLayer *vdl, const gchar *full_path )
       vdl->files = g_list_prepend ( vdl->files, duped_path );
       a_dems_load ( duped_path );
       g_debug("%s: %s", __FUNCTION__, duped_path);
-      vik_layer_emit_update ( VIK_LAYER(vdl) );
     }
     return TRUE;
   } else
@@ -1086,16 +1085,16 @@ static void dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
   else
     return;
 
-  gdk_threads_enter();
+  //gdk_threads_enter();
   g_mutex_lock ( p->mutex );
   if ( p->vdl ) {
     g_object_weak_unref ( G_OBJECT(p->vdl), weak_ref_cb, p );
 
     if ( dem_layer_add_file ( p->vdl, p->dest ) )
-      vik_layer_emit_update ( VIK_LAYER(p->vdl) );
+      vik_layer_emit_update ( VIK_LAYER(p->vdl), TRUE ); // Yes update from background thread
   }
   g_mutex_unlock ( p->mutex );
-  gdk_threads_leave();
+  //gdk_threads_leave();
 }
 
 
@@ -1157,6 +1156,8 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
 
     g_free ( tmp );
   }
+  else
+    vik_layer_emit_update ( VIK_LAYER(vdl), FALSE );
 
   g_free ( dem_file );
   g_free ( full_path );

@@ -630,7 +630,7 @@ static gboolean georef_layer_move_release ( VikGeorefLayer *vgl, GdkEventButton 
   {
     vgl->corner.easting += (event->x - vgl->click_x) * vik_viewport_get_xmpp (vvp);
     vgl->corner.northing -= (event->y - vgl->click_y) * vik_viewport_get_ympp (vvp);
-    vik_layer_emit_update ( VIK_LAYER(vgl) );
+    vik_layer_emit_update ( VIK_LAYER(vgl), FALSE );
     return TRUE;
   }
   return FALSE; /* I didn't move anything on this layer! */
@@ -663,7 +663,7 @@ static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *e
   }
   vik_viewport_set_xmpp ( vvp, vgl->mpp_easting );
   vik_viewport_set_ympp ( vvp, vgl->mpp_northing );
-  vik_layer_emit_update ( VIK_LAYER(vgl) );
+  vik_layer_emit_update ( VIK_LAYER(vgl), FALSE );
   return TRUE;
 }
 
