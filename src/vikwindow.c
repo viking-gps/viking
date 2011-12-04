@@ -1670,12 +1670,15 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
     g_object_unref ( file );
     if ( self->filename )
     {
-      gchar *filenames[] = { path, NULL };
+      GSList *filenames = NULL;
+      filenames = g_slist_append ( filenames, path );
       g_signal_emit ( G_OBJECT(self), window_signals[VW_OPENWINDOW_SIGNAL], 0, filenames );
+      // NB: GSList & contents are freed by main.open_window
     }
-    else
+    else {
       vik_window_open_file ( self, path, TRUE );
-    g_free ( path );
+      g_free ( path );
+    }
   }
 
   g_free (filename);
