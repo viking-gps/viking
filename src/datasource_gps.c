@@ -37,10 +37,6 @@
 #include "gpx.h"
 #include "acquire.h"
 
-#if GTK_CHECK_VERSION(2,6,0)
-#define USE_NEW_COMBO_BOX
-#endif
-
 static gboolean gps_acquire_in_progress = FALSE;
 
 static gint last_active = -1;
@@ -117,9 +113,6 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   char *device = NULL;
   char *tracks = NULL;
   char *waypoints = NULL;
-#ifndef USE_NEW_COMBO_BOX
-  GtkTreeIter iter;
-#endif
   gps_user_data_t *w = (gps_user_data_t *)user_data;
 
   if (gps_acquire_in_progress) {
@@ -148,12 +141,7 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   tracks = NULL;
   waypoints = NULL;
 
-  /* Old stuff */
-#ifdef USE_NEW_COMBO_BOX
   ser = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
-#else
-  ser = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter);
-#endif
   *input_file = g_strdup(ser);
 
   g_debug(_("using cmdline '%s' and file '%s'\n"), *babelargs, *input_file);
@@ -164,9 +152,6 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
 {
   char *ser = NULL;
   char *device = NULL;
-#ifndef USE_NEW_COMBO_BOX
-  GtkTreeIter iter;
-#endif
   gps_user_data_t *w = (gps_user_data_t *)user_data;
 
   if (gps_acquire_in_progress) {
@@ -194,12 +179,7 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
   /* device points to static content => no free */
   device = NULL;
   
-  /* Old stuff */
-#ifdef USE_NEW_COMBO_BOX
   ser = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
-#else
-  ser = gtk_combo_box_get_active_iter(GTK_COMBO_BOX(w->ser_b),&iter);
-#endif
   *input_file = g_strdup(ser);
 }
 
