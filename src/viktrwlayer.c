@@ -235,6 +235,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
+static void trw_layer_reverse ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] );
 static void trw_layer_edit_trackpoint ( gpointer pass_along[6] );
 static void trw_layer_show_picture ( gpointer pass_along[6] );
@@ -3572,6 +3573,24 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
 /* end of split/merge routines */
 
 /**
+ * Reverse a track
+ */
+static void trw_layer_reverse ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track = (VikTrack *)g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  // Check valid track
+  GList *trps = track->trackpoints;
+  if ( !trps )
+    return;
+
+  vik_track_reverse ( track );
+ 
+  vik_layer_emit_update ( VIK_LAYER(pass_along[0]), FALSE );
+}
+
+/**
  * Similar to trw_layer_enum_item, but this uses a sorted method
  */
 static void trw_layer_sorted_name_list(gpointer key, gpointer value, gpointer udata)
@@ -4032,6 +4051,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     item = gtk_menu_item_new_with_mnemonic ( _("Split By _Number of Points...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_n_points), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Reverse Track") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_reverse), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
