@@ -1175,7 +1175,14 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 	 * If points are the same in display coordinates, don't draw.
 	 */
 	if ( useoldvals && x == oldx && y == oldy )
+	{
+	  // Still need to process points to ensure 'stops' are drawn if required
+	  if ( drawstops && drawpoints && ! drawing_white_background && list->next &&
+	       (VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > dp->vtl->stop_length) )
+	    vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, 11), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
+
 	  goto skip;
+	}
 
         if ( drawpoints && ! drawing_white_background )
         {
