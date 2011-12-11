@@ -36,8 +36,9 @@
 #include "vikfilelist.h"
 #include "geotag_exif.h"
 #include "thumbnails.h"
+#include "background.h"
 
-// Taken from GPSCorrelate 1.6.1
+// Function taken from GPSCorrelate 1.6.1
 // ConvertToUnixTime Copyright 2005 Daniel Foote. GPL2+
 
 #define EXIF_DATE_FORMAT "%d:%d:%d %d:%d:%d"
@@ -131,6 +132,7 @@ typedef struct {
 	VikTrack *track;     // Use specified track or all tracks if NULL
 	// User options...
 	option_values_t ov;
+	GList *files;
 	time_t PhotoTime;
 	// Store answer from interpolation for an image
 	gboolean found_match;
@@ -233,7 +235,7 @@ static void trw_layer_geotag_track ( const gchar *name, VikTrack *track, geotag_
  */
 static void trw_layer_geotag_process ( geotag_options_t *options )
 {
-	if ( !options->vtl )
+	if ( !options->vtl || !IS_VIK_LAYER(options->vtl) )
 		return;
 
 	if ( !options->image )
@@ -307,6 +309,49 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 	}
 }
 
+/*
+ * Tidy up
+ */
+static void trw_layer_geotag_thread_free ( geotag_options_t *gtd )
+{
+	if ( gtd->files )
+		g_list_free ( gtd->files );
+	g_free ( gtd );
+}
+
+/**
+ * Run geotagging process in a separate thread
+ */
+static int trw_layer_geotag_thread ( geotag_options_t *options, gpointer threaddata )
+{
+	guint total = g_list_length(options->files), done = 0;
+
+	// TODO decide how to report any issues to the user ...
+
+	// Foreach file attempt to geotag it
+	while ( options->files ) {
+		options->image = (gchar *) ( options->files->data );
+		trw_layer_geotag_process ( options );
+		options->files = options->files->next;
+
+		// Update thread progress and detect stop requests
+		int result = a_background_thread_progress ( threaddata, ((gdouble) ++done) / total );
+		if ( result != 0 )
+			return -1; /* Abort thread */
+	}
+
+	if ( options->redraw ) {
+		if ( IS_VIK_LAYER(options->vtl) ) {
+			// Ensure any new images get shown
+			trw_layer_verify_thumbnails ( options->vtl, NULL ); // NB second parameter not used ATM
+			// Force redraw as verify only redraws if there are new thumbnails (they may already exist)
+			vik_layer_emit_update ( VIK_LAYER(options->vtl), TRUE ); // Update from background
+		}
+	}
+
+	return 0;
+}
+
 /**
  * Parse user input from dialog response
  */
@@ -319,56 +364,52 @@ static void trw_layer_geotag_response_cb ( GtkDialog *dialog, gint resp, GeoTagW
 	default: {
 		//GTK_RESPONSE_ACCEPT:
 		// Get options
-		geotag_options_t options;
-		options.vtl = widgets->vtl;
-		options.track = widgets->track;
+		geotag_options_t *options = g_malloc ( sizeof(geotag_options_t) );
+		options->vtl = widgets->vtl;
+		options->track = widgets->track;
 		// Values extracted from the widgets:
-		options.ov.create_waypoints = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->create_waypoints_b) );
-		options.ov.write_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->write_exif_b) );
-		options.ov.overwrite_gps_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_gps_exif_b) );
-		options.ov.no_change_mtime = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->no_change_mtime_b) );
-		options.ov.interpolate_segments = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->interpolate_segments_b) );
-		options.ov.TimeZoneHours = 0;
-		options.ov.TimeZoneMins = 0;
+		options->ov.create_waypoints = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->create_waypoints_b) );
+		options->ov.write_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->write_exif_b) );
+		options->ov.overwrite_gps_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_gps_exif_b) );
+		options->ov.no_change_mtime = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->no_change_mtime_b) );
+		options->ov.interpolate_segments = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->interpolate_segments_b) );
+		options->ov.TimeZoneHours = 0;
+		options->ov.TimeZoneMins = 0;
 		const gchar* TZString = gtk_entry_get_text(GTK_ENTRY(widgets->time_zone_b));
 		/* Check the string. If there is a colon, then (hopefully) it's a time in xx:xx format.
 		 * If not, it's probably just a +/-xx format. In all other cases,
 		 * it will be interpreted as +/-xx, which, if given a string, returns 0. */
 		if (strstr(TZString, ":")) {
 			/* Found colon. Split into two. */
-			sscanf(TZString, "%d:%d", &options.ov.TimeZoneHours, &options.ov.TimeZoneMins);
-			if (options.ov.TimeZoneHours < 0)
-				options.ov.TimeZoneMins *= -1;
+			sscanf(TZString, "%d:%d", &options->ov.TimeZoneHours, &options->ov.TimeZoneMins);
+			if (options->ov.TimeZoneHours < 0)
+				options->ov.TimeZoneMins *= -1;
 		} else {
 			/* No colon. Just parse. */
-			options.ov.TimeZoneHours = atoi(TZString);
+			options->ov.TimeZoneHours = atoi(TZString);
 		}
-		options.ov.time_offset = atoi ( gtk_entry_get_text ( GTK_ENTRY(widgets->time_offset_b) ) );
+		options->ov.time_offset = atoi ( gtk_entry_get_text ( GTK_ENTRY(widgets->time_offset_b) ) );
 
-		options.redraw = FALSE;
+		options->redraw = FALSE;
 
 		// Save settings for reuse
-		default_values = options.ov;
+		default_values = options->ov;
 
-		// TODO consider if this should run in background as processing may take some time
-		//  - especially if there are lots of images and/or large tracks
-		// However it seems reasonably quick on an average machine
+		options->files = g_list_copy ( vik_file_list_get_files ( widgets->files ) );
 
-		GList *iter = vik_file_list_get_files ( widgets->files );
-		// TODO decide how to report any issues to the user ...
-		// Foreach file attempt to geotag it
-		while ( iter ) {
-			options.image = (gchar *) ( iter->data );
-			trw_layer_geotag_process ( &options );
-			iter = iter->next;
-		}
+		gint len = g_list_length ( options->files );
+		gchar *tmp = g_strdup_printf ( _("Geotagging %d Images..."), len );
 
-		if ( options.redraw ) {
-			// Ensure any new images get shown
-			trw_layer_verify_thumbnails ( widgets->vtl, NULL ); // NB second parameter not used ATM
-			// Force redraw as verify only redraws if there are new thumbnails (they may already exist)
-			vik_layer_emit_update ( VIK_LAYER(widgets->vtl), FALSE );
-		}
+		// Processing lots of files can take time - so run a background effort
+		a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(options->vtl),
+							  tmp,
+							  (vik_thr_func) trw_layer_geotag_thread,
+							  options,
+							  (vik_thr_free_func) trw_layer_geotag_thread_free,
+							  NULL,
+							  len );
+
+		g_free ( tmp );
 
 		break;
 	}
