@@ -1187,23 +1187,20 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
         if ( drawpoints && ! drawing_white_background )
         {
           if ( list->next ) {
-	    /* Regular point - draw 2x square. */
-	    vik_viewport_draw_rectangle ( dp->vp, main_gc, TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
-
 	    /*
-	     * TODO: The concept of drawing stops is that a trackpoint
+	     * The concept of drawing stops is that a trackpoint
 	     * that is if the next trackpoint has a timestamp far into
 	     * the future, we draw a circle of 6x trackpoint size,
-	     * instead of a rectange of 2x trackpoint size.  Skipping
-	     * over this next statement results in missing the stop.
-	     * Instead, we should skip the drawop if the coordinates
-	     * match and it is not a stop.  Note that the arc is drawn
-	     * over the rectangle.
+	     * instead of a rectangle of 2x trackpoint size.
+	     * This is drawn first so the trackpoint will be drawn on top
 	     */
             /* stops */
             if ( drawstops && VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > dp->vtl->stop_length )
 	      /* Stop point.  Draw 6x circle. */
               vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, 11), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
+
+	    /* Regular point - draw 2x square. */
+	    vik_viewport_draw_rectangle ( dp->vp, main_gc, TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
           }
           else
 	    /* Final point - draw 4x circle. */
