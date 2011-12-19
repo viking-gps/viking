@@ -1082,7 +1082,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
 	// No conversion needed if already in metres
 
 	// consider chunk size
-	int y_alt = height - ((height * (elev-alt_offset))/(chunksa[cia]*LINES) );
+	int y_alt = height - ((height * elev)/(chunksa[cia]*LINES) );
 	gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
       }
     }
