@@ -11,6 +11,7 @@ src/google.c
 src/googlesearch.c
 src/datasource_file.c
 src/datasource_gc.c
+src/datasource_geotag.c
 src/datasource_google.c
 src/datasource_gps.c
 src/datasource_osm.c
@@ -42,5 +43,6 @@ src/viktreeview.c
 src/viktrwlayer.c
 src/viktrwlayer_propwin.c
 src/viktrwlayer_tpwin.c
+src/viktrwlayer_geotag.c
 src/vikwindow.c
 src/viking.desktop.in

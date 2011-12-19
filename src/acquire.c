@@ -119,15 +119,20 @@ static void get_from_anything ( w_and_interface_t *wi )
   }
   gdk_threads_leave();
 
+  // TODO consider removing 'type' and make everything run via the specficied process function
   switch ( source_interface->type ) {
   case VIK_DATASOURCE_GPSBABEL_DIRECT:
-    result = a_babel_convert_from (vtl, cmd, (BabelStatusFunc) progress_func, extra, w);
+    result = a_babel_convert_from (vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
     break;
   case VIK_DATASOURCE_URL:
     result = a_babel_convert_from_url (vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
     break;
   case VIK_DATASOURCE_SHELL_CMD:
     result = a_babel_convert_from_shellcommand ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
+    break;
+  case VIK_DATASOURCE_INTERNAL:
+    if ( source_interface->process_func )
+      result = source_interface->process_func ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w );
     break;
   default:
     g_critical("Houston, we've had a problem.");
@@ -150,8 +155,10 @@ static void get_from_anything ( w_and_interface_t *wi )
       if ( creating_new_layer ) {
 	/* Only create the layer if it actually contains anything useful */
 	if ( g_hash_table_size (vik_trw_layer_get_tracks(vtl)) ||
-	     g_hash_table_size (vik_trw_layer_get_waypoints(vtl)) )
+	     g_hash_table_size (vik_trw_layer_get_waypoints(vtl)) ) {
+	  vik_layer_post_read ( VIK_LAYER(vtl), w->vvp, TRUE );
 	  vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
+	}
 	else
 	  gtk_label_set_text ( GTK_LABEL(w->status), _("No data.") );
       }
@@ -224,7 +231,8 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   /* for manual dialogs */
   GtkWidget *dialog = NULL;
   GtkWidget *status;
-  gchar *cmd, *extra;
+  gchar *cmd = NULL;
+  gchar *extra = NULL;
   gchar *cmd_off = NULL;
   gchar *extra_off = NULL;
   acq_dialog_widgets_t *w;
@@ -315,8 +323,8 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
 	( pass_along_data, &cmd, &extra, name_src_track );
 
     g_free ( name_src_track );
-  } else
-    source_interface->get_cmd_string_func ( pass_along_data, &cmd, &extra );
+  } else if ( source_interface->get_cmd_string_func )
+      source_interface->get_cmd_string_func ( pass_along_data, &cmd, &extra );
 
   /* Get data for Off command */
   if ( source_interface->off_func ) {
@@ -373,7 +381,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   else {
     if ( cmd_off ) {
       /* Turn off */
-      a_babel_convert_from (NULL, cmd_off, NULL, extra_off, NULL);
+      a_babel_convert_from (NULL, cmd_off, extra_off, NULL, NULL);
     }
     g_free ( w ); /* thread has finished; free w */
   }

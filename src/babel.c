@@ -96,7 +96,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
     a_gpx_write_file(vt, f);
     fclose(f);
     f = NULL;
-    ret = a_babel_convert_from ( vt, bargs, cb, name_src, user_data );
+    ret = a_babel_convert_from ( vt, bargs, name_src, cb, user_data );
     g_remove(name_src);
     g_free(name_src);
   }
@@ -257,7 +257,7 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
  *
  * Returns: %TRUE on success
  */
-gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *from, gpointer user_data )
+gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, const char *from, BabelStatusFunc cb, gpointer user_data )
 {
   int i,j;
   int fd_dst;
@@ -362,7 +362,7 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
 
     fetch_ret = a_http_download_get_url(url, "", name_src, &options, NULL);
     if (fetch_ret == 0)
-      ret = a_babel_convert_from( vt, babelargs, NULL, name_src, NULL);
+      ret = a_babel_convert_from( vt, babelargs, name_src, NULL, NULL);
  
     g_remove(name_src);
     g_free(babelargs);
@@ -382,7 +382,7 @@ static gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, g
   return babel_general_convert (cb, args, user_data);
 }
 
-gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, const char *to, gpointer user_data )
+gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, const char *to, BabelStatusFunc cb, gpointer user_data )
 {
   int i,j;
   int fd_src;

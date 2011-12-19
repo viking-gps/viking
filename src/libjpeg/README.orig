@@ -1,0 +1,50 @@
+				      EXIF
+				      ----
+
+'exif' is a small command-line utility to show EXIF information hidden
+in JPEG files. I wrote it to demonstrate the power of libexif.
+
+It depends on 
+ * libexif (http://www.sourceforge.net/projects/libexif)
+ * popt
+
+Have fun!
+
+Lutz <lutz@users.sourceforge.net>
+
+
+BUILDING
+--------
+
+Assuming libexif and popt are installed, building exif from the source
+tar ball should be a simple matter of:
+
+  ./configure
+  make
+  sudo make install
+
+If your libexif is installed in a non-standard location, you must point
+configure at the location of its libexif.pc file using the pkg-config
+path, like this:
+
+  ./configure PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
+When building from CVS, run this before configuring:
+
+  autoreconf -i
+
+
+INTERNATIONALIZATION
+--------------------
+
+All translations for exif, except cs, ru and en_CA, are coordinated by
+the Translation Project at http://translationproject.org/.  This means
+that ALL changes to the .po files (except those few exceptions) MUST be
+made through the TP web site, or they will be eventually overwritten
+and lost.  If you are interested in translating exif into a new
+language, simply join TP and start!  A translation disclaimer is NOT
+required for exif; by making a translation, you agree implicitly to
+provide it under the same license terms as the rest of exif (GPL).
+When a new version of exif is available for translation, an exif
+maintainer will contact the Translation Project and all interested TP
+members will be automatically notified.

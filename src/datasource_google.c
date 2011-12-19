@@ -57,6 +57,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_google_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_google_get_cmd_string,
+  (VikDataSourceProcessFunc)		NULL,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_google_cleanup,

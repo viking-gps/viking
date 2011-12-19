@@ -63,6 +63,7 @@ VikDataSourceInterface vik_datasource_gps_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_gps_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_gps_get_cmd_string,
+  (VikDataSourceProcessFunc)		NULL,
   (VikDataSourceProgressFunc)		datasource_gps_progress,
   (VikDataSourceAddProgressWidgetsFunc)	datasource_gps_add_progress_widgets,
   (VikDataSourceCleanupFunc)		datasource_gps_cleanup,

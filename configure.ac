@@ -222,6 +222,20 @@ case $ac_cv_enable_geocaches in
 esac
 AM_CONDITIONAL([GEOCACHES], [test x$ac_cv_enable_geocaches = xyes])
 
+AC_ARG_ENABLE(geotag, AC_HELP_STRING([--enable-geotag],
+	      [enable Geotag Support (default is enable).]),
+              [ac_cv_enable_geotag=$enableval],
+              [ac_cv_enable_geotag=yes])
+AC_CACHE_CHECK([whether to enable Geotag Support],
+               [ac_cv_enable_geotag], [ac_cv_enable_geotag=yes])
+case $ac_cv_enable_geotag in
+  yes)
+    AC_CHECK_LIB(exif,exif_loader_new,,AC_MSG_ERROR([libexif is needed for Geotag features[,] but is not found. The feature can be disabled with --disable-geotag]))
+    AC_DEFINE(VIK_CONFIG_GEOTAG, [], [GEOTAG STUFF])
+    ;;
+esac
+AM_CONDITIONAL([GEOTAG], [test x$ac_cv_enable_geotag = xyes])
+
 AC_ARG_ENABLE(spotmaps, AC_HELP_STRING([--enable-spotmaps],
 	      [enable SPOTMaps map (default is enable).]),
               [ac_cv_enable_spotmaps=$enableval],
@@ -359,6 +373,7 @@ echo "BlueMarble                       : $ac_cv_enable_bluemarble"
 echo "SPOTMaps                         : $ac_cv_enable_spotmaps"
 echo "Geonames                         : $ac_cv_enable_geonames"
 echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
+echo "Geotag Support                   : $ac_cv_enable_geotag"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"

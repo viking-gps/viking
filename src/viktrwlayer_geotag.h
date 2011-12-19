@@ -1,7 +1,8 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +19,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef __VIK_DATASOURCES_H
-#define __VIK_DATASOURCES_H
+#ifndef _VIKING_TRWLAYER_GEOTAG_H
+#define _VIKING_TRWLAYER_GEOTAG_H
 
-#include "acquire.h"
+#include <glib.h>
+#include <gtk/gtk.h>
+#include "viktrwlayer.h"
 
-extern VikDataSourceInterface vik_datasource_gps_interface;
-extern VikDataSourceInterface vik_datasource_file_interface;
-extern VikDataSourceInterface vik_datasource_google_interface;
-#ifdef VIK_CONFIG_OPENSTREETMAP
-extern VikDataSourceInterface vik_datasource_osm_interface;
-#endif
-#ifdef VIK_CONFIG_GEOCACHES
-extern VikDataSourceInterface vik_datasource_gc_interface;
-#endif
-#ifdef VIK_CONFIG_GEOTAG
-extern VikDataSourceInterface vik_datasource_geotag_interface;
-#endif
+// To be only called from within viktrwlayer
+void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *track, const gchar *track_name );
+
 #endif

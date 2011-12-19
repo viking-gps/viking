@@ -27,6 +27,7 @@
 #include "vikwindow.h"
 #include "viklayerspanel.h"
 #include "vikviewport.h"
+#include "babel.h"
 
 typedef struct _VikDataSourceInterface VikDataSourceInterface;
 
@@ -42,10 +43,12 @@ typedef struct {
   gpointer user_data;
 } acq_dialog_widgets_t;
 
+/* Direct, URL & Shell types process the results with GPSBabel to create tracks/waypoint */
 typedef enum {
   VIK_DATASOURCE_GPSBABEL_DIRECT,
   VIK_DATASOURCE_URL,
-  VIK_DATASOURCE_SHELL_CMD
+  VIK_DATASOURCE_SHELL_CMD,
+  VIK_DATASOURCE_INTERNAL
 } vik_datasource_type_t;
 
 typedef enum {
@@ -79,6 +82,9 @@ typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **babe
 typedef void (*VikDataSourceGetCmdStringFuncWithInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name );
 typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name, const gchar *input_track_file_name );
 
+/* The actual function to do stuff - must report success/failure */
+typedef gboolean (*VikDataSourceProcessFunc)  ( gpointer vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw );
+
 /* */
 typedef void  (*VikDataSourceProgressFunc)  (gpointer c, gpointer data, acq_dialog_widgets_t *w);
 
@@ -108,6 +114,8 @@ struct _VikDataSourceInterface {
 
   /* or VikDataSourceGetCmdStringFuncWithInput, if inputtype is not NONE */
   VikDataSourceGetCmdStringFunc get_cmd_string_func; 
+
+  VikDataSourceProcessFunc process_func;
 
   VikDataSourceProgressFunc progress_func;
   VikDataSourceAddProgressWidgetsFunc add_progress_widgets_func;
