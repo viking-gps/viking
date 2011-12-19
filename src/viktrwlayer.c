@@ -5576,11 +5576,11 @@ static void trw_layer_show_picture ( gpointer pass_along[6] )
 #else /* WINDOWS */
   GError *err = NULL;
   gchar *quoted_file = g_shell_quote ( (gchar *) pass_along[5] );
-  gchar *cmd = g_strdup_printf ( "eog %s", quoted_file );
+  gchar *cmd = g_strdup_printf ( "%s %s", a_vik_get_image_viewer(), quoted_file );
   g_free ( quoted_file );
   if ( ! g_spawn_command_line_async ( cmd, &err ) )
     {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER( pass_along[0]), _("Could not launch eog to open file.") );
+      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( pass_along[0]), _("Could not launch %s to open file."), a_vik_get_image_viewer() );
       g_error_free ( err );
     }
   g_free ( cmd );

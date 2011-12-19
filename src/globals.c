@@ -41,34 +41,51 @@ static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
  
 static VikLayerParam prefs1[] = {
-  { VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_DEGREE_FORMAT_DMS, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL },
 };
 
 static VikLayerParam prefs2[] = {
-  { VIKING_PREFERENCES_NAMESPACE "units_distance", VIK_LAYER_PARAM_UINT, VIK_UNITS_DISTANCE_KILOMETRES, N_("Distance units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_distance, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "units_distance", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Distance units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_distance, NULL },
 };
 
 static VikLayerParam prefs3[] = {
-  { VIKING_PREFERENCES_NAMESPACE "units_speed", VIK_LAYER_PARAM_UINT, VIK_UNITS_SPEED_KILOMETRES_PER_HOUR, N_("Speed units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_speed, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "units_speed", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Speed units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_speed, NULL },
 };
 
 static VikLayerParam prefs4[] = {
-  { VIKING_PREFERENCES_NAMESPACE "units_height", VIK_LAYER_PARAM_UINT, VIK_UNITS_HEIGHT_METRES, N_("Height units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_height, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "units_height", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Height units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_height, NULL },
 };
 
 static VikLayerParam prefs5[] = {
-  { VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, TRUE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL },
 };
 
 static VikLayerParam prefs6[] = {
-  { VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LOCATION_LAT, N_("Default latitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default latitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL },
 };
 static VikLayerParam prefs7[] = {
-  { VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LOCATION_LONG, N_("Default longitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default longitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL },
 };
+
+/* External/Export Options */
+
+static gchar * params_kml_export_units[] = {"Metric", "Statute", "Nautical", NULL};
+
+static VikLayerParam io_prefs[] = {
+  { VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("KML File Export Units:"), VIK_LAYER_WIDGET_COMBOBOX, params_kml_export_units, NULL },
+};
+
+#ifndef WINDOWS
+static VikLayerParam io_prefs_non_windows[] = {
+  { VIKING_PREFERENCES_IO_NAMESPACE "image_viewer", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Image Viewer:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL },
+};
+#endif
+
+/* End of Options static stuff */
 
 void a_vik_preferences_init ()
 {
+  // Defaults for the options are setup here
   a_preferences_register_group ( VIKING_PREFERENCES_GROUP_KEY, _("General") );
 
   VikLayerParamData tmp;
@@ -92,6 +109,17 @@ void a_vik_preferences_init ()
   a_preferences_register(prefs6, tmp, VIKING_PREFERENCES_GROUP_KEY);
   tmp.d = -74.007130;
   a_preferences_register(prefs7, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
+  // New Tab
+  a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
+
+  tmp.u = VIK_KML_EXPORT_UNITS_METRIC;
+  a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+
+#ifndef WINDOWS
+  tmp.s = "xdg-open";
+  a_preferences_register(&io_prefs_non_windows[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+#endif
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -142,3 +170,19 @@ gdouble a_vik_get_default_long ( )
   data = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "default_longitude")->d;
   return data;
 }
+
+/* External/Export Options */
+
+vik_kml_export_units_t a_vik_get_kml_export_units ( )
+{
+  vik_kml_export_units_t units;
+  units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "kml_export_units")->u;
+  return units;
+}
+
+#ifndef WINDOWS
+const gchar* a_vik_get_image_viewer ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "image_viewer")->s;
+}
+#endif
