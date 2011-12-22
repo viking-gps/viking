@@ -97,6 +97,20 @@ void osm_init () {
                                 "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
 
+  VikMapSource *mapquest_type =
+    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+                                "id", 19,
+                                "label", "OpenStreetMap (MapQuest)",
+                                "hostname", "otile1.mqcdn.com",
+                                "url", "/tiles/1.0.0/osm/%d/%d/%d.png",
+                                "check-file-server-time", TRUE,
+                                "use-etag", FALSE,
+                                "copyright", "Tiles Courtesy of MapQuest © OpenStreetMap contributors",
+                                "license", "MapQuest Specific",
+                                "license-url", "http://developer.mapquest.com/web/info/terms-of-use",
+                                NULL));
+
+  maps_layer_register_map_source (mapquest_type);
   maps_layer_register_map_source (osmarender_type);
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (maplint_type);
