@@ -145,6 +145,9 @@ static GdkPixbuf *child_create_thumbnail(const gchar *path)
 	GdkPixbuf *image, *tmpbuf;
 
 	image = gdk_pixbuf_new_from_file(path, NULL);
+	if (!image)
+	  return NULL;
+
 	tmpbuf = gdk_pixbuf_apply_embedded_orientation(image);
 	g_object_unref(G_OBJECT(image));
 	image = tmpbuf;
