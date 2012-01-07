@@ -1241,26 +1241,26 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           else {
 
             vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
-            if ( dp->vtl->drawelevation && list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+            if ( dp->vtl->drawelevation && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
               GdkPoint tmp[4];
               #define FIXALTITUDE(what) ((VIK_TRACKPOINT((what))->altitude-min_alt)/alt_diff*DRAW_ELEVATION_FACTOR*dp->vtl->elevation_factor/dp->xmpp)
-              if ( list && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
-                tmp[0].x = oldx;
-                tmp[0].y = oldy;
-                tmp[1].x = oldx;
-                tmp[1].y = oldy-FIXALTITUDE(list->data);
-                tmp[2].x = x;
-                tmp[2].y = y-FIXALTITUDE(list->next->data);
-                tmp[3].x = x;
-                tmp[3].y = y;
 
-                GdkGC *tmp_gc;
-                if ( ((oldx - x) > 0 && (oldy - y) > 0) || ((oldx - x) < 0 && (oldy - y) < 0))
-                  tmp_gc = GTK_WIDGET(dp->vp)->style->light_gc[3];
-                else
-                  tmp_gc = GTK_WIDGET(dp->vp)->style->dark_gc[0];
-                vik_viewport_draw_polygon ( dp->vp, tmp_gc, TRUE, tmp, 4);
-              }
+	      tmp[0].x = oldx;
+	      tmp[0].y = oldy;
+	      tmp[1].x = oldx;
+	      tmp[1].y = oldy-FIXALTITUDE(list->data);
+	      tmp[2].x = x;
+	      tmp[2].y = y-FIXALTITUDE(list->next->data);
+	      tmp[3].x = x;
+	      tmp[3].y = y;
+
+	      GdkGC *tmp_gc;
+	      if ( ((oldx - x) > 0 && (oldy - y) > 0) || ((oldx - x) < 0 && (oldy - y) < 0))
+		tmp_gc = GTK_WIDGET(dp->vp)->style->light_gc[3];
+	      else
+		tmp_gc = GTK_WIDGET(dp->vp)->style->dark_gc[0];
+	      vik_viewport_draw_polygon ( dp->vp, tmp_gc, TRUE, tmp, 4);
+
               vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy-FIXALTITUDE(list->data), x, y-FIXALTITUDE(list->next->data));
             }
           }
