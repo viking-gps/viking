@@ -3217,10 +3217,10 @@ static void trw_layer_goto_track_min_alt ( gpointer pass_along[6] )
   goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(vtp->coord));
 }
 
-/* 
+/*
  * Automatically change the viewport to center on the track and zoom to see the extent of the track
- */ 
-static void trw_layer_auto_track_view ( gpointer pass_along[5] )
+ */
+static void trw_layer_auto_track_view ( gpointer pass_along[6] )
 {
   GList **trps = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
   if ( trps && *trps )
