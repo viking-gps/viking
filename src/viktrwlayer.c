@@ -5666,7 +5666,7 @@ static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp)
 }
 
 /* Params are: vvp, event, last match found or NULL */
-static void tool_show_picture_wp ( char *name, VikWaypoint *wp, gpointer params[2] )
+static void tool_show_picture_wp ( char *name, VikWaypoint *wp, gpointer params[3] )
 {
   if ( wp->image && wp->visible )
   {
