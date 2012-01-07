@@ -36,6 +36,8 @@ static GSList *statusbars_to_update = NULL;
 
 static gint bgitemcount = 0;
 
+#define VIK_BG_NUM_ARGS 7
+
 enum
 {
   TITLE_COLUMN = 0,
@@ -74,7 +76,7 @@ int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
   return res;
 }
 
-static void thread_die ( gpointer args[6] )
+static void thread_die ( gpointer args[VIK_BG_NUM_ARGS] )
 {
   vik_thr_free_func userdata_free_func = args[3];
 
@@ -106,7 +108,7 @@ int a_background_testcancel ( gpointer callbackdata )
   return 0;
 }
 
-static void thread_helper ( gpointer args[6], gpointer user_data )
+static void thread_helper ( gpointer args[VIK_BG_NUM_ARGS], gpointer user_data )
 {
   /* unpack args */
   vik_thr_func func = args[1];
@@ -139,7 +141,7 @@ static void thread_helper ( gpointer args[6], gpointer user_data )
 void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items )
 {
   GtkTreeIter *piter = g_malloc ( sizeof ( GtkTreeIter ) );
-  gpointer *args = g_malloc ( sizeof(gpointer) * 7 );
+  gpointer *args = g_malloc ( sizeof(gpointer) * VIK_BG_NUM_ARGS );
 
   g_debug(__FUNCTION__);
 
