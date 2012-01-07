@@ -978,6 +978,7 @@ static void dem24k_dem_download_thread ( DEMDownloadParams *p, gpointer threadda
 	ceil(p->lon*8)/8 );
   /* FIX: don't use system, use execv or something. check for existence */
   system(cmdline);
+  g_free ( cmdline );
 }
 
 static gchar *dem24k_lat_lon_to_dest_fn ( gdouble lat, gdouble lon )
