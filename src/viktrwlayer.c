@@ -2585,7 +2585,6 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   static gpointer pass_along[2];
   GtkWidget *item;
   GtkWidget *export_submenu;
-  GtkWidget *wikipedia_submenu;
   pass_along[0] = vtl;
   pass_along[1] = vlp;
 
@@ -2655,7 +2654,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_GEONAMES
-  wikipedia_submenu = gtk_menu_new();
+  GtkWidget *wikipedia_submenu = gtk_menu_new();
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Add Wikipedia Waypoints") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
   gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
