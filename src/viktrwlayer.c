@@ -1556,14 +1556,19 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
 static VikTrwLayer* trw_layer_create ( VikViewport *vp )
 {
   VikTrwLayer *rv = trw_layer_new ( DRAWMODE_BY_TRACK );
+  vik_layer_rename ( VIK_LAYER(rv), vik_trw_layer_interface.name );
+
+  if ( vp == NULL || GTK_WIDGET(vp)->window == NULL ) {
+    /* early exit, as the rest is GUI related */
+    return rv;
+  }
+
   PangoFontDescription *pfd;
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
   pfd = pango_font_description_from_string (WAYPOINT_FONT);
   pango_layout_set_font_description (rv->wplabellayout, pfd);
   /* freeing PangoFontDescription, cause it has been copied by prev. call */
   pango_font_description_free (pfd);
-
-  vik_layer_rename ( VIK_LAYER(rv), vik_trw_layer_interface.name );
 
   trw_layer_new_track_gcs ( rv, vp );
 
