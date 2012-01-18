@@ -260,6 +260,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 				// Mark for redraw
 				options->redraw = TRUE;
 			}
+			g_free ( datetime );
 			return;
 		}
 
