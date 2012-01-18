@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 #ifdef HAVE_MATH_H
-#include "math.h"
+#include <math.h>
 #endif
 #include <glib.h>
 #include <glib/gstdio.h>
