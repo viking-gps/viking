@@ -338,7 +338,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
     else {
       msg = g_strdup_printf ( "%s : %s %d (@%s)", _("FAILED TO UPLOAD DATA TO OSM"), _("HTTP response code"), ans, timestr );
       vik_statusbar_set_message ( vik_window_get_statusbar ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl) ), VIK_STATUSBAR_INFO, msg );
-      VikTrwLayer *vtl = oti->vtl;
+      //VikTrwLayer *vtl = oti->vtl;
       // Crashes here - multi-thread issue...
       //a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), msg );
     }
