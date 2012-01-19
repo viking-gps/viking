@@ -1,5 +1,9 @@
 This file is meant to summarize the Viking development policies.
 
+####
+#### Also check information in the Wiki:
+#### http://sourceforge.net/apps/mediawiki/viking/index.php?title=Main_Page
+####
 
 Clean commits
 =============
@@ -7,6 +11,15 @@ Clean commits
 Commits/patches should be as fine-grained as possible (and no finer). Every
 distinct change should be in its own commit and every commit should be a
 meaningful change on its own.
+
+Preferred Code Contribution Methods
+===================================
+
+Since the project uses git for source control, patches that utilize git (especially for patch sets) are preferred in this order:
+* Commits pushed to a publically accessible git host (e.g. GitHub, Gitorious, etc...)
+   - This enables commits to be easily managed such as pulling, merging or cherry-picking
+* Email git diffs to the dev mailing list - use 'git format-patch' method
+* Plain diffs can be emailed to the dev mailing list and/or stored in the SourceForge Patch Tracker for Viking.
 
 Coding style
 ============
@@ -19,6 +32,17 @@ Functions starting with "a_" do not, these modules may have static variables.
 Both are followed by the module name. Unless of course the function is static, in which case it may be called anything.
 
 All (well, practically all) global constants and macros start with "VIK_" and then the module name.
+
+Coding Checks
+=============
+
+Code should compile with the minimum number of warnings (ideally none).
+
+Code should pass static analysis with defaults for 'cppcheck' (http://sourceforge.net/projects/cppcheck/) with no errors.
+
+ATM there is one deliberate error in vikgpslayer.c designed to prevent building if the code encounters a GPSD version we don't handle. Something like:
+[vikgpslayer.c:1479]: (error) Invalid number of character ({) when these macros are defined: 'GPSD_API_MAJOR_VERSION;VIK_CONFIG_REALTIME_GPS_TRACKING'.
+This can be 'hidden' via cppcheck --suppress syntax.
 
 Technical notices
 =================
