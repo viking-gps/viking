@@ -524,4 +524,28 @@ void a_babel_uninit ()
 {
   g_free ( gpsbabel_loc );
   g_free ( unbuffer_loc );
+
+  if ( a_babel_file_list ) {
+    GList *gl;
+    for (gl = a_babel_file_list; gl != NULL; gl = g_list_next(gl)) {
+      BabelFile *file = gl->data;
+      g_free ( file->name );
+      g_free ( file->ext );
+      g_free ( file->label );
+      g_free ( gl->data );
+    }
+    g_list_free ( a_babel_file_list );
+  }
+
+  if ( a_babel_device_list ) {
+    GList *gl;
+    for (gl = a_babel_device_list; gl != NULL; gl = g_list_next(gl)) {
+      BabelDevice *device = gl->data;
+      g_free ( device->name );
+      g_free ( device->label );
+      g_free ( gl->data );
+    }
+    g_list_free ( a_babel_device_list );
+  }
+
 }
