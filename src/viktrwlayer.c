@@ -2276,6 +2276,45 @@ static void trw_layer_export_kml ( gpointer layer_and_vlp[2] )
   g_free ( auto_save_name );
 }
 
+/**
+ * Convert the given TRW layer into a temporary GPX file and open it with the specified program
+ *
+ */
+static void trw_layer_export_external_gpx ( gpointer layer_and_vlp[2], const gchar* external_program )
+{
+  gchar *name_used = NULL;
+  int fd;
+
+  if ((fd = g_file_open_tmp("tmp-viking.XXXXXX.gpx", &name_used, NULL)) >= 0) {
+    gboolean failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), name_used, FILE_TYPE_GPX, NULL);
+    if (failed) {
+      a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("Could not create temporary file for export.") );
+    }
+    else {
+      GError *err = NULL;
+      gchar *quoted_file = g_shell_quote ( name_used );
+      gchar *cmd = g_strdup_printf ( "%s %s", external_program, quoted_file );
+      g_free ( quoted_file );
+      if ( ! g_spawn_command_line_async ( cmd, &err ) )
+	{
+	  a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( layer_and_vlp[0]), _("Could not launch %s."), external_program );
+	  g_error_free ( err );
+	}
+      g_free ( cmd );
+    }
+    // Note ATM the 'temporary' file is not deleted, as loading via another program is not instantaneous
+    //g_remove ( name_used );
+    // Perhaps should be deleted when the program ends?
+    // For now leave it to the user to delete it / use system temp cleanup methods.
+    g_free ( name_used );
+  }
+}
+
+static void trw_layer_export_external_gpx_1 ( gpointer layer_and_vlp[2] )
+{
+  trw_layer_export_external_gpx ( layer_and_vlp, a_vik_get_external_gpx_program_1() );
+}
+
 static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
 {
   gpointer layer_and_vlp[2];
@@ -2649,6 +2688,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
 
   item = gtk_menu_item_new_with_mnemonic ( _("Export as _KML...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_kml), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
+  gtk_widget_show ( item );
+
+  gchar* external1 = g_strconcat ( _("Open with External Program_1: "), a_vik_get_external_gpx_program_1(), NULL );
+  item = gtk_menu_item_new_with_mnemonic ( external1 );
+  g_free ( external1 );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_external_gpx_1), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 

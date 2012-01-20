@@ -137,6 +137,8 @@ vik_kml_export_units_t a_vik_get_kml_export_units ( );
 const gchar* a_vik_get_image_viewer ( );
 #endif
 
+const gchar* a_vik_get_external_gpx_program_1 ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
