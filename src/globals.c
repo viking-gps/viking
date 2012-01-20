@@ -83,6 +83,7 @@ static VikLayerParam io_prefs_non_windows[] = {
 
 static VikLayerParam io_prefs_external_gpx[] = {
   { VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_1", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("External GPX Program 1:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL },
+  { VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_2", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("External GPX Program 2:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL },
 };
 
 /* End of Options static stuff */
@@ -128,6 +129,9 @@ void a_vik_preferences_init ()
   // JOSM for OSM editing around a GPX tracj
   tmp.s = "josm";
   a_preferences_register(&io_prefs_external_gpx[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+  // Add a second external program - another OSM editor by default
+  tmp.s = "merkaartor";
+  a_preferences_register(&io_prefs_external_gpx[1], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -198,4 +202,9 @@ const gchar* a_vik_get_image_viewer ( )
 const gchar* a_vik_get_external_gpx_program_1 ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_1")->s;
+}
+
+const gchar* a_vik_get_external_gpx_program_2 ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_2")->s;
 }

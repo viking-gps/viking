@@ -139,6 +139,8 @@ const gchar* a_vik_get_image_viewer ( );
 
 const gchar* a_vik_get_external_gpx_program_1 ( );
 
+const gchar* a_vik_get_external_gpx_program_2 ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."

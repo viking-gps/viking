@@ -2315,6 +2315,11 @@ static void trw_layer_export_external_gpx_1 ( gpointer layer_and_vlp[2] )
   trw_layer_export_external_gpx ( layer_and_vlp, a_vik_get_external_gpx_program_1() );
 }
 
+static void trw_layer_export_external_gpx_2 ( gpointer layer_and_vlp[2] )
+{
+  trw_layer_export_external_gpx ( layer_and_vlp, a_vik_get_external_gpx_program_2() );
+}
+
 static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
 {
   gpointer layer_and_vlp[2];
@@ -2695,6 +2700,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   item = gtk_menu_item_new_with_mnemonic ( external1 );
   g_free ( external1 );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_external_gpx_1), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
+  gtk_widget_show ( item );
+
+  gchar* external2 = g_strconcat ( _("Open with External Program_2: "), a_vik_get_external_gpx_program_2(), NULL );
+  item = gtk_menu_item_new_with_mnemonic ( external2 );
+  g_free ( external2 );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_external_gpx_2), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
