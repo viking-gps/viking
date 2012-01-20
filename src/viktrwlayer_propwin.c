@@ -110,6 +110,7 @@ typedef struct _propwidgets {
   GtkWidget *w_duptp_count;
   GtkWidget *w_max_speed;
   GtkWidget *w_avg_speed;
+  GtkWidget *w_mvg_speed;
   GtkWidget *w_avg_dist;
   GtkWidget *w_elev_range;
   GtkWidget *w_elev_gain;
@@ -2493,7 +2494,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   int cnt;
   int i;
 
-  static gchar *label_texts[] = { N_("<b>Comment:</b>"), N_("<b>Track Length:</b>"), N_("<b>Trackpoints:</b>"), N_("<b>Segments:</b>"), N_("<b>Duplicate Points:</b>"), N_("<b>Max Speed:</b>"), N_("<b>Avg. Speed:</b>"), N_("<b>Avg. Dist. Between TPs:</b>"), N_("<b>Elevation Range:</b>"), N_("<b>Total Elevation Gain/Loss:</b>"), N_("<b>Start:</b>"), N_("<b>End:</b>"), N_("<b>Duration:</b>") };
+  static gchar *label_texts[] = { N_("<b>Comment:</b>"), N_("<b>Track Length:</b>"), N_("<b>Trackpoints:</b>"), N_("<b>Segments:</b>"), N_("<b>Duplicate Points:</b>"), N_("<b>Max Speed:</b>"), N_("<b>Avg. Speed:</b>"), N_("<b>Moving Avg. Speed:</b>"), N_("<b>Avg. Dist. Between TPs:</b>"), N_("<b>Elevation Range:</b>"), N_("<b>Total Elevation Gain/Loss:</b>"), N_("<b>Start:</b>"), N_("<b>End:</b>"), N_("<b>Duration:</b>") };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 
@@ -2581,6 +2582,34 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     }
   }
   widgets->w_avg_speed = content[cnt++] = gtk_label_new ( tmp_buf );
+
+  // Use 60sec as the default period to be considered stopped
+  //  this is the TrackWaypoint draw stops default value 'vtl->stop_length'
+  //  however this variable is not directly accessible - and I don't expect it's often changed from the default
+  //  so ATM just put in the number
+  tmp_speed = vik_track_get_average_speed_moving(tr, 60);
+  if ( tmp_speed == 0 )
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
+  else {
+    switch (speed_units) {
+    case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_MILES_PER_HOUR:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_METRES_PER_SECOND:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
+      break;
+    case VIK_UNITS_SPEED_KNOTS:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
+      break;
+    default:
+      g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
+      g_critical("Houston, we've had a problem. speed=%d", speed_units);
+    }
+  }
+  widgets->w_mvg_speed = content[cnt++] = gtk_label_new ( tmp_buf );
 
   switch (dist_units) {
   case VIK_UNITS_DISTANCE_KILOMETRES:
