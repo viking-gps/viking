@@ -83,6 +83,7 @@ void vik_track_remove_dup_points ( VikTrack *vt );
 
 gdouble vik_track_get_max_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed(const VikTrack *tr);
+gdouble vik_track_get_average_speed_moving ( const VikTrack *tr, int stop_length_seconds );
 
 void vik_track_convert ( VikTrack *tr, VikCoordMode dest_mode );
 gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks );

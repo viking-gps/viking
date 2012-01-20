@@ -309,6 +309,42 @@ gdouble vik_track_get_average_speed(const VikTrack *tr)
   return (time == 0) ? 0 : ABS(len/time);
 }
 
+/**
+ * Based on a simple average speed, but with a twist - to give a moving average.
+ *  . GPSs often report a moving average in their statistics output
+ *  . bicycle speedos often don't factor in time when stopped - hence reporting a moving average for speed
+ *
+ * Often GPS track will record every second but not when stationary
+ * This method doesn't use samples that differ over the specified time limit - effectively skipping that time chunk from the total time
+ *
+ * Suggest to use 60 seconds as the stop length (as the default used in the TrackWaypoint draw stops factor)
+ */
+gdouble vik_track_get_average_speed_moving (const VikTrack *tr, int stop_length_seconds)
+{
+  gdouble len = 0.0;
+  guint32 time = 0;
+  if ( tr->trackpoints )
+  {
+    GList *iter = tr->trackpoints->next;
+    while (iter)
+    {
+      if ( VIK_TRACKPOINT(iter->data)->has_timestamp &&
+          VIK_TRACKPOINT(iter->prev->data)->has_timestamp &&
+          (! VIK_TRACKPOINT(iter->data)->newsegment) )
+      {
+	if ( ( VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp ) < stop_length_seconds ) {
+	  len += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
+				  &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+	
+	  time += ABS(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
+	}
+      }
+      iter = iter->next;
+    }
+  }
+  return (time == 0) ? 0 : ABS(len/time);
+}
+
 gdouble vik_track_get_max_speed(const VikTrack *tr)
 {
   gdouble maxspeed = 0.0, speed = 0.0;
