@@ -774,8 +774,6 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
       gdouble xx, yy; gint xx_tmp, yy_tmp;
       gint base_yy, xend, yend;
 
-      GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
-
       xend = (xinc == 1) ? (xmax+1) : (xmin-1);
       yend = (yinc == 1) ? (ymax+1) : (ymin-1);
 
@@ -798,6 +796,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
                      vml->cache_dir, mode,
                      ulm.scale, ulm.z, ulm.x, ulm.y );
             if ( g_file_test ( path_buf, G_FILE_TEST_EXISTS ) == TRUE ) {
+	      GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
               vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil );
             }
           } else {
