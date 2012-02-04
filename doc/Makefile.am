@@ -1,4 +1,4 @@
-SUBDIRS = dev examples
+SUBDIRS = examples
 
 EXTRA_DIST = GETTING-STARTED GPSMAPPER \
   viking.xml viking-remote.xml
