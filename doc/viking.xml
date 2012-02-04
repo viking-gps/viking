@@ -350,11 +350,6 @@ and docbook-xsl in your Build-Depends control field.
 
   </refsect1>
   <refsect1>
-    <title>SEE ALSO</title>
-
-    <para>viking-remote (1).</para>
-  </refsect1>
-  <refsect1>
     <title>AUTHOR</title>
 
     <para>This manual page was written by &dhusername; &dhemail; for

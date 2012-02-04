@@ -1,7 +1,7 @@
 SUBDIRS = examples
 
 EXTRA_DIST = GETTING-STARTED GPSMAPPER \
-  viking.xml viking-remote.xml
+  viking.xml
 
 CLEANFILES=
 
@@ -9,7 +9,7 @@ CLEANFILES=
 # TODO conditional processing
 # (availability of docbook stylesheet and xsltproc)
 if GEN_MANPAGES
-MANPAGES=viking.1 viking-remote.1
+MANPAGES=viking.1
 man_MANS = $(MANPAGES)
 CLEANFILES+=$(MANPAGES)
 endif
