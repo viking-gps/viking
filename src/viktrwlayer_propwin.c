@@ -150,7 +150,11 @@ typedef struct _propwidgets {
   gdouble   min_altitude;
   gdouble   max_altitude;
   gdouble   draw_min_altitude;
+  gdouble   draw_min_altitude_time;
   gint      cia; // Chunk size Index into Altitudes
+  gint      ciat; // Chunk size Index into Altitudes / Time
+  // NB cia & ciat are normally same value but sometimes not due to differing methods of altitude array creation
+  //    thus also have draw_min_altitude for each altitude graph type
   gdouble   *speeds;
   gdouble   *speeds_dist;
   gdouble   min_speed;
@@ -588,8 +592,7 @@ static gint blobby_altitude_time ( gdouble x_blob, PropWidgets *widgets )
   if (ix == widgets->profile_width)
     ix--;
 
-  gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->ats[ix]-widgets->draw_min_altitude)/(chunksa[widgets->cia]*LINES);
-  // only difference here [could refactor]?          _____________________/
+  gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->ats[ix]-widgets->draw_min_altitude_time)/(chunksa[widgets->ciat]*LINES);
   return y_blob;
 }
 
@@ -1537,10 +1540,10 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   minmax_array(widgets->ats, &widgets->min_altitude, &widgets->max_altitude, TRUE, widgets->profile_width);
 
-  get_new_min_and_chunk_index_altitude (widgets->min_altitude, widgets->max_altitude, &widgets->draw_min_altitude, &widgets->cia);
+  get_new_min_and_chunk_index_altitude (widgets->min_altitude, widgets->max_altitude, &widgets->draw_min_altitude_time, &widgets->ciat);
 
   // Assign locally
-  mina = widgets->draw_min_altitude;
+  mina = widgets->draw_min_altitude_time;
 
   window = gtk_widget_get_toplevel (widgets->elev_time_box);
 
@@ -1567,11 +1570,11 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     pango_font_description_free (pfd);
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
-      sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
+      sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[widgets->ciat]));
       break;
     case VIK_UNITS_HEIGHT_FEET:
       // NB values already converted into feet
-      sprintf(s, "%8dft", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
+      sprintf(s, "%8dft", (int)(mina + (LINES-i)*chunksa[widgets->ciat]));
       break;
     default:
       sprintf(s, "--");
@@ -1591,7 +1594,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   /* draw elevations */
   for ( i = 0; i < widgets->profile_width; i++ )
       gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3],
-		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->ats[i]-mina)/(chunksa[widgets->cia]*LINES) );
+		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->ats[i]-mina)/(chunksa[widgets->ciat]*LINES) );
 
   // Show speed indicator
   if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed)) ) {
