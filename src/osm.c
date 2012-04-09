@@ -61,6 +61,18 @@ void osm_init () {
                                 "license", "CC-BY-SA",
                                 "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
+  VikMapSource *transport_type =
+    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+                                "id", 20,
+                                "label", "OpenStreetMap (Transport)",
+                                "hostname", "c.tile2.opencyclemap.org",
+                                "url", "/transport/%d/%d/%d.png",
+                                "check-file-server-time", TRUE,
+                                "use-etag", FALSE,
+                                "copyright", "Tiles courtesy of Andy Allan © OpenStreetMap contributors",
+                                "license", "CC-BY-SA",
+                                "license-url", "http://www.openstreetmap.org/copyright",
+                                NULL));
   VikMapSource *wms_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_WMSC_MAP_SOURCE,
                                 "id", 18,
@@ -89,6 +101,7 @@ void osm_init () {
   maps_layer_register_map_source (mapquest_type);
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (cycle_type);
+  maps_layer_register_map_source (transport_type);
   maps_layer_register_map_source (wms_type);
 
   // Webtools
