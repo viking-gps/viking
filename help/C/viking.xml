@@ -715,10 +715,10 @@ Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServe
 <listitem><para>Terraserver Topos</para></listitem>
 <listitem><para>Terraserver Aerials</para></listitem>
 <listitem><para>Terraserver Urban Areas</para></listitem>
-<listitem><para>OpenStreetMap (Osmarender)</para></listitem>
-<listitem><para>OpenStreetMap (Mapnik) - This is the default</para></listitem>
-<listitem><para>OpenStreetMap (Maplint)</para></listitem>
+<listitem><para>OpenStreetMap (Mapquest) - This is the default (&appname; Version1.3+)</para></listitem>
+<listitem><para>OpenStreetMap (Mapnik)</para></listitem>
 <listitem><para>OpenStreetMap (Cycle)</para></listitem>
+<listitem><para>OpenStreetMap (Transport) (&appname; Version1.3+)</para></listitem>
 <listitem><para>NASA BlueMarble</para></listitem>
 <listitem><para>SpotMap (&appname; Version1.1+)</para></listitem>
 </itemizedlist>
