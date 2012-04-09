@@ -19,17 +19,6 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
-<!-- No more active
-  <object class="VikSlippyMapSource">
-    <property name="label">Letuffe/hiking</property>
-    <property name="hostname">beta.letuffe.org</property>
-    <property name="url">/tiles/renderer.py/hiking/%d/%d/%d.png</property>
-    <property name="id">20</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
--->
   <object class="VikWmscMapSource">
     <property name="id">18</property>
     <property name="label">OpenStreetMap (WMS)</property>
@@ -85,17 +74,5 @@
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Yahoo Street</property>
-    <property name="hostname">us.maps1.yimg.com</property>
-    <property name="url">/us.tile.maps.yahoo.com/tl?v=4.1&amp;x=%d&amp;y=%-d&amp;z=%d</property>
-    <property name="id">104</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Yahoo Sat</property>
-    <property name="hostname">us.maps3.yimg.com</property>
-    <property name="url">/aerial.maps.yimg.com/ximg?v=1.7&amp;t=a&amp;s=256&amp;x=%d&amp;y=%-d&amp;z=%d</property>
-    <property name="id">105</property>
   </object>
 </objects>
