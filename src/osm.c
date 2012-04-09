@@ -57,7 +57,7 @@ void osm_init () {
                                 "url", "/cycle/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
-                                "copyright", "© OpenStreetMap contributors",
+                                "copyright", "Tiles courtesy of Andy Allan © OpenStreetMap contributors",
                                 "license", "CC-BY-SA",
                                 "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
