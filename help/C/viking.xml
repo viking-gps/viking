@@ -365,7 +365,7 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 <section id="osm_upload"><title>Upload To OSM</title>
 <para>
 This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
-Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap account), these details can be stored in &appname; preferences.
+Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap account), these details can be stored in &appname; <link linkend="prefs_osm">preferences.</link>
 </para>
 <para>
  &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
@@ -373,8 +373,9 @@ Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap a
 <note>
 <para>
  <emphasis role="bold">Warning!</emphasis>
-The password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OpenStreetMap server. This is due to OpenStreetMap's basic authentication method.
+The password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OpenStreetMap server. This is due to the use of OpenStreetMap's basic authentication method.
 </para>
+<para>Currently &appname; does not support the <ulink url="http://oauth.net/">OAuth</ulink> mechanism.</para>
 </note>
 </section>
 
@@ -993,7 +994,8 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 </section>
 
 <!-- Preferences -->
-<section><title>Preferences</title>
+<section id="prefs"><title>Preferences</title>
+<section><title>General</title>
 <section><title>Localisation</title>
 <para>You can select units displayed by &appname; to best fit your usage.</para>
 <figure>
@@ -1022,6 +1024,14 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 </screenshot>
 </figure>
 </section>
+<section><title>Waypoint Icon Size</title>
+<para>An option exists to control the icon (symbol) size used for waypoints
+</para>
+</section>
+<section><title>'Home' Default Location: Latitude and Longitude</title>
+<para>You can set the 'Home' location directly by inputting the latitude and longitude in decimal degrees.
+</para>
+</section>
 <section><title>Tile's age</title>
 <para>This age is used to decided wether or not a new request to tile server must be done.
 </para>
@@ -1033,7 +1043,49 @@ This value is used when you create a new map layer.
 </para>
 <para>You are still able to change this value in each map layer properties.</para>
 </section>
+<section><title>Map Cache Memory Size</title>
+<para>This controls the amount of maps that are stored in memory, rather than having to reread from disk.
+Generally if you have a system with lots of memory it's recommended to increase this value.
+</para>
 </section>
+</section>
+
+<section><title>Export/External</title>
+<section><title>KML Export Units</title>
+<para>Allows setting the units used when saved as the KML file type, such as Metric or Statue units</para>
+</section>
+<section><title>Image Viewer (Not Windows)</title>
+<para>Allows setting the program used to view images associated with Waypoints.</para>
+<para>By default this is set to 'xdg-open' which should open the system's default image viewer, however this can be overridden with this setting.</para>
+<para>Note: for Windows systems, viewing images associated with Waypoints always uses the system's default image viewer.</para>
+</section>
+<section><title>External GPX programs</title>
+<para>Allows setting the programs invoked via the TrackWaypoint Layer -> Export Layer -> Open With 'program'</para>
+<para>Two options are given so that it can be configured for various uses such as:</para>
+<variablelist>
+<varlistentry>
+<listitem><para>An OSM editor (default)</para></listitem>
+</varlistentry>
+<varlistentry>
+<listitem><para>Some other user defined program</para></listitem>
+</varlistentry>
+</variablelist>
+</section>
+</section>
+
+<section id="prefs_osm"><title>OpenStreetMap Traces</title>
+<section><title>OSM Username + Password</title>
+<para>Store your OSM details here, so that you don't need to enter it in every time in the <link linkend="osm_upload">Upload to OSM</link> procedure.</para>
+<note>
+ <emphasis role="bold">Warning!</emphasis>
+ Your OSM password will be stored in plain text.
+</note>
+</section>
+</section>
+
+</section>
+
+<!-- HOWTOS-->
 <section><title>Mini-Howto's</title>
 <section><title>Getting Started</title>
 <para>
