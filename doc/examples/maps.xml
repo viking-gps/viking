@@ -1,30 +1,10 @@
 <objects>
 <!-- Built in -->
   <object class="VikSlippyMapSource">
-    <property name="label">OpenStreetMap (Osmarender)</property>
-    <property name="hostname">tah.openstreetmap.org</property>
-    <property name="url">/Tiles/tile/%d/%d/%d.png</property>
-    <property name="id">12</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-<!-- Built in -->
-  <object class="VikSlippyMapSource">
     <property name="label">OpenStreetMap (Mapnik)</property>
     <property name="hostname">tile.openstreetmap.org</property>
     <property name="url">/%d/%d/%d.png</property>
     <property name="id">13</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-<!-- Built in -->
-  <object class="VikSlippyMapSource">
-    <property name="label">OpenStreetMap (Maplint)</property>
-    <property name="hostname">tah.openstreetmap.org</property>
-    <property name="url">/Tiles/maplint.php/%d/%d/%d.png</property>
-    <property name="id">14</property>
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
