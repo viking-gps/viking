@@ -3419,7 +3419,6 @@ static gint trackpoint_compare(gconstpointer a, gconstpointer b)
   return 0;
 }
 
-#ifdef VIK_CONFIG_ALPHABETIZED_TRW
 /**
  * comparison function which can be used to sort tracks or waypoints by name
  */
@@ -3433,7 +3432,6 @@ static gint sort_alphabetically (gconstpointer a, gconstpointer b, gpointer user
     // Same sort method as used in the vik_treeview_*_alphabetize functions
     return strcmp ( namea, nameb );
 }
-#endif
 
 /**
  * Attempt to merge selected track with other tracks specified by the user
