@@ -3466,10 +3466,8 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
     return;
   }
 
-#ifdef VIK_CONFIG_ALPHABETIZED_TRW
   // Sort alphabetically for user presentation
   other_tracks = g_list_sort_with_data (other_tracks, sort_alphabetically, NULL);
-#endif
 
   GList *merge_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
       other_tracks, TRUE,
