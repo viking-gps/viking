@@ -67,8 +67,9 @@ static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint 
     gtk_selection_data_set ( selection_data, selection_data->target, 8, (void *)vc, sizeof(*vc) + vc->len );
   }
   if ( info == 1 ) {
-    // String
-    gtk_selection_data_set_text ( selection_data, vc->text, -1); // string text is null terminated
+    // Should be a string, but make sure it's something
+    if ( vc->text )
+      gtk_selection_data_set_text ( selection_data, vc->text, -1); // string text is null terminated
   }
 
 }
@@ -348,8 +349,9 @@ void a_clipboard_copy_selected ( VikLayersPanel *vlp )
     if ( vik_layer_get_interface(layer_type)->copy_item) {
       subtype = vik_treeview_item_get_data(sel->vt, &iter);
       vik_layer_get_interface(layer_type)->copy_item(sel, subtype, vik_treeview_item_get_pointer(sel->vt, &iter), &data, &len );
-      name = vik_treeview_item_get_pointer(sel->vt, &iter);
-    }    
+      // This name is used in setting the text representation of the item on the clipboard.
+      name = vik_treeview_item_get_name(sel->vt, &iter);
+    }
   }
   else
   {

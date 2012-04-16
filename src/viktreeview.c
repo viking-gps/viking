@@ -233,6 +233,13 @@ gint vik_treeview_item_get_type ( VikTreeview *vt, GtkTreeIter *iter )
   return rv;
 }
 
+gchar* vik_treeview_item_get_name ( VikTreeview *vt, GtkTreeIter *iter )
+{
+  gchar *rv;
+  TREEVIEW_GET ( vt->model, iter, NAME_COLUMN, &rv );
+  return rv;
+}
+
 gint vik_treeview_item_get_data ( VikTreeview *vt, GtkTreeIter *iter )
 {
   gint rv;

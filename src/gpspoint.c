@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +40,7 @@
 
 static void a_gpspoint_write_track ( const gchar *name, VikTrack *t, FILE *f );
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f );
-static void a_gpspoint_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f );
+static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f );
 
 
 /* outline for file gpspoint.c
@@ -443,14 +444,18 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   }
 }
 
-static void a_gpspoint_write_waypoint ( const gchar *name, VikWaypoint *wp, FILE *f )
+static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f )
 {
   static struct LatLon ll;
   gchar *s_lat, *s_lon;
+  // Sanity clause
+  if ( wp && !(wp->name) ) {
+    return;
+  }
   vik_coord_to_latlon ( &(wp->coord), &ll );
   s_lat = a_coords_dtostr(ll.lat);
   s_lon = a_coords_dtostr(ll.lon);
-  fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, name );
+  fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, wp->name );
   g_free ( s_lat ); 
   g_free ( s_lon );
 

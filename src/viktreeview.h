@@ -60,6 +60,7 @@ GtkWidget *vik_treeview_get_widget ( VikTreeview *vt );
 
 gint vik_treeview_item_get_data ( VikTreeview *vt, GtkTreeIter *iter );
 gint vik_treeview_item_get_type ( VikTreeview *vt, GtkTreeIter *iter );
+gchar *vik_treeview_item_get_name ( VikTreeview *vt, GtkTreeIter *iter );
 gpointer vik_treeview_item_get_pointer ( VikTreeview *vt, GtkTreeIter *iter );
 void vik_treeview_item_set_pointer ( VikTreeview *vt, GtkTreeIter *iter, gpointer pointer );
 

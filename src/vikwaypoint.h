@@ -34,6 +34,7 @@ struct _VikWaypoint {
   VikCoord coord;
   gboolean visible;
   gdouble altitude;
+  gchar *name;
   gchar *comment;
   gchar *image;
   /* a rather misleading, ugly hack needed for trwlayer's click image.
@@ -45,6 +46,7 @@ struct _VikWaypoint {
 };
 
 VikWaypoint *vik_waypoint_new();
+void vik_waypoint_set_name(VikWaypoint *wp, const gchar *name);
 void vik_waypoint_set_comment(VikWaypoint *wp, const gchar *comment);
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image);
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);

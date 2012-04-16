@@ -194,7 +194,7 @@ static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
    When an existing waypoint the default name is shown but is not allowed to be changed and NULL is returned
  */
 /* todo: less on this side, like add track */
-gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *wp, GHashTable *waypoints, VikCoordMode coord_mode, gboolean is_new, gboolean *updated )
+gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new, gboolean *updated )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Waypoint Properties"),
                                                    parent,
@@ -343,55 +343,48 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
   {
     if ( is_new )
     {
-      const gchar *entered_name = gtk_entry_get_text ( GTK_ENTRY(nameentry) );
+      gchar *entered_name = g_strdup ( (gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) ) );
       if ( strlen(entered_name) == 0 ) /* TODO: other checks (isalpha or whatever ) */
         a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
       else {
 
-        gchar *use_name = g_strdup ( entered_name );
+	// NB: No check for unique names - this allows generation of same named entries.
 
-        if ( g_hash_table_lookup ( waypoints, use_name ) && !a_dialog_yes_or_no ( parent, _("The waypoint \"%s\" exists, do you want to overwrite it?"), use_name ) )
-          g_free ( use_name );
-        else
-        {
-          /* Do It */
-          ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
-          ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
-          vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
-	  // Always store in metres
-	  switch (height_units) {
-	  case VIK_UNITS_HEIGHT_METRES:
-	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	    break;
-	  case VIK_UNITS_HEIGHT_FEET:
-	    wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
-	    break;
-	  default:
-	    wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	    g_critical("Houston, we've had a problem. height=%d", height_units);
-	  }
-          vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
-          vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
-          if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
-            a_thumbnails_create ( wp->image );
+	/* Do It */
+	ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
+	ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
+	vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
+	// Always store in metres
+	switch (height_units) {
+	case VIK_UNITS_HEIGHT_METRES:
+	  wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
+	  break;
+	case VIK_UNITS_HEIGHT_FEET:
+	  wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
+	  break;
+	default:
+	  wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
+	  g_critical("Houston, we've had a problem. height=%d", height_units);
+	}
+	vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
+	vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
+	if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
+	  a_thumbnails_create ( wp->image );
 
-	  {
-	    GtkTreeIter iter, first;
-	    gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
-	    if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
-	      vik_waypoint_set_symbol ( wp, NULL );
-	    } else {
-	      gchar *sym;
-	      gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
-	      vik_waypoint_set_symbol ( wp, sym );
-	      g_free(sym);
-	    }
-	  }		
+	GtkTreeIter iter, first;
+	gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
+	if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
+	  vik_waypoint_set_symbol ( wp, NULL );
+	} else {
+	  gchar *sym;
+	  gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
+	  vik_waypoint_set_symbol ( wp, sym );
+	  g_free(sym);
+	}
 
-          gtk_widget_destroy ( dialog );
-          return use_name;
-        }
-      } /* else (valid name) */
+	gtk_widget_destroy ( dialog );
+	return entered_name;
+      }
     }
     else
     {

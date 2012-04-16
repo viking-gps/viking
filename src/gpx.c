@@ -616,7 +616,7 @@ entitize(const char * str)
 
 /* export GPX */
 
-static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, GpxWritingContext *context ) 
+static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 {
   FILE *f = context->file;
   static struct LatLon ll;
@@ -630,7 +630,12 @@ static void gpx_write_waypoint ( const gchar *name, VikWaypoint *wp, GpxWritingC
   g_free ( s_lat );
   g_free ( s_lon );
 
-  tmp = entitize ( name );
+  // Sanity clause
+  if ( wp->name )
+    tmp = entitize ( wp->name );
+  else
+    tmp = g_strdup ("waypoint");
+
   fprintf ( f, "  <name>%s</name>\n", tmp );
   g_free ( tmp);
 
@@ -802,19 +807,6 @@ static void gpx_write_footer( FILE *f )
   fprintf(f, "</gpx>\n");
 }
 
-
-
-typedef struct {
-  VikWaypoint *wp;
-  const gchar *name;
-} gpx_waypoint_and_name;
-
-typedef struct {
-  gpx_waypoint_and_name *wps;
-  guint i;
-  guint n_wps;
-} gpx_gather_waypoints_passalong_t;
-
 /* Type to hold name of track and timestamp of first trackpoint */
 typedef struct {
   time_t first_timestamp;
@@ -826,15 +818,6 @@ typedef struct {
   guint i;
   guint n_trks;
 } gpx_gather_tracks_passalong_t;
-
-static void gpx_collect_waypoint ( const gchar *name, VikWaypoint *wp, gpx_gather_waypoints_passalong_t *passalong )
-{
-  if ( passalong->i < passalong->n_wps ) {
-    passalong->wps[passalong->i].name = name;
-    passalong->wps[passalong->i].wp = wp;
-    passalong->i++;
-  }
-}
 
 /* Function to collect a track and the first timestamp in the list */
 static void gpx_collect_track (const gchar *name, VikTrack *track, gpx_gather_tracks_passalong_t *passalong)
@@ -855,10 +838,10 @@ static void gpx_collect_track (const gchar *name, VikTrack *track, gpx_gather_tr
   }
 }
 
-static int gpx_waypoint_and_name_compar(const void *x, const void *y)
+static int gpx_waypoint_compare(const void *x, const void *y)
 {
-  gpx_waypoint_and_name *a = (gpx_waypoint_and_name *)x;
-  gpx_waypoint_and_name *b = (gpx_waypoint_and_name *)y;
+  VikWaypoint *a = (VikWaypoint *)x;
+  VikWaypoint *b = (VikWaypoint *)y;
   return strcmp(a->name,b->name);
 }
 
@@ -890,18 +873,18 @@ void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *vtl, FI
 
   gpx_write_header ( f );
 
+  // gather waypoints in a list, then sort
+  // g_hash_table_get_values: glib 2.14+
+  GList *gl = g_hash_table_get_values ( vik_trw_layer_get_waypoints ( vtl ) );
+  gl = g_list_sort ( gl, gpx_waypoint_compare );
 
-  gpx_gather_waypoints_passalong_t passalong;
-  passalong.n_wps = g_hash_table_size ( vik_trw_layer_get_waypoints ( vtl ) );
-  passalong.i = 0;
-  passalong.wps = g_new(gpx_waypoint_and_name,passalong.n_wps);
-  g_hash_table_foreach ( vik_trw_layer_get_waypoints ( vtl ), (GHFunc) gpx_collect_waypoint, &passalong );
-  /* gather waypoints in a list, then sort */
-  qsort(passalong.wps, passalong.n_wps, sizeof(gpx_waypoint_and_name), gpx_waypoint_and_name_compar);
-  for ( i = 0; i < passalong.n_wps; i++ )
-    gpx_write_waypoint ( passalong.wps[i].name, passalong.wps[i].wp, &context);
-  g_free ( passalong.wps );
+  GList *iter;
+  for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
+    gpx_write_waypoint ( (VikWaypoint*)iter->data, &context );
+  }
 
+  g_list_free ( gl );
+	     
   gpx_gather_tracks_passalong_t passalong_tracks;
   passalong_tracks.n_trks = g_hash_table_size ( vik_trw_layer_get_tracks (vtl) );
   passalong_tracks.i = 0;

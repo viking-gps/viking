@@ -25,18 +25,31 @@
 #include "vikcoord.h"
 #include "vikwaypoint.h"
 #include "globals.h"
-
+#include <glib/gi18n.h>
 
 VikWaypoint *vik_waypoint_new()
 {
   VikWaypoint *wp = g_malloc ( sizeof ( VikWaypoint ) );
   wp->altitude = VIK_DEFAULT_ALTITUDE;
+  wp->name = g_strdup(_("Waypoint"));
   wp->comment = NULL;
   wp->image = NULL;
   wp->image_width = 0;
   wp->image_height = 0;
   wp->symbol = NULL;
   return wp;
+}
+
+// Hmmm tempted to put in new constructor
+void vik_waypoint_set_name(VikWaypoint *wp, const gchar *name)
+{
+  if ( wp->name )
+    g_free ( wp->name );
+
+  if ( name && name[0] != '\0' )
+    wp->name = g_strdup(name);
+  else
+    wp->name = NULL;
 }
 
 void vik_waypoint_set_comment_no_copy(VikWaypoint *wp, gchar *comment)
@@ -95,6 +108,8 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
 {
   VikWaypoint *new_wp = vik_waypoint_new();
   *new_wp = *wp;
+  new_wp->name = NULL;
+  vik_waypoint_set_name(new_wp,wp->name);
   new_wp->comment = NULL; /* if the waypoint had a comment, FOR CRYING OUT LOUD DON'T FREE IT! This lousy bug took me TWO HOURS to figure out... sigh... */
   vik_waypoint_set_comment(new_wp,wp->comment);
   new_wp->image = NULL;
@@ -104,18 +119,26 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   return new_wp;
 }
 
+/*
+ * Take a Waypoint and convert it into a byte array
+ */
 void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *datalen)
 {
   GByteArray *b = g_byte_array_new();
   guint len;
 
+  // This creates space for fixed sized members like gints and whatnot
+  //  and copies that amount of data from the waypoint to byte array
   g_byte_array_append(b, (guint8 *)wp, sizeof(*wp));
 
+  // This allocates space for variant sized strings
+  //  and copies that amount of data from the waypoint to byte array
 #define vwm_append(s) \
   len = (s) ? strlen(s)+1 : 0; \
   g_byte_array_append(b, (guint8 *)&len, sizeof(len)); \
   if (s) g_byte_array_append(b, (guint8 *)s, len);
 
+  vwm_append(wp->name);
   vwm_append(wp->comment);
   vwm_append(wp->image);
   vwm_append(wp->symbol);
@@ -126,6 +149,9 @@ void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *datalen)
 #undef vwm_append
 }
 
+/*
+ * Take a byte array and convert it into a Waypoint
+ */
 VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen)
 {
   guint len;
@@ -143,6 +169,7 @@ VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen)
   } \
   data += len;
 
+  vwu_get(new_wp->name);
   vwu_get(new_wp->comment);
   vwu_get(new_wp->image); 
   vwu_get(new_wp->symbol);
