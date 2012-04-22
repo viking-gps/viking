@@ -1,5 +1,6 @@
 src/acquire.c
 src/background.c
+src/bing.c
 src/bingmapsource.c
 src/clipboard.c
 src/curl_download.c
@@ -18,6 +19,7 @@ src/datasource_osm.c
 src/dem.c
 src/download.c
 src/file.c
+src/geotag_exif.c
 src/osm-traces.c
 src/mapcache.c
 src/print.c
@@ -46,3 +48,4 @@ src/viktrwlayer_tpwin.c
 src/viktrwlayer_geotag.c
 src/vikwindow.c
 src/viking.desktop.in
+src/libjpeg/jpeg-data.c
