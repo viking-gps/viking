@@ -5,15 +5,15 @@ msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-20 21:11+0200\n"
-"PO-Revision-Date: 2011-02-08 21:04+0000\n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"PO-Revision-Date: 2011-09-17 12:24+0000\n"
+"Last-Translator: Nicolas ELIE <Unknown>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2011-05-11 16:01+0000\n"
-"X-Generator: Launchpad (build 13014)\n"
+"X-Launchpad-Export-Date: 2012-04-22 16:16+0000\n"
+"X-Generator: Launchpad (build 15120)\n"
 "Language: \n"
 "X-Poedit-Language: French\n"
 
@@ -68,6 +68,8 @@ msgid ""
 "The clipboard contains sublayer data for %s layers. You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
+"Le presse-papier contient des données de sous-calque pour %s calques. Vous "
+"devez choisir un calque de ce type pour coller les données du presse-papier."
 
 #: ../src/clipboard.c:220
 msgid ""
@@ -1460,7 +1462,7 @@ msgstr "Taille du cache des images :"
 #: ../src/viktrwlayer.c:1654
 #, c-format
 msgid " in %d:%02d hrs:mins"
-msgstr ""
+msgstr " en %d:%02d h:min"
 
 #: ../src/viktrwlayer.c:1658
 #, c-format
@@ -2498,257 +2500,3 @@ msgstr ""
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr "Viking"
-
-#~ msgid "Goto Map Center"
-#~ msgstr "Aller au centre de la carte"
-
-#~ msgid "Export to World File"
-#~ msgstr "Exporter en fichier World"
-
-#~ msgid "Upload to GPS"
-#~ msgstr "Émission vers le GPS"
-
-#~ msgid "Download from GPS"
-#~ msgstr "Réception depuis le GPS"
-
-#~ msgid "Empty Upload"
-#~ msgstr "Émission vide"
-
-#~ msgid "Empty Download"
-#~ msgstr "Réception vide"
-
-#~ msgid "Download Onscreen Maps"
-#~ msgstr "Télécharger dalles visibles"
-
-#~ msgid "Refresh Onscreen Tiles"
-#~ msgstr "Rafraîchir dalles visibles"
-
-#~ msgid "Create"
-#~ msgstr "Créer"
-
-#~ msgid "Export as GPSPoint"
-#~ msgstr "Exporter en tant que GPSPoint"
-
-#~ msgid "Export as GPSMapper"
-#~ msgstr "Exporter en tant que GPSMapper"
-
-#~ msgid "Export as GPX"
-#~ msgstr "Exporter en tant que GPX"
-
-#~ msgid "Goto Startpoint"
-#~ msgstr "Aller au premier point"
-
-#~ msgid "Goto Endpoint"
-#~ msgstr "Aller au dernier point"
-
-#, c-format
-#~ msgid ""
-#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
-#~ "of this type to paste the clipboard data."
-#~ msgstr ""
-#~ "Le presse-papier contient des données pour un calque %s. Vous devez "
-#~ "sélectionner un calque de ce type pour y coller ces données."
-
-#~ msgid "Zoom factor (in meters per pixel:"
-#~ msgstr "Facteur de zoom (en mètres par pixel) :"
-
-#~ msgid "I don't know that place. Do you want another search?"
-#~ msgstr ""
-#~ "Je ne connais pas cet endroit. Voulez-vous faire une autre rechercher ?"
-
-#~ msgid "The email used as login"
-#~ msgstr "Email utilisé pour se connecter"
-
-#~ msgid "Enter the email you use to login into www.openstreetmap.org."
-#~ msgstr "Entrer l'email utilisé pour se connecter sur www.openstreetmap.org"
-
-#~ msgid "The password used to login"
-#~ msgstr "Mot de passe utilisé pour la connexion"
-
-#~ msgid "Enter the password you use to login into www.openstreetmap.org."
-#~ msgstr ""
-#~ "Entrer le mot de passe utilisé pour se connecter sur www.openstreetmap.org"
-
-#~ msgid "The name of the file on OSM"
-#~ msgstr "Nom du fichier sur OSM"
-
-#~ msgid ""
-#~ "This is the name of the file created on the server. This is not the name of "
-#~ "the local file."
-#~ msgstr ""
-#~ "Nom du fichier créé sur le serveur. Ce n'est pas le nom du fichier local."
-
-#~ msgid "Indicates if the trace is public or not"
-#~ msgstr "Spécifie si cette trace est publique ou privée"
-
-#~ msgid "Maps Directory (Optional):"
-#~ msgstr "Répertoire des cartes (optionnel) :"
-
-#~ msgid "Redownload bad map(s)"
-#~ msgstr "Retélécharger les mauvaises cartes"
-
-#~ msgid "Redownload all map(s)"
-#~ msgstr "Retélécharger toutes les cartes"
-
-#~ msgid "_Open"
-#~ msgstr "_Ouvrir"
-
-#~ msgid "A_ppend File"
-#~ msgstr "_Ajouter un fichier"
-
-#~ msgid "From _GPS"
-#~ msgstr "À partir d'un _GPS"
-
-#~ msgid "Google _Directions"
-#~ msgstr "_Directions Google"
-
-#~ msgid "Geo_caches"
-#~ msgstr "Geo_caches"
-
-#~ msgid "_Generate Image File"
-#~ msgstr "Enregistrer dans un fichier _image"
-
-#~ msgid "Generate _Directory of Images"
-#~ msgstr "Générer un _répertoire d'images"
-
-#~ msgid "Go to arbitrary lat\\/lon coordinate"
-#~ msgstr "Aller à une coordonnée latitude/longitude donnée"
-
-#~ msgid "Zoom _To"
-#~ msgstr "Zoom _optimal"
-
-#~ msgid "Pan North"
-#~ msgstr "Déplacer vers le Nord"
-
-#~ msgid "Pan East"
-#~ msgstr "Déplacer vers l'Est"
-
-#~ msgid "Pan South"
-#~ msgstr "Déplacer vers le Sud"
-
-#~ msgid "Pan West"
-#~ msgstr "Déplacer vers l'Ouest"
-
-#~ msgid "Empty All"
-#~ msgstr "Tout effacer"
-
-#~ msgid "Full Screen"
-#~ msgstr "Plein écran"
-
-#~ msgid "Goto Center of Layer"
-#~ msgstr "Aller au centre du calque"
-
-#~ msgid "Goto Waypoint"
-#~ msgstr "Aller au waypoint"
-
-#~ msgid "Upload to OSM"
-#~ msgstr "Envoyer sur OSM"
-
-#~ msgid "New Waypoint"
-#~ msgstr "Nouveau waypoint"
-
-#~ msgid "Export layer"
-#~ msgstr "Exporter le calque"
-
-#~ msgid "Goto"
-#~ msgstr "Aller à"
-
-#~ msgid "Visit Geocache Webpage"
-#~ msgstr "Ouvrir la page web de Geocache"
-
-#~ msgid "Goto \"Center\""
-#~ msgstr "Aller au centre"
-
-#~ msgid "Merge By Time"
-#~ msgstr "Fusionner en fonction du temps"
-
-#~ msgid "Download maps along track..."
-#~ msgstr "Télécharger les cartes le long de la trace…"
-
-#~ msgid "Apply DEM Data"
-#~ msgstr "Appliquer les altitudes du DEM"
-
-#~ msgid "Split By Time"
-#~ msgstr "Découper en fonction du temps"
-
-#~ msgid "Save _As"
-#~ msgstr "Enregistrer _sous…"
-
-#~ msgid "_Go to Lat\\/Lon..."
-#~ msgstr "Choisir la _latitude/longitude…"
-
-#~ msgid "Set Background Color..."
-#~ msgstr "Modifier la couleur de fond…"
-
-#~ msgid "_Preferences..."
-#~ msgstr "_Préférences…"
-
-#~ msgid "Use smaller symbols for waypoints"
-#~ msgstr "Utiliser des symboles plus petits pour les waypoints"
-
-#~ msgid "Add Wikipedia Waypoints"
-#~ msgstr "Ajouter les waypoints Wikipedia"
-
-#~ msgid "Merge With Other Tracks..."
-#~ msgstr "Fusionner avec d'autre traces..."
-
-#~ msgid "Within layer bounds"
-#~ msgstr "A l'intérieur de la couche courrante"
-
-#~ msgid "Within current view"
-#~ msgstr "A l'intérieur de la vue courrante"
-
-#~ msgid "Go To location"
-#~ msgstr "Aller à une position"
-
-#~ msgid "Flush Map cache"
-#~ msgstr "Purger le cache des cartes"
-
-#~ msgid "Extend track end"
-#~ msgstr "Etendre l'extrémité de la trace"
-
-#~ msgid "Extend using magic scissors"
-#~ msgstr "Extension en utilisant les ciseaux magiques"
-
-#~ msgid "View Google Directions"
-#~ msgstr "Voir les indications de direction Google"
-
-#~ msgid "Zoom to Fit Map"
-#~ msgstr "Zoomer sur la carte"
-
-#~ msgid "Use with filter"
-#~ msgstr "Utiliser avec un filtre"
-
-#~ msgid "Open _Recent file"
-#~ msgstr "Ouvrir un fichier _récent"
-
-#~ msgid "Download missing Onscreen Maps"
-#~ msgstr "Télécharger les cartes manquantes à l'écran"
-
-#~ msgid "Download new Onscreen Maps from server"
-#~ msgstr "Rafraîchir les cartes à l'écran"
-
-#~ msgid ""
-#~ "Turn Off After Transfer\n"
-#~ "(Garmin Only)"
-#~ msgstr ""
-#~ "Éteindre le GPS après de transfert\n"
-#~ "(GPS Garmin uniquement)"
-
-#~ msgid "Go to Location..."
-#~ msgstr "Aller à..."
-
-#~ msgid "Goto _Endpoint"
-#~ msgstr "Aller au _dernier point"
-
-#~ msgid "_Goto Startpoint"
-#~ msgstr "_Aller au premier point"
-
-#~ msgid "Goto \"_Center\""
-#~ msgstr "Aller au _centre"
-
-#~ msgid "Show Side Pa_nel"
-#~ msgstr "Afficher le pan_neau latéral"
-
-#~ msgid "_Show Scale"
-#~ msgstr "_Afficher l'échelle"

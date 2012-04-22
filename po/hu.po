@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-20 21:11+0200\n"
-"PO-Revision-Date: 2011-02-03 14:16+0000\n"
-"Last-Translator: György Balló <ballogy@freestart.hu>\n"
+"PO-Revision-Date: 2011-09-26 17:52+0000\n"
+"Last-Translator: György Balló <ballogyor@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2011-05-11 16:01+0000\n"
-"X-Generator: Launchpad (build 13014)\n"
+"X-Launchpad-Export-Date: 2012-04-22 16:16+0000\n"
+"X-Generator: Launchpad (build 15120)\n"
 "Language: hu\n"
 
 #: ../src/acquire.c:118
@@ -1615,11 +1615,11 @@ msgstr "Kettévágás, ha az időeltérés a nyompontok között meghaladja:"
 
 #: ../src/viktrwlayer.c:3009
 msgid "Split Every Nth Point"
-msgstr ""
+msgstr "Kettévágás minden x-edik pontnál"
 
 #: ../src/viktrwlayer.c:3010
 msgid "Split on every Nth point:"
-msgstr ""
+msgstr "Kettévágás minden x-edik pontnál:"
 
 #: ../src/viktrwlayer.c:3100
 msgid "Waypoint Already Exists"
@@ -1679,7 +1679,7 @@ msgstr "_Kettévágás idő szerint"
 
 #: ../src/viktrwlayer.c:3366
 msgid "Split By _Number of Points"
-msgstr ""
+msgstr "Kettévágás adott _számú pontnál"
 
 #: ../src/viktrwlayer.c:3371
 msgid "Down_load Maps Along Track..."
@@ -2495,25 +2495,3 @@ msgstr "Térképalapú GPS adatkezelő (élő adatátvitelre képes)."
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr "Viking"
-
-#~ msgid ""
-#~ "Turn Off After Transfer\n"
-#~ "(Garmin Only)"
-#~ msgstr ""
-#~ "Kikapcsolás átvitel után\n"
-#~ "(csak Garmin esetén)"
-
-#~ msgid "_Goto Startpoint"
-#~ msgstr "_Ugrás a kezdőpontra"
-
-#~ msgid "Goto \"_Center\""
-#~ msgstr "Ugrás \"_középre\""
-
-#~ msgid "Goto _Endpoint"
-#~ msgstr "Ugrás a _végpontra"
-
-#~ msgid "Show Side Pa_nel"
-#~ msgstr "_Oldalpanel megjelenítése"
-
-#~ msgid "_Show Scale"
-#~ msgstr "_Aránymérték megjelenítése"
