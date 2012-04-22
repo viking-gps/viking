@@ -1,3 +1,8 @@
+Viking 1.2.2 (2011-11-03)
+Fixes since 1.2.1
+* Increase default tile age check to 7 days.
+* Fix compilation with curl 7.21.7 (SF#3376584)
+
 Viking 1.2.1 (2011-06-16)
 Fixes since 1.2
 * Support proper MAC OS file locations.
