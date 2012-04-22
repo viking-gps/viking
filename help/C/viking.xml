@@ -1062,24 +1062,21 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <section><title>External GPX programs</title>
 <para>Allows setting the programs invoked via the TrackWaypoint Layer -> Export Layer -> Open With 'program'</para>
 <para>Two options are given so that it can be configured for various uses such as:</para>
-<variablelist>
-<varlistentry>
+<itemizedlist>
 <listitem><para>An OSM editor (default)</para></listitem>
-</varlistentry>
-<varlistentry>
 <listitem><para>Some other user defined program</para></listitem>
-</varlistentry>
-</variablelist>
+</itemizedlist>
 </section>
 </section>
 
 <section id="prefs_osm"><title>OpenStreetMap Traces</title>
 <section><title>OSM Username + Password</title>
 <para>Store your OSM details here, so that you don't need to enter it in every time in the <link linkend="osm_upload">Upload to OSM</link> procedure.</para>
-<note>
- <emphasis role="bold">Warning!</emphasis>
- Your OSM password will be stored in plain text.
-</note>
+<warning>
+<para>
+Your OSM password will be stored in plain text.
+</para>
+</warning>
 </section>
 </section>
 
