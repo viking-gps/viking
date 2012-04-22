@@ -1,3 +1,73 @@
+Viking 1.3 (2012-04-22)
+New features since 1.2.2
+* Be consistent in that track and waypoint list dialogs are always sorted alphabetically.
+* Add OSM Transport map as a built in map option.
+* Add supported MIME types to the desktop file specification.
+* Add example script that can be used to upload a track as a route to a predefined GPS device.
+* Display the average moving speed for a track in the track properties.
+* Add ability to open a TrackWaypoint layer with another external program (default merkaartor).
+* Add ability to open a TrackWaypoint layer with an external program (default JOSM).
+* Use map default: OSM MapQuest tileserver.
+* Add and use a preference for the associated image viewer program.
+* Add and use KML File Export units option.
+* Add ability to geotag images interpolating times against tracks.
+* Acquire Geotag Images via TRW Layer
+* Ensure vtl created in acquire operation runs post read stage.
+* EXIF read implementation for geotagged images (libexif).
+* Add new process stage for acquire methods.
+* Enable reversing a track from the track menu.
+* Display compact message on the statusbar for the selected trackpoint or waypoint. (SF#3314888)
+* Enable multiple selection and deletion.
+* Scale waypoint icons to give large or small icons as necessary.
+* Add Yahoo! Maps webtool link.
+* Extend webtools with a bounds version for the URL which takes four string parameters.
+* Add webtool for Bing maps.
+* Add Acquire OSM option into the Track/Waypoint layer operations.
+* Add used geo-* scripts as they are public domain.
+* Continue geocaching.com support via third party tools.
+* Show elevation gain/loss on track creation 'tooltip' (as per SF#2838561 request), when such data is available.
+* Automatically attempt to set elevation data from the DEM layer whilst a track is being created.
+* When creating a track, display the total distance of track (via a tooltip like text) on the main display.
+* Allow to import any file known by gpsbabel
+* Add support for any device known by gpsbabel
+* Add experimental support for GPSD_API_MAJOR_VERSION 5.
+* Add ability to acquire GPS traces stored on OSM
+* Enable copying layer/sublayer names as plain text, so that it can be pasted into external text handling applications.
+* Enable getting of the statusbar from the window.
+* On creating a new waypoint always attempt to auto set the altitude if DEM data is available.
+* Enable the escape key to remove/reset the ruler tool.
+
+Fixes since 1.2.2
+* Remove Tiles@home support as the service has stopped.
+* cleanup: Remove unused and out of date 'viking-remote' script and related files.
+* cleanup: Remove *very* old documentation and don't bother distributing any of it which is all old.
+* Fix Track Properties graph blob marker drawn at wrong elevation when elevation graphs have different min/max heights.
+* Fix Track Properties graph DEM points drawn at wrong elevation when lowest elevation is not zero.
+* Use an intermediary program which will invoke the system's default for opening images.
+* Fix opening of external web sites via center method when the zoom level is less than 1 mpp.
+* Fix crashing on opening a file via recent menu after a .vik file is opened.
+* Fix too easy to accidently move a waypoint with an image with the select tool - must use shift key.
+* Fix can not immediately select another layer if currently selected layer's visibility changes.
+* Fix compilation with curl 7.21.7 (SF#3376584)
+* Improve libgps test with the consistently available function: gps_close
+* Fix <GTK 2.24 combo box usage.
+* Fix crashing on opening multiple files after a .vik file is opened.
+* Solution for SF#2766266 - Give user feedback about OSM uploads (success/failure).
+* Fix: send VLP's update signal when adding a layer
+* Fix: Don't abort program when attempting webtool center with different x & y factors.
+* Fix Join Tracks functionality.
+* Fix SF#3408170: Selected Track Thickness is Always 1px
+* Fix tracks not shown over map when map layer is dragged to the end of the treeview list.
+* Refuse to load unsupported file types.
+* Restore broken GPS power off command.
+* Fix: SF#3042692 - Tiles May Get Deleted During Offline Usage.
+* Fix some tracks elevation profile may display no altitude, despite all altitudes available in the track.
+* Fix SF#3387590: Top Layer cannot be renamed
+* Enable merging tracks without timestamps to other tracks that do not have timestamps. (SF#2886231)
+* Prevent track merge by time requests when there are no other suitable tracks.
+* Improve track name when split from Track Properties window.
+* Replace 'Magic Scissors' by a more accurate name - 'Route Finder'.
+
 Viking 1.2.2 (2011-11-03)
 Fixes since 1.2.1
 * Increase default tile age check to 7 days.
@@ -632,7 +702,7 @@ Viking 0.1.3 (2007-05-17)
 
 Viking 0.1.2 (2007-02-13)
 - direct access to GPS device: GPS layer
-- position inputs accept DDD/DMM/DMS formats (ex: 3.5, 3°30.0, 3°30'0.00)
+- position inputs accept DDD/DMM/DMS formats (ex: 3.5, 3\B030.0, 3\B030'0.00)
 - time position in Track Poperties
 - tool (menu entries and buttons) are enabled/disabled following context
 - standard 'Edit' menu (with 'Copy', 'Cut', 'Paste' and 'Delete' actions)
