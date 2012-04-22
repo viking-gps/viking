@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-20 21:11+0200\n"
-"PO-Revision-Date: 2011-02-01 15:27+0000\n"
-"Last-Translator: Colegota <Unknown>\n"
+"PO-Revision-Date: 2011-12-31 12:53+0000\n"
+"Last-Translator: Jonay <jonay.santana@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2011-05-11 16:01+0000\n"
-"X-Generator: Launchpad (build 13014)\n"
+"X-Launchpad-Export-Date: 2012-04-22 16:16+0000\n"
+"X-Generator: Launchpad (build 15120)\n"
 
 #: ../src/dialog.c:199
 msgid "Waypoint Properties"
@@ -1618,11 +1618,11 @@ msgstr "Dividir cuando el intervalo entre puntos exceda:"
 
 #: ../src/viktrwlayer.c:3009
 msgid "Split Every Nth Point"
-msgstr ""
+msgstr "Separar cada punto N-ésimo:"
 
 #: ../src/viktrwlayer.c:3010
 msgid "Split on every Nth point:"
-msgstr ""
+msgstr "Separar en cada punto N-ésimo:"
 
 #: ../src/viktrwlayer.c:3100
 msgid "Waypoint Already Exists"
@@ -1682,7 +1682,7 @@ msgstr "Dividir por tiempo"
 
 #: ../src/viktrwlayer.c:3366
 msgid "Split By _Number of Points"
-msgstr ""
+msgstr "Separar por _Número de Puntos"
 
 #: ../src/viktrwlayer.c:3371
 msgid "Down_load Maps Along Track..."
@@ -2110,11 +2110,11 @@ msgstr "_Nuevo"
 
 #: ../src/vikwindow.c:2260
 msgid "New file"
-msgstr "Nuevo archivo"
+msgstr "Archivo nuevo"
 
 #: ../src/vikwindow.c:2261
 msgid "_Open..."
-msgstr "_Abrir..."
+msgstr "_Abrir…"
 
 #: ../src/vikwindow.c:2261
 msgid "Open a file"
@@ -2501,242 +2501,3 @@ msgstr ""
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr "Vikingo"
-
-#~ msgid "Create"
-#~ msgstr "Crear"
-
-#~ msgid "The name of the file on OSM"
-#~ msgstr "El nombre del fichero en OSM"
-
-#~ msgid ""
-#~ "This is the name of the file created on the server. This is not the name of "
-#~ "the local file."
-#~ msgstr ""
-#~ "Este es el nombre del fichero creado en el servidor. No es el nombre del "
-#~ "fichero local."
-
-#~ msgid "Indicates if the trace is public or not"
-#~ msgstr "Indica si la traza es pública o no"
-
-#~ msgid "Goto Map Center"
-#~ msgstr "Ir al centro del mapa"
-
-#~ msgid "Export to World File"
-#~ msgstr "Exportar a fichero World"
-
-#~ msgid "Empty All"
-#~ msgstr "Vaciar todo"
-
-#~ msgid "Maps Directory (Optional):"
-#~ msgstr "Directorio de mapas (opcional):"
-
-#~ msgid "Download Onscreen Maps"
-#~ msgstr "Descargar mapas en pantalla"
-
-#~ msgid "Refresh Onscreen Tiles"
-#~ msgstr "Refrescar teselas en pantalla"
-
-#~ msgid "Redownload bad map(s)"
-#~ msgstr "Redescargar mapa(s) corrupto(s)"
-
-#~ msgid "Redownload all map(s)"
-#~ msgstr "Redescargar todos los mapas"
-
-#~ msgid "Zoom to Fit Map"
-#~ msgstr "Ajustar zoom al mapa"
-
-#~ msgid "Goto Center of Layer"
-#~ msgstr "Ir al centro de la capa"
-
-#~ msgid "Goto Waypoint"
-#~ msgstr "Ir a waypoint"
-
-#~ msgid "Export layer"
-#~ msgstr "Exportar capa"
-
-#~ msgid "Upload to OSM"
-#~ msgstr "Enviar a OSM"
-
-#~ msgid "Export as GPSMapper"
-#~ msgstr "Exportar como GPSMapper"
-
-#~ msgid "Export as GPSPoint"
-#~ msgstr "Exportar como GPSPoint"
-
-#~ msgid "New Waypoint"
-#~ msgstr "Nuevo waypoint"
-
-#~ msgid "Export as GPX"
-#~ msgstr "Exportar como GPX"
-
-#~ msgid "Goto"
-#~ msgstr "Ir a"
-
-#~ msgid "Visit Geocache Webpage"
-#~ msgstr "Visitar web Geochache"
-
-#~ msgid "Goto Startpoint"
-#~ msgstr "Ir al comienzo"
-
-#~ msgid "Goto \"Center\""
-#~ msgstr "Ir al centro"
-
-#~ msgid "Goto Endpoint"
-#~ msgstr "Ir al final"
-
-#~ msgid "Merge By Time"
-#~ msgstr "Fusionar por tiempo"
-
-#~ msgid "Download maps along track..."
-#~ msgstr "Descargar mapas a lo largo de la ruta..."
-
-#~ msgid "Split By Time"
-#~ msgstr "Dividir por tiempo"
-
-#~ msgid "Apply DEM Data"
-#~ msgstr "Aplicar datos DEM"
-
-#~ msgid "_Open"
-#~ msgstr "_Abrir"
-
-#~ msgid "A_ppend File"
-#~ msgstr "A_ñadir a archivo"
-
-#~ msgid "Google _Directions"
-#~ msgstr "_Direcciones Google"
-
-#~ msgid "Geo_caches"
-#~ msgstr "Geo_caches"
-
-#~ msgid "From _GPS"
-#~ msgstr "Desde _GPS"
-
-#~ msgid "Generate _Directory of Images"
-#~ msgstr "Generar _directorio de imágenes"
-
-#~ msgid "Save _As"
-#~ msgstr "Guardar _como"
-
-#~ msgid "Set Background Color..."
-#~ msgstr "Fijar color de fondo..."
-
-#~ msgid "Pan South"
-#~ msgstr "Desplazar al S"
-
-#~ msgid "Pan East"
-#~ msgstr "Desplazar al E"
-
-#~ msgid "Pan North"
-#~ msgstr "Desplazar al N"
-
-#~ msgid "Pan West"
-#~ msgstr "Desplazar al W"
-
-#~ msgid "Zoom factor (in meters per pixel:"
-#~ msgstr "Factor de zoom (metros/pixel):"
-
-#~ msgid "I don't know that place. Do you want another search?"
-#~ msgstr "Se desconoce ese lugar. ¿Desea efectuar otra búsqueda?"
-
-#~ msgid "The email used as login"
-#~ msgstr "Identif. de usuario (correo-e)"
-
-#~ msgid "Enter the email you use to login into www.openstreetmap.org."
-#~ msgstr "Correo electrónico que usa para acceder a www.openstreetmap.org."
-
-#~ msgid "The password used to login"
-#~ msgstr "Contraseña usada para acceder"
-
-#~ msgid "Enter the password you use to login into www.openstreetmap.org."
-#~ msgstr ""
-#~ "Introduzca la contraseña que usa para acceder a www.openstreetmap.org."
-
-#~ msgid "Go to arbitrary lat\\/lon coordinate"
-#~ msgstr "Ir a una lat\\/lon arbitraria"
-
-#~ msgid "Zoom _To"
-#~ msgstr "Zoom _personalizado"
-
-#~ msgid "Upload to GPS"
-#~ msgstr "Envío al GPS"
-
-#~ msgid "Download from GPS"
-#~ msgstr "Descarga del GPS"
-
-#~ msgid "Empty Upload"
-#~ msgstr "Vaciar zona de envío"
-
-#~ msgid "Empty Download"
-#~ msgstr "Vaciar zona de descarga"
-
-#~ msgid "_Generate Image File"
-#~ msgstr "Generar i_magen"
-
-#~ msgid "_Go to Lat\\/Lon..."
-#~ msgstr "_Ir a Lat/Lon..."
-
-#~ msgid "_Preferences..."
-#~ msgstr "_Preferencias..."
-
-#~ msgid "Full Screen"
-#~ msgstr "Pantalla completa"
-
-#, c-format
-#~ msgid ""
-#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
-#~ "of this type to paste the clipboard data."
-#~ msgstr ""
-#~ "El portapapeles contiene subcapas de %s capas. Usted deberá seleccionar una "
-#~ "capa de este tipo para copiarla"
-
-#~ msgid "Use smaller symbols for waypoints"
-#~ msgstr "Usa simbolos pequellos para los indicadores"
-
-#~ msgid "Add Wikipedia Waypoints"
-#~ msgstr "Agregando señalizadores Wikipedia"
-
-#~ msgid "Within current view"
-#~ msgstr "Vista Actual"
-
-#~ msgid "Merge With Other Tracks..."
-#~ msgstr "Unido con otros tracks..."
-
-#~ msgid "Extend track end"
-#~ msgstr "fin del track Extend"
-
-#~ msgid "Extend using magic scissors"
-#~ msgstr "Extend esta usando las tijeras magicas"
-
-#~ msgid "View Google Directions"
-#~ msgstr "Vista de direcciones Google"
-
-#~ msgid "Use with filter"
-#~ msgstr "Usado con el filtro"
-
-#~ msgid "Go To location"
-#~ msgstr "Ir a la localidad"
-
-#~ msgid "Within layer bounds"
-#~ msgstr "Limite de capas de marcaje"
-
-#~ msgid "Flush Map cache"
-#~ msgstr "Limpiar cache de Mapas"
-
-#~ msgid "Download missing Onscreen Maps"
-#~ msgstr "Descargar Mapas Onscreen faltantes"
-
-#~ msgid "Download new Onscreen Maps from server"
-#~ msgstr "Descargar Mapas Onscreen faltantes"
-
-#~ msgid "Open _Recent file"
-#~ msgstr "Open _Recent file"
-
-#~ msgid "Redownload new map(s)"
-#~ msgstr "Repetir descarga de nuevos mapas"
-
-#~ msgid ""
-#~ "Turn Off After Transfer\n"
-#~ "(Garmin Only)"
-#~ msgstr ""
-#~ "Apagar después de la transferenca\n"
-#~ "(Sólo Garmin)"

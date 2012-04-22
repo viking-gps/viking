@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-04-20 21:11+0200\n"
-"PO-Revision-Date: 2011-04-29 12:02+0000\n"
-"Last-Translator: eknus <eknus@gmx.net>\n"
+"PO-Revision-Date: 2012-03-26 18:58+0000\n"
+"Last-Translator: Dennis Baudys <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2011-05-11 16:01+0000\n"
-"X-Generator: Launchpad (build 13014)\n"
+"X-Launchpad-Export-Date: 2012-04-22 16:16+0000\n"
+"X-Generator: Launchpad (build 15120)\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
@@ -486,7 +486,7 @@ msgstr "Kachelalter (s)"
 #: ../src/download.c:233
 #, c-format
 msgid "Download error: %s"
-msgstr "Fehler beim Herrunterladen: %s"
+msgstr "Fehler beim Herunterladen: %s"
 
 #: ../src/file.c:427 ../src/file.c:431
 #, c-format
@@ -535,7 +535,7 @@ msgstr "curl request fehlgeschlagen: %s"
 #: ../src/osm-traces.c:264
 #, c-format
 msgid "failed to open temporary file: %s"
-msgstr "Fehler beim Öffen der Zwischendatei: %s"
+msgstr "Fehler beim Öffnen der Zwischendatei: %s"
 
 #: ../src/osm-traces.c:298
 #, c-format
@@ -555,9 +555,9 @@ msgid ""
 "The email used as login\n"
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
-"Die e-Mail-Adresse zum Einloggen\n"
-"<small>Geben sie die e-Mailadresse ein, die sie zum Einloggen auf "
-"www.openstreetmap.org verwenden.</small>"
+"Die E-Mail-Adresse zum Einloggen\n"
+"<small>Geben Sie die E-Mail-Adresse ein, mit der Sie sich auf "
+"www.openstreetmap.org einloggen.</small>"
 
 #: ../src/osm-traces.c:345
 msgid "Password:"
@@ -570,8 +570,8 @@ msgid ""
 "www.openstreetmap.org.</small>"
 msgstr ""
 "Das Passwort zum Einloggen\n"
-"<small>Geben sie das Passwort ein, das sie zum Einloggen auf "
-"www.openstreetmap.org verwenden.</small>"
+"<small>Geben Sie das Passwort ein, mit dem Sie sich auf "
+"www.openstreetmap.org einloggen.</small>"
 
 #: ../src/osm-traces.c:359
 msgid "File's name:"
@@ -593,7 +593,7 @@ msgstr "Beschreibung:"
 
 #: ../src/osm-traces.c:378
 msgid "The description of the trace"
-msgstr "Beschreibung des Aufzeichnung"
+msgstr "Beschreibung der Aufzeichnung"
 
 #: ../src/osm-traces.c:380
 msgid "Tags:"
@@ -660,7 +660,7 @@ msgstr "Kann Web-Browser nicht starten"
 
 #: ../src/util.c:90
 msgid "Could not create new email."
-msgstr "Kann E-Mai nicht erstellen"
+msgstr "Kann E-Mail nicht erstellen"
 
 #: ../src/vikcoordlayer.c:46
 msgid "Color:"
@@ -777,7 +777,7 @@ msgstr "DEM-Download/Import"
 #: ../src/vikdemlayer.c:275
 #, c-format
 msgid "Number of files: %d"
-msgstr "Anzaht der Dateien: %d"
+msgstr "Anzahl der Dateien: %d"
 
 #: ../src/vikdemlayer.c:376
 msgid "DEM Loading"
@@ -791,7 +791,7 @@ msgstr "Keine SRTM-Daten für %f, %f verfügbar"
 #: ../src/vikdemlayer.c:1118
 msgid "No download source selected. Edit layer properties."
 msgstr ""
-"Es ist keine Quelle zum Herunterladen gewählt. Bitte bearbeite Sie die "
+"Es ist keine Quelle zum Herunterladen ausgewählt. Bitte bearbeiten Sie die "
 "Eigenschaften der Ebene."
 
 #: ../src/vikdemlayer.c:1141
@@ -907,7 +907,7 @@ msgstr "_Goto (zum Kartenmittelpunkt)"
 
 #: ../src/vikgeoreflayer.c:602
 msgid "_Export to World File"
-msgstr "_Export (auf World File)"
+msgstr "_Export als World-Datei"
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
@@ -971,7 +971,7 @@ msgstr "Unbekanntes GPS-Protokoll"
 
 #: ../src/vikgpslayer.c:417
 msgid "Unknown serial port device"
-msgstr "Unkenntes serielles Schnittstellengerät"
+msgstr "Unbekanntes serielles Schnittstellengerät"
 
 #: ../src/vikgpslayer.c:483
 #, c-format
@@ -1016,15 +1016,15 @@ msgstr "unerwartete Anzahl der \"disconnected handlers\": %d"
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
-msgstr[0] "%d Wegpunkt heraufladen"
-msgstr[1] "%d Wegpunkte heraufladen"
+msgstr[0] "%d Wegpunkt hochladen..."
+msgstr[1] "%d Wegpunkte heochladen..."
 
 #: ../src/vikgpslayer.c:785
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
-msgstr[0] "%d Spurpunkt heraufladen"
-msgstr[1] "%d Spurpunkte heraufladen"
+msgstr[0] "%d Spurpunkt hochladen..."
+msgstr[1] "%d Spurpunkte hochladen..."
 
 #: ../src/vikgpslayer.c:809
 #, c-format
@@ -1181,7 +1181,7 @@ msgstr "Alpha:"
 
 #: ../src/vikmapslayer.c:127
 msgid "Autodownload maps:"
-msgstr "Karten automatisches Herunterladen:"
+msgstr "Karten automatisch herunterladen:"
 
 #: ../src/vikmapslayer.c:128
 msgid "Zoom Level:"
@@ -1305,7 +1305,7 @@ msgstr "Spur-Beginn"
 
 #: ../src/viktrwlayer.c:334
 msgid "Edit Waypoint"
-msgstr "Wegpunkt editieren"
+msgstr "Wegpunkt bearbeiten"
 
 #: ../src/viktrwlayer.c:339
 msgid "Edit Trackpoint"
@@ -1368,7 +1368,7 @@ msgstr "Spur-Zeichenmodus"
 
 #: ../src/viktrwlayer.c:381
 msgid "Draw Track Lines"
-msgstr "Spur-Linen zeichnen"
+msgstr "Spurlinien zeichnen"
 
 #: ../src/viktrwlayer.c:382
 msgid "Draw Trackpoints"
@@ -1494,7 +1494,7 @@ msgstr "%s%.1f miles %s"
 
 #: ../src/viktrwlayer.c:1830 ../src/viktrwlayer.c:1901
 msgid "This layer has no waypoints or trackpoints."
-msgstr "Diese Ebene hat keine Wepunkte oder Spurpunkte."
+msgstr "Diese Ebene hat keine Wegpunkte oder Spurpunkte."
 
 #: ../src/viktrwlayer.c:1928 ../src/vikwindow.c:1678 ../src/vikwindow.c:2123
 #, c-format
@@ -1503,7 +1503,7 @@ msgstr "Soll die bereits existierende Datei \"%s\" überschrieben werden?"
 
 #: ../src/viktrwlayer.c:1938 ../src/vikwindow.c:1699
 msgid "The filename you requested could not be opened for writing."
-msgstr "Die angegebene Datei kann nicht zum schreiben geöffnet werden."
+msgstr "Die angegebene Datei kann nicht zum Schreiben geöffnet werden."
 
 #: ../src/viktrwlayer.c:1943 ../src/viktrwlayer.c:1948
 #: ../src/viktrwlayer.c:1953
@@ -1754,7 +1754,7 @@ msgstr "Rückwärts"
 
 #: ../src/viktrwlayer_propwin.c:767
 msgid "Delete Dupl."
-msgstr "Dublikate löschen"
+msgstr "Duplikate löschen"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Comment:</b>"
@@ -1794,7 +1794,7 @@ msgstr "<b>Höhendifferenz:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Total Elevation Gain/Loss:</b>"
-msgstr "<b>Absolute Höhengewinn/verlust:</b>"
+msgstr "<b>Absoluter Höhengewinn/-verlust:</b>"
 
 #: ../src/viktrwlayer_propwin.c:790
 msgid "<b>Start:</b>"
@@ -1860,7 +1860,7 @@ msgstr "<b>Höhe:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:119
 msgid "<b>Timestamp:</b>"
-msgstr "<b>Zeutstempel:</b>"
+msgstr "<b>Zeitstempel:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:120
 msgid "<b>Time:</b>"
@@ -1969,7 +1969,7 @@ msgstr "Sie müssen eine Ebene auswählen, um ihre Eigenschaften anzuzeigen."
 
 #: ../src/vikwindow.c:1228
 msgid "You must select a layer to delete."
-msgstr "Sie müssen eine Ebene auswählen zu Löschen."
+msgstr "Sie müssen eine Ebene zum Löschen auswählen."
 
 #: ../src/vikwindow.c:1562
 #, c-format
@@ -2066,11 +2066,11 @@ msgstr "Datei (_F)"
 
 #: ../src/vikwindow.c:2250
 msgid "_Edit"
-msgstr "Bearbeiten (_B)"
+msgstr "_Bearbeiten"
 
 #: ../src/vikwindow.c:2251
 msgid "_View"
-msgstr "Ansicht (_V)"
+msgstr "_Anzeige"
 
 #: ../src/vikwindow.c:2252
 msgid "_Show"
@@ -2394,23 +2394,23 @@ msgstr "Eigenschaften (_P)"
 
 #: ../src/vikwindow.c:2325
 msgid "_About"
-msgstr "Über (_A)"
+msgstr "_Info"
 
 #: ../src/vikwindow.c:2331
 msgid "_UTM Mode"
-msgstr "UTM Modus (_U)"
+msgstr "_UTM-Modus"
 
 #: ../src/vikwindow.c:2332
 msgid "_Expedia Mode"
-msgstr "Expedia Modus (_E)"
+msgstr "_Expedia-Modus"
 
 #: ../src/vikwindow.c:2333
 msgid "_Mercator Mode"
-msgstr "Mercator Modus (_M)"
+msgstr "_Mercator-Modus"
 
 #: ../src/vikwindow.c:2334
 msgid "Lat_/Lon Mode"
-msgstr "Längen-/Breitengrad Modus (_/)"
+msgstr "Längen-_/Breitengrad-Modus"
 
 #: ../src/vikwindow.c:2338
 msgid "Pan Tool"
@@ -2495,217 +2495,3 @@ msgstr "Kartenbasierter GPS Daten-Manager (Live-Daten fähig)"
 #: ../src/viking.desktop.in.h:3
 msgid "Viking"
 msgstr "Viking"
-
-#~ msgid "The name of the file on OSM"
-#~ msgstr "Name der Datei auf OSM"
-
-#~ msgid "Goto"
-#~ msgstr "Gehe zu"
-
-#~ msgid "Goto Startpoint"
-#~ msgstr "Gehe zum Startpunkt"
-
-#~ msgid "Goto Endpoint"
-#~ msgstr "Gehe zum Endpunkt"
-
-#~ msgid "_Open"
-#~ msgstr "_Öffnen"
-
-#~ msgid "Create"
-#~ msgstr "Anlegen"
-
-#~ msgid "I don't know that place. Do you want another search?"
-#~ msgstr "Ort unbekannt. Wünschen sie eine andere Suche?"
-
-#~ msgid ""
-#~ "This is the name of the file created on the server. This is not the name of "
-#~ "the local file."
-#~ msgstr ""
-#~ "Dies ist der Name der auf dem Server erstellten Datei. Das ist nicht der "
-#~ "Name der lokalen Datei."
-
-#~ msgid "Indicates if the trace is public or not"
-#~ msgstr ""
-#~ "Zeigt an, ob die Aufzeichnung öffentlich sichtbar sein soll  oder nicht"
-
-#, c-format
-#~ msgid ""
-#~ "The clipboard contains sublayer data for a %s layers.You must select a layer "
-#~ "of this type to paste the clipboard data."
-#~ msgstr ""
-#~ "Die Zwischenablage enthält Daten für eine Unterebene einer %s-Ebene. Diese "
-#~ "Art von Ebene muss ausgewählt werden, um den Inhalt der Zwischenablage "
-#~ "einfügen zu können."
-
-#~ msgid "Zoom factor (in meters per pixel:"
-#~ msgstr "Zoom-Faktor (Meter pro Pixel)"
-
-#~ msgid "Use smaller symbols for waypoints"
-#~ msgstr "Kleiner Symbole für Wegpunkte benutzen"
-
-#~ msgid "The email used as login"
-#~ msgstr "E-Mail als Anmeldung"
-
-#~ msgid "Enter the email you use to login into www.openstreetmap.org."
-#~ msgstr "Ihre E-Mailadresse für die Anmeldung bei www.openstreetmap.org."
-
-#~ msgid "The password used to login"
-#~ msgstr "Das Passwort für die Anmeldung"
-
-#~ msgid "Enter the password you use to login into www.openstreetmap.org."
-#~ msgstr ""
-#~ "Bitte geben Sie das Passwort für die Anmeldung bei www.openstreetmap.org ein"
-
-#~ msgid "Goto Map Center"
-#~ msgstr "Zur Karten-Mitte gehen"
-
-#~ msgid "Export to World File"
-#~ msgstr "Als World-Datei exportieren"
-
-#~ msgid "Empty Download"
-#~ msgstr "Leerer Download"
-
-#~ msgid "Upload to GPS"
-#~ msgstr "Zum GPS-Gerät senden"
-
-#~ msgid "Download from GPS"
-#~ msgstr "Von GPS-Gerät herunterladen"
-
-#~ msgid "Empty All"
-#~ msgstr "Komplett leer"
-
-#~ msgid "Empty Upload"
-#~ msgstr "Leerer Upload"
-
-#~ msgid "Full Screen"
-#~ msgstr "Vollbild"
-
-#~ msgid "Goto Waypoint"
-#~ msgstr "Gehe zu Wegpunkt:"
-
-#~ msgid "Export as GPSMapper"
-#~ msgstr "Als GPSMapper exportieren"
-
-#~ msgid "Export as GPSPoint"
-#~ msgstr "Als GPSPoint exportieren"
-
-#~ msgid "Export as GPX"
-#~ msgstr "Als GPX exportieren"
-
-#~ msgid "Add Wikipedia Waypoints"
-#~ msgstr "Wikipedia-Wegpunkt hinzufügen"
-
-#~ msgid "Within layer bounds"
-#~ msgstr "Innerhalb der Ebenen-Grenzen"
-
-#~ msgid "Within current view"
-#~ msgstr "Innerhalb der aktuellen Ansicht"
-
-#~ msgid "New Waypoint"
-#~ msgstr "Neuer Wegpunkt"
-
-#~ msgid "Upload to OSM"
-#~ msgstr "Zur OSM hinaufladen"
-
-#~ msgid "Split By Time"
-#~ msgstr "Nach Zeit aufteilen"
-
-#~ msgid "Apply DEM Data"
-#~ msgstr "DEM-Daten übernehmen"
-
-#~ msgid "Use with filter"
-#~ msgstr "Mit Filtern benutzen"
-
-#~ msgid "Google _Directions"
-#~ msgstr "Google-_Verzeichnisse"
-
-#~ msgid "Geo_caches"
-#~ msgstr "Geo_caches"
-
-#~ msgid "From _GPS"
-#~ msgstr "Von _GPS"
-
-#~ msgid "Save _As"
-#~ msgstr "Speichern _unter"
-
-#~ msgid "_Go to Lat\\/Lon..."
-#~ msgstr "_Gehe zu Lat\\/Lon ..."
-
-#~ msgid "Set Background Color..."
-#~ msgstr "Hintergrundfarbe setzen ..."
-
-#~ msgid "_Preferences..."
-#~ msgstr "_Einstellungen …"
-
-#~ msgid "Zoom to Fit Map"
-#~ msgstr "Vergrösserung an Karte anpassen"
-
-#~ msgid "Redownload bad map(s)"
-#~ msgstr "Schlechte Karte(n) erneut herunterladen"
-
-#~ msgid "Redownload all map(s)"
-#~ msgstr "Alle Karte(n) erneut herunterladen"
-
-#~ msgid "Goto \"Center\""
-#~ msgstr "Gehe zu \"Mittelpunkt\""
-
-#~ msgid "Download maps along track..."
-#~ msgstr "Karte entlang der Spur herunterladen"
-
-#~ msgid "Visit Geocache Webpage"
-#~ msgstr "Geocache-Webseite besuchen"
-
-#~ msgid "View Google Directions"
-#~ msgstr "Google-Verzeichnis anzeigen"
-
-#~ msgid "A_ppend File"
-#~ msgstr "Datei a_nfügen"
-
-#~ msgid "_Generate Image File"
-#~ msgstr "Bild-Datei _erzeugen"
-
-#~ msgid "Go To location"
-#~ msgstr "Gehe zu Posistion"
-
-#~ msgid "Generate _Directory of Images"
-#~ msgstr "Bild-_Verzeichnis erzeugen"
-
-#~ msgid "Flush Map cache"
-#~ msgstr "Karten-Zwischenspeicher leeren"
-
-#~ msgid "Merge By Time"
-#~ msgstr "Nach Zeit zusammenfassen"
-
-#~ msgid "Merge With Other Tracks..."
-#~ msgstr "Mit anderen Spuren zusammenfassen ..."
-
-#~ msgid ""
-#~ "Turn Off After Transfer\n"
-#~ "(Garmin Only)"
-#~ msgstr ""
-#~ "Nach Übertragung abschalten\n"
-#~ "(nur Garmin)"
-
-#~ msgid "Redownload new map(s)"
-#~ msgstr "Neue Karte(n) erneut herunterladen"
-
-#~ msgid "Go to Location..."
-#~ msgstr "Gehe zu Standort..."
-
-#~ msgid "Pan South"
-#~ msgstr "nach Süden verschieben"
-
-#~ msgid "Pan East"
-#~ msgstr "nach Osten verschieben"
-
-#~ msgid "Pan North"
-#~ msgstr "nach Norden verschieben"
-
-#~ msgid "Pan West"
-#~ msgstr "nach Westen verschieben"
-
-#~ msgid "_Show Scale"
-#~ msgstr "Maßstab anzeigen"
-
-#~ msgid "Goto Center of Layer"
-#~ msgstr "Gehe zur Mitte der Ebene"
