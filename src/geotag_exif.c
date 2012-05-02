@@ -22,9 +22,6 @@
 
 /*
  * This uses EXIF information from images to create waypoints at those positions
- * TODO: allow writing of image location:
- *  . Via correlation with a track (c.f. gpscorrelate) (multiple images)
- *  . Via screen position (individual image) on an existing waypoint
  *
  * For the implementation I have chosen to use libexif, which keeps Viking a pure C program
  * For an alternative implementation (a la gpscorrelate), one could use libeviv2 but it appears to be C++ only.
@@ -250,21 +247,26 @@ MyReturn:
 }
 
 /**
- * a_geotag_create_waypoint_positioned:
+ * a_geotag_waypoint_positioned:
  * @filename: The image file to process
  * @coord:    The location for positioning the Waypoint
  * @name:     Returns a name for the Waypoint (can be NULL)
+ * @waypoint: An existing waypoint to update (can be NULL to generate a new waypoint)
  *
- * Returns: An allocated Waypoint or NULL if Waypoint could not be generated
+ * Returns: An allocated waypoint if the input waypoint is NULL,
+ *  otherwise the passed in waypoint is updated
  *
  *  Here EXIF processing is used to get non position related information (i.e. just the comment)
  *
  */
-VikWaypoint* a_geotag_create_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name )
+VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name, VikWaypoint *wp )
 {
 	*name = NULL;
-	VikWaypoint *wp = vik_waypoint_new();
-	wp->visible = TRUE;
+	if ( wp == NULL ) {
+		// Need to create waypoint
+		wp = vik_waypoint_new();
+		wp->visible = TRUE;
+	}
 	wp->coord = coord;
 	wp->altitude = alt;
 
@@ -288,7 +290,6 @@ VikWaypoint* a_geotag_create_waypoint_positioned ( const gchar *filename, VikCoo
 	}
 
 	vik_waypoint_set_image ( wp, filename );
-
 
 	return wp;
 }

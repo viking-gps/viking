@@ -93,6 +93,8 @@ typedef struct {
 	VikTrwLayer *vtl;    // to pass on
 	VikTrack *track;     // Use specified track or all tracks if NULL
 	GtkCheckButton *create_waypoints_b;
+	GtkLabel *overwrite_waypoints_l; // Referenced so the sensitivity can be changed
+	GtkCheckButton *overwrite_waypoints_b;
 	GtkCheckButton *write_exif_b;
 	GtkLabel *overwrite_gps_exif_l; // Referenced so the sensitivity can be changed
 	GtkCheckButton *overwrite_gps_exif_b;
@@ -117,6 +119,7 @@ static void geotag_widgets_free ( GeoTagWidgets *widgets )
 
 typedef struct {
 	gboolean create_waypoints;
+	gboolean overwrite_waypoints;
 	gboolean write_exif;
 	gboolean overwrite_gps_exif;
 	gboolean no_change_mtime;
@@ -143,6 +146,7 @@ typedef struct {
 } geotag_options_t;
 
 static option_values_t default_values = {
+	TRUE,
 	TRUE,
 	TRUE,
 	FALSE,
@@ -254,7 +258,22 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 				VikWaypoint *wp = a_geotag_create_waypoint_from_file ( options->image, vik_trw_layer_get_coord_mode (options->vtl), &name );
 				if ( !name )
 					name = g_strdup ( a_file_basename ( options->image ) );
-				vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
+
+				gboolean updated_waypoint = FALSE;
+
+				if ( options->ov.overwrite_waypoints ) {
+					VikWaypoint *current_wp = vik_trw_layer_get_waypoint ( options->vtl, name );
+					if ( current_wp ) {
+						// Existing wp found, so set new position, comment and image
+						current_wp = a_geotag_waypoint_positioned ( options->image, wp->coord, wp->altitude, &name, current_wp );
+						updated_waypoint = TRUE;
+					}
+				}
+
+				if ( !updated_waypoint ) {
+					vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
+				}
+
 				g_free ( name );
 				
 				// Mark for redraw
@@ -290,14 +309,33 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 
 			if ( options->ov.create_waypoints ) {
 
-				// Create waypoint with found position
-				gchar *name = NULL;
-				VikWaypoint *wp = a_geotag_create_waypoint_positioned ( options->image, options->coord, options->altitude, &name );
-				if ( !name )
-					name = g_strdup ( a_file_basename ( options->image ) );
-				vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
-				g_free ( name );
+				gboolean updated_waypoint = FALSE;
+
+				if ( options->ov.overwrite_waypoints ) {
 				
+					// Update existing WP
+					// Find a WP with current name
+					gchar *name = NULL;
+					name = g_strdup ( a_file_basename ( options->image ) );
+					VikWaypoint *wp = vik_trw_layer_get_waypoint ( options->vtl, name );
+					if ( wp ) {
+						// Found, so set new position, comment and image
+						wp = a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, wp );
+						updated_waypoint = TRUE;
+					}
+					g_free ( name );
+				}
+
+				if ( !updated_waypoint ) {
+					// Create waypoint with found position
+					gchar *name = NULL;
+					VikWaypoint *wp = a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, NULL );
+					if ( !name )
+						name = g_strdup ( a_file_basename ( options->image ) );
+					vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
+					g_free ( name );
+				}
+
 				// Mark for redraw
 				options->redraw = TRUE;
 			}
@@ -370,6 +408,7 @@ static void trw_layer_geotag_response_cb ( GtkDialog *dialog, gint resp, GeoTagW
 		options->track = widgets->track;
 		// Values extracted from the widgets:
 		options->ov.create_waypoints = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->create_waypoints_b) );
+		options->ov.overwrite_waypoints = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_waypoints_b) );
 		options->ov.write_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->write_exif_b) );
 		options->ov.overwrite_gps_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_gps_exif_b) );
 		options->ov.no_change_mtime = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->no_change_mtime_b) );
@@ -439,6 +478,18 @@ static void write_exif_b_cb ( GtkWidget *gw, GeoTagWidgets *gtw )
 	}
 }
 
+static void create_waypoints_b_cb ( GtkWidget *gw, GeoTagWidgets *gtw )
+{
+	// Overwriting waypoints are irrelevant if not going to create them!
+	if ( gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(gtw->create_waypoints_b) ) ) {
+		gtk_widget_set_sensitive ( GTK_WIDGET(gtw->overwrite_waypoints_b), TRUE );
+		gtk_widget_set_sensitive ( GTK_WIDGET(gtw->overwrite_waypoints_l), TRUE );
+	}
+	else {
+		gtk_widget_set_sensitive ( GTK_WIDGET(gtw->overwrite_waypoints_b), FALSE );
+		gtk_widget_set_sensitive ( GTK_WIDGET(gtw->overwrite_waypoints_l), FALSE );
+	}
+}
 
 /**
  * trw_layer_geotag_dialog:
@@ -461,6 +512,8 @@ void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr
 	widgets->vtl = vtl;
 	widgets->track = track;
 	widgets->create_waypoints_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
+	widgets->overwrite_waypoints_l = GTK_LABEL ( gtk_label_new ( _("Overwrite Existing Waypoints:") ) );
+	widgets->overwrite_waypoints_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 	widgets->write_exif_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 	widgets->overwrite_gps_exif_l = GTK_LABEL ( gtk_label_new ( _("Overwrite Existing GPS Information:") ) );
 	widgets->overwrite_gps_exif_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
@@ -475,6 +528,7 @@ void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr
 
 	// Defaults - TODO restore previous values / save settings somewhere??
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->create_waypoints_b), default_values.create_waypoints );
+	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_waypoints_b), default_values.overwrite_waypoints );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->write_exif_b), default_values.write_exif );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_gps_exif_b), default_values.overwrite_gps_exif );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->no_change_mtime_b), default_values.no_change_mtime );
@@ -487,12 +541,18 @@ void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr
 
 	// Ensure sensitivities setup
 	write_exif_b_cb ( GTK_WIDGET(widgets->write_exif_b), widgets );
-
 	g_signal_connect ( G_OBJECT(widgets->write_exif_b), "toggled", G_CALLBACK(write_exif_b_cb), widgets );
+
+	create_waypoints_b_cb ( GTK_WIDGET(widgets->create_waypoints_b), widgets );
+	g_signal_connect ( G_OBJECT(widgets->create_waypoints_b), "toggled", G_CALLBACK(create_waypoints_b_cb), widgets );
 
 	GtkWidget *cw_hbox = gtk_hbox_new ( FALSE, 0 );
 	gtk_box_pack_start ( GTK_BOX(cw_hbox), gtk_label_new ( _("Create Waypoints:") ), FALSE, FALSE, 5 );
 	gtk_box_pack_start ( GTK_BOX(cw_hbox), GTK_WIDGET(widgets->create_waypoints_b), FALSE, FALSE, 5 );
+
+	GtkWidget *ow_hbox = gtk_hbox_new ( FALSE, 0 );
+	gtk_box_pack_start ( GTK_BOX(ow_hbox), GTK_WIDGET(widgets->overwrite_waypoints_l), FALSE, FALSE, 5 );
+	gtk_box_pack_start ( GTK_BOX(ow_hbox), GTK_WIDGET(widgets->overwrite_waypoints_b), FALSE, FALSE, 5 );
 
 	GtkWidget *we_hbox = gtk_hbox_new ( FALSE, 0 );
 	gtk_box_pack_start ( GTK_BOX(we_hbox), gtk_label_new ( _("Write EXIF:") ), FALSE, FALSE, 5 );
@@ -531,6 +591,7 @@ void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr
 	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), GTK_WIDGET(widgets->files), TRUE, TRUE, 0 );
 
 	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), cw_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), ow_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), we_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), og_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), fm_hbox,  FALSE, FALSE, 0);

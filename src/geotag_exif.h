@@ -28,7 +28,7 @@
 
 VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoordMode vcmode, gchar **name );
 
-VikWaypoint* a_geotag_create_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name );
+VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name, VikWaypoint *wp );
 
 gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_GPS_info );
 
