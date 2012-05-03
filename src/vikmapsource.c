@@ -95,7 +95,7 @@ _supports_download_only_new (VikMapSource *self)
  * @fct: the callback function to use to return matching copyrights.
  * @data: the user data to use to call the callbaack function.
  *
- * retreive copyright(s) for the corresponding bounding box and zoom level.
+ * Retrieve copyright(s) for the corresponding bounding box and zoom level.
  */
 void
 vik_map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data)

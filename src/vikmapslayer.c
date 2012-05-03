@@ -291,6 +291,13 @@ void _update_map_source ( const char *label, VikMapSource *map, int index )
   params_maptypes[index] = g_strdup (label);
 }
 
+/**
+ * maps_layer_register_map_source:
+ * @map: the new VikMapSource
+ *
+ * Register a new VikMapSource.
+ * Override existing one (equality of id).
+ */
 void maps_layer_register_map_source ( VikMapSource *map )
 {
   g_assert(map != NULL);
