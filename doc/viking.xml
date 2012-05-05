@@ -283,7 +283,7 @@ and docbook-xsl in your Build-Depends control field.
         <title>External tools</title>
         <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
-        <para>Currently, there is a single object class available: VikWebtoolCenter. Such feature allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
+        <para>The VikWebtoolCenter allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -296,7 +296,24 @@ and docbook-xsl in your Build-Depends control field.
             </varlistentry>
             <varlistentry>
               <term>url</term>
-              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "http://hostname/%d/%d/%d.png")</para></listitem>
+              <listitem><para>the parametrized URL to open, in the spirit of C printf format, with 2 "%s" and a "%d" fields for X, Y and Z (zoom level) (eg. "http://hostname/?lat=%s&amp;lon=%s&amp;zoom=%d")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para>The VikWebtoolBounds allows to declare any Webtool using a logic based on bounds coordinates.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 4 "%s" fields for left, right, bottom and top (eg. "http://hostname:8111/load_and_zoom?left=%s&amp;right=%s&amp;bottom=%s&amp;top=%s")</para></listitem>
             </varlistentry>
           </variablelist>
         </para>
