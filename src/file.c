@@ -684,16 +684,15 @@ gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
   return FALSE;
 }
 
-gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, const gchar *trackname )
+gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk )
 {
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {
-    if (trackname) {
-      VikTrack *vt = vik_trw_layer_get_track ( vtl, trackname );
+    if ( trk ) {
       switch ( file_type ) {
         case FILE_TYPE_GPX:
-          a_gpx_write_track_file ( trackname, vt, f );
+          a_gpx_write_track_file ( trk, f );
           break;
         default:
           g_critical("Houston, we've had a problem. file_type=%d", file_type);

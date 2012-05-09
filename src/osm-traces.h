@@ -27,6 +27,6 @@
 
 void osm_traces_init();
 void osm_traces_upload_cb(gpointer layer_and_vlp[2], guint file_type);
-void osm_traces_upload_track_cb(gpointer pass_along[6]);
+void osm_traces_upload_track_cb(gpointer pass_along[8]);
 
 #endif

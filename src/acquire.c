@@ -56,7 +56,6 @@ const VikDataSourceInterface *filters[] = {
 const guint N_FILTERS = sizeof(filters) / sizeof(filters[0]);
 
 VikTrack *filter_track = NULL;
-gchar *filter_track_name = NULL;
 
 /********************************************************/
 
@@ -214,7 +213,7 @@ static gchar *write_tmp_track ( VikTrack *track )
   FILE *f;
   g_assert ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0);
   f = fdopen(fd_src, "w");
-  a_gpx_write_track_file("track", track, f); /* Thank you Guilhem! Just when I needed this function... -- Evan */
+  a_gpx_write_track_file(track, f); /* Thank you Guilhem! Just when I needed this function... -- Evan */
   fclose(f);
   f = NULL;
   return name_src;
@@ -448,7 +447,7 @@ GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, Vi
   if ( filter_track == NULL )
     return NULL;
   else {
-    gchar *menu_title = g_strdup_printf ( "Filter with %s", filter_track_name );
+    gchar *menu_title = g_strdup_printf ( "Filter with %s", filter_track->name );
     GtkWidget *rv = acquire_build_menu ( vw, vlp, vvp, vtl, filter_track,
 			menu_title, VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK );
     g_free ( menu_title );
@@ -461,15 +460,11 @@ GtkWidget *a_acquire_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport
   return acquire_build_menu ( vw, vlp, vvp, NULL, tr, "Filter", VIK_DATASOURCE_INPUTTYPE_TRACK );
 }
 
-void a_acquire_set_filter_track ( VikTrack *tr, const gchar *name )
+void a_acquire_set_filter_track ( VikTrack *tr )
 {
   if ( filter_track )
     vik_track_free ( filter_track );
-  if ( filter_track_name )
-    g_free ( filter_track_name );
 
   filter_track = tr;
   vik_track_ref ( tr );
-
-  filter_track_name = g_strdup(name);
 }

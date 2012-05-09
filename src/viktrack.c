@@ -53,6 +53,17 @@ void vik_track_set_comment_no_copy(VikTrack *tr, gchar *comment)
 }
 
 
+void vik_track_set_name(VikTrack *tr, const gchar *name)
+{
+  if ( tr->name )
+    g_free ( tr->name );
+
+  if ( name && name[0] != '\0' )
+    tr->name = g_strdup(name);
+  else
+    tr->name = NULL;
+}
+
 void vik_track_set_comment(VikTrack *tr, const gchar *comment)
 {
   if ( tr->comment )
@@ -85,6 +96,8 @@ void vik_track_free(VikTrack *tr)
   if ( tr->ref_count-- > 1 )
     return;
 
+  if ( tr->name )
+    g_free ( tr->name );
   if ( tr->comment )
     g_free ( tr->comment );
   g_list_foreach ( tr->trackpoints, (GFunc) g_free, NULL );
@@ -109,6 +122,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr )
     new_tr->trackpoints = g_list_append ( new_tr->trackpoints, new_tp );
     tp_iter = tp_iter->next;
   }
+  vik_track_set_name(new_tr,tr->name);
   vik_track_set_comment(new_tr,tr->comment);
   return new_tr;
 }
@@ -253,6 +267,9 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
       iter->prev->next = NULL;
       iter->prev = NULL;
       rv[i] = vik_track_new();
+      // TODO: consider new naming strategy here
+      if ( tr->name )
+        vik_track_set_name ( rv[i], tr->name );
       if ( tr->comment )
         vik_track_set_comment ( rv[i], tr->comment );
       rv[i]->visible = tr->visible;
@@ -1085,6 +1102,10 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   }
   *(guint *)(b->data + intp) = ntp;
 
+  len = (tr->name) ? strlen(tr->name)+1 : 0;
+  g_byte_array_append(b, (guint8 *)&len, sizeof(len));
+  if (tr->name) g_byte_array_append(b, (guint8 *)tr->name, len);
+
   len = (tr->comment) ? strlen(tr->comment)+1 : 0; 
   g_byte_array_append(b, (guint8 *)&len, sizeof(len)); 
   if (tr->comment) g_byte_array_append(b, (guint8 *)tr->comment, len);
@@ -1115,6 +1136,13 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
     data += sizeof(*new_tp);
     new_tr->trackpoints = g_list_append(new_tr->trackpoints, new_tp);
   }
+
+  len = *(guint *)data;
+  data += sizeof(len);
+  if (len) {
+    new_tr->name = g_strdup((gchar *)data);
+  }
+  data += len;
 
   len = *(guint *)data;
   data += sizeof(len);

@@ -56,8 +56,9 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
 void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t );
 
 // ATM no external waypoint manipulation - only on tracks
+// Track returned is the first one
 VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, const gchar *name );
-gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, const gchar *trk_name );
+gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk );
 
 gboolean vik_trw_layer_auto_set_view ( VikTrwLayer *vtl, VikViewport *vvp );
 gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest );
@@ -69,7 +70,7 @@ VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl );
 
 void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl );
 void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl );
-void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, const gchar *trk_name );
+void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk );
 
 /* Exposed Layer Interface function definitions */
 // Intended only for use by other trw_layer subwindows

@@ -38,7 +38,7 @@
 /* strtod */
 
 
-static void a_gpspoint_write_track ( const gchar *name, VikTrack *t, FILE *f );
+static void a_gpspoint_write_track ( const gpointer id, const VikTrack *t, FILE *f );
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f );
 static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f );
 
@@ -530,16 +530,20 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
 }
 
 
-static void a_gpspoint_write_track ( const gchar *name, VikTrack *t, FILE *f )
+static void a_gpspoint_write_track ( const gpointer id, const VikTrack *t, FILE *f )
 {
+  // Sanity clause
+  if ( t && !(t->name) ) {
+    return;
+  }
   if ( t->comment )
   {
     gchar *tmp_comment = slashdup(t->comment);
-    fprintf ( f, "type=\"track\" name=\"%s\" comment=\"%s\"%s\n", name, tmp_comment, t->visible ? "" : " visible=\"n\"" );
+    fprintf ( f, "type=\"track\" name=\"%s\" comment=\"%s\"%s\n", t->name, tmp_comment, t->visible ? "" : " visible=\"n\"" );
     g_free ( tmp_comment );
   }
   else
-    fprintf ( f, "type=\"track\" name=\"%s\"%s\n", name, t->visible ? "" : " visible=\"n\"" );
+    fprintf ( f, "type=\"track\" name=\"%s\"%s\n", t->name, t->visible ? "" : " visible=\"n\"" );
   g_list_foreach ( t->trackpoints, (GFunc) a_gpspoint_write_trackpoint, f );
   fprintf ( f, "type=\"trackend\"\n" );
 }

@@ -268,7 +268,6 @@ struct _VikGpsLayer {
   GpsFix last_fix;
 
   VikTrack *realtime_track;
-  gchar *realtime_track_name;
 
   GIOChannel *realtime_io_channel;
   guint realtime_io_watch_id;
@@ -1530,8 +1529,7 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
     VikTrwLayer *vtl = vgl->trw_children[TRW_REALTIME];
     vgl->realtime_track = vik_track_new();
     vgl->realtime_track->visible = TRUE;
-    vgl->realtime_track_name = make_track_name(vtl);
-    vik_trw_layer_add_track(vtl, vgl->realtime_track_name, vgl->realtime_track);
+    vik_trw_layer_add_track(vtl, make_track_name(vtl), vgl->realtime_track);
   }
 
 #if GPSD_API_MAJOR_VERSION == 3 || GPSD_API_MAJOR_VERSION == 4
@@ -1616,7 +1614,7 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
   if (vgl->realtime_record && vgl->realtime_track) {
     create_realtime_trackpoint(vgl, TRUE);
     if ((vgl->realtime_track->trackpoints == NULL) || (vgl->realtime_track->trackpoints->next == NULL))
-      vik_trw_layer_delete_track(vgl->trw_children[TRW_REALTIME], vgl->realtime_track_name);
+      vik_trw_layer_delete_track(vgl->trw_children[TRW_REALTIME], vgl->realtime_track);
     vgl->realtime_track = NULL;
   }
 }

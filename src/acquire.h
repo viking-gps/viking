@@ -151,8 +151,8 @@ GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, Vi
  * returns NULL if no applicable filters */
 GtkWidget *a_acquire_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrack *tr);
 
-/* sets aplication-wide track to use with filter. references the track. */
-void a_acquire_set_filter_track ( VikTrack *tr, const gchar *name );
+/* sets application-wide track to use with filter. references the track. */
+void a_acquire_set_filter_track ( VikTrack *tr );
 
 
 #endif

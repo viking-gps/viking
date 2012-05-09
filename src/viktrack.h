@@ -60,9 +60,11 @@ struct _VikTrack {
   gchar *comment;
   guint8 ref_count;
   GtkWidget *property_dialog;
+  gchar *name;
 };
 
 VikTrack *vik_track_new();
+void vik_track_set_name(VikTrack *wp, const gchar *name);
 void vik_track_set_comment(VikTrack *wp, const gchar *comment);
 void vik_track_ref(VikTrack *tr);
 void vik_track_free(VikTrack *tr);

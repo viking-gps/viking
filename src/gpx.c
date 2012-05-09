@@ -764,13 +764,18 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
 }
 
 
-static void gpx_write_track ( const gchar *name, VikTrack *t, GpxWritingContext *context )
+static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 {
   FILE *f = context->file;
   gchar *tmp;
   gboolean first_tp_is_newsegment = FALSE; /* must temporarily make it not so, but we want to restore state. not that it matters. */
 
-  tmp = entitize ( name );
+  // Sanity clause
+  if ( t->name )
+    tmp = entitize ( t->name );
+  else
+    tmp = g_strdup ("track");
+
   fprintf ( f, "<trk%s>\n  <name>%s</name>\n", t->visible ? "" : " hidden=\"hidden\"", tmp );
   g_free ( tmp );
 
@@ -810,7 +815,7 @@ static void gpx_write_footer( FILE *f )
 /* Type to hold name of track and timestamp of first trackpoint */
 typedef struct {
   time_t first_timestamp;
-  const gchar *name;
+  gpointer id;
 } gpx_track_and_timestamp;
 
 typedef struct {
@@ -820,11 +825,11 @@ typedef struct {
 } gpx_gather_tracks_passalong_t;
 
 /* Function to collect a track and the first timestamp in the list */
-static void gpx_collect_track (const gchar *name, VikTrack *track, gpx_gather_tracks_passalong_t *passalong)
+static void gpx_collect_track (const gpointer id, VikTrack *track, gpx_gather_tracks_passalong_t *passalong)
 {
   if (passalong->i < passalong->n_trks)
   {
-    passalong->trks[passalong->i].name = name;
+    passalong->trks[passalong->i].id = id;
     if (track && track->trackpoints && track->trackpoints->data)
     {
       VikTrackpoint *first_point = (VikTrackpoint *)track->trackpoints->data;
@@ -846,7 +851,7 @@ static int gpx_waypoint_compare(const void *x, const void *y)
 }
 
 /* Function to compare two tracks by their first timestamp */
-static int gpx_track_and_timestamp_compar(const void *x, const void *y)
+static int gpx_track_and_timestamp_compare(const void *x, const void *y)
 {
   gpx_track_and_timestamp *a = (gpx_track_and_timestamp *)x;
   gpx_track_and_timestamp *b = (gpx_track_and_timestamp *)y;
@@ -869,7 +874,6 @@ void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
 void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *vtl, FILE *f )
 {
   GpxWritingContext context = { options, f };
-  int i;
 
   gpx_write_header ( f );
 
@@ -891,24 +895,28 @@ void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *vtl, FI
   passalong_tracks.trks = g_new(gpx_track_and_timestamp,passalong_tracks.n_trks);
   g_hash_table_foreach (vik_trw_layer_get_tracks(vtl), (GHFunc) gpx_collect_track, &passalong_tracks);
   /* Sort by timestamp */
-  qsort(passalong_tracks.trks, passalong_tracks.n_trks, sizeof(gpx_track_and_timestamp), gpx_track_and_timestamp_compar);
-  for (i=0;i<passalong_tracks.n_trks; i++)
-  {
-    gpx_write_track(passalong_tracks.trks[i].name, (VikTrack *)g_hash_table_lookup(vik_trw_layer_get_tracks(vtl), passalong_tracks.trks[i].name), &context);
+  gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
+  gl = g_list_sort ( gl, gpx_track_and_timestamp_compare );
+
+  for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
+    gpx_write_track ( (VikTrack*)iter->data, &context );
   }
+
+  g_list_free ( gl );
+
   g_free ( passalong_tracks.trks );
   gpx_write_footer ( f );
 }
 
-void a_gpx_write_track_file ( const gchar *name, VikTrack *t, FILE *f )
+void a_gpx_write_track_file ( VikTrack *trk, FILE *f )
 {
-  a_gpx_write_track_file_options ( NULL, name, t, f );
+  a_gpx_write_track_file_options ( NULL, trk, f );
 }
 
-void a_gpx_write_track_file_options ( GpxWritingOptions *options, const gchar *name, VikTrack *t, FILE *f )
+void a_gpx_write_track_file_options ( GpxWritingOptions *options, VikTrack *trk, FILE *f )
 {
   GpxWritingContext context = {options, f};
   gpx_write_header ( f );
-  gpx_write_track ( name, t, &context );
+  gpx_write_track ( trk, &context );
   gpx_write_footer ( f );
 }

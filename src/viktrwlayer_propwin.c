@@ -4,7 +4,7 @@
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005-2007, Alex Foobarian <foobarian@gmail.com>
  * Copyright (C) 2007-2008, Quy Tonthat <qtonthat@gmail.com>
- * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,6 @@ typedef struct _propwidgets {
   gboolean  configure_dialog;
   VikTrwLayer *vtl;
   VikTrack *tr;
-  gchar *track_name;
   gint      profile_width;
   gint      profile_height;
   gint      profile_width_old;
@@ -2700,20 +2699,21 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
     case VIK_TRW_LAYER_PROPWIN_DEL_DUP:
       vik_track_remove_dup_points(tr);
       /* above operation could have deleted current_tp or last_tp */
-      trw_layer_cancel_tps_of_track ( vtl, widgets->track_name );
+      trw_layer_cancel_tps_of_track ( vtl, tr );
       vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       break;
     case VIK_TRW_LAYER_PROPWIN_SPLIT:
       {
         /* get new tracks, add them, resolve naming conflicts (free if cancel), and delete old. old can still exist on clipboard. */
         guint ntracks;
+	
         VikTrack **tracks = vik_track_split_into_segments(tr, &ntracks);
         gchar *new_tr_name;
         guint i;
         for ( i = 0; i < ntracks; i++ )
         {
           g_assert ( tracks[i] );
-          new_tr_name = g_strdup_printf("%s #%d", widgets->track_name, i+1);
+          new_tr_name = g_strdup_printf("%s #%d", widgets->tr->name, i+1);
           /* if ( (wp_exists) && (! overwrite) ) */
           /* don't need to upper case new_tr_name because old tr name was uppercase */
           if ( vik_trw_layer_get_track(vtl, new_tr_name ) && 
@@ -2737,7 +2737,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           g_free ( tracks );
           /* Don't let track destroy this dialog */
           vik_track_clear_property_dialog(tr);
-          vik_trw_layer_delete_track ( vtl, widgets->track_name );
+          vik_trw_layer_delete_track ( vtl, tr );
           vik_layer_emit_update ( VIK_LAYER(vtl), FALSE ); /* chase thru the hoops */
         }
       }
@@ -2756,7 +2756,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           break;
         }
 
-        gchar *r_name = g_strdup_printf("%s #2", widgets->track_name);
+        gchar *r_name = g_strdup_printf("%s #2", widgets->tr->name);
         if (vik_trw_layer_get_track(vtl, r_name ) && 
              ( ! a_dialog_yes_or_no( VIK_GTK_WINDOW_FROM_LAYER(vtl),
               "The track \"%s\" exists, do you wish to overwrite it?", r_name)))
@@ -2846,7 +2846,7 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
   return vbox;
 }
 
-void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, gchar *track_name, VikViewport *vvp )
+void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, VikViewport *vvp )
 {
   /* FIXME: free widgets when destroy signal received */
   PropWidgets *widgets = prop_widgets_new();
@@ -2854,8 +2854,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->tr = tr;
   widgets->profile_width  = PROPWIN_PROFILE_WIDTH;
   widgets->profile_height = PROPWIN_PROFILE_HEIGHT;
-  widgets->track_name = track_name;
-  gchar *title = g_strdup_printf(_("%s - Track Properties"), track_name);
+  gchar *title = g_strdup_printf(_("%s - Track Properties"), tr->name);
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                          parent,
                          GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
@@ -3218,4 +3217,24 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   vik_track_set_property_dialog(tr, dialog);
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all ( dialog );
+}
+
+
+/**
+ * Update this property dialog
+ * e.g. if the track has been renamed
+ */
+void vik_trw_layer_propwin_update ( VikTrack *trk )
+{
+  // If not displayed do nothing
+  if ( !trk->property_dialog )
+    return;
+
+  // Update title with current name
+  if ( trk->name ) {
+    gchar *title = g_strdup_printf ( _("%s - Track Properties"), trk->name );
+    gtk_window_set_title ( GTK_WINDOW(trk->property_dialog), title );
+    g_free(title);
+  }
+
 }

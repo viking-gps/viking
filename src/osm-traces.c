@@ -86,7 +86,7 @@ typedef struct _OsmTracesInfo {
   gchar *tags;
   const OsmTraceVis_t *vistype;
   VikTrwLayer *vtl;
-  gchar *track_name;
+  VikTrack *trk;
 } OsmTracesInfo;
 
 static VikLayerParam prefs[] = {
@@ -104,7 +104,6 @@ static void oti_free(OsmTracesInfo *oti)
     g_free(oti->name); oti->name = NULL;
     g_free(oti->description); oti->description = NULL;
     g_free(oti->tags); oti->tags = NULL;
-    g_free(oti->track_name); oti->track_name = NULL;
     
     g_object_unref(oti->vtl); oti->vtl = NULL;
   }
@@ -282,11 +281,10 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   file = fdopen(fd, "w");
 
   /* writing gpx file */
-  if (oti->track_name != NULL)
+  if (oti->trk != NULL)
   {
     /* Upload only the selected track */
-    VikTrack *track = vik_trw_layer_get_track(oti->vtl, oti->track_name);
-    a_gpx_write_track_file_options(&options, oti->track_name, track, file);
+    a_gpx_write_track_file_options(&options, oti->trk, file);
   }
   else
   {
@@ -355,9 +353,9 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
  * Uploading a VikTrwLayer
  *
  * @param vtl VikTrwLayer
- * @param track_name if not null, the name of the track to upload
+ * @param trk if not null, the track to upload
  */
-static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track_name )
+static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 {
   GtkWidget *dia = gtk_dialog_new_with_buttons (_("OSM upload"),
                                                  VIK_GTK_WINDOW_FROM_LAYER(vtl),
@@ -410,8 +408,8 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
 
   name_label = gtk_label_new(_("File's name:"));
   name_entry = gtk_entry_new();
-  if (track_name != NULL)
-    name = track_name;
+  if (trk != NULL)
+    name = trk->name;
   else
     name = vik_layer_get_name(VIK_LAYER(vtl));
   gtk_entry_set_text(GTK_ENTRY(name_entry), name);
@@ -465,7 +463,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, const gchar *track
     info->tags        = g_strdup(gtk_entry_get_text(GTK_ENTRY(tags_entry)));
     info->vistype     = &OsmTraceVis[gtk_combo_box_get_active(visibility)];
     info->vtl         = VIK_TRW_LAYER(g_object_ref(vtl));
-    info->track_name  = (track_name == NULL) ? NULL : g_strdup(track_name);
+    info->trk         = trk;
 
     title = g_strdup_printf(_("Uploading %s to OSM"), info->name);
 
@@ -493,7 +491,12 @@ void osm_traces_upload_cb ( gpointer layer_and_vlp[2], guint file_type )
 /**
  * Function called by the entry menu of a single track
  */
-void osm_traces_upload_track_cb ( gpointer pass_along[6] )
+// TODO: Fix this dodgy usage of magic 8 ball array sized numbering
+//       At least have some common definition somewhere...
+void osm_traces_upload_track_cb ( gpointer pass_along[8] )
 {
-  osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(pass_along[0]), pass_along[3]);
+  if ( pass_along[7] ) {
+    VikTrack *trk = VIK_TRACK(pass_along[7]);
+    osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(pass_along[0]), trk);
+  }
 }
