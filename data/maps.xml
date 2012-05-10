@@ -29,6 +29,15 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
+  <object class="VikSlippyMapSource">
+    <property name="id">29</property>
+    <property name="label">CalTopo USGS 7.5" Topos</property>
+    <property name="hostname">s3-us-west-1.amazonaws.com</property>
+    <property name="url">/caltopo/topo/%d/%d/%d.png?v=1</property>
+    <property name="copyright">CalTopo Terms of Use</property>
+    <property name="license">CalTopo Terms of Use</property>
+    <property name="license-url">http://caltopo.com/</property>
+  </object>
   <object class="VikTmsMapSource">
     <property name="id">50</property>
     <property name="label">SPOTMaps</property>
