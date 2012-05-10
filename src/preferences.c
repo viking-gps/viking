@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <glib/gstdio.h>
 #include "preferences.h"
+#include "dir.h"
 #include "file.h"
 
 // TODO: register_group

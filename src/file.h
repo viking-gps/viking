@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2012, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +56,6 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 /* Only need to define VikTrack and trackname if the file type is FILE_TYPE_GPX_TRACK */
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, const gchar *trackname );
-const gchar *a_get_viking_dir();
 
 void file_write_layer_param ( FILE *f, const gchar *name, guint8 type, VikLayerParamData data );
 

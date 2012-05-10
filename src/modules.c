@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2006-2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2006-2012, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 #include "osm-traces.h"
 #include "bluemarble.h"
 #include "geonames.h"
-#include "file.h"
+#include "dir.h"
 #include "vikmapslayer.h"
 #include "vikexttools.h"
 #include "vikgoto.h"
@@ -76,10 +76,12 @@ modules_register_gototools(VikGobjectBuilder *self, GObject *object)
 }
 
 static void
-modules_load_config(void)
+modules_load_config_dir(const gchar *dir)
 {
+  g_debug("Loading configurations from directory %s", dir);
+
   /* Maps sources */
-  gchar *maps = g_build_filename(a_get_viking_dir(), VIKING_MAPS_FILE, NULL);
+  gchar *maps = g_build_filename(dir, VIKING_MAPS_FILE, NULL);
   if (g_access (maps, R_OK) == 0)
   {
 	VikGobjectBuilder *builder = vik_gobject_builder_new ();
@@ -89,7 +91,7 @@ modules_load_config(void)
   }
 
   /* External tools */
-  gchar *tools = g_build_filename(a_get_viking_dir(), VIKING_EXTTOOLS_FILE, NULL);
+  gchar *tools = g_build_filename(dir, VIKING_EXTTOOLS_FILE, NULL);
   if (g_access (tools, R_OK) == 0)
   {
 	VikGobjectBuilder *builder = vik_gobject_builder_new ();
@@ -99,7 +101,7 @@ modules_load_config(void)
   }
 
   /* Go-to search engines */
-  gchar *go_to = g_build_filename(a_get_viking_dir(), VIKING_GOTOTOOLS_FILE, NULL);
+  gchar *go_to = g_build_filename(dir, VIKING_GOTOTOOLS_FILE, NULL);
   if (g_access (go_to, R_OK) == 0)
   {
 	VikGobjectBuilder *builder = vik_gobject_builder_new ();
@@ -107,6 +109,42 @@ modules_load_config(void)
 	vik_gobject_builder_parse (builder, go_to);
 	g_object_unref (builder);
   }
+}
+
+static void
+modules_load_config(void)
+{
+  /* Look in the directories of data path */
+  gchar * * data_dirs = a_get_viking_data_path();
+  /* Priority is standard one:
+     left element is more important than right one.
+     But our logic is to load all existing files and overwrite
+     overlapping config with last recent one.
+     So, we have to process directories in reverse order. */
+  /* First: find the last element */
+  gchar * * ptr = data_dirs;
+  while (*ptr != NULL) ptr++;
+  /* Second: deduce the number of directories */
+  int nb_data_dirs = 0;
+  nb_data_dirs = ptr - data_dirs;
+  /* Last: parse them in reverse order */
+  for (; nb_data_dirs > 0 ; nb_data_dirs--)
+  {
+    modules_load_config_dir(data_dirs[nb_data_dirs-1]);
+  }
+  g_strfreev(data_dirs);
+	
+  /* Check if system config is set */
+  modules_load_config_dir(VIKING_SYSCONFDIR);
+
+  const gchar *data_home = a_get_viking_data_home ();
+  if (data_home)
+  {
+    modules_load_config_dir(data_home);
+  }
+	
+  /* Check user's home config */
+  modules_load_config_dir(a_get_viking_dir());
 }
 
 void modules_init()

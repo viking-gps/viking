@@ -1,21 +1,13 @@
+<!-- This file is an example for viking's extension system. -->
 <objects>
-  <object class="VikWebtoolCenter">
-    <property name="label">Letuffe (Hiking)</property>
-    <property name="url">http://beta.letuffe.org/?layers=0B000FFFFFFFFFFFF&amp;lat=%s&amp;lon=%s&amp;zoom=%d</property>
-    <property name="id">42</property>
-  </object>
-  <object class="VikWebtoolCenter">
-    <property name="label">Osmose</property>
-    <property name="url">http://osmose.openstreetmap.fr/map/cgi-bin/index.py?layers=B00000FFFFFFFFFFFFT&amp;lat=%s&amp;lon=%s&amp;zoom=%d</property>
-    <property name="id">43</property>
-  </object>
-  <object class="VikWebtoolCenter">
-    <property name="label">NLS: Historic Map of GB</property>
-    <property name="url">http://nls.tileserver.com?lat=%s&amp;lng=%s&amp;zoom=%d</property>
-    <property name="id">44</property>
-  </object>
+  <!-- The VikWebtoolCenter allows to declare any Webtool using a logic based on center coordinates and zoom level value. -->
   <object class="VikWebtoolCenter">
     <property name="label">Yahoo! Maps</property>
     <property name="url">http://maps.yahoo.com/#lat=%s&amp;lon=%s&amp;zoom=%d</property>
+  </object>
+  <!-- The VikWebtoolBounds allows to declare any Webtool using a logic based on bounds coordinates. -->
+  <object class="VikWebtoolBounds">
+    <property name="label">Local port 8111 (eg JOSM)</property>
+    <property name="url">http://localhost:8111/load_and_zoom?left=%s&amp;right=%s&amp;bottom=%s&amp;top=%s</property>
   </object>
 </objects>

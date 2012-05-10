@@ -41,6 +41,7 @@
 #include <curl/curl.h>
 
 #include "background.h"
+#include "dir.h"
 #include "file.h"
 #include "globals.h"
 #include "curl_download.h"

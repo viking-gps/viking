@@ -1,4 +1,4 @@
-SUBDIRS = src test doc po help
+SUBDIRS = src test data doc po help
 
 INTLTOOL = \
 	intltool-extract.in \

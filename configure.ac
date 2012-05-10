@@ -348,6 +348,7 @@ AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
                  test/Makefile
                  help/Makefile
+                 data/Makefile
                  doc/Makefile
                  doc/examples/Makefile])
 if test x$enable_gtk_doc = xyes; then

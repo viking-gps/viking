@@ -60,6 +60,7 @@ libviking_a_SOURCES = \
 	coords.c coords.h \
 	gpsmapper.c gpsmapper.h \
 	gpspoint.c gpspoint.h \
+	dir.c dir.h \
 	file.c file.h \
 	authors.h \
 	documenters.h \
@@ -184,6 +185,9 @@ LDADD           = libviking.a $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libic
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
 	$(PACKAGE_CFLAGS) \
 	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
+AM_CPPFLAGS		= \
+	-DVIKING_DATADIR=\""$(pkgdatadir)"\" \
+	-DVIKING_SYSCONFDIR=\""$(sysconfdir)/$(PACKAGE)"\"
 
 @INTLTOOL_DESKTOP_RULE@
 

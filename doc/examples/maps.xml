@@ -1,5 +1,6 @@
+<!-- This file is an example for map source definitions. -->
 <objects>
-<!-- Built in -->
+  <!-- The VikSlippyMapSource allows to declare any map's source working like OpenStreetMap. -->
   <object class="VikSlippyMapSource">
     <property name="label">OpenStreetMap (Mapnik)</property>
     <property name="hostname">tile.openstreetmap.org</property>
@@ -9,16 +10,7 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
-<!-- Built in -->
-  <object class="VikSlippyMapSource">
-    <property name="label">OpenStreetMap (Cycle)</property>
-    <property name="hostname">b.tile.opencyclemap.org</property>
-    <property name="url">/cycle/%d/%d/%d.png</property>
-    <property name="id">17</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
+  <!-- The VikWmscMapSource allows to declare any WMS or WMS-C service. -->
   <object class="VikWmscMapSource">
     <property name="id">18</property>
     <property name="label">OpenStreetMap (WMS)</property>
@@ -29,6 +21,7 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
+  <!-- The VikTmsMapSource allows to declare any TMS service. -->
   <object class="VikTmsMapSource">
     <property name="id">50</property>
     <property name="label">SPOTMaps</property>
@@ -38,41 +31,5 @@
     <property name="copyright">© Cnes/Spot Image</property>
     <property name="license">CC-by-SA 2.0 / ODBl</property>
     <property name="license-url">http://www.youmapps.org/licenses/EULA-OSM-en.html</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Letuffe/hiking</property>
-    <property name="hostname">beta.letuffe.org</property>
-    <property name="url">/tiles/renderer.py/hiking/%d/%d/%d.png</property>
-    <property name="id">100</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Public Transport Map </property>
-    <property name="hostname">tile.xn--pnvkarte-m4a.de</property>
-    <property name="url">/tilegen/%0d/%d/%d.png</property>
-    <property name="id">101</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Cyclemap (Cloudmade)</property>
-    <property name="hostname">a.andy.sandbox.cloudmade.com</property>
-    <property name="url">/tiles/cycle/%d/%d/%d.png</property>
-    <property name="id">102</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Bridle Map</property>
-    <property name="hostname">opentiles.com</property>
-    <property name="url">/nop/tiles/%d/%d/%d.png</property>
-    <property name="id">103</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
 </objects>

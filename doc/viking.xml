@@ -365,6 +365,35 @@ and docbook-xsl in your Build-Depends control field.
       </varlistentry>
     </variablelist>
 
+	<para>Extension files (<filename>maps.xml</filename>,
+	<filename>goto_tools.xml</filename>,
+	<filename>external_tools.xml</filename>)
+	are also searched in <filename>/etc/viking</filename> and
+	<filename>/usr/share/viking</filename> directories (or related in your system).</para>
+
+  </refsect1>
+  <refsect1>
+    <title>ENVIRONMENT</title>
+
+    <variablelist>
+      <varlistentry>
+        <term><envar>XDG_DATA_HOME</envar></term>
+        <listitem>
+          <para>Optional directory to look for extension files
+          (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>,
+          <filename>external_tools.xml</filename>).</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><envar>XDG_DATA_DIRS</envar></term>
+        <listitem>
+          <para>Path used to change the directories scanned for extension files
+          (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>,
+          <filename>external_tools.xml</filename>).</para>
+       </listitem>
+      </varlistentry>
+    </variablelist>
+
   </refsect1>
   <refsect1>
     <title>AUTHOR</title>

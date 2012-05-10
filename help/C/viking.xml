@@ -1494,7 +1494,7 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
       </section>
 
       <section>
-        <title>Webtools</title>
+        <title>External tools</title>
         <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
         <para>The VikWebtoolCenter allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
@@ -1531,6 +1531,13 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
             </varlistentry>
           </variablelist>
         </para>
+      </section>
+      
+      <section>
+        <title>More</title>
+        <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>external_tools.xml</filename>) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
+        <para>The <envar>XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
+        <para>The <envar>XDG_DATA_HOME</envar> environment variable s also used (if set) to look for these extension files.</para>
       </section>
 
 </section>

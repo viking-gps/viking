@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2012, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -735,36 +736,3 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
   return FALSE;
 }
 
-const gchar *a_get_viking_dir()
-{
-  static gchar *viking_dir = NULL;
-
-  // TODO: use g_get_user_config_dir ?
-
-  if (!viking_dir) {
-    const gchar *home = g_getenv("HOME");
-    if (!home || g_access(home, W_OK))
-      home = g_get_home_dir ();
-#ifdef HAVE_MKDTEMP
-    if (!home || g_access(home, W_OK))
-    {
-      static gchar temp[] = {"/tmp/vikXXXXXX"};
-      home = mkdtemp(temp);
-    }
-#endif
-    if (!home || g_access(home, W_OK))
-      /* Fatal error */
-      g_critical("Unable to find a base directory");
-
-    /* Build the name of the directory */
-#ifdef __APPLE__
-    viking_dir = g_build_filename(home, "/Library/Application Support/Viking", NULL);
-#else
-    viking_dir = g_build_filename(home, ".viking", NULL);
-#endif
-    if (g_file_test(viking_dir, G_FILE_TEST_EXISTS) == FALSE)
-      g_mkdir(viking_dir, 0755);
-  }
-
-  return viking_dir;
-}
