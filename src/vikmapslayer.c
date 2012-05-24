@@ -335,6 +335,7 @@ gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
 /******** CACHE DIR STUFF ***************/
 /****************************************/
 
+#define DIRECTDIRACCESS "%s%d" G_DIR_SEPARATOR_S "%d" G_DIR_SEPARATOR_S "%d%s"
 #define DIRSTRUCTURE "%st%ds%dz%d" G_DIR_SEPARATOR_S "%d" G_DIR_SEPARATOR_S "%d"
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 
@@ -518,6 +519,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   vik_layer_init ( VIK_LAYER(vml), VIK_LAYER_MAPS );
   idx = map_uniq_id_to_index(19); /* 19 is id for OSM MapQuest maps */
     vml->maptype = (idx < NUM_MAP_TYPES) ? idx : 0;
+  vml->maptype = (idx < NUM_MAP_TYPES) ? idx : 0;
   vml->alpha = 255;
   vml->mapzoom_id = 0;
   vml->dl_tool_x = vml->dl_tool_y = -1;
@@ -637,9 +639,14 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
                             mode, mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
 
   if ( ! pixbuf ) {
-    g_snprintf ( filename_buf, buf_len, DIRSTRUCTURE,
-                     vml->cache_dir, mode,
-                     mapcoord->scale, mapcoord->z, mapcoord->x, mapcoord->y );
+    if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) )
+      g_snprintf ( filename_buf, buf_len, DIRECTDIRACCESS,
+		   vml->cache_dir, (17 - mapcoord->scale), mapcoord->x, mapcoord->y, ".png" );
+    else
+      g_snprintf ( filename_buf, buf_len, DIRSTRUCTURE,
+		   vml->cache_dir, mode,
+		   mapcoord->scale, mapcoord->z, mapcoord->x, mapcoord->y );
+
     if ( g_file_test ( filename_buf, G_FILE_TEST_EXISTS ) == TRUE)
     {
       GError *gx = NULL;
@@ -705,7 +712,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
   gdouble xzoom = vik_viewport_get_xmpp ( vvp );
   gdouble yzoom = vik_viewport_get_ympp ( vvp );
   gdouble xshrinkfactor = 1.0, yshrinkfactor = 1.0;
-  gdouble existence_only = FALSE;
+  gboolean existence_only = FALSE;
 
   if ( vml->xmapzoom && (vml->xmapzoom != xzoom || vml->ymapzoom != yzoom) ) {
     xshrinkfactor = vml->xmapzoom / xzoom;
@@ -799,9 +806,13 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
           ulm.y = y;
 
           if ( existence_only ) {
-            g_snprintf ( path_buf, max_path_len, DIRSTRUCTURE,
-                     vml->cache_dir, mode,
-                     ulm.scale, ulm.z, ulm.x, ulm.y );
+	    if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) )
+	      g_snprintf ( path_buf, max_path_len, DIRECTDIRACCESS,
+			   vml->cache_dir, (17 - ulm.scale), ulm.x, ulm.y, ".png" );
+	    else
+	      g_snprintf ( path_buf, max_path_len, DIRSTRUCTURE,
+			   vml->cache_dir, mode,
+			   ulm.scale, ulm.z, ulm.x, ulm.y );
             if ( g_file_test ( path_buf, G_FILE_TEST_EXISTS ) == TRUE ) {
 	      GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
               vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil );
@@ -1056,6 +1067,11 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
   gdouble yzoom = vml->ymapzoom ? vml->ymapzoom : vik_viewport_get_ympp ( vvp );
   MapCoord ulm, brm;
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  // Don't ever attempt download on direct access
+  if ( vik_map_source_is_direct_file_access ( map ) )
+    return;
+
   if ( vik_map_source_coord_to_mapcoord ( map, ul, xzoom, yzoom, &ulm ) 
     && vik_map_source_coord_to_mapcoord ( map, br, xzoom, yzoom, &brm ) )
   {
@@ -1142,6 +1158,10 @@ void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport 
 {
   MapCoord ulm, brm;
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  // Don't ever attempt download on direct access
+  if ( vik_map_source_is_direct_file_access ( map ) )
+    return;
 
   if (!vik_map_source_coord_to_mapcoord(map, ul, zoom, zoom, &ulm) 
     || !vik_map_source_coord_to_mapcoord(map, br, zoom, zoom, &brm)) {
