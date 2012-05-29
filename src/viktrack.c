@@ -525,6 +525,43 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
     *up = *down = VIK_DEFAULT_ALTITUDE;
 }
 
+gdouble *vik_track_make_gradient_map ( const VikTrack *tr, guint16 num_chunks )
+{
+  gdouble *pts;
+  gdouble *altitudes;
+  gdouble total_length, chunk_length, current_gradient;
+  gdouble altitude1, altitude2;
+  guint16 current_chunk;
+
+  g_assert ( num_chunks < 16000 );
+
+  total_length = vik_track_get_length_including_gaps ( tr );
+  chunk_length = total_length / num_chunks;
+
+  /* Zero chunk_length (eg, track of 2 tp with the same loc) will cause crash */
+  if (chunk_length <= 0) {
+    return NULL;
+  }
+
+  altitudes = vik_track_make_elevation_map (tr, num_chunks);
+  if (altitudes == NULL) {
+    return NULL;
+  }
+
+  current_gradient = 0.0;
+  pts = g_malloc ( sizeof(gdouble) * num_chunks );
+  for (current_chunk = 0; current_chunk < (num_chunks - 1); current_chunk++) {
+    altitude1 = altitudes[current_chunk];
+    altitude2 = altitudes[current_chunk + 1];
+    current_gradient = 100.0 * (altitude2 - altitude1) / chunk_length;
+
+    pts[current_chunk] = current_gradient;
+  }
+
+  pts[current_chunk] = current_gradient;
+
+  return pts;
+}
 
 /* by Alex Foobarian */
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
