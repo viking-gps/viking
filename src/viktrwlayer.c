@@ -4248,6 +4248,138 @@ static void trw_layer_delete_tracks_from_selection ( gpointer lav[2] )
   }
 }
 
+typedef struct {
+  gboolean    has_same_waypoint_name;
+  const gchar *same_waypoint_name;
+} same_waypoint_name_udata;
+
+static gint check_waypoints_for_same_name ( gconstpointer aa, gconstpointer bb, gpointer udata )
+{
+  const gchar* namea = (const gchar*) aa;
+  const gchar* nameb = (const gchar*) bb;
+
+  // the test
+  gint result = strcmp ( namea, nameb );
+
+  if ( result == 0 ) {
+    // Found two names the same
+    same_waypoint_name_udata *user_data = udata;
+    user_data->has_same_waypoint_name = TRUE;
+    user_data->same_waypoint_name = namea;
+  }
+
+  // Leave ordering the same
+  return 0;
+}
+
+/**
+ * Find out if any waypoints have the same name in this layer
+ */
+gboolean trw_layer_has_same_waypoint_names ( VikTrwLayer *vtl )
+{
+  // Sort items by name, then compare if any next to each other are the same
+
+  GList *waypoint_names = NULL;
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_sorted_wp_id_by_name_list, &waypoint_names );
+
+  // No waypoints
+  if ( ! waypoint_names )
+    return FALSE;
+
+  same_waypoint_name_udata udata;
+  udata.has_same_waypoint_name = FALSE;
+
+  // Use sort routine to traverse list comparing items
+  // Don't care how this list ends up ordered ( doesn't actually change ) - care about the returned status
+  GList *dummy_list = g_list_sort_with_data ( waypoint_names, check_waypoints_for_same_name, &udata );
+  // Still no waypoints...
+  if ( ! dummy_list )
+    return FALSE;
+
+  return udata.has_same_waypoint_name;
+}
+
+/**
+ * Force unqiue waypoint names for this layer
+ * Note the panel is a required parameter to enable the update of the names displayed
+ */
+static void vik_trw_layer_uniquify_waypoints ( VikTrwLayer *vtl, VikLayersPanel *vlp )
+{
+  // . Search list for an instance of repeated name
+  // . get waypoint of this name
+  // . create new name
+  // . rename waypoint & update equiv. treeview iter
+  // . repeat until all different
+
+  same_waypoint_name_udata udata;
+
+  GList *waypoint_names = NULL;
+  udata.has_same_waypoint_name = FALSE;
+  udata.same_waypoint_name = NULL;
+
+  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_sorted_wp_id_by_name_list, &waypoint_names );
+
+  // No waypoints
+  if ( ! waypoint_names )
+    return;
+
+  GList *dummy_list1 = g_list_sort_with_data ( waypoint_names, check_waypoints_for_same_name, &udata );
+
+  // Still no waypoints...
+  if ( ! dummy_list1 )
+    return;
+
+  while ( udata.has_same_waypoint_name ) {
+
+    // Find a waypoint with the same name
+    VikWaypoint *waypoint = vik_trw_layer_get_waypoint ( vtl, (gpointer) udata.same_waypoint_name );
+
+    if ( ! waypoint ) {
+      // Broken :(
+      g_critical("Houston, we've had a problem.");
+      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, 
+                                  _("Internal Error in vik_trw_layer_uniquify_waypoints") );
+      return;
+    }
+
+    // Rename it
+    gchar *newname = get_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, udata.same_waypoint_name );
+    vik_waypoint_set_name ( waypoint, newname );
+
+    wpu_udata udataU;
+    udataU.wp   = waypoint;
+    udataU.uuid = NULL;
+
+    // Need want key of it for treeview update
+    gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
+
+    if ( wpf && udataU.uuid ) {
+
+      GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
+
+      if ( it ) {
+        vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, newname );
+#ifdef VIK_CONFIG_ALPHABETIZED_TRW
+        vik_treeview_sublayer_realphabetize ( VIK_LAYER(vtl)->vt, it, newname );
+#endif
+      }
+    }
+
+    // Start trying to find same names again...
+    waypoint_names = NULL;
+    g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_sorted_wp_id_by_name_list, &waypoint_names );
+    udata.has_same_waypoint_name = FALSE;
+    GList *dummy_list2 = g_list_sort_with_data ( waypoint_names, check_waypoints_for_same_name, &udata );
+
+    // No waypoints any more - give up searching
+    if ( ! dummy_list2 )
+      udata.has_same_waypoint_name = FALSE;
+  }
+
+  // Update
+  vik_layers_panel_emit_update ( vlp );
+}
+
 /**
  *
  */
@@ -4256,9 +4388,15 @@ static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] )
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
   GList *all = NULL;
 
-  // TODO consider disabling this with warning message about
-  //  not working due to multiple same names
-  //  enable calling (yet to be defined) uniqify method?
+  // Ensure list of waypoint names offered is unique
+  if ( trw_layer_has_same_waypoint_names ( vtl ) ) {
+    if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			      _("Multiple entries with the same name exist. This method only works with unique names. Force unique names now?"), NULL ) ) {
+      vik_trw_layer_uniquify_waypoints ( vtl, VIK_LAYERS_PANEL(lav[1]) );
+    }
+    else
+      return;
+  }
 
   // Sort list alphabetically for better presentation
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_sorted_wp_id_by_name_list, &all);
@@ -4282,10 +4420,7 @@ static void trw_layer_delete_waypoints_from_selection ( gpointer lav[2] )
   if ( delete_list ) {
     GList *l;
     for (l = delete_list; l != NULL; l = g_list_next(l)) {
-      // TODO Hmmm conversion needed here -- not 1:1 relationship any more of name to reference
-      //   -- new functionality / or need to extend list to have uuid with it / or have uuids and ways to find out the name for display
-      //    may need to rework the general dialog functions
-      // ARM This deletes first WP it finds of that name
+      // This deletes first waypoint it finds of that name (but uniqueness is enforced above)
       trw_layer_delete_waypoint_by_name (vtl, l->data);
     }
     g_list_free(delete_list);
