@@ -4068,6 +4068,139 @@ static void trw_layer_sorted_track_id_by_name_list (const gpointer id, const Vik
   *list = g_list_insert_sorted_with_data (*list, trk->name, sort_alphabetically, NULL);
 }
 
+
+typedef struct {
+  gboolean    has_same_track_name;
+  const gchar *same_track_name;
+} same_track_name_udata;
+
+static gint check_tracks_for_same_name ( gconstpointer aa, gconstpointer bb, gpointer udata )
+{
+  const gchar* namea = (const gchar*) aa;
+  const gchar* nameb = (const gchar*) bb;
+
+  // the test
+  gint result = strcmp ( namea, nameb );
+
+  if ( result == 0 ) {
+    // Found two names the same
+    same_track_name_udata *user_data = udata;
+    user_data->has_same_track_name = TRUE;
+    user_data->same_track_name = namea;
+  }
+
+  // Leave ordering the same
+  return 0;
+}
+
+/**
+ * Find out if any tracks have the same name in this layer
+ */
+static gboolean trw_layer_has_same_track_names ( VikTrwLayer *vtl )
+{
+  // Sort items by name, then compare if any next to each other are the same
+
+  GList *track_names = NULL;
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_sorted_track_id_by_name_list, &track_names );
+
+  // No tracks
+  if ( ! track_names )
+    return FALSE;
+
+  same_track_name_udata udata;
+  udata.has_same_track_name = FALSE;
+
+  // Use sort routine to traverse list comparing items
+  // Don't care how this list ends up ordered ( doesn't actually change ) - care about the returned status
+  GList *dummy_list = g_list_sort_with_data ( track_names, check_tracks_for_same_name, &udata );
+  // Still no tracks...
+  if ( ! dummy_list )
+    return FALSE;
+
+  return udata.has_same_track_name;
+}
+
+/**
+ * Force unqiue track names for this layer
+ * Note the panel is a required parameter to enable the update of the names displayed
+ */
+static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vlp )
+{
+  // . Search list for an instance of repeated name
+  // . get track of this name
+  // . create new name
+  // . rename track & update equiv. treeview iter
+  // . repeat until all different
+
+  same_track_name_udata udata;
+
+  GList *track_names = NULL;
+  udata.has_same_track_name = FALSE;
+  udata.same_track_name = NULL;
+
+  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_sorted_track_id_by_name_list, &track_names );
+
+  // No tracks
+  if ( ! track_names )
+    return;
+
+  GList *dummy_list1 = g_list_sort_with_data ( track_names, check_tracks_for_same_name, &udata );
+
+  // Still no tracks...
+  if ( ! dummy_list1 )
+    return;
+
+  while ( udata.has_same_track_name ) {
+
+    // Find a track with the same name
+    VikTrack *trk = vik_trw_layer_get_track ( vtl, (gpointer) udata.same_track_name );
+
+    if ( ! trk ) {
+      // Broken :(
+      g_critical("Houston, we've had a problem.");
+      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, 
+                                  _("Internal Error in vik_trw_layer_uniquify_tracks") );
+      return;
+    }
+
+    // Rename it
+    gchar *newname = get_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, udata.same_track_name );
+    vik_track_set_name ( trk, newname );
+
+    trku_udata udataU;
+    udataU.trk  = trk;
+    udataU.uuid = NULL;
+
+    // Need want key of it for treeview update
+    gpointer *trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udataU );
+
+    if ( trkf && udataU.uuid ) {
+
+      GtkTreeIter *it = g_hash_table_lookup ( vtl->tracks_iters, udataU.uuid );
+
+      if ( it ) {
+        vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, newname );
+#ifdef VIK_CONFIG_ALPHABETIZED_TRW
+        vik_treeview_sublayer_realphabetize ( VIK_LAYER(vtl)->vt, it, newname );
+#endif
+      }
+    }
+
+    // Start trying to find same names again...
+    track_names = NULL;
+    g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_sorted_track_id_by_name_list, &track_names );
+    udata.has_same_track_name = FALSE;
+    GList *dummy_list2 = g_list_sort_with_data ( track_names, check_tracks_for_same_name, &udata );
+
+    // No tracks any more - give up searching
+    if ( ! dummy_list2 )
+      udata.has_same_track_name = FALSE;
+  }
+
+  // Update
+  vik_layers_panel_emit_update ( vlp );
+}
+
 /**
  *
  */
@@ -4076,9 +4209,15 @@ static void trw_layer_delete_tracks_from_selection ( gpointer lav[2] )
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
   GList *all = NULL;
 
-  // TODO consider disabling this with warning message about
-  //  not working due to multiple same names
-  //  enable calling (yet to be defined) uniqify method?
+  // Ensure list of track names offered is unique
+  if ( trw_layer_has_same_track_names ( vtl ) ) {
+    if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			      _("Multiple entries with the same name exist. This method only works with unique names. Force unique names now?"), NULL ) ) {
+      vik_trw_layer_uniquify_tracks ( vtl, VIK_LAYERS_PANEL(lav[1]) );
+    }
+    else
+      return;
+  }
 
   // Sort list alphabetically for better presentation
   g_hash_table_foreach(vtl->tracks, (GHFunc) trw_layer_sorted_track_id_by_name_list, &all);
@@ -4101,10 +4240,7 @@ static void trw_layer_delete_tracks_from_selection ( gpointer lav[2] )
   if ( delete_list ) {
     GList *l;
     for (l = delete_list; l != NULL; l = g_list_next(l)) {
-      // TODO Hmmm conversion needed here -- not 1:1 relationship any more of name to reference
-      //   -- new functionality / or need to extend list to have uuid with it / or have uuids and ways to find out the name for display
-      //    may need to rework the general dialog functions
-      // ATM This deletes first trk it finds of that name
+      // This deletes first trk it finds of that name (but uniqueness is enforced above)
       trw_layer_delete_track_by_name (vtl, l->data);
     }
     g_list_free(delete_list);
