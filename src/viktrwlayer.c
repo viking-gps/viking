@@ -6407,7 +6407,20 @@ VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl )
   return vtl->coord_mode;
 }
 
-
+/**
+ * Uniquify the whole layer
+ * Also requires the layers panel as the names shown there need updating too
+ * Returns whether the operation was successful or not
+ */
+gboolean vik_trw_layer_uniquify ( VikTrwLayer *vtl, VikLayersPanel *vlp )
+{
+  if ( vtl && vlp ) {
+    vik_trw_layer_uniquify_tracks ( vtl, vlp );
+    vik_trw_layer_uniquify_waypoints ( vtl, vlp );
+    return TRUE;
+  }
+  return FALSE;
+}
 
 static void waypoint_convert ( const gpointer id, VikWaypoint *wp, VikCoordMode *dest_mode )
 {

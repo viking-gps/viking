@@ -27,6 +27,7 @@
 #include "vikviewport.h"
 #include "vikwaypoint.h"
 #include "viktrack.h"
+#include "viklayerspanel.h"
 
 #define VIK_TRW_LAYER_TYPE            (vik_trw_layer_get_type ())
 #define VIK_TRW_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_TRW_LAYER_TYPE, VikTrwLayer))
@@ -67,6 +68,8 @@ GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l );
 gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikCoord *def_coord );
 
 VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl );
+
+gboolean vik_trw_layer_uniquify ( VikTrwLayer *vtl, VikLayersPanel *vlp );
 
 void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl );
 void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl );
