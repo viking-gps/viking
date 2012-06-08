@@ -119,6 +119,7 @@ typedef struct {
   GtkWidget *progress_label;
   GtkWidget *trk_label;
   VikViewport *vvp;
+  VikLayersPanel *vlp;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   gboolean realtime_tracking;
 #endif
@@ -1069,9 +1070,17 @@ static void gps_comm_thread(GpsSession *sess)
   if (sess->direction == GPS_DOWN)
     result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_download_progress_func, sess);
-  else
+  else {
+    // Enforce unique names in the layer upload to the GPS device
+    // NB this may only be a Garmin device restriction (and may be not every Garmin device either...)
+    // Thus this maintains the older code in built restriction
+    if ( ! vik_trw_layer_uniquify ( sess->vtl, sess->vlp ) )
+      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(sess->vtl))), VIK_STATUSBAR_INFO, 
+				  _("Warning - GPS Upload items may overwrite each other") );
+
     result = a_babel_convert_to (sess->vtl, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_upload_progress_func, sess);
+  }
 
   if (!result) {
     gtk_label_set_text ( GTK_LABEL(sess->status_label), _("Error: couldn't find gpsbabel.") );
@@ -1112,7 +1121,7 @@ static void gps_comm_thread(GpsSession *sess)
   g_thread_exit(NULL);
 }
 
-static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *port, gboolean tracking, VikViewport *vvp, gboolean do_tracks, gboolean do_waypoints) {
+static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *port, gboolean tracking, VikViewport *vvp, VikLayersPanel *vlp, gboolean do_tracks, gboolean do_waypoints) {
   GpsSession *sess = g_malloc(sizeof(GpsSession));
   char *tracks = NULL;
   char *waypoints = NULL;
@@ -1124,6 +1133,7 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
   sess->ok = TRUE;
   sess->window_title = (dir == GPS_DOWN) ? _("GPS Download") : _("GPS Upload");
   sess->vvp = vvp;
+  sess->vlp = vlp;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   sess->realtime_tracking = tracking;
 #endif
@@ -1191,8 +1201,9 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
 static void gps_upload_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(layer_and_vlp[1]);
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
-  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, NULL, vgl->upload_tracks, vgl->upload_waypoints);
+  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, NULL, vlp, vgl->upload_tracks, vgl->upload_waypoints);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
@@ -1202,9 +1213,9 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, vgl->realtime_tracking, vvp, vgl->download_tracks, vgl->download_waypoints);
+  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
 #else
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, FALSE, vvp, vgl->download_tracks, vgl->download_waypoints);
+  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
 #endif
 }
 
