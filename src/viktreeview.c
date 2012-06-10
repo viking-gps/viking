@@ -211,7 +211,10 @@ treeview_tooltip_cb (GtkWidget  *widget,
     return FALSE;
   }
   else {
-    gtk_tooltip_set_markup (tooltip, buffer);
+    // No point in using (Pango) markup verson - gtk_tooltip_set_markup()
+    //  especially as waypoint comments may well contain HTML markup which confuses the pango markup parser
+    // This plain text is probably faster too.
+    gtk_tooltip_set_text (tooltip, buffer);
   }
 
   gtk_tree_view_set_tooltip_row (tree_view, tooltip, path);
