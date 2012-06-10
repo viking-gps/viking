@@ -188,7 +188,7 @@ gdouble a_vik_get_default_long ( )
 vik_kml_export_units_t a_vik_get_kml_export_units ( )
 {
   vik_kml_export_units_t units;
-  units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "kml_export_units")->u;
+  units = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units")->u;
   return units;
 }
 
