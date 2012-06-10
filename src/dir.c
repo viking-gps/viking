@@ -79,7 +79,7 @@ a_get_viking_data_home()
 	const gchar *xdg_data_home = g_getenv("XDG_DATA_HOME");
 	if (xdg_data_home)
 	{
-		return g_build_filename(xdg_data_home, PACKAGE);
+		return g_build_filename(xdg_data_home, PACKAGE, NULL);
 	}
 	else
 	{
