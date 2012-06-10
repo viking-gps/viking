@@ -126,7 +126,7 @@ void a_vik_preferences_init ()
   a_preferences_register(&io_prefs_non_windows[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 #endif
 
-  // JOSM for OSM editing around a GPX tracj
+  // JOSM for OSM editing around a GPX track
   tmp.s = "josm";
   a_preferences_register(&io_prefs_external_gpx[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
   // Add a second external program - another OSM editor by default
