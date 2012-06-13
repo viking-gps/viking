@@ -81,15 +81,20 @@ static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove (
 #endif
 
 #define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=kml"
-#define VIK_TRW_LAYER_TRACK_GC 13
+#define VIK_TRW_LAYER_TRACK_GC 16
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
 #define VIK_TRW_LAYER_TRACK_GC_MAX 11
 #define VIK_TRW_LAYER_TRACK_GC_BLACK 12
+#define VIK_TRW_LAYER_TRACK_GC_SLOW 13
+#define VIK_TRW_LAYER_TRACK_GC_AVER 14
+#define VIK_TRW_LAYER_TRACK_GC_FAST 15
 
 #define DRAWMODE_BY_TRACK 0
-#define DRAWMODE_BY_VELOCITY 1
+#define DRAWMODE_BY_SPEED 1
 #define DRAWMODE_ALL_BLACK 2
+// Note using DRAWMODE_BY_SPEED may be slow especially for vast numbers of trackpoints
+//  as we are (re)calculating the colour for every point
 
 #define POINTS 1
 #define LINES 2
@@ -133,9 +138,8 @@ struct _VikTrwLayer {
   guint8 wp_size;
   gboolean wp_draw_symbols;
 
-  gdouble velocity_min, velocity_max;
+  gdouble track_draw_speed_factor;
   GArray *track_gc;
-  guint16 track_gc_iter;
   GdkGC *current_track_gc;
   GdkGC *track_bg_gc;
   GdkGC *waypoint_gc;
@@ -227,7 +231,6 @@ static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2]);
 static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp );
 static void trw_layer_free_track_gcs ( VikTrwLayer *vtl );
 
-static gint calculate_velocity ( VikTrwLayer *vtl, VikTrackpoint *tp1, VikTrackpoint *tp2 );
 static void trw_layer_draw_track_cb ( const gchar *name, VikTrack *track, struct DrawingParams *dp );
 static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct DrawingParams *dp );
 
@@ -365,15 +368,15 @@ enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WA
 static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images") };
 enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES };
 
-static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Velocity"), N_("All Tracks Black"), 0 };
+static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Speed"), N_("All Tracks Black"), 0 };
 static gchar *params_wpsymbols[] = { N_("Filled Square"), N_("Square"), N_("Circle"), N_("X"), 0 };
 
 
 static VikLayerParamScale params_scales[] = {
  /* min  max    step digits */
  {  1,   10,    1,   0 }, /* line_thickness */
- {  0.0, 99.0,  1,   2 }, /* velocity_min */
- {  1.0, 100.0, 1.0, 2 }, /* velocity_max */
+ {  0,   100,   1,   0 }, /* track draw speed factor */
+ {  1.0, 100.0, 1.0, 2 }, /* UNUSED */
                 /* 5 * step == how much to turn */
  {  16,   128,  3.2, 0 }, /* image_size */
  {   0,   255,  5,   0 }, /* image alpha */
@@ -400,8 +403,7 @@ VikLayerParam trw_layer_params[] = {
   { "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0 },
   { "bg_line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track BG Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 6 },
   { "trackbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, N_("Track Background Color"), VIK_LAYER_WIDGET_COLOR, 0 },
-  { "velocity_min", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Min Track Velocity:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 1 },
-  { "velocity_max", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Max Track Velocity:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 2 },
+  { "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 1 },
 
   { "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, 0 },
@@ -418,7 +420,7 @@ VikLayerParam trw_layer_params[] = {
   { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Memory Cache Size:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
 };
 
-enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_VMIN, PARAM_VMAX, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
+enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_TDSF, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
 
 /*** TO ADD A PARAM:
  *** 1) Add to trw_layer_params and enumeration
@@ -729,39 +731,8 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
                      trw_layer_new_track_gcs ( vtl, vp );
                    }
                    break;
-    case PARAM_VMIN:
-    {
-      /* Convert to store internally
-         NB file operation always in internal units (metres per second) */
-      vik_units_speed_t speed_units = a_vik_get_units_speed ();
-      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
-	vtl->velocity_min = data.d;
-      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
-	vtl->velocity_min = VIK_KPH_TO_MPS(data.d);
-      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
-	vtl->velocity_min = VIK_MPH_TO_MPS(data.d);
-      else
-	/* Knots */
-	vtl->velocity_min = VIK_KNOTS_TO_MPS(data.d);
-      break;
-    }
-    case PARAM_VMAX:
-    {
-      /* Convert to store internally
-         NB file operation always in internal units (metres per second) */
-      vik_units_speed_t speed_units = a_vik_get_units_speed ();
-      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
-	vtl->velocity_max = data.d;
-      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
-	vtl->velocity_max = VIK_KPH_TO_MPS(data.d);
-      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
-	vtl->velocity_max = VIK_MPH_TO_MPS(data.d);
-      else
-	/* Knots */
-	vtl->velocity_max = VIK_KNOTS_TO_MPS(data.d);
-      break;
-    }
     case PARAM_TBGC: gdk_gc_set_rgb_fg_color(vtl->track_bg_gc, &(data.c)); break;
+    case PARAM_TDSF: vtl->track_draw_speed_factor = data.d; break;
     case PARAM_DLA: vtl->drawlabels = data.b; break;
     case PARAM_DI: vtl->drawimages = data.b; break;
     case PARAM_IS: if ( data.u != vtl->image_size )
@@ -804,41 +775,10 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_DL: rv.b = vtl->drawlines; break;
     case PARAM_LT: rv.u = vtl->line_thickness; break;
     case PARAM_BLT: rv.u = vtl->bg_line_thickness; break;
-    case PARAM_VMIN:
-    {
-      /* Convert to store internally
-         NB file operation always in internal units (metres per second) */
-      vik_units_speed_t speed_units = a_vik_get_units_speed ();
-      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
-	rv.d = vtl->velocity_min;
-      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
-	rv.d = VIK_MPS_TO_KPH(vtl->velocity_min);
-      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
-	rv.d = VIK_MPS_TO_MPH(vtl->velocity_min);
-      else
-	/* Knots */
-	rv.d = VIK_MPS_TO_KNOTS(vtl->velocity_min);
-      break;
-    }
-    case PARAM_VMAX:
-    {
-      /* Convert to store internally
-         NB file operation always in internal units (metres per second) */
-      vik_units_speed_t speed_units = a_vik_get_units_speed ();
-      if ( is_file_operation || speed_units == VIK_UNITS_SPEED_METRES_PER_SECOND )
-	rv.d = vtl->velocity_max;
-      else if ( speed_units == VIK_UNITS_SPEED_KILOMETRES_PER_HOUR )
-	rv.d = VIK_MPS_TO_KPH(vtl->velocity_max);
-      else if ( speed_units == VIK_UNITS_SPEED_MILES_PER_HOUR )
-	rv.d = VIK_MPS_TO_MPH(vtl->velocity_max);
-      else
-	/* Knots */
-	rv.d = VIK_MPS_TO_KNOTS(vtl->velocity_max);
-      break;
-    }
     case PARAM_DLA: rv.b = vtl->drawlabels; break;
     case PARAM_DI: rv.b = vtl->drawimages; break;
     case PARAM_TBGC: vik_gc_get_fg_color(vtl->track_bg_gc, &(rv.c)); break;
+    case PARAM_TDSF: rv.d = vtl->track_draw_speed_factor; break;
     case PARAM_IS: rv.u = vtl->image_size; break;
     case PARAM_IA: rv.u = vtl->image_alpha; break;
     case PARAM_ICS: rv.u = vtl->image_cache_size; break;
@@ -987,8 +927,7 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
   rv->waypoint_text_gc = NULL;
   rv->waypoint_bg_gc = NULL;
   rv->track_gc = NULL;
-  rv->velocity_max = 5.0;
-  rv->velocity_min = 0.0;
+  rv->track_draw_speed_factor = 30.0;
   rv->line_thickness = 1;
   rv->bg_line_thickness = 0;
   rv->current_wp = NULL;
@@ -1094,27 +1033,28 @@ static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp )
   dp->track_gc_iter = 0;
 }
 
-static gint calculate_velocity ( VikTrwLayer *vtl, VikTrackpoint *tp1, VikTrackpoint *tp2 )
+/*
+ * Determine the colour of the trackpoint (and/or trackline) relative to the average speed
+ * Here a simple traffic like light colour system is used:
+ *  . slow points are red
+ *  . average is yellow
+ *  . fast points are green
+ */
+static gint track_section_colour_by_speed ( VikTrwLayer *vtl, VikTrackpoint *tp1, VikTrackpoint *tp2, gdouble average_speed, gdouble low_speed, gdouble high_speed )
 {
-  static gdouble rv = 0;
-  if ( tp1->has_timestamp && tp2->has_timestamp )
-  {
-    rv = ( vik_coord_diff ( &(tp1->coord), &(tp2->coord) )
-           / (tp1->timestamp - tp2->timestamp) ) - vtl->velocity_min;
-
-    if ( rv < 0 )
-      return VIK_TRW_LAYER_TRACK_GC_MIN;
-    else if ( vtl->velocity_min >= vtl->velocity_max )
-      return VIK_TRW_LAYER_TRACK_GC_MAX;
-
-    rv *= (VIK_TRW_LAYER_TRACK_GC_RATES / (vtl->velocity_max - vtl->velocity_min));
-
-    if ( rv >= VIK_TRW_LAYER_TRACK_GC_MAX )
-      return VIK_TRW_LAYER_TRACK_GC_MAX;
-    return (gint) rv;
- }
- else
-   return VIK_TRW_LAYER_TRACK_GC_BLACK;
+  gdouble rv = 0;
+  if ( tp1->has_timestamp && tp2->has_timestamp ) {
+    if ( average_speed > 0 ) {
+      rv = ( vik_coord_diff ( &(tp1->coord), &(tp2->coord) ) / (tp1->timestamp - tp2->timestamp) );
+      if ( rv < low_speed )
+        return VIK_TRW_LAYER_TRACK_GC_SLOW;
+      else if ( rv > high_speed )
+        return VIK_TRW_LAYER_TRACK_GC_FAST;
+      else
+        return VIK_TRW_LAYER_TRACK_GC_AVER;
+    }
+  }
+  return VIK_TRW_LAYER_TRACK_GC_BLACK;
 }
 
 void draw_utm_skip_insignia ( VikViewport *vvp, GdkGC *gc, gint x, gint y )
@@ -1162,6 +1102,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     drawstops = dp->vtl->drawstops;
   }
 
+  gboolean drawing_highlight = FALSE;
   /* Current track - used for creation */
   if ( track == dp->vtl->current_track )
     main_gc = dp->vtl->current_track_gc;
@@ -1175,6 +1116,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 			( dp->vtl->tracks == vik_window_get_selected_tracks ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ||
 			track == vik_window_get_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ) {
 	main_gc = vik_viewport_get_gc_highlight (dp->vp);
+	drawing_highlight = TRUE;
       }
       else {
 	if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
@@ -1208,6 +1150,17 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     oldx = x;
     oldy = y;
 
+    gdouble average_speed = 0.0;
+    gdouble low_speed = 0.0;
+    gdouble high_speed = 0.0;
+    // If necessary calculate these values - which is done only once per track redraw
+    if ( dp->vtl->drawmode == DRAWMODE_BY_SPEED ) {
+      // the percentage factor away from the average speed determines transistions between the levels
+      average_speed = vik_track_get_average_speed_moving(track, dp->vtl->stop_length);
+      low_speed = average_speed - (average_speed*(dp->vtl->track_draw_speed_factor/100.0));
+      high_speed = average_speed + (average_speed*(dp->vtl->track_draw_speed_factor/100.0));
+    }
+
     while ((list = g_list_next(list)))
     {
       tp = VIK_TRACKPOINT(list->data);
@@ -1234,8 +1187,18 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 	  goto skip;
 	}
 
+        VikTrackpoint *tp2 = VIK_TRACKPOINT(list->prev->data);
+        if ( drawpoints || dp->vtl->drawlines ) {
+          // setup main_gc for both point and line drawing
+          if ( !drawing_highlight && (dp->vtl->drawmode == DRAWMODE_BY_SPEED) ) {
+            dp->track_gc_iter = track_section_colour_by_speed ( dp->vtl, tp, tp2, average_speed, low_speed, high_speed );
+            main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+          }
+        }
+
         if ( drawpoints && ! drawing_white_background )
         {
+
           if ( list->next ) {
 	    /*
 	     * The concept of drawing stops is that a trackpoint
@@ -1259,16 +1222,10 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 
         if ((!tp->newsegment) && (dp->vtl->drawlines))
         {
-          VikTrackpoint *tp2 = VIK_TRACKPOINT(list->prev->data);
 
           /* UTM only: zone check */
           if ( drawpoints && dp->vtl->coord_mode == VIK_COORD_UTM && tp->coord.utm_zone != dp->center->utm_zone )
             draw_utm_skip_insignia (  dp->vp, main_gc, x, y);
-
-          if ( dp->vtl->drawmode == DRAWMODE_BY_VELOCITY ) {
-            dp->track_gc_iter = calculate_velocity ( dp->vtl, tp, tp2 );
-            main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
-          }
 
           if (!useoldvals)
             vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &oldx, &oldy );
@@ -1316,10 +1273,11 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           if ( dp->vtl->coord_mode != VIK_COORD_UTM || tp->coord.utm_zone == dp->center->utm_zone )
           {
             vik_viewport_coord_to_screen ( dp->vp, &(tp->coord), &x, &y );
-            if ( dp->vtl->drawmode == DRAWMODE_BY_VELOCITY ) {
-              dp->track_gc_iter = calculate_velocity ( dp->vtl, tp, tp2 );
+
+            if ( !drawing_highlight && (dp->vtl->drawmode == DRAWMODE_BY_SPEED) ) {
+              dp->track_gc_iter = track_section_colour_by_speed ( dp->vtl, tp, tp2, average_speed, low_speed, high_speed );
               main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
-            }
+	    }
 
 	    /*
 	     * If points are the same in display coordinates, don't draw.
@@ -1349,7 +1307,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     }
   }
   if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
-    if ( ++(dp->track_gc_iter) >= VIK_TRW_LAYER_TRACK_GC )
+    if ( ++(dp->track_gc_iter) >= VIK_TRW_LAYER_TRACK_GC_MAX )
       dp->track_gc_iter = 0;
 }
 
@@ -1587,6 +1545,10 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
   gc[11] = vik_viewport_new_gc ( vp, "#874200", width ); /* above range */
 
   gc[12] = vik_viewport_new_gc ( vp, "#000000", width ); /* black / no speed data */
+
+  gc[VIK_TRW_LAYER_TRACK_GC_SLOW] = vik_viewport_new_gc ( vp, "#E6202E", width ); // red-ish
+  gc[VIK_TRW_LAYER_TRACK_GC_AVER] = vik_viewport_new_gc ( vp, "#D2CD26", width ); // yellow-ish
+  gc[VIK_TRW_LAYER_TRACK_GC_FAST] = vik_viewport_new_gc ( vp, "#2B8700", width ); // green-ish
 
   g_array_append_vals ( vtl->track_gc, gc, VIK_TRW_LAYER_TRACK_GC );
 }
