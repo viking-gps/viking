@@ -1310,7 +1310,7 @@ void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright )
   g_return_if_fail ( vp != NULL );
   if ( copyright )
   {
-    gchar *found = (gchar*)g_slist_find_custom ( vp->copyrights, copyright, (GCompareFunc)strcmp );
+    GSList *found = g_slist_find_custom ( vp->copyrights, copyright, (GCompareFunc)strcmp );
     if ( found == NULL )
     {
       gchar *duple = g_strdup ( copyright );
