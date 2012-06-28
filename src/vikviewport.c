@@ -551,11 +551,25 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
 
   /* compute copyrights string */
   guint len = g_slist_length ( vvp->copyrights );
+
   int i;
   for (i = 0 ; i < len ; i++)
   {
+    // Stop when buffer is full
+    int slen = strlen ( s );
+    if ( slen >= 127 )
+      break;
+
     gchar *copyright = g_slist_nth_data ( vvp->copyrights, i );
-    strcat ( s, copyright );
+
+    // Only use part of this copyright that fits in the available space left
+    //  remembering 1 character is left available for the appended space
+    int clen = strlen ( copyright );
+    if ( slen + clen > 126 ) {
+      clen = 126 - slen;
+    }
+
+    strncat ( s, copyright, clen );
     strcat ( s, " " );
   }
 
