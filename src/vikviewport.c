@@ -628,7 +628,6 @@ void vik_viewport_draw_logo ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
 
-  /* compute copyrights string */
   guint len = g_slist_length ( vvp->logos );
   gint x = vvp->width - PAD;
   gint y = PAD;
