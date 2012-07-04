@@ -5748,7 +5748,7 @@ static void trw_layer_show_picture ( gpointer pass_along[6] )
 {
   /* thanks to the Gaim people for showing me ShellExecute and g_spawn_command_line_async */
 #ifdef WINDOWS
-  ShellExecute(NULL, NULL, (char *) pass_along[5], NULL, ".\\", 0);
+  ShellExecute(NULL, "open", (char *) pass_along[5], NULL, NULL, SW_SHOWNORMAL);
 #else /* WINDOWS */
   GError *err = NULL;
   gchar *quoted_file = g_shell_quote ( (gchar *) pass_along[5] );
