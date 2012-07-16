@@ -78,6 +78,8 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] );
 static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] );
 static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2] );
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp);
+static void rt_gpsd_disconnect(VikGpsLayer *vgl);
+static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed);
 #endif
 
 typedef enum {GARMIN_P = 0, MAGELLAN_P, DELORME_P, NAVILINK_P, NUM_PROTOCOLS} vik_gps_proto;
@@ -714,6 +716,7 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
     g_object_unref(vgl->trw_children[i]);
   }
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+  rt_gpsd_disconnect(vgl);
   if (vgl->realtime_track_gc != NULL)
     g_object_unref(vgl->realtime_track_gc);
   if (vgl->realtime_track_bg_gc != NULL)
@@ -1266,9 +1269,6 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
 }
 
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-static void rt_gpsd_disconnect(VikGpsLayer *vgl);
-static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed);
-
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
 {
   struct LatLon ll;
