@@ -1614,7 +1614,6 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
   }
 
   if (vgl->realtime_record && vgl->realtime_track) {
-    create_realtime_trackpoint(vgl, TRUE);
     if ((vgl->realtime_track->trackpoints == NULL) || (vgl->realtime_track->trackpoints->next == NULL))
       vik_trw_layer_delete_track(vgl->trw_children[TRW_REALTIME], vgl->realtime_track_name);
     vgl->realtime_track = NULL;
