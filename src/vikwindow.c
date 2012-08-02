@@ -668,7 +668,13 @@ static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
     else
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*2/3, vik_viewport_get_height(vw->viking_vvp)/2 );
   } else if ( modifiers == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
-    /* control+shift == make sure mouse is still over the same point on the map when we zoom */
+    // This zoom is on the center position
+    if ( event->direction == GDK_SCROLL_UP )
+      vik_viewport_zoom_in (vw->viking_vvp);
+    else
+      vik_viewport_zoom_out (vw->viking_vvp);
+  } else {
+    /* make sure mouse is still over the same point on the map when we zoom */
     VikCoord coord;
     gint x, y;
     gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
@@ -681,11 +687,6 @@ static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
     vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
     vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - event->x),
                                      center_y + (y - event->y) );
-  } else {
-    if ( event->direction == GDK_SCROLL_UP )
-      vik_viewport_zoom_in (vw->viking_vvp);
-    else
-      vik_viewport_zoom_out (vw->viking_vvp);
   }
 
   draw_update(vw);
@@ -1046,11 +1047,33 @@ static gpointer zoomtool_create (VikWindow *vw, VikViewport *vvp)
 static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
 {
   vw->modified = TRUE;
-  vik_viewport_set_center_screen ( vw->viking_vvp, (gint) event->x, (gint) event->y );
-  if ( event->button == 1 )
-    vik_viewport_zoom_in (vw->viking_vvp);
-  else if ( event->button == 3 )
-    vik_viewport_zoom_out (vw->viking_vvp);
+  guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
+
+  VikCoord coord;
+  gint x, y;
+  gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
+  gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
+
+  if ( modifiers == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
+    // This zoom is on the center position
+    vik_viewport_set_center_screen ( vw->viking_vvp, center_x, center_y );
+    if ( event->button == 1 )
+      vik_viewport_zoom_in (vw->viking_vvp);
+    else if ( event->button == 3 )
+      vik_viewport_zoom_out (vw->viking_vvp);
+  }
+  else {
+    /* make sure mouse is still over the same point on the map when we zoom */
+    vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
+    if ( event->button == 1 )
+      vik_viewport_zoom_in (vw->viking_vvp);
+    else if ( event->button == 3 )
+      vik_viewport_zoom_out(vw->viking_vvp);
+    vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
+    vik_viewport_set_center_screen ( vw->viking_vvp,
+                                     center_x + (x - event->x),
+                                     center_y + (y - event->y) );
+  }
   draw_update ( vw );
   return VIK_LAYER_TOOL_ACK;
 }

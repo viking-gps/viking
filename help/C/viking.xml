@@ -824,7 +824,7 @@ This layer is allows drawing of grid lines on the viewport.
 You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
 </para>
 <para>
-Scroll: zoom in and out without changing the center (also Ctrl+, Ctrl- [*not* KeyPad +/-])
+Scroll: zoom in and out keeping the mouse over same location
 </para>
 <para>
 Ctrl-scroll: pan north-south (also Ctrl-up, Ctrl-down)
@@ -833,7 +833,7 @@ Ctrl-scroll: pan north-south (also Ctrl-up, Ctrl-down)
 Shift-scroll: pan east-west (also Ctrl-left, Ctrl-right)
 </para>
 <para>
-Ctrl-shift-scroll: zoom in and out, keeping mouse over same location (like Google maps)
+Ctrl-shift-scroll: zoom in and out, without changing the center (also Ctrl+, Ctrl- [*not* KeyPad +/-])
 </para>
 <para>
 Left or Middle-click: make the clicked point on the map the center
