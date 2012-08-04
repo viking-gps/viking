@@ -2596,7 +2596,7 @@ static void trw_layer_geotagging_track ( gpointer pass_along[6] )
   trw_layer_geotag_dialog ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
 			    vtl,
 			    track,
-			    pass_along[3] );
+			    track->name );
 }
 
 static void trw_layer_geotagging ( gpointer lav[2] )
