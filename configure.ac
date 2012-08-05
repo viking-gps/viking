@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT(viking, 1.3)
-AM_INIT_AUTOMAKE()
+AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
 GTK_DOC_CHECK(1.0)
