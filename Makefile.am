@@ -25,8 +25,10 @@ generate-changelog:
 dist-hook: viking.spec generate-changelog
 	cp $(top_builddir)/viking.spec $(distdir)
 
+MAINTAINERCLEANFILES = \
+	gnome-doc-utils.make
+
 DISTCLEANFILES = \
-	gnome-doc-utils.make \
 	intltool-extract \
 	intltool-merge \
 	intltool-update
