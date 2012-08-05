@@ -247,6 +247,12 @@ ALL_ICONS_HEADER = $(ALL_ICONS:.png=_pixmap.h)
 
 BUILT_SOURCES = $(ALL_ICONS_HEADER) icons.c icons.h
 CLEANFILES = $(BUILT_SOURCES)
+SUFFIXES = .png _pixmap.h
+
+.png_pixmap.h:
+	gdk-pixbuf-csource --name="`basename $< .png`_pixbuf" --struct --extern $< > $@
+	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp$@.h
+	mv temp$@.h $@
 
 noinst_LIBRARIES = libicons.a
 libicons_a_SOURCES = icons.c icons.h
@@ -259,11 +265,6 @@ icons.c: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
 	echo "#include <gdk-pixbuf/gdk-pixdata.h>" >> $@
 	for file in *_pixmap.h ; do echo "#include \"$$file\"" >> $@ ; done
-
-%_pixmap.h: %.png
-	gdk-pixbuf-csource --name="`basename $< .png`_pixbuf" --struct --extern $< > $@
-	cat $@ | sed -e 's/\(pixel_data: ..\)/\1 (unsigned char \*)/' > temp$@.h
-	mv temp$@.h $@
 
 $(BUILT_SOURCES): $(srcdir)/Makefile.am
 
