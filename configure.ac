@@ -341,6 +341,8 @@ dnl correct flags to aclocal.
 ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
 AC_SUBST(ACLOCAL_AMFLAGS)
 
+AM_CONDITIONAL(VIKING_DOC, test x${enable_gtk_doc} = xyes)
+
 # Configuration
 AC_CONFIG_FILES([Makefile
                  src/Makefile
@@ -350,10 +352,8 @@ AC_CONFIG_FILES([Makefile
                  help/Makefile
                  data/Makefile
                  doc/Makefile
+                 doc/reference/Makefile
                  doc/examples/Makefile])
-if test x$enable_gtk_doc = xyes; then
-AC_CONFIG_FILES([doc/reference/Makefile])
-fi
 AC_OUTPUT([
 	   viking.spec
 	   ])
