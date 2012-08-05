@@ -10,10 +10,10 @@ full:
 	make
 
 EXTRA_DIST = \
-	     gnome-doc-utils.make \
-		 ChangeLog.0 \
-	     viking.spec \
-	     $(INTLTOOL)
+	gnome-doc-utils.make \
+	ChangeLog.0 \
+	viking.spec \
+	$(INTLTOOL)
 
 .PHONY: generate-changelog
 generate-changelog:
