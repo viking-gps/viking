@@ -15,7 +15,6 @@ authors.h: $(top_srcdir)/AUTHORS
 	echo "NULL};" >> $@
 
 if HAVE_XSLTPROC
-XP=@XP@
 documenters.h: $(top_srcdir)/help/C/viking.xml
 	$(XP) $(srcdir)/docbook2documenters.xsl $(top_srcdir)/help/C/viking.xml > $@
 else
