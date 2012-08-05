@@ -56,7 +56,9 @@ gint vik_trw_layer_get_property_tracks_line_thickness ( VikTrwLayer *vtl );
 void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
 void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t );
 
-// ATM no external waypoint manipulation - only on tracks
+// Waypoint returned is the first one
+VikWaypoint *vik_trw_layer_get_waypoint ( VikTrwLayer *vtl, const gchar *name );
+
 // Track returned is the first one
 VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, const gchar *name );
 gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk );
