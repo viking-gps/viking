@@ -101,7 +101,7 @@ typedef gboolean (*VikToolKeyFunc) (VikLayer *, GdkEventKey *, gpointer);
 
 typedef struct _VikToolInterface VikToolInterface;
 struct _VikToolInterface {
-  gchar *name;
+  GtkRadioActionEntry radioActionEntry;
   VikToolConstructorFunc create;
   VikToolDestructorFunc destroy;
   VikToolActivationFunc activate;

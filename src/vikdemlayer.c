@@ -131,7 +131,8 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
 static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
 
 static VikToolInterface dem_tools[] = {
-  { N_("DEM Download/Import"), (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
+  { { "DEMDownload", "vik-icon-DEM Download", N_("_DEM Download"), NULL, N_("DEM Download"), 0 },
+    (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
     (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release,
     (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_demdl_pixbuf },
 };

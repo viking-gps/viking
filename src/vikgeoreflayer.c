@@ -65,12 +65,15 @@ static gboolean georef_layer_move_press ( VikGeorefLayer *vgl, GdkEventButton *e
 static gpointer georef_layer_zoom_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
 
+// See comment in viktrwlayer.c for advice on values used
 static VikToolInterface georef_tools[] = {
-  { N_("Georef Move Map"), (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
+  { { "GeorefMoveMap", "vik-icon-Georef Move Map",  N_("_Georef Move Map"), NULL,  N_("Georef Move Map"), 0 },
+    (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release,
     (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_geomove_pixbuf },
 
-  { N_("Georef Zoom Tool"), (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
+  { { "GeorefZoomTool", "vik-icon-Georef Zoom Tool",  N_("Georef Z_oom Tool"), NULL,  N_("Georef Zoom Tool"), 0 },
+    (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL,
     (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_geozoom_pixbuf },
 };

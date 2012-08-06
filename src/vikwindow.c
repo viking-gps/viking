@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005-2006, Alex Foobarian <foobarian@gmail.com>
+ * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,6 +204,7 @@ enum {
 
 static guint window_signals[VW_LAST_SIGNAL] = { 0 };
 
+// TODO get rid of this as this is unnecessary duplication...
 static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Pan"), N_("Zoom"), N_("Ruler"), N_("Select") };
 
 GType vik_window_get_type (void)
@@ -261,7 +263,7 @@ void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
 
     for (j = 0; j < tool_count; j++) {
       action = gtk_action_group_get_action(vw->action_group,
-	    layer_interface->tools[j].name);
+                                           layer_interface->tools[j].radioActionEntry.name);
       g_object_set(action, "sensitive", i == vl->type, NULL);
     }
   }
@@ -462,7 +464,8 @@ static void draw_status ( VikWindow *vw )
       /* xmpp should be a whole number so don't show useless .000 bit */
       g_snprintf ( zoom_level, 22, "%d %s", (int)xmpp, unit );
   if ( vw->current_tool == TOOL_LAYER )
-    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].name );
+    // Use tooltip rather than the internal name as the tooltip is i8n
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].radioActionEntry.tooltip );
   else
     vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, _(tool_names[vw->current_tool]) );
 
@@ -1016,7 +1019,7 @@ static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, ruler_tool_st
 }
 
 static VikToolInterface ruler_tool = 
-  { "Ruler", 
+  { { "Ruler", "vik-icon-ruler", N_("_Ruler"), "<control><shift>R", N_("Ruler Tool"), 2 },
     (VikToolConstructorFunc) ruler_create,
     (VikToolDestructorFunc) ruler_destroy,
     (VikToolActivationFunc) NULL,
@@ -1062,7 +1065,7 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
 }
 
 static VikToolInterface zoom_tool = 
-  { "Zoom", 
+  { { "Zoom", "vik-icon-zoom", N_("_Zoom"), "<control><shift>Z", N_("Zoom Tool"), 1 },
     (VikToolConstructorFunc) zoomtool_create,
     (VikToolDestructorFunc) NULL,
     (VikToolActivationFunc) NULL,
@@ -1106,7 +1109,7 @@ static VikLayerToolFuncStatus pantool_release (VikLayer *vl, GdkEventButton *eve
 }
 
 static VikToolInterface pan_tool = 
-  { "Pan", 
+  { { "Pan", "vik-icon-pan", N_("_Pan"), "<control><shift>P", N_("Pan Tool"), 0 },
     (VikToolConstructorFunc) pantool_create,
     (VikToolDestructorFunc) NULL,
     (VikToolActivationFunc) NULL,
@@ -1222,7 +1225,7 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
 }
 
 static VikToolInterface select_tool =
-  { "Select",
+  { { "Select", "vik-icon-select", N_("_Select"), "<control><shift>S", N_("Select Tool"), 3 },
     (VikToolConstructorFunc) selecttool_create,
     (VikToolDestructorFunc) selecttool_destroy,
     (VikToolActivationFunc) NULL,
@@ -1474,7 +1477,7 @@ static int toolbox_get_tool(toolbox_tools_t *vt, const gchar *tool_name)
 {
   int i;
   for (i=0; i<vt->n_tools; i++) {
-    if (!strcmp(tool_name, vt->tools[i].ti.name)) {
+    if (!strcmp(tool_name, vt->tools[i].ti.radioActionEntry.name)) {
       break;
     }
   }
@@ -1559,7 +1562,7 @@ static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event)
 
 void vik_window_enable_layer_tool ( VikWindow *vw, gint layer_id, gint tool_id )
 {
-  gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, vik_layer_get_interface(layer_id)->tools[tool_id].name ) );
+  gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, vik_layer_get_interface(layer_id)->tools[tool_id].radioActionEntry.name ) );
 }
 
 /* this function gets called whenever a toolbar tool is clicked */
@@ -1591,7 +1594,7 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
     /* TODO: only enable tools from active layer */
     for (layer_id=0; layer_id<VIK_LAYER_NUM_TYPES; layer_id++) {
       for ( tool_id = 0; tool_id < vik_layer_get_interface(layer_id)->tools_count; tool_id++ ) {
-	if (!strcmp(vik_layer_get_interface(layer_id)->tools[tool_id].name, gtk_action_get_name(a))) {
+	if (!strcmp(vik_layer_get_interface(layer_id)->tools[tool_id].radioActionEntry.name, gtk_action_get_name(a))) {
            vw->current_tool = TOOL_LAYER;
            vw->tool_layer_id = layer_id;
            vw->tool_tool_id = tool_id;
@@ -2611,13 +2614,6 @@ static GtkRadioActionEntry mode_entries[] = {
   { "ModeLatLon",      NULL,         N_("Lat_/Lon Mode"),           "<control>l", NULL, 5 },
 };
 
-static GtkRadioActionEntry tool_entries[] = {
-  { "Pan",      "vik-icon-pan",        N_("_Pan"),                         "<control><shift>P", N_("Pan Tool"),  0 },
-  { "Zoom",      "vik-icon-zoom",        N_("_Zoom"),                         "<control><shift>Z", N_("Zoom Tool"),  1 },
-  { "Ruler",     "vik-icon-ruler",       N_("_Ruler"),                        "<control><shift>R", N_("Ruler Tool"), 2 },
-  { "Select",    "vik-icon-select",      N_("_Select"),                       "<control><shift>S", N_("Select Tool"), 3 }
-};
-
 static GtkToggleActionEntry toggle_entries[] = {
   { "ShowScale",      NULL,                 N_("Show _Scale"),               "F5",         N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
   { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)set_draw_centermark, TRUE },
@@ -2667,14 +2663,16 @@ static void window_create_ui( VikWindow *window )
 
   register_vik_icons(icon_factory);
 
+  // Copy the tool RadioActionEntries out of the main Window structure into an extending array 'tools'
+  //  so that it can be applied to the UI in one action group add function call below
   ntools = 0;
-  for (i=0; i<G_N_ELEMENTS(tool_entries); i++) {
+  for (i=0; i<window->vt->n_tools; i++) {
       tools = g_renew(GtkRadioActionEntry, tools, ntools+1);
       radio = &tools[ntools];
       ntools++;
-      *radio = tool_entries[i];
+      *radio = window->vt->tools[i].ti.radioActionEntry;
       radio->value = ntools;
-  }  
+  }
 
   for (i=0; i<VIK_LAYER_NUM_TYPES; i++) {
     GtkActionEntry action;
@@ -2700,27 +2698,25 @@ static void window_create_ui( VikWindow *window )
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainToolbar/ToolItems/", vik_layer_get_interface(i)->name, NULL, GTK_UI_MANAGER_SEPARATOR, FALSE);
     }
 
+    // Further tool copying for to apply to the UI, also apply menu UI setup
     for ( j = 0; j < vik_layer_get_interface(i)->tools_count; j++ ) {
       tools = g_renew(GtkRadioActionEntry, tools, ntools+1);
       radio = &tools[ntools];
       ntools++;
       
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Tools", 
-			    _(vik_layer_get_interface(i)->tools[j].name),
-			    vik_layer_get_interface(i)->tools[j].name,
+			    vik_layer_get_interface(i)->tools[j].radioActionEntry.label,
+			    vik_layer_get_interface(i)->tools[j].radioActionEntry.name,
 			    GTK_UI_MANAGER_MENUITEM, FALSE);
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainToolbar/ToolItems", 
-			    _(vik_layer_get_interface(i)->tools[j].name),
-			    vik_layer_get_interface(i)->tools[j].name,
+			    vik_layer_get_interface(i)->tools[j].radioActionEntry.label,
+			    vik_layer_get_interface(i)->tools[j].radioActionEntry.name,
 			    GTK_UI_MANAGER_TOOLITEM, FALSE);
 
       toolbox_add_tool(window->vt, &(vik_layer_get_interface(i)->tools[j]), i);
 
-      radio->name = vik_layer_get_interface(i)->tools[j].name;
-      radio->stock_id = vik_layer_get_interface(i)->tools[j].name,
-      radio->label = _(vik_layer_get_interface(i)->tools[j].name);
-      radio->accelerator = NULL;
-      radio->tooltip = _(vik_layer_get_interface(i)->tools[j].name);
+      *radio = vik_layer_get_interface(i)->tools[j].radioActionEntry;
+      // Overwrite with actual number to use
       radio->value = ntools;
     }
   }
@@ -2734,7 +2730,7 @@ static void window_create_ui( VikWindow *window )
   for (i=0; i<VIK_LAYER_NUM_TYPES; i++) {
     for ( j = 0; j < vik_layer_get_interface(i)->tools_count; j++ ) {
       GtkAction *action = gtk_action_group_get_action(action_group,
-			    vik_layer_get_interface(i)->tools[j].name);
+			    vik_layer_get_interface(i)->tools[j].radioActionEntry.name);
       g_object_set(action, "sensitive", FALSE, NULL);
     }
   }
@@ -2748,26 +2744,27 @@ static void window_create_ui( VikWindow *window )
 }
 
 
-
+// TODO - add method to add tool icons defined from outside this file
+//  and remove the reverse dependency on icon definition from this file
 static struct { 
   const GdkPixdata *data;
   gchar *stock_id;
 } stock_icons[] = {
-  { &begintr_18_pixbuf,		"Begin Track"      },
-  { &route_finder_18_pixbuf,	"Route Finder"     },
-  { &mover_22_pixbuf,		"vik-icon-pan"     },
-  { &demdl_18_pixbuf,		"DEM Download/Import"     },
-  { &showpic_18_pixbuf,		"Show Picture"      },
-  { &addtr_18_pixbuf,		"Create Track"      },
-  { &edtr_18_pixbuf,		"Edit Trackpoint"   },
-  { &addwp_18_pixbuf,		"Create Waypoint"   },
-  { &edwp_18_pixbuf,		"Edit Waypoint"     },
+  { &mover_22_pixbuf,		"vik-icon-pan"      },
   { &zoom_18_pixbuf,		"vik-icon-zoom"     },
   { &ruler_18_pixbuf,		"vik-icon-ruler"    },
   { &select_18_pixbuf,		"vik-icon-select"   },
-  { &geozoom_18_pixbuf,		"Georef Zoom Tool"  },
-  { &geomove_18_pixbuf,		"Georef Move Map"   },
-  { &mapdl_18_pixbuf,		"Maps Download"     },
+  { &begintr_18_pixbuf,		"vik-icon-Begin Track"      },
+  { &route_finder_18_pixbuf,	"vik-icon-Route Finder"     },
+  { &demdl_18_pixbuf,		"vik-icon-DEM Download/Import"},
+  { &showpic_18_pixbuf,		"vik-icon-Show Picture"     },
+  { &addtr_18_pixbuf,		"vik-icon-Create Track"     },
+  { &edtr_18_pixbuf,		"vik-icon-Edit Trackpoint"  },
+  { &addwp_18_pixbuf,		"vik-icon-Create Waypoint"  },
+  { &edwp_18_pixbuf,		"vik-icon-Edit Waypoint"    },
+  { &geozoom_18_pixbuf,		"vik-icon-Georef Zoom Tool" },
+  { &geomove_18_pixbuf,		"vik-icon-Georef Move Map"  },
+  { &mapdl_18_pixbuf,		"vik-icon-Maps Download"    },
 };
  
 static gint n_stock_icons = G_N_ELEMENTS (stock_icons);
