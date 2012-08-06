@@ -847,11 +847,17 @@ Middle-click and drag: pan
 Pan moves the viewpoint. A single click centers the viewport at that point, whereas click and drag dynamically moves the view around.
 This is the default tool.
 </para>
+<para>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</keycap>
+</para>
 </section>
 
 <section><title>Zoom</title>
 <para>
 Zooms in and out on the clicked part of the map.
+</para>
+<para>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</keycap>
 </para>
 </section>
 
@@ -859,6 +865,9 @@ Zooms in and out on the clicked part of the map.
 <para>
 The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
 A second click will 'freeze' the ruler at that point.
+</para>
+<para>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+R</keycap>
 </para>
 </section>
 
@@ -868,6 +877,9 @@ The select tool allows one to choose any waypoint or track by clicking on it (or
 </para>
 <para>
 ATM to select a track one must actually click on a trackpoint, which is also selected.
+</para>
+<para>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</keycap>
 </para>
 </section>
 
