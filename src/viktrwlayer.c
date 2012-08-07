@@ -474,7 +474,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
 /* End Layer Interface function definitions */
 
 VikLayerInterface vik_trw_layer_interface = {
-  "TrackWaypoint",
+  N_("TrackWaypoint"),
   &viktrwlayer_pixbuf,
 
   trw_layer_tools,

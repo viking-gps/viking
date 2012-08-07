@@ -177,7 +177,7 @@ enum {
   NUM_PARAMS};
 
 VikLayerInterface vik_gps_layer_interface = {
-  "GPS",
+  N_("GPS"),
   &vikgpslayer_pixbuf,
 
   NULL,

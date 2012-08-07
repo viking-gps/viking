@@ -52,7 +52,7 @@ static VikLayerParam coord_layer_params[] = {
 enum { PARAM_COLOR = 0, PARAM_MIN_INC, PARAM_LINE_THICKNESS, NUM_PARAMS };
 
 VikLayerInterface vik_coord_layer_interface = {
-  "Coord",
+  N_("Coordinate"),
   &vikcoordlayer_pixbuf,
 
   NULL,

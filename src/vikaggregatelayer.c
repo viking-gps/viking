@@ -23,6 +23,7 @@
 #include "icons/icons.h"
 
 #include <string.h>
+#include <glib/gi18n.h>
 
 #define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
 
@@ -32,7 +33,7 @@ static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoord
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
 VikLayerInterface vik_aggregate_layer_interface = {
-  "Aggregate",
+  N_("Aggregate"),
   &vikaggregatelayer_pixbuf,
 
   NULL,

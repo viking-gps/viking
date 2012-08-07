@@ -182,7 +182,7 @@ static const guint DEM_N_GRADIENT_COLORS = sizeof(dem_gradient_colors)/sizeof(de
 
 
 VikLayerInterface vik_dem_layer_interface = {
-  "DEM",
+  N_("DEM"),
   &vikdemlayer_pixbuf,
 
   dem_tools,

@@ -79,7 +79,7 @@ static VikToolInterface georef_tools[] = {
 };
 
 VikLayerInterface vik_georef_layer_interface = {
-  "GeoRef Map",
+  N_("GeoRef Map"),
   &vikgeoreflayer_pixbuf, /*icon */
 
   georef_tools,
