@@ -34,6 +34,7 @@ static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikA
 
 VikLayerInterface vik_aggregate_layer_interface = {
   N_("Aggregate"),
+  "<control><shift>A",
   &vikaggregatelayer_pixbuf,
 
   NULL,

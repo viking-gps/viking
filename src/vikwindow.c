@@ -2688,7 +2688,7 @@ static void window_create_ui( VikWindow *window )
     action.name = vik_layer_get_interface(i)->name;
     action.stock_id = vik_layer_get_interface(i)->name;
     action.label = g_strdup_printf( _("New _%s Layer"), vik_layer_get_interface(i)->name);
-    action.accelerator = NULL;
+    action.accelerator = vik_layer_get_interface(i)->accelerator;
     action.tooltip = NULL;
     action.callback = (GCallback)menu_addlayer_cb;
     gtk_action_group_add_actions(action_group, &action, 1, window);

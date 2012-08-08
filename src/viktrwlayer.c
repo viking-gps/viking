@@ -475,6 +475,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
 
 VikLayerInterface vik_trw_layer_interface = {
   N_("TrackWaypoint"),
+  "<control><shift>Y",
   &viktrwlayer_pixbuf,
 
   trw_layer_tools,

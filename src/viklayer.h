@@ -202,6 +202,7 @@ typedef struct _VikLayerInterface VikLayerInterface;
 /* See vik_layer_* for function parameter names */
 struct _VikLayerInterface {
   const gchar *                     name;
+  const gchar *                     accelerator;
   const GdkPixdata *                icon;
 
   VikToolInterface *                tools;
