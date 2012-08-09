@@ -219,6 +219,8 @@ static void layers_panel_init ( VikLayersPanel *vlp )
   gtk_box_pack_start ( GTK_BOX(vlp), hbox, FALSE, FALSE, 0 );
 
   vlp->popup_factory = gtk_item_factory_new ( GTK_TYPE_MENU, "<main>", NULL );
+  gtk_item_factory_set_translate_func (vlp->popup_factory,
+          (GtkTranslateFunc) gettext, NULL, NULL);
   gtk_item_factory_create_items ( vlp->popup_factory, NUM_BASE_ENTRIES, base_entries, vlp );
   for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
   {
