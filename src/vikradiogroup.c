@@ -20,6 +20,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include "vikradiogroup.h"
 
@@ -83,7 +84,7 @@ GtkWidget *vik_radio_group_new ( GList *options )
   vrg = VIK_RADIO_GROUP ( g_object_new ( VIK_RADIO_GROUP_TYPE, NULL ) );
 
   label = g_list_nth_data(options, 0);
-  t = gtk_radio_button_new_with_label ( NULL, label );
+  t = gtk_radio_button_new_with_label ( NULL, gettext(label) );
   gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(t), TRUE );
   gtk_box_pack_start ( GTK_BOX(vrg), t, FALSE, FALSE, 0 );
 
@@ -93,7 +94,8 @@ GtkWidget *vik_radio_group_new ( GList *options )
   while ( ( option = g_list_next(option) ) != NULL )
   {
     label = option->data;
-    t = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(vrg->radios->data), label );
+    t = gtk_radio_button_new_with_label_from_widget (
+            GTK_RADIO_BUTTON(vrg->radios->data), gettext(label));
     vrg->radios = g_slist_append( vrg->radios, t );
     gtk_box_pack_start ( GTK_BOX(vrg), GTK_WIDGET(t), FALSE, FALSE, 0 );
     vrg->options_count++;
