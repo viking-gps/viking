@@ -3832,6 +3832,52 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
 }
 
+/**
+ * Split a track at the currently selected trackpoint,
+ *  asking the user for the new name
+ */
+static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl )
+{
+  if ( !vtl->current_tpl )
+    return;
+
+  if ( vtl->current_tpl->next && vtl->current_tpl->prev ) {
+    gchar *name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, vtl->current_tp_track->name);
+    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name ) ) )
+    {
+      VikTrack *tr = vik_track_new ();
+      GList *newglist = g_list_alloc ();
+      newglist->prev = NULL;
+      newglist->next = vtl->current_tpl->next;
+      newglist->data = vik_trackpoint_copy(VIK_TRACKPOINT(vtl->current_tpl->data));
+      tr->trackpoints = newglist;
+
+      vtl->current_tpl->next->prev = newglist; /* end old track here */
+      vtl->current_tpl->next = NULL;
+
+      vtl->current_tpl = newglist; /* change tp to first of new track. */
+      vtl->current_tp_track = tr;
+
+      tr->visible = TRUE;
+
+      vik_trw_layer_add_track ( vtl, name, tr );
+
+      trku_udata udata;
+      udata.trk  = tr;
+      udata.uuid = NULL;
+
+      // Also need id of newly created track
+      gpointer *trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
+      if ( trkf && udata.uuid )
+        vtl->current_tp_id = udata.uuid;
+      else
+        vtl->current_tp_id = NULL;
+
+      vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
+    }
+  }
+}
+
 /* split by time routine */
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
 {
@@ -4977,41 +5023,8 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
 
   if ( response == VIK_TRW_LAYER_TPWIN_SPLIT && vtl->current_tpl->next && vtl->current_tpl->prev )
   {
-    gchar *name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, vtl->current_tp_track->name);
-    if ( ( name = a_dialog_new_track ( GTK_WINDOW(vtl->tpwin), vtl->tracks, name ) ) )
-    {
-      VikTrack *tr = vik_track_new ();
-      GList *newglist = g_list_alloc ();
-      newglist->prev = NULL;
-      newglist->next = vtl->current_tpl->next;
-      newglist->data = vik_trackpoint_copy(VIK_TRACKPOINT(vtl->current_tpl->data));
-      tr->trackpoints = newglist;
-
-      vtl->current_tpl->next->prev = newglist; /* end old track here */
-      vtl->current_tpl->next = NULL;
-
-      vtl->current_tpl = newglist; /* change tp to first of new track. */
-      vtl->current_tp_track = tr;
-
-      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
-
-      tr->visible = TRUE;
-
-      vik_trw_layer_add_track ( vtl, name, tr );
-
-      trku_udata udata;
-      udata.trk  = tr;
-      udata.uuid = NULL;
-
-      // Also need id of newly created track
-      gpointer *trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
-      if ( trkf && udata.uuid )
-        vtl->current_tp_id = udata.uuid;
-      else
-        vtl->current_tp_id = NULL;
-
-      vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
-    }
+    trw_layer_split_at_selected_trackpoint ( vtl );
+    vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DELETE )
   {
