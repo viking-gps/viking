@@ -245,6 +245,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
+static void trw_layer_split_at_trackpoint ( gpointer pass_along[6] );
 static void trw_layer_reverse ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] );
 static void trw_layer_edit_trackpoint ( gpointer pass_along[6] );
@@ -4028,6 +4029,14 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
   g_list_free(newlists);
 }
 
+/**
+ * Split a track at the currently selected trackpoint
+ */
+static void trw_layer_split_at_trackpoint ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  trw_layer_split_at_selected_trackpoint ( vtl );
+}
 /* end of split/merge routines */
 
 /**
@@ -4827,6 +4836,13 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_n_points), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(split_submenu), item );
     gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Split at _Trackpoint") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_at_trackpoint), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(split_submenu), item );
+    gtk_widget_show ( item );
+    // Make it available only when a trackpoint is selected.
+    gtk_widget_set_sensitive ( item, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
 
     item = gtk_image_menu_item_new_with_mnemonic ( _("_Reverse Track") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_MENU) );
