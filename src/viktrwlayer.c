@@ -4991,13 +4991,25 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       vtl->current_tpl->next = NULL;
 
       vtl->current_tpl = newglist; /* change tp to first of new track. */
-      vtl->current_tp_track->name = name;
+      vtl->current_tp_track = tr;
 
       vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
 
       tr->visible = TRUE;
 
       vik_trw_layer_add_track ( vtl, name, tr );
+
+      trku_udata udata;
+      udata.trk  = tr;
+      udata.uuid = NULL;
+
+      // Also need id of newly created track
+      gpointer *trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
+      if ( trkf && udata.uuid )
+        vtl->current_tp_id = udata.uuid;
+      else
+        vtl->current_tp_id = NULL;
+
       vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
     }
   }
