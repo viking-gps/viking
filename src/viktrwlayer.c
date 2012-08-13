@@ -243,6 +243,7 @@ static void trw_layer_goto_track_min_alt ( gpointer pass_along[6] );
 static void trw_layer_goto_track_center ( gpointer pass_along[6] );
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
+static void trw_layer_append_track ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
 static void trw_layer_split_at_trackpoint ( gpointer pass_along[6] );
@@ -3734,6 +3735,74 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
   }
 }
 
+// c.f. trw_layer_sorted_track_id_by_name_list
+//  but don't add the specified track to the list (normally current track)
+static void trw_layer_sorted_track_id_by_name_list_exclude_self (const gpointer id, const VikTrack *trk, gpointer udata)
+{
+  twt_udata *user_data = udata;
+
+  // Skip self
+  if (trk->trackpoints == user_data->exclude) {
+    return;
+  }
+
+  // Sort named list alphabetically
+  *(user_data->result) = g_list_insert_sorted_with_data (*(user_data->result), trk->name, sort_alphabetically, NULL);
+}
+
+/**
+ * Join - this allows combining 'routes' and 'tracks'
+ *  i.e. doesn't care about whether tracks have consistent timestamps
+ * ATM can only append one track at a time to the currently selected track
+ */
+static void trw_layer_append_track ( gpointer pass_along[6] )
+{
+
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  GList *other_tracks_names = NULL;
+
+  // Sort alphabetically for user presentation
+  // Convert into list of names for usage with dialog function
+  // TODO: Need to consider how to work best when we can have multiple tracks the same name...
+  twt_udata udata;
+  udata.result = &other_tracks_names;
+  udata.exclude = trk->trackpoints;
+
+  g_hash_table_foreach(vtl->tracks, (GHFunc) trw_layer_sorted_track_id_by_name_list_exclude_self, (gpointer)&udata);
+
+  // Note the limit to selecting one track only
+  //  this is to control the ordering of appending tracks, i.e. the selected track always goes after the current track
+  //  (otherwise with multiple select the ordering would not be controllable by the user - automatically being alphabetically)
+  GList *append_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                               other_tracks_names,
+                                               FALSE,
+                                               _("Append Track"),
+                                               _("Select the track to append after the current track"));
+
+  g_list_free(other_tracks_names);
+
+  // It's a list, but shouldn't contain more than one other track!
+  if ( append_list ) {
+    GList *l;
+    for (l = append_list; l != NULL; l = g_list_next(l)) {
+      // TODO: at present this uses the first track found by name,
+      //  which with potential multiple same named tracks may not be the one selected...
+      VikTrack *append_track = vik_trw_layer_get_track ( vtl, l->data );
+      if ( append_track ) {
+        trk->trackpoints = g_list_concat(trk->trackpoints, append_track->trackpoints);
+        append_track->trackpoints = NULL;
+        vik_trw_layer_delete_track (vtl, append_track);
+      }
+    }
+    for (l = append_list; l != NULL; l = g_list_next(l))
+      g_free(l->data);
+    g_list_free(append_list);
+    vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
+  }
+}
+
 /* merge by time routine */
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
 {
@@ -4824,6 +4893,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     item = gtk_menu_item_new_with_mnemonic ( _("Merge _With Other Tracks...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_with_other), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("_Append Track...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_append_track), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
     gtk_widget_show ( item );
 
