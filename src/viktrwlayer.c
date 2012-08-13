@@ -165,10 +165,6 @@ struct _VikTrwLayer {
   gpointer current_tp_id;
   VikTrwLayerTpwin *tpwin;
 
-  /* weird hack for joining tracks */
-  GList *last_tpl;
-  VikTrack *last_tp_track;
-
   /* track editing tool -- more specifically, moving tps */
   gboolean moving_tp;
 
@@ -293,7 +289,6 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
 static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
 
 static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl );
-static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
@@ -962,8 +957,6 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
   rv->route_finder_append = FALSE;
 
   rv->waypoint_rightclick = FALSE;
-  rv->last_tpl = NULL;
-  rv->last_tp_track = NULL;
   rv->tpwin = NULL;
   rv->image_cache = g_queue_new();
   rv->image_size = 64;
@@ -2988,8 +2981,6 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk )
 {
   if (vtl->current_tp_track == trk )
     trw_layer_cancel_current_tp ( vtl, FALSE );
-  else if (vtl->last_tp_track == trk )
-    trw_layer_cancel_last_tp ( vtl );
 }
 	
 static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name)
@@ -3283,8 +3274,6 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
   vtl->route_finder_added_track = NULL;
   if (vtl->current_tp_track)
     trw_layer_cancel_current_tp(vtl, FALSE);
-  if (vtl->last_tp_track)
-    trw_layer_cancel_last_tp ( vtl );
 
   g_hash_table_foreach(vtl->tracks_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
   g_hash_table_remove_all(vtl->tracks_iters);
@@ -5080,15 +5069,6 @@ static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl )
   }
 }
 
-/* to be called when last_tpl no longer exists. */
-static void trw_layer_cancel_last_tp ( VikTrwLayer *vtl )
-{
-  if ( vtl->tpwin ) /* can't join with a non-existant TP. */
-    vik_trw_layer_tpwin_disable_join ( vtl->tpwin );
-  vtl->last_tpl = NULL;
-  vtl->last_tp_track = NULL;
-}
-
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy )
 {
   if ( vtl->tpwin )
@@ -5131,9 +5111,6 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       return;
 
     GList *new_tpl;
-    /* can't join with a non-existent trackpoint */
-    vtl->last_tpl = NULL;
-    vtl->last_tp_track = NULL;
 
     if ( (new_tpl = vtl->current_tpl->next) || (new_tpl = vtl->current_tpl->prev) )
     {
@@ -5145,8 +5122,6 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       /* at this point the old trackpoint exists, but the list links are correct (new), so it is safe to do this. */
       if ( vtl->current_tp_track )
         vik_trw_layer_tpwin_set_tp ( vtl->tpwin, new_tpl, vtl->current_tp_track->name );
-
-      trw_layer_cancel_last_tp ( vtl );
 
       g_free ( vtl->current_tpl->data ); /* TODO: vik_trackpoint_free() */
       g_list_free_1 ( vtl->current_tpl );
@@ -5163,53 +5138,14 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_FORWARD && vtl->current_tpl->next )
   {
-    vtl->last_tpl = vtl->current_tpl;
     if ( vtl->current_tp_track )
       vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->next, vtl->current_tp_track->name );
     vik_layer_emit_update(VIK_LAYER(vtl), FALSE); /* TODO longone: either move or only update if tp is inside drawing window */
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_BACK && vtl->current_tpl->prev )
   {
-    vtl->last_tpl = vtl->current_tpl;
     if ( vtl->current_tp_track )
       vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->prev, vtl->current_tp_track->name );
-    vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
-  }
-  else if ( response == VIK_TRW_LAYER_TPWIN_JOIN )
-  {
-    // Check tracks exist and are different before joining
-    if ( ! vtl->last_tp_track || ! vtl->current_tp_track || vtl->last_tp_track == vtl->current_tp_track )
-      return;
-
-    VikTrack *tr1 = vtl->last_tp_track;
-    VikTrack *tr2 = vtl->current_tp_track;
-
-    VikTrack *tr_first = tr1, *tr_last = tr2;
-
-    if ( (!vtl->last_tpl->next) && (!vtl->current_tpl->next) ) /* both endpoints */
-      vik_track_reverse ( tr2 ); /* reverse the second, that way second track clicked will be later. */
-    else if ( (!vtl->last_tpl->prev) && (!vtl->current_tpl->prev) )
-      vik_track_reverse ( tr1 );
-    else if ( (!vtl->last_tpl->prev) && (!vtl->current_tpl->next) ) /* clicked startpoint, then endpoint -- concat end to start */
-    {
-      tr_first = tr2;
-      tr_last = tr1;
-    }
-    /* default -- clicked endpoint then startpoint -- connect endpoint to startpoint */
-
-    if ( tr_last->trackpoints ) /* deleting this part here joins them into 1 segmented track. useful but there's no place in the UI for this feature. segments should be deprecated anyway. */
-      VIK_TRACKPOINT(tr_last->trackpoints->data)->newsegment = FALSE;
-    tr1->trackpoints = g_list_concat ( tr_first->trackpoints, tr_last->trackpoints );
-    tr2->trackpoints = NULL;
-
-    vtl->current_tp_track = vtl->last_tp_track; /* current_tp stays the same (believe it or not!) */
-    vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
-
-    /* if we did this before, trw_layer_delete_track would have canceled the current tp because
-     * it was the current track. canceling the current tp would have set vtl->current_tpl to NULL */
-    vik_trw_layer_delete_track ( vtl, vtl->current_tp_track );
-
-    trw_layer_cancel_last_tp ( vtl ); /* same TP, can't join. */
     vik_layer_emit_update(VIK_LAYER(vtl), FALSE);
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_INSERT && vtl->current_tpl->next )
@@ -5424,10 +5360,6 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
 	if ( vtl->tpwin )
           if ( vtl->current_tp_track )
             vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
-
-	// Don't really know what this is for but seems like it might be handy...
-	/* can't join with itself! */
-        trw_layer_cancel_last_tp ( vtl );
       }
     }
 
@@ -6192,8 +6124,6 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
       return TRUE;
     }
 
-    vtl->last_tpl = vtl->current_tpl;
-    vtl->last_tp_track = vtl->current_tp_track;
   }
 
   g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
@@ -6275,8 +6205,6 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
     /* diff dist is diff from orig */
     if ( vtl->tpwin )
       vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
-    /* can't join with itself! */
-    trw_layer_cancel_last_tp ( vtl );
 
     vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;

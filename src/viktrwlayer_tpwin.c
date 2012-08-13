@@ -43,8 +43,6 @@ struct _VikTrwLayerTpwin {
   GtkLabel *track_name, *ts, *localtime, *diff_dist, *diff_time, *diff_speed, *hdop, *vdop, *pdop, *sat;
   GList *buttons;
   VikTrackpoint *cur_tp;
-  gboolean cur_tp_is_endpoint; /* for join */
-
   gboolean sync_to_tp_block;
 };
 
@@ -140,7 +138,6 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
       _("_Insert After"), VIK_TRW_LAYER_TPWIN_INSERT,
       GTK_STOCK_DELETE, VIK_TRW_LAYER_TPWIN_DELETE,
       _("Split Here"), VIK_TRW_LAYER_TPWIN_SPLIT,
-      _("Join With Last"), VIK_TRW_LAYER_TPWIN_JOIN,
       GTK_STOCK_GO_BACK, VIK_TRW_LAYER_TPWIN_BACK,
       GTK_STOCK_GO_FORWARD, VIK_TRW_LAYER_TPWIN_FORWARD,
       NULL );
@@ -224,7 +221,6 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_DELETE, FALSE );
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_FORWARD, FALSE );
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_BACK, FALSE );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_JOIN, FALSE );
   gtk_label_set_text ( tpwin->diff_dist, NULL );
   gtk_label_set_text ( tpwin->diff_time, NULL );
   gtk_label_set_text ( tpwin->diff_speed, NULL );
@@ -232,11 +228,6 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_label_set_text ( tpwin->hdop, NULL );
   gtk_label_set_text ( tpwin->pdop, NULL );
   gtk_label_set_text ( tpwin->sat, NULL );
-}
-
-void vik_trw_layer_tpwin_disable_join ( VikTrwLayerTpwin *tpwin )
-{
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_JOIN, FALSE );
 }
 
 void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *track_name )
@@ -255,9 +246,6 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
 
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_FORWARD, (gboolean) GPOINTER_TO_INT (tpl->next) );
   SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_BACK, (gboolean) GPOINTER_TO_INT (tpl->prev) );
-
-  /* we can only join tracks if there was a last tp, the last tp was an endpoint, _AND_ this tp is an endpoint */
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_JOIN, tpwin->cur_tp && tpwin->cur_tp_is_endpoint && (!(tpl->next && tpl->prev)) );
 
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lat), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), TRUE );
@@ -386,7 +374,6 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   gtk_label_set_text ( tpwin->sat, tmp_str );
 
   tpwin->cur_tp = tp;
-  tpwin->cur_tp_is_endpoint = ! (tpl->next && tpl->prev);
 }
 
 void vik_trw_layer_tpwin_set_track_name ( VikTrwLayerTpwin *tpwin, const gchar *track_name )
