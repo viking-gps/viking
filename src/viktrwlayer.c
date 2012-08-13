@@ -6092,6 +6092,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, params.closest_track_id ), TRUE );
     vtl->current_tpl = params.closest_tpl;
     vtl->current_tp_id = params.closest_track_id;
+    vtl->current_tp_track = g_hash_table_lookup ( vtl->tracks, params.closest_track_id );
     trw_layer_tpwin_init ( vtl );
     set_statusbar_msg_info_trkpt ( vtl, params.closest_tp );
     vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
