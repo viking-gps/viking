@@ -4809,14 +4809,22 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
+    GtkWidget *combine_submenu;
+    combine_submenu = gtk_menu_new ();
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Co_mbine") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CONNECT, GTK_ICON_SIZE_MENU) );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), combine_submenu );
+
     item = gtk_menu_item_new_with_mnemonic ( _("_Merge By Time...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_by_timestamp), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
     gtk_widget_show ( item );
 
     item = gtk_menu_item_new_with_mnemonic ( _("Merge _With Other Tracks...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_with_other), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
     gtk_widget_show ( item );
 
     GtkWidget *split_submenu;
