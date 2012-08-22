@@ -107,12 +107,6 @@ static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove (
 #define MAX_STOP_LENGTH 86400
 #define DRAW_ELEVATION_FACTOR 30 /* height of elevation plotting, sort of relative to zoom level ("mpp" that isn't mpp necessarily) */
                                  /* this is multiplied by user-inputted value from 1-100. */
-enum {
-VIK_TRW_LAYER_SUBLAYER_TRACKS,
-VIK_TRW_LAYER_SUBLAYER_WAYPOINTS,
-VIK_TRW_LAYER_SUBLAYER_TRACK,
-VIK_TRW_LAYER_SUBLAYER_WAYPOINT
-};
 
 enum { WP_SYMBOL_FILLED_SQUARE, WP_SYMBOL_SQUARE, WP_SYMBOL_CIRCLE, WP_SYMBOL_X, WP_NUM_SYMBOLS };
 
@@ -321,7 +315,6 @@ static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
 static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
 static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
 
-static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name);
 static void waypoint_convert ( const gpointer id, VikWaypoint *wp, VikCoordMode *dest_mode );
 static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_mode );
 
@@ -677,7 +670,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
 
     w = vik_waypoint_unmarshall(fi->data, fi->len);
     // When copying - we'll create a new name based on the original
-    name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, w->name);
+    name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, w->name);
     vik_trw_layer_add_waypoint ( vtl, name, w );
     waypoint_convert (NULL, w, &vtl->coord_mode);
 
@@ -693,7 +686,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
 
     t = vik_track_unmarshall(fi->data, fi->len);
     // When copying - we'll create a new name based on the original
-    name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, t->name);
+    name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, t->name);
     vik_trw_layer_add_track ( vtl, name, t );
     track_convert (name, t, &vtl->coord_mode);
 
@@ -2983,7 +2976,7 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk )
     trw_layer_cancel_current_tp ( vtl, FALSE );
 }
 	
-static gchar *get_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name)
+gchar *trw_layer_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name)
 {
  gint i = 2;
  gchar *newname = g_strdup(name);
@@ -3036,7 +3029,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
   if (type == VIK_TRW_LAYER_SUBLAYER_TRACK) {
     VikTrack *trk = g_hash_table_lookup ( vtl_src->tracks, id );
 
-    gchar *newname = get_new_unique_sublayer_name(vtl_dest, type, trk->name);
+    gchar *newname = trw_layer_new_unique_sublayer_name(vtl_dest, type, trk->name);
 
     VikTrack *trk2 = vik_track_copy ( trk );
     vik_trw_layer_add_track ( vtl_dest, newname, trk2 );
@@ -3046,7 +3039,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
   if (type == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
     VikWaypoint *wp = g_hash_table_lookup ( vtl_src->waypoints, id );
 
-    gchar *newname = get_new_unique_sublayer_name(vtl_dest, type, wp->name);
+    gchar *newname = trw_layer_new_unique_sublayer_name(vtl_dest, type, wp->name);
 
     VikWaypoint *wp2 = vik_waypoint_copy ( wp );
     vik_trw_layer_add_waypoint ( vtl_dest, newname, wp2 );
@@ -3900,7 +3893,7 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl )
     return;
 
   if ( vtl->current_tpl->next && vtl->current_tpl->prev ) {
-    gchar *name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, vtl->current_tp_track->name);
+    gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, vtl->current_tp_track->name);
     if ( name ) {
       VikTrack *tr = vik_track_new ();
       GList *newglist = g_list_alloc ();
@@ -4242,7 +4235,7 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
     }
 
     // Rename it
-    gchar *newname = get_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, udata.same_track_name );
+    gchar *newname = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, udata.same_track_name );
     vik_track_set_name ( trk, newname );
 
     trku_udata udataU;
@@ -4421,7 +4414,7 @@ static void vik_trw_layer_uniquify_waypoints ( VikTrwLayer *vtl, VikLayersPanel 
     }
 
     // Rename it
-    gchar *newname = get_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, udata.same_waypoint_name );
+    gchar *newname = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, udata.same_waypoint_name );
     vik_waypoint_set_name ( waypoint, newname );
 
     wpu_udata udataU;
@@ -6008,7 +6001,7 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
 
   if ( ! vtl->current_track )
   {
-    gchar *name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track"));
+    gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track"));
     if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name ) ) )
     {
       vtl->current_track = vik_track_new();

@@ -35,6 +35,13 @@
 #define IS_VIK_TRW_LAYER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_TRW_LAYER_TYPE))
 #define IS_VIK_TRW_LAYER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), VIK_TRW_LAYER_TYPE))
 
+enum {
+  VIK_TRW_LAYER_SUBLAYER_TRACKS,
+  VIK_TRW_LAYER_SUBLAYER_WAYPOINTS,
+  VIK_TRW_LAYER_SUBLAYER_TRACK,
+  VIK_TRW_LAYER_SUBLAYER_WAYPOINT
+};
+
 typedef struct _VikTrwLayerClass VikTrwLayerClass;
 struct _VikTrwLayerClass
 {
@@ -80,5 +87,7 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk );
 /* Exposed Layer Interface function definitions */
 // Intended only for use by other trw_layer subwindows
 void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
+// Other functions only for use by other trw_layer subwindows
+gchar *trw_layer_new_unique_sublayer_name ( VikTrwLayer *vtl, gint sublayer_type, const gchar *name );
 
 #endif
