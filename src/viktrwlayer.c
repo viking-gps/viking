@@ -3892,8 +3892,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
 }
 
 /**
- * Split a track at the currently selected trackpoint,
- *  asking the user for the new name
+ * Split a track at the currently selected trackpoint
  */
 static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl )
 {
@@ -3902,8 +3901,7 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl )
 
   if ( vtl->current_tpl->next && vtl->current_tpl->prev ) {
     gchar *name = get_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, vtl->current_tp_track->name);
-    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name ) ) )
-    {
+    if ( name ) {
       VikTrack *tr = vik_track_new ();
       GList *newglist = g_list_alloc ();
       newglist->prev = NULL;

@@ -2704,7 +2704,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       break;
     case VIK_TRW_LAYER_PROPWIN_SPLIT:
       {
-        /* get new tracks, add them, resolve naming conflicts (free if cancel), and delete old. old can still exist on clipboard. */
+        /* get new tracks, add them and then the delete old one. old can still exist on clipboard. */
         guint ntracks;
 	
         VikTrack **tracks = vik_track_split_into_segments(tr, &ntracks);
@@ -2712,25 +2712,10 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
         guint i;
         for ( i = 0; i < ntracks; i++ )
         {
-          g_assert ( tracks[i] );
-          new_tr_name = g_strdup_printf("%s #%d", widgets->tr->name, i+1);
-          /* if ( (wp_exists) && (! overwrite) ) */
-          /* don't need to upper case new_tr_name because old tr name was uppercase */
-          if ( vik_trw_layer_get_track(vtl, new_tr_name ) && 
-             ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl), "The track \"%s\" exists, do you wish to overwrite it?", new_tr_name ) ) )
-          {
-            gchar *new_new_tr_name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );
-            g_free ( new_tr_name );
-            if (new_new_tr_name)
-              new_tr_name = new_new_tr_name;
-            else
-            {
-              new_tr_name = NULL;
-              vik_track_free ( tracks[i] );
-            }
-          }
-          if ( new_tr_name )
-            vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
+          if ( tracks[i] ) {
+	    new_tr_name = g_strdup_printf("%s #%d", widgets->tr->name, i+1);
+	    vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
+	  }
         }
         if ( tracks )
         {
