@@ -2713,7 +2713,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
         for ( i = 0; i < ntracks; i++ )
         {
           if ( tracks[i] ) {
-	    new_tr_name = g_strdup_printf("%s #%d", widgets->tr->name, i+1);
+	    new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, widgets->tr->name);
 	    vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
 	  }
         }
@@ -2741,7 +2741,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           break;
         }
 
-        gchar *r_name = g_strdup_printf("%s #2", widgets->tr->name);
+        gchar *r_name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, widgets->tr->name);
         iter->prev->next = NULL;
         iter->prev = NULL;
         VikTrack *tr_right = vik_track_new();

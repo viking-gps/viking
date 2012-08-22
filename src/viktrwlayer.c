@@ -3931,12 +3931,12 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl )
 /* split by time routine */
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
 {
-  VikTrack *track = (VikTrack *) g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
   GList *trps = track->trackpoints;
   GList *iter;
   GList *newlists = NULL;
   GList *newtps = NULL;
-  guint i;
   static guint thr = 1;
 
   time_t ts, prev_ts;
@@ -3978,7 +3978,6 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
 
   /* put lists of trackpoints into tracks */
   iter = newlists;
-  i = 1;
   // Only bother updating if the split results in new tracks
   if (g_list_length (newlists) > 1) {
     while (iter) {
@@ -3989,15 +3988,15 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
       tr->visible = track->visible;
       tr->trackpoints = (GList *)(iter->data);
 
-      new_tr_name = g_strdup_printf ("%s #%d", track->name, i++);
-      vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), new_tr_name, tr);
+      new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, track->name);
+      vik_trw_layer_add_track(vtl, new_tr_name, tr);
       /*    g_print("adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
 	  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp);*/
 
       iter = g_list_next(iter);
     }
     // Remove original track and then update the display
-    vik_trw_layer_delete_track (VIK_TRW_LAYER(pass_along[0]), track);
+    vik_trw_layer_delete_track (vtl, track);
     vik_layer_emit_update(VIK_LAYER(pass_along[0]), FALSE);
   }
   g_list_free(newlists);
@@ -4055,7 +4054,6 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
 
   /* put lists of trackpoints into tracks */
   iter = newlists;
-  guint i = 1;
   // Only bother updating if the split results in new tracks
   if (g_list_length (newlists) > 1) {
     while (iter) {
@@ -4066,13 +4064,13 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
       tr->visible = track->visible;
       tr->trackpoints = (GList *)(iter->data);
 
-      new_tr_name = g_strdup_printf ("%s #%d", track->name, i++);
-      vik_trw_layer_add_track(VIK_TRW_LAYER(pass_along[0]), new_tr_name, tr);
+      new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, track->name);
+      vik_trw_layer_add_track(vtl, new_tr_name, tr);
 
       iter = g_list_next(iter);
     }
     // Remove original track and then update the display
-    vik_trw_layer_delete_track (VIK_TRW_LAYER(pass_along[0]), track);
+    vik_trw_layer_delete_track (vtl, track);
     vik_layer_emit_update(VIK_LAYER(pass_along[0]), FALSE);
   }
   g_list_free(newlists);
