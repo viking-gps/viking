@@ -3578,47 +3578,49 @@ static void find_tracks_with_timestamp_type(gpointer key, gpointer value, gpoint
 /* called for each key in track hash table. if original track user_data[1] is close enough
  * to the passed one, add it to list in user_data[0] 
  */
-static void find_nearby_track(gpointer key, gpointer value, gpointer user_data)
+static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer user_data)
 {
   time_t t1, t2;
   VikTrackpoint *p1, *p2;
+  VikTrack *trk = VIK_TRACK(value);
 
   GList **nearby_tracks = ((gpointer *)user_data)[0];
-  GList *orig_track = ((gpointer *)user_data)[1];
-  guint thr = GPOINTER_TO_UINT (((gpointer *)user_data)[2]);
+  GList *tpoints = ((gpointer *)user_data)[1];
 
   /* outline: 
    * detect reasons for not merging, and return
    * if no reason is found not to merge, then do it.
    */
 
-  if (VIK_TRACK(value)->trackpoints == orig_track) {
+  // Exclude the original track from the compiled list
+  if (trk->trackpoints == tpoints) {
     return;
   }
 
-  t1 = VIK_TRACKPOINT(orig_track->data)->timestamp;
-  t2 = VIK_TRACKPOINT(g_list_last(orig_track)->data)->timestamp;
+  t1 = VIK_TRACKPOINT(g_list_first(tpoints)->data)->timestamp;
+  t2 = VIK_TRACKPOINT(g_list_last(tpoints)->data)->timestamp;
 
-  if (VIK_TRACK(value)->trackpoints) {
-    p1 = VIK_TRACKPOINT(VIK_TRACK(value)->trackpoints->data);
-    p2 = VIK_TRACKPOINT(g_list_last(VIK_TRACK(value)->trackpoints)->data);
+  if (trk->trackpoints) {
+    p1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data);
+    p2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data);
 
     if (!p1->has_timestamp || !p2->has_timestamp) {
-      g_print("no timestamp\n");
+      //g_print("no timestamp\n");
       return;
     }
 
-    /*  g_print("Got track named %s, times %d, %d\n", (gchar *)key, p1->timestamp, p2->timestamp); */
-    if (! (abs(t1 - p2->timestamp) < thr*60 ||
+    guint threshold = GPOINTER_TO_UINT (((gpointer *)user_data)[2]);
+    //g_print("Got track named %s, times %d, %d\n", trk->name, p1->timestamp, p2->timestamp);
+    if (! (abs(t1 - p2->timestamp) < threshold ||
 	/*  p1 p2      t1 t2 */
-	   abs(p1->timestamp - t2) < thr*60)
+	   abs(p1->timestamp - t2) < threshold)
 	/*  t1 t2      p1 p2 */
 	) {
       return;
     }
   }
 
-  *nearby_tracks = g_list_prepend(*nearby_tracks, key);
+  *nearby_tracks = g_list_prepend(*nearby_tracks, value);
 }
 
 /* comparison function used to sort tracks; a and b are hash table keys */
@@ -3737,10 +3739,6 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
 
   //time_t t1, t2;
-  GList *nearby_tracks;
-  GList *trps;
-  static  guint thr = 1;
-  guint track_count = 0;
 
   GList *tracks_with_timestamp = NULL;
   VikTrack *orig_trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
@@ -3763,25 +3761,28 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
   }
   g_list_free(tracks_with_timestamp);
 
-  if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(vtl), 
-			       _("Merge Threshold..."), 
-			       _("Merge when time between tracks less than:"), 
-			       &thr)) {
+  static guint threshold_in_minutes = 1;
+  if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                               _("Merge Threshold..."),
+                               _("Merge when time between tracks less than:"),
+                               &threshold_in_minutes)) {
     return;
   }
 
-  /* merge tracks until we can't */
-  //VikTrack *track;
-  nearby_tracks = NULL;
-  do {
-    gpointer params[3];
+  // keep attempting to merge all tracks until no merges within the time specified is possible
+  gboolean attempt_merge = TRUE;
+  GList *nearby_tracks = NULL;
+  GList *trps;
+  static gpointer params[3];
 
-    // Need to refind original track incase we've deleted and recreated it??
-    //track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+  while ( attempt_merge ) {
+
+    // Don't try again unless tracks have changed
+    attempt_merge = FALSE;
+
     trps = orig_trk->trackpoints;
     if ( !trps )
       return;
-
 
     if (nearby_tracks) {
       g_list_free(nearby_tracks);
@@ -3793,49 +3794,40 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
     
     /*    g_print("Original track times: %d and %d\n", t1, t2);  */
     params[0] = &nearby_tracks;
-    params[1] = trps;
-    params[2] = GUINT_TO_POINTER (thr);
+    params[1] = (gpointer)trps;
+    params[2] = GUINT_TO_POINTER (threshold_in_minutes*60); // In seconds
 
     /* get a list of adjacent-in-time tracks */
-    g_hash_table_foreach(vtl->tracks, find_nearby_track, (gpointer)params);
-
-    /* add original track */
-    nearby_tracks = g_list_prepend(nearby_tracks, orig_trk);
+    g_hash_table_foreach(vtl->tracks, find_nearby_tracks_by_time, params);
 
     /* merge them */
-    { 
-#define get_track(x) VIK_TRACK(g_hash_table_lookup(vtl->tracks, ((x)->data)))
-      GList *l = nearby_tracks;
-      //      VikTrack *tr = vik_track_new();
-      //tr->visible = track->visible;
-      track_count = 0;
-      while (l) {
-	/*
-#define get_first_trackpoint(x) VIK_TRACKPOINT(get_track(x)->trackpoints->data)
-#define get_last_trackpoint(x) VIK_TRACKPOINT(g_list_last(get_track(x)->trackpoints)->data)
-	time_t t1, t2;
-	t1 = get_first_trackpoint(l)->timestamp;
-	t2 = get_last_trackpoint(l)->timestamp;
+    GList *l = nearby_tracks;
+    while ( l ) {
+       /*
+#define get_first_trackpoint(x) VIK_TRACKPOINT(VIK_TRACK(x)->trackpoints->data)
+#define get_last_trackpoint(x) VIK_TRACKPOINT(g_list_last(VIK_TRACK(x)->trackpoints)->data)
+        time_t t1, t2;
+        t1 = get_first_trackpoint(l)->timestamp;
+        t2 = get_last_trackpoint(l)->timestamp;
 #undef get_first_trackpoint
 #undef get_last_trackpoint
-	g_print("     %20s: track %d - %d\n", (char *)l->data, (int)t1, (int)t2);
-	*/
+        g_print("     %20s: track %d - %d\n", VIK_TRACK(l->data)->name, (int)t1, (int)t2);
+       */
 
+      /* remove trackpoints from merged track, delete track */
+      orig_trk->trackpoints = g_list_concat(orig_trk->trackpoints, VIK_TRACK(l->data)->trackpoints);
+      VIK_TRACK(l->data)->trackpoints = NULL;
+      vik_trw_layer_delete_track (vtl, VIK_TRACK(l->data));
 
-	/* remove trackpoints from merged track, delete track */
-	orig_trk->trackpoints = g_list_concat(orig_trk->trackpoints, get_track(l)->trackpoints);
-	get_track(l)->trackpoints = NULL;
-	vik_trw_layer_delete_track (vtl, l->data);
+      // Tracks have changed, therefore retry again against all the remaining tracks
+      attempt_merge = TRUE;
 
-	track_count++;
-	l = g_list_next(l);
-      }
-#undef get_track
-      orig_trk->trackpoints = g_list_sort(orig_trk->trackpoints, trackpoint_compare);
-      //vik_trw_layer_add_track(vtl, strdup(orig_track_name), tr);
-
+      l = g_list_next(l);
     }
-  } while (track_count > 1);
+
+    orig_trk->trackpoints = g_list_sort(orig_trk->trackpoints, trackpoint_compare);
+  }
+
   g_list_free(nearby_tracks);
   vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
 }

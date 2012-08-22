@@ -2757,22 +2757,6 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
         }
 
         gchar *r_name = g_strdup_printf("%s #2", widgets->tr->name);
-        if (vik_trw_layer_get_track(vtl, r_name ) && 
-             ( ! a_dialog_yes_or_no( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-              "The track \"%s\" exists, do you wish to overwrite it?", r_name)))
-        {
-	  gchar *new_r_name = a_dialog_new_track( VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_trw_layer_get_tracks(vtl), NULL );
-            if (new_r_name) {
-              g_free( r_name );
-              r_name = new_r_name;
-            }
-            else {
-              a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_WARNING,
-                  _("Operation Aborted. Track unchanged"), NULL);
-              keep_dialog = TRUE;
-              break;
-            }
-        }
         iter->prev->next = NULL;
         iter->prev = NULL;
         VikTrack *tr_right = vik_track_new();
