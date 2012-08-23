@@ -237,6 +237,7 @@ static void trw_layer_append_track ( gpointer pass_along[6] );
 static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
 static void trw_layer_split_at_trackpoint ( gpointer pass_along[6] );
+static void trw_layer_split_segments ( gpointer pass_along[6] );
 static void trw_layer_reverse ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] );
 static void trw_layer_edit_trackpoint ( gpointer pass_along[6] );
@@ -4084,6 +4085,35 @@ static void trw_layer_split_at_trackpoint ( gpointer pass_along[6] )
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
   trw_layer_split_at_selected_trackpoint ( vtl );
 }
+
+/**
+ * Split a track by its segments
+ */
+static void trw_layer_split_segments ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *trk = (VikTrack *)g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+  guint ntracks;
+
+  VikTrack **tracks = vik_track_split_into_segments (trk, &ntracks);
+  gchar *new_tr_name;
+  guint i;
+  for ( i = 0; i < ntracks; i++ ) {
+    if ( tracks[i] ) {
+      new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, trk->name);
+      vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
+    }
+  }
+  if ( tracks ) {
+    g_free ( tracks );
+    // Remove original track
+    vik_trw_layer_delete_track ( vtl, trk );
+    vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+  }
+  else {
+    a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Can not split track as it has no segments"));
+  }
+}
 /* end of split/merge routines */
 
 /**
@@ -4894,6 +4924,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     item = gtk_menu_item_new_with_mnemonic ( _("Split By _Number of Points...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_by_n_points), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(split_submenu), item );
+    gtk_widget_show ( item );
+
+    // ATM always enable this entry - don't want to have to analyse the track before displaying the menu - to keep the menu speedy
+    item = gtk_menu_item_new_with_mnemonic ( _("Split Se_gments") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_split_segments), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(split_submenu), item );
     gtk_widget_show ( item );
 
