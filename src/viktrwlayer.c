@@ -239,6 +239,7 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
 static void trw_layer_split_at_trackpoint ( gpointer pass_along[6] );
 static void trw_layer_split_segments ( gpointer pass_along[6] );
 static void trw_layer_delete_points_same_position ( gpointer pass_along[6] );
+static void trw_layer_delete_points_same_time ( gpointer pass_along[6] );
 static void trw_layer_reverse ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] );
 static void trw_layer_edit_trackpoint ( gpointer pass_along[6] );
@@ -4141,6 +4142,29 @@ static void trw_layer_delete_points_same_position ( gpointer pass_along[6] )
 }
 
 /**
+ * Delete adjacent track points with the same timestamp
+ * Normally new tracks that are 'routes' won't have any timestamps so should be OK to clean up the track
+ */
+static void trw_layer_delete_points_same_time ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *trk = (VikTrack *)g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  gulong removed = vik_track_remove_same_time_points ( trk );
+
+  // Track has been updated so update tps:
+  trw_layer_cancel_tps_of_track ( vtl, trk );
+
+  // Inform user how much was deleted as it's not obvious from the normal view
+  gchar str[64];
+  const gchar *tmp_str = ngettext("Deleted %ld point", "Deleted %ld points", removed);
+  g_snprintf(str, 64, tmp_str, removed);
+  a_dialog_info_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), str);
+
+  vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+}
+
+/**
  * Reverse a track
  */
 static void trw_layer_reverse ( gpointer pass_along[6] )
@@ -4974,6 +4998,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     item = gtk_menu_item_new_with_mnemonic ( _("Delete Points With The Same _Position") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_points_same_position), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Delete Points With The Same _Time") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_points_same_time), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
     gtk_widget_show ( item );
 
