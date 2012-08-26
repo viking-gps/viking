@@ -1039,67 +1039,238 @@ static VikToolInterface ruler_tool =
 /********************************************************************************
  ** Zoom tool code
  ********************************************************************************/
-static gpointer zoomtool_create (VikWindow *vw, VikViewport *vvp)
+
+typedef struct {
+  VikWindow *vw;
+  GdkPixmap *pixmap;
+  // Track zoom bounds for zoom tool with shift modifier:
+  gboolean bounds_active;
+  gint start_x;
+  gint start_y;
+} zoom_tool_state_t;
+
+/*
+ * In case the screen size has changed
+ */
+static void zoomtool_resize_pixmap (zoom_tool_state_t *zts)
 {
-  return vw;
+    int w1, h1, w2, h2;
+
+    // Allocate a drawing area the size of the viewport
+    w1 = vik_viewport_get_width ( zts->vw->viking_vvp );
+    h1 = vik_viewport_get_height ( zts->vw->viking_vvp );
+
+    if ( !zts->pixmap ) {
+      // Totally new
+      zts->pixmap = gdk_pixmap_new ( GTK_WIDGET(zts->vw->viking_vvp)->window, w1, h1, -1 );
+    }
+
+    gdk_drawable_get_size ( zts->pixmap, &w2, &h2 );
+
+    if ( w1 != w2 || h1 != h2 ) {
+      // Has changed - delete and recreate with new values
+      g_object_unref ( G_OBJECT ( zts->pixmap ) );
+      zts->pixmap = gdk_pixmap_new ( GTK_WIDGET(zts->vw->viking_vvp)->window, w1, h1, -1 );
+    }
 }
 
-static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
+static gpointer zoomtool_create (VikWindow *vw, VikViewport *vvp)
 {
-  vw->modified = TRUE;
+  zoom_tool_state_t *zts = g_new(zoom_tool_state_t, 1);
+  zts->vw = vw;
+  zts->pixmap = NULL;
+  zts->start_x = 0;
+  zts->start_y = 0;
+  zts->bounds_active = FALSE;
+  return zts;
+}
+
+static void zoomtool_destroy ( zoom_tool_state_t *zts)
+{
+  if ( zts->pixmap )
+    g_object_unref ( G_OBJECT ( zts->pixmap ) );
+  g_free(zts);
+}
+
+static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, zoom_tool_state_t *zts)
+{
+  zts->vw->modified = TRUE;
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
 
   VikCoord coord;
   gint x, y;
-  gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
-  gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
+  gint center_x = vik_viewport_get_width ( zts->vw->viking_vvp ) / 2;
+  gint center_y = vik_viewport_get_height ( zts->vw->viking_vvp ) / 2;
+
+  gboolean skip_update = FALSE;
+
+  zts->bounds_active = FALSE;
 
   if ( modifiers == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
     // This zoom is on the center position
-    vik_viewport_set_center_screen ( vw->viking_vvp, center_x, center_y );
+    vik_viewport_set_center_screen ( zts->vw->viking_vvp, center_x, center_y );
     if ( event->button == 1 )
-      vik_viewport_zoom_in (vw->viking_vvp);
+      vik_viewport_zoom_in (zts->vw->viking_vvp);
     else if ( event->button == 3 )
-      vik_viewport_zoom_out (vw->viking_vvp);
+      vik_viewport_zoom_out (zts->vw->viking_vvp);
   }
   else if ( modifiers == GDK_CONTROL_MASK ) {
     // This zoom is to recenter on the mouse position
-    vik_viewport_set_center_screen ( vw->viking_vvp, (gint) event->x, (gint) event->y );
+    vik_viewport_set_center_screen ( zts->vw->viking_vvp, (gint) event->x, (gint) event->y );
     if ( event->button == 1 )
-      vik_viewport_zoom_in (vw->viking_vvp);
+      vik_viewport_zoom_in (zts->vw->viking_vvp);
     else if ( event->button == 3 )
-      vik_viewport_zoom_out (vw->viking_vvp);
+      vik_viewport_zoom_out (zts->vw->viking_vvp);
+  }
+  else if ( modifiers == GDK_SHIFT_MASK ) {
+    // Get start of new zoom bounds
+    if ( event->button == 1 ) {
+      zts->bounds_active = TRUE;
+      zts->start_x = (gint) event->x;
+      zts->start_y = (gint) event->y;
+      skip_update = TRUE;
+    }
   }
   else {
     /* make sure mouse is still over the same point on the map when we zoom */
-    vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
+    vik_viewport_screen_to_coord ( zts->vw->viking_vvp, event->x, event->y, &coord );
     if ( event->button == 1 )
-      vik_viewport_zoom_in (vw->viking_vvp);
+      vik_viewport_zoom_in (zts->vw->viking_vvp);
     else if ( event->button == 3 )
-      vik_viewport_zoom_out(vw->viking_vvp);
-    vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
-    vik_viewport_set_center_screen ( vw->viking_vvp,
+      vik_viewport_zoom_out(zts->vw->viking_vvp);
+    vik_viewport_coord_to_screen ( zts->vw->viking_vvp, &coord, &x, &y );
+    vik_viewport_set_center_screen ( zts->vw->viking_vvp,
                                      center_x + (x - event->x),
                                      center_y + (y - event->y) );
   }
-  draw_update ( vw );
+
+  if ( !skip_update )
+    draw_update ( zts->vw );
+
   return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event, VikViewport *vvp)
+static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event, zoom_tool_state_t *zts)
 {
+  guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
+
+  if ( zts->bounds_active && modifiers == GDK_SHIFT_MASK ) {
+    zoomtool_resize_pixmap ( zts );
+
+    // Blank out currently drawn area
+    gdk_draw_drawable ( zts->pixmap,
+                        GTK_WIDGET(zts->vw->viking_vvp)->style->black_gc,
+                        vik_viewport_get_pixmap(zts->vw->viking_vvp),
+                        0, 0, 0, 0, -1, -1);
+
+    // Calculate new box starting point & size in pixels
+    int xx, yy, width, height;
+    if ( event->y > zts->start_y ) {
+      yy = zts->start_y;
+      height = event->y-zts->start_y;
+    }
+    else {
+      yy = event->y;
+      height = zts->start_y-event->y;
+    }
+    if ( event->x > zts->start_x ) {
+      xx = zts->start_x;
+      width = event->x-zts->start_x;
+    }
+    else {
+      xx = event->x;
+      width = zts->start_x-event->x;
+    }
+
+    // Draw the box
+    gdk_draw_rectangle (zts->pixmap, GTK_WIDGET(zts->vw->viking_vvp)->style->black_gc, FALSE, xx, yy, width, height);
+
+    // Only actually draw when there's time to do so
+    if (draw_buf_done) {
+      static gpointer pass_along[3];
+      pass_along[0] = GTK_WIDGET(zts->vw->viking_vvp)->window;
+      pass_along[1] = GTK_WIDGET(zts->vw->viking_vvp)->style->black_gc;
+      pass_along[2] = zts->pixmap;
+      g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
+      draw_buf_done = FALSE;
+    }
+  }
   return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *event, VikViewport *vvp)
+static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *event, zoom_tool_state_t *zts)
 {
+  guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
+
+  zts->bounds_active = FALSE;
+
+  // Ensure haven't just released on the exact same position
+  //  i.e. probably haven't moved the mouse at all
+  if ( modifiers == GDK_SHIFT_MASK && !( ( event->x == zts->start_x ) && ( event->y == zts->start_y )) ) {
+
+    VikCoord coord1, coord2;
+    vik_viewport_screen_to_coord ( zts->vw->viking_vvp, zts->start_x, zts->start_y, &coord1);
+    vik_viewport_screen_to_coord ( zts->vw->viking_vvp, event->x, event->y, &coord2);
+
+    // From the extend of the bounds pick the best zoom level
+    // c.f. trw_layer_zoom_to_show_latlons()
+    // Maybe refactor...
+    struct LatLon ll1, ll2;
+    vik_coord_to_latlon(&coord1, &ll1);
+    vik_coord_to_latlon(&coord2, &ll2);
+    struct LatLon average = { (ll1.lat+ll2.lat)/2,
+			      (ll1.lon+ll2.lon)/2 };
+
+    VikCoord new_center;
+    vik_coord_load_from_latlon ( &new_center, vik_viewport_get_coord_mode ( zts->vw->viking_vvp ), &average );
+    vik_viewport_set_center_coord ( zts->vw->viking_vvp, &new_center );
+
+    /* Convert into definite 'smallest' and 'largest' positions */
+    struct LatLon minmin;
+    if ( ll1.lat < ll2.lat )
+      minmin.lat = ll1.lat;
+    else
+      minmin.lat = ll2.lat;
+
+    struct LatLon maxmax;
+    if ( ll1.lon > ll2.lon )
+      maxmax.lon = ll1.lon;
+    else
+      maxmax.lon = ll2.lon;
+
+    /* Always recalculate the 'best' zoom level */
+    gdouble zoom = VIK_VIEWPORT_MIN_ZOOM;
+    vik_viewport_set_zoom ( zts->vw->viking_vvp, zoom );
+
+    gdouble min_lat, max_lat, min_lon, max_lon;
+    /* Should only be a maximum of about 18 iterations from min to max zoom levels */
+    while ( zoom <= VIK_VIEWPORT_MAX_ZOOM ) {
+      vik_viewport_get_min_max_lat_lon ( zts->vw->viking_vvp, &min_lat, &max_lat, &min_lon, &max_lon );
+      /* NB I think the logic used in this test to determine if the bounds is within view
+	 fails if track goes across 180 degrees longitude.
+	 Hopefully that situation is not too common...
+	 Mind you viking doesn't really do edge locations to well anyway */
+      if ( min_lat < minmin.lat &&
+           max_lat > minmin.lat &&
+           min_lon < maxmax.lon &&
+           max_lon > maxmax.lon )
+	/* Found within zoom level */
+	break;
+
+      /* Try next */
+      zoom = zoom * 2;
+      vik_viewport_set_zoom ( zts->vw->viking_vvp, zoom );
+    }
+
+    draw_update ( zts->vw );
+  }
   return VIK_LAYER_TOOL_ACK;
 }
 
 static VikToolInterface zoom_tool = 
   { { "Zoom", "vik-icon-zoom", N_("_Zoom"), "<control><shift>Z", N_("Zoom Tool"), 1 },
     (VikToolConstructorFunc) zoomtool_create,
-    (VikToolDestructorFunc) NULL,
+    (VikToolDestructorFunc) zoomtool_destroy,
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) zoomtool_click, 

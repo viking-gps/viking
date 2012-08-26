@@ -854,13 +854,16 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</key
 
 <section><title>Zoom</title>
 <para>
-Zooms in and out on the clicked part of the map.
+Zooms in and out on the clicked part of the map or by the selected area.
 </para>
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</keycap>
 </para>
 <para>
 Ctrl + left or right click: Zoom in/out and center the map on the clicked location
+</para>
+<para>
+Shift (and hold) + left mouse button: Draws a bounding box area on which to zoom in. The zoom action is performed when the left mouse button is released.
 </para>
 </section>
 
