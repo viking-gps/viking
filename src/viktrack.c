@@ -210,20 +210,27 @@ gulong vik_track_get_dup_point_count ( const VikTrack *tr )
   return num;
 }
 
-void vik_track_remove_dup_points ( VikTrack *tr )
+/*
+ * Deletes adjacent points that have the same position
+ * Returns the number of points that were deleted
+ */
+gulong vik_track_remove_dup_points ( VikTrack *tr )
 {
+  gulong num = 0;
   GList *iter = tr->trackpoints;
   while ( iter )
   {
     if ( iter->next && vik_coord_equals ( &(VIK_TRACKPOINT(iter->data)->coord),
                        &(VIK_TRACKPOINT(iter->next->data)->coord) ) )
     {
+      num++;
       g_free ( iter->next->data );
       tr->trackpoints = g_list_delete_link ( tr->trackpoints, iter->next );
     }
     else
       iter = iter->next;
   }
+  return num;
 }
 
 guint vik_track_get_segment_count(const VikTrack *tr)
