@@ -82,6 +82,8 @@ void vik_track_reverse(VikTrack *tr);
 
 gulong vik_track_get_dup_point_count ( const VikTrack *vt );
 gulong vik_track_remove_dup_points ( VikTrack *vt );
+gulong vik_track_get_same_time_point_count ( const VikTrack *vt );
+gulong vik_track_remove_same_time_points ( VikTrack *vt );
 
 gdouble vik_track_get_max_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed(const VikTrack *tr);
