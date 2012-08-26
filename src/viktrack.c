@@ -224,7 +224,11 @@ gulong vik_track_remove_dup_points ( VikTrack *tr )
                        &(VIK_TRACKPOINT(iter->next->data)->coord) ) )
     {
       num++;
-      g_free ( iter->next->data );
+      // Maintain track segments
+      if ( VIK_TRACKPOINT(iter->next->data)->newsegment && (iter->next)->next )
+        VIK_TRACKPOINT(((iter->next)->next)->data)->newsegment = TRUE;
+
+      vik_trackpoint_free ( iter->next->data );
       tr->trackpoints = g_list_delete_link ( tr->trackpoints, iter->next );
     }
     else
