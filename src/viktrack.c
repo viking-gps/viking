@@ -342,6 +342,30 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
   return rv;
 }
 
+/*
+ * Simply remove any subsequent segment markers in a track to form one continuous track
+ * Return the number of segments merged
+ */
+guint vik_track_merge_segments(VikTrack *tr)
+{
+  guint num = 0;
+  GList *iter = tr->trackpoints;
+  if ( !iter )
+    return num;
+
+  // Always skip the first point as this should be the first segment
+  iter = iter->next;
+
+  while ( (iter = iter->next) )
+  {
+    if ( VIK_TRACKPOINT(iter->data)->newsegment ) {
+      VIK_TRACKPOINT(iter->data)->newsegment = FALSE;
+      num++;
+    }
+  }
+  return num;
+}
+
 void vik_track_reverse ( VikTrack *tr )
 {
   GList *iter;
