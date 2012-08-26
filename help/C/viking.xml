@@ -859,6 +859,9 @@ Zooms in and out on the clicked part of the map.
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</keycap>
 </para>
+<para>
+Ctrl + left or right click: Zoom in/out and center the map on the clicked location
+</para>
 </section>
 
 <section><title>Ruler</title>

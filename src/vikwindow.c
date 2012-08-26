@@ -1062,6 +1062,14 @@ static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *even
     else if ( event->button == 3 )
       vik_viewport_zoom_out (vw->viking_vvp);
   }
+  else if ( modifiers == GDK_CONTROL_MASK ) {
+    // This zoom is to recenter on the mouse position
+    vik_viewport_set_center_screen ( vw->viking_vvp, (gint) event->x, (gint) event->y );
+    if ( event->button == 1 )
+      vik_viewport_zoom_in (vw->viking_vvp);
+    else if ( event->button == 3 )
+      vik_viewport_zoom_out (vw->viking_vvp);
+  }
   else {
     /* make sure mouse is still over the same point on the map when we zoom */
     vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
