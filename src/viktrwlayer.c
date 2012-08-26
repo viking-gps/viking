@@ -231,6 +231,7 @@ static void trw_layer_goto_track_max_speed ( gpointer pass_along[6] );
 static void trw_layer_goto_track_max_alt ( gpointer pass_along[6] );
 static void trw_layer_goto_track_min_alt ( gpointer pass_along[6] );
 static void trw_layer_goto_track_center ( gpointer pass_along[6] );
+static void trw_layer_merge_by_segment ( gpointer pass_along[6] );
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_merge_with_other ( gpointer pass_along[6] );
 static void trw_layer_append_track ( gpointer pass_along[6] );
@@ -3788,6 +3789,20 @@ static void trw_layer_append_track ( gpointer pass_along[6] )
   }
 }
 
+/* merge by segments */
+static void trw_layer_merge_by_segment ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+  guint segments = vik_track_merge_segments ( trk );
+  // NB currently no need to redraw as segments not actually shown on the display
+  // However inform the user of what happened:
+  gchar str[64];
+  const gchar *tmp_str = ngettext("%d segment merged", "%d segments merged", segments);
+  g_snprintf(str, 64, tmp_str, segments);
+  a_dialog_info_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), str );
+}
+
 /* merge by time routine */
 static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
 {
@@ -4949,6 +4964,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     item = gtk_menu_item_new_with_mnemonic ( _("Merge _With Other Tracks...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_with_other), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Merge _Segments") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_merge_by_segment), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
     gtk_widget_show ( item );
 
