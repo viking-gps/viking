@@ -84,4 +84,13 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">OpenSeaMap</property>
+    <property name="hostname">tiles.openseamap.org</property>
+    <property name="url">/seamark/%d/%d/%d.png</property>
+    <property name="id">600</property>
+    <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
+  </object>
 </objects>
