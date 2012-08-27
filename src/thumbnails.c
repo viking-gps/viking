@@ -122,7 +122,7 @@ GdkPixbuf *a_thumbnails_scale_pixbuf(GdkPixbuf *src, int max_w, int max_h)
 
 	if (w <= max_w && h <= max_h)
 	{
-		gdk_pixbuf_ref(src);
+		g_object_ref ( G_OBJECT ( src ) );
 		return src;
 	}
 	else
@@ -155,7 +155,7 @@ static GdkPixbuf *child_create_thumbnail(const gchar *path)
 	if (image)
         {
 		GdkPixbuf *thumb = save_thumbnail(path, image);
-		gdk_pixbuf_unref ( image );
+		g_object_unref ( G_OBJECT ( image ) );
 		return thumb;
 	}
 
@@ -289,7 +289,7 @@ GdkPixbuf *a_thumbnails_get(const gchar *pathname)
 	goto out;
 err:
 	if (thumb)
-		gdk_pixbuf_unref(thumb);
+		g_object_unref ( G_OBJECT ( thumb ) );
 	thumb = NULL;
 out:
 	g_free(path);
