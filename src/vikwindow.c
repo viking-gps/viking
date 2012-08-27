@@ -313,7 +313,8 @@ static void window_init ( VikWindow *vw )
   window_set_filename (vw, NULL);
   vw->toolbar = GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar"));
 
-  toolbox_activate(vw->vt, "Pan");
+  // Set the default tool
+  gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
 
   vw->filename = NULL;
   vw->item_factory = NULL;
@@ -1575,8 +1576,10 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
   toolbox_activate(vw->vt, gtk_action_get_name(a));
 
   cursor = toolbox_get_cursor(vw->vt, gtk_action_get_name(a));
-  /* We set cursor, even if it is NULL: it resets to default */
-  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, (GdkCursor *)cursor );
+
+  if ( GTK_WIDGET(vw->viking_vvp)->window )
+    /* We set cursor, even if it is NULL: it resets to default */
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, (GdkCursor *)cursor );
 
   if (!strcmp(gtk_action_get_name(a), "Pan")) {
     vw->current_tool = TOOL_PAN;
