@@ -5931,14 +5931,23 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     /* offset from cursor a bit */
     xd = event->x + 10;
     yd = event->y - 10;
-    // TODO: maybe a background rectangle to make the text more visible (as per Ruler information)
+
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
     PangoFontDescription *pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
     pango_layout_set_font_description (pl, pfd);
     pango_font_description_free (pfd);
 
     pango_layout_set_text (pl, str, -1);
+    gint wd, hd;
+    pango_layout_get_pixel_size ( pl, &wd, &hd );
+
+    // Create a background block to make the text easier to read over the background map
+    GdkGC *background_block_gc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
+    gdk_draw_rectangle (pixmap, background_block_gc, TRUE, xd-2, yd-2, wd+4, hd+2);
     gdk_draw_layout (pixmap, vtl->current_track_newpoint_gc, xd, yd, pl);
+
+    g_object_unref ( G_OBJECT ( pl ) );
+    g_object_unref ( G_OBJECT ( background_block_gc ) );
 
     passalong = g_new(draw_sync_t,1); // freed by draw_sync()
     passalong->vtl = vtl;
