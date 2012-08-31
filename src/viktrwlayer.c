@@ -5931,12 +5931,14 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     /* offset from cursor a bit */
     xd = event->x + 10;
     yd = event->y - 10;
-    // TODO: is it worth using pango a layout?
     // TODO: maybe a background rectangle to make the text more visible (as per Ruler information)
-    gdk_draw_string (pixmap,
-                     gdk_font_from_description (pango_font_description_from_string ("Sans 8")),
-                     vtl->current_track_newpoint_gc,
-                     xd, yd, str);
+    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
+    PangoFontDescription *pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
+    pango_layout_set_font_description (pl, pfd);
+    pango_font_description_free (pfd);
+
+    pango_layout_set_text (pl, str, -1);
+    gdk_draw_layout (pixmap, vtl->current_track_newpoint_gc, xd, yd, pl);
 
     passalong = g_new(draw_sync_t,1); // freed by draw_sync()
     passalong->vtl = vtl;
