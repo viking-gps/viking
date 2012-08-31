@@ -137,6 +137,9 @@ struct _VikTrwLayer {
   GArray *track_gc;
   guint16 track_gc_iter;
   GdkGC *current_track_gc;
+  // Separate GC for a track's potential new point as drawn via separate method
+  //  (compared to the actual track points drawn in the main trw_layer_draw_track function)
+  GdkGC *current_track_newpoint_gc;
   GdkGC *track_bg_gc;
   GdkGC *waypoint_gc;
   GdkGC *waypoint_text_gc;
@@ -144,8 +147,7 @@ struct _VikTrwLayer {
   GdkFont *waypoint_font;
   VikTrack *current_track;
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
-  gboolean ct_sync_done;
-
+  gboolean draw_sync_done;
 
   VikCoordMode coord_mode;
 
@@ -961,7 +963,7 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
   rv->moving_tp = FALSE;
   rv->moving_wp = FALSE;
 
-  rv->ct_sync_done = TRUE;
+  rv->draw_sync_done = TRUE;
 
   rv->route_finder_started = FALSE;
   rv->route_finder_check_added_track = FALSE;
@@ -1505,6 +1507,11 @@ static void trw_layer_free_track_gcs ( VikTrwLayer *vtl )
     g_object_unref ( vtl->current_track_gc );
     vtl->current_track_gc = NULL;
   }
+  if ( vtl->current_track_newpoint_gc )
+  {
+    g_object_unref ( vtl->current_track_newpoint_gc );
+    vtl->current_track_newpoint_gc = NULL;
+  }
 
   if ( ! vtl->track_gc )
     return;
@@ -1530,6 +1537,12 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
     g_object_unref ( vtl->current_track_gc );
   vtl->current_track_gc = vik_viewport_new_gc ( vp, "#FF0000", 2 );
   gdk_gc_set_line_attributes ( vtl->current_track_gc, 2, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+
+  // 'newpoint' gc is exactly the same as the current track gc
+  if ( vtl->current_track_newpoint_gc )
+    g_object_unref ( vtl->current_track_newpoint_gc );
+  vtl->current_track_newpoint_gc = vik_viewport_new_gc ( vp, "#FF0000", 2 );
+  gdk_gc_set_line_attributes ( vtl->current_track_newpoint_gc, 2, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
 
   vtl->track_gc = g_array_sized_new ( FALSE, FALSE, sizeof ( GdkGC * ), VIK_TRW_LAYER_TRACK_GC );
 
@@ -5196,25 +5209,24 @@ static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp)
 
 typedef struct {
   VikTrwLayer *vtl;
-  VikViewport *vvp;
-  gint x1,y1,x2,y2,x3,y3;
-  const gchar* str;
-} new_track_move_passalong_t;
+  GdkDrawable *drawable;
+  GdkGC *gc;
+  GdkPixmap *pixmap;
+} draw_sync_t;
 
-/* sync and undraw, but only when we have time */
-static gboolean ct_sync ( gpointer passalong )
+/*
+ * Draw specified pixmap
+ */
+static gboolean draw_sync ( gpointer data )
 {
-  new_track_move_passalong_t *p = (new_track_move_passalong_t *) passalong;
-
-  vik_viewport_sync ( p->vvp );
-  gdk_gc_set_function ( p->vtl->current_track_gc, GDK_INVERT );
-  vik_viewport_draw_line ( p->vvp, p->vtl->current_track_gc, p->x1, p->y1, p->x2, p->y2 );
-  vik_viewport_draw_string (p->vvp, gdk_font_from_description (pango_font_description_from_string ("Sans 8")), p->vtl->current_track_gc, p->x3, p->y3, p->str);
-  gdk_gc_set_function ( p->vtl->current_track_gc, GDK_COPY );
-
-  g_free ( (gpointer) p->str ) ;
-  p->vtl->ct_sync_done = TRUE;
-  g_free ( p );
+  draw_sync_t *ds = (draw_sync_t*) data;
+  gdk_threads_enter();
+  gdk_draw_drawable (ds->drawable,
+                     ds->gc,
+                     ds->pixmap,
+                     0, 0, 0, 0, -1, -1);
+  ds->vtl->draw_sync_done = TRUE;
+  gdk_threads_leave();
   return FALSE;
 }
 
@@ -5292,16 +5304,41 @@ static void update_statusbar ( VikTrwLayer *vtl )
 static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp )
 {
   /* if we haven't sync'ed yet, we don't have time to do more. */
-  if ( vtl->ct_sync_done && vtl->current_track && vtl->current_track->trackpoints ) {
-    GList *iter = vtl->current_track->trackpoints;
-    new_track_move_passalong_t *passalong;
+  if ( vtl->draw_sync_done && vtl->current_track && vtl->current_track->trackpoints ) {
+    GList *iter = g_list_last ( vtl->current_track->trackpoints );
+
+    static GdkPixmap *pixmap = NULL;
+    int w1, h1, w2, h2;
+    // Need to check in case window has been resized
+    w1 = vik_viewport_get_width(vvp);
+    h1 = vik_viewport_get_height(vvp);
+    if (!pixmap) {
+      pixmap = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+    }
+    gdk_drawable_get_size (pixmap, &w2, &h2);
+    if (w1 != w2 || h1 != h2) {
+      g_object_unref ( G_OBJECT ( pixmap ) );
+      pixmap = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+    }
+
+    // Reset to background
+    gdk_draw_drawable (pixmap,
+                       vtl->current_track_newpoint_gc,
+                       vik_viewport_get_pixmap(vvp),
+                       0, 0, 0, 0, -1, -1);
+
+    draw_sync_t *passalong;
     gint x1, y1;
 
-    while ( iter->next )
-      iter = iter->next;
-    gdk_gc_set_function ( vtl->current_track_gc, GDK_INVERT );
     vik_viewport_coord_to_screen ( vvp, &(VIK_TRACKPOINT(iter->data)->coord), &x1, &y1 );
-    vik_viewport_draw_line ( vvp, vtl->current_track_gc, x1, y1, event->x, event->y );
+
+    // FOR SCREEN OVERLAYS WE MUST DRAW INTO THIS PIXMAP (when using the reset method)
+    //  otherwise using vik_viewport_draw_* functions puts the data into the base pixmap,
+    //  thus when we come to reset to the background it would include what we have already drawn!!
+    gdk_draw_line ( pixmap,
+                    vtl->current_track_newpoint_gc,
+                    x1, y1, event->x, event->y );
+    // Using this reset method is more reliable than trying to undraw previous efforts via the GDK_INVERT method
 
     /* Find out actual distance of current track */
     gdouble distance = vik_track_get_length (vtl->current_track);
@@ -5337,28 +5374,27 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     /* offset from cursor a bit */
     xd = event->x + 10;
     yd = event->y - 10;
-    /* note attempted setting text using pango layouts - but the 'undraw' technique didn't work */
-    vik_viewport_draw_string (vvp, gdk_font_from_description (pango_font_description_from_string ("Sans 8")), vtl->current_track_gc, xd, yd, str);
+    // TODO: is it worth using pango a layout?
+    // TODO: maybe a background rectangle to make the text more visible (as per Ruler information)
+    gdk_draw_string (pixmap,
+                     gdk_font_from_description (pango_font_description_from_string ("Sans 8")),
+                     vtl->current_track_newpoint_gc,
+                     xd, yd, str);
 
-    gdk_gc_set_function ( vtl->current_track_gc, GDK_COPY );
-
-    passalong = g_new(new_track_move_passalong_t,1); /* freed by sync */
+    passalong = g_new(draw_sync_t,1); // freed by draw_sync()
     passalong->vtl = vtl;
-    passalong->vvp = vvp;
-    passalong->x1 = x1;
-    passalong->y1 = y1;
-    passalong->x2 = event->x;
-    passalong->y2 = event->y;
-    passalong->x3 = xd;
-    passalong->y3 = yd;
-    passalong->str = str;
+    passalong->pixmap = pixmap;
+    passalong->drawable = GTK_WIDGET(vvp)->window;
+    passalong->gc = vtl->current_track_newpoint_gc;
 
     // Update statusbar with full gain/loss information
     statusbar_write (str, elev_gain, elev_loss, vtl);
 
-    /* this will sync and undraw when we have time to */
-    g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, ct_sync, passalong, NULL);
-    vtl->ct_sync_done = FALSE;
+    g_free ((gpointer)str);
+
+    // draw pixmap when we have time to
+    g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_sync, passalong, NULL);
+    vtl->draw_sync_done = FALSE;
     return VIK_LAYER_TOOL_ACK_GRAB_FOCUS;
   }
   return VIK_LAYER_TOOL_ACK;
