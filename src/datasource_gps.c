@@ -123,7 +123,8 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   gps_acquire_in_progress = TRUE;
 
   last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
-  device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+  if (a_babel_device_list)
+    device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
 
   last_get_tracks = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_tracks_b));
   if (last_get_tracks)
@@ -164,6 +165,8 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
     return;
   }
   
+  if (!a_babel_device_list)
+    return;
   last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
   device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
   if (!strcmp(device, "garmin")) {
