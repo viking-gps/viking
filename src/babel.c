@@ -234,10 +234,9 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
 
     f = g_fopen(name_dst, "r");
     if (f) {
-      a_gpx_read_file ( vt, f );
+      ret = a_gpx_read_file ( vt, f );
       fclose(f);
       f = NULL;
-      ret = TRUE;
     }
   }
     

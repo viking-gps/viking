@@ -32,7 +32,7 @@ typedef struct {
 	gboolean force_time; /// Force time field
 } GpxWritingOptions;
 
-void a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
+gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f );
 void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *trw, FILE *f );
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f );

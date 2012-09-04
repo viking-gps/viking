@@ -418,9 +418,10 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
 // make like a "stack" of tag names
 // like gpspoint's separated like /gpx/wpt/whatever
 
-void a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
+gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
   XML_Parser parser = XML_ParserCreate(NULL);
   int done=0, len;
+  enum XML_Status status = XML_STATUS_ERROR;
 
   XML_SetElementHandler(parser, (XML_StartElementHandler) gpx_start, (XML_EndElementHandler) gpx_end);
   XML_SetUserData(parser, vtl); /* in the future we could remove all global variables */
@@ -439,12 +440,14 @@ void a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
   while (!done) {
     len = fread(buf, 1, sizeof(buf)-7, f);
     done = feof(f) || !len;
-    XML_Parse(parser, buf, len, done);
+    status = XML_Parse(parser, buf, len, done);
   }
  
   XML_ParserFree (parser);
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
+
+  return status != XML_STATUS_ERROR;
 }
 
 /**** entitize from GPSBabel ****/

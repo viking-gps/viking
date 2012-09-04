@@ -611,7 +611,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
       }
     }
     else if ( is_gpx_file || check_magic ( f, GPX_MAGIC ) ) {
-      a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
+      success = a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
     }
     else
       success = a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
