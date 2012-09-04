@@ -181,7 +181,8 @@ static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets,
 
   /* Retrieve and memorize file format selected */
   last_type = gtk_combo_box_get_active ( GTK_COMBO_BOX (widgets->type) );
-  type = ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name;
+  if ( a_babel_file_list )
+    type = ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name;
 
   /* Build the string */
   *cmd = g_strdup_printf( "-i %s", type);
