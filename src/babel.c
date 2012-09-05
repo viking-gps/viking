@@ -105,68 +105,27 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   return ret;
 }
 
-#ifdef WINDOWS
-static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointer user_data )
+/**
+ * Perform any cleanup actions once GPSBabel has completed running
+ */
+static void babel_watch ( GPid pid,
+                          gint status,
+                          gpointer user_data )
 {
-  gboolean ret;
-  FILE *f;
-  gchar *cmd;
-  gchar **args2;
-  
-  STARTUPINFO si;
-  PROCESS_INFORMATION pi;
-
-  ZeroMemory( &si, sizeof(si) );
-  ZeroMemory( &pi, sizeof(pi) );
-  si.cb = sizeof(si);
-  si.dwFlags = STARTF_USESHOWWINDOW;
-  si.wShowWindow = SW_HIDE;
-  
-  cmd = g_strjoinv( " ", args);
-  args2 = g_strsplit(cmd, "\\", 0);
-  g_free(cmd);
-  cmd = g_strjoinv( "\\\\", args2);
-  g_free(args2);
-  args2 = g_strsplit(cmd, "/", 0);
-  g_free(cmd);
-  cmd = g_strjoinv( "\\\\", args2);
-
-  if( !CreateProcess(
-             NULL,                   // No module name (use command line).
-        (LPTSTR)cmd,           // Command line.
-        NULL,                   // Process handle not inheritable.
-        NULL,                   // Thread handle not inheritable.
-        FALSE,                  // Set handle inheritance to FALSE.
-        0,                      // No creation flags.
-        NULL,                   // Use parent's environment block.
-        NULL,                   // Use parent's starting directory.
-        &si,                    // Pointer to STARTUPINFO structure.
-        &pi )                   // Pointer to PROCESS_INFORMATION structure.
-    ){
-    g_error ( "CreateProcess failed" );
-    ret = FALSE;
-  }
-  else {
-    WaitForSingleObject(pi.hProcess, INFINITE);
-    WaitForSingleObject(pi.hThread, INFINITE);
-    
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
-    
-    if ( cb )
-      cb(BABEL_DONE, NULL, user_data);
-    
-    ret = TRUE;
-  }
-
-  g_strfreev( args2 );
-  g_free( cmd );
- 
-  return ret;
+  g_spawn_close_pid ( pid );
 }
-/* Windows */
-#else
-/* Posix */
+
+/**
+ * babel_general_convert:
+ * @args: The command line arguments passed to GPSBabel
+ * @cb: callback that is run for each line of GPSBabel output and at completion of the run
+ *      callback may be NULL
+ * @user_data: passed along to cb
+ *
+ * The function to actually invoke the GPSBabel external command
+ *
+ * Returns: %TRUE on successful invocation of GPSBabel command
+ */
 static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointer user_data )
 {
   gboolean ret = FALSE;
@@ -174,7 +133,7 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
   GError *error = NULL;
   gint babel_stdout;
 
-  if (!g_spawn_async_with_pipes (NULL, args, NULL, 0, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {
+  if (!g_spawn_async_with_pipes (NULL, args, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {
     g_error("Async command failed: %s", error->message);
     g_error_free(error);
     ret = FALSE;
@@ -193,15 +152,14 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
       cb(BABEL_DONE, NULL, user_data);
     fclose(diag);
     diag = NULL;
-    waitpid(pid, NULL, 0);
-    g_spawn_close_pid(pid);
+
+    g_child_watch_add ( pid, (GChildWatchFunc) babel_watch, NULL );
 
     ret = TRUE;
   }
     
   return ret;
 }
-#endif /* Posix */
 
 /**
  * babel_general_convert_from:
