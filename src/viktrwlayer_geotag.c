@@ -252,6 +252,11 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 				// Create waypoint with file information
 				gchar *name = NULL;
 				VikWaypoint *wp = a_geotag_create_waypoint_from_file ( options->image, vik_trw_layer_get_coord_mode (options->vtl), &name );
+				if ( !wp ) {
+					// Couldn't create Waypoint
+					g_free ( datetime );
+					return;
+				}
 				if ( !name )
 					name = g_strdup ( a_file_basename ( options->image ) );
 				vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
