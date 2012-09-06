@@ -2213,6 +2213,12 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
     gtk_window_set_transient_for ( GTK_WINDOW(vw->save_dia), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_dia), TRUE );
   }
+  // Auto append / replace extension with '.vik' to the suggested file name as it's going to be a Viking File
+  gchar* auto_save_name = strdup ( vw->filename ? a_file_basename ( vw->filename ) : _("Untitled") );
+  if ( ! check_file_ext ( auto_save_name, ".vik" ) )
+    auto_save_name = g_strconcat ( auto_save_name, ".vik", NULL );
+
+  gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(vw->save_dia), auto_save_name);
 
   while ( gtk_dialog_run ( GTK_DIALOG(vw->save_dia) ) == GTK_RESPONSE_ACCEPT )
   {
@@ -2225,6 +2231,7 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
       break;
     }
   }
+  g_free ( auto_save_name );
   gtk_widget_hide ( vw->save_dia );
   return rv;
 }
