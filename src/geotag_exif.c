@@ -307,6 +307,7 @@ VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coor
 gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_GPS_info )
 {
 	gchar* datetime = NULL;
+	*has_GPS_info = FALSE;
 
 	ExifData *ed = exif_data_new_from_file ( filename );
 
@@ -324,12 +325,21 @@ gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_G
 	}
 
 	// Check GPS Info
-	*has_GPS_info = FALSE;
-	
+
 	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_VERSION_ID);
 	// Confirm this has a GPS Id - normally "2.0.0.0" or "2.2.0.0"
 	if ( ee && ee->components == 4 )
 		*has_GPS_info = TRUE;
+
+	// Check other basic GPS fields exist too
+	// I have encountered some images which have just the EXIF_TAG_GPS_VERSION_ID but nothing else
+	// So to confirm check more EXIF GPS TAGS:
+	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LATITUDE);
+	if ( !ee )
+		*has_GPS_info = FALSE;
+	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LONGITUDE);
+	if ( !ee )
+		*has_GPS_info = FALSE;
 
 	exif_data_free ( ed );
 
