@@ -577,67 +577,69 @@ gboolean check_file_magic_vik ( const gchar *filename )
 
 VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename_or_uri )
 {
+  g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );
+
   char *filename = (char *)filename_or_uri;
   if (strncmp(filename, "file://", 7) == 0)
     filename = filename + 7;
 
-  gboolean is_gpx_file = check_file_ext ( filename, ".gpx" );
   FILE *f = xfopen ( filename, "r" );
-
-  g_assert ( vp );
 
   if ( ! f )
     return LOAD_TYPE_READ_FAILURE;
 
-  if ( !is_gpx_file && check_magic ( f, VIK_MAGIC ) )
+  VikLoadType_t load_answer = LOAD_TYPE_VIK_SUCCESS;
+
+  // Attempt loading the primary file type first - our internal .vik file:
+  if ( check_magic ( f, VIK_MAGIC ) )
   {
     file_read ( top, f, vp );
-    if ( f != stdin )
-      xfclose(f);
-    return LOAD_TYPE_VIK_SUCCESS;
   }
   else
   {
-    gboolean success = TRUE;
+	// For all other file types which consist of tracks, routes and/or waypoints,
+	//  must be loaded into a new TrackWaypoint layer (hence it be created)
+    gboolean success = TRUE; // Detect load failures - mainly to remove the layer created as it's not required
+
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
 
     // In fact both kml & gpx files start the same as they are in xml
     if ( check_file_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
       // Implicit Conversion
-      if ( ! a_babel_convert_from ( VIK_TRW_LAYER(vtl), "-i kml", filename, NULL, NULL ) ) {
-	// Probably want to remove the vtl, but I'm not sure how yet...
-	xfclose(f);
-	return LOAD_TYPE_GPSBABEL_FAILURE;
+      if ( ! ( success = a_babel_convert_from ( VIK_TRW_LAYER(vtl), "-i kml", filename, NULL, NULL ) ) ) {
+        load_answer = LOAD_TYPE_GPSBABEL_FAILURE;
       }
     }
-    else if ( is_gpx_file || check_magic ( f, GPX_MAGIC ) ) {
-      success = a_gpx_read_file ( VIK_TRW_LAYER(vtl), f );
-      if ( ! success ) {
-        // free up layer
-        g_object_unref ( vtl );
-        xfclose(f);
-        return LOAD_TYPE_GPX_FAILURE;
+    // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
+    //    - which currently confuses our check_magic function
+    else if ( check_file_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC ) ) {
+      if ( ! ( success = a_gpx_read_file ( VIK_TRW_LAYER(vtl), f ) ) ) {
+        load_answer = LOAD_TYPE_GPX_FAILURE;
       }
     }
-    else
-      success = a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f );
+    else {
+      // Try final supported file type
+      if ( ! ( success = a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f ) ) ) {
+		// Failure here means we don't know how to handle the file
+        load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
+	  }
+    }
 
-    // Refuse to load file types not supported
+    // Clean up when we can't handle the file
     if ( ! success ) {
       // free up layer
       g_object_unref ( vtl );
-      xfclose(f);
-      return LOAD_TYPE_UNSUPPORTED_FAILURE;
     }
-
-    vik_layer_rename ( vtl, a_file_basename ( filename ) );
-    vik_layer_post_read ( vtl, vp, TRUE );
-    vik_aggregate_layer_add_layer ( top, vtl );
-    vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
-
-    xfclose(f);
-    return LOAD_TYPE_OTHER_SUCCESS;
+    else {
+      // Complete the setup from the successful load
+      vik_layer_rename ( vtl, a_file_basename ( filename ) );
+      vik_layer_post_read ( vtl, vp, TRUE );
+      vik_aggregate_layer_add_layer ( top, vtl );
+      vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
+    }
   }
+  xfclose(f);
+  return load_answer;
 }
 
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename )
@@ -677,9 +679,9 @@ const gchar *a_file_basename ( const gchar *filename )
 */
 gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
 {
+  g_return_val_if_fail ( filename != NULL, FALSE );
+  g_return_val_if_fail ( fileext && fileext[0]=='.', FALSE );
   const gchar *basename = a_file_basename(filename);
-  g_assert( filename );
-  g_assert( fileext && fileext[0]=='.' );
   if (!basename)
     return FALSE;
 
