@@ -31,6 +31,7 @@
 #include "util.h"
 #include "dialog.h"
 
+#ifndef WINDOWS
 static gboolean spawn_command_line_async(const gchar * cmd,
                                          const gchar * arg)
 {
@@ -46,6 +47,7 @@ static gboolean spawn_command_line_async(const gchar * cmd,
  
   return status;
 }
+#endif
 
 void open_url(GtkWindow *parent, const gchar * url)
 {
