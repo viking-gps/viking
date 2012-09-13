@@ -249,7 +249,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, const cha
 
       g_strfreev(sub_args);
     } else
-      g_error("gpsbabel not found in PATH");
+      g_critical("gpsbabel not found in PATH");
     g_remove(name_dst);
     g_free(name_dst);
   }
@@ -332,7 +332,7 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
 static gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
 {
   if (!a_file_export(vt, name_src, FILE_TYPE_GPX, NULL)) {
-    g_error("Error exporting to %s", name_src);
+    g_critical("Error exporting to %s", name_src);
     return FALSE;
   }
        
@@ -373,7 +373,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, const char 
 
       g_strfreev(sub_args);
     } else
-      g_error("gpsbabel not found in PATH");
+      g_critical("gpsbabel not found in PATH");
     g_remove(name_src);
     g_free(name_src);
   }
@@ -459,7 +459,7 @@ static gboolean load_feature ()
 
     ret = babel_general_convert (load_feature_cb, args, NULL);
   } else
-    g_error("gpsbabel not found in PATH");
+    g_critical("gpsbabel not found in PATH");
 
   return ret;
 }
@@ -469,7 +469,7 @@ void a_babel_init ()
   /* TODO allow to set gpsbabel path via command line */
   gpsbabel_loc = g_find_program_in_path( "gpsbabel" );
   if ( !gpsbabel_loc )
-    g_error( "gpsbabel not found in PATH" );
+    g_critical( "gpsbabel not found in PATH" );
   unbuffer_loc = g_find_program_in_path( "unbuffer" );
   if ( !unbuffer_loc )
     g_warning( "unbuffer not found in PATH" );

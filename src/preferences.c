@@ -63,7 +63,7 @@ static void preferences_groups_uninit()
 void a_preferences_register_group ( const gchar *key, const gchar *name )
 {
   if ( g_hash_table_lookup ( groups_keys_to_indices, key ) )
-    g_error("Duplicate preferences group keys");
+    g_critical("Duplicate preferences group keys");
   else {
     g_ptr_array_add ( groups_names, g_strdup(name) );
     g_hash_table_insert ( groups_keys_to_indices, g_strdup(key), GINT_TO_POINTER ( (gint) groups_names->len ) ); /* index + 1 */
@@ -103,7 +103,7 @@ void layer_typed_param_data_free(gpointer p)
      * by the layer -- i.e. free'd by the layer.
      */
     case VIK_LAYER_PARAM_STRING_LIST:
-      g_error ( "Param strings not implemented in preferences"); //fake it
+      g_critical ( "Param strings not implemented in preferences"); //fake it
       break;
   }
   g_free ( val );
@@ -126,7 +126,7 @@ VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type, VikLa
      * by the layer -- i.e. free'd by the layer.
      */
     case VIK_LAYER_PARAM_STRING_LIST:
-      g_error ( "Param strings not implemented in preferences"); //fake it
+      g_critical ( "Param strings not implemented in preferences"); //fake it
       break;
   }
   return newval;
@@ -203,7 +203,7 @@ static gboolean preferences_load_from_file()
         // otherwise change it (you know the type!)
         // if it's a string list do some funky stuff ... yuck... not yet.
         if ( oldval->type == VIK_LAYER_PARAM_STRING_LIST )
-          g_error ( "Param strings not implemented in preferences"); // fake it
+          g_critical ( "Param strings not implemented in preferences"); // fake it
 
         newval = layer_data_typed_param_copy_from_string ( oldval->type, val );
         g_hash_table_insert ( values, key, newval );
@@ -223,7 +223,7 @@ static gboolean preferences_load_from_file()
 static void preferences_run_setparam ( gpointer notused, guint16 i, VikLayerParamData data, VikLayerParam *params )
 {
   if ( params[i].type == VIK_LAYER_PARAM_STRING_LIST )
-    g_error ( "Param strings not implemented in preferences"); //fake it
+    g_critical ( "Param strings not implemented in preferences"); //fake it
   g_hash_table_insert ( values, (gchar *)(params[i].name), layer_typed_param_data_copy_from_data(params[i].type, data) );
 }
 
@@ -238,7 +238,7 @@ static VikLayerParamData preferences_run_getparam ( gpointer notused, guint16 i,
   VikLayerTypedParamData *val = (VikLayerTypedParamData *) g_hash_table_lookup ( values, ((VikLayerParam *)g_ptr_array_index(params,i))->name );
   g_assert ( val != NULL );
   if ( val->type == VIK_LAYER_PARAM_STRING_LIST )
-    g_error ( "Param strings not implemented in preferences"); //fake it
+    g_critical ( "Param strings not implemented in preferences"); //fake it
   return val->data;
 }
 

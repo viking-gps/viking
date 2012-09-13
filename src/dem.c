@@ -352,7 +352,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
   dem->n_columns = 0;
 
   if ((mf = g_mapped_file_new(file_name, FALSE, &error)) == NULL) {
-    g_error(_("Couldn't map file %s: %s"), file_name, error->message);
+    g_critical(_("Couldn't map file %s: %s"), file_name, error->message);
     g_error_free(error);
     g_free(dem);
     return NULL;

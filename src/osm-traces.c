@@ -236,7 +236,7 @@ static gint osm_traces_upload_file(const char *user,
       }
     }
     else {
-      g_error(_("curl_easy_getinfo failed: %d"), res);
+      g_critical(_("curl_easy_getinfo failed: %d"), res);
       result = -1;
     }
   }
@@ -344,7 +344,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   /* Removing temporary file */
   ret = g_unlink(filename);
   if (ret != 0) {
-    g_error(_("failed to unlink temporary file: %s"), strerror(errno));
+    g_critical(_("failed to unlink temporary file: %s"), strerror(errno));
   }
 }
 
