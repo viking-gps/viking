@@ -26,6 +26,10 @@ gnome-doc-utils.m4
 /omf.make
 /viking.spec
 /xmldocs.make
+# make dist output:
+viking-*tar.bz2
+viking-*tar.gz
+viking-*zip
 
 # data/
 data/Makefile
