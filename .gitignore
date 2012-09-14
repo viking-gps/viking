@@ -27,6 +27,10 @@ gnome-doc-utils.m4
 /viking.spec
 /xmldocs.make
 
+# data/
+data/Makefile
+data/Makefile.in
+
 # /doc/
 /doc/Makefile.in
 /doc/Makefile
