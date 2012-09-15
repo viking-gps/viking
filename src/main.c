@@ -50,8 +50,6 @@ void a_datasource_gc_init();
 
 #include "modules.h"
 
-#define MAX_WINDOWS 1024
-
 /* FIXME LOCALEDIR must be configured by ./configure --localedir */
 /* But something does not work actually. */
 /* So, we need to redefine this variable on windows. */
@@ -59,14 +57,6 @@ void a_datasource_gc_init();
 #undef LOCALEDIR
 #define LOCALEDIR "locale"
 #endif
-
-static guint window_count = 0;
-
-static VikWindow *new_window ();
-static void open_window ( VikWindow *vw, GSList *files );
-static void statusbar_update ( VikWindow *vw, const gchar *message );
-static void destroy( GtkWidget *widget,
-                     gpointer   data );
 
 #if GLIB_CHECK_VERSION (2, 32, 0)
 /* Callback to log message */
@@ -87,66 +77,6 @@ static void mute_log(const gchar *log_domain,
   /* Nothing to do, we just want to mute */
 }
 #endif
-
-/* Another callback */
-static void destroy( GtkWidget *widget,
-                     gpointer   data )
-{
-    if ( ! --window_count )
-      gtk_main_quit ();
-}
-
-// Only here because other signal handlers are!
-// TODO: why can't we just move all these into VikWindow and be done with it?!
-static void statusbar_update ( VikWindow *vw, const gchar *message )
-{
-  vik_window_statusbar_update ( vw, message );
-}
-
-static VikWindow *new_window ()
-{
-  if ( window_count < MAX_WINDOWS )
-  {
-    VikWindow *vw = vik_window_new ();
-
-    g_signal_connect (G_OBJECT (vw), "destroy",
-		      G_CALLBACK (destroy), NULL);
-    g_signal_connect (G_OBJECT (vw), "newwindow",
-		      G_CALLBACK (new_window), NULL);
-    g_signal_connect (G_OBJECT (vw), "openwindow",
-		      G_CALLBACK (open_window), NULL);
-    g_signal_connect (G_OBJECT (vw), "statusbarupdate",
-		      G_CALLBACK (statusbar_update), NULL);
-
-    gtk_widget_show_all ( GTK_WIDGET(vw) );
-
-    window_count++;
-
-    return vw;
-  }
-  return NULL;
-}
-
-static void open_window ( VikWindow *vw, GSList *files )
-{
-  gboolean change_fn = (g_slist_length(files) == 1); /* only change fn if one file */
-  GSList *cur_file = files;
-  while ( cur_file ) {
-    // Only open a new window if a viking file
-    gchar *file_name = cur_file->data;
-    if (vw != NULL && check_file_magic_vik ( file_name ) ) {
-      VikWindow *newvw = new_window();
-      if (newvw)
-	vik_window_open_file ( newvw, file_name, change_fn );
-    }
-    else {
-      vik_window_open_file ( vw, file_name, change_fn );
-    }
-    g_free (file_name);
-    cur_file = g_slist_next (cur_file);
-  }
-  g_slist_free (files);
-}
 
 /* Options */
 static GOptionEntry entries[] = 
@@ -232,7 +162,7 @@ int main( int argc, char *argv[] )
   gtk_window_set_default_icon(main_icon);
 
   /* Create the first window */
-  first_window = new_window();
+  first_window = vik_window_new_window();
 
   gdk_threads_enter ();
   while ( ++i < argc ) {

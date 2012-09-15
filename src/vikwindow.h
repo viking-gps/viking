@@ -51,7 +51,9 @@ struct _VikWindowClass
 
 GType vik_window_get_type ();
 
-VikWindow *vik_window_new ();
+// To call from main to start things off:
+VikWindow *vik_window_new_window ();
+
 GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode );
 gboolean vik_window_get_pan_move ( VikWindow *vw );
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean changefilename );
@@ -62,8 +64,6 @@ struct _VikLayersPanel * vik_window_layers_panel(VikWindow *vw);
 struct _VikStatusbar * vik_window_get_statusbar(VikWindow *vw);
 // Only for use from background.c:
 void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message );
-// This one only from main.c:
-void vik_window_statusbar_update (VikWindow *vw, const gchar* message );
 
 void vik_window_set_redraw_trigger(struct _VikLayer *vl);
 

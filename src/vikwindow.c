@@ -55,6 +55,12 @@
 #include <gio/gio.h>
 #include <gdk/gdkkeysyms.h>
 
+// This seems rather arbitary, quite large and pointless
+//  I mean, if you have a thousand windows open;
+//   why not be allowed to open a thousand more...
+#define MAX_WINDOWS 1024
+static guint window_count = 0;
+
 #define VIKING_WINDOW_WIDTH      1000
 #define VIKING_WINDOW_HEIGHT     800
 #define DRAW_IMAGE_DEFAULT_WIDTH 1280
@@ -68,9 +74,17 @@ static void window_init ( VikWindow *vw );
 static void window_class_init ( VikWindowClass *klass );
 static void window_set_filename ( VikWindow *vw, const gchar *filename );
 
+static VikWindow *window_new ();
+
 static void draw_update ( VikWindow *vw );
 
 static void newwindow_cb ( GtkAction *a, VikWindow *vw );
+
+// Signals
+static void open_window ( VikWindow *vw, GSList *files );
+static void statusbar_update ( VikWindow *vw, const gchar *message );
+static void destroy_window ( GtkWidget *widget,
+                             gpointer   data );
 
 /* Drawing & stuff */
 
@@ -279,6 +293,65 @@ void vik_window_statusbar_update ( VikWindow *vw, const gchar* message )
   g_idle_add ( (GSourceFunc) statusbar_idle_update, data );
 }
 
+// Actual signal handlers
+static void destroy_window ( GtkWidget *widget,
+                             gpointer   data )
+{
+    if ( ! --window_count )
+      gtk_main_quit ();
+}
+
+static void statusbar_update ( VikWindow *vw, const gchar *message )
+{
+  vik_window_statusbar_update ( vw, message );
+}
+
+VikWindow *vik_window_new_window ()
+{
+  if ( window_count < MAX_WINDOWS )
+  {
+    VikWindow *vw = window_new ();
+
+    g_signal_connect (G_OBJECT (vw), "destroy",
+		      G_CALLBACK (destroy_window), NULL);
+    g_signal_connect (G_OBJECT (vw), "newwindow",
+		      G_CALLBACK (vik_window_new_window), NULL);
+    g_signal_connect (G_OBJECT (vw), "openwindow",
+		      G_CALLBACK (open_window), NULL);
+    g_signal_connect (G_OBJECT (vw), "statusbarupdate",
+		      G_CALLBACK (statusbar_update), NULL);
+
+    gtk_widget_show_all ( GTK_WIDGET(vw) );
+
+    window_count++;
+
+    return vw;
+  }
+  return NULL;
+}
+
+static void open_window ( VikWindow *vw, GSList *files )
+{
+  gboolean change_fn = (g_slist_length(files) == 1); /* only change fn if one file */
+  GSList *cur_file = files;
+  while ( cur_file ) {
+    // Only open a new window if a viking file
+    gchar *file_name = cur_file->data;
+    if (vw != NULL && check_file_magic_vik ( file_name ) ) {
+      VikWindow *newvw = vik_window_new_window ();
+      if (newvw)
+	vik_window_open_file ( newvw, file_name, change_fn );
+    }
+    else {
+      vik_window_open_file ( vw, file_name, change_fn );
+    }
+    g_free (file_name);
+    cur_file = g_slist_next (cur_file);
+  }
+  g_slist_free (files);
+}
+// End signals
+
 void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
 {
   int i, j, tool_count;
@@ -401,7 +474,7 @@ static void window_init ( VikWindow *vw )
   vw->save_img_dir_dia = NULL;
 }
 
-VikWindow *vik_window_new ()
+static VikWindow *window_new ()
 {
   return VIK_WINDOW ( g_object_new ( VIK_WINDOW_TYPE, NULL ) );
 }
