@@ -199,6 +199,7 @@ enum {
 enum {
   VW_NEWWINDOW_SIGNAL,
   VW_OPENWINDOW_SIGNAL,
+  VW_STATUSBAR_UPDATE_SIGNAL,
   VW_LAST_SIGNAL
 };
 
@@ -249,6 +250,35 @@ VikStatusbar * vik_window_get_statusbar ( VikWindow *vw )
   return vw->viking_vs;
 }
 
+/**
+ * For signalling the update from a background thread
+ */
+void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message )
+{
+  g_signal_emit ( G_OBJECT(vw), window_signals[VW_STATUSBAR_UPDATE_SIGNAL], 0, message );
+}
+
+/**
+ * For the actual statusbar update!
+ */
+static void statusbar_idle_update ( gpointer indata )
+{
+  gpointer *data = indata;
+  vik_statusbar_set_message ( data[0], VIK_STATUSBAR_ITEMS, data[1] );
+}
+
+/**
+ * Update statusbar in the main thread
+ */
+void vik_window_statusbar_update ( VikWindow *vw, const gchar* message )
+{
+  // ATM we know the message has been statically allocated so this is OK (no need to handle any freeing)
+  static gpointer data[2];
+  data[0] = vw->viking_vs;
+  data[1] = (gchar*) message;
+  g_idle_add ( (GSourceFunc) statusbar_idle_update, data );
+}
+
 void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
 {
   int i, j, tool_count;
@@ -274,7 +304,7 @@ static void window_finalize ( GObject *gob )
   VikWindow *vw = VIK_WINDOW(gob);
   g_return_if_fail ( vw != NULL );
 
-  a_background_remove_status ( vw->viking_vs );
+  a_background_remove_window ( vw );
 
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
@@ -287,6 +317,7 @@ static void window_class_init ( VikWindowClass *klass )
 
   window_signals[VW_NEWWINDOW_SIGNAL] = g_signal_new ( "newwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, newwindow), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
   window_signals[VW_OPENWINDOW_SIGNAL] = g_signal_new ( "openwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, openwindow), NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
+  window_signals[VW_STATUSBAR_UPDATE_SIGNAL] = g_signal_new ( "statusbarupdate", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, statusbarupdate), NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
   object_class = G_OBJECT_CLASS (klass);
 
@@ -362,7 +393,7 @@ static void window_init ( VikWindow *vw )
 
   gtk_box_pack_end (GTK_BOX(main_vbox), GTK_WIDGET(vw->viking_vs), FALSE, TRUE, 0);
 
-  a_background_add_status(vw->viking_vs);
+  a_background_add_window ( vw );
 
   vw->open_dia = NULL;
   vw->save_dia = NULL;
