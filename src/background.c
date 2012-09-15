@@ -22,7 +22,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "vikstatus.h"
 #include "background.h"
 
 static GThreadPool *thread_pool = NULL;
@@ -32,7 +31,8 @@ static GtkWidget *bgwindow = NULL;
 static GtkWidget *bgtreeview = NULL;
 static GtkListStore *bgstore = NULL;
 
-static GSList *statusbars_to_update = NULL;
+// Still only actually updating the statusbar though
+static GSList *windows_to_update = NULL;
 
 static gint bgitemcount = 0;
 
@@ -46,18 +46,16 @@ enum
   N_COLUMNS,
 };
 
-void a_background_update_status ( VikStatusbar *vs, gchar *str )
+void a_background_update_status ( VikWindow *vw, gpointer data )
 {
-  gdk_threads_enter ();
-  vik_statusbar_set_message ( vs, VIK_STATUSBAR_ITEMS, str );
-  gdk_threads_leave ();
+  static gchar buf[20];
+  g_snprintf(buf, sizeof(buf), _("%d items"), bgitemcount);
+  vik_window_signal_statusbar_update ( vw, buf );
 }
 
 static void background_thread_update ()
 {
-  static gchar buf[20];
-  g_snprintf(buf, sizeof(buf), _("%d items"), bgitemcount);
-  g_slist_foreach ( statusbars_to_update, (GFunc) a_background_update_status, buf );
+  g_slist_foreach ( windows_to_update, (GFunc) a_background_update_status, NULL );
 }
 
 int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
@@ -289,13 +287,12 @@ void a_background_uninit()
   g_thread_pool_free ( thread_pool, TRUE, TRUE );
 }
 
-void a_background_add_status(VikStatusbar *vs)
+void a_background_add_window (VikWindow *vw)
 {
-  statusbars_to_update = g_slist_prepend(statusbars_to_update,vs);
+  windows_to_update = g_slist_prepend(windows_to_update,vw);
 }
 
-void a_background_remove_status(VikStatusbar *vs)
+void a_background_remove_window (VikWindow *vw)
 {
-  statusbars_to_update = g_slist_remove(statusbars_to_update,vs);
+  windows_to_update = g_slist_remove(windows_to_update,vw);
 }
-

@@ -64,6 +64,7 @@ static guint window_count = 0;
 
 static VikWindow *new_window ();
 static void open_window ( VikWindow *vw, GSList *files );
+static void statusbar_update ( VikWindow *vw, const gchar *message );
 static void destroy( GtkWidget *widget,
                      gpointer   data );
 
@@ -95,6 +96,13 @@ static void destroy( GtkWidget *widget,
       gtk_main_quit ();
 }
 
+// Only here because other signal handlers are!
+// TODO: why can't we just move all these into VikWindow and be done with it?!
+static void statusbar_update ( VikWindow *vw, const gchar *message )
+{
+  vik_window_statusbar_update ( vw, message );
+}
+
 static VikWindow *new_window ()
 {
   if ( window_count < MAX_WINDOWS )
@@ -107,6 +115,8 @@ static VikWindow *new_window ()
 		      G_CALLBACK (new_window), NULL);
     g_signal_connect (G_OBJECT (vw), "openwindow",
 		      G_CALLBACK (open_window), NULL);
+    g_signal_connect (G_OBJECT (vw), "statusbarupdate",
+		      G_CALLBACK (statusbar_update), NULL);
 
     gtk_widget_show_all ( GTK_WIDGET(vw) );
 
