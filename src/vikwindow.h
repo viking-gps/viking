@@ -45,7 +45,7 @@ struct _VikWindowClass
 {
   GtkWindowClass window_class;
   void (* newwindow) (VikWindow *vw);
-  void (* openwindow) (VikWindow *vw, const gchar *filename);
+  void (* openwindow) (VikWindow *vw, GSList *filenames);
 };
 
 GType vik_window_get_type ();
