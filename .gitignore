@@ -70,6 +70,7 @@ doc/reference/*stamp
 /src/libviking.a
 /src/stamp-h1
 /src/viking
+/src/viking.exe
 /src/viking.desktop
 /src/vikenumtypes.h
 /src/vikenumtypes.c
