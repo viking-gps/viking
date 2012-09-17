@@ -3004,7 +3004,7 @@ static struct {
   { &select_18_pixbuf,		"vik-icon-select"   },
   { &begintr_18_pixbuf,		"vik-icon-Begin Track"      },
   { &route_finder_18_pixbuf,	"vik-icon-Route Finder"     },
-  { &demdl_18_pixbuf,		"vik-icon-DEM Download/Import"},
+  { &demdl_18_pixbuf,		"vik-icon-DEM Download"     },
   { &showpic_18_pixbuf,		"vik-icon-Show Picture"     },
   { &addtr_18_pixbuf,		"vik-icon-Create Track"     },
   { &edtr_18_pixbuf,		"vik-icon-Edit Trackpoint"  },
