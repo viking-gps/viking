@@ -584,6 +584,9 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
    * for panning and zooming; tools only get left/right/movement 
    */
   if ( event->button == 2) {
+    if ( vw->vt->tools[vw->vt->active_tool].ti.pan_handler )
+      // Tool still may need to do something (such as disable something)
+      toolbox_click(vw->vt, event);
     vik_window_pan_click ( vw, event );
   } 
   else {
@@ -676,7 +679,10 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
   gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
 
   if ( event->button == 2 ) {  /* move / pan */
-    vik_window_pan_release(vw, event);
+    if ( vw->vt->tools[vw->vt->active_tool].ti.pan_handler )
+      // Tool still may need to do something (such as reenable something)
+      toolbox_release(vw->vt, event);
+    vik_window_pan_release ( vw, event );
   }
   else {
     toolbox_release(vw->vt, event);
@@ -1061,6 +1067,7 @@ static VikToolInterface ruler_tool =
     (VikToolMouseMoveFunc) ruler_move, 
     (VikToolMouseFunc) ruler_release,
     (VikToolKeyFunc) ruler_key_press,
+    FALSE,
     GDK_CURSOR_IS_PIXMAP,
     &cursor_ruler_pixbuf };
 /*** end ruler code ********************************************************/
@@ -1308,6 +1315,7 @@ static VikToolInterface zoom_tool =
     (VikToolMouseMoveFunc) zoomtool_move,
     (VikToolMouseFunc) zoomtool_release,
     NULL,
+    FALSE,
     GDK_CURSOR_IS_PIXMAP,
     &cursor_zoom_pixbuf };
 /*** end zoom code ********************************************************/
@@ -1352,6 +1360,7 @@ static VikToolInterface pan_tool =
     (VikToolMouseMoveFunc) pantool_move,
     (VikToolMouseFunc) pantool_release,
     NULL,
+    FALSE,
     GDK_FLEUR };
 /*** end pan code ********************************************************/
 
@@ -1468,6 +1477,7 @@ static VikToolInterface select_tool =
     (VikToolMouseMoveFunc) selecttool_move,
     (VikToolMouseFunc) selecttool_release,
     (VikToolKeyFunc) NULL,
+    FALSE,
     GDK_LEFT_PTR,
     NULL,
     NULL };

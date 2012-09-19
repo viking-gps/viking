@@ -134,7 +134,9 @@ static VikToolInterface maps_tools[] = {
   { { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
     (VikToolConstructorFunc) maps_layer_download_create, NULL, NULL, NULL,
     (VikToolMouseFunc) maps_layer_download_click, NULL,  (VikToolMouseFunc) maps_layer_download_release,
-    (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_mapdl_pixbuf },
+    (VikToolKeyFunc) NULL,
+    FALSE,
+    GDK_CURSOR_IS_PIXMAP, &cursor_mapdl_pixbuf },
 };
 
 VikLayerInterface vik_maps_layer_interface = {
