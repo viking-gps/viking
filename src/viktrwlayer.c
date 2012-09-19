@@ -148,6 +148,7 @@ struct _VikTrwLayer {
   VikTrack *current_track;
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
   gboolean draw_sync_done;
+  gboolean draw_sync_do;
 
   VikCoordMode coord_mode;
 
@@ -307,6 +308,7 @@ static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp ); 
+static void tool_new_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
@@ -331,31 +333,47 @@ static void highest_wp_number_remove_wp(VikTrwLayer *vtl, const gchar *old_wp_na
 
 
 static VikToolInterface trw_layer_tools[] = {
-  { N_("Create Waypoint"), (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_addwp_pixbuf },
+  { N_("Create Waypoint"), (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL,
+    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, (VikToolKeyFunc) NULL,
+    FALSE,
+    GDK_CURSOR_IS_PIXMAP, &cursor_addwp_pixbuf },
 
   { N_("Create Track"),    (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_new_track_click, (VikToolMouseMoveFunc) tool_new_track_move, NULL,
-    (VikToolKeyFunc) tool_new_track_key_press, GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf },
+    (VikToolMouseFunc) tool_new_track_click,
+    (VikToolMouseMoveFunc) tool_new_track_move,
+    (VikToolMouseFunc) tool_new_track_release,
+    (VikToolKeyFunc) tool_new_track_key_press,
+    TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
+    GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf },
 
   { N_("Begin Track"),    (VikToolConstructorFunc) tool_begin_track_create,       NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_begintr_pixbuf },
+    (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, (VikToolKeyFunc) NULL,
+    FALSE,
+    GDK_CURSOR_IS_PIXMAP, &cursor_begintr_pixbuf },
 
   { N_("Edit Waypoint"),   (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_waypoint_click,   
     (VikToolMouseMoveFunc) tool_edit_waypoint_move,
-    (VikToolMouseFunc) tool_edit_waypoint_release, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf },
+    (VikToolMouseFunc) tool_edit_waypoint_release, (VikToolKeyFunc) NULL,
+    FALSE,
+    GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf },
 
   { N_("Edit Trackpoint"), (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL, 
     (VikToolMouseFunc) tool_edit_trackpoint_click,
     (VikToolMouseMoveFunc) tool_edit_trackpoint_move,
-    (VikToolMouseFunc) tool_edit_trackpoint_release, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_edtr_pixbuf },
+    (VikToolMouseFunc) tool_edit_trackpoint_release, (VikToolKeyFunc) NULL,
+    FALSE,
+    GDK_CURSOR_IS_PIXMAP, &cursor_edtr_pixbuf },
 
   { N_("Show Picture"),    (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL, 
-    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf },
+    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL,
+    FALSE,
+    GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf },
 
   { N_("Route Finder"),  (VikToolConstructorFunc) tool_route_finder_create,  NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_route_finder_click, NULL, NULL, (VikToolKeyFunc) NULL, GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
+    (VikToolMouseFunc) tool_route_finder_click, NULL, NULL, (VikToolKeyFunc) NULL,
+    FALSE,
+    GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
 };
 enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
@@ -964,6 +982,7 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
   rv->moving_wp = FALSE;
 
   rv->draw_sync_done = TRUE;
+  rv->draw_sync_do = TRUE;
 
   rv->route_finder_started = FALSE;
   rv->route_finder_check_added_track = FALSE;
@@ -5220,13 +5239,18 @@ typedef struct {
 static gboolean draw_sync ( gpointer data )
 {
   draw_sync_t *ds = (draw_sync_t*) data;
-  gdk_threads_enter();
-  gdk_draw_drawable (ds->drawable,
-                     ds->gc,
-                     ds->pixmap,
-                     0, 0, 0, 0, -1, -1);
-  ds->vtl->draw_sync_done = TRUE;
-  gdk_threads_leave();
+  // Sometimes don't want to draw
+  //  normally because another update has taken precedent such as panning the display
+  //   which means this pixmap is no longer valid
+  if ( ds->vtl->draw_sync_do ) {
+    gdk_threads_enter();
+    gdk_draw_drawable (ds->drawable,
+                       ds->gc,
+                       ds->pixmap,
+                       0, 0, 0, 0, -1, -1);
+    ds->vtl->draw_sync_done = TRUE;
+    gdk_threads_leave();
+  }
   return FALSE;
 }
 
@@ -5430,6 +5454,13 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return FALSE;
 
+  if ( event->button == 2 ) {
+    // As the display is panning, the new track pixmap is now invalid so don't draw it
+    //  otherwise this drawing done results in flickering back to an old image
+    vtl->draw_sync_do = FALSE;
+    return FALSE;
+  }
+
   if ( event->button == 3 && vtl->current_track )
   {
     /* undo */
@@ -5500,6 +5531,15 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
 
   vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
   return TRUE;
+}
+
+static void tool_new_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  if ( event->button == 2 ) {
+    // Pan moving ended - enable potential point drawing again
+    vtl->draw_sync_do = TRUE;
+    vtl->draw_sync_done = TRUE;
+  }
 }
 
 /*** New waypoint ****/
