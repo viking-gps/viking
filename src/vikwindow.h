@@ -81,7 +81,6 @@ gpointer vik_window_get_selected_waypoint ( VikWindow *vw ); /* return type VikW
 void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer vtl, gpointer name ); /* input VikWaypoint, VikTrwLayer */
 /* Return the VikTrwLayer of the selected track(s) or waypoint(s) are in (maybe NULL) */
 gpointer vik_window_get_containing_trw_layer ( VikWindow *vw );
-gpointer vik_window_get_selected_name ( VikWindow *vw );
 /* return indicates if a redraw is necessary */
 gboolean vik_window_clear_highlight ( VikWindow *vw );
 

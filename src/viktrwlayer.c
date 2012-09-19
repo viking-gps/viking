@@ -5478,20 +5478,31 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
   VikTrack *track = (VikTrack*)vik_window_get_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) );
   if ( track && track->visible ) {
 
-    if ( vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ) {
+    if ( track->name ) {
 
       if ( vtl->track_right_click_menu )
-	gtk_object_sink ( GTK_OBJECT(vtl->track_right_click_menu) );
+        gtk_object_sink ( GTK_OBJECT(vtl->track_right_click_menu) );
 
       vtl->track_right_click_menu = GTK_MENU ( gtk_menu_new () );
       
-      trw_layer_sublayer_add_menu_items ( vtl,
-					  vtl->track_right_click_menu,
-					  NULL,
-					  VIK_TRW_LAYER_SUBLAYER_TRACK,
-					  vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ),
-					  g_hash_table_lookup ( vtl->tracks_iters, vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ),
-					  vvp);
+      trku_udata udataU;
+      udataU.trk  = track;
+      udataU.uuid = NULL;
+
+      gpointer *trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udataU );
+
+      if ( trkf && udataU.uuid ) {
+
+        GtkTreeIter *iter = g_hash_table_lookup ( vtl->tracks_iters, udataU.uuid );
+
+        trw_layer_sublayer_add_menu_items ( vtl,
+                                            vtl->track_right_click_menu,
+                                            NULL,
+                                            VIK_TRW_LAYER_SUBLAYER_TRACK,
+                                            udataU.uuid,
+                                            iter,
+                                            vvp );
+      }
 
       gtk_menu_popup ( vtl->track_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
 	
@@ -5502,19 +5513,30 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
   /* See if a waypoint is selected */
   VikWaypoint *waypoint = (VikWaypoint*)vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) );
   if ( waypoint && waypoint->visible ) {
-    if ( vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ) {
+    if ( waypoint->name ) {
 
       if ( vtl->wp_right_click_menu )
-	gtk_object_sink ( GTK_OBJECT(vtl->wp_right_click_menu) );
+        gtk_object_sink ( GTK_OBJECT(vtl->wp_right_click_menu) );
 
       vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
-      trw_layer_sublayer_add_menu_items ( vtl,
-					  vtl->wp_right_click_menu,
-					  NULL,
-					  VIK_TRW_LAYER_SUBLAYER_WAYPOINT,
-					  vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ),
-					  g_hash_table_lookup ( vtl->waypoints_iters, vik_window_get_selected_name ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl) ) ),
-					  vvp);
+
+      wpu_udata udata;
+      udata.wp   = waypoint;
+      udata.uuid = NULL;
+
+      gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, (gpointer) &udata );
+
+      if ( wpf && udata.uuid ) {
+        GtkTreeIter *iter = g_hash_table_lookup ( vtl->waypoints_iters, udata.uuid );
+
+        trw_layer_sublayer_add_menu_items ( vtl,
+                                            vtl->wp_right_click_menu,
+                                            NULL,
+                                            VIK_TRW_LAYER_SUBLAYER_WAYPOINT,
+                                            udata.uuid,
+                                            iter,
+                                            vvp );
+      }
       gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
 
       return TRUE;

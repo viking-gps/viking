@@ -178,7 +178,6 @@ struct _VikWindow {
   gpointer selected_waypoints; /* notionally GList */
   gpointer selected_waypoint; /* notionally VikWaypoint */
   /* only use for individual track or waypoint */
-  gpointer selected_name; /* notionally gchar */
   ////// NEED TO THINK ABOUT VALIDITY OF THESE             //////
   ////// i.e. what happens when stuff is deleted elsewhere //////
   ////// Generally seems alright as can not access them    //////
@@ -1435,7 +1434,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
   else if ( ( event->button == 3 ) && ( vl && ( vl->type == VIK_LAYER_TRW ) ) ) {
     if ( vl->visible )
       /* Act on currently selected item to show menu */
-      if ( ( t->vw->selected_track || t->vw->selected_waypoint ) && t->vw->selected_name )
+      if ( t->vw->selected_track || t->vw->selected_waypoint )
 	if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
 	  vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, t->vw->viking_vvp );
   }
@@ -3046,7 +3045,6 @@ void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
-  vw->selected_name      = NULL;
   // Set highlight thickness
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
@@ -3065,7 +3063,6 @@ void vik_window_set_selected_tracks ( VikWindow *vw, gpointer gl, gpointer vtl )
   vw->selected_track     = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
-  vw->selected_name      = NULL;
   // Set highlight thickness
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
@@ -3079,7 +3076,6 @@ void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl, 
 {
   vw->selected_track = vt;
   vw->containing_vtl = vtl;
-  vw->selected_name  = name;
   /* Clear others */
   vw->selected_vtl       = NULL;
   vw->selected_tracks    = NULL;
@@ -3103,7 +3099,6 @@ void vik_window_set_selected_waypoints ( VikWindow *vw, gpointer gl, gpointer vt
   vw->selected_track     = NULL;
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
-  vw->selected_name      = NULL;
 }
 
 gpointer vik_window_get_selected_waypoint ( VikWindow *vw )
@@ -3115,17 +3110,11 @@ void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer v
 {
   vw->selected_waypoint = vwp;
   vw->containing_vtl    = vtl;
-  vw->selected_name     = name;
   /* Clear others */
   vw->selected_vtl       = NULL;
   vw->selected_track     = NULL;
   vw->selected_tracks    = NULL;
   vw->selected_waypoints = NULL;
-}
-
-gpointer vik_window_get_selected_name ( VikWindow *vw )
-{
-  return vw->selected_name;
 }
 
 gboolean vik_window_clear_highlight ( VikWindow *vw )
