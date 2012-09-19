@@ -1101,7 +1101,7 @@ static void gps_comm_thread(GpsSession *sess)
       if (!sess->realtime_tracking)
 #endif
       {
-	if (sess->vvp) {
+	if ( sess->vvp && sess->direction == GPS_DOWN ) {
 	  /* View the data available */
 	  vik_trw_layer_auto_set_view ( sess->vtl, sess->vvp) ;
 	  vik_layer_emit_update ( VIK_LAYER(sess->vtl), TRUE ); // Yes update from background thread
@@ -1207,7 +1207,9 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(layer_and_vlp[1]);
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
-  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, NULL, vlp, vgl->upload_tracks, vgl->upload_waypoints);
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
+  VikViewport *vvp = vik_window_viewport(vw);
+  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
