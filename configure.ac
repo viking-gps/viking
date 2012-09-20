@@ -129,7 +129,7 @@ esac
 AM_CONDITIONAL([BING], [test x$ac_cv_enable_bing = xyes])
 
 AC_ARG_ENABLE(google, AC_HELP_STRING([--enable-google],
-              [enable Google stuff (default is enable)]),
+              [enable Google stuff (Goto and External Open) (default is enable)]),
               [ac_cv_enable_google=$enableval],
               [ac_cv_enable_google=yes])
 AC_CACHE_CHECK([whether to enable Google stuff],
@@ -140,6 +140,19 @@ case $ac_cv_enable_google in
     ;;
 esac
 AM_CONDITIONAL([GOOGLE], [test x$ac_cv_enable_google = xyes])
+
+
+AC_ARG_ENABLE(google-directions, AC_HELP_STRING([--enable-google-directions],
+              [enable Google Directions (default is disabled because it does not work)]),
+              [ac_cv_enable_google_directions=$enableval],
+              [ac_cv_enable_google_directions=no])
+AC_CACHE_CHECK([whether to enable Google directions],
+               [ac_cv_enable_google_directions], [ac_cv_enable_google_directions=yes])
+case $ac_cv_enable_google_directions in
+  yes)
+    AC_DEFINE(VIK_CONFIG_GOOGLE_DIRECTIONS, [], [GOOGLE DIRECTIONS])
+    ;;
+esac
 
 AC_ARG_ENABLE(terraserver, AC_HELP_STRING([--enable-terraserver],
               [enable Terraserver stuff (default is enable)]),
@@ -364,7 +377,8 @@ echo "$PACKAGE $VERSION"
 echo "-------------------------------------------"
 echo "Alphabetized track & waypoints   : $ac_cv_enable_alpha_trw"
 echo "Bing Maps                        : $ac_cv_enable_bing"
-echo "Google Maps                      : $ac_cv_enable_google"
+echo "Google Goto                      : $ac_cv_enable_google"
+echo "Google Directions (Broken)       : $ac_cv_enable_google_directions"
 echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"

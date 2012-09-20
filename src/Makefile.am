@@ -108,6 +108,7 @@ libviking_a_SOURCES = \
 	datasource_gc.c \
 	datasource_bfilter.c \
 	datasources.h \
+	google.c google.h \
 	googlesearch.c googlesearch.h \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
@@ -128,11 +129,6 @@ if BING
 libviking_a_SOURCES += \
 	bingmapsource.c bingmapsource.h \
 	bing.c bing.h
-endif
-
-if GOOGLE
-libviking_a_SOURCES += \
-	google.c google.h
 endif
 
 if TERRASERVER
