@@ -39,7 +39,7 @@
 
 static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
-static gboolean _supports_download_only_new (VikMapSource *self );
+static gboolean _supports_download_only_new ( VikMapSource *self );
 static gboolean _is_direct_file_access ( VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
@@ -276,8 +276,8 @@ static gint wmsc_zoom ( gdouble mpp ) {
   return 255;
 }
 
-gboolean
-_supports_download_only_new (VikMapSource *self)
+static gboolean
+_supports_download_only_new ( VikMapSource *self )
 {
 	g_return_val_if_fail (VIK_IS_WMSC_MAP_SOURCE(self), FALSE);
 	
