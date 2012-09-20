@@ -80,7 +80,14 @@ static gboolean return_true (gpointer a, gpointer b, gpointer c) { return TRUE; 
 static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove ( ght, (GHRFunc) return_true, FALSE ); }
 #endif
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
+// This is currently broken as Google have disabled the KML output in Google Maps API v3
+// It has been ifdefed out in the hope that Route Finding functionality will be restored one day...
+// Only have 'JSON' and 'XML' see:
+// https://developers.google.com/maps/documentation/directions/#DirectionsResponses
 #define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=kml"
+#endif
+
 #define VIK_TRW_LAYER_TRACK_GC 16
 #define VIK_TRW_LAYER_TRACK_GC_RATES 10
 #define VIK_TRW_LAYER_TRACK_GC_MIN 0
@@ -318,9 +325,10 @@ static void tool_new_track_release ( VikTrwLayer *vtl, GdkEventButton *event, Vi
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
 static gpointer tool_route_finder_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-
+#endif
 
 static void cached_pixbuf_free ( CachedPixbuf *cp );
 static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
@@ -387,11 +395,13 @@ static VikToolInterface trw_layer_tools[] = {
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf },
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
   { { "RouteFinder", "vik-icon-Route Finder", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
     (VikToolConstructorFunc) tool_route_finder_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_route_finder_click, NULL, NULL, (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
+#endif
 };
 enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
@@ -3478,6 +3488,7 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
     goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
 }
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
 /**
  * extend a track using route finder
  */
@@ -3496,6 +3507,7 @@ static void trw_layer_extend_track_end_route_finder ( gpointer pass_along[6] )
     goto_coord ( pass_along[1], pass_along[0], pass_along[5], &last_coord) ;
 
 }
+#endif
 
 static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
 {
@@ -4839,11 +4851,13 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
     item = gtk_image_menu_item_new_with_mnemonic ( _("Extend _Using Route Finder") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("Route Finder", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end_route_finder), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
     item = gtk_image_menu_item_new_with_mnemonic ( _("Upload to _OSM...") );
@@ -6275,6 +6289,7 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
 }
 
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
 /*** Route Finder ***/
 static gpointer tool_route_finder_create ( VikWindow *vw, VikViewport *vvp)
 {
@@ -6350,6 +6365,7 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
   }
   return TRUE;
 }
+#endif
 
 /*** Show picture ****/
 
