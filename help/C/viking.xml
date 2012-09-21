@@ -531,11 +531,13 @@ Changes the current tool to add trackpoints to the end of the track.
 </para>
 </section>
 
+<!--
 <section><title>Extend Using Route Finder</title>
 <para>
 Enables the Route Finder tool. Thus on a subsequent left click in the viewport, a route is calculated from the end of track to that point using Google's route service and applied to the track.
 </para>
 </section>
+-->
 
 <section><title>Upload to OSM</title>
 <para>
@@ -549,6 +551,7 @@ This selects the track to be used in the <link linkend="filter_with_track">Filte
 </para>
 </section>
 
+<!--
 <section><title>View Google Directions</title>
 <para>
 This option is only available on a track created using the Route Finder tool.
@@ -562,7 +565,7 @@ The record of the Google route is stored in the track's comment, so if the comme
 </para>
 </note>
 </section>
-
+-->
 </section><!-- End Track Options -->
 
 <section><title>Waypoint Properties</title>
@@ -940,6 +943,7 @@ On Windows this uses the default system image viewer.
 </para>
 </section>
 
+<!--
 <section><title>Route Finder</title>
 <para>Creates a track using Google maps routing between two points.
 Requires an internet connection. Click one point, then click another to
@@ -952,7 +956,7 @@ Right-click: undo last routing (only track removed - not any waypoints)
 <keycap>Ctrl</keycap>: continue previous track
 </para>
 </section>
-
+-->
 </section>
 
 <section><title>Georef Map Layer Tools</title>
