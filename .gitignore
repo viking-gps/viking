@@ -59,6 +59,9 @@ doc/reference/viking*
 doc/reference/sgml*
 doc/reference/*stamp
 
+# help/C/
+help/C/viking.pdf
+
 # /src/
 /src/.deps
 /src/Makefile.in
