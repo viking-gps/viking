@@ -37,3 +37,6 @@ ACLOCAL_AMFLAGS = -I m4
 
 DISTCHECK_CONFIGURE_FLAGS = \
 	--disable-scrollkeeper
+
+# Ignore gtk theme cache files on distcheck
+distuninstallcheck_listfiles = find . -type f -print | grep -v 'icon-theme.cache'
