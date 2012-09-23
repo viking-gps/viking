@@ -165,10 +165,8 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
 /* See VikDataSourceInterface */
 static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file )
 {
-  gchar *filename, *type;
-
   /* Retrieve the file selected */
-  filename = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(widgets->file) );
+  gchar *filename = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(widgets->file) );
 
   /* Memorize the directory for later use */
   g_free (last_folder_uri);
@@ -180,6 +178,7 @@ static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets,
   last_file_filter = g_object_get_data ( G_OBJECT(filter), "Babel" );
 
   /* Retrieve and memorize file format selected */
+  gchar *type = NULL;
   last_type = gtk_combo_box_get_active ( GTK_COMBO_BOX (widgets->type) );
   if ( a_babel_file_list )
     type = ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name;
