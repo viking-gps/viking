@@ -1074,7 +1074,7 @@ static void gps_comm_thread(GpsSession *sess)
     result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_download_progress_func, sess);
   else {
-    result = a_babel_convert_to (sess->vtl, sess->cmd_args, sess->port,
+    result = a_babel_convert_to (sess->vtl, NULL, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_upload_progress_func, sess);
   }
 

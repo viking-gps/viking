@@ -329,9 +329,9 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
   return ret;
 }
 
-static gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
+static gboolean babel_general_convert_to( VikTrwLayer *vt, VikTrack *trk, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
 {
-  if (!a_file_export(vt, name_src, FILE_TYPE_GPX, NULL)) {
+  if (!a_file_export(vt, name_src, FILE_TYPE_GPX, trk)) {
     g_critical("Error exporting to %s", name_src);
     return FALSE;
   }
@@ -339,7 +339,22 @@ static gboolean babel_general_convert_to( VikTrwLayer *vt, BabelStatusFunc cb, g
   return babel_general_convert (cb, args, user_data);
 }
 
-gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, const char *to, BabelStatusFunc cb, gpointer user_data )
+/**
+ * a_babel_convert_to:
+ * @vt             The TRW layer from which data is taken.
+ * @track          Operate on the individual track if specified. Use NULL when operating on a TRW layer
+ * @babelargs      A string containing gpsbabel command line options.  In addition to any filters, this string
+ *                 must include the input file type (-i) option.
+ * @to             Filename or device the data is written to.
+ * @cb		   Optional callback function. Same usage as in a_babel_convert.
+ *
+ * Exports data using gpsbabel.  This routine is synchronous;
+ * that is, it will block the calling program until the conversion is done. To avoid blocking, call
+ * this routine from a worker thread.
+ *
+ * Returns: %TRUE on successful invocation of GPSBabel command
+ */
+gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babelargs, const char *to, BabelStatusFunc cb, gpointer user_data )
 {
   int i,j;
   int fd_src;
@@ -369,7 +384,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, const char *babelargs, const char 
       args[i++] = (char *)to;
       args[i] = NULL;
 
-      ret = babel_general_convert_to ( vt, cb, args, name_src, user_data );
+      ret = babel_general_convert_to ( vt, track, cb, args, name_src, user_data );
 
       g_strfreev(sub_args);
     } else
