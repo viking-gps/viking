@@ -260,10 +260,11 @@ void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message )
 /**
  * For the actual statusbar update!
  */
-static void statusbar_idle_update ( gpointer indata )
+static gboolean statusbar_idle_update ( gpointer indata )
 {
   gpointer *data = indata;
   vik_statusbar_set_message ( data[0], VIK_STATUSBAR_ITEMS, data[1] );
+  return FALSE;
 }
 
 /**
