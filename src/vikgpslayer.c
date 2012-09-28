@@ -121,7 +121,6 @@ typedef struct {
   GtkWidget *progress_label;
   GtkWidget *trk_label;
   VikViewport *vvp;
-  VikLayersPanel *vlp;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   gboolean realtime_tracking;
 #endif
@@ -1075,13 +1074,6 @@ static void gps_comm_thread(GpsSession *sess)
     result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_download_progress_func, sess);
   else {
-    // Enforce unique names in the layer upload to the GPS device
-    // NB this may only be a Garmin device restriction (and may be not every Garmin device either...)
-    // Thus this maintains the older code in built restriction
-    if ( ! vik_trw_layer_uniquify ( sess->vtl, sess->vlp ) )
-      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(sess->vtl))), VIK_STATUSBAR_INFO, 
-				  _("Warning - GPS Upload items may overwrite each other") );
-
     result = a_babel_convert_to (sess->vtl, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_upload_progress_func, sess);
   }
@@ -1137,7 +1129,18 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
   sess->ok = TRUE;
   sess->window_title = (dir == GPS_DOWN) ? _("GPS Download") : _("GPS Upload");
   sess->vvp = vvp;
-  sess->vlp = vlp;
+
+  // This must be done inside the main thread as the uniquify causes screen updates
+  //  (originally performed this nearer the point of upload in the thread)
+  if ( dir == GPS_UP ) {
+    // Enforce unique names in the layer upload to the GPS device
+    // NB this may only be a Garmin device restriction (and may be not every Garmin device either...)
+    // Thus this maintains the older code in built restriction
+    if ( ! vik_trw_layer_uniquify ( sess->vtl, vlp ) )
+      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(sess->vtl))), VIK_STATUSBAR_INFO,
+				  _("Warning - GPS Upload items may overwrite each other") );
+  }
+
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   sess->realtime_tracking = tracking;
 #endif
