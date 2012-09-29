@@ -82,10 +82,10 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl);
 static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed);
 #endif
 
-typedef enum {GARMIN_P = 0, MAGELLAN_P, DELORME_P, NAVILINK_P, NUM_PROTOCOLS} vik_gps_proto;
-static gchar * params_protocols[] = {"Garmin", "Magellan", "DeLorme", "NAViLink", NULL};
-static gchar * protocols_args[]   = {"garmin", "magellan", "delbin", "navilink"};
-/*#define NUM_PROTOCOLS (sizeof(params_protocols)/sizeof(params_protocols[0]) - 1) */
+// Shouldn't need to use these much any more as the protocol is now saved as a string.
+// They are kept for compatibility loading old .vik files
+typedef enum {GARMIN_P = 0, MAGELLAN_P, DELORME_P, NAVILINK_P, OLD_NUM_PROTOCOLS} vik_gps_proto;
+static gchar * protocols_args[]   = {"garmin", "magellan", "delbin", "navilink", NULL};
 #ifdef WINDOWS
 static gchar * params_ports[] = {"com1", "usb:", NULL};
 #else
@@ -151,7 +151,7 @@ enum {
 #endif
 
 static VikLayerParam gps_layer_params[] = {
-  { "gps_protocol", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
+  { "gps_protocol", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL}, // List now assigned at runtime
   { "gps_port", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
   { "gps_download_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Download Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
   { "gps_upload_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Upload Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
@@ -289,13 +289,35 @@ struct _VikGpsLayer {
   gboolean realtime_jump_to_start;
   guint vehicle_position;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-  guint protocol_id;
+  gchar *protocol;
   gchar *serial_port;
   gboolean download_tracks;
   gboolean download_waypoints;
   gboolean upload_tracks;
   gboolean upload_waypoints;
 };
+
+/**
+ * Overwrite the static setup with dynamically generated GPS Babel device list
+ */
+static void gps_layer_inst_init ( VikGpsLayer *self )
+{
+  gint new_proto = 0;
+  // +1 for luck (i.e the NULL terminator)
+  gchar **new_protocols = g_malloc(1 + g_list_length(a_babel_device_list)*sizeof(gpointer));
+
+  GList *gl = g_list_first ( a_babel_device_list );
+  while ( gl ) {
+    // should be using label property but use name for now
+    //  thus don't need to mess around converting label to name later on
+    new_protocols[new_proto++] = ((BabelDevice*)gl->data)->name;
+    gl = g_list_next ( gl );
+  }
+  new_protocols[new_proto] = NULL;
+
+  vik_gps_layer_interface.params[0].widget_data = new_protocols;
+  // assigned to [0] because this^ is the GPS protocol in the params list
+}
 
 GType vik_gps_layer_get_type ()
 {
@@ -313,7 +335,7 @@ GType vik_gps_layer_get_type ()
       NULL, /* class_data */
       sizeof (VikGpsLayer),
       0,
-      NULL /* instance init */
+      (GInstanceInitFunc) gps_layer_inst_init,
     };
     val_type = g_type_register_static ( VIK_LAYER_TYPE, "VikGpsLayer", &val_info, 0 );
   }
@@ -337,7 +359,7 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
 
 static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
 {
-  return params_protocols[vgl->protocol_id];
+  return vgl->protocol;
 }
 
 /* "Copy" */
@@ -409,16 +431,27 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
   switch ( id )
   {
     case PARAM_PROTOCOL:
-      if (data.u < NUM_PROTOCOLS)
-        vgl->protocol_id = data.u;
+      if (data.s) {
+        g_free(vgl->protocol);
+        // Backwards Compatibility: previous versions <v1.4 stored protocol as an array index
+        int index = data.s[0] - '0';
+        if (data.s[0] != '\0' &&
+            g_ascii_isdigit (data.s[0]) &&
+            data.s[1] == '\0' &&
+            index < OLD_NUM_PROTOCOLS)
+          // It is a single digit: activate compatibility
+          vgl->protocol = g_strdup(protocols_args[index]);
+        else
+          vgl->protocol = g_strdup(data.s);
+        g_debug("%s: %s", __FUNCTION__, vgl->protocol);
+      }
       else
         g_warning(_("Unknown GPS Protocol"));
       break;
     case PARAM_PORT:
-      if (data.s)
-{
+      if (data.s) {
         g_free(vgl->serial_port);
-        /* Compat: previous version stored serial_port as an array index */
+        // Backwards Compatibility: previous versions <v0.9.91 stored serial_port as an array index
         int index = data.s[0] - '0';
         if (data.s[0] != '\0' &&
             g_ascii_isdigit (data.s[0]) &&
@@ -428,8 +461,8 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
           vgl->serial_port = g_strdup(old_params_ports[index]);
         else
           vgl->serial_port = g_strdup(data.s);
-      g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
-}
+        g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
+      }
       else
         g_warning(_("Unknown serial port device"));
       break;
@@ -482,7 +515,8 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
   switch ( id )
   {
     case PARAM_PROTOCOL:
-      rv.u = vgl->protocol_id;
+      rv.s = vgl->protocol;
+      g_debug("%s: %s", __FUNCTION__, rv.s);
       break;
     case PARAM_PORT:
       rv.s = vgl->serial_port;
@@ -560,7 +594,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->vehicle_position = VEHICLE_POSITION_ON_SCREEN;
   vgl->gpsd_retry_interval = 10;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-  vgl->protocol_id = 0;
+  vgl->protocol = g_strdup("garmin");
   vgl->serial_port = NULL;
   vgl->download_tracks = TRUE;
   vgl->download_waypoints = TRUE;
@@ -749,6 +783,11 @@ static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIt
 {
   GtkTreeIter iter;
   int ix;
+
+  // TODO set to garmin by default
+  //if (a_babel_device_list)
+  // device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+  // Need to access uibuild widgets somehow....
 
   for (ix = 0; ix < NUM_TRW; ix++) {
     VikLayer * trw = VIK_LAYER(vgl->trw_children[ix]);
@@ -1155,7 +1194,7 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
     waypoints = "";
 
   sess->cmd_args = g_strdup_printf("-D 9 %s %s -%c %s",
-				   tracks, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocols_args[proto]);
+				   tracks, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocol);
   tracks = NULL;
   waypoints = NULL;
 
