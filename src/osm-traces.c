@@ -325,22 +325,21 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
     if ( ans == 0 ) {
       // Success
       msg = g_strdup_printf ( "%s (@%s)", _("Uploaded to OSM"), timestr );
-      vik_statusbar_set_message ( vik_window_get_statusbar ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl) ), VIK_STATUSBAR_INFO, msg );
     }
     // Use UPPER CASE for bad news :(
     else if ( ans < 0 ) {
       msg = g_strdup_printf ( "%s (@%s)", _("FAILED TO UPLOAD DATA TO OSM - CURL PROBLEM"), timestr );
-      vik_statusbar_set_message ( vik_window_get_statusbar ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl) ), VIK_STATUSBAR_INFO, msg );
-      //a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(oti->vtl), msg );
     }
     else {
       msg = g_strdup_printf ( "%s : %s %d (@%s)", _("FAILED TO UPLOAD DATA TO OSM"), _("HTTP response code"), ans, timestr );
-      vik_statusbar_set_message ( vik_window_get_statusbar ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl) ), VIK_STATUSBAR_INFO, msg );
-      //VikTrwLayer *vtl = oti->vtl;
-      // Crashes here - multi-thread issue...
-      //a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), msg );
     }
-    g_free (msg);
+    // From the background so should use the signalling method to update display:
+    // TODO: This only works with statically assigned strings ATM
+    vik_window_signal_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl), msg, VIK_STATUSBAR_INFO );
+    // Thus can't free the memory yet...
+    // Luckily OSM traces isn't heavily used so this is not a significant memory leak
+    //g_free (msg);
+    // But this is better than potentially crashing from multi thread GUI updates
   }
   /* Removing temporary file */
   ret = g_unlink(filename);
