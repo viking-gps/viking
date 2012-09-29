@@ -46,7 +46,7 @@ struct _VikWindowClass
   GtkWindowClass window_class;
   void (* newwindow) (VikWindow *vw);
   void (* openwindow) (VikWindow *vw, GSList *filenames);
-  void (* statusbarupdate) (VikWindow *vw, const gchar *message);
+  void (* statusbarupdate) (VikWindow *vw, const gchar *message, vik_statusbar_type_t vs_type);
 };
 
 GType vik_window_get_type ();
@@ -62,8 +62,8 @@ void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);
 struct _VikViewport * vik_window_viewport(VikWindow *vw);
 struct _VikLayersPanel * vik_window_layers_panel(VikWindow *vw);
 struct _VikStatusbar * vik_window_get_statusbar(VikWindow *vw);
-// Only for use from background.c:
-void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message );
+// Only for use from background threads:
+void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message, vik_statusbar_type_t vs_type);
 
 void vik_window_set_redraw_trigger(struct _VikLayer *vl);
 

@@ -82,7 +82,7 @@ static void newwindow_cb ( GtkAction *a, VikWindow *vw );
 
 // Signals
 static void open_window ( VikWindow *vw, GSList *files );
-static void statusbar_update ( VikWindow *vw, const gchar *message );
+static void statusbar_update ( VikWindow *vw, const gchar *message, vik_statusbar_type_t vs_type );
 static void destroy_window ( GtkWidget *widget,
                              gpointer   data );
 
@@ -266,9 +266,9 @@ VikStatusbar * vik_window_get_statusbar ( VikWindow *vw )
 /**
  * For signalling the update from a background thread
  */
-void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message )
+void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message, vik_statusbar_type_t vs_type)
 {
-  g_signal_emit ( G_OBJECT(vw), window_signals[VW_STATUSBAR_UPDATE_SIGNAL], 0, message );
+  g_signal_emit ( G_OBJECT(vw), window_signals[VW_STATUSBAR_UPDATE_SIGNAL], 0, message, vs_type );
 }
 
 /**
@@ -277,19 +277,20 @@ void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message )
 static gboolean statusbar_idle_update ( gpointer indata )
 {
   gpointer *data = indata;
-  vik_statusbar_set_message ( data[0], VIK_STATUSBAR_ITEMS, data[1] );
+  vik_statusbar_set_message ( data[0], GPOINTER_TO_INT(data[2]), data[1] );
   return FALSE;
 }
 
 /**
  * Update statusbar in the main thread
  */
-void vik_window_statusbar_update ( VikWindow *vw, const gchar* message )
+static void window_statusbar_update ( VikWindow *vw, const gchar* message, vik_statusbar_type_t vs_type )
 {
   // ATM we know the message has been statically allocated so this is OK (no need to handle any freeing)
-  static gpointer data[2];
+  static gpointer data[3];
   data[0] = vw->viking_vs;
   data[1] = (gchar*) message;
+  data[2] = GINT_TO_POINTER(vs_type);
   g_idle_add ( (GSourceFunc) statusbar_idle_update, data );
 }
 
@@ -301,9 +302,9 @@ static void destroy_window ( GtkWidget *widget,
       gtk_main_quit ();
 }
 
-static void statusbar_update ( VikWindow *vw, const gchar *message )
+static void statusbar_update ( VikWindow *vw, const gchar *message, vik_statusbar_type_t vs_type )
 {
-  vik_window_statusbar_update ( vw, message );
+  window_statusbar_update ( vw, message, vs_type );
 }
 
 VikWindow *vik_window_new_window ()
@@ -319,7 +320,7 @@ VikWindow *vik_window_new_window ()
     g_signal_connect (G_OBJECT (vw), "openwindow",
 		      G_CALLBACK (open_window), NULL);
     g_signal_connect (G_OBJECT (vw), "statusbarupdate",
-		      G_CALLBACK (statusbar_update), NULL);
+		      G_CALLBACK (statusbar_update), vw);
 
     gtk_widget_show_all ( GTK_WIDGET(vw) );
 
@@ -390,7 +391,7 @@ static void window_class_init ( VikWindowClass *klass )
 
   window_signals[VW_NEWWINDOW_SIGNAL] = g_signal_new ( "newwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, newwindow), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
   window_signals[VW_OPENWINDOW_SIGNAL] = g_signal_new ( "openwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, openwindow), NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
-  window_signals[VW_STATUSBAR_UPDATE_SIGNAL] = g_signal_new ( "statusbarupdate", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, statusbarupdate), NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
+  window_signals[VW_STATUSBAR_UPDATE_SIGNAL] = g_signal_new ( "statusbarupdate", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, statusbarupdate), NULL, NULL, gtk_marshal_VOID__POINTER_UINT, G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
   object_class = G_OBJECT_CLASS (klass);
 
