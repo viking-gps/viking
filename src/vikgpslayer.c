@@ -109,6 +109,7 @@ typedef struct {
   gint total_count;
   gint count;
   VikTrwLayer *vtl;
+  VikTrack *track;
   gchar *cmd_args;
   gchar *window_title;
   GtkWidget *dialog;
@@ -1112,7 +1113,7 @@ static void gps_comm_thread(GpsSession *sess)
     result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_download_progress_func, sess);
   else {
-    result = a_babel_convert_to (sess->vtl, NULL, sess->cmd_args, sess->port,
+    result = a_babel_convert_to (sess->vtl, sess->track, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_upload_progress_func, sess);
   }
 
@@ -1161,6 +1162,7 @@ static void gps_comm_thread(GpsSession *sess)
  * Talk to a GPS Device using a thread which updates a dialog with the progress
  */
 gint vik_gps_comm ( VikTrwLayer *vtl,
+                    VikTrack *track,
                     vik_gps_dir dir,
                     gchar *protocol,
                     gchar *port,
@@ -1177,6 +1179,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
   sess->mutex = g_mutex_new();
   sess->direction = dir;
   sess->vtl = vtl;
+  sess->track = track;
   sess->port = g_strdup(port);
   sess->ok = TRUE;
   sess->window_title = (dir == GPS_DOWN) ? _("GPS Download") : _("GPS Upload");
@@ -1264,7 +1267,7 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
-  vik_gps_comm(vtl, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
@@ -1274,9 +1277,9 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  vik_gps_comm(vtl, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
 #else
-  vik_gps_comm(vtl, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
 #endif
 }
 

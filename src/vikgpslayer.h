@@ -24,6 +24,7 @@
 #define _VIKING_GPSLAYER_H
 
 #include "viklayer.h"
+#include "viktrack.h"
 
 #define VIK_GPS_LAYER_TYPE            (vik_gps_layer_get_type ())
 #define VIK_GPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_GPS_LAYER_TYPE, VikGpsLayer))
@@ -52,6 +53,7 @@ VikTrwLayer * vik_gps_layer_get_a_child(VikGpsLayer *vgl);
 
 // Non layer specific but expose communal method
 gint vik_gps_comm ( VikTrwLayer *vtl,
+                    VikTrack *track,
                     vik_gps_dir dir,
                     gchar *protocol,
                     gchar *port,
