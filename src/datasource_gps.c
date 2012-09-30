@@ -258,6 +258,12 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
   case BABEL_DIAG_OUTPUT:
     line = (gchar *)data;
 
+    gdk_threads_enter();
+    if (w->ok) {
+      gtk_label_set_text ( GTK_LABEL(w->status), _("Status: Working...") );
+    }
+    gdk_threads_leave();
+
     /* tells us how many items there will be */
     if (strstr(line, "Xfer Wpt")) { 
       gps_data->progress_label = gps_data->wp_label;

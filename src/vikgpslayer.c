@@ -963,6 +963,14 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
   case BABEL_DIAG_OUTPUT:
     line = (gchar *)data;
 
+    gdk_threads_enter();
+    g_mutex_lock(sess->mutex);
+    if (sess->ok) {
+      gtk_label_set_text ( GTK_LABEL(sess->status_label), _("Status: Working...") );
+    }
+    g_mutex_unlock(sess->mutex);
+    gdk_threads_leave();
+
     /* tells us how many items there will be */
     if (strstr(line, "Xfer Wpt")) { 
       sess->progress_label = sess->wp_label;
@@ -1046,6 +1054,14 @@ static void gps_upload_progress_func(BabelProgressCode c, gpointer data, GpsSess
   switch(c) {
   case BABEL_DIAG_OUTPUT:
     line = (gchar *)data;
+
+    gdk_threads_enter();
+    g_mutex_lock(sess->mutex);
+    if (sess->ok) {
+      gtk_label_set_text ( GTK_LABEL(sess->status_label), _("Status: Working...") );
+    }
+    g_mutex_unlock(sess->mutex);
+    gdk_threads_leave();
 
     if (strstr(line, "PRDDAT")) {
       gchar **tokens = g_strsplit(line, " ", 0);
