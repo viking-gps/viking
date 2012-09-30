@@ -93,7 +93,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
     f = fdopen(fd_src, "w");
-    a_gpx_write_file(vt, f);
+    a_gpx_write_file(vt, f, NULL);
     fclose(f);
     f = NULL;
     ret = a_babel_convert_from ( vt, bargs, name_src, cb, user_data );
@@ -331,7 +331,8 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
 
 static gboolean babel_general_convert_to( VikTrwLayer *vt, VikTrack *trk, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )
 {
-  if (!a_file_export(vt, name_src, FILE_TYPE_GPX, trk)) {
+  // Now strips out invisible tracks and waypoints
+  if (!a_file_export(vt, name_src, FILE_TYPE_GPX, trk, FALSE)) {
     g_critical("Error exporting to %s", name_src);
     return FALSE;
   }

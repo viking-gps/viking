@@ -621,6 +621,10 @@ entitize(const char * str)
 
 static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 {
+  // Don't write invisible waypoints when specified
+  if (context->options && !context->options->hidden && !wp->visible)
+    return;
+
   FILE *f = context->file;
   static struct LatLon ll;
   gchar *s_lat,*s_lon;
@@ -628,6 +632,8 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   vik_coord_to_latlon ( &(wp->coord), &ll );
   s_lat = a_coords_dtostr( ll.lat );
   s_lon = a_coords_dtostr( ll.lon );
+  // NB 'hidden' is not part of any GPX standard - this appears to be a made up Viking 'extension'
+  //  luckily most other GPX processing software ignores things they don't understand
   fprintf ( f, "<wpt lat=\"%s\" lon=\"%s\"%s>\n",
                s_lat, s_lon, wp->visible ? "" : " hidden=\"hidden\"" );
   g_free ( s_lat );
@@ -769,6 +775,10 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
 
 static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 {
+  // Don't write invisible tracks when specified
+  if (context->options && !context->options->hidden && !t->visible)
+    return;
+
   FILE *f = context->file;
   gchar *tmp;
   gboolean first_tp_is_newsegment = FALSE; /* must temporarily make it not so, but we want to restore state. not that it matters. */
@@ -779,6 +789,8 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   else
     tmp = g_strdup ("track");
 
+  // NB 'hidden' is not part of any GPX standard - this appears to be a made up Viking 'extension'
+  //  luckily most other GPX processing software ignores things they don't understand
   fprintf ( f, "<trk%s>\n  <name>%s</name>\n", t->visible ? "" : " hidden=\"hidden\"", tmp );
   g_free ( tmp );
 
@@ -788,7 +800,6 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
     fprintf ( f, "  <desc>%s</desc>\n", tmp );
     g_free ( tmp );
   }
-
   fprintf ( f, "  <trkseg>\n" );
 
   if ( t->trackpoints && t->trackpoints->data ) {
@@ -869,12 +880,7 @@ static int gpx_track_and_timestamp_compare(const void *x, const void *y)
   return 0;
 }
 
-void a_gpx_write_file( VikTrwLayer *vtl, FILE *f )
-{
-	a_gpx_write_file_options(NULL, vtl, f);
-}
-
-void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *vtl, FILE *f )
+void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 {
   GpxWritingContext context = { options, f };
 
@@ -911,12 +917,7 @@ void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *vtl, FI
   gpx_write_footer ( f );
 }
 
-void a_gpx_write_track_file ( VikTrack *trk, FILE *f )
-{
-  a_gpx_write_track_file_options ( NULL, trk, f );
-}
-
-void a_gpx_write_track_file_options ( GpxWritingOptions *options, VikTrack *trk, FILE *f )
+void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options )
 {
   GpxWritingContext context = {options, f};
   gpx_write_header ( f );

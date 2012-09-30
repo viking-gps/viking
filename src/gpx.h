@@ -30,12 +30,11 @@
 typedef struct {
 	gboolean force_ele; /// Force ele field
 	gboolean force_time; /// Force time field
+	gboolean hidden; /// Write invisible tracks/waypoints (default is yes)
 } GpxWritingOptions;
 
 gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
-void a_gpx_write_file ( VikTrwLayer *trw, FILE *f );
-void a_gpx_write_file_options ( GpxWritingOptions *options, VikTrwLayer *trw, FILE *f );
-void a_gpx_write_track_file ( VikTrack *trk, FILE *f );
-void a_gpx_write_track_file_options ( GpxWritingOptions *options, VikTrack *trk, FILE *f );
+void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options );
+void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options );
 
 #endif

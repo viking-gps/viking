@@ -258,8 +258,9 @@ static gint osm_traces_upload_file(const char *user,
  */
 static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
 {
-  /* Due to OSM limits, we have to enforce ele and time fields */
-  static GpxWritingOptions options = { TRUE, TRUE };
+  /* Due to OSM limits, we have to enforce ele and time fields
+   also don't upload invisible tracks */
+  static GpxWritingOptions options = { TRUE, TRUE, FALSE };
   FILE *file = NULL;
   gchar *filename = NULL;
   int fd;
@@ -284,12 +285,12 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   if (oti->trk != NULL)
   {
     /* Upload only the selected track */
-    a_gpx_write_track_file_options(&options, oti->trk, file);
+    a_gpx_write_track_file(oti->trk, file, &options);
   }
   else
   {
     /* Upload the whole VikTrwLayer */
-    a_gpx_write_file_options(&options, oti->vtl, file);
+    a_gpx_write_file(oti->vtl, file, &options);
   }
   
   /* We can close the file */
