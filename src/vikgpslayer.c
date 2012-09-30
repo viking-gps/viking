@@ -1242,40 +1242,47 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
   tracks = NULL;
   waypoints = NULL;
 
-  sess->dialog = gtk_dialog_new_with_buttons ( "", VIK_GTK_WINDOW_FROM_LAYER(vtl), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_dialog_set_response_sensitive ( GTK_DIALOG(sess->dialog),
-      GTK_RESPONSE_ACCEPT, FALSE );
-  gtk_window_set_title ( GTK_WINDOW(sess->dialog), sess->window_title );
+  // Only create dialog if we're going to do some transferring
+  if ( do_tracks || do_waypoints ) {
+    sess->dialog = gtk_dialog_new_with_buttons ( "", VIK_GTK_WINDOW_FROM_LAYER(vtl), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+    gtk_dialog_set_response_sensitive ( GTK_DIALOG(sess->dialog),
+                                        GTK_RESPONSE_ACCEPT, FALSE );
+    gtk_window_set_title ( GTK_WINDOW(sess->dialog), sess->window_title );
 
-  sess->status_label = gtk_label_new (_("Status: detecting gpsbabel"));
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox),
-      sess->status_label, FALSE, FALSE, 5 );
-  gtk_widget_show_all(sess->status_label);
+    sess->status_label = gtk_label_new (_("Status: detecting gpsbabel"));
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->status_label, FALSE, FALSE, 5 );
+    gtk_widget_show_all(sess->status_label);
 
-  sess->gps_label = gtk_label_new (_("GPS device: N/A"));
-  sess->ver_label = gtk_label_new ("");
-  sess->id_label = gtk_label_new ("");
-  sess->wp_label = gtk_label_new ("");
-  sess->trk_label = gtk_label_new ("");
+    sess->gps_label = gtk_label_new (_("GPS device: N/A"));
+    sess->ver_label = gtk_label_new ("");
+    sess->id_label = gtk_label_new ("");
+    sess->wp_label = gtk_label_new ("");
+    sess->trk_label = gtk_label_new ("");
 
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->gps_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->wp_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->trk_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->gps_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->wp_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->trk_label, FALSE, FALSE, 5 );
 
-  gtk_widget_show_all(sess->dialog);
+    gtk_widget_show_all(sess->dialog);
 
-  sess->progress_label = sess->wp_label;
-  sess->total_count = -1;
+    sess->progress_label = sess->wp_label;
+    sess->total_count = -1;
 
-  /* TODO: starting gps read/write thread here */
-  g_thread_create((GThreadFunc)gps_comm_thread, sess, FALSE, NULL );
+    // Starting gps read/write thread
+    g_thread_create((GThreadFunc)gps_comm_thread, sess, FALSE, NULL );
 
-  gtk_dialog_set_default_response ( GTK_DIALOG(sess->dialog), GTK_RESPONSE_ACCEPT );
-  gtk_dialog_run(GTK_DIALOG(sess->dialog));
+    gtk_dialog_set_default_response ( GTK_DIALOG(sess->dialog), GTK_RESPONSE_ACCEPT );
+    gtk_dialog_run(GTK_DIALOG(sess->dialog));
 
-  gtk_widget_destroy(sess->dialog);
+    gtk_widget_destroy(sess->dialog);
+  }
+  else {
+    if ( !turn_off )
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("No GPS items selected for transfer.") );
+  }
 
   g_mutex_lock(sess->mutex);
+
   if (sess->ok) {
     sess->ok = FALSE;   /* tell thread to stop */
     g_mutex_unlock(sess->mutex);
