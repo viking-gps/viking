@@ -196,8 +196,9 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_wpt:
        if ( set_c_ll( attr ) ) {
          c_wp = vik_waypoint_new ();
-         if ( ! get_attr ( attr, "hidden" ) )
-           c_wp->visible = TRUE;
+         c_wp->visible = TRUE;
+         if ( get_attr ( attr, "hidden" ) )
+           c_wp->visible = FALSE;
 
          vik_coord_load_from_latlon ( &(c_wp->coord), vik_trw_layer_get_coord_mode ( vtl ), &c_ll );
        }
@@ -205,8 +206,9 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
 
      case tt_trk:
        c_tr = vik_track_new ();
-       if ( ! get_attr ( attr, "hidden" ) )
-         c_tr->visible = TRUE;
+       c_tr->visible = TRUE;
+       if ( get_attr ( attr, "hidden" ) )
+         c_tr->visible = FALSE;
        break;
 
      case tt_trk_trkseg:
