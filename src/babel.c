@@ -409,7 +409,7 @@ static void load_feature_parse_line (gchar *line)
         BabelDevice *device = g_malloc ( sizeof (BabelDevice) );
         set_mode (device->mode, tokens[1]);
         device->name = g_strdup (tokens[2]);
-        device->label = g_strdup (tokens[4]);
+        device->label = g_strndup (tokens[4], 50); // Limit really long label text
         a_babel_device_list = g_list_append (a_babel_device_list, device);
         g_debug ("New gpsbabel device: %s", device->name);
       } else {
