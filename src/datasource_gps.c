@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2006, Alex Foobarian <foobarian@gmail.com>
- * Copyright (C) 2010, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
 
+#include "datasource_gps.h"
 #include "viking.h"
 #include "babel.h"
 #include "gpx.h"
@@ -108,13 +109,64 @@ static gpointer datasource_gps_init_func ()
   return g_malloc (sizeof(gps_user_data_t));
 }
 
+/**
+ * datasource_gps_get_protocol:
+ *
+ * Method to get the communication protocol of the GPS device from the widget structure
+ */
+gchar* datasource_gps_get_protocol ( gpointer user_data )
+{
+  // Uses the list of supported devices
+  gps_user_data_t *w = (gps_user_data_t *)user_data;
+  last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
+  if (a_babel_device_list)
+    return ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+
+  return NULL;
+}
+
+/**
+ * datasource_gps_get_descriptor:
+ *
+ * Method to get the descriptor from the widget structure
+ * "Everything is a file"
+ * Could actually be normal file or a serial port
+ */
+gchar* datasource_gps_get_descriptor ( gpointer user_data )
+{
+  gps_user_data_t *w = (gps_user_data_t *)user_data;
+  return gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
+}
+
+/**
+ * datasource_gps_get_do_tracks:
+ *
+ * Method to get the track handling behaviour from the widget structure
+ */
+gboolean datasource_gps_get_do_tracks ( gpointer user_data )
+{
+  gps_user_data_t *w = (gps_user_data_t *)user_data;
+  last_get_tracks = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_tracks_b));
+  return last_get_tracks;
+}
+
+/**
+ * datasource_gps_get_do_waypoints:
+ *
+ * Method to get the waypoint handling behaviour from the widget structure
+ */
+gboolean datasource_gps_get_do_waypoints ( gpointer user_data )
+{
+  gps_user_data_t *w = (gps_user_data_t *)user_data;
+  last_get_waypoints = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b));
+  return last_get_waypoints;
+}
+
 static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file )
 {
-  char *ser = NULL;
   char *device = NULL;
   char *tracks = NULL;
   char *waypoints = NULL;
-  gps_user_data_t *w = (gps_user_data_t *)user_data;
 
   if (gps_acquire_in_progress) {
     *babelargs = *input_file = NULL;
@@ -122,17 +174,14 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   
   gps_acquire_in_progress = TRUE;
 
-  last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
-  if (a_babel_device_list)
-    device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+  device = datasource_gps_get_protocol ( user_data );
 
-  last_get_tracks = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_tracks_b));
-  if (last_get_tracks)
+  if ( datasource_gps_get_do_tracks ( user_data ) )
     tracks = "-t";
   else
     tracks = "";
-  last_get_waypoints = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b));
-  if (last_get_waypoints)
+
+  if ( datasource_gps_get_do_waypoints ( user_data ) )
     waypoints = "-w";
   else
     waypoints = "";
@@ -143,12 +192,21 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   tracks = NULL;
   waypoints = NULL;
 
-  ser = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
-  *input_file = g_strdup(ser);
+  *input_file = g_strdup(datasource_gps_get_descriptor(user_data));
 
   g_debug(_("using cmdline '%s' and file '%s'\n"), *babelargs, *input_file);
 }
 
+/**
+ * datasource_gps_get_off:
+ *
+ * Method to get the off behaviour from the widget structure
+ */
+gboolean datasource_gps_get_off ( gpointer user_data )
+{
+  gps_user_data_t *w = (gps_user_data_t *)user_data;
+  return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->off_request_b));
+}
 
 static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **input_file )
 {
@@ -161,7 +219,7 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
   }
 
   /* See if we should turn off the device */
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->off_request_b))) {
+  if (!datasource_gps_get_off ( user_data )){
     return;
   }
   
@@ -192,6 +250,16 @@ static void datasource_gps_cleanup ( gpointer user_data )
 {
   g_free ( user_data );
   gps_acquire_in_progress = FALSE;
+}
+
+/**
+ * datasource_gps_clean_up:
+ *
+ * External method to tidy up
+ */
+void datasource_gps_clean_up ( gpointer user_data )
+{
+  datasource_gps_cleanup ( user_data );
 }
 
 static void set_total_count(gint cnt, acq_dialog_widgets_t *w)
@@ -346,7 +414,7 @@ static void find_garmin (gpointer elem, gpointer user_data)
   }
 }
 
-void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
+static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
 {
   gps_user_data_t *w = (gps_user_data_t *)user_data;
   GtkTable *box, *data_type_box;
@@ -419,6 +487,31 @@ void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpo
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(box), FALSE, FALSE, 5 );
 
   gtk_widget_show_all ( dialog );
+}
+
+/**
+ * datasource_gps_setup:
+ * @dialog: The GTK dialog. The caller is responsible for managing the dialog creation/deletion
+ * @only_tracks: When only tracks are specified, waypoints will be disabled.
+ *
+ * Returns: A gpointer to the private structure for GPS progress/information widgets
+ *          Pass this pointer back into the other exposed datasource_gps_X functions
+ */
+gpointer datasource_gps_setup ( GtkWidget *dialog, gboolean only_tracks )
+{
+  gps_user_data_t *w_gps = (gps_user_data_t *)datasource_gps_init_func();
+  datasource_gps_add_setup_widgets ( dialog, NULL, w_gps );
+
+  if ( only_tracks ) {
+    // Indicate tracks enabled (although no option to turn off):
+    gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(w_gps->get_tracks_b), TRUE);
+    gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_tracks_b), FALSE );
+    // Disable waypoints
+    gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(w_gps->get_waypoints_b), FALSE);
+    gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_waypoints_l), FALSE );
+    gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_waypoints_b), FALSE );
+  }
+  return (gpointer)w_gps;
 }
 
 void datasource_gps_add_progress_widgets ( GtkWidget *dialog, gpointer user_data )

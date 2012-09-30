@@ -103,7 +103,7 @@ libviking_a_SOURCES = \
 	acquire.c acquire.h \
 	babel.c babel.h \
 	datasource_file.c \
-	datasource_gps.c \
+	datasource_gps.c datasource_gps.h \
 	datasource_google.c \
 	datasource_gc.c \
 	datasource_bfilter.c \
