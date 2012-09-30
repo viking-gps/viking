@@ -61,6 +61,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
                     VikViewport *vvp,
                     VikLayersPanel *vlp,
                     gboolean do_tracks,
-                    gboolean do_waypoints );
+                    gboolean do_waypoints,
+		    gboolean turn_off);
 
 #endif

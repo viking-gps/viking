@@ -1174,6 +1174,17 @@ static void gps_comm_thread(GpsSession *sess)
 
 /**
  * vik_gps_comm:
+ * @vtl: The TrackWaypoint layer to operate on
+ * @track: Operate on a particular track when specified
+ * @dir: The direction of the transfer
+ * @protocol: The GPS device communication protocol
+ * @port: The GPS serial port
+ * @tracking: If tracking then viewport display update will be skipped
+ * @vvp: A viewport is required as the display may get updated
+ * @vlp: A layers panel is needed for uploading as the items maybe modified
+ * @do_tracks: Whether tracks shoud be processed
+ * @do_waypoints: Whether waypoints shoud be processed
+ * @turn_off: Whether we should attempt to turn off the GPS device after the transfer (only some devices support this)
  *
  * Talk to a GPS Device using a thread which updates a dialog with the progress
  */
@@ -1186,7 +1197,8 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
                     VikViewport *vvp,
                     VikLayersPanel *vlp,
                     gboolean do_tracks,
-                    gboolean do_waypoints )
+                    gboolean do_waypoints,
+		    gboolean turn_off )
 {
   GpsSession *sess = g_malloc(sizeof(GpsSession));
   char *tracks = NULL;
@@ -1269,6 +1281,14 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
     g_mutex_unlock(sess->mutex);
   }
   else {
+    if ( turn_off ) {
+      // No need for thread for powering off device (should be quick operation...) - so use babel command directly:
+      gchar *device_off = g_strdup_printf("-i %s,%s", protocol, "power_off");
+      gboolean result = a_babel_convert_from (NULL, (const char*)device_off, (const char*)port, NULL, NULL);
+      if ( !result )
+        a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not turn off device.") );
+      g_free ( device_off );
+    }
     g_mutex_unlock(sess->mutex);
     gps_session_delete(sess);
   }
@@ -1283,7 +1303,7 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
-  vik_gps_comm(vtl, NULL, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints, FALSE);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
@@ -1293,9 +1313,9 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints, FALSE);
 #else
-  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints, FALSE);
 #endif
 }
 
