@@ -100,18 +100,17 @@ static gchar * old_params_ports[] = {"com1", "usb:", NULL};
 static gchar * old_params_ports[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0", "/dev/ttyUSB1", "usb:", NULL};
 #endif
 #define OLD_NUM_PORTS (sizeof(old_params_ports)/sizeof(old_params_ports[0]) - 1)
-typedef enum {GPS_DOWN=0, GPS_UP} gps_dir;
 
 typedef struct {
   GMutex *mutex;
-  gps_dir direction;
+  vik_gps_dir direction;
   gchar *port;
   gboolean ok;
   gint total_count;
   gint count;
   VikTrwLayer *vtl;
   gchar *cmd_args;
-  gchar * window_title;
+  gchar *window_title;
   GtkWidget *dialog;
   GtkWidget *status_label;
   GtkWidget *gps_label;
@@ -1156,7 +1155,21 @@ static void gps_comm_thread(GpsSession *sess)
   g_thread_exit(NULL);
 }
 
-static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *port, gboolean tracking, VikViewport *vvp, VikLayersPanel *vlp, gboolean do_tracks, gboolean do_waypoints) {
+/**
+ * vik_gps_comm:
+ *
+ * Talk to a GPS Device using a thread which updates a dialog with the progress
+ */
+gint vik_gps_comm ( VikTrwLayer *vtl,
+                    vik_gps_dir dir,
+                    gchar *protocol,
+                    gchar *port,
+                    gboolean tracking,
+                    VikViewport *vvp,
+                    VikLayersPanel *vlp,
+                    gboolean do_tracks,
+                    gboolean do_waypoints )
+{
   GpsSession *sess = g_malloc(sizeof(GpsSession));
   char *tracks = NULL;
   char *waypoints = NULL;
@@ -1251,7 +1264,7 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
-  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints);
+  vik_gps_comm(vtl, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
@@ -1261,9 +1274,9 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
 #else
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
 #endif
 }
 
@@ -1695,4 +1708,3 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
   }
 }
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-

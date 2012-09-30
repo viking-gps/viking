@@ -23,8 +23,6 @@
 #ifndef _VIKING_GPSLAYER_H
 #define _VIKING_GPSLAYER_H
 
-#include <time.h>
-
 #include "viklayer.h"
 
 #define VIK_GPS_LAYER_TYPE            (vik_gps_layer_get_type ())
@@ -41,10 +39,26 @@ struct _VikGpsLayerClass
 
 GType vik_gps_layer_get_type ();
 
+typedef enum {
+  GPS_DOWN=0,
+  GPS_UP
+} vik_gps_dir;
+
 typedef struct _VikGpsLayer VikGpsLayer;
 
 gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl );
 const GList *vik_gps_layer_get_children ( VikGpsLayer *vgl );
 VikTrwLayer * vik_gps_layer_get_a_child(VikGpsLayer *vgl);
+
+// Non layer specific but expose communal method
+gint vik_gps_comm ( VikTrwLayer *vtl,
+                    vik_gps_dir dir,
+                    gchar *protocol,
+                    gchar *port,
+                    gboolean tracking,
+                    VikViewport *vvp,
+                    VikLayersPanel *vlp,
+                    gboolean do_tracks,
+                    gboolean do_waypoints );
 
 #endif
