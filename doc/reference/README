@@ -7,3 +7,18 @@ Then, cd to doc/reference and launch make command.
 (This directory is not recursively make when launching make from top
 directory. So, this avoid spending time in reference documentation
 computation when not really needed.)
+
+Unfortunately to regenerate the references running make again does not
+detect any changes to the source files, thus it must be regenerated
+manually:
+
+$ make clean ; make
+
+If you want remove the generated HTML files you need to perform a more
+thorough cleanse:
+
+$ make distclean
+
+Unfortunately this also removes the Makefile, so you have to go through
+the ./configure steps again to regenerate the Makefile.
+
