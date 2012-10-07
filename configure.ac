@@ -354,19 +354,23 @@ dnl correct flags to aclocal.
 ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
 AC_SUBST(ACLOCAL_AMFLAGS)
 
-AM_CONDITIONAL(VIKING_DOC, test x${enable_gtk_doc} = xyes)
+AM_CONDITIONAL([VIKING_DOC], test x${enable_gtk_doc} = xyes)
 
 # Configuration
-AC_CONFIG_FILES([Makefile
-                 src/Makefile
-                 src/icons/Makefile
-		 po/Makefile.in
-                 test/Makefile
-                 help/Makefile
-                 data/Makefile
-                 doc/Makefile
-                 doc/reference/Makefile
-                 doc/examples/Makefile])
+AC_CONFIG_FILES([
+		Makefile
+		src/Makefile
+		src/icons/Makefile
+		po/Makefile.in
+		data/Makefile
+		test/Makefile])
+AM_COND_IF([VIKING_DOC],
+	[AC_CONFIG_FILES([
+		help/Makefile
+		doc/Makefile
+		doc/reference/Makefile
+		doc/examples/Makefile])])
+
 AC_OUTPUT([
 	   viking.spec
 	   ])
@@ -392,6 +396,7 @@ echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
 echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"
+echo "Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})"
 echo "-------------------------------------------"
 echo ""
 echo "Configure finished, type 'make' to build."

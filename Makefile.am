@@ -1,4 +1,8 @@
-SUBDIRS = src test data doc po help
+# Optionally build documentation bits
+if VIKING_DOC
+	DO_DOCS = "help doc"
+endif
+SUBDIRS = src test data po $(DO_DOCS)
 
 INTLTOOL = \
 	intltool-extract.in \
