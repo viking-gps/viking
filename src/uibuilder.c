@@ -360,6 +360,8 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
 
       gtk_widget_destroy ( dialog ); /* hide before redrawing. */
       g_free ( widgets );
+      if ( tables )
+        g_free ( tables );
 
       return must_redraw ? 2 : 3; /* user clicked OK */
     }
