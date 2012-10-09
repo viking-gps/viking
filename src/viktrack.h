@@ -64,8 +64,8 @@ struct _VikTrack {
 };
 
 VikTrack *vik_track_new();
-void vik_track_set_name(VikTrack *wp, const gchar *name);
-void vik_track_set_comment(VikTrack *wp, const gchar *comment);
+void vik_track_set_name(VikTrack *tr, const gchar *name);
+void vik_track_set_comment(VikTrack *tr, const gchar *comment);
 void vik_track_ref(VikTrack *tr);
 void vik_track_free(VikTrack *tr);
 VikTrack *vik_track_copy ( const VikTrack *tr );
