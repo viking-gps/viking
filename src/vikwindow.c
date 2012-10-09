@@ -489,9 +489,12 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
       return vw->vt->tools[vw->vt->active_tool].ti.key_press(vl, event, vw->vt->tools[vw->vt->active_tool].state);
   }
 
-  // No layer - but enable window tool keypress processing - these should be able to handle a NULL layer
-  if ( vw->vt->tools[vw->vt->active_tool].ti.key_press ) {
-    return vw->vt->tools[vw->vt->active_tool].ti.key_press ( vl, event, vw->vt->tools[vw->vt->active_tool].state );
+  // Ensure called only on window tools (i.e. not on any of the Layer tools since the layer is NULL)
+  if ( vw->current_tool < TOOL_LAYER ) {
+    // No layer - but enable window tool keypress processing - these should be able to handle a NULL layer
+    if ( vw->vt->tools[vw->vt->active_tool].ti.key_press ) {
+      return vw->vt->tools[vw->vt->active_tool].ti.key_press ( vl, event, vw->vt->tools[vw->vt->active_tool].state );
+    }
   }
 
   /* Restore Main Menu via Escape key if the user has hidden it */
