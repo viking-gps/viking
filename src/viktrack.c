@@ -414,7 +414,12 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
     gboolean okay = FALSE;
     while ( iter )
     {
-      if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+      // Sometimes a GPS device (or indeed any random file) can have stupid numbers for elevations
+      // Since when is 9.9999e+24 a valid elevation!!
+      // This can happen when a track (with no elevations) is uploaded to a GPS device and then redownloaded (e.g. using a Garmin Legend EtrexHCx)
+      // Some protection against trying to work with crazily massive numbers (otherwise get SIGFPE, Arithmetic exception)
+      if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE &&
+	   VIK_TRACKPOINT(iter->data)->altitude < 1E9 ) {
         okay = TRUE; break;
       }
       iter = iter->next;
