@@ -616,7 +616,7 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   iter = tr->trackpoints->next;
   numpts = 0;
   s[0] = 0;
-  t[0] = VIK_TRACKPOINT(iter->prev->data)->timestamp;
+  t[0] = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   numpts++;
   while (iter) {
     s[numpts] = s[numpts-1] + vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord), &(VIK_TRACKPOINT(iter->data)->coord) );
@@ -690,7 +690,7 @@ gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks )
   iter = tr->trackpoints->next;
   numpts = 0;
   s[0] = 0;
-  t[0] = VIK_TRACKPOINT(iter->prev->data)->timestamp;
+  t[0] = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   numpts++;
   while (iter) {
     s[numpts] = s[numpts-1] + vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord), &(VIK_TRACKPOINT(iter->data)->coord) );
@@ -860,7 +860,7 @@ gdouble *vik_track_make_speed_dist_map ( const VikTrack *tr, guint16 num_chunks 
   iter = tr->trackpoints->next;
   numpts = 0;
   s[0] = 0;
-  t[0] = VIK_TRACKPOINT(iter->prev->data)->timestamp;
+  t[0] = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   numpts++;
   while (iter) {
     s[numpts] = s[numpts-1] + vik_coord_diff ( &(VIK_TRACKPOINT(iter->prev->data)->coord), &(VIK_TRACKPOINT(iter->data)->coord) );

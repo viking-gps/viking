@@ -532,10 +532,12 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
 
 static void a_gpspoint_write_track ( const gpointer id, const VikTrack *t, FILE *f )
 {
-  // Sanity clause
-  if ( t && !(t->name) ) {
+  // Sanity clauses
+  if ( !t )
     return;
-  }
+  if ( !(t->name) )
+    return;
+
   if ( t->comment )
   {
     gchar *tmp_comment = slashdup(t->comment);
