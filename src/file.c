@@ -267,7 +267,15 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
   vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1], TRUE );
 }
 
-static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
+/**
+ * Read in a Viking file and return how successful the parsing was
+ * ATM this will always work, in that even if there are parsing problems
+ *  then there will be no new values to override the defaults
+ *
+ * TODO flow up line number(s) / error messages of problems encountered...
+ *
+ */
+static gboolean file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
 {
   Stack *stack;
   struct LatLon ll = { 0.0, 0.0 };
@@ -280,6 +288,8 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
   guint8 params_count = 0;
 
   GHashTable *string_lists = g_hash_table_new(g_direct_hash,g_direct_equal);
+
+  gboolean successful_read = TRUE;
 
   push(&stack);
   stack->under = NULL;
@@ -317,6 +327,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
         int parent_type = VIK_LAYER(stack->data)->type;
         if ( ( ! stack->data ) || ((parent_type != VIK_LAYER_AGGREGATE) && (parent_type != VIK_LAYER_GPS)) )
         {
+          successful_read = FALSE;
           g_warning ( "Line %ld: Layer command inside non-Aggregate Layer (type %d)", line_num, parent_type );
           push(&stack); /* inside INVALID layer */
           stack->data = NULL;
@@ -328,6 +339,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
           push(&stack);
           if ( type == -1 )
           {
+            successful_read = FALSE;
             g_warning ( "Line %ld: Unknown type %s", line_num, line+6 );
             stack->data = NULL;
           }
@@ -347,8 +359,10 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
       }
       else if ( str_starts_with ( line, "EndLayer", 8, FALSE ) )
       {
-        if ( stack->under == NULL )
+        if ( stack->under == NULL ) {
+          successful_read = FALSE;
           g_warning ( "Line %ld: Mismatched ~EndLayer command", line_num );
+        }
         else
         {
           /* add any string lists we've accumulated */
@@ -367,8 +381,10 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
             else if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_GPS) {
               /* TODO: anything else needs to be done here ? */
             }
-            else
+            else {
+              successful_read = FALSE;
               g_warning ( "Line %ld: EndLayer command inside non-Aggregate Layer (type %d)", line_num, VIK_LAYER(stack->data)->type );
+            }
           }
           pop(&stack);
         }
@@ -400,6 +416,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
       }
       else
       {
+        successful_read = FALSE;
         g_warning ( "Line %ld: Unknown tilde command", line_num );
       }
     }
@@ -428,10 +445,12 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
         vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_EXPEDIA );
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "google" ) == 0)
       {
+        successful_read = FALSE;
         g_warning ( _("Draw mode '%s' no more supported"), "google" );
       }
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "kh" ) == 0)
       {
+        successful_read = FALSE;
         g_warning ( _("Draw mode '%s' no more supported"), "kh" );
       }
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "mercator" ) == 0)
@@ -461,6 +480,7 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
 
         if ( ! params )
         {
+          successful_read = FALSE;
           g_warning ( "Line %ld: No options for this kind of layer", line_num );
           continue;
         }
@@ -493,11 +513,19 @@ static void file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
             found_match = TRUE;
             break;
           }
-        if ( ! found_match )
+        if ( ! found_match ) {
+          // ATM don't flow up this issue because at least one internal parameter has changed from version 1.3
+          //   and don't what to worry users about raising such issues
+          // TODO Maybe hold old values here - compare the line value against them and if a match
+          //       generate a different style of message in the GUI...
+          // successful_read = FALSE;
           g_warning ( "Line %ld: Unknown parameter. Line:\n%s", line_num, line );
+	}
       }
-      else
+      else {
+        successful_read = FALSE;
         g_warning ( "Line %ld: Invalid parameter or parameter outside of layer.", line_num );
+      }
     }
 /* could be:
 [Layer Type=Bla]
@@ -527,6 +555,8 @@ name=this
   /* delete anything we've forgotten about -- should only happen when file ends before an EndLayer */
   g_hash_table_foreach ( string_lists, string_list_delete, NULL );
   g_hash_table_destroy ( string_lists );
+
+  return successful_read;
 }
 
 /*
@@ -588,12 +618,15 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
   if ( ! f )
     return LOAD_TYPE_READ_FAILURE;
 
-  VikLoadType_t load_answer = LOAD_TYPE_VIK_SUCCESS;
+  VikLoadType_t load_answer = LOAD_TYPE_OTHER_SUCCESS;
 
   // Attempt loading the primary file type first - our internal .vik file:
   if ( check_magic ( f, VIK_MAGIC ) )
   {
-    file_read ( top, f, vp );
+    if ( file_read ( top, f, vp ) )
+      load_answer = LOAD_TYPE_VIK_SUCCESS;
+    else
+      load_answer = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
   }
   else
   {
