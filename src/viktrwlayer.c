@@ -1565,16 +1565,20 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
     g_object_unref ( vtl->track_bg_gc );
   vtl->track_bg_gc = vik_viewport_new_gc ( vp, "#FFFFFF", width + vtl->bg_line_thickness );
 
+  // Ensure new track drawing heeds line thickness setting
+  //  however always have a minium of 2, as 1 pixel is really narrow
+  gint new_track_width = (vtl->line_thickness < 2) ? 2 : vtl->line_thickness;
+  
   if ( vtl->current_track_gc )
     g_object_unref ( vtl->current_track_gc );
-  vtl->current_track_gc = vik_viewport_new_gc ( vp, "#FF0000", 2 );
-  gdk_gc_set_line_attributes ( vtl->current_track_gc, 2, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+  vtl->current_track_gc = vik_viewport_new_gc ( vp, "#FF0000", new_track_width );
+  gdk_gc_set_line_attributes ( vtl->current_track_gc, new_track_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
 
   // 'newpoint' gc is exactly the same as the current track gc
   if ( vtl->current_track_newpoint_gc )
     g_object_unref ( vtl->current_track_newpoint_gc );
-  vtl->current_track_newpoint_gc = vik_viewport_new_gc ( vp, "#FF0000", 2 );
-  gdk_gc_set_line_attributes ( vtl->current_track_newpoint_gc, 2, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+  vtl->current_track_newpoint_gc = vik_viewport_new_gc ( vp, "#FF0000", new_track_width );
+  gdk_gc_set_line_attributes ( vtl->current_track_newpoint_gc, new_track_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
 
   vtl->track_gc = g_array_sized_new ( FALSE, FALSE, sizeof ( GdkGC * ), VIK_TRW_LAYER_TRACK_GC );
 
