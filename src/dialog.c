@@ -205,8 +205,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
                                                    GTK_RESPONSE_ACCEPT,
                                                    NULL);
   struct LatLon ll;
-  GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL, *commentlabel, 
-    *commententry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
+  GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL;
+  GtkWidget *commentlabel, *commententry, *descriptionlabel, *descriptionentry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
   GtkListStore *store;
 
   gchar *lat, *lon, *alt;
@@ -266,9 +266,13 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
   commentlabel = gtk_label_new (_("Comment:"));
   commententry = gtk_entry_new ();
   gchar *cmt =  NULL;
+  // Auto put in some kind of 'name' as a comment if one previously 'goto'ed this exact location
   cmt = a_vik_goto_get_search_string_for_this_place(VIK_WINDOW(parent));
   if (cmt)
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
+
+  descriptionlabel = gtk_label_new (_("Description:"));
+  descriptionentry = gtk_entry_new ();
 
   imagelabel = gtk_label_new (_("Image:"));
   imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
@@ -318,6 +322,9 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
   if ( !is_new && wp->comment )
     gtk_entry_set_text ( GTK_ENTRY(commententry), wp->comment );
 
+  if ( !is_new && wp->description )
+    gtk_entry_set_text ( GTK_ENTRY(descriptionentry), wp->description );
+
   if ( !is_new && wp->image )
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
@@ -330,6 +337,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), altentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), commentlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), commententry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), descriptionlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), descriptionentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), imagelabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), imageentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), symbollabel, FALSE, FALSE, 0);
@@ -367,6 +376,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
 	  g_critical("Houston, we've had a problem. height=%d", height_units);
 	}
 	vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
+	vik_waypoint_set_description ( wp, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) );
 	vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
 	if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
 	  a_thumbnails_create ( wp->image );
@@ -404,6 +414,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
       }
       if ( (! wp->comment) || strcmp ( wp->comment, gtk_entry_get_text ( GTK_ENTRY(commententry) ) ) != 0 )
         vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
+      if ( (! wp->description) || strcmp ( wp->description, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) ) != 0 )
+        vik_waypoint_set_description ( wp, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) );
       if ( (! wp->image) || strcmp ( wp->image, vik_file_entry_get_filename ( VIK_FILE_ENTRY ( imageentry ) ) ) != 0 )
       {
         vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );

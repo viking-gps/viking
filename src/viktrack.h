@@ -58,6 +58,7 @@ struct _VikTrack {
   GList *trackpoints;
   gboolean visible;
   gchar *comment;
+  gchar *description;
   guint8 ref_count;
   GtkWidget *property_dialog;
   gchar *name;
@@ -66,6 +67,7 @@ struct _VikTrack {
 VikTrack *vik_track_new();
 void vik_track_set_name(VikTrack *tr, const gchar *name);
 void vik_track_set_comment(VikTrack *tr, const gchar *comment);
+void vik_track_set_description(VikTrack *tr, const gchar *description);
 void vik_track_ref(VikTrack *tr);
 void vik_track_free(VikTrack *tr);
 VikTrack *vik_track_copy ( const VikTrack *tr );

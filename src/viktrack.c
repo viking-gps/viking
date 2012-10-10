@@ -75,6 +75,17 @@ void vik_track_set_comment(VikTrack *tr, const gchar *comment)
     tr->comment = NULL;
 }
 
+void vik_track_set_description(VikTrack *tr, const gchar *description)
+{
+  if ( tr->description )
+    g_free ( tr->description );
+
+  if ( description && description[0] != '\0' )
+    tr->description = g_strdup(description);
+  else
+    tr->description = NULL;
+}
+
 void vik_track_ref(VikTrack *tr)
 {
   tr->ref_count++;
@@ -100,6 +111,8 @@ void vik_track_free(VikTrack *tr)
     g_free ( tr->name );
   if ( tr->comment )
     g_free ( tr->comment );
+  if ( tr->description )
+    g_free ( tr->description );
   g_list_foreach ( tr->trackpoints, (GFunc) g_free, NULL );
   g_list_free( tr->trackpoints );
   if (tr->property_dialog)
@@ -124,6 +137,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr )
   }
   vik_track_set_name(new_tr,tr->name);
   vik_track_set_comment(new_tr,tr->comment);
+  vik_track_set_description(new_tr,tr->description);
   return new_tr;
 }
 
@@ -333,6 +347,8 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
         vik_track_set_name ( rv[i], tr->name );
       if ( tr->comment )
         vik_track_set_comment ( rv[i], tr->comment );
+      if ( tr->description )
+        vik_track_set_description ( rv[i], tr->description );
       rv[i]->visible = tr->visible;
       rv[i]->trackpoints = iter;
       i++;
@@ -1192,19 +1208,25 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   }
   *(guint *)(b->data + intp) = ntp;
 
-  len = (tr->name) ? strlen(tr->name)+1 : 0;
-  g_byte_array_append(b, (guint8 *)&len, sizeof(len));
-  if (tr->name) g_byte_array_append(b, (guint8 *)tr->name, len);
+  // This allocates space for variant sized strings
+  //  and copies that amount of data from the track to byte array
+#define vtm_append(s) \
+  len = (s) ? strlen(s)+1 : 0; \
+  g_byte_array_append(b, (guint8 *)&len, sizeof(len)); \
+  if (s) g_byte_array_append(b, (guint8 *)s, len);
 
-  len = (tr->comment) ? strlen(tr->comment)+1 : 0; 
-  g_byte_array_append(b, (guint8 *)&len, sizeof(len)); 
-  if (tr->comment) g_byte_array_append(b, (guint8 *)tr->comment, len);
+  vtm_append(tr->name);
+  vtm_append(tr->comment);
+  vtm_append(tr->description);
 
   *data = b->data;
   *datalen = b->len;
   g_byte_array_free(b, FALSE);
 }
 
+/*
+ * Take a byte array and convert it into a Track
+ */
 VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
 {
   guint len;
@@ -1227,18 +1249,20 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
     new_tr->trackpoints = g_list_append(new_tr->trackpoints, new_tp);
   }
 
-  len = *(guint *)data;
-  data += sizeof(len);
-  if (len) {
-    new_tr->name = g_strdup((gchar *)data);
-  }
+#define vtu_get(s) \
+  len = *(guint *)data; \
+  data += sizeof(len); \
+  if (len) { \
+    (s) = g_strdup((gchar *)data); \
+  } else { \
+    (s) = NULL; \
+  } \
   data += len;
 
-  len = *(guint *)data;
-  data += sizeof(len);
-  if (len) {
-    new_tr->comment = g_strdup((gchar *)data);
-  }
+  vtu_get(new_tr->name);
+  vtu_get(new_tr->comment);
+  vtu_get(new_tr->description);
+
   return new_tr;
 }
 

@@ -110,6 +110,7 @@ typedef struct _propwidgets {
   gint      profile_height_offset;
   GtkWidget *dialog;
   GtkWidget *w_comment;
+  GtkWidget *w_description;
   GtkWidget *w_track_length;
   GtkWidget *w_tp_count;
   GtkWidget *w_segment_count;
@@ -2691,6 +2692,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       break;
     case GTK_RESPONSE_ACCEPT:
       vik_track_set_comment(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_comment)));
+      vik_track_set_description(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_description)));
       break;
     case VIK_TRW_LAYER_PROPWIN_REVERSE:
       vik_track_reverse(tr);
@@ -2857,7 +2859,22 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   int cnt;
   int i;
 
-  static gchar *label_texts[] = { N_("<b>Comment:</b>"), N_("<b>Track Length:</b>"), N_("<b>Trackpoints:</b>"), N_("<b>Segments:</b>"), N_("<b>Duplicate Points:</b>"), N_("<b>Max Speed:</b>"), N_("<b>Avg. Speed:</b>"), N_("<b>Moving Avg. Speed:</b>"), N_("<b>Avg. Dist. Between TPs:</b>"), N_("<b>Elevation Range:</b>"), N_("<b>Total Elevation Gain/Loss:</b>"), N_("<b>Start:</b>"), N_("<b>End:</b>"), N_("<b>Duration:</b>") };
+  static gchar *label_texts[] = {
+    N_("<b>Comment:</b>"),
+    N_("<b>Description:</b>"),
+    N_("<b>Track Length:</b>"),
+    N_("<b>Trackpoints:</b>"),
+    N_("<b>Segments:</b>"),
+    N_("<b>Duplicate Points:</b>"),
+    N_("<b>Max Speed:</b>"),
+    N_("<b>Avg. Speed:</b>"),
+    N_("<b>Moving Avg. Speed:</b>"),
+    N_("<b>Avg. Dist. Between TPs:</b>"),
+    N_("<b>Elevation Range:</b>"),
+    N_("<b>Total Elevation Gain/Loss:</b>"),
+    N_("<b>Start:</b>"),
+    N_("<b>End:</b>"),
+    N_("<b>Duration:</b>") };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 
@@ -2867,6 +2884,12 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_comment), tr->comment );
   g_signal_connect_swapped ( widgets->w_comment, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
   content[cnt++] = widgets->w_comment;
+
+  widgets->w_description = gtk_entry_new ();
+  if ( tr->description )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_description), tr->description );
+  g_signal_connect_swapped ( widgets->w_description, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
+  content[cnt++] = widgets->w_description;
 
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
 

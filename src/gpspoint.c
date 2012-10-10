@@ -73,6 +73,7 @@ static gint line_type = GPSPOINT_TYPE_NONE;
 static struct LatLon line_latlon;
 static gchar *line_name;
 static gchar *line_comment;
+static gchar *line_description;
 static gchar *line_image;
 static gchar *line_symbol;
 static gboolean line_newsegment = FALSE;
@@ -228,6 +229,12 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
         line_comment = NULL;
       }
 
+      if ( line_description )
+      {
+        vik_waypoint_set_description ( wp, line_description );
+        line_description = NULL;
+      }
+
       if ( line_image )
       {
         vik_waypoint_set_image ( wp, line_image );
@@ -254,6 +261,12 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       {
         vik_track_set_comment ( pl, line_comment );
         line_comment = NULL;
+      }
+
+      if ( line_description )
+      {
+        vik_track_set_description ( pl, line_description );
+        line_description = NULL;
       }
 
       pl->trackpoints = NULL;
@@ -284,13 +297,16 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     if (line_name) 
       g_free ( line_name );
     line_name = NULL;
-    if (line_comment) 
+    if (line_comment)
       g_free ( line_comment );
+    if (line_description)
+      g_free ( line_description );
     if (line_image)
       g_free ( line_image );
     if (line_symbol)
       g_free ( line_symbol );
     line_comment = NULL;
+    line_description = NULL;
     line_image = NULL;
     line_symbol = NULL;
     line_type = GPSPOINT_TYPE_NONE;
@@ -390,6 +406,11 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
     if (line_comment == NULL)
       line_comment = deslashndup ( value, value_len );
   }
+  else if (key_len == 11 && strncasecmp( key, "description", key_len ) == 0 && value != NULL)
+  {
+    if (line_description == NULL)
+      line_description = deslashndup ( value, value_len );
+  }
   else if (key_len == 5 && strncasecmp( key, "image", key_len ) == 0 && value != NULL)
   {
     if (line_image == NULL)
@@ -473,6 +494,12 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
     fprintf ( f, " comment=\"%s\"", tmp_comment );
     g_free ( tmp_comment );
   }
+  if ( wp->description )
+  {
+    gchar *tmp_description = slashdup(wp->description);
+    fprintf ( f, " description=\"%s\"", tmp_description );
+    g_free ( tmp_description );
+  }
   if ( wp->image )
   {
     gchar *tmp_image = slashdup(wp->image);
@@ -533,23 +560,34 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, FILE *f )
 }
 
 
-static void a_gpspoint_write_track ( const gpointer id, const VikTrack *t, FILE *f )
+static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FILE *f )
 {
   // Sanity clauses
-  if ( !t )
+  if ( !trk )
     return;
-  if ( !(t->name) )
+  if ( !(trk->name) )
     return;
 
-  if ( t->comment )
-  {
-    gchar *tmp_comment = slashdup(t->comment);
-    fprintf ( f, "type=\"track\" name=\"%s\" comment=\"%s\"%s\n", t->name, tmp_comment, t->visible ? "" : " visible=\"n\"" );
-    g_free ( tmp_comment );
+  fprintf ( f, "type=\"track\" name=\"%s\"", trk->name);
+
+  if ( trk->comment ) {
+    gchar *tmp = slashdup(trk->comment);
+    fprintf ( f, " comment=\"%s\"", tmp );
+    g_free ( tmp );
   }
-  else
-    fprintf ( f, "type=\"track\" name=\"%s\"%s\n", t->name, t->visible ? "" : " visible=\"n\"" );
-  g_list_foreach ( t->trackpoints, (GFunc) a_gpspoint_write_trackpoint, f );
+
+  if ( trk->description ) {
+    gchar *tmp = slashdup(trk->description);
+    fprintf ( f, " description=\"%s\"", tmp );
+    g_free ( tmp );
+  }
+
+  if ( ! trk->visible ) {
+    fprintf ( f, " visible=\"n\"" );
+  }
+  fprintf ( f, "\n" );
+
+  g_list_foreach ( trk->trackpoints, (GFunc) a_gpspoint_write_trackpoint, f );
   fprintf ( f, "type=\"trackend\"\n" );
 }
 

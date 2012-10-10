@@ -29,14 +29,9 @@
 
 VikWaypoint *vik_waypoint_new()
 {
-  VikWaypoint *wp = g_malloc ( sizeof ( VikWaypoint ) );
+  VikWaypoint *wp = g_malloc0 ( sizeof ( VikWaypoint ) );
   wp->altitude = VIK_DEFAULT_ALTITUDE;
   wp->name = g_strdup(_("Waypoint"));
-  wp->comment = NULL;
-  wp->image = NULL;
-  wp->image_width = 0;
-  wp->image_height = 0;
-  wp->symbol = NULL;
   return wp;
 }
 
@@ -70,6 +65,17 @@ void vik_waypoint_set_comment(VikWaypoint *wp, const gchar *comment)
     wp->comment = NULL;
 }
 
+void vik_waypoint_set_description(VikWaypoint *wp, const gchar *description)
+{
+  if ( wp->description )
+    g_free ( wp->description );
+
+  if ( description && description[0] != '\0' )
+    wp->description = g_strdup(description);
+  else
+    wp->description = NULL;
+}
+
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image)
 {
   if ( wp->image )
@@ -97,6 +103,8 @@ void vik_waypoint_free(VikWaypoint *wp)
 {
   if ( wp->comment )
     g_free ( wp->comment );
+  if ( wp->description )
+    g_free ( wp->description );
   if ( wp->image )
     g_free ( wp->image );
   if ( wp->symbol )
@@ -108,13 +116,10 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
 {
   VikWaypoint *new_wp = vik_waypoint_new();
   *new_wp = *wp;
-  new_wp->name = NULL;
   vik_waypoint_set_name(new_wp,wp->name);
-  new_wp->comment = NULL; /* if the waypoint had a comment, FOR CRYING OUT LOUD DON'T FREE IT! This lousy bug took me TWO HOURS to figure out... sigh... */
   vik_waypoint_set_comment(new_wp,wp->comment);
-  new_wp->image = NULL;
+  vik_waypoint_set_description(new_wp,wp->description);
   vik_waypoint_set_image(new_wp,wp->image);
-  new_wp->symbol = NULL;
   vik_waypoint_set_symbol(new_wp,wp->symbol);
   return new_wp;
 }
@@ -140,6 +145,7 @@ void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *datalen)
 
   vwm_append(wp->name);
   vwm_append(wp->comment);
+  vwm_append(wp->description);
   vwm_append(wp->image);
   vwm_append(wp->symbol);
 
@@ -156,9 +162,11 @@ VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen)
 {
   guint len;
   VikWaypoint *new_wp = vik_waypoint_new();
+  // This copies the fixed sized elements (i.e. visibility, altitude, image_width, etc...)
   memcpy(new_wp, data, sizeof(*new_wp));
   data += sizeof(*new_wp);
 
+  // Now the variant sized strings...
 #define vwu_get(s) \
   len = *(guint *)data; \
   data += sizeof(len); \
@@ -171,6 +179,7 @@ VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen)
 
   vwu_get(new_wp->name);
   vwu_get(new_wp->comment);
+  vwu_get(new_wp->description);
   vwu_get(new_wp->image); 
   vwu_get(new_wp->symbol);
   
