@@ -392,9 +392,11 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
       else if ( str_starts_with ( line, "LayerData", 9, FALSE ) )
       {
         if ( stack->data && vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data )
-          vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data ( VIK_LAYER(stack->data), f );
+        {
           /* must read until hits ~EndLayerData */
-
+          if ( ! vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data ( VIK_LAYER(stack->data), f ) )
+            successful_read = FALSE;
+        }
         else
         { /* simply skip layer data over */
           while ( fgets ( buffer, 4096, f ) )

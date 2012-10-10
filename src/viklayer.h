@@ -167,7 +167,7 @@ typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, guint16,
 typedef VikLayerParamData
                       (*VikLayerFuncGetParam)              (VikLayer *, guint16, gboolean);
 
-typedef void          (*VikLayerFuncReadFileData)          (VikLayer *, FILE *);
+typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *); // Should report success or failure
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *);
 
 /* item manipulation */

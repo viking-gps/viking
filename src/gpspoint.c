@@ -170,8 +170,11 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     line_buffer[strlen(line_buffer)-1] = '\0'; /* chop off newline */
 
     /* for gpspoint files wrapped inside */
-    if ( strlen(line_buffer) >= 13 && strncmp ( line_buffer, "~EndLayerData", 13 ) == 0 )
+    if ( strlen(line_buffer) >= 13 && strncmp ( line_buffer, "~EndLayerData", 13 ) == 0 ) {
+      // Even just a blank TRW is ok when in a .vik file
+      have_read_something = TRUE;
       break;
+    }
 
     /* each line: nullify stuff, make thing if nes, free name if ness */
     tag_start = line_buffer;
