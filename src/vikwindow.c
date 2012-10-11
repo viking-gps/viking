@@ -1617,7 +1617,7 @@ static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
   draw_update ( vw );
 }
 
-void draw_goto_cb ( GtkAction *a, VikWindow *vw )
+static void draw_goto_cb ( GtkAction *a, VikWindow *vw )
 {
   VikCoord new_center;
 
