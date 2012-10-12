@@ -37,6 +37,7 @@
 #include "icons/icons.h"
 #include "vikexttools.h"
 #include "garminsymbols.h"
+#include "vikmapslayer.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -101,6 +102,7 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event );
 static void draw_mouse_motion ( VikWindow *vw, GdkEventMotion *event );
 static void draw_zoom_cb ( GtkAction *a, VikWindow *vw );
 static void draw_goto_cb ( GtkAction *a, VikWindow *vw );
+static void draw_refresh_cb ( GtkAction *a, VikWindow *vw );
 
 static void draw_status ( VikWindow *vw );
 
@@ -454,7 +456,8 @@ static void window_init ( VikWindow *vw )
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "motion_notify_event", G_CALLBACK(draw_mouse_motion), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "update", G_CALLBACK(draw_update), vw);
 
-  g_signal_connect_swapped (G_OBJECT (vw->viking_vvp), "key_press_event", G_CALLBACK (key_press_event), vw);
+  // Allow key presses to be processed anywhere
+  g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
 
   gtk_window_set_default_size ( GTK_WINDOW(vw), VIKING_WINDOW_WIDTH, VIKING_WINDOW_HEIGHT);
 
@@ -480,8 +483,57 @@ static VikWindow *window_new ()
   return VIK_WINDOW ( g_object_new ( VIK_WINDOW_TYPE, NULL ) );
 }
 
+/**
+ * Update the displayed map
+ *  Only update the top most visible map layer
+ *  ATM this assumes (as per defaults) the top most map has full alpha setting
+ *   such that other other maps even though they may be active will not be seen
+ *  It's more complicated to work out which maps are actually visible due to alpha settings
+ *   and overkill for this simple refresh method.
+ */
+static void simple_map_update ( VikWindow *vw, gboolean only_new )
+{
+  // Find the most relevent single map layer to operate on
+  VikLayer *vl = vik_aggregate_layer_get_top_visible_layer_of_type (vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER_MAPS);
+  if ( vl )
+	vik_maps_layer_download ( VIK_MAPS_LAYER(vl), vw->viking_vvp, only_new );
+}
+
+/**
+ * This is the global key press handler
+ *  Global shortcuts are available at any time and hence are not restricted to when a certain tool is enabled
+ */
 static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer data )
 {
+  // The keys handled here are not in the menuing system for a couple of reasons:
+  //  . Keeps the menu size compact (alebit at expense of discoverably)
+  //  . Allows differing key bindings to perform the same actions
+
+  // First decide if key events are related to the maps layer
+  gboolean map_download = FALSE;
+  gboolean map_download_only_new = TRUE; // Only new or reload
+
+  GdkModifierType modifiers = gtk_accelerator_get_default_mod_mask();
+
+  // Standard 'Refresh' keys: F5 or Ctrl+r
+  // Note 'F5' is actually handled via draw_refresh_cb() later on
+  //  (not 'R' it's 'r' notice the case difference!!)
+  if ( event->keyval == GDK_r && (event->state & modifiers) == GDK_CONTROL_MASK ) {
+	map_download = TRUE;
+	map_download_only_new = TRUE;
+  }
+  // Full cache reload with Ctrl+F5 or Ctrl+Shift+r [This is not in the menu system]
+  // Note the use of uppercase R here since shift key has been pressed
+  else if ( (event->keyval == GDK_F5 && (event->state & modifiers) == GDK_CONTROL_MASK ) ||
+           ( event->keyval == GDK_R && (event->state & modifiers) == (GDK_CONTROL_MASK + GDK_SHIFT_MASK) ) ) {
+	map_download = TRUE;
+	map_download_only_new = FALSE;
+  }
+
+  if ( map_download ) {
+    simple_map_update ( vw, map_download_only_new );
+  }
+
   VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
   if (vl && vw->vt->active_tool != -1 && vw->vt->tools[vw->vt->active_tool].ti.key_press ) {
     gint ltype = vw->vt->tools[vw->vt->active_tool].layer_type;
@@ -1131,11 +1183,13 @@ static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, ruler_tool_st
     ruler_deactivate ( vl, s );
     return TRUE;
   }
+  // Regardless of whether we used it, return false so other GTK things may use it
   return FALSE;
 }
 
-static VikToolInterface ruler_tool = 
-  { { "Ruler", "vik-icon-ruler", N_("_Ruler"), "<control><shift>R", N_("Ruler Tool"), 2 },
+static VikToolInterface ruler_tool =
+  // NB Ctrl+Shift+R is used for Refresh (deemed more important), so use 'U' instead
+  { { "Ruler", "vik-icon-ruler", N_("_Ruler"), "<control><shift>U", N_("Ruler Tool"), 2 },
     (VikToolConstructorFunc) ruler_create,
     (VikToolDestructorFunc) ruler_destroy,
     (VikToolActivationFunc) NULL,
@@ -1644,6 +1698,15 @@ static void draw_goto_cb ( GtkAction *a, VikWindow *vw )
 
   vik_viewport_set_center_coord ( vw->viking_vvp, &new_center );
   draw_update ( vw );
+}
+
+/**
+ * Refresh maps displayed
+ */
+static void draw_refresh_cb ( GtkAction *a, VikWindow *vw )
+{
+  // Only get 'new' maps
+  simple_map_update ( vw, TRUE );
 }
 
 static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw )
@@ -2908,6 +2971,7 @@ static GtkActionEntry entries[] = {
   { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to _Location..."),    	      NULL,         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
+  { "Refresh",   GTK_STOCK_REFRESH,      N_("_Refresh"),                      "F5",         N_("Refresh any maps displayed"),               (GCallback)draw_refresh_cb       },
   { "SetHLColor",GTK_STOCK_SELECT_COLOR, N_("Set _Highlight Color..."),       NULL,         NULL,                                           (GCallback)set_highlight_color   },
   { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Bac_kground Color..."),      NULL,         NULL,                                           (GCallback)set_bg_color          },
   { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
@@ -2961,7 +3025,7 @@ static GtkRadioActionEntry mode_entries[] = {
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ShowScale",      NULL,                 N_("Show _Scale"),               "F5",         N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
+  { "ShowScale",      NULL,                 N_("Show _Scale"),               "<shift>F5",  N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
   { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)set_draw_centermark, TRUE },
   { "ShowHighlight",  GTK_STOCK_UNDERLINE,  N_("Show _Highlight"),           "F7",         N_("Show Highlight"),                          (GCallback)set_draw_highlight, TRUE },
   { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },

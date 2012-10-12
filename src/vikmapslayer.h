@@ -51,6 +51,6 @@ void maps_layer_download_section_without_redraw ( VikMapsLayer *vml, VikViewport
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);
 gchar *maps_layer_default_dir ();
-
+void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean only_new );
 
 #endif

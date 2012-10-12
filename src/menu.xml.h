@@ -62,6 +62,8 @@ static const char *menu_xml =
 	"      <menuitem action='GotoLL'/>"
 	"      <menuitem action='GotoUTM'/>"
 	"      <separator/>"
+	"      <menuitem action='Refresh'/>"
+	"      <separator/>"
 	"      <menuitem action='SetBGColor'/>"
 	"      <menuitem action='SetHLColor'/>"
 	"      <menuitem action='FullScreen'/>"

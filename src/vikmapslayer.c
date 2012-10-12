@@ -132,9 +132,14 @@ enum { PARAM_MAPTYPE=0, PARAM_CACHE_DIR, PARAM_ALPHA, PARAM_AUTODOWNLOAD, PARAM_
 
 static VikToolInterface maps_tools[] = {
   { { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
-    (VikToolConstructorFunc) maps_layer_download_create, NULL, NULL, NULL,
-    (VikToolMouseFunc) maps_layer_download_click, NULL,  (VikToolMouseFunc) maps_layer_download_release,
-    (VikToolKeyFunc) NULL,
+    (VikToolConstructorFunc) maps_layer_download_create,
+    NULL,
+    NULL,
+    NULL,
+    (VikToolMouseFunc) maps_layer_download_click,
+    NULL,
+    (VikToolMouseFunc) maps_layer_download_release,
+    NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_mapdl_pixbuf },
 };
@@ -1419,4 +1424,24 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
+}
+
+/**
+ * Enable downloading maps of the current screen area either 'new' or 'everything'
+ */
+void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean only_new )
+{
+  if ( !vml ) return;
+  if ( !vvp ) return;
+
+  static gpointer pass_along[2];
+  pass_along[0] = vml;
+  pass_along[1] = vvp;
+
+  if ( only_new )
+    // Get only new maps
+    maps_layer_download_new_onscreen_maps ( pass_along );
+  else
+    // Redownload everything
+    maps_layer_redownload_all_onscreen_maps ( pass_along );
 }

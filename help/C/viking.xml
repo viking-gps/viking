@@ -246,16 +246,24 @@ Some function keys follow standard GUI behaviour:
 </para>
 <itemizedlist>
 <listitem><para><keycap>F1</keycap> Help (view this manual)</para></listitem>
+<listitem><para><keycap>F5</keycap> or <keycap>Ctrl+R</keycap> Refresh the maps on screen</para></listitem>
 <listitem><para><keycap>F10</keycap> Select the Menubar (in built behaviour)</para></listitem>
 <listitem><para><keycap>F11</keycap> Full Screen</para></listitem>
+<listitem><para><keycap>Ctrl+F5</keycap> or <keycap>Ctrl+Shift+R</keycap> Redownload the maps on screen</para></listitem>
 </itemizedlist>
+<note>
+<para>
+Refresh attempts to get new maps only if the local tile cache time period has expired for any particular map tile.
+Redownload gets all on screen maps from the server, ignoring the local tile cache.
+</para>
+</note>
 <para>
 Other function keys control turn on/off visibility of various elements:
 </para>
 <itemizedlist>
 <listitem><para><keycap>F3</keycap> Toggle visibility of the Toolbar</para></listitem>
 <listitem><para><keycap>F4</keycap> Toggle visibility of the Menubar</para></listitem>
-<listitem><para><keycap>F5</keycap> Toggle visibility of the Scale indicator on the viewport</para></listitem>
+<listitem><para><keycap>Shift+F5</keycap> Toggle visibility of the Scale indicator on the viewport</para></listitem>
 <listitem><para><keycap>F6</keycap> Toggle visibility of the Center Crosshairs on the viewport</para></listitem>
 <listitem><para><keycap>F7</keycap> Toggle showing selected items (e.g. tracks or waypoints) in the highlight colour in the viewport</para></listitem>
 <listitem><para><keycap>F9</keycap> Toggle visibility of the Layers Panel</para></listitem>
@@ -951,7 +959,7 @@ The ruler is used to measure the bearing and distance between two points: Click 
 A second click will 'freeze' the ruler at that point.
 </para>
 <para>
-This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+R</keycap>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</keycap>
 </para>
 </section>
 
