@@ -236,7 +236,39 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </itemizedlist>
 </para>
 </section>
+
+<section><title>Shortcut Keys</title>
+<para>
+&appname; has several shortcut keys or key combinations for commands as listed in the main window along side the command.
+</para>
+<para>
+Some function keys follow standard GUI behaviour:
+</para>
+<itemizedlist>
+<listitem><para><keycap>F1</keycap> Help (view this manual)</para></listitem>
+<listitem><para><keycap>F10</keycap> Select the Menubar (in built behaviour)</para></listitem>
+<listitem><para><keycap>F11</keycap> Full Screen</para></listitem>
+</itemizedlist>
+<para>
+Other function keys control turn on/off visibility of various elements:
+</para>
+<itemizedlist>
+<listitem><para><keycap>F3</keycap> Toggle visibility of the Toolbar</para></listitem>
+<listitem><para><keycap>F4</keycap> Toggle visibility of the Menubar</para></listitem>
+<listitem><para><keycap>F5</keycap> Toggle visibility of the Scale indicator on the viewport</para></listitem>
+<listitem><para><keycap>F6</keycap> Toggle visibility of the Center Crosshairs on the viewport</para></listitem>
+<listitem><para><keycap>F7</keycap> Toggle showing selected items (e.g. tracks or waypoints) in the highlight colour in the viewport</para></listitem>
+<listitem><para><keycap>F9</keycap> Toggle visibility of the Layers Panel</para></listitem>
+<listitem><para><keycap>F12</keycap> Toggle visibility of the Statusbar</para></listitem>
+</itemizedlist>
+<para>
+Standard shortcuts are provided for normal GUI operations: such as creating new files, opening, saving and exitting.
+Then there are shortcuts specific to &appname; to switch projection modes, zoom in/out, create layers and switch the active tool mode.
+For these combinations see the menu entry themselves.
+</para>
 </section>
+
+</section><!--General Concepts End-->
 
 <section><title>Layers</title>
 
