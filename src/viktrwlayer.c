@@ -3014,14 +3014,21 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_mnemonic ( _("View All Trac_ks") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_tracks_view), pass_along );
+  GtkWidget *view_submenu = gtk_menu_new();
+  item = gtk_image_menu_item_new_with_mnemonic ( _("V_iew") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), view_submenu );
 
-  item = gtk_menu_item_new_with_mnemonic ( _("V_iew All Waypoints") );
+  item = gtk_menu_item_new_with_mnemonic ( _("View All _Tracks") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_tracks_view), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (view_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("View All _Waypoints") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_waypoints_view), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (view_submenu), item);
   gtk_widget_show ( item );
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Goto Center of Layer") );
