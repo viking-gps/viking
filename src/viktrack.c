@@ -210,20 +210,81 @@ gulong vik_track_get_dup_point_count ( const VikTrack *tr )
   return num;
 }
 
-void vik_track_remove_dup_points ( VikTrack *tr )
+/*
+ * Deletes adjacent points that have the same position
+ * Returns the number of points that were deleted
+ */
+gulong vik_track_remove_dup_points ( VikTrack *tr )
 {
+  gulong num = 0;
   GList *iter = tr->trackpoints;
   while ( iter )
   {
     if ( iter->next && vik_coord_equals ( &(VIK_TRACKPOINT(iter->data)->coord),
                        &(VIK_TRACKPOINT(iter->next->data)->coord) ) )
     {
-      g_free ( iter->next->data );
+      num++;
+      // Maintain track segments
+      if ( VIK_TRACKPOINT(iter->next->data)->newsegment && (iter->next)->next )
+        VIK_TRACKPOINT(((iter->next)->next)->data)->newsegment = TRUE;
+
+      vik_trackpoint_free ( iter->next->data );
       tr->trackpoints = g_list_delete_link ( tr->trackpoints, iter->next );
     }
     else
       iter = iter->next;
   }
+  return num;
+}
+
+/*
+ * Get a count of trackpoints with the same defined timestamp
+ * Note is using timestamps with a resolution with 1 second
+ */
+gulong vik_track_get_same_time_point_count ( const VikTrack *tr )
+{
+  gulong num = 0;
+  GList *iter = tr->trackpoints;
+  while ( iter ) {
+    if ( iter->next &&
+	 ( VIK_TRACKPOINT(iter->data)->has_timestamp &&
+           VIK_TRACKPOINT(iter->next->data)->has_timestamp ) &&
+         ( VIK_TRACKPOINT(iter->data)->timestamp ==
+           VIK_TRACKPOINT(iter->next->data)->timestamp) )
+      num++;
+    iter = iter->next;
+  }
+  return num;
+}
+
+/*
+ * Deletes adjacent points that have the same defined timestamp
+ * Returns the number of points that were deleted
+ */
+gulong vik_track_remove_same_time_points ( VikTrack *tr )
+{
+  gulong num = 0;
+  GList *iter = tr->trackpoints;
+  while ( iter ) {
+    if ( iter->next &&
+	 ( VIK_TRACKPOINT(iter->data)->has_timestamp &&
+           VIK_TRACKPOINT(iter->next->data)->has_timestamp ) &&
+         ( VIK_TRACKPOINT(iter->data)->timestamp ==
+           VIK_TRACKPOINT(iter->next->data)->timestamp) ) {
+
+      num++;
+      
+      // Maintain track segments
+      if ( VIK_TRACKPOINT(iter->next->data)->newsegment && (iter->next)->next )
+        VIK_TRACKPOINT(((iter->next)->next)->data)->newsegment = TRUE;
+
+      vik_trackpoint_free ( iter->next->data );
+      tr->trackpoints = g_list_delete_link ( tr->trackpoints, iter->next );
+    }
+    else
+      iter = iter->next;
+  }
+  return num;
 }
 
 guint vik_track_get_segment_count(const VikTrack *tr)
@@ -279,6 +340,30 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
   }
   *ret_len = segs;
   return rv;
+}
+
+/*
+ * Simply remove any subsequent segment markers in a track to form one continuous track
+ * Return the number of segments merged
+ */
+guint vik_track_merge_segments(VikTrack *tr)
+{
+  guint num = 0;
+  GList *iter = tr->trackpoints;
+  if ( !iter )
+    return num;
+
+  // Always skip the first point as this should be the first segment
+  iter = iter->next;
+
+  while ( (iter = iter->next) )
+  {
+    if ( VIK_TRACKPOINT(iter->data)->newsegment ) {
+      VIK_TRACKPOINT(iter->data)->newsegment = FALSE;
+      num++;
+    }
+  }
+  return num;
 }
 
 void vik_track_reverse ( VikTrack *tr )

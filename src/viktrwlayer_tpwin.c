@@ -35,16 +35,19 @@
 #include "dialog.h"
 #include "globals.h"
 
-#define SET_BUTTON_SENSITIVE(tpwin,num,sens) gtk_widget_set_sensitive ( GTK_WIDGET(g_list_nth_data((tpwin->buttons),(num))), (sens));
-
 struct _VikTrwLayerTpwin {
   GtkDialog parent;
   GtkSpinButton *lat, *lon, *alt;
   GtkLabel *track_name, *ts, *localtime, *diff_dist, *diff_time, *diff_speed, *hdop, *vdop, *pdop, *sat;
-  GList *buttons;
+  // Previously these buttons were in a glist, however I think the ordering behaviour is implicit
+  //  thus control manually to ensure operating on the correct button
+  GtkWidget *button_close;
+  GtkWidget *button_delete;
+  GtkWidget *button_insert;
+  GtkWidget *button_split;
+  GtkWidget *button_back;
+  GtkWidget *button_forward;
   VikTrackpoint *cur_tp;
-  gboolean cur_tp_is_endpoint; /* for join */
-
   gboolean sync_to_tp_block;
 };
 
@@ -135,16 +138,24 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_window_set_transient_for ( GTK_WINDOW(tpwin), parent );
   gtk_window_set_title ( GTK_WINDOW(tpwin), _("Trackpoint") );
 
+  tpwin->button_close = gtk_dialog_add_button ( GTK_DIALOG(tpwin), GTK_STOCK_CLOSE, VIK_TRW_LAYER_TPWIN_CLOSE);
+  tpwin->button_insert = gtk_dialog_add_button ( GTK_DIALOG(tpwin), _("_Insert After"), VIK_TRW_LAYER_TPWIN_INSERT);
+  tpwin->button_delete = gtk_dialog_add_button ( GTK_DIALOG(tpwin), GTK_STOCK_DELETE, VIK_TRW_LAYER_TPWIN_DELETE);
+  tpwin->button_split = gtk_dialog_add_button ( GTK_DIALOG(tpwin), _("Split Here"), VIK_TRW_LAYER_TPWIN_SPLIT);
+  tpwin->button_back = gtk_dialog_add_button ( GTK_DIALOG(tpwin), GTK_STOCK_GO_BACK, VIK_TRW_LAYER_TPWIN_BACK);
+  tpwin->button_forward = gtk_dialog_add_button ( GTK_DIALOG(tpwin), GTK_STOCK_GO_FORWARD, VIK_TRW_LAYER_TPWIN_FORWARD);
+
+  /*
   gtk_dialog_add_buttons ( GTK_DIALOG(tpwin),
       GTK_STOCK_CLOSE, VIK_TRW_LAYER_TPWIN_CLOSE,
       _("_Insert After"), VIK_TRW_LAYER_TPWIN_INSERT,
       GTK_STOCK_DELETE, VIK_TRW_LAYER_TPWIN_DELETE,
       _("Split Here"), VIK_TRW_LAYER_TPWIN_SPLIT,
-      _("Join With Last"), VIK_TRW_LAYER_TPWIN_JOIN,
       GTK_STOCK_GO_BACK, VIK_TRW_LAYER_TPWIN_BACK,
       GTK_STOCK_GO_FORWARD, VIK_TRW_LAYER_TPWIN_FORWARD,
       NULL );
   tpwin->buttons = gtk_container_get_children(GTK_CONTAINER(GTK_DIALOG(tpwin)->action_area));
+  */
 
   /* main track info */
   left_vbox = a_dialog_create_label_vbox ( left_label_texts, sizeof(left_label_texts) / sizeof(left_label_texts[0]) );
@@ -219,12 +230,13 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), FALSE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), FALSE );
 
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_INSERT, FALSE );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_SPLIT, FALSE );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_DELETE, FALSE );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_FORWARD, FALSE );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_BACK, FALSE );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_JOIN, FALSE );
+  // Only keep close button enabled
+  gtk_widget_set_sensitive ( tpwin->button_insert, FALSE );
+  gtk_widget_set_sensitive ( tpwin->button_split, FALSE );
+  gtk_widget_set_sensitive ( tpwin->button_delete, FALSE );
+  gtk_widget_set_sensitive ( tpwin->button_back, FALSE );
+  gtk_widget_set_sensitive ( tpwin->button_forward, FALSE );
+
   gtk_label_set_text ( tpwin->diff_dist, NULL );
   gtk_label_set_text ( tpwin->diff_time, NULL );
   gtk_label_set_text ( tpwin->diff_speed, NULL );
@@ -234,11 +246,6 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_label_set_text ( tpwin->sat, NULL );
 }
 
-void vik_trw_layer_tpwin_disable_join ( VikTrwLayerTpwin *tpwin )
-{
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_JOIN, FALSE );
-}
-
 void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *track_name )
 {
   static char tmp_str[25];
@@ -246,18 +253,14 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   VikTrackpoint *tp = VIK_TRACKPOINT(tpl->data);
 
   /* Only can insert if not at the end (otherwise use extend track) */
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_INSERT, (gboolean) GPOINTER_TO_INT (tpl->next) );
-
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_DELETE, TRUE );
+  gtk_widget_set_sensitive ( tpwin->button_insert, (gboolean) GPOINTER_TO_INT (tpl->next) );
+  gtk_widget_set_sensitive ( tpwin->button_delete, TRUE );
 
   /* We can only split up a track if it's not an endpoint. Makes sense to me. */
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_SPLIT, tpl->next && tpl->prev );
+  gtk_widget_set_sensitive ( tpwin->button_split, tpl->next && tpl->prev );
 
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_FORWARD, (gboolean) GPOINTER_TO_INT (tpl->next) );
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_BACK, (gboolean) GPOINTER_TO_INT (tpl->prev) );
-
-  /* we can only join tracks if there was a last tp, the last tp was an endpoint, _AND_ this tp is an endpoint */
-  SET_BUTTON_SENSITIVE ( tpwin, VIK_TRW_LAYER_TPWIN_JOIN, tpwin->cur_tp && tpwin->cur_tp_is_endpoint && (!(tpl->next && tpl->prev)) );
+  gtk_widget_set_sensitive ( tpwin->button_forward, (gboolean) GPOINTER_TO_INT (tpl->next) );
+  gtk_widget_set_sensitive ( tpwin->button_back, (gboolean) GPOINTER_TO_INT (tpl->prev) );
 
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lat), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), TRUE );
@@ -386,7 +389,6 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   gtk_label_set_text ( tpwin->sat, tmp_str );
 
   tpwin->cur_tp = tp;
-  tpwin->cur_tp_is_endpoint = ! (tpl->next && tpl->prev);
 }
 
 void vik_trw_layer_tpwin_set_track_name ( VikTrwLayerTpwin *tpwin, const gchar *track_name )

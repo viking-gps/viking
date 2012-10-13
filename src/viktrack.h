@@ -78,10 +78,13 @@ gdouble vik_track_get_length_including_gaps(const VikTrack *tr);
 gulong vik_track_get_tp_count(const VikTrack *tr);
 guint vik_track_get_segment_count(const VikTrack *tr);
 VikTrack **vik_track_split_into_segments(VikTrack *tr, guint *ret_len);
+guint vik_track_merge_segments(VikTrack *tr);
 void vik_track_reverse(VikTrack *tr);
 
 gulong vik_track_get_dup_point_count ( const VikTrack *vt );
-void vik_track_remove_dup_points ( VikTrack *vt );
+gulong vik_track_remove_dup_points ( VikTrack *vt );
+gulong vik_track_get_same_time_point_count ( const VikTrack *vt );
+gulong vik_track_remove_same_time_points ( VikTrack *vt );
 
 gdouble vik_track_get_max_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed(const VikTrack *tr);
