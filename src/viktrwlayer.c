@@ -1995,8 +1995,16 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 {
   switch ( subtype )
   {
-    case VIK_TRW_LAYER_SUBLAYER_TRACKS: return NULL;
-    case VIK_TRW_LAYER_SUBLAYER_WAYPOINTS: return NULL;
+    case VIK_TRW_LAYER_SUBLAYER_TRACKS:
+    {
+      // Very simple tooltip - may expand detail in the future...
+      static gchar tmp_buf[32];
+      g_snprintf (tmp_buf, sizeof(tmp_buf),
+                  _("Tracks: %d"),
+                  g_hash_table_size (l->tracks));
+      return tmp_buf;
+    }
+    break;
     case VIK_TRW_LAYER_SUBLAYER_TRACK:
     {
       VikTrack *tr = g_hash_table_lookup ( l->tracks, sublayer );
@@ -2033,6 +2041,16 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	}
 	return tmp_buf;
       }
+    }
+    break;
+    case VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
+    {
+      // Very simple tooltip - may expand detail in the future...
+      static gchar tmp_buf[32];
+      g_snprintf (tmp_buf, sizeof(tmp_buf),
+                  _("Waypoints: %d"),
+                  g_hash_table_size (l->waypoints));
+      return tmp_buf;
     }
     break;
     case VIK_TRW_LAYER_SUBLAYER_WAYPOINT:

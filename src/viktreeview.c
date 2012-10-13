@@ -161,10 +161,6 @@ vik_treeview_tooltip_cb (GtkWidget  *widget,
   if ( rv == VIK_TREEVIEW_TYPE_SUBLAYER ) {
 
     gtk_tree_model_get (model, &iter, ITEM_DATA_COLUMN, &rv, -1);
-    // No tooltips ATM for the immediate Tracks / Waypoints tree list
-    if ( rv == 0 || rv == 1 )
-      // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS or VIK_TRW_LAYER_SUBLAYER_TRACKS
-      return FALSE;
 
     gpointer sublayer;
     gtk_tree_model_get (model, &iter, ITEM_POINTER_COLUMN, &sublayer, -1);
