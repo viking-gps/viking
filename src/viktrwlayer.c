@@ -1787,36 +1787,46 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
     vik_treeview_item_set_visible ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[1], FALSE );
 }
 
+static void trw_layer_add_sublayer_tracks ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
+{
+#ifdef VIK_CONFIG_ALPHABETIZED_TRW
+  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
+#else
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
+#endif
+}
+
+static void trw_layer_add_sublayer_waypoints ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
+{
+#ifdef VIK_CONFIG_ALPHABETIZED_TRW
+  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
+#else
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
+#endif
+}
 
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
   GtkTreeIter iter2;
   gpointer pass_along[5] = { &(vtl->tracks_iter), &iter2, vtl, vt, GINT_TO_POINTER(VIK_TRW_LAYER_SUBLAYER_TRACK) };
 
-#ifdef VIK_CONFIG_ALPHABETIZED_TRW
-  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
-#else
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
-#endif
-  if ( ! vtl->tracks_visible )
-    vik_treeview_item_set_visible ( (VikTreeview *) vt, &(vtl->tracks_iter), FALSE ); 
+  if ( g_hash_table_size (vtl->tracks) > 0 ) {
+    trw_layer_add_sublayer_tracks ( vtl, vt , layer_iter );
+    g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_realize_track, pass_along );
 
-  g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_realize_track, pass_along );
+    vik_treeview_item_set_visible ( (VikTreeview *) vt, &(vtl->tracks_iter), vtl->tracks_visible );
+  }
 
-#ifdef VIK_CONFIG_ALPHABETIZED_TRW
-  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
-#else
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
-#endif
+  if ( g_hash_table_size (vtl->waypoints) > 0 ) {
+    trw_layer_add_sublayer_waypoints ( vtl, vt , layer_iter );
 
-  if ( ! vtl->waypoints_visible )
-    vik_treeview_item_set_visible ( (VikTreeview *) vt, &(vtl->waypoints_iter), FALSE ); 
+    pass_along[0] = &(vtl->waypoints_iter);
+    pass_along[4] = GINT_TO_POINTER(VIK_TRW_LAYER_SUBLAYER_WAYPOINT);
 
-  pass_along[0] = &(vtl->waypoints_iter);
-  pass_along[4] = GINT_TO_POINTER(VIK_TRW_LAYER_SUBLAYER_WAYPOINT);
+    g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_realize_waypoint, pass_along );
 
-  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_realize_waypoint, pass_along );
-
+    vik_treeview_item_set_visible ( (VikTreeview *) vt, &(vtl->waypoints_iter), vtl->waypoints_visible );
+  }
 }
 
 static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer )
@@ -3205,6 +3215,11 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
 
   if ( VIK_LAYER(vtl)->realized )
   {
+    // Do we need to create the sublayer:
+    if ( g_hash_table_size (vtl->waypoints) == 0 ) {
+      trw_layer_add_sublayer_waypoints ( vtl, VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter) );
+    }
+
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
 
     // Visibility column always needed for waypoints
@@ -3235,6 +3250,11 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
   if ( VIK_LAYER(vtl)->realized )
   {
+    // Do we need to create the sublayer:
+    if ( g_hash_table_size (vtl->tracks) == 0 ) {
+      trw_layer_add_sublayer_tracks ( vtl, VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter) );
+    }
+
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
     // Visibility column always needed for tracks
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
@@ -3416,6 +3436,11 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk )
         vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
         g_hash_table_remove ( vtl->tracks_iters, udata.uuid );
         g_hash_table_remove ( vtl->tracks, udata.uuid );
+
+	// If last sublayer, then remove sublayer container
+	if ( g_hash_table_size (vtl->tracks) == 0 ) {
+          vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter) );
+	}
       }
     }
   }
@@ -3452,6 +3477,11 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
 
         highest_wp_number_remove_wp(vtl, wp->name);
         g_hash_table_remove ( vtl->waypoints, udata.uuid ); // last because this frees the name
+
+	// If last sublayer, then remove sublayer container
+	if ( g_hash_table_size (vtl->waypoints) == 0 ) {
+          vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter) );
+	}
       }
     }
 
@@ -3555,6 +3585,8 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
   g_hash_table_remove_all(vtl->tracks_iters);
   g_hash_table_remove_all(vtl->tracks);
 
+  vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter) );
+
   vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
 }
 
@@ -3569,6 +3601,8 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
   g_hash_table_foreach(vtl->waypoints_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
   g_hash_table_remove_all(vtl->waypoints_iters);
   g_hash_table_remove_all(vtl->waypoints);
+
+  vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter) );
 
   vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
 }
