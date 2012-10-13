@@ -480,6 +480,7 @@ Version1.1+: This centers the viewport on the track and selects the best zoom le
 </para>
 </section>
 
+<section><title>Combine</title>
 <section><title>Merge By Time</title>
 <para>
 This operation repeatedly tries to merge the right-clicked track
@@ -497,6 +498,21 @@ This opens a dialog listing the other tracks in the same TrackWaypoint layer, fr
 </para>
 </section>
 
+<section><title>Merge Segments</title>
+<para>
+Combines track segments. Effectively removing track segment markers to leave one segment for the whole track.
+</para>
+</section>
+
+<section><title>Append Track</title>
+<para>
+Enable joining of a single track to the end of the current track.
+This opens a dialog listing the other tracks in the same TrackWaypoint layer from which one can make the selection.
+</para>
+</section>
+</section>
+
+<section><title>Split</title>
 <section><title>Split By Time</title>
 <para>
 This operation will split a single track into segments wherever the
@@ -511,6 +527,33 @@ taken over a long time.
 Version1.2+: This operation will split a single track into segments by the number of points specified.
 This can be useful with devices which may have limits on the number of points it supports.
 </para>
+</section>
+
+<section><title>Split Segments</title>
+<para>
+Splits track segments into new tracks.
+</para>
+</section>
+
+<section><title>Split at Trackpoint</title>
+<para>
+Splits the track at the currently selected trackpoint. This is only enabled when a trackpoint is selected.
+</para>
+</section>
+</section>
+
+<section><title>Delete Points</title>
+<section><title>Delete Points With the Same Position</title>
+<para>
+Deletes subsequent points that have the same position (but have different timestamps).
+</para>
+</section>
+<section><title>Delete Points With the Same Time</title>
+<para>
+Deletes subsequent points that have the same time stamp (but may have different positions).
+</para>
+</section>
+
 </section>
 
 <section><title>Apply DEM data</title>
