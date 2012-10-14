@@ -35,6 +35,7 @@ typedef enum {
 void a_clipboard_copy(VikClipboardDataType  type, guint16 layer_type, gint subtype, guint len, const gchar* text, guint8 * data);
 void a_clipboard_copy_selected ( VikLayersPanel *vlp );
 gboolean a_clipboard_paste ( VikLayersPanel *vlp );
+VikClipboardDataType a_clipboard_type ( );
 
 G_END_DECLS
 
