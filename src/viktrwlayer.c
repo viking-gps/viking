@@ -227,7 +227,7 @@ static void trw_layer_copy_item_cb ( gpointer pass_along[6] );
 static void trw_layer_cut_item_cb ( gpointer pass_along[6] );
 
 static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] );
-static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct LatLon maxmin[2] );	
+static void trw_layer_find_maxmin_tracks ( const gchar *name, const VikTrack *trk, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2]);
 
 static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp );
@@ -2160,9 +2160,9 @@ static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoi
     maxmin[1].lon = VIK_LATLON(&fixme)->lon;
 }
 
-static void trw_layer_find_maxmin_tracks ( const gchar *name, GList **t, struct LatLon maxmin[2] )
+static void trw_layer_find_maxmin_tracks ( const gchar *name, const VikTrack *trk, struct LatLon maxmin[2] )
 {
-  GList *tr = *t;
+  GList *tr = trk->trackpoints;
   static VikCoord fixme;
 
   while ( tr )
@@ -3582,13 +3582,12 @@ static void trw_layer_goto_track_startpoint ( gpointer pass_along[6] )
 
 static void trw_layer_goto_track_center ( gpointer pass_along[6] )
 {
-  /* FIXME: get this into viktrack.c, and should be ->trackpoints right? */
-  GList **trps = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
-  if ( trps && *trps )
+  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  if ( track && track->trackpoints )
   {
     struct LatLon average, maxmin[2] = { {0,0}, {0,0} };
     VikCoord coord;
-    trw_layer_find_maxmin_tracks ( NULL, trps, maxmin );
+    trw_layer_find_maxmin_tracks ( NULL, track, maxmin );
     average.lat = (maxmin[0].lat+maxmin[1].lat)/2;
     average.lon = (maxmin[0].lon+maxmin[1].lon)/2;
     vik_coord_load_from_latlon ( &coord, VIK_TRW_LAYER(pass_along[0])->coord_mode, &average );
@@ -3676,11 +3675,11 @@ static void trw_layer_goto_track_min_alt ( gpointer pass_along[6] )
  */
 static void trw_layer_auto_track_view ( gpointer pass_along[6] )
 {
-  GList **trps = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
-  if ( trps && *trps )
+  VikTrack *trk = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  if ( trk && trk->trackpoints )
   {
     struct LatLon maxmin[2] = { {0,0}, {0,0} };
-    trw_layer_find_maxmin_tracks ( NULL, trps, maxmin );
+    trw_layer_find_maxmin_tracks ( NULL, trk, maxmin );
     trw_layer_zoom_to_show_latlons ( VIK_TRW_LAYER(pass_along[0]), pass_along[5], maxmin );
     if ( pass_along[1] )
       vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(pass_along[1]) );
