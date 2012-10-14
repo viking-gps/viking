@@ -731,6 +731,12 @@ static void trw_layer_cut_item_cb ( gpointer pass_along[6])
   trw_layer_delete_item(pass_along);
 }
 
+static void trw_layer_paste_item_cb ( gpointer pass_along[6])
+{
+  // Slightly cheating method, routing via the panels capability
+  a_clipboard_paste (VIK_LAYERS_PANEL(pass_along[1]));
+}
+
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len )
 {
   FlatItem *fi;
@@ -5222,6 +5228,23 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       }
 
     }
+  }
+
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS || subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS ) {
+    item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PASTE, NULL );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_paste_item_cb), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+    // TODO: only enable if suitable item is in clipboard - want to determine *which* sublayer type
+    if ( a_clipboard_type ( ) == VIK_CLIPBOARD_DATA_SUBLAYER )
+      gtk_widget_set_sensitive ( item, TRUE );
+    else
+      gtk_widget_set_sensitive ( item, FALSE );
+
+    // Add separator
+    item = gtk_menu_item_new ();
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
   }
 
   if ( vlp && (subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) )
