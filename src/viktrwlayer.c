@@ -3083,10 +3083,17 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_New Waypoint...") );
+  GtkWidget *new_submenu = gtk_menu_new();
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_New") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NEW, GTK_ICON_SIZE_MENU) );
+  gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
+  gtk_widget_show(item);
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), new_submenu);
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("New _Waypoint...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NEW, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (new_submenu), item);
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_GEONAMES
