@@ -1163,7 +1163,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
   }
 }
 
-void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom)
+void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom)
 {
   MapCoord ulm, brm;
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
@@ -1185,7 +1185,7 @@ void maps_layer_download_section_without_redraw( VikMapsLayer *vml, VikViewport 
   mdi->vvp = vvp;
   mdi->map_layer_alive = TRUE;
   mdi->mutex = g_mutex_new();
-  mdi->refresh_display = FALSE;
+  mdi->refresh_display = TRUE;
 
   mdi->cache_dir = g_strdup ( vml->cache_dir );
   mdi->maxlen = strlen ( vml->cache_dir ) + 40;
