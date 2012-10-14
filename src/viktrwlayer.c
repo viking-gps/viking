@@ -268,6 +268,8 @@ static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
 static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar* title, const gchar* default_name, VikTrack* trk, guint file_type );
 static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] );
 static void trw_layer_new_wp ( gpointer lav[2] );
+static void trw_layer_new_track ( gpointer lav[2] );
+static void trw_layer_finish_track ( gpointer lav[2] );
 static void trw_layer_auto_waypoints_view ( gpointer lav[2] );
 static void trw_layer_auto_tracks_view ( gpointer lav[2] );
 static void trw_layer_delete_all_tracks ( gpointer lav[2] );
@@ -2955,6 +2957,27 @@ static void trw_layer_new_wp ( gpointer lav[2] )
     vik_layers_panel_emit_update ( vlp );
 }
 
+static void trw_layer_new_track ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+
+  if ( ! vtl->current_track ) {
+    gchar *name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track")) ;
+    vtl->current_track = vik_track_new();
+    vtl->current_track->visible = TRUE;
+    vik_trw_layer_add_track ( vtl, name, vtl->current_track );
+
+    vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );
+  }
+}
+
+static void trw_layer_finish_track ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  vtl->current_track = NULL;
+  vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+}
+
 static void trw_layer_auto_tracks_view ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
@@ -3006,6 +3029,18 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
+
+  if ( vtl->current_track ) {
+    item = gtk_menu_item_new_with_mnemonic ( _("_Finish Track") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_finish_track), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+
+    // Add separator
+    item = gtk_menu_item_new ();
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+  }
 
   /* Now with icons */
   item = gtk_image_menu_item_new_with_mnemonic ( _("_View Layer") );
@@ -3095,6 +3130,14 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wp), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (new_submenu), item);
   gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("New _Track") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NEW, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_track), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (new_submenu), item);
+  gtk_widget_show ( item );
+  // Make it available only when a new track *not* already in progress
+  gtk_widget_set_sensitive ( item, ! (gboolean)GPOINTER_TO_INT(vtl->current_track) );
 
 #ifdef VIK_CONFIG_GEONAMES
   GtkWidget *wikipedia_submenu = gtk_menu_new();
@@ -5222,11 +5265,30 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
   {
     rv = TRUE;
 
+    if ( l->current_track ) {
+      item = gtk_menu_item_new_with_mnemonic ( _("_Finish Track") );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_finish_track), pass_along );
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+      gtk_widget_show ( item );
+      // Add separator
+      item = gtk_menu_item_new ();
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+    }
+
     item = gtk_image_menu_item_new_with_mnemonic ( _("_View All Tracks") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_auto_tracks_view), pass_along );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_New Track") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NEW, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_track), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    // Make it available only when a new track *not* already in progress
+    gtk_widget_set_sensitive ( item, ! (gboolean)GPOINTER_TO_INT(l->current_track) );
 
     item = gtk_image_menu_item_new_with_mnemonic ( _("Delete _All Tracks") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
@@ -5246,6 +5308,18 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     item = gtk_menu_item_new ();
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+
+    if ( l->current_track ) {
+      item = gtk_menu_item_new_with_mnemonic ( _("_Finish Track") );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_finish_track), pass_along );
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+      gtk_widget_show ( item );
+
+      // Add separator
+      item = gtk_menu_item_new ();
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+    }
 
     item = gtk_image_menu_item_new_with_mnemonic ( _("_View Track") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
