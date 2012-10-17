@@ -303,6 +303,31 @@ gulong vik_track_remove_same_time_points ( VikTrack *tr )
   return num;
 }
 
+/*
+ * Deletes all 'extra' trackpoint information
+ *  such as time stamps, speed, course etc...
+ */
+void vik_track_to_routepoints ( VikTrack *tr )
+{
+  GList *iter = tr->trackpoints;
+  while ( iter ) {
+
+    // c.f. with vik_trackpoint_new()
+
+    VIK_TRACKPOINT(iter->data)->has_timestamp = FALSE;
+    VIK_TRACKPOINT(iter->data)->timestamp = 0;
+    VIK_TRACKPOINT(iter->data)->speed = NAN;
+    VIK_TRACKPOINT(iter->data)->course = NAN;
+    VIK_TRACKPOINT(iter->data)->hdop = VIK_DEFAULT_DOP;
+    VIK_TRACKPOINT(iter->data)->vdop = VIK_DEFAULT_DOP;
+    VIK_TRACKPOINT(iter->data)->pdop = VIK_DEFAULT_DOP;
+    VIK_TRACKPOINT(iter->data)->nsats = 0;
+    VIK_TRACKPOINT(iter->data)->fix_mode = VIK_GPS_MODE_NOT_SEEN;
+
+    iter = iter->next;
+  }
+}
+
 guint vik_track_get_segment_count(const VikTrack *tr)
 {
   guint num = 1;

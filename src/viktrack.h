@@ -97,6 +97,8 @@ gulong vik_track_remove_dup_points ( VikTrack *vt );
 gulong vik_track_get_same_time_point_count ( const VikTrack *vt );
 gulong vik_track_remove_same_time_points ( VikTrack *vt );
 
+void vik_track_to_routepoints ( VikTrack *tr );
+
 gdouble vik_track_get_max_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed_moving ( const VikTrack *tr, int stop_length_seconds );

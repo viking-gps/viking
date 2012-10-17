@@ -4175,6 +4175,58 @@ static void trw_layer_goto_track_center ( gpointer pass_along[6] )
   }
 }
 
+static void trw_layer_convert_track_route ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *trk;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( !trk )
+    return;
+
+  // Converting a track to a route can be a bit more complicated,
+  //  so give a chance to change our minds:
+  if ( !trk->is_route &&
+       ( ( vik_track_get_segment_count ( trk ) > 1 ) ||
+         ( vik_track_get_average_speed ( trk ) > 0.0 ) ) ) {
+
+    if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                _("Converting a track to a route removes extra track data such as segments, timestamps, etc...\nDo you want to continue?"), NULL ) )
+      return;
+}
+
+  // Copy it
+  VikTrack *trk_copy = vik_track_copy ( trk );
+
+  // Convert
+  trk_copy->is_route = !trk_copy->is_route;
+
+  // ATM can't set name to self - so must create temporary copy
+  gchar *name = g_strdup ( trk_copy->name );
+
+  // Delete old one and then add new one
+  if ( trk->is_route ) {
+    vik_trw_layer_delete_route ( vtl, trk );
+    vik_trw_layer_add_track ( vtl, name, trk_copy );
+  }
+  else {
+    // Extra route conversion bits...
+    vik_track_merge_segments ( trk_copy );
+    vik_track_to_routepoints ( trk_copy );
+
+    vik_trw_layer_delete_track ( vtl, trk );
+    vik_trw_layer_add_route ( vtl, name, trk_copy );
+  }
+  g_free ( name );
+
+  // Update in case color of track / route changes when moving between sublayers
+  vik_layer_emit_update ( VIK_LAYER(pass_along[0]), FALSE );
+}
+
+
 static void trw_layer_extend_track_end ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
@@ -6181,6 +6233,15 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       item = gtk_image_menu_item_new_with_mnemonic ( _("E_xtend Route End") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
+      item = gtk_image_menu_item_new_with_mnemonic ( _("C_onvert to a Route") );
+    else
+      item = gtk_image_menu_item_new_with_mnemonic ( _("C_onvert to a Track") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CONVERT, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_convert_track_route), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
