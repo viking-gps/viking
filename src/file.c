@@ -734,13 +734,15 @@ gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
  */
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk, gboolean write_hidden )
 {
-  GpxWritingOptions options = { FALSE, FALSE, write_hidden };
+  GpxWritingOptions options = { FALSE, FALSE, write_hidden, FALSE };
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {
     if ( trk ) {
       switch ( file_type ) {
         case FILE_TYPE_GPX:
+          // trk defined so can set the option
+          options.is_route = trk->is_route;
           a_gpx_write_track_file ( trk, f, &options );
           break;
         default:

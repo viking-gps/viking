@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,6 +128,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr )
   VikTrackpoint *new_tp;
   GList *tp_iter = tr->trackpoints;
   new_tr->visible = tr->visible;
+  new_tr->is_route = tr->is_route;
   new_tr->trackpoints = NULL;
   while ( tp_iter )
   {
@@ -350,6 +352,7 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
       if ( tr->description )
         vik_track_set_description ( rv[i], tr->description );
       rv[i]->visible = tr->visible;
+      rv[i]->is_route = tr->is_route;
       rv[i]->trackpoints = iter;
       i++;
     }
@@ -1235,8 +1238,10 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   guint ntp;
   gint i;
 
-  /* only the visibility is needed */
+  /* basic properties: */
   new_tr->visible = ((VikTrack *)data)->visible;
+  new_tr->is_route = ((VikTrack *)data)->is_route;
+
   data += sizeof(*new_tr);
 
   ntp = *(guint *)data;

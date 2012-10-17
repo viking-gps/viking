@@ -112,8 +112,10 @@ typedef struct {
   GtkWidget *ver_label;
   GtkWidget *id_label;
   GtkWidget *wp_label;
-  GtkWidget *progress_label;
   GtkWidget *trk_label;
+  GtkWidget *rte_label;
+  GtkWidget *progress_label;
+  vik_gps_xfer_type progress_type;
   VikViewport *vvp;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   gboolean realtime_tracking;
@@ -149,6 +151,8 @@ static VikLayerParam gps_layer_params[] = {
   { "gps_port", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
   { "gps_download_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Download Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
   { "gps_upload_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Upload Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
+  { "gps_download_routes", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Download Routes:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
+  { "gps_upload_routes", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Upload Routes:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
   { "gps_download_waypoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Download Waypoints:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
   { "gps_upload_waypoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Upload Waypoints:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
@@ -163,6 +167,7 @@ static VikLayerParam gps_layer_params[] = {
 enum {
   PARAM_PROTOCOL=0, PARAM_PORT,
   PARAM_DOWNLOAD_TRACKS, PARAM_UPLOAD_TRACKS,
+  PARAM_DOWNLOAD_ROUTES, PARAM_UPLOAD_ROUTES,
   PARAM_DOWNLOAD_WAYPOINTS, PARAM_UPLOAD_WAYPOINTS,
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   PARAM_REALTIME_REC, PARAM_REALTIME_CENTER_START, PARAM_VEHICLE_POSITION, PARAM_GPSD_HOST, PARAM_GPSD_PORT, PARAM_GPSD_RETRY_INTERVAL,
@@ -287,8 +292,10 @@ struct _VikGpsLayer {
   gchar *protocol;
   gchar *serial_port;
   gboolean download_tracks;
+  gboolean download_routes;
   gboolean download_waypoints;
   gboolean upload_tracks;
+  gboolean upload_routes;
   gboolean upload_waypoints;
 };
 
@@ -467,6 +474,12 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
     case PARAM_UPLOAD_TRACKS:
       vgl->upload_tracks = data.b;
       break;
+    case PARAM_DOWNLOAD_ROUTES:
+      vgl->download_routes = data.b;
+      break;
+    case PARAM_UPLOAD_ROUTES:
+      vgl->upload_routes = data.b;
+      break;
     case PARAM_DOWNLOAD_WAYPOINTS:
       vgl->download_waypoints = data.b;
       break;
@@ -522,6 +535,12 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
       break;
     case PARAM_UPLOAD_TRACKS:
       rv.b = vgl->upload_tracks;
+      break;
+    case PARAM_DOWNLOAD_ROUTES:
+      rv.b = vgl->download_routes;
+      break;
+    case PARAM_UPLOAD_ROUTES:
+      rv.b = vgl->upload_routes;
       break;
     case PARAM_DOWNLOAD_WAYPOINTS:
       rv.b = vgl->download_waypoints;
@@ -593,6 +612,8 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->serial_port = NULL;
   vgl->download_tracks = TRUE;
   vgl->download_waypoints = TRUE;
+  vgl->download_routes = TRUE;
+  vgl->upload_routes = TRUE;
   vgl->upload_tracks = TRUE;
   vgl->upload_waypoints = TRUE;
 
@@ -859,17 +880,25 @@ static void set_total_count(gint cnt, GpsSession *sess)
     const gchar *tmp_str;
     if (sess->direction == GPS_DOWN)
     {
-      if (sess->progress_label == sess->wp_label)
-        tmp_str = ngettext("Downloading %d waypoint...", "Downloading %d waypoints...", cnt);
-      else
-        tmp_str = ngettext("Downloading %d trackpoint...", "Downloading %d trackpoints...", cnt);
+      switch (sess->progress_type) {
+      case WPT: tmp_str = ngettext("Downloading %d waypoint...", "Downloading %d waypoints...", cnt); sess->total_count = cnt; break;
+      case TRK: tmp_str = ngettext("Downloading %d trackpoint...", "Downloading %d trackpoints...", cnt); sess->total_count = cnt; break;
+      default:
+        {
+          // Maybe a gpsbabel bug/feature (upto at least v1.4.3 or maybe my Garmin device) but the count always seems x2 too many for routepoints
+          gint mycnt = (cnt / 2) + 1;
+          tmp_str = ngettext("Downloading %d routepoint...", "Downloading %d routepoints...", mycnt); break;
+          sess->total_count = mycnt;
+        }
+      }
     }
-    else 
+    else
     {
-      if (sess->progress_label == sess->wp_label)
-        tmp_str = ngettext("Uploading %d waypoint...", "Uploading %d waypoints...", cnt);
-      else
-        tmp_str = ngettext("Uploading %d trackpoint...", "Uploading %d trackpoints...", cnt);
+      switch (sess->progress_type) {
+      case WPT: tmp_str = ngettext("Uploading %d waypoint...", "Uploading %d waypoints...", cnt); break;
+      case TRK: tmp_str = ngettext("Uploading %d trackpoint...", "Uploading %d trackpoints...", cnt); break;
+      default: tmp_str = ngettext("Uploading %d routepoint...", "Uploading %d routepoints...", cnt); break;
+      }
     }
 
     g_snprintf(s, 128, tmp_str, cnt);
@@ -892,31 +921,35 @@ static void set_current_count(gint cnt, GpsSession *sess)
     if (cnt < sess->total_count) {
       if (sess->direction == GPS_DOWN)
       {
-        if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Downloaded %d out of %d waypoint...", "Downloaded %d out of %d waypoints...", sess->total_count);
-        else
-          tmp_str = ngettext("Downloaded %d out of %d trackpoint...", "Downloaded %d out of %d trackpoints...", sess->total_count);
+        switch (sess->progress_type) {
+        case WPT: tmp_str = ngettext("Downloaded %d out of %d waypoint...", "Downloaded %d out of %d waypoints...", sess->total_count); break;
+        case TRK: tmp_str = ngettext("Downloaded %d out of %d trackpoint...", "Downloaded %d out of %d trackpoints...", sess->total_count); break;
+        default: tmp_str = ngettext("Downloaded %d out of %d routepoint...", "Downloaded %d out of %d routepoints...", sess->total_count); break;
+        }
       }
       else {
-        if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Uploaded %d out of %d waypoint...", "Uploaded %d out of %d waypoints...", sess->total_count);
-        else
-          tmp_str = ngettext("Uploaded %d out of %d trackpoint...", "Uploaded %d out of %d trackpoints...", sess->total_count);
+        switch (sess->progress_type) {
+        case WPT: tmp_str = ngettext("Uploaded %d out of %d waypoint...", "Uploaded %d out of %d waypoints...", sess->total_count); break;
+        case TRK: tmp_str = ngettext("Uploaded %d out of %d trackpoint...", "Uploaded %d out of %d trackpoints...", sess->total_count); break;
+        default: tmp_str = ngettext("Uploaded %d out of %d routepoint...", "Uploaded %d out of %d routepoints...", sess->total_count); break;
+	}
       }
       g_snprintf(s, 128, tmp_str, cnt, sess->total_count);
     } else {
       if (sess->direction == GPS_DOWN)
       {
-        if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Downloaded %d waypoint", "Downloaded %d waypoints", cnt);
-        else
-          tmp_str = ngettext("Downloaded %d trackpoint", "Downloaded %d trackpoints", cnt);
+        switch (sess->progress_type) {
+        case WPT: tmp_str = ngettext("Downloaded %d waypoint", "Downloaded %d waypoints", cnt); break;
+        case TRK: tmp_str = ngettext("Downloaded %d trackpoint", "Downloaded %d trackpoints", cnt); break;
+        default: tmp_str = ngettext("Downloaded %d routepoint", "Downloaded %d routepoints", cnt); break;
+	}
       }
       else {
-        if (sess->progress_label == sess->wp_label)
-          tmp_str = ngettext("Uploaded %d waypoint", "Uploaded %d waypoints", cnt);
-        else
-          tmp_str = ngettext("Uploaded %d trackpoint", "Uploaded %d trackpoints", cnt);
+        switch (sess->progress_type) {
+        case WPT: tmp_str = ngettext("Uploaded %d waypoint", "Uploaded %d waypoints", cnt); break;
+        case TRK: tmp_str = ngettext("Uploaded %d trackpoint", "Uploaded %d trackpoints", cnt); break;
+        default: tmp_str = ngettext("Uploaded %d routepoint", "Uploaded %d routepoints", cnt); break;
+	}
       }
       g_snprintf(s, 128, tmp_str, cnt);
     }	  
@@ -966,13 +999,20 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
     g_mutex_unlock(sess->mutex);
     gdk_threads_leave();
 
-    /* tells us how many items there will be */
-    if (strstr(line, "Xfer Wpt")) { 
+    /* tells us the type of items that will follow */
+    if (strstr(line, "Xfer Wpt")) {
       sess->progress_label = sess->wp_label;
+      sess->progress_type = WPT;
     }
-    if (strstr(line, "Xfer Trk")) { 
+    if (strstr(line, "Xfer Trk")) {
       sess->progress_label = sess->trk_label;
+      sess->progress_type = TRK;
     }
+    if (strstr(line, "Xfer Rte")) {
+      sess->progress_label = sess->rte_label;
+      sess->progress_type = RTE;
+    }
+
     if (strstr(line, "PRDDAT")) {
       gchar **tokens = g_strsplit(line, " ", 0);
       gchar info[128];
@@ -1006,7 +1046,7 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
       }
       g_strfreev(tokens);
     }
-    if (strstr(line, "RECORD")) { 
+    if (strstr(line, "RECORD")) {
       int lsb, msb, cnt;
 
       if (strlen(line) > 20) {
@@ -1017,7 +1057,7 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
         sess->count = 0;
       }
     }
-    if ( strstr(line, "WPTDAT") || strstr(line, "TRKHDR") || strstr(line, "TRKDAT") ) {
+    if ( strstr(line, "WPTDAT") || strstr(line, "TRKHDR") || strstr(line, "TRKDAT") || strstr(line, "RTEHDR") || strstr(line, "RTEWPT") ) {
       sess->count++;
       set_current_count(sess->count, sess);
     }
@@ -1093,15 +1133,28 @@ static void gps_upload_progress_func(BabelProgressCode c, gpointer data, GpsSess
     if ( strstr(line, "WPTDAT")) {
       if (sess->count == 0) {
         sess->progress_label = sess->wp_label;
+        sess->progress_type = WPT;
         set_total_count(cnt, sess);
       }
       sess->count++;
       set_current_count(sess->count, sess);
-
+    }
+    if ( strstr(line, "RTEHDR") || strstr(line, "RTEWPT") ) {
+       if (sess->count == 0) {
+         sess->progress_label = sess->rte_label;
+         sess->progress_type = RTE;
+         // Maybe a gpsbabel bug/feature (upto at least v1.4.3 or maybe my Garmin device) but the count always seems x2 too many for routepoints
+         // Anyway since we're uploading - we should know how many points we're going to put!
+         cnt = (cnt / 2) + 1;
+         set_total_count(cnt, sess);
+       }
+       sess->count++;
+       set_current_count(sess->count, sess);
     }
     if ( strstr(line, "TRKHDR") || strstr(line, "TRKDAT") ) {
       if (sess->count == 0) {
         sess->progress_label = sess->trk_label;
+	sess->progress_type = TRK;
         set_total_count(cnt, sess);
       }
       sess->count++;
@@ -1192,11 +1245,13 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
                     VikViewport *vvp,
                     VikLayersPanel *vlp,
                     gboolean do_tracks,
+                    gboolean do_routes,
                     gboolean do_waypoints,
 		    gboolean turn_off )
 {
   GpsSession *sess = g_malloc(sizeof(GpsSession));
   char *tracks = NULL;
+  char *routes = NULL;
   char *waypoints = NULL;
 
   sess->mutex = g_mutex_new();
@@ -1227,18 +1282,22 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
     tracks = "-t";
   else
     tracks = "";
+  if (do_routes)
+    routes = "-r";
+  else
+    routes = "";
   if (do_waypoints)
     waypoints = "-w";
   else
     waypoints = "";
 
-  sess->cmd_args = g_strdup_printf("-D 9 %s %s -%c %s",
-				   tracks, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocol);
+  sess->cmd_args = g_strdup_printf("-D 9 %s %s %s -%c %s",
+				   tracks, routes, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocol);
   tracks = NULL;
   waypoints = NULL;
 
   // Only create dialog if we're going to do some transferring
-  if ( do_tracks || do_waypoints ) {
+  if ( do_tracks || do_waypoints || do_routes ) {
     sess->dialog = gtk_dialog_new_with_buttons ( "", VIK_GTK_WINDOW_FROM_LAYER(vtl), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
     gtk_dialog_set_response_sensitive ( GTK_DIALOG(sess->dialog),
                                         GTK_RESPONSE_ACCEPT, FALSE );
@@ -1253,10 +1312,12 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
     sess->id_label = gtk_label_new ("");
     sess->wp_label = gtk_label_new ("");
     sess->trk_label = gtk_label_new ("");
+    sess->rte_label = gtk_label_new ("");
 
     gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->gps_label, FALSE, FALSE, 5 );
     gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->wp_label, FALSE, FALSE, 5 );
     gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->trk_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->rte_label, FALSE, FALSE, 5 );
 
     gtk_widget_show_all(sess->dialog);
 
@@ -1305,7 +1366,7 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
-  vik_gps_comm(vtl, NULL, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints, FALSE);
+  vik_gps_comm(vtl, NULL, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_routes, vgl->upload_waypoints, FALSE);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
@@ -1315,9 +1376,9 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints, FALSE);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_routes, vgl->download_waypoints, FALSE);
 #else
-  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints, FALSE);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_routes, vgl->download_waypoints, FALSE);
 #endif
 }
 
@@ -1331,6 +1392,7 @@ static void gps_empty_upload_cb( gpointer layer_and_vlp[2] )
     return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
+  vik_trw_layer_delete_all_routes ( vgl-> trw_children[TRW_UPLOAD]);
 }
 
 static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
@@ -1343,6 +1405,7 @@ static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
     return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
+  vik_trw_layer_delete_all_routes ( vgl-> trw_children[TRW_DOWNLOAD]);
 }
 
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
@@ -1369,8 +1432,10 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
     return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_UPLOAD]);
+  vik_trw_layer_delete_all_routes ( vgl-> trw_children[TRW_UPLOAD]);
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_DOWNLOAD]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_DOWNLOAD]);
+  vik_trw_layer_delete_all_routes ( vgl-> trw_children[TRW_DOWNLOAD]);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);

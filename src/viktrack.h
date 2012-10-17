@@ -55,10 +55,17 @@ struct _VikTrackpoint {
   gdouble pdop;     /* VIK_DEFAULT_DOP if data unavailable */
 };
 
+// Instead of having a separate VikRoute type, routes are considered tracks
+//  Thus all track operations must cope with a 'route' version
+//  [track functions handle having no timestamps anyway - so there is no practical difference in most cases]
+//  This is simpler than having to rewrite particularly every track function for route version
+//   given that they do the same things
+//  Mostly this matters in the display in deciding where and how they are shown
 typedef struct _VikTrack VikTrack;
 struct _VikTrack {
   GList *trackpoints;
   gboolean visible;
+  gboolean is_route;
   gchar *comment;
   gchar *description;
   guint8 ref_count;

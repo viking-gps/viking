@@ -2642,8 +2642,13 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
         for ( i = 0; i < ntracks; i++ )
         {
           if ( tracks[i] ) {
-	    new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, widgets->tr->name);
-	    vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
+	    new_tr_name = trw_layer_new_unique_sublayer_name ( vtl,
+                                                               widgets->tr->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK,
+                                                               widgets->tr->name);
+            if ( widgets->tr->is_route )
+              vik_trw_layer_add_route ( vtl, new_tr_name, tracks[i] );
+            else
+              vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
 	  }
         }
         if ( tracks )
@@ -2651,7 +2656,10 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           g_free ( tracks );
           /* Don't let track destroy this dialog */
           vik_track_clear_property_dialog(tr);
-          vik_trw_layer_delete_track ( vtl, tr );
+          if ( widgets->tr->is_route )
+            vik_trw_layer_delete_route ( vtl, tr );
+          else
+            vik_trw_layer_delete_track ( vtl, tr );
           vik_layer_emit_update ( VIK_LAYER(vtl), FALSE ); /* chase thru the hoops */
         }
       }
@@ -2670,16 +2678,22 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           break;
         }
 
-        gchar *r_name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, widgets->tr->name);
+        gchar *r_name = trw_layer_new_unique_sublayer_name(vtl,
+                                                           widgets->tr->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK,
+                                                           widgets->tr->name);
         iter->prev->next = NULL;
         iter->prev = NULL;
         VikTrack *tr_right = vik_track_new();
         if ( tr->comment )
           vik_track_set_comment ( tr_right, tr->comment );
         tr_right->visible = tr->visible;
+        tr_right->is_route = tr->is_route;
         tr_right->trackpoints = iter;
 
-        vik_trw_layer_add_track(vtl, r_name, tr_right);
+        if ( widgets->tr->is_route )
+          vik_trw_layer_add_route(vtl, r_name, tr_right);
+        else
+          vik_trw_layer_add_track(vtl, r_name, tr_right);
         vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       }
       break;
