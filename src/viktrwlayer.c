@@ -4693,6 +4693,102 @@ static void trw_layer_append_track ( gpointer pass_along[6] )
   }
 }
 
+/**
+ * Very similar to trw_layer_append_track for joining
+ * but this allows selection from the 'other' list
+ * If a track is selected, then is shows routes and joins the selected one
+ * If a route is selected, then is shows tracks and joins the selected one
+ */
+static void trw_layer_append_other ( gpointer pass_along[6] )
+{
+
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *trk;
+  GHashTable *ght_mykind, *ght_others;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
+    ght_mykind = vtl->routes;
+    ght_others = vtl->tracks;
+  }
+  else {
+    ght_mykind = vtl->tracks;
+    ght_others = vtl->routes;
+  }
+
+  trk = (VikTrack *) g_hash_table_lookup ( ght_mykind, pass_along[3] );
+
+  if ( !trk )
+    return;
+
+  GList *other_tracks_names = NULL;
+
+  // Sort alphabetically for user presentation
+  // Convert into list of names for usage with dialog function
+  // TODO: Need to consider how to work best when we can have multiple tracks the same name...
+  twt_udata udata;
+  udata.result = &other_tracks_names;
+  udata.exclude = trk->trackpoints;
+
+  g_hash_table_foreach(ght_others, (GHFunc) trw_layer_sorted_track_id_by_name_list_exclude_self, (gpointer)&udata);
+
+  // Note the limit to selecting one track only
+  //  this is to control the ordering of appending tracks, i.e. the selected track always goes after the current track
+  //  (otherwise with multiple select the ordering would not be controllable by the user - automatically being alphabetically)
+  GList *append_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                                 other_tracks_names,
+                                                 FALSE,
+                                                 trk->is_route ? _("Append Track"): _("Append Route"),
+                                                 trk->is_route ? _("Select the track to append after the current route") :
+                                                                 _("Select the route to append after the current track") );
+
+  g_list_free(other_tracks_names);
+
+  // It's a list, but shouldn't contain more than one other track!
+  if ( append_list ) {
+    GList *l;
+    for (l = append_list; l != NULL; l = g_list_next(l)) {
+      // TODO: at present this uses the first track found by name,
+      //  which with potential multiple same named tracks may not be the one selected...
+
+      // Get FROM THE OTHER TYPE list
+      VikTrack *append_track;
+      if ( trk->is_route )
+        append_track = vik_trw_layer_get_track ( vtl, l->data );
+      else
+        append_track = vik_trw_layer_get_route ( vtl, l->data );
+
+      if ( append_track ) {
+
+        if ( !append_track->is_route &&
+             ( ( vik_track_get_segment_count ( append_track ) > 1 ) ||
+               ( vik_track_get_average_speed ( append_track ) > 0.0 ) ) ) {
+
+          if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                      _("Converting a track to a route removes extra track data such as segments, timestamps, etc...\nDo you want to continue?"), NULL ) ) {
+	    vik_track_merge_segments ( append_track );
+	    vik_track_to_routepoints ( append_track );
+	  }
+          else {
+            break;
+          }
+        }
+
+        trk->trackpoints = g_list_concat(trk->trackpoints, append_track->trackpoints);
+        append_track->trackpoints = NULL;
+
+	// Delete copied which is FROM THE OTHER TYPE list
+        if ( trk->is_route )
+          vik_trw_layer_delete_track (vtl, append_track);
+	else
+          vik_trw_layer_delete_route (vtl, append_track);
+      }
+    }
+    for (l = append_list; l != NULL; l = g_list_next(l))
+      g_free(l->data);
+    g_list_free(append_list);
+    vik_layer_emit_update( VIK_LAYER(vtl), FALSE );
+  }
+}
+
 /* merge by segments */
 static void trw_layer_merge_by_segment ( gpointer pass_along[6] )
 {
@@ -6136,6 +6232,14 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     else
       item = gtk_menu_item_new_with_mnemonic ( _("_Append Route...") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_append_track), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
+    gtk_widget_show ( item );
+
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
+      item = gtk_menu_item_new_with_mnemonic ( _("Append _Route...") );
+    else
+      item = gtk_menu_item_new_with_mnemonic ( _("Append _Track...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_append_other), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(combine_submenu), item );
     gtk_widget_show ( item );
 
