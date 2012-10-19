@@ -276,7 +276,9 @@ static void trw_layer_geotagging_track ( gpointer pass_along[6] );
 static void trw_layer_geotagging ( gpointer lav[2] );
 #endif
 static void trw_layer_acquire_gps_cb ( gpointer lav[2] );
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
 static void trw_layer_acquire_google_cb ( gpointer lav[2] );
+#endif
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void trw_layer_acquire_osm_cb ( gpointer lav[2] );
 #endif
@@ -2637,6 +2639,7 @@ static void trw_layer_acquire_gps_cb ( gpointer lav[2] )
   a_acquire ( vw, vlp, vvp, &vik_datasource_gps_interface );
 }
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
 /*
  * Acquire into this TRW Layer from Google Directions
  */
@@ -2649,6 +2652,7 @@ static void trw_layer_acquire_google_cb ( gpointer lav[2] )
 
   a_acquire ( vw, vlp, vvp, &vik_datasource_google_interface );
 }
+#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
 /*
@@ -2877,10 +2881,12 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
   item = gtk_menu_item_new_with_mnemonic ( _("From G_oogle Directions...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_google_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
+#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
   item = gtk_menu_item_new_with_mnemonic ( _("From _OSM Traces...") );
