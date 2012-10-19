@@ -122,8 +122,10 @@ static void on_complete_process (w_and_interface_t *wi)
       gtk_dialog_response ( GTK_DIALOG(wi->w->dialog), GTK_RESPONSE_ACCEPT );
     }
     // Main display update
-    if ( wi->vtl )
+    if ( wi->vtl ) {
+      vik_layer_post_read ( VIK_LAYER(wi->vtl), wi->w->vvp, TRUE );
       vik_layers_panel_emit_update ( wi->w->vlp );
+    }
   } else {
     /* cancelled */
     if ( wi->creating_new_layer )
