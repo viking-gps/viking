@@ -1170,7 +1170,7 @@ static gint track_section_colour_by_speed ( VikTrwLayer *vtl, VikTrackpoint *tp1
   return VIK_TRW_LAYER_TRACK_GC_BLACK;
 }
 
-void draw_utm_skip_insignia ( VikViewport *vvp, GdkGC *gc, gint x, gint y )
+static void draw_utm_skip_insignia ( VikViewport *vvp, GdkGC *gc, gint x, gint y )
 {
   vik_viewport_draw_line ( vvp, gc, x+5, y, x-5, y );
   vik_viewport_draw_line ( vvp, gc, x, y+5, x, y-5 );
