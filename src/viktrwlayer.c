@@ -291,6 +291,7 @@ static void trw_layer_acquire_geocache_cb ( gpointer lav[2] );
 #ifdef VIK_CONFIG_GEOTAG
 static void trw_layer_acquire_geotagged_cb ( gpointer lav[2] );
 #endif
+static void trw_layer_acquire_file_cb ( gpointer lav[2] );
 static void trw_layer_gps_upload ( gpointer lav[2] );
 
 /* pop-up items */
@@ -2798,6 +2799,19 @@ static void trw_layer_gps_upload_any ( gpointer pass_along[6] )
                  turn_off );
 }
 
+/*
+ * Acquire into this TRW Layer from any GPS Babel supported file
+ */
+static void trw_layer_acquire_file_cb ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+
+  a_acquire ( vw, vlp, vvp, &vik_datasource_file_interface );
+}
+
 static void trw_layer_new_wp ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
@@ -3002,6 +3016,11 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
 #endif
+
+  item = gtk_menu_item_new_with_mnemonic ( _("From _File...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_file_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show ( item );
 
   GtkWidget *upload_submenu = gtk_menu_new ();
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Upload") );
