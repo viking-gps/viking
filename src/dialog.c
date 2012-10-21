@@ -563,16 +563,8 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *defaul
       a_dialog_info_msg ( parent, _("Please enter a name for the track.") );
     else {
       gchar *name = g_strdup ( constname );
-
-      if ( g_hash_table_lookup( tracks, name ) && !a_dialog_yes_or_no ( parent, _("The track \"%s\" exists, do you want to overwrite it?"), gtk_entry_get_text ( GTK_ENTRY(entry) ) ) )
-      {
-        g_free ( name );
-      }
-      else
-      {
-        gtk_widget_destroy ( dialog );
-        return name;
-      }
+      gtk_widget_destroy ( dialog );
+      return name;
     }
   }
   gtk_widget_destroy ( dialog );
