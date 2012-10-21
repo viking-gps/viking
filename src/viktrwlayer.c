@@ -334,8 +334,8 @@ static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
 static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
-static gpointer tool_begin_track_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static gpointer tool_new_route_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_new_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp ); 
@@ -384,11 +384,14 @@ static VikToolInterface trw_layer_tools[] = {
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf },
 
-  { { "BeginTrack", "vik-icon-Begin Track", N_("_Begin Track"), "<control><shift>B", N_("Begin Track"), 0 },
-    (VikToolConstructorFunc) tool_begin_track_create,       NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_begin_track_click,       NULL, NULL, (VikToolKeyFunc) NULL,
-    FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_begintr_pixbuf },
+  { { "CreateRoute", "vik-icon-Create Route", N_("Create _Route"), "<control><shift>B", N_("Create Route"), 0 },
+    (VikToolConstructorFunc) tool_new_route_create,       NULL, NULL, NULL,
+    (VikToolMouseFunc) tool_new_route_click,
+    (VikToolMouseMoveFunc) tool_new_track_move, // -\#
+    (VikToolMouseFunc) tool_new_track_release,  //   -> Reuse these track methods on a route
+    (VikToolKeyFunc) tool_new_track_key_press,  // -/#
+    TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
+    GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf },
 
   { { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
     (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL,
@@ -420,7 +423,7 @@ static VikToolInterface trw_layer_tools[] = {
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
 #endif
 };
-enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_BEGIN_TRACK, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
+enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_CREATE_ROUTE, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
 
 /****** PARAMETERS ******/
 
@@ -3121,7 +3124,7 @@ static void trw_layer_new_route ( gpointer lav[2] )
     vtl->current_track->is_route = TRUE;
     vik_trw_layer_add_route ( vtl, name, vtl->current_track );
 
-    vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );// CREATE_ROUTE??
+    vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_ROUTE );
   }
 }
 
@@ -4240,7 +4243,7 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
     return;
 
   vtl->current_track = track;
-  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK);
+  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, track->is_route ? TOOL_CREATE_ROUTE : TOOL_CREATE_TRACK);
 
   if ( track->trackpoints )
     goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
@@ -7268,18 +7271,6 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
   return FALSE;
 }
 
-/**** Begin track ***/
-static gpointer tool_begin_track_create ( VikWindow *vw, VikViewport *vvp)
-{
-  return vvp;
-}
-
-static gboolean tool_begin_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
-{
-  vtl->current_track = NULL;
-  return tool_new_track_click ( vtl, event, vvp );
-}
-
 /*** New track ****/
 
 static gpointer tool_new_track_create ( VikWindow *vw, VikViewport *vvp)
@@ -7519,7 +7510,13 @@ static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event,
   return FALSE;
 }
 
-static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+/*
+ * Common function to handle trackpoint button requests on either a route or a track
+ *  . enables adding a point via normal click
+ *  . enables removal of last point via right click
+ *  . finishing of the track or route via double clicking
+ */
+static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   VikTrackpoint *tp;
 
@@ -7533,8 +7530,10 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
     return FALSE;
   }
 
-  if ( event->button == 3 && vtl->current_track )
+  if ( event->button == 3 )
   {
+    if ( !vtl->current_track )
+      return FALSE;
     /* undo */
     if ( vtl->current_track->trackpoints )
     {
@@ -7563,21 +7562,6 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
     return TRUE;
   }
 
-  if ( ! vtl->current_track )
-  {
-    gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track"));
-    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name ) ) )
-    {
-      vtl->current_track = vik_track_new();
-      vtl->current_track->visible = TRUE;
-      vik_trw_layer_add_track ( vtl, name, vtl->current_track );
-
-      /* incase it was created by begin track */
-      vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );
-    }
-    else
-      return TRUE;
-  }
   tp = vik_trackpoint_new();
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &(tp->coord) );
 
@@ -7592,9 +7576,12 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   tp->newsegment = FALSE;
   tp->has_timestamp = FALSE;
   tp->timestamp = 0;
-  vtl->current_track->trackpoints = g_list_append ( vtl->current_track->trackpoints, tp );
-  /* Auto attempt to get elevation from DEM data (if it's available) */
-  vik_track_apply_dem_data_last_trackpoint ( vtl->current_track );
+
+  if ( vtl->current_track ) {
+    vtl->current_track->trackpoints = g_list_append ( vtl->current_track->trackpoints, tp );
+    /* Auto attempt to get elevation from DEM data (if it's available) */
+    vik_track_apply_dem_data_last_trackpoint ( vtl->current_track );
+  }
 
   vtl->ct_x1 = vtl->ct_x2;
   vtl->ct_y1 = vtl->ct_y2;
@@ -7605,6 +7592,24 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   return TRUE;
 }
 
+static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  // ----------------------------------------------------- if current is a route - switch to new track
+  if ( event->button == 1 && ( ! vtl->current_track || (vtl->current_track && vtl->current_track->is_route ) ))
+  {
+    gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track"));
+    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name, FALSE ) ) )
+    {
+      vtl->current_track = vik_track_new();
+      vtl->current_track->visible = TRUE;
+      vik_trw_layer_add_track ( vtl, name, vtl->current_track );
+    }
+    else
+      return TRUE;
+  }
+  return tool_new_track_or_route_click ( vtl, event, vvp );
+}
+
 static void tool_new_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   if ( event->button == 2 ) {
@@ -7612,6 +7617,32 @@ static void tool_new_track_release ( VikTrwLayer *vtl, GdkEventButton *event, Vi
     vtl->draw_sync_do = TRUE;
     vtl->draw_sync_done = TRUE;
   }
+}
+
+/*** New route ****/
+
+static gpointer tool_new_route_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_new_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  // -------------------------- if current is a track - switch to new route
+  if ( event->button == 1 && ( ! vtl->current_track || (vtl->current_track && !vtl->current_track->is_route ) ) )
+  {
+    gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, _("Route"));
+    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->routes, name, TRUE ) ) )
+    {
+      vtl->current_track = vik_track_new();
+      vtl->current_track->visible = TRUE;
+      vtl->current_track->is_route = TRUE;
+      vik_trw_layer_add_route ( vtl, name, vtl->current_track );
+    }
+    else
+      return TRUE;
+  }
+  return tool_new_track_or_route_click ( vtl, event, vvp );
 }
 
 /*** New waypoint ****/

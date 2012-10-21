@@ -530,9 +530,9 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
   return NULL;
 }
 
-gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name )
+gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name, gboolean is_route )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Track"),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( is_route ? _("Add Route") : _("Add Track"),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -540,7 +540,7 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *defaul
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL);
-  GtkWidget *label = gtk_label_new ( _("Track Name:") );
+  GtkWidget *label = gtk_label_new ( is_route ? _("Route Name:") : _("Track Name:") );
   GtkWidget *entry = gtk_entry_new ();
 
   if (default_name)
