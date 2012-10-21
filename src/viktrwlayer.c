@@ -6890,6 +6890,7 @@ typedef struct {
   VikTrackpoint *closest_tp;
   VikViewport *vvp;
   GList *closest_tpl;
+  LatLonBBox bbox;
 } TPSearchParams;
 
 static void waypoint_search_closest_tp ( gpointer id, VikWaypoint *wp, WPSearchParams *params )
@@ -6933,6 +6934,9 @@ static void track_search_closest_tp ( gpointer id, VikTrack *t, TPSearchParams *
   if ( !t->visible )
     return;
 
+  if ( ! BBOX_INTERSECT ( t->bbox, params->bbox ) )
+    return;
+
   while (tpl)
   {
     gint x, y;
@@ -6964,6 +6968,7 @@ static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikV
   params.vvp = vvp;
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
+  vik_viewport_get_min_max_lat_lon ( params.vvp, &(params.bbox.south), &(params.bbox.north), &(params.bbox.west), &(params.bbox.east) );
   g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
   return params.closest_tp;
 }
@@ -7093,9 +7098,12 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   if ( !vtl->tracks_visible && !vtl->waypoints_visible && !vtl->routes_visible )
     return FALSE;
 
+  LatLonBBox bbox;
+  vik_viewport_get_min_max_lat_lon ( vvp, &(bbox.south), &(bbox.north), &(bbox.west), &(bbox.east) );
+
   // Go for waypoints first as these often will be near a track, but it's likely the wp is wanted rather then the track
 
-  if (vtl->waypoints_visible) {
+  if ( vtl->waypoints_visible && BBOX_INTERSECT (vtl->waypoints_bbox, bbox ) ) {
     WPSearchParams wp_params;
     wp_params.vvp = vvp;
     wp_params.x = event->x;
@@ -7138,6 +7146,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   tp_params.y = event->y;
   tp_params.closest_track_id = NULL;
   tp_params.closest_tp = NULL;
+  tp_params.bbox = bbox;
 
   if (vtl->tracks_visible) {
     g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &tp_params);
