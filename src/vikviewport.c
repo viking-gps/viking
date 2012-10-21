@@ -1002,7 +1002,8 @@ void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gin
 
 void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 )
 {
-  if ( x1 > -10 && x1 < vvp->width + 10 && y1 > -10 && y1 < vvp->height + 10 )
+  // Using 32 as half the default waypoint image size, so this draws ensures the highlight gets done
+  if ( x1 > -32 && x1 < vvp->width + 32 && y1 > -32 && y1 < vvp->height + 32 )
     gdk_draw_rectangle ( vvp->scr_buffer, gc, filled, x1, y1, x2, y2);
 }
 
