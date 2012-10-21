@@ -49,6 +49,8 @@
 /* for ALTI_TO_MPP */
 #include "globals.h"
 
+#define MERCATOR_FACTOR(x) ( (65536.0 / 180 / (x)) * 256.0 )
+
 static gdouble EASTING_OFFSET = 500000.0;
 
 static gint PAD = 10;
@@ -70,9 +72,11 @@ struct _VikViewport {
   GtkDrawingArea drawing_area;
   GdkPixmap *scr_buffer;
   gint width, height;
+  gint width_2, height_2; // Half of the normal width and height
   VikCoord center;
   VikCoordMode coord_mode;
   gdouble xmpp, ympp;
+  gdouble xmfactor, ymfactor;
 
   GdkPixbuf *alpha_pixbuf;
   guint8 alpha_pixbuf_width;
@@ -158,6 +162,8 @@ vik_viewport_init ( VikViewport *vvp )
   /* TODO: not static */
   vvp->xmpp = 4.0;
   vvp->ympp = 4.0;
+  vvp->xmfactor = MERCATOR_FACTOR (vvp->xmpp);
+  vvp->ymfactor = MERCATOR_FACTOR (vvp->ympp);
   vvp->coord_mode = VIK_COORD_LATLON;
   vvp->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   vvp->center.mode = VIK_COORD_LATLON;
@@ -287,6 +293,10 @@ void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint heigh
 {
   vvp->width = width;
   vvp->height = height;
+
+  vvp->width_2 = vvp->width/2;
+  vvp->height_2 = vvp->height/2;
+
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
   vvp->scr_buffer = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, vvp->width, vvp->height, -1 );
@@ -309,6 +319,9 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
 
   vvp->width = GTK_WIDGET(vvp)->allocation.width;
   vvp->height = GTK_WIDGET(vvp)->allocation.height;
+
+  vvp->width_2 = vvp->width/2;
+  vvp->height_2 = vvp->height/2;
 
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
@@ -665,8 +678,11 @@ void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off )
 void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
 {
   g_return_if_fail ( vvp != NULL );
-  if ( xympp >= VIK_VIEWPORT_MIN_ZOOM && xympp <= VIK_VIEWPORT_MAX_ZOOM )
+  if ( xympp >= VIK_VIEWPORT_MIN_ZOOM && xympp <= VIK_VIEWPORT_MAX_ZOOM ) {
     vvp->xmpp = vvp->ympp = xympp;
+    // Since xmpp & ympp are the same it doesn't matter which one is used here
+    vvp->xmfactor = vvp->ymfactor = MERCATOR_FACTOR(vvp->xmpp);
+  }
 
   if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
     viewport_utm_zone_check(vvp);
@@ -681,6 +697,9 @@ void vik_viewport_zoom_in ( VikViewport *vvp )
     vvp->xmpp /= 2;
     vvp->ympp /= 2;
 
+    vvp->xmfactor = MERCATOR_FACTOR(vvp->xmpp);
+    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
+
     viewport_utm_zone_check(vvp);
   }
 }
@@ -692,6 +711,9 @@ void vik_viewport_zoom_out ( VikViewport *vvp )
   {
     vvp->xmpp *= 2;
     vvp->ympp *= 2;
+
+    vvp->xmfactor = MERCATOR_FACTOR(vvp->xmpp);
+    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
 
     viewport_utm_zone_check(vvp);
   }
@@ -718,6 +740,7 @@ void vik_viewport_set_xmpp ( VikViewport *vvp, gdouble xmpp )
 {
   if ( xmpp >= VIK_VIEWPORT_MIN_ZOOM && xmpp <= VIK_VIEWPORT_MAX_ZOOM ) {
     vvp->xmpp = xmpp;
+    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
       viewport_utm_zone_check(vvp);
   }
@@ -727,6 +750,7 @@ void vik_viewport_set_ympp ( VikViewport *vvp, gdouble ympp )
 {
   if ( ympp >= VIK_VIEWPORT_MIN_ZOOM && ympp <= VIK_VIEWPORT_MAX_ZOOM ) {
     vvp->ympp = ympp;
+    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
       viewport_utm_zone_check(vvp);
   }
@@ -863,34 +887,32 @@ void vik_viewport_screen_to_coord ( VikViewport *vvp, int x, int y, VikCoord *co
 
     utm->zone = vvp->center.utm_zone;
     utm->letter = vvp->center.utm_letter;
-    utm->easting = ( ( x - ( vvp->width / 2) ) * vvp->xmpp ) + vvp->center.east_west;
+    utm->easting = ( ( x - ( vvp->width_2) ) * vvp->xmpp ) + vvp->center.east_west;
     zone_delta = floor( (utm->easting - EASTING_OFFSET ) / vvp->utm_zone_width + 0.5 );
     utm->zone += zone_delta;
     utm->easting -= zone_delta * vvp->utm_zone_width;
-    utm->northing = ( ( ( vvp->height / 2) - y ) * vvp->ympp ) + vvp->center.north_south;
+    utm->northing = ( ( ( vvp->height_2) - y ) * vvp->ympp ) + vvp->center.north_south;
   } else if ( vvp->coord_mode == VIK_COORD_LATLON ) {
     coord->mode = VIK_COORD_LATLON;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
-      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width/2));
-      coord->north_south = vvp->center.north_south + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height/2 - y));
+      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width_2));
+      coord->north_south = vvp->center.north_south + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height_2 - y));
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA )
-      calcxy_rev(&(coord->east_west), &(coord->north_south), x, y, vvp->center.east_west, vvp->center.north_south, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width/2, vvp->height/2);
+      calcxy_rev(&(coord->east_west), &(coord->north_south), x, y, vvp->center.east_west, vvp->center.north_south, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width_2, vvp->height_2);
     else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
-      /* FIXMERCATOR */
-      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width/2));
-      coord->north_south = DEMERCLAT ( MERCLAT(vvp->center.north_south) + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height/2 - y)) );
-
-#if 0
--->	THIS IS JUNK HERE.
-      *y = vvp->height/2 + (65536.0 / 180 / vvp->ympp * (MERCLAT(center->lat) - MERCLAT(ll->lat)))*256.0;
-
-      (*y - vvp->height/2) / 256 / 65536 * 180 * vvp->ympp = (MERCLAT(center->lat) - MERCLAT(ll->lat);
-      DML((180.0 * vvp->ympp / 65536 / 256 * (vvp->height/2 - y)) + ML(cl)) = ll
-#endif
+      /* This isn't called with a high frequently so less need to optimize */
+      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width_2));
+      coord->north_south = DEMERCLAT ( MERCLAT(vvp->center.north_south) + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height_2 - y)) );
     }
   }
 }
 
+/*
+ * Since this function is used for every drawn trackpoint - it can get called alot
+ * Thus x & y position factors are calculated once on zoom changes,
+ *  avoiding the need to do it here all the time.
+ * For good measure the half width and height values are also pre calculated too.
+ */
 void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int *x, int *y )
 {
   static VikCoord tmp;
@@ -912,24 +934,22 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
       return;
     }
 
-    *x = ( (utm->easting - center->easting) / vvp->xmpp ) + (vvp->width / 2) -
+    *x = ( (utm->easting - center->easting) / vvp->xmpp ) + (vvp->width_2) -
   	  (center->zone - utm->zone ) * vvp->utm_zone_width / vvp->xmpp;
-    *y = (vvp->height / 2) - ( (utm->northing - center->northing) / vvp->ympp );
+    *y = (vvp->height_2) - ( (utm->northing - center->northing) / vvp->ympp );
   } else if ( vvp->coord_mode == VIK_COORD_LATLON ) {
     struct LatLon *center = (struct LatLon *) &(vvp->center);
     struct LatLon *ll = (struct LatLon *) coord;
     double xx,yy;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
-      /* FIXMERCATOR: Optimize */
-      *x = vvp->width/2 + (65536.0 / 180 / vvp->xmpp * (ll->lon - center->lon))*256.0;
-      *y = vvp->height/2 + (65536.0 / 180 / vvp->ympp * (center->lat - ll->lat))*256.0;
+      *x = vvp->width_2 + ( MERCATOR_FACTOR(vvp->xmpp) * (ll->lon - center->lon) );
+      *y = vvp->height_2 + ( MERCATOR_FACTOR(vvp->ympp) * (center->lat - ll->lat) );
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA ) {
-      calcxy ( &xx, &yy, center->lon, center->lat, ll->lon, ll->lat, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width / 2, vvp->height / 2 );
+      calcxy ( &xx, &yy, center->lon, center->lat, ll->lon, ll->lat, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width_2, vvp->height_2 );
       *x = xx; *y = yy;
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
-      /* FIXMERCATOR: Optimize */
-      *x = vvp->width/2 + (65536.0 / 180 / vvp->xmpp * (ll->lon - center->lon))*256.0;
-      *y = vvp->height/2 + (65536.0 / 180 / vvp->ympp * (MERCLAT(center->lat) - MERCLAT(ll->lat)))*256.0;
+      *x = vvp->width_2 + ( MERCATOR_FACTOR(vvp->xmpp) * (ll->lon - center->lon) );
+      *y = vvp->height_2 + ( MERCATOR_FACTOR(vvp->ympp) * ( MERCLAT(center->lat) - MERCLAT(ll->lat) ) );
     }
   }
 }
