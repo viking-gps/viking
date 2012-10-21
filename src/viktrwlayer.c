@@ -5727,7 +5727,7 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     if ( wpf ) {
       // An existing waypoint has been found with the requested name
       if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(l),
-           _("A waypoint with the name \"%s\" already exists. Really create one with the same name?"), 
+           _("A waypoint with the name \"%s\" already exists. Really rename to the same name?"),
            newname ) )
         return NULL;
     }
@@ -5757,7 +5757,7 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     if ( trkf ) {
       // An existing track has been found with the requested name
       if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(l),
-          _("A track with the name \"%s\" already exists. Really create one with the same name?"),
+          _("A track with the name \"%s\" already exists. Really rename to the same name?"),
           newname ) )
         return NULL;
     }
