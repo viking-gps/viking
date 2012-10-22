@@ -1178,7 +1178,7 @@ static void draw_utm_skip_insignia ( VikViewport *vvp, GdkGC *gc, gint x, gint y
   vik_viewport_draw_line ( vvp, gc, x+5, y-5, x-5, y+5 );
 }
 
-static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct DrawingParams *dp, gboolean drawing_white_background )
+static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct DrawingParams *dp, gboolean draw_track_outline )
 {
   /* TODO: this function is a mess, get rid of any redundancy */
   GList *list = track->trackpoints;
@@ -1205,10 +1205,10 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
     return;
 
   /* admittedly this is not an efficient way to do it because we go through the whole GC thing all over... */
-  if ( dp->vtl->bg_line_thickness && !drawing_white_background )
+  if ( dp->vtl->bg_line_thickness && !draw_track_outline )
     trw_layer_draw_track ( name, track, dp, TRUE );
 
-  if ( drawing_white_background )
+  if ( draw_track_outline )
     drawpoints = drawstops = FALSE;
   else {
     drawpoints = dp->vtl->drawpoints;
@@ -1293,7 +1293,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 	if ( useoldvals && x == oldx && y == oldy )
 	{
 	  // Still need to process points to ensure 'stops' are drawn if required
-	  if ( drawstops && drawpoints && ! drawing_white_background && list->next &&
+	  if ( drawstops && drawpoints && ! draw_track_outline && list->next &&
 	       (VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > dp->vtl->stop_length) )
 	    vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, 11), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
 
@@ -1309,7 +1309,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           }
         }
 
-        if ( drawpoints && ! drawing_white_background )
+        if ( drawpoints && ! draw_track_outline )
         {
 
           if ( list->next ) {
@@ -1343,7 +1343,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           if (!useoldvals)
             vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &oldx, &oldy );
 
-          if ( drawing_white_background ) {
+          if ( draw_track_outline ) {
             vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
           }
           else {
@@ -1414,7 +1414,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 	     */
 	    if ( x != oldx || y != oldy )
 	      {
-		if ( drawing_white_background )
+		if ( draw_track_outline )
 		  vik_viewport_draw_line ( dp->vp, dp->vtl->track_bg_gc, oldx, oldy, x, y);
 		else
 		  vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
