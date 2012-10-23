@@ -507,6 +507,12 @@ void vik_treeview_item_delete ( VikTreeview *vt, GtkTreeIter *iter )
 
 /* Treeview Reform Project */
 
+void vik_treeview_item_set_icon ( VikTreeview *vt, GtkTreeIter *iter, const GdkPixbuf *icon )
+{
+  g_return_if_fail ( iter != NULL && icon != NULL );
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ICON_COLUMN, icon, -1);
+}
+
 void vik_treeview_item_set_name ( VikTreeview *vt, GtkTreeIter *iter, const gchar *to )
 {
   g_return_if_fail ( iter != NULL && to != NULL );
