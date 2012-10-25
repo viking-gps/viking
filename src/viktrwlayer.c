@@ -116,6 +116,18 @@ static g_hash_table_remove_all (GHashTable *ght) { g_hash_table_foreach_remove (
 
 enum { WP_SYMBOL_FILLED_SQUARE, WP_SYMBOL_SQUARE, WP_SYMBOL_CIRCLE, WP_SYMBOL_X, WP_NUM_SYMBOLS };
 
+// See http://developer.gnome.org/pango/stable/PangoMarkupFormat.html
+typedef enum {
+  FS_XX_SMALL = 0, // 'xx-small'
+  FS_X_SMALL,
+  FS_SMALL,
+  FS_MEDIUM, // DEFAULT
+  FS_LARGE,
+  FS_X_LARGE,
+  FS_XX_LARGE,
+  FS_NUM_SIZES
+} font_size_t;
+
 struct _VikTrwLayer {
   VikLayer vl;
   GHashTable *tracks;
@@ -137,6 +149,7 @@ struct _VikTrwLayer {
   guint8 wp_symbol;
   guint8 wp_size;
   gboolean wp_draw_symbols;
+  font_size_t wp_font_size;
 
   gdouble track_draw_speed_factor;
   GArray *track_gc;
@@ -426,6 +439,16 @@ static VikLayerParamScale params_scales[] = {
  {   1, 100, 1,   0 }, /* stop_length */
 };
 
+static gchar* params_font_sizes[] = {
+  N_("Extra Extra Small"),
+  N_("Extra Small"),
+  N_("Small"),
+  N_("Medium"),
+  N_("Large"),
+  N_("Extra Large"),
+  N_("Extra Extra Large"),
+  NULL };
+
 VikLayerParam trw_layer_params[] = {
   { "tracks_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES },
   { "waypoints_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES },
@@ -445,6 +468,7 @@ VikLayerParam trw_layer_params[] = {
   { "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 1 },
 
   { "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL },
   { "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, 0 },
   { "wptextcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Text:"), VIK_LAYER_WIDGET_COLOR, 0 },
   { "wpbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Background:"), VIK_LAYER_WIDGET_COLOR, 0 },
@@ -459,7 +483,7 @@ VikLayerParam trw_layer_params[] = {
   { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Memory Cache Size:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
 };
 
-enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_TDSF, PARAM_DLA, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
+enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_TDSF, PARAM_DLA, PARAM_WPFONTSIZE, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
 
 /*** TO ADD A PARAM:
  *** 1) Add to trw_layer_params and enumeration
@@ -795,6 +819,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_WPSYM: if ( data.u < WP_NUM_SYMBOLS ) vtl->wp_symbol = data.u; break;
     case PARAM_WPSIZE: if ( data.u > 0 && data.u <= 64 ) vtl->wp_size = data.u; break;
     case PARAM_WPSYMS: vtl->wp_draw_symbols = data.b; break;
+    case PARAM_WPFONTSIZE: if ( data.u < FS_NUM_SIZES ) vtl->wp_font_size = data.u; break;
   }
   return TRUE;
 }
@@ -829,6 +854,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WPSYM: rv.u = vtl->wp_symbol; break;
     case PARAM_WPSIZE: rv.u = vtl->wp_size; break;
     case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
+    case PARAM_WPFONTSIZE: rv.u = vtl->wp_font_size; break;
   }
   return rv;
 }
@@ -1484,7 +1510,31 @@ static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct
       /* thanks to the GPSDrive people (Fritz Ganter et al.) for hints on this part ... yah, I'm too lazy to study documentation */
       gint label_x, label_y;
       gint width, height;
-      pango_layout_set_text ( dp->vtl->wplabellayout, wp->name, -1 );
+      // Hopefully name won't break the markup (may need to sanitize - g_markup_escape_text())
+
+      // Could this stored in the waypoint rather than recreating each pass?
+      gchar *fsize = NULL;
+      switch (dp->vtl->wp_font_size) {
+        case FS_XX_SMALL: fsize = g_strdup ( "xx-small" ); break;
+        case FS_X_SMALL: fsize = g_strdup ( "x-small" ); break;
+        case FS_SMALL: fsize = g_strdup ( "small" ); break;
+        case FS_LARGE: fsize = g_strdup ( "large" ); break;
+        case FS_X_LARGE: fsize = g_strdup ( "x-large" ); break;
+        case FS_XX_LARGE: fsize = g_strdup ( "xx-large" ); break;
+        default: fsize = g_strdup ( "medium" ); break;
+      }
+
+      gchar *wp_label_markup = g_strdup_printf ( "<span size=\"%s\">%s</span>", fsize, wp->name );
+
+      if ( pango_parse_markup ( wp_label_markup, -1, 0, NULL, NULL, NULL, NULL ) )
+        pango_layout_set_markup ( dp->vtl->wplabellayout, wp_label_markup, -1 );
+      else
+        // Fallback if parse failure
+        pango_layout_set_text ( dp->vtl->wplabellayout, wp->name, -1 );
+
+      g_free ( wp_label_markup );
+      g_free ( fsize );
+
       pango_layout_get_pixel_size ( dp->vtl->wplabellayout, &width, &height );
       label_x = x - width/2;
       if (sym)
