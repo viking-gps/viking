@@ -1814,6 +1814,20 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
   return rv;
 }
 
+#define SMALL_ICON_SIZE 18
+/*
+ * Can accept a null symbol, and may return null value
+ */
+static GdkPixbuf* get_wp_sym_small ( gchar *symbol )
+{
+  GdkPixbuf* wp_icon = a_get_wp_sym (symbol);
+  // ATM a_get_wp_sym returns a cached icon, with the size dependent on the preferences.
+  //  So needing a small icon for the treeview may need some resizing:
+  if ( wp_icon && gdk_pixbuf_get_width ( wp_icon ) != SMALL_ICON_SIZE )
+    wp_icon = gdk_pixbuf_scale_simple ( wp_icon, SMALL_ICON_SIZE, SMALL_ICON_SIZE, GDK_INTERP_BILINEAR );
+  return wp_icon;
+}
+
 static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] )
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
@@ -1837,10 +1851,11 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
 static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer pass_along[5] )
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
+
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
-  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), NULL, TRUE, TRUE );
+  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, TRUE );
 #else
-  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), NULL, TRUE, TRUE );
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, TRUE );
 #endif
 
   *new_iter = *((GtkTreeIter *) pass_along[1]);
@@ -3486,9 +3501,9 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
 
     // Visibility column always needed for waypoints
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
-    vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, NULL, TRUE, TRUE );
+    vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, TRUE );
 #else
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, NULL, TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, TRUE );
 #endif
     // Actual setting of visibility dependent on the waypoint
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
@@ -4101,6 +4116,9 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
     {
       gboolean updated = FALSE;
       a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wp->name, wp, vtl->coord_mode, FALSE, &updated );
+
+      if ( updated && pass_along[6] )
+        vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, pass_along[6], get_wp_sym_small (wp->symbol) );
 
       if ( updated && VIK_LAYER(vtl)->visible )
 	vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
