@@ -22,9 +22,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#define WAYPOINT_FONT "Sans 8"
-
 /* WARNING: If you go beyond this point, we are NOT responsible for any ill effects on your sanity */
 /* viktrwlayer.c -- 5000+ lines can make a difference in the state of things */
 
@@ -151,7 +148,6 @@ struct _VikTrwLayer {
   GdkGC *waypoint_gc;
   GdkGC *waypoint_text_gc;
   GdkGC *waypoint_bg_gc;
-  GdkFont *waypoint_font;
   VikTrack *current_track;
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
   gboolean draw_sync_done;
@@ -1029,9 +1025,6 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   if ( trwlayer->waypoint_bg_gc != NULL )
     g_object_unref ( G_OBJECT ( trwlayer->waypoint_bg_gc ) );
 
-  if ( trwlayer->waypoint_font != NULL )
-    gdk_font_unref ( trwlayer->waypoint_font );
-
   if ( trwlayer->tpwin != NULL )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tpwin) );
 
@@ -1621,12 +1614,8 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
     return rv;
   }
 
-  PangoFontDescription *pfd;
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
-  pfd = pango_font_description_from_string (WAYPOINT_FONT);
-  pango_layout_set_font_description (rv->wplabellayout, pfd);
-  /* freeing PangoFontDescription, cause it has been copied by prev. call */
-  pango_font_description_free (pfd);
+  pango_layout_set_font_description (rv->wplabellayout, GTK_WIDGET(vp)->style->font_desc);
 
   trw_layer_new_track_gcs ( rv, vp );
 
@@ -1635,12 +1624,11 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
   rv->waypoint_bg_gc = vik_viewport_new_gc ( vp, "#8383C4", 1 );
   gdk_gc_set_function ( rv->waypoint_bg_gc, GDK_AND );
 
-  rv->waypoint_font = gdk_font_load ( "-*-helvetica-bold-r-normal-*-*-100-*-*-p-*-iso8859-1" );
-
   rv->has_verified_thumbnails = FALSE;
   rv->wp_symbol = WP_SYMBOL_FILLED_SQUARE;
   rv->wp_size = 4;
   rv->wp_draw_symbols = TRUE;
+  rv->wp_font_size = FS_MEDIUM;
 
   rv->coord_mode = vik_viewport_get_coord_mode ( vp );
 
@@ -6272,19 +6260,18 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     }
       
     const gchar *str = distance_string (distance);
-    gint xd,yd;
-    /* offset from cursor a bit */
-    xd = event->x + 10;
-    yd = event->y - 10;
 
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
-    PangoFontDescription *pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, GTK_WIDGET(vvp)->style->font_desc);
 
     pango_layout_set_text (pl, str, -1);
     gint wd, hd;
     pango_layout_get_pixel_size ( pl, &wd, &hd );
+
+    gint xd,yd;
+    // offset from cursor a bit depending on font size
+    xd = event->x + 10;
+    yd = event->y - hd;
 
     // Create a background block to make the text easier to read over the background map
     GdkGC *background_block_gc = vik_viewport_new_gc ( vvp, "#cccccc", 1);

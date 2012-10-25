@@ -865,7 +865,6 @@ static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
  ********************************************************************************/
 static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, gdouble distance)
 {
-  PangoFontDescription *pfd;
   PangoLayout *pl;
   gchar str[128];
   GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
@@ -966,11 +965,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     gint wb, hb, xb, yb;
 
     pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
-
-    pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
-
+    pango_layout_set_font_description (pl, GTK_WIDGET(vvp)->style->font_desc);
     pango_layout_set_text(pl, "N", -1);
     gdk_draw_layout(d, gc, x1-5, y1-CR-3*CW-8, pl);
 

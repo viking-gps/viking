@@ -56,8 +56,6 @@
 #define PROPWIN_PROFILE_WIDTH 600
 #define PROPWIN_PROFILE_HEIGHT 300
 
-#define PROPWIN_LABEL_FONT "Sans 7"
-
 typedef enum {
   PROPWIN_GRAPH_TYPE_ELEVATION_DISTANCE,
   PROPWIN_GRAPH_TYPE_GRADIENT_DISTANCE,
@@ -1327,15 +1325,13 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, window->style->font_desc);
+
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
       sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
@@ -1488,15 +1484,13 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
   
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, window->style->font_desc);
+
     sprintf(s, "%8d%%", (int)(mina + (LINES-i)*chunksg[widgets->cig]));
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
@@ -1608,15 +1602,13 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, window->style->font_desc);
+
     // NB: No need to convert here anymore as numbers are in the appropriate units
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
@@ -1755,15 +1747,13 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, window->style->font_desc);
+
     if ( dist_units == VIK_UNITS_DISTANCE_MILES )
       sprintf(s, _("%.1f miles"), ((LINES-i)*chunksd[widgets->cid]));
     else
@@ -1861,15 +1851,13 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, window->style->font_desc);
+
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
       sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[widgets->ciat]));
@@ -1991,15 +1979,13 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoFontDescription *pfd;
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pfd = pango_font_description_from_string (PROPWIN_LABEL_FONT);
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, window->style->font_desc);
+
     // NB: No need to convert here anymore as numbers are in the appropriate units
     switch (speed_units) {
     case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:

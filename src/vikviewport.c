@@ -436,7 +436,6 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     VikCoord left, right;
     gdouble unit, base, diff, old_unit, old_diff, ratio;
     gint odd, len, SCSIZE = 5, HEIGHT=10;
-    PangoFontDescription *pfd;
     PangoLayout *pl;
     gchar s[128];
 
@@ -505,9 +504,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       }
     }
     pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
-    pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
-    pango_layout_set_font_description (pl, pfd);
-    pango_font_description_free (pfd);
+    pango_layout_set_font_description (pl, GTK_WIDGET(&vvp->drawing_area)->style->font_desc);
 
     switch (dist_units) {
     case VIK_UNITS_DISTANCE_KILOMETRES:
@@ -544,7 +541,6 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
 
-  PangoFontDescription *pfd;
   PangoLayout *pl;
   PangoRectangle ink_rect, logical_rect;
   gchar s[128] = "";
@@ -575,20 +571,17 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
 
   /* create pango layout */
   pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
-  pfd = pango_font_description_from_string ("Sans 8"); // FIXME: settable option? global variable?
-  pango_layout_set_font_description (pl, pfd);
-  pango_font_description_free (pfd);
-  pfd = NULL;
+  pango_layout_set_font_description (pl, GTK_WIDGET(&vvp->drawing_area)->style->font_desc);
   pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
 
   /* Set the text */
   pango_layout_set_text(pl, s, -1);
 
   /* Use maximum of half the viewport width */
-  pango_layout_set_width ( pl, ( vvp->width / 2 - PAD ) * PANGO_SCALE );
+  pango_layout_set_width ( pl, ( vvp->width / 2 ) * PANGO_SCALE );
   pango_layout_get_pixel_extents(pl, &ink_rect, &logical_rect);
   vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
-			   vvp->width / 2, vvp->height - PAD - logical_rect.height, pl);
+			   vvp->width / 2, vvp->height - logical_rect.height, pl);
 
   /* Free memory */
   g_object_unref(pl);
