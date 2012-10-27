@@ -77,6 +77,7 @@ static struct LatLon line_latlon;
 static gchar *line_name;
 static gchar *line_comment;
 static gchar *line_description;
+static gchar *line_color;
 static gchar *line_image;
 static gchar *line_symbol;
 static gboolean line_newsegment = FALSE;
@@ -273,6 +274,12 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
         line_description = NULL;
       }
 
+      if ( line_color )
+      {
+        if ( gdk_color_parse ( line_color, &(pl->color) ) )
+        pl->has_color = TRUE;
+      }
+
       pl->trackpoints = NULL;
       vik_trw_layer_filein_add_track ( trw, line_name, pl );
       g_free ( line_name );
@@ -305,12 +312,15 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       g_free ( line_comment );
     if (line_description)
       g_free ( line_description );
+    if (line_color)
+      g_free ( line_color );
     if (line_image)
       g_free ( line_image );
     if (line_symbol)
       g_free ( line_symbol );
     line_comment = NULL;
     line_description = NULL;
+    line_color = NULL;
     line_image = NULL;
     line_symbol = NULL;
     line_type = GPSPOINT_TYPE_NONE;
@@ -418,6 +428,11 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   {
     if (line_description == NULL)
       line_description = deslashndup ( value, value_len );
+  }
+  else if (key_len == 5 && strncasecmp( key, "color", key_len ) == 0 && value != NULL)
+  {
+    if (line_color == NULL)
+      line_color = deslashndup ( value, value_len );
   }
   else if (key_len == 5 && strncasecmp( key, "image", key_len ) == 0 && value != NULL)
   {
@@ -590,6 +605,10 @@ static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FIL
     gchar *tmp = slashdup(trk->description);
     fprintf ( f, " description=\"%s\"", tmp );
     g_free ( tmp );
+  }
+
+  if ( trk->has_color ) {
+    fprintf ( f, " color=#%.2x%.2x%.2x", (int)(trk->color.red/256),(int)(trk->color.green/256),(int)(trk->color.blue/256));
   }
 
   if ( ! trk->visible ) {

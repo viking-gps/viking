@@ -69,8 +69,10 @@ struct _VikTrack {
   gchar *comment;
   gchar *description;
   guint8 ref_count;
-  GtkWidget *property_dialog;
   gchar *name;
+  GtkWidget *property_dialog;
+  gboolean has_color;
+  GdkColor color;
 };
 
 VikTrack *vik_track_new();

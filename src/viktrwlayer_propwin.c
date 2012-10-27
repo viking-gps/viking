@@ -100,6 +100,7 @@ typedef struct _propwidgets {
   gboolean  configure_dialog;
   VikTrwLayer *vtl;
   VikTrack *tr;
+  gpointer  trk_id;
   VikViewport *vvp;
   VikLayersPanel *vlp;
   gint      profile_width;
@@ -124,6 +125,7 @@ typedef struct _propwidgets {
   GtkWidget *w_time_start;
   GtkWidget *w_time_end;
   GtkWidget *w_time_dur;
+  GtkWidget *w_color;
   GtkWidget *w_cur_dist; /*< Current distance */
   GtkWidget *w_cur_elevation;
   GtkWidget *w_cur_gradient_dist; /*< Current distance on gradient graph */
@@ -2617,6 +2619,9 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
     case GTK_RESPONSE_ACCEPT:
       vik_track_set_comment(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_comment)));
       vik_track_set_description(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_description)));
+      gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
+      trw_layer_update_treeview ( widgets->vtl, widgets->tr, widgets->trk_id );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
       break;
     case VIK_TRW_LAYER_PROPWIN_REVERSE:
       vik_track_reverse(tr);
@@ -2756,13 +2761,19 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
   return vbox;
 }
 
-void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr, gpointer vlp, VikViewport *vvp )
+void vik_trw_layer_propwin_run ( GtkWindow *parent,
+                                 VikTrwLayer *vtl,
+                                 VikTrack *tr,
+                                 gpointer vlp,
+                                 VikViewport *vvp,
+                                 gpointer *trk_id )
 {
   PropWidgets *widgets = prop_widgets_new();
   widgets->vtl = vtl;
   widgets->vvp = vvp;
   widgets->vlp = vlp;
   widgets->tr = tr;
+  widgets->trk_id = trk_id;
   widgets->profile_width  = PROPWIN_PROFILE_WIDTH;
   widgets->profile_height = PROPWIN_PROFILE_HEIGHT;
   gchar *title = g_strdup_printf(_("%s - Track Properties"), tr->name);
@@ -2813,7 +2824,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     N_("<b>Total Elevation Gain/Loss:</b>"),
     N_("<b>Start:</b>"),
     N_("<b>End:</b>"),
-    N_("<b>Duration:</b>") };
+    N_("<b>Duration:</b>"),
+    N_("<b>Color:</b>") };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 
@@ -3023,6 +3035,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
     widgets->w_time_end = content[cnt++] = gtk_label_new(_("No Data"));
     widgets->w_time_dur = content[cnt++] = gtk_label_new(_("No Data"));
   }
+
+  widgets->w_color = content[cnt++] = gtk_color_button_new_with_color ( &(tr->color) );
 
   table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);

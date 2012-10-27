@@ -129,6 +129,8 @@ VikTrack *vik_track_copy ( const VikTrack *tr )
   GList *tp_iter = tr->trackpoints;
   new_tr->visible = tr->visible;
   new_tr->is_route = tr->is_route;
+  new_tr->has_color = tr->has_color;
+  new_tr->color = tr->color;
   new_tr->trackpoints = NULL;
   while ( tp_iter )
   {
@@ -1266,6 +1268,8 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   /* basic properties: */
   new_tr->visible = ((VikTrack *)data)->visible;
   new_tr->is_route = ((VikTrack *)data)->is_route;
+  new_tr->has_color = ((VikTrack *)data)->has_color;
+  new_tr->color = ((VikTrack *)data)->color;
 
   data += sizeof(*new_tr);
 

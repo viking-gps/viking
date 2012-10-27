@@ -77,14 +77,13 @@
 #define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=js"
 #endif
 
-#define VIK_TRW_LAYER_TRACK_GC 16
-#define VIK_TRW_LAYER_TRACK_GC_RATES 10
-#define VIK_TRW_LAYER_TRACK_GC_MIN 0
-#define VIK_TRW_LAYER_TRACK_GC_MAX 11
-#define VIK_TRW_LAYER_TRACK_GC_BLACK 12
-#define VIK_TRW_LAYER_TRACK_GC_SLOW 13
-#define VIK_TRW_LAYER_TRACK_GC_AVER 14
-#define VIK_TRW_LAYER_TRACK_GC_FAST 15
+#define VIK_TRW_LAYER_TRACK_GC 5
+#define VIK_TRW_LAYER_TRACK_GCS 10
+#define VIK_TRW_LAYER_TRACK_GC_BLACK 0
+#define VIK_TRW_LAYER_TRACK_GC_SLOW 1
+#define VIK_TRW_LAYER_TRACK_GC_AVER 2
+#define VIK_TRW_LAYER_TRACK_GC_FAST 3
+#define VIK_TRW_LAYER_TRACK_GC_STOP 4
 
 #define DRAWMODE_BY_TRACK 0
 #define DRAWMODE_BY_SPEED 1
@@ -148,6 +147,7 @@ struct _VikTrwLayer {
 
   gdouble track_draw_speed_factor;
   GArray *track_gc;
+  GdkGC *track_1color_gc;
   GdkGC *current_track_gc;
   // Separate GC for a track's potential new point as drawn via separate method
   //  (compared to the actual track points drawn in the main trw_layer_draw_track function)
@@ -222,7 +222,6 @@ struct DrawingParams {
   gdouble cc; // Cosine factor in track directions
   gdouble ss; // Sine factor in track directions
   const VikCoord *center;
-  gint track_gc_iter;
   gboolean one_zone, lat_lon;
   gdouble ce1, ce2, cn1, cn2;
 };
@@ -554,6 +553,7 @@ static VikTrwLayer* trw_layer_new ( gint drawmode );
 /* Layer Interface function definitions */
 static VikTrwLayer* trw_layer_create ( VikViewport *vp );
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter );
+static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp );
 static void trw_layer_free ( VikTrwLayer *trwlayer );
 static void trw_layer_draw ( VikTrwLayer *l, gpointer data );
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
@@ -600,7 +600,7 @@ VikLayerInterface vik_trw_layer_interface = {
 
   (VikLayerFuncCreate)                  trw_layer_create,
   (VikLayerFuncRealize)                 trw_layer_realize,
-  (VikLayerFuncPostRead)                trw_layer_verify_thumbnails,
+  (VikLayerFuncPostRead)                trw_layer_post_read,
   (VikLayerFuncFree)                    trw_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -1078,52 +1078,29 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
   rv->routes = g_hash_table_new_full ( g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) vik_track_free );
   rv->routes_iters = g_hash_table_new_full ( g_direct_hash, g_direct_equal, NULL, g_free );
 
-  /* TODO: constants at top */
+  // Default values
   rv->waypoints_visible = rv->tracks_visible = rv->routes_visible = TRUE;
   rv->drawmode = drawmode;
   rv->drawpoints = TRUE;
   rv->drawpoints_size = MIN_POINT_SIZE;
   rv->drawdirections_size = 5;
-  rv->drawstops = FALSE;
-  rv->drawelevation = FALSE;
   rv->elevation_factor = 30;
   rv->stop_length = 60;
   rv->drawlines = TRUE;
-  rv->wplabellayout = NULL;
-  rv->wp_right_click_menu = NULL;
-  rv->track_right_click_menu = NULL;
-  rv->waypoint_gc = NULL;
-  rv->waypoint_text_gc = NULL;
-  rv->waypoint_bg_gc = NULL;
-  rv->track_gc = NULL;
   rv->track_draw_speed_factor = 30.0;
   rv->line_thickness = 1;
-  rv->bg_line_thickness = 0;
-  rv->current_wp = NULL;
-  rv->current_wp_id = NULL;
-  rv->current_track = NULL;
-  rv->current_tpl = NULL;
-  rv->current_tp_track = NULL;
-  rv->current_tp_id = NULL;
-  rv->moving_tp = FALSE;
-  rv->moving_wp = FALSE;
 
   rv->draw_sync_done = TRUE;
   rv->draw_sync_do = TRUE;
 
-  rv->route_finder_started = FALSE;
-  rv->route_finder_check_added_track = FALSE;
-  rv->route_finder_current_track = NULL;
-  rv->route_finder_append = FALSE;
-
-  rv->waypoint_rightclick = FALSE;
-  rv->tpwin = NULL;
   rv->image_cache = g_queue_new();
   rv->image_size = 64;
   rv->image_alpha = 255;
   rv->image_cache_size = 300;
   rv->drawimages = TRUE;
   rv->drawlabels = TRUE;
+  // Everything else is 0, FALSE or NULL
+
   return rv;
 }
 
@@ -1198,8 +1175,6 @@ static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, Vi
     dp->cn1 = bottomright.north_south;
     dp->cn2 = upperleft.north_south;
   }
-
-  dp->track_gc_iter = 0;
 }
 
 /*
@@ -1288,18 +1263,22 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 	main_gc = vik_viewport_get_gc_highlight (dp->vp);
 	drawing_highlight = TRUE;
       }
-      else {
-	if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
-	  dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_BLACK;
-
-	main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
-      }
     }
-    else {
-      if ( dp->vtl->drawmode == DRAWMODE_ALL_BLACK )
-	dp->track_gc_iter = VIK_TRW_LAYER_TRACK_GC_BLACK;
-	  
-      main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+    if ( !drawing_highlight ) {
+      // Still need to figure out the gc according to the drawing mode:
+      switch ( dp->vtl->drawmode ) {
+      case DRAWMODE_BY_TRACK:
+        if ( dp->vtl->track_1color_gc )
+          g_object_unref ( dp->vtl->track_1color_gc );
+        dp->vtl->track_1color_gc = vik_viewport_new_gc_from_color ( dp->vp, &track->color, dp->vtl->line_thickness );
+        main_gc = dp->vtl->track_1color_gc;
+	break;
+      default:
+        // Mostly for DRAWMODE_ALL_BLACK
+        // but includes DRAWMODE_BY_SPEED, main_gc is set later on as necessary
+        main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_BLACK);
+        break;
+      }
     }
   }
 
@@ -1311,8 +1290,9 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 
     vik_viewport_coord_to_screen ( dp->vp, &(tp->coord), &x, &y );
 
-    if ( (drawpoints) && dp->track_gc_iter < VIK_TRW_LAYER_TRACK_GC )
-    {
+    // Draw the first point as something a bit different from the normal points
+    // ATM it's slightly bigger and a triangle
+    if ( drawpoints ) {
       GdkPoint trian[3] = { { x, y-(3*tp_size) }, { x-(2*tp_size), y+(2*tp_size) }, {x+(2*tp_size), y+(2*tp_size)} };
       vik_viewport_draw_polygon ( dp->vp, main_gc, TRUE, trian, 3 );
     }
@@ -1361,8 +1341,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
         if ( drawpoints || dp->vtl->drawlines ) {
           // setup main_gc for both point and line drawing
           if ( !drawing_highlight && (dp->vtl->drawmode == DRAWMODE_BY_SPEED) ) {
-            dp->track_gc_iter = track_section_colour_by_speed ( dp->vtl, tp, tp2, average_speed, low_speed, high_speed );
-            main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+            main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, track_section_colour_by_speed ( dp->vtl, tp, tp2, average_speed, low_speed, high_speed ) );
           }
         }
 
@@ -1379,8 +1358,8 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 	     */
             /* stops */
             if ( drawstops && VIK_TRACKPOINT(list->next->data)->timestamp - VIK_TRACKPOINT(list->data)->timestamp > dp->vtl->stop_length )
-	      /* Stop point.  Draw 6x circle. */
-              vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, 11), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
+	      /* Stop point.  Draw 6x circle. Always in redish colour */
+              vik_viewport_draw_arc ( dp->vp, g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_STOP), TRUE, x-(3*tp_size), y-(3*tp_size), 6*tp_size, 6*tp_size, 0, 360*64 );
 
 	    /* Regular point - draw 2x square. */
 	    vik_viewport_draw_rectangle ( dp->vp, main_gc, TRUE, x-tp_size, y-tp_size, 2*tp_size, 2*tp_size );
@@ -1462,8 +1441,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
             vik_viewport_coord_to_screen ( dp->vp, &(tp->coord), &x, &y );
 
             if ( !drawing_highlight && (dp->vtl->drawmode == DRAWMODE_BY_SPEED) ) {
-              dp->track_gc_iter = track_section_colour_by_speed ( dp->vtl, tp, tp2, average_speed, low_speed, high_speed );
-              main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, dp->track_gc_iter);
+              main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, track_section_colour_by_speed ( dp->vtl, tp, tp2, average_speed, low_speed, high_speed ));
 	    }
 
 	    /*
@@ -1493,9 +1471,6 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
       }
     }
   }
-  if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
-    if ( ++(dp->track_gc_iter) >= VIK_TRW_LAYER_TRACK_GC_MAX )
-      dp->track_gc_iter = 0;
 }
 
 /* the only reason this exists is so that trw_layer_draw_track can first call itself to draw the white track background */
@@ -1709,6 +1684,11 @@ static void trw_layer_free_track_gcs ( VikTrwLayer *vtl )
     g_object_unref ( vtl->track_bg_gc );
     vtl->track_bg_gc = NULL;
   }
+  if ( vtl->track_1color_gc )
+  {
+    g_object_unref ( vtl->track_1color_gc );
+    vtl->track_1color_gc = NULL;
+  }
   if ( vtl->current_track_gc ) 
   {
     g_object_unref ( vtl->current_track_gc );
@@ -1757,22 +1737,8 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
 
   vtl->track_gc = g_array_sized_new ( FALSE, FALSE, sizeof ( GdkGC * ), VIK_TRW_LAYER_TRACK_GC );
 
-  gc[0] = vik_viewport_new_gc ( vp, "#2d870a", width ); /* below range */
-
-  gc[1] = vik_viewport_new_gc ( vp, "#0a8742", width );
-  gc[2] = vik_viewport_new_gc ( vp, "#0a8783", width );
-  gc[3] = vik_viewport_new_gc ( vp, "#0a4d87", width );
-  gc[4] = vik_viewport_new_gc ( vp, "#05469f", width );
-  gc[5] = vik_viewport_new_gc ( vp, "#1b059f", width );
-  gc[6] = vik_viewport_new_gc ( vp, "#2d059f", width );
-  gc[7] = vik_viewport_new_gc ( vp, "#4a059f", width );
-  gc[8] = vik_viewport_new_gc ( vp, "#84059f", width );
-  gc[9] = vik_viewport_new_gc ( vp, "#96059f", width );
-  gc[10] = vik_viewport_new_gc ( vp, "#f22ef2", width );
-
-  gc[11] = vik_viewport_new_gc ( vp, "#874200", width ); /* above range */
-
-  gc[12] = vik_viewport_new_gc ( vp, "#000000", width ); /* black / no speed data */
+  gc[VIK_TRW_LAYER_TRACK_GC_STOP] = vik_viewport_new_gc ( vp, "#874200", width );
+  gc[VIK_TRW_LAYER_TRACK_GC_BLACK] = vik_viewport_new_gc ( vp, "#000000", width ); // black
 
   gc[VIK_TRW_LAYER_TRACK_GC_SLOW] = vik_viewport_new_gc ( vp, "#E6202E", width ); // red-ish
   gc[VIK_TRW_LAYER_TRACK_GC_AVER] = vik_viewport_new_gc ( vp, "#D2CD26", width ); // yellow-ish
@@ -1832,11 +1798,28 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
+  GdkPixbuf *pixbuf = NULL;
+
+  if ( track->has_color ) {
+    pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, FALSE, 8, SMALL_ICON_SIZE, SMALL_ICON_SIZE );
+    // Annoyingly the GdkColor.pixel does not give the correct color when passed to gdk_pixbuf_fill (even when alloc'ed)
+    // Here is some magic found to do the conversion
+    // http://www.cs.binghamton.edu/~sgreene/cs360-2011s/topics/gtk+-2.20.1/gtk/gtkcolorbutton.c
+    guint32 pixel = ((track->color.red & 0xff00) << 16) |
+      ((track->color.green & 0xff00) << 8) |
+      (track->color.blue & 0xff00);
+
+    gdk_pixbuf_fill ( pixbuf, pixel );
+  }
+
 #ifdef VIK_CONFIG_ALPHABETIZED_TRW
-  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), NULL, TRUE, TRUE );
+  vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, TRUE );
 #else
-  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), NULL, TRUE, TRUE );
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, TRUE );
 #endif
+
+  if ( pixbuf )
+    g_object_unref (pixbuf);
 
   *new_iter = *((GtkTreeIter *) pass_along[1]);
   if ( track->is_route )
@@ -3128,17 +3111,24 @@ static void trw_layer_new_track ( gpointer lav[2] )
   }
 }
 
+static void new_route_create_common ( VikTrwLayer *vtl, gchar *name )
+{
+  vtl->current_track = vik_track_new();
+  vtl->current_track->visible = TRUE;
+  vtl->current_track->is_route = TRUE;
+  // By default make all routes red
+  vtl->current_track->has_color = TRUE;
+  gdk_color_parse ( "red", &vtl->current_track->color );
+  vik_trw_layer_add_route ( vtl, name, vtl->current_track );
+}
+
 static void trw_layer_new_route ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
 
   if ( ! vtl->current_track ) {
     gchar *name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, _("Route")) ;
-    vtl->current_track = vik_track_new();
-    vtl->current_track->visible = TRUE;
-    vtl->current_track->is_route = TRUE;
-    vik_trw_layer_add_route ( vtl, name, vtl->current_track );
-
+    new_route_create_common ( vtl, name );
     vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_ROUTE );
   }
 }
@@ -3546,7 +3536,8 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
   }
 
   g_hash_table_insert ( vtl->tracks, GUINT_TO_POINTER(tr_uuid), t );
- 
+
+  trw_layer_update_treeview ( vtl, t, GUINT_TO_POINTER(tr_uuid) );
 }
 
 // Fake Route UUIDs vi simple increasing integer
@@ -3580,6 +3571,7 @@ void vik_trw_layer_add_route ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
   g_hash_table_insert ( vtl->routes, GUINT_TO_POINTER(rt_uuid), t );
 
+  trw_layer_update_treeview ( vtl, t, GUINT_TO_POINTER(rt_uuid) );
 }
 
 /* to be called whenever a track has been deleted or may have been changed. */
@@ -4135,10 +4127,49 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
     if ( tr && tr->name )
     {
       vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-				  vtl, tr,
+				  vtl,
+                                  tr,
 				  pass_along[1], /* vlp */
-				  pass_along[5] );  /* vvp */
+				  pass_along[5], /* vvp */
+                                  pass_along[6]); /* iter */
     }
+  }
+}
+
+/*
+ * Update the treeview of the track id - primarily to update the icon
+ */
+void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gpointer *trk_id )
+{
+  trku_udata udata;
+  udata.trk  = trk;
+  udata.uuid = NULL;
+
+  gpointer *trkf = NULL;
+  if ( trk->is_route )
+    trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udata );
+  else
+    trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
+
+  if ( trkf && udata.uuid ) {
+
+    GtkTreeIter *iter = NULL;
+    if ( trk->is_route )
+      iter = g_hash_table_lookup ( vtl->routes_iters, udata.uuid );
+    else
+      iter = g_hash_table_lookup ( vtl->tracks_iters, udata.uuid );
+
+    if ( iter ) {
+      // TODO: Make this a function
+      GdkPixbuf *pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, FALSE, 8, 18, 18);
+      guint32 pixel = ((trk->color.red & 0xff00) << 16) |
+	((trk->color.green & 0xff00) << 8) |
+	(trk->color.blue & 0xff00);
+      gdk_pixbuf_fill ( pixbuf, pixel );
+      vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, iter, pixbuf );
+      g_object_unref (pixbuf);
+    }
+
   }
 }
 
@@ -4941,6 +4972,7 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl, gint subt
       newglist->data = vik_trackpoint_copy(VIK_TRACKPOINT(vtl->current_tpl->data));
       tr->trackpoints = newglist;
       tr->is_route = vtl->current_tp_track->is_route;
+      tr->color = vtl->current_tp_track->color;
       tr->visible = TRUE;
 
       vtl->current_tpl->next->prev = newglist; /* end old track here */
@@ -5117,6 +5149,7 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
       tr = vik_track_new();
       tr->visible = track->visible;
       tr->is_route = track->is_route;
+      tr->color = track->color;
       tr->trackpoints = (GList *)(iter->data);
 
       if ( track->is_route ) {
@@ -7519,7 +7552,7 @@ static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event,
       g_free ( last->data );
       vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
     }
-    
+
     update_statusbar ( vtl );
 
     vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
@@ -7651,12 +7684,7 @@ static gboolean tool_new_route_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   {
     gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, _("Route"));
     if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->routes, name, TRUE ) ) )
-    {
-      vtl->current_track = vik_track_new();
-      vtl->current_track->visible = TRUE;
-      vtl->current_track->is_route = TRUE;
-      vik_trw_layer_add_route ( vtl, name, vtl->current_track );
-    }
+      new_route_create_common ( vtl, name );
     else
       return TRUE;
   }
@@ -8058,6 +8086,75 @@ void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
       g_free ( tmp );
     }
   }
+}
+
+static const gchar* my_track_colors ( gint ii )
+{
+  static const gchar* colors[VIK_TRW_LAYER_TRACK_GCS] = {
+    "#2d870a",
+    "#0a8742",
+    "#0a8783",
+    "#0e4d87",
+    "#05469f",
+    "#1b059f",
+    "#2d059f",
+    "#4a059f",
+    "#84059f",
+    "#96059f"
+  };
+  // Fast and reliable way of returning a colour
+  return colors[(ii % VIK_TRW_LAYER_TRACK_GCS)];
+}
+
+static void trw_layer_track_alloc_colors ( VikTrwLayer *vtl )
+{
+  GHashTableIter iter;
+  gpointer key, value;
+
+  gint ii = 0;
+  // Tracks
+  g_hash_table_iter_init ( &iter, vtl->tracks );
+
+  while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+
+    // Tracks get a random spread of colours if not already assigned
+    if ( ! VIK_TRACK(value)->has_color ) {
+      gdk_color_parse ( my_track_colors (ii) , &(VIK_TRACK(value)->color) );
+      VIK_TRACK(value)->has_color = TRUE;
+    }
+
+    trw_layer_update_treeview ( vtl, VIK_TRACK(value), key );
+
+    ii++;
+    if (ii > VIK_TRW_LAYER_TRACK_GCS)
+      ii = 0;
+  }
+
+  // Routes
+  ii = 0;
+  g_hash_table_iter_init ( &iter, vtl->routes );
+
+  while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+
+    // Routes get an intermix of reds
+    if ( ! VIK_TRACK(value)->has_color ) {
+      if ( ii )
+        gdk_color_parse ( "#FF0000" , &(VIK_TRACK(value)->color) ); // Red
+      else
+        gdk_color_parse ( "#B40916" , &(VIK_TRACK(value)->color) ); // Dark Red
+      VIK_TRACK(value)->has_color = TRUE;
+    }
+
+    trw_layer_update_treeview ( vtl, VIK_TRACK(value), key );
+
+    ii = !ii;
+  }
+}
+
+static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vp )
+{
+  trw_layer_verify_thumbnails ( vtl, vp );
+  trw_layer_track_alloc_colors ( vtl );
 }
 
 VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl )
