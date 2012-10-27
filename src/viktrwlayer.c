@@ -642,12 +642,6 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSelectedViewportMenu)    trw_layer_show_selected_viewport_menu,
 };
 
-// for copy & paste
-typedef struct {
-  guint len;
-  guint8 data[0];
-} FlatItem;
-
 GType vik_trw_layer_get_type ()
 {
   static GType vtl_type = 0;
@@ -761,7 +755,6 @@ static void trw_layer_paste_item_cb ( gpointer pass_along[6])
 
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len )
 {
-  FlatItem *fi;
   guint8 *id;
   guint il;
 
@@ -770,44 +763,36 @@ static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer subla
     return;
   }
 
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
-  {
+  GByteArray *ba = g_byte_array_new ();
+
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
     vik_waypoint_marshall ( g_hash_table_lookup ( vtl->waypoints, sublayer ), &id, &il );
-    // 'Simple' memory copy of byte array from the marshalling above
-    *len = sizeof(FlatItem) + 1 + il; // not sure what the 1 is for yet...
-    fi = g_malloc ( *len );
-    fi->len = *len;
-    memcpy(fi->data, id, il);
   } else if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
     vik_track_marshall ( g_hash_table_lookup ( vtl->tracks, sublayer ), &id, &il );
-    // less magic than before...
-    *len = sizeof(FlatItem) + 1 + il;
-    fi = g_malloc ( *len );
-    fi->len = *len;
-    memcpy(fi->data, id, il);
   } else {
     vik_track_marshall ( g_hash_table_lookup ( vtl->routes, sublayer ), &id, &il );
-    // less magic than before...
-    *len = sizeof(FlatItem) + 1 + il;
-    fi = g_malloc ( *len );
-    fi->len = *len;
-    memcpy(fi->data, id, il);
   }
 
+  g_byte_array_append ( ba, id, il );
+
   g_free(id);
-  *item = (guint8 *)fi;
+
+  *len = ba->len;
+  *item = ba->data;
 }
 
 static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *item, guint len )
 {
-  FlatItem *fi = (FlatItem *) item;
+  if ( !item )
+    return FALSE;
 
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT && fi )
+  gchar *name;
+
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
   {
     VikWaypoint *w;
-    gchar *name;
 
-    w = vik_waypoint_unmarshall(fi->data, fi->len);
+    w = vik_waypoint_unmarshall ( item, len );
     // When copying - we'll create a new name based on the original
     name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, w->name);
     vik_trw_layer_add_waypoint ( vtl, name, w );
@@ -818,12 +803,11 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
       vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK && fi )
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
   {
     VikTrack *t;
-    gchar *name;
 
-    t = vik_track_unmarshall(fi->data, fi->len);
+    t = vik_track_unmarshall ( item, len );
     // When copying - we'll create a new name based on the original
     name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, t->name);
     vik_trw_layer_add_track ( vtl, name, t );
@@ -834,12 +818,11 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
       vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     return TRUE;
   }
-  if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE && fi )
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE )
   {
     VikTrack *t;
-    gchar *name;
 
-    t = vik_track_unmarshall(fi->data, fi->len);
+    t = vik_track_unmarshall ( item, len );
     // When copying - we'll create a new name based on the original
     name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, t->name);
     vik_trw_layer_add_route ( vtl, name, t );
