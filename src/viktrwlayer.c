@@ -8143,14 +8143,14 @@ static const gchar* my_track_colors ( gint ii )
 {
   static const gchar* colors[VIK_TRW_LAYER_TRACK_GCS] = {
     "#2d870a",
-    "#0a8742",
+    "#135D34",
     "#0a8783",
     "#0e4d87",
     "#05469f",
-    "#1b059f",
+    "#695CBB",
     "#2d059f",
     "#4a059f",
-    "#84059f",
+    "#5A171A",
     "#96059f"
   };
   // Fast and reliable way of returning a colour
