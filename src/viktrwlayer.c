@@ -953,58 +953,126 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
 {
   guint8 *pd;
-  gchar *dd;
-  gsize dl;
   gint pl;
-  gchar *tmpname;
-  FILE *f;
 
   *data = NULL;
 
-  if ((f = fdopen(g_file_open_tmp (NULL, &tmpname, NULL), "r+"))) {
-    a_gpx_write_file(vtl, f, NULL);
-    vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
-    fclose(f);
-    f = NULL;
-    g_file_get_contents(tmpname, &dd, &dl, NULL);
-    *len = sizeof(pl) + pl + dl;
-    *data = g_malloc(*len);
-    memcpy(*data, &pl, sizeof(pl));
-    memcpy(*data + sizeof(pl), pd, pl);
-    memcpy(*data + sizeof(pl) + pl, dd, dl);
-    
-    g_free(pd);
-    g_free(dd);
-    g_remove(tmpname);
-    g_free(tmpname);
+  // Use byte arrays to store sublayer data
+  // much like done elsewhere e.g. vik_layer_marshall_params()
+  GByteArray *ba = g_byte_array_new ( );
+
+  guint8 *sl_data;
+  guint sl_len;
+
+  guint object_length;
+  guint subtype;
+  // store:
+  // the length of the item
+  // the sublayer type of item
+  // the the actual item
+#define tlm_append(object_pointer, size, type)	\
+  subtype = (type); \
+  object_length = (size); \
+  g_byte_array_append ( ba, (guint8 *)&object_length, sizeof(object_length) ); \
+  g_byte_array_append ( ba, (guint8 *)&subtype, sizeof(subtype) ); \
+  g_byte_array_append ( ba, (object_pointer), object_length );
+
+  // Layer parameters first
+  vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
+  g_byte_array_append ( ba, (guint8 *)&pl, sizeof(pl) ); \
+  g_byte_array_append ( ba, pd, pl );
+  g_free ( pd );
+
+  // Now sublayer data
+  GHashTableIter iter;
+  gpointer key, value;
+
+  // Waypoints
+  g_hash_table_iter_init ( &iter, vtl->waypoints );
+  while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+    vik_waypoint_marshall ( VIK_WAYPOINT(value), &sl_data, &sl_len );
+    tlm_append ( sl_data, sl_len, VIK_TRW_LAYER_SUBLAYER_WAYPOINT );
+    g_free ( sl_data );
   }
+
+  // Tracks
+  g_hash_table_iter_init ( &iter, vtl->tracks );
+  while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+    vik_track_marshall ( VIK_TRACK(value), &sl_data, &sl_len );
+    tlm_append ( sl_data, sl_len, VIK_TRW_LAYER_SUBLAYER_TRACK );
+    g_free ( sl_data );
+  }
+
+  // Routes
+  g_hash_table_iter_init ( &iter, vtl->routes );
+  while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+    vik_track_marshall ( VIK_TRACK(value), &sl_data, &sl_len );
+    tlm_append ( sl_data, sl_len, VIK_TRW_LAYER_SUBLAYER_ROUTE );
+    g_free ( sl_data );
+  }
+
+#undef tlm_append
+
+  *data = ba->data;
+  *len = ba->len;
 }
 
 static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikTrwLayer *rv = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, NULL, FALSE ));
+  VikTrwLayer *vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, NULL, FALSE ));
   gint pl;
-  gchar *tmpname;
-  FILE *f;
+  gint consumed_length;
 
-
+  // First the overall layer parameters
   memcpy(&pl, data, sizeof(pl));
   data += sizeof(pl);
-  vik_layer_unmarshall_params ( VIK_LAYER(rv), data, pl, vvp );
+  vik_layer_unmarshall_params ( VIK_LAYER(vtl), data, pl, vvp );
   data += pl;
 
-  if (!(f = fdopen(g_file_open_tmp (NULL, &tmpname, NULL), "r+"))) {
-    g_critical("couldn't open temp file");
-    exit(1);
+  consumed_length = pl;
+  const gint sizeof_len_and_subtype = sizeof(gint) + sizeof(gint);
+
+#define tlm_size (*(gint *)data)
+  // See marshalling above for order of how this is written
+#define tlm_next \
+  data += sizeof_len_and_subtype + tlm_size;
+
+  // Now the individual sublayers:
+
+  while ( *data && consumed_length < len ) {
+    // Normally four extra bytes at the end of the datastream
+    //  (since it's a GByteArray and that's where it's length is stored)
+    //  So only attempt read when there's an actual block of sublayer data
+    if ( consumed_length + tlm_size < len ) {
+
+      // Reuse pl to read the subtype from the data stream
+      memcpy(&pl, data+sizeof(gint), sizeof(pl));
+
+      if ( pl == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
+        VikTrack *trk = vik_track_unmarshall ( data + sizeof_len_and_subtype, 0 );
+        gchar *name = g_strdup ( trk->name );
+        vik_trw_layer_add_track ( vtl, name, trk );
+        g_free ( name );
+      }
+      if ( pl == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
+        VikWaypoint *wp = vik_waypoint_unmarshall ( data + sizeof_len_and_subtype, 0 );
+        gchar *name = g_strdup ( wp->name );
+        vik_trw_layer_add_waypoint ( vtl, name, wp );
+        g_free ( name );
+      }
+      if ( pl == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
+        VikTrack *trk = vik_track_unmarshall ( data + sizeof_len_and_subtype, 0 );
+        gchar *name = g_strdup ( trk->name );
+        vik_trw_layer_add_route ( vtl, name, trk );
+        g_free ( name );
+      }
+    }
+    consumed_length += tlm_size + sizeof_len_and_subtype;
+    tlm_next;
   }
-  fwrite(data, len - pl - sizeof(pl), 1, f);
-  rewind(f);
-  a_gpx_read_file(rv, f);
-  fclose(f);
-  f = NULL;
-  g_remove(tmpname);
-  g_free(tmpname);
-  return rv;
+  //g_debug ("consumed_length %d vs len %d", consumed_length, len);
+
+  return vtl;
 }
 
 // Keep interesting hash function at least visible
