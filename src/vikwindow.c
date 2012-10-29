@@ -2646,7 +2646,62 @@ static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointe
   g_free ( label_text );
 }
 
-static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_image_only )
+/*
+ * Get an allocated filename (or directory as specified)
+ */
+static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
+{
+  gchar *fn = NULL;
+  if ( one_image_only )
+  {
+    // Single file
+    if (!vw->save_img_dia) {
+      vw->save_img_dia = gtk_file_chooser_dialog_new (_("Save Image"),
+                                                      GTK_WINDOW(vw),
+                                                      GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                                                      NULL);
+      gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dia), GTK_WINDOW(vw) );
+      gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dia), TRUE );
+    }
+
+    if ( gtk_dialog_run ( GTK_DIALOG(vw->save_img_dia) ) == GTK_RESPONSE_ACCEPT ) {
+      fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(vw->save_img_dia) );
+      if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) )
+	if ( ! a_dialog_yes_or_no ( GTK_WINDOW(vw->save_img_dia), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
+	  fn = NULL;
+    }
+    gtk_widget_hide ( vw->save_img_dia );
+  }
+  else {
+    // A directory
+    // For some reason this method is only written to work in UTM...
+    if ( vik_viewport_get_coord_mode(vw->viking_vvp) != VIK_COORD_UTM ) {
+      a_dialog_error_msg ( GTK_WINDOW(vw), _("You must be in UTM mode to use this feature") );
+      return fn;
+    }
+
+    if (!vw->save_img_dir_dia) {
+      vw->save_img_dir_dia = gtk_file_chooser_dialog_new (_("Choose a directory to hold images"),
+                                                          GTK_WINDOW(vw),
+                                                          GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                          GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+                                                          NULL);
+      gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dir_dia), GTK_WINDOW(vw) );
+      gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dir_dia), TRUE );
+    }
+
+    if ( gtk_dialog_run ( GTK_DIALOG(vw->save_img_dir_dia) ) == GTK_RESPONSE_ACCEPT ) {
+      fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(vw->save_img_dir_dia) );
+    }
+    gtk_widget_hide ( vw->save_img_dir_dia );
+  }
+  return fn;
+}
+
+static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
 {
   /* todo: default for answers inside VikWindow or static (thruout instance) */
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Save to Image File"), GTK_WINDOW(vw),
@@ -2742,6 +2797,11 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
     gtk_widget_hide ( GTK_WIDGET(dialog) );
+
+    gchar *fn = draw_image_filename ( vw, one_image_only );
+    if ( !fn )
+      return;
+
     if ( one_image_only )
       save_image_file ( vw, fn, 
                       vw->draw_image_width = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(width_spin) ),
@@ -2758,6 +2818,8 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_width_spin) ),
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_height_spin) ) );
     }
+
+    g_free ( fn );
   }
   gtk_widget_destroy ( GTK_WIDGET(dialog) );
 }
@@ -2765,64 +2827,12 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
 
 static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
 {
-  gchar *fn;
-  if (!vw->save_img_dia) {
-    vw->save_img_dia = gtk_file_chooser_dialog_new (_("Save Image"),
-				      GTK_WINDOW(vw),
-				      GTK_FILE_CHOOSER_ACTION_SAVE,
-				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
-				      NULL);
-    gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dia), GTK_WINDOW(vw) );
-    gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dia), TRUE );
-  }
-
-  while ( gtk_dialog_run ( GTK_DIALOG(vw->save_img_dia) ) == GTK_RESPONSE_ACCEPT )
-  {
-    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(vw->save_img_dia) );
-    if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE || a_dialog_yes_or_no ( GTK_WINDOW(vw->save_img_dia), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
-    {
-      draw_to_image_file ( vw, fn, TRUE );
-      break;
-    }
-    g_free(fn);
-    fn = NULL;
-  }
-  gtk_widget_hide ( vw->save_img_dia );
+  draw_to_image_file ( vw, TRUE );
 }
 
 static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
 {
-  gchar *fn = NULL;
-  
-  if ( vik_viewport_get_coord_mode(vw->viking_vvp) != VIK_COORD_UTM ) {
-    a_dialog_error_msg ( GTK_WINDOW(vw), _("You must be in UTM mode to use this feature") );
-    return;
-  }
-
-  if (!vw->save_img_dir_dia) {
-    vw->save_img_dir_dia = gtk_file_chooser_dialog_new (_("Choose a directory to hold images"),
-				      GTK_WINDOW(vw),
-				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-				      NULL);
-    gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dir_dia), GTK_WINDOW(vw) );
-    gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dir_dia), TRUE );
-  }
-  
-  while ( gtk_dialog_run ( GTK_DIALOG(vw->save_img_dir_dia) ) == GTK_RESPONSE_ACCEPT )
-  {
-    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(vw->save_img_dir_dia) );
-    if ( fn )
-    {
-      draw_to_image_file ( vw, fn, FALSE );
-      g_free(fn);
-      fn = NULL;
-      break;
-    }
-  }
-  gtk_widget_hide ( vw->save_img_dir_dia );
+  draw_to_image_file ( vw, FALSE );
 }
 
 #if GTK_CHECK_VERSION(2,10,0)
