@@ -42,7 +42,7 @@ static List *queue_tail = NULL;
 static int queue_count = 0;
 
 static guint32 queue_size = 0;
-static guint32 max_queue_size = VIK_CONFIG_MAPCACHE_SIZE;
+static guint32 max_queue_size = VIK_CONFIG_MAPCACHE_SIZE * 1024 * 1024;
 
 
 static GHashTable *cache = NULL;
@@ -54,7 +54,7 @@ static GMutex *mc_mutex = NULL;
 
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */
- { 1, 300, 1, 0 },
+ { 1, 1024, 1, 0 },
 };
 
 static VikLayerParam prefs[] = {
@@ -64,7 +64,7 @@ static VikLayerParam prefs[] = {
 void a_mapcache_init ()
 {
   VikLayerParamData tmp;
-  tmp.u = VIK_CONFIG_MAPCACHE_SIZE / 1024 / 1024;
+  tmp.u = VIK_CONFIG_MAPCACHE_SIZE;
   a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   mc_mutex = g_mutex_new();

@@ -315,15 +315,15 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_SEARCH, ${VIK_CONFIG_SEARCH},
 
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
-                            [specify the size of the map cache (default is 50331648)])],
+                            [specify the size of the map cache in MB (default is 128)])],
             [if test "x$withval" = "xno"; then
                 VIK_CONFIG_MAPCACHE_SIZE=0;
              elif test "x$withval" = "xyes"; then
-                AC_MSG_ERROR([Please, set a value for size of the map cache])
+                AC_MSG_ERROR([Please, set a value for size of the map cache in MB])
              else
                 VIK_CONFIG_MAPCACHE_SIZE=${withval}
              fi],
-             [VIK_CONFIG_MAPCACHE_SIZE=50331648])
+             [VIK_CONFIG_MAPCACHE_SIZE=128])
 AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
                    [Size of the map cache])
 
