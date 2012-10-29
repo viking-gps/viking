@@ -2504,6 +2504,11 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
 
   /* save buffer as file. */
   pixbuf_to_save = gdk_pixbuf_get_from_drawable ( NULL, GDK_DRAWABLE(vik_viewport_get_pixmap ( vw->viking_vvp )), NULL, 0, 0, 0, 0, w, h);
+  if ( !pixbuf_to_save ) {
+    g_warning("Failed to generate internal pixmap");
+    goto cleanup;
+  }
+
   gdk_pixbuf_save ( pixbuf_to_save, fn, save_as_png ? "png" : "jpeg", &error, NULL );
   if (error)
   {
@@ -2512,6 +2517,7 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   }
   g_object_unref ( G_OBJECT(pixbuf_to_save) );
 
+ cleanup:
   /* pretend like nothing happened ;) */
   vik_viewport_set_xmpp ( vw->viking_vvp, old_xmpp );
   vik_viewport_set_ympp ( vw->viking_vvp, old_ympp );
@@ -2662,10 +2668,12 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
 
 
   width_label = gtk_label_new ( _("Width (pixels):") );
-  width_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vw->draw_image_width, 10, 5000, 10, 100, 0 )), 10, 0 );
+  width_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vw->draw_image_width, 10, 50000, 10, 100, 0 )), 10, 0 );
   height_label = gtk_label_new ( _("Height (pixels):") );
-  height_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vw->draw_image_height, 10, 5000, 10, 100, 0 )), 10, 0 );
-
+  height_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vw->draw_image_height, 10, 50000, 10, 100, 0 )), 10, 0 );
+#ifdef WINDOWS
+  GtkWidget *win_warning_label = gtk_label_new ( _("WARNING: USING LARGE IMAGES OVER 10000x10000\nMAY CRASH THE PROGRAM!") );
+#endif
   zoom_label = gtk_label_new ( _("Zoom (meters per pixel):") );
   /* TODO: separate xzoom and yzoom factors */
   zoom_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vik_viewport_get_xmpp(vw->viking_vvp), VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM/2.0, 1, 100, 0 )), 16, 0);
@@ -2692,6 +2700,9 @@ static void draw_to_image_file ( VikWindow *vw, const gchar *fn, gboolean one_im
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), width_spin, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), height_label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), height_spin, FALSE, FALSE, 0);
+#ifdef WINDOWS
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), win_warning_label, FALSE, FALSE, 0);
+#endif
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), current_window_button, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), png_radio, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), jpeg_radio, FALSE, FALSE, 0);

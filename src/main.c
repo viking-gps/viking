@@ -58,6 +58,10 @@ void a_datasource_gc_init();
 #define LOCALEDIR "locale"
 #endif
 
+#ifdef HAVE_X11_XLIB_H
+#include "X11/Xlib.h"
+#endif
+
 #if GLIB_CHECK_VERSION (2, 32, 0)
 /* Callback to log message */
 static void log_debug(const gchar *log_domain,
@@ -75,6 +79,20 @@ static void mute_log(const gchar *log_domain,
                      gpointer user_data)
 {
   /* Nothing to do, we just want to mute */
+}
+#endif
+
+#if HAVE_X11_XLIB_H
+static int myXErrorHandler(Display *display, XErrorEvent *theEvent)
+{
+  g_fprintf (stderr,
+             _("Ignoring Xlib error: error code %d request code %d\n"),
+             theEvent->error_code,
+             theEvent->request_code);
+  // No exit on X errors!
+  //  mainly to handle out of memory error when requesting large pixbuf from user request
+  //  see vikwindow.c::save_image_file ()
+  return 0;
 }
 #endif
 
@@ -135,6 +153,10 @@ int main( int argc, char *argv[] )
 #else
   if (!vik_debug)
     g_log_set_handler (NULL, G_LOG_LEVEL_DEBUG, mute_log, NULL);
+#endif
+
+#if HAVE_X11_XLIB_H
+  XSetErrorHandler(myXErrorHandler);
 #endif
 
   a_preferences_init ();
