@@ -2491,6 +2491,23 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   gdouble old_xmpp, old_ympp;
   GError *error = NULL;
 
+  GtkWidget *msgbox = gtk_message_dialog_new ( GTK_WINDOW(vw),
+                                               GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                               GTK_MESSAGE_INFO,
+                                               GTK_BUTTONS_NONE,
+					       _("Generating image file...") );
+
+  g_signal_connect_swapped (msgbox, "response", G_CALLBACK (gtk_widget_destroy), msgbox);
+  // Ensure dialog shown
+  gtk_widget_show_all ( msgbox );
+  // Try harder...
+  vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, _("Generating image file...") );
+  while ( gtk_events_pending() )
+    gtk_main_iteration ();
+  // Despite many efforts & variations, GTK on my Linux system doesn't show the actual msgbox contents :(
+  // At least the empty box can give a clue something's going on + the statusbar msg...
+  // Windows version under Wine OK!
+
   /* backup old zoom & set new */
   old_xmpp = vik_viewport_get_xmpp ( vw->viking_vvp );
   old_ympp = vik_viewport_get_ympp ( vw->viking_vvp );
@@ -2505,7 +2522,8 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   /* save buffer as file. */
   pixbuf_to_save = gdk_pixbuf_get_from_drawable ( NULL, GDK_DRAWABLE(vik_viewport_get_pixmap ( vw->viking_vvp )), NULL, 0, 0, 0, 0, w, h);
   if ( !pixbuf_to_save ) {
-    g_warning("Failed to generate internal pixmap");
+    g_warning("Failed to generate internal pixmap size: %d x %d", w, h);
+    gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Failed to generate internal image.\n\nTry creating a smaller image.") );
     goto cleanup;
   }
 
@@ -2513,11 +2531,20 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   if (error)
   {
     g_warning("Unable to write to file %s: %s", fn, error->message );
+    gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Failed to generate image file.") );
     g_error_free (error);
+  }
+  else {
+    // Success
+    gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Image file generated.") );
   }
   g_object_unref ( G_OBJECT(pixbuf_to_save) );
 
  cleanup:
+  vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, "" );
+  gtk_dialog_add_button ( GTK_DIALOG(msgbox), GTK_STOCK_OK, GTK_RESPONSE_OK );
+  gtk_dialog_run ( GTK_DIALOG(msgbox) ); // Don't care about the result
+
   /* pretend like nothing happened ;) */
   vik_viewport_set_xmpp ( vw->viking_vvp, old_xmpp );
   vik_viewport_set_ympp ( vw->viking_vvp, old_ympp );
