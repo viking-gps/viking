@@ -2662,6 +2662,28 @@ static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
                                                       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                                       GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
                                                       NULL);
+
+      GtkFileChooser *chooser = GTK_FILE_CHOOSER ( vw->save_img_dia );
+      /* Add filters */
+      GtkFileFilter *filter;
+      filter = gtk_file_filter_new ();
+      gtk_file_filter_set_name ( filter, _("All") );
+      gtk_file_filter_add_pattern ( filter, "*" );
+      gtk_file_chooser_add_filter ( chooser, filter );
+
+      filter = gtk_file_filter_new ();
+      gtk_file_filter_set_name ( filter, _("JPG") );
+      gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+      gtk_file_chooser_add_filter ( chooser, filter );
+
+      filter = gtk_file_filter_new ();
+      gtk_file_filter_set_name ( filter, _("PNG") );
+      gtk_file_filter_add_mime_type ( filter, "image/png");
+      gtk_file_chooser_add_filter ( chooser, filter );
+
+      // Default to pngs
+      gtk_file_chooser_set_filter ( chooser, filter );
+
       gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dia), GTK_WINDOW(vw) );
       gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dia), TRUE );
     }
