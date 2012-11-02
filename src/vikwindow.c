@@ -2285,6 +2285,20 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
 				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 				      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 				      NULL);
+    GtkFileFilter *filter;
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("All") );
+    gtk_file_filter_add_pattern ( filter, "*" );
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->save_dia), filter);
+
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Viking") );
+    gtk_file_filter_add_pattern ( filter, "*.vik" );
+    gtk_file_filter_add_pattern ( filter, "*.viking" );
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->save_dia), filter);
+    // Default to a Viking file
+    gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(vw->save_dia), filter);
+
     gtk_window_set_transient_for ( GTK_WINDOW(vw->save_dia), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_dia), TRUE );
   }
