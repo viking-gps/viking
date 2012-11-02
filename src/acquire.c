@@ -199,7 +199,7 @@ static gchar *write_tmp_trwlayer ( VikTrwLayer *vtl )
   FILE *f;
   g_assert ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0);
   f = fdopen(fd_src, "w");
-  a_gpx_write_file(vtl, f);
+  a_gpx_write_file(vtl, f, NULL);
   fclose(f);
   f = NULL;
   return name_src;
@@ -213,7 +213,7 @@ static gchar *write_tmp_track ( VikTrack *track )
   FILE *f;
   g_assert ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0);
   f = fdopen(fd_src, "w");
-  a_gpx_write_track_file(track, f); /* Thank you Guilhem! Just when I needed this function... -- Evan */
+  a_gpx_write_track_file(track, f, NULL); /* Thank you Guilhem! Just when I needed this function... -- Evan */
   fclose(f);
   f = NULL;
   return name_src;

@@ -34,6 +34,7 @@
 
 #include "viking.h"
 #include "vikmapslayer.h"
+#include "vikgpslayer.h"
 #include "viktrwlayer_tpwin.h"
 #include "viktrwlayer_propwin.h"
 #ifdef VIK_CONFIG_GEOTAG
@@ -53,6 +54,7 @@
 #endif
 #include "acquire.h"
 #include "datasources.h"
+#include "datasource_gps.h"
 #include "util.h"
 
 #include "icons/icons.h"
@@ -255,6 +257,7 @@ static void trw_layer_reverse ( gpointer pass_along[6] );
 static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] );
 static void trw_layer_edit_trackpoint ( gpointer pass_along[6] );
 static void trw_layer_show_picture ( gpointer pass_along[6] );
+static void trw_layer_gps_upload_any ( gpointer pass_along[6] );
 
 static void trw_layer_centerize ( gpointer layer_and_vlp[2] );
 static void trw_layer_auto_view ( gpointer layer_and_vlp[2] );
@@ -288,6 +291,7 @@ static void trw_layer_acquire_geocache_cb ( gpointer lav[2] );
 #ifdef VIK_CONFIG_GEOTAG
 static void trw_layer_acquire_geotagged_cb ( gpointer lav[2] );
 #endif
+static void trw_layer_gps_upload ( gpointer lav[2] );
 
 /* pop-up items */
 static void trw_layer_properties_item ( gpointer pass_along[7] );
@@ -844,7 +848,7 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
   *data = NULL;
 
   if ((f = fdopen(g_file_open_tmp (NULL, &tmpname, NULL), "r+"))) {
-    a_gpx_write_file(vtl, f);
+    a_gpx_write_file(vtl, f, NULL);
     vik_layer_marshall_params(VIK_LAYER(vtl), &pd, &pl);
     fclose(f);
     f = NULL;
@@ -2322,7 +2326,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, co
     if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE )
     {
       gtk_widget_hide ( file_selector );
-      failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trk );
+      failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trk, TRUE );
       break;
     }
     else
@@ -2330,7 +2334,7 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, co
       if ( a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
       {
         gtk_widget_hide ( file_selector );
-	failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trk );
+	failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trk, TRUE );
         break;
       }
     }
@@ -2384,7 +2388,7 @@ static void trw_layer_export_external_gpx ( gpointer layer_and_vlp[2], const gch
   int fd;
 
   if ((fd = g_file_open_tmp("tmp-viking.XXXXXX.gpx", &name_used, NULL)) >= 0) {
-    gboolean failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), name_used, FILE_TYPE_GPX, NULL);
+    gboolean failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), name_used, FILE_TYPE_GPX, NULL, TRUE);
     if (failed) {
       a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("Could not create temporary file for export.") );
     }
@@ -2708,6 +2712,92 @@ static void trw_layer_acquire_geotagged_cb ( gpointer lav[2] )
 }
 #endif
 
+static void trw_layer_gps_upload ( gpointer lav[2] )
+{
+  gpointer pass_along[6];
+  pass_along[0] = lav[0];
+  pass_along[1] = lav[1];
+  pass_along[2] = NULL; // No track - operate on the layer
+  pass_along[3] = NULL;
+  pass_along[4] = NULL;
+  pass_along[5] = NULL;
+
+  trw_layer_gps_upload_any ( pass_along );
+}
+
+/**
+ * If pass_along[3] is defined that this will upload just that track
+ */
+static void trw_layer_gps_upload_any ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(pass_along[1]);
+
+  // May not actually get a track here as pass_along[3] can be null
+  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+
+  gboolean on_track = track ? TRUE : FALSE;
+
+  if (on_track && !track->visible) {
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Can not upload invisible track.") );
+    return;
+  }
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("GPS Upload"),
+                                                    VIK_GTK_WINDOW_FROM_LAYER(pass_along[0]),
+                                                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_OK,
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    GTK_STOCK_CANCEL,
+                                                    GTK_RESPONSE_REJECT,
+                                                    NULL );
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
+
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  gpointer dgs = datasource_gps_setup ( dialog, on_track );
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
+    datasource_gps_clean_up ( dgs );
+    gtk_widget_destroy ( dialog );
+    return;
+  }
+
+  // Get info from reused datasource dialog widgets
+  gchar* protocol = datasource_gps_get_protocol ( dgs );
+  gchar* port = datasource_gps_get_descriptor ( dgs );
+  // NB don't free the above strings as they're references to values held elsewhere
+  gboolean do_tracks = datasource_gps_get_do_tracks ( dgs );
+  gboolean do_waypoints = datasource_gps_get_do_waypoints ( dgs );
+  gboolean turn_off = datasource_gps_get_off ( dgs );
+
+  gtk_widget_destroy ( dialog );
+
+  // When called from the viewport - work the corresponding layerspanel:
+  if ( !vlp ) {
+    vlp = vik_window_layers_panel ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+  }
+
+  // Apply settings to transfer to the GPS device
+  vik_gps_comm ( vtl,
+                 track,
+                 GPS_UP,
+                 protocol,
+                 port,
+                 FALSE,
+                 vik_layers_panel_get_viewport (vlp),
+                 vlp,
+                 do_tracks,
+                 do_waypoints,
+                 turn_off );
+}
+
 static void trw_layer_new_wp ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
@@ -2913,13 +3003,26 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_widget_show ( item );
 #endif
 
+  GtkWidget *upload_submenu = gtk_menu_new ();
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Upload") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU) );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), upload_submenu );
+
 #ifdef VIK_CONFIG_OPENSTREETMAP 
   item = gtk_image_menu_item_new_with_mnemonic ( _("Upload to _OSM...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (upload_submenu), item);
   gtk_widget_show ( item );
 #endif
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Upload to _GPS...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_gps_upload), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (upload_submenu), item);
+  gtk_widget_show ( item );
 
   GtkWidget *delete_submenu = gtk_menu_new ();
   item = gtk_image_menu_item_new_with_mnemonic ( _("De_lete") );
@@ -5121,15 +5224,28 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_widget_show ( item );
 #endif
 
+    GtkWidget *upload_submenu = gtk_menu_new ();
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Upload") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU) );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), upload_submenu );
+
 #ifdef VIK_CONFIG_OPENSTREETMAP
     item = gtk_image_menu_item_new_with_mnemonic ( _("Upload to _OSM...") );
     // Convert internal pointer into actual track for usage outside this file
     pass_along[7] = g_hash_table_lookup ( l->tracks, sublayer);
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_track_cb), pass_along );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU) );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_track_cb), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(upload_submenu), item );
     gtk_widget_show ( item );
 #endif
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Upload to GPS...") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_gps_upload_any), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(upload_submenu), item );
+    gtk_widget_show ( item );
 
     if ( is_valid_google_route ( l, sublayer ) )
     {

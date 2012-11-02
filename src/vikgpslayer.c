@@ -82,10 +82,10 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl);
 static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed);
 #endif
 
-typedef enum {GARMIN_P = 0, MAGELLAN_P, DELORME_P, NAVILINK_P, NUM_PROTOCOLS} vik_gps_proto;
-static gchar * params_protocols[] = {"Garmin", "Magellan", "DeLorme", "NAViLink", NULL};
-static gchar * protocols_args[]   = {"garmin", "magellan", "delbin", "navilink"};
-/*#define NUM_PROTOCOLS (sizeof(params_protocols)/sizeof(params_protocols[0]) - 1) */
+// Shouldn't need to use these much any more as the protocol is now saved as a string.
+// They are kept for compatibility loading old .vik files
+typedef enum {GARMIN_P = 0, MAGELLAN_P, DELORME_P, NAVILINK_P, OLD_NUM_PROTOCOLS} vik_gps_proto;
+static gchar * protocols_args[]   = {"garmin", "magellan", "delbin", "navilink", NULL};
 #ifdef WINDOWS
 static gchar * params_ports[] = {"com1", "usb:", NULL};
 #else
@@ -100,18 +100,18 @@ static gchar * old_params_ports[] = {"com1", "usb:", NULL};
 static gchar * old_params_ports[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0", "/dev/ttyUSB1", "usb:", NULL};
 #endif
 #define OLD_NUM_PORTS (sizeof(old_params_ports)/sizeof(old_params_ports[0]) - 1)
-typedef enum {GPS_DOWN=0, GPS_UP} gps_dir;
 
 typedef struct {
   GMutex *mutex;
-  gps_dir direction;
+  vik_gps_dir direction;
   gchar *port;
   gboolean ok;
   gint total_count;
   gint count;
   VikTrwLayer *vtl;
+  VikTrack *track;
   gchar *cmd_args;
-  gchar * window_title;
+  gchar *window_title;
   GtkWidget *dialog;
   GtkWidget *status_label;
   GtkWidget *gps_label;
@@ -151,7 +151,7 @@ enum {
 #endif
 
 static VikLayerParam gps_layer_params[] = {
-  { "gps_protocol", VIK_LAYER_PARAM_UINT, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, params_protocols, NULL},
+  { "gps_protocol", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("GPS Protocol:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL}, // List now assigned at runtime
   { "gps_port", VIK_LAYER_PARAM_STRING, GROUP_DATA_MODE, N_("Serial Port:"), VIK_LAYER_WIDGET_COMBOBOX, params_ports, NULL},
   { "gps_download_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Download Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
   { "gps_upload_tracks", VIK_LAYER_PARAM_BOOLEAN, GROUP_DATA_MODE, N_("Upload Tracks:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL},
@@ -289,13 +289,35 @@ struct _VikGpsLayer {
   gboolean realtime_jump_to_start;
   guint vehicle_position;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-  guint protocol_id;
+  gchar *protocol;
   gchar *serial_port;
   gboolean download_tracks;
   gboolean download_waypoints;
   gboolean upload_tracks;
   gboolean upload_waypoints;
 };
+
+/**
+ * Overwrite the static setup with dynamically generated GPS Babel device list
+ */
+static void gps_layer_inst_init ( VikGpsLayer *self )
+{
+  gint new_proto = 0;
+  // +1 for luck (i.e the NULL terminator)
+  gchar **new_protocols = g_malloc(1 + g_list_length(a_babel_device_list)*sizeof(gpointer));
+
+  GList *gl = g_list_first ( a_babel_device_list );
+  while ( gl ) {
+    // should be using label property but use name for now
+    //  thus don't need to mess around converting label to name later on
+    new_protocols[new_proto++] = ((BabelDevice*)gl->data)->name;
+    gl = g_list_next ( gl );
+  }
+  new_protocols[new_proto] = NULL;
+
+  vik_gps_layer_interface.params[0].widget_data = new_protocols;
+  // assigned to [0] because this^ is the GPS protocol in the params list
+}
 
 GType vik_gps_layer_get_type ()
 {
@@ -313,7 +335,7 @@ GType vik_gps_layer_get_type ()
       NULL, /* class_data */
       sizeof (VikGpsLayer),
       0,
-      NULL /* instance init */
+      (GInstanceInitFunc) gps_layer_inst_init,
     };
     val_type = g_type_register_static ( VIK_LAYER_TYPE, "VikGpsLayer", &val_info, 0 );
   }
@@ -337,7 +359,7 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
 
 static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
 {
-  return params_protocols[vgl->protocol_id];
+  return vgl->protocol;
 }
 
 /* "Copy" */
@@ -409,16 +431,27 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
   switch ( id )
   {
     case PARAM_PROTOCOL:
-      if (data.u < NUM_PROTOCOLS)
-        vgl->protocol_id = data.u;
+      if (data.s) {
+        g_free(vgl->protocol);
+        // Backwards Compatibility: previous versions <v1.4 stored protocol as an array index
+        int index = data.s[0] - '0';
+        if (data.s[0] != '\0' &&
+            g_ascii_isdigit (data.s[0]) &&
+            data.s[1] == '\0' &&
+            index < OLD_NUM_PROTOCOLS)
+          // It is a single digit: activate compatibility
+          vgl->protocol = g_strdup(protocols_args[index]);
+        else
+          vgl->protocol = g_strdup(data.s);
+        g_debug("%s: %s", __FUNCTION__, vgl->protocol);
+      }
       else
         g_warning(_("Unknown GPS Protocol"));
       break;
     case PARAM_PORT:
-      if (data.s)
-{
+      if (data.s) {
         g_free(vgl->serial_port);
-        /* Compat: previous version stored serial_port as an array index */
+        // Backwards Compatibility: previous versions <v0.9.91 stored serial_port as an array index
         int index = data.s[0] - '0';
         if (data.s[0] != '\0' &&
             g_ascii_isdigit (data.s[0]) &&
@@ -428,8 +461,8 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
           vgl->serial_port = g_strdup(old_params_ports[index]);
         else
           vgl->serial_port = g_strdup(data.s);
-      g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
-}
+        g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
+      }
       else
         g_warning(_("Unknown serial port device"));
       break;
@@ -482,7 +515,8 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
   switch ( id )
   {
     case PARAM_PROTOCOL:
-      rv.u = vgl->protocol_id;
+      rv.s = vgl->protocol;
+      g_debug("%s: %s", __FUNCTION__, rv.s);
       break;
     case PARAM_PORT:
       rv.s = vgl->serial_port;
@@ -560,7 +594,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->vehicle_position = VEHICLE_POSITION_ON_SCREEN;
   vgl->gpsd_retry_interval = 10;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-  vgl->protocol_id = 0;
+  vgl->protocol = g_strdup("garmin");
   vgl->serial_port = NULL;
   vgl->download_tracks = TRUE;
   vgl->download_waypoints = TRUE;
@@ -750,6 +784,11 @@ static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIt
   GtkTreeIter iter;
   int ix;
 
+  // TODO set to garmin by default
+  //if (a_babel_device_list)
+  // device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+  // Need to access uibuild widgets somehow....
+
   for (ix = 0; ix < NUM_TRW; ix++) {
     VikLayer * trw = VIK_LAYER(vgl->trw_children[ix]);
     vik_treeview_add_layer ( VIK_LAYER(vgl)->vt, layer_iter, &iter,
@@ -924,6 +963,14 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
   case BABEL_DIAG_OUTPUT:
     line = (gchar *)data;
 
+    gdk_threads_enter();
+    g_mutex_lock(sess->mutex);
+    if (sess->ok) {
+      gtk_label_set_text ( GTK_LABEL(sess->status_label), _("Status: Working...") );
+    }
+    g_mutex_unlock(sess->mutex);
+    gdk_threads_leave();
+
     /* tells us how many items there will be */
     if (strstr(line, "Xfer Wpt")) { 
       sess->progress_label = sess->wp_label;
@@ -1008,6 +1055,14 @@ static void gps_upload_progress_func(BabelProgressCode c, gpointer data, GpsSess
   case BABEL_DIAG_OUTPUT:
     line = (gchar *)data;
 
+    gdk_threads_enter();
+    g_mutex_lock(sess->mutex);
+    if (sess->ok) {
+      gtk_label_set_text ( GTK_LABEL(sess->status_label), _("Status: Working...") );
+    }
+    g_mutex_unlock(sess->mutex);
+    gdk_threads_leave();
+
     if (strstr(line, "PRDDAT")) {
       gchar **tokens = g_strsplit(line, " ", 0);
       gchar info[128];
@@ -1074,7 +1129,7 @@ static void gps_comm_thread(GpsSession *sess)
     result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_download_progress_func, sess);
   else {
-    result = a_babel_convert_to (sess->vtl, sess->cmd_args, sess->port,
+    result = a_babel_convert_to (sess->vtl, sess->track, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_upload_progress_func, sess);
   }
 
@@ -1117,7 +1172,34 @@ static void gps_comm_thread(GpsSession *sess)
   g_thread_exit(NULL);
 }
 
-static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *port, gboolean tracking, VikViewport *vvp, VikLayersPanel *vlp, gboolean do_tracks, gboolean do_waypoints) {
+/**
+ * vik_gps_comm:
+ * @vtl: The TrackWaypoint layer to operate on
+ * @track: Operate on a particular track when specified
+ * @dir: The direction of the transfer
+ * @protocol: The GPS device communication protocol
+ * @port: The GPS serial port
+ * @tracking: If tracking then viewport display update will be skipped
+ * @vvp: A viewport is required as the display may get updated
+ * @vlp: A layers panel is needed for uploading as the items maybe modified
+ * @do_tracks: Whether tracks shoud be processed
+ * @do_waypoints: Whether waypoints shoud be processed
+ * @turn_off: Whether we should attempt to turn off the GPS device after the transfer (only some devices support this)
+ *
+ * Talk to a GPS Device using a thread which updates a dialog with the progress
+ */
+gint vik_gps_comm ( VikTrwLayer *vtl,
+                    VikTrack *track,
+                    vik_gps_dir dir,
+                    gchar *protocol,
+                    gchar *port,
+                    gboolean tracking,
+                    VikViewport *vvp,
+                    VikLayersPanel *vlp,
+                    gboolean do_tracks,
+                    gboolean do_waypoints,
+		    gboolean turn_off )
+{
   GpsSession *sess = g_malloc(sizeof(GpsSession));
   char *tracks = NULL;
   char *waypoints = NULL;
@@ -1125,6 +1207,7 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
   sess->mutex = g_mutex_new();
   sess->direction = dir;
   sess->vtl = vtl;
+  sess->track = track;
   sess->port = g_strdup(port);
   sess->ok = TRUE;
   sess->window_title = (dir == GPS_DOWN) ? _("GPS Download") : _("GPS Upload");
@@ -1155,49 +1238,64 @@ static gint gps_comm(VikTrwLayer *vtl, gps_dir dir, vik_gps_proto proto, gchar *
     waypoints = "";
 
   sess->cmd_args = g_strdup_printf("-D 9 %s %s -%c %s",
-				   tracks, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocols_args[proto]);
+				   tracks, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocol);
   tracks = NULL;
   waypoints = NULL;
 
-  sess->dialog = gtk_dialog_new_with_buttons ( "", VIK_GTK_WINDOW_FROM_LAYER(vtl), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-  gtk_dialog_set_response_sensitive ( GTK_DIALOG(sess->dialog),
-      GTK_RESPONSE_ACCEPT, FALSE );
-  gtk_window_set_title ( GTK_WINDOW(sess->dialog), sess->window_title );
+  // Only create dialog if we're going to do some transferring
+  if ( do_tracks || do_waypoints ) {
+    sess->dialog = gtk_dialog_new_with_buttons ( "", VIK_GTK_WINDOW_FROM_LAYER(vtl), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+    gtk_dialog_set_response_sensitive ( GTK_DIALOG(sess->dialog),
+                                        GTK_RESPONSE_ACCEPT, FALSE );
+    gtk_window_set_title ( GTK_WINDOW(sess->dialog), sess->window_title );
 
-  sess->status_label = gtk_label_new (_("Status: detecting gpsbabel"));
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox),
-      sess->status_label, FALSE, FALSE, 5 );
-  gtk_widget_show_all(sess->status_label);
+    sess->status_label = gtk_label_new (_("Status: detecting gpsbabel"));
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->status_label, FALSE, FALSE, 5 );
+    gtk_widget_show_all(sess->status_label);
 
-  sess->gps_label = gtk_label_new (_("GPS device: N/A"));
-  sess->ver_label = gtk_label_new ("");
-  sess->id_label = gtk_label_new ("");
-  sess->wp_label = gtk_label_new ("");
-  sess->trk_label = gtk_label_new ("");
+    sess->gps_label = gtk_label_new (_("GPS device: N/A"));
+    sess->ver_label = gtk_label_new ("");
+    sess->id_label = gtk_label_new ("");
+    sess->wp_label = gtk_label_new ("");
+    sess->trk_label = gtk_label_new ("");
 
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->gps_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->wp_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->trk_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->gps_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->wp_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->trk_label, FALSE, FALSE, 5 );
 
-  gtk_widget_show_all(sess->dialog);
+    gtk_widget_show_all(sess->dialog);
 
-  sess->progress_label = sess->wp_label;
-  sess->total_count = -1;
+    sess->progress_label = sess->wp_label;
+    sess->total_count = -1;
 
-  /* TODO: starting gps read/write thread here */
-  g_thread_create((GThreadFunc)gps_comm_thread, sess, FALSE, NULL );
+    // Starting gps read/write thread
+    g_thread_create((GThreadFunc)gps_comm_thread, sess, FALSE, NULL );
 
-  gtk_dialog_set_default_response ( GTK_DIALOG(sess->dialog), GTK_RESPONSE_ACCEPT );
-  gtk_dialog_run(GTK_DIALOG(sess->dialog));
+    gtk_dialog_set_default_response ( GTK_DIALOG(sess->dialog), GTK_RESPONSE_ACCEPT );
+    gtk_dialog_run(GTK_DIALOG(sess->dialog));
 
-  gtk_widget_destroy(sess->dialog);
+    gtk_widget_destroy(sess->dialog);
+  }
+  else {
+    if ( !turn_off )
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("No GPS items selected for transfer.") );
+  }
 
   g_mutex_lock(sess->mutex);
+
   if (sess->ok) {
     sess->ok = FALSE;   /* tell thread to stop */
     g_mutex_unlock(sess->mutex);
   }
   else {
+    if ( turn_off ) {
+      // No need for thread for powering off device (should be quick operation...) - so use babel command directly:
+      gchar *device_off = g_strdup_printf("-i %s,%s", protocol, "power_off");
+      gboolean result = a_babel_convert_from (NULL, (const char*)device_off, (const char*)port, NULL, NULL);
+      if ( !result )
+        a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not turn off device.") );
+      g_free ( device_off );
+    }
     g_mutex_unlock(sess->mutex);
     gps_session_delete(sess);
   }
@@ -1212,7 +1310,7 @@ static void gps_upload_cb( gpointer layer_and_vlp[2] )
   VikTrwLayer *vtl = vgl->trw_children[TRW_UPLOAD];
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
-  gps_comm(vtl, GPS_UP, vgl->protocol_id, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_UP, vgl->protocol, vgl->serial_port, FALSE, vvp, vlp, vgl->upload_tracks, vgl->upload_waypoints, FALSE);
 }
 
 static void gps_download_cb( gpointer layer_and_vlp[2] )
@@ -1222,9 +1320,9 @@ static void gps_download_cb( gpointer layer_and_vlp[2] )
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
   VikViewport *vvp = vik_window_viewport(vw);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, vgl->realtime_tracking, vvp, NULL, vgl->download_tracks, vgl->download_waypoints, FALSE);
 #else
-  gps_comm(vtl, GPS_DOWN, vgl->protocol_id, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints);
+  vik_gps_comm(vtl, NULL, GPS_DOWN, vgl->protocol, vgl->serial_port, FALSE, vvp, NULL, vgl->download_tracks, vgl->download_waypoints, FALSE);
 #endif
 }
 
@@ -1656,4 +1754,3 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
   }
 }
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-

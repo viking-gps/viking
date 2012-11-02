@@ -1,7 +1,8 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,22 +20,16 @@
  *
  */
 
-#ifndef _VIKING_GPX_H
-#define _VIKING_GPX_H
+#include "viking.h"
+#include "gtk/gtk.h"
 
-#include "viktrwlayer.h"
+gpointer datasource_gps_setup ( GtkWidget *dialog, gboolean only_tracks );
+void datasource_gps_clean_up ( gpointer user_data );
 
-/**
- * Options adapting GPX writing.
- */
-typedef struct {
-	gboolean force_ele; /// Force ele field
-	gboolean force_time; /// Force time field
-	gboolean hidden; /// Write invisible tracks/waypoints (default is yes)
-} GpxWritingOptions;
+gchar* datasource_gps_get_protocol ( gpointer user_data );
+gchar* datasource_gps_get_descriptor ( gpointer user_data );
 
-gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
-void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options );
-void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options );
+gboolean datasource_gps_get_do_tracks ( gpointer user_data );
+gboolean datasource_gps_get_do_waypoints ( gpointer user_data );
 
-#endif
+gboolean datasource_gps_get_off ( gpointer user_data );

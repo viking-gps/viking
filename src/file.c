@@ -727,15 +727,27 @@ gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
   return FALSE;
 }
 
-gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk )
+/**
+ * a_file_export:
+ * @vtl: The TrackWaypoint to export data from
+ * @filename: The name of the file to be written
+ * @file_type: Choose one of the supported file types for the export
+ * @trk: If specified then only export this track rather than the whole layer
+ * @write_hidden: Whether to write invisible items
+ *
+ * A general export command to convert from Viking TRW layer data to an external supported format.
+ * The write_hidden option is provided mainly to be able to transfer selected items when uploading to a GPS
+ */
+gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk, gboolean write_hidden )
 {
+  GpxWritingOptions options = { FALSE, FALSE, write_hidden };
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {
     if ( trk ) {
       switch ( file_type ) {
         case FILE_TYPE_GPX:
-          a_gpx_write_track_file ( trk, f );
+          a_gpx_write_track_file ( trk, f, &options );
           break;
         default:
           g_critical("Houston, we've had a problem. file_type=%d", file_type);
@@ -746,7 +758,7 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
           a_gpsmapper_write_file ( vtl, f );
           break;
         case FILE_TYPE_GPX:
-          a_gpx_write_file ( vtl, f );
+          a_gpx_write_file ( vtl, f, &options );
           break;
         case FILE_TYPE_GPSPOINT:
           a_gpspoint_write_file ( vtl, f );
@@ -756,14 +768,14 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
 	  f = NULL;
 	  switch ( a_vik_get_kml_export_units () ) {
 	    case VIK_KML_EXPORT_UNITS_STATUTE:
-	      return a_babel_convert_to ( vtl, "-o kml", filename, NULL, NULL );
+	      return a_babel_convert_to ( vtl, NULL, "-o kml", filename, NULL, NULL );
 	      break;
 	    case VIK_KML_EXPORT_UNITS_NAUTICAL:
-	      return a_babel_convert_to ( vtl, "-o kml,units=n", filename, NULL, NULL );
+	      return a_babel_convert_to ( vtl, NULL, "-o kml,units=n", filename, NULL, NULL );
 	      break;
 	    default:
 	      // VIK_KML_EXPORT_UNITS_METRIC:
-	      return a_babel_convert_to ( vtl, "-o kml,units=m", filename, NULL, NULL );
+	      return a_babel_convert_to ( vtl, NULL, "-o kml,units=m", filename, NULL, NULL );
 	      break;
 	  }
 	  break;
