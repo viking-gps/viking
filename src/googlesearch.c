@@ -118,7 +118,7 @@ static gboolean google_goto_tool_parse_file_for_latlon(VikGotoTool *self, gchar 
 
   if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
     g_critical(_("couldn't map temp file"));
-    exit(1);
+    return FALSE;
   }
   len = g_mapped_file_get_length(mf);
   text = g_mapped_file_get_contents(mf);

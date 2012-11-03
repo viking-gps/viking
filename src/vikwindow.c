@@ -1842,10 +1842,6 @@ static toolbox_tools_t* toolbox_create(VikWindow *vw)
   vt->n_tools = 0;
   vt->active_tool = -1;
   vt->vw = vw;
-  if (!vw->viking_vvp) {
-    g_critical("no viewport found.");
-    exit(1);
-  }
   return vt;
 }
 
@@ -1882,7 +1878,7 @@ static void toolbox_activate(toolbox_tools_t *vt, const gchar *tool_name)
 
   if (tool == vt->n_tools) {
     g_critical("trying to activate a non-existent tool...");
-    exit(1);
+    return;
   }
   /* is the tool already active? */
   if (vt->active_tool == tool) {

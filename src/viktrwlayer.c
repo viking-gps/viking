@@ -6005,10 +6005,10 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &params);
   if ( vtl->current_wp == params.closest_wp && vtl->current_wp != NULL )
   {
-    /* how do we get here? I'm putting in the abort until we can figure it out. -alex */
+    // how do we get here?
     marker_begin_move(t, event->x, event->y);
     g_critical("shouldn't be here");
-    exit(1);
+    return FALSE;
   }
   else if ( params.closest_wp )
   {
