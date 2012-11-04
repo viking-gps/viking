@@ -52,7 +52,6 @@ VikLayersPanel *vik_layers_panel_new ();
 void vik_layers_panel_free ( VikLayersPanel *vlp );
 void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l );
 void vik_layers_panel_draw_all ( VikLayersPanel *vlp );
-void vik_layers_panel_draw_all_using_viewport ( VikLayersPanel *vlp, VikViewport *vvp );
 VikLayer *vik_layers_panel_get_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_cut_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_copy_selected ( VikLayersPanel *vlp );

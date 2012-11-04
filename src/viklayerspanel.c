@@ -535,12 +535,6 @@ void vik_layers_panel_draw_all ( VikLayersPanel *vlp )
     vik_aggregate_layer_draw ( vlp->toplayer, vlp->vvp );
 }
 
-void vik_layers_panel_draw_all_using_viewport ( VikLayersPanel *vlp, VikViewport *vvp )
-{
-  if ( vlp->vvp && VIK_LAYER(vlp->toplayer)->visible )
-    vik_aggregate_layer_draw ( vlp->toplayer, vvp );
-}
-
 void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
 {
   gint type;
