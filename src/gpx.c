@@ -944,9 +944,14 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
   }
 
   g_list_free ( gl );
-  /* Sort by timestamp */
+
   gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
-  gl = g_list_sort ( gl, gpx_track_compare_timestamp );
+  // Sort method determined by preference
+  if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_TIME )
+    gl = g_list_sort ( gl, gpx_track_compare_timestamp );
+  else
+    gl = g_list_sort ( gl, gpx_track_compare_name );
+
   // Routes sorted by name
   GList *glrte = g_hash_table_get_values ( vik_trw_layer_get_routes ( vtl ) );
   glrte = g_list_sort ( glrte, gpx_track_compare_name );
