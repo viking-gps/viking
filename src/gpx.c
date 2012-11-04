@@ -828,37 +828,6 @@ static void gpx_write_footer( FILE *f )
   fprintf(f, "</gpx>\n");
 }
 
-/* Type to hold name of track and timestamp of first trackpoint */
-typedef struct {
-  time_t first_timestamp;
-  gpointer id;
-} gpx_track_and_timestamp;
-
-typedef struct {
-  gpx_track_and_timestamp *trks;
-  guint i;
-  guint n_trks;
-} gpx_gather_tracks_passalong_t;
-
-/* Function to collect a track and the first timestamp in the list */
-static void gpx_collect_track (const gpointer id, VikTrack *track, gpx_gather_tracks_passalong_t *passalong)
-{
-  if (passalong->i < passalong->n_trks)
-  {
-    passalong->trks[passalong->i].id = id;
-    if (track && track->trackpoints && track->trackpoints->data)
-    {
-      VikTrackpoint *first_point = (VikTrackpoint *)track->trackpoints->data;
-      passalong->trks[passalong->i].first_timestamp = first_point->timestamp;
-    }
-    else
-    {
-      passalong->trks[passalong->i].first_timestamp = 0;
-    }
-    passalong->i++;
-  }
-}
-
 static int gpx_waypoint_compare(const void *x, const void *y)
 {
   VikWaypoint *a = (VikWaypoint *)x;
@@ -867,18 +836,33 @@ static int gpx_waypoint_compare(const void *x, const void *y)
 }
 
 /* Function to compare two tracks by their first timestamp */
-static int gpx_track_and_timestamp_compare(const void *x, const void *y)
+static int gpx_track_compare_timestamp (const void *x, const void *y)
 {
-  gpx_track_and_timestamp *a = (gpx_track_and_timestamp *)x;
-  gpx_track_and_timestamp *b = (gpx_track_and_timestamp *)y;
-  if (a->first_timestamp < b->first_timestamp)
-  {
-    return -1;
+  VikTrack *a = (VikTrack *)x;
+  VikTrack *b = (VikTrack *)y;
+
+  VikTrackpoint *tpa = NULL;
+  VikTrackpoint *tpb = NULL;
+
+  if ( a->trackpoints )
+    tpa = VIK_TRACKPOINT(g_list_first(a->trackpoints)->data);
+
+  if ( b->trackpoints )
+    tpb = VIK_TRACKPOINT(g_list_first(b->trackpoints)->data);
+
+  if ( tpa && tpb ) {
+    if ( tpa->timestamp < tpb->timestamp )
+      return -1;
+    if ( tpa->timestamp > tpb->timestamp )
+      return 1;
   }
-  if (a->first_timestamp > b->first_timestamp)
-  {
+
+  if ( tpa && !tpb )
     return 1;
-  }
+
+  if ( !tpa && tpb )
+    return -1;
+
   return 0;
 }
 
@@ -899,15 +883,9 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
   }
 
   g_list_free ( gl );
-	     
-  gpx_gather_tracks_passalong_t passalong_tracks;
-  passalong_tracks.n_trks = g_hash_table_size ( vik_trw_layer_get_tracks (vtl) );
-  passalong_tracks.i = 0;
-  passalong_tracks.trks = g_new(gpx_track_and_timestamp,passalong_tracks.n_trks);
-  g_hash_table_foreach (vik_trw_layer_get_tracks(vtl), (GHFunc) gpx_collect_track, &passalong_tracks);
   /* Sort by timestamp */
   gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
-  gl = g_list_sort ( gl, gpx_track_and_timestamp_compare );
+  gl = g_list_sort ( gl, gpx_track_compare_timestamp );
 
   for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
     gpx_write_track ( (VikTrack*)iter->data, &context );
@@ -915,7 +893,6 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 
   g_list_free ( gl );
 
-  g_free ( passalong_tracks.trks );
   gpx_write_footer ( f );
 }
 
