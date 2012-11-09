@@ -1192,39 +1192,73 @@ Your OSM password will be stored in plain text.
 
 <!-- HOWTOS-->
 <section><title>Mini-Howto's</title>
-<section><title>Getting Started</title>
+<section id="howto_start"><title>Getting Started</title>
 <para>
 To quickly get started using &appname;, follow these instructions.
 </para>
 <section><title>Go to an area of interest</title>
 <para>
-&appname;'s default location is a Manhatten, New York, USA, so you may need to pick another place that interests you.
+&appname;'s default location is a Manhatten, New York, USA, so you may need to pick another place that interests you - such as where you live.
 </para>
 <procedure>
 <title>Method A</title>
 <step>
 <para>
-Use View - Go to to move to a coordinate of interest. 
+  Use the online location address/place search.
 </para>
+<para>
+  Use the <guibutton>Go to Location</guibutton> toolbar button or from the menus
+  <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>.
+  You can change the search location provider if desired.
+  Enter the name of place you wish to go to (you may need to specify the country to refine the search).
+  Also you can enter a post code or a ZIP code instead.
+</para>
+<note>
+	<para>You will need an internet connection for this search to work</para>
+</note>
 </step>
 </procedure>
 <procedure>
 <title>Method B</title>
 <step>
-<para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
-to load data directly from your GPS into &appname;.
-Currently Garmin, Magellan, DeLorme and Navilink protocols are supported.
+<para>
+	If you know the coordinates of where you want to view:
 </para>
-<note>
-<para>You must have write permission to the port used. For Unix like OS:</para>
-<para>/dev/ttyS0 is the first serial port</para>
-<para>/dev/ttyUSB0 is the first USB port</para>
-</note>
-<note><para>For DeLorme device support you will need GPSBabel v1.4.0+ installed</para></note>
+<para>
+Use <menuchoice><guimenu>View</guimenu></menuchoice> and select from either <menuchoice><guimenu>Go to Lat/Lon</guimenu></menuchoice> or <menuchoice><guimenu>Go to UTM</guimenu></menuchoice> and then enter in the specific coordinates.
+</para>
 </step>
 </procedure>
 <procedure>
 <title>Method C</title>
+<step>
+<para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
+to load data directly from your GPS into &appname;.
+</para>
+<para>You can specify the types of data to acquire: Tracks and/or Waypoints.
+</para>
+<note>
+<para>You must have write permission to the port used. For <trademark>Unix</trademark> like OS:</para>
+<itemizedlist>
+	<listitem><para>/dev/ttyS0 is the first serial port</para></listitem>
+	<listitem><para>/dev/ttyUSB0 is the first USB port</para></listitem>
+	<listitem><para>usb: is any USB port</para></listitem>
+</itemizedlist>
+<para>Depending on your distribution only one of the USB port types may work</para>
+<para>For <trademark>Windows</trademark>:</para>
+<itemizedlist>
+	<listitem><para>com1: is the first serial port</para></listitem>
+	<listitem><para>usb: is any USB port</para></listitem>
+</itemizedlist>
+</note>
+<note>
+	<para>The GPS devices supported are those supported by <application>GPSBabel</application>.</para>
+	<para>Garmin and Magellan GPS devices supported by all versions, later versions of GPSBabel support more devices such as DeLorme and Navilink.</para>
+</note>
+</step>
+</procedure>
+<procedure>
+<title>Method D</title>
 <step>
 <para>
 Get data from files in GPX or KML format, which can be opened directly.
@@ -1265,7 +1299,19 @@ your GPS data is in. This means that it will be drawn last, or on top
 of the other layers. Select the Map layer from the list and click the
 down arrow button beneath the list. Your tracks will now be drawn over
 the map. </para>
+</section>
 
+<section><title>Set Your Home Location</title>
+<para>
+	You can save the current center position of the viewport as the default location AKA the Home Location by
+	<menuchoice><guimenu>Edit</guimenu><guimenuitem>Set the Default Location</guimenuitem></menuchoice>.
+</para>
+<para>
+	Then at any time you can return to this place by clicking on the <guibutton>Home</guibutton> icon on the toolbar.
+</para>
+<para>
+    You can also set the default location via specifing the exact latitude and longitude in the <link linkend="prefs">Preferences</link>.
+</para>
 </section>
 
 </section>
@@ -1274,7 +1320,6 @@ the map. </para>
 The first you'll see is an empty map, because &appname; in its default configuration will download maps only on demand.
 Before fetching unneeded data, one can position to a location of interest, e.g. Stuttgart: <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>, enter 'Stuttgart'.
 </para>
-
 <section><title>Fetching the maps</title>
 <para>
 <emphasis role="bold">Map</emphasis>
