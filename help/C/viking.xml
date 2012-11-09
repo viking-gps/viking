@@ -706,6 +706,7 @@ Various options allow control of how the geotagging process is performed:
 <itemizedlist>
 <listitem><para>Images - Add the images used for geotagging</para></listitem>
 <listitem><para>Create Waypoints</para></listitem>
+<listitem><para>Overwrite Existing Waypoints</para></listitem>
 <listitem><para>Write EXIF</para></listitem>
 <listitem><para>Overwrite Existing GPS Information</para></listitem>
 <listitem><para>Interpolate Between Track Segments</para></listitem>
@@ -966,7 +967,7 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</key
 </para>
 </section>
 
-<section><title>Version1.1+: Select</title>
+<section id="select"><title>Version1.1+: Select</title>
 <para>
 The select tool allows one to choose any waypoint or track by clicking on it (or reasonably near) in the viewpoint.
 </para>
@@ -1512,6 +1513,60 @@ Increasing the page number parameter allows one to request the subsequent sets o
 See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for further detail.
 </para>
 </formalpara>
+</section>
+</section>
+
+<section><title>Geotagging</title>
+<para>
+	This assumes you already have a map layer enabled for ease of use (if not see above to get one).
+</para>
+<section><title>Manual Positioning</title>
+<para>
+	This is useful for instances when you already know exactly where the image was taken (no need for tracklog).
+	Or maybe you want to adjust an automatically generated waypoint for the position of the subject of the image rather than the location that the photograph is taken from.
+	ATM this process only works on an individual image, so it will be tedious for handling lots of images.
+</para>
+<para>
+	First create a Track Waypoint layer or use an existing one; and select it in the Layers Panel.
+	NB Make sure this layer is above the map layer in the Layers Panel list.
+	Create a new waypoint (or move an existing one) to exact location desired:
+<itemizedlist>
+	<listitem><para>Select the New Waypoint tool, then left click on the map at the location desired, choosing an image to associate with it in the new waypoint dialog</para></listitem>
+	<listitem><para>Select the <link linkend="select">Select Tool</link>, then left click on waypoint to be moved. Left click again and drag the waypoint to the location desired</para></listitem>
+</itemizedlist>
+	Then using the Select tool left click on waypoint to select it, then right click to access the Waypoint properties menu, then choose
+	<menuchoice><guimenu>Update Geotag on Image</guimenu><guisubmenu>Update</guisubmenu></menuchoice>
+</para>
+<para>
+	The <guilabel>Update Geotag on Image</guilabel> options are only available when a waypoint has an image associated with it.
+</para>
+</section>
+
+<section><title>Automatic Positioning Against a Tracklog</title>
+<para>
+	First you will need a tracklog with timestamps in it. Either load one from a previously saved file or freshly acquired from a GPS device -
+	see <link linkend="howto_start">Getting Started</link>.
+	It helps if this is the track that was recorded at the time you took some photographs!
+</para>
+<para>
+	Select the track either from the layers panel on the left or via the viewport using the <link linkend="select">Select Tool</link>.
+	Then right click on it and chose the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> leading you to the <link linkend="geotagging">Geotagging Dialog</link>.
+</para>
+<para>
+	Load some images that where taken around the time the track log was recorded. Confirm the other options in the dialog - normally the defaults should be alright and select OK.
+	If things are succesful, new waypoints with thumbnail images of the photographs will appear.
+	You should probably check they are really in the right place as often the timestamp of the camera may not be aligned to the GPS correctly leading to inferring incorrect locations.
+</para>
+<formalpara><title>Option: Overwrite Waypoints</title>
+<para>
+	This is particularly useful when one finds an attempt at geotagging gives wrong locations, often due to time offset issues.
+	Simply try again with a new time offset (often 1 hour adjustments due to Daylight Savings or Summer Time times) and the old waypoints will be updated (instead of creating new ones).
+</para>
+</formalpara>
+<para>
+	If you have multiple tracks in a TrackWaypoint layer, then invoking the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> action on the layer
+	will search all the tracks to find location matches.
+</para>
 </section>
 </section>
 
