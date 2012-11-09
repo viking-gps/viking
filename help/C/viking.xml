@@ -161,12 +161,12 @@ Editing tracks and trackpoints, joining and splitting up tracks
 </listitem>
 <listitem>
 <para>
-Show the live GPS position on the map (for use on a mobile device - e.g. a laptop)
+Show the live GPS position on the map (for use on a mobile device - e.g. a laptop). Not <trademark>Windows</trademark> at the moment.
 </para>
 </listitem>
 <listitem>
 <para>
-Import track+waypoint files of various types via GPSBabel
+Import track+waypoint files of various types via <application>GPSBabel</application>
 </para>
 </listitem>
 <listitem>
@@ -185,9 +185,9 @@ View, create and update Geotagged Images (using EXIF data).
 <section><title>General Concepts</title>
 <section><title>Layers</title>
 <para>
-'Layers' is concept one may know from powerful graphics editors such as Photoshop or GIMP.
+'Layers' is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
 Instead of putting all the data on the same level, it is stacked (i.e. layered) with different data over one another.
-This can make useful for analysis and general handling of various sets of data.
+This can be useful for analysis and general handling of various sets of data.
 </para>
 <para>
 Unfortunately the downside of this complexity is remembering how differing layers of data can obscure other data.
@@ -627,7 +627,7 @@ Enables the Route Finder tool. Thus on a subsequent left click in the viewport, 
 
 <section><title>Upload to OSM</title>
 <para>
-Same as the layer <link linkend="osm_upload">Upload to OSM</link>, but only applies to the track.
+Same as the layer <link linkend="osm_upload">Upload to OSM</link> command, but only applies to the track.
 </para>
 </section>
 
@@ -1024,8 +1024,8 @@ Options in the Track Point Edit dialog include: change position, go to next, go 
 <section><title>Show Picture</title>
 <para>
 Opens an image viewer with the picture associated with the waypoint.
-On Linux this uses <application>eog</application>.
-On Windows this uses the default system image viewer.
+By default this uses the default system image viewer.
+For Linux you can override this with the setting in the <link linkend="prefs_external">preferences.</link>
 </para>
 </section>
 
@@ -1118,7 +1118,7 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 <term>DDD</term><listitem><para>decimal degree</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>DDD</term><listitem><para>partial sexagesimal display: degrees, minutes and décimal part of minutes</para></listitem>
+<term>DMM</term><listitem><para>partial sexagesimal display: degrees, minutes and decimal part of minutes</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>DMS</term><listitem><para>sexagesimal display: degrees, minutes and seconds</para></listitem>
@@ -1158,13 +1158,13 @@ Generally if you have a system with lots of memory it's recommended to increase 
 </section>
 </section>
 
-<section><title>Export/External</title>
+<section id="prefs_external"><title>Export/External</title>
 <section><title>KML Export Units</title>
 <para>Allows setting the units used when saved as the KML file type, such as Metric or Statue units</para>
 </section>
 <section><title>Image Viewer (Not Windows)</title>
 <para>Allows setting the program used to view images associated with Waypoints.</para>
-<para>By default this is set to 'xdg-open' which should open the system's default image viewer, however this can be overridden with this setting.</para>
+<para>By default this is set to <application>xdg-open</application> which should open the system's default image viewer, however this can be overridden with this setting.</para>
 <para>Note: for Windows systems, viewing images associated with Waypoints always uses the system's default image viewer.</para>
 </section>
 <section><title>External GPX programs</title>
@@ -1298,7 +1298,7 @@ role in the pre-fetch for offline usage discussed later
 </step>
 </procedure>
 <para>You'll see a map of Stuttgart. Using the mouse wheel, you can
-zoom in and out. The maps for the choosen resoltion will be downloaded
+zoom in and out. The maps for the choosen resolution will be downloaded
 automatically.
 </para>
 <para>
@@ -1338,30 +1338,22 @@ You can also alter the Min. and Max. elevation in this dialogue.
 </section>
 <section><title>GPS Track with Height Profile</title>
 <procedure>
-<step><para>uncheck the DEM layer (the map show up again)</para></step>
-<step><para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New TrackWaypoint Layer</guimenuitem></menuchoice></para></step>
-</procedure>
-<para>
-Ensure the new track layer is above the map layer.
-</para>
-<procedure>
-<step><para>expand trackwaypointlayer, select <guimenuitem>Tracks</guimenuitem></para></step>
+<step><para>Uncheck the DEM layer (the map is shown again)</para></step>
 <step>
-<para>
-in the tools menu choose <guimenuitem>Begin Track</guimenuitem> which looks like this:
-<figure>
-<title>Begin Track Icon</title>
-<screenshot>
-  <graphic format="PNG" fileref="figures/begintr_18.png"/>
-</screenshot>
-</figure>
+	<para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New TrackWaypoint Layer</guimenuitem></menuchoice></para>
+	<para>Ensure the new track layer is above the map layer.</para>
+</step>
+<step><para>Expand the TrackWaypoint layer, select <guimenuitem>Tracks</guimenuitem></para></step>
+<step><para>In the tools menu choose <guiicon><inlinegraphic fileref="figures/begintr_18.png"/></guiicon> <guibutton>Begin Track</guibutton>
 </para></step>
-<step><para>leftclick in the map window, enter a name</para></step>
-<step><para>click several times to generate a track (a right-click removes the last point)</para></step>
-<step><para>expand tracks in the layer menu, your track should show up, select it</para></step>
-<step><para>right click your track, select <guimenuitem>Apply DEM data</guimenuitem></para></step>
-<step><para>right click your track again, select <guimenuitem>Properies</guimenuitem></para></step>
-<step><para>click the tab <guilabel>Elevation-distance</guilabel> - enjoy the plot</para></step>
+<step><para>Leftclick in the map window, enter a name</para></step>
+<step>
+	<para>Click several times to generate a track (a right-click removes the last point).</para>
+	<para>Height data is set automatically since DEM data is available</para>
+</step>
+<step><para>Expand tracks in the layer menu, your track should show up, select it</para></step>
+<step><para>Right click your track, select <guimenuitem>Properties</guimenuitem></para></step>
+<step><para>Click the tab <guilabel>Elevation-distance</guilabel> - enjoy the plot</para></step>
 </procedure>
 <para>
 In order to save this setting for later usage
@@ -1411,10 +1403,7 @@ tiles into <filename>.viking-map-holiday/</filename> if you like.
 </substeps>
 </step>
 </procedure>
-<para>This may take some time and hd capacity. Lixus wrote a set of
-scripts which allow to download the map tiles for several zoom-level in
-parallel from the command line.
-</para>
+<para>This may take some time and some hard disk capacity.</para>
 <para>
 Do not forget to save your configuration (as discussed above).
 </para>
@@ -1750,6 +1739,9 @@ Accept: */*
 </formalpara>
 <formalpara><title>unbuffer (optional)</title>
 <para>&appname; uses unbuffer command to optimize conversion calls.</para>
+</formalpara>
+<formalpara><title>gpsd (optional - but not <trademark>Windows</trademark>)</title>
+<para>&appname; can use <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to get the current location.</para>
 </formalpara>
 </section>
 
