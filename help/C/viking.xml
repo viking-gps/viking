@@ -240,6 +240,40 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </para>
 </section>
 
+<section><title>Map Cache</title>
+<para>
+&appname; stores downloaded map tiles to disk for a couple of reasons:
+</para>
+<itemizedlist>
+<listitem><para>Enables off line usage</para></listitem>
+<listitem><para>Reduces loading on the map tile provider</para></listitem>
+</itemizedlist>
+<para>
+The &appname; automatic caching strategy is two fold:
+</para>
+<itemizedlist>
+<listitem>
+<para>
+  If the age of the tile on disk is less than the specified tile age in the <link linkend="prefs_osm">preferences</link>,
+  it will <emphasis>not</emphasis> attempt to contact the server to get a new version of the tile.
+</para>
+</listitem>
+<listitem>
+<para>
+  When the tile age has expired &appname; will attempt a <emphasis>refresh</emphasis> update, so that it provides the cached tile generation timestamp so the server can determine if a new tile image needs to be returned. Not all map types support this refresh method.
+</para>
+</listitem>
+</itemizedlist>
+<para>
+  You can override the caching scheme by using right-click on the Map on the layers panel and selecting <guimenuitem>Redownload All Onscreen Maps</guimenuitem>, or <keycap>Ctrl+F5</keycap> for the top most map displayed. This will get the latest version held by the server.
+</para>
+<note>
+<para>
+  This can be useful if you contribute to OpenStreetMap and wish to see your modifications (of course give time for the server to have processed your changes - see <ulink url="http://help.openstreetmap.org/questions/102/i-have-made-edits-but-they-dont-show-up-on-the-map">I have made edits but they don't show up on the map</ulink>)
+</para>
+</note>
+</section>
+
 <section><title>Shortcut Keys</title>
 <para>
 &appname; has several shortcut keys or key combinations for commands as listed in the main window along side the command.
