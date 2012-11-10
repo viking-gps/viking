@@ -717,7 +717,7 @@ Various options allow control of how the geotagging process is performed:
 
 </section><!-- TRW Layer END -->
 
-<section><title>GPS Layer</title>
+<section id="gps_layer"><title>GPS Layer</title>
 <para>
 The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
@@ -1567,6 +1567,41 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 	If you have multiple tracks in a TrackWaypoint layer, then invoking the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> action on the layer
 	will search all the tracks to find location matches.
 </para>
+</section>
+</section>
+
+<section><title>GPS Real Time Location (Not <trademark>Windows</trademark>)</title>
+<para>
+	&appname; relies on <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
+	Unfortunately <application>gpsd</application> is not available on <trademark>Windows</trademark>,
+	so currently this functionality is disabled in <trademark>Windows</trademark> builds of &appname;
+</para>
+<para>
+	This assumes you already have a map layer enabled for ease of use (if not see above to get one).
+</para>
+<para>
+	Turn on the GPS Device, ensure it has figured out it's location and plug it in to your computer.
+</para>
+<section><title>Set Up GPS Layer</title>
+<para>
+	You will need a <link linkend="gps_layer">GPS Layer</link>. One can be added via <menuchoice><guimenu>Layers</guimenu><guisubmenu>Add GPS Layer</guisubmenu></menuchoice>.
+</para>
+<para>
+	Adjust the <emphasis>Realtime Tracking Mode</emphasis> settings to interface with <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> as necessary. Normally the defaults should suffice.
+</para>
+<para>
+  Current Linux distributions should run <application>gpsd</application> automatically when a GPS Device is plugged in. Otherwise you may have to run <application>gpsd</application> manually.
+</para>
+<para>
+  Then right-click the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
+  Hopefully the viewport should jump to the GPS location.
+</para>
+<para>
+  Troubleshooting checklist:
+</para>
+<procedure><step><para>Confirm <application>gpsd</application> is running.</para></step></procedure>
+<procedure><step><para>Confirm on the GPS device it has a location.</para></step></procedure>
+<procedure><step><para>Confirm the <emphasis>Realtime Tracking Mode</emphasis> settings.</para></step></procedure>
 </section>
 </section>
 
