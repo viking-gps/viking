@@ -439,6 +439,20 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 </para>
 </section>
 
+<section><title>Upload</title>
+
+<section id="gps_upload"><title>Upload to GPS</title>
+<para>
+This opens a dialog to select the GPS Device and port to which the layer information will be transferred.
+</para>
+<para>
+The types of GPS information (tracks or waypoints) to be transferred can be selected.
+</para>
+<para>
+Tracks or Waypoints that are invisible will not be transferred.
+</para>
+</section>
+
 <section id="osm_upload"><title>Upload To OSM</title>
 <para>
 This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
@@ -454,6 +468,8 @@ The password is transferred <emphasis role="bold">unencrypted</emphasis> in ever
 </para>
 <para>Currently &appname; does not support the <ulink url="http://oauth.net/">OAuth</ulink> mechanism.</para>
 </note>
+</section>
+
 </section>
 
 <section><title>Filter</title>
@@ -659,10 +675,20 @@ Enables the Route Finder tool. Thus on a subsequent left click in the viewport, 
 </section>
 -->
 
+<section><title>Upload</title>
+
+<section><title>Upload to GPS</title>
+<para>
+Same as the layer <link linkend="gps_upload">Upload to GPS</link> command, but only applies to the track.
+</para>
+</section>
+
 <section><title>Upload to OSM</title>
 <para>
 Same as the layer <link linkend="osm_upload">Upload to OSM</link> command, but only applies to the track.
 </para>
+</section>
+
 </section>
 
 <section><title>Use With Filter</title>
