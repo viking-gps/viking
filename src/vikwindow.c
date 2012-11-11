@@ -1750,8 +1750,19 @@ static void help_help_cb ( GtkAction *a, VikWindow *vw )
 #if GTK_CHECK_VERSION (2, 14, 0)
   gchar *uri;
   uri = g_strdup_printf("ghelp:%s", PACKAGE);
-  gtk_show_uri(NULL, uri, GDK_CURRENT_TIME, NULL);
+  GError *error = NULL;
+  gboolean show = gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, &error);
+  if ( !show && !error )
+    // No error to show, so unlikely this will get called
+    a_dialog_error_msg ( GTK_WINDOW(vw), _("The help system is not available.") );
+  else if ( error ) {
+    // Main error path
+    a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Help is not available because: %s.\nEnsure a Mime Type ghelp handler program is installed (e.g. yelp)."), error->message );
+    g_error_free ( error );
+  }
   g_free(uri);
+#else
+  a_dialog_error_msg ( GTK_WINDOW(vw), "Help is not available in this build." ); // Unlikely to happen so not going to bother with I8N
 #endif
 #endif /* WINDOWS */
 }

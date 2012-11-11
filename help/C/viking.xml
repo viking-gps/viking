@@ -24,8 +24,9 @@
     </abstract>
 
     <copyright>
-      <year>2009</year>
+      <year>2012</year>
       <holder>Guilhem Bonnefille</holder>
+      <holder>Rob Norris</holder>
     </copyright>
 
     <!-- An address can be added to the publisher information. -->
@@ -77,7 +78,9 @@
         <date>&date;</date>
         <revdescription>
           <para role="author">Guilhem Bonnefille <email>guilhem.bonnefille@gmail.com</email></para>
+          <para role="author">Rob Norris <email>rw_norris@hotmail.com</email></para>
           <para role="publisher">GNOME Documentation Project</para>
+          <para>This document was generated on <?dbtimestamp format="Y-m-d"?>.</para>    
         </revdescription>
       </revision>
     </revhistory>
@@ -158,12 +161,12 @@ Editing tracks and trackpoints, joining and splitting up tracks
 </listitem>
 <listitem>
 <para>
-Show the live GPS position on the map (for use on a mobile device - e.g. a laptop)
+Show the live GPS position on the map (for use on a mobile device - e.g. a laptop). Not <trademark>Windows</trademark> at the moment.
 </para>
 </listitem>
 <listitem>
 <para>
-Import track+waypoint files of various types via GPSBabel
+Import track+waypoint files of various types via <application>GPSBabel</application>
 </para>
 </listitem>
 <listitem>
@@ -182,9 +185,9 @@ View, create and update Geotagged Images (using EXIF data).
 <section><title>General Concepts</title>
 <section><title>Layers</title>
 <para>
-'Layers' is concept one may know from powerful graphics editors such as Photoshop or GIMP.
+'Layers' is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
 Instead of putting all the data on the same level, it is stacked (i.e. layered) with different data over one another.
-This can make useful for analysis and general handling of various sets of data.
+This can be useful for analysis and general handling of various sets of data.
 </para>
 <para>
 Unfortunately the downside of this complexity is remembering how differing layers of data can obscure other data.
@@ -235,6 +238,40 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </listitem>
 </itemizedlist>
 </para>
+</section>
+
+<section><title>Map Cache</title>
+<para>
+&appname; stores downloaded map tiles to disk for a couple of reasons:
+</para>
+<itemizedlist>
+<listitem><para>Enables off line usage</para></listitem>
+<listitem><para>Reduces loading on the map tile provider</para></listitem>
+</itemizedlist>
+<para>
+The &appname; automatic caching strategy is two fold:
+</para>
+<itemizedlist>
+<listitem>
+<para>
+  If the age of the tile on disk is less than the specified tile age in the <link linkend="prefs_osm">preferences</link>,
+  it will <emphasis>not</emphasis> attempt to contact the server to get a new version of the tile.
+</para>
+</listitem>
+<listitem>
+<para>
+  When the tile age has expired &appname; will attempt a <emphasis>refresh</emphasis> update, so that it provides the cached tile generation timestamp so the server can determine if a new tile image needs to be returned. Not all map types support this refresh method.
+</para>
+</listitem>
+</itemizedlist>
+<para>
+  You can override the caching scheme by using right-click on the Map on the layers panel and selecting <guimenuitem>Redownload All Onscreen Maps</guimenuitem>, or <keycap>Ctrl+F5</keycap> for the top most map displayed. This will get the latest version held by the server.
+</para>
+<note>
+<para>
+  This can be useful if you contribute to OpenStreetMap and wish to see your modifications (of course give time for the server to have processed your changes - see <ulink url="http://help.openstreetmap.org/questions/102/i-have-made-edits-but-they-dont-show-up-on-the-map">I have made edits but they don't show up on the map</ulink>)
+</para>
+</note>
 </section>
 
 <section><title>Shortcut Keys</title>
@@ -402,6 +439,20 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 </para>
 </section>
 
+<section><title>Upload</title>
+
+<section id="gps_upload"><title>Upload to GPS</title>
+<para>
+This opens a dialog to select the GPS Device and port to which the layer information will be transferred.
+</para>
+<para>
+The types of GPS information (tracks or waypoints) to be transferred can be selected.
+</para>
+<para>
+Tracks or Waypoints that are invisible will not be transferred.
+</para>
+</section>
+
 <section id="osm_upload"><title>Upload To OSM</title>
 <para>
 This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
@@ -417,6 +468,8 @@ The password is transferred <emphasis role="bold">unencrypted</emphasis> in ever
 </para>
 <para>Currently &appname; does not support the <ulink url="http://oauth.net/">OAuth</ulink> mechanism.</para>
 </note>
+</section>
+
 </section>
 
 <section><title>Filter</title>
@@ -622,10 +675,20 @@ Enables the Route Finder tool. Thus on a subsequent left click in the viewport, 
 </section>
 -->
 
+<section><title>Upload</title>
+
+<section><title>Upload to GPS</title>
+<para>
+Same as the layer <link linkend="gps_upload">Upload to GPS</link> command, but only applies to the track.
+</para>
+</section>
+
 <section><title>Upload to OSM</title>
 <para>
-Same as the layer <link linkend="osm_upload">Upload to OSM</link>, but only applies to the track.
+Same as the layer <link linkend="osm_upload">Upload to OSM</link> command, but only applies to the track.
 </para>
+</section>
+
 </section>
 
 <section><title>Use With Filter</title>
@@ -703,6 +766,7 @@ Various options allow control of how the geotagging process is performed:
 <itemizedlist>
 <listitem><para>Images - Add the images used for geotagging</para></listitem>
 <listitem><para>Create Waypoints</para></listitem>
+<listitem><para>Overwrite Existing Waypoints</para></listitem>
 <listitem><para>Write EXIF</para></listitem>
 <listitem><para>Overwrite Existing GPS Information</para></listitem>
 <listitem><para>Interpolate Between Track Segments</para></listitem>
@@ -713,7 +777,7 @@ Various options allow control of how the geotagging process is performed:
 
 </section><!-- TRW Layer END -->
 
-<section><title>GPS Layer</title>
+<section id="gps_layer"><title>GPS Layer</title>
 <para>
 The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
@@ -907,7 +971,10 @@ This layer is allows drawing of grid lines on the viewport.
 
 <section><title>Tools</title>
 <para>
-You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
+&appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan.
+</para>
+<para>
+You can use the scroll wheel and the right-click(drag) to respectively zoom and pan no matter what tool you are using.
 </para>
 <para>
 Scroll: zoom in and out keeping the mouse over same location
@@ -930,6 +997,12 @@ Middle-click and drag: pan
 
 <section><title>Pan</title>
 <para>
+This is the default mode of operation for &appname;.
+</para>
+<para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mover_22.png"/></guiicon>
+</para>
+<para>
 Pan moves the viewpoint. A single click centers the viewport at that point, whereas click and drag dynamically moves the view around.
 This is the default tool.
 </para>
@@ -939,6 +1012,9 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</key
 </section>
 
 <section><title>Zoom</title>
+<para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/zoom_18.png"/></guiicon>
+</para>
 <para>
 Zooms in and out on the clicked part of the map or by the selected area.
 </para>
@@ -955,6 +1031,9 @@ Shift (and hold) + left mouse button: Draws a bounding box area on which to zoom
 
 <section><title>Ruler</title>
 <para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/ruler_18.png"/></guiicon>
+</para>
+<para>
 The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
 A second click will 'freeze' the ruler at that point.
 </para>
@@ -963,7 +1042,10 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</key
 </para>
 </section>
 
-<section><title>Version1.1+: Select</title>
+<section id="select"><title>Version1.1+: Select</title>
+<para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/select_18.png"/></guiicon>
+</para>
 <para>
 The select tool allows one to choose any waypoint or track by clicking on it (or reasonably near) in the viewpoint.
 </para>
@@ -981,11 +1063,17 @@ You must have a TrackWaypoint Layer selected to use these tools.
 </para>
 <section><title>Create Waypoint</title>
 <para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addwp_18.png"/></guiicon>
+</para>
+<para>
 Left click will open the new waypoint dialog using the specified position.
 </para>
 </section>
 
 <section><title>Create/Begin Track</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addtr_18.png"/></guiicon>
+</para>
 <para>
 Left click to create a new trackpoint. If it's the initial trackpoint you will be asked to enter a name for the track.
 If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoint position to a nearby existing trackpoint.
@@ -998,6 +1086,9 @@ Double click or <keycap>Escape</keycap>: finish track creation.
 
 <section><title>Edit Waypoint</title>
 <para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/edwp_18.png"/></guiicon>
+</para>
+<para>
 Left Click/drag: select/move a waypoint.
 If <keycap>Ctrl</keycap> is held at the same time, it will jump the waypoint position to a nearby existing trackpoint.
 If <keycap>Shift</keycap> is held at the same time, it will jump the waypoint position to a nearby existing waypoint.
@@ -1008,6 +1099,9 @@ same menu accessed by right-clicking the waypoint in the layers panel)
 </section>
 
 <section><title>Edit Trackpoint</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/edtr_18.png"/></guiicon>
+</para>
 <para>
 Left click near a trackpoint (in screen pixel terms) to bring up the Track Point Edit dialog on that trackpoint.
 Whilst the edit dialog is already open, left click again and drag enables moving of the trackpoint.
@@ -1020,14 +1114,20 @@ Options in the Track Point Edit dialog include: change position, go to next, go 
 
 <section><title>Show Picture</title>
 <para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/showpic_18.png"/></guiicon>
+</para>
+<para>
 Opens an image viewer with the picture associated with the waypoint.
-On Linux this uses <application>eog</application>.
-On Windows this uses the default system image viewer.
+By default this uses the default system image viewer.
+For Linux you can override this with the setting in the <link linkend="prefs_external">preferences.</link>
 </para>
 </section>
 
 <!--
 <section><title>Route Finder</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/route_finder_18.png"/></guiicon>
+</para>
 <para>Creates a track using Google maps routing between two points.
 Requires an internet connection. Click one point, then click another to
 create a track.
@@ -1047,6 +1147,9 @@ Right-click: undo last routing (only track removed - not any waypoints)
 You must have a Georef Map Layer selected to use these tools.
 </para>
 <section><title>Georef zoom</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/geozoom_18.png"/></guiicon>
+</para>
 <para>Changes the zoom level of the georeferenced map and changes the
 &appname; zoom level accordingly. Useful if you are trying to match GPS
 data to a georeferenced map.
@@ -1054,6 +1157,9 @@ data to a georeferenced map.
 </section>
 
 <section><title>Georef move</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/geomove_18.png"/></guiicon>
+</para>
 <para>
 Drag to move the georeferenced map.
 </para>
@@ -1063,6 +1169,9 @@ Drag to move the georeferenced map.
 <section><title>Map Download</title>
 <para>
 You must have a Map Layer selected to use this.
+</para>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mapdl_18.png"/></guiicon>
 </para>
 <para>
 Click to download a single tile. Drag to download tiles in the dragged rectangle area.
@@ -1075,6 +1184,9 @@ Right-click to redownload bad/all tiles. Right-click and drag to redownload bad/
 <section><title>DEM Download</title>
 <para>
 You must have a DEM Layer selected to use this.
+</para>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/demdl_18.png"/></guiicon>
 </para>
 <para>
 Click to download and import a DEM file.
@@ -1115,7 +1227,7 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 <term>DDD</term><listitem><para>decimal degree</para></listitem>
 </varlistentry>
 <varlistentry>
-<term>DDD</term><listitem><para>partial sexagesimal display: degrees, minutes and décimal part of minutes</para></listitem>
+<term>DMM</term><listitem><para>partial sexagesimal display: degrees, minutes and decimal part of minutes</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>DMS</term><listitem><para>sexagesimal display: degrees, minutes and seconds</para></listitem>
@@ -1155,13 +1267,13 @@ Generally if you have a system with lots of memory it's recommended to increase 
 </section>
 </section>
 
-<section><title>Export/External</title>
+<section id="prefs_external"><title>Export/External</title>
 <section><title>KML Export Units</title>
 <para>Allows setting the units used when saved as the KML file type, such as Metric or Statue units</para>
 </section>
 <section><title>Image Viewer (Not Windows)</title>
 <para>Allows setting the program used to view images associated with Waypoints.</para>
-<para>By default this is set to 'xdg-open' which should open the system's default image viewer, however this can be overridden with this setting.</para>
+<para>By default this is set to <application>xdg-open</application> which should open the system's default image viewer, however this can be overridden with this setting.</para>
 <para>Note: for Windows systems, viewing images associated with Waypoints always uses the system's default image viewer.</para>
 </section>
 <section><title>External GPX programs</title>
@@ -1188,40 +1300,74 @@ Your OSM password will be stored in plain text.
 </section>
 
 <!-- HOWTOS-->
-<section><title>Mini-Howto's</title>
-<section><title>Getting Started</title>
+<section><title>Howto's</title>
+<section id="howto_start"><title>Getting Started</title>
 <para>
 To quickly get started using &appname;, follow these instructions.
 </para>
 <section><title>Go to an area of interest</title>
 <para>
-&appname;'s default location is a Manhatten, New York, USA, so you may need to pick another place that interests you.
+&appname;'s default location is a Manhatten, New York, USA, so you may need to pick another place that interests you - such as where you live.
 </para>
 <procedure>
 <title>Method A</title>
 <step>
 <para>
-Use View - Go to to move to a coordinate of interest. 
+  Use the online location address/place search.
 </para>
+<para>
+  Use the <guibutton>Go to Location</guibutton> toolbar button or from the menus
+  <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>.
+  You can change the search location provider if desired.
+  Enter the name of place you wish to go to (you may need to specify the country to refine the search).
+  Also you can enter a post code or a ZIP code instead.
+</para>
+<note>
+	<para>You will need an internet connection for this search to work</para>
+</note>
 </step>
 </procedure>
 <procedure>
 <title>Method B</title>
 <step>
-<para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
-to load data directly from your GPS into &appname;.
-Currently Garmin, Magellan, DeLorme and Navilink protocols are supported.
+<para>
+	If you know the coordinates of where you want to view:
 </para>
-<note>
-<para>You must have write permission to the port used. For Unix like OS:</para>
-<para>/dev/ttyS0 is the first serial port</para>
-<para>/dev/ttyUSB0 is the first USB port</para>
-</note>
-<note><para>For DeLorme device support you will need GPSBabel v1.4.0+ installed</para></note>
+<para>
+Use <menuchoice><guimenu>View</guimenu></menuchoice> and select from either <menuchoice><guimenu>Go to Lat/Lon</guimenu></menuchoice> or <menuchoice><guimenu>Go to UTM</guimenu></menuchoice> and then enter in the specific coordinates.
+</para>
 </step>
 </procedure>
 <procedure>
 <title>Method C</title>
+<step>
+<para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
+to load data directly from your GPS into &appname;.
+</para>
+<para>You can specify the types of data to acquire: Tracks and/or Waypoints.
+</para>
+<note>
+<para>You must have write permission to the port used. For <trademark>Unix</trademark> like OS:</para>
+<itemizedlist>
+	<listitem><para>/dev/ttyS0 is the first serial port</para></listitem>
+	<listitem><para>/dev/ttyUSB0 is the first USB port</para></listitem>
+	<listitem><para>usb: is any USB port</para></listitem>
+</itemizedlist>
+<para>Depending on your distribution only one of the USB port types may work</para>
+<para>For <trademark>Windows</trademark>:</para>
+<itemizedlist>
+	<listitem><para>com1: is the first serial port</para></listitem>
+	<listitem><para>usb: is any USB port</para></listitem>
+</itemizedlist>
+</note>
+<note>
+	<para>The GPS devices supported are those supported by <application>GPSBabel</application>.</para>
+	<para>Garmin and Magellan GPS devices supported by all versions, later versions of GPSBabel support more devices such as DeLorme and Navilink.</para>
+</note>
+</step>
+</procedure>
+<procedure>
+<title>Method D</title>
 <step>
 <para>
 Get data from files in GPX or KML format, which can be opened directly.
@@ -1262,7 +1408,19 @@ your GPS data is in. This means that it will be drawn last, or on top
 of the other layers. Select the Map layer from the list and click the
 down arrow button beneath the list. Your tracks will now be drawn over
 the map. </para>
+</section>
 
+<section><title>Set Your Home Location</title>
+<para>
+	You can save the current center position of the viewport as the default location AKA the Home Location by
+	<menuchoice><guimenu>Edit</guimenu><guimenuitem>Set the Default Location</guimenuitem></menuchoice>.
+</para>
+<para>
+	Then at any time you can return to this place by clicking on the <guibutton>Home</guibutton> icon on the toolbar.
+</para>
+<para>
+    You can also set the default location via specifing the exact latitude and longitude in the <link linkend="prefs">Preferences</link>.
+</para>
 </section>
 
 </section>
@@ -1271,7 +1429,6 @@ the map. </para>
 The first you'll see is an empty map, because &appname; in its default configuration will download maps only on demand.
 Before fetching unneeded data, one can position to a location of interest, e.g. Stuttgart: <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>, enter 'Stuttgart'.
 </para>
-
 <section><title>Fetching the maps</title>
 <para>
 <emphasis role="bold">Map</emphasis>
@@ -1295,7 +1452,7 @@ role in the pre-fetch for offline usage discussed later
 </step>
 </procedure>
 <para>You'll see a map of Stuttgart. Using the mouse wheel, you can
-zoom in and out. The maps for the choosen resoltion will be downloaded
+zoom in and out. The maps for the choosen resolution will be downloaded
 automatically.
 </para>
 <para>
@@ -1335,30 +1492,22 @@ You can also alter the Min. and Max. elevation in this dialogue.
 </section>
 <section><title>GPS Track with Height Profile</title>
 <procedure>
-<step><para>uncheck the DEM layer (the map show up again)</para></step>
-<step><para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New TrackWaypoint Layer</guimenuitem></menuchoice></para></step>
-</procedure>
-<para>
-Ensure the new track layer is above the map layer.
-</para>
-<procedure>
-<step><para>expand trackwaypointlayer, select <guimenuitem>Tracks</guimenuitem></para></step>
+<step><para>Uncheck the DEM layer (the map is shown again)</para></step>
 <step>
-<para>
-in the tools menu choose <guimenuitem>Begin Track</guimenuitem> which looks like this:
-<figure>
-<title>Begin Track Icon</title>
-<screenshot>
-  <graphic format="PNG" fileref="figures/begintr_18.png"/>
-</screenshot>
-</figure>
+	<para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New TrackWaypoint Layer</guimenuitem></menuchoice></para>
+	<para>Ensure the new track layer is above the map layer.</para>
+</step>
+<step><para>Expand the TrackWaypoint layer, select <guimenuitem>Tracks</guimenuitem></para></step>
+<step><para>In the tools menu choose <guiicon><inlinegraphic fileref="figures/begintr_18.png"/></guiicon> <guibutton>Begin Track</guibutton>
 </para></step>
-<step><para>leftclick in the map window, enter a name</para></step>
-<step><para>click several times to generate a track (a right-click removes the last point)</para></step>
-<step><para>expand tracks in the layer menu, your track should show up, select it</para></step>
-<step><para>right click your track, select <guimenuitem>Apply DEM data</guimenuitem></para></step>
-<step><para>right click your track again, select <guimenuitem>Properies</guimenuitem></para></step>
-<step><para>click the tab <guilabel>Elevation-distance</guilabel> - enjoy the plot</para></step>
+<step><para>Leftclick in the map window, enter a name</para></step>
+<step>
+	<para>Click several times to generate a track (a right-click removes the last point).</para>
+	<para>Height data is set automatically since DEM data is available</para>
+</step>
+<step><para>Expand tracks in the layer menu, your track should show up, select it</para></step>
+<step><para>Right click your track, select <guimenuitem>Properties</guimenuitem></para></step>
+<step><para>Click the tab <guilabel>Elevation-distance</guilabel> - enjoy the plot</para></step>
 </procedure>
 <para>
 In order to save this setting for later usage
@@ -1408,10 +1557,7 @@ tiles into <filename>.viking-map-holiday/</filename> if you like.
 </substeps>
 </step>
 </procedure>
-<para>This may take some time and hd capacity. Lixus wrote a set of
-scripts which allow to download the map tiles for several zoom-level in
-parallel from the command line.
-</para>
+<para>This may take some time and some hard disk capacity.</para>
 <para>
 Do not forget to save your configuration (as discussed above).
 </para>
@@ -1475,6 +1621,95 @@ Increasing the page number parameter allows one to request the subsequent sets o
 See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for further detail.
 </para>
 </formalpara>
+</section>
+</section>
+
+<section><title>Geotagging</title>
+<para>
+	This assumes you already have a map layer enabled for ease of use (if not see above to get one).
+</para>
+<section><title>Manual Positioning</title>
+<para>
+	This is useful for instances when you already know exactly where the image was taken (no need for tracklog).
+	Or maybe you want to adjust an automatically generated waypoint for the position of the subject of the image rather than the location that the photograph is taken from.
+	ATM this process only works on an individual image, so it will be tedious for handling lots of images.
+</para>
+<para>
+	First create a Track Waypoint layer or use an existing one; and select it in the Layers Panel.
+	NB Make sure this layer is above the map layer in the Layers Panel list.
+	Create a new waypoint (or move an existing one) to exact location desired:
+<itemizedlist>
+	<listitem><para>Select the New Waypoint tool, then left click on the map at the location desired, choosing an image to associate with it in the new waypoint dialog</para></listitem>
+	<listitem><para>Select the <link linkend="select">Select Tool</link>, then left click on waypoint to be moved. Left click again and drag the waypoint to the location desired</para></listitem>
+</itemizedlist>
+	Then using the Select tool left click on waypoint to select it, then right click to access the Waypoint properties menu, then choose
+	<menuchoice><guimenu>Update Geotag on Image</guimenu><guisubmenu>Update</guisubmenu></menuchoice>
+</para>
+<para>
+	The <guilabel>Update Geotag on Image</guilabel> options are only available when a waypoint has an image associated with it.
+</para>
+</section>
+
+<section><title>Automatic Positioning Against a Tracklog</title>
+<para>
+	First you will need a tracklog with timestamps in it. Either load one from a previously saved file or freshly acquired from a GPS device -
+	see <link linkend="howto_start">Getting Started</link>.
+	It helps if this is the track that was recorded at the time you took some photographs!
+</para>
+<para>
+	Select the track either from the layers panel on the left or via the viewport using the <link linkend="select">Select Tool</link>.
+	Then right click on it and chose the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> leading you to the <link linkend="geotagging">Geotagging Dialog</link>.
+</para>
+<para>
+	Load some images that where taken around the time the track log was recorded. Confirm the other options in the dialog - normally the defaults should be alright and select OK.
+	If things are succesful, new waypoints with thumbnail images of the photographs will appear.
+	You should probably check they are really in the right place as often the timestamp of the camera may not be aligned to the GPS correctly leading to inferring incorrect locations.
+</para>
+<formalpara><title>Option: Overwrite Waypoints</title>
+<para>
+	This is particularly useful when one finds an attempt at geotagging gives wrong locations, often due to time offset issues.
+	Simply try again with a new time offset (often 1 hour adjustments due to Daylight Savings or Summer Time times) and the old waypoints will be updated (instead of creating new ones).
+</para>
+</formalpara>
+<para>
+	If you have multiple tracks in a TrackWaypoint layer, then invoking the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> action on the layer
+	will search all the tracks to find location matches.
+</para>
+</section>
+</section>
+
+<section><title>GPS Real Time Location (Not <trademark>Windows</trademark>)</title>
+<para>
+	&appname; relies on <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
+	Unfortunately <application>gpsd</application> is not available on <trademark>Windows</trademark>,
+	so currently this functionality is disabled in <trademark>Windows</trademark> builds of &appname;
+</para>
+<para>
+	This assumes you already have a map layer enabled for ease of use (if not see above to get one).
+</para>
+<para>
+	Turn on the GPS Device, ensure it has figured out it's location and plug it in to your computer.
+</para>
+<section><title>Set Up GPS Layer</title>
+<para>
+	You will need a <link linkend="gps_layer">GPS Layer</link>. One can be added via <menuchoice><guimenu>Layers</guimenu><guisubmenu>Add GPS Layer</guisubmenu></menuchoice>.
+</para>
+<para>
+	Adjust the <emphasis>Realtime Tracking Mode</emphasis> settings to interface with <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> as necessary. Normally the defaults should suffice.
+</para>
+<para>
+  Current Linux distributions should run <application>gpsd</application> automatically when a GPS Device is plugged in. Otherwise you may have to run <application>gpsd</application> manually.
+</para>
+<para>
+  Then right-click the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
+  Hopefully the viewport should jump to the GPS location.
+</para>
+<para>
+  Troubleshooting checklist:
+</para>
+<procedure><step><para>Confirm <application>gpsd</application> is running.</para></step></procedure>
+<procedure><step><para>Confirm on the GPS device it has a location.</para></step></procedure>
+<procedure><step><para>Confirm the <emphasis>Realtime Tracking Mode</emphasis> settings.</para></step></procedure>
 </section>
 </section>
 
@@ -1747,6 +1982,9 @@ Accept: */*
 </formalpara>
 <formalpara><title>unbuffer (optional)</title>
 <para>&appname; uses unbuffer command to optimize conversion calls.</para>
+</formalpara>
+<formalpara><title>gpsd (optional - but not <trademark>Windows</trademark>)</title>
+<para>&appname; can use <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to get the current location.</para>
 </formalpara>
 </section>
 

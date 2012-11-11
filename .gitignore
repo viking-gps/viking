@@ -61,6 +61,7 @@ doc/reference/*stamp
 
 # help/C/
 help/C/viking.pdf
+help/C/*html
 
 # /src/
 /src/.deps
