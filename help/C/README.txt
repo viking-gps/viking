@@ -7,3 +7,6 @@ html2wiki --dialect=MediaWiki \
 --wiki-uri=http://sourceforge.net/apps/mediawiki/viking \
 --base-uri=http://sourceforge.net/apps/mediawiki/viking \
 index.html > help.wiki
+
+# To generate the PDF:
+dblatex viking.xml
