@@ -972,6 +972,51 @@ static void set_gps_info(const gchar *info, GpsSession *sess)
   gdk_threads_leave();
 }
 
+/*
+ * Common processing for GPS Device information
+ * It doesn't matter whether we're uploading or downloading
+ */
+static void process_line_for_gps_info ( const gchar *line, GpsSession *sess )
+{
+  if (strstr(line, "PRDDAT")) {
+    gchar **tokens = g_strsplit(line, " ", 0);
+    gchar info[128];
+    int ilen = 0;
+    int i;
+    int n_tokens = 0;
+
+    while (tokens[n_tokens])
+      n_tokens++;
+
+    // I'm not entirely clear what information this is trying to get...
+    //  Obviously trying to decipher some kind of text/naming scheme
+    //  Anyway this will be superceded if there is 'Unit:' information
+    if (n_tokens > 8) {
+      for (i=8; tokens[i] && ilen < sizeof(info)-2 && strcmp(tokens[i], "00"); i++) {
+        guint ch;
+        sscanf(tokens[i], "%x", &ch);
+        info[ilen++] = ch;
+      }
+      info[ilen++] = 0;
+      set_gps_info(info, sess);
+    }
+    g_strfreev(tokens);
+  }
+
+  /* eg: "Unit:\teTrex Legend HCx Software Version 2.90\n" */
+  if (strstr(line, "Unit:")) {
+    gchar **tokens = g_strsplit(line, "\t", 0);
+    int n_tokens = 0;
+    while (tokens[n_tokens])
+      n_tokens++;
+
+    if (n_tokens > 1) {
+      set_gps_info(tokens[1], sess);
+    }
+    g_strfreev(tokens);
+  }
+}
+
 static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSession * sess )
 {
   gchar *line;
@@ -1013,39 +1058,8 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
       sess->progress_type = RTE;
     }
 
-    if (strstr(line, "PRDDAT")) {
-      gchar **tokens = g_strsplit(line, " ", 0);
-      gchar info[128];
-      int ilen = 0;
-      int i;
-      int n_tokens = 0;
+    process_line_for_gps_info ( line, sess );
 
-      while (tokens[n_tokens])
-        n_tokens++;
-
-      if (n_tokens > 8) {
-        for (i=8; tokens[i] && ilen < sizeof(info)-2 && strcmp(tokens[i], "00"); i++) {
-	  guint ch;
-	  sscanf(tokens[i], "%x", &ch);
-	  info[ilen++] = ch;
-        }
-        info[ilen++] = 0;
-        set_gps_info(info, sess);
-      }
-      g_strfreev(tokens);
-    }
-    /* eg: "Unit:\teTrex Legend HCx Software Version 2.90\n" */
-    if (strstr(line, "Unit:")) {
-      gchar **tokens = g_strsplit(line, "\t", 0);
-      int n_tokens = 0;
-      while (tokens[n_tokens])
-        n_tokens++;
-
-      if (n_tokens > 1) {
-        set_gps_info(tokens[1], sess);
-      }
-      g_strfreev(tokens);
-    }
     if (strstr(line, "RECORD")) {
       int lsb, msb, cnt;
 
@@ -1098,27 +1112,8 @@ static void gps_upload_progress_func(BabelProgressCode c, gpointer data, GpsSess
     g_mutex_unlock(sess->mutex);
     gdk_threads_leave();
 
-    if (strstr(line, "PRDDAT")) {
-      gchar **tokens = g_strsplit(line, " ", 0);
-      gchar info[128];
-      int ilen = 0;
-      int i;
-      int n_tokens = 0;
+    process_line_for_gps_info ( line, sess );
 
-      while (tokens[n_tokens])
-        n_tokens++;
-
-      if (n_tokens > 8) {
-        for (i=8; tokens[i] && ilen < sizeof(info)-2 && strcmp(tokens[i], "00"); i++) {
-	  guint ch;
-	  sscanf(tokens[i], "%x", &ch);
-	  info[ilen++] = ch;
-        }
-        info[ilen++] = 0;
-        set_gps_info(info, sess);
-      }
-      g_strfreev(tokens);
-    }
     if (strstr(line, "RECORD")) { 
       int lsb, msb;
 
