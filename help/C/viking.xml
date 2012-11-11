@@ -945,7 +945,10 @@ This layer is allows drawing of grid lines on the viewport.
 
 <section><title>Tools</title>
 <para>
-You can use the scroll wheel and the right-click to zoom and pan no matter what tool you are using.
+&appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan.
+</para>
+<para>
+You can use the scroll wheel and the right-click(drag) to respectively zoom and pan no matter what tool you are using.
 </para>
 <para>
 Scroll: zoom in and out keeping the mouse over same location
@@ -968,6 +971,12 @@ Middle-click and drag: pan
 
 <section><title>Pan</title>
 <para>
+This is the default mode of operation for &appname;.
+</para>
+<para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mover_22.png"/></guiicon>
+</para>
+<para>
 Pan moves the viewpoint. A single click centers the viewport at that point, whereas click and drag dynamically moves the view around.
 This is the default tool.
 </para>
@@ -977,6 +986,9 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</key
 </section>
 
 <section><title>Zoom</title>
+<para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/zoom_18.png"/></guiicon>
+</para>
 <para>
 Zooms in and out on the clicked part of the map or by the selected area.
 </para>
@@ -993,6 +1005,9 @@ Shift (and hold) + left mouse button: Draws a bounding box area on which to zoom
 
 <section><title>Ruler</title>
 <para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/ruler_18.png"/></guiicon>
+</para>
+<para>
 The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
 A second click will 'freeze' the ruler at that point.
 </para>
@@ -1002,6 +1017,9 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</key
 </section>
 
 <section id="select"><title>Version1.1+: Select</title>
+<para>
+This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/select_18.png"/></guiicon>
+</para>
 <para>
 The select tool allows one to choose any waypoint or track by clicking on it (or reasonably near) in the viewpoint.
 </para>
@@ -1019,11 +1037,17 @@ You must have a TrackWaypoint Layer selected to use these tools.
 </para>
 <section><title>Create Waypoint</title>
 <para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addwp_18.png"/></guiicon>
+</para>
+<para>
 Left click will open the new waypoint dialog using the specified position.
 </para>
 </section>
 
 <section><title>Create/Begin Track</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addtr_18.png"/></guiicon>
+</para>
 <para>
 Left click to create a new trackpoint. If it's the initial trackpoint you will be asked to enter a name for the track.
 If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoint position to a nearby existing trackpoint.
@@ -1036,6 +1060,9 @@ Double click or <keycap>Escape</keycap>: finish track creation.
 
 <section><title>Edit Waypoint</title>
 <para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/edwp_18.png"/></guiicon>
+</para>
+<para>
 Left Click/drag: select/move a waypoint.
 If <keycap>Ctrl</keycap> is held at the same time, it will jump the waypoint position to a nearby existing trackpoint.
 If <keycap>Shift</keycap> is held at the same time, it will jump the waypoint position to a nearby existing waypoint.
@@ -1046,6 +1073,9 @@ same menu accessed by right-clicking the waypoint in the layers panel)
 </section>
 
 <section><title>Edit Trackpoint</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/edtr_18.png"/></guiicon>
+</para>
 <para>
 Left click near a trackpoint (in screen pixel terms) to bring up the Track Point Edit dialog on that trackpoint.
 Whilst the edit dialog is already open, left click again and drag enables moving of the trackpoint.
@@ -1058,6 +1088,9 @@ Options in the Track Point Edit dialog include: change position, go to next, go 
 
 <section><title>Show Picture</title>
 <para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/showpic_18.png"/></guiicon>
+</para>
+<para>
 Opens an image viewer with the picture associated with the waypoint.
 By default this uses the default system image viewer.
 For Linux you can override this with the setting in the <link linkend="prefs_external">preferences.</link>
@@ -1066,6 +1099,9 @@ For Linux you can override this with the setting in the <link linkend="prefs_ext
 
 <!--
 <section><title>Route Finder</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/route_finder_18.png"/></guiicon>
+</para>
 <para>Creates a track using Google maps routing between two points.
 Requires an internet connection. Click one point, then click another to
 create a track.
@@ -1085,6 +1121,9 @@ Right-click: undo last routing (only track removed - not any waypoints)
 You must have a Georef Map Layer selected to use these tools.
 </para>
 <section><title>Georef zoom</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/geozoom_18.png"/></guiicon>
+</para>
 <para>Changes the zoom level of the georeferenced map and changes the
 &appname; zoom level accordingly. Useful if you are trying to match GPS
 data to a georeferenced map.
@@ -1092,6 +1131,9 @@ data to a georeferenced map.
 </section>
 
 <section><title>Georef move</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/geomove_18.png"/></guiicon>
+</para>
 <para>
 Drag to move the georeferenced map.
 </para>
@@ -1101,6 +1143,9 @@ Drag to move the georeferenced map.
 <section><title>Map Download</title>
 <para>
 You must have a Map Layer selected to use this.
+</para>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mapdl_18.png"/></guiicon>
 </para>
 <para>
 Click to download a single tile. Drag to download tiles in the dragged rectangle area.
@@ -1113,6 +1158,9 @@ Right-click to redownload bad/all tiles. Right-click and drag to redownload bad/
 <section><title>DEM Download</title>
 <para>
 You must have a DEM Layer selected to use this.
+</para>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/demdl_18.png"/></guiicon>
 </para>
 <para>
 Click to download and import a DEM file.
