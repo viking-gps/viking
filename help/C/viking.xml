@@ -974,7 +974,7 @@ This layer is allows drawing of grid lines on the viewport.
 &appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan.
 </para>
 <para>
-You can use the scroll wheel and the right-click(drag) to respectively zoom and pan no matter what tool you are using.
+You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, center map at position and pan respectively no matter what tool you are using.
 </para>
 <para>
 Scroll: zoom in and out keeping the mouse over same location
@@ -989,7 +989,7 @@ Shift-scroll: pan east-west (also Ctrl-left, Ctrl-right)
 Ctrl-shift-scroll: zoom in and out, without changing the center (also Ctrl+, Ctrl- [*not* KeyPad +/-])
 </para>
 <para>
-Left or Middle-click: make the clicked point on the map the center
+Middle-click: make the clicked point on the map the center
 </para>
 <para>
 Middle-click and drag: pan
