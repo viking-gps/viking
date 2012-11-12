@@ -63,6 +63,10 @@ and docbook-xsl in your Build-Depends control field.
       <year>2010</year>
       <holder>Guilhem Bonnefille</holder>
     </copyright>
+    <copyright>
+      <year>2012</year>
+      <holder>Rob Norris</holder>
+    </copyright>
     &dhdate;
   </refentryinfo>
   <refmeta>
@@ -108,15 +112,18 @@ and docbook-xsl in your Build-Depends control field.
     <title>DESCRIPTION</title>
 
     <para>
-  Viking is a free/open source program to manage GPS data. You can 
-  import and plot tracks and waypoints, show OpenStreetMap (OSM) maps and/or 
-  Terraserver maps under it, add coordinate lines, make new tracks 
-  and waypoints, hide different things, etc. It is written in C 
-  with the GTK+ 2 toolkit, available for Linux, other POSIX 
-  operating systems, and Windows, and is licensed under the GNU GPL. 
+      Viking is a program to manage GPS data.
     </para>
     <para>  
-  Homepage: <ulink type="http" url="http://viking.sf.net">http://viking.sf.net</ulink>
+      You can import and plot tracks, routes and waypoints, show OpenStreetMap (OSM) maps and/or
+      Terraserver maps under it, add coordinate lines, make new tracks, routes and waypoints, hide different things, etc.
+      It is written in C with the GTK+ 2 toolkit, available for Linux, other POSIX operating systems and Windows.
+    </para>
+    <para>  
+      Homepage: <ulink type="http" url="http://viking.sf.net">http://viking.sf.net</ulink>
+    </para>
+    <para>  
+      Viking is licensed under the GNU GPL.
     </para>
 
   </refsect1>
@@ -399,7 +406,7 @@ and docbook-xsl in your Build-Depends control field.
   <refsect1>
     <title>AUTHOR</title>
 
-    <para>This manual page was written by &dhusername; &dhemail; for
+    <para>This manual page was originally written by &dhusername; &dhemail; for
       the &debian; system (but may be used by others).  Permission is
       granted to copy, distribute and/or modify this document under
       the terms of the &gnu; General Public License, Version 2 any 
