@@ -20,6 +20,9 @@
  *
  */
 
+#ifndef _DATASOURCE_GPS_H
+#define _DATASOURCE_GPS_H
+
 #include "viking.h"
 #include "gtk/gtk.h"
 
@@ -33,3 +36,5 @@ gboolean datasource_gps_get_do_tracks ( gpointer user_data );
 gboolean datasource_gps_get_do_waypoints ( gpointer user_data );
 
 gboolean datasource_gps_get_off ( gpointer user_data );
+
+#endif
