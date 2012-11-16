@@ -33,6 +33,7 @@ static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoord
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
 VikLayerInterface vik_aggregate_layer_interface = {
+  "Aggregate",
   N_("Aggregate"),
   "<control><shift>A",
   &vikaggregatelayer_pixbuf,

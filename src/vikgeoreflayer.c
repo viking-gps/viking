@@ -83,6 +83,7 @@ static VikToolInterface georef_tools[] = {
 };
 
 VikLayerInterface vik_georef_layer_interface = {
+  "GeoRef Map",
   N_("GeoRef Map"),
   NULL,
   &vikgeoreflayer_pixbuf, /*icon */

@@ -100,7 +100,7 @@ static guint16 layer_type_from_string ( const gchar *str )
 {
   guint8 i;
   for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
-    if ( strcasecmp ( str, vik_layer_get_interface(i)->name ) == 0 )
+    if ( strcasecmp ( str, vik_layer_get_interface(i)->fixed_layer_name ) == 0 )
       return i;
   return -1;
 }
@@ -209,7 +209,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
   while (stack && stack->data)
   {
     current_layer = VIK_LAYER(((GList *)stack->data)->data);
-    fprintf ( f, "\n~Layer %s\n", vik_layer_get_interface(current_layer->type)->name );
+    fprintf ( f, "\n~Layer %s\n", vik_layer_get_interface(current_layer->type)->fixed_layer_name );
     write_layer_params_and_data ( current_layer, f );
     if ( current_layer->type == VIK_LAYER_AGGREGATE && !vik_aggregate_layer_is_empty(VIK_AGGREGATE_LAYER(current_layer)) )
     {

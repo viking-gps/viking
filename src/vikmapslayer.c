@@ -145,6 +145,7 @@ static VikToolInterface maps_tools[] = {
 };
 
 VikLayerInterface vik_maps_layer_interface = {
+  "Map",
   N_("Map"),
   "<control><shift>M",
   &vikmapslayer_pixbuf,

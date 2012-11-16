@@ -204,7 +204,8 @@ typedef struct _VikLayerInterface VikLayerInterface;
 
 /* See vik_layer_* for function parameter names */
 struct _VikLayerInterface {
-  const gchar *                     name;
+  const gchar *                     fixed_layer_name; // Used in .vik files - this should never change to maintain file compatibility
+  const gchar *                     name;             // Translate-able name used for display purposes
   const gchar *                     accelerator;
   const GdkPixdata *                icon;
 
