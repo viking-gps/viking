@@ -274,7 +274,7 @@ The &appname; automatic caching strategy is two fold:
 </note>
 </section>
 
-<section><title>Shortcut Keys</title>
+<section id="shortcut_keys"><title>Shortcut Keys</title>
 <para>
 &appname; has several shortcut keys or key combinations for commands as listed in the main window along side the command.
 </para>
@@ -314,6 +314,205 @@ For these combinations see the menu entry themselves.
 </section>
 
 </section><!--General Concepts End-->
+
+<section><title>File Types and the Main Window</title>
+
+<para>
+&appname; has it's own file type traditionally marked by the <emphasis>.vik</emphasis> file extension.
+This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregrates, maps, tracks, waypoints, etc...).
+</para>
+<para>
+Besides it's own file type, &appname; can open (and save to via export methods) GPX and KML file types.
+</para>
+<note>
+<para>
+&appname; does not handle GPX 1.1 particularly well - it prefers GPX 1.0
+</para>
+</note>
+<para>
+By default &appname; opens a default blank window centered on the home location.
+Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
+Each section (apart from the viewport) can be hidden via the <link linkend="shortcut_keys">keyboard shortcuts</link> or from the
+<menuchoice><guimenu>View</guimenu><guisubmenu>Show</guisubmenu></menuchoice> choices.
+</para>
+<para>
+One may consider each &appname; window to be a separate project - each with it's project <emphasis>Viking</emphasis> file.
+However generally one window is enough for most purposes!
+</para>
+<para>
+Several operations apply at the window level as follows next.
+Also see the <link linkend="tools">Tools</link> section for the operational modes that generally work in conjunction with a selected layer.
+</para>
+
+<section><title>New</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu></menuchoice> menu and on the toolbar <guibutton>New</guibutton>.
+</para>
+<para>
+This creates a new window with the default settings.
+</para>
+</section>
+
+<section><title>Open</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Open</guisubmenu></menuchoice> menu and on the toolbar <guibutton>Open</guibutton>.
+</para>
+<para>
+This opens a file chooser dialog to select one (or more) files of the supported GPS data file types:
+<itemizedlist>
+<listitem><para>Viking</para></listitem>
+<listitem><para>GPX</para></listitem>
+<listitem><para>KML</para></listitem>
+</itemizedlist>
+</para>
+<para>
+GPX and KML files will be loaded into the existing &appname; view. A <emphasis>Viking</emphasis> file will be given a new window if the current window is already assigned.
+</para>
+<tip>
+<para>
+&appname; handles more file types via the <link linkend="acquire">Acquire</link> methods below.
+</para>
+</tip>
+</section>
+
+<section><title>Save</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Save</guisubmenu></menuchoice> menu and on the toolbar <guibutton>Save</guibutton>.
+</para>
+<para>
+If the current opened file is <emphasis>Viking</emphasis> file, this save will simply update it.
+If it is a new file or the file loaded was an external type (i.e. GPX or KML), then this will ask for a <emphasis>new name</emphasis> to save as a <emphasis>Viking</emphasis> file.
+</para>
+</section>
+
+<section><title>Save As</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Save As</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+This will ask for a <emphasis>new name</emphasis> to save as a <emphasis>Viking</emphasis> file (even it was already a <emphasis>Viking</emphasis> file).
+</para>
+</section>
+
+<section><title>Append</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Append</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+Selecting a <emphasis>Viking</emphasis> file from this method will join the file contents to the current window (instead of creating a new one).
+GPX and KML files may also be appended, but this is exactly the same as the normal file open method.
+</para>
+</section>
+
+<section id="acquire"><title>Acquire</title>
+
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Acquire</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+If successful, these methods place the results in a new TrackWaypoint layer.
+</para>
+
+<section>
+<title>From GPS</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
+Probably the easiest way of getting information from a GPS Device.
+</para>
+<para>
+Select the GPS Device communication settings and then hit <guibutton>OK</guibutton>.
+See the <link linkend="method_c">Getting Started</link> section for more info about the settings.
+</para>
+<note>
+<para>
+Some GPS devices (such as the <trademark>Garmin Nuvi 255</trademark>) support a native file system and write information to a <filename>Current.gpx</filename> file or similar. You will have to browse the file system on the device and open it directly.
+</para>
+</note>
+</section>
+
+<section>
+<title>Import File With GPSBabel</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>Import File With GPSBabel</guimenuitem></menuchoice>
+</para>
+<para>
+Other formats can be imported that are supported by GPSBabel.
+</para>
+<para>
+You need to select the file <emphasis>and</emphasis> the type of the file that is going to be opened,
+since there is no automatic detection of the file kind.
+</para>
+</section>
+
+<section>
+<title>OSM Traces</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>OSM Traces</guimenuitem></menuchoice>
+See <link linkend="osm_dl">OpenStreetMap Download</link> section for more information.
+</para>
+</section>
+
+<section>
+<title>From Geotagged Images</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From Geotagged Images</guimenuitem></menuchoice>
+Enables automatic creation of waypoints from geotagged images.
+</para>
+<para>
+This menu opens a dialog to select such image files.
+If the image files have geotag information in them, then a TrackWaypoint layer with named waypoints positioned at the location of each image with a thumbnail of that image is created.
+</para>
+</section>
+
+</section> <!-- End Acquire -->
+
+<section><title>Print</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Print</guisubmenu></menuchoice> menu and on the toolbar <guibutton>Print</guibutton>.
+</para>
+<para>
+Print uses what is displayed on the current map view for printing: i.e. what ever map, tracks and waypoints that are in view, including the
+cross hairs and the scale.
+</para>
+<para>
+It uses a standard system print dialog using an image the size of the current viewport in pixel terms.
+On the <emphasis>Image Settings</emphasis> you can move the image around the page and scale the image up / or down.
+</para>
+</section>
+
+<section><title>Generate Image File</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Generate Image File</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+Allows generation of larger (pixel) area images than the standard Print method above.
+From the generated image you can use the facilities of the <application>Operating System</application> to print the image
+or perform other actions.
+</para>
+<para>
+You should have previously downloaded the tile images for the chosen zoom level,
+otherwise the image produced will have missing sections.
+</para>
+<warning>
+<para>
+Using large areas takes some time to process and due to the method used it may run out of memory to complete the operation.
+Unfortunately under <trademark>Windows</trademark> systems it can not detect this failure and may crash the program.
+So the maximum size is dependent on the capabilities of your system.
+For instance the largest successful image generated on my (RN) Debian system is a pixel area of 20,000 x 20,000.
+</para>
+</warning>
+</section>
+
+<section><title>Generate Directory of Images</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Generate Directory of Images</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+This is only available in UTM mode.
+</para>
+</section>
+
+</section> <!-- End File Types -->
 
 <section><title>Layers</title>
 
@@ -439,6 +638,13 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 </para>
 </section>
 
+<section><title>Acquire</title>
+<para>
+This offers the same choice of <link linkend="acquire">Acquire</link> methods as on the <guimenu>File</guimenu> menu.
+However when invoked from here, the results will be stored in this layer (instead of creating a new one).
+</para>
+</section>
+
 <section><title>Upload</title>
 
 <section id="gps_upload"><title>Upload to GPS</title>
@@ -461,13 +667,12 @@ Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap a
 <para>
  &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
 </para>
-<note>
+<warning>
 <para>
- <emphasis role="bold">Warning!</emphasis>
 The password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OpenStreetMap server. This is due to the use of OpenStreetMap's basic authentication method.
 </para>
 <para>Currently &appname; does not support the <ulink url="http://oauth.net/">OAuth</ulink> mechanism.</para>
-</note>
+</warning>
 </section>
 
 </section>
@@ -969,7 +1174,7 @@ This layer is allows drawing of grid lines on the viewport.
 
 </section>
 
-<section><title>Tools</title>
+<section id="tools"><title>Tools</title>
 <para>
 &appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan.
 </para>
@@ -1339,7 +1544,7 @@ Use <menuchoice><guimenu>View</guimenu></menuchoice> and select from either <men
 </step>
 </procedure>
 <procedure>
-<title>Method C</title>
+<title id="method_c">Method C</title>
 <step>
 <para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
 to load data directly from your GPS into &appname;.
@@ -1602,7 +1807,7 @@ The tags field is a white separated list of tag.
 </para> 
 </formalpara>
 </section>
-<section><title>Downloading traces from OpenStreetMap</title>
+<section id="osm_dl"><title>Downloading traces from OpenStreetMap</title>
 <para>
 It is possible to download GPS traces directly from OpenStreetMap into &appname;.
 This feature can be really useful for checking existing data before uploading new ones.
