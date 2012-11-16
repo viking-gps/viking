@@ -22,6 +22,8 @@
 #ifndef __VIKING_DEM_H
 #define __VIKING_DEM_H
 
+G_BEGIN_DECLS
+
 #define VIK_DEM_INVALID_ELEVATION -32768
 
 /* unit codes */
@@ -71,5 +73,7 @@ gint16 vik_dem_get_shepard_interpol ( VikDEM *dem, gdouble east, gdouble north )
 gint16 vik_dem_get_best_interpol ( VikDEM *dem, gdouble east, gdouble north );
 
 void vik_dem_east_north_to_xy ( VikDEM *dem, gdouble east, gdouble north, guint *col, guint *row );
+
+G_END_DECLS
 
 #endif

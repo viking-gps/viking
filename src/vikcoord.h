@@ -24,6 +24,8 @@
 
 #include "coords.h"
 
+G_BEGIN_DECLS
+
 typedef gshort VikCoordMode;
 #define VIK_COORD_UTM 0
 #define VIK_COORD_LATLON 1
@@ -57,5 +59,7 @@ gboolean vik_coord_equals ( const VikCoord *coord1, const VikCoord *coord2 );
 void vik_coord_set_area(const VikCoord *coord, const struct LatLon *wh, VikCoord *tl, VikCoord *br);
 gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCoord *br);
 /* all coord operations MUST BE ABSTRACTED!!! */
+
+G_END_DECLS
 
 #endif

@@ -28,6 +28,8 @@
 
 #include "vikcoord.h"
 
+G_BEGIN_DECLS
+
 /* todo important: put these in their own header file, maybe.probably also rename */
 
 #define VIK_TRACK(x) ((VikTrack *)(x))
@@ -126,5 +128,7 @@ VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr );
 
 void vik_track_set_property_dialog(VikTrack *tr, GtkWidget *dialog);
 void vik_track_clear_property_dialog(VikTrack *tr);
+
+G_END_DECLS
 
 #endif

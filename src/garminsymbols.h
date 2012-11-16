@@ -26,9 +26,13 @@
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+G_BEGIN_DECLS
+
 GdkPixbuf *a_get_wp_sym ( const gchar *sym );
 void a_populate_sym_list ( GtkListStore *list );
 /* Use when preferences have changed to reload icons*/
 void clear_garmin_icon_syms ();
+
+G_END_DECLS
 
 #endif

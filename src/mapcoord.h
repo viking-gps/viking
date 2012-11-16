@@ -24,6 +24,8 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 /* common struct to all map types and map layer, to hold info about a
  * particular tile */
 
@@ -33,5 +35,6 @@ typedef struct {
   gint scale;
 } MapCoord;
 
-#endif
+G_END_DECLS
 
+#endif

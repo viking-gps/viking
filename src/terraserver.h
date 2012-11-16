@@ -24,9 +24,13 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 #include "vikcoord.h"
 #include "mapcoord.h"
 
 void terraserver_init();
+
+G_END_DECLS
 
 #endif

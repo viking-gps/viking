@@ -26,6 +26,8 @@
 #include "vikwaypoint.h"
 #include "vikcoord.h"
 
+G_BEGIN_DECLS
+
 VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoordMode vcmode, gchar **name );
 
 VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name, VikWaypoint *wp );
@@ -33,5 +35,7 @@ VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coor
 gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_GPS_info );
 
 gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble alt, gboolean no_change_mtime );
+
+G_END_DECLS
 
 #endif // _VIKING_GEOTAG_EXIF_H

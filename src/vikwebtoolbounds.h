@@ -26,6 +26,8 @@
 
 #include "vikwebtool.h"
 
+G_BEGIN_DECLS
+
 #define VIK_WEBTOOL_BOUNDS_TYPE            (vik_webtool_bounds_get_type ())
 #define VIK_WEBTOOL_BOUNDS(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_WEBTOOL_BOUNDS_TYPE, VikWebtoolBounds))
 #define VIK_WEBTOOL_BOUNDS_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_WEBTOOL_BOUNDS_TYPE, VikWebtoolBoundsClass))
@@ -50,5 +52,7 @@ struct _VikWebtoolBounds {
 
 VikWebtoolBounds* vik_webtool_bounds_new ( );
 VikWebtoolBounds* vik_webtool_bounds_new_with_members ( const gchar *label, const gchar *url );
+
+G_END_DECLS
 
 #endif

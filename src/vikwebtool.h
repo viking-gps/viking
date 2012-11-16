@@ -27,6 +27,8 @@
 
 #include "vikexttool.h"
 
+G_BEGIN_DECLS
+
 #define VIK_WEBTOOL_TYPE            (vik_webtool_get_type ())
 #define VIK_WEBTOOL(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_WEBTOOL_TYPE, VikWebtool))
 #define VIK_WEBTOOL_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_WEBTOOL_TYPE, VikWebtoolClass))
@@ -51,5 +53,7 @@ struct _VikWebtool {
 };
 
 gchar *vik_webtool_get_url ( VikWebtool *self, VikWindow *vwindow );
+
+G_END_DECLS
 
 #endif

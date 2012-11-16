@@ -24,6 +24,8 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 gchar *convert_lat_dec_to_ddd(gdouble lat);
 gchar *convert_lon_dec_to_ddd(gdouble lon);
 
@@ -34,5 +36,7 @@ gchar *convert_lat_dec_to_dms(gdouble lat);
 gchar *convert_lon_dec_to_dms(gdouble lon);
 
 gdouble convert_dms_to_dec(const gchar *dms);
+
+G_END_DECLS
 
 #endif

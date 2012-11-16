@@ -25,6 +25,8 @@
 
 #include "vikwindow.h"
 
+G_BEGIN_DECLS
+
 #define VIK_EXT_TOOL_TYPE            (vik_ext_tool_get_type ())
 #define VIK_EXT_TOOL(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_EXT_TOOL_TYPE, VikExtTool))
 #define VIK_EXT_TOOL_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_EXT_TOOL_TYPE, VikExtToolClass))
@@ -51,5 +53,7 @@ struct _VikExtTool {
 
 gchar *vik_ext_tool_get_label ( VikExtTool *self );
 void vik_ext_tool_open ( VikExtTool *self, VikWindow *vwindow );
+
+G_END_DECLS
 
 #endif

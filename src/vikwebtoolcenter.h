@@ -25,6 +25,8 @@
 
 #include "vikwebtool.h"
 
+G_BEGIN_DECLS
+
 #define VIK_WEBTOOL_CENTER_TYPE            (vik_webtool_center_get_type ())
 #define VIK_WEBTOOL_CENTER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_WEBTOOL_CENTER_TYPE, VikWebtoolCenter))
 #define VIK_WEBTOOL_CENTER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_WEBTOOL_CENTER_TYPE, VikWebtoolCenterClass))
@@ -52,5 +54,7 @@ guint8 vik_webtool_center_mpp_to_zoom (VikWebtool *self, gdouble mpp);
 
 VikWebtoolCenter* vik_webtool_center_new ( );
 VikWebtoolCenter* vik_webtool_center_new_with_members ( const gchar *label, const gchar *url );
+
+G_END_DECLS
 
 #endif

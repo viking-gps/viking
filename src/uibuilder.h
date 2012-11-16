@@ -23,6 +23,8 @@
 
 #include <gtk/gtk.h>
 
+G_BEGIN_DECLS
+
 /* Parameters (for I/O and Properties) */
 
 typedef union {
@@ -110,5 +112,7 @@ VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow 
 
 /* frees data from last (if ness) */
 void a_uibuilder_free_paramdatas ( VikLayerParamData *paramdatas, VikLayerParam *params, guint16 params_count );
+
+G_END_DECLS
 
 #endif

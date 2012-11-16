@@ -29,6 +29,8 @@
 #include "viktrwlayer.h"
 #include "vikviewport.h"
 
+G_BEGIN_DECLS
+
 typedef enum {
 FILE_TYPE_GPSPOINT=1,
 FILE_TYPE_GPSMAPPER=2,
@@ -61,5 +63,6 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
 
 void file_write_layer_param ( FILE *f, const gchar *name, guint8 type, VikLayerParamData data );
 
+G_END_DECLS
 
 #endif

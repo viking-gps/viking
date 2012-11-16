@@ -24,6 +24,8 @@
 
 #include "viktrwlayer.h"
 
+G_BEGIN_DECLS
+
 /**
  * Options adapting GPX writing.
  */
@@ -36,5 +38,7 @@ typedef struct {
 gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options );
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options );
+
+G_END_DECLS
 
 #endif

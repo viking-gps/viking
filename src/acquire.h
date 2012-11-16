@@ -29,6 +29,8 @@
 #include "vikviewport.h"
 #include "babel.h"
 
+G_BEGIN_DECLS
+
 typedef struct _VikDataSourceInterface VikDataSourceInterface;
 
 /* global data structure used to expose the progress dialog to the worker thread */
@@ -154,5 +156,6 @@ GtkWidget *a_acquire_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport
 /* sets application-wide track to use with filter. references the track. */
 void a_acquire_set_filter_track ( VikTrack *tr );
 
+G_END_DECLS
 
 #endif

@@ -29,6 +29,8 @@
 #include "mapcoord.h"
 #include "vikmapslayer_compat.h"
 
+G_BEGIN_DECLS
+
 #define VIK_MAPS_LAYER_TYPE            (vik_maps_layer_get_type ())
 #define VIK_MAPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_MAPS_LAYER_TYPE, VikMapsLayer))
 #define VIK_MAPS_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_MAPS_LAYER_TYPE, VikMapsLayerClass))
@@ -52,5 +54,7 @@ gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);
 gchar *maps_layer_default_dir ();
 void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean only_new );
+
+G_END_DECLS
 
 #endif

@@ -37,6 +37,8 @@ renaming functions and defining LatLon and UTM structs.
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 struct UTM {
   gdouble northing;
   gdouble easting;
@@ -71,5 +73,7 @@ char *a_coords_dtostr ( double d );
  * Use the prefered representation.
  */
 void a_coords_latlon_to_string ( const struct LatLon *latlon, gchar **lat, gchar **lon );
+
+G_END_DECLS
 
 #endif

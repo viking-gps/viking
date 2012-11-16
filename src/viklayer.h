@@ -31,6 +31,8 @@
 #include "viktreeview.h"
 #include "vikviewport.h"
 
+G_BEGIN_DECLS
+
 #define VIK_LAYER_TYPE            (vik_layer_get_type ())
 #define VIK_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_LAYER_TYPE, VikLayer))
 #define VIK_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_LAYER_TYPE, VikLayerClass))
@@ -311,5 +313,7 @@ GdkPixbuf *vik_layer_load_icon ( gint type );
 VikLayer *vik_layer_get_and_reset_trigger();
 void vik_layer_emit_update_secondary ( VikLayer *vl ); /* to be called by aggregate layer only. doesn't set the trigger */
 void vik_layer_emit_update_although_invisible ( VikLayer *vl );
+
+G_END_DECLS
 
 #endif

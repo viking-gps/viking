@@ -24,6 +24,8 @@
 
 #include "viklayer.h"
 
+G_BEGIN_DECLS
+
 #define VIK_DEM_LAYER_TYPE            (vik_dem_layer_get_type ())
 #define VIK_DEM_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_DEM_LAYER_TYPE, VikDEMLayer))
 #define VIK_DEM_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_DEM_LAYER_TYPE, VikDEMLayerClass))
@@ -49,5 +51,6 @@ void vik_dem_layer_free ( VikDEMLayer *vcl );
 VikDEMLayer *vik_dem_layer_create ( VikViewport *vp );
 gboolean vik_dem_layer_properties ( VikDEMLayer *vcl, gpointer vp );
 
+G_END_DECLS
 
 #endif

@@ -27,6 +27,10 @@
 #include "vikcoord.h"
 #include "mapcoord.h"
 
+G_BEGIN_DECLS
+
 void expedia_init();
+
+G_END_DECLS
 
 #endif

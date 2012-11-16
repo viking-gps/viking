@@ -26,6 +26,8 @@
 #include "viking.h"
 #include "gtk/gtk.h"
 
+G_BEGIN_DECLS
+
 gpointer datasource_gps_setup ( GtkWidget *dialog, gboolean only_tracks );
 void datasource_gps_clean_up ( gpointer user_data );
 
@@ -36,5 +38,7 @@ gboolean datasource_gps_get_do_tracks ( gpointer user_data );
 gboolean datasource_gps_get_do_waypoints ( gpointer user_data );
 
 gboolean datasource_gps_get_off ( gpointer user_data );
+
+G_END_DECLS
 
 #endif

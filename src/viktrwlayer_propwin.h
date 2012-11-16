@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 #include "viktrack.h"
 
-/* should this file exist? */
+G_BEGIN_DECLS
 
 #define VIK_TRW_LAYER_PROPWIN_SPLIT 1
 #define VIK_TRW_LAYER_PROPWIN_REVERSE 2
@@ -39,5 +39,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
  * e.g. if the track has been renamed
  */
 void vik_trw_layer_propwin_update ( VikTrack *trk );
+
+G_END_DECLS
 
 #endif

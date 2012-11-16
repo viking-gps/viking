@@ -24,6 +24,8 @@
 
 #include "viklayer.h"
 
+G_BEGIN_DECLS
+
 #define VIK_COORD_LAYER_TYPE            (vik_coord_layer_get_type ())
 #define VIK_COORD_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_COORD_LAYER_TYPE, VikCoordLayer))
 #define VIK_COORD_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_COORD_LAYER_TYPE, VikCoordLayerClass))
@@ -49,5 +51,6 @@ void vik_coord_layer_free ( VikCoordLayer *vcl );
 VikCoordLayer *vik_coord_layer_create ( VikViewport *vp );
 gboolean vik_coord_layer_properties ( VikCoordLayer *vcl, gpointer vp );
 
+G_END_DECLS
 
 #endif

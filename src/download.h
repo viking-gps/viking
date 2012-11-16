@@ -25,6 +25,8 @@
 
 #include <stdio.h>
 
+G_BEGIN_DECLS
+
 /* File content check */
 typedef gboolean (*VikFileContentCheckerFunc) (FILE*);
 gboolean a_check_map_file(FILE*);
@@ -90,5 +92,7 @@ void a_download_handle_cleanup ( void *handle );
 enum { DOWNLOAD_NO_ERROR = 0,
        DOWNLOAD_NO_NEWER_FILE,
        DOWNLOAD_ERROR };
+
+G_END_DECLS
 
 #endif

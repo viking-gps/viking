@@ -27,6 +27,8 @@
 
 #include "viktrwlayer.h"
 
+G_BEGIN_DECLS
+
 /**
  * BabelProgressCode:
  * @BABEL_DIAG_OUTPUT: a line of diagnostic output is available. The pointer is to a 
@@ -100,5 +102,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
 
 void a_babel_init ();
 void a_babel_uninit ();
+
+G_END_DECLS
 
 #endif

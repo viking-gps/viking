@@ -29,6 +29,8 @@
 #include "vikwaypoint.h"
 #include "vikcoord.h"
 
+G_BEGIN_DECLS
+
 /* most of this file is an architechtural flaw. */
 
 #define a_dialog_info_msg(win,info) a_dialog_msg(win,GTK_MESSAGE_INFO,info,NULL)
@@ -76,4 +78,7 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
 GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg );
 
 void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *license, const gchar *url);
+
+G_END_DECLS
+
 #endif

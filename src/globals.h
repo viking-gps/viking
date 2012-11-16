@@ -24,6 +24,8 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 #define PROJECT "Viking"
 #define VIKING_VERSION PACKAGE_VERSION
 #define VIKING_VERSION_NAME "This Name For Rent"
@@ -150,5 +152,7 @@ const gchar* a_vik_get_external_gpx_program_2 ( );
 /* AKA Export/External Prefs */
 #define VIKING_PREFERENCES_IO_GROUP_KEY "viking.io"
 #define VIKING_PREFERENCES_IO_NAMESPACE "viking.io."
+
+G_END_DECLS
 
 #endif

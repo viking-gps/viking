@@ -22,11 +22,14 @@
 #ifndef __VIKING_OSM_TRACES_H
 #define __VIKING_OSM_TRACES_H
 
-
 #include <glib.h>
+
+G_BEGIN_DECLS
 
 void osm_traces_init();
 void osm_traces_upload_cb(gpointer layer_and_vlp[2], guint file_type);
 void osm_traces_upload_track_cb(gpointer pass_along[8]);
+
+G_BEGIN_DECLS
 
 #endif

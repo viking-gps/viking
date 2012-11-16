@@ -26,6 +26,8 @@
 #include "viklayer.h"
 #include "viktrack.h"
 
+G_BEGIN_DECLS
+
 #define VIK_GPS_LAYER_TYPE            (vik_gps_layer_get_type ())
 #define VIK_GPS_LAYER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_GPS_LAYER_TYPE, VikGpsLayer))
 #define VIK_GPS_LAYER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_GPS_LAYER_TYPE, VikGpsLayerClass))
@@ -63,5 +65,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
                     gboolean do_tracks,
                     gboolean do_waypoints,
 		    gboolean turn_off);
+
+G_END_DECLS
 
 #endif

@@ -24,6 +24,7 @@
 
 #include "vikcoord.h"
 
+G_BEGIN_DECLS
 /* todo important: put these in their own header file, maybe.probably also rename */
 
 #define VIK_WAYPOINT(x) ((VikWaypoint *)(x))
@@ -57,5 +58,7 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp);
 void vik_waypoint_set_comment_no_copy(VikWaypoint *wp, gchar *comment);
 void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *len);
 VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen);
+
+G_END_DECLS
 
 #endif
