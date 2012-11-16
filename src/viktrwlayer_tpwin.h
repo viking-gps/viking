@@ -60,5 +60,6 @@ void vik_trw_layer_tpwin_disable_join ( VikTrwLayerTpwin *tpwin );
 void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *track_name );
 void vik_trw_layer_tpwin_set_track_name ( VikTrwLayerTpwin *tpwin, const gchar *track_name );
 
+G_END_DECLS
 
 #endif

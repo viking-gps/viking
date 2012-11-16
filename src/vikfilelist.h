@@ -49,4 +49,6 @@ GtkWidget *vik_file_list_new ( const gchar *title );
 GList *vik_file_list_get_files ( VikFileList *vfl );
 void vik_file_list_set_files ( VikFileList *vfl, GList * );
 
+G_END_DECLS
+
 #endif
