@@ -2711,7 +2711,10 @@ static void draw_to_image_file_current_window_cb(GtkWidget* widget,GdkEventButto
 {
   VikWindow *vw = VIK_WINDOW(pass_along[0]);
   GtkSpinButton *width_spin = GTK_SPIN_BUTTON(pass_along[1]), *height_spin = GTK_SPIN_BUTTON(pass_along[2]);
-  GtkSpinButton *zoom_spin = GTK_SPIN_BUTTON(pass_along[3]);
+
+  gint active = gtk_combo_box_get_active ( GTK_COMBO_BOX(pass_along[3]) );
+  gdouble zoom = pow (2, active-2 );
+
   gdouble width_min, width_max, height_min, height_max;
   gint width, height;
 
@@ -2719,8 +2722,8 @@ static void draw_to_image_file_current_window_cb(GtkWidget* widget,GdkEventButto
   gtk_spin_button_get_range ( height_spin, &height_min, &height_max );
 
   /* TODO: support for xzoom and yzoom values */
-  width = vik_viewport_get_width ( vw->viking_vvp ) * vik_viewport_get_xmpp ( vw->viking_vvp ) / gtk_spin_button_get_value ( zoom_spin );
-  height = vik_viewport_get_height ( vw->viking_vvp ) * vik_viewport_get_xmpp ( vw->viking_vvp ) / gtk_spin_button_get_value ( zoom_spin );
+  width = vik_viewport_get_width ( vw->viking_vvp ) * vik_viewport_get_xmpp ( vw->viking_vvp ) / zoom;
+  height = vik_viewport_get_height ( vw->viking_vvp ) * vik_viewport_get_xmpp ( vw->viking_vvp ) / zoom;
 
   if ( width > width_max || width < width_min || height > height_max || height < height_min )
     a_dialog_info_msg ( GTK_WINDOW(vw), _("Viewable region outside allowable pixel size bounds for image. Clipping width/height values.") );
@@ -2732,11 +2735,14 @@ static void draw_to_image_file_current_window_cb(GtkWidget* widget,GdkEventButto
 static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointer *pass_along)
 {
   GtkSpinButton *width_spin = GTK_SPIN_BUTTON(pass_along[1]), *height_spin = GTK_SPIN_BUTTON(pass_along[2]);
-  GtkSpinButton *zoom_spin = GTK_SPIN_BUTTON(pass_along[3]);
+
+  gint active = gtk_combo_box_get_active ( GTK_COMBO_BOX(pass_along[3]) );
+  gdouble zoom = pow (2, active-2 );
+
   gchar *label_text;
   gdouble w, h;
-  w = gtk_spin_button_get_value(width_spin) * gtk_spin_button_get_value(zoom_spin);
-  h = gtk_spin_button_get_value(height_spin) * gtk_spin_button_get_value(zoom_spin);
+  w = gtk_spin_button_get_value(width_spin) * zoom;
+  h = gtk_spin_button_get_value(height_spin) * zoom;
   if (pass_along[4]) /* save many images; find TOTAL area covered */
   {
     w *= gtk_spin_button_get_value(GTK_SPIN_BUTTON(pass_along[4]));
@@ -2850,12 +2856,11 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   GtkWidget *png_radio, *jpeg_radio;
   GtkWidget *current_window_button;
   gpointer current_window_pass_along[7];
-  GtkWidget *zoom_label, *zoom_spin;
+  GtkWidget *zoom_label, *zoom_combo;
   GtkWidget *total_size_label;
 
   /* only used if (!one_image_only) */
   GtkWidget *tiles_width_spin = NULL, *tiles_height_spin = NULL;
-
 
   width_label = gtk_label_new ( _("Width (pixels):") );
   width_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vw->draw_image_width, 10, 50000, 10, 100, 0 )), 10, 0 );
@@ -2866,7 +2871,15 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
 #endif
   zoom_label = gtk_label_new ( _("Zoom (meters per pixel):") );
   /* TODO: separate xzoom and yzoom factors */
-  zoom_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( vik_viewport_get_xmpp(vw->viking_vvp), VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM/2.0, 1, 100, 0 )), 16, 0);
+  zoom_combo = create_zoom_combo_all_levels();
+
+  gdouble mpp = vik_viewport_get_xmpp(vw->viking_vvp);
+  gint active = 2 + ( log (mpp) / log (2) );
+
+  // Can we not hard code size here?
+  if ( active > 17 )
+    active = 17;
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(zoom_combo), active );
 
   total_size_label = gtk_label_new ( NULL );
 
@@ -2874,7 +2887,7 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   current_window_pass_along [0] = vw;
   current_window_pass_along [1] = width_spin;
   current_window_pass_along [2] = height_spin;
-  current_window_pass_along [3] = zoom_spin;
+  current_window_pass_along [3] = zoom_combo;
   current_window_pass_along [4] = NULL; /* used for one_image_only != 1 */
   current_window_pass_along [5] = NULL;
   current_window_pass_along [6] = total_size_label;
@@ -2897,12 +2910,11 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), png_radio, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), jpeg_radio, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), zoom_label, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), zoom_spin, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), zoom_combo, FALSE, FALSE, 0);
 
   if ( ! one_image_only )
   {
     GtkWidget *tiles_width_label, *tiles_height_label;
-
 
     tiles_width_label = gtk_label_new ( _("East-west image tiles:") );
     tiles_width_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( 5, 1, 10, 1, 100, 0 )), 1, 0 );
@@ -2921,7 +2933,7 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), total_size_label, FALSE, FALSE, 0);
   g_signal_connect ( G_OBJECT(width_spin), "value-changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
   g_signal_connect ( G_OBJECT(height_spin), "value-changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
-  g_signal_connect ( G_OBJECT(zoom_spin), "value-changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
+  g_signal_connect ( G_OBJECT(zoom_combo), "changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
 
   draw_to_image_file_total_area_cb ( NULL, current_window_pass_along ); /* set correct size info now */
 
@@ -2937,18 +2949,21 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
     if ( !fn )
       return;
 
+    gint active = gtk_combo_box_get_active ( GTK_COMBO_BOX(zoom_combo) );
+    gdouble zoom = pow (2, active-2 );
+
     if ( one_image_only )
       save_image_file ( vw, fn, 
                       vw->draw_image_width = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(width_spin) ),
                       vw->draw_image_height = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(height_spin) ),
-                      gtk_spin_button_get_value ( GTK_SPIN_BUTTON(zoom_spin) ), /* do not save this value, default is current zoom */
+                      zoom,
                       vw->draw_image_save_as_png = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(png_radio) ) );
     else {
       // NB is in UTM mode ATM
       save_image_dir ( vw, fn,
                        vw->draw_image_width = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(width_spin) ),
                        vw->draw_image_height = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(height_spin) ),
-                       gtk_spin_button_get_value ( GTK_SPIN_BUTTON(zoom_spin) ), /* do not save this value, default is current zoom */
+                       zoom,
                        vw->draw_image_save_as_png = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(png_radio) ),
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_width_spin) ),
                        gtk_spin_button_get_value ( GTK_SPIN_BUTTON(tiles_height_spin) ) );
