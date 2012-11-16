@@ -156,6 +156,7 @@ struct _VikWindow {
   VikStatusbar *viking_vs;
 
   GtkToolbar *toolbar;
+  GtkComboBox *tb_zoom_combo;
 
   GtkItemFactory *item_factory;
 
@@ -403,6 +404,55 @@ static void window_class_init ( VikWindowClass *klass )
 
 }
 
+static void set_toolbar_zoom ( VikWindow *vw, gdouble mpp )
+{
+  gint active = 2 + ( log (mpp) / log (2) );
+  // Can we not hard code size here?
+  if ( active > 17 )
+    active = 17;
+  gtk_combo_box_set_active ( vw->tb_zoom_combo, active );
+}
+
+static void zoom_changed ( GtkComboBox *combo, VikWindow *vw )
+{
+  gint active = gtk_combo_box_get_active ( combo );
+
+  // But has it really changed?
+  // Unfortunately this function gets invoked even on manual setting of the combo value
+  gdouble zoom_request = pow (2, active-2 );
+  gdouble current_zoom = vik_viewport_get_zoom ( vw->viking_vvp );
+  if ( current_zoom != 0.0 && zoom_request != current_zoom ) {
+    vik_viewport_set_zoom ( vw->viking_vvp, zoom_request );
+    // Force drawing update
+    draw_update ( vw );
+  }
+}
+
+static GtkWidget *create_zoom_combo_all_levels ()
+{
+  GtkWidget *zoom_combo = gtk_combo_box_new_text();
+  GtkComboBox *combo = GTK_COMBO_BOX ( zoom_combo );
+  gtk_combo_box_append_text ( combo, "0.25");
+  gtk_combo_box_append_text ( combo, "0.5");
+  gtk_combo_box_append_text ( combo, "1");
+  gtk_combo_box_append_text ( combo, "2");
+  gtk_combo_box_append_text ( combo, "4");
+  gtk_combo_box_append_text ( combo, "8");
+  gtk_combo_box_append_text ( combo, "16");
+  gtk_combo_box_append_text ( combo, "32");
+  gtk_combo_box_append_text ( combo, "64");
+  gtk_combo_box_append_text ( combo, "128");
+  gtk_combo_box_append_text ( combo, "256");
+  gtk_combo_box_append_text ( combo, "512");
+  gtk_combo_box_append_text ( combo, "1024");
+  gtk_combo_box_append_text ( combo, "2048");
+  gtk_combo_box_append_text ( combo, "4096");
+  gtk_combo_box_append_text ( combo, "8192");
+  gtk_combo_box_append_text ( combo, "16384");
+  gtk_combo_box_append_text ( combo, "32768");
+  return zoom_combo;
+}
+
 static void window_init ( VikWindow *vw )
 {
   GtkWidget *main_vbox;
@@ -444,6 +494,15 @@ static void window_init ( VikWindow *vw )
   gtk_toolbar_set_style (vw->toolbar, GTK_TOOLBAR_ICONS);
 
   vik_ext_tools_add_menu_items ( vw, vw->uim );
+
+  vw->tb_zoom_combo = GTK_COMBO_BOX(create_zoom_combo_all_levels());
+
+  g_signal_connect ( G_OBJECT(vw->tb_zoom_combo), "changed", G_CALLBACK(zoom_changed), vw );
+
+  // Add the zoom combo to the toolbar at the end
+  GtkToolItem *tooli = gtk_tool_item_new ();
+  gtk_container_add ( GTK_CONTAINER(tooli), GTK_WIDGET (vw->tb_zoom_combo) );
+  gtk_toolbar_insert ( vw->toolbar, tooli, gtk_toolbar_get_n_items (vw->toolbar) );
 
   g_signal_connect (G_OBJECT (vw), "delete_event", G_CALLBACK (delete_event), NULL);
 
@@ -607,7 +666,19 @@ static void draw_sync ( VikWindow *vw )
 {
   vik_viewport_sync(vw->viking_vvp);
   draw_status ( vw );
-  /* other things may be necc here later. */
+}
+
+/*
+ * Split the status update, as sometimes only need to update the tool part
+ *  also on initialization the zoom related stuff is not ready to be used
+ */
+static void draw_status_tool ( VikWindow *vw )
+{
+  if ( vw->current_tool == TOOL_LAYER )
+    // Use tooltip rather than the internal name as the tooltip is i8n
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].radioActionEntry.tooltip );
+  else
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, _(tool_names[vw->current_tool]) );
 }
 
 static void draw_status ( VikWindow *vw )
@@ -624,13 +695,12 @@ static void draw_status ( VikWindow *vw )
     else
       /* xmpp should be a whole number so don't show useless .000 bit */
       g_snprintf ( zoom_level, 22, "%d %s", (int)xmpp, unit );
-  if ( vw->current_tool == TOOL_LAYER )
-    // Use tooltip rather than the internal name as the tooltip is i8n
-    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].radioActionEntry.tooltip );
-  else
-    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, _(tool_names[vw->current_tool]) );
 
   vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_ZOOM, zoom_level );
+  // OK maybe not quite in the statusbar - but we have the zoom level so use it
+  set_toolbar_zoom ( vw, xmpp ); // But it's a status of some kind!
+
+  draw_status_tool ( vw );  
 }
 
 void vik_window_set_redraw_trigger(VikLayer *vl)
@@ -1990,7 +2060,7 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
       }
     }
   }
-  draw_status ( vw );
+  draw_status_tool ( vw );
 }
 
 static void window_set_filename ( VikWindow *vw, const gchar *filename )
