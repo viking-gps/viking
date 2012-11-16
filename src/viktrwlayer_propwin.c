@@ -2830,7 +2830,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   g_signal_connect(dialog, "response", G_CALLBACK(propwin_response_cb), widgets);
   GtkTable *table;
   gdouble tr_len;
-  guint32 tp_count, seg_count;
+  gulong tp_count;
+  guint seg_count;
 
   gdouble min_alt, max_alt;
   widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), tr, vlp, vvp, widgets, &min_alt, &max_alt);
@@ -2896,7 +2897,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *
   widgets->w_track_length = content[cnt++] = gtk_label_new ( tmp_buf );
 
   tp_count = vik_track_get_tp_count(tr);
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", tp_count );
+  g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", tp_count );
   widgets->w_tp_count = content[cnt++] = gtk_label_new ( tmp_buf );
 
   seg_count = vik_track_get_segment_count(tr) ;
