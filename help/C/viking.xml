@@ -1646,12 +1646,11 @@ Use <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoi
 Other formats can be imported that are supported by GPSBabel.
 <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>Import File With GPSBabel...</guimenuitem></menuchoice>
 </para>
-</step>
-<step>
+<note>
 <para>
-Expand Tracks or Waypoints. Right-click on the
-track or waypoint of interest and select <guimenuitem>Goto "Center"</guimenuitem>.
+The viewport will be automatically moved and resized to view the contents of the file.
 </para>
+</note>
 </step>
 </procedure>
 </section>
