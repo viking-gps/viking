@@ -828,8 +828,21 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
-  a_coords_utm_to_latlon ( &utm, &ll );
-  a_coords_latlon_to_string ( &ll, &lat, &lon );
+
+  if ( vik_viewport_get_drawmode ( vw->viking_vvp ) == VIK_VIEWPORT_DRAWMODE_UTM ) {
+    // Reuse lat for the first part (Zone + N or S, and lon for the second part (easting and northing) of a UTM format:
+    //  ZONE[N|S] EASTING NORTHING
+    lat = g_malloc(4*sizeof(gchar));
+    // NB zone is stored in a char but is an actual number
+    g_snprintf (lat, 4, "%d%c", utm.zone, utm.letter);
+    lon = g_malloc(16*sizeof(gchar));
+    g_snprintf (lon, 16, "%d %d", (gint)utm.easting, (gint)utm.northing);
+  }
+  else {
+    a_coords_utm_to_latlon ( &utm, &ll );
+    a_coords_latlon_to_string ( &ll, &lat, &lon );
+  }
+
   /* Change interpolate method according to scale */
   zoom = vik_viewport_get_zoom(vw->viking_vvp);
   if (zoom > 2.0)
