@@ -143,6 +143,7 @@ struct _VikTrwLayer {
   guint8 drawstops;
   guint32 stop_length;
   guint8 drawlines;
+  guint8 drawdirections;
   guint8 line_thickness;
   guint8 bg_line_thickness;
 
@@ -223,6 +224,8 @@ struct DrawingParams {
   VikTrwLayer *vtl;
   gdouble xmpp, ympp;
   guint16 width, height;
+  gdouble cc; // Cosine factor in track directions
+  gdouble ss; // Sine factor in track directions
   const VikCoord *center;
   gint track_gc_iter;
   gboolean one_zone, lat_lon;
@@ -310,7 +313,7 @@ static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[6] );
 
 static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer pass_along[5] );
 static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] );
-static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp );
+static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp );
 
 static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
@@ -455,6 +458,7 @@ VikLayerParam trw_layer_params[] = {
 
   { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Drawing Mode:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL },
   { "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Lines"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "drawdirections", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Direction"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "drawpoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Trackpoints"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "drawelevation", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Elevation"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "elevation_factor", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Draw Elevation Height %:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 9 },
@@ -483,7 +487,40 @@ VikLayerParam trw_layer_params[] = {
   { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Memory Cache Size:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
 };
 
-enum { PARAM_TV, PARAM_WV, PARAM_DM, PARAM_DL, PARAM_DP, PARAM_DE, PARAM_EF, PARAM_DS, PARAM_SL, PARAM_LT, PARAM_BLT, PARAM_TBGC, PARAM_TDSF, PARAM_DLA, PARAM_WPFONTSIZE, PARAM_WPC, PARAM_WPTC, PARAM_WPBC, PARAM_WPBA, PARAM_WPSYM, PARAM_WPSIZE, PARAM_WPSYMS, PARAM_DI, PARAM_IS, PARAM_IA, PARAM_ICS, NUM_PARAMS };
+enum {
+  // Sublayer visibilities
+  PARAM_TV,
+  PARAM_WV,
+  // Tracks
+  PARAM_DM,
+  PARAM_DL,
+  PARAM_DD,
+  PARAM_DP,
+  PARAM_DE,
+  PARAM_EF,
+  PARAM_DS,
+  PARAM_SL,
+  PARAM_LT,
+  PARAM_BLT,
+  PARAM_TBGC,
+  PARAM_TDSF,
+  PARAM_DLA,
+  // Waypoints
+  PARAM_WPFONTSIZE,
+  PARAM_WPC,
+  PARAM_WPTC,
+  PARAM_WPBC,
+  PARAM_WPBA,
+  PARAM_WPSYM,
+  PARAM_WPSIZE,
+  PARAM_WPSYMS,
+  // WP images
+  PARAM_DI,
+  PARAM_IS,
+  PARAM_IA,
+  PARAM_ICS,
+  NUM_PARAMS
+};
 
 /*** TO ADD A PARAM:
  *** 1) Add to trw_layer_params and enumeration
@@ -778,6 +815,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_DE: vtl->drawelevation = data.b; break;
     case PARAM_DS: vtl->drawstops = data.b; break;
     case PARAM_DL: vtl->drawlines = data.b; break;
+    case PARAM_DD: vtl->drawdirections = data.b; break;
     case PARAM_SL: if ( data.u >= MIN_STOP_LENGTH && data.u <= MAX_STOP_LENGTH )
                      vtl->stop_length = data.u;
                    break;
@@ -839,6 +877,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_DS: rv.b = vtl->drawstops; break;
     case PARAM_SL: rv.u = vtl->stop_length; break;
     case PARAM_DL: rv.b = vtl->drawlines; break;
+    case PARAM_DD: rv.b = vtl->drawdirections; break;
     case PARAM_LT: rv.u = vtl->line_thickness; break;
     case PARAM_BLT: rv.u = vtl->bg_line_thickness; break;
     case PARAM_DLA: rv.b = vtl->drawlabels; break;
@@ -1059,13 +1098,18 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   g_queue_free ( trwlayer->image_cache );
 }
 
-static void init_drawing_params ( struct DrawingParams *dp, VikViewport *vp )
+static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp )
 {
+  const gint TRACK_ARROW_SIZE = 5;
+  dp->vtl = vtl;
   dp->vp = vp;
   dp->xmpp = vik_viewport_get_xmpp ( vp );
   dp->ympp = vik_viewport_get_ympp ( vp );
   dp->width = vik_viewport_get_width ( vp );
   dp->height = vik_viewport_get_height ( vp );
+  dp->cc = TRACK_ARROW_SIZE*cos(45 * DEG2RAD); // Calculate once per vtl update - even if not used
+  dp->ss = TRACK_ARROW_SIZE*sin(45 * DEG2RAD); // Calculate once per vtl update - even if not used
+
   dp->center = vik_viewport_get_center ( vp );
   dp->one_zone = vik_viewport_is_one_zone ( vp ); /* false if some other projection besides UTM */
   dp->lat_lon = vik_viewport_get_coord_mode ( vp ) == VIK_COORD_LATLON;
@@ -1299,6 +1343,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
           else {
 
             vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
+
             if ( dp->vtl->drawelevation && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
               GdkPoint tmp[4];
               #define FIXALTITUDE(what) ((VIK_TRACKPOINT((what))->altitude-min_alt)/alt_diff*DRAW_ELEVATION_FACTOR*dp->vtl->elevation_factor/dp->xmpp)
@@ -1321,6 +1366,22 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 
               vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy-FIXALTITUDE(list->data), x, y-FIXALTITUDE(list->next->data));
             }
+          }
+        }
+
+        if ( (!tp->newsegment) && dp->vtl->drawdirections ) {
+          // Draw an arrow at the mid point to show the direction of the track
+          // Code is a rework from vikwindow::draw_ruler()
+          gint midx = (oldx + x) / 2;
+          gint midy = (oldy + y) / 2;
+
+          gdouble len = sqrt ( ((midx-oldx) * (midx-oldx)) + ((midy-oldy) * (midy-oldy)) );
+          // Avoid divide by zero and ensure at least 1 pixel big
+          if ( len > 1 ) {
+            gdouble dx = (oldx - midx) / len;
+            gdouble dy = (oldy - midy) / len;
+            vik_viewport_draw_line ( dp->vp, main_gc, midx, midy, midx + (dx * dp->cc + dy * dp->ss), midy + (dy * dp->cc - dx * dp->ss) );
+            vik_viewport_draw_line ( dp->vp, main_gc, midx, midy, midx + (dx * dp->cc - dy * dp->ss), midy + (dy * dp->cc + dx * dp->ss) );
           }
         }
 
@@ -1565,8 +1626,7 @@ static void trw_layer_draw ( VikTrwLayer *l, gpointer data )
   static struct DrawingParams dp;
   g_assert ( l != NULL );
 
-  init_drawing_params ( &dp, VIK_VIEWPORT(data) );
-  dp.vtl = l;
+  init_drawing_params ( &dp, l, VIK_VIEWPORT(data) );
 
   if ( l->tracks_visible )
     g_hash_table_foreach ( l->tracks, (GHFunc) trw_layer_draw_track_cb, &dp );
