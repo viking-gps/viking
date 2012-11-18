@@ -138,12 +138,14 @@ struct _VikTrwLayer {
   gboolean tracks_visible, waypoints_visible;
   guint8 drawmode;
   guint8 drawpoints;
+  guint8 drawpoints_size;
   guint8 drawelevation;
   guint8 elevation_factor;
   guint8 drawstops;
   guint32 stop_length;
   guint8 drawlines;
   guint8 drawdirections;
+  guint8 drawdirections_size;
   guint8 line_thickness;
   guint8 bg_line_thickness;
 
@@ -426,6 +428,11 @@ enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES };
 static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Speed"), N_("All Tracks Black"), 0 };
 static gchar *params_wpsymbols[] = { N_("Filled Square"), N_("Square"), N_("Circle"), N_("X"), 0 };
 
+#define MIN_POINT_SIZE 2
+#define MAX_POINT_SIZE 10
+
+#define MIN_ARROW_SIZE 3
+#define MAX_ARROW_SIZE 20
 
 static VikLayerParamScale params_scales[] = {
  /* min  max    step digits */
@@ -433,13 +440,15 @@ static VikLayerParamScale params_scales[] = {
  {  0,   100,   1,   0 }, /* track draw speed factor */
  {  1.0, 100.0, 1.0, 2 }, /* UNUSED */
                 /* 5 * step == how much to turn */
- {  16,   128,  3.2, 0 }, /* image_size */
- {   0,   255,  5,   0 }, /* image alpha */
- {   5,   500,  5,   0 }, /* image cache_size */
- {   0,   8,    1,   0 }, /* image cache_size */
+ {  16,   128,  4,   0 }, // 3: image_size - NB step size ignored when an HSCALE used
+ {   0,   255,  5,   0 }, // 4: image alpha -    "     "      "            "
+ {   5,   500,  5,   0 }, // 5: image cache_size -     "      "
+ {   0,   8,    1,   0 }, // 6: Background line thickness
  {   1,  64,    1,   0 }, /* wpsize */
  {   MIN_STOP_LENGTH, MAX_STOP_LENGTH, 1,   0 }, /* stop_length */
- {   1, 100, 1,   0 }, /* stop_length */
+ {   1, 100, 1,   0 }, // 9: elevation factor
+ {   MIN_POINT_SIZE,  MAX_POINT_SIZE,  1,   0 }, // 10: track point size
+ {   MIN_ARROW_SIZE,  MAX_ARROW_SIZE,  1,   0 }, // 11: direction arrow size
 };
 
 static gchar* params_font_sizes[] = {
@@ -458,18 +467,20 @@ VikLayerParam trw_layer_params[] = {
 
   { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Drawing Mode:"), VIK_LAYER_WIDGET_RADIOGROUP, NULL },
   { "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Lines"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0 },
   { "drawdirections", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Direction"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "trkdirectionsize", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Direction Size:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 11 },
   { "drawpoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Trackpoints"), VIK_LAYER_WIDGET_CHECKBUTTON },
+  { "trkpointsize", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Trackpoint Size:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 10 },
   { "drawelevation", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Elevation"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "elevation_factor", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Draw Elevation Height %:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 9 },
 
   { "drawstops", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Stops"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "stop_length", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Min Stop Length (seconds):"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 8 },
 
-  { "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0 },
   { "bg_line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track BG Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 6 },
   { "trackbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, N_("Track Background Color"), VIK_LAYER_WIDGET_COLOR, 0 },
-  { "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 1 },
+  { "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_HSCALE, params_scales + 1 },
 
   { "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON },
   { "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL },
@@ -487,6 +498,7 @@ VikLayerParam trw_layer_params[] = {
   { "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Memory Cache Size:"), VIK_LAYER_WIDGET_HSCALE, params_scales + 5 },
 };
 
+// ENUMERATION MUST BE IN THE SAME ORDER AS THE NAMED PARAMS ABOVE
 enum {
   // Sublayer visibilities
   PARAM_TV,
@@ -494,18 +506,20 @@ enum {
   // Tracks
   PARAM_DM,
   PARAM_DL,
+  PARAM_LT,
   PARAM_DD,
+  PARAM_DDS,
   PARAM_DP,
+  PARAM_DPS,
   PARAM_DE,
   PARAM_EF,
   PARAM_DS,
   PARAM_SL,
-  PARAM_LT,
   PARAM_BLT,
   PARAM_TBGC,
   PARAM_TDSF,
-  PARAM_DLA,
   // Waypoints
+  PARAM_DLA,
   PARAM_WPFONTSIZE,
   PARAM_WPC,
   PARAM_WPTC,
@@ -812,10 +826,18 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_WV: vtl->waypoints_visible = data.b; break;
     case PARAM_DM: vtl->drawmode = data.u; break;
     case PARAM_DP: vtl->drawpoints = data.b; break;
+    case PARAM_DPS:
+      if ( data.u >= MIN_POINT_SIZE && data.u <= MAX_POINT_SIZE )
+        vtl->drawpoints_size = data.u;
+      break;
     case PARAM_DE: vtl->drawelevation = data.b; break;
     case PARAM_DS: vtl->drawstops = data.b; break;
     case PARAM_DL: vtl->drawlines = data.b; break;
     case PARAM_DD: vtl->drawdirections = data.b; break;
+    case PARAM_DDS:
+      if ( data.u >= MIN_ARROW_SIZE && data.u <= MAX_ARROW_SIZE )
+        vtl->drawdirections_size = data.u;
+      break;
     case PARAM_SL: if ( data.u >= MIN_STOP_LENGTH && data.u <= MAX_STOP_LENGTH )
                      vtl->stop_length = data.u;
                    break;
@@ -872,12 +894,14 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WV: rv.b = vtl->waypoints_visible; break;
     case PARAM_DM: rv.u = vtl->drawmode; break;
     case PARAM_DP: rv.b = vtl->drawpoints; break;
+    case PARAM_DPS: rv.u = vtl->drawpoints_size; break;
     case PARAM_DE: rv.b = vtl->drawelevation; break;
     case PARAM_EF: rv.u = vtl->elevation_factor; break;
     case PARAM_DS: rv.b = vtl->drawstops; break;
     case PARAM_SL: rv.u = vtl->stop_length; break;
     case PARAM_DL: rv.b = vtl->drawlines; break;
     case PARAM_DD: rv.b = vtl->drawdirections; break;
+    case PARAM_DDS: rv.u = vtl->drawdirections_size; break;
     case PARAM_LT: rv.u = vtl->line_thickness; break;
     case PARAM_BLT: rv.u = vtl->bg_line_thickness; break;
     case PARAM_DLA: rv.b = vtl->drawlabels; break;
@@ -1021,6 +1045,8 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
   rv->waypoints_visible = rv->tracks_visible = TRUE;
   rv->drawmode = drawmode;
   rv->drawpoints = TRUE;
+  rv->drawpoints_size = MIN_POINT_SIZE;
+  rv->drawdirections_size = 5;
   rv->drawstops = FALSE;
   rv->drawelevation = FALSE;
   rv->elevation_factor = 30;
@@ -1100,15 +1126,14 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp )
 {
-  const gint TRACK_ARROW_SIZE = 5;
   dp->vtl = vtl;
   dp->vp = vp;
   dp->xmpp = vik_viewport_get_xmpp ( vp );
   dp->ympp = vik_viewport_get_ympp ( vp );
   dp->width = vik_viewport_get_width ( vp );
   dp->height = vik_viewport_get_height ( vp );
-  dp->cc = TRACK_ARROW_SIZE*cos(45 * DEG2RAD); // Calculate once per vtl update - even if not used
-  dp->ss = TRACK_ARROW_SIZE*sin(45 * DEG2RAD); // Calculate once per vtl update - even if not used
+  dp->cc = vtl->drawdirections_size*cos(45 * DEG2RAD); // Calculate once per vtl update - even if not used
+  dp->ss = vtl->drawdirections_size*sin(45 * DEG2RAD); // Calculate once per vtl update - even if not used
 
   dp->center = vik_viewport_get_center ( vp );
   dp->one_zone = vik_viewport_is_one_zone ( vp ); /* false if some other projection besides UTM */
@@ -1184,8 +1209,8 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
   gboolean drawelevation;
   gdouble min_alt, max_alt, alt_diff = 0;
 
-  const guint8 tp_size_reg = 2;
-  const guint8 tp_size_cur = 4;
+  const guint8 tp_size_reg = dp->vtl->drawpoints_size;
+  const guint8 tp_size_cur = dp->vtl->drawpoints_size*2;
   guint8 tp_size;
 
   if ( dp->vtl->drawelevation )
