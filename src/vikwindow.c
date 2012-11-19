@@ -3418,7 +3418,7 @@ gpointer vik_window_get_selected_track ( VikWindow *vw )
   return vw->selected_track;
 }
 
-void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl, gpointer name )
+void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl )
 {
   vw->selected_track = vt;
   vw->containing_vtl = vtl;
@@ -3452,7 +3452,7 @@ gpointer vik_window_get_selected_waypoint ( VikWindow *vw )
   return vw->selected_waypoint;
 }
 
-void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer vtl, gpointer name )
+void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer vtl )
 {
   vw->selected_waypoint = vwp;
   vw->containing_vtl    = vtl;

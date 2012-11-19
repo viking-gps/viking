@@ -2178,7 +2178,7 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	  case VIK_TRW_LAYER_SUBLAYER_TRACK:
 	    {
 	      VikTrack *track = g_hash_table_lookup ( l->tracks, sublayer );
-	      vik_window_set_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), (gpointer)track, l, sublayer );
+	      vik_window_set_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), (gpointer)track, l );
 	      /* Mark for redraw */
 	      return TRUE;
 	    }
@@ -2192,14 +2192,14 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	    break;
 	  case VIK_TRW_LAYER_SUBLAYER_WAYPOINT:
 	    {
-	      VikWaypoint *wpt = g_hash_table_lookup ( l->waypoints, sublayer );
-	      if ( wpt ) {
-            vik_window_set_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), (gpointer)wpt, l, sublayer );
-            // Show some waypoint info
-            set_statusbar_msg_info_wpt ( l, wpt );
-            /* Mark for redraw */
-            return TRUE;
-	      }
+              VikWaypoint *wpt = g_hash_table_lookup ( l->waypoints, sublayer );
+              if ( wpt ) {
+                vik_window_set_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l), (gpointer)wpt, l );
+                // Show some waypoint info
+                set_statusbar_msg_info_wpt ( l, wpt );
+                /* Mark for redraw */
+                return TRUE;
+              }
 	    }
 	    break;
 	  default:
