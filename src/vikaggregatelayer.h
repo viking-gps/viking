@@ -22,8 +22,6 @@
 #ifndef _VIKING_AGGREGATELAYER_H
 #define _VIKING_AGGREGATELAYER_H
 
-#include <time.h>
-
 #include "viklayer.h"
 
 G_BEGIN_DECLS
