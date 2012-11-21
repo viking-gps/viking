@@ -129,6 +129,10 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
   if (vik_verbose)
     curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
   curl_easy_setopt ( curl, CURLOPT_NOSIGNAL, 1 ); // Yep, we're a multi-threaded program so don't let signals mess it up!
+  if ( options != NULL && options->user_pass ) {
+    curl_easy_setopt ( curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+    curl_easy_setopt ( curl, CURLOPT_USERPWD, options->user_pass );
+  }
   curl_easy_setopt ( curl, CURLOPT_URL, uri );
   curl_easy_setopt ( curl, CURLOPT_WRITEDATA, f );
   curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);

@@ -62,6 +62,12 @@ typedef struct {
    */
   VikFileContentCheckerFunc check_file;
 
+  /**
+   * If need to authenticate on download
+   *  format: 'username:password'
+   */
+  gchar *user_pass;
+
 } DownloadMapOptions;
 
 typedef struct {
