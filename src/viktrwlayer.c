@@ -3423,7 +3423,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_GOOGLE
-  item = gtk_menu_item_new_with_mnemonic ( _("From G_oogle Directions...") );
+  item = gtk_menu_item_new_with_mnemonic ( _("From Google _Directions...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_google_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
