@@ -58,7 +58,7 @@ typedef struct {
   gchar *desc;
 } found_geoname;
 
-found_geoname *new_found_geoname()
+static found_geoname *new_found_geoname()
 {
   found_geoname *ret;
 
@@ -71,7 +71,7 @@ found_geoname *new_found_geoname()
   return(ret);
 }
 
-found_geoname *copy_found_geoname(found_geoname *src)
+static found_geoname *copy_found_geoname(found_geoname *src)
 {
   found_geoname *dest = new_found_geoname();
   dest->name = g_strdup(src->name);
@@ -89,7 +89,7 @@ static void free_list_geonames(found_geoname *geoname, gpointer userdata)
   g_free(geoname->desc);
 }
 
-void free_geoname_list(GList *found_places)
+static void free_geoname_list(GList *found_places)
 {
   g_list_foreach(found_places, (GFunc)free_list_geonames, NULL);
   g_list_free(found_places);
@@ -122,7 +122,7 @@ void buttonToggled(GtkCellRendererToggle* renderer, gchar* pathStr, gpointer dat
    gtk_tree_store_set(GTK_TREE_STORE (data), &iter, 0, enabled, -1);
 }
 
-GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg)
+static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg)
 {
   GtkTreeIter iter;
   GtkCellRenderer *renderer;
