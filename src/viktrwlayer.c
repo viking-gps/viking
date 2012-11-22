@@ -3396,27 +3396,6 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   // Make it available only when a new track *not* already in progress
   gtk_widget_set_sensitive ( item, ! (gboolean)GPOINTER_TO_INT(vtl->current_track) );
 
-#ifdef VIK_CONFIG_GEONAMES
-  GtkWidget *wikipedia_submenu = gtk_menu_new();
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Add Wikipedia Waypoints") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
-  gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
-  gtk_widget_show(item);
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), wikipedia_submenu);
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Within _Layer Bounds") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_layer), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Within _Current View") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_100, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
-  gtk_widget_show ( item );
-#endif
-
 #ifdef VIK_CONFIG_GEOTAG
   item = gtk_menu_item_new_with_mnemonic ( _("Geotag _Images...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_geotagging), pass_along );
@@ -3425,7 +3404,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
 #endif
 
   GtkWidget *acquire_submenu = gtk_menu_new ();
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Ac_quire") );
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Acquire") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU) );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
@@ -3447,6 +3426,27 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   item = gtk_menu_item_new_with_mnemonic ( _("From _OSM Traces...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_osm_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show ( item );
+#endif
+
+#ifdef VIK_CONFIG_GEONAMES
+  GtkWidget *wikipedia_submenu = gtk_menu_new();
+  item = gtk_image_menu_item_new_with_mnemonic ( _("From _Wikipedia Waypoints") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
+  gtk_menu_shell_append(GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show(item);
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), wikipedia_submenu);
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Within _Layer Bounds") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_layer), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Within _Current View") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_100, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_new_wikipedia_wp_viewport), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (wikipedia_submenu), item);
   gtk_widget_show ( item );
 #endif
 
