@@ -110,27 +110,14 @@ static void none_found(VikWindow *vw)
   gtk_widget_destroy(dialog);
 }
 
-void buttonToggled(GtkCellRendererToggle* renderer, gchar* pathStr, gpointer data)
-{
-   GtkTreeIter iter;
-   gboolean enabled;
-   GtkTreePath* path = gtk_tree_path_new_from_string(pathStr);
-   gtk_tree_model_get_iter(GTK_TREE_MODEL (data), &iter, path);
-   gtk_tree_model_get(GTK_TREE_MODEL (data), &iter, 0, &enabled, -1);
-   enabled = !enabled;
-   gtk_tree_store_set(GTK_TREE_STORE (data), &iter, 0, enabled, -1);
-}
-
 static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg)
 {
   GtkTreeIter iter;
   GtkCellRenderer *renderer;
-  GtkCellRenderer *toggle_render;
   GtkWidget *view;
   found_geoname *geoname;
   gchar *latlon_string;
   int column_runner;
-  gboolean checked;
   gboolean to_copy;
 
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
@@ -150,11 +137,6 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
 #endif
   GtkWidget *label = gtk_label_new ( msg );
   GtkTreeStore *store;
-  if (multiple_selection_allowed)
-  {
-    store = gtk_tree_store_new(4, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-  }
-  else
   {
     store = gtk_tree_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
   }
@@ -164,11 +146,6 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
     geoname = (found_geoname *)geoname_runner->data;
     latlon_string = g_strdup_printf("(%f,%f)", geoname->ll.lat, geoname->ll.lon);
     gtk_tree_store_append(store, &iter, NULL);
-    if (multiple_selection_allowed)
-    {
-      gtk_tree_store_set(store, &iter, 0, FALSE, 1, geoname->name, 2, geoname->country, 3, latlon_string, -1);
-    }
-    else
     {
       gtk_tree_store_set(store, &iter, 0, geoname->name, 1, geoname->country, 2, latlon_string, -1);
     }
@@ -178,14 +155,6 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
   view = gtk_tree_view_new();
   renderer = gtk_cell_renderer_text_new();
   column_runner = 0;
-  if (multiple_selection_allowed)
-  {
-    toggle_render = gtk_cell_renderer_toggle_new();
-    g_object_set(toggle_render, "activatable", TRUE, NULL);
-    g_signal_connect(toggle_render, "toggled", (GCallback) buttonToggled, GTK_TREE_MODEL(store));
-    gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Select", toggle_render, "active", column_runner, NULL);
-    column_runner++;
-  }
   gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Name", renderer, "text", column_runner, NULL);
   column_runner++;
   gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Country", renderer, "text", column_runner, NULL);
@@ -213,14 +182,6 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
     while (geoname_runner)
     {
       to_copy = FALSE;
-      if (multiple_selection_allowed)
-      {
-        gtk_tree_model_get(GTK_TREE_MODEL(store), &iter, 0, &checked, -1);
-        if (checked) {
-          to_copy = TRUE;
-        }
-      }
-      else
       {
         if (gtk_tree_selection_iter_is_selected(selection, &iter))
         {
