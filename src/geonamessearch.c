@@ -32,6 +32,7 @@
 #include "viking.h"
 #include "util.h"
 #include "curl_download.h"
+#include "geonamessearch.h"
 
 /* Compatibility */
 #if ! GLIB_CHECK_VERSION(2,22,0)
