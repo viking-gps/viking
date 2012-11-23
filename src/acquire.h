@@ -44,7 +44,7 @@ typedef struct {
   VikLayersPanel *vlp;
   VikViewport *vvp;
   GtkWidget *dialog;
-  gboolean ok; /* if OK is false when we exit, we MUST free w */
+  gboolean running;
   VikDataSourceInterface *source_interface;
   gpointer user_data;
 } acq_dialog_widgets_t;
@@ -139,6 +139,7 @@ struct _VikDataSourceInterface {
   gboolean autoview;
   gboolean keep_dialog_open; /* when done */
 
+  gboolean is_thread;
 
   /*** Manual UI Building ***/
   VikDataSourceInitFunc init_func;

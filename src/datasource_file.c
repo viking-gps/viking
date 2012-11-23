@@ -62,6 +62,7 @@ VikDataSourceInterface vik_datasource_file_interface = {
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
   TRUE,
+  TRUE,
   (VikDataSourceInitFunc)		datasource_file_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_file_add_setup_widgets,

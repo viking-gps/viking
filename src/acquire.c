@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +64,8 @@ typedef struct {
   acq_dialog_widgets_t *w;
   gchar *cmd;
   gchar *extra;
+  gboolean creating_new_layer;
+  VikTrwLayer *vtl;
 } w_and_interface_t;
 
 
@@ -72,20 +75,62 @@ typedef struct {
 
 static void progress_func ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w )
 {
-  gdk_threads_enter ();
-  if (!w->ok) {
-    if ( w->source_interface->cleanup_func )
-      w->source_interface->cleanup_func( w->user_data );
-    g_free ( w );
-    gdk_threads_leave();
-    g_thread_exit ( NULL );
+  if ( w->source_interface->is_thread ) {
+    gdk_threads_enter ();
+    if ( !w->running ) {
+      if ( w->source_interface->cleanup_func )
+        w->source_interface->cleanup_func ( w->user_data );
+      gdk_threads_leave ();
+      g_thread_exit ( NULL );
+    }
+    gdk_threads_leave ();
   }
-  gdk_threads_leave ();
 
   if ( w->source_interface->progress_func )
     w->source_interface->progress_func ( c, data, w );
 }
 
+/**
+ * Some common things to do on completion of a datasource process
+ *  . Update layer
+ *  . Update dialog info
+ *  . Update main dsisplay
+ */
+static void on_complete_process (w_and_interface_t *wi)
+{
+  if (wi->w->running) {
+    gtk_label_set_text ( GTK_LABEL(wi->w->status), _("Done.") );
+    if ( wi->creating_new_layer ) {
+      /* Only create the layer if it actually contains anything useful */
+      // TODO: create function for this operation to hide detail:
+      if ( g_hash_table_size (vik_trw_layer_get_tracks(wi->vtl)) ||
+           g_hash_table_size (vik_trw_layer_get_waypoints(wi->vtl)) ||
+           g_hash_table_size (vik_trw_layer_get_routes(wi->vtl)) ) {
+        vik_layer_post_read ( VIK_LAYER(wi->vtl), wi->w->vvp, TRUE );
+        vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(wi->w->vlp), VIK_LAYER(wi->vtl));
+      }
+      else
+        gtk_label_set_text ( GTK_LABEL(wi->w->status), _("No data.") );
+    }
+    /* View this data if available and is desired */
+    if ( wi->vtl && wi->w->source_interface->autoview ) {
+      vik_trw_layer_auto_set_view ( wi->vtl, vik_layers_panel_get_viewport(wi->w->vlp) );
+    }
+    if ( wi->w->source_interface->keep_dialog_open ) {
+      gtk_dialog_set_response_sensitive ( GTK_DIALOG(wi->w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
+      gtk_dialog_set_response_sensitive ( GTK_DIALOG(wi->w->dialog), GTK_RESPONSE_REJECT, FALSE );
+    } else {
+      gtk_dialog_response ( GTK_DIALOG(wi->w->dialog), GTK_RESPONSE_ACCEPT );
+    }
+    // Main display update
+    if ( wi->vtl )
+      vik_layers_panel_emit_update ( wi->w->vlp );
+  } else {
+    /* cancelled */
+    if ( wi->creating_new_layer )
+      g_object_unref(wi->vtl);
+  }
+}
 
 /* this routine is the worker thread.  there is only one simultaneous download allowed */
 static void get_from_anything ( w_and_interface_t *wi )
@@ -93,86 +138,35 @@ static void get_from_anything ( w_and_interface_t *wi )
   gchar *cmd = wi->cmd;
   gchar *extra = wi->extra;
   gboolean result = TRUE;
-  VikTrwLayer *vtl = NULL;
 
-  gboolean creating_new_layer = TRUE;
-
-  acq_dialog_widgets_t *w = wi->w;
   VikDataSourceInterface *source_interface = wi->w->source_interface;
-  g_free ( wi );
-  wi = NULL;
-
-  gdk_threads_enter();
-  if (source_interface->mode == VIK_DATASOURCE_ADDTOLAYER) {
-    VikLayer *current_selected = vik_layers_panel_get_selected ( w->vlp );
-    if ( IS_VIK_TRW_LAYER(current_selected) ) {
-      vtl = VIK_TRW_LAYER(current_selected);
-      creating_new_layer = FALSE;
-    }
-  }
-  if ( creating_new_layer ) {
-    vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, NULL, FALSE ) );
-    vik_layer_rename ( VIK_LAYER ( vtl ), _(source_interface->layer_title) );
-    gtk_label_set_text ( GTK_LABEL(w->status), _("Working...") );
-  }
-  gdk_threads_leave();
 
   if ( source_interface->process_func )
-    result = source_interface->process_func ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w );
+    result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, wi->w );
 
   g_free ( cmd );
   g_free ( extra );
 
   if (!result) {
     gdk_threads_enter();
-    gtk_label_set_text ( GTK_LABEL(w->status), _("Error: acquisition failed.") );
-    if ( creating_new_layer )
-      g_object_unref ( G_OBJECT ( vtl ) );
+    gtk_label_set_text ( GTK_LABEL(wi->w->status), _("Error: acquisition failed.") );
+    if ( wi->creating_new_layer )
+      g_object_unref ( G_OBJECT ( wi->vtl ) );
     gdk_threads_leave();
   } 
   else {
     gdk_threads_enter();
-    if (w->ok) {
-      gtk_label_set_text ( GTK_LABEL(w->status), _("Done.") );
-      if ( creating_new_layer ) {
-	/* Only create the layer if it actually contains anything useful */
-	// TODO: create function for this operation to hide detail:
-	if ( g_hash_table_size (vik_trw_layer_get_tracks(vtl)) ||
-	     g_hash_table_size (vik_trw_layer_get_waypoints(vtl)) ||
-	     g_hash_table_size (vik_trw_layer_get_routes(vtl)) ) {
-	  vik_layer_post_read ( VIK_LAYER(vtl), w->vvp, TRUE );
-	  vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(w->vlp), VIK_LAYER(vtl));
-	}
-	else
-	  gtk_label_set_text ( GTK_LABEL(w->status), _("No data.") );
-      }
-      /* View this data if available and is desired */
-      if ( vtl && source_interface->autoview ) {
-	vik_trw_layer_auto_set_view ( vtl, vik_layers_panel_get_viewport(w->vlp) );
-	vik_layers_panel_emit_update (w->vlp);
-      }
-      if ( source_interface->keep_dialog_open ) {
-        gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
-        gtk_dialog_set_response_sensitive ( GTK_DIALOG(w->dialog), GTK_RESPONSE_REJECT, FALSE );
-      } else {
-        gtk_dialog_response ( GTK_DIALOG(w->dialog), GTK_RESPONSE_ACCEPT );     
-      }
-    } else {
-      /* canceled */
-      if ( creating_new_layer )
-	g_object_unref(vtl);
-    }
+    on_complete_process ( wi );
+    gdk_threads_leave();
   }
+
   if ( source_interface->cleanup_func )
-    source_interface->cleanup_func ( w->user_data );
+    source_interface->cleanup_func ( wi->w->user_data );
 
-  if ( w->ok ) {
-    w->ok = FALSE;
-  } else {
-    g_free ( w );
+  if ( wi->w->running ) {
+    wi->w->running = FALSE;
   }
 
-  gdk_threads_leave();
   g_thread_exit ( NULL );
 }
 
@@ -325,29 +319,27 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
     a_uibuilder_free_paramdatas ( paramdatas, source_interface->params, source_interface->params_count );
   }
 
-  /*** LET'S DO IT! ***/
-
-  if ( ! cmd )
-    return;
-
   w = g_malloc(sizeof(*w));
   wi = g_malloc(sizeof(*wi));
   wi->w = w;
   wi->w->source_interface = source_interface;
   wi->cmd = cmd;
   wi->extra = extra; /* usually input data type (?) */
+  wi->vtl = vtl;
+  wi->creating_new_layer = (!vtl);
 
   dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_dialog_set_response_sensitive ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT, FALSE );
   gtk_window_set_title ( GTK_WINDOW(dialog), _(source_interface->window_title) );
 
-
   w->dialog = dialog;
-  w->ok = TRUE;
-  status = gtk_label_new (_("Status: detecting gpsbabel"));
+  w->running = TRUE;
+  status = gtk_label_new (_("Working..."));
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), status, FALSE, FALSE, 5 );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  gtk_widget_show_all(status);
+  // May not want to see the dialog at all
+  if ( source_interface->is_thread || source_interface->keep_dialog_open )
+    gtk_widget_show_all(dialog);
   w->status = status;
 
   w->vw = vw;
@@ -358,20 +350,61 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   }
   w->user_data = user_data;
 
-
-  g_thread_create((GThreadFunc)get_from_anything, wi, FALSE, NULL );
-
-  gtk_dialog_run ( GTK_DIALOG(dialog) );
-  if ( w->ok )
-    w->ok = FALSE; /* tell thread to stop. TODO: add mutex */
-  else {
-    if ( cmd_off ) {
-      /* Turn off */
-      a_babel_convert_from (NULL, cmd_off, extra_off, NULL, NULL);
+  if (source_interface->mode == VIK_DATASOURCE_ADDTOLAYER) {
+    VikLayer *current_selected = vik_layers_panel_get_selected ( w->vlp );
+    if ( IS_VIK_TRW_LAYER(current_selected) ) {
+      wi->vtl = VIK_TRW_LAYER(current_selected);
+      wi->creating_new_layer = FALSE;
     }
-    g_free ( w ); /* thread has finished; free w */
   }
+  if ( wi->creating_new_layer ) {
+    wi->vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, NULL, FALSE ) );
+    vik_layer_rename ( VIK_LAYER ( wi->vtl ), _(source_interface->layer_title) );
+  }
+
+  if ( source_interface->is_thread ) {
+    if ( cmd ) {
+      g_thread_create((GThreadFunc)get_from_anything, wi, FALSE, NULL );
+      gtk_dialog_run ( GTK_DIALOG(dialog) );
+      if (w->running) {
+	w->running = FALSE;
+      } else {
+        if ( cmd_off ) {
+          /* Turn off */
+          a_babel_convert_from (NULL, cmd_off, extra_off, NULL, NULL);
+          g_free ( cmd_off );
+        }
+        if ( extra_off )
+          g_free ( extra_off );
+      }
+    }
+    else {
+      // This shouldn't happen...
+      gtk_label_set_text ( GTK_LABEL(w->status), _("Unable to create command\nAcquire method failed.") );
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      goto end;
+    }
+  }
+  else {
+    // bypass thread method malarkly - you'll just have to wait...
+    if ( source_interface->process_func ) {
+      gboolean result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, w );
+      if ( !result )
+        a_dialog_msg ( GTK_WINDOW(vw), GTK_MESSAGE_ERROR, _("Error: acquisition failed."), NULL );
+    }
+    g_free ( cmd );
+    g_free ( extra );
+
+    on_complete_process ( wi );
+    // Actually show it if necessary
+    if ( wi->w->source_interface->keep_dialog_open )
+      gtk_dialog_run ( GTK_DIALOG(dialog) );
+  }
+
+ end:
   gtk_widget_destroy ( dialog );
+  g_free ( w );
+  g_free ( wi );
 }
 
 /**

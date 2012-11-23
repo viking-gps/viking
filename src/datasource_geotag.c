@@ -55,6 +55,7 @@ VikDataSourceInterface vik_datasource_geotag_interface = {
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
   TRUE,
+  TRUE,
   (VikDataSourceInitFunc)		        datasource_geotag_init,
   (VikDataSourceCheckExistenceFunc)	    NULL,
   (VikDataSourceAddSetupWidgetsFunc)    datasource_geotag_add_setup_widgets,

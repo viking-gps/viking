@@ -63,6 +63,7 @@ VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
   TRUE,
   FALSE, /* keep dialog open after success */
+  TRUE,
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_simplify_get_cmd_string,
   (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
@@ -98,6 +99,7 @@ VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
   TRUE,
   FALSE, /* keep dialog open after success */
+  TRUE,
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_dup_get_cmd_string,
   (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
@@ -130,6 +132,7 @@ VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,
   TRUE,
   FALSE, /* keep dialog open after success */
+  TRUE,
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_polygon_get_cmd_string,
   (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
@@ -165,6 +168,7 @@ VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,
   TRUE,
   FALSE, /* keep dialog open after success */
+  TRUE,
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_exclude_polygon_get_cmd_string,
   (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,

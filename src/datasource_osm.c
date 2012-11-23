@@ -55,6 +55,7 @@ VikDataSourceInterface vik_datasource_osm_interface = {
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
   TRUE,
+  TRUE,
   (VikDataSourceInitFunc)		datasource_osm_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_osm_add_setup_widgets,
