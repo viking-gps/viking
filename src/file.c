@@ -49,6 +49,8 @@
 #define FILE_SEP '/'
 #endif
 
+#define VIKING_FILE_VERSION 1
+
 typedef struct _Stack Stack;
 
 struct _Stack {
@@ -189,7 +191,9 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
       g_critical("Houston, we've had a problem. mode=%d", mode);
   }
 
-  fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\nhighlightcolor=%s\ndrawscale=%s\ndrawcentermark=%s\ndrawhighlight=%s\n",
+  fprintf ( f, "#VIKING GPS Data file " VIKING_URL "\n" );
+  fprintf ( f, "FILE_VERSION=%d\n", VIKING_FILE_VERSION );
+  fprintf ( f, "\nxmpp=%f\nympp=%f\nlat=%f\nlon=%f\nmode=%s\ncolor=%s\nhighlightcolor=%s\ndrawscale=%s\ndrawcentermark=%s\ndrawhighlight=%s\n",
       vik_viewport_get_xmpp ( VIK_VIEWPORT(vp) ), vik_viewport_get_ympp ( VIK_VIEWPORT(vp) ), ll.lat, ll.lon,
       modestring, vik_viewport_get_background_color(VIK_VIEWPORT(vp)),
       vik_viewport_get_highlight_color(VIK_VIEWPORT(vp)),
@@ -427,7 +431,14 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
         if ( line[i] == '=' )
           eq_pos = i;
 
-      if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "xmpp", eq_pos ) == 0) /* "hard coded" params: global & for all layer-types */
+      if ( stack->under == NULL && eq_pos == 12 && strncasecmp ( line, "FILE_VERSION", eq_pos ) == 0) {
+        gint version = strtol(line+13, NULL, 10);
+        g_debug ( "%s: reading file version %d", __FUNCTION__, version );
+        if ( version > VIKING_FILE_VERSION )
+          successful_read = FALSE;
+        // However we'll still carry and attempt to read whatever we can
+      }
+      else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "xmpp", eq_pos ) == 0) /* "hard coded" params: global & for all layer-types */
         vik_viewport_set_xmpp ( VIK_VIEWPORT(vp), strtod ( line+5, NULL ) );
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "ympp", eq_pos ) == 0)
         vik_viewport_set_ympp ( VIK_VIEWPORT(vp), strtod ( line+5, NULL ) );
