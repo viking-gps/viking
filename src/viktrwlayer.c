@@ -5807,7 +5807,10 @@ static void trw_layer_goto_waypoint ( gpointer pass_along[6] )
 
 static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[6] )
 {
-  gchar *webpage = g_strdup_printf("http://www.geocaching.com/seek/cache_details.aspx?wp=%s", (gchar *) pass_along[3] );
+  VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->waypoints, pass_along[3] );
+  if ( !wp )
+    return;
+  gchar *webpage = g_strdup_printf("http://www.geocaching.com/seek/cache_details.aspx?wp=%s", wp->name );
   open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), webpage);
   g_free ( webpage );
 }
