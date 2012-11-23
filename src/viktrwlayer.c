@@ -2877,7 +2877,8 @@ static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] )
     maxmin[0].lon = two_ll.lon;
     maxmin[1].lon = one_ll.lon;
   }
-  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
+  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, maxmin);
+  vik_layers_panel_emit_update ( vlp );
 }
 
 static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] )
@@ -2887,7 +2888,8 @@ static void trw_layer_new_wikipedia_wp_layer ( gpointer lav[2] )
   struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
   
   trw_layer_find_maxmin (vtl, maxmin);
-  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vlp, maxmin);
+  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, maxmin);
+  vik_layers_panel_emit_update ( vlp );
 }
 
 #ifdef VIK_CONFIG_GEOTAG

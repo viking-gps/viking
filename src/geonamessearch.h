@@ -26,7 +26,7 @@
 G_BEGIN_DECLS
 
 /* Finding Wikipedia entries within a certain box */
-void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *vlp, struct LatLon maxmin[2]);
+void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon maxmin[2] );
 
 G_END_DECLS
 

@@ -424,7 +424,7 @@ static gchar *download_url(gchar *uri)
   return(tmpname);
 }
 
-void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *vlp, struct LatLon maxmin[2])
+void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon maxmin[2] )
 {
   gchar *uri;
   gchar *tmpname;
@@ -472,5 +472,4 @@ void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *v
     g_remove(tmpname);
     g_free(tmpname);
   }
-  vik_layers_panel_emit_update(vlp);
 }
