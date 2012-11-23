@@ -98,12 +98,6 @@ struct _VikViewport {
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
 
-  /* handy conversion factors which make google plotting extremely fast */
-  gdouble google_calcx_fact;
-  gdouble google_calcy_fact;
-  gdouble google_calcx_rev_fact;
-  gdouble google_calcy_rev_fact;
-
   /* trigger stuff */
   gpointer trigger;
   GdkPixmap *snapshot_buffer;
