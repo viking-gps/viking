@@ -314,6 +314,7 @@ static void trw_layer_delete_routes_from_selection ( gpointer lav[2] );
 static void trw_layer_properties_item ( gpointer pass_along[7] );
 static void trw_layer_goto_waypoint ( gpointer pass_along[6] );
 static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[6] );
+static void trw_layer_waypoint_webpage ( gpointer pass_along[6] );
 
 static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer pass_along[5] );
 static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] );
@@ -5828,6 +5829,18 @@ static void trw_layer_waypoint_gc_webpage ( gpointer pass_along[6] )
   g_free ( webpage );
 }
 
+static void trw_layer_waypoint_webpage ( gpointer pass_along[6] )
+{
+  VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->waypoints, pass_along[3] );
+  if ( !wp )
+    return;
+  if ( !strncmp(wp->comment, "http", 4) ) {
+    open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), wp->comment);
+  } else if ( !strncmp(wp->description, "http", 4) ) {
+    open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(pass_along[0])), wp->description);
+  }
+}
+
 static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter )
 {
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
@@ -6094,6 +6107,18 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 	gtk_menu_shell_append (GTK_MENU_SHELL (geotag_submenu), item);
 	gtk_widget_show ( item );
 #endif
+      }
+
+      if ( wp )
+      {
+        if ( ( wp->comment && !strncmp(wp->comment, "http", 4) ) ||
+             ( wp->description && !strncmp(wp->description, "http", 4) )) {
+          item = gtk_image_menu_item_new_with_mnemonic ( _("Visit _Webpage") );
+          gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NETWORK, GTK_ICON_SIZE_MENU) );
+          g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_webpage), pass_along );
+          gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+          gtk_widget_show ( item );
+        }
       }
 
     }
