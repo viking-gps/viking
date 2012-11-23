@@ -2861,34 +2861,14 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
 
 static void trw_layer_new_wikipedia_wp_viewport ( gpointer lav[2] )
 {
-  VikCoord one, two;
-  struct LatLon one_ll, two_ll;
   struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
-
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
-  vik_viewport_screen_to_coord ( vvp, 0, 0, &one);
-  vik_viewport_screen_to_coord ( vvp, vik_viewport_get_width(vvp), vik_viewport_get_height(vvp), &two);
-  vik_coord_to_latlon(&one, &one_ll);
-  vik_coord_to_latlon(&two, &two_ll);
-  if (one_ll.lat > two_ll.lat) {
-    maxmin[0].lat = one_ll.lat;
-    maxmin[1].lat = two_ll.lat;
-  }
-  else {
-    maxmin[0].lat = two_ll.lat;
-    maxmin[1].lat = one_ll.lat;
-  }
-  if (one_ll.lon > two_ll.lon) {
-    maxmin[0].lon = one_ll.lon;
-    maxmin[1].lon = two_ll.lon;
-  }
-  else {
-    maxmin[0].lon = two_ll.lon;
-    maxmin[1].lon = one_ll.lon;
-  }
+
+  // Note the order is max part first then min part - thus reverse order of use in min_max function:
+  vik_viewport_get_min_max_lat_lon ( vvp, &maxmin[1].lat, &maxmin[0].lat, &maxmin[1].lon, &maxmin[0].lon );
   a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, maxmin);
   vik_layers_panel_emit_update ( vlp );
 }
