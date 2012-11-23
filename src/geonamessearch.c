@@ -54,6 +54,7 @@ typedef struct {
   gchar *name;
   gchar *country;
   struct LatLon ll;
+  gchar *cmt;
   gchar *desc;
 } found_geoname;
 
@@ -64,6 +65,7 @@ static found_geoname *new_found_geoname()
   ret = (found_geoname *)g_malloc(sizeof(found_geoname));
   ret->name = NULL;
   ret->country = NULL;
+  ret->cmt = NULL;
   ret->desc = NULL;
   ret->ll.lat = 0.0;
   ret->ll.lon = 0.0;
@@ -77,6 +79,7 @@ static found_geoname *copy_found_geoname(found_geoname *src)
   dest->country = g_strdup(src->country);
   dest->ll.lat = src->ll.lat;
   dest->ll.lon = src->ll.lon;
+  dest->cmt = g_strdup(src->cmt);
   dest->desc = g_strdup(src->desc);
   return(dest);
 }
@@ -85,6 +88,7 @@ static void free_list_geonames(found_geoname *geoname, gpointer userdata)
 {
   g_free(geoname->name);
   g_free(geoname->country);
+  g_free(geoname->cmt);
   g_free(geoname->desc);
 }
 
@@ -332,6 +336,8 @@ static GList *get_entries_from_file(gchar *file_name)
     }
     else {
       if (wikipedia_url) {
+        // Really we should support the GPX URL tag and then put that in there...
+        geoname->cmt = g_strdup_printf("http://%s", wikipedia_url);
         if (thumbnail_url) {
           geoname -> desc = g_strdup_printf("<a href=\"http://%s\" target=\"_blank\"><img src=\"%s\" border=\"0\"/></a>", wikipedia_url, thumbnail_url);
         }
@@ -396,7 +402,8 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
     wiki_wp = vik_waypoint_new();
     wiki_wp->visible = TRUE;
     vik_coord_load_from_latlon(&(wiki_wp->coord), vik_trw_layer_get_coord_mode ( vtl ), &(wiki_geoname->ll));
-    vik_waypoint_set_comment(wiki_wp, wiki_geoname->desc);
+    vik_waypoint_set_comment(wiki_wp, wiki_geoname->cmt);
+    vik_waypoint_set_description(wiki_wp, wiki_geoname->desc);
     vik_trw_layer_filein_add_waypoint ( vtl, wiki_geoname->name, wiki_wp );
     wp_runner = g_list_next(wp_runner);
   }
