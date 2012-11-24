@@ -30,7 +30,10 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY dhfirstname "<firstname>Ralf</firstname>">
   <!ENTITY dhsurname   "<surname>Meyer</surname>">
   <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>2008-05-02</date>">
+  <!ENTITY dhdate      "<date>2012-11-24</date>">
+  <!-- Would be nice if the version could auto-update. -->
+  <!ENTITY dhsource      "Viking">
+  <!ENTITY dhversion     "1.3.2">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
        allowed: see man(7), man(1). -->
   <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
@@ -43,6 +46,9 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY gnu         "<acronym>GNU</acronym>">
   <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
 ]>
+
+<reference>
+<title>&dhsource; &dhversion;</title>
 
 <refentry xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
@@ -61,8 +67,9 @@ and docbook-xsl in your Build-Depends control field.
   </refentryinfo>
   <refmeta>
     &dhucpackage;
-
     &dhsection;
+    <refmiscinfo CLASS="source">&dhsource;</refmiscinfo>
+    <refmiscinfo CLASS="version">&dhversion;</refmiscinfo>
   </refmeta>
   <refnamediv>
     <refname>&dhpackage;</refname>
@@ -111,12 +118,6 @@ and docbook-xsl in your Build-Depends control field.
     <para>  
   Homepage: <ulink type="http" url="http://viking.sf.net">http://viking.sf.net</ulink>
     </para>
-
-    <para>This manual page was written for the &debian; distribution
-      because the original program does not have a manual page.
-    </para>
-
-    <para><command>&dhpackage;</command> is a program to manage GPS data</para>
 
   </refsect1>
   <refsect1>
@@ -411,4 +412,4 @@ and docbook-xsl in your Build-Depends control field.
 
   </refsect1>
 </refentry>
-
+</reference>
