@@ -39,7 +39,14 @@
 #define g_mapped_file_unref g_mapped_file_free
 #endif
 
-#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s"
+/**
+ * See http://www.geonames.org/export/wikipedia-webservice.html#wikipediaBoundingBox
+ */
+// Translators may wish to change this setting as appropriate to get Wikipedia articles in that language
+#define GEONAMES_LANG N_("en")
+
+#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s&lang=%s"
+
 #define GEONAMES_FEATURE_PATTERN "\"feature\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
 #define GEONAMES_NAME_PATTERN "\"name\": \""
@@ -394,7 +401,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   gchar *south = a_coords_dtostr(maxmin[1].lat);
   gchar *east = a_coords_dtostr(maxmin[0].lon);
   gchar *west = a_coords_dtostr(maxmin[1].lon);
-  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west);
+  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, GEONAMES_LANG);
   g_free(north); north = NULL;
   g_free(south); south = NULL;
   g_free(east);  east = NULL;
