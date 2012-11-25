@@ -452,6 +452,21 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
     wiki_wp->altitude = wiki_geoname->elevation;
     vik_waypoint_set_comment(wiki_wp, wiki_geoname->cmt);
     vik_waypoint_set_description(wiki_wp, wiki_geoname->desc);
+    // Use the featue type to generate a suitable waypoint icon
+    //  http://www.geonames.org/wikipedia/wikipedia_features.html
+    // Only a few values supported as only a few symbols make sense
+    if ( wiki_geoname->feature ) {
+      if ( !strcmp (wiki_geoname->feature, "city") )
+        vik_waypoint_set_symbol(wiki_wp, "city (medium)");
+      if ( !strcmp (wiki_geoname->feature, "edu") )
+        vik_waypoint_set_symbol(wiki_wp, "school");
+      if ( !strcmp (wiki_geoname->feature, "airport") )
+        vik_waypoint_set_symbol(wiki_wp, "airport");
+      if ( !strcmp (wiki_geoname->feature, "mountain") )
+        vik_waypoint_set_symbol(wiki_wp, "summit");
+      if ( !strcmp (wiki_geoname->feature, "forest") )
+        vik_waypoint_set_symbol(wiki_wp, "forest");
+    }
     vik_trw_layer_filein_add_waypoint ( vtl, wiki_geoname->name, wiki_wp );
     wp_runner = g_list_next(wp_runner);
   }
