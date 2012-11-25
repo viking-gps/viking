@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2009, Hein Ragas
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +40,7 @@
 #endif
 
 #define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s"
-// Not entirely convinced how useful seeing what the country is
-#define GEONAMES_COUNTRY_PATTERN "\"countryCode\": \""
+#define GEONAMES_FEATURE_PATTERN "\"feature\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
 #define GEONAMES_NAME_PATTERN "\"name\": \""
 #define GEONAMES_LATITUDE_PATTERN "\"lat\": "
@@ -53,7 +53,7 @@
 
 typedef struct {
   gchar *name;
-  gchar *country;
+  gchar *feature;
   struct LatLon ll;
   gchar *cmt;
   gchar *desc;
@@ -65,7 +65,7 @@ static found_geoname *new_found_geoname()
 
   ret = (found_geoname *)g_malloc(sizeof(found_geoname));
   ret->name = NULL;
-  ret->country = NULL;
+  ret->feature = NULL;
   ret->cmt = NULL;
   ret->desc = NULL;
   ret->ll.lat = 0.0;
@@ -77,7 +77,7 @@ static found_geoname *copy_found_geoname(found_geoname *src)
 {
   found_geoname *dest = new_found_geoname();
   dest->name = g_strdup(src->name);
-  dest->country = g_strdup(src->country);
+  dest->feature = g_strdup(src->feature);
   dest->ll.lat = src->ll.lat;
   dest->ll.lon = src->ll.lon;
   dest->cmt = g_strdup(src->cmt);
@@ -88,7 +88,7 @@ static found_geoname *copy_found_geoname(found_geoname *src)
 static void free_list_geonames(found_geoname *geoname, gpointer userdata)
 {
   g_free(geoname->name);
-  g_free(geoname->country);
+  g_free(geoname->feature);
   g_free(geoname->cmt);
   g_free(geoname->desc);
 }
@@ -152,7 +152,7 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
     latlon_string = g_strdup_printf("(%f,%f)", geoname->ll.lat, geoname->ll.lon);
     gtk_tree_store_append(store, &iter, NULL);
     {
-      gtk_tree_store_set(store, &iter, 0, geoname->name, 1, geoname->country, 2, latlon_string, -1);
+      gtk_tree_store_set(store, &iter, 0, geoname->name, 1, geoname->feature, 2, latlon_string, -1);
     }
     geoname_runner = g_list_next(geoname_runner);
     g_free(latlon_string);
@@ -160,11 +160,11 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
   view = gtk_tree_view_new();
   renderer = gtk_cell_renderer_text_new();
   column_runner = 0;
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Name", renderer, "text", column_runner, NULL);
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, _("Name"), renderer, "text", column_runner, NULL);
   column_runner++;
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Country", renderer, "text", column_runner, NULL);
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, _("Feature"), renderer, "text", column_runner, NULL);
   column_runner++;
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, "Lat/Lon", renderer, "text", column_runner, NULL);
+  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, _("Lat/Lon"), renderer, "text", column_runner, NULL);
   gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), TRUE);
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
   gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
@@ -246,15 +246,15 @@ static GList *get_entries_from_file(gchar *file_name)
   {
     more = TRUE;
     geoname = new_found_geoname();
-    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_COUNTRY_PATTERN))) {
-      pat += strlen(GEONAMES_COUNTRY_PATTERN);
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_FEATURE_PATTERN))) {
+      pat += strlen(GEONAMES_FEATURE_PATTERN);
       fragment_len = 0;
       s = pat;
       while (*pat != '"') {
         fragment_len++;
         pat++;
       }
-      geoname -> country = g_strndup(s, fragment_len);
+      geoname->feature = g_strndup(s, fragment_len);
     }
     if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_LONGITUDE_PATTERN)) == NULL) {
       more = FALSE;
