@@ -44,8 +44,11 @@
  */
 // Translators may wish to change this setting as appropriate to get Wikipedia articles in that language
 #define GEONAMES_LANG N_("en")
+// TODO - offer configuration of this value somewhere
+//  ATM decided it's not essential enough to warrant putting in the preferences
+#define GEONAMES_MAX_ENTRIES 20
 
-#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s&lang=%s"
+#define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s&lang=%s&maxRows=%d"
 
 #define GEONAMES_FEATURE_PATTERN "\"feature\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
@@ -186,12 +189,20 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
       multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
   g_object_unref(store);
 
+  GtkWidget *scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+  gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
+
   gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
-  gtk_widget_show ( label );
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), view, FALSE, FALSE, 0);
-  gtk_widget_show ( view );
+  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolledwindow, TRUE, TRUE, 0);
+
+  // Ensure a reasonable number of items are shown, but let the width be automatically sized
+  gtk_widget_set_size_request ( dialog, -1, 400) ;
+  gtk_widget_show_all ( dialog );
+
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
+
   while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
   {
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
@@ -401,7 +412,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   gchar *south = a_coords_dtostr(maxmin[1].lat);
   gchar *east = a_coords_dtostr(maxmin[0].lon);
   gchar *west = a_coords_dtostr(maxmin[1].lon);
-  uri = g_strdup_printf(GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, GEONAMES_LANG);
+  uri = g_strdup_printf ( GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, GEONAMES_LANG, GEONAMES_MAX_ENTRIES );
   g_free(north); north = NULL;
   g_free(south); south = NULL;
   g_free(east);  east = NULL;
