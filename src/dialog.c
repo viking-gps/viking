@@ -494,9 +494,12 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
   renderer = gtk_cell_renderer_text_new();
   // Use the column header to display the message text,
   // this makes the overall widget allocation simple as treeview takes up all the space
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, msg, renderer, "text", 0, NULL);
+  GtkTreeViewColumn *column;
+  column = gtk_tree_view_column_new_with_attributes (msg, renderer, "text", 0, NULL );
+  gtk_tree_view_column_set_sort_column_id (column, 0);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (view), column);
+
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
-  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), TRUE);
   gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
       multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
   g_object_unref(store);
