@@ -123,7 +123,6 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
   found_geoname *geoname;
   gchar *latlon_string;
   int column_runner;
-  gboolean to_copy;
 
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                                                   parent,
@@ -141,31 +140,40 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
   response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
 #endif
   GtkWidget *label = gtk_label_new ( msg );
-  GtkTreeStore *store;
-  {
-    store = gtk_tree_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-  }
+  GtkTreeStore *store = gtk_tree_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
   GList *geoname_runner = geonames;
   while (geoname_runner)
   { 
     geoname = (found_geoname *)geoname_runner->data;
     latlon_string = g_strdup_printf("(%f,%f)", geoname->ll.lat, geoname->ll.lon);
     gtk_tree_store_append(store, &iter, NULL);
-    {
-      gtk_tree_store_set(store, &iter, 0, geoname->name, 1, geoname->feature, 2, latlon_string, -1);
-    }
+    gtk_tree_store_set(store, &iter, 0, geoname->name, 1, geoname->feature, 2, latlon_string, -1);
     geoname_runner = g_list_next(geoname_runner);
     g_free(latlon_string);
   }
+
   view = gtk_tree_view_new();
   renderer = gtk_cell_renderer_text_new();
   column_runner = 0;
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, _("Name"), renderer, "text", column_runner, NULL);
+  GtkTreeViewColumn *column;
+  // NB could allow columns to be shifted around by doing this after each new
+  // gtk_tree_view_column_set_reorderable ( column, TRUE );
+  // However I don't think is that useful, so I haven't put it in
+  column = gtk_tree_view_column_new_with_attributes( _("Name"), renderer, "text", column_runner, NULL);
+  gtk_tree_view_column_set_sort_column_id (column, column_runner);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (view), column);
+
   column_runner++;
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, _("Feature"), renderer, "text", column_runner, NULL);
+  column = gtk_tree_view_column_new_with_attributes( _("Feature"), renderer, "text", column_runner, NULL);
+  gtk_tree_view_column_set_sort_column_id (column, column_runner);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (view), column);
+
   column_runner++;
-  gtk_tree_view_insert_column_with_attributes( GTK_TREE_VIEW(view), -1, _("Lat/Lon"), renderer, "text", column_runner, NULL);
-  gtk_tree_view_set_headers_visible( GTK_TREE_VIEW(view), TRUE);
+  column = gtk_tree_view_column_new_with_attributes( _("Lat/Lon"), renderer, "text", column_runner, NULL);
+  gtk_tree_view_column_set_sort_column_id (column, column_runner);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (view), column);
+
   gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(store));
   gtk_tree_selection_set_mode( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
       multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
@@ -182,28 +190,33 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
     GList *selected_geonames = NULL;
 
-    gtk_tree_model_get_iter_first( GTK_TREE_MODEL(store), &iter);
-    geoname_runner = geonames;
-    while (geoname_runner)
-    {
-      to_copy = FALSE;
-      {
-        if (gtk_tree_selection_iter_is_selected(selection, &iter))
-        {
-          to_copy = TRUE;
+    // Possibily not the fastest method but we don't have thousands of entries to process...
+    if ( gtk_tree_model_get_iter_first( GTK_TREE_MODEL(store), &iter) ) {
+      do {
+        if ( gtk_tree_selection_iter_is_selected ( selection, &iter ) ) {
+          // For every selected item,
+          // compare the name from the displayed view to every geoname entry to find the geoname this selection represents
+          gchar* name;
+          gtk_tree_model_get (GTK_TREE_MODEL(store), &iter, 0, &name, -1 );
+	  // I believe the name of these items to be always unique
+          geoname_runner = geonames;
+          while ( geoname_runner ) {
+            if ( !strcmp ( ((found_geoname*)geoname_runner->data)->name, name ) ) {
+              found_geoname *copied = copy_found_geoname(geoname_runner->data);
+              selected_geonames = g_list_prepend(selected_geonames, copied);
+              break;
+            }
+            geoname_runner = g_list_next(geoname_runner);
+          }
         }
       }
-      if (to_copy) {
-        found_geoname *copied = copy_found_geoname(geoname_runner->data);
-        selected_geonames = g_list_prepend(selected_geonames, copied);
-      }
-      geoname_runner = g_list_next(geoname_runner);
-      gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter);
+      while ( gtk_tree_model_iter_next ( GTK_TREE_MODEL(store), &iter ) );
     }
+
     if (selected_geonames)
     { 
       gtk_widget_destroy ( dialog );
-      return (selected_geonames);
+      return selected_geonames;
     }
     a_dialog_error_msg(parent, _("Nothing was selected"));
   }
