@@ -54,6 +54,7 @@
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
 #define GEONAMES_NAME_PATTERN "\"name\": \""
 #define GEONAMES_LATITUDE_PATTERN "\"lat\": "
+#define GEONAMES_ELEVATION_PATTERN "\"elevation\": "
 #define GEONAMES_TITLE_PATTERN "\"title\": \""
 #define GEONAMES_WIKIPEDIAURL_PATTERN "\"wikipediaUrl\": \""
 #define GEONAMES_THUMBNAILIMG_PATTERN "\"thumbnailImg\": \""
@@ -65,6 +66,7 @@ typedef struct {
   gchar *name;
   gchar *feature;
   struct LatLon ll;
+  gdouble elevation;
   gchar *cmt;
   gchar *desc;
 } found_geoname;
@@ -80,7 +82,8 @@ static found_geoname *new_found_geoname()
   ret->desc = NULL;
   ret->ll.lat = 0.0;
   ret->ll.lon = 0.0;
-  return(ret);
+  ret->elevation = VIK_DEFAULT_ALTITUDE;
+  return ret;
 }
 
 static found_geoname *copy_found_geoname(found_geoname *src)
@@ -90,6 +93,7 @@ static found_geoname *copy_found_geoname(found_geoname *src)
   dest->feature = g_strdup(src->feature);
   dest->ll.lat = src->ll.lat;
   dest->ll.lon = src->ll.lon;
+  dest->elevation = src->elevation;
   dest->cmt = g_strdup(src->cmt);
   dest->desc = g_strdup(src->desc);
   return(dest);
@@ -248,7 +252,7 @@ static GList *get_entries_from_file(gchar *file_name)
   GMappedFile *mf;
   gsize len;
   gboolean more = TRUE;
-  gchar lat_buf[32], lon_buf[32];
+  gchar lat_buf[32], lon_buf[32], elev_buf[32];
   gchar *s;
   gint fragment_len;
   GList *found_places = NULL;
@@ -259,7 +263,7 @@ static GList *get_entries_from_file(gchar *file_name)
   gchar *wikipedia_url = NULL;
   gchar *thumbnail_url = NULL;
 
-  lat_buf[0] = lon_buf[0] = '\0';
+  lat_buf[0] = lon_buf[0] = elev_buf[0] = '\0';
 
   if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
     g_critical(_("couldn't map temp file"));
@@ -303,6 +307,17 @@ static GList *get_entries_from_file(gchar *file_name)
         more = FALSE;
       }
       geoname->ll.lon = g_ascii_strtod(lon_buf, NULL);
+    }
+    if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_ELEVATION_PATTERN))) {
+      pat += strlen(GEONAMES_ELEVATION_PATTERN);
+      s = elev_buf;
+      if (*pat == '-')
+        *s++ = *pat++;
+      while ((s < (elev_buf + sizeof(elev_buf))) && (pat < (text + len)) &&
+              (g_ascii_isdigit(*pat) || (*pat == '.')))
+        *s++ = *pat++;
+      *s = '\0';
+      geoname->elevation = g_ascii_strtod(elev_buf, NULL);
     }
     if ((pat = g_strstr_len(entry, strlen(entry), GEONAMES_NAME_PATTERN))) {
       pat += strlen(GEONAMES_NAME_PATTERN);
@@ -434,6 +449,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
     wiki_wp = vik_waypoint_new();
     wiki_wp->visible = TRUE;
     vik_coord_load_from_latlon(&(wiki_wp->coord), vik_trw_layer_get_coord_mode ( vtl ), &(wiki_geoname->ll));
+    wiki_wp->altitude = wiki_geoname->elevation;
     vik_waypoint_set_comment(wiki_wp, wiki_geoname->cmt);
     vik_waypoint_set_description(wiki_wp, wiki_geoname->desc);
     vik_trw_layer_filein_add_waypoint ( vtl, wiki_geoname->name, wiki_wp );
