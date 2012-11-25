@@ -469,6 +469,7 @@ void a_geonames_wikipedia_box(VikWindow *vw, VikTrwLayer *vtl, VikLayersPanel *v
   free_geoname_list(selected);
   g_free(uri);
   if (tmpname) {
+    g_remove(tmpname);
     g_free(tmpname);
   }
   vik_layers_panel_emit_update(vlp);
