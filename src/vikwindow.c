@@ -2486,7 +2486,8 @@ static void goto_default_location( GtkAction *a, VikWindow *vw)
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
-  a_vik_goto(vw, vw->viking_vlp, vw->viking_vvp);
+  a_vik_goto ( vw, vw->viking_vvp );
+  vik_layers_panel_emit_update ( vw->viking_vlp );
 }
 
 static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )

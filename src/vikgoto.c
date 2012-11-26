@@ -155,7 +155,7 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
   return(goto_str);   /* goto_str needs to be freed by caller */
 }
 
-void a_vik_goto(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
+void a_vik_goto(VikWindow *vw, VikViewport *vvp)
 {
   VikCoord new_center;
   gchar *s_str;
@@ -183,7 +183,6 @@ void a_vik_goto(VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp)
         g_free(last_successful_goto_str);
       last_successful_goto_str = g_strdup(last_goto_str);
       vik_viewport_set_center_coord(vvp, &new_center);
-      vik_layers_panel_emit_update(vlp);
       more = FALSE;
     }
     else if (!prompt_try_again(vw))
