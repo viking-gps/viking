@@ -83,7 +83,7 @@ static void progress_func ( BabelProgressCode c, gpointer data, acq_dialog_widge
   gdk_threads_leave ();
 
   if ( w->source_interface->progress_func )
-    w->source_interface->progress_func ( (gpointer) c, data, w );
+    w->source_interface->progress_func ( c, data, w );
 }
 
 

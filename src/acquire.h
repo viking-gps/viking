@@ -88,7 +88,7 @@ typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data
 typedef gboolean (*VikDataSourceProcessFunc)  ( gpointer vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw );
 
 /* */
-typedef void  (*VikDataSourceProgressFunc)  (gpointer c, gpointer data, acq_dialog_widgets_t *w);
+typedef void  (*VikDataSourceProgressFunc)  ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w );
 
 /* Creates widgets to show in a progress dialog, may set up state via user_data */
 typedef void  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog, gpointer user_data );
