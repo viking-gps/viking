@@ -46,7 +46,6 @@
 #include <glib/gi18n.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 #include "globals.h"
-#include "curl_download.h"
 #include "bingmapsource.h"
 #include "bbox.h"
 #include "background.h"
@@ -391,32 +390,12 @@ _parse_file_for_attributions(BingMapSource *self, gchar *filename)
 static int
 _load_attributions ( BingMapSource *self )
 {
-	FILE *tmp_file;
-	int tmp_fd;
-	gchar *tmpname;
-	gchar *uri;
 	int ret = 0;  /* OK */
 
 	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	gchar *uri = g_strdup_printf(URL_ATTR_FMT, priv->api_key);
 
-	if ((tmp_fd = g_file_open_tmp ("vik-bing.XXXXXX", &tmpname, NULL)) == -1) {
-		g_critical(_("couldn't open temp file"));
-		return -1;
-	}
-
-	tmp_file = fdopen(tmp_fd, "r+");
-	uri = g_strdup_printf(URL_ATTR_FMT, priv->api_key);
-
-	/* TODO: curl may not be available */
-	if (curl_download_uri(uri, tmp_file, vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self)), 0, NULL)) {  /* error */
-		fclose(tmp_file);
-		tmp_file = NULL;
-		ret = -1;
-		goto done;
-	}
-
-	fclose(tmp_file);
-	tmp_file = NULL;
+	gchar *tmpname = a_download_uri_to_tmp_file ( uri, vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self)) );
 
 	g_debug("%s: %s", __FUNCTION__, tmpname);
 	if (!_parse_file_for_attributions(self, tmpname)) {

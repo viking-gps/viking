@@ -88,6 +88,8 @@ int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *
 void *a_download_handle_init ();
 void a_download_handle_cleanup ( void *handle );
 
+gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadMapOptions *options );
+
 /* Error messages returned by download functions */
 enum { DOWNLOAD_NO_ERROR = 0,
        DOWNLOAD_NO_NEWER_FILE,

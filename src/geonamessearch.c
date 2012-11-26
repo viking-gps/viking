@@ -31,7 +31,6 @@
 
 #include "viking.h"
 #include "util.h"
-#include "curl_download.h"
 #include "geonamessearch.h"
 
 /* Compatibility */
@@ -399,31 +398,6 @@ static GList *get_entries_from_file(gchar *file_name)
 }
 
 
-static gchar *download_url(gchar *uri)
-{
-  FILE *tmp_file;
-  int tmp_fd;
-  gchar *tmpname;
-
-  if ((tmp_fd = g_file_open_tmp ("vikgsearch.XXXXXX", &tmpname, NULL)) == -1) {
-    g_critical(_("couldn't open temp file"));
-    return NULL;
-  }
-  tmp_file = fdopen(tmp_fd, "r+");
-
-  if (curl_download_uri(uri, tmp_file, NULL, 0, NULL)) {
-    // error
-    fclose(tmp_file);
-    tmp_file = NULL;
-    g_remove(tmpname);
-    g_free(tmpname);
-    return(NULL);
-  }
-  fclose(tmp_file);
-  tmp_file = NULL;
-  return(tmpname);
-}
-
 void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon maxmin[2] )
 {
   gchar *uri;
@@ -444,7 +418,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   g_free(south); south = NULL;
   g_free(east);  east = NULL;
   g_free(west);  west = NULL;
-  tmpname = download_url(uri);
+  tmpname = a_download_uri_to_tmp_file ( uri, NULL );
   if (!tmpname) {
     none_found(vw);
     return;

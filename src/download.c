@@ -293,3 +293,37 @@ void a_download_handle_cleanup ( void *handle )
 {
   curl_download_handle_cleanup ( handle );
 }
+
+/**
+ * a_download_url_to_tmp_file:
+ * @uri:         The URI (Uniform Resource Identifier)
+ * @options:     Download options (maybe NULL)
+ *
+ * returns name of the temporary file created - NULL if unsuccessful
+ *  this string needs to be freed once used
+ *  the file needs to be removed once used
+ */
+gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadMapOptions *options )
+{
+  FILE *tmp_file;
+  int tmp_fd;
+  gchar *tmpname;
+
+  if ( (tmp_fd = g_file_open_tmp ("viking-download.XXXXXX", &tmpname, NULL)) == -1 ) {
+    g_critical (_("couldn't open temp file"));
+    return NULL;
+  }
+
+  tmp_file = fdopen(tmp_fd, "r+");
+
+  if ( curl_download_uri ( uri, tmp_file, options, NULL, NULL ) ) {
+    // error
+    fclose ( tmp_file );
+    g_remove ( tmpname );
+    g_free ( tmpname );
+    return NULL;
+  }
+  fclose ( tmp_file );
+
+  return tmpname;
+}
