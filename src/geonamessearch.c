@@ -267,6 +267,7 @@ static GList *get_entries_from_file(gchar *file_name)
 
   if ((mf = g_mapped_file_new(file_name, FALSE, NULL)) == NULL) {
     g_critical(_("couldn't map temp file"));
+    return NULL;
   }
   len = g_mapped_file_get_length(mf);
   text = g_mapped_file_get_contents(mf);
