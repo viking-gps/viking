@@ -361,6 +361,10 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
       wi->creating_new_layer = FALSE;
     }
   }
+  else if ( source_interface->mode == VIK_DATASOURCE_MANUAL_LAYER_MANAGEMENT ) {
+    // Don't create in acquire - as datasource will perform the necessary actions
+    wi->creating_new_layer = FALSE;
+  }
   if ( wi->creating_new_layer ) {
     wi->vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, NULL, FALSE ) );
     vik_layer_rename ( VIK_LAYER ( wi->vtl ), _(source_interface->layer_title) );

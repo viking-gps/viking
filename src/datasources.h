@@ -32,6 +32,7 @@ extern VikDataSourceInterface vik_datasource_google_interface;
 #endif
 #ifdef VIK_CONFIG_OPENSTREETMAP
 extern VikDataSourceInterface vik_datasource_osm_interface;
+extern VikDataSourceInterface vik_datasource_osm_my_traces_interface;
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
 extern VikDataSourceInterface vik_datasource_gc_interface;

@@ -51,7 +51,8 @@ typedef struct {
 
 typedef enum {
   VIK_DATASOURCE_CREATENEWLAYER,
-  VIK_DATASOURCE_ADDTOLAYER
+  VIK_DATASOURCE_ADDTOLAYER,
+  VIK_DATASOURCE_MANUAL_LAYER_MANAGEMENT,
 } vik_datasource_mode_t;
 /* TODO: replace track/layer? */
 

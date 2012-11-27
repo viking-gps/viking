@@ -121,7 +121,7 @@ static const gchar *get_default_user()
   return default_user;
 }
 
-static void set_login(const gchar *user_, const gchar *password_)
+void osm_set_login(const gchar *user_, const gchar *password_)
 {
   /* Allocate mutex */
   if (login_mutex == NULL)
@@ -136,7 +136,7 @@ static void set_login(const gchar *user_, const gchar *password_)
   g_mutex_unlock(login_mutex);
 }
 
-static gchar *get_login()
+gchar *osm_get_login()
 {
   gchar *user_pass = NULL;
   g_mutex_lock(login_mutex);
@@ -182,7 +182,7 @@ static gint osm_traces_upload_file(const char *user,
 
   char *base_url = "http://www.openstreetmap.org/api/0.6/gpx/create";
 
-  gchar *user_pass = get_login();
+  gchar *user_pass = osm_get_login();
 
   gint result = 0; // Default to it worked!
 
@@ -350,6 +350,33 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
 }
 
 /**
+ *
+ */
+void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry)
+{
+  if (!user_entry || !password_entry)
+    return;
+
+  const gchar *default_user = get_default_user();
+  const gchar *pref_user = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "username")->s;
+  const gchar *pref_password = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "password")->s;
+
+  if (user != NULL && user[0] != '\0')
+    gtk_entry_set_text(GTK_ENTRY(user_entry), user);
+  else if (pref_user != NULL && pref_user[0] != '\0')
+    gtk_entry_set_text(GTK_ENTRY(user_entry), pref_user);
+  else if (default_user != NULL)
+    gtk_entry_set_text(GTK_ENTRY(user_entry), default_user);
+
+  if (password != NULL && password[0] != '\0')
+    gtk_entry_set_text(GTK_ENTRY(password_entry), password);
+  else if (pref_password != NULL)
+    gtk_entry_set_text(GTK_ENTRY(password_entry), pref_password);
+  /* This is a password -> invisible */
+  gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
+}
+
+/**
  * Uploading a VikTrwLayer
  *
  * @param vtl VikTrwLayer
@@ -366,9 +393,6 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
                                                  GTK_RESPONSE_ACCEPT,
                                                  NULL);
 
-  const gchar *default_user = get_default_user();
-  const gchar *pref_user = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "username")->s;
-  const gchar *pref_password = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "password")->s;
   const gchar *name = NULL;
   GtkWidget *user_label, *user_entry;
   GtkWidget *password_label, *password_entry;
@@ -380,12 +404,6 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 
   user_label = gtk_label_new(_("Email:"));
   user_entry = gtk_entry_new();
-  if (user != NULL && user[0] != '\0')
-    gtk_entry_set_text(GTK_ENTRY(user_entry), user);
-  else if (pref_user != NULL && pref_user[0] != '\0')
-    gtk_entry_set_text(GTK_ENTRY(user_entry), pref_user);
-  else if (default_user != NULL)
-    gtk_entry_set_text(GTK_ENTRY(user_entry), default_user);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_markup(GTK_WIDGET(user_entry),
@@ -394,17 +412,13 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 
   password_label = gtk_label_new(_("Password:"));
   password_entry = gtk_entry_new();
-  if (password != NULL && password[0] != '\0')
-    gtk_entry_set_text(GTK_ENTRY(password_entry), password);
-  else if (pref_password != NULL)
-    gtk_entry_set_text(GTK_ENTRY(password_entry), pref_password);
-  /* This is a password -> invisible */
-  gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), password_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), password_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_markup(GTK_WIDGET(password_entry),
                         _("The password used to login\n"
                         "<small>Enter the password you use to login into www.openstreetmap.org.</small>"));
+
+  osm_login_widgets ( user_entry, password_entry );
 
   name_label = gtk_label_new(_("File's name:"));
   name_entry = gtk_entry_new();
@@ -452,8 +466,8 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
     gchar *title = NULL;
 
     /* overwrite authentication info */
-    set_login(gtk_entry_get_text(GTK_ENTRY(user_entry)),
-              gtk_entry_get_text(GTK_ENTRY(password_entry)));
+    osm_set_login(gtk_entry_get_text(GTK_ENTRY(user_entry)),
+                  gtk_entry_get_text(GTK_ENTRY(password_entry)));
 
     /* Storing data for the future thread */
     OsmTracesInfo *info = g_malloc(sizeof(OsmTracesInfo));
