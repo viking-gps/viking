@@ -57,6 +57,7 @@
 #include <unistd.h>
 #endif
 
+#include "vikmapsourcedefault.h"
 #include "mapcache.h"
 /* only for dialog.h -- ugh */
 #include "vikwaypoint.h"
@@ -1269,6 +1270,61 @@ static void maps_layer_redownload_new ( VikMapsLayer *vml )
   start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_NEW );
 }
 
+/**
+ * Display a simple dialog with information about this particular map tile
+ */
+static void maps_layer_tile_info ( VikMapsLayer *vml )
+{
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  gdouble xzoom = vml->xmapzoom ? vml->xmapzoom : vik_viewport_get_xmpp ( vml->redownload_vvp );
+  gdouble yzoom = vml->ymapzoom ? vml->ymapzoom : vik_viewport_get_ympp ( vml->redownload_vvp );
+  MapCoord ulm;
+
+  if ( !vik_map_source_coord_to_mapcoord ( map, &(vml->redownload_ul), xzoom, yzoom, &ulm ) )
+    return;
+
+  gchar *filename = NULL;
+  gchar *message = NULL;
+  gchar *source = NULL;
+
+  if ( vik_map_source_is_direct_file_access ( map ) ) {
+    filename = g_strdup_printf ( DIRECTDIRACCESS, vml->cache_dir, ulm.scale, ulm.x, ulm.y, ".png" );
+    source = g_strconcat ( "file://", filename, NULL );
+  }
+  else {
+	filename = g_strdup_printf ( DIRSTRUCTURE, vml->cache_dir, vik_map_source_get_uniq_id(map), ulm.scale, ulm.z, ulm.x, ulm.y );
+    source = g_strdup_printf ( "http://%s%s",
+                               vik_map_source_default_get_hostname ( VIK_MAP_SOURCE_DEFAULT(map) ),
+                               vik_map_source_default_get_uri ( VIK_MAP_SOURCE_DEFAULT(map), &ulm ) );
+  }
+
+  if ( g_file_test ( filename, G_FILE_TEST_EXISTS ) ) {
+
+    // Get some timestamp information of the tile
+    struct stat stat_buf;
+    if ( g_stat ( filename, &stat_buf ) == 0 ) {
+      time_t file_time = stat_buf.st_mtime;
+      GDateTime* gdt = g_date_time_new_from_unix_utc ( file_time );
+      gchar *time = g_date_time_format ( gdt, "%c" );
+
+      message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: %s"), source, filename, time );
+
+      g_free ( time );
+      g_date_time_unref ( gdt);
+    }
+  }
+  else
+    message = g_strdup_printf ( _("Source: %s\n\nNo Tile File!"), source );
+
+  // Show the info
+  a_dialog_info_msg (  VIK_GTK_WINDOW_FROM_LAYER(vml), message );
+
+  g_free ( message );
+  g_free ( source );
+  g_free ( filename );
+}
+
 static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
 {
   if (!vml || vml->vl.type != VIK_LAYER_MAPS)
@@ -1308,6 +1364,11 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
         item = gtk_menu_item_new_with_mnemonic ( _("Redownload _All Map(s)") );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all), vml );
         gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+
+        item = gtk_image_menu_item_new_with_mnemonic ( _("_Show Tile Information") );
+        gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_MENU) );
+        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_tile_info), vml );
+        gtk_menu_shell_append (GTK_MENU_SHELL(vml->dl_right_click_menu), item);
       }
 
       gtk_menu_popup ( vml->dl_right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );
