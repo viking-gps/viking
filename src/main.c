@@ -190,8 +190,18 @@ int main( int argc, char *argv[] )
   while ( ++i < argc ) {
     if ( strcmp(argv[i],"--") == 0 && !dashdash_already )
       dashdash_already = TRUE; /* hack to open '-' */
-    else
-      vik_window_open_file ( first_window, argv[i], argc == 2 );
+    else {
+      VikWindow *newvw = first_window;
+      gboolean change_filename = (i == 1);
+
+      // Open any subsequent .vik files in their own window
+      if ( i > 1 && check_file_magic_vik ( argv[i] ) ) {
+        newvw = vik_window_new_window ();
+        change_filename = TRUE;
+      }
+
+      vik_window_open_file ( newvw, argv[i], change_filename );
+    }
   }
 
   gtk_main ();

@@ -344,7 +344,7 @@ static void open_window ( VikWindow *vw, GSList *files )
     if (vw != NULL && check_file_magic_vik ( file_name ) ) {
       VikWindow *newvw = vik_window_new_window ();
       if (newvw)
-	vik_window_open_file ( newvw, file_name, change_fn );
+        vik_window_open_file ( newvw, file_name, TRUE );
     }
     else {
       vik_window_open_file ( vw, file_name, change_fn );
@@ -2343,11 +2343,28 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     else {
       files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(vw->open_dia) );
       gboolean change_fn = newwindow && (g_slist_length(files)==1); /* only change fn if one file */
-      
+      gboolean first_vik_file = TRUE;
       cur_file = files;
       while ( cur_file ) {
+
         gchar *file_name = cur_file->data;
-        vik_window_open_file ( vw, file_name, change_fn );
+        if ( newwindow && check_file_magic_vik ( file_name ) ) {
+          // Load first of many .vik files in current window
+          if ( first_vik_file ) {
+            vik_window_open_file ( vw, file_name, TRUE );
+            first_vik_file = FALSE;
+          }
+          else {
+            // Load each subsequent .vik file in a separate window
+            VikWindow *newvw = vik_window_new_window ();
+            if (newvw)
+              vik_window_open_file ( newvw, file_name, TRUE );
+          }
+        }
+        else
+          // Other file types
+          vik_window_open_file ( vw, file_name, change_fn );
+
         g_free (file_name);
         cur_file = g_slist_next (cur_file);
       }
