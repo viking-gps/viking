@@ -32,9 +32,8 @@
 
 #include "viking.h"
 #include "util.h"
-#include "curl_download.h"
-
 #include "vikgototool.h"
+#include "vikgoto.h"
 
 static gchar *last_goto_str = NULL;
 static VikCoord *last_coord = NULL;
