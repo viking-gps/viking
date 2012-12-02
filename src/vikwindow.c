@@ -451,8 +451,7 @@ static GtkWidget *create_zoom_combo_all_levels ()
   gtk_combo_box_append_text ( combo, "16384");
   gtk_combo_box_append_text ( combo, "32768");
   /* Create tooltip */
-  GtkTooltips *tooltips = gtk_tooltips_new ();
-  gtk_tooltips_set_tip ( tooltips, GTK_WIDGET (combo), _("Select zoom level"), NULL);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (combo), _("Select zoom level"));
   return zoom_combo;
 }
 
