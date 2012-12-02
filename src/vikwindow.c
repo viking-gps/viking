@@ -2519,6 +2519,7 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
       NULL,
       VIK_LAYER_WIDGET_SPINBUTTON,
       NULL,
+      NULL,
       NULL },
   };
   VikLayerParam pref_lon[] = {
@@ -2527,6 +2528,7 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
       VIK_LOCATION_LONG,
       NULL,
       VIK_LAYER_WIDGET_SPINBUTTON,
+      NULL,
       NULL,
       NULL },
   };

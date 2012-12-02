@@ -43,7 +43,7 @@ VikLayerParamScale simplify_params_scales[] = {
 };
 
 VikLayerParam bfilter_simplify_params[] = {
-  { "numberofpoints", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Max number of points:"), VIK_LAYER_WIDGET_SPINBUTTON, simplify_params_scales, NULL },
+  { "numberofpoints", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Max number of points:"), VIK_LAYER_WIDGET_SPINBUTTON, simplify_params_scales, NULL, NULL },
 };
 
 VikLayerParamData bfilter_simplify_params_defaults[] = {

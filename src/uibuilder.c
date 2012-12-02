@@ -143,10 +143,8 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         gtk_entry_set_visibility ( GTK_ENTRY(rv), FALSE );
         if (data.s)
           gtk_entry_set_text ( GTK_ENTRY(rv), data.s );
-#if GTK_CHECK_VERSION(2,12,0)
-	gtk_widget_set_tooltip_text ( GTK_WIDGET(rv),
-	                              _("Take care that this password will be stored clearly in a plain file.") );
-#endif
+        gtk_widget_set_tooltip_text ( GTK_WIDGET(rv),
+                                     _("Take care that this password will be stored clearly in a plain file.") );
       }
       break;
     case VIK_LAYER_WIDGET_FILEENTRY:
@@ -181,6 +179,10 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         gtk_scale_set_digits ( GTK_SCALE(rv), scale->digits );
         gtk_range_set_value ( GTK_RANGE(rv), init_val );
       }
+  }
+  if ( rv && !gtk_widget_get_tooltip_text ( rv ) ) {
+    if ( param->tooltip )
+      gtk_widget_set_tooltip_text ( rv, _(param->tooltip) );
   }
   return rv;
 }

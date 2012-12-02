@@ -109,7 +109,7 @@ VikLayerParamScale params_scales[] = {
 };
 
 static VikLayerParam prefs[] = {
-  { VIKING_PREFERENCES_NAMESPACE "download_tile_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Tile age (s):"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales + 0, NULL },
+  { VIKING_PREFERENCES_NAMESPACE "download_tile_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Tile age (s):"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL },
 };
 
 void a_download_init (void)

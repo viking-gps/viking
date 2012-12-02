@@ -45,6 +45,7 @@ typedef struct {
   guint8 widget_type;
   gpointer widget_data;
   gpointer extra_widget_data;
+  const gchar *tooltip;
 } VikLayerParam;
 
 enum {
