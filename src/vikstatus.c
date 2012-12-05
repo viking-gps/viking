@@ -56,6 +56,13 @@ GType vik_statusbar_get_type (void)
   return vs_type;
 }
 
+/**
+ * vik_statusbar_new:
+ *
+ * Creates a new #VikStatusbar widget.
+ *
+ * Return value: the new #VikStatusbar widget.
+ **/
 VikStatusbar *vik_statusbar_new ()
 {
   VikStatusbar *vs = VIK_STATUSBAR ( g_object_new ( VIK_STATUSBAR_TYPE, NULL ) );
@@ -89,6 +96,14 @@ VikStatusbar *vik_statusbar_new ()
   return vs;
 }
 
+/**
+ * vik_statusbar_set_message:
+ * @vs: the #VikStatusbar itself
+ * @field: the field to update
+ * @message: the message to use
+ *
+ * Update the message of the given field.
+ **/
 void vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const gchar *message )
 {
   if ( field >= 0 && field < VIK_STATUSBAR_NUM_TYPES )
