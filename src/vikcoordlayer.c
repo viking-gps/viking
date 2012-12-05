@@ -418,7 +418,7 @@ static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp, const g
 VikCoordLayer *vik_coord_layer_create ( VikViewport *vp )
 {
   VikCoordLayer *vcl = vik_coord_layer_new ();
-  coord_layer_update_gc ( vcl, vp, "red" );
+  if ( vp )
+    coord_layer_update_gc ( vcl, vp, "red" );
   return vcl;
 }
-

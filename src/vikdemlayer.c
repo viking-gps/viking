@@ -851,14 +851,14 @@ VikDEMLayer *vik_dem_layer_create ( VikViewport *vp )
 {
   VikDEMLayer *vdl = vik_dem_layer_new ();
   gint i;
+  if ( vp ) {
+    /* TODO: share GCS between layers */
+    for ( i = 0; i < DEM_N_HEIGHT_COLORS; i++ )
+      vdl->gcs[i] = vik_viewport_new_gc ( vp, dem_height_colors[i], UNUSED_LINE_THICKNESS );
 
-  /* TODO: share GCS between layers */
-  for ( i = 0; i < DEM_N_HEIGHT_COLORS; i++ )
-    vdl->gcs[i] = vik_viewport_new_gc ( vp, dem_height_colors[i], UNUSED_LINE_THICKNESS );
-
-  for ( i = 0; i < DEM_N_GRADIENT_COLORS; i++ )
-    vdl->gcsgradient[i] = vik_viewport_new_gc ( vp, dem_gradient_colors[i], UNUSED_LINE_THICKNESS );
-
+    for ( i = 0; i < DEM_N_GRADIENT_COLORS; i++ )
+      vdl->gcsgradient[i] = vik_viewport_new_gc ( vp, dem_gradient_colors[i], UNUSED_LINE_THICKNESS );
+  }
   return vdl;
 }
 /**************************************************************

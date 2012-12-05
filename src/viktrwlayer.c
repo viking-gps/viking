@@ -876,7 +876,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_DM: vtl->drawmode = data.u; break;
     case PARAM_TC:
       vtl->track_color = data.c;
-      trw_layer_new_track_gcs ( vtl, vp );
+      if ( vp ) trw_layer_new_track_gcs ( vtl, vp );
       break;
     case PARAM_DP: vtl->drawpoints = data.b; break;
     case PARAM_DPS:
@@ -900,13 +900,13 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_LT: if ( data.u > 0 && data.u < 15 && data.u != vtl->line_thickness )
                    {
                      vtl->line_thickness = data.u;
-                     trw_layer_new_track_gcs ( vtl, vp );
+                     if ( vp ) trw_layer_new_track_gcs ( vtl, vp );
                    }
                    break;
     case PARAM_BLT: if ( data.u <= 8 && data.u != vtl->bg_line_thickness )
                    {
                      vtl->bg_line_thickness = data.u;
-                     trw_layer_new_track_gcs ( vtl, vp );
+                     if ( vp ) trw_layer_new_track_gcs ( vtl, vp );
                    }
                    break;
     case PARAM_TBGC: gdk_gc_set_rgb_fg_color(vtl->track_bg_gc, &(data.c)); break;
