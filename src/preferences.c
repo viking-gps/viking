@@ -86,16 +86,15 @@ static gint16 preferences_groups_key_to_index( const gchar *key )
 typedef struct {
   VikLayerParamData data;
   guint8 type;
-  gpointer freeme; // because data.s is const and the compiler complains
 } VikLayerTypedParamData;
 
-void layer_typed_param_data_free(gpointer p)
+static void layer_typed_param_data_free(gpointer p)
 {
   VikLayerTypedParamData *val = (VikLayerTypedParamData *)p;
   switch ( val->type ) {
     case VIK_LAYER_PARAM_STRING:
-      if ( val->freeme )
-        g_free ( val->freeme );
+      if ( val->data.s )
+        g_free ( (gpointer)val->data.s );
       break;
     /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
      * the internals call get_param -- i.e. it should be managed w/in the layer.
@@ -109,7 +108,7 @@ void layer_typed_param_data_free(gpointer p)
   g_free ( val );
 }
 
-VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type, VikLayerParamData val) {
+static VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type, VikLayerParamData val) {
   VikLayerTypedParamData *newval = g_new(VikLayerTypedParamData,1);
   newval->data = val;
   newval->type = type;
@@ -117,7 +116,6 @@ VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type, VikLa
     case VIK_LAYER_PARAM_STRING: {
       gchar *s = g_strdup(newval->data.s);
       newval->data.s = s;
-      newval->freeme = s;
       break;
     }
     /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
@@ -133,7 +131,7 @@ VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type, VikLa
 }
 
 /* TODO: share this code with file.c */
-VikLayerTypedParamData *layer_data_typed_param_copy_from_string ( guint8 type, const gchar *str )
+static VikLayerTypedParamData *layer_data_typed_param_copy_from_string ( guint8 type, const gchar *str )
 {
   g_assert ( type != VIK_LAYER_PARAM_STRING_LIST );
   VikLayerTypedParamData *rv = g_new(VikLayerTypedParamData,1);
@@ -150,7 +148,6 @@ VikLayerTypedParamData *layer_data_typed_param_copy_from_string ( guint8 type, c
     default: {
       gchar *s = g_strdup(str);
       rv->data.s = s;
-      rv->freeme = s;
     }
   }
   return rv;
