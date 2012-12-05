@@ -1161,6 +1161,10 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
   rv->elevation_factor = 30;
   rv->stop_length = 60;
   rv->drawlines = TRUE;
+  rv->wp_symbol = WP_SYMBOL_FILLED_SQUARE;
+  rv->wp_size = 4;
+  rv->wp_draw_symbols = TRUE;
+  rv->wp_font_size = FS_MEDIUM;
   rv->track_draw_speed_factor = 30.0;
   rv->line_thickness = 1;
 
@@ -1845,12 +1849,6 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
   rv->waypoint_text_gc = vik_viewport_new_gc ( vp, "#FFFFFF", 1 );
   rv->waypoint_bg_gc = vik_viewport_new_gc ( vp, "#8383C4", 1 );
   gdk_gc_set_function ( rv->waypoint_bg_gc, GDK_AND );
-
-  rv->has_verified_thumbnails = FALSE;
-  rv->wp_symbol = WP_SYMBOL_FILLED_SQUARE;
-  rv->wp_size = 4;
-  rv->wp_draw_symbols = TRUE;
-  rv->wp_font_size = FS_MEDIUM;
 
   rv->coord_mode = vik_viewport_get_coord_mode ( vp );
 
