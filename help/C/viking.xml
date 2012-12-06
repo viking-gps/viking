@@ -1182,22 +1182,22 @@ This layer is allows drawing of grid lines on the viewport.
 You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, center map at position and pan respectively no matter what tool you are using.
 </para>
 <para>
-Scroll: zoom in and out keeping the mouse over same location
+<keycap>Scroll</keycap>: zoom in and out keeping the mouse over same location
 </para>
 <para>
-Ctrl-scroll: pan north-south (also Ctrl-up, Ctrl-down)
+<keycap>Ctrl-scroll</keycap>: pan north-south (also <keycap>Ctrl-up</keycap>, <keycap>Ctrl-down</keycap>)
 </para>
 <para>
-Shift-scroll: pan east-west (also Ctrl-left, Ctrl-right)
+<keycap>Shift-scroll</keycap>: pan east-west (also <keycap>Ctrl-left</keycap>, <keycap>Ctrl-right</keycap>)
 </para>
 <para>
-Ctrl-shift-scroll: zoom in and out, without changing the center (also Ctrl+, Ctrl- [*not* KeyPad +/-])
+<keycap>Ctrl-shift-scroll</keycap>: zoom in and out, without changing the center (also <keycap>Ctrl+</keycap>, <keycap>Ctrl-</keycap> [*not* KeyPad +/-])
 </para>
 <para>
-Middle-click: make the clicked point on the map the center
+<keycap>Middle-click</keycap>: make the clicked point on the map the center
 </para>
 <para>
-Middle-click and drag: pan
+<keycap>Middle-click</keycap> and drag: pan
 </para>
 
 <section><title>Pan</title>
@@ -1227,10 +1227,10 @@ Zooms in and out on the clicked part of the map or by the selected area.
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</keycap>
 </para>
 <para>
-Ctrl + left or right click: Zoom in/out and center the map on the clicked location
+<keycap>Ctrl</keycap> + left or right click: Zoom in/out and center the map on the clicked location
 </para>
 <para>
-Shift (and hold) + left mouse button: Draws a bounding box area on which to zoom in. The zoom action is performed when the left mouse button is released.
+<keycap>Shift</keycap> (and hold) + left mouse button: Draws a bounding box area on which to zoom in. The zoom action is performed when the left mouse button is released.
 </para>
 </section>
 
