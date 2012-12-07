@@ -269,7 +269,7 @@ struct _VikLayerInterface {
 VikLayerInterface *vik_layer_get_interface ( gint type );
 
 
-void vik_layer_init ( VikLayer *vl, gint type );
+void vik_layer_set_type ( VikLayer *vl, gint type );
 void vik_layer_draw ( VikLayer *l, gpointer data );
 void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode );
 void vik_layer_rename ( VikLayer *l, const gchar *new_name );

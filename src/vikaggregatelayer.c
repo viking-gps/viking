@@ -190,7 +190,7 @@ static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, Vi
 VikAggregateLayer *vik_aggregate_layer_new ()
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( g_object_new ( VIK_AGGREGATE_LAYER_TYPE, NULL ) );
-  vik_layer_init ( VIK_LAYER(val), VIK_LAYER_AGGREGATE );
+  vik_layer_set_type ( VIK_LAYER(val), VIK_LAYER_AGGREGATE );
   val->children = NULL;
   return val;
 }

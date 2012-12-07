@@ -231,7 +231,7 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
 VikGeorefLayer *georef_layer_new ( )
 {
   VikGeorefLayer *vgl = VIK_GEOREF_LAYER ( g_object_new ( VIK_GEOREF_LAYER_TYPE, NULL ) );
-  vik_layer_init ( VIK_LAYER(vgl), VIK_LAYER_GEOREF );
+  vik_layer_set_type ( VIK_LAYER(vgl), VIK_LAYER_GEOREF );
 
   vgl->image = NULL;
   vgl->pixbuf = NULL;

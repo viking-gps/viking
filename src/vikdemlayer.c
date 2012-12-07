@@ -432,7 +432,7 @@ VikDEMLayer *vik_dem_layer_new ( )
 {
   VikDEMLayer *vdl = VIK_DEM_LAYER ( g_object_new ( VIK_DEM_LAYER_TYPE, NULL ) );
 
-  vik_layer_init ( VIK_LAYER(vdl), VIK_LAYER_DEM );
+  vik_layer_set_type ( VIK_LAYER(vdl), VIK_LAYER_DEM );
 
   vdl->files = NULL;
 

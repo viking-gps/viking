@@ -1022,7 +1022,7 @@ static VikTrwLayer* trw_layer_new ( gint drawmode )
     trw_layer_params[PARAM_WPSYM].widget_data = str_array_to_glist(params_wpsymbols);
 
   VikTrwLayer *rv = VIK_TRW_LAYER ( g_object_new ( VIK_TRW_LAYER_TYPE, NULL ) );
-  vik_layer_init ( VIK_LAYER(rv), VIK_LAYER_TRW );
+  vik_layer_set_type ( VIK_LAYER(rv), VIK_LAYER_TRW );
 
   // It's not entirely clear the benefits of hash tables usage here - possibly the simplicity of first implementation for unique names
   // Now with the name of the item stored as part of the item - these tables are effectively straightforward lists

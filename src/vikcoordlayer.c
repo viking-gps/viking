@@ -200,7 +200,7 @@ VikCoordLayer *vik_coord_layer_new ( )
   GdkColor InitColor;
   
   VikCoordLayer *vcl = VIK_COORD_LAYER ( g_object_new ( VIK_COORD_LAYER_TYPE, NULL ) );
-  vik_layer_init ( VIK_LAYER(vcl), VIK_LAYER_COORD );
+  vik_layer_set_type ( VIK_LAYER(vcl), VIK_LAYER_COORD );
 
   InitColor.pixel = 0;
   InitColor.red = 65535;

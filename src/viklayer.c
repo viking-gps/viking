@@ -48,45 +48,18 @@ static guint layer_signals[VL_LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class;
 
-static void layer_class_init ( VikLayerClass *klass );
-static void layer_init ( VikLayer *vl );
-static void layer_finalize ( VikLayer *vl );
-static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp );
+static void vik_layer_finalize ( VikLayer *vl );
+static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp );
 
+G_DEFINE_TYPE (VikLayer, vik_layer, G_TYPE_OBJECT)
 
-/* TODO longone: rename vik_layer_init -> set_type */
-
-GType vik_layer_get_type ()
-{
-  static GType vl_type = 0;
-
-  if (!vl_type)
-  {
-    static const GTypeInfo vl_info =
-    {
-      sizeof (VikLayerClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) layer_class_init, /* class init */
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikLayer),
-      0,
-      (GInstanceInitFunc) layer_init /* instance init */
-    };
-    vl_type = g_type_register_static ( G_TYPE_OBJECT, "VikLayer", &vl_info, 0 );
-  }
-
-  return vl_type;
-}
-
-static void layer_class_init (VikLayerClass *klass)
+static void vik_layer_class_init (VikLayerClass *klass)
 {
   GObjectClass *object_class;
 
   object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = (GObjectFinalizeFunc) layer_finalize;
+  object_class->finalize = (GObjectFinalizeFunc) vik_layer_finalize;
 
   parent_class = g_type_class_peek_parent (klass);
 
@@ -156,14 +129,14 @@ VikLayerInterface *vik_layer_get_interface ( gint type )
   return vik_layer_interfaces[type];
 }
 
-static void layer_init ( VikLayer *vl )
+static void vik_layer_init ( VikLayer *vl )
 {
   vl->visible = TRUE;
   vl->name = NULL;
   vl->realized = FALSE;
 }
 
-void vik_layer_init ( VikLayer *vl, gint type )
+void vik_layer_set_type ( VikLayer *vl, gint type )
 {
   vl->type = type;
 }
@@ -220,7 +193,7 @@ gboolean vik_layer_properties ( VikLayer *layer, gpointer vp )
 {
   if ( vik_layer_interfaces[layer->type]->properties )
     return vik_layer_interfaces[layer->type]->properties ( layer, vp );
-  return layer_properties_factory ( layer, vp );
+  return vik_layer_properties_factory ( layer, vp );
 }
 
 void vik_layer_draw ( VikLayer *l, gpointer data )
@@ -397,7 +370,7 @@ VikLayer *vik_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp )
   }
 }
 
-static void layer_finalize ( VikLayer *vl )
+static void vik_layer_finalize ( VikLayer *vl )
 {
   g_assert ( vl != NULL );
   if ( vik_layer_interfaces[vl->type]->free )
@@ -502,7 +475,7 @@ void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file 
     vik_layer_interfaces[layer->type]->post_read ( layer, vp, from_file );
 }
 
-static gboolean layer_properties_factory ( VikLayer *vl, VikViewport *vp )
+static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp )
 {
   switch ( a_uibuilder_properties_factory ( _("Layer Properties"),
 					    VIK_GTK_WINDOW_FROM_WIDGET(vp),

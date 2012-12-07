@@ -566,7 +566,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
 {
   gint i;
   VikGpsLayer *vgl = VIK_GPS_LAYER ( g_object_new ( VIK_GPS_LAYER_TYPE, NULL ) );
-  vik_layer_init ( VIK_LAYER(vgl), VIK_LAYER_GPS );
+  vik_layer_set_type ( VIK_LAYER(vgl), VIK_LAYER_GPS );
   for (i = 0; i < NUM_TRW; i++) {
     vgl->trw_children[i] = NULL;
   }
