@@ -125,11 +125,21 @@ VikLayerParam maps_layer_params[] = {
   { "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
     N_("Control the Alpha value for transparency effects") },
   { "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL },
+  { "adlonlymissing", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload Only Gets Missing Maps:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Using this option avoids attempting to update already acquired tiles. This can be useful if you want to restrict the network usage, without having to resort to manual control. Only applies when 'Autodownload Maps' is on.") },
   { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms, NULL,
     N_("Determines the method of displaying map tiles for the current zoom level. 'Viking Zoom Level' uses the best matching level, otherwise setting a fixed value will always use map tiles of the specified value regardless of the actual zoom level.") },
 };
 
-enum { PARAM_MAPTYPE=0, PARAM_CACHE_DIR, PARAM_ALPHA, PARAM_AUTODOWNLOAD, PARAM_MAPZOOM, NUM_PARAMS };
+enum {
+  PARAM_MAPTYPE=0,
+  PARAM_CACHE_DIR,
+  PARAM_ALPHA,
+  PARAM_AUTODOWNLOAD,
+  PARAM_ONLYMISSING,
+  PARAM_MAPZOOM,
+  NUM_PARAMS
+};
 
 static VikToolInterface maps_tools[] = {
   { { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
@@ -213,6 +223,7 @@ struct _VikMapsLayer {
   gdouble xmapzoom, ymapzoom;
 
   gboolean autodownload;
+  gboolean adl_only_missing;
   VikCoord *last_center;
   gdouble last_xmpp;
   gdouble last_ympp;
@@ -496,6 +507,7 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerPa
     }
     case PARAM_ALPHA: if ( data.u <= 255 ) vml->alpha = data.u; break;
     case PARAM_AUTODOWNLOAD: vml->autodownload = data.b; break;
+    case PARAM_ONLYMISSING: vml->adl_only_missing = data.b; break;
     case PARAM_MAPZOOM: if ( data.u < NUM_MAPZOOMS ) {
                           vml->mapzoom_id = data.u;
                           vml->xmapzoom = __mapzooms_x [data.u];
@@ -514,6 +526,7 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
     case PARAM_MAPTYPE: rv.u = map_index_to_uniq_id ( vml->maptype ); break;
     case PARAM_ALPHA: rv.u = vml->alpha; break;
     case PARAM_AUTODOWNLOAD: rv.u = vml->autodownload; break;
+    case PARAM_ONLYMISSING: rv.u = vml->adl_only_missing; break;
     case PARAM_MAPZOOM: rv.u = vml->mapzoom_id; break;
   }
   return rv;
@@ -536,6 +549,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   vml->dl_tool_x = vml->dl_tool_y = -1;
   maps_layer_set_cache_dir ( vml, NULL );
   vml->autodownload = FALSE;
+  vml->adl_only_missing = FALSE;
   vml->last_center = NULL;
   vml->last_xmpp = 0.0;
   vml->last_ympp = 0.0;
@@ -761,7 +775,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 
     if ( (!existence_only) && vml->autodownload  && should_start_autodownload(vml, vvp)) {
       g_debug("%s: Starting autodownload", __FUNCTION__);
-      if ( vik_map_source_supports_download_only_new (map) )
+      if ( !vml->adl_only_missing && vik_map_source_supports_download_only_new (map) )
         // Try to download newer tiles
         start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NEW );
       else
