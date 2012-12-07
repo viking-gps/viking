@@ -71,8 +71,6 @@ static guint window_count = 0;
 static void window_finalize ( GObject *gob );
 static GObjectClass *parent_class;
 
-static void window_init ( VikWindow *vw );
-static void window_class_init ( VikWindowClass *klass );
 static void window_set_filename ( VikWindow *vw, const gchar *filename );
 
 static VikWindow *window_new ();
@@ -224,29 +222,7 @@ static guint window_signals[VW_LAST_SIGNAL] = { 0 };
 // TODO get rid of this as this is unnecessary duplication...
 static gchar *tool_names[NUMBER_OF_TOOLS] = { N_("Pan"), N_("Zoom"), N_("Ruler"), N_("Select") };
 
-GType vik_window_get_type (void)
-{
-  static GType vw_type = 0;
-
-  if (!vw_type)
-  {
-    static const GTypeInfo vw_info = 
-    {
-      sizeof (VikWindowClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) window_class_init, /* class_init */
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikWindow),
-      0,
-      (GInstanceInitFunc) window_init,
-    };
-    vw_type = g_type_register_static ( GTK_TYPE_WINDOW, "VikWindow", &vw_info, 0 );
-  }
-
-  return vw_type;
-}
+G_DEFINE_TYPE (VikWindow, vik_window, GTK_TYPE_WINDOW)
 
 VikViewport * vik_window_viewport(VikWindow *vw)
 {
@@ -387,7 +363,7 @@ static void window_finalize ( GObject *gob )
 }
 
 
-static void window_class_init ( VikWindowClass *klass )
+static void vik_window_class_init ( VikWindowClass *klass )
 {
   /* destructor */
   GObjectClass *object_class;
@@ -455,7 +431,7 @@ static GtkWidget *create_zoom_combo_all_levels ()
   return zoom_combo;
 }
 
-static void window_init ( VikWindow *vw )
+static void vik_window_init ( VikWindow *vw )
 {
   GtkWidget *main_vbox;
   GtkWidget *hpaned;
