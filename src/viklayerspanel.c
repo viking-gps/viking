@@ -35,9 +35,6 @@ enum {
   VLP_LAST_SIGNAL
 };
 
-static void layers_panel_class_init ( VikLayersPanelClass *klass );
-static void layers_panel_init ( VikLayersPanel *vlp );
-
 static guint layers_panel_signals[VLP_LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class;
@@ -76,31 +73,9 @@ static void layers_move_item_up ( VikLayersPanel *vlp );
 static void layers_move_item_down ( VikLayersPanel *vlp );
 static void layers_panel_finalize ( GObject *gob );
 
-GType vik_layers_panel_get_type()
-{
-  static GType vlp_type = 0;
+G_DEFINE_TYPE (VikLayersPanel, vik_layers_panel, GTK_TYPE_VBOX)
 
-  if (!vlp_type)
-  {
-    static const GTypeInfo vlp_info = 
-    {
-      sizeof (VikLayersPanelClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) layers_panel_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikLayersPanel),
-      0,
-      (GInstanceInitFunc) layers_panel_init,
-    };
-    vlp_type = g_type_register_static ( GTK_TYPE_VBOX, "VikLayersPanel", &vlp_info, 0 );
-  }
-
-  return vlp_type;
-}
-
-static void layers_panel_class_init ( VikLayersPanelClass *klass )
+static void vik_layers_panel_class_init ( VikLayersPanelClass *klass )
 {
   GObjectClass *object_class;
 
@@ -129,7 +104,7 @@ VikViewport *vik_layers_panel_get_viewport ( VikLayersPanel *vlp )
   return vlp->vvp;
 }
 
-static void layers_panel_init ( VikLayersPanel *vlp )
+static void vik_layers_panel_init ( VikLayersPanel *vlp )
 {
   GtkWidget *hbox;
   GtkWidget *addbutton, *addimage;
