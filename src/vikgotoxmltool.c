@@ -37,14 +37,10 @@
 
 #include "vikgotoxmltool.h"
 
+static void vik_goto_xml_tool_finalize ( GObject *gob );
 
-static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass );
-static void _goto_xml_tool_init ( VikGotoXmlTool *self );
-
-static void _goto_xml_tool_finalize ( GObject *gob );
-
-static gchar *_goto_xml_tool_get_url_format ( VikGotoTool *self );
-static gboolean _goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
+static gchar *vik_goto_xml_tool_get_url_format ( VikGotoTool *self );
+static gboolean vik_goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
 
 typedef struct _VikGotoXmlToolPrivate VikGotoXmlToolPrivate;
 
@@ -63,29 +59,7 @@ struct _VikGotoXmlToolPrivate
                                         VIK_GOTO_XML_TOOL_TYPE,          \
                                         VikGotoXmlToolPrivate))
 
-GType vik_goto_xml_tool_get_type()
-{
-  static GType w_type = 0;
-
-  if (!w_type)
-  {
-    static const GTypeInfo w_info = 
-    {
-      sizeof (VikGotoXmlToolClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) _goto_xml_tool_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikGotoXmlTool),
-      0,
-      (GInstanceInitFunc) _goto_xml_tool_init,
-    };
-    w_type = g_type_register_static ( VIK_GOTO_TOOL_TYPE, "VikGotoXmlTool", &w_info, 0 );
-  }
-
-  return w_type;
-}
+G_DEFINE_TYPE (VikGotoXmlTool, vik_goto_xml_tool, VIK_GOTO_TOOL_TYPE)
 
 enum
 {
@@ -99,10 +73,10 @@ enum
 };
 
 static void
-_goto_xml_tool_set_property (GObject      *object,
-                             guint         property_id,
-                             const GValue *value,
-                             GParamSpec   *pspec)
+vik_goto_xml_tool_set_property (GObject      *object,
+                                guint         property_id,
+                                const GValue *value,
+                                GParamSpec   *pspec)
 {
   VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
@@ -173,10 +147,10 @@ _goto_xml_tool_set_property (GObject      *object,
 }
 
 static void
-_goto_xml_tool_get_property (GObject    *object,
-                             guint       property_id,
-                             GValue     *value,
-                             GParamSpec *pspec)
+vik_goto_xml_tool_get_property (GObject    *object,
+                                guint       property_id,
+                                GValue     *value,
+                                GParamSpec *pspec)
 {
   VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
@@ -210,7 +184,8 @@ _goto_xml_tool_get_property (GObject    *object,
     }
 }
 
-static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
+static void
+vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
 {
   GObjectClass *object_class;
   VikGotoToolClass *parent_class;
@@ -218,9 +193,9 @@ static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
 
   object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = _goto_xml_tool_finalize;
-  object_class->set_property = _goto_xml_tool_set_property;
-  object_class->get_property = _goto_xml_tool_get_property;
+  object_class->finalize = vik_goto_xml_tool_finalize;
+  object_class->set_property = vik_goto_xml_tool_set_property;
+  object_class->get_property = vik_goto_xml_tool_get_property;
 
 
   pspec = g_param_spec_string ("url-format",
@@ -270,18 +245,20 @@ static void _goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
 
   parent_class = VIK_GOTO_TOOL_CLASS (klass);
 
-  parent_class->get_url_format = _goto_xml_tool_get_url_format;
-  parent_class->parse_file_for_latlon = _goto_xml_tool_parse_file_for_latlon;
+  parent_class->get_url_format = vik_goto_xml_tool_get_url_format;
+  parent_class->parse_file_for_latlon = vik_goto_xml_tool_parse_file_for_latlon;
 
   g_type_class_add_private (klass, sizeof (VikGotoXmlToolPrivate));
 }
 
-VikGotoXmlTool *vik_goto_xml_tool_new ()
+VikGotoXmlTool *
+vik_goto_xml_tool_new ()
 {
   return VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "Google", NULL ) );
 }
 
-static void _goto_xml_tool_init ( VikGotoXmlTool *self )
+static void
+vik_goto_xml_tool_init ( VikGotoXmlTool *self )
 {
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   priv->url_format = NULL;
@@ -294,7 +271,8 @@ static void _goto_xml_tool_init ( VikGotoXmlTool *self )
   priv->ll.lon = NAN;
 }
 
-static void _goto_xml_tool_finalize ( GObject *gob )
+static void
+vik_goto_xml_tool_finalize ( GObject *gob )
 {
   G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
@@ -394,7 +372,7 @@ _text (GMarkupParseContext *context,
 }
 
 static gboolean
-_goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll)
+vik_goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll)
 {
 	GMarkupParser xml_parser;
 	GMarkupParseContext *xml_context = NULL;
@@ -472,7 +450,7 @@ _goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct 
 }
 
 static gchar *
-_goto_xml_tool_get_url_format ( VikGotoTool *self )
+vik_goto_xml_tool_get_url_format ( VikGotoTool *self )
 {
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   g_return_val_if_fail(priv != NULL, NULL);
