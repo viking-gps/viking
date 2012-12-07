@@ -31,40 +31,15 @@
 
 #include "util.h"
 
-static void webtool_class_init ( VikWebtoolClass *klass );
-static void webtool_init ( VikWebtool *vwd );
-
 static GObjectClass *parent_class;
 
 static void webtool_finalize ( GObject *gob );
 
 static void webtool_open ( VikExtTool *self, VikWindow *vwindow );
 
-GType vik_webtool_get_type()
-{
-  static GType w_type = 0;
+G_DEFINE_ABSTRACT_TYPE (VikWebtool, vik_webtool, VIK_EXT_TOOL_TYPE)
 
-  if (!w_type)
-  {
-    static const GTypeInfo w_info = 
-    {
-      sizeof (VikWebtoolClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) webtool_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikWebtool),
-      0,
-      (GInstanceInitFunc) webtool_init,
-    };
-    w_type = g_type_register_static ( VIK_EXT_TOOL_TYPE, "VikWebtool", &w_info, G_TYPE_FLAG_ABSTRACT );
-  }
-
-  return w_type;
-}
-
-static void webtool_class_init ( VikWebtoolClass *klass )
+static void vik_webtool_class_init ( VikWebtoolClass *klass )
 {
   GObjectClass *object_class;
   VikExtToolClass *ext_tool_class;
@@ -84,8 +59,9 @@ VikWebtool *vik_webtool_new ()
   return VIK_WEBTOOL ( g_object_new ( VIK_WEBTOOL_TYPE, NULL ) );
 }
 
-static void webtool_init ( VikWebtool *vlp )
+static void vik_webtool_init ( VikWebtool *vlp )
 {
+  // NOTHING
 }
 
 static void webtool_finalize ( GObject *gob )
