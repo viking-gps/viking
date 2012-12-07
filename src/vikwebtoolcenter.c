@@ -33,9 +33,6 @@
 #include "util.h"
 #include "globals.h"
 
-static void webtool_center_class_init ( VikWebtoolCenterClass *klass );
-static void webtool_center_init ( VikWebtoolCenter *vwd );
-
 static GObjectClass *parent_class;
 
 static void webtool_center_finalize ( GObject *gob );
@@ -54,29 +51,7 @@ struct _VikWebtoolCenterPrivate
                                        VIK_WEBTOOL_CENTER_TYPE,          \
                                        VikWebtoolCenterPrivate))
 
-GType vik_webtool_center_get_type()
-{
-  static GType w_type = 0;
-
-  if (!w_type)
-  {
-    static const GTypeInfo w_info = 
-    {
-      sizeof (VikWebtoolCenterClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) webtool_center_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikWebtoolCenter),
-      0,
-      (GInstanceInitFunc) webtool_center_init,
-    };
-    w_type = g_type_register_static ( VIK_WEBTOOL_TYPE, "VikWebtoolCenter", &w_info, 0 );
-  }
-
-  return w_type;
-}
+G_DEFINE_TYPE (VikWebtoolCenter, vik_webtool_center, VIK_WEBTOOL_TYPE)
 
 enum
 {
@@ -131,7 +106,8 @@ webtool_center_get_property (GObject    *object,
     }
 }
 
-static void webtool_center_class_init ( VikWebtoolCenterClass *klass )
+static void
+vik_webtool_center_class_init ( VikWebtoolCenterClass *klass )
 {
   GObjectClass *gobject_class;
   VikWebtoolClass *base_class;
@@ -177,7 +153,8 @@ VikWebtoolCenter *vik_webtool_center_new_with_members ( const gchar *label, cons
   return result;
 }
 
-static void webtool_center_init ( VikWebtoolCenter *self )
+static void
+vik_webtool_center_init ( VikWebtoolCenter *self )
 {
   VikWebtoolCenterPrivate *priv = WEBTOOL_CENTER_GET_PRIVATE (self);
   priv->url = NULL;
