@@ -42,38 +42,13 @@
 
 static DownloadMapOptions googlesearch_options = { FALSE, FALSE, "http://maps.google.com/", 0, a_check_map_file };
 
-static void google_goto_tool_class_init ( GoogleGotoToolClass *klass );
-static void google_goto_tool_init ( GoogleGotoTool *vwd );
-
 static void google_goto_tool_finalize ( GObject *gob );
 
 static gchar *google_goto_tool_get_url_format ( VikGotoTool *self );
 static DownloadMapOptions *google_goto_tool_get_download_options ( VikGotoTool *self );
 static gboolean google_goto_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
 
-GType google_goto_tool_get_type()
-{
-  static GType w_type = 0;
-
-  if (!w_type)
-  {
-    static const GTypeInfo w_info = 
-    {
-      sizeof (GoogleGotoToolClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) google_goto_tool_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (GoogleGotoTool),
-      0,
-      (GInstanceInitFunc) google_goto_tool_init,
-    };
-    w_type = g_type_register_static ( VIK_GOTO_TOOL_TYPE, "GoogleGotoTool", &w_info, 0 );
-  }
-
-  return w_type;
-}
+G_DEFINE_TYPE (GoogleGotoTool, google_goto_tool, VIK_GOTO_TOOL_TYPE)
 
 static void google_goto_tool_class_init ( GoogleGotoToolClass *klass )
 {
