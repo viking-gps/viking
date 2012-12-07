@@ -33,9 +33,6 @@
 
 #include "globals.h"
 
-static void webtool_bounds_class_init ( VikWebtoolBoundsClass *klass );
-static void webtool_bounds_init ( VikWebtoolBounds *vwd );
-
 static GObjectClass *parent_class;
 
 static void webtool_bounds_finalize ( GObject *gob );
@@ -53,29 +50,7 @@ struct _VikWebtoolBoundsPrivate
                                        VIK_WEBTOOL_BOUNDS_TYPE,          \
                                        VikWebtoolBoundsPrivate))
 
-GType vik_webtool_bounds_get_type()
-{
-  static GType w_type = 0;
-
-  if (!w_type)
-  {
-    static const GTypeInfo w_info =
-    {
-      sizeof (VikWebtoolBoundsClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) webtool_bounds_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikWebtoolBounds),
-      0,
-      (GInstanceInitFunc) webtool_bounds_init,
-    };
-    w_type = g_type_register_static ( VIK_WEBTOOL_TYPE, "VikWebtoolBounds", &w_info, 0 );
-  }
-
-  return w_type;
-}
+G_DEFINE_TYPE (VikWebtoolBounds, vik_webtool_bounds, VIK_WEBTOOL_TYPE)
 
 enum
 {
@@ -130,7 +105,8 @@ webtool_bounds_get_property (GObject    *object,
     }
 }
 
-static void webtool_bounds_class_init ( VikWebtoolBoundsClass *klass )
+static void
+vik_webtool_bounds_class_init ( VikWebtoolBoundsClass *klass )
 {
   GObjectClass *gobject_class;
   VikWebtoolClass *base_class;
@@ -176,7 +152,8 @@ VikWebtoolBounds *vik_webtool_bounds_new_with_members ( const gchar *label, cons
   return result;
 }
 
-static void webtool_bounds_init ( VikWebtoolBounds *self )
+static void
+vik_webtool_bounds_init ( VikWebtoolBounds *self )
 {
   VikWebtoolBoundsPrivate *priv = WEBTOOL_BOUNDS_GET_PRIVATE (self);
   priv->url = NULL;
