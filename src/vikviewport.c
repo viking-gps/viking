@@ -53,8 +53,6 @@ static gdouble EASTING_OFFSET = 500000.0;
 
 static gint PAD = 10;
 
-static void viewport_class_init ( VikViewportClass *klass );
-static void viewport_init ( VikViewport *vvp );
 static void viewport_finalize ( GObject *gob );
 static void viewport_utm_zone_check ( VikViewport *vvp );
 
@@ -131,31 +129,10 @@ viewport_utm_zone_width ( VikViewport *vvp )
     return 0.0;
 }
 
+G_DEFINE_TYPE (VikViewport, vik_viewport, GTK_TYPE_DRAWING_AREA)
 
-GType vik_viewport_get_type (void)
-{
-  static GType vvp_type = 0;
-
-  if (!vvp_type)
-  {
-    static const GTypeInfo vvp_info = 
-    {
-      sizeof (VikViewportClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) viewport_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (VikViewport),
-      0,
-      (GInstanceInitFunc) viewport_init,
-    };
-    vvp_type = g_type_register_static ( GTK_TYPE_DRAWING_AREA, "VikViewport", &vvp_info, 0 );
-  }
-  return vvp_type;
-}
-
-static void viewport_class_init ( VikViewportClass *klass )
+static void
+vik_viewport_class_init ( VikViewportClass *klass )
 {
   /* Destructor */
   GObjectClass *object_class;
@@ -173,7 +150,8 @@ VikViewport *vik_viewport_new ()
   return vv;
 }
 
-static void viewport_init ( VikViewport *vvp )
+static void
+vik_viewport_init ( VikViewport *vvp )
 {
   viewport_init_ra();
 
