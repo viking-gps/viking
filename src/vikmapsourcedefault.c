@@ -78,7 +78,7 @@ enum
   PROP_LICENSE_URL,
 };
 
-G_DEFINE_TYPE_EXTENDED (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
+G_DEFINE_ABSTRACT_TYPE (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE);
 
 static void
 vik_map_source_default_init (VikMapSourceDefault *object)

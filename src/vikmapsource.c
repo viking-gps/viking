@@ -40,7 +40,7 @@ static void vik_map_source_class_init (VikMapSourceClass *klass);
 
 static gboolean _supports_download_only_new (VikMapSource *object);
 
-G_DEFINE_TYPE_EXTENDED (VikMapSource, vik_map_source, G_TYPE_OBJECT, (GTypeFlags)G_TYPE_FLAG_ABSTRACT,);
+G_DEFINE_ABSTRACT_TYPE (VikMapSource, vik_map_source, G_TYPE_OBJECT);
 
 static void
 vik_map_source_init (VikMapSource *object)
