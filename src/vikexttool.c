@@ -148,11 +148,6 @@ static void vik_ext_tool_class_init ( VikExtToolClass *klass )
   g_type_class_add_private (klass, sizeof (VikExtToolPrivate));
 }
 
-VikExtTool *vik_ext_tool_new ()
-{
-  return VIK_EXT_TOOL ( g_object_new ( VIK_EXT_TOOL_TYPE, NULL ) );
-}
-
 static void vik_ext_tool_init ( VikExtTool *self )
 {
   VikExtToolPrivate *priv = EXT_TOOL_GET_PRIVATE (self);
