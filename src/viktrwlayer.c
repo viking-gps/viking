@@ -980,15 +980,6 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
   return rv;
 }
 
-static GList * str_array_to_glist(gchar* data[])
-{
-  GList *gl = NULL;
-  gpointer * p;
-  for (p = (gpointer)data; *p; p++)
-    gl = g_list_prepend(gl, *p);
-  return(g_list_reverse(gl));
-}
-
 // Keep interesting hash function at least visible
 /*
 static guint strcase_hash(gconstpointer v)

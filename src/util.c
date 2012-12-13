@@ -116,3 +116,12 @@ gchar *uri_escape(gchar *str)
   return(esc_str);
 }
 
+
+GList * str_array_to_glist(gchar* data[])
+{
+  GList *gl = NULL;
+  gpointer * p;
+  for (p = (gpointer)data; *p; p++)
+    gl = g_list_prepend(gl, *p);
+  return g_list_reverse(gl);
+}

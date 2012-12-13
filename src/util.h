@@ -34,6 +34,8 @@ void new_email(GtkWindow *parent, const gchar * address);
 
 gchar *uri_escape(gchar *str);
 
+GList * str_array_to_glist(gchar* data[]);
+
 G_END_DECLS
 
 #endif
