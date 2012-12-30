@@ -45,12 +45,6 @@
 #include <gps.h>
 #endif
 
-#if ! GLIB_CHECK_VERSION(2,14,0)
-inline guint g_timeout_add_seconds(guint interval, GSourceFunc function, gpointer data) {
-  return g_timeout_add(interval*1000, function, data);
-}
-#endif
-
 #define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
 static void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
