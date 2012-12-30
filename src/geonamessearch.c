@@ -33,6 +33,11 @@
 #include "util.h"
 #include "curl_download.h"
 
+/* Compatibility */
+#if ! GLIB_CHECK_VERSION(2,22,0)
+#define g_mapped_file_unref g_mapped_file_free
+#endif
+
 #define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s"
 #define GEONAMES_COUNTRY_PATTERN "\"countryName\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
@@ -388,7 +393,7 @@ static GList *get_entries_from_file(gchar *file_name)
   }
   g_strfreev(found_entries);
   found_places = g_list_reverse(found_places);
-  g_mapped_file_free(mf);
+  g_mapped_file_unref(mf);
   return(found_places);
 }
 

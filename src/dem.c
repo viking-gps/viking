@@ -48,6 +48,11 @@
 #include "dem.h"
 #include "file.h"
 
+/* Compatibility */
+#if ! GLIB_CHECK_VERSION(2,22,0)
+#define g_mapped_file_unref g_mapped_file_free
+#endif
+
 #define DEM_BLOCK_SIZE 1024
 #define GET_COLUMN(dem,n) ((VikDEMColumn *)g_ptr_array_index( (dem)->columns, (n) ))
 
@@ -365,7 +370,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
     gulong ucsize;
 
     if ((unzip_mem = unzip_hgt_file(dem_file, &ucsize)) == NULL) {
-      g_mapped_file_free(mf);
+      g_mapped_file_unref(mf);
       g_ptr_array_free(dem->columns, TRUE);
       g_free(dem);
       return NULL;
@@ -381,7 +386,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
     arcsec = 1;
   else {
     g_warning("%s(): file %s does not have right size", __PRETTY_FUNCTION__, basename);
-    g_mapped_file_free(mf);
+    g_mapped_file_unref(mf);
     g_free(dem);
     return NULL;
   }
@@ -409,7 +414,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
 
   if (zip)
     g_free(dem_mem);
-  g_mapped_file_free(mf);
+  g_mapped_file_unref(mf);
   return dem;
 }
 
