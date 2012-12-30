@@ -439,7 +439,7 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
 
 GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
 {
-  return acquire_build_menu ( vw, vlp, vvp, vtl, NULL, "_Filter", VIK_DATASOURCE_INPUTTYPE_TRWLAYER );
+  return acquire_build_menu ( vw, vlp, vvp, vtl, NULL, _("_Filter"), VIK_DATASOURCE_INPUTTYPE_TRWLAYER );
 }
 
 GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
@@ -447,7 +447,7 @@ GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, Vi
   if ( filter_track == NULL )
     return NULL;
   else {
-    gchar *menu_title = g_strdup_printf ( "Filter with %s", filter_track->name );
+    gchar *menu_title = g_strdup_printf ( _("Filter with %s"), filter_track->name );
     GtkWidget *rv = acquire_build_menu ( vw, vlp, vvp, vtl, filter_track,
 			menu_title, VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK );
     g_free ( menu_title );
@@ -457,7 +457,7 @@ GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, Vi
 
 GtkWidget *a_acquire_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrack *tr)
 {
-  return acquire_build_menu ( vw, vlp, vvp, NULL, tr, "Filter", VIK_DATASOURCE_INPUTTYPE_TRACK );
+  return acquire_build_menu ( vw, vlp, vvp, NULL, tr, _("Filter"), VIK_DATASOURCE_INPUTTYPE_TRACK );
 }
 
 void a_acquire_set_filter_track ( VikTrack *tr )
