@@ -92,6 +92,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   gchar *bargs = g_strconcat(babelargs, " -i gpx", NULL);
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
+    g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
     f = fdopen(fd_src, "w");
     a_gpx_write_file(vt, f, NULL);
     fclose(f);
@@ -223,6 +224,7 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, const cha
   gchar *args[64];
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
+    g_debug ("%s: temporary file: %s", __FUNCTION__, name_dst);
     close(fd_dst);
 
     if (gpsbabel_loc ) {
@@ -274,6 +276,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
   gchar **args;  
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
+    g_debug ("%s: temporary file: %s", __FUNCTION__, name_dst);
     gchar *shell_command;
     if ( input_file_type )
       shell_command = g_strdup_printf("%s | %s -i %s -f - -o gpx -F %s",
@@ -312,6 +315,7 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
   g_debug("%s: input_type=%s url=%s", __FUNCTION__, input_type, url);
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
+    g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
     close(fd_src);
     g_remove(name_src);
 
@@ -364,6 +368,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
   gchar *args[64];  
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
+    g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
     close(fd_src);
 
     if (gpsbabel_loc ) {
