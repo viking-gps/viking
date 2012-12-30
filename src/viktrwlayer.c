@@ -4972,6 +4972,7 @@ static void trw_layer_track_use_with_filter ( gpointer pass_along[6] )
   a_acquire_set_filter_track ( trk );
 }
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
 static gboolean is_valid_google_route ( VikTrwLayer *vtl, const gpointer track_id )
 {
   VikTrack *tr = g_hash_table_lookup ( vtl->tracks, track_id );
@@ -4989,6 +4990,7 @@ static void trw_layer_track_google_route_webpage ( gpointer pass_along[6] )
     g_free ( webpage );
   }
 }
+#endif
 
 /* vlp can be NULL if necessary - i.e. right-click from a tool */
 /* viewpoint is now available instead */
@@ -5374,6 +5376,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(upload_submenu), item );
     gtk_widget_show ( item );
 
+#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
     if ( is_valid_google_route ( l, sublayer ) )
     {
       item = gtk_image_menu_item_new_with_mnemonic ( _("_View Google Directions") );
@@ -5382,6 +5385,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
       gtk_widget_show ( item );
     }
+#endif
 
     item = gtk_image_menu_item_new_with_mnemonic ( _("Use with _Filter") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
