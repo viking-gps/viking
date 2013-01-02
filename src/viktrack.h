@@ -81,7 +81,7 @@ void vik_track_set_comment(VikTrack *tr, const gchar *comment);
 void vik_track_set_description(VikTrack *tr, const gchar *description);
 void vik_track_ref(VikTrack *tr);
 void vik_track_free(VikTrack *tr);
-VikTrack *vik_track_copy ( const VikTrack *tr );
+VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points );
 void vik_track_set_comment_no_copy(VikTrack *tr, gchar *comment);
 VikTrackpoint *vik_trackpoint_new();
 void vik_trackpoint_free(VikTrackpoint *tp);

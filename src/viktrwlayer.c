@@ -3707,7 +3707,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
 
     gchar *newname = trw_layer_new_unique_sublayer_name(vtl_dest, type, trk->name);
 
-    VikTrack *trk2 = vik_track_copy ( trk );
+    VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_track ( vtl_dest, newname, trk2 );
     vik_trw_layer_delete_track ( vtl_src, trk );
   }
@@ -3717,7 +3717,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
 
     gchar *newname = trw_layer_new_unique_sublayer_name(vtl_dest, type, trk->name);
 
-    VikTrack *trk2 = vik_track_copy ( trk );
+    VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_route ( vtl_dest, newname, trk2 );
     vik_trw_layer_delete_route ( vtl_src, trk );
   }
@@ -4302,7 +4302,7 @@ static void trw_layer_convert_track_route ( gpointer pass_along[6] )
 }
 
   // Copy it
-  VikTrack *trk_copy = vik_track_copy ( trk );
+  VikTrack *trk_copy = vik_track_copy ( trk, TRUE );
 
   // Convert
   trk_copy->is_route = !trk_copy->is_route;
@@ -5016,15 +5016,12 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl, gint subt
   if ( vtl->current_tpl->next && vtl->current_tpl->prev ) {
     gchar *name = trw_layer_new_unique_sublayer_name(vtl, subtype, vtl->current_tp_track->name);
     if ( name ) {
-      VikTrack *tr = vik_track_new ();
+      VikTrack *tr = vik_track_copy ( vtl->current_tp_track, FALSE );
       GList *newglist = g_list_alloc ();
       newglist->prev = NULL;
       newglist->next = vtl->current_tpl->next;
       newglist->data = vik_trackpoint_copy(VIK_TRACKPOINT(vtl->current_tpl->data));
       tr->trackpoints = newglist;
-      tr->is_route = vtl->current_tp_track->is_route;
-      tr->color = vtl->current_tp_track->color;
-      tr->visible = TRUE;
 
       vtl->current_tpl->next->prev = newglist; /* end old track here */
       vtl->current_tpl->next = NULL;
@@ -5114,8 +5111,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
       gchar *new_tr_name;
       VikTrack *tr;
 
-      tr = vik_track_new();
-      tr->visible = track->visible;
+      tr = vik_track_copy ( track, FALSE );
       tr->trackpoints = (GList *)(iter->data);
 
       new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, track->name);
@@ -5197,10 +5193,7 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
       gchar *new_tr_name;
       VikTrack *tr;
 
-      tr = vik_track_new();
-      tr->visible = track->visible;
-      tr->is_route = track->is_route;
-      tr->color = track->color;
+      tr = vik_track_copy ( track, FALSE );
       tr->trackpoints = (GList *)(iter->data);
 
       if ( track->is_route ) {

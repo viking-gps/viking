@@ -122,7 +122,17 @@ void vik_track_free(VikTrack *tr)
   g_free ( tr );
 }
 
-VikTrack *vik_track_copy ( const VikTrack *tr )
+/**
+ * vik_track_copy:
+ * @tr: The Track to copy
+ * @copy_points: Whether to copy the track points or not
+ *
+ * Normally for copying the track it's best to copy all the trackpoints
+ * However for some operations such as splitting tracks the trackpoints will be managed separately, so no need to copy them.
+ *
+ * Returns: the copied VikTrack
+ */
+VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
 {
   VikTrack *new_tr = vik_track_new();
   VikTrackpoint *new_tp;
@@ -132,12 +142,15 @@ VikTrack *vik_track_copy ( const VikTrack *tr )
   new_tr->has_color = tr->has_color;
   new_tr->color = tr->color;
   new_tr->trackpoints = NULL;
-  while ( tp_iter )
+  if ( copy_points )
   {
-    new_tp = g_malloc ( sizeof ( VikTrackpoint ) );
-    *new_tp = *((VikTrackpoint *)(tp_iter->data));
-    new_tr->trackpoints = g_list_append ( new_tr->trackpoints, new_tp );
-    tp_iter = tp_iter->next;
+    while ( tp_iter )
+    {
+      new_tp = g_malloc ( sizeof ( VikTrackpoint ) );
+      *new_tp = *((VikTrackpoint *)(tp_iter->data));
+      new_tr->trackpoints = g_list_append ( new_tr->trackpoints, new_tp );
+      tp_iter = tp_iter->next;
+    }
   }
   vik_track_set_name(new_tr,tr->name);
   vik_track_set_comment(new_tr,tr->comment);
@@ -359,7 +372,7 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
   }
 
   rv = g_malloc ( segs * sizeof(VikTrack *) );
-  tr = vik_track_copy ( t );
+  tr = vik_track_copy ( t, TRUE );
   rv[0] = tr;
   iter = tr->trackpoints;
 
@@ -370,16 +383,7 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
     {
       iter->prev->next = NULL;
       iter->prev = NULL;
-      rv[i] = vik_track_new();
-      // TODO: consider new naming strategy here
-      if ( tr->name )
-        vik_track_set_name ( rv[i], tr->name );
-      if ( tr->comment )
-        vik_track_set_comment ( rv[i], tr->comment );
-      if ( tr->description )
-        vik_track_set_description ( rv[i], tr->description );
-      rv[i]->visible = tr->visible;
-      rv[i]->is_route = tr->is_route;
+      rv[i] = vik_track_copy ( tr, FALSE );
       rv[i]->trackpoints = iter;
       i++;
     }
