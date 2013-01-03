@@ -6321,6 +6321,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
   /* if we haven't sync'ed yet, we don't have time to do more. */
   if ( vtl->draw_sync_done && vtl->current_track && vtl->current_track->trackpoints ) {
     GList *iter = g_list_last ( vtl->current_track->trackpoints );
+    VikTrackpoint *last_tpt = VIK_TRACKPOINT(iter->data);
 
     static GdkPixmap *pixmap = NULL;
     int w1, h1, w2, h2;
@@ -6345,7 +6346,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     draw_sync_t *passalong;
     gint x1, y1;
 
-    vik_viewport_coord_to_screen ( vvp, &(VIK_TRACKPOINT(iter->data)->coord), &x1, &y1 );
+    vik_viewport_coord_to_screen ( vvp, &(last_tpt->coord), &x1, &y1 );
 
     // FOR SCREEN OVERLAYS WE MUST DRAW INTO THIS PIXMAP (when using the reset method)
     //  otherwise using vik_viewport_draw_* functions puts the data into the base pixmap,
@@ -6363,7 +6364,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     struct LatLon ll;
     vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
     vik_coord_to_latlon ( &coord, &ll );
-    distance = distance + vik_coord_diff( &coord, &(VIK_TRACKPOINT(iter->data)->coord));
+    distance = distance + vik_coord_diff( &coord, &(last_tpt->coord));
 
     // Get elevation data
     gdouble elev_gain, elev_loss;
@@ -6373,14 +6374,14 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     gdouble elev_new;
     elev_new = (gdouble) a_dems_get_elev_by_coord ( &coord, VIK_DEM_INTERPOL_BEST );
     if ( elev_new != VIK_DEM_INVALID_ELEVATION ) {
-      if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+      if ( last_tpt->altitude != VIK_DEFAULT_ALTITUDE ) {
 	// Adjust elevation of last track point
-	if ( elev_new > VIK_TRACKPOINT(iter->data)->altitude )
+	if ( elev_new > last_tpt->altitude )
 	  // Going up
-	  elev_gain += elev_new - VIK_TRACKPOINT(iter->data)->altitude;
+	  elev_gain += elev_new - last_tpt->altitude;
 	else
 	  // Going down
-	  elev_loss += VIK_TRACKPOINT(iter->data)->altitude - elev_new;
+	  elev_loss += last_tpt->altitude - elev_new;
       }
     }
       
