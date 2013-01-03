@@ -6245,7 +6245,7 @@ static gboolean draw_sync ( gpointer data )
   return FALSE;
 }
 
-static const gchar* distance_string (gdouble distance)
+static gchar* distance_string (gdouble distance)
 {
   gchar str[128];
 
@@ -6308,11 +6308,11 @@ static void update_statusbar ( VikTrwLayer *vtl )
 
   /* Find out actual distance of current track */
   gdouble distance = vik_track_get_length (vtl->current_track);
-  const gchar *str = distance_string (distance);
+  gchar *str = distance_string (distance);
 
   statusbar_write (str, elev_gain, elev_loss, vtl);
 
-  g_free ((gpointer)str);
+  g_free (str);
 }
 
 
@@ -6385,7 +6385,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
       }
     }
       
-    const gchar *str = distance_string (distance);
+    gchar *str = distance_string (distance);
 
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
     pango_layout_set_font_description (pl, GTK_WIDGET(vvp)->style->font_desc);
@@ -6416,7 +6416,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     // Update statusbar with full gain/loss information
     statusbar_write (str, elev_gain, elev_loss, vtl);
 
-    g_free ((gpointer)str);
+    g_free (str);
 
     // draw pixmap when we have time to
     g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_sync, passalong, NULL);
