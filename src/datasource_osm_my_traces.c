@@ -38,6 +38,7 @@
 #include "preferences.h"
 #include "curl_download.h"
 #include "datasource_gps.h"
+#include "bbox.h"
 
 /**
  * See http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces
@@ -49,6 +50,7 @@ typedef struct {
 	GtkWidget *user_entry;
 	GtkWidget *password_entry;
 	// NB actual user and password values are stored in oms-traces.c
+	VikViewport *vvp;
 } datasource_osm_my_traces_t;
 
 static gpointer datasource_osm_my_traces_init( );
@@ -119,6 +121,9 @@ static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikV
 
 	osm_login_widgets (data->user_entry, data->password_entry);
 	gtk_widget_show_all ( dialog );
+
+	/* Keep reference to viewport */
+	data->vvp = vvp;
 }
 
 static void datasource_osm_my_traces_get_cmd_string ( gpointer user_data, gchar **args, gchar **extra, DownloadMapOptions *options )
@@ -155,6 +160,8 @@ typedef struct {
 	gchar *vis;
 	gchar *desc;
 	struct LatLon ll;
+	gboolean in_current_view; // Is the track LatLon start within the current viewport
+                              // This is useful in deciding whether to download a track or not
 	// ATM Only used for display - may want to convert to a time_t for other usage
 	gchar *timestamp;
 	// user made up tags - not being used yet - would be nice to sort/select on these but display will get complicated
@@ -172,6 +179,7 @@ static gpx_meta_data_t *new_gpx_meta_data_t()
 	ret->desc = NULL;
 	ret->ll.lat = 0.0;
 	ret->ll.lon = 0.0;
+	ret->in_current_view = FALSE;
 	ret->timestamp = NULL;
 
 	return ret;
@@ -201,6 +209,7 @@ static gpx_meta_data_t *copy_gpx_meta_data_t (gpx_meta_data_t *src)
 	dest->desc = g_strdup(src->desc);
 	dest->ll.lat = src->ll.lat;
 	dest->ll.lon = src->ll.lon;
+	dest->in_current_view = src->in_current_view;
 	dest->timestamp = g_strdup(src->timestamp);
 
 	return dest;
@@ -389,7 +398,7 @@ static GList *select_from_list (GtkWindow *parent, GList *list, const gchar *tit
 	response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
 #endif
 	GtkWidget *label = gtk_label_new ( msg );
-	GtkTreeStore *store = gtk_tree_store_new ( 5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING );
+	GtkTreeStore *store = gtk_tree_store_new ( 6, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN );
 	GList *list_runner = list;
 	while (list_runner) {
 		gpx_meta_data_t *gpx_meta_data = (gpx_meta_data_t *)list_runner->data;
@@ -402,6 +411,7 @@ static GList *select_from_list (GtkWindow *parent, GList *list, const gchar *tit
 		                     2, gpx_meta_data->timestamp,
 		                     3, latlon_string,
 		                     4, gpx_meta_data->vis,
+		                     5, gpx_meta_data->in_current_view,
 		                     -1 );
 		list_runner = g_list_next ( list_runner );
 		g_free ( latlon_string );
@@ -433,6 +443,13 @@ static GList *select_from_list (GtkWindow *parent, GList *list, const gchar *tit
 
 	column_runner++;
 	column = gtk_tree_view_column_new_with_attributes ( _("Privacy"), renderer, "text", column_runner, NULL); // AKA Visibility
+	gtk_tree_view_column_set_sort_column_id (column, column_runner);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (view), column);
+
+	GtkCellRenderer *renderer_toggle = gtk_cell_renderer_toggle_new ();
+	g_object_set (G_OBJECT (renderer_toggle), "activatable", FALSE, NULL); // No user action - value is just for display
+	column_runner++;
+	column = gtk_tree_view_column_new_with_attributes ( _("Within Current View"), renderer_toggle, "active", column_runner, NULL);
 	gtk_tree_view_column_set_sort_column_id (column, column_runner);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view), column);
 
@@ -509,6 +526,40 @@ static void none_found ( GtkWindow *gw )
 	gtk_widget_destroy(dialog);
 }
 
+/**
+ * For each track - mark whether the start is in within the viewport
+ */
+static void set_in_current_view_property ( VikTrwLayer *vtl, datasource_osm_my_traces_t *data, GList *gl )
+{
+	gdouble min_lat, max_lat, min_lon, max_lon;
+	/* get Viewport bounding box */
+	vik_viewport_get_min_max_lat_lon ( data->vvp, &min_lat, &max_lat, &min_lon, &max_lon );
+
+	LatLonBBox bbox;
+	bbox.north = max_lat;
+	bbox.east = max_lon;
+	bbox.south = min_lat;
+	bbox.west = min_lon;
+
+	GList *iterator = gl;
+	while ( iterator ) {
+		gpx_meta_data_t* gmd = (gpx_meta_data_t*)iterator->data;
+		// Convert point position into a 'fake' bounding box
+		// TODO - probably should have function to see if point is within bounding box
+		//   rather than constructing this fake bounding box for the test
+		LatLonBBox gmd_bbox;
+		gmd_bbox.north = gmd->ll.lat;
+		gmd_bbox.east = gmd->ll.lon;
+		gmd_bbox.south = gmd->ll.lat;
+		gmd_bbox.west = gmd->ll.lon;
+
+		if ( BBOX_INTERSECT ( bbox, gmd_bbox ) )
+			gmd->in_current_view = TRUE;
+
+		iterator = g_list_next ( iterator );
+	}
+}
+
 static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused )
 {
 	//datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t *)adw->user_data;
@@ -529,7 +580,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 	gchar *tmpname = a_download_uri_to_tmp_file ( DS_OSM_TRACES_GPX_FILES, &options );
 	result = read_gpx_files_metadata_xml ( tmpname, xd );
 	// Test already downloaded metadata file: eg:
-	//result = read_gpx_files_metadata_xml ( "/tmp/vikingdl.9XX2NW", xd );
+	//result = read_gpx_files_metadata_xml ( "/tmp/viking-download.GI47PW", xd );
 
 	if ( tmpname ) {
 		g_remove ( tmpname );
@@ -546,6 +597,8 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 	}
 
 	xd->list_of_gpx_meta_data = g_list_reverse ( xd->list_of_gpx_meta_data );
+
+	set_in_current_view_property ( vtl, adw->user_data, xd->list_of_gpx_meta_data );
 
     if (vik_datasource_osm_my_traces_interface.is_thread) gdk_threads_enter();
 	GList *selected = select_from_list ( GTK_WINDOW(adw->vw), xd->list_of_gpx_meta_data, "Select GPS Traces", "Select the GPS traces you want to add." );
