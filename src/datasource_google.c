@@ -31,7 +31,7 @@
 #include "gpx.h"
 #include "acquire.h"
 
-#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s+to:%s&output=kml"
+#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s+to:%s&output=js"
 
 typedef struct {
   GtkWidget *from_entry, *to_entry;
@@ -103,7 +103,7 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
   to_quoted = g_strjoinv( "%20", to_split);
 
   *cmd = g_strdup_printf( GOOGLE_DIRECTIONS_STRING, from_quoted, to_quoted );
-  *input_file_type = g_strdup("kml");
+  *input_file_type = g_strdup("google");
 
   g_free(last_from_str);
   g_free(last_to_str);

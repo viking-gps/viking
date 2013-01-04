@@ -34,7 +34,6 @@
 
 /************************ FILTER LIST *******************/
 // extern VikDataSourceInterface vik_datasource_gps_interface;
-// extern VikDataSourceInterface vik_datasource_google_interface;
 
 /*** Input is TRWLayer ***/
 extern VikDataSourceInterface vik_datasource_bfilter_simplify_interface;

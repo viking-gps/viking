@@ -2445,7 +2445,7 @@ static void acquire_from_file ( GtkAction *a, VikWindow *vw )
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface );
 }
 
-#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
+#ifdef VIK_CONFIG_GOOGLE
 static void acquire_from_google ( GtkAction *a, VikWindow *vw )
 {
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface );
@@ -3122,7 +3122,7 @@ static GtkActionEntry entries[] = {
   { "Acquire",   GTK_STOCK_GO_DOWN,      N_("A_cquire"),                  NULL,         NULL,                                               (GCallback)NULL },
   { "AcquireGPS",   NULL,                N_("From _GPS..."),           	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
   { "AcquireGPSBabel",   NULL,                N_("Import File With GPS_Babel..."),           	  NULL,         N_("Import file via GPSBabel converter"),              (GCallback)acquire_from_file      },
-#ifdef VIK_CONFIG_GOOGLE_DIRECTIONS
+#ifdef VIK_CONFIG_GOOGLE
   { "AcquireGoogle",   NULL,             N_("Google _Directions..."),     NULL,         N_("Get driving directions from Google"),           (GCallback)acquire_from_google   },
 #endif
 #ifdef VIK_CONFIG_OPENSTREETMAP
