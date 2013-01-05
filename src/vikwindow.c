@@ -3343,7 +3343,7 @@ static struct {
   { &zoom_18_pixbuf,		"vik-icon-zoom"     },
   { &ruler_18_pixbuf,		"vik-icon-ruler"    },
   { &select_18_pixbuf,		"vik-icon-select"   },
-  { &begintr_18_pixbuf,		"vik-icon-Begin Track"      },
+  { &vik_new_route_18_pixbuf,   "vik-icon-Create Route"     },
   { &route_finder_18_pixbuf,	"vik-icon-Route Finder"     },
   { &demdl_18_pixbuf,		"vik-icon-DEM Download"     },
   { &showpic_18_pixbuf,		"vik-icon-Show Picture"     },

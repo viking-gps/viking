@@ -70,9 +70,11 @@ static VikLayerParam prefs7[] = {
 /* External/Export Options */
 
 static gchar * params_kml_export_units[] = {"Metric", "Statute", "Nautical", NULL};
+static gchar * params_gpx_export_trk_sort[] = {N_("Alphabetical"), N_("Time"), NULL};
 
 static VikLayerParam io_prefs[] = {
   { VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("KML File Export Units:"), VIK_LAYER_WIDGET_COMBOBOX, params_kml_export_units, NULL },
+  { VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_track_sort", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Track Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_trk_sort, NULL },
 };
 
 #ifndef WINDOWS
@@ -120,6 +122,9 @@ void a_vik_preferences_init ()
 
   tmp.u = VIK_KML_EXPORT_UNITS_METRIC;
   a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+
+  tmp.u = VIK_GPX_EXPORT_TRK_SORT_TIME;
+  a_preferences_register(&io_prefs[1], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 
 #ifndef WINDOWS
   tmp.s = "xdg-open";
@@ -190,6 +195,13 @@ vik_kml_export_units_t a_vik_get_kml_export_units ( )
   vik_kml_export_units_t units;
   units = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units")->u;
   return units;
+}
+
+vik_gpx_export_trk_sort_t a_vik_get_gpx_export_trk_sort ( )
+{
+  vik_gpx_export_trk_sort_t sort;
+  sort = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_track_sort")->u;
+  return sort;
 }
 
 #ifndef WINDOWS

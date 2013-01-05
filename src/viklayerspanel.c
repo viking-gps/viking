@@ -280,7 +280,7 @@ static gboolean layers_button_press_cb ( VikLayersPanel *vlp, GdkEventButton *ev
 {
   if (event->button == 3)
   {
-    GtkTreeIter iter;
+    static GtkTreeIter iter;
     if ( vik_treeview_get_iter_at_pos ( vlp->vt, &iter, event->x, event->y ) )
     {
       layers_popup ( vlp, &iter, 3 );

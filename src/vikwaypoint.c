@@ -115,7 +115,9 @@ void vik_waypoint_free(VikWaypoint *wp)
 VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
 {
   VikWaypoint *new_wp = vik_waypoint_new();
-  *new_wp = *wp;
+  new_wp->coord = wp->coord;
+  new_wp->visible = wp->visible;
+  new_wp->altitude = wp->altitude;
   vik_waypoint_set_name(new_wp,wp->name);
   vik_waypoint_set_comment(new_wp,wp->comment);
   vik_waypoint_set_description(new_wp,wp->description);

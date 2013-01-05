@@ -530,9 +530,9 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
   return NULL;
 }
 
-gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name )
+gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name, gboolean is_route )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Track"),
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( is_route ? _("Add Route") : _("Add Track"),
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,
@@ -540,7 +540,7 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *defaul
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL);
-  GtkWidget *label = gtk_label_new ( _("Track Name:") );
+  GtkWidget *label = gtk_label_new ( is_route ? _("Route Name:") : _("Track Name:") );
   GtkWidget *entry = gtk_entry_new ();
 
   if (default_name)
@@ -563,16 +563,8 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *defaul
       a_dialog_info_msg ( parent, _("Please enter a name for the track.") );
     else {
       gchar *name = g_strdup ( constname );
-
-      if ( g_hash_table_lookup( tracks, name ) && !a_dialog_yes_or_no ( parent, _("The track \"%s\" exists, do you want to overwrite it?"), gtk_entry_get_text ( GTK_ENTRY(entry) ) ) )
-      {
-        g_free ( name );
-      }
-      else
-      {
-        gtk_widget_destroy ( dialog );
-        return name;
-      }
+      gtk_widget_destroy ( dialog );
+      return name;
     }
   }
   gtk_widget_destroy ( dialog );

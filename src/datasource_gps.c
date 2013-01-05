@@ -42,6 +42,7 @@ static gboolean gps_acquire_in_progress = FALSE;
 
 static gint last_active = -1;
 static gboolean last_get_tracks = TRUE;
+static gboolean last_get_routes = TRUE;
 static gboolean last_get_waypoints = TRUE;
 
 static gpointer datasource_gps_init_func ( );
@@ -88,6 +89,8 @@ typedef struct {
   GtkCheckButton *off_request_b;
   GtkWidget *get_tracks_l;
   GtkCheckButton *get_tracks_b;
+  GtkWidget *get_routes_l;
+  GtkCheckButton *get_routes_b;
   GtkWidget *get_waypoints_l;
   GtkCheckButton *get_waypoints_b;
 
@@ -97,7 +100,9 @@ typedef struct {
   GtkWidget *id_label;
   GtkWidget *wp_label;
   GtkWidget *trk_label;
+  GtkWidget *rte_label;
   GtkWidget *progress_label;
+  vik_gps_xfer_type progress_type;
 
   /* state */
   int total_count;
@@ -151,6 +156,18 @@ gboolean datasource_gps_get_do_tracks ( gpointer user_data )
 }
 
 /**
+ * datasource_gps_get_do_routes:
+ *
+ * Method to get the route handling behaviour from the widget structure
+ */
+gboolean datasource_gps_get_do_routes ( gpointer user_data )
+{
+  gps_user_data_t *w = (gps_user_data_t *)user_data;
+  last_get_routes = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w->get_routes_b));
+  return last_get_routes;
+}
+
+/**
  * datasource_gps_get_do_waypoints:
  *
  * Method to get the waypoint handling behaviour from the widget structure
@@ -166,6 +183,7 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
 {
   char *device = NULL;
   char *tracks = NULL;
+  char *routes = NULL;
   char *waypoints = NULL;
 
   if (gps_acquire_in_progress) {
@@ -181,15 +199,21 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   else
     tracks = "";
 
+  if ( datasource_gps_get_do_routes ( user_data ) )
+    routes = "-r";
+  else
+    routes = "";
+
   if ( datasource_gps_get_do_waypoints ( user_data ) )
     waypoints = "-w";
   else
     waypoints = "";
 
-  *babelargs = g_strdup_printf("-D 9 %s %s -i %s", tracks, waypoints, device);
+  *babelargs = g_strdup_printf("-D 9 %s %s %s -i %s", tracks, routes, waypoints, device);
   /* device points to static content => no free */
   device = NULL;
   tracks = NULL;
+  routes = NULL;
   waypoints = NULL;
 
   *input_file = g_strdup(datasource_gps_get_descriptor(user_data));
@@ -269,14 +293,21 @@ static void set_total_count(gint cnt, acq_dialog_widgets_t *w)
   if (w->ok) {
     gps_user_data_t *gps_data = (gps_user_data_t *)w->user_data;
     const gchar *tmp_str;
-    if (gps_data->progress_label == gps_data->wp_label)
-      tmp_str = ngettext("Downloading %d waypoint...", "Downloading %d waypoints...", cnt);
-    else
-      tmp_str = ngettext("Downloading %d trackpoint...", "Downloading %d trackpoints...", cnt);
+    switch (gps_data->progress_type) {
+    case WPT: tmp_str = ngettext("Downloading %d waypoint...", "Downloading %d waypoints...", cnt); gps_data->total_count = cnt; break;
+    case TRK: tmp_str = ngettext("Downloading %d trackpoint...", "Downloading %d trackpoints...", cnt); gps_data->total_count = cnt; break;
+    default:
+      {
+        // Maybe a gpsbabel bug/feature (upto at least v1.4.3 or maybe my Garmin device) but the count always seems x2 too many for routepoints
+        gint mycnt = (cnt / 2) + 1;
+        tmp_str = ngettext("Downloading %d routepoint...", "Downloading %d routepoints...", mycnt);
+        gps_data->total_count = mycnt;
+        break;
+      }
+    }
     s = g_strdup_printf(tmp_str, cnt);
     gtk_label_set_text ( GTK_LABEL(gps_data->progress_label), s );
     gtk_widget_show ( gps_data->progress_label );
-    gps_data->total_count = cnt;
   }
   g_free(s); s = NULL;
   gdk_threads_leave();
@@ -290,10 +321,18 @@ static void set_current_count(gint cnt, acq_dialog_widgets_t *w)
     gps_user_data_t *gps_data = (gps_user_data_t *)w->user_data;
 
     if (cnt < gps_data->total_count) {
-      s = g_strdup_printf(_("Downloaded %d out of %d %s..."), cnt, gps_data->total_count, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
+      switch (gps_data->progress_type) {
+      case WPT: s = g_strdup_printf(_("Downloaded %d out of %d %s..."), cnt, gps_data->total_count, "waypoints"); break;
+      case TRK: s = g_strdup_printf(_("Downloaded %d out of %d %s..."), cnt, gps_data->total_count, "trackpoints"); break;
+      default: s = g_strdup_printf(_("Downloaded %d out of %d %s..."), cnt, gps_data->total_count, "routepoints"); break;
+      }
     } else {
-      s = g_strdup_printf(_("Downloaded %d %s."), cnt, (gps_data->progress_label == gps_data->wp_label) ? "waypoints" : "trackpoints");
-    }	  
+      switch (gps_data->progress_type) {
+      case WPT: s = g_strdup_printf(_("Downloaded %d %s."), cnt, "waypoints"); break;
+      case TRK: s = g_strdup_printf(_("Downloaded %d %s."), cnt, "trackpoints"); break;
+      default: s = g_strdup_printf(_("Downloaded %d %s."), cnt, "routepoints"); break;
+      }
+    }
     gtk_label_set_text ( GTK_LABEL(gps_data->progress_label), s );
   }
   g_free(s); s = NULL;
@@ -332,13 +371,20 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
     }
     gdk_threads_leave();
 
-    /* tells us how many items there will be */
-    if (strstr(line, "Xfer Wpt")) { 
+    /* tells us the type of items that will follow */
+    if (strstr(line, "Xfer Wpt")) {
       gps_data->progress_label = gps_data->wp_label;
+      gps_data->progress_type = WPT;
     }
-    if (strstr(line, "Xfer Trk")) { 
+    if (strstr(line, "Xfer Trk")) {
       gps_data->progress_label = gps_data->trk_label;
+      gps_data->progress_type = TRK;
     }
+    if (strstr(line, "Xfer Rte")) {
+      gps_data->progress_label = gps_data->rte_label;
+      gps_data->progress_type = RTE;
+    }
+
     if (strstr(line, "PRDDAT")) {
       gchar **tokens = g_strsplit(line, " ", 0);
       gchar info[128];
@@ -372,7 +418,8 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
       }
       g_strfreev(tokens);
     }
-    if (strstr(line, "RECORD")) { 
+    /* tells us how many items there will be */
+    if (strstr(line, "RECORD")) {
       int lsb, msb, cnt;
 
       if (strlen(line) > 20) {
@@ -383,7 +430,7 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
        gps_data->count = 0;
       }
     }
-    if ( strstr(line, "WPTDAT") || strstr(line, "TRKHDR") || strstr(line, "TRKDAT") ) {
+    if ( strstr(line, "WPTDAT") || strstr(line, "TRKHDR") || strstr(line, "TRKDAT") || strstr(line, "RTEHDR") || strstr(line, "RTEWPT") ) {
       gps_data->count++;
       set_current_count(gps_data->count, w);
     }
@@ -466,6 +513,10 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   w->get_tracks_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_tracks_b), last_get_tracks);
 
+  w->get_routes_l = gtk_label_new (_("Routes:"));
+  w->get_routes_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_routes_b), last_get_routes);
+
   w->get_waypoints_l = gtk_label_new (_("Waypoints:"));
   w->get_waypoints_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b), last_get_waypoints);
@@ -479,8 +530,10 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   gtk_table_attach_defaults(box, GTK_WIDGET(w->ser_b), 1, 2, 1, 2);
   gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_tracks_l), 0, 1, 0, 1);
   gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_tracks_b), 1, 2, 0, 1);
-  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_waypoints_l), 2, 3, 0, 1);
-  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_waypoints_b), 3, 4, 0, 1);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_routes_l), 2, 3, 0, 1);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_routes_b), 3, 4, 0, 1);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_waypoints_l), 4, 5, 0, 1);
+  gtk_table_attach_defaults(data_type_box, GTK_WIDGET(w->get_waypoints_b), 5, 6, 0, 1);
   gtk_table_attach_defaults(box, GTK_WIDGET(data_type_box), 0, 2, 2, 3);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_l), 0, 1, 3, 4);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->off_request_b), 1, 3, 3, 4);
@@ -492,31 +545,49 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 /**
  * datasource_gps_setup:
  * @dialog: The GTK dialog. The caller is responsible for managing the dialog creation/deletion
- * @only_tracks: When only tracks are specified, waypoints will be disabled.
+ * @xfer: The default type of items enabled for transfer, others disabled.
+ * @xfer_all: When specified all items are enabled for transfer.
  *
  * Returns: A gpointer to the private structure for GPS progress/information widgets
  *          Pass this pointer back into the other exposed datasource_gps_X functions
  */
-gpointer datasource_gps_setup ( GtkWidget *dialog, gboolean only_tracks )
+gpointer datasource_gps_setup ( GtkWidget *dialog, vik_gps_xfer_type xfer, gboolean xfer_all )
 {
   gps_user_data_t *w_gps = (gps_user_data_t *)datasource_gps_init_func();
   datasource_gps_add_setup_widgets ( dialog, NULL, w_gps );
 
-  if ( only_tracks ) {
-    // Indicate tracks enabled (although no option to turn off):
-    gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(w_gps->get_tracks_b), TRUE);
-    gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_tracks_b), FALSE );
-    // Disable waypoints
-    gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(w_gps->get_waypoints_b), FALSE);
-    gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_waypoints_l), FALSE );
-    gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_waypoints_b), FALSE );
+  gboolean way = xfer_all;
+  gboolean trk = xfer_all;
+  gboolean rte = xfer_all;
+
+  // Selectively turn bits on
+  if ( !xfer_all ) {
+    switch (xfer) {
+    case WPT: way = TRUE; break;
+    case RTE: rte = TRUE; break;
+    default: trk = TRUE; break;
+    }
   }
+
+  // Apply
+  gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(w_gps->get_tracks_b), trk );
+  gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_tracks_l), trk );
+  gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_tracks_b), trk );
+
+  gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(w_gps->get_routes_b), rte );
+  gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_routes_l), rte );
+  gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_routes_b), rte );
+
+  gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(w_gps->get_waypoints_b), way );
+  gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_waypoints_l), way );
+  gtk_widget_set_sensitive ( GTK_WIDGET(w_gps->get_waypoints_b), way );
+
   return (gpointer)w_gps;
 }
 
 void datasource_gps_add_progress_widgets ( GtkWidget *dialog, gpointer user_data )
 {
-  GtkWidget *gpslabel, *verlabel, *idlabel, *wplabel, *trklabel;
+  GtkWidget *gpslabel, *verlabel, *idlabel, *wplabel, *trklabel, *rtelabel;
 
   gps_user_data_t *w_gps = (gps_user_data_t *)user_data;
 
@@ -525,10 +596,12 @@ void datasource_gps_add_progress_widgets ( GtkWidget *dialog, gpointer user_data
   idlabel = gtk_label_new ("");
   wplabel = gtk_label_new ("");
   trklabel = gtk_label_new ("");
+  rtelabel = gtk_label_new ("");
 
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), gpslabel, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), wplabel, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), trklabel, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), rtelabel, FALSE, FALSE, 5 );
 
   gtk_widget_show_all ( dialog );
 
@@ -537,5 +610,6 @@ void datasource_gps_add_progress_widgets ( GtkWidget *dialog, gpointer user_data
   w_gps->ver_label = verlabel;
   w_gps->progress_label = w_gps->wp_label = wplabel;
   w_gps->trk_label = trklabel;
+  w_gps->rte_label = rtelabel;
   w_gps->total_count = -1;
 }

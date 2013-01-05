@@ -260,7 +260,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
 {
   /* Due to OSM limits, we have to enforce ele and time fields
    also don't upload invisible tracks */
-  static GpxWritingOptions options = { TRUE, TRUE, FALSE };
+  static GpxWritingOptions options = { TRUE, TRUE, FALSE, FALSE };
   FILE *file = NULL;
   gchar *filename = NULL;
   int fd;

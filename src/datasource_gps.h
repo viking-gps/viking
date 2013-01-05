@@ -28,13 +28,14 @@
 
 G_BEGIN_DECLS
 
-gpointer datasource_gps_setup ( GtkWidget *dialog, gboolean only_tracks );
+gpointer datasource_gps_setup ( GtkWidget *dialog, vik_gps_xfer_type xfer, gboolean xfer_all );
 void datasource_gps_clean_up ( gpointer user_data );
 
 gchar* datasource_gps_get_protocol ( gpointer user_data );
 gchar* datasource_gps_get_descriptor ( gpointer user_data );
 
 gboolean datasource_gps_get_do_tracks ( gpointer user_data );
+gboolean datasource_gps_get_do_routes ( gpointer user_data );
 gboolean datasource_gps_get_do_waypoints ( gpointer user_data );
 
 gboolean datasource_gps_get_off ( gpointer user_data );

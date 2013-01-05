@@ -108,14 +108,13 @@ variety of tasks. Some of the things you can use &appname; for are:
 </para>
 <itemizedlist mark="opencircle"><listitem>
 <para>
-Uploading and downloading waypoints, tracks to/from GPS.
+Uploading and downloading waypoints, tracks and routes to/from GPS.
 </para>
 </listitem>
 <listitem>
-<para>Preparing tracks and waypoints for trips using maps from services
-such as OpenStreetMap (OSM) and/or Terrasever. The data is only needed to be uploaded to
-your GPS before you leave. The maps together with your tracks and
-waypoints can also be printed and used during the trip.
+<para>Preparing tracks, routes and waypoints for trips using maps from services such as OpenStreetMap (OSM) and/or Terrasever.
+The data is only needed to be uploaded to your GPS before you leave.
+The maps together with your tracks, routes and waypoints can also be printed and used during the trip.
 </para>
 </listitem>
 <listitem>
@@ -129,7 +128,7 @@ Analyzing Off Highway Vehicle (OHV) and hiking trips, understanding where you we
 </para>
 </listitem>
 <listitem>
-<para>Making waypoints and tracks to follow to easily get someplace
+<para>Making waypoints, tracks and routes to follow to easily get someplace
 you've never been before or don't have GPS data for but online
 maps exist for it.
 </para>
@@ -156,7 +155,7 @@ Downloading and storing OpenStreetMap and/or Terraserver maps on your hard drive
 </listitem>
 <listitem>
 <para>
-Editing tracks and trackpoints, joining and splitting up tracks 
+Editing routes or tracks and their trackpoints, joining and splitting up tracks and routes.
 </para>
 </listitem>
 <listitem>
@@ -166,7 +165,7 @@ Show the live GPS position on the map (for use on a mobile device - e.g. a lapto
 </listitem>
 <listitem>
 <para>
-Import track+waypoint files of various types via <application>GPSBabel</application>
+Import track, route and waypoint files of various types via <application>GPSBabel</application>
 </para>
 </listitem>
 <listitem>
@@ -311,6 +310,38 @@ Standard shortcuts are provided for normal GUI operations: such as creating new 
 Then there are shortcuts specific to &appname; to switch projection modes, zoom in/out, create layers and switch the active tool mode.
 For these combinations see the menu entry themselves.
 </para>
+</section>
+
+<section><title>Tracks vs Routes</title>
+<para>
+In theory a route is path you are planning to follow and a track of where you have actually been. The GPX specification splits these into two separate catergories, although tracks contain everything route may have.
+</para>
+<para>
+Q. When planning a 'route' what difference does it make if it's a route or a track?
+</para>
+<para>
+A. One difference is in how a GPS device navigates following the route or track.
+Or you may want to consider interoperability with other software.
+Otherwise it is probably best to use tracks as they are a superset of the route functionality.
+</para>
+<para>
+For example on Garmin Etrex:
+</para>
+<itemizedlist>
+<listitem>
+<para>Route following: Uses navigation mode with compass and estimated time to next point.</para>
+<para>If following on road it can calculate a route on fly.</para>
+<para>I (RN) always use this mode to follow pre planned routes.</para>
+</listitem>
+<listitem>
+<para>Track following: Uses a <trademark>TracBack</trademark> mode</para>
+<para>I (RN) never use this so I can't comment on how it actually compares to the route mode.</para>
+</listitem>
+</itemizedlist>
+<note><para>
+There are often restrictions on the numbers of route points the GPS Device can handle - may be 250 or as little as 50.
+This generally not a problem for single day routes, but needs managing for multi-day events or for highly detailed routes.
+</para></note>
 </section>
 
 </section><!--General Concepts End-->
@@ -554,7 +585,7 @@ See the individual section for detail about each layer.
 
 <section><title>TrackWaypoint Layer</title>
 <para>
-TrackWaypoint layers display GPS data (tracks and waypoints).
+TrackWaypoint layers display GPS data (tracks, routes and waypoints).
 </para>
 <para>One way to create new waypoints is to copy a
 latitude/longitude coordinate pair, such as the one shown on most
@@ -562,11 +593,23 @@ geocaches, and paste it into an active TrackWaypoint layer. &appname; can
 automatically recognize several variations of the lat/lon format.
 </para>
 <para>
-By right-clicking tracks and waypoints in the layers panel, you can do
-many things with tracks and waypoints. You can easily find a specific
-track or waypoint by expanding the Tracks or Waypoints sublayers in the
-layers panel to show all tracks or waypoints, and typing the name of
-the track/waypoint.
+By right-clicking on tracks, routes or waypoints in the layers panel, you can access many commands on them.
+You can easily find a specific track, route or waypoint by expanding the appropriate containing Tracks, Routes or Waypoints sublayer in the
+layers panel to show all the individual items and then typing the name of the track, route or waypoint.
+</para>
+
+<para>
+The containing Tracks, Routes or Waypoints sublayers are only shown when items of that type exist.
+To start creating them enter into a create mode via either the <guibutton>Create</guibutton> toolbar commands or the <guimenuitem>New</guimenuitem> menu commands.
+</para>
+
+<para>
+By default routes are coloured red. Tracks are automatically assigned a spread of colours.
+</para>
+
+<para>
+Most operations are available on tracks are available on routes, except for functionality that relies on having timestamps - since routes by definition have no timing information. Thus for example, uploading a route to OpenStreetMap Traces is not available nor is Geotagging on a route.
+It is possible to convert between Tracks and Routes, although converting from a Track to a Route may involve a loss of information (hence you are required to confirm this operation before it happens).
 </para>
 
 <section><title>Layer Operations</title>
@@ -576,25 +619,35 @@ The layer has a context menu with several operations.
 
 <section><title>View Layer</title>
 <para>
-Version1.1+: This will automatically move the viewport and select the best zoom level to see the whole layer (i.e. tracks and waypoints).
+Version1.1+: This will automatically move the viewport and select the best zoom level to see the whole layer (i.e. all tracks, routes and waypoints).
 </para>
 </section>
 
+<section><title>View</title>
+
 <section><title>View All Tracks</title>
 <para>
-Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the tracks in the layer (ignoring positions of any waypoints).
+Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the tracks in the layer (ignoring positions of any routes or waypoints).
+</para>
+</section>
+
+<section><title>View All Routes</title>
+<para>
+Version1.4+: This will automatically move the viewport and select the best zoom level to see the all the routes in the layer (ignoring positions of any tracks or waypoints).
 </para>
 </section>
 
 <section><title>View All Waypoints</title>
 <para>
-Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the waypoints in the layer (ignoring positions of any tracks).
+Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the waypoints in the layer (ignoring positions of any tracks or routes).
 </para>
+</section>
+
 </section>
 
 <section><title>Goto Center of Layer</title>
 <para>
-This will automatically move the viewport to see the whole layer (i.e. tracks and waypoints). It does not adjust the zoom level.
+This will automatically move the viewport to see the whole layer (i.e. tracks, routes and waypoints). It does not adjust the zoom level.
 </para>
 </section>
 
@@ -612,7 +665,7 @@ You are probably better off expanding the waypoint list and directly start typin
 
 <section><title>Export Layer</title>
 <para>
-The layer (all tracks and waypoints) can be exported to a file GPX, GPSPoint, GPSMapper or Google's KML format.
+The layer (all tracks, routes and waypoints) can be exported to a file GPX, GPSPoint, GPSMapper or Google's KML format.
 </para>
 <para>
 Version1.1+: An individual track can be exported to a GPX file via the track menu.
@@ -652,10 +705,10 @@ However when invoked from here, the results will be stored in this layer (instea
 This opens a dialog to select the GPS Device and port to which the layer information will be transferred.
 </para>
 <para>
-The types of GPS information (tracks or waypoints) to be transferred can be selected.
+The types of GPS information (tracks, routes or waypoints) to be transferred can be selected.
 </para>
 <para>
-Tracks or Waypoints that are invisible will not be transferred.
+Tracks, Routes or Waypoints that are invisible will not be transferred.
 </para>
 </section>
 
@@ -717,12 +770,12 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 
 </section><!-- End TRW Layer Options -->
 
-<section><title>Track Properties</title>
+<section><title>Track and Route Properties</title>
 <para>
-Show many useful statistics about a track, including a
+Show many useful statistics about a track or a route, including a
 elevation-distance graph and a speed-time graph (if data is available).
 You can click these graphs to jump to the point in the track. You can
-also reverse a track, delete duplicates, and split a track from its
+also reverse it, delete duplicates, and split a track from its
 component segments (discontinuous breaks in a track) into separate
 tracks.
 </para>
@@ -756,7 +809,7 @@ The following colors are used in the elevation-distance graph:
 
 </section>
 
-<section><title>Track Operations</title>
+<section><title>Track and Route Operations</title>
 
 <section><title>Goto</title>
 <para>
@@ -768,7 +821,7 @@ This centers the viewport on the selected position on the track:
 <listitem><para>Endpoint</para></listitem>
 <listitem><para>Version1.1+: Highest Altitude</para></listitem>
 <listitem><para>Version1.1+: Lowest Altitude</para></listitem>
-<listitem><para>Version1.1+: Maximum Speed</para></listitem>
+<listitem><para>Version1.1+: Maximum Speed (Not Available on Routes)</para></listitem>
 </itemizedlist>
 </section>
 
@@ -788,6 +841,9 @@ threshold time away. This way, if you somehow end up with lots of small
 segments (say, caused by turning the GPS on and off) you can merge them
 easily into one track.
 </para>
+<para>
+This is not available on routes as they have no timestamps.
+</para>
 </section>
 
 <section><title>Merge With Other Tracks</title>
@@ -802,7 +858,7 @@ Combines track segments. Effectively removing track segment markers to leave one
 </para>
 </section>
 
-<section><title>Append Track</title>
+<section><title>Append Track or Route</title>
 <para>
 Enable joining of a single track to the end of the current track.
 This opens a dialog listing the other tracks in the same TrackWaypoint layer from which one can make the selection.
@@ -818,6 +874,9 @@ time interval between successive trackpoints is larger than some
 threshold. This is useful when processing raw NMEA GPS data, especially
 taken over a long time.
 </para>
+<para>
+This is not available on routes as they have no timestamps.
+</para>
 </section>
 
 <section><title>Split By Number of Points</title>
@@ -830,6 +889,9 @@ This can be useful with devices which may have limits on the number of points it
 <section><title>Split Segments</title>
 <para>
 Splits track segments into new tracks.
+</para>
+<para>
+This is not available on routes as they do not have route segments.
 </para>
 </section>
 
@@ -849,6 +911,9 @@ Deletes subsequent points that have the same position (but have different timest
 <section><title>Delete Points With the Same Time</title>
 <para>
 Deletes subsequent points that have the same time stamp (but may have different positions).
+</para>
+<para>
+This is not available on routes as they have no timestamps.
 </para>
 </section>
 
@@ -897,6 +962,9 @@ Same as the layer <link linkend="osm_upload">Upload to OSM</link> command, but o
 <section><title>Use With Filter</title>
 <para>
 This selects the track to be used in the <link linkend="filter_with_track">Filter With <emphasis>Trackname</emphasis></link> feature.
+</para>
+<para>
+This is not available on routes.
 </para>
 </section>
 
@@ -998,8 +1066,8 @@ To download data from the GPS, right-click the GPS layer and click <guimenuitem>
 <section><title>Upload</title>
 <para>
 To upload data to the GPS, first populate the GPS Upload child
-layer of the GPS layer (either by creating waypoints/tracks in it, or
-copying and pasting or dragging waypoints/tracks from another layer).
+layer of the GPS layer (either by creating waypoints/tracks/routes in it, or
+copying and pasting or dragging waypoints/tracks/routes from another layer).
 Then right-click the GPS layer and click <guimenuitem>Upload to GPS</guimenuitem>.
 </para>
 </section>
@@ -1545,7 +1613,7 @@ Use <menuchoice><guimenu>View</guimenu></menuchoice> and select from either <men
 <para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
 to load data directly from your GPS into &appname;.
 </para>
-<para>You can specify the types of data to acquire: Tracks and/or Waypoints.
+<para>You can specify the types of data to acquire: Tracks, Routes and/or Waypoints.
 </para>
 <note>
 <para>You must have write permission to the port used. For <trademark>Unix</trademark> like OS:</para>
@@ -1578,12 +1646,11 @@ Use <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoi
 Other formats can be imported that are supported by GPSBabel.
 <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>Import File With GPSBabel...</guimenuitem></menuchoice>
 </para>
-</step>
-<step>
+<note>
 <para>
-Expand Tracks or Waypoints. Right-click on the
-track or waypoint of interest and select <guimenuitem>Goto "Center"</guimenuitem>.
+The viewport will be automatically moved and resized to view the contents of the file.
 </para>
+</note>
 </step>
 </procedure>
 </section>
@@ -1699,7 +1766,7 @@ You can also alter the Min. and Max. elevation in this dialogue.
 	<para>Ensure the new track layer is above the map layer.</para>
 </step>
 <step><para>Expand the TrackWaypoint layer, select <guimenuitem>Tracks</guimenuitem></para></step>
-<step><para>In the tools menu choose <guiicon><inlinegraphic fileref="figures/begintr_18.png"/></guiicon> <guibutton>Begin Track</guibutton>
+<step><para>In the tools menu choose <guiicon><inlinegraphic fileref="figures/addtr_18.png"/></guiicon> <guibutton>Create Track</guibutton>
 </para></step>
 <step><para>Leftclick in the map window, enter a name</para></step>
 <step>

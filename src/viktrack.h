@@ -55,15 +55,24 @@ struct _VikTrackpoint {
   gdouble pdop;     /* VIK_DEFAULT_DOP if data unavailable */
 };
 
+// Instead of having a separate VikRoute type, routes are considered tracks
+//  Thus all track operations must cope with a 'route' version
+//  [track functions handle having no timestamps anyway - so there is no practical difference in most cases]
+//  This is simpler than having to rewrite particularly every track function for route version
+//   given that they do the same things
+//  Mostly this matters in the display in deciding where and how they are shown
 typedef struct _VikTrack VikTrack;
 struct _VikTrack {
   GList *trackpoints;
   gboolean visible;
+  gboolean is_route;
   gchar *comment;
   gchar *description;
   guint8 ref_count;
-  GtkWidget *property_dialog;
   gchar *name;
+  GtkWidget *property_dialog;
+  gboolean has_color;
+  GdkColor color;
 };
 
 VikTrack *vik_track_new();
@@ -72,7 +81,7 @@ void vik_track_set_comment(VikTrack *tr, const gchar *comment);
 void vik_track_set_description(VikTrack *tr, const gchar *description);
 void vik_track_ref(VikTrack *tr);
 void vik_track_free(VikTrack *tr);
-VikTrack *vik_track_copy ( const VikTrack *tr );
+VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points );
 void vik_track_set_comment_no_copy(VikTrack *tr, gchar *comment);
 VikTrackpoint *vik_trackpoint_new();
 void vik_trackpoint_free(VikTrackpoint *tp);
@@ -89,6 +98,8 @@ gulong vik_track_get_dup_point_count ( const VikTrack *vt );
 gulong vik_track_remove_dup_points ( VikTrack *vt );
 gulong vik_track_get_same_time_point_count ( const VikTrack *vt );
 gulong vik_track_remove_same_time_points ( VikTrack *vt );
+
+void vik_track_to_routepoints ( VikTrack *tr );
 
 gdouble vik_track_get_max_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed(const VikTrack *tr);

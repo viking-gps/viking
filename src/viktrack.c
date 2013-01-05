@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,19 +122,35 @@ void vik_track_free(VikTrack *tr)
   g_free ( tr );
 }
 
-VikTrack *vik_track_copy ( const VikTrack *tr )
+/**
+ * vik_track_copy:
+ * @tr: The Track to copy
+ * @copy_points: Whether to copy the track points or not
+ *
+ * Normally for copying the track it's best to copy all the trackpoints
+ * However for some operations such as splitting tracks the trackpoints will be managed separately, so no need to copy them.
+ *
+ * Returns: the copied VikTrack
+ */
+VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
 {
   VikTrack *new_tr = vik_track_new();
   VikTrackpoint *new_tp;
   GList *tp_iter = tr->trackpoints;
   new_tr->visible = tr->visible;
+  new_tr->is_route = tr->is_route;
+  new_tr->has_color = tr->has_color;
+  new_tr->color = tr->color;
   new_tr->trackpoints = NULL;
-  while ( tp_iter )
+  if ( copy_points )
   {
-    new_tp = g_malloc ( sizeof ( VikTrackpoint ) );
-    *new_tp = *((VikTrackpoint *)(tp_iter->data));
-    new_tr->trackpoints = g_list_append ( new_tr->trackpoints, new_tp );
-    tp_iter = tp_iter->next;
+    while ( tp_iter )
+    {
+      new_tp = g_malloc ( sizeof ( VikTrackpoint ) );
+      *new_tp = *((VikTrackpoint *)(tp_iter->data));
+      new_tr->trackpoints = g_list_append ( new_tr->trackpoints, new_tp );
+      tp_iter = tp_iter->next;
+    }
   }
   vik_track_set_name(new_tr,tr->name);
   vik_track_set_comment(new_tr,tr->comment);
@@ -301,6 +318,31 @@ gulong vik_track_remove_same_time_points ( VikTrack *tr )
   return num;
 }
 
+/*
+ * Deletes all 'extra' trackpoint information
+ *  such as time stamps, speed, course etc...
+ */
+void vik_track_to_routepoints ( VikTrack *tr )
+{
+  GList *iter = tr->trackpoints;
+  while ( iter ) {
+
+    // c.f. with vik_trackpoint_new()
+
+    VIK_TRACKPOINT(iter->data)->has_timestamp = FALSE;
+    VIK_TRACKPOINT(iter->data)->timestamp = 0;
+    VIK_TRACKPOINT(iter->data)->speed = NAN;
+    VIK_TRACKPOINT(iter->data)->course = NAN;
+    VIK_TRACKPOINT(iter->data)->hdop = VIK_DEFAULT_DOP;
+    VIK_TRACKPOINT(iter->data)->vdop = VIK_DEFAULT_DOP;
+    VIK_TRACKPOINT(iter->data)->pdop = VIK_DEFAULT_DOP;
+    VIK_TRACKPOINT(iter->data)->nsats = 0;
+    VIK_TRACKPOINT(iter->data)->fix_mode = VIK_GPS_MODE_NOT_SEEN;
+
+    iter = iter->next;
+  }
+}
+
 guint vik_track_get_segment_count(const VikTrack *tr)
 {
   guint num = 1;
@@ -330,7 +372,7 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
   }
 
   rv = g_malloc ( segs * sizeof(VikTrack *) );
-  tr = vik_track_copy ( t );
+  tr = vik_track_copy ( t, TRUE );
   rv[0] = tr;
   iter = tr->trackpoints;
 
@@ -341,15 +383,7 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
     {
       iter->prev->next = NULL;
       iter->prev = NULL;
-      rv[i] = vik_track_new();
-      // TODO: consider new naming strategy here
-      if ( tr->name )
-        vik_track_set_name ( rv[i], tr->name );
-      if ( tr->comment )
-        vik_track_set_comment ( rv[i], tr->comment );
-      if ( tr->description )
-        vik_track_set_description ( rv[i], tr->description );
-      rv[i]->visible = tr->visible;
+      rv[i] = vik_track_copy ( tr, FALSE );
       rv[i]->trackpoints = iter;
       i++;
     }
@@ -1235,8 +1269,12 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   guint ntp;
   gint i;
 
-  /* only the visibility is needed */
+  /* basic properties: */
   new_tr->visible = ((VikTrack *)data)->visible;
+  new_tr->is_route = ((VikTrack *)data)->is_route;
+  new_tr->has_color = ((VikTrack *)data)->has_color;
+  new_tr->color = ((VikTrack *)data)->color;
+
   data += sizeof(*new_tr);
 
   ntp = *(guint *)data;

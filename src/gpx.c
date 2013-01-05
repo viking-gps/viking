@@ -5,6 +5,7 @@
  * Copyright (C) 2007, Quy Tonthat <qtonthat@gmail.com>
  * Copyright (C) 2008, Hein Ragas <viking@ragas.nl>
  * Copyright (C) 2009, Tal B <tal.bav@gmail.com>
+ * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * Some of the code adapted from GPSBabel 1.2.7
  * http://gpsbabel.sf.net/
@@ -61,6 +62,8 @@ typedef enum {
         tt_trk_desc,
         tt_trk_name,
 
+        tt_rte,
+
         tt_trk_trkseg,
         tt_trk_trkseg_trkpt,
         tt_trk_trkseg_trkpt_ele,
@@ -113,13 +116,11 @@ tag_mapping tag_path_map[] = {
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
 
         { tt_trk, "/gpx/trk" },
-        { tt_trk, "/gpx/rte" },
         { tt_trk_name, "/gpx/trk/name" },
         { tt_trk_cmt, "/gpx/trk/cmt" },
         { tt_trk_desc, "/gpx/trk/desc" },
         { tt_trk_trkseg, "/gpx/trk/trkseg" },
         { tt_trk_trkseg_trkpt, "/gpx/trk/trkseg/trkpt" },
-        { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/trk/trkseg/trkpt/ele" },
         { tt_trk_trkseg_trkpt_time, "/gpx/trk/trkseg/trkpt/time" },
 	/* extended */
@@ -131,6 +132,15 @@ tag_mapping tag_path_map[] = {
         { tt_trk_trkseg_trkpt_hdop, "/gpx/trk/trkseg/trkpt/hdop" },
         { tt_trk_trkseg_trkpt_vdop, "/gpx/trk/trkseg/trkpt/vdop" },
         { tt_trk_trkseg_trkpt_pdop, "/gpx/trk/trkseg/trkpt/pdop" },
+
+        { tt_rte, "/gpx/rte" },
+        // NB Route reuses track point feature tags
+        { tt_trk_name, "/gpx/rte/name" },
+        { tt_trk_cmt, "/gpx/rte/cmt" },
+        { tt_trk_desc, "/gpx/rte/desc" },
+        { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
+        { tt_trk_trkseg_trkpt_ele, "/gpx/rte/rtept/ele" },
+
         {0}
 };
 
@@ -209,7 +219,9 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
        break;
 
      case tt_trk:
+     case tt_rte:
        c_tr = vik_track_new ();
+       c_tr->is_route = (current_tag == tt_rte) ? TRUE : FALSE;
        c_tr->visible = TRUE;
        if ( get_attr ( attr, "hidden" ) )
          c_tr->visible = FALSE;
@@ -286,6 +298,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk:
+     case tt_rte:
        if ( ! c_tr_name )
          c_tr_name = g_strdup_printf("VIKING_TR%d", unnamed_tracks++);
        vik_trw_layer_filein_add_track ( vtl, c_tr_name, c_tr );
@@ -710,12 +723,13 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   gchar *time_iso8601;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
-  if ( tp->newsegment )
+  // No such thing as a rteseg! So make sure we don't put them in
+  if ( context->options && !context->options->is_route && tp->newsegment )
     fprintf ( f, "  </trkseg>\n  <trkseg>\n" );
 
   s_lat = a_coords_dtostr( ll.lat );
   s_lon = a_coords_dtostr( ll.lon );
-  fprintf ( f, "  <trkpt lat=\"%s\" lon=\"%s\">\n", s_lat, s_lon );
+  fprintf ( f, "  <%spt lat=\"%s\" lon=\"%s\">\n", (context->options && context->options->is_route) ? "rte" : "trk", s_lat, s_lon );
   g_free ( s_lat ); s_lat = NULL;
   g_free ( s_lon ); s_lon = NULL;
 
@@ -794,8 +808,7 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
     fprintf ( f, "    <pdop>%s</pdop>\n", s_dop );
   g_free ( s_dop ); s_dop = NULL;
 
-
-  fprintf ( f, "  </trkpt>\n" );
+  fprintf ( f, "  </%spt>\n", (context->options && context->options->is_route) ? "rte" : "trk" );
 }
 
 
@@ -817,7 +830,10 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 
   // NB 'hidden' is not part of any GPX standard - this appears to be a made up Viking 'extension'
   //  luckily most other GPX processing software ignores things they don't understand
-  fprintf ( f, "<trk%s>\n  <name>%s</name>\n", t->visible ? "" : " hidden=\"hidden\"", tmp );
+  fprintf ( f, "<%s%s>\n  <name>%s</name>\n",
+	    t->is_route ? "rte" : "trk",
+	    t->visible ? "" : " hidden=\"hidden\"",
+	    tmp );
   g_free ( tmp );
 
   if ( t->comment )
@@ -833,7 +849,10 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
     fprintf ( f, "  <desc>%s</desc>\n", tmp );
     g_free ( tmp );
   }
-  fprintf ( f, "  <trkseg>\n" );
+
+  /* No such thing as a rteseg! */
+  if ( !t->is_route )
+    fprintf ( f, "  <trkseg>\n" );
 
   if ( t->trackpoints && t->trackpoints->data ) {
     first_tp_is_newsegment = VIK_TRACKPOINT(t->trackpoints->data)->newsegment;
@@ -842,7 +861,11 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
     VIK_TRACKPOINT(t->trackpoints->data)->newsegment = first_tp_is_newsegment; /* restore state */
   }
 
-  fprintf ( f, "</trkseg>\n</trk>\n" );
+  /* NB apparently no such thing as a rteseg! */
+  if (!t->is_route)
+    fprintf ( f, "  </trkseg>\n");
+
+  fprintf ( f, "</%s>\n", t->is_route ? "rte" : "trk" );
 }
 
 static void gpx_write_header( FILE *f )
@@ -863,6 +886,13 @@ static int gpx_waypoint_compare(const void *x, const void *y)
 {
   VikWaypoint *a = (VikWaypoint *)x;
   VikWaypoint *b = (VikWaypoint *)y;
+  return strcmp(a->name,b->name);
+}
+
+static int gpx_track_compare_name(const void *x, const void *y)
+{
+  VikTrack *a = (VikTrack *)x;
+  VikTrack *b = (VikTrack *)y;
   return strcmp(a->name,b->name);
 }
 
@@ -914,15 +944,41 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
   }
 
   g_list_free ( gl );
-  /* Sort by timestamp */
-  gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
-  gl = g_list_sort ( gl, gpx_track_compare_timestamp );
 
+  gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
+  // Sort method determined by preference
+  if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_TIME )
+    gl = g_list_sort ( gl, gpx_track_compare_timestamp );
+  else
+    gl = g_list_sort ( gl, gpx_track_compare_name );
+
+  // Routes sorted by name
+  GList *glrte = g_hash_table_get_values ( vik_trw_layer_get_routes ( vtl ) );
+  glrte = g_list_sort ( glrte, gpx_track_compare_name );
+
+  // g_list_concat doesn't copy memory properly
+  // so process each list separately
+
+  GpxWritingContext context_tmp = context;
+  GpxWritingOptions opt_tmp = { FALSE, FALSE, FALSE };
+  // Force trackpoints on tracks
+  if ( !context.options )
+    context_tmp.options = &opt_tmp;
+  context_tmp.options->is_route = FALSE;
+
+  // Loop around each list and write each one
   for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
-    gpx_write_track ( (VikTrack*)iter->data, &context );
+    gpx_write_track ( (VikTrack*)iter->data, &context_tmp );
+  }
+
+  // Routes (to get routepoints)
+  context_tmp.options->is_route = TRUE;
+  for (iter = g_list_first (glrte); iter != NULL; iter = g_list_next (iter)) {
+    gpx_write_track ( (VikTrack*)iter->data, &context_tmp );
   }
 
   g_list_free ( gl );
+  g_list_free ( glrte );
 
   gpx_write_footer ( f );
 }

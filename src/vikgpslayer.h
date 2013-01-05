@@ -47,6 +47,12 @@ typedef enum {
   GPS_UP
 } vik_gps_dir;
 
+typedef enum {
+  WPT=0,
+  TRK=1,
+  RTE=2
+} vik_gps_xfer_type;
+
 typedef struct _VikGpsLayer VikGpsLayer;
 
 gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl );
@@ -63,6 +69,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
                     VikViewport *vvp,
                     VikLayersPanel *vlp,
                     gboolean do_tracks,
+                    gboolean do_routes,
                     gboolean do_waypoints,
 		    gboolean turn_off);
 
