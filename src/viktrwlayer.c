@@ -232,15 +232,15 @@ static void trw_layer_delete_item ( gpointer pass_along[6] );
 static void trw_layer_copy_item_cb ( gpointer pass_along[6] );
 static void trw_layer_cut_item_cb ( gpointer pass_along[6] );
 
-static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] );
-static void trw_layer_find_maxmin_tracks ( const gchar *name, const VikTrack *trk, struct LatLon maxmin[2] );
+static void trw_layer_find_maxmin_waypoints ( const gpointer id, const VikWaypoint *w, struct LatLon maxmin[2] );
+static void trw_layer_find_maxmin_tracks ( const gpointer id, const VikTrack *trk, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2]);
 
 static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp );
 static void trw_layer_free_track_gcs ( VikTrwLayer *vtl );
 
-static void trw_layer_draw_track_cb ( const gchar *name, VikTrack *track, struct DrawingParams *dp );
-static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct DrawingParams *dp );
+static void trw_layer_draw_track_cb ( const gpointer id, VikTrack *track, struct DrawingParams *dp );
+static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct DrawingParams *dp );
 
 static void goto_coord ( gpointer *vlp, gpointer vvp, gpointer vl, const VikCoord *coord );
 static void trw_layer_goto_track_startpoint ( gpointer pass_along[6] );
@@ -354,7 +354,7 @@ static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikV
 static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
 
 static void waypoint_convert ( const gpointer id, VikWaypoint *wp, VikCoordMode *dest_mode );
-static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_mode );
+static void track_convert ( const gpointer id, VikTrack *tr, VikCoordMode *dest_mode );
 
 static gchar *highest_wp_number_get(VikTrwLayer *vtl);
 static void highest_wp_number_reset(VikTrwLayer *vtl);
@@ -1269,7 +1269,7 @@ static void draw_utm_skip_insignia ( VikViewport *vvp, GdkGC *gc, gint x, gint y
   vik_viewport_draw_line ( vvp, gc, x+5, y-5, x-5, y+5 );
 }
 
-static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct DrawingParams *dp, gboolean draw_track_outline )
+static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct DrawingParams *dp, gboolean draw_track_outline )
 {
   /* TODO: this function is a mess, get rid of any redundancy */
   GList *list = track->trackpoints;
@@ -1297,7 +1297,7 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 
   /* admittedly this is not an efficient way to do it because we go through the whole GC thing all over... */
   if ( dp->vtl->bg_line_thickness && !draw_track_outline )
-    trw_layer_draw_track ( name, track, dp, TRUE );
+    trw_layer_draw_track ( id, track, dp, TRUE );
 
   if ( draw_track_outline )
     drawpoints = drawstops = FALSE;
@@ -1534,9 +1534,9 @@ static void trw_layer_draw_track ( const gchar *name, VikTrack *track, struct Dr
 }
 
 /* the only reason this exists is so that trw_layer_draw_track can first call itself to draw the white track background */
-static void trw_layer_draw_track_cb ( const gchar *name, VikTrack *track, struct DrawingParams *dp )
+static void trw_layer_draw_track_cb ( const gpointer id, VikTrack *track, struct DrawingParams *dp )
 {
-  trw_layer_draw_track ( name, track, dp, FALSE );
+  trw_layer_draw_track ( id, track, dp, FALSE );
 }
 
 static void cached_pixbuf_free ( CachedPixbuf *cp )
@@ -1550,7 +1550,7 @@ static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name )
   return strcmp ( cp->image, name );
 }
 
-static void trw_layer_draw_waypoint ( const gchar *name, VikWaypoint *wp, struct DrawingParams *dp )
+static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct DrawingParams *dp )
 {
   if ( wp->visible )
   if ( (!dp->one_zone && !dp->lat_lon) || ( ( dp->lat_lon || wp->coord.utm_zone == dp->center->utm_zone ) && 
@@ -2478,7 +2478,7 @@ VikTrack *vik_trw_layer_get_route ( VikTrwLayer *vtl, const gchar *name )
   return g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find, (gpointer) name );
 }
 
-static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoint *w, struct LatLon maxmin[2] )
+static void trw_layer_find_maxmin_waypoints ( const gpointer id, const VikWaypoint *w, struct LatLon maxmin[2] )
 {
   static VikCoord fixme;
   vik_coord_copy_convert ( &(w->coord), VIK_COORD_LATLON, &fixme );
@@ -2492,7 +2492,7 @@ static void trw_layer_find_maxmin_waypoints ( const gchar *name, const VikWaypoi
     maxmin[1].lon = VIK_LATLON(&fixme)->lon;
 }
 
-static void trw_layer_find_maxmin_tracks ( const gchar *name, const VikTrack *trk, struct LatLon maxmin[2] )
+static void trw_layer_find_maxmin_tracks ( const gpointer id, const VikTrack *trk, struct LatLon maxmin[2] )
 {
   GList *tr = trk->trackpoints;
   static VikCoord fixme;
@@ -3229,7 +3229,7 @@ static void trw_layer_auto_tracks_view ( gpointer lav[2] )
   }
 }
 
-static void trw_layer_single_waypoint_jump ( const gchar *name, const VikWaypoint *wp, gpointer vvp )
+static void trw_layer_single_waypoint_jump ( const gpointer id, const VikWaypoint *wp, gpointer vvp )
 {
   /* NB do not care if wp is visible or not */
   vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), &(wp->coord) );
@@ -4022,7 +4022,7 @@ static gboolean trw_layer_delete_track_by_name ( VikTrwLayer *vtl, const gchar *
     return FALSE;
 }
 
-static void remove_item_from_treeview(const gchar *name, GtkTreeIter *it, VikTreeview * vt)
+static void remove_item_from_treeview ( const gpointer id, GtkTreeIter *it, VikTreeview * vt )
 {
     vik_treeview_item_delete (vt, it );
 }
@@ -8013,7 +8013,7 @@ static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp)
 }
 
 /* Params are: vvp, event, last match found or NULL */
-static void tool_show_picture_wp ( char *name, VikWaypoint *wp, gpointer params[3] )
+static void tool_show_picture_wp ( const gpointer id, VikWaypoint *wp, gpointer params[3] )
 {
   if ( wp->image && wp->visible )
   {
@@ -8075,10 +8075,7 @@ static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *even
  ***************************************************************************/
 
 
-
-
-
-static void image_wp_make_list ( char *name, VikWaypoint *wp, GSList **pics )
+static void image_wp_make_list ( const gpointer id, VikWaypoint *wp, GSList **pics )
 {
   if ( wp->image && ( ! a_thumbnails_exists ( wp->image ) ) )
     *pics = g_slist_append ( *pics, (gpointer) g_strdup ( wp->image ) );
@@ -8240,7 +8237,7 @@ static void waypoint_convert ( const gpointer id, VikWaypoint *wp, VikCoordMode 
   vik_coord_convert ( &(wp->coord), *dest_mode );
 }
 
-static void track_convert ( const gchar *name, VikTrack *tr, VikCoordMode *dest_mode )
+static void track_convert ( const gpointer id, VikTrack *tr, VikCoordMode *dest_mode )
 {
   vik_track_convert ( tr, *dest_mode );
 }
