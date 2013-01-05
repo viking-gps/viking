@@ -382,7 +382,7 @@ static void vik_window_class_init ( VikWindowClass *klass )
 
 static void set_toolbar_zoom ( VikWindow *vw, gdouble mpp )
 {
-  gint active = 2 + ( log (mpp) / log (2) );
+  gint active = 2 + round ( log (mpp) / log (2) );
   // Can we not hard code size here?
   if ( active > 17 )
     active = 17;
@@ -2882,7 +2882,7 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   zoom_combo = create_zoom_combo_all_levels();
 
   gdouble mpp = vik_viewport_get_xmpp(vw->viking_vvp);
-  gint active = 2 + ( log (mpp) / log (2) );
+  gint active = 2 + round ( log (mpp) / log (2) );
 
   // Can we not hard code size here?
   if ( active > 17 )
