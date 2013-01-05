@@ -217,6 +217,7 @@ typedef struct {
 struct DrawingParams {
   VikViewport *vp;
   VikTrwLayer *vtl;
+  VikWindow *vw;
   gdouble xmpp, ympp;
   guint16 width, height;
   gdouble cc; // Cosine factor in track directions
@@ -1202,6 +1203,7 @@ static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, Vi
 {
   dp->vtl = vtl;
   dp->vp = vp;
+  dp->vw = (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl);
   dp->xmpp = vik_viewport_get_xmpp ( vp );
   dp->ympp = vik_viewport_get_ympp ( vp );
   dp->width = vik_viewport_get_width ( vp );
@@ -1316,10 +1318,10 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
       /* if track is member of selected layer or is the current selected track
 	 then draw in the highlight colour.
 	 NB this supercedes the drawmode */
-      if ( dp->vtl && ( ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ||
-			( !track->is_route && ( dp->vtl->tracks == vik_window_get_selected_tracks ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ) ||
-			( track->is_route && ( dp->vtl->routes == vik_window_get_selected_tracks ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ) ||
-			track == vik_window_get_selected_track ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) ) {
+      if ( ( dp->vtl == vik_window_get_selected_trw_layer ( dp->vw ) ) ||
+           ( !track->is_route && ( dp->vtl->tracks == vik_window_get_selected_tracks ( dp->vw ) ) ) ||
+           ( track->is_route && ( dp->vtl->routes == vik_window_get_selected_tracks ( dp->vw ) ) ) ||
+           ( track == vik_window_get_selected_track ( dp->vw ) ) ) {
 	main_gc = vik_viewport_get_gc_highlight (dp->vp);
 	drawing_highlight = TRUE;
       }
@@ -1622,9 +1624,9 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
         if ( x+(w/2) > 0 && y+(h/2) > 0 && x-(w/2) < dp->width && y-(h/2) < dp->height ) /* always draw within boundaries */
         {
 	  if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
-	    if ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
-		 dp->vtl->waypoints == vik_window_get_selected_waypoints ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
-		 wp == vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ) {
+            if ( dp->vtl == vik_window_get_selected_trw_layer ( dp->vw ) ||
+                 dp->vtl->waypoints == vik_window_get_selected_waypoints ( dp->vw ) ||
+                 wp == vik_window_get_selected_waypoint ( dp->vw ) ) {
 	      // Highlighted - so draw a little border around the chosen one
 	      // single line seems a little weak so draw 2 of them
 	      vik_viewport_draw_rectangle (dp->vp, vik_viewport_get_gc_highlight (dp->vp), FALSE,
@@ -1704,9 +1706,9 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
 
       /* if highlight mode on, then draw background text in highlight colour */
       if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
-	if ( dp->vtl == vik_window_get_selected_trw_layer ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
-	     dp->vtl->waypoints == vik_window_get_selected_waypoints ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) ||
-	     wp == vik_window_get_selected_waypoint ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl) ) )
+	if ( dp->vtl == vik_window_get_selected_trw_layer ( dp->vw ) ||
+             dp->vtl->waypoints == vik_window_get_selected_waypoints ( dp->vw ) ||
+             wp == vik_window_get_selected_waypoint ( dp->vw ) )
 	  vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, label_x - 1, label_y-1,width+2,height+2);
 	else
 	  vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
