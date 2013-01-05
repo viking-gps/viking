@@ -4356,7 +4356,9 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
 static void trw_layer_extend_track_end_route_finder ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
-  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->routes, pass_along[3] );
+  if ( !track )
+    return;
   VikCoord last_coord = (((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord);
 
   vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, NUM_TOOLS );
@@ -5933,13 +5935,13 @@ static void trw_layer_track_use_with_filter ( gpointer pass_along[6] )
 #ifdef VIK_CONFIG_GOOGLE
 static gboolean is_valid_google_route ( VikTrwLayer *vtl, const gpointer track_id )
 {
-  VikTrack *tr = g_hash_table_lookup ( vtl->tracks, track_id );
+  VikTrack *tr = g_hash_table_lookup ( vtl->routes, track_id );
   return ( tr && tr->comment && strlen(tr->comment) > 7 && !strncmp(tr->comment, "from:", 5) );
 }
 
-static void trw_layer_track_google_route_webpage ( gpointer pass_along[6] )
+static void trw_layer_google_route_webpage ( gpointer pass_along[6] )
 {
-  VikTrack *tr = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->tracks, pass_along[3] );
+  VikTrack *tr = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->routes, pass_along[3] );
   if ( tr ) {
     gchar *escaped = uri_escape ( tr->comment );
     gchar *webpage = g_strdup_printf("http://maps.google.com/maps?f=q&hl=en&q=%s", escaped );
@@ -6448,11 +6450,13 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_GOOGLE
-    item = gtk_image_menu_item_new_with_mnemonic ( _("Extend _Using Route Finder") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("Route Finder", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end_route_finder), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-    gtk_widget_show ( item );
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("Extend _Using Route Finder") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("Route Finder", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end_route_finder), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+    }
 #endif
 
     // ATM can't upload a single waypoint but can do waypoints to a GPS
@@ -6471,6 +6475,17 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     }
   }
 
+#ifdef VIK_CONFIG_GOOGLE
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE && is_valid_google_route ( l, sublayer ) )
+  {
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_View Google Directions") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NETWORK, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_google_route_webpage), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+  }
+#endif
+
   // Some things aren't usable with routes
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
 #ifdef VIK_CONFIG_OPENSTREETMAP
@@ -6481,23 +6496,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(osm_traces_upload_track_cb), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(upload_submenu), item );
     gtk_widget_show ( item );
-#endif
-
-    item = gtk_image_menu_item_new_with_mnemonic ( _("_Upload to GPS...") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_gps_upload_any), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(upload_submenu), item );
-    gtk_widget_show ( item );
-
-#ifdef VIK_CONFIG_GOOGLE
-    if ( is_valid_google_route ( l, sublayer ) )
-    {
-      item = gtk_image_menu_item_new_with_mnemonic ( _("_View Google Directions") );
-      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NETWORK, GTK_ICON_SIZE_MENU) );
-      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_google_route_webpage), pass_along );
-      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-      gtk_widget_show ( item );
-    }
 #endif
 
     item = gtk_image_menu_item_new_with_mnemonic ( _("Use with _Filter") );
@@ -7967,6 +7965,7 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
                           g_ascii_dtostr (startlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) start.lon),
                           g_ascii_dtostr (endlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lat),
                           g_ascii_dtostr (endlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lon));
+    // NB normally this returns a GPX Route - so subsequent usage of it must lookup via the routes hash
     a_babel_convert_from_url ( vtl, url, "google", NULL, NULL );
     g_free ( url );
 
