@@ -422,7 +422,19 @@ static VikToolInterface trw_layer_tools[] = {
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
 #endif
 };
-enum { TOOL_CREATE_WAYPOINT=0, TOOL_CREATE_TRACK, TOOL_CREATE_ROUTE, TOOL_EDIT_WAYPOINT, TOOL_EDIT_TRACKPOINT, TOOL_SHOW_PICTURE, NUM_TOOLS };
+
+enum {
+  TOOL_CREATE_WAYPOINT=0,
+  TOOL_CREATE_TRACK,
+  TOOL_CREATE_ROUTE,
+  TOOL_EDIT_WAYPOINT,
+  TOOL_EDIT_TRACKPOINT,
+  TOOL_SHOW_PICTURE,
+#ifdef VIK_CONFIG_GOOGLE
+  TOOL_ROUTE_FINDER,
+#endif
+  NUM_TOOLS
+};
 
 /****** PARAMETERS ******/
 
@@ -4360,7 +4372,7 @@ static void trw_layer_extend_track_end_route_finder ( gpointer pass_along[6] )
     return;
   VikCoord last_coord = (((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord);
 
-  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, NUM_TOOLS );
+  vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_ROUTE_FINDER );
   vtl->route_finder_coord =  last_coord;
   vtl->route_finder_current_track = track;
   vtl->route_finder_started = TRUE;
