@@ -1773,12 +1773,12 @@ static void draw_refresh_cb ( GtkAction *a, VikWindow *vw )
 
 static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw )
 {
-  gint type;
+ VikLayerTypeEnum type;
   for ( type = 0; type < VIK_LAYER_NUM_TYPES; type++ ) {
     if (!strcmp(vik_layer_get_interface(type)->name, gtk_action_get_name(a))) {
       if ( vik_layers_panel_new_layer ( vw->viking_vlp, type ) ) {
-	draw_update ( vw );
-	vw->modified = TRUE;
+        draw_update ( vw );
+        vw->modified = TRUE;
       }
     }
   }
@@ -2022,7 +2022,7 @@ void vik_window_enable_layer_tool ( VikWindow *vw, gint layer_id, gint tool_id )
 static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 {
   /* White Magic, my friends ... White Magic... */
-  int layer_id, tool_id;
+  gint tool_id;
   const GdkCursor *cursor = NULL;
 
   toolbox_activate(vw->vt, gtk_action_get_name(a));
@@ -2047,6 +2047,7 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
   }
   else {
     /* TODO: only enable tools from active layer */
+    VikLayerTypeEnum layer_id;
     for (layer_id=0; layer_id<VIK_LAYER_NUM_TYPES; layer_id++) {
       for ( tool_id = 0; tool_id < vik_layer_get_interface(layer_id)->tools_count; tool_id++ ) {
 	if (!strcmp(vik_layer_get_interface(layer_id)->tools[tool_id].radioActionEntry.name, gtk_action_get_name(a))) {

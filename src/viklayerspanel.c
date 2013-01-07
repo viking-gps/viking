@@ -408,7 +408,7 @@ static void layers_popup_cb ( VikLayersPanel *vlp )
  * 
  * Create a new layer and add to panel.
  */
-gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, gint type )
+gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type )
 {
   VikLayer *l;
   g_assert ( vlp->vvp );
@@ -672,7 +672,7 @@ gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToo
 }
 #endif
 
-VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, gint type )
+VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, VikLayerTypeEnum type )
 {
   VikLayer *rv = vik_layers_panel_get_selected ( vlp );
   if ( rv == NULL || rv->type != type )

@@ -437,6 +437,8 @@ void a_uibuilder_free_paramdatas ( VikLayerParamData *paramdatas, VikLayerParam 
         }
         g_list_free ( paramdatas[i].sl );
         break;
+      default:
+        break;
       }
     }
   }

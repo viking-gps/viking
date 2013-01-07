@@ -123,7 +123,7 @@ static VikLayerInterface *vik_layer_interfaces[VIK_LAYER_NUM_TYPES] = {
   &vik_dem_layer_interface,
 };
 
-VikLayerInterface *vik_layer_get_interface ( gint type )
+VikLayerInterface *vik_layer_get_interface ( VikLayerTypeEnum type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );
   return vik_layer_interfaces[type];
@@ -136,7 +136,7 @@ static void vik_layer_init ( VikLayer *vl )
   vl->realized = FALSE;
 }
 
-void vik_layer_set_type ( VikLayer *vl, gint type )
+void vik_layer_set_type ( VikLayer *vl, VikLayerTypeEnum type )
 {
   vl->type = type;
 }
@@ -164,7 +164,7 @@ const gchar *vik_layer_get_name ( VikLayer *l )
   return l->name;
 }
 
-VikLayer *vik_layer_create ( gint type, gpointer vp, GtkWindow *w, gboolean interactive )
+VikLayer *vik_layer_create ( VikLayerTypeEnum type, gpointer vp, GtkWindow *w, gboolean interactive )
 {
   VikLayer *new_layer = NULL;
   g_assert ( type < VIK_LAYER_NUM_TYPES );
@@ -454,7 +454,7 @@ const gchar* vik_layer_layer_tooltip ( VikLayer *l )
   return NULL;
 }
 
-GdkPixbuf *vik_layer_load_icon ( gint type )
+GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );
   if ( vik_layer_interfaces[type]->icon )

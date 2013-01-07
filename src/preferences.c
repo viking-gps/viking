@@ -104,11 +104,13 @@ static void layer_typed_param_data_free(gpointer p)
     case VIK_LAYER_PARAM_STRING_LIST:
       g_critical ( "Param strings not implemented in preferences"); //fake it
       break;
+    default:
+      break;
   }
   g_free ( val );
 }
 
-static VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type, VikLayerParamData val) {
+static VikLayerTypedParamData *layer_typed_param_data_copy_from_data(VikLayerParamType type, VikLayerParamData val) {
   VikLayerTypedParamData *newval = g_new(VikLayerTypedParamData,1);
   newval->data = val;
   newval->type = type;
@@ -126,14 +128,15 @@ static VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type
     case VIK_LAYER_PARAM_STRING_LIST:
       g_critical ( "Param strings not implemented in preferences"); //fake it
       break;
+    default:
+      break;
   }
   return newval;
 }
 
 /* TODO: share this code with file.c */
-static VikLayerTypedParamData *layer_data_typed_param_copy_from_string ( guint8 type, const gchar *str )
+static VikLayerTypedParamData *layer_data_typed_param_copy_from_string ( VikLayerParamType type, const gchar *str )
 {
-  g_assert ( type != VIK_LAYER_PARAM_STRING_LIST );
   VikLayerTypedParamData *rv = g_new(VikLayerTypedParamData,1);
   rv->type = type;
   switch ( type )
@@ -206,7 +209,6 @@ static gboolean preferences_load_from_file()
         g_hash_table_insert ( values, key, newval );
 
         g_free(key);
-
         // change value
       }
     }
