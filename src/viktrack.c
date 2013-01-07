@@ -1320,7 +1320,9 @@ void vik_track_apply_dem_data ( VikTrack *tr )
   }
 }
 
-/*
+/**
+ * vik_track_apply_dem_data_last_trackpoint:
+ * 
  * Apply DEM data (if available) - to only the last trackpoint
  */
 void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
@@ -1334,7 +1336,11 @@ void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
   }
 }
 
-/* appends t2 to t1, leaving t2 with no trackpoints */
+/**
+ * vik_track_steal_and_append_trackpoints:
+ * 
+ * appends t2 to t1, leaving t2 with no trackpoints
+ */
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
 {
   if ( t1->trackpoints ) {
@@ -1348,9 +1354,13 @@ void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
   t2->trackpoints = NULL;
 }
 
-/* starting at the end, looks backwards for the last "double point", a duplicate trackpoint.
+/**
+ * vik_track_cut_back_to_double_point:
+ * 
+ * starting at the end, looks backwards for the last "double point", a duplicate trackpoint.
  * If there is no double point, deletes all the trackpoints.
- * Returns the new end of the track (or the start if there are no double points)
+ * 
+ * Returns: the new end of the track (or the start if there are no double points)
  */
 VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr )
 {
