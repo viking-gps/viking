@@ -390,6 +390,11 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   gtk_widget_destroy ( dialog );
 }
 
+/**
+ * a_acquire:
+ *
+ * Process the given VikDataSourceInterface for sources with no input data.
+ */
 void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface ) {
   acquire ( vw, vlp, vvp, source_interface, NULL, NULL );
 }
@@ -440,11 +445,25 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
   return menu_item;
 }
 
+/**
+ * a_acquire_trwlayer_menu:
+ *
+ * Create a sub menu intended for rightclicking on a TRWLayer's menu called "Filter".
+ * 
+ * Returns: %NULL if no filters.
+ */
 GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
 {
   return acquire_build_menu ( vw, vlp, vvp, vtl, NULL, _("_Filter"), VIK_DATASOURCE_INPUTTYPE_TRWLAYER );
 }
 
+/**
+ * a_acquire_trwlayer_track_menu:
+ *
+ * Create a sub menu intended for rightclicking on a TRWLayer's menu called "Filter with Track "TRACKNAME"...".
+ * 
+ * Returns: %NULL if no filters or no filter track has been set.
+ */
 GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
 {
   if ( filter_track == NULL )
@@ -458,11 +477,23 @@ GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, Vi
   }
 }
 
+/**
+ * a_acquire_track_menu:
+ *
+ * Create a sub menu intended for rightclicking on a track's menu called "Filter".
+ * 
+ * Returns: %NULL if no applicable filters
+ */
 GtkWidget *a_acquire_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrack *tr)
 {
   return acquire_build_menu ( vw, vlp, vvp, NULL, tr, _("Filter"), VIK_DATASOURCE_INPUTTYPE_TRACK );
 }
 
+/**
+ * a_acquire_set_filter_track:
+ *
+ * Sets application-wide track to use with filter. references the track.
+ */
 void a_acquire_set_filter_track ( VikTrack *tr )
 {
   if ( filter_track )
