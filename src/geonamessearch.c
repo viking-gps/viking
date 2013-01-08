@@ -39,7 +39,8 @@
 #endif
 
 #define GEONAMES_WIKIPEDIA_URL_FMT "http://ws.geonames.org/wikipediaBoundingBoxJSON?formatted=true&north=%s&south=%s&east=%s&west=%s"
-#define GEONAMES_COUNTRY_PATTERN "\"countryName\": \""
+// Not entirely convinced how useful seeing what the country is
+#define GEONAMES_COUNTRY_PATTERN "\"countryCode\": \""
 #define GEONAMES_LONGITUDE_PATTERN "\"lng\": "
 #define GEONAMES_NAME_PATTERN "\"name\": \""
 #define GEONAMES_LATITUDE_PATTERN "\"lat\": "
