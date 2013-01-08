@@ -16,6 +16,7 @@ src/datasource_geotag.c
 src/datasource_google.c
 src/datasource_gps.c
 src/datasource_osm.c
+src/datasource_wikipedia.c
 src/dem.c
 src/download.c
 src/file.c

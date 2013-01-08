@@ -107,6 +107,7 @@ libviking_a_SOURCES = \
 	datasource_google.c \
 	datasource_gc.c \
 	datasource_bfilter.c \
+	datasource_wikipedia.c \
 	datasources.h \
 	googlesearch.c googlesearch.h \
 	dem.c dem.h \

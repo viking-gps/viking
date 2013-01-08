@@ -27,6 +27,9 @@ static const char *menu_xml =
 #ifdef VIK_CONFIG_GEOTAG
 	"        <menuitem action='AcquireGeotag'/>"
 #endif
+#ifdef VIK_CONFIG_GEONAMES
+	"        <menuitem action='AcquireWikipedia'/>"
+#endif
 	"      </menu>"
 	"      <separator/>"
 	"      <menuitem action='GenImg'/>"
