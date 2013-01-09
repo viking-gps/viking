@@ -109,7 +109,7 @@ static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, g
   page = last_page_number;
 
   *cmd = g_strdup_printf( DOWNLOAD_URL_FMT, sminlon, sminlat, smaxlon, smaxlat, page );
-  *input_file_type = g_strdup("gpx");
+  *input_file_type = NULL;
 }
 
 static void datasource_osm_cleanup ( gpointer data )
