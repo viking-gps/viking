@@ -51,7 +51,6 @@ static void datasource_geotag_cleanup ( gpointer user_data );
 VikDataSourceInterface vik_datasource_geotag_interface = {
   N_("Create Waypoints from Geotagged Images"),
   N_("Geotagged Images"),
-  VIK_DATASOURCE_INTERNAL,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,

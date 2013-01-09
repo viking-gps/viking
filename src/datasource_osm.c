@@ -51,7 +51,6 @@ static void datasource_osm_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_osm_interface = {
   N_("OSM traces"),
   N_("OSM traces"),
-  VIK_DATASOURCE_URL,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
@@ -60,7 +59,7 @@ VikDataSourceInterface vik_datasource_osm_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_osm_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_osm_get_cmd_string,
-  (VikDataSourceProcessFunc)		NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from_url,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_osm_cleanup,

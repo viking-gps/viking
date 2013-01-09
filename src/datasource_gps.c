@@ -56,7 +56,6 @@ static void datasource_gps_off ( gpointer add_widgets_data_not_used, gchar **bab
 VikDataSourceInterface vik_datasource_gps_interface = {
   N_("Acquire from GPS"),
   N_("Acquired from GPS"),
-  VIK_DATASOURCE_GPSBABEL_DIRECT,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
@@ -65,7 +64,7 @@ VikDataSourceInterface vik_datasource_gps_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_gps_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_gps_get_cmd_string,
-  (VikDataSourceProcessFunc)		NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from,
   (VikDataSourceProgressFunc)		datasource_gps_progress,
   (VikDataSourceAddProgressWidgetsFunc)	datasource_gps_add_progress_widgets,
   (VikDataSourceCleanupFunc)		datasource_gps_cleanup,

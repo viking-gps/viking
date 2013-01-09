@@ -49,14 +49,6 @@ typedef struct {
   gpointer user_data;
 } acq_dialog_widgets_t;
 
-/* Direct, URL & Shell types process the results with GPSBabel to create tracks/waypoint */
-typedef enum {
-  VIK_DATASOURCE_GPSBABEL_DIRECT,
-  VIK_DATASOURCE_URL,
-  VIK_DATASOURCE_SHELL_CMD,
-  VIK_DATASOURCE_INTERNAL
-} vik_datasource_type_t;
-
 typedef enum {
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_ADDTOLAYER
@@ -93,13 +85,13 @@ typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewpor
 
 /**
  * VikDataSourceGetCmdStringFunc:
+ * @user_data: provided by #VikDataSourceInterface.init_func or dialog with params
+ * @args: the arguments computed for #VikDataSourceInterface.process_func
+ * @extra: extra arguments for #VikDataSourceInterface.process_func
  * 
- * if %VIK_DATASOURCE_GPSBABEL_DIRECT, babelargs and inputfile.
- * if %VIK_DATASOURCE_SHELL_CMD, shellcmd and inputtype.
- * if %VIK_DATASOURCE_URL, url and inputtype.
  * set both to %NULL to signal refusal (ie already downloading).
  */
-typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
+typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **args, gchar **extra );
 
 typedef void (*VikDataSourceGetCmdStringFuncWithInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name );
 typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name, const gchar *input_track_file_name );
@@ -133,7 +125,6 @@ typedef void (*VikDataSourceOffFunc) ( gpointer user_data, gchar **babelargs_or_
 struct _VikDataSourceInterface {
   const gchar *window_title;
   const gchar *layer_title;
-  vik_datasource_type_t type;
   vik_datasource_mode_t mode;
   vik_datasource_inputtype_t inputtype;
   gboolean autoview;

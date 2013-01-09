@@ -58,7 +58,6 @@ static void datasource_file_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_file_interface = {
   N_("Import file with GPSBabel"),
   N_("Imported file"),
-  VIK_DATASOURCE_GPSBABEL_DIRECT,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
@@ -67,7 +66,7 @@ VikDataSourceInterface vik_datasource_file_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_file_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_file_get_cmd_string,
-  (VikDataSourceProcessFunc)		NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_file_cleanup,

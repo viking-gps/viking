@@ -48,7 +48,6 @@ static void datasource_google_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_google_interface = {
   N_("Google Directions"),
   N_("Google Directions"),
-  VIK_DATASOURCE_URL,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
@@ -57,7 +56,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_google_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_google_get_cmd_string,
-  (VikDataSourceProcessFunc)		NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from_url,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_google_cleanup,

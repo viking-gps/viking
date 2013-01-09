@@ -59,14 +59,13 @@ VikLayerParamData bfilter_simplify_params_defaults[] = {
 VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   N_("Simplify All Tracks..."),
   N_("Simplified Tracks"),
-  VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
   TRUE,
   FALSE, /* keep dialog open after success */
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_simplify_get_cmd_string,
-  (VikDataSourceProcessFunc) NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -95,14 +94,13 @@ static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdata
 VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
   N_("Remove Duplicate Waypoints"),
   N_("Remove Duplicate Waypoints"),
-  VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
   TRUE,
   FALSE, /* keep dialog open after success */
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_dup_get_cmd_string,
-  (VikDataSourceProcessFunc) NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -128,14 +126,13 @@ static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *param
 VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
   N_("Waypoints Inside This"),
   N_("Polygonized Layer"),
-  VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,
   TRUE,
   FALSE, /* keep dialog open after success */
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_polygon_get_cmd_string,
-  (VikDataSourceProcessFunc) NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -164,14 +161,13 @@ static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamDat
 VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
   N_("Waypoints Outside This"),
   N_("Polygonzied Layer"),
-  VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,
   TRUE,
   FALSE, /* keep dialog open after success */
   NULL, NULL, NULL,
   (VikDataSourceGetCmdStringFunc)	datasource_bfilter_exclude_polygon_get_cmd_string,
-  (VikDataSourceProcessFunc) NULL,
+  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 

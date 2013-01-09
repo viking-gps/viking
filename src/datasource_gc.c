@@ -65,7 +65,6 @@ static gchar *datasource_gc_check_existence ();
 VikDataSourceInterface vik_datasource_gc_interface = {
   N_("Download Geocaches"),
   N_("Geocaching.com Caches"),
-  VIK_DATASOURCE_SHELL_CMD,
   VIK_DATASOURCE_ADDTOLAYER,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE, // Yes automatically update the display - otherwise we won't see the geocache waypoints!
@@ -74,7 +73,7 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   (VikDataSourceCheckExistenceFunc)	datasource_gc_check_existence,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_gc_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_gc_get_cmd_string,
-  (VikDataSourceProcessFunc)		NULL,
+  (VikDataSourceProcessFunc)		a_babel_convert_from_shellcommand,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_gc_cleanup,

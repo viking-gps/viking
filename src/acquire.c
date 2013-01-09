@@ -117,24 +117,8 @@ static void get_from_anything ( w_and_interface_t *wi )
   }
   gdk_threads_leave();
 
-  // TODO consider removing 'type' and make everything run via the specficied process function
-  switch ( source_interface->type ) {
-  case VIK_DATASOURCE_GPSBABEL_DIRECT:
-    result = a_babel_convert_from (vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
-    break;
-  case VIK_DATASOURCE_URL:
-    result = a_babel_convert_from_url (vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
-    break;
-  case VIK_DATASOURCE_SHELL_CMD:
-    result = a_babel_convert_from_shellcommand ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w);
-    break;
-  case VIK_DATASOURCE_INTERNAL:
-    if ( source_interface->process_func )
-      result = source_interface->process_func ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w );
-    break;
-  default:
-    g_critical("Houston, we've had a problem.");
-  }
+  if ( source_interface->process_func )
+    result = source_interface->process_func ( vtl, cmd, extra, (BabelStatusFunc) progress_func, w );
 
   g_free ( cmd );
   g_free ( extra );
