@@ -315,7 +315,8 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
  * @cb:	       Optional callback function. Same usage as in a_babel_convert().
  * @user_data: passed along to cb
  *
- * Download the file pointed by the URL.
+ * Download the file pointed by the URL and optionally uses GPSBabel to convert from input_file_type.
+ * If input_file_type is %NULL, doesn't use GPSBabel. Input must be GPX.
  */
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data )
 {
@@ -333,12 +334,22 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
     close(fd_src);
     g_remove(name_src);
 
-    babelargs = g_strdup_printf(" -i %s", input_type);
-
     fetch_ret = a_http_download_get_url(url, "", name_src, &options, NULL);
-    if (fetch_ret == 0)
-      ret = a_babel_convert_from( vt, babelargs, name_src, NULL, NULL);
- 
+    if (fetch_ret == 0) {
+      if (input_type != NULL) {
+        babelargs = g_strdup_printf(" -i %s", input_type);
+        ret = a_babel_convert_from( vt, babelargs, name_src, NULL, NULL);
+      } else {
+        /* Process directly the retrieved file */
+        g_debug("%s: directly read GPX file %s", __FUNCTION__, name_src);
+        FILE *f = g_fopen(name_src, "r");
+        if (f) {
+          ret = a_gpx_read_file ( vt, f );
+          fclose(f);
+          f = NULL;
+        }
+      }
+    }
     g_remove(name_src);
     g_free(babelargs);
     g_free(name_src);
