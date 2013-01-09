@@ -98,6 +98,10 @@ typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data
 
 /**
  * VikDataSourceProcessFunc:
+ * @vtl:
+ * @cmd: the arguments computed by #VikDataSourceInterface.get_cmd_string_func
+ * @extra: the extra arguments computed by #VikDataSourceInterface.get_cmd_string_func
+ * @status_cb: the #VikDataSourceInterface.progress_func
  * 
  * The actual function to do stuff - must report success/failure.
  */
@@ -122,6 +126,11 @@ typedef void (*VikDataSourceCleanupFunc) ( gpointer user_data );
 
 typedef void (*VikDataSourceOffFunc) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );;
 
+/**
+ * VikDataSourceInterface:
+ * 
+ * Main interface.
+ */
 struct _VikDataSourceInterface {
   const gchar *window_title;
   const gchar *layer_title;
