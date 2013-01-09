@@ -208,6 +208,7 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
  * @babelargs: A string containing gpsbabel command line options. In addition to any filters, this string
  *             must include the input file type (-i) option.
  * @cb:	       Optional callback function. Same usage as in a_babel_convert().
+ * @user_data: passed along to cb
  *
  * Loads data into a trw layer from a file, using gpsbabel.  This routine is synchronous;
  * that is, it will block the calling program until the conversion is done. To avoid blocking, call
@@ -261,6 +262,10 @@ gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, const cha
 
 /**
  * a_babel_convert_from_shellcommand:
+ * @vt: The #VikTrwLayer where to insert the collected data
+ * @input_cmd: the command to run
+ * @cb:	       Optional callback function. Same usage as in a_babel_convert().
+ * @user_data: passed along to cb
  *
  * Runs the input command in a shell (bash) and optionally uses GPSBabel to convert from input_file_type.
  * If input_file_type is %NULL, doesn't use GPSBabel. Input must be GPX (or Geocaching *.loc)
@@ -303,6 +308,15 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
   return ret;
 }
 
+/**
+ * a_babel_convert_from_url:
+ * @vt: The #VikTrwLayer where to insert the collected data
+ * @url: the URL to fetch
+ * @cb:	       Optional callback function. Same usage as in a_babel_convert().
+ * @user_data: passed along to cb
+ *
+ * Download the file pointed by the URL.
+ */
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data )
 {
   static DownloadMapOptions options = { FALSE, FALSE, NULL, 0, NULL};
@@ -346,12 +360,13 @@ static gboolean babel_general_convert_to( VikTrwLayer *vt, VikTrack *trk, BabelS
 
 /**
  * a_babel_convert_to:
- * @vt             The TRW layer from which data is taken.
- * @track          Operate on the individual track if specified. Use NULL when operating on a TRW layer
- * @babelargs      A string containing gpsbabel command line options.  In addition to any filters, this string
+ * @vt:             The TRW layer from which data is taken.
+ * @track:          Operate on the individual track if specified. Use NULL when operating on a TRW layer
+ * @babelargs:      A string containing gpsbabel command line options.  In addition to any filters, this string
  *                 must include the input file type (-i) option.
- * @to             Filename or device the data is written to.
- * @cb		   Optional callback function. Same usage as in a_babel_convert.
+ * @to:             Filename or device the data is written to.
+ * @cb:		   Optional callback function. Same usage as in a_babel_convert.
+ * @user_data: passed along to cb
  *
  * Exports data using gpsbabel.  This routine is synchronous;
  * that is, it will block the calling program until the conversion is done. To avoid blocking, call
@@ -413,7 +428,7 @@ static void set_mode(BabelMode mode, gchar *smode)
 }
 
 /**
- * load_feature:
+ * load_feature_parse_line:
  * 
  * Load a single feature stored in the given line.
  */
@@ -485,6 +500,13 @@ static gboolean load_feature ()
   return ret;
 }
 
+/**
+ * a_babel_init:
+ * 
+ * Initialises babel module.
+ * Mainly check existence of gpsbabel progam
+ * and load all features available in ths version.
+ */
 void a_babel_init ()
 {
   /* TODO allow to set gpsbabel path via command line */
@@ -498,6 +520,11 @@ void a_babel_init ()
   load_feature ();
 }
 
+/**
+ * a_babel_uninit:
+ * 
+ * Free resources acquired by a_babel_init.
+ */
 void a_babel_uninit ()
 {
   g_free ( gpsbabel_loc );
