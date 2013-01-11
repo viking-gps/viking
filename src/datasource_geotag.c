@@ -44,8 +44,8 @@ static gchar *last_folder_uri = NULL;
 
 static gpointer datasource_geotag_init( );
 static void datasource_geotag_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );
-static gboolean datasource_geotag_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw );
+static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, gpointer not_used );
+static gboolean datasource_geotag_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used );
 static void datasource_geotag_cleanup ( gpointer user_data );
 
 VikDataSourceInterface vik_datasource_geotag_interface = {
@@ -127,7 +127,7 @@ static void datasource_geotag_add_setup_widgets ( GtkWidget *dialog, VikViewport
 	gtk_widget_show_all ( dialog );
 }
 
-static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype )
+static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, gpointer not_used )
 {
 	datasource_geotag_user_data_t *userdata = (datasource_geotag_user_data_t *)user_data;
 	/* Retrieve the files selected */
@@ -149,7 +149,7 @@ static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babel
 /**
  * Process selected files and try to generate waypoints storing them in the given vtl
  */
-static gboolean datasource_geotag_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw )
+static gboolean datasource_geotag_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used )
 {
 	datasource_geotag_user_data_t *user_data = (datasource_geotag_user_data_t *)adw->user_data;
 

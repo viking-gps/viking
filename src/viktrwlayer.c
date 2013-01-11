@@ -8021,7 +8021,7 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
                           g_ascii_dtostr (endlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lat),
                           g_ascii_dtostr (endlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lon));
     // NB normally this returns a GPX Route - so subsequent usage of it must lookup via the routes hash
-    a_babel_convert_from_url ( vtl, url, "google", NULL, NULL );
+    a_babel_convert_from_url ( vtl, url, "google", NULL, NULL, NULL );
     g_free ( url );
 
     /* see if anything was done -- a track was added or appended to */

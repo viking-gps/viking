@@ -46,7 +46,7 @@ static gboolean last_get_routes = TRUE;
 static gboolean last_get_waypoints = TRUE;
 
 static gpointer datasource_gps_init_func ( );
-static void datasource_gps_get_cmd_string ( gpointer add_widgets_data_not_used, gchar **babelargs, gchar **input_file );
+static void datasource_gps_get_cmd_string ( gpointer add_widgets_data_not_used, gchar **babelargs, gchar **input_file, gpointer not_used );
 static void datasource_gps_cleanup ( gpointer user_data );
 static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w );
 static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
@@ -179,7 +179,7 @@ gboolean datasource_gps_get_do_waypoints ( gpointer user_data )
   return last_get_waypoints;
 }
 
-static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file )
+static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file, gpointer not_used )
 {
   char *device = NULL;
   char *tracks = NULL;

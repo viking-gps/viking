@@ -45,7 +45,7 @@ static gdouble last_page_number = 0;
 
 static gpointer datasource_osm_init( );
 static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type );	
+static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
 static void datasource_osm_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_osm_interface = {
@@ -60,7 +60,7 @@ VikDataSourceInterface vik_datasource_osm_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_osm_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_osm_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from_url,
+  (VikDataSourceProcessFunc)            a_babel_convert_from_url,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_osm_cleanup,
@@ -87,7 +87,7 @@ static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   widgets->vvp = vvp;
 }
 
-static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type )
+static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options )
 {
   int page = 0;
   gdouble min_lat, max_lat, min_lon, max_lon;
@@ -111,6 +111,7 @@ static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, g
 
   *cmd = g_strdup_printf( DOWNLOAD_URL_FMT, sminlon, sminlat, smaxlon, smaxlat, page );
   *input_file_type = NULL;
+  options = NULL;
 }
 
 static void datasource_osm_cleanup ( gpointer data )

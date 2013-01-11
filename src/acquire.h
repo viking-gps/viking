@@ -88,10 +88,11 @@ typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewpor
  * @user_data: provided by #VikDataSourceInterface.init_func or dialog with params
  * @args: the arguments computed for #VikDataSourceInterface.process_func
  * @extra: extra arguments for #VikDataSourceInterface.process_func
+ * @options: even more options for #VikDataSourceInterface.process_func
  * 
  * set both to %NULL to signal refusal (ie already downloading).
  */
-typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **args, gchar **extra );
+typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **args, gchar **extra, gpointer options );
 
 typedef void (*VikDataSourceGetCmdStringFuncWithInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name );
 typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name, const gchar *input_track_file_name );
@@ -102,10 +103,12 @@ typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data
  * @cmd: the arguments computed by #VikDataSourceInterface.get_cmd_string_func
  * @extra: the extra arguments computed by #VikDataSourceInterface.get_cmd_string_func
  * @status_cb: the #VikDataSourceInterface.progress_func
+ * @adw: the widgets and data used by #VikDataSourceInterface.progress_func
+ * @options: more options returned by #VikDataSourceInterface.get_cmd_string_func
  * 
  * The actual function to do stuff - must report success/failure.
  */
-typedef gboolean (*VikDataSourceProcessFunc)  ( gpointer vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw );
+typedef gboolean (*VikDataSourceProcessFunc)  ( gpointer vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer options );
 
 /* */
 typedef void  (*VikDataSourceProgressFunc)  ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w );

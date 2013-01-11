@@ -42,7 +42,7 @@ static gchar *last_to_str = NULL;
 
 static gpointer datasource_google_init( );
 static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_file_type );	
+static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
 static void datasource_google_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_google_interface = {
@@ -57,7 +57,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_google_add_setup_widgets,
   (VikDataSourceGetCmdStringFunc)	datasource_google_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from_url,
+  (VikDataSourceProcessFunc)            a_babel_convert_from_url,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_google_cleanup,
@@ -89,7 +89,7 @@ static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport
   gtk_widget_show_all(dialog);
 }
 
-static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_file_type )
+static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options )
 {
   /* TODO: special characters handling!!! */
   gchar *from_quoted, *to_quoted;
@@ -104,6 +104,7 @@ static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widg
 
   *cmd = g_strdup_printf( GOOGLE_DIRECTIONS_STRING, from_quoted, to_quoted );
   *input_file_type = g_strdup("google");
+  options = NULL;
 
   g_free(last_from_str);
   g_free(last_to_str);

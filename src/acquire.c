@@ -66,6 +66,7 @@ typedef struct {
   gchar *extra;
   gboolean creating_new_layer;
   VikTrwLayer *vtl;
+  gpointer options;
 } w_and_interface_t;
 
 
@@ -142,10 +143,11 @@ static void get_from_anything ( w_and_interface_t *wi )
   VikDataSourceInterface *source_interface = wi->w->source_interface;
 
   if ( source_interface->process_func )
-    result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, wi->w );
+    result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, wi->w, wi->options );
 
   g_free ( cmd );
   g_free ( extra );
+  g_free ( wi->options );
 
   if (!result) {
     gdk_threads_enter();
@@ -217,6 +219,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   gchar *extra_off = NULL;
   acq_dialog_widgets_t *w;
   gpointer user_data;
+  gpointer options = NULL;
 
   /* for UI builder */
   gpointer pass_along_data;
@@ -304,7 +307,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
 
     g_free ( name_src_track );
   } else if ( source_interface->get_cmd_string_func )
-      source_interface->get_cmd_string_func ( pass_along_data, &cmd, &extra );
+    source_interface->get_cmd_string_func ( pass_along_data, &cmd, &extra, &options );
 
   /* Get data for Off command */
   if ( source_interface->off_func ) {
@@ -325,6 +328,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   wi->w->source_interface = source_interface;
   wi->cmd = cmd;
   wi->extra = extra; /* usually input data type (?) */
+  wi->options = options;
   wi->vtl = vtl;
   wi->creating_new_layer = (!vtl);
 
@@ -371,7 +375,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
       } else {
         if ( cmd_off ) {
           /* Turn off */
-          a_babel_convert_from (NULL, cmd_off, extra_off, NULL, NULL);
+          a_babel_convert_from (NULL, cmd_off, extra_off, NULL, NULL, NULL);
           g_free ( cmd_off );
         }
         if ( extra_off )
@@ -388,12 +392,13 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   else {
     // bypass thread method malarkly - you'll just have to wait...
     if ( source_interface->process_func ) {
-      gboolean result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, w );
+      gboolean result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, w, options );
       if ( !result )
         a_dialog_msg ( GTK_WINDOW(vw), GTK_MESSAGE_ERROR, _("Error: acquisition failed."), NULL );
     }
     g_free ( cmd );
     g_free ( extra );
+    g_free ( options );
 
     on_complete_process ( wi );
     // Actually show it if necessary

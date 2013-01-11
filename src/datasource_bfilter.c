@@ -32,7 +32,7 @@
 
 /************************************ Simplify ***********************************/
 
-static void datasource_bfilter_simplify_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename );
+static void datasource_bfilter_simplify_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used );
 
 /* TODO: shell_escape stuff */
 /* TODO: name is useless for filters */
@@ -78,7 +78,7 @@ VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
 };
 
 
-static void datasource_bfilter_simplify_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename )
+static void datasource_bfilter_simplify_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used )
 {
   *input_file_type = NULL;
   *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -x simplify,count=%d -o gpx -F -", input_filename, paramdatas[0].u );
@@ -86,7 +86,7 @@ static void datasource_bfilter_simplify_get_cmd_string ( VikLayerParamData *para
 
 /************************************ Duplicate Location ***********************************/
 
-static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename );
+static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used );
 
 /* TODO: shell_escape stuff */
 /* TODO: name is useless for filters */
@@ -110,7 +110,7 @@ VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
 };
 
 
-static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename )
+static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used )
 {
   *input_file_type = NULL;
   *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -x duplicate,location -o gpx -F -", input_filename );
@@ -119,7 +119,7 @@ static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdata
 
 /************************************ Polygon ***********************************/
 
-static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename );
+static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used );
 
 /* TODO: shell_escape stuff */
 /* TODO: name is useless for filters */
@@ -147,7 +147,7 @@ VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
 };
 
 
-static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename )
+static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used )
 {
   *input_file_type = NULL;
   *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -o arc -F - | gpsbabel -i gpx -f %s -x polygon,file=- -o gpx -F -", input_track_filename, input_filename );
@@ -155,7 +155,7 @@ static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *param
 
 /************************************ Exclude Polygon ***********************************/
 
-static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename );
+static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used );
 
 /* TODO: shell_escape stuff */
 /* TODO: name is useless for filters */
@@ -183,7 +183,7 @@ VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
 };
 
 
-static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename )
+static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used )
 {
   *input_file_type = NULL;
   *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -o arc -F - | gpsbabel -i gpx -f %s -x polygon,exclude,file=- -o gpx -F -", input_track_filename, input_filename );

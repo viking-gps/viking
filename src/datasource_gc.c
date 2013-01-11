@@ -56,7 +56,7 @@ typedef struct {
 
 static gpointer datasource_gc_init ( );
 static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type );	
+static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used );
 static void datasource_gc_cleanup ( datasource_gc_widgets_t *widgets );
 static gchar *datasource_gc_check_existence ();
 
@@ -216,7 +216,7 @@ static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vv
   gtk_widget_show_all(dialog);
 }
 
-static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type )
+static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used )
 {
   //gchar *safe_string = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ) );
   gchar *safe_user = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "username")->s );

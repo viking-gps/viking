@@ -1170,7 +1170,7 @@ static void gps_comm_thread(GpsSession *sess)
 
   if (sess->direction == GPS_DOWN)
     result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
-        (BabelStatusFunc) gps_download_progress_func, sess);
+        (BabelStatusFunc) gps_download_progress_func, sess, NULL);
   else {
     result = a_babel_convert_to (sess->vtl, sess->track, sess->cmd_args, sess->port,
         (BabelStatusFunc) gps_upload_progress_func, sess);
@@ -1342,7 +1342,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
     if ( turn_off ) {
       // No need for thread for powering off device (should be quick operation...) - so use babel command directly:
       gchar *device_off = g_strdup_printf("-i %s,%s", protocol, "power_off");
-      gboolean result = a_babel_convert_from (NULL, (const char*)device_off, (const char*)port, NULL, NULL);
+      gboolean result = a_babel_convert_from (NULL, (const char*)device_off, (const char*)port, NULL, NULL, NULL);
       if ( !result )
         a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not turn off device.") );
       g_free ( device_off );

@@ -52,7 +52,7 @@ static int last_type = 0;
 
 static gpointer datasource_file_init( );
 static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file_type );	
+static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used );
 static void datasource_file_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_file_interface = {
@@ -163,7 +163,7 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
 }
 
 /* See VikDataSourceInterface */
-static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file )
+static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file, gpointer not_used )
 {
   /* Retrieve the file selected */
   gchar *filename = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(widgets->file) );
