@@ -84,6 +84,8 @@ gpointer vik_window_get_containing_trw_layer ( VikWindow *vw );
 /* return indicates if a redraw is necessary */
 gboolean vik_window_clear_highlight ( VikWindow *vw );
 
+GThread *vik_window_get_thread ( VikWindow *vw );
+
 typedef struct {
   VikWindow *vw;
   VikViewport *vvp;

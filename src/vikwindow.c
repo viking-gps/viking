@@ -182,6 +182,7 @@ struct _VikWindow {
   gboolean only_updating_coord_mode_ui; /* hack for a bug in GTK */
   GtkUIManager *uim;
 
+  GThread  *thread;
   /* half-drawn update */
   VikLayer *trigger;
   VikCoord trigger_center;
@@ -510,6 +511,11 @@ static void vik_window_init ( VikWindow *vw )
   vw->save_dia = NULL;
   vw->save_img_dia = NULL;
   vw->save_img_dir_dia = NULL;
+
+  // Store the thread value so comparisons can be made to determine the gdk update method
+  // Hopefully we are storing the main thread value here :)
+  //  [ATM any window initialization is always be performed by the main thread]
+  vw->thread = g_thread_self();
 }
 
 static VikWindow *window_new ()
@@ -3467,4 +3473,9 @@ gboolean vik_window_clear_highlight ( VikWindow *vw )
     need_redraw = TRUE;
   }
   return need_redraw;
+}
+
+GThread *vik_window_get_thread ( VikWindow *vw )
+{
+  return vw->thread;
 }
