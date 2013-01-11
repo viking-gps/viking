@@ -221,9 +221,23 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   }
 }
 
-void vik_layers_panel_emit_update ( VikLayersPanel *vlp )
+/**
+ * Invoke the actual drawing via signal method
+ */
+static gboolean idle_draw_panel ( VikLayersPanel *vlp )
 {
   g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_UPDATE_SIGNAL], 0 );
+  return FALSE; // Nothing else to do
+}
+
+void vik_layers_panel_emit_update ( VikLayersPanel *vlp )
+{
+  // Only ever draw when there is time to do so
+  if ( g_thread_self() != vik_window_get_thread (VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vlp))) )
+    // Drawing requested from another (background) thread, so handle via the gdk thread method
+    gdk_threads_add_idle ( (GSourceFunc) idle_draw_panel, vlp );
+  else
+    g_idle_add ( (GSourceFunc) idle_draw_panel, vlp );
 }
 
 static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
