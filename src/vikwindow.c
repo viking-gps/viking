@@ -188,15 +188,11 @@ struct _VikWindow {
   /* Store at this level for highlighted selection drawing since it applies to the viewport and the layers panel */
   /* Only one of these items can be selected at the same time */
   gpointer selected_vtl; /* notionally VikTrwLayer */
-  gpointer selected_tracks; /* notionally GList */
+  GHashTable *selected_tracks;
   gpointer selected_track; /* notionally VikTrack */
-  gpointer selected_waypoints; /* notionally GList */
+  GHashTable *selected_waypoints;
   gpointer selected_waypoint; /* notionally VikWaypoint */
   /* only use for individual track or waypoint */
-  ////// NEED TO THINK ABOUT VALIDITY OF THESE             //////
-  ////// i.e. what happens when stuff is deleted elsewhere //////
-  ////// Generally seems alright as can not access them    //////
-  ////// containing_vtl now seems unecessary               //////
   /* For track(s) & waypoint(s) it is the layer they are in - this helps refering to the individual item easier */
   gpointer containing_vtl; /* notionally VikTrwLayer */
 };
@@ -3393,14 +3389,14 @@ void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
 
-gpointer vik_window_get_selected_tracks ( VikWindow *vw )
+GHashTable *vik_window_get_selected_tracks ( VikWindow *vw )
 {
   return vw->selected_tracks;
 }
 
-void vik_window_set_selected_tracks ( VikWindow *vw, gpointer gl, gpointer vtl )
+void vik_window_set_selected_tracks ( VikWindow *vw, GHashTable *ght, gpointer vtl )
 {
-  vw->selected_tracks = gl;
+  vw->selected_tracks = ght;
   vw->containing_vtl  = vtl;
   /* Clear others */
   vw->selected_vtl       = NULL;
@@ -3429,14 +3425,14 @@ void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl )
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
 
-gpointer vik_window_get_selected_waypoints ( VikWindow *vw )
+GHashTable *vik_window_get_selected_waypoints ( VikWindow *vw )
 {
   return vw->selected_waypoints;
 }
 
-void vik_window_set_selected_waypoints ( VikWindow *vw, gpointer gl, gpointer vtl )
+void vik_window_set_selected_waypoints ( VikWindow *vw, GHashTable *ght, gpointer vtl )
 {
-  vw->selected_waypoints = gl;
+  vw->selected_waypoints = ght;
   vw->containing_vtl     = vtl;
   /* Clear others */
   vw->selected_vtl       = NULL;
