@@ -389,7 +389,7 @@ static int trw_layer_geotag_thread ( geotag_options_t *options, gpointer threadd
 			// Ensure any new images get shown
 			trw_layer_verify_thumbnails ( options->vtl, NULL ); // NB second parameter not used ATM
 			// Force redraw as verify only redraws if there are new thumbnails (they may already exist)
-			vik_layer_emit_update ( VIK_LAYER(options->vtl), TRUE ); // Update from background
+			vik_layer_emit_update ( VIK_LAYER(options->vtl) ); // NB Update from background
 		}
 	}
 

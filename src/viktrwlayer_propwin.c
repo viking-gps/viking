@@ -382,7 +382,7 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
       /* since vlp not set, vvp should be valid instead! */
       if ( vvp )
 	vik_viewport_set_center_coord ( vvp, &coord );
-      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
     }
   }
   return trackpoint;
@@ -2621,11 +2621,11 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       vik_track_set_description(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_description)));
       gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
       trw_layer_update_treeview ( widgets->vtl, widgets->tr, widgets->trk_id );
-      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_REVERSE:
       vik_track_reverse(tr);
-      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_DEL_DUP:
       vik_track_remove_dup_points(tr); // NB ignore the returned answer
@@ -2634,7 +2634,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
 
       /* above operation could have deleted current_tp or last_tp */
       trw_layer_cancel_tps_of_track ( vtl, tr );
-      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_SPLIT:
       {
@@ -2665,7 +2665,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
             vik_trw_layer_delete_route ( vtl, tr );
           else
             vik_trw_layer_delete_track ( vtl, tr );
-          vik_layer_emit_update ( VIK_LAYER(vtl), FALSE ); /* chase thru the hoops */
+          vik_layer_emit_update ( VIK_LAYER(vtl) ); /* chase thru the hoops */
         }
       }
       break;
@@ -2699,7 +2699,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           vik_trw_layer_add_route(vtl, r_name, tr_right);
         else
           vik_trw_layer_add_track(vtl, r_name, tr_right);
-        vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
+        vik_layer_emit_update ( VIK_LAYER(vtl) );
       }
       break;
     default:

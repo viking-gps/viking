@@ -1044,7 +1044,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
           a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)), mdi->mapcoord.scale );
       if (mdi->refresh_display && mdi->map_layer_alive) {
         /* TODO: check if it's on visible area */
-        vik_layer_emit_update ( VIK_LAYER(mdi->vml), TRUE ); // Yes update display from background
+        vik_layer_emit_update ( VIK_LAYER(mdi->vml) ); // NB update display from background
       }
       g_mutex_unlock(mdi->mutex);
       mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */

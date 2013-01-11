@@ -511,7 +511,7 @@ gboolean vik_layers_panel_properties ( VikLayersPanel *vlp )
       a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Aggregate Layers have no settable properties.") );
     VikLayer *layer = VIK_LAYER( vik_treeview_item_get_pointer ( vlp->vt, &iter ) );
     if (vik_layer_properties ( layer, vlp->vvp ))
-      vik_layer_emit_update ( layer, FALSE );
+      vik_layer_emit_update ( layer );
     return TRUE;
   }
   else

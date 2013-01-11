@@ -328,7 +328,7 @@ static int dem_layer_load_list_thread ( dem_load_thread_data *dltd, gpointer thr
   //gdk_threads_enter();
   // Test is helpful to prevent Gtk-CRITICAL warnings if the program is exitted whilst loading
   if ( IS_VIK_LAYER(dltd->vdl) )
-    vik_layer_emit_update ( VIK_LAYER(dltd->vdl), TRUE ); // Yes update from background thread
+    vik_layer_emit_update ( VIK_LAYER(dltd->vdl) ); // NB update from background thread
   //gdk_threads_leave();
 
   return result;
@@ -1097,7 +1097,7 @@ static void dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
     g_object_weak_unref ( G_OBJECT(p->vdl), weak_ref_cb, p );
 
     if ( dem_layer_add_file ( p->vdl, p->dest ) )
-      vik_layer_emit_update ( VIK_LAYER(p->vdl), TRUE ); // Yes update from background thread
+      vik_layer_emit_update ( VIK_LAYER(p->vdl) ); // NB update from background thread
   }
   g_mutex_unlock ( p->mutex );
   //gdk_threads_leave();
@@ -1163,7 +1163,7 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
     g_free ( tmp );
   }
   else
-    vik_layer_emit_update ( VIK_LAYER(vdl), FALSE );
+    vik_layer_emit_update ( VIK_LAYER(vdl) );
 
   g_free ( dem_file );
   g_free ( full_path );
