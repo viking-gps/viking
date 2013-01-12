@@ -124,9 +124,9 @@ typedef struct {
 static void gps_session_delete(GpsSession *sess);
 
 static gchar *params_groups[] = {
-  "Data Mode",
+  N_("Data Mode"),
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  "Realtime Tracking Mode",
+  N_("Realtime Tracking Mode"),
 #endif
 };
 
@@ -134,9 +134,9 @@ enum {GROUP_DATA_MODE, GROUP_REALTIME_MODE};
 
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
 static gchar *params_vehicle_position[] = {
-  "Keep vehicle at center",
-  "Keep vehicle on screen",
-  "Disable",
+  N_("Keep vehicle at center"),
+  N_("Keep vehicle on screen"),
+  N_("Disable"),
   NULL
 };
 enum {
