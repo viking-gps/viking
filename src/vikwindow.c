@@ -72,6 +72,7 @@ static void window_finalize ( GObject *gob );
 static GObjectClass *parent_class;
 
 static void window_set_filename ( VikWindow *vw, const gchar *filename );
+static const gchar *window_get_filename ( VikWindow *vw );
 
 static VikWindow *window_new ();
 
@@ -612,7 +613,7 @@ static gboolean delete_event( VikWindow *vw )
       _("Do you want to save the changes you made to the document \"%s\"?\n"
 	"\n"
 	"Your changes will be lost if you don't save them."),
-      vw->filename ? a_file_basename ( vw->filename ) : _("Untitled") ) );
+      window_get_filename ( vw ) ) );
     gtk_dialog_add_buttons ( dia, _("Don't Save"), GTK_RESPONSE_NO, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_YES, NULL );
     switch ( gtk_dialog_run ( dia ) )
     {
@@ -2059,16 +2060,22 @@ static void window_set_filename ( VikWindow *vw, const gchar *filename )
   if ( filename == NULL )
   {
     vw->filename = NULL;
-    file = _("Untitled");
   }
   else
   {
     vw->filename = g_strdup(filename);
-    file = a_file_basename ( filename );
   }
+
+  /* Refresh window's title */
+  file = window_get_filename ( vw );
   title = g_strdup_printf( "%s - Viking", file );
   gtk_window_set_title ( GTK_WINDOW(vw), title );
   g_free ( title );
+}
+
+static const gchar *window_get_filename ( VikWindow *vw )
+{
+  return vw->filename ? a_file_basename ( vw->filename ) : _("Untitled");
 }
 
 GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode )
@@ -2379,7 +2386,7 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_dia), TRUE );
   }
   // Auto append / replace extension with '.vik' to the suggested file name as it's going to be a Viking File
-  gchar* auto_save_name = strdup ( vw->filename ? a_file_basename ( vw->filename ) : _("Untitled") );
+  gchar* auto_save_name = strdup ( window_get_filename ( vw ) );
   if ( ! check_file_ext ( auto_save_name, ".vik" ) )
     auto_save_name = g_strconcat ( auto_save_name, ".vik", NULL );
 
