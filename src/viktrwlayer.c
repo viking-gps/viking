@@ -77,17 +77,18 @@
 #define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=js"
 #endif
 
-#define VIK_TRW_LAYER_TRACK_GC 5
+#define VIK_TRW_LAYER_TRACK_GC 6
 #define VIK_TRW_LAYER_TRACK_GCS 10
 #define VIK_TRW_LAYER_TRACK_GC_BLACK 0
 #define VIK_TRW_LAYER_TRACK_GC_SLOW 1
 #define VIK_TRW_LAYER_TRACK_GC_AVER 2
 #define VIK_TRW_LAYER_TRACK_GC_FAST 3
 #define VIK_TRW_LAYER_TRACK_GC_STOP 4
+#define VIK_TRW_LAYER_TRACK_GC_SINGLE 5
 
 #define DRAWMODE_BY_TRACK 0
 #define DRAWMODE_BY_SPEED 1
-#define DRAWMODE_ALL_BLACK 2
+#define DRAWMODE_ALL_SAME_COLOR 2
 // Note using DRAWMODE_BY_SPEED may be slow especially for vast numbers of trackpoints
 //  as we are (re)calculating the colour for every point
 
@@ -148,6 +149,7 @@ struct _VikTrwLayer {
   gdouble track_draw_speed_factor;
   GArray *track_gc;
   GdkGC *track_1color_gc;
+  GdkColor track_color;
   GdkGC *current_track_gc;
   // Separate GC for a track's potential new point as drawn via separate method
   //  (compared to the actual track points drawn in the main trw_layer_draw_track function)
@@ -445,7 +447,7 @@ enum {
 static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images") };
 enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES };
 
-static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Speed"), N_("All Tracks Black"), 0 };
+static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Speed"), N_("All Tracks Same Color"), NULL };
 static gchar *params_wpsymbols[] = { N_("Filled Square"), N_("Square"), N_("Circle"), N_("X"), 0 };
 
 #define MIN_POINT_SIZE 2
@@ -487,6 +489,8 @@ VikLayerParam trw_layer_params[] = {
   { "routes_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL },
 
   { "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Drawing Mode:"), VIK_LAYER_WIDGET_COMBOBOX, params_drawmodes, NULL, NULL },
+  { "trackcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, N_("All Tracks Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL,
+    N_("The color used when 'All Tracks Same Color' drawing mode is selected") },
   { "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Lines"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL },
   { "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL },
   { "drawdirections", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Direction"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL },
@@ -529,6 +533,7 @@ enum {
   PARAM_RV,
   // Tracks
   PARAM_DM,
+  PARAM_TC,
   PARAM_DL,
   PARAM_LT,
   PARAM_DD,
@@ -869,6 +874,10 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_WV: vtl->waypoints_visible = data.b; break;
     case PARAM_RV: vtl->routes_visible = data.b; break;
     case PARAM_DM: vtl->drawmode = data.u; break;
+    case PARAM_TC:
+      vtl->track_color = data.c;
+      trw_layer_new_track_gcs ( vtl, vp );
+      break;
     case PARAM_DP: vtl->drawpoints = data.b; break;
     case PARAM_DPS:
       if ( data.u >= MIN_POINT_SIZE && data.u <= MAX_POINT_SIZE )
@@ -938,6 +947,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WV: rv.b = vtl->waypoints_visible; break;
     case PARAM_RV: rv.b = vtl->routes_visible; break;
     case PARAM_DM: rv.u = vtl->drawmode; break;
+    case PARAM_TC: rv.c = vtl->track_color; break;
     case PARAM_DP: rv.b = vtl->drawpoints; break;
     case PARAM_DPS: rv.u = vtl->drawpoints_size; break;
     case PARAM_DE: rv.b = vtl->drawelevation; break;
@@ -1339,9 +1349,9 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
         main_gc = dp->vtl->track_1color_gc;
 	break;
       default:
-        // Mostly for DRAWMODE_ALL_BLACK
+        // Mostly for DRAWMODE_ALL_SAME_COLOR
         // but includes DRAWMODE_BY_SPEED, main_gc is set later on as necessary
-        main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_BLACK);
+        main_gc = g_array_index(dp->vtl->track_gc, GdkGC *, VIK_TRW_LAYER_TRACK_GC_SINGLE);
         break;
       }
     }
@@ -1809,6 +1819,8 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
   gc[VIK_TRW_LAYER_TRACK_GC_AVER] = vik_viewport_new_gc ( vp, "#D2CD26", width ); // yellow-ish
   gc[VIK_TRW_LAYER_TRACK_GC_FAST] = vik_viewport_new_gc ( vp, "#2B8700", width ); // green-ish
 
+  gc[VIK_TRW_LAYER_TRACK_GC_SINGLE] = vik_viewport_new_gc_from_color ( vp, &(vtl->track_color), width );
+
   g_array_append_vals ( vtl->track_gc, gc, VIK_TRW_LAYER_TRACK_GC );
 }
 
@@ -1824,6 +1836,8 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
 
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
   pango_layout_set_font_description (rv->wplabellayout, GTK_WIDGET(vp)->style->font_desc);
+
+  gdk_color_parse ( "#000000", &(rv->track_color) ); // Black
 
   trw_layer_new_track_gcs ( rv, vp );
 
