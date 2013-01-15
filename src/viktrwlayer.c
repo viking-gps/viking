@@ -3171,15 +3171,26 @@ static void trw_layer_new_wp ( gpointer lav[2] )
     vik_layers_panel_emit_update ( vlp );
 }
 
+static void new_track_create_common ( VikTrwLayer *vtl, gchar *name )
+{
+  vtl->current_track = vik_track_new();
+  vtl->current_track->visible = TRUE;
+  if ( vtl->drawmode == DRAWMODE_ALL_SAME_COLOR )
+    // Create track with the preferred colour from the layer properties
+    vtl->current_track->color = vtl->track_color;
+  else
+    gdk_color_parse ( "#000000", &(vtl->current_track->color) );
+  vtl->current_track->has_color = TRUE;
+  vik_trw_layer_add_track ( vtl, name, vtl->current_track );
+}
+
 static void trw_layer_new_track ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
 
   if ( ! vtl->current_track ) {
     gchar *name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track")) ;
-    vtl->current_track = vik_track_new();
-    vtl->current_track->visible = TRUE;
-    vik_trw_layer_add_track ( vtl, name, vtl->current_track );
+    new_track_create_common ( vtl, name );
 
     vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );
   }
@@ -7774,9 +7785,7 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
     gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track"));
     if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name, FALSE ) ) )
     {
-      vtl->current_track = vik_track_new();
-      vtl->current_track->visible = TRUE;
-      vik_trw_layer_add_track ( vtl, name, vtl->current_track );
+      new_track_create_common ( vtl, name );
     }
     else
       return TRUE;
