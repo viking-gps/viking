@@ -8276,6 +8276,7 @@ static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mo
     vtl->coord_mode = dest_mode;
     g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_convert, &dest_mode );
     g_hash_table_foreach ( vtl->tracks, (GHFunc) track_convert, &dest_mode );
+    g_hash_table_foreach ( vtl->routes, (GHFunc) track_convert, &dest_mode );
   }
 }
 
