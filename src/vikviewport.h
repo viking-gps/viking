@@ -179,7 +179,8 @@ void vik_viewport_draw_arc ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint 
 void vik_viewport_draw_polygon ( VikViewport *vvp, GdkGC *gc, gboolean filled, GdkPoint *points, gint npoints );
 void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, PangoLayout *layout );
 
-
+/* Utilities */
+void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, gint y2, gdouble *angle, gdouble *baseangle );
 
 G_END_DECLS
 

@@ -957,29 +957,8 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   /* draw compass */
 #define CR 80
 #define CW 4
-  angle = atan2(dy, dx) + M_PI_2;
 
-  if ( vik_viewport_get_drawmode ( vvp ) == VIK_VIEWPORT_DRAWMODE_UTM) {
-    VikCoord test;
-    struct LatLon ll;
-    struct UTM u;
-    gint tx, ty;
-
-    vik_viewport_screen_to_coord ( vvp, x1, y1, &test );
-    vik_coord_to_latlon ( &test, &ll );
-    ll.lat += vik_viewport_get_ympp ( vvp ) * vik_viewport_get_height ( vvp ) / 11000.0; // about 11km per degree latitude
-    a_coords_latlon_to_utm ( &ll, &u );
-    vik_coord_load_from_utm ( &test, VIK_VIEWPORT_DRAWMODE_UTM, &u );
-    vik_viewport_coord_to_screen ( vvp, &test, &tx, &ty );
-
-    baseangle = M_PI - atan2(tx-x1, ty-y1);
-    angle -= baseangle;
-  }
-
-  if (angle<0) 
-    angle+=2*M_PI;
-  if (angle>2*M_PI)
-    angle-=2*M_PI;
+  vik_viewport_compute_bearing ( vvp, x1, y1, x2, y2, &angle, &baseangle );
 
   {
     GdkColor color;

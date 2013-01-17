@@ -1305,3 +1305,46 @@ void vik_viewport_add_logo ( VikViewport *vp, const GdkPixbuf *logo )
     }
   }
 }
+
+/**
+ * vik_viewport_compute_bearing:
+ * @vp: self object
+ * @x1: screen coord
+ * @y1: screen coord
+ * @x2: screen coord
+ * @y2: screen coord
+ * @angle: bearing in Radian (output)
+ * @baseangle: UTM base angle in Radian (output)
+ * 
+ * Compute bearing.
+ */
+void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, gint y2, gdouble *angle, gdouble *baseangle )
+{
+  gdouble len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+  gdouble dx = (x2-x1)/len*10;
+  gdouble dy = (y2-y1)/len*10;
+
+  *angle = atan2(dy, dx) + M_PI_2;
+
+  if ( vik_viewport_get_drawmode ( vp ) == VIK_VIEWPORT_DRAWMODE_UTM) {
+    VikCoord test;
+    struct LatLon ll;
+    struct UTM u;
+    gint tx, ty;
+
+    vik_viewport_screen_to_coord ( vp, x1, y1, &test );
+    vik_coord_to_latlon ( &test, &ll );
+    ll.lat += vik_viewport_get_ympp ( vp ) * vik_viewport_get_height ( vp ) / 11000.0; // about 11km per degree latitude
+    a_coords_latlon_to_utm ( &ll, &u );
+    vik_coord_load_from_utm ( &test, VIK_VIEWPORT_DRAWMODE_UTM, &u );
+    vik_viewport_coord_to_screen ( vp, &test, &tx, &ty );
+
+    *baseangle = M_PI - atan2(tx-x1, ty-y1);
+    *angle -= *baseangle;
+  }
+
+  if (*angle < 0)
+    *angle += 2*M_PI;
+  if (*angle > 2*M_PI)
+    *angle -= 2*M_PI;
+}

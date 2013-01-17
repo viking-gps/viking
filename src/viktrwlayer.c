@@ -7473,11 +7473,14 @@ static gchar* distance_string (gdouble distance)
 /*
  * Actually set the message in statusbar
  */
-static void statusbar_write (const gchar *distance_string, gdouble elev_gain, gdouble elev_loss, VikTrwLayer *vtl )
+static void statusbar_write (gdouble distance, gdouble elev_gain, gdouble elev_loss, gdouble last_step, gdouble angle, VikTrwLayer *vtl )
 {
   // Only show elevation data when track has some elevation properties
   gchar str_gain_loss[64];
   str_gain_loss[0] = '\0';
+  gchar str_last_step[64];
+  str_last_step[0] = '\0';
+  gchar *str_total = distance_string (distance);
   
   if ( (elev_gain > 0.1) || (elev_loss > 0.1) ) {
     if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_METRES )
@@ -7485,11 +7488,20 @@ static void statusbar_write (const gchar *distance_string, gdouble elev_gain, gd
     else
       g_sprintf(str_gain_loss, _(" - Gain %dft:Loss %dft"), (int)VIK_METERS_TO_FEET(elev_gain), (int)VIK_METERS_TO_FEET(elev_loss));
   }
+  
+  if ( last_step > 0 ) {
+      gchar *tmp = distance_string (last_step);
+      g_sprintf(str_last_step, _(" - Bearing %3.1f° - Step %s"), angle*180.0/M_PI, tmp);
+      g_free ( tmp );
+  }
+  
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
 
   // Write with full gain/loss information
-  gchar *msg = g_strdup_printf ( "%s%s", distance_string, str_gain_loss);
-  vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, msg );
+  gchar *msg = g_strdup_printf ( "Total %s%s%s", str_total, str_last_step, str_gain_loss);
+  vik_statusbar_set_message ( vik_window_get_statusbar (vw), VIK_STATUSBAR_INFO, msg );
   g_free ( msg );
+  g_free ( str_total );
 }
 
 /*
@@ -7503,11 +7515,8 @@ static void update_statusbar ( VikTrwLayer *vtl )
 
   /* Find out actual distance of current track */
   gdouble distance = vik_track_get_length (vtl->current_track);
-  gchar *str = distance_string (distance);
 
-  statusbar_write (str, elev_gain, elev_loss, vtl);
-
-  g_free (str);
+  statusbar_write (distance, elev_gain, elev_loss, 0, 0, vtl);
 }
 
 
@@ -7559,7 +7568,8 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     struct LatLon ll;
     vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
     vik_coord_to_latlon ( &coord, &ll );
-    distance = distance + vik_coord_diff( &coord, &(last_tpt->coord));
+    gdouble last_step = vik_coord_diff( &coord, &(last_tpt->coord));
+    distance = distance + last_step;
 
     // Get elevation data
     gdouble elev_gain, elev_loss;
@@ -7579,7 +7589,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
 	  elev_loss += last_tpt->altitude - elev_new;
       }
     }
-      
+    
     gchar *str = distance_string (distance);
 
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
@@ -7608,8 +7618,12 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     passalong->drawable = GTK_WIDGET(vvp)->window;
     passalong->gc = vtl->current_track_newpoint_gc;
 
+    gdouble angle;
+    gdouble baseangle;
+    vik_viewport_compute_bearing ( vvp, x1, y1, event->x, event->y, &angle, &baseangle );
+
     // Update statusbar with full gain/loss information
-    statusbar_write (str, elev_gain, elev_loss, vtl);
+    statusbar_write (distance, elev_gain, elev_loss, last_step, angle, vtl);
 
     g_free (str);
 

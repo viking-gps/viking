@@ -220,6 +220,20 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 <listitem><para>The zoom factor</para></listitem>
 <listitem><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></listitem>
 </itemizedlist>
+<para>When creating a track/route, the statusbar also displays some information about the track/route.</para>
+<figure>
+<title>Statusbar</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/trw_statusbar.png"/>
+</screenshot>
+</figure>
+<para>This part of the statusbar displays:
+<itemizedlist>
+<listitem><para>The total distance of the track/route (including currently edited segment).</para></listitem>
+<listitem><para>The bearing of the currently edited segment.</para></listitem>
+<listitem><para>The distance of the currently edited segment.</para></listitem>
+</itemizedlist>
+</para>
 </section>
 
 <section><title>Projections</title>
