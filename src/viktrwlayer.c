@@ -308,6 +308,7 @@ static void trw_layer_gps_upload ( gpointer lav[2] );
 //  Most track handling functions can handle operating on the route list
 //  However these ones are easier in separate functions
 static void trw_layer_auto_routes_view ( gpointer lav[2] );
+static void trw_layer_delete_all_routes ( gpointer lav[2] );
 static void trw_layer_delete_routes_from_selection ( gpointer lav[2] );
 
 /* pop-up items */
@@ -3486,6 +3487,18 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Tracks _From Selection...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_tracks_from_selection), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Delete _All Routes") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_routes), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Delete Routes From Selection...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_routes_from_selection), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
   
