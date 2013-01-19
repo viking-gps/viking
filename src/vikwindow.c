@@ -38,6 +38,7 @@
 #include "vikexttools.h"
 #include "garminsymbols.h"
 #include "vikmapslayer.h"
+#include "geonamessearch.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -2462,6 +2463,13 @@ static void acquire_from_geotag ( GtkAction *a, VikWindow *vw )
 }
 #endif
 
+#ifdef VIK_CONFIG_GEONAMES
+static void acquire_from_wikipedia ( GtkAction *a, VikWindow *vw )
+{
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_wikipedia_interface );
+}
+#endif
+
 static void goto_default_location( GtkAction *a, VikWindow *vw)
 {
   struct LatLon ll;
@@ -3124,6 +3132,9 @@ static GtkActionEntry entries[] = {
 #endif
 #ifdef VIK_CONFIG_GEOTAG
   { "AcquireGeotag", NULL,               N_("From Geotagged _Images..."), NULL,         N_("Create waypoints from geotagged images"),       (GCallback)acquire_from_geotag   },
+#endif
+#ifdef VIK_CONFIG_GEONAMES
+  { "AcquireWikipedia", NULL,            N_("From _Wikipedia Waypoints"), NULL,         N_("Create waypoints from Wikipedia items in the current view"), (GCallback)acquire_from_wikipedia },
 #endif
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },
