@@ -452,10 +452,13 @@ GPX and KML files may also be appended, but this is exactly the same as the norm
 <section id="acquire" xreflabel="acquire"><title>Acquire</title>
 
 <para>
-Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Acquire</guisubmenu></menuchoice> menu only.
+Available on the <menuchoice><guimenu>File</guimenu><guisubmenu>Acquire</guisubmenu></menuchoice> menu and from the <xref linkend="TrackWaypoint"/> layer menu.
 </para>
 <para>
-If successful, these methods place the results in a new TrackWaypoint layer.
+If used from the <guimenu>File</guimenu> menu and a TrackWaypoint layer is not currently selected, these methods place the results in a new TrackWaypoint layer. When a TrackWaypoint layer is selected, then using the <menuchoice><guimenu>File</guimenu><guisubmenu>Acquire</guisubmenu></menuchoice> will put the results into the selected TrackWaypoint layer.
+</para>
+<para>
+If used from the <xref linkend="TrackWaypoint"/> layer menu these methods place the results in that TrackWaypoint layer.
 </para>
 
 <section>
@@ -505,7 +508,7 @@ Enables automatic creation of waypoints from geotagged images.
 </para>
 <para>
 This menu opens a dialog to select such image files.
-If the image files have geotag information in them, then a TrackWaypoint layer with named waypoints positioned at the location of each image with a thumbnail of that image is created.
+If the image files have geotag information in them, then a <xref linkend="TrackWaypoint"/> layer with named waypoints positioned at the location of each image with a thumbnail of that image is created.
 </para>
 </section>
 
@@ -607,7 +610,7 @@ The cut/copy/paste options can be accessed in a variety of ways once the layer h
 See the individual section for detail about each layer.
 </para>
 
-<section><title>TrackWaypoint Layer</title>
+<section id="TrackWaypoint" xreflabel="TrackWaypoint"><title>TrackWaypoint Layer</title>
 <para>
 TrackWaypoint layers display GPS data (tracks, routes and waypoints).
 </para>
@@ -1069,7 +1072,7 @@ Various options allow control of how the geotagging process is performed:
 <para>
 The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
-Expand the GPS layer in the layers panel to see the two TrackWaypoint layers it
+Expand the GPS layer in the layers panel to see the two <xref linkend="TrackWaypoint"/> layers it
 uses for uploading and downloading. To upload, download, or use
 realtime tracking, right-click the GPS layer and click the appropiate
 menu item.
@@ -1193,7 +1196,7 @@ Force a refresh of all visible map tiles.
 This layer is a container layer to hold other layers. There is always an initial and controlling 'Top Layer' that can not be removed, although it can be renamed.
 </para>
 <para>
-This layer type is useful for grouping other layers, especially TrackWaypoint layers, in whatever categories are relevant to you: such as by activity, location or date.
+This layer type is useful for grouping other layers, especially <xref linkend="TrackWaypoint"/> layers, in whatever categories are relevant to you: such as by activity, location or date.
 Here are some suggestions:
 <itemizedlist>
 <listitem><para>Hiking</para></listitem>
@@ -1564,7 +1567,7 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <para>Note: for Windows systems, viewing images associated with Waypoints always uses the system's default image viewer.</para>
 </section>
 <section><title>External GPX programs</title>
-<para>Allows setting the programs invoked via the TrackWaypoint Layer -> Export Layer -> Open With 'program'</para>
+<para>Allows setting the programs invoked via the <xref linkend="TrackWaypoint"/> Layer menu <menuchoice><guimenu>Export Layer</guimenu><guisubmenu>Open With 'program'</guisubmenu></menuchoice></para>
 <para>Two options are given so that it can be configured for various uses such as:</para>
 <itemizedlist>
 <listitem><para>An OSM editor (default)</para></listitem>
