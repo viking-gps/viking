@@ -509,6 +509,16 @@ If the image files have geotag information in them, then a TrackWaypoint layer w
 </para>
 </section>
 
+<section>
+<title>From Wikipedia Waypoints</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From Wikipedia Waypoints</guimenuitem></menuchoice>
+</para>
+<para>
+This gets 'interesting' points from Wikipedia for the specified view: either within the extent of layer bounds or within the current viewport boundary.
+</para>
+</section>
+
 </section> <!-- End Acquire -->
 
 <section><title>Print</title>
@@ -689,12 +699,6 @@ Version1.1+: An individual track can be exported to a GPX file via the track men
 <section id="new_wp"><title>New Waypoint</title>
 <para>
 This opens a dialog box to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
-</para>
-</section>
-
-<section><title>Add Wikipedia Waypoints</title>
-<para>
-This gets 'interesting' points from Wikipedia for the specified view: either within the extent of layer bounds or within the current viewport boundary.
 </para>
 </section>
 
