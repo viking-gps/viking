@@ -578,13 +578,13 @@ This is only available in UTM mode.
 Layers supported by &appname; are:
 </para>
 <itemizedlist>
-<listitem><para>Aggregate</para></listitem>
-<listitem><para>TrackWaypoint</para></listitem>
-<listitem><para>GPS</para></listitem>
-<listitem><para>DEM</para></listitem>
-<listitem><para>Coord</para></listitem>
-<listitem><para>Map</para></listitem>
-<listitem><para>GeoRef</para></listitem>
+<listitem><para><xref linkend="Aggregate"/></para></listitem>
+<listitem><para><xref linkend="TrackWaypoint"/></para></listitem>
+<listitem><para><xref linkend="GPS"/></para></listitem>
+<listitem><para><xref linkend="DEM"/></para></listitem>
+<listitem><para><xref linkend="Coordinate"/></para></listitem>
+<listitem><para><xref linkend="Maps"/></para></listitem>
+<listitem><para><xref linkend="GeoRef"/></para></listitem>
 </itemizedlist>
 <para>
 For each layer there are a few standard options:
@@ -609,6 +609,7 @@ The cut/copy/paste options can be accessed in a variety of ways once the layer h
 <para>
 See the individual section for detail about each layer.
 </para>
+</section>
 
 <section id="TrackWaypoint" xreflabel="TrackWaypoint"><title>TrackWaypoint Layer</title>
 <para>
@@ -1068,7 +1069,7 @@ Various options allow control of how the geotagging process is performed:
 
 </section><!-- TRW Layer END -->
 
-<section id="gps_layer" xreflabel="GPS Layer"><title>GPS Layer</title>
+<section id="GPS" xreflabel="GPS"><title>GPS Layer</title>
 <para>
 The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
@@ -1115,7 +1116,7 @@ There are several options to quickly delete a subsection of data:
 
 </section><!-- End GPS -->
 
-<section><title>DEM (Digital Elevation Model) Layer</title>
+<section id="DEM" xreflabel="DEM"><title>DEM (Digital Elevation Model) Layer</title>
 <para>
 This layer provides elevation data from the <ulink url="http://www2.jpl.nasa.gov/srtm/">Shuttle Radar Topography Mission (SRTM)</ulink>
 </para>
@@ -1140,7 +1141,7 @@ Using many DEMs is CPU/memory intensive. Depending on your computer's capability
 </section><!-- End DEM -->
 
 
-<section><title>Maps Layer</title>
+<section id="Maps" xreflabel="Maps"><title>Maps Layer</title>
 <para>
 This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible.
 You will need an open internet connection when you are downloading maps, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
@@ -1191,7 +1192,7 @@ Force a refresh of all visible map tiles.
 
 </section><!-- End Maps -->
 
-<section><title>Aggregrate Layer</title>
+<section id="Aggregate" xreflabel="Aggregate"><title>Aggregate Layer</title>
 <para>
 This layer is a container layer to hold other layers. There is always an initial and controlling 'Top Layer' that can not be removed, although it can be renamed.
 </para>
@@ -1226,7 +1227,7 @@ Add a new layer of the selected type.
 
 </section><!-- End Agg -->
 
-<section><title>GeoRef Layer</title>
+<section id="GeoRef" xreflabel="GeoRef"><title>GeoRef Layer</title>
 <para>
 This layer allows one to use any image as a map. You will need to tell it how to align the map to a position in the world and the scale of map.
 </para>
@@ -1252,13 +1253,12 @@ Opens a file save dialog to save the scale and position information as a <ulink 
 
 </section><!-- End GeoRef -->
 
-<section><title>Coord Layer</title>
+<section id="Coordinate" xreflabel="Coordinate"><title>Coordinate Layer</title>
 <para>
 This layer is allows drawing of grid lines on the viewport.
 </para>
 </section><!-- End Coord -->
 
-</section>
 
 <section id="tools" xreflabel="Tools"><title>Tools</title>
 <para>
@@ -1350,7 +1350,7 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</key
 
 <section><title>TrackWaypoint Layer Tools</title>
 <para>
-You must have a TrackWaypoint Layer selected to use these tools.
+You must have a <xref linkend="TrackWaypoint"/> Layer selected to use these tools.
 </para>
 <section id="createwptool" xreflabel="Create Waypoint"><title>Create Waypoint</title>
 <para>
@@ -1434,7 +1434,7 @@ Right-click: undo last routing (only track removed - not any waypoints)
 
 <section><title>Georef Map Layer Tools</title>
 <para>
-You must have a Georef Map Layer selected to use these tools.
+You must have a <xref linkend="GeoRef"/> Map Layer selected to use these tools.
 </para>
 <section><title>Georef zoom</title>
 <para>
@@ -1458,7 +1458,7 @@ Drag to move the georeferenced map.
 
 <section><title>Map Download</title>
 <para>
-You must have a Map Layer selected to use this.
+You must have a <xref linkend="Maps"/> Layer selected to use this.
 </para>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mapdl_18.png"/></guiicon>
@@ -1473,7 +1473,7 @@ Right-click to redownload bad/all tiles. Right-click and drag to redownload bad/
 
 <section><title>DEM Download</title>
 <para>
-You must have a DEM Layer selected to use this.
+You must have a <xref linkend="DEM"/> Layer selected to use this.
 </para>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/demdl_18.png"/></guiicon>
@@ -1753,7 +1753,7 @@ automatically.
 <step><para>Keep the download source as is (SRTM Global 90m), hit <guilabel>OK</guilabel>.</para></step>
 </procedure>
 
-<para>In the layer listing on the left, the DEM layer should reside
+<para>In the layer listing on the left, the <xref linkend="DEM"/> layer should reside
 above the map layer. If this is not the case, highlight the DEM layer
 an shift it one up (using the arrow up button).
 </para>
@@ -1781,12 +1781,12 @@ You can also alter the Min. and Max. elevation in this dialogue.
 </section>
 <section><title>GPS Track with Height Profile</title>
 <procedure>
-<step><para>Uncheck the DEM layer (the map is shown again)</para></step>
+<step><para>Uncheck the <xref linkend="DEM"/> layer (the map is shown again)</para></step>
 <step>
 	<para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New TrackWaypoint Layer</guimenuitem></menuchoice></para>
 	<para>Ensure the new track layer is above the map layer.</para>
 </step>
-<step><para>Expand the TrackWaypoint layer, select <guimenuitem>Tracks</guimenuitem></para></step>
+<step><para>Expand the <xref linkend="TrackWaypoint"/> layer, select <guimenuitem>Tracks</guimenuitem></para></step>
 <step><para>In the tools menu choose <guiicon><inlinegraphic fileref="figures/addtr_18.png"/></guiicon> <guibutton>Create Track</guibutton>
 </para></step>
 <step><para>Leftclick in the map window, enter a name</para></step>
@@ -1809,7 +1809,7 @@ In order to save this setting for later usage
 </section>
 <section><title>Usecase: offline data for holiday</title>
 <para>
-Suppose you want to have the map and DEM data offline for your holiday in Italy near Bologna.
+Suppose you want to have the <xref linkend="Maps"/> and <xref linkend="DEM"/> data offline for your holiday in Italy near Bologna.
 </para>
 <procedure>
 <step><para>Start a new &appname; session.</para></step>
@@ -1822,7 +1822,7 @@ This allows you to delete the map stuff after holiday without purging the rest o
 <step><para>check <guilabel>autodownload map</guilabel></para></step>
 <step><para>keep <guilabel>viking zoom level</guilabel></para></step>
 <step><para>zoom out to 1024</para></step>
-<step><para>add a DEM layer (as discussed above)</para></step>
+<step><para>add a <xref linkend="DEM"/> layer (as discussed above)</para></step>
 <step><para>download the DEM data</para></step>
 </procedure>
 <para>In the &app; version discussed here, the DEM data automatically
@@ -1867,16 +1867,15 @@ It is possible to upload data directly from &appname; to OpenStreetMap.
 <formalpara>
 <title>Upload a layer</title>
 <para>
-One solution is to upload whole a TrackWaypoint layer. To do this,
+One solution is to upload whole a <xref linkend="TrackWaypoint"/> layer. To do this,
 simply select the layer and right click on it. Then, select <guimenuitem>Upload to
 OSM</guimenuitem>.
 </para>
 </formalpara>
 <formalpara>
 <title>Upload a single track</title>
-<para>One solution is to upload whole a TrackWaypoint layer. To do
-this, simply select the layer and right click on it. Then, select
-<guimenuitem>Upload to OSM</guimenuitem>.
+<para>Another solution is to upload an individual track. Simply select the track and right click on it.
+Then select <guimenuitem>Upload to OSM</guimenuitem>.
 </para>
 </formalpara>
 <formalpara>
@@ -1887,7 +1886,7 @@ The email field is the email you used to subscribed into OpenStreetMap.
 The password field is the password you used with this account.
 The filename is the name you want your upload has on the server. This information is displayed by the osm server.
 The description is some descriptive information.
-The tags field is a white separated list of tag.
+The tags field is a white separated list of tags.
 </para> 
 </formalpara>
 </section>
@@ -1915,7 +1914,7 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 
 <section><title>Geotagging</title>
 <para>
-	This assumes you already have a map layer enabled for ease of use (if not see above to get one).
+	This assumes you already have a <xref linkend="Maps"/> layer enabled for ease of use (if not see above to get one).
 </para>
 <section><title>Manual Positioning</title>
 <para>
@@ -1924,7 +1923,7 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 	ATM this process only works on an individual image, so it will be tedious for handling lots of images.
 </para>
 <para>
-	First create a Track Waypoint layer or use an existing one; and select it in the Layers Panel.
+	First create a <xref linkend="TrackWaypoint"/> layer or use an existing one; and select it in the Layers Panel.
 	NB Make sure this layer is above the map layer in the Layers Panel list.
 	Create a new waypoint (or move an existing one) to exact location desired:
 <itemizedlist>
@@ -1974,14 +1973,14 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 	so currently this functionality is disabled in <trademark>Windows</trademark> builds of &appname;
 </para>
 <para>
-	This assumes you already have a map layer enabled for ease of use (if not see above to get one).
+	This assumes you already have a <xref linkend="Maps"/> layer enabled for ease of use (if not see above to get one).
 </para>
 <para>
 	Turn on the GPS Device, ensure it has figured out it's location and plug it in to your computer.
 </para>
 <section><title>Set Up GPS Layer</title>
 <para>
-	You will need a <xref linkend="gps_layer"/>. One can be added via <menuchoice><guimenu>Layers</guimenu><guisubmenu>Add GPS Layer</guisubmenu></menuchoice>.
+	You will need a <xref linkend="GPS"/> layer. One can be added via <menuchoice><guimenu>Layers</guimenu><guisubmenu>Add GPS Layer</guisubmenu></menuchoice>.
 </para>
 <para>
 	Adjust the <emphasis>Realtime Tracking Mode</emphasis> settings to interface with <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> as necessary. Normally the defaults should suffice.
