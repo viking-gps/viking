@@ -267,7 +267,7 @@ The &appname; automatic caching strategy is two fold:
 <itemizedlist>
 <listitem>
 <para>
-  If the age of the tile on disk is less than the specified tile age in the <link linkend="prefs_osm">preferences</link>,
+  If the age of the tile on disk is less than the specified tile age (see <xref linkend="prefs"/>),
   it will <emphasis>not</emphasis> attempt to contact the server to get a new version of the tile.
 </para>
 </listitem>
@@ -287,7 +287,7 @@ The &appname; automatic caching strategy is two fold:
 </note>
 </section>
 
-<section id="shortcut_keys"><title>Shortcut Keys</title>
+<section id="shortcut_keys" xreflabel="Shortcut Keys"><title>Shortcut Keys</title>
 <para>
 &appname; has several shortcut keys or key combinations for commands as listed in the main window along side the command.
 </para>
@@ -377,7 +377,7 @@ Besides it's own file type, &appname; can open (and save to via export methods) 
 <para>
 By default &appname; opens a default blank window centered on the home location.
 Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
-Each section (apart from the viewport) can be hidden via the <link linkend="shortcut_keys">keyboard shortcuts</link> or from the
+Each section (apart from the viewport) can be hidden using the <xref linkend="shortcut_keys"/> or from the
 <menuchoice><guimenu>View</guimenu><guisubmenu>Show</guisubmenu></menuchoice> choices.
 </para>
 <para>
@@ -386,7 +386,7 @@ However generally one window is enough for most purposes!
 </para>
 <para>
 Several operations apply at the window level as follows next.
-Also see the <link linkend="tools">Tools</link> section for the operational modes that generally work in conjunction with a selected layer.
+Also see <xref linkend="tools"/> for the operational modes that generally work in conjunction with a selected layer.
 </para>
 
 <section><title>New</title>
@@ -449,7 +449,7 @@ GPX and KML files may also be appended, but this is exactly the same as the norm
 </para>
 </section>
 
-<section id="acquire"><title>Acquire</title>
+<section id="acquire" xreflabel="acquire"><title>Acquire</title>
 
 <para>
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Acquire</guisubmenu></menuchoice> menu only.
@@ -711,7 +711,7 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 
 <section><title>Acquire</title>
 <para>
-This offers the same choice of <link linkend="acquire">Acquire</link> methods as on the <guimenu>File</guimenu> menu.
+This offers the same choice from <xref linkend="acquire"/> methods as on the <guimenu>File</guimenu> menu.
 However when invoked from here, the results will be stored in this layer (instead of creating a new one).
 </para>
 </section>
@@ -730,10 +730,10 @@ Tracks, Routes or Waypoints that are invisible will not be transferred.
 </para>
 </section>
 
-<section id="osm_upload"><title>Upload To OSM</title>
+<section id="osm_upload" xreflabel="Upload To OSM" ><title>Upload To OSM</title>
 <para>
 This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
-Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap account), these details can be stored in &appname; <link linkend="prefs_osm">preferences.</link>
+Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap account), these details can be stored in &appname; <xref linkend="prefs_osm"/>
 </para>
 <para>
  &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
@@ -1036,7 +1036,7 @@ Same as the layer <link linkend="new_wp">New Waypoint</link>.
 
 </section><!-- WP END -->
 
-<section id="geotagging"><title>Version1.3+: Geotag Images</title>
+<section id="geotagging" xreflabel="Geotagging"><title>Version1.3+: Geotag Images</title>
 <para>
 This dialog allows geotagging images (normally taken with a digital camera) via interpolation against a specific track or all tracks in the TrackWaypoint layer - depending on how it is invoked.
 </para>
@@ -1065,7 +1065,7 @@ Various options allow control of how the geotagging process is performed:
 
 </section><!-- TRW Layer END -->
 
-<section id="gps_layer"><title>GPS Layer</title>
+<section id="gps_layer" xreflabel="GPS Layer"><title>GPS Layer</title>
 <para>
 The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
@@ -1162,7 +1162,7 @@ Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServe
 </itemizedlist>
 
 <para>
-&appname; can be configured to handle additional maps. See <link linkend="extend_viking">Extending &appname;</link> for further detail.
+&appname; can be configured to handle additional maps. See <xref linkend="extend_viking"/> for further detail.
 </para>
 
 <section><title>Layer Operations</title>
@@ -1257,7 +1257,7 @@ This layer is allows drawing of grid lines on the viewport.
 
 </section>
 
-<section id="tools"><title>Tools</title>
+<section id="tools" xreflabel="Tools"><title>Tools</title>
 <para>
 &appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan.
 </para>
@@ -1330,7 +1330,7 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</key
 </para>
 </section>
 
-<section id="select"><title>Version1.1+: Select</title>
+<section id="select" xreflabel="Select"><title>Version1.1+: Select</title>
 <para>
 This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/select_18.png"/></guiicon>
 </para>
@@ -1349,7 +1349,7 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</key
 <para>
 You must have a TrackWaypoint Layer selected to use these tools.
 </para>
-<section><title>Create Waypoint</title>
+<section id="createwptool" xreflabel="Create Waypoint"><title>Create Waypoint</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addwp_18.png"/></guiicon>
 </para>
@@ -1407,7 +1407,7 @@ Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic filere
 <para>
 Opens an image viewer with the picture associated with the waypoint.
 By default this uses the default system image viewer.
-For Linux you can override this with the setting in the <link linkend="prefs_external">preferences.</link>
+For Linux you can override this with the setting in the <xref linkend="prefs_external"/>
 </para>
 </section>
 
@@ -1498,7 +1498,7 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 </section>
 
 <!-- Preferences -->
-<section id="prefs"><title>Preferences</title>
+<section id="prefs" xreflabel="Preferences"><title>Preferences</title>
 <section><title>General</title>
 <section><title>Localisation</title>
 <para>You can select units displayed by &appname; to best fit your usage.</para>
@@ -1554,7 +1554,7 @@ Generally if you have a system with lots of memory it's recommended to increase 
 </section>
 </section>
 
-<section id="prefs_external"><title>Export/External</title>
+<section id="prefs_external" xreflabel="Export/External Preferences"><title>Export/External</title>
 <section><title>KML Export Units</title>
 <para>Allows setting the units used when saved as the KML file type, such as Metric or Statue units</para>
 </section>
@@ -1573,9 +1573,9 @@ Generally if you have a system with lots of memory it's recommended to increase 
 </section>
 </section>
 
-<section id="prefs_osm"><title>OpenStreetMap Traces</title>
+<section id="prefs_osm" xreflabel="OpenStreetMap Traces Preferences"><title>OpenStreetMap Traces</title>
 <section><title>OSM Username + Password</title>
-<para>Store your OSM details here, so that you don't need to enter it in every time in the <link linkend="osm_upload">Upload to OSM</link> procedure.</para>
+<para>Store your OSM details here, so that you don't need to enter it in every time in the <xref linkend="osm_upload"/> procedure.</para>
 <warning>
 <para>
 Your OSM password will be stored in plain text.
@@ -1705,7 +1705,7 @@ the map. </para>
 	Then at any time you can return to this place by clicking on the <guibutton>Home</guibutton> icon on the toolbar.
 </para>
 <para>
-    You can also set the default location via specifing the exact latitude and longitude in the <link linkend="prefs">Preferences</link>.
+    You can also set the default location via specifing the exact latitude and longitude in the <xref linkend="prefs"/>.
 </para>
 </section>
 
@@ -1925,8 +1925,8 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 	NB Make sure this layer is above the map layer in the Layers Panel list.
 	Create a new waypoint (or move an existing one) to exact location desired:
 <itemizedlist>
-	<listitem><para>Select the New Waypoint tool, then left click on the map at the location desired, choosing an image to associate with it in the new waypoint dialog</para></listitem>
-	<listitem><para>Select the <link linkend="select">Select Tool</link>, then left click on waypoint to be moved. Left click again and drag the waypoint to the location desired</para></listitem>
+	<listitem><para>Select the <xref linkend="createwptool"/> tool, then left click on the map at the location desired, choosing an image to associate with it in the new waypoint dialog</para></listitem>
+	<listitem><para>Select the <xref linkend="select"/> tool, then left click on waypoint to be moved. Left click again and drag the waypoint to the location desired</para></listitem>
 </itemizedlist>
 	Then using the Select tool left click on waypoint to select it, then right click to access the Waypoint properties menu, then choose
 	<menuchoice><guimenu>Update Geotag on Image</guimenu><guisubmenu>Update</guisubmenu></menuchoice>
@@ -1943,8 +1943,8 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 	It helps if this is the track that was recorded at the time you took some photographs!
 </para>
 <para>
-	Select the track either from the layers panel on the left or via the viewport using the <link linkend="select">Select Tool</link>.
-	Then right click on it and chose the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> leading you to the <link linkend="geotagging">Geotagging Dialog</link>.
+	Select the track either from the layers panel on the left or via the viewport using the <xref linkend="select"/> tool.
+	Then right click on it and chose the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> leading you to the <xref linkend="geotagging"/> Dialog.
 </para>
 <para>
 	Load some images that where taken around the time the track log was recorded. Confirm the other options in the dialog - normally the defaults should be alright and select OK.
@@ -1978,7 +1978,7 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 </para>
 <section><title>Set Up GPS Layer</title>
 <para>
-	You will need a <link linkend="gps_layer">GPS Layer</link>. One can be added via <menuchoice><guimenu>Layers</guimenu><guisubmenu>Add GPS Layer</guisubmenu></menuchoice>.
+	You will need a <xref linkend="gps_layer"/>. One can be added via <menuchoice><guimenu>Layers</guimenu><guisubmenu>Add GPS Layer</guisubmenu></menuchoice>.
 </para>
 <para>
 	Adjust the <emphasis>Realtime Tracking Mode</emphasis> settings to interface with <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> as necessary. Normally the defaults should suffice.
@@ -1999,7 +1999,7 @@ See <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for fu
 </section>
 </section>
 
-<section id="extend_viking">
+<section id="extend_viking" xreflabel="Extending Viking">
     <title>Extending Viking</title>
 
       <para>Currently, &app; has some extention points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
