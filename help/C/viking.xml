@@ -632,6 +632,11 @@ To start creating them enter into a create mode via either the <guibutton>Create
 </para>
 
 <para>
+The sublayers also offer right click menu options.
+These are the same as those available at the TrackWaypoint level, but only those that relate to the sublayer type.
+</para>
+
+<para>
 By default routes are coloured red. Tracks are automatically assigned a spread of colours.
 </para>
 
@@ -653,19 +658,19 @@ Version1.1+: This will automatically move the viewport and select the best zoom 
 
 <section><title>View</title>
 
-<section><title>View All Tracks</title>
+<section id="track_view_all"><title>View All Tracks</title>
 <para>
 Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the tracks in the layer (ignoring positions of any routes or waypoints).
 </para>
 </section>
 
-<section><title>View All Routes</title>
+<section id="route_view_all"><title>View All Routes</title>
 <para>
 Version1.4+: This will automatically move the viewport and select the best zoom level to see the all the routes in the layer (ignoring positions of any tracks or waypoints).
 </para>
 </section>
 
-<section><title>View All Waypoints</title>
+<section id="wp_view_all"><title>View All Waypoints</title>
 <para>
 Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the waypoints in the layer (ignoring positions of any tracks or routes).
 </para>
@@ -679,7 +684,7 @@ This will automatically move the viewport to see the whole layer (i.e. tracks, r
 </para>
 </section>
 
-<section><title>Goto Waypoint</title>
+<section id="wp_goto"><title>Goto Waypoint</title>
 <para>
 This opens a dialog box to enter a name of waypoint to search for. If it is found the viewport is centred on it.
 </para>
@@ -700,10 +705,29 @@ Version1.1+: An individual track can be exported to a GPX file via the track men
 </para>
 </section>
 
+<section id="finish"><title>Finish Track or Route</title>
+<para>
+This is only available when a track or route is being created by the <xref linkend="track_create"/> or <xref linkend="route_create"/> tools.
+Selecting this option ends the creation of that individual track or route.
+</para>
+</section>
+
+<section><title>New</title>
 <section id="new_wp"><title>New Waypoint</title>
 <para>
 This opens a dialog box to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
 </para>
+</section>
+<section id="new_track"><title>New Track</title>
+<para>
+This turns on the <xref linkend="track_create"/> tool.
+</para>
+</section>
+<section id="new_route"><title>New Route</title>
+<para>
+This turns on the <xref linkend="route_create"/> tool.
+</para>
+</section>
 </section>
 
 <section><title>Geotag Images</title>
@@ -752,6 +776,28 @@ The password is transferred <emphasis role="bold">unencrypted</emphasis> in ever
 
 </section>
 
+<section><title>Delete</title>
+<para>Offers deletion of various parts of a TrackWaypoint layer:</para>
+<section id="delete_all_tracks"><title>Delete All Tracks</title>
+<para>Deletes all the tracks in this layer.</para>
+</section>
+<section id="delete_selection_tracks"><title>Delete Tracks from Selection</title>
+<para>Opens a dialog with list of all the tracks from this layer to choose the ones to delete.</para>
+</section>
+<section id="delete_all_routes"><title>Delete All Routes</title>
+<para>Deletes all the routes in this layer.</para>
+</section>
+<section id="delete_selection_routes"><title>Delete Routes from Selection</title>
+<para>Opens a dialog with list of all the routes from this layer to choose the ones to delete.</para>
+</section>
+<section id="delete_all_waypoints"><title>Delete All Waypoints</title>
+<para>Deletes all the waypoints in this layer.</para>
+</section>
+<section id="delete_selection_waypoints"><title>Delete Waypoints from Selection</title>
+<para>Opens a dialog with list of all the waypoints from this layer to choose the ones to delete.</para>
+</section>
+</section>
+
 <section><title>Filter</title>
 <section><title>Simplify All Tracks</title>
 <para>
@@ -791,6 +837,17 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 </section>
 
 </section><!-- End TRW Layer Options -->
+
+<section><title>Track and Route Sublayer Options</title>
+<para>Repeats options available at the TrackWaypoint level, but only those for tracks and routes:</para>
+<itemizedlist>
+<listitem><para>Finish Track or Route. Same as the layer <link linkend="finish_track">Finish Track or Route</link></para></listitem>
+<listitem><para>New Track or Route. Same as the layer <link linkend="new_track">New Track</link> or <link linkend="new_route">New Route</link></para></listitem>
+<listitem><para>View All Tracks or Routes. Same as the layer <link linkend="track_view_all">View All Tracks</link> or <link linkend="route_view_all">View All Routes</link></para></listitem>
+<listitem><para>Delete All Tracks or Routes. Same as the layer <link linkend="delete_all_tracks">Delete All Tracks</link> or <link linkend="delete_all_routes">Delete All Routes</link></para></listitem>
+<listitem><para>Delete Tracks or Routes from Selection. Same as the layer <link linkend="delete_selection_tracks">Delete Tracks from Selection</link> or <link linkend="delete_selection_routes">Delete Routes from Selection</link></para></listitem>
+</itemizedlist>
+</section>
 
 <section><title>Track and Route Properties</title>
 <para>
@@ -832,6 +889,13 @@ The following colors are used in the elevation-distance graph:
 </section>
 
 <section><title>Track and Route Operations</title>
+
+<section><title>Finish Track</title>
+<para>
+This is only available when a track is being created by the <xref linkend="track_create"/> tool.
+Selecting this option ends the creation of the individual track.
+</para>
+</section>
 
 <section><title>Goto</title>
 <para>
@@ -1006,6 +1070,17 @@ The record of the Google route is stored in the track's comment, so if the comme
 
 </section><!-- End Track Options -->
 
+<section><title>Waypoint Sublayer Options</title>
+<para>Repeats options available at the TrackWaypoint level, but only those for waypoints:</para>
+<itemizedlist>
+<listitem><para>New Waypoint. Same as the layer <link linkend="new_wp">New Waypoint</link></para></listitem>
+<listitem><para>View All Waypoints. Same as the layer <link linkend="wp_view_all">View All Waypoints</link></para></listitem>
+<listitem><para>Goto Waypoint. Same as the layer <link linkend="wp_goto">Goto Waypoint</link></para></listitem>
+<listitem><para>Delete All Waypoints. Same as the layer <link linkend="delete_all_waypoints">Delete All Waypoints</link></para></listitem>
+<listitem><para>Delete Waypoints from Selection. Same as the layer <link linkend="delete_selection_waypoints">Delete Waypoints from Selection</link></para></listitem>
+</itemizedlist>
+</section>
+
 <section><title>Waypoint Properties</title>
 
 <para>
@@ -1026,9 +1101,15 @@ This centers the viewport on the selected waypoint.
 </para>
 </section>
 
+<section><title>Visit Webpage</title>
+<para>
+If the waypoint's comment (or description) starts with 'http:' then this option is available and allows launching a web browser to go to the webpage.
+</para>
+</section>
+
 <section><title>Visit Geocache Webpage</title>
 <para>
-If the waypoint's name is in Geocache form (GCXXXXX) you can launch a web browser to go to the Geocache page.
+If the waypoint's name is in Geocache form (GCXXXXX) then this option is available and allows launching a web browser to go to the Geocache page.
 </para>
 </section>
 
@@ -1361,7 +1442,7 @@ Left click will open the new waypoint dialog using the specified position.
 </para>
 </section>
 
-<section><title>Create/Begin Track</title>
+<section id="track_create" xreflabel="Create Track"><title>Create Track</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addtr_18.png"/></guiicon>
 </para>
@@ -1371,7 +1452,23 @@ If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoi
 Right click or <keycap>Backspace</keycap>: undo one point.
 </para>
 <para>
-Double click or <keycap>Escape</keycap>: finish track creation.
+Double click or <keycap>Escape</keycap>: to finish track creation.
+Finishing the track is also available via the right click <xref linkend="TrackWaypoint"/> and track menus.
+</para>
+<para>
+One must finish the current track to be able to create another track.
+</para>
+</section>
+
+<section id="route_create" xreflabel="Create Route"><title>Create Route</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/vik_new_route_18.png"/></guiicon>
+</para>
+<para>
+This operates in exactly the same way as the <link linkend="track_create">Create Track</link> above.
+</para>
+<para>
+One must finish the current route to be able to create another route.
 </para>
 </section>
 
