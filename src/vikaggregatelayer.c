@@ -356,6 +356,58 @@ static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoord
   }
 }
 
+static void aggregate_layer_child_visibile_toggle ( gpointer data[2] )
+{
+  // Convert data back to correct types
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( data[0] );
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL ( data[1] );
+  VikLayer *vl;
+
+  // Loop around all (child) layers applying visibility setting
+  // This does not descend the tree if there are aggregates within aggregrate - just the first level of layers held
+  GList *iter = val->children;
+  while ( iter ) {
+    vl = VIK_LAYER ( iter->data );
+    vl->visible = !vl->visible;
+    // Also set checkbox on/off
+    vik_treeview_item_toggle_visible ( vik_layers_panel_get_treeview ( vlp ), &(vl->iter) );
+    iter = iter->next;
+  }
+  // Redraw as view may have changed
+  vik_layer_emit_update ( VIK_LAYER ( val ) );
+}
+
+static void aggregate_layer_child_visibile ( gpointer data[2], gboolean on_off)
+{
+  // Convert data back to correct types
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( data[0] );
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL ( data[1] );
+  VikLayer *vl;
+
+  // Loop around all (child) layers applying visibility setting
+  // This does not descend the tree if there are aggregates within aggregrate - just the first level of layers held
+  GList *iter = val->children;
+  while ( iter ) {
+    vl = VIK_LAYER ( iter->data );
+    vl->visible = on_off;
+    // Also set checkbox on_off
+    vik_treeview_item_set_visible ( vik_layers_panel_get_treeview ( vlp ), &(vl->iter), on_off );
+    iter = iter->next;
+  }
+  // Redraw as view may have changed
+  vik_layer_emit_update ( VIK_LAYER ( val ) );
+}
+
+static void aggregate_layer_child_visibile_on ( gpointer data[2] )
+{
+  aggregate_layer_child_visibile ( data, TRUE );
+}
+
+static void aggregate_layer_child_visibile_off ( gpointer data[2] )
+{
+  aggregate_layer_child_visibile ( data, FALSE );
+}
+
 static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp )
 {
   // Data to pass on in menu functions
@@ -365,6 +417,30 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
 
   GtkWidget *item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+
+  GtkWidget *vis_submenu = gtk_menu_new ();
+  item = gtk_menu_item_new_with_mnemonic ( _("_Visibility") );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), vis_submenu );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Show All") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visibile_on), data );
+  gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Hide All") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visibile_off), data );
+  gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Toggle") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visibile_toggle), data );
+  gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
   gtk_widget_show ( item );
 
 }
