@@ -1465,8 +1465,8 @@ static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
     vik_coord_load_from_latlon ( &gps, vik_viewport_get_coord_mode(vp), &ll);
     vik_viewport_coord_to_screen ( vp, &gps, &x, &y );
 
-    gdouble heading_cos = cos(M_PI/180*vgl->realtime_fix.fix.track);
-    gdouble heading_sin = sin(M_PI/180*vgl->realtime_fix.fix.track);
+    gdouble heading_cos = cos(DEG2RAD(vgl->realtime_fix.fix.track));
+    gdouble heading_sin = sin(DEG2RAD(vgl->realtime_fix.fix.track));
 
     half_back_y = y+8*heading_cos;
     half_back_x = x-8*heading_sin;

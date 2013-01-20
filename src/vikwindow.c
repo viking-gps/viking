@@ -938,8 +938,8 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   gdouble len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
   gdouble dx = (x2-x1)/len*10; 
   gdouble dy = (y2-y1)/len*10;
-  gdouble c = cos(15.0 * M_PI/180.0);
-  gdouble s = sin(15.0 * M_PI/180.0);
+  gdouble c = cos(DEG2RAD(15.0));
+  gdouble s = sin(DEG2RAD(15.0));
   gdouble angle;
   gdouble baseangle = 0;
   gint i;
@@ -974,14 +974,14 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     gdk_color_parse("#2255cc", &color);
     gdk_gc_set_rgb_fg_color(thickgc, &color);
   }
-  gdk_draw_arc (d, thickgc, FALSE, x1-CR+CW/2, y1-CR+CW/2, 2*CR-CW, 2*CR-CW, (90 - baseangle*180/M_PI)*64, -angle*180/M_PI*64);
+  gdk_draw_arc (d, thickgc, FALSE, x1-CR+CW/2, y1-CR+CW/2, 2*CR-CW, 2*CR-CW, (90 - RAD2DEG(baseangle))*64, -RAD2DEG(angle)*64);
 
 
   gdk_gc_copy(thickgc, gc);
   gdk_gc_set_line_attributes(thickgc, 2, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
   for (i=0; i<180; i++) {
-    c = cos(i*M_PI/90.0 + baseangle);
-    s = sin(i*M_PI/90.0 + baseangle);
+    c = cos(DEG2RAD(i)*2 + baseangle);
+    s = sin(DEG2RAD(i)*2 + baseangle);
 
     if (i%5) {
       gdk_draw_line (d, gc, x1 + CR*c, y1 + CR*s, x1 + (CR+CW)*c, y1 + (CR+CW)*s);
@@ -1057,7 +1057,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     LABEL(xd, yd, wd, hd);
 
     /* draw label with bearing */
-    g_sprintf(str, "%3.1f°", angle*180.0/M_PI);
+    g_sprintf(str, "%3.1f°", RAD2DEG(angle));
     pango_layout_set_text(pl, str, -1);
     pango_layout_get_pixel_size ( pl, &wb, &hb );
     xb = x1 + CR*cos(angle-M_PI_2);

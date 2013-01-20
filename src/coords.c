@@ -129,8 +129,8 @@ void a_coords_latlon_to_utm( const struct LatLon *latlon, struct UTM *utm )
 	longitude -= 360.0;
 
     /* Now convert. */
-    lat_rad = latitude * M_PI / 180.0;
-    long_rad = longitude * M_PI / 180.0;
+    lat_rad = DEG2RAD(latitude);
+    long_rad = DEG2RAD(longitude);
     zone = (int) ( ( longitude + 180 ) / 6 ) + 1;
     if ( latitude >= 56.0 && latitude < 64.0 &&
 	 longitude >= 3.0 && longitude < 12.0 )
@@ -144,7 +144,7 @@ void a_coords_latlon_to_utm( const struct LatLon *latlon, struct UTM *utm )
 	else if ( longitude >= 33.0 && longitude < 42.0 ) zone = 37;
 	}
     long_origin = ( zone - 1 ) * 6 - 180 + 3;	/* +3 puts origin in middle of zone */
-    long_origin_rad = long_origin * M_PI / 180.0;
+    long_origin_rad = DEG2RAD(long_origin);
     eccPrimeSquared = EccentricitySquared / ( 1.0 - EccentricitySquared );
     N = EquatorialRadius / sqrt( 1.0 - EccentricitySquared * sin( lat_rad ) * sin( lat_rad ) );
     T = tan( lat_rad ) * tan( lat_rad );
@@ -239,9 +239,9 @@ void a_coords_utm_to_latlon( const struct UTM *utm, struct LatLon *latlon )
     R1 = EquatorialRadius * ( 1.0 - EccentricitySquared ) / pow( 1.0 - EccentricitySquared * sin( phi1_rad ) * sin( phi1_rad ), 1.5 );
     D = x / ( N1 * K0 );
     latitude = phi1_rad - ( N1 * tan( phi1_rad ) / R1 ) * ( D * D / 2 -( 5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared ) * D * D * D * D / 24 + ( 61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eccPrimeSquared - 3 * C1 * C1 ) * D * D * D * D * D * D / 720 );
-    latitude = latitude * 180.0 / M_PI;
+    latitude = RAD2DEG(latitude);
     longitude = ( D - ( 1 + 2 * T1 + C1 ) * D * D * D / 6 + ( 5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eccPrimeSquared + 24 * T1 * T1 ) * D * D * D * D * D / 120 ) / cos( phi1_rad );
-    longitude = long_origin + longitude * 180.0 / M_PI;
+    longitude = long_origin + RAD2DEG(longitude);
 
     /* Show results. */
 

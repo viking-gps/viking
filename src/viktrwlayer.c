@@ -7484,7 +7484,7 @@ static void statusbar_write (gdouble distance, gdouble elev_gain, gdouble elev_l
   
   if ( last_step > 0 ) {
       gchar *tmp = distance_string (last_step);
-      g_sprintf(str_last_step, _(" - Bearing %3.1f° - Step %s"), angle*180.0/M_PI, tmp);
+      g_sprintf(str_last_step, _(" - Bearing %3.1f° - Step %s"), RAD2DEG(angle), tmp);
       g_free ( tmp );
   }
   
