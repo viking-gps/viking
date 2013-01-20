@@ -352,12 +352,11 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
   {
     if ( is_new )
     {
-      gchar *entered_name = g_strdup ( (gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) ) );
-      if ( strlen(entered_name) == 0 ) /* TODO: other checks (isalpha or whatever ) */
+      if ( strlen((gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) )) == 0 ) /* TODO: other checks (isalpha or whatever ) */
         a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
       else {
-
 	// NB: No check for unique names - this allows generation of same named entries.
+        gchar *entered_name = g_strdup ( (gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) ) );
 
 	/* Do It */
 	ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
