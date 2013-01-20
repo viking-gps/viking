@@ -2372,7 +2372,7 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_dia), TRUE );
   }
   // Auto append / replace extension with '.vik' to the suggested file name as it's going to be a Viking File
-  gchar* auto_save_name = strdup ( window_get_filename ( vw ) );
+  gchar* auto_save_name = g_strdup ( window_get_filename ( vw ) );
   if ( ! check_file_ext ( auto_save_name, ".vik" ) )
     auto_save_name = g_strconcat ( auto_save_name, ".vik", NULL );
 
