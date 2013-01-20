@@ -63,12 +63,12 @@ G_BEGIN_DECLS
 #define VIK_GTK_WINDOW_FROM_WIDGET(x) GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(x)))
 #define VIK_GTK_WINDOW_FROM_LAYER(x) VIK_GTK_WINDOW_FROM_WIDGET(VIK_LAYER(x)->vt)
 
-#define DEG2RAD 0.017453293
-#define RAD2DEG 57.2957795
+#define DEG2RAD(x) ((x)*(M_PI/180))
+#define RAD2DEG(x) ((x)*(180/M_PI))
 
 /* mercator projection, latitude conversion (degrees) */
-#define MERCLAT(x) (RAD2DEG * log(tan((0.25 * M_PI) + (0.5 * DEG2RAD * (x)))))
-#define DEMERCLAT(x) (RAD2DEG * atan(sinh(DEG2RAD * (x))))
+#define MERCLAT(x) (RAD2DEG(log(tan((0.25 * M_PI) + (0.5 * DEG2RAD(x))))))
+#define DEMERCLAT(x) (RAD2DEG(atan(sinh(DEG2RAD(x)))))
 
 /* Some command line options */
 extern gboolean vik_debug;

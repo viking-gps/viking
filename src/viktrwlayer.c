@@ -1210,8 +1210,8 @@ static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, Vi
   dp->ympp = vik_viewport_get_ympp ( vp );
   dp->width = vik_viewport_get_width ( vp );
   dp->height = vik_viewport_get_height ( vp );
-  dp->cc = vtl->drawdirections_size*cos(45 * DEG2RAD); // Calculate once per vtl update - even if not used
-  dp->ss = vtl->drawdirections_size*sin(45 * DEG2RAD); // Calculate once per vtl update - even if not used
+  dp->cc = vtl->drawdirections_size*cos(DEG2RAD(45)); // Calculate once per vtl update - even if not used
+  dp->ss = vtl->drawdirections_size*sin(DEG2RAD(45)); // Calculate once per vtl update - even if not used
 
   dp->center = vik_viewport_get_center ( vp );
   dp->one_zone = vik_viewport_is_one_zone ( vp ); /* false if some other projection besides UTM */

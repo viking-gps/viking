@@ -1066,14 +1066,14 @@ static gboolean calcxy_rev(double *lg, double *lt, gint x, gint y, double zero_l
   lon =
     zero_long -
     px / (Ra *
-         cos (lat * DEG2RAD));
+         cos (DEG2RAD(lat)));
 
-  dif = lat * (1 - (cos ((fabs (lon - zero_long)) * DEG2RAD)));
+  dif = lat * (1 - (cos (DEG2RAD(fabs (lon - zero_long)))));
   lat = lat - dif / 1.5;
   lon =
     zero_long -
     px / (Ra *
-              cos (lat * DEG2RAD));
+              cos (DEG2RAD(lat)));
 
   *lt = lat;
   *lg = lon;
@@ -1093,9 +1093,9 @@ static gboolean calcxy(double *x, double *y, double lg, double lt, double zero_l
 //    lt *= rad2deg;
     Ra = Radius[90+(gint)lt];
     *x = Ra *
-         cos (lt*DEG2RAD) * (lg - zero_long);
+         cos (DEG2RAD(lt)) * (lg - zero_long);
     *y = Ra * (lt - zero_lat);
-    dif = Ra * RAD2DEG * (1 - (cos ((DEG2RAD * (lg - zero_long)))));
+    dif = Ra * RAD2DEG(1 - (cos ((DEG2RAD(lg - zero_long)))));
     *y = *y + dif / 1.85;
     *x = *x / pixelfact_x;
     *y = *y / pixelfact_y;
@@ -1113,7 +1113,7 @@ static void viewport_init_ra()
   {
     gint i;
     for ( i = -90; i <= 90; i++)
-      Radius[i+90] = calcR ( (double)i ) * DEG2RAD;
+      Radius[i+90] = calcR ( DEG2RAD((double)i) );
     done_before = TRUE;
   }
 }
@@ -1137,7 +1137,7 @@ double calcR (double lat)
      * = 0.081082 Eccentricity
      */
 
-    lat = lat * DEG2RAD;
+    lat = DEG2RAD(lat);
     sc = sin (lat);
     x = a * (1.0 - e2);
     z = 1.0 - e2 * sc * sc;
