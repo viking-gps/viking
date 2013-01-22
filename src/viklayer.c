@@ -507,3 +507,73 @@ VikLayerTypeEnum vik_layer_type_from_string ( const gchar *str )
       return i;
   return VIK_LAYER_NUM_TYPES;
 }
+
+void vik_layer_typed_param_data_free ( gpointer gp )
+{
+  VikLayerTypedParamData *val = (VikLayerTypedParamData *)gp;
+  switch ( val->type ) {
+    case VIK_LAYER_PARAM_STRING:
+      if ( val->data.s )
+        g_free ( (gpointer)val->data.s );
+      break;
+    /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
+     * the internals call get_param -- i.e. it should be managed w/in the layer.
+     * The value passed by the internals into set_param should also be managed
+     * by the layer -- i.e. free'd by the layer.
+     */
+    case VIK_LAYER_PARAM_STRING_LIST:
+      g_warning ("Param strings not implemented"); //fake it
+      break;
+    default:
+      break;
+  }
+  g_free ( val );
+}
+
+VikLayerTypedParamData *vik_layer_typed_param_data_copy_from_data (VikLayerParamType type, VikLayerParamData val) {
+  VikLayerTypedParamData *newval = g_new(VikLayerTypedParamData,1);
+  newval->data = val;
+  newval->type = type;
+  switch ( newval->type ) {
+    case VIK_LAYER_PARAM_STRING: {
+      gchar *s = g_strdup(newval->data.s);
+      newval->data.s = s;
+      break;
+    }
+    /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
+     * the internals call get_param -- i.e. it should be managed w/in the layer.
+     * The value passed by the internals into set_param should also be managed
+     * by the layer -- i.e. free'd by the layer.
+     */
+    case VIK_LAYER_PARAM_STRING_LIST:
+      g_critical ( "Param strings not implemented"); //fake it
+      break;
+    default:
+      break;
+  }
+  return newval;
+}
+
+#define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
+
+VikLayerTypedParamData *vik_layer_data_typed_param_copy_from_string ( VikLayerParamType type, const gchar *str )
+{
+  VikLayerTypedParamData *rv = g_new(VikLayerTypedParamData,1);
+  rv->type = type;
+  switch ( type )
+  {
+    case VIK_LAYER_PARAM_DOUBLE: rv->data.d = strtod(str, NULL); break;
+    case VIK_LAYER_PARAM_UINT: rv->data.u = strtoul(str, NULL, 10); break;
+    case VIK_LAYER_PARAM_INT: rv->data.i = strtol(str, NULL, 10); break;
+    case VIK_LAYER_PARAM_BOOLEAN: rv->data.b = TEST_BOOLEAN(str); break;
+    case VIK_LAYER_PARAM_COLOR: memset(&(rv->data.c), 0, sizeof(rv->data.c)); /* default: black */
+      gdk_color_parse ( str, &(rv->data.c) ); break;
+    /* STRING or STRING_LIST -- if STRING_LIST, just set param to add a STRING */
+    default: {
+      gchar *s = g_strdup(str);
+      rv->data.s = s;
+    }
+  }
+  return rv;
+}
+

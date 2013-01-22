@@ -315,6 +315,15 @@ void vik_layer_emit_update_although_invisible ( VikLayer *vl );
 
 VikLayerTypeEnum vik_layer_type_from_string ( const gchar *str );
 
+typedef struct {
+  VikLayerParamData data;
+  VikLayerParamType type;
+} VikLayerTypedParamData;
+
+void vik_layer_typed_param_data_free ( gpointer gp );
+VikLayerTypedParamData *vik_layer_typed_param_data_copy_from_data ( VikLayerParamType type, VikLayerParamData val );
+VikLayerTypedParamData *vik_layer_data_typed_param_copy_from_string ( VikLayerParamType type, const gchar *str );
+
 G_END_DECLS
 
 #endif
