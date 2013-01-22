@@ -37,9 +37,30 @@ typedef union {
   GList *sl;
 } VikLayerParamData;
 
+/* id is index */
+typedef enum {
+VIK_LAYER_PARAM_DOUBLE=1,
+VIK_LAYER_PARAM_UINT,
+VIK_LAYER_PARAM_INT,
+
+/* in my_layer_set_param, if you want to use the string, you should dup it
+ * in my_layer_get_param, the string returned will NOT be free'd, you are responsible for managing it (I think) */
+VIK_LAYER_PARAM_STRING,
+VIK_LAYER_PARAM_BOOLEAN,
+VIK_LAYER_PARAM_COLOR,
+
+/* NOTE: string list works uniquely: data.sl should NOT be free'd when
+ * the internals call get_param -- i.e. it should be managed w/in the layer.
+ * The value passed by the internals into set_param should also be managed
+ * by the layer -- i.e. free'd by the layer.
+ */
+
+VIK_LAYER_PARAM_STRING_LIST,
+} VikLayerParamType;
+
 typedef struct {
   const gchar *name;
-  guint8 type;
+  VikLayerParamType type;
   gint16 group;
   const gchar *title;
   guint8 widget_type;
@@ -75,37 +96,24 @@ typedef struct {
   guint8 digits;
 } VikLayerParamScale;
 
-/* id is index */
-enum {
-VIK_LAYER_PARAM_DOUBLE=1,
-VIK_LAYER_PARAM_UINT,
-VIK_LAYER_PARAM_INT,
 
-/* in my_layer_set_param, if you want to use the string, you should dup it
- * in my_layer_get_param, the string returned will NOT be free'd, you are responsible for managing it (I think) */
-VIK_LAYER_PARAM_STRING,
-VIK_LAYER_PARAM_BOOLEAN,
-VIK_LAYER_PARAM_COLOR,
 
-/* NOTE: string list works uniquely: data.sl should NOT be free'd when
- * the internals call get_param -- i.e. it should be managed w/in the layer.
- * The value passed by the internals into set_param should also be managed
- * by the layer -- i.e. free'd by the layer.
- */
 
-VIK_LAYER_PARAM_STRING_LIST,
-};
 
 GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data );
 VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerParam *param );
-gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
-				      guint16 params_count, gchar **groups, guint8 groups_count,
-				      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
-				      gpointer pass_along1, gpointer pass_along2,
-				      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
-				      gpointer pass_along_getparam );
+gint a_uibuilder_properties_factory ( const gchar *dialog_name,
+                                      GtkWindow *parent,
+                                      VikLayerParam *params,
+                                      guint16 params_count,
+                                      gchar **groups,
+                                      guint8 groups_count,
+                                      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
+                                      gpointer pass_along1,
+                                      gpointer pass_along2,
+                                      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
+                                      gpointer pass_along_getparam );
                                       /* pass_along1 and pass_along2 are for set_param first and last params */
-
 
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,
