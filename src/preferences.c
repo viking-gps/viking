@@ -75,27 +75,6 @@ static gint16 preferences_groups_key_to_index( const gchar *key )
 
 /*****************************/
 
-/* MAKES A COPY OF THE KEY!!! */
-static gboolean preferences_load_parse_param(gchar *buf, gchar **key, gchar **val )
-{
-  gchar *eq_pos;
-  gint len;
-
-  // comments, special characters in viking file format
-  if ( buf == NULL || buf[0] == '\0' || buf[0] == '~' || buf[0] == '=' || buf[0] == '#' )
-    return FALSE;
-  eq_pos = strchr ( buf, '=' );
-  if ( ! eq_pos )
-    return FALSE;
-  *key = g_strndup ( buf, eq_pos - buf );
-  *val = eq_pos + 1;
-  len = strlen(*val);
-  if ( len > 0 )
-    if ( (*val)[len - 1] == '\n' )
-      (*val) [ len - 1 ] = '\0'; /* cut off newline */
-  return TRUE;
-}
-
 static gboolean preferences_load_from_file()
 {
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
@@ -109,7 +88,7 @@ static gboolean preferences_load_from_file()
     while ( ! feof (f) ) {
       if (fgets(buf,sizeof(buf),f) == NULL)
         break;
-      if ( preferences_load_parse_param(buf, &key, &val ) ) {
+      if ( split_string_from_file_on_equals(buf, &key, &val ) ) {
         // if it's not in there, ignore it
         oldval = g_hash_table_lookup ( values, key );
         if ( ! oldval ) {

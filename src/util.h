@@ -36,6 +36,8 @@ gchar *uri_escape(gchar *str);
 
 GList * str_array_to_glist(gchar* data[]);
 
+gboolean split_string_from_file_on_equals ( gchar *buf, gchar **key, gchar **val );
+
 G_END_DECLS
 
 #endif

@@ -125,3 +125,25 @@ GList * str_array_to_glist(gchar* data[])
     gl = g_list_prepend(gl, *p);
   return g_list_reverse(gl);
 }
+
+/* MAKES A COPY OF THE KEY!!! */
+gboolean split_string_from_file_on_equals ( gchar *buf, gchar **key, gchar **val )
+{
+  gchar *eq_pos;
+  gint len;
+
+  // comments, special characters in viking file format
+  if ( buf == NULL || buf[0] == '\0' || buf[0] == '~' || buf[0] == '=' || buf[0] == '#' )
+    return FALSE;
+  eq_pos = strchr ( buf, '=' );
+  if ( ! eq_pos )
+    return FALSE;
+  *key = g_strndup ( buf, eq_pos - buf );
+  *val = eq_pos + 1;
+  len = strlen(*val);
+  if ( len > 0 )
+    if ( (*val)[len - 1] == '\n' )
+      (*val) [ len - 1 ] = '\0'; /* cut off newline */
+  return TRUE;
+}
+
