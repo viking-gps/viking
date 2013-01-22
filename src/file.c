@@ -93,15 +93,6 @@ static gboolean str_starts_with ( const gchar *haystack, const gchar *needle, gu
 }
 
 void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type, VikLayerParamData data ) {
-static VikLayerTypeEnum layer_type_from_string ( const gchar *str )
-{
-  VikLayerTypeEnum i;
-  for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
-    if ( strcasecmp ( str, vik_layer_get_interface(i)->fixed_layer_name ) == 0 )
-      return i;
-  return VIK_LAYER_NUM_TYPES;
-}
-
       /* string lists are handled differently. We get a GList (that shouldn't
        * be freed) back for get_param and if it is null we shouldn't write
        * anything at all (otherwise we'd read in a list with an empty string,
@@ -334,7 +325,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
         }
         else
         {
-          VikLayerTypeEnum type = layer_type_from_string ( line+6 );
+          VikLayerTypeEnum type = vik_layer_type_from_string ( line+6 );
           push(&stack);
           if ( type == VIK_LAYER_NUM_TYPES )
           {

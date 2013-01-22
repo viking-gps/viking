@@ -499,3 +499,11 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp )
   }
 }
 
+VikLayerTypeEnum vik_layer_type_from_string ( const gchar *str )
+{
+  VikLayerTypeEnum i;
+  for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
+    if ( strcasecmp ( str, vik_layer_get_interface(i)->fixed_layer_name ) == 0 )
+      return i;
+  return VIK_LAYER_NUM_TYPES;
+}
