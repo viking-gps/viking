@@ -70,7 +70,6 @@
 #include "viklayerspanel.h"
 
 #include "mapcoord.h"
-#include "terraserver.h"
 
 #include "icons/icons.h"
 
