@@ -50,17 +50,6 @@ struct _VikLayerClass
 
 GType vik_layer_get_type ();
 
-typedef enum {
-  VIK_LAYER_AGGREGATE = 0,
-  VIK_LAYER_TRW,
-  VIK_LAYER_COORD,
-  VIK_LAYER_GEOREF,
-  VIK_LAYER_GPS,
-  VIK_LAYER_MAPS,
-  VIK_LAYER_DEM,
-  VIK_LAYER_NUM_TYPES
-} VikLayerTypeEnum;
-
 struct _VikLayer {
   GObject obj;
   gchar *name;
@@ -275,6 +264,8 @@ void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name );
 const gchar *vik_layer_get_name ( VikLayer *l );
 
 gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation);
+
+void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp );
 
 void vik_layer_emit_update ( VikLayer *vl );
 

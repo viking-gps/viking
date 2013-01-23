@@ -28,6 +28,8 @@
 
 #include "viking.h"
 #include <string.h>
+#include <stdlib.h>
+#include "viklayer_defaults.h"
 
 /* functions common to all layers. */
 /* TODO longone: rename interface free -> finalize */
@@ -50,6 +52,7 @@ static GObjectClass *parent_class;
 
 static void vik_layer_finalize ( VikLayer *vl );
 static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp );
+static gboolean layer_defaults_register ( VikLayerTypeEnum type );
 
 G_DEFINE_TYPE (VikLayer, vik_layer, G_TYPE_OBJECT)
 
@@ -66,6 +69,12 @@ static void vik_layer_class_init (VikLayerClass *klass)
   layer_signals[VL_UPDATE_SIGNAL] = g_signal_new ( "update", G_TYPE_FROM_CLASS (klass),
       G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayerClass, update), NULL, NULL, 
       g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+
+  // Register all parameter defaults, early in the start up sequence
+  VikLayerTypeEnum layer;
+  for ( layer = 0; layer < VIK_LAYER_NUM_TYPES; layer++ )
+    // ATM ignore the returned value
+    layer_defaults_register ( layer );
 }
 
 /**
@@ -127,6 +136,35 @@ VikLayerInterface *vik_layer_get_interface ( VikLayerTypeEnum type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );
   return vik_layer_interfaces[type];
+}
+
+/**
+ * Store default values for this layer
+ *
+ * Returns whether any parameters where registered
+ */
+static gboolean layer_defaults_register ( VikLayerTypeEnum type )
+{
+  // See if any parameters
+  VikLayerParam *params = vik_layer_interfaces[type]->params;
+  if ( ! params )
+    return FALSE;
+
+  gboolean answer = FALSE; // Incase all parameters are 'not in properties'
+  guint16 params_count = vik_layer_interfaces[type]->params_count;
+  guint16 i;
+  // Process each parameter
+  for ( i = 0; i < params_count; i++ ) {
+    if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
+      if ( params[i].default_value ) {
+        VikLayerParamData paramd = params[i].default_value();
+        a_layer_defaults_register ( &params[i], paramd, vik_layer_interfaces[type]->fixed_layer_name );
+        answer = TRUE;
+      }
+    }
+  }
+
+  return answer;
 }
 
 static void vik_layer_init ( VikLayer *vl )
@@ -577,3 +615,29 @@ VikLayerTypedParamData *vik_layer_data_typed_param_copy_from_string ( VikLayerPa
   return rv;
 }
 
+
+/**
+ * vik_layer_set_defaults:
+ *
+ * Loop around all parameters for the specified layer to call the function to get the
+ *  default value for that parameter
+ */
+void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
+{
+  VikLayerInterface *vli = vik_layer_get_interface ( vl->type );
+  const gchar *layer_name = vli->fixed_layer_name;
+  VikLayerParamData data;
+
+  int i;
+  for ( i = 0; i < vli->params_count; i++ ) {
+    // Ensure parameter is for use
+    if ( vli->params[i].group > VIK_LAYER_NOT_IN_PROPERTIES ) {
+      // ATM can't handle string lists
+      // only DEM files uses this currently
+      if ( vli->params[i].type != VIK_LAYER_PARAM_STRING_LIST ) {
+        data = a_layer_defaults_get ( layer_name, vli->params[i].name, vli->params[i].type );
+        vik_layer_set_param ( vl, i, data, vvp, FALSE );
+      }
+    }
+  }
+}

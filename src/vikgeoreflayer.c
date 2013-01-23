@@ -32,13 +32,49 @@
 #include <stdlib.h>
 
 #include "icons/icons.h"
+/*
+static struct UTM default_location_UTM ( void )
+{
+  struct LatLon ll;
+  ll.lat = a_vik_get_default_lat ();
+  ll.lon = a_vik_get_default_long ();
+  struct UTM u;
+  a_coords_latlon_to_utm (&ll, &u);
+  return u;
+}
+
+static VikLayerParamData easting_default ( void )
+{
+  struct UTM u = default_location_UTM();
+  VikLayerParamData data;
+  data.d = u.easting;
+  return data;
+}
+
+static VikLayerParamData northing_default ( void )
+{
+  struct UTM u = default_location_UTM();
+  VikLayerParamData data;
+  data.d = u.northing;
+  return data;
+}
+
+static VikLayerParamData image_default ( void )
+{
+  VikLayerParamData data;
+  data.s = g_strdup ("");
+  return data;
+}
+
+static VikLayerParamData mpp_default ( void ) { return VIK_LPD_DOUBLE ( 4.0 ); }
+*/
 
 VikLayerParam georef_layer_params[] = {
-  { "image", VIK_LAYER_PARAM_STRING, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, },
-  { "corner_easting", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL  },
-  { "corner_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL  },
-  { "mpp_easting", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL },
-  { "mpp_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL  },
+  { VIK_LAYER_GEOREF, "image", VIK_LAYER_PARAM_STRING, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "corner_easting", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "corner_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "mpp_easting", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "mpp_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL },
 };
 
 enum { PARAM_IMAGE = 0, PARAM_CE, PARAM_CN, PARAM_ME, PARAM_MN, NUM_PARAMS };
@@ -48,7 +84,7 @@ static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len
 static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
 static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id, gboolean is_file_operation );
-VikGeorefLayer *georef_layer_new ( );
+static VikGeorefLayer *georef_layer_new ( VikViewport *vvp );
 VikGeorefLayer *georef_layer_create ( VikViewport *vp );
 static void georef_layer_free ( VikGeorefLayer *vgl );
 gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp );
@@ -193,7 +229,7 @@ static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len
 
 static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikGeorefLayer *rv = georef_layer_new ();
+  VikGeorefLayer *rv = georef_layer_new ( vvp );
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
   if (rv->image) {
     georef_layer_load_image ( rv );
@@ -228,10 +264,14 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
   return rv;
 }
 
-VikGeorefLayer *georef_layer_new ( )
+static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
 {
   VikGeorefLayer *vgl = VIK_GEOREF_LAYER ( g_object_new ( VIK_GEOREF_LAYER_TYPE, NULL ) );
   vik_layer_set_type ( VIK_LAYER(vgl), VIK_LAYER_GEOREF );
+
+  // Since GeoRef layer doesn't use uibuilder
+  //  initializing this way won't do anything yet..
+  vik_layer_set_defaults ( VIK_LAYER(vgl), vvp );
 
   vgl->image = NULL;
   vgl->pixbuf = NULL;
@@ -306,7 +346,7 @@ static void georef_layer_free ( VikGeorefLayer *vgl )
 
 VikGeorefLayer *georef_layer_create ( VikViewport *vp )
 {
-  return georef_layer_new ();
+  return georef_layer_new ( vp );
 }
 
 gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp )
@@ -548,7 +588,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
   {
     if (! *vgl)
     {
-      *vgl = georef_layer_new ();
+      *vgl = georef_layer_new ( VIK_VIEWPORT(vp) );
        vik_layer_rename ( VIK_LAYER(*vgl), vik_georef_layer_interface.name );
     }
     (*vgl)->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(ce_spin) );

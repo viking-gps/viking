@@ -34,6 +34,7 @@
 #include "mapcache.h"
 #include "print.h"
 #include "preferences.h"
+#include "viklayer_defaults.h"
 #include "icons/icons.h"
 #include "vikexttools.h"
 #include "garminsymbols.h"
@@ -2520,6 +2521,20 @@ static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
   a_mapcache_flush();
 }
 
+static void layer_defaults_cb ( GtkAction *a, VikWindow *vw )
+{
+  gchar **texts = g_strsplit ( gtk_action_get_name(a), "Layer", 0 );
+
+  if ( !texts[1] )
+    return; // Internally broken :(
+
+  if ( ! a_layer_defaults_show_window ( GTK_WINDOW(vw), texts[1] ) )
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("This layer has no configurable properties.") );
+  // NB no update needed
+
+  g_strfreev ( texts );
+}
+
 static void preferences_cb ( GtkAction *a, VikWindow *vw )
 {
   gboolean wp_icon_size = a_vik_get_use_large_waypoint_icons();
@@ -2538,7 +2553,8 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
   /* Simplistic repeat of preference setting
      Only the name & type are important for setting the preference via this 'external' way */
   VikLayerParam pref_lat[] = {
-    { VIKING_PREFERENCES_NAMESPACE "default_latitude",
+    { VIK_LAYER_NUM_TYPES,
+      VIKING_PREFERENCES_NAMESPACE "default_latitude",
       VIK_LAYER_PARAM_DOUBLE,
       VIK_LOCATION_LAT,
       NULL,
@@ -2548,7 +2564,8 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
       NULL },
   };
   VikLayerParam pref_lon[] = {
-    { VIKING_PREFERENCES_NAMESPACE "default_longitude",
+    { VIK_LAYER_NUM_TYPES,
+      VIKING_PREFERENCES_NAMESPACE "default_longitude",
       VIK_LAYER_PARAM_DOUBLE,
       VIK_LOCATION_LONG,
       NULL,
@@ -3202,6 +3219,7 @@ static GtkActionEntry entries[] = {
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         NULL,                                           (GCallback)preferences_cb              },
+  { "LayerDefaults",GTK_STOCK_PREFERENCES, N_("_Layer Defaults"),             NULL,         NULL,                                           NULL },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
 
   { "HelpEntry", GTK_STOCK_HELP,         N_("_Help"),                         "F1",         NULL,                                           (GCallback)help_help_cb     },
@@ -3322,6 +3340,23 @@ static void window_create_ui( VikWindow *window )
       // Overwrite with actual number to use
       radio->value = ntools;
     }
+
+    GtkActionEntry action_dl;
+    gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Edit/LayerDefaults",
+			  vik_layer_get_interface(i)->name,
+			  g_strdup_printf("Layer%s", vik_layer_get_interface(i)->fixed_layer_name),
+			  GTK_UI_MANAGER_MENUITEM, FALSE);
+
+    // For default layers use action names of the form 'Layer<LayerName>'
+    // This is to avoid clashing with just the layer name used above for the tool actions
+    action_dl.name = g_strconcat("Layer", vik_layer_get_interface(i)->fixed_layer_name, NULL);
+    action_dl.stock_id = NULL;
+    action_dl.label = g_strconcat("_", vik_layer_get_interface(i)->name, "...", NULL); // Prepend marker for keyboard accelerator
+    action_dl.accelerator = NULL;
+    action_dl.tooltip = NULL;
+    action_dl.callback = (GCallback)layer_defaults_cb;
+    gtk_action_group_add_actions(action_group, &action_dl, 1, window);
+    // NB An alternate method of adding menuitems manually is performed ATM in vikexttools.c
   }
   g_object_unref (icon_factory);
 

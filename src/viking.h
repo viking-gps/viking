@@ -42,6 +42,7 @@
 #include "vikviewport.h"
 #include "viktreeview.h"
 #include "viklayer.h"
+#include "viklayer_defaults.h"
 #include "vikaggregatelayer.h"
 #include "viklayerspanel.h"
 #include "vikcoordlayer.h"
