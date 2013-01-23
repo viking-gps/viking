@@ -294,6 +294,7 @@ static void trw_layer_acquire_google_cb ( gpointer lav[2] );
 #endif
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void trw_layer_acquire_osm_cb ( gpointer lav[2] );
+static void trw_layer_acquire_osm_my_traces_cb ( gpointer lav[2] );
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
 static void trw_layer_acquire_geocache_cb ( gpointer lav[2] );
@@ -2975,6 +2976,19 @@ static void trw_layer_acquire_osm_cb ( gpointer lav[2] )
 
   a_acquire ( vw, vlp, vvp, &vik_datasource_osm_interface );
 }
+
+/**
+ * Acquire into this TRW Layer from OSM for 'My' Traces
+ */
+static void trw_layer_acquire_osm_my_traces_cb ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp =  vik_window_viewport(vw);
+
+  a_acquire ( vw, vlp, vvp, &vik_datasource_osm_my_traces_interface );
+}
 #endif
 
 #ifdef VIK_CONFIG_GEOCACHES
@@ -3406,6 +3420,11 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
 #ifdef VIK_CONFIG_OPENSTREETMAP
   item = gtk_menu_item_new_with_mnemonic ( _("From _OSM Traces...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_osm_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("From _My OSM Traces...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_osm_my_traces_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
 #endif

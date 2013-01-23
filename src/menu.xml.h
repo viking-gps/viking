@@ -20,6 +20,7 @@ static const char *menu_xml =
 #endif
 #ifdef VIK_CONFIG_OPENSTREETMAP
 	"        <menuitem action='AcquireOSM'/>"
+	"        <menuitem action='AcquireMyOSM'/>"
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
 	"        <menuitem action='AcquireGC'/>"

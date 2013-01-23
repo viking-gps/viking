@@ -2446,6 +2446,11 @@ static void acquire_from_osm ( GtkAction *a, VikWindow *vw )
 {
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_interface );
 }
+
+static void acquire_from_my_osm ( GtkAction *a, VikWindow *vw )
+{
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_my_traces_interface );
+}
 #endif
 
 #ifdef VIK_CONFIG_GEOCACHES
@@ -3126,6 +3131,7 @@ static GtkActionEntry entries[] = {
 #endif
 #ifdef VIK_CONFIG_OPENSTREETMAP
   { "AcquireOSM",   NULL,                 N_("_OSM Traces..."),    	  NULL,         N_("Get traces from OpenStreetMap"),            (GCallback)acquire_from_osm       },
+  { "AcquireMyOSM", NULL,                 N_("_My OSM Traces..."),    	  NULL,         N_("Get Your Own Traces from OpenStreetMap"),   (GCallback)acquire_from_my_osm    },
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
   { "AcquireGC",   NULL,                 N_("Geo_caches..."),    	  NULL,         N_("Get Geocaches from geocaching.com"),            (GCallback)acquire_from_gc       },
