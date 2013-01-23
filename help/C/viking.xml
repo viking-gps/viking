@@ -705,7 +705,7 @@ Version1.1+: An individual track can be exported to a GPX file via the track men
 </para>
 </section>
 
-<section id="finish"><title>Finish Track or Route</title>
+<section id="finish_track"><title>Finish Track or Route</title>
 <para>
 This is only available when a track or route is being created by the <xref linkend="track_create"/> or <xref linkend="route_create"/> tools.
 Selecting this option ends the creation of that individual track or route.
