@@ -126,24 +126,48 @@ GList * str_array_to_glist(gchar* data[])
   return g_list_reverse(gl);
 }
 
-/* MAKES A COPY OF THE KEY!!! */
-gboolean split_string_from_file_on_equals ( gchar *buf, gchar **key, gchar **val )
+/**
+ * split_string_from_file_on_equals:
+ *
+ * @buf: the input string
+ * @key: newly allocated string that is before the '='
+ * @val: newly allocated string after the '='
+ *
+ * Designed for file line processing, so it ignores strings beginning with special
+ *  characters, such as '#'; returns false in such situations.
+ * Also returns false if no equals character is found
+ *
+ * e.g. if buf = "GPS.parameter=42"
+ *   key = "GPS.parameter"
+ *   val = "42"
+ */
+gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar **val )
 {
-  gchar *eq_pos;
-  gint len;
-
   // comments, special characters in viking file format
   if ( buf == NULL || buf[0] == '\0' || buf[0] == '~' || buf[0] == '=' || buf[0] == '#' )
     return FALSE;
-  eq_pos = strchr ( buf, '=' );
-  if ( ! eq_pos )
+
+  if ( ! strchr ( buf, '=' ) )
     return FALSE;
-  *key = g_strndup ( buf, eq_pos - buf );
-  *val = eq_pos + 1;
-  len = strlen(*val);
-  if ( len > 0 )
-    if ( (*val)[len - 1] == '\n' )
-      (*val) [ len - 1 ] = '\0'; /* cut off newline */
+
+  gchar **strv = g_strsplit ( buf, "=", 2 );
+
+  gint gi = 0;
+  gchar *str = strv[gi];
+  while ( str ) {
+	if ( gi == 0 )
+	  *key = g_strdup ( str );
+	else
+	  *val = g_strdup ( str );
+    gi++;
+    str = strv[gi];
+  }
+
+  g_strfreev ( strv );
+
+  // Remove newline from val and also any other whitespace
+  *key = g_strstrip ( *key );
+  *val = g_strstrip ( *val );
+
   return TRUE;
 }
-

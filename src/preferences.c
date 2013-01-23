@@ -26,6 +26,7 @@
 #include "preferences.h"
 #include "dir.h"
 #include "file.h"
+#include "util.h"
 
 // TODO: STRING_LIST
 // TODO: share code in file reading
@@ -88,11 +89,12 @@ static gboolean preferences_load_from_file()
     while ( ! feof (f) ) {
       if (fgets(buf,sizeof(buf),f) == NULL)
         break;
-      if ( split_string_from_file_on_equals(buf, &key, &val ) ) {
+      if ( split_string_from_file_on_equals ( buf, &key, &val ) ) {
         // if it's not in there, ignore it
         oldval = g_hash_table_lookup ( values, key );
         if ( ! oldval ) {
           g_free(key);
+          g_free(val);
           continue;
         }
 
@@ -105,6 +107,7 @@ static gboolean preferences_load_from_file()
         g_hash_table_insert ( values, key, newval );
 
         g_free(key);
+        g_free(val);
         // change value
       }
     }
