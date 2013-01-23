@@ -40,6 +40,9 @@ typedef struct _VikStatusbarClass VikStatusbarClass;
 struct _VikStatusbarClass
 {
   GtkStatusbarClass statusbar_class;
+
+  void (* zoom_changed)  (VikStatusbar *vs,
+                          gint          zoom);
 };
 
 GType vik_statusbar_get_type ();

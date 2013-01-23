@@ -388,6 +388,18 @@ static void set_toolbar_zoom ( VikWindow *vw, gdouble mpp )
   gtk_combo_box_set_active ( vw->tb_zoom_combo, active );
 }
 
+static void zoom_changed_cb ( VikStatusbar *vs, gdouble zoom_request, VikWindow *vw )
+{
+  // But has it really changed?
+  gdouble current_zoom = vik_viewport_get_zoom ( vw->viking_vvp );
+  if ( current_zoom != 0.0 && zoom_request != current_zoom ) {
+    vik_viewport_set_zoom ( vw->viking_vvp, zoom_request );
+    // Force drawing update
+    draw_update ( vw );
+  }
+
+}
+
 static void zoom_changed ( GtkComboBox *combo, VikWindow *vw )
 {
   gint active = gtk_combo_box_get_active ( combo );
@@ -475,6 +487,7 @@ static void vik_window_init ( VikWindow *vw )
   vw->tb_zoom_combo = GTK_COMBO_BOX(create_zoom_combo_all_levels());
 
   g_signal_connect ( G_OBJECT(vw->tb_zoom_combo), "changed", G_CALLBACK(zoom_changed), vw );
+  g_signal_connect ( G_OBJECT(vw->viking_vs), "zoom-changed", G_CALLBACK(zoom_changed_cb), vw );
 
   // Add the zoom combo to the toolbar at the end
   GtkToolItem *tooli = gtk_tool_item_new ();

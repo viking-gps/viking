@@ -234,6 +234,13 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 <listitem><para>The distance of the currently edited segment.</para></listitem>
 </itemizedlist>
 </para>
+<para>For convenience, a zoom selector can be opened from the status bar. Simply left-click on the zoom factor.</para>
+<figure>
+  <title>The zoom selector available from status bar</title>
+  <screenshot>
+    <graphic format="PNG" fileref="figures/zoom_status_popup.png"/>
+  </screenshot>
+</figure>
 </section>
 
 <section><title>Projections</title>
