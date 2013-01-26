@@ -35,9 +35,8 @@ static GList *ext_tools_list = NULL;
 
 void vik_ext_tools_register ( VikExtTool *tool )
 {
-  IS_VIK_EXT_TOOL( tool );
-
-  ext_tools_list = g_list_append ( ext_tools_list, g_object_ref ( tool ) );
+  if ( IS_VIK_EXT_TOOL( tool ) )
+    ext_tools_list = g_list_append ( ext_tools_list, g_object_ref ( tool ) );
 }
 
 void vik_ext_tools_unregister_all ()

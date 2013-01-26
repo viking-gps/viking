@@ -45,9 +45,8 @@ int last_goto_tool = 0;
 
 void vik_goto_register ( VikGotoTool *tool )
 {
-  IS_VIK_GOTO_TOOL( tool );
-
-  goto_tools_list = g_list_append ( goto_tools_list, g_object_ref ( tool ) );
+  if ( IS_VIK_GOTO_TOOL( tool ) )
+    goto_tools_list = g_list_append ( goto_tools_list, g_object_ref ( tool ) );
 }
 
 void vik_goto_unregister_all ()
