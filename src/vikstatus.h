@@ -41,8 +41,8 @@ struct _VikStatusbarClass
 {
   GtkStatusbarClass statusbar_class;
 
-  void (* zoom_changed)  (VikStatusbar *vs,
-                          gint          zoom);
+  void (* clicked)  (VikStatusbar *vs,
+                     gint          item);
 };
 
 GType vik_statusbar_get_type ();

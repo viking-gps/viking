@@ -33,7 +33,7 @@
 
 enum
 {
-  ZOOM_CHANGED,
+  CLICKED,
   LAST_SIGNAL
 };
 
@@ -47,71 +47,33 @@ G_DEFINE_TYPE (VikStatusbar, vik_statusbar, GTK_TYPE_HBOX)
 
 static guint vik_statusbar_signals[LAST_SIGNAL] = { 0 };
 
-static void
-selection_done (GtkMenuShell *menushell,
-                gpointer      user_data)
-{
-  VikStatusbar *vs = VIK_STATUSBAR (user_data);
-
-  GtkWidget *aw = gtk_menu_get_active ( GTK_MENU (menushell) );
-  gint active = GPOINTER_TO_INT(gtk_object_get_data ( GTK_OBJECT (aw), "position" ));
-
-  gdouble zoom_request = pow (2, active-2 );
-
-  g_signal_emit (G_OBJECT (vs),
-                         vik_statusbar_signals[ZOOM_CHANGED], 0,
-                         zoom_request);
-}
-
 static gint
-zoom_popup_handler (GtkWidget *widget)
+forward_signal (GtkObject *object, gpointer user_data)
 {
-  GtkMenu *menu;
+    gint item = GPOINTER_TO_INT (gtk_object_get_data ( object, "type" ));
+    VikStatusbar *vs = VIK_STATUSBAR (user_data);
 
-  g_return_val_if_fail (widget != NULL, FALSE);
-  g_return_val_if_fail (GTK_IS_MENU (widget), FALSE);
+    g_signal_emit (G_OBJECT (vs),
+                   vik_statusbar_signals[CLICKED], 0,
+                   item);
 
-  /* The "widget" is the menu that was supplied when 
-   * g_signal_connect_swapped() was called.
-   */
-  menu = GTK_MENU (widget);
-
-  gtk_menu_popup (menu, NULL, NULL, NULL, NULL, 
-                  1, gtk_get_current_event_time());
-  return TRUE;
-}
-
-static GtkWidget *
-create_zoom_menu_all_levels ()
-{
-  GtkWidget *menu = gtk_menu_new ();
-  char *itemLabels[] = { "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768", NULL };
-
-  int i;
-  for (i = 0 ; itemLabels[i] != NULL ; i++)
-    {
-      GtkWidget *item = gtk_menu_item_new_with_label (itemLabels[i]);
-      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-      gtk_widget_show (item);
-      gtk_object_set_data (GTK_OBJECT (item), "position", GINT_TO_POINTER(i));
-    }
-  return menu;
+    return TRUE;
 }
 
 static void
 vik_statusbar_class_init (VikStatusbarClass *klass)
 {
-  vik_statusbar_signals[ZOOM_CHANGED] =
-    g_signal_new ("zoom-changed",
+  vik_statusbar_signals[CLICKED] =
+    g_signal_new ("clicked",
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_FIRST,
-                  G_STRUCT_OFFSET (VikStatusbarClass, zoom_changed),
+                  G_STRUCT_OFFSET (VikStatusbarClass, clicked),
                   NULL, NULL,
-                  g_cclosure_marshal_VOID__DOUBLE,
+                  g_cclosure_marshal_VOID__INT,
                   G_TYPE_NONE, 1,
-                  G_TYPE_DOUBLE);
+                  G_TYPE_INT);
 
-  klass->zoom_changed = NULL;
+  klass->clicked = NULL;
 }
 
 static void
@@ -129,6 +91,7 @@ vik_statusbar_init (VikStatusbar *vs)
       vs->status[i] = gtk_statusbar_new();
       gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[i]), FALSE );
     }
+    gtk_object_set_data (GTK_OBJECT (vs->status[i]), "type", GINT_TO_POINTER(i));
   }
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_TOOL], FALSE, FALSE, 1);
@@ -137,9 +100,7 @@ vik_statusbar_init (VikStatusbar *vs)
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ITEMS], FALSE, FALSE, 1);
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ITEMS], 100, -1 );
 
-  GtkWidget *menu = create_zoom_menu_all_levels ();
-  g_signal_connect ( G_OBJECT(menu), "selection-done", G_CALLBACK(selection_done), vs);
-  g_signal_connect_swapped ( G_OBJECT(vs->status[VIK_STATUSBAR_ZOOM]), "clicked", G_CALLBACK (zoom_popup_handler), menu);
+  g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_ZOOM]), "clicked", G_CALLBACK (forward_signal), vs);
   gtk_button_set_relief ( GTK_BUTTON(vs->status[VIK_STATUSBAR_ZOOM]), GTK_RELIEF_NONE );
   gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_ZOOM]), _("Current zoom level. Click to select a new one."));
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ZOOM], FALSE, FALSE, 1);

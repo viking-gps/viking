@@ -156,7 +156,6 @@ struct _VikWindow {
   VikStatusbar *viking_vs;
 
   GtkToolbar *toolbar;
-  GtkComboBox *tb_zoom_combo;
 
   GtkItemFactory *item_factory;
 
@@ -379,40 +378,40 @@ static void vik_window_class_init ( VikWindowClass *klass )
 
 }
 
-static void set_toolbar_zoom ( VikWindow *vw, gdouble mpp )
+static void zoom_changed (GtkMenuShell *menushell,
+              gpointer      user_data)
 {
-  gint active = 2 + round ( log (mpp) / log (2) );
-  // Can we not hard code size here?
-  if ( active > 17 )
-    active = 17;
-  gtk_combo_box_set_active ( vw->tb_zoom_combo, active );
-}
+  VikWindow *vw = VIK_WINDOW (user_data);
 
-static void zoom_changed_cb ( VikStatusbar *vs, gdouble zoom_request, VikWindow *vw )
-{
-  // But has it really changed?
-  gdouble current_zoom = vik_viewport_get_zoom ( vw->viking_vvp );
-  if ( current_zoom != 0.0 && zoom_request != current_zoom ) {
-    vik_viewport_set_zoom ( vw->viking_vvp, zoom_request );
-    // Force drawing update
-    draw_update ( vw );
-  }
+  GtkWidget *aw = gtk_menu_get_active ( GTK_MENU (menushell) );
+  gint active = GPOINTER_TO_INT(gtk_object_get_data ( GTK_OBJECT (aw), "position" ));
 
-}
-
-static void zoom_changed ( GtkComboBox *combo, VikWindow *vw )
-{
-  gint active = gtk_combo_box_get_active ( combo );
-
-  // But has it really changed?
-  // Unfortunately this function gets invoked even on manual setting of the combo value
   gdouble zoom_request = pow (2, active-2 );
+
+  // But has it really changed?
   gdouble current_zoom = vik_viewport_get_zoom ( vw->viking_vvp );
   if ( current_zoom != 0.0 && zoom_request != current_zoom ) {
     vik_viewport_set_zoom ( vw->viking_vvp, zoom_request );
     // Force drawing update
     draw_update ( vw );
   }
+}
+
+static GtkWidget * create_zoom_menu_all_levels ()
+{
+  GtkWidget *menu = gtk_menu_new ();
+  char *itemLabels[] = { "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768", NULL };
+
+  int i;
+  for (i = 0 ; itemLabels[i] != NULL ; i++)
+    {
+      GtkWidget *item = gtk_menu_item_new_with_label (itemLabels[i]);
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+      gtk_widget_show (item);
+      gtk_object_set_data (GTK_OBJECT (item), "position", GINT_TO_POINTER(i));
+    }
+
+  return menu;
 }
 
 static GtkWidget *create_zoom_combo_all_levels ()
@@ -440,6 +439,23 @@ static GtkWidget *create_zoom_combo_all_levels ()
   /* Create tooltip */
   gtk_widget_set_tooltip_text (GTK_WIDGET (combo), _("Select zoom level"));
   return zoom_combo;
+}
+
+static gint zoom_popup_handler (GtkWidget *widget)
+{
+  GtkMenu *menu;
+
+  g_return_val_if_fail (widget != NULL, FALSE);
+  g_return_val_if_fail (GTK_IS_MENU (widget), FALSE);
+
+  /* The "widget" is the menu that was supplied when
+   * g_signal_connect_swapped() was called.
+   */
+  menu = GTK_MENU (widget);
+
+  gtk_menu_popup (menu, NULL, NULL, NULL, NULL,
+                  1, gtk_get_current_event_time());
+  return TRUE;
 }
 
 static void vik_window_init ( VikWindow *vw )
@@ -484,15 +500,11 @@ static void vik_window_init ( VikWindow *vw )
 
   vik_ext_tools_add_menu_items ( vw, vw->uim );
 
-  vw->tb_zoom_combo = GTK_COMBO_BOX(create_zoom_combo_all_levels());
-
-  g_signal_connect ( G_OBJECT(vw->tb_zoom_combo), "changed", G_CALLBACK(zoom_changed), vw );
-  g_signal_connect ( G_OBJECT(vw->viking_vs), "zoom-changed", G_CALLBACK(zoom_changed_cb), vw );
-
-  // Add the zoom combo to the toolbar at the end
-  GtkToolItem *tooli = gtk_tool_item_new ();
-  gtk_container_add ( GTK_CONTAINER(tooli), GTK_WIDGET (vw->tb_zoom_combo) );
-  gtk_toolbar_insert ( vw->toolbar, tooli, gtk_toolbar_get_n_items (vw->toolbar) );
+  GtkWidget * zoom_levels = gtk_ui_manager_get_widget (vw->uim, "/MainMenu/View/SetZoom");
+  GtkWidget * zoom_levels_menu = create_zoom_menu_all_levels ();
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (zoom_levels), zoom_levels_menu);
+  g_signal_connect ( G_OBJECT(zoom_levels_menu), "selection-done", G_CALLBACK(zoom_changed), vw);
+  g_signal_connect_swapped ( G_OBJECT(vw->viking_vs), "clicked", G_CALLBACK(zoom_popup_handler), zoom_levels_menu );
 
   g_signal_connect (G_OBJECT (vw), "delete_event", G_CALLBACK (delete_event), NULL);
 
@@ -692,8 +704,6 @@ static void draw_status ( VikWindow *vw )
       g_snprintf ( zoom_level, 22, "%d %s", (int)xmpp, unit );
 
   vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_ZOOM, zoom_level );
-  // OK maybe not quite in the statusbar - but we have the zoom level so use it
-  set_toolbar_zoom ( vw, xmpp ); // But it's a status of some kind!
 
   draw_status_tool ( vw );  
 }
@@ -3177,24 +3187,6 @@ static GtkActionEntry entries[] = {
   { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                   "<control>plus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", NULL,                                           (GCallback)draw_zoom_cb          },
   { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To..."),               "<control>Z", NULL,                                           (GCallback)zoom_to_cb            },
-  { "Zoom0.25",  NULL,                   N_("0.25"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom0.5",   NULL,                   N_("0.5"),                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom1",     NULL,                   N_("1"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom2",     NULL,                   N_("2"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom4",     NULL,                   N_("4"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom8",     NULL,                   N_("8"),                             NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom16",    NULL,                   N_("16"),                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom32",    NULL,                   N_("32"),                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom64",    NULL,                   N_("64"),                            NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom128",   NULL,                   N_("128"),                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom256",   NULL,                   N_("256"),                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom512",   NULL,                   N_("512"),                           NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom1024",  NULL,                   N_("1024"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom2048",  NULL,                   N_("2048"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom4096",  NULL,                   N_("4096"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom8192",  NULL,                   N_("8192"),                          NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom16384", NULL,                   N_("16384"),                         NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
-  { "Zoom32768", NULL,                   N_("32768"),                         NULL,         NULL,                                           (GCallback)draw_zoom_cb          },
   { "PanNorth",  NULL,                   N_("Pan _North"),                "<control>Up",    NULL,                                           (GCallback)draw_pan_cb },
   { "PanEast",   NULL,                   N_("Pan _East"),                 "<control>Right", NULL,                                           (GCallback)draw_pan_cb },
   { "PanSouth",  NULL,                   N_("Pan _South"),                "<control>Down",  NULL,                                           (GCallback)draw_pan_cb },
