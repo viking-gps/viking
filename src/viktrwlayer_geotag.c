@@ -169,8 +169,8 @@ static void trw_layer_geotag_track ( const gchar *name, VikTrack *track, geotag_
 	VikTrackpoint *trkpt;
 	VikTrackpoint *trkpt_next;
 
-	GList *mytrkpt = track->trackpoints;
-	for ( mytrkpt = mytrkpt; mytrkpt; mytrkpt = mytrkpt->next ) {
+	GList *mytrkpt;
+	for ( mytrkpt = track->trackpoints; mytrkpt; mytrkpt = mytrkpt->next ) {
 
 		// Do something for this trackpoint...
 

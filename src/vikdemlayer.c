@@ -571,7 +571,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
     for ( x=start_x, counter.lon = start_lon; counter.lon <= end_lon+escale_deg*skip_factor; counter.lon += escale_deg * skip_factor, x += skip_factor ) {
       // NOTE: ( counter.lon <= end_lon + ESCALE_DEG*SKIP_FACTOR ) is neccessary so in high zoom modes,
       // the leftmost column does also get drawn, if the center point is out of viewport.
-      if ( x >= 0 && x < dem->n_columns ) {
+      if ( x < dem->n_columns ) {
         column = g_ptr_array_index ( dem->columns, x );
         // get previous and next column. catch out-of-bound.
 	gint32 new_x = x;
