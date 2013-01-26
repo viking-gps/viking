@@ -8249,7 +8249,11 @@ static void trw_layer_track_alloc_colors ( VikTrwLayer *vtl )
 
     // Tracks get a random spread of colours if not already assigned
     if ( ! VIK_TRACK(value)->has_color ) {
-      gdk_color_parse ( my_track_colors (ii) , &(VIK_TRACK(value)->color) );
+      if ( vtl->drawmode == DRAWMODE_ALL_SAME_COLOR )
+        VIK_TRACK(value)->color = vtl->track_color;
+      else {
+        gdk_color_parse ( my_track_colors (ii), &(VIK_TRACK(value)->color) );
+      }
       VIK_TRACK(value)->has_color = TRUE;
     }
 
