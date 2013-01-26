@@ -160,7 +160,7 @@ static option_values_t default_values = {
 /**
  * Correlate the image against the specified track
  */
-static void trw_layer_geotag_track ( const gchar *name, VikTrack *track, geotag_options_t *options )
+static void trw_layer_geotag_track ( const gpointer id, VikTrack *track, geotag_options_t *options )
 {
 	// If already found match then don't need to check this track
 	if ( options->found_match )
@@ -298,7 +298,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 
 		if ( options->track ) {
 			// Single specified track
-			// NB Doesn't care about track name
+			// NB Doesn't care about track id
 			trw_layer_geotag_track ( NULL, options->track, options );
 		}
 		else {
