@@ -4745,8 +4745,7 @@ static void trw_layer_merge_with_other ( gpointer pass_along[6] )
         merge_track = vik_trw_layer_get_track ( vtl, l->data );
 
       if (merge_track) {
-        track->trackpoints = g_list_concat(track->trackpoints, merge_track->trackpoints);
-        merge_track->trackpoints = NULL;
+        vik_track_steal_and_append_trackpoints ( track, merge_track );
         if ( track->is_route )
           vik_trw_layer_delete_route (vtl, merge_track);
         else
@@ -4834,8 +4833,7 @@ static void trw_layer_append_track ( gpointer pass_along[6] )
         append_track = vik_trw_layer_get_track ( vtl, l->data );
 
       if ( append_track ) {
-        trk->trackpoints = g_list_concat(trk->trackpoints, append_track->trackpoints);
-        append_track->trackpoints = NULL;
+        vik_track_steal_and_append_trackpoints ( trk, append_track );
         if ( trk->is_route )
           vik_trw_layer_delete_route (vtl, append_track);
         else
@@ -4928,8 +4926,7 @@ static void trw_layer_append_other ( gpointer pass_along[6] )
           }
         }
 
-        trk->trackpoints = g_list_concat(trk->trackpoints, append_track->trackpoints);
-        append_track->trackpoints = NULL;
+        vik_track_steal_and_append_trackpoints ( trk, append_track );
 
 	// Delete copied which is FROM THE OTHER TYPE list
         if ( trk->is_route )
@@ -5041,8 +5038,7 @@ static void trw_layer_merge_by_timestamp ( gpointer pass_along[6] )
        */
 
       /* remove trackpoints from merged track, delete track */
-      orig_trk->trackpoints = g_list_concat(orig_trk->trackpoints, VIK_TRACK(l->data)->trackpoints);
-      VIK_TRACK(l->data)->trackpoints = NULL;
+      vik_track_steal_and_append_trackpoints ( orig_trk, VIK_TRACK(l->data) );
       vik_trw_layer_delete_track (vtl, VIK_TRACK(l->data));
 
       // Tracks have changed, therefore retry again against all the remaining tracks
