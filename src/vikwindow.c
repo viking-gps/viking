@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005-2006, Alex Foobarian <foobarian@gmail.com>
- * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -294,6 +294,14 @@ static void destroy_window ( GtkWidget *widget,
       gtk_main_quit ();
 }
 
+#define VIK_SETTINGS_WIN_SIDEPANEL "window_sidepanel"
+#define VIK_SETTINGS_WIN_STATUSBAR "window_statusbar"
+#define VIK_SETTINGS_WIN_TOOLBAR "window_toolbar"
+// Menubar setting to off is never auto saved in case it's accidentally turned off
+// It's not so obvious so to recover the menu visibility.
+// Thus this value is for setting manually via editting the settings file directly
+#define VIK_SETTINGS_WIN_MENUBAR "window_menubar"
+
 VikWindow *vik_window_new_window ()
 {
   if ( window_count < MAX_WINDOWS )
@@ -308,6 +316,39 @@ VikWindow *vik_window_new_window ()
 		      G_CALLBACK (open_window), NULL);
 
     gtk_widget_show_all ( GTK_WIDGET(vw) );
+
+    // These settings are applied after the show all as these options hide widgets
+    gboolean sidepanel;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, &sidepanel ) )
+      if ( ! sidepanel ) {
+        gtk_widget_hide ( GTK_WIDGET(vw->viking_vlp) );
+        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanel" );
+        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+      }
+
+    gboolean statusbar;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_STATUSBAR, &statusbar ) )
+      if ( ! statusbar ) {
+        gtk_widget_hide ( GTK_WIDGET(vw->viking_vs) );
+        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewStatusBar" );
+        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+      }
+
+    gboolean toolbar;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_TOOLBAR, &toolbar ) )
+      if ( ! toolbar ) {
+        gtk_widget_hide ( GTK_WIDGET(vw->toolbar) );
+        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewToolBar" );
+        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+      }
+
+    gboolean menubar;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MENUBAR, &menubar ) )
+      if ( ! menubar ) {
+        gtk_widget_hide ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
+        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
+        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+      }
 
     window_count++;
 
@@ -526,6 +567,11 @@ static void drag_data_received_cb ( GtkWidget *widget,
   gtk_drag_finish ( context, success, FALSE, time );
 }
 
+#define VIK_SETTINGS_WIN_MAX "window_maximized"
+#define VIK_SETTINGS_WIN_FULLSCREEN "window_fullscreen"
+#define VIK_SETTINGS_WIN_WIDTH "window_width"
+#define VIK_SETTINGS_WIN_HEIGHT "window_height"
+
 static void vik_window_init ( VikWindow *vw )
 {
   GtkWidget *main_vbox;
@@ -589,7 +635,32 @@ static void vik_window_init ( VikWindow *vw )
   // Allow key presses to be processed anywhere
   g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
 
-  gtk_window_set_default_size ( GTK_WINDOW(vw), VIKING_WINDOW_WIDTH, VIKING_WINDOW_HEIGHT);
+  gint height;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_HEIGHT, &height ) ) {
+    // Enforce a basic minimum size
+    if ( height < 160 )
+      height = 160;
+  }
+  else
+    // No setting - so use default
+    height = VIKING_WINDOW_HEIGHT;
+
+  gint width;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_WIDTH, &width ) ) {
+    // Enforce a basic minimum size
+    if ( width < 320 )
+      width = 320;
+  }
+  else
+    // No setting - so use default
+    width = VIKING_WINDOW_WIDTH;
+
+  gtk_window_set_default_size ( GTK_WINDOW(vw), width, height );
+
+  gboolean maxed;
+  if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MAX, &maxed ) )
+    if ( maxed )
+      gtk_window_maximize ( GTK_WINDOW(vw) );
 
   hpaned = gtk_hpaned_new ();
   gtk_paned_pack1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
@@ -603,6 +674,15 @@ static void vik_window_init ( VikWindow *vw )
   a_background_add_window ( vw );
 
   window_list = g_slist_prepend ( window_list, vw);
+
+  gboolean full;
+  if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, &full ) ) {
+    if ( full ) {
+      gtk_window_fullscreen ( GTK_WINDOW(vw) );
+      GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/FullScreen" );
+      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
+    }
+  }
 
   vw->open_dia = NULL;
   vw->save_dia = NULL;
@@ -710,6 +790,26 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
 
 static gboolean delete_event( VikWindow *vw )
 {
+  // On every window close - save latest maximized state
+  gint state = gdk_window_get_state ( GTK_WIDGET(vw)->window );
+  gboolean state_max = state & GDK_WINDOW_STATE_MAXIMIZED;
+  a_settings_set_boolean ( VIK_SETTINGS_WIN_MAX, state_max );
+
+  gboolean state_fullscreen = state & GDK_WINDOW_STATE_FULLSCREEN;
+  a_settings_set_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, state_fullscreen );
+
+  a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vlp)) );
+
+  a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vs)) );
+
+  a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->toolbar)) );
+
+  gint width, height;
+  gtk_window_get_size ( GTK_WINDOW (vw), &width, &height );
+
+  a_settings_set_integer ( VIK_SETTINGS_WIN_WIDTH, width );
+  a_settings_set_integer ( VIK_SETTINGS_WIN_HEIGHT, height );
+
 #ifdef VIKING_PROMPT_IF_MODIFIED
   if ( vw->modified )
 #else
