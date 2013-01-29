@@ -1344,11 +1344,7 @@ void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
 {
   if ( t1->trackpoints ) {
-    GList *tpiter = t1->trackpoints;
-    while ( tpiter->next )
-      tpiter = tpiter->next;
-    tpiter->next = t2->trackpoints;
-    t2->trackpoints->prev = tpiter;
+    t1->trackpoints = g_list_concat ( t1->trackpoints, t2->trackpoints );
   } else
     t1->trackpoints = t2->trackpoints;
   t2->trackpoints = NULL;
