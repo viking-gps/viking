@@ -164,6 +164,7 @@ int main( int argc, char *argv[] )
   XSetErrorHandler(myXErrorHandler);
 #endif
 
+  a_settings_init ();
   a_preferences_init ();
 
   a_vik_preferences_init ();
@@ -226,6 +227,7 @@ int main( int argc, char *argv[] )
   a_dems_uninit ();
   a_layer_defaults_uninit ();
   a_preferences_uninit ();
+  a_settings_uninit ();
 
   curl_download_uninit();
 
