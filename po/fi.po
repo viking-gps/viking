@@ -1,59 +1,60 @@
-# Italian translation for viking
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Finnish messages for viking
+# Copyright © 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the viking package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# Jorma Karvonen <karvonen.jorma@gmail.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-04-22 21:22+0200\n"
-"PO-Revision-Date: 2012-11-07 01:17+0000\n"
-"Last-Translator: Wonderfulheart <Unknown>\n"
-"Language-Team: Italian <it@li.org>\n"
+"PO-Revision-Date: 2012-11-13 23:03+0000\n"
+"Last-Translator: Jorma Karvonen <karvonen.jorma@gmail.com>\n"
+"Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2013-01-26 19:16+0000\n"
 "X-Generator: Launchpad (build 16451)\n"
+"Language: fi\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
-msgstr "In esecuzione..."
+msgstr "Työn alla..."
 
 #: ../src/acquire.c:146
 msgid "Error: acquisition failed."
-msgstr "Errore: acquisizione non riuscita."
+msgstr "Virhe: hankinta epäonnistui."
 
 #: ../src/acquire.c:154 ../src/vikgpslayer.c:1083
 msgid "Done."
-msgstr "Fatto."
+msgstr "Valmis."
 
 #: ../src/acquire.c:163
 msgid "No data."
-msgstr "Nessun dato."
+msgstr "Ei tietoja."
 
 #: ../src/acquire.c:361 ../src/vikgpslayer.c:1151
 msgid "Status: detecting gpsbabel"
-msgstr "Stato: rilevazione di gpsbabel in corso"
+msgstr "Tila: havaittiin gpsbabel"
 
 #: ../src/background.c:59
 #, c-format
 msgid "%d items"
-msgstr "%d elementi"
+msgstr "%d alkiota"
 
 #: ../src/background.c:250
 msgid "Job"
-msgstr "Lavoro"
+msgstr "Työ"
 
 #: ../src/background.c:254
 msgid "Progress"
-msgstr "Avanzamento"
+msgstr "Edistyminen"
 
 #: ../src/background.c:270
 msgid "Viking Background Jobs"
-msgstr "Processi in background di Viking"
+msgstr "Viking-taustatyöt"
 
 #: ../src/bing.c:47
 msgid "Bing"
@@ -62,20 +63,20 @@ msgstr "Bing"
 #: ../src/bingmapsource.c:403 ../src/geonamessearch.c:404
 #: ../src/vikgototool.c:250
 msgid "couldn't open temp file"
-msgstr "Impossibile aprire il file temporaneo"
+msgstr "tilapäisen tiedoston avaaminen epäonnistui"
 
 #. VIK_GTK_WINDOW_FROM_WIDGET(vp)
 #: ../src/bingmapsource.c:466
 msgid "Bing attribution Loading"
-msgstr "Caricamento attributi di Bing"
+msgstr "Bing-attribuuttilataus"
 
 #: ../src/clipboard.c:94
 msgid "paste failed"
-msgstr "Impossibile incollare"
+msgstr "liittäminen epäonnistui"
 
 #: ../src/clipboard.c:104
 msgid "wrong clipboard data size"
-msgstr "dimensione dei dati negli appunti sbagliata"
+msgstr "virheellinen leikepöytätietojen koko"
 
 #: ../src/clipboard.c:123
 #, c-format
@@ -83,149 +84,145 @@ msgid ""
 "The clipboard contains sublayer data for %s layers. You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
-"La clipboard contiene dati di sottolivello per i livelli %s. Devi "
-"selezionare un livello di questo tipo per incollare i dati della clipboard."
+"Leikepöytä sisältää alikerrostietoja %s:lle kerrokselle. Sinun on valittava "
+"tämän tyyppinen kerros leikepöytätietojen liittämiseksi."
 
 #: ../src/clipboard.c:235
 msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
 "into."
-msgstr ""
-"Per incollare un waypoint, selezionare un livello appropriato in cui "
-"incollarlo."
+msgstr "Välietapin liittämiseksi valitse sopiva kerros liittämiskohteeksi."
 
 #: ../src/dialog.c:52
 msgid "Go to Lat/Lon"
-msgstr "Vai a Lat/Lon"
+msgstr "Siirry leveysp./pituusp."
 
 #: ../src/dialog.c:64 ../src/dialog.c:251
 msgid "Latitude:"
-msgstr "Latitudine:"
+msgstr "Leveyspiiri:"
 
 #: ../src/dialog.c:70 ../src/dialog.c:256
 msgid "Longitude:"
-msgstr "Longitudine:"
+msgstr "Pituuspiiri:"
 
 #: ../src/dialog.c:102
 msgid "Go to UTM"
-msgstr "Vai a UTM"
+msgstr "Siirry UTM:ään"
 
 #: ../src/dialog.c:115
 msgid "Northing:"
-msgstr ""
-"Copy text   \t\r\n"
-"Northing:"
+msgstr "Pohjoista leveyttä:"
 
 #: ../src/dialog.c:121
 msgid "Easting:"
-msgstr "Easting:"
+msgstr "Itäistä pituutta:"
 
 #: ../src/dialog.c:128
 msgid "Zone:"
-msgstr "Zona:"
+msgstr "Vyöhyke:"
 
 #: ../src/dialog.c:131
 msgid "Letter:"
-msgstr "Lettera:"
+msgstr "Kirjain:"
 
 #: ../src/dialog.c:199
 msgid "Waypoint Properties"
-msgstr "Proprietà Waypoint"
+msgstr "Välietappiominaisuudet"
 
 #: ../src/dialog.c:233
 msgid "Name:"
-msgstr "Nome:"
+msgstr "Nimi:"
 
 #: ../src/dialog.c:261
 msgid "Altitude:"
-msgstr "Altitudine:"
+msgstr "Korkeusasema:"
 
 #: ../src/dialog.c:266
 msgid "Comment:"
-msgstr "Commento:"
+msgstr "Kommentti:"
 
 #: ../src/dialog.c:273
 msgid "Image:"
-msgstr "Immagine:"
+msgstr "Kuva:"
 
 #: ../src/dialog.c:278
 msgid "Symbol:"
-msgstr "Simbolo:"
+msgstr "Symboli:"
 
 #: ../src/dialog.c:287
 msgid "(none)"
-msgstr "(nessuno)"
+msgstr "(ei mitään)"
 
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:348
 msgid "Please enter a name for the waypoint."
-msgstr "Inserire un nome per il waypoint."
+msgstr "Kirjoita välietapin nimi."
 
 #: ../src/dialog.c:353
 #, c-format
 msgid "The waypoint \"%s\" exists, do you want to overwrite it?"
-msgstr "Il waypoint \"%s\" è già presente, desideri sovrascriverlo?"
+msgstr "Välietappi ”%s” on olemassa, haluatko korvata sen?"
 
 #: ../src/dialog.c:522 ../src/geonamessearch.c:237
 msgid "Nothing was selected"
-msgstr "Niente di selezionato"
+msgstr "Mitään ei ole valittu"
 
 #: ../src/dialog.c:530
 msgid "Add Track"
-msgstr "Aggiungi traccia"
+msgstr "Lisää reitti"
 
 #: ../src/dialog.c:538
 msgid "Track Name:"
-msgstr "Nome traccia:"
+msgstr "Reittinimi:"
 
 #: ../src/dialog.c:558
 msgid "Please enter a name for the track."
-msgstr "Inserire un nome per la traccia."
+msgstr "Kirjoita reitin nimi."
 
 #: ../src/dialog.c:562
 #, c-format
 msgid "The track \"%s\" exists, do you want to overwrite it?"
-msgstr "La traccia \"%s\" è già presente, desideri sovrascriverla?"
+msgstr "Reitti ”%s” on olemassa, haluatko korvata sen?"
 
 #: ../src/dialog.c:624
 msgid "Zoom Factors..."
-msgstr "Fattori di zoom..."
+msgstr "Loitonnus-/lähennystekijät..."
 
 #: ../src/dialog.c:638
 msgid "Zoom factor (in meters per pixel):"
-msgstr "Fattore di ingrandimento (in merti per pixel):"
+msgstr "Loitonnus-/lähennystekijä (metreissä per pikseli):"
 
 #: ../src/dialog.c:639
 msgid "X (easting): "
-msgstr "X (easting) "
+msgstr "X (itäistä pituutta): "
 
 #: ../src/dialog.c:640
 msgid "Y (northing): "
-msgstr "Y (northing): "
+msgstr "Y (pohjoista leveyttä): "
 
 #: ../src/dialog.c:645
 msgid "X and Y zoom factors must be equal"
-msgstr "I fattori di zoom di X e Y devono essere uguali"
+msgstr "X- ja Y-loitonnus/lähennystekijöiden on oltava yhtä suuria"
 
 #: ../src/dialog.c:700
 msgid "1 min"
-msgstr "1 min"
+msgstr "1 min."
 
 #: ../src/dialog.c:701
 msgid "1 hour"
-msgstr "1 ora"
+msgstr "1 tunti"
 
 #: ../src/dialog.c:702
 msgid "1 day"
-msgstr "1 giorno"
+msgstr "1 päivä"
 
 #: ../src/dialog.c:703
 msgid "Custom (in minutes):"
-msgstr "Personalizzato (in minuti)"
+msgstr "Oma (minuuteissa):"
 
 #: ../src/dialog.c:809
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr "Gestione, esplorazione, analisi topografica e GPS."
+msgstr "GPS-tieto- ja topologia-analysoija, -selain ja -hallintaohjelma"
 
 #: ../src/dialog.c:810
 msgid ""
@@ -243,40 +240,41 @@ msgid ""
 "this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
-"This program is free software; you can redistribute it and/or modify it "
-"under the terms of the GNU General Public License as published by the Free "
-"Software Foundation; either version 2 of the License, or (at your option) "
-"any later version.\n"
+"Tämä ohjelma on vapaaohjelmisto; voitte levittää edelleen ja/tai \n"
+"muuttaa sitä Free Software Foundationin julkaiseman GNU General Public\n"
+"Licensen ehtojen mukaisesti; joko version 2, tai (valintanne mukaan)\n"
+"minkä tahansa myöhemmän version.\n"
 "\n"
-"This program is distributed in the hope that it will be useful, but WITHOUT "
-"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
-"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
-"more details.\n"
+"Tätä ohjelmaa levitetään siinä toivossa, että se olisi hyödyllinen,\n"
+"mutta TAKUUTA EI OLE; ei edes KAUPALLISESTI HYVÄKSYTTÄVÄSTÄ LAADUSTA\n"
+"tai SOPIVUUDESTA TIETTYYN TARKOITUKSEEN. Katsokaa lisätietoja GNU\n"
+"General Public Licensestä.\n"
 "\n"
-"You should have received a copy of the GNU General Public License along with "
-"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
-"Place, Suite 330, Boston, MA 02111-1307, USA"
+"\"Olette saaneet kopion GNU General Public Licensestä tämän\n"
+"ohjelman mukana. Ellette saaneet, kirjoittakaa osoitteeseen\n"
+"Free Software Foundation, Inc., 59 Temple Place, Suite 330,\n"
+"Boston, MA 02111-1307, USA."
 
 #: ../src/dialog.c:838
 msgid "Translation is coordinated on http://launchpad.net/viking"
-msgstr "Le traduzioni vengono coordinate su http://launchpad.net/viking"
+msgstr "Kotoistamiset koordinoi http://launchpad.net/viking"
 
 #: ../src/dialog.c:846
 msgid "Download along track"
-msgstr "Scarica lungo il tracciato"
+msgstr "Lataa reittiä pitkin"
 
 #: ../src/dialog.c:852
 msgid "Map type:"
-msgstr "Tipo di mappa:"
+msgstr "Karttatyyppi:"
 
 #: ../src/dialog.c:857
 msgid "Zoom level:"
-msgstr "Livello di ingrandimento:"
+msgstr "Loitonnus-/lähennystaso:"
 
 #: ../src/dialog.c:897
 #, c-format
 msgid "The map data is licensed: %s."
-msgstr "La mappa dei dati è protetta da licenza: %s."
+msgstr "Karttatiedot on lisensoitu: %s."
 
 #: ../src/dialog.c:900
 #, c-format
@@ -285,20 +283,21 @@ msgid ""
 "<b>%s</b>.\n"
 "Please, read the license before continuing."
 msgstr ""
-"I dati forniti da \"<b>%s</b>\" hanno la seguente licenza: <b>%s</b>.\n"
-"Leggere la licenza prima di continuare."
+"Kohteen ’<b>%s</b>’ tarjoamat tiedot on lisenssoitu seuraavan lisenssin "
+"mukaan: <b>%s</b>.\n"
+"Lue lisenssiehdot ennen jatkamista."
 
 #: ../src/dialog.c:905
 msgid "Open license"
-msgstr "Apri licenza"
+msgstr "Avaa lisenssi"
 
 #: ../src/expedia.c:53
 msgid "Expedia Street Maps"
-msgstr "Mappe stradali di Expedia"
+msgstr "Expedia Street-kartat"
 
 #: ../src/expedia.c:81
 msgid "Invalid expedia altitude"
-msgstr "Altitudine di expedia non valida"
+msgstr "Virheellinen expedia-korkeus"
 
 #: ../src/expedia.c:112
 #, c-format
@@ -306,9 +305,8 @@ msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
-"Impossibile aprire il file immagine di EXPEDIA (successivamente ad un "
-"download corretto! Se pregato di segnalarci questo fatto e di cancellare il "
-"file!): %s"
+"EXPEDIA-kuvatiedoston avaus epäonnistui (heti onnistuneen latauksen jälkeen! "
+"Ilmoita ja poista kuvatiedosto!): %s"
 
 #: ../src/expedia.c:125
 #, c-format
@@ -316,75 +314,74 @@ msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
-"Impossibile salvare il file immagine di EXPEDIA (successivamente ad un "
-"download corretto! Se pregato di segnalarci questo fatto e di cancellare il "
-"file!): %s"
+"EXPEDIA-kuvatiedoston tallentaminen epäonnistui (heti onnistuneen latauksen "
+"jälkeen! Ilmoita ja poista kuvatiedosto!): %s"
 
 #: ../src/geonamessearch.c:97
 msgid "Search"
-msgstr "Cerca"
+msgstr "Etsi"
 
 #: ../src/geonamessearch.c:99
 msgid "No entries found!"
-msgstr "Nessuna voce trovata!"
+msgstr "Kohteita ei löytynyt!"
 
 #: ../src/geonamessearch.c:263 ../src/googlesearch.c:120
 msgid "couldn't map temp file"
-msgstr "Imopssibile mappare il file temporaneo"
+msgstr "tilapäisen tiedoston kartoittaminen epäonnistui"
 
 #: ../src/globals.c:44
 msgid "Degree format:"
-msgstr "Formato gradi:"
+msgstr "Astemuoto:"
 
 #: ../src/globals.c:48
 msgid "Distance units:"
-msgstr "Unità di distanza:"
+msgstr "Etäisyysyksiköt:"
 
 #: ../src/globals.c:52
 msgid "Speed units:"
-msgstr "Unità di velocità:"
+msgstr "Nopeusyksiköt:"
 
 #: ../src/globals.c:56
 msgid "Height units:"
-msgstr "Unità di altezza:"
+msgstr "Korkeusyksiköt:"
 
 #: ../src/globals.c:60
 msgid "Use large waypoint icons:"
-msgstr "Usa icone grandi per i waypoint:"
+msgstr "Käytä suurikokoisia välietappikuvakkeita:"
 
 #: ../src/globals.c:64
 msgid "Default latitude:"
-msgstr "Latitudine predefinita:"
+msgstr "Oletusleveysaste:"
 
 #: ../src/globals.c:67
 msgid "Default longitude:"
-msgstr "Longitudine predefinita:"
+msgstr "Oletuspituusaste:"
 
 #: ../src/globals.c:75
 msgid "KML File Export Units:"
-msgstr "Unità di Esportazione dei file KML:"
+msgstr "KML-tiedostovientiyksiköt:"
 
 #: ../src/globals.c:80
 msgid "Image Viewer:"
-msgstr "Visualizzatore di immagine:"
+msgstr "Kuvaselain:"
 
 #: ../src/globals.c:85
 msgid "External GPX Program 1:"
-msgstr "Programma GPX esterno 1:"
+msgstr "Ulkoinen GPX-ohjelma 1:"
 
 #: ../src/globals.c:86
 msgid "External GPX Program 2:"
-msgstr "Programma GPX esterno 2:"
+msgstr "Ulkoinen GPX-ohjelma 2:"
 
 #. Defaults for the options are setup here
 #: ../src/globals.c:94
 msgid "General"
-msgstr "Generale"
+msgstr "Yleistä"
 
 #. New Tab
 #: ../src/globals.c:119
 msgid "Export/External"
-msgstr "Esporta/Esterno"
+msgstr "Vie/Ulkoinen"
 
 #. Webtools
 #: ../src/google.c:36
@@ -393,82 +390,83 @@ msgstr "Google"
 
 #: ../src/datasource_file.c:59
 msgid "Import file with GPSBabel"
-msgstr "Importa file con GPBBabel"
+msgstr "Tuo tiedosto GPSBabel-ohjelmalla"
 
 #: ../src/datasource_file.c:60
 msgid "Imported file"
-msgstr "File importato"
+msgstr "Tuotu tiedosto"
 
 #. The file selector
 #: ../src/datasource_file.c:133
 msgid "File:"
-msgstr "File:"
+msgstr "Tiedosto:"
 
 #: ../src/datasource_file.c:134
 msgid "File to import"
-msgstr "File da importare"
+msgstr "Tuotava tiedosto"
 
 #: ../src/datasource_file.c:141
 msgid "All files"
-msgstr "Tutti i file"
+msgstr "Kaikki tiedostot"
 
 #. The file format selector
 #: ../src/datasource_file.c:148
 msgid "File type:"
-msgstr "Tipo di file:"
+msgstr "Tiedostotyyppi:"
 
+#  Tämä on debug-sanoma
 #: ../src/datasource_file.c:193
 #, c-format
 msgid "using babel args '%s' and file '%s'"
-msgstr "uso degli argomenti babel '%s' e file '%s'"
+msgstr "käytetään babel-argumentteja ’%s’ ja tiedostoa ’%s’"
 
 #: ../src/datasource_gc.c:66
 msgid "Download Geocaches"
-msgstr "Scarica Geocache"
+msgstr "Lataa geokätköt"
 
 #: ../src/datasource_gc.c:67
 msgid "Geocaching.com Caches"
-msgstr "Cache di Geocaching.com"
+msgstr "Geocaching.com-kätköt"
 
 #: ../src/datasource_gc.c:85
 msgid "geocaching.com username:"
-msgstr "Nome utente di geocaching.com:"
+msgstr "geocaching.com-käyttäjänimi:"
 
 #: ../src/datasource_gc.c:86
 msgid "geocaching.com password:"
-msgstr "Password di geocaching.com:"
+msgstr "geocaching.com-salasana:"
 
 #: ../src/datasource_gc.c:127
 #, c-format
 msgid ""
 "Can't find %s or %s in path! Check that you have installed it correctly."
 msgstr ""
-"Impossibile trovare %s o %s nel percorso! Controlla siano installati "
-"correttamente."
+"Kohteiden %s tai %s löytäminen polussa epäonnistui! Tarkista, että olet "
+"asentanut sen oikein."
 
 #: ../src/datasource_gc.c:189
 msgid "Number geocaches:"
-msgstr "Numero geocache:"
+msgstr "Geokätköjen lukumäärä:"
 
 #: ../src/datasource_gc.c:191
 msgid "Centered around:"
-msgstr "Centrata su:"
+msgstr "Keskitetty ympärille:"
 
 #: ../src/datasource_gc.c:227
 msgid "Broken input - using some defaults"
-msgstr "Input corrotto - uso quelli predefiniti"
+msgstr "Rikkinäinen syöte - käytetään joitakin oletusarvoja"
 
 #: ../src/datasource_geotag.c:52
 msgid "Create Waypoints from Geotagged Images"
-msgstr "Crea Punti di Transito da Immagini Georeferenziate"
+msgstr "Luo välietapit Geotagged-kuvista"
 
 #: ../src/datasource_geotag.c:53
 msgid "Geotagged Images"
-msgstr "Immagini Georeferenziate"
+msgstr "Geotagged-kuvat"
 
 #: ../src/datasource_geotag.c:105 ../src/vikwindow.c:1838
 msgid "All"
-msgstr "Tutti"
+msgstr "Kaikki"
 
 #: ../src/datasource_geotag.c:110
 msgid "JPG"
@@ -477,249 +475,251 @@ msgstr "JPG"
 #: ../src/datasource_geotag.c:171
 #, c-format
 msgid "Unable to create waypoint from %s"
-msgstr "Impossibile creare il punto di transito da %s"
+msgstr "Välietapin luominen kohteesta %s epäonnistui"
 
 #: ../src/datasource_google.c:49 ../src/datasource_google.c:50
 msgid "Google Directions"
-msgstr "Indicazioni da Google"
+msgstr "Google-ajo-ohjeet"
 
 #: ../src/datasource_google.c:77
 msgid "From:"
-msgstr "Da:"
+msgstr "Mistä:"
 
 #: ../src/datasource_google.c:79
 msgid "To:"
-msgstr "A:"
+msgstr "Mihin:"
 
 #: ../src/datasource_gps.c:55
 msgid "Acquire from GPS"
-msgstr "Acquisisci dal GPS"
+msgstr "Hanki GPS:stä"
 
 #: ../src/datasource_gps.c:56
 msgid "Acquired from GPS"
-msgstr "Aquisiti dal GPS"
+msgstr "Hankittu GPS:stä"
 
+#  Tämä on debug-sanoma
 #: ../src/datasource_gps.c:148
 #, c-format
 msgid "using cmdline '%s' and file '%s'\n"
-msgstr "Sto utilizzando cmdline '%s' e file '%s'\n"
+msgstr "käytetään cmdline ’%s’ ja file ’%s’\n"
 
 #: ../src/datasource_gps.c:202 ../src/vikgpslayer.c:826
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
-msgstr[0] "Download in corso di %d waypoint"
-msgstr[1] "Download in corso di %d waypoint"
+msgstr[0] "Ladataan %d välietappi..."
+msgstr[1] "Ladataan %d välietappia..."
 
 #: ../src/datasource_gps.c:204 ../src/vikgpslayer.c:828
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
-msgstr[0] "Download in corso di %d trackpoint"
-msgstr[1] "Download in corso di %d trackpoint"
+msgstr[0] "Ladataan %d reittipiste..."
+msgstr[1] "Ladataan %d reittipisteet..."
 
 #: ../src/datasource_gps.c:222
 #, c-format
 msgid "Downloaded %d out of %d %s..."
-msgstr "Scaricati %d di %d %s"
+msgstr "Ladattu %d / %d %s..."
 
 #: ../src/datasource_gps.c:224
 #, c-format
 msgid "Downloaded %d %s."
-msgstr "Scaricati %d %s."
+msgstr "Ladattu %d %s."
 
 #: ../src/datasource_gps.c:237 ../src/vikgpslayer.c:898
 #, c-format
 msgid "GPS Device: %s"
-msgstr "Dispositivo GPS: %s"
+msgstr "GPS-laite: %s"
 
 #: ../src/datasource_gps.c:345 ../src/vikgpslayer.c:152
 msgid "GPS Protocol:"
-msgstr "Protocollo GPS:"
+msgstr "GPS-yhteyskäytäntö:"
 
 #: ../src/datasource_gps.c:364 ../src/vikgpslayer.c:153
 msgid "Serial Port:"
-msgstr "Porta seriale:"
+msgstr "Sarjaportti:"
 
 #: ../src/datasource_gps.c:385
 msgid ""
 "Turn Off After Transfer\n"
 "(Garmin/NAViLink Only)"
 msgstr ""
-"Spegni al termine del trasferimento\n"
-"(solo Garmin/NAViLink)"
+"Käännä pois päältä siirron jälkeen\n"
+"(Vain Garmin/NAViLink)"
 
 #: ../src/datasource_gps.c:388
 msgid "Tracks:"
-msgstr "Tracciati:"
+msgstr "Reitit:"
 
 #: ../src/datasource_gps.c:392
 msgid "Waypoints:"
-msgstr "Punti di Transito:"
+msgstr "Välietapit:"
 
 #: ../src/datasource_gps.c:421 ../src/vikgpslayer.c:1156
 msgid "GPS device: N/A"
-msgstr "Dipositivo GPS: N/D"
+msgstr "GPS-laite: Ei saatavilla"
 
 #: ../src/datasource_osm.c:52 ../src/datasource_osm.c:53
 msgid "OSM traces"
-msgstr "Tracce OSM"
+msgstr "OSM-jäljet:"
 
 #: ../src/datasource_osm.c:80
 msgid "Page number:"
-msgstr "Numero della pagina:"
+msgstr "Sivunumero:"
 
 #: ../src/dem.c:60 ../src/dem.c:74
 msgid "Invalid DEM"
-msgstr "DEM non valido"
+msgstr "Virheellinen DEM"
 
 #: ../src/dem.c:116
 msgid "Invalid DEM header"
-msgstr "Header DEM non valido"
+msgstr "Virheellinen DEM-otsake"
 
 #: ../src/dem.c:185 ../src/dem.c:198
 msgid "Incorrect DEM Class B record: expected 1"
-msgstr "DEM Classe B non corretta: attesa 1"
+msgstr "Virheellinen DEM Class B-tietue, odotettiin 1"
 
 #: ../src/dem.c:355
 #, c-format
 msgid "Couldn't map file %s: %s"
-msgstr "Impossibile mappare il file %s: %s"
+msgstr "Tiedoston %s kartoittaminen epäonnistui: %s"
 
+#  As a translator I have no idea, what this means. What is Tile age and what (s)??
 #: ../src/download.c:112
 msgid "Tile age (s):"
-msgstr ""
+msgstr "Tiili-ikä (s):"
 
 #: ../src/download.c:233
 #, c-format
 msgid "Download error: %s"
-msgstr "Errore durante il download: %s"
+msgstr "Latausvirhe: %s"
 
 #: ../src/file.c:430 ../src/file.c:434
 #, c-format
 msgid "Draw mode '%s' no more supported"
-msgstr "Modalità '%s' non più supportata"
+msgstr "Piirrostilaa ’%s’ ei enää tueta"
 
 #: ../src/geotag_exif.c:422
 msgid "Not enough memory."
-msgstr "Memoria insufficiente."
+msgstr "Muisti ei riitä."
 
 #: ../src/geotag_exif.c:440
 msgid "Setting a value for this tag is unsupported!"
-msgstr "L'impostazione di un valore per questo tag non è supportato!"
+msgstr "Arvon asettamista tälle tunnisteelle ei tueta!"
 
 #: ../src/geotag_exif.c:459
 #, c-format
 msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Troppo pochi componenti specificati (necessari %d, trovati %d)\n"
+msgstr "Määritelty liian vähän komponentteja (tarvitaan %d, löytyi %d)\n"
 
 #: ../src/geotag_exif.c:463
 msgid "Numeric value expected\n"
-msgstr "Valore numerico atteso\n"
+msgstr "Odotettiin numeroarvoa\n"
 
 #: ../src/geotag_exif.c:471
 msgid "This shouldn't happen!"
-msgstr "Questo non dovrebbe accadere!"
+msgstr "Tätä ei pitäisi tapahtua!"
 
 #: ../src/geotag_exif.c:541
 msgid "Not yet implemented!"
-msgstr "Non ancora implementato"
+msgstr "Ei ole vielä toteutettu!"
 
 #: ../src/geotag_exif.c:554
 msgid "Warning; Too many components specified!"
-msgstr "Attenzione; Troppi componenti specificati!"
+msgstr "Varoitus; Liian monta komponenttia määritelty!"
 
 #: ../src/osm-traces.c:73
 msgid "Identifiable (public w/ timestamps)"
-msgstr "Identificabili (strada pubblica/ marcatori temporali)"
+msgstr "Tunnistettava (julkiset w/ aikaleimat)"
 
 #: ../src/osm-traces.c:74
 msgid "Trackable (private w/ timestamps)"
-msgstr "Tracciabile (strada privata/ marcatori temporali)"
+msgstr "Reititettävä (yksityiset w/ aikaleimat)"
 
 #: ../src/osm-traces.c:75
 msgid "Public"
-msgstr "Pubblico"
+msgstr "Julkinen"
 
 #: ../src/osm-traces.c:76
 msgid "Private"
-msgstr "Privato"
+msgstr "Yksityinen"
 
 #: ../src/osm-traces.c:93
 msgid "OSM username:"
-msgstr "Username OSM:"
+msgstr "OSM-käyttäjänimi:"
 
 #: ../src/osm-traces.c:94
 msgid "OSM password:"
-msgstr "Password OSM:"
+msgstr "OSM-salasana:"
 
 #. Preferences
 #: ../src/osm-traces.c:152
 msgid "OpenStreetMap Traces"
-msgstr "Tracce OpenStreetMap"
+msgstr "OpenStreetMap-jäljet"
 
 #: ../src/osm-traces.c:235
 #, c-format
 msgid "failed to upload data: HTTP response is %ld"
-msgstr "Impossibile effettuare l'upload: la risposta HTTP è %ld"
+msgstr "tietojen kopioiminen palvelimelle epäonnistui: HTTP-vastaus on %ld"
 
 #: ../src/osm-traces.c:240
 #, c-format
 msgid "curl_easy_getinfo failed: %d"
-msgstr "errore di curl_easy_getinfo: %d"
+msgstr "curl_easy_getinfo epäonnistui: %d"
 
 #: ../src/osm-traces.c:245
 #, c-format
 msgid "curl request failed: %s"
-msgstr "Errore di curl request: %s"
+msgstr "curl-pyyntö epäonnistui: %s"
 
 #: ../src/osm-traces.c:275
 #, c-format
 msgid "failed to open temporary file: %s"
-msgstr "Apertura del file temporaneo %s fallita."
+msgstr "tilapäisen tiedoston avaaminen epäonnistui: %s"
 
 #. Success
 #: ../src/osm-traces.c:329
 msgid "Uploaded to OSM"
-msgstr "Caricato su OSM"
+msgstr "Kopioitu OSM-palvelimelle"
 
 #: ../src/osm-traces.c:334
 msgid "FAILED TO UPLOAD DATA TO OSM - CURL PROBLEM"
-msgstr "CARICAMENTO DEI DATI ALL'OSM NON RIUSCITA - PROBLEMA CURL"
+msgstr "TIETOJEN KOPIOIMINEN OSM-PALVELIMELLE EPÄONNISTUI - CURL-PULMA"
 
 #: ../src/osm-traces.c:339
 msgid "FAILED TO UPLOAD DATA TO OSM"
-msgstr "CARICAMENTO DEI DATI ALL'OSM NON RIUSCITO"
+msgstr "TIETOJEN KOPIOIMINEN OSM-PALVELIMELLE EPÄONNISTUI"
 
 #: ../src/osm-traces.c:339
 msgid "HTTP response code"
-msgstr "Codice di risposta HTTP"
+msgstr "HTTP-vastauskoodi"
 
 #: ../src/osm-traces.c:350
 #, c-format
 msgid "failed to unlink temporary file: %s"
-msgstr "Impossibile eseguire l'unlink del file temporaneo: %s"
+msgstr "unlink-toiminto tilapäiselle tiedostolle epäonnistui: %s"
 
 #: ../src/osm-traces.c:362
 msgid "OSM upload"
-msgstr "upload OSM"
+msgstr "OSM-kopiointi palvelimelle"
 
 #: ../src/osm-traces.c:383
 msgid "Email:"
-msgstr "Email:"
+msgstr "Sähköpostiosoite:"
 
 #: ../src/osm-traces.c:394
 msgid ""
 "The email used as login\n"
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
-"L'indirizzo email utilizzata per effettuare il login\n"
-"<small>Inserisci l'indirizzo email utilizzato per effettuare il login di "
+"Sähköpostiosoitetta käytetty kirjautumiseen\n"
+"<small>Kirjoita sähköpostiosoite, jota käytät kirjautumiseen sivustolle "
 "www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:397
 msgid "Password:"
-msgstr "Password:"
+msgstr "Salasana:"
 
 #: ../src/osm-traces.c:408
 msgid ""
@@ -727,13 +727,13 @@ msgid ""
 "<small>Enter the password you use to login into "
 "www.openstreetmap.org.</small>"
 msgstr ""
-"La password utilizzata per effettuare il login\n"
-"<small>Inserisci la password che utilizzi per effettuare il login su "
+"Salasanaa käytetty kirjautumiseen\n"
+"<small>Kirjoita salasana, jota käytät kirjautumiseen sivustolle "
 "www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:411
 msgid "File's name:"
-msgstr "Nome del file:"
+msgstr "Tiedoston nimi:"
 
 #: ../src/osm-traces.c:421
 msgid ""
@@ -741,447 +741,443 @@ msgid ""
 "<small>This is the name of the file created on the server.This is not the "
 "name of the local file.</small>"
 msgstr ""
-"Il nome del file su OSM\n"
-"<small>Questo è il nome del file creato sul server. Questo non è il nome del "
-"file in locale</small>"
+"Tiedoston nimi OSM:ssä\n"
+"<small>Tämä on palvelimella luodun tiedoston nimi. Tämä ei ole paikallisen "
+"tiedoston nimi.</small>"
 
 #: ../src/osm-traces.c:425
 msgid "Description:"
-msgstr "Descrizione:"
+msgstr "Kuvaus:"
 
 #: ../src/osm-traces.c:430
 msgid "The description of the trace"
-msgstr "La descrizione della traccia"
+msgstr "Jäljen kuvaus"
 
 #: ../src/osm-traces.c:432
 msgid "Tags:"
-msgstr "Tag:"
+msgstr "Tunnisteet:"
 
 #: ../src/osm-traces.c:437
 msgid "The tags associated to the trace"
-msgstr "I tag associati alla traccia"
+msgstr "Jälkeen liitetyt tunnisteet"
 
 #: ../src/osm-traces.c:470
 #, c-format
 msgid "Uploading %s to OSM"
-msgstr "Caricamento di %s su OSM"
+msgstr "Kopioidaan %s OSM-palvelimelle"
 
 #: ../src/mapcache.c:61
 msgid "Mapcache memory size (MB):"
-msgstr "Dimensione della cache delle mappe (MB)"
+msgstr "Mapcache-muistikoko (Mt):"
 
 #: ../src/print.c:53
 msgid "None"
-msgstr "Nessuno"
+msgstr "Ei mitään"
 
 #: ../src/print.c:54
 msgid "Horizontally"
-msgstr "Orizzontalmente"
+msgstr "Vaakasuoraan"
 
 #: ../src/print.c:55
 msgid "Vertically"
-msgstr "Verticalmente"
+msgstr "Pystysuoraan"
 
 #: ../src/print.c:56
 msgid "Both"
-msgstr "Entrambi"
+msgstr "Molemmat"
 
 #: ../src/print.c:120
 msgid "Image Settings"
-msgstr "Impostazioni dell'immagine"
+msgstr "Kuva-asetukset"
 
 #: ../src/print.c:546
 msgid "done"
-msgstr "fatto"
+msgstr "valmis"
 
 #. Page Size
 #: ../src/print.c:575
 msgid "_Adjust Page Size and Orientation"
-msgstr "Regol_a la dimensione e l'orientamento pagina"
+msgstr "_Säädä kuvakoko ja suuntaus"
 
 #: ../src/print.c:591
 msgid "C_enter:"
-msgstr "C_entro:"
+msgstr "K_eskitä:"
 
 #. ignore page margins
 #: ../src/print.c:609
 msgid "Ignore Page _Margins"
-msgstr "Ignora i _margini della pagina"
+msgstr "Ohita sivu_marginaalit"
 
 #: ../src/print.c:628
 msgid "Image S_ize:"
-msgstr "Dimen_sione immagine:"
+msgstr "_Kuvakoko:"
 
 #: ../src/util.c:79
 msgid "Could not launch web browser."
-msgstr "Impossibile avviare il browser web."
+msgstr "Webbiselaimen käynnistäminen epäonnistui."
 
 #: ../src/util.c:90
 msgid "Could not create new email."
-msgstr "Impossibile creare una nuova email."
+msgstr "Uuden sähköpostiosoitteen luominen epäonnistui."
 
 #: ../src/vikcoordlayer.c:46
 msgid "Color:"
-msgstr "Colore:"
+msgstr "Väri:"
 
 #: ../src/vikcoordlayer.c:47
 msgid "Minutes Width:"
-msgstr "Larghezza minuti:"
+msgstr "Minuuttipituus:"
 
 #: ../src/vikcoordlayer.c:48
 msgid "Line Thickness:"
-msgstr "Spessore della linea:"
+msgstr "Viivan paksuus:"
 
 #: ../src/datasource_bfilter.c:46
 msgid "Max number of points:"
-msgstr "Numero massimo di punti:"
+msgstr "Pisteiden enimmäismäärä:"
 
 #: ../src/datasource_bfilter.c:60
 msgid "Simplify All Tracks..."
-msgstr "Semplifica Tutti i Tracciati..."
+msgstr "Yksinkertaista kaikkia reittejä..."
 
 #: ../src/datasource_bfilter.c:61
 msgid "Simplified Tracks"
-msgstr "Tracciati Semplificati"
+msgstr "Yksinkertaistetut reitit"
 
 #: ../src/datasource_bfilter.c:96 ../src/datasource_bfilter.c:97
 msgid "Remove Duplicate Waypoints"
-msgstr "Rimuovi waypoint doppi"
+msgstr "Poista välietappien kaksoiskappaleet"
 
 #: ../src/datasource_bfilter.c:129
 msgid "Waypoints Inside This"
-msgstr "Waypoint all'interno di questo"
+msgstr "Poista välietapit tämän sisältä"
 
 #: ../src/datasource_bfilter.c:130
 msgid "Polygonized Layer"
-msgstr "Livelli Poligonizzati"
+msgstr "Monikulmaistettu kerros"
 
 #: ../src/datasource_bfilter.c:165
 msgid "Waypoints Outside This"
-msgstr "Waypoint all'esterno di questo"
+msgstr "Välietapit tämän ulkopuolella"
 
+#  Tämä on varmaan typo ?
 #: ../src/datasource_bfilter.c:166
 msgid "Polygonzied Layer"
-msgstr "Strato a poligoni"
+msgstr "Monikulmaistettu kerros"
 
 #: ../src/main.c:133
 msgid "Enable debug output"
-msgstr "Abilita output di debug"
+msgstr "Ota käyttöön vianjäljitystulostus"
 
 #: ../src/main.c:134
 msgid "Enable verbose output"
-msgstr "Abilita output prolisso"
+msgstr "Ota käyttöön lavea tulostus"
 
 #: ../src/main.c:135
 msgid "Show version"
-msgstr "Mostra versione"
+msgstr "Näytä versio"
 
 #: ../src/osm.c:109
 msgid "OSM (view)"
-msgstr "OSM (visualizza)"
+msgstr "OSM (näkymä)"
 
 #: ../src/osm.c:113
 msgid "OSM (edit)"
-msgstr "OSM (modifica)"
+msgstr "OSM (muokkaa)"
 
 #: ../src/osm.c:117
 msgid "OSM (render)"
-msgstr "OSM (disegna)"
+msgstr "OSM (renderoi)"
 
 #. Example: http://127.0.0.1:8111/load_and_zoom?left=8.19&right=8.20&top=48.605&bottom=48.590&select=node413602999
 #. JOSM or merkaartor must already be running with remote interface enabled
 #: ../src/osm.c:124
 msgid "Local port 8111 (eg JOSM)"
-msgstr "Porta locale 8111 (per esempio JOSM)"
+msgstr "Paikallinen portti 8111 (esim.: JOSM)"
 
 #: ../src/preferences.c:287
 msgid "Preferences"
-msgstr "Preferenze"
+msgstr "Asetukset"
 
 #: ../src/uibuilder.c:148
 msgid "Take care that this password will be stored clearly in a plain file."
 msgstr ""
-"Attenzione, questa password verrà memorizzata in chiaro in un file di testo."
+"Muista, että tämä salasana tallennetaan salaamattomaan tekstitiedostoon."
 
 #: ../src/vikdemlayer.c:101
 msgid "Absolute height"
-msgstr "Altezza assoluta"
+msgstr "Absoluuttinen korkeus"
 
 #: ../src/vikdemlayer.c:102
 msgid "Height gradient"
-msgstr "Gradiente di altezza"
+msgstr "Korkeuskaltevuus"
 
 #: ../src/vikdemlayer.c:118
 msgid "DEM Files:"
-msgstr "File DEM:"
+msgstr "DEM-tiedostot:"
 
 #: ../src/vikdemlayer.c:119
 msgid "Download Source:"
-msgstr "Fonte di scaricamento:"
+msgstr "Latauslähde:"
 
 #: ../src/vikdemlayer.c:120
 msgid "Min Elev Color:"
-msgstr "Colore elevazione minima:"
+msgstr "Alimman korkeusaseman väri"
 
 #: ../src/vikdemlayer.c:121
 msgid "Type:"
-msgstr "Tipo:"
+msgstr "Tyyppi:"
 
 #: ../src/vikdemlayer.c:122
 msgid "Min Elev:"
-msgstr "Elev. minima:"
+msgstr "Alin korkeusasema:"
 
 #: ../src/vikdemlayer.c:123
 msgid "Max Elev:"
-msgstr "Elev. massima:"
+msgstr "Ylin korkeusasema:"
 
 #: ../src/vikdemlayer.c:134
 msgid "DEM Download/Import"
-msgstr "Scarica/Importa DEM"
+msgstr "DEM-lataus/tuonti"
 
 #: ../src/vikdemlayer.c:279
 #, c-format
 msgid "Number of files: %d"
-msgstr "Numero di file: %d"
+msgstr "Tiedostojen lukumäärä: %d"
 
 #: ../src/vikdemlayer.c:380
 msgid "DEM Loading"
-msgstr "Caricamento DEM"
+msgstr "DEM-lataus"
 
 #: ../src/vikdemlayer.c:884
 #, c-format
 msgid "No SRTM data available for %f, %f"
-msgstr "Dati SRTM non disponibili per %f, %f"
+msgstr "SRTM-tietoja ei ole käytettävissä kohteelle %f, %f"
 
 #: ../src/vikdemlayer.c:1144
 #, c-format
 msgid "Downloading DEM %s"
-msgstr "Download di DEM %s in corso"
+msgstr "Ladataan DEM %s"
 
 #: ../src/vikfileentry.c:68
 msgid "Browse..."
-msgstr "Sfoglia..."
+msgstr "Selaa..."
 
 #: ../src/vikfileentry.c:96
 msgid "Choose file"
-msgstr "Selezionare il file"
+msgstr "Valitse tiedosto"
 
 #: ../src/vikfilelist.c:48
 msgid "Choose file(s)"
-msgstr "Selezionare file"
+msgstr "Valitse tiedostot"
 
 #: ../src/vikfilelist.c:172
 msgid "Add..."
-msgstr "Aggiungi..."
+msgstr "Lisää..."
 
 #: ../src/vikfilelist.c:173
 msgid "Delete"
-msgstr "Elimina"
+msgstr "Poista"
 
 #: ../src/vikgeoreflayer.c:69
 msgid "Georef Move Map"
-msgstr "Sposta mappa Georef"
+msgstr "Georef-siirtokartta"
 
 #: ../src/vikgeoreflayer.c:73
 msgid "Georef Zoom Tool"
-msgstr "Strumento di Zoom Georef"
+msgstr "Georef-loitonnus-/lähennystyökalu"
 
 #: ../src/vikgeoreflayer.c:326 ../src/vikmapslayer.c:645
 #, c-format
 msgid "Couldn't open image file: %s"
-msgstr "Impossibile aprire il file immagine: %s"
+msgstr "Kuvatiedoston avaus epäonnistui: %s"
 
 #: ../src/vikgeoreflayer.c:356
 msgid "Unexpected end of file reading World file."
-msgstr "Fine del file inattesa durante la lettura del World File."
+msgstr "World-tiedoston lukemisen odottamaton loppu."
 
 #: ../src/vikgeoreflayer.c:372 ../src/vikgeoreflayer.c:417
 msgid "Choose World file"
-msgstr "Seleziona \"World File\""
+msgstr "Valitse World-tiedosto"
 
 #: ../src/vikgeoreflayer.c:385
 msgid "The World file you requested could not be opened for reading."
-msgstr "Il World File richiesto non può essere aperto per la lettura."
+msgstr "Pyytämäsi World-tiedoston avaus lukemista varten epäonnistui."
 
 #: ../src/vikgeoreflayer.c:430
 msgid "The file you requested could not be opened for writing."
-msgstr ""
-"Non è stato possibile aprire il file richiesto in modalità di scrittura"
+msgstr "Pyytämäsi tiedoston avaus kirjoittamista varten epäonnistui."
 
 #: ../src/vikgeoreflayer.c:447 ../src/viklayer.c:507
 msgid "Layer Properties"
-msgstr "Proprietà del livello"
+msgstr "Kerrosominaisuudet"
 
 #: ../src/vikgeoreflayer.c:469
 msgid "World File Parameters:"
-msgstr "Parametri del World File:"
+msgstr "Loitonna/lähennä (metriä per pikseli):"
 
 #: ../src/vikgeoreflayer.c:470
 msgid "Load From File..."
-msgstr "Carica da file..."
+msgstr "Lataa tiedostosta..."
 
 #: ../src/vikgeoreflayer.c:475
 msgid "Corner pixel easting:"
-msgstr "Allineamento angolo verso est in pixel:"
+msgstr "Kulmapikselin itäinen pituusaste:"
 
 #: ../src/vikgeoreflayer.c:477
 msgid "the UTM \"easting\" value of the upper-right corner pixel of the map"
-msgstr ""
-"Il valore dell'UTM \"percorso verso est\" del pixel nell'angolo in alto a "
-"destra della mappa"
+msgstr "Kartan oikean yläkulman pikselin UTM ”itäistä pituutta”-arvo"
 
 #: ../src/vikgeoreflayer.c:479
 msgid "Corner pixel northing:"
-msgstr "Allineamento angolo verso nord in pixel:"
+msgstr "Kulmapikselin pohjoinen leveysaste:"
 
 #: ../src/vikgeoreflayer.c:481
 msgid "the UTM \"northing\" value of the upper-right corner pixel of the map"
-msgstr ""
-"Il valore dell'UTM \"percorso verso nord\" del pixel nell'angolo in alto a "
-"destra della mappa"
+msgstr "Kartan oikean yläkulman pikselin UTM ”pohjoista leveyttä”-arvo"
 
 #: ../src/vikgeoreflayer.c:483
 msgid "X (easting) scale (mpp): "
-msgstr "scala X (easting) (mpp): "
+msgstr "X (itäistä pituutta)-skaala (mpp): "
 
 #: ../src/vikgeoreflayer.c:484
 msgid "Y (northing) scale (mpp): "
-msgstr "Scala Y (northing mpp): "
+msgstr "Y (pohjoista leveyttä)-skaala (mpp): "
 
 #: ../src/vikgeoreflayer.c:487
 msgid "the scale of the map in the X direction (meters per pixel)"
-msgstr "Scala della mappa nella direxione X (metri per pixel)"
+msgstr "karttaskaala X-suunnassa (metriä per pikseli)"
 
 #: ../src/vikgeoreflayer.c:489
 msgid "the scale of the map in the Y direction (meters per pixel)"
-msgstr "Scala della mappa nella direxione Y (metri per pixel)"
+msgstr "karttaskaala Y-suunnassa (metriä per pikseli)"
 
 #: ../src/vikgeoreflayer.c:491
 msgid "Map Image:"
-msgstr "Immagine della mappa:"
+msgstr "Karttakuva:"
 
 #. Now with icons
 #: ../src/vikgeoreflayer.c:599
 msgid "_Zoom to Fit Map"
-msgstr "_Zoom per adattare la mappa"
+msgstr "_Loitonna/Lähennä sopimaan karttaan"
 
 #: ../src/vikgeoreflayer.c:605
 msgid "_Goto Map Center"
-msgstr "_Va al _centro della mappa"
+msgstr "_Siirry karttakeskustaan"
 
 #: ../src/vikgeoreflayer.c:611
 msgid "_Export to World File"
-msgstr "_Esporta al File del Mondo"
+msgstr "_World-tiedoston vienti"
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
-msgstr "Non è disponibile alcuno strumento \"vai a\"."
+msgstr "Siirtymistyökalua ei ole käytettävissä."
 
 #: ../src/vikgoto.c:90 ../src/vikgoto.c:109
 msgid "goto"
-msgstr "Vai a"
+msgstr "siirry"
 
 #: ../src/vikgoto.c:92
 msgid "I don't know that place. Do you want another goto?"
-msgstr "Non conosco quel posto. Vuoi andare in un altro?"
+msgstr "En tunne paikkaa. Haluatko siirtyä muualle?"
 
 #: ../src/vikgoto.c:111
 msgid "goto provider:"
-msgstr "vai al fornitore:"
+msgstr "siirtymistarjoaja:"
 
 #: ../src/vikgoto.c:126
 msgid "Enter address or place name:"
-msgstr "Digita l'indirizzo oppure il nome di un luogo"
+msgstr "Kirjoita osoite tai paikan nimi:"
 
 #: ../src/vikgpslayer.c:154
 msgid "Download Tracks:"
-msgstr "Scarica i Tracciati:"
+msgstr "Lataa reitit:"
 
 #: ../src/vikgpslayer.c:155
 msgid "Upload Tracks:"
-msgstr "Carica i Tracciati:"
+msgstr "Kopioi reitit palvelimelle:"
 
 #: ../src/vikgpslayer.c:156
 msgid "Download Waypoints:"
-msgstr "Scarica i Punti di Transito:"
+msgstr "Lataa välietapit:"
 
 #: ../src/vikgpslayer.c:157
 msgid "Upload Waypoints:"
-msgstr "Carica i Punti di Transito:"
+msgstr "Kopioi välietapit palvelimelle:"
 
 #: ../src/vikgpslayer.c:159
 msgid "Recording tracks"
-msgstr "Registra i tracciati"
+msgstr "Tallennetaan reittejä"
 
 #: ../src/vikgpslayer.c:160
 msgid "Jump to current position on start"
-msgstr "All'avvio salta alla posizione corrente"
+msgstr "Hyppää alussa nykyiseen sijaintiin"
 
 #: ../src/vikgpslayer.c:161
 msgid "Moving Map Method:"
-msgstr "Metodo di spostamento mappa:"
+msgstr "Siirretään kartta-menetelmä:"
 
 #: ../src/vikgpslayer.c:162
 msgid "Gpsd Host:"
-msgstr "Host Gpsd:"
+msgstr "Gpsd-tietokone:"
 
 #: ../src/vikgpslayer.c:163
 msgid "Gpsd Port:"
-msgstr "Porta di Gpsd:"
+msgstr "Gpsd-portti:"
 
 #: ../src/vikgpslayer.c:164
 msgid "Gpsd Retry Interval (seconds):"
-msgstr "Intervallo di Prova Gpsd (secondi):"
+msgstr "Gpsd-toistoväli (sekuntia):"
 
 #: ../src/vikgpslayer.c:239 ../src/vikgpslayer.c:1126
 msgid "GPS Download"
-msgstr "Download GPS"
+msgstr "GPS-lataus"
 
 #: ../src/vikgpslayer.c:239 ../src/vikgpslayer.c:1126
 msgid "GPS Upload"
-msgstr "Upload GPS"
+msgstr "GPS-kopiointi palvelimelle"
 
 #: ../src/vikgpslayer.c:241
 msgid "GPS Realtime Tracking"
-msgstr "Tracciamento GPS in Tempo Reale"
+msgstr "GPS-tosiaikareititys"
 
 #: ../src/vikgpslayer.c:413
 msgid "Unknown GPS Protocol"
-msgstr "Protocollo GPS sconosciuto"
+msgstr "Tuntematon GPS-yhteyskäytäntö"
 
 #: ../src/vikgpslayer.c:432
 msgid "Unknown serial port device"
-msgstr "Porta seriale del dispositivo sconosciuta"
+msgstr "Tuntematon sarjaporttilaite"
 
 #: ../src/vikgpslayer.c:522
 #, c-format
 msgid "%s: unknown parameter"
-msgstr "%s: parametro sconosciuto"
+msgstr "%s: tuntematon parametri"
 
 #. Now with icons
 #: ../src/vikgpslayer.c:641
 msgid "_Upload to GPS"
-msgstr "Carica al GPS (_U)"
+msgstr "Kopioi_daan GPS-palvelimelle"
 
 #: ../src/vikgpslayer.c:647
 msgid "Download from _GPS"
-msgstr "Scarica dal _GPS"
+msgstr "Lataa _GPS:stä"
 
 #: ../src/vikgpslayer.c:668
 msgid "Empty _Realtime"
-msgstr "Svuota Tempo _Reale"
+msgstr "Tyhje_nna tosiaika"
 
 #: ../src/vikgpslayer.c:675
 msgid "E_mpty Upload"
-msgstr "Svuota il Carica_mento"
+msgstr "Tyhjennä _kopioiminen palvelimelle"
 
 #: ../src/vikgpslayer.c:681
 msgid "_Empty Download"
-msgstr "Svuota lo Scaricamento (_E)"
+msgstr "Ty_hjennä lataus"
 
 #: ../src/vikgpslayer.c:687
 msgid "Empty _All"
-msgstr "Svuota Tutto (_A)"
+msgstr "Tyhjennä K_aikki"
 
 #. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
@@ -1191,149 +1187,149 @@ msgstr "Svuota Tutto (_A)"
 #: ../src/vikgpslayer.c:704
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
-msgstr "Numero inatteso di gestori disconnessi: %d"
+msgstr "Odottamaton irtikytkettyjen käsittelijöiden lukumäärä: %d"
 
 #: ../src/vikgpslayer.c:833
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
-msgstr[0] "Upload di %d waypoint in corso..."
-msgstr[1] "Upload di %d waypoint in corso..."
+msgstr[0] "Kopioidaan %d välietappi palvelimelle..."
+msgstr[1] "Kopioidaan %d välietappia palvelimelle..."
 
 #: ../src/vikgpslayer.c:835
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
-msgstr[0] "Caricamento di %d punto del tracciato in corso..."
-msgstr[1] "Caricamento di %d punti del tracciato in corso..."
+msgstr[0] "Kopioidaan %d reittipiste palvelimelle..."
+msgstr[1] "Kopioidaan %d reittipistettä palvelimelle..."
 
 #: ../src/vikgpslayer.c:859
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
-msgstr[0] "Scaricati %d waypoint su %d..."
-msgstr[1] "Scaricati %d waypoint su %d..."
+msgstr[0] "Ladattu %d / %d välietappi..."
+msgstr[1] "Ladattu %d / %d välietappia..."
 
 #: ../src/vikgpslayer.c:861
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
-msgstr[0] "Scaricato %d punto del tracciato su %d..."
-msgstr[1] "Scaricati %d punti del tracciato su %d..."
+msgstr[0] "Ladattu %d / %d reittipiste..."
+msgstr[1] "Ladattu %d / %d reittipistettä..."
 
 #: ../src/vikgpslayer.c:865
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
-msgstr[0] "Caricati %d di %d waypoint..."
-msgstr[1] "Caricati %d di of %d waypoint..."
+msgstr[0] "Kopioitu %d / %d välietappi palvelimelle..."
+msgstr[1] "Kopioitu %d / %d välietappia palvelimelle..."
 
 #: ../src/vikgpslayer.c:867
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
-msgstr[0] "Caricato %d di %d punto del tracciato..."
-msgstr[1] "Caricati %d di %d punti del tracciato..."
+msgstr[0] "Kopioitu %d / %d reittipiste palvelimelle..."
+msgstr[1] "Kopioitu %d / %d reittipistettä palvelimelle..."
 
 #: ../src/vikgpslayer.c:874
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
-msgstr[0] "Scaricati %d waypoint"
-msgstr[1] "Scaricati %d waypoint"
+msgstr[0] "Ladattiin %d välietappi"
+msgstr[1] "Ladattiin %d välietappia"
 
 #: ../src/vikgpslayer.c:876
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
-msgstr[0] "Scaricato %d punto del tracciato"
-msgstr[1] "Scaricati %d punti del tracciato"
+msgstr[0] "Ladattiin %d reittipiste"
+msgstr[1] "Ladattiin %d reittipistettä"
 
 #: ../src/vikgpslayer.c:880
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
-msgstr[0] "Caricati %d waypoint"
-msgstr[1] "Caricati %d waypoint"
+msgstr[0] "Kopioitu %d välietappi palvelimelle"
+msgstr[1] "Kopioitu %d välietappia palvelimelle"
 
 #: ../src/vikgpslayer.c:882
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
-msgstr[0] "Caricato %d punto del tracciato"
-msgstr[1] "Caricati %d punti del tracciato"
+msgstr[0] "Kopioitu %d reittipiste palvelimelle"
+msgstr[1] "Kopioitu %d reittipistettä palvelimelle"
 
 #: ../src/vikgpslayer.c:1078
 msgid "Error: couldn't find gpsbabel."
-msgstr "Errore: impossibile trovare gpsbabel."
+msgstr "Virhe: ohjelman gpsbabel löytyminen epäonnistui."
 
 #: ../src/vikgpslayer.c:1217
 msgid "Are you sure you want to delete GPS Upload data?"
-msgstr "Sei sicuro di voler eliminare i dati GPS Caricati?"
+msgstr "Oletko varma, että haluat poistaa palvelimelle kopioidut GPS-tiedot?"
 
 #: ../src/vikgpslayer.c:1229
 msgid "Are you sure you want to delete GPS Download data?"
-msgstr "Sei sicuro di voler eliminare i dati GPS Scaricati?"
+msgstr "Oletko varma, että haluat poistaa GPS-ladatut tiedot?"
 
 #: ../src/vikgpslayer.c:1242
 msgid "Are you sure you want to delete GPS Realtime data?"
-msgstr "Sei sicuro di voler eliminare i dati GPS in Tempo Reale?"
+msgstr "Oletko varma, että haluat poistaa GPS-tosiaikatiedot?"
 
 #: ../src/vikgpslayer.c:1255
 msgid "Are you sure you want to delete All GPS data?"
-msgstr "Sei sicuro di voler eliminare Tutti i dati GPS?"
+msgstr "Oletko varma, että haluat poistaa kaikki GPS-tiedot?"
 
 #: ../src/viklayerspanel.c:58
 msgid "/C_ut"
-msgstr "/T_aglia"
+msgstr "/L_eikkaa"
 
 #: ../src/viklayerspanel.c:59
 msgid "/_Copy"
-msgstr "/_Copia"
+msgstr "/K_opioi"
 
 #: ../src/viklayerspanel.c:60
 msgid "/_Paste"
-msgstr "/_Incolla"
+msgstr "/_Liitä"
 
 #: ../src/viklayerspanel.c:61
 msgid "/_Delete"
-msgstr "/_Elimina"
+msgstr "/_Poista"
 
 #: ../src/viklayerspanel.c:62
 msgid "/New Layer"
-msgstr "/Nuovo Livello"
+msgstr "/Uusi kerros"
 
 #: ../src/viklayerspanel.c:152
 msgid "Top Layer"
-msgstr "Livello superiore"
+msgstr "Ylin kerros"
 
 #: ../src/viklayerspanel.c:168
 msgid "Add new layer"
-msgstr "Aggiunge un nuovo livelle"
+msgstr "Lisää uusi kerros"
 
 #: ../src/viklayerspanel.c:175
 msgid "Remove selected layer"
-msgstr "Elimina livello selezionato"
+msgstr "Siirrä valittu kerros"
 
 #: ../src/viklayerspanel.c:182
 msgid "Move selected layer up"
-msgstr "Sposta il livello selezionato in su"
+msgstr "Siirrä valittua kerrosta ylöspäin"
 
 #: ../src/viklayerspanel.c:189
 msgid "Move selected layer down"
-msgstr "Sposta il livello selezionato in giù"
+msgstr "Siirrä valittua kerrosta alaspäin"
 
 #: ../src/viklayerspanel.c:196
 msgid "Cut selected layer"
-msgstr "Taglia il livello selezionato"
+msgstr "Leikkaa valittu kerros"
 
 #: ../src/viklayerspanel.c:203
 msgid "Copy selected layer"
-msgstr "Copia il livello selezionato"
+msgstr "Kopioi valittu kerros"
 
 #: ../src/viklayerspanel.c:210
 msgid "Paste layer below selected layer"
-msgstr "Incolla il livello sotto al livello selezionato"
+msgstr "Liitä kerros valitun kerroksen alapuolelle"
 
 #. TODO: FIXME: if name has a '/' in it it will get all messed up. why not have an itemfactory field with
 #. name, icon, shortcut, etc.?
@@ -1341,73 +1337,73 @@ msgstr "Incolla il livello sotto al livello selezionato"
 #: ../src/viklayerspanel.c:228 ../src/vikwindow.c:2692
 #, c-format
 msgid "New %s Layer"
-msgstr "Nuovo livello %s"
+msgstr "Uusi %s-kerros"
 
 #: ../src/viklayerspanel.c:521
 msgid "Aggregate Layers have no settable properties."
-msgstr "I livelli aggregati non hanno proprietà modificabili."
+msgstr "Aggregate-kerroksissa ei ole asetettavia ominaisuuksia."
 
 #: ../src/viklayerspanel.c:571
 msgid "You cannot cut the Top Layer."
-msgstr "Impossibile tagliare il livello superiore."
+msgstr "Et voi leikata ylintä kerrosta."
 
 #: ../src/viklayerspanel.c:616
 #, c-format
 msgid "Are you sure you want to delete %s?"
-msgstr "Sei sicuro di voler eliminare %s?"
+msgstr "Oletko varma, että haluat poistaa kohteen %s?"
 
 #: ../src/viklayerspanel.c:633
 msgid "You cannot delete the Top Layer."
-msgstr "Impossibile eliminare il livello superiore."
+msgstr "Et  voi poistaa ylintä kerrosta."
 
 #: ../src/viklayerspanel.c:717
 msgid "Are you sure you wish to delete all layers?"
-msgstr "Desideri veramente eliminare tutti i livelli?"
+msgstr "Oletko varma, että haluat poistaa kaikki kerrokset?"
 
 #. ******* MAPZOOMS ********
 #: ../src/vikmapslayer.c:91
 msgid "Use Viking Zoom Level"
-msgstr "Usa il livello di Zoom di Viking"
+msgstr "Käytä Viking-loitonnus-/lähentämistasoa"
 
 #: ../src/vikmapslayer.c:124
 msgid "Map Type:"
-msgstr "Tipo di mappa:"
+msgstr "Karttatyyppi:"
 
 #: ../src/vikmapslayer.c:125
 msgid "Maps Directory:"
-msgstr "Cartella delle mappe"
+msgstr "Karttahakemisto:"
 
 #: ../src/vikmapslayer.c:126
 msgid "Alpha:"
-msgstr "Alpha:"
+msgstr "Alfa:"
 
 #: ../src/vikmapslayer.c:127
 msgid "Autodownload maps:"
-msgstr "Scarica le mappe automaticamente:"
+msgstr "Lataa kartat automaattisesti:"
 
 #: ../src/vikmapslayer.c:128
 msgid "Zoom Level:"
-msgstr "Livello di Zoom:"
+msgstr "Loitonnus-/lähentämistaso:"
 
 #: ../src/vikmapslayer.c:134
 msgid "Maps Download"
-msgstr "Scarica mappe"
+msgstr "Kartat ladattu"
 
 #: ../src/vikmapslayer.c:140
 msgid "Map"
-msgstr "Mappa"
+msgstr "Kartta"
 
 #: ../src/vikmapslayer.c:226
 msgid "Default maplayer directory:"
-msgstr "Cartella predefinita del livello mappa"
+msgstr "Karttakerrosoletushakemisto:"
 
 #: ../src/vikmapslayer.c:474
 msgid "Unknown map type"
-msgstr "Tipo di mappa sconosciuto"
+msgstr "Tuntematon karttatyyppi"
 
 #: ../src/vikmapslayer.c:484
 msgid "Unknown Map Zoom"
-msgstr "Zoom di mappa sconosciuto"
+msgstr "Tuntematon karttaloitonnus/-lähennys"
 
 #: ../src/vikmapslayer.c:554
 #, c-format
@@ -1415,9 +1411,8 @@ msgid ""
 "New map cannot be displayed in the current drawmode.\n"
 "Select \"%s\" from View menu to view it."
 msgstr ""
-"La nuova mappa non può essere visualizzata nella modalità di disegno "
-"corrente.\n"
-"Seleziona \"%s\" dal menu Visualizza per visualizzarla."
+"Uutta karttaa ei voida näyttää nykyisessä piirrostilassa.\n"
+"Valitse ”%s” Näkymä-valikosta sen katsomiseksi."
 
 #: ../src/vikmapslayer.c:713
 #, c-format
@@ -1425,40 +1420,41 @@ msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
 msgstr ""
-"Rappresentazione o esistenza di celle impossibile oltre il fattore di zoom %d"
+"Raukkamaisesti kieltäydytään tiilien piirtämisestä tai tiilien esiintyminen "
+"on loitonnus-/lähentämistekijän %d takana"
 
 #: ../src/vikmapslayer.c:1108
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
-msgstr[0] "Sto scaricando nuovamente fino a %d %s mappa..."
-msgstr[1] "Sto scaricando nuovamente fino a %d %s mappe..."
+msgstr[0] "Ladataan uudelleen korkeintaan %d %s kartta..."
+msgstr[1] "Ladataan uudelleen kokeintaan %d %s karttaa..."
 
 #: ../src/vikmapslayer.c:1110
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
-msgstr[0] "Sto scaricando nuovamente fino a %d %s mappa..."
-msgstr[1] "Sto scaricando nuovamente fino a %d %s mappe..."
+msgstr[0] "Ladataan uudelleen %d %s kartta..."
+msgstr[1] "Ladataan uudelleen %d %s karttaa..."
 
 #: ../src/vikmapslayer.c:1114 ../src/vikmapslayer.c:1185
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
-msgstr[0] "Scaricamento %d %s mappa..."
-msgstr[1] "Scaricamento %d %s mappe..."
+msgstr[0] "Ladataan %d %s kartta..."
+msgstr[1] "Ladataan %d %s karttaa..."
 
 #: ../src/vikmapslayer.c:1248
 msgid "Redownload _Bad Map(s)"
-msgstr "Riscarica la(e) Mappa(e) Difettosa(e) (_B)"
+msgstr "Lataa uu_delleen huonot kartat"
 
 #: ../src/vikmapslayer.c:1252
 msgid "Redownload _New Map(s)"
-msgstr "Riscarica la(e) _Nuova(e) Mappa(e)"
+msgstr "Lataa uudelleen _uudet kartat"
 
 #: ../src/vikmapslayer.c:1256
 msgid "Redownload _All Map(s)"
-msgstr "Riscarica Tutta(e) la(e) Mappa(e) (_A)"
+msgstr "Lataa _uudelleen kaikki kartat"
 
 #: ../src/vikmapslayer.c:1336
 #, c-format
@@ -1466,101 +1462,101 @@ msgid ""
 "Wrong drawmode for this map.\n"
 "Select \"%s\" from View menu and try again."
 msgstr ""
-"Modalità di disegno non valida per questa mappa.\n"
-"Seleziona \"%s\" dal menu Visualizza e riprova."
+"Väärä piirrostila tälle kartalle.\n"
+"Valitse ”%s” Näkymä-valikosta ja yritä uudelleen."
 
 #: ../src/vikmapslayer.c:1341
 msgid "Wrong zoom level for this map."
-msgstr "Livello di zoom errato per questa mappa."
+msgstr "Väärä loitonnus-/lähennystaso tälle kartalle."
 
 #. Now with icons
 #: ../src/vikmapslayer.c:1372
 msgid "Download _Missing Onscreen Maps"
-msgstr "Scarica le Mappe _Mancanti a Schermo"
+msgstr "Lataa _puuttuva näytön kartat"
 
 #: ../src/vikmapslayer.c:1379
 msgid "Download _New Onscreen Maps"
-msgstr "Scarica Nuove Mappe a Schermo"
+msgstr "Lataa uu_det näytön kartat"
 
 #: ../src/vikmapslayer.c:1386
 msgid "Reload _All Onscreen Maps"
-msgstr "Ricarica Tutte le Mappe a Schermo (_A)"
+msgstr "Lat_aa uudelleen kaikki näytön kartat"
 
 #: ../src/viktreeview.c:281
 msgid "Layer Name"
-msgstr "Nome del livello"
+msgstr "Kerrosnimi"
 
 #: ../src/viktreeview.c:754
 #, c-format
 msgid "delete data from %s\n"
-msgstr "Elimina dati da %s\n"
+msgstr "poista tiedot kohteesta %s\n"
 
 #: ../src/viktrwlayer.c:332
 msgid "Create Waypoint"
-msgstr "Crea Waypoint"
+msgstr "Luo välietappi"
 
 #: ../src/viktrwlayer.c:335
 msgid "Create Track"
-msgstr "Crea il Tracciato"
+msgstr "Luo reitti"
 
 #: ../src/viktrwlayer.c:339
 msgid "Begin Track"
-msgstr "Inizia il Tracciato"
+msgstr "Aloita reitti"
 
 #: ../src/viktrwlayer.c:342
 msgid "Edit Waypoint"
-msgstr "Modifica Waypoint"
+msgstr "Muokkaa välietappia"
 
 #: ../src/viktrwlayer.c:347
 msgid "Edit Trackpoint"
-msgstr "Modifica il Punto del Tracciato"
+msgstr "Muokkaa reittipistettä"
 
 #: ../src/viktrwlayer.c:352
 msgid "Show Picture"
-msgstr "Visualizza immagine"
+msgstr "Näytä kuva"
 
 #: ../src/viktrwlayer.c:355
 msgid "Route Finder"
-msgstr "Trova Percorso"
+msgstr "Reittietsijä"
 
 #. ***** PARAMETERS *****
 #: ../src/viktrwlayer.c:362 ../src/viktrwlayer.c:1644
 #: ../src/viktrwlayer.c:1646
 msgid "Waypoints"
-msgstr "Waypoint"
+msgstr "Välietapit"
 
 #: ../src/viktrwlayer.c:362 ../src/viktrwlayer.c:1634
 #: ../src/viktrwlayer.c:1636
 msgid "Tracks"
-msgstr "Tracciati"
+msgstr "Reitit"
 
 #: ../src/viktrwlayer.c:362
 msgid "Waypoint Images"
-msgstr "Immagini dei Waypoint"
+msgstr "Välietappikuvat"
 
 #: ../src/viktrwlayer.c:365
 msgid "Draw by Track"
-msgstr "Disegna da Traccia"
+msgstr "Piirrä reitin mukaan"
 
 #: ../src/viktrwlayer.c:365
 msgid "Draw by Velocity"
-msgstr "Disegna da Velocità"
+msgstr "Piirrä vauhdin mukaan"
 
 #: ../src/viktrwlayer.c:365
 msgid "All Tracks Black"
-msgstr "Tutti i Tracciati Neri"
+msgstr "Kaikki reitit mustina"
 
 #: ../src/viktrwlayer.c:366
 msgid "Filled Square"
-msgstr "Quadrato riempito"
+msgstr "Täytetty nelikulmio"
 
 #: ../src/viktrwlayer.c:366
 msgid "Square"
-msgstr "Quadrato"
+msgstr "Nelikulmio"
 
 #: ../src/viktrwlayer.c:366
 msgid "Circle"
-msgstr "Cerchio"
+msgstr "Ympyrä"
 
 #: ../src/viktrwlayer.c:366
 msgid "X"
@@ -1568,104 +1564,104 @@ msgstr "X"
 
 #: ../src/viktrwlayer.c:388
 msgid "Track Drawing Mode:"
-msgstr "Modalità di Disegno del Tracciato:"
+msgstr "Reittipiirrostila:"
 
 #: ../src/viktrwlayer.c:389
 msgid "Draw Track Lines"
-msgstr "Disegna le Linee del Tracciato"
+msgstr "Piirrä reittiviivat"
 
 #: ../src/viktrwlayer.c:390
 msgid "Draw Trackpoints"
-msgstr "Disegna i Punti del Tracciato"
+msgstr "Piirrä reittipisteet"
 
 #: ../src/viktrwlayer.c:391
 msgid "Draw Elevation"
-msgstr "Disegna elevazione"
+msgstr "Piirrä korkeusasema"
 
 #: ../src/viktrwlayer.c:392
 msgid "Draw Elevation Height %:"
-msgstr "Disegna altezza dell'elevazione %:"
+msgstr "Piirrä korkeusaseman korkeus %:"
 
 #: ../src/viktrwlayer.c:394
 msgid "Draw Stops"
-msgstr "Disegna stop"
+msgstr "Piirrä pysähdykset"
 
 #: ../src/viktrwlayer.c:395
 msgid "Min Stop Length (seconds):"
-msgstr "Lunghezza Minima Stop (secondi):"
+msgstr "Pienin pysähdyspituus (sekunteina):"
 
 #: ../src/viktrwlayer.c:397
 msgid "Track Thickness:"
-msgstr "Spessore del Tracciato:"
+msgstr "Reittipaksuus:"
 
 #: ../src/viktrwlayer.c:398
 msgid "Track BG Thickness:"
-msgstr "Spessore dello Sfondo del Tracciato:"
+msgstr "Reitin taustapaksuus:"
 
 #: ../src/viktrwlayer.c:399
 msgid "Track Background Color"
-msgstr "Colore di Sfondo del Tracciato"
+msgstr "Reitin taustaväri"
 
 #: ../src/viktrwlayer.c:400
 msgid "Min Track Velocity:"
-msgstr "Velocità Minima del Tracciato:"
+msgstr "Vähimmäisreittinopeus:"
 
 #: ../src/viktrwlayer.c:401
 msgid "Max Track Velocity:"
-msgstr "Velocità Massima del Tracciato:"
+msgstr "Enimmäisreittinopeus:"
 
 #: ../src/viktrwlayer.c:403
 msgid "Draw Labels"
-msgstr "Disegna Etichette"
+msgstr "Piirrä nimiöt"
 
 #: ../src/viktrwlayer.c:404
 msgid "Waypoint Color:"
-msgstr "Colore del Waypoint:"
+msgstr "Välietapin väri:"
 
 #: ../src/viktrwlayer.c:405
 msgid "Waypoint Text:"
-msgstr "Testo del Waypoint:"
+msgstr "Välietappiteksti:"
 
 #: ../src/viktrwlayer.c:406
 msgid "Background:"
-msgstr "Sfondo:"
+msgstr "Tausta:"
 
 #: ../src/viktrwlayer.c:407
 msgid "Fake BG Color Translucency:"
-msgstr "Trasparenza del colore di sfondo finta"
+msgstr "Teeskennelty taustavärin ĺäpikuultavuus:"
 
 #: ../src/viktrwlayer.c:408
 msgid "Waypoint marker:"
-msgstr "Marker waypoint:"
+msgstr "Välietappimerkki:"
 
 #: ../src/viktrwlayer.c:409
 msgid "Waypoint size:"
-msgstr "Dimensione del Waypoint:"
+msgstr "Välietapin koko:"
 
 #: ../src/viktrwlayer.c:410
 msgid "Draw Waypoint Symbols:"
-msgstr "Disegna simboli dei Waypoint:"
+msgstr "Piirrä välietappisymbolit:"
 
 #: ../src/viktrwlayer.c:412
 msgid "Draw Waypoint Images"
-msgstr "Disegna immagini del Waypoint"
+msgstr "Piirrä välietappikuvat"
 
 #: ../src/viktrwlayer.c:413
 msgid "Image Size (pixels):"
-msgstr "Dimensione immagine (pixel):"
+msgstr "Kuvakoko (pikseliä):"
 
 #: ../src/viktrwlayer.c:414
 msgid "Image Alpha:"
-msgstr "Alpha immagine:"
+msgstr "Kuva-alfa:"
 
 #: ../src/viktrwlayer.c:415
 msgid "Image Memory Cache Size:"
-msgstr "Dimensione della memoria cache per l'immagine:"
+msgstr "Kuvamuistin välimuistikoko:"
 
 #: ../src/viktrwlayer.c:1800
 #, c-format
 msgid " in %d:%02d hrs:mins"
-msgstr " in %d:%02d ore:minuti"
+msgstr " ajassa %d:%02d tuntia:minuuttia"
 
 #: ../src/viktrwlayer.c:1804
 #, c-format
@@ -1674,17 +1670,17 @@ msgid ""
 "%sTotal Length %.1f %s%s"
 msgstr ""
 "\n"
-"%sLunghezza totale %.1f %s%s"
+"%sKokonaispituus %.1f %s%s"
 
 #: ../src/viktrwlayer.c:1810
 #, c-format
 msgid "Tracks: %d - Waypoints: %d%s"
-msgstr "Tracciati: %d - Waypoint: %d%s"
+msgstr "Reittejä: %d - Välietappeja: %d%s"
 
 #: ../src/viktrwlayer.c:1845
 #, c-format
 msgid "- %d:%02d hrs:mins"
-msgstr "- %d:%02d ore:minuti"
+msgstr "- %d:%02d tuntia:minuuttia"
 
 #: ../src/viktrwlayer.c:1853
 #, c-format
@@ -1694,29 +1690,29 @@ msgstr "%s%.1f km %s"
 #: ../src/viktrwlayer.c:1856
 #, c-format
 msgid "%s%.1f miles %s"
-msgstr "%s%.1f miglia %s"
+msgstr "%s%.1f mailia %s"
 
 #: ../src/viktrwlayer.c:1885
 #, c-format
 msgid "Trkpt: Alt %dft"
-msgstr "Punto del tracciato: Altitudine %dft"
+msgstr "Trkpt: Alt %d jalkaa"
 
 #. VIK_UNITS_HEIGHT_METRES:
 #: ../src/viktrwlayer.c:1889
 #, c-format
 msgid "Trkpt: Alt %dm"
-msgstr "Punto del tracciato: Altitudine %dm"
+msgstr "Trkpt: Alt %d m"
 
 #. Compact date time format
 #: ../src/viktrwlayer.c:1896
 #, c-format
 msgid " | Time %x %X"
-msgstr " | Orario %x %X"
+msgstr " | Aika %x %X"
 
 #: ../src/viktrwlayer.c:1914
 #, c-format
 msgid " | Track: %s"
-msgstr " | Tracciato: %s"
+msgstr " | Reitti: %s"
 
 #. Combine parts to make overall message
 #: ../src/viktrwlayer.c:1918
@@ -1727,440 +1723,438 @@ msgstr "%s%s | %s %s %s"
 #: ../src/viktrwlayer.c:1933
 #, c-format
 msgid "Wpt: Alt %dft"
-msgstr "Punto panoramico: Altitudine %dft"
+msgstr "Wpt: Korkeus %d jalkaa"
 
 #. VIK_UNITS_HEIGHT_METRES:
 #: ../src/viktrwlayer.c:1937
 #, c-format
 msgid "Wpt: Alt %dm"
-msgstr "Punto panoramico: Altitudine %dm"
+msgstr "Wpt: Korkeus %d m"
 
 #. Add comment if available
 #: ../src/viktrwlayer.c:1952
 #, c-format
 msgid "%s | %s %s | Comment: %s"
-msgstr "%s | %s %s | Commento: %s"
+msgstr "%s | %s %s | Kommentti: %s"
 
 #: ../src/viktrwlayer.c:1954
 #, c-format
 msgid "%s | %s %s"
-msgstr ""
+msgstr "%s | %s %s"
 
 #: ../src/viktrwlayer.c:2134 ../src/viktrwlayer.c:2205
 msgid "This layer has no waypoints or trackpoints."
-msgstr "Questo livello non ha punti di transito o punti del tracciato."
+msgstr "Tässä kerroksessa ei ole välietappeja tai reittipisteitä."
 
 #: ../src/viktrwlayer.c:2232 ../src/vikwindow.c:1894 ../src/vikwindow.c:2362
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
-msgstr "Il file \"%s\" esiste già; sovrascriverlo?"
+msgstr "Tiedosto ”%s” on olemassa, haluatko korvata sen?"
 
 #: ../src/viktrwlayer.c:2242 ../src/vikwindow.c:1915
 msgid "The filename you requested could not be opened for writing."
-msgstr "Non è stato possibile aprire il file richiesto in scrittura."
+msgstr "Pyytämäsi tiedostonimen avaus kirjoittamista varten epäonnistui."
 
 #: ../src/viktrwlayer.c:2247 ../src/viktrwlayer.c:2252
 #: ../src/viktrwlayer.c:2262 ../src/viktrwlayer.c:2274
 msgid "Export Layer"
-msgstr "Esporta livello"
+msgstr "Vie kerros"
 
 #: ../src/viktrwlayer.c:2291
 msgid "Could not create temporary file for export."
-msgstr "Impossibile creare il file temporaneo per l'esportazione."
+msgstr "Tilapäisen tiedoston luominen vientiä varten epäonnistui."
 
 #: ../src/viktrwlayer.c:2300
 #, c-format
 msgid "Could not launch %s."
-msgstr "Impossibile lanciare %s."
+msgstr "Kohteen %s käynnistäminen epäonnistui."
 
 #: ../src/viktrwlayer.c:2334
 msgid "Export Track as GPX"
-msgstr "Esporta il Tracciato come GPX"
+msgstr "Vie reitti GPX:nä"
 
 #: ../src/viktrwlayer.c:2342
 msgid "Find"
-msgstr "Trova"
+msgstr "Etsi"
 
 #: ../src/viktrwlayer.c:2352
 msgid "Waypoint Name:"
-msgstr "Nome del Waypoint:"
+msgstr "Välietapin nimi:"
 
 #: ../src/viktrwlayer.c:2374
 msgid "Waypoint not found in this layer."
-msgstr "Waypoint non trovato in questo livello."
+msgstr "Välietappia ei löytynyt tässä kerroksessa."
 
 #. Now with icons
 #: ../src/viktrwlayer.c:2645
 msgid "_View Layer"
-msgstr "_Visualizza Livello"
+msgstr "_Näkymäkerros"
 
 #: ../src/viktrwlayer.c:2651
 msgid "View All Trac_ks"
-msgstr "Visualizza Tutti i Tracciati (_k)"
+msgstr "Katso kaikkia _reittejä"
 
 #: ../src/viktrwlayer.c:2656
 msgid "V_iew All Waypoints"
-msgstr "V_isualizza Tutti i Punti di Transito"
+msgstr "Kats_o kaikkia välietappeja"
 
 #: ../src/viktrwlayer.c:2661
 msgid "_Goto Center of Layer"
-msgstr ""
+msgstr "Sii_rry kerroksen keskustaan"
 
 #: ../src/viktrwlayer.c:2667 ../src/viktrwlayer.c:4144
 msgid "Goto _Waypoint..."
-msgstr "Vai al Punto di Transito... (_W)"
+msgstr "Siirry _välietappiin..."
 
 #: ../src/viktrwlayer.c:2673
 msgid "_Export Layer"
-msgstr "_Esporta livello"
+msgstr "_Vie kerros"
 
 #: ../src/viktrwlayer.c:2679
 msgid "Export as GPS_Point..."
-msgstr "Esporta come GPS_Point..."
+msgstr "Vie tyyppinä GPS_Point..."
 
 #: ../src/viktrwlayer.c:2684
 msgid "Export as GPS_Mapper..."
-msgstr "Esporta come GPS_Mapper..."
+msgstr "Vie tyyppinä GPS_Mapper..."
 
 #: ../src/viktrwlayer.c:2689
 msgid "Export as _GPX..."
-msgstr "Esporta come _GPX..."
+msgstr "Vie tyyppinä _GPX..."
 
 #: ../src/viktrwlayer.c:2694
 msgid "Export as _KML..."
-msgstr "Esporta come _KML..."
+msgstr "Vie tyyppinä _KML..."
 
 #: ../src/viktrwlayer.c:2699
 msgid "Open with External Program_1: "
-msgstr "Apri con Programma Esterno_1: "
+msgstr "Avaa ulkoisella ohjelmalla Program_1: "
 
 #: ../src/viktrwlayer.c:2706
 msgid "Open with External Program_2: "
-msgstr "Apri con Programma Esterno_2: "
+msgstr "Avaa ulkoisella ohjelmalla Program_2: "
 
 #: ../src/viktrwlayer.c:2713 ../src/viktrwlayer.c:4129
 msgid "_New Waypoint..."
-msgstr "_Nuovo Punto di Transito..."
+msgstr "_Uusi välietappi..."
 
 #: ../src/viktrwlayer.c:2721
 msgid "_Add Wikipedia Waypoints"
-msgstr "_Aggiungi i Punti di Transito Wikipedia"
+msgstr "_Lisää Wikipedia-välietappeja"
 
 #: ../src/viktrwlayer.c:2727
 msgid "Within _Layer Bounds"
-msgstr "Dentro i Confini dei _Livelli"
+msgstr "Kerr_osrajojen sisällä"
 
 #: ../src/viktrwlayer.c:2733
 msgid "Within _Current View"
-msgstr "Dentro la Vista _Corrente"
+msgstr "Nykyisen nä_kymän sisällä"
 
 #: ../src/viktrwlayer.c:2741 ../src/viktrwlayer.c:4336
 msgid "Geotag _Images..."
-msgstr "_Immagini Georeferenziate..."
+msgstr "Geotag-_kuvat..."
 
 #: ../src/viktrwlayer.c:2748
 msgid "Ac_quire"
-msgstr "Ac_quisisci"
+msgstr "Ha_nki"
 
 #: ../src/viktrwlayer.c:2754 ../src/vikwindow.c:2534
 msgid "From _GPS..."
-msgstr "Da _GPS..."
+msgstr "_GPS:stä..."
 
 #: ../src/viktrwlayer.c:2759
 msgid "From G_oogle Directions..."
-msgstr "Da Direzioni G_oogle..."
+msgstr "G_oogle Ajo-ohjeista..."
 
 #: ../src/viktrwlayer.c:2765
 msgid "From _OSM Traces..."
-msgstr "Dalle Tracce _OSM..."
+msgstr "_OSM-jäljistä..."
 
 #: ../src/viktrwlayer.c:2772
 msgid "From Geo_caching..."
-msgstr "Da Geo_caching..."
+msgstr "Geo_kätköistä..."
 
 #: ../src/viktrwlayer.c:2779 ../src/vikwindow.c:2544
 msgid "From Geotagged _Images..."
-msgstr "Dalle _Immagini Georeferenziate..."
+msgstr "Geotagged-_kuvista..."
 
 #: ../src/viktrwlayer.c:2786 ../src/viktrwlayer.c:4302
 msgid "Upload to _OSM..."
-msgstr ""
+msgstr "Kopioi _OSM-palvelimelle..."
 
 #: ../src/viktrwlayer.c:2794
 msgid "De_lete"
-msgstr "E_limina"
+msgstr "Po_ista"
 
 #: ../src/viktrwlayer.c:2800
 msgid "Delete All _Tracks"
-msgstr "Elimina Tutti i _Tracciati"
+msgstr "Poista kaikki _reitit"
 
 #: ../src/viktrwlayer.c:2806
 msgid "Delete Tracks _From Selection..."
-msgstr "Elimina Tutti i _Tracciati dalla Selezione..."
+msgstr "_Poista reitit valinnasta..."
 
 #: ../src/viktrwlayer.c:2812
 msgid "Delete All _Waypoints"
-msgstr "Elimina Tutti i Punti di Transito (_W)"
+msgstr "Poista _kaikki välietapit"
 
 #: ../src/viktrwlayer.c:2818
 msgid "Delete Waypoints From _Selection..."
-msgstr "Elimina i Punti di Transito dalla _Selezione..."
+msgstr "Poista _välietapit valinnasta..."
 
 #: ../src/viktrwlayer.c:3092
 #, c-format
 msgid "Are you sure you want to delete all tracks in %s?"
-msgstr "Sei sicuro di voler eliminare tutti i tracciati in %s?"
+msgstr "Oletko varma, että haluat poistaa kaikki reitit kohteessa %s?"
 
 #: ../src/viktrwlayer.c:3102
 #, c-format
 msgid "Are you sure you want to delete all waypoints in %s?"
-msgstr "Sei sicuro di voler eliminare tutti i punti di transito in %s?"
+msgstr "Oletko varma, että haluat poistaa kaikki välietapit kohteessa %s?"
 
 #: ../src/viktrwlayer.c:3117
 #, c-format
 msgid "Are you sure you want to delete the waypoint \"%s\""
-msgstr "Sei sicuro di voler eliminare il punto di transito \"%s\""
+msgstr "Oletko varma, että haluat poistaa välietapin ”%s”?"
 
 #: ../src/viktrwlayer.c:3127
 #, c-format
 msgid "Are you sure you want to delete the track \"%s\""
-msgstr "Sei sicuro di voler eliminare il tracciato \"%s\""
+msgstr "Oletko varma, että haluat poistaa reitin ”%s”"
 
 #: ../src/viktrwlayer.c:3463
 msgid "Failed. No other tracks with timestamps in this layer found"
-msgstr ""
-"Non riuscito. Non sono stati trovati altri tracciati con le marcature "
-"temporali in questo livello"
+msgstr "Epäonnistui. Tästä kerroksesta ei löytynyt reittejä aikaleimoilla"
 
 #: ../src/viktrwlayer.c:3465
 msgid "Failed. No other tracks without timestamps in this layer found"
 msgstr ""
-"Non riuscito. Non sono stati trovati altri tracciati senza le marcature "
-"temporali in questo livello"
+"Epäonnistui. Tästä kerroksesta ei löytynyt muita reittejä ilman aikaleimoja"
 
 #: ../src/viktrwlayer.c:3474
 msgid "Merge with..."
-msgstr "Unisci con..."
+msgstr "Yhdistetty kohteeseen..."
 
 #: ../src/viktrwlayer.c:3474
 msgid "Select track to merge with"
-msgstr "Selezionare il tracciato con cui unire"
+msgstr "Valitse reitti, joka yhdistetään"
 
 #: ../src/viktrwlayer.c:3514
 msgid "Failed. This track does not have timestamp"
-msgstr "Fallito. Questo tracciato non ha un timestamp"
+msgstr "Epäonnistui. Tällä reitillä ei ole aikaleimaa"
 
 #: ../src/viktrwlayer.c:3527
 msgid "Failed. No other track in this layer has timestamp"
-msgstr "Fallito. Nessun altro tracciato in questo livello ha un timestamp"
+msgstr ""
+"Epäonnistui. Millään muulla reitillä tässä kerroksessa ei ole aikaleimaa"
 
 #: ../src/viktrwlayer.c:3534
 msgid "Merge Threshold..."
-msgstr "Soglia di unione..."
+msgstr "Yhdistämiskynnys..."
 
 #: ../src/viktrwlayer.c:3535
 msgid "Merge when time between tracks less than:"
-msgstr "Unisci quando il tempo tra i tracciati è minore di:"
+msgstr "Yhdistä, kun aika reittien välillä on pienempi kuin:"
 
 #: ../src/viktrwlayer.c:3627
 msgid "Split Threshold..."
-msgstr "Soglia di divisione..."
+msgstr "Halkaise kynnys..."
 
 #: ../src/viktrwlayer.c:3628
 msgid "Split when time between trackpoints exceeds:"
-msgstr "Dividi quando il tempo tra i trackpoint supera i:"
+msgstr "Jaa kahtia kun reittipisteiden välinen aika ylittää:"
 
 #: ../src/viktrwlayer.c:3698
 msgid "Split Every Nth Point"
-msgstr "Dividi Ogni Punto Nord"
+msgstr "Jaa osiin joka N. piste"
 
 #: ../src/viktrwlayer.c:3699
 msgid "Split on every Nth point:"
-msgstr "Dividi su Ogni Punto Nord:"
+msgstr "Jaa osiin joka N. pisteellä:"
 
 #: ../src/viktrwlayer.c:3801
 msgid "No tracks found"
-msgstr "Nessun tracciato trovato"
+msgstr "Reittejä ei löytynyt"
 
 #: ../src/viktrwlayer.c:3809 ../src/viktrwlayer.c:3846
 msgid "Delete Selection"
-msgstr "Elimina Selezione"
+msgstr "Poista valinta"
 
 #: ../src/viktrwlayer.c:3810
 msgid "Select tracks to delete"
-msgstr "Seleziona i tracciati da eliminare"
+msgstr "Valitse poistettavat reitit"
 
 #: ../src/viktrwlayer.c:3836
 msgid "No waypoints found"
-msgstr "Waypoint non trovati"
+msgstr "Välietappeja ei löytynyt"
 
 #: ../src/viktrwlayer.c:3847
 msgid "Select waypoints to delete"
-msgstr "Seleziona i punti di transito da eliminare"
+msgstr "Valitse poistettavat välietapit"
 
 #: ../src/viktrwlayer.c:3890
 msgid "Waypoint Already Exists"
-msgstr "Waypoint già esistente"
+msgstr "Välietappi on jo olemassa"
 
 #: ../src/viktrwlayer.c:3931
 msgid "Track Already Exists"
-msgstr "Tracciato già esistente"
+msgstr "Reitti on jo olemassa"
 
 #: ../src/viktrwlayer.c:4061 ../src/viktrwlayer.c:4194
 msgid "_Goto"
-msgstr "V_ai a"
+msgstr "_Siirry"
 
 #: ../src/viktrwlayer.c:4077
 msgid "_Visit Geocache Webpage"
-msgstr "_Visita la pagina Web di Geocache"
+msgstr "_Vieraile Geocache-webbisivulla"
 
 #: ../src/viktrwlayer.c:4097
 msgid "_Show Picture..."
-msgstr "Mostra Fotografia... (_S)"
+msgstr "Näytä k_uva"
 
 #: ../src/viktrwlayer.c:4105
 msgid "Update Geotag on _Image"
-msgstr "Aggiorna Georeferenza sull'_Immagine"
+msgstr "Päivitä Geotag-tunnistetta _kuvassa"
 
 #: ../src/viktrwlayer.c:4111
 msgid "_Update"
-msgstr "Aggiorna (_U)"
+msgstr "_Päivitä"
 
 #: ../src/viktrwlayer.c:4116
 msgid "Update and _Keep File Timestamp"
-msgstr "Aggiorna e Mantieni il File dell'Orario Impresso (_K)"
+msgstr "Päivitä ja pidä tiedostoaikaleima"
 
 #: ../src/viktrwlayer.c:4138
 msgid "_View All Waypoints"
-msgstr "_Visualizza Tutti i Punti di Transito"
+msgstr "Ka_tso kaikkia välietappeja"
 
 #: ../src/viktrwlayer.c:4150
 msgid "Delete _All Waypoints"
-msgstr "Elmina Tutti i Waypoint (_A)"
+msgstr "Poist_a kaikki välietapit"
 
 #: ../src/viktrwlayer.c:4156
 msgid "_Delete Waypoints From Selection..."
-msgstr "Elimina (_D) i Punti di Transito dalla Selezione..."
+msgstr "_Poista välietapit valinnasta..."
 
 #: ../src/viktrwlayer.c:4167
 msgid "_View All Tracks"
-msgstr "_Visualizza Tutti i Tracciati"
+msgstr "Katso kaikk_ia reittejä"
 
 #: ../src/viktrwlayer.c:4173
 msgid "Delete _All Tracks"
-msgstr "Elimina Tutti i Tracciati (_A)"
+msgstr "Poi_sta kaikki reitit"
 
 #: ../src/viktrwlayer.c:4179
 msgid "_Delete Tracks From Selection..."
-msgstr "Elimina (_D) i Tracciati dalla Selezione..."
+msgstr "_Poista reitit valinnasta..."
 
 #: ../src/viktrwlayer.c:4200
 msgid "_Startpoint"
-msgstr "Punto _iniziale"
+msgstr "_Alkupiste"
 
 #: ../src/viktrwlayer.c:4206
 msgid "\"_Center\""
-msgstr "\"_Centra\""
+msgstr "”_Keskipiste”"
 
 #: ../src/viktrwlayer.c:4212
 msgid "_Endpoint"
-msgstr "Punto _finale"
+msgstr "L_oppupiste"
 
 #: ../src/viktrwlayer.c:4218
 msgid "_Highest Altitude"
-msgstr "Altitudine Più Alta (_H)"
+msgstr "Korkein ko_hta"
 
 #: ../src/viktrwlayer.c:4224
 msgid "_Lowest Altitude"
-msgstr "Altitudine Più Bassa (_L)"
+msgstr "Ali_n kohta"
 
 #: ../src/viktrwlayer.c:4230
 msgid "_Maximum Speed"
-msgstr "Velocità _massima"
+msgstr "_Enimmäisnopeus"
 
 #: ../src/viktrwlayer.c:4236
 msgid "_View Track"
-msgstr "_Visualizza tracciato"
+msgstr "Näkymä_reitti"
 
 #: ../src/viktrwlayer.c:4242
 msgid "_Merge By Time..."
-msgstr "Unisci per Orario... (_M)"
+msgstr "Y_hdistä ajan perusteella..."
 
 #: ../src/viktrwlayer.c:4247
 msgid "Merge _With Other Tracks..."
-msgstr "Unisci Con (_W) Altri Tracciati..."
+msgstr "Yhdistä _muiden reittien kanssa..."
 
 #: ../src/viktrwlayer.c:4252
 msgid "_Split By Time..."
-msgstr "Dividi per Orario... (_S)"
+msgstr "_Jaa osiin ajan mukaan..."
 
 #: ../src/viktrwlayer.c:4257
 msgid "Split By _Number of Points..."
-msgstr "Dividi per _Numero di Punti..."
+msgstr "J_aa osiin pisteiden määrän mukaan..."
 
 #: ../src/viktrwlayer.c:4262
 msgid "_Reverse Track"
-msgstr "Inverti il Tracciato (_R)"
+msgstr "Kään_teinen reitti"
 
 #: ../src/viktrwlayer.c:4270
 msgid "Down_load Maps Along Track..."
-msgstr "Scarica _le Mappe Lungo il Tracciato..."
+msgstr "_Lataa kartat reitin varrelta..."
 
 #: ../src/viktrwlayer.c:4277
 msgid "_Apply DEM Data"
-msgstr "_Applica dati DEM"
+msgstr "_Käytä DEM-tietoja"
 
 #: ../src/viktrwlayer.c:4283
 msgid "Export Trac_k as GPX..."
-msgstr "Esporta Tracciato come GPX... (_k)"
+msgstr "Vie rei_tti GPX-tiedostona..."
 
 #: ../src/viktrwlayer.c:4289
 msgid "E_xtend Track End"
-msgstr "Estendi il Tracciato fino al Termine (_x)"
+msgstr "Laaj_enna reitin loppu"
 
 #: ../src/viktrwlayer.c:4295
 msgid "Extend _Using Route Finder"
-msgstr "Estendi _Usando il Percorso di Ricerca"
+msgstr "Laaj_enna käyttäen reittietsijää"
 
 #: ../src/viktrwlayer.c:4311
 msgid "_View Google Directions"
-msgstr "_Visualizza Direzioni Google"
+msgstr "_Katso Google-ajo-ohjeita"
 
 #: ../src/viktrwlayer.c:4318
 msgid "Use with _Filter"
-msgstr "Utilizza con _filtro"
+msgstr "Käytä suo_dattimen kera"
 
 #: ../src/viktrwlayer.c:4349
 msgid "_Edit Trackpoint"
-msgstr "Modifica il Punto del Tracciato (_E)"
+msgstr "M_uokkaa reittipistettä"
 
 #: ../src/viktrwlayer.c:5262
 #, c-format
 msgid " - Gain %dm:Loss %dm"
-msgstr " - Miglioramento %dm:Perdita %dm"
+msgstr " - Hyöty %d m:Tappio %d m"
 
 #: ../src/viktrwlayer.c:5264
 #, c-format
 msgid " - Gain %dft:Loss %dft"
-msgstr " - Miglioramento %dft:Perdita %dft"
+msgstr " - Hyöty %d jalkaa:Tappio %d jalkaa"
 
 #: ../src/viktrwlayer.c:5429
 msgid "Track"
-msgstr "Tracciato"
+msgstr "Reitti"
 
 #: ../src/viktrwlayer.c:5759
 #, c-format
 msgid "Could not launch %s to open file."
-msgstr "Impossibile lanciare %s per aprire il file."
+msgstr "Kohteen %s käynnistäminen tiedoston avaamiseksi epäonnistui."
 
 #: ../src/viktrwlayer.c:5843
 #, c-format
 msgid "Creating %d Image Thumbnails..."
-msgstr "Creazione di %d miniature..."
+msgstr "Luodaan %d pienoiskuvaa..."
 
 #: ../src/viktrwlayer.c:6077
 msgid "No map layer in use. Create one first"
-msgstr "Nessun livello di mappa in uso. Creane uno prima"
+msgstr "Yhtään karttakerrosta ei ole käytössä. Luo ensin yksi"
 
 #: ../src/viktrwlayer_propwin.c:738 ../src/viktrwlayer_propwin.c:1001
 #, c-format
@@ -2170,12 +2164,12 @@ msgstr "%.1f km/h"
 #: ../src/viktrwlayer_propwin.c:741 ../src/viktrwlayer_propwin.c:1004
 #, c-format
 msgid "%.1f mph"
-msgstr "%.1f miglia/h"
+msgstr "%.1f mph"
 
 #: ../src/viktrwlayer_propwin.c:744 ../src/viktrwlayer_propwin.c:1007
 #, c-format
 msgid "%.1f knots"
-msgstr "%.1f nodi"
+msgstr "%.1f solmua"
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:748 ../src/viktrwlayer_propwin.c:1011
@@ -2186,7 +2180,7 @@ msgstr "%.1f m/s"
 #: ../src/viktrwlayer_propwin.c:1466
 #, c-format
 msgid "%.1f miles"
-msgstr "%.1f miglia"
+msgstr "%.1f mailia"
 
 #: ../src/viktrwlayer_propwin.c:1468
 #, c-format
@@ -2195,88 +2189,88 @@ msgstr "%.1f km"
 
 #: ../src/viktrwlayer_propwin.c:2366
 msgid "Failed spliting track. Track unchanged"
-msgstr "Divisione del tracciato non riuscita. Tracciato invariato"
+msgstr "Reitin jakaminen osiin epäonnistui. Reitti on muuttumaton"
 
 #: ../src/viktrwlayer_propwin.c:2383
 msgid "Operation Aborted. Track unchanged"
-msgstr "Operazione interrotta. Tracciato invariato"
+msgstr "Toiminto keskeytettiin. Reitti muuttumaton"
 
 #: ../src/viktrwlayer_propwin.c:2470
 #, c-format
 msgid "%s - Track Properties"
-msgstr "%s - Proprietà del tracciato"
+msgstr "%s - Reittiominaisuudet"
 
 #: ../src/viktrwlayer_propwin.c:2475
 msgid "Split at _Marker"
-msgstr "Dividi al _Marcatore"
+msgstr "Jaa osiin _merkitsijän kohdalta"
 
 #: ../src/viktrwlayer_propwin.c:2476
 msgid "Split _Segments"
-msgstr "Dividi _Segmenti"
+msgstr "Jaa osiin se_gmentit"
 
 #: ../src/viktrwlayer_propwin.c:2477
 msgid "_Reverse"
-msgstr "Inverti (_R)"
+msgstr "Kää_nteinen"
 
 #: ../src/viktrwlayer_propwin.c:2478
 msgid "_Delete Dupl."
-msgstr "Elimina _Duplicati"
+msgstr "Po_ista kaksoiskappale"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Comment:</b>"
-msgstr "<b>Commento:</b>"
+msgstr "<b>Kommentti:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Track Length:</b>"
-msgstr "<b>Lunghezza tracciato:</b>"
+msgstr "<b>Reittipituus:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Trackpoints:</b>"
-msgstr "<b>Trackpoints:</b>"
+msgstr "<b>Reittipisteet:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Segments:</b>"
-msgstr "<b>Segmenti:</b>"
+msgstr "<b>Segmentit:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Duplicate Points:</b>"
-msgstr "<b>Punti duplicati:</b>"
+msgstr "<b>Pisteiden kaksoiskappaleet:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Max Speed:</b>"
-msgstr "<b>Velocità massima:</b>"
+msgstr "<b>Enimmäisnopeus:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Avg. Speed:</b>"
-msgstr "<b>Velocità media:</b>"
+msgstr "<b>Keskinopeus:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Moving Avg. Speed:</b>"
-msgstr "<b>Velocità Media di Spostamento:</b>"
+msgstr "<b>Siirrytään keskinopeudella:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Avg. Dist. Between TPs:</b>"
-msgstr "<b>Distanza media fra TrackPoint:</b>"
+msgstr "<b>Keskimääräinen etäisyys reittipisteiden välillä</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Elevation Range:</b>"
-msgstr "<b>Intervallo di quota:</b>"
+msgstr "<b>Korkeusasema-alue:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Total Elevation Gain/Loss:</b>"
-msgstr "<b>Dislivello totale/Perdita:</b>"
+msgstr "<b>Kokonaiskorkeusaseman hyöty/tappio:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Start:</b>"
-msgstr "<b>Inizio:</b>"
+msgstr "<b>Alku:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>End:</b>"
-msgstr "<b>Fine:</b>"
+msgstr "<b>Loppu:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Duration:</b>"
-msgstr "<b>Durata:</b>"
+msgstr "<b>Kesto:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2543 ../src/viktrwlayer_propwin.c:2567
 #: ../src/viktrwlayer_propwin.c:2595 ../src/viktrwlayer_propwin.c:2632
@@ -2289,103 +2283,103 @@ msgstr "<b>Durata:</b>"
 #: ../src/viktrwlayer_propwin.c:2791 ../src/viktrwlayer_propwin.c:2792
 #, c-format
 msgid "No Data"
-msgstr "Nessun dato"
+msgstr "Ei tietoja"
 
 #: ../src/viktrwlayer_propwin.c:2697
 #, c-format
 msgid "%d minutes"
-msgstr "%d minuti"
+msgstr "%d minuuttia"
 
 #: ../src/viktrwlayer_propwin.c:2722
 msgid "Statistics"
-msgstr "Statistiche"
+msgstr "Tilastot"
 
 #: ../src/viktrwlayer_propwin.c:2735
 msgid "Show D_EM"
-msgstr "Mostra D_EM"
+msgstr "Näytä D_EM"
 
 #: ../src/viktrwlayer_propwin.c:2736 ../src/viktrwlayer_propwin.c:2751
 #: ../src/viktrwlayer_propwin.c:2793
 msgid "Show _GPS Speed"
-msgstr "Mostra la Velocità _GPS"
+msgstr "Näytä _GPS-nopeus"
 
 #: ../src/viktrwlayer_propwin.c:2738 ../src/viktrwlayer_propwin.c:2767
 #: ../src/viktrwlayer_propwin.c:2795
 msgid "<b>Track Distance:</b>"
-msgstr "<b>Distanza tracciato:</b>"
+msgstr "<b>Reittietäisyys:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2739 ../src/viktrwlayer_propwin.c:2782
 msgid "<b>Track Height:</b>"
-msgstr "<b>Altezza del Tracciato:</b>"
+msgstr "<b>Reittikorkeus:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2744
 msgid "Elevation-distance"
-msgstr "Elevazione-distanza"
+msgstr "Korkeusasema-etäisyys"
 
 #: ../src/viktrwlayer_propwin.c:2753 ../src/viktrwlayer_propwin.c:2768
 #: ../src/viktrwlayer_propwin.c:2781
 msgid "<b>Track Time:</b>"
-msgstr "<b>Durata tracciato:</b>"
+msgstr "<b>Reittiaika:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2754 ../src/viktrwlayer_propwin.c:2796
 msgid "<b>Track Speed:</b>"
-msgstr "<b>Velocità del Tracciato:</b>"
+msgstr "<b>Reittinopeus:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2758
 msgid "Speed-time"
-msgstr "Velocità-tempo"
+msgstr "Nopeusaika"
 
 #: ../src/viktrwlayer_propwin.c:2765 ../src/viktrwlayer_propwin.c:2779
 msgid "Show S_peed"
-msgstr "Mostra la Velocità (_p)"
+msgstr "Näytä no_peus"
 
 #: ../src/viktrwlayer_propwin.c:2772
 msgid "Distance-time"
-msgstr ""
+msgstr "Etäisyysaika"
 
 #: ../src/viktrwlayer_propwin.c:2786
 msgid "Elevation-time"
-msgstr ""
+msgstr "Korkeusasema-aika"
 
 #: ../src/viktrwlayer_propwin.c:2800
 msgid "Speed-distance"
-msgstr ""
+msgstr "Nopeusetäisyys"
 
 #: ../src/viktrwlayer_tpwin.c:115
 msgid "<b>Part of Track:</b>"
-msgstr "<b>Parte del tracciato:</b>"
+msgstr "<b>Reitin osa:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:116
 msgid "<b>Latitude:</b>"
-msgstr "<b>Latitudine:</b>"
+msgstr "<b>Leveysaste:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:117
 msgid "<b>Longitude:</b>"
-msgstr "<b>Longitudine:</b>"
+msgstr "<b>Pituusaste:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:118
 msgid "<b>Altitude:</b>"
-msgstr "<b>Altitudine:</b>"
+msgstr "<b>Korkeus:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:119
 msgid "<b>Timestamp:</b>"
-msgstr "<b>Timestamp:</b>"
+msgstr "<b>Aikaleima:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:120
 msgid "<b>Time:</b>"
-msgstr "<b>Tempo:</b>"
+msgstr "<b>Aika:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:121
 msgid "<b>Distance Difference:</b>"
-msgstr "<b>Differenza di distanza:</b>"
+msgstr "<b>Etäisyysero:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:122
 msgid "<b>Time Difference:</b>"
-msgstr "<b>Differenza di tempo:</b>"
+msgstr "<b>Aikaero:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:123
 msgid "<b>\"Speed\" Between:</b>"
-msgstr "<b>\"Velocità\" tra:</b>"
+msgstr "<b>”Nopeus” välillä:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:124
 msgid "<b>VDOP:</b>"
@@ -2405,56 +2399,56 @@ msgstr "<b>SAT/FIX:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:136
 msgid "Trackpoint"
-msgstr "Trackpoint"
+msgstr "Reittipiste"
 
 #: ../src/viktrwlayer_tpwin.c:140
 msgid "_Insert After"
-msgstr "_Inserisci dopo"
+msgstr "L_isää jälkeen"
 
 #: ../src/viktrwlayer_tpwin.c:142
 msgid "Split Here"
-msgstr "Suddividi qui"
+msgstr "Jaa osiin tässä"
 
 #: ../src/viktrwlayer_tpwin.c:143
 msgid "Join With Last"
-msgstr "Unisci con l'ultimo"
+msgstr "Liity viimeiseen"
 
 #: ../src/viktrwlayer_geotag.c:402
 #, c-format
 msgid "Geotagging %d Images..."
-msgstr "Georeferenziate %d immagini..."
+msgstr "Merkitään Geotageilla %d kuvaa..."
 
 #: ../src/viktrwlayer_geotag.c:454
 msgid "Geotag Images"
-msgstr "Georeferenzia le Immagini"
+msgstr "Geotag-kuvat"
 
 #: ../src/viktrwlayer_geotag.c:460
 msgid "Images"
-msgstr "Immagini"
+msgstr "Kuvat"
 
 #: ../src/viktrwlayer_geotag.c:465
 msgid "Overwrite Existing GPS Information:"
-msgstr "Sovrascrivi le Informazioni GPS Esistenti:"
+msgstr "Korvaa olemassa olevat GPS-tiedot:"
 
 #: ../src/viktrwlayer_geotag.c:467
 msgid "Keep File Modification Timestamp:"
-msgstr "Mantieni il File di Modifica dell'Ora Impressa"
+msgstr "Säilytä tiedoston muokkausaikaleima:"
 
 #: ../src/viktrwlayer_geotag.c:494
 msgid "Create Waypoints:"
-msgstr "Crea i Punti di Transito:"
+msgstr "Luo välietapit:"
 
 #: ../src/viktrwlayer_geotag.c:498
 msgid "Write EXIF:"
-msgstr "Scrittura EXIF:"
+msgstr "Kirjoita EXIF:"
 
 #: ../src/viktrwlayer_geotag.c:510
 msgid "Interpolate Between Track Segments:"
-msgstr "Interpolazione Tra i Segmenti del Tracciato:"
+msgstr "Interpoloidaan reittisegmenttien välillä:"
 
 #: ../src/viktrwlayer_geotag.c:514
 msgid "Image Time Offset (Seconds):"
-msgstr ""
+msgstr "Kuva-aikasiirros (sekuntia):"
 
 #: ../src/viktrwlayer_geotag.c:516
 msgid ""
@@ -2462,14 +2456,14 @@ msgid ""
 "data. Calculate this with (GPS - Photo). Can be negative or positive. Useful "
 "to adjust times when a camera's timestamp was incorrect."
 msgstr ""
-"Il numero di secondi da aggiungere all'orario delle foto in modo che "
-"corrisponda ai dati GPS. Questo è calcolato con (GPS - Photo). Può essere "
-"positivo o negativo. Utile per regolare gli orari quando quelli impressi da "
-"una fotocamera non erano corretti."
+"Sekuntimäärä, joka täytyy LISÄTÄ valokuvan aikaa, jotta se täsmää GPS-"
+"tietoihin. Laske tämä (GPS-Photo)-ohjelmalla. Lukema voi olla negatiivinen "
+"tai positiivinen. Se on hyödyllinen säädettäessa aikoja, kun kameran "
+"aikaleima on virheellinen."
 
 #: ../src/viktrwlayer_geotag.c:519
 msgid "Image Timezone:"
-msgstr "Fuso Orario dell'Immagine:"
+msgstr "Kuvan aikavyöhyke:"
 
 #: ../src/viktrwlayer_geotag.c:521
 msgid ""
@@ -2477,36 +2471,35 @@ msgid ""
 "camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct "
 "adjustment to the images' time can be made. GPS data is always in UTC."
 msgstr ""
-"Il fuso orario che è stato utilizzato quando le immagini sono state create. "
-"Ad esempio, se una fotocamera è impostata su AWST o +8:00 ore. Inserisci qui "
-"+8:00 in modo che possa essere fatta la corretta regolazione sull'ora delle "
-"immagini. I dati GPS sono sempre in UTC."
+"Aikavyöhyke, jota käytettiin kuvia luotaessa. Esimerkiksi, jos kameraan on "
+"asetettu AWST tai +8:00 tuntia, Kirjoita +8:00 tänne, jotta kuvien aikaan "
+"voidaan tehdä oikea säätö. GPS-tiedot ovat aina UTC-ajassa."
 
 #: ../src/viktrwlayer_geotag.c:525
 #, c-format
 msgid "Using track: %s"
-msgstr "Utilizza il tracciato: %s"
+msgstr "Käytetään reittiä: %s"
 
 #: ../src/viktrwlayer_geotag.c:527
 #, c-format
 msgid "Using all tracks in: %s"
-msgstr "Utilizza tutti i tracciati: %s"
+msgstr "Käytetään kaikki reitit kohteessa: %s"
 
 #: ../src/vikwindow.c:206
 msgid "Pan"
-msgstr "Scorri"
+msgstr "Vaakavieritä"
 
 #: ../src/vikwindow.c:206
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Loitonna/lähennä"
 
 #: ../src/vikwindow.c:206
 msgid "Ruler"
-msgstr "Righello"
+msgstr "Viivotin"
 
 #: ../src/vikwindow.c:206
 msgid "Select"
-msgstr "Seleziona"
+msgstr "Valitse"
 
 #: ../src/vikwindow.c:416
 #, c-format
@@ -2515,17 +2508,17 @@ msgid ""
 "\n"
 "Your changes will be lost if you don't save them."
 msgstr ""
-"Desideri salvare le modifiche effettuate al documento \"%s\"?\n"
+"Haluatko tallentaa asiakirjaan ”%s” tehdyt muutokset?\n"
 "\n"
-"Le modifiche effettuate saranno perse se non salvate."
+"Muutoksesi katoavat, jos et tallenna niitä."
 
 #: ../src/vikwindow.c:419 ../src/vikwindow.c:1614
 msgid "Untitled"
-msgstr "Senza titolo"
+msgstr "Otsikoton"
 
 #: ../src/vikwindow.c:420
 msgid "Don't Save"
-msgstr "Non salvare"
+msgstr "Älä tallenna"
 
 #: ../src/vikwindow.c:455
 msgid "mpp"
@@ -2533,17 +2526,17 @@ msgstr "mpp"
 
 #: ../src/vikwindow.c:455
 msgid "pixelfact"
-msgstr "pixelfact"
+msgstr "pikselitieto"
 
 #: ../src/vikwindow.c:606
 #, c-format
 msgid "%s %s %dm"
-msgstr "%s %s %dm"
+msgstr "%s %s %d m"
 
 #: ../src/vikwindow.c:608
 #, c-format
 msgid "%s %s %dft"
-msgstr "%s %s %dft"
+msgstr "%s %s %d jalkaa"
 
 #: ../src/vikwindow.c:611
 #, c-format
@@ -2552,41 +2545,43 @@ msgstr "%s %s"
 
 #: ../src/vikwindow.c:1360
 msgid "You must select a layer to show its properties."
-msgstr "Selezionare un livello per vederne le proprietà."
+msgstr "Kerros on valittava sen ominaisuuksien näyttämiseksi."
 
 #: ../src/vikwindow.c:1390
 msgid "You must select a layer to delete."
-msgstr "Selezionare un livello per l'eliminazione."
+msgstr "Kerros on valittava poistamista varten."
 
 #: ../src/vikwindow.c:1730
 #, c-format
 msgid "Unable to add '%s' to the list of recently used documents"
-msgstr "Impossibile aggiungere \"%s\" alla lista dei documenti recenti."
+msgstr ""
+"Asiakirjan ’%s’ lisääminen äskettäin käytettyjen asiakirjojen luetteloon "
+"epäonnistui"
 
 #: ../src/vikwindow.c:1744
 msgid "The file you requested could not be opened."
-msgstr "Il file richiesto non può essere aperto."
+msgstr "Pyytämäsi tiedoston avaaminen epäonnistui."
 
 #: ../src/vikwindow.c:1747
 msgid ""
 "GPSBabel is required to load files of this type or GPSBabel encountered "
 "problems."
 msgstr ""
-"Per caricare i file di questo tipo è richiesto GPSBabel oppure GPSBabel ha "
-"rilevato dei problemi."
+"GPSBabel tarvitaan tämän tyyppisten tiedostojen lataamiseen tai GPSBabel "
+"kohtasi pulmia."
 
 #: ../src/vikwindow.c:1750
 #, c-format
 msgid "Unsupported file type for %s"
-msgstr "Tipo di file non supportato per %s"
+msgstr "Tukematon tiedostotyyppi kohteelle %s"
 
 #: ../src/vikwindow.c:1802
 msgid "Please select a GPS data file to open. "
-msgstr "Selezionare un archivio GPS da aprire. "
+msgstr "Valitse avattava GPS-datatiedosto. "
 
 #: ../src/vikwindow.c:1812
 msgid "Geocaching"
-msgstr "Geocaching"
+msgstr "Geokätkyily"
 
 #: ../src/vikwindow.c:1818
 msgid "Google Earth"
@@ -2598,314 +2593,314 @@ msgstr "GPX"
 
 #: ../src/vikwindow.c:1828 ../src/viking.desktop.in.h:1
 msgid "Viking"
-msgstr "Viking"
+msgstr "Viikinki"
 
 #: ../src/vikwindow.c:1881
 msgid "Save as Viking File."
-msgstr "Salva come file di Viking."
+msgstr "Tallenna Viking-tiedostona."
 
 #: ../src/vikwindow.c:2197
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
 msgstr ""
-"Regione visibile fuori dal bordo della dimensione pixel consentita per "
-"l'immagine. Regolazione dei valori larghezza/altezza."
+"Katsottava alue kuvan sallittavan pikselikokorajojen ulkopuolella. Leikataan "
+"leveys/korkeus-arvoja."
 
 #: ../src/vikwindow.c:2219
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. km)"
-msgstr "Area Totale: %ldm x %ldm (%.3f kmq)"
+msgstr "Kokonaisalue: %ldm x %ldm (%.3f neliökilometriä)"
 
 #: ../src/vikwindow.c:2222
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. miles)"
-msgstr "Area totale: %ldm x %ldm (%.3f miglia quadrate)"
+msgstr "Kokonaisalue: %ldm x %ldm (%.3f neliömailia)"
 
 #. todo: default for answers inside VikWindow or static (thruout instance)
 #: ../src/vikwindow.c:2236
 msgid "Save to Image File"
-msgstr "Salva come file immagine"
+msgstr "Tallenna kuvatiedostoon"
 
 #: ../src/vikwindow.c:2254
 msgid "Width (pixels):"
-msgstr "Larghezza (pixel):"
+msgstr "Leveys (pikseliä):"
 
 #: ../src/vikwindow.c:2256
 msgid "Height (pixels):"
-msgstr "Altezza (pixel):"
+msgstr "Korkeus (pikseliä):"
 
 #: ../src/vikwindow.c:2259
 msgid "Zoom (meters per pixel):"
-msgstr "Zoom (metri per pixel):"
+msgstr "Loitonna/lähennä (metriä per pikseli):"
 
 #: ../src/vikwindow.c:2265
 msgid "Area in current viewable window"
-msgstr "Area nella finestra visibile"
+msgstr "Alue nykyisin katsottavassa ikkunassa"
 
 #: ../src/vikwindow.c:2275
 msgid "Save as PNG"
-msgstr "Salva come PNG"
+msgstr "Tallenna PNG-tiedostona"
 
 #: ../src/vikwindow.c:2276
 msgid "Save as JPEG"
-msgstr "Salva come JPEG"
+msgstr "Tallenna JPEG-tiedostona"
 
 #: ../src/vikwindow.c:2296
 msgid "East-west image tiles:"
-msgstr "Celle dell'immagine est-ovest:"
+msgstr "Itä-länsi-kuvatiilit:"
 
 #: ../src/vikwindow.c:2298
 msgid "North-south image tiles:"
-msgstr "Celle dell'immagine nord-sud:"
+msgstr "Pohjois-etelä-kuvatiilit:"
 
 #: ../src/vikwindow.c:2349
 msgid "Save Image"
-msgstr "Salva immagine"
+msgstr "Tallenna kuva"
 
 #: ../src/vikwindow.c:2378
 msgid "You must be in UTM mode to use this feature"
-msgstr "Si deve essere in modalità UTM per utilizzare questa funzione"
+msgstr "Tätä ominaisuutta voi käyttää vain UTM-tilassa"
 
 #: ../src/vikwindow.c:2383
 msgid "Choose a directory to hold images"
-msgstr "Selezionare una cartella dove conservare le immagini"
+msgstr "Valitse hakemisto kuvien säilyttämiseen"
 
 #: ../src/vikwindow.c:2481
 msgid "Choose a background color"
-msgstr "Selezionare un colore di sfondo"
+msgstr "Valitse taustaväri"
 
 #: ../src/vikwindow.c:2497
 msgid "Choose a track highlight color"
-msgstr "Scegli un colore di evidenziazione del tracciato"
+msgstr "Valitse reitin korotustväri"
 
 #: ../src/vikwindow.c:2518
 msgid "_File"
-msgstr "_File"
+msgstr "_Tiedosto"
 
 #: ../src/vikwindow.c:2519
 msgid "_Edit"
-msgstr "_Modifica"
+msgstr "_Muokkaa"
 
 #: ../src/vikwindow.c:2520
 msgid "_View"
-msgstr "_Visualizza"
+msgstr "_Näkymä"
 
 #: ../src/vikwindow.c:2521
 msgid "_Show"
-msgstr "Mo_stra"
+msgstr "_Näytä"
 
 #: ../src/vikwindow.c:2522 ../src/vikwindow.c:2616
 msgid "_Zoom"
-msgstr "_Zoom"
+msgstr "_Loitonna/lähennä"
 
 #: ../src/vikwindow.c:2523 ../src/vikwindow.c:2615
 msgid "_Pan"
-msgstr "_Scorri"
+msgstr "_Vaakavieritä"
 
 #: ../src/vikwindow.c:2524
 msgid "_Layers"
-msgstr "_Livelli"
+msgstr "_Kerrokset"
 
 #: ../src/vikwindow.c:2525
 msgid "_Tools"
-msgstr "S_trumenti"
+msgstr "_Työkalut"
 
 #: ../src/vikwindow.c:2526
 msgid "_Webtools"
-msgstr "_Strumenti Web"
+msgstr "_Webbityökalut"
 
 #: ../src/vikwindow.c:2527 ../src/vikwindow.c:2601
 msgid "_Help"
-msgstr "Aiuto (_H)"
+msgstr "_Opaste"
 
 #: ../src/vikwindow.c:2529
 msgid "_New"
-msgstr "_Nuovo"
+msgstr "_Uusi"
 
 #: ../src/vikwindow.c:2529
 msgid "New file"
-msgstr "Nuovo file"
+msgstr "Uusi tiedosto"
 
 #: ../src/vikwindow.c:2530
 msgid "_Open..."
-msgstr "_Apri..."
+msgstr "_Avaa..."
 
 #: ../src/vikwindow.c:2530
 msgid "Open a file"
-msgstr "Apri un file"
+msgstr "Avaa tiedosto"
 
 #: ../src/vikwindow.c:2531
 msgid "Open _Recent File"
-msgstr "Apri file _recente"
+msgstr "A_vaa äskeinen tiedosto"
 
 #: ../src/vikwindow.c:2532
 msgid "Append _File..."
-msgstr "A_ppendi file..."
+msgstr "Liitä tie_dosto..."
 
 #: ../src/vikwindow.c:2532
 msgid "Append data from a different file"
-msgstr "Appende i dati da un file differente"
+msgstr "Liitä tietoja eri tiedostosta"
 
 #: ../src/vikwindow.c:2533
 msgid "A_cquire"
-msgstr "A_cquisisci"
+msgstr "H_anki"
 
 #: ../src/vikwindow.c:2534
 msgid "Transfer data from a GPS device"
-msgstr "Trasferisce i dati da un dispositivo GPS"
+msgstr "Siirrä tietoa GPS-laitteesta"
 
 #: ../src/vikwindow.c:2535
 msgid "Import File With GPS_Babel..."
-msgstr "Importa il File con GPS_Babel..."
+msgstr "Tuo tiedosto ohjelmalla GPS_Babel..."
 
 #: ../src/vikwindow.c:2535
 msgid "Import file via GPSBabel converter"
-msgstr "Importa il file con il convertitore GPSBabel"
+msgstr "Tuo tiedosto GPSBabel-muuntimen kautta"
 
 #: ../src/vikwindow.c:2536
 msgid "Google _Directions..."
-msgstr "Percorsi _di Google..."
+msgstr "Google _Ajo-ohjeet..."
 
 #: ../src/vikwindow.c:2536
 msgid "Get driving directions from Google"
-msgstr "Ottiene indicazioni di guida da Google"
+msgstr "Hae ajo-ohjeita Googlelta"
 
 #: ../src/vikwindow.c:2538
 msgid "_OSM Traces..."
-msgstr "Tracce _OSM"
+msgstr "_OSM-jäljet..."
 
 #: ../src/vikwindow.c:2538
 msgid "Get traces from OpenStreetMap"
-msgstr "Ottieni tracce da OpenStreetMap"
+msgstr "Hae jäljet ohjelmasta OpenStreetMap"
 
 #: ../src/vikwindow.c:2541
 msgid "Geo_caches..."
-msgstr "Geo_caches"
+msgstr "Geo_kätköt..."
 
 #: ../src/vikwindow.c:2541
 msgid "Get Geocaches from geocaching.com"
-msgstr "Ottieni Geocaches da geocaching.com"
+msgstr "Hae geokätköt osoitteesta geocaching.com"
 
 #: ../src/vikwindow.c:2544
 msgid "Create waypoints from geotagged images"
-msgstr "Crea i punti di transito dalle immagini georeferenziate"
+msgstr "Luo välietapit geotagged-kuvista"
 
 #: ../src/vikwindow.c:2546
 msgid "_Save"
-msgstr "_Salva"
+msgstr "Talle_nna"
 
 #: ../src/vikwindow.c:2546
 msgid "Save the file"
-msgstr "Salva il file"
+msgstr "Tallenna tiedosto"
 
 #: ../src/vikwindow.c:2547
 msgid "Save _As..."
-msgstr "S_alva con nome..."
+msgstr "Tall_enna nimellä..."
 
 #: ../src/vikwindow.c:2547
 msgid "Save the file under different name"
-msgstr "Salva il file con un nome differente"
+msgstr "Tallenna tiedosto eri nimellä"
 
 #: ../src/vikwindow.c:2548
 msgid "_Generate Image File..."
-msgstr "_Genera file immagine..."
+msgstr "T_uota kuvatiedosto..."
 
 #: ../src/vikwindow.c:2548
 msgid "Save a snapshot of the workspace into a file"
-msgstr "Salva una schermata della pagina in un file"
+msgstr "Tallenna työtilan kuvakaappaus tiedostoon"
 
 #: ../src/vikwindow.c:2549
 msgid "Generate _Directory of Images..."
-msgstr "Genera _cartella di immagini..."
+msgstr "Tuota ku_vahakemisto..."
 
 #: ../src/vikwindow.c:2549
 msgid "FIXME:IMGDIR"
-msgstr "FIXME:IMGDIR"
+msgstr "KORJAAMINUT:IMGDIR"
 
 #: ../src/vikwindow.c:2552
 msgid "_Print..."
-msgstr "Stam_pa"
+msgstr "_Tulosta..."
 
 #: ../src/vikwindow.c:2552
 msgid "Print maps"
-msgstr "Stampa mappe"
+msgstr "Tulosta karttoja"
 
 #: ../src/vikwindow.c:2555
 msgid "E_xit"
-msgstr "_Esci"
+msgstr "P_oistu"
 
 #: ../src/vikwindow.c:2555
 msgid "Exit the program"
-msgstr "Esce dal programma"
+msgstr "Poistu ohjelmasta"
 
 #: ../src/vikwindow.c:2556
 msgid "Save and Exit"
-msgstr "Salva ed esci"
+msgstr "Tallenna ja poistu"
 
 #: ../src/vikwindow.c:2556
 msgid "Save and Exit the program"
-msgstr "Salva ed esce dal programma"
+msgstr "Tallenna ja poistu ohjelmasta"
 
 #: ../src/vikwindow.c:2558
 msgid "Go to the _Default Location"
-msgstr "Vai alla posizione pre_definita"
+msgstr "Siirry _oletusijaintiin"
 
 #: ../src/vikwindow.c:2558
 msgid "Go to the default location"
-msgstr "Va alla posizione predefinita"
+msgstr "Siirry oletussijaintiin"
 
 #: ../src/vikwindow.c:2559
 msgid "Go to _Location..."
-msgstr "Vai alla _posizione..."
+msgstr "_Siirry sijaintiin..."
 
 #: ../src/vikwindow.c:2559
 msgid "Go to address/place using text search"
-msgstr "Va all'indirizzo/posizione usando la ricerca testuale"
+msgstr "Siirry osoitteesen/paikkaan käyttäen tekstihakua"
 
 #: ../src/vikwindow.c:2560
 msgid "_Go to Lat/Lon..."
-msgstr "_Vai a Lat/Lon..."
+msgstr "_Siirry leveyspiirille/pituuspiirille..."
 
 #: ../src/vikwindow.c:2560
 msgid "Go to arbitrary lat/lon coordinate"
-msgstr "Va alle coordinate lat/lon arbitrarie"
+msgstr "Siirry satunnaiseen leveysp./pituusp. koordinaattiin"
 
 #: ../src/vikwindow.c:2561
 msgid "Go to UTM..."
-msgstr "Vai a UTM..."
+msgstr "Siirry UTM:ään..."
 
 #: ../src/vikwindow.c:2561
 msgid "Go to arbitrary UTM coordinate"
-msgstr "Va alle coordinate UTM arbitrarie"
+msgstr "Siirry satunnaiseen UTM-koordinaattiin"
 
 #: ../src/vikwindow.c:2562
 msgid "Set _Highlight Color..."
-msgstr "Imposta il Colore di Evidenziazione (_H)..."
+msgstr "Aseta _korostusväri..."
 
 #: ../src/vikwindow.c:2563
 msgid "Set Bac_kground Color..."
-msgstr "Imposta colore dello s_fondo"
+msgstr "Aseta tausta_väri..."
 
 #: ../src/vikwindow.c:2564
 msgid "Zoom _In"
-msgstr "Aumenta _ingrandimento"
+msgstr "Lä_hennä"
 
 #: ../src/vikwindow.c:2565
 msgid "Zoom _Out"
-msgstr "Riduci ingrandiment_o"
+msgstr "Loi_tonna"
 
 #: ../src/vikwindow.c:2566
 msgid "Zoom _To..."
-msgstr "Ingran_disci a..."
+msgstr "Loitonna/lähennä _kohteeseen..."
 
 #: ../src/vikwindow.c:2567
 msgid "0.25"
-msgstr "0.25"
+msgstr "0,25"
 
 #: ../src/vikwindow.c:2568
 msgid "0.5"
-msgstr "0.5"
+msgstr "0,5"
 
 #: ../src/vikwindow.c:2569
 msgid "1"
@@ -2973,190 +2968,190 @@ msgstr "32768"
 
 #: ../src/vikwindow.c:2585
 msgid "Pan _North"
-msgstr "Pan _Nord"
+msgstr "V_ieritä pohjoiseen"
 
 #: ../src/vikwindow.c:2586
 msgid "Pan _East"
-msgstr "Pan _Est"
+msgstr "Vi_eritä itään"
 
 #: ../src/vikwindow.c:2587
 msgid "Pan _South"
-msgstr "Pan _Sud"
+msgstr "Vieri_tä etelään"
 
 #: ../src/vikwindow.c:2588
 msgid "Pan _West"
-msgstr "Pan Ovest (_W)"
+msgstr "Vieritä _länteen"
 
 #: ../src/vikwindow.c:2589
 msgid "Background _Jobs"
-msgstr "_Lavori in background"
+msgstr "Ta_ustatyöt"
 
 #: ../src/vikwindow.c:2591
 msgid "Cu_t"
-msgstr "_Taglia"
+msgstr "Leikk_aa"
 
 #: ../src/vikwindow.c:2592
 msgid "_Copy"
-msgstr "_Copia"
+msgstr "Kop_ioi"
 
 #: ../src/vikwindow.c:2593
 msgid "_Paste"
-msgstr "Inco_lla"
+msgstr "_Liitä"
 
 #: ../src/vikwindow.c:2594
 msgid "_Delete"
-msgstr "_Elimina"
+msgstr "_Poista"
 
 #: ../src/vikwindow.c:2595
 msgid "Delete All"
-msgstr "Elimina tutto"
+msgstr "Poista kaikki"
 
 #: ../src/vikwindow.c:2596
 msgid "_Flush Map Cache"
-msgstr "Aggiorna la cache della mappe"
+msgstr "_Tyhjennä karttavälimuisti"
 
 #: ../src/vikwindow.c:2597
 msgid "_Set the Default Location"
-msgstr "Imposta la posizione p_redefinita"
+msgstr "_Aseta oletussijainti"
 
 #: ../src/vikwindow.c:2597
 msgid "Set the Default Location to the current position"
-msgstr "Imposta la posizione predefinita alla posizione corrente"
+msgstr "Aseta oletussijainniksi nykyinen sijainti"
 
 #: ../src/vikwindow.c:2598
 msgid "_Preferences"
-msgstr "_Preferenze"
+msgstr "A_setukset"
 
 #: ../src/vikwindow.c:2599
 msgid "_Properties"
-msgstr "_Proprietà"
+msgstr "Ominaisuu_det"
 
 #: ../src/vikwindow.c:2602
 msgid "_About"
-msgstr "Inform_azioni"
+msgstr "O_hjelmasta"
 
 #: ../src/vikwindow.c:2608
 msgid "_UTM Mode"
-msgstr "Modalità _UTM"
+msgstr "_UTM-tila"
 
 #: ../src/vikwindow.c:2609
 msgid "_Expedia Mode"
-msgstr "Modalità _Expedia"
+msgstr "_Expedia-tila"
 
 #: ../src/vikwindow.c:2610
 msgid "_Mercator Mode"
-msgstr "Modalità _Mercatore"
+msgstr "_Mercator-tila"
 
 #: ../src/vikwindow.c:2611
 msgid "Lat_/Lon Mode"
-msgstr "Modalità Lat_/Lon"
+msgstr "Le_veysaste-/pituuastetila"
 
 #: ../src/vikwindow.c:2615
 msgid "Pan Tool"
-msgstr "Strumento di scorrimento"
+msgstr "Vaakavieritystyökalu"
 
 #: ../src/vikwindow.c:2616
 msgid "Zoom Tool"
-msgstr "Strumento di Zoom"
+msgstr "Suurennuslasi"
 
 #: ../src/vikwindow.c:2617
 msgid "_Ruler"
-msgstr "_Righello"
+msgstr "V_iivotin"
 
 #: ../src/vikwindow.c:2617
 msgid "Ruler Tool"
-msgstr "Strumento righello"
+msgstr "Viivotintyökalu"
 
 #: ../src/vikwindow.c:2618
 msgid "_Select"
-msgstr "_Seleziona"
+msgstr "Valit_se"
 
 #: ../src/vikwindow.c:2618
 msgid "Select Tool"
-msgstr "Strumento di Selezione"
+msgstr "Valintatyökalu"
 
 #: ../src/vikwindow.c:2622
 msgid "Show _Scale"
-msgstr "Mostra _scala"
+msgstr "Näytä _skaala"
 
 #: ../src/vikwindow.c:2622
 msgid "Show Scale"
-msgstr "Mostra la scala"
+msgstr "Näytä skaala"
 
 #: ../src/vikwindow.c:2623
 msgid "Show _Center Mark"
-msgstr "Mostra il Marcatore _Centrale"
+msgstr "Näytä k_eskusmerkki"
 
 #: ../src/vikwindow.c:2623
 msgid "Show Center Mark"
-msgstr "Mostra segnale centrale"
+msgstr "Näytä keskusmerkki"
 
 #: ../src/vikwindow.c:2624
 msgid "Show _Highlight"
-msgstr "Mostra Evidenziazione (_H)"
+msgstr "Näytä _korostus"
 
 #: ../src/vikwindow.c:2624
 msgid "Show Highlight"
-msgstr "Mostra Evidenziazione"
+msgstr "Näytä korostus"
 
 #: ../src/vikwindow.c:2625
 msgid "_Full Screen"
-msgstr "Sc_hermo intero"
+msgstr "K_okonäyttö"
 
 #: ../src/vikwindow.c:2625
 msgid "Activate full screen mode"
-msgstr "Attiva la modalità a schermo intero"
+msgstr "Aktivoi kokonäyttötila"
 
 #: ../src/vikwindow.c:2626
 msgid "Show Side _Panel"
-msgstr "Mostra _pannello laterale"
+msgstr "Näytä siv_upaneeli"
 
 #: ../src/vikwindow.c:2626
 msgid "Show Side Panel"
-msgstr "Mostra il pannello laterale"
+msgstr "Näytä sivupaneeli"
 
 #: ../src/vikwindow.c:2627
 msgid "Show Status_bar"
-msgstr "Mostra _barra di stato"
+msgstr "Näytä tilapal_kki"
 
 #: ../src/vikwindow.c:2627
 msgid "Show Statusbar"
-msgstr "Mostra la barra di stato"
+msgstr "Näytä tilapalkki"
 
 #: ../src/vikwindow.c:2628
 msgid "Show _Toolbar"
-msgstr "Mostra barra s_trumenti"
+msgstr "Näytä _työkalupalkki"
 
 #: ../src/vikwindow.c:2628
 msgid "Show Toolbar"
-msgstr "Mostra la barra degli strumenti"
+msgstr "Näytä työkalupalkki"
 
 #: ../src/vikwindow.c:2629
 msgid "Show _Menu"
-msgstr "Mostra _menu"
+msgstr "Näytä _Valikko"
 
 #: ../src/vikwindow.c:2629
 msgid "Show Menu"
-msgstr "Mostra il menu"
+msgstr "Näytä valikko"
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"
-msgstr "Gestore dati GPS"
+msgstr "GPS-tietohallinta"
 
 #: ../src/viking.desktop.in.h:3
 msgid "Map Based GPS Data Manager (live data capable)."
-msgstr "Gestore dati GPS basato su mappa (dati in tempo reale)."
+msgstr "Karttaperustaienn GPS-datahallinta (livetietokykyinen)."
 
 #: ../src/libjpeg/jpeg-data.c:206
 msgid "Data does not follow JPEG specification."
-msgstr "Il dato non segue la specifica JPEG."
+msgstr "Tiedot eivät noudata JPEF-määrittelyä."
 
 #: ../src/libjpeg/jpeg-data.c:291
 #, c-format
 msgid "Path '%s' invalid."
-msgstr "Percorso '%s' non valido."
+msgstr "Polku ’%s’ on virheellinen."
 
 #: ../src/libjpeg/jpeg-data.c:309
 #, c-format
 msgid "Could not read '%s'."
-msgstr "Impossibile leggere '%s'."
+msgstr "Kohteen ’%s’ lukeminen epäonnistui."

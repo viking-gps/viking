@@ -7,63 +7,78 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-20 21:11+0200\n"
-"PO-Revision-Date: 2012-03-26 18:58+0000\n"
-"Last-Translator: Dennis Baudys <Unknown>\n"
+"POT-Creation-Date: 2012-04-22 21:22+0200\n"
+"PO-Revision-Date: 2012-08-17 22:58+0000\n"
+"Last-Translator: Guido Scholz <guido.scholz@bayernline.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-04-22 16:16+0000\n"
-"X-Generator: Launchpad (build 15120)\n"
+"X-Launchpad-Export-Date: 2013-01-26 19:16+0000\n"
+"X-Generator: Launchpad (build 16451)\n"
+"Language: de\n"
 
 #: ../src/acquire.c:118
 msgid "Working..."
 msgstr "In Bearbeitung ..."
 
-#: ../src/acquire.c:141
+#: ../src/acquire.c:146
 msgid "Error: acquisition failed."
 msgstr "Fehler: Datenübertragung fehlgeschlagen"
 
-#: ../src/acquire.c:149 ../src/vikgpslayer.c:1034
+#: ../src/acquire.c:154 ../src/vikgpslayer.c:1083
 msgid "Done."
 msgstr "Fertig."
 
-#: ../src/acquire.c:156
+#: ../src/acquire.c:163
 msgid "No data."
 msgstr "Keine Daten."
 
-#: ../src/acquire.c:353 ../src/vikgpslayer.c:1088
+#: ../src/acquire.c:361 ../src/vikgpslayer.c:1151
 msgid "Status: detecting gpsbabel"
 msgstr "Status: Suche nach gpsbabel"
 
-#: ../src/background.c:57
+#: ../src/background.c:59
 #, c-format
 msgid "%d items"
 msgstr "%d Teile"
 
-#: ../src/background.c:248
+#: ../src/background.c:250
 msgid "Job"
 msgstr "Auftrag"
 
-#: ../src/background.c:252
+#: ../src/background.c:254
 msgid "Progress"
 msgstr "Fortschritt"
 
-#: ../src/background.c:268
+#: ../src/background.c:270
 msgid "Viking Background Jobs"
-msgstr "Viking-Hintergrund-Auftrag"
+msgstr "Viking-Hintergrund-Aufträge"
 
-#: ../src/clipboard.c:85
+#: ../src/bing.c:47
+msgid "Bing"
+msgstr "Bing"
+
+#: ../src/bingmapsource.c:403 ../src/geonamessearch.c:404
+#: ../src/vikgototool.c:250
+msgid "couldn't open temp file"
+msgstr "Kann Zwischendatei nicht öffnen"
+
+#. VIK_GTK_WINDOW_FROM_WIDGET(vp)
+#: ../src/bingmapsource.c:466
+msgid "Bing attribution Loading"
+msgstr "Lade Bing-Attribution"
+
+#: ../src/clipboard.c:94
 msgid "paste failed"
-msgstr "einfügen fehlgeschlagen"
+msgstr "Einfügen fehlgeschlagen"
 
-#: ../src/clipboard.c:95
+#: ../src/clipboard.c:104
 msgid "wrong clipboard data size"
-msgstr "Größe der Zwischenablage falsch"
+msgstr "Fehlerhafte Größe für Zwischenablage"
 
-#: ../src/clipboard.c:114
+#: ../src/clipboard.c:123
 #, c-format
 msgid ""
 "The clipboard contains sublayer data for %s layers. You must select a layer "
@@ -72,20 +87,15 @@ msgstr ""
 "Die Zwischenablage enthält Sublayer-Daten für %s Ebenen. Sie müssen eine "
 "Ebene dieses Typs wählen, um die Dateien der Zwischenablage einzufügen."
 
-#: ../src/clipboard.c:220
+#: ../src/clipboard.c:235
 msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
 "into."
 msgstr "Bitte eine zum Einfügen eines Wegpunktes geeignete Ebene auswählen."
 
-#: ../src/curl_download.c:118
-#, c-format
-msgid "%s() Curl perform failed: %s"
-msgstr "%s() Curl fehlgeschlagen: %s"
-
 #: ../src/dialog.c:52
 msgid "Go to Lat/Lon"
-msgstr "Gehe zu Lat/Lon"
+msgstr "Gehe zu Breite/Länge"
 
 #: ../src/dialog.c:64 ../src/dialog.c:251
 msgid "Latitude:"
@@ -212,7 +222,7 @@ msgstr "Einstellung (in Minuten)"
 
 #: ../src/dialog.c:809
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr "GPS-Daten und Topo-Analyzer, Explorer und Manager,"
+msgstr "GPS-Daten und Topo-Analysierer, Explorer und Manager,"
 
 #: ../src/dialog.c:810
 msgid ""
@@ -276,12 +286,12 @@ msgid ""
 "<b>%s</b>.\n"
 "Please, read the license before continuing."
 msgstr ""
-"Die Daten von '<b>%s</b>'  unterliegen der Lizenz: <b>%s</b>.\n"
-"Bevor sie fortfahren lesen sie bitte die Lizenzvereinbarungen."
+"Die Daten von '<b>%s</b>' unterliegen der Lizenz: <b>%s</b>.\n"
+"Bevor sie fortfahren, lesen sie bitte die Lizenzvereinbarungen."
 
 #: ../src/dialog.c:905
 msgid "Open license"
-msgstr "Offene Lizenz,"
+msgstr "Offene Lizenz"
 
 #: ../src/expedia.c:53
 msgid "Expedia Street Maps"
@@ -298,7 +308,7 @@ msgid ""
 "report and delete image file!): %s"
 msgstr ""
 "Kann EXPEDIA-Bilddatei nicht öffnen (nach erfolgreichem Herunterladen! Bitte "
-"berichten und löschen Sie die Bild-Datei !): %s"
+"berichten und löschen Sie die Bild-Datei!): %s"
 
 #: ../src/expedia.c:125
 #, c-format
@@ -307,7 +317,7 @@ msgid ""
 "report and delete image file!): %s"
 msgstr ""
 "Kann EXPEDIA-Bilddatei nicht speichern (nach erfolgreichem Herunterladen! "
-"Bitte berichten und löschen Sie die Bild-Datei !): %s"
+"Bitte berichten und löschen Sie die Bild-Datei!): %s"
 
 #: ../src/geonamessearch.c:97
 msgid "Search"
@@ -320,10 +330,6 @@ msgstr "Keine Einträge gefunden!"
 #: ../src/geonamessearch.c:263 ../src/googlesearch.c:120
 msgid "couldn't map temp file"
 msgstr "Aufzeichen der Zwischendatei fehlgeschlagen"
-
-#: ../src/geonamessearch.c:404 ../src/vikgototool.c:250
-msgid "couldn't open temp file"
-msgstr "Kann Zwischendatei nicht öffnen"
 
 #: ../src/globals.c:44
 msgid "Degree format:"
@@ -343,7 +349,7 @@ msgstr "Höheneinheit:"
 
 #: ../src/globals.c:60
 msgid "Use large waypoint icons:"
-msgstr "Benutze große Wegpunkt-Icons:"
+msgstr "Benutze große Wegpunktsymbole:"
 
 #: ../src/globals.c:64
 msgid "Default latitude:"
@@ -353,50 +359,134 @@ msgstr "Standardbreitengrad:"
 msgid "Default longitude:"
 msgstr "Standardlängengrad:"
 
+#: ../src/globals.c:75
+msgid "KML File Export Units:"
+msgstr "KML-Datei Exporteinheiten:"
+
+#: ../src/globals.c:80
+msgid "Image Viewer:"
+msgstr "Bildbetrachter:"
+
+#: ../src/globals.c:85
+msgid "External GPX Program 1:"
+msgstr "Externes GPX-Programm 1:"
+
+#: ../src/globals.c:86
+msgid "External GPX Program 2:"
+msgstr "Externes GPX-Programm 2:"
+
+#. Defaults for the options are setup here
+#: ../src/globals.c:94
+msgid "General"
+msgstr "Allgemeines"
+
+#. New Tab
+#: ../src/globals.c:119
+msgid "Export/External"
+msgstr "Export/Externes"
+
 #. Webtools
 #: ../src/google.c:36
 msgid "Google"
 msgstr "Google"
 
-#: ../src/datasource_gc.c:62
+#: ../src/datasource_file.c:59
+msgid "Import file with GPSBabel"
+msgstr "Importiere Datei mit GPSBabel"
+
+#: ../src/datasource_file.c:60
+msgid "Imported file"
+msgstr "Importierte Datei"
+
+#. The file selector
+#: ../src/datasource_file.c:133
+msgid "File:"
+msgstr "Datei:"
+
+#: ../src/datasource_file.c:134
+msgid "File to import"
+msgstr "Zu importierende Datei"
+
+#: ../src/datasource_file.c:141
+msgid "All files"
+msgstr "Alle Dateien"
+
+#. The file format selector
+#: ../src/datasource_file.c:148
+msgid "File type:"
+msgstr "Dateityp:"
+
+#: ../src/datasource_file.c:193
+#, c-format
+msgid "using babel args '%s' and file '%s'"
+msgstr "Benutze babel Argumente '%s' und Datei '%s'"
+
+#: ../src/datasource_gc.c:66
 msgid "Download Geocaches"
 msgstr "Geocaches herunterladen"
 
-#: ../src/datasource_gc.c:63
+#: ../src/datasource_gc.c:67
 msgid "Geocaching.com Caches"
 msgstr "Caches von Geocaching.com"
 
-#: ../src/datasource_gc.c:80
+#: ../src/datasource_gc.c:85
 msgid "geocaching.com username:"
 msgstr "geocaching.com-Benutzername:"
 
-#: ../src/datasource_gc.c:81
+#: ../src/datasource_gc.c:86
 msgid "geocaching.com password:"
 msgstr "geocaching.com-Passwort:"
 
-#: ../src/datasource_gc.c:109
+#: ../src/datasource_gc.c:127
+#, c-format
 msgid ""
-"Can't find gcget in path! Check that you have installed gcget correctly."
+"Can't find %s or %s in path! Check that you have installed it correctly."
 msgstr ""
-"Kann gcget nicht finden! Bitte prüfen Sie, ob gcget korrekt installiert ist."
+"Kann %s oder %s nicht im Pfad finden! Bitte prüfen, ob es richtig "
+"installiert ist"
 
-#: ../src/datasource_gc.c:171
+#: ../src/datasource_gc.c:189
 msgid "Number geocaches:"
 msgstr "Anzahl Geocaches:"
 
-#: ../src/datasource_gc.c:173
+#: ../src/datasource_gc.c:191
 msgid "Centered around:"
 msgstr "Mittelpunkt:"
 
+#: ../src/datasource_gc.c:227
+msgid "Broken input - using some defaults"
+msgstr "Falsche Eingabe - Benutze einige Voreinstellungen"
+
+#: ../src/datasource_geotag.c:52
+msgid "Create Waypoints from Geotagged Images"
+msgstr "Wegpunkte aus georeferenzierten Bildern erzeugen"
+
+#: ../src/datasource_geotag.c:53
+msgid "Geotagged Images"
+msgstr "Georeferenzierte Bilder"
+
+#: ../src/datasource_geotag.c:105 ../src/vikwindow.c:1838
+msgid "All"
+msgstr "Alle"
+
+#: ../src/datasource_geotag.c:110
+msgid "JPG"
+msgstr "JPG"
+
+#: ../src/datasource_geotag.c:171
+#, c-format
+msgid "Unable to create waypoint from %s"
+msgstr "Kann keinen Wegpunkt aus %s erzeugen"
+
 #: ../src/datasource_google.c:49 ../src/datasource_google.c:50
 msgid "Google Directions"
-msgstr "Google-Richtung"
+msgstr "Google-Richtungen"
 
-#: ../src/datasource_google.c:76
+#: ../src/datasource_google.c:77
 msgid "From:"
 msgstr "Von:"
 
-#: ../src/datasource_google.c:78
+#: ../src/datasource_google.c:79
 msgid "To:"
 msgstr "Zu:"
 
@@ -408,49 +498,49 @@ msgstr "Vom GPS laden"
 msgid "Acquired from GPS"
 msgstr "Vom GPS geladen"
 
-#: ../src/datasource_gps.c:151
+#: ../src/datasource_gps.c:148
 #, c-format
 msgid "using cmdline '%s' and file '%s'\n"
 msgstr "Kommandozeile '%s'  und Datei '%s' benutzen\n"
 
-#: ../src/datasource_gps.c:217 ../src/vikgpslayer.c:776
+#: ../src/datasource_gps.c:202 ../src/vikgpslayer.c:826
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
-msgstr[0] "%d Wegpunkt herunterladen"
-msgstr[1] "%d Wegpunkte herunterladen"
+msgstr[0] "%d Wegpunkt herunterladen..."
+msgstr[1] "%d Wegpunkte herunterladen..."
 
-#: ../src/datasource_gps.c:219 ../src/vikgpslayer.c:778
+#: ../src/datasource_gps.c:204 ../src/vikgpslayer.c:828
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
-msgstr[0] "%d Spurpunkt herunterladen"
-msgstr[1] "%d Spurpunkte herunterladen"
+msgstr[0] "%d Spurpunkt herunterladen..."
+msgstr[1] "%d Spurpunkte herunterladen..."
 
-#: ../src/datasource_gps.c:237
+#: ../src/datasource_gps.c:222
 #, c-format
 msgid "Downloaded %d out of %d %s..."
-msgstr "%d runtergeladen von %d %s ..."
+msgstr "%d heruntergeladen von %d %s ..."
 
-#: ../src/datasource_gps.c:239
+#: ../src/datasource_gps.c:224
 #, c-format
 msgid "Downloaded %d %s."
-msgstr "%d %s geladen."
+msgstr "%d %s heruntergeladen."
 
-#: ../src/datasource_gps.c:252 ../src/vikgpslayer.c:848
+#: ../src/datasource_gps.c:237 ../src/vikgpslayer.c:898
 #, c-format
 msgid "GPS Device: %s"
 msgstr "GPS-Gerät: %s"
 
-#: ../src/datasource_gps.c:341 ../src/vikgpslayer.c:152
+#: ../src/datasource_gps.c:345 ../src/vikgpslayer.c:152
 msgid "GPS Protocol:"
 msgstr "GPS-Protokoll:"
 
-#: ../src/datasource_gps.c:350 ../src/vikgpslayer.c:153
+#: ../src/datasource_gps.c:364 ../src/vikgpslayer.c:153
 msgid "Serial Port:"
-msgstr "Serieller Port:"
+msgstr "Serielle Schnittstelle:"
 
-#: ../src/datasource_gps.c:371
+#: ../src/datasource_gps.c:385
 msgid ""
 "Turn Off After Transfer\n"
 "(Garmin/NAViLink Only)"
@@ -458,9 +548,25 @@ msgstr ""
 "Nach dem Datentransfer bitte ausschalten\n"
 "(Nur Garmin/NAViLink)"
 
-#: ../src/datasource_gps.c:392 ../src/vikgpslayer.c:1093
+#: ../src/datasource_gps.c:388
+msgid "Tracks:"
+msgstr "Spuren:"
+
+#: ../src/datasource_gps.c:392
+msgid "Waypoints:"
+msgstr "Wegpunkte:"
+
+#: ../src/datasource_gps.c:421 ../src/vikgpslayer.c:1156
 msgid "GPS device: N/A"
 msgstr "GPS-Gerät: Nicht gefunden"
+
+#: ../src/datasource_osm.c:52 ../src/datasource_osm.c:53
+msgid "OSM traces"
+msgstr "OSM-Spuren"
+
+#: ../src/datasource_osm.c:80
+msgid "Page number:"
+msgstr "Seitennummer:"
 
 #: ../src/dem.c:60 ../src/dem.c:74
 msgid "Invalid DEM"
@@ -488,10 +594,39 @@ msgstr "Kachelalter (s)"
 msgid "Download error: %s"
 msgstr "Fehler beim Herunterladen: %s"
 
-#: ../src/file.c:427 ../src/file.c:431
+#: ../src/file.c:430 ../src/file.c:434
 #, c-format
 msgid "Draw mode '%s' no more supported"
 msgstr "Zeichen-Modus '%s' nicht mehr unterstützt"
+
+#: ../src/geotag_exif.c:422
+msgid "Not enough memory."
+msgstr "Nicht genügend Speicher."
+
+#: ../src/geotag_exif.c:440
+msgid "Setting a value for this tag is unsupported!"
+msgstr "Werteingabe für diese Marke wird nicht unterstützt!"
+
+#: ../src/geotag_exif.c:459
+#, c-format
+msgid "Too few components specified (need %d, found %d)\n"
+msgstr "Zu wenig Komponenten angegeben (erforderlich: %d, gefunden: %d)\n"
+
+#: ../src/geotag_exif.c:463
+msgid "Numeric value expected\n"
+msgstr "Numerischer Wert erwartet\n"
+
+#: ../src/geotag_exif.c:471
+msgid "This shouldn't happen!"
+msgstr "Das sollte nicht passieren!"
+
+#: ../src/geotag_exif.c:541
+msgid "Not yet implemented!"
+msgstr "Noch nicht implementiert!"
+
+#: ../src/geotag_exif.c:554
+msgid "Warning; Too many components specified!"
+msgstr "Warnung: Zu viele Komponenten angegeben!"
 
 #: ../src/osm-traces.c:73
 msgid "Identifiable (public w/ timestamps)"
@@ -517,67 +652,89 @@ msgstr "OSM-Benutzername:"
 msgid "OSM password:"
 msgstr "OSM-Passwort:"
 
-#: ../src/osm-traces.c:229
+#. Preferences
+#: ../src/osm-traces.c:152
+msgid "OpenStreetMap Traces"
+msgstr "Openstreetmap-Spuren"
+
+#: ../src/osm-traces.c:235
 #, c-format
 msgid "failed to upload data: HTTP response is %ld"
 msgstr "Fehler beim Hochladen (HTTP Fehler: %ld)"
 
-#: ../src/osm-traces.c:232
+#: ../src/osm-traces.c:240
 #, c-format
 msgid "curl_easy_getinfo failed: %d"
 msgstr "curl_easy_getinfo fehlgeschlagen: %d"
 
-#: ../src/osm-traces.c:236
+#: ../src/osm-traces.c:245
 #, c-format
 msgid "curl request failed: %s"
 msgstr "curl request fehlgeschlagen: %s"
 
-#: ../src/osm-traces.c:264
+#: ../src/osm-traces.c:275
 #, c-format
 msgid "failed to open temporary file: %s"
 msgstr "Fehler beim Öffnen der Zwischendatei: %s"
 
-#: ../src/osm-traces.c:298
+#. Success
+#: ../src/osm-traces.c:329
+msgid "Uploaded to OSM"
+msgstr "Nach OSM hochgeladen"
+
+#: ../src/osm-traces.c:334
+msgid "FAILED TO UPLOAD DATA TO OSM - CURL PROBLEM"
+msgstr "Fehler beim Hochladen nach OSM - Curl-Problem"
+
+#: ../src/osm-traces.c:339
+msgid "FAILED TO UPLOAD DATA TO OSM"
+msgstr "Fehler beim Hochladen nach OSM"
+
+#: ../src/osm-traces.c:339
+msgid "HTTP response code"
+msgstr "HTTP Antwort"
+
+#: ../src/osm-traces.c:350
 #, c-format
 msgid "failed to unlink temporary file: %s"
 msgstr "Fehler beim Freigeben der Zwischendatei: %s"
 
-#: ../src/osm-traces.c:310
+#: ../src/osm-traces.c:362
 msgid "OSM upload"
 msgstr "OSM-Upload"
 
-#: ../src/osm-traces.c:331
+#: ../src/osm-traces.c:383
 msgid "Email:"
 msgstr "E-Mail:"
 
-#: ../src/osm-traces.c:342
+#: ../src/osm-traces.c:394
 msgid ""
 "The email used as login\n"
 "<small>Enter the email you use to login into www.openstreetmap.org.</small>"
 msgstr ""
-"Die E-Mail-Adresse zum Einloggen\n"
+"Die E-Mail-Adresse zum Anmelden\n"
 "<small>Geben Sie die E-Mail-Adresse ein, mit der Sie sich auf "
 "www.openstreetmap.org einloggen.</small>"
 
-#: ../src/osm-traces.c:345
+#: ../src/osm-traces.c:397
 msgid "Password:"
 msgstr "Passwort:"
 
-#: ../src/osm-traces.c:356
+#: ../src/osm-traces.c:408
 msgid ""
 "The password used to login\n"
 "<small>Enter the password you use to login into "
 "www.openstreetmap.org.</small>"
 msgstr ""
-"Das Passwort zum Einloggen\n"
+"Das Passwort zum Anmelden\n"
 "<small>Geben Sie das Passwort ein, mit dem Sie sich auf "
-"www.openstreetmap.org einloggen.</small>"
+"www.openstreetmap.org anmelden.</small>"
 
-#: ../src/osm-traces.c:359
+#: ../src/osm-traces.c:411
 msgid "File's name:"
 msgstr "Dateiname:"
 
-#: ../src/osm-traces.c:369
+#: ../src/osm-traces.c:421
 msgid ""
 "The name of the file on OSM\n"
 "<small>This is the name of the file created on the server.This is not the "
@@ -587,30 +744,30 @@ msgstr ""
 "<small>Das ist der Name der Datei, die auf dem Server erstellt wurde. Es ist "
 "nicht der Name der lokalen Datei.</small>"
 
-#: ../src/osm-traces.c:373
+#: ../src/osm-traces.c:425
 msgid "Description:"
 msgstr "Beschreibung:"
 
-#: ../src/osm-traces.c:378
+#: ../src/osm-traces.c:430
 msgid "The description of the trace"
 msgstr "Beschreibung der Aufzeichnung"
 
-#: ../src/osm-traces.c:380
+#: ../src/osm-traces.c:432
 msgid "Tags:"
-msgstr "Tags:"
+msgstr "Schlagwörter:"
 
-#: ../src/osm-traces.c:385
+#: ../src/osm-traces.c:437
 msgid "The tags associated to the trace"
-msgstr "Die zur Aufzeichnung gehörigen Tags:"
+msgstr "Die zur Aufzeichnung gehörigen Schlagwörter:"
 
-#: ../src/osm-traces.c:418
+#: ../src/osm-traces.c:470
 #, c-format
 msgid "Uploading %s to OSM"
 msgstr "Hochladen von %s nach OSM"
 
 #: ../src/mapcache.c:61
 msgid "Mapcache memory size (MB):"
-msgstr "Mapcache-Speichergrösse (MB):"
+msgstr "Größe des Kartenpuffers (MB):"
 
 #: ../src/print.c:53
 msgid "None"
@@ -632,35 +789,35 @@ msgstr "Beides"
 msgid "Image Settings"
 msgstr "Bildeinstellungen"
 
-#: ../src/print.c:550
+#: ../src/print.c:546
 msgid "done"
 msgstr "fertig"
 
 #. Page Size
-#: ../src/print.c:579
+#: ../src/print.c:575
 msgid "_Adjust Page Size and Orientation"
-msgstr "Seitengröße und Orientierung anpassen (_A)"
+msgstr "Seitengröße und _Orientierung anpassen"
 
-#: ../src/print.c:595
+#: ../src/print.c:591
 msgid "C_enter:"
-msgstr "Zentrieren: (_e)"
+msgstr "_Zentrieren:"
 
 #. ignore page margins
-#: ../src/print.c:613
+#: ../src/print.c:609
 msgid "Ignore Page _Margins"
-msgstr "Seiten-Ränder ignorieren (_M)"
+msgstr "Seiten_ränder ignorieren"
 
-#: ../src/print.c:632
+#: ../src/print.c:628
 msgid "Image S_ize:"
-msgstr "Bildgröße: (_i)"
+msgstr "_Bildgröße:"
 
 #: ../src/util.c:79
 msgid "Could not launch web browser."
-msgstr "Kann Web-Browser nicht starten"
+msgstr "Kann Web-Browser nicht starten."
 
 #: ../src/util.c:90
 msgid "Could not create new email."
-msgstr "Kann E-Mail nicht erstellen"
+msgstr "Kann E-Mail nicht erstellen."
 
 #: ../src/vikcoordlayer.c:46
 msgid "Color:"
@@ -679,56 +836,62 @@ msgid "Max number of points:"
 msgstr "Maximale Anzahl von Punkten:"
 
 #: ../src/datasource_bfilter.c:60
-msgid "Simplify All Tracks"
-msgstr "Alle Spuren vereinfachen"
+msgid "Simplify All Tracks..."
+msgstr "Alle GPS-Spuren vereinfachen..."
 
 #: ../src/datasource_bfilter.c:61
 msgid "Simplified Tracks"
 msgstr "Vereinfachte Spuren"
 
-#: ../src/datasource_bfilter.c:95 ../src/datasource_bfilter.c:96
+#: ../src/datasource_bfilter.c:96 ../src/datasource_bfilter.c:97
 msgid "Remove Duplicate Waypoints"
 msgstr "Doppelte Wegpunkte entfernen"
 
-#: ../src/datasource_bfilter.c:127
+#: ../src/datasource_bfilter.c:129
 msgid "Waypoints Inside This"
-msgstr "Innere Wegpunkte in"
+msgstr "Wegpunkte innerhalb von"
 
-#: ../src/datasource_bfilter.c:128
+#: ../src/datasource_bfilter.c:130
 msgid "Polygonized Layer"
 msgstr "Polygon-Ebene"
 
-#: ../src/datasource_bfilter.c:162
+#: ../src/datasource_bfilter.c:165
 msgid "Waypoints Outside This"
-msgstr "Der Wegpunkt liegt ausserhalb von"
+msgstr "Wegpunkte liegt außerhalb von"
 
-#: ../src/datasource_bfilter.c:163
+#: ../src/datasource_bfilter.c:166
 msgid "Polygonzied Layer"
 msgstr "Ebene in Polygon"
 
-#: ../src/main.c:121
+#: ../src/main.c:133
 msgid "Enable debug output"
 msgstr "Fehlerausgabe aktivieren"
 
-#: ../src/main.c:122
+#: ../src/main.c:134
 msgid "Enable verbose output"
 msgstr "Mit Verlaufsprotokoll"
 
-#: ../src/main.c:123
+#: ../src/main.c:135
 msgid "Show version"
 msgstr "Version anzeigen"
 
-#: ../src/osm.c:107
+#: ../src/osm.c:109
 msgid "OSM (view)"
-msgstr "OSM (View)"
+msgstr "OSM (Ansicht)"
 
-#: ../src/osm.c:111
+#: ../src/osm.c:113
 msgid "OSM (edit)"
-msgstr "OSM (Edit)"
+msgstr "OSM (Bearbeiten)"
 
-#: ../src/osm.c:115
+#: ../src/osm.c:117
 msgid "OSM (render)"
-msgstr "OSM (Render)"
+msgstr "OSM (Darstellen)"
+
+#. Example: http://127.0.0.1:8111/load_and_zoom?left=8.19&right=8.20&top=48.605&bottom=48.590&select=node413602999
+#. JOSM or merkaartor must already be running with remote interface enabled
+#: ../src/osm.c:124
+msgid "Local port 8111 (eg JOSM)"
+msgstr "Lokaler Port 8111 (z.B. JOSM)"
 
 #: ../src/preferences.c:287
 msgid "Preferences"
@@ -738,84 +901,78 @@ msgstr "Einstellungen"
 msgid "Take care that this password will be stored clearly in a plain file."
 msgstr "Achtung: Das Passwort wird in Klartext in einer Datei abgelegt."
 
-#: ../src/vikdemlayer.c:102
+#: ../src/vikdemlayer.c:101
 msgid "Absolute height"
 msgstr "Absolute Höhe"
 
-#: ../src/vikdemlayer.c:103
+#: ../src/vikdemlayer.c:102
 msgid "Height gradient"
 msgstr "Höhen-Gradient"
 
-#: ../src/vikdemlayer.c:120
+#: ../src/vikdemlayer.c:118
 msgid "DEM Files:"
 msgstr "DEM-Dateien:"
 
-#: ../src/vikdemlayer.c:121
+#: ../src/vikdemlayer.c:119
 msgid "Download Source:"
 msgstr "Quelle zum Herunterladen:"
 
-#: ../src/vikdemlayer.c:122
+#: ../src/vikdemlayer.c:120
 msgid "Min Elev Color:"
-msgstr "min. Höhe Farbe:"
+msgstr "Min. Höhe Farbe:"
 
-#: ../src/vikdemlayer.c:123
+#: ../src/vikdemlayer.c:121
 msgid "Type:"
 msgstr "Typ:"
 
-#: ../src/vikdemlayer.c:124
+#: ../src/vikdemlayer.c:122
 msgid "Min Elev:"
 msgstr "Min. Höhe:"
 
-#: ../src/vikdemlayer.c:125
+#: ../src/vikdemlayer.c:123
 msgid "Max Elev:"
 msgstr "Max. Höhe:"
 
-#: ../src/vikdemlayer.c:136
+#: ../src/vikdemlayer.c:134
 msgid "DEM Download/Import"
 msgstr "DEM-Download/Import"
 
-#: ../src/vikdemlayer.c:275
+#: ../src/vikdemlayer.c:279
 #, c-format
 msgid "Number of files: %d"
 msgstr "Anzahl der Dateien: %d"
 
-#: ../src/vikdemlayer.c:376
+#: ../src/vikdemlayer.c:380
 msgid "DEM Loading"
 msgstr "Lade DEM"
 
-#: ../src/vikdemlayer.c:880
+#: ../src/vikdemlayer.c:884
 #, c-format
 msgid "No SRTM data available for %f, %f"
 msgstr "Keine SRTM-Daten für %f, %f verfügbar"
 
-#: ../src/vikdemlayer.c:1118
-msgid "No download source selected. Edit layer properties."
-msgstr ""
-"Es ist keine Quelle zum Herunterladen ausgewählt. Bitte bearbeiten Sie die "
-"Eigenschaften der Ebene."
-
-#: ../src/vikdemlayer.c:1141
+#: ../src/vikdemlayer.c:1144
 #, c-format
 msgid "Downloading DEM %s"
 msgstr "DEM %s herunterladen"
 
 #: ../src/vikfileentry.c:68
 msgid "Browse..."
-msgstr "Durchsuchen …"
+msgstr "_Durchsuchen..."
 
 #: ../src/vikfileentry.c:96
 msgid "Choose file"
 msgstr "Datei auswählen"
 
-#: ../src/vikfilelist.c:47
+#: ../src/vikfilelist.c:48
 msgid "Choose file(s)"
 msgstr "Datei(en) auswählen"
 
-#: ../src/vikfilelist.c:126
+#: ../src/vikfilelist.c:172
 msgid "Add..."
 msgstr "Hinzufügen ..."
 
-#: ../src/vikfilelist.c:127
+#: ../src/vikfilelist.c:173
 msgid "Delete"
 msgstr "Löschen"
 
@@ -827,95 +984,97 @@ msgstr "Georef-Karte verschieben"
 msgid "Georef Zoom Tool"
 msgstr "Georef-Vergrösserungswerkzeug"
 
-#: ../src/vikgeoreflayer.c:320 ../src/vikmapslayer.c:635
+#: ../src/vikgeoreflayer.c:326 ../src/vikmapslayer.c:645
 #, c-format
 msgid "Couldn't open image file: %s"
-msgstr "Konnte Bild nicht öffnen: %s"
+msgstr "Konnte Bilddatei nicht öffnen: %s"
 
-#: ../src/vikgeoreflayer.c:350
+#: ../src/vikgeoreflayer.c:356
 msgid "Unexpected end of file reading World file."
-msgstr "Unerwartetes Ende beim Einlesen der World-Datei."
+msgstr "Unerwartetes Ende beim Einlesen der Welt-Datei."
 
-#: ../src/vikgeoreflayer.c:366 ../src/vikgeoreflayer.c:411
+#: ../src/vikgeoreflayer.c:372 ../src/vikgeoreflayer.c:417
 msgid "Choose World file"
-msgstr "World-Datei auswählen"
+msgstr "Welt-Datei auswählen"
 
-#: ../src/vikgeoreflayer.c:379
+#: ../src/vikgeoreflayer.c:385
 msgid "The World file you requested could not be opened for reading."
-msgstr "Ihre gewünschte World-Datei kann zum Einlesen nicht geöffnet werden."
+msgstr ""
+"Ihre gewünschte Welt-Datei koonte zum Einlesen nicht geöffnet werden."
 
-#: ../src/vikgeoreflayer.c:424
+#: ../src/vikgeoreflayer.c:430
 msgid "The file you requested could not be opened for writing."
-msgstr "Die angeforderte Datei kann nicht zum Schreiben geöffnet werden."
+msgstr "Die angeforderte Datei konnte nicht zum Schreiben geöffnet werden."
 
-#: ../src/vikgeoreflayer.c:441 ../src/viklayer.c:478
+#: ../src/vikgeoreflayer.c:447 ../src/viklayer.c:507
 msgid "Layer Properties"
 msgstr "Ebenen-Eigenschaften"
 
-#: ../src/vikgeoreflayer.c:463
+#: ../src/vikgeoreflayer.c:469
 msgid "World File Parameters:"
-msgstr "World-Datei-Parameter:"
+msgstr "Welt-Datei-Parameter:"
 
-#: ../src/vikgeoreflayer.c:464
+#: ../src/vikgeoreflayer.c:470
 msgid "Load From File..."
 msgstr "Aus Datei laden ..."
 
-#: ../src/vikgeoreflayer.c:469
+#: ../src/vikgeoreflayer.c:475
 msgid "Corner pixel easting:"
 msgstr "Pixel östliche Ecke"
 
-#: ../src/vikgeoreflayer.c:471
+#: ../src/vikgeoreflayer.c:477
 msgid "the UTM \"easting\" value of the upper-right corner pixel of the map"
 msgstr "Der Östliche UTM-Wert des Pixel an der oberen rechten Ecke der Karte"
 
-#: ../src/vikgeoreflayer.c:473
+#: ../src/vikgeoreflayer.c:479
 msgid "Corner pixel northing:"
 msgstr "Pixel. Nördliche Ecke"
 
-#: ../src/vikgeoreflayer.c:475
+#: ../src/vikgeoreflayer.c:481
 msgid "the UTM \"northing\" value of the upper-right corner pixel of the map"
 msgstr ""
 "Der Nördliche UTM-Wert des Pixel an der oberen rechten Ecke der Karte"
 
-#: ../src/vikgeoreflayer.c:477
+#: ../src/vikgeoreflayer.c:483
 msgid "X (easting) scale (mpp): "
 msgstr "X (Ostwert) Maßstab (mpp): "
 
-#: ../src/vikgeoreflayer.c:478
+#: ../src/vikgeoreflayer.c:484
 msgid "Y (northing) scale (mpp): "
 msgstr "Y (Nordwert) Maßstab (mpp): "
 
-#: ../src/vikgeoreflayer.c:481
+#: ../src/vikgeoreflayer.c:487
 msgid "the scale of the map in the X direction (meters per pixel)"
 msgstr "Maßstab in X-Richtung (Meter pro Pixel)"
 
-#: ../src/vikgeoreflayer.c:483
+#: ../src/vikgeoreflayer.c:489
 msgid "the scale of the map in the Y direction (meters per pixel)"
 msgstr "Maßstab in Y-Richtung (Meter pro Pixel)"
 
-#: ../src/vikgeoreflayer.c:485
+#: ../src/vikgeoreflayer.c:491
 msgid "Map Image:"
 msgstr "Karten-Bild:"
 
-#: ../src/vikgeoreflayer.c:592
+#. Now with icons
+#: ../src/vikgeoreflayer.c:599
 msgid "_Zoom to Fit Map"
-msgstr "_Zoom (zum einpassen der Karte)"
+msgstr "_Zoom (zum Einpassen der Karte)"
 
-#: ../src/vikgeoreflayer.c:597
+#: ../src/vikgeoreflayer.c:605
 msgid "_Goto Map Center"
-msgstr "_Goto (zum Kartenmittelpunkt)"
+msgstr "_Gehe zum Kartenmittelpunkt"
 
-#: ../src/vikgeoreflayer.c:602
+#: ../src/vikgeoreflayer.c:611
 msgid "_Export to World File"
-msgstr "_Export als World-Datei"
+msgstr "_Export als Welt-Datei"
 
 #: ../src/vikgoto.c:77
 msgid "No goto tool available."
-msgstr "Keine GoTo-Tool verfügbar"
+msgstr "Kein \"Gehe zu\"-Werkzeug verfügbar"
 
 #: ../src/vikgoto.c:90 ../src/vikgoto.c:109
 msgid "goto"
-msgstr "GoTo"
+msgstr "Gehe zu"
 
 #: ../src/vikgoto.c:92
 msgid "I don't know that place. Do you want another goto?"
@@ -929,236 +1088,276 @@ msgstr "Suchanbieter:"
 msgid "Enter address or place name:"
 msgstr "Adresse oder Namen des Ortes eingeben:"
 
+#: ../src/vikgpslayer.c:154
+msgid "Download Tracks:"
+msgstr "GPS-Spuren herunterladen:"
+
+#: ../src/vikgpslayer.c:155
+msgid "Upload Tracks:"
+msgstr "GPS-Spuren zum Hochladen:"
+
 #: ../src/vikgpslayer.c:156
+msgid "Download Waypoints:"
+msgstr "Wegpunkte zum Herunterladen:"
+
+#: ../src/vikgpslayer.c:157
+msgid "Upload Waypoints:"
+msgstr "Wegpunkte zum Hochladen:"
+
+#: ../src/vikgpslayer.c:159
 msgid "Recording tracks"
 msgstr "Spur aufzeichen"
 
-#: ../src/vikgpslayer.c:157
+#: ../src/vikgpslayer.c:160
 msgid "Jump to current position on start"
 msgstr "Beim Start zu dieser Position springen"
 
-#: ../src/vikgpslayer.c:158
+#: ../src/vikgpslayer.c:161
 msgid "Moving Map Method:"
 msgstr "Kartenverschiebungsmethode:"
 
-#: ../src/vikgpslayer.c:159
+#: ../src/vikgpslayer.c:162
 msgid "Gpsd Host:"
 msgstr "Gpsd-Rechner:"
 
-#: ../src/vikgpslayer.c:160
+#: ../src/vikgpslayer.c:163
 msgid "Gpsd Port:"
 msgstr "Gpsd-Port:"
 
-#: ../src/vikgpslayer.c:161
+#: ../src/vikgpslayer.c:164
 msgid "Gpsd Retry Interval (seconds):"
 msgstr "Gpsd-Empfangs-Interval (Sekunden):"
 
-#: ../src/vikgpslayer.c:228 ../src/vikgpslayer.c:1078
+#: ../src/vikgpslayer.c:239 ../src/vikgpslayer.c:1126
 msgid "GPS Download"
 msgstr "Von GPS-Gerät herunterladen"
 
-#: ../src/vikgpslayer.c:228 ../src/vikgpslayer.c:1078
+#: ../src/vikgpslayer.c:239 ../src/vikgpslayer.c:1126
 msgid "GPS Upload"
 msgstr "Zum GPS-Gerät senden"
 
-#: ../src/vikgpslayer.c:230
+#: ../src/vikgpslayer.c:241
 msgid "GPS Realtime Tracking"
 msgstr "GPS-Echtzeitverfolgung"
 
-#: ../src/vikgpslayer.c:398
+#: ../src/vikgpslayer.c:413
 msgid "Unknown GPS Protocol"
 msgstr "Unbekanntes GPS-Protokoll"
 
-#: ../src/vikgpslayer.c:417
+#: ../src/vikgpslayer.c:432
 msgid "Unknown serial port device"
 msgstr "Unbekanntes serielles Schnittstellengerät"
 
-#: ../src/vikgpslayer.c:483
+#: ../src/vikgpslayer.c:522
 #, c-format
 msgid "%s: unknown parameter"
 msgstr "%s: unbekannter Parameter"
 
-#: ../src/vikgpslayer.c:597
+#. Now with icons
+#: ../src/vikgpslayer.c:641
 msgid "_Upload to GPS"
-msgstr "_Upload (Hochladen auf GPS)"
+msgstr "Auf GPS-Gerät _hochladen"
 
-#: ../src/vikgpslayer.c:602
+#: ../src/vikgpslayer.c:647
 msgid "Download from _GPS"
-msgstr "Herunterladen vom _GPS"
+msgstr "Vom _GPS-Gerät herunterladen"
 
-#: ../src/vikgpslayer.c:619
+#: ../src/vikgpslayer.c:668
 msgid "Empty _Realtime"
-msgstr "Empty _Realtime (Löschen Echtzeitaufzeichnnung)"
+msgstr "Echtzeitaufzeichnnung _löschen"
 
-#: ../src/vikgpslayer.c:625
+#: ../src/vikgpslayer.c:675
 msgid "E_mpty Upload"
-msgstr "E_mpty  (Lösche Hochladen)"
+msgstr "L_ösche Hochgeladenes"
 
-#: ../src/vikgpslayer.c:630
+#: ../src/vikgpslayer.c:681
 msgid "_Empty Download"
-msgstr "_Empty (Lösche  Herunterladen)"
+msgstr "_Lösche Heruntergeladenes"
 
-#: ../src/vikgpslayer.c:635
+#: ../src/vikgpslayer.c:687
 msgid "Empty _All"
-msgstr "Empty _All (Lösche alles)"
+msgstr "Lösche _alles"
 
 #. 
 #. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
 #. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
 #. I don't think there's any side effects and certainly better than the program just aborting
 #. 
-#: ../src/vikgpslayer.c:651
+#: ../src/vikgpslayer.c:704
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
-msgstr "unerwartete Anzahl der \"disconnected handlers\": %d"
+msgstr "Unerwartete Anzahl an \"disconnected handlers\": %d"
 
-#: ../src/vikgpslayer.c:783
+#: ../src/vikgpslayer.c:833
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
 msgstr[0] "%d Wegpunkt hochladen..."
-msgstr[1] "%d Wegpunkte heochladen..."
+msgstr[1] "%d Wegpunkte hochladen..."
 
-#: ../src/vikgpslayer.c:785
+#: ../src/vikgpslayer.c:835
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
 msgstr[0] "%d Spurpunkt hochladen..."
 msgstr[1] "%d Spurpunkte hochladen..."
 
-#: ../src/vikgpslayer.c:809
+#: ../src/vikgpslayer.c:859
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
-msgstr[0] "%d von %d Wegpunkt heruntergeladen"
-msgstr[1] "%d von %d Wegpunkten heruntergeladen"
+msgstr[0] "%d von %d Wegpunkt heruntergeladen..."
+msgstr[1] "%d von %d Wegpunkten heruntergeladen..."
 
-#: ../src/vikgpslayer.c:811
+#: ../src/vikgpslayer.c:861
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
-msgstr[0] "%d von %d Spurpunkt heruntergeladen"
-msgstr[1] "%d von %d Spurpunkten heruntergeladen"
+msgstr[0] "%d von %d Spurpunkt heruntergeladen..."
+msgstr[1] "%d von %d Spurpunkten heruntergeladen..."
 
-#: ../src/vikgpslayer.c:815
+#: ../src/vikgpslayer.c:865
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
 msgstr[0] "%d von %d Wegpunkt heruntergeladen ..."
 msgstr[1] "%d von %d Wegpunkte heruntergeladen ..."
 
-#: ../src/vikgpslayer.c:817
+#: ../src/vikgpslayer.c:867
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
 msgstr[0] "%d von %d Spurpunkt heruntergeladen ..."
 msgstr[1] "%d von %d Spurpunkten heruntergeladen ..."
 
-#: ../src/vikgpslayer.c:824
+#: ../src/vikgpslayer.c:874
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
 msgstr[0] "%d Wegpunkt heruntergeladen"
 msgstr[1] "%d Wegpunkte heruntergeladen"
 
-#: ../src/vikgpslayer.c:826
+#: ../src/vikgpslayer.c:876
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
 msgstr[0] "%d Spurpunkt heruntergeladen"
 msgstr[1] "%d Spurpunkte heruntergeladen"
 
-#: ../src/vikgpslayer.c:830
+#: ../src/vikgpslayer.c:880
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
 msgstr[0] "%d Wegpunkt heruntergeladen"
 msgstr[1] "%d Wegpunkte heruntergeladen"
 
-#: ../src/vikgpslayer.c:832
+#: ../src/vikgpslayer.c:882
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
 msgstr[0] "%d Spurpunkt heruntergeladen"
 msgstr[1] "%d Spurpunkte heruntergeladen"
 
-#: ../src/vikgpslayer.c:1029
+#: ../src/vikgpslayer.c:1078
 msgid "Error: couldn't find gpsbabel."
 msgstr "Fehler: gpsbabel nicht gefunden."
 
-#: ../src/viklayerspanel.c:57
+#: ../src/vikgpslayer.c:1217
+msgid "Are you sure you want to delete GPS Upload data?"
+msgstr ""
+"Sind sie sicher, dass sie die GPS-Daten zum Hochladen löschen möchten?"
+
+#: ../src/vikgpslayer.c:1229
+msgid "Are you sure you want to delete GPS Download data?"
+msgstr ""
+"Sind sie sicher, dass sie die GPS-Daten zum Herunterladen löschen möchten?"
+
+#: ../src/vikgpslayer.c:1242
+msgid "Are you sure you want to delete GPS Realtime data?"
+msgstr "Sind sie sicher, dass sie die GPS-Echtzeitdaten löschen möchten?"
+
+#: ../src/vikgpslayer.c:1255
+msgid "Are you sure you want to delete All GPS data?"
+msgstr "Sind sie sicher, dass sie alle GPS-Daten löschen möchten?"
+
+#: ../src/viklayerspanel.c:58
 msgid "/C_ut"
 msgstr "/A_usschneiden"
 
-#: ../src/viklayerspanel.c:58
+#: ../src/viklayerspanel.c:59
 msgid "/_Copy"
 msgstr "/_Kopieren"
 
-#: ../src/viklayerspanel.c:59
+#: ../src/viklayerspanel.c:60
 msgid "/_Paste"
 msgstr "/_Einfügen"
 
-#: ../src/viklayerspanel.c:60
+#: ../src/viklayerspanel.c:61
 msgid "/_Delete"
 msgstr "/_Löschen"
 
-#: ../src/viklayerspanel.c:61
+#: ../src/viklayerspanel.c:62
 msgid "/New Layer"
 msgstr "/Neue Ebene"
 
-#: ../src/viklayerspanel.c:150
+#: ../src/viklayerspanel.c:152
 msgid "Top Layer"
 msgstr "Oberste Ebene"
 
-#: ../src/viklayerspanel.c:165
+#: ../src/viklayerspanel.c:168
 msgid "Add new layer"
 msgstr "Eine neue Ebene hinzufügen"
 
-#: ../src/viklayerspanel.c:172
+#: ../src/viklayerspanel.c:175
 msgid "Remove selected layer"
 msgstr "Ausgewählte Ebene entfernen"
 
-#: ../src/viklayerspanel.c:179
+#: ../src/viklayerspanel.c:182
 msgid "Move selected layer up"
 msgstr "Gewählte Ebene nach oben verschieben"
 
-#: ../src/viklayerspanel.c:186
+#: ../src/viklayerspanel.c:189
 msgid "Move selected layer down"
 msgstr "Gewählte Ebene nach unten veraschieben"
 
-#: ../src/viklayerspanel.c:193
+#: ../src/viklayerspanel.c:196
 msgid "Cut selected layer"
 msgstr "Gewählte Ebene ausschneiden"
 
-#: ../src/viklayerspanel.c:200
+#: ../src/viklayerspanel.c:203
 msgid "Copy selected layer"
 msgstr "Gewählte Ebene kopieren"
 
-#: ../src/viklayerspanel.c:207
+#: ../src/viklayerspanel.c:210
 msgid "Paste layer below selected layer"
 msgstr "Ebene unterhalb gewählter Ebene einfügen"
 
 #. TODO: FIXME: if name has a '/' in it it will get all messed up. why not have an itemfactory field with
 #. name, icon, shortcut, etc.?
 #. Note: we use a temporary label in order to share translation with other codde
-#: ../src/viklayerspanel.c:225 ../src/vikwindow.c:2412
+#: ../src/viklayerspanel.c:228 ../src/vikwindow.c:2692
 #, c-format
 msgid "New %s Layer"
-msgstr "Neue %s Ebene"
+msgstr "Neue %s Ebene..."
 
-#: ../src/viklayerspanel.c:495
+#: ../src/viklayerspanel.c:521
 msgid "Aggregate Layers have no settable properties."
 msgstr "Zusammengefügte Ebenen ohne gemeinsame Eigenschaft."
 
-#: ../src/viklayerspanel.c:545
+#: ../src/viklayerspanel.c:571
 msgid "You cannot cut the Top Layer."
-msgstr "Sie können nicht die oberste Ebene ausschneiden."
+msgstr "Sie können die oberste Ebene nicht ausschneiden."
 
-#: ../src/viklayerspanel.c:601
+#: ../src/viklayerspanel.c:616
+#, c-format
+msgid "Are you sure you want to delete %s?"
+msgstr "Sind Sie sicher, dass sie %s löschen möchten?"
+
+#: ../src/viklayerspanel.c:633
 msgid "You cannot delete the Top Layer."
-msgstr "Sie können nicht die oberste Ebene löschen."
+msgstr "Sie können die oberste Ebene nicht löschen."
 
-#: ../src/viklayerspanel.c:685
+#: ../src/viklayerspanel.c:717
 msgid "Are you sure you wish to delete all layers?"
 msgstr "Sind Sie sicher, dass Sie alle Ebenen löschen wollen?"
 
@@ -1195,68 +1394,68 @@ msgstr "Herunterladen von Karten"
 msgid "Map"
 msgstr "Karte"
 
-#: ../src/vikmapslayer.c:220
+#: ../src/vikmapslayer.c:226
 msgid "Default maplayer directory:"
 msgstr "Standardverzeichnis für Kartenebenen:"
 
-#: ../src/vikmapslayer.c:464
+#: ../src/vikmapslayer.c:474
 msgid "Unknown map type"
 msgstr "Unbekannter Kartentyp"
 
-#: ../src/vikmapslayer.c:474
+#: ../src/vikmapslayer.c:484
 msgid "Unknown Map Zoom"
 msgstr "Unbekannte Kartenvergrösserung"
 
-#: ../src/vikmapslayer.c:544
+#: ../src/vikmapslayer.c:554
 #, c-format
 msgid ""
 "New map cannot be displayed in the current drawmode.\n"
 "Select \"%s\" from View menu to view it."
 msgstr ""
-"Neue Karte kann im aktuellen Zeichenmodus nicht angezeigt werden. \n"
+"Neue Karte kann im aktuellen Zeichenmodus nicht angezeigt werden.\n"
 "Wähle \"%s\" aus dem Ansichtmenü."
 
-#: ../src/vikmapslayer.c:703
+#: ../src/vikmapslayer.c:713
 #, c-format
 msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
-msgstr "Schlechte Kacheldarstellung beim rauszoomen hinter Faktor %d"
+msgstr "Schlechte Kacheldarstellung beim Herauszoomen hinter Faktor %d"
 
-#: ../src/vikmapslayer.c:1101
+#: ../src/vikmapslayer.c:1108
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
-msgstr[0] "Neuladen von bis zu %d %s Karten."
-msgstr[1] "Neuladen von bis zu %d %s Karten."
+msgstr[0] "Neuladen von bis zu %d %s Karten..."
+msgstr[1] "Neuladen von bis zu %d %s Karten..."
 
-#: ../src/vikmapslayer.c:1103
+#: ../src/vikmapslayer.c:1110
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
-msgstr[0] "Erneutes Herunterladen der %d %s Karte ..."
-msgstr[1] "Erneutes Herunterladen der %d %s Karten ..."
+msgstr[0] "Erneutes Herunterladen der %d %s Karte..."
+msgstr[1] "Erneutes Herunterladen der %d %s Karten..."
 
-#: ../src/vikmapslayer.c:1107 ../src/vikmapslayer.c:1178
+#: ../src/vikmapslayer.c:1114 ../src/vikmapslayer.c:1185
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
-msgstr[0] "Herunterladen der %d %s Karte ..."
-msgstr[1] "Erneutes Herunterladen der %d %s Karten ..."
+msgstr[0] "Herunterladen der %d %s Karte..."
+msgstr[1] "Erneutes Herunterladen der %d %s Karten..."
 
-#: ../src/vikmapslayer.c:1241
+#: ../src/vikmapslayer.c:1248
 msgid "Redownload _Bad Map(s)"
-msgstr "Neuladen _Bad Map(s) (fehlerhafte Karte)"
+msgstr "_Fehlerhafte Karte(n) erneut laden"
 
-#: ../src/vikmapslayer.c:1245
+#: ../src/vikmapslayer.c:1252
 msgid "Redownload _New Map(s)"
-msgstr "Neuladen _New Map(s) (neue Karte)"
+msgstr "_Neue Karte(n) erneut laden"
 
-#: ../src/vikmapslayer.c:1249
+#: ../src/vikmapslayer.c:1256
 msgid "Redownload _All Map(s)"
-msgstr "Neuladen _All Map(S) (alle Katen)"
+msgstr "_Alle Karten neu laden"
 
-#: ../src/vikmapslayer.c:1329
+#: ../src/vikmapslayer.c:1336
 #, c-format
 msgid ""
 "Wrong drawmode for this map.\n"
@@ -1265,205 +1464,205 @@ msgstr ""
 "Falscher Zeichenmodus für diese Karte.\n"
 "Wähle \"%s\" aus dem Ansichtmenü und versuche es neu."
 
-#: ../src/vikmapslayer.c:1334
+#: ../src/vikmapslayer.c:1341
 msgid "Wrong zoom level for this map."
 msgstr "Falsche Vergrösserungsstufe für diese Karte."
 
 #. Now with icons
-#: ../src/vikmapslayer.c:1365
-msgid "Download _Missing Onscreen Maps"
-msgstr "Laden _Missing Onscreen Maps (Fehlende Bildschirmkarte)"
-
 #: ../src/vikmapslayer.c:1372
-msgid "Download _New Onscreen Maps"
-msgstr "Laden _New Onscreen Maps (neue Bildschirmkarte)"
+msgid "Download _Missing Onscreen Maps"
+msgstr "_Fehlende Bildschirmkarte laden"
 
 #: ../src/vikmapslayer.c:1379
-msgid "Reload _All Onscreen Maps"
-msgstr "Neuladen _All Onscreen Maps (alle Bildschirmkarten)"
+msgid "Download _New Onscreen Maps"
+msgstr "_Neue Bildschirmkarte laden"
 
-#: ../src/viktreeview.c:268
+#: ../src/vikmapslayer.c:1386
+msgid "Reload _All Onscreen Maps"
+msgstr "Alle _Bildschirmkarten erneut laden"
+
+#: ../src/viktreeview.c:281
 msgid "Layer Name"
 msgstr "Name der Ebene"
 
-#: ../src/viktreeview.c:694
+#: ../src/viktreeview.c:754
 #, c-format
 msgid "delete data from %s\n"
 msgstr "Daten von %s löschen\n"
 
-#: ../src/viktrwlayer.c:324
+#: ../src/viktrwlayer.c:332
 msgid "Create Waypoint"
-msgstr "Wegpunkt erstellen"
+msgstr "Weg_punkt erstellen"
 
-#: ../src/viktrwlayer.c:327
+#: ../src/viktrwlayer.c:335
 msgid "Create Track"
-msgstr "Spur erzeugen"
-
-#: ../src/viktrwlayer.c:331
-msgid "Begin Track"
-msgstr "Spur-Beginn"
-
-#: ../src/viktrwlayer.c:334
-msgid "Edit Waypoint"
-msgstr "Wegpunkt bearbeiten"
+msgstr "Spur er_zeugen"
 
 #: ../src/viktrwlayer.c:339
-msgid "Edit Trackpoint"
-msgstr "Spurpunkt bearbeiten"
+msgid "Begin Track"
+msgstr "Spur begi_nnen"
 
-#: ../src/viktrwlayer.c:344
-msgid "Show Picture"
-msgstr "Bild anzeigen"
+#: ../src/viktrwlayer.c:342
+msgid "Edit Waypoint"
+msgstr "Wegpunkt _bearbeiten"
 
 #: ../src/viktrwlayer.c:347
-msgid "Magic Scissors"
-msgstr "Magische Schere"
+msgid "Edit Trackpoint"
+msgstr "Spurpun_kt bearbeiten"
+
+#: ../src/viktrwlayer.c:352
+msgid "Show Picture"
+msgstr "Bild _anzeigen"
+
+#: ../src/viktrwlayer.c:355
+msgid "Route Finder"
+msgstr "Routensuche"
 
 #. ***** PARAMETERS *****
-#: ../src/viktrwlayer.c:354 ../src/viktrwlayer.c:1506
-#: ../src/viktrwlayer.c:1508
+#: ../src/viktrwlayer.c:362 ../src/viktrwlayer.c:1644
+#: ../src/viktrwlayer.c:1646
 msgid "Waypoints"
 msgstr "Wegpunkte"
 
-#: ../src/viktrwlayer.c:354 ../src/viktrwlayer.c:1496
-#: ../src/viktrwlayer.c:1498
+#: ../src/viktrwlayer.c:362 ../src/viktrwlayer.c:1634
+#: ../src/viktrwlayer.c:1636
 msgid "Tracks"
 msgstr "Spuren"
 
-#: ../src/viktrwlayer.c:354
+#: ../src/viktrwlayer.c:362
 msgid "Waypoint Images"
-msgstr "Wegpunkt-Bild"
+msgstr "Wegpunkt-Bilder"
 
-#: ../src/viktrwlayer.c:357
+#: ../src/viktrwlayer.c:365
 msgid "Draw by Track"
 msgstr "Von Spur gezeichnet"
 
-#: ../src/viktrwlayer.c:357
+#: ../src/viktrwlayer.c:365
 msgid "Draw by Velocity"
 msgstr "Von Geschwindigkeit gezeichnet"
 
-#: ../src/viktrwlayer.c:357
+#: ../src/viktrwlayer.c:365
 msgid "All Tracks Black"
 msgstr "Alle Spuren in schwarz"
 
-#: ../src/viktrwlayer.c:358
+#: ../src/viktrwlayer.c:366
 msgid "Filled Square"
 msgstr "Rechteck ausgefüllt"
 
-#: ../src/viktrwlayer.c:358
+#: ../src/viktrwlayer.c:366
 msgid "Square"
 msgstr "Quadrat"
 
-#: ../src/viktrwlayer.c:358
+#: ../src/viktrwlayer.c:366
 msgid "Circle"
 msgstr "Kreis"
 
-#: ../src/viktrwlayer.c:358
+#: ../src/viktrwlayer.c:366
 msgid "X"
 msgstr "X"
 
-#: ../src/viktrwlayer.c:380
+#: ../src/viktrwlayer.c:388
 msgid "Track Drawing Mode:"
 msgstr "Spur-Zeichenmodus"
 
-#: ../src/viktrwlayer.c:381
+#: ../src/viktrwlayer.c:389
 msgid "Draw Track Lines"
 msgstr "Spurlinien zeichnen"
 
-#: ../src/viktrwlayer.c:382
+#: ../src/viktrwlayer.c:390
 msgid "Draw Trackpoints"
 msgstr "Spurpunkte zeichnen"
 
-#: ../src/viktrwlayer.c:383
+#: ../src/viktrwlayer.c:391
 msgid "Draw Elevation"
 msgstr "Steigungen zeichnen"
 
-#: ../src/viktrwlayer.c:384
+#: ../src/viktrwlayer.c:392
 msgid "Draw Elevation Height %:"
 msgstr "Steigungshöhe zeichnen %:"
 
-#: ../src/viktrwlayer.c:386
+#: ../src/viktrwlayer.c:394
 msgid "Draw Stops"
 msgstr "Stopps zeichnen"
 
-#: ../src/viktrwlayer.c:387
+#: ../src/viktrwlayer.c:395
 msgid "Min Stop Length (seconds):"
 msgstr "Minimale Stopp-Dauer (Sekunden):"
 
-#: ../src/viktrwlayer.c:389
+#: ../src/viktrwlayer.c:397
 msgid "Track Thickness:"
 msgstr "Spur-Dicke:"
 
-#: ../src/viktrwlayer.c:390
+#: ../src/viktrwlayer.c:398
 msgid "Track BG Thickness:"
 msgstr "Spur-Hintergrund-Dicke:"
 
-#: ../src/viktrwlayer.c:391
+#: ../src/viktrwlayer.c:399
 msgid "Track Background Color"
 msgstr "Spur-Hintergrundfarbe:"
 
-#: ../src/viktrwlayer.c:392
+#: ../src/viktrwlayer.c:400
 msgid "Min Track Velocity:"
 msgstr "Minimale Spur-Geschwindigkeit:"
 
-#: ../src/viktrwlayer.c:393
+#: ../src/viktrwlayer.c:401
 msgid "Max Track Velocity:"
 msgstr "Maximale Spur-Geschwindigkeit:"
 
-#: ../src/viktrwlayer.c:395
+#: ../src/viktrwlayer.c:403
 msgid "Draw Labels"
 msgstr "Beschriftungen zeichnen"
 
-#: ../src/viktrwlayer.c:396
+#: ../src/viktrwlayer.c:404
 msgid "Waypoint Color:"
 msgstr "Wegpunkt-Farbe:"
 
-#: ../src/viktrwlayer.c:397
+#: ../src/viktrwlayer.c:405
 msgid "Waypoint Text:"
 msgstr "Wegpunkt-Text:"
 
-#: ../src/viktrwlayer.c:398
+#: ../src/viktrwlayer.c:406
 msgid "Background:"
 msgstr "Hintergrund:"
 
-#: ../src/viktrwlayer.c:399
+#: ../src/viktrwlayer.c:407
 msgid "Fake BG Color Translucency:"
 msgstr "Falsche Hintergrund-Farbdurchsichtigkeit:"
 
-#: ../src/viktrwlayer.c:400
+#: ../src/viktrwlayer.c:408
 msgid "Waypoint marker:"
 msgstr "Wegpunkt-Markierung"
 
-#: ../src/viktrwlayer.c:401
+#: ../src/viktrwlayer.c:409
 msgid "Waypoint size:"
 msgstr "Wegpunkt-Grösse:"
 
-#: ../src/viktrwlayer.c:402
+#: ../src/viktrwlayer.c:410
 msgid "Draw Waypoint Symbols:"
 msgstr "Wegpunkt-Symbol zeichnen:"
 
-#: ../src/viktrwlayer.c:404
+#: ../src/viktrwlayer.c:412
 msgid "Draw Waypoint Images"
 msgstr "Wegpunkt-Bild zeichnen:"
 
-#: ../src/viktrwlayer.c:405
+#: ../src/viktrwlayer.c:413
 msgid "Image Size (pixels):"
 msgstr "Bild-Grösse (Pixel):"
 
-#: ../src/viktrwlayer.c:406
+#: ../src/viktrwlayer.c:414
 msgid "Image Alpha:"
-msgstr "Bild Alpha:"
+msgstr "Bild Alpha-Wert:"
 
-#: ../src/viktrwlayer.c:407
+#: ../src/viktrwlayer.c:415
 msgid "Image Memory Cache Size:"
-msgstr "Bildspeicher Cachegröße:"
+msgstr "Bildspeicher Puffergröße:"
 
-#: ../src/viktrwlayer.c:1654
+#: ../src/viktrwlayer.c:1800
 #, c-format
 msgid " in %d:%02d hrs:mins"
-msgstr " in %d:%02d hh:min"
+msgstr " in %d:%02d hh:mm"
 
-#: ../src/viktrwlayer.c:1658
+#: ../src/viktrwlayer.c:1804
 #, c-format
 msgid ""
 "\n"
@@ -1472,375 +1671,678 @@ msgstr ""
 "\n"
 "%s Gesamtlänge %.1f %s%s"
 
-#: ../src/viktrwlayer.c:1664
+#: ../src/viktrwlayer.c:1810
 #, c-format
 msgid "Tracks: %d - Waypoints: %d%s"
-msgstr "Tracks: %d - Waypoints: %d%s"
+msgstr "GPS-Spuren: %d - Wegpunkte: %d%s"
 
-#: ../src/viktrwlayer.c:1699
+#: ../src/viktrwlayer.c:1845
 #, c-format
 msgid "- %d:%02d hrs:mins"
-msgstr "- %d:%02d hh:min"
+msgstr "- %d:%02d hh:mm"
 
-#: ../src/viktrwlayer.c:1707
+#: ../src/viktrwlayer.c:1853
 #, c-format
 msgid "%s%.1f km %s"
 msgstr "%s%.1f km %s"
 
-#: ../src/viktrwlayer.c:1710
+#: ../src/viktrwlayer.c:1856
 #, c-format
 msgid "%s%.1f miles %s"
-msgstr "%s%.1f miles %s"
+msgstr "%s%.1f Meilen %s"
 
-#: ../src/viktrwlayer.c:1830 ../src/viktrwlayer.c:1901
+#: ../src/viktrwlayer.c:1885
+#, c-format
+msgid "Trkpt: Alt %dft"
+msgstr "Trkpt: Höhe %d ft"
+
+#. VIK_UNITS_HEIGHT_METRES:
+#: ../src/viktrwlayer.c:1889
+#, c-format
+msgid "Trkpt: Alt %dm"
+msgstr "Trkpt: Höhe %d m"
+
+#. Compact date time format
+#: ../src/viktrwlayer.c:1896
+#, c-format
+msgid " | Time %x %X"
+msgstr " | Zeit %x %X"
+
+#: ../src/viktrwlayer.c:1914
+#, c-format
+msgid " | Track: %s"
+msgstr " | GPS-Spur: %s"
+
+#. Combine parts to make overall message
+#: ../src/viktrwlayer.c:1918
+#, c-format
+msgid "%s%s | %s %s %s"
+msgstr "%s%s | %s %s %s"
+
+#: ../src/viktrwlayer.c:1933
+#, c-format
+msgid "Wpt: Alt %dft"
+msgstr "Wpt: Höhe %d ft"
+
+#. VIK_UNITS_HEIGHT_METRES:
+#: ../src/viktrwlayer.c:1937
+#, c-format
+msgid "Wpt: Alt %dm"
+msgstr "Wpt: Höhe %d m"
+
+#. Add comment if available
+#: ../src/viktrwlayer.c:1952
+#, c-format
+msgid "%s | %s %s | Comment: %s"
+msgstr "%s | %s %s | Kommentar: %s"
+
+#: ../src/viktrwlayer.c:1954
+#, c-format
+msgid "%s | %s %s"
+msgstr "%s | %s %s"
+
+#: ../src/viktrwlayer.c:2134 ../src/viktrwlayer.c:2205
 msgid "This layer has no waypoints or trackpoints."
 msgstr "Diese Ebene hat keine Wegpunkte oder Spurpunkte."
 
-#: ../src/viktrwlayer.c:1928 ../src/vikwindow.c:1678 ../src/vikwindow.c:2123
+#: ../src/viktrwlayer.c:2232 ../src/vikwindow.c:1894 ../src/vikwindow.c:2362
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Soll die bereits existierende Datei \"%s\" überschrieben werden?"
 
-#: ../src/viktrwlayer.c:1938 ../src/vikwindow.c:1699
+#: ../src/viktrwlayer.c:2242 ../src/vikwindow.c:1915
 msgid "The filename you requested could not be opened for writing."
-msgstr "Die angegebene Datei kann nicht zum Schreiben geöffnet werden."
+msgstr "Die angegebene Datei konnte nicht zum Schreiben geöffnet werden."
 
-#: ../src/viktrwlayer.c:1943 ../src/viktrwlayer.c:1948
-#: ../src/viktrwlayer.c:1953
+#: ../src/viktrwlayer.c:2247 ../src/viktrwlayer.c:2252
+#: ../src/viktrwlayer.c:2262 ../src/viktrwlayer.c:2274
 msgid "Export Layer"
 msgstr "Ebene exportieren"
 
-#: ../src/viktrwlayer.c:1967
+#: ../src/viktrwlayer.c:2291
+msgid "Could not create temporary file for export."
+msgstr "Konnte keine temporäre Datei für Export erzeugen."
+
+#: ../src/viktrwlayer.c:2300
+#, c-format
+msgid "Could not launch %s."
+msgstr "Konnte %s nicht starten."
+
+#: ../src/viktrwlayer.c:2334
 msgid "Export Track as GPX"
 msgstr "Exportiere Spur als GPX"
 
-#: ../src/viktrwlayer.c:1975
+#: ../src/viktrwlayer.c:2342
 msgid "Find"
 msgstr "Suche"
 
-#: ../src/viktrwlayer.c:1985
+#: ../src/viktrwlayer.c:2352
 msgid "Waypoint Name:"
 msgstr "Wegpunkt-Name:"
 
-#: ../src/viktrwlayer.c:2007
+#: ../src/viktrwlayer.c:2374
 msgid "Waypoint not found in this layer."
 msgstr "Wegpunkt nicht in dieser Ebene gefunden"
 
-#: ../src/viktrwlayer.c:2148
+#. Now with icons
+#: ../src/viktrwlayer.c:2645
 msgid "_View Layer"
-msgstr "_View Layer (Ansichtsebene)"
+msgstr "_Ebene anzeigen"
 
-#: ../src/viktrwlayer.c:2153
+#: ../src/viktrwlayer.c:2651
 msgid "View All Trac_ks"
-msgstr "Zeige alle Spuren (_k)"
+msgstr "_Alle Spuren anzeigen"
 
-#: ../src/viktrwlayer.c:2158
+#: ../src/viktrwlayer.c:2656
 msgid "V_iew All Waypoints"
-msgstr "Zeige alle Wegpunkte (_i)"
+msgstr "Alle _Wegpunkte anzeigen"
 
-#: ../src/viktrwlayer.c:2163
+#: ../src/viktrwlayer.c:2661
 msgid "_Goto Center of Layer"
-msgstr "Zentriere Ebene (_G)"
+msgstr "_Zentriere Ebene"
 
-#: ../src/viktrwlayer.c:2168
-msgid "Goto _Waypoint"
-msgstr "Zeige Wegpunkt (_W)"
+#: ../src/viktrwlayer.c:2667 ../src/viktrwlayer.c:4144
+msgid "Goto _Waypoint..."
+msgstr "Gehe _zum Wegpunkt..."
 
-#: ../src/viktrwlayer.c:2174
+#: ../src/viktrwlayer.c:2673
 msgid "_Export Layer"
-msgstr "Exprtiere Ebene (_E)"
+msgstr "_Exportiere Ebene"
 
-#: ../src/viktrwlayer.c:2179
-msgid "Export as GPS_Point"
-msgstr "Exportiere als GPS-Punkt (_P)"
+#: ../src/viktrwlayer.c:2679
+msgid "Export as GPS_Point..."
+msgstr "E_xportiere als Spurpunkt..."
 
-#: ../src/viktrwlayer.c:2184
-msgid "Export as GPS_Mapper"
-msgstr "Exportier als GPS-Mapper (_M)"
+#: ../src/viktrwlayer.c:2684
+msgid "Export as GPS_Mapper..."
+msgstr "Ex_portiere als GPS-Kartierer..."
 
-#: ../src/viktrwlayer.c:2189
-msgid "Export as _GPX"
-msgstr "Exportiere als GPX (_G)"
+#: ../src/viktrwlayer.c:2689
+msgid "Export as _GPX..."
+msgstr "Exportiere als _GPX..."
 
-#: ../src/viktrwlayer.c:2194 ../src/viktrwlayer.c:3297
-msgid "_New Waypoint"
-msgstr "Neuer Wegpunkt (_N)"
+#: ../src/viktrwlayer.c:2694
+msgid "Export as _KML..."
+msgstr "Exportiere als _KML..."
 
-#: ../src/viktrwlayer.c:2201
+#: ../src/viktrwlayer.c:2699
+msgid "Open with External Program_1: "
+msgstr "Mit externem Programm _1 öffnen: "
+
+#: ../src/viktrwlayer.c:2706
+msgid "Open with External Program_2: "
+msgstr "Mit externem Programm _2 öffnen: "
+
+#: ../src/viktrwlayer.c:2713 ../src/viktrwlayer.c:4129
+msgid "_New Waypoint..."
+msgstr "Neuer _Wegpunkt..."
+
+#: ../src/viktrwlayer.c:2721
 msgid "_Add Wikipedia Waypoints"
-msgstr "Neuer Wikipedia Wegpunkt (_A)"
+msgstr "Neuer Wi_kipedia Wegpunkt"
 
-#: ../src/viktrwlayer.c:2206
+#: ../src/viktrwlayer.c:2727
 msgid "Within _Layer Bounds"
-msgstr "In Ebenen-Begrenzungen (_L)"
+msgstr "_Innerhalb Ebenenbegrenzung"
 
-#: ../src/viktrwlayer.c:2211
+#: ../src/viktrwlayer.c:2733
 msgid "Within _Current View"
-msgstr "In aktuelle Ansicht (_C)"
+msgstr "Innerhalb _aktueller Ansicht"
 
-#: ../src/viktrwlayer.c:2218 ../src/viktrwlayer.c:3397
-msgid "Upload to _OSM"
-msgstr "Zu OSM Hochladen (_O)"
+#: ../src/viktrwlayer.c:2741 ../src/viktrwlayer.c:4336
+msgid "Geotag _Images..."
+msgstr "_Kartenreferenzierte Bilder..."
 
-#: ../src/viktrwlayer.c:2786
-msgid "Failed. This track does not have timestamp"
-msgstr "Fehlgeschlagen. Diese Spur hat keine Zeitstempel"
+#: ../src/viktrwlayer.c:2748
+msgid "Ac_quire"
+msgstr "_Laden"
+
+#: ../src/viktrwlayer.c:2754 ../src/vikwindow.c:2534
+msgid "From _GPS..."
+msgstr "Von _GPS-Gerät..."
+
+#: ../src/viktrwlayer.c:2759
+msgid "From G_oogle Directions..."
+msgstr "Von G_oogle-Richtungen..."
+
+#: ../src/viktrwlayer.c:2765
+msgid "From _OSM Traces..."
+msgstr "Von _OSM-Spuren..."
+
+#: ../src/viktrwlayer.c:2772
+msgid "From Geo_caching..."
+msgstr "Von Geo-_Caching..."
+
+#: ../src/viktrwlayer.c:2779 ../src/vikwindow.c:2544
+msgid "From Geotagged _Images..."
+msgstr "Von georeferenzierten _Bildern..."
+
+#: ../src/viktrwlayer.c:2786 ../src/viktrwlayer.c:4302
+msgid "Upload to _OSM..."
+msgstr "Nach OSM _hochladen..."
+
+#: ../src/viktrwlayer.c:2794
+msgid "De_lete"
+msgstr "_Löschen"
 
 #: ../src/viktrwlayer.c:2800
-msgid "Failed. No other track in this layer has timestamp"
-msgstr "Fehlgeschlagen. Keine andere Spur in dieser Ebene hat Zeitstempel"
+msgid "Delete All _Tracks"
+msgstr "_Alle GPS-Spuren löschen"
 
-#: ../src/viktrwlayer.c:2811
+#: ../src/viktrwlayer.c:2806
+msgid "Delete Tracks _From Selection..."
+msgstr "Ge_wählte GPS-Spuren löschen..."
+
+#: ../src/viktrwlayer.c:2812
+msgid "Delete All _Waypoints"
+msgstr "Alle Weg_punkte löschen"
+
+#: ../src/viktrwlayer.c:2818
+msgid "Delete Waypoints From _Selection..."
+msgstr "Gewählte Wegpun_kte löschen..."
+
+#: ../src/viktrwlayer.c:3092
+#, c-format
+msgid "Are you sure you want to delete all tracks in %s?"
+msgstr "Sind sich sicher, dass sie alle GPS-Spuren in %s löschen wollen?"
+
+#: ../src/viktrwlayer.c:3102
+#, c-format
+msgid "Are you sure you want to delete all waypoints in %s?"
+msgstr "Sind sich sicher, dass sie alle Wegpunkte in %s löschen wollen?"
+
+#: ../src/viktrwlayer.c:3117
+#, c-format
+msgid "Are you sure you want to delete the waypoint \"%s\""
+msgstr "Sind sich sicher, dass sie den Wegpunkt \"%s\" löschen wollen?"
+
+#: ../src/viktrwlayer.c:3127
+#, c-format
+msgid "Are you sure you want to delete the track \"%s\""
+msgstr "Sind sich sicher, dass sie die GPS-Spur \"%s\" löschen wollen?"
+
+#: ../src/viktrwlayer.c:3463
+msgid "Failed. No other tracks with timestamps in this layer found"
+msgstr ""
+"Fehler: Keine weiteren GPS-Spuren mit Zeitstempel in dieser Ebene gefunden"
+
+#: ../src/viktrwlayer.c:3465
+msgid "Failed. No other tracks without timestamps in this layer found"
+msgstr ""
+"Fehler: Keine weiteren GPS-Spuren ohne Zeitstempel in dieser Ebene gefunden"
+
+#: ../src/viktrwlayer.c:3474
 msgid "Merge with..."
-msgstr "Verbinde mit..."
+msgstr "Vereinen mit..."
 
-#: ../src/viktrwlayer.c:2811
+#: ../src/viktrwlayer.c:3474
 msgid "Select track to merge with"
 msgstr "Spur auswählen zum Zusammenfügen mit"
 
-#: ../src/viktrwlayer.c:2848
-msgid "Merge Threshold..."
-msgstr "Mische Grenzwerte..."
+#: ../src/viktrwlayer.c:3514
+msgid "Failed. This track does not have timestamp"
+msgstr "Fehlgeschlagen. Diese Spur hat keine Zeitstempel"
 
-#: ../src/viktrwlayer.c:2849
+#: ../src/viktrwlayer.c:3527
+msgid "Failed. No other track in this layer has timestamp"
+msgstr "Fehlgeschlagen. Keine andere Spur in dieser Ebene hat Zeitstempel"
+
+#: ../src/viktrwlayer.c:3534
+msgid "Merge Threshold..."
+msgstr "Vereine bei Grenzwert..."
+
+#: ../src/viktrwlayer.c:3535
 msgid "Merge when time between tracks less than:"
 msgstr "Zusammenfassen wenn Dauer zwischen Spuren kleiner als ist:"
 
-#: ../src/viktrwlayer.c:2941
+#: ../src/viktrwlayer.c:3627
 msgid "Split Threshold..."
-msgstr "Grenze trennen ..."
+msgstr "Bei Schwellwert trennen..."
 
-#: ../src/viktrwlayer.c:2942
+#: ../src/viktrwlayer.c:3628
 msgid "Split when time between trackpoints exceeds:"
-msgstr "Trennen wenn Dauer zwischen Spurpunkten grösser als:"
+msgstr "Trennen, wenn Dauer zwischen Spurpunkten grösser als:"
 
-#: ../src/viktrwlayer.c:3009
+#: ../src/viktrwlayer.c:3698
 msgid "Split Every Nth Point"
-msgstr "trenne jeden n'ten Punkt"
+msgstr "Trenne jeden n'ten Punkt"
 
-#: ../src/viktrwlayer.c:3010
+#: ../src/viktrwlayer.c:3699
 msgid "Split on every Nth point:"
-msgstr "trenne auf dem n'ten Punkt"
+msgstr "Trenne auf dem n'ten Punkt"
 
-#: ../src/viktrwlayer.c:3100
+#: ../src/viktrwlayer.c:3801
+msgid "No tracks found"
+msgstr "Keine GPS-Spuren gefunden"
+
+#: ../src/viktrwlayer.c:3809 ../src/viktrwlayer.c:3846
+msgid "Delete Selection"
+msgstr "Auswahl löschen"
+
+#: ../src/viktrwlayer.c:3810
+msgid "Select tracks to delete"
+msgstr "GPS-Spuren zum Löschen auswählen"
+
+#: ../src/viktrwlayer.c:3836
+msgid "No waypoints found"
+msgstr "Keine Wegpunkte gefunden"
+
+#: ../src/viktrwlayer.c:3847
+msgid "Select waypoints to delete"
+msgstr "Wegpunkte zum Löschen auswählen"
+
+#: ../src/viktrwlayer.c:3890
 msgid "Waypoint Already Exists"
 msgstr "Wegpunkt existiert bereits"
 
-#: ../src/viktrwlayer.c:3141
+#: ../src/viktrwlayer.c:3931
 msgid "Track Already Exists"
 msgstr "Spur bereits vorhanden"
 
-#: ../src/viktrwlayer.c:3271 ../src/viktrwlayer.c:3311
+#: ../src/viktrwlayer.c:4061 ../src/viktrwlayer.c:4194
 msgid "_Goto"
-msgstr "gehe zu (_G)"
+msgstr "_Gehe zu"
 
-#: ../src/viktrwlayer.c:3285
+#: ../src/viktrwlayer.c:4077
 msgid "_Visit Geocache Webpage"
-msgstr "Zur Geocache Webpage (_V)"
+msgstr "Zur Geocache _Internetseite"
 
-#: ../src/viktrwlayer.c:3316
+#: ../src/viktrwlayer.c:4097
+msgid "_Show Picture..."
+msgstr "Bild _anzeigen..."
+
+#: ../src/viktrwlayer.c:4105
+msgid "Update Geotag on _Image"
+msgstr "Geotag über _Bild aktualisieren"
+
+#: ../src/viktrwlayer.c:4111
+msgid "_Update"
+msgstr "_Aktualisieren"
+
+#: ../src/viktrwlayer.c:4116
+msgid "Update and _Keep File Timestamp"
+msgstr "Aktualisieren und _Zeitstempel der Datei erhalten"
+
+#: ../src/viktrwlayer.c:4138
+msgid "_View All Waypoints"
+msgstr "Alle Weg_punkte anzeigen"
+
+#: ../src/viktrwlayer.c:4150
+msgid "Delete _All Waypoints"
+msgstr "Alle Wegpunkte l_öschen"
+
+#: ../src/viktrwlayer.c:4156
+msgid "_Delete Waypoints From Selection..."
+msgstr "Gewählte Wegpun_kte löschen"
+
+#: ../src/viktrwlayer.c:4167
+msgid "_View All Tracks"
+msgstr "Alle GPS-Sp_uren anzeigen"
+
+#: ../src/viktrwlayer.c:4173
+msgid "Delete _All Tracks"
+msgstr "Alle GPS-Spu_ren löschen"
+
+#: ../src/viktrwlayer.c:4179
+msgid "_Delete Tracks From Selection..."
+msgstr "Gew_ählte GPS-Spuren löschen..."
+
+#: ../src/viktrwlayer.c:4200
 msgid "_Startpoint"
-msgstr "Startpunkt (_S)"
+msgstr "_Startpunkt"
 
-#: ../src/viktrwlayer.c:3321
+#: ../src/viktrwlayer.c:4206
 msgid "\"_Center\""
-msgstr "Zentriere (_C)"
+msgstr "_Zentriere"
 
-#: ../src/viktrwlayer.c:3326
+#: ../src/viktrwlayer.c:4212
 msgid "_Endpoint"
-msgstr "Endpunkt (_E)"
+msgstr "_Endpunkt"
 
-#: ../src/viktrwlayer.c:3331
+#: ../src/viktrwlayer.c:4218
 msgid "_Highest Altitude"
-msgstr "höchster Punkt (_H)"
+msgstr "_Höchster Punkt"
 
-#: ../src/viktrwlayer.c:3336
+#: ../src/viktrwlayer.c:4224
 msgid "_Lowest Altitude"
-msgstr "tiefster Punkt (_L)"
+msgstr "_Tiefster Punkt"
 
-#: ../src/viktrwlayer.c:3341
+#: ../src/viktrwlayer.c:4230
 msgid "_Maximum Speed"
-msgstr "Maximalgeschwindigkeit (_M)"
+msgstr "_Maximalgeschwindigkeit"
 
-#: ../src/viktrwlayer.c:3346
+#: ../src/viktrwlayer.c:4236
 msgid "_View Track"
-msgstr "Zeige Spur (_V)"
+msgstr "_Zeige Spur"
 
-#: ../src/viktrwlayer.c:3351
-msgid "_Merge By Time"
-msgstr "Mische nach Zeit (_M)"
+#: ../src/viktrwlayer.c:4242
+msgid "_Merge By Time..."
+msgstr "Vereinen nach _Zeit"
 
-#: ../src/viktrwlayer.c:3356
+#: ../src/viktrwlayer.c:4247
 msgid "Merge _With Other Tracks..."
-msgstr "Mische mit anderen Spuren... (_W)"
+msgstr "Mit _anderen Spuren vereinen..."
 
-#: ../src/viktrwlayer.c:3361
-msgid "_Split By Time"
-msgstr "Trenne nach Zeit (_S)"
+#: ../src/viktrwlayer.c:4252
+msgid "_Split By Time..."
+msgstr "_Trenne nach Zeit"
 
-#: ../src/viktrwlayer.c:3366
-msgid "Split By _Number of Points"
-msgstr "Trenne nach Anzahl der Punkte (_N)"
+#: ../src/viktrwlayer.c:4257
+msgid "Split By _Number of Points..."
+msgstr "Tre_nne nach Anzahl der Punkte"
 
-#: ../src/viktrwlayer.c:3371
+#: ../src/viktrwlayer.c:4262
+msgid "_Reverse Track"
+msgstr "GPS-Spur _umkehren"
+
+#: ../src/viktrwlayer.c:4270
 msgid "Down_load Maps Along Track..."
-msgstr "Lade Karte entlang der Spur... (_l)"
+msgstr "_Lade Karte entlang der Spur..."
 
-#: ../src/viktrwlayer.c:3376
+#: ../src/viktrwlayer.c:4277
 msgid "_Apply DEM Data"
-msgstr "Verwende DEM-Daten (_A)"
+msgstr "Verwende DEM-D_aten"
 
-#: ../src/viktrwlayer.c:3381
-msgid "Export Trac_k as GPX"
-msgstr "exportiere Spur als GPX (_k)"
+#: ../src/viktrwlayer.c:4283
+msgid "Export Trac_k as GPX..."
+msgstr "Ex_portiere Spur als GPX..."
 
-#: ../src/viktrwlayer.c:3386
+#: ../src/viktrwlayer.c:4289
 msgid "E_xtend Track End"
-msgstr "Verlängere Spurende (_E)"
+msgstr "Verlänger_e Spurende"
 
-#: ../src/viktrwlayer.c:3391
-msgid "Extend _Using Magic Scissors"
-msgstr "Verlängere mit der magischen Schere (_U)"
+#: ../src/viktrwlayer.c:4295
+msgid "Extend _Using Route Finder"
+msgstr "Verlängere über _Routenfinder"
 
-#: ../src/viktrwlayer.c:3405
+#: ../src/viktrwlayer.c:4311
 msgid "_View Google Directions"
-msgstr "Ansicht Google Directions (_V)"
+msgstr "Google _Directions anzeigen"
 
-#: ../src/viktrwlayer.c:3411
+#: ../src/viktrwlayer.c:4318
 msgid "Use with _Filter"
-msgstr "Filter (_F)"
+msgstr "_Filter anwenden"
 
-#: ../src/viktrwlayer.c:4092
+#: ../src/viktrwlayer.c:4349
+msgid "_Edit Trackpoint"
+msgstr "Spurpunkt _bearbeiten"
+
+#: ../src/viktrwlayer.c:5262
+#, c-format
+msgid " - Gain %dm:Loss %dm"
+msgstr " - Gewinn %d m: Verlust %d m"
+
+#: ../src/viktrwlayer.c:5264
+#, c-format
+msgid " - Gain %dft:Loss %dft"
+msgstr " - Gewinn %d ft: Verlust %d ft"
+
+#: ../src/viktrwlayer.c:5429
 msgid "Track"
-msgstr "Track"
+msgstr "Spur"
 
-#: ../src/viktrwlayer.c:4425
-msgid "Could not launch eog to open file."
-msgstr "EoG kann nicht zum anzeigen der Datei gestartet werden."
+#: ../src/viktrwlayer.c:5759
+#, c-format
+msgid "Could not launch %s to open file."
+msgstr "Konnte %s nicht zum Dateiöffnen starten."
 
-#: ../src/viktrwlayer.c:4497
+#: ../src/viktrwlayer.c:5843
 #, c-format
 msgid "Creating %d Image Thumbnails..."
 msgstr "%d Bild-Vorschauen erzeugen ..."
 
-#: ../src/viktrwlayer.c:4731
+#: ../src/viktrwlayer.c:6077
 msgid "No map layer in use. Create one first"
 msgstr "Keine Karten-Ebene in Benutzung. Zuerst eine erzeugen"
 
-#: ../src/viktrwlayer_propwin.c:688
+#: ../src/viktrwlayer_propwin.c:738 ../src/viktrwlayer_propwin.c:1001
+#, c-format
+msgid "%.1f kph"
+msgstr "%.1f km/h"
+
+#: ../src/viktrwlayer_propwin.c:741 ../src/viktrwlayer_propwin.c:1004
+#, c-format
+msgid "%.1f mph"
+msgstr "%.1f mph"
+
+#: ../src/viktrwlayer_propwin.c:744 ../src/viktrwlayer_propwin.c:1007
+#, c-format
+msgid "%.1f knots"
+msgstr "%.1f knots"
+
+#. VIK_UNITS_SPEED_METRES_PER_SECOND:
+#: ../src/viktrwlayer_propwin.c:748 ../src/viktrwlayer_propwin.c:1011
+#, c-format
+msgid "%.1f m/s"
+msgstr "%.1f m/s"
+
+#: ../src/viktrwlayer_propwin.c:1466
+#, c-format
+msgid "%.1f miles"
+msgstr "%.1f Meilen"
+
+#: ../src/viktrwlayer_propwin.c:1468
+#, c-format
+msgid "%.1f km"
+msgstr "%.1f km"
+
+#: ../src/viktrwlayer_propwin.c:2366
 msgid "Failed spliting track. Track unchanged"
 msgstr "Trennen der Spur fehlgeschlagen. Spur unverändert"
 
-#: ../src/viktrwlayer_propwin.c:705
+#: ../src/viktrwlayer_propwin.c:2383
 msgid "Operation Aborted. Track unchanged"
 msgstr "Operation angebrochen. Spur unverändert"
 
-#: ../src/viktrwlayer_propwin.c:759
+#: ../src/viktrwlayer_propwin.c:2470
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s - Spur-Eigenschaften"
 
-#: ../src/viktrwlayer_propwin.c:764
-msgid "Split at Marker"
-msgstr "An Markierung trennen"
+#: ../src/viktrwlayer_propwin.c:2475
+msgid "Split at _Marker"
+msgstr "Bei Markierung _trennen"
 
-#: ../src/viktrwlayer_propwin.c:765
-msgid "Split Segments"
-msgstr "Segmente aufteilen"
+#: ../src/viktrwlayer_propwin.c:2476
+msgid "Split _Segments"
+msgstr "_Segmente trennen"
 
-#: ../src/viktrwlayer_propwin.c:766
-msgid "Reverse"
-msgstr "Rückwärts"
+#: ../src/viktrwlayer_propwin.c:2477
+msgid "_Reverse"
+msgstr "_Umkehren"
 
-#: ../src/viktrwlayer_propwin.c:767
-msgid "Delete Dupl."
-msgstr "Duplikate löschen"
+#: ../src/viktrwlayer_propwin.c:2478
+msgid "_Delete Dupl."
+msgstr "_Doppelte Daten löschen"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Comment:</b>"
 msgstr "<b>Kommentar:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Track Length:</b>"
 msgstr "<b>Spur-Länge:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Trackpoints:</b>"
 msgstr "<b>Spurpunkte:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Segments:</b>"
 msgstr "<b>Segmente:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Duplicate Points:</b>"
 msgstr "<b>Doppelte Punkte:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Max Speed:</b>"
 msgstr "<b>Höchstgeschwindigkeit:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>Durchschnittsgeschwindigkeit:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
+msgid "<b>Moving Avg. Speed:</b>"
+msgstr "<b>Mittlere Durchschnittsgeschwindigkeit:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr "<b>Durchschnt. Abstand TPs:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Elevation Range:</b>"
 msgstr "<b>Höhendifferenz:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr "<b>Absoluter Höhengewinn/-verlust:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Start:</b>"
 msgstr "<b>Start:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>End:</b>"
 msgstr "<b>Ende:</b>"
 
-#: ../src/viktrwlayer_propwin.c:790
+#: ../src/viktrwlayer_propwin.c:2500
 msgid "<b>Duration:</b>"
 msgstr "<b>Dauer:</b>"
 
-#: ../src/viktrwlayer_propwin.c:830 ../src/viktrwlayer_propwin.c:854
-#: ../src/viktrwlayer_propwin.c:891 ../src/viktrwlayer_propwin.c:909
-#: ../src/viktrwlayer_propwin.c:959 ../src/viktrwlayer_propwin.c:960
-#: ../src/viktrwlayer_propwin.c:961 ../src/viktrwlayer_propwin.c:983
-#: ../src/viktrwlayer_propwin.c:990
+#: ../src/viktrwlayer_propwin.c:2543 ../src/viktrwlayer_propwin.c:2567
+#: ../src/viktrwlayer_propwin.c:2595 ../src/viktrwlayer_propwin.c:2632
+#: ../src/viktrwlayer_propwin.c:2650 ../src/viktrwlayer_propwin.c:2700
+#: ../src/viktrwlayer_propwin.c:2701 ../src/viktrwlayer_propwin.c:2702
+#: ../src/viktrwlayer_propwin.c:2733 ../src/viktrwlayer_propwin.c:2734
+#: ../src/viktrwlayer_propwin.c:2749 ../src/viktrwlayer_propwin.c:2750
+#: ../src/viktrwlayer_propwin.c:2763 ../src/viktrwlayer_propwin.c:2764
+#: ../src/viktrwlayer_propwin.c:2777 ../src/viktrwlayer_propwin.c:2778
+#: ../src/viktrwlayer_propwin.c:2791 ../src/viktrwlayer_propwin.c:2792
 #, c-format
 msgid "No Data"
 msgstr "Keine Daten"
 
-#: ../src/viktrwlayer_propwin.c:956
+#: ../src/viktrwlayer_propwin.c:2697
 #, c-format
 msgid "%d minutes"
 msgstr "%d Minuten"
 
-#: ../src/viktrwlayer_propwin.c:979
+#: ../src/viktrwlayer_propwin.c:2722
 msgid "Statistics"
 msgstr "Statistik"
 
-#: ../src/viktrwlayer_propwin.c:984
+#: ../src/viktrwlayer_propwin.c:2735
+msgid "Show D_EM"
+msgstr "D_EM Anzeigen"
+
+#: ../src/viktrwlayer_propwin.c:2736 ../src/viktrwlayer_propwin.c:2751
+#: ../src/viktrwlayer_propwin.c:2793
+msgid "Show _GPS Speed"
+msgstr "_GPS-Geschwindigkeit anzeigen"
+
+#: ../src/viktrwlayer_propwin.c:2738 ../src/viktrwlayer_propwin.c:2767
+#: ../src/viktrwlayer_propwin.c:2795
 msgid "<b>Track Distance:</b>"
 msgstr "<b>Spur-Distanz:</b>"
 
-#: ../src/viktrwlayer_propwin.c:985
+#: ../src/viktrwlayer_propwin.c:2739 ../src/viktrwlayer_propwin.c:2782
+msgid "<b>Track Height:</b>"
+msgstr "<b>Spur-Höhe:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2744
 msgid "Elevation-distance"
 msgstr "Höhenunterschied"
 
-#: ../src/viktrwlayer_propwin.c:991
+#: ../src/viktrwlayer_propwin.c:2753 ../src/viktrwlayer_propwin.c:2768
+#: ../src/viktrwlayer_propwin.c:2781
 msgid "<b>Track Time:</b>"
 msgstr "<b>Spur-Zeit:</b>"
 
-#: ../src/viktrwlayer_propwin.c:992
+#: ../src/viktrwlayer_propwin.c:2754 ../src/viktrwlayer_propwin.c:2796
+msgid "<b>Track Speed:</b>"
+msgstr "<b>Spur-Geschwindigkeit:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2758
 msgid "Speed-time"
 msgstr "Geschwindigkeit-Zeit"
+
+#: ../src/viktrwlayer_propwin.c:2765 ../src/viktrwlayer_propwin.c:2779
+msgid "Show S_peed"
+msgstr "_Geschwindigkeit anzeigen"
+
+#: ../src/viktrwlayer_propwin.c:2772
+msgid "Distance-time"
+msgstr "Distanz-Zeit"
+
+#: ../src/viktrwlayer_propwin.c:2786
+msgid "Elevation-time"
+msgstr "Höhe-Zeit"
+
+#: ../src/viktrwlayer_propwin.c:2800
+msgid "Speed-distance"
+msgstr "Geschwindigkeit-Distanz"
 
 #: ../src/viktrwlayer_tpwin.c:115
 msgid "<b>Part of Track:</b>"
@@ -1900,7 +2402,7 @@ msgstr "Spurpunkt"
 
 #: ../src/viktrwlayer_tpwin.c:140
 msgid "_Insert After"
-msgstr "Einfügen nach (_I)"
+msgstr "Einfügen _nach"
 
 #: ../src/viktrwlayer_tpwin.c:142
 msgid "Split Here"
@@ -1910,19 +2412,94 @@ msgstr "Hier auftrennen"
 msgid "Join With Last"
 msgstr "Mit letztem verbinden"
 
-#: ../src/vikwindow.c:189
+#: ../src/viktrwlayer_geotag.c:402
+#, c-format
+msgid "Geotagging %d Images..."
+msgstr "Georeferenziere %d Bilder..."
+
+#: ../src/viktrwlayer_geotag.c:454
+msgid "Geotag Images"
+msgstr "Bilder georeferenzieren"
+
+#: ../src/viktrwlayer_geotag.c:460
+msgid "Images"
+msgstr "Bilder"
+
+#: ../src/viktrwlayer_geotag.c:465
+msgid "Overwrite Existing GPS Information:"
+msgstr "Überschreibe existierende GPS-Information:"
+
+#: ../src/viktrwlayer_geotag.c:467
+msgid "Keep File Modification Timestamp:"
+msgstr "Erhalte Zeitstempel für Dateiänderung:"
+
+#: ../src/viktrwlayer_geotag.c:494
+msgid "Create Waypoints:"
+msgstr "Erzeuge Wegpunkte:"
+
+#: ../src/viktrwlayer_geotag.c:498
+msgid "Write EXIF:"
+msgstr "Schreibe EXIF:"
+
+#: ../src/viktrwlayer_geotag.c:510
+msgid "Interpolate Between Track Segments:"
+msgstr "Interpoliere zwischen Spursegmenten:"
+
+#: ../src/viktrwlayer_geotag.c:514
+msgid "Image Time Offset (Seconds):"
+msgstr "Bild-Zeitversatz (Sekunden)"
+
+#: ../src/viktrwlayer_geotag.c:516
+msgid ""
+"The number of seconds to ADD to the photos time to make it match the GPS "
+"data. Calculate this with (GPS - Photo). Can be negative or positive. Useful "
+"to adjust times when a camera's timestamp was incorrect."
+msgstr ""
+"Anzahl Sekunden, die der Zeitinformation im Bild hinzugefügt werden muss, um "
+"synchron zu den GPS-Daten zu sein. Kann negativ oder positiv sein. Nützlich, "
+"wenn der Kamerazeitstempel falsch war."
+
+#: ../src/viktrwlayer_geotag.c:519
+msgid "Image Timezone:"
+msgstr "Zeitzone des Bildes"
+
+#: ../src/viktrwlayer_geotag.c:521
+msgid ""
+"The timezone that was used when the images were created. For example, if a "
+"camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct "
+"adjustment to the images' time can be made. GPS data is always in UTC."
+msgstr ""
+"Zeitzone in der das Bild erzeugt wurde. Z.B. wenn die Kamera CEST oder +2:00 "
+"h nutzt, dann hier +2:00 eingeben, so dass der Zeitstempel des Bildes auf "
+"die GPS-Zeitbasis (UTC) justiert wird."
+
+#: ../src/viktrwlayer_geotag.c:525
+#, c-format
+msgid "Using track: %s"
+msgstr "Benutze Spur: %s"
+
+#: ../src/viktrwlayer_geotag.c:527
+#, c-format
+msgid "Using all tracks in: %s"
+msgstr "Benutze alle Spuren in: %s"
+
+#: ../src/vikwindow.c:206
 msgid "Pan"
 msgstr "Greifer"
 
-#: ../src/vikwindow.c:189
+#: ../src/vikwindow.c:206
 msgid "Zoom"
 msgstr "Vergrößerung"
 
-#: ../src/vikwindow.c:189
+#: ../src/vikwindow.c:206
 msgid "Ruler"
 msgstr "Lineal"
 
-#: ../src/vikwindow.c:381
+#: ../src/vikwindow.c:206
+msgid "Select"
+msgstr "Auswahl"
+
+#: ../src/vikwindow.c:416
 #, c-format
 msgid ""
 "Do you want to save the changes you made to the document \"%s\"?\n"
@@ -1932,64 +2509,93 @@ msgstr ""
 "Wollen Sie die Änderungen am Dokument \"%s\" speichern?\n"
 "Ihre Änderungen gehen verloren, wenn Sie sie nicht speichern."
 
-#: ../src/vikwindow.c:384 ../src/vikwindow.c:1449
+#: ../src/vikwindow.c:419 ../src/vikwindow.c:1614
 msgid "Untitled"
 msgstr "Unbenannt"
 
-#: ../src/vikwindow.c:385
+#: ../src/vikwindow.c:420
 msgid "Don't Save"
 msgstr "Nicht speichern"
 
-#: ../src/vikwindow.c:420
+#: ../src/vikwindow.c:455
 msgid "mpp"
 msgstr "mpp"
 
-#: ../src/vikwindow.c:420
+#: ../src/vikwindow.c:455
 msgid "pixelfact"
 msgstr "pixelfact"
 
-#: ../src/vikwindow.c:571
+#: ../src/vikwindow.c:606
 #, c-format
 msgid "%s %s %dm"
-msgstr "%s %s %dm"
+msgstr "%s %s %d m"
 
-#: ../src/vikwindow.c:573
+#: ../src/vikwindow.c:608
 #, c-format
 msgid "%s %s %dft"
 msgstr "%s %s %d ft"
 
-#: ../src/vikwindow.c:576
+#: ../src/vikwindow.c:611
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
-#: ../src/vikwindow.c:1198
+#: ../src/vikwindow.c:1360
 msgid "You must select a layer to show its properties."
 msgstr "Sie müssen eine Ebene auswählen, um ihre Eigenschaften anzuzeigen."
 
-#: ../src/vikwindow.c:1228
+#: ../src/vikwindow.c:1390
 msgid "You must select a layer to delete."
 msgstr "Sie müssen eine Ebene zum Löschen auswählen."
 
-#: ../src/vikwindow.c:1562
+#: ../src/vikwindow.c:1730
 #, c-format
 msgid "Unable to add '%s' to the list of recently used documents"
 msgstr ""
 "'%s'  kann der Liste der aktuell benutzten Dokumente nicht angefügt werden."
 
-#: ../src/vikwindow.c:1576
+#: ../src/vikwindow.c:1744
 msgid "The file you requested could not be opened."
 msgstr "Die angeforderte Datei konnte nicht geöffnet werden."
 
-#: ../src/vikwindow.c:1622
+#: ../src/vikwindow.c:1747
+msgid ""
+"GPSBabel is required to load files of this type or GPSBabel encountered "
+"problems."
+msgstr ""
+"GPSBabel wird benötigt, um Dateien dieses Typs zu laden oder es gab ein "
+"Problem beim Anwenden von GPSBabel."
+
+#: ../src/vikwindow.c:1750
+#, c-format
+msgid "Unsupported file type for %s"
+msgstr "Nicht unterstützter Dateityp für %s"
+
+#: ../src/vikwindow.c:1802
 msgid "Please select a GPS data file to open. "
 msgstr "Bitte geben Sie eine GPS-Datendatei zum Öffnen an. "
 
-#: ../src/vikwindow.c:1665
+#: ../src/vikwindow.c:1812
+msgid "Geocaching"
+msgstr "Geocaching"
+
+#: ../src/vikwindow.c:1818
+msgid "Google Earth"
+msgstr "Google Earth"
+
+#: ../src/vikwindow.c:1823
+msgid "GPX"
+msgstr "GPX"
+
+#: ../src/vikwindow.c:1828 ../src/viking.desktop.in.h:1
+msgid "Viking"
+msgstr "Viking"
+
+#: ../src/vikwindow.c:1881
 msgid "Save as Viking File."
 msgstr "Als Viking-Datei speichern."
 
-#: ../src/vikwindow.c:1956
+#: ../src/vikwindow.c:2197
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
@@ -1997,501 +2603,551 @@ msgstr ""
 "Der sichtbare Bereich liegt außerhalb der erlaubten Pixelzahl des Bildes. "
 "Höhe/Breite beschnitten."
 
-#: ../src/vikwindow.c:1978
+#: ../src/vikwindow.c:2219
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. km)"
-msgstr "Totale Fläche: %ldm x %ldm (%.3f sq. km)"
+msgstr "Gesamtareal: %ld m x %ld m (%.3f km²)"
 
-#: ../src/vikwindow.c:1981
+#: ../src/vikwindow.c:2222
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. miles)"
-msgstr "Gesamtareal: %ldm x %ldm (%.3f sq. miles)"
+msgstr "Gesamtareal: %ld m x %ld m (%.3f Quadratmeilen)"
 
 #. todo: default for answers inside VikWindow or static (thruout instance)
-#: ../src/vikwindow.c:1995
+#: ../src/vikwindow.c:2236
 msgid "Save to Image File"
 msgstr "Als Bild-Datei speichern"
 
-#: ../src/vikwindow.c:2013
+#: ../src/vikwindow.c:2254
 msgid "Width (pixels):"
 msgstr "Breite (Pixel):"
 
-#: ../src/vikwindow.c:2015
+#: ../src/vikwindow.c:2256
 msgid "Height (pixels):"
 msgstr "Höhe (Pixel):"
 
-#: ../src/vikwindow.c:2018
+#: ../src/vikwindow.c:2259
 msgid "Zoom (meters per pixel):"
 msgstr "Vergrösserung (Meter pro Pixel):"
 
-#: ../src/vikwindow.c:2024
+#: ../src/vikwindow.c:2265
 msgid "Area in current viewable window"
 msgstr "Bereich in aktuell sichtbarem Fenster"
 
-#: ../src/vikwindow.c:2034
+#: ../src/vikwindow.c:2275
 msgid "Save as PNG"
 msgstr "Als PNG speichern"
 
-#: ../src/vikwindow.c:2035
+#: ../src/vikwindow.c:2276
 msgid "Save as JPEG"
 msgstr "Als JPEG speichern"
 
-#: ../src/vikwindow.c:2055
+#: ../src/vikwindow.c:2296
 msgid "East-west image tiles:"
 msgstr "Ost-West-Bildkachel:"
 
-#: ../src/vikwindow.c:2057
+#: ../src/vikwindow.c:2298
 msgid "North-south image tiles:"
 msgstr "Nord-Süd-Bildkachel:"
 
-#: ../src/vikwindow.c:2099
-msgid "You must be in UTM mode to use this feature"
-msgstr "Diese Funktion nur im UTM-Modus möglich."
-
-#: ../src/vikwindow.c:2110
+#: ../src/vikwindow.c:2349
 msgid "Save Image"
 msgstr "Bild speichern"
 
-#: ../src/vikwindow.c:2139
+#: ../src/vikwindow.c:2378
+msgid "You must be in UTM mode to use this feature"
+msgstr "Diese Funktion nur im UTM-Modus möglich."
+
+#: ../src/vikwindow.c:2383
 msgid "Choose a directory to hold images"
 msgstr "Ein Verzeichnis für Speicherung der Bilder auswählen"
 
-#: ../src/vikwindow.c:2228
+#: ../src/vikwindow.c:2481
 msgid "Choose a background color"
 msgstr "Hintergrundfarbe wählen"
 
-#: ../src/vikwindow.c:2249
-msgid "_File"
-msgstr "Datei (_F)"
+#: ../src/vikwindow.c:2497
+msgid "Choose a track highlight color"
+msgstr "Farbe für Hervorhebung der Spur wählen"
 
-#: ../src/vikwindow.c:2250
+#: ../src/vikwindow.c:2518
+msgid "_File"
+msgstr "_Datei"
+
+#: ../src/vikwindow.c:2519
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
-#: ../src/vikwindow.c:2251
+#: ../src/vikwindow.c:2520
 msgid "_View"
-msgstr "_Anzeige"
+msgstr "_Ansicht"
 
-#: ../src/vikwindow.c:2252
+#: ../src/vikwindow.c:2521
 msgid "_Show"
-msgstr "Anzeigen (_S)"
+msgstr "_Anzeigen"
 
-#: ../src/vikwindow.c:2253 ../src/vikwindow.c:2339
+#: ../src/vikwindow.c:2522 ../src/vikwindow.c:2616
 msgid "_Zoom"
-msgstr "Vergrößerung (_V)"
+msgstr "_Vergrößerung"
 
-#: ../src/vikwindow.c:2254 ../src/vikwindow.c:2338
+#: ../src/vikwindow.c:2523 ../src/vikwindow.c:2615
 msgid "_Pan"
-msgstr "Greife (_P)"
+msgstr "_Greife"
 
-#: ../src/vikwindow.c:2255
+#: ../src/vikwindow.c:2524
 msgid "_Layers"
-msgstr "Ebenen (_L)"
+msgstr "_Ebenen"
 
-#: ../src/vikwindow.c:2256
+#: ../src/vikwindow.c:2525
 msgid "_Tools"
-msgstr "Werkzeuge (_W)"
+msgstr "_Werkzeuge"
 
-#: ../src/vikwindow.c:2257
+#: ../src/vikwindow.c:2526
 msgid "_Webtools"
-msgstr "_Webtools"
+msgstr "_Internetwerkzeuge"
 
-#: ../src/vikwindow.c:2258 ../src/vikwindow.c:2324
+#: ../src/vikwindow.c:2527 ../src/vikwindow.c:2601
 msgid "_Help"
-msgstr "Hilfe (_H)"
+msgstr "_Hilfe"
 
-#: ../src/vikwindow.c:2260
+#: ../src/vikwindow.c:2529
 msgid "_New"
-msgstr "Neu (_N)"
+msgstr "_Neu"
 
-#: ../src/vikwindow.c:2260
+#: ../src/vikwindow.c:2529
 msgid "New file"
 msgstr "Neue Datei"
 
-#: ../src/vikwindow.c:2261
+#: ../src/vikwindow.c:2530
 msgid "_Open..."
 msgstr "_Öffnen..."
 
-#: ../src/vikwindow.c:2261
+#: ../src/vikwindow.c:2530
 msgid "Open a file"
 msgstr "Eine Datei öffnen"
 
-#: ../src/vikwindow.c:2262
+#: ../src/vikwindow.c:2531
 msgid "Open _Recent File"
-msgstr "Zuletzt geöffnet (_R)"
+msgstr "_Zuletzt geöffnet"
 
-#: ../src/vikwindow.c:2263
+#: ../src/vikwindow.c:2532
 msgid "Append _File..."
-msgstr "Datei anfügen... (_F)"
+msgstr "Datei _anfügen..."
 
-#: ../src/vikwindow.c:2263
+#: ../src/vikwindow.c:2532
 msgid "Append data from a different file"
 msgstr "Daten auf einer anderen Datei anfügen"
 
-#: ../src/vikwindow.c:2264
+#: ../src/vikwindow.c:2533
 msgid "A_cquire"
-msgstr "Laden (_c)"
+msgstr "_Laden"
 
-#: ../src/vikwindow.c:2265
-msgid "From _GPS..."
-msgstr "Von GPS... (_G)"
-
-#: ../src/vikwindow.c:2265
+#: ../src/vikwindow.c:2534
 msgid "Transfer data from a GPS device"
 msgstr "Daten von GPS-Gerät übertragen"
 
-#: ../src/vikwindow.c:2266
-msgid "Google _Directions..."
-msgstr "Google-Richtung... (_D)"
+#: ../src/vikwindow.c:2535
+msgid "Import File With GPS_Babel..."
+msgstr "Importiere Datei mit GPS_Babel..."
 
-#: ../src/vikwindow.c:2266
+#: ../src/vikwindow.c:2535
+msgid "Import file via GPSBabel converter"
+msgstr "Importiere Datei über den GPSBabel-Dateikonvertierer"
+
+#: ../src/vikwindow.c:2536
+msgid "Google _Directions..."
+msgstr "Google-_Richtung..."
+
+#: ../src/vikwindow.c:2536
 msgid "Get driving directions from Google"
 msgstr "Fahrtrichtung von Google beziehen"
 
-#: ../src/vikwindow.c:2268
-msgid "Geo_caches..."
-msgstr "Geocaches... (_c)"
+#: ../src/vikwindow.c:2538
+msgid "_OSM Traces..."
+msgstr "_OSM-Spuren..."
 
-#: ../src/vikwindow.c:2268
+#: ../src/vikwindow.c:2538
+msgid "Get traces from OpenStreetMap"
+msgstr "Hole Spuren von Openstreetmap"
+
+#: ../src/vikwindow.c:2541
+msgid "Geo_caches..."
+msgstr "Geo_caches..."
+
+#: ../src/vikwindow.c:2541
 msgid "Get Geocaches from geocaching.com"
 msgstr "Geocaches von geocaching.com beziehen"
 
-#: ../src/vikwindow.c:2270
-msgid "_Save"
-msgstr "Speichern (_S)"
+#: ../src/vikwindow.c:2544
+msgid "Create waypoints from geotagged images"
+msgstr "Erzeuge Wegpunkte aus georeferenzierten Bildern"
 
-#: ../src/vikwindow.c:2270
+#: ../src/vikwindow.c:2546
+msgid "_Save"
+msgstr "_Speichern"
+
+#: ../src/vikwindow.c:2546
 msgid "Save the file"
 msgstr "Datei speichern"
 
-#: ../src/vikwindow.c:2271
+#: ../src/vikwindow.c:2547
 msgid "Save _As..."
-msgstr "Speichern unter... (_A)"
+msgstr "Speichern _unter …"
 
-#: ../src/vikwindow.c:2271
+#: ../src/vikwindow.c:2547
 msgid "Save the file under different name"
 msgstr "Datei unter anderem Namen Speichern"
 
-#: ../src/vikwindow.c:2272
+#: ../src/vikwindow.c:2548
 msgid "_Generate Image File..."
-msgstr "Bild-Datei erzeugen... (_G)"
+msgstr "_Bild-Datei erzeugen..."
 
-#: ../src/vikwindow.c:2272
+#: ../src/vikwindow.c:2548
 msgid "Save a snapshot of the workspace into a file"
 msgstr "Speichere Schnappschuss des Arbeitsbereichs in einer Datei."
 
-#: ../src/vikwindow.c:2273
+#: ../src/vikwindow.c:2549
 msgid "Generate _Directory of Images..."
-msgstr "Bild-Verzeichnis erzeugen... (_D)"
+msgstr "Bild-_Verzeichnis erzeugen..."
 
-#: ../src/vikwindow.c:2273
+#: ../src/vikwindow.c:2549
 msgid "FIXME:IMGDIR"
 msgstr "FIXME:IMGDIR"
 
-#: ../src/vikwindow.c:2276
+#: ../src/vikwindow.c:2552
 msgid "_Print..."
-msgstr "Drucken... (_P)"
+msgstr "_Drucken..."
 
-#: ../src/vikwindow.c:2276
+#: ../src/vikwindow.c:2552
 msgid "Print maps"
 msgstr "Karten drucken"
 
-#: ../src/vikwindow.c:2279
+#: ../src/vikwindow.c:2555
 msgid "E_xit"
-msgstr "Beenden (_x)"
+msgstr "Be_enden"
 
-#: ../src/vikwindow.c:2279
+#: ../src/vikwindow.c:2555
 msgid "Exit the program"
 msgstr "Das Programm beenden"
 
-#: ../src/vikwindow.c:2280
+#: ../src/vikwindow.c:2556
 msgid "Save and Exit"
-msgstr "Speichern und beenden"
+msgstr "Speichern _und beenden"
 
-#: ../src/vikwindow.c:2280
+#: ../src/vikwindow.c:2556
 msgid "Save and Exit the program"
 msgstr "Speichern und das Programm beenden"
 
-#: ../src/vikwindow.c:2282
+#: ../src/vikwindow.c:2558
 msgid "Go to the _Default Location"
-msgstr "Gehe zum Ausgangsstandort (_D)"
+msgstr "Gehe zum _Ausgangsstandort"
 
-#: ../src/vikwindow.c:2282
+#: ../src/vikwindow.c:2558
 msgid "Go to the default location"
 msgstr "Gehe zum Ausgangsstandort"
 
-#: ../src/vikwindow.c:2283
+#: ../src/vikwindow.c:2559
 msgid "Go to _Location..."
-msgstr "Gehe zur Lokation (_L)"
+msgstr "Gehe zum _Ort"
 
-#: ../src/vikwindow.c:2283
+#: ../src/vikwindow.c:2559
 msgid "Go to address/place using text search"
-msgstr "Gehe zu Adresse/Ort mittels Textsuche"
+msgstr "Gehe zu Adresse/Ort mittels _Textsuche"
 
-#: ../src/vikwindow.c:2284
+#: ../src/vikwindow.c:2560
 msgid "_Go to Lat/Lon..."
-msgstr "Gehe zu Lat/Lon ... (_G)"
+msgstr "Gehe zu B_reite/Länge..."
 
-#: ../src/vikwindow.c:2284
+#: ../src/vikwindow.c:2560
 msgid "Go to arbitrary lat/lon coordinate"
 msgstr "Gehe zu beliebiger Breiten-/Längenkoordinate"
 
-#: ../src/vikwindow.c:2285
+#: ../src/vikwindow.c:2561
 msgid "Go to UTM..."
-msgstr "Gehe zu UTM ..."
+msgstr "Gehe zu _UTM..."
 
-#: ../src/vikwindow.c:2285
+#: ../src/vikwindow.c:2561
 msgid "Go to arbitrary UTM coordinate"
 msgstr "Gehe zu beliebiger UTM-Koordinate"
 
-#: ../src/vikwindow.c:2286
-msgid "Set Bac_kground Color..."
-msgstr "Hintergrundfarbe (_k)"
+#: ../src/vikwindow.c:2562
+msgid "Set _Highlight Color..."
+msgstr "Farbe für _Hervorhebung wählen..."
 
-#: ../src/vikwindow.c:2287
+#: ../src/vikwindow.c:2563
+msgid "Set Bac_kground Color..."
+msgstr "Hintergrund_farbe"
+
+#: ../src/vikwindow.c:2564
 msgid "Zoom _In"
 msgstr "Ver_größern"
 
-#: ../src/vikwindow.c:2288
+#: ../src/vikwindow.c:2565
 msgid "Zoom _Out"
-msgstr "Verkleinern (_O)"
+msgstr "Ver_kleinern"
 
-#: ../src/vikwindow.c:2289
+#: ../src/vikwindow.c:2566
 msgid "Zoom _To..."
-msgstr "Zoome auf..."
+msgstr "Zoome _auf..."
 
-#: ../src/vikwindow.c:2290
+#: ../src/vikwindow.c:2567
 msgid "0.25"
 msgstr "0,25"
 
-#: ../src/vikwindow.c:2291
+#: ../src/vikwindow.c:2568
 msgid "0.5"
 msgstr "0,5"
 
-#: ../src/vikwindow.c:2292
+#: ../src/vikwindow.c:2569
 msgid "1"
 msgstr "1"
 
-#: ../src/vikwindow.c:2293
+#: ../src/vikwindow.c:2570
 msgid "2"
 msgstr "2"
 
-#: ../src/vikwindow.c:2294
+#: ../src/vikwindow.c:2571
 msgid "4"
 msgstr "4"
 
-#: ../src/vikwindow.c:2295
+#: ../src/vikwindow.c:2572
 msgid "8"
 msgstr "8"
 
-#: ../src/vikwindow.c:2296
+#: ../src/vikwindow.c:2573
 msgid "16"
 msgstr "16"
 
-#: ../src/vikwindow.c:2297
+#: ../src/vikwindow.c:2574
 msgid "32"
 msgstr "32"
 
-#: ../src/vikwindow.c:2298
+#: ../src/vikwindow.c:2575
 msgid "64"
 msgstr "64"
 
-#: ../src/vikwindow.c:2299
+#: ../src/vikwindow.c:2576
 msgid "128"
 msgstr "128"
 
-#: ../src/vikwindow.c:2300
+#: ../src/vikwindow.c:2577
 msgid "256"
 msgstr "256"
 
-#: ../src/vikwindow.c:2301
+#: ../src/vikwindow.c:2578
 msgid "512"
 msgstr "512"
 
-#: ../src/vikwindow.c:2302
+#: ../src/vikwindow.c:2579
 msgid "1024"
 msgstr "1024"
 
-#: ../src/vikwindow.c:2303
+#: ../src/vikwindow.c:2580
 msgid "2048"
 msgstr "2048"
 
-#: ../src/vikwindow.c:2304
+#: ../src/vikwindow.c:2581
 msgid "4096"
 msgstr "4096"
 
-#: ../src/vikwindow.c:2305
+#: ../src/vikwindow.c:2582
 msgid "8192"
 msgstr "8192"
 
-#: ../src/vikwindow.c:2306
+#: ../src/vikwindow.c:2583
 msgid "16384"
 msgstr "16384"
 
-#: ../src/vikwindow.c:2307
+#: ../src/vikwindow.c:2584
 msgid "32768"
 msgstr "32768"
 
-#: ../src/vikwindow.c:2308
+#: ../src/vikwindow.c:2585
 msgid "Pan _North"
-msgstr "Richtung Nord (_N)"
+msgstr "Richtung _Nord"
 
-#: ../src/vikwindow.c:2309
+#: ../src/vikwindow.c:2586
 msgid "Pan _East"
-msgstr "Richtung Ost (_E)"
+msgstr "Richtung _Ost"
 
-#: ../src/vikwindow.c:2310
+#: ../src/vikwindow.c:2587
 msgid "Pan _South"
-msgstr "Richtung Süd(_S)"
+msgstr "Richtung _Süd"
 
-#: ../src/vikwindow.c:2311
+#: ../src/vikwindow.c:2588
 msgid "Pan _West"
-msgstr "Richtung West(_W)"
+msgstr "Richtung _West"
 
-#: ../src/vikwindow.c:2312
+#: ../src/vikwindow.c:2589
 msgid "Background _Jobs"
-msgstr "Hintergrund-_Aufträge"
+msgstr "Hintergrund_aufträge"
 
-#: ../src/vikwindow.c:2314
+#: ../src/vikwindow.c:2591
 msgid "Cu_t"
-msgstr "Ausschneiden (_t)"
+msgstr "_Ausschneiden"
 
-#: ../src/vikwindow.c:2315
+#: ../src/vikwindow.c:2592
 msgid "_Copy"
-msgstr "Kopieren (_C)"
+msgstr "K_opieren"
 
-#: ../src/vikwindow.c:2316
+#: ../src/vikwindow.c:2593
 msgid "_Paste"
-msgstr "Einfügen (_P)"
+msgstr "_Einfügen"
 
-#: ../src/vikwindow.c:2317
+#: ../src/vikwindow.c:2594
 msgid "_Delete"
-msgstr "Löschen (_D)"
+msgstr "_Löschen"
 
-#: ../src/vikwindow.c:2318
+#: ../src/vikwindow.c:2595
 msgid "Delete All"
-msgstr "Alle löschen"
+msgstr "_Alle löschen"
 
-#: ../src/vikwindow.c:2319
+#: ../src/vikwindow.c:2596
 msgid "_Flush Map Cache"
-msgstr "Kartencache löschen (_F)"
+msgstr "Kartenpu_ffer löschen"
 
-#: ../src/vikwindow.c:2320
+#: ../src/vikwindow.c:2597
 msgid "_Set the Default Location"
-msgstr "Ausgangsstandort setzen (_S)"
+msgstr "Ausgangsstandort _setzen"
 
-#: ../src/vikwindow.c:2320
+#: ../src/vikwindow.c:2597
 msgid "Set the Default Location to the current position"
 msgstr "Ausgangsstandort auf aktuelle Position setzen"
 
-#: ../src/vikwindow.c:2321
+#: ../src/vikwindow.c:2598
 msgid "_Preferences"
-msgstr "Einstellungen"
+msgstr "_Einstellungen"
 
-#: ../src/vikwindow.c:2322
+#: ../src/vikwindow.c:2599
 msgid "_Properties"
-msgstr "Eigenschaften (_P)"
+msgstr "Ei_genschaften..."
 
-#: ../src/vikwindow.c:2325
+#: ../src/vikwindow.c:2602
 msgid "_About"
-msgstr "_Info"
+msgstr "_Über"
 
-#: ../src/vikwindow.c:2331
+#: ../src/vikwindow.c:2608
 msgid "_UTM Mode"
 msgstr "_UTM-Modus"
 
-#: ../src/vikwindow.c:2332
+#: ../src/vikwindow.c:2609
 msgid "_Expedia Mode"
 msgstr "_Expedia-Modus"
 
-#: ../src/vikwindow.c:2333
+#: ../src/vikwindow.c:2610
 msgid "_Mercator Mode"
 msgstr "_Mercator-Modus"
 
-#: ../src/vikwindow.c:2334
+#: ../src/vikwindow.c:2611
 msgid "Lat_/Lon Mode"
 msgstr "Längen-_/Breitengrad-Modus"
 
-#: ../src/vikwindow.c:2338
+#: ../src/vikwindow.c:2615
 msgid "Pan Tool"
 msgstr "Greifer-Werkzeug"
 
-#: ../src/vikwindow.c:2339
+#: ../src/vikwindow.c:2616
 msgid "Zoom Tool"
 msgstr "Vergrößerungswerkzeug"
 
-#: ../src/vikwindow.c:2340
+#: ../src/vikwindow.c:2617
 msgid "_Ruler"
-msgstr "Messwerkzeug (_R)"
+msgstr "_Messwerkzeug"
 
-#: ../src/vikwindow.c:2340
+#: ../src/vikwindow.c:2617
 msgid "Ruler Tool"
 msgstr "Messwerkzeug"
 
-#: ../src/vikwindow.c:2344
-msgid "Show _Scale"
-msgstr "Maßstab (_S)"
+#: ../src/vikwindow.c:2618
+msgid "_Select"
+msgstr "Aus_wählen"
 
-#: ../src/vikwindow.c:2344
+#: ../src/vikwindow.c:2618
+msgid "Select Tool"
+msgstr "Auswahlwerkzeug"
+
+#: ../src/vikwindow.c:2622
+msgid "Show _Scale"
+msgstr "Maß_stab anzeigen"
+
+#: ../src/vikwindow.c:2622
 msgid "Show Scale"
 msgstr "Maßstab anzeigen"
 
-#: ../src/vikwindow.c:2345
+#: ../src/vikwindow.c:2623
 msgid "Show _Center Mark"
-msgstr "Mittenmarkierung anzeigen (_C)"
+msgstr "_Mittenmarkierung anzeigen"
 
-#: ../src/vikwindow.c:2345
+#: ../src/vikwindow.c:2623
 msgid "Show Center Mark"
 msgstr "Zentrumsmarkierung anzeigen"
 
-#: ../src/vikwindow.c:2346
-msgid "_Full Screen"
-msgstr "Vollbild"
+#: ../src/vikwindow.c:2624
+msgid "Show _Highlight"
+msgstr "_Hervorhebung anzeigen"
 
-#: ../src/vikwindow.c:2346
+#: ../src/vikwindow.c:2624
+msgid "Show Highlight"
+msgstr "Hervorhebung anzeigen"
+
+#: ../src/vikwindow.c:2625
+msgid "_Full Screen"
+msgstr "_Vollbild"
+
+#: ../src/vikwindow.c:2625
 msgid "Activate full screen mode"
 msgstr "Vollbildmodus aktivieren"
 
-#: ../src/vikwindow.c:2347
+#: ../src/vikwindow.c:2626
 msgid "Show Side _Panel"
-msgstr "Seitenfenster (_P)"
+msgstr "Seiten_fenster anzeigen"
 
-#: ../src/vikwindow.c:2347
+#: ../src/vikwindow.c:2626
 msgid "Show Side Panel"
-msgstr "Seitenpanel anzeigen"
+msgstr "Seitenfenster anzeigen"
 
-#: ../src/vikwindow.c:2348
+#: ../src/vikwindow.c:2627
 msgid "Show Status_bar"
-msgstr "Statusleiste (_b)"
+msgstr "Status_leiste anzeigen"
 
-#: ../src/vikwindow.c:2348
+#: ../src/vikwindow.c:2627
 msgid "Show Statusbar"
-msgstr "Statusleiste"
+msgstr "Statusleiste anzeigen"
 
-#: ../src/vikwindow.c:2349
+#: ../src/vikwindow.c:2628
 msgid "Show _Toolbar"
-msgstr "Werkzeugleiste (_T)"
+msgstr "_Werkzeugleiste anzeigen"
 
-#: ../src/vikwindow.c:2349
+#: ../src/vikwindow.c:2628
 msgid "Show Toolbar"
-msgstr "Werkzeugleiste"
+msgstr "Werkzeugleiste anzeigen"
 
-#: ../src/vikwindow.c:2350
+#: ../src/vikwindow.c:2629
 msgid "Show _Menu"
-msgstr "Ansichtsmenü (_M)"
+msgstr "_Menü anzeigen"
 
-#: ../src/vikwindow.c:2350
+#: ../src/vikwindow.c:2629
 msgid "Show Menu"
-msgstr "Ansichtsmenü"
+msgstr "Menü anzeigen"
 
-#: ../src/viking.desktop.in.h:1
+#: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"
 msgstr "GPS-Daten-Manager"
 
-#: ../src/viking.desktop.in.h:2
+#: ../src/viking.desktop.in.h:3
 msgid "Map Based GPS Data Manager (live data capable)."
 msgstr "Kartenbasierter GPS Daten-Manager (Live-Daten fähig)"
 
-#: ../src/viking.desktop.in.h:3
-msgid "Viking"
-msgstr "Viking"
+#: ../src/libjpeg/jpeg-data.c:206
+msgid "Data does not follow JPEG specification."
+msgstr "Daten erfüllen nicht die JPEG-Spezifikation."
+
+#: ../src/libjpeg/jpeg-data.c:291
+#, c-format
+msgid "Path '%s' invalid."
+msgstr "Pfad '%s' ist ungültig."
+
+#: ../src/libjpeg/jpeg-data.c:309
+#, c-format
+msgid "Could not read '%s'."
+msgstr "Konnte '%s' nicht lesen."
