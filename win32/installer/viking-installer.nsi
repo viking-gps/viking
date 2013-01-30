@@ -333,6 +333,7 @@ Section Uninstall
     Delete "$INSTDIR\libatk-1.0-0.dll"
     Delete "$INSTDIR\libcairo-2.dll"
     Delete "$INSTDIR\libcurl.dll"
+    Delete "$INSTDIR\libexif-12.dll"
     Delete "$INSTDIR\libexpat.dll"
     Delete "$INSTDIR\libexpat-1.dll"
     Delete "$INSTDIR\libfontconfig-1.dll"
