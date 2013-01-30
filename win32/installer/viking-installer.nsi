@@ -9,6 +9,8 @@ Var name
 
 ;--------------------------------
 ;Configuration
+;Needs to be 4 numbers:  W.X.Y.Z
+!define VIKING_VERSION  "1.3.2.1"
 
 ;The name var is set in .onInit
 Name $name
