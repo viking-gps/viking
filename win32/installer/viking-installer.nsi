@@ -113,6 +113,7 @@ VIAddVersionKey "FileDescription" "Viking Installer"
 
   !insertmacro MUI_LANGUAGE "English"
   !insertmacro MUI_LANGUAGE "French"
+  !insertmacro MUI_LANGUAGE "Spanish"
 
 ;--------------------------------
 ;Translations
