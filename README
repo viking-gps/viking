@@ -16,8 +16,8 @@ Git repo:
 Installing Viking
 =================
 
-If you downloaded viking from Git, you have to:
-  $ autogen.sh
+If you downloaded Viking from Git, you have to:
+  $ ./autogen.sh
 
 Next, or if you downloaded a tarball, you have to:
   $ ./configure
@@ -26,7 +26,7 @@ Next, or if you downloaded a tarball, you have to:
 Check output of "./configure --help" for configuration options.
 In particular, it is possible to disable some features, like --disable-google in order to disable any Google stuff.
 
-If you whish to install viking, you have to (as root):
+If you wish to install Viking, you have to (as root):
   # make install
 
 For detailled explaination on install, see INSTALL file.
