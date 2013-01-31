@@ -20,11 +20,12 @@ for /f %%i in (gmolist.txt) do mkdir %DESTINATION%\%%~ni\LC_MESSAGES
 for /f %%i in (gmolist.txt) do %MYCOPY% ..\po\%%i %DESTINATION%\%%~ni\LC_MESSAGES\viking.mo
 del gmolist.txt
 
-echo Copying other stuff
+echo Copying Viking
 %MYCOPY% ..\src\viking.exe %DESTINATION%
 %MYCOPY% installer\pixmaps\viking_icon.ico %DESTINATION%
 %MYCOPY% ..\COPYING %DESTINATION%\COPYING_GPL.txt
 ::
+echo Copying GPSBabel
 :: It is assumed you've tested the code after building it :)
 ::  Thus GPSBabel should be here
 %MYCOPY% ..\src\gpsbabel.exe %DESTINATION%
@@ -32,13 +33,34 @@ echo Copying other stuff
 ::  (or get it from an old Viking Windows release)
 ::  and copy the command line program into ..\src
 ::
-%MYCOPY% C:\MinGW\bin\libcurl.dll %DESTINATION%
-%MYCOPY% C:\MinGW\bin\libexif-12.dll %DESTINATION%
+echo Copying Libraries
+set LIBCURL=C:\MinGW\bin\libcurl.dll
+if exist %LIBCURL% (
+	%MYCOPY% %LIBCURL% %DESTINATION%
+) else (
+	echo %LIBCURL% does not exist
+	goto Tidy
+)
+set LIBEXIF=C:\MinGW\bin\libexif-12.dll
+if exist %LIBEXIF% (
+	%MYCOPY% %LIBEXIF% %DESTINATION%
+) else (
+	echo %LIBEXIF% does not exist
+	goto Tidy
+)
 ::
+echo Copying Translations
 %MYCOPY% installer\translations\*nsh %DESTINATION%
 
-echo Run NSIS
+echo Running NSIS (command line version)
 pushd installer
-"C:\Program Files\NSIS\makensisw.exe" viking-installer.nsi
+if exist "%ProgramFiles%\NSIS" (
+	"%ProgramFiles%\NSIS\makensis.exe" viking-installer.nsi
+) else (
+	echo NSIS Not installed in known location
+)
 popd
 
+echo Tidy Up
+:Tidy
+rmdir /S /Q %DESTINATION%
