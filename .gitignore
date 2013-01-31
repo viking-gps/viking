@@ -109,5 +109,13 @@ help/C/*html
 /po/stamp-it
 
 # win32/
+win32/Makefile
+win32/Makefile.in
+win32/installer/Makefile
+win32/installer/Makefile.in
+win32/installer/pixmaps/Makefile
+win32/installer/pixmaps/Makefile.in
 win32/installer/pixmaps/*o
+win32/installer/translations/Makefile
+win32/installer/translations/Makefile.in
 win32/installer/viking*.exe
