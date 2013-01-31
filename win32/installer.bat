@@ -16,8 +16,8 @@ set DESTINATION=installer\bin
 echo Copying locale files into layout required by NSIS
 dir ..\po\*.gmo /B > gmolist.txt
 :: Create directories like de\LC_MESSAGES
-for /f %%i in (gmolist.txt) do mkdir %DESTINATION%\%~ni\LC_MESSAGES
-for /f %%i in (gmolist.txt) do %MYCOPY% ..\po\%%i %DESTINATION%\%~ni\LC_MESSAGES\viking.mo
+for /f %%i in (gmolist.txt) do mkdir %DESTINATION%\%%~ni\LC_MESSAGES
+for /f %%i in (gmolist.txt) do %MYCOPY% ..\po\%%i %DESTINATION%\%%~ni\LC_MESSAGES\viking.mo
 del gmolist.txt
 
 echo Copying other stuff
