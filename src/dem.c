@@ -379,6 +379,8 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
     dem_mem = unzip_mem;
     file_size = ucsize;
   }
+  else
+    dem_mem = (gint16 *)dem_file;
 
   if (file_size == (num_rows_3sec * num_rows_3sec * sizeof(gint16)))
     arcsec = 3;
