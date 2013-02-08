@@ -134,7 +134,7 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
   gint babel_stdout;
 
   if (!g_spawn_async_with_pipes (NULL, args, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {
-    g_error("Async command failed: %s", error->message);
+    g_warning ("Async command failed: %s", error->message);
     g_error_free(error);
     ret = FALSE;
   } else {
