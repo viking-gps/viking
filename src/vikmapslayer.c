@@ -1305,13 +1305,19 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
     struct stat stat_buf;
     if ( g_stat ( filename, &stat_buf ) == 0 ) {
       time_t file_time = stat_buf.st_mtime;
+#if GLIB_CHECK_VERSION(2,26,0)
       GDateTime* gdt = g_date_time_new_from_unix_utc ( file_time );
       gchar *time = g_date_time_format ( gdt, "%c" );
-
+#else
+      char time[20];
+      strftime(time, 20, "%Y-%m-%d %H:%M:%S", localtime(&file_time));
+#endif
       message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: %s"), source, filename, time );
 
+#if GLIB_CHECK_VERSION(2,26,0)
       g_free ( time );
       g_date_time_unref ( gdt);
+#endif
     }
   }
   else
