@@ -149,7 +149,7 @@ static void get_from_anything ( w_and_interface_t *wi )
   g_free ( extra );
   g_free ( wi->options );
 
-  if (!result) {
+  if (wi->w->running && !result) {
     gdk_threads_enter();
     gtk_label_set_text ( GTK_LABEL(wi->w->status), _("Error: acquisition failed.") );
     if ( wi->creating_new_layer )
@@ -167,6 +167,11 @@ static void get_from_anything ( w_and_interface_t *wi )
 
   if ( wi->w->running ) {
     wi->w->running = FALSE;
+  }
+  else {
+    g_free ( wi->w );
+    g_free ( wi );
+    wi = NULL;
   }
 
   g_thread_exit ( NULL );
@@ -378,7 +383,9 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
       g_thread_create((GThreadFunc)get_from_anything, wi, FALSE, NULL );
       gtk_dialog_run ( GTK_DIALOG(dialog) );
       if (w->running) {
-	w->running = FALSE;
+        // Cancel and mark for thread to finish
+        w->running = FALSE;
+        // NB Thread will free memory
       } else {
         if ( cmd_off ) {
           /* Turn off */
@@ -387,13 +394,16 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
         }
         if ( extra_off )
           g_free ( extra_off );
+
+        // Thread finished by normal completion - free memory
+        g_free ( w );
+        g_free ( wi );
       }
     }
     else {
       // This shouldn't happen...
       gtk_label_set_text ( GTK_LABEL(w->status), _("Unable to create command\nAcquire method failed.") );
       gtk_dialog_run (GTK_DIALOG (dialog));
-      goto end;
     }
   }
   else {
@@ -411,12 +421,12 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
     // Actually show it if necessary
     if ( wi->w->source_interface->keep_dialog_open )
       gtk_dialog_run ( GTK_DIALOG(dialog) );
+
+    g_free ( w );
+    g_free ( wi );
   }
 
- end:
   gtk_widget_destroy ( dialog );
-  g_free ( w );
-  g_free ( wi );
 }
 
 /**
