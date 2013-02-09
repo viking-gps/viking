@@ -5,7 +5,9 @@ include $(top_srcdir)/gnome-doc-utils.make
 # Nevertheless we need to copy the images into figures/ so they are available for the distribution installed help
 # Most tool icons are _18, except the pan one which is _22 just to be annoying
 get-icons:
-	cp -f ../src/icons/*_[12][0-9].png C/figures/
+	-cp -f ../src/icons/*_[12][0-9].png C/figures/
+# '-' ^^^^^ means it doesn't care about the exit status
+#  this copy statement is not critical (especially when run under make distcheck)
 
 dist-hook: get-icons doc-dist-hook
 

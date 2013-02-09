@@ -1,8 +1,8 @@
 # Optionally build documentation bits
 if VIKING_DOC
-	DO_DOCS = "help doc"
+	DO_DOCS = "doc"
 endif
-SUBDIRS = src test data po win32 $(DO_DOCS)
+SUBDIRS = src test data po win32 help $(DO_DOCS)
 
 INTLTOOL = \
 	intltool-extract.in \

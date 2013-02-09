@@ -352,13 +352,13 @@ AC_CONFIG_FILES([
 		po/Makefile.in
 		data/Makefile
 		test/Makefile
+		help/Makefile
 		win32/Makefile
 		win32/installer/Makefile
 		win32/installer/pixmaps/Makefile
 		win32/installer/translations/Makefile])
 AM_COND_IF([VIKING_DOC],
 	[AC_CONFIG_FILES([
-		help/Makefile
 		doc/Makefile
 		doc/reference/Makefile
 		doc/examples/Makefile])])
