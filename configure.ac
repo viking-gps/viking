@@ -33,7 +33,7 @@ AC_SUBST(ACLOCAL_AMFLAGS)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([malloc.h netdb.h netinet/in.h stdlib.h string.h sys/param.h sys/socket.h sys/types.h sys/wait.h unistd.h math.h utime.h X11/Xlib.h])
+AC_CHECK_HEADERS([malloc.h stdlib.h string.h sys/param.h sys/types.h unistd.h math.h utime.h X11/Xlib.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -42,7 +42,7 @@ AC_TYPE_MODE_T
 # Checks for library functions or symbols
 AC_FUNC_STAT
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([floor gethostbyname memset mkdtemp pow realpath socket sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
+AC_CHECK_FUNCS([floor memset mkdtemp pow realpath sqrt strcasecmp strchr strdup strncasecmp strtol strtoul])
 AC_CHECK_LIB(m, tan)
 AC_CHECK_LIB(z, inflate)
 AC_CHECK_LIB(X11, XSetErrorHandler)
