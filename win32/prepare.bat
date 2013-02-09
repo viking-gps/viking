@@ -181,6 +181,7 @@ if not exist "%MINGW_BIN%\libcurl.dll" (
 	copy /Y libcurl\bin\*.* "%MinGW_BIN%"
 	copy /Y libcurl\lib\*.* "%MinGW%\lib"
 	copy /Y libcurl\docs\*.* "%MinGW%\doc"
+	copy /Y COPYING.txt "%MinGW%\COPYING_curl.txt"
 	rmdir /S /Q libcurl
 	del %CURL_TAR%
 	@echo OFF
@@ -222,6 +223,10 @@ if not exist "%MINGW_BIN%\libstdc++-6.dll" (
 	del %STDCPP_TAR%
 )
 
+::
+:: Ideally building the code on Windows shouldn't need Doc Utils or the Help processor stuff
+:: But ATM it's too hard to avoid.
+::
 echo =+=+=
 echo Checking Gnome Doc Utils...
 echo =+=+=
@@ -233,6 +238,54 @@ if not exist "%MINGW_BIN%\gnome-doc-prepare" (
 	echo Extracting Gnome Doc Utils...
 	7z x %GNOME_DOC_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
+)
+
+echo =+=+=
+echo Checking xsltproc...
+echo =+=+=
+set XLST=libxslt-1.1.26.win32
+set XLST_ZIP=%XLST%.zip
+if not exist "%MINGW_BIN%\xsltproc.exe" (
+	if not exist %XLST_ZIP% (
+		wget ftp://ftp.zlatkovic.com/libxml/%XLST_ZIP%
+	)
+	echo Extracting XLST...
+	7z x %XLST_ZIP%
+	xcopy /Y /S "%XLST%\bin\*" "%MinGW_BIN%"
+	if ERRORLEVEL 1 goto Error
+	rmdir /Q /S %XLST%
+)
+
+echo =+=+=
+echo Checking xmllint...
+echo =+=+=
+set XML2=libxml2-2.7.8.win32
+set XML2_ZIP=%XML2%.zip
+if not exist "%MINGW_BIN%\xmllint.exe" (
+	if not exist %XML2_ZIP% (
+		wget ftp://ftp.zlatkovic.com/libxml/%XML2_ZIP%
+	)
+	echo Extracting xmllint...
+	7z x %XML2_ZIP%
+	xcopy /Y /S "%XML2%\bin\*" "%MinGW_BIN%"
+	if ERRORLEVEL 1 goto Error
+	rmdir /Q /S %XML2%
+)
+
+echo =+=+=
+echo Checking iconv...
+echo =+=+=
+set ICONV=iconv-1.9.2.win32
+set ICONV_ZIP=%ICONV%.zip
+if not exist "%MINGW_BIN%\iconv.dll" (
+	if not exist %ICONV_ZIP% (
+		wget ftp://ftp.zlatkovic.com/libxml/%ICONV_ZIP%
+	)
+	echo Extracting iconv...
+	7z x %ICONV_ZIP%
+	xcopy /Y /S "%ICONV%\bin\*" "%MinGW_BIN%"
+	if ERRORLEVEL 1 goto Error
+	rmdir /Q /S %ICONV%
 )
 
 :: Note GPSBabel can not be directly downloaded via wget

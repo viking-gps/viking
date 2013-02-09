@@ -48,8 +48,6 @@ SetDateSave on
 !define HKLM_APP_PATHS_KEY			"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\viking.exe"
 !define VIKING_UNINST_EXE			"viking-uninst.exe"
 
-!define DOWNLOADER_URL				"http://downloads.sourceforge.net/viking/"
-
 ;--------------------------------
 ;Version resource
 VIProductVersion "${VIKING_VERSION}"
@@ -322,51 +320,8 @@ Section Uninstall
 
   cont_uninstall:
 
-    RMDir /r "$INSTDIR\etc"
-    RMDir /r "$INSTDIR\lib"
-    RMDir /r "$INSTDIR\locale"
-    RMDir /r "$INSTDIR\share"
-    Delete "$INSTDIR\AUTHORS.txt"
-    Delete "$INSTDIR\Changelog.txt"
-    Delete "$INSTDIR\COPYING_curl.txt"
-    Delete "$INSTDIR\COPYING_GPL.txt"
-    Delete "$INSTDIR\freetype6.dll"
-    Delete "$INSTDIR\gpsbabel.exe"
-    Delete "$INSTDIR\intl.dll"
-    Delete "$INSTDIR\libatk-1.0-0.dll"
-    Delete "$INSTDIR\libcairo-2.dll"
-    Delete "$INSTDIR\libcurl.dll"
-    Delete "$INSTDIR\libexif-12.dll"
-    Delete "$INSTDIR\libexpat.dll"
-    Delete "$INSTDIR\libexpat-1.dll"
-    Delete "$INSTDIR\libfontconfig-1.dll"
-    Delete "$INSTDIR\libgailutil-18.dll"
-    Delete "$INSTDIR\libgdk_pixbuf-2.0-0.dll"
-    Delete "$INSTDIR\libgdk-win32-2.0-0.dll"
-    Delete "$INSTDIR\libgio-2.0-0.dll"
-    Delete "$INSTDIR\libglib-2.0-0.dll"
-    Delete "$INSTDIR\libgmodule-2.0-0.dll"
-    Delete "$INSTDIR\libgobject-2.0-0.dll"
-    Delete "$INSTDIR\libgthread-2.0-0.dll"
-    Delete "$INSTDIR\libgtk-win32-2.0-0.dll"
-    Delete "$INSTDIR\libjpeg-7.dll"
-    Delete "$INSTDIR\libpango-1.0-0.dll"
-    Delete "$INSTDIR\libpangocairo-1.0-0.dll"
-    Delete "$INSTDIR\libpangoft2-1.0-0.dll"
-    Delete "$INSTDIR\libpangowin32-1.0-0.dll"
-    Delete "$INSTDIR\libpng12-0.dll"
-    Delete "$INSTDIR\libtiff-3.dll"
-    Delete "$INSTDIR\libtiffxx-3.dll"
-    Delete "$INSTDIR\NEWS.txt"
-    Delete "$INSTDIR\README.txt"
-    Delete "$INSTDIR\viking.exe"
-    Delete "$INSTDIR\viking.pdf"
-    Delete "$INSTDIR\zlib1.dll"
-    Delete "$INSTDIR\${VIKING_UNINST_EXE}"
-    Delete "$INSTDIR\install.log"
-
-    ;Try to remove Viking install dir (only if empty)
-    RMDir "$INSTDIR"
+    ;Simply wipe the Viking install dir
+    RMDir /r "$INSTDIR"
 
     ; Shortcuts..
     Delete "$DESKTOP\Viking.lnk"
