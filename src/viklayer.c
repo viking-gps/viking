@@ -82,7 +82,7 @@ static gboolean idle_draw ( VikLayer *vl )
  */
 void vik_layer_emit_update ( VikLayer *vl )
 {
-  if ( vl->visible ) {
+  if ( vl->visible && vl->realized ) {
     vik_window_set_redraw_trigger(vl);
 
     // Only ever draw when there is time to do so

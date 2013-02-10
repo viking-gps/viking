@@ -376,18 +376,21 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
       a_dems_list_free ( vdl->files );
       // Set file list so any other intermediate screen drawing updates will show currently loaded DEMs by the working thread
       vdl->files = data.sl;
-      // Thread Load
-      dem_load_thread_data *dltd = g_malloc ( sizeof(dem_load_thread_data) );
-      dltd->vdl = vdl;
-      dltd->vdl->files = data.sl;
+      // No need for thread if no files
+      if ( vdl->files ) {
+        // Thread Load
+        dem_load_thread_data *dltd = g_malloc ( sizeof(dem_load_thread_data) );
+        dltd->vdl = vdl;
+        dltd->vdl->files = data.sl;
 
-      a_background_thread ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
-			    _("DEM Loading"),
-			    (vik_thr_func) dem_layer_load_list_thread,
-			    dltd,
-			    (vik_thr_free_func) dem_layer_thread_data_free,
-			    (vik_thr_free_func) dem_layer_thread_cancel,
-			    g_list_length ( data.sl ) ); // Number of DEM files
+        a_background_thread ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
+                              _("DEM Loading"),
+                              (vik_thr_func) dem_layer_load_list_thread,
+                              dltd,
+                              (vik_thr_free_func) dem_layer_thread_data_free,
+                              (vik_thr_free_func) dem_layer_thread_cancel,
+                              g_list_length ( data.sl ) ); // Number of DEM files
+      }
       break;
     }
   }
