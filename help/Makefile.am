@@ -14,5 +14,5 @@ dist-hook: get-icons doc-dist-hook
 DOC_MODULE = viking
 DOC_ENTITIES = legal.xml
 DOC_INCLUDES =
-DOC_FIGURES = figures/*.png
+DOC_FIGURES = figures/*.png figures/*.jpg
 DOC_LINGUAS =

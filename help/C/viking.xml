@@ -179,6 +179,12 @@ View, create and update Geotagged Images (using EXIF data).
 &appname; is under continual improvement: see the potential areas in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Main_Page#TODO_.2F_Ideas"><citetitle>Roadmap / Wishlist</citetitle></ulink>:
 </para>
 </note>
+<figure>
+<title>Screenshot: OSM Cycle Map and Many Tracks</title>
+<screenshot>
+  <graphic format="JPG" fileref="figures/Viking-OSM-CycleMap-ManyTracks.jpg"/>
+</screenshot>
+</figure>
 </section>
 
 <section><title>General Concepts</title>
