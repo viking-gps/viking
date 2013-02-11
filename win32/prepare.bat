@@ -26,7 +26,7 @@ set BIN_UTILS=binutils-2.19.1-mingw32-bin.tar.gz
 set GCC_CORE=gcc-core-3.4.5-20060117-3.tar.gz
 set GCC_GPP=gcc-g++-3.4.5-20060117-3.tar.gz
 set MINGWRTDLL=mingwrt-3.15.2-mingw32-dll.tar.gz
-set MINGWRTDEV=mingwrt-3.15.2-mingw32-dll.tar.gz
+set MINGWRTDEV=mingwrt-3.15.2-mingw32-dev.tar.gz
 set W32API=w32api-3.13-mingw32-dev.tar.gz
 
 if not exist "%MINGW_BIN%" (
