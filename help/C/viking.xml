@@ -1583,7 +1583,30 @@ Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic filere
 Click to download a single tile. Drag to download tiles in the dragged rectangle area.
 </para>
 <para>
-Right-click to redownload bad/all tiles. Right-click and drag to redownload bad/all tiles in the dragged rectangle area.
+Right-click to redownload tiles via the selected method. Right-click and drag to redownload tiles in the dragged rectangle area by the selected method.
+The possible methods to redownload one or more tiles are:
+</para>
+<para>
+<itemizedlist>
+<listitem><para>Bad - Only if the tile is corrupt in some way or missing, then this will download a new copy</para></listitem>
+<listitem><para>New - Refresh the tile according to the local map cache and if server has a newer version</para></listitem>
+<listitem><para>All - Redownload the tile</para></listitem>
+</itemizedlist>
+</para>
+<formalpara><title>Map Tile Information</title>
+<para>
+By right clicking on viewport you can see the tile properties of the that location for the current map layer and current zoom level.
+This includes the remote source URL for the tile and the cached version on the local filesystem with timestamp details.
+</para>
+</formalpara>
+<para>
+<figure>
+<title>Map Tile Info Dialog: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/map_tile_info_dialog.png"/>
+</screenshot>
+</figure>
+This is using MapQuest at &appname; zoom level 128 over the Isle of Wight, UK.
 </para>
 </section>
 
