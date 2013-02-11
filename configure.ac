@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(viking, 1.3.2)
+AC_INIT(viking, 1.4)
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])

@@ -1,3 +1,51 @@
+Viking 1.4 (2013-02-11)
+New features since 1.3.2
+* Support for GPX Route type including transfer to/from GPS Devices.
+** Replaced 'Add Track' tool with 'Create Route' tool. (NB There still is the Create Track tool)
+* Support for GPX 'Description' for tracks, waypoints and routes.
+* Add ability to Acquire My OSM Traces and ability to choose any subset of the available traces.
+* GPS Upload from a track.
+* Enable giving a track a specific colour (drawn in default draw by track mode).
+* Enable drawing all tracks in a specific colour (no longer is Black the only option).
+* Allow option of drawing a direction arrow when drawing a track.
+* Allow configuration of trackpoint size and direction arrow size.
+* Display Waypoint Icons in the layers panel treeview.
+* Restored Route Finding via Google Services. [Was disabled in 1.3.2 due to change in formats supported]
+* Only display sublayer container when there are sublayers.
+* Display map tile source and cached file information in a dialog for a position.
+* Quick zoom level change from the statusbar by clicking on the zoom level to select another level.
+* In the Zoom Tool mode: can select an area to zoom in on (via holding shift key + drag mouse).
+* Mouse Zooming in/out maintains the position focus on the mouse pointer location.
+** (Use the keys Ctrl+Shift and mouse zoom to maintain the centered map location).
+* Improvements in Acquiring Wikipedia Points (allow more points, sortable columns, URL and feature type).
+* Allow opening a URL on a waypoint which has a URL for a comment or description.
+* Re-organized TrackWaypoint Layer menus to group functionality together better with New, View, Combine, Split, Delete, Acquire and Upload submenus.
+* Gradient Graph view on the Track Properties.
+* Allow same named TrackWaypoint sublayer items. i.e. can now have 2 (or more) waypoints with the same name.
+* Add support of a Map type for a local On Disk OSM Tile Format.
+* Revised Draw Track by Speed mode with a simple traffic light colouring scheme to represent slow/average/fast speeds.
+* Enable deletion of track points with the same timestamp.
+* Ability to merge segments of a track.
+* Allow generation of large pixel sized images.
+* Rework image generation to ask for file name first and then only allow supported map zoom levels.
+* Allow control of waypoint text size on the viewport display.
+* Allow control of GPX file saving track order (either Alphabetical or By Time via global preference).
+* Keyboard shortcuts to create layers and enable some tools.
+* Show the bearing and the step distance of the next point when creating a track or route.
+* Improved feedback in reading erroneous files.
+* Improved Help Manual.
+* More translation texts including a Finnish version.
+* Scripts to support the creation of the Windows Executable Installer.
+* Add a python tool to convert the Viking tile cache into a MapBox MBTiles format file.
+* Many internal improvements.
+
+Fixes since 1.3.2
+* Don't accidently overwrite GPX and KML files in the Viking file type.
+* Use the default desktop font for waypoint viewport display text.
+* Ensure when opening multiple .vik files they are each loaded into a new window.
+* Show UTM location in statusbar when in UTM mode.
+* Fix: crash when dealing with non-compressed DEM files
+
 Viking 1.3.2 (2012-09-23)
 Bug Fix Release including:
 * Removed Route Finder Tool as Google Direction service interface has disabled the method Viking interfaced with it.
