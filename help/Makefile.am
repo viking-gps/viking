@@ -14,5 +14,26 @@ dist-hook: get-icons doc-dist-hook
 DOC_MODULE = viking
 DOC_ENTITIES = legal.xml
 DOC_INCLUDES =
-DOC_FIGURES = figures/*.png figures/*.jpg
+DOC_FIGURES = \
+    figures/addtr_18.png \
+    figures/addwp_18.png \
+    figures/demdl_18.png \
+    figures/edtr_18.png \
+    figures/edwp_18.png \
+    figures/geomove_18.png \
+    figures/geozoom_18.png \
+    figures/map_tile_info_dialog.png \
+    figures/mapdl_18.png \
+    figures/mover_22.png \
+    figures/properties_degree.png \
+    figures/properties_units.png \
+    figures/route_finder_18.png \
+    figures/ruler_18.png \
+    figures/select_18.png \
+    figures/showpic_18.png \
+    figures/trw_statusbar.png \
+    figures/vik_new_route_18.png \
+    figures/zoom_18.png \
+    figures/zoom_status_popup.png \
+    figures/Viking-OSM-CycleMap-ManyTracks.jpg
 DOC_LINGUAS =
