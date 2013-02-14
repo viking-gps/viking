@@ -71,31 +71,14 @@ static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
 static gchar * params_vik_fileref[] = {N_("Absolute"), N_("Relative"), NULL};
 
-static VikLayerParam prefs1[] = {
+static VikLayerParam general_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL, NULL },
-};
-
-static VikLayerParam prefs2[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "units_distance", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Distance units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_distance, NULL, NULL },
-};
-
-static VikLayerParam prefs3[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "units_speed", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Speed units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_speed, NULL, NULL },
-};
-
-static VikLayerParam prefs4[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "units_height", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Height units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_height, NULL, NULL },
-};
-
-static VikLayerParam prefs5[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL },
-};
-
-static VikLayerParam prefs6[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default latitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL, NULL },
-};
-static VikLayerParam prefs7[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default longitude:"),  VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default latitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default longitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL, NULL },
 };
 
 /* External/Export Options */
@@ -139,25 +122,25 @@ void a_vik_preferences_init ()
 
   VikLayerParamData tmp;
   tmp.u = VIK_DEGREE_FORMAT_DMS;
-  a_preferences_register(prefs1, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register(&general_prefs[0], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   tmp.u = VIK_UNITS_DISTANCE_KILOMETRES;
-  a_preferences_register(prefs2, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register(&general_prefs[1], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   tmp.u = VIK_UNITS_SPEED_KILOMETRES_PER_HOUR;
-  a_preferences_register(prefs3, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register(&general_prefs[2], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   tmp.u = VIK_UNITS_HEIGHT_METRES;
-  a_preferences_register(prefs4, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register(&general_prefs[3], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   tmp.b = TRUE;
-  a_preferences_register(prefs5, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register(&general_prefs[4], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   /* Maintain the default location to New York */
   tmp.d = 40.714490;
-  a_preferences_register(prefs6, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register(&general_prefs[5], tmp, VIKING_PREFERENCES_GROUP_KEY);
   tmp.d = -74.007130;
-  a_preferences_register(prefs7, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register(&general_prefs[6], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
