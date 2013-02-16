@@ -28,6 +28,8 @@ SetDateSave on
 !include "Sections.nsh"
 !include "WinVer.nsh"
 !include "LogicLib.nsh"
+;; http://nsis.sourceforge.net/File_Association
+!include "FileAssociation.nsh"
 
 !include "FileFunc.nsh"
 !insertmacro GetParameters
@@ -279,15 +281,12 @@ SectionGroup /e $(VIKING_SHORTCUTS_SECTION_TITLE) SecShortcuts
   SectionEnd
 SectionGroupEnd
 
+;--------------------------------
+;File association
 
-
-
-
-
-
-
-
-
+Section $(VIKING_FILE_ASSOCIATION_SECTION_TITLE) SecFileAssociation
+  ${registerExtension} "$INSTDIR\viking.exe" ".vik" "Viking File"
+SectionEnd
 
 
 ;--------------------------------
@@ -326,6 +325,9 @@ Section Uninstall
     ; Shortcuts..
     Delete "$DESKTOP\Viking.lnk"
 
+    ; File association
+    ${unregisterExtension} ".vik" "Viking File"
+
     Goto done
 
   cant_uninstall:
@@ -351,6 +353,8 @@ SectionEnd ; end of uninstall section
         $(VIKING_DESKTOP_SHORTCUT_DESC)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenuShortcut} \
         $(VIKING_STARTMENU_SHORTCUT_DESC)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecFileAssociation} \
+        $(VIKING_FILE_ASSOCIATION_DESC)
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 

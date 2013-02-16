@@ -5,7 +5,7 @@
 ;;  Spanish language strings for the Windows Viking NSIS installer.
 ;;  Windows Code page: 1252
 ;;
-;;  Author: Roberto Camarero <rcamarero@gmail.com>
+;;  Author: Roberto
 ;;
 ;; Modified for Viking by Mathieu Albinet <mathieu_a@users.sourceforge.net>
 
@@ -25,11 +25,13 @@
 !define VIKING_SHORTCUTS_SECTION_TITLE		"Accesos directos"
 !define VIKING_DESKTOP_SHORTCUT_SECTION_TITLE	"Escritorio"
 !define VIKING_STARTMENU_SHORTCUT_SECTION_TITLE	"Menú Inicio"
+!define VIKING_FILE_ASSOCIATION_SECTION_TITLE	"Extensión.vik"
 !define VIKING_SECTION_DESCRIPTION		"Ficheros y DLLs de base de Viking"
 
 !define VIKING_SHORTCUTS_SECTION_DESCRIPTION	"Accesos directos para lanzar Viking"
 !define VIKING_DESKTOP_SHORTCUT_DESC		"Crear un acceso directo a Viking en el escritorio"
 !define VIKING_STARTMENU_SHORTCUT_DESC		"Crear un acceso directo a Viking en el menú de inicio"
+!define VIKING_FILE_ASSOCIATION_DESC    "Asociar Viking con la extensión .vik"
 
 ; Installer Finish Page
 !define VIKING_FINISH_VISIT_WEB_SITE		"Visite la página web de Viking" 
