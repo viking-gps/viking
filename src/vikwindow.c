@@ -3219,7 +3219,7 @@ static GtkActionEntry entries[] = {
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         NULL,                                           (GCallback)preferences_cb              },
-  { "LayerDefaults",GTK_STOCK_PREFERENCES, N_("_Layer Defaults"),             NULL,         NULL,                                           NULL },
+  { "LayerDefaults",GTK_STOCK_PROPERTIES, N_("_Layer Defaults"),             NULL,         NULL,                                           NULL },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         NULL,                                           (GCallback)menu_properties_cb    },
 
   { "HelpEntry", GTK_STOCK_HELP,         N_("_Help"),                         "F1",         NULL,                                           (GCallback)help_help_cb     },
