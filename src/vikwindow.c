@@ -571,6 +571,9 @@ static void drag_data_received_cb ( GtkWidget *widget,
 #define VIK_SETTINGS_WIN_FULLSCREEN "window_fullscreen"
 #define VIK_SETTINGS_WIN_WIDTH "window_width"
 #define VIK_SETTINGS_WIN_HEIGHT "window_height"
+#define VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH "window_save_image_width"
+#define VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT "window_save_image_height"
+#define VIK_SETTINGS_WIN_SAVE_IMAGE_PNG "window_save_image_as_png"
 
 static void vik_window_init ( VikWindow *vw )
 {
@@ -601,9 +604,22 @@ static void vik_window_init ( VikWindow *vw )
  
   vw->pan_move = FALSE; 
   vw->pan_x = vw->pan_y = -1;
-  vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
-  vw->draw_image_height = DRAW_IMAGE_DEFAULT_HEIGHT;
-  vw->draw_image_save_as_png = DRAW_IMAGE_DEFAULT_SAVE_AS_PNG;
+
+  gint draw_image_width;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, &draw_image_width ) )
+    vw->draw_image_width = draw_image_width;
+  else
+    vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
+  gint draw_image_height;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT, &draw_image_height ) )
+    vw->draw_image_height = draw_image_height;
+  else
+    vw->draw_image_height = DRAW_IMAGE_DEFAULT_HEIGHT;
+  gboolean draw_image_save_as_png;
+  if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SAVE_IMAGE_PNG, &draw_image_save_as_png ) )
+    vw->draw_image_save_as_png = draw_image_save_as_png;
+  else
+    vw->draw_image_save_as_png = DRAW_IMAGE_DEFAULT_SAVE_AS_PNG;
 
   main_vbox = gtk_vbox_new(FALSE, 1);
   gtk_container_add (GTK_CONTAINER (vw), main_vbox);
@@ -830,6 +846,13 @@ static gboolean delete_event( VikWindow *vw )
       default: gtk_widget_destroy ( GTK_WIDGET(dia) ); return ! save_file(NULL, vw);
     }
   }
+
+  if ( window_count == 1 ) {
+    a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, vw->draw_image_width );
+    a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT, vw->draw_image_height );
+    a_settings_set_boolean ( VIK_SETTINGS_WIN_SAVE_IMAGE_PNG, vw->draw_image_save_as_png );
+  }
+
   return FALSE;
 }
 
