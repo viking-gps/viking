@@ -3042,13 +3042,16 @@ static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
       gtk_file_filter_add_mime_type ( filter, "image/jpeg");
       gtk_file_chooser_add_filter ( chooser, filter );
 
+      if ( !vw->draw_image_save_as_png )
+        gtk_file_chooser_set_filter ( chooser, filter );
+
       filter = gtk_file_filter_new ();
       gtk_file_filter_set_name ( filter, _("PNG") );
       gtk_file_filter_add_mime_type ( filter, "image/png");
       gtk_file_chooser_add_filter ( chooser, filter );
 
-      // Default to pngs
-      gtk_file_chooser_set_filter ( chooser, filter );
+      if ( vw->draw_image_save_as_png )
+        gtk_file_chooser_set_filter ( chooser, filter );
 
       gtk_window_set_transient_for ( GTK_WINDOW(vw->save_img_dia), GTK_WINDOW(vw) );
       gtk_window_set_destroy_with_parent ( GTK_WINDOW(vw->save_img_dia), TRUE );
