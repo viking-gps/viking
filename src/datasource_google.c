@@ -40,7 +40,7 @@ typedef struct {
 static gchar *last_from_str = NULL;
 static gchar *last_to_str = NULL;
 
-static gpointer datasource_google_init( );
+static gpointer datasource_google_init ( acq_vik_t *avt );
 static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_google_get_cmd_string ( datasource_google_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
 static void datasource_google_cleanup ( gpointer data );
@@ -64,7 +64,7 @@ VikDataSourceInterface vik_datasource_google_interface = {
   (VikDataSourceOffFunc)                NULL,
 };
 
-static gpointer datasource_google_init ( )
+static gpointer datasource_google_init ( acq_vik_t *avt )
 {
   datasource_google_widgets_t *widgets = g_malloc(sizeof(*widgets));
   return widgets;

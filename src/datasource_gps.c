@@ -45,7 +45,7 @@ static gboolean last_get_tracks = TRUE;
 static gboolean last_get_routes = TRUE;
 static gboolean last_get_waypoints = TRUE;
 
-static gpointer datasource_gps_init_func ( );
+static gpointer datasource_gps_init_func ( acq_vik_t *avt );
 static void datasource_gps_get_cmd_string ( gpointer add_widgets_data_not_used, gchar **babelargs, gchar **input_file, gpointer not_used );
 static void datasource_gps_cleanup ( gpointer user_data );
 static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w );
@@ -109,7 +109,7 @@ typedef struct {
   int count;
 } gps_user_data_t;
 
-static gpointer datasource_gps_init_func ()
+static gpointer datasource_gps_init_func ( acq_vik_t *avt )
 {
   return g_malloc (sizeof(gps_user_data_t));
 }
@@ -565,7 +565,7 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
  */
 gpointer datasource_gps_setup ( GtkWidget *dialog, vik_gps_xfer_type xfer, gboolean xfer_all )
 {
-  gps_user_data_t *w_gps = (gps_user_data_t *)datasource_gps_init_func();
+  gps_user_data_t *w_gps = (gps_user_data_t *)datasource_gps_init_func ( NULL );
   datasource_gps_add_setup_widgets ( dialog, NULL, w_gps );
 
   gboolean way = xfer_all;

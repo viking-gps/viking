@@ -43,7 +43,7 @@ typedef struct {
 
 static gdouble last_page_number = 0;
 
-static gpointer datasource_osm_init( );
+static gpointer datasource_osm_init ( acq_vik_t *avt );
 static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
 static void datasource_osm_cleanup ( gpointer data );
@@ -67,9 +67,11 @@ VikDataSourceInterface vik_datasource_osm_interface = {
   (VikDataSourceOffFunc)                NULL,
 };
 
-static gpointer datasource_osm_init ( )
+static gpointer datasource_osm_init ( acq_vik_t *avt )
 {
   datasource_osm_widgets_t *widgets = g_malloc(sizeof(*widgets));
+  /* Keep reference to viewport */
+  widgets->vvp = avt->vvp;
   return widgets;
 }
 
@@ -83,8 +85,6 @@ static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), page_number_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->page_number, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
-  /* Keep reference to viewport */
-  widgets->vvp = vvp;
 }
 
 static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options )

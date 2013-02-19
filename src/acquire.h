@@ -33,6 +33,12 @@ G_BEGIN_DECLS
 
 typedef struct _VikDataSourceInterface VikDataSourceInterface;
 
+typedef struct {
+  VikWindow *vw;
+  VikLayersPanel *vlp;
+  VikViewport *vvp;
+} acq_vik_t;
+
 /**
  * acq_dialog_widgets_t:
  *
@@ -68,7 +74,7 @@ typedef enum {
  * 
  * Returns: pointer to state if OK, otherwise %NULL
  */
-typedef gpointer (*VikDataSourceInitFunc) ();
+typedef gpointer (*VikDataSourceInitFunc) ( acq_vik_t *avt );
 
 /**
  * VikDataSourceCheckExistenceFunc:

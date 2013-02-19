@@ -226,6 +226,11 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   gpointer user_data;
   gpointer options = NULL;
 
+  acq_vik_t avt;
+  avt.vlp = vlp;
+  avt.vvp = vvp;
+  avt.vw = vw;
+
   /* for UI builder */
   gpointer pass_along_data;
   VikLayerParamData *paramdatas = NULL;
@@ -234,7 +239,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
 
   /*** INIT AND CHECK EXISTENCE ***/
   if ( source_interface->init_func )
-    user_data = source_interface->init_func();
+    user_data = source_interface->init_func(&avt);
   else
     user_data = NULL;
   pass_along_data = user_data;
