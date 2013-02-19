@@ -2246,8 +2246,12 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
     {
       VikWaypoint *w = g_hash_table_lookup ( l->waypoints, sublayer );
       // NB It's OK to return NULL
-      if ( w )
-        return w->comment;
+      if ( w ) {
+        if ( w->comment )
+          return w->comment;
+        else
+          return w->description;
+      }
     }
     break;
     default: break;
