@@ -22,8 +22,6 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <string.h>
-#include <limits.h>
 
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
@@ -35,8 +33,6 @@
 #include "gpx.h"
 #include "acquire.h"
 #include "osm-traces.h"
-#include "preferences.h"
-#include "curl_download.h"
 #include "datasource_gps.h"
 #include "bbox.h"
 
