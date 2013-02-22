@@ -346,7 +346,7 @@ vik_print_preview_realize (GtkWidget *widget)
 
   cursor = gdk_cursor_new_for_display (gtk_widget_get_display (widget),
                                        GDK_FLEUR);
-  gdk_window_set_cursor (widget->window, cursor);
+  gdk_window_set_cursor (gtk_widget_get_window(widget), cursor);
   gdk_cursor_unref (cursor);
 }
 
@@ -367,7 +367,7 @@ vik_print_preview_event (GtkWidget        *widget,
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      gdk_pointer_grab (widget->window, FALSE,
+      gdk_pointer_grab (gtk_widget_get_window(widget), FALSE,
                         (GDK_BUTTON1_MOTION_MASK |
                          GDK_BUTTON_RELEASE_MASK),
                         NULL, NULL, event->button.time);
@@ -456,18 +456,18 @@ vik_print_preview_expose_event (GtkWidget        *widget,
                                        &top_margin,
                                        &bottom_margin);
 
-  cr = gdk_cairo_create (widget->window);
+  cr = gdk_cairo_create (gtk_widget_get_window(widget));
 
   scale = vik_print_preview_get_scale (preview);
 
   /* draw background */
   cairo_scale (cr, scale, scale);
-  gdk_cairo_set_source_color (cr, &widget->style->white);
+  gdk_cairo_set_source_color (cr, &gtk_widget_get_style(widget)->white);
   cairo_rectangle (cr, 0, 0, paper_width, paper_height);
   cairo_fill (cr);
 
   /* draw page_margins */
-  gdk_cairo_set_source_color (cr, &widget->style->black);
+  gdk_cairo_set_source_color (cr, &gtk_widget_get_style(widget)->black);
   cairo_rectangle (cr,
                    left_margin,
                    top_margin,

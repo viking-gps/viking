@@ -591,18 +591,18 @@ void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr
 	else
 		track_string = g_strdup_printf ( _("Using all tracks in: %s"), VIK_LAYER(widgets->vtl)->name );
 
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), gtk_label_new ( track_string ), FALSE, FALSE, 5 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), gtk_label_new ( track_string ), FALSE, FALSE, 5 );
 
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), GTK_WIDGET(widgets->files), TRUE, TRUE, 0 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), GTK_WIDGET(widgets->files), TRUE, TRUE, 0 );
 
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), cw_hbox,  FALSE, FALSE, 0);
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), ow_hbox,  FALSE, FALSE, 0);
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), we_hbox,  FALSE, FALSE, 0);
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), og_hbox,  FALSE, FALSE, 0);
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), fm_hbox,  FALSE, FALSE, 0);
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), is_hbox,  FALSE, FALSE, 0);
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), to_hbox,  FALSE, FALSE, 0);
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(widgets->dialog)->vbox), tz_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), cw_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), ow_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), we_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), og_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), fm_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), is_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), to_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), tz_hbox,  FALSE, FALSE, 0);
 
 	g_signal_connect ( widgets->dialog, "response", G_CALLBACK(trw_layer_geotag_response_cb), widgets );
 

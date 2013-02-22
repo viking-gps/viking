@@ -1296,11 +1296,11 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
   window = gtk_widget_get_toplevel (widgets->elev_box);
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
-  no_alt_info = gdk_gc_new ( window->window );
+  no_alt_info = gdk_gc_new ( gtk_widget_get_window(window) );
   gdk_color_parse ( "yellow", &color );
   gdk_gc_set_rgb_fg_color ( no_alt_info, &color);
 
@@ -1354,8 +1354,8 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   if ( gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_dem)) ||
        gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed)) ) {
 
-    GdkGC *dem_alt_gc = gdk_gc_new ( window->window );
-    GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
+    GdkGC *dem_alt_gc = gdk_gc_new ( gtk_widget_get_window(window) );
+    GdkGC *gps_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
 
     gdk_color_parse ( "green", &color );
     gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
@@ -1459,7 +1459,7 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
 
   window = gtk_widget_get_toplevel (widgets->gradient_box);
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
@@ -1496,7 +1496,7 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->gradients[i]-mina)/(chunksg[widgets->cig]*LINES) );
 
   if ( gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_gradient_gps_speed)) ) {
-    GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
+    GdkGC *gps_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
 
     gdk_color_parse ( "red", &color );
     gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
@@ -1567,7 +1567,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   window = gtk_widget_get_toplevel (widgets->speed_box);
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
@@ -1635,7 +1635,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_gps_speed)) ) {
 
-    GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
+    GdkGC *gps_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
     GdkColor color;
     gdk_color_parse ( "red", &color );
     gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
@@ -1710,7 +1710,7 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   window = gtk_widget_get_toplevel (widgets->dist_box);
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
@@ -1764,7 +1764,7 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   // Show speed indicator
   if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_dist_speed)) ) {
-    GdkGC *dist_speed_gc = gdk_gc_new ( window->window );
+    GdkGC *dist_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
     GdkColor color;
     gdk_color_parse ( "red", &color );
     gdk_gc_set_rgb_fg_color ( dist_speed_gc, &color);
@@ -1826,7 +1826,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   window = gtk_widget_get_toplevel (widgets->elev_time_box);
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
@@ -1875,7 +1875,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   // Show speed indicator
   if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed)) ) {
-    GdkGC *elev_speed_gc = gdk_gc_new ( window->window );
+    GdkGC *elev_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
     GdkColor color;
     gdk_color_parse ( "red", &color );
     gdk_gc_set_rgb_fg_color ( elev_speed_gc, &color);
@@ -1943,7 +1943,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   window = gtk_widget_get_toplevel (widgets->speed_dist_box);
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
 
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
@@ -2012,7 +2012,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_sd_gps_speed)) ) {
 
-    GdkGC *gps_speed_gc = gdk_gc_new ( window->window );
+    GdkGC *gps_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
     GdkColor color;
     gdk_color_parse ( "red", &color );
     gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
@@ -2418,7 +2418,7 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widget
 
   minmax_array(widgets->altitudes, min_alt, max_alt, TRUE, widgets->profile_width);
   
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
   g_object_unref ( G_OBJECT(pix) );
@@ -2448,7 +2448,7 @@ GtkWidget *vik_trw_layer_create_gradient ( GtkWidget *window, PropWidgets *widge
     return NULL;
   }
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
   g_object_unref ( G_OBJECT(pix) );
@@ -2476,7 +2476,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, PropWidgets *widgets
   if ( widgets->speeds == NULL )
     return NULL;
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
 #if 0
@@ -2527,7 +2527,7 @@ GtkWidget *vik_trw_layer_create_dtdiag ( GtkWidget *window, PropWidgets *widgets
   if ( widgets->distances == NULL )
     return NULL;
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
   g_object_unref ( G_OBJECT(pix) );
@@ -2556,7 +2556,7 @@ GtkWidget *vik_trw_layer_create_etdiag ( GtkWidget *window, PropWidgets *widgets
   if ( widgets->ats == NULL )
     return NULL;
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
   g_object_unref ( G_OBJECT(pix) );
@@ -2584,7 +2584,7 @@ GtkWidget *vik_trw_layer_create_sddiag ( GtkWidget *window, PropWidgets *widgets
   if ( widgets->speeds_dist == NULL )
     return NULL;
 
-  pix = gdk_pixmap_new( window->window, widgets->profile_width + MARGIN, widgets->profile_height, -1 );
+  pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width + MARGIN, widgets->profile_height, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
 
   g_object_unref ( G_OBJECT(pix) );
@@ -3143,7 +3143,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-distance")));
   }
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), graphs, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), graphs, FALSE, FALSE, 0);
 
   gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, FALSE);
   if (seg_count <= 1)

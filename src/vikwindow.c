@@ -733,7 +733,7 @@ static void window_configure_event ( VikWindow *vw )
     first = 0;
     vw->viewport_cursor = (GdkCursor *)toolbox_get_cursor(vw->vt, "Pan");
     /* We set cursor, even if it is NULL: it resets to default */
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->viewport_cursor );
+    gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
   }
 }
 
@@ -1193,12 +1193,12 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
     w1 = vik_viewport_get_width(vvp); 
     h1 = vik_viewport_get_height(vvp);
     if (!buf) {
-      buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+      buf = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), w1, h1, -1 );
     }
     gdk_drawable_get_size(buf, &w2, &h2);
     if (w1 != w2 || h1 != h2) {
       g_object_unref ( G_OBJECT ( buf ) );
-      buf = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+      buf = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), w1, h1, -1 );
     }
 
     vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
@@ -1210,7 +1210,7 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
     draw_ruler(vvp, buf, gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
     if (draw_buf_done) {
       static gpointer pass_along[3];
-      pass_along[0] = GTK_WIDGET(vvp)->window;
+      pass_along[0] = gtk_widget_get_window(GTK_WIDGET(vvp));
       pass_along[1] = gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc;
       pass_along[2] = buf;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
@@ -1300,7 +1300,7 @@ static void zoomtool_resize_pixmap (zoom_tool_state_t *zts)
 
     if ( !zts->pixmap ) {
       // Totally new
-      zts->pixmap = gdk_pixmap_new ( GTK_WIDGET(zts->vw->viking_vvp)->window, w1, h1, -1 );
+      zts->pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(zts->vw->viking_vvp)), w1, h1, -1 );
     }
 
     gdk_drawable_get_size ( zts->pixmap, &w2, &h2 );
@@ -1308,7 +1308,7 @@ static void zoomtool_resize_pixmap (zoom_tool_state_t *zts)
     if ( w1 != w2 || h1 != h2 ) {
       // Has changed - delete and recreate with new values
       g_object_unref ( G_OBJECT ( zts->pixmap ) );
-      zts->pixmap = gdk_pixmap_new ( GTK_WIDGET(zts->vw->viking_vvp)->window, w1, h1, -1 );
+      zts->pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(zts->vw->viking_vvp)), w1, h1, -1 );
     }
 }
 
@@ -1426,7 +1426,7 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
     // Only actually draw when there's time to do so
     if (draw_buf_done) {
       static gpointer pass_along[3];
-      pass_along[0] = GTK_WIDGET(zts->vw->viking_vvp)->window;
+      pass_along[0] = gtk_widget_get_window(GTK_WIDGET(zts->vw->viking_vvp));
       pass_along[1] = gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc;
       pass_along[2] = zts->pixmap;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
@@ -1821,7 +1821,6 @@ static void help_help_cb ( GtkAction *a, VikWindow *vw )
 #ifdef WINDOWS
   ShellExecute(NULL, "open", ""PACKAGE".pdf", NULL, NULL, SW_SHOWNORMAL);
 #else /* WINDOWS */
-#if GTK_CHECK_VERSION (2, 14, 0)
   gchar *uri;
   uri = g_strdup_printf("ghelp:%s", PACKAGE);
   GError *error = NULL;
@@ -1835,9 +1834,6 @@ static void help_help_cb ( GtkAction *a, VikWindow *vw )
     g_error_free ( error );
   }
   g_free(uri);
-#else
-  a_dialog_error_msg ( GTK_WINDOW(vw), "Help is not available in this build." ); // Unlikely to happen so not going to bother with I8N
-#endif
 #endif /* WINDOWS */
 }
 
@@ -2034,9 +2030,9 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 
   vw->viewport_cursor = (GdkCursor *)toolbox_get_cursor(vw->vt, gtk_action_get_name(a));
 
-  if ( GTK_WIDGET(vw->viking_vvp)->window )
+  if ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)) )
     /* We set cursor, even if it is NULL: it resets to default */
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->viewport_cursor );
+    gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
 
   if (!strcmp(gtk_action_get_name(a), "Pan")) {
     vw->current_tool = TOOL_PAN;
@@ -3127,18 +3123,18 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   if ( ! vw->draw_image_save_as_png )
     gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(jpeg_radio), TRUE );
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), width_label, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), width_spin, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), height_label, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), height_spin, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), width_label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), width_spin, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), height_label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), height_spin, FALSE, FALSE, 0);
 #ifdef WINDOWS
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), win_warning_label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), win_warning_label, FALSE, FALSE, 0);
 #endif
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), current_window_button, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), png_radio, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), jpeg_radio, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), zoom_label, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), zoom_combo, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), current_window_button, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), png_radio, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), jpeg_radio, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zoom_label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zoom_combo, FALSE, FALSE, 0);
 
   if ( ! one_image_only )
   {
@@ -3148,17 +3144,17 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
     tiles_width_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( 5, 1, 10, 1, 100, 0 )), 1, 0 );
     tiles_height_label = gtk_label_new ( _("North-south image tiles:") );
     tiles_height_spin = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new ( 5, 1, 10, 1, 100, 0 )), 1, 0 );
-    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), tiles_width_label, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), tiles_width_spin, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), tiles_height_label, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), tiles_height_spin, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tiles_width_label, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tiles_width_spin, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tiles_height_label, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tiles_height_spin, FALSE, FALSE, 0);
 
     current_window_pass_along [4] = tiles_width_spin;
     current_window_pass_along [5] = tiles_height_spin;
     g_signal_connect ( G_OBJECT(tiles_width_spin), "value-changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
     g_signal_connect ( G_OBJECT(tiles_height_spin), "value-changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
   }
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), total_size_label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), total_size_label, FALSE, FALSE, 0);
   g_signal_connect ( G_OBJECT(width_spin), "value-changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
   g_signal_connect ( G_OBJECT(height_spin), "value-changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
   g_signal_connect ( G_OBJECT(zoom_combo), "changed", G_CALLBACK(draw_to_image_file_total_area_cb), current_window_pass_along );
@@ -3167,7 +3163,7 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
-  gtk_widget_show_all ( GTK_DIALOG(dialog)->vbox );
+  gtk_widget_show_all ( gtk_dialog_get_content_area(GTK_DIALOG(dialog)) );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
@@ -3289,11 +3285,11 @@ static void set_bg_color ( GtkAction *a, VikWindow *vw )
 {
   GtkWidget *colorsd = gtk_color_selection_dialog_new ( _("Choose a background color") );
   GdkColor *color = vik_viewport_get_background_gdkcolor ( vw->viking_vvp );
-  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
-  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
+  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
+  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
   if ( gtk_dialog_run ( GTK_DIALOG(colorsd) ) == GTK_RESPONSE_OK )
   {
-    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
+    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
     vik_viewport_set_background_gdkcolor ( vw->viking_vvp, color );
     draw_update ( vw );
   }
@@ -3305,11 +3301,11 @@ static void set_highlight_color ( GtkAction *a, VikWindow *vw )
 {
   GtkWidget *colorsd = gtk_color_selection_dialog_new ( _("Choose a track highlight color") );
   GdkColor *color = vik_viewport_get_highlight_gdkcolor ( vw->viking_vvp );
-  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
-  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
+  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
+  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
   if ( gtk_dialog_run ( GTK_DIALOG(colorsd) ) == GTK_RESPONSE_OK )
   {
-    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(GTK_COLOR_SELECTION_DIALOG(colorsd)->colorsel), color );
+    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
     vik_viewport_set_highlight_gdkcolor ( vw->viking_vvp, color );
     draw_update ( vw );
   }

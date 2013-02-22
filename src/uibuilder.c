@@ -301,7 +301,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
       guint8 current_group;
       guint16 tab_widget_count;
       notebook = gtk_notebook_new ();
-      gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), notebook, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), notebook, FALSE, FALSE, 0);
       tables = g_malloc ( sizeof(GtkWidget *) * groups_count );
       for ( current_group = 0; current_group < groups_count; current_group++ )
       {
@@ -320,7 +320,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
     else
     {
       table = gtk_table_new( widget_count, 1, FALSE );
-      gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), table, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, FALSE, FALSE, 0);
     }
 
     for ( i = 0, j = 0; i < params_count; i++ )

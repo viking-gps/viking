@@ -80,8 +80,8 @@ static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   page_number_label = gtk_label_new (_("Page number:"));
   widgets->page_number = gtk_spin_button_new_with_range(0, 100, 1);
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(widgets->page_number), last_page_number);
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), page_number_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), widgets->page_number, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), page_number_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->page_number, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
   /* Keep reference to viewport */
   widgets->vvp = vvp;

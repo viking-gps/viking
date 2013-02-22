@@ -507,7 +507,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
   GtkWidget *pass_along[4];
 
   table = gtk_table_new ( 6, 2, FALSE );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0 );
 
   wfp_hbox = gtk_hbox_new ( FALSE, 0 );
   wfp_label = gtk_label_new ( _("World File Parameters:") );

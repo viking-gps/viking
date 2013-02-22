@@ -82,10 +82,10 @@ static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport
     gtk_entry_set_text(GTK_ENTRY(widgets->from_entry), last_from_str);
   if (last_to_str)
     gtk_entry_set_text(GTK_ENTRY(widgets->to_entry), last_to_str);
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), from_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), widgets->from_entry, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), to_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), widgets->to_entry, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), from_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->from_entry, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), to_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->to_entry, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
 }
 

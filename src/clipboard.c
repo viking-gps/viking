@@ -64,7 +64,7 @@ static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint 
   if ( info == 0 ) {
     // Viking Data Type
     //    g_print("clip_get: vc = %p, size = %d\n", vc, sizeof(*vc) + vc->len);
-    gtk_selection_data_set ( selection_data, selection_data->target, 8, (void *)vc, sizeof(*vc) + vc->len );
+    gtk_selection_data_set ( selection_data, gtk_selection_data_get_target(selection_data), 8, (void *)vc, sizeof(*vc) + vc->len );
   }
   if ( info == 1 ) {
     // Should be a string, but make sure it's something
@@ -91,17 +91,17 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
 {
   VikLayersPanel *vlp = p;
   vik_clipboard_t *vc;
-  if (sd->length == -1) {
+  if (gtk_selection_data_get_length(sd) == -1) {
     g_warning ( _("paste failed") );
     return;
   } 
-  //  g_print("clip receive: target = %s, type = %s\n", gdk_atom_name(sd->target), gdk_atom_name(sd->type));
-  g_assert(!strcmp(gdk_atom_name(sd->target), target_table[0].target));
+  //  g_print("clip receive: target = %s, type = %s\n", gdk_atom_name(gtk_selection_data_get_target(sd), gdk_atom_name(sd->type));
+  g_assert(!strcmp(gdk_atom_name(gtk_selection_data_get_target(sd)), target_table[0].target));
 
-  vc = (vik_clipboard_t *)sd->data;
+  vc = (vik_clipboard_t *)gtk_selection_data_get_data(sd);
   //  g_print("  sd->data = %p, sd->length = %d, vc->len = %d\n", sd->data, sd->length, vc->len);
 
-  if (sd->length != sizeof(*vc) + vc->len) {
+  if (gtk_selection_data_get_length(sd) != sizeof(*vc) + vc->len) {
     g_warning ( _("wrong clipboard data size") );
     return;
   }
@@ -256,15 +256,15 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
   gint tag = 0, i;
   struct LatLon coord;
 
-  if (sd->length == -1) {
+  if (gtk_selection_data_get_length(sd) == -1) {
     return;
   } 
 
   /* - copying from Mozilla seems to give html in UTF-16. */
-  if (!(s =  g_convert ( (gchar *)sd->data, sd->length, "UTF-8", "UTF-16", &r, &w, &err))) {
+  if (!(s =  g_convert ( (gchar *)gtk_selection_data_get_data(sd), gtk_selection_data_get_length(sd), "UTF-8", "UTF-16", &r, &w, &err))) {
     return;
   }
-  //  g_print("html is %d bytes long: %s\n", sd->length, s);
+  //  g_print("html is %d bytes long: %s\n", gtk_selection_data_get_length(sd), s);
 
   /* scrape a coordinate pasted from a geocaching.com page: look for a 
    * telltale tag if possible, and then remove tags 
@@ -406,12 +406,12 @@ static void clip_determine_viking_type ( GtkClipboard *c, GtkSelectionData *sd, 
   // Default value
   *vdct = VIK_CLIPBOARD_DATA_NONE;
   vik_clipboard_t *vc;
-  if (sd->length == -1) {
+  if (gtk_selection_data_get_length(sd) == -1) {
     g_warning ("DETERMINING TYPE: length failure");
     return;
   }
 
-  vc = (vik_clipboard_t *)sd->data;
+  vc = (vik_clipboard_t *)gtk_selection_data_get_data(sd);
 
   if ( !vc->type )
     return;

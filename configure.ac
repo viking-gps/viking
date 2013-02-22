@@ -67,7 +67,7 @@ dnl  ------------------
 PKG_CHECK_MODULES(PACKAGE, [
         glib-2.0          >= 2.16
         gthread-2.0       >= 2.2
-        gtk+-2.0          >= 2.12
+        gtk+-2.0          >= 2.14
         gio-2.0           >= 2.12
 ])
 
