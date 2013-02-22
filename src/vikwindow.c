@@ -157,8 +157,6 @@ struct _VikWindow {
 
   GtkToolbar *toolbar;
 
-  GtkItemFactory *item_factory;
-
   /* tool management state */
   guint current_tool;
   toolbox_tools_t *vt;
@@ -479,7 +477,6 @@ static void vik_window_init ( VikWindow *vw )
   gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
 
   vw->filename = NULL;
-  vw->item_factory = NULL;
 
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
