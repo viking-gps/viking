@@ -840,7 +840,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 			   vml->cache_dir, mode,
 			   ulm.scale, ulm.z, ulm.x, ulm.y );
             if ( g_file_test ( path_buf, G_FILE_TEST_EXISTS ) == TRUE ) {
-	      GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
+	      GdkGC *black_gc = gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc;
               vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil );
             }
           } else {

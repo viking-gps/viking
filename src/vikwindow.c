@@ -1029,7 +1029,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     gint wb, hb, xb, yb;
 
     pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
-    pango_layout_set_font_description (pl, GTK_WIDGET(vvp)->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
     pango_layout_set_text(pl, "N", -1);
     gdk_draw_layout(d, gc, x1-5, y1-CR-3*CW-8, pl);
 
@@ -1195,13 +1195,13 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
     vik_coord_to_latlon ( &coord, &ll );
     vik_viewport_coord_to_screen ( vvp, &s->oldcoord, &oldx, &oldy );
 
-    gdk_draw_drawable (buf, GTK_WIDGET(vvp)->style->black_gc, 
+    gdk_draw_drawable (buf, gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc,
 		       vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
-    draw_ruler(vvp, buf, GTK_WIDGET(vvp)->style->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
+    draw_ruler(vvp, buf, gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
     if (draw_buf_done) {
       static gpointer pass_along[3];
       pass_along[0] = GTK_WIDGET(vvp)->window;
-      pass_along[1] = GTK_WIDGET(vvp)->style->black_gc;
+      pass_along[1] = gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc;
       pass_along[2] = buf;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
@@ -1387,7 +1387,7 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
 
     // Blank out currently drawn area
     gdk_draw_drawable ( zts->pixmap,
-                        GTK_WIDGET(zts->vw->viking_vvp)->style->black_gc,
+                        gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc,
                         vik_viewport_get_pixmap(zts->vw->viking_vvp),
                         0, 0, 0, 0, -1, -1);
 
@@ -1411,13 +1411,13 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
     }
 
     // Draw the box
-    gdk_draw_rectangle (zts->pixmap, GTK_WIDGET(zts->vw->viking_vvp)->style->black_gc, FALSE, xx, yy, width, height);
+    gdk_draw_rectangle (zts->pixmap, gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc, FALSE, xx, yy, width, height);
 
     // Only actually draw when there's time to do so
     if (draw_buf_done) {
       static gpointer pass_along[3];
       pass_along[0] = GTK_WIDGET(zts->vw->viking_vvp)->window;
-      pass_along[1] = GTK_WIDGET(zts->vw->viking_vvp)->style->black_gc;
+      pass_along[1] = gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc;
       pass_along[2] = zts->pixmap;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;

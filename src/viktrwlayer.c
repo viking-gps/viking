@@ -1476,9 +1476,9 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
 
 	      GdkGC *tmp_gc;
 	      if ( ((oldx - x) > 0 && (oldy - y) > 0) || ((oldx - x) < 0 && (oldy - y) < 0))
-		tmp_gc = GTK_WIDGET(dp->vp)->style->light_gc[3];
+		tmp_gc = gtk_widget_get_style(GTK_WIDGET(dp->vp))->light_gc[3];
 	      else
-		tmp_gc = GTK_WIDGET(dp->vp)->style->dark_gc[0];
+		tmp_gc = gtk_widget_get_style(GTK_WIDGET(dp->vp))->dark_gc[0];
 	      vik_viewport_draw_polygon ( dp->vp, tmp_gc, TRUE, tmp, 4);
 
               vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy-FIXALTITUDE(list->data), x, y-FIXALTITUDE(list->next->data));
@@ -1835,7 +1835,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
   }
 
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
-  pango_layout_set_font_description (rv->wplabellayout, GTK_WIDGET(vp)->style->font_desc);
+  pango_layout_set_font_description (rv->wplabellayout, gtk_widget_get_style(GTK_WIDGET(vp))->font_desc);
 
   gdk_color_parse ( "#000000", &(rv->track_color) ); // Black
 
@@ -7630,7 +7630,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     gchar *str = distance_string (distance);
 
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
-    pango_layout_set_font_description (pl, GTK_WIDGET(vvp)->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
 
     pango_layout_set_text (pl, str, -1);
     gint wd, hd;

@@ -452,18 +452,18 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
 			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
     /* black scale */
-    vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+    vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
-    vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+    vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
-    vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+    vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
     if (odd%2) {
       int i;
       for (i=1; i<5; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
 			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
-        vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+        vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
       }
     } else {
@@ -471,12 +471,12 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       for (i=1; i<10; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
   			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
-        vik_viewport_draw_line(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc, 
+        vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
   			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
       }
     }
     pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
-    pango_layout_set_font_description (pl, GTK_WIDGET(&vvp->drawing_area)->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->font_desc);
 
     switch (dist_units) {
     case VIK_UNITS_DISTANCE_KILOMETRES:
@@ -502,7 +502,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
     }
     pango_layout_set_text(pl, s, -1);
-    vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
+    vik_viewport_draw_layout(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			   PAD + len + PAD, vvp->height - PAD - 10, pl);
     g_object_unref(pl);
     pl = NULL;
@@ -543,7 +543,7 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
 
   /* create pango layout */
   pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
-  pango_layout_set_font_description (pl, GTK_WIDGET(&vvp->drawing_area)->style->font_desc);
+  pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->font_desc);
   pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
 
   /* Set the text */
@@ -552,7 +552,7 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
   /* Use maximum of half the viewport width */
   pango_layout_set_width ( pl, ( vvp->width / 2 ) * PANGO_SCALE );
   pango_layout_get_pixel_extents(pl, &ink_rect, &logical_rect);
-  vik_viewport_draw_layout(vvp, GTK_WIDGET(&vvp->drawing_area)->style->black_gc,
+  vik_viewport_draw_layout(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			   vvp->width / 2, vvp->height - logical_rect.height, pl);
 
   /* Free memory */
@@ -588,7 +588,7 @@ void vik_viewport_draw_centermark ( VikViewport *vvp )
   const int gap = 4;
   int center_x = vvp->width/2;
   int center_y = vvp->height/2;
-  GdkGC * black_gc = GTK_WIDGET(&vvp->drawing_area)->style->black_gc;
+  GdkGC * black_gc = gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc;
 
   /* white back ground */
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x - gap, center_y);
@@ -634,7 +634,7 @@ gboolean vik_viewport_get_draw_highlight ( VikViewport *vvp )
 void vik_viewport_sync ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
-  gdk_draw_drawable(GTK_WIDGET(vvp)->window, GTK_WIDGET(vvp)->style->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, 0, 0, vvp->width, vvp->height);
+  gdk_draw_drawable(GTK_WIDGET(vvp)->window, gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, 0, 0, vvp->width, vvp->height);
 }
 
 void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off )
@@ -642,7 +642,7 @@ void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off )
   gint x, y, wid, hei;
 
   g_return_if_fail ( vvp != NULL );
-  gdk_draw_drawable(GTK_WIDGET(vvp)->window, GTK_WIDGET(vvp)->style->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, x_off, y_off, vvp->width, vvp->height);
+  gdk_draw_drawable(GTK_WIDGET(vvp)->window, gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, x_off, y_off, vvp->width, vvp->height);
 
   if (x_off >= 0) {
     x = 0;
@@ -1020,9 +1020,8 @@ void vik_viewport_draw_pixbuf ( VikViewport *vvp, GdkPixbuf *pixbuf, gint src_x,
                               gint dest_x, gint dest_y, gint w, gint h )
 {
   gdk_draw_pixbuf ( vvp->scr_buffer,
-// GTK_WIDGET(vvp)->style->black_gc,
-NULL,
- pixbuf,
+                    NULL,
+                    pixbuf,
                     src_x, src_y, dest_x, dest_y, w, h,
                     GDK_RGB_DITHER_NONE, 0, 0 );
 }

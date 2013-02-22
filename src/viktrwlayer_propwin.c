@@ -556,7 +556,7 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 	gdouble marker_x = (pc * widgets->profile_width) + MARGIN;
 	save_image_and_draw_graph_marks(image,
 					marker_x,
-					window->style->black_gc,
+					gtk_widget_get_style(window)->black_gc,
 					-1, // Don't draw blob on clicks
 					0,
 					graph_saved_img,
@@ -764,7 +764,7 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
 
   save_image_and_draw_graph_marks (image,
 				   marker_x,
-				   window->style->black_gc,
+				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN+x,
 				   y_blob,
 				   &widgets->elev_graph_saved_img,
@@ -841,7 +841,7 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
 
   save_image_and_draw_graph_marks (image,
 				   marker_x,
-				   window->style->black_gc,
+				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN+x,
 				   y_blob,
 				   &widgets->gradient_graph_saved_img,
@@ -932,7 +932,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 
   save_image_and_draw_graph_marks (image,
 				   marker_x,
-				   window->style->black_gc,
+				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN+x,
 				   y_blob,
 				   &widgets->speed_graph_saved_img,
@@ -1011,7 +1011,7 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 
   save_image_and_draw_graph_marks (image,
 				   marker_x,
-				   window->style->black_gc,
+				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN+x,
 				   y_blob,
 				   &widgets->dist_graph_saved_img,
@@ -1090,7 +1090,7 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 
   save_image_and_draw_graph_marks (image,
 				   marker_x,
-				   window->style->black_gc,
+				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN+x,
 				   y_blob,
 				   &widgets->elev_time_graph_saved_img,
@@ -1186,7 +1186,7 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 
   save_image_and_draw_graph_marks (image,
 				   marker_x,
-				   window->style->black_gc,
+				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN+x,
 				   y_blob,
 				   &widgets->speed_dist_graph_saved_img,
@@ -1305,9 +1305,9 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   gdk_gc_set_rgb_fg_color ( no_alt_info, &color);
 
   /* clear the image */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
 		     TRUE, 0, 0, MARGIN, widgets->profile_height);
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
 		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
   
   /* draw grid */
@@ -1317,7 +1317,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, window->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
@@ -1333,10 +1333,10 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
     }
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
+    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
 		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
+    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
 		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
@@ -1348,7 +1348,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
       gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, 
 		      i + MARGIN, 0, i + MARGIN, widgets->profile_height );
     else 
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
+      gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->altitudes[i]-mina)/(chunksa[widgets->cia]*LINES) );
 
   if ( gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_dem)) ||
@@ -1386,7 +1386,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   }
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
   g_object_unref ( G_OBJECT(no_alt_info) );
@@ -1464,9 +1464,9 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
   /* clear the image */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
 		     TRUE, 0, 0, MARGIN, widgets->profile_height);
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
 		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
   
   /* draw grid */
@@ -1476,15 +1476,15 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, window->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     sprintf(s, "%8d%%", (int)(mina + (LINES-i)*chunksg[widgets->cig]));
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
+    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
 		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
+    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
 		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
@@ -1492,7 +1492,7 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
 
   /* draw gradients */
   for ( i = 0; i < widgets->profile_width; i++ )
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
+    gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->gradients[i]-mina)/(chunksg[widgets->cig]*LINES) );
 
   if ( gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_gradient_gps_speed)) ) {
@@ -1518,7 +1518,7 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
   }
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
 }
@@ -1582,9 +1582,9 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   mins = widgets->draw_min_speed;
   
   /* clear the image */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0], 
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
 		     TRUE, 0, 0, MARGIN, widgets->profile_height);
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0], 
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
 		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
 
   /* draw grid */
@@ -1594,7 +1594,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, window->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     // NB: No need to convert here anymore as numbers are in the appropriate units
     switch (speed_units) {
@@ -1617,10 +1617,10 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3, 
+    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
 		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0], 
+    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
 		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
@@ -1629,7 +1629,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   /* draw speeds */
   for ( i = 0; i < widgets->profile_width; i++ )
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3], 
+    gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->speeds[i]-mins)/(chunkss[widgets->cis]*LINES) );
 
 
@@ -1671,7 +1671,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   }
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
 }
@@ -1727,9 +1727,9 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   get_new_min_and_chunk_index (0, maxd, chunksd, sizeof(chunksd)/sizeof(chunksd[0]), &dummy, &widgets->cid);
 
   /* clear the image */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0],
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
 		     TRUE, 0, 0, MARGIN, widgets->profile_height);
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0],
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
 		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
 
   /* draw grid */
@@ -1739,7 +1739,7 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, window->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     if ( dist_units == VIK_UNITS_DISTANCE_MILES )
       sprintf(s, _("%.1f miles"), ((LINES-i)*chunksd[widgets->cid]));
@@ -1748,10 +1748,10 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3,
+    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
 		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0],
+    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
 		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
@@ -1759,7 +1759,7 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   
   /* draw distance */
   for ( i = 0; i < widgets->profile_width; i++ )
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3],
+    gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->distances[i])/(chunksd[widgets->cid]*LINES) );
 
   // Show speed indicator
@@ -1782,7 +1782,7 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   }
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
 
@@ -1831,9 +1831,9 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
 
   /* clear the image */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0],
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
 		     TRUE, 0, 0, MARGIN, widgets->profile_height);
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0],
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
 		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
 
   /* draw grid */
@@ -1843,7 +1843,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, window->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
@@ -1859,10 +1859,10 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     }
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3,
+    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
 		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0],
+    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
 		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
@@ -1870,7 +1870,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   /* draw elevations */
   for ( i = 0; i < widgets->profile_width; i++ )
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3],
+    gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->ats[i]-mina)/(chunksa[widgets->ciat]*LINES) );
 
   // Show speed indicator
@@ -1893,7 +1893,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   }
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
 
@@ -1959,9 +1959,9 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   mins = widgets->draw_min_speed;
   
   /* clear the image */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->bg_gc[0],
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
 		     TRUE, 0, 0, MARGIN, widgets->profile_height);
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->mid_gc[0],
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
 		     TRUE, MARGIN, 0, widgets->profile_width, widgets->profile_height);
 
   /* draw grid */
@@ -1971,7 +1971,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     int w, h;
 
     pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, window->style->font_desc);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     // NB: No need to convert here anymore as numbers are in the appropriate units
     switch (speed_units) {
@@ -1994,10 +1994,10 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
     pango_layout_set_text(pl, s, -1);
     pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), window->style->fg_gc[0], MARGIN-w-3,
+    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
 		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), window->style->dark_gc[0],
+    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
 		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
     g_object_unref ( G_OBJECT ( pl ) );
     pl = NULL;
@@ -2006,7 +2006,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   /* draw speeds */
   for ( i = 0; i < widgets->profile_width; i++ )
-      gdk_draw_line ( GDK_DRAWABLE(pix), window->style->dark_gc[3],
+    gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
 		      i + MARGIN, widgets->profile_height, i + MARGIN, widgets->profile_height-widgets->profile_height*(widgets->speeds_dist[i]-mins)/(chunkss[widgets->cisd]*LINES) );
 
 
@@ -2049,7 +2049,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   }
 
   /* draw border */
-  gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
+  gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc, FALSE, MARGIN, 0, widgets->profile_width-1, widgets->profile_height-1);
 
   g_object_unref ( G_OBJECT(pix) );
 }
@@ -2105,7 +2105,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 
       save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       window->style->black_gc,
+				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN,
 				       y_blob,
 				       &widgets->elev_graph_saved_img,
@@ -2153,7 +2153,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 
       save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       window->style->black_gc,
+				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN,
 				       y_blob,
 				       &widgets->gradient_graph_saved_img,
@@ -2203,7 +2203,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 
       save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       window->style->black_gc,
+				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN,
 				       y_blob,
 				       &widgets->speed_graph_saved_img,
@@ -2253,7 +2253,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 
       save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       window->style->black_gc,
+				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN,
 				       y_blob,
 				       &widgets->dist_graph_saved_img,
@@ -2302,7 +2302,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 
       save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       window->style->black_gc,
+				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN,
 				       y_blob,
 				       &widgets->elev_time_graph_saved_img,
@@ -2350,7 +2350,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 
       save_image_and_draw_graph_marks (image,
 				       marker_x,
-				       window->style->black_gc,
+				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN,
 				       y_blob,
 				       &widgets->speed_dist_graph_saved_img,
@@ -2483,19 +2483,19 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, PropWidgets *widgets
   /* XXX this can go out, it's just a helpful dev tool */
   {
     int j;
-    GdkGC **colors[8] = { window->style->bg_gc,
-			  window->style->fg_gc,
-			  window->style->light_gc,
-			  window->style->dark_gc,
-			  window->style->mid_gc,
-			  window->style->text_gc,
-			  window->style->base_gc,
-			  window->style->text_aa_gc };
+    GdkGC **colors[8] = { gtk_widget_get_style(window)->bg_gc,
+			  gtk_widget_get_style(window)->fg_gc,
+			  gtk_widget_get_style(window)->light_gc,
+			  gtk_widget_get_style(window)->dark_gc,
+			  gtk_widget_get_style(window)->mid_gc,
+			  gtk_widget_get_style(window)->text_gc,
+			  gtk_widget_get_style(window)->base_gc,
+			  gtk_widget_get_style(window)->text_aa_gc };
     for (i=0; i<5; i++) {
       for (j=0; j<8; j++) {
 	gdk_draw_rectangle(GDK_DRAWABLE(pix), colors[j][i],
 			   TRUE, i*20, j*20, 20, 20);
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), window->style->black_gc,
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc,
 			   FALSE, i*20, j*20, 20, 20);
       }
     }
