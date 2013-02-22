@@ -48,9 +48,9 @@ G_DEFINE_TYPE (VikStatusbar, vik_statusbar, GTK_TYPE_HBOX)
 static guint vik_statusbar_signals[LAST_SIGNAL] = { 0 };
 
 static gint
-forward_signal (GtkObject *object, gpointer user_data)
+forward_signal (GObject *object, gpointer user_data)
 {
-    gint item = GPOINTER_TO_INT (gtk_object_get_data ( object, "type" ));
+    gint item = GPOINTER_TO_INT (g_object_get_data ( object, "type" ));
     VikStatusbar *vs = VIK_STATUSBAR (user_data);
 
     g_signal_emit (G_OBJECT (vs),
@@ -91,7 +91,7 @@ vik_statusbar_init (VikStatusbar *vs)
       vs->status[i] = gtk_statusbar_new();
       gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[i]), FALSE );
     }
-    gtk_object_set_data (GTK_OBJECT (vs->status[i]), "type", GINT_TO_POINTER(i));
+    g_object_set_data (G_OBJECT (vs->status[i]), "type", GINT_TO_POINTER(i));
   }
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_TOOL], FALSE, FALSE, 1);

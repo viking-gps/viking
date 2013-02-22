@@ -382,7 +382,7 @@ static void zoom_changed (GtkMenuShell *menushell,
   VikWindow *vw = VIK_WINDOW (user_data);
 
   GtkWidget *aw = gtk_menu_get_active ( GTK_MENU (menushell) );
-  gint active = GPOINTER_TO_INT(gtk_object_get_data ( GTK_OBJECT (aw), "position" ));
+  gint active = GPOINTER_TO_INT(g_object_get_data ( G_OBJECT (aw), "position" ));
 
   gdouble zoom_request = pow (2, active-2 );
 
@@ -406,7 +406,7 @@ static GtkWidget * create_zoom_menu_all_levels ()
       GtkWidget *item = gtk_menu_item_new_with_label (itemLabels[i]);
       gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
       gtk_widget_show (item);
-      gtk_object_set_data (GTK_OBJECT (item), "position", GINT_TO_POINTER(i));
+      g_object_set_data (G_OBJECT (item), "position", GINT_TO_POINTER(i));
     }
 
   return menu;
