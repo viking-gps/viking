@@ -1191,7 +1191,7 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
     g_object_ref_sink ( G_OBJECT(trwlayer->wp_right_click_menu) );
 
   if ( trwlayer->track_right_click_menu )
-    gtk_object_sink ( GTK_OBJECT(trwlayer->track_right_click_menu) );
+    g_object_ref_sink ( G_OBJECT(trwlayer->track_right_click_menu) );
 
   if ( trwlayer->wplabellayout != NULL)
     g_object_unref ( G_OBJECT ( trwlayer->wplabellayout ) );
@@ -7153,7 +7153,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
     if ( track->name ) {
 
       if ( vtl->track_right_click_menu )
-        gtk_object_sink ( GTK_OBJECT(vtl->track_right_click_menu) );
+        g_object_ref_sink ( G_OBJECT(vtl->track_right_click_menu) );
 
       vtl->track_right_click_menu = GTK_MENU ( gtk_menu_new () );
       
@@ -7196,7 +7196,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
     if ( waypoint->name ) {
 
       if ( vtl->wp_right_click_menu )
-        gtk_object_sink ( GTK_OBJECT(vtl->wp_right_click_menu) );
+        g_object_ref_sink ( G_OBJECT(vtl->wp_right_click_menu) );
 
       vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
 
