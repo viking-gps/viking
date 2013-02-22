@@ -104,6 +104,8 @@ gchar *trw_layer_new_unique_sublayer_name ( VikTrwLayer *vtl, gint sublayer_type
 
 void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gpointer *trk_id );
 
+void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coord, gboolean vertical );
+
 G_END_DECLS
 
 #endif

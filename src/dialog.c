@@ -194,7 +194,7 @@ static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
    When an existing waypoint the default name is shown but is not allowed to be changed and NULL is returned
  */
 /* todo: less on this side, like add track */
-gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new, gboolean *updated )
+gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *vtl, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new, gboolean *updated )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Waypoint Properties"),
                                                    parent,
@@ -347,6 +347,11 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   gtk_widget_show_all ( GTK_DIALOG(dialog)->vbox );
+
+  if ( !is_new ) {
+    // Shift left<->right to try not to obscure the waypoint.
+    trw_layer_dialog_shift ( vtl, GTK_WINDOW(dialog), &(wp->coord), FALSE );
+  }
 
   while ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {

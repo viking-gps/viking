@@ -2932,7 +2932,7 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
   if ( elev != VIK_DEM_INVALID_ELEVATION )
     wp->altitude = (gdouble)elev;
 
-  returned_name = a_dialog_waypoint ( w, default_name, wp, vtl->coord_mode, TRUE, &updated );
+  returned_name = a_dialog_waypoint ( w, default_name, vtl, wp, vtl->coord_mode, TRUE, &updated );
 
   if ( returned_name )
   {
@@ -4326,7 +4326,7 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
     if ( wp && wp->name )
     {
       gboolean updated = FALSE;
-      a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wp->name, wp, vtl->coord_mode, FALSE, &updated );
+      a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wp->name, vtl, wp, vtl->coord_mode, FALSE, &updated );
 
       if ( updated && pass_along[6] )
         vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, pass_along[6], get_wp_sym_small (wp->symbol) );
@@ -6899,6 +6899,95 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
     vik_layer_emit_update(VIK_LAYER(vtl));
 }
 
+/**
+ * trw_layer_dialog_shift:
+ * @vertical: The reposition strategy. If Vertical moves dialog vertically, otherwise moves it horizontally
+ *
+ * Try to reposition a dialog if it's over the specified coord
+ *  so to not obscure the item of interest
+ */
+void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coord, gboolean vertical )
+{
+  GtkWindow *parent = VIK_GTK_WINDOW_FROM_LAYER(vtl); //i.e. the main window
+
+  // get parent window position & size
+  gint win_pos_x, win_pos_y;
+  gtk_window_get_position ( parent, &win_pos_x, &win_pos_y );
+
+  gint win_size_x, win_size_y;
+  gtk_window_get_size ( parent, &win_size_x, &win_size_y );
+
+  // get own dialog size
+  gint dia_size_x, dia_size_y;
+  gtk_window_get_size ( dialog, &dia_size_x, &dia_size_y );
+
+  // get own dialog position
+  gint dia_pos_x, dia_pos_y;
+  gtk_window_get_position ( dialog, &dia_pos_x, &dia_pos_y );
+
+  // Dialog not 'realized'/positioned - so can't really do any repositioning logic
+  if ( dia_pos_x > 2 && dia_pos_y > 2 ) {
+
+    VikViewport *vvp = vik_window_viewport ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+
+    gint vp_xx, vp_yy; // In viewport pixels
+    vik_viewport_coord_to_screen ( vvp, coord, &vp_xx, &vp_yy );
+
+    // Work out the 'bounding box' in pixel terms of the dialog and only move it when over the position
+
+    gint dest_x = 0;
+    gint dest_y = 0;
+    if ( gtk_widget_translate_coordinates ( GTK_WIDGET(vvp), GTK_WIDGET(parent), 0, 0, &dest_x, &dest_y ) ) {
+
+      // Transform Viewport pixels into absolute pixels
+      gint tmp_xx = vp_xx + dest_x + win_pos_x - 10;
+      gint tmp_yy = vp_yy + dest_y + win_pos_y - 10;
+
+      // Is dialog over the point (to within an  ^^ edge value)
+      if ( (tmp_xx > dia_pos_x) && (tmp_xx < (dia_pos_x + dia_size_x)) &&
+           (tmp_yy > dia_pos_y) && (tmp_yy < (dia_pos_y + dia_size_y)) ) {
+
+        if ( vertical ) {
+	  // Shift up<->down
+          gint hh = vik_viewport_get_height ( vvp );
+
+          // Consider the difference in viewport to the full window
+          gint offset_y = dest_y;
+          // Add difference between dialog and window sizes
+          offset_y += win_pos_y + (hh/2 - dia_size_y)/2;
+
+          if ( vp_yy > hh/2 ) {
+            // Point in bottom half, move window to top half
+            gtk_window_move ( dialog, dia_pos_x, offset_y );
+          }
+          else {
+            // Point in top half, move dialog down
+            gtk_window_move ( dialog, dia_pos_x, hh/2 + offset_y );
+          }
+	}
+	else {
+	  // Shift left<->right
+          gint ww = vik_viewport_get_width ( vvp );
+
+          // Consider the difference in viewport to the full window
+          gint offset_x = dest_x;
+          // Add difference between dialog and window sizes
+          offset_x += win_pos_x + (ww/2 - dia_size_x)/2;
+
+          if ( vp_xx > ww/2 ) {
+            // Point on right, move window to left
+            gtk_window_move ( dialog, offset_x, dia_pos_y );
+          }
+          else {
+            // Point on left, move right
+            gtk_window_move ( dialog, ww/2 + offset_x, dia_pos_y );
+          }
+	}
+      }
+    }
+  }
+}
+
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
 {
   if ( ! vtl->tpwin )
@@ -6907,8 +6996,18 @@ static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
     g_signal_connect_swapped ( GTK_DIALOG(vtl->tpwin), "response", G_CALLBACK(trw_layer_tpwin_response), vtl );
     /* connect signals -- DELETE SIGNAL VERY IMPORTANT TO SET TO NULL */
     g_signal_connect_swapped ( vtl->tpwin, "delete-event", G_CALLBACK(trw_layer_cancel_current_tp), vtl );
+
     gtk_widget_show_all ( GTK_WIDGET(vtl->tpwin) );
+
+    if ( vtl->current_tpl ) {
+      // get tp pixel position
+      VikTrackpoint *tp = VIK_TRACKPOINT(vtl->current_tpl->data);
+
+      // Shift up<->down to try not to obscure the trackpoint.
+      trw_layer_dialog_shift ( vtl, GTK_WINDOW(vtl->tpwin), &(tp->coord), TRUE );
+    }
   }
+
   if ( vtl->current_tpl )
     if ( vtl->current_tp_track )
       vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );

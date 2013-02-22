@@ -28,6 +28,7 @@
 #include "coords.h"
 #include "vikwaypoint.h"
 #include "vikcoord.h"
+#include "viktrwlayer.h"
 
 G_BEGIN_DECLS
 
@@ -57,7 +58,7 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
     The name to use is returned
    When an existing waypoint the name is shown but is not allowed to be changed and NULL is returned
  */
-gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new, gboolean *updated );
+gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *vtl, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new, gboolean *updated );
 
 gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *default_name, gboolean is_route );
 
