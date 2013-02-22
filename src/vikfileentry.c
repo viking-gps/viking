@@ -77,7 +77,7 @@ GtkWidget *vik_file_entry_new (GtkFileChooserAction action)
   return GTK_WIDGET(vfe);
 }
 
-G_CONST_RETURN gchar *vik_file_entry_get_filename ( VikFileEntry *vfe )
+const gchar *vik_file_entry_get_filename ( VikFileEntry *vfe )
 {
   return gtk_entry_get_text ( GTK_ENTRY(vfe->entry) );
 }

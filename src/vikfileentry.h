@@ -45,7 +45,7 @@ struct _VikFileEntryClass
 GType vik_file_entry_get_type ();
 
 GtkWidget *vik_file_entry_new (GtkFileChooserAction action);
-G_CONST_RETURN gchar *vik_file_entry_get_filename ( VikFileEntry *vfe );
+const gchar *vik_file_entry_get_filename ( VikFileEntry *vfe );
 void vik_file_entry_set_filename ( VikFileEntry *vfe, const gchar *filename );
 
 G_END_DECLS
