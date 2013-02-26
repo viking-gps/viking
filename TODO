@@ -1,3 +1,17 @@
+===============================
+ FOR HISTORICAL REFERENCE ONLY
+===============================
+
+This file hasn't been touched since early 2007 (other than this update!)
+
+Most of the TODOs/ideas are now maintained in the Wiki and/or feature requests in the SourceForge tracker.
+
+It also contains some historical implementation data for changes made in the 0.0.X series in 2003+2004,
+ before the public source code version tracking started (2005 onwards in svn and then git).
+
+--------------------------------
+
+
 FEATURE FREEZE!!!
 --------------
 BEFORE RELEASE:
