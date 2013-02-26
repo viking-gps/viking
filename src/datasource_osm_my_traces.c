@@ -275,12 +275,12 @@ static void gpx_meta_data_start ( xml_data *xd, const char *el, const char **att
 			xd->current_gpx_meta_data->name = g_strdup ( tmp );
 
 		if ( ( tmp = get_attr ( attr, "lat" ) ) ) {
-			g_snprintf (buf, sizeof (buf), tmp);
+			g_strlcpy ( buf, tmp, sizeof (buf) );
 			xd->current_gpx_meta_data->ll.lat = g_ascii_strtod ( buf, NULL );
 		}
 
 		if ( ( tmp = get_attr ( attr, "lon" ) ) ) {
-			g_snprintf (buf, sizeof (buf), tmp);
+			g_strlcpy ( buf, tmp, sizeof (buf) );
 			xd->current_gpx_meta_data->ll.lon = g_ascii_strtod ( buf, NULL );
 		}
 
