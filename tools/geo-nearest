@@ -10,11 +10,11 @@
 #	Requires: curl; gpsbabel; bash or ksh;
 #		  mysql (if using the gpsdrive.sql output option)
 #
-#	Donated to the public domain by Rick Richardson <rickr@mn.rr.com>
+#	Donated to the public domain by Rick Richardson <rickrich@gmail.com>
 #
 #	Use at your own risk.  Not suitable for any purpose.  Not legal tender.
 #
-#	$Id: geo-nearest.sh,v 1.42 2011/04/06 19:10:38 rick Exp $
+#	$Id: geo-nearest.sh,v 1.49 2013/02/18 21:41:06 rick Exp $
 #
 
 PROGNAME="$0"
@@ -29,9 +29,13 @@ SYNOPSIS
 
     `basename $PROGNAME` [options] latitude longitude
 
+    `basename $PROGNAME` [options] latitude longitude cache-type
+
     `basename $PROGNAME` [options] zipcode
 
     `basename $PROGNAME` [options] u=<username>
+
+    `basename $PROGNAME` [options] ul=<username>
 
     `basename $PROGNAME` [options] pq=<pocket-query>
 
@@ -91,15 +95,31 @@ EXAMPLES
 	geo-nearest -n200 -Xifound -urickrich -pPW |awk '{print \$1}' >2.foo
 	geo-gid -otabsep \$(comm -12 1.foo 2.foo) >both
 
-    Fetch by owner:
+    Fetch by owner placed:
 
 	geo-nearest u=team-deadhead
+
+    Fetch by owner found:
+
+	geo-nearest ul="AAA+of+MichigAn&sortdir=asc&sort=placed"
 
     Fetch by tx method:
 
 	# nearby caches of this (puzzle) type, that I haven't found
 	geo-nearest -n500 -f -otabsep tx=40861821-1835-4e11-b666-8d41064d03fe |
 	    geo-mystery >> Caches/rick.ts
+
+	Also, tx=webcam, tx=earth, tx=multi, tx=event, tx=virtual, tx=letter,
+	tx=unknown, tx=trad (tx=reg is an alias).
+
+    Fetch by cache-type method:
+
+	# nearby caches of this (puzzle) type, that I haven't found
+	geo-nearest -n500 -f -otabsep unknown |
+	    geo-mystery >> Caches/rick.ts
+
+	Also, cache-type is webcam, earth, multi, event, virtual, letter,
+	unknown, trad (reg is an alias).
 
     Fetch a bookmark list:
 
@@ -109,6 +129,8 @@ EXAMPLES
 
     Fetch a PQ query:
 
+	geo-nearest -q "Needs Maintenance"
+	or
 	geo-nearest pq=08be103b-ffd1-4e27-992f-616e144e24df
 
 FILES
@@ -220,11 +242,21 @@ latlon() {
 }
 
 #
-#	Convert DegDec to MinDec
+#	Convert DegDec to MinDec with optional NS/EW
 #
 degdec2mindec() {
-    awk -v v=$1 \
-	'BEGIN{ i=int(v); f=(v-i)*60; if(f<0)f=-f; printf "%d.%06.3f\n", i, f}'
+    awk -v v=$1 -v sym=$2 \
+    '
+    function abs(x)     { return (x>=0) ? x : -x }
+    BEGIN{
+	i=int(v)
+	if (sym == "")
+	    printf "%d.%06.3f\n", i, abs(v-i) * 60
+	else
+	    printf "%s%d.%06.3f\n", \
+		i >= 0.0 ? substr(sym, 1, 1) : substr(sym, 2, 1), \
+		abs(i), abs(v-i) * 60
+    }'
 }
 
 #
@@ -235,9 +267,15 @@ read_rc_file() {
 	. $HOME/.georc
 	# Allow LAT/LON in rc file to be in any of the formats that we grok
 	if [ "" != "$LAT" ]; then
+	    if ! is_latlon $LAT 0; then
+		error "Latitude '$LAT' is not parsed in .georc!"
+	    fi
 	    LAT=`latlon $LAT`
 	fi
 	if [ "" != "$LON" ]; then
+	    if ! is_latlon 0 $LON; then
+		error "Longitude '$LON' is not parsed in .georc!"
+	    fi
 	    LON=`latlon $LON`
 	fi
     else
@@ -275,7 +313,11 @@ read_rc_file() {
 		# Miscellaneous...
 		#OUTFMT=gpsdrive
 		#GPSDRIVE_VER=2.09
+		#GEOMYSTERY=$HOME/.geo-mystery
+		#OCMYSTERY=$HOME/.oc-mystery
+		#DATEFMT=0
 		#CURL_OPTS="-4"
+		#CURL_OPTS="--sslv3"
 	EOF
 	error "First time user: please review and edit $HOME/.georc"
     fi
@@ -401,7 +443,7 @@ $2@$3"
 ##############################################################################
 # begin #include "geo-common-gc"
 # 
-# $Id: geo-common-gc,v 1.242 2011/05/21 17:38:57 rick Exp $
+# $Id: geo-common-gc,v 1.313 2013/02/01 14:29:33 rick Exp $
 ##############################################################################
 
 #
@@ -436,6 +478,8 @@ FOUND=1
 USERFOUND=1
 BABELFLAGS=
 RADIUS=
+RADIUS_NUM=
+RADIUS_MILES=
 OUTFILE=
 OUTFMT=gpsdrive
 NUM=20
@@ -451,6 +495,8 @@ gc_usage() {
 	cat <<EOF
 OPTIONS
 	-b bookmark	Use list "bookmark" [none]
+	-q query	geo-nearest: Use PQ list "query" [none]
+	-q search	geo-newest: Use search "search" [none]
 	-c		Remove cookie file when done
 	-f              Do not report any found or unavailable caches
 	-m              Do not report any members-only caches
@@ -459,15 +505,15 @@ OPTIONS
 	-s		Output short names for the caches (gpsbabel option)
 	-I term		Include only caches with 'term' [$INCLUDE]
 	-X term		Exclude caches with 'term' [$EXCLUDE]
-			terms: "" (exclude none), unfound, ifound, soc, unavail,
+			terms: ~ (exclude none), unfound, ifound, soc, unavail,
 			regular, multi, virtual, webcam, event, hybrid, cito
 	-r radius	Display only caches with radius (e.g. -r 25M)
 	-M mystery	Use file 'mystery' for unknown/mystery/puzzle
 			caches [$GEOMYSTERY]. Awk Format:
-			    gcid lat lon comment
-			i.e:
-			    GC2CBVB n44.45.123 w93.00.321       Final
-			    GC2CC1Z 44.123456 -93.564123	Cache
+
+			gcid lat lon comment
+
+	                i.e.: GC2CBVB n44.45.123 w93.00.321       Final
 
 	-u username	Username for http://www.geocaching.com
 	-p password	Password for http://www.geocaching.com
@@ -483,6 +529,8 @@ OPTIONS
 	-L logdir	Also fetch the plain text log entries (slowly)
 			For -H or -L, the limit is 1500 updated caches/day.
 	-! "lpr -Plp"	Print HTML pages
+	-E var=val	Set environment "var" to "val"
+			i.e. DATEFMT=0|1
 	-D lvl		Debug level [$DEBUG]
 	-U		Retrieve latest version of this script
 
@@ -493,6 +541,22 @@ DEFAULTS
 	    LAT=latitude;       LON=logitude;        GEOMYSTERY=/dev/null;
 	    NUM=num;            OUTFMT=format;       BABELFLAGS=-s;
 	    SQLUSER=gast;       SQLPASS=gast;        SQLDB=geoinfo;
+	    DATEFMT=[0|1];
+DATE FORMATS
+	Geocaching.com date formats that are compatible:
+
+	    GC Format   Example	    Compatible
+	    YYYY-MM-DD	2011-07-13  yes
+	    YYYY/MM/DD	2011/07/13  yes
+	    MM/DD/YYYY	07/13/2011  yes
+	    DD/MM/YYYY	13/07/2011  yes if DATEFMT=1 in \$HOME/.georc
+	    DD/Mmm/YYYY	13/Jul/2001 no
+	    Mmm/DD/YYYY	Jul/13/2011 no
+	    DD Mmm YY   13 Jul 11   yes	(english only)
+
+	Change them here:
+
+	    http://www.geocaching.com/account/ManagePreferences.aspx
 EOF
 }
 
@@ -508,14 +572,17 @@ gc_getopts() {
     LOGDIR=
     CMDPIPE=
     BOOKMARK=
+    POCKETQUERY=
 
-    while getopts "!:H:L:I:X:b:cdfFmM:n:o:O:p:Pr:sSt:u:D:Uh?-" opt
+    while getopts "!:E:H:L:I:X:b:q:cdfFmM:n:o:O:p:Pr:sSt:u:D:Uh?-" opt
     do
 	case $opt in
 	"!")	CMDPIPE="$OPTARG";;
 	b)	BOOKMARK="$OPTARG";;
+	q)	POCKETQUERY="$OPTARG";;
 	c)	NOCOOKIES=1;;
 	d)	DELETE=1;;
+	E)	eval "$OPTARG";;
 	f)	FOUND=0; EXCLUDE="$EXCLUDE|-ifound";;
 	m)	SOC=0;;
 	M)	GEOMYSTERY="$OPTARG";;
@@ -528,7 +595,7 @@ gc_getopts() {
 		INCLUDE="$INCLUDE-$OPTARG"
 		;;
 	X)
-		if [ "" = "$OPTARG" ]; then
+		if [ "" = "$OPTARG" -o "~"  = "$OPTARG" ]; then
 		    EXCLUDE=-ExClUdEnOtHiNg
 		else
 		    EXCLUDE="$EXCLUDE|-$OPTARG"
@@ -548,8 +615,14 @@ gc_getopts() {
 	r)	RADIUS="$OPTARG"
 		RADIUS_NUM=`awk -v "N=$RADIUS" 'BEGIN{printf "%d\n", N}'`
 		case "$RADIUS" in
-		*km*|*KM*)	RADIUS_UNITS=km;;
-		*)		RADIUS_UNITS=mi;;
+		*km*|*KM*)
+		    RADIUS_UNITS=km
+		    RADIUS_MILES=`dc -e "6k $RADIUS_NUM 1.609344/p" `
+		    ;;
+		*)
+		    RADIUS_MILES=$RADIUS_NUM
+		    RADIUS_UNITS=mi
+		    ;;
 		esac
 		;;
 	s)	BABELFLAGS="$BABELFLAGS -s"; GEONUKE=",nuke_placer";;
@@ -585,7 +658,7 @@ gc_getopts() {
 	MAP=1
 	;;
     map,*)
-	MAPOPTS=`echo "$OUTFMT" | sed -n 's/map,\(.*\)$/\1/p'`
+	MAPOPTS=`echo "$OUTFMT" | $sed -n 's/map,\(.*\)$/\1/p'`
 	OUTFMT=tiger,newmarker=grnpin,iconismarker
 	MAP=1
 	;;
@@ -619,31 +692,16 @@ gc_getviewstate() {
     viewstate=
     viewstate="$viewstate -d __VIEWSTATE=$__VIEWSTATE"
     if [ "$__VIEWSTATEFIELDCOUNT" != "" ]; then
-	get_value __VIEWSTATE1 $file; __VIEWSTATE1=`urlencode "$__VIEWSTATE1"`
-	get_value __VIEWSTATE2 $file; __VIEWSTATE2=`urlencode "$__VIEWSTATE2"`
-	get_value __VIEWSTATE3 $file; __VIEWSTATE3=`urlencode "$__VIEWSTATE3"`
-	get_value __VIEWSTATE4 $file; __VIEWSTATE4=`urlencode "$__VIEWSTATE4"`
-	get_value __VIEWSTATE5 $file; __VIEWSTATE5=`urlencode "$__VIEWSTATE5"`
-	get_value __VIEWSTATE6 $file; __VIEWSTATE6=`urlencode "$__VIEWSTATE6"`
-	get_value __VIEWSTATE7 $file; __VIEWSTATE7=`urlencode "$__VIEWSTATE7"`
-	get_value __VIEWSTATE8 $file; __VIEWSTATE8=`urlencode "$__VIEWSTATE8"`
-	get_value __VIEWSTATE9 $file; __VIEWSTATE9=`urlencode "$__VIEWSTATE9"`
-	get_value __VIEWSTATE10 $file; __VIEWSTATE10=`urlencode "$__VIEWSTATE10"`
-
 	viewstate="$viewstate -d __VIEWSTATEFIELDCOUNT=$__VIEWSTATEFIELDCOUNT"
-	viewstate="$viewstate -d __VIEWSTATE1=$__VIEWSTATE1"
-	viewstate="$viewstate -d __VIEWSTATE2=$__VIEWSTATE2"
-	viewstate="$viewstate -d __VIEWSTATE3=$__VIEWSTATE3"
-	viewstate="$viewstate -d __VIEWSTATE4=$__VIEWSTATE4"
-	viewstate="$viewstate -d __VIEWSTATE5=$__VIEWSTATE5"
-	viewstate="$viewstate -d __VIEWSTATE6=$__VIEWSTATE6"
-	viewstate="$viewstate -d __VIEWSTATE7=$__VIEWSTATE7"
-	viewstate="$viewstate -d __VIEWSTATE8=$__VIEWSTATE8"
-	if [ "$__VIEWSTATE9" != "" ]; then
-	    # __VIEWSTATEFIELDCOUNT == 9, but VIEWSTATE9 is null on geo-myfinds!
-	    viewstate="$viewstate -d __VIEWSTATE9=$__VIEWSTATE9"
-	    viewstate="$viewstate -d __VIEWSTATE10=$__VIEWSTATE10"
-	fi
+	fc=1
+	while test $fc -lt $__VIEWSTATEFIELDCOUNT; do
+	    get_value __VIEWSTATE$fc $file
+	    eval xxx=\${__VIEWSTATE$fc}
+	    eval __VIEWSTATE$fc=`urlencode "$xxx"`
+	    eval xxx=\${__VIEWSTATE$fc}
+	    viewstate="$viewstate -d __VIEWSTATE$fc=$xxx"
+	    fc=`expr $fc + 1`
+	done
     fi
 }
 
@@ -670,7 +728,8 @@ gc_login() {
     curl $CURL_OPTS -s -A "$UA" -c$COOKIE_FILE \
 	-e "$URL;auto" \
 	-o $LOGINPAGE "$URL"
-    [ -s $LOGINPAGE ] || error "Unable to connect to gc.com"
+    [ -s $LOGINPAGE ] \
+	|| error "Unable to connect to gc.com; Try: CURL_OPTS=\"--sslv3\" in ~/.georc"
     get_value __VIEWSTATE $LOGINPAGE
     __VIEWSTATE=`urlencode "$__VIEWSTATE"`
     get_value __EVENTVALIDATION $LOGINPAGE
@@ -683,17 +742,32 @@ gc_login() {
     #
     URL="$GEOS/login/default.aspx"
     #URL="$URL?RESET=Y"
+    #
+    # RER 05/05/12: bug in recent curl/openssl use "--sslv3" for a workaround
     debug 1 "curl $URL"
-    dbgcmd curl $CURL_OPTS -s -A "$UA" -b$COOKIE_FILE -c$COOKIE_FILE \
+    dbgcmd curl $CURL_OPTS --sslv3 -s -A "$UA" -b$COOKIE_FILE -c$COOKIE_FILE \
 	-d __VIEWSTATE="$__VIEWSTATE" \
 	-d __EVENTVALIDATION="$__EVENTVALIDATION" \
 	-e "$URL;auto" \
-	-dctl00%24SiteContent%24tbUsername="$_username" \
-	-dctl00%24SiteContent%24tbPassword="$_password" \
-	-dctl00%24SiteContent%24btnSignIn=Login \
+	-dctl00%24ContentBody%24tbUsername="$_username" \
+	-dctl00%24ContentBody%24tbPassword="$_password" \
+	-dctl00%24ContentBody%24btnSignIn=Login \
 	-L "$URL" > $LOGINPAGE
-    if grep -q "ErrorText" $LOGINPAGE; then
+    if [ ! -s $LOGINPAGE ]; then
+	error "curl: returned /dev/null for '$LOGINPAGE'"
+    fi
+    if grep -q "FormErrorWidget" $LOGINPAGE; then
 	error "Login username/password does not match."
+    fi 
+    if grep -q "If you are human" $LOGINPAGE; then
+	error "Have to login this time with a web browser because of Recaptcha"
+    fi 
+    if grep -q "temporarily down for maintenance." $LOGINPAGE; then
+	error "Geocaching.com is temporarily down for maintenance."
+    fi 
+    # Make case insignificant
+    if ! grep -y -q "ctl00_ContentBody_LoggedInPanel" $LOGINPAGE; then
+	error "BUG: gc.com changed the login page."
     fi 
 }
 
@@ -724,6 +798,7 @@ getcids() {
 	-v "VARTIME=$VARTIME" \
 	-v "SOC=$SOC" \
 	-v "DATE=$date" \
+	-v "DATEFMT=$DATEFMT" \
 	-v "DEBUG=$DEBUG" \
 	< $1 \
     '
@@ -791,71 +866,93 @@ getcids() {
 	    print "id = ", id, "wp = ", gid > "/dev/stderr"
 	return gid
     }
+
     function hash2sdt(text,
-		value, mod, sizePre, diff, terrainPre, difficultyPre) {
-	if (ratingKey == "")
-	    ratingKey = "hbM9fjmrxy7z42LFD58BkKgPGdHscvCqNnw3ptO6lJ"
-
-	# cut leading zero
-	if (length(text) > 6)
-	    text = substr(text, length(text) - 6 + 1)
-	# add missing leading zero
-	while (length(text) < 6)
-	    text = "h" text
-
-	for (i = 0; i < 6; i ++) {
-	    value += (index(ratingKey, substr(text, i+1, 1)) - 1) \
-			 * (42 ^ (5 - i) );
+	    day, cmd, i, value, mod, s0, t0, d0) {
+	if (thiscode == "")
+	{
+	code[1] = "PDMTRXBJjZNH9fKW8vetlCgbos24mydknahrcOxYqLwGSE370z65ApVFQ"
+	code[2] = "6JKt4b70rHoeTLqQB2jANwcYSMW9xPk3aplE5hGvyfsZDgFmndOVRC8zX"
+	code[3] = "Rl2QaDdTsnK7rOZoywzx0H58NLCAGqgtp43mvYJVkFEejMWB69cXhfSbP"
+	code[4] = "jShz6gF3OvonKEWkJCbZf4GeDX25VcyPsqwRYpLM8BtATm0x7l9aHQdNr"
+	code[5] = "aJs2OWpoYfN9zvDHCwZrm83b4SKkFhXcAL0QPgBy7tMdRGlqxjEVn65Te"
+	code[6] = "g6aXp7rqvkEl5JLnRDhfWGHTeA9OMQYdwS2BcbK0jCyFx4sPo83tmzZVN"
+	code[7] = "MlocEO5eAgTFfLXzyPDk2qJhjBn98QSdNHR47mGWtY3ZvVxCpr0Ks6abw"
+	code[8] = "p7SPbvzM4VkQ8f25cJL0gBlWjYmFoKhArXRHZntTGe6CNsyE3a9qOdwDx"
+	code[9] = "znlBb8GHNdhCKyOpo53ePX9xfkvjD0aTEAVZ72qSQwrmMYct6JgRFWLs4"
+	code[10] = "KXztRHdrkBwSWEn3AN2Fh8vOL5QMjx6oTgyCD7JYpaGmVcf9Pelb4q0Zs"
+	code[11] = "M3odkDCgQa7GWK9pYh8tLAl6xFecRwPZNbTz0s42rqfOnSmvEjVyB5JXH"
+	code[12] = "gweGxNAYCKfLdrb68X93ahjHMDtTWRFJVZvl0po5ySmOQnscPz4Ekq2B7"
+	code[13] = "p2zelnEox9HqkGF4V5AZ6LbMBsy0dQc8J3fDXvON7jWgrKYCSTaPtRhmw"
+	code[14] = "cy2gjCAJt3KmMxbr5OzQeYsvHpLF8fRVaoNXdGBW0l7ESZDP9qkw4Th6n"
+	code[15] = "9KQZlwfBsCqN6oWkYhrSpDAEP48c5m3eJn2jVHLdybMx0gaOGRXzvFTt7"
+	code[16] = "7j6CJPfqbMygan42HwxFBcrK3RYLstmOXWGeSQZ9kzl0VE8oDTpAhd5Nv"
+	code[17] = "YScWw7gsx49ebLAqMGotHRX3fnCv6FBOkzVE5jdlmPTarDKQJyp8Z0hN2"
+	code[18] = "BgwR6oskAcVPqeYdLKr3ONvflXz2nDSbxMQJEhyZC0pWHm759GFa4tT8j"
+	code[19] = "9QyolrBq37he4nbCTcXEkmGHjYS02RDgMZLfOtavVzKNFxPs58p6JwWAd"
+	code[20] = "8OwsHykXLJ3tqWZmR2pbVagMcTdnSC9FveN5z0xYjGK6frh7Q4EPDBAlo"
+	code[21] = "RVBh8qEaN4Aw2Ob5egSytWjQD6oFmKvXfYnCzcx73kJsHrd9TLPZM0Glp"
+	code[22] = "7MqQGJkKzZvdgmRXBH8CYeAVf3cy29LOW4PNaD0rsnowEpTbF5Sxhtl6j"
+	code[23] = "8C26QBoWjEPcJ3Sf7TYtexXlMNyqArm0KD9HOLvZakGwnVbFsdp45Rzhg"
+	code[24] = "6e5fC2S4Bwcm9pVKyqdFE3WlRDroTLJgGtN8ZQsAabMzHYO0Xvj7Pnxhk"
+	code[25] = "JXHgMGcAVNpDEwWYvyBl025m89dOoTSKPxhstjq6e4QrCk3aZFbzfn7RL"
+	code[26] = "Yp3ARoesjKXB2cadmkHvFQM7SEJtqf0l9TwzbPLrZDxO8h5C6NnGWyVg4"
+	code[27] = "9kJaM4HonPWtcQvsYSEK3Vy5pjCRFqNO6lgr0x7mh2b8wdTGDzfLXeABZ"
+	code[28] = "4n2gSwqzGB7C0MpV3yDY9FTtol8XjkJNcEPr6LxhZQKdRvHOfsA5eWmab"
+	code[29] = "P6G8jsOxBCqf3k74DnXtAvl2ThabeEHJVgZp5wSzF9NWRcYMyL0dromKQ"
+	code[30] = "WVwgM93zjmNcLpHvoSK2Q5bCxaATGsryXn6Bhfd0Z8qtERk7PYOJD4Fle"
+	code[31] = "PZqTVol4HOXz0GWt38Qec59rKMyabfhE2DdsNxpF7RASkBjnYwvCgmJ6L"
+	    cmd = sprintf("%s -u +%%-d", DATE)
+	    cmd | getline day; close(cmd)
+	    thiscode = code[day]
 	}
-	# debug(5, "sdk value: " value)
+
+	value = 0
+	for (i = 1; i <= length(text); ++i) {
+	    value = 57 * value + index(thiscode, substr(text, i, 1)) - 1
+	}
+	#print value
 
 	mod = (value - 131586) % 16777216
 
-	sizePre = int(mod / (42 ^ 3));
-	if (sizePre == 0) diff = 0
-	else if (sizePre == 1) diff = 131072
-	else if (sizePre == 3) diff = 262144
-	else if (sizePre == 5) diff = 393217
-	else if (sizePre == 7) diff = 524288
-	else if (sizePre == 8) diff = 655360
-	else if (sizePre == 12) diff = 917504
-	else diff = -1
-
-	terrainPre = int((mod - diff) / 252)
-	difficultyPre = int(((mod - diff) % 42) - (terrainPre * 4))
+	s0 = int(mod / 131072);
+	t0 = int((mod % 131072) / 256)
+	d0 = int((mod % 131072) % 256)
+	#print s0, t0, d0
 
 	# cache size
-	if (sizePre == 0) size = "not chosen"
-	else if (sizePre == 1) size = "Micro"
-	else if (sizePre == 3) size = "Regular"
-	else if (sizePre == 5) size = "Large"
-	else if (sizePre == 7) size = "Virtual"
-	else if (sizePre == 8) size = "Unknown"
-	else if (sizePre == 12) size = "Small"
+	if (s0 == 0) size = "not chosen"
+	else if (s0 == 1) size = "Micro"
+	else if (s0 == 2) size = "Regular"
+	else if (s0 == 3) size = "Large"
+	else if (s0 == 4) size = "Virtual"
+	else if (s0 == 5) size = "Unknown"
+	else if (s0 == 7) size = "Small"
 	else size = "BUG"
 
 	# terrain rating
-	if (terrainPre == 0) terrain = 1.0
-	else if (terrainPre == 1) terrain = 1.5
-	else if (terrainPre == 2) terrain = 2.0
-	else if (terrainPre == 3) terrain = 2.5
-	else if (terrainPre == 4) terrain = 3.0
-	else if (terrainPre == 5) terrain = 3.5
-	else if (terrainPre == 6) terrain = 4.0
-	else if (terrainPre == 7) terrain = 4.5
+	if (t0 == 0) terrain = 1.0
+	else if (t0 == 1) terrain = 1.5
+	else if (t0 == 2) terrain = 2.0
+	else if (t0 == 3) terrain = 2.5
+	else if (t0 == 4) terrain = 3.0
+	else if (t0 == 5) terrain = 3.5
+	else if (t0 == 6) terrain = 4.0
+	else if (t0 == 7) terrain = 4.5
 	else terrain = 5.0
 
 	# difficulty rating
-	if (difficultyPre == 0) difficulty = 1.0
-	else if (difficultyPre == 1) difficulty = 1.5
-	else if (difficultyPre == 2) difficulty = 2.0
-	else if (difficultyPre == 3) difficulty = 2.5
-	else if (difficultyPre == 4) difficulty = 3.0
-	else if (difficultyPre == 5) difficulty = 3.5
-	else if (difficultyPre == 6) difficulty = 4.0
-	else if (difficultyPre == 7) difficulty = 4.5
+	if (d0 == 0) difficulty = 1.0
+	else if (d0 == 1) difficulty = 1.5
+	else if (d0 == 2) difficulty = 2.0
+	else if (d0 == 3) difficulty = 2.5
+	else if (d0 == 4) difficulty = 3.0
+	else if (d0 == 5) difficulty = 3.5
+	else if (d0 == 6) difficulty = 4.0
+	else if (d0 == 7) difficulty = 4.5
 	else difficulty = 5.0
     }
+
     function begin_new_entry() {
 	# Beginning of a new entry, reset variables to defaults
 	inrecord = 1
@@ -873,6 +970,7 @@ getcids() {
 	ifoundt = 0
 	container = "unknown"
 	sendgps = 0	# Non-subscription members
+	placer = ""
 	# Bug Fix: FIXME
 	#gctype = "Traditional cache"
 	#type = "regular"
@@ -884,6 +982,7 @@ getcids() {
     }
     function parse_dates(text,    cmd, val) {
 	sub("[*]$", "", text)
+	sub("^ *", "", text)	# remove leading blanks
 	debug(5, "parse_dates: text=" text)
 	if (text ~ /Today/)
 	{
@@ -902,8 +1001,27 @@ getcids() {
 	}
 	else if (text ~ /[0-9][^<]*[0-9]/ )
 	{
-	    cmd = sprintf("%s -d \"12am %s\" +%%s", DATE, text)
-	    cmd | getline val; close(cmd)
+	    # GC Format   Example	    Compatible
+	    # YYYY/MM/DD	2011/07/13  yes
+	    # MM/DD/YYYY	07/13/2011  yes
+	    # DD/MM/YYYY	13/07/2011  yes if DATEFMT = 1
+	    # DD/Mmm/YYYY	13/Jul/2001 no
+	    # Mmm/DD/YYYY	Jul/13/2011 no
+	    nf = split(text, fld, "/")
+	    if (nf == 3 && DATEFMT == 1)
+	    {
+		# DD before MM
+		debug(5, "parse_dates:  fld=" fld[1] "." fld[2] "." fld[3])
+		cmd = sprintf("%s -d \"12am %s\" +%%s", DATE,
+			fld[2] "/" fld[1] "/" fld[3])
+		cmd | getline val; close(cmd)
+	    }
+	    else
+	    {
+		# Regular way
+		cmd = sprintf("%s -d \"12am %s\" +%%s", DATE, text)
+		cmd | getline val; close(cmd)
+	    }
 	}
 	else
 	    val = 0
@@ -948,6 +1066,33 @@ getcids() {
 	sub("</[^>]*>", "", name)
 	sub("<[^>]*>", "", name)
 	sub("<[^>]*>", "", name)
+	debug(5, "name: " name)
+    }
+    # bookmarks by guid=...
+    /<a href="http:..www.geocaching.com\/seek\/cache_details.aspx.guid=[^>]*>/ {
+	if ($0 ~ /img src/)
+	{
+	    name = $0
+	    sub(".*img src[^>]*>", "", name)
+	    sub("</span.*", "", name)
+	    sub(".*Strike.>", "", name)
+	    sub("</a.*", "", name)
+	    debug(5, "bid name: " name)
+
+	    gctype = $0
+	    sub(".* alt=.", "", gctype)
+	    sub(". />.*", "", gctype)
+	    debug(5, "gctype: " gctype)
+	}
+	else
+	{
+	    begin_new_entry()
+	    gcid = $0
+	    sub(".*<a href=.*/seek/cache_details.aspx?[^>]*>", "", gcid)
+	    sub("<.*", "", gcid)
+	    cid = wp2id(gcid)
+	    debug(5, "gcid: " gcid)
+	}
     }
     /"Found It!"/ {
 	if (USERFOUND)
@@ -957,15 +1102,15 @@ getcids() {
     /Premium Member Only Cache/ {
 	soc = 1
     }
-    tdcnt == (8-0) && /[0-9][0-9]*.[0-9][0-9]*/ {
+    tdcnt == (9-0) && /[0-9][0-9]*.[0-9][0-9]*/ {
 	# RER: May 4, 2011
 	date = $0
 	sub(/^ */, "", date)
+	sub(/.*small.>/, "", date)
 	sub(/ *<.*/, "", date)
 	sub(/\015/, "", date)
-	debug(5, "date: " date)
-	cmd = sprintf("%s -d \"12am %s\" +%%s", DATE, date)
-	cmd | getline placedt; close(cmd)
+	debug(5, "placedt text: "date)
+	placedt = parse_dates(date)
 	debug(5, "placedt: " placedt)
     }
     # <td>
@@ -979,7 +1124,7 @@ getcids() {
     #	<span class="Success">
     #	</span>
     # </td>
-    tdcnt == (9-0) && /[a-zA-Z0-9*>]<br .>/ {
+    tdcnt == (10-0) && /[a-zA-Z0-9*>]<br .>/ {
 	# catch dates DD MMM YY, N days ago, Today, Yesterday
 	unfound = 0
 	date = $0
@@ -989,7 +1134,7 @@ getcids() {
 	foundt = lastfoundt
 	debug(5, "lastfoundt: " lastfoundt)
     }
-    tdcnt == (9-0) && /[a-zA-Z0-9*>]<.span>/ {
+    tdcnt == (10-0) && /[a-zA-Z0-9*>]<.span>/ {
 	unfound = 0
 	date = $0
 	sub(".*Success.>", "", date)
@@ -1008,35 +1153,25 @@ getcids() {
     /<strike>[^<]/ {
 	avail = 0;
     }
+    /class=".*Warning Strike.*">/ {
+	debug(5, "***archived***")
+	avail = 0; archived = 1
+    }
     /class=".*Strike">/ {
 	avail = 0
     }
-    /class=".*Warning Strike.*">/ {
-	avail = 0; archived = 1
+    tdcnt == 6 && /^ *by / {
+	placer = $0
+	sub("^ *by ", "", placer)
+	sub("\015", "", placer)
+	debug(5, "placer: <" placer ">")
     }
-    tdcnt == 5 && /^ *GC/ {
+    tdcnt == 6 && /^ *GC/ {
 	gcid = $0
 	sub("^ *", "", gcid)
 	sub("\015", "", gcid)
 	debug(5, "GCID: <" gcid ">")
         cid = wp2id(gcid)
-    }
-    /left" nowrap>[0-9].*[0-9][0-9]<.td>/ {
-	i = match($0, ">")
-	j = match($0, "<.td>")
-	date = substr($0, i+1, j-i-1)
-	sub(q, "20", date)
-	cmd = sprintf("%s -d \"%s\" +%%s", DATE, date)
-	cmd | getline placedt; close(cmd)
-    }
-    /left" nowrap>[0-9].*[0-9][0-9].<IMG/ {
-	# gc.com calls this "new"
-	i = match($0, ">")
-	j = match($0, " <IMG ")
-	date = substr($0, i+1, j-i-1)
-	sub(q, "20", date)
-	cmd = sprintf("%s -d \"%s\" +%%s", DATE, date)
-	cmd | getline placedt; close(cmd)
     }
     /alt=.Your Geocache/ {
 	# altmy cache
@@ -1099,7 +1234,7 @@ getcids() {
 	bid = substr($0, i+7, 99) + 0
     }
     #/ImgGen.seek.CacheInfo.ashx?v=/ {
-    0 && /[?]v=/ {
+    archived && /[?]v=/ {
 	text = $0
 	debug(5, "sdt text: " text)
 	sub(".*?v=", "", text)
@@ -1139,7 +1274,7 @@ getcids() {
 	vartime=1234
 	if (VARTIME == "placed") vartime = placedt
 	else if (VARTIME == "ifound") vartime = ifoundt
-	else if (foundt > 0) vartime = foundt
+	#else if (foundt > 0) vartime = foundt
 	else vartime = placedt
 
 	# date -d 1970-01-01 1237093200 sec +%Y%m%d
@@ -1150,7 +1285,10 @@ getcids() {
 
 	# avail=1 is the choice right now (8/19/05)
 	# archived=0 is the choice right now (11/14/06)
-	if (!archived && (SOC || !soc))
+	# sendgps=1 Remove non-soc caches from basic member. (12/18/2012)
+	debug(5, gcid "\tsendgps: " sendgps " archived: " archived  \
+		    " SOC: " SOC " soc: " soc " bid: " bid)
+	if (!archived && (SOC || !soc) && (sendgps == 1 || bid) )
 	{
 	    if (bid != 0) {
 		printf("-dBID=%d\n", bid) > CIDFILE
@@ -1162,10 +1300,10 @@ getcids() {
 		#"%.1f\t%.1f\t%s\t"
 		#difficulty, terrain, container,
 	    printf "%s\t%s\t%d\t%s\t%s\t%s\t%d\t%d\t%d\t" \
-		"%s\t%s\t%s\n",
-		gcid, strtype, vartime,
-		ifound, soc, iplaced, placedt, foundt, ifoundt,
-		gctype, "hint", lastfound >> XTRAFILE
+		    "%s\t%s\t%s\t%s\n",
+		    gcid, strtype, vartime,
+		    ifound, soc, iplaced, placedt, foundt, ifoundt,
+		    gctype, placer, "hint", lastfound >> XTRAFILE
 	    if (--NUM == 0)
 		exit
 	}
@@ -1175,16 +1313,19 @@ getcids() {
 		print "Archived ", gcid, " " name > "/dev/stderr"
 	    if (name == "")
 		name = "error-no-name!"
+	    if (placer == "")
+		placer = "unknown-placer"
 	    # Use "merge" file output, NOT XTRAFILE!
-	    printf "%s\t%s\t0.0\t0.0\t%s%s%s\t%s\t%d\t" \
-		"%s\t%s\t%s\t%d\t%d\t%d\t%.1f\t%.1f\t%s\t%s\t%s\t%s\n",
+	    printf "%s\t%s\t0.0\t0.0\t%s%s%s\t" \
+		"%.1f\t%.1f\t%s\t" \
+		"%s\t%d\t%d\t%d\t%d\t%d\t%d\t%s\t%s\t%s\t%s\t%s\n",
 		gcid, name,
 		"http://www.geocaching.com/seek/cache_details.aspx",
 		"?log=y&wp=", gcid,
 		difficulty, terrain, container,
 		strtype, vartime,
 		ifound, soc, iplaced, placedt, foundt, ifoundt,
-		gctype, "hint", lastfound >> ARCHFILE
+		gctype, placer, "hint", lastfound >> ARCHFILE
 	    if (--NUM == 0)
 		exit
 	}
@@ -1207,8 +1348,8 @@ make_scrape_style() {
 	BADCHARS                TAB
 	IFIELD	SHORTNAME,	"",	"%s"
 	IFIELD	DESCRIPTION,	"",	"%s"	
-	IFIELD	LAT_DECIMAL,	"",	"%08.5f"
-	IFIELD	LON_DECIMAL,	"",	"%08.5f"
+	IFIELD	LAT_DECIMAL,	"",	"%.6f"
+	IFIELD	LON_DECIMAL,	"",	"%.6f"
 	IFIELD	URL,	"",	"%s"
 	IFIELD	GEOCACHE_DIFF,	"",	"%3.1f"		#difficulty
 	IFIELD	GEOCACHE_TERR,	"",	"%3.1f"		#terrain
@@ -1222,12 +1363,13 @@ make_scrape_style() {
 	IFIELD	IGNORE,		"",	"%s"		#found time
 	IFIELD	IGNORE,		"",	"%s"		#ifound time
 	IFIELD	GEOCACHE_TYPE,	"",	"%s"		#gc.com type
+	IFIELD	GEOCACHE_PLACER, "",	"%s"		#gc.com placer
 	IFIELD	GEOCACHE_HINT,	"",	"%s"		#gc.com hint
 	IFIELD	GEOCACHE_LAST_FOUND, "","%s"		#gc.com last found
 	OFIELD	SHORTNAME,	"",	"%s"
 	OFIELD	DESCRIPTION,	"",	"%s"
-	OFIELD	LAT_DECIMAL,	"",	"%08.5f"
-	OFIELD	LON_DECIMAL,	"",	"%08.5f"
+	OFIELD	LAT_DECIMAL,	"",	"%.6f"
+	OFIELD	LON_DECIMAL,	"",	"%.6f"
 	OFIELD	URL,	"",	"%s"
 	OFIELD	GEOCACHE_DIFF,	"",	"%3.1f"		#difficulty
 	OFIELD	GEOCACHE_TERR,	"",	"%3.1f"		#terrain
@@ -1237,7 +1379,7 @@ make_scrape_style() {
 }
 
 #
-#	csv2csv puzzle-file 
+#	csv2csv geo-mystery-file 
 #
 csv2csv() {
     if [ ! -e "$1" ]; then
@@ -1274,15 +1416,17 @@ csv2csv() {
 		continue
 	    if ($0 ~ "^[ 	]*$")
 		continue
+	    gc=$1
+	    sub(".*/", "", gc)	# remove stuff like http://coord.info/
 	    if ($2 ~ "unk")
 	    {
-		lat[$1] = 48
-		lon[$1] = -88
+		lat[gc] = 48
+		lon[gc] = -88
 	    }
 	    else
 	    {
-		lat[$1] = $2
-		lon[$1] = $3
+		lat[gc] = $2
+		lon[gc] = $3
 	    }
 	}
 	FS="	"
@@ -1293,8 +1437,8 @@ csv2csv() {
 	    deglat = latlon( lat[$1] )
 	    deglon = latlon( lon[$1] )
 	    # GC# Desc lat lon URL diff terr size
-	    for (i = 1; i <= 2; ++i)
-		printf "%s\t", $i
+	    printf "%s\t", $1
+	    printf "+%s\t", $2
 	    printf "%.6f\t%.6f\t", deglat, deglon
 	    for (i = 5; i < NF; ++i)
 		printf "%s\t", $i
@@ -1307,6 +1451,44 @@ csv2csv() {
 }
 
 #
+#	Fetch the cache patch
+#
+gc_fetch_cache_page(){
+    _page=$1	#out
+    _gcid=$2	#in
+    _url=$3	#in
+    _extra=$4	#in
+
+    # Fetch the basic cache page
+    echo "<BASE HREF=http://www.geocaching.com/seek/>" > $_page
+    debug 1 "${_extra}curl $_url #cache fetch $_gcid.html"
+    curl $CURL_OPTS -L -s -b $COOKIE_FILE -A "$UA" \
+	$_url \
+	| tr -d "\001\007\010\013\017\020\031" \
+	| sed -e '/<\/html>/d' \
+	>> $_page
+
+    size=$(ls -l $_page | awk '{print $5}')
+    if [ $size -lt 1000 ]; then
+	debug 0 "Could not retrieve web page for cache $_gcid"
+	return 1
+    fi
+
+    # JSON for logbooks
+    JSON_NUM=100
+    tkn=`grep "userToken = '" $_page | sed -e "s/userToken = '//" -e "s/'.*//" `
+    jsurl="http://www.geocaching.com/seek/geocache.logbook"
+    jsurl="$jsurl?tkn=$tkn"
+    jsurl="$jsurl&idx=1&num=$JSON_NUM&sp=false&sf=false&decrypt=false"
+    debug 1 "curl $jsurl" >&2
+    curl $CURL_OPTS -s -A "$UA" -b $COOKIE_FILE \
+	 "$jsurl" >> $_page
+    echo "" >> $_page
+    echo "</html>" >> $_page
+    return 0
+}
+
+#
 #	Query the gc website
 #
 gc_query() {
@@ -1315,6 +1497,9 @@ gc_query() {
     fi
     if [ $FOUND = 0 ]; then
 	    SEARCH="$SEARCH&f=1"
+    fi
+    if [ "$RADIUS_NUM" != "" ]; then
+	    SEARCH="$SEARCH&dist=$RADIUS_MILES"
     fi
 
     if [ $DEBUG -gt 0 ]; then
@@ -1366,11 +1551,31 @@ gc_query() {
 	SEARCH=`
 	    curl $CURL_OPTS -L -s -b $COOKIE_FILE -A "$UA" "$URL" \
 	    | grep -y ">$BOOKMARK<" \
-	    | sed -e 's@^.*href=.http://www.geocaching.com/@@' -e 's/.>.*$//'
+	    | $sed \
+		-e 's@. title.*@@' \
+		-e 's@^.*href=.http://www.geocaching.com/@@' -e 's/.>.*$//'
 	    `
 	case "$SEARCH" in
 	*bookmarks*) 	;;
 	*)		error "No bookmark with the name '$BOOKMARK'.";;
+	esac
+    fi
+
+    #
+    #	Find the pocket query
+    #
+    if [ "$POCKETQUERY" != "" ]; then
+	URL="$GEO/pocket/default.aspx"
+	debug 1 "$start: curl $URL #pocket-query"
+	SEARCH=`
+	    curl $CURL_OPTS -L -s -b $COOKIE_FILE -A "$UA" "$URL" \
+	    | grep -y "title=\"$POCKETQUERY\"" \
+	    | $sed \
+		-e 's@.*guid=@@' -e 's@".*@@'
+	    `
+	case "$SEARCH" in
+	*-*-*-*-*)	SEARCH="?pq=$SEARCH";;
+	*)		error "No PQ with the name '$POCKETQUERY'.";;
 	esac
     fi
 
@@ -1417,10 +1622,17 @@ gc_query() {
 	    # "postback"... grab the "next" button
 	    case "$SEARCH" in
 	    *bookmark*)
-		__EVENTTARGET="ListInfo\$pgrBMItems\$_ctl8"
+		# __EVENTTARGET="ListInfo\$pgrBMItems\$_ctl08"
+		# Get the last TGT (== ctl08)
+                TGT=$($sed -n "s/^.*__doPostBack('.*pgrBMItems\$\(.*\)','.*/\1/p" \
+                    < $HTMLPAGE)
+		if [ "$TGT" = "" ]; then
+		    error "TGT is blank!"
+		fi
+                __EVENTTARGET="ctl00%24ContentBody%24ListInfo%24pgrBMItems%24$TGT"
 		;;
 	    *)
-                TGT=$(sed -n "s/^.*__doPostBack('.*pgrTop\$\(.*\)','.*/\1/p" \
+                TGT=$($sed -n "s/^.*__doPostBack('.*pgrTop\$\(.*\)','.*/\1/p" \
                     < $HTMLPAGE)
 		if [ "$TGT" = "" ]; then
 		    error "TGT is blank!"
@@ -1432,11 +1644,11 @@ gc_query() {
 		-d __EVENTTARGET="$__EVENTTARGET" \
 		$viewstate \
 		"$URL" \
-		| sed -e "s/&#39;/'/g" -e "s/\r//" > $HTMLPAGE
+		| $sed -e "s/&#39;/'/g" -e "s/\r//" > $HTMLPAGE
 	else
 	    curl $CURL_OPTS -L -s -b $COOKIE_FILE -A "$UA" \
 		"$URL" \
-		| sed -e "s/&#39;/'/g" -e "s/\r//" > $HTMLPAGE
+		| $sed -e "s/&#39;/'/g" -e "s/\r//" > $HTMLPAGE
 	    if [ "$DEBUG" -ge 1 ]; then
 		grep "Total Records:.*Top.*" $HTMLPAGE |
 		    sed -e "s/<.b>.*//" -e "s/^.*span>//" -e "s/<b>//" 1>&2
@@ -1464,11 +1676,13 @@ gc_query() {
 	# Grab a few important values from the page
 	#
 	gc_getviewstate $HTMLPAGE
+	# cp $HTMLPAGE /tmp/view$start.html
 
 	#
 	# Grab the CIDs into two categories: found and notfound
 	#
 	> $CIDFILE
+	debug 3 "getcids $HTMLPAGE $CIDFILE $XTRAFILE $ARCHFILE $((NUM-start))"
 	getcids $HTMLPAGE $CIDFILE $XTRAFILE $ARCHFILE $((NUM-start))
 
 	#
@@ -1486,19 +1700,26 @@ gc_query() {
 		URL="$URL$SEARCH"
 		;;
 	    esac
+	    #
+	    #	Fetch the .loc file
+	    #	1)	-d "Download=Download+Waypoints"...	geo-nearest
+	    #	2)	-d "ListInfo:btnDownload=	...	old
+	    #	3)	-d 'ctl00$ContentBody		...	-b acro
+	    #
 	    debug 2 "$start: curl $URL #loc"
 	    curl $CURL_OPTS -s -b $COOKIE_FILE -A "$UA" \
-		    $viewstate \
-		    `cat $CIDFILE` \
-		    -d "Download=Download+Waypoints" \
-		    -d "ListInfo:btnDownload=Download+to+.Loc" \
-		    "$URL" \
+		$viewstate \
+		`cat $CIDFILE` \
+		-d "Download=Download+Waypoints" \
+		-d "ListInfo:btnDownload=Download+to+.Loc" \
+		-d 'ctl00$ContentBody$ListInfo$btnDownload=Download+to+.Loc' \
+		"$URL" \
 	    | $filter2 \
-	    | sed -e 's/^<?xml [^>]*>//' \
+	    | $sed -e 's/^<?xml [^>]*>//' \
 		    -e 's/>[gG]eocache</>Geocache</g' \
 		    -e 's/<loc [^>]*>//' \
 		    -e 's#</loc>##' \
-	    > $LOCTMPFILE
+		    > $LOCTMPFILE
 	    rc=$?; if [ $rc != 0 ]; then
 		error "curl: fetch the waypoints"
 	    fi
@@ -1536,7 +1757,7 @@ gc_query() {
 		#
 		bstart=$start
 		grep "^ *GC.*" $HTMLPAGE \
-		| sed -e "s/ //g" \
+		| $sed -e "s/ //g" \
 		| while read gcid; do
 		    #
 		    #	Get the cache page
@@ -1545,12 +1766,28 @@ gc_query() {
 		    if [ ! -s $cachepage -o $timestamp -nt $cachepage ]; then
 			# cache page doesn't exist or out of date
 			sleep 3 #$GEOSLEEP
+
 			urlpage="http://www.geocaching.com"
 			urlpage="$urlpage/seek/cache_details.aspx"
 			urlpage="$urlpage?log=y&wp=$gcid"
-			debug 0 "$bstart: curl $urlpage #cache fetch $gcid.html"
-			curl $CURL_OPTS -L -s -b $COOKIE_FILE -A "$UA" \
-			    $urlpage > $cachepage
+			gc_fetch_cache_page $cachepage $gcid $urlpage \
+			    "$bstart: "
+			if [ $? != 0 ]; then
+			    continue
+			fi
+		    fi
+		    
+		    # 01/07/12: remove soc's!
+		    if grep -q 'alt="Premium Members only"' $cachepage; then
+			continue
+		    fi
+		    # 12/18/12: remove soc's
+		    if grep -q 'uxPremiumSubmitBottom' $cachepage; then
+			continue
+		    fi
+		    # 02/04/12: removed archived!
+		    if grep -q '>This cache has been archived' $cachepage; then
+			continue
 		    fi
 
 		    #
@@ -1558,13 +1795,13 @@ gc_query() {
 		    #
 		    name=` grep -A1 "<head><title>" $cachepage \
 			| tail -1 | tr -d "\r"  \
-			| sed -e 's/[ 	]*GC[^ ]* //' -e 's/ (.*by/ by/' `
+			| $sed -e 's/[ 	]*GC[^ ]* //' -e 's/ (.*by/ by/' `
 		    diff=` grep ctl00_ContentBody_uxLegendScale $cachepage \
-			| sed -e 's/.*alt="//' -e 's/ .*//' `
+			| $sed -e 's/.*alt="//' -e 's/ .*//' `
 		    terr=` grep ctl00_ContentBody_Localize6 $cachepage \
-			| sed -e 's/.*alt="//' -e 's/ .*//' `
+			| $sed -e 's/.*alt="//' -e 's/ .*//' `
 		    size=` grep "alt=.Size:" $cachepage \
-			| sed -e 's/.*alt="Size: //' -e 's/" .*//' `
+			| $sed -e 's/.*alt="Size: //' -e 's/" .*//' `
 		    case $size in
 		    Unknown)	cont=1;;
 		    Micro)	cont=2;;
@@ -1579,7 +1816,7 @@ gc_query() {
 		    echo "<waypoint>"
 		    echo "<name id=\"$gcid\"><![CDATA[$name]]></name>"
 		    grep "lnkConversions" $cachepage \
-			| sed -e 's/.*lat=/<coord lat="/' \
+			| $sed -e 's/.*lat=/<coord lat="/' \
 			    -e 's/&amp;lon=/" lon="/' -e 's@&.*@"/>@'
 		    echo "<type>Geocache</type>"
 		    echo -n "<link text=\"Cache Details\">"
@@ -1656,6 +1893,7 @@ gc_query() {
     # Convert CSV into CSV with puzzles...
     csv2csv $GEOMYSTERY < $CSVFILE2 > $CSVFILE
 
+    # 01/07/12: NO --nocheck-order; it is wrong!
     join -t '	' $CSVFILE $XTRAFILE > $JOINFILE
     if [ $? != 0 ]; then
 	cp $CSVFILE /tmp/geo.err.csv
@@ -1664,12 +1902,12 @@ gc_query() {
     fi
     egrep -- "$INCLUDE" < $JOINFILE \
     | egrep -v -- "$EXCLUDE" \
-    | sed -e 's/wp=/log=y\&&/' > $MERGEFILE
+    | $sed -e 's/wp=/log=y\&&/' > $MERGEFILE
 
     if [ $FOUND = 1 ]; then
 	cat $ARCHFILE \
 	| egrep -- "$INCLUDE" | egrep -v -- "$EXCLUDE" \
-	| sed -e 's/wp=/log=y\&&/' >> $MERGEFILE
+	| $sed -e 's/wp=/log=y\&&/' >> $MERGEFILE
     fi
 
     if [ $DEBUG -ge 2 ]; then
@@ -1791,6 +2029,7 @@ gc_query() {
 	    #
 	    #	Don't fetch page if we already have a current version
 	    #
+	    #debug 1 "placedt=<$placedt> <$foundt>"
 	    if [ $placedt -gt $foundt ]; then
 		filetime="$placedt"
 	    else
@@ -1821,17 +2060,8 @@ gc_query() {
 	    # Be kind to the server.  Do not remove this sleep
 	    sleep $GEOSLEEP
 
-	    echo "<BASE HREF=http://www.geocaching.com/seek/>" > $HTMLPAGE
-	    debug 1 "curl $url" >&2
-	    dbgcmd curl $CURL_OPTS -s -A "$UA" -b $COOKIE_FILE "$url" |
-		tr -d "\001\007\010\013\017\020\031" >> $HTMLPAGE
+	    gc_fetch_cache_page $HTMLPAGE $id $url ""
 	    if [ $? != 0 ]; then
-		error "Couldn't fetch $id cache page"
-	    fi
-
-	    size=$(ls -l $HTMLPAGE | awk '{print $5}')
-	    if [ $size -lt 1000 ]; then
-		debug 0 "Could not retrieve web page for cache $id"
 		continue
 	    fi
 
@@ -1844,9 +2074,14 @@ gc_query() {
 	    fi
 
 	    if [ "$LOGDIR" != "" ]; then
-		sed -e '1,/Cache find counts/d' -e 's/<STRONG><IMG SRC=/\
-&/g' < $HTMLPAGE |
-		egrep ">$LOGUSERNAME<|strong> \($LOGUSERNAME\) \(" > $HTMLPAGE2
+		$sed -e '1,/Logged Visits/d' \
+		    -e 's/<strong><img src=/\
+&/g' \
+		    < $HTMLPAGE |
+		egrep ">$LOGUSERNAME<|strong> \($LOGUSERNAME\) \(" |
+		$sed -e 's#<a href="log.aspx?LUID.*##' \
+		    -e 's#<a href=./profile[^ ]*##' \
+		    > $HTMLPAGE2
 		lynx -dump $HTMLPAGE2 > $LOGDIR/$id.log
 		if [ "$filetime" -gt 0 ]; then
 		    $touch -d "1/1/70 $filetime seconds" "$LOGDIR/$id.log"
@@ -1856,13 +2091,13 @@ gc_query() {
 	IFS="$OIFS"
 
 	if [ "$LOGDIR" != "" ]; then
-	    # This is a hack, and might be innaccurate
+	    # This is a hack, and might be inaccurate
 	    echo -n "Finds:" >&2
 	    MONTHS="  January |  February |  March |  April |  May |  June "
 	    MONTHS="$MONTHS|  July |  August | September |  October "
 	    MONTHS="$MONTHS|  November |  December "
 	    egrep "$MONTHS" $LOGDIR/*.log |
-	    egrep "icon_smile|icon_happy|icon_camera" | wc -l >&2
+	    egrep "Found it  |icon_smile|icon_happy|icon_camera" | wc -l >&2
 	fi
 
     fi
@@ -1891,7 +2126,7 @@ SQLTAG=Geocache
 #
 gpsdrive_create_210() {
     echo "CREATE TABLE poi ("
-    echo "poi_id        INTEGER      PRIMARY KEY,"
+    echo "poi_id        INTEGER      PRIMARY KEY AUTOINCREMENT,"
     echo "name          VARCHAR(80)  NOT NULL default 'not specified',"
     echo "poi_type      VARCHAR(160) NOT NULL default 'unknown',"
     echo "lat           DOUBLE       NOT NULL default '0',"
@@ -1918,6 +2153,7 @@ gpsdrive_purge() {
 	if [ ! -s $SQLITEDB ]; then
 	    gpsdrive_create_210
 	fi
+	SQLTAG=`echo $SQLTAG | tr A-Z a-z`
 	delcmd="delete from poi"
 	echo "$delcmd where poi_type like '$SQLTAG%';"
 	;;
@@ -1927,6 +2163,7 @@ gpsdrive_purge() {
 gpsdrive_add_209() {
 	delcmd="delete from waypoints"
 	addcmd="replace into waypoints (name,lat,lon,type)"
+	addcmd="insert into waypoints (name,lat,lon,type)"
 	sqltag="$1"
 	echo "use $SQLDB;"
 	while read name lat lon type extra
@@ -1954,15 +2191,18 @@ gpsdrive_add_210(){
     if [ ! -s $SQLITEDB ]; then
 	gpsdrive_create_210
     fi
+    echo "PRAGMA synchronous=OFF;"
     delcmd="delete from poi"
-    addcmd="replace into poi (poi_id,name,poi_type,lat,lon,alt,comment,last_modified)"
+    addcmd="replace into poi (name,poi_type,lat,lon,alt,comment,last_modified)"
+    addcmd="insert into poi (name,poi_type,lat,lon,alt,comment,last_modified)"
     sqltag="$1"
     sqltag=`echo "$sqltag" | tr A-Z a-z`
     OIFS="$IFS"
     IFS="|"
     #while read name lat lon type extra
     poi_id=0
-    egrep -v 'Geocache Found|-ifound' | tr '	' '|' | tr -d "'" |
+    egrep -v 'Geocache Found|-ifound' \
+	| tr -d "|" | tr '	' '|' | tr -d "'" |
     while read index shortname description notes url urltext icon lat lon \
         lat32 lon32 latdecdir londecdir latdirdec londirdec latdir londir \
         altfeet altmeters excel timet diff terr container type \
@@ -1974,7 +2214,11 @@ gpsdrive_add_210(){
 	if [ "$placer" = "dyl1231" ]; then
 	    continue
 	fi
-	name=`echo "$description" | tr -d "'"`
+
+	#name=`echo "$description" | tr -d "'"`
+	#For Performance...
+	name=${description//\'/}
+
 	# Primary key is autoincrementing id number, so delete
 	# the old record (if any) by name and type
 	if [ $PURGE = 0 ]; then
@@ -2003,7 +2247,7 @@ gpsdrive_add_210(){
 	    "Webcam Cache")	poi_type="geocache.geocache_webcam";;
 	    *)			    poi_type="geocache";;
 	    esac
-	    echo -n "$addcmd values ($poi_id,'$name','$poi_type',"
+	    echo -n "$addcmd values ('$name','$poi_type',"
 	    echo -n "'$lat','$lon',"
 	    echo -n "'0.0'," #alt
 	    echo -n "'$type $container $diff/$terr. Last Found: $lastfound.  $hint',"
@@ -2083,6 +2327,24 @@ case "$#" in
 	LON=`latlon $LON`
 	SEARCH="?origin_lat=$LAT&origin_long=$LON"
 	;;
+3)
+	# lat lon cache-type
+	LAT=`latlon $1`
+	LON=`latlon $2`
+	case "$3" in
+	webcam)		cFilter="31d2ae3c-c358-4b5f-8dcd-2185bf472d3d";;
+	earth*)		cFilter="c66f5cf3-9523-4549-b8dd-759cd2f18db8";;
+	multi*)		cFilter="a5f6d0ad-d2f2-4011-8c14-940a9ebf3c74";;
+	event)		cFilter="69eb8534-b718-4b35-ae3c-a856a55b0874";;
+	virtual)	cFilter="294d4360-ac86-4c83-84dd-8113ef678d7e";;
+	letter*)	cFilter="4bdd8fb2-d7bc-453f-a9c5-968563b15d24";;
+	unknown)	cFilter="40861821-1835-4e11-b666-8d41064d03fe";;
+	trad*)		cFilter="32bc9333-5e52-4957-b0f6-5a2c8fc7b257";;
+	reg*)		cFilter="32bc9333-5e52-4957-b0f6-5a2c8fc7b257";;
+	*)		error "Unknown cache-type '$3'";;
+	esac
+	SEARCH="?lat=$LAT&lng=$LON&cFilter=$cFilter"
+	;;
 2)
 	LAT=`latlon $1`
 	LON=`latlon $2`
@@ -2094,13 +2356,32 @@ case "$#" in
 	u=*)
 	    SEARCH="?$1"
 	    ;;
+	ul=*)
+	    SEARCH="?$1"
+	    ;;
 	pq=*)
+	    SEARCH="?$1"
+	    ;;
+	tx=*\&*)
+	    # tx=NNN&ul=USERNAME
 	    SEARCH="?$1"
 	    ;;
 	tx=*)
 	    LAT=`latlon $LAT`
 	    LON=`latlon $LON`
-	    SEARCH="?$1&lat=$LAT&lng=$LON"
+	    case "$1" in
+	    tx=webcam)	tx="tx=31d2ae3c-c358-4b5f-8dcd-2185bf472d3d";;
+	    tx=earth*)	tx="tx=c66f5cf3-9523-4549-b8dd-759cd2f18db8";;
+	    tx=multi*)	tx="tx=a5f6d0ad-d2f2-4011-8c14-940a9ebf3c74";;
+	    tx=event)	tx="tx=69eb8534-b718-4b35-ae3c-a856a55b0874";;
+	    tx=virtual)	tx="tx=294d4360-ac86-4c83-84dd-8113ef678d7e";;
+	    tx=letter*)	tx="tx=4bdd8fb2-d7bc-453f-a9c5-968563b15d24";;
+	    tx=unknown)	tx="tx=40861821-1835-4e11-b666-8d41064d03fe";;
+	    tx=trad*)	tx="tx=32bc9333-5e52-4957-b0f6-5a2c8fc7b257";;
+	    tx=reg*)	tx="tx=32bc9333-5e52-4957-b0f6-5a2c8fc7b257";;
+	    *)		tx=$1;;
+	    esac
+	    SEARCH="?$tx&lat=$LAT&lng=$LON"
 	    ;;
 	guid=*)
 	    SEARCH="bookmarks/view.aspx?$1"

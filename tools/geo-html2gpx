@@ -48,6 +48,10 @@ DATE FORMATS
             Mmm/DD/YYYY Jul/13/2011 no
             DD Mmm YY   13 Jul 11   yes (english only)
 
+	Change them here:
+
+	    http://www.geocaching.com/account/ManagePreferences.aspx
+
 EXAMPLES
 	Convert into GPX:
 
@@ -124,7 +128,13 @@ shift `expr $OPTIND - 1`
 #
 YR=`date +"%Y"`
 
-cat "$@" | tr -d '\001\002\003\004\005\006\007\015\022\026\030' \
+case `$awk --version` in
+"GNU Awk"*)	;;
+*)		error "awk is not GNU awk!";;
+esac
+
+cat "$@" \
+| tr -d '\001\002\003\004\005\006\007\015\021\022\023\024\026\030' \
 | sed 's/<A /\
 <A /g' |
 $awk -vDEBUG=$DEBUG -vINCR=$INCR \
@@ -911,16 +921,61 @@ function wpt_init() {
     gs_type = ""
 }
 
+function dec2utf(dec) {
+    if (dec <= 0x7f)
+	return sprintf("%c", dec)
+    else if (dec <= 0x07ff)
+	return sprintf("%c%c", 0xC0 + rshift(dec, 6), 0x80 + and(dec, 0x3F) )
+}
+
+function asc2xml(txt,	o, ent, dec) {
+    o = ""
+    while (match(txt, "&#x[0123456789abcdefABCDEF]*;"))
+    {
+	o = o substr(txt, 1, RSTART-1)
+	ent = toupper(substr(txt, RSTART+3, RLENGTH-4))
+	txt = substr(txt, RSTART+RLENGTH)
+	dec = hex2dec(ent)
+	o = o dec2utf(dec)
+    }
+    txt = o txt
+    o = ""
+    while (match(txt, "&#[0123456789]*;"))
+    {
+	o = o substr(txt, 1, RSTART-1)
+	ent = toupper(substr(txt, RSTART+2, RLENGTH-3))
+	txt = substr(txt, RSTART+RLENGTH)
+	dec = ent + 0
+	o = o dec2utf(dec)
+    }
+    o = o txt
+    return o
+}
+
 function umlauts(text) {
-    # Somewhat minimal translation of HTML entities in titles
-    gsub("&#228;", "\xc3\xa4", text)
-    gsub("&#246;", "\xc3\xb6", text)
-    gsub("&#252;", "\xc3\xbc", text)
-    gsub("&#196;", "\xc3\x84", text)
-    gsub("&#214;", "\xc3\x96", text)
-    gsub("&#220;", "\xc3\x9c", text)
-    gsub("&#223;", "\xc3\x9f", text)
-    gsub("&#176;", "\xc2\xb0", text)
+    text = asc2xml(text)
+    if(0)
+    {
+	# Somewhat minimal translation of HTML entities in titles
+	gsub("&#228;", "\xc3\xa4", text)
+	gsub("&#xE4;", "\xc3\xa4", text)
+	gsub("&#246;", "\xc3\xb6", text)
+	gsub("&#xF6;", "\xc3\xb6", text)
+	gsub("&#252;", "\xc3\xbc", text)
+	gsub("&#xFC;", "\xc3\xbc", text)
+	gsub("&#196;", "\xc3\x84", text)
+	gsub("&#xC4;", "\xc3\x84", text)
+	gsub("&#214;", "\xc3\x96", text)
+	gsub("&#xD6;", "\xc3\x96", text)
+	gsub("&#220;", "\xc3\x9c", text)
+	gsub("&#xDC;", "\xc3\x9c", text)
+	gsub("&#223;", "\xc3\x9f", text)
+	gsub("&#xDF;", "\xc3\x9f", text)
+	gsub("&#176;", "\xc2\xb0", text)
+	gsub("&#xB0;", "\xc2\xb0", text)
+	gsub("&#180;", "\xc2\xb4", text)
+	gsub("&#xB4;", "\xc2\xb4", text)
+    }
     gsub("&amp;", "\\&", text)
     return text
 }
@@ -1309,7 +1364,7 @@ function attr_begin1(gif, id, text) {
 function attr_begin() {
     # attr_begin1("slealth", 40, "Stealth required")  Dont work!!!
     attr_id["dog"] = 1; attr_text["dog"] = "Dogs"
-    attr_id["dogs"] = 1; attr_text["dogs"] = "Dogs allowed"
+    attr_id["dogs"] = 1; attr_text["dogs"] = "Dogs"
     attr_id["fee"] = 2; attr_text["fee"] = "Access or parking fee"
     attr_id["rappelling"] = 3; attr_text["rappelling"] = "Climbing gear"
     attr_id["boat"] = 4; attr_text["boat"] = "Boat"
@@ -1325,62 +1380,61 @@ function attr_begin() {
     attr_id["available"] = 13; attr_text["available"] = "Available at all times"
     attr_id["night"] = 14; attr_text["night"] = "Recommended at night"
     attr_id["winter"] = 15; attr_text["winter"] = "Available during winter"
-    # 16
-    attr_id["poisonoak"] = 17; attr_text["poisonoak"] = "Poison plants"
-    attr_id["dangerousanimals"] = 18; attr_text["dangerousanimals"] = "Dangerous Animals"
-    attr_id["ticks"] = 19; attr_text["ticks"] = "Ticks"
+    attr_id["poisonoak"] = 16; attr_text["poisonoak"] = "Poison plants"
+    attr_id["dangerousanimals"] = 17; attr_text["dangerousanimals"] = "Dangerous Animals"
+    attr_id["ticks"] = 18; attr_text["ticks"] = "Ticks"
 
-    attr_id["mines"] = 20; attr_text["mines"] = "Abandoned mines"
-    attr_id["cliff"] = 21; attr_text["cliff"] = "Cliff / falling rocks"
-    attr_id["hunting"] = 22; attr_text["hunting"] = "Hunting"
-    attr_id["danger"] = 23; attr_text["danger"] = "Dangerous area"
-    attr_id["wheelchair"] = 24; attr_text["wheelchair"] ="Wheelchair accessible"
-    attr_id["parking"] = 25; attr_text["parking"] = "Parking available"
-    attr_id["public"] = 26; attr_text["public"] = "Public transportation"
-    attr_id["water"] = 27; attr_text["water"] = "Drinking water nearby"
-    attr_id["restrooms"] = 28; attr_text["restrooms"] ="Public restrooms nearby"
-    attr_id["phone"] = 29; attr_text["phone"] = "Telephone nearby"
+    attr_id["mines"] = 19; attr_text["mines"] = "Abandoned mines"
+    attr_id["cliff"] = 20; attr_text["cliff"] = "Cliff / falling rocks"
+    attr_id["hunting"] = 21; attr_text["hunting"] = "Hunting"
+    attr_id["danger"] = 22; attr_text["danger"] = "Dangerous area"
+    attr_id["wheelchair"] = 23; attr_text["wheelchair"] ="Wheelchair accessible"
+    attr_id["parking"] = 24; attr_text["parking"] = "Parking available"
+    attr_id["public"] = 25; attr_text["public"] = "Public transportation"
+    attr_id["water"] = 26; attr_text["water"] = "Drinking water nearby"
+    attr_id["restrooms"] = 27; attr_text["restrooms"] ="Public restrooms nearby"
+    attr_id["phone"] = 28; attr_text["phone"] = "Telephone nearby"
 
-    attr_id["picnic"] = 30; attr_text["picnic"] = "Picnic tables nearby"
-    attr_id["camping"] = 31; attr_text["camping"] = "Camping available"
-    attr_id["bicycles"] = 32; attr_text["bicycles"] = "Bicycles"
-    attr_id["motorcycles"] = 33; attr_text["motorcycles"] = "Motorcycles"
-    attr_id["quads"] = 34; attr_text["quads"] = "Quads"
-    attr_id["jeeps"] = 35; attr_text["jeeps"] = "Off-road vehicles"
-    attr_id["snowmobiles"] = 36; attr_text["snowmobiles"] = "Snowmobiles"
-    attr_id["horses"] = 37; attr_text["horses"] = "Horses"
-    attr_id["campfires"] = 38; attr_text["campfires"] = "Campfires"
-    attr_id["thorns"] = 39; attr_text["thorns"] = "Thorns"
+    attr_id["picnic"] = 29; attr_text["picnic"] = "Picnic tables nearby"
+    attr_id["camping"] = 30; attr_text["camping"] = "Camping available"
+    attr_id["bicycles"] = 31; attr_text["bicycles"] = "Bicycles"
+    attr_id["motorcycles"] = 32; attr_text["motorcycles"] = "Motorcycles"
+    attr_id["quads"] = 33; attr_text["quads"] = "Quads"
+    attr_id["jeeps"] = 34; attr_text["jeeps"] = "Off-road vehicles"
+    attr_id["snowmobiles"] = 35; attr_text["snowmobiles"] = "Snowmobiles"
+    attr_id["horses"] = 36; attr_text["horses"] = "Horses"
+    attr_id["campfires"] = 37; attr_text["campfires"] = "Campfires"
+    attr_id["thorns"] = 38; attr_text["thorns"] = "Thorns"
 
-    attr_id["stealth"] = 40; attr_text["stealth"] = "Stealth required"
-    attr_id["stroller"] = 41; attr_text["stroller"] = "Stroller accessible"
-    attr_id["firstaid"] = 42; attr_text["firstaid"] = "Needs maintenance"
-    attr_id["cow"] = 43; attr_text["cow"] = "Watch for livestock"
-    attr_id["flashlight"] = 44; attr_text["flashlight"] = "Flashlight required"
+    attr_id["stealth"] = 39; attr_text["stealth"] = "Stealth required"
+    attr_id["stroller"] = 40; attr_text["stroller"] = "Stroller accessible"
+    attr_id["firstaid"] = 41; attr_text["firstaid"] = "Needs maintenance"
+    attr_id["cow"] = 42; attr_text["cow"] = "Watch for livestock"
+    attr_id["flashlight"] = 43; attr_text["flashlight"] = "Flashlight required"
     attr_id["landf"] = 44; attr_text["landf"] = "Lost And Found Tour"
-    attr_id["rv"] = 46; attr_text["rv"] = "Recreational Vehicle"
-    attr_id["field"] = 47; attr_text["field"] = "Field Puzzle"
-    attr_id["UV"] = 48; attr_text["UV"] = "UV Light Required"
-    attr_id["snowshoes"] = 49; attr_text["snowshoes"] = "Snowshoes"
+    attr_id["rv"] = 45; attr_text["rv"] = "Recreational Vehicle"
+    attr_id["field"] = 46; attr_text["field"] = "Field Puzzle"
+    attr_id["UV"] = 47; attr_text["UV"] = "UV Light Required"
+    attr_id["snowshoes"] = 48; attr_text["snowshoes"] = "Snowshoes"
 
-    attr_id["skiis"] = 50; attr_text["skiis"] = "Cross Country Skis"
-    attr_id["s-tool"] = 51; attr_text["s-tool"] = "Special Tool Required"
-    attr_id["nightcache"] = 52; attr_text["nightcache"] = "Night Cache"
-    attr_id["parkngrab"] = 53; attr_text["parkngrab"] = "Park and Grab"
-    attr_id["AbandonedBuilding"] = 54; attr_text["AbandonedBuilding"] = "Abandoned Structure"
-    attr_id["hike_short"] = 55; attr_text["hike_short"] = "Short hike (less than 1km)"
-    attr_id["hike_med"] = 56; attr_text["hike_med"] = "Medium hike (1km-10km)"
-    attr_id["hike_long"] = 57; attr_text["hike_long"] = "Long hike (+10km)"
-    attr_id["fuel"] = 58; attr_text["fuel"] = "Fuel Nearby"
-    attr_id["food"] = 59; attr_text["food"] = "Food Nearby"
+    attr_id["skiis"] = 49; attr_text["skiis"] = "Cross Country Skis"
+    attr_id["s-tool"] = 50; attr_text["s-tool"] = "Special Tool Required"
+    attr_id["nightcache"] = 51; attr_text["nightcache"] = "Night Cache"
+    attr_id["parkngrab"] = 52; attr_text["parkngrab"] = "Park and Grab"
+    attr_id["AbandonedBuilding"] = 53; attr_text["AbandonedBuilding"] = "Abandoned Structure"
+    attr_id["hike_short"] = 54; attr_text["hike_short"] = "Short hike (less than 1km)"
+    attr_id["hike_med"] = 55; attr_text["hike_med"] = "Medium hike (1km-10km)"
+    attr_id["hike_long"] = 56; attr_text["hike_long"] = "Long hike (+10km)"
+    attr_id["fuel"] = 57; attr_text["fuel"] = "Fuel Nearby"
+    attr_id["food"] = 58; attr_text["food"] = "Food Nearby"
 
-    attr_id["wirelessbeacon"] = 60; attr_text["wirelessbeacon"] = "Wireless Beacon"
-    attr_id["partnership"] = 61; attr_text["partnership"] = "Partnership"
-    attr_id["seasonal"] = 62; attr_text["seasonal"] = "Seasonal Access"
-    attr_id["tourist"] = 63; attr_text["tourist"] = "Tourist Friendly"
-    attr_id["treeclimbing"] = 64; attr_text["treeclimbing"] = "Tree Climbing"
-    attr_id["frontyard"] = 65; attr_text["frontyard"] = "Front Yard (Private Residence)"
-    attr_id["teamwork"] = 66; attr_text["teamwork"] = "Teamwork Required"
+    attr_id["wirelessbeacon"] = 59; attr_text["wirelessbeacon"] = "Wireless Beacon"
+    attr_id["partnership"] = 60; attr_text["partnership"] = "Partnership"
+    attr_id["seasonal"] = 61; attr_text["seasonal"] = "Seasonal Access"
+    attr_id["tourist"] = 62; attr_text["tourist"] = "Tourist Friendly"
+    attr_id["treeclimbing"] = 63; attr_text["treeclimbing"] = "Tree Climbing"
+    attr_id["frontyard"] = 64; attr_text["frontyard"] = "Front Yard (Private Residence)"
+    attr_id["teamwork"] = 65; attr_text["teamwork"] = "Teamwork Required"
 }
 
 function tagattr(lvl, kind, yesno) {
@@ -1398,7 +1452,8 @@ function tagattr(lvl, kind, yesno) {
     gs_type = $0
     sub(/.* alt=./, "", gs_type)
     sub(/. width=.*/, "", gs_type)
-    debug(1, "type: " gs_type)
+    sub(/. title=.*/, "", gs_type)
+    debug(1, "gs_type: " gs_type)
 }
 /<span id="ctl00_ContentBody_CacheName">/ {
     if (gs_type)
@@ -1463,6 +1518,11 @@ function tagattr(lvl, kind, yesno) {
     waypoints = remwaypoints()
     wplist = splitwaypoints(waypoints)
 }
+# 03/01/2011
+/ContentBody_WaypointsInfo/	{
+    waypoints = remwaypoints()
+    wplist = splitwaypoints(waypoints)
+}
 /class="LogsTable Table"/ {	# old
     logs_section = 1
 }
@@ -1508,7 +1568,8 @@ function tagattr(lvl, kind, yesno) {
 	sub(/&.*/, "", gid)
     }
 }
-/^ *by <a href/ {
+# Add optional "A cache ". 08/21/2012
+/^ *(A cache )*by <a href/ {
     gs_owner = $0
     sub(/.*ds=2.>/, "", gs_owner)
     sub(/<.*/, "", gs_owner)
@@ -1516,6 +1577,13 @@ function tagattr(lvl, kind, yesno) {
     gs_guid = $0
     sub(/.*guid=/, "", gs_guid)
     sub(/&.*/, "", gs_guid)
+}
+# Fake gs_guid is user 03/01/2011
+/userInfo = {ID:/ {
+    gs_guid = $0
+    sub(/.*: /, "", gs_guid)
+    sub(/}.*/, "", gs_guid)
+    debug(1, "guid " gs_guid)
 }
 /.* alt=.Size/ {
     gs_size = $0
@@ -1664,7 +1732,7 @@ function tagattr(lvl, kind, yesno) {
     gs_diff = text
     debug(1 , "gs_diff: " gs_diff)
 }
-/ctl00_ContentBody_Localize6/ {
+/ctl00_ContentBody_Localize/ {
     text = $0
     sub(/.*alt=./, "", text); sub(/ .*/, "", text)
     gs_terr = text
@@ -1797,7 +1865,7 @@ BEGIN {
 
     tagstart(1, "wpt", "lat=\"" lat "\" lon=\"" lon "\"")
     if (time != "")
-	tagtext(2, "time", time "T00:00:00.0000000-07:00")
+	tagtext(2, "time", time "T07:00:00Z")
     tagtext(2, "name", gcid)
     tagtext(2, "desc", gs_name " by " gs_owner ", " \
 		    gs_type " (" gs_diff "/" gs_terr ")")
@@ -1823,6 +1891,7 @@ BEGIN {
     tagtext(3, "groundspeak:placed_by", gs_owner)
     tagptext(3,"groundspeak:owner", "id=\"" gs_guid "\"", gs_owner)
     tagtext(3, "groundspeak:type", gs_type)
+    tagtext(3, "groundspeak:container", gs_size)
 
     if (nattr_yes != 0 || nattr_no != 0)
     {
@@ -1834,7 +1903,6 @@ BEGIN {
 	tagend(3, "groundspeak:attributes")
     }
 
-    tagtext(3, "groundspeak:container", gs_size)
     tagtext(3, "groundspeak:difficulty", gs_diff)
     tagtext(3, "groundspeak:terrain", gs_terr)
     tagtext(3, "groundspeak:country", gs_country)
@@ -1872,6 +1940,8 @@ BEGIN {
     if (json_log_bool)
     {
 	nlogs = JSONArrayLength(json_logs, "data")
+	if (nlogs > NUMLOGS+1)
+	    nlogs = NUMLOGS+1
 	debug(1, "New Logs: " nlogs)
 	if (nlogs > 1)
 	    tagstart(3, "groundspeak:logs")
@@ -1894,9 +1964,22 @@ BEGIN {
 	    else ltype = "Unknown"
 
 	    ldate = json_logs["data" SUBSEP i SUBSEP "Visited"]
+	    n = split(ldate, fld, "/")
+	    if (n == 3)
+	    {
+		#new format: 08/18/2011
+		if (DATEFMT == 1)
+		    ldate = sprintf("%d-%02d-%02dT20:00:00Z",
+			fld[3], fld[2], fld[1])
+		else
+		    ldate = sprintf("%d-%02d-%02dT20:00:00Z",
+			fld[3], fld[1], fld[2])
+		debug(2, "logdate: " ldate)
+	    }
 	    lfinder = json_logs["data" SUBSEP i SUBSEP "UserName"]
+	    lfinder = umlauts(lfinder)
 	    logid = json_logs["data" SUBSEP i SUBSEP "LogID"]
-	    guid = json_logs["data" SUBSEP i SUBSEP "LogGuid"]
+	    guid = json_logs["data" SUBSEP i SUBSEP "AccountID"]
 	    ltext = json_logs["data" SUBSEP i SUBSEP "LogText"]
 	    ltext = htmlclean(ltext)
 	    ltext = umlauts(ltext)
