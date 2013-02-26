@@ -69,6 +69,7 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE, // Yes automatically update the display - otherwise we won't see the geocache waypoints!
   TRUE,
+  TRUE,
   (VikDataSourceInitFunc)		datasource_gc_init,
   (VikDataSourceCheckExistenceFunc)	datasource_gc_check_existence,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_gc_add_setup_widgets,
