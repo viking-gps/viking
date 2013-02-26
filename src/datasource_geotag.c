@@ -137,8 +137,10 @@ static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babel
 
 	/* TODO Memorize the file filter for later use... */
 	//GtkFileFilter *filter = gtk_file_chooser_get_filter ( GTK_FILE_CHOOSER(userdata->files) );
-}
 
+	// return some value so *thread* processing will continue
+	*babelargs_or_shellcmd = g_strdup ("fake command"); // Not really used, thus no translations
+}
 
 /**
  * Process selected files and try to generate waypoints storing them in the given vtl
