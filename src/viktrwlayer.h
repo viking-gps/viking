@@ -81,6 +81,8 @@ gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest );
 GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l );
 GHashTable *vik_trw_layer_get_routes ( VikTrwLayer *l );
 GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l );
+gboolean vik_trw_layer_is_empty ( VikTrwLayer *vtl );
+
 gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikCoord *def_coord );
 
 VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl );

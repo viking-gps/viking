@@ -2446,6 +2446,13 @@ GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l )
   return l->waypoints;
 }
 
+gboolean vik_trw_layer_is_empty ( VikTrwLayer *vtl )
+{
+  return ! ( g_hash_table_size ( vtl->tracks ) ||
+             g_hash_table_size ( vtl->routes ) ||
+             g_hash_table_size ( vtl->waypoints ) );
+}
+
 /*
  * ATM use a case sensitive find
  * Finds the first one
