@@ -106,7 +106,7 @@ static void on_complete_process (w_and_interface_t *wi)
       // TODO: create function for this operation to hide detail:
       if ( ! vik_trw_layer_is_empty ( wi->vtl ) ) {
         vik_layer_post_read ( VIK_LAYER(wi->vtl), wi->w->vvp, TRUE );
-        vik_aggregate_layer_add_layer( vik_layers_panel_get_top_layer(wi->w->vlp), VIK_LAYER(wi->vtl));
+        vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(wi->w->vlp), VIK_LAYER(wi->vtl), TRUE );
       }
       else
         gtk_label_set_text ( GTK_LABEL(wi->w->status), _("No data.") );

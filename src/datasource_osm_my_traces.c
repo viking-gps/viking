@@ -623,7 +623,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 				vik_layer_rename ( VIK_LAYER ( vtlX ), ((gpx_meta_data_t*)selected_iterator->data)->name );
 			else
 				vik_layer_rename ( VIK_LAYER ( vtlX ), _("My OSM Traces") );
-			vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer (adw->vlp), VIK_LAYER(vtlX) );
+			vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer (adw->vlp), VIK_LAYER(vtlX), TRUE );
 		}
 
 		result = FALSE;

@@ -200,9 +200,16 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
   GtkTreeIter iter;
   VikLayer *vl = VIK_LAYER(val);
 
+  // By default layers are inserted above the selected layer
+  gboolean put_above = TRUE;
+
+  // These types are 'base' types in that you what other information on top
+  if ( l->type == VIK_LAYER_MAPS || l->type == VIK_LAYER_DEM || l->type == VIK_LAYER_GEOREF )
+    put_above = FALSE;
+
   if ( vl->realized )
   {
-    vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, l, l->type, l->type, replace_iter );
+    vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, replace_iter );
     if ( ! l->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
     vik_layer_realize ( l, vl->vt, &iter );
@@ -213,7 +220,11 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
 
   if (replace_iter) {
     GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( vl->vt, replace_iter ) );
-    val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone)+1 );
+    if ( put_above )
+      val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone)+1 );
+    else
+      // Thus insert 'here' (so don't add 1)
+      val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone) );
   } else {
     // Effectively insert at 'end' of the list to match how displayed in the treeview
     //  - but since it is drawn from 'bottom first' it is actually the first in the child list
@@ -225,14 +236,28 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
   g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update_secondary), val );
 }
 
-void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l )
+/**
+ * vik_aggregate_layer_add_layer:
+ * @allow_reordering: should be set for GUI interactions,
+ *                    whereas loading from a file needs strict ordering and so should be FALSE
+ */
+void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l, gboolean allow_reordering )
 {
   GtkTreeIter iter;
   VikLayer *vl = VIK_LAYER(val);
 
+  // By default layers go to the top
+  gboolean put_above = TRUE;
+
+  if ( allow_reordering ) {
+    // These types are 'base' types in that you what other information on top
+    if ( l->type == VIK_LAYER_MAPS || l->type == VIK_LAYER_DEM || l->type == VIK_LAYER_GEOREF )
+      put_above = FALSE;
+  }
+
   if ( vl->realized )
   {
-    vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, l, l->type, l->type);
+    vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type);
     if ( ! l->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
     vik_layer_realize ( l, vl->vt, &iter );
@@ -241,7 +266,11 @@ void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l )
       vik_treeview_expand ( vl->vt, &(vl->iter) );
   }
 
-  val->children = g_list_append ( val->children, l );
+  if ( put_above )
+    val->children = g_list_append ( val->children, l );
+  else
+    val->children = g_list_prepend ( val->children, l );
+
   g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update_secondary), val );
 }
 
@@ -483,7 +512,7 @@ void vik_aggregate_layer_realize ( VikAggregateLayer *val, VikTreeview *vt, GtkT
   while ( i )
   {
     vli = VIK_LAYER(i->data);
-    vik_treeview_add_layer ( vl->vt, layer_iter, &iter, vli->name, val, 
+    vik_treeview_add_layer ( vl->vt, layer_iter, &iter, vli->name, val, TRUE,
         vli, vli->type, vli->type );
     if ( ! vli->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );

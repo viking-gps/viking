@@ -542,29 +542,38 @@ void vik_treeview_item_unselect ( VikTreeview *vt, GtkTreeIter *iter )
   gtk_tree_selection_unselect_iter ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( vt ) ), iter );
 }
 
-void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent,
+void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
                               gpointer item, gint data, gint icon_type )
 {
   g_assert ( iter != NULL );
   g_assert ( icon_type < VIK_LAYER_NUM_TYPES );
-  gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
+  if ( above )
+    gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
+  else
+    gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
     ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
     ICON_COLUMN, icon_type >= 0 ? vt->layer_type_icons[icon_type] : NULL, -1 );
 }
 
-void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent,
+void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
                               gpointer item, gint data, gint icon_type, GtkTreeIter *sibling )
 {
   g_assert ( iter != NULL );
   g_assert ( icon_type < VIK_LAYER_NUM_TYPES );
   if (sibling) {
-    gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, sibling );
+    if (above)
+      gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, sibling );
+    else
+      gtk_tree_store_insert_after ( GTK_TREE_STORE(vt->model), iter, parent_iter, sibling );
   } else {
-    gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
+    if (above)
+      gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
+    else
+      gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   }
-    
+
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
     ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, TRUE,

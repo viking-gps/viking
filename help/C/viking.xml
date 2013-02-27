@@ -188,7 +188,7 @@ View, create and update Geotagged Images (using EXIF data).
 </section>
 
 <section><title>General Concepts</title>
-<section><title>Layers</title>
+<section id="gc_layers" xreftitle="Layers"><title>Layers</title>
 <para>
 'Layers' is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
 Instead of putting all the data on the same level, it is stacked (i.e. layered) with different data over one another.
@@ -203,12 +203,12 @@ to create the appearance of partial transparency.
 By controlling this value one can see data below it in the layer heirarchy for interesting effects.
 </para>
 </section>
-<section><title>Layers Panel</title>
+<section id="gc_layers_panel" xreftitle="Layers Panel"><title>Layers Panel</title>
 <para>
 The panel on the left is called the <emphasis role="bold">layers panel</emphasis>.
 It determines which layers and sublayers (such as tracks and waypoints)
-are shown, and the order in which they are drawn. Layers list on the
-top of the layers panel are drawn last. You can change the order by
+are shown, and the order in which they are drawn. Layers on the
+top of the layers panel list are drawn last. You can change the order by
 drag and drop, or by selecting a layer and using the up and down
 buttons at the bottom of the layers panel.
 </para>
@@ -649,7 +649,7 @@ geocaches, and paste it into an active TrackWaypoint layer. &appname; can
 automatically recognize several variations of the lat/lon format.
 </para>
 <para>
-By right-clicking on tracks, routes or waypoints in the layers panel, you can access many commands on them.
+By right-clicking on tracks, routes or waypoints in the <xref linkend="gc_layers_panel"/>, you can access many commands on them.
 You can easily find a specific track, route or waypoint by expanding the appropriate containing Tracks, Routes or Waypoints sublayer in the
 layers panel to show all the individual items and then typing the name of the track, route or waypoint.
 </para>
@@ -1581,7 +1581,7 @@ Drag to move the georeferenced map.
 </section>
 </section>
 
-<section><title>Map Download</title>
+<section id="map_tool_dl" xreftitle="Map Download"><title>Map Download</title>
 <para>
 You must have a <xref linkend="Maps"/> Layer selected to use this.
 </para>
@@ -1823,13 +1823,13 @@ The viewport will be automatically moved and resized to view the contents of the
 </step>
 </procedure>
 </section>
-<section><title>Add a map layer</title>
+<section><title>Add a Map Layer</title>
 <para>
-1. Use Layers - New Map Layer, and choose a suitable cache directory
+Use <menuchoice><guimenu>Layers</guimenu><guimenuitem>New Map Layer</guimenuitem></menuchoice>, and choose a suitable cache directory
 where you would like to store your tracks and click <guilabel>OK</guilabel>. Zoom to a
 comfortable level (I suggest 4 mpp) by clicking the left and right
 mouse buttons on the gray area where your tracks are. Now from the menu
-choose Tools - Map Download, Click where you would like to download a
+choose the <xref linkend="map_tool_dl"/> Tool. Click where you would like to download a
 map. Regardless of what tool you are using, the middle mouse button
 always pans. </para>
 <note>
@@ -1838,13 +1838,13 @@ You need an open internet connection when you are downloading maps.
 </para>
 </note>
 <para>
-1. You will notice the maps are being drawn on top of the tracks, which
-is probably not what you want. Look at the Layers Panel to the left.
-Notice how the layer named Map is ABOVE your TrackWaypoint layer that
-your GPS data is in. This means that it will be drawn last, or on top
-of the other layers. Select the Map layer from the list and click the
-down arrow button beneath the list. Your tracks will now be drawn over
-the map. </para>
+If you can no longer see your tracks or waypoints and only the map,
+it is because the layer named <emphasis>Map</emphasis> is <emphasis>ABOVE</emphasis> your TrackWaypoint layer that your GPS data is in.
+This means that it will be drawn last and on top of the other <xref linkend="gc_layers"/>.
+Look at the  <xref linkend="gc_layers_panel"/> to the left which shows this order.
+Select the Map layer from the list and click the down arrow button beneath the list until the Map layer is below the TrackWaypoint layer.
+Your tracks will now be drawn over the map.
+</para>
 </section>
 
 <section><title>Set Your Home Location</title>
@@ -2085,7 +2085,7 @@ This list can be sorted on each column so that it easier to find an individual t
 	ATM this process only works on an individual image, so it will be tedious for handling lots of images.
 </para>
 <para>
-	First create a <xref linkend="TrackWaypoint"/> layer or use an existing one; and select it in the Layers Panel.
+	First create a <xref linkend="TrackWaypoint"/> layer or use an existing one; and select it in the <xref linkend="gc_layers_panel"/>.
 	NB Make sure this layer is above the map layer in the Layers Panel list.
 	Create a new waypoint (or move an existing one) to exact location desired:
 <itemizedlist>

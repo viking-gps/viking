@@ -85,9 +85,9 @@ gboolean vik_treeview_item_get_parent_iter ( VikTreeview *vt, GtkTreeIter *iter,
 void vik_treeview_expand_toplevel ( VikTreeview *vt );
 void vik_treeview_expand ( VikTreeview *vt, GtkTreeIter *iter );
 
-void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent,
+void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
                               gpointer item, gint data, gint icon_type ); /* icon type: type of layer or -1 -> no icon */
-void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent,
+void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
                               gpointer item, gint data, gint icon_type, GtkTreeIter *sibling );
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
                                  gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable );
