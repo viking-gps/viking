@@ -26,6 +26,7 @@
 #include <glib.h>
 
 #include "viktrwlayer.h"
+#include "download.h"
 
 G_BEGIN_DECLS
 
