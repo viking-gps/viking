@@ -51,7 +51,7 @@ static void ext_tools_open_cb ( GtkWidget *widget, VikWindow *vwindow )
   vik_ext_tool_open ( ext_tool, vwindow );
 }
 
-void vik_ext_tools_add_menu_items_to_menu ( VikWindow *vwindow, GtkMenu *menu )
+static void vik_ext_tools_add_menu_items_to_menu ( VikWindow *vwindow, GtkMenu *menu )
 {
   GList *iter;
   for (iter = ext_tools_list; iter; iter = iter->next)
