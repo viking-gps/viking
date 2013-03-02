@@ -2629,37 +2629,37 @@ static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
   //  thus maintain the behaviour ATM.
   // Hence explicit setting here (as the value may be changed elsewhere)
   vik_datasource_gps_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface, NULL, NULL );
 }
 
 static void acquire_from_file ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface, NULL, NULL );
 }
 
 #ifdef VIK_CONFIG_GOOGLE
 static void acquire_from_google ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface, NULL, NULL );
 }
 #endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void acquire_from_osm ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_interface, NULL, NULL );
 }
 
 static void acquire_from_my_osm ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_my_traces_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_my_traces_interface, NULL, NULL );
 }
 #endif
 
 #ifdef VIK_CONFIG_GEOCACHES
 static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gc_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gc_interface, NULL, NULL );
 }
 #endif
 
@@ -2667,14 +2667,14 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 static void acquire_from_geotag ( GtkAction *a, VikWindow *vw )
 {
   vik_datasource_geotag_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_geotag_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_geotag_interface, NULL, NULL );
 }
 #endif
 
 #ifdef VIK_CONFIG_GEONAMES
 static void acquire_from_wikipedia ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_wikipedia_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_wikipedia_interface, NULL, NULL );
 }
 #endif
 

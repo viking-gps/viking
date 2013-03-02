@@ -3039,7 +3039,7 @@ static void trw_layer_acquire_gps_cb ( gpointer lav[2] )
   VikViewport *vvp =  vik_window_viewport(vw);
 
   vik_datasource_gps_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
-  a_acquire ( vw, vlp, vvp, &vik_datasource_gps_interface );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_gps_interface, NULL, NULL );
 }
 
 #ifdef VIK_CONFIG_GOOGLE
@@ -3053,7 +3053,7 @@ static void trw_layer_acquire_google_cb ( gpointer lav[2] )
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
 
-  a_acquire ( vw, vlp, vvp, &vik_datasource_google_interface );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_google_interface, NULL, NULL );
 }
 #endif
 
@@ -3068,7 +3068,7 @@ static void trw_layer_acquire_osm_cb ( gpointer lav[2] )
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
 
-  a_acquire ( vw, vlp, vvp, &vik_datasource_osm_interface );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_osm_interface, NULL, NULL );
 }
 
 /**
@@ -3081,7 +3081,7 @@ static void trw_layer_acquire_osm_my_traces_cb ( gpointer lav[2] )
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
 
-  a_acquire ( vw, vlp, vvp, &vik_datasource_osm_my_traces_interface );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_osm_my_traces_interface, NULL, NULL );
 }
 #endif
 
@@ -3096,7 +3096,7 @@ static void trw_layer_acquire_geocache_cb ( gpointer lav[2] )
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
 
-  a_acquire ( vw, vlp, vvp, &vik_datasource_gc_interface );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_gc_interface, NULL, NULL );
 }
 #endif
 
@@ -3112,7 +3112,7 @@ static void trw_layer_acquire_geotagged_cb ( gpointer lav[2] )
   VikViewport *vvp =  vik_window_viewport(vw);
 
   vik_datasource_geotag_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
-  a_acquire ( vw, vlp, vvp, &vik_datasource_geotag_interface );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_geotag_interface, NULL, NULL );
 
   // Reverify thumbnails as they may have changed
   vtl->has_verified_thumbnails = FALSE;
@@ -3238,7 +3238,7 @@ static void trw_layer_acquire_file_cb ( gpointer lav[2] )
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
 
-  a_acquire ( vw, vlp, vvp, &vik_datasource_file_interface );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_file_interface, NULL, NULL );
 }
 
 static void trw_layer_new_wp ( gpointer lav[2] )

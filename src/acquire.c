@@ -213,7 +213,7 @@ static gchar *write_tmp_track ( VikTrack *track )
  * the other can be NULL.
  */
 static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface,
-		      VikTrwLayer *vtl, VikTrack *track )
+		      VikTrwLayer *vtl, VikTrack *track, gpointer userdata, VikDataSourceCleanupFunc cleanup_function )
 {
   /* for manual dialogs */
   GtkWidget *dialog = NULL;
@@ -230,6 +230,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   avt.vlp = vlp;
   avt.vvp = vvp;
   avt.vw = vw;
+  avt.userdata = userdata;
 
   /* for UI builder */
   gpointer pass_along_data;
@@ -432,15 +433,26 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   }
 
   gtk_widget_destroy ( dialog );
+
+  if ( cleanup_function )
+    cleanup_function ( source_interface );
 }
 
 /**
  * a_acquire:
+ * @vw: The #VikWindow to work with
+ * @vlp: The #VikLayersPanel in which a #VikTrwLayer layer may be created/appended
+ * @vvp: The #VikViewport defining the current view
+ * @source_interface: The #VikDataSourceInterface determining how and what actions to take
+ * @userdata: External data to be passed into the #VikDataSourceInterface
+ * @cleanup_function: The function to dispose the #VikDataSourceInterface if necessary
  *
  * Process the given VikDataSourceInterface for sources with no input data.
  */
-void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface ) {
-  acquire ( vw, vlp, vvp, source_interface, NULL, NULL );
+void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface,
+                 gpointer userdata, VikDataSourceCleanupFunc cleanup_function )
+{
+  acquire ( vw, vlp, vvp, source_interface, NULL, NULL, userdata, cleanup_function );
 }
 
 static void acquire_trwlayer_callback ( GObject *menuitem, gpointer *pass_along )
@@ -452,7 +464,7 @@ static void acquire_trwlayer_callback ( GObject *menuitem, gpointer *pass_along 
   VikTrwLayer *vtl =	pass_along[3];
   VikTrack *tr =	pass_along[4];
 
-  acquire ( vw, vlp, vvp, iface, vtl, tr );
+  acquire ( vw, vlp, vvp, iface, vtl, tr, NULL, NULL );
 }
 
 static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp,

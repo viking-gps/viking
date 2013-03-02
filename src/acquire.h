@@ -37,6 +37,7 @@ typedef struct {
   VikWindow *vw;
   VikLayersPanel *vlp;
   VikViewport *vvp;
+  gpointer userdata;
 } acq_vik_t;
 
 /**
@@ -177,10 +178,9 @@ struct _VikDataSourceInterface {
 };
 
 /**********************************/
-/**********************************/
-/**********************************/
 
-void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface );
+void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface,
+                 gpointer userdata, VikDataSourceCleanupFunc cleanup_function );
 
 GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl);
 
