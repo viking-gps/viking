@@ -37,6 +37,7 @@
 #include "viklayer_defaults.h"
 #include "icons/icons.h"
 #include "vikexttools.h"
+#include "vikexttool_datasources.h"
 #include "garminsymbols.h"
 #include "vikmapslayer.h"
 #include "geonamessearch.h"
@@ -515,6 +516,8 @@ static void vik_window_init ( VikWindow *vw )
   gtk_box_pack_start (GTK_BOX(main_vbox), GTK_WIDGET(vw->toolbar), FALSE, TRUE, 0);
   gtk_toolbar_set_icon_size (vw->toolbar, GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_toolbar_set_style (vw->toolbar, GTK_TOOLBAR_ICONS);
+
+  vik_ext_tool_datasources_add_menu_items ( vw, vw->uim );
 
   GtkWidget * zoom_levels = gtk_ui_manager_get_widget (vw->uim, "/MainMenu/View/SetZoom");
   GtkWidget * zoom_levels_menu = create_zoom_menu_all_levels ( vik_viewport_get_zoom(vw->viking_vvp) );

@@ -52,6 +52,7 @@
 #include "acquire.h"
 #include "datasources.h"
 #include "datasource_gps.h"
+#include "vikexttool_datasources.h"
 #include "util.h"
 
 #include "icons/icons.h"
@@ -3575,6 +3576,8 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_file_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
+
+  vik_ext_tool_datasources_add_menu_items_to_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), GTK_MENU (acquire_submenu) );
 
   GtkWidget *upload_submenu = gtk_menu_new ();
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Upload") );
