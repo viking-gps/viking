@@ -38,7 +38,7 @@ static GKeyFile *keyfile;
 
 static gboolean loaded;
 
-static VikLayerParamData get_default_data ( const gchar *group, const gchar *name, VikLayerParamType ptype )
+static VikLayerParamData get_default_data_answer ( const gchar *group, const gchar *name, VikLayerParamType ptype, gpointer success )
 {
 	VikLayerParamData data = VIK_LPD_BOOLEAN ( FALSE );
 
@@ -86,32 +86,21 @@ static VikLayerParamData get_default_data ( const gchar *group, const gchar *nam
 	}
 	default: break;
 	}
+	success = GINT_TO_POINTER (TRUE);
 	if ( error ) {
 		g_warning ( error->message );
 		g_error_free ( error );
+		success = GINT_TO_POINTER (FALSE);
 	}
 
 	return data;
 }
 
-static gboolean defaults_load_from_file()
+static VikLayerParamData get_default_data ( const gchar *group, const gchar *name, VikLayerParamType ptype )
 {
-	GKeyFileFlags flags = G_KEY_FILE_KEEP_COMMENTS;
-
-	GError *error = NULL;
-
-	gchar *fn = g_build_filename ( a_get_viking_dir(), VIKING_LAYER_DEFAULTS_INI_FILE, NULL );
-
-	if ( !g_key_file_load_from_file ( keyfile, fn, flags, &error ) ) {
-		g_warning ( "%s: %s", error->message, fn );
-		g_free ( fn );
-		g_error_free ( error );
-		return FALSE;
-	}
-
-	g_free ( fn );
-
-	return TRUE;
+	gpointer success = GINT_TO_POINTER (TRUE);
+	// NB This should always succeed - don't worry about 'success'
+	return get_default_data_answer ( group, name, ptype, success );
 }
 
 static void set_default_data ( VikLayerParamData data, const gchar *group, const gchar *name, VikLayerParamType ptype )
@@ -158,6 +147,58 @@ static VikLayerParamData defaults_run_getparam ( gpointer index_ptr, guint16 i, 
 	VikLayerParam *vlp = (VikLayerParam *)g_ptr_array_index(paramsVD,index+i);
 
 	return get_default_data ( vik_layer_get_interface(vlp->layer)->fixed_layer_name, vlp->name, vlp->type );
+}
+
+static void use_internal_defaults_if_missing_default ( VikLayerTypeEnum type )
+{
+	VikLayerParam *params = vik_layer_get_interface(type)->params;
+	if ( ! params )
+		return;
+
+	guint16 params_count = vik_layer_get_interface(type)->params_count;
+	guint16 i;
+	// Process each parameter
+	for ( i = 0; i < params_count; i++ ) {
+		if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
+			gpointer success = GINT_TO_POINTER (FALSE);
+			// Check current default is available
+			get_default_data_answer ( vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type, success);
+			// If no longer have a viable default
+			if ( ! GPOINTER_TO_INT (success) ) {
+				// Reset value
+				if ( params[i].default_value ) {
+					VikLayerParamData paramd = params[i].default_value();
+					set_default_data ( paramd, vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type );
+				}
+			}
+		}
+	}
+}
+
+static gboolean defaults_load_from_file()
+{
+	GKeyFileFlags flags = G_KEY_FILE_KEEP_COMMENTS;
+
+	GError *error = NULL;
+
+	gchar *fn = g_build_filename ( a_get_viking_dir(), VIKING_LAYER_DEFAULTS_INI_FILE, NULL );
+
+	if ( !g_key_file_load_from_file ( keyfile, fn, flags, &error ) ) {
+		g_warning ( "%s: %s", error->message, fn );
+		g_free ( fn );
+		g_error_free ( error );
+		return FALSE;
+	}
+
+	g_free ( fn );
+
+	// Ensure if have a key file, then any missing values are set from the internal defaults
+	VikLayerTypeEnum layer;
+	for ( layer = 0; layer < VIK_LAYER_NUM_TYPES; layer++ ) {
+		use_internal_defaults_if_missing_default ( layer );
+	}
+
+	return TRUE;
 }
 
 /* TRUE on success */
