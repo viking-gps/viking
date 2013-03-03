@@ -1,0 +1,33 @@
+<objects>
+  <!-- NB In built, but this is the equivalent -->
+  <object class="VikWebtoolDatasource">
+    <property name="label">OpenStreetBugs</property>
+    <property name="url_format_code">LRBT</property>
+    <!-- format_code describes the order and what each of the substitution values are in the URL -->
+    <!-- B = Bottom of the current view  i.e. minimum latitude -->
+    <!-- L = Left of the current view  i.e. minimum longitude -->
+    <!-- T = Top of the current view  i.e. maximum latitude -->
+    <!-- R = Right of the current view i.e. maximum longitude -->
+    <!-- A = center lAtitude of the current view -->
+    <!-- O = center lOngitude of the current view -->
+    <!-- Z = OSM Zoom value of the current view (http://wiki.openstreetmap.org/wiki/Zoom_levels) -->
+    <property name="file_type"></property>
+    <!-- A non defined or empty value (as above) means use internal GPX processing -->
+    <!--  otherwise the value is used in calling gpsbabel with the '-i' parameter to identify the file format e.g. gpx or kml -->
+    <!-- See http://www.gpsbabel.org/capabilities.html for the full range of file types. The value is case sensitive. -->
+    <property name="url">http://openstreetbugs.schokokeks.org/api/0.1/getGPX?l=%s&amp;r=%s&amp;b=%s&amp;t=%s&amp;open=only_open_bugs</property>
+  </object>
+  <object class="VikWebtoolDatasource">
+    <property name="label">PostBoxes</property>
+    <property name="url_format_code">AO</property>
+    <!-- file_type not set, so uses internal GPX handler -->
+    <property name="url">robert.mathmos.net/osm/postboxes/2/mapdata.cgi?lat=%s&amp;lon=%s&amp;output=gpx</property>
+    <!-- URL doesn't have to have the starting 'http://' -->
+  </object>
+  <object class="VikWebtoolDatasource">
+    <property name="label">OpenPlaques</property>
+    <property name="url_format_code">TLBR</property>
+    <property name="url">http://openplaques.org/plaques.kml?box=[%s,%s],[%s,%s]</property>
+    <property name="file_type">kml</property>
+  </object>
+</objects>
