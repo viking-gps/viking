@@ -37,46 +37,23 @@ typedef union {
   GList *sl;
 } VikLayerParamData;
 
-typedef struct {
-  const gchar *name;
-  guint8 type;
-  gint16 group;
-  const gchar *title;
-  guint8 widget_type;
-  gpointer widget_data;
-  gpointer extra_widget_data;
-  const gchar *tooltip;
-} VikLayerParam;
-
-enum {
-VIK_LAYER_NOT_IN_PROPERTIES=-2,
-VIK_LAYER_GROUP_NONE=-1
-};
-
-enum {
-VIK_LAYER_WIDGET_CHECKBUTTON=0,
-VIK_LAYER_WIDGET_RADIOGROUP,
-VIK_LAYER_WIDGET_RADIOGROUP_STATIC,
-VIK_LAYER_WIDGET_SPINBUTTON,
-VIK_LAYER_WIDGET_ENTRY,
-VIK_LAYER_WIDGET_PASSWORD,
-VIK_LAYER_WIDGET_FILEENTRY,
-VIK_LAYER_WIDGET_FOLDERENTRY,
-VIK_LAYER_WIDGET_HSCALE,
-VIK_LAYER_WIDGET_COLOR,
-VIK_LAYER_WIDGET_COMBOBOX,
-VIK_LAYER_WIDGET_FILELIST,
-};
-
-typedef struct {
-  gdouble min;
-  gdouble max;
-  gdouble step;
-  guint8 digits;
-} VikLayerParamScale;
+typedef enum {
+  VIK_LAYER_WIDGET_CHECKBUTTON=0,
+  VIK_LAYER_WIDGET_RADIOGROUP,
+  VIK_LAYER_WIDGET_RADIOGROUP_STATIC,
+  VIK_LAYER_WIDGET_SPINBUTTON,
+  VIK_LAYER_WIDGET_ENTRY,
+  VIK_LAYER_WIDGET_PASSWORD,
+  VIK_LAYER_WIDGET_FILEENTRY,
+  VIK_LAYER_WIDGET_FOLDERENTRY,
+  VIK_LAYER_WIDGET_HSCALE,
+  VIK_LAYER_WIDGET_COLOR,
+  VIK_LAYER_WIDGET_COMBOBOX,
+  VIK_LAYER_WIDGET_FILELIST,
+} VikLayerWidgetType;
 
 /* id is index */
-enum {
+typedef enum {
 VIK_LAYER_PARAM_DOUBLE=1,
 VIK_LAYER_PARAM_UINT,
 VIK_LAYER_PARAM_INT,
@@ -94,18 +71,84 @@ VIK_LAYER_PARAM_COLOR,
  */
 
 VIK_LAYER_PARAM_STRING_LIST,
+} VikLayerParamType;
+
+typedef enum {
+  VIK_LAYER_AGGREGATE = 0,
+  VIK_LAYER_TRW,
+  VIK_LAYER_COORD,
+  VIK_LAYER_GEOREF,
+  VIK_LAYER_GPS,
+  VIK_LAYER_MAPS,
+  VIK_LAYER_DEM,
+  VIK_LAYER_NUM_TYPES // Also use this value to indicate no layer association
+} VikLayerTypeEnum;
+
+// Default value has to be returned via a function
+//  because certain types value are can not be statically allocated
+//  (i.e. a string value that is dependent on other functions)
+// Also easier for colours to be set via a function call rather than a static assignment
+typedef VikLayerParamData (*VikLayerDefaultFunc) ( void );
+
+typedef struct {
+  VikLayerTypeEnum layer;
+  const gchar *name;
+  VikLayerParamType type;
+  gint16 group;
+  const gchar *title;
+  VikLayerWidgetType widget_type;
+  gpointer widget_data;
+  gpointer extra_widget_data;
+  const gchar *tooltip;
+  VikLayerDefaultFunc default_value;
+} VikLayerParam;
+
+enum {
+VIK_LAYER_NOT_IN_PROPERTIES=-2,
+VIK_LAYER_GROUP_NONE=-1
 };
+
+typedef struct {
+  gdouble min;
+  gdouble max;
+  gdouble step;
+  guint8 digits;
+} VikLayerParamScale;
+
+
+  /* Annoyingly 'C' cannot initialize unions properly */
+  /* It's dependent on the standard used or the compiler support... */
+#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L || __GNUC__
+#define VIK_LPD_BOOLEAN(X)     (VikLayerParamData) { .b = (X) }
+#define VIK_LPD_INT(X)         (VikLayerParamData) { .u = (X) }
+#define VIK_LPD_UINT(X)        (VikLayerParamData) { .i = (X) }
+#define VIK_LPD_COLOR(X,Y,Z,A) (VikLayerParamData) { .c = (GdkColor){ (X), (Y), (Z), (A) } }
+#define VIK_LPD_DOUBLE(X)      (VikLayerParamData) { .d = (X) }
+#else
+#define VIK_LPD_BOOLEAN(X)     (VikLayerParamData) { (X) }
+#define VIK_LPD_INT(X)         (VikLayerParamData) { (X) }
+#define VIK_LPD_UINT(X)        (VikLayerParamData) { (X) }
+#define VIK_LPD_COLOR(X,Y,Z,A) (VikLayerParamData) { (X), (Y), (Z), (A) }
+#define VIK_LPD_DOUBLE(X)      (VikLayerParamData) { (X) }
+#endif
+
+VikLayerParamData vik_lpd_true_default ( void );
+VikLayerParamData vik_lpd_false_default ( void );
 
 GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data );
 VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerParam *param );
-gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
-				      guint16 params_count, gchar **groups, guint8 groups_count,
-				      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
-				      gpointer pass_along1, gpointer pass_along2,
-				      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
-				      gpointer pass_along_getparam );
+gint a_uibuilder_properties_factory ( const gchar *dialog_name,
+                                      GtkWindow *parent,
+                                      VikLayerParam *params,
+                                      guint16 params_count,
+                                      gchar **groups,
+                                      guint8 groups_count,
+                                      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
+                                      gpointer pass_along1,
+                                      gpointer pass_along2,
+                                      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
+                                      gpointer pass_along_getparam );
                                       /* pass_along1 and pass_along2 are for set_param first and last params */
-
 
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,

@@ -125,3 +125,49 @@ GList * str_array_to_glist(gchar* data[])
     gl = g_list_prepend(gl, *p);
   return g_list_reverse(gl);
 }
+
+/**
+ * split_string_from_file_on_equals:
+ *
+ * @buf: the input string
+ * @key: newly allocated string that is before the '='
+ * @val: newly allocated string after the '='
+ *
+ * Designed for file line processing, so it ignores strings beginning with special
+ *  characters, such as '#'; returns false in such situations.
+ * Also returns false if no equals character is found
+ *
+ * e.g. if buf = "GPS.parameter=42"
+ *   key = "GPS.parameter"
+ *   val = "42"
+ */
+gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar **val )
+{
+  // comments, special characters in viking file format
+  if ( buf == NULL || buf[0] == '\0' || buf[0] == '~' || buf[0] == '=' || buf[0] == '#' )
+    return FALSE;
+
+  if ( ! strchr ( buf, '=' ) )
+    return FALSE;
+
+  gchar **strv = g_strsplit ( buf, "=", 2 );
+
+  gint gi = 0;
+  gchar *str = strv[gi];
+  while ( str ) {
+	if ( gi == 0 )
+	  *key = g_strdup ( str );
+	else
+	  *val = g_strdup ( str );
+    gi++;
+    str = strv[gi];
+  }
+
+  g_strfreev ( strv );
+
+  // Remove newline from val and also any other whitespace
+  *key = g_strstrip ( *key );
+  *val = g_strstrip ( *val );
+
+  return TRUE;
+}

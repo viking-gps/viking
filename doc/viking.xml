@@ -360,6 +360,12 @@ and docbook-xsl in your Build-Depends control field.
         </listitem>
       </varlistentry>
       <varlistentry>
+        <term><filename>~/.viking/viking_layer_defaults.ini</filename></term>
+        <listitem>
+          <para>Layer default values for &dhpackage;.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><filename>~/.viking/cookies.txt</filename></term>
         <listitem>
           <para>File hosting cookies used by &dhpackage;.</para>

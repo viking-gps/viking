@@ -32,6 +32,7 @@ src/main.c
 src/osm.c
 src/osm-traces.c
 src/preferences.c
+src/viklayer_defaults.c
 src/uibuilder.c
 src/vikaggregatelayer.c
 src/vikdemlayer.c

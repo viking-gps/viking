@@ -28,6 +28,8 @@
 
 #include "viking.h"
 #include <string.h>
+#include <stdlib.h>
+#include "viklayer_defaults.h"
 
 /* functions common to all layers. */
 /* TODO longone: rename interface free -> finalize */
@@ -50,6 +52,7 @@ static GObjectClass *parent_class;
 
 static void vik_layer_finalize ( VikLayer *vl );
 static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp );
+static gboolean layer_defaults_register ( VikLayerTypeEnum type );
 
 G_DEFINE_TYPE (VikLayer, vik_layer, G_TYPE_OBJECT)
 
@@ -66,6 +69,12 @@ static void vik_layer_class_init (VikLayerClass *klass)
   layer_signals[VL_UPDATE_SIGNAL] = g_signal_new ( "update", G_TYPE_FROM_CLASS (klass),
       G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayerClass, update), NULL, NULL, 
       g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+
+  // Register all parameter defaults, early in the start up sequence
+  VikLayerTypeEnum layer;
+  for ( layer = 0; layer < VIK_LAYER_NUM_TYPES; layer++ )
+    // ATM ignore the returned value
+    layer_defaults_register ( layer );
 }
 
 /**
@@ -123,10 +132,39 @@ static VikLayerInterface *vik_layer_interfaces[VIK_LAYER_NUM_TYPES] = {
   &vik_dem_layer_interface,
 };
 
-VikLayerInterface *vik_layer_get_interface ( gint type )
+VikLayerInterface *vik_layer_get_interface ( VikLayerTypeEnum type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );
   return vik_layer_interfaces[type];
+}
+
+/**
+ * Store default values for this layer
+ *
+ * Returns whether any parameters where registered
+ */
+static gboolean layer_defaults_register ( VikLayerTypeEnum type )
+{
+  // See if any parameters
+  VikLayerParam *params = vik_layer_interfaces[type]->params;
+  if ( ! params )
+    return FALSE;
+
+  gboolean answer = FALSE; // Incase all parameters are 'not in properties'
+  guint16 params_count = vik_layer_interfaces[type]->params_count;
+  guint16 i;
+  // Process each parameter
+  for ( i = 0; i < params_count; i++ ) {
+    if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
+      if ( params[i].default_value ) {
+        VikLayerParamData paramd = params[i].default_value();
+        a_layer_defaults_register ( &params[i], paramd, vik_layer_interfaces[type]->fixed_layer_name );
+        answer = TRUE;
+      }
+    }
+  }
+
+  return answer;
 }
 
 static void vik_layer_init ( VikLayer *vl )
@@ -136,7 +174,7 @@ static void vik_layer_init ( VikLayer *vl )
   vl->realized = FALSE;
 }
 
-void vik_layer_set_type ( VikLayer *vl, gint type )
+void vik_layer_set_type ( VikLayer *vl, VikLayerTypeEnum type )
 {
   vl->type = type;
 }
@@ -164,7 +202,7 @@ const gchar *vik_layer_get_name ( VikLayer *l )
   return l->name;
 }
 
-VikLayer *vik_layer_create ( gint type, gpointer vp, GtkWindow *w, gboolean interactive )
+VikLayer *vik_layer_create ( VikLayerTypeEnum type, gpointer vp, GtkWindow *w, gboolean interactive )
 {
   VikLayer *new_layer = NULL;
   g_assert ( type < VIK_LAYER_NUM_TYPES );
@@ -454,7 +492,7 @@ const gchar* vik_layer_layer_tooltip ( VikLayer *l )
   return NULL;
 }
 
-GdkPixbuf *vik_layer_load_icon ( gint type )
+GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );
   if ( vik_layer_interfaces[type]->icon )
@@ -499,3 +537,107 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp )
   }
 }
 
+VikLayerTypeEnum vik_layer_type_from_string ( const gchar *str )
+{
+  VikLayerTypeEnum i;
+  for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
+    if ( strcasecmp ( str, vik_layer_get_interface(i)->fixed_layer_name ) == 0 )
+      return i;
+  return VIK_LAYER_NUM_TYPES;
+}
+
+void vik_layer_typed_param_data_free ( gpointer gp )
+{
+  VikLayerTypedParamData *val = (VikLayerTypedParamData *)gp;
+  switch ( val->type ) {
+    case VIK_LAYER_PARAM_STRING:
+      if ( val->data.s )
+        g_free ( (gpointer)val->data.s );
+      break;
+    /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
+     * the internals call get_param -- i.e. it should be managed w/in the layer.
+     * The value passed by the internals into set_param should also be managed
+     * by the layer -- i.e. free'd by the layer.
+     */
+    case VIK_LAYER_PARAM_STRING_LIST:
+      g_warning ("Param strings not implemented"); //fake it
+      break;
+    default:
+      break;
+  }
+  g_free ( val );
+}
+
+VikLayerTypedParamData *vik_layer_typed_param_data_copy_from_data (VikLayerParamType type, VikLayerParamData val) {
+  VikLayerTypedParamData *newval = g_new(VikLayerTypedParamData,1);
+  newval->data = val;
+  newval->type = type;
+  switch ( newval->type ) {
+    case VIK_LAYER_PARAM_STRING: {
+      gchar *s = g_strdup(newval->data.s);
+      newval->data.s = s;
+      break;
+    }
+    /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
+     * the internals call get_param -- i.e. it should be managed w/in the layer.
+     * The value passed by the internals into set_param should also be managed
+     * by the layer -- i.e. free'd by the layer.
+     */
+    case VIK_LAYER_PARAM_STRING_LIST:
+      g_critical ( "Param strings not implemented"); //fake it
+      break;
+    default:
+      break;
+  }
+  return newval;
+}
+
+#define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
+
+VikLayerTypedParamData *vik_layer_data_typed_param_copy_from_string ( VikLayerParamType type, const gchar *str )
+{
+  VikLayerTypedParamData *rv = g_new(VikLayerTypedParamData,1);
+  rv->type = type;
+  switch ( type )
+  {
+    case VIK_LAYER_PARAM_DOUBLE: rv->data.d = strtod(str, NULL); break;
+    case VIK_LAYER_PARAM_UINT: rv->data.u = strtoul(str, NULL, 10); break;
+    case VIK_LAYER_PARAM_INT: rv->data.i = strtol(str, NULL, 10); break;
+    case VIK_LAYER_PARAM_BOOLEAN: rv->data.b = TEST_BOOLEAN(str); break;
+    case VIK_LAYER_PARAM_COLOR: memset(&(rv->data.c), 0, sizeof(rv->data.c)); /* default: black */
+      gdk_color_parse ( str, &(rv->data.c) ); break;
+    /* STRING or STRING_LIST -- if STRING_LIST, just set param to add a STRING */
+    default: {
+      gchar *s = g_strdup(str);
+      rv->data.s = s;
+    }
+  }
+  return rv;
+}
+
+
+/**
+ * vik_layer_set_defaults:
+ *
+ * Loop around all parameters for the specified layer to call the function to get the
+ *  default value for that parameter
+ */
+void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
+{
+  VikLayerInterface *vli = vik_layer_get_interface ( vl->type );
+  const gchar *layer_name = vli->fixed_layer_name;
+  VikLayerParamData data;
+
+  int i;
+  for ( i = 0; i < vli->params_count; i++ ) {
+    // Ensure parameter is for use
+    if ( vli->params[i].group > VIK_LAYER_NOT_IN_PROPERTIES ) {
+      // ATM can't handle string lists
+      // only DEM files uses this currently
+      if ( vli->params[i].type != VIK_LAYER_PARAM_STRING_LIST ) {
+        data = a_layer_defaults_get ( layer_name, vli->params[i].name, vli->params[i].type );
+        vik_layer_set_param ( vl, i, data, vvp, FALSE );
+      }
+    }
+  }
+}

@@ -21,23 +21,18 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <glib/gstdio.h>
 #include "preferences.h"
 #include "dir.h"
 #include "file.h"
+#include "util.h"
 
-// TODO: register_group
 // TODO: STRING_LIST
 // TODO: share code in file reading
 // TODO: remove hackaround in show_window
-// TODO: move typeddata to uibuilder, make it more used & general, it's a "prettier" solution methinks
-// maybe this wasn't such a good idea...
 
 #define VIKING_PREFS_FILE "viking.prefs"
-
-#define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 
 static GPtrArray *params;
 static GHashTable *values;
@@ -81,101 +76,6 @@ static gint16 preferences_groups_key_to_index( const gchar *key )
 
 /*****************************/
 
-/************/
-
-typedef struct {
-  VikLayerParamData data;
-  guint8 type;
-} VikLayerTypedParamData;
-
-static void layer_typed_param_data_free(gpointer p)
-{
-  VikLayerTypedParamData *val = (VikLayerTypedParamData *)p;
-  switch ( val->type ) {
-    case VIK_LAYER_PARAM_STRING:
-      if ( val->data.s )
-        g_free ( (gpointer)val->data.s );
-      break;
-    /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
-     * the internals call get_param -- i.e. it should be managed w/in the layer.
-     * The value passed by the internals into set_param should also be managed
-     * by the layer -- i.e. free'd by the layer.
-     */
-    case VIK_LAYER_PARAM_STRING_LIST:
-      g_critical ( "Param strings not implemented in preferences"); //fake it
-      break;
-  }
-  g_free ( val );
-}
-
-static VikLayerTypedParamData *layer_typed_param_data_copy_from_data(guint8 type, VikLayerParamData val) {
-  VikLayerTypedParamData *newval = g_new(VikLayerTypedParamData,1);
-  newval->data = val;
-  newval->type = type;
-  switch ( newval->type ) {
-    case VIK_LAYER_PARAM_STRING: {
-      gchar *s = g_strdup(newval->data.s);
-      newval->data.s = s;
-      break;
-    }
-    /* TODO: APPLICABLE TO US? NOTE: string layer works auniquely: data.sl should NOT be free'd when
-     * the internals call get_param -- i.e. it should be managed w/in the layer.
-     * The value passed by the internals into set_param should also be managed
-     * by the layer -- i.e. free'd by the layer.
-     */
-    case VIK_LAYER_PARAM_STRING_LIST:
-      g_critical ( "Param strings not implemented in preferences"); //fake it
-      break;
-  }
-  return newval;
-}
-
-/* TODO: share this code with file.c */
-static VikLayerTypedParamData *layer_data_typed_param_copy_from_string ( guint8 type, const gchar *str )
-{
-  g_assert ( type != VIK_LAYER_PARAM_STRING_LIST );
-  VikLayerTypedParamData *rv = g_new(VikLayerTypedParamData,1);
-  rv->type = type;
-  switch ( type )
-  {
-    case VIK_LAYER_PARAM_DOUBLE: rv->data.d = strtod(str, NULL); break;
-    case VIK_LAYER_PARAM_UINT: rv->data.u = strtoul(str, NULL, 10); break;
-    case VIK_LAYER_PARAM_INT: rv->data.i = strtol(str, NULL, 10); break;
-    case VIK_LAYER_PARAM_BOOLEAN: rv->data.b = TEST_BOOLEAN(str); break;
-    case VIK_LAYER_PARAM_COLOR: memset(&(rv->data.c), 0, sizeof(rv->data.c)); /* default: black */
-      gdk_color_parse ( str, &(rv->data.c) ); break;
-    /* STRING or STRING_LIST -- if STRING_LIST, just set param to add a STRING */
-    default: {
-      gchar *s = g_strdup(str);
-      rv->data.s = s;
-    }
-  }
-  return rv;
-}
-
-/************/
-
-/* MAKES A COPY OF THE KEY!!! */
-static gboolean preferences_load_parse_param(gchar *buf, gchar **key, gchar **val )
-{
-  gchar *eq_pos;
-  gint len;
-
-  // comments, special characters in viking file format
-  if ( buf == NULL || buf[0] == '\0' || buf[0] == '~' || buf[0] == '=' || buf[0] == '#' )
-    return FALSE;
-  eq_pos = strchr ( buf, '=' );
-  if ( ! eq_pos )
-    return FALSE;
-  *key = g_strndup ( buf, eq_pos - buf );
-  *val = eq_pos + 1;
-  len = strlen(*val);
-  if ( len > 0 )
-    if ( (*val)[len - 1] == '\n' )
-      (*val) [ len - 1 ] = '\0'; /* cut off newline */
-  return TRUE;
-}
-
 static gboolean preferences_load_from_file()
 {
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
@@ -189,11 +89,12 @@ static gboolean preferences_load_from_file()
     while ( ! feof (f) ) {
       if (fgets(buf,sizeof(buf),f) == NULL)
         break;
-      if ( preferences_load_parse_param(buf, &key, &val ) ) {
+      if ( split_string_from_file_on_equals ( buf, &key, &val ) ) {
         // if it's not in there, ignore it
         oldval = g_hash_table_lookup ( values, key );
         if ( ! oldval ) {
           g_free(key);
+          g_free(val);
           continue;
         }
 
@@ -202,11 +103,11 @@ static gboolean preferences_load_from_file()
         if ( oldval->type == VIK_LAYER_PARAM_STRING_LIST )
           g_critical ( "Param strings not implemented in preferences"); // fake it
 
-        newval = layer_data_typed_param_copy_from_string ( oldval->type, val );
+        newval = vik_layer_data_typed_param_copy_from_string ( oldval->type, val );
         g_hash_table_insert ( values, key, newval );
 
         g_free(key);
-
+        g_free(val);
         // change value
       }
     }
@@ -221,7 +122,7 @@ static void preferences_run_setparam ( gpointer notused, guint16 i, VikLayerPara
 {
   if ( params[i].type == VIK_LAYER_PARAM_STRING_LIST )
     g_critical ( "Param strings not implemented in preferences"); //fake it
-  g_hash_table_insert ( values, (gchar *)(params[i].name), layer_typed_param_data_copy_from_data(params[i].type, data) );
+  g_hash_table_insert ( values, (gchar *)(params[i].name), vik_layer_typed_param_data_copy_from_data(params[i].type, data) );
 }
 
 /* Allow preferences to be manipulated externally */
@@ -297,7 +198,7 @@ void a_preferences_register(VikLayerParam *pref, VikLayerParamData defaultval, c
   /* copy value */
   VikLayerParam *newpref = g_new(VikLayerParam,1);
   *newpref = *pref;
-  VikLayerTypedParamData *newval = layer_typed_param_data_copy_from_data(pref->type, defaultval);
+  VikLayerTypedParamData *newval = vik_layer_typed_param_data_copy_from_data(pref->type, defaultval);
   if ( group_key )
     newpref->group = preferences_groups_key_to_index ( group_key );
 
@@ -313,7 +214,7 @@ void a_preferences_init()
   params = g_ptr_array_new ();
 
   /* key not copied (same ptr as in pref), actual param data yes */
-  values = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, layer_typed_param_data_free);
+  values = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, vik_layer_typed_param_data_free);
 
   loaded = FALSE;
 }

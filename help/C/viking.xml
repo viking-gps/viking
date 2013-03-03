@@ -632,6 +632,9 @@ The cut/copy/paste options can be accessed in a variety of ways once the layer h
 <listitem><para>Buttons at the bottom of the Layers Panel</para></listitem>
 </itemizedlist>
 <para>
+Default values used for each layer's properties can be altered via the <menuchoice><guimenu>Edit</guimenu><guisubmenu>Layer Defaults</guisubmenu></menuchoice> menu options.
+</para>
+<para>
 See the individual section for detail about each layer.
 </para>
 </section>

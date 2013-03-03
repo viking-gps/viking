@@ -123,6 +123,7 @@ libviking_a_SOURCES = \
 	uibuilder.c uibuilder.h \
 	print-preview.c print-preview.h \
 	print.c print.h \
+	viklayer_defaults.c viklayer_defaults.h \
 	preferences.c preferences.h
 
 if BING

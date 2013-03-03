@@ -29,6 +29,9 @@
 #include "vikfileentry.h"
 #include "vikfilelist.h"
 
+VikLayerParamData vik_lpd_true_default ( void ) { return VIK_LPD_BOOLEAN ( TRUE ); }
+VikLayerParamData vik_lpd_false_default ( void ) { return VIK_LPD_BOOLEAN ( FALSE ); }
+
 GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data )
 {
   GtkWidget *rv = NULL;
@@ -252,7 +255,6 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
   return rv;
 }
 
-
 gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
 				      guint16 params_count, gchar **groups, guint8 groups_count,
 				      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
@@ -330,10 +332,10 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
 
         widgets[j] = a_uibuilder_new_widget ( &(params[i]), getparam ( pass_along_getparam, i, FALSE ) );
 
-        g_assert ( widgets[j] != NULL );
-
-        gtk_table_attach ( GTK_TABLE(table), gtk_label_new(_(params[i].title)), 0, 1, j, j+1, 0, 0, 0, 0 );
-        gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL, 0, 2, 2 );
+        if ( widgets[j] ) {
+          gtk_table_attach ( GTK_TABLE(table), gtk_label_new(_(params[i].title)), 0, 1, j, j+1, 0, 0, 0, 0 );
+          gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL, 0, 2, 2 );
+        }
         j++;
       }
     }
@@ -436,6 +438,8 @@ void a_uibuilder_free_paramdatas ( VikLayerParamData *paramdatas, VikLayerParam 
           iter = iter->next;
         }
         g_list_free ( paramdatas[i].sl );
+        break;
+      default:
         break;
       }
     }

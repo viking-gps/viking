@@ -60,20 +60,7 @@ struct _VikLayer {
   GtkTreeIter iter;
 
   /* for explicit "polymorphism" (function type switching) */
-  guint16 type;
-};
-
-
-
-enum {
-  VIK_LAYER_AGGREGATE = 0,
-  VIK_LAYER_TRW,
-  VIK_LAYER_COORD,
-  VIK_LAYER_GEOREF,
-  VIK_LAYER_GPS,
-  VIK_LAYER_MAPS,
-  VIK_LAYER_DEM,
-  VIK_LAYER_NUM_TYPES
+  VikLayerTypeEnum type;
 };
 
 /* I think most of these are ignored,
@@ -266,10 +253,10 @@ struct _VikLayerInterface {
   VikLayerFuncSelectedViewportMenu  show_viewport_menu;
 };
 
-VikLayerInterface *vik_layer_get_interface ( gint type );
+VikLayerInterface *vik_layer_get_interface ( VikLayerTypeEnum type );
 
 
-void vik_layer_set_type ( VikLayer *vl, gint type );
+void vik_layer_set_type ( VikLayer *vl, VikLayerTypeEnum type );
 void vik_layer_draw ( VikLayer *l, gpointer data );
 void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode );
 void vik_layer_rename ( VikLayer *l, const gchar *new_name );
@@ -278,13 +265,15 @@ const gchar *vik_layer_get_name ( VikLayer *l );
 
 gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation);
 
+void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp );
+
 void vik_layer_emit_update ( VikLayer *vl );
 
 /* GUI */
 void vik_layer_set_menu_items_selection(VikLayer *l, guint16 selection);
 guint16 vik_layer_get_menu_items_selection(VikLayer *l);
 void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp );
-VikLayer *vik_layer_create ( gint type, gpointer vp, GtkWindow *w, gboolean interactive );
+VikLayer *vik_layer_create ( VikLayerTypeEnum type, gpointer vp, GtkWindow *w, gboolean interactive );
 gboolean vik_layer_properties ( VikLayer *layer, gpointer vp );
 
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter * layer_iter );
@@ -309,11 +298,22 @@ const gchar* vik_layer_layer_tooltip ( VikLayer *l );
 gboolean vik_layer_selected ( VikLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
 
 /* TODO: put in layerspanel */
-GdkPixbuf *vik_layer_load_icon ( gint type );
+GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type );
 
 VikLayer *vik_layer_get_and_reset_trigger();
 void vik_layer_emit_update_secondary ( VikLayer *vl ); /* to be called by aggregate layer only. doesn't set the trigger */
 void vik_layer_emit_update_although_invisible ( VikLayer *vl );
+
+VikLayerTypeEnum vik_layer_type_from_string ( const gchar *str );
+
+typedef struct {
+  VikLayerParamData data;
+  VikLayerParamType type;
+} VikLayerTypedParamData;
+
+void vik_layer_typed_param_data_free ( gpointer gp );
+VikLayerTypedParamData *vik_layer_typed_param_data_copy_from_data ( VikLayerParamType type, VikLayerParamData val );
+VikLayerTypedParamData *vik_layer_data_typed_param_copy_from_string ( VikLayerParamType type, const gchar *str );
 
 G_END_DECLS
 

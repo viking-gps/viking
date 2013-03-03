@@ -368,7 +368,7 @@ gboolean vik_aggregate_layer_delete ( VikAggregateLayer *val, GtkTreeIter *iter 
 
 #if 0
 /* returns 0 == we're good, 1 == didn't find any layers, 2 == got rejected */
-guint vik_aggregate_layer_tool ( VikAggregateLayer *val, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp )
+guint vik_aggregate_layer_tool ( VikAggregateLayer *val, VikLayerTypeEnum layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp )
 {
   GList *iter = val->children;
   gboolean found_rej = FALSE;
@@ -403,7 +403,7 @@ guint vik_aggregate_layer_tool ( VikAggregateLayer *val, guint16 layer_type, Vik
 }
 #endif 
 
-VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer *val, gint type )
+VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer *val, VikLayerTypeEnum type )
 {
   VikLayer *rv;
   GList *ls = val->children;
@@ -428,7 +428,7 @@ VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer 
   return NULL;
 }
 
-GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, gint type, gboolean include_invisible)
+GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, VikLayerTypeEnum type, gboolean include_invisible)
 {
   GList *l = layers;
   GList *children = val->children;
@@ -442,11 +442,11 @@ GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList 
     if (vl->type == VIK_LAYER_AGGREGATE ) {
       // Don't even consider invisible aggregrates, unless told to
       if (vl->visible || include_invisible)
-	l = vik_aggregate_layer_get_all_layers_of_type(VIK_AGGREGATE_LAYER(children->data), l, type, include_invisible);
+        l = vik_aggregate_layer_get_all_layers_of_type(VIK_AGGREGATE_LAYER(children->data), l, type, include_invisible);
     }
     else if (vl->type == type) {
       if (vl->visible || include_invisible)
-	l = g_list_prepend(l, children->data); /* now in top down order */
+        l = g_list_prepend(l, children->data); /* now in top down order */
     }
     else if (type == VIK_LAYER_TRW) {
       /* GPS layers contain TRW layers. cf with usage in file.c */

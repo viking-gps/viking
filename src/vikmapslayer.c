@@ -44,34 +44,16 @@
 #include <math.h>
 #endif
 
-#include "globals.h"
-#include "util.h"
-#include "coords.h"
-#include "vikcoord.h"
-#include "viktreeview.h"
-#include "vikviewport.h"
-#include "viklayer.h"
-#include "vikmapslayer.h"
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
+#include "viking.h"
 #include "vikmapsourcedefault.h"
 #include "mapcache.h"
-/* only for dialog.h -- ugh */
-#include "vikwaypoint.h"
-#include "dialog.h"
-#include "preferences.h"
-
-#include "vikstatus.h"
 #include "background.h"
-
-#include "vikaggregatelayer.h"
-#include "viklayerspanel.h"
-
-#include "mapcoord.h"
-
+#include "preferences.h"
+#include "vikmapslayer.h"
 #include "icons/icons.h"
 
 /****** MAP TYPES ******/
@@ -120,16 +102,27 @@ static VikLayerParamScale params_scales[] = {
  { 0, 255, 3, 0 }, /* alpha */
 };
 
+static VikLayerParamData mode_default ( void ) { return VIK_LPD_UINT ( 19 ); } // OSM MapQuest maps
+static VikLayerParamData directory_default ( void )
+{
+  VikLayerParamData data;
+  data.s = g_strdup ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s );
+  return data;
+}
+static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
+static VikLayerParamData mapzoom_default ( void ) { return VIK_LPD_UINT ( 0 ); }
+
 VikLayerParam maps_layer_params[] = {
-  { "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL },
-  { "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, NULL },
-  { "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
-    N_("Control the Alpha value for transparency effects") },
-  { "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL },
-  { "adlonlymissing", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload Only Gets Missing Maps:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
-    N_("Using this option avoids attempting to update already acquired tiles. This can be useful if you want to restrict the network usage, without having to resort to manual control. Only applies when 'Autodownload Maps' is on.") },
-  { "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms, NULL,
-    N_("Determines the method of displaying map tiles for the current zoom level. 'Viking Zoom Level' uses the best matching level, otherwise setting a fixed value will always use map tiles of the specified value regardless of the actual zoom level.") },
+  { VIK_LAYER_MAPS, "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, mode_default },
+  { VIK_LAYER_MAPS, "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, NULL, directory_default },
+  { VIK_LAYER_MAPS, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
+    N_("Control the Alpha value for transparency effects"), alpha_default },
+  { VIK_LAYER_MAPS, "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default },
+  { VIK_LAYER_MAPS, "adlonlymissing", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload Only Gets Missing Maps:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Using this option avoids attempting to update already acquired tiles. This can be useful if you want to restrict the network usage, without having to resort to manual control. Only applies when 'Autodownload Maps' is on."), vik_lpd_false_default },
+  { VIK_LAYER_MAPS, "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms, NULL,
+    N_("Determines the method of displaying map tiles for the current zoom level. 'Viking Zoom Level' uses the best matching level, otherwise setting a fixed value will always use map tiles of the specified value regardless of the actual zoom level."),
+    mapzoom_default },
 };
 
 enum {
@@ -246,7 +239,7 @@ enum { REDOWNLOAD_NONE = 0,    /* download only missing maps */
        DOWNLOAD_OR_REFRESH };  /* download missing maps and refresh cache */
 
 static VikLayerParam prefs[] = {
-  { VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default maplayer directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("Choose a directory to store cached Map tiles for this layer") },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default maplayer directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("Choose a directory to store cached Map tiles for this layer") },
 };
 
 void maps_layer_init ()
@@ -539,18 +532,12 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
 
 static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
 {
-  int idx;
   VikMapsLayer *vml = VIK_MAPS_LAYER ( g_object_new ( VIK_MAPS_LAYER_TYPE, NULL ) );
   vik_layer_set_type ( VIK_LAYER(vml), VIK_LAYER_MAPS );
-  idx = map_uniq_id_to_index(19); /* 19 is id for OSM MapQuest maps */
-    vml->maptype = (idx < NUM_MAP_TYPES) ? idx : 0;
-  vml->maptype = (idx < NUM_MAP_TYPES) ? idx : 0;
-  vml->alpha = 255;
-  vml->mapzoom_id = 0;
+
+  vik_layer_set_defaults ( VIK_LAYER(vml), vvp );
+
   vml->dl_tool_x = vml->dl_tool_y = -1;
-  maps_layer_set_cache_dir ( vml, NULL );
-  vml->autodownload = FALSE;
-  vml->adl_only_missing = FALSE;
   vml->last_center = NULL;
   vml->last_xmpp = 0.0;
   vml->last_ympp = 0.0;

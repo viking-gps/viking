@@ -92,16 +92,7 @@ static gboolean str_starts_with ( const gchar *haystack, const gchar *needle, gu
   return FALSE;
 }
 
-static guint16 layer_type_from_string ( const gchar *str )
-{
-  guint8 i;
-  for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
-    if ( strcasecmp ( str, vik_layer_get_interface(i)->fixed_layer_name ) == 0 )
-      return i;
-  return -1;
-}
-
-void file_write_layer_param ( FILE *f, const gchar *name, guint8 type, VikLayerParamData data ) {
+void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type, VikLayerParamData data ) {
       /* string lists are handled differently. We get a GList (that shouldn't
        * be freed) back for get_param and if it is null we shouldn't write
        * anything at all (otherwise we'd read in a list with an empty string,
@@ -131,6 +122,7 @@ void file_write_layer_param ( FILE *f, const gchar *name, guint8 type, VikLayerP
           case VIK_LAYER_PARAM_BOOLEAN: fprintf ( f, "%c\n", data.b ? 't' : 'f' ); break;
           case VIK_LAYER_PARAM_STRING: fprintf ( f, "%s\n", data.s ); break;
           case VIK_LAYER_PARAM_COLOR: fprintf ( f, "#%.2x%.2x%.2x\n", (int)(data.c.red/256),(int)(data.c.green/256),(int)(data.c.blue/256)); break;
+          default: break;
         }
       }
 }
@@ -333,9 +325,9 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
         }
         else
         {
-          gint16 type = layer_type_from_string ( line+6 );
+          VikLayerTypeEnum type = vik_layer_type_from_string ( line+6 );
           push(&stack);
-          if ( type == -1 )
+          if ( type == VIK_LAYER_NUM_TYPES )
           {
             successful_read = FALSE;
             g_warning ( "Line %ld: Unknown type %s", line_num, line+6 );

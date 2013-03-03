@@ -385,8 +385,6 @@ static gboolean vik_treeview_selection_filter(GtkTreeSelection *selection, GtkTr
 
 void vik_treeview_init ( VikTreeview *vt )
 {
-  guint16 i;
-
   vt->was_a_toggle = FALSE;
 
   vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN ));
@@ -417,6 +415,7 @@ void vik_treeview_init ( VikTreeview *vt )
     idest->drag_data_received = vik_treeview_drag_data_received;
   }      
 
+  VikLayerTypeEnum i;
   for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
     vt->layer_type_icons[i] = vik_layer_load_icon ( i ); /* if icon can't be loaded, it will be null and simply not be shown. */
 

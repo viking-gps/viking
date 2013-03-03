@@ -31,6 +31,7 @@
 #include "babel.h"
 #include "curl_download.h"
 #include "preferences.h"
+#include "viklayer_defaults.h"
 #include "globals.h"
 #include "vikmapslayer.h"
 
@@ -163,6 +164,8 @@ int main( int argc, char *argv[] )
 
   a_vik_preferences_init ();
 
+  a_layer_defaults_init ();
+
   a_download_init();
   curl_download_init();
 
@@ -212,6 +215,7 @@ int main( int argc, char *argv[] )
   a_background_uninit ();
   a_mapcache_uninit ();
   a_dems_uninit ();
+  a_layer_defaults_uninit ();
   a_preferences_uninit ();
 
   curl_download_uninit();
