@@ -295,10 +295,6 @@ and docbook-xsl in your Build-Depends control field.
         <para>The related properties are:
           <variablelist>
             <varlistentry>
-              <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
-            </varlistentry>
-            <varlistentry>
               <term>label</term>
               <listitem><para>the text displayed in the menu entry</para></listitem>
             </varlistentry>
@@ -312,8 +308,6 @@ and docbook-xsl in your Build-Depends control field.
         <para>The related properties are:
           <variablelist>
             <varlistentry>
-              <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>label</term>

@@ -2291,10 +2291,6 @@ This list can be sorted on each column so that it easier to find an individual t
         <para>The related properties are:
           <variablelist>
             <varlistentry>
-              <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
-            </varlistentry>
-            <varlistentry>
               <term>label</term>
               <listitem><para>the text displayed in the menu entry</para></listitem>
             </varlistentry>
@@ -2307,10 +2303,6 @@ This list can be sorted on each column so that it easier to find an individual t
         <para>The VikWebtoolBounds allows to declare any Webtool using a logic based on bounds coordinates.</para>
         <para>The related properties are:
           <variablelist>
-            <varlistentry>
-              <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
-            </varlistentry>
             <varlistentry>
               <term>label</term>
               <listitem><para>the text displayed in the menu entry</para></listitem>
