@@ -509,7 +509,7 @@ void vik_treeview_item_delete ( VikTreeview *vt, GtkTreeIter *iter )
 
 void vik_treeview_item_set_icon ( VikTreeview *vt, GtkTreeIter *iter, const GdkPixbuf *icon )
 {
-  g_return_if_fail ( iter != NULL && icon != NULL );
+  g_return_if_fail ( iter != NULL );
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ICON_COLUMN, icon, -1);
 }
 
