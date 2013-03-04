@@ -147,6 +147,7 @@ struct _VikTrwLayer {
   guint8 wp_size;
   gboolean wp_draw_symbols;
   font_size_t wp_font_size;
+  gchar *wp_fsize_str;
 
   gdouble track_draw_speed_factor;
   GArray *track_gc;
@@ -989,7 +990,21 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_WPSYM: if ( data.u < WP_NUM_SYMBOLS ) vtl->wp_symbol = data.u; break;
     case PARAM_WPSIZE: if ( data.u > 0 && data.u <= 64 ) vtl->wp_size = data.u; break;
     case PARAM_WPSYMS: vtl->wp_draw_symbols = data.b; break;
-    case PARAM_WPFONTSIZE: if ( data.u < FS_NUM_SIZES ) vtl->wp_font_size = data.u; break;
+    case PARAM_WPFONTSIZE:
+      if ( data.u < FS_NUM_SIZES ) {
+        vtl->wp_font_size = data.u;
+        g_free ( vtl->wp_fsize_str );
+        switch ( vtl->wp_font_size ) {
+          case FS_XX_SMALL: vtl->wp_fsize_str = g_strdup ( "xx-small" ); break;
+          case FS_X_SMALL: vtl->wp_fsize_str = g_strdup ( "x-small" ); break;
+          case FS_SMALL: vtl->wp_fsize_str = g_strdup ( "small" ); break;
+          case FS_LARGE: vtl->wp_fsize_str = g_strdup ( "large" ); break;
+          case FS_X_LARGE: vtl->wp_fsize_str = g_strdup ( "x-large" ); break;
+          case FS_XX_LARGE: vtl->wp_fsize_str = g_strdup ( "xx-large" ); break;
+          default: vtl->wp_fsize_str = g_strdup ( "medium" ); break;
+        }
+      }
+      break;
   }
   return TRUE;
 }
@@ -1253,6 +1268,8 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
 
   if ( trwlayer->waypoint_bg_gc != NULL )
     g_object_unref ( G_OBJECT ( trwlayer->waypoint_bg_gc ) );
+
+  g_free ( trwlayer->wp_fsize_str );
 
   if ( trwlayer->tpwin != NULL )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tpwin) );
@@ -1740,18 +1757,7 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
       // Hopefully name won't break the markup (may need to sanitize - g_markup_escape_text())
 
       // Could this stored in the waypoint rather than recreating each pass?
-      gchar *fsize = NULL;
-      switch (dp->vtl->wp_font_size) {
-        case FS_XX_SMALL: fsize = g_strdup ( "xx-small" ); break;
-        case FS_X_SMALL: fsize = g_strdup ( "x-small" ); break;
-        case FS_SMALL: fsize = g_strdup ( "small" ); break;
-        case FS_LARGE: fsize = g_strdup ( "large" ); break;
-        case FS_X_LARGE: fsize = g_strdup ( "x-large" ); break;
-        case FS_XX_LARGE: fsize = g_strdup ( "xx-large" ); break;
-        default: fsize = g_strdup ( "medium" ); break;
-      }
-
-      gchar *wp_label_markup = g_strdup_printf ( "<span size=\"%s\">%s</span>", fsize, wp->name );
+      gchar *wp_label_markup = g_strdup_printf ( "<span size=\"%s\">%s</span>", dp->vtl->wp_fsize_str, wp->name );
 
       if ( pango_parse_markup ( wp_label_markup, -1, 0, NULL, NULL, NULL, NULL ) )
         pango_layout_set_markup ( dp->vtl->wplabellayout, wp_label_markup, -1 );
@@ -1760,7 +1766,6 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
         pango_layout_set_text ( dp->vtl->wplabellayout, wp->name, -1 );
 
       g_free ( wp_label_markup );
-      g_free ( fsize );
 
       pango_layout_get_pixel_size ( dp->vtl->wplabellayout, &width, &height );
       label_x = x - width/2;
