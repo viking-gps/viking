@@ -4253,7 +4253,7 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
       gboolean updated = FALSE;
       a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wp->name, wp, vtl->coord_mode, FALSE, &updated );
 
-      if ( updated && wp->symbol && pass_along[6] )
+      if ( updated && pass_along[6] )
         vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, pass_along[6], get_wp_sym_small (wp->symbol) );
 
       if ( updated && VIK_LAYER(vtl)->visible )
