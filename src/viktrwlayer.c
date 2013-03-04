@@ -1642,7 +1642,6 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
              wp->coord.north_south > dp->cn1 && wp->coord.north_south < dp->cn2 ) )
   {
     gint x, y;
-    GdkPixbuf *sym = NULL;
     vik_viewport_coord_to_screen ( dp->vp, &(wp->coord), &x, &y );
 
     /* if in shrunken_cache, get that. If not, get and add to shrunken_cache */
@@ -1726,9 +1725,9 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
       }
     }
 
-    /* DRAW ACTUAL DOT */
-    if ( dp->vtl->wp_draw_symbols && wp->symbol && (sym = a_get_wp_sym(wp->symbol)) ) {
-      vik_viewport_draw_pixbuf ( dp->vp, sym, 0, 0, x - gdk_pixbuf_get_width(sym)/2, y - gdk_pixbuf_get_height(sym)/2, -1, -1 );
+    // Draw appropriate symbol - either symbol image or simple types
+    if ( dp->vtl->wp_draw_symbols && wp->symbol && wp->symbol_pixbuf ) {
+      vik_viewport_draw_pixbuf ( dp->vp, wp->symbol_pixbuf, 0, 0, x - gdk_pixbuf_get_width(wp->symbol_pixbuf)/2, y - gdk_pixbuf_get_height(wp->symbol_pixbuf)/2, -1, -1 );
     } 
     else if ( wp == dp->vtl->current_wp ) {
       switch ( dp->vtl->wp_symbol ) {
@@ -1769,8 +1768,8 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
 
       pango_layout_get_pixel_size ( dp->vtl->wplabellayout, &width, &height );
       label_x = x - width/2;
-      if (sym)
-        label_y = y - height - 2 - gdk_pixbuf_get_height(sym)/2;
+      if ( wp->symbol_pixbuf )
+        label_y = y - height - 2 - gdk_pixbuf_get_height(wp->symbol_pixbuf)/2;
       else
         label_y = y - dp->vtl->wp_size - height - 2;
 
@@ -3752,6 +3751,27 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk )
 {
   if (vtl->current_tp_track == trk )
     trw_layer_cancel_current_tp ( vtl, FALSE );
+}
+
+/**
+ * Normally this is done to due the waypoint size preference having changed
+ */
+void vik_trw_layer_reset_waypoints ( VikTrwLayer *vtl )
+{
+  GHashTableIter iter;
+  gpointer key, value;
+
+  // Foreach waypoint
+  g_hash_table_iter_init ( &iter, vtl->waypoints );
+  while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
+    VikWaypoint *wp = VIK_WAYPOINT(value);
+    if ( wp->symbol ) {
+      // Reapply symbol setting to update the pixbuf
+      gchar *tmp_symbol = g_strdup ( wp->symbol );
+      vik_waypoint_set_symbol ( wp, tmp_symbol );
+      g_free ( tmp_symbol );
+    }
+  }
 }
 
 gchar *trw_layer_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name)
