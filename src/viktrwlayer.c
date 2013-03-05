@@ -5490,11 +5490,6 @@ static void trw_layer_reverse ( gpointer pass_along[6] )
   if ( ! track )
     return;
 
-  // Check valid track
-  GList *trps = track->trackpoints;
-  if ( !trps )
-    return;
-
   vik_track_reverse ( track );
  
   vik_layer_emit_update ( VIK_LAYER(pass_along[0]) );

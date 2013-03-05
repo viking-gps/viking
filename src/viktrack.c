@@ -429,11 +429,13 @@ guint vik_track_merge_segments(VikTrack *tr)
 
 void vik_track_reverse ( VikTrack *tr )
 {
-  GList *iter;
+  if ( ! tr->trackpoints )
+    return;
+
   tr->trackpoints = g_list_reverse(tr->trackpoints);
 
   /* fix 'newsegment' */
-  iter = g_list_last ( tr->trackpoints );
+  GList *iter = g_list_last ( tr->trackpoints );
   while ( iter )
   {
     if ( ! iter->next ) /* last segment, was first, cancel newsegment. */
