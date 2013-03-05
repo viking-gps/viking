@@ -1,4 +1,7 @@
-Viking is a free/open source program to manage GPS data. You can import, plot and create tracks and waypoints, show OSM, Terraserver and other maps, see real-time GPS position, get geocaches, control items, etc. It is written in C & the GTK+2 toolkit.
+Viking is a free/open source program to manage GPS data. You can
+import, plot and create tracks and waypoints, show OSM, Terraserver
+and other maps, see real-time GPS position, get geocaches, control
+items, etc. It is written in C & the GTK+2 toolkit.
 
 Website: http://viking.sf.net/
 
@@ -23,8 +26,9 @@ Next, or if you downloaded a tarball, you have to:
   $ ./configure
   $ make
 
-Check output of "./configure --help" for configuration options.
-In particular, it is possible to disable some features, like --disable-google in order to disable any Google stuff.
+Check output of "./configure --help" for configuration options.  In
+particular, it is possible to disable some features, like
+--disable-google in order to disable any Google stuff.
 
 If you wish to install Viking, you have to (as root):
   # make install
