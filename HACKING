@@ -27,11 +27,14 @@ Coding style
 Naming:
 A "module" is a .c file.
 
-Functions starting with "vik_" operate on an object/structure with the module name (see layer.c for an example).
-Functions starting with "a_" do not, these modules may have static variables.
-Both are followed by the module name. Unless of course the function is static, in which case it may be called anything.
+Functions starting with "vik_" operate on an object/structure with the
+module name (see layer.c for an example).  Functions starting with
+"a_" do not, these modules may have static variables.  Both are
+followed by the module name. Unless of course the function is static,
+in which case it may be called anything.
 
-All (well, practically all) global constants and macros start with "VIK_" and then the module name.
+All (well, practically all) global constants and macros start with
+"VIK_" and then the module name.
 
 Coding Checks
 =============
@@ -47,29 +50,40 @@ This can be 'hidden' via cppcheck --suppress syntax.
 Technical notices
 =================
 
-In order to activate reference documentation, you have to specify the following configure command line:
+In order to activate reference documentation, you have to specify the
+following configure command line:
 $ ./configure --enable-gtk-doc --enable-gtk-doc-html
 
 Then, cd to doc/reference and launch make command.
 
 ---
 
-The layers panel holds all the layers. Layers connect to the layers panel via what I call "interfaces" which are really just a 
-structure of function pointers and pointers to other bits such as icons. viklayer.c switches between the layers like 
-polymorhpism. Anything specific to the layer should (in theory) be found solely in that layer's source file.
+The layers panel holds all the layers. Layers connect to the layers
+panel via what I call "interfaces" which are really just a structure
+of function pointers and pointers to other bits such as
+icons. viklayer.c switches between the layers like
+polymorhpism. Anything specific to the layer should (in theory) be
+found solely in that layer's source file.
 
-There are some ugly hacks in here, like the layers panel holding the viewport and each layer holding the viewport and a 
-GtkTreeIter. Unfortunately it was the only way I could figure out to do some things. It would be _much_ easier with a 
-object-oriented language.
+There are some ugly hacks in here, like the layers panel holding the
+viewport and each layer holding the viewport and a
+GtkTreeIter. Unfortunately it was the only way I could figure out to
+do some things. It would be _much_ easier with a object-oriented
+language.
 
 ---
 
-"xmpp" and "ympp" are really misnomers, as they only represent the Meters Per Pixel in UTM mode. Otherwise they are an artificial
-zooming system. In expedia mode it represents the "Alti", in Google mode it represents 2^(scale), e.g. 2^0 = 1, 2^8 = 256.
+"xmpp" and "ympp" are really misnomers, as they only represent the
+Meters Per Pixel in UTM mode. Otherwise they are an artificial zooming
+system. In expedia mode it represents the "Alti", in Google mode it
+represents 2^(scale), e.g. 2^0 = 1, 2^8 = 256.
 
 ---
 Implementing a MapSource
 
-VikMapSource is the "interface", the really base class of the MapSource tree.
-In order to implement a MapSource, you have to prefer to derive from VikMapSourceDefault, a less abstract class, adding a property based implementation for some aspects of the VikMapSource interface.
-Then, you have to provide implementation for coord_to_mapcoord, mapcoord_to_center_coord and download methods.
+VikMapSource is the "interface", the really base class of the
+MapSource tree.  In order to implement a MapSource, you have to prefer
+to derive from VikMapSourceDefault, a less abstract class, adding a
+property based implementation for some aspects of the VikMapSource
+interface.  Then, you have to provide implementation for
+coord_to_mapcoord, mapcoord_to_center_coord and download methods.
