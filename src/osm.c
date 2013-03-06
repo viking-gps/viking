@@ -157,5 +157,10 @@ void osm_init () {
     NULL ) );
     vik_goto_register ( VIK_GOTO_TOOL ( namefinder ) );
     g_object_unref ( namefinder );
+
+  // Not really OSM but can't be bothered to create somewhere else to put it...
+  webtool = vik_webtool_center_new_with_members ( _("Wikimedia Toolserver GeoHack"), "http://toolserver.org/~geohack/geohack.php?params=%s;%s" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
+  g_object_unref ( webtool );
 }
 
