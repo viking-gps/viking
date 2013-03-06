@@ -268,7 +268,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
                                0  /* minimum value */,
                                G_MAXUINT16 /* maximum value */,
                                0  /* default value */,
-                               G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+                               G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_TILESIZE_X, pspec);
 
 	pspec = g_param_spec_uint ("tilesize-y",
@@ -277,7 +277,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
                                0  /* minimum value */,
                                G_MAXUINT16 /* maximum value */,
                                0  /* default value */,
-                               G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+                               G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_TILESIZE_Y, pspec);
 
 	pspec = g_param_spec_enum("drawmode",
