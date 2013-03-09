@@ -496,8 +496,6 @@ static void vik_window_init ( VikWindow *vw )
   gtk_toolbar_set_icon_size (vw->toolbar, GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_toolbar_set_style (vw->toolbar, GTK_TOOLBAR_ICONS);
 
-  vik_ext_tools_add_menu_items ( vw, vw->uim );
-
   GtkWidget * zoom_levels = gtk_ui_manager_get_widget (vw->uim, "/MainMenu/View/SetZoom");
   GtkWidget * zoom_levels_menu = create_zoom_menu_all_levels ();
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (zoom_levels), zoom_levels_menu);
@@ -3353,7 +3351,6 @@ static void window_create_ui( VikWindow *window )
     action_dl.tooltip = NULL;
     action_dl.callback = (GCallback)layer_defaults_cb;
     gtk_action_group_add_actions(action_group, &action_dl, 1, window);
-    // NB An alternate method of adding menuitems manually is performed ATM in vikexttools.c
   }
   g_object_unref (icon_factory);
 
@@ -3369,6 +3366,10 @@ static void window_create_ui( VikWindow *window )
       g_object_set(action, "sensitive", FALSE, NULL);
     }
   }
+
+  // This is done last so we don't need to track the value of mid anymore
+  vik_ext_tools_add_action_items ( window, window->uim, action_group, mid );
+
   window->action_group = action_group;
 
   accel_group = gtk_ui_manager_get_accel_group (uim);

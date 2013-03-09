@@ -51,7 +51,7 @@ static void ext_tools_open_cb ( GtkWidget *widget, VikWindow *vwindow )
   vik_ext_tool_open ( ext_tool, vwindow );
 }
 
-static void vik_ext_tools_add_menu_items_to_menu ( VikWindow *vwindow, GtkMenu *menu )
+void vik_ext_tools_add_action_items ( VikWindow *vwindow, GtkUIManager *uim, GtkActionGroup *action_group, guint mid )
 {
   GList *iter;
   for (iter = ext_tools_list; iter; iter = iter->next)
@@ -62,24 +62,18 @@ static void vik_ext_tools_add_menu_items_to_menu ( VikWindow *vwindow, GtkMenu *
     label = vik_ext_tool_get_label ( ext_tool );
     if ( label )
     {
-      GtkWidget *item = NULL;
-      item = gtk_menu_item_new_with_label ( _(label) );
+      gtk_ui_manager_add_ui ( uim, mid, "/ui/MainMenu/Tools/Exttools",
+                              _(label),
+                              label,
+                              GTK_UI_MANAGER_MENUITEM, FALSE );
+
+      GtkAction *action = gtk_action_new ( label, label, NULL, NULL );
+      g_object_set_data ( G_OBJECT(action), VIK_TOOL_DATA_KEY, ext_tool );
+      g_signal_connect ( G_OBJECT(action), "activate", G_CALLBACK(ext_tools_open_cb), vwindow );
+
+      gtk_action_group_add_action ( action_group, action );
+
       g_free ( label ); label = NULL;
-      // Store tool's ref into the menu entry
-      g_object_set_data ( G_OBJECT(item), VIK_TOOL_DATA_KEY, ext_tool );
-      g_signal_connect ( G_OBJECT(item), "activate", G_CALLBACK(ext_tools_open_cb), vwindow );
-      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-      gtk_widget_show ( item );
     }
   }
-}
-
-void vik_ext_tools_add_menu_items ( VikWindow *vwindow, GtkUIManager *uim )
-{
-  GtkWidget *widget = NULL;
-  GtkMenu *menu = NULL;
-  widget = gtk_ui_manager_get_widget (uim, "/MainMenu/Tools/Exttools");
-  menu = GTK_MENU ( gtk_menu_item_get_submenu ( GTK_MENU_ITEM ( widget ) ) );
-  vik_ext_tools_add_menu_items_to_menu ( vwindow, menu );
-  gtk_widget_show ( widget );
 }
