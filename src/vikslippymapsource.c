@@ -51,6 +51,7 @@
 
 #include "globals.h"
 #include "vikslippymapsource.h"
+#include "maputils.h"
 
 static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
@@ -299,35 +300,6 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	object_class->finalize = vik_slippy_map_source_finalize;
 }
 
-/* 1 << (x) is like a 2**(x) */
-#define GZ(x) ((1<<(x)))
-
-static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), GZ(6), GZ(7), GZ(8), GZ(9),
-                                           GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15), GZ(16), GZ(17) };
-
-static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
-
-static const gdouble scale_neg_mpps[] = { 1.0/GZ(0), 1.0/GZ(1), 1.0/GZ(2), 1.0/GZ(3) };
-static const gint num_scales_neg = (sizeof(scale_neg_mpps) / sizeof(scale_neg_mpps[0]));
-
-#define ERROR_MARGIN 0.01
-gint
-vik_slippy_map_source_zoom_to_scale ( gdouble mpp ) {
-  gint i;
-  for ( i = 0; i < num_scales; i++ ) {
-    if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN ) {
-      return i;
-    }
-  }
-  for ( i = 0; i < num_scales_neg; i++ ) {
-    if ( ABS(scale_neg_mpps[i] - mpp) < 0.000001 ) {
-      return -i;
-    }
-  }
-
-  return 255;
-}
-
 gboolean
 _is_direct_file_access (VikMapSource *self)
 {
@@ -356,12 +328,12 @@ _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdo
   if ( xzoom != yzoom )
     return FALSE;
 
-  dest->scale = vik_slippy_map_source_zoom_to_scale ( xzoom );
+  dest->scale = map_utils_mpp_to_scale ( xzoom );
   if ( dest->scale == 255 )
     return FALSE;
 
-  dest->x = (src->east_west + 180) / 360 * GZ(17) / xzoom;
-  dest->y = (180 - MERCLAT(src->north_south)) / 360 * GZ(17) / xzoom;
+  dest->x = (src->east_west + 180) / 360 * VIK_GZ(17) / xzoom;
+  dest->y = (180 - MERCLAT(src->north_south)) / 360 * VIK_GZ(17) / xzoom;
   dest->z = 0;
 
   return TRUE;
@@ -372,12 +344,12 @@ _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest )
 {
   gdouble socalled_mpp;
   if (src->scale >= 0)
-    socalled_mpp = GZ(src->scale);
+    socalled_mpp = VIK_GZ(src->scale);
   else
-    socalled_mpp = 1.0/GZ(-src->scale);
+    socalled_mpp = 1.0/VIK_GZ(-src->scale);
   dest->mode = VIK_COORD_LATLON;
-  dest->east_west = ((src->x+0.5) / GZ(17) * socalled_mpp * 360) - 180;
-  dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / GZ(17) * socalled_mpp * 360));
+  dest->east_west = ((src->x+0.5) / VIK_GZ(17) * socalled_mpp * 360) - 180;
+  dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / VIK_GZ(17) * socalled_mpp * 360));
 }
 
 static gchar *

@@ -90,6 +90,7 @@ libviking_a_SOURCES = \
 	vikradiogroup.c vikradiogroup.h \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \
+	maputils.c maputils.h \
 	vikmapsource.c vikmapsource.h \
 	vikmapsourcedefault.c vikmapsourcedefault.h \
 	vikmapslayer.c vikmapslayer.h \

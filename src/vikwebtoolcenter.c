@@ -32,6 +32,7 @@
 
 #include "util.h"
 #include "globals.h"
+#include "maputils.h"
 
 static GObjectClass *parent_class;
 
@@ -167,28 +168,8 @@ static void webtool_center_finalize ( GObject *gob )
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
-/* 1 << (x) is like a 2**(x) */
-#define GZ(x) (1<<(x))
-
-static const gdouble scale_mpps[] = { GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), GZ(6), GZ(7), GZ(8), GZ(9),
-                                      GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15), GZ(16), GZ(17) };
-
-static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
-
-#define ERROR_MARGIN 0.01
 static guint8 webtool_center_mpp_to_zoom ( VikWebtool *self, gdouble mpp ) {
-  gint i;
-  for ( i = 0; i < num_scales; i++ ) {
-    if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN ) {
-      g_debug ( "webtool_center_mpp_to_zoom: %f -> %d", mpp, i );
-      return i;
-    }
-  }
-  // Handle mpp smaller than 1
-  // return a useful value such that '17 - this number' gives a natural number.
-  // Ideally should return '-1' or '0.5' but that's tricky with an unsigned int type!
-  // (i.e. should rework to support zoom levels of 18 or 19)
-  return 0;
+  return map_utils_mpp_to_zoom_level ( mpp );
 }
 
 static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
@@ -196,7 +177,7 @@ static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
   VikWebtoolCenterPrivate *priv = NULL;
   VikViewport *viewport = NULL;
   const VikCoord *coord = NULL;
-  guint8 zoom = 0;
+  guint8 zoom = 17;
   struct LatLon ll;
   gchar strlat[G_ASCII_DTOSTR_BUF_SIZE], strlon[G_ASCII_DTOSTR_BUF_SIZE];
 
@@ -210,15 +191,13 @@ static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
   // zoom - ideally x & y factors need to be the same otherwise use a default
   if ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) )
     zoom = vik_webtool_center_mpp_to_zoom ( self, vik_viewport_get_zoom ( viewport ) );
-  else
-    zoom = 1.0;
 
   // Cannot simply use g_strdup_printf and gdouble due to locale.
   // As we compute an URL, we have to think in C locale.
   g_ascii_dtostr (strlat, G_ASCII_DTOSTR_BUF_SIZE, ll.lat);
   g_ascii_dtostr (strlon, G_ASCII_DTOSTR_BUF_SIZE, ll.lon);
 
-  return g_strdup_printf ( priv->url, strlat, strlon, 17-zoom );
+  return g_strdup_printf ( priv->url, strlat, strlon, zoom );
 }
 
 guint8 vik_webtool_center_mpp_to_zoom (VikWebtool *self, gdouble mpp)
