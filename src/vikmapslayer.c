@@ -50,6 +50,7 @@
 
 #include "viking.h"
 #include "vikmapsourcedefault.h"
+#include "maputils.h"
 #include "mapcache.h"
 #include "background.h"
 #include "preferences.h"
@@ -690,12 +691,20 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
   return pixbuf;
 }
 
-gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
+static gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
 {
   const VikCoord *center = vik_viewport_get_center ( vvp );
 
   if (vik_window_get_pan_move (VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(GTK_WIDGET(vvp)))))
     /* D'n'D pan in action: do not download */
+    return FALSE;
+
+  // TEMPORARY HACK
+  // Prevent requests for downloading tiles at Zoom Level 19 and above for most map types
+  // Allow MapQuest Zoom Level up to 19
+  // TODO: This should be made a property of the map source and then use that value
+  gdouble xzoom = vik_viewport_get_xmpp ( vvp );
+  if ( (vml->maptype != 19 && map_utils_mpp_to_scale (xzoom) < -1) || (vml->maptype == 19 && map_utils_mpp_to_scale (xzoom) < -2) )
     return FALSE;
 
   if (vml->last_center == NULL) {
