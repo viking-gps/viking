@@ -26,6 +26,9 @@
 #include "config.h"
 #endif
 
+// TODO: Make these configurable
+#define MAX_TILES 1000
+
 #define MAX_SHRINKFACTOR 8.0000001 /* zoom 1 viewing 8-tiles */
 #define MIN_SHRINKFACTOR 0.0312499 /* zoom 32 viewing 1-tiles */
 
@@ -743,8 +746,10 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     yzoom = vml->xmapzoom;
     if ( ! (xshrinkfactor > MIN_SHRINKFACTOR && xshrinkfactor < MAX_SHRINKFACTOR &&
          yshrinkfactor > MIN_SHRINKFACTOR && yshrinkfactor < MAX_SHRINKFACTOR ) ) {
-      if ( xshrinkfactor > REAL_MIN_SHRINKFACTOR && yshrinkfactor > REAL_MIN_SHRINKFACTOR )
+      if ( xshrinkfactor > REAL_MIN_SHRINKFACTOR && yshrinkfactor > REAL_MIN_SHRINKFACTOR ) {
+        g_debug ( "%s: existence_only due to SHRINKFACTORS", __FUNCTION__ );
         existence_only = TRUE;
+      }
       else {
         g_warning ( _("Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out factor"), (int)( 1.0/REAL_MIN_SHRINKFACTOR));
         return;
@@ -766,6 +771,15 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     VikCoord coord;
     gint xx, yy, width, height;
     GdkPixbuf *pixbuf;
+
+    // Prevent the program grinding to a halt if trying to deal with thousands of tiles
+    //  which can happen when using a small fixed zoom level and viewing large areas.
+    // Also prevents very large number of tile download requests
+    gint tiles = (xmax-xmin) * (ymax-ymin);
+    if ( tiles > MAX_TILES ) {
+      g_debug ( "%s: existence_only due to wanting too many tiles (%d)", __FUNCTION__, tiles );
+      existence_only = TRUE;
+    }
 
     guint max_path_len = strlen(vml->cache_dir) + 40;
     gchar *path_buf = g_malloc ( max_path_len * sizeof(char) );
