@@ -1319,8 +1319,11 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
       GDateTime* gdt = g_date_time_new_from_unix_utc ( file_time );
       gchar *time = g_date_time_format ( gdt, "%c" );
 #else
-      char time[20];
-      strftime(time, 20, "%Y-%m-%d %H:%M:%S", localtime(&file_time));
+      GDate* gdate = g_date_new ();
+      g_date_set_time_t ( gdate, file_time );
+      char time[32];
+      g_date_strftime ( time, sizeof(time), "%c", gdate );
+      g_date_free ( gdate );
 #endif
       message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: %s"), source, filename, time );
 
