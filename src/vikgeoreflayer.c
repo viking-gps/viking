@@ -57,9 +57,9 @@ static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewp
 static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
 static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id, gboolean is_file_operation );
 static VikGeorefLayer *georef_layer_new ( VikViewport *vvp );
-VikGeorefLayer *georef_layer_create ( VikViewport *vp );
+static VikGeorefLayer *georef_layer_create ( VikViewport *vp );
 static void georef_layer_free ( VikGeorefLayer *vgl );
-gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp );
+static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp );
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp );
 static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp );
 static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image );
@@ -322,12 +322,12 @@ static void georef_layer_free ( VikGeorefLayer *vgl )
     g_object_unref ( vgl->scaled );
 }
 
-VikGeorefLayer *georef_layer_create ( VikViewport *vp )
+static VikGeorefLayer *georef_layer_create ( VikViewport *vp )
 {
   return georef_layer_new ( vp );
 }
 
-gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp )
+static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp )
 {
   return georef_layer_dialog ( &vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp) );
 }
