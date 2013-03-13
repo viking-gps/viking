@@ -60,11 +60,11 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp );
 VikGeorefLayer *georef_layer_create ( VikViewport *vp );
 static void georef_layer_free ( VikGeorefLayer *vgl );
 gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp );
-static void georef_layer_draw ( VikGeorefLayer *vgl, gpointer data );
+static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp );
 static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp );
 static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image );
 static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWindow *w );
-static void georef_layer_load_image ( VikGeorefLayer *vgl );
+static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file );
 
 /* tools */
 static gpointer georef_layer_move_create ( VikWindow *vw, VikViewport *vvp);
@@ -204,7 +204,7 @@ static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewp
   VikGeorefLayer *rv = georef_layer_new ( vvp );
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
   if (rv->image) {
-    georef_layer_load_image ( rv );
+    georef_layer_load_image ( rv, vvp, TRUE );
   }
   return rv;
 }
@@ -260,12 +260,13 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   return vgl;
 }
 
-static void georef_layer_draw ( VikGeorefLayer *vgl, gpointer data )
+static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 {
-/* bla, bla */
+  if ( vik_viewport_get_drawmode(vp) != VIK_VIEWPORT_DRAWMODE_UTM )
+    return;
+
   if ( vgl->pixbuf )
   {
-    VikViewport *vp = VIK_VIEWPORT(data);
     struct UTM utm_middle;
     gdouble xmpp = vik_viewport_get_xmpp(vp), ympp = vik_viewport_get_ympp(vp);
     GdkPixbuf *pixbuf = vgl->pixbuf;
@@ -331,7 +332,7 @@ gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp )
   return georef_layer_dialog ( &vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp) );
 }
 
-static void georef_layer_load_image ( VikGeorefLayer *vgl )
+static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file )
 {
   GError *gx = NULL;
   if ( vgl->image == NULL )
@@ -358,6 +359,14 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl )
     vgl->height = gdk_pixbuf_get_height ( vgl->pixbuf );
   }
 
+  if ( !from_file )
+  {
+    if ( vik_viewport_get_drawmode(vp) != VIK_VIEWPORT_DRAWMODE_UTM )
+    {
+      a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
+                             _("GeoRef map cannot be displayed in the current drawmode.\nSelect \"UTM Mode\" from View menu to view it.") );
+    }
+  }
   /* should find length and width here too */
 }
 
@@ -575,7 +584,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
     if ( (!(*vgl)->image) || strcmp( (*vgl)->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) ) != 0 )
     {
       georef_layer_set_image ( *vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) );
-      georef_layer_load_image ( *vgl );
+      georef_layer_load_image ( *vgl, VIK_VIEWPORT(vp), FALSE );
     }
 
     gtk_widget_destroy ( GTK_WIDGET(dialog) );
