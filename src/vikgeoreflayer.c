@@ -350,7 +350,8 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboo
 
   if (gx)
   {
-    g_warning ( _("Couldn't open image file: %s"), gx->message );
+    if ( !from_file )
+      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vp), _("Couldn't open image file: %s"), gx->message );
     g_error_free ( gx );
   }
   else
