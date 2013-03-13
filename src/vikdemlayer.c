@@ -57,6 +57,10 @@
 
 #define UNUSED_LINE_THICKNESS 3
 
+static VikDEMLayer *dem_layer_new ( VikViewport *vvp );
+static void dem_layer_draw ( VikDEMLayer *vdl, VikViewport *vp );
+static void dem_layer_free ( VikDEMLayer *vdl );
+static VikDEMLayer *dem_layer_create ( VikViewport *vp );
 static const gchar* dem_layer_tooltip( VikDEMLayer *vdl );
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
@@ -194,13 +198,13 @@ VikLayerInterface vik_dem_layer_interface = {
 
   VIK_MENU_ITEM_ALL,
 
-  (VikLayerFuncCreate)                  vik_dem_layer_create,
+  (VikLayerFuncCreate)                  dem_layer_create,
   (VikLayerFuncRealize)                 NULL,
   (VikLayerFuncPostRead)                dem_layer_post_read,
-  (VikLayerFuncFree)                    vik_dem_layer_free,
+  (VikLayerFuncFree)                    dem_layer_free,
 
   (VikLayerFuncProperties)              NULL,
-  (VikLayerFuncDraw)                    vik_dem_layer_draw,
+  (VikLayerFuncDraw)                    dem_layer_draw,
   (VikLayerFuncChangeCoordMode)         NULL,
 
   (VikLayerFuncSetMenuItemsSelection)   NULL,
@@ -287,7 +291,7 @@ static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len )
 
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikDEMLayer *rv = vik_dem_layer_new ( vvp );
+  VikDEMLayer *rv = dem_layer_new ( vvp );
   gint i;
 
   /* TODO: share GCS between layers */
@@ -429,7 +433,7 @@ static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_f
   /* nothing ATM, but keep in case it's needed the future */
 }
 
-VikDEMLayer *vik_dem_layer_new ( VikViewport *vvp )
+static VikDEMLayer *dem_layer_new ( VikViewport *vvp )
 {
   VikDEMLayer *vdl = VIK_DEM_LAYER ( g_object_new ( VIK_DEM_LAYER_TYPE, NULL ) );
 
@@ -803,9 +807,8 @@ static const gchar *srtm_continent_dir ( gint lat, gint lon )
   return(g_hash_table_lookup(srtm_continent, name));
 }
 
-void vik_dem_layer_draw ( VikDEMLayer *vdl, gpointer data )
+static void dem_layer_draw ( VikDEMLayer *vdl, VikViewport *vp )
 {
-  VikViewport *vp = (VikViewport *) data;
   GList *dems_iter = vdl->files;
   VikDEM *dem;
 
@@ -827,7 +830,7 @@ void vik_dem_layer_draw ( VikDEMLayer *vdl, gpointer data )
   }
 }
 
-void vik_dem_layer_free ( VikDEMLayer *vdl )
+static void dem_layer_free ( VikDEMLayer *vdl )
 {
   gint i;
   if ( vdl->gcs )
@@ -843,9 +846,9 @@ void vik_dem_layer_free ( VikDEMLayer *vdl )
   a_dems_list_free ( vdl->files );
 }
 
-VikDEMLayer *vik_dem_layer_create ( VikViewport *vp )
+VikDEMLayer *dem_layer_create ( VikViewport *vp )
 {
-  VikDEMLayer *vdl = vik_dem_layer_new ( vp );
+  VikDEMLayer *vdl = dem_layer_new ( vp );
   gint i;
   if ( vp ) {
     /* TODO: share GCS between layers */

@@ -42,15 +42,6 @@ GType vik_dem_layer_get_type ();
 
 typedef struct _VikDEMLayer VikDEMLayer;
 
-/* TODO 0.0.8: yup, everything goes. */
-
-VikDEMLayer *vik_dem_layer_new ( );
-void vik_dem_layer_draw ( VikDEMLayer *vcl, gpointer data );
-void vik_dem_layer_free ( VikDEMLayer *vcl );
-
-VikDEMLayer *vik_dem_layer_create ( VikViewport *vp );
-gboolean vik_dem_layer_properties ( VikDEMLayer *vcl, gpointer vp );
-
 G_END_DECLS
 
 #endif
