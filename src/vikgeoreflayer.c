@@ -33,40 +33,12 @@
 
 #include "icons/icons.h"
 /*
-static struct UTM default_location_UTM ( void )
-{
-  struct LatLon ll;
-  ll.lat = a_vik_get_default_lat ();
-  ll.lon = a_vik_get_default_long ();
-  struct UTM u;
-  a_coords_latlon_to_utm (&ll, &u);
-  return u;
-}
-
-static VikLayerParamData easting_default ( void )
-{
-  struct UTM u = default_location_UTM();
-  VikLayerParamData data;
-  data.d = u.easting;
-  return data;
-}
-
-static VikLayerParamData northing_default ( void )
-{
-  struct UTM u = default_location_UTM();
-  VikLayerParamData data;
-  data.d = u.northing;
-  return data;
-}
-
 static VikLayerParamData image_default ( void )
 {
   VikLayerParamData data;
   data.s = g_strdup ("");
   return data;
 }
-
-static VikLayerParamData mpp_default ( void ) { return VIK_LPD_DOUBLE ( 4.0 ); }
 */
 
 VikLayerParam georef_layer_params[] = {
@@ -272,6 +244,11 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   // Since GeoRef layer doesn't use uibuilder
   //  initializing this way won't do anything yet..
   vik_layer_set_defaults ( VIK_LAYER(vgl), vvp );
+
+  // Make these defaults based on the current view
+  vgl->mpp_northing = vik_viewport_get_ympp ( vvp );
+  vgl->mpp_easting = vik_viewport_get_xmpp ( vvp );
+  vik_coord_to_utm ( vik_viewport_get_center ( vvp ), &(vgl->corner) );
 
   vgl->image = NULL;
   vgl->pixbuf = NULL;
