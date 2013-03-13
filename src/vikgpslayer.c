@@ -49,7 +49,7 @@
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
 static void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void vik_gps_layer_free ( VikGpsLayer *val );
-static void vik_gps_layer_draw ( VikGpsLayer *val, gpointer data );
+static void vik_gps_layer_draw ( VikGpsLayer *val, VikViewport *vp );
 static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
 
 static void gps_layer_marshall( VikGpsLayer *val, guint8 **data, gint *len );
@@ -666,37 +666,37 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   return vgl;
 }
 
-static void vik_gps_layer_draw ( VikGpsLayer *vgl, gpointer data )
+static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp )
 {
   gint i;
   VikLayer *vl;
-  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( VIK_VIEWPORT(data) ));
+  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( vp ));
 
   for (i = 0; i < NUM_TRW; i++) {
     vl = VIK_LAYER(vgl->trw_children[i]);
     if (vl == trigger) {
-      if ( vik_viewport_get_half_drawn ( VIK_VIEWPORT(data) ) ) {
-        vik_viewport_set_half_drawn ( VIK_VIEWPORT(data), FALSE );
-        vik_viewport_snapshot_load( VIK_VIEWPORT(data) );
+      if ( vik_viewport_get_half_drawn ( vp ) ) {
+        vik_viewport_set_half_drawn ( vp, FALSE );
+        vik_viewport_snapshot_load( vp );
       } else {
-        vik_viewport_snapshot_save( VIK_VIEWPORT(data) );
+        vik_viewport_snapshot_save( vp );
       }
     }
-    if (!vik_viewport_get_half_drawn( VIK_VIEWPORT(data)))
-      vik_layer_draw ( vl, data );
+    if (!vik_viewport_get_half_drawn(vp))
+      vik_layer_draw ( vl, vp );
   }
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   if (vgl->realtime_tracking) {
     if (VIK_LAYER(vgl) == trigger) {
-      if ( vik_viewport_get_half_drawn ( VIK_VIEWPORT(data) ) ) {
-        vik_viewport_set_half_drawn ( VIK_VIEWPORT(data), FALSE );
-        vik_viewport_snapshot_load( VIK_VIEWPORT(data) );
+      if ( vik_viewport_get_half_drawn ( vp ) ) {
+        vik_viewport_set_half_drawn ( vp, FALSE );
+        vik_viewport_snapshot_load( vp );
       } else {
-        vik_viewport_snapshot_save( VIK_VIEWPORT(data) );
+        vik_viewport_snapshot_save( vp );
       }
     }
-    if (!vik_viewport_get_half_drawn( VIK_VIEWPORT(data)))
-      realtime_tracking_draw(vgl, VIK_VIEWPORT(data));
+    if (!vik_viewport_get_half_drawn(vp))
+      realtime_tracking_draw(vgl, vp);
   }
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 }

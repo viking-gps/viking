@@ -257,7 +257,7 @@ VikLayerInterface *vik_layer_get_interface ( VikLayerTypeEnum type );
 
 
 void vik_layer_set_type ( VikLayer *vl, VikLayerTypeEnum type );
-void vik_layer_draw ( VikLayer *l, gpointer data );
+void vik_layer_draw ( VikLayer *l, VikViewport *vp );
 void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode );
 void vik_layer_rename ( VikLayer *l, const gchar *new_name );
 void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name );

@@ -294,24 +294,23 @@ void vik_aggregate_layer_move_layer ( VikAggregateLayer *val, GtkTreeIter *child
  * of the pixmap before drawing the trigger layer so we can use it again
  * later.
  */
-void vik_aggregate_layer_draw ( VikAggregateLayer *val, gpointer data )
+void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp )
 {
   GList *iter = val->children;
   VikLayer *vl;
-  VikViewport *viewport = VIK_VIEWPORT(data);
-  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( viewport ));
+  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( vp ));
   while ( iter ) {
     vl = VIK_LAYER(iter->data);
     if ( vl == trigger ) {
-      if ( vik_viewport_get_half_drawn ( viewport ) ) {
-        vik_viewport_set_half_drawn ( viewport, FALSE );
-        vik_viewport_snapshot_load( viewport );
+      if ( vik_viewport_get_half_drawn ( vp ) ) {
+        vik_viewport_set_half_drawn ( vp, FALSE );
+        vik_viewport_snapshot_load( vp );
       } else {
-        vik_viewport_snapshot_save( viewport );
+        vik_viewport_snapshot_save( vp );
       }
     }
-    if ( vl->type == VIK_LAYER_AGGREGATE || vl->type == VIK_LAYER_GPS || ! vik_viewport_get_half_drawn( viewport ) )
-      vik_layer_draw ( vl, data );
+    if ( vl->type == VIK_LAYER_AGGREGATE || vl->type == VIK_LAYER_GPS || ! vik_viewport_get_half_drawn( vp ) )
+      vik_layer_draw ( vl, vp );
     iter = iter->next;
   }
 }

@@ -234,11 +234,11 @@ gboolean vik_layer_properties ( VikLayer *layer, gpointer vp )
   return vik_layer_properties_factory ( layer, vp );
 }
 
-void vik_layer_draw ( VikLayer *l, gpointer data )
+void vik_layer_draw ( VikLayer *l, VikViewport *vp )
 {
   if ( l->visible )
     if ( vik_layer_interfaces[l->type]->draw )
-      vik_layer_interfaces[l->type]->draw ( l, data );
+      vik_layer_interfaces[l->type]->draw ( l, vp );
 }
 
 void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode )
