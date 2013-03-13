@@ -156,18 +156,6 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 	//if ( ! ( ee->data[0] == 2 && ee->data[2] == 0 && ee->data[3] == 0 ) )
 	//	goto MyReturn;
 
-
-	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_MAP_DATUM);
-	if ( ! ( ee && ee->components > 0 && ee->format == EXIF_FORMAT_ASCII ) )
-		goto MyReturn;
-
-	// If map datum specified - only deal in WGS-84 - the defacto standard
-	if ( ee && ee->components > 0 ) {
-		exif_entry_get_value ( ee, str, 128 );
-		if ( strncmp (str, "WGS-84", 6) )
-			goto MyReturn;
-	}
-
 	//
 	// Lat & Long is necessary to form a waypoint.
 	//
