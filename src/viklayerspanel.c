@@ -47,19 +47,14 @@ struct _VikLayersPanel {
 
   VikTreeview *vt;
   VikViewport *vvp; /* reference */
-
-  GtkItemFactory *popup_factory;
 };
 
-static GtkItemFactoryEntry base_entries[] = {
- { N_("/C_ut"), NULL, (GtkItemFactoryCallback) vik_layers_panel_cut_selected, -1, "<StockItem>", GTK_STOCK_CUT },
- { N_("/_Copy"), NULL, (GtkItemFactoryCallback) vik_layers_panel_copy_selected, -1, "<StockItem>", GTK_STOCK_COPY },
- { N_("/_Paste"), NULL, (GtkItemFactoryCallback) vik_layers_panel_paste_selected, -1, "<StockItem>", GTK_STOCK_PASTE },
- { N_("/_Delete"), NULL, (GtkItemFactoryCallback) vik_layers_panel_delete_selected, -1, "<StockItem>", GTK_STOCK_DELETE },
- { N_("/New Layer"), NULL, NULL, -1, "<Branch>" },
+static GtkActionEntry entries[] = {
+  { "Cut",    GTK_STOCK_CUT,    N_("C_ut"),       NULL, NULL, (GCallback) vik_layers_panel_cut_selected },
+  { "Copy",   GTK_STOCK_COPY,   N_("_Copy"),      NULL, NULL, (GCallback) vik_layers_panel_copy_selected },
+  { "Paste",  GTK_STOCK_PASTE,  N_("_Paste"),     NULL, NULL, (GCallback) vik_layers_panel_paste_selected },
+  { "Delete", GTK_STOCK_DELETE, N_("_Delete"),    NULL, NULL, (GCallback) vik_layers_panel_delete_selected },
 };
-
-#define NUM_BASE_ENTRIES (sizeof(base_entries)/sizeof(base_entries[0]))
 
 static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter);
 static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text);
@@ -104,6 +99,61 @@ VikViewport *vik_layers_panel_get_viewport ( VikLayersPanel *vlp )
   return vlp->vvp;
 }
 
+static gboolean layers_panel_new_layer ( gpointer lpnl[2] )
+{
+  return vik_layers_panel_new_layer ( lpnl[0], GPOINTER_TO_INT(lpnl[1]) );
+}
+
+/**
+ * Create menu popup on demand
+ */
+static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp )
+{
+  GtkWidget *menu = gtk_menu_new ();
+  GtkWidget *menuitem;
+  guint ii;
+
+  for ( ii = 0; ii < G_N_ELEMENTS(entries); ii++ ) {
+    if ( entries[ii].stock_id ) {
+      menuitem = gtk_image_menu_item_new_with_mnemonic ( entries[ii].label );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_stock (entries[ii].stock_id, GTK_ICON_SIZE_MENU) );
+    }
+    else
+      menuitem = gtk_menu_item_new_with_mnemonic ( entries[ii].label );
+
+    g_signal_connect_swapped ( G_OBJECT(menuitem), "activate", G_CALLBACK(entries[ii].callback), vlp );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    gtk_widget_show ( menuitem );
+  }
+
+  GtkWidget *submenu = gtk_menu_new();
+  menuitem = gtk_menu_item_new_with_mnemonic ( _("New Layer") );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  gtk_widget_show ( menuitem );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), submenu );
+
+  // Static: so memory accessible yet not continually allocated
+  static gpointer lpnl[VIK_LAYER_NUM_TYPES][2];
+
+  for ( ii = 0; ii < VIK_LAYER_NUM_TYPES; ii++ ) {
+    if ( vik_layer_get_interface(ii)->icon ) {
+      menuitem = gtk_image_menu_item_new_with_mnemonic ( vik_layer_get_interface(ii)->name );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_pixbuf ( vik_layer_load_icon (ii) ) );
+    }
+    else
+      menuitem = gtk_menu_item_new_with_mnemonic ( vik_layer_get_interface(ii)->name );
+
+    lpnl[ii][0] = vlp;
+    lpnl[ii][1] = GINT_TO_POINTER(ii);
+
+    g_signal_connect_swapped ( G_OBJECT(menuitem), "activate", G_CALLBACK(layers_panel_new_layer), lpnl[ii] );
+    gtk_menu_shell_append (GTK_MENU_SHELL (submenu), menuitem);
+    gtk_widget_show ( menuitem );
+  }
+
+  return menu;
+}
+
 static void vik_layers_panel_init ( VikLayersPanel *vlp )
 {
   GtkWidget *hbox;
@@ -115,8 +165,6 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   GtkWidget *copybutton, *copyimage;
   GtkWidget *pastebutton, *pasteimage;
   GtkWidget *scrolledwindow;
-  GtkItemFactoryEntry entry;
-  guint i, tmp;
 
   vlp->vvp = NULL;
 
@@ -192,33 +240,6 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   
   gtk_box_pack_start ( GTK_BOX(vlp), scrolledwindow, TRUE, TRUE, 0 );
   gtk_box_pack_start ( GTK_BOX(vlp), hbox, FALSE, FALSE, 0 );
-
-  vlp->popup_factory = gtk_item_factory_new ( GTK_TYPE_MENU, "<main>", NULL );
-  gtk_item_factory_set_translate_func (vlp->popup_factory,
-          (GtkTranslateFunc) gettext, NULL, NULL);
-  gtk_item_factory_create_items ( vlp->popup_factory, NUM_BASE_ENTRIES, base_entries, vlp );
-  for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
-  {
-    /* TODO: FIXME: if name has a '/' in it it will get all messed up. why not have an itemfactory field with
-                    name, icon, shortcut, etc.? */
-    gchar *label = g_strdup_printf(_("New _%s Layer"), vik_layer_get_interface(i)->name );
-    entry.path = g_strdup_printf("%s/%s", base_entries[NUM_BASE_ENTRIES-1].path, label );
-    g_free ( label );
-    entry.accelerator = NULL;
-    entry.callback = (GtkItemFactoryCallback) vik_layers_panel_new_layer;
-    entry.callback_action = i;
-    if ( vik_layer_get_interface(i)->icon )
-    {
-      entry.item_type = "<ImageItem>";
-      entry.extra_data = gdk_pixdata_serialize ( vik_layer_get_interface(i)->icon, &tmp );
-    }
-    else
-      entry.item_type = "<Item>";
-
-    gtk_item_factory_create_item ( vlp->popup_factory, &entry, vlp, 1 );
-    g_free ( (gpointer) entry.extra_data );
-    g_free ( entry.path );
-  }
 }
 
 /**
@@ -337,7 +358,7 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
       VikLayer *layer = VIK_LAYER(vik_treeview_item_get_pointer ( vlp->vt, iter ));
 
       if ( layer->type == VIK_LAYER_AGGREGATE )
-        menu = GTK_MENU(gtk_item_factory_get_widget ( vlp->popup_factory, "<main>" ));
+        menu = GTK_MENU ( layers_panel_create_popup ( vlp ) );
       else
       {
         GtkWidget *del, *prop;
@@ -395,7 +416,9 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
     }
   }
   else
-    menu = GTK_MENU(gtk_item_factory_get_widget ( vlp->popup_factory, base_entries[NUM_BASE_ENTRIES-1].path ));
+  {
+    menu = GTK_MENU ( layers_panel_create_popup ( vlp ) );
+  }
   gtk_menu_popup ( menu, NULL, NULL, NULL, NULL, mouse_button, gtk_get_current_event_time() );
 }
 
@@ -719,7 +742,6 @@ static void layers_panel_finalize ( GObject *gob )
 {
   VikLayersPanel *vlp = VIK_LAYERS_PANEL ( gob );
   g_object_unref ( VIK_LAYER(vlp->toplayer) );
-  g_object_unref ( G_OBJECT(vlp->popup_factory) );
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
