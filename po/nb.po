@@ -1481,24 +1481,24 @@ msgid "Are you sure you want to delete All GPS data?"
 msgstr ""
 
 #: ../src/viklayerspanel.c:55
-msgid "/C_ut"
+msgid "C_ut"
 msgstr ""
 
 #: ../src/viklayerspanel.c:56
-msgid "/_Copy"
-msgstr "/_Kopier"
+msgid "_Copy"
+msgstr "_Kopier"
 
 #: ../src/viklayerspanel.c:57
-msgid "/_Paste"
-msgstr "/_Lim inn"
+msgid "_Paste"
+msgstr "_Lim inn"
 
 #: ../src/viklayerspanel.c:58
-msgid "/_Delete"
-msgstr "/_Slett"
+msgid "_Delete"
+msgstr "_Slett"
 
 #: ../src/viklayerspanel.c:59
-msgid "/New Layer"
-msgstr "/Nytt lag"
+msgid "New Layer"
+msgstr "Nytt lag"
 
 #: ../src/viklayerspanel.c:127
 msgid "Top Layer"

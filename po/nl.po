@@ -1511,23 +1511,23 @@ msgid "Are you sure you want to delete All GPS data?"
 msgstr ""
 
 #: ../src/viklayerspanel.c:55
-msgid "/C_ut"
+msgid "C_ut"
 msgstr ""
 
 #: ../src/viklayerspanel.c:56
-msgid "/_Copy"
+msgid "_Copy"
 msgstr ""
 
 #: ../src/viklayerspanel.c:57
-msgid "/_Paste"
+msgid "_Paste"
 msgstr ""
 
 #: ../src/viklayerspanel.c:58
-msgid "/_Delete"
-msgstr "/_Verwijderen"
+msgid "_Delete"
+msgstr "_Verwijderen"
 
 #: ../src/viklayerspanel.c:59
-msgid "/New Layer"
+msgid "New Layer"
 msgstr ""
 
 #: ../src/viklayerspanel.c:127

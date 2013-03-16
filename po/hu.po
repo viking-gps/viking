@@ -1514,24 +1514,24 @@ msgid "Are you sure you want to delete All GPS data?"
 msgstr ""
 
 #: ../src/viklayerspanel.c:55
-msgid "/C_ut"
-msgstr "/_Kivágás"
+msgid "C_ut"
+msgstr "_Kivágás"
 
 #: ../src/viklayerspanel.c:56
-msgid "/_Copy"
-msgstr "/_Másolás"
+msgid "_Copy"
+msgstr "_Másolás"
 
 #: ../src/viklayerspanel.c:57
-msgid "/_Paste"
-msgstr "/_Beillesztés"
+msgid "_Paste"
+msgstr "_Beillesztés"
 
 #: ../src/viklayerspanel.c:58
-msgid "/_Delete"
-msgstr "/_Törlés"
+msgid "_Delete"
+msgstr "_Törlés"
 
 #: ../src/viklayerspanel.c:59
-msgid "/New Layer"
-msgstr "/Új réteg"
+msgid "New Layer"
+msgstr "Új réteg"
 
 #: ../src/viklayerspanel.c:127
 msgid "Top Layer"

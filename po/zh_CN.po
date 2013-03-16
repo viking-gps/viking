@@ -1475,24 +1475,24 @@ msgid "Are you sure you want to delete All GPS data?"
 msgstr ""
 
 #: ../src/viklayerspanel.c:55
-msgid "/C_ut"
-msgstr "/_u 剪切"
+msgid "C_ut"
+msgstr "_u 剪切"
 
 #: ../src/viklayerspanel.c:56
-msgid "/_Copy"
-msgstr "/_C 拷贝"
+msgid "_Copy"
+msgstr "_C 拷贝"
 
 #: ../src/viklayerspanel.c:57
-msgid "/_Paste"
-msgstr "/_P 粘贴"
+msgid "_Paste"
+msgstr "_P 粘贴"
 
 #: ../src/viklayerspanel.c:58
-msgid "/_Delete"
-msgstr "/_D 删除"
+msgid "_Delete"
+msgstr "_D 删除"
 
 #: ../src/viklayerspanel.c:59
-msgid "/New Layer"
-msgstr "/新图层"
+msgid "New Layer"
+msgstr "新图层"
 
 #: ../src/viklayerspanel.c:127
 msgid "Top Layer"
