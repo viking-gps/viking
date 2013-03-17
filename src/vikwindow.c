@@ -63,6 +63,7 @@
 //   why not be allowed to open a thousand more...
 #define MAX_WINDOWS 1024
 static guint window_count = 0;
+static GSList *window_list = NULL;
 
 #define VIKING_WINDOW_WIDTH      1000
 #define VIKING_WINDOW_HEIGHT     800
@@ -356,6 +357,8 @@ static void window_finalize ( GObject *gob )
 
   a_background_remove_window ( vw );
 
+  window_list = g_slist_remove ( window_list, vw );
+
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
@@ -528,6 +531,8 @@ static void vik_window_init ( VikWindow *vw )
   gtk_box_pack_end (GTK_BOX(main_vbox), GTK_WIDGET(vw->viking_vs), FALSE, TRUE, 0);
 
   a_background_add_window ( vw );
+
+  window_list = g_slist_prepend ( window_list, vw);
 
   vw->open_dia = NULL;
   vw->save_dia = NULL;
@@ -2530,17 +2535,38 @@ static void layer_defaults_cb ( GtkAction *a, VikWindow *vw )
   g_strfreev ( texts );
 }
 
+static void preferences_change_update ( VikWindow *vw, gpointer data )
+{
+  // Want to update all TrackWaypoint layers
+  GList *layers = vik_layers_panel_get_all_layers_of_type ( vw->viking_vlp, VIK_LAYER_TRW, TRUE );
+
+  GList *iter = g_list_first ( layers );
+  while ( iter ) {
+    // Reset the individual waypoints themselves due to the preferences change
+    VikTrwLayer *vtl = VIK_TRW_LAYER(VIK_LAYER(layers->data));
+    vik_trw_layer_reset_waypoints ( vtl );
+	iter = g_list_next ( iter );
+  }
+
+  g_list_free ( layers );
+
+  draw_update ( vw );
+}
+
 static void preferences_cb ( GtkAction *a, VikWindow *vw )
 {
   gboolean wp_icon_size = a_vik_get_use_large_waypoint_icons();
 
   a_preferences_show_window ( GTK_WINDOW(vw) );
 
-  // Delete icon indexing 'cache' and so automatically regenerates with the new setting when changed
-  if (wp_icon_size != a_vik_get_use_large_waypoint_icons())
+  // Has the waypoint size setting changed?
+  if (wp_icon_size != a_vik_get_use_large_waypoint_icons()) {
+    // Delete icon indexing 'cache' and so automatically regenerates with the new setting when changed
     clear_garmin_icon_syms ();
 
-  draw_update ( vw );
+    // Update all windows
+    g_slist_foreach ( window_list, (GFunc) preferences_change_update, NULL );
+  }
 }
 
 static void default_location_cb ( GtkAction *a, VikWindow *vw )

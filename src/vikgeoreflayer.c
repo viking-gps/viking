@@ -275,33 +275,6 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 
     vik_coord_to_utm ( vik_viewport_get_center ( vp ), &utm_middle );
 
-    /* scale the pixbuf if it doesn't match our dimensions */
-    if ( xmpp != vgl->mpp_easting || ympp != vgl->mpp_northing )
-    {
-      layer_width = round(vgl->width * vgl->mpp_easting / xmpp);
-      layer_height = round(vgl->height * vgl->mpp_northing / ympp);
-
-      /* rescale if necessary */
-      if (layer_width == vgl->scaled_width && layer_height == vgl->scaled_height && vgl->scaled != NULL)
-        pixbuf = vgl->scaled;
-      else
-      {
-        pixbuf = gdk_pixbuf_scale_simple(
-          vgl->pixbuf, 
-          layer_width,
-          layer_height,
-          GDK_INTERP_BILINEAR
-        );
-
-        if (vgl->scaled != NULL)
-          g_object_unref(vgl->scaled);
-
-        vgl->scaled = pixbuf;
-        vgl->scaled_width = layer_width;
-        vgl->scaled_height = layer_height;
-      }
-    }
-
     guint width = vik_viewport_get_width(vp), height = vik_viewport_get_height(vp);
     gint32 x, y;
     vgl->corner.zone = utm_middle.zone;
@@ -309,8 +282,43 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
     VikCoord corner_coord;
     vik_coord_load_from_utm ( &corner_coord, vik_viewport_get_coord_mode(vp), &(vgl->corner) );
     vik_viewport_coord_to_screen ( vp, &corner_coord, &x, &y );
-    if ( (x < 0 || x < width) && (y < 0 || y < height) && x+layer_width > 0 && y+layer_height > 0 )
+
+    /* mark to scale the pixbuf if it doesn't match our dimensions */
+    gboolean scale = FALSE;
+    if ( xmpp != vgl->mpp_easting || ympp != vgl->mpp_northing )
+    {
+      scale = TRUE;
+      layer_width = round(vgl->width * vgl->mpp_easting / xmpp);
+      layer_height = round(vgl->height * vgl->mpp_northing / ympp);
+    }
+
+    // If image not in viewport bounds - no need to draw it (or bother with any scaling)
+    if ( (x < 0 || x < width) && (y < 0 || y < height) && x+layer_width > 0 && y+layer_height > 0 ) {
+
+      if ( scale )
+      {
+        /* rescale if necessary */
+        if (layer_width == vgl->scaled_width && layer_height == vgl->scaled_height && vgl->scaled != NULL)
+          pixbuf = vgl->scaled;
+        else
+        {
+          pixbuf = gdk_pixbuf_scale_simple(
+            vgl->pixbuf,
+            layer_width,
+            layer_height,
+            GDK_INTERP_BILINEAR
+          );
+
+          if (vgl->scaled != NULL)
+            g_object_unref(vgl->scaled);
+
+          vgl->scaled = pixbuf;
+          vgl->scaled_width = layer_width;
+          vgl->scaled_height = layer_height;
+        }
+      }
       vik_viewport_draw_pixbuf ( vp, pixbuf, 0, 0, x, y, layer_width, layer_height ); /* todo: draw only what we need to. */
+    }
   }
 }
 

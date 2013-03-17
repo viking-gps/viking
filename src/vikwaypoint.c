@@ -25,6 +25,7 @@
 #include "vikcoord.h"
 #include "vikwaypoint.h"
 #include "globals.h"
+#include "garminsymbols.h"
 #include <glib/gi18n.h>
 
 VikWaypoint *vik_waypoint_new()
@@ -93,10 +94,16 @@ void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname)
   if ( wp->symbol )
     g_free ( wp->symbol );
 
-  if ( symname && symname[0] != '\0' )
+  // NB symbol_pixbuf is just a reference, so no need to free it
+
+  if ( symname && symname[0] != '\0' ) {
     wp->symbol = g_strdup(symname);
-  else
+    wp->symbol_pixbuf = a_get_wp_sym ( wp->symbol );
+  }
+  else {
     wp->symbol = NULL;
+    wp->symbol_pixbuf = NULL;
+  }
 }
 
 void vik_waypoint_free(VikWaypoint *wp)

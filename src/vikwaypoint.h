@@ -24,6 +24,8 @@
 
 #include "vikcoord.h"
 
+#include <gdk-pixbuf/gdk-pixdata.h>
+
 G_BEGIN_DECLS
 /* todo important: put these in their own header file, maybe.probably also rename */
 
@@ -45,6 +47,8 @@ struct _VikWaypoint {
   guint8 image_width;
   guint8 image_height;
   gchar *symbol;
+  // Only for GUI display
+  GdkPixbuf *symbol_pixbuf;
 };
 
 VikWaypoint *vik_waypoint_new();

@@ -27,6 +27,7 @@
 #include <gtk/gtk.h>
 
 #include "vikcoord.h"
+#include "bbox.h"
 
 G_BEGIN_DECLS
 
@@ -73,6 +74,7 @@ struct _VikTrack {
   GtkWidget *property_dialog;
   gboolean has_color;
   GdkColor color;
+  LatLonBBox bbox;
 };
 
 VikTrack *vik_track_new();
@@ -121,6 +123,8 @@ gdouble *vik_track_make_speed_dist_map ( const VikTrack *tr, guint16 num_chunks 
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt );
 void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
 VikTrack *vik_track_unmarshall (guint8 *data, guint datalen);
+
+void vik_track_calculate_bounds ( VikTrack *trk );
 
 void vik_track_apply_dem_data ( VikTrack *tr);
 void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr );

@@ -141,6 +141,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   new_tr->is_route = tr->is_route;
   new_tr->has_color = tr->has_color;
   new_tr->color = tr->color;
+  new_tr->bbox = tr->bbox;
   new_tr->trackpoints = NULL;
   if ( copy_points )
   {
@@ -265,6 +266,10 @@ gulong vik_track_remove_dup_points ( VikTrack *tr )
     else
       iter = iter->next;
   }
+
+  // NB isn't really be necessary as removing duplicate points shouldn't alter the bounds!
+  vik_track_calculate_bounds ( tr );
+
   return num;
 }
 
@@ -315,6 +320,9 @@ gulong vik_track_remove_same_time_points ( VikTrack *tr )
     else
       iter = iter->next;
   }
+
+  vik_track_calculate_bounds ( tr );
+
   return num;
 }
 
@@ -385,6 +393,9 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
       iter->prev = NULL;
       rv[i] = vik_track_copy ( tr, FALSE );
       rv[i]->trackpoints = iter;
+
+      vik_track_calculate_bounds ( rv[i] );
+
       i++;
     }
   }
@@ -1274,6 +1285,7 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   new_tr->is_route = ((VikTrack *)data)->is_route;
   new_tr->has_color = ((VikTrack *)data)->has_color;
   new_tr->color = ((VikTrack *)data)->color;
+  new_tr->bbox = ((VikTrack *)data)->bbox;
 
   data += sizeof(*new_tr);
 
@@ -1304,6 +1316,48 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   return new_tr;
 }
 
+/**
+ * (Re)Calculate the bounds of the given track,
+ *  updating the track's bounds data.
+ * This should be called whenever a track's trackpoints are changed
+ */
+void vik_track_calculate_bounds ( VikTrack *trk )
+{
+  GList *tp_iter;
+  tp_iter = trk->trackpoints;
+  
+  struct LatLon topleft, bottomright, ll;
+  
+  // Set bounds to first point
+  if ( tp_iter ) {
+    vik_coord_to_latlon ( &(VIK_TRACKPOINT(tp_iter->data)->coord), &topleft );
+    vik_coord_to_latlon ( &(VIK_TRACKPOINT(tp_iter->data)->coord), &bottomright );
+  }
+  while ( tp_iter ) {
+
+    // See if this trackpoint increases the track bounds.
+   
+    vik_coord_to_latlon ( &(VIK_TRACKPOINT(tp_iter->data)->coord), &ll );
+  
+    if ( ll.lat > topleft.lat) topleft.lat = ll.lat;
+    if ( ll.lon < topleft.lon) topleft.lon = ll.lon;
+    if ( ll.lat < bottomright.lat) bottomright.lat = ll.lat;
+    if ( ll.lon > bottomright.lon) bottomright.lon = ll.lon;
+    
+    tp_iter = tp_iter->next;
+  }
+ 
+  g_debug ( g_strdup_printf("Bounds of track: '%s' is: %f,%f to: %f,%f", trk->name, topleft.lat, topleft.lon, bottomright.lat, bottomright.lon ) );
+
+  trk->bbox.north = topleft.lat;
+  trk->bbox.east = bottomright.lon;
+  trk->bbox.south = bottomright.lat;
+  trk->bbox.west = topleft.lon;
+}
+
+/**
+ *
+ */
 void vik_track_apply_dem_data ( VikTrack *tr )
 {
   GList *tp_iter;
@@ -1322,7 +1376,6 @@ void vik_track_apply_dem_data ( VikTrack *tr )
 
 /**
  * vik_track_apply_dem_data_last_trackpoint:
- * 
  * Apply DEM data (if available) - to only the last trackpoint
  */
 void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
@@ -1348,6 +1401,9 @@ void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
   } else
     t1->trackpoints = t2->trackpoints;
   t2->trackpoints = NULL;
+
+  // Trackpoints updated - so update the bounds
+  vik_track_calculate_bounds ( t1 );
 }
 
 /**
