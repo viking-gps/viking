@@ -269,6 +269,14 @@ static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
 
 static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text)
 {
+  if ( !new_text )
+    return;
+
+  if ( new_text[0] == '\0' ) {
+    a_dialog_error_msg ( GTK_WINDOW(VIK_WINDOW_FROM_WIDGET(vlp)), _("New name can not be blank.") );
+    return;
+  }
+
   if ( vik_treeview_item_get_type ( vlp->vt, iter ) == VIK_TREEVIEW_TYPE_LAYER )
   {
     VikLayer *l;
