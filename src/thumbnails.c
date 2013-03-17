@@ -55,7 +55,6 @@
 
 #undef MIN /* quit yer whining, gcc */
 #undef MAX
-#include <sys/param.h> /* for realpath() */
 #ifndef MAX
 /* We need MAX macro and some system does not offer it */
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -66,8 +65,6 @@
 #ifdef WINDOWS
 #define THUMB_DIR "\\THUMBNAILS\\" /* viking maps default viking\maps */
 #define THUMB_SUB_DIR "normal\\"
-#define realpath(X,Y) _fullpath(Y,X,MAX_PATH)
-
 #else
 #define THUMB_DIR "/.thumbnails/"
 #define THUMB_SUB_DIR "normal/"
@@ -305,7 +302,7 @@ static char *pathdup(const char *path)
 
 	g_return_val_if_fail(path != NULL, NULL);
 
-	if (realpath(path, real))
+	if (file_realpath(path, real))
 		return g_strdup(real);
 
 	return g_strdup(path);

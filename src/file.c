@@ -34,6 +34,9 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef WINDOWS
+#define realpath(X,Y) _fullpath(Y,X,MAX_PATH)
+#endif
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
@@ -787,5 +790,13 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
     return TRUE;
   }
   return FALSE;
+}
+
+/**
+ * Just a wrapper around realpath, which itself is platform dependent
+ */
+char *file_realpath ( const char *path, char *real )
+{
+  return realpath ( path, real );
 }
 
