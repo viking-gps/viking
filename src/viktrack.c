@@ -59,10 +59,7 @@ void vik_track_set_name(VikTrack *tr, const gchar *name)
   if ( tr->name )
     g_free ( tr->name );
 
-  if ( name && name[0] != '\0' )
-    tr->name = g_strdup(name);
-  else
-    tr->name = NULL;
+  tr->name = g_strdup(name);
 }
 
 void vik_track_set_comment(VikTrack *tr, const gchar *comment)

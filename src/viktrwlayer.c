@@ -5889,8 +5889,9 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     VikWaypoint *wp = g_hash_table_lookup ( l->waypoints, sublayer );
 
     // No actual change to the name supplied
-    if (strcmp(newname, wp->name) == 0 )
-      return NULL;
+    if ( wp->name )
+      if (strcmp(newname, wp->name) == 0 )
+       return NULL;
 
     VikWaypoint *wpf = vik_trw_layer_get_waypoint ( l, newname );
 
@@ -5919,8 +5920,9 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     VikTrack *trk = g_hash_table_lookup ( l->tracks, sublayer );
 
     // No actual change to the name supplied
-    if (strcmp(newname, trk->name) == 0)
-      return NULL;
+    if ( trk->name )
+      if (strcmp(newname, trk->name) == 0)
+	return NULL;
 
     VikTrack *trkf = vik_trw_layer_get_track ( l, (gpointer) newname );
 
@@ -5956,8 +5958,9 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     VikTrack *trk = g_hash_table_lookup ( l->routes, sublayer );
 
     // No actual change to the name supplied
-    if (strcmp(newname, trk->name) == 0)
-      return NULL;
+    if ( trk->name )
+      if (strcmp(newname, trk->name) == 0)
+        return NULL;
 
     VikTrack *trkf = vik_trw_layer_get_route ( l, (gpointer) newname );
 

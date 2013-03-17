@@ -41,10 +41,7 @@ void vik_waypoint_set_name(VikWaypoint *wp, const gchar *name)
   if ( wp->name )
     g_free ( wp->name );
 
-  if ( name && name[0] != '\0' )
-    wp->name = g_strdup(name);
-  else
-    wp->name = NULL;
+  wp->name = g_strdup(name);
 }
 
 void vik_waypoint_set_comment_no_copy(VikWaypoint *wp, gchar *comment)
