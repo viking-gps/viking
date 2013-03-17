@@ -305,6 +305,9 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
       guint8 current_group;
       guint16 tab_widget_count;
       notebook = gtk_notebook_new ();
+      // Switch to vertical notebook mode when many groups
+      if ( groups_count > 4 )
+        gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(notebook), GTK_POS_LEFT );
       gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), notebook, FALSE, FALSE, 0);
       tables = g_malloc ( sizeof(GtkWidget *) * groups_count );
       for ( current_group = 0; current_group < groups_count; current_group++ )
