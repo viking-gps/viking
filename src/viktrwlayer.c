@@ -2711,6 +2711,12 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, co
 					       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					       GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 					       NULL);
+  gchar *cwd = g_get_current_dir();
+  if ( cwd ) {
+    gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(file_selector), cwd );
+    g_free ( cwd );
+  }
+
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(file_selector), default_name);
 
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )

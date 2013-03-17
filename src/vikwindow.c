@@ -2303,11 +2303,17 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   if ( ! vw->open_dia )
   {
     vw->open_dia = gtk_file_chooser_dialog_new (_("Please select a GPS data file to open. "),
-				      GTK_WINDOW(vw),
-				      GTK_FILE_CHOOSER_ACTION_OPEN,
-				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-				      NULL);
+                                                GTK_WINDOW(vw),
+                                                GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                                NULL);
+    gchar *cwd = g_get_current_dir();
+    if ( cwd ) {
+      gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(vw->open_dia), cwd );
+      g_free ( cwd );
+    }
+
     GtkFileFilter *filter;
     // NB file filters are listed this way for alphabetical ordering
 #ifdef VIK_CONFIG_GEOCACHES
@@ -2399,11 +2405,17 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
   if ( ! vw->save_dia )
   {
     vw->save_dia = gtk_file_chooser_dialog_new (_("Save as Viking File."),
-				      GTK_WINDOW(vw),
-				      GTK_FILE_CHOOSER_ACTION_SAVE,
-				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				      GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
-				      NULL);
+                                                GTK_WINDOW(vw),
+                                                GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                                                NULL);
+    gchar *cwd = g_get_current_dir();
+    if ( cwd ) {
+      gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(vw->save_dia), cwd );
+      g_free ( cwd );
+    }
+
     GtkFileFilter *filter;
     filter = gtk_file_filter_new ();
     gtk_file_filter_set_name( filter, _("All") );
@@ -3004,6 +3016,12 @@ static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
                                                       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                                       GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
                                                       NULL);
+
+      gchar *cwd = g_get_current_dir();
+      if ( cwd ) {
+        gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(vw->save_img_dia), cwd );
+        g_free ( cwd );
+      }
 
       GtkFileChooser *chooser = GTK_FILE_CHOOSER ( vw->save_img_dia );
       /* Add filters */
