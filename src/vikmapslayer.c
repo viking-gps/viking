@@ -520,7 +520,15 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
   VikLayerParamData rv;
   switch ( id )
   {
-    case PARAM_CACHE_DIR: rv.s = vml->cache_dir ? vml->cache_dir : ""; break;
+    case PARAM_CACHE_DIR:
+      /* Only save a blank when the map cache location equals the default
+          On reading in, when it is blank then the default is reconstructed
+          Since the default changes dependent on the user and OS, it means the resultant file is more portable */
+      if ( is_file_operation && vml->cache_dir && strcmp ( vml->cache_dir, MAPS_CACHE_DIR ) == 0 )
+        rv.s = "";
+      else
+        rv.s = vml->cache_dir ? vml->cache_dir : "";
+      break;
     case PARAM_MAPTYPE: rv.u = map_index_to_uniq_id ( vml->maptype ); break;
     case PARAM_ALPHA: rv.u = vml->alpha; break;
     case PARAM_AUTODOWNLOAD: rv.u = vml->autodownload; break;
