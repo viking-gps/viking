@@ -354,7 +354,11 @@ static void page_setup_cb (GtkWidget *widget, CustomWidgetInfo *info)
   GtkWidget         *toplevel;
 
   toplevel = gtk_widget_get_toplevel (widget);
+#if GTK_CHECK_VERSION (2,18,0)
+  if (! gtk_widget_is_toplevel (toplevel))
+#else
   if (! GTK_WIDGET_TOPLEVEL (toplevel))
+#endif
     toplevel = NULL;
 
   settings = gtk_print_operation_get_print_settings (operation);
@@ -593,9 +597,17 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
   gtk_widget_show (label);
 
+#if GTK_CHECK_VERSION (2,24,0)
+  combo = gtk_combo_box_text_new ();
+#else
   combo = gtk_combo_box_new_text ();
+#endif
   for (center = center_modes; center->name; center++) {
+#if GTK_CHECK_VERSION (2,24,0)
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), _(center->name));
+#else
     gtk_combo_box_append_text(GTK_COMBO_BOX(combo), _(center->name));
+#endif
   }
   gtk_combo_box_set_active(GTK_COMBO_BOX(combo), VIK_PRINT_CENTER_BOTH);
   gtk_box_pack_start (GTK_BOX (hbox), combo, TRUE, TRUE, 0);
