@@ -21,15 +21,16 @@
 #include "config.h"
 #endif
 
-#ifdef WINDOWS
-#include <windows.h>
-#endif
-
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 
 #include "util.h"
 #include "dialog.h"
+
+/*
+#ifdef WINDOWS
+#include <windows.h>
+#endif
 
 #ifndef WINDOWS
 static gboolean spawn_command_line_async(const gchar * cmd,
@@ -48,53 +49,38 @@ static gboolean spawn_command_line_async(const gchar * cmd,
   return status;
 }
 #endif
+*/
 
 void open_url(GtkWindow *parent, const gchar * url)
 {
-#ifdef WINDOWS
-  ShellExecute(NULL, NULL, (char *) url, NULL, ".\\", 0);
-#else /* WINDOWS */
-  const gchar *browsers[] = {
-    "xdg-open", "gnome-open", "kfmclient openURL",
-    "sensible-browser", "firefox", "epiphany",
-    "iceweasel", "seamonkey", "galeon", "mozilla",
-    "opera", "konqueror", "netscape", "links -g",
-    "chromium-browser", "chromium", "chrome",
-    "safari", "camino", "omniweb", "icab",
-    NULL
-  };
-  gint i=0;
-  
-  const gchar *browser = g_getenv("BROWSER");
-  if (browser == NULL || browser[0] == '\0') {
-    /* $BROWSER not set -> use first entry */
-    browser = browsers[i++];
+  GError *error = NULL;
+  gtk_show_uri ( gtk_widget_get_screen (GTK_WIDGET(parent)), url, GDK_CURRENT_TIME, &error );
+  if ( error ) {
+    a_dialog_error_msg_extra ( parent, _("Could not launch web browser. %s"), error->message );
+    g_error_free ( error );
   }
-  do {
-    if (spawn_command_line_async(browser, url)) {
-      return;
-    }
-
-    browser = browsers[i++];
-  } while(browser);
-  
-  a_dialog_error_msg ( parent, _("Could not launch web browser.") );
-#endif /* WINDOWS */
 }
 
 void new_email(GtkWindow *parent, const gchar * address)
 {
   gchar *uri = g_strdup_printf("mailto:%s", address);
+  GError *error = NULL;
+  gtk_show_uri ( gtk_widget_get_screen (GTK_WIDGET(parent)), uri, GDK_CURRENT_TIME, &error );
+  if ( error ) {
+    a_dialog_error_msg_extra ( parent, _("Could not create new email. %s"), error->message );
+    g_error_free ( error );
+  }
+  /*
 #ifdef WINDOWS
   ShellExecute(NULL, NULL, (char *) uri, NULL, ".\\", 0);
-#else /* WINDOWS */
+#else
   if (!spawn_command_line_async("xdg-email", uri))
     a_dialog_error_msg ( parent, _("Could not create new email.") );
-#endif /* WINDOWS */
+#endif
+  */
   g_free(uri);
   uri = NULL;
 }
-
 gchar *uri_escape(gchar *str)
 {
   gchar *esc_str = g_malloc(3*strlen(str));
