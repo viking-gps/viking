@@ -84,13 +84,7 @@ static gpointer datasource_file_init ( )
 static void fill_combo_box (gpointer data, gpointer user_data)
 {
   const gchar *label = ((BabelFile*) data)->label;
-#if GTK_CHECK_VERSION (2,24,0)
-  GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT (user_data);
-  gtk_combo_box_text_append_text (combo, label);
-#else
-  GtkComboBox *combo = GTK_COMBO_BOX (user_data);
-  gtk_combo_box_append_text (combo, label);
-#endif
+  vik_combo_box_text_append (GTK_WIDGET(user_data), label);
 }
 
 static void add_file_filter (gpointer data, gpointer user_data)
@@ -146,11 +140,7 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
 
   /* The file format selector */
   type_label = gtk_label_new (_("File type:"));
-#if GTK_CHECK_VERSION (2,24,0)
-  widgets->type = gtk_combo_box_text_new ();
-#else
-  widgets->type = gtk_combo_box_new_text ();
-#endif
+  widgets->type = vik_combo_box_text_new ();
   g_list_foreach (a_babel_file_list, fill_combo_box, widgets->type);
   gtk_combo_box_set_active (GTK_COMBO_BOX (widgets->type), last_type);
 

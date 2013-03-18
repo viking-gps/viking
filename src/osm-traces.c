@@ -399,7 +399,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   GtkWidget *name_label, *name_entry;
   GtkWidget *description_label, *description_entry;
   GtkWidget *tags_label, *tags_entry;
-  GtkComboBox *visibility;
+  GtkWidget *visibility;
   const OsmTraceVis_t *vis_t;
 
   user_label = gtk_label_new(_("Email:"));
@@ -448,11 +448,12 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   gtk_widget_set_tooltip_text(GTK_WIDGET(tags_entry),
                         _("The tags associated to the trace"));
 
-  visibility = GTK_COMBO_BOX(gtk_combo_box_new_text ());
+  visibility = vik_combo_box_text_new();
   for (vis_t = OsmTraceVis; vis_t->combostr != NULL; vis_t++)
-	gtk_combo_box_append_text(visibility, vis_t->combostr);
+    vik_combo_box_text_append (visibility, vis_t->combostr);
+
   /* Set identifiable by default */
-  gtk_combo_box_set_active(visibility, 0);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(visibility), 0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), GTK_WIDGET(visibility), FALSE, FALSE, 0);
 
   /* User should think about it first... */
@@ -475,7 +476,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
     info->description = g_strdup(gtk_entry_get_text(GTK_ENTRY(description_entry)));
     /* TODO Normalize tags: they will be used as URL part */
     info->tags        = g_strdup(gtk_entry_get_text(GTK_ENTRY(tags_entry)));
-    info->vistype     = &OsmTraceVis[gtk_combo_box_get_active(visibility)];
+    info->vistype     = &OsmTraceVis[gtk_combo_box_get_active(GTK_COMBO_BOX(visibility))];
     info->vtl         = VIK_TRW_LAYER(g_object_ref(vtl));
     info->trk         = trk;
 

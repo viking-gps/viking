@@ -853,22 +853,24 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
 #if GTK_CHECK_VERSION (2, 20, 0)
   response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 #endif
+
   GtkWidget *map_label = gtk_label_new(_("Map type:"));
-  GtkComboBox *map_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  GtkWidget *map_combo = vik_combo_box_text_new();
   for (s = mapnames; *s; s++)
-    gtk_combo_box_append_text(map_combo, *s);
-  gtk_combo_box_set_active (map_combo, default_map);
+    vik_combo_box_text_append (GTK_COMBO_BOX(map_combo), *s);
+  gtk_combo_box_set_active (GTK_COMBO_BOX(map_combo), default_map);
+
   GtkWidget *zoom_label = gtk_label_new(_("Zoom level:"));
-  GtkComboBox *zoom_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  GtkWidget *zoom_combo = vik_combo_box_text_new();
   for (s = zoom_list; *s; s++)
-    gtk_combo_box_append_text(zoom_combo, *s);
-  gtk_combo_box_set_active (zoom_combo, default_zoom);
+    vik_combo_box_text_append (GTK_COMBO_BOX(zoom_combo), *s);
+  gtk_combo_box_set_active (GTK_COMBO_BOX(zoom_combo), default_zoom);
 
   GtkTable *box = GTK_TABLE(gtk_table_new(2, 2, FALSE));
-  gtk_table_attach_defaults(box, GTK_WIDGET(map_label), 0, 1, 0, 1);
-  gtk_table_attach_defaults(box, GTK_WIDGET(map_combo), 1, 2, 0, 1);
-  gtk_table_attach_defaults(box, GTK_WIDGET(zoom_label), 0, 1, 1, 2);
-  gtk_table_attach_defaults(box, GTK_WIDGET(zoom_combo), 1, 2, 1, 2);
+  gtk_table_attach_defaults(box, map_label, 0, 1, 0, 1);
+  gtk_table_attach_defaults(box, map_combo, 1, 2, 0, 1);
+  gtk_table_attach_defaults(box, zoom_label, 0, 1, 1, 2);
+  gtk_table_attach_defaults(box, zoom_combo, 1, 2, 1, 2);
 
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(box), FALSE, FALSE, 5 );
 
@@ -881,8 +883,8 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
     return FALSE;
   }
 
-  *selected_map = gtk_combo_box_get_active(map_combo);
-  *selected_zoom = gtk_combo_box_get_active(zoom_combo);
+  *selected_map = gtk_combo_box_get_active(GTK_COMBO_BOX(map_combo));
+  *selected_zoom = gtk_combo_box_get_active(GTK_COMBO_BOX(zoom_combo));
 
   gtk_widget_destroy(dialog);
   return TRUE;

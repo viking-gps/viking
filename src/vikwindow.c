@@ -423,29 +423,28 @@ static GtkWidget * create_zoom_menu_all_levels ()
 
 static GtkWidget *create_zoom_combo_all_levels ()
 {
-  GtkWidget *zoom_combo = gtk_combo_box_new_text();
-  GtkComboBox *combo = GTK_COMBO_BOX ( zoom_combo );
-  gtk_combo_box_append_text ( combo, "0.25");
-  gtk_combo_box_append_text ( combo, "0.5");
-  gtk_combo_box_append_text ( combo, "1");
-  gtk_combo_box_append_text ( combo, "2");
-  gtk_combo_box_append_text ( combo, "4");
-  gtk_combo_box_append_text ( combo, "8");
-  gtk_combo_box_append_text ( combo, "16");
-  gtk_combo_box_append_text ( combo, "32");
-  gtk_combo_box_append_text ( combo, "64");
-  gtk_combo_box_append_text ( combo, "128");
-  gtk_combo_box_append_text ( combo, "256");
-  gtk_combo_box_append_text ( combo, "512");
-  gtk_combo_box_append_text ( combo, "1024");
-  gtk_combo_box_append_text ( combo, "2048");
-  gtk_combo_box_append_text ( combo, "4096");
-  gtk_combo_box_append_text ( combo, "8192");
-  gtk_combo_box_append_text ( combo, "16384");
-  gtk_combo_box_append_text ( combo, "32768");
+  GtkWidget *combo = vik_combo_box_text_new();
+  vik_combo_box_text_append ( combo, "0.25");
+  vik_combo_box_text_append ( combo, "0.5");
+  vik_combo_box_text_append ( combo, "1");
+  vik_combo_box_text_append ( combo, "2");
+  vik_combo_box_text_append ( combo, "4");
+  vik_combo_box_text_append ( combo, "8");
+  vik_combo_box_text_append ( combo, "16");
+  vik_combo_box_text_append ( combo, "32");
+  vik_combo_box_text_append ( combo, "64");
+  vik_combo_box_text_append ( combo, "128");
+  vik_combo_box_text_append ( combo, "256");
+  vik_combo_box_text_append ( combo, "512");
+  vik_combo_box_text_append ( combo, "1024");
+  vik_combo_box_text_append ( combo, "2048");
+  vik_combo_box_text_append ( combo, "4096");
+  vik_combo_box_text_append ( combo, "8192");
+  vik_combo_box_text_append ( combo, "16384");
+  vik_combo_box_text_append ( combo, "32768");
   /* Create tooltip */
-  gtk_widget_set_tooltip_text (GTK_WIDGET (combo), _("Select zoom level"));
-  return zoom_combo;
+  gtk_widget_set_tooltip_text (combo, _("Select zoom level"));
+  return combo;
 }
 
 static gint zoom_popup_handler (GtkWidget *widget)
