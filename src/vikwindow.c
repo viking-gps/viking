@@ -85,7 +85,7 @@ static void newwindow_cb ( GtkAction *a, VikWindow *vw );
 
 // Signals
 static void open_window ( VikWindow *vw, GSList *files );
-static void statusbar_update ( VikWindow *vw, const gchar *message, vik_statusbar_type_t vs_type );
+static void statusbar_update ( VikWindow *vw, vik_statusbar_type_t vs_type, const gchar *message );
 static void destroy_window ( GtkWidget *widget,
                              gpointer   data );
 
@@ -248,7 +248,7 @@ VikStatusbar * vik_window_get_statusbar ( VikWindow *vw )
  */
 void vik_window_signal_statusbar_update (VikWindow *vw, const gchar* message, vik_statusbar_type_t vs_type)
 {
-  g_signal_emit ( G_OBJECT(vw), window_signals[VW_STATUSBAR_UPDATE_SIGNAL], 0, message, vs_type );
+  g_signal_emit ( G_OBJECT(vw), window_signals[VW_STATUSBAR_UPDATE_SIGNAL], 0, vs_type, message );
 }
 
 /**
@@ -282,7 +282,7 @@ static void destroy_window ( GtkWidget *widget,
       gtk_main_quit ();
 }
 
-static void statusbar_update ( VikWindow *vw, const gchar *message, vik_statusbar_type_t vs_type )
+static void statusbar_update ( VikWindow *vw, vik_statusbar_type_t vs_type, const gchar *message )
 {
   window_statusbar_update ( vw, message, vs_type );
 }
@@ -375,7 +375,7 @@ static void vik_window_class_init ( VikWindowClass *klass )
 
   window_signals[VW_NEWWINDOW_SIGNAL] = g_signal_new ( "newwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, newwindow), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
   window_signals[VW_OPENWINDOW_SIGNAL] = g_signal_new ( "openwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, openwindow), NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
-  window_signals[VW_STATUSBAR_UPDATE_SIGNAL] = g_signal_new ( "statusbarupdate", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, statusbarupdate), NULL, NULL, gtk_marshal_VOID__POINTER_UINT, G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
+  window_signals[VW_STATUSBAR_UPDATE_SIGNAL] = g_signal_new ( "statusbarupdate", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, statusbarupdate), NULL, NULL, g_cclosure_marshal_VOID__UINT_POINTER, G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_POINTER);
 
   object_class = G_OBJECT_CLASS (klass);
 
