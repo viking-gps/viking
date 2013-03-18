@@ -90,11 +90,11 @@ static void vik_treeview_class_init ( VikTreeviewClass *klass )
   parent_class = g_type_class_peek_parent (klass);
 
   treeview_signals[VT_ITEM_EDITED_SIGNAL] = g_signal_new ( "item_edited", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikTreeviewClass, item_edited), NULL, NULL, 
-    gtk_marshal_VOID__POINTER_POINTER, G_TYPE_NONE, 2, GTK_TYPE_POINTER, G_TYPE_POINTER);
+    gtk_marshal_VOID__POINTER_POINTER, G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_POINTER);
   /* VOID__UINT_POINTER: kinda hack-ish, but it works. */
 
   treeview_signals[VT_ITEM_TOGGLED_SIGNAL] = g_signal_new ( "item_toggled", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikTreeviewClass, item_toggled), NULL, NULL,
-    g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, GTK_TYPE_POINTER );
+    g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER );
 }
 
 static void vik_treeview_edited_cb (GtkCellRendererText *cell, gchar *path_str, const gchar *new_name, VikTreeview *vt)
