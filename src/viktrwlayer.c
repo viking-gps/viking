@@ -6804,6 +6804,7 @@ static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
 typedef struct {
   gint x, y;
   gint closest_x, closest_y;
+  gboolean draw_images;
   gpointer *closest_wp_id;
   VikWaypoint *closest_wp;
   VikViewport *vvp;
@@ -6827,7 +6828,7 @@ static void waypoint_search_closest_tp ( gpointer id, VikWaypoint *wp, WPSearchP
   vik_viewport_coord_to_screen ( params->vvp, &(wp->coord), &x, &y );
 
   // If waypoint has an image then use the image size to select
-  if ( wp->image ) {
+  if ( params->draw_images && wp->image ) {
     gint slackx, slacky;
     slackx = wp->image_width / 2;
     slacky = wp->image_height / 2;
@@ -6900,6 +6901,7 @@ static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikVie
   params.x = x;
   params.y = y;
   params.vvp = vvp;
+  params.draw_images = vtl->drawimages;
   params.closest_wp = NULL;
   params.closest_wp_id = NULL;
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &params);
@@ -7021,6 +7023,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
     wp_params.vvp = vvp;
     wp_params.x = event->x;
     wp_params.y = event->y;
+    wp_params.draw_images = vtl->drawimages;
     wp_params.closest_wp_id = NULL;
     wp_params.closest_wp = NULL;
 
@@ -7325,6 +7328,7 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
+  params.draw_images = vtl->drawimages;
   params.closest_wp_id = NULL;
   /* TODO: should get track listitem so we can break it up, make a new track, mess it up, all that. */
   params.closest_wp = NULL;
