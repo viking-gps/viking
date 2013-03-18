@@ -30,8 +30,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#if GTK_CHECK_VERSION(2,10,0)
-
 #include "viking.h"
 #include "print.h"
 #include "print-preview.h"
@@ -671,5 +669,3 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   
   return layout;
 }
-
-#endif

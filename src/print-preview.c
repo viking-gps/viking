@@ -21,8 +21,6 @@
 
 #include <gtk/gtk.h>
 
-#if GTK_CHECK_VERSION(2,10,0)
-
 #include "print-preview.h"
 
 
@@ -588,5 +586,3 @@ print_preview_queue_draw (VikPrintPreview *preview)
 {
   gtk_widget_queue_draw (GTK_WIDGET (preview->area));
 }
-
-#endif
