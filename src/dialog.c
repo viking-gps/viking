@@ -790,6 +790,7 @@ guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar
   return 0;
 }
 
+#if (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION < 24)
 static void about_url_hook (GtkAboutDialog *about,
                             const gchar    *link,
                             gpointer        data)
@@ -803,6 +804,7 @@ static void about_email_hook (GtkAboutDialog *about,
 {
   new_email (GTK_WINDOW(about), email);
 }
+#endif
 
 void a_dialog_about ( GtkWindow *parent )
 {
@@ -825,8 +827,12 @@ void a_dialog_about ( GtkWindow *parent )
 			"along with this program; if not, write to the Free Software "
 			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA");
 
+  // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program
+  // This is the old method:
+#if (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION < 24)
   gtk_about_dialog_set_url_hook (about_url_hook, NULL, NULL);
   gtk_about_dialog_set_email_hook (about_email_hook, NULL, NULL);
+#endif
   gtk_show_about_dialog (parent,
 	/* TODO do not set program-name and correctly set info for g_get_application_name */
   	"program-name", program_name,
