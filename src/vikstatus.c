@@ -95,7 +95,7 @@ vik_statusbar_init (VikStatusbar *vs)
   }
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_TOOL], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_TOOL], 150, -1 );
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_TOOL], 125, -1 );
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ITEMS], FALSE, FALSE, 1);
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ITEMS], 100, -1 );
@@ -107,7 +107,7 @@ vik_statusbar_init (VikStatusbar *vs)
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ZOOM], 100, -1 );
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_POSITION], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_POSITION], 250, -1 );
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_POSITION], 275, -1 );
 
   gtk_box_pack_end ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_INFO], TRUE, TRUE, 1);
 

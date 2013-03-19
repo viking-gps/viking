@@ -138,7 +138,7 @@ static gchar *convert_dec_to_dms(gdouble dec, gchar pos_c, gchar neg_c)
   val_s = (tmp - val_m) * 60;
 
   /* Format */
-  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%d'%f\"",
+  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%d'%.4f\"",
                              sign_c, val_d, val_m, val_s );
   return result;
 }
