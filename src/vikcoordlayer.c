@@ -31,6 +31,9 @@
 #include "icons/icons.h"
 
 static VikCoordLayer *coord_layer_new ( );
+static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp );
+static void coord_layer_free ( VikCoordLayer *vcl );
+static VikCoordLayer *coord_layer_create ( VikViewport *vp );
 static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len );
 static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
@@ -73,13 +76,13 @@ VikLayerInterface vik_coord_layer_interface = {
 
   VIK_MENU_ITEM_ALL,
 
-  (VikLayerFuncCreate)                  vik_coord_layer_create,
+  (VikLayerFuncCreate)                  coord_layer_create,
   (VikLayerFuncRealize)                 NULL,
   (VikLayerFuncPostRead)                coord_layer_post_read,
-  (VikLayerFuncFree)                    vik_coord_layer_free,
+  (VikLayerFuncFree)                    coord_layer_free,
 
   (VikLayerFuncProperties)              NULL,
-  (VikLayerFuncDraw)                    vik_coord_layer_draw,
+  (VikLayerFuncDraw)                    coord_layer_draw,
   (VikLayerFuncChangeCoordMode)         NULL,
 
   (VikLayerFuncSetMenuItemsSelection)   NULL,
@@ -205,10 +208,8 @@ static VikCoordLayer *coord_layer_new ( VikViewport *vvp )
   return vcl;
 }
 
-void vik_coord_layer_draw ( VikCoordLayer *vcl, gpointer data )
+static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
 {
-  VikViewport *vp = (VikViewport *) data;
-
   if ( !vcl->gc ) {
     return;
   }
@@ -381,7 +382,7 @@ void vik_coord_layer_draw ( VikCoordLayer *vcl, gpointer data )
   }
 }
 
-void vik_coord_layer_free ( VikCoordLayer *vcl )
+static void coord_layer_free ( VikCoordLayer *vcl )
 {
   if ( vcl->gc != NULL )
     g_object_unref ( G_OBJECT(vcl->gc) );
@@ -395,7 +396,7 @@ static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp )
   vcl->gc = vik_viewport_new_gc_from_color ( vp, &(vcl->color), vcl->line_thickness );
 }
 
-VikCoordLayer *vik_coord_layer_create ( VikViewport *vp )
+static VikCoordLayer *coord_layer_create ( VikViewport *vp )
 {
   VikCoordLayer *vcl = coord_layer_new ( vp );
   if ( vp )
