@@ -532,9 +532,14 @@ void a_babel_init ()
   gpsbabel_loc = g_find_program_in_path( "gpsbabel" );
   if ( !gpsbabel_loc )
     g_critical( "gpsbabel not found in PATH" );
+
+  // Unlikely to package unbuffer on Windows so ATM don't even bother trying
+  // Highly unlikely unbuffer is available on a Windows system otherwise
+#ifndef WINDOWS
   unbuffer_loc = g_find_program_in_path( "unbuffer" );
   if ( !unbuffer_loc )
     g_warning( "unbuffer not found in PATH" );
+#endif
 
   load_feature ();
 }
