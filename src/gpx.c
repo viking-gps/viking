@@ -706,7 +706,14 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   if ( wp->symbol ) 
   {
     tmp = entitize(wp->symbol);
-    fprintf ( f, "  <sym>%s</sym>\n", tmp);
+    if ( a_vik_gpx_export_wpt_sym_name ( ) ) {
+       // Lowercase the symbol name
+       gchar *tmp2 = g_utf8_strdown ( tmp, -1 );
+       fprintf ( f, "  <sym>%s</sym>\n",  tmp2 );
+       g_free ( tmp2 );
+    }
+    else
+      fprintf ( f, "  <sym>%s</sym>\n", tmp);
     g_free ( tmp );
   }
 
