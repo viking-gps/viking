@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (c) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include "viking.h"
 #include "viktrwlayer_analysis.h"
+#include "viktrwlayer_tracklist.h"
 #include "icons/icons.h"
 
 #include <string.h>
@@ -477,6 +478,14 @@ static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_da
   return tracks_and_layers;
 }
 
+static void aggregate_layer_track_list_dialog ( gpointer data[2] )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(data[0]);
+  gchar *title = g_strdup_printf ( _("%s: Track and Route List"), VIK_LAYER(val)->name );
+  vik_trw_layer_track_list_show_dialog ( title, VIK_LAYER(val), NULL, aggregate_layer_track_create_list, TRUE );
+  g_free ( title );
+}
+
 /**
  * aggregate_layer_analyse_close:
  *
@@ -562,6 +571,12 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_analyse), data );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Track _List...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_track_list_dialog), data );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 }
 
