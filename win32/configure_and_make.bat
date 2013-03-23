@@ -5,5 +5,5 @@
 ::
 set PATH=%PATH%;%SystemDrive%\Mingw\bin;%SystemDrive%\msys\1.0\bin
 cd ..\
-sh configure CFLAGS=-DWINDOWS LIBCURL=-lcurldll LIBS=-lzdll --disable-realtime-gps-tracking --disable-scrollkeeper
+sh configure CFLAGS="-DWINDOWS -mwindows" LIBCURL=-lcurldll LIBS=-lzdll --disable-realtime-gps-tracking --disable-scrollkeeper
 make
