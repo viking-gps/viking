@@ -143,6 +143,9 @@ void a_vik_preferences_init ()
   // Add a second external program - another OSM editor by default
   tmp.s = "merkaartor";
   a_preferences_register(&io_prefs_external_gpx[1], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+
+  // 'Advanced' Properties
+  a_preferences_register_group ( VIKING_PREFERENCES_ADVANCED_GROUP_KEY, _("Advanced") );
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )

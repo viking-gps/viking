@@ -167,6 +167,11 @@ const gchar* a_vik_get_external_gpx_program_2 ( );
 #define VIKING_PREFERENCES_IO_GROUP_KEY "viking.io"
 #define VIKING_PREFERENCES_IO_NAMESPACE "viking.io."
 
+/* Group for global preferences - but 'advanced'
+   User changeable but only for those that need it */
+#define VIKING_PREFERENCES_ADVANCED_GROUP_KEY "viking.advanced"
+#define VIKING_PREFERENCES_ADVANCED_NAMESPACE "viking.advanced."
+
 G_END_DECLS
 
 #endif
