@@ -531,7 +531,12 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
   }
   if ( wp->symbol )
   {
-    fprintf ( f, " symbol=\"%s\"", wp->symbol );
+    // Due to changes in garminsymbols - the symbol name is now in Title Case
+    // However to keep newly generated .vik files better compatible with older Viking versions
+    //   The symbol names will always be lowercase
+    gchar *tmp_symbol = g_utf8_strdown(wp->symbol, -1);
+    fprintf ( f, " symbol=\"%s\"", tmp_symbol );
+    g_free ( tmp_symbol );
   }
   if ( ! wp->visible )
     fprintf ( f, " visible=\"n\"" );

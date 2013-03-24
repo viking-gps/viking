@@ -1,0 +1,176 @@
+#VIKING GPS Data file http://viking.sf.net/
+FILE_VERSION=1
+
+xmpp=4.000000
+ympp=4.000000
+lat=50.829525
+lon=-1.063514
+mode=mercator
+color=#cccccc
+highlightcolor=#eea500
+drawscale=t
+drawcentermark=t
+drawhighlight=t
+
+~Layer TrackWaypoint
+name=TrackWaypoint
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=t
+wpsymbol=0
+wpsize=4
+wpsyms=t
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+
+
+~LayerData
+type="waypointlist"
+type="waypoint" latitude="50.821843000000001" longitude="-1.0668610000000001" name="090" symbol="ski resort"
+type="waypoint" latitude="50.822006000000002" longitude="-1.0649299999999999" name="091" symbol="ice skating"
+type="waypoint" latitude="50.821843000000001" longitude="-1.0635140000000001" name="092" symbol="wrecker"
+type="waypoint" latitude="50.837235" longitude="-1.0614539999999999" name="010" symbol="restaurant"
+type="waypoint" latitude="50.821980846129357" longitude="-1.0597801904296875" name="094" symbol="geocache found"
+type="waypoint" latitude="50.836177999999997" longitude="-1.0669040000000001" name="012" symbol="bar"
+type="waypoint" latitude="50.836046538490095" longitude="-1.0654455979003907" name="013" symbol="skull and crossbones"
+type="waypoint" latitude="50.821058999999998" longitude="-1.0649299999999999" name="097" symbol="flag, red"
+type="waypoint" latitude="50.838489000000003" longitude="-1.059094" name="005" symbol="bank"
+type="waypoint" latitude="50.836127846901626" longitude="-1.0626131851806642" name="015" symbol="shipwreck"
+type="waypoint" latitude="50.836095999999998" longitude="-1.0593509999999999" name="017" symbol="navaid, amber"
+type="waypoint" latitude="50.834741000000001" longitude="-1.0670329999999999" name="018" symbol="navaid, black"
+type="waypoint" latitude="50.834795" longitude="-1.065445" name="019" symbol="navaid, blue"
+type="waypoint" latitude="50.836312999999997" longitude="-1.063814" name="014" symbol="buoy, white"
+type="waypoint" latitude="50.837316000000001" longitude="-1.0593939999999999" name="011" symbol="light"
+type="waypoint" latitude="50.836127846901626" longitude="-1.0610253174438478" name="016" symbol="man overboard"
+type="waypoint" latitude="50.820760999999997" longitude="-1.066775" name="096" symbol="flag, green"
+type="waypoint" latitude="50.820923999999998" longitude="-1.0634710000000001" name="098" symbol="pin, blue"
+type="waypoint" latitude="50.821058999999998" longitude="-1.061626" name="099" symbol="pin, green"
+type="waypoint" latitude="50.822277" longitude="-1.0582780000000001" name="095" symbol="flag, blue"
+type="waypoint" latitude="50.822141000000002" longitude="-1.0614969999999999" name="093" symbol="geocache"
+type="waypoint" latitude="50.834904000000002" longitude="-1.063814" name="020" symbol="navaid, green"
+type="waypoint" latitude="50.834985000000003" longitude="-1.0622259999999999" name="021" symbol="navaid, green/red"
+type="waypoint" latitude="50.834767999999997" longitude="-1.0608960000000001" name="022" symbol="navaid, green/white"
+type="waypoint" latitude="50.834795" longitude="-1.0593939999999999" name="023" symbol="navaid, orange"
+type="waypoint" latitude="50.833413" longitude="-1.0670759999999999" name="024" symbol="navaid, red"
+type="waypoint" latitude="50.833548999999998" longitude="-1.065488" name="025" symbol="navaid, red/green"
+type="waypoint" latitude="50.833520999999998" longitude="-1.0639000000000001" name="026" symbol="navaid, red/white"
+type="waypoint" latitude="50.833629999999999" longitude="-1.0621830000000001" name="027" symbol="navaid, violet"
+type="waypoint" latitude="50.833548999999998" longitude="-1.060767" name="028" symbol="navaid, white"
+type="waypoint" latitude="50.833576000000001" longitude="-1.0593509999999999" name="029" symbol="navaid, white/green"
+type="waypoint" latitude="50.832192999999997" longitude="-1.0672470000000001" name="030" symbol="drinking water"
+type="waypoint" latitude="50.832436999999999" longitude="-1.065617" name="031" symbol="telephone"
+type="waypoint" latitude="50.832436999999999" longitude="-1.0640289999999999" name="032" symbol="medical facility"
+type="waypoint" latitude="50.832518999999998" longitude="-1.0623119999999999" name="033" symbol="information"
+type="waypoint" latitude="50.832410000000003" longitude="-1.0608960000000001" name="034" symbol="parking area"
+type="waypoint" latitude="50.832464000000002" longitude="-1.059094" name="035" symbol="park"
+type="waypoint" latitude="50.831218" longitude="-1.0674189999999999" name="036" symbol="picnic area"
+type="waypoint" latitude="50.831218" longitude="-1.0656600000000001" name="037" symbol="scenic area"
+type="waypoint" latitude="50.831325999999997" longitude="-1.0641579999999999" name="038" symbol="skiing area"
+type="waypoint" latitude="50.831299000000001" longitude="-1.0623549999999999" name="039" symbol="swimming area"
+type="waypoint" latitude="50.831325999999997" longitude="-1.060853" name="040" symbol="dam"
+type="waypoint" latitude="50.831325999999997" longitude="-1.0590079999999999" name="041" symbol="controlled area"
+type="waypoint" latitude="50.830132999999996" longitude="-1.0672900000000001" name="042" symbol="danger area"
+type="waypoint" latitude="50.830295999999997" longitude="-1.065617" name="043" symbol="restricted area"
+type="waypoint" latitude="50.830159999999999" longitude="-1.0641579999999999" name="044" symbol="ball park"
+type="waypoint" latitude="50.830132999999996" longitude="-1.0622259999999999" name="045" symbol="car"
+type="waypoint" latitude="50.830106000000001" longitude="-1.0605960000000001" name="046" symbol="hunting area"
+type="waypoint" latitude="50.830215000000003" longitude="-1.0590079999999999" name="047" symbol="shopping center"
+type="waypoint" latitude="50.829211999999998" longitude="-1.0672900000000001" name="048" symbol="lodging"
+type="waypoint" latitude="50.829048999999998" longitude="-1.065445" name="049" symbol="mine"
+type="waypoint" latitude="50.829211999999998" longitude="-1.0640289999999999" name="050" symbol="trail head"
+type="waypoint" latitude="50.829048999999998" longitude="-1.062141" name="051" symbol="truck stop"
+type="waypoint" latitude="50.829129999999999" longitude="-1.060467" name="052" symbol="fishing hot spot facility"
+type="waypoint" latitude="50.829048999999998" longitude="-1.058664" name="053" symbol="ground transportation"
+type="waypoint" latitude="50.828021" longitude="-1.0671619999999999" name="054" symbol="golf course"
+type="waypoint" latitude="50.827993999999997" longitude="-1.0652299999999999" name="055" symbol="city (small)"
+type="waypoint" latitude="50.827913000000002" longitude="-1.063814" name="056" symbol="city (medium)"
+type="waypoint" latitude="50.828130000000002" longitude="-1.062141" name="057" symbol="city (large)"
+type="waypoint" latitude="50.827939999999998" longitude="-1.060467" name="058" symbol="amusement park"
+type="waypoint" latitude="50.827967000000001" longitude="-1.058664" name="059" symbol="bowling"
+type="waypoint" latitude="50.826557999999999" longitude="-1.0670759999999999" name="060" symbol="car rental"
+type="waypoint" latitude="50.826720000000002" longitude="-1.0653589999999999" name="061" symbol="car repair"
+type="waypoint" latitude="50.826883000000002" longitude="-1.0640289999999999" name="062" symbol="fast food"
+type="waypoint" latitude="50.826909999999998" longitude="-1.0623119999999999" name="063" symbol="fitness center"
+type="waypoint" latitude="50.826855999999999" longitude="-1.060467" name="064" symbol="movie theater"
+type="waypoint" latitude="50.826557999999999" longitude="-1.0585359999999999" name="065" symbol="museum"
+type="waypoint" latitude="50.825636000000003" longitude="-1.0669470000000001" name="066" symbol="pharmacy"
+type="waypoint" latitude="50.825771000000003" longitude="-1.065102" name="067" symbol="pizza"
+type="waypoint" latitude="50.825825999999999" longitude="-1.0639430000000001" name="068" symbol="post office"
+type="waypoint" latitude="50.825933999999997" longitude="-1.062012" name="069" symbol="rv park"
+type="waypoint" latitude="50.820869000000002" longitude="-1.0597369999999999" name="100" symbol="pin, red"
+type="waypoint" latitude="50.821112999999997" longitude="-1.058235" name="101" symbol="block, blue"
+type="waypoint" latitude="50.819811999999999" longitude="-1.0666899999999999" name="102" symbol="block, green"
+type="waypoint" latitude="50.820002000000002" longitude="-1.0649729999999999" name="103" symbol="block, red"
+type="waypoint" latitude="50.820028999999998" longitude="-1.063385" name="104" symbol="bike trail"
+type="waypoint" latitude="50.820082999999997" longitude="-1.0614969999999999" name="105" symbol="airport"
+type="waypoint" latitude="50.82011" longitude="-1.0597799999999999" name="106" symbol="tall tower"
+type="waypoint" latitude="50.820002000000002" longitude="-1.058106" name="107" symbol="short tower"
+type="waypoint" latitude="50.825397000000002" longitude="-1.0545020000000001" name="108" symbol="glider area"
+type="waypoint" latitude="50.826014999999998" longitude="-1.0605530000000001" name="070" symbol="school"
+type="waypoint" latitude="50.825853000000002" longitude="-1.058621" name="071" symbol="stadium"
+type="waypoint" latitude="50.824741000000003" longitude="-1.066775" name="072" symbol="department store"
+type="waypoint" latitude="50.824849999999998" longitude="-1.065102" name="073" symbol="zoo"
+type="waypoint" latitude="50.824877000000001" longitude="-1.0636429999999999" name="074" symbol="convenience store"
+type="waypoint" latitude="50.824877000000001" longitude="-1.0617970000000001" name="075" symbol="live theater"
+type="waypoint" latitude="50.825066999999997" longitude="-1.060338" name="076" symbol="scales"
+type="waypoint" latitude="50.824930999999999" longitude="-1.058621" name="077" symbol="toll booth"
+type="waypoint" latitude="50.823768000000001" longitude="-1.0669040000000001" name="078" symbol="bridge"
+type="waypoint" latitude="50.823740999999998" longitude="-1.0649729999999999" name="079" symbol="building"
+type="waypoint" latitude="50.825558999999998" longitude="-1.05227" name="109" symbol="ultralight area"
+type="waypoint" latitude="50.825558999999998" longitude="-1.0494380000000001" name="110" symbol="parachute area"
+type="waypoint" latitude="50.837594000000003" longitude="-1.0729979999999999" name="111" symbol="green diamon"
+type="waypoint" latitude="50.836266000000002" longitude="-1.0729120000000001" name="112" symbol="red diamon"
+type="waypoint" latitude="50.834884000000002" longitude="-1.0729120000000001" name="113" symbol="green square"
+type="waypoint" latitude="50.833525907470261" longitude="-1.0729128677978517" name="114" symbol="red square"
+type="waypoint" latitude="50.832228000000001" longitude="-1.07317" name="115" symbol="waypoint"
+type="waypoint" latitude="50.830683000000001" longitude="-1.073213" name="116" symbol="none"
+type="waypoint" latitude="50.829541406590103" longitude="-1.0730845291748048" name="117" symbol="flag"
+type="waypoint" latitude="50.828406000000001" longitude="-1.073256" name="118" symbol="city (capitol)"
+type="waypoint" latitude="50.827249999999999" longitude="-1.0730409999999999" name="119" symbol="heliport"
+type="waypoint" latitude="50.823822" longitude="-1.0636000000000001" name="080" symbol="cemetery"
+type="waypoint" latitude="50.823822" longitude="-1.0615399999999999" name="081" symbol="church"
+type="waypoint" latitude="50.823903000000001" longitude="-1.059866" name="082" symbol="civil"
+type="waypoint" latitude="50.822682999999998" longitude="-1.066775" name="084" symbol="oil field"
+type="waypoint" latitude="50.838284999999999" longitude="-1.06596" name="001" symbol="marina"
+type="waypoint" latitude="50.822845999999998" longitude="-1.0636429999999999" name="086" symbol="beach"
+type="waypoint" latitude="50.823008999999999" longitude="-1.061626" name="087" symbol="forest"
+type="waypoint" latitude="50.838487000000001" longitude="-1.0612820000000001" name="004" symbol="diver down flag 2"
+type="waypoint" latitude="50.838484000000001" longitude="-1.0630850000000001" name="003" symbol="diver down flag 1"
+type="waypoint" latitude="50.837119000000001" longitude="-1.065445" name="007" symbol="gas station"
+type="waypoint" latitude="50.822819000000003" longitude="-1.065059" name="085" symbol="tunnel"
+type="waypoint" latitude="50.823117000000003" longitude="-1.0584070000000001" name="089" symbol="police station"
+type="waypoint" latitude="50.824012000000003" longitude="-1.0584499999999999" name="083" symbol="crossing"
+type="waypoint" latitude="50.837148999999997" longitude="-1.0642860000000001" name="008" symbol="horn"
+type="waypoint" latitude="50.837087077589644" longitude="-1.0668183068847656" name="006" symbol="fishing area"
+type="waypoint" latitude="50.837235" longitude="-1.063042" name="009" symbol="residence"
+type="waypoint" latitude="50.838428" longitude="-1.0645009999999999" name="002" symbol="bell"
+type="waypoint" latitude="50.825758999999998" longitude="-1.072827" name="120" symbol="exit"
+type="waypoint" latitude="50.838377323445549" longitude="-1.0683209259643556" name="121"
+type="waypoint" latitude="50.822899999999997" longitude="-1.059909" name="088" symbol="summit"
+type="waypointlistend"
+~EndLayerData
+~EndLayer
+

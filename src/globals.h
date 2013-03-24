@@ -140,6 +140,13 @@ typedef enum {
 
 vik_gpx_export_trk_sort_t a_vik_get_gpx_export_trk_sort ( );
 
+typedef enum {
+  VIK_GPX_EXPORT_WPT_SYM_NAME_TITLECASE,
+  VIK_GPX_EXPORT_WPT_SYM_NAME_LOWERCASE,
+} vik_gpx_export_wpt_sym_name_t;
+
+vik_gpx_export_wpt_sym_name_t a_vik_gpx_export_wpt_sym_name ( );
+
 #ifndef WINDOWS
 /* Windows automatically uses the system defined viewer
    ATM for other systems need to specify the program to use */

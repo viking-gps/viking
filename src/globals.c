@@ -71,10 +71,13 @@ static VikLayerParam prefs7[] = {
 
 static gchar * params_kml_export_units[] = {"Metric", "Statute", "Nautical", NULL};
 static gchar * params_gpx_export_trk_sort[] = {N_("Alphabetical"), N_("Time"), NULL};
+static gchar * params_gpx_export_wpt_symbols[] = {N_("Title Case"), N_("Lowercase"), NULL};
 
 static VikLayerParam io_prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("KML File Export Units:"), VIK_LAYER_WIDGET_COMBOBOX, params_kml_export_units, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_track_sort", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Track Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_trk_sort, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("KML File Export Units:"), VIK_LAYER_WIDGET_COMBOBOX, params_kml_export_units, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_track_sort", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Track Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_trk_sort, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_sym_names", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Waypoint Symbols:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_wpt_symbols, NULL,
+      N_("Save GPX Waypoint Symbol names in the specified case. May be useful for compatibility with various devices"), NULL },
 };
 
 #ifndef WINDOWS
@@ -125,6 +128,9 @@ void a_vik_preferences_init ()
 
   tmp.u = VIK_GPX_EXPORT_TRK_SORT_TIME;
   a_preferences_register(&io_prefs[1], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+
+  tmp.u = VIK_GPX_EXPORT_WPT_SYM_NAME_TITLECASE;
+  a_preferences_register(&io_prefs[2], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 
 #ifndef WINDOWS
   tmp.s = "xdg-open";
@@ -202,6 +208,13 @@ vik_gpx_export_trk_sort_t a_vik_get_gpx_export_trk_sort ( )
   vik_gpx_export_trk_sort_t sort;
   sort = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_track_sort")->u;
   return sort;
+}
+
+vik_gpx_export_wpt_sym_name_t a_vik_gpx_export_wpt_sym_name ( )
+{
+  gboolean val;
+  val = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_sym_names")->u;
+  return val;
 }
 
 #ifndef WINDOWS
