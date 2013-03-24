@@ -39,7 +39,8 @@ static gchar * params_units_speed[] = {"km/h", "mph", "m/s", "knots", NULL};
 static gchar * params_units_height[] = {"Metres", "Feet", NULL};
 static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
- 
+static gchar * params_vik_fileref[] = {N_("Absolute"), N_("Relative"), NULL};
+
 static VikLayerParam prefs1[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL, NULL },
 };
@@ -89,6 +90,11 @@ static VikLayerParam io_prefs_non_windows[] = {
 static VikLayerParam io_prefs_external_gpx[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_1", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("External GPX Program 1:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_2", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("External GPX Program 2:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL, NULL },
+};
+
+static VikLayerParam prefs_advanced[] = {
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "save_file_reference_mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Save File Reference Mode:"), VIK_LAYER_WIDGET_COMBOBOX, params_vik_fileref, NULL,
+    N_("When saving a Viking .vik file, this determines how the directory paths of filenames are written."), NULL },
 };
 
 /* End of Options static stuff */
@@ -146,6 +152,9 @@ void a_vik_preferences_init ()
 
   // 'Advanced' Properties
   a_preferences_register_group ( VIKING_PREFERENCES_ADVANCED_GROUP_KEY, _("Advanced") );
+
+  tmp.u = VIK_FILE_REF_FORMAT_ABSOLUTE;
+  a_preferences_register(&prefs_advanced[0], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -235,4 +244,11 @@ const gchar* a_vik_get_external_gpx_program_1 ( )
 const gchar* a_vik_get_external_gpx_program_2 ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_2")->s;
+}
+
+vik_file_ref_format_t a_vik_get_file_ref_format ( )
+{
+  vik_file_ref_format_t format;
+  format = a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "save_file_reference_mode")->u;
+  return format;
 }

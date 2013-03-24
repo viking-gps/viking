@@ -157,6 +157,14 @@ const gchar* a_vik_get_external_gpx_program_1 ( );
 
 const gchar* a_vik_get_external_gpx_program_2 ( );
 
+/* File reference preferences - mainly in saving of a viking file */
+typedef enum {
+  VIK_FILE_REF_FORMAT_ABSOLUTE,
+  VIK_FILE_REF_FORMAT_RELATIVE,
+} vik_file_ref_format_t;
+
+vik_file_ref_format_t a_vik_get_file_ref_format ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."

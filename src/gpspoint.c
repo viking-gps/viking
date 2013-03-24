@@ -527,8 +527,23 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
   }
   if ( wp->image )
   {
-    gchar *tmp_image = slashdup(wp->image);
-    fprintf ( f, " image=\"%s\"", tmp_image );
+    gchar *tmp_image = NULL;
+    gchar *cwd = NULL;
+    if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE ) {
+      cwd = g_get_current_dir();
+      if ( cwd )
+        tmp_image = g_strdup ( file_GetRelativeFilename ( cwd, wp->image ) );
+    }
+
+    // if cwd not available - use image filename as is
+    // this should be an absolute path as set in thumbnails
+    if ( !cwd )
+      tmp_image = slashdup(wp->image);
+
+    if ( tmp_image )
+      fprintf ( f, " image=\"%s\"", tmp_image );
+
+    g_free ( cwd );
     g_free ( tmp_image );
   }
   if ( wp->symbol )

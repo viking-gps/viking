@@ -349,6 +349,40 @@ static void dem_layer_thread_cancel ( dem_load_thread_data *data )
   // Thus we can see/use what was done
 }
 
+/**
+ * Process the list of DEM files and convert each one to a relative path
+ */
+static GList *dem_layer_convert_to_relative_filenaming ( GList *files )
+{
+  gchar *cwd = g_get_current_dir();
+  if ( !cwd )
+    return files;
+
+  GList *relfiles = NULL;
+
+  while ( files ) {
+    gchar *file = g_strdup ( file_GetRelativeFilename ( cwd, files->data ) );
+    relfiles = g_list_prepend ( relfiles, file );
+    files = files->next;
+  }
+
+  g_free ( cwd );
+
+  if ( relfiles ) {
+    // Replacing current list, so delete old values first.
+    GList *iter = files;
+    while ( iter ) {
+      g_free ( iter->data );
+      iter = iter->next;
+    }
+    g_list_free ( files );
+
+    return relfiles;
+  }
+
+  return files;
+}
+
 gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
@@ -404,7 +438,13 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gbo
   VikLayerParamData rv;
   switch ( id )
   {
-    case PARAM_FILES: rv.sl = vdl->files; break;
+    case PARAM_FILES:
+      rv.sl = vdl->files;
+      if ( is_file_operation )
+        // Save in relative format if necessary
+        if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE )
+          rv.sl = dem_layer_convert_to_relative_filenaming ( rv.sl );
+      break;
     case PARAM_SOURCE: rv.u = vdl->source; break;
     case PARAM_TYPE: rv.u = vdl->type; break;
     case PARAM_COLOR: rv.c = vdl->color; break;
@@ -1063,17 +1103,17 @@ static void weak_ref_cb ( gpointer ptr, GObject * dead_vdl )
 }
 
 /* Try to add file full_path.
- * full_path will be copied.
+ * filename will be copied.
  * returns FALSE if file does not exists, TRUE otherwise.
  */
-static gboolean dem_layer_add_file ( VikDEMLayer *vdl, const gchar *full_path )
+static gboolean dem_layer_add_file ( VikDEMLayer *vdl, const gchar *filename )
 {
-  if ( g_file_test(full_path, G_FILE_TEST_EXISTS ) == TRUE ) {
+  if ( g_file_test(filename, G_FILE_TEST_EXISTS) == TRUE ) {
     /* only load if file size is not 0 (not in progress) */
     struct stat sb;
-    stat (full_path, &sb);
+    stat ( filename, &sb );
     if ( sb.st_size ) {
-      gchar *duped_path = g_strdup(full_path);
+      gchar *duped_path = g_strdup(filename);
       vdl->files = g_list_prepend ( vdl->files, duped_path );
       a_dems_load ( duped_path );
       g_debug("%s: %s", __FUNCTION__, duped_path);

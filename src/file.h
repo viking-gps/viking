@@ -65,6 +65,8 @@ void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type
 
 char *file_realpath ( const char *path, char *real );
 
+const gchar *file_GetRelativeFilename ( gchar *currentDirectory, gchar *absoluteFilename );
+
 G_END_DECLS
 
 #endif

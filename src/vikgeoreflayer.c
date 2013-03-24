@@ -227,7 +227,22 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
   VikLayerParamData rv;
   switch ( id )
   {
-    case PARAM_IMAGE: rv.s = vgl->image ? vgl->image : ""; break;
+    case PARAM_IMAGE: {
+      gboolean set = FALSE;
+      if ( is_file_operation ) {
+        if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE ) {
+          gchar *cwd = g_get_current_dir();
+          if ( cwd ) {
+            rv.s = file_GetRelativeFilename ( cwd, vgl->image );
+	    if ( !rv.s ) rv.s = "";
+            set = TRUE;
+	  }
+	}
+      }
+      if ( !set )
+        rv.s = vgl->image ? vgl->image : "";
+      break;
+    }
     case PARAM_CN: rv.d = vgl->corner.northing; break;
     case PARAM_CE: rv.d = vgl->corner.easting; break;
     case PARAM_MN: rv.d = vgl->mpp_northing; break;
