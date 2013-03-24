@@ -7878,28 +7878,34 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
 	  elev_loss += last_tpt->altitude - elev_new;
       }
     }
-    
-    gchar *str = distance_string (distance);
 
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
+    //
+    // Display of the distance 'tooltip' during track creation is controlled by a preference
+    //
+    if ( a_vik_get_create_track_tooltip() ) {
 
-    pango_layout_set_text (pl, str, -1);
-    gint wd, hd;
-    pango_layout_get_pixel_size ( pl, &wd, &hd );
+      gchar *str = distance_string (distance);
 
-    gint xd,yd;
-    // offset from cursor a bit depending on font size
-    xd = event->x + 10;
-    yd = event->y - hd;
+      PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
+      pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
+      pango_layout_set_text (pl, str, -1);
+      gint wd, hd;
+      pango_layout_get_pixel_size ( pl, &wd, &hd );
 
-    // Create a background block to make the text easier to read over the background map
-    GdkGC *background_block_gc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
-    gdk_draw_rectangle (pixmap, background_block_gc, TRUE, xd-2, yd-2, wd+4, hd+2);
-    gdk_draw_layout (pixmap, vtl->current_track_newpoint_gc, xd, yd, pl);
+      gint xd,yd;
+      // offset from cursor a bit depending on font size
+      xd = event->x + 10;
+      yd = event->y - hd;
 
-    g_object_unref ( G_OBJECT ( pl ) );
-    g_object_unref ( G_OBJECT ( background_block_gc ) );
+      // Create a background block to make the text easier to read over the background map
+      GdkGC *background_block_gc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
+      gdk_draw_rectangle (pixmap, background_block_gc, TRUE, xd-2, yd-2, wd+4, hd+2);
+      gdk_draw_layout (pixmap, vtl->current_track_newpoint_gc, xd, yd, pl);
+
+      g_object_unref ( G_OBJECT ( pl ) );
+      g_object_unref ( G_OBJECT ( background_block_gc ) );
+      g_free (str);
+    }
 
     passalong = g_new(draw_sync_t,1); // freed by draw_sync()
     passalong->vtl = vtl;
@@ -7913,8 +7919,6 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
 
     // Update statusbar with full gain/loss information
     statusbar_write (distance, elev_gain, elev_loss, last_step, angle, vtl);
-
-    g_free (str);
 
     // draw pixmap when we have time to
     g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_sync, passalong, NULL);

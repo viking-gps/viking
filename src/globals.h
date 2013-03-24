@@ -165,6 +165,8 @@ typedef enum {
 
 vik_file_ref_format_t a_vik_get_file_ref_format ( );
 
+gboolean a_vik_get_create_track_tooltip ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
