@@ -419,6 +419,8 @@ const gchar *a_get_hashed_sym ( const gchar *sym ) {
   }
   if (g_hash_table_lookup_extended(icons, sym, &x, &gp))
     return garmin_syms[GPOINTER_TO_INT(gp)].sym;
+  else if (g_hash_table_lookup_extended(old_icons, sym, &x, &gp))
+    return garmin_syms[GPOINTER_TO_INT(gp)].sym;
   else
     return NULL;
 }
