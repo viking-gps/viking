@@ -3844,10 +3844,16 @@ static void trw_layer_enum_item ( gpointer id, GList **tr, GList **l )
  */
 static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, gpointer id, gint type )
 {
+  gboolean rename = ( vtl_src != vtl_dest );
+
   if (type == VIK_TRW_LAYER_SUBLAYER_TRACK) {
     VikTrack *trk = g_hash_table_lookup ( vtl_src->tracks, id );
 
-    gchar *newname = trw_layer_new_unique_sublayer_name(vtl_dest, type, trk->name);
+    gchar *newname;
+    if ( rename )
+      newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, trk->name );
+    else
+      newname = g_strdup ( trk->name );
 
     VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_track ( vtl_dest, newname, trk2 );
@@ -3857,7 +3863,11 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
   if (type == VIK_TRW_LAYER_SUBLAYER_ROUTE) {
     VikTrack *trk = g_hash_table_lookup ( vtl_src->routes, id );
 
-    gchar *newname = trw_layer_new_unique_sublayer_name(vtl_dest, type, trk->name);
+    gchar *newname;
+    if ( rename )
+      newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, trk->name );
+    else
+      newname = g_strdup ( trk->name );
 
     VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_route ( vtl_dest, newname, trk2 );
@@ -3867,14 +3877,21 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
   if (type == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
     VikWaypoint *wp = g_hash_table_lookup ( vtl_src->waypoints, id );
 
-    gchar *newname = trw_layer_new_unique_sublayer_name(vtl_dest, type, wp->name);
+    gchar *newname;
+    if ( rename )
+      newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, wp->name );
+    else
+      newname = g_strdup ( wp->name );
 
     VikWaypoint *wp2 = vik_waypoint_copy ( wp );
     vik_trw_layer_add_waypoint ( vtl_dest, newname, wp2 );
     trw_layer_delete_waypoint ( vtl_src, wp );
 
-    trw_layer_calculate_bounds_waypoints ( vtl_dest );
-    trw_layer_calculate_bounds_waypoints ( vtl_src );
+    // If no change - don't need to recalculate bounds
+    if ( !rename ) {
+      trw_layer_calculate_bounds_waypoints ( vtl_dest );
+      trw_layer_calculate_bounds_waypoints ( vtl_src );
+    }
   }
 }
 
