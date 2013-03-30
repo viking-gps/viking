@@ -2478,6 +2478,126 @@ static gboolean save_file ( GtkAction *a, VikWindow *vw )
   }
 }
 
+/**
+ * export_to:
+ *
+ * Export all TRW Layers in the list to individual files in the specified directory
+ *
+ * Returns: %TRUE on success
+ */
+static gboolean export_to ( VikWindow *vw, GList *gl, VikFileType_t vft, const gchar *dir, const gchar *extension )
+{
+  gboolean success = TRUE;
+
+  gint export_count = 0;
+
+  vik_window_set_busy_cursor ( vw );
+
+  while ( gl ) {
+
+    gchar *fn = g_strconcat ( dir, G_DIR_SEPARATOR_S, VIK_LAYER(gl->data)->name, extension, NULL );
+
+    // Some protection in attempting to write too many same named files
+    // As this will get horribly slow...
+    gboolean safe = FALSE;
+    gint ii = 2;
+    while ( ii < 5000 ) {
+      if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) ) {
+        // Try rename
+        g_free ( fn );
+        fn = g_strdup_printf ( "%s%s%s#%03d%s", dir, G_DIR_SEPARATOR_S, VIK_LAYER(gl->data)->name, ii, extension );
+	  }
+	  else {
+		  safe = TRUE;
+		  break;
+	  }
+	  ii++;
+    }
+    if ( ii == 5000 )
+      success = FALSE;
+
+    // NB: We allow exporting empty layers
+    if ( safe ) {
+      gboolean this_success = a_file_export ( VIK_TRW_LAYER(gl->data), fn, vft, NULL, TRUE );
+
+      // Show some progress
+      if ( this_success ) {
+        export_count++;
+        gchar *message = g_strconcat ( _("Exporting to file: "), fn, NULL );
+        vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, message );
+        while ( gtk_events_pending() )
+          gtk_main_iteration ();
+        g_free ( message );
+      }
+      
+      success = success && this_success;
+    }
+
+    g_free ( fn );
+    gl = g_list_next ( gl );
+  }
+
+  vik_window_clear_busy_cursor ( vw );
+
+  // Confirm what happened.
+  gchar *message = g_strdup_printf ( _("Exported files: %d"), export_count );
+  vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, message );
+  g_free ( message );
+
+  return success;
+}
+
+static void export_to_common ( VikWindow *vw, VikFileType_t vft, const gchar *extension )
+{
+  GList *gl = vik_layers_panel_get_all_layers_of_type ( vw->viking_vlp, VIK_LAYER_TRW, TRUE );
+
+  if ( !gl ) {
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("Nothing to Export!") );
+    return;
+  }
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Export to directory"),
+                                                    GTK_WINDOW(vw),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CANCEL,
+                                                    GTK_RESPONSE_REJECT,
+                                                    GTK_STOCK_OK,
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL );
+
+  GtkWidget *gw = gtk_file_chooser_widget_new ( GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER );
+  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), gw, TRUE, TRUE, 0 );
+
+  // try to make it a nice size - otherwise seems to default to something impractically small
+  gtk_window_set_default_size ( GTK_WINDOW(dialog), 600, 300 );
+
+  gtk_widget_show_all ( dialog );
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
+    gchar *dir = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(gw) );
+    gtk_widget_destroy ( dialog );
+    if ( dir ) {
+      if ( !export_to ( vw, gl, vft, dir, extension ) )
+        a_dialog_error_msg ( GTK_WINDOW(vw),_("Could not convert all files") );
+      g_free ( dir );
+    }
+  }
+  else
+    gtk_widget_destroy ( dialog );
+
+  g_list_free ( gl );
+}
+
+static void export_to_gpx ( GtkAction *a, VikWindow *vw )
+{
+  export_to_common ( vw, FILE_TYPE_GPX, ".gpx" );
+}
+
+static void export_to_kml ( GtkAction *a, VikWindow *vw )
+{
+  export_to_common ( vw, FILE_TYPE_KML, ".kml" );
+}
+
 static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
 {
   // Via the file menu, acquiring from a GPS makes a new layer
@@ -3219,6 +3339,8 @@ static GtkActionEntry entries[] = {
   { "Open",      GTK_STOCK_OPEN,         N_("_Open..."),                         "<control>O", N_("Open a file"),                                  (GCallback)load_file             },
   { "OpenRecentFile", NULL,              N_("Open _Recent File"),         NULL,         NULL,                                               (GCallback)NULL },
   { "Append",    GTK_STOCK_ADD,          N_("Append _File..."),           NULL,         N_("Append data from a different file"),            (GCallback)load_file             },
+  { "Export",    GTK_STOCK_CONVERT,      N_("_Export All"),               NULL,         N_("Export All TrackWaypoint Layers"),              (GCallback)NULL                  },
+  { "ExportGPX", NULL,                   N_("_GPX..."),           	      NULL,         N_("Export as GPX"),                                (GCallback)export_to_gpx         },
   { "Acquire",   GTK_STOCK_GO_DOWN,      N_("A_cquire"),                  NULL,         NULL,                                               (GCallback)NULL },
   { "AcquireGPS",   NULL,                N_("From _GPS..."),           	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
   { "AcquireGPSBabel",   NULL,                N_("Import File With GPS_Babel..."),           	  NULL,         N_("Import file via GPSBabel converter"),              (GCallback)acquire_from_file      },
@@ -3281,6 +3403,10 @@ static GtkActionEntry entries[] = {
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         NULL,                                           (GCallback)help_about_cb    },
 };
 
+static GtkActionEntry entries_gpsbabel[] = {
+  { "ExportKML", NULL,                   N_("_KML..."),           	      NULL,         N_("Export as KML"),                                (GCallback)export_to_kml },
+};
+
 /* Radio items */
 /* FIXME use VIEWPORT_DRAWMODE values */
 static GtkRadioActionEntry mode_entries[] = {
@@ -3333,6 +3459,15 @@ static void window_create_ui( VikWindow *window )
   gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), window);
   gtk_action_group_add_toggle_actions (action_group, toggle_entries, G_N_ELEMENTS (toggle_entries), window);
   gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 4, (GCallback)window_change_coord_mode_cb, window);
+
+  // Use this to see if GPSBabel is available:
+  if ( a_babel_device_list ) {
+	// If going to add more entries then might be worth creating a menu_gpsbabel.xml.h file
+	if ( gtk_ui_manager_add_ui_from_string ( uim,
+	  "<ui><menubar name='MainMenu'><menu action='File'><menu action='Export'><menuitem action='ExportKML'/></menu></menu></menubar></ui>",
+	  -1, &error ) )
+      gtk_action_group_add_actions ( action_group, entries_gpsbabel, G_N_ELEMENTS (entries_gpsbabel), window );
+  }
 
   icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (icon_factory); 
