@@ -416,7 +416,7 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   {
     if (line_name == NULL)
     {
-      line_name = g_strndup ( value, value_len );
+      line_name = deslashndup ( value, value_len );
     }
   }
   else if (key_len == 7 && strncasecmp( key, "comment", key_len ) == 0 && value != NULL)
@@ -502,7 +502,9 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
   vik_coord_to_latlon ( &(wp->coord), &ll );
   s_lat = a_coords_dtostr(ll.lat);
   s_lon = a_coords_dtostr(ll.lon);
-  fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, wp->name );
+  gchar *tmp_name = slashdup(wp->name);
+  fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, tmp_name );
+  g_free ( tmp_name );
   g_free ( s_lat ); 
   g_free ( s_lon );
 
@@ -598,7 +600,9 @@ static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FIL
   if ( !(trk->name) )
     return;
 
-  fprintf ( f, "type=\"%s\" name=\"%s\"", trk->is_route ? "route" : "track", trk->name);
+  gchar *tmp_name = slashdup(trk->name);
+  fprintf ( f, "type=\"%s\" name=\"%s\"", trk->is_route ? "route" : "track", tmp_name );
+  g_free ( tmp_name );
 
   if ( trk->comment ) {
     gchar *tmp = slashdup(trk->comment);
