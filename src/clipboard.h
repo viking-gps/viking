@@ -29,7 +29,8 @@ G_BEGIN_DECLS
 typedef enum {
   VIK_CLIPBOARD_DATA_NONE = 0,
   VIK_CLIPBOARD_DATA_LAYER,
-  VIK_CLIPBOARD_DATA_SUBLAYER
+  VIK_CLIPBOARD_DATA_SUBLAYER,
+  VIK_CLIPBOARD_DATA_TEXT,
 } VikClipboardDataType;
 
 void a_clipboard_copy(VikClipboardDataType  type, guint16 layer_type, gint subtype, guint len, const gchar* text, guint8 * data);

@@ -55,7 +55,7 @@ void vik_layers_panel_draw_all ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_cut_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_copy_selected ( VikLayersPanel *vlp );
-void vik_layers_panel_paste_selected ( VikLayersPanel *vlp );
+gboolean vik_layers_panel_paste_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_delete_selected ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, VikLayerTypeEnum type );
 void vik_layers_panel_set_viewport ( VikLayersPanel *vlp, VikViewport *vvp );

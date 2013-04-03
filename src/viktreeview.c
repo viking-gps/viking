@@ -67,6 +67,7 @@ struct _VikTreeview {
   GdkPixbuf *layer_type_icons[VIK_LAYER_NUM_TYPES];
 
   gboolean was_a_toggle;
+  gboolean editing;
 };
 
 /* TODO: find, make "static" and put up here all non-"a_" functions */
@@ -131,12 +132,23 @@ static void vik_treeview_class_init ( VikTreeviewClass *klass )
 
 static void vik_treeview_edited_cb (GtkCellRendererText *cell, gchar *path_str, const gchar *new_name, VikTreeview *vt)
 {
+  vt->editing = FALSE;
   GtkTreeIter iter;
 
   /* get type and data */
   vik_treeview_get_iter_from_path_str ( vt, &iter, path_str );
 
   g_signal_emit ( G_OBJECT(vt), treeview_signals[VT_ITEM_EDITED_SIGNAL], 0, &iter, new_name );
+}
+
+static void vik_treeview_edit_start_cb (GtkCellRenderer *cell, GtkCellEditable *editable, gchar *path, VikTreeview *vt)
+{
+  vt->editing = TRUE;
+}
+
+static void vik_treeview_edit_stop_cb (GtkCellRenderer *cell, VikTreeview *vt)
+{
+  vt->editing = FALSE;
 }
 
 static void vik_treeview_toggled_cb (GtkCellRendererToggle *cell, gchar *path_str, VikTreeview *vt)
@@ -289,6 +301,9 @@ static void vik_treeview_add_columns ( VikTreeview *vt )
   g_signal_connect (renderer, "edited",
 		    G_CALLBACK (vik_treeview_edited_cb), vt);
 
+  g_signal_connect (renderer, "editing-started", G_CALLBACK (vik_treeview_edit_start_cb), vt);
+  g_signal_connect (renderer, "editing-canceled", G_CALLBACK (vik_treeview_edit_stop_cb), vt);
+
   g_object_set (G_OBJECT (renderer), "xalign", 0.0, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 
   col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (vt),
@@ -418,6 +433,7 @@ static gboolean vik_treeview_selection_filter(GtkTreeSelection *selection, GtkTr
 void vik_treeview_init ( VikTreeview *vt )
 {
   vt->was_a_toggle = FALSE;
+  vt->editing = FALSE;
 
   vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN ));
 
@@ -529,6 +545,14 @@ void vik_treeview_select_iter ( VikTreeview *vt, GtkTreeIter *iter, gboolean vie
 gboolean vik_treeview_get_selected_iter ( VikTreeview *vt, GtkTreeIter *iter )
 {
   return gtk_tree_selection_get_selected ( gtk_tree_view_get_selection ( GTK_TREE_VIEW ( vt ) ), NULL, iter );
+}
+
+gboolean vik_treeview_get_editing ( VikTreeview *vt )
+{
+  // Don't know how to get cell for the selected item
+  //return GPOINTER_TO_INT(g_object_get_data ( G_OBJECT(cell), "editing" ));
+  // Instead maintain our own value applying to the whole tree
+  return vt->editing;
 }
 
 void vik_treeview_item_delete ( VikTreeview *vt, GtkTreeIter *iter )

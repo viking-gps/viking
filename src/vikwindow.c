@@ -1684,6 +1684,12 @@ static VikToolInterface select_tool =
 
 static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
 {
+  // Since the treeview cell editting intercepts standard keyboard handlers, it means we can receive events here
+  // Thus if currently editting, ensure we don't move the viewport when Ctrl+<arrow> is received
+  VikLayer *sel = vik_layers_panel_get_selected ( vw->viking_vlp );
+  if ( sel && vik_treeview_get_editing ( sel->vt ) )
+    return;
+
   if (!strcmp(gtk_action_get_name(a), "PanNorth")) {
     vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, 0 );
   } else if (!strcmp(gtk_action_get_name(a), "PanEast")) {
@@ -1803,7 +1809,7 @@ static void menu_cut_layer_cb ( GtkAction *a, VikWindow *vw )
 
 static void menu_paste_layer_cb ( GtkAction *a, VikWindow *vw )
 {
-  if ( a_clipboard_paste ( vw->viking_vlp ) )
+  if ( vik_layers_panel_paste_selected ( vw->viking_vlp ) )
   {
     vw->modified = TRUE;
   }

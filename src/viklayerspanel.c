@@ -604,13 +604,13 @@ void vik_layers_panel_copy_selected ( VikLayersPanel *vlp )
   a_clipboard_copy_selected ( vlp );
 }
 
-void vik_layers_panel_paste_selected ( VikLayersPanel *vlp )
+gboolean vik_layers_panel_paste_selected ( VikLayersPanel *vlp )
 {
   GtkTreeIter iter;
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
     /* Nothing to do */
-    return;
-  a_clipboard_paste ( vlp );
+    return FALSE;
+  return a_clipboard_paste ( vlp );
 }
 
 void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
