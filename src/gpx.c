@@ -175,7 +175,7 @@ struct LatLon c_ll;
 gboolean f_tr_newseg;
 guint unnamed_waypoints = 0;
 guint unnamed_tracks = 0;
-
+guint unnamed_routes = 0;
 
 static const char *get_attr ( const char **attr, const char *key )
 {
@@ -290,7 +290,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
      case tt_waypoint:
      case tt_wpt:
        if ( ! c_wp_name )
-         c_wp_name = g_strdup_printf("VIKING_WP%d", unnamed_waypoints++);
+         c_wp_name = g_strdup_printf("VIKING_WP%04d", unnamed_waypoints++);
        vik_trw_layer_filein_add_waypoint ( vtl, c_wp_name, c_wp );
        g_free ( c_wp_name );
        c_wp = NULL;
@@ -298,9 +298,12 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_trk:
+       if ( ! c_tr_name )
+         c_tr_name = g_strdup_printf("VIKING_TR%03d", unnamed_tracks++);
+       // Delibrate fall through
      case tt_rte:
        if ( ! c_tr_name )
-         c_tr_name = g_strdup_printf("VIKING_TR%d", unnamed_tracks++);
+         c_tr_name = g_strdup_printf("VIKING_RT%03d", unnamed_routes++);
        vik_trw_layer_filein_add_track ( vtl, c_tr_name, c_tr );
        g_free ( c_tr_name );
        c_tr = NULL;
@@ -465,8 +468,9 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
   xpath = g_string_new ( "" );
   c_cdata = g_string_new ( "" );
 
-  unnamed_waypoints = 0;
-  unnamed_tracks = 0;
+  unnamed_waypoints = 1;
+  unnamed_tracks = 1;
+  unnamed_routes = 1;
 
   while (!done) {
     len = fread(buf, 1, sizeof(buf)-7, f);
