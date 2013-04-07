@@ -86,6 +86,9 @@ gboolean vik_window_clear_highlight ( VikWindow *vw );
 
 GThread *vik_window_get_thread ( VikWindow *vw );
 
+void vik_window_set_busy_cursor ( VikWindow *vw );
+void vik_window_clear_busy_cursor ( VikWindow *vw );
+
 typedef struct {
   VikWindow *vw;
   VikViewport *vvp;

@@ -159,6 +159,9 @@ struct _VikWindow {
 
   GtkToolbar *toolbar;
 
+  GdkCursor *busy_cursor;
+  GdkCursor *viewport_cursor; // only a reference
+
   /* tool management state */
   guint current_tool;
   toolbox_tools_t *vt;
@@ -359,6 +362,8 @@ static void window_finalize ( GObject *gob )
 
   window_list = g_slist_remove ( window_list, vw );
 
+  gdk_cursor_unref ( vw->busy_cursor );
+
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
@@ -476,6 +481,8 @@ static void vik_window_init ( VikWindow *vw )
   window_create_ui(vw);
   window_set_filename (vw, NULL);
   vw->toolbar = GTK_TOOLBAR(gtk_ui_manager_get_widget (vw->uim, "/MainToolbar"));
+
+  vw->busy_cursor = gdk_cursor_new ( GDK_WATCH );
 
   // Set the default tool
   gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
@@ -723,11 +730,10 @@ static void window_configure_event ( VikWindow *vw )
   if (first) {
     // This is a hack to set the cursor corresponding to the first tool
     // FIXME find the correct way to initialize both tool and its cursor
-    const GdkCursor *cursor = NULL;
     first = 0;
-    cursor = toolbox_get_cursor(vw->vt, "Pan");
+    vw->viewport_cursor = (GdkCursor *)toolbox_get_cursor(vw->vt, "Pan");
     /* We set cursor, even if it is NULL: it resets to default */
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, (GdkCursor *)cursor );
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->viewport_cursor );
   }
 }
 
@@ -2024,15 +2030,13 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
 {
   /* White Magic, my friends ... White Magic... */
   gint tool_id;
-  const GdkCursor *cursor = NULL;
-
   toolbox_activate(vw->vt, gtk_action_get_name(a));
 
-  cursor = toolbox_get_cursor(vw->vt, gtk_action_get_name(a));
+  vw->viewport_cursor = (GdkCursor *)toolbox_get_cursor(vw->vt, gtk_action_get_name(a));
 
   if ( GTK_WIDGET(vw->viking_vvp)->window )
     /* We set cursor, even if it is NULL: it resets to default */
-    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, (GdkCursor *)cursor );
+    gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->viewport_cursor );
 
   if (!strcmp(gtk_action_get_name(a), "Pan")) {
     vw->current_tool = TOOL_PAN;
@@ -2202,8 +2206,31 @@ static void update_recently_used_document(const gchar *filename)
   g_slice_free (GtkRecentData, recent_data);
 }
 
+/**
+ * Call this before doing things that may take a long time and otherwise not show any other feedback
+ *  such as loading and saving files
+ */
+void vik_window_set_busy_cursor ( VikWindow *vw )
+{
+  gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw)), vw->busy_cursor );
+  // Viewport has a separate cursor
+  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->busy_cursor );
+  // Ensure cursor updated before doing stuff
+  while( gtk_events_pending() )
+    gtk_main_iteration();
+}
+
+void vik_window_clear_busy_cursor ( VikWindow *vw )
+{
+  gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw)), NULL );
+  // Restore viewport cursor
+  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->viewport_cursor );
+}
+
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename )
 {
+  vik_window_set_busy_cursor ( vw );
+
   switch ( a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename ) )
   {
     case LOAD_TYPE_READ_FAILURE:
@@ -2258,7 +2285,10 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       draw_update ( vw );
       break;
   }
+
+  vik_window_clear_busy_cursor ( vw );
 }
+
 static void load_file ( GtkAction *a, VikWindow *vw )
 {
   GSList *files = NULL;
@@ -2421,16 +2451,20 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
 
 static gboolean window_save ( VikWindow *vw )
 {
+  vik_window_set_busy_cursor ( vw );
+  gboolean success = TRUE;
+
   if ( a_file_save ( vik_layers_panel_get_top_layer ( vw->viking_vlp ), vw->viking_vvp, vw->filename ) )
   {
     update_recently_used_document ( vw->filename );
-    return TRUE;
   }
   else
   {
     a_dialog_error_msg ( GTK_WINDOW(vw), _("The filename you requested could not be opened for writing.") );
-    return FALSE;
+    success = FALSE;
   }
+  vik_window_clear_busy_cursor ( vw );
+  return success;
 }
 
 static gboolean save_file ( GtkAction *a, VikWindow *vw )
