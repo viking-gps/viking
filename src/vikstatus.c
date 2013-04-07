@@ -30,6 +30,7 @@
 #include <math.h>
 
 #include "vikstatus.h"
+#include "background.h"
 
 enum
 {
@@ -53,9 +54,13 @@ forward_signal (GObject *object, gpointer user_data)
     gint item = GPOINTER_TO_INT (g_object_get_data ( object, "type" ));
     VikStatusbar *vs = VIK_STATUSBAR (user_data);
 
-    g_signal_emit (G_OBJECT (vs),
-                   vik_statusbar_signals[CLICKED], 0,
-                   item);
+    // Clicking on the items field will bring up the background jobs window
+    if ( item == VIK_STATUSBAR_ITEMS )
+      a_background_show_window();
+    else
+      g_signal_emit (G_OBJECT (vs),
+                     vik_statusbar_signals[CLICKED], 0,
+                     item);
 
     return TRUE;
 }
@@ -63,6 +68,16 @@ forward_signal (GObject *object, gpointer user_data)
 static void
 vik_statusbar_class_init (VikStatusbarClass *klass)
 {
+  /*
+  vik_statusbar_signals[CLICKED_BG_ITEMS] =
+    g_signal_new ("clicked_bg_items",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_FIRST,
+                  G_STRUCT_OFFSET (VikStatusbarClass, clicked_bg_items),
+                  NULL, NULL, NULL, G_TYPE_NONE, 0);
+
+  klass->clicked_bg_items = NULL;
+  */
   vik_statusbar_signals[CLICKED] =
     g_signal_new ("clicked",
                   G_TYPE_FROM_CLASS (klass),
@@ -84,7 +99,7 @@ vik_statusbar_init (VikStatusbar *vs)
   for ( i = 0; i < VIK_STATUSBAR_NUM_TYPES; i++ ) {
     vs->empty[i] = TRUE;
     
-    if (i == VIK_STATUSBAR_ZOOM)
+    if (i == VIK_STATUSBAR_ITEMS || i == VIK_STATUSBAR_ZOOM )
       vs->status[i] = gtk_button_new();
     else
     {
@@ -97,6 +112,9 @@ vik_statusbar_init (VikStatusbar *vs)
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_TOOL], FALSE, FALSE, 1);
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_TOOL], 125, -1 );
 
+  g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_ITEMS]), "clicked", G_CALLBACK (forward_signal), vs);
+  gtk_button_set_relief ( GTK_BUTTON(vs->status[VIK_STATUSBAR_ITEMS]), GTK_RELIEF_NONE );
+  gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_ITEMS]), _("Current number of background tasks. Click to see the background jobs."));
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ITEMS], FALSE, FALSE, 1);
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ITEMS], 100, -1 );
 
@@ -145,7 +163,7 @@ vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const 
 {
   if ( field >= 0 && field < VIK_STATUSBAR_NUM_TYPES )
   {
-    if ( field == VIK_STATUSBAR_ZOOM )
+    if ( field == VIK_STATUSBAR_ITEMS || field == VIK_STATUSBAR_ZOOM  )
     {
       gtk_button_set_label ( GTK_BUTTON(vs->status[field]), message);
     }
