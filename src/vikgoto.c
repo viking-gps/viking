@@ -126,12 +126,18 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
   if (last_goto_str)
     gtk_entry_set_text(GTK_ENTRY(goto_entry), last_goto_str);
 
+  // 'ok' when press return in the entry
+  g_signal_connect_swapped (goto_entry, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
+
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), tool_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), tool_list, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_entry, FALSE, FALSE, 5 );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all(dialog);
+
+  // Ensure the text field has focus so we can start typing straight away
+  gtk_widget_grab_focus ( goto_entry );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
     gtk_widget_destroy(dialog);
