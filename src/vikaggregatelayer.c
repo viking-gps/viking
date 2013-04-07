@@ -408,6 +408,39 @@ static void aggregate_layer_child_visibile_off ( gpointer data[2] )
   aggregate_layer_child_visibile ( data, FALSE );
 }
 
+/**
+ * If order is true sort ascending, otherwise a descending sort
+ */
+static gint sort_layer_compare ( gconstpointer a, gconstpointer b, gpointer order )
+{
+  VikLayer *sa = (VikLayer *)a;
+  VikLayer *sb = (VikLayer *)b;
+
+  // Default ascending order
+  gint answer = g_strcmp0 ( sa->name, sb->name );
+
+  if ( GPOINTER_TO_INT(order) ) {
+    // Invert sort order for ascending order
+    answer = -answer;
+  }
+
+  return answer;
+}
+
+static void aggregate_layer_sort_a2z ( gpointer lav[2] )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(lav[0]);
+  vik_treeview_sort_children ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), VL_SO_ALPHABETICAL_ASCENDING );
+  val->children = g_list_sort_with_data ( val->children, sort_layer_compare, GINT_TO_POINTER(TRUE) );
+}
+
+static void aggregate_layer_sort_z2a ( gpointer lav[2] )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(lav[0]);
+  vik_treeview_sort_children ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), VL_SO_ALPHABETICAL_DESCENDING );
+  val->children = g_list_sort_with_data ( val->children, sort_layer_compare, GINT_TO_POINTER(FALSE) );
+}
+
 static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp )
 {
   // Data to pass on in menu functions
@@ -443,6 +476,24 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
   gtk_widget_show ( item );
 
+  GtkWidget *submenu_sort = gtk_menu_new ();
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Sort") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu_sort );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Name _Ascending") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_ASCENDING, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_a2z), data );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Name _Descending") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_DESCENDING, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_z2a), data );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
+  gtk_widget_show ( item );
 }
 
 static void disconnect_layer_signal ( VikLayer *vl, VikAggregateLayer *val )
