@@ -136,6 +136,7 @@ vik_kml_export_units_t a_vik_get_kml_export_units ( );
 typedef enum {
   VIK_GPX_EXPORT_TRK_SORT_ALPHA,
   VIK_GPX_EXPORT_TRK_SORT_TIME,
+  VIK_GPX_EXPORT_TRK_SORT_CREATION,
 } vik_gpx_export_trk_sort_t;
 
 vik_gpx_export_trk_sort_t a_vik_get_gpx_export_trk_sort ( );

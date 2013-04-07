@@ -71,7 +71,7 @@ static VikLayerParam prefs7[] = {
 /* External/Export Options */
 
 static gchar * params_kml_export_units[] = {"Metric", "Statute", "Nautical", NULL};
-static gchar * params_gpx_export_trk_sort[] = {N_("Alphabetical"), N_("Time"), NULL};
+static gchar * params_gpx_export_trk_sort[] = {N_("Alphabetical"), N_("Time"), N_("Creation"), NULL };
 static gchar * params_gpx_export_wpt_symbols[] = {N_("Title Case"), N_("Lowercase"), NULL};
 
 static VikLayerParam io_prefs[] = {

@@ -954,11 +954,20 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 
   g_list_free ( gl );
 
-  gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
+  //gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
+  // Forming the list manually seems to produce one that is more likely to be nearer to the creation order
+  gpointer key, value;
+  GHashTableIter ght_iter;
+  g_hash_table_iter_init ( &ght_iter, vik_trw_layer_get_tracks ( vtl ) );
+  while ( g_hash_table_iter_next (&ght_iter, &key, &value) ) {
+    gl = g_list_prepend ( gl ,value );
+  }
+  gl = g_list_reverse ( gl );
+
   // Sort method determined by preference
   if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_TIME )
     gl = g_list_sort ( gl, gpx_track_compare_timestamp );
-  else
+  else if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_ALPHA )
     gl = g_list_sort ( gl, gpx_track_compare_name );
 
   // Routes sorted by name
