@@ -1,3 +1,23 @@
+Viking 1.4.1.0 (2013-04-08)
+Bug Fix Release + updated translations
+* Import Launchpad translation updates [Mainly for large Czech update]
+* Fix using .vik files with 'unusual' track or waypoint names
+* Fix waypoint selection when the waypoint has an image but the images are not being displayed.
+* Fix showing map timestamps on Windows on the map tile info dialog.
+* SF#3608411: Part 2 - Avoid creating command window on Viking start-up.
+* SF#3608411: Part 1 - Avoid warning about unbuffer on Windows Systems.
+* SF#3608264: Improve Statusbar Location Info Maybe Truncated
+* Prevent inputting empty names for layers and sublayers via the layers panel.
+* SF#3608311: Fix crash caused by renaming blank sublayer names
+* Be less strigent in loading Geotagged images without optional GPS tags
+* Fix use of scaled tile image when tile image not present.
+* Enable updating the treeview to allow setting a blank waypoint symbol.
+* Improve the Waypoint tooltip to display the description if there is no comment.
+* Fix datasource acquiring waypoints from geotag images.
+* Updated geo-* scripts to version released on 2013/02/18
+* Fix compilation with --enable-geocaches option.
+* help/Makefile.am: explicitly list figures.
+
 Viking 1.4.0.1 (2013-02-16)
 Windows Only Release.
 * Windows: Add .vik file extension association option in the installer
