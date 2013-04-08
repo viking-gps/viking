@@ -12,4 +12,4 @@ dblatex viking.xml
 popd
 popd
 
-wine ~/.wine/drive_c/windows/system32/cmd.exe /c installer.bat
+wine cmd.exe /c installer.bat
