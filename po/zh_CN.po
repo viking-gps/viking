@@ -3,15 +3,15 @@ msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-02-04 23:29+0100\n"
-"PO-Revision-Date: 2011-03-08 13:50+0000\n"
+"PO-Revision-Date: 2013-03-07 06:59+0000\n"
 "Last-Translator: Wylmer Wang <Unknown>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2013-02-11 21:20+0000\n"
-"X-Generator: Launchpad (build 16482)\n"
+"X-Launchpad-Export-Date: 2013-03-23 17:12+0000\n"
+"X-Generator: Launchpad (build 16540)\n"
 "X-Poedit-Language: Simplified Chinese\n"
 
 #: ../src/acquire.c:103 ../src/vikgpslayer.c:1185
@@ -20,7 +20,7 @@ msgstr "完成。"
 
 #: ../src/acquire.c:114
 msgid "No data."
-msgstr ""
+msgstr "无数据。"
 
 #: ../src/acquire.c:154 ../src/acquire.c:404
 msgid "Error: acquisition failed."
@@ -53,7 +53,7 @@ msgstr ""
 #: ../src/background.c:52
 #, c-format
 msgid "%d items"
-msgstr "%d 项目"
+msgstr "%d 项"
 
 #: ../src/background.c:248
 msgid "Job"
@@ -3605,11 +3605,11 @@ msgstr ""
 
 #: ../src/vikwindow.c:3187
 msgid "Zoom _In"
-msgstr "_I 缩小"
+msgstr "放大(_I)"
 
 #: ../src/vikwindow.c:3188
 msgid "Zoom _Out"
-msgstr "_O 放大"
+msgstr "缩小(_O)"
 
 #: ../src/vikwindow.c:3189
 msgid "Zoom _To..."
@@ -3649,7 +3649,7 @@ msgstr "_P 粘贴"
 
 #: ../src/vikwindow.c:3199
 msgid "_Delete"
-msgstr "_D 删除"
+msgstr "删除(_D)"
 
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
