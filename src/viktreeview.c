@@ -543,10 +543,9 @@ void vik_treeview_item_unselect ( VikTreeview *vt, GtkTreeIter *iter )
 }
 
 void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, gint icon_type )
+                              gpointer item, gint data, VikLayerTypeEnum layer_type )
 {
   g_assert ( iter != NULL );
-  g_assert ( icon_type < VIK_LAYER_NUM_TYPES );
   if ( above )
     gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   else
@@ -554,14 +553,13 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
     ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
-    ICON_COLUMN, icon_type >= 0 ? vt->layer_type_icons[icon_type] : NULL, -1 );
+    ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL, -1 );
 }
 
 void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, gint icon_type, GtkTreeIter *sibling )
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling )
 {
   g_assert ( iter != NULL );
-  g_assert ( icon_type < VIK_LAYER_NUM_TYPES );
   if (sibling) {
     if (above)
       gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, sibling );
@@ -577,7 +575,7 @@ void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
     ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, TRUE,
-    ICON_COLUMN, icon_type >= 0 ? vt->layer_type_icons[icon_type] : NULL, -1 );
+    ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL, -1 );
 }
 
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
@@ -657,8 +655,7 @@ void vik_treeview_add_sublayer_alphabetized
 static void vik_treeview_finalize ( GObject *gob )
 {
   VikTreeview *vt = VIK_TREEVIEW ( gob );
-  guint16 i;
-
+  VikLayerTypeEnum i;
   for ( i = 0; i < VIK_LAYER_NUM_TYPES; i++ )
     if ( vt->layer_type_icons[i] != NULL )
       g_object_unref ( G_OBJECT(vt->layer_type_icons[i]) );

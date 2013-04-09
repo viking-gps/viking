@@ -23,6 +23,7 @@
 #define _VIKING_TREEVIEW_H
 
 #include "config.h"
+#include "uibuilder.h"
 
 #include <glib.h>
 #include <glib-object.h>
@@ -86,9 +87,9 @@ void vik_treeview_expand_toplevel ( VikTreeview *vt );
 void vik_treeview_expand ( VikTreeview *vt, GtkTreeIter *iter );
 
 void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, gint icon_type ); /* icon type: type of layer or -1 -> no icon */
+                              gpointer item, gint data, VikLayerTypeEnum layer_type );
 void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, gint icon_type, GtkTreeIter *sibling );
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling );
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
                                  gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable );
 
