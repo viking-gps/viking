@@ -1487,11 +1487,11 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:56
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopiér"
 
 #: ../src/viklayerspanel.c:57
 msgid "_Paste"
-msgstr ""
+msgstr "_Sæt ind"
 
 #: ../src/viklayerspanel.c:58
 msgid "_Delete"
@@ -3645,18 +3645,6 @@ msgstr "Baggrunds_job"
 #: ../src/vikwindow.c:3196
 msgid "Cu_t"
 msgstr "K_lip"
-
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_Kopiér"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_Sæt ind"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Slet"
 
 #: ../src/vikwindow.c:3200
 msgid "Delete All"

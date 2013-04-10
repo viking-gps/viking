@@ -3705,18 +3705,6 @@ msgstr "Фоновые задачи"
 msgid "Cu_t"
 msgstr "Вырезать"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "Копировать"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "Вставить"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "Удалить"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Удалить все"

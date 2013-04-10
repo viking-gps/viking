@@ -3714,18 +3714,6 @@ msgstr "Ta_ustatyöt"
 msgid "Cu_t"
 msgstr "Leikk_aa"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "Kop_ioi"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_Liitä"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Poista"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Poista kaikki"

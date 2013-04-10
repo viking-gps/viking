@@ -3639,18 +3639,6 @@ msgstr "_J 后台任务"
 msgid "Cu_t"
 msgstr "_t 剪切"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_C 拷贝"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_P 粘贴"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "删除(_D)"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "全部删除"

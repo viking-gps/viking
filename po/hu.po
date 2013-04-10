@@ -3694,18 +3694,6 @@ msgstr "_Háttérmunkák"
 msgid "Cu_t"
 msgstr "_Kivágás"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_Másolás"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_Beillesztés"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Törlés"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Összes törlése"

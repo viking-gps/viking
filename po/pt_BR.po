@@ -3697,18 +3697,6 @@ msgstr ""
 msgid "Cu_t"
 msgstr ""
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr ""
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr ""
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr ""
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Excluir tudo"

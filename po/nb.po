@@ -3648,18 +3648,6 @@ msgstr "Bakgrunns_jobb"
 msgid "Cu_t"
 msgstr "Klipp _ut"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_Kopier"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_Lim inn"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "Sle_tt"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Slett alle"

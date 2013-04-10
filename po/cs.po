@@ -3741,18 +3741,6 @@ msgstr "Úlohy na _pozadí"
 msgid "Cu_t"
 msgstr "Vyjmou_t"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_Kopírovat"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_Vložit"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Smazat"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "S_mazat vše"

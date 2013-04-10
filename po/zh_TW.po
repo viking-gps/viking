@@ -3639,18 +3639,6 @@ msgstr "_J 背景工作"
 msgid "Cu_t"
 msgstr "_t 剪取"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_C 拷貝"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_P 黏貼"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_D 移除"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "全部移除"

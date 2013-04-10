@@ -3655,18 +3655,6 @@ msgstr "Opravila v _ozadju"
 msgid "Cu_t"
 msgstr "_Izreži"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_Kopiraj"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_Prilepi"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "I_zbriši"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Izbriši vse"

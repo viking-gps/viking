@@ -3719,18 +3719,6 @@ msgstr "_Lavori in background"
 msgid "Cu_t"
 msgstr "_Taglia"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_Copia"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "Inco_lla"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Elimina"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Elimina tutto"

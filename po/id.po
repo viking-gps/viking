@@ -3648,18 +3648,6 @@ msgstr ""
 msgid "Cu_t"
 msgstr "Potong"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "Salin"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "Tempel"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "Hapus"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Hapus Semua"

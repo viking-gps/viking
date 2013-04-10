@@ -3697,18 +3697,6 @@ msgstr "_Tareas en segundo plano"
 msgid "Cu_t"
 msgstr "Cor_tar"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "_Copiar"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "_Pegar"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Borrar"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Borrar todo"

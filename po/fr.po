@@ -1531,7 +1531,7 @@ msgstr "C_oller"
 
 #: ../src/viklayerspanel.c:58
 msgid "_Delete"
-msgstr "_Détruire"
+msgstr "_Effacer"
 
 #: ../src/viklayerspanel.c:59
 msgid "New Layer"
@@ -3695,18 +3695,6 @@ msgstr "Tâches de fond"
 #: ../src/vikwindow.c:3196
 msgid "Cu_t"
 msgstr "Co_uper"
-
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "Co_pier"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "C_oller"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Effacer"
 
 #: ../src/vikwindow.c:3200
 msgid "Delete All"

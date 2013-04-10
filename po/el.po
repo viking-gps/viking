@@ -3647,18 +3647,6 @@ msgstr ""
 msgid "Cu_t"
 msgstr "Απ_οκοπή"
 
-#: ../src/vikwindow.c:3197
-msgid "_Copy"
-msgstr "Αντι_γραφή"
-
-#: ../src/vikwindow.c:3198
-msgid "_Paste"
-msgstr "Ε_πικόλληση"
-
-#: ../src/vikwindow.c:3199
-msgid "_Delete"
-msgstr "_Διαγραφή"
-
 #: ../src/vikwindow.c:3200
 msgid "Delete All"
 msgstr "Διαγραφή όλων"
