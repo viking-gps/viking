@@ -1330,7 +1330,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
     gtk_window_set_title ( GTK_WINDOW(sess->dialog), sess->window_title );
 
     sess->status_label = gtk_label_new (_("Status: detecting gpsbabel"));
-    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->status_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(sess->dialog))), sess->status_label, FALSE, FALSE, 5 );
     gtk_widget_show_all(sess->status_label);
 
     sess->gps_label = gtk_label_new (_("GPS device: N/A"));
@@ -1340,10 +1340,10 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
     sess->trk_label = gtk_label_new ("");
     sess->rte_label = gtk_label_new ("");
 
-    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->gps_label, FALSE, FALSE, 5 );
-    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->wp_label, FALSE, FALSE, 5 );
-    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->trk_label, FALSE, FALSE, 5 );
-    gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(sess->dialog)->vbox), sess->rte_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(sess->dialog))), sess->gps_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(sess->dialog))), sess->wp_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(sess->dialog))), sess->trk_label, FALSE, FALSE, 5 );
+    gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(sess->dialog))), sess->rte_label, FALSE, FALSE, 5 );
 
     gtk_widget_show_all(sess->dialog);
 

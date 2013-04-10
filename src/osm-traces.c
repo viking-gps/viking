@@ -399,21 +399,21 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   GtkWidget *name_label, *name_entry;
   GtkWidget *description_label, *description_entry;
   GtkWidget *tags_label, *tags_entry;
-  GtkComboBox *visibility;
+  GtkWidget *visibility;
   const OsmTraceVis_t *vis_t;
 
   user_label = gtk_label_new(_("Email:"));
   user_entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), user_entry, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_markup(GTK_WIDGET(user_entry),
                         _("The email used as login\n"
                         "<small>Enter the email you use to login into www.openstreetmap.org.</small>"));
 
   password_label = gtk_label_new(_("Password:"));
   password_entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), password_label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), password_entry, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_markup(GTK_WIDGET(password_entry),
                         _("The password used to login\n"
                         "<small>Enter the password you use to login into www.openstreetmap.org.</small>"));
@@ -427,8 +427,8 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   else
     name = vik_layer_get_name(VIK_LAYER(vtl));
   gtk_entry_set_text(GTK_ENTRY(name_entry), name);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), name_label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), name_entry, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), name_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), name_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_markup(GTK_WIDGET(name_entry),
                         _("The name of the file on OSM\n"
                         "<small>This is the name of the file created on the server."
@@ -436,24 +436,25 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 
   description_label = gtk_label_new(_("Description:"));
   description_entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), description_label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), description_entry, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), description_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), description_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_text(GTK_WIDGET(description_entry),
                         _("The description of the trace"));
 
   tags_label = gtk_label_new(_("Tags:"));
   tags_entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), tags_label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), tags_entry, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), tags_label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), tags_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_text(GTK_WIDGET(tags_entry),
                         _("The tags associated to the trace"));
 
-  visibility = GTK_COMBO_BOX(gtk_combo_box_new_text ());
+  visibility = vik_combo_box_text_new();
   for (vis_t = OsmTraceVis; vis_t->combostr != NULL; vis_t++)
-	gtk_combo_box_append_text(visibility, vis_t->combostr);
+    vik_combo_box_text_append (visibility, vis_t->combostr);
+
   /* Set identifiable by default */
-  gtk_combo_box_set_active(visibility, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), GTK_WIDGET(visibility), FALSE, FALSE, 0);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(visibility), 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), GTK_WIDGET(visibility), FALSE, FALSE, 0);
 
   /* User should think about it first... */
   gtk_dialog_set_default_response ( GTK_DIALOG(dia), GTK_RESPONSE_REJECT );
@@ -475,7 +476,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
     info->description = g_strdup(gtk_entry_get_text(GTK_ENTRY(description_entry)));
     /* TODO Normalize tags: they will be used as URL part */
     info->tags        = g_strdup(gtk_entry_get_text(GTK_ENTRY(tags_entry)));
-    info->vistype     = &OsmTraceVis[gtk_combo_box_get_active(visibility)];
+    info->vistype     = &OsmTraceVis[gtk_combo_box_get_active(GTK_COMBO_BOX(visibility))];
     info->vtl         = VIK_TRW_LAYER(g_object_ref(vtl));
     info->trk         = trk;
 

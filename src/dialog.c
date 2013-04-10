@@ -78,10 +78,10 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
   gtk_widget_show ( lat );
   gtk_widget_show ( lon );
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), latlabel,  FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), lat, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), lonlabel,  FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), lon,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lat, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonlabel,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lon,  FALSE, FALSE, 0);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
@@ -144,11 +144,11 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
 
   gtk_widget_show_all ( zonehbox );
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), norlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), nor, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), easlabel,  FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), eas,  FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), zonehbox,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), norlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nor, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), easlabel,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), eas,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zonehbox,  FALSE, FALSE, 0);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
@@ -231,7 +231,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   *updated = FALSE;
 
   namelabel = gtk_label_new (_("Name:"));
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), namelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), namelabel, FALSE, FALSE, 0);
   if ( is_new )
   {
     // New waypoint, so name is still changeable
@@ -246,7 +246,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       nameentry = gtk_label_new ( default_name );
   }
   if ( nameentry )
-    gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), nameentry, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nameentry, FALSE, FALSE, 0);
 
   latlabel = gtk_label_new (_("Latitude:"));
   latentry = gtk_entry_new ();
@@ -329,24 +329,24 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), latlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), latentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), lonlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), lonentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), altlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), altentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), commentlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), commententry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), descriptionlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), descriptionentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), imagelabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), imageentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), symbollabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), commentlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), commententry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), descriptionlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), descriptionentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imagelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imageentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), symbollabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
-  gtk_widget_show_all ( GTK_DIALOG(dialog)->vbox );
+  gtk_widget_show_all ( gtk_dialog_get_content_area(GTK_DIALOG(dialog)) );
 
   if ( !is_new ) {
     // Shift left<->right to try not to obscure the waypoint.
@@ -512,7 +512,7 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
   gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
 
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolledwindow, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), scrolledwindow, TRUE, TRUE, 0 );
   // Ensure a reasonable number of items are shown, but let the width be automatically sized
   gtk_widget_set_size_request ( dialog, -1, 400) ;
 
@@ -553,8 +553,8 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *defaul
   if (default_name)
     gtk_entry_set_text ( GTK_ENTRY(entry), default_name );
 
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), entry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), entry, FALSE, FALSE, 0);
 
   g_signal_connect_swapped ( entry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
 
@@ -637,7 +637,7 @@ gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp 
   GtkWidget *pass_along[3];
 
   table = gtk_table_new ( 4, 2, FALSE );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0 );
 
   label = gtk_label_new ( _("Zoom factor (in meters per pixel):") );
   xlabel = gtk_label_new ( _("X (easting): "));
@@ -697,7 +697,7 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
   GtkWidget *pass_along[1];
 
   table = gtk_table_new ( 4, 2, FALSE );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0 );
 
   label = gtk_label_new (label_text);
 
@@ -765,7 +765,7 @@ guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar
   guint result = default_num;
 
   table = gtk_table_new ( 2, 1, FALSE );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), table, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0 );
 
   label = gtk_label_new (label_text);
   spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( default_num, min, max, step, 5, 0 ), 1, 0 );
@@ -790,6 +790,7 @@ guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar
   return 0;
 }
 
+#if (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION < 24)
 static void about_url_hook (GtkAboutDialog *about,
                             const gchar    *link,
                             gpointer        data)
@@ -803,6 +804,7 @@ static void about_email_hook (GtkAboutDialog *about,
 {
   new_email (GTK_WINDOW(about), email);
 }
+#endif
 
 void a_dialog_about ( GtkWindow *parent )
 {
@@ -825,8 +827,12 @@ void a_dialog_about ( GtkWindow *parent )
 			"along with this program; if not, write to the Free Software "
 			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA");
 
+  // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program
+  // This is the old method:
+#if (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION < 24)
   gtk_about_dialog_set_url_hook (about_url_hook, NULL, NULL);
   gtk_about_dialog_set_email_hook (about_email_hook, NULL, NULL);
+#endif
   gtk_show_about_dialog (parent,
 	/* TODO do not set program-name and correctly set info for g_get_application_name */
   	"program-name", program_name,
@@ -853,24 +859,26 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
 #if GTK_CHECK_VERSION (2, 20, 0)
   response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 #endif
+
   GtkWidget *map_label = gtk_label_new(_("Map type:"));
-  GtkComboBox *map_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  GtkWidget *map_combo = vik_combo_box_text_new();
   for (s = mapnames; *s; s++)
-    gtk_combo_box_append_text(map_combo, *s);
-  gtk_combo_box_set_active (map_combo, default_map);
+    vik_combo_box_text_append (GTK_COMBO_BOX(map_combo), *s);
+  gtk_combo_box_set_active (GTK_COMBO_BOX(map_combo), default_map);
+
   GtkWidget *zoom_label = gtk_label_new(_("Zoom level:"));
-  GtkComboBox *zoom_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+  GtkWidget *zoom_combo = vik_combo_box_text_new();
   for (s = zoom_list; *s; s++)
-    gtk_combo_box_append_text(zoom_combo, *s);
-  gtk_combo_box_set_active (zoom_combo, default_zoom);
+    vik_combo_box_text_append (GTK_COMBO_BOX(zoom_combo), *s);
+  gtk_combo_box_set_active (GTK_COMBO_BOX(zoom_combo), default_zoom);
 
   GtkTable *box = GTK_TABLE(gtk_table_new(2, 2, FALSE));
-  gtk_table_attach_defaults(box, GTK_WIDGET(map_label), 0, 1, 0, 1);
-  gtk_table_attach_defaults(box, GTK_WIDGET(map_combo), 1, 2, 0, 1);
-  gtk_table_attach_defaults(box, GTK_WIDGET(zoom_label), 0, 1, 1, 2);
-  gtk_table_attach_defaults(box, GTK_WIDGET(zoom_combo), 1, 2, 1, 2);
+  gtk_table_attach_defaults(box, map_label, 0, 1, 0, 1);
+  gtk_table_attach_defaults(box, map_combo, 1, 2, 0, 1);
+  gtk_table_attach_defaults(box, zoom_label, 0, 1, 1, 2);
+  gtk_table_attach_defaults(box, zoom_combo, 1, 2, 1, 2);
 
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), GTK_WIDGET(box), FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(box), FALSE, FALSE, 5 );
 
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
@@ -881,8 +889,8 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
     return FALSE;
   }
 
-  *selected_map = gtk_combo_box_get_active(map_combo);
-  *selected_zoom = gtk_combo_box_get_active(zoom_combo);
+  *selected_map = gtk_combo_box_get_active(GTK_COMBO_BOX(map_combo));
+  *selected_zoom = gtk_combo_box_get_active(GTK_COMBO_BOX(zoom_combo));
 
   gtk_widget_destroy(dialog);
   return TRUE;

@@ -119,7 +119,7 @@ static void datasource_geotag_add_setup_widgets ( GtkWidget *dialog, VikViewport
 	//  However not much point since these will have images associated with them!
 
 	/* Packing all widgets */
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), userdata->files, TRUE, TRUE, 0 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), userdata->files, TRUE, TRUE, 0 );
 
 	gtk_widget_show_all ( dialog );
 }

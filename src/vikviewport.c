@@ -191,7 +191,11 @@ vik_viewport_init ( VikViewport *vvp )
 
   g_signal_connect (G_OBJECT(vvp), "configure_event", G_CALLBACK(vik_viewport_configure), NULL);
 
+#if GTK_CHECK_VERSION (2,18,0)
+  gtk_widget_set_can_focus ( GTK_WIDGET(vvp), TRUE );
+#else
   GTK_WIDGET_SET_FLAGS(vvp, GTK_CAN_FOCUS); /* allow VVP to have focus -- enabling key events, etc */
+#endif
 }
 
 GdkColor *vik_viewport_get_background_gdkcolor ( VikViewport *vvp )
@@ -270,7 +274,7 @@ GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thic
   GdkGC *rv = NULL;
   GdkColor color;
 
-  rv = gdk_gc_new ( GTK_WIDGET(vvp)->window );
+  rv = gdk_gc_new ( gtk_widget_get_window(GTK_WIDGET(vvp)) );
   if ( gdk_color_parse ( colorname, &color ) )
     gdk_gc_set_rgb_fg_color ( rv, &color );
   else
@@ -283,7 +287,7 @@ GdkGC *vik_viewport_new_gc_from_color ( VikViewport *vvp, GdkColor *color, gint 
 {
   GdkGC *rv;
 
-  rv = gdk_gc_new ( GTK_WIDGET(vvp)->window );
+  rv = gdk_gc_new ( gtk_widget_get_window(GTK_WIDGET(vvp)) );
   gdk_gc_set_rgb_fg_color ( rv, color );
   gdk_gc_set_line_attributes ( rv, thickness, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
   return rv;
@@ -299,12 +303,12 @@ void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint heigh
 
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
-  vvp->scr_buffer = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, vvp->width, vvp->height, -1 );
+  vvp->scr_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
 
   /* TODO trigger: only if this is enabled !!! */
   if ( vvp->snapshot_buffer )
     g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
-  vvp->snapshot_buffer = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, vvp->width, vvp->height, -1 );
+  vvp->snapshot_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
 }
 
 
@@ -326,13 +330,13 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
 
-  vvp->scr_buffer = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, vvp->width, vvp->height, -1 );
+  vvp->scr_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
 
   /* TODO trigger: only if enabled! */
   if ( vvp->snapshot_buffer )
     g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
 
-  vvp->snapshot_buffer = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, vvp->width, vvp->height, -1 );
+  vvp->snapshot_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
   /* TODO trigger */
 
   /* this is down here so it can get a GC (necessary?) */
@@ -647,7 +651,7 @@ gboolean vik_viewport_get_draw_highlight ( VikViewport *vvp )
 void vik_viewport_sync ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
-  gdk_draw_drawable(GTK_WIDGET(vvp)->window, gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, 0, 0, vvp->width, vvp->height);
+  gdk_draw_drawable(gtk_widget_get_window(GTK_WIDGET(vvp)), gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, 0, 0, vvp->width, vvp->height);
 }
 
 void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off )
@@ -655,7 +659,7 @@ void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off )
   gint x, y, wid, hei;
 
   g_return_if_fail ( vvp != NULL );
-  gdk_draw_drawable(GTK_WIDGET(vvp)->window, gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, x_off, y_off, vvp->width, vvp->height);
+  gdk_draw_drawable(gtk_widget_get_window(GTK_WIDGET(vvp)), gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, x_off, y_off, vvp->width, vvp->height);
 
   if (x_off >= 0) {
     x = 0;

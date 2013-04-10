@@ -344,7 +344,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   w->dialog = dialog;
   w->running = TRUE;
   status = gtk_label_new (_("Working..."));
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), status, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), status, FALSE, FALSE, 5 );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   // May not want to see the dialog at all
   if ( source_interface->is_thread || source_interface->keep_dialog_open )

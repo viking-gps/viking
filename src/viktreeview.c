@@ -78,6 +78,39 @@ static gboolean vik_treeview_drag_data_delete ( GtkTreeDragSource *drag_source, 
 
 G_DEFINE_TYPE (VikTreeview, vik_treeview, GTK_TYPE_TREE_VIEW)
 
+static void vik_cclosure_marshal_VOID__POINTER_POINTER ( GClosure     *closure,
+                                                         GValue       *return_value,
+                                                         guint         n_param_vals,
+                                                         const GValue *param_values,
+                                                         gpointer      invocation_hint,
+                                                         gpointer      marshal_data )
+{
+  typedef gboolean (*VikMarshalFunc_VOID__POINTER_POINTER) ( gpointer      data1,
+                                                             gconstpointer arg_1,
+                                                             gconstpointer arg_2,
+                                                             gpointer      data2 );
+
+  register VikMarshalFunc_VOID__POINTER_POINTER callback;
+  register GCClosure* cc = (GCClosure*) closure;
+  register gpointer data1, data2;
+
+  g_return_if_fail (n_param_vals == 3);
+
+  if (G_CCLOSURE_SWAP_DATA(closure)) {
+    data1 = closure->data;
+    data2 = g_value_peek_pointer (param_values + 0);
+  }
+  else {
+    data1 = g_value_peek_pointer (param_values + 0);
+    data2 = closure->data;
+  }
+  callback = (VikMarshalFunc_VOID__POINTER_POINTER) (marshal_data ? marshal_data : cc->callback);
+  callback ( data1,
+             g_value_get_pointer(param_values + 1),
+             g_value_get_pointer(param_values + 2),
+             data2 );
+}
+
 static void vik_treeview_class_init ( VikTreeviewClass *klass )
 {
   /* Destructor */
@@ -90,11 +123,10 @@ static void vik_treeview_class_init ( VikTreeviewClass *klass )
   parent_class = g_type_class_peek_parent (klass);
 
   treeview_signals[VT_ITEM_EDITED_SIGNAL] = g_signal_new ( "item_edited", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikTreeviewClass, item_edited), NULL, NULL, 
-    gtk_marshal_VOID__POINTER_POINTER, G_TYPE_NONE, 2, GTK_TYPE_POINTER, G_TYPE_POINTER);
-  /* VOID__UINT_POINTER: kinda hack-ish, but it works. */
+    vik_cclosure_marshal_VOID__POINTER_POINTER, G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_POINTER);
 
   treeview_signals[VT_ITEM_TOGGLED_SIGNAL] = g_signal_new ( "item_toggled", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikTreeviewClass, item_toggled), NULL, NULL,
-    g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, GTK_TYPE_POINTER );
+    g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER );
 }
 
 static void vik_treeview_edited_cb (GtkCellRendererText *cell, gchar *path_str, const gchar *new_name, VikTreeview *vt)

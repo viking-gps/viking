@@ -104,15 +104,15 @@ static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikV
 	user_label = gtk_label_new(_("Username:"));
 	data->user_entry = gtk_entry_new();
 
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), user_label, FALSE, FALSE, 0 );
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), data->user_entry, FALSE, FALSE, 0 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), user_label, FALSE, FALSE, 0 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), data->user_entry, FALSE, FALSE, 0 );
 	gtk_widget_set_tooltip_markup ( GTK_WIDGET(data->user_entry), _("The email or username used to login to OSM") );
 
 	password_label = gtk_label_new ( _("Password:") );
 	data->password_entry = gtk_entry_new ();
 
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), password_label, FALSE, FALSE, 0 );
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), data->password_entry, FALSE, FALSE, 0 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), password_label, FALSE, FALSE, 0 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), data->password_entry, FALSE, FALSE, 0 );
 	gtk_widget_set_tooltip_markup ( GTK_WIDGET(data->password_entry), _("The password used to login to OSM") );
 
 	osm_login_widgets (data->user_entry, data->password_entry);
@@ -457,8 +457,8 @@ static GList *select_from_list (GtkWindow *parent, GList *list, const gchar *tit
 	gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
 	gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
 
-	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolledwindow, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), label, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), scrolledwindow, TRUE, TRUE, 0);
 
 	// Ensure a reasonable number of items are shown, but let the width be automatically sized
 	gtk_widget_set_size_request ( dialog, -1, 400) ;
@@ -514,7 +514,7 @@ static void none_found ( GtkWindow *gw )
 	gtk_window_set_title(GTK_WINDOW(dialog), _("GPS Traces"));
 
 	GtkWidget *search_label = gtk_label_new(_("None found!"));
-	gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), search_label, FALSE, FALSE, 5 );
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), search_label, FALSE, FALSE, 5 );
 	gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 	gtk_widget_show_all(dialog);
 

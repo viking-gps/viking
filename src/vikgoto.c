@@ -88,7 +88,7 @@ static gboolean prompt_try_again(VikWindow *vw)
   gtk_window_set_title(GTK_WINDOW(dialog), _("goto"));
 
   GtkWidget *goto_label = gtk_label_new(_("I don't know that place. Do you want another goto?"));
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), goto_label, FALSE, FALSE, 5 );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all(dialog);
 
@@ -107,15 +107,14 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
   gtk_window_set_title(GTK_WINDOW(dialog), _("goto"));
 
   GtkWidget *tool_label = gtk_label_new(_("goto provider:"));
-  GtkWidget *tool_list = gtk_combo_box_new_text ();
-
+  GtkWidget *tool_list = vik_combo_box_text_new ();
   GList *current = g_list_first (goto_tools_list);
   while (current != NULL)
   {
     char *label = NULL;
     VikGotoTool *tool = current->data;
     label = vik_goto_tool_get_label (tool);
-    gtk_combo_box_append_text ( GTK_COMBO_BOX( tool_list ), label);
+    vik_combo_box_text_append ( tool_list, label );
     current = g_list_next (current);
   }
   /* Set the previously selected provider as default */
@@ -129,10 +128,10 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
   // 'ok' when press return in the entry
   g_signal_connect_swapped (goto_entry, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
 
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), tool_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), tool_list, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), goto_entry, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_list, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), goto_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), goto_entry, FALSE, FALSE, 5 );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all(dialog);
 

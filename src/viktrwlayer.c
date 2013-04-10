@@ -1892,7 +1892,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
   VikTrwLayer *rv = trw_layer_new1 ( vp );
   vik_layer_rename ( VIK_LAYER(rv), vik_trw_layer_interface.name );
 
-  if ( vp == NULL || GTK_WIDGET(vp)->window == NULL ) {
+  if ( vp == NULL || gtk_widget_get_window(GTK_WIDGET(vp)) == NULL ) {
     /* early exit, as the rest is GUI related */
     return rv;
   }
@@ -2877,8 +2877,8 @@ static void trw_layer_goto_wp ( gpointer layer_and_vlp[2] )
   label = gtk_label_new(_("Waypoint Name:"));
   entry = gtk_entry_new();
 
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dia)->vbox), entry, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), entry, FALSE, FALSE, 0);
   gtk_widget_show_all ( label );
   gtk_widget_show_all ( entry );
 
@@ -7816,12 +7816,12 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     w1 = vik_viewport_get_width(vvp);
     h1 = vik_viewport_get_height(vvp);
     if (!pixmap) {
-      pixmap = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+      pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), w1, h1, -1 );
     }
     gdk_drawable_get_size (pixmap, &w2, &h2);
     if (w1 != w2 || h1 != h2) {
       g_object_unref ( G_OBJECT ( pixmap ) );
-      pixmap = gdk_pixmap_new ( GTK_WIDGET(vvp)->window, w1, h1, -1 );
+      pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), w1, h1, -1 );
     }
 
     // Reset to background
@@ -7898,7 +7898,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
     passalong = g_new(draw_sync_t,1); // freed by draw_sync()
     passalong->vtl = vtl;
     passalong->pixmap = pixmap;
-    passalong->drawable = GTK_WIDGET(vvp)->window;
+    passalong->drawable = gtk_widget_get_window(GTK_WIDGET(vvp));
     passalong->gc = vtl->current_track_newpoint_gc;
 
     gdouble angle;

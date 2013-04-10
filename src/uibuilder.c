@@ -51,13 +51,12 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       }
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
-#ifndef GTK_2_2
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
       {
         gchar **pstr = param->widget_data;
-        rv = gtk_combo_box_new_text ();
+        rv = vik_combo_box_text_new ();
         while ( *pstr )
-          gtk_combo_box_append_text ( GTK_COMBO_BOX ( rv ), *(pstr++) );
+          vik_combo_box_text_append ( rv, *(pstr++) );
         if ( param->extra_widget_data ) /* map of alternate uint values for options */
         {
           int i;
@@ -74,16 +73,19 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data )
       {
         gchar **pstr = param->widget_data;
-        rv = GTK_WIDGET ( gtk_combo_box_entry_new_text () );
+#if GTK_CHECK_VERSION (2, 24, 0)
+        rv = gtk_combo_box_text_new_with_entry ();
+#else
+        rv = gtk_combo_box_entry_new_text ();
+#endif
         if ( data.s )
-          gtk_combo_box_append_text ( GTK_COMBO_BOX ( rv ), data.s );
+          vik_combo_box_text_append ( rv, data.s );
         while ( *pstr )
-          gtk_combo_box_append_text ( GTK_COMBO_BOX ( rv ), *(pstr++) );
+          vik_combo_box_text_append ( rv, *(pstr++) );
         if ( data.s )
           gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), 0 );
       }
       break;
-#endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
       /* widget_data and extra_widget_data are GList */
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
@@ -202,7 +204,6 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       rv.b = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
-#ifndef GTK_2_2
       if ( param->type == VIK_LAYER_PARAM_UINT )
       {
         rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
@@ -213,11 +214,14 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       }
       if ( param->type == VIK_LAYER_PARAM_STRING)
       {
+#if GTK_CHECK_VERSION (2, 24, 0)
+        rv.s = gtk_entry_get_text (GTK_ENTRY (gtk_bin_get_child (GTK_BIN (widget))));
+#else
         rv.s = gtk_combo_box_get_active_text ( GTK_COMBO_BOX(widget) );
+#endif
 	g_debug("%s: %s", __FUNCTION__, rv.s);
       }
       break;
-#endif
     case VIK_LAYER_WIDGET_RADIOGROUP:
     case VIK_LAYER_WIDGET_RADIOGROUP_STATIC:
       rv.u = vik_radio_group_get_selected(VIK_RADIO_GROUP(widget));
@@ -301,7 +305,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
       guint8 current_group;
       guint16 tab_widget_count;
       notebook = gtk_notebook_new ();
-      gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), notebook, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), notebook, FALSE, FALSE, 0);
       tables = g_malloc ( sizeof(GtkWidget *) * groups_count );
       for ( current_group = 0; current_group < groups_count; current_group++ )
       {
@@ -320,7 +324,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
     else
     {
       table = gtk_table_new( widget_count, 1, FALSE );
-      gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), table, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, FALSE, FALSE, 0);
     }
 
     for ( i = 0, j = 0; i < params_count; i++ )
