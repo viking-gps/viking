@@ -140,7 +140,11 @@ static VikLayerParamData preferences_run_getparam ( gpointer notused, guint16 i,
   return val->data;
 }
 
-/* TRUE on success */
+/**
+ * a_preferences_save_to_file:
+ * 
+ * Returns: TRUE on success
+ */
 gboolean a_preferences_save_to_file()
 {
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);

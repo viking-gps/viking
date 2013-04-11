@@ -47,7 +47,6 @@ VikLayerParamData *a_preferences_get(const gchar *key);
 /* Allow preferences to be manipulated externally */
 void a_preferences_run_setparam ( VikLayerParamData data, VikLayerParam *params );
 
-/* TRUE on success */
 gboolean a_preferences_save_to_file();
 
 
