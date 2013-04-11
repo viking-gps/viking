@@ -102,6 +102,10 @@ void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
 // Other functions only for use by other trw_layer subwindows
 gchar *trw_layer_new_unique_sublayer_name ( VikTrwLayer *vtl, gint sublayer_type, const gchar *name );
 
+gboolean vik_trw_layer_get_tracks_visibility ( VikTrwLayer *vtl );
+gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl );
+gboolean vik_trw_layer_get_waypoints_visibility ( VikTrwLayer *vtl );
+
 void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gpointer *trk_id );
 
 void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coord, gboolean vertical );

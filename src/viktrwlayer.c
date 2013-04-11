@@ -2507,6 +2507,21 @@ gboolean vik_trw_layer_is_empty ( VikTrwLayer *vtl )
              g_hash_table_size ( vtl->waypoints ) );
 }
 
+gboolean vik_trw_layer_get_tracks_visibility ( VikTrwLayer *vtl )
+{
+  return vtl->tracks_visible;
+}
+
+gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl )
+{
+  return vtl->routes_visible;
+}
+
+gboolean vik_trw_layer_get_waypoints_visibility ( VikTrwLayer *vtl )
+{
+  return vtl->waypoints_visible;
+}
+
 /*
  * ATM use a case sensitive find
  * Finds the first one
