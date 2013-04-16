@@ -303,17 +303,19 @@ static void *unzip_hgt_file(gchar *zip_file, gulong *unzip_size)
 
 
 	local_file_header = (struct _lfh *) zip_file;
-	if (local_file_header->sig != 0x04034b50) {
+	if (GUINT32_FROM_LE(local_file_header->sig) != 0x04034b50) {
 		g_warning("%s(): wrong format", __PRETTY_FUNCTION__);
 		g_free(unzip_data);
 		goto end;
 	}
 
-	zip_data = zip_file + sizeof(struct _lfh) + local_file_header->filename_len + local_file_header->extra_field_len;
-	unzip_data = g_malloc(local_file_header->uncompressed_size);
-	gulong uncompressed_size = local_file_header->uncompressed_size;
+	zip_data = zip_file + sizeof(struct _lfh)
+		+ GUINT16_FROM_LE(local_file_header->filename_len)
+		+ GUINT16_FROM_LE(local_file_header->extra_field_len);
+	gulong uncompressed_size = GUINT32_FROM_LE(local_file_header->uncompressed_size);
+	unzip_data = g_malloc(uncompressed_size);
 
-	if (!(*unzip_size = uncompress_data(unzip_data, uncompressed_size, zip_data, local_file_header->compressed_size))) {
+	if (!(*unzip_size = uncompress_data(unzip_data, uncompressed_size, zip_data, GUINT32_FROM_LE(local_file_header->compressed_size)))) {
 		g_free(unzip_data);
 		unzip_data = NULL;
 		goto end;
