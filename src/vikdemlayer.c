@@ -35,6 +35,7 @@
 #include <string.h>
 #endif
 #include <stdlib.h>
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
 #include "background.h"
@@ -251,6 +252,9 @@ struct _VikDEMLayer {
   GdkColor color;
   guint source;
   guint type;
+
+  // right click menu only stuff - similar to mapslayer
+  GtkMenu *right_click_menu;
 };
 
 GType vik_dem_layer_get_type ()
@@ -1159,11 +1163,67 @@ static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
+/**
+ * Display a simple dialog with information about the DEM file at this location
+ */
+static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
+{
+  gint intlat, intlon;
+  const gchar *continent_dir;
+
+  intlat = (int)floor(ll->lat);
+  intlon = (int)floor(ll->lon);
+  continent_dir = srtm_continent_dir(intlat, intlon);
+
+  gchar *source = NULL;
+  if ( continent_dir )
+    source = g_strdup_printf ( "http:/%s%s/%c%02d%c%03d.hgt.zip",
+                               SRTM_HTTP_URI,
+                               continent_dir,
+                               (intlat >= 0) ? 'N' : 'S',
+                               ABS(intlat),
+                               (intlon >= 0) ? 'E' : 'W',
+                               ABS(intlon) );
+  else
+    // Probably not over any land...
+    source = g_strdup ( _("No DEM File Available") );
+
+  gchar *filename = NULL;
+  gchar *dem_file = NULL;
+#ifdef VIK_CONFIG_DEM24K
+  dem_file = dem24k_lat_lon_to_dest_fn ( ll->lat, ll->lon );
+#else
+  dem_file = srtm_lat_lon_to_dest_fn ( ll->lat, ll->lon );
+#endif
+  gchar *message = NULL;
+
+  filename = g_strdup_printf ( "%s%s", MAPS_CACHE_DIR, dem_file );
+
+  if ( g_file_test ( filename, G_FILE_TEST_EXISTS ) ) {
+    // Get some timestamp information of the file
+    struct stat stat_buf;
+    if ( g_stat ( filename, &stat_buf ) == 0 ) {
+      gchar time_buf[64];
+      strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
+      message = g_strdup_printf ( _("\nSource: %s\n\nDEM File: %s\nDEM File Timestamp: %s"), source, filename, time_buf );
+    }
+  }
+  else
+    message = g_strdup_printf ( _("Source: %s\n\nNo DEM File!"), source );
+
+  // Show the info
+  a_dialog_info_msg ( GTK_WINDOW(gtk_widget_get_toplevel(widget)), message );
+
+  g_free ( message );
+  g_free ( source );
+  g_free ( dem_file );
+  g_free ( filename );
+}
 
 static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
 {
   VikCoord coord;
-  struct LatLon ll;
+  static struct LatLon ll;
 
   gchar *full_path;
   gchar *dem_file = NULL;
@@ -1186,27 +1246,42 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
 
   g_debug("%s: %s", __FUNCTION__, full_path);
 
-  // TODO: check if already in filelist
+  if ( event->button == 1 ) {
+    // TODO: check if already in filelist
+    if ( ! dem_layer_add_file(vdl, full_path) ) {
+      gchar *tmp = g_strdup_printf ( _("Downloading DEM %s"), dem_file );
+      DEMDownloadParams *p = g_malloc(sizeof(DEMDownloadParams));
+      p->dest = g_strdup(full_path);
+      p->lat = ll.lat;
+      p->lon = ll.lon;
+      p->vdl = vdl;
+      p->mutex = g_mutex_new();
+      p->source = vdl->source;
+      g_object_weak_ref(G_OBJECT(p->vdl), weak_ref_cb, p );
 
-  if ( ! dem_layer_add_file(vdl, full_path) ) {
-    gchar *tmp = g_strdup_printf ( _("Downloading DEM %s"), dem_file );
-    DEMDownloadParams *p = g_malloc(sizeof(DEMDownloadParams));
-    p->dest = g_strdup(full_path);
-    p->lat = ll.lat;
-    p->lon = ll.lon;
-    p->vdl = vdl;
-    p->mutex = g_mutex_new();
-    p->source = vdl->source;
-    g_object_weak_ref(G_OBJECT(p->vdl), weak_ref_cb, p );
+      a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vdl), tmp,
+                            (vik_thr_func) dem_download_thread, p,
+                            (vik_thr_free_func) free_dem_download_params, NULL, 1 );
 
-    a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vdl), tmp,
-		(vik_thr_func) dem_download_thread, p,
-		(vik_thr_free_func) free_dem_download_params, NULL, 1 );
-
-    g_free ( tmp );
+      g_free ( tmp );
+    }
+    else
+      vik_layer_emit_update ( VIK_LAYER(vdl) );
   }
-  else
-    vik_layer_emit_update ( VIK_LAYER(vdl) );
+  else {
+    if ( !vdl->right_click_menu ) {
+      GtkWidget *item;
+      vdl->right_click_menu = GTK_MENU ( gtk_menu_new () );
+
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Show DEM File Information") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_MENU) );
+      g_signal_connect ( G_OBJECT(item), "activate", G_CALLBACK(dem_layer_file_info), &ll );
+      gtk_menu_shell_append (GTK_MENU_SHELL(vdl->right_click_menu), item);
+    }
+
+    gtk_menu_popup ( vdl->right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );
+    gtk_widget_show_all ( GTK_WIDGET(vdl->right_click_menu) );
+  }
 
   g_free ( dem_file );
   g_free ( full_path );
