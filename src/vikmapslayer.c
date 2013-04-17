@@ -1337,23 +1337,9 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
     // Get some timestamp information of the tile
     struct stat stat_buf;
     if ( g_stat ( filename, &stat_buf ) == 0 ) {
-      time_t file_time = stat_buf.st_mtime;
-#if GLIB_CHECK_VERSION(2,26,0)
-      GDateTime* gdt = g_date_time_new_from_unix_utc ( file_time );
-      gchar *time = g_date_time_format ( gdt, "%c" );
-#else
-      GDate* gdate = g_date_new ();
-      g_date_set_time_t ( gdate, file_time );
-      char time[32];
-      g_date_strftime ( time, sizeof(time), "%c", gdate );
-      g_date_free ( gdate );
-#endif
-      message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: %s"), source, filename, time );
-
-#if GLIB_CHECK_VERSION(2,26,0)
-      g_free ( time );
-      g_date_time_unref ( gdt);
-#endif
+      gchar time_buf[64];
+      strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
+      message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: %s"), source, filename, time_buf );
     }
   }
   else
