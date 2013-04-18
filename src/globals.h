@@ -176,6 +176,16 @@ gboolean a_vik_get_restore_window_state ( );
 
 gboolean a_vik_get_add_default_map_layer ( );
 
+typedef enum {
+  VIK_STARTUP_METHOD_HOME_LOCATION,
+  VIK_STARTUP_METHOD_LAST_LOCATION,
+  VIK_STARTUP_METHOD_SPECIFIED_FILE,
+} vik_startup_method_t;
+
+vik_startup_method_t a_vik_get_startup_method ( );
+
+const gchar *a_vik_get_startup_file ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
