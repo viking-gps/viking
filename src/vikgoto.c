@@ -41,7 +41,8 @@ static gchar *last_successful_goto_str = NULL;
 
 static GList *goto_tools_list = NULL;
 
-int last_goto_tool = 0;
+#define VIK_SETTINGS_GOTO_PROVIDER "goto_provider"
+int last_goto_tool = -1;
 
 void vik_goto_register ( VikGotoTool *tool )
 {
@@ -99,7 +100,20 @@ static gboolean prompt_try_again(VikWindow *vw)
   return ret;
 }
 
-static gchar *  a_prompt_for_goto_string(VikWindow *vw)
+static gint find_entry = -1;
+static gint wanted_entry = -1;
+
+static void find_provider (gpointer elem, gpointer user_data)
+{
+  const gchar *name = vik_goto_tool_get_label (elem);
+  const gchar *provider = user_data;
+  find_entry++;
+  if (!strcmp(name, provider)) {
+    wanted_entry = find_entry;
+  }
+}
+
+static gchar *a_prompt_for_goto_string(VikWindow *vw)
 {
   GtkWidget *dialog = NULL;
 
@@ -117,8 +131,23 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
     vik_combo_box_text_append ( tool_list, label );
     current = g_list_next (current);
   }
-  /* Set the previously selected provider as default */
-  gtk_combo_box_set_active ( GTK_COMBO_BOX( tool_list ), last_goto_tool);
+
+  // Use setting for the provider if available
+  if ( last_goto_tool < 0 ) {
+    find_entry = -1;
+    wanted_entry = -1;
+    gchar *provider = NULL;
+    if ( a_settings_get_string ( VIK_SETTINGS_GOTO_PROVIDER, &provider ) ) {
+      // Use setting
+      if ( provider )
+        g_list_foreach (goto_tools_list, find_provider, provider);
+      // If not found set it to the first entry, otherwise use the entry
+      last_goto_tool = ( wanted_entry < 0 ) ? 0 : wanted_entry;
+    }
+    else
+      last_goto_tool = 0;
+  }
+  gtk_combo_box_set_active ( GTK_COMBO_BOX( tool_list ), last_goto_tool );
 
   GtkWidget *goto_label = gtk_label_new(_("Enter address or place name:"));
   GtkWidget *goto_entry = gtk_entry_new();
@@ -143,7 +172,9 @@ static gchar *  a_prompt_for_goto_string(VikWindow *vw)
     return NULL;
   }
   
-  last_goto_tool = gtk_combo_box_get_active ( GTK_COMBO_BOX (tool_list) );
+  last_goto_tool = gtk_combo_box_get_active ( GTK_COMBO_BOX(tool_list) );
+  gchar *provider = vik_goto_tool_get_label ( g_list_nth_data (goto_tools_list, last_goto_tool) );
+  a_settings_set_string ( VIK_SETTINGS_GOTO_PROVIDER, provider );
 
   gchar *goto_str = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(goto_entry) ) );
 
