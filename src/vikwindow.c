@@ -317,39 +317,40 @@ VikWindow *vik_window_new_window ()
 
     gtk_widget_show_all ( GTK_WIDGET(vw) );
 
-    // These settings are applied after the show all as these options hide widgets
-    gboolean sidepanel;
-    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, &sidepanel ) )
-      if ( ! sidepanel ) {
-        gtk_widget_hide ( GTK_WIDGET(vw->viking_vlp) );
-        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanel" );
-        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
-      }
+    if ( a_vik_get_restore_window_state() ) {
+      // These settings are applied after the show all as these options hide widgets
+      gboolean sidepanel;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, &sidepanel ) )
+        if ( ! sidepanel ) {
+          gtk_widget_hide ( GTK_WIDGET(vw->viking_vlp) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanel" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
 
-    gboolean statusbar;
-    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_STATUSBAR, &statusbar ) )
-      if ( ! statusbar ) {
-        gtk_widget_hide ( GTK_WIDGET(vw->viking_vs) );
-        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewStatusBar" );
-        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
-      }
+      gboolean statusbar;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_STATUSBAR, &statusbar ) )
+        if ( ! statusbar ) {
+          gtk_widget_hide ( GTK_WIDGET(vw->viking_vs) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewStatusBar" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
 
-    gboolean toolbar;
-    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_TOOLBAR, &toolbar ) )
-      if ( ! toolbar ) {
-        gtk_widget_hide ( GTK_WIDGET(vw->toolbar) );
-        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewToolBar" );
-        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
-      }
+      gboolean toolbar;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_TOOLBAR, &toolbar ) )
+        if ( ! toolbar ) {
+          gtk_widget_hide ( GTK_WIDGET(vw->toolbar) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewToolBar" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
 
-    gboolean menubar;
-    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MENUBAR, &menubar ) )
-      if ( ! menubar ) {
-        gtk_widget_hide ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
-        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
-        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
-      }
-
+      gboolean menubar;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MENUBAR, &menubar ) )
+        if ( ! menubar ) {
+          gtk_widget_hide ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+    }
     window_count++;
 
     return vw;
@@ -651,33 +652,6 @@ static void vik_window_init ( VikWindow *vw )
   // Allow key presses to be processed anywhere
   g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
 
-  gint height;
-  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_HEIGHT, &height ) ) {
-    // Enforce a basic minimum size
-    if ( height < 160 )
-      height = 160;
-  }
-  else
-    // No setting - so use default
-    height = VIKING_WINDOW_HEIGHT;
-
-  gint width;
-  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_WIDTH, &width ) ) {
-    // Enforce a basic minimum size
-    if ( width < 320 )
-      width = 320;
-  }
-  else
-    // No setting - so use default
-    width = VIKING_WINDOW_WIDTH;
-
-  gtk_window_set_default_size ( GTK_WINDOW(vw), width, height );
-
-  gboolean maxed;
-  if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MAX, &maxed ) )
-    if ( maxed )
-      gtk_window_maximize ( GTK_WINDOW(vw) );
-
   hpaned = gtk_hpaned_new ();
   gtk_paned_pack1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
   gtk_paned_pack2 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vvp), TRUE, TRUE );
@@ -691,14 +665,44 @@ static void vik_window_init ( VikWindow *vw )
 
   window_list = g_slist_prepend ( window_list, vw);
 
-  gboolean full;
-  if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, &full ) ) {
-    if ( full ) {
-      gtk_window_fullscreen ( GTK_WINDOW(vw) );
-      GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/FullScreen" );
-      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
+  gint height = VIKING_WINDOW_HEIGHT;
+  gint width = VIKING_WINDOW_WIDTH;
+
+  if ( a_vik_get_restore_window_state() ) {
+    if ( a_settings_get_integer ( VIK_SETTINGS_WIN_HEIGHT, &height ) ) {
+      // Enforce a basic minimum size
+      if ( height < 160 )
+        height = 160;
+    }
+    else
+      // No setting - so use default
+      height = VIKING_WINDOW_HEIGHT;
+
+    if ( a_settings_get_integer ( VIK_SETTINGS_WIN_WIDTH, &width ) ) {
+      // Enforce a basic minimum size
+      if ( width < 320 )
+        width = 320;
+    }
+    else
+      // No setting - so use default
+      width = VIKING_WINDOW_WIDTH;
+
+    gboolean maxed;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MAX, &maxed ) )
+      if ( maxed )
+	gtk_window_maximize ( GTK_WINDOW(vw) );
+
+    gboolean full;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, &full ) ) {
+      if ( full ) {
+        gtk_window_fullscreen ( GTK_WINDOW(vw) );
+        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/FullScreen" );
+        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
+      }
     }
   }
+
+  gtk_window_set_default_size ( GTK_WINDOW(vw), width, height );
 
   vw->open_dia = NULL;
   vw->save_dia = NULL;
@@ -806,26 +810,6 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
 
 static gboolean delete_event( VikWindow *vw )
 {
-  // On every window close - save latest maximized state
-  gint state = gdk_window_get_state ( GTK_WIDGET(vw)->window );
-  gboolean state_max = state & GDK_WINDOW_STATE_MAXIMIZED;
-  a_settings_set_boolean ( VIK_SETTINGS_WIN_MAX, state_max );
-
-  gboolean state_fullscreen = state & GDK_WINDOW_STATE_FULLSCREEN;
-  a_settings_set_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, state_fullscreen );
-
-  a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vlp)) );
-
-  a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vs)) );
-
-  a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->toolbar)) );
-
-  gint width, height;
-  gtk_window_get_size ( GTK_WINDOW (vw), &width, &height );
-
-  a_settings_set_integer ( VIK_SETTINGS_WIN_WIDTH, width );
-  a_settings_set_integer ( VIK_SETTINGS_WIN_HEIGHT, height );
-
 #ifdef VIKING_PROMPT_IF_MODIFIED
   if ( vw->modified )
 #else
@@ -848,6 +832,30 @@ static gboolean delete_event( VikWindow *vw )
   }
 
   if ( window_count == 1 ) {
+    // On the final window close - save latest state - if it's wanted...
+    if ( a_vik_get_restore_window_state() ) {
+      gint state = gdk_window_get_state ( GTK_WIDGET(vw)->window );
+      gboolean state_max = state & GDK_WINDOW_STATE_MAXIMIZED;
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_MAX, state_max );
+
+      gboolean state_fullscreen = state & GDK_WINDOW_STATE_FULLSCREEN;
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, state_fullscreen );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vlp)) );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vs)) );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->toolbar)) );
+
+      // If supersized - no need to save the enlarged width+height values
+      if ( ! (state_fullscreen || state_max) ) {
+        gint width, height;
+        gtk_window_get_size ( GTK_WINDOW (vw), &width, &height );
+        a_settings_set_integer ( VIK_SETTINGS_WIN_WIDTH, width );
+        a_settings_set_integer ( VIK_SETTINGS_WIN_HEIGHT, height );
+      }
+    }
+
     a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, vw->draw_image_width );
     a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT, vw->draw_image_height );
     a_settings_set_boolean ( VIK_SETTINGS_WIN_SAVE_IMAGE_PNG, vw->draw_image_save_as_png );

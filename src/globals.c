@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2008, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * Copyright (C) 2010, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2010-2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,6 +111,10 @@ static VikLayerParam prefs_advanced[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "create_track_tooltip", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Tooltip during Track Creation:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL },
 };
 
+static VikLayerParam startup_prefs[] = {
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "restore_window_state", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Restore Window Setup:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Restore window size and layout"), NULL, },
+};
 /* End of Options static stuff */
 
 void a_vik_preferences_init ()
@@ -144,6 +148,9 @@ void a_vik_preferences_init ()
 
   // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_STARTUP_GROUP_KEY, _("Startup") );
+
+  tmp.b = FALSE;
+  a_preferences_register(&startup_prefs[0], tmp, VIKING_PREFERENCES_STARTUP_GROUP_KEY);
 
   // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
@@ -278,4 +285,12 @@ vik_file_ref_format_t a_vik_get_file_ref_format ( )
 gboolean a_vik_get_create_track_tooltip ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "create_track_tooltip")->b;
+}
+
+// Startup Options
+gboolean a_vik_get_restore_window_state ( )
+{
+  gboolean data;
+  data = a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "restore_window_state")->b;
+  return data;
 }
