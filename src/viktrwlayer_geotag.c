@@ -145,17 +145,52 @@ typedef struct {
 	gboolean redraw;
 } geotag_options_t;
 
-static option_values_t default_values = {
-	TRUE,
-	TRUE,
-	TRUE,
-	FALSE,
-	TRUE,
-	TRUE,
-	0,
-	0,
-	0,
-};
+#define VIK_SETTINGS_GEOTAG_CREATE_WAYPOINT      "geotag_create_waypoints"
+#define VIK_SETTINGS_GEOTAG_OVERWRITE_WAYPOINTS  "geotag_overwrite_waypoints"
+#define VIK_SETTINGS_GEOTAG_WRITE_EXIF           "geotag_write_exif"
+#define VIK_SETTINGS_GEOTAG_OVERWRITE_GPS_EXIF   "geotag_overwrite_gps"
+#define VIK_SETTINGS_GEOTAG_NO_CHANGE_MTIME      "geotag_no_change_mtime"
+#define VIK_SETTINGS_GEOTAG_INTERPOLATE_SEGMENTS "geotag_interpolate_segments"
+#define VIK_SETTINGS_GEOTAG_TIME_OFFSET          "geotag_time_offset"
+#define VIK_SETTINGS_GEOTAG_TIME_OFFSET_HOURS    "geotag_time_offset_hours"
+#define VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS     "geotag_time_offset_mins"
+
+static void save_default_values ( option_values_t default_values )
+{
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_CREATE_WAYPOINT, default_values.create_waypoints );
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_OVERWRITE_WAYPOINTS, default_values.overwrite_waypoints );
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_WRITE_EXIF, default_values.write_exif );
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_OVERWRITE_GPS_EXIF, default_values.overwrite_gps_exif );
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_NO_CHANGE_MTIME, default_values.no_change_mtime );
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_INTERPOLATE_SEGMENTS, default_values.interpolate_segments );
+	a_settings_set_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET, default_values.time_offset );
+	a_settings_set_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_HOURS, default_values.TimeZoneHours );
+	a_settings_set_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS, default_values.TimeZoneMins );
+}
+
+static option_values_t get_default_values ( )
+{
+	option_values_t default_values;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_CREATE_WAYPOINT, &default_values.create_waypoints ) )
+		default_values.create_waypoints = TRUE;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_OVERWRITE_WAYPOINTS, &default_values.overwrite_waypoints ) )
+		default_values.overwrite_waypoints = TRUE;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_WRITE_EXIF, &default_values.write_exif ) )
+		default_values.write_exif = TRUE;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_OVERWRITE_GPS_EXIF, &default_values.overwrite_gps_exif ) )
+		default_values.overwrite_gps_exif = FALSE;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_NO_CHANGE_MTIME, &default_values.no_change_mtime ) )
+		default_values.no_change_mtime = TRUE;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_INTERPOLATE_SEGMENTS, &default_values.interpolate_segments ) )
+		default_values.interpolate_segments = TRUE;
+	if ( ! a_settings_get_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET, &default_values.time_offset ) )
+		default_values.time_offset = 0;
+	if ( ! a_settings_get_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_HOURS, &default_values.TimeZoneHours ) )
+		default_values.TimeZoneHours = 0;
+	if ( ! a_settings_get_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS, &default_values.TimeZoneMins ) )
+		default_values.TimeZoneMins = 0;
+	return default_values;
+}
 
 /**
  * Correlate the image against the specified track
@@ -438,7 +473,7 @@ static void trw_layer_geotag_response_cb ( GtkDialog *dialog, gint resp, GeoTagW
 		options->redraw = FALSE;
 
 		// Save settings for reuse
-		default_values = options->ov;
+		save_default_values ( options->ov );
 
 		options->files = g_list_copy ( vik_file_list_get_files ( widgets->files ) );
 
@@ -531,7 +566,9 @@ void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr
 	gtk_entry_set_width_chars ( widgets->time_zone_b, 7);
 	gtk_entry_set_width_chars ( widgets->time_offset_b, 7);
 
-	// Defaults - TODO restore previous values / save settings somewhere??
+	// Defaults
+	option_values_t default_values = get_default_values ();
+
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->create_waypoints_b), default_values.create_waypoints );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_waypoints_b), default_values.overwrite_waypoints );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->write_exif_b), default_values.write_exif );
