@@ -143,6 +143,9 @@ void a_vik_preferences_init ()
   a_preferences_register(&general_prefs[6], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   // New Tab
+  a_preferences_register_group ( VIKING_PREFERENCES_STARTUP_GROUP_KEY, _("Startup") );
+
+  // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
 
   tmp.u = VIK_KML_EXPORT_UNITS_METRIC;

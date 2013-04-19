@@ -186,6 +186,9 @@ gboolean a_vik_get_create_track_tooltip ( );
 #define VIKING_PREFERENCES_ADVANCED_GROUP_KEY "viking.advanced"
 #define VIKING_PREFERENCES_ADVANCED_NAMESPACE "viking.advanced."
 
+#define VIKING_PREFERENCES_STARTUP_GROUP_KEY "viking.startup"
+#define VIKING_PREFERENCES_STARTUP_NAMESPACE "viking.startup."
+
 G_END_DECLS
 
 #endif
