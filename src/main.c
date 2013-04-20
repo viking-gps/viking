@@ -217,6 +217,8 @@ int main( int argc, char *argv[] )
     }
   }
 
+  vik_window_new_window_finish ( first_window );
+
   gtk_main ();
   gdk_threads_leave ();
 

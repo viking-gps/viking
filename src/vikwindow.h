@@ -53,6 +53,8 @@ GType vik_window_get_type ();
 // To call from main to start things off:
 VikWindow *vik_window_new_window ();
 
+void vik_window_new_window_finish ( VikWindow *vw );
+
 GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode );
 gboolean vik_window_get_pan_move ( VikWindow *vw );
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean changefilename );

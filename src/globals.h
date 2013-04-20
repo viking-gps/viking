@@ -174,6 +174,8 @@ gboolean a_vik_get_create_track_tooltip ( );
 
 gboolean a_vik_get_restore_window_state ( );
 
+gboolean a_vik_get_add_default_map_layer ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."

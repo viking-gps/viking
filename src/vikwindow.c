@@ -358,6 +358,25 @@ VikWindow *vik_window_new_window ()
   return NULL;
 }
 
+/**
+ * Steps to be taken once initial loading has completed
+ */
+void vik_window_new_window_finish ( VikWindow *vw )
+{
+  // Don't add a map if we've loaded a Viking file already
+  if ( vw->filename )
+    return;
+
+  // Maybe add a default map layer
+  if ( a_vik_get_add_default_map_layer () ) {
+    VikMapsLayer *vml = VIK_MAPS_LAYER ( vik_layer_create(VIK_LAYER_MAPS, vw->viking_vvp, NULL, FALSE) );
+    vik_layer_rename ( VIK_LAYER(vml), _("Default Map") );
+    vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(vml), TRUE );
+
+    draw_update ( vw );
+  }
+}
+
 static void open_window ( VikWindow *vw, GSList *files )
 {
   gboolean change_fn = (g_slist_length(files) == 1); /* only change fn if one file */

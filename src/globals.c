@@ -114,6 +114,8 @@ static VikLayerParam prefs_advanced[] = {
 static VikLayerParam startup_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "restore_window_state", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Restore Window Setup:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Restore window size and layout"), NULL, },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "add_default_map_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Add a Default Map Layer:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("The default map layer added is defined by the Layer Defaults. Use the menu Edit->Layer Defaults->Map... to change the map type and other values."), NULL, },
 };
 /* End of Options static stuff */
 
@@ -151,6 +153,9 @@ void a_vik_preferences_init ()
 
   tmp.b = FALSE;
   a_preferences_register(&startup_prefs[0], tmp, VIKING_PREFERENCES_STARTUP_GROUP_KEY);
+
+  tmp.b = FALSE;
+  a_preferences_register(&startup_prefs[1], tmp, VIKING_PREFERENCES_STARTUP_GROUP_KEY);
 
   // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
@@ -292,5 +297,12 @@ gboolean a_vik_get_restore_window_state ( )
 {
   gboolean data;
   data = a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "restore_window_state")->b;
+  return data;
+}
+
+gboolean a_vik_get_add_default_map_layer ( )
+{
+  gboolean data;
+  data = a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "add_default_map_layer")->b;
   return data;
 }
