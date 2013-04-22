@@ -956,6 +956,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 
   //gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
   // Forming the list manually seems to produce one that is more likely to be nearer to the creation order
+  gl = NULL;
   gpointer key, value;
   GHashTableIter ght_iter;
   g_hash_table_iter_init ( &ght_iter, vik_trw_layer_get_tracks ( vtl ) );
