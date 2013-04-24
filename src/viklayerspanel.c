@@ -233,7 +233,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   pasteimage = gtk_image_new_from_stock ( GTK_STOCK_PASTE, GTK_ICON_SIZE_SMALL_TOOLBAR );
   pastebutton = gtk_button_new ( );
   gtk_container_add ( GTK_CONTAINER(pastebutton),pasteimage );
-  gtk_widget_set_tooltip_text ( GTK_WIDGET(pastebutton), _("Paste layer below selected layer"));
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(pastebutton), _("Paste layer into selected container layer or otherwise above selected layer"));
   gtk_box_pack_start ( GTK_BOX(hbox), pastebutton, TRUE, TRUE, 0 );
   g_signal_connect_swapped ( G_OBJECT(pastebutton), "clicked", G_CALLBACK(vik_layers_panel_paste_selected), vlp );
 
