@@ -4321,6 +4321,32 @@ static void trw_layer_delete_item ( gpointer pass_along[6] )
     vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
+/**
+ *  Rename waypoint and maintain corresponding name of waypoint in the treeview
+ */
+static void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name )
+{
+  vik_waypoint_set_name ( wp, new_name );
+
+  // Now update the treeview as well
+  wpu_udata udataU;
+  udataU.wp   = wp;
+  udataU.uuid = NULL;
+
+  // Need key of it for treeview update
+  gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
+
+  if ( wpf && udataU.uuid ) {
+    GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
+
+    if ( it ) {
+      vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, new_name );
+#ifdef VIK_CONFIG_ALPHABETIZED_TRW
+      vik_treeview_sublayer_realphabetize ( VIK_LAYER(vtl)->vt, it, new_name );
+#endif
+    }
+  }
+}
 
 static void trw_layer_properties_item ( gpointer pass_along[7] )
 {
@@ -4332,7 +4358,9 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
     if ( wp && wp->name )
     {
       gboolean updated = FALSE;
-      a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wp->name, vtl, wp, vtl->coord_mode, FALSE, &updated );
+      gchar *new_name = a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wp->name, vtl, wp, vtl->coord_mode, FALSE, &updated );
+      if ( new_name )
+        trw_layer_waypoint_rename ( vtl, wp, new_name );
 
       if ( updated && pass_along[6] )
         vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, pass_along[6], get_wp_sym_small (wp->symbol) );
@@ -5889,26 +5917,8 @@ static void vik_trw_layer_uniquify_waypoints ( VikTrwLayer *vtl, VikLayersPanel 
 
     // Rename it
     gchar *newname = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, udata.same_waypoint_name );
-    vik_waypoint_set_name ( waypoint, newname );
 
-    wpu_udata udataU;
-    udataU.wp   = waypoint;
-    udataU.uuid = NULL;
-
-    // Need want key of it for treeview update
-    gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
-
-    if ( wpf && udataU.uuid ) {
-
-      GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
-
-      if ( it ) {
-        vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, newname );
-#ifdef VIK_CONFIG_ALPHABETIZED_TRW
-        vik_treeview_sublayer_realphabetize ( VIK_LAYER(vtl)->vt, it, newname );
-#endif
-      }
-    }
+    trw_layer_waypoint_rename ( vtl, waypoint, newname );
 
     // Start trying to find same names again...
     waypoint_names = NULL;

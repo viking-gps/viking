@@ -191,7 +191,6 @@ static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
 /* Specify if a new waypoint or not */
 /* If a new waypoint then it uses the default_name for the suggested name allowing the user to change it.
     The name to use is returned
-   When an existing waypoint the default name is shown but is not allowed to be changed and NULL is returned
  */
 /* todo: less on this side, like add track */
 gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *vtl, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new, gboolean *updated )
@@ -232,21 +231,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
 
   namelabel = gtk_label_new (_("Name:"));
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), namelabel, FALSE, FALSE, 0);
-  if ( is_new )
-  {
-    // New waypoint, so name is still changeable
-    nameentry = gtk_entry_new ();
-    if ( default_name )
-      gtk_entry_set_text( GTK_ENTRY(nameentry), default_name );
-    g_signal_connect_swapped ( nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
-  }
-  else {
-    // Existing waypoint - so can not change the name this way - but at least can see it
-    if ( default_name )
-      nameentry = gtk_label_new ( default_name );
-  }
-  if ( nameentry )
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nameentry, FALSE, FALSE, 0);
+  // Name is now always changeable
+  nameentry = gtk_entry_new ();
+  if ( default_name )
+    gtk_entry_set_text( GTK_ENTRY(nameentry), default_name );
+  g_signal_connect_swapped ( nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nameentry, FALSE, FALSE, 0);
 
   latlabel = gtk_label_new (_("Latitude:"));
   latentry = gtk_entry_new ();
@@ -355,95 +345,59 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
 
   while ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
-    if ( is_new )
-    {
-      if ( strlen((gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) )) == 0 ) /* TODO: other checks (isalpha or whatever ) */
-        a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
-      else {
-	// NB: No check for unique names - this allows generation of same named entries.
-        gchar *entered_name = g_strdup ( (gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) ) );
+    if ( strlen((gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) )) == 0 ) /* TODO: other checks (isalpha or whatever ) */
+      a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
+    else {
+      // NB: No check for unique names - this allows generation of same named entries.
+      gchar *entered_name = g_strdup ( (gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) ) );
 
-	/* Do It */
-	ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
-	ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
-	vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
-	// Always store in metres
-	switch (height_units) {
-	case VIK_UNITS_HEIGHT_METRES:
-	  wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	  break;
-	case VIK_UNITS_HEIGHT_FEET:
-	  wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
-	  break;
-	default:
-	  wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	  g_critical("Houston, we've had a problem. height=%d", height_units);
-	}
-	vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
-	vik_waypoint_set_description ( wp, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) );
-	vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
-	if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
-	  a_thumbnails_create ( wp->image );
-
-	GtkTreeIter iter, first;
-	gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
-	if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
-	  vik_waypoint_set_symbol ( wp, NULL );
-	} else {
-	  gchar *sym;
-	  gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
-	  vik_waypoint_set_symbol ( wp, sym );
-	  g_free(sym);
-	}
-
-	gtk_widget_destroy ( dialog );
-	return entered_name;
-      }
-    }
-    else
-    {
+      /* Do It */
       ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
       ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
+      // Always store in metres
       switch (height_units) {
       case VIK_UNITS_HEIGHT_METRES:
-	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	break;
+        wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
+        break;
       case VIK_UNITS_HEIGHT_FEET:
-	wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
-	break;
+        wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
+        break;
       default:
-	wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-	g_critical("Houston, we've had a problem. height=%d", height_units);
+        wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
+        g_critical("Houston, we've had a problem. height=%d", height_units);
       }
-      if ( (! wp->comment) || strcmp ( wp->comment, gtk_entry_get_text ( GTK_ENTRY(commententry) ) ) != 0 )
+      if ( g_strcmp0 ( wp->comment, gtk_entry_get_text ( GTK_ENTRY(commententry) ) ) )
         vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
-      if ( (! wp->description) || strcmp ( wp->description, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) ) != 0 )
+      if ( g_strcmp0 ( wp->description, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) ) )
         vik_waypoint_set_description ( wp, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) );
-      if ( (! wp->image) || strcmp ( wp->image, vik_file_entry_get_filename ( VIK_FILE_ENTRY ( imageentry ) ) ) != 0 )
-      {
+      if ( g_strcmp0 ( wp->image, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) ) )
         vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
-        if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
-          a_thumbnails_create ( wp->image );
-      }
+      if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
+        a_thumbnails_create ( wp->image );
 
-      {
-	GtkTreeIter iter, first;
-	gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
-	if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
-	  vik_waypoint_set_symbol ( wp, NULL );
-	} else {
-	  gchar *sym;
-	  gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
-	  vik_waypoint_set_symbol ( wp, sym );
-	  g_free(sym);
-	}
-      }		
+      GtkTreeIter iter, first;
+      gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
+      if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
+        vik_waypoint_set_symbol ( wp, NULL );
+      } else {
+        gchar *sym;
+        gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
+        vik_waypoint_set_symbol ( wp, sym );
+        g_free(sym);
+      }
 
       gtk_widget_destroy ( dialog );
-      
-      *updated = TRUE;
-      return NULL;
+      if ( is_new )
+        return entered_name;
+      else {
+        *updated = TRUE;
+        // See if name has been changed
+        if ( g_strcmp0 (default_name, entered_name ) )
+          return entered_name;
+        else
+          return NULL;
+      }
     }
   }
   gtk_widget_destroy ( dialog );
