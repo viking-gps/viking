@@ -75,6 +75,9 @@ extern gboolean vik_debug;
 extern gboolean vik_verbose;
 extern gboolean vik_version;
 
+/* Allow comparing versions */
+gint viking_version_to_number ( gchar *version );
+
 /* Global preferences */
 void a_vik_preferences_init ();
 
