@@ -1,6 +1,8 @@
 #!/bin/bash
 # NB Annoyingly pushd/popd are bashisms!
 #
+# License: CC0
+#
 # You don't want to do this on a previously configured/built Linux source tree
 #  as the build system will get confused so make clean and start again...
 #

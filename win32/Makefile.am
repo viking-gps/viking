@@ -1,4 +1,4 @@
-
+# License: CC0
 EXTRA_DIST = \
 	prepare.bat \
 	configure_and_make.bat \

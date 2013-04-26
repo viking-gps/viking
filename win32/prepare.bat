@@ -1,4 +1,5 @@
 @echo OFF
+:: License: CC0
 ::
 :: Setup wget first - this has to be done manually
 :: http://gnuwin32.sourceforge.net/packages/wget.htm

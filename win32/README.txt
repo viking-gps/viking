@@ -1,4 +1,5 @@
-
+# License: CC0
+#
 The build under Windows follows the same process as the traditional Linux build:
 
     cd ../src

@@ -1,3 +1,4 @@
+:: License: CC0
 :: Full build
 ::
 :: Note this assumes the 'configure' script already exists

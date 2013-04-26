@@ -1,4 +1,5 @@
 #!/bin/bash
+# License: CC0
 
 # 'make dist' stuff
 # ensure we have the latest changelog

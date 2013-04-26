@@ -1,4 +1,5 @@
 @echo OFF
+:: License: CC0
 ::
 :: TODO return an error code when not completed as expected
 ::

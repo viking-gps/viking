@@ -1,4 +1,5 @@
 #!/bin/bash
+# License: CC0
 
 # First ensure we have a configure script:
 pushd ..

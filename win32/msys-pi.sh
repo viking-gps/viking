@@ -1,3 +1,4 @@
+# License: CC0
 # Fix up MSYS install
 # Don't ask for questions
 # fix fstab to the values I need
