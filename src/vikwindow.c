@@ -3140,6 +3140,8 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   // Can we not hard code size here?
   if ( active > 17 )
     active = 17;
+  if ( active < 0 )
+    active = 0;
   gtk_combo_box_set_active ( GTK_COMBO_BOX(zoom_combo), active );
 
   total_size_label = gtk_label_new ( NULL );
