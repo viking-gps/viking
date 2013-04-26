@@ -222,12 +222,16 @@ static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gch
   //gchar *safe_string = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ) );
   gchar *safe_user = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "username")->s );
   gchar *safe_pass = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "password")->s );
+  gchar *slat, *slon;
   gdouble lat, lon;
   if ( 2 != sscanf ( gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ), "%lf,%lf", &lat, &lon ) ) {
     g_warning (_("Broken input - using some defaults"));
     lat = a_vik_get_default_lat();
     lon = a_vik_get_default_long();
   }
+  // Convert double as string in C locale
+  slat = a_coords_dtostr ( lat );
+  slon = a_coords_dtostr ( lon );
 
   // Unix specific shell commands
   // 1. Remove geocache webpages (maybe be from different location)
@@ -235,18 +239,20 @@ static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gch
   // 3. Converts webpages into a single waypoint file, ignoring zero location waypoints '-z'
   //       Probably as they are premium member only geocaches and user is only a basic member
   //  Final output is piped into GPSbabel - hence removal of *html is done at beginning of the command sequence
-  *cmd = g_strdup_printf( "rm -f ~/.geo/caches/*html ; %s -P -n%d -r%.1fM -u %s -p %s %.4f %.4f ; %s -z ~/.geo/caches/*html ",
+  *cmd = g_strdup_printf( "rm -f ~/.geo/caches/*html ; %s -P -n%d -r%.1fM -u %s -p %s %s %s ; %s -z ~/.geo/caches/*html ",
 			  GC_PROGRAM1,
 			  gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->num_spin) ),
 			  gtk_spin_button_get_value_as_float ( GTK_SPIN_BUTTON(widgets->miles_radius_spin) ),
 			  safe_user,
 			  safe_pass,
-			  lat, lon,
+			  slat, slon,
 			  GC_PROGRAM2 );
   *input_file_type = NULL;
   //g_free ( safe_string );
   g_free ( safe_user );
   g_free ( safe_pass );
+  g_free ( slat );
+  g_free ( slon );
 }
 
 static void datasource_gc_cleanup ( datasource_gc_widgets_t *widgets )
