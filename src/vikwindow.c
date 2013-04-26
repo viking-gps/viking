@@ -398,10 +398,10 @@ static void zoom_changed (GtkMenuShell *menushell,
 static GtkWidget * create_zoom_menu_all_levels ()
 {
   GtkWidget *menu = gtk_menu_new ();
-  char *itemLabels[] = { "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768", NULL };
+  char *itemLabels[] = { "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768" };
 
   int i;
-  for (i = 0 ; itemLabels[i] != NULL ; i++)
+  for (i = 0 ; i < G_N_ELEMENTS(itemLabels) ; i++)
     {
       GtkWidget *item = gtk_menu_item_new_with_label (itemLabels[i]);
       gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
