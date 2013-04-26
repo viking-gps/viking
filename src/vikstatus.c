@@ -68,16 +68,6 @@ forward_signal (GObject *object, gpointer user_data)
 static void
 vik_statusbar_class_init (VikStatusbarClass *klass)
 {
-  /*
-  vik_statusbar_signals[CLICKED_BG_ITEMS] =
-    g_signal_new ("clicked_bg_items",
-                  G_TYPE_FROM_CLASS (klass),
-                  G_SIGNAL_RUN_FIRST,
-                  G_STRUCT_OFFSET (VikStatusbarClass, clicked_bg_items),
-                  NULL, NULL, NULL, G_TYPE_NONE, 0);
-
-  klass->clicked_bg_items = NULL;
-  */
   vik_statusbar_signals[CLICKED] =
     g_signal_new ("clicked",
                   G_TYPE_FROM_CLASS (klass),
