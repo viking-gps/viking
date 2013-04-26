@@ -184,14 +184,16 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
         rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
-        vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), data.s );
+        if ( data.s )
+          vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), data.s );
       }
       break;
     case VIK_LAYER_WIDGET_FOLDERENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
         rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-        vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), data.s );
+        if ( data.s )
+          vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), data.s );
       }
       break;
 

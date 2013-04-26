@@ -123,7 +123,7 @@ void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type
           case VIK_LAYER_PARAM_UINT: fprintf ( f, "%d\n", data.u ); break;
           case VIK_LAYER_PARAM_INT: fprintf ( f, "%d\n", data.i ); break;
           case VIK_LAYER_PARAM_BOOLEAN: fprintf ( f, "%c\n", data.b ? 't' : 'f' ); break;
-          case VIK_LAYER_PARAM_STRING: fprintf ( f, "%s\n", data.s ); break;
+          case VIK_LAYER_PARAM_STRING: fprintf ( f, "%s\n", data.s ? data.s : "" ); break;
           case VIK_LAYER_PARAM_COLOR: fprintf ( f, "#%.2x%.2x%.2x\n", (int)(data.c.red/256),(int)(data.c.green/256),(int)(data.c.blue/256)); break;
           default: break;
         }
