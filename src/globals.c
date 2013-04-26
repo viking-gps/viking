@@ -23,15 +23,45 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 
 #include <glib/gi18n.h>
 
 #include "globals.h"
 #include "preferences.h"
+#include "math.h"
 
 gboolean vik_debug = FALSE;
 gboolean vik_verbose = FALSE;
 gboolean vik_version = FALSE;
+
+/**
+ * viking_version_to_number:
+ * @version:  The string of the Viking version.
+ *            This should be in the form of N.N.N.N, where the 3rd + 4th numbers are optional
+ *            Often you'll want to pass in VIKING_VERSION
+ *
+ * Returns: a single number useful for comparison
+ */
+gint viking_version_to_number ( gchar *version )
+{
+  // Basic method, probably can be improved
+  gint version_number = 0;
+  gchar** parts = g_strsplit ( version, ".", 0 );
+  gint part_num = 0;
+  gchar *part = parts[part_num];
+  // Allow upto 4 parts to the version number
+  while ( part && part_num < 4 ) {
+    // Allow each part to have upto 100
+    version_number = version_number + ( atol(part) * pow(100, 3-part_num) );
+    part_num++;
+    part = parts[part_num];
+  }
+  g_strfreev ( parts );
+  return version_number;
+}
 
 static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", NULL};
 static gchar * params_units_distance[] = {"Kilometres", "Miles", NULL};
@@ -92,6 +122,8 @@ static VikLayerParam io_prefs_external_gpx[] = {
 
 void a_vik_preferences_init ()
 {
+  g_debug ( "VIKING VERSION as number: %d", viking_version_to_number (VIKING_VERSION) );
+
   // Defaults for the options are setup here
   a_preferences_register_group ( VIKING_PREFERENCES_GROUP_KEY, _("General") );
 
