@@ -106,24 +106,27 @@ static gboolean layers_panel_new_layer ( gpointer lpnl[2] )
 
 /**
  * Create menu popup on demand
+ * @full: offer cut/copy options as well - not just the new layer options
  */
-static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp )
+static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full )
 {
   GtkWidget *menu = gtk_menu_new ();
   GtkWidget *menuitem;
   guint ii;
 
-  for ( ii = 0; ii < G_N_ELEMENTS(entries); ii++ ) {
-    if ( entries[ii].stock_id ) {
-      menuitem = gtk_image_menu_item_new_with_mnemonic ( entries[ii].label );
-      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_stock (entries[ii].stock_id, GTK_ICON_SIZE_MENU) );
-    }
-    else
-      menuitem = gtk_menu_item_new_with_mnemonic ( entries[ii].label );
+  if ( full ) {
+    for ( ii = 0; ii < G_N_ELEMENTS(entries); ii++ ) {
+      if ( entries[ii].stock_id ) {
+        menuitem = gtk_image_menu_item_new_with_mnemonic ( entries[ii].label );
+        gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_stock (entries[ii].stock_id, GTK_ICON_SIZE_MENU) );
+      }
+      else
+        menuitem = gtk_menu_item_new_with_mnemonic ( entries[ii].label );
 
-    g_signal_connect_swapped ( G_OBJECT(menuitem), "activate", G_CALLBACK(entries[ii].callback), vlp );
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-    gtk_widget_show ( menuitem );
+      g_signal_connect_swapped ( G_OBJECT(menuitem), "activate", G_CALLBACK(entries[ii].callback), vlp );
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+      gtk_widget_show ( menuitem );
+    }
   }
 
   GtkWidget *submenu = gtk_menu_new();
@@ -358,7 +361,7 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
       VikLayer *layer = VIK_LAYER(vik_treeview_item_get_pointer ( vlp->vt, iter ));
 
       if ( layer->type == VIK_LAYER_AGGREGATE )
-        menu = GTK_MENU ( layers_panel_create_popup ( vlp ) );
+        menu = GTK_MENU ( layers_panel_create_popup ( vlp, TRUE ) );
       else
       {
         GtkWidget *del, *prop;
@@ -417,7 +420,7 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
   }
   else
   {
-    menu = GTK_MENU ( layers_panel_create_popup ( vlp ) );
+    menu = GTK_MENU ( layers_panel_create_popup ( vlp, FALSE ) );
   }
   gtk_menu_popup ( menu, NULL, NULL, NULL, NULL, mouse_button, gtk_get_current_event_time() );
 }
