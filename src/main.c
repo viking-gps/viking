@@ -164,6 +164,9 @@ int main( int argc, char *argv[] )
   XSetErrorHandler(myXErrorHandler);
 #endif
 
+  // Discover if this is the very first run
+  a_vik_very_first_run ();
+
   a_settings_init ();
   a_preferences_init ();
 

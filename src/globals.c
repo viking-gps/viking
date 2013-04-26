@@ -32,6 +32,7 @@
 #include "globals.h"
 #include "preferences.h"
 #include "math.h"
+#include "dir.h"
 
 gboolean vik_debug = FALSE;
 gboolean vik_verbose = FALSE;
@@ -123,6 +124,34 @@ static VikLayerParam startup_prefs[] = {
     N_("The default file to load on startup. Only applies when the startup method is set to 'Specified File'"), NULL, },
 };
 /* End of Options static stuff */
+
+/**
+ * Detect when Viking is run for the very first time
+ * Call this very early in the startup sequence to ensure subsequent correct results
+ * The return value is cached, since later on the test will no longer be true
+ */
+gboolean a_vik_very_first_run ()
+{
+  static gboolean vik_very_first_run_known = FALSE;
+  static gboolean vik_very_first_run = FALSE;
+
+  // use cached result if available
+  if ( vik_very_first_run_known )
+    return vik_very_first_run;
+
+  gchar *dir = a_get_viking_dir_no_create();
+  // NB: will need extra logic if default dir gets changed e.g. from ~/.viking to ~/.config/viking
+  if ( dir ) {
+    // If directory exists - Viking has been run before
+    vik_very_first_run = ! g_file_test ( dir, G_FILE_TEST_EXISTS );
+    g_free ( dir );
+  }
+  else
+    vik_very_first_run = TRUE;
+  vik_very_first_run_known = TRUE;
+
+  return vik_very_first_run;
+}
 
 void a_vik_preferences_init ()
 {

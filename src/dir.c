@@ -32,37 +32,45 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-const gchar *a_get_viking_dir()
+/**
+ * For external use, free the result
+ * Made externally available primarily to detect when Viking is first run
+ */
+gchar *a_get_viking_dir_no_create()
 {
-  static gchar *viking_dir = NULL;
-
   // TODO: use g_get_user_config_dir ?
 
-  if (!viking_dir) {
-    const gchar *home = g_getenv("HOME");
-    if (!home || g_access(home, W_OK))
-      home = g_get_home_dir ();
+  const gchar *home = g_getenv("HOME");
+  if (!home || g_access(home, W_OK))
+    home = g_get_home_dir ();
 #ifdef HAVE_MKDTEMP
-    if (!home || g_access(home, W_OK))
+  if (!home || g_access(home, W_OK))
     {
       static gchar temp[] = {"/tmp/vikXXXXXX"};
       home = mkdtemp(temp);
     }
 #endif
-    if (!home || g_access(home, W_OK))
-      /* Fatal error */
-      g_critical("Unable to find a base directory");
+  if (!home || g_access(home, W_OK))
+    /* Fatal error */
+    g_critical("Unable to find a base directory");
 
     /* Build the name of the directory */
 #ifdef __APPLE__
-    viking_dir = g_build_filename(home, "/Library/Application Support/Viking", NULL);
+  return g_build_filename(home, "/Library/Application Support/Viking", NULL);
 #else
-    viking_dir = g_build_filename(home, ".viking", NULL);
+  return g_build_filename(home, ".viking", NULL);
 #endif
+}
+
+static gchar *viking_dir = NULL;
+
+const gchar *a_get_viking_dir()
+{
+  if (!viking_dir) {
+    viking_dir = a_get_viking_dir_no_create ();
     if (g_file_test(viking_dir, G_FILE_TEST_EXISTS) == FALSE)
       g_mkdir(viking_dir, 0755);
   }
-
   return viking_dir;
 }
 
