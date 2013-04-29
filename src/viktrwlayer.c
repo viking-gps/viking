@@ -3899,11 +3899,9 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
     vik_trw_layer_add_waypoint ( vtl_dest, newname, wp2 );
     trw_layer_delete_waypoint ( vtl_src, wp );
 
-    // If no change - don't need to recalculate bounds
-    if ( !rename ) {
-      trw_layer_calculate_bounds_waypoints ( vtl_dest );
-      trw_layer_calculate_bounds_waypoints ( vtl_src );
-    }
+    // Recalculate bounds even if not renamed as maybe dragged between layers
+    trw_layer_calculate_bounds_waypoints ( vtl_dest );
+    trw_layer_calculate_bounds_waypoints ( vtl_src );
   }
 }
 
