@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar *extra )
 {
@@ -206,6 +207,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   struct LatLon ll;
   GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL;
   GtkWidget *commentlabel, *commententry, *descriptionlabel, *descriptionentry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
+  GtkWidget *timelabel = NULL;
+  GtkWidget *timevaluelabel = NULL; // No editing of time allowed ATM
   GtkListStore *store;
 
   gchar *lat, *lon, *alt;
@@ -318,11 +321,22 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   if ( !is_new && wp->image )
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
+  if ( !is_new && wp->has_timestamp ) {
+    gchar tmp_str[32];
+    timelabel = gtk_label_new ( _("Time:") );
+    timevaluelabel = gtk_label_new ( NULL );
+    strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(wp->timestamp)) );
+    gtk_label_set_text ( GTK_LABEL(timevaluelabel), tmp_str );
+  }
 
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonentry, FALSE, FALSE, 0);
+  if ( timelabel ) {
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timelabel, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timevaluelabel, FALSE, FALSE, 0);
+  }
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), commentlabel, FALSE, FALSE, 0);
