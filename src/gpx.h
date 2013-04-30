@@ -30,6 +30,7 @@ G_BEGIN_DECLS
  * Options adapting GPX writing.
  */
 typedef struct {
+	// NB force options only apply to trackpoints
 	gboolean force_ele; /// Force ele field
 	gboolean force_time; /// Force time field
 	gboolean hidden; /// Write invisible tracks/waypoints (default is yes)

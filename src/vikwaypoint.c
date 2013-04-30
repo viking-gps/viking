@@ -127,6 +127,8 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   new_wp->coord = wp->coord;
   new_wp->visible = wp->visible;
   new_wp->altitude = wp->altitude;
+  new_wp->has_timestamp = wp->has_timestamp;
+  new_wp->timestamp = wp->timestamp;
   vik_waypoint_set_name(new_wp,wp->name);
   vik_waypoint_set_comment(new_wp,wp->comment);
   vik_waypoint_set_description(new_wp,wp->description);

@@ -54,7 +54,8 @@ typedef enum {
         tt_wpt_desc,
         tt_wpt_name,
         tt_wpt_ele,
-	tt_wpt_sym,
+        tt_wpt_sym,
+        tt_wpt_time,
         tt_wpt_link,            /* New in GPX 1.1 */
 
         tt_trk,
@@ -108,6 +109,7 @@ tag_mapping tag_path_map[] = {
         { tt_waypoint_name, "/loc/waypoint/name" },
 
         { tt_wpt_ele, "/gpx/wpt/ele" },
+        { tt_wpt_time, "/gpx/wpt/time" },
         { tt_wpt_name, "/gpx/wpt/name" },
         { tt_wpt_cmt, "/gpx/wpt/cmt" },
         { tt_wpt_desc, "/gpx/wpt/desc" },
@@ -249,6 +251,7 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_wpt_desc:
      case tt_wpt_name:
      case tt_wpt_ele:
+     case tt_wpt_time:
      case tt_wpt_link:
      case tt_trk_cmt:
      case tt_trk_desc:
@@ -282,6 +285,7 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
 static void gpx_end(VikTrwLayer *vtl, const char *el)
 {
   static GTimeVal tp_time;
+  static GTimeVal wp_time;
 
   g_string_truncate ( xpath, xpath->len - strlen(el) - 1 );
 
@@ -366,6 +370,14 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_wpt_time:
+       if ( g_time_val_from_iso8601(c_cdata->str, &wp_time) ) {
+         c_wp->timestamp = wp_time.tv_sec;
+         c_wp->has_timestamp = TRUE;
+       }
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_trk_trkseg_trkpt_time:
        if ( g_time_val_from_iso8601(c_cdata->str, &tp_time) ) {
          c_tp->timestamp = tp_time.tv_sec;
@@ -434,6 +446,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_trk_cmt:
     case tt_trk_desc:
     case tt_trk_trkseg_trkpt_time:
+    case tt_wpt_time:
     case tt_trk_trkseg_trkpt_course:
     case tt_trk_trkseg_trkpt_speed:
     case tt_trk_trkseg_trkpt_fix:
@@ -689,6 +702,18 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     fprintf ( f, "  <ele>%s</ele>\n", tmp );
     g_free ( tmp );
   }
+
+  if ( wp->has_timestamp ) {
+    GTimeVal timestamp;
+    timestamp.tv_sec = wp->timestamp;
+    timestamp.tv_usec = 0;
+
+    gchar *time_iso8601 = g_time_val_to_iso8601 ( &timestamp );
+    if ( time_iso8601 != NULL )
+      fprintf ( f, "  <time>%s</time>\n", time_iso8601 );
+    g_free ( time_iso8601 );
+  }
+
   if ( wp->comment )
   {
     tmp = entitize(wp->comment);
