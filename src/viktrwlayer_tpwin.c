@@ -248,7 +248,7 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
 
 void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *track_name )
 {
-  static char tmp_str[25];
+  static char tmp_str[32];
   static struct LatLon ll;
   VikTrackpoint *tp = VIK_TRACKPOINT(tpl->data);
 
@@ -294,8 +294,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *tr
   {
     g_snprintf ( tmp_str, sizeof(tmp_str), "%ld", tp->timestamp );
     gtk_label_set_text ( tpwin->ts, tmp_str );
-    g_snprintf ( tmp_str, MIN(25,sizeof(tmp_str)), "%s", ctime(&(tp->timestamp)) );
-    /* max. len of 25 will snip off newline, which is good since it messes stuff up */
+    strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(tp->timestamp)) );
     gtk_label_set_text ( tpwin->localtime, tmp_str );
   }
   else
