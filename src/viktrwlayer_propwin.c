@@ -3018,14 +3018,10 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
     t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
 
-    strncpy(tmp_buf, ctime(&t1), sizeof(tmp_buf));
-    tmp_buf[sizeof(tmp_buf)-1] = 0;
-    g_strchomp(tmp_buf);
+    strftime (tmp_buf, sizeof(tmp_buf), "%c", localtime(&(t1)));
     widgets->w_time_start = content[cnt++] = gtk_label_new(tmp_buf);
 
-    strncpy(tmp_buf, ctime(&t2), sizeof(tmp_buf));
-    tmp_buf[sizeof(tmp_buf)-1] = 0;
-    g_strchomp(tmp_buf);
+    strftime (tmp_buf, sizeof(tmp_buf), "%c", localtime(&(t2)));
     widgets->w_time_end = content[cnt++] = gtk_label_new(tmp_buf);
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes"), (int)(t2-t1)/60);
