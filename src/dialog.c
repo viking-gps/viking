@@ -322,7 +322,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
   if ( !is_new && wp->has_timestamp ) {
-    gchar tmp_str[32];
+    gchar tmp_str[64];
     timelabel = gtk_label_new ( _("Time:") );
     timevaluelabel = gtk_label_new ( NULL );
     strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(wp->timestamp)) );

@@ -248,7 +248,7 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
 
 void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *track_name )
 {
-  static char tmp_str[32];
+  static char tmp_str[64];
   static struct LatLon ll;
   VikTrackpoint *tp = VIK_TRACKPOINT(tpl->data);
 
