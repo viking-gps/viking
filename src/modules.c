@@ -43,11 +43,13 @@
 #include "dir.h"
 #include "vikmapslayer.h"
 #include "vikexttools.h"
+#include "vikexttool_datasources.h"
 #include "vikgoto.h"
 #include "vikgobjectbuilder.h"
 
 #define VIKING_MAPS_FILE "maps.xml"
 #define VIKING_EXTTOOLS_FILE "external_tools.xml"
+#define VIKING_DATASOURCES_FILE "datasources.xml"
 #define VIKING_GOTOTOOLS_FILE "goto_tools.xml"
 
 static void
@@ -65,6 +67,14 @@ modules_register_exttools(VikGobjectBuilder *self, GObject *object)
   g_debug (__FUNCTION__);
   VikExtTool *tool = VIK_EXT_TOOL (object);
   vik_ext_tools_register (tool);
+}
+
+static void
+modules_register_datasources(VikGobjectBuilder *self, GObject *object)
+{
+  g_debug (__FUNCTION__);
+  VikExtTool *tool = VIK_EXT_TOOL (object);
+  vik_ext_tool_datasources_register (tool);
 }
 
 static void
@@ -97,6 +107,15 @@ modules_load_config_dir(const gchar *dir)
 	VikGobjectBuilder *builder = vik_gobject_builder_new ();
 	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_exttools), NULL);
 	vik_gobject_builder_parse (builder, tools);
+	g_object_unref (builder);
+  }
+
+  gchar *datasources = g_build_filename(dir, VIKING_DATASOURCES_FILE, NULL);
+  if (g_access (datasources, R_OK) == 0)
+  {
+	VikGobjectBuilder *builder = vik_gobject_builder_new ();
+	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_datasources), NULL);
+	vik_gobject_builder_parse (builder, datasources);
 	g_object_unref (builder);
   }
 

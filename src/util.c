@@ -157,3 +157,29 @@ gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar
 
   return TRUE;
 }
+
+/* 1 << (x) is like a 2**(x) */
+#define GZ(x) (1<<(x))
+
+static const gdouble scale_mpps[] = { 0.125, 0.25, 0.5, GZ(0), GZ(1), GZ(2), GZ(3), GZ(4), GZ(5), GZ(6), GZ(7), GZ(8), GZ(9),
+                                      GZ(10), GZ(11), GZ(12), GZ(13), GZ(14), GZ(15), GZ(16), GZ(17) };
+
+static const gint num_scales = (sizeof(scale_mpps) / sizeof(scale_mpps[0]));
+
+#define ERROR_MARGIN 0.01
+/**
+ * mpp_to_zoom:
+ *
+ * Returns: a zoom level. see : http://wiki.openstreetmap.org/wiki/Zoom_levels
+ */
+guint8 mpp_to_zoom ( gdouble mpp )
+{
+  gint i;
+  for ( i = 0; i < num_scales; i++ ) {
+    if ( ABS(scale_mpps[i] - mpp) < ERROR_MARGIN ) {
+      g_debug ( "mpp_to_zoom: %f -> %d", mpp, i );
+      return 20-i;
+    }
+  }
+  return 17; // a safe zoomed in default
+}

@@ -50,7 +50,7 @@ static BabelFile *last_file_filter = NULL;
 /* The last file format selected */
 static int last_type = 0;
 
-static gpointer datasource_file_init( );
+static gpointer datasource_file_init ( acq_vik_t *avt );
 static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used );
 static void datasource_file_cleanup ( gpointer data );
@@ -75,7 +75,7 @@ VikDataSourceInterface vik_datasource_file_interface = {
 };
 
 /* See VikDataSourceInterface */
-static gpointer datasource_file_init ( )
+static gpointer datasource_file_init ( acq_vik_t *avt )
 {
   datasource_file_widgets_t *widgets = g_malloc(sizeof(*widgets));
   return widgets;

@@ -2163,6 +2163,101 @@ This list can be sorted on each column so that it easier to find an individual t
 </section>
 </section>
 
+<section><title>What to Do if &appname; Does Not Seem to Work</title>
+<para>
+In order to get some information about what &appname; is doing, start it in verbose debug mode via the command line:
+<programlisting>viking -dV</programlisting>
+</para>
+<para>
+For instance you can check the correct URLs &appname; is using in requesting remote data for DEMs or map tiles in the verbose debug output.
+E.g. Something like this for DEMs:
+<screen>
+** (viking:28778): DEBUG: curl_download_uri: uri=http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip
+* About to connect() to dds.cr.usgs.gov port 80 (#0)
+* Trying 152.61.128.95... * connected
+* Connected to dds.cr.usgs.gov (152.61.128.95) port 80 (#0)
+ GET /srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip HTTP/1.1
+User-Agent: viking/0.9.8 libcurl/7.18.2 GnuTLS/2.4.2 zlib/1.2.3.3 libidn/1.8
+Host: dds.cr.usgs.gov
+Accept: */*
+ HTTP/1.1 200 OK
+ Date: Sun, 26 Jul 2009 18:13:38 GMT
+ Server: Apache
+ Last-Modified: Tue, 21 Jul 2009 19:57:35 GMT
+ ETag: eac3f8-1828f5-46f3caa76070a
+ Accept-Ranges: bytes
+ Content-Length: 1583349
+ Content-Type: application/zip
+
+* Connection #0 to host dds.cr.usgs.gov left intact
+* Closing connection #0
+** (viking:28778): DEBUG: dem_layer_add_file: /home/username/.viking-maps/srtm3-Eurasia/N48E008.hgt.zip
+</screen>
+Or for OSM Mapnik tile server:
+<screen>
+* About to connect() to tile.openstreetmap.org port 80 (#0)
+*   Trying 193.63.75.28... * connected
+* Connected to tile.openstreetmap.org (193.63.75.28) port 80 (#0)
+ GET /13/4065/2748.png HTTP/1.1
+User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
+Host: tile.openstreetmap.org
+Accept: */*
+
+* HTTP 1.0, assume close after body
+ HTTP/1.0 200 OK
+ Date: Thu, 14 Oct 2010 22:18:42 GMT
+ Server: Apache/2.2.8 (Ubuntu)
+ ETag: "b66ff9d46474bab68262a3483428a232"
+** (viking:16704): DEBUG: curl_get_etag_func: ETAG found: "b66ff9d46474bab68262a3483428a232"
+ Content-Length: 17194
+ Cache-Control: max-age=94805
+ Expires: Sat, 16 Oct 2010 00:38:47 GMT
+ Content-Type: image/png
+ Age: 5153
+ X-Cache: HIT from konqi.openstreetmap.org
+ X-Cache-Lookup: HIT from konqi.openstreetmap.org:3128
+ Via: 1.1 konqi.openstreetmap.org:3128 (squid/2.7.STABLE7)
+ Connection: close
+ 
+* Closing connection #0
+* About to connect() to a.andy.sandbox.cloudmade.com port 80 (#0)
+*   Trying 178.63.75.195... ** (viking:16704): DEBUG: curl_download_uri: uri=http://tile.openstreetmap.org/13/4065/2749.png
+* About to connect() to tile.openstreetmap.org port 80 (#0)
+*   Trying 193.63.75.28... * connected
+* Connected to a.andy.sandbox.cloudmade.com (178.63.75.195) port 80 (#0)
+ GET /tiles/cycle/13/4065/2747.png HTTP/1.1
+User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
+Host: a.andy.sandbox.cloudmade.com
+Accept: */*
+
+* connected
+* Connected to tile.openstreetmap.org (193.63.75.28) port 80 (#0)
+ GET /13/4065/2749.png HTTP/1.1
+User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
+Host: tile.openstreetmap.org
+Accept: */*
+
+* HTTP 1.0, assume close after body
+ HTTP/1.0 200 OK
+ Date: Thu, 14 Oct 2010 23:44:35 GMT
+ Server: Apache/2.2.8 (Ubuntu)
+ ETag: "8e520ad47ce9c1b63430554886eb5fab"
+** (viking:16704): DEBUG: curl_get_etag_func: ETAG found: "8e520ad47ce9c1b63430554886eb5fab"
+ Content-Length: 18094
+ Cache-Control: max-age=87742
+ Expires: Sat, 16 Oct 2010 00:06:57 GMT
+ Content-Type: image/png
+ X-Cache: MISS from konqi.openstreetmap.org
+ X-Cache-Lookup: MISS from konqi.openstreetmap.org:3128
+ Via: 1.1 konqi.openstreetmap.org:3128 (squid/2.7.STABLE7)
+ Connection: close
+</screen>
+</para>
+</section>
+
+</section>
+<!-- End of Howtos -->
+
 <section id="extend_viking" xreflabel="Extending Viking">
     <title>Extending Viking</title>
 
@@ -2291,10 +2386,6 @@ This list can be sorted on each column so that it easier to find an individual t
         <para>The related properties are:
           <variablelist>
             <varlistentry>
-              <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
-            </varlistentry>
-            <varlistentry>
               <term>label</term>
               <listitem><para>the text displayed in the menu entry</para></listitem>
             </varlistentry>
@@ -2308,10 +2399,6 @@ This list can be sorted on each column so that it easier to find an individual t
         <para>The related properties are:
           <variablelist>
             <varlistentry>
-              <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the tool</para></listitem>
-            </varlistentry>
-            <varlistentry>
               <term>label</term>
               <listitem><para>the text displayed in the menu entry</para></listitem>
             </varlistentry>
@@ -2324,107 +2411,59 @@ This list can be sorted on each column so that it easier to find an individual t
       </section>
       
       <section>
+        <title>Remote File Datasources</title>
+        <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
+        <para>The file is <filename>~/.viking/datasources.xml</filename>.</para>
+        <para>An example of the file is in the source distribution <filename>doc/examples/datasources.xml</filename>.</para>
+        <para>The VikWebtoolDatasource allows to declare any URL using logic based on coordinates.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem>
+                <para>the parametrized URL to open in the spirit of C printf format, with up to 7 "%s" values. e.g. <literal>http://hostname/getfile?lat=%s&amp;lon=%s</literal></para>
+                <para>The order and meaning of these parameters is given by the url_format_code below</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url_format_code</term>
+              <listitem>
+                <para>A string describing the parametrized URL substitution parameters, each character represents how to translate each term.</para>
+                <para>B = Bottom of the current view i.e. minimum latitude</para>
+                <para>L = Left of the current view i.e. minimum longitude</para>
+                <para>T = Top of the current view i.e. maximum latitude</para>
+                <para>R = Right of the current view i.e. maximum longitude</para>
+                <para>A = center lAtitude of the current view</para>
+                <para>O = center lOngitude of the current view</para>
+                <para>Z = OSM Zoom value of the current view. See <ulink url="http://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+                <para>Thus for the url example above then the format code should be <emphasis>AO</emphasis></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>file_type</term>
+              <listitem>
+                <para>This value is passed on for the -i parameter in interfacing with GPSBabel.</para>
+                <para>If it is not defined then the returned file is interpreted internally as a GPX file.</para>
+                <para>Possible values such as 'kml', 'mapsource' etc.. can be used. See <ulink ref="http://www.gpsbabel.org/capabilities.html">GPSBabel File Formats</ulink> for the full list.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </section>
+
+      <section>
         <title>More</title>
-        <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>external_tools.xml</filename>) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
+        <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>external_tools.xml</filename>, <filename>datasources.xml</filename>) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
         <para>The <envar>XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
-        <para>The <envar>XDG_DATA_HOME</envar> environment variable s also used (if set) to look for these extension files.</para>
+        <para>The <envar>XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
       </section>
 
 </section>
-
-<section><title>What to Do if &appname; Does Not Seem to Work</title>
-<para>
-In order to get some information about what &appname; is doing, start it in verbose debug mode via the command line:
-<programlisting>viking -dV</programlisting>
-</para>
-<para>
-For instance you can check the correct URLs &appname; is using in requesting remote data for DEMs or map tiles in the verbose debug output.
-E.g. Something like this for DEMs:
-<screen>
-** (viking:28778): DEBUG: curl_download_uri: uri=http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip
-* About to connect() to dds.cr.usgs.gov port 80 (#0)
-* Trying 152.61.128.95... * connected
-* Connected to dds.cr.usgs.gov (152.61.128.95) port 80 (#0)
- GET /srtm/version2_1/SRTM3/Eurasia/N48E008.hgt.zip HTTP/1.1
-User-Agent: viking/0.9.8 libcurl/7.18.2 GnuTLS/2.4.2 zlib/1.2.3.3 libidn/1.8
-Host: dds.cr.usgs.gov
-Accept: */*
- HTTP/1.1 200 OK
- Date: Sun, 26 Jul 2009 18:13:38 GMT
- Server: Apache
- Last-Modified: Tue, 21 Jul 2009 19:57:35 GMT
- ETag: eac3f8-1828f5-46f3caa76070a
- Accept-Ranges: bytes
- Content-Length: 1583349
- Content-Type: application/zip
-
-* Connection #0 to host dds.cr.usgs.gov left intact
-* Closing connection #0
-** (viking:28778): DEBUG: dem_layer_add_file: /home/username/.viking-maps/srtm3-Eurasia/N48E008.hgt.zip
-</screen>
-Or for OSM Mapnik tile server:
-<screen>
-* About to connect() to tile.openstreetmap.org port 80 (#0)
-*   Trying 193.63.75.28... * connected
-* Connected to tile.openstreetmap.org (193.63.75.28) port 80 (#0)
- GET /13/4065/2748.png HTTP/1.1
-User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
-Host: tile.openstreetmap.org
-Accept: */*
-
-* HTTP 1.0, assume close after body
- HTTP/1.0 200 OK
- Date: Thu, 14 Oct 2010 22:18:42 GMT
- Server: Apache/2.2.8 (Ubuntu)
- ETag: "b66ff9d46474bab68262a3483428a232"
-** (viking:16704): DEBUG: curl_get_etag_func: ETAG found: "b66ff9d46474bab68262a3483428a232"
- Content-Length: 17194
- Cache-Control: max-age=94805
- Expires: Sat, 16 Oct 2010 00:38:47 GMT
- Content-Type: image/png
- Age: 5153
- X-Cache: HIT from konqi.openstreetmap.org
- X-Cache-Lookup: HIT from konqi.openstreetmap.org:3128
- Via: 1.1 konqi.openstreetmap.org:3128 (squid/2.7.STABLE7)
- Connection: close
- 
-* Closing connection #0
-* About to connect() to a.andy.sandbox.cloudmade.com port 80 (#0)
-*   Trying 178.63.75.195... ** (viking:16704): DEBUG: curl_download_uri: uri=http://tile.openstreetmap.org/13/4065/2749.png
-* About to connect() to tile.openstreetmap.org port 80 (#0)
-*   Trying 193.63.75.28... * connected
-* Connected to a.andy.sandbox.cloudmade.com (178.63.75.195) port 80 (#0)
- GET /tiles/cycle/13/4065/2747.png HTTP/1.1
-User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
-Host: a.andy.sandbox.cloudmade.com
-Accept: */*
-
-* connected
-* Connected to tile.openstreetmap.org (193.63.75.28) port 80 (#0)
- GET /13/4065/2749.png HTTP/1.1
-User-Agent: viking/0.9.96 libcurl/7.20.1 GnuTLS/2.8.6 zlib/1.2.3.4 libidn/1.18
-Host: tile.openstreetmap.org
-Accept: */*
-
-* HTTP 1.0, assume close after body
- HTTP/1.0 200 OK
- Date: Thu, 14 Oct 2010 23:44:35 GMT
- Server: Apache/2.2.8 (Ubuntu)
- ETag: "8e520ad47ce9c1b63430554886eb5fab"
-** (viking:16704): DEBUG: curl_get_etag_func: ETAG found: "8e520ad47ce9c1b63430554886eb5fab"
- Content-Length: 18094
- Cache-Control: max-age=87742
- Expires: Sat, 16 Oct 2010 00:06:57 GMT
- Content-Type: image/png
- X-Cache: MISS from konqi.openstreetmap.org
- X-Cache-Lookup: MISS from konqi.openstreetmap.org:3128
- Via: 1.1 konqi.openstreetmap.org:3128 (squid/2.7.STABLE7)
- Connection: close
-</screen>
-</para>
-</section>
-
-</section>
+<!-- End of Extending Viking -->
 
 <section><title>Dependencies</title>
 <formalpara><title>gpsbabel</title>

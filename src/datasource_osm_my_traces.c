@@ -49,7 +49,7 @@ typedef struct {
 	VikViewport *vvp;
 } datasource_osm_my_traces_t;
 
-static gpointer datasource_osm_my_traces_init( );
+static gpointer datasource_osm_my_traces_init ( acq_vik_t *avt );
 static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_osm_my_traces_get_cmd_string ( gpointer user_data, gchar **args, gchar **extra, DownloadMapOptions *options );
 static gboolean datasource_osm_my_traces_process  ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused );
@@ -80,7 +80,7 @@ VikDataSourceInterface vik_datasource_osm_my_traces_interface = {
   0
 };
 
-static gpointer datasource_osm_my_traces_init ( )
+static gpointer datasource_osm_my_traces_init ( acq_vik_t *avt )
 {
   datasource_osm_my_traces_t *data = g_malloc(sizeof(*data));
   // Reuse GPS functions

@@ -37,6 +37,7 @@
 #include "viklayer_defaults.h"
 #include "icons/icons.h"
 #include "vikexttools.h"
+#include "vikexttool_datasources.h"
 #include "garminsymbols.h"
 #include "vikmapslayer.h"
 #include "geonamessearch.h"
@@ -515,6 +516,8 @@ static void vik_window_init ( VikWindow *vw )
   gtk_box_pack_start (GTK_BOX(main_vbox), GTK_WIDGET(vw->toolbar), FALSE, TRUE, 0);
   gtk_toolbar_set_icon_size (vw->toolbar, GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_toolbar_set_style (vw->toolbar, GTK_TOOLBAR_ICONS);
+
+  vik_ext_tool_datasources_add_menu_items ( vw, vw->uim );
 
   GtkWidget * zoom_levels = gtk_ui_manager_get_widget (vw->uim, "/MainMenu/View/SetZoom");
   GtkWidget * zoom_levels_menu = create_zoom_menu_all_levels ( vik_viewport_get_zoom(vw->viking_vvp) );
@@ -2629,37 +2632,37 @@ static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
   //  thus maintain the behaviour ATM.
   // Hence explicit setting here (as the value may be changed elsewhere)
   vik_datasource_gps_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface, NULL, NULL );
 }
 
 static void acquire_from_file ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface, NULL, NULL );
 }
 
 #ifdef VIK_CONFIG_GOOGLE
 static void acquire_from_google ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface, NULL, NULL );
 }
 #endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void acquire_from_osm ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_interface, NULL, NULL );
 }
 
 static void acquire_from_my_osm ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_my_traces_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_my_traces_interface, NULL, NULL );
 }
 #endif
 
 #ifdef VIK_CONFIG_GEOCACHES
 static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gc_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gc_interface, NULL, NULL );
 }
 #endif
 
@@ -2667,14 +2670,14 @@ static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 static void acquire_from_geotag ( GtkAction *a, VikWindow *vw )
 {
   vik_datasource_geotag_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_geotag_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_geotag_interface, NULL, NULL );
 }
 #endif
 
 #ifdef VIK_CONFIG_GEONAMES
 static void acquire_from_wikipedia ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_wikipedia_interface );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_wikipedia_interface, NULL, NULL );
 }
 #endif
 

@@ -33,6 +33,13 @@ G_BEGIN_DECLS
 
 typedef struct _VikDataSourceInterface VikDataSourceInterface;
 
+typedef struct {
+  VikWindow *vw;
+  VikLayersPanel *vlp;
+  VikViewport *vvp;
+  gpointer userdata;
+} acq_vik_t;
+
 /**
  * acq_dialog_widgets_t:
  *
@@ -68,7 +75,7 @@ typedef enum {
  * 
  * Returns: pointer to state if OK, otherwise %NULL
  */
-typedef gpointer (*VikDataSourceInitFunc) ();
+typedef gpointer (*VikDataSourceInitFunc) ( acq_vik_t *avt );
 
 /**
  * VikDataSourceCheckExistenceFunc:
@@ -171,10 +178,9 @@ struct _VikDataSourceInterface {
 };
 
 /**********************************/
-/**********************************/
-/**********************************/
 
-void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface );
+void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface,
+                 gpointer userdata, VikDataSourceCleanupFunc cleanup_function );
 
 GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl);
 

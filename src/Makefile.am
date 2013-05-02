@@ -119,6 +119,8 @@ libviking_a_SOURCES = \
 	vikwebtool.c vikwebtool.h \
 	vikwebtoolcenter.c vikwebtoolcenter.h \
 	vikwebtoolbounds.c vikwebtoolbounds.h \
+	vikexttool_datasources.c vikexttool_datasources.h \
+	vikwebtool_datasource.c vikwebtool_datasource.h \
 	dems.c dems.h \
 	srtm_continent.c \
 	uibuilder.c uibuilder.h \

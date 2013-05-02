@@ -54,7 +54,7 @@ typedef struct {
 } datasource_gc_widgets_t;
 
 
-static gpointer datasource_gc_init ( );
+static gpointer datasource_gc_init ( acq_vik_t *avt );
 static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used );
 static void datasource_gc_cleanup ( datasource_gc_widgets_t *widgets );
@@ -98,7 +98,7 @@ void a_datasource_gc_init()
 }
 
 
-static gpointer datasource_gc_init ( )
+static gpointer datasource_gc_init ( acq_vik_t *avt )
 {
   datasource_gc_widgets_t *widgets = g_malloc(sizeof(*widgets));
   return widgets;

@@ -188,7 +188,7 @@ static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
   coord = vik_viewport_get_center ( viewport );
   vik_coord_to_latlon ( coord, &ll );
 
-  // zoom - ideally x & y factors need to be the same otherwise use a default
+  // zoom - ideally x & y factors need to be the same otherwise use the default
   if ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) )
     zoom = vik_webtool_center_mpp_to_zoom ( self, vik_viewport_get_zoom ( viewport ) );
 

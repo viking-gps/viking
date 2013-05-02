@@ -32,7 +32,9 @@
 #include "vikwmscmapsource.h"
 #include "vikwebtoolcenter.h"
 #include "vikwebtoolbounds.h"
+#include "vikwebtool_datasource.h"
 #include "vikexttools.h"
+#include "vikexttool_datasources.h"
 #include "vikgotoxmltool.h"
 #include "vikgoto.h"
 
@@ -136,6 +138,18 @@ void osm_init () {
   webtoolbounds = vik_webtool_bounds_new_with_members ( _("Local port 8111 (eg JOSM)"), "http://localhost:8111/load_and_zoom?left=%s&right=%s&bottom=%s&top=%s" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtoolbounds ) );
   g_object_unref ( webtoolbounds );
+
+  // NB: THERE MUST BE AT LEAST ONE VikWebtoolDatasource defined otherwise the parsing of the datasource.xml will fail
+  //  since it won't know about such a GObject type existing!
+  //   (in fact this is a problem in the vikgobjectbuilder -> g_markup_parse_context_parse -> _start_element -> g_type_from_name )
+  VikWebtoolDatasource *vwtds = NULL;
+  vwtds = vik_webtool_datasource_new_with_members ( _("OpenStreetMap Notes"), "http://api.openstreetmap.org/api/0.6/notes.gpx?bbox=%s,%s,%s,%s&amp;closed=0", "LBRT", NULL );
+  vik_ext_tool_datasources_register ( VIK_EXT_TOOL ( vwtds ) );
+  g_object_unref ( vwtds );
+
+  vwtds = vik_webtool_datasource_new_with_members ( _("OpenStreetBugs"), "http://openstreetbugs.schokokeks.org/api/0.1/getGPX?l=%s&r=%s&b=%s&t=%s&open=only_open_bugs", "LRBT", NULL );
+  vik_ext_tool_datasources_register ( VIK_EXT_TOOL ( vwtds ) );
+  g_object_unref ( vwtds );
 
   // Goto
   VikGotoXmlTool *nominatim = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM Nominatim",
