@@ -17,6 +17,14 @@
     <!-- See http://www.gpsbabel.org/capabilities.html for the full range of file types. The value is case sensitive. -->
     <property name="url">http://openstreetbugs.schokokeks.org/api/0.1/getGPX?l=%s&amp;r=%s&amp;b=%s&amp;t=%s&amp;open=only_open_bugs</property>
   </object>
+  <!-- NB In built, but this is the equivalent -->
+  <object class="VikWebtoolDatasource">
+    <!-- See http://wiki.openstreetmap.org/wiki/API_v0.6#Map_Notes_API-->
+    <property name="label">OpenStreetMap Notes</property>
+    <property name="url_format_code">LBRT</property>
+    <property name="file_type"></property>
+    <property name="url">http://api.openstreetmap.org/api/0.6/notes.gpx?bbox=%s,%s,%s,%s&amp;closed=0</property>
+  </object>
   <object class="VikWebtoolDatasource">
     <property name="label">PostBoxes</property>
     <property name="url_format_code">AO</property>
