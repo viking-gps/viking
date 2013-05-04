@@ -36,25 +36,12 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#include "coords.h"
-#include "vikcoord.h"
-#include "viktrack.h"
 #include "viktrwlayer.h"
 #include "viktrwlayer_propwin.h"
-#include "vikwaypoint.h"
-#include "dialog.h"
-#include "globals.h"
 #include "dems.h"
-
+#include "viking.h"
 #include "vikviewport.h" /* ugh */
-#include "viktreeview.h" /* ugh */
 #include <gdk-pixbuf/gdk-pixdata.h>
-#include "viklayer.h" /* ugh */
-#include "vikaggregatelayer.h"
-#include "viklayerspanel.h" /* ugh */
-
-#define PROPWIN_PROFILE_WIDTH 600
-#define PROPWIN_PROFILE_HEIGHT 300
 
 typedef enum {
   PROPWIN_GRAPH_TYPE_ELEVATION_DISTANCE,
@@ -2377,6 +2364,10 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
 
     // Without this the settting, the dialog will only grow in vertical size - one can not then make it smaller!
     gtk_widget_set_size_request ( widget, widgets->profile_width+widgets->profile_width_offset, widgets->profile_height+widgets->profile_height_offset );
+
+    // Allow resizing back down to a minimal size (especially useful if the initial size has been made bigger after restoring from the saved settings)
+    GdkGeometry geom = { 600+widgets->profile_width_offset, 300+widgets->profile_height_offset, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
+    gdk_window_set_geometry_hints ( gtk_widget_get_window(widget), &geom, GDK_HINT_MIN_SIZE );
   }
   else {
     widgets->profile_width_old = widgets->profile_width;
@@ -2598,8 +2589,18 @@ GtkWidget *vik_trw_layer_create_sddiag ( GtkWidget *window, PropWidgets *widgets
 }
 #undef MARGIN
 
+#define VIK_SETTINGS_TRACK_PROFILE_WIDTH "track_profile_display_width"
+#define VIK_SETTINGS_TRACK_PROFILE_HEIGHT "track_profile_display_height"
+
+static void save_values ( PropWidgets *widgets )
+{
+  a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, widgets->profile_width );
+  a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, widgets->profile_height );
+}
+
 static void destroy_cb ( GtkDialog *dialog, PropWidgets *widgets )
 {
+  save_values(widgets);
   prop_widgets_free(widgets);
 }
 
@@ -2773,8 +2774,19 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->vlp = vlp;
   widgets->tr = tr;
   widgets->trk_id = trk_id;
-  widgets->profile_width  = PROPWIN_PROFILE_WIDTH;
-  widgets->profile_height = PROPWIN_PROFILE_HEIGHT;
+
+  gint profile_size_value;
+  // Ensure minimum values
+  widgets->profile_width = 600;
+  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, &profile_size_value ) )
+    if ( profile_size_value > widgets->profile_width )
+      widgets->profile_width = profile_size_value;
+
+  widgets->profile_height = 300;
+  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, &profile_size_value ) )
+    if ( profile_size_value > widgets->profile_height )
+      widgets->profile_height = profile_size_value;
+
   gchar *title = g_strdup_printf(_("%s - Track Properties"), tr->name);
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                          parent,
