@@ -2376,8 +2376,7 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
     widgets->configure_dialog = FALSE;
 
     // Without this the settting, the dialog will only grow in vertical size - one can not then make it smaller!
-    gtk_widget_set_size_request ( widget, widgets->profile_width+widgets->profile_width_offset, widgets->profile_height );
-    // In fact this allows one to compress it a bit more vertically as I don't add on the height offset
+    gtk_widget_set_size_request ( widget, widgets->profile_width+widgets->profile_width_offset, widgets->profile_height+widgets->profile_height_offset );
   }
   else {
     widgets->profile_width_old = widgets->profile_width;
@@ -3147,7 +3146,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if (vik_track_get_dup_point_count(tr) <= 0)
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_DEL_DUP, FALSE);
 
-  // On dialog realization configure_event casues the graphs to be initially drawn
+  // On dialog realization configure_event causes the graphs to be initially drawn
   widgets->configure_dialog = TRUE;
   g_signal_connect ( G_OBJECT(dialog), "configure-event", G_CALLBACK (configure_event), widgets );
 
