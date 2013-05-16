@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2007, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2007,2013, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include <glib/gi18n.h>
 
 #include "osm.h"
+#include "osrm.h"
 #include "vikmapslayer.h"
 #include "vikslippymapsource.h"
 #include "vikwmscmapsource.h"
@@ -37,6 +38,8 @@
 #include "vikexttool_datasources.h"
 #include "vikgotoxmltool.h"
 #include "vikgoto.h"
+#include "vikrouting.h"
+#include "osrm.h"
 
 /* initialisation */
 void osm_init () {
@@ -176,5 +179,9 @@ void osm_init () {
   webtool = vik_webtool_center_new_with_members ( _("Wikimedia Toolserver GeoHack"), "http://toolserver.org/~geohack/geohack.php?params=%s;%s" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
+  
+  OsrmRouting *osrm = osrm_routing_new ( );
+  vik_routing_register ( VIK_ROUTING_ENGINE ( osrm ) );
+  g_object_unref ( osrm );
 }
 
