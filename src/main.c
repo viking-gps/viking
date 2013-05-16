@@ -34,6 +34,7 @@
 #include "viklayer_defaults.h"
 #include "globals.h"
 #include "vikmapslayer.h"
+#include "vikrouting.h"
 
 #ifdef VIK_CONFIG_GEOCACHES
 void a_datasource_gc_init();
@@ -181,6 +182,8 @@ int main( int argc, char *argv[] )
 #ifdef VIK_CONFIG_GEOCACHES
   a_datasource_gc_init();
 #endif
+
+  vik_routing_prefs_init();
 
   /* Set the icon */
   main_icon = gdk_pixbuf_from_pixdata(&viking_pixbuf, FALSE, NULL);

@@ -85,6 +85,8 @@ libviking_a_SOURCES = \
 	vikgoto.c vikgoto.h \
 	viktrwlayer_tpwin.c viktrwlayer_tpwin.h \
 	viktrwlayer_propwin.c viktrwlayer_propwin.h \
+	vikrouting.c vikrouting.h \
+	vikroutingengine.c vikroutingengine.h \
 	thumbnails.c thumbnails.h \
 	background.c background.h \
 	vikradiogroup.c vikradiogroup.h \
@@ -137,6 +139,7 @@ endif
 
 if GOOGLE
 libviking_a_SOURCES += \
+       googlerouting.c googlerouting.h \
        google.c google.h
 endif
 

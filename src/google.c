@@ -30,6 +30,8 @@
 #include "vikwebtoolcenter.h"
 #include "vikgoto.h"
 #include "googlesearch.h"
+#include "vikrouting.h"
+#include "googlerouting.h"
 
 void google_init () {
   // Webtools
@@ -41,4 +43,9 @@ void google_init () {
   GoogleGotoTool *gototool = google_goto_tool_new (  );
   vik_goto_register ( VIK_GOTO_TOOL ( gototool ) );
   g_object_unref ( gototool );
+
+  // Routing
+  GoogleRouting *routing = google_routing_new ( );
+  vik_routing_register ( VIK_ROUTING_ENGINE ( routing ) );
+  g_object_unref ( routing );
 }

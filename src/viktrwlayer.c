@@ -6,6 +6,7 @@
  * Copyright (C) 2007, Quy Tonthat <qtonthat@gmail.com>
  * Copyright (C) 2009, Hein Ragas <viking@ragas.nl>
  * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2012-2013, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +56,8 @@
 #include "vikexttool_datasources.h"
 #include "util.h"
 
+#include "vikrouting.h"
+
 #include "icons/icons.h"
 
 #ifdef HAVE_MATH_H
@@ -73,10 +76,6 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
-
-#ifdef VIK_CONFIG_GOOGLE
-#define GOOGLE_DIRECTIONS_STRING "maps.google.com/maps?q=from:%s,%s+to:%s,%s&output=js"
-#endif
 
 #define VIK_TRW_LAYER_TRACK_GC 6
 #define VIK_TRW_LAYER_TRACK_GCS 10
@@ -356,10 +355,8 @@ static void tool_new_track_release ( VikTrwLayer *vtl, GdkEventButton *event, Vi
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp ); 
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-#ifdef VIK_CONFIG_GOOGLE
 static gpointer tool_route_finder_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-#endif
 
 static void cached_pixbuf_free ( CachedPixbuf *cp );
 static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
@@ -428,13 +425,11 @@ static VikToolInterface trw_layer_tools[] = {
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf },
 
-#ifdef VIK_CONFIG_GOOGLE
   { { "RouteFinder", "vik-icon-Route Finder", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
     (VikToolConstructorFunc) tool_route_finder_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_route_finder_click, NULL, NULL, (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
-#endif
 };
 
 enum {
@@ -444,9 +439,7 @@ enum {
   TOOL_EDIT_WAYPOINT,
   TOOL_EDIT_TRACKPOINT,
   TOOL_SHOW_PICTURE,
-#ifdef VIK_CONFIG_GOOGLE
   TOOL_ROUTE_FINDER,
-#endif
   NUM_TOOLS
 };
 
@@ -4552,7 +4545,6 @@ static void trw_layer_extend_track_end ( gpointer pass_along[6] )
     goto_coord ( pass_along[1], pass_along[0], pass_along[5], &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
 }
 
-#ifdef VIK_CONFIG_GOOGLE
 /**
  * extend a track using route finder
  */
@@ -4573,7 +4565,6 @@ static void trw_layer_extend_track_end_route_finder ( gpointer pass_along[6] )
     goto_coord ( pass_along[1], pass_along[0], pass_along[5], &last_coord) ;
 
 }
-#endif
 
 static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
 {
@@ -6668,7 +6659,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
-#ifdef VIK_CONFIG_GOOGLE
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
       item = gtk_image_menu_item_new_with_mnemonic ( _("Extend _Using Route Finder") );
       gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("Route Finder", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
@@ -6676,7 +6666,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
       gtk_widget_show ( item );
     }
-#endif
 
     // ATM can't upload a single waypoint but can do waypoints to a GPS
     if ( subtype != VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
@@ -8275,7 +8264,6 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
 }
 
 
-#ifdef VIK_CONFIG_GOOGLE
 /*** Route Finder ***/
 static gpointer tool_route_finder_create ( VikWindow *vw, VikViewport *vvp)
 {
@@ -8307,9 +8295,6 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
   }
   else if ( vtl->route_finder_started || (event->state & GDK_CONTROL_MASK && vtl->route_finder_current_track) ) {
     struct LatLon start, end;
-    gchar startlat[G_ASCII_DTOSTR_BUF_SIZE], startlon[G_ASCII_DTOSTR_BUF_SIZE];
-    gchar endlat[G_ASCII_DTOSTR_BUF_SIZE], endlon[G_ASCII_DTOSTR_BUF_SIZE];
-    gchar *url;
 
     vik_coord_to_latlon ( &(vtl->route_finder_coord), &start );
     vik_coord_to_latlon ( &(tmp), &end );
@@ -8323,14 +8308,7 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
       vtl->route_finder_started = FALSE;
     }
 
-    url = g_strdup_printf(GOOGLE_DIRECTIONS_STRING,
-                          g_ascii_dtostr (startlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) start.lat),
-                          g_ascii_dtostr (startlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) start.lon),
-                          g_ascii_dtostr (endlat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lat),
-                          g_ascii_dtostr (endlon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) end.lon));
-    // NB normally this returns a GPX Route - so subsequent usage of it must lookup via the routes hash
-    a_babel_convert_from_url ( vtl, url, "google", NULL, NULL, NULL );
-    g_free ( url );
+    vik_routing_default_find ( vtl, start, end);
 
     /* see if anything was done -- a track was added or appended to */
     if ( vtl->route_finder_check_added_track && vtl->route_finder_added_track ) {
@@ -8356,7 +8334,6 @@ static gboolean tool_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *even
   }
   return TRUE;
 }
-#endif
 
 /*** Show picture ****/
 

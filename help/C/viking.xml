@@ -669,7 +669,7 @@ By default routes are coloured red. Tracks are automatically assigned a spread o
 </para>
 
 <para>
-Most operations are available on tracks are available on routes, except for functionality that relies on having timestamps - since routes by definition have no timing information. Thus for example, uploading a route to OpenStreetMap Traces is not available nor is Geotagging on a route.
+Most operations available on tracks are available on routes, except for functionality that relies on having timestamps - since routes by definition have no timing information. Thus for example, uploading a route to OpenStreetMap Traces is not available nor is Geotagging on a route.
 It is possible to convert between Tracks and Routes, although converting from a Track to a Route may involve a loss of information (hence you are required to confirm this operation before it happens).
 </para>
 
@@ -1053,7 +1053,7 @@ Changes the current tool to add trackpoints to the end of the track.
 
 <section><title>Extend Using Route Finder</title>
 <para>
-Enables the Route Finder tool. Thus on a subsequent left click in the viewport, a route is calculated from the end of track to that point using Google's route service and applied to the track.
+Enables the Route Finder tool. Thus on a subsequent left click in the viewport, a route is calculated from the end of track to that point using the default route service and applied to the track.
 </para>
 </section>
 
@@ -1539,11 +1539,11 @@ For Linux you can override this with the setting in the <xref linkend="prefs_ext
 </para>
 </section>
 
-<section><title>Route Finder</title>
+<section id="route_finder" xreflabel="Route Finder"><title>Route Finder</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/route_finder_18.png"/></guiicon>
 </para>
-<para>Creates a track using Google maps routing between two points.
+<para>Creates a track using default routing engine between two points.
 Requires an internet connection. Click one point, then click another to
 create a track.
 </para>
@@ -1732,6 +1732,12 @@ Generally if you have a system with lots of memory it's recommended to increase 
 Your OSM password will be stored in plain text.
 </para>
 </warning>
+</section>
+</section>
+
+<section id="prefs_routing" xreflabel="Routing Preferences"><title>Routing</title>
+<section><title>Routing engine</title>
+<para>You can select the routing engine used by default, ie by features that do not propose a live selection, like <xref linkend="route_finder"/>.</para>
 </section>
 </section>
 
