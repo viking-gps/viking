@@ -53,16 +53,19 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_COMBOBOX:
       if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
       {
+        /* Build a simple combobox */
         gchar **pstr = param->widget_data;
         rv = vik_combo_box_text_new ();
         while ( *pstr )
           vik_combo_box_text_append ( rv, *(pstr++) );
         if ( param->extra_widget_data ) /* map of alternate uint values for options */
         {
+          /* Set the effective default value */
           int i;
           for ( i = 0; ((const char **)param->widget_data)[i]; i++ )
             if ( ((guint *)param->extra_widget_data)[i] == data.u )
             {
+              /* Match default value */
               gtk_combo_box_set_active ( GTK_COMBO_BOX(rv), i );
               break;
             }
@@ -70,8 +73,9 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         else
           gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), data.u );
       }
-      else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data )
+      else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data && !param->extra_widget_data )
       {
+        /* Build a combobox with editable text */
         gchar **pstr = param->widget_data;
 #if GTK_CHECK_VERSION (2, 24, 0)
         rv = gtk_combo_box_text_new_with_entry ();
@@ -83,6 +87,30 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         while ( *pstr )
           vik_combo_box_text_append ( rv, *(pstr++) );
         if ( data.s )
+          gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), 0 );
+      }
+      else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data && param->extra_widget_data)
+      {
+        /* Build a combobox with fixed selections without editable text */
+        gchar **pstr = param->widget_data;
+        rv = GTK_WIDGET ( vik_combo_box_text_new () );
+        while ( *pstr )
+          vik_combo_box_text_append ( rv, *(pstr++) );
+        if ( data.s )
+        {
+          /* Set the effective default value */
+          /* In case of value does not exist, set the first value */
+          gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), 0 );
+          int i;
+          for ( i = 0; ((const char **)param->widget_data)[i]; i++ )
+            if ( strcmp(((const char **)param->extra_widget_data)[i], data.s) == 0 )
+            {
+              /* Match default value */
+              gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), i );
+              break; 
+            }
+        }
+        else
           gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), 0 );
       }
       break;
@@ -214,11 +242,21 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       }
       if ( param->type == VIK_LAYER_PARAM_STRING)
       {
+        if ( param->extra_widget_data )
+        {
+          /* Combobox displays labels and we want values from extra */
+          int pos = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
+          rv.s = ((const char **)param->extra_widget_data)[pos];
+        }
+        else
+        {
+          /* Return raw value */
 #if GTK_CHECK_VERSION (2, 24, 0)
-        rv.s = gtk_entry_get_text (GTK_ENTRY (gtk_bin_get_child (GTK_BIN (widget))));
+          rv.s = gtk_entry_get_text (GTK_ENTRY (gtk_bin_get_child (GTK_BIN (widget))));
 #else
-        rv.s = gtk_combo_box_get_active_text ( GTK_COMBO_BOX(widget) );
+          rv.s = gtk_combo_box_get_active_text ( GTK_COMBO_BOX(widget) );
 #endif
+        }
 	g_debug("%s: %s", __FUNCTION__, rv.s);
       }
       break;
