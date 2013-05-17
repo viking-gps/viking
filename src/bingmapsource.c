@@ -56,6 +56,7 @@
 #define URL_ATTR_FMT "http://dev.virtualearth.net/REST/v1/Imagery/Metadata/Aerial/0,0?zl=1&mapVersion=v1&key=%s&include=ImageryProviders&output=xml"
 
 static gchar *_get_uri ( VikMapSourceDefault *self, MapCoord *src );
+static gchar *_get_hostname ( VikMapSourceDefault *self );
 static void _get_copyright (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 static const GdkPixbuf *_get_logo ( VikMapSource *self );
 static int _load_attributions ( BingMapSource *self );
@@ -72,6 +73,8 @@ struct _Attribution
 typedef struct _BingMapSourcePrivate BingMapSourcePrivate;
 struct _BingMapSourcePrivate
 {
+	gchar *hostname;
+	gchar *url;
 	gchar *api_key;
 	GList *attributions;
 	/* Current attribution, when parsing */
@@ -88,6 +91,8 @@ enum
 {
 	PROP_0,
 
+	PROP_HOSTNAME,
+	PROP_URL,
 	PROP_API_KEY,
 };
 
@@ -99,6 +104,8 @@ bing_map_source_init (BingMapSource *self)
 	/* initialize the object here */
 	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
 
+	priv->hostname = NULL;
+	priv->url = NULL;
 	priv->api_key = NULL;
 	priv->attributions = NULL;
 	priv->attribution = NULL;
@@ -110,6 +117,10 @@ bing_map_source_finalize (GObject *object)
 	BingMapSource *self = BING_MAP_SOURCE (object);
 	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
 
+	g_free (priv->hostname);
+	priv->hostname = NULL;
+	g_free (priv->url);
+	priv->url = NULL;
 	g_free (priv->api_key);
 	priv->api_key = NULL;
 
@@ -127,6 +138,16 @@ _set_property (GObject      *object,
 
 	switch (property_id)
 	{
+	case PROP_HOSTNAME:
+		g_free (priv->hostname);
+		priv->hostname = g_value_dup_string (value);
+		break;
+
+	case PROP_URL:
+		g_free (priv->url);
+		priv->url = g_value_dup_string (value);
+		break;
+
 	case PROP_API_KEY:
 		priv->api_key = g_strdup (g_value_get_string (value));
 		break;
@@ -149,6 +170,14 @@ _get_property (GObject    *object,
 
 	switch (property_id)
 	{
+	case PROP_HOSTNAME:
+		g_value_set_string (value, priv->hostname);
+		break;
+
+	case PROP_URL:
+		g_value_set_string (value, priv->url);
+		break;
+
 	case PROP_API_KEY:
 		g_value_set_string (value, priv->api_key);
 		break;
@@ -168,13 +197,28 @@ bing_map_source_class_init (BingMapSourceClass *klass)
 	VikMapSourceDefaultClass* grandparent_class = VIK_MAP_SOURCE_DEFAULT_CLASS (klass);
 	VikMapSourceClass* base_class = VIK_MAP_SOURCE_CLASS (klass);
 	GParamSpec *pspec = NULL;
-		
+
 	/* Overiding methods */
 	object_class->set_property = _set_property;
 	object_class->get_property = _get_property;
 	grandparent_class->get_uri = _get_uri;
+	grandparent_class->get_hostname = _get_hostname;
 	base_class->get_logo      = _get_logo;
 	base_class->get_copyright = _get_copyright;
+
+	pspec = g_param_spec_string ("hostname",
+	                             "Hostname",
+	                             "The hostname of the map server",
+	                             "<no-set>" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_HOSTNAME, pspec);
+
+	pspec = g_param_spec_string ("url",
+	                             "URL",
+	                             "The template of the tiles' URL",
+	                             "<no-set>" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_URL, pspec);
 
 	pspec = g_param_spec_string ("api-key",
                                      "API key",
@@ -218,12 +262,21 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (BING_IS_MAP_SOURCE(self), NULL);
 
-	/* BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE(self); */
+	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE(self);
 	gchar *quadtree = compute_quad_tree (17 - src->scale, src->x, src->y);
-	gchar *uri = g_strdup_printf ( "/tiles/a%s.%s?g=587", quadtree, "jpeg");
+	gchar *uri = g_strdup_printf ( priv->url, quadtree );
 	g_free (quadtree);
 	return uri;
 } 
+
+static gchar *
+_get_hostname( VikMapSourceDefault *self )
+{
+	g_return_val_if_fail (BING_IS_MAP_SOURCE(self), NULL);
+
+	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE(self);
+	return g_strdup( priv->hostname );
+}
 
 static const GdkPixbuf *
 _get_logo( VikMapSource *self )
@@ -243,7 +296,7 @@ _get_copyright(VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(V
 
 	/* Loop over all known attributions */
 	GList *attribution = priv->attributions;
-	if (attribution == NULL) {
+	if (attribution == NULL && g_strcmp0 ("<no-set>", priv->api_key)) {
 		_async_load_attributions (BING_MAP_SOURCE (self));
 	}
 	while (attribution != NULL) {
@@ -470,6 +523,7 @@ bing_map_source_new_with_id (guint8 id, const gchar *label, const gchar *key)
 	                    "id", id,
 						"label", label,
 						"hostname", "ecn.t2.tiles.virtualearth.net",
+						"url", "/tiles/a%s.jpeg?g=587",
 						"api-key", key,
 						"check-file-server-time", TRUE,
 						"copyright", "© 2011 Microsoft Corporation and/or its suppliers",
