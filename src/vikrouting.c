@@ -77,7 +77,7 @@ search_by_id (gconstpointer a,
               gconstpointer b)
 {
 	const gchar *id = b;
-	VikRoutingEngine *engine = a;
+	VikRoutingEngine *engine = (VikRoutingEngine *)a;
 	gchar *engineId = vik_routing_engine_get_id (engine);
 	if (id && engine)
 		return strcmp(id, engineId);
@@ -111,7 +111,7 @@ vik_routing_find_engine ( const gchar *id )
 static VikRoutingEngine *
 vik_routing_default( void )
 {
-  gchar *id = a_preferences_get ( VIKING_ROUTING_PARAMS_NAMESPACE "default")->s;
+  const gchar *id = a_preferences_get ( VIKING_ROUTING_PARAMS_NAMESPACE "default")->s;
   VikRoutingEngine *engine = vik_routing_find_engine(id);
   if (engine == NULL && routing_engine_list != NULL && g_list_first (routing_engine_list) != NULL)
     /* Fallback to first element */
