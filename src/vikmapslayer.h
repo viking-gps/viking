@@ -48,6 +48,7 @@ GType vik_maps_layer_get_type ();
 typedef struct _VikMapsLayer VikMapsLayer;
 
 void maps_layer_init ();
+void maps_layer_set_autodownload_default ( gboolean autodownload );
 void maps_layer_register_map_source ( VikMapSource *map );
 void vik_maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom );
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);

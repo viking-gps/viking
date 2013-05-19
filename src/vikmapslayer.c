@@ -143,6 +143,15 @@ enum {
   NUM_PARAMS
 };
 
+void maps_layer_set_autodownload_default ( gboolean autodownload )
+{
+  // Set appropriate function
+  if ( autodownload )
+    maps_layer_params[PARAM_AUTODOWNLOAD].default_value = vik_lpd_true_default;
+  else
+    maps_layer_params[PARAM_AUTODOWNLOAD].default_value = vik_lpd_false_default;
+}
+
 static VikToolInterface maps_tools[] = {
   { { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
     (VikToolConstructorFunc) maps_layer_download_create,

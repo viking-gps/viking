@@ -42,6 +42,8 @@ guint8 mpp_to_zoom ( gdouble mpp );
 
 void check_latest_version ( GtkWindow *window );
 
+void set_auto_features_on_first_run ( void );
+
 G_END_DECLS
 
 #endif

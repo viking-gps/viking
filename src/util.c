@@ -29,6 +29,8 @@
 #include "dialog.h"
 #include "globals.h"
 #include "download.h"
+#include "preferences.h"
+#include "vikmapslayer.h"
 
 /*
 #ifdef WINDOWS
@@ -244,7 +246,7 @@ static void latest_version_thread ( GtkWindow *window )
   }
 }
 
-/*
+/**
  * check_latest_version:
  * @window: Somewhere where we may need use the display to inform the user about the version status
  *
@@ -264,4 +266,46 @@ void check_latest_version ( GtkWindow *window )
   g_thread_create ( (GThreadFunc)latest_version_thread, window, FALSE, NULL );
 #endif
 #endif
+}
+
+/**
+ * set_auto_features_on_first_run:
+ *
+ *  Ask the user's opinion to set some of Viking's default behaviour
+ */
+void set_auto_features_on_first_run ( void )
+{
+  gboolean auto_features = FALSE;
+  if ( a_vik_very_first_run () ) {
+
+    GtkWidget *win = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
+
+    if ( a_dialog_yes_or_no ( GTK_WINDOW(win),
+                              _("This appears to be Viking's very first run.\n\nDo you wish to enable automatic internet features?\n\nIndividual settings can be controlled in the Preferences."), NULL ) )
+      auto_features = TRUE;
+  }
+
+  if ( auto_features ) {
+    // Set Maps to autodownload
+    // Ensure the default is true
+    maps_layer_set_autodownload_default ( TRUE );
+
+    // Simplistic repeat of preference settings
+    //  Only the name & type are important for setting a preference via this 'external' way
+
+    // Enable auto add map +
+    // Enable IP lookup
+    VikLayerParam pref_add_map[] = { { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "add_default_map_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, NULL, VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, }, };
+    VikLayerParam pref_startup_method[] = { { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_method", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, NULL, VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, NULL, }, };
+
+    VikLayerParamData vlp_data;
+    vlp_data.b = TRUE;
+    a_preferences_run_setparam ( vlp_data, pref_add_map );
+
+    vlp_data.u = VIK_STARTUP_METHOD_AUTO_LOCATION;
+    a_preferences_run_setparam ( vlp_data, pref_startup_method );
+
+    // Ensure settings are saved for next time
+    a_preferences_save_to_file ();
+  }
 }

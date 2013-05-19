@@ -198,6 +198,9 @@ int main( int argc, char *argv[] )
 
   gdk_threads_enter ();
 
+  // Ask for confirmation of default settings on first run
+  set_auto_features_on_first_run ();
+
   /* Create the first window */
   first_window = vik_window_new_window();
 
