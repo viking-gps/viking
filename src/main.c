@@ -183,10 +183,11 @@ int main( int argc, char *argv[] )
   main_icon = gdk_pixbuf_from_pixdata(&viking_pixbuf, FALSE, NULL);
   gtk_window_set_default_icon(main_icon);
 
+  gdk_threads_enter ();
+
   /* Create the first window */
   first_window = vik_window_new_window();
 
-  gdk_threads_enter ();
   while ( ++i < argc ) {
     if ( strcmp(argv[i],"--") == 0 && !dashdash_already )
       dashdash_already = TRUE; /* hack to open '-' */
