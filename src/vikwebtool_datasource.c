@@ -142,11 +142,7 @@ static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar *
 	gchar *url = vik_webtool_get_url ( vwd, data->vw );
 	g_debug ("%s: %s", __FUNCTION__, url );
 
-	// if url starts with 'http://' then only the copy the part after it - as the download code always inserts it!
-	if ( !strncmp(url, "http://", 7 ) )
-		*cmd = g_strndup ( &url[7], strlen (url) );
-	else
-		*cmd = g_strdup ( url );
+	*cmd = g_strdup ( url );
 
 	// Only use first section of the file_type string
 	// One can't use values like 'kml -x transform,rte=wpt' in order to do fancy things

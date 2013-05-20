@@ -27,6 +27,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -208,10 +209,19 @@ int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, Down
   int ret;
   gchar *full = NULL;
 
-  /* Compose the full url */
-  full = g_strdup_printf ( "%s://%s%s", (ftp?"ftp":"http"), hostname, uri );
+  if ( strstr ( hostname, "://" ) != NULL )
+    /* Already full url */
+    full = (gchar *) hostname;
+  else if ( strstr ( uri, "://" ) != NULL )
+    /* Already full url */
+    full = (gchar *) uri;
+  else
+    /* Compose the full url */
+    full = g_strdup_printf ( "%s://%s%s", (ftp?"ftp":"http"), hostname, uri );
   ret = curl_download_uri ( full, f, options, file_options, handle );
-  g_free ( full );
+  /* Free newly allocated memory, but do not free uri */
+  if ( hostname != full && uri != full )
+    g_free ( full );
   full = NULL;
 
   return ret;
