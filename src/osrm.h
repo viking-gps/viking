@@ -49,6 +49,8 @@ struct _OsrmRouting {
   VikRoutingEngine obj;
 };
 
+OsrmRouting *osrm_routing_new ();
+
 G_END_DECLS
 
 #endif

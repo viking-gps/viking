@@ -92,7 +92,7 @@ osrm_routing_get_download_options ( VikRoutingEngine *self )
 	return &osrms_routing_options;
 }
 
-gchar *
+static gchar *
 osrm_routing_get_url_for_coords ( VikRoutingEngine *self, struct LatLon start, struct LatLon end )
 {
     gchar startlat[G_ASCII_DTOSTR_BUF_SIZE], startlon[G_ASCII_DTOSTR_BUF_SIZE];
