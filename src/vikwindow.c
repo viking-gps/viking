@@ -479,6 +479,53 @@ static gint zoom_popup_handler (GtkWidget *widget)
   return TRUE;
 }
 
+enum {
+  TARGET_URIS,
+};
+
+static void drag_data_received_cb ( GtkWidget *widget,
+                                    GdkDragContext *context,
+                                    gint x,
+                                    gint y,
+                                    GtkSelectionData *selection_data,
+                                    guint target_type,
+                                    guint time,
+                                    gpointer data )
+{
+  gboolean success = FALSE;
+
+  if ( (selection_data != NULL) && (gtk_selection_data_get_length(selection_data) > 0) ) {
+    switch (target_type) {
+    case TARGET_URIS: {
+      gchar *str = (gchar*)gtk_selection_data_get_data(selection_data);
+      g_debug ("drag received string:%s \n", str);
+
+      // Convert string into GSList of individual entries for use with our open signal
+      gchar **entries = g_strsplit(str, "\r\n", 0);
+      GSList *filenames = NULL;
+      gint entry_runner = 0;
+      gchar *entry = entries[entry_runner];
+      while (entry) {
+        if ( g_strcmp0 ( entry, "" ) )
+          filenames = g_slist_append ( filenames, entry );
+        entry_runner++;
+        entry = entries[entry_runner];
+      }
+
+      if ( filenames )
+        g_signal_emit ( G_OBJECT(VIK_WINDOW_FROM_WIDGET(widget)), window_signals[VW_OPENWINDOW_SIGNAL], 0, filenames );
+        // NB: GSList & contents are freed by main.open_window
+
+      success = TRUE;
+      break;
+    }
+    default: break;
+    }
+  }
+
+  gtk_drag_finish ( context, success, FALSE, time );
+}
+
 static void vik_window_init ( VikWindow *vw )
 {
   GtkWidget *main_vbox;
@@ -561,6 +608,11 @@ static void vik_window_init ( VikWindow *vw )
   vw->save_dia = NULL;
   vw->save_img_dia = NULL;
   vw->save_img_dir_dia = NULL;
+
+  // Only accept Drag and Drop of files onto the viewport
+  gtk_drag_dest_set ( GTK_WIDGET(vw->viking_vvp), GTK_DEST_DEFAULT_ALL, NULL, 0, GDK_ACTION_COPY );
+  gtk_drag_dest_add_uri_targets ( GTK_WIDGET(vw->viking_vvp) );
+  g_signal_connect ( GTK_WIDGET(vw->viking_vvp), "drag-data-received", G_CALLBACK(drag_data_received_cb), NULL );
 
   // Store the thread value so comparisons can be made to determine the gdk update method
   // Hopefully we are storing the main thread value here :)
