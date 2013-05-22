@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 #define PROJECT "Viking"
 #define VIKING_VERSION PACKAGE_VERSION
 #define VIKING_VERSION_NAME "This Name For Rent"
-#define VIKING_URL "http://viking.sf.net/"
+#define VIKING_URL PACKAGE_URL
 
 #define ALTI_TO_MPP 1.4017295
 #define MPP_TO_ALTI 0.7134044
