@@ -143,36 +143,57 @@ vik_routing_default_find(VikTrwLayer *vt, struct LatLon start, struct LatLon end
 void
 vik_routing_register( VikRoutingEngine *engine )
 {
-  if ( VIK_IS_ROUTING_ENGINE ( engine ) )
-    routing_engine_list = g_list_append ( routing_engine_list, g_object_ref ( engine ) );
-
-  gsize len = 0;
-  if (routing_engine_labels)
-    len = g_strv_length (routing_engine_labels);
-
   gchar *label = vik_routing_engine_get_label ( engine );
   gchar *id = vik_routing_engine_get_id ( engine );
+  gsize len = 0;
 
-  /* Add the label */
-  routing_engine_labels = g_realloc (routing_engine_labels, (len+2)*sizeof(gchar*));
-  routing_engine_labels[len] = g_strdup (label);
-  routing_engine_labels[len+1] = NULL;
+  /* check if id already exists in list */
+  GList *elem = g_list_find_custom (routing_engine_list, id, search_by_id);
+  if (elem != NULL) {
+    g_debug("%s: %s already exists: update", __FUNCTION__, id);
 
-  /* Add the id */
-  routing_engine_ids = g_realloc (routing_engine_ids, (len+2)*sizeof(gchar*));
-  routing_engine_ids[len] = g_strdup (id);
-  routing_engine_ids[len+1] = NULL;
+    /* Update main list */
+    g_object_unref (elem->data);
+    elem->data = g_object_ref ( engine );
+
+    /* Update GUI arrays */
+    len = g_strv_length (routing_engine_labels);
+    for (; len > 0 ; len--) {
+      if (strcmp (routing_engine_ids[len-1], id) == 0)
+			break;
+	}
+    /* Update the label (possibly different */
+    g_free (routing_engine_labels[len-1]);
+    routing_engine_labels[len-1] = g_strdup (label);
+    
+  } else {
+    g_debug("%s: %s is new: append", __FUNCTION__, id);
+    routing_engine_list = g_list_append ( routing_engine_list, g_object_ref ( engine ) );
+
+    if (routing_engine_labels)
+      len = g_strv_length (routing_engine_labels);
   
-  /* Hack
-     We have to ensure the mode LayerParam references the up-to-date
-     GLists.
-  */
-  /*
-  memcpy(&maps_layer_params[0].widget_data, &params_maptypes, sizeof(gpointer));
-  memcpy(&maps_layer_params[0].extra_widget_data, &params_maptypes_ids, sizeof(gpointer));
-  */
-  prefs[0].widget_data = routing_engine_labels;
-  prefs[0].extra_widget_data = routing_engine_ids;
+    /* Add the label */
+    routing_engine_labels = g_realloc (routing_engine_labels, (len+2)*sizeof(gchar*));
+    routing_engine_labels[len] = g_strdup (label);
+    routing_engine_labels[len+1] = NULL;
+
+    /* Add the id */
+    routing_engine_ids = g_realloc (routing_engine_ids, (len+2)*sizeof(gchar*));
+    routing_engine_ids[len] = g_strdup (id);
+    routing_engine_ids[len+1] = NULL;
+  
+    /* Hack
+       We have to ensure the mode LayerParam references the up-to-date
+       GLists.
+    */
+    /*
+    memcpy(&maps_layer_params[0].widget_data, &params_maptypes, sizeof(gpointer));
+    memcpy(&maps_layer_params[0].extra_widget_data, &params_maptypes_ids, sizeof(gpointer));
+    */
+    prefs[0].widget_data = routing_engine_labels;
+    prefs[0].extra_widget_data = routing_engine_ids;
+  }
 }
 
 /**
