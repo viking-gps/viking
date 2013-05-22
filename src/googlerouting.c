@@ -48,8 +48,6 @@
 
 static DownloadMapOptions googles_routing_options = { FALSE, FALSE, "http://maps.google.com/", 0, NULL };
 
-static void google_routing_finalize ( GObject *gob );
-
 static gchar *google_routing_get_url_for_coords ( VikRoutingEngine *self, struct LatLon start, struct LatLon end );
 static DownloadMapOptions *google_routing_get_download_options ( VikRoutingEngine *self );
 
@@ -61,8 +59,6 @@ static void google_routing_class_init ( GoogleRoutingClass *klass )
   VikRoutingEngineClass *parent_class;
 
   object_class = G_OBJECT_CLASS (klass);
-
-  object_class->finalize = google_routing_finalize;
 
   parent_class = VIK_ROUTING_ENGINE_CLASS (klass);
 
@@ -86,11 +82,6 @@ GoogleRouting *google_routing_new ()
 
 static void google_routing_init ( GoogleRouting *vlp )
 {
-}
-
-static void google_routing_finalize ( GObject *gob )
-{
-  G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
 
 static DownloadMapOptions *

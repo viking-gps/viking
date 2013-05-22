@@ -46,8 +46,6 @@
 
 static DownloadMapOptions osrms_routing_options = { FALSE, FALSE, "http://map.project-osrm.org/", 0, NULL };
 
-static void osrm_routing_finalize ( GObject *gob );
-
 static gchar *osrm_routing_get_url_for_coords ( VikRoutingEngine *self, struct LatLon start, struct LatLon end );
 static DownloadMapOptions *osrm_routing_get_download_options ( VikRoutingEngine *self );
 
@@ -59,8 +57,6 @@ static void osrm_routing_class_init ( OsrmRoutingClass *klass )
   VikRoutingEngineClass *parent_class;
 
   object_class = G_OBJECT_CLASS (klass);
-
-  object_class->finalize = osrm_routing_finalize;
 
   parent_class = VIK_ROUTING_ENGINE_CLASS (klass);
 
@@ -79,11 +75,6 @@ OsrmRouting *osrm_routing_new ()
 
 static void osrm_routing_init ( OsrmRouting *vlp )
 {
-}
-
-static void osrm_routing_finalize ( GObject *gob )
-{
-  G_OBJECT_GET_CLASS(gob)->finalize(gob);
 }
 
 static DownloadMapOptions *
