@@ -386,7 +386,11 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
 
   if ( source_interface->is_thread ) {
     if ( cmd ) {
-      g_thread_create((GThreadFunc)get_from_anything, wi, FALSE, NULL );
+#if GLIB_CHECK_VERSION (2, 32, 0)
+      g_thread_try_new ( "get_from_anything", (GThreadFunc)get_from_anything, wi, NULL );
+#else
+      g_thread_create ( (GThreadFunc)get_from_anything, wi, FALSE, NULL );
+#endif
       gtk_dialog_run ( GTK_DIALOG(dialog) );
       if (w->running) {
         // Cancel and mark for thread to finish

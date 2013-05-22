@@ -120,7 +120,9 @@ int main( int argc, char *argv[] )
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   textdomain (GETTEXT_PACKAGE);
 
+#if ! GLIB_CHECK_VERSION (2, 32, 0)
   g_thread_init ( NULL );
+#endif
   gdk_threads_init ();
 
   gui_initialized = gtk_init_with_args (&argc, &argv, "files+", entries, NULL, &error);
