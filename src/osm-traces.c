@@ -334,13 +334,8 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
     else {
       msg = g_strdup_printf ( "%s : %s %d (@%s)", _("FAILED TO UPLOAD DATA TO OSM"), _("HTTP response code"), ans, timestr );
     }
-    // From the background so should use the signalling method to update display:
-    // TODO: This only works with statically assigned strings ATM
-    vik_window_signal_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl), msg, VIK_STATUSBAR_INFO );
-    // Thus can't free the memory yet...
-    // Luckily OSM traces isn't heavily used so this is not a significant memory leak
-    //g_free (msg);
-    // But this is better than potentially crashing from multi thread GUI updates
+    vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(oti->vtl), msg, VIK_STATUSBAR_INFO );
+    g_free (msg);
   }
   /* Removing temporary file */
   ret = g_unlink(filename);

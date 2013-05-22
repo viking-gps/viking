@@ -50,7 +50,7 @@ void a_background_update_status ( VikWindow *vw, gpointer data )
 {
   static gchar buf[20];
   g_snprintf(buf, sizeof(buf), _("%d items"), bgitemcount);
-  vik_window_signal_statusbar_update ( vw, buf, VIK_STATUSBAR_ITEMS );
+  vik_window_statusbar_update ( vw, buf, VIK_STATUSBAR_ITEMS );
 }
 
 static void background_thread_update ()
