@@ -35,6 +35,7 @@
 #include "globals.h"
 #include "vikmapslayer.h"
 #include "vikrouting.h"
+#include "util.h"
 
 #ifdef VIK_CONFIG_GEOCACHES
 void a_datasource_gc_init();
@@ -195,6 +196,8 @@ int main( int argc, char *argv[] )
 
   /* Create the first window */
   first_window = vik_window_new_window();
+
+  check_latest_version ( GTK_WINDOW(first_window) );
 
   while ( ++i < argc ) {
     if ( strcmp(argv[i],"--") == 0 && !dashdash_already )

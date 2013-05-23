@@ -40,6 +40,8 @@ gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar
 
 guint8 mpp_to_zoom ( gdouble mpp );
 
+void check_latest_version ( GtkWindow *window );
+
 G_END_DECLS
 
 #endif

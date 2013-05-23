@@ -21,11 +21,14 @@
 #include "config.h"
 #endif
 
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 
 #include "util.h"
 #include "dialog.h"
+#include "globals.h"
+#include "download.h"
 
 /*
 #ifdef WINDOWS
@@ -182,4 +185,83 @@ guint8 mpp_to_zoom ( gdouble mpp )
     }
   }
   return 17; // a safe zoomed in default
+}
+
+typedef struct {
+  GtkWindow *window; // Layer needed for redrawing
+  gchar *version;     // Image list
+} new_version_thread_data;
+
+static gboolean new_version_available_message ( new_version_thread_data *nvtd )
+{
+  // Only a simple goto website option is offered
+  // Trying to do an installation update is platform specific
+  if ( a_dialog_yes_or_no ( nvtd->window,
+                            _("There is a newer version of Viking available: %s\n\nDo you wish to go to Viking's website now?"), nvtd->version ) )
+    // NB 'VIKING_URL' redirects to the Wiki, here we want to go the main site.
+    open_url ( nvtd->window, "http://sourceforge.net/projects/viking/" );
+  //else
+  //  increase amount of time between performing version checks
+  g_free ( nvtd->version );
+  g_free ( nvtd );
+  return FALSE;
+}
+
+static void latest_version_thread ( GtkWindow *window )
+{
+  // Need to allow a few of redirects, as SF file is often served from different server
+  DownloadMapOptions options = { FALSE, FALSE, NULL, 5, NULL, NULL };
+  gchar *filename = a_download_uri_to_tmp_file ( "http://sourceforge.net/projects/viking/files/VERSION", &options );
+  //gchar *filename = g_strdup ( "VERSION" );
+  if ( !filename ) {
+    return;
+  }
+
+  GMappedFile *mf = g_mapped_file_new ( filename, FALSE, NULL );
+  if ( !mf )
+    return;
+
+  gchar *text = g_mapped_file_get_contents ( mf );
+
+  gint latest_version = viking_version_to_number ( text );
+  gint my_version = viking_version_to_number ( VIKING_VERSION );
+
+  g_debug ( "The lastest version is: %s", text );
+
+  if ( my_version < latest_version ) {
+    new_version_thread_data *nvtd = g_malloc ( sizeof(new_version_thread_data) );
+    nvtd->window = window;
+    nvtd->version = g_strdup ( text );
+    gdk_threads_add_idle ( (GSourceFunc) new_version_available_message, nvtd );
+  }
+  else
+    g_debug ( "Running the lastest version: %s", VIKING_VERSION );
+
+  g_mapped_file_unref ( mf );
+  if ( filename ) {
+    g_remove ( filename );
+    g_free ( filename );
+  }
+}
+
+/*
+ * check_latest_version:
+ * @window: Somewhere where we may need use the display to inform the user about the version status
+ *
+ * Periodically checks the released latest VERSION file on the website to compare with the running version
+ *
+ * ATM the plan is for a 1.4.2 release to be always on *just* for Windows platforms
+ * Then in 1.5.X it will made entirely optional (default on for Windows)
+ *  with a longer periodic check (enabled via state saving using the soon to be released 'settings' code)
+ *
+ */
+void check_latest_version ( GtkWindow *window )
+{
+#ifdef WINDOWS
+#if GLIB_CHECK_VERSION (2, 32, 0)
+  g_thread_try_new ( "latest_version_thread", (GThreadFunc)latest_version_thread, window, NULL );
+#else
+  g_thread_create ( (GThreadFunc)latest_version_thread, window, FALSE, NULL );
+#endif
+#endif
 }
