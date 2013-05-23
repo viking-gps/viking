@@ -220,7 +220,7 @@ vik_map_source_get_drawmode (VikMapSource *self)
  * @self: the VikMapSource of interest.
  *
  *   Return true when we can bypass all this download malarky
- *   Treat the files as a pre generated data set in OSM tile server layout: <tiledir>/%d/%d/%d.png
+ *   Treat the files as a pre generated data set in OSM tile server layout: tiledir/%d/%d/%d.png
  */
 gboolean
 vik_map_source_is_direct_file_access (VikMapSource * self)
