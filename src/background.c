@@ -23,6 +23,7 @@
 #include <glib/gi18n.h>
 
 #include "background.h"
+#include "settings.h"
 
 static GThreadPool *thread_pool = NULL;
 static gboolean stop_all_threads = FALSE;
@@ -218,6 +219,8 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
     gtk_widget_hide ( bgwindow );
 }
 
+#define VIK_SETTINGS_BACKGROUND_MAX_THREADS "background_max_threads"
+
 /**
  * a_background_init:
  *
@@ -226,8 +229,11 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
 void a_background_init()
 {
   /* initialize thread pool */
-  /* TODO parametrize this via preference and/or command line arg */
   gint max_threads = 10;  /* limit maximum number of threads running at one time */
+  gint maxt;
+  if ( a_settings_get_integer ( VIK_SETTINGS_BACKGROUND_MAX_THREADS, &maxt ) )
+    max_threads = maxt;
+
   thread_pool = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
 
   GtkCellRenderer *renderer;
