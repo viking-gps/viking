@@ -19,7 +19,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifndef _MAP_UTILS_H
+#define _MAP_UTILS_H
+
 #include <glib.h>
+
+G_BEGIN_DECLS
 
 /* 1 << (x) is like a 2**(x) */
 #define VIK_GZ(x) ((1<<(x)))
@@ -28,3 +33,7 @@
 gint map_utils_mpp_to_scale ( gdouble mpp );
 
 guint8 map_utils_mpp_to_zoom_level ( gdouble mpp );
+
+G_BEGIN_DECLS
+
+#endif

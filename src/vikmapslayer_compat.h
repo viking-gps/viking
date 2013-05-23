@@ -26,6 +26,8 @@
 #include "vikviewport.h"
 #include "mapcoord.h"
 
+G_BEGIN_DECLS
+
 typedef struct {
   guint8 uniq_id;
   guint16 tilesize_x;
@@ -40,5 +42,7 @@ typedef struct {
 } VikMapsLayer_MapType;
 
 void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapType *map_type );
+
+G_END_DECLS
 
 #endif

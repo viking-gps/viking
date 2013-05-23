@@ -26,7 +26,13 @@
 #ifndef __VIKING_PRINT_H
 #define __VIKING_PRINT_H
 
+#include "vikwindow.h"
+
+G_BEGIN_DECLS
+
 void a_print(VikWindow *vw, VikViewport *vvp);
+
+G_END_DECLS
 
 #endif /*__VIKING_PRINT_H*/
 

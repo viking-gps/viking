@@ -25,8 +25,12 @@
 
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 const gchar *a_get_viking_dir();
 gchar ** a_get_viking_data_path();
 gchar *a_get_viking_data_home();
+
+G_END_DECLS
 
 #endif
