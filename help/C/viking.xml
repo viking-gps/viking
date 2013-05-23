@@ -2286,7 +2286,7 @@ Accept: */*
         <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems and <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark>.</para>
         <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Maps">Maps Wiki</ulink></para>
 
-        <para>The VikSlippyMapSource allows to declare any map's source working like OpenStreetMap. It supports the following properties:
+        <para>The <classname>VikSlippyMapSource</classname> allows to declare any map's source working like OpenStreetMap. It supports the following properties:
           <variablelist>
             <varlistentry>
               <term>id</term>
@@ -2306,7 +2306,7 @@ Accept: */*
             </varlistentry>
           </variablelist>
         </para>
-        <para>The VikTmsMapSource allows to declare any TMS service. It supports the following properties:
+        <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties:
           <variablelist>
             <varlistentry>
               <term>id</term>
@@ -2326,7 +2326,7 @@ Accept: */*
             </varlistentry>
           </variablelist>
         </para>
-        <para>The VikWmscMapSource allows to declare any WMS or WMS-C service. It supports the following properties:
+        <para>The <classname>VikWmscMapSource</classname> allows to declare any WMS or WMS-C service. It supports the following properties:
           <variablelist>
             <varlistentry>
               <term>id</term>
@@ -2352,7 +2352,7 @@ Accept: */*
         <title>Go-to search engines</title>
         <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
-        <para>Currently, there is a single object class available: VikGotoXmlTool. Such feature allows to declare any search engine using a XML format as result.</para>
+        <para>Currently, there is a single object class available: <classname>VikGotoXmlTool</classname>. Such feature allows to declare any search engine using a XML format as result.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -2388,7 +2388,7 @@ Accept: */*
         <title>External tools</title>
         <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
-        <para>The VikWebtoolCenter allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
+        <para>The <classname>VikWebtoolCenter</classname> allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -2401,7 +2401,7 @@ Accept: */*
             </varlistentry>
           </variablelist>
         </para>
-        <para>The VikWebtoolBounds allows to declare any Webtool using a logic based on bounds coordinates.</para>
+        <para>The <classname>VikWebtoolBounds</classname> allows to declare any Webtool using a logic based on bounds coordinates.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -2421,7 +2421,7 @@ Accept: */*
         <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
         <para>The file is <filename>~/.viking/datasources.xml</filename>.</para>
         <para>An example of the file is in the source distribution <filename>doc/examples/datasources.xml</filename>.</para>
-        <para>The VikWebtoolDatasource allows to declare any URL using logic based on coordinates.</para>
+        <para>The <classname>VikWebtoolDatasource</classname> allows to declare any URL using logic based on coordinates.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
