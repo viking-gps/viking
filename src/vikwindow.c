@@ -178,6 +178,7 @@ struct _VikWindow {
 
   gchar *filename;
   gboolean modified;
+  VikLoadType_t loaded_type;
 
   GtkWidget *open_dia, *save_dia;
   GtkWidget *save_img_dia, *save_img_dir_dia;
@@ -359,6 +360,59 @@ VikWindow *vik_window_new_window ()
 }
 
 /**
+ * determine_location_thread:
+ * @vw:         The window that will get updated
+ * @threaddata: Data used by our background thread mechanism
+ *
+ * Use the features in vikgoto to determine where we are
+ * Then set up the viewport:
+ *  1. To goto the location
+ *  2. Set an appropriate level zoom for the location type
+ *  3. Some statusbar message feedback
+ */
+static int determine_location_thread ( VikWindow *vw, gpointer threaddata )
+{
+  struct LatLon ll;
+  gchar *name = NULL;
+  gint ans = a_vik_goto_where_am_i ( vw->viking_vvp, &ll, &name );
+
+  int result = a_background_thread_progress ( threaddata, 1.0 );
+  if ( result != 0 ) {
+    vik_window_statusbar_update ( vw, _("Location lookup aborted"), VIK_STATUSBAR_INFO );
+    return -1; /* Abort thread */
+  }
+
+  if ( ans ) {
+    // Zoom out a little
+    gdouble zoom = 16.0;
+
+    if ( ans == 2 ) {
+      // Position found with city precision - so zoom out more
+      zoom = 128.0;
+    }
+    else if ( ans == 3 ) {
+      // Position found via country name search - so zoom wayyyy out
+      zoom = 2048.0;
+    }
+
+    vik_viewport_set_zoom ( vw->viking_vvp, zoom );
+    vik_viewport_set_center_latlon ( vw->viking_vvp, &ll );
+
+    gchar *message = g_strdup_printf ( _("Location found: %s"), name );
+    vik_window_statusbar_update ( vw, message, VIK_STATUSBAR_INFO );
+    g_free ( name );
+    g_free ( message );
+
+    // Signal to redraw from the background
+    vik_layers_panel_emit_update ( vw->viking_vlp );
+  }
+  else
+    vik_window_statusbar_update ( vw, _("Unable to determine location"), VIK_STATUSBAR_INFO );
+
+  return 0;
+}
+
+/**
  * Steps to be taken once initial loading has completed
  */
 void vik_window_new_window_finish ( VikWindow *vw )
@@ -380,6 +434,22 @@ void vik_window_new_window_finish ( VikWindow *vw )
     vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(vml), TRUE );
 
     draw_update ( vw );
+  }
+
+  // If not loaded any file, maybe try the location lookup
+  if ( vw->loaded_type == LOAD_TYPE_READ_FAILURE ) {
+    if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_AUTO_LOCATION ) {
+
+      vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, _("Trying to determine location...") );
+
+      a_background_thread ( GTK_WINDOW(vw),
+                            _("Determining location"),
+                            (vik_thr_func) determine_location_thread,
+                            vw,
+                            NULL,
+                            NULL,
+                            1 );
+    }
   }
 }
 
@@ -624,7 +694,7 @@ static void vik_window_init ( VikWindow *vw )
   gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
 
   vw->filename = NULL;
-
+  vw->loaded_type = LOAD_TYPE_READ_FAILURE; //AKA none
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
  
@@ -2456,8 +2526,8 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename )
 {
   vik_window_set_busy_cursor ( vw );
-
-  switch ( a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename ) )
+  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename );
+  switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:
       a_dialog_error_msg ( GTK_WINDOW(vw), _("The file you requested could not be opened.") );

@@ -31,6 +31,7 @@ G_BEGIN_DECLS
 void vik_goto_register (VikGotoTool *tool);
 void vik_goto_unregister_all (void);
 
+gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name );
 void a_vik_goto(VikWindow *vw, VikViewport *vvp);
 gchar * a_vik_goto_get_search_string_for_this_place(VikWindow *vw);
 

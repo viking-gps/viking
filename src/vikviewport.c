@@ -43,7 +43,6 @@
 #include "vikcoord.h"
 #include "vikwindow.h"
 #include "vikviewport.h"
-
 #include "mapcoord.h"
 
 /* for ALTI_TO_MPP */
@@ -180,7 +179,6 @@ vik_viewport_init ( VikViewport *vvp )
 
   a_coords_latlon_to_utm ( &ll, &utm );
 
-  /* TODO: not static */
   vvp->xmpp = zoom_x;
   vvp->ympp = zoom_y;
   vvp->xmfactor = MERCATOR_FACTOR (vvp->xmpp);

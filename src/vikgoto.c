@@ -35,6 +35,11 @@
 #include "vikgototool.h"
 #include "vikgoto.h"
 
+/* Compatibility */
+#if ! GLIB_CHECK_VERSION(2,22,0)
+#define g_mapped_file_unref g_mapped_file_free
+#endif
+
 static gchar *last_goto_str = NULL;
 static VikCoord *last_coord = NULL;
 static gchar *last_successful_goto_str = NULL;
@@ -113,6 +118,28 @@ static void find_provider (gpointer elem, gpointer user_data)
   }
 }
 
+/**
+ * Setup last_goto_tool value
+ */
+static void get_provider ()
+{
+  // Use setting for the provider if available
+  if ( last_goto_tool < 0 ) {
+    find_entry = -1;
+    wanted_entry = -1;
+    gchar *provider = NULL;
+    if ( a_settings_get_string ( VIK_SETTINGS_GOTO_PROVIDER, &provider ) ) {
+      // Use setting
+      if ( provider )
+        g_list_foreach (goto_tools_list, find_provider, provider);
+      // If not found set it to the first entry, otherwise use the entry
+      last_goto_tool = ( wanted_entry < 0 ) ? 0 : wanted_entry;
+    }
+    else
+      last_goto_tool = 0;
+  }
+}
+
 static gchar *a_prompt_for_goto_string(VikWindow *vw)
 {
   GtkWidget *dialog = NULL;
@@ -132,21 +159,7 @@ static gchar *a_prompt_for_goto_string(VikWindow *vw)
     current = g_list_next (current);
   }
 
-  // Use setting for the provider if available
-  if ( last_goto_tool < 0 ) {
-    find_entry = -1;
-    wanted_entry = -1;
-    gchar *provider = NULL;
-    if ( a_settings_get_string ( VIK_SETTINGS_GOTO_PROVIDER, &provider ) ) {
-      // Use setting
-      if ( provider )
-        g_list_foreach (goto_tools_list, find_provider, provider);
-      // If not found set it to the first entry, otherwise use the entry
-      last_goto_tool = ( wanted_entry < 0 ) ? 0 : wanted_entry;
-    }
-    else
-      last_goto_tool = 0;
-  }
+  get_provider ();
   gtk_combo_box_set_active ( GTK_COMBO_BOX( tool_list ), last_goto_tool );
 
   GtkWidget *goto_label = gtk_label_new(_("Enter address or place name:"));
@@ -172,6 +185,7 @@ static gchar *a_prompt_for_goto_string(VikWindow *vw)
     return NULL;
   }
   
+  // TODO check if list is empty
   last_goto_tool = gtk_combo_box_get_active ( GTK_COMBO_BOX(tool_list) );
   gchar *provider = vik_goto_tool_get_label ( g_list_nth_data (goto_tools_list, last_goto_tool) );
   a_settings_set_string ( VIK_SETTINGS_GOTO_PROVIDER, provider );
@@ -187,6 +201,26 @@ static gchar *a_prompt_for_goto_string(VikWindow *vw)
   }
 
   return(goto_str);   /* goto_str needs to be freed by caller */
+}
+
+/**
+ * Goto a place when we already have a string to search on
+ *
+ * Returns: %TRUE if a successful lookup
+ */
+static gboolean vik_goto_place ( VikWindow *vw, VikViewport *vvp, gchar* name, VikCoord *vcoord )
+{
+  // Ensure last_goto_tool is given a value
+  get_provider ();
+
+  if ( goto_tools_list ) {
+    VikGotoTool *gototool = g_list_nth_data ( goto_tools_list, last_goto_tool );
+    if ( gototool ) {
+      if ( vik_goto_tool_get_coord ( gototool, vw, vvp, name, vcoord ) == 0 )
+        return TRUE;
+    }
+  }
+  return FALSE;
 }
 
 void a_vik_goto(VikWindow *vw, VikViewport *vvp)
@@ -223,4 +257,154 @@ void a_vik_goto(VikWindow *vw, VikViewport *vvp)
         more = FALSE;
     g_free(s_str);
   } while (more);
+}
+
+#define HOSTIP_LATITUDE_PATTERN "\"lat\":\""
+#define HOSTIP_LONGITUDE_PATTERN "\"lng\":\""
+#define HOSTIP_CITY_PATTERN "\"city\":\""
+#define HOSTIP_COUNTRY_PATTERN "\"country_name\":\""
+
+/**
+ * Automatic attempt to find out where you are using:
+ *   1. http://www.hostip.info ++
+ *   2. if not specific enough fallback to using the default goto tool with a country name
+ * ++ Using returned JSON information
+ *  c.f. with googlesearch.c - similar implementation is used here
+ *
+ * returns:
+ *   0 if failed to locate anything
+ *   1 if exact latitude/longitude found
+ *   2 if position only as precise as a city
+ *   3 if position only as precise as a country
+ * @name: Contains the name of place found. Free this string after use.
+ */
+gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
+{
+  gint result = 0;
+  *name = NULL;
+
+  gchar *tmpname = a_download_uri_to_tmp_file ( "http://api.hostip.info/get_json.php?position=true", NULL );
+  //gchar *tmpname = g_strdup ("../test/hostip2.json");
+  if (!tmpname) {
+    return result;
+  }
+
+  ll->lat = 0.0;
+  ll->lon = 0.0;
+
+  gchar *pat;
+  GMappedFile *mf;
+  gchar *ss;
+  gint fragment_len;
+
+  gchar lat_buf[32], lon_buf[32];
+  lat_buf[0] = lon_buf[0] = '\0';
+  gchar *country;
+  gchar *city;
+
+  if ((mf = g_mapped_file_new(tmpname, FALSE, NULL)) == NULL) {
+    g_critical(_("couldn't map temp file"));
+    goto tidy;
+  }
+
+  gsize len = g_mapped_file_get_length(mf);
+  gchar *text = g_mapped_file_get_contents(mf);
+
+  if ((pat = g_strstr_len(text, len, HOSTIP_COUNTRY_PATTERN))) {
+    pat += strlen(HOSTIP_COUNTRY_PATTERN);
+    fragment_len = 0;
+    ss = pat;
+    while (*pat != '"') {
+      fragment_len++;
+      pat++;
+    }
+    country = g_strndup(ss, fragment_len);
+  }
+
+  if ((pat = g_strstr_len(text, len, HOSTIP_CITY_PATTERN))) {
+    pat += strlen(HOSTIP_CITY_PATTERN);
+    fragment_len = 0;
+    ss = pat;
+    while (*pat != '"') {
+      fragment_len++;
+      pat++;
+    }
+    city = g_strndup(ss, fragment_len);
+  }
+
+  if ((pat = g_strstr_len(text, len, HOSTIP_LATITUDE_PATTERN))) {
+    pat += strlen(HOSTIP_LATITUDE_PATTERN);
+    ss = lat_buf;
+    if (*pat == '-')
+      *ss++ = *pat++;
+    while ((ss < (lat_buf + sizeof(lat_buf))) && (pat < (text + len)) &&
+	   (g_ascii_isdigit(*pat) || (*pat == '.')))
+      *ss++ = *pat++;
+    *ss = '\0';
+    ll->lat = g_ascii_strtod(lat_buf, NULL);
+  }
+
+  if ((pat = g_strstr_len(text, len, HOSTIP_LONGITUDE_PATTERN))) {
+    pat += strlen(HOSTIP_LONGITUDE_PATTERN);
+    ss = lon_buf;
+    if (*pat == '-')
+      *ss++ = *pat++;
+    while ((ss < (lon_buf + sizeof(lon_buf))) && (pat < (text + len)) &&
+	   (g_ascii_isdigit(*pat) || (*pat == '.')))
+      *ss++ = *pat++;
+    *ss = '\0';
+    ll->lon = g_ascii_strtod(lon_buf, NULL);
+  }
+
+  if ( ll->lat != 0.0 && ll->lon != 0.0 ) {
+    if ( ll->lat > -90.0 && ll->lat < 90.0 && ll->lon > -180.0 && ll->lon < 180.0 ) {
+      // Found a 'sensible' & 'precise' location
+      result = 1;
+      *name = g_strdup ( _("Locality") ); //Albeit maybe not known by an actual name!
+    }
+  }
+  else {
+    // Hopefully city name is unique enough to lookup position on
+    // Maybe for American places where hostip appends the State code on the end
+    // But if the country code is not appended if could easily get confused
+    //  e.g. 'Portsmouth' could be at least
+    //   Portsmouth, Hampshire, UK or
+    //   Portsmouth, Viginia, USA.
+
+    // Try city name lookup
+    if ( city ) {
+      g_debug ( "%s: found city %s", __FUNCTION__, city );
+      if ( strcmp ( city, "(Unknown city)" ) != 0 ) {
+        VikCoord new_center;
+        if ( vik_goto_place ( NULL, vvp, city, &new_center ) ) {
+          // Got something
+          vik_coord_to_latlon ( &new_center, ll );
+          result = 2;
+          *name = city;
+          goto tidy;
+        }
+      }
+    }
+
+    // Try country name lookup
+    if ( country ) {
+      g_debug ( "%s: found country %s", __FUNCTION__, country );
+      if ( strcmp ( country, "(Unknown Country)" ) != 0 ) {
+        VikCoord new_center;
+        if ( vik_goto_place ( NULL, vvp, country, &new_center ) ) {
+          // Finally got something
+          vik_coord_to_latlon ( &new_center, ll );
+          result = 3;
+          *name = country;
+          goto tidy;
+        }
+      }
+    }
+  }
+  
+ tidy:
+  g_mapped_file_unref ( mf );
+  g_remove ( tmpname );
+  g_free ( tmpname );
+  return result;
 }

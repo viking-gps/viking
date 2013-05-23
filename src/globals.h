@@ -180,6 +180,7 @@ typedef enum {
   VIK_STARTUP_METHOD_HOME_LOCATION,
   VIK_STARTUP_METHOD_LAST_LOCATION,
   VIK_STARTUP_METHOD_SPECIFIED_FILE,
+  VIK_STARTUP_METHOD_AUTO_LOCATION,
 } vik_startup_method_t;
 
 vik_startup_method_t a_vik_get_startup_method ( );
