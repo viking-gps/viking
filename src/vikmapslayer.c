@@ -110,7 +110,8 @@ static VikLayerParamData mode_default ( void ) { return VIK_LPD_UINT ( 19 ); } /
 static VikLayerParamData directory_default ( void )
 {
   VikLayerParamData data;
-  data.s = g_strdup ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s );
+  VikLayerParamData *pref = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir");
+  if (pref) data.s = g_strdup ( pref->s );
   return data;
 }
 static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
