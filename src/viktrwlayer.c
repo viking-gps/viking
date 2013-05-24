@@ -8129,6 +8129,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   params.closest_track_id = NULL;
   /* TODO: should get track listitem so we can break it up, make a new track, mess it up, all that. */
   params.closest_tp = NULL;
+  vik_viewport_get_min_max_lat_lon ( vvp, &(params.bbox.south), &(params.bbox.north), &(params.bbox.west), &(params.bbox.east) );
 
   if ( event->button != 1 ) 
     return FALSE;
