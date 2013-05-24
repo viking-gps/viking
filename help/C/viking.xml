@@ -2507,6 +2507,41 @@ Accept: */*
         <para>The <envar>XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
       </section>
 
+
+      <section>
+        <title>Miscellaneous Settings</title>
+        <para>Various individual values are automatically saved between &app; sessions in the <filename>~/.viking/viking.ini</filename> file.</para>
+        <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
+        <para>Some values in this file are <emphasis>read only</emphasis>, in the sense that there is no way to set it other than by manually entering in the keys and values (the key will not exist in the file otherwise). This allows some fine tuning of &app; behaviours, without resorting to recompiling the code. However is it not expected that these values should need to be changed for a normal user, hence no GUI options for these have been provided.</para>
+        <para>Here is the list of the <emphasis>read only</emphasis> keys and their default values.</para>
+	<orderedlist>
+	  <listitem>
+	    <para>maps_max_tiles=1000</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_min_shrinkfactor=0.0312499</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_max_shrinkfactor=8.0000001</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_real_min_shrinkfactor=0.0039062499</para>
+	  </listitem>
+	  <listitem>
+	    <para>background_max_threads=10</para>
+	  </listitem>
+	  <listitem>
+	    <para>window_menubar=true</para>
+	  </listitem>
+	  <listitem>
+	    <para>version_check_period_days=14</para>
+	  </listitem>
+	  <listitem>
+	    <para>trackwaypoint_alphabetized=true</para>
+	  </listitem>
+	</orderedlist>
+      </section>
+
 </section>
 <!-- End of Extending Viking -->
 
