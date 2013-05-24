@@ -140,7 +140,6 @@ endif
 
 if GOOGLE
 libviking_a_SOURCES += \
-       googlerouting.c googlerouting.h \
        google.c google.h
 endif
 
