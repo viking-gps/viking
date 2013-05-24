@@ -2417,6 +2417,45 @@ Accept: */*
       </section>
       
       <section>
+        <title>Routing engine</title>
+        <para>It is possible to declare new routing engines. The file is <filename>~/.viking/routing.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/routing.xml</filename>.</para>
+        <para>The <classname>VikRoutingWebEngine</classname> allows to declare a routing engine available via HTTP.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>a string, should be unique as it used to identify the routing engine</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-base</term>
+              <listitem><para>the base URL of the web service (eg. "http://hostname/service?")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-start-ll</term>
+              <listitem><para>the part of the URL setting the starting point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;start=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-stop-ll</term>
+              <listitem><para>the part of the URL setting the end point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;start=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer</term>
+              <listitem><para>an URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location</term>
+              <listitem><para>the max depth of recursive redirections</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </section>
+      
+      <section>
         <title>Remote File Datasources</title>
         <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
         <para>The file is <filename>~/.viking/datasources.xml</filename>.</para>

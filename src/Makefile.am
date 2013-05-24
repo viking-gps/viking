@@ -87,6 +87,7 @@ libviking_a_SOURCES = \
 	viktrwlayer_propwin.c viktrwlayer_propwin.h \
 	vikrouting.c vikrouting.h \
 	vikroutingengine.c vikroutingengine.h \
+	vikroutingwebengine.c vikroutingwebengine.h \
 	thumbnails.c thumbnails.h \
 	background.c background.h \
 	vikradiogroup.c vikradiogroup.h \

@@ -1,0 +1,22 @@
+<objects>
+  <object class="VikRoutingWebEngine">
+    <property name="id">osrm</property>
+    <property name="label">OSRM</property>
+    <property name="format">gpx</property>
+    <property name="url-base">http://router.project-osrm.org/viaroute?output=gpx</property>
+    <property name="url-start-ll">&amp;loc=%s,%s</property>
+    <property name="url-stop-ll">&amp;loc=%s,%s</property>
+    <property name="url-via-ll">&amp;loc=%s,%s</property>
+  </object>
+  <object class="VikRoutingWebEngine">
+    <property name="id">google</property>
+    <property name="label">Google</property>
+    <property name="format">google</property>
+    <property name="url-base">http://maps.google.com/maps?output=js&amp;q=</property>
+    <property name="url-start-ll">from:%s,%s</property>
+    <property name="url-stop-ll">+to:%s,%s</property>
+    <property name="url-via-ll"></property>
+    <property name="referer">http://maps.google.com/</property>
+  </object>
+</objects>
+

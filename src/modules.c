@@ -45,12 +45,15 @@
 #include "vikexttools.h"
 #include "vikexttool_datasources.h"
 #include "vikgoto.h"
+#include "vikrouting.h"
+#include "vikroutingwebengine.h"
 #include "vikgobjectbuilder.h"
 
 #define VIKING_MAPS_FILE "maps.xml"
 #define VIKING_EXTTOOLS_FILE "external_tools.xml"
 #define VIKING_DATASOURCES_FILE "datasources.xml"
 #define VIKING_GOTOTOOLS_FILE "goto_tools.xml"
+#define VIKING_ROUTING_FILE "routing.xml"
 
 static void
 modules_register_map_source(VikGobjectBuilder *self, GObject *object)
@@ -83,6 +86,14 @@ modules_register_gototools(VikGobjectBuilder *self, GObject *object)
   g_debug (__FUNCTION__);
   VikGotoTool *tool = VIK_GOTO_TOOL (object);
   vik_goto_register (tool);
+}
+
+static void
+modules_register_routing_engine(VikGobjectBuilder *self, GObject *object)
+{
+  g_debug (__FUNCTION__);
+  VikRoutingEngine *engine = VIK_ROUTING_ENGINE (object);
+  vik_routing_register (engine);
 }
 
 static void
@@ -126,6 +137,16 @@ modules_load_config_dir(const gchar *dir)
 	VikGobjectBuilder *builder = vik_gobject_builder_new ();
 	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_gototools), NULL);
 	vik_gobject_builder_parse (builder, go_to);
+	g_object_unref (builder);
+  }
+
+  /* Routing engines */
+  gchar *routing = g_build_filename(dir, VIKING_ROUTING_FILE, NULL);
+  if (g_access (routing, R_OK) == 0)
+  {
+	VikGobjectBuilder *builder = vik_gobject_builder_new ();
+	g_signal_connect (builder, "new-object", G_CALLBACK (modules_register_routing_engine), NULL);
+	vik_gobject_builder_parse (builder, routing);
 	g_object_unref (builder);
   }
 }
@@ -193,6 +214,9 @@ void modules_init()
 #ifdef VIK_CONFIG_SPOTMAPS
   spotmaps_init();
 #endif
+
+  /* Force registering of loadable types */
+  VIK_ROUTING_WEB_ENGINE_TYPE;
 
   /* As modules are loaded, we can load configuration files */
   modules_load_config ();
