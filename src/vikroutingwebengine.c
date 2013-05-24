@@ -36,12 +36,13 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
+#include "babel.h"
+
 #include "vikroutingwebengine.h"
 
 static void vik_routing_web_engine_finalize ( GObject *gob );
 
-static gchar *vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLon start, struct LatLon end );
-static DownloadMapOptions *vik_routing_web_engine_get_download_options ( VikRoutingEngine *self );
+static int vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end );
 
 typedef struct _VikRoutingWebEnginePrivate VikRoutingWebEnginePrivate;
 struct _VikRoutingWebEnginePrivate
@@ -173,8 +174,7 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
 
   parent_class = VIK_ROUTING_ENGINE_CLASS (klass);
 
-  parent_class->get_url_for_coords = vik_routing_web_engine_get_url_for_coords;
-  parent_class->get_download_options = vik_routing_web_engine_get_download_options;
+  parent_class->find = vik_routing_web_engine_find;
 
   /**
    * VikRoutingWebEngine:url-base:
@@ -333,4 +333,21 @@ vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLo
 	g_free ( endURL );
 	
     return url;
+}
+
+static int
+vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end )
+{
+  gchar *uri;
+  int ret = 0;  /* OK */
+
+  uri = vik_routing_web_engine_get_url_for_coords(self, start, end);
+
+  DownloadMapOptions *options = vik_routing_web_engine_get_download_options(self);
+  
+  gchar *format = vik_routing_engine_get_format ( self );
+  a_babel_convert_from_url ( vtl, uri, format, NULL, NULL, options );
+
+  g_free(uri);
+  return ret;
 }

@@ -45,9 +45,7 @@ typedef struct _VikRoutingEngineClass VikRoutingEngineClass;
 struct _VikRoutingEngineClass
 {
   GObjectClass object_class;
-  void (*find)(VikTrwLayer *vt, struct LatLon start, struct LatLon end);
-  gchar *(*get_url_for_coords)(VikRoutingEngine *self, struct LatLon start, struct LatLon end);
-  DownloadMapOptions *(*get_download_options) ( VikRoutingEngine *self );
+  int (*find)(VikRoutingEngine *self, VikTrwLayer *vt, struct LatLon start, struct LatLon end);
 };
 
 GType vik_routing_engine_get_type ();

@@ -34,13 +34,11 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
-#include "curl_download.h"
 #include "babel.h"
 
 #include "vikroutingengine.h"
 
 static void vik_routing_engine_finalize ( GObject *gob );
-static DownloadMapOptions *vik_routing_engine_get_download_options_default ( VikRoutingEngine *self );
 static GObjectClass *parent_class;
 
 typedef struct _VikRoutingPrivate VikRoutingPrivate;
@@ -143,8 +141,6 @@ vik_routing_engine_class_init ( VikRoutingEngineClass *klass )
 
   routing_class = VIK_ROUTING_ENGINE_CLASS ( klass );
   routing_class->find = NULL;
-  routing_class->get_download_options = vik_routing_engine_get_download_options_default;
-  routing_class->get_url_for_coords = NULL;
 
 
   pspec = g_param_spec_string ("id",
@@ -198,52 +194,16 @@ vik_routing_engine_finalize ( GObject *self )
   G_OBJECT_CLASS(parent_class)->finalize(self);
 }
 
-static DownloadMapOptions *
-vik_routing_engine_get_download_options_default ( VikRoutingEngine *self )
-{
-	// Default: return NULL
-	return NULL;
-}
-
-static gchar *
-vik_routing_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLon start, struct LatLon end )
-{
-	VikRoutingEngineClass *klass;
-	
-	g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), NULL );
-	klass = VIK_ROUTING_ENGINE_GET_CLASS( self );
-	g_return_val_if_fail ( klass->get_url_for_coords != NULL, NULL );
-	
-	return klass->get_url_for_coords( self, start, end );
-}
-
-static DownloadMapOptions *
-vik_routing_engine_get_download_options ( VikRoutingEngine *self )
-{
-	VikRoutingEngineClass *klass;
-	
-	g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), NULL );
-	klass = VIK_ROUTING_ENGINE_GET_CLASS( self );
-	g_return_val_if_fail ( klass->get_download_options != NULL, NULL );
-
-	return klass->get_download_options( self );
-}
-
 int
 vik_routing_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end )
 {
-  gchar *uri;
-  int ret = 0;  /* OK */
+	VikRoutingEngineClass *klass;
+	
+	g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), 0 );
+	klass = VIK_ROUTING_ENGINE_GET_CLASS( self );
+	g_return_val_if_fail ( klass->find != NULL, 0 );
 
-  uri = vik_routing_engine_get_url_for_coords(self, start, end);
-
-  DownloadMapOptions *options = vik_routing_engine_get_download_options(self);
-  
-  gchar *format = vik_routing_engine_get_format ( self );
-  a_babel_convert_from_url ( vtl, uri, format, NULL, NULL, options );
-
-  g_free(uri);
-  return ret;
+	return klass->find( self, vtl, start, end );
 }
 
 /**
