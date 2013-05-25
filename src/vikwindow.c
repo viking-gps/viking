@@ -2648,7 +2648,7 @@ static void export_to_common ( VikWindow *vw, VikFileType_t vft, const gchar *ex
                                                     NULL );
 
   GtkWidget *gw = gtk_file_chooser_widget_new ( GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER );
-  gtk_box_pack_start ( GTK_BOX(GTK_DIALOG(dialog)->vbox), gw, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), gw, TRUE, TRUE, 0 );
 
   // try to make it a nice size - otherwise seems to default to something impractically small
   gtk_window_set_default_size ( GTK_WINDOW(dialog), 600, 300 );
