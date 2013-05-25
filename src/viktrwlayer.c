@@ -5141,10 +5141,19 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
 
   while (iter) {
     ts = VIK_TRACKPOINT(iter->data)->timestamp;
+
+    // Check for unordered time points - this is quite a rare occurence - unless one has reversed a track.
     if (ts < prev_ts) {
-      g_print("panic: ts < prev_ts: this should never happen!\n");
+      gchar tmp_str[64];
+      strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&ts) );
+      if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                _("Can not split track due to trackpoints not ordered in time - such as at %s.\n\nGoto this trackpoint?"),
+                                tmp_str ) ) {
+	goto_coord ( pass_along[1], vtl, pass_along[5], &(VIK_TRACKPOINT(iter->data)->coord) );
+      }
       return;
     }
+
     if (ts - prev_ts > thr*60) {
       /* flush accumulated trackpoints into new list */
       newlists = g_list_append(newlists, g_list_reverse(newtps));
