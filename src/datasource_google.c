@@ -82,10 +82,13 @@ static void datasource_google_add_setup_widgets ( GtkWidget *dialog, VikViewport
     gtk_entry_set_text(GTK_ENTRY(widgets->from_entry), last_from_str);
   if (last_to_str)
     gtk_entry_set_text(GTK_ENTRY(widgets->to_entry), last_to_str);
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), from_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->from_entry, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), to_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->to_entry, FALSE, FALSE, 5 );
+
+  /* Packing all these widgets */
+  GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  gtk_box_pack_start ( box, from_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, widgets->from_entry, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, to_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, widgets->to_entry, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
 }
 
