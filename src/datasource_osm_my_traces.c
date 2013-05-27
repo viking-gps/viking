@@ -111,11 +111,14 @@ static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikV
 	password_label = gtk_label_new ( _("Password:") );
 	data->password_entry = gtk_entry_new ();
 
-	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), password_label, FALSE, FALSE, 0 );
-	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), data->password_entry, FALSE, FALSE, 0 );
 	gtk_widget_set_tooltip_markup ( GTK_WIDGET(data->password_entry), _("The password used to login to OSM") );
 
 	osm_login_widgets (data->user_entry, data->password_entry);
+
+	/* Packing all widgets */
+	GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+	gtk_box_pack_start ( box, password_label, FALSE, FALSE, 0 );
+	gtk_box_pack_start ( box, data->password_entry, FALSE, FALSE, 0 );
 	gtk_widget_show_all ( dialog );
 
 	/* Keep reference to viewport */
