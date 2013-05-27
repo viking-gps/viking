@@ -145,10 +145,11 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
   gtk_combo_box_set_active (GTK_COMBO_BOX (widgets->type), last_type);
 
   /* Packing all these widgets */
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), filename_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->file, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), type_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->type, FALSE, FALSE, 5 );
+  GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  gtk_box_pack_start ( box, filename_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, widgets->file, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, type_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, widgets->type, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
 }
 
