@@ -44,6 +44,6 @@ extern VikDataSourceInterface vik_datasource_geotag_interface;
 extern VikDataSourceInterface vik_datasource_wikipedia_interface;
 #endif
 
-G_BEGIN_DECLS
+G_END_DECLS
 
 #endif

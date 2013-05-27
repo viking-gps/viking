@@ -35,6 +35,6 @@ void osm_set_login (const gchar *user_, const gchar *password_);
 gchar *osm_get_login();
 void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry);
 
-G_BEGIN_DECLS
+G_END_DECLS
 
 #endif
