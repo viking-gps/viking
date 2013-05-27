@@ -208,12 +208,14 @@ static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vv
   g_signal_connect_swapped ( G_OBJECT(widgets->center_entry), "changed", G_CALLBACK(datasource_gc_draw_circle), widgets );
   g_signal_connect_swapped ( G_OBJECT(widgets->miles_radius_spin), "value-changed", G_CALLBACK(datasource_gc_draw_circle), widgets );
 
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), num_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->num_spin, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), center_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->center_entry, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), miles_radius_label, FALSE, FALSE, 5 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), widgets->miles_radius_spin, FALSE, FALSE, 5 );
+  /* Packing all these widgets */
+  GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  gtk_box_pack_start ( box, num_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, widgets->num_spin, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, center_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, widgets->center_entry, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, miles_radius_label, FALSE, FALSE, 5 );
+  gtk_box_pack_start ( box, widgets->miles_radius_spin, FALSE, FALSE, 5 );
   gtk_widget_show_all(dialog);
 }
 
