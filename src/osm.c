@@ -74,17 +74,6 @@ void osm_init () {
                                 "license", "CC-BY-SA",
                                 "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
-  VikMapSource *wms_type =
-    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_WMSC_MAP_SOURCE,
-                                "id", 18,
-                                "label", "OpenStreetMap (WMS)",
-                                "hostname", "full.wms.geofabrik.de",
-                                "url", "/std/demo_key?LAYERS=osm-full&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&EXCEPTIONS=&SRS=EPSG:4326&BBOX=%s,%s,%s,%s&WIDTH=256&HEIGHT=256",
-                                "check-file-server-time", FALSE,
-                                "copyright", "© OpenStreetMap contributors",
-                                "license", "CC-BY-SA",
-                                "license-url", "http://www.openstreetmap.org/copyright",
-                                NULL));
 
   VikMapSource *mapquest_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -113,7 +102,6 @@ void osm_init () {
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (cycle_type);
   maps_layer_register_map_source (transport_type);
-  maps_layer_register_map_source (wms_type);
   maps_layer_register_map_source (direct_type);
 
   // Webtools
