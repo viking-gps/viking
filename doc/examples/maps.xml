@@ -10,17 +10,6 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
-  <!-- The VikWmscMapSource allows to declare any WMS or WMS-C service. -->
-  <object class="VikWmscMapSource">
-    <property name="id">18</property>
-    <property name="label">OpenStreetMap (WMS)</property>
-    <property name="hostname">full.wms.geofabrik.de</property>
-    <property name="url">/std/demo_key?LAYERS=osm-full&amp;FORMAT=image/png&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=&amp;SRS=EPSG:4326&amp;BBOX=%s,%s,%s,%s&amp;WIDTH=256&amp;HEIGHT=256</property>
-    <property name="check-file-server-time">FALSE</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
   <!-- The VikTmsMapSource allows to declare any TMS service. -->
   <object class="VikTmsMapSource">
     <property name="id">50</property>
