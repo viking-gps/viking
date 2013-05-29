@@ -516,6 +516,11 @@ static guint map_uniq_id_to_index ( guint uniq_id )
   return NUM_MAP_TYPES; /* no such thing */
 }
 
+void vik_maps_layer_pretend_licence_shown ( VikMapsLayer *vml )
+{
+  vml->license_notice_shown = TRUE;
+}
+
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation )
 {
   // When loading from a file don't need the license reminder
