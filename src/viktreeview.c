@@ -748,66 +748,6 @@ void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_laye
   g_free ( positions );
 }
 
-void vik_treeview_sublayer_realphabetize ( VikTreeview *vt, GtkTreeIter *iter, const gchar *newname )
-{
-  GtkTreeIter search_iter, parent_iter;
-  gchar *search_name = NULL;
-  g_assert ( iter != NULL );
-
-  gtk_tree_model_iter_parent ( vt->model, &parent_iter, iter );
-
-  g_assert ( gtk_tree_model_iter_children ( vt->model, &search_iter, &parent_iter ) );
-
-  do {
-    gtk_tree_model_get ( vt->model, &search_iter, NAME_COLUMN, &search_name, -1 );
-    if ( strcmp ( search_name, newname ) > 0 ) /* not >= or would trip on itself */
-    {
-      gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, &search_iter );
-      g_free (search_name);
-      search_name = NULL;
-      return;
-    }
-    g_free (search_name);
-    search_name = NULL;
-  } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
-
-  gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, NULL );
-}
-
-void vik_treeview_add_sublayer_alphabetized
-                 ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                   gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable )
-{
-  GtkTreeIter search_iter;
-  gchar *search_name = NULL;
-  g_assert ( iter != NULL );
-
-  if ( gtk_tree_model_iter_children ( vt->model, &search_iter, parent_iter ) )
-  {
-    gboolean found_greater_string = FALSE;
-    do {
-      gtk_tree_model_get ( vt->model, &search_iter, NAME_COLUMN, &search_name, -1 );
-      if ( strcmp ( search_name, name ) >= 0 )
-      {
-        gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, &search_iter );
-        found_greater_string = TRUE;
-        g_free (search_name);
-        search_name = NULL;
-        break;
-      }
-      g_free (search_name);
-      search_name = NULL;
-    } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
-
-    if ( ! found_greater_string )
-      gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
-  }
-  else
-    gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
-
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, has_visible, EDITABLE_COLUMN, editable, ICON_COLUMN, icon, -1 );
-}
-
 static void vik_treeview_finalize ( GObject *gob )
 {
   VikTreeview *vt = VIK_TREEVIEW ( gob );
