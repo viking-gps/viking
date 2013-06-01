@@ -190,7 +190,7 @@ View, create and update Geotagged Images (using EXIF data).
 <section><title>General Concepts</title>
 <section id="gc_layers" xreftitle="Layers"><title>Layers</title>
 <para>
-'Layers' is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
+<emphasis>Layers</emphasis> is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
 Instead of putting all the data on the same level, it is stacked (i.e. layered) with different data over one another.
 This can be useful for analysis and general handling of various sets of data.
 </para>
@@ -344,7 +344,7 @@ For these combinations see the menu entry themselves.
 In theory a route is path you are planning to follow and a track of where you have actually been. The GPX specification splits these into two separate catergories, although tracks contain everything route may have.
 </para>
 <para>
-Q. When planning a 'route' what difference does it make if it's a route or a track?
+Q. When planning a <emphasis>route</emphasis> what difference does it make if it's a route or a track?
 </para>
 <para>
 A. One difference is in how a GPS device navigates following the route or track.
@@ -543,7 +543,7 @@ If the image files have geotag information in them, then a <xref linkend="TrackW
 <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From Wikipedia Waypoints</guimenuitem></menuchoice>
 </para>
 <para>
-This gets 'interesting' points from Wikipedia for the specified view: either within the extent of layer bounds or within the current viewport boundary.
+This gets <emphasis>interesting</emphasis> points from Wikipedia for the specified view: either within the extent of layer bounds or within the current viewport boundary.
 </para>
 </section>
 
@@ -891,7 +891,7 @@ The following colors are used in the elevation-distance graph:
 </para>
 <variablelist>
 <varlistentry>
-<term>'Main' colour - this is dependent on your Desktop theme - often blue by default</term>
+<term><emphasis>Main</emphasis> colour - this is dependent on your Desktop theme - often blue by default</term>
 <listitem><para>elevation data in graph</para></listitem>
 </varlistentry>
 <varlistentry>
@@ -1131,7 +1131,7 @@ This centers the viewport on the selected waypoint.
 
 <section><title>Visit Webpage</title>
 <para>
-If the waypoint's comment (or description) starts with 'http:' then this option is available and allows launching a web browser to go to the webpage.
+If the waypoint's comment (or description) starts with <literal>http:</literal> then this option is available and allows launching a web browser to go to the webpage.
 </para>
 </section>
 
@@ -1256,7 +1256,7 @@ This layer provides a single map resource, you may have multiple map layers but 
 You will need an open internet connection when you are downloading maps, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
 </para>
 <para>
-Some maps are continually improving over time (e.g. OpenStreetMap) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - 'Tile Age' to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
+Some maps are continually improving over time (e.g. OpenStreetMap) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - <emphasis>Tile Age</emphasis> to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
 </para>
 <para>
 Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServer-USA">Terraserver</ulink> (Primarily USA coverage) and <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
@@ -1435,7 +1435,7 @@ This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fi
 </para>
 <para>
 The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
-A second click will 'freeze' the ruler at that point.
+A second click will <emphasis>freeze</emphasis> the ruler at that point.
 </para>
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</keycap>
@@ -1683,8 +1683,8 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 <para>An option exists to control the icon (symbol) size used for waypoints
 </para>
 </section>
-<section><title>'Home' Default Location: Latitude and Longitude</title>
-<para>You can set the 'Home' location directly by inputting the latitude and longitude in decimal degrees.
+<section><title><emphasis>Home</emphasis> Default Location: Latitude and Longitude</title>
+<para>You can set the <emphasis>Home</emphasis> location directly by inputting the latitude and longitude in decimal degrees.
 </para>
 </section>
 <section><title>Tile's age</title>
@@ -1870,7 +1870,7 @@ Your tracks will now be drawn over the map.
 <section><title>From 1st startup to GPS track (including offline maps)</title>
 <para>
 The first you'll see is an empty map, because &appname; in its default configuration will download maps only on demand.
-Before fetching unneeded data, one can position to a location of interest, e.g. Stuttgart: <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>, enter 'Stuttgart'.
+Before fetching unneeded data, one can position to a location of interest, e.g. Stuttgart: <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>, enter <userinput>Stuttgart</userinput>.
 </para>
 <section><title>Fetching the maps</title>
 <para>
@@ -2062,7 +2062,7 @@ This feature can be really useful for checking existing data before uploading ne
 <guimenuitem>OSM traces...</guimenuitem>
 </menuchoice>.
 Each request can get up to 5,000 points.
-The dialog box allows setting which group of 5,000 points to get. These groups are known as 'Page Numbers' which start at 0.
+The dialog box allows setting which group of 5,000 points to get. These groups are known as <emphasis>Page Numbers</emphasis> which start at 0.
 Increasing the page number parameter allows one to request the subsequent sets of point groups.
 </para>
 </formalpara>
