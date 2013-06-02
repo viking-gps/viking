@@ -46,7 +46,17 @@
 #include "vikexttool_datasources.h"
 #include "vikgoto.h"
 #include "vikrouting.h"
+
+/* Loadable types */
+#include "vikslippymapsource.h"
+#include "viktmsmapsource.h"
+#include "vikwmscmapsource.h"
+#include "vikwebtoolcenter.h"
+#include "vikwebtoolbounds.h"
+#include "vikgotoxmltool.h"
+#include "vikwebtool_datasource.h"
 #include "vikroutingwebengine.h"
+
 #include "vikgobjectbuilder.h"
 
 #define VIKING_MAPS_FILE "maps.xml"
@@ -187,6 +197,34 @@ modules_load_config(void)
   modules_load_config_dir(a_get_viking_dir());
 }
 
+static void
+register_loadable_types(void)
+{
+  /* Force registering of loadable types */
+  volatile GType types[] = {
+    /* Maps */
+    VIK_TYPE_SLIPPY_MAP_SOURCE,
+    VIK_TYPE_TMS_MAP_SOURCE,
+    VIK_TYPE_WMSC_MAP_SOURCE,
+
+    /* Goto */
+    VIK_GOTO_XML_TOOL_TYPE,
+
+    /* Tools */
+    VIK_WEBTOOL_CENTER_TYPE,
+    VIK_WEBTOOL_BOUNDS_TYPE,
+
+    /* Datasource */
+    VIK_WEBTOOL_DATASOURCE_TYPE,
+
+    /* Routing */
+    VIK_ROUTING_WEB_ENGINE_TYPE
+  };
+
+  /* kill 'unused variable'  warning */
+  g_debug("%ld types loaded", sizeof(types)/sizeof(GType));
+}
+
 void modules_init()
 {
 #ifdef VIK_CONFIG_BING
@@ -215,8 +253,7 @@ void modules_init()
   spotmaps_init();
 #endif
 
-  /* Force registering of loadable types */
-  VIK_ROUTING_WEB_ENGINE_TYPE;
+  register_loadable_types ();
 
   /* As modules are loaded, we can load configuration files */
   modules_load_config ();
