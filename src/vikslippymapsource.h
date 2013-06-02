@@ -20,6 +20,8 @@
 #ifndef _VIK_SLIPPY_MAP_SOURCE_H
 #define _VIK_SLIPPY_MAP_SOURCE_H
 
+#include <glib.h>
+
 #include "vikcoord.h"
 #include "mapcoord.h"
 #include "vikmapsourcedefault.h"
