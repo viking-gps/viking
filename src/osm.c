@@ -129,9 +129,7 @@ void osm_init () {
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtoolbounds ) );
   g_object_unref ( webtoolbounds );
 
-  // NB: THERE MUST BE AT LEAST ONE VikWebtoolDatasource defined otherwise the parsing of the datasource.xml will fail
-  //  since it won't know about such a GObject type existing!
-  //   (in fact this is a problem in the vikgobjectbuilder -> g_markup_parse_context_parse -> _start_element -> g_type_from_name )
+  // Datasource
   VikWebtoolDatasource *vwtds = NULL;
   vwtds = vik_webtool_datasource_new_with_members ( _("OpenStreetMap Notes"), "http://api.openstreetmap.org/api/0.6/notes.gpx?bbox=%s,%s,%s,%s&amp;closed=0", "LBRT", NULL );
   vik_ext_tool_datasources_register ( VIK_EXT_TOOL ( vwtds ) );
