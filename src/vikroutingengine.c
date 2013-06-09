@@ -194,6 +194,17 @@ vik_routing_engine_finalize ( GObject *self )
   G_OBJECT_CLASS(parent_class)->finalize(self);
 }
 
+/**
+ * vik_routing_engine_find:
+ * @self: self object
+ * @vtl:
+ * @start: starting point
+ * @end: ending point
+ *
+ * Retrieve a route between two coordinates.
+ * 
+ * Returns: indicates success or not.
+ */
 int
 vik_routing_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end )
 {
