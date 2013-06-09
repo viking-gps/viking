@@ -4659,7 +4659,7 @@ static void trw_layer_goto_track_min_alt ( gpointer pass_along[6] )
  */
 static void trw_layer_auto_track_view ( gpointer pass_along[6] )
 {
-  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
   VikTrack *trk;
   if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
     trk = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
@@ -4670,11 +4670,11 @@ static void trw_layer_auto_track_view ( gpointer pass_along[6] )
   {
     struct LatLon maxmin[2] = { {0,0}, {0,0} };
     trw_layer_find_maxmin_tracks ( NULL, trk, maxmin );
-    trw_layer_zoom_to_show_latlons ( VIK_TRW_LAYER(pass_along[0]), pass_along[5], maxmin );
+    trw_layer_zoom_to_show_latlons ( vtl, pass_along[5], maxmin );
     if ( pass_along[1] )
       vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(pass_along[1]) );
     else
-      vik_layer_emit_update ( VIK_LAYER(pass_along[0]) );
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
   }
 }
 
