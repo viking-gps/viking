@@ -420,25 +420,26 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
   g_assert ( vml != NULL);
   g_free ( vml->cache_dir );
   vml->cache_dir = NULL;
+  const gchar *mydir = dir;
 
   if ( dir == NULL || dir[0] == '\0' )
   {
     if ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir") )
-      vml->cache_dir = g_strdup ( a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s );
+      mydir = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s;
+  }
+
+  // Ensure cache_dir always ends with a separator
+  len = strlen(mydir);
+  if ( mydir[len-1] != G_DIR_SEPARATOR )
+  {
+    vml->cache_dir = g_malloc ( len+2 );
+    strncpy ( vml->cache_dir, mydir, len );
+    vml->cache_dir[len] = G_DIR_SEPARATOR;
+    vml->cache_dir[len+1] = '\0';
   }
   else
-  {
-    len = strlen(dir);
-    if ( dir[len-1] != G_DIR_SEPARATOR )
-    {
-      vml->cache_dir = g_malloc ( len+2 );
-      strncpy ( vml->cache_dir, dir, len );
-      vml->cache_dir[len] = G_DIR_SEPARATOR;
-      vml->cache_dir[len+1] = '\0';
-    }
-    else
-      vml->cache_dir = g_strdup ( dir );
-  }
+    vml->cache_dir = g_strdup ( mydir );
+
   maps_layer_mkdir_if_default_dir ( vml );
 }
 
