@@ -122,6 +122,8 @@ static VikLayerParam startup_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_method", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Startup Method:"), VIK_LAYER_WIDGET_COMBOBOX, params_startup_methods, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_file", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Startup File:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,
     N_("The default file to load on startup. Only applies when the startup method is set to 'Specified File'"), NULL, },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "check_version", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Check For New Version:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Periodically check to see if a new version of Viking is available"), NULL, },
 };
 /* End of Options static stuff */
 
@@ -196,6 +198,9 @@ void a_vik_preferences_init ()
 
   tmp.s = "";
   a_preferences_register(&startup_prefs[3], tmp, VIKING_PREFERENCES_STARTUP_GROUP_KEY);
+
+  tmp.b = FALSE;
+  a_preferences_register(&startup_prefs[4], tmp, VIKING_PREFERENCES_STARTUP_GROUP_KEY);
 
   // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_IO_GROUP_KEY, _("Export/External") );
@@ -357,4 +362,9 @@ vik_startup_method_t a_vik_get_startup_method ( )
 const gchar *a_vik_get_startup_file ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_file")->s;
+}
+
+gboolean a_vik_get_check_version ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "check_version")->b;
 }

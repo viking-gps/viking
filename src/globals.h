@@ -190,6 +190,8 @@ vik_startup_method_t a_vik_get_startup_method ( );
 
 const gchar *a_vik_get_startup_file ( );
 
+gboolean a_vik_get_check_version ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
