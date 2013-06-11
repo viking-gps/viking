@@ -388,7 +388,7 @@ Besides it's own file type, &appname; can open (and save to via export methods) 
 </para>
 </note>
 <para>
-By default &appname; opens a default blank window centered on the home location.
+By default &appname; opens a default blank window centered on the home location. This behaviour can be changed by the <xref linkend="prefs_startup"/>.
 Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
 Each section (apart from the viewport) can be hidden using the <xref linkend="shortcut_keys"/> or from the
 <menuchoice><guimenu>View</guimenu><guisubmenu>Show</guisubmenu></menuchoice> choices.
@@ -1741,13 +1741,44 @@ Your OSM password will be stored in plain text.
 </section>
 </section>
 
+<section id="prefs_startup" xreflabel="Startup Preferences"><title>Startup</title>
+<para>Naturally since these preferences effect the startup, the values will not be used until &appname; is restarted.</para>
+<section><title>Restore Window Setup</title>
+<para>When this is enabled, the main window size and layout (such as whether the statusbar or layers panel are shown) is restored to the values from last use.</para>
+</section>
+<section><title>Default Map Layer</title>
+<para>When this is enabled, a map layer is automatically added whenever &appname; is opened and a &appname; file is not to be loaded.</para>
+<para>The map layer used is defined by the map layer's default values.</para>
+</section>
+<section><title>Startup Method</title>
+<para>Enables selection of how the startup position should be determined.</para>
+<itemizedlist>
+<listitem><para>Home Location (default) - Position as set by the <guilabel>Set the Default Location</guilabel></para></listitem>
+<listitem><para>Last Location - Uses the last position viewed on the viewport</para></listitem>
+<listitem><para>Specified File - Load the file as specified below</para></listitem>
+<listitem><para>Auto Location - Use the web service <ulink url="http://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup</para></listitem>
+</itemizedlist>
+</section>
+<section><title>Startup File</title>
+<para>Loads this specified file when the Startup method is set to <guilabel>Specified File</guilabel></para>
+</section>
+<section><title>Check For New Version</title>
+<para>Periodically (no more than once every 14 days), check to see if there is a new version of &appname; available.</para>
+</section>
+</section>
+
 </section>
 
 <!-- HOWTOS-->
 <section><title>Howto's</title>
 <section id="howto_start"><title>Getting Started</title>
 <para>
-To quickly get started using &appname;, follow these instructions.
+&appname; from version 1.5 has several features to ease the start up process.
+On the very first run, you will be asked if you want to enable these features which make use of an Internet connection.
+If you select no or you have upgraded from an earlier version you can choose to enable any of the startup options via the <xref linkend="prefs_startup"/>.
+</para>
+<para>
+Some other general use cases for using &appname;, are as follows:
 </para>
 <section><title>Go to an area of interest</title>
 <para>
