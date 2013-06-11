@@ -11,6 +11,7 @@ static const char *menu_xml =
 	"      <menuitem action='Append'/>"
 	"      <menuitem action='Save'/>"
 	"      <menuitem action='SaveAs'/>"
+	"      <menuitem action='FileProperties'/>"
 	"      <separator/>"
 	"      <menu action='Export'>"
 	"        <menuitem action='ExportGPX'/>"

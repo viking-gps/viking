@@ -2680,6 +2680,42 @@ static void export_to_kml ( GtkAction *a, VikWindow *vw )
   export_to_common ( vw, FILE_TYPE_KML, ".kml" );
 }
 
+static void file_properties_cb ( GtkAction *a, VikWindow *vw )
+{
+  gchar *message = NULL;
+  if ( vw->filename ) {
+    if ( g_file_test ( vw->filename, G_FILE_TEST_EXISTS ) ) {
+      // Get some timestamp information of the file
+      GStatBuf stat_buf;
+      if ( g_stat ( vw->filename, &stat_buf ) == 0 ) {
+        gchar time_buf[64];
+        strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
+	gchar *size = NULL;
+	gint byte_size = stat_buf.st_size;
+	// See http://en.wikipedia.org/wiki/Megabyte (and Kilobyte)
+	//  hence using 1000 rather than 1024
+	//  so get output as per 'ls' or the Gtk file open dialog
+	if ( byte_size < 1000 )
+	  size = g_strdup_printf ( _("%d bytes"), byte_size );
+	else if ( byte_size < 1000*1000 )
+	  size = g_strdup_printf ( _("%3.1f kB"), (gdouble)byte_size / 1000 );
+	else
+	  size = g_strdup_printf ( _("%3.1f MB"), (gdouble)byte_size / (1000*1000) );
+        message = g_strdup_printf ( _("%s\n\n%s\n\n%s"), vw->filename, time_buf, size );
+	g_free (size);
+      }
+    }
+    else
+      message = g_strdup ( _("File not accessible") );
+  }
+  else
+    message = g_strdup ( _("No Viking File") );
+
+  // Show the info
+  a_dialog_info_msg ( GTK_WINDOW(vw), message );
+  g_free ( message );
+}
+
 static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
 {
   // Via the file menu, acquiring from a GPS makes a new layer
@@ -3453,6 +3489,7 @@ static GtkActionEntry entries[] = {
 #endif
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },
+  { "FileProperties", NULL,              N_("Properties..."),                    NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
   { "GenImg",    GTK_STOCK_CLEAR,        N_("_Generate Image File..."),          NULL,  N_("Save a snapshot of the workspace into a file"), (GCallback)draw_to_image_file_cb },
   { "GenImgDir", GTK_STOCK_DND_MULTIPLE, N_("Generate _Directory of Images..."), NULL,  N_("FIXME:IMGDIR"),                                 (GCallback)draw_to_image_dir_cb  },
   { "Print",    GTK_STOCK_PRINT,        N_("_Print..."),          NULL,         N_("Print maps"), (GCallback)print_cb },
