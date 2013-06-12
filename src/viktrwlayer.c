@@ -8263,10 +8263,9 @@ static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton
   tp->timestamp = 0;
 
   if ( vtl->current_track ) {
-    vtl->current_track->trackpoints = g_list_append ( vtl->current_track->trackpoints, tp );
+    vik_track_add_trackpoint ( vtl->current_track, tp, TRUE ); // Ensure bounds is updated
     /* Auto attempt to get elevation from DEM data (if it's available) */
     vik_track_apply_dem_data_last_trackpoint ( vtl->current_track );
-    vik_track_calculate_bounds ( vtl->current_track );
   }
 
   vtl->ct_x1 = vtl->ct_x2;

@@ -1586,7 +1586,7 @@ static void create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forced)
         vik_coord_load_from_latlon(&tp->coord,
              vik_trw_layer_get_coord_mode(vgl->trw_children[TRW_REALTIME]), &ll);
 
-        vgl->realtime_track->trackpoints = g_list_append(vgl->realtime_track->trackpoints, tp);
+        vik_track_add_trackpoint ( vgl->realtime_track, tp, TRUE ); // Ensure bounds is recalculated
         vgl->realtime_fix.dirty = FALSE;
         vgl->realtime_fix.satellites_used = 0;
         vgl->last_fix = vgl->realtime_fix;

@@ -180,6 +180,48 @@ VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp)
   return rv;
 }
 
+/**
+ * track_recalculate_bounds_last_tp:
+ * @trk:   The track to consider the recalculation on
+ *
+ * A faster bounds check, since it only considers the last track point
+ */
+static void track_recalculate_bounds_last_tp ( VikTrack *trk )
+{
+  GList *tpl = g_list_last ( trk->trackpoints );
+
+  if ( tpl ) {
+    struct LatLon ll;
+    // See if this trackpoint increases the track bounds and update if so
+    vik_coord_to_latlon ( &(VIK_TRACKPOINT(tpl->data)->coord), &ll );
+    if ( ll.lat > trk->bbox.north )
+      trk->bbox.north = ll.lat;
+    if ( ll.lon < trk->bbox.west )
+      trk->bbox.west = ll.lon;
+    if ( ll.lat < trk->bbox.south )
+      trk->bbox.south = ll.lat;
+    if ( ll.lon > trk->bbox.east )
+      trk->bbox.east = ll.lon;
+  }
+}
+
+/**
+ * vik_track_add_trackpoint:
+ * @tr:          The track to which the trackpoint will be added
+ * @tp:          The trackpoint to add
+ * @recalculate: Whether to perform any associated properties recalculations
+ *               Generally one should avoid recalculation via this method if adding lots of points
+ *               (But ensure calculate_bounds() is called after adding all points!!)
+ *
+ * The trackpoint is added to the end of the existing trackpoint list
+ */
+void vik_track_add_trackpoint ( VikTrack *tr, VikTrackpoint *tp, gboolean recalculate )
+{
+  tr->trackpoints = g_list_append ( tr->trackpoints, tp );
+  if ( recalculate )
+    track_recalculate_bounds_last_tp ( tr );
+}
+
 gdouble vik_track_get_length(const VikTrack *tr)
 {
   gdouble len = 0.0;
