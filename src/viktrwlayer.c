@@ -36,6 +36,7 @@
 #include "viktrwlayer_tpwin.h"
 #include "viktrwlayer_propwin.h"
 #include "viktrwlayer_analysis.h"
+#include "viktrwlayer_tracklist.h"
 #ifdef VIK_CONFIG_GEOTAG
 #include "viktrwlayer_geotag.h"
 #include "geotag_exif.h"
@@ -323,6 +324,9 @@ static void trw_layer_acquire_geotagged_cb ( gpointer lav[2] );
 #endif
 static void trw_layer_acquire_file_cb ( gpointer lav[2] );
 static void trw_layer_gps_upload ( gpointer lav[2] );
+
+static void trw_layer_track_list_dialog_single ( gpointer pass_along[6] );
+static void trw_layer_track_list_dialog ( gpointer lav[2] );
 
 // Specific route versions:
 //  Most track handling functions can handle operating on the route list
@@ -3962,7 +3966,14 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   if ( item ) {
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
-  }  
+  }
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Track _List...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_list_dialog), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->tracks)+g_hash_table_size (vtl->routes)) );
 }
 
 // Fake Waypoint UUIDs vi simple increasing integer
@@ -7429,6 +7440,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_tracks_visibility_toggle), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_List Tracks...") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_list_dialog_single), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+
     gtk_widget_show ( item );
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
@@ -7501,6 +7518,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_routes_visibility_toggle), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_List Routes...") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_list_dialog_single), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+
     gtk_widget_show ( item );
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
@@ -10178,4 +10201,43 @@ static gchar *highest_wp_number_get(VikTrwLayer *vtl)
     return NULL;
   g_snprintf(buf,4,"%03d", vtl->highest_wp_number+1 );
   return g_strdup(buf);
+}
+
+/**
+ * trw_layer_create_track_list_both:
+ *
+ * Create the latest list of tracks and routes
+ */
+static GList* trw_layer_create_track_list_both ( VikLayer *vl, gpointer user_data )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(vl);
+  GList *tracks = NULL;
+  tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) ) );
+  tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_routes ( vtl ) ) );
+
+  return vik_trw_layer_build_track_list_t ( vtl, tracks );
+}
+
+static void trw_layer_track_list_dialog_single ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+
+  gchar *title = NULL;
+  if ( GPOINTER_TO_INT(pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_TRACKS )
+    title = g_strdup_printf ( _("%s: Track List"), VIK_LAYER(vtl)->name );
+  else
+    title = g_strdup_printf ( _("%s: Route List"), VIK_LAYER(vtl)->name );
+
+  vik_trw_layer_track_list_show_dialog ( title, VIK_LAYER(vtl), pass_along[2], trw_layer_create_track_list, FALSE );
+  g_free ( title );
+}
+
+static void trw_layer_track_list_dialog ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  //VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+
+  gchar *title = g_strdup_printf ( _("%s: Track and Route List"), VIK_LAYER(vtl)->name );
+  vik_trw_layer_track_list_show_dialog ( title, VIK_LAYER(vtl), NULL, trw_layer_create_track_list_both, FALSE );
+  g_free ( title );
 }
