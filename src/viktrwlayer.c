@@ -142,12 +142,14 @@ struct _VikTrwLayer {
   guint8 drawdirections_size;
   guint8 line_thickness;
   guint8 bg_line_thickness;
+  vik_layer_sort_order_t track_sort_order;
 
   guint8 wp_symbol;
   guint8 wp_size;
   gboolean wp_draw_symbols;
   font_size_t wp_font_size;
   gchar *wp_fsize_str;
+  vik_layer_sort_order_t wp_sort_order;
 
   gdouble track_draw_speed_factor;
   GArray *track_gc;
@@ -212,8 +214,6 @@ struct _VikTrwLayer {
   VikStdLayerMenuItem menu_selection;
 
   gint highest_wp_number;
-
-  gboolean alphabetized;
 };
 
 /* A caached waypoint image. */
@@ -486,6 +486,14 @@ static gchar* params_font_sizes[] = {
   N_("Extra Extra Large"),
   NULL };
 
+// Needs to align with vik_layer_sort_order_t
+static gchar* params_sort_order[] = {
+  N_("None"),
+  N_("Name Ascending"),
+  N_("Name Descending"),
+  NULL
+};
+
 static VikLayerParamData black_color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#000000", &data.c ); return data; // Black
 }
@@ -515,6 +523,8 @@ static VikLayerParamData image_size_default ( void ) { return VIK_LPD_UINT ( 64 
 static VikLayerParamData image_alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
 static VikLayerParamData image_cache_size_default ( void ) { return VIK_LPD_UINT ( 300 ); }
 
+static VikLayerParamData sort_order_default ( void ) { return VIK_LPD_UINT ( 0 ); }
+
 VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "tracks_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default },
   { VIK_LAYER_TRW, "waypoints_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default },
@@ -541,6 +551,9 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
     N_("The percentage factor away from the average speed determining the color used"), speed_factor_default },
 
+  { VIK_LAYER_TRW, "tracksortorder", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order, NULL, NULL, sort_order_default },
+
+  // Waypoint Options:
   { VIK_LAYER_TRW, "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default },
   { VIK_LAYER_TRW, "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL, NULL, wpfontsize_default },
   { VIK_LAYER_TRW, "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, black_color_default },
@@ -550,6 +563,7 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint marker:"), VIK_LAYER_WIDGET_COMBOBOX, params_wpsymbols, NULL, NULL, wpsymbol_default },
   { VIK_LAYER_TRW, "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[7], NULL, NULL, wpsize_default },
   { VIK_LAYER_TRW, "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Symbols:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default },
+  { VIK_LAYER_TRW, "wpsortorder", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order, NULL, NULL, sort_order_default },
 
   { VIK_LAYER_TRW, "drawimages", VIK_LAYER_PARAM_BOOLEAN, GROUP_IMAGES, N_("Draw Waypoint Images"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default },
   { VIK_LAYER_TRW, "image_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Size (pixels):"), VIK_LAYER_WIDGET_HSCALE, &params_scales[3], NULL, NULL, image_size_default },
@@ -579,6 +593,7 @@ enum {
   PARAM_BLT,
   PARAM_TBGC,
   PARAM_TDSF,
+  PARAM_TSO,
   // Waypoints
   PARAM_DLA,
   PARAM_WPFONTSIZE,
@@ -589,6 +604,7 @@ enum {
   PARAM_WPSYM,
   PARAM_WPSIZE,
   PARAM_WPSYMS,
+  PARAM_WPSO,
   // WP images
   PARAM_DI,
   PARAM_IS,
@@ -948,6 +964,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
         gdk_gc_set_rgb_fg_color(vtl->track_bg_gc, &(vtl->track_bg_color));
       break;
     case PARAM_TDSF: vtl->track_draw_speed_factor = data.d; break;
+    case PARAM_TSO: if ( data.u < VL_SO_LAST ) vtl->track_sort_order = data.u; break;
     case PARAM_DLA: vtl->drawlabels = data.b; break;
     case PARAM_DI: vtl->drawimages = data.b; break;
     case PARAM_IS: if ( data.u != vtl->image_size )
@@ -1001,6 +1018,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
         }
       }
       break;
+    case PARAM_WPSO: if ( data.u < VL_SO_LAST ) vtl->wp_sort_order = data.u; break;
   }
   return TRUE;
 }
@@ -1030,6 +1048,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_DI: rv.b = vtl->drawimages; break;
     case PARAM_TBGC: rv.c = vtl->track_bg_color; break;
     case PARAM_TDSF: rv.d = vtl->track_draw_speed_factor; break;
+    case PARAM_TSO: rv.u = vtl->track_sort_order; break;
     case PARAM_IS: rv.u = vtl->image_size; break;
     case PARAM_IA: rv.u = vtl->image_alpha; break;
     case PARAM_ICS: rv.u = vtl->image_cache_size; break;
@@ -1041,6 +1060,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WPSIZE: rv.u = vtl->wp_size; break;
     case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
     case PARAM_WPFONTSIZE: rv.u = vtl->wp_font_size; break;
+    case PARAM_WPSO: rv.u = vtl->wp_sort_order; break;
   }
   return rv;
 }
@@ -1235,11 +1255,6 @@ static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
   rv->draw_sync_done = TRUE;
   rv->draw_sync_do = TRUE;
   // Everything else is 0, FALSE or NULL
-
-  rv->alphabetized = TRUE;
-  gboolean alphabetized;
-  if ( a_settings_get_boolean ( "trackwaypoint_alphabetized", &alphabetized ) )
-    rv->alphabetized = alphabetized;
 
   return rv;
 }
@@ -1948,10 +1963,7 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
     gdk_pixbuf_fill ( pixbuf, pixel );
   }
 
-  if ( VIK_TRW_LAYER(pass_along[2])->alphabetized )
-    vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, TRUE );
-  else
-    vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, TRUE );
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, TRUE );
 
   if ( pixbuf )
     g_object_unref (pixbuf);
@@ -1970,10 +1982,7 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
-  if ( VIK_TRW_LAYER(pass_along[2])->alphabetized )
-    vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, TRUE );
-  else
-    vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, TRUE );
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, TRUE );
 
   *new_iter = *((GtkTreeIter *) pass_along[1]);
   g_hash_table_insert ( VIK_TRW_LAYER(pass_along[2])->waypoints_iters, id, new_iter );
@@ -1984,26 +1993,17 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
 
 static void trw_layer_add_sublayer_tracks ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  if ( vtl->alphabetized )
-    vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
-  else
-    vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
 }
 
 static void trw_layer_add_sublayer_waypoints ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  if ( vtl->alphabetized )
-    vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
-  else
-    vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
 }
 
 static void trw_layer_add_sublayer_routes ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  if ( vtl->alphabetized )
-    vik_treeview_add_sublayer_alphabetized ( (VikTreeview *) vt, layer_iter, &(vtl->routes_iter), _("Routes"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES, NULL, TRUE, FALSE );
-  else
-    vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->routes_iter), _("Routes"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->routes_iter), _("Routes"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES, NULL, TRUE, FALSE );
 }
 
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
@@ -2013,13 +2013,13 @@ static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *
 
   if ( g_hash_table_size (vtl->tracks) > 0 ) {
     trw_layer_add_sublayer_tracks ( vtl, vt , layer_iter );
+    pass_along[5] = GINT_TO_POINTER(g_hash_table_size (vtl->tracks));
     g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_realize_track, pass_along );
 
-    vik_treeview_item_set_visible ( (VikTreeview *) vt, &(vtl->tracks_iter), vtl->tracks_visible );
+    vik_treeview_item_set_visible ( vt, &(vtl->tracks_iter), vtl->tracks_visible );
   }
 
   if ( g_hash_table_size (vtl->routes) > 0 ) {
-
     trw_layer_add_sublayer_routes ( vtl, vt, layer_iter );
 
     pass_along[0] = &(vtl->routes_iter);
@@ -3673,10 +3673,7 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
 
     // Visibility column always needed for waypoints
-    if ( vtl->alphabetized )
-      vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, TRUE );
-    else
-      vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, TRUE );
 
     // Actual setting of visibility dependent on the waypoint
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
@@ -3707,15 +3704,15 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
     // Visibility column always needed for tracks
-    if ( vtl->alphabetized )
-      vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, GUINT_TO_POINTER(tr_uuid), VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
-    else
-      vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, GUINT_TO_POINTER(tr_uuid), VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, GUINT_TO_POINTER(tr_uuid), VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
 
     // Actual setting of visibility dependent on the track
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
 
     g_hash_table_insert ( vtl->tracks_iters, GUINT_TO_POINTER(tr_uuid), iter );
+
+    // Sort now as post_read is not called on a realized track
+    vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->track_sort_order );
   }
 
   g_hash_table_insert ( vtl->tracks, GUINT_TO_POINTER(tr_uuid), t );
@@ -3740,16 +3737,15 @@ void vik_trw_layer_add_route ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
     }
 
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
-    // Visibility column always needed for tracks
-    if ( vtl->alphabetized )
-      vik_treeview_add_sublayer_alphabetized ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), iter, name, vtl, GUINT_TO_POINTER(rt_uuid), VIK_TRW_LAYER_SUBLAYER_ROUTE, NULL, TRUE, TRUE );
-    else
-      vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), iter, name, vtl, GUINT_TO_POINTER(rt_uuid), VIK_TRW_LAYER_SUBLAYER_ROUTE, NULL, TRUE, TRUE );
-
-    // Actual setting of visibility dependent on the track
+    // Visibility column always needed for routes
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), iter, name, vtl, GUINT_TO_POINTER(rt_uuid), VIK_TRW_LAYER_SUBLAYER_ROUTE, NULL, TRUE, TRUE );
+    // Actual setting of visibility dependent on the route
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
 
     g_hash_table_insert ( vtl->routes_iters, GUINT_TO_POINTER(rt_uuid), iter );
+
+    // Sort now as post_read is not called on a realized route
+    vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->track_sort_order );
   }
 
   g_hash_table_insert ( vtl->routes, GUINT_TO_POINTER(rt_uuid), t );
@@ -3855,7 +3851,10 @@ static void trw_layer_enum_item ( gpointer id, GList **tr, GList **l )
  */
 static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, gpointer id, gint type )
 {
+  // TODO reconsider strategy when moving within layer (if anything...)
   gboolean rename = ( vtl_src != vtl_dest );
+  if ( ! rename )
+    return;
 
   if (type == VIK_TRW_LAYER_SUBLAYER_TRACK) {
     VikTrack *trk = g_hash_table_lookup ( vtl_src->tracks, id );
@@ -3927,8 +3926,7 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
     while (iter) {
       if (type==VIK_TRW_LAYER_SUBLAYER_TRACKS) {
         trw_layer_move_item ( vtl_src, vtl_dest, iter->data, VIK_TRW_LAYER_SUBLAYER_TRACK);
-      }
-      else if (type==VIK_TRW_LAYER_SUBLAYER_ROUTES) {
+      } else if (type==VIK_TRW_LAYER_SUBLAYER_ROUTES) {
         trw_layer_move_item ( vtl_src, vtl_dest, iter->data, VIK_TRW_LAYER_SUBLAYER_ROUTE);
       } else {
         trw_layer_move_item ( vtl_src, vtl_dest, iter->data, VIK_TRW_LAYER_SUBLAYER_WAYPOINT);
@@ -4338,8 +4336,7 @@ static void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const
 
     if ( it ) {
       vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, new_name );
-      if ( vtl->alphabetized )
-        vik_treeview_sublayer_realphabetize ( VIK_LAYER(vtl)->vt, it, new_name );
+      vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
     }
   }
 }
@@ -5709,8 +5706,10 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
 
       if ( it ) {
         vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, newname );
-        if ( vtl->alphabetized )
-          vik_treeview_sublayer_realphabetize ( VIK_LAYER(vtl)->vt, it, newname );
+        if ( ontrack )
+          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->wp_sort_order );
+	else
+          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->wp_sort_order );
       }
     }
 
@@ -5727,6 +5726,52 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
 
   // Update
   vik_layers_panel_emit_update ( vlp );
+}
+
+static void trw_layer_sort_order_a2z ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  GtkTreeIter *iter;
+
+  switch (GPOINTER_TO_INT (pass_along[2])) {
+  case VIK_TRW_LAYER_SUBLAYER_TRACKS:
+    iter = &(vtl->tracks_iter);
+    vtl->track_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    break;
+  case VIK_TRW_LAYER_SUBLAYER_ROUTES:
+    iter = &(vtl->routes_iter);
+    vtl->track_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    break;
+  default: // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
+    iter = &(vtl->waypoints_iter);
+    vtl->wp_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    break;
+  }
+
+  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, VL_SO_ALPHABETICAL_ASCENDING );
+}
+
+static void trw_layer_sort_order_z2a ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  GtkTreeIter *iter;
+
+  switch (GPOINTER_TO_INT (pass_along[2])) {
+  case VIK_TRW_LAYER_SUBLAYER_TRACKS:
+    iter = &(vtl->tracks_iter);
+    vtl->track_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
+    break;
+  case VIK_TRW_LAYER_SUBLAYER_ROUTES:
+    iter = &(vtl->routes_iter);
+    vtl->track_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
+    break;
+  default: // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
+    iter = &(vtl->waypoints_iter);
+    vtl->wp_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
+    break;
+  }
+
+  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, VL_SO_ALPHABETICAL_DESCENDING );
 }
 
 /**
@@ -6203,8 +6248,8 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     // Update WP name and refresh the treeview
     vik_waypoint_set_name (wp, newname);
 
-    if ( l->alphabetized )
-      vik_treeview_sublayer_realphabetize ( VIK_LAYER(l)->vt, iter, newname );
+    vik_treeview_item_set_name ( VIK_LAYER(l)->vt, iter, newname );
+    vik_treeview_sort_children ( VIK_LAYER(l)->vt, &(l->waypoints_iter), l->wp_sort_order );
 
     vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vlp) );
 
@@ -6240,8 +6285,8 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     // Property Dialog of the track
     vik_trw_layer_propwin_update ( trk );
 
-    if ( l->alphabetized )
-      vik_treeview_sublayer_realphabetize ( VIK_LAYER(l)->vt, iter, newname );
+    vik_treeview_item_set_name ( VIK_LAYER(l)->vt, iter, newname );
+    vik_treeview_sort_children ( VIK_LAYER(l)->vt, &(l->tracks_iter), l->track_sort_order );
 
     vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vlp) );
 
@@ -6277,8 +6322,8 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     // Property Dialog of the track
     vik_trw_layer_propwin_update ( trk );
 
-    if ( l->alphabetized )
-      vik_treeview_sublayer_realphabetize ( VIK_LAYER(l)->vt, iter, newname );
+    vik_treeview_item_set_name ( VIK_LAYER(l)->vt, iter, newname );
+    vik_treeview_sort_children ( VIK_LAYER(l)->vt, &(l->tracks_iter), l->track_sort_order );
 
     vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vlp) );
 
@@ -6670,6 +6715,28 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_routes_visibility_toggle), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
+    gtk_widget_show ( item );
+  }
+
+
+  if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS || subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS || subtype == VIK_TRW_LAYER_SUBLAYER_ROUTES ) {
+    GtkWidget *submenu_sort = gtk_menu_new ();
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Sort") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu_sort );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Name _Ascending") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_ASCENDING, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_sort_order_a2z), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Name _Descending") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_DESCENDING, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_sort_order_z2a), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
     gtk_widget_show ( item );
   }
 
@@ -8833,6 +8900,19 @@ static void trw_layer_calculate_bounds_tracks ( VikTrwLayer *vtl )
   g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_calculate_bounds_track, NULL );
 }
 
+static void trw_layer_sort_all ( VikTrwLayer *vtl )
+{
+  // Obviously need 2 to tango - sorting with only 1 (or less) is a lonely activity!
+  if ( g_hash_table_size (vtl->tracks) > 1 )
+    vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->track_sort_order );
+
+  if ( g_hash_table_size (vtl->routes) > 1 )
+    vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->track_sort_order );
+
+  if ( g_hash_table_size (vtl->waypoints) > 1 )
+    vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
+}
+
 static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean from_file )
 {
   trw_layer_verify_thumbnails ( vtl, vvp );
@@ -8840,6 +8920,13 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean fro
 
   trw_layer_calculate_bounds_waypoints ( vtl );
   trw_layer_calculate_bounds_tracks ( vtl );
+
+  // Apply treeview sort after loading all the tracks for this layer
+  //  (rather than sorted insert on each individual track additional)
+  //  and after subsequent changes to the properties as the specified order may have changed.
+  //  since the sorting of a treeview section is now very quick
+  // NB sorting is also performed after every name change as well to maintain the list order
+  trw_layer_sort_all ( vtl );
 }
 
 VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl )
