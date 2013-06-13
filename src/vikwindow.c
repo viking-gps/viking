@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005-2006, Alex Foobarian <foobarian@gmail.com>
- * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,6 +178,7 @@ struct _VikWindow {
 
   gchar *filename;
   gboolean modified;
+  VikLoadType_t loaded_type;
 
   GtkWidget *open_dia, *save_dia;
   GtkWidget *save_img_dia, *save_img_dir_dia;
@@ -294,6 +295,14 @@ static void destroy_window ( GtkWidget *widget,
       gtk_main_quit ();
 }
 
+#define VIK_SETTINGS_WIN_SIDEPANEL "window_sidepanel"
+#define VIK_SETTINGS_WIN_STATUSBAR "window_statusbar"
+#define VIK_SETTINGS_WIN_TOOLBAR "window_toolbar"
+// Menubar setting to off is never auto saved in case it's accidentally turned off
+// It's not so obvious so to recover the menu visibility.
+// Thus this value is for setting manually via editting the settings file directly
+#define VIK_SETTINGS_WIN_MENUBAR "window_menubar"
+
 VikWindow *vik_window_new_window ()
 {
   if ( window_count < MAX_WINDOWS )
@@ -309,11 +318,140 @@ VikWindow *vik_window_new_window ()
 
     gtk_widget_show_all ( GTK_WIDGET(vw) );
 
+    if ( a_vik_get_restore_window_state() ) {
+      // These settings are applied after the show all as these options hide widgets
+      gboolean sidepanel;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, &sidepanel ) )
+        if ( ! sidepanel ) {
+          gtk_widget_hide ( GTK_WIDGET(vw->viking_vlp) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanel" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
+      gboolean statusbar;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_STATUSBAR, &statusbar ) )
+        if ( ! statusbar ) {
+          gtk_widget_hide ( GTK_WIDGET(vw->viking_vs) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewStatusBar" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
+      gboolean toolbar;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_TOOLBAR, &toolbar ) )
+        if ( ! toolbar ) {
+          gtk_widget_hide ( GTK_WIDGET(vw->toolbar) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewToolBar" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
+      gboolean menubar;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MENUBAR, &menubar ) )
+        if ( ! menubar ) {
+          gtk_widget_hide ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+    }
     window_count++;
 
     return vw;
   }
   return NULL;
+}
+
+/**
+ * determine_location_thread:
+ * @vw:         The window that will get updated
+ * @threaddata: Data used by our background thread mechanism
+ *
+ * Use the features in vikgoto to determine where we are
+ * Then set up the viewport:
+ *  1. To goto the location
+ *  2. Set an appropriate level zoom for the location type
+ *  3. Some statusbar message feedback
+ */
+static int determine_location_thread ( VikWindow *vw, gpointer threaddata )
+{
+  struct LatLon ll;
+  gchar *name = NULL;
+  gint ans = a_vik_goto_where_am_i ( vw->viking_vvp, &ll, &name );
+
+  int result = a_background_thread_progress ( threaddata, 1.0 );
+  if ( result != 0 ) {
+    vik_window_statusbar_update ( vw, _("Location lookup aborted"), VIK_STATUSBAR_INFO );
+    return -1; /* Abort thread */
+  }
+
+  if ( ans ) {
+    // Zoom out a little
+    gdouble zoom = 16.0;
+
+    if ( ans == 2 ) {
+      // Position found with city precision - so zoom out more
+      zoom = 128.0;
+    }
+    else if ( ans == 3 ) {
+      // Position found via country name search - so zoom wayyyy out
+      zoom = 2048.0;
+    }
+
+    vik_viewport_set_zoom ( vw->viking_vvp, zoom );
+    vik_viewport_set_center_latlon ( vw->viking_vvp, &ll );
+
+    gchar *message = g_strdup_printf ( _("Location found: %s"), name );
+    vik_window_statusbar_update ( vw, message, VIK_STATUSBAR_INFO );
+    g_free ( name );
+    g_free ( message );
+
+    // Signal to redraw from the background
+    vik_layers_panel_emit_update ( vw->viking_vlp );
+  }
+  else
+    vik_window_statusbar_update ( vw, _("Unable to determine location"), VIK_STATUSBAR_INFO );
+
+  return 0;
+}
+
+/**
+ * Steps to be taken once initial loading has completed
+ */
+void vik_window_new_window_finish ( VikWindow *vw )
+{
+  // Don't add a map if we've loaded a Viking file already
+  if ( vw->filename )
+    return;
+
+  if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_SPECIFIED_FILE ) {
+    vik_window_open_file ( vw, a_vik_get_startup_file(), TRUE );
+    if ( vw->filename )
+      return;
+  }
+
+  // Maybe add a default map layer
+  if ( a_vik_get_add_default_map_layer () ) {
+    VikMapsLayer *vml = VIK_MAPS_LAYER ( vik_layer_create(VIK_LAYER_MAPS, vw->viking_vvp, NULL, FALSE) );
+    vik_maps_layer_pretend_licence_shown ( vml );
+    vik_layer_rename ( VIK_LAYER(vml), _("Default Map") );
+    vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(vml), TRUE );
+
+    draw_update ( vw );
+  }
+
+  // If not loaded any file, maybe try the location lookup
+  if ( vw->loaded_type == LOAD_TYPE_READ_FAILURE ) {
+    if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_AUTO_LOCATION ) {
+
+      vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, _("Trying to determine location...") );
+
+      a_background_thread ( GTK_WINDOW(vw),
+                            _("Determining location"),
+                            (vik_thr_func) determine_location_thread,
+                            vw,
+                            NULL,
+                            NULL,
+                            1 );
+    }
+  }
 }
 
 static void open_window ( VikWindow *vw, GSList *files )
@@ -526,6 +664,14 @@ static void drag_data_received_cb ( GtkWidget *widget,
   gtk_drag_finish ( context, success, FALSE, time );
 }
 
+#define VIK_SETTINGS_WIN_MAX "window_maximized"
+#define VIK_SETTINGS_WIN_FULLSCREEN "window_fullscreen"
+#define VIK_SETTINGS_WIN_WIDTH "window_width"
+#define VIK_SETTINGS_WIN_HEIGHT "window_height"
+#define VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH "window_save_image_width"
+#define VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT "window_save_image_height"
+#define VIK_SETTINGS_WIN_SAVE_IMAGE_PNG "window_save_image_as_png"
+
 static void vik_window_init ( VikWindow *vw )
 {
   GtkWidget *main_vbox;
@@ -549,15 +695,28 @@ static void vik_window_init ( VikWindow *vw )
   gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
 
   vw->filename = NULL;
-
+  vw->loaded_type = LOAD_TYPE_READ_FAILURE; //AKA none
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
  
   vw->pan_move = FALSE; 
   vw->pan_x = vw->pan_y = -1;
-  vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
-  vw->draw_image_height = DRAW_IMAGE_DEFAULT_HEIGHT;
-  vw->draw_image_save_as_png = DRAW_IMAGE_DEFAULT_SAVE_AS_PNG;
+
+  gint draw_image_width;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, &draw_image_width ) )
+    vw->draw_image_width = draw_image_width;
+  else
+    vw->draw_image_width = DRAW_IMAGE_DEFAULT_WIDTH;
+  gint draw_image_height;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT, &draw_image_height ) )
+    vw->draw_image_height = draw_image_height;
+  else
+    vw->draw_image_height = DRAW_IMAGE_DEFAULT_HEIGHT;
+  gboolean draw_image_save_as_png;
+  if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SAVE_IMAGE_PNG, &draw_image_save_as_png ) )
+    vw->draw_image_save_as_png = draw_image_save_as_png;
+  else
+    vw->draw_image_save_as_png = DRAW_IMAGE_DEFAULT_SAVE_AS_PNG;
 
   main_vbox = gtk_vbox_new(FALSE, 1);
   gtk_container_add (GTK_CONTAINER (vw), main_vbox);
@@ -589,8 +748,6 @@ static void vik_window_init ( VikWindow *vw )
   // Allow key presses to be processed anywhere
   g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
 
-  gtk_window_set_default_size ( GTK_WINDOW(vw), VIKING_WINDOW_WIDTH, VIKING_WINDOW_HEIGHT);
-
   hpaned = gtk_hpaned_new ();
   gtk_paned_pack1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
   gtk_paned_pack2 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vvp), TRUE, TRUE );
@@ -603,6 +760,45 @@ static void vik_window_init ( VikWindow *vw )
   a_background_add_window ( vw );
 
   window_list = g_slist_prepend ( window_list, vw);
+
+  gint height = VIKING_WINDOW_HEIGHT;
+  gint width = VIKING_WINDOW_WIDTH;
+
+  if ( a_vik_get_restore_window_state() ) {
+    if ( a_settings_get_integer ( VIK_SETTINGS_WIN_HEIGHT, &height ) ) {
+      // Enforce a basic minimum size
+      if ( height < 160 )
+        height = 160;
+    }
+    else
+      // No setting - so use default
+      height = VIKING_WINDOW_HEIGHT;
+
+    if ( a_settings_get_integer ( VIK_SETTINGS_WIN_WIDTH, &width ) ) {
+      // Enforce a basic minimum size
+      if ( width < 320 )
+        width = 320;
+    }
+    else
+      // No setting - so use default
+      width = VIKING_WINDOW_WIDTH;
+
+    gboolean maxed;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_MAX, &maxed ) )
+      if ( maxed )
+	gtk_window_maximize ( GTK_WINDOW(vw) );
+
+    gboolean full;
+    if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, &full ) ) {
+      if ( full ) {
+        gtk_window_fullscreen ( GTK_WINDOW(vw) );
+        GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/FullScreen" );
+        gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
+      }
+    }
+  }
+
+  gtk_window_set_default_size ( GTK_WINDOW(vw), width, height );
 
   vw->open_dia = NULL;
   vw->save_dia = NULL;
@@ -730,6 +926,37 @@ static gboolean delete_event( VikWindow *vw )
       default: gtk_widget_destroy ( GTK_WIDGET(dia) ); return ! save_file(NULL, vw);
     }
   }
+
+  if ( window_count == 1 ) {
+    // On the final window close - save latest state - if it's wanted...
+    if ( a_vik_get_restore_window_state() ) {
+      gint state = gdk_window_get_state ( GTK_WIDGET(vw)->window );
+      gboolean state_max = state & GDK_WINDOW_STATE_MAXIMIZED;
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_MAX, state_max );
+
+      gboolean state_fullscreen = state & GDK_WINDOW_STATE_FULLSCREEN;
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, state_fullscreen );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vlp)) );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vs)) );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->toolbar)) );
+
+      // If supersized - no need to save the enlarged width+height values
+      if ( ! (state_fullscreen || state_max) ) {
+        gint width, height;
+        gtk_window_get_size ( GTK_WINDOW (vw), &width, &height );
+        a_settings_set_integer ( VIK_SETTINGS_WIN_WIDTH, width );
+        a_settings_set_integer ( VIK_SETTINGS_WIN_HEIGHT, height );
+      }
+    }
+
+    a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, vw->draw_image_width );
+    a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT, vw->draw_image_height );
+    a_settings_set_boolean ( VIK_SETTINGS_WIN_SAVE_IMAGE_PNG, vw->draw_image_save_as_png );
+  }
+
   return FALSE;
 }
 
@@ -2300,8 +2527,8 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename )
 {
   vik_window_set_busy_cursor ( vw );
-
-  switch ( a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename ) )
+  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename );
+  switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:
       a_dialog_error_msg ( GTK_WINDOW(vw), _("The file you requested could not be opened.") );

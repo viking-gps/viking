@@ -1,9 +1,8 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2007-2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * Based on:
- * Copyright (C) 2003-2007, Leandro A. F. Pereira <leandro@linuxmag.com.br>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,29 +19,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifndef _VIKING_UTIL_H
-#define _VIKING_UTIL_H
-
-#include <glib.h>
-#include <gtk/gtk.h>
+#ifndef __SETTINGS_H
+#define __SETTINGS_H
 
 G_BEGIN_DECLS
 
-void open_url(GtkWindow *parent, const gchar * url);
-void new_email(GtkWindow *parent, const gchar * address);
+void a_settings_init();
 
-gchar *uri_escape(gchar *str);
+void a_settings_uninit();
 
-GList * str_array_to_glist(gchar* data[]);
+gboolean a_settings_get_boolean ( const gchar *name, gboolean *val );
 
-gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar **val );
+void a_settings_set_boolean ( const gchar *name, gboolean val );
 
-guint8 mpp_to_zoom ( gdouble mpp );
+gboolean a_settings_get_string ( const gchar *name, gchar **val );
 
-void check_latest_version ( GtkWindow *window );
+void a_settings_set_string ( const gchar *name, const gchar *val );
 
-void set_auto_features_on_first_run ( void );
+gboolean a_settings_get_integer ( const gchar *name, gint *val );
+
+void a_settings_set_integer ( const gchar *name, gint val );
+
+gboolean a_settings_get_double ( const gchar *name, gdouble *val );
+
+void a_settings_set_double ( const gchar *name, gdouble val );
 
 G_END_DECLS
 

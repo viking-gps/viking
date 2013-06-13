@@ -410,6 +410,14 @@ and docbook-xsl in your Build-Depends control field.
         </listitem>
       </varlistentry>
       <varlistentry>
+        <term><filename>~/.viking/viking.ini</filename></term>
+        <listitem>
+          <para>Values for &dhpackage; automatically saved between sessions.</para>
+          <para>Not generally intended to be manually edited.</para>
+	  <para>However some finer control of default internal values can be set.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><filename>~/.viking/cookies.txt</filename></term>
         <listitem>
           <para>File hosting cookies used by &dhpackage;.</para>

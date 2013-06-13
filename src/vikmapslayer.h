@@ -48,12 +48,14 @@ GType vik_maps_layer_get_type ();
 typedef struct _VikMapsLayer VikMapsLayer;
 
 void maps_layer_init ();
+void maps_layer_set_autodownload_default ( gboolean autodownload );
 void maps_layer_register_map_source ( VikMapSource *map );
 void vik_maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom );
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);
 gchar *maps_layer_default_dir ();
 void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean only_new );
+void vik_maps_layer_pretend_licence_shown ( VikMapsLayer *vml );
 
 G_END_DECLS
 

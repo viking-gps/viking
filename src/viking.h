@@ -57,5 +57,6 @@
 #include "vikwindow.h"
 #include "gpspoint.h"
 #include "gpsmapper.h"
+#include "settings.h"
 
 #endif

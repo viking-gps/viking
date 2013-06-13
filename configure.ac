@@ -104,18 +104,6 @@ if test "x$ac_cv_enable_deprecations" = "xyes"; then
 fi
 
 # Options
-AC_ARG_ENABLE(alphabetized-trw, AC_HELP_STRING([--enable-alphabetized-trw],
-              [enable alphabetized track & waypoints (default is enable)]),
-              [ac_cv_enable_alpha_trw=$enableval],
-              [ac_cv_enable_alpha_trw=yes])
-AC_CACHE_CHECK([whether to enable alphabetized track & waypoint],
-               [ac_cv_enable_alpha_trw], [ac_cv_enable_alpha_trw=yes])
-case $ac_cv_enable_alpha_trw in
-  yes)
-    AC_DEFINE(VIK_CONFIG_ALPHABETIZED_TRW, [], [NO ALPHABETIZED TRW])
-    ;;
-esac
-
 AC_ARG_ENABLE(bing, AC_HELP_STRING([--enable-bing],
               [enable Bing stuff (default is enable)]),
               [ac_cv_enable_bing=$enableval],

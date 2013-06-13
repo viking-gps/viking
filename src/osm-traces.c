@@ -46,6 +46,9 @@
 #define VIKING_OSM_TRACES_PARAMS_GROUP_KEY "osm_traces"
 #define VIKING_OSM_TRACES_PARAMS_NAMESPACE "osm_traces."
 
+#define VIK_SETTINGS_OSM_TRACE_VIS "osm_trace_visibility"
+static gint last_active = -1;
+
 /**
  * Login to use for OSM uploading.
  */
@@ -447,8 +450,28 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   for (vis_t = OsmTraceVis; vis_t->combostr != NULL; vis_t++)
     vik_combo_box_text_append (visibility, vis_t->combostr);
 
-  /* Set identifiable by default */
-  gtk_combo_box_set_active(GTK_COMBO_BOX(visibility), 0);
+  // Set identifiable by default or use the settings for the value
+  if ( last_active < 0 ) {
+    gint find_entry = -1;
+    gint wanted_entry = -1;
+    gchar *vis = NULL;
+    if ( a_settings_get_string ( VIK_SETTINGS_OSM_TRACE_VIS, &vis ) ) {
+      // Use setting
+      if ( vis ) {
+        for (vis_t = OsmTraceVis; vis_t->apistr != NULL; vis_t++) {
+          find_entry++;
+          if (!strcmp(vis, vis_t->apistr)) {
+            wanted_entry = find_entry;
+          }
+        }
+      }
+      // If not found set it to the first entry, otherwise use the entry
+      last_active = ( wanted_entry < 0 ) ? 0 : wanted_entry;
+    }
+    else
+      last_active = 0;
+  }
+  gtk_combo_box_set_active(GTK_COMBO_BOX(visibility), last_active);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), GTK_WIDGET(visibility), FALSE, FALSE, 0);
 
   /* User should think about it first... */
@@ -474,6 +497,10 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
     info->vistype     = &OsmTraceVis[gtk_combo_box_get_active(GTK_COMBO_BOX(visibility))];
     info->vtl         = VIK_TRW_LAYER(g_object_ref(vtl));
     info->trk         = trk;
+
+    // Save visibility value for default reuse
+    last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(visibility));
+    a_settings_set_string ( VIK_SETTINGS_OSM_TRACE_VIS, OsmTraceVis[last_active].apistr );
 
     title = g_strdup_printf(_("Uploading %s to OSM"), info->name);
 

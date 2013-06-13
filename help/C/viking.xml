@@ -388,7 +388,7 @@ Besides it's own file type, &appname; can open (and save to via export methods) 
 </para>
 </note>
 <para>
-By default &appname; opens a default blank window centered on the home location.
+By default &appname; opens a default blank window centered on the home location. This behaviour can be changed by the <xref linkend="prefs_startup"/>.
 Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
 Each section (apart from the viewport) can be hidden using the <xref linkend="shortcut_keys"/> or from the
 <menuchoice><guimenu>View</guimenu><guisubmenu>Show</guisubmenu></menuchoice> choices.
@@ -1741,13 +1741,44 @@ Your OSM password will be stored in plain text.
 </section>
 </section>
 
+<section id="prefs_startup" xreflabel="Startup Preferences"><title>Startup</title>
+<para>Naturally since these preferences effect the startup, the values will not be used until &appname; is restarted.</para>
+<section><title>Restore Window Setup</title>
+<para>When this is enabled, the main window size and layout (such as whether the statusbar or layers panel are shown) is restored to the values from last use.</para>
+</section>
+<section><title>Default Map Layer</title>
+<para>When this is enabled, a map layer is automatically added whenever &appname; is opened and a &appname; file is not to be loaded.</para>
+<para>The map layer used is defined by the map layer's default values.</para>
+</section>
+<section><title>Startup Method</title>
+<para>Enables selection of how the startup position should be determined.</para>
+<itemizedlist>
+<listitem><para>Home Location (default) - Position as set by the <guilabel>Set the Default Location</guilabel></para></listitem>
+<listitem><para>Last Location - Uses the last position viewed on the viewport</para></listitem>
+<listitem><para>Specified File - Load the file as specified below</para></listitem>
+<listitem><para>Auto Location - Use the web service <ulink url="http://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup</para></listitem>
+</itemizedlist>
+</section>
+<section><title>Startup File</title>
+<para>Loads this specified file when the Startup method is set to <guilabel>Specified File</guilabel></para>
+</section>
+<section><title>Check For New Version</title>
+<para>Periodically (no more than once every 14 days), check to see if there is a new version of &appname; available.</para>
+</section>
+</section>
+
 </section>
 
 <!-- HOWTOS-->
 <section><title>Howto's</title>
 <section id="howto_start"><title>Getting Started</title>
 <para>
-To quickly get started using &appname;, follow these instructions.
+&appname; from version 1.5 has several features to ease the start up process.
+On the very first run, you will be asked if you want to enable these features which make use of an Internet connection.
+If you select no or you have upgraded from an earlier version you can choose to enable any of the startup options via the <xref linkend="prefs_startup"/>.
+</para>
+<para>
+Some other general use cases for using &appname;, are as follows:
 </para>
 <section><title>Go to an area of interest</title>
 <para>
@@ -2505,6 +2536,41 @@ Accept: */*
         <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>external_tools.xml</filename>, <filename>datasources.xml</filename>) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
         <para>The <envar>XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
         <para>The <envar>XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
+      </section>
+
+
+      <section>
+        <title>Miscellaneous Settings</title>
+        <para>Various individual values are automatically saved between &app; sessions in the <filename>~/.viking/viking.ini</filename> file.</para>
+        <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
+        <para>Some values in this file are <emphasis>read only</emphasis>, in the sense that there is no way to set it other than by manually entering in the keys and values (the key will not exist in the file otherwise). This allows some fine tuning of &app; behaviours, without resorting to recompiling the code. However is it not expected that these values should need to be changed for a normal user, hence no GUI options for these have been provided.</para>
+        <para>Here is the list of the <emphasis>read only</emphasis> keys and their default values.</para>
+	<orderedlist>
+	  <listitem>
+	    <para>maps_max_tiles=1000</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_min_shrinkfactor=0.0312499</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_max_shrinkfactor=8.0000001</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_real_min_shrinkfactor=0.0039062499</para>
+	  </listitem>
+	  <listitem>
+	    <para>background_max_threads=10</para>
+	  </listitem>
+	  <listitem>
+	    <para>window_menubar=true</para>
+	  </listitem>
+	  <listitem>
+	    <para>version_check_period_days=14</para>
+	  </listitem>
+	  <listitem>
+	    <para>trackwaypoint_alphabetized=true</para>
+	  </listitem>
+	</orderedlist>
       </section>
 
 </section>

@@ -26,14 +26,6 @@
 #include "config.h"
 #endif
 
-// TODO: Make these configurable
-#define MAX_TILES 1000
-
-#define MAX_SHRINKFACTOR 8.0000001 /* zoom 1 viewing 8-tiles */
-#define MIN_SHRINKFACTOR 0.0312499 /* zoom 32 viewing 1-tiles */
-
-#define REAL_MIN_SHRINKFACTOR 0.0039062499 /* if shrinkfactor is between MAX and REAL_MAX, will only check for existence */
-
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 #include <glib.h>
@@ -59,6 +51,17 @@
 #include "preferences.h"
 #include "vikmapslayer.h"
 #include "icons/icons.h"
+
+#define VIK_SETTINGS_MAP_MAX_TILES "maps_max_tiles"
+static gint MAX_TILES = 1000;
+
+#define VIK_SETTINGS_MAP_MIN_SHRINKFACTOR "maps_min_shrinkfactor"
+#define VIK_SETTINGS_MAP_MAX_SHRINKFACTOR "maps_max_shrinkfactor"
+static gdouble MAX_SHRINKFACTOR = 8.0000001; /* zoom 1 viewing 8-tiles */
+static gdouble MIN_SHRINKFACTOR = 0.0312499; /* zoom 32 viewing 1-tiles */
+
+#define VIK_SETTINGS_MAP_REAL_MIN_SHRINKFACTOR "maps_real_min_shrinkfactor"
+static gdouble REAL_MIN_SHRINKFACTOR = 0.0039062499; /* if shrinkfactor is between MAX and REAL_MAX, will only check for existence */
 
 /****** MAP TYPES ******/
 
@@ -139,6 +142,15 @@ enum {
   PARAM_MAPZOOM,
   NUM_PARAMS
 };
+
+void maps_layer_set_autodownload_default ( gboolean autodownload )
+{
+  // Set appropriate function
+  if ( autodownload )
+    maps_layer_params[PARAM_AUTODOWNLOAD].default_value = vik_lpd_true_default;
+  else
+    maps_layer_params[PARAM_AUTODOWNLOAD].default_value = vik_lpd_false_default;
+}
 
 static VikToolInterface maps_tools[] = {
   { { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
@@ -252,6 +264,20 @@ void maps_layer_init ()
   VikLayerParamData tmp;
   tmp.s = maps_layer_default_dir();
   a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+
+  gint max_tiles = MAX_TILES;
+  if ( a_settings_get_integer ( VIK_SETTINGS_MAP_MAX_TILES, &max_tiles ) )
+    MAX_TILES = max_tiles;
+
+  gdouble gdtmp;
+  if ( a_settings_get_double ( VIK_SETTINGS_MAP_MIN_SHRINKFACTOR, &gdtmp ) )
+    MIN_SHRINKFACTOR = gdtmp;
+
+  if ( a_settings_get_double ( VIK_SETTINGS_MAP_MAX_SHRINKFACTOR, &gdtmp ) )
+    MAX_SHRINKFACTOR = gdtmp;
+
+  if ( a_settings_get_double ( VIK_SETTINGS_MAP_REAL_MIN_SHRINKFACTOR, &gdtmp ) )
+    REAL_MIN_SHRINKFACTOR = gdtmp;
 }
 
 /****************************************/
@@ -488,6 +514,11 @@ static guint map_uniq_id_to_index ( guint uniq_id )
     if ( vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(i)) == uniq_id )
       return i;
   return NUM_MAP_TYPES; /* no such thing */
+}
+
+void vik_maps_layer_pretend_licence_shown ( VikMapsLayer *vml )
+{
+  vml->license_notice_shown = TRUE;
 }
 
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation )

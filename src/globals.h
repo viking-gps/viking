@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +78,9 @@ extern gboolean vik_version;
 
 /* Allow comparing versions */
 gint viking_version_to_number ( gchar *version );
+
+/* Very first run */
+gboolean a_vik_very_first_run ();
 
 /* Global preferences */
 void a_vik_preferences_init ();
@@ -171,6 +175,23 @@ vik_file_ref_format_t a_vik_get_file_ref_format ( );
 
 gboolean a_vik_get_create_track_tooltip ( );
 
+gboolean a_vik_get_restore_window_state ( );
+
+gboolean a_vik_get_add_default_map_layer ( );
+
+typedef enum {
+  VIK_STARTUP_METHOD_HOME_LOCATION,
+  VIK_STARTUP_METHOD_LAST_LOCATION,
+  VIK_STARTUP_METHOD_SPECIFIED_FILE,
+  VIK_STARTUP_METHOD_AUTO_LOCATION,
+} vik_startup_method_t;
+
+vik_startup_method_t a_vik_get_startup_method ( );
+
+const gchar *a_vik_get_startup_file ( );
+
+gboolean a_vik_get_check_version ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
@@ -185,6 +206,9 @@ gboolean a_vik_get_create_track_tooltip ( );
    User changeable but only for those that need it */
 #define VIKING_PREFERENCES_ADVANCED_GROUP_KEY "viking.advanced"
 #define VIKING_PREFERENCES_ADVANCED_NAMESPACE "viking.advanced."
+
+#define VIKING_PREFERENCES_STARTUP_GROUP_KEY "viking.startup"
+#define VIKING_PREFERENCES_STARTUP_NAMESPACE "viking.startup."
 
 G_END_DECLS
 

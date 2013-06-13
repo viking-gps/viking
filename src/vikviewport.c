@@ -43,11 +43,11 @@
 #include "vikcoord.h"
 #include "vikwindow.h"
 #include "vikviewport.h"
-
 #include "mapcoord.h"
 
 /* for ALTI_TO_MPP */
 #include "globals.h"
+#include "settings.h"
 
 #define MERCATOR_FACTOR(x) ( (65536.0 / 180 / (x)) * 256.0 )
 
@@ -148,6 +148,11 @@ VikViewport *vik_viewport_new ()
   return vv;
 }
 
+#define VIK_SETTINGS_VIEW_LAST_LATITUDE "viewport_last_latitude"
+#define VIK_SETTINGS_VIEW_LAST_LONGITUDE "viewport_last_longitude"
+#define VIK_SETTINGS_VIEW_LAST_ZOOM_X "viewport_last_zoom_xpp"
+#define VIK_SETTINGS_VIEW_LAST_ZOOM_Y "viewport_last_zoom_ypp"
+
 static void
 vik_viewport_init ( VikViewport *vvp )
 {
@@ -157,11 +162,25 @@ vik_viewport_init ( VikViewport *vvp )
   struct LatLon ll;
   ll.lat = a_vik_get_default_lat();
   ll.lon = a_vik_get_default_long();
+  gdouble zoom_x = 4.0;
+  gdouble zoom_y = 4.0;
+
+  if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_LAST_LOCATION ) {
+    gdouble lat, lon, dzoom;
+    if ( a_settings_get_double ( VIK_SETTINGS_VIEW_LAST_LATITUDE, &lat ) )
+      ll.lat = lat;
+    if ( a_settings_get_double ( VIK_SETTINGS_VIEW_LAST_LONGITUDE, &lon ) )
+      ll.lon = lon;
+    if ( a_settings_get_double ( VIK_SETTINGS_VIEW_LAST_ZOOM_X, &dzoom ) )
+      zoom_x = dzoom;
+    if ( a_settings_get_double ( VIK_SETTINGS_VIEW_LAST_ZOOM_Y, &dzoom ) )
+      zoom_y = dzoom;
+  }
+
   a_coords_latlon_to_utm ( &ll, &utm );
 
-  /* TODO: not static */
-  vvp->xmpp = 4.0;
-  vvp->ympp = 4.0;
+  vvp->xmpp = zoom_x;
+  vvp->ympp = zoom_y;
   vvp->xmfactor = MERCATOR_FACTOR (vvp->xmpp);
   vvp->ymfactor = MERCATOR_FACTOR (vvp->ympp);
   vvp->coord_mode = VIK_COORD_LATLON;
@@ -362,6 +381,15 @@ static void viewport_finalize ( GObject *gob )
   VikViewport *vvp = VIK_VIEWPORT(gob);
 
   g_return_if_fail ( vvp != NULL );
+
+  if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_LAST_LOCATION ) {
+    struct LatLon ll;
+    vik_coord_to_latlon ( &(vvp->center), &ll );
+    a_settings_set_double ( VIK_SETTINGS_VIEW_LAST_LATITUDE, ll.lat );
+    a_settings_set_double ( VIK_SETTINGS_VIEW_LAST_LONGITUDE, ll.lon );
+    a_settings_set_double ( VIK_SETTINGS_VIEW_LAST_ZOOM_X, vvp->xmpp );
+    a_settings_set_double ( VIK_SETTINGS_VIEW_LAST_ZOOM_Y, vvp->ympp );
+  }
 
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );

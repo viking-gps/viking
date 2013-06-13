@@ -653,8 +653,6 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
 }
 
 
-#ifdef VIK_CONFIG_ALPHABETIZED_TRW
-
 void vik_treeview_sublayer_realphabetize ( VikTreeview *vt, GtkTreeIter *iter, const gchar *newname )
 {
   GtkTreeIter search_iter, parent_iter;
@@ -714,8 +712,6 @@ void vik_treeview_add_sublayer_alphabetized
 
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, has_visible, EDITABLE_COLUMN, editable, ICON_COLUMN, icon, -1 );
 }
-
-#endif
 
 static void vik_treeview_finalize ( GObject *gob )
 {

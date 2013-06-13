@@ -164,6 +164,10 @@ int main( int argc, char *argv[] )
   XSetErrorHandler(myXErrorHandler);
 #endif
 
+  // Discover if this is the very first run
+  a_vik_very_first_run ();
+
+  a_settings_init ();
   a_preferences_init ();
 
   a_vik_preferences_init ();
@@ -194,6 +198,9 @@ int main( int argc, char *argv[] )
 
   gdk_threads_enter ();
 
+  // Ask for confirmation of default settings on first run
+  set_auto_features_on_first_run ();
+
   /* Create the first window */
   first_window = vik_window_new_window();
 
@@ -216,6 +223,8 @@ int main( int argc, char *argv[] )
     }
   }
 
+  vik_window_new_window_finish ( first_window );
+
   gtk_main ();
   gdk_threads_leave ();
 
@@ -226,6 +235,7 @@ int main( int argc, char *argv[] )
   a_dems_uninit ();
   a_layer_defaults_uninit ();
   a_preferences_uninit ();
+  a_settings_uninit ();
 
   curl_download_uninit();
 
