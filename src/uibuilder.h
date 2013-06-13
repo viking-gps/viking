@@ -169,6 +169,15 @@ void a_uibuilder_free_paramdatas ( VikLayerParamData *paramdatas, VikLayerParam 
 #define vik_combo_box_text_append(X,Y) gtk_combo_box_append_text(GTK_COMBO_BOX(X),Y)
 #endif
 
+// Consider adding sort options such as by time
+//  However use within the treeview then is more complicated as one would need to store that data in the treeview...
+typedef enum {
+  VL_SO_NONE = 0,
+  VL_SO_ALPHABETICAL_ASCENDING,
+  VL_SO_ALPHABETICAL_DESCENDING,
+  VL_SO_LAST
+} vik_layer_sort_order_t;
+
 G_END_DECLS
 
 #endif
