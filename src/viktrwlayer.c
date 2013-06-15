@@ -246,7 +246,6 @@ static void trw_layer_delete_item ( gpointer pass_along[6] );
 static void trw_layer_copy_item_cb ( gpointer pass_along[6] );
 static void trw_layer_cut_item_cb ( gpointer pass_along[6] );
 
-static void trw_layer_find_maxmin_waypoints ( const gpointer id, const VikWaypoint *w, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin_tracks ( const gpointer id, const VikTrack *trk, struct LatLon maxmin[2] );
 static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2]);
 
@@ -2580,44 +2579,26 @@ VikTrack *vik_trw_layer_get_route ( VikTrwLayer *vtl, const gchar *name )
   return g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find, (gpointer) name );
 }
 
-static void trw_layer_find_maxmin_waypoints ( const gpointer id, const VikWaypoint *w, struct LatLon maxmin[2] )
-{
-  static VikCoord fixme;
-  vik_coord_copy_convert ( &(w->coord), VIK_COORD_LATLON, &fixme );
-  if ( VIK_LATLON(&fixme)->lat > maxmin[0].lat || maxmin[0].lat == 0.0 )
-    maxmin[0].lat = VIK_LATLON(&fixme)->lat;
-  if ( VIK_LATLON(&fixme)->lat < maxmin[1].lat || maxmin[1].lat == 0.0 )
-    maxmin[1].lat = VIK_LATLON(&fixme)->lat;
-  if ( VIK_LATLON(&fixme)->lon > maxmin[0].lon || maxmin[0].lon == 0.0 )
-    maxmin[0].lon = VIK_LATLON(&fixme)->lon;
-  if ( VIK_LATLON(&fixme)->lon < maxmin[1].lon || maxmin[1].lon == 0.0 )
-    maxmin[1].lon = VIK_LATLON(&fixme)->lon;
-}
-
 static void trw_layer_find_maxmin_tracks ( const gpointer id, const VikTrack *trk, struct LatLon maxmin[2] )
 {
-  GList *tr = trk->trackpoints;
-  static VikCoord fixme;
-
-  while ( tr )
-  {
-    vik_coord_copy_convert ( &(VIK_TRACKPOINT(tr->data)->coord), VIK_COORD_LATLON, &fixme );
-    if ( VIK_LATLON(&fixme)->lat > maxmin[0].lat || maxmin[0].lat == 0.0 )
-      maxmin[0].lat = VIK_LATLON(&fixme)->lat;
-    if ( VIK_LATLON(&fixme)->lat < maxmin[1].lat || maxmin[1].lat == 0.0 )
-      maxmin[1].lat = VIK_LATLON(&fixme)->lat;
-    if ( VIK_LATLON(&fixme)->lon > maxmin[0].lon || maxmin[0].lon == 0.0 )
-      maxmin[0].lon = VIK_LATLON(&fixme)->lon;
-    if ( VIK_LATLON(&fixme)->lon < maxmin[1].lon || maxmin[1].lon == 0.0 )
-      maxmin[1].lon = VIK_LATLON(&fixme)->lon;
-    tr = tr->next;
-  }
+  if ( trk->bbox.north > maxmin[0].lat || maxmin[0].lat == 0.0 )
+    maxmin[0].lat = trk->bbox.north;
+  if ( trk->bbox.south < maxmin[1].lat || maxmin[1].lat == 0.0 )
+    maxmin[1].lat = trk->bbox.south;
+  if ( trk->bbox.east > maxmin[0].lon || maxmin[0].lon == 0.0 )
+    maxmin[0].lon = trk->bbox.east;
+  if ( trk->bbox.west < maxmin[1].lon || maxmin[1].lon == 0.0 )
+    maxmin[1].lon = trk->bbox.west;
 }
 
 static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2])
 {
   // Continually reuse maxmin to find the latest maximum and minimum values
-  g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_find_maxmin_waypoints, maxmin );
+  // First set to waypoints bounds
+  maxmin[0].lat = vtl->waypoints_bbox.north;
+  maxmin[1].lat = vtl->waypoints_bbox.south;
+  maxmin[0].lon = vtl->waypoints_bbox.east;
+  maxmin[1].lon = vtl->waypoints_bbox.west;
   g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_find_maxmin_tracks, maxmin );
   g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_find_maxmin_tracks, maxmin );
 }
@@ -3369,7 +3350,10 @@ static void trw_layer_auto_waypoints_view ( gpointer lav[2] )
   else if ( g_hash_table_size (vtl->waypoints) > 1 )
   {
     struct LatLon maxmin[2] = { {0,0}, {0,0} };
-    g_hash_table_foreach ( vtl->waypoints, (GHFunc) trw_layer_find_maxmin_waypoints, maxmin );
+    maxmin[0].lat = vtl->waypoints_bbox.north;
+    maxmin[1].lat = vtl->waypoints_bbox.south;
+    maxmin[0].lon = vtl->waypoints_bbox.east;
+    maxmin[1].lon = vtl->waypoints_bbox.west;
     trw_layer_zoom_to_show_latlons ( vtl, vik_layers_panel_get_viewport (vlp), maxmin );
   }
 
