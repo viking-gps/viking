@@ -7309,6 +7309,10 @@ void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coo
 {
   GtkWindow *parent = VIK_GTK_WINDOW_FROM_LAYER(vtl); //i.e. the main window
 
+  // Attempt force dialog to be shown so we can find out where it is more reliably...
+  while ( gtk_events_pending() )
+    gtk_main_iteration ();
+
   // get parent window position & size
   gint win_pos_x, win_pos_y;
   gtk_window_get_position ( parent, &win_pos_x, &win_pos_y );
