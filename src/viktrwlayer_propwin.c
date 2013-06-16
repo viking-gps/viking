@@ -116,6 +116,8 @@ typedef struct _propwidgets {
   GtkWidget *w_time_end;
   GtkWidget *w_time_dur;
   GtkWidget *w_color;
+  GtkWidget *w_namelabel;
+  GtkWidget *w_number_distlabels;
   GtkWidget *w_cur_dist; /*< Current distance */
   GtkWidget *w_cur_elevation;
   GtkWidget *w_cur_gradient_dist; /*< Current distance on gradient graph */
@@ -2515,6 +2517,8 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       vik_track_set_comment(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_comment)));
       vik_track_set_description(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_description)));
       gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
+      tr->draw_name_mode = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->w_namelabel) );
+      tr->max_number_dist_labels = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number_distlabels) );
       trw_layer_update_treeview ( widgets->vtl, widgets->tr, widgets->trk_id );
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       break;
@@ -2738,7 +2742,10 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     N_("<b>Start:</b>"),
     N_("<b>End:</b>"),
     N_("<b>Duration:</b>"),
-    N_("<b>Color:</b>") };
+    N_("<b>Color:</b>"),
+    N_("<b>Draw Name:</b>"),
+    N_("<b>Max No. of Distance Labels:</b>"),
+  };
   static gchar tmp_buf[50];
   gdouble tmp_speed;
 
@@ -2946,6 +2953,25 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   }
 
   widgets->w_color = content[cnt++] = gtk_color_button_new_with_color ( &(tr->color) );
+
+  static gchar *draw_name_labels[] = {
+    N_("No"),
+    N_("Centre"),
+    N_("Start only"),
+    N_("End only"),
+    N_("Start and End"),
+    N_("Centre, Start and End"),
+    NULL
+  };
+
+  widgets->w_namelabel = content[cnt++] = vik_combo_box_text_new ();
+  gchar **pstr = draw_name_labels;
+  while ( *pstr )
+    vik_combo_box_text_append ( widgets->w_namelabel, *(pstr++) );
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(widgets->w_namelabel), tr->draw_name_mode );
+
+  widgets->w_number_distlabels = content[cnt++] = 
+   gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new(tr->max_number_dist_labels, 0, 100, 1, 1, 0)), 1, 0 );
 
   table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);

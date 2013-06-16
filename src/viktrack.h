@@ -56,6 +56,16 @@ struct _VikTrackpoint {
   gdouble pdop;     /* VIK_DEFAULT_DOP if data unavailable */
 };
 
+typedef enum {
+  TRACK_DRAWNAME_NO=0,
+  TRACK_DRAWNAME_CENTRE,
+  TRACK_DRAWNAME_START,
+  TRACK_DRAWNAME_END,
+  TRACK_DRAWNAME_START_END,
+  TRACK_DRAWNAME_START_END_CENTRE,
+  NUM_TRACK_DRAWNAMES
+} VikTrackDrawnameType;
+
 // Instead of having a separate VikRoute type, routes are considered tracks
 //  Thus all track operations must cope with a 'route' version
 //  [track functions handle having no timestamps anyway - so there is no practical difference in most cases]
@@ -67,6 +77,8 @@ struct _VikTrack {
   GList *trackpoints;
   gboolean visible;
   gboolean is_route;
+  VikTrackDrawnameType draw_name_mode;
+  guint8 max_number_dist_labels;
   gchar *comment;
   gchar *description;
   guint8 ref_count;
@@ -78,6 +90,7 @@ struct _VikTrack {
 };
 
 VikTrack *vik_track_new();
+void vik_track_set_defaults(VikTrack *tr);
 void vik_track_set_name(VikTrack *tr, const gchar *name);
 void vik_track_set_comment(VikTrack *tr, const gchar *comment);
 void vik_track_set_description(VikTrack *tr, const gchar *description);

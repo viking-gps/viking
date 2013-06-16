@@ -78,6 +78,8 @@ static gchar *line_name;
 static gchar *line_comment;
 static gchar *line_description;
 static gchar *line_color;
+static gint line_name_label = 0;
+static gint line_dist_label = 0;
 static gchar *line_image;
 static gchar *line_symbol;
 static gboolean line_newsegment = FALSE;
@@ -243,6 +245,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     {
       have_read_something = TRUE;
       VikTrack *pl = vik_track_new();
+      // NB don't set defaults here as all properties are stored in the GPS_POINT format
+      //vik_track_set_defaults ( pl );
 
       /* Thanks to Peter Jones for this Fix */
       if (!line_name) line_name = g_strdup("UNK");
@@ -261,6 +265,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
         if ( gdk_color_parse ( line_color, &(pl->color) ) )
         pl->has_color = TRUE;
       }
+
+      pl->draw_name_mode = line_name_label;
+      pl->max_number_dist_labels = line_dist_label;
 
       pl->trackpoints = NULL;
       vik_trw_layer_filein_add_track ( trw, line_name, pl );
@@ -318,6 +325,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
     line_course = NAN;
     line_sat = 0;
     line_fix = 0;
+    line_name_label = 0;
+    line_dist_label = 0;
   }
 
   return have_read_something;
@@ -415,6 +424,14 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   {
     if (line_color == NULL)
       line_color = deslashndup ( value, value_len );
+  }
+  else if (key_len == 14 && strncasecmp( key, "draw_name_mode", key_len ) == 0 && value != NULL)
+  {
+    line_name_label = atoi(value);
+  }
+  else if (key_len == 18 && strncasecmp( key, "number_dist_labels", key_len ) == 0 && value != NULL)
+  {
+    line_dist_label = atoi(value);
   }
   else if (key_len == 5 && strncasecmp( key, "image", key_len ) == 0 && value != NULL)
   {
@@ -616,6 +633,12 @@ static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FIL
   if ( trk->has_color ) {
     fprintf ( f, " color=#%.2x%.2x%.2x", (int)(trk->color.red/256),(int)(trk->color.green/256),(int)(trk->color.blue/256));
   }
+
+  if ( trk->draw_name_mode > 0 )
+    fprintf ( f, " draw_name_mode=\"%d\"", trk->draw_name_mode );
+
+  if ( trk->max_number_dist_labels > 0 )
+    fprintf ( f, " number_dist_labels=\"%d\"", trk->max_number_dist_labels );
 
   if ( ! trk->visible ) {
     fprintf ( f, " visible=\"n\"" );
