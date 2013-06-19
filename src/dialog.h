@@ -66,10 +66,6 @@ gboolean a_dialog_yes_or_no ( GtkWindow *parent, const gchar *message, const gch
 gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp );
 gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint *thr );
 
-/**
- * Dialog to return a positive number via a spinbox within the supplied limits
- * A return value of zero indicates the dialog was cancelled
- */
 guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint default_num, guint min, guint max, guint step );
 
 void a_dialog_choose_dir ( GtkWidget *entry );

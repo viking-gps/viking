@@ -710,8 +710,11 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
 }
 
 /**
+ * a_dialog_get_positive_number:
+ * 
  * Dialog to return a positive number via a spinbox within the supplied limits
- * A return value of zero indicates the dialog was cancelled
+ * 
+ * Returns: A value of zero indicates the dialog was cancelled
  */
 guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint default_num, guint min, guint max, guint step )
 {
