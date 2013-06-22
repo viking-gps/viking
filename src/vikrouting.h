@@ -35,6 +35,7 @@ void vik_routing_default_find ( VikTrwLayer *vt, struct LatLon start, struct Lat
 void vik_routing_prefs_init();
 void vik_routing_register( VikRoutingEngine *engine );
 void vik_routing_unregister_all ();
+void vik_routing_foreach_engine ( GFunc func, gpointer user_data );
 
 G_END_DECLS
 

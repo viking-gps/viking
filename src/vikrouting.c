@@ -208,3 +208,16 @@ vik_routing_unregister_all ()
   g_strfreev ( routing_engine_labels );
   g_strfreev ( routing_engine_ids );
 }
+
+/**
+ * vik_routing_foreach_engine:
+ * @func: the function to run on each element
+ * @user_data: user's data to give to each call of @func
+ *
+ * Loop over all registered routing engines.
+ */
+void
+vik_routing_foreach_engine (GFunc func, gpointer user_data)
+{
+  g_list_foreach ( routing_engine_list, func, user_data );
+}
