@@ -331,10 +331,12 @@ vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLo
 	startURL = substitute_latlon ( priv->url_start_ll_fmt, start );
 	endURL = substitute_latlon ( priv->url_stop_ll_fmt, end );
 	url = g_strconcat ( priv->url_base, startURL, endURL, NULL );
+
+	/* Free memory */
 	g_free ( startURL );
 	g_free ( endURL );
-	
-    return url;
+
+	return url;
 }
 
 static int
@@ -351,5 +353,6 @@ vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct L
   a_babel_convert_from_url ( vtl, uri, format, NULL, NULL, options );
 
   g_free(uri);
+
   return ret;
 }
