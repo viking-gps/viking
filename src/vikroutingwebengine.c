@@ -320,6 +320,8 @@ vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLo
 	gchar *endURL;
 	gchar *url;
 
+	g_return_val_if_fail ( VIK_IS_ROUTING_WEB_ENGINE (self), NULL);
+
 	VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE ( self );
 
 	g_return_val_if_fail ( priv->url_base != NULL, NULL);
