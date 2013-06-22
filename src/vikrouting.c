@@ -72,6 +72,7 @@ vik_routing_prefs_init()
   a_preferences_register(prefs, tmp, VIKING_ROUTING_PARAMS_GROUP_KEY);
 }
 
+/* @see g_list_find_custom */
 static gint
 search_by_id (gconstpointer a,
               gconstpointer b)
