@@ -102,14 +102,14 @@ vik_routing_find_engine ( const gchar *id )
 }
 
 /**
- * vik_routing_default:
+ * vik_routing_default_engine:
  * 
  * Retrieve the default engine, based on user's preferences.
  * 
  * Returns: the default engine
  */
 static VikRoutingEngine *
-vik_routing_default( void )
+vik_routing_default_engine ( void )
 {
   const gchar *id = a_preferences_get ( VIKING_ROUTING_PARAMS_NAMESPACE "default")->s;
   VikRoutingEngine *engine = vik_routing_find_engine(id);
@@ -129,7 +129,7 @@ void
 vik_routing_default_find(VikTrwLayer *vt, struct LatLon start, struct LatLon end)
 {
   /* The engine */
-  VikRoutingEngine *engine = vik_routing_default ( );
+  VikRoutingEngine *engine = vik_routing_default_engine ( );
   /* The route computation */
   vik_routing_engine_find ( engine, vt, start, end );
 }
