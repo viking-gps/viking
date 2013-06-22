@@ -221,3 +221,84 @@ vik_routing_foreach_engine (GFunc func, gpointer user_data)
 {
   g_list_foreach ( routing_engine_list, func, user_data );
 }
+
+/*
+ * This function is called for all routing engine registered.
+ * Following result of the predicate function, the current engine
+ * is added to the combobox. In order to retrieve the VikRoutingEngine
+ * object, we store a list of added engine in a GObject's data "engines".
+ *
+ * @see g_list_foreach()
+ */
+static void
+fill_engine_box (gpointer data, gpointer user_data)
+{
+  VikRoutingEngine *engine = (VikRoutingEngine*) data;
+  /* Retrieve combo */
+  GtkWidget *widget = (GtkWidget*) user_data;
+
+  /* Only register engine fulliling expected behavior */
+  Predicate predicate = g_object_get_data ( G_OBJECT ( widget ), "func" );
+  gpointer predicate_data = g_object_get_data ( G_OBJECT ( widget ), "user_data" );
+  /* No predicate means to register all engines */
+  gboolean ok = predicate == NULL || predicate (engine, predicate_data);
+
+  if (ok)
+  {
+    /* Add item in widget */
+    const gchar *label = vik_routing_engine_get_label (engine);
+    vik_combo_box_text_append (widget, label);
+    /* Save engine in internal list */
+    GList *engines = (GList*) g_object_get_data ( G_OBJECT ( widget ) , "engines" );
+    engines = g_list_append ( engines, engine );
+    g_object_set_data ( G_OBJECT ( widget ), "engines", engines );
+  }
+}
+
+/**
+ * vik_routing_ui_selector_new:
+ * @func: user function to decide if an engine has to be added or not
+ * @user_data: user data for previous function
+ *
+ * Creates a combo box to allow selection of a routing engine.
+ *
+ * We use GObject data hastable to store and retrieve the VikRoutingEngine
+ * associated to the selection.
+ *
+ * Returns: the combo box
+ */
+GtkWidget *
+vik_routing_ui_selector_new (Predicate func, gpointer user_data)
+{
+  /* Create the combo */
+  GtkWidget * combo = vik_combo_box_text_new ();
+
+  /* Save data for foreach function */
+  g_object_set_data ( G_OBJECT ( combo ), "func", func );
+  g_object_set_data ( G_OBJECT ( combo ), "user_data", user_data );
+
+  /* Filter all engines with given user function */
+  vik_routing_foreach_engine (fill_engine_box, combo);
+
+  return combo;
+}
+
+/**
+ * vik_routing_ui_selector_get_nth:
+ * @combo: the GtkWidget combobox
+ * @pos: the selected position
+ *
+ * Retrieve the VikRoutingEngine stored in a list attached to @combo
+ * via the "engines" property.
+ *
+ * Returns: the VikRoutingEngine object associated to @pos
+ */
+VikRoutingEngine *
+vik_routing_ui_selector_get_nth (GtkWidget *combo, int pos)
+{
+  /* Retrieve engine */
+  GList *engines = (GList*) g_object_get_data ( G_OBJECT ( combo ) , "engines" );
+  VikRoutingEngine *engine = g_list_nth_data ( engines, pos );
+
+  return engine;
+}
