@@ -27,7 +27,6 @@
 
 G_BEGIN_DECLS
 
-
 /* Default */
 void vik_routing_default_find ( VikTrwLayer *vt, struct LatLon start, struct LatLon end );
 

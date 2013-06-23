@@ -19,9 +19,7 @@ static const char *menu_xml =
 	"      <menu action='Acquire'>"
 	"        <menuitem action='AcquireGPS'/>"
 	"        <menuitem action='AcquireGPSBabel'/>"
-#ifdef VIK_CONFIG_GOOGLE
-	"        <menuitem action='AcquireGoogle'/>"
-#endif
+	"        <menuitem action='AcquireRouting'/>"
 #ifdef VIK_CONFIG_OPENSTREETMAP
 	"        <menuitem action='AcquireOSM'/>"
 	"        <menuitem action='AcquireMyOSM'/>"

@@ -59,6 +59,8 @@ void google_init () {
     "url-base", "http://maps.google.com/maps?output=js&q=",
     "url-start-ll", "from:%s,%s",
     "url-stop-ll", "+to:%s,%s",
+    "url-start-dir", "from:%s",
+    "url-stop-dir", "+to:%s",
     "referer", "http://maps.google.com/",
     NULL);
   vik_routing_register ( VIK_ROUTING_ENGINE ( routing ) );

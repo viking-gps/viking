@@ -99,6 +99,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
 gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, const char *file, BabelStatusFunc cb, gpointer user_data, gpointer options );
 gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_file_type, BabelStatusFunc cb, gpointer user_data, gpointer options );
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data, DownloadMapOptions *options );
+gboolean a_babel_convert_from_url_or_shell ( VikTrwLayer *vt, const char *input, const char *input_type, BabelStatusFunc cb, gpointer user_data, DownloadMapOptions *options );
 gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babelargs, const char *file, BabelStatusFunc cb, gpointer user_data );
 
 void a_babel_init ();

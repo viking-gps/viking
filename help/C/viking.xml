@@ -547,6 +547,16 @@ This gets <emphasis>interesting</emphasis> points from Wikipedia for the specifi
 </para>
 </section>
 
+<section>
+<title>From Routing</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From Directions</guimenuitem></menuchoice>
+</para>
+<para>
+This gets a route from given directions.
+</para>
+</section>
+
 </section> <!-- End Acquire -->
 
 <section><title>Print</title>
@@ -2473,6 +2483,16 @@ Accept: */*
             <varlistentry>
               <term>url-stop-ll</term>
               <listitem><para>the part of the URL setting the end point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;start=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-start-dir</term>
+              <listitem><para>the part of the URL setting the starting point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para>
+						<para>(Optional)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-stop-dir</term>
+              <listitem><para>the part of the URL setting the end point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para>
+						<para>(Optional)</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>referer</term>

@@ -300,9 +300,7 @@ static void trw_layer_geotagging_track ( gpointer pass_along[6] );
 static void trw_layer_geotagging ( gpointer lav[2] );
 #endif
 static void trw_layer_acquire_gps_cb ( gpointer lav[2] );
-#ifdef VIK_CONFIG_GOOGLE
-static void trw_layer_acquire_google_cb ( gpointer lav[2] );
-#endif
+static void trw_layer_acquire_routing_cb ( gpointer lav[2] );
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void trw_layer_acquire_osm_cb ( gpointer lav[2] );
 static void trw_layer_acquire_osm_my_traces_cb ( gpointer lav[2] );
@@ -3039,20 +3037,18 @@ static void trw_layer_acquire_gps_cb ( gpointer lav[2] )
   a_acquire ( vw, vlp, vvp, &vik_datasource_gps_interface, NULL, NULL );
 }
 
-#ifdef VIK_CONFIG_GOOGLE
 /*
- * Acquire into this TRW Layer from Google Directions
+ * Acquire into this TRW Layer from Directions
  */
-static void trw_layer_acquire_google_cb ( gpointer lav[2] )
+static void trw_layer_acquire_routing_cb ( gpointer lav[2] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
 
-  a_acquire ( vw, vlp, vvp, &vik_datasource_google_interface, NULL, NULL );
+  a_acquire ( vw, vlp, vvp, &vik_datasource_routing_interface, NULL, NULL );
 }
-#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
 /*
@@ -3514,12 +3510,11 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
 
-#ifdef VIK_CONFIG_GOOGLE
-  item = gtk_menu_item_new_with_mnemonic ( _("From Google _Directions...") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_google_cb), pass_along );
+  /* FIXME: only add menu when at least a routing engine has support for Directions */
+  item = gtk_menu_item_new_with_mnemonic ( _("From _Directions...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_routing_cb), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
-#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
   item = gtk_menu_item_new_with_mnemonic ( _("From _OSM Traces...") );

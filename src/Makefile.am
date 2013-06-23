@@ -108,7 +108,7 @@ libviking_a_SOURCES = \
 	babel.c babel.h \
 	datasource_file.c \
 	datasource_gps.c datasource_gps.h \
-	datasource_google.c \
+	datasource_routing.c \
 	datasource_gc.c \
 	datasource_bfilter.c \
 	datasource_wikipedia.c \

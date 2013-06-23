@@ -43,14 +43,22 @@
 static void vik_routing_web_engine_finalize ( GObject *gob );
 
 static int vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end );
+static gchar *vik_routing_web_engine_get_cmd_from_directions(VikRoutingEngine *self, const gchar *start, const gchar *end);
+static gboolean vik_routing_web_engine_supports_direction(VikRoutingEngine *self);
 
 typedef struct _VikRoutingWebEnginePrivate VikRoutingWebEnginePrivate;
 struct _VikRoutingWebEnginePrivate
 {
 	gchar *url_base;
+	
+	/* LatLon */
 	gchar *url_start_ll_fmt;
 	gchar *url_stop_ll_fmt;
 	gchar *url_via_ll_fmt;
+
+	/* Directions */
+	gchar *url_start_dir_fmt;
+	gchar *url_stop_dir_fmt;
 
 	DownloadMapOptions options;
 };
@@ -63,9 +71,15 @@ enum
   PROP_0,
 
   PROP_URL_BASE,
+  
+  /* LatLon */
   PROP_URL_START_LL,
   PROP_URL_STOP_LL,
   PROP_URL_VIA_LL,
+
+  /* Direction */
+  PROP_URL_START_DIR,
+  PROP_URL_STOP_DIR,
 
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
@@ -101,6 +115,16 @@ vik_routing_web_engine_set_property (GObject      *object,
     case PROP_URL_VIA_LL:
       g_free (priv->url_via_ll_fmt);
       priv->url_via_ll_fmt = g_strdup(g_value_get_string (value));
+      break;
+
+    case PROP_URL_START_DIR:
+      g_free (priv->url_start_dir_fmt);
+      priv->url_start_dir_fmt = g_strdup(g_value_get_string (value));
+      break;
+
+    case PROP_URL_STOP_DIR:
+      g_free (priv->url_stop_dir_fmt);
+      priv->url_stop_dir_fmt = g_strdup(g_value_get_string (value));
       break;
 
     case PROP_REFERER:
@@ -145,6 +169,14 @@ vik_routing_web_engine_get_property (GObject    *object,
       g_value_set_string (value, priv->url_via_ll_fmt);
       break;
 
+    case PROP_URL_START_DIR:
+      g_value_set_string (value, priv->url_start_dir_fmt);
+      break;
+
+    case PROP_URL_STOP_DIR:
+      g_value_set_string (value, priv->url_stop_dir_fmt);
+      break;
+
     case PROP_REFERER:
       g_value_set_string (value, priv->options.referer);
       break;
@@ -175,6 +207,8 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
   parent_class = VIK_ROUTING_ENGINE_CLASS (klass);
 
   parent_class->find = vik_routing_web_engine_find;
+  parent_class->supports_direction = vik_routing_web_engine_supports_direction;
+  parent_class->get_cmd_from_directions = vik_routing_web_engine_get_cmd_from_directions;
 
   /**
    * VikRoutingWebEngine:url-base:
@@ -229,6 +263,32 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
 
 
   /**
+   * VikRoutingWebEngine:url-start-dir:
+   *
+   * The part of the request hosting the end point.
+   */
+  pspec = g_param_spec_string ("url-start-dir",
+                               "Start part of the URL",
+                               "The part of the request hosting the start point",
+                               NULL /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_URL_START_DIR, pspec);
+    
+
+  /**
+   * VikRoutingWebEngine:url-stop-dir:
+   *
+   * The part of the request hosting the end point.
+   */
+  pspec = g_param_spec_string ("url-stop-dir",
+                               "Stop part of the URL",
+                               "The part of the request hosting the end point",
+                               NULL /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_URL_STOP_DIR, pspec);
+
+
+  /**
    * VikRoutingWebEngine:referer:
    *
    * The REFERER string to use in HTTP request.
@@ -263,9 +323,15 @@ static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
   VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE ( self );
 
   priv->url_base = NULL;
+  
+  /* LatLon */
   priv->url_start_ll_fmt = NULL;
   priv->url_stop_ll_fmt = NULL;
   priv->url_via_ll_fmt = NULL;
+
+  /* Directions */
+  priv->url_start_dir_fmt = NULL;
+  priv->url_stop_dir_fmt = NULL;
 
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
@@ -280,12 +346,20 @@ static void vik_routing_web_engine_finalize ( GObject *gob )
 
   g_free (priv->url_base);
   priv->url_base = NULL;
+  
+  /* LatLon */
   g_free (priv->url_start_ll_fmt);
   priv->url_start_ll_fmt = NULL;
   g_free (priv->url_stop_ll_fmt);
   priv->url_stop_ll_fmt = NULL;
   g_free (priv->url_via_ll_fmt);
   priv->url_via_ll_fmt = NULL;
+
+  /* Directions */
+  g_free (priv->url_start_dir_fmt);
+  priv->url_start_dir_fmt = NULL;
+  g_free (priv->url_stop_dir_fmt);
+  priv->url_stop_dir_fmt = NULL;
 
   g_free (priv->options.referer);
   priv->options.referer = NULL;
@@ -319,7 +393,7 @@ vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLo
 	gchar *startURL;
 	gchar *endURL;
 	gchar *url;
-
+	
 	g_return_val_if_fail ( VIK_IS_ROUTING_WEB_ENGINE (self), NULL);
 
 	VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE ( self );
@@ -355,4 +429,49 @@ vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct L
   g_free(uri);
 
   return ret;
+}
+
+static gchar *
+vik_routing_web_engine_get_cmd_from_directions ( VikRoutingEngine *self, const gchar *start, const gchar *end )
+{
+  g_return_val_if_fail ( VIK_IS_ROUTING_WEB_ENGINE (self), NULL);
+
+  VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE ( self );
+
+  g_return_val_if_fail ( priv->url_base != NULL, NULL);
+  g_return_val_if_fail ( priv->url_start_dir_fmt != NULL, NULL);
+  g_return_val_if_fail ( priv->url_stop_dir_fmt != NULL, NULL);
+
+  gchar *from_quoted, *to_quoted;
+  gchar **from_split, **to_split;
+  from_quoted = g_shell_quote ( start );
+  to_quoted = g_shell_quote ( end );
+
+  from_split = g_strsplit( from_quoted, " ", 0);
+  to_split = g_strsplit( to_quoted, " ", 0);
+
+  from_quoted = g_strjoinv( "%20", from_split);
+  to_quoted = g_strjoinv( "%20", to_split);
+
+  gchar *url_fmt = g_strconcat ( priv->url_base, priv->url_start_dir_fmt, priv->url_stop_dir_fmt, NULL );
+  gchar *url = g_strdup_printf ( url_fmt, from_quoted, to_quoted );
+
+  g_free ( url_fmt );
+
+  g_free(from_quoted);
+  g_free(to_quoted);
+  g_strfreev(from_split);
+  g_strfreev(to_split);
+
+  return url;
+}
+
+static gboolean
+vik_routing_web_engine_supports_direction ( VikRoutingEngine *self )
+{
+  g_return_val_if_fail ( VIK_IS_ROUTING_WEB_ENGINE (self), FALSE);
+
+  VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE ( self );
+
+  return (priv->url_start_dir_fmt) != NULL;
 }

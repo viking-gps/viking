@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2006, Quy Tonthat <qtonthat@gmail.com>
+ * Copyright (C) 2013, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +47,11 @@
 
 /* TODO in the future we could have support for other shells (change command strings), or not use a shell at all */
 #define BASH_LOCATION "/bin/bash"
+
+/**
+ * List of supported protocols.
+ */
+const gchar *PROTOS[] = { "http://", "https://", "ftp://", NULL };
 
 /**
  * Path to gpsbabel
@@ -364,6 +370,43 @@ gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char
   }
 
   return ret;
+}
+
+/**
+ * a_babel_convert_from_url_or_shell:
+ * @vt: The #VikTrwLayer where to insert the collected data
+ * @url: the URL to fetch
+ * @cb:	       Optional callback function. Same usage as in a_babel_convert().
+ * @user_data: passed along to cb
+ * @options:   download options. Maybe NULL.
+ *
+ * Download the file pointed by the URL and optionally uses GPSBabel to convert from input_file_type.
+ * If input_file_type is %NULL, doesn't use GPSBabel. Input must be GPX.
+ *
+ * Returns: %TRUE on successful invocation of GPSBabel or read of the GPX
+ *
+ */
+gboolean a_babel_convert_from_url_or_shell ( VikTrwLayer *vt, const char *input, const char *input_type, BabelStatusFunc cb, gpointer user_data, DownloadMapOptions *options )
+{
+  
+  /* Check nature of input */
+  gboolean isUrl = FALSE;
+  int i = 0;
+  for (i = 0 ; PROTOS[i] != NULL ; i++)
+  {
+    const gchar *proto = PROTOS[i];
+    if (strncmp (input, proto, strlen(proto)) == 0)
+    {
+      /* Procotol matches: save result */
+      isUrl = TRUE;
+    }
+  }
+  
+  /* Do the job */
+  if (isUrl)
+    return a_babel_convert_from_url (vt, input, input_type, cb, user_data, options);
+  else
+    return a_babel_convert_from_shellcommand (vt, input, input_type, cb, user_data, options);
 }
 
 static gboolean babel_general_convert_to( VikTrwLayer *vt, VikTrack *trk, BabelStatusFunc cb, gchar **args, const gchar *name_src, gpointer user_data )

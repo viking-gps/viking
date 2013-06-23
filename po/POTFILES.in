@@ -13,10 +13,10 @@ src/googlesearch.c
 src/datasource_file.c
 src/datasource_gc.c
 src/datasource_geotag.c
-src/datasource_google.c
 src/datasource_gps.c
 src/datasource_osm.c
 src/datasource_osm_my_traces.c
+src/datasource_routing.c
 src/datasource_wikipedia.c
 src/dem.c
 src/download.c

@@ -2958,12 +2958,10 @@ static void acquire_from_file ( GtkAction *a, VikWindow *vw )
   a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface, NULL, NULL );
 }
 
-#ifdef VIK_CONFIG_GOOGLE
-static void acquire_from_google ( GtkAction *a, VikWindow *vw )
+static void acquire_from_routing ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_google_interface, NULL, NULL );
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_routing_interface, NULL, NULL );
 }
-#endif
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void acquire_from_osm ( GtkAction *a, VikWindow *vw )
@@ -3698,9 +3696,7 @@ static GtkActionEntry entries[] = {
   { "Acquire",   GTK_STOCK_GO_DOWN,      N_("A_cquire"),                  NULL,         NULL,                                               (GCallback)NULL },
   { "AcquireGPS",   NULL,                N_("From _GPS..."),           	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
   { "AcquireGPSBabel",   NULL,                N_("Import File With GPS_Babel..."),           	  NULL,         N_("Import file via GPSBabel converter"),              (GCallback)acquire_from_file      },
-#ifdef VIK_CONFIG_GOOGLE
-  { "AcquireGoogle",   NULL,             N_("Google _Directions..."),     NULL,         N_("Get driving directions from Google"),           (GCallback)acquire_from_google   },
-#endif
+  { "AcquireRouting",   NULL,             N_("_Directions..."),     NULL,         N_("Get driving directions"),           (GCallback)acquire_from_routing   },
 #ifdef VIK_CONFIG_OPENSTREETMAP
   { "AcquireOSM",   NULL,                 N_("_OSM Traces..."),    	  NULL,         N_("Get traces from OpenStreetMap"),            (GCallback)acquire_from_osm       },
   { "AcquireMyOSM", NULL,                 N_("_My OSM Traces..."),    	  NULL,         N_("Get Your Own Traces from OpenStreetMap"),   (GCallback)acquire_from_my_osm    },
