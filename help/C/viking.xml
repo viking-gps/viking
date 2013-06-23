@@ -2482,7 +2482,7 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>url-stop-ll</term>
-              <listitem><para>the part of the URL setting the end point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;start=%s,%s")</para></listitem>
+              <listitem><para>the part of the URL setting the end point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;stop=%s,%s")</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url-start-dir</term>
