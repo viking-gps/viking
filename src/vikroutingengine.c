@@ -245,7 +245,9 @@ vik_routing_engine_get_label ( VikRoutingEngine *self )
 
 /**
  * vik_routing_engine_get_format:
- * 
+ *
+ * GPSbabel's Format of result.
+ *
  * Returns: the format of self
  */
 gchar *
