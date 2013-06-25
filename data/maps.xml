@@ -8,6 +8,7 @@
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
+    <property name="use-etag">TRUE</property>
   </object>
 <!-- Built in -->
   <object class="VikSlippyMapSource">
@@ -18,6 +19,7 @@
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
+    <property name="check-file-server-time">TRUE</property>
   </object>
   <object class="VikWmscMapSource">
     <property name="id">18</property>
