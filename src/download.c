@@ -104,18 +104,30 @@ static GList *file_list = NULL;
 static GMutex *file_list_mutex = NULL;
 
 /* spin button scales */
-VikLayerParamScale params_scales[] = {
-  {1, 86400*7, 60, 0},		/* download_tile_age */
+static VikLayerParamScale params_scales[] = {
+  {1, 365, 1, 0},		/* download_tile_age */
 };
 
+static VikLayerParamData convert_to_display ( VikLayerParamData value )
+{
+  // From seconds into days
+  return VIK_LPD_UINT ( value.u / 86400 );
+}
+
+static VikLayerParamData convert_to_internal ( VikLayerParamData value )
+{
+  // From days into seconds
+  return VIK_LPD_UINT ( 86400 * value.u );
+}
+
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "download_tile_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Tile age (s):"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "download_tile_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Tile age (days):"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL, NULL, convert_to_display, convert_to_internal },
 };
 
 void a_download_init (void)
 {
 	VikLayerParamData tmp;
-	tmp.u = VIK_CONFIG_DEFAULT_TILE_AGE;
+	tmp.u = VIK_CONFIG_DEFAULT_TILE_AGE / 86400; // Now in days
 	a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
 
 	file_list_mutex = g_mutex_new();
