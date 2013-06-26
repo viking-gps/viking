@@ -3081,7 +3081,10 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
       VIK_LAYER_WIDGET_SPINBUTTON,
       NULL,
       NULL,
-      NULL },
+      NULL,
+      NULL,
+      NULL,
+    },
   };
   VikLayerParam pref_lon[] = {
     { VIK_LAYER_NUM_TYPES,
@@ -3092,7 +3095,10 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
       VIK_LAYER_WIDGET_SPINBUTTON,
       NULL,
       NULL,
-      NULL },
+      NULL,
+      NULL,
+      NULL,
+    },
   };
 
   /* Get current center */

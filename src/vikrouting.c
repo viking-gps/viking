@@ -51,7 +51,7 @@
 static GList *routing_engine_list = NULL;
 
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_ROUTING_PARAMS_NAMESPACE "default", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default engine:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_ROUTING_PARAMS_NAMESPACE "default", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default engine:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, NULL, NULL },
 };
 
 gchar **routing_engine_labels = NULL;

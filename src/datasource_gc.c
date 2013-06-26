@@ -82,8 +82,8 @@ VikDataSourceInterface vik_datasource_gc_interface = {
 };
 
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_GC_PARAMS_NAMESPACE "username", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("geocaching.com username:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, VIKING_GC_PARAMS_NAMESPACE "password", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("geocaching.com password:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_GC_PARAMS_NAMESPACE "username", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("geocaching.com username:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_GC_PARAMS_NAMESPACE "password", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("geocaching.com password:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, NULL, NULL },
 };
 
 void a_datasource_gc_init()

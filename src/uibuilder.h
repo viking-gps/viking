@@ -90,6 +90,10 @@ typedef enum {
 // Also easier for colours to be set via a function call rather than a static assignment
 typedef VikLayerParamData (*VikLayerDefaultFunc) ( void );
 
+// Convert between the value held internally and the value used for display
+//  e.g. keep the internal value in seconds yet use days in the display
+typedef VikLayerParamData (*VikLayerConvertFunc) ( VikLayerParamData );
+
 typedef struct {
   VikLayerTypeEnum layer;
   const gchar *name;
@@ -101,6 +105,8 @@ typedef struct {
   gpointer extra_widget_data;
   const gchar *tooltip;
   VikLayerDefaultFunc default_value;
+  VikLayerConvertFunc convert_to_display;
+  VikLayerConvertFunc convert_to_internal;
 } VikLayerParam;
 
 enum {
