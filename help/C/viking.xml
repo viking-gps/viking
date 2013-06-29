@@ -188,7 +188,7 @@ View, create and update Geotagged Images (using EXIF data).
 </section>
 
 <section><title>General Concepts</title>
-<section id="gc_layers" xreftitle="Layers"><title>Layers</title>
+<section id="gc_layers" xreflabel="Layers"><title>Layers</title>
 <para>
 <emphasis>Layers</emphasis> is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
 Instead of putting all the data on the same level, it is stacked (i.e. layered) with different data over one another.
@@ -203,7 +203,7 @@ to create the appearance of partial transparency.
 By controlling this value one can see data below it in the layer heirarchy for interesting effects.
 </para>
 </section>
-<section id="gc_layers_panel" xreftitle="Layers Panel"><title>Layers Panel</title>
+<section id="gc_layers_panel" xreflabel="Layers Panel"><title>Layers Panel</title>
 <para>
 The panel on the left is called the <emphasis role="bold">layers panel</emphasis>.
 It determines which layers and sublayers (such as tracks and waypoints)
@@ -1591,7 +1591,7 @@ Drag to move the georeferenced map.
 </section>
 </section>
 
-<section id="map_tool_dl" xreftitle="Map Download"><title>Map Download</title>
+<section id="map_tool_dl" xreflabel="Map Download"><title>Map Download</title>
 <para>
 You must have a <xref linkend="Maps"/> Layer selected to use this.
 </para>
@@ -2544,7 +2544,7 @@ Accept: */*
               <listitem>
                 <para>This value is passed on for the -i parameter in interfacing with GPSBabel.</para>
                 <para>If it is not defined then the returned file is interpreted internally as a GPX file.</para>
-                <para>Possible values such as 'kml', 'mapsource' etc.. can be used. See <ulink ref="http://www.gpsbabel.org/capabilities.html">GPSBabel File Formats</ulink> for the full list.</para>
+                <para>Possible values such as 'kml', 'mapsource' etc.. can be used. See <ulink url="http://www.gpsbabel.org/capabilities.html">GPSBabel File Formats</ulink> for the full list.</para>
               </listitem>
             </varlistentry>
           </variablelist>
