@@ -2587,9 +2587,6 @@ Accept: */*
 	  <listitem>
 	    <para>version_check_period_days=14</para>
 	  </listitem>
-	  <listitem>
-	    <para>trackwaypoint_alphabetized=true</para>
-	  </listitem>
 	</orderedlist>
       </section>
 

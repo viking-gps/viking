@@ -442,6 +442,11 @@ void vik_treeview_init ( VikTreeview *vt )
 
   gtk_tree_view_set_model ( GTK_TREE_VIEW(vt), vt->model );
   vik_treeview_add_columns ( vt );
+
+  // Can not specify 'auto' sort order with a 'GtkTreeSortable' on the name since we want to control the ordering of layers
+  // Thus need to create special sort to operate on a subsection of treeview (i.e. from a specific child either a layer or sublayer)
+  // see vik_treeview_sort_children()
+
   g_object_unref (vt->model);
 
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (vt), TRUE);
@@ -648,69 +653,99 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
 {
   g_assert ( iter != NULL );
 
-  gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
+  gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, has_visible, EDITABLE_COLUMN, editable, ICON_COLUMN, icon, -1 );
 }
 
-
-void vik_treeview_sublayer_realphabetize ( VikTreeview *vt, GtkTreeIter *iter, const gchar *newname )
+// Inspired by the internals of GtkTreeView sorting itself
+typedef struct _SortTuple
 {
-  GtkTreeIter search_iter, parent_iter;
-  gchar *search_name = NULL;
-  g_assert ( iter != NULL );
+  gint offset;
+  gchar *name;
+} SortTuple;
 
-  gtk_tree_model_iter_parent ( vt->model, &parent_iter, iter );
-
-  g_assert ( gtk_tree_model_iter_children ( vt->model, &search_iter, &parent_iter ) );
-
-  do {
-    gtk_tree_model_get ( vt->model, &search_iter, NAME_COLUMN, &search_name, -1 );
-    if ( strcmp ( search_name, newname ) > 0 ) /* not >= or would trip on itself */
-    {
-      gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, &search_iter );
-      g_free (search_name);
-      search_name = NULL;
-      return;
-    }
-    g_free (search_name);
-    search_name = NULL;
-  } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
-
-  gtk_tree_store_move_before ( GTK_TREE_STORE(vt->model), iter, NULL );
-}
-
-void vik_treeview_add_sublayer_alphabetized
-                 ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                   gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable )
+/**
+ * If order is true sort ascending, otherwise a descending sort
+ */
+static gint sort_tuple_compare ( gconstpointer a, gconstpointer b, gpointer order )
 {
-  GtkTreeIter search_iter;
-  gchar *search_name = NULL;
-  g_assert ( iter != NULL );
+  SortTuple *sa = (SortTuple *)a;
+  SortTuple *sb = (SortTuple *)b;
 
-  if ( gtk_tree_model_iter_children ( vt->model, &search_iter, parent_iter ) )
-  {
-    gboolean found_greater_string = FALSE;
-    do {
-      gtk_tree_model_get ( vt->model, &search_iter, NAME_COLUMN, &search_name, -1 );
-      if ( strcmp ( search_name, name ) >= 0 )
-      {
-        gtk_tree_store_insert_before ( GTK_TREE_STORE(vt->model), iter, parent_iter, &search_iter );
-        found_greater_string = TRUE;
-        g_free (search_name);
-        search_name = NULL;
-        break;
-      }
-      g_free (search_name);
-      search_name = NULL;
-    } while ( gtk_tree_model_iter_next ( vt->model, &search_iter ) );
+  // Default ascending order
+  gint answer = g_strcmp0 ( sa->name, sb->name );
 
-    if ( ! found_greater_string )
-      gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
+  if ( !GPOINTER_TO_INT(order) ) {
+    // Invert sort order for descending order
+    answer = -answer;
   }
-  else
-    gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
 
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, has_visible, EDITABLE_COLUMN, editable, ICON_COLUMN, icon, -1 );
+  return answer;
+}
+
+/**
+ * Note: I don't believe we can sensibility use built in model sort gtk_tree_model_sort_new_with_model() on the name,
+ * since that would also sort the layers - but that needs to be user controlled for ordering, such as which maps get drawn on top.
+ *
+ * vik_treeview_sort_children:
+ * @vt:     The treeview to operate on
+ * @parent: The level within the treeview to sort
+ * @order:  How the items should be sorted
+ *
+ * Use the gtk_tree_store_reorder method as it very quick
+ *
+ * This ordering can be performed on demand and works for any parent iterator (i.e. both sublayer and layer levels)
+ *
+ * It should be called whenever an individual sublayer item is added or renamed (or after a group of sublayer items have been added).
+ *
+ * Previously with insertion sort on every sublayer addition: adding 10,000 items would take over 30 seconds!
+ * Now sorting after simply adding all tracks takes 1 second.
+ * For a KML file with over 10,000 tracks (3Mb zipped) - See 'UK Hampshire Rights of Way'
+ * http://www3.hants.gov.uk/row/row-maps.htm
+ */
+void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_layer_sort_order_t order )
+{
+  if ( order == VL_SO_NONE )
+    // Nothing to do
+    return;
+
+  GtkTreeModel *model = vt->model;
+  GtkTreeIter child;
+  if ( !gtk_tree_model_iter_children ( model, &child, parent ) )
+    return;
+
+  guint length = gtk_tree_model_iter_n_children ( model, parent );
+
+  // Create an array to store the position offsets
+  SortTuple *sort_array;
+  sort_array = g_new ( SortTuple, length );
+
+  guint ii = 0;
+  do {
+    sort_array[ii].offset = ii;
+    gtk_tree_model_get ( model, &child, NAME_COLUMN, &(sort_array[ii].name), -1 );
+    ii++;
+  } while ( gtk_tree_model_iter_next (model, &child) );
+
+  gboolean sort_order = (order == VL_SO_ALPHABETICAL_ASCENDING );
+
+  // Sort list...
+  g_qsort_with_data (sort_array,
+                     length,
+                     sizeof (SortTuple),
+                     sort_tuple_compare,
+                     GINT_TO_POINTER(sort_order));
+
+  // As the sorted list contains the reordered position offsets, extract this and then apply to the treeview
+  gint *positions = g_malloc ( sizeof(gdouble) * length );
+  for ( ii = 0; ii < length; ii++ ) {
+    positions[ii] = sort_array[ii].offset;
+  }
+  g_free ( sort_array );
+
+  // This is extremely fast compared to the old alphabetical insertion
+  gtk_tree_store_reorder ( GTK_TREE_STORE(model), parent, positions );
+  g_free ( positions );
 }
 
 static void vik_treeview_finalize ( GObject *gob )
