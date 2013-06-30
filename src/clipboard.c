@@ -346,11 +346,11 @@ void a_clipboard_copy_selected ( VikLayersPanel *vlp )
 {
   VikLayer *sel = vik_layers_panel_get_selected ( vlp );
   GtkTreeIter iter;
-  VikClipboardDataType type;
+  VikClipboardDataType type = VIK_CLIPBOARD_DATA_NONE;
   guint16 layer_type = 0;
   gint subtype = 0;
   guint8 *data = NULL;
-  guint len;
+  guint len = 0;
   const gchar *name = NULL;
 
   if ( ! sel )

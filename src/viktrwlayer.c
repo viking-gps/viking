@@ -2017,7 +2017,7 @@ static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *
 
   if ( g_hash_table_size (vtl->tracks) > 0 ) {
     trw_layer_add_sublayer_tracks ( vtl, vt , layer_iter );
-    pass_along[5] = GINT_TO_POINTER(g_hash_table_size (vtl->tracks));
+
     g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_realize_track, pass_along );
 
     vik_treeview_item_set_visible ( vt, &(vtl->tracks_iter), vtl->tracks_visible );
@@ -7697,6 +7697,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   tp_params.y = event->y;
   tp_params.closest_track_id = NULL;
   tp_params.closest_tp = NULL;
+  tp_params.closest_tpl = NULL;
   tp_params.bbox = bbox;
 
   if (vtl->tracks_visible) {
@@ -8525,6 +8526,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   params.closest_track_id = NULL;
   /* TODO: should get track listitem so we can break it up, make a new track, mess it up, all that. */
   params.closest_tp = NULL;
+  params.closest_tpl = NULL;
   vik_viewport_get_min_max_lat_lon ( vvp, &(params.bbox.south), &(params.bbox.north), &(params.bbox.west), &(params.bbox.east) );
 
   if ( event->button != 1 ) 

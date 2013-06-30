@@ -114,7 +114,7 @@ static VikLayerParamData directory_default ( void )
 {
   VikLayerParamData data;
   VikLayerParamData *pref = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir");
-  if (pref) data.s = g_strdup ( pref->s );
+  if (pref) data.s = g_strdup ( pref->s ); else data.s = "";
   return data;
 }
 static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
