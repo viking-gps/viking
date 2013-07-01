@@ -3680,6 +3680,9 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
 
     g_hash_table_insert ( vtl->waypoints_iters, GUINT_TO_POINTER(wp_uuid), iter );
+
+    // Sort now as post_read is not called on a realized waypoint
+    vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
   }
 
   highest_wp_number_add_wp(vtl, name);
@@ -8993,6 +8996,9 @@ static void trw_layer_calculate_bounds_tracks ( VikTrwLayer *vtl )
 
 static void trw_layer_sort_all ( VikTrwLayer *vtl )
 {
+  if ( ! VIK_LAYER(vtl)->vt )
+    return;
+
   // Obviously need 2 to tango - sorting with only 1 (or less) is a lonely activity!
   if ( g_hash_table_size (vtl->tracks) > 1 )
     vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->track_sort_order );
