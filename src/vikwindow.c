@@ -3037,12 +3037,14 @@ static void preferences_change_update ( VikWindow *vw, gpointer data )
   // Want to update all TrackWaypoint layers
   GList *layers = vik_layers_panel_get_all_layers_of_type ( vw->viking_vlp, VIK_LAYER_TRW, TRUE );
 
-  GList *iter = g_list_first ( layers );
-  while ( iter ) {
+  if ( !layers )
+    return;
+
+  while ( layers ) {
     // Reset the individual waypoints themselves due to the preferences change
-    VikTrwLayer *vtl = VIK_TRW_LAYER(VIK_LAYER(layers->data));
+    VikTrwLayer *vtl = VIK_TRW_LAYER(layers->data);
     vik_trw_layer_reset_waypoints ( vtl );
-	iter = g_list_next ( iter );
+    layers = g_list_next ( layers );
   }
 
   g_list_free ( layers );
