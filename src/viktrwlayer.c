@@ -4706,8 +4706,36 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
                                   tr,
 				  pass_along[1], /* vlp */
 				  pass_along[5], /* vvp */
-                                  pass_along[6]); /* iter */
+                                  pass_along[6], /* iter */
+                                  FALSE );
     }
+  }
+}
+
+/**
+ * trw_layer_track_statistics:
+ *
+ * Show track statistics.
+ * ATM jump to the stats page in the properties
+ * TODO: consider separating the stats into an individual dialog?
+ */
+static void trw_layer_track_statistics ( gpointer pass_along[7] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikTrack *trk;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_TRACK )
+    trk = g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+  else
+    trk = g_hash_table_lookup ( vtl->routes, pass_along[3] );
+
+  if ( trk && trk->name ) {
+    vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                vtl,
+                                trk,
+                                pass_along[1], // vlp
+                                pass_along[5], // vvp
+                                pass_along[6], // iter
+                                TRUE );
   }
 }
 
@@ -7188,6 +7216,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
+    item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_statistics), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
     GtkWidget *goto_submenu;
     goto_submenu = gtk_menu_new ();
     item = gtk_image_menu_item_new_with_mnemonic ( _("_Goto") );
@@ -9354,7 +9387,8 @@ static void trw_layer_sort_all ( VikTrwLayer *vtl )
 
 static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean from_file )
 {
-  trw_layer_verify_thumbnails ( vtl, vvp );
+  if ( VIK_LAYER(vtl)->realized )
+    trw_layer_verify_thumbnails ( vtl, vvp );
   trw_layer_track_alloc_colors ( vtl );
 
   trw_layer_calculate_bounds_waypoints ( vtl );

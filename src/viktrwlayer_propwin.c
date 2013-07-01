@@ -2702,7 +2702,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                  VikTrack *tr,
                                  gpointer vlp,
                                  VikViewport *vvp,
-                                 gpointer *trk_id )
+                                 gpointer *trk_id,
+                                 gboolean start_on_stats )
 {
   PropWidgets *widgets = prop_widgets_new();
   widgets->vtl = vtl;
@@ -3120,6 +3121,10 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   vik_track_set_property_dialog(tr, dialog);
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all ( dialog );
+
+  // Gtk note: due to historical reasons, this must be done after widgets are shown
+  if ( start_on_stats )
+    gtk_notebook_set_current_page ( GTK_NOTEBOOK(graphs), 1 );
 }
 
 
