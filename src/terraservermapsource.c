@@ -254,7 +254,7 @@ _get_download_options( VikMapSourceDefault *self )
 }
 
 TerraserverMapSource *
-terraserver_map_source_new_with_id (guint8 id, const char *label, int type)
+terraserver_map_source_new_with_id (guint16 id, const char *label, int type)
 {
 	char *copyright = NULL;
 	switch (type)

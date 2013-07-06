@@ -27,7 +27,7 @@
 #include "mapcoord.h"
 
 typedef struct {
-  guint8 uniq_id;
+  guint16 uniq_id;
   guint16 tilesize_x;
   guint16 tilesize_y;
   guint drawmode;

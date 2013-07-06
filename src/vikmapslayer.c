@@ -476,7 +476,7 @@ GType vik_maps_layer_get_type ()
 /************** PARAMETERS **************/
 /****************************************/
 
-static guint map_index_to_uniq_id (guint8 index)
+static guint map_index_to_uniq_id (guint16 index)
 {
   g_assert ( index < NUM_MAP_TYPES );
   return vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(index));

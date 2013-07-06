@@ -150,15 +150,15 @@ vik_map_source_get_logo (VikMapSource *self)
 	return (*klass->get_logo)(self);
 }
 
-guint8
+guint16
 vik_map_source_get_uniq_id (VikMapSource *self)
 {
 	VikMapSourceClass *klass;
-	g_return_val_if_fail (self != NULL, (guint8 )0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), (guint8 )0);
+	g_return_val_if_fail (self != NULL, (guint16 )0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), (guint16 )0);
 	klass = VIK_MAP_SOURCE_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->get_uniq_id != NULL, (guint8 )0);
+	g_return_val_if_fail (klass->get_uniq_id != NULL, (guint16 )0);
 
 	return (*klass->get_uniq_id)(self);
 }
