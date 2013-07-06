@@ -381,7 +381,7 @@ _get_download_options( VikMapSourceDefault *self )
 }
 
 VikSlippyMapSource *
-vik_slippy_map_source_new_with_id (guint8 id, const gchar *label, const gchar *hostname, const gchar *url)
+vik_slippy_map_source_new_with_id (guint16 id, const gchar *label, const gchar *hostname, const gchar *url)
 {
 	return g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
 	                    "id", id, "label", label, "hostname", hostname, "url", url, NULL);

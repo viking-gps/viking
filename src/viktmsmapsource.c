@@ -353,7 +353,7 @@ _get_download_options( VikMapSourceDefault *self )
 }
 
 VikTmsMapSource *
-vik_tms_map_source_new_with_id (guint8 id, const gchar *label, const gchar *hostname, const gchar *url)
+vik_tms_map_source_new_with_id (guint16 id, const gchar *label, const gchar *hostname, const gchar *url)
 {
 	return g_object_new(VIK_TYPE_TMS_MAP_SOURCE,
 	                    "id", id, "label", label, "hostname", hostname, "url", url, NULL);

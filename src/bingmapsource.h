@@ -48,7 +48,7 @@ struct _BingMapSource
 
 GType bing_map_source_get_type (void) G_GNUC_CONST;
 
-BingMapSource * bing_map_source_new_with_id (guint8 id, const gchar *label, const gchar *key);
+BingMapSource * bing_map_source_new_with_id (guint16 id, const gchar *label, const gchar *key);
 
 G_END_DECLS
 

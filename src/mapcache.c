@@ -124,7 +124,7 @@ static void list_add_entry ( gchar *key )
   }
 }
 
-void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
+void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, x, y, z, type, zoom, alpha, xshrinkfactor, yshrinkfactor );
   static int tmp = 0;
@@ -155,14 +155,14 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint8 type, gu
   if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d size=%u\n", queue_count, queue_size ); tmp=0; }
 }
 
-GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint8 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
+GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   static char key[48];
   g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, x, y, z, type, zoom, alpha, xshrinkfactor, yshrinkfactor );
   return g_hash_table_lookup ( cache, key );
 }
 
-void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint8 type, guint zoom )
+void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, guint zoom )
 {
   char key[40];
   List *loop = queue_tail;

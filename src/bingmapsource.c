@@ -516,7 +516,7 @@ _async_load_attributions ( BingMapSource *self )
  * Returns: a newly allocated BingMapSource GObject.
  */
 BingMapSource *
-bing_map_source_new_with_id (guint8 id, const gchar *label, const gchar *key)
+bing_map_source_new_with_id (guint16 id, const gchar *label, const gchar *key)
 {
 	/* initialize settings here */
 	return g_object_new(BING_TYPE_MAP_SOURCE,

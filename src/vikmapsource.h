@@ -49,7 +49,7 @@ struct _VikMapSourceClass
 	const gchar *(* get_license_url) (VikMapSource * self);
 	const GdkPixbuf *(* get_logo) (VikMapSource * self);
 
-	guint8 (* get_uniq_id) (VikMapSource * self);
+	guint16 (* get_uniq_id) (VikMapSource * self);
 	const gchar * (* get_label) (VikMapSource * self);
 	guint16 (* get_tilesize_x) (VikMapSource * self);
 	guint16 (* get_tilesize_y) (VikMapSource * self);
@@ -75,7 +75,7 @@ const gchar *vik_map_source_get_license (VikMapSource * self);
 const gchar *vik_map_source_get_license_url (VikMapSource * self);
 const GdkPixbuf *vik_map_source_get_logo (VikMapSource * self);
 
-guint8 vik_map_source_get_uniq_id (VikMapSource * self);
+guint16 vik_map_source_get_uniq_id (VikMapSource * self);
 const gchar *vik_map_source_get_label (VikMapSource * self);
 guint16 vik_map_source_get_tilesize_x (VikMapSource * self);
 guint16 vik_map_source_get_tilesize_y (VikMapSource * self);

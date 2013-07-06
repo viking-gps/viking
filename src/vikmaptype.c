@@ -32,7 +32,7 @@
 #include "vikmaptype.h"
 #include "vikmapslayer_compat.h"
 
-static guint8 map_type_get_uniq_id (VikMapSource *self);
+static guint16 map_type_get_uniq_id (VikMapSource *self);
 static const gchar *map_type_get_label (VikMapSource *self);
 static guint16 map_type_get_tilesize_x (VikMapSource *self);
 static guint16 map_type_get_tilesize_y (VikMapSource *self);
@@ -105,11 +105,11 @@ vik_map_type_class_init (VikMapTypeClass *klass)
 	object_class->finalize = vik_map_type_finalize;
 }
 
-static guint8
+static guint16
 map_type_get_uniq_id (VikMapSource *self)
 {
     VikMapTypePrivate *priv = VIK_MAP_TYPE_PRIVATE(self);
-	g_return_val_if_fail (priv != NULL, (guint8)0);
+	g_return_val_if_fail (priv != NULL, (guint16)0);
 
 	return priv->map_type.uniq_id;
 }
