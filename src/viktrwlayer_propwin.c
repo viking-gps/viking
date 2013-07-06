@@ -63,7 +63,10 @@ static const gdouble chunksa[] = {2.0, 5.0, 10.0, 15.0, 20.0,
 static const gdouble chunksg[] = {1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 10.0,
 				  12.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 75.0,
 				  100.0, 150.0, 200.0, 250.0, 375.0, 500.0,
-				  750.0, 1000.0, 10000.0};
+				  750.0, 1000.0, 10000.0, 100000.0};
+// Normally gradients should range up to couple hundred precent at most,
+//  however there are possibilities of having points with no altitude after a point with a big altitude
+//  (such as places with invalid DEM values in otherwise mountainous regions) - thus giving huge negative gradients.
 
 /* (Hopefully!) Human friendly grid sizes - note no fixed 'ratio' just numbers that look nice...*/
 /* As need to cover walking speeds - have many low numbers (but also may go up to airplane speeds!) */
@@ -231,111 +234,50 @@ static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gbool
 #define MARGIN 70
 #define LINES 5
 /**
+ * get_new_min_and_chunk_index:
  * Returns via pointers:
- *   the new minimum value to be used for the altitude graph
- *   the index in to the altitudes chunk sizes array (ci = Chunk Index)
+ *   the new minimum value to be used for the graph
+ *   the index in to the chunk sizes array (ci = Chunk Index)
  */
-static void get_new_min_and_chunk_index_altitude (gdouble mina, gdouble maxa, gdouble *new_min, gint *ci)
+static void get_new_min_and_chunk_index (gdouble mina, gdouble maxa, const gdouble *chunks, size_t chunky, gdouble *new_min, gint *ci)
 {
   /* Get unitized chunk */
   /* Find suitable chunk index */
   *ci = 0;
-  gdouble diffa_chunk = (maxa - mina)/LINES;
-
-  /* Loop through to find best match */
-  while (diffa_chunk > chunksa[*ci]) {
-    (*ci)++;
-    /* Last Resort Check */
-    if ( *ci == sizeof(chunksa)/sizeof(chunksa[0]) )
-      break;
-  }
-
-  /* Ensure adjusted minimum .. maximum covers mina->maxa */
-
-  // Now work out adjusted minimum point to the nearest lowest chunk divisor value
-  // When negative ensure logic uses lowest value
-  if ( mina < 0 )
-    *new_min = (gdouble) ( ( (gint)(mina - chunksa[*ci]) / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
-  else
-    *new_min = (gdouble) ( ( (gint)mina / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
-
-  // Range not big enough - as new minimum has lowered
-  if ((*new_min + (chunksa[*ci] * LINES) < maxa)) {
-    // Next chunk should cover it
-    if ( *ci < sizeof(chunksa)/sizeof(chunksa[0]) ) {
-      (*ci)++;
-      // Remember to adjust the minimum too...
-      if ( mina < 0 )
-	*new_min = (gdouble) ( ( (gint)(mina - chunksa[*ci]) / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
-      else
-	*new_min = (gdouble) ( ( (gint)mina / (gint)chunksa[*ci] ) * (gint)chunksa[*ci] );
-    }
-  }
-}
-
-/**
- * Returns via pointers:
- *   the new minimum value to be used for the altitude graph
- *   the index in to the altitudes chunk sizes array (ci = Chunk Index)
- */
-static void get_new_min_and_chunk_index_gradient (gdouble mina, gdouble maxa, gdouble *new_min, gint *ci)
-{
-  /* Get unitized chunk */
-  /* Find suitable chunk index */
-  *ci = 0;
-  gdouble diffa_chunk = (maxa - mina)/LINES;
-
-  /* Loop through to find best match */
-  while (diffa_chunk > chunksg[*ci]) {
-    (*ci)++;
-    /* Last Resort Check */
-    if ( *ci == sizeof(chunksg)/sizeof(chunksg[0]) )
-      break;
-  }
-
-  /* Ensure adjusted minimum .. maximum covers mina->maxa */
-
-  // Now work out adjusted minimum point to the nearest lowest chunk divisor value
-  // When negative ensure logic uses lowest value
-  if ( mina < 0 )
-    *new_min = (gdouble) ( ( (gint)(mina - chunksg[*ci]) / (gint)chunksg[*ci] ) * (gint)chunksg[*ci] );
-  else
-    *new_min = (gdouble) ( ( (gint)mina / (gint)chunksg[*ci] ) * (gint)chunksg[*ci] );
-
-  // Range not big enough - as new minimum has lowered
-  if ((*new_min + (chunksg[*ci] * LINES) < maxa)) {
-    // Next chunk should cover it
-    if ( *ci < sizeof(chunksg)/sizeof(chunksg[0]) ) {
-      (*ci)++;
-      // Remember to adjust the minimum too...
-      if ( mina < 0 )
-	*new_min = (gdouble) ( ( (gint)(mina - chunksg[*ci]) / (gint)chunksg[*ci] ) * (gint)chunksg[*ci] );
-      else
-	*new_min = (gdouble) ( ( (gint)mina / (gint)chunksg[*ci] ) * (gint)chunksg[*ci] );
-    }
-  }
-}
-
-/**
- * Returns via pointers:
- *   the new minimum value to be used for the appropriate graph
- *   the index in to that array (ci = Chunk Index)
- */
-static void get_new_min_and_chunk_index (gdouble mins, gdouble maxs, const gdouble *chunks, size_t chunky, gdouble *new_min, gint *ci)
-{
-  *ci = 0;
-  gdouble diff_chunk = (maxs - mins)/LINES;
+  gdouble diff_chunk = (maxa - mina)/LINES;
 
   /* Loop through to find best match */
   while (diff_chunk > chunks[*ci]) {
     (*ci)++;
     /* Last Resort Check */
-    if ( *ci == chunky )
+    if ( *ci == chunky ) {
+      // Use previous value and exit loop
+      (*ci)--;
       break;
+    }
   }
-  *new_min = (gdouble) ( (gint)((mins / chunks[*ci] ) * chunks[*ci]) );
 
-  // Speeds are never negative so don't need to worry about a negative new minimum
+  /* Ensure adjusted minimum .. maximum covers mina->maxa */
+
+  // Now work out adjusted minimum point to the nearest lowest chunk divisor value
+  // When negative ensure logic uses lowest value
+  if ( mina < 0 )
+    *new_min = (gdouble) ( (gint)((mina - chunks[*ci]) / chunks[*ci]) * chunks[*ci] );
+  else
+    *new_min = (gdouble) ( (gint)(mina / chunks[*ci]) * chunks[*ci] );
+
+  // Range not big enough - as new minimum has lowered
+  if ((*new_min + (chunks[*ci] * LINES) < maxa)) {
+    // Next chunk should cover it
+    if ( *ci < chunky-1 ) {
+      (*ci)++;
+      // Remember to adjust the minimum too...
+      if ( mina < 0 )
+        *new_min = (gdouble) ( (gint)((mina - chunks[*ci]) / chunks[*ci]) * chunks[*ci] );
+      else
+        *new_min = (gdouble) ( (gint)(mina / chunks[*ci]) * chunks[*ci] );
+    }
+  }
 }
 
 static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
@@ -1275,7 +1217,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
   minmax_array(widgets->altitudes, &widgets->min_altitude, &widgets->max_altitude, TRUE, widgets->profile_width);
 
-  get_new_min_and_chunk_index_altitude (widgets->min_altitude, widgets->max_altitude, &widgets->draw_min_altitude, &widgets->cia);
+  get_new_min_and_chunk_index (widgets->min_altitude, widgets->max_altitude, chunksa, G_N_ELEMENTS(chunksa), &widgets->draw_min_altitude, &widgets->cia);
 
   // Assign locally
   mina = widgets->draw_min_altitude;
@@ -1439,7 +1381,7 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
 
   minmax_array(widgets->gradients, &widgets->min_gradient, &widgets->max_gradient, TRUE, widgets->profile_width);
 
-  get_new_min_and_chunk_index_gradient (widgets->min_gradient, widgets->max_gradient, &widgets->draw_min_gradient, &widgets->cig);
+  get_new_min_and_chunk_index (widgets->min_gradient, widgets->max_gradient, chunksg, G_N_ELEMENTS(chunksg), &widgets->draw_min_gradient, &widgets->cig);
 
   // Assign locally
   mina = widgets->draw_min_gradient;
@@ -1563,7 +1505,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     widgets->min_speed = 0; /* splines sometimes give negative speeds */
 
   /* Find suitable chunk index */
-  get_new_min_and_chunk_index (widgets->min_speed, widgets->max_speed, chunkss, sizeof(chunkss)/sizeof(chunkss[0]), &widgets->draw_min_speed, &widgets->cis);
+  get_new_min_and_chunk_index (widgets->min_speed, widgets->max_speed, chunkss, G_N_ELEMENTS(chunkss), &widgets->draw_min_speed, &widgets->cis);
 
   // Assign locally
   mins = widgets->draw_min_speed;
@@ -1711,7 +1653,7 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   /* Find suitable chunk index */
   gdouble dummy = 0.0; // expect this to remain the same! (not that it's used)
-  get_new_min_and_chunk_index (0, maxd, chunksd, sizeof(chunksd)/sizeof(chunksd[0]), &dummy, &widgets->cid);
+  get_new_min_and_chunk_index (0, maxd, chunksd, G_N_ELEMENTS(chunksd), &dummy, &widgets->cid);
 
   /* clear the image */
   gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
@@ -1806,7 +1748,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   minmax_array(widgets->ats, &widgets->min_altitude, &widgets->max_altitude, TRUE, widgets->profile_width);
 
-  get_new_min_and_chunk_index_altitude (widgets->min_altitude, widgets->max_altitude, &widgets->draw_min_altitude_time, &widgets->ciat);
+  get_new_min_and_chunk_index (widgets->min_altitude, widgets->max_altitude, chunksa, G_N_ELEMENTS(chunksa), &widgets->draw_min_altitude_time, &widgets->ciat);
 
   // Assign locally
   mina = widgets->draw_min_altitude_time;
@@ -1940,7 +1882,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     widgets->min_speed = 0; /* splines sometimes give negative speeds */
 
   /* Find suitable chunk index */
-  get_new_min_and_chunk_index (widgets->min_speed, widgets->max_speed_dist, chunkss, sizeof(chunkss)/sizeof(chunkss[0]), &widgets->draw_min_speed, &widgets->cisd);
+  get_new_min_and_chunk_index (widgets->min_speed, widgets->max_speed_dist, chunkss, G_N_ELEMENTS(chunkss), &widgets->draw_min_speed, &widgets->cisd);
 
   // Assign locally
   mins = widgets->draw_min_speed;
