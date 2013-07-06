@@ -35,7 +35,6 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include <zlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef HAVE_UNISTD_H
@@ -45,6 +44,7 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
+#include "compression.h"
 #include "dem.h"
 #include "file.h"
 
@@ -251,80 +251,6 @@ static void dem_parse_block ( gchar *buffer, VikDEM *dem, gint *cur_column, gint
   }
 }
 
-/* return size of unzip data or 0 if failed */
-/* can be made generic to uncompress zip, gzip, bzip2 data */
-static guint uncompress_data(void *uncompressed_buffer, guint uncompressed_size, void *compressed_data, guint compressed_size)
-{
-	z_stream stream;
-	int err;
-
-	stream.next_in = compressed_data;
-	stream.avail_in = compressed_size;
-	stream.next_out = uncompressed_buffer;
-	stream.avail_out = uncompressed_size;
-	stream.zalloc = (alloc_func)0;
-	stream.zfree = (free_func)0;
-	stream.opaque = (voidpf)0;
-
-	/* negative windowBits to inflateInit2 means "no header" */
-	if ((err = inflateInit2(&stream, -MAX_WBITS)) != Z_OK) {
-		g_warning("%s(): inflateInit2 failed", __PRETTY_FUNCTION__);
-		return 0;
-	}
-
-	err = inflate(&stream, Z_FINISH);
-	if ((err != Z_OK) && (err != Z_STREAM_END) && stream.msg) {
-		g_warning("%s() inflate failed err=%d \"%s\"", __PRETTY_FUNCTION__, err, stream.msg == NULL ? "unknown" : stream.msg);
-		inflateEnd(&stream);
-		return 0;
-	}
-
-	inflateEnd(&stream);
-	return(stream.total_out);
-}
-
-static void *unzip_hgt_file(gchar *zip_file, gulong *unzip_size)
-{
-	void *unzip_data = NULL;
-	gchar *zip_data;
-	struct _lfh {
-		guint32 sig;
-		guint16 extract_version;
-		guint16 flags;
-		guint16 comp_method;
-		guint16 time;
-		guint16 date;
-		guint32 crc_32;
-		guint32 compressed_size;
-		guint32 uncompressed_size;
-		guint16 filename_len;
-		guint16 extra_field_len;
-	}  __attribute__ ((__packed__)) *local_file_header = NULL;
-
-
-	local_file_header = (struct _lfh *) zip_file;
-	if (GUINT32_FROM_LE(local_file_header->sig) != 0x04034b50) {
-		g_warning("%s(): wrong format", __PRETTY_FUNCTION__);
-		g_free(unzip_data);
-		goto end;
-	}
-
-	zip_data = zip_file + sizeof(struct _lfh)
-		+ GUINT16_FROM_LE(local_file_header->filename_len)
-		+ GUINT16_FROM_LE(local_file_header->extra_field_len);
-	gulong uncompressed_size = GUINT32_FROM_LE(local_file_header->uncompressed_size);
-	unzip_data = g_malloc(uncompressed_size);
-
-	if (!(*unzip_size = uncompress_data(unzip_data, uncompressed_size, zip_data, GUINT32_FROM_LE(local_file_header->compressed_size)))) {
-		g_free(unzip_data);
-		unzip_data = NULL;
-		goto end;
-	}
-
-end:
-	return(unzip_data);
-}
-
 static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basename, gboolean zip)
 {
   gint i, j;
@@ -371,7 +297,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
     void *unzip_mem = NULL;
     gulong ucsize;
 
-    if ((unzip_mem = unzip_hgt_file(dem_file, &ucsize)) == NULL) {
+    if ((unzip_mem = unzip_file(dem_file, &ucsize)) == NULL) {
       g_mapped_file_unref(mf);
       g_ptr_array_foreach ( dem->columns, (GFunc)g_free, NULL );
       g_ptr_array_free(dem->columns, TRUE);

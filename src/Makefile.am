@@ -49,6 +49,7 @@ libviking_a_SOURCES = \
 	bbox.h \
 	modules.h modules.c \
 	curl_download.c curl_download.h \
+	compression.c compression.h \
 	menu.xml.h \
     degrees_converters.c degrees_converters.h \
 	globals.c globals.h \
