@@ -299,8 +299,8 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
 
   gchar lat_buf[32], lon_buf[32];
   lat_buf[0] = lon_buf[0] = '\0';
-  gchar *country;
-  gchar *city;
+  gchar *country = NULL;
+  gchar *city = NULL;
 
   if ((mf = g_mapped_file_new(tmpname, FALSE, NULL)) == NULL) {
     g_critical(_("couldn't map temp file"));
