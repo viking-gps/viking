@@ -1184,6 +1184,35 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
 }
 
 /**
+ * draw_grid:
+ *
+ * A common way to draw the grid with y axis labels
+ *
+ */
+static void draw_grid ( GtkWidget *window, GtkWidget *image, PropWidgets *widgets, GdkPixmap *pix, gchar *ss, gint i )
+{
+  PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
+
+  pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
+  pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
+
+  gchar *label_markup = g_strdup_printf ( "<span size=\"small\">%s</span>", ss );
+  pango_layout_set_markup ( pl, label_markup, -1 );
+  g_free ( label_markup );
+
+  int w, h;
+  pango_layout_get_pixel_size ( pl, &w, &h );
+
+  gdk_draw_layout ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
+                    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl );
+
+  gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
+                  MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i );
+  g_object_unref ( G_OBJECT ( pl ) );
+  pl = NULL;
+}
+
+/**
  * Draw just the height profile image
  */
 static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
@@ -1241,12 +1270,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
-    int w, h;
-
-    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
@@ -1260,15 +1284,8 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
       sprintf(s, "--");
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
-    pango_layout_set_text(pl, s, -1);
-    pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
-		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
-    g_object_unref ( G_OBJECT ( pl ) );
-    pl = NULL;
+    draw_grid ( window, image, widgets, pix, s, i );
   }
 
   /* draw elevations */
@@ -1400,23 +1417,11 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
   
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
-    int w, h;
-
-    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     sprintf(s, "%8d%%", (int)(mina + (LINES-i)*chunksg[widgets->cig]));
-    pango_layout_set_text(pl, s, -1);
-    pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
-		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
-    g_object_unref ( G_OBJECT ( pl ) );
-    pl = NULL;
+    draw_grid ( window, image, widgets, pix, s, i );
   }
 
   /* draw gradients */
@@ -1518,12 +1523,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
-    int w, h;
-
-    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     // NB: No need to convert here anymore as numbers are in the appropriate units
     switch (speed_units) {
@@ -1544,15 +1544,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
     }
 
-    pango_layout_set_text(pl, s, -1);
-    pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
-		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
-
-    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
-    g_object_unref ( G_OBJECT ( pl ) );
-    pl = NULL;
+    draw_grid ( window, image, widgets, pix, s, i );
   }
   
 
@@ -1663,27 +1655,14 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
-    int w, h;
-
-    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     if ( dist_units == VIK_UNITS_DISTANCE_MILES )
       sprintf(s, _("%.1f miles"), ((LINES-i)*chunksd[widgets->cid]));
     else
       sprintf(s, _("%.1f km"), ((LINES-i)*chunksd[widgets->cid]));
 
-    pango_layout_set_text(pl, s, -1);
-    pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
-		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
-
-    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
-    g_object_unref ( G_OBJECT ( pl ) );
-    pl = NULL;
+    draw_grid ( window, image, widgets, pix, s, i );
   }
   
   /* draw distance */
@@ -1767,12 +1746,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
-    int w, h;
-
-    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
@@ -1786,15 +1760,8 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
       sprintf(s, "--");
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
-    pango_layout_set_text(pl, s, -1);
-    pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
-		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
 
-    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
-    g_object_unref ( G_OBJECT ( pl ) );
-    pl = NULL;
+    draw_grid ( window, image, widgets, pix, s, i );
   }
 
   /* draw elevations */
@@ -1895,12 +1862,7 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   /* draw grid */
   for (i=0; i<=LINES; i++) {
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
     gchar s[32];
-    int w, h;
-
-    pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
 
     // NB: No need to convert here anymore as numbers are in the appropriate units
     switch (speed_units) {
@@ -1921,17 +1883,8 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
     }
 
-    pango_layout_set_text(pl, s, -1);
-    pango_layout_get_pixel_size (pl, &w, &h);
-    gdk_draw_layout(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0], MARGIN-w-3,
-		    CLAMP((int)i*widgets->profile_height/LINES - h/2, 0, widgets->profile_height-h), pl);
-
-    gdk_draw_line (GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-		   MARGIN, widgets->profile_height/LINES * i, MARGIN + widgets->profile_width, widgets->profile_height/LINES * i);
-    g_object_unref ( G_OBJECT ( pl ) );
-    pl = NULL;
+    draw_grid ( window, image, widgets, pix, s, i );
   }
-  
 
   /* draw speeds */
   for ( i = 0; i < widgets->profile_width; i++ )
