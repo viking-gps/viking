@@ -6897,12 +6897,31 @@ static void trw_layer_analyse_close ( GtkWidget *dialog, gint resp, VikLayer* vl
 }
 
 /**
- * trw_layer_analyse_create_list:
+ * vik_trw_layer_build_track_list_t:
+ *
+ * Helper function to construct a list of #vik_trw_track_list_t
+ */
+GList *vik_trw_layer_build_track_list_t ( VikTrwLayer *vtl, GList *tracks )
+{
+  GList *tracks_and_layers = NULL;
+  // build tracks_and_layers list
+  while ( tracks ) {
+    vik_trw_track_list_t *vtdl = g_malloc (sizeof(vik_trw_track_list_t));
+    vtdl->trk = VIK_TRACK(tracks->data);
+    vtdl->vtl = vtl;
+    tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );
+    tracks = g_list_next ( tracks );
+  }
+  return tracks_and_layers;
+}
+
+/**
+ * trw_layer_create_track_list:
  *
  * Create the latest list of tracks with the associated layer(s)
  *  Although this will always be from a single layer here
  */
-static GList* trw_layer_analyse_create_list ( VikLayer *vl, gpointer user_data )
+static GList* trw_layer_create_track_list ( VikLayer *vl, gpointer user_data )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(vl);
   GList *tracks = NULL;
@@ -6911,18 +6930,7 @@ static GList* trw_layer_analyse_create_list ( VikLayer *vl, gpointer user_data )
   else
     tracks = g_hash_table_get_values ( vik_trw_layer_get_routes(vtl) );
 
-  GList *tracks_and_layers = NULL;
-  // build tracks_and_layers list
-  tracks = g_list_first ( tracks );
-  while ( tracks ) {
-    vik_trw_track_list_t *vtdl = g_malloc (sizeof(vik_trw_track_list_t));
-    vtdl->trk = VIK_TRACK(tracks->data);
-    vtdl->vtl = vtl;
-    tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );
-    tracks = g_list_next ( tracks );
-  }
-
-  return tracks_and_layers;
+  return vik_trw_layer_build_track_list_t ( vtl, tracks );
 }
 
 static void trw_layer_tracks_stats ( gpointer lav[2] )
@@ -6936,7 +6944,7 @@ static void trw_layer_tracks_stats ( gpointer lav[2] )
                                                              VIK_LAYER(vtl)->name,
                                                              VIK_LAYER(vtl),
                                                              GINT_TO_POINTER(VIK_TRW_LAYER_SUBLAYER_TRACKS),
-                                                             trw_layer_analyse_create_list,
+                                                             trw_layer_create_track_list,
                                                              trw_layer_analyse_close );
 }
 
@@ -6954,7 +6962,7 @@ static void trw_layer_routes_stats ( gpointer lav[2] )
                                                              VIK_LAYER(vtl)->name,
                                                              VIK_LAYER(vtl),
                                                              GINT_TO_POINTER(VIK_TRW_LAYER_SUBLAYER_ROUTES),
-                                                             trw_layer_analyse_create_list,
+                                                             trw_layer_create_track_list,
                                                              trw_layer_analyse_close );
 }
 

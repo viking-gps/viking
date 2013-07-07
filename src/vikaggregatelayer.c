@@ -446,13 +446,13 @@ static void aggregate_layer_sort_z2a ( gpointer lav[2] )
 }
 
 /**
- * aggregate_layer_analyse_create_list:
+ * aggregate_layer_track_create_list:
  * @vl:        The layer that should create the track and layers list
  * @user_data: Not used in this function
  *
  * Returns: A list of #vik_trw_track_list_t
  */
-static GList* aggregate_layer_analyse_create_list ( VikLayer *vl, gpointer user_data )
+static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_data )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(vl);
 
@@ -460,7 +460,7 @@ static GList* aggregate_layer_analyse_create_list ( VikLayer *vl, gpointer user_
   GList *layers = NULL;
   layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
 
-  // For each TRW layers keep appending the tracks and routes to build a list of all of them
+  // For each TRW layers keep adding the tracks and routes to build a list of all of them
   GList *tracks_and_layers = NULL;
   layers = g_list_first ( layers );
   while ( layers ) {
@@ -468,15 +468,8 @@ static GList* aggregate_layer_analyse_create_list ( VikLayer *vl, gpointer user_
     tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) ) );
     tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_routes( VIK_TRW_LAYER(layers->data) ) ) );
 
-    GList *trks = g_list_first (tracks);
-    while ( trks ) {
-      vik_trw_track_list_t *vtdl = g_malloc (sizeof(vik_trw_track_list_t));
-      vtdl->trk = VIK_TRACK(trks->data);
-      vtdl->vtl = VIK_TRW_LAYER(layers->data);
-      tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );
-      trks = g_list_next ( trks );
-    }
-    g_list_free ( tracks );
+    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
+
     layers = g_list_next ( layers );
   }
   g_list_free ( layers );
@@ -508,7 +501,7 @@ static void aggregate_layer_analyse ( gpointer data[2] )
                                                              VIK_LAYER(val)->name,
                                                              VIK_LAYER(val),
                                                              NULL,
-                                                             aggregate_layer_analyse_create_list,
+                                                             aggregate_layer_track_create_list,
                                                              aggregate_layer_analyse_close );
 }
 

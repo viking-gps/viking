@@ -28,7 +28,6 @@
 
 G_BEGIN_DECLS
 typedef void (*VikTrwlayerAnalyseCloseFunc) (GtkWidget*, gint, VikLayer*);
-typedef GList* (*VikTrwlayerGetTracksAndLayersFunc) (VikLayer*, gpointer);
 
 GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
                                         const gchar *name,

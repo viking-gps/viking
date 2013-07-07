@@ -103,6 +103,9 @@ typedef struct {
   VikTrwLayer *vtl;
 } vik_trw_track_list_t;
 
+typedef GList* (*VikTrwlayerGetTracksAndLayersFunc) (VikLayer*, gpointer);
+GList *vik_trw_layer_build_track_list_t ( VikTrwLayer *vtl, GList *tracks );
+
 /* Exposed Layer Interface function definitions */
 // Intended only for use by other trw_layer subwindows
 void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
