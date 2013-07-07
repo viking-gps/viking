@@ -267,6 +267,38 @@ case $ac_cv_enable_realtimegpstracking in
 esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])
 
+# BZIP2
+AC_ARG_ENABLE(bz2, AC_HELP_STRING([--enable-bzip2],
+	      [enable bzip2 Support (default is enable).]),
+              [ac_cv_enable_bzip2=$enableval],
+              [ac_cv_enable_bzip2=yes])
+AC_CACHE_CHECK([whether to enable bzip2 Support],
+               [ac_cv_enable_bzip2], [ac_cv_enable_bzip2=yes])
+case $ac_cv_enable_bzip2 in
+  yes)
+    AC_CHECK_HEADERS([bzlib.h],[],[AC_MSG_ERROR([bzlib.h is needed but not found - you will need to install package 'libbz2-dev' or similar. The feature can be disabled with --disable-bzip2])])
+    AC_CHECK_LIB(bz2, BZ2_bzBuffToBuffDecompress, [], [AC_MSG_ERROR([libbz2 is needed but not found.])])
+    ;;
+esac
+AM_CONDITIONAL([BZIP2], [test x$ac_cv_enable_bzip2 = xyes])
+
+# FILE MAGIC
+AC_ARG_ENABLE(magic, AC_HELP_STRING([--enable-magic],
+	      [enable File Magic support via libmagic (default is enable).]),
+              [ac_cv_enable_magic=$enableval],
+              [ac_cv_enable_magic=yes])
+AC_CACHE_CHECK([whether to enable Magic Support],
+               [ac_cv_enable_magic], [ac_cv_enable_magic=yes])
+case $ac_cv_enable_magic in
+  yes)
+    AC_CHECK_HEADERS([magic.h],[],[AC_MSG_ERROR([magic.h is needed but not found - you will need to install package 'libmagic-dev' or similar. The feature can be disabled with --disable-magic])])
+    AC_CHECK_LIB(magic, magic_open, [], [AC_MSG_ERROR([libmagic is needed but not found.])])
+    ;;
+esac
+AM_CONDITIONAL([MAGIC], [test x$ac_cv_enable_magic = xyes])
+
+###
+
 AC_ARG_WITH(search,
             [AC_HELP_STRING([--with-search],
                             [specify google or geonames for searching (default is google)])],
@@ -372,6 +404,8 @@ echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "Geotag Support                   : $ac_cv_enable_geotag"
 echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
 echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
+echo "bzip2 Support                    : $ac_cv_enable_bzip2"
+echo "File Magic Support               : $ac_cv_enable_magic"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
 echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"
 echo "Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})"

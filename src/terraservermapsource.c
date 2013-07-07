@@ -36,7 +36,7 @@ static gchar *_get_hostname( VikMapSourceDefault *self );
 static DownloadMapOptions *_get_download_options( VikMapSourceDefault *self );
 
 /* FIXME Huge gruik */
-static DownloadMapOptions terraserver_options = { FALSE, FALSE, NULL, 0, a_check_map_file };
+static DownloadMapOptions terraserver_options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL };
 
 typedef struct _TerraserverMapSourcePrivate TerraserverMapSourcePrivate;
 struct _TerraserverMapSourcePrivate

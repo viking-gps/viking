@@ -568,7 +568,8 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 
 	gchar *user_pass = osm_get_login();
 
-	DownloadMapOptions options = { FALSE, FALSE, NULL, 2, NULL, user_pass }; // Allow a couple of redirects
+	// Support .zip + bzip2 files directly
+	DownloadMapOptions options = { FALSE, FALSE, NULL, 2, NULL, user_pass, a_try_decompress_file }; // Allow a couple of redirects
 
 	xml_data *xd = g_malloc ( sizeof (xml_data) );
 	//xd->xpath = g_string_new ( "" );

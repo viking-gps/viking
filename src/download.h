@@ -32,6 +32,9 @@ typedef gboolean (*VikFileContentCheckerFunc) (FILE*);
 gboolean a_check_map_file(FILE*);
 gboolean a_check_html_file(FILE*);
 gboolean a_check_kml_file(FILE*);
+// Convert
+void a_try_decompress_file (gchar *name);
+typedef void (*VikFileContentConvertFunc) (gchar*); // filename (temporary)
 
 typedef struct {
   /**
@@ -67,6 +70,11 @@ typedef struct {
    *  format: 'username:password'
    */
   gchar *user_pass;
+
+  /**
+   * File manipulation if necessary such as uncompressing the downloaded file.
+   */
+  VikFileContentConvertFunc convert_file;
 
 } DownloadMapOptions;
 

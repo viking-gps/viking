@@ -30,12 +30,16 @@
 #include <zlib.h>
 #endif
 
-#include "compression.h"
+#ifdef HAVE_BZLIB_H
+#include <bzlib.h>
+#endif
 
+#include "compression.h"
+#include <gio/gio.h>
+#include <glib/gstdio.h>
 
 #ifdef HAVE_LIBZ
 /* return size of unzip data or 0 if failed */
-/* can be made generic to uncompress zip, gzip, bzip2 data */
 static guint uncompress_data(void *uncompressed_buffer, guint uncompressed_size, void *compressed_data, guint compressed_size)
 {
 	z_stream stream;
@@ -120,3 +124,66 @@ end:
 	return(unzip_data);
 }
 
+/**
+ * uncompress_bzip2:
+ * @name: The name of the file to attempt to decompress
+ *
+ * Returns: The name of the uncompressed file (in a temporary location) or NULL
+ *   free the returned name after use.
+ *
+ * Also see: http://www.bzip.org/1.0.5/bzip2-manual-1.0.5.html
+ */
+gchar* uncompress_bzip2 ( gchar *name )
+{
+#ifdef HAVE_BZLIB_H
+	FILE *ff = g_fopen ( name, "r" );
+	if ( !ff )
+		return NULL;
+
+	int     bzerror;
+	BZFILE* bf = BZ2_bzReadOpen ( &bzerror, ff, 0, 0, NULL, 0 ); // This should take care of the bz2 file header
+	if ( bzerror != BZ_OK ) {
+		BZ2_bzReadClose ( &bzerror, bf );
+		// handle error
+		return NULL;
+	}
+
+	GFileIOStream *gios;
+	GError *error = NULL;
+	GFile *gf = g_file_new_tmp ( "vik-bz2-tmp.XXXXXX", &gios, &error );
+	gchar *tmpname = g_file_get_path (gf);
+
+	GOutputStream *gos = g_io_stream_get_output_stream ( G_IO_STREAM(gios) );
+
+	// Process in arbitary sized chunks
+	char buf[4096];
+	bzerror = BZ_OK;
+	int nBuf;
+	// Now process the actual compression data
+	while ( bzerror == BZ_OK ) {
+		nBuf = BZ2_bzRead ( &bzerror, bf, buf, 4096 );
+		if ( bzerror == BZ_OK || bzerror == BZ_STREAM_END) {
+			// do something with buf[0 .. nBuf-1]
+			if ( g_output_stream_write ( gos, buf, nBuf, NULL, &error ) < 0 ) {
+				g_critical ( "Couldn't write bz2 tmp %s file due to %s", tmpname, error->message );
+				g_error_free (error);
+				BZ2_bzReadClose ( &bzerror, bf );
+				goto end;
+			}
+		}
+	}
+	if ( bzerror != BZ_STREAM_END ) {
+		BZ2_bzReadClose ( &bzerror, bf );
+		// handle error...
+		goto end;
+	} else {
+		BZ2_bzReadClose ( &bzerror, bf );
+		g_output_stream_close ( gos, NULL, &error );
+	}
+
+ end:
+	return tmpname;
+#else
+	return NULL;
+#endif
+}
