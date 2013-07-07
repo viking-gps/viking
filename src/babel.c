@@ -332,7 +332,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
 gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data, DownloadMapOptions *options )
 {
   // If no download options specified, use defaults:
-  DownloadMapOptions myoptions = { FALSE, FALSE, NULL, 0, NULL, NULL };
+  DownloadMapOptions myoptions = { FALSE, FALSE, NULL, 2, NULL, NULL };
   if ( options )
     myoptions = *options;
   gint fd_src;
