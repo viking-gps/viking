@@ -626,7 +626,6 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 				vik_layer_rename ( VIK_LAYER ( vtlX ), ((gpx_meta_data_t*)selected_iterator->data)->name );
 			else
 				vik_layer_rename ( VIK_LAYER ( vtlX ), _("My OSM Traces") );
-			vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer (adw->vlp), VIK_LAYER(vtlX), TRUE );
 		}
 
 		result = FALSE;
@@ -645,9 +644,11 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 		}
 
 		if ( result ) {
+			// Can use the layer
+			vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer (adw->vlp), VIK_LAYER(vtlX), TRUE );
 			// Move to area of the track
-			vik_trw_layer_auto_set_view ( vtlX, vik_window_viewport(adw->vw) );
 			vik_layer_post_read ( VIK_LAYER(vtlX), vik_window_viewport(adw->vw), TRUE );
+			vik_trw_layer_auto_set_view ( vtlX, vik_window_viewport(adw->vw) );
 			vtl_last = vtlX;
 		}
 		else if ( create_new_layer ) {
