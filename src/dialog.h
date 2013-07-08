@@ -41,7 +41,7 @@ G_BEGIN_DECLS
 #define a_dialog_info_msg_extra(win,info,extra) a_dialog_msg(win,GTK_MESSAGE_INFO,info,extra)
 #define a_dialog_error_msg_extra(win,info,extra) a_dialog_msg(win,GTK_MESSAGE_ERROR,info,extra)
 
-GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count );
+GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count, gint spacing, gint padding );
 
 void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar *extra );
 

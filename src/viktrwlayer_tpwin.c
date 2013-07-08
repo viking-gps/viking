@@ -158,7 +158,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   */
 
   /* main track info */
-  left_vbox = a_dialog_create_label_vbox ( left_label_texts, sizeof(left_label_texts) / sizeof(left_label_texts[0]) );
+  left_vbox = a_dialog_create_label_vbox ( left_label_texts, G_N_ELEMENTS(left_label_texts), 3, 5 );
 
   tpwin->track_name = GTK_LABEL(gtk_label_new(NULL));
   tpwin->ts = GTK_LABEL(gtk_label_new(NULL));
@@ -186,7 +186,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->localtime), FALSE, FALSE, 5 );
 
   /* diff info */
-  diff_left_vbox = a_dialog_create_label_vbox ( right_label_texts, sizeof(right_label_texts) / sizeof(right_label_texts[0]) );
+  diff_left_vbox = a_dialog_create_label_vbox ( right_label_texts, G_N_ELEMENTS(right_label_texts), 3, 5 );
 
   tpwin->diff_dist = GTK_LABEL(gtk_label_new(NULL));
   tpwin->diff_time = GTK_LABEL(gtk_label_new(NULL));

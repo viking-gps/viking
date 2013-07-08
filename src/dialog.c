@@ -547,17 +547,17 @@ gchar *a_dialog_new_track ( GtkWindow *parent, GHashTable *tracks, gchar *defaul
 }
 
 /* creates a vbox full of labels */
-GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count )
+GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count, gint spacing, gint padding )
 {
   GtkWidget *vbox, *label;
   int i;
-  vbox = gtk_vbox_new( TRUE, 3 );
+  vbox = gtk_vbox_new( TRUE, spacing );
 
   for ( i = 0; i < label_count; i++ )
   {
     label = gtk_label_new(NULL);
     gtk_label_set_markup ( GTK_LABEL(label), _(texts[i]) );
-    gtk_box_pack_start ( GTK_BOX(vbox), label, FALSE, TRUE, 5 );
+    gtk_box_pack_start ( GTK_BOX(vbox), label, FALSE, TRUE, padding );
   }
   return vbox;
 }
