@@ -6676,7 +6676,7 @@ static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl )
        if courses in degrees are 350 + 020, the mid course more likely to be 005 (not 185)
        [similar applies if value is in radians] */
     if (tp_current->course != NAN && tp_next->course != NAN)
-      tp_new->speed = (tp_current->course + tp_next->course)/2;
+      tp_new->course = (tp_current->course + tp_next->course)/2;
 
     /* DOP / sat values remain at defaults as not they do not seem applicable to a dreamt up point */
 
