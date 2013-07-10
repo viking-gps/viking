@@ -2511,7 +2511,7 @@ void vik_window_set_busy_cursor ( VikWindow *vw )
 {
   gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw)), vw->busy_cursor );
   // Viewport has a separate cursor
-  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->busy_cursor );
+  gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->busy_cursor );
   // Ensure cursor updated before doing stuff
   while( gtk_events_pending() )
     gtk_main_iteration();
@@ -2521,7 +2521,7 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
 {
   gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw)), NULL );
   // Restore viewport cursor
-  gdk_window_set_cursor ( GTK_WIDGET(vw->viking_vvp)->window, vw->viewport_cursor );
+  gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
 }
 
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename )
