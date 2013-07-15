@@ -291,6 +291,11 @@ void a_background_uninit()
   /* wait until all running threads stop */
   stop_all_threads = TRUE;
   g_thread_pool_free ( thread_pool, TRUE, TRUE );
+
+  gtk_list_store_clear ( bgstore );
+  g_object_unref ( bgstore );
+
+  gtk_widget_destroy ( bgwindow );
 }
 
 void a_background_add_window (VikWindow *vw)

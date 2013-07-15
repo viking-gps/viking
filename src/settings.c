@@ -81,7 +81,7 @@ void a_settings_uninit()
 	if ( error ) {
 		g_warning ( error->message );
 		g_error_free ( error );
-		return;
+		goto tidy;
 	}
 
 	g_file_set_contents ( fn, keyfilestr, size, &error );
@@ -91,6 +91,9 @@ void a_settings_uninit()
 	}
 
 	g_key_file_free ( keyfile );
+ tidy:
+	g_free ( keyfilestr );
+	g_free ( fn );
 }
 
 // ATM, can't see a point in having any more than one group for various settings

@@ -340,12 +340,14 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
 
 static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp);
+static void tool_edit_trackpoint_destroy ( tool_ed_t *t );
 static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
 static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp);
+static void tool_edit_waypoint_destroy ( tool_ed_t *t );
 static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
 static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
@@ -407,7 +409,9 @@ static VikToolInterface trw_layer_tools[] = {
     GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf },
 
   { { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
-    (VikToolConstructorFunc) tool_edit_waypoint_create,   NULL, NULL, NULL,
+    (VikToolConstructorFunc) tool_edit_waypoint_create,
+    (VikToolDestructorFunc) tool_edit_waypoint_destroy,
+    NULL, NULL,
     (VikToolMouseFunc) tool_edit_waypoint_click,   
     (VikToolMouseMoveFunc) tool_edit_waypoint_move,
     (VikToolMouseFunc) tool_edit_waypoint_release, (VikToolKeyFunc) NULL,
@@ -415,7 +419,9 @@ static VikToolInterface trw_layer_tools[] = {
     GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf },
 
   { { "EditTrackpoint", "vik-icon-Edit Trackpoint", N_("Edit Trac_kpoint"), "<control><shift>K", N_("Edit Trackpoint"), 0 },
-    (VikToolConstructorFunc) tool_edit_trackpoint_create, NULL, NULL, NULL,
+    (VikToolConstructorFunc) tool_edit_trackpoint_create,
+    (VikToolDestructorFunc) tool_edit_trackpoint_destroy,
+    NULL, NULL,
     (VikToolMouseFunc) tool_edit_trackpoint_click,
     (VikToolMouseMoveFunc) tool_edit_trackpoint_move,
     (VikToolMouseFunc) tool_edit_trackpoint_release, (VikToolKeyFunc) NULL,
@@ -7934,6 +7940,11 @@ static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp)
   return t;
 }
 
+static void tool_edit_waypoint_destroy ( tool_ed_t *t )
+{
+  g_free ( t );
+}
+
 static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
 {
   WPSearchParams params;
@@ -8513,6 +8524,11 @@ static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp)
   t->vvp = vvp;
   t->holding = FALSE;
   return t;
+}
+
+static void tool_edit_trackpoint_destroy ( tool_ed_t *t )
+{
+  g_free ( t );
 }
 
 static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )

@@ -365,6 +365,7 @@ void a_layer_defaults_init()
 void a_layer_defaults_uninit()
 {
 	g_key_file_free ( keyfile );	
+	g_ptr_array_foreach ( paramsVD, (GFunc)g_free, NULL );
 	g_ptr_array_free ( paramsVD, TRUE );
 }
 

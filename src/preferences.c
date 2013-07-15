@@ -51,6 +51,7 @@ static void preferences_groups_init()
 
 static void preferences_groups_uninit()
 {
+  g_ptr_array_foreach ( groups_names, (GFunc)g_free, NULL );
   g_ptr_array_free ( groups_names, TRUE );
   g_hash_table_destroy ( groups_keys_to_indices );
 }
@@ -227,6 +228,7 @@ void a_preferences_uninit()
 {
   preferences_groups_uninit();
 
+  g_ptr_array_foreach ( params, (GFunc)g_free, NULL );
   g_ptr_array_free ( params, TRUE );
   g_hash_table_destroy ( values );
 }

@@ -506,6 +506,12 @@ static void window_finalize ( GObject *gob )
   window_list = g_slist_remove ( window_list, vw );
 
   gdk_cursor_unref ( vw->busy_cursor );
+  int tt;
+  for (tt = 0; tt < vw->vt->n_tools; tt++ )
+    if ( vw->vt->tools[tt].ti.destroy )
+      vw->vt->tools[tt].ti.destroy ( vw->vt->tools[tt].state );
+  g_free ( vw->vt->tools );
+  g_free ( vw->vt );
 
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
