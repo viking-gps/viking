@@ -1263,7 +1263,11 @@ static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
 static void trw_layer_free ( VikTrwLayer *trwlayer )
 {
   g_hash_table_destroy(trwlayer->waypoints);
+  g_hash_table_destroy(trwlayer->waypoints_iters);
   g_hash_table_destroy(trwlayer->tracks);
+  g_hash_table_destroy(trwlayer->tracks_iters);
+  g_hash_table_destroy(trwlayer->routes);
+  g_hash_table_destroy(trwlayer->routes_iters);
 
   /* ODC: replace with GArray */
   trw_layer_free_track_gcs ( trwlayer );
