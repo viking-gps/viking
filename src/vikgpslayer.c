@@ -1485,7 +1485,8 @@ static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
   if ( vgl->realtime_fix.fix.latitude > lse.lat &&
        vgl->realtime_fix.fix.latitude < lnw.lat &&
        vgl->realtime_fix.fix.longitude > lnw.lon &&
-       vgl->realtime_fix.fix.longitude < lse.lon ) {
+       vgl->realtime_fix.fix.longitude < lse.lon &&
+       !isnan (vgl->realtime_fix.fix.track) ) {
     VikCoord gps;
     gint x, y;
     gint half_back_x, half_back_y;
@@ -1551,8 +1552,8 @@ static void create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forced)
 
     if (vgl->realtime_record && vgl->realtime_fix.dirty) {
       gboolean replace = FALSE;
-      int heading = (int)floor(vgl->realtime_fix.fix.track);
-      int last_heading = (int)floor(vgl->last_fix.fix.track);
+      int heading = isnan(vgl->realtime_fix.fix.track) ? 0 : (int)floor(vgl->realtime_fix.fix.track);
+      int last_heading = isnan(vgl->last_fix.fix.track) ? 0 : (int)floor(vgl->last_fix.fix.track);
       int alt = isnan(vgl->realtime_fix.fix.altitude) ? VIK_DEFAULT_ALTITUDE : floor(vgl->realtime_fix.fix.altitude);
       int last_alt = isnan(vgl->last_fix.fix.altitude) ? VIK_DEFAULT_ALTITUDE : floor(vgl->last_fix.fix.altitude);
       if (((last_tp = g_list_last(vgl->realtime_track->trackpoints)) != NULL) &&
@@ -1607,8 +1608,7 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
 
   if ((vgpsd->gpsd.fix.mode >= MODE_2D) &&
       !isnan(vgpsd->gpsd.fix.latitude) &&
-      !isnan(vgpsd->gpsd.fix.longitude) &&
-      !isnan(vgpsd->gpsd.fix.track)) {
+      !isnan(vgpsd->gpsd.fix.longitude)) {
 
     VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vgl));
     VikViewport *vvp = vik_window_viewport(vw);
