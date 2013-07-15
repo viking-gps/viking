@@ -56,6 +56,7 @@
 #include "datasource_gps.h"
 #include "vikexttool_datasources.h"
 #include "util.h"
+#include "vikutils.h"
 
 #include "vikrouting.h"
 
@@ -2327,52 +2328,30 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
   return NULL;
 }
 
-/*
- * Function to show basic track point information on the statusbar
+#define VIK_SETTINGS_TRKPT_SELECTED_STATUSBAR_FORMAT "trkpt_selected_statusbar_format"
+
+/**
+ * set_statusbar_msg_info_trkpt:
+ *
+ * Function to show track point information on the statusbar
+ *  Items displayed is controlled by the settings format code
  */
 static void set_statusbar_msg_info_trkpt ( VikTrwLayer *vtl, VikTrackpoint *trkpt )
 {
-  gchar tmp_buf1[64];
-  switch (a_vik_get_units_height ()) {
-  case VIK_UNITS_HEIGHT_FEET:
-    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Trkpt: Alt %dft"), (int)round(VIK_METERS_TO_FEET(trkpt->altitude)));
-    break;
-  default:
-    //VIK_UNITS_HEIGHT_METRES:
-    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Trkpt: Alt %dm"), (int)round(trkpt->altitude));
-  }
-  
-  gchar tmp_buf2[64];
-  tmp_buf2[0] = '\0';
-  if ( trkpt->has_timestamp ) {
-    // Compact date time format
-    strftime (tmp_buf2, sizeof(tmp_buf2), _(" | Time %x %X"), localtime(&(trkpt->timestamp)));
+  gchar *statusbar_format_code = NULL;
+  gboolean need2free = FALSE;
+  if ( !a_settings_get_string ( VIK_SETTINGS_TRKPT_SELECTED_STATUSBAR_FORMAT, &statusbar_format_code ) ) {
+    // Otherwise use default
+    statusbar_format_code = g_strdup ( "KATDN" );
+    need2free = TRUE;
   }
 
-  // Position part
-  // Position is put later on, as this bit may not be seen if the display is not big enough,
-  //   one can easily use the current pointer position to see this if needed
-  gchar *lat = NULL, *lon = NULL;
-  static struct LatLon ll;
-  vik_coord_to_latlon (&(trkpt->coord), &ll);
-  a_coords_latlon_to_string ( &ll, &lat, &lon );
-
-  // Track name
-  // Again is put later on, as this bit may not be seen if the display is not big enough
-  //  trackname can be seen from the treeview (when enabled)
-  // Also name could be very long to not leave room for anything else
-  gchar tmp_buf3[64];
-  tmp_buf3[0] = '\0';
-  if ( vtl->current_tp_track ) {
-    g_snprintf(tmp_buf3, sizeof(tmp_buf3),  _(" | Track: %s"), vtl->current_tp_track->name );
-  }
-
-  // Combine parts to make overall message
-  gchar *msg = g_strdup_printf (_("%s%s | %s %s %s"), tmp_buf1, tmp_buf2, lat, lon, tmp_buf3);
+  gchar *msg = vu_trackpoint_formatted_message ( statusbar_format_code, trkpt, NULL, vtl->current_tp_track );
   vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, msg );
-  g_free ( lat );
-  g_free ( lon );
   g_free ( msg );
+
+  if ( need2free )
+    g_free ( statusbar_format_code );
 }
 
 /*
