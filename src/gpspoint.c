@@ -228,28 +228,16 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       line_name = NULL;
 
       if ( line_comment )
-      {
         vik_waypoint_set_comment ( wp, line_comment );
-        line_comment = NULL;
-      }
 
       if ( line_description )
-      {
         vik_waypoint_set_description ( wp, line_description );
-        line_description = NULL;
-      }
 
       if ( line_image )
-      {
         vik_waypoint_set_image ( wp, line_image );
-        line_image = NULL;
-      }
 
       if ( line_symbol )
-      {
         vik_waypoint_set_symbol ( wp, line_symbol );
-	line_symbol = NULL;
-      }
     }
     else if ((line_type == GPSPOINT_TYPE_TRACK || line_type == GPSPOINT_TYPE_ROUTE) && line_name)
     {
@@ -263,16 +251,10 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       pl->is_route = (line_type == GPSPOINT_TYPE_ROUTE);
 
       if ( line_comment )
-      {
         vik_track_set_comment ( pl, line_comment );
-        line_comment = NULL;
-      }
 
       if ( line_description )
-      {
         vik_track_set_description ( pl, line_description );
-        line_description = NULL;
-      }
 
       if ( line_color )
       {
