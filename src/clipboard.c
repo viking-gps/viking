@@ -96,7 +96,7 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
     return;
   } 
   //  g_print("clip receive: target = %s, type = %s\n", gdk_atom_name(gtk_selection_data_get_target(sd), gdk_atom_name(sd->type));
-  g_assert(!strcmp(gdk_atom_name(gtk_selection_data_get_target(sd)), target_table[0].target));
+  //g_assert(!strcmp(gdk_atom_name(gtk_selection_data_get_target(sd)), target_table[0].target));
 
   vc = (vik_clipboard_t *)gtk_selection_data_get_data(sd);
   //  g_print("  sd->data = %p, sd->length = %d, vc->len = %d\n", sd->data, sd->length, vc->len);
@@ -317,19 +317,26 @@ void clip_receive_targets ( GtkClipboard *c, GdkAtom *a, gint n, gpointer p )
   gint i;
 
   for (i=0; i<n; i++) {
-    //g_print("  ""%s""\n", gdk_atom_name(a[i]));
-    if (!strcmp(gdk_atom_name(a[i]), "text/html")) {
+    gchar* name = gdk_atom_name(a[i]);
+    //g_print("  ""%s""\n", name);
+    gboolean breaktime = FALSE;
+    if (!g_strcmp0(name, "text/html")) {
       gtk_clipboard_request_contents ( c, gdk_atom_intern("text/html", TRUE), clip_receive_html, vlp );
-      break;
+      breaktime = TRUE;
     }
     if (a[i] == GDK_TARGET_STRING) {
       gtk_clipboard_request_text ( c, clip_receive_text, vlp );
-      break;
+      breaktime = TRUE;
     }
-    if (!strcmp(gdk_atom_name(a[i]), "application/viking")) {
+    if (!g_strcmp0(name, "application/viking")) {
       gtk_clipboard_request_contents ( c, gdk_atom_intern("application/viking", TRUE), clip_receive_viking, vlp );
-      break;
+      breaktime = TRUE;
     }
+
+    g_free ( name );
+
+    if ( breaktime )
+      break;
   }
 }
 
@@ -459,11 +466,18 @@ static void clip_determine_type ( GtkClipboard *c, GdkAtom *a, gint n, gpointer 
 {
   gint i;
   for (i=0; i<n; i++) {
-    // g_print("  ""%s""\n", gdk_atom_name(a[i]));
-    if (!strcmp(gdk_atom_name(a[i]), "application/viking")) {
+    gchar *name = gdk_atom_name(a[i]);
+    // g_print("  ""%s""\n", name);
+    gboolean breaktime = FALSE;
+    if (!g_strcmp0(name, "application/viking")) {
       gtk_clipboard_request_contents ( c, gdk_atom_intern("application/viking", TRUE), clip_determine_viking_type, p );
-      break;
+      breaktime = TRUE;
     }
+
+    g_free ( name );
+
+    if ( breaktime )
+      break;
   }
 }
 
