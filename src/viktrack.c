@@ -714,6 +714,8 @@ gdouble *vik_track_make_gradient_map ( const VikTrack *tr, guint16 num_chunks )
 
   pts[current_chunk] = current_gradient;
 
+  g_free ( altitudes );
+
   return pts;
 }
 
