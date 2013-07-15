@@ -7498,6 +7498,7 @@ static gboolean draw_sync ( gpointer data )
     ds->vtl->draw_sync_done = TRUE;
     gdk_threads_leave();
   }
+  g_free ( ds );
   return FALSE;
 }
 
