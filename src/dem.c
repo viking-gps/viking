@@ -373,6 +373,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
 
     if ((unzip_mem = unzip_hgt_file(dem_file, &ucsize)) == NULL) {
       g_mapped_file_unref(mf);
+      g_ptr_array_foreach ( dem->columns, (GFunc)g_free, NULL );
       g_ptr_array_free(dem->columns, TRUE);
       g_free(dem);
       return NULL;
@@ -508,6 +509,7 @@ void vik_dem_free ( VikDEM *dem )
   guint i;
   for ( i = 0; i < dem->n_columns; i++)
     g_free ( GET_COLUMN(dem, i)->points );
+  g_ptr_array_foreach ( dem->columns, (GFunc)g_free, NULL );
   g_ptr_array_free ( dem->columns, TRUE );
   g_free ( dem );
 }
