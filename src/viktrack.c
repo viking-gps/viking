@@ -1155,7 +1155,7 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdoub
     if (VIK_TRACKPOINT(iter->data)->timestamp > t_pos) {
       if (iter->prev == NULL)  /* first trackpoint */
         break;
-      time_t t_before = t_pos - VIK_TRACKPOINT(iter->prev)->timestamp;
+      time_t t_before = t_pos - VIK_TRACKPOINT(iter->prev->data)->timestamp;
       time_t t_after = VIK_TRACKPOINT(iter->data)->timestamp - t_pos;
       if (t_before <= t_after)
         iter = iter->prev;
