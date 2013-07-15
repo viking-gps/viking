@@ -747,6 +747,7 @@ void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_laye
   gint *positions = g_malloc ( sizeof(gdouble) * length );
   for ( ii = 0; ii < length; ii++ ) {
     positions[ii] = sort_array[ii].offset;
+    g_free ( sort_array[ii].name );
   }
   g_free ( sort_array );
 
