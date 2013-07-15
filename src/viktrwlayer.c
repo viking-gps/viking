@@ -873,6 +873,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
     name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, w->name);
     vik_trw_layer_add_waypoint ( vtl, name, w );
     waypoint_convert (NULL, w, &vtl->coord_mode);
+    g_free ( name );
 
     trw_layer_calculate_bounds_waypoints ( vtl );
 
@@ -890,6 +891,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
     name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, t->name);
     vik_trw_layer_add_track ( vtl, name, t );
     vik_track_convert (t, vtl->coord_mode);
+    g_free ( name );
 
     // Consider if redraw necessary for the new item
     if ( vtl->vl.visible && vtl->tracks_visible && t->visible )
@@ -905,6 +907,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
     name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, t->name);
     vik_trw_layer_add_route ( vtl, name, t );
     vik_track_convert (t, vtl->coord_mode);
+    g_free ( name );
 
     // Consider if redraw necessary for the new item
     if ( vtl->vl.visible && vtl->routes_visible && t->visible )
@@ -3278,6 +3281,7 @@ static void trw_layer_new_track ( gpointer lav[2] )
   if ( ! vtl->current_track ) {
     gchar *name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track")) ;
     new_track_create_common ( vtl, name );
+    g_free ( name );
 
     vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_TRACK );
   }
@@ -3301,6 +3305,7 @@ static void trw_layer_new_route ( gpointer lav[2] )
   if ( ! vtl->current_track ) {
     gchar *name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, _("Route")) ;
     new_route_create_common ( vtl, name );
+    g_free ( name );
     vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_CREATE_ROUTE );
   }
 }
@@ -3794,6 +3799,11 @@ void vik_trw_layer_reset_waypoints ( VikTrwLayer *vtl )
   }
 }
 
+/**
+ * trw_layer_new_unique_sublayer_name:
+ *
+ * Allocates a unique new name
+ */
 gchar *trw_layer_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type, const gchar *name)
 {
   gint i = 2;
@@ -3880,6 +3890,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
 
     VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_track ( vtl_dest, newname, trk2 );
+    g_free ( newname );
     vik_trw_layer_delete_track ( vtl_src, trk );
   }
 
@@ -3894,6 +3905,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
 
     VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_route ( vtl_dest, newname, trk2 );
+    g_free ( newname );
     vik_trw_layer_delete_route ( vtl_src, trk );
   }
 
@@ -3908,6 +3920,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
 
     VikWaypoint *wp2 = vik_waypoint_copy ( wp );
     vik_trw_layer_add_waypoint ( vtl_dest, newname, wp2 );
+    g_free ( newname );
     trw_layer_delete_waypoint ( vtl_src, wp );
 
     // Recalculate bounds even if not renamed as maybe dragged between layers
@@ -5264,6 +5277,7 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl, gint subt
 
       vik_layer_emit_update(VIK_LAYER(vtl));
     }
+    g_free ( name );
   }
 }
 
@@ -5339,8 +5353,8 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] )
       vik_trw_layer_add_track(vtl, new_tr_name, tr);
       /*    g_print("adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
 	  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp);*/
+      g_free ( new_tr_name );
       vik_track_calculate_bounds ( tr );
-
       iter = g_list_next(iter);
     }
     // Remove original track and then update the display
@@ -5426,6 +5440,7 @@ static void trw_layer_split_by_n_points ( gpointer pass_along[6] )
         new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, track->name);
         vik_trw_layer_add_track(vtl, new_tr_name, tr);
       }
+      g_free ( new_tr_name );
       vik_track_calculate_bounds ( tr );
 
       iter = g_list_next(iter);
@@ -5471,6 +5486,7 @@ static void trw_layer_split_segments ( gpointer pass_along[6] )
     if ( tracks[i] ) {
       new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, trk->name);
       vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
+      g_free ( new_tr_name );
     }
   }
   if ( tracks ) {
@@ -8458,6 +8474,7 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
     if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->tracks, name, FALSE ) ) )
     {
       new_track_create_common ( vtl, name );
+      g_free ( name );
     }
     else
       return TRUE;
@@ -8487,8 +8504,10 @@ static gboolean tool_new_route_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   if ( event->button == 1 && ( ! vtl->current_track || (vtl->current_track && !vtl->current_track->is_route ) ) )
   {
     gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, _("Route"));
-    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->routes, name, TRUE ) ) )
+    if ( ( name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->routes, name, TRUE ) ) ) {
       new_route_create_common ( vtl, name );
+      g_free ( name );
+    }
     else
       return TRUE;
   }
