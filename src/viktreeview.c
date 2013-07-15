@@ -123,11 +123,14 @@ static void vik_treeview_toggled_cb (GtkCellRendererToggle *cell, gchar *path_st
       // Toggle set on different path
       // therefore prevent subsequent auto selection (otherwise no action needed)
       vt->was_a_toggle = TRUE;
+    gtk_tree_path_free ( tp_selected );
   }
   else
     // Toggle set on new path
     // therefore prevent subsequent auto selection
     vt->was_a_toggle = TRUE;
+
+  gtk_tree_path_free ( tp_toggle );
 
   g_signal_emit ( G_OBJECT(vt), treeview_signals[VT_ITEM_TOGGLED_SIGNAL], 0, &iter_toggle );
 }
@@ -175,11 +178,14 @@ vik_treeview_tooltip_cb (GtkWidget  *widget,
     gtk_tree_model_get (model, &iter, ITEM_POINTER_COLUMN, &layer, -1);
     g_snprintf (buffer, sizeof(buffer), "%s", vik_layer_layer_tooltip (VIK_LAYER(layer)));
   }
-  else
+  else {
+    gtk_tree_path_free (path);
     return FALSE;
+  }
 
   // Don't display null strings :)
   if ( strncmp (buffer, "(null)", 6) == 0 ) {
+    gtk_tree_path_free (path);
     return FALSE;
   }
   else {
@@ -492,6 +498,7 @@ void vik_treeview_select_iter ( VikTreeview *vt, GtkTreeIter *iter, gboolean vie
 				    gtk_tree_view_get_expander_column (tree_view),
 				    FALSE,
 				    0.0, 0.0 );
+    gtk_tree_path_free ( path );
   }
 }
 
