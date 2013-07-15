@@ -2549,6 +2549,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
               vik_trw_layer_add_route ( vtl, new_tr_name, tracks[i] );
             else
               vik_trw_layer_add_track ( vtl, new_tr_name, tracks[i] );
+            vik_track_calculate_bounds ( tracks[i] );
 	  }
         }
         if ( tracks )
@@ -2594,6 +2595,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           vik_trw_layer_add_route(vtl, r_name, tr_right);
         else
           vik_trw_layer_add_track(vtl, r_name, tr_right);
+        vik_track_calculate_bounds ( tr_right );
         vik_layer_emit_update ( VIK_LAYER(vtl) );
       }
       break;
