@@ -34,7 +34,6 @@
 #include "vikgobjectbuilder.h"
 
 /* FIXME use private fields */
-static gchar *class_name = NULL;
 GType gtype = 0;
 gchar *property_name = NULL;
 GParameter *parameters = NULL;
@@ -104,13 +103,14 @@ _start_element (GMarkupParseContext *context,
 {
 	if (strcmp(element_name, "object") == 0)
 	{
-		class_name = g_strdup(attribute_values[0]);
+		gchar *class_name = g_strdup(attribute_values[0]);
 		gtype = g_type_from_name (class_name);
 		if (gtype == 0)
 		{
 			g_warning("Unknown GObject type '%s'", class_name);
 			return;
 		}
+		g_free (class_name);
 	}
 	if (strcmp(element_name, "property") == 0 && gtype != 0)
 	{

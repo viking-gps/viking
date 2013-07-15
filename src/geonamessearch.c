@@ -230,6 +230,7 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
             }
             geoname_runner = g_list_next(geoname_runner);
           }
+	  g_free ( name );
         }
       }
       while ( gtk_tree_model_iter_next ( GTK_TREE_MODEL(store), &iter ) );

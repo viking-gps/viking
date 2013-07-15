@@ -1390,7 +1390,7 @@ void vik_track_calculate_bounds ( VikTrack *trk )
     tp_iter = tp_iter->next;
   }
  
-  g_debug ( g_strdup_printf("Bounds of track: '%s' is: %f,%f to: %f,%f", trk->name, topleft.lat, topleft.lon, bottomright.lat, bottomright.lon ) );
+  g_debug ( "Bounds of track: '%s' is: %f,%f to: %f,%f", trk->name, topleft.lat, topleft.lon, bottomright.lat, bottomright.lon );
 
   trk->bbox.north = topleft.lat;
   trk->bbox.east = bottomright.lon;

@@ -199,7 +199,7 @@ static gboolean get_file_name(GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
   gchar *str;
   gtk_tree_model_get ( model, iter, 0, &str, -1 );
   g_debug ("%s: %s", __FUNCTION__, str);
-  (*list) = g_list_append((*list), g_strdup(str));
+  (*list) = g_list_append((*list), str); // NB str is already a copy
   return FALSE;
 }
 

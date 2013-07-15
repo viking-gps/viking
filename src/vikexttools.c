@@ -73,6 +73,8 @@ void vik_ext_tools_add_action_items ( VikWindow *vwindow, GtkUIManager *uim, Gtk
 
       gtk_action_group_add_action ( action_group, action );
 
+      g_object_unref ( action );
+
       g_free ( label ); label = NULL;
     }
   }

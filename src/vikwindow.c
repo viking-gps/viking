@@ -3865,6 +3865,8 @@ static void window_create_ui( VikWindow *window )
     action.callback = (GCallback)menu_addlayer_cb;
     gtk_action_group_add_actions(action_group, &action, 1, window);
 
+    g_free ( (gchar*)action.label );
+
     if ( vik_layer_get_interface(i)->tools_count ) {
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Tools/", vik_layer_get_interface(i)->name, NULL, GTK_UI_MANAGER_SEPARATOR, FALSE);
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainToolbar/ToolItems/", vik_layer_get_interface(i)->name, NULL, GTK_UI_MANAGER_SEPARATOR, FALSE);
@@ -3893,10 +3895,12 @@ static void window_create_ui( VikWindow *window )
     }
 
     GtkActionEntry action_dl;
+    gchar *layername = g_strdup_printf ( "Layer%s", vik_layer_get_interface(i)->fixed_layer_name );
     gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Edit/LayerDefaults",
 			  vik_layer_get_interface(i)->name,
-			  g_strdup_printf("Layer%s", vik_layer_get_interface(i)->fixed_layer_name),
+			  layername,
 			  GTK_UI_MANAGER_MENUITEM, FALSE);
+    g_free (layername);
 
     // For default layers use action names of the form 'Layer<LayerName>'
     // This is to avoid clashing with just the layer name used above for the tool actions
@@ -3907,6 +3911,8 @@ static void window_create_ui( VikWindow *window )
     action_dl.tooltip = NULL;
     action_dl.callback = (GCallback)layer_defaults_cb;
     gtk_action_group_add_actions(action_group, &action_dl, 1, window);
+    g_free ( (gchar*)action_dl.name );
+    g_free ( (gchar*)action_dl.label );
   }
   g_object_unref (icon_factory);
 

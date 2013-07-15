@@ -494,6 +494,7 @@ static GList *select_from_list (GtkWindow *parent, GList *list, const gchar *tit
 						}
 						list_runner = g_list_next ( list_runner );
 					}
+					g_free ( name );
 				}
 			}
 			while ( gtk_tree_model_iter_next ( GTK_TREE_MODEL(store), &iter ) );
@@ -645,6 +646,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 			// TODO feedback to UI to inform which traces failed
 			if ( !result )
 				g_warning ( _("Unable to get trace: %s"), url );
+			g_free ( url );
 		}
 
 		if ( result ) {

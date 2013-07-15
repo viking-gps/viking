@@ -120,6 +120,7 @@ modules_load_config_dir(const gchar *dir)
 	vik_gobject_builder_parse (builder, maps);
 	g_object_unref (builder);
   }
+  g_free ( maps );
 
   /* External tools */
   gchar *tools = g_build_filename(dir, VIKING_EXTTOOLS_FILE, NULL);
@@ -130,6 +131,7 @@ modules_load_config_dir(const gchar *dir)
 	vik_gobject_builder_parse (builder, tools);
 	g_object_unref (builder);
   }
+  g_free ( tools );
 
   gchar *datasources = g_build_filename(dir, VIKING_DATASOURCES_FILE, NULL);
   if (g_access (datasources, R_OK) == 0)
@@ -139,6 +141,7 @@ modules_load_config_dir(const gchar *dir)
 	vik_gobject_builder_parse (builder, datasources);
 	g_object_unref (builder);
   }
+  g_free ( datasources );
 
   /* Go-to search engines */
   gchar *go_to = g_build_filename(dir, VIKING_GOTOTOOLS_FILE, NULL);
@@ -149,6 +152,7 @@ modules_load_config_dir(const gchar *dir)
 	vik_gobject_builder_parse (builder, go_to);
 	g_object_unref (builder);
   }
+  g_free ( go_to );
 
   /* Routing engines */
   gchar *routing = g_build_filename(dir, VIKING_ROUTING_FILE, NULL);
@@ -159,6 +163,7 @@ modules_load_config_dir(const gchar *dir)
 	vik_gobject_builder_parse (builder, routing);
 	g_object_unref (builder);
   }
+  g_free ( routing );
 }
 
 static void
