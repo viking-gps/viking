@@ -7111,6 +7111,29 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
     gtk_widget_show ( item );
 
+    GtkWidget *transform_submenu;
+    transform_submenu = gtk_menu_new ();
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Transform") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CONVERT, GTK_ICON_SIZE_MENU) );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), transform_submenu );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Apply DEM Data") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("vik-icon-DEM Download", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_apply_dem_data), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
+    gtk_widget_show ( item );
+
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
+      item = gtk_image_menu_item_new_with_mnemonic ( _("C_onvert to a Route") );
+    else
+      item = gtk_image_menu_item_new_with_mnemonic ( _("C_onvert to a Track") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CONVERT, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_convert_track_route), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
+    gtk_widget_show ( item );
+
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
       item = gtk_image_menu_item_new_with_mnemonic ( _("_Reverse Track") );
     else
@@ -7140,12 +7163,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       gtk_widget_show ( item );
     }
 
-    item = gtk_image_menu_item_new_with_mnemonic ( _("_Apply DEM Data") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("vik-icon-DEM Download", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_apply_dem_data), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-    gtk_widget_show ( item );
-
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
       item = gtk_image_menu_item_new_with_mnemonic ( _("_Export Track as GPX...") );
     else
@@ -7161,15 +7178,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       item = gtk_image_menu_item_new_with_mnemonic ( _("E_xtend Route End") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_extend_track_end), pass_along );
-    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-    gtk_widget_show ( item );
-
-    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
-      item = gtk_image_menu_item_new_with_mnemonic ( _("C_onvert to a Route") );
-    else
-      item = gtk_image_menu_item_new_with_mnemonic ( _("C_onvert to a Track") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CONVERT, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_convert_track_route), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
