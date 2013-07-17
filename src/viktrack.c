@@ -1450,8 +1450,7 @@ static void smoothie ( GList *tp1, GList *tp2, gdouble elev1, gdouble elev2, gui
 
 /**
  * vik_track_smooth_missing_elevation_data:
- *
- * #flat: Specify how the missing elevations will be set.
+ * @flat: Specify how the missing elevations will be set.
  *        When TRUE it uses a simple flat method, using the last known elevation
  *        When FALSE is uses an interpolation method to the next known elevation
  *

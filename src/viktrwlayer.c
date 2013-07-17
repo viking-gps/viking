@@ -4606,6 +4606,54 @@ static void trw_layer_apply_dem_data ( gpointer pass_along[6] )
     vik_track_apply_dem_data ( track );
 }
 
+/**
+ * smooth_it:
+ *
+ * A common function for applying the elevation smoothing and reporting the results.
+ */
+static void smooth_it ( VikTrwLayer *vtl, VikTrack *track, gboolean flat )
+{
+  gulong changed = vik_track_smooth_missing_elevation_data ( track, flat );
+  // Inform user how much was changed
+  gchar str[64];
+  const gchar *tmp_str = ngettext("%ld point adjusted", "%ld points adjusted", changed);
+  g_snprintf(str, 64, tmp_str, changed);
+  a_dialog_info_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), str);
+}
+
+/**
+ *
+ */
+static void trw_layer_missing_elevation_data_interp ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( !track )
+    return;
+
+  smooth_it ( vtl, track, FALSE );
+}
+
+static void trw_layer_missing_elevation_data_flat ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( !track )
+    return;
+
+  smooth_it ( vtl, track, TRUE );
+}
+
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
@@ -7123,6 +7171,25 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("vik-icon-DEM Download", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_apply_dem_data), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
+    gtk_widget_show ( item );
+
+    GtkWidget *smooth_submenu;
+    smooth_submenu = gtk_menu_new ();
+    item = gtk_menu_item_new_with_mnemonic ( _("_Smooth Missing Elevation Data") );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), smooth_submenu );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Interpolated") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_missing_elevation_data_interp), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(smooth_submenu), item );
+    gtk_widget_set_tooltip_text (item, _("Interpolate between known elevation values to derive values for the missing elevations"));
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Flat") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_missing_elevation_data_flat), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(smooth_submenu), item );
+    gtk_widget_set_tooltip_text (item, _("Set unknown elevation values to the last known value"));
     gtk_widget_show ( item );
 
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
