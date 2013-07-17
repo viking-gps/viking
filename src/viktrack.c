@@ -1425,6 +1425,102 @@ void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
   }
 }
 
+
+/**
+ * smoothie:
+ *
+ * Apply elevation smoothing over range of trackpoints between the list start and end points
+ */
+static void smoothie ( GList *tp1, GList *tp2, gdouble elev1, gdouble elev2, guint points )
+{
+  // If was really clever could try and weigh interpolation according to the distance between trackpoints somehow
+  // Instead a simple average interpolation for the number of points given.
+  gdouble change = (elev2 - elev1)/(points+1);
+  gint count = 1;
+  GList *tp_iter = tp1;
+  while ( tp_iter != tp2 && tp_iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
+
+    tp->altitude = elev1 + (change*count);
+
+    count++;
+    tp_iter = tp_iter->next;
+  }
+}
+
+/**
+ * vik_track_smooth_missing_elevation_data:
+ *
+ * #flat: Specify how the missing elevations will be set.
+ *        When TRUE it uses a simple flat method, using the last known elevation
+ *        When FALSE is uses an interpolation method to the next known elevation
+ *
+ * For each point with a missing elevation, set it to use the last known available elevation value.
+ * Primarily of use for smallish DEM holes where it is missing elevation data.
+ * Eg see Austria: around N47.3 & E13.8
+ *
+ * Returns: The number of points that were adjusted
+ */
+gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat )
+{
+  gulong num = 0;
+
+  GList *tp_iter;
+  gdouble elev = VIK_DEFAULT_ALTITUDE;
+
+  VikTrackpoint *tp_missing = NULL;
+  GList *iter_first = NULL;
+  guint points = 0;
+
+  tp_iter = tr->trackpoints;
+  while ( tp_iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
+
+    if ( VIK_DEFAULT_ALTITUDE == tp->altitude ) {
+      if ( flat ) {
+        // Simply assign to last known value
+	if ( elev != VIK_DEFAULT_ALTITUDE ) {
+          tp->altitude = elev;
+          num++;
+	}
+      }
+      else {
+        if ( !tp_missing ) {
+          // Remember the first trackpoint (and the list pointer to it) of a section of no altitudes
+          tp_missing = tp;
+          iter_first = tp_iter;
+          points = 1;
+        }
+        else {
+          // More missing altitudes
+          points++;
+        }
+      }
+    }
+    else {
+      // Altitude available (maybe again!)
+      // If this marks the end of a section of altitude-less points
+      //  then apply smoothing for that section of points
+      if ( points > 0 && elev != VIK_DEFAULT_ALTITUDE )
+        if ( !flat ) {
+          smoothie ( iter_first, tp_iter, elev, tp->altitude, points );
+          num = num + points;
+        }
+
+      // reset
+      points = 0;
+      tp_missing = NULL;
+
+      // Store for reuse as the last known good value
+      elev = tp->altitude;
+    }
+
+    tp_iter = tp_iter->next;
+  }
+
+  return num;
+}
+
 /**
  * vik_track_steal_and_append_trackpoints:
  * 
