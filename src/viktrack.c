@@ -1392,22 +1392,33 @@ void vik_track_calculate_bounds ( VikTrack *trk )
 }
 
 /**
+ * vik_track_apply_dem_data:
+ * @skip_existing: When TRUE, don't change the elevation if the trackpoint already has a value
  *
+ * Set elevation data for a track using any available DEM information
  */
-void vik_track_apply_dem_data ( VikTrack *tr )
+gulong vik_track_apply_dem_data ( VikTrack *tr, gboolean skip_existing )
 {
+  gulong num = 0;
   GList *tp_iter;
   gint16 elev;
   tp_iter = tr->trackpoints;
   while ( tp_iter ) {
-    /* TODO: of the 4 possible choices we have for choosing an elevation
-     * (trackpoint in between samples), choose the one with the least elevation change
-     * as the last */
-    elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(tp_iter->data)->coord), VIK_DEM_INTERPOL_BEST );
-    if ( elev != VIK_DEM_INVALID_ELEVATION )
-      VIK_TRACKPOINT(tp_iter->data)->altitude = elev;
+    // Don't apply if the point already has a value and the overwrite is off
+    if ( !(skip_existing && VIK_TRACKPOINT(tp_iter->data)->altitude != VIK_DEFAULT_ALTITUDE) ) {
+      /* TODO: of the 4 possible choices we have for choosing an elevation
+       * (trackpoint in between samples), choose the one with the least elevation change
+       * as the last */
+      elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(tp_iter->data)->coord), VIK_DEM_INTERPOL_BEST );
+
+      if ( elev != VIK_DEM_INVALID_ELEVATION ) {
+        VIK_TRACKPOINT(tp_iter->data)->altitude = elev;
+	num++;
+      }
+    }
     tp_iter = tp_iter->next;
   }
+  return num;
 }
 
 /**
