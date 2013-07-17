@@ -4596,8 +4596,18 @@ static void trw_layer_extend_track_end_route_finder ( gpointer pass_along[6] )
  *
  * A common function for applying the DEM values and reporting the results.
  */
-static void apply_dem_data_common ( VikTrwLayer *vtl, VikTrack *track, gboolean skip_existing_elevations )
+static void apply_dem_data_common ( VikTrwLayer *vtl, VikLayersPanel *vlp, VikTrack *track, gboolean skip_existing_elevations )
 {
+  // If have a vlp then perform a basic test to see if any DEM info available...
+  if ( vlp ) {
+    GList *dems = vik_layers_panel_get_all_layers_of_type (vlp, VIK_LAYER_DEM, TRUE); // Includes hidden DEM layer types
+
+    if ( !g_list_length(dems) ) {
+      a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), _("No DEM layers available, thus no DEM values can be applied.") );
+      return;
+    }
+  }
+
   gulong changed = vik_track_apply_dem_data ( track, skip_existing_elevations );
   // Inform user how much was changed
   gchar str[64];
@@ -4616,7 +4626,7 @@ static void trw_layer_apply_dem_data_all ( gpointer pass_along[6] )
     track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
 
   if ( track )
-    apply_dem_data_common ( vtl, track, FALSE );
+    apply_dem_data_common ( vtl, pass_along[1], track, FALSE );
 }
 
 static void trw_layer_apply_dem_data_only_missing ( gpointer pass_along[6] )
@@ -4629,7 +4639,7 @@ static void trw_layer_apply_dem_data_only_missing ( gpointer pass_along[6] )
     track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
 
   if ( track )
-    apply_dem_data_common ( vtl, track, TRUE );
+    apply_dem_data_common ( vtl, pass_along[1], track, TRUE );
 }
 
 /**
