@@ -4550,6 +4550,18 @@ static void trw_layer_convert_track_route ( gpointer pass_along[6] )
   vik_layer_emit_update ( VIK_LAYER(pass_along[0]) );
 }
 
+static void trw_layer_anonymize_times ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( track )
+    vik_track_anonymize_times ( track );
+}
 
 static void trw_layer_extend_track_end ( gpointer pass_along[6] )
 {
@@ -7249,6 +7261,15 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_convert_track_route), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
     gtk_widget_show ( item );
+
+    // Routes don't have timestamps - so this is only available for tracks
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Anonymize Times") );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_anonymize_times), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
+      gtk_widget_set_tooltip_text (item, _("Shift timestamps to a relative offset from 1901-01-01"));
+      gtk_widget_show ( item );
+    }
 
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
       item = gtk_image_menu_item_new_with_mnemonic ( _("_Reverse Track") );
