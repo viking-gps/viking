@@ -1392,6 +1392,37 @@ void vik_track_calculate_bounds ( VikTrack *trk )
 }
 
 /**
+ * vik_track_anonymize_times:
+ *
+ * Shift all timestamps to be relatively offset from 1901-01-01
+ */
+void vik_track_anonymize_times ( VikTrack *tr )
+{
+  GTimeVal gtv;
+  g_time_val_from_iso8601 ( "1901-01-01T00:00:00Z", &gtv );
+
+  time_t anon_timestamp = gtv.tv_sec;
+  time_t offset = 0;
+
+  GList *tp_iter;
+  tp_iter = tr->trackpoints;
+  while ( tp_iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
+    if ( tp->has_timestamp ) {
+      // Calculate an offset in time using the first available timestamp
+      if ( offset == 0 )
+	offset = tp->timestamp - anon_timestamp;
+
+      // Apply this offset to shift all timestamps towards 1901 & hence anonymising the time
+      // Note that the relative difference between timestamps is kept - thus calculating speeds will still work
+      tp->timestamp = tp->timestamp - offset;
+    }
+    tp_iter = tp_iter->next;
+  }
+}
+
+
+/**
  * vik_track_apply_dem_data:
  * @skip_existing: When TRUE, don't change the elevation if the trackpoint already has a value
  *
