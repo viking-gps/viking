@@ -4499,6 +4499,34 @@ static void trw_layer_goto_track_center ( gpointer pass_along[6] )
   }
 }
 
+/**
+ * distance_in_preferred_units:
+ * @dist: The source distance in standard SI Units (i.e. metres)
+ *
+ * TODO: This is a generic function that could be moved into globals.c or utils.c
+ *
+ * Probably best used if you have a only few conversions to perform.
+ * However if doing many points (such as on all points along a track) then this may be a bit slow,
+ *  since it will be doing the preference check on each call
+ *
+ * Returns: The distance in the units as specified by the preferences
+ */
+static gdouble distance_in_preferred_units ( gdouble dist )
+{
+  gdouble mydist;
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+  switch (dist_units) {
+  case VIK_UNITS_DISTANCE_MILES:
+    mydist = VIK_METERS_TO_MILES(dist);
+    break;
+  // VIK_UNITS_DISTANCE_KILOMETRES:
+  default:
+    mydist = dist/1000.0;
+    break;
+  }
+  return mydist;
+}
+
 static void trw_layer_convert_track_route ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
