@@ -600,9 +600,11 @@ For instance the largest successful image generated on my (RN) Debian system is 
 <para>
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Generate Directory of Images</guisubmenu></menuchoice> menu only.
 </para>
+<note>
 <para>
 This is only available in UTM mode.
 </para>
+</note>
 </section>
 
 </section> <!-- End File Types -->
@@ -745,9 +747,13 @@ Version1.1+: An individual track can be exported to a GPX file via the track men
 
 <section id="finish_track"><title>Finish Track or Route</title>
 <para>
-This is only available when a track or route is being created by the <xref linkend="track_create"/> or <xref linkend="route_create"/> tools.
 Selecting this option ends the creation of that individual track or route.
 </para>
+<note>
+<para>
+This is only available when a track or route is being created by the <xref linkend="track_create"/> or <xref linkend="route_create"/> tools.
+</para>
+</note>
 </section>
 
 <section><title>New</title>
@@ -930,9 +936,13 @@ The following colors are used in the elevation-distance graph:
 
 <section><title>Finish Track</title>
 <para>
-This is only available when a track is being created by the <xref linkend="track_create"/> tool.
 Selecting this option ends the creation of the individual track.
 </para>
+<note>
+<para>
+This is only available when a track is being created by the <xref linkend="track_create"/> tool.
+</para>
+</note>
 </section>
 
 <section><title>Goto</title>
@@ -965,9 +975,11 @@ threshold time away. This way, if you somehow end up with lots of small
 segments (say, caused by turning the GPS on and off) you can merge them
 easily into one track.
 </para>
+<note>
 <para>
 This is not available on routes as they have no timestamps.
 </para>
+</note>
 </section>
 
 <section><title>Merge With Other Tracks</title>
@@ -998,9 +1010,11 @@ time interval between successive trackpoints is larger than some
 threshold. This is useful when processing raw NMEA GPS data, especially
 taken over a long time.
 </para>
+<note>
 <para>
 This is not available on routes as they have no timestamps.
 </para>
+</note>
 </section>
 
 <section><title>Split By Number of Points</title>
@@ -1014,15 +1028,22 @@ This can be useful with devices which may have limits on the number of points it
 <para>
 Splits track segments into new tracks.
 </para>
+<note>
 <para>
 This is not available on routes as they do not have route segments.
 </para>
+</note>
 </section>
 
 <section><title>Split at Trackpoint</title>
 <para>
-Splits the track at the currently selected trackpoint. This is only enabled when a trackpoint is selected.
+Splits the track at the currently selected trackpoint.
 </para>
+<note>
+<para>
+This is only enabled when a trackpoint is selected.
+</para>
+</note>
 </section>
 </section>
 
@@ -1036,9 +1057,11 @@ Deletes subsequent points that have the same position (but have different timest
 <para>
 Deletes subsequent points that have the same time stamp (but may have different positions).
 </para>
+<note>
 <para>
 This is not available on routes as they have no timestamps.
 </para>
+</note>
 </section>
 
 </section>
@@ -1087,9 +1110,11 @@ Same as the layer <link linkend="osm_upload">Upload to OSM</link> command, but o
 <para>
 This selects the track to be used in the <link linkend="filter_with_track">Filter With <emphasis>Trackname</emphasis></link> feature.
 </para>
+<note>
 <para>
 This is not available on routes.
 </para>
+</note>
 </section>
 
 <section><title>View Google Directions</title>
