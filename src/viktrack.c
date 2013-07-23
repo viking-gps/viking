@@ -257,14 +257,7 @@ gdouble vik_track_get_length_including_gaps(const VikTrack *tr)
 
 gulong vik_track_get_tp_count(const VikTrack *tr)
 {
-  gulong num = 0;
-  GList *iter = tr->trackpoints;
-  while ( iter )
-  {
-    num++;
-    iter = iter->next;
-  }
-  return num;
+  return g_list_length(tr->trackpoints);
 }
 
 gulong vik_track_get_dup_point_count ( const VikTrack *tr )
