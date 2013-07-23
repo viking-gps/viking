@@ -1117,6 +1117,19 @@ This is not available on routes.
 </note>
 </section>
 
+<section><title>Refine Route...</title>
+<para>
+This function allows to request a Routing Engine in order to refine a given route.
+By "refining" we mean computing all real intermediates points between some given major points.
+This could be useful to compute a trip giving only the wished important steps.
+</para>
+<note>
+<para>
+This is only available on routes.
+</para>
+</note>
+</section>
+
 <section><title>View Google Directions</title>
 <para>
 This option is only available on a track created using the Route Finder tool.
@@ -2508,6 +2521,10 @@ Accept: */*
             <varlistentry>
               <term>url-stop-ll</term>
               <listitem><para>the part of the URL setting the end point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;stop=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-via-ll</term>
+              <listitem><para>the part of the URL setting via point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;via=%s,%s")</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url-start-dir</term>

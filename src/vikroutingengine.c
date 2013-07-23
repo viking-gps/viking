@@ -141,8 +141,12 @@ vik_routing_engine_class_init ( VikRoutingEngineClass *klass )
 
   routing_class = VIK_ROUTING_ENGINE_CLASS ( klass );
   routing_class->find = NULL;
+
   routing_class->supports_direction = NULL;
   routing_class->get_cmd_from_directions = NULL;
+
+  routing_class->refine = NULL;
+  routing_class->supports_refine = NULL;
 
   pspec = g_param_spec_string ("id",
                                "Identifier",
@@ -296,4 +300,48 @@ vik_routing_engine_get_cmd_from_directions ( VikRoutingEngine *self, const gchar
   g_return_val_if_fail ( klass->get_cmd_from_directions != NULL, NULL );
 
   return klass->get_cmd_from_directions( self, start, end );
+}
+
+/**
+ * vik_routing_engine_refine:
+ * @self: self object
+ * @vtl: layer where to create new track
+ * @vt: the simple route to refine
+ *
+ * Retrieve a route refining the @vt track/route.
+ *
+ * A refined route is computed from @vt.
+ * The route is computed from first trackpoint to last trackpoint,
+ * and going via all intermediate trackpoints.
+ *
+ * Returns: indicates success or not.
+ */
+int
+vik_routing_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *vt )
+{
+  VikRoutingEngineClass *klass;
+
+  g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), 0 );
+  klass = VIK_ROUTING_ENGINE_GET_CLASS ( self );
+  g_return_val_if_fail ( klass->refine != NULL, 0 );
+
+  return klass->refine ( self, vtl, vt );
+}
+
+/**
+ * vik_routing_engine_supports_refine:
+ * @self: routing engine
+ *
+ * Returns: %TRUE if this engine supports the refine of track
+ */
+gboolean
+vik_routing_engine_supports_refine ( VikRoutingEngine *self )
+{
+  VikRoutingEngineClass *klass;
+
+  g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), FALSE );
+  klass = VIK_ROUTING_ENGINE_GET_CLASS ( self );
+  g_return_val_if_fail ( klass->supports_refine != NULL, FALSE );
+
+  return klass->supports_refine ( self );
 }

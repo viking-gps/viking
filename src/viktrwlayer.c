@@ -4703,6 +4703,77 @@ static void trw_layer_auto_track_view ( gpointer pass_along[6] )
   }
 }
 
+/*
+ * Refine the selected track/route with a routing engine.
+ * The routing engine is selected by the user, when requestiong the job.
+ */
+static void trw_layer_route_refine ( gpointer pass_along[6] )
+{
+  static gint last_engine = 0;
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikTrack *trk;
+
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( trk && trk->trackpoints )
+  {
+    /* Select engine from dialog */
+    GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Refine Route with Routing Engine..."),
+                                                  VIK_GTK_WINDOW_FROM_LAYER (vtl),
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_STOCK_CANCEL,
+                                                  GTK_RESPONSE_REJECT,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+    GtkWidget *label = gtk_label_new ( _("Select routing engine") );
+    gtk_widget_show_all(label);
+
+    gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), label, TRUE, TRUE, 0 );
+
+    GtkWidget * combo = vik_routing_ui_selector_new ( (Predicate)vik_routing_engine_supports_refine, NULL );
+    gtk_combo_box_set_active (GTK_COMBO_BOX (combo), last_engine);
+    gtk_widget_show_all(combo);
+
+    gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), combo, TRUE, TRUE, 0 );
+
+    gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
+    if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
+    {
+        /* Dialog validated: retrieve selected engine and do the job */
+        last_engine = gtk_combo_box_get_active ( GTK_COMBO_BOX(combo) );
+        VikRoutingEngine *routing = vik_routing_ui_selector_get_nth (combo, last_engine);
+
+        /* Change cursor */
+        vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(pass_along[0])) );
+
+        /* Force saving track */
+        /* FIXME: remove or rename this hack */
+        vtl->route_finder_check_added_track = TRUE;
+
+        /* the job */
+        vik_routing_engine_refine (routing, vtl, trk);
+
+        /* FIXME: remove or rename this hack */
+        if ( vtl->route_finder_added_track )
+          vik_track_calculate_bounds ( vtl->route_finder_added_track );
+
+        vtl->route_finder_added_track = NULL;
+        vtl->route_finder_check_added_track = FALSE;
+
+        vik_layer_emit_update ( VIK_LAYER(vtl) );
+
+        /* Restore cursor */
+        vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(pass_along[0])) );
+    }
+    gtk_widget_destroy ( dialog );
+  }
+}
+
 static void trw_layer_edit_trackpoint ( gpointer pass_along[6] )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
@@ -7034,6 +7105,14 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_reverse), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("Refine Route...") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_route_refine), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
+    }
 
     /* ATM This function is only available via the layers panel, due to the method in finding out the maps in use */
     if ( vlp ) {
