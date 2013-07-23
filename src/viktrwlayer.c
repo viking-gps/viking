@@ -4720,6 +4720,20 @@ static void trw_layer_route_refine ( gpointer pass_along[6] )
 
   if ( trk && trk->trackpoints )
   {
+    /* Check size of the route */
+    int nb = vik_track_get_tp_count(trk);
+    if (nb > 100) {
+      GtkWidget *dialog = gtk_message_dialog_new (VIK_GTK_WINDOW_FROM_LAYER (vtl),
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_MESSAGE_WARNING,
+                                                  GTK_BUTTONS_OK_CANCEL,
+                                                  _("Refining a track with many points (%d) is unlikely to yield sensible results. Do you want to Continue?"),
+                                                  nb);
+      gint response = gtk_dialog_run ( GTK_DIALOG(dialog) );
+      gtk_widget_destroy ( dialog );
+      if (response != GTK_RESPONSE_OK )
+        return;
+    }
     /* Select engine from dialog */
     GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Refine Route with Routing Engine..."),
                                                   VIK_GTK_WINDOW_FROM_LAYER (vtl),
