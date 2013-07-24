@@ -30,7 +30,7 @@
 #include "viking.h"
 #include "icons/icons.h"
 
-static VikCoordLayer *coord_layer_new ( );
+static VikCoordLayer *coord_layer_new ( VikViewport *vp );
 static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp );
 static void coord_layer_free ( VikCoordLayer *vcl );
 static VikCoordLayer *coord_layer_create ( VikViewport *vp );
@@ -39,6 +39,7 @@ static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewpor
 static gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
 static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id, gboolean is_file_operation );
 static void coord_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
+static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp );
 
 static VikLayerParamScale param_scales[] = {
   { 0.05, 60.0, 0.25, 10 },
@@ -158,8 +159,9 @@ static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len )
 
 static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikCoordLayer *rv = coord_layer_new ();
+  VikCoordLayer *rv = coord_layer_new ( vvp );
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
+  coord_layer_update_gc ( rv, vvp );
   return rv;
 }
 
