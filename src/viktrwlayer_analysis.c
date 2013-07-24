@@ -503,7 +503,7 @@ static void analyse_close ( GtkWidget *dialog, gint resp, analyse_cb_t *data )
  * Returns: The dialog that is created to display the analyse information
  */
 GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
-                                        gchar *name,
+                                        const gchar *name,
                                         VikLayer *vl,
                                         gpointer user_data,
                                         VikTrwlayerGetTracksAndLayersFunc get_tracks_and_layers_cb,
