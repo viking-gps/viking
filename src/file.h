@@ -38,7 +38,6 @@ FILE_TYPE_GPX=3,
 FILE_TYPE_KML=4,
 } VikFileType_t;
 
-const gchar *a_file_basename ( const gchar *filename );
 gboolean check_file_ext ( const gchar *filename, const gchar *fileext );
 
 /*

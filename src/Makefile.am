@@ -62,6 +62,7 @@ libviking_a_SOURCES = \
 	gpspoint.c gpspoint.h \
 	dir.c dir.h \
 	file.c file.h \
+	fileutils.c fileutils.h \
 	authors.h \
 	documenters.h \
 	dialog.c dialog.h \
