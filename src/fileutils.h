@@ -18,46 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifndef __FILE_UTILS_H
+#define __FILE_UTILS_H
 
-#ifndef __VIKING_VIKING_H
-#define __VIKING_VIKING_H
+#include <glib.h>
 
-#include <gtk/gtk.h>
-#include <gdk-pixbuf/gdk-pixdata.h>
-#include <time.h>
+G_BEGIN_DECLS
 
-#ifdef WINDOWS
-#include <io.h>
-#include <winsock.h>
-#endif
+const gchar *a_file_basename ( const gchar *filename );
 
-#include "config.h"
-
-#include "globals.h"
-#include "coords.h"
-#include "vikcoord.h"
-#include "download.h"
-#include "vikwaypoint.h"
-#include "viktrack.h"
-#include "vikviewport.h"
-#include "viktreeview.h"
-#include "viklayer.h"
-#include "viklayer_defaults.h"
-#include "vikaggregatelayer.h"
-#include "viklayerspanel.h"
-#include "vikcoordlayer.h"
-#include "vikgeoreflayer.h"
-#include "vikstatus.h"
-#include "vikfileentry.h"
-#include "viktrwlayer.h"
-#include "vikgpslayer.h"
-#include "clipboard.h"
-#include "dialog.h"
-#include "file.h"
-#include "fileutils.h"
-#include "vikwindow.h"
-#include "gpspoint.h"
-#include "gpsmapper.h"
-#include "settings.h"
+G_END_DECLS
 
 #endif

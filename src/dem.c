@@ -46,7 +46,8 @@
 
 #include "compression.h"
 #include "dem.h"
-#include "file.h"
+#include "coords.h"
+#include "fileutils.h"
 
 /* Compatibility */
 #if ! GLIB_CHECK_VERSION(2,22,0)

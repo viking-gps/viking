@@ -18,46 +18,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+/*
+ * Code that is independent of any other Viking specific types
+ * Otherwise see file.c
+ */
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-#ifndef __VIKING_VIKING_H
-#define __VIKING_VIKING_H
-
-#include <gtk/gtk.h>
-#include <gdk-pixbuf/gdk-pixdata.h>
-#include <time.h>
+#include "fileutils.h"
 
 #ifdef WINDOWS
-#include <io.h>
-#include <winsock.h>
+#define FILE_SEP '\\'
+#else
+#define FILE_SEP '/'
 #endif
 
-#include "config.h"
-
-#include "globals.h"
-#include "coords.h"
-#include "vikcoord.h"
-#include "download.h"
-#include "vikwaypoint.h"
-#include "viktrack.h"
-#include "vikviewport.h"
-#include "viktreeview.h"
-#include "viklayer.h"
-#include "viklayer_defaults.h"
-#include "vikaggregatelayer.h"
-#include "viklayerspanel.h"
-#include "vikcoordlayer.h"
-#include "vikgeoreflayer.h"
-#include "vikstatus.h"
-#include "vikfileentry.h"
-#include "viktrwlayer.h"
-#include "vikgpslayer.h"
-#include "clipboard.h"
-#include "dialog.h"
-#include "file.h"
-#include "fileutils.h"
-#include "vikwindow.h"
-#include "gpspoint.h"
-#include "gpsmapper.h"
-#include "settings.h"
-
-#endif
+const gchar *a_file_basename ( const gchar *filename )
+{
+  const gchar *t = filename + strlen(filename) - 1;
+  while ( --t > filename )
+    if ( *(t-1) == FILE_SEP )
+      break;
+  if ( t >= filename )
+    return t;
+  return filename;
+}

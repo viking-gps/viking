@@ -22,6 +22,8 @@
 #ifndef __VIKING_DEM_H
 #define __VIKING_DEM_H
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 #define VIK_DEM_INVALID_ELEVATION -32768

@@ -762,17 +762,6 @@ gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filenam
 }
 
 
-const gchar *a_file_basename ( const gchar *filename )
-{
-  const gchar *t = filename + strlen(filename) - 1;
-  while ( --t > filename )
-    if ( *(t-1) == G_DIR_SEPARATOR )
-      break;
-  if ( t >= filename )
-    return t;
-  return filename;
-}
-
 /* example: 
      gboolean is_gpx = a_file_check_ext ( "a/b/c.gpx", ".gpx" );
 */
