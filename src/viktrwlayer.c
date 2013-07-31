@@ -9934,12 +9934,10 @@ void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, g
 static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] )
 {
   VikMapsLayer *vml;
-  gint selected_map, default_map;
+  gint selected_map;
   gchar *zoomlist[] = {"0.125", "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", NULL };
   gdouble zoom_vals[] = {0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
   gint selected_zoom, default_zoom;
-  int i,j;
-
 
   VikTrwLayer *vtl = pass_along[0];
   VikLayersPanel *vlp = pass_along[1];
@@ -9961,45 +9959,31 @@ static void trw_layer_download_map_along_track_cb ( gpointer pass_along[6] )
     return;
   }
 
+  // Convert from list of vmls to list of names. Allowing the user to select one of them
   gchar **map_names = g_malloc(1 + num_maps * sizeof(gpointer));
   VikMapsLayer **map_layers = g_malloc(1 + num_maps * sizeof(gpointer));
 
   gchar **np = map_names;
   VikMapsLayer **lp = map_layers;
+  int i;
   for (i = 0; i < num_maps; i++) {
-    gboolean dup = FALSE;
     vml = (VikMapsLayer *)(vmls->data);
-    for (j = 0; j < i; j++) { /* no duplicate allowed */
-      if (vik_maps_layer_get_map_type(vml) == vik_maps_layer_get_map_type(map_layers[j])) {
-        dup = TRUE;
-        break;
-      }
-    }
-    if (!dup) {
-      *lp++ = vml;
-      *np++ = vik_maps_layer_get_map_label(vml);
-    }
+    *lp++ = vml;
+    *np++ = vik_maps_layer_get_map_label(vml);
     vmls = vmls->next;
   }
+  // Mark end of the array lists
   *lp = NULL;
   *np = NULL;
-  num_maps = lp - map_layers;
-
-  for (default_map = 0; default_map < num_maps; default_map++) {
-    /* TODO: check for parent layer's visibility */
-    if (VIK_LAYER(map_layers[default_map])->visible)
-      break;
-  }
-  default_map = (default_map == num_maps) ? 0 : default_map;
 
   gdouble cur_zoom = vik_viewport_get_zoom(vvp);
-  for (default_zoom = 0; default_zoom < sizeof(zoom_vals)/sizeof(gdouble); default_zoom++) {
+  for (default_zoom = 0; default_zoom < G_N_ELEMENTS(zoom_vals); default_zoom++) {
     if (cur_zoom == zoom_vals[default_zoom])
       break;
   }
-  default_zoom = (default_zoom == sizeof(zoom_vals)/sizeof(gdouble)) ? sizeof(zoom_vals)/sizeof(gdouble) - 1 : default_zoom;
+  default_zoom = (default_zoom == G_N_ELEMENTS(zoom_vals)) ? G_N_ELEMENTS(zoom_vals) - 1 : default_zoom;
 
-  if (!a_dialog_map_n_zoom(VIK_GTK_WINDOW_FROM_LAYER(vtl), map_names, default_map, zoomlist, default_zoom, &selected_map, &selected_zoom))
+  if (!a_dialog_map_n_zoom(VIK_GTK_WINDOW_FROM_LAYER(vtl), map_names, 0, zoomlist, default_zoom, &selected_map, &selected_zoom))
     goto done;
 
   vik_track_download_map(trk, map_layers[selected_map], vvp, zoom_vals[selected_zoom]);
