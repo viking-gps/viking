@@ -46,9 +46,11 @@ def optimize_connection(cur):
     cur.execute("""PRAGMA locking_mode=EXCLUSIVE""")
     cur.execute("""PRAGMA journal_mode=DELETE""")
 
-def optimize_database(cur):
+def write_database(cur):
     logger.debug('analyzing db')
     cur.execute("""ANALYZE;""")
+
+def optimize_database(cur):
     logger.debug('cleaning db')
     cur.execute("""VACUUM;""")
 
@@ -107,8 +109,10 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
 
     msg = "\nTotal tiles inserted %s \n" %(count)
     sys.stdout.write(msg)
-    sys.stdout.write("Optimizing...\n")
-    optimize_database(con)
+    write_database(cur)
+    if not kwargs.get('nooptimize'):
+        sys.stdout.write("Optimizing...\n")
+        optimize_database(con)
     return
 
 ##
@@ -126,10 +130,16 @@ Import from an MB Tiles into Viking's cache file layour is not available [yet]
 Note you can use the http://github.com/mapbox/mbutil mbutil script to further handle .mbtiles
 such as converting it into an OSM tile layout and then pointing a new Viking Map at that location with the map type of 'On Disk OSM Layout'""")
    
-parser.add_option('-t', dest='tileid',
+parser.add_option('-t', '--tileid', dest='tileid',
+    action="store",
     help='''Tile id of Viking map cache to use (19 if not specified as this is Viking's default (MaqQuest))''',
     type='string',
     default='19')
+
+parser.add_option('-n', '--nooptimize', dest='nooptimize',
+    action="store_true",
+    help='''Do not attempt to optimize the mbtiles output file''',
+    default=False)
 
 (options, args) = parser.parse_args()
 
