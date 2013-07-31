@@ -284,18 +284,6 @@ void maps_layer_init ()
 /******** MAPS LAYER TYPES **************/
 /****************************************/
 
-int _get_index_for_id ( guint id )
-{
-  int index = 0 ;
-  while (params_maptypes_ids[index] != 0)
-  {
-    if (params_maptypes_ids[index] == id)
-      return index;
-    index++;
-  }
-  return -1;
-}
-
 void _add_map_source ( guint id, const char *label, VikMapSource *map )
 {
   gsize len = 0;
