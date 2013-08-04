@@ -25,8 +25,8 @@
 #ifdef HAVE_MATH_H
 #include <math.h>
 #endif
-#include <glib.h>
 #include <string.h>
+#include "degrees_converters.h"
 
 #define DEGREE_SYMBOL "\302\260"
 
