@@ -4586,7 +4586,7 @@ static void trw_layer_delete_item ( gpointer pass_along[6] )
         // Get confirmation from the user
         // Maybe this Waypoint Delete should be optional as is it could get annoying...
         if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-            _("Are you sure you want to delete the waypoint \"%s\""),
+            _("Are you sure you want to delete the waypoint \"%s\"?"),
             wp->name ) )
           return;
       was_visible = trw_layer_delete_waypoint ( vtl, wp );
@@ -4599,7 +4599,7 @@ static void trw_layer_delete_item ( gpointer pass_along[6] )
       if ( GPOINTER_TO_INT ( pass_along[4]) )
         // Get confirmation from the user
         if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-				  _("Are you sure you want to delete the track \"%s\""),
+				  _("Are you sure you want to delete the track \"%s\"?"),
 				  trk->name ) )
           return;
       was_visible = vik_trw_layer_delete_track ( vtl, trk );
@@ -4612,7 +4612,7 @@ static void trw_layer_delete_item ( gpointer pass_along[6] )
       if ( GPOINTER_TO_INT ( pass_along[4]) )
         // Get confirmation from the user
         if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-                                    _("Are you sure you want to delete the route \"%s\""),
+                                    _("Are you sure you want to delete the route \"%s\"?"),
                                     trk->name ) )
           return;
       was_visible = vik_trw_layer_delete_route ( vtl, trk );
