@@ -84,6 +84,10 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonlabel,  FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lon,  FALSE, FALSE, 0);
 
+  // 'ok' when press return in the entry
+  g_signal_connect_swapped (lat, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
+  g_signal_connect_swapped (lon, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
+
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
