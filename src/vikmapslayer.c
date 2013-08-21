@@ -667,6 +667,8 @@ static GdkPixbuf *pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
     GdkPixbuf *tmp = gdk_pixbuf_add_alpha(pixbuf,FALSE,0,0,0);
     g_object_unref(G_OBJECT(pixbuf));
     pixbuf = tmp;
+    if ( !pixbuf )
+      return NULL;
   }
 
   pixels = gdk_pixbuf_get_pixels(pixbuf);
@@ -729,9 +731,10 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
           if ( xshrinkfactor != 1.0 || yshrinkfactor != 1.0 )
             pixbuf = pixbuf_shrink ( pixbuf, xshrinkfactor, yshrinkfactor );
 
-          a_mapcache_add ( pixbuf, mapcoord->x, mapcoord->y, 
-              mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
-              mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
+          if ( pixbuf )
+            a_mapcache_add ( pixbuf, mapcoord->x, mapcoord->y,
+                             mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
+                             mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
       }
     }
   }
