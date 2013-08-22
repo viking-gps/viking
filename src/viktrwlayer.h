@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (c) 2011, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2011-2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,6 +119,18 @@ gboolean vik_trw_layer_get_waypoints_visibility ( VikTrwLayer *vtl );
 void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gpointer *trk_id );
 
 void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coord, gboolean vertical );
+
+typedef struct {
+  VikTrack *trk; // input
+  gpointer uuid; // output
+} trku_udata;
+gboolean trw_layer_track_find_uuid ( const gpointer id, const VikTrack *trk, gpointer udata );
+
+void trw_layer_zoom_to_show_latlons ( VikTrwLayer *vtl, VikViewport *vvp, struct LatLon maxmin[2] );
+
+GHashTable *vik_trw_layer_get_tracks_iters ( VikTrwLayer *vtl );
+GHashTable *vik_trw_layer_get_routes_iters ( VikTrwLayer *vtl );
+GHashTable *vik_trw_layer_get_waypoints_iters ( VikTrwLayer *vtl );
 
 G_END_DECLS
 

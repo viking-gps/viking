@@ -2799,6 +2799,21 @@ GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l )
   return l->waypoints;
 }
 
+GHashTable *vik_trw_layer_get_tracks_iters ( VikTrwLayer *vtl )
+{
+  return vtl->tracks_iters;
+}
+
+GHashTable *vik_trw_layer_get_routes_iters ( VikTrwLayer *vtl )
+{
+  return vtl->routes_iters;
+}
+
+GHashTable *vik_trw_layer_get_waypoints_iters ( VikTrwLayer *vtl )
+{
+  return vtl->waypoints;
+}
+
 gboolean vik_trw_layer_is_empty ( VikTrwLayer *vtl )
 {
   return ! ( g_hash_table_size ( vtl->tracks ) ||
@@ -2920,7 +2935,7 @@ static void trw_layer_centerize ( gpointer layer_and_vlp[2] )
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0]), _("This layer has no waypoints or trackpoints.") );
 }
 
-static void trw_layer_zoom_to_show_latlons ( VikTrwLayer *vtl, VikViewport *vvp, struct LatLon maxmin[2] )
+void trw_layer_zoom_to_show_latlons ( VikTrwLayer *vtl, VikViewport *vvp, struct LatLon maxmin[2] )
 {
   /* First set the center [in case previously viewing from elsewhere] */
   /* Then loop through zoom levels until provided positions are in view */
@@ -4248,12 +4263,7 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
   }
 }
 
-typedef struct {
-  VikTrack *trk; // input
-  gpointer uuid;   // output
-} trku_udata;
-
-static gboolean trw_layer_track_find_uuid ( const gpointer id, const VikTrack *trk, gpointer udata )
+gboolean trw_layer_track_find_uuid ( const gpointer id, const VikTrack *trk, gpointer udata )
 {
   trku_udata *user_data = udata;
   if ( trk == user_data->trk ) {
