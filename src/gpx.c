@@ -223,6 +223,7 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_trk:
      case tt_rte:
        c_tr = vik_track_new ();
+       vik_track_set_defaults ( c_tr );
        c_tr->is_route = (current_tag == tt_rte) ? TRUE : FALSE;
        c_tr->visible = TRUE;
        if ( get_attr ( attr, "hidden" ) )

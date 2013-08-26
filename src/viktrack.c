@@ -38,12 +38,33 @@
 #include "viktrack.h"
 #include "globals.h"
 #include "dems.h"
+#include "settings.h"
 
 VikTrack *vik_track_new()
 {
   VikTrack *tr = g_malloc0 ( sizeof ( VikTrack ) );
   tr->ref_count = 1;
   return tr;
+}
+
+#define VIK_SETTINGS_TRACK_NAME_MODE "track_draw_name_mode"
+#define VIK_SETTINGS_TRACK_NUM_DIST_LABELS "track_number_dist_labels"
+
+/**
+ * vik_track_set_defaults:
+ *
+ * Set some default values for a track.
+ * ATM This uses the 'settings' method to get values,
+ *  so there is no GUI way to control these yet...
+ */
+void vik_track_set_defaults(VikTrack *tr)
+{
+  gint tmp;
+  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_NAME_MODE, &tmp ) )
+    tr->draw_name_mode = tmp;
+
+  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_NUM_DIST_LABELS, &tmp ) )
+    tr->max_number_dist_labels = tmp;
 }
 
 void vik_track_set_comment_no_copy(VikTrack *tr, gchar *comment)
@@ -136,6 +157,8 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   GList *tp_iter = tr->trackpoints;
   new_tr->visible = tr->visible;
   new_tr->is_route = tr->is_route;
+  new_tr->draw_name_mode = tr->draw_name_mode;
+  new_tr->max_number_dist_labels = tr->max_number_dist_labels;
   new_tr->has_color = tr->has_color;
   new_tr->color = tr->color;
   new_tr->bbox = tr->bbox;
@@ -1082,6 +1105,55 @@ gdouble *vik_track_make_speed_dist_map ( const VikTrack *tr, guint16 num_chunks 
   return v;
 }
 
+/**
+ * vik_track_get_tp_by_dist:
+ * @trk:                  The Track on which to find a Trackpoint
+ * @meters_from_start:    The distance along a track that the trackpoint returned is near
+ * @get_next_point:       Since there is a choice of trackpoints, this determines which one to return
+ * @tp_metres_from_start: For the returned Trackpoint, returns the distance along the track
+ *
+ * TODO: Consider changing the boolean get_next_point into an enum with these options PREVIOUS, NEXT, NEAREST
+ *
+ * Returns: The #VikTrackpoint fitting the criteria or NULL
+ */
+VikTrackpoint *vik_track_get_tp_by_dist ( VikTrack *trk, gdouble meters_from_start, gboolean get_next_point, gdouble *tp_metres_from_start )
+{
+  gdouble current_dist = 0.0;
+  gdouble current_inc = 0.0;
+  if ( tp_metres_from_start )
+    *tp_metres_from_start = 0.0;
+
+  if ( trk->trackpoints ) {
+    GList *iter = g_list_next ( g_list_first ( trk->trackpoints ) );
+    while (iter) {
+      current_inc = vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
+                                     &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+      current_dist += current_inc;
+      if ( current_dist >= meters_from_start )
+        break;
+      iter = g_list_next ( iter );
+    }
+    // passed the end of the track
+    if ( !iter )
+      return NULL;
+
+    if ( tp_metres_from_start )
+      *tp_metres_from_start = current_dist;
+
+    // we've gone past the distance already, is the previous trackpoint wanted?
+    if ( !get_next_point ) {
+      if ( iter->prev ) {
+        if ( tp_metres_from_start )
+          *tp_metres_from_start = current_dist-current_inc;
+        return VIK_TRACKPOINT(iter->prev->data);
+      }
+    }
+    return VIK_TRACKPOINT(iter->data);
+  }
+
+  return NULL;
+}
+
 /* by Alex Foobarian */
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start )
 {
@@ -1319,6 +1391,8 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   /* basic properties: */
   new_tr->visible = ((VikTrack *)data)->visible;
   new_tr->is_route = ((VikTrack *)data)->is_route;
+  new_tr->draw_name_mode = ((VikTrack *)data)->draw_name_mode;
+  new_tr->max_number_dist_labels = ((VikTrack *)data)->max_number_dist_labels;
   new_tr->has_color = ((VikTrack *)data)->has_color;
   new_tr->color = ((VikTrack *)data)->color;
   new_tr->bbox = ((VikTrack *)data)->bbox;

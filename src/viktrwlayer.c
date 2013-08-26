@@ -131,6 +131,7 @@ struct _VikTrwLayer {
   gboolean tracks_visible, routes_visible, waypoints_visible;
   LatLonBBox waypoints_bbox;
 
+  gboolean track_draw_labels;
   guint8 drawmode;
   guint8 drawpoints;
   guint8 drawpoints_size;
@@ -144,6 +145,10 @@ struct _VikTrwLayer {
   guint8 line_thickness;
   guint8 bg_line_thickness;
   vik_layer_sort_order_t track_sort_order;
+
+  PangoLayout *tracklabellayout;
+  font_size_t track_font_size;
+  gchar *track_fsize_str;
 
   guint8 wp_symbol;
   guint8 wp_size;
@@ -454,8 +459,8 @@ enum {
 
 /****** PARAMETERS ******/
 
-static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images") };
-enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES };
+static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images"), N_("Tracks Advanced") };
+enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES, GROUP_TRACKS_ADV };
 
 static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Speed"), N_("All Tracks Same Color"), NULL };
 static gchar *params_wpsymbols[] = { N_("Filled Square"), N_("Square"), N_("Circle"), N_("X"), 0 };
@@ -516,6 +521,7 @@ static VikLayerParamData elevation_factor_default ( void ) { return VIK_LPD_UINT
 static VikLayerParamData stop_length_default ( void ) { return VIK_LPD_UINT ( 60 ); }
 static VikLayerParamData speed_factor_default ( void ) { return VIK_LPD_DOUBLE ( 30.0 ); }
 
+static VikLayerParamData tnfontsize_default ( void ) { return VIK_LPD_UINT ( FS_MEDIUM ); }
 static VikLayerParamData wpfontsize_default ( void ) { return VIK_LPD_UINT ( FS_MEDIUM ); }
 static VikLayerParamData wptextcolor_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#FFFFFF", &data.c ); return data; // White
@@ -537,28 +543,29 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "waypoints_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "routes_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
 
+  { VIK_LAYER_TRW, "trackdrawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Note: the individual track controls what labels may be displayed"), vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_TRW, "trackfontsize", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Track Labels Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL, NULL, tnfontsize_default, NULL, NULL },
   { VIK_LAYER_TRW, "drawmode", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Drawing Mode:"), VIK_LAYER_WIDGET_COMBOBOX, params_drawmodes, NULL, NULL, drawmode_default, NULL, NULL },
   { VIK_LAYER_TRW, "trackcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, N_("All Tracks Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL,
     N_("The color used when 'All Tracks Same Color' drawing mode is selected"), black_color_default, NULL, NULL },
   { VIK_LAYER_TRW, "drawlines", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Lines"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
-  { VIK_LAYER_TRW, "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL, line_thickness_default, NULL, NULL },
+  { VIK_LAYER_TRW, "line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Track Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL, line_thickness_default, NULL, NULL },
   { VIK_LAYER_TRW, "drawdirections", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Track Direction"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
-  { VIK_LAYER_TRW, "trkdirectionsize", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Direction Size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[11], NULL, NULL, trkdirectionsize_default, NULL, NULL },
+  { VIK_LAYER_TRW, "trkdirectionsize", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Direction Size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[11], NULL, NULL, trkdirectionsize_default, NULL, NULL },
   { VIK_LAYER_TRW, "drawpoints", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Trackpoints"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
-  { VIK_LAYER_TRW, "trkpointsize", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Trackpoint Size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[10], NULL, NULL, trkpointsize_default, NULL, NULL },
+  { VIK_LAYER_TRW, "trkpointsize", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Trackpoint Size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[10], NULL, NULL, trkpointsize_default, NULL, NULL },
   { VIK_LAYER_TRW, "drawelevation", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Elevation"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
-  { VIK_LAYER_TRW, "elevation_factor", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Draw Elevation Height %:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[9], NULL, NULL, elevation_factor_default, NULL, NULL },
-
+  { VIK_LAYER_TRW, "elevation_factor", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Draw Elevation Height %:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[9], NULL, NULL, elevation_factor_default, NULL, NULL },
   { VIK_LAYER_TRW, "drawstops", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS, N_("Draw Stops"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Whether to draw a marker when trackpoints are at the same position but over the minimum stop length apart in time"), vik_lpd_false_default, NULL, NULL },
-  { VIK_LAYER_TRW, "stop_length", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Min Stop Length (seconds):"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[8], NULL, NULL, stop_length_default, NULL, NULL },
+  { VIK_LAYER_TRW, "stop_length", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Min Stop Length (seconds):"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[8], NULL, NULL, stop_length_default, NULL, NULL },
 
-  { VIK_LAYER_TRW, "bg_line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track BG Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[6], NULL, NULL, bg_line_thickness_default, NULL, NULL },
-  { VIK_LAYER_TRW, "trackbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS, N_("Track Background Color"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, trackbgcolor_default, NULL, NULL },
-  { VIK_LAYER_TRW, "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
+  { VIK_LAYER_TRW, "bg_line_thickness", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Track BG Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[6], NULL, NULL, bg_line_thickness_default, NULL, NULL },
+  { VIK_LAYER_TRW, "trackbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_TRACKS_ADV, N_("Track Background Color"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, trackbgcolor_default, NULL, NULL },
+  { VIK_LAYER_TRW, "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS_ADV, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
     N_("The percentage factor away from the average speed determining the color used"), speed_factor_default, NULL, NULL },
-
-  { VIK_LAYER_TRW, "tracksortorder", VIK_LAYER_PARAM_UINT, GROUP_TRACKS, N_("Track Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order, NULL, NULL, sort_order_default, NULL, NULL },
+  { VIK_LAYER_TRW, "tracksortorder", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Track Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order, NULL, NULL, sort_order_default, NULL, NULL },
 
   { VIK_LAYER_TRW, "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL, NULL, wpfontsize_default, NULL, NULL },
@@ -584,6 +591,8 @@ enum {
   PARAM_WV,
   PARAM_RV,
   // Tracks
+  PARAM_TDL,
+  PARAM_TLFONTSIZE,
   PARAM_DM,
   PARAM_TC,
   PARAM_DL,
@@ -931,6 +940,22 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_TV: vtl->tracks_visible = data.b; break;
     case PARAM_WV: vtl->waypoints_visible = data.b; break;
     case PARAM_RV: vtl->routes_visible = data.b; break;
+    case PARAM_TDL: vtl->track_draw_labels = data.b; break;
+    case PARAM_TLFONTSIZE:
+      if ( data.u < FS_NUM_SIZES ) {
+        vtl->track_font_size = data.u;
+        g_free ( vtl->track_fsize_str );
+        switch ( vtl->track_font_size ) {
+          case FS_XX_SMALL: vtl->track_fsize_str = g_strdup ( "xx-small" ); break;
+          case FS_X_SMALL: vtl->track_fsize_str = g_strdup ( "x-small" ); break;
+          case FS_SMALL: vtl->track_fsize_str = g_strdup ( "small" ); break;
+          case FS_LARGE: vtl->track_fsize_str = g_strdup ( "large" ); break;
+          case FS_X_LARGE: vtl->track_fsize_str = g_strdup ( "x-large" ); break;
+          case FS_XX_LARGE: vtl->track_fsize_str = g_strdup ( "xx-large" ); break;
+          default: vtl->track_fsize_str = g_strdup ( "medium" ); break;
+        }
+      }
+      break;
     case PARAM_DM: vtl->drawmode = data.u; break;
     case PARAM_TC:
       vtl->track_color = data.c;
@@ -1040,6 +1065,8 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_TV: rv.b = vtl->tracks_visible; break;
     case PARAM_WV: rv.b = vtl->waypoints_visible; break;
     case PARAM_RV: rv.b = vtl->routes_visible; break;
+    case PARAM_TDL: rv.b = vtl->track_draw_labels; break;
+    case PARAM_TLFONTSIZE: rv.u = vtl->track_font_size; break;
     case PARAM_DM: rv.u = vtl->drawmode; break;
     case PARAM_TC: rv.c = vtl->track_color; break;
     case PARAM_DP: rv.b = vtl->drawpoints; break;
@@ -1287,6 +1314,9 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   if ( trwlayer->track_right_click_menu )
     g_object_ref_sink ( G_OBJECT(trwlayer->track_right_click_menu) );
 
+  if ( trwlayer->tracklabellayout != NULL)
+    g_object_unref ( G_OBJECT ( trwlayer->tracklabellayout ) );
+
   if ( trwlayer->wplabellayout != NULL)
     g_object_unref ( G_OBJECT ( trwlayer->wplabellayout ) );
 
@@ -1300,6 +1330,7 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
     g_object_unref ( G_OBJECT ( trwlayer->waypoint_bg_gc ) );
 
   g_free ( trwlayer->wp_fsize_str );
+  g_free ( trwlayer->track_fsize_str );
 
   if ( trwlayer->tpwin != NULL )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tpwin) );
@@ -1383,6 +1414,262 @@ static void draw_utm_skip_insignia ( VikViewport *vvp, GdkGC *gc, gint x, gint y
   vik_viewport_draw_line ( vvp, gc, x, y+5, x, y-5 );
   vik_viewport_draw_line ( vvp, gc, x+5, y+5, x-5, y-5 );
   vik_viewport_draw_line ( vvp, gc, x+5, y-5, x-5, y+5 );
+}
+
+
+static void trw_layer_draw_track_label ( gchar *name, gchar *fgcolour, gchar *bgcolour, struct DrawingParams *dp, VikCoord *coord )
+{
+  gchar *label_markup = g_strdup_printf ( "<span foreground=\"%s\" background=\"%s\" size=\"%s\">%s</span>", fgcolour, bgcolour, dp->vtl->track_fsize_str, name );
+
+  if ( pango_parse_markup ( label_markup, -1, 0, NULL, NULL, NULL, NULL ) )
+    pango_layout_set_markup ( dp->vtl->tracklabellayout, label_markup, -1 );
+  else
+    // Fallback if parse failure
+    pango_layout_set_text ( dp->vtl->tracklabellayout, name, -1 );
+
+  g_free ( label_markup );
+
+  gint label_x, label_y;
+  gint width, height;
+  pango_layout_get_pixel_size ( dp->vtl->tracklabellayout, &width, &height );
+
+  vik_viewport_coord_to_screen ( dp->vp, coord, &label_x, &label_y );
+  vik_viewport_draw_layout ( dp->vp, dp->vtl->track_bg_gc, label_x-width/2, label_y-height/2, dp->vtl->tracklabellayout );
+}
+
+/**
+ * distance_in_preferred_units:
+ * @dist: The source distance in standard SI Units (i.e. metres)
+ *
+ * TODO: This is a generic function that could be moved into globals.c or utils.c
+ *
+ * Probably best used if you have a only few conversions to perform.
+ * However if doing many points (such as on all points along a track) then this may be a bit slow,
+ *  since it will be doing the preference check on each call
+ *
+ * Returns: The distance in the units as specified by the preferences
+ */
+static gdouble distance_in_preferred_units ( gdouble dist )
+{
+  gdouble mydist;
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+  switch (dist_units) {
+  case VIK_UNITS_DISTANCE_MILES:
+    mydist = VIK_METERS_TO_MILES(dist);
+    break;
+  // VIK_UNITS_DISTANCE_KILOMETRES:
+  default:
+    mydist = dist/1000.0;
+    break;
+  }
+  return mydist;
+}
+
+/**
+ * trw_layer_draw_dist_labels:
+ *
+ * Draw a few labels along a track at nicely seperated distances
+ * This might slow things down if there's many tracks being displayed with this on.
+ */
+static void trw_layer_draw_dist_labels ( struct DrawingParams *dp, VikTrack *trk, gboolean drawing_highlight )
+{
+  static const gdouble chunksd[] = {0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0,
+                                    25.0, 40.0, 50.0, 75.0, 100.0,
+                                    150.0, 200.0, 250.0, 500.0, 1000.0};
+
+  gdouble dist = vik_track_get_length_including_gaps ( trk ) / (trk->max_number_dist_labels+1);
+
+  // Convert to specified unit to find the friendly breakdown value
+  dist = distance_in_preferred_units ( dist );
+
+  gint index = 0;
+  gint i=0;
+  for ( i = 0; i < G_N_ELEMENTS(chunksd); i++ ) {
+    if ( chunksd[i] > dist ) {
+      index = i;
+      dist = chunksd[index];
+      break;
+    }
+  }
+
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+
+  for ( i = 1; i < trk->max_number_dist_labels+1; i++ ) {
+    gdouble dist_i = dist * i;
+
+    // Convert distance back into metres for use in finding a trackpoint
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_MILES:
+      dist_i = VIK_MILES_TO_METERS(dist_i);
+      break;
+      // VIK_UNITS_DISTANCE_KILOMETRES:
+    default:
+      dist_i = dist_i*1000.0;
+      break;
+    }
+
+    gdouble dist_current = 0.0;
+    VikTrackpoint *tp_current = vik_track_get_tp_by_dist ( trk, dist_i, FALSE, &dist_current );
+    gdouble dist_next = 0.0;
+    VikTrackpoint *tp_next = vik_track_get_tp_by_dist ( trk, dist_i, TRUE, &dist_next );
+
+    gdouble dist_between_tps = fabs (dist_next - dist_current);
+    gdouble ratio = 0.0;
+    // Prevent division by 0 errors
+    if ( dist_between_tps > 0.0 )
+      ratio = fabs(dist_i-dist_current)/dist_between_tps;
+
+    if ( tp_current && tp_next ) {
+      // Construct the name based on the distance value
+      gchar *name;
+      gchar *units;
+      switch (dist_units) {
+      case VIK_UNITS_DISTANCE_MILES:
+        units = g_strdup ( _("miles") );
+        break;
+        // VIK_UNITS_DISTANCE_KILOMETRES:
+      default:
+        units = g_strdup ( _("km") );
+        break;
+      }
+
+      // Convert for display
+      dist_i = distance_in_preferred_units ( dist_i );
+
+      // Make the precision of the output related to the unit size.
+      if ( index == 0 )
+        name = g_strdup_printf ( "%.2f %s", dist_i, units);
+      else if ( index == 1 )
+        name = g_strdup_printf ( "%.1f %s", dist_i, units);
+      else
+        name = g_strdup_printf ( "%d %s", (gint)round(dist_i), units); // TODO single vs plurals
+      g_free ( units );
+
+      struct LatLon ll_current, ll_next;
+      vik_coord_to_latlon ( &tp_current->coord, &ll_current );
+      vik_coord_to_latlon ( &tp_next->coord, &ll_next );
+
+      // positional interpolation
+      // Using a simple ratio - may not be perfectly correct due to lat/long projections
+      //  but should be good enough over the small scale that I anticipate usage on
+      struct LatLon ll_new = { ll_current.lat + (ll_next.lat-ll_current.lat)*ratio,
+			       ll_current.lon + (ll_next.lon-ll_current.lon)*ratio };
+      VikCoord coord;
+      vik_coord_load_from_latlon ( &coord, dp->vtl->coord_mode, &ll_new );
+
+      gchar *fgcolour;
+      if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
+        fgcolour = gdk_color_to_string ( &(trk->color) );
+      else
+        fgcolour = gdk_color_to_string ( &(dp->vtl->track_color) );
+
+      // if highlight mode on, then colour the background in the highlight colour
+      gchar *bgcolour;
+      if ( drawing_highlight )
+	bgcolour = g_strdup ( vik_viewport_get_highlight_color ( dp->vp ) );
+      else
+        bgcolour = gdk_color_to_string ( &(dp->vtl->track_bg_color) );
+
+      trw_layer_draw_track_label ( name, fgcolour, bgcolour, dp, &coord );
+
+      g_free ( fgcolour );
+      g_free ( bgcolour );
+      g_free ( name );
+    }
+  }
+}
+
+/**
+ * trw_layer_draw_track_name_labels:
+ *
+ * Draw a label (or labels) for the track name somewhere depending on the track's properties
+ */
+static void trw_layer_draw_track_name_labels ( struct DrawingParams *dp, VikTrack *trk, gboolean drawing_highlight )
+{
+  gchar *fgcolour;
+  if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
+    fgcolour = gdk_color_to_string ( &(trk->color) );
+  else
+    fgcolour = gdk_color_to_string ( &(dp->vtl->track_color) );
+
+  // if highlight mode on, then colour the background in the highlight colour
+  gchar *bgcolour;
+  if ( drawing_highlight )
+    bgcolour = g_strdup ( vik_viewport_get_highlight_color ( dp->vp ) );
+  else
+    bgcolour = gdk_color_to_string ( &(dp->vtl->track_bg_color) );
+
+  gchar *ename = g_markup_escape_text ( trk->name, -1 );
+
+  if ( trk->draw_name_mode == TRACK_DRAWNAME_START_END_CENTRE ||
+       trk->draw_name_mode == TRACK_DRAWNAME_CENTRE ) {
+    struct LatLon average, maxmin[2] = { {0,0}, {0,0} };
+    trw_layer_find_maxmin_tracks ( NULL, trk, maxmin );
+    average.lat = (maxmin[0].lat+maxmin[1].lat)/2;
+    average.lon = (maxmin[0].lon+maxmin[1].lon)/2;
+    VikCoord coord;
+    vik_coord_load_from_latlon ( &coord, dp->vtl->coord_mode, &average );
+
+    trw_layer_draw_track_label ( ename, fgcolour, bgcolour, dp, &coord );
+  }
+
+  if ( trk->draw_name_mode == TRACK_DRAWNAME_CENTRE )
+    // No other labels to draw
+    return;
+
+  GList *ending = g_list_last ( trk->trackpoints );
+  VikCoord begin_coord = VIK_TRACKPOINT(trk->trackpoints->data)->coord;
+  VikCoord end_coord = VIK_TRACKPOINT(ending->data)->coord;
+
+  gboolean done_start_end = FALSE;
+
+  if ( trk->draw_name_mode == TRACK_DRAWNAME_START_END ||
+       trk->draw_name_mode == TRACK_DRAWNAME_START_END_CENTRE ) {
+
+    // This number can be configured via the settings if you really want to change it
+    gdouble distance_diff;
+    if ( ! a_settings_get_double ( "trackwaypoint_start_end_distance_diff", &distance_diff ) )
+      distance_diff = 100.0; // Metres
+
+    if ( vik_coord_diff ( &begin_coord, &end_coord ) < distance_diff ) {
+      // Start and end 'close' together so only draw one label at an average location
+      gint x1, x2, y1, y2;
+      vik_viewport_coord_to_screen ( dp->vp, &begin_coord, &x1, &y1);
+      vik_viewport_coord_to_screen ( dp->vp, &end_coord, &x2, &y2);
+      VikCoord av_coord;
+      vik_viewport_screen_to_coord ( dp->vp, (x1 + x2) / 2, (y1 + y2) / 2, &av_coord );
+
+      gchar *name = g_strdup_printf ( "%s: %s", ename, _("start/end") );
+      trw_layer_draw_track_label ( name, fgcolour, bgcolour, dp, &av_coord );
+      g_free ( name );
+
+      done_start_end = TRUE;
+    }
+  }
+
+  if ( ! done_start_end ) {
+    if ( trk->draw_name_mode == TRACK_DRAWNAME_START ||
+         trk->draw_name_mode == TRACK_DRAWNAME_START_END ||
+         trk->draw_name_mode == TRACK_DRAWNAME_START_END_CENTRE ) {
+      gchar *name_start = g_strdup_printf ( "%s: %s", ename, _("start") );
+      trw_layer_draw_track_label ( name_start, fgcolour, bgcolour, dp, &begin_coord );
+      g_free ( name_start );
+    }
+    // Don't draw end label if this is the one being created
+    if ( trk != dp->vtl->current_track ) {
+      if ( trk->draw_name_mode == TRACK_DRAWNAME_END ||
+           trk->draw_name_mode == TRACK_DRAWNAME_START_END ||
+           trk->draw_name_mode == TRACK_DRAWNAME_START_END_CENTRE ) {
+        gchar *name_end = g_strdup_printf ( "%s: %s", ename, _("end") );
+        trw_layer_draw_track_label ( name_end, fgcolour, bgcolour, dp, &end_coord );
+        g_free ( name_end );
+      }
+    }
+  }
+
+  g_free ( fgcolour );
+  g_free ( bgcolour );
+  g_free ( ename );
 }
 
 static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct DrawingParams *dp, gboolean draw_track_outline )
@@ -1644,6 +1931,17 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
           }
         }
         useoldvals = FALSE;
+      }
+    }
+
+    // Labels drawn after the trackpoints, so the labels are on top
+    if ( dp->vtl->track_draw_labels ) {
+      if ( track->max_number_dist_labels > 0 ) {
+        trw_layer_draw_dist_labels ( dp, track, drawing_highlight );
+      }
+
+      if ( track->draw_name_mode != TRACK_DRAWNAME_NO ) {
+        trw_layer_draw_track_name_labels ( dp, track, drawing_highlight );
       }
     }
   }
@@ -1932,6 +2230,9 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
 
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
   pango_layout_set_font_description (rv->wplabellayout, gtk_widget_get_style(GTK_WIDGET(vp))->font_desc);
+
+  rv->tracklabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
+  pango_layout_set_font_description (rv->tracklabellayout, gtk_widget_get_style(GTK_WIDGET(vp))->font_desc);
 
   trw_layer_new_track_gcs ( rv, vp );
 
@@ -3262,6 +3563,7 @@ static void trw_layer_new_wp ( gpointer lav[2] )
 static void new_track_create_common ( VikTrwLayer *vtl, gchar *name )
 {
   vtl->current_track = vik_track_new();
+  vik_track_set_defaults ( vtl->current_track );
   vtl->current_track->visible = TRUE;
   if ( vtl->drawmode == DRAWMODE_ALL_SAME_COLOR )
     // Create track with the preferred colour from the layer properties
@@ -3288,6 +3590,7 @@ static void trw_layer_new_track ( gpointer lav[2] )
 static void new_route_create_common ( VikTrwLayer *vtl, gchar *name )
 {
   vtl->current_track = vik_track_new();
+  vik_track_set_defaults ( vtl->current_track );
   vtl->current_track->visible = TRUE;
   vtl->current_track->is_route = TRUE;
   // By default make all routes red
@@ -4401,8 +4704,36 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
                                   tr,
 				  pass_along[1], /* vlp */
 				  pass_along[5], /* vvp */
-                                  pass_along[6]); /* iter */
+                                  pass_along[6], /* iter */
+                                  FALSE );
     }
+  }
+}
+
+/**
+ * trw_layer_track_statistics:
+ *
+ * Show track statistics.
+ * ATM jump to the stats page in the properties
+ * TODO: consider separating the stats into an individual dialog?
+ */
+static void trw_layer_track_statistics ( gpointer pass_along[7] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikTrack *trk;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_TRACK )
+    trk = g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+  else
+    trk = g_hash_table_lookup ( vtl->routes, pass_along[3] );
+
+  if ( trk && trk->name ) {
+    vik_trw_layer_propwin_run ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                vtl,
+                                trk,
+                                pass_along[1], // vlp
+                                pass_along[5], // vvp
+                                pass_along[6], // iter
+                                TRUE );
   }
 }
 
@@ -7143,6 +7474,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
+    item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_statistics), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
     GtkWidget *goto_submenu;
     goto_submenu = gtk_menu_new ();
     item = gtk_image_menu_item_new_with_mnemonic ( _("_Goto") );
@@ -9397,7 +9733,8 @@ static void trw_layer_sort_all ( VikTrwLayer *vtl )
 
 static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean from_file )
 {
-  trw_layer_verify_thumbnails ( vtl, vvp );
+  if ( VIK_LAYER(vtl)->realized )
+    trw_layer_verify_thumbnails ( vtl, vvp );
   trw_layer_track_alloc_colors ( vtl );
 
   trw_layer_calculate_bounds_waypoints ( vtl );

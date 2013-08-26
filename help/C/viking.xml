@@ -2629,6 +2629,9 @@ Accept: */*
 	  <listitem>
 	    <para>version_check_period_days=14</para>
 	  </listitem>
+	  <listitem>
+	    <para>trackwaypoint_start_end_distance_diff=100.0</para>
+	  </listitem>
 	</orderedlist>
       </section>
 
