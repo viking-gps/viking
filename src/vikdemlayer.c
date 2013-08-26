@@ -933,7 +933,11 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
   continent_dir = srtm_continent_dir(intlat, intlon);
 
   if (!continent_dir) {
-    g_warning(N_("No SRTM data available for %f, %f"), p->lat, p->lon);
+    if ( p->vdl ) {
+      gchar *msg = g_strdup_printf ( _("No SRTM data available for %f, %f"), p->lat, p->lon );
+      vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(p->vdl), msg, VIK_STATUSBAR_INFO );
+      g_free ( msg );
+    }
     return;
   }
 

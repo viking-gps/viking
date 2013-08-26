@@ -127,8 +127,10 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen);
 
 void vik_track_calculate_bounds ( VikTrack *trk );
 
-void vik_track_apply_dem_data ( VikTrack *tr);
+void vik_track_anonymize_times ( VikTrack *tr );
+gulong vik_track_apply_dem_data ( VikTrack *tr, gboolean skip_existing );
 void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr );
+gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat );
 
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 );
 

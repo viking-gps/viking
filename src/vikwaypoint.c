@@ -26,6 +26,7 @@
 #include "vikwaypoint.h"
 #include "globals.h"
 #include "garminsymbols.h"
+#include "dems.h"
 #include <glib/gi18n.h>
 
 VikWaypoint *vik_waypoint_new()
@@ -135,6 +136,28 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   vik_waypoint_set_image(new_wp,wp->image);
   vik_waypoint_set_symbol(new_wp,wp->symbol);
   return new_wp;
+}
+
+/**
+ * vik_waypoint_apply_dem_data:
+ * @wp:            The Waypoint to operate on
+ * @skip_existing: When TRUE, don't change the elevation if the waypoint already has a value
+ *
+ * Set elevation data for a waypoint using available DEM information
+ *
+ * Returns: TRUE if the waypoint was updated
+ */
+gboolean vik_waypoint_apply_dem_data ( VikWaypoint *wp, gboolean skip_existing )
+{
+  gboolean updated = FALSE;
+  if ( !(skip_existing && wp->altitude != VIK_DEFAULT_ALTITUDE) ) {
+    gint16 elev = a_dems_get_elev_by_coord ( &(wp->coord), VIK_DEM_INTERPOL_BEST );
+    if ( elev != VIK_DEM_INVALID_ELEVATION ) {
+      wp->altitude = (gdouble)elev;
+      updated = TRUE;
+    }
+  }
+  return updated;
 }
 
 /*

@@ -87,6 +87,7 @@ typedef struct _OsmTracesInfo {
   gchar *name;
   gchar *description;
   gchar *tags;
+  gboolean anonymize_times; // ATM only available on a single track.
   const OsmTraceVis_t *vistype;
   VikTrwLayer *vtl;
   VikTrack *trk;
@@ -288,7 +289,15 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   if (oti->trk != NULL)
   {
     /* Upload only the selected track */
-    a_gpx_write_track_file(oti->trk, file, &options);
+    if ( oti->anonymize_times )
+    {
+      VikTrack *trk = vik_track_copy(oti->trk, TRUE);
+      vik_track_anonymize_times(trk);
+      a_gpx_write_track_file(trk, file, &options);
+      vik_track_free(trk);
+    }
+    else
+      a_gpx_write_track_file(oti->trk, file, &options);
   }
   else
   {
@@ -398,6 +407,7 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   GtkWidget *description_label, *description_entry;
   GtkWidget *tags_label, *tags_entry;
   GtkWidget *visibility;
+  GtkWidget *anonymize_checkbutton = NULL;
   const OsmTraceVis_t *vis_t;
 
   user_label = gtk_label_new(_("Email:"));
@@ -438,6 +448,16 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), description_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_text(GTK_WIDGET(description_entry),
                         _("The description of the trace"));
+
+  if (trk != NULL) {
+    GtkWidget *label = gtk_label_new(_("Anonymize Times:"));
+    anonymize_checkbutton = gtk_check_button_new ();
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), label, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), anonymize_checkbutton, FALSE, FALSE, 0);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(anonymize_checkbutton),
+                                _("Anonymize times of the trace.\n"
+                                  "<small>You may choose to make the trace identifiable, yet mask the actual real time values</small>"));
+  }
 
   tags_label = gtk_label_new(_("Tags:"));
   tags_entry = gtk_entry_new();
@@ -497,6 +517,10 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
     info->vistype     = &OsmTraceVis[gtk_combo_box_get_active(GTK_COMBO_BOX(visibility))];
     info->vtl         = VIK_TRW_LAYER(g_object_ref(vtl));
     info->trk         = trk;
+    if (trk != NULL && anonymize_checkbutton != NULL )
+      info->anonymize_times = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(anonymize_checkbutton));
+    else
+      info->anonymize_times = FALSE;
 
     // Save visibility value for default reuse
     last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(visibility));

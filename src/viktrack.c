@@ -1392,22 +1392,64 @@ void vik_track_calculate_bounds ( VikTrack *trk )
 }
 
 /**
+ * vik_track_anonymize_times:
  *
+ * Shift all timestamps to be relatively offset from 1901-01-01
  */
-void vik_track_apply_dem_data ( VikTrack *tr )
+void vik_track_anonymize_times ( VikTrack *tr )
 {
+  GTimeVal gtv;
+  g_time_val_from_iso8601 ( "1901-01-01T00:00:00Z", &gtv );
+
+  time_t anon_timestamp = gtv.tv_sec;
+  time_t offset = 0;
+
+  GList *tp_iter;
+  tp_iter = tr->trackpoints;
+  while ( tp_iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
+    if ( tp->has_timestamp ) {
+      // Calculate an offset in time using the first available timestamp
+      if ( offset == 0 )
+	offset = tp->timestamp - anon_timestamp;
+
+      // Apply this offset to shift all timestamps towards 1901 & hence anonymising the time
+      // Note that the relative difference between timestamps is kept - thus calculating speeds will still work
+      tp->timestamp = tp->timestamp - offset;
+    }
+    tp_iter = tp_iter->next;
+  }
+}
+
+
+/**
+ * vik_track_apply_dem_data:
+ * @skip_existing: When TRUE, don't change the elevation if the trackpoint already has a value
+ *
+ * Set elevation data for a track using any available DEM information
+ */
+gulong vik_track_apply_dem_data ( VikTrack *tr, gboolean skip_existing )
+{
+  gulong num = 0;
   GList *tp_iter;
   gint16 elev;
   tp_iter = tr->trackpoints;
   while ( tp_iter ) {
-    /* TODO: of the 4 possible choices we have for choosing an elevation
-     * (trackpoint in between samples), choose the one with the least elevation change
-     * as the last */
-    elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(tp_iter->data)->coord), VIK_DEM_INTERPOL_BEST );
-    if ( elev != VIK_DEM_INVALID_ELEVATION )
-      VIK_TRACKPOINT(tp_iter->data)->altitude = elev;
+    // Don't apply if the point already has a value and the overwrite is off
+    if ( !(skip_existing && VIK_TRACKPOINT(tp_iter->data)->altitude != VIK_DEFAULT_ALTITUDE) ) {
+      /* TODO: of the 4 possible choices we have for choosing an elevation
+       * (trackpoint in between samples), choose the one with the least elevation change
+       * as the last */
+      elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(tp_iter->data)->coord), VIK_DEM_INTERPOL_BEST );
+
+      if ( elev != VIK_DEM_INVALID_ELEVATION ) {
+        VIK_TRACKPOINT(tp_iter->data)->altitude = elev;
+	num++;
+      }
+    }
     tp_iter = tp_iter->next;
   }
+  return num;
 }
 
 /**
@@ -1423,6 +1465,101 @@ void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
     if ( elev != VIK_DEM_INVALID_ELEVATION )
       VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->altitude = elev;
   }
+}
+
+
+/**
+ * smoothie:
+ *
+ * Apply elevation smoothing over range of trackpoints between the list start and end points
+ */
+static void smoothie ( GList *tp1, GList *tp2, gdouble elev1, gdouble elev2, guint points )
+{
+  // If was really clever could try and weigh interpolation according to the distance between trackpoints somehow
+  // Instead a simple average interpolation for the number of points given.
+  gdouble change = (elev2 - elev1)/(points+1);
+  gint count = 1;
+  GList *tp_iter = tp1;
+  while ( tp_iter != tp2 && tp_iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
+
+    tp->altitude = elev1 + (change*count);
+
+    count++;
+    tp_iter = tp_iter->next;
+  }
+}
+
+/**
+ * vik_track_smooth_missing_elevation_data:
+ * @flat: Specify how the missing elevations will be set.
+ *        When TRUE it uses a simple flat method, using the last known elevation
+ *        When FALSE is uses an interpolation method to the next known elevation
+ *
+ * For each point with a missing elevation, set it to use the last known available elevation value.
+ * Primarily of use for smallish DEM holes where it is missing elevation data.
+ * Eg see Austria: around N47.3 & E13.8
+ *
+ * Returns: The number of points that were adjusted
+ */
+gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat )
+{
+  gulong num = 0;
+
+  GList *tp_iter;
+  gdouble elev = VIK_DEFAULT_ALTITUDE;
+
+  VikTrackpoint *tp_missing = NULL;
+  GList *iter_first = NULL;
+  guint points = 0;
+
+  tp_iter = tr->trackpoints;
+  while ( tp_iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
+
+    if ( VIK_DEFAULT_ALTITUDE == tp->altitude ) {
+      if ( flat ) {
+        // Simply assign to last known value
+	if ( elev != VIK_DEFAULT_ALTITUDE ) {
+          tp->altitude = elev;
+          num++;
+	}
+      }
+      else {
+        if ( !tp_missing ) {
+          // Remember the first trackpoint (and the list pointer to it) of a section of no altitudes
+          tp_missing = tp;
+          iter_first = tp_iter;
+          points = 1;
+        }
+        else {
+          // More missing altitudes
+          points++;
+        }
+      }
+    }
+    else {
+      // Altitude available (maybe again!)
+      // If this marks the end of a section of altitude-less points
+      //  then apply smoothing for that section of points
+      if ( points > 0 && elev != VIK_DEFAULT_ALTITUDE )
+        if ( !flat ) {
+          smoothie ( iter_first, tp_iter, elev, tp->altitude, points );
+          num = num + points;
+        }
+
+      // reset
+      points = 0;
+      tp_missing = NULL;
+
+      // Store for reuse as the last known good value
+      elev = tp->altitude;
+    }
+
+    tp_iter = tp_iter->next;
+  }
+
+  return num;
 }
 
 /**
