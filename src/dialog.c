@@ -798,12 +798,45 @@ void a_dialog_about ( GtkWindow *parent )
 			"along with this program; if not, write to the Free Software "
 			"Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA");
 
+  // Would be nice to use gtk_about_dialog_add_credit_section (), but that requires gtk 3.4
+  // For now shove it in the 'artists' section so at least the information is easily visible
+  // Something more advanced might have proper version information too...
+  const gchar *libs[] = {
+    "Compiled in libraries:",
+    // Default libs
+    "libglib-2.0",
+    "libgthread-2.0",
+    "libgtk+-2.0",
+    "libgio-2.0",
+    // Potentially optional libs (but probably couldn't build without them)
+#ifdef HAVE_LIBM
+    "libm",
+#endif
+#ifdef HAVE_LIBZ
+    "libz",
+#endif
+#ifdef HAVE_LIBCURL
+    "libcurl",
+#endif
+    // Actually optional libs
+#ifdef HAVE_LIBGPS
+    "libgps",
+#endif
+#ifdef HAVE_LIBEXIF
+    "libexif",
+#endif
+#ifdef HAVE_LIBX11
+    "libX11",
+#endif
+    NULL
+  };
   // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program
   // This is the old method:
 #if (GTK_MAJOR_VERSION == 2 && GTK_MINOR_VERSION < 24)
   gtk_about_dialog_set_url_hook (about_url_hook, NULL, NULL);
   gtk_about_dialog_set_email_hook (about_email_hook, NULL, NULL);
 #endif
+
   gtk_show_about_dialog (parent,
 	/* TODO do not set program-name and correctly set info for g_get_application_name */
   	"program-name", program_name,
@@ -817,6 +850,7 @@ void a_dialog_about ( GtkWindow *parent )
 	"authors", AUTHORS,
 	"documenters", DOCUMENTERS,
 	"translator-credits", _("Translation is coordinated on http://launchpad.net/viking"),
+	"artists", libs,
 	NULL);
 }
 

@@ -1,8 +1,10 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2007, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +40,10 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
+#ifdef HAVE_MAGIC_H
+#include <magic.h>
+#endif
+#include "compression.h"
 
 #include "download.h"
 
@@ -154,6 +160,76 @@ static void unlock_file(const char *fn)
 	g_mutex_unlock(file_list_mutex);
 }
 
+
+static void uncompress_zip ( gchar *name )
+{
+	GError *error = NULL;
+	GMappedFile *mf;
+
+	if ((mf = g_mapped_file_new ( name, FALSE, &error )) == NULL) {
+		g_critical(_("Couldn't map file %s: %s"), name, error->message);
+		g_error_free(error);
+		return;
+	}
+	gchar *file_contents = g_mapped_file_get_contents ( mf );
+
+	void *unzip_mem = NULL;
+	gulong ucsize;
+
+	if ((unzip_mem = unzip_file (file_contents, &ucsize)) == NULL) {
+		g_mapped_file_unref ( mf );
+		return;
+	}
+
+	// This overwrires any previous file contents
+	if ( ! g_file_set_contents ( name, unzip_mem, ucsize, &error ) ) {
+		g_critical ( "Couldn't write file '%s', because of %s", name, error->message );
+		g_error_free ( error );
+	}
+}
+
+/**
+ * a_try_decompress_file:
+ * @name:  The potentially compressed filename
+ *
+ * Perform magic to decide how which type of decompression to attempt
+ */
+void a_try_decompress_file (gchar *name)
+{
+#ifdef HAVE_MAGIC_H
+	magic_t myt = magic_open ( MAGIC_CONTINUE|MAGIC_ERROR|MAGIC_MIME );
+	gboolean zip = FALSE;
+	gboolean bzip2 = FALSE;
+	if ( myt ) {
+		magic_load ( myt, NULL );
+		const char* magic = magic_file (myt, name);
+		g_debug ("%s: magic output: %s", __FUNCTION__, magic );
+
+		if ( g_strcmp0 (magic, "application/zip; charset=binary") == 0 )
+			zip = TRUE;
+
+		if ( g_strcmp0 (magic, "application/x-bzip2; charset=binary") == 0 )
+			bzip2 = TRUE;
+
+		magic_close ( myt );
+	}
+
+	if ( !(zip || bzip2) )
+		return;
+
+	if ( zip ) {
+		uncompress_zip ( name );
+	}
+	else if ( bzip2 ) {
+		gchar* bz2_name = uncompress_bzip2 ( name );
+		g_remove ( name );
+		g_rename ( bz2_name, name );
+	}
+
+	return;
+#endif
+}
+
 static int download( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *options, gboolean ftp, void *handle)
 {
   FILE *f;
@@ -252,6 +328,9 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     }
     return -1;
   }
+
+  if ( options->convert_file )
+	  options->convert_file ( tmpfilename );
 
   if (options->use_etag) {
     if (file_options.new_etag) {
