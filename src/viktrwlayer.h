@@ -116,7 +116,7 @@ gboolean vik_trw_layer_get_tracks_visibility ( VikTrwLayer *vtl );
 gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl );
 gboolean vik_trw_layer_get_waypoints_visibility ( VikTrwLayer *vtl );
 
-void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gpointer *trk_id );
+void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk );
 
 void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coord, gboolean vertical );
 

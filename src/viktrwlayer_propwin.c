@@ -90,7 +90,6 @@ typedef struct _propwidgets {
   gboolean  configure_dialog;
   VikTrwLayer *vtl;
   VikTrack *tr;
-  gpointer  trk_id;
   VikViewport *vvp;
   VikLayersPanel *vlp;
   gint      profile_width;
@@ -2519,7 +2518,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
       tr->draw_name_mode = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->w_namelabel) );
       tr->max_number_dist_labels = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number_distlabels) );
-      trw_layer_update_treeview ( widgets->vtl, widgets->tr, widgets->trk_id );
+      trw_layer_update_treeview ( widgets->vtl, widgets->tr );
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_REVERSE:
@@ -2702,7 +2701,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                  VikTrack *tr,
                                  gpointer vlp,
                                  VikViewport *vvp,
-                                 gpointer *trk_id,
                                  gboolean start_on_stats )
 {
   PropWidgets *widgets = prop_widgets_new();
@@ -2710,7 +2708,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->vvp = vvp;
   widgets->vlp = vlp;
   widgets->tr = tr;
-  widgets->trk_id = trk_id;
 
   gint profile_size_value;
   // Ensure minimum values

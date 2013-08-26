@@ -38,7 +38,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 								 VikTrack *tr,
 								 gpointer vlp,
 								 VikViewport *vvp,
-								 gpointer *trk_id,
 								 gboolean start_on_stats );
 
 /**

@@ -4042,7 +4042,7 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
   g_hash_table_insert ( vtl->tracks, GUINT_TO_POINTER(tr_uuid), t );
 
-  trw_layer_update_treeview ( vtl, t, GUINT_TO_POINTER(tr_uuid) );
+  trw_layer_update_treeview ( vtl, t );
 }
 
 // Fake Route UUIDs vi simple increasing integer
@@ -4075,7 +4075,7 @@ void vik_trw_layer_add_route ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
   g_hash_table_insert ( vtl->routes, GUINT_TO_POINTER(rt_uuid), t );
 
-  trw_layer_update_treeview ( vtl, t, GUINT_TO_POINTER(rt_uuid) );
+  trw_layer_update_treeview ( vtl, t );
 }
 
 /* to be called whenever a track has been deleted or may have been changed. */
@@ -4705,7 +4705,6 @@ static void trw_layer_properties_item ( gpointer pass_along[7] )
                                   tr,
 				  pass_along[1], /* vlp */
 				  pass_along[5], /* vvp */
-                                  pass_along[6], /* iter */
                                   FALSE );
     }
   }
@@ -4733,7 +4732,6 @@ static void trw_layer_track_statistics ( gpointer pass_along[7] )
                                 trk,
                                 pass_along[1], // vlp
                                 pass_along[5], // vvp
-                                pass_along[6], // iter
                                 TRUE );
   }
 }
@@ -4741,7 +4739,7 @@ static void trw_layer_track_statistics ( gpointer pass_along[7] )
 /*
  * Update the treeview of the track id - primarily to update the icon
  */
-void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gpointer *trk_id )
+void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk )
 {
   trku_udata udata;
   udata.trk  = trk;
@@ -9763,7 +9761,7 @@ static void trw_layer_track_alloc_colors ( VikTrwLayer *vtl )
       VIK_TRACK(value)->has_color = TRUE;
     }
 
-    trw_layer_update_treeview ( vtl, VIK_TRACK(value), key );
+    trw_layer_update_treeview ( vtl, VIK_TRACK(value) );
 
     ii++;
     if (ii > VIK_TRW_LAYER_TRACK_GCS)
@@ -9785,7 +9783,7 @@ static void trw_layer_track_alloc_colors ( VikTrwLayer *vtl )
       VIK_TRACK(value)->has_color = TRUE;
     }
 
-    trw_layer_update_treeview ( vtl, VIK_TRACK(value), key );
+    trw_layer_update_treeview ( vtl, VIK_TRACK(value) );
 
     ii = !ii;
   }
