@@ -102,6 +102,7 @@ VikTrackpoint *vik_trackpoint_new();
 void vik_trackpoint_free(VikTrackpoint *tp);
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp);
 void vik_track_add_trackpoint(VikTrack *tr, VikTrackpoint *tp, gboolean recalculate);
+gdouble vik_track_get_length_to_trackpoint (const VikTrack *tr, const VikTrackpoint *tp);
 gdouble vik_track_get_length(const VikTrack *tr);
 gdouble vik_track_get_length_including_gaps(const VikTrack *tr);
 gulong vik_track_get_tp_count(const VikTrack *tr);

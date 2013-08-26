@@ -245,6 +245,33 @@ void vik_track_add_trackpoint ( VikTrack *tr, VikTrackpoint *tp, gboolean recalc
     track_recalculate_bounds_last_tp ( tr );
 }
 
+/**
+ * vik_track_get_length_to_trackpoint:
+ *
+ */
+gdouble vik_track_get_length_to_trackpoint (const VikTrack *tr, const VikTrackpoint *tp)
+{
+  gdouble len = 0.0;
+  if ( tr->trackpoints )
+  {
+    GList *iter = tr->trackpoints->next;
+    while (iter)
+    {
+      VikTrackpoint *tp1 = VIK_TRACKPOINT(iter->data);
+      if ( ! tp1->newsegment )
+        len += vik_coord_diff ( &(tp1->coord),
+                                &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+
+      // Exit when we reach the desired point
+      if ( tp1 == tp )
+	break;
+
+      iter = iter->next;
+    }
+  }
+  return len;
+}
+
 gdouble vik_track_get_length(const VikTrack *tr)
 {
   gdouble len = 0.0;

@@ -2632,7 +2632,50 @@ Accept: */*
 	  <listitem>
 	    <para>trackwaypoint_start_end_distance_diff=100.0</para>
 	  </listitem>
+	  <listitem>
+	    <para>gps_statusbar_format=GSA</para>
+	    <para>This string is in the Message Format Code</para>
+	  </listitem>
+	  <listitem>
+	    <para>trkpt_selected_statusbar_format=KATDN</para>
+	    <para>This string is in the Message Format Code</para>
+	  </listitem>
 	</orderedlist>
+
+	<section>
+          <title>Message Format Code</title>
+	  <para>Currently for ease of implementation the message format code is a string of characters.</para>
+          <para>Each character represents what should be inserted in relation to a Trackpoint.</para>
+	  <para>One day it might evolve into something more user friendly with a frontend to control it, perhaps allowing arbitary text too. However for now at least some control is offered :)</para>
+	  <para>
+          <variablelist>
+            <varlistentry>
+              <term>Character Code</term>
+              <listitem>
+              <para>G = Some text to display at the start of the message - <emphasis>GPSD</emphasis></para>
+              <para>K = Some text to display at the start of the message - <emphasis>Trkpt</emphasis></para>
+              <para>A = Altitude of a Trackpoint</para>
+              <para>S = Speed of a Trackpoint</para>
+              <para>C = Course of a Trackpoint</para>
+              <para>L = Location of a Trackpoint</para>
+              <para>T = Time of a Trackpoint</para>
+              <para>M = Time diff of a Trackpoint from the previous trackpoint</para>
+              <para>X = Number of satellites used in the trackpoint fix</para>
+              <para>D = Distance of the trackpoint from the start of a track (following along the track)</para>
+              <para>P = Distance difference of the trackpoint from the previous trackpoint</para>
+              <para>N = Name of track to which the trackpoint belongs</para>
+	      </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Output Notes</term>
+              <listitem>
+	      <para>If the output has <emphasis>*</emphasis> after it, then the value has been calculated via interpolation (such as speed when the Trackpoint does not contain a speed value).</para>
+	      <para>If the output has <emphasis>**</emphasis> after it, then difficulties were encountered in trying to work the value so probably a default of 0 will be shown.</para>
+	      </listitem>
+            </varlistentry>
+          </variablelist>
+	  </para>
+	</section>
       </section>
 
 </section>
