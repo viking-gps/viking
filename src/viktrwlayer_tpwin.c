@@ -254,7 +254,7 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_label_set_text ( tpwin->sat, NULL );
 }
 
-void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, gchar *track_name )
+void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gchar *track_name )
 {
   static char tmp_str[64];
   static struct LatLon ll;
