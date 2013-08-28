@@ -278,6 +278,7 @@ static void trw_layer_split_by_timestamp ( gpointer pass_along[6] );
 static void trw_layer_split_by_n_points ( gpointer pass_along[6] );
 static void trw_layer_split_at_trackpoint ( gpointer pass_along[6] );
 static void trw_layer_split_segments ( gpointer pass_along[6] );
+static void trw_layer_delete_point_selected ( gpointer pass_along[6] );
 static void trw_layer_delete_points_same_position ( gpointer pass_along[6] );
 static void trw_layer_delete_points_same_time ( gpointer pass_along[6] );
 static void trw_layer_reverse ( gpointer pass_along[6] );
@@ -6069,6 +6070,60 @@ static void trw_layer_split_segments ( gpointer pass_along[6] )
 }
 /* end of split/merge routines */
 
+static void trw_layer_trackpoint_selected_delete ( VikTrwLayer *vtl, VikTrack *trk )
+{
+  GList *new_tpl;
+
+  // Find available adjacent trackpoint
+  if ( (new_tpl = vtl->current_tpl->next) || (new_tpl = vtl->current_tpl->prev) ) {
+    if ( VIK_TRACKPOINT(vtl->current_tpl->data)->newsegment && vtl->current_tpl->next )
+      VIK_TRACKPOINT(vtl->current_tpl->next->data)->newsegment = TRUE; /* don't concat segments on del */
+
+    // Delete current trackpoint
+    vik_trackpoint_free ( vtl->current_tpl->data );
+    trk->trackpoints = g_list_delete_link ( trk->trackpoints, vtl->current_tpl );
+
+    // Set to current to the available adjacent trackpoint
+    vtl->current_tpl = new_tpl;
+
+    if ( vtl->current_tp_track ) {
+      vik_track_calculate_bounds ( vtl->current_tp_track );
+    }
+  }
+  else {
+    // Delete current trackpoint
+    vik_trackpoint_free ( vtl->current_tpl->data );
+    trk->trackpoints = g_list_delete_link ( trk->trackpoints, vtl->current_tpl );
+    trw_layer_cancel_current_tp ( vtl, FALSE );
+  }
+}
+
+/**
+ * Delete the selected point
+ */
+static void trw_layer_delete_point_selected ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *trk;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( !trk )
+    return;
+
+  if ( !vtl->current_tpl )
+    return;
+
+  trw_layer_trackpoint_selected_delete ( vtl, trk );
+
+  // Track has been updated so update tps:
+  trw_layer_cancel_tps_of_track ( vtl, trk );
+
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
 /**
  * Delete adjacent track points at the same position
  * AKA Delete Dulplicates on the Properties Window
@@ -7589,6 +7644,14 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_widget_show ( item );
     gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), delete_submenu );
 
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Delete _Selected Point") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DELETE, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_point_selected), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+    gtk_widget_show ( item );
+    // Make it available only when a point is selected
+    gtk_widget_set_sensitive ( item, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
+
     item = gtk_menu_item_new_with_mnemonic ( _("Delete Points With The Same _Position") );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_points_same_position), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
@@ -7935,36 +7998,13 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
     if ( tr == NULL )
       return;
 
-    GList *new_tpl;
+    trw_layer_trackpoint_selected_delete ( vtl, tr );
 
-    // Find available adjacent trackpoint
-    if ( (new_tpl = vtl->current_tpl->next) || (new_tpl = vtl->current_tpl->prev) )
-    {
-      if ( VIK_TRACKPOINT(vtl->current_tpl->data)->newsegment && vtl->current_tpl->next )
-        VIK_TRACKPOINT(vtl->current_tpl->next->data)->newsegment = TRUE; /* don't concat segments on del */
-
-      // Delete current trackpoint
-      vik_trackpoint_free ( vtl->current_tpl->data );
-      tr->trackpoints = g_list_delete_link ( tr->trackpoints, vtl->current_tpl );
-
-      // Set to current to the available adjacent trackpoint
-      vtl->current_tpl = new_tpl;
-
+    if ( vtl->current_tpl )
       // Reset dialog with the available adjacent trackpoint
-      if ( vtl->current_tp_track ) {
-        vik_track_calculate_bounds ( vtl->current_tp_track );
-        vik_trw_layer_tpwin_set_tp ( vtl->tpwin, new_tpl, vtl->current_tp_track->name );
-      }
+      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
 
-      vik_layer_emit_update(VIK_LAYER(vtl));
-    }
-    else
-    {
-      // Delete current trackpoint
-      vik_trackpoint_free ( vtl->current_tpl->data );
-      tr->trackpoints = g_list_delete_link ( tr->trackpoints, vtl->current_tpl );
-      trw_layer_cancel_current_tp ( vtl, FALSE );
-    }
+    vik_layer_emit_update(VIK_LAYER(vtl));
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_FORWARD && vtl->current_tpl->next )
   {
