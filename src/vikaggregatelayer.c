@@ -360,7 +360,7 @@ static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoord
   }
 }
 
-static void aggregate_layer_child_visibile_toggle ( gpointer data[2] )
+static void aggregate_layer_child_visible_toggle ( gpointer data[2] )
 {
   // Convert data back to correct types
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( data[0] );
@@ -381,7 +381,7 @@ static void aggregate_layer_child_visibile_toggle ( gpointer data[2] )
   vik_layer_emit_update ( VIK_LAYER ( val ) );
 }
 
-static void aggregate_layer_child_visibile ( gpointer data[2], gboolean on_off)
+static void aggregate_layer_child_visible ( gpointer data[2], gboolean on_off)
 {
   // Convert data back to correct types
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( data[0] );
@@ -402,14 +402,14 @@ static void aggregate_layer_child_visibile ( gpointer data[2], gboolean on_off)
   vik_layer_emit_update ( VIK_LAYER ( val ) );
 }
 
-static void aggregate_layer_child_visibile_on ( gpointer data[2] )
+static void aggregate_layer_child_visible_on ( gpointer data[2] )
 {
-  aggregate_layer_child_visibile ( data, TRUE );
+  aggregate_layer_child_visible ( data, TRUE );
 }
 
-static void aggregate_layer_child_visibile_off ( gpointer data[2] )
+static void aggregate_layer_child_visible_off ( gpointer data[2] )
 {
-  aggregate_layer_child_visibile ( data, FALSE );
+  aggregate_layer_child_visible ( data, FALSE );
 }
 
 /**
@@ -531,19 +531,19 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Show All") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visibile_on), data );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visible_on), data );
   gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
   gtk_widget_show ( item );
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Hide All") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visibile_off), data );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visible_off), data );
   gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
   gtk_widget_show ( item );
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Toggle") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visibile_toggle), data );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visible_toggle), data );
   gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
   gtk_widget_show ( item );
 
