@@ -341,7 +341,7 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
 static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] );
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp );
 
-static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl );
+static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
@@ -6185,6 +6185,43 @@ static void trw_layer_delete_points_same_time ( gpointer pass_along[6] )
 }
 
 /**
+ * Insert a point
+ */
+static void trw_layer_insert_point_after ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( ! track )
+    return;
+
+  trw_layer_insert_tp_beside_current_tp ( vtl, FALSE );
+
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+static void trw_layer_insert_point_before ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)pass_along[0];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->routes, pass_along[3] );
+  else
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, pass_along[3] );
+
+  if ( ! track )
+    return;
+
+  trw_layer_insert_tp_beside_current_tp ( vtl, TRUE );
+
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
  * Reverse a track
  */
 static void trw_layer_reverse ( gpointer pass_along[6] )
@@ -7636,6 +7673,27 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     // Make it available only when a trackpoint is selected.
     gtk_widget_set_sensitive ( item, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
 
+    GtkWidget *insert_submenu = gtk_menu_new ();
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_Insert Points") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), insert_submenu );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Insert Point _Before Selected Point") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_insert_point_before), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(insert_submenu), item );
+    gtk_widget_show ( item );
+    // Make it available only when a point is selected
+    gtk_widget_set_sensitive ( item, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
+
+    item = gtk_menu_item_new_with_mnemonic ( _("Insert Point _After Selected Point") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_insert_point_after), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(insert_submenu), item );
+    gtk_widget_show ( item );
+    // Make it available only when a point is selected
+    gtk_widget_set_sensitive ( item, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
+
     GtkWidget *delete_submenu;
     delete_submenu = gtk_menu_new ();
     item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Poi_nts") );
@@ -7895,51 +7953,60 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
   return rv;
 }
 
-static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl )
+// TODO: Probably better to rework this track manipulation in viktrack.c
+static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before )
 {
-  /* sanity checks */
+  // sanity check
   if (!vtl->current_tpl)
-    return;
-  if (!vtl->current_tpl->next)
     return;
 
   VikTrackpoint *tp_current = VIK_TRACKPOINT(vtl->current_tpl->data);
-  VikTrackpoint *tp_next = VIK_TRACKPOINT(vtl->current_tpl->next->data);
+  VikTrackpoint *tp_other = NULL;
 
-  /* Use current and next trackpoints to form a new track point which is inserted into the tracklist */
-  if ( tp_next ) {
+  if ( before ) {
+    if (!vtl->current_tpl->prev)
+      return;
+    tp_other = VIK_TRACKPOINT(vtl->current_tpl->prev->data);
+  } else {
+    if (!vtl->current_tpl->next)
+      return;
+    tp_other = VIK_TRACKPOINT(vtl->current_tpl->next->data);
+  }
+
+  // Use current and other trackpoints to form a new track point which is inserted into the tracklist
+  if ( tp_other ) {
 
     VikTrackpoint *tp_new = vik_trackpoint_new();
-    struct LatLon ll_current, ll_next;
+    struct LatLon ll_current, ll_other;
     vik_coord_to_latlon ( &tp_current->coord, &ll_current );
-    vik_coord_to_latlon ( &tp_next->coord, &ll_next );
+    vik_coord_to_latlon ( &tp_other->coord, &ll_other );
 
     /* main positional interpolation */
-    struct LatLon ll_new = { (ll_current.lat+ll_next.lat)/2, (ll_current.lon+ll_next.lon)/2 };
+    struct LatLon ll_new = { (ll_current.lat+ll_other.lat)/2, (ll_current.lon+ll_other.lon)/2 };
     vik_coord_load_from_latlon ( &(tp_new->coord), vtl->coord_mode, &ll_new );
 
     /* Now other properties that can be interpolated */
-    tp_new->altitude = (tp_current->altitude + tp_next->altitude) / 2;
+    tp_new->altitude = (tp_current->altitude + tp_other->altitude) / 2;
 
-    if (tp_current->has_timestamp && tp_next->has_timestamp) {
+    if (tp_current->has_timestamp && tp_other->has_timestamp) {
       /* Note here the division is applied to each part, then added
 	 This is to avoid potential overflow issues with a 32 time_t for dates after midpoint of this Unix time on 2004/01/04 */
-      tp_new->timestamp = (tp_current->timestamp/2) + (tp_next->timestamp/2);
+      tp_new->timestamp = (tp_current->timestamp/2) + (tp_other->timestamp/2);
       tp_new->has_timestamp = TRUE;
     }
 
-    if (tp_current->speed != NAN && tp_next->speed != NAN)
-      tp_new->speed = (tp_current->speed + tp_next->speed)/2;
+    if (tp_current->speed != NAN && tp_other->speed != NAN)
+      tp_new->speed = (tp_current->speed + tp_other->speed)/2;
 
     /* TODO - improve interpolation of course, as it may not be correct.
        if courses in degrees are 350 + 020, the mid course more likely to be 005 (not 185)
        [similar applies if value is in radians] */
-    if (tp_current->course != NAN && tp_next->course != NAN)
-      tp_new->course = (tp_current->course + tp_next->course)/2;
+    if (tp_current->course != NAN && tp_other->course != NAN)
+      tp_new->course = (tp_current->course + tp_other->course)/2;
 
     /* DOP / sat values remain at defaults as not they do not seem applicable to a dreamt up point */
 
-    /* Insert new point into the trackpoints list after the current TP */
+    // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed
     VikTrack *trk = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_id );
     if ( !trk )
       // Otherwise try routes
@@ -7949,8 +8016,10 @@ static void trw_layer_insert_tp_after_current_tp ( VikTrwLayer *vtl )
 
     gint index =  g_list_index ( trk->trackpoints, tp_current );
     if ( index > -1 ) {
+      if ( !before )
+        index = index + 1;
       // NB no recalculation of bounds since it is inserted between points
-      trk->trackpoints = g_list_insert ( trk->trackpoints, tp_new, index+1 );
+      trk->trackpoints = g_list_insert ( trk->trackpoints, tp_new, index );
     }
   }
 }
@@ -8020,7 +8089,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_INSERT && vtl->current_tpl->next )
   {
-    trw_layer_insert_tp_after_current_tp ( vtl );
+    trw_layer_insert_tp_beside_current_tp ( vtl, FALSE );
     vik_layer_emit_update(VIK_LAYER(vtl));
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DATA_CHANGED )
