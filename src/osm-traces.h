@@ -25,11 +25,12 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
+#include "viktrwlayer.h"
+
 G_BEGIN_DECLS
 
 void osm_traces_init();
-void osm_traces_upload_cb(gpointer layer_and_vlp[2], guint file_type);
-void osm_traces_upload_track_cb(gpointer pass_along[8]);
+void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk );
 
 void osm_set_login (const gchar *user_, const gchar *password_);
 gchar *osm_get_login();
