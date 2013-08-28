@@ -194,7 +194,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 
 		case 'D': {
 			if ( trk ) {
-				// Distance from start (along the track)      
+				// Distance from start (along the track)
 				gdouble distd =	vik_track_get_length_to_trackpoint (trk, trkpt);
 				gchar *dist_units_str = NULL;
 				vik_units_distance_t dist_units = a_vik_get_units_distance ();
@@ -240,7 +240,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 	g_free ( separator );
 	g_free ( speed_units_str );
 
-	gchar *msg = g_strdup_printf ( "%s%s%s%s%s%s%s%s%s", values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8] );
+	gchar *msg = g_strconcat ( values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8], NULL );
 
 	for ( i = 0; i < FMT_MAX_NUMBER_CODES; i++ ) {
 		if ( values[i] != '\0' )
