@@ -226,8 +226,8 @@ register_loadable_types(void)
     VIK_ROUTING_WEB_ENGINE_TYPE
   };
 
-  /* kill 'unused variable'  warning */
-  g_debug("%ld types loaded", sizeof(types)/sizeof(GType));
+  /* kill 'unused variable' + argument type warnings */
+  g_debug("%d types loaded", (int)sizeof(types)/(int)sizeof(GType));
 }
 
 void modules_init()
