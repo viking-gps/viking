@@ -8294,8 +8294,12 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
 
     // Determine if working on a waypoint or a trackpoint
     if ( t->is_waypoint ) {
+      // Update waypoint position
       vtl->current_wp->coord = new_coord;
       trw_layer_calculate_bounds_waypoints ( vtl );
+      // Reset waypoint pointer
+      vtl->current_wp    = NULL;
+      vtl->current_wp_id = NULL;
     }
     else {
       if ( vtl->current_tpl ) {
@@ -8304,16 +8308,12 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
         if ( vtl->current_tp_track )
           vik_track_calculate_bounds ( vtl->current_tp_track );
 
-	if ( vtl->tpwin )
+        if ( vtl->tpwin )
           if ( vtl->current_tp_track )
             vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+        // NB don't reset the selected trackpoint, thus ensuring it's still in the tpwin
       }
     }
-
-    // Reset
-    vtl->current_wp    = NULL;
-    vtl->current_wp_id = NULL;
-    trw_layer_cancel_current_tp ( vtl, FALSE );
 
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
