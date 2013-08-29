@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (c) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include "viking.h"
 #include "viktrwlayer_analysis.h"
+#include "viktrwlayer_tracklist.h"
 #include "icons/icons.h"
 
 #include <string.h>
@@ -446,13 +447,13 @@ static void aggregate_layer_sort_z2a ( gpointer lav[2] )
 }
 
 /**
- * aggregate_layer_analyse_create_list:
+ * aggregate_layer_track_create_list:
  * @vl:        The layer that should create the track and layers list
  * @user_data: Not used in this function
  *
  * Returns: A list of #vik_trw_track_list_t
  */
-static GList* aggregate_layer_analyse_create_list ( VikLayer *vl, gpointer user_data )
+static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_data )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(vl);
 
@@ -460,7 +461,7 @@ static GList* aggregate_layer_analyse_create_list ( VikLayer *vl, gpointer user_
   GList *layers = NULL;
   layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
 
-  // For each TRW layers keep appending the tracks and routes to build a list of all of them
+  // For each TRW layers keep adding the tracks and routes to build a list of all of them
   GList *tracks_and_layers = NULL;
   layers = g_list_first ( layers );
   while ( layers ) {
@@ -468,20 +469,21 @@ static GList* aggregate_layer_analyse_create_list ( VikLayer *vl, gpointer user_
     tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) ) );
     tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_routes( VIK_TRW_LAYER(layers->data) ) ) );
 
-    GList *trks = g_list_first (tracks);
-    while ( trks ) {
-      vik_trw_track_list_t *vtdl = g_malloc (sizeof(vik_trw_track_list_t));
-      vtdl->trk = VIK_TRACK(trks->data);
-      vtdl->vtl = VIK_TRW_LAYER(layers->data);
-      tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );
-      trks = g_list_next ( trks );
-    }
-    g_list_free ( tracks );
+    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
+
     layers = g_list_next ( layers );
   }
   g_list_free ( layers );
 
   return tracks_and_layers;
+}
+
+static void aggregate_layer_track_list_dialog ( gpointer data[2] )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(data[0]);
+  gchar *title = g_strdup_printf ( _("%s: Track and Route List"), VIK_LAYER(val)->name );
+  vik_trw_layer_track_list_show_dialog ( title, VIK_LAYER(val), NULL, aggregate_layer_track_create_list, TRUE );
+  g_free ( title );
 }
 
 /**
@@ -508,7 +510,7 @@ static void aggregate_layer_analyse ( gpointer data[2] )
                                                              VIK_LAYER(val)->name,
                                                              VIK_LAYER(val),
                                                              NULL,
-                                                             aggregate_layer_analyse_create_list,
+                                                             aggregate_layer_track_create_list,
                                                              aggregate_layer_analyse_close );
 }
 
@@ -569,6 +571,12 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_analyse), data );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Track _List...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_track_list_dialog), data );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 }
 
