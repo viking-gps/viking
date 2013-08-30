@@ -38,8 +38,6 @@ GList * str_array_to_glist(gchar* data[]);
 
 gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar **val );
 
-guint8 mpp_to_zoom ( gdouble mpp );
-
 void check_latest_version ( GtkWindow *window );
 
 void set_auto_features_on_first_run ( void );

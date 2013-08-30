@@ -33,7 +33,7 @@
 
 #include "globals.h"
 #include "acquire.h"
-#include "util.h"
+#include "maputils.h"
 
 static GObjectClass *parent_class;
 
@@ -338,7 +338,7 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 	guint8 zoom = 17; // A zoomed in default
 	// zoom - ideally x & y factors need to be the same otherwise use the default
 	if ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) )
-		zoom = mpp_to_zoom ( vik_viewport_get_zoom ( viewport ) );
+		zoom = map_utils_mpp_to_zoom_level ( vik_viewport_get_zoom ( viewport ) );
 
 	gchar szoom[G_ASCII_DTOSTR_BUF_SIZE];
 	g_snprintf ( szoom, G_ASCII_DTOSTR_BUF_SIZE, "%d", zoom );
