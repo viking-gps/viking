@@ -45,13 +45,16 @@ src/vikgpslayer.c
 src/viklayer.c
 src/viklayerspanel.c
 src/vikmapslayer.c
+src/vikrouting.c
 src/viktreeview.c
 src/viktrwlayer.c
 src/viktrwlayer_propwin.c
 src/viktrwlayer_tpwin.c
+src/viktrwlayer_tracklist.c
 src/viktrwlayer_geotag.c
 src/viktrwlayer_analysis.c
 src/vikstatus.c
+src/vikutils.c
 src/vikwaypoint.c
 src/vikwindow.c
 src/viking.desktop.in
