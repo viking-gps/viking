@@ -26,6 +26,8 @@ gnome-doc-utils.m4
 /omf.make
 /viking.spec
 /xmldocs.make
+/test-driver
+/compile
 # make dist output:
 viking-*tar.bz2
 viking-*tar.gz
