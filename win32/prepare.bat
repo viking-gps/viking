@@ -224,6 +224,38 @@ if not exist "%MINGW_BIN%\libstdc++-6.dll" (
 	del %STDCPP_TAR%
 )
 
+echo =+=+=
+echo Checking libbz2 header...
+echo =+=+=
+set BZ2_TAR=bzip2-1.0.6-4-mingw32-dev.tar
+set BZ2_LZ=%BZ2_TAR%.lzma
+if not exist "%MINGW%\include\bzlib.h" (
+	if not exist %BZ2_LZ% (
+		wget "http://sourceforge.net/projects/mingw/files/MinGW/Extension/bzip2/bzip2-1.0.6-4/%BZ2_LZ%"
+	)
+	echo Extracting libbz2 header...
+	7z e %BZ2_LZ%
+	7z x %BZ2_TAR% -o"%MinGW%"
+	if ERRORLEVEL 1 goto Error
+	del %BZ2_TAR%
+)
+
+echo =+=+=
+echo Checking libbz2...
+echo =+=+=
+set BZ2DLL_TAR=libbz2-1.0.6-4-mingw32-dll-2.tar
+set BZ2DLL_LZ=%BZ2DLL_TAR%.lzma
+if not exist "%MINGW_BIN%\libbz2-2.dll" (
+	if not exist %BZ2DLL_LZ% (
+		wget "http://sourceforge.net/projects/mingw/files/MinGW/Extension/bzip2/bzip2-1.0.6-4/%BZ2DLL_LZ%"
+	)
+	echo Extracting libbz2...
+	7z e %BZ2DLL_LZ%
+	7z x %BZ2DLL_TAR% -o"%MinGW%"
+	if ERRORLEVEL 1 goto Error
+	del %BZ2DLL_TAR%
+)
+
 ::
 :: Ideally building the code on Windows shouldn't need Doc Utils or the Help processor stuff
 :: But ATM it's too hard to avoid.
