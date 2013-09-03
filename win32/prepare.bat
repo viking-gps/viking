@@ -256,6 +256,42 @@ if not exist "%MINGW_BIN%\libbz2-2.dll" (
 	del %BZ2DLL_TAR%
 )
 
+echo =+=+=
+echo Checking magic dev...
+echo =+=+=
+set MAGIC_ZIP=file-5.03-lib.zip
+if not exist "%MINGW%\include\magic.h" (
+	if not exist %MAGIC_ZIP% (
+		wget http://downloads.sourceforge.net/gnuwin32/%MAGIC_ZIP%
+	)
+	7z x %MAGIC_ZIP% -o"%MinGW%"
+	if ERRORLEVEL 1 goto Error
+)
+
+echo =+=+=
+echo Checking magic DLL...
+echo =+=+=
+set MAGICDLL_ZIP=file-5.03-bin.zip
+if not exist "%MINGW_BIN%\magic1.dll" (
+	if not exist %MAGICDLL_ZIP% (
+		wget http://downloads.sourceforge.net/gnuwin32/%MAGICDLL_ZIP%
+	)
+	7z x %MAGICDLL_ZIP% -o"%MinGW%"
+	if ERRORLEVEL 1 goto Error
+)
+
+echo =+=+=
+echo Checking regex DLL (required by magic)...
+echo =+=+=
+set REGDLL_ZIP=regex-2.7-bin.zip
+if not exist "%MINGW_BIN%\regex2.dll" (
+	if not exist %REGDLL_ZIP% (
+		wget http://downloads.sourceforge.net/gnuwin32/%REGDLL_ZIP%
+	)
+	7z x %REGDLL_ZIP% -o"%MinGW%"
+	if ERRORLEVEL 1 goto Error
+)
+
 ::
 :: Ideally building the code on Windows shouldn't need Doc Utils or the Help processor stuff
 :: But ATM it's too hard to avoid.

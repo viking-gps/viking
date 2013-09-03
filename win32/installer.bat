@@ -73,6 +73,15 @@ if exist "%LIBBZ2%" (
 	echo Required %LIBBZ2% does not exist
 	goto Tidy
 )
+set LIBMAGIC=%MINGW_BIN%\magic1.dll
+if exist "%LIBMAGIC%" (
+	%MYCOPY% "%LIBMAGIC%" %DESTINATION%
+	%MYCOPY% "%MINGW_BIN%\regex2.dll" %DESTINATION%
+	%MYCOPY% "%MINGW%\share\misc\magic.mgc" %DESTINATION%
+) else (
+	echo Required %LIBMAGIC% does not exist
+	goto Tidy
+)
 
 :: TODO Maybe embed http://gtk-win.sourceforge.net/home/index.php/Main/EmbeddingGTK directly in NSIS?
 :: Best to use the same GTK version as we built against in prepare.bat!!
