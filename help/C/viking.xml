@@ -1652,7 +1652,7 @@ The possible methods to redownload one or more tiles are:
 </para>
 <formalpara><title>Map Tile Information</title>
 <para>
-By right clicking on viewport you can see the tile properties of the that location for the current map layer and current zoom level.
+By right clicking on viewport and selecting <guimenu>Show Tile Information</guimenu> you can see the tile properties of this location for the current map layer and current zoom level.
 This includes the remote source URL for the tile and the cached version on the local filesystem with timestamp details.
 </para>
 </formalpara>
