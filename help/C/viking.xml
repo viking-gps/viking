@@ -1677,6 +1677,21 @@ Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic filere
 <para>
 Click to download and import a DEM file.
 </para>
+<formalpara><title>DEM File Information</title>
+<para>
+By right clicking on viewport and selecting <guimenu>Show DEM File Infomation</guimenu> you can see the file properties of the DEM file for this location.
+This includes the remote source URL for the file and the cached version on the local filesystem with timestamp details.
+</para>
+</formalpara>
+<para>
+<figure>
+<title>DEM File Info Dialog: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/DEM_file_info_dialog.png"/>
+</screenshot>
+</figure>
+This is for block 51N, 003W - covering Bristol in the UK.
+</para>
 </section>
 
 <section><title>Webtools</title>

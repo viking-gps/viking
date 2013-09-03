@@ -35,5 +35,6 @@ DOC_FIGURES = \
     figures/vik_new_route_18.png \
     figures/zoom_18.png \
     figures/zoom_status_popup.png \
-    figures/Viking-OSM-CycleMap-ManyTracks.jpg
+    figures/Viking-OSM-CycleMap-ManyTracks.jpg \
+    figures/DEM_file_info_dialog.png
 DOC_LINGUAS =
