@@ -13,4 +13,8 @@ dblatex viking.xml
 popd
 popd
 
+if [ ! -e installer/bin ]; then
+	mkdir installer/bin
+fi
+
 wine cmd.exe /c installer.bat
