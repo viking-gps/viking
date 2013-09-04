@@ -1047,7 +1047,37 @@ This is only enabled when a trackpoint is selected.
 </section>
 </section>
 
+<section><title>Insert Points</title>
+<note>
+<para>
+These options are only enabled when a trackpoint is selected.
+</para>
+</note>
+<section><title>Insert Point Before Selected Point</title>
+<para>
+Inserts a track point halfway between the previous track point and the current track point.
+All track point properties are interpolated between the two points.
+</para>
+</section>
+<section><title>Insert Point After Selected Point</title>
+<para>
+Inserts a track point halfway between the current track point and the next track point.
+All track point properties are interpolated between the two points.
+</para>
+</section>
+</section>
+
 <section><title>Delete Points</title>
+<section><title>Delete Selected Point</title>
+<para>
+Deletes the currently selected track point.
+</para>
+<note>
+<para>
+This is only enabled when a trackpoint is selected.
+</para>
+</note>
+</section>
 <section><title>Delete Points With the Same Position</title>
 <para>
 Deletes subsequent points that have the same position (but have different timestamps).
