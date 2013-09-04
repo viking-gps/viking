@@ -201,7 +201,14 @@ void a_try_decompress_file (gchar *name)
 	gboolean zip = FALSE;
 	gboolean bzip2 = FALSE;
 	if ( myt ) {
+#ifdef WINDOWS
+		// We have to 'package' the magic database ourselves :(
+		//  --> %PROGRAM FILES%\Viking\magic.mgc
+		magic_load ( myt, "magic.mgc" );
+#else
+		// Use system default
 		magic_load ( myt, NULL );
+#endif
 		const char* magic = magic_file (myt, name);
 		g_debug ("%s: magic output: %s", __FUNCTION__, magic );
 
