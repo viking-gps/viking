@@ -828,6 +828,12 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBX11
     "libX11",
 #endif
+#ifdef HAVE_LIBMAGIC
+    "libmagic",
+#endif
+#ifdef HAVE_LIBBZ2
+    "libbz2",
+#endif
     NULL
   };
   // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program
