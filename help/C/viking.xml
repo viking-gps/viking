@@ -1389,6 +1389,30 @@ This requests map tiles only if the maps are older than the Tile Age preference.
 Force a refresh of all visible map tiles.
 </para>
 </section>
+
+<section><title>Download Maps in Zoom Levels</title>
+<para>
+This opens a dialog to enable requesting the download of maps for the region in the viewport over a specified number of zoom levels.
+The download method type can be specified to help limit the number of requests.
+</para>
+<warning>
+<para>
+There are some inbuilt limits to prevent downloading large amounts of map tiles.
+</para>
+<para>
+Please respect the usage policy of the tile set provider.
+Such as <ulink url="http://wiki.openstreetmap.org/wiki/Tile_usage_policy"><citetitle>OSM Tile Usage Policy</citetitle></ulink>.
+</para>
+</warning>
+<para>
+<figure>
+<title>Maps Download Dialog: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Maps_download_region_dialog.png"/>
+</screenshot>
+</figure>
+</para>
+</section>
 </section>
 
 
