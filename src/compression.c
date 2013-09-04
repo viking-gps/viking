@@ -145,13 +145,30 @@ gchar* uncompress_bzip2 ( gchar *name )
 	if ( bzerror != BZ_OK ) {
 		BZ2_bzReadClose ( &bzerror, bf );
 		// handle error
+		g_warning ( "%s: BZ ReadOpen error on %s", __FUNCTION__, name );
 		return NULL;
 	}
 
 	GFileIOStream *gios;
 	GError *error = NULL;
+	gchar *tmpname = NULL;
+#if GLIB_CHECK_VERSION(2,32,0)
 	GFile *gf = g_file_new_tmp ( "vik-bz2-tmp.XXXXXX", &gios, &error );
-	gchar *tmpname = g_file_get_path (gf);
+	tmpname = g_file_get_path (gf);
+#else
+	gint fd = g_file_open_tmp ( "vik-bz2-tmp.XXXXXX", &tmpname, &error );
+	if ( error ) {
+		g_warning ( error->message );
+		g_error_free ( error );
+		return NULL;
+	}
+	gios = g_file_open_readwrite ( g_file_new_for_path (tmpname), NULL, &error );
+	if ( error ) {
+		g_warning ( error->message );
+		g_error_free ( error );
+		return NULL;
+	}
+#endif
 
 	GOutputStream *gos = g_io_stream_get_output_stream ( G_IO_STREAM(gios) );
 
@@ -173,13 +190,11 @@ gchar* uncompress_bzip2 ( gchar *name )
 		}
 	}
 	if ( bzerror != BZ_STREAM_END ) {
-		BZ2_bzReadClose ( &bzerror, bf );
 		// handle error...
-		goto end;
-	} else {
-		BZ2_bzReadClose ( &bzerror, bf );
-		g_output_stream_close ( gos, NULL, &error );
+		g_warning ( "%s: BZ error :( %d", __FUNCTION__, bzerror );
 	}
+	BZ2_bzReadClose ( &bzerror, bf );
+	g_output_stream_close ( gos, NULL, &error );
 
  end:
 	return tmpname;
