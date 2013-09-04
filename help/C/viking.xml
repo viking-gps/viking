@@ -1100,10 +1100,61 @@ This is not available on routes as they have no timestamps.
 
 </section>
 
+<section><title>Transform</title>
+<para>
+These options alter the data of trackpoints of a track but not add or remove trackpoints.
+And don't seem to fit any other category :)
+</para>
 <section><title>Apply DEM data</title>
 <para>
 If any DEM data is loaded, this will apply the DEM data to give the track elevation data.
+Two ways of applying DEM data are offered:
+<orderedlist>
+<listitem><para>Keep. Retains the existing elevation data of trackpoints and only those missing an elevation value are set.</para></listitem>
+<listitem><para>Overwrite. Elevation data are set on all trackpoints even if they already elevation values.</para></listitem>
+</orderedlist>
 </para>
+</section>
+<section><title>Smooth Missing Elevation data</title>
+<para>
+In various locations across the world, there are missing DEM values (AKA DEM Holes) from the SRTM data.
+This is particularly noticeable in mountainous areas.
+Two ways of applying elevation data to trackpoints that do not have elevation values are offered:
+<orderedlist>
+<listitem><para>Interpolated. Missing elevation data is interpolated between the previous and next known values.</para></listitem>
+<listitem><para>Flat. Elevation data is filled in from the last previously known value.</para></listitem>
+</orderedlist>
+</para>
+</section>
+<section>
+<title>Convert to Track or Route</title>
+<para>
+If this is a Route then it will convert it to a Track.
+</para>
+<para>
+If this is Track then convert it to a Route.
+</para>
+<para>
+<note>
+Converting from a Track to a Route may involve a loss of information, in particular timestamp values (hence you are required to confirm this operation before it happens).
+</note>
+</para>
+</section>
+<section>
+<title>Anonymize Times</title>
+<para>
+Timestamp information of a track can be shifted to be all offset from 1901-01-01.
+</para>
+<para>
+Thus the timestamps themselves will no longer reveal exactly when a track was taken.
+However the relative difference between the timestamps is kept thus one is still able to calculate some properties such as speeds along the track.
+</para>
+<para>
+<note>
+This is not available for routes, as they have no timestamps.
+</note>
+</para>
+</section>
 </section>
 
 <section><title>Export Track as GPX</title>
