@@ -1035,9 +1035,13 @@ This is not available on routes as they do not have route segments.
 </note>
 </section>
 
-<section><title>Split at Trackpoint</title>
+<section id='trkpt_split' xreflabel="Split at Trackpoint"><title>Split at Trackpoint</title>
 <para>
 Splits the track at the currently selected trackpoint.
+</para>
+<para>
+The current track will finish at this trackpoint.
+A new track will start from a copy of this trackpoint.
 </para>
 <note>
 <para>
@@ -1143,6 +1147,17 @@ This selects the track to be used in the <link linkend="filter_with_track">Filte
 <note>
 <para>
 This is not available on routes.
+</para>
+</note>
+</section>
+
+<section><title>Edit Trackpoint</title>
+<para>
+This opens the Trackpoint edit dialog. See <xref linkend="Trackpoint_edit"/>.
+</para>
+<note>
+<para>
+This is only enabled when a trackpoint is selected.
 </para>
 </note>
 </section>
@@ -1601,9 +1616,38 @@ Left click near a trackpoint (in screen pixel terms) to bring up the Track Point
 Whilst the edit dialog is already open, left click again and drag enables moving of the trackpoint.
 If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoint position to a nearby existing trackpoint.
 </para>
+<section id="Trackpoint_edit" xreflabel="Edit Trackpoint Dialog"><title>Edit Trackpoint Dialog</title>
 <para>
-Options in the Track Point Edit dialog include: change position, go to next, go to previous, delete, insert (halfway to next trackpoint) and splitting the track.
+Editing options in the Trackpoint Edit dialog include:
+<itemizedlist>
+<listitem>Edit the trackpoint name</listitem>
+<listitem>Changing raw lat/long position and altitude</listitem>
+<listitem>Forward (go to the next trackpoint)</listitem>
+<listitem>Back (go to the previous trackpoint)</listitem>
+<listitem>Delete</listitem>
+<listitem>Insert. Inserts a point halfway to next trackpoint</listitem>
+<listitem>Split. <xref linkend="trkpt_split"/></listitem>
+</itemizedlist>
 </para>
+<para>
+Several fields are read only for reference purposes, values are shown if the trackpoint has such information:
+<itemizedlist>
+<listitem>Time.</listitem>
+<listitem>Speed and course.</listitem>
+<listitem>'Between' values: Speed, Time Difference and Distance Difference. When moving between trackpoints (via the Back and Forward buttons) these values are calculated.</listitem>
+<listitem>GPS precision factors.</listitem>
+</itemizedlist>
+</para>
+<para>
+<figure>
+<title>Trackpoint Edit Dialog: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Trackpoint_edit_dialog.png"/>
+</screenshot>
+</figure>
+One must have been going downhill here to get a reasonable speed by bicycle!
+</para>
+</section>
 </section>
 
 <section><title>Show Picture</title>

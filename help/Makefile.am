@@ -31,6 +31,7 @@ DOC_FIGURES = \
     figures/ruler_18.png \
     figures/select_18.png \
     figures/showpic_18.png \
+    figures/Trackpoint_edit_dialog.png \
     figures/trw_statusbar.png \
     figures/vik_new_route_18.png \
     figures/zoom_18.png \
