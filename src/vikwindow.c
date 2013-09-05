@@ -650,8 +650,13 @@ static void drag_data_received_cb ( GtkWidget *widget,
       gint entry_runner = 0;
       gchar *entry = entries[entry_runner];
       while (entry) {
-        if ( g_strcmp0 ( entry, "" ) )
-          filenames = g_slist_append ( filenames, entry );
+        if ( g_strcmp0 ( entry, "" ) ) {
+          // Drag+Drop gives URIs. And so in particular, %20 in place of spaces in filenames
+          //  thus need to convert the text into a plain string
+          gchar *filename = g_filename_from_uri ( entry, NULL, NULL );
+          if ( filename )
+            filenames = g_slist_append ( filenames, filename );
+        }
         entry_runner++;
         entry = entries[entry_runner];
       }

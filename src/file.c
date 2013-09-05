@@ -613,15 +613,10 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
 
   char *filename = (char *)filename_or_uri;
   if (strncmp(filename, "file://", 7) == 0) {
+    // Consider replacing this with:
+    // filename = g_filename_from_uri ( entry, NULL, NULL );
+    // Since this doesn't support URIs properly (i.e. will failure if is it has %20 characters in it)
     filename = filename + 7;
-#ifdef WINDOWS
-    // For drag and drop we receive URIs like 'file:///c:/path/to/file'
-    // Thus may need to ignore the leading '/'
-    if ( strlen (filename) > 3 ) {
-      if ( (strncmp (filename, "/", 1) == 0) && (strncmp (filename+2, ":", 1) == 0) )
-        filename = filename + 1;
-    }
-#endif
     g_debug ( "Loading file %s from URI %s", filename, filename_or_uri );
   }
   FILE *f = xfopen ( filename, "r" );
