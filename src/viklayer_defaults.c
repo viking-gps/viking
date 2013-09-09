@@ -88,7 +88,7 @@ static VikLayerParamData get_default_data_answer ( const gchar *group, const gch
 	}
 	*success = GINT_TO_POINTER (TRUE);
 	if ( error ) {
-		g_warning ( error->message );
+		g_warning ( "%s", error->message );
 		g_error_free ( error );
 		*success = GINT_TO_POINTER (FALSE);
 	}
@@ -212,7 +212,7 @@ static gboolean layer_defaults_save_to_file()
     gchar *keyfilestr = g_key_file_to_data ( keyfile, &size, &error );
 
     if ( error ) {
-		g_warning ( error->message );
+		g_warning ( "%s", error->message );
 		g_error_free ( error );
 		answer = FALSE;
 		goto tidy;

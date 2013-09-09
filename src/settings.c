@@ -79,7 +79,7 @@ void a_settings_uninit()
 	gchar *keyfilestr = g_key_file_to_data ( keyfile, &size, &error );
 
 	if ( error ) {
-		g_warning ( error->message );
+		g_warning ( "%s", error->message );
 		g_error_free ( error );
 		goto tidy;
 	}
@@ -106,7 +106,7 @@ static gboolean settings_get_boolean ( const gchar *group, const gchar *name, gb
 	gboolean bb = g_key_file_get_boolean ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( error->message );
+		g_warning ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -131,7 +131,7 @@ static gboolean settings_get_string ( const gchar *group, const gchar *name, gch
 	gchar *str = g_key_file_get_string ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( error->message );
+		g_warning ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -156,7 +156,7 @@ static gboolean settings_get_integer ( const gchar *group, const gchar *name, gi
 	gint ii = g_key_file_get_integer ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( error->message );
+		g_warning ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -181,7 +181,7 @@ static gboolean settings_get_double ( const gchar *group, const gchar *name, gdo
 	gdouble dd = g_key_file_get_double ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( error->message );
+		g_warning ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
