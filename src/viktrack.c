@@ -155,6 +155,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   VikTrack *new_tr = vik_track_new();
   VikTrackpoint *new_tp;
   GList *tp_iter = tr->trackpoints;
+  new_tr->name = g_strdup(tr->name);
   new_tr->visible = tr->visible;
   new_tr->is_route = tr->is_route;
   new_tr->draw_name_mode = tr->draw_name_mode;
@@ -193,7 +194,22 @@ VikTrackpoint *vik_trackpoint_new()
 
 void vik_trackpoint_free(VikTrackpoint *tp)
 {
+  g_free(tp->name);
   g_free(tp);
+}
+
+void vik_trackpoint_set_name(VikTrackpoint *tp, const gchar *name)
+{
+  if ( tp->name )
+    g_free ( tp->name );
+
+  // If the name is blank then completely remove it
+  if ( name && name[0] == '\0' )
+    tp->name = NULL;
+  else if ( name )
+    tp->name = g_strdup(name);
+  else
+    tp->name = NULL;
 }
 
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp)

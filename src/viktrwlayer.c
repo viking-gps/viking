@@ -2648,7 +2648,7 @@ static void set_statusbar_msg_info_trkpt ( VikTrwLayer *vtl, VikTrackpoint *trkp
   gboolean need2free = FALSE;
   if ( !a_settings_get_string ( VIK_SETTINGS_TRKPT_SELECTED_STATUSBAR_FORMAT, &statusbar_format_code ) ) {
     // Otherwise use default
-    statusbar_format_code = g_strdup ( "KATDN" );
+    statusbar_format_code = g_strdup ( "KEATDN" );
     need2free = TRUE;
   }
 

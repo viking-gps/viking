@@ -285,6 +285,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       tp->has_timestamp = line_has_timestamp;
       tp->timestamp = line_timestamp;
       tp->altitude = line_altitude;
+      vik_trackpoint_set_name ( tp, line_name );
       if (line_extended) {
         tp->speed = line_speed;
         tp->course = line_course;
@@ -574,6 +575,12 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
   fprintf ( f, "type=\"%spoint\" latitude=\"%s\" longitude=\"%s\"", write_info->is_route ? "route" : "track", s_lat, s_lon );
   g_free ( s_lat ); 
   g_free ( s_lon );
+
+  if ( tp->name ) {
+    gchar *name = slashdup(tp->name);
+    fprintf ( f, " name=\"%s\"", name );
+    g_free(name);
+  }
 
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE ) {
     gchar *s_alt = a_coords_dtostr(tp->altitude);

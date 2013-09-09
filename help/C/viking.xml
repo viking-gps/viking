@@ -2652,7 +2652,7 @@ Accept: */*
 	    <para>This string is in the Message Format Code</para>
 	  </listitem>
 	  <listitem>
-	    <para>trkpt_selected_statusbar_format=KATDN</para>
+	    <para>trkpt_selected_statusbar_format=KEATDN</para>
 	    <para>This string is in the Message Format Code</para>
 	  </listitem>
 	</orderedlist>
@@ -2679,6 +2679,7 @@ Accept: */*
               <para>D = Distance of the trackpoint from the start of a track (following along the track)</para>
               <para>P = Distance difference of the trackpoint from the previous trackpoint</para>
               <para>N = Name of track to which the trackpoint belongs</para>
+              <para>E = Name of the trackpoint</para>
 	      </listitem>
             </varlistentry>
             <varlistentry>

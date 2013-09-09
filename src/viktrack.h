@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 
 typedef struct _VikTrackpoint VikTrackpoint;
 struct _VikTrackpoint {
+  gchar* name;
   VikCoord coord;
   gboolean newsegment;
   gboolean has_timestamp;
@@ -101,6 +102,8 @@ void vik_track_set_comment_no_copy(VikTrack *tr, gchar *comment);
 VikTrackpoint *vik_trackpoint_new();
 void vik_trackpoint_free(VikTrackpoint *tp);
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp);
+void vik_trackpoint_set_name(VikTrackpoint *tp, const gchar *name);
+
 void vik_track_add_trackpoint(VikTrack *tr, VikTrackpoint *tp, gboolean recalculate);
 gdouble vik_track_get_length_to_trackpoint (const VikTrack *tr, const VikTrackpoint *tp);
 gdouble vik_track_get_length(const VikTrack *tr);

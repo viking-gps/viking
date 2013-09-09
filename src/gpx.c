@@ -69,6 +69,7 @@ typedef enum {
         tt_trk_trkseg_trkpt,
         tt_trk_trkseg_trkpt_ele,
         tt_trk_trkseg_trkpt_time,
+        tt_trk_trkseg_trkpt_name,
 	/* extended */
         tt_trk_trkseg_trkpt_course,
         tt_trk_trkseg_trkpt_speed,
@@ -125,6 +126,7 @@ tag_mapping tag_path_map[] = {
         { tt_trk_trkseg_trkpt, "/gpx/trk/trkseg/trkpt" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/trk/trkseg/trkpt/ele" },
         { tt_trk_trkseg_trkpt_time, "/gpx/trk/trkseg/trkpt/time" },
+        { tt_trk_trkseg_trkpt_name, "/gpx/trk/trkseg/trkpt/name" },
 	/* extended */
 	{ tt_trk_trkseg_trkpt_course, "/gpx/trk/trkseg/trkpt/course" },
         { tt_trk_trkseg_trkpt_speed, "/gpx/trk/trkseg/trkpt/speed" },
@@ -141,6 +143,7 @@ tag_mapping tag_path_map[] = {
         { tt_trk_cmt, "/gpx/rte/cmt" },
         { tt_trk_desc, "/gpx/rte/desc" },
         { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
+        { tt_trk_trkseg_trkpt_name, "/gpx/rte/rtept/name" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/rte/rtept/ele" },
 
         {0}
@@ -246,6 +249,7 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
        }
        break;
 
+     case tt_trk_trkseg_trkpt_name:
      case tt_trk_trkseg_trkpt_ele:
      case tt_trk_trkseg_trkpt_time:
      case tt_wpt_cmt:
@@ -379,6 +383,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_trk_trkseg_trkpt_name:
+       vik_trackpoint_set_name ( c_tp, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_trk_trkseg_trkpt_time:
        if ( g_time_val_from_iso8601(c_cdata->str, &tp_time) ) {
          c_tp->timestamp = tp_time.tv_sec;
@@ -448,6 +457,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_trk_desc:
     case tt_trk_trkseg_trkpt_time:
     case tt_wpt_time:
+    case tt_trk_trkseg_trkpt_name:
     case tt_trk_trkseg_trkpt_course:
     case tt_trk_trkseg_trkpt_speed:
     case tt_trk_trkseg_trkpt_fix:
@@ -767,6 +777,12 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   fprintf ( f, "  <%spt lat=\"%s\" lon=\"%s\">\n", (context->options && context->options->is_route) ? "rte" : "trk", s_lat, s_lon );
   g_free ( s_lat ); s_lat = NULL;
   g_free ( s_lon ); s_lon = NULL;
+
+  if (tp->name) {
+    gchar *s_name = entitize(tp->name);
+    fprintf ( f, "    <name>%s</name>\n", s_name );
+    g_free(s_name);
+  }
 
   s_alt = NULL;
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )

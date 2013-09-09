@@ -232,6 +232,13 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			values[i] = g_strdup_printf ( _("%sTrack: %s"), separator, trk->name );
 			break;
 
+		case 'E': // Name of trackpoint if available
+			if ( trkpt->name )
+				values[i] = g_strdup_printf ( "%s%s", separator, trkpt->name );
+			else
+				values[i] = g_strdup ( "" );
+			break;
+
 		default:
 			break;
 		}
