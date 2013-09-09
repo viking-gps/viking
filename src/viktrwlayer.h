@@ -114,6 +114,7 @@ typedef struct {
 } vik_trw_waypoint_list_t;
 
 typedef GList* (*VikTrwlayerGetWaypointsAndLayersFunc) (VikLayer*, gpointer);
+GList *vik_trw_layer_build_waypoint_list_t ( VikTrwLayer *vtl, GList *waypoints );
 
 GdkPixbuf* get_wp_sym_small ( gchar *symbol );
 
