@@ -2258,7 +2258,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
 /*
  * Can accept a null symbol, and may return null value
  */
-static GdkPixbuf* get_wp_sym_small ( gchar *symbol )
+GdkPixbuf* get_wp_sym_small ( gchar *symbol )
 {
   GdkPixbuf* wp_icon = a_get_wp_sym (symbol);
   // ATM a_get_wp_sym returns a cached icon, with the size dependent on the preferences.
@@ -3163,12 +3163,7 @@ static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
   g_free ( auto_save_name );
 }
 
-typedef struct {
-  VikWaypoint *wp; // input
-  gpointer uuid;   // output
-} wpu_udata;
-
-static gboolean trw_layer_waypoint_find_uuid ( const gpointer id, const VikWaypoint *wp, gpointer udata )
+gboolean trw_layer_waypoint_find_uuid ( const gpointer id, const VikWaypoint *wp, gpointer udata )
 {
   wpu_udata *user_data = udata;
   if ( wp == user_data->wp ) {

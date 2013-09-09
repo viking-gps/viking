@@ -106,6 +106,17 @@ typedef struct {
 typedef GList* (*VikTrwlayerGetTracksAndLayersFunc) (VikLayer*, gpointer);
 GList *vik_trw_layer_build_track_list_t ( VikTrwLayer *vtl, GList *tracks );
 
+// For creating a list of waypoints with the corresponding layer it is in
+//  (thus a selection of waypoints may be from differing layers)
+typedef struct {
+  VikWaypoint *wpt;
+  VikTrwLayer *vtl;
+} vik_trw_waypoint_list_t;
+
+typedef GList* (*VikTrwlayerGetWaypointsAndLayersFunc) (VikLayer*, gpointer);
+
+GdkPixbuf* get_wp_sym_small ( gchar *symbol );
+
 /* Exposed Layer Interface function definitions */
 // Intended only for use by other trw_layer subwindows
 void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
@@ -125,6 +136,12 @@ typedef struct {
   gpointer uuid; // output
 } trku_udata;
 gboolean trw_layer_track_find_uuid ( const gpointer id, const VikTrack *trk, gpointer udata );
+
+typedef struct {
+  VikWaypoint *wp; // input
+  gpointer uuid;   // output
+} wpu_udata;
+gboolean trw_layer_waypoint_find_uuid ( const gpointer id, const VikWaypoint *wp, gpointer udata );
 
 void trw_layer_zoom_to_show_latlons ( VikTrwLayer *vtl, VikViewport *vvp, struct LatLon maxmin[2] );
 
