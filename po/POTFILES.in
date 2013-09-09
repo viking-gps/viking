@@ -51,6 +51,7 @@ src/viktrwlayer.c
 src/viktrwlayer_propwin.c
 src/viktrwlayer_tpwin.c
 src/viktrwlayer_tracklist.c
+src/viktrwlayer_waypointlist.c
 src/viktrwlayer_geotag.c
 src/viktrwlayer_analysis.c
 src/vikstatus.c
