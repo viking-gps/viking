@@ -3492,6 +3492,9 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   png_radio = gtk_radio_button_new_with_label ( NULL, _("Save as PNG") );
   jpeg_radio = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(png_radio), _("Save as JPEG") );
 
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), png_radio, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), jpeg_radio, FALSE, FALSE, 0);
+
   if ( ! vw->draw_image_save_as_png )
     gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(jpeg_radio), TRUE );
 
@@ -3503,8 +3506,6 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), win_warning_label, FALSE, FALSE, 0);
 #endif
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), current_window_button, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), png_radio, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), jpeg_radio, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zoom_label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zoom_combo, FALSE, FALSE, 0);
 
