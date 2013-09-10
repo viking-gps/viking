@@ -562,8 +562,8 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
       break;
     case PARAM_GPSD_PORT:
       if (data.s) {
-        if (vgl->gpsd_port);
-        g_free(vgl->gpsd_port);
+        if (vgl->gpsd_port)
+          g_free(vgl->gpsd_port);
         vgl->gpsd_port = g_strdup(data.s);
       }
       break;
