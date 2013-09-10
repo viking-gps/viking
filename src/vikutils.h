@@ -29,6 +29,10 @@ G_BEGIN_DECLS
 
 gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkpt, VikTrackpoint *trkpt_prev, VikTrack *trk );
 
+void vu_check_latest_version ( GtkWindow *window );
+
+void vu_set_auto_features_on_first_run ( void );
+
 G_END_DECLS
 
 #endif
