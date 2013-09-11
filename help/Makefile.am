@@ -22,6 +22,8 @@ DOC_FIGURES = \
     figures/edwp_18.png \
     figures/geomove_18.png \
     figures/geozoom_18.png \
+    figures/LayersTracksList.png \
+    figures/LayersTracksStatistics.png \
     figures/Maps_download_region_dialog.png \
     figures/map_tile_info_dialog.png \
     figures/mapdl_18.png \
@@ -35,6 +37,7 @@ DOC_FIGURES = \
     figures/Trackpoint_edit_dialog.png \
     figures/trw_statusbar.png \
     figures/vik_new_route_18.png \
+    figures/WaypointsList.png \
     figures/zoom_18.png \
     figures/zoom_status_popup.png \
     figures/Viking-OSM-CycleMap-ManyTracks.jpg \
