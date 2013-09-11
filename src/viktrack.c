@@ -132,7 +132,7 @@ void vik_track_free(VikTrack *tr)
     g_free ( tr->comment );
   if ( tr->description )
     g_free ( tr->description );
-  g_list_foreach ( tr->trackpoints, (GFunc) g_free, NULL );
+  g_list_foreach ( tr->trackpoints, (GFunc) vik_trackpoint_free, NULL );
   g_list_free( tr->trackpoints );
   if (tr->property_dialog)
     if ( GTK_IS_WIDGET(tr->property_dialog) )
@@ -153,8 +153,6 @@ void vik_track_free(VikTrack *tr)
 VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
 {
   VikTrack *new_tr = vik_track_new();
-  VikTrackpoint *new_tp;
-  GList *tp_iter = tr->trackpoints;
   new_tr->name = g_strdup(tr->name);
   new_tr->visible = tr->visible;
   new_tr->is_route = tr->is_route;
@@ -166,13 +164,15 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   new_tr->trackpoints = NULL;
   if ( copy_points )
   {
+    GList *tp_iter = tr->trackpoints;
     while ( tp_iter )
     {
-      new_tp = g_malloc ( sizeof ( VikTrackpoint ) );
-      *new_tp = *((VikTrackpoint *)(tp_iter->data));
-      new_tr->trackpoints = g_list_append ( new_tr->trackpoints, new_tp );
+      VikTrackpoint *new_tp = vik_trackpoint_copy ( (VikTrackpoint*)(tp_iter->data) );
+      new_tr->trackpoints = g_list_prepend ( new_tr->trackpoints, new_tp );
       tp_iter = tp_iter->next;
     }
+    if ( new_tr->trackpoints )
+      new_tr->trackpoints = g_list_reverse ( new_tr->trackpoints );
   }
   vik_track_set_name(new_tr,tr->name);
   vik_track_set_comment(new_tr,tr->comment);
@@ -214,9 +214,11 @@ void vik_trackpoint_set_name(VikTrackpoint *tp, const gchar *name)
 
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp)
 {
-  VikTrackpoint *rv = vik_trackpoint_new();
-  *rv = *tp;
-  return rv;
+  VikTrackpoint *new_tp = vik_trackpoint_new();
+  memcpy ( new_tp, tp, sizeof(VikTrackpoint) );
+  if ( tp->name )
+    new_tp->name = g_strdup (tp->name);
+  return new_tp;
 }
 
 /**
@@ -1395,21 +1397,22 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   intp = b->len;
   g_byte_array_append(b, (guint8 *)&len, sizeof(len));
 
-  tps = tr->trackpoints;
-  ntp = 0;
-  while (tps) {
-    g_byte_array_append(b, (guint8 *)tps->data, sizeof(VikTrackpoint));
-    tps = tps->next;
-    ntp++;
-  }
-  *(guint *)(b->data + intp) = ntp;
-
   // This allocates space for variant sized strings
   //  and copies that amount of data from the track to byte array
 #define vtm_append(s) \
   len = (s) ? strlen(s)+1 : 0; \
   g_byte_array_append(b, (guint8 *)&len, sizeof(len)); \
   if (s) g_byte_array_append(b, (guint8 *)s, len);
+
+  tps = tr->trackpoints;
+  ntp = 0;
+  while (tps) {
+    g_byte_array_append(b, (guint8 *)tps->data, sizeof(VikTrackpoint));
+    vtm_append(VIK_TRACKPOINT(tps->data)->name);
+    tps = tps->next;
+    ntp++;
+  }
+  *(guint *)(b->data + intp) = ntp;
 
   vtm_append(tr->name);
   vtm_append(tr->comment);
@@ -1445,13 +1448,6 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   ntp = *(guint *)data;
   data += sizeof(ntp);
 
-  for (i=0; i<ntp; i++) {
-    new_tp = vik_trackpoint_new();
-    memcpy(new_tp, data, sizeof(*new_tp));
-    data += sizeof(*new_tp);
-    new_tr->trackpoints = g_list_append(new_tr->trackpoints, new_tp);
-  }
-
 #define vtu_get(s) \
   len = *(guint *)data; \
   data += sizeof(len); \
@@ -1461,6 +1457,16 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
     (s) = NULL; \
   } \
   data += len;
+
+  for (i=0; i<ntp; i++) {
+    new_tp = vik_trackpoint_new();
+    memcpy(new_tp, data, sizeof(*new_tp));
+    data += sizeof(*new_tp);
+    vtu_get(new_tp->name);
+    new_tr->trackpoints = g_list_prepend(new_tr->trackpoints, new_tp);
+  }
+  if ( new_tr->trackpoints )
+    new_tr->trackpoints = g_list_reverse(new_tr->trackpoints);
 
   vtu_get(new_tr->name);
   vtu_get(new_tr->comment);

@@ -115,11 +115,12 @@ static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
   }
 }
 
-static void tpwin_set_name ( VikTrwLayerTpwin *tpwin )
+static gboolean tpwin_set_name ( VikTrwLayerTpwin *tpwin )
 {
   if ( tpwin->cur_tp && (!tpwin->sync_to_tp_block) ) {
     vik_trackpoint_set_name ( tpwin->cur_tp, gtk_entry_get_text(GTK_ENTRY(tpwin->trkpt_name)) );
   }
+  return FALSE;
 }
 
 VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
