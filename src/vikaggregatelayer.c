@@ -23,6 +23,7 @@
 #include "viking.h"
 #include "viktrwlayer_analysis.h"
 #include "viktrwlayer_tracklist.h"
+#include "viktrwlayer_waypointlist.h"
 #include "icons/icons.h"
 
 #include <string.h>
@@ -447,6 +448,45 @@ static void aggregate_layer_sort_z2a ( gpointer lav[2] )
 }
 
 /**
+ * aggregate_layer_waypoint_create_list:
+ * @vl:        The layer that should create the waypoint and layers list
+ * @user_data: Not used in this function
+ *
+ * Returns: A list of #vik_trw_waypoint_list_t
+ */
+static GList* aggregate_layer_waypoint_create_list ( VikLayer *vl, gpointer user_data )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(vl);
+
+  // Get all TRW layers
+  GList *layers = NULL;
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
+
+  // For each TRW layers keep adding the waypoints to build a list of all of them
+  GList *waypoints_and_layers = NULL;
+  layers = g_list_first ( layers );
+  while ( layers ) {
+    GList *waypoints = NULL;
+    waypoints = g_list_concat ( waypoints, g_hash_table_get_values ( vik_trw_layer_get_waypoints( VIK_TRW_LAYER(layers->data) ) ) );
+
+    waypoints_and_layers = g_list_concat ( waypoints_and_layers, vik_trw_layer_build_waypoint_list_t ( VIK_TRW_LAYER(layers->data), waypoints ) );
+
+    layers = g_list_next ( layers );
+  }
+  g_list_free ( layers );
+
+  return waypoints_and_layers;
+}
+
+static void aggregate_layer_waypoint_list_dialog ( gpointer data[2] )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(data[0]);
+  gchar *title = g_strdup_printf ( _("%s: Waypoint List"), VIK_LAYER(val)->name );
+  vik_trw_layer_waypoint_list_show_dialog ( title, VIK_LAYER(val), NULL, aggregate_layer_waypoint_create_list, TRUE );
+  g_free ( title );
+}
+
+/**
  * aggregate_layer_track_create_list:
  * @vl:        The layer that should create the track and layers list
  * @user_data: Not used in this function
@@ -576,6 +616,12 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   item = gtk_image_menu_item_new_with_mnemonic ( _("Track _List...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_track_list_dialog), data );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Waypoint List...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_waypoint_list_dialog), data );
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 }

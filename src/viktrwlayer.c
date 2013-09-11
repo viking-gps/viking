@@ -37,6 +37,7 @@
 #include "viktrwlayer_propwin.h"
 #include "viktrwlayer_analysis.h"
 #include "viktrwlayer_tracklist.h"
+#include "viktrwlayer_waypointlist.h"
 #ifdef VIK_CONFIG_GEOTAG
 #include "viktrwlayer_geotag.h"
 #include "geotag_exif.h"
@@ -327,6 +328,7 @@ static void trw_layer_gps_upload ( gpointer lav[2] );
 
 static void trw_layer_track_list_dialog_single ( gpointer pass_along[6] );
 static void trw_layer_track_list_dialog ( gpointer lav[2] );
+static void trw_layer_waypoint_list_dialog ( gpointer lav[2] );
 
 // Specific route versions:
 //  Most track handling functions can handle operating on the route list
@@ -2258,7 +2260,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
 /*
  * Can accept a null symbol, and may return null value
  */
-static GdkPixbuf* get_wp_sym_small ( gchar *symbol )
+GdkPixbuf* get_wp_sym_small ( gchar *symbol )
 {
   GdkPixbuf* wp_icon = a_get_wp_sym (symbol);
   // ATM a_get_wp_sym returns a cached icon, with the size dependent on the preferences.
@@ -3163,12 +3165,7 @@ static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
   g_free ( auto_save_name );
 }
 
-typedef struct {
-  VikWaypoint *wp; // input
-  gpointer uuid;   // output
-} wpu_udata;
-
-static gboolean trw_layer_waypoint_find_uuid ( const gpointer id, const VikWaypoint *wp, gpointer udata )
+gboolean trw_layer_waypoint_find_uuid ( const gpointer id, const VikWaypoint *wp, gpointer udata )
 {
   wpu_udata *user_data = udata;
   if ( wp == user_data->wp ) {
@@ -3974,6 +3971,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
   gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->tracks)+g_hash_table_size (vtl->routes)) );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("_Waypoint List...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_list_dialog), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->waypoints)) );
 }
 
 // Fake Waypoint UUIDs vi simple increasing integer
@@ -6904,6 +6908,39 @@ static void trw_layer_routes_visibility_toggle ( gpointer lav[2] )
 }
 
 /**
+ * vik_trw_layer_build_waypoint_list_t:
+ *
+ * Helper function to construct a list of #vik_trw_waypoint_list_t
+ */
+GList *vik_trw_layer_build_waypoint_list_t ( VikTrwLayer *vtl, GList *waypoints )
+{
+  GList *waypoints_and_layers = NULL;
+  // build waypoints_and_layers list
+  while ( waypoints ) {
+    vik_trw_waypoint_list_t *vtdl = g_malloc (sizeof(vik_trw_waypoint_list_t));
+    vtdl->wpt = VIK_WAYPOINT(waypoints->data);
+    vtdl->vtl = vtl;
+    waypoints_and_layers = g_list_prepend ( waypoints_and_layers, vtdl );
+    waypoints = g_list_next ( waypoints );
+  }
+  return waypoints_and_layers;
+}
+
+/**
+ * trw_layer_create_waypoint_list:
+ *
+ * Create the latest list of waypoints with the associated layer(s)
+ *  Although this will always be from a single layer here
+ */
+static GList* trw_layer_create_waypoint_list ( VikLayer *vl, gpointer user_data )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(vl);
+  GList *waypoints = g_hash_table_get_values ( vik_trw_layer_get_waypoints(vtl) );
+
+  return vik_trw_layer_build_waypoint_list_t ( vtl, waypoints );
+}
+
+/**
  * trw_layer_analyse_close:
  *
  * Stuff to do on dialog closure
@@ -7373,6 +7410,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoints_visibility_toggle), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(vis_submenu), item );
     gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("_List Waypoints...") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_list_dialog), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   }
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS )
@@ -7443,7 +7485,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_list_dialog_single), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-
     gtk_widget_show ( item );
 
     item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
@@ -10237,5 +10278,15 @@ static void trw_layer_track_list_dialog ( gpointer lav[2] )
 
   gchar *title = g_strdup_printf ( _("%s: Track and Route List"), VIK_LAYER(vtl)->name );
   vik_trw_layer_track_list_show_dialog ( title, VIK_LAYER(vtl), NULL, trw_layer_create_track_list_both, FALSE );
+  g_free ( title );
+}
+
+static void trw_layer_waypoint_list_dialog ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  //VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+
+  gchar *title = g_strdup_printf ( _("%s: Waypoint List"), VIK_LAYER(vtl)->name );
+  vik_trw_layer_waypoint_list_show_dialog ( title, VIK_LAYER(vtl), NULL, trw_layer_create_waypoint_list, FALSE );
   g_free ( title );
 }

@@ -88,6 +88,7 @@ libviking_a_SOURCES = \
 	viktrwlayer_propwin.c viktrwlayer_propwin.h \
 	viktrwlayer_analysis.c viktrwlayer_analysis.h \
 	viktrwlayer_tracklist.c viktrwlayer_tracklist.h \
+	viktrwlayer_waypointlist.c viktrwlayer_waypointlist.h \
 	vikrouting.c vikrouting.h \
 	vikroutingengine.c vikroutingengine.h \
 	vikroutingwebengine.c vikroutingwebengine.h \
