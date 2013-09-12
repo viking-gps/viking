@@ -7245,18 +7245,15 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
     {
-      gboolean separator_created = FALSE;
+      // Always create separator as now there is always at least the transform menu option
+      item = gtk_menu_item_new ();
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_widget_show ( item );
 
       /* could be a right-click using the tool */
       if ( vlp != NULL ) {
-	item = gtk_menu_item_new ();
-	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-	gtk_widget_show ( item );
-
-	separator_created = TRUE;
-
         item = gtk_image_menu_item_new_with_mnemonic ( _("_Goto") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_MENU) );
+        gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_MENU) );
         g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_waypoint), pass_along );
         gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
         gtk_widget_show ( item );
@@ -7266,14 +7263,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
       if ( wp && wp->name ) {
         if ( is_valid_geocache_name ( wp->name ) ) {
-
-          if ( !separator_created ) {
-            item = gtk_menu_item_new ();
-            gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-            gtk_widget_show ( item );
-            separator_created = TRUE;
-          }
-
           item = gtk_menu_item_new_with_mnemonic ( _("_Visit Geocache Webpage") );
           g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_gc_webpage), pass_along );
           gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
@@ -7283,13 +7272,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
       if ( wp && wp->image )
       {
-	if ( !separator_created ) {
-	  item = gtk_menu_item_new ();
-	  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-	  gtk_widget_show ( item );
-	  separator_created = TRUE;
-	}
-
 	// Set up image paramater
 	pass_along[5] = wp->image;
 
@@ -7330,7 +7312,6 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
           gtk_widget_show ( item );
         }
       }
-
     }
   }
 
