@@ -425,6 +425,8 @@ static GtkTreeViewColumn *my_new_column_text ( const gchar *title, GtkCellRender
 	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes ( title, renderer, "text", column_runner, NULL );
 	gtk_tree_view_column_set_sort_column_id ( column, column_runner );
 	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
+	gtk_tree_view_column_set_reorderable ( column, TRUE );
+	gtk_tree_view_column_set_resizable ( column, TRUE );
 	return column;
 }
 
@@ -474,6 +476,7 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 
 	GtkWidget *view = gtk_tree_view_new();
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+	g_object_set (G_OBJECT (renderer), "xalign", 0.0, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 	GtkTreeViewColumn *column;
 	GtkTreeViewColumn *sort_by_column;
 
@@ -481,6 +484,8 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	if ( show_layer_names ) {
 		// Insert column for the layer name when viewing multi layers
 		column = my_new_column_text ( _("Layer"), renderer, view, column_runner++ );
+		g_object_set (G_OBJECT (renderer), "xalign", 0.0, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+		gtk_tree_view_column_set_expand ( column, TRUE );
 		// remember the layer column so we can sort by it later
 		sort_by_column = column;
 	}
@@ -488,11 +493,13 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 		column_runner++;
 
 	column = my_new_column_text ( _("Name"), renderer, view, column_runner++ );
+	gtk_tree_view_column_set_expand ( column, TRUE );
 	if ( !show_layer_names )
 		// remember the name column so we can sort by it later
 		sort_by_column = column;
 
 	column = my_new_column_text ( _("Date"), renderer, view, column_runner++ );
+	gtk_tree_view_column_set_resizable ( column, TRUE );
 
 	GtkCellRenderer *renderer_toggle = gtk_cell_renderer_toggle_new ();
 	column = gtk_tree_view_column_new_with_attributes ( _("Visible"), renderer_toggle, "active", column_runner, NULL );
@@ -501,6 +508,7 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	column_runner++;
 
 	column = my_new_column_text ( _("Comment"), renderer, view, column_runner++ );
+	gtk_tree_view_column_set_expand ( column, TRUE );
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
 		column = my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
@@ -539,9 +547,8 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gtk_tree_view_column_clicked ( sort_by_column );
 
 	// Ensure a reasonable number of items are shown
-	//  TODO may wish to impose maximum width, especially on the name fields (+set ellipize?)
-	//  TODO may be save window size between invocations.
-	gtk_window_set_default_size ( GTK_WINDOW(dialog), show_layer_names ? 800 : 600, 400 );
+	//  TODO: may be save window size, column order, sorted by between invocations.
+	gtk_window_set_default_size ( GTK_WINDOW(dialog), show_layer_names ? 700 : 500, 400 );
 }
 
 
@@ -577,6 +584,8 @@ void vik_trw_layer_waypoint_list_show_dialog ( gchar *title,
 	g_signal_connect ( G_OBJECT(dialog), "response", G_CALLBACK(waypoint_close_cb), gl );
 
 	gtk_widget_show_all ( dialog );
+	// Yes - set the size *AGAIN* - this time widgets are expanded nicely
+	gtk_window_resize ( GTK_WINDOW(dialog), show_layer_names ? 800 : 600, 400 );
 
 	// ATM lock out on dialog run - to prevent list contents being manipulated in other parts of the GUI whilst shown here.
 	gtk_dialog_run (GTK_DIALOG (dialog));
