@@ -461,7 +461,7 @@ static void open_window ( VikWindow *vw, GSList *files )
   while ( cur_file ) {
     // Only open a new window if a viking file
     gchar *file_name = cur_file->data;
-    if (vw != NULL && check_file_magic_vik ( file_name ) ) {
+    if (vw != NULL && vw->filename && check_file_magic_vik ( file_name ) ) {
       VikWindow *newvw = vik_window_new_window ();
       if (newvw)
         vik_window_open_file ( newvw, file_name, TRUE );
