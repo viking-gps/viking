@@ -315,7 +315,7 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
                              "Specifies the number of retries to follow a redirect while downloading a page",
                              0  /* minimum value */,
                              G_MAXLONG /* maximum value */,
-                             0  /* default value */,
+                             2  /* default value */,
                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
 
