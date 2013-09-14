@@ -911,14 +911,41 @@ Opens a new dialog with the list. As described in the Aggregrate layer <xref lin
 </itemizedlist>
 </section>
 
-<section><title>Track and Route Properties</title>
+<section xreflabel="Track and Route Properties"><title>Track and Route Properties</title>
 <para>
-Show many useful statistics about a track or a route, including a
-elevation-distance graph and a speed-time graph (if data is available).
-You can click these graphs to jump to the point in the track. You can
-also reverse it, delete duplicates, and split a track from its
-component segments (discontinuous breaks in a track) into separate
-tracks.
+This shows several tabs for properties and useful statistics about a track or a route, including elevation-distance and speed-time graphs (if data is available).
+Moving the mouse pointer over the graph displays values related to that point along the track.
+You can click on these graphs to jump to the point in the track.
+You can reverse it, delete duplicates, split at marked position or split a track from its component segments (discontinuous breaks in a track) into separate tracks.
+</para>
+<section id='track_properties' xreflabel="Track and Route Properties"><title>Track and Route Properties Tab</title>
+<para>
+<figure>
+<title>Properties Tab: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Track_properties.png"/>
+</screenshot>
+</figure>
+</para>
+</section>
+<section id='track_statistics' xreflabel="Track and Route Statistics"><title>Track and Route Statistics Tab</title>
+<para>
+<figure>
+<title>Statistics Tab: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Track_statistics.png"/>
+</screenshot>
+</figure>
+</para>
+</section>
+<section id='track_elev_graphs' xreflabel="Track Elevation Graph"><title>Track Elevation Graph</title>
+<para>
+<figure>
+<title>Elevation Distance Tab: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Track_elevation_graph.png"/>
+</screenshot>
+</figure>
 </para>
 <para>
 The following colors are used in the elevation-distance graph:
@@ -947,7 +974,7 @@ The following colors are used in the elevation-distance graph:
 </listitem>
 </varlistentry>
 </variablelist>
-
+</section>
 </section>
 
 <section><title>Track and Route Operations</title>
@@ -1563,7 +1590,7 @@ Hovering the mouse over an entry will show a tooltip of the comment or descripti
 Each entry in the track list can be selected and on mouse right click offers these options:
 <itemizedlist>
 <listitem><para>View. Move the viewport to the area of the item and highlight it.</para></listitem>
-<listitem><para>Statistics. Open the properties dialog on the Statistics tab. Note this will close the track list dialog.</para></listitem>
+<listitem><para>Statistics. Opens the Properties dialog on the <xref linkend="track_statistics"/> tab. Note this will close the track list dialog.</para></listitem>
 </itemizedlist>
 </para>
 </section>

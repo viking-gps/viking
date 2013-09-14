@@ -35,6 +35,9 @@ DOC_FIGURES = \
     figures/select_18.png \
     figures/showpic_18.png \
     figures/Trackpoint_edit_dialog.png \
+    figures/Track_elevation_graph.png \
+    figures/Track_properties.png \
+    figures/Track_statistics.png \
     figures/trw_statusbar.png \
     figures/vik_new_route_18.png \
     figures/WaypointsList.png \
