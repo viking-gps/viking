@@ -244,9 +244,6 @@ struct _VikMapsLayer {
   GtkMenu *dl_right_click_menu;
   VikCoord redownload_ul, redownload_br; /* right click menu only */
   VikViewport *redownload_vvp;
-
-  gboolean license_notice_shown; // FALSE for new maps only, otherwise
-                                 // TRUE for saved maps & other layer changes as we don't need to show it again
 };
 
 enum { REDOWNLOAD_NONE = 0,    /* download only missing maps */
@@ -504,24 +501,47 @@ static guint map_uniq_id_to_index ( guint uniq_id )
   return NUM_MAP_TYPES; /* no such thing */
 }
 
-void vik_maps_layer_pretend_licence_shown ( VikMapsLayer *vml )
+#define VIK_SETTINGS_MAP_LICENSE_SHOWN "map_license_shown"
+
+/**
+ * Convenience function to display the license
+ */
+static void maps_show_license ( GtkWindow *parent, VikMapSource *map )
 {
-  vml->license_notice_shown = TRUE;
+  a_dialog_license ( parent,
+		     vik_map_source_get_label (map),
+		     vik_map_source_get_license (map),
+		     vik_map_source_get_license_url (map) );
 }
 
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation )
 {
-  // When loading from a file don't need the license reminder
-  if ( is_file_operation )
-    vml->license_notice_shown = TRUE;
-
   switch ( id )
   {
     case PARAM_CACHE_DIR: maps_layer_set_cache_dir ( vml, data.s ); break;
     case PARAM_MAPTYPE: {
       gint maptype = map_uniq_id_to_index(data.u);
-      if ( maptype == NUM_MAP_TYPES ) g_warning(_("Unknown map type"));
-      else vml->maptype = maptype;
+      if ( maptype == NUM_MAP_TYPES )
+        g_warning(_("Unknown map type"));
+      else {
+        vml->maptype = maptype;
+
+        // When loading from a file don't need the license reminder - ensure it's saved into the 'seen' list
+        if ( is_file_operation ) {
+          a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, maptype );
+        }
+        else {
+          VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+          if (vik_map_source_get_license (map) != NULL) {
+            // Check if licence for this map type has been shown before
+            if ( ! a_settings_get_integer_list_contains ( VIK_SETTINGS_MAP_LICENSE_SHOWN, maptype ) ) {
+              if ( vvp )
+                maps_show_license ( VIK_GTK_WINDOW_FROM_WIDGET(vvp), map );
+              a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, maptype );
+            }
+          }
+        }
+      }
       break;
     }
     case PARAM_ALPHA: if ( data.u <= 255 ) vml->alpha = data.u; break;
@@ -591,7 +611,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   vml->last_ympp = 0.0;
 
   vml->dl_right_click_menu = NULL;
-  vml->license_notice_shown = FALSE;
+  //vml->license_notice_shown = FALSE;
 
   return vml;
 }
@@ -624,14 +644,6 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
       gchar *msg = g_strdup_printf(_("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it."), drawmode_name);
       a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vp), msg );
       g_free(msg);
-    }
-
-    if (vik_map_source_get_license (map) != NULL) {
-      if ( ! vml->license_notice_shown ) {
-	a_dialog_license (VIK_GTK_WINDOW_FROM_WIDGET(vp), vik_map_source_get_label (map),
-			  vik_map_source_get_license (map), vik_map_source_get_license_url (map) );
-	vml->license_notice_shown = TRUE;
-      }
     }
   }
 }
@@ -1535,6 +1547,18 @@ static void maps_layer_redownload_all_onscreen_maps ( gpointer vml_vvp[2] )
   download_onscreen_maps( vml_vvp, REDOWNLOAD_ALL);
 }
 
+static void maps_layers_about ( gpointer vml_vvp[2] )
+{
+  VikMapsLayer *vml = vml_vvp[0];
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  if ( vik_map_source_get_license (map) )
+    maps_show_license ( VIK_GTK_WINDOW_FROM_LAYER(vml), map );
+  else
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml),
+                        vik_map_source_get_label (map) );
+}
+
 /**
  * maps_layer_how_many_maps:
  * Copied from maps_layer_download_section but without the actual download and this returns a value
@@ -1830,6 +1854,11 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   item = gtk_image_menu_item_new_with_mnemonic ( _("Download Maps in _Zoom Levels...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DND_MULTIPLE, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layers_about), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 }

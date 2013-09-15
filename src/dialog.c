@@ -924,8 +924,7 @@ void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *licens
                                  _("The map data is licensed: %s."),
                                  license);
   gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
-    _("The data provided by '<b>%s</b>' are licensed under the following license: <b>%s</b>.\n"
-    "Please, read the license before continuing."),
+    _("The data provided by '<b>%s</b>' are licensed under the following license: <b>%s</b>."),
     map, license);
 #define RESPONSE_OPEN_LICENSE 600
   if (url != NULL) {

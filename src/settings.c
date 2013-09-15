@@ -198,3 +198,92 @@ void a_settings_set_double ( const gchar *name, gdouble val )
 {
 	g_key_file_set_double ( keyfile, VIKING_SETTINGS_GROUP, name, val );
 }
+
+static gboolean settings_get_integer_list ( const gchar *group, const gchar *name, gint **vals, gsize *length )
+{
+	GError *error = NULL;
+	gboolean success = TRUE;
+	gint *ints = g_key_file_get_integer_list ( keyfile, group, name, length, &error );
+	if ( error ) {
+		// Only print on debug - as often may have requests for keys not in the file
+		g_debug ( "%s", error->message );
+		g_error_free ( error );
+		success = FALSE;
+	}
+	*vals = ints;
+	return success;
+}
+
+/*
+ * The returned list of integers should be freed when no longer needed
+ */
+static gboolean a_settings_get_integer_list ( const gchar *name, gint **vals, gsize* length )
+{
+	return settings_get_integer_list ( VIKING_SETTINGS_GROUP, name, vals, length );
+}
+
+static void a_settings_set_integer_list ( const gchar *name, gint vals[], gsize length )
+{
+	g_key_file_set_integer_list ( keyfile, VIKING_SETTINGS_GROUP, name, vals, length );
+}
+
+gboolean a_settings_get_integer_list_contains ( const gchar *name, gint val )
+{
+	gint* vals = NULL;
+	gsize length;
+	// Get current list and see if the value supplied is in the list
+	gboolean contains = FALSE;
+	// Get current list
+	if ( a_settings_get_integer_list ( name, &vals, &length ) ) {
+		// See if it's not already there
+		gint ii = 0;
+		if ( vals && length ) {
+			while ( ii < length ) {
+				if ( vals[ii] == val ) {
+					contains = TRUE;
+					break;
+				}
+				ii++;
+			}
+			// Free old array
+			g_free (vals);
+		}
+	}
+	return contains;
+}
+
+void a_settings_set_integer_list_containing ( const gchar *name, gint val )
+{
+	gint* vals = NULL;
+	gsize length;
+	gboolean need_to_add = TRUE;
+	gint ii = 0;
+	// Get current list
+	if ( a_settings_get_integer_list ( name, &vals, &length ) ) {
+		// See if it's not already there
+		if ( vals && length ) {
+			while ( ii < length ) {
+				if ( vals[ii] == val ) {
+					need_to_add = FALSE;
+					break;
+				}
+				ii++;
+			}
+		}
+	}
+	// Add value into array if necessary
+	if ( need_to_add ) {
+		// NB not bothering to sort this 'list' ATM as there is not much to be gained
+		guint new_length = length + 1;
+		gint new_vals[new_length];
+		// Copy array
+		for ( ii = 0; ii < length; ii++ ) {
+			new_vals[ii] = vals[ii];
+		}
+		new_vals[length] = val; // Set the new value
+		// Apply
+		a_settings_set_integer_list ( name, new_vals, new_length );
+		// Free old array
+		g_free (vals);
+	}
+}

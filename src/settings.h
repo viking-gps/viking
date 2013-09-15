@@ -44,6 +44,15 @@ gboolean a_settings_get_double ( const gchar *name, gdouble *val );
 
 void a_settings_set_double ( const gchar *name, gdouble val );
 
+/*
+gboolean a_settings_get_integer_list ( const gchar *name, gint *vals, gsize* length );
+
+void a_settings_set_integer_list ( const gchar *name, gint vals[], gsize length );
+*/
+gboolean a_settings_get_integer_list_contains ( const gchar *name, gint val );
+
+void a_settings_set_integer_list_containing ( const gchar *name, gint val );
+
 G_END_DECLS
 
 #endif

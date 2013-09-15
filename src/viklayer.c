@@ -636,7 +636,7 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
       // only DEM files uses this currently
       if ( vli->params[i].type != VIK_LAYER_PARAM_STRING_LIST ) {
         data = a_layer_defaults_get ( layer_name, vli->params[i].name, vli->params[i].type );
-        vik_layer_set_param ( vl, i, data, vvp, FALSE );
+        vik_layer_set_param ( vl, i, data, vvp, TRUE ); // Possibly come from a file
       }
     }
   }
