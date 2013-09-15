@@ -495,8 +495,10 @@ vik_print_preview_expose_event (GtkWidget        *widget,
 
       if (preview->pixbuf == NULL)
         {
-          gint width  = MIN (widget->allocation.width, 1024);
-          gint height = MIN (widget->allocation.height, 1024);
+          GtkAllocation allocation;
+          gtk_widget_get_allocation ( widget, &allocation );
+          gint width  = MIN (allocation.width, 1024);
+          gint height = MIN (allocation.height, 1024);
 
           preview->pixbuf = get_thumbnail(drawable, width, height);
         }

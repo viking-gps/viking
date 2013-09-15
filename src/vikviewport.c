@@ -340,8 +340,10 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
 {
   g_return_val_if_fail ( vvp != NULL, TRUE );
 
-  vvp->width = GTK_WIDGET(vvp)->allocation.width;
-  vvp->height = GTK_WIDGET(vvp)->allocation.height;
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( GTK_WIDGET(vvp), &allocation );
+  vvp->width = allocation.width;
+  vvp->height = allocation.height;
 
   vvp->width_2 = vvp->width/2;
   vvp->height_2 = vvp->height/2;

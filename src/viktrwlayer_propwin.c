@@ -350,7 +350,9 @@ static void save_image_and_draw_graph_marks (GtkWidget *image,
   saved_img->saved = TRUE;
 
   if ((marker_x >= MARGIN) && (marker_x < (PROFILE_WIDTH + MARGIN))) {
-    gdk_draw_line (GDK_DRAWABLE(pix), gc, marker_x, 0, marker_x, image->allocation.height);
+    GtkAllocation allocation;
+    gtk_widget_get_allocation ( image, &allocation );
+    gdk_draw_line (GDK_DRAWABLE(pix), gc, marker_x, 0, marker_x, allocation.height);
     *marker_drawn = TRUE;
   }
   else
@@ -414,7 +416,10 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
       graph_type == PROPWIN_GRAPH_TYPE_DISTANCE_TIME ||
       graph_type == PROPWIN_GRAPH_TYPE_ELEVATION_TIME );
 
-  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, event_box->allocation.width, widgets->vtl, widgets->vlp, widgets->vvp, widgets->tr, is_time_graph, widgets->profile_width);
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( event_box, &allocation );
+
+  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, allocation.width, widgets->vtl, widgets->vlp, widgets->vvp, widgets->tr, is_time_graph, widgets->profile_width);
   // Unable to get the point so give up
   if ( trackpoint == NULL ) {
     gtk_dialog_set_response_sensitive(GTK_DIALOG(widgets->dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, FALSE);
@@ -639,7 +644,10 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( event_box, &allocation );
+
+  gdouble x = mouse_x - allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
@@ -716,7 +724,10 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( event_box, &allocation );
+
+  gdouble x = mouse_x - allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
@@ -793,7 +804,9 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( event_box, &allocation );
+  gdouble x = mouse_x - allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
@@ -887,7 +900,10 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( event_box, &allocation );
+
+  gdouble x = mouse_x - allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
@@ -966,7 +982,10 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( event_box, &allocation );
+
+  gdouble x = mouse_x - allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
@@ -1042,7 +1061,10 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   else
     mouse_x = event->x;
 
-  gdouble x = mouse_x - event_box->allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( event_box, &allocation );
+
+  gdouble x = mouse_x - allocation.width / 2 + widgets->profile_width / 2 - MARGIN / 2;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
