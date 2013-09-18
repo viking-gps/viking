@@ -29,8 +29,6 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-#define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
-
 static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, gint *len );
 static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
@@ -638,7 +636,9 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
 
 static void disconnect_layer_signal ( VikLayer *vl, VikAggregateLayer *val )
 {
-  g_assert(DISCONNECT_UPDATE_SIGNAL(vl,val)==1);
+  guint number_handlers = g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val);
+  if ( number_handlers != 1 )
+    g_critical ("%s: Unexpected number of disconnect handlers: %d", __FUNCTION__, number_handlers);
 }
 
 void vik_aggregate_layer_free ( VikAggregateLayer *val )
@@ -672,7 +672,7 @@ gboolean vik_aggregate_layer_delete ( VikAggregateLayer *val, GtkTreeIter *iter 
 
   vik_treeview_item_delete ( VIK_LAYER(val)->vt, iter );
   val->children = g_list_remove ( val->children, l );
-  g_assert(DISCONNECT_UPDATE_SIGNAL(l,val)==1);
+  disconnect_layer_signal ( l, val );
   g_object_unref ( l );
 
   return was_visible;
