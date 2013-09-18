@@ -46,7 +46,6 @@
 #include "vikutils.h"
 #endif
 
-#define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
 static void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void vik_gps_layer_free ( VikGpsLayer *val );
@@ -483,7 +482,8 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
     child_layer = vik_layer_unmarshall ( data + sizeof(gint), alm_size, vvp );
     if (child_layer) {
       rv->trw_children[i++] = (VikTrwLayer *)child_layer;
-      g_signal_connect_swapped ( G_OBJECT(child_layer), "update", G_CALLBACK(vik_layer_emit_update_secondary), rv );
+      // NB no need to attach signal update handler here
+      //  as this will always be performed later on in vik_gps_layer_realize()
     }
     alm_next;
   }
@@ -796,14 +796,9 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
 
 static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
 {
-  guint number_handlers = DISCONNECT_UPDATE_SIGNAL(vl,vgl);
+  guint number_handlers = g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, vgl);
   if ( number_handlers != 1 ) {
-    /*
-      NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
-      This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
-      I don't think there's any side effects and certainly better than the program just aborting
-    */
-    g_warning(_("Unexpected number of disconnected handlers: %d"), number_handlers);
+    g_critical(_("Unexpected number of disconnected handlers: %d"), number_handlers);
   }
 }
 
