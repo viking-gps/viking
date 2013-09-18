@@ -62,7 +62,6 @@ static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl );
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *val, VikCoordMode mode );
 static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
-static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
 static void gps_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_download_cb( gpointer layer_and_vlp[2] );
@@ -290,7 +289,7 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
-  (VikLayerFuncDragDropRequest)		gps_layer_drag_drop_request,
+  (VikLayerFuncDragDropRequest)         NULL,
 
   (VikLayerFuncSelectClick)             NULL,
   (VikLayerFuncSelectMove)              NULL,
@@ -829,23 +828,6 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 }
 
-gboolean vik_gps_layer_delete ( VikGpsLayer *vgl, GtkTreeIter *iter )
-{
-  gint i;
-  VikLayer *l = VIK_LAYER( vik_treeview_item_get_pointer ( VIK_LAYER(vgl)->vt, iter ) );
-  gboolean was_visible = l->visible;
-
-  vik_treeview_item_delete ( VIK_LAYER(vgl)->vt, iter );
-  for (i = 0; i < NUM_TRW; i++) {
-    if (VIK_LAYER(vgl->trw_children[i]) == l)
-      vgl->trw_children[i] = NULL;
-  }
-  g_assert(DISCONNECT_UPDATE_SIGNAL(l,vgl)==1);
-  g_object_unref ( l );
-
-  return was_visible;
-}
-
 static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
   GtkTreeIter iter;
@@ -894,22 +876,6 @@ gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl )
   if ( vgl->trw_children[0] )
     return FALSE;
   return TRUE;
-}
-
-static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
-{
-  VikTreeview *vt = VIK_LAYER(val_src)->vt;
-  VikLayer *vl = vik_treeview_item_get_pointer(vt, src_item_iter);
-  gchar *dp;
-
-  dp = gtk_tree_path_to_string(dest_path);
-
-  /* vik_gps_layer_delete unrefs, but we don't want that here.
-   * we're still using the layer. */
-  g_object_ref ( vl );
-  vik_gps_layer_delete(val_src, src_item_iter);
-
-  g_free(dp);
 }
 
 static void gps_session_delete(GpsSession *sess)
