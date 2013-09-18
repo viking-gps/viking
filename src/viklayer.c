@@ -248,7 +248,7 @@ void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode )
 }
 
 typedef struct {
-  gint layer_type;
+  VikLayerTypeEnum layer_type;
   gint len;
   guint8 data[0];
 } header_t;
