@@ -222,6 +222,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       VikWaypoint *wp = vik_waypoint_new();
       wp->visible = line_visible;
       wp->altitude = line_altitude;
+      wp->has_timestamp = line_has_timestamp;
+      wp->timestamp = line_timestamp;
 
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &line_latlon );
 
@@ -513,6 +515,8 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
     fprintf ( f, " altitude=\"%s\"", s_alt );
     g_free(s_alt);
   }
+  if ( wp->has_timestamp )
+    fprintf ( f, " unixtime=\"%ld\"", wp->timestamp );
   if ( wp->comment )
   {
     gchar *tmp_comment = slashdup(wp->comment);
