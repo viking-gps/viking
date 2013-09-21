@@ -29,7 +29,6 @@
 
 #include "viking.h"
 #include "viktrwlayer_waypointlist.h"
-#include "viktrwlayer_propwin.h"
 
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!
 #define WAYPOINT_LIST_DATE_FORMAT "%Y-%m-%d %H:%M"
@@ -173,9 +172,17 @@ static void trw_layer_waypoint_properties ( menu_array_values values )
 		GtkWidget *gw = gtk_widget_get_toplevel ( values[MA_TREEVIEW] );
 		waypoint_close_cb ( gw, 0, values[MA_WPTS_LIST] );
 
-		gboolean updated; // Unused
-        a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wpt->name, vtl, wpt, vik_trw_layer_get_coord_mode(vtl), FALSE, &updated );
-    }
+		gboolean updated = FALSE;
+		gchar *new_name = a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wpt->name, vtl, wpt, vik_trw_layer_get_coord_mode(vtl), FALSE, &updated );
+		if ( new_name )
+			trw_layer_waypoint_rename ( vtl, wpt, new_name );
+
+		if ( updated )
+			trw_layer_waypoint_reset_icon ( vtl, wpt );
+
+		if ( updated && VIK_LAYER(vtl)->visible )
+			vik_layer_emit_update ( VIK_LAYER(vtl) );
+	}
 }
 
 static void trw_layer_waypoint_view ( menu_array_values values )

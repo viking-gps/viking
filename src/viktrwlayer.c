@@ -4651,7 +4651,7 @@ static void trw_layer_delete_item ( gpointer pass_along[6] )
 /**
  *  Rename waypoint and maintain corresponding name of waypoint in the treeview
  */
-static void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name )
+void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name )
 {
   vik_waypoint_set_name ( wp, new_name );
 
@@ -4669,6 +4669,28 @@ static void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const
     if ( it ) {
       vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, new_name );
       vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
+    }
+  }
+}
+
+/**
+ *  Maintain icon of waypoint in the treeview
+ */
+void trw_layer_waypoint_reset_icon ( VikTrwLayer *vtl, VikWaypoint *wp )
+{
+  // update the treeview
+  wpu_udata udataU;
+  udataU.wp   = wp;
+  udataU.uuid = NULL;
+
+  // Need key of it for treeview update
+  gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
+
+  if ( wpf && udataU.uuid ) {
+    GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
+
+    if ( it ) {
+      vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, it, get_wp_sym_small (wp->symbol) );
     }
   }
 }

@@ -123,6 +123,8 @@ GdkPixbuf* get_wp_sym_small ( gchar *symbol );
 void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
 // Other functions only for use by other trw_layer subwindows
 gchar *trw_layer_new_unique_sublayer_name ( VikTrwLayer *vtl, gint sublayer_type, const gchar *name );
+void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name );
+void trw_layer_waypoint_reset_icon ( VikTrwLayer *vtl, VikWaypoint *wp );
 
 gboolean vik_trw_layer_get_tracks_visibility ( VikTrwLayer *vtl );
 gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl );
