@@ -300,7 +300,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	object_class->finalize = vik_slippy_map_source_finalize;
 }
 
-gboolean
+static gboolean
 _is_direct_file_access (VikMapSource *self)
 {
   g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
@@ -310,7 +310,7 @@ _is_direct_file_access (VikMapSource *self)
   return priv->is_direct_file_access;
 }
 
-gboolean
+static gboolean
 _supports_download_only_new (VikMapSource *self)
 {
   g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
