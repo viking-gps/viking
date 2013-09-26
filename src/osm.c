@@ -91,6 +91,18 @@ void osm_init () {
                                 "license", "MapQuest Specific",
                                 "license-url", "http://developer.mapquest.com/web/info/terms-of-use",
                                 NULL));
+  VikMapSource *hot_type =
+    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+                                "id", 22,
+                                "label", "OpenStreetMap (Humanitarian)",
+                                "hostname", "c.tile.openstreetmap.fr",
+                                "url", "/hot/%d/%d/%d.png",
+                                "check-file-server-time", TRUE,
+                                "use-etag", FALSE,
+                                "copyright", "© OpenStreetMap contributors. Tiles courtesy of Humanitarian OpenStreetMap Team",
+                                "license", "CC-BY-SA",
+                                "license-url", "http://www.openstreetmap.org/copyright",
+                                NULL));
 
   // NB no cache needed for this type!!
   VikMapSource *direct_type =
@@ -106,6 +118,7 @@ void osm_init () {
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (cycle_type);
   maps_layer_register_map_source (transport_type);
+  maps_layer_register_map_source (hot_type);
   maps_layer_register_map_source (direct_type);
 
   // Webtools
