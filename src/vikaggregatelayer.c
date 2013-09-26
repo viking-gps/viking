@@ -80,6 +80,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
 
   (VikLayerFuncSetParam)                NULL,
   (VikLayerFuncGetParam)                NULL,
+  (VikLayerFuncChangeParam)             NULL,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,

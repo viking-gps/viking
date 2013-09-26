@@ -132,6 +132,7 @@ VikLayerInterface vik_georef_layer_interface = {
 
   (VikLayerFuncSetParam)                georef_layer_set_param,
   (VikLayerFuncGetParam)                georef_layer_get_param,
+  (VikLayerFuncChangeParam)             NULL,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,

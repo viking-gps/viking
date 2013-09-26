@@ -92,6 +92,7 @@ static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation );
 static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, gboolean is_file_operation );
+static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values );
 static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp );
 static VikMapsLayer *maps_layer_new ( VikViewport *vvp );
 static void maps_layer_free ( VikMapsLayer *vml );
@@ -208,6 +209,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   (VikLayerFuncSetParam)                maps_layer_set_param,
   (VikLayerFuncGetParam)                maps_layer_get_param,
+  (VikLayerFuncChangeParam)             maps_layer_change_param,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,
@@ -592,6 +594,25 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
     case PARAM_MAPZOOM: rv.u = vml->mapzoom_id; break;
   }
   return rv;
+}
+
+static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values )
+{
+  switch ( GPOINTER_TO_INT(values[UI_CHG_PARAM_ID]) ) {
+    // Alter sensitivity of 'download only missing' widgets according to the autodownload setting.
+    case PARAM_AUTODOWNLOAD: {
+      // Get new value
+      VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+      GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+      GtkWidget **ww2 = values[UI_CHG_LABELS];
+      GtkWidget *w1 = ww1[PARAM_ONLYMISSING];
+      GtkWidget *w2 = ww2[PARAM_ONLYMISSING];
+      if ( w1 ) gtk_widget_set_sensitive ( w1, vlpd.b );
+      if ( w2 ) gtk_widget_set_sensitive ( w2, vlpd.b );
+      break;
+    }
+    default: break;
+  }
 }
 
 /****************************************/

@@ -225,6 +225,7 @@ VikLayerInterface vik_dem_layer_interface = {
 
   (VikLayerFuncSetParam)                dem_layer_set_param,
   (VikLayerFuncGetParam)                dem_layer_get_param,
+  (VikLayerFuncChangeParam)             NULL,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,

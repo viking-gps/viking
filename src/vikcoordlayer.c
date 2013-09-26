@@ -103,6 +103,7 @@ VikLayerInterface vik_coord_layer_interface = {
 
   (VikLayerFuncSetParam)                coord_layer_set_param,
   (VikLayerFuncGetParam)                coord_layer_get_param,
+  (VikLayerFuncChangeParam)             NULL,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,

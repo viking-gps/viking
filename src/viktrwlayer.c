@@ -662,6 +662,7 @@ static void trw_layer_marshall ( VikTrwLayer *vtl, guint8 **data, gint *len );
 static VikTrwLayer *trw_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp );
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gboolean is_file_operation );
+static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values );
 static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
 static void trw_layer_cut_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer );
 static void trw_layer_copy_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer, guint8 **item, guint *len );
@@ -716,6 +717,7 @@ VikLayerInterface vik_trw_layer_interface = {
 
   (VikLayerFuncSetParam)                trw_layer_set_param,
   (VikLayerFuncGetParam)                trw_layer_get_param,
+  (VikLayerFuncChangeParam)             trw_layer_change_param,
 
   (VikLayerFuncReadFileData)            a_gpspoint_read_file,
   (VikLayerFuncWriteFileData)           a_gpspoint_write_file,
@@ -1106,6 +1108,75 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WPSO: rv.u = vtl->wp_sort_order; break;
   }
   return rv;
+}
+
+static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values )
+{
+  // This '-3' is to account for the first few parameters not in the properties
+  const gint OFFSET = -3;
+
+  switch ( GPOINTER_TO_INT(values[UI_CHG_PARAM_ID]) ) {
+    // Alter sensitivity of waypoint draw image related widgets according to the draw image setting.
+    case PARAM_DI: {
+      // Get new value
+      VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+      GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+      GtkWidget **ww2 = values[UI_CHG_LABELS];
+      GtkWidget *w1 = ww1[OFFSET + PARAM_IS];
+      GtkWidget *w2 = ww2[OFFSET + PARAM_IS];
+      GtkWidget *w3 = ww1[OFFSET + PARAM_IA];
+      GtkWidget *w4 = ww2[OFFSET + PARAM_IA];
+      GtkWidget *w5 = ww1[OFFSET + PARAM_ICS];
+      GtkWidget *w6 = ww2[OFFSET + PARAM_ICS];
+      if ( w1 ) gtk_widget_set_sensitive ( w1, vlpd.b );
+      if ( w2 ) gtk_widget_set_sensitive ( w2, vlpd.b );
+      if ( w3 ) gtk_widget_set_sensitive ( w3, vlpd.b );
+      if ( w4 ) gtk_widget_set_sensitive ( w4, vlpd.b );
+      if ( w5 ) gtk_widget_set_sensitive ( w5, vlpd.b );
+      if ( w6 ) gtk_widget_set_sensitive ( w6, vlpd.b );
+      break;
+    }
+    // Alter sensitivity of waypoint label related widgets according to the draw label setting.
+    case PARAM_DLA: {
+      // Get new value
+      VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+      GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+      GtkWidget **ww2 = values[UI_CHG_LABELS];
+      GtkWidget *w1 = ww1[OFFSET + PARAM_WPTC];
+      GtkWidget *w2 = ww2[OFFSET + PARAM_WPTC];
+      GtkWidget *w3 = ww1[OFFSET + PARAM_WPBC];
+      GtkWidget *w4 = ww2[OFFSET + PARAM_WPBC];
+      GtkWidget *w5 = ww1[OFFSET + PARAM_WPBA];
+      GtkWidget *w6 = ww2[OFFSET + PARAM_WPBA];
+      GtkWidget *w7 = ww1[OFFSET + PARAM_WPFONTSIZE];
+      GtkWidget *w8 = ww2[OFFSET + PARAM_WPFONTSIZE];
+      if ( w1 ) gtk_widget_set_sensitive ( w1, vlpd.b );
+      if ( w2 ) gtk_widget_set_sensitive ( w2, vlpd.b );
+      if ( w3 ) gtk_widget_set_sensitive ( w3, vlpd.b );
+      if ( w4 ) gtk_widget_set_sensitive ( w4, vlpd.b );
+      if ( w5 ) gtk_widget_set_sensitive ( w5, vlpd.b );
+      if ( w6 ) gtk_widget_set_sensitive ( w6, vlpd.b );
+      if ( w7 ) gtk_widget_set_sensitive ( w7, vlpd.b );
+      if ( w8 ) gtk_widget_set_sensitive ( w8, vlpd.b );
+      break;
+    }
+    // Alter sensitivity of all track colours according to the draw track mode.
+    case PARAM_DM: {
+      // Get new value
+      VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+      gboolean sensitive = ( vlpd.u == DRAWMODE_ALL_SAME_COLOR );
+      GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+      GtkWidget **ww2 = values[UI_CHG_LABELS];
+      GtkWidget *w1 = ww1[OFFSET + PARAM_TC];
+      GtkWidget *w2 = ww2[OFFSET + PARAM_TC];
+      if ( w1 ) gtk_widget_set_sensitive ( w1, sensitive );
+      if ( w2 ) gtk_widget_set_sensitive ( w2, sensitive );
+      break;
+    }
+    // NB Since other track settings have been split across tabs,
+    // I don't think it's useful to set sensitivities on widgets you can't immediately see
+    default: break;
+  }
 }
 
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )

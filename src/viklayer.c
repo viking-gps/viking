@@ -525,7 +525,8 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp )
 					    vl, 
 					    vp,
 					    (gpointer) vik_layer_interfaces[vl->type]->get_param, 
-					    vl) ) {
+					    vl,
+					    (gpointer) vik_layer_interfaces[vl->type]->change_param ) ) {
     case 0:
     case 3:
       return FALSE;
