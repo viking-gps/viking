@@ -57,6 +57,7 @@ static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gd
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
 
 static gboolean _is_direct_file_access (VikMapSource *self );
+static gboolean _is_mbtiles (VikMapSource *self );
 static gboolean _supports_download_only_new (VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
@@ -70,6 +71,7 @@ struct _VikSlippyMapSourcePrivate
   gchar *url;
   DownloadMapOptions options;
   gboolean is_direct_file_access;
+  gboolean is_mbtiles;
 };
 
 #define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_SLIPPY_MAP_SOURCE, VikSlippyMapSourcePrivate))
@@ -86,6 +88,7 @@ enum
   PROP_CHECK_FILE_SERVER_TIME,
   PROP_USE_ETAG,
   PROP_IS_DIRECT_FILE_ACCESS,
+  PROP_IS_MBTILES,
 };
 
 G_DEFINE_TYPE (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
@@ -104,6 +107,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   priv->options.check_file_server_time = FALSE;
   priv->options.use_etag = FALSE;
   priv->is_direct_file_access = FALSE;
+  priv->is_mbtiles = FALSE;
 
   g_object_set (G_OBJECT (self),
                 "tilesize-x", 256,
@@ -170,6 +174,10 @@ vik_slippy_map_source_set_property (GObject      *object,
       priv->is_direct_file_access = g_value_get_boolean (value);
       break;
 
+    case PROP_IS_MBTILES:
+      priv->is_mbtiles = g_value_get_boolean (value);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -216,6 +224,10 @@ vik_slippy_map_source_get_property (GObject    *object,
       g_value_set_boolean (value, priv->is_direct_file_access);
       break;
 
+    case PROP_IS_MBTILES:
+      g_value_set_boolean (value, priv->is_mbtiles);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -238,6 +250,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	grandparent_class->coord_to_mapcoord =        _coord_to_mapcoord;
 	grandparent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	grandparent_class->is_direct_file_access = _is_direct_file_access;
+	grandparent_class->is_mbtiles = _is_mbtiles;
 	grandparent_class->supports_download_only_new = _supports_download_only_new;
 
 	parent_class->get_uri = _get_uri;
@@ -295,6 +308,12 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
                                   G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_IS_DIRECT_FILE_ACCESS, pspec);
 
+	pspec = g_param_spec_boolean ("is-mbtiles",
+	                              "Is an SQL MBTiles File",
+	                              "Use an SQL MBTiles File for the tileset - no need for a webservice",
+	                              FALSE  /* default value */,
+	                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_IS_MBTILES, pspec);
 	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
 	
 	object_class->finalize = vik_slippy_map_source_finalize;
@@ -308,6 +327,16 @@ _is_direct_file_access (VikMapSource *self)
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 
   return priv->is_direct_file_access;
+}
+
+static gboolean
+_is_mbtiles (VikMapSource *self)
+{
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+
+  return priv->is_mbtiles;
 }
 
 static gboolean

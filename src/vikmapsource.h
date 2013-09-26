@@ -55,6 +55,7 @@ struct _VikMapSourceClass
 	guint16 (* get_tilesize_y) (VikMapSource * self);
 	VikViewportDrawMode (* get_drawmode) (VikMapSource * self);
 	gboolean (* is_direct_file_access) (VikMapSource * self);
+	gboolean (* is_mbtiles) (VikMapSource * self);
 	gboolean (* supports_download_only_new) (VikMapSource * self);
 	gboolean (* coord_to_mapcoord) (VikMapSource * self, const VikCoord * src, gdouble xzoom, gdouble yzoom, MapCoord * dest);
 	void (* mapcoord_to_center_coord) (VikMapSource * self, MapCoord * src, VikCoord * dest);
@@ -81,6 +82,7 @@ guint16 vik_map_source_get_tilesize_x (VikMapSource * self);
 guint16 vik_map_source_get_tilesize_y (VikMapSource * self);
 VikViewportDrawMode vik_map_source_get_drawmode (VikMapSource * self);
 gboolean vik_map_source_is_direct_file_access (VikMapSource * self);
+gboolean vik_map_source_is_mbtiles (VikMapSource * self);
 gboolean vik_map_source_supports_download_only_new (VikMapSource * self);
 gboolean vik_map_source_coord_to_mapcoord (VikMapSource * self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 void vik_map_source_mapcoord_to_center_coord (VikMapSource * self, MapCoord *src, VikCoord *dest);
