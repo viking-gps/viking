@@ -763,6 +763,12 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
     }
   }
 #endif
+
+  // If the on Disk OSM Tile Layout type
+  if ( vml->maptype == 21 )
+    // Copy the directory into filename
+    //  thus the mapcache look up will be unique when using more than one of these map types
+    vml->filename = g_strdup (vml->cache_dir);
 }
 
 static const gchar* maps_layer_tooltip ( VikMapsLayer *vml )
@@ -943,7 +949,7 @@ static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, 
   if ( pixbuf )
     a_mapcache_add ( pixbuf, mapcoord->x, mapcoord->y,
                      mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
-                     mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
+                     mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
 
   return pixbuf;
 }
@@ -954,7 +960,7 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
 
   /* get the thing */
   pixbuf = a_mapcache_get ( mapcoord->x, mapcoord->y, mapcoord->z,
-                            mode, mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
+                            mode, mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
 
   if ( ! pixbuf ) {
     if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
