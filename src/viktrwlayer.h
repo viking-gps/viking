@@ -125,6 +125,7 @@ void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
 gchar *trw_layer_new_unique_sublayer_name ( VikTrwLayer *vtl, gint sublayer_type, const gchar *name );
 void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name );
 void trw_layer_waypoint_reset_icon ( VikTrwLayer *vtl, VikWaypoint *wp );
+void trw_layer_calculate_bounds_waypoints ( VikTrwLayer *vtl );
 
 gboolean vik_trw_layer_get_tracks_visibility ( VikTrwLayer *vtl );
 gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl );

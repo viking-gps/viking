@@ -421,6 +421,7 @@ static int trw_layer_geotag_thread ( geotag_options_t *options, gpointer threadd
 
 	if ( options->redraw ) {
 		if ( IS_VIK_LAYER(options->vtl) ) {
+			trw_layer_calculate_bounds_waypoints ( options->vtl );
 			// Ensure any new images get shown
 			trw_layer_verify_thumbnails ( options->vtl, NULL ); // NB second parameter not used ATM
 			// Force redraw as verify only redraws if there are new thumbnails (they may already exist)

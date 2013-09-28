@@ -263,8 +263,6 @@ static void trw_layer_free_track_gcs ( VikTrwLayer *vtl );
 static void trw_layer_draw_track_cb ( const gpointer id, VikTrack *track, struct DrawingParams *dp );
 static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct DrawingParams *dp );
 
-static void trw_layer_calculate_bounds_waypoints ( VikTrwLayer *vtl );
-
 static void goto_coord ( gpointer *vlp, gpointer vvp, gpointer vl, const VikCoord *coord );
 static void trw_layer_goto_track_startpoint ( gpointer pass_along[6] );
 static void trw_layer_goto_track_endpoint ( gpointer pass_along[6] );
@@ -9837,7 +9835,7 @@ static void trw_layer_track_alloc_colors ( VikTrwLayer *vtl )
  * (Re)Calculate the bounds of the waypoints in this layer,
  * This should be called whenever waypoints are changed
  */
-static void trw_layer_calculate_bounds_waypoints ( VikTrwLayer *vtl )
+void trw_layer_calculate_bounds_waypoints ( VikTrwLayer *vtl )
 {
   struct LatLon topleft = { 0.0, 0.0 };
   struct LatLon bottomright = { 0.0, 0.0 };
