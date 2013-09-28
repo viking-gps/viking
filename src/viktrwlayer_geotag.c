@@ -548,7 +548,11 @@ void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *tr
 													GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
 													GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
 													NULL );
-	widgets->files = VIK_FILE_LIST(vik_file_list_new ( _("Images") )); // TODO would be nice to be able to set a filefilter
+	GtkFileFilter *filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name ( filter, _("JPG") );
+	gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+
+	widgets->files = VIK_FILE_LIST(vik_file_list_new ( _("Images"), filter ));
 	widgets->vtl = vtl;
 	widgets->track = track;
 	widgets->create_waypoints_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
