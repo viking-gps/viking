@@ -1145,7 +1145,7 @@ This is not available on routes as they have no timestamps.
 
 </section>
 
-<section><title>Transform</title>
+<section id="transform" xreflabel="Transform"><title>Transform</title>
 <para>
 These options alter the data of trackpoints of a track but not add or remove trackpoints.
 And don't seem to fit any other category :)
@@ -1323,6 +1323,13 @@ This centers the viewport on the selected waypoint.
 <para>
 This opens the <link linkend="geotagging">Geotag Dialog</link> to allow Geotagging multiple images to the position of this waypoint.
 In this circumstance creation of waypoint options are disabled and only the options related to writing the EXIF information are available.
+</para>
+</section>
+
+<section><title>Transform</title>
+<para>
+Offers a subset of the track <xref linkend="transform"/> utilities.
+Currently only setting the altitude from DEM data methods are available.
 </para>
 </section>
 
