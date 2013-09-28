@@ -201,7 +201,7 @@ jpeg_data_load_data (JPEGData *data, const unsigned char *d,
 		for (i = 0; i < MIN(7, size - o); i++)
 			if (d[o + i] != 0xff)
 				break;
-		if (!JPEG_IS_MARKER (d[o + i])) {
+		if ((i >= size - o) || !JPEG_IS_MARKER (d[o + i])) {
 			exif_log (data->priv->log, EXIF_LOG_CODE_CORRUPT_DATA, "jpeg-data",
 					_("Data does not follow JPEG specification."));
 			return;
@@ -222,10 +222,11 @@ jpeg_data_load_data (JPEGData *data, const unsigned char *d,
 		default:
 
 			/* Read the length of the section */
+			if (2 > size - o) { o = size; break; }
 			len = ((d[o] << 8) | d[o + 1]) - 2;
 			if (len > size) { o = size; break; }
 			o += 2;
-			if (o + len > size) { o = size; break; }
+			if (len > size - o) { o = size; break; }
 
 			switch (s->marker) {
 			case JPEG_MARKER_APP1:
@@ -235,24 +236,35 @@ jpeg_data_load_data (JPEGData *data, const unsigned char *d,
 			default:
 				s->content.generic.data =
 						malloc (sizeof (char) * len);
-				if (!s->content.generic.data) return;
+				if (!s->content.generic.data) {
+					EXIF_LOG_NO_MEMORY (data->priv->log, "jpeg-data", sizeof (char) * len);
+					return;
+				}
 				s->content.generic.size = len;
 				memcpy (s->content.generic.data, &d[o], len);
 
 				/* In case of SOS, image data will follow. */
 				if (s->marker == JPEG_MARKER_SOS) {
-					/* -2 means 'take all but the last 2 bytes which are hoped to be JPEG_MARKER_EOI */
-					data->size = size - 2 - o - len;
-					if (d[o + len + data->size] != 0xFF) {
-						/* A truncated file (i.e. w/o JPEG_MARKER_EOI at the end).
-						   Instead of trying to use the last two bytes as marker,
-						   touching memory beyond allocated memory and posssibly saving
-						   back screwed file, we rather take the rest of the file. */
-						data->size += 2;
+					data->size = size - o - len;
+					if (data->size >= 2) {
+						/* -2 means 'take all but the last 2 bytes which are
+						   hoped to be JPEG_MARKER_EOI */
+						data->size -= 2;
+						if (d[o + len + data->size] != 0xFF) {
+							/* A truncated file (i.e. w/o JPEG_MARKER_EOI at the end).
+							   Instead of trying to use the last two bytes as marker,
+							   touching memory beyond allocated memory and posssibly saving
+							   back screwed file, we rather take the rest of the file. */
+							data->size += 2;
+						}
 					}
 					data->data = malloc (
 						sizeof (char) * data->size);
-					if (!data->data) return;
+					if (!data->data) {
+						EXIF_LOG_NO_MEMORY (data->priv->log, "jpeg-data", sizeof (char) * data->size);
+						data->size = 0;
+						return;
+					}
 					memcpy (data->data, d + o + len,
 						data->size);
 					o += data->size;
