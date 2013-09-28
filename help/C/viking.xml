@@ -1319,6 +1319,13 @@ This centers the viewport on the selected waypoint.
 </para>
 </section>
 
+<section><title>Geotag Images...</title>
+<para>
+This opens the <link linkend="geotagging">Geotag Dialog</link> to allow Geotagging multiple images to the position of this waypoint.
+In this circumstance creation of waypoint options are disabled and only the options related to writing the EXIF information are available.
+</para>
+</section>
+
 <section><title>Visit Webpage</title>
 <para>
 If the waypoint's comment (or description) starts with <literal>http:</literal> then this option is available and allows launching a web browser to go to the webpage.
@@ -1341,10 +1348,10 @@ Same as the layer <link linkend="new_wp">New Waypoint</link>.
 
 <section id="geotagging" xreflabel="Geotagging"><title>Version1.3+: Geotag Images</title>
 <para>
-This dialog allows geotagging images (normally taken with a digital camera) via interpolation against a specific track or all tracks in the TrackWaypoint layer - depending on how it is invoked.
+This dialog allows geotagging images (normally taken with a digital camera) against a specific waypoint or via interpolation against a specific track or all tracks in the TrackWaypoint layer - depending on how it is invoked.
 </para>
 <para>
-Images need to have an EXIF DATE_TIME_ORIGINAL (nearly always set by a camera). This timestamp is then used to find the location when the image(s) was taken by searching through the track(s) to find the nearest time - interpolating between points if necessary to set the location.
+When geotagging against tracks, images need to have an EXIF DATE_TIME_ORIGINAL (nearly always set by a camera). This timestamp is then used to find the location when the image(s) was taken by searching through the track(s) to find the nearest time - interpolating between points if necessary to set the location.
 </para>
 <note>
 <para>

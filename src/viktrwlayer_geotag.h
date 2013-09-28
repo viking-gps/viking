@@ -29,7 +29,10 @@
 G_BEGIN_DECLS
 
 // To be only called from within viktrwlayer
-void trw_layer_geotag_dialog ( GtkWindow *parent, VikTrwLayer *vtl, VikTrack *track, const gchar *track_name );
+void trw_layer_geotag_dialog ( GtkWindow *parent,
+                               VikTrwLayer *vtl,
+                               VikWaypoint *wpt,
+                               VikTrack *track );
 
 G_END_DECLS
 

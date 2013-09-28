@@ -3311,9 +3311,20 @@ static void trw_layer_geotagging_track ( gpointer pass_along[6] )
   vtl->has_verified_thumbnails = FALSE;
 
   trw_layer_geotag_dialog ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-			    vtl,
-			    track,
-			    track->name );
+                            vtl,
+                            NULL,
+                            track );
+}
+
+static void trw_layer_geotagging_waypoint ( gpointer pass_along[6] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(pass_along[0]);
+  VikWaypoint *wpt = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->waypoints, pass_along[3] );
+
+  trw_layer_geotag_dialog ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                            vtl,
+                            wpt,
+                            NULL );
 }
 
 static void trw_layer_geotagging ( gpointer lav[2] )
@@ -3323,9 +3334,9 @@ static void trw_layer_geotagging ( gpointer lav[2] )
   vtl->has_verified_thumbnails = FALSE;
 
   trw_layer_geotag_dialog ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
-			    vtl,
-			    NULL,
-			    NULL);
+                            vtl,
+                            NULL,
+                            NULL );
 }
 #endif
 
@@ -7288,6 +7299,13 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
           gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
           gtk_widget_show ( item );
         }
+#ifdef VIK_CONFIG_GEOTAG
+        item = gtk_menu_item_new_with_mnemonic ( _("Geotag _Images...") );
+        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_geotagging_waypoint), pass_along );
+        gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+        gtk_widget_set_tooltip_text (item, _("Geotag multiple images against this waypoint"));
+        gtk_widget_show ( item );
+#endif
       }
 
       if ( wp && wp->image )
