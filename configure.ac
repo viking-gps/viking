@@ -8,6 +8,7 @@ dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
 GTK_DOC_CHECK(1.0)
 
+AC_PROG_CC_STDC
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
