@@ -44,7 +44,14 @@ struct _VikFileEntryClass
 
 GType vik_file_entry_get_type ();
 
-GtkWidget *vik_file_entry_new (GtkFileChooserAction action);
+typedef enum {
+  VF_FILTER_NONE = 0,
+  VF_FILTER_IMAGE,   // JPG+PNG
+  VF_FILTER_MBTILES,
+  VF_FILTER_LAST
+} vf_filter_type;
+
+GtkWidget *vik_file_entry_new (GtkFileChooserAction action, vf_filter_type filter_type);
 const gchar *vik_file_entry_get_filename ( VikFileEntry *vfe );
 void vik_file_entry_set_filename ( VikFileEntry *vfe, const gchar *filename );
 

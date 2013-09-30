@@ -35,6 +35,7 @@ struct _VikFileEntry {
   GtkWidget *entry, *button;
   GtkWidget *file_selector;
   GtkFileChooserAction action;
+  gint filter_type;
 };
 
 GType vik_file_entry_get_type (void)
@@ -61,7 +62,10 @@ GType vik_file_entry_get_type (void)
   return vs_type;
 }
 
-GtkWidget *vik_file_entry_new (GtkFileChooserAction action)
+/**
+ * Create a file entry with an optional file filter
+ */
+GtkWidget *vik_file_entry_new (GtkFileChooserAction action, vf_filter_type filter_type)
 {
   VikFileEntry *vfe = VIK_FILE_ENTRY ( g_object_new ( VIK_FILE_ENTRY_TYPE, NULL ) );
   vfe->entry = gtk_entry_new ();
@@ -73,6 +77,7 @@ GtkWidget *vik_file_entry_new (GtkFileChooserAction action)
   gtk_box_pack_start ( GTK_BOX(vfe), vfe->button, FALSE, FALSE, 3 );
 
   vfe->file_selector = NULL;
+  vfe->filter_type = filter_type;
 
   return GTK_WIDGET(vfe);
 }
@@ -101,6 +106,39 @@ static void choose_file ( VikFileEntry *vfe )
 				      NULL);
     gtk_window_set_transient_for ( GTK_WINDOW(vfe->file_selector), GTK_WINDOW(win) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vfe->file_selector), TRUE );
+
+    switch ( vfe->filter_type ) {
+      case VF_FILTER_IMAGE: {
+        GtkFileFilter *filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("JPG") );
+        gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+
+        filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("PNG") );
+        gtk_file_filter_add_mime_type ( filter, "image/png");
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+
+        break;
+      }
+      case VF_FILTER_MBTILES: {
+        GtkFileFilter *filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("MBTiles") );
+        gtk_file_filter_add_pattern ( filter, "*.sqlite" );
+        gtk_file_filter_add_pattern ( filter, "*.mbtiles" );
+        gtk_file_filter_add_pattern ( filter, "*.db3" );
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+        break;
+      }
+      default: break;
+    }
+    if ( vfe->filter_type ) {
+      // Always have an catch all filter at the end
+      GtkFileFilter *filter = gtk_file_filter_new ();
+      gtk_file_filter_set_name( filter, _("All") );
+      gtk_file_filter_add_pattern ( filter, "*" );
+      gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vfe->file_selector), filter);
+    }
   }
 
   if ( gtk_dialog_run ( GTK_DIALOG(vfe->file_selector) ) == GTK_RESPONSE_ACCEPT )

@@ -188,7 +188,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_FILEENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
+        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, GPOINTER_TO_INT(param->widget_data));
         if ( vlpd.s )
           vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), vlpd.s );
       }
@@ -196,7 +196,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_FOLDERENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, VF_FILTER_NONE);
         if ( vlpd.s )
           vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), vlpd.s );
       }
