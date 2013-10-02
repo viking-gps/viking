@@ -3033,24 +3033,14 @@ static void trw_layer_export ( gpointer layer_and_vlp[2], const gchar *title, co
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(file_selector) );
-    if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE )
+    if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE ||
+         a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
     {
       gtk_widget_hide ( file_selector );
       vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0])) );
       failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trk, TRUE );
       vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0])) );
       break;
-    }
-    else
-    {
-      if ( a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
-      {
-        gtk_widget_hide ( file_selector );
-        vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0])) );
-	failed = ! a_file_export ( VIK_TRW_LAYER(layer_and_vlp[0]), fn, file_type, trk, TRUE );
-        vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(layer_and_vlp[0])) );
-        break;
-      }
     }
   }
   gtk_widget_destroy ( file_selector );
