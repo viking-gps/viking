@@ -479,7 +479,6 @@ void append_element (gpointer elem, gpointer user_data)
 }
 
 static gint find_entry = -1;
-static gint garmin_entry = -1;
 static gint wanted_entry = -1;
 
 static void find_protocol (gpointer elem, gpointer user_data)
@@ -509,15 +508,13 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
       // Use setting
       if ( protocol )
         g_list_foreach (a_babel_device_list, find_protocol, protocol);
-      // If not found set it to the first entry, otherwise use the entry
-      last_active = ( wanted_entry < 0 ) ? 0 : wanted_entry;
     }
     else {
-      // Maintain default to Garmin devices (assumed most popular/numerous device)
-      garmin_entry = -1;
+      // Attempt to maintain default to Garmin devices (assumed most popular/numerous device)
       g_list_foreach (a_babel_device_list, find_protocol, "garmin");
-      last_active = ( garmin_entry < 0 ) ? 0 : garmin_entry;
     }
+    // If not found set it to the first entry, otherwise use the entry
+    last_active = ( wanted_entry < 0 ) ? 0 : wanted_entry;
   }
 
   gtk_combo_box_set_active (GTK_COMBO_BOX(w->proto_b), last_active);
