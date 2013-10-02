@@ -111,10 +111,6 @@ static void on_complete_process (w_and_interface_t *wi)
       else
         gtk_label_set_text ( GTK_LABEL(wi->w->status), _("No data.") );
     }
-    /* View this data if available and is desired */
-    if ( wi->vtl && wi->w->source_interface->autoview ) {
-      vik_trw_layer_auto_set_view ( wi->vtl, vik_layers_panel_get_viewport(wi->w->vlp) );
-    }
     if ( wi->w->source_interface->keep_dialog_open ) {
       gtk_dialog_set_response_sensitive ( GTK_DIALOG(wi->w->dialog), GTK_RESPONSE_ACCEPT, TRUE );
       gtk_dialog_set_response_sensitive ( GTK_DIALOG(wi->w->dialog), GTK_RESPONSE_REJECT, FALSE );
@@ -124,6 +120,10 @@ static void on_complete_process (w_and_interface_t *wi)
     // Main display update
     if ( wi->vtl ) {
       vik_layer_post_read ( VIK_LAYER(wi->vtl), wi->w->vvp, TRUE );
+      // View this data if desired - must be done after post read (so that the bounds are known)
+      if ( wi->w->source_interface->autoview ) {
+	vik_trw_layer_auto_set_view ( wi->vtl, vik_layers_panel_get_viewport(wi->w->vlp) );
+      }
       vik_layers_panel_emit_update ( wi->w->vlp );
     }
   } else {
