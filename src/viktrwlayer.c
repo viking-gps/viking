@@ -311,6 +311,7 @@ static void trw_layer_geotagging ( gpointer lav[2] );
 #endif
 static void trw_layer_acquire_gps_cb ( gpointer lav[2] );
 static void trw_layer_acquire_routing_cb ( gpointer lav[2] );
+static void trw_layer_acquire_url_cb ( gpointer lav[2] );
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void trw_layer_acquire_osm_cb ( gpointer lav[2] );
 static void trw_layer_acquire_osm_my_traces_cb ( gpointer lav[2] );
@@ -3369,6 +3370,20 @@ static void trw_layer_acquire_routing_cb ( gpointer lav[2] )
   a_acquire ( vw, vlp, vvp, &vik_datasource_routing_interface, NULL, NULL );
 }
 
+/*
+ * Acquire into this TRW Layer from an entered URL
+ */
+static void trw_layer_acquire_url_cb ( gpointer lav[2] )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(lav[0]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp = vik_window_viewport(vw);
+
+  vik_datasource_url_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
+  a_acquire ( vw, vlp, vvp, &vik_datasource_url_interface, NULL, NULL );
+}
+
 #ifdef VIK_CONFIG_OPENSTREETMAP
 /*
  * Acquire into this TRW Layer from OSM
@@ -3853,6 +3868,11 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
   gtk_widget_show ( item );
 #endif
+
+  item = gtk_menu_item_new_with_mnemonic ( _("From _URL...") );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_url_cb), pass_along );
+  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+  gtk_widget_show ( item );
 
 #ifdef VIK_CONFIG_GEONAMES
   GtkWidget *wikipedia_submenu = gtk_menu_new();

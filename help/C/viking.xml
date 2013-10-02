@@ -557,6 +557,22 @@ This gets a route from given directions.
 </para>
 </section>
 
+<section>
+<title>From URL</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From URL</guimenuitem></menuchoice>
+</para>
+<para>
+This gets a file from the entered URL.
+File formats that can be opened are those supported by GPSBabel.
+</para>
+<note>
+<para>
+You need to select the type of the file that is going to be returned, since there is no automatic detection of the file kind.
+</para>
+</note>
+</section>
+
 </section> <!-- End Acquire -->
 
 <section><title>Print</title>

@@ -41,6 +41,7 @@ extern VikDataSourceInterface vik_datasource_geotag_interface;
 #ifdef VIK_CONFIG_GEONAMES
 extern VikDataSourceInterface vik_datasource_wikipedia_interface;
 #endif
+extern VikDataSourceInterface vik_datasource_url_interface;
 
 G_END_DECLS
 

@@ -3007,6 +3007,12 @@ static void acquire_from_wikipedia ( GtkAction *a, VikWindow *vw )
 }
 #endif
 
+static void acquire_from_url ( GtkAction *a, VikWindow *vw )
+{
+  vik_datasource_url_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
+  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_url_interface, NULL, NULL );
+}
+
 static void goto_default_location( GtkAction *a, VikWindow *vw)
 {
   struct LatLon ll;
@@ -3726,6 +3732,7 @@ static GtkActionEntry entries[] = {
 #ifdef VIK_CONFIG_GEOTAG
   { "AcquireGeotag", NULL,               N_("From Geotagged _Images..."), NULL,         N_("Create waypoints from geotagged images"),       (GCallback)acquire_from_geotag   },
 #endif
+  { "AcquireURL", NULL,                  N_("From _URL..."),              NULL,         N_("Get a file from a URL"),                        (GCallback)acquire_from_url },
 #ifdef VIK_CONFIG_GEONAMES
   { "AcquireWikipedia", NULL,            N_("From _Wikipedia Waypoints"), NULL,         N_("Create waypoints from Wikipedia items in the current view"), (GCallback)acquire_from_wikipedia },
 #endif

@@ -79,7 +79,7 @@ typedef struct {
 
 /**
  * BabelFile:
- * @name: gpsbabel's identifier of the device
+ * @name: gpsbabel's identifier of the format
  * @ext: file's extension for this format
  * @label: human readable label
  * 
