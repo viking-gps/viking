@@ -479,14 +479,14 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
   return ret;
 }
 
-static void set_mode(BabelMode mode, gchar *smode)
+static void set_mode(BabelMode *mode, gchar *smode)
 {
-  mode.waypointsRead  = smode[0] == 'r';
-  mode.waypointsWrite = smode[1] == 'w';
-  mode.tracksRead     = smode[2] == 'r';
-  mode.tracksWrite    = smode[3] == 'w';
-  mode.routesRead     = smode[4] == 'r';
-  mode.routesWrite    = smode[5] == 'w';
+  mode->waypointsRead  = smode[0] == 'r';
+  mode->waypointsWrite = smode[1] == 'w';
+  mode->tracksRead     = smode[2] == 'r';
+  mode->tracksWrite    = smode[3] == 'w';
+  mode->routesRead     = smode[4] == 'r';
+  mode->routesWrite    = smode[5] == 'w';
 }
 
 /**
@@ -505,11 +505,16 @@ static void load_feature_parse_line (gchar *line)
            && tokens[3] != NULL
            && tokens[4] != NULL ) {
         BabelDevice *device = g_malloc ( sizeof (BabelDevice) );
-        set_mode (device->mode, tokens[1]);
+        set_mode (&(device->mode), tokens[1]);
         device->name = g_strdup (tokens[2]);
         device->label = g_strndup (tokens[4], 50); // Limit really long label text
         a_babel_device_list = g_list_append (a_babel_device_list, device);
-        g_debug ("New gpsbabel device: %s", device->name);
+        g_debug ("New gpsbabel device: %s, %d%d%d%d%d%d(%s)",
+        		device->name,
+        		device->mode.waypointsRead, device->mode.waypointsWrite,
+        		device->mode.tracksRead, device->mode.tracksWrite,
+        		device->mode.routesRead, device->mode.routesWrite,
+        			tokens[1]);
       } else {
         g_warning ( "Unexpected gpsbabel format string: %s", line);
       }
@@ -519,12 +524,17 @@ static void load_feature_parse_line (gchar *line)
            && tokens[3] != NULL
            && tokens[4] != NULL ) {
         BabelFile *file = g_malloc ( sizeof (BabelFile) );
-        set_mode (file->mode, tokens[1]);
+        set_mode (&(file->mode), tokens[1]);
         file->name = g_strdup (tokens[2]);
         file->ext = g_strdup (tokens[3]);
         file->label = g_strdup (tokens[4]);
         a_babel_file_list = g_list_append (a_babel_file_list, file);
-        g_debug ("New gpsbabel file: %s", file->name);
+        g_debug ("New gpsbabel file: %s, %d%d%d%d%d%d(%s)",
+        			file->name,
+        			file->mode.waypointsRead, file->mode.waypointsWrite,
+        			file->mode.tracksRead, file->mode.tracksWrite,
+        			file->mode.routesRead, file->mode.routesWrite,
+        			tokens[1]);
       } else {
         g_warning ( "Unexpected gpsbabel format string: %s", line);
       }
