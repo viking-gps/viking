@@ -3149,7 +3149,12 @@ static void trw_layer_export_gpx_track ( gpointer pass_along[6] )
   if ( ! check_file_ext ( auto_save_name, ".gpx" ) )
     auto_save_name = g_strconcat ( auto_save_name, ".gpx", NULL );
 
-  trw_layer_export ( layer_and_vlp, _("Export Track as GPX"), auto_save_name, trk, FILE_TYPE_GPX );
+  gchar *label = NULL;
+  if ( GPOINTER_TO_INT (pass_along[2]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    label = _("Export Route as GPX");
+  else
+    label = _("Export Track as GPX");
+  trw_layer_export ( layer_and_vlp, label, auto_save_name, trk, FILE_TYPE_GPX );
 
   g_free ( auto_save_name );
 }
