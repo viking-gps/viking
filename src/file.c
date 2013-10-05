@@ -48,12 +48,6 @@
 #define GPX_MAGIC "<?xm"
 #define VIK_MAGIC_LEN 4
 
-#ifdef WINDOWS
-#define FILE_SEP '\\'
-#else
-#define FILE_SEP '/'
-#endif
-
 #define VIKING_FILE_VERSION 1
 
 typedef struct _Stack Stack;
@@ -728,7 +722,7 @@ const gchar *a_file_basename ( const gchar *filename )
 {
   const gchar *t = filename + strlen(filename) - 1;
   while ( --t > filename )
-    if ( *(t-1) == FILE_SEP )
+    if ( *(t-1) == G_DIR_SEPARATOR )
       break;
   if ( t >= filename )
     return t;
