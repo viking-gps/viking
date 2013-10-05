@@ -41,6 +41,8 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
+#include "file.h"
+
 #define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 #define VIK_MAGIC "#VIK"
 #define GPX_MAGIC "<?xm"
