@@ -105,7 +105,7 @@ void a_print(VikWindow *vw, VikViewport *vvp)
   data.width         = vik_viewport_get_width(vvp);
   data.height        = vik_viewport_get_height(vvp);
 
-  data.xres = data.yres = 230;   /* FIXME */
+  data.xres = data.yres = 1; // This forces it to default to a 100% page size
 
   if (print_settings != NULL) 
     gtk_print_operation_set_print_settings (print_oper, print_settings);
