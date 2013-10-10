@@ -4970,6 +4970,8 @@ static void trw_layer_extend_track_end_route_finder ( gpointer pass_along[6] )
   VikTrack *track = g_hash_table_lookup ( VIK_TRW_LAYER(pass_along[0])->routes, pass_along[3] );
   if ( !track )
     return;
+  if ( !track->trackpoints )
+    return;
   VikCoord last_coord = (((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord);
 
   vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_ROUTE_FINDER );
