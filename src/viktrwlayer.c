@@ -1714,9 +1714,14 @@ static void trw_layer_draw_track_name_labels ( struct DrawingParams *dp, VikTrac
     // No other labels to draw
     return;
 
-  GList *ending = g_list_last ( trk->trackpoints );
-  VikCoord begin_coord = VIK_TRACKPOINT(trk->trackpoints->data)->coord;
-  VikCoord end_coord = VIK_TRACKPOINT(ending->data)->coord;
+  VikTrackpoint *tp_end = vik_track_get_tp_last ( trk );
+  if ( !tp_end )
+    return;
+  VikTrackpoint *tp_begin = vik_track_get_tp_first ( trk );
+  if ( !tp_begin )
+    return;
+  VikCoord begin_coord = tp_begin->coord;
+  VikCoord end_coord = tp_end->coord;
 
   gboolean done_start_end = FALSE;
 
@@ -2517,12 +2522,12 @@ static void trw_layer_tracks_tooltip ( const gchar *name, VikTrack *tr, tooltip_
 
   // Ensure times are available
   if ( tr->trackpoints &&
-       VIK_TRACKPOINT(tr->trackpoints->data)->has_timestamp &&
-       VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->has_timestamp ) {
+       vik_track_get_tp_first(tr)->has_timestamp &&
+       vik_track_get_tp_last(tr)->has_timestamp ) {
 
     time_t t1, t2;
-    t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
-    t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+    t1 = vik_track_get_tp_first(tr)->timestamp;
+    t2 = vik_track_get_tp_last(tr)->timestamp;
 
     // Assume never actually have a track with a time of 0 (1st Jan 1970)
     // Hence initialize to the first 'proper' value
@@ -2672,11 +2677,11 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	static gchar tmp_buf[100];
 	// Compact info: Short date eg (11/20/99), duration and length
 	// Hopefully these are the things that are most useful and so promoted into the tooltip
-	if ( tr->trackpoints && VIK_TRACKPOINT(tr->trackpoints->data)->has_timestamp ) {
+	if ( tr->trackpoints && vik_track_get_tp_first(tr)->has_timestamp ) {
 	  // %x     The preferred date representation for the current locale without the time.
-	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&(VIK_TRACKPOINT(tr->trackpoints->data)->timestamp)));
-	  if ( VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->has_timestamp ) {
-	    gint dur = ( (VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp) - (VIK_TRACKPOINT(tr->trackpoints->data)->timestamp) );
+	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&(vik_track_get_tp_first(tr)->timestamp)));
+	  if ( vik_track_get_tp_last(tr)->has_timestamp ) {
+	    gint dur = ( (vik_track_get_tp_last(tr)->timestamp) - (vik_track_get_tp_first(tr)->timestamp) );
 	    if ( dur > 0 )
 	      g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)round(dur/3600), (int)round((dur/60)%60) );
 	  }
@@ -4940,7 +4945,7 @@ static void trw_layer_goto_track_startpoint ( menu_array_sublayer values )
     track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
 
   if ( track && track->trackpoints )
-    goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(((VikTrackpoint *) track->trackpoints->data)->coord) );
+    goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vik_track_get_tp_first(track)->coord) );
 }
 
 static void trw_layer_goto_track_center ( menu_array_sublayer values )
@@ -5044,7 +5049,7 @@ static void trw_layer_extend_track_end ( menu_array_sublayer values )
   vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, track->is_route ? TOOL_CREATE_ROUTE : TOOL_CREATE_TRACK);
 
   if ( track->trackpoints )
-    goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord) );
+    goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vik_track_get_tp_last(track)->coord) );
 }
 
 /**
@@ -5058,15 +5063,13 @@ static void trw_layer_extend_track_end_route_finder ( menu_array_sublayer values
     return;
   if ( !track->trackpoints )
     return;
-  VikCoord last_coord = (((VikTrackpoint *)g_list_last(track->trackpoints)->data)->coord);
 
   vik_window_enable_layer_tool ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), VIK_LAYER_TRW, TOOL_ROUTE_FINDER );
-  vtl->route_finder_coord =  last_coord;
+  vtl->route_finder_coord = vik_track_get_tp_last(track)->coord;
   vtl->route_finder_current_track = track;
   vtl->route_finder_started = TRUE;
 
-  if ( track->trackpoints )
-    goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &last_coord );
+  goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &vtl->route_finder_coord );
 }
 
 /**
@@ -5258,12 +5261,9 @@ static void trw_layer_goto_track_endpoint ( menu_array_sublayer values )
 
   if ( !track )
     return;
-
-  GList *trps = track->trackpoints;
-  if ( !trps )
+  if ( !track->trackpoints )
     return;
-  trps = g_list_last(trps);
-  goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(((VikTrackpoint *) trps->data)->coord));
+  goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vik_track_get_tp_last(track)->coord));
 }
 
 static void trw_layer_goto_track_max_speed ( menu_array_sublayer values )
@@ -5454,14 +5454,14 @@ static void find_tracks_with_timestamp_type(gpointer key, gpointer value, gpoint
 {
   twt_udata *user_data = udata;
   VikTrackpoint *p1, *p2;
-
-  if (VIK_TRACK(value)->trackpoints == user_data->exclude) {
+  VikTrack *trk = VIK_TRACK(value);
+  if (trk == (VikTrack *)user_data->exclude) {
     return;
   }
 
-  if (VIK_TRACK(value)->trackpoints) {
-    p1 = VIK_TRACKPOINT(VIK_TRACK(value)->trackpoints->data);
-    p2 = VIK_TRACKPOINT(g_list_last(VIK_TRACK(value)->trackpoints)->data);
+  if (trk->trackpoints) {
+    p1 = vik_track_get_tp_first(trk);
+    p2 = vik_track_get_tp_last(trk);
 
     if ( user_data->with_timestamps ) {
       if (!p1->has_timestamp || !p2->has_timestamp) {
@@ -5501,12 +5501,12 @@ static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer u
     return;
   }
 
-  t1 = VIK_TRACKPOINT(g_list_first(tpoints)->data)->timestamp;
-  t2 = VIK_TRACKPOINT(g_list_last(tpoints)->data)->timestamp;
+  t1 = vik_track_get_tp_first(trk)->timestamp;
+  t2 = vik_track_get_tp_last(trk)->timestamp;
 
   if (trk->trackpoints) {
-    p1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data);
-    p2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data);
+    p1 = vik_track_get_tp_first(trk);
+    p2 = vik_track_get_tp_last(trk);
 
     if (!p1->has_timestamp || !p2->has_timestamp) {
       //g_print("no timestamp\n");
@@ -5595,7 +5595,7 @@ static void trw_layer_merge_with_other ( menu_array_sublayer values )
   udata.exclude = track->trackpoints;
   // Allow merging with 'similar' time type time tracks
   // i.e. either those times, or those without
-  udata.with_timestamps = (VIK_TRACKPOINT(track->trackpoints->data)->has_timestamp);
+  udata.with_timestamps = vik_track_get_tp_first(track)->has_timestamp;
 
   g_hash_table_foreach(ght_tracks, find_tracks_with_timestamp_type, (gpointer)&udata);
   other_tracks = g_list_reverse(other_tracks);
@@ -5861,7 +5861,7 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
   GList *tracks_with_timestamp = NULL;
   VikTrack *orig_trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
   if (orig_trk->trackpoints &&
-      !VIK_TRACKPOINT(orig_trk->trackpoints->data)->has_timestamp) {
+      !vik_track_get_tp_first(orig_trk)->has_timestamp) {
     a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. This track does not have timestamp"));
     return;
   }
@@ -5907,10 +5907,6 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
       nearby_tracks = NULL;
     }
 
-    //t1 = ((VikTrackpoint *)trps->data)->timestamp;
-    //t2 = ((VikTrackpoint *)g_list_last(trps)->data)->timestamp;
-    
-    /*    g_print("Original track times: %d and %d\n", t1, t2);  */
     params[0] = &nearby_tracks;
     params[1] = (gpointer)trps;
     params[2] = GUINT_TO_POINTER (threshold_in_minutes*60); // In seconds
@@ -5921,17 +5917,6 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
     /* merge them */
     GList *l = nearby_tracks;
     while ( l ) {
-       /*
-#define get_first_trackpoint(x) VIK_TRACKPOINT(VIK_TRACK(x)->trackpoints->data)
-#define get_last_trackpoint(x) VIK_TRACKPOINT(g_list_last(VIK_TRACK(x)->trackpoints)->data)
-        time_t t1, t2;
-        t1 = get_first_trackpoint(l)->timestamp;
-        t2 = get_last_trackpoint(l)->timestamp;
-#undef get_first_trackpoint
-#undef get_last_trackpoint
-        g_print("     %20s: track %d - %d\n", VIK_TRACK(l->data)->name, (int)t1, (int)t2);
-       */
-
       /* remove trackpoints from merged track, delete track */
       vik_track_steal_and_append_trackpoints ( orig_trk, VIK_TRACK(l->data) );
       vik_trw_layer_delete_track (vtl, VIK_TRACK(l->data));
@@ -6077,8 +6062,6 @@ static void trw_layer_split_by_timestamp ( menu_array_sublayer values )
 
       new_tr_name = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, track->name);
       vik_trw_layer_add_track(vtl, new_tr_name, tr);
-      /*    g_print("adding track %s, times %d - %d\n", new_tr_name, VIK_TRACKPOINT(tr->trackpoints->data)->timestamp,
-	  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp);*/
       g_free ( new_tr_name );
       vik_track_calculate_bounds ( tr );
       iter = g_list_next(iter);
@@ -9220,8 +9203,7 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
 {
   /* if we haven't sync'ed yet, we don't have time to do more. */
   if ( vtl->draw_sync_done && vtl->current_track && vtl->current_track->trackpoints ) {
-    GList *iter = g_list_last ( vtl->current_track->trackpoints );
-    VikTrackpoint *last_tpt = VIK_TRACKPOINT(iter->data);
+    VikTrackpoint *last_tpt = vik_track_get_tp_last(vtl->current_track);
 
     static GdkPixmap *pixmap = NULL;
     int w1, h1, w2, h2;
@@ -9335,6 +9317,21 @@ static VikLayerToolFuncStatus tool_new_track_move ( VikTrwLayer *vtl, GdkEventMo
   return VIK_LAYER_TOOL_ACK;
 }
 
+// NB vtl->current_track must be valid
+static void undo_trackpoint_add ( VikTrwLayer *vtl )
+{
+  // 'undo'
+  if ( vtl->current_track->trackpoints ) {
+    // TODO rework this...
+    //vik_trackpoint_free ( vik_track_get_tp_last (vtl->current_track) );
+    GList *last = g_list_last(vtl->current_track->trackpoints);
+    g_free ( last->data );
+    vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
+
+    vik_track_calculate_bounds ( vtl->current_track );
+  }
+}
+
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
 {
   if ( vtl->current_track && event->keyval == GDK_Escape ) {
@@ -9342,16 +9339,8 @@ static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event,
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   } else if ( vtl->current_track && event->keyval == GDK_BackSpace ) {
-    /* undo */
-    if ( vtl->current_track->trackpoints )
-    {
-      GList *last = g_list_last(vtl->current_track->trackpoints);
-      g_free ( last->data );
-      vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
-    }
-
+    undo_trackpoint_add ( vtl );
     update_statusbar ( vtl );
-
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
@@ -9382,16 +9371,8 @@ static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton
   {
     if ( !vtl->current_track )
       return FALSE;
-    /* undo */
-    if ( vtl->current_track->trackpoints )
-    {
-      GList *last = g_list_last(vtl->current_track->trackpoints);
-      g_free ( last->data );
-      vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
-    }
-    vik_track_calculate_bounds ( vtl->current_track );
+    undo_trackpoint_add ( vtl );
     update_statusbar ( vtl );
-
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
@@ -9401,10 +9382,8 @@ static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton
     /* subtract last (duplicate from double click) tp then end */
     if ( vtl->current_track && vtl->current_track->trackpoints && vtl->ct_x1 == vtl->ct_x2 && vtl->ct_y1 == vtl->ct_y2 )
     {
-      GList *last = g_list_last(vtl->current_track->trackpoints);
-      g_free ( last->data );
-      vtl->current_track->trackpoints = g_list_remove_link ( vtl->current_track->trackpoints, last );
       /* undo last, then end */
+      undo_trackpoint_add ( vtl );
       vtl->current_track = NULL;
     }
     vik_layer_emit_update ( VIK_LAYER(vtl) );
