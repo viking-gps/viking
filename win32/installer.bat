@@ -82,6 +82,13 @@ if exist "%LIBMAGIC%" (
 	echo Required %LIBMAGIC% does not exist
 	goto Tidy
 )
+set LIBSQL3=%MINGW_BIN%\sqlite3.dll
+if exist "%LIBSQL3%" (
+	%MYCOPY% "%LIBSQL3%" %DESTINATION%
+) else (
+	echo Required %LIBSQL3% does not exist
+	goto Tidy
+)
 
 :: TODO Maybe embed http://gtk-win.sourceforge.net/home/index.php/Main/EmbeddingGTK directly in NSIS?
 :: Best to use the same GTK version as we built against in prepare.bat!!

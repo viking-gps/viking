@@ -292,6 +292,38 @@ if not exist "%MINGW_BIN%\regex2.dll" (
 	if ERRORLEVEL 1 goto Error
 )
 
+echo =+=+=
+echo Checking SQLite dev...
+echo =+=+=
+set SQL_ZIP=sqlite-amalgamation-3080002.zip
+if not exist "%MINGW%\include\sqlite3.h" (
+	if not exist %SQL_ZIP% (
+		wget http://www.sqlite.org/2013/%SQL_ZIP%
+	)
+	7z x %SQL_ZIP%
+	if ERRORLEVEL 1 goto Error
+	copy /Y sqlite-amalgamation-3080002\s* "%MinGW%\include"
+	rmdir /S /Q sqlite-amalgamation-3080002
+)
+
+echo =+=+=
+echo Checking SQL DLL...
+echo =+=+=
+set SQLDLL_ZIP=sqlite-dll-win32-x86-3080002.zip
+if not exist "%MINGW_BIN%\sqlite3.dll" (
+	if not exist %SQLDLL_ZIP% (
+		wget http://www.sqlite.org/2013/%SQLDLL_ZIP%
+	)
+	7z x %SQLDLL_ZIP% -o"%MinGW_BIN%"
+	if ERRORLEVEL 1 goto Error
+	REM Annoyingly SQL doesn't come with a .lib file so have to generate it ourselves:
+	REM Possibly need to insert the line 'LIBRARY sqlite3.dll' at the beginning of the def file?
+	REM  but this may not be needed as the --dllname option may suffice
+	popd %MinGW_BIN%
+	dlltool -d sqlite3.def --dllname sqlite3.dll -l ..\lib\sqlite3.lib
+	pushd
+)
+
 ::
 :: Ideally building the code on Windows shouldn't need Doc Utils or the Help processor stuff
 :: But ATM it's too hard to avoid.
