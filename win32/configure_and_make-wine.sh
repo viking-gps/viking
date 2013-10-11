@@ -2,6 +2,8 @@
 # License: CC0
 
 # First ensure we have a configure script:
+rm -rf ../src/.deps
+rm -rf ../src/icons/.deps
 pushd ..
 ./autogen.sh
 make distclean
