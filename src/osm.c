@@ -123,7 +123,7 @@ void osm_init () {
 
   // Webtools
   VikWebtoolCenter *webtool = NULL;
-  webtool = vik_webtool_center_new_with_members ( _("OSM (view)"), "http://openstreetmap.org/?lat=%s&lon=%s&zoom=%d&layers=B000FTF" );
+  webtool = vik_webtool_center_new_with_members ( _("OSM (view)"), "http://openstreetmap.org/?lat=%s&lon=%s&zoom=%d" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
 
