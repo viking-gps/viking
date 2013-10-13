@@ -1,3 +1,61 @@
+Viking 1.5 (2013-10-13)
+New features since 1.4.2
+* Startup preferences for ease of use.
+* Multi layer/track statistics.
+* Multi layer/track or waypoint detailed lists.
+* Control sorting of layers and quick show/hide all options.
+* Configurable layer defaults.
+* Optimizations when loading and drawing large numbers of tracks.
+* Allow higher zoom levels up to 1/32 (OSM z22 equivalent but maps only requested up to z19).
+* Retain internal options across sessions.
+* Selectable online router service provider (now including OSRM)
+* 'Via' points online route refining.
+* Download a file directly from an URL.
+* Datasource acquiring files from URLs related to the current view.
+* Support timestamps (read only) in waypoints.
+* Support naming trackpoints.
+* Request downloading a region of maps over multiple zoom levels.
+* Support Compressed My OSM Traces files (requires libbz2 and libmagic).
+* Support opening files drag and drop on to the viewport.
+* Support relative paths in Viking files.
+* Add support for OSM Humanitarian (HOT) Style Map.
+* Advanced preferences.
+* Optional track labelling on the viewport.
+* Translations for the Basque language.
+* Improved Help Manual.
+* Many internal improvements.
+
+Fixes since 1.4.2
+* Fix crashing if attempting to Extend a Route via the Route Finder when the route has no points.
+
+Viking 1.4.2.0 (2013-07-26)
+Bug Fix Release
+* Fix menu use of named own Icons since the icons were renamed some time ago.
+* [QA] Fix memory leak in drawing new tracks/routes.
+* [QA] Fix memory leak on deleting TrackWaypoint layers.
+* [QA] Fix large memory leak on viewing Track Properties.
+* [QA] Fix incorrect iterator usage.
+* [QA] Fix memory leaks on reading in Viking files.
+* [QA] Fix memory leak in treeview tooltips and selection.
+* [QA] Fix large memory leak when removing DEM layers.
+* Fix some interpolated values of a trackpoint on insertion between points.
+* Fix handling failed downloads with the My OSM Traces method.
+* SF Bugs#101: Fix Acquire from Google Directions.
+* Fix name search using Google.
+* SF Bugs#100: Fix Crash on viewing Track Properties with extreme gradients.
+* SF Bugs#97: Fix missing redownload settings of some maps in the example config
+* SF Bugs#99: Increase limit for Map IDs
+* Automated check for the latest version. ATM only on Windows systems.
+* Enable getting Viking Version as a number from a string to enable comparisons.
+* SF#3613971: Remove Geofabrik's OpenStreetMap WMS, as it is not for public use.
+* Don't silently fail on attempting to split to a track.
+* Fix background thread statusbar update instability.
+* Fix location of gdk_threads_enter() to be before first window creation.
+* Allow Bing Map source URL to be set via the configuration XML file.
+* SF#3610708: Fix Failing to Load DEM files on Big Endian Systems.
+* Fix incorrect setting to lowest zoom value when clicking away from the statusbar zoom menu.
+* [QA] Improve create zoom menu to use G_N_ELEMENTS to know array bounds.
+
 Viking 1.4.1.0 (2013-04-08)
 Bug Fix Release + updated translations
 * Import Launchpad translation updates [Mainly for large Czech update]

@@ -30,10 +30,10 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY dhfirstname "<firstname>Ralf</firstname>">
   <!ENTITY dhsurname   "<surname>Meyer</surname>">
   <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>2013-04-08</date>">
+  <!ENTITY dhdate      "<date>2013-10-13</date>">
   <!-- Would be nice if the version could auto-update. -->
   <!ENTITY dhsource      "Viking">
-  <!ENTITY dhversion     "1.4.1">
+  <!ENTITY dhversion     "1.5.0">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
        allowed: see man(7), man(1). -->
   <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
