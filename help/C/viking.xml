@@ -1195,11 +1195,11 @@ If this is a Route then it will convert it to a Track.
 <para>
 If this is Track then convert it to a Route.
 </para>
-<para>
 <note>
+<para>
 Converting from a Track to a Route may involve a loss of information, in particular timestamp values (hence you are required to confirm this operation before it happens).
-</note>
 </para>
+</note>
 </section>
 <section>
 <title>Anonymize Times</title>
@@ -1210,11 +1210,11 @@ Timestamp information of a track can be shifted to be all offset from 1901-01-01
 Thus the timestamps themselves will no longer reveal exactly when a track was taken.
 However the relative difference between the timestamps is kept thus one is still able to calculate some properties such as speeds along the track.
 </para>
-<para>
 <note>
+<para>
 This is not available for routes, as they have no timestamps.
-</note>
 </para>
+</note>
 </section>
 </section>
 
@@ -1864,22 +1864,22 @@ If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoi
 <para>
 Editing options in the Trackpoint Edit dialog include:
 <itemizedlist>
-<listitem>Edit the trackpoint name</listitem>
-<listitem>Changing raw lat/long position and altitude</listitem>
-<listitem>Forward (go to the next trackpoint)</listitem>
-<listitem>Back (go to the previous trackpoint)</listitem>
-<listitem>Delete</listitem>
-<listitem>Insert. Inserts a point halfway to next trackpoint</listitem>
-<listitem>Split. <xref linkend="trkpt_split"/></listitem>
+<listitem><para>Edit the trackpoint name</para></listitem>
+<listitem><para>Changing raw lat/long position and altitude</para></listitem>
+<listitem><para>Forward (go to the next trackpoint)</para></listitem>
+<listitem><para>Back (go to the previous trackpoint)</para></listitem>
+<listitem><para>Delete</para></listitem>
+<listitem><para>Insert. Inserts a point halfway to next trackpoint</para></listitem>
+<listitem><para>Split. <xref linkend="trkpt_split"/></para></listitem>
 </itemizedlist>
 </para>
 <para>
 Several fields are read only for reference purposes, values are shown if the trackpoint has such information:
 <itemizedlist>
-<listitem>Time.</listitem>
-<listitem>Speed and course.</listitem>
-<listitem>'Between' values: Speed, Time Difference and Distance Difference. When moving between trackpoints (via the Back and Forward buttons) these values are calculated.</listitem>
-<listitem>GPS precision factors.</listitem>
+<listitem><para>Time.</para></listitem>
+<listitem><para>Speed and course.</para></listitem>
+<listitem><para>'Between' values: Speed, Time Difference and Distance Difference. When moving between trackpoints (via the Back and Forward buttons) these values are calculated.</para></listitem>
+<listitem><para>GPS precision factors.</para></listitem>
 </itemizedlist>
 </para>
 <para>
