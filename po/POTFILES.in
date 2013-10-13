@@ -10,6 +10,7 @@ src/geonamessearch.c
 src/globals.c
 src/google.c
 src/googlesearch.c
+src/datasource_bfilter.c
 src/datasource_file.c
 src/datasource_gc.c
 src/datasource_geotag.c
@@ -17,6 +18,7 @@ src/datasource_gps.c
 src/datasource_osm.c
 src/datasource_osm_my_traces.c
 src/datasource_routing.c
+src/datasource_url.c
 src/datasource_wikipedia.c
 src/dem.c
 src/download.c
@@ -27,7 +29,6 @@ src/mapcache.c
 src/print.c
 src/util.c
 src/vikcoordlayer.c
-src/datasource_bfilter.c
 src/main.c
 src/osm.c
 src/osm-traces.c
