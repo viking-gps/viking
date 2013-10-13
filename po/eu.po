@@ -1,0 +1,4825 @@
+# Basque translation for viking
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
+# This file is distributed under the same license as the viking package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: viking\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2013-09-03 21:58+0200\n"
+"PO-Revision-Date: 2013-08-06 06:57+0000\n"
+"Last-Translator: gorkaazk <gorkaazkarate@gmail.com>\n"
+"Language-Team: Basque <eu@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2013-10-12 09:04+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
+
+#: ../src/acquire.c:103 ../src/vikgpslayer.c:1235
+msgid "Done."
+msgstr "Eginda."
+
+#: ../src/acquire.c:112
+msgid "No data."
+msgstr "Daturik ez."
+
+#: ../src/acquire.c:154 ../src/acquire.c:424
+msgid "Error: acquisition failed."
+msgstr "Errorea: eskuratzeak huts egin du."
+
+#: ../src/acquire.c:352
+msgid "Working..."
+msgstr "Lanean..."
+
+#. This shouldn't happen...
+#: ../src/acquire.c:415
+msgid ""
+"Unable to create command\n"
+"Acquire method failed."
+msgstr ""
+"Ezin da komandoa sortu\n"
+"eskuratze-metodoak huts egin du."
+
+#: ../src/acquire.c:517
+msgid "_Filter"
+msgstr "_Iragazkia"
+
+#: ../src/acquire.c:532
+#, c-format
+msgid "Filter with %s"
+msgstr "Iragazi honen bidez %s"
+
+#: ../src/acquire.c:549
+msgid "Filter"
+msgstr "Iragazi"
+
+#: ../src/background.c:53
+#, c-format
+msgid "%d items"
+msgstr "%d elementuak"
+
+#: ../src/background.c:254
+msgid "Job"
+msgstr "Lana"
+
+#: ../src/background.c:258
+msgid "Progress"
+msgstr "Aurrerapena"
+
+#: ../src/background.c:274
+msgid "Viking Background Jobs"
+msgstr "Viking atzeko planoko lanak"
+
+#: ../src/bing.c:47
+msgid "Bing"
+msgstr "Bing"
+
+#. VIK_GTK_WINDOW_FROM_WIDGET(vp)
+#: ../src/bingmapsource.c:499
+msgid "Bing attribution Loading"
+msgstr "Bing atributuak kargatzen"
+
+#: ../src/clipboard.c:95
+msgid "paste failed"
+msgstr "Errorea itsastean"
+
+#: ../src/clipboard.c:105
+msgid "wrong clipboard data size"
+msgstr "arbeleko datuen tamaina okerra"
+
+#: ../src/clipboard.c:124
+#, c-format
+msgid ""
+"The clipboard contains sublayer data for %s layers. You must select a layer "
+"of this type to paste the clipboard data."
+msgstr ""
+"Arbelak %s geruzaren azpigeruza-datuak ditu. Hautatu behar duzu mota "
+"horretako geruza arbeleko datuak itsasteko."
+
+#: ../src/clipboard.c:236
+msgid ""
+"In order to paste a waypoint, please select an appropriate layer to paste "
+"into."
+msgstr "Hautatu geruza egokia bide-puntu bat itsasteko."
+
+#: ../src/dialog.c:53
+msgid "Go to Lat/Lon"
+msgstr "Joan latit/longitudera"
+
+#: ../src/dialog.c:65 ../src/dialog.c:244
+msgid "Latitude:"
+msgstr "Latitudea:"
+
+#: ../src/dialog.c:71 ../src/dialog.c:249
+msgid "Longitude:"
+msgstr "Longitudea:"
+
+#: ../src/dialog.c:103
+msgid "Go to UTM"
+msgstr ""
+"Joan UTM-ra (Universal Transverse Mercator coordinate system horretara; "
+"Mercator-ren trebeseko koordenada sistema unibertsal horretara))"
+
+#: ../src/dialog.c:116
+msgid "Northing:"
+msgstr "Iparra:"
+
+#: ../src/dialog.c:122
+msgid "Easting:"
+msgstr "Ekialdea:"
+
+#: ../src/dialog.c:129
+msgid "Zone:"
+msgstr "Zona:"
+
+#: ../src/dialog.c:132
+msgid "Letter:"
+msgstr "Hizkia:"
+
+#: ../src/dialog.c:199
+msgid "Waypoint Properties"
+msgstr "Bide-puntuaren  propietateak"
+
+#: ../src/dialog.c:235
+msgid "Name:"
+msgstr "Izena:"
+
+#: ../src/dialog.c:254
+msgid "Altitude:"
+msgstr "Altitudea:"
+
+#: ../src/dialog.c:259
+msgid "Comment:"
+msgstr "Iruzkina:"
+
+#: ../src/dialog.c:267 ../src/osm-traces.c:445
+msgid "Description:"
+msgstr "Deskripzioa:"
+
+#: ../src/dialog.c:270
+msgid "Image:"
+msgstr "Irudia:"
+
+#: ../src/dialog.c:275
+msgid "Symbol:"
+msgstr "Ikurra:"
+
+#: ../src/dialog.c:284
+msgid "(none)"
+msgstr "(bat ere ez)"
+
+#: ../src/dialog.c:326
+msgid "Time:"
+msgstr ""
+
+#. TODO: other checks (isalpha or whatever )
+#: ../src/dialog.c:363
+msgid "Please enter a name for the waypoint."
+msgstr "Eman iezaiozu izen bat bide-puntuari, mesedez."
+
+#: ../src/dialog.c:502 ../src/geonamessearch.c:244
+#: ../src/datasource_osm_my_traces.c:507
+msgid "Nothing was selected"
+msgstr "Ez zegoen ezer hautatuta"
+
+#: ../src/dialog.c:510
+msgid "Add Route"
+msgstr "Gehitu ibilbidea"
+
+#: ../src/dialog.c:510
+msgid "Add Track"
+msgstr "Gehitu  arrastoa"
+
+#: ../src/dialog.c:518
+msgid "Route Name:"
+msgstr "Ibilbidearen izena:"
+
+#: ../src/dialog.c:518
+msgid "Track Name:"
+msgstr "Arrastoaren izena:"
+
+#: ../src/dialog.c:538
+msgid "Please enter a name for the track."
+msgstr "Eman izen bat arrastoari."
+
+#: ../src/dialog.c:596
+msgid "Zoom Factors..."
+msgstr "Zoom faktoreak..."
+
+#: ../src/dialog.c:610
+msgid "Zoom factor (in meters per pixel):"
+msgstr "Zoom faktorea (metro/pixeleko)"
+
+#: ../src/dialog.c:611
+msgid "X (easting): "
+msgstr "X (ekialdea): "
+
+#: ../src/dialog.c:612
+msgid "Y (northing): "
+msgstr "Y (iparra): "
+
+#: ../src/dialog.c:617
+msgid "X and Y zoom factors must be equal"
+msgstr "X eta Y zoom-faktoreak berdinak izan behar dute"
+
+#: ../src/dialog.c:672
+msgid "1 min"
+msgstr "Minutu 1"
+
+#: ../src/dialog.c:673
+msgid "1 hour"
+msgstr "Ordu 1"
+
+#: ../src/dialog.c:674
+msgid "1 day"
+msgstr "Egun 1"
+
+#: ../src/dialog.c:675
+msgid "Custom (in minutes):"
+msgstr "Pertsonalizatua (minututan):"
+
+#: ../src/dialog.c:786
+msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
+msgstr "GPS Data eta Topo Analyzer, Explorer eta Manager."
+
+#: ../src/dialog.c:787
+msgid ""
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
+"Place, Suite 330, Boston, MA 02111-1307, USA"
+msgstr ""
+"Programa hau software librea da; birbanatu  edo eta aldatu dezakezu  "
+"Software Librearen Fundazioak argitaratutako GNU General Public License-aren "
+"baldintzapean; baita ere Lizentziaren 2. edo ondorengo bertsioak.\n"
+"\n"
+"Programa hau banatu da erabilgarria izan dadin, baina INOLAKO BERMERIK GABE; "
+" ez merkatal erabilpenerako ez eta erabilpen pertsonalerako. Xehetasun "
+"gehiago  GNU General Public License-an aurki ditzakezu.\n"
+"\n"
+"Programa honekin batera,  GNU General Public License-aren kopia bat jaso "
+"beharko zenuke; bestela, Software Librearen Fundazioari idatzi, Inc., 59 "
+"Temple Place, Suite 330, Boston, MA 02111-1307, USA"
+
+#: ../src/dialog.c:852
+msgid "Translation is coordinated on http://launchpad.net/viking"
+msgstr "Itzulpen koordinatuta dago  http://launchpad.net/viking orrian"
+
+#: ../src/dialog.c:861
+msgid "Download along track"
+msgstr "Deskargatu zeharkako arrastoa"
+
+#: ../src/dialog.c:868
+msgid "Map type:"
+msgstr "Mapa mota:"
+
+#: ../src/dialog.c:874
+msgid "Zoom level:"
+msgstr "Zoom maila:"
+
+#: ../src/dialog.c:914
+#, c-format
+msgid "The map data is licensed: %s."
+msgstr "Maparen datuak lizentzia honekin: %s."
+
+#: ../src/dialog.c:917
+#, c-format
+msgid ""
+"The data provided by '<b>%s</b>' are licensed under the following license: "
+"<b>%s</b>.\n"
+"Please, read the license before continuing."
+msgstr ""
+"'<b>%s</b>'-k hornitutako datuak ondorengo lizentziapean argitaratuta  "
+"daude:  <b>%s</b>.\n"
+"Jarraitu aurretik lizentzia irakurri."
+
+#: ../src/dialog.c:922
+msgid "Open license"
+msgstr "Lizentzia irekia"
+
+#: ../src/expedia.c:53
+msgid "Expedia Street Maps"
+msgstr "Expedia Street Maps"
+
+#: ../src/expedia.c:81
+msgid "Invalid expedia altitude"
+msgstr "Expedia altitudea ez da baliozkoa"
+
+#: ../src/expedia.c:112
+#, c-format
+msgid ""
+"Couldn't open EXPEDIA image file (right after successful download! Please "
+"report and delete image file!): %s"
+msgstr ""
+"Ezin da ireki EXPEDIA irudi-fitxategia (hain justu arrakastaz deskargatu "
+"ondoren! Informatu eta ezabatu irudi-fitxategai!): %s"
+
+#: ../src/expedia.c:125
+#, c-format
+msgid ""
+"Couldn't save EXPEDIA image file (right after successful download! Please "
+"report and delete image file!): %s"
+msgstr ""
+"Ezin da gorde EXPEDIA irudi-fitxategia (hain justu arrakastaz deskargatu "
+"ondoren! Informatu eta ezabatu irudi-fitxategai!): %s"
+
+#. *
+#. * See http://www.geonames.org/export/wikipedia-webservice.html#wikipediaBoundingBox
+#. 
+#. Translators may wish to change this setting as appropriate to get Wikipedia articles in that language
+#: ../src/geonamessearch.c:46
+msgid "en"
+msgstr "en"
+
+#: ../src/geonamessearch.c:121
+msgid "Search"
+msgstr "Bilatu"
+
+#: ../src/geonamessearch.c:123
+msgid "No entries found!"
+msgstr "Ez da sarrerarik aurkitu!"
+
+#. NB could allow columns to be shifted around by doing this after each new
+#. gtk_tree_view_column_set_reorderable ( column, TRUE );
+#. However I don't think is that useful, so I haven't put it in
+#: ../src/geonamessearch.c:177 ../src/datasource_osm_my_traces.c:424
+#: ../src/viktrwlayer_tracklist.c:521
+msgid "Name"
+msgstr "Izena"
+
+#: ../src/geonamessearch.c:182
+msgid "Feature"
+msgstr "Ezaugarri"
+
+#: ../src/geonamessearch.c:187 ../src/datasource_osm_my_traces.c:439
+msgid "Lat/Lon"
+msgstr "Lat/Lon"
+
+#: ../src/geonamessearch.c:270 ../src/googlesearch.c:100 ../src/vikgoto.c:306
+msgid "couldn't map temp file"
+msgstr "ezin esleitu aldi baterako fitxategia"
+
+#: ../src/globals.c:73
+msgid "Absolute"
+msgstr ""
+
+#: ../src/globals.c:73
+msgid "Relative"
+msgstr ""
+
+#: ../src/globals.c:76
+msgid "Degree format:"
+msgstr "Gradu-formatua"
+
+#: ../src/globals.c:77
+msgid "Distance units:"
+msgstr "Distantzia-unitateak:"
+
+#: ../src/globals.c:78
+msgid "Speed units:"
+msgstr "Abiadura-unitateak:"
+
+#: ../src/globals.c:79
+msgid "Height units:"
+msgstr "Alturera-unitateak:"
+
+#: ../src/globals.c:80
+msgid "Use large waypoint icons:"
+msgstr "Erabili bide-puntu ikono handiak:"
+
+#: ../src/globals.c:81
+msgid "Default latitude:"
+msgstr "Lehenetsitako latitudea:"
+
+#: ../src/globals.c:82
+msgid "Default longitude:"
+msgstr "Lehenetsitako longitudea:"
+
+#: ../src/globals.c:88
+msgid "Alphabetical"
+msgstr "Alfabetikoa"
+
+#: ../src/globals.c:88 ../src/datasource_osm_my_traces.c:434
+msgid "Time"
+msgstr "Denbora"
+
+#: ../src/globals.c:88
+msgid "Creation"
+msgstr ""
+
+#: ../src/globals.c:89
+msgid "Title Case"
+msgstr ""
+
+#: ../src/globals.c:89
+msgid "Lowercase"
+msgstr ""
+
+#: ../src/globals.c:92
+msgid "KML File Export Units:"
+msgstr "KML fitxategien esportazio unitateak:"
+
+#: ../src/globals.c:93
+msgid "GPX Track Order:"
+msgstr "GPXaren arrastoaren agindua:"
+
+#: ../src/globals.c:94
+msgid "GPX Waypoint Symbols:"
+msgstr ""
+
+#: ../src/globals.c:95
+msgid ""
+"Save GPX Waypoint Symbol names in the specified case. May be useful for "
+"compatibility with various devices"
+msgstr ""
+
+#: ../src/globals.c:100
+msgid "Image Viewer:"
+msgstr "Irudi-ikustailea:"
+
+#: ../src/globals.c:105
+msgid "External GPX Program 1:"
+msgstr "GPX kanpoko programa 1:"
+
+#: ../src/globals.c:106
+msgid "External GPX Program 2:"
+msgstr "GPX kanpoko programa 2:"
+
+#: ../src/globals.c:110
+msgid "Save File Reference Mode:"
+msgstr ""
+
+#: ../src/globals.c:111
+msgid ""
+"When saving a Viking .vik file, this determines how the directory paths of "
+"filenames are written."
+msgstr ""
+
+#: ../src/globals.c:112
+msgid "Show Tooltip during Track Creation:"
+msgstr ""
+
+#: ../src/globals.c:115
+msgid "Home Location"
+msgstr ""
+
+#: ../src/globals.c:115
+msgid "Last Location"
+msgstr ""
+
+#: ../src/globals.c:115
+msgid "Specified File"
+msgstr ""
+
+#: ../src/globals.c:115
+msgid "Auto Location"
+msgstr ""
+
+#: ../src/globals.c:118
+msgid "Restore Window Setup:"
+msgstr ""
+
+#: ../src/globals.c:119
+msgid "Restore window size and layout"
+msgstr ""
+
+#: ../src/globals.c:120
+msgid "Add a Default Map Layer:"
+msgstr ""
+
+#: ../src/globals.c:121
+msgid ""
+"The default map layer added is defined by the Layer Defaults. Use the menu "
+"Edit->Layer Defaults->Map... to change the map type and other values."
+msgstr ""
+
+#: ../src/globals.c:122
+msgid "Startup Method:"
+msgstr ""
+
+#: ../src/globals.c:123
+msgid "Startup File:"
+msgstr ""
+
+#: ../src/globals.c:124
+msgid ""
+"The default file to load on startup. Only applies when the startup method is "
+"set to 'Specified File'"
+msgstr ""
+
+#: ../src/globals.c:125
+msgid "Check For New Version:"
+msgstr ""
+
+#: ../src/globals.c:126
+msgid "Periodically check to see if a new version of Viking is available"
+msgstr ""
+
+#. Defaults for the options are setup here
+#: ../src/globals.c:163
+msgid "General"
+msgstr "Orokorra"
+
+#. New Tab
+#: ../src/globals.c:188
+msgid "Startup"
+msgstr ""
+
+#. New Tab
+#: ../src/globals.c:206
+msgid "Export/External"
+msgstr "Esportatu/Kanpokoa"
+
+#. 'Advanced' Properties
+#: ../src/globals.c:230
+msgid "Advanced"
+msgstr ""
+
+#. Webtools
+#: ../src/google.c:38
+msgid "Google"
+msgstr "Google"
+
+#: ../src/datasource_file.c:59
+msgid "Import file with GPSBabel"
+msgstr "Inportatu irudia GPSBabel-en bidez"
+
+#: ../src/datasource_file.c:60
+msgid "Imported file"
+msgstr "Inportatutako fitxategia"
+
+#. The file selector
+#: ../src/datasource_file.c:127
+msgid "File:"
+msgstr "Fitxategia:"
+
+#: ../src/datasource_file.c:128
+msgid "File to import"
+msgstr "Inportatzeko fitxategia"
+
+#: ../src/datasource_file.c:135
+msgid "All files"
+msgstr "Fitxategi guztiak"
+
+#. The file format selector
+#: ../src/datasource_file.c:142
+msgid "File type:"
+msgstr "Fitxategi mota:"
+
+#: ../src/datasource_file.c:184
+#, c-format
+msgid "using babel args '%s' and file '%s'"
+msgstr "Erabiltzen Babel argumentuak  '%s' eta fitxategia  '%s'"
+
+#: ../src/datasource_gc.c:66
+msgid "Download Geocaches"
+msgstr "Deskargatu Geocache-ak"
+
+#: ../src/datasource_gc.c:67
+msgid "Geocaching.com Caches"
+msgstr "Geocaching.com Cache-ak"
+
+#: ../src/datasource_gc.c:85
+msgid "geocaching.com username:"
+msgstr "geocaching.com erabiltzaile-izena:"
+
+#: ../src/datasource_gc.c:86
+msgid "geocaching.com password:"
+msgstr "geocaching.com pasahitza:"
+
+#: ../src/datasource_gc.c:127
+#, c-format
+msgid ""
+"Can't find %s or %s in path! Check that you have installed it correctly."
+msgstr ""
+"Ezin da aurkitu %s edo %s kokalekuan! Egiaztatu ongi instalatu duzula."
+
+#: ../src/datasource_gc.c:189
+msgid "Number geocaches:"
+msgstr "geocahes-zenbakia:"
+
+#: ../src/datasource_gc.c:191
+msgid "Centered around:"
+msgstr "Zentratuta inguruan:"
+
+#: ../src/datasource_gc.c:230
+msgid "Broken input - using some defaults"
+msgstr "Hautsitako sarrera - lehenetsitako batzuk erabiltzen"
+
+#: ../src/datasource_geotag.c:51
+msgid "Create Waypoints from Geotagged Images"
+msgstr "Sortu bide-puntuak geo-etiketatutako irudietatik"
+
+#: ../src/datasource_geotag.c:52
+msgid "Geotagged Images"
+msgstr "Geo-etiketatutako irudiak"
+
+#: ../src/datasource_geotag.c:102 ../src/vikwindow.c:2655
+#: ../src/vikwindow.c:2729 ../src/vikwindow.c:3380
+msgid "All"
+msgstr "Guztiak"
+
+#: ../src/datasource_geotag.c:107 ../src/vikwindow.c:3385
+msgid "JPG"
+msgstr "JPG"
+
+#: ../src/datasource_geotag.c:168
+#, c-format
+msgid "Unable to create waypoint from %s"
+msgstr "Ezin da bide-punturik sortu  %s-tik"
+
+#: ../src/datasource_gps.c:54
+msgid "Acquire from GPS"
+msgstr "Eskuratu GPStik"
+
+#: ../src/datasource_gps.c:55
+msgid "Acquired from GPS"
+msgstr "GPStik eskuratua"
+
+#: ../src/datasource_gps.c:245
+#, c-format
+msgid "using cmdline '%s' and file '%s'\n"
+msgstr "'%s' cmdline eta '%s' fitxategia erabiltzen\n"
+
+#: ../src/datasource_gps.c:327 ../src/vikgpslayer.c:934
+#, c-format
+msgid "Downloading %d waypoint..."
+msgid_plural "Downloading %d waypoints..."
+msgstr[0] "Deskargatzen %d bide-puntua..."
+msgstr[1] "Deskargatzen %d bide-puntuak..."
+
+#: ../src/datasource_gps.c:328 ../src/vikgpslayer.c:935
+#, c-format
+msgid "Downloading %d trackpoint..."
+msgid_plural "Downloading %d trackpoints..."
+msgstr[0] "Deskargatzen %d arrasto-puntua..."
+msgstr[1] "Deskargatzen %d arrasto-puntuak..."
+
+#: ../src/datasource_gps.c:333 ../src/vikgpslayer.c:940
+#, c-format
+msgid "Downloading %d routepoint..."
+msgid_plural "Downloading %d routepoints..."
+msgstr[0] "Deskargatzen %d ibilbide-puntua..."
+msgstr[1] "Deskargatzen %d ibilbide-puntuak..."
+
+#: ../src/datasource_gps.c:355 ../src/datasource_gps.c:356
+#: ../src/datasource_gps.c:357
+#, c-format
+msgid "Downloaded %d out of %d %s..."
+msgstr "%d horietatik %d %s deskargaturik..."
+
+#: ../src/datasource_gps.c:361 ../src/datasource_gps.c:362
+#: ../src/datasource_gps.c:363
+#, c-format
+msgid "Downloaded %d %s."
+msgstr "Deskargatuak %d %s."
+
+#: ../src/datasource_gps.c:377 ../src/vikgpslayer.c:1018
+#, c-format
+msgid "GPS Device: %s"
+msgstr "GPS gailua: %s"
+
+#: ../src/datasource_gps.c:400 ../src/vikgpslayer.c:1092
+#: ../src/vikgpslayer.c:1160
+msgid "Status: Working..."
+msgstr "Orain: lanean..."
+
+#. NB gps_layer_inst_init() is performed after parameter registeration
+#. thus to give the protocols some potential values use the old static list
+#. TODO: find another way to use gps_layer_inst_init()?
+#: ../src/datasource_gps.c:500 ../src/vikgpslayer.c:207
+msgid "GPS Protocol:"
+msgstr "GPS protokoloa:"
+
+#. List reassigned at runtime
+#: ../src/datasource_gps.c:526 ../src/vikgpslayer.c:208
+msgid "Serial Port:"
+msgstr "Serie-ataka:"
+
+#: ../src/datasource_gps.c:576
+msgid ""
+"Turn Off After Transfer\n"
+"(Garmin/NAViLink Only)"
+msgstr ""
+"Itzali transferitu eta gero\n"
+"(bakarrik Garmin/NAVlink)"
+
+#: ../src/datasource_gps.c:583
+msgid "Tracks:"
+msgstr "Arrastoak:"
+
+#: ../src/datasource_gps.c:590
+msgid "Routes:"
+msgstr "Ibilbideak:"
+
+#: ../src/datasource_gps.c:597
+msgid "Waypoints:"
+msgstr "Bide-puntuak:"
+
+#: ../src/datasource_gps.c:675 ../src/vikgpslayer.c:1355
+msgid "GPS device: N/A"
+msgstr "GPS gailua: ez dago eskuragarri"
+
+#: ../src/datasource_osm.c:52 ../src/datasource_osm.c:53
+msgid "OSM traces"
+msgstr "OSM arrastoak"
+
+#: ../src/datasource_osm.c:82
+msgid "Page number:"
+msgstr "Orrialde-zenbakia:"
+
+#: ../src/datasource_osm_my_traces.c:59 ../src/datasource_osm_my_traces.c:60
+msgid "OSM My Traces"
+msgstr "OSM My Traces (OpenStreetMap-eko Nire Arrastoak)"
+
+#: ../src/datasource_osm_my_traces.c:104
+msgid "Username:"
+msgstr "Erabiltzailea:"
+
+#: ../src/datasource_osm_my_traces.c:109
+msgid "The email or username used to login to OSM"
+msgstr ""
+"OSM-en sartzeko erabiltzen duzun posta-helbidea edo erabiltzaile-izena"
+
+#: ../src/datasource_osm_my_traces.c:111 ../src/osm-traces.c:421
+msgid "Password:"
+msgstr "Pasahitza:"
+
+#: ../src/datasource_osm_my_traces.c:114
+msgid "The password used to login to OSM"
+msgstr "OSM-en  sartzeko erabilitako pasahitza"
+
+#: ../src/datasource_osm_my_traces.c:429
+msgid "Description"
+msgstr "Deskripzioa"
+
+#: ../src/datasource_osm_my_traces.c:444
+msgid "Privacy"
+msgstr "Pribatutasuna"
+
+#: ../src/datasource_osm_my_traces.c:451
+msgid "Within Current View"
+msgstr "Uneko ikuspegi barruan"
+
+#: ../src/datasource_osm_my_traces.c:518
+msgid "GPS Traces"
+msgstr "GPS-arrastoak"
+
+#: ../src/datasource_osm_my_traces.c:520
+msgid "None found!"
+msgstr "Ez da ezer aurkitu!"
+
+#: ../src/datasource_osm_my_traces.c:634
+msgid "My OSM Traces"
+msgstr "My OSM Traces (Nire OSM arrastoak)"
+
+#: ../src/datasource_osm_my_traces.c:649
+#, c-format
+msgid "Unable to get trace: %s"
+msgstr "Ezin izan da arrastoa lortu: %s"
+
+#: ../src/datasource_routing.c:53 ../src/datasource_routing.c:54
+msgid "Directions"
+msgstr ""
+
+#. Engine selector
+#: ../src/datasource_routing.c:83
+msgid "Engine:"
+msgstr ""
+
+#. From and To entries
+#: ../src/datasource_routing.c:88
+msgid "From:"
+msgstr "Nondik:"
+
+#: ../src/datasource_routing.c:90
+msgid "To:"
+msgstr "Nora:"
+
+#: ../src/datasource_wikipedia.c:32
+msgid "Create Waypoints from Wikipedia Articles"
+msgstr "Sortu bide-puntuak Wikipedia artikuluetatik"
+
+#: ../src/datasource_wikipedia.c:33
+msgid "Wikipedia Waypoints"
+msgstr "Wikipediako bide-puntuak"
+
+#: ../src/dem.c:65 ../src/dem.c:79
+msgid "Invalid DEM"
+msgstr "Ez da onartzeko moduko DEM (Digital Elevation Model)"
+
+#: ../src/dem.c:121
+msgid "Invalid DEM header"
+msgstr "Ez da onartzeko moduko DEM burua (Digital Elevation Model)"
+
+#: ../src/dem.c:190 ../src/dem.c:203
+msgid "Incorrect DEM Class B record: expected 1"
+msgstr "DEM Class B erregistro okerra: itxaroten 1"
+
+#: ../src/dem.c:288 ../src/download.c:170
+#, c-format
+msgid "Couldn't map file %s: %s"
+msgstr "Ezin da aurkitu map fitxategia %s: %s"
+
+#: ../src/download.c:130
+msgid "Tile age (days):"
+msgstr ""
+
+#: ../src/download.c:321
+#, c-format
+msgid "Download error: %s"
+msgstr "Deskarga-errorea: %s"
+
+#: ../src/download.c:404
+msgid "couldn't open temp file"
+msgstr "Ezin da aldi baterako fitxategia ireki"
+
+#: ../src/file.c:451 ../src/file.c:456
+#, c-format
+msgid "Draw mode '%s' no more supported"
+msgstr "Marrazketa modua  '%s' ez da gehiago onartzen"
+
+#: ../src/geotag_exif.c:421
+msgid "Not enough memory."
+msgstr "Memoria nahikorik ez."
+
+#: ../src/geotag_exif.c:439
+msgid "Setting a value for this tag is unsupported!"
+msgstr "Etiketa honetarako balio bat ezartzeko zerbitzurik ez dago!"
+
+#: ../src/geotag_exif.c:458
+#, c-format
+msgid "Too few components specified (need %d, found %d)\n"
+msgstr "Osagai gutxiegi zehaztu dira (%d behar ziren,  %d topatu dira)\n"
+
+#: ../src/geotag_exif.c:462
+msgid "Numeric value expected\n"
+msgstr "Balio numerikoa espero zen\n"
+
+#: ../src/geotag_exif.c:470
+msgid "This shouldn't happen!"
+msgstr "Hau ez luke gertatu behar!"
+
+#: ../src/geotag_exif.c:540
+msgid "Not yet implemented!"
+msgstr "Oraindik ez dago egikaritua!"
+
+#: ../src/geotag_exif.c:553
+msgid "Warning; Too many components specified!"
+msgstr "Kontuz; osagai gehiegi zehaztuta!"
+
+#: ../src/osm-traces.c:76
+msgid "Identifiable (public w/ timestamps)"
+msgstr "Identifikagarria (publikoa, data-zigilu eta guzti)"
+
+#: ../src/osm-traces.c:77
+msgid "Trackable (private w/ timestamps)"
+msgstr "Arrastogarria (pribatua, data-zigilu eta guzti)"
+
+#: ../src/osm-traces.c:78
+msgid "Public"
+msgstr "Publikoa"
+
+#: ../src/osm-traces.c:79
+msgid "Private"
+msgstr "Pribatua"
+
+#: ../src/osm-traces.c:97
+msgid "OSM username:"
+msgstr "OSM erabiltzaile-izena:"
+
+#: ../src/osm-traces.c:98
+msgid "OSM password:"
+msgstr "OSM pasahitza:"
+
+#. Preferences
+#: ../src/osm-traces.c:155
+msgid "OpenStreetMap Traces"
+msgstr "OpenStreetMap arrastoak"
+
+#: ../src/osm-traces.c:238
+#, c-format
+msgid "failed to upload data: HTTP response is %ld"
+msgstr "Errorea datuak kargatzean: HTTP erantzuna %ld da"
+
+#: ../src/osm-traces.c:243
+#, c-format
+msgid "curl_easy_getinfo failed: %d"
+msgstr "curl_easy_getinfo errorea: %d"
+
+#: ../src/osm-traces.c:248
+#, c-format
+msgid "curl request failed: %s"
+msgstr "curl eskaera-errorea: %s"
+
+#: ../src/osm-traces.c:279
+#, c-format
+msgid "failed to open temporary file: %s"
+msgstr "Errorea aldi baterako fitxategia irikitzean: %s"
+
+#. Success
+#: ../src/osm-traces.c:340
+msgid "Uploaded to OSM"
+msgstr "OSMera kargatuta"
+
+#: ../src/osm-traces.c:344
+msgid "FAILED TO UPLOAD DATA TO OSM - CURL PROBLEM"
+msgstr "Errorea OSMera datuak kargatzean- curl errorea"
+
+#: ../src/osm-traces.c:347
+msgid "FAILED TO UPLOAD DATA TO OSM"
+msgstr "Errorea OSMera datuak kargatzean"
+
+#: ../src/osm-traces.c:347
+msgid "HTTP response code"
+msgstr "HTTP erantzun-kodea"
+
+#: ../src/osm-traces.c:355
+#, c-format
+msgid "failed to unlink temporary file: %s"
+msgstr "Errorea aldi baterako fitxategia desesteketzen: %s"
+
+#: ../src/osm-traces.c:394
+msgid "OSM upload"
+msgstr "OSM karga"
+
+#: ../src/osm-traces.c:413
+msgid "Email:"
+msgstr "E-posta:"
+
+#: ../src/osm-traces.c:418
+msgid ""
+"The email used as login\n"
+"<small>Enter the email you use to login into www.openstreetmap.org.</small>"
+msgstr ""
+"Sartzeko idatzi helbide elektonikoa\n"
+"<small>Idatzi www.openstreetmap.org orrian sartzeko erabiltzen duzun helbide "
+"elektronikoa.</small>"
+
+#: ../src/osm-traces.c:426
+msgid ""
+"The password used to login\n"
+"<small>Enter the password you use to login into "
+"www.openstreetmap.org.</small>"
+msgstr ""
+"Sartzeko idatzi pasahitza\n"
+"<small>Idatzi www.openstreetmap.org orrian sartzeko erabiltzen duzun "
+"pasahitza.</small>"
+
+#: ../src/osm-traces.c:431
+msgid "File's name:"
+msgstr "Fitxategiaren izena:"
+
+#: ../src/osm-traces.c:441
+msgid ""
+"The name of the file on OSM\n"
+"<small>This is the name of the file created on the server.This is not the "
+"name of the local file.</small>"
+msgstr ""
+"OSMko fitxategiaren izena\n"
+"<small>Hau da zerbitzarian sortutako fitxategiaren izena. Hau ez da errore "
+"lokalaren izena.</small>"
+
+#: ../src/osm-traces.c:450
+msgid "The description of the trace"
+msgstr "Arrastoaren deskripzioa"
+
+#: ../src/osm-traces.c:453
+msgid "Anonymize Times:"
+msgstr ""
+
+#: ../src/osm-traces.c:458
+msgid ""
+"Anonymize times of the trace.\n"
+"<small>You may choose to make the trace identifiable, yet mask the actual "
+"real time values</small>"
+msgstr ""
+
+#: ../src/osm-traces.c:462
+msgid "Tags:"
+msgstr "Etiketak:"
+
+#: ../src/osm-traces.c:467
+msgid "The tags associated to the trace"
+msgstr "Arrastoari asoziatutako etiketak"
+
+#: ../src/osm-traces.c:529
+#, c-format
+msgid "Uploading %s to OSM"
+msgstr "%s OSMera kargatzen"
+
+#: ../src/mapcache.c:61
+msgid "Map cache memory size (MB):"
+msgstr "Maparen cache-memoriaren tamaina (MB)"
+
+#: ../src/print.c:51 ../src/viktrwlayer.c:509
+msgid "None"
+msgstr "Bat ere ez"
+
+#: ../src/print.c:52
+msgid "Horizontally"
+msgstr "Horizontalki"
+
+#: ../src/print.c:53
+msgid "Vertically"
+msgstr "Bertikalki"
+
+#: ../src/print.c:54
+msgid "Both"
+msgstr "Biak"
+
+#: ../src/print.c:118
+msgid "Image Settings"
+msgstr "Irudi-ezarpenak"
+
+#: ../src/print.c:548
+msgid "done"
+msgstr "eginda"
+
+#. Page Size
+#: ../src/print.c:577
+msgid "_Adjust Page Size and Orientation"
+msgstr "_Doitu orriaren tamaina eta orientazioa"
+
+#: ../src/print.c:593
+msgid "C_enter:"
+msgstr "_Zentratuta:"
+
+#. ignore page margins
+#: ../src/print.c:611
+msgid "Ignore Page _Margins"
+msgstr "Ez ikusi egin orrialdeko _marjinei"
+
+#: ../src/print.c:630
+msgid "Image S_ize:"
+msgstr "Irudiaren tamaina"
+
+#: ../src/util.c:65
+#, c-format
+msgid "Could not launch web browser. %s"
+msgstr ""
+
+#: ../src/util.c:76
+#, c-format
+msgid "Could not create new email. %s"
+msgstr ""
+
+#: ../src/util.c:177
+#, c-format
+msgid ""
+"There is a newer version of Viking available: %s\n"
+"\n"
+"Do you wish to go to Viking's website now?"
+msgstr ""
+
+#: ../src/util.c:304
+msgid ""
+"This appears to be Viking's very first run.\n"
+"\n"
+"Do you wish to enable automatic internet features?\n"
+"\n"
+"Individual settings can be controlled in the Preferences."
+msgstr ""
+
+#: ../src/vikcoordlayer.c:57
+msgid "Color:"
+msgstr "Kolorea:"
+
+#: ../src/vikcoordlayer.c:58
+msgid "Minutes Width:"
+msgstr "Zabalera minututan:"
+
+#: ../src/vikcoordlayer.c:59
+msgid "Line Thickness:"
+msgstr "Marraren lodiera"
+
+#: ../src/vikcoordlayer.c:66
+msgid "Coordinate"
+msgstr "Koordenatua"
+
+#: ../src/datasource_bfilter.c:46
+msgid "Max number of points:"
+msgstr "Gehienezko puntu-kopurua"
+
+#: ../src/datasource_bfilter.c:60
+msgid "Simplify All Tracks..."
+msgstr "Sinplifikatu arrasto guztiak..."
+
+#: ../src/datasource_bfilter.c:61
+msgid "Simplified Tracks"
+msgstr "Sinplifikatutako arrastoak"
+
+#: ../src/datasource_bfilter.c:96 ../src/datasource_bfilter.c:97
+msgid "Remove Duplicate Waypoints"
+msgstr "Ezabatu bikoiztutak bide-puntuak"
+
+#: ../src/datasource_bfilter.c:129
+msgid "Waypoints Inside This"
+msgstr "Bide-puntuak honen barnean"
+
+#: ../src/datasource_bfilter.c:130
+msgid "Polygonized Layer"
+msgstr "Poligono-geruza"
+
+#: ../src/datasource_bfilter.c:165
+msgid "Waypoints Outside This"
+msgstr "Bide-puntuak honen kanpoan"
+
+#: ../src/datasource_bfilter.c:166
+msgid "Polygonzied Layer"
+msgstr "Poligono-geruza"
+
+#: ../src/main.c:92
+#, c-format
+msgid "Ignoring Xlib error: error code %d request code %d\n"
+msgstr "Ez ikusia egiten Xlib errorea: errore-kodea %d eskaera-kodea %d\n"
+
+#: ../src/main.c:105
+msgid "Enable debug output"
+msgstr "Gaitu arazketaren irteera"
+
+#: ../src/main.c:106
+msgid "Enable verbose output"
+msgstr "Gaitu irteera xehatua"
+
+#: ../src/main.c:107
+msgid "Show version"
+msgstr "Erakutsi bertsioa"
+
+#: ../src/osm.c:99
+msgid "On Disk OSM Tile Format"
+msgstr "On Disk OSM lauza formatua"
+
+#: ../src/osm.c:113
+msgid "OSM (view)"
+msgstr "OSM (ikusi)"
+
+#: ../src/osm.c:117
+msgid "OSM (edit)"
+msgstr "OSM (editatu)"
+
+#: ../src/osm.c:121
+msgid "OSM (render)"
+msgstr "OSM (errendatu)"
+
+#. Example: http://127.0.0.1:8111/load_and_zoom?left=8.19&right=8.20&top=48.605&bottom=48.590&select=node413602999
+#. JOSM or merkaartor must already be running with remote interface enabled
+#: ../src/osm.c:128
+msgid "Local port 8111 (eg JOSM)"
+msgstr "8111 ataka lokala (e.b. JOSM)"
+
+#: ../src/osm.c:134
+msgid "OpenStreetMap Notes"
+msgstr ""
+
+#: ../src/osm.c:138
+msgid "OpenStreetBugs"
+msgstr ""
+
+#. Not really OSM but can't be bothered to create somewhere else to put it...
+#: ../src/osm.c:164
+msgid "Wikimedia Toolserver GeoHack"
+msgstr ""
+
+#: ../src/preferences.c:191
+msgid "Preferences"
+msgstr "Hobespenak"
+
+#: ../src/viklayer_defaults.c:232
+#, c-format
+msgid "Could not open file: %s"
+msgstr ""
+
+#: ../src/viklayer_defaults.c:303
+msgid "Layer Defaults"
+msgstr ""
+
+#: ../src/uibuilder.c:185
+msgid "Take care that this password will be stored clearly in a plain file."
+msgstr "Kontuan izan pasahitza formaturik gabeko testu-fitxategi batean."
+
+#: ../src/vikaggregatelayer.c:42
+msgid "Aggregate"
+msgstr "Agregatu"
+
+#. VikLayersPanel *vlp = VIK_LAYERS_PANEL(lav[1]);
+#: ../src/vikaggregatelayer.c:484 ../src/viktrwlayer.c:10238
+#, c-format
+msgid "%s: Track and Route List"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:529 ../src/viktrwlayer.c:7354
+#: ../src/viktrwlayer.c:7420 ../src/viktrwlayer.c:7498
+msgid "_Visibility"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:534
+msgid "_Show All"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:540
+msgid "_Hide All"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:546 ../src/viktrwlayer.c:7371
+#: ../src/viktrwlayer.c:7437 ../src/viktrwlayer.c:7515
+msgid "_Toggle"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:553 ../src/viktrwlayer.c:7536
+msgid "_Sort"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:559 ../src/viktrwlayer.c:7542
+msgid "Name _Ascending"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:565 ../src/viktrwlayer.c:7548
+msgid "Name _Descending"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:571 ../src/viktrwlayer.c:7449
+#: ../src/viktrwlayer.c:7527 ../src/viktrwlayer.c:7587
+#: ../src/viktrwlayer_tracklist.c:237
+msgid "_Statistics"
+msgstr ""
+
+#: ../src/vikaggregatelayer.c:576 ../src/viktrwlayer.c:3971
+msgid "Track _List..."
+msgstr ""
+
+#: ../src/vikdemlayer.c:92
+msgid "Absolute height"
+msgstr "Altuera absolutua"
+
+#: ../src/vikdemlayer.c:93
+msgid "Height gradient"
+msgstr "Altuera-gradientea"
+
+#: ../src/vikdemlayer.c:118
+msgid "DEM Files:"
+msgstr "DEM fitxategiak"
+
+#: ../src/vikdemlayer.c:119
+msgid "Download Source:"
+msgstr "Deskargatu iturria:"
+
+#: ../src/vikdemlayer.c:120
+msgid "Min Elev Color:"
+msgstr "Altuera txikienaren kolorea"
+
+#: ../src/vikdemlayer.c:121
+msgid "Type:"
+msgstr "Mota:"
+
+#: ../src/vikdemlayer.c:122
+msgid "Min Elev:"
+msgstr "Altuera txikiena"
+
+#: ../src/vikdemlayer.c:123
+msgid "Max Elev:"
+msgstr "Alturera maximoa"
+
+#: ../src/vikdemlayer.c:134
+msgid "_DEM Download"
+msgstr "_DEM deskarga"
+
+#: ../src/vikdemlayer.c:134
+msgid "DEM Download"
+msgstr "DEM deskarga"
+
+#: ../src/vikdemlayer.c:188
+msgid "DEM"
+msgstr "DEM"
+
+#: ../src/vikdemlayer.c:287
+#, c-format
+msgid "Number of files: %d"
+msgstr "Fitxategi-kopura: %d"
+
+#: ../src/vikdemlayer.c:427
+msgid "DEM Loading"
+msgstr "DEM kargatzen"
+
+#: ../src/vikdemlayer.c:937
+#, c-format
+msgid "No SRTM data available for %f, %f"
+msgstr "SRTM data ez baliozkoa hemen  %f, %f"
+
+#. Probably not over any land...
+#: ../src/vikdemlayer.c:1193
+msgid "No DEM File Available"
+msgstr ""
+
+#: ../src/vikdemlayer.c:1212
+#, c-format
+msgid ""
+"\n"
+"Source: %s\n"
+"\n"
+"DEM File: %s\n"
+"DEM File Timestamp: %s"
+msgstr ""
+
+#: ../src/vikdemlayer.c:1216
+#, c-format
+msgid ""
+"Source: %s\n"
+"\n"
+"No DEM File!"
+msgstr ""
+
+#: ../src/vikdemlayer.c:1256
+#, c-format
+msgid "Downloading DEM %s"
+msgstr "DEM deskargatzen  %s"
+
+#: ../src/vikdemlayer.c:1280
+msgid "_Show DEM File Information"
+msgstr ""
+
+#: ../src/vikfileentry.c:68
+msgid "Browse..."
+msgstr "Arakatu..."
+
+#: ../src/vikfileentry.c:96
+msgid "Choose file"
+msgstr "Aukeratu fitxategia"
+
+#: ../src/vikfilelist.c:48
+msgid "Choose file(s)"
+msgstr "Aukeratu fitxategia(k)"
+
+#: ../src/vikfilelist.c:172
+msgid "Add..."
+msgstr "Gehitu..."
+
+#: ../src/vikfilelist.c:173
+msgid "Delete"
+msgstr "Ezabatu"
+
+#: ../src/vikgeoreflayer.c:78
+msgid "_Georef Move Map"
+msgstr "_Georef Move Map"
+
+#: ../src/vikgeoreflayer.c:78
+msgid "Georef Move Map"
+msgstr "Georef Move Map"
+
+#: ../src/vikgeoreflayer.c:85
+msgid "Georef Z_oom Tool"
+msgstr "Georef zoom-tresna"
+
+#: ../src/vikgeoreflayer.c:85
+msgid "Georef Zoom Tool"
+msgstr "Georef zoom-tresna"
+
+#: ../src/vikgeoreflayer.c:95
+msgid "GeoRef Map"
+msgstr "GeoRef mapa"
+
+#: ../src/vikgeoreflayer.c:377 ../src/vikmapslayer.c:720
+#, c-format
+msgid "Couldn't open image file: %s"
+msgstr "Ezin da irudi-fitxategia ireki:  %s"
+
+#: ../src/vikgeoreflayer.c:391
+msgid ""
+"GeoRef map cannot be displayed in the current drawmode.\n"
+"Select \"UTM Mode\" from View menu to view it."
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:415
+msgid "Unexpected end of file reading World file."
+msgstr "Mundua fitxategia irakurtzean ustegabekok bukaera"
+
+#: ../src/vikgeoreflayer.c:431 ../src/vikgeoreflayer.c:476
+msgid "Choose World file"
+msgstr "Aukeratu Mundua fitxategia"
+
+#: ../src/vikgeoreflayer.c:444
+msgid "The World file you requested could not be opened for reading."
+msgstr "Aukeratu duzun Mundua fitxategia ezin da ireki irakurtzeko."
+
+#: ../src/vikgeoreflayer.c:489
+msgid "The file you requested could not be opened for writing."
+msgstr "Eskatu duzun fitxategia ezin da ireki idazteko."
+
+#: ../src/vikgeoreflayer.c:506 ../src/viklayer.c:518
+msgid "Layer Properties"
+msgstr "Geruza-propietateak"
+
+#: ../src/vikgeoreflayer.c:528
+msgid "World File Parameters:"
+msgstr "Mundua fitxategiaren parametroak"
+
+#: ../src/vikgeoreflayer.c:529
+msgid "Load From File..."
+msgstr "Kargatu fitxategitik..."
+
+#: ../src/vikgeoreflayer.c:534
+msgid "Corner pixel easting:"
+msgstr "Izkinako pixela ekialdean lerrokatzen:"
+
+#: ../src/vikgeoreflayer.c:536
+msgid "the UTM \"easting\" value of the upper-left corner pixel of the map"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:538
+msgid "Corner pixel northing:"
+msgstr "Izkinako pixela iparrean lerrokatzen:"
+
+#: ../src/vikgeoreflayer.c:540
+msgid "the UTM \"northing\" value of the upper-left corner pixel of the map"
+msgstr ""
+
+#: ../src/vikgeoreflayer.c:542
+msgid "X (easting) scale (mpp): "
+msgstr "X (ekialde) eskala (mpp) "
+
+#: ../src/vikgeoreflayer.c:543
+msgid "Y (northing) scale (mpp): "
+msgstr "Y (iparra) eskala (mpp) "
+
+#: ../src/vikgeoreflayer.c:546
+msgid "the scale of the map in the X direction (meters per pixel)"
+msgstr "Maparen eskala X norabidean (pixeleko metroak)"
+
+#: ../src/vikgeoreflayer.c:548
+msgid "the scale of the map in the Y direction (meters per pixel)"
+msgstr "Maparen eskala Y norabidean (pixeleko metroak)"
+
+#: ../src/vikgeoreflayer.c:550
+msgid "Map Image:"
+msgstr "Mapa-irudia"
+
+#. Now with icons
+#: ../src/vikgeoreflayer.c:658
+msgid "_Zoom to Fit Map"
+msgstr "_Zoom egin mapa doitzeko"
+
+#: ../src/vikgeoreflayer.c:664
+msgid "_Goto Map Center"
+msgstr "_Joan maparen erdira"
+
+#: ../src/vikgeoreflayer.c:670
+msgid "_Export to World File"
+msgstr "_Esportatu Mundua fitxategira"
+
+#: ../src/vikgoto.c:81
+msgid "No goto tool available."
+msgstr "Joan-tresna ezin da erabili"
+
+#: ../src/vikgoto.c:94 ../src/vikgoto.c:148
+msgid "goto"
+msgstr "Joan"
+
+#: ../src/vikgoto.c:96
+msgid "I don't know that place. Do you want another goto?"
+msgstr "Ez dut toki hori ezagutzen. Beste toki batera joan nahi duzu?"
+
+#: ../src/vikgoto.c:150
+msgid "goto provider:"
+msgstr "Jo zerbitzu-hornitzailearengana:"
+
+#: ../src/vikgoto.c:165
+msgid "Enter address or place name:"
+msgstr "Sartu helbidea edo toki-izena"
+
+#: ../src/vikgoto.c:363
+msgid "Locality"
+msgstr ""
+
+#: ../src/vikgpslayer.c:128
+msgid "Data Mode"
+msgstr "Datu modua"
+
+#: ../src/vikgpslayer.c:130
+msgid "Realtime Tracking Mode"
+msgstr "Denbora errealeko arrastoa modua"
+
+#: ../src/vikgpslayer.c:167
+msgid "Keep vehicle at center"
+msgstr "Mantendu ibilgailua erdian"
+
+#: ../src/vikgpslayer.c:168
+msgid "Keep vehicle on screen"
+msgstr "Mantendu ibilgailua pantailan"
+
+#: ../src/vikgpslayer.c:169
+msgid "Disable"
+msgstr "Ezgaitu"
+
+#: ../src/vikgpslayer.c:209
+msgid "Download Tracks:"
+msgstr "Deskargatu arrastoak:"
+
+#: ../src/vikgpslayer.c:210
+msgid "Upload Tracks:"
+msgstr "Kargatu arratoak:"
+
+#: ../src/vikgpslayer.c:211
+msgid "Download Routes:"
+msgstr "Deskargatu ibilbideak:"
+
+#: ../src/vikgpslayer.c:212
+msgid "Upload Routes:"
+msgstr "Kargatu ibilbideak:"
+
+#: ../src/vikgpslayer.c:213
+msgid "Download Waypoints:"
+msgstr "Deskargatu bide-puntuak:"
+
+#: ../src/vikgpslayer.c:214
+msgid "Upload Waypoints:"
+msgstr "Kargatu bide-puntuak:"
+
+#: ../src/vikgpslayer.c:216
+msgid "Recording tracks"
+msgstr "Arrastoak grabatzen"
+
+#: ../src/vikgpslayer.c:217
+msgid "Jump to current position on start"
+msgstr "Jauzi egin uneko posiziora abiatzean"
+
+#: ../src/vikgpslayer.c:218
+msgid "Moving Map Method:"
+msgstr "Mapa-mugikorra metodoa:"
+
+#: ../src/vikgpslayer.c:219
+msgid "Update Statusbar:"
+msgstr ""
+
+#: ../src/vikgpslayer.c:219
+msgid "Display information in the statusbar on GPS updates"
+msgstr ""
+
+#: ../src/vikgpslayer.c:220
+msgid "Gpsd Host:"
+msgstr "Gpsd-ostalaria:"
+
+#: ../src/vikgpslayer.c:221
+msgid "Gpsd Port:"
+msgstr "Gpsd-ataka:"
+
+#: ../src/vikgpslayer.c:222
+msgid "Gpsd Retry Interval (seconds):"
+msgstr "Gpsd berriz saiatzek interbaloa (segundoak):"
+
+#: ../src/vikgpslayer.c:243
+msgid "GPS"
+msgstr "GPSa"
+
+#: ../src/vikgpslayer.c:306 ../src/vikgpslayer.c:1308
+msgid "GPS Download"
+msgstr "GPS deskarga"
+
+#: ../src/vikgpslayer.c:306 ../src/vikgpslayer.c:1308
+#: ../src/viktrwlayer.c:3480
+msgid "GPS Upload"
+msgstr "GPS karga"
+
+#: ../src/vikgpslayer.c:308
+msgid "GPS Realtime Tracking"
+msgstr "GPS denbora errealeko arrastoa"
+
+#: ../src/vikgpslayer.c:517
+msgid "Unknown GPS Protocol"
+msgstr "GPS-protokolo ezezaguna"
+
+#: ../src/vikgpslayer.c:535
+msgid "Unknown serial port device"
+msgstr "serie-atakako gailu ezezaguna"
+
+#: ../src/vikgpslayer.c:648
+#, c-format
+msgid "%s: unknown parameter"
+msgstr "%s: parametro ezezaguna"
+
+#. Now with icons
+#: ../src/vikgpslayer.c:743
+msgid "_Upload to GPS"
+msgstr "_GPSra kargatu"
+
+#: ../src/vikgpslayer.c:749
+msgid "Download from _GPS"
+msgstr "_GPStik deskargatu"
+
+#: ../src/vikgpslayer.c:770
+msgid "Empty _Realtime"
+msgstr "Hustu benetako_denbora"
+
+#: ../src/vikgpslayer.c:777
+msgid "E_mpty Upload"
+msgstr "Karga hutsa"
+
+#: ../src/vikgpslayer.c:783
+msgid "_Empty Download"
+msgstr "Deskarga hutsa"
+
+#: ../src/vikgpslayer.c:789
+msgid "Empty _All"
+msgstr "Dena hutsa"
+
+#. 
+#. NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
+#. This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
+#. I don't think there's any side effects and certainly better than the program just aborting
+#. 
+#: ../src/vikgpslayer.c:806
+#, c-format
+msgid "Unexpected number of disconnected handlers: %d"
+msgstr "Deskonektatutako  gailu kopuru ustegabea: %d"
+
+#: ../src/vikgpslayer.c:948
+#, c-format
+msgid "Uploading %d waypoint..."
+msgid_plural "Uploading %d waypoints..."
+msgstr[0] "%d bide-puntua kargatzen..."
+msgstr[1] "%d bide-puntuak kargatzen..."
+
+#: ../src/vikgpslayer.c:949
+#, c-format
+msgid "Uploading %d trackpoint..."
+msgid_plural "Uploading %d trackpoints..."
+msgstr[0] "%d arrastoa kargatzen..."
+msgstr[1] "%d arrastoak kargatzen..."
+
+#: ../src/vikgpslayer.c:950
+#, c-format
+msgid "Uploading %d routepoint..."
+msgid_plural "Uploading %d routepoints..."
+msgstr[0] "%d ibilbide-puntua kargatzen..."
+msgstr[1] "%d ibilbide-puntu kargatzen..."
+
+#: ../src/vikgpslayer.c:975
+#, c-format
+msgid "Downloaded %d out of %d waypoint..."
+msgid_plural "Downloaded %d out of %d waypoints..."
+msgstr[0] "%d/%d  bide-puntu deskargatuta..."
+msgstr[1] "%d/%d  bide-puntu deskargatuta..."
+
+#: ../src/vikgpslayer.c:976
+#, c-format
+msgid "Downloaded %d out of %d trackpoint..."
+msgid_plural "Downloaded %d out of %d trackpoints..."
+msgstr[0] "%d/%d arrasto-puntu deskargatuta..."
+msgstr[1] "%d/%d arrasto-puntu deskargatuta..."
+
+#: ../src/vikgpslayer.c:977
+#, c-format
+msgid "Downloaded %d out of %d routepoint..."
+msgid_plural "Downloaded %d out of %d routepoints..."
+msgstr[0] "%d/%d ibilbide-puntu deskargatuta..."
+msgstr[1] "%d/%d ibilbide-puntu deskargatuta..."
+
+#: ../src/vikgpslayer.c:982
+#, c-format
+msgid "Uploaded %d out of %d waypoint..."
+msgid_plural "Uploaded %d out of %d waypoints..."
+msgstr[0] "%d/%d bide-puntu kargatuta..."
+msgstr[1] "%d/%d bide-puntu kargatuta..."
+
+#: ../src/vikgpslayer.c:983
+#, c-format
+msgid "Uploaded %d out of %d trackpoint..."
+msgid_plural "Uploaded %d out of %d trackpoints..."
+msgstr[0] "%d/%d arrasto-puntu kargatuta..."
+msgstr[1] "%d/%d arrasto-puntu kargatuta..."
+
+#: ../src/vikgpslayer.c:984
+#, c-format
+msgid "Uploaded %d out of %d routepoint..."
+msgid_plural "Uploaded %d out of %d routepoints..."
+msgstr[0] "%d/%d ibilbide-puntu kargatuta..."
+msgstr[1] "%d/%d ibilbide-puntu kargatuta..."
+
+#: ../src/vikgpslayer.c:992
+#, c-format
+msgid "Downloaded %d waypoint"
+msgid_plural "Downloaded %d waypoints"
+msgstr[0] "%d bide-puntu deskargatuta"
+msgstr[1] "%d bide-puntuak deskargatuta"
+
+#: ../src/vikgpslayer.c:993
+#, c-format
+msgid "Downloaded %d trackpoint"
+msgid_plural "Downloaded %d trackpoints"
+msgstr[0] "%d arrasto-puntu deskargatuta"
+msgstr[1] "%d arrasto-puntu deskargatuta"
+
+#: ../src/vikgpslayer.c:994
+#, c-format
+msgid "Downloaded %d routepoint"
+msgid_plural "Downloaded %d routepoints"
+msgstr[0] "%d ibilbide-puntu deskargatuta"
+msgstr[1] "%d ibilbide-puntu deskargatuta"
+
+#: ../src/vikgpslayer.c:999
+#, c-format
+msgid "Uploaded %d waypoint"
+msgid_plural "Uploaded %d waypoints"
+msgstr[0] "%d bide-puntu kargatuta"
+msgstr[1] "%d bide-puntu kargatuta"
+
+#: ../src/vikgpslayer.c:1000
+#, c-format
+msgid "Uploaded %d trackpoint"
+msgid_plural "Uploaded %d trackpoints"
+msgstr[0] "%d arrasto-puntu kargatuta"
+msgstr[1] "%d arrasto-puntu kargatuta"
+
+#: ../src/vikgpslayer.c:1001
+#, c-format
+msgid "Uploaded %d routepoint"
+msgid_plural "Uploaded %d routepoints"
+msgstr[0] "%d ibilbide-puntu kargatuta"
+msgstr[1] "%d ibilbide-puntu kargatuta"
+
+#: ../src/vikgpslayer.c:1230
+msgid "Error: couldn't find gpsbabel."
+msgstr "Errorea: Ezin da aurkitu gpsbabel"
+
+#: ../src/vikgpslayer.c:1319
+msgid "Warning - GPS Upload items may overwrite each other"
+msgstr "Kontuz - kargatutako GPS-elementuek beste batzuk gainidatz ditzakete"
+
+#: ../src/vikgpslayer.c:1351
+msgid "Status: detecting gpsbabel"
+msgstr "Egoera: gpsbabel bilatzen"
+
+#: ../src/vikgpslayer.c:1386
+msgid "No GPS items selected for transfer."
+msgstr "Ez dago GPS-elementu hautaturik transferitzeko"
+
+#: ../src/vikgpslayer.c:1401
+msgid "Could not turn off device."
+msgstr "Ezin da gailua itzali"
+
+#: ../src/vikgpslayer.c:1439
+msgid "Are you sure you want to delete GPS Upload data?"
+msgstr "Seguru zaude ezabatu nahi dituzula kargatutako GPS datuak?"
+
+#: ../src/vikgpslayer.c:1452
+msgid "Are you sure you want to delete GPS Download data?"
+msgstr "Seguru zaude ezabatu nahi dituzula deskargatutako GPS datuak?"
+
+#: ../src/vikgpslayer.c:1466
+msgid "Are you sure you want to delete GPS Realtime data?"
+msgstr "Seguru zaude ezabatu nahi dituzula kargatutako GPS  Realtime datuak?"
+
+#: ../src/vikgpslayer.c:1479
+msgid "Are you sure you want to delete All GPS data?"
+msgstr "Seguru zaude ezabatu nahi dituzula GPS datu guztiak?"
+
+#: ../src/viklayerspanel.c:53
+msgid "C_ut"
+msgstr ""
+
+#: ../src/viklayerspanel.c:54 ../src/vikwindow.c:3753
+msgid "_Copy"
+msgstr "_Kopiatu"
+
+#: ../src/viklayerspanel.c:55 ../src/vikwindow.c:3754
+msgid "_Paste"
+msgstr "_Itsatsi"
+
+#: ../src/viklayerspanel.c:56 ../src/vikwindow.c:3755
+msgid "_Delete"
+msgstr "_Ezabatu"
+
+#: ../src/viklayerspanel.c:133
+msgid "New Layer"
+msgstr ""
+
+#: ../src/viklayerspanel.c:178
+msgid "Top Layer"
+msgstr "Goiko geruza"
+
+#: ../src/viklayerspanel.c:194
+msgid "Add new layer"
+msgstr "Gehitu geruza berria"
+
+#: ../src/viklayerspanel.c:201
+msgid "Remove selected layer"
+msgstr "Ezabatu hautatutako geruza"
+
+#: ../src/viklayerspanel.c:208
+msgid "Move selected layer up"
+msgstr "Mugitu gora hautatutako geruza"
+
+#: ../src/viklayerspanel.c:215
+msgid "Move selected layer down"
+msgstr "Mugitu behera hautatutako geruza"
+
+#: ../src/viklayerspanel.c:222
+msgid "Cut selected layer"
+msgstr "Moztu hautatutako geruza"
+
+#: ../src/viklayerspanel.c:229
+msgid "Copy selected layer"
+msgstr "Kopiatu hautatutako geruza"
+
+#: ../src/viklayerspanel.c:236
+msgid ""
+"Paste layer into selected container layer or otherwise above selected layer"
+msgstr ""
+
+#: ../src/viklayerspanel.c:300
+msgid "New name can not be blank."
+msgstr ""
+
+#: ../src/viklayerspanel.c:544
+msgid "Aggregate Layers have no settable properties."
+msgstr "Gehitutako geruzek ez dute propietate konfiguragarririk"
+
+#: ../src/viklayerspanel.c:588
+msgid "You cannot cut the Top Layer."
+msgstr "Ezin duzu moztu goiko geruza"
+
+#: ../src/viklayerspanel.c:633
+#, c-format
+msgid "Are you sure you want to delete %s?"
+msgstr "Ziur zaude %s ezabatu nahi duzula?"
+
+#: ../src/viklayerspanel.c:650
+msgid "You cannot delete the Top Layer."
+msgstr "Ezin duzu ezabatu goiko geruza"
+
+#: ../src/viklayerspanel.c:734
+msgid "Are you sure you wish to delete all layers?"
+msgstr "Seguru zaude geruza guztiak ezabatu nahi dituzula?"
+
+#. ******* MAPZOOMS ********
+#: ../src/vikmapslayer.c:80
+msgid "Use Viking Zoom Level"
+msgstr "Erabili Viking Zoom Level"
+
+#: ../src/vikmapslayer.c:124
+msgid "Map Type:"
+msgstr "Mapa mota"
+
+#: ../src/vikmapslayer.c:125
+msgid "Maps Directory:"
+msgstr "Mapen direktorioa"
+
+#: ../src/vikmapslayer.c:126
+msgid "Alpha:"
+msgstr "Alfa:"
+
+#: ../src/vikmapslayer.c:127
+msgid "Control the Alpha value for transparency effects"
+msgstr "Kontrolatu Alfa-balioa gardentasun efektuetarako"
+
+#: ../src/vikmapslayer.c:128
+msgid "Autodownload maps:"
+msgstr "Autodeskargatu mapak:"
+
+#: ../src/vikmapslayer.c:129
+msgid "Autodownload Only Gets Missing Maps:"
+msgstr "Autodeskargatu galdutako mapak bakarrik:"
+
+#: ../src/vikmapslayer.c:130
+msgid ""
+"Using this option avoids attempting to update already acquired tiles. This "
+"can be useful if you want to restrict the network usage, without having to "
+"resort to manual control. Only applies when 'Autodownload Maps' is on."
+msgstr ""
+"Aukera hau erabilita saihets dezakezu lehendik eskuratutako lauzak "
+"eguneratzea. Aukera interesgarria konexioaren erabilera murriztu nahi "
+"baduzu. Erabili bakarrik 'Autodeskargatu mapak' aktibatuta dagoenean."
+
+#: ../src/vikmapslayer.c:131
+msgid "Zoom Level:"
+msgstr "Zoom-maila:"
+
+#: ../src/vikmapslayer.c:132
+msgid ""
+"Determines the method of displaying map tiles for the current zoom level. "
+"'Viking Zoom Level' uses the best matching level, otherwise setting a fixed "
+"value will always use map tiles of the specified value regardless of the "
+"actual zoom level."
+msgstr ""
+"Ebazten du zein metodo erabili mapako lauzak erakusteko erabiltzen ari den "
+"zoomarekin. 'Viking Zoom maila' horrek erabiltzen du zoom mailarik egokiena, "
+"bestela, ezarriz gero balio jakin bat, beti erabiliko ditu neurri jakin "
+"horretako mapa-lauzak, orain dagoen zoom mailari ez-ikusiarena eginez."
+
+#: ../src/vikmapslayer.c:156
+msgid "_Maps Download"
+msgstr "_Deskargatu mapak"
+
+#: ../src/vikmapslayer.c:156
+msgid "Maps Download"
+msgstr "Deskargatu mapak"
+
+#: ../src/vikmapslayer.c:171
+msgid "Map"
+msgstr "Mapa"
+
+#: ../src/vikmapslayer.c:259
+msgid "Default map layer directory:"
+msgstr ""
+
+#: ../src/vikmapslayer.c:259
+msgid "Choose a directory to store cached Map tiles for this layer"
+msgstr "Aukeratu direktorio bat gordetzeko geruza honetako mapa-lauzak"
+
+#: ../src/vikmapslayer.c:523
+msgid "Unknown map type"
+msgstr "Mapa mota ezezaguna"
+
+#: ../src/vikmapslayer.c:534
+msgid "Unknown Map Zoom"
+msgstr "Mapa zoom ezezaguna"
+
+#: ../src/vikmapslayer.c:624
+#, c-format
+msgid ""
+"New map cannot be displayed in the current drawmode.\n"
+"Select \"%s\" from View menu to view it."
+msgstr ""
+"Mapa berria ezin da bistaratu uneko marrazketa-moduan.\n"
+"Hautatu menuko Ikusi ataleko \"%s\" ondo ikusteko."
+
+#: ../src/vikmapslayer.c:798
+#, c-format
+msgid ""
+"Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
+"factor"
+msgstr ""
+"Era koldar batean uko egiten mapa-lauzak marrazteari edo bestela, badaude "
+"mapa-lauzak %d zoom faktore horren harago"
+
+#: ../src/vikmapslayer.c:1210
+#, c-format
+msgid "Redownloading up to %d %s map..."
+msgid_plural "Redownloading up to %d %s maps..."
+msgstr[0] "Berriro deskargatzen  %d %s maparaino..."
+msgstr[1] "Berriro deskargatzen  %d %s mapetaraino..."
+
+#: ../src/vikmapslayer.c:1212
+#, c-format
+msgid "Redownloading %d %s map..."
+msgid_plural "Redownloading %d %s maps..."
+msgstr[0] "Berriro deskargatzen  %d %s mapa..."
+msgstr[1] "Berriro deskargatzen  %d %s mapak..."
+
+#: ../src/vikmapslayer.c:1216 ../src/vikmapslayer.c:1290
+#, c-format
+msgid "Downloading %d %s map..."
+msgid_plural "Downloading %d %s maps..."
+msgstr[0] "Deskargatzen  %d %s mapa..."
+msgstr[1] "Deskargatzen  %d %s mapak..."
+
+#: ../src/vikmapslayer.c:1376
+#, c-format
+msgid ""
+"\n"
+"Source: %s\n"
+"\n"
+"Tile File: %s\n"
+"Tile File Timestamp: %s"
+msgstr ""
+"\n"
+"Iturburua: %s\n"
+"\n"
+"Mapa-lauza fitxategia: %s\n"
+"Mapa-lauza fitxategi data-zigilua: %s"
+
+#: ../src/vikmapslayer.c:1380
+#, c-format
+msgid ""
+"Source: %s\n"
+"\n"
+"No Tile File!"
+msgstr ""
+"Iturburua: %s\n"
+"\n"
+"Ez dago mapa-lauzarik!"
+
+#: ../src/vikmapslayer.c:1418
+msgid "Redownload _Bad Map(s)"
+msgstr "Kargatu berriro mapa _kaxkarra(k)"
+
+#: ../src/vikmapslayer.c:1422
+msgid "Redownload _New Map(s)"
+msgstr "Kargatu berriro mapa _berria(k)"
+
+#: ../src/vikmapslayer.c:1426
+msgid "Redownload _All Map(s)"
+msgstr "Kargatu berriro mapa _guztia(k)"
+
+#: ../src/vikmapslayer.c:1430
+msgid "_Show Tile Information"
+msgstr "_Erakutsi lauzen informazioa"
+
+#: ../src/vikmapslayer.c:1511
+#, c-format
+msgid ""
+"Wrong drawmode for this map.\n"
+"Select \"%s\" from View menu and try again."
+msgstr ""
+"Marrazteko moduaren akatsa mapa honetan\n"
+"Hautatu \"%s\" menuko Ikusi atalean eta saiatu berriz."
+
+#: ../src/vikmapslayer.c:1516
+msgid "Wrong zoom level for this map."
+msgstr "Zoom maila okerra mapa honentzat"
+
+#: ../src/vikmapslayer.c:1647
+msgid "Zoom Start:"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1654
+msgid "Zoom End:"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1660
+msgid "Download Maps Method:"
+msgstr ""
+
+#. redownload method - needs to align with REDOWNLOAD* macro values
+#: ../src/vikmapslayer.c:1732
+msgid "Missing"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1732
+msgid "Bad"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1732
+msgid "New"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1732
+msgid "Reload All"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1734
+msgid "Download for Zoom Levels"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1774
+#, c-format
+msgid ""
+"You are not allowed to download more than %d tiles in one go (requested %d)"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1782
+#, c-format
+msgid "Do you really want to download %d tiles?"
+msgstr ""
+
+#. Now with icons
+#: ../src/vikmapslayer.c:1807
+msgid "Download _Missing Onscreen Maps"
+msgstr "Kargatu _Galdutako pantailako mapak"
+
+#: ../src/vikmapslayer.c:1814
+msgid "Download _New Onscreen Maps"
+msgstr "Kargatu pantailako mapa _berriak"
+
+#: ../src/vikmapslayer.c:1821
+msgid "Reload _All Onscreen Maps"
+msgstr "Berriro kargatu pantailako mapa _guztiak"
+
+#: ../src/vikmapslayer.c:1827
+msgid "Download Maps in _Zoom Levels..."
+msgstr ""
+
+#: ../src/vikrouting.c:54
+msgid "Default engine:"
+msgstr ""
+
+#: ../src/viktreeview.c:316
+msgid "Layer Name"
+msgstr "Geruza-izena"
+
+#: ../src/viktreeview.c:851
+#, c-format
+msgid "delete data from %s\n"
+msgstr "ezabatu datuak hemendik %s\n"
+
+#: ../src/viktrwlayer.c:398
+msgid "Create _Waypoint"
+msgstr "Sortu _bide-puntua"
+
+#: ../src/viktrwlayer.c:398
+msgid "Create Waypoint"
+msgstr "Sortu bide-puntua"
+
+#: ../src/viktrwlayer.c:404
+msgid "Create _Track"
+msgstr "Sortu _arrastoa"
+
+#: ../src/viktrwlayer.c:404
+msgid "Create Track"
+msgstr "Sortu arrastoa"
+
+#: ../src/viktrwlayer.c:413
+msgid "Create _Route"
+msgstr "Sortu _ibilbidea"
+
+#: ../src/viktrwlayer.c:413
+msgid "Create Route"
+msgstr "Sortu ibilbidea"
+
+#: ../src/viktrwlayer.c:422
+msgid "_Edit Waypoint"
+msgstr "_Editatu bide-puntua"
+
+#: ../src/viktrwlayer.c:422
+msgid "Edit Waypoint"
+msgstr "Editatu bide-puntua"
+
+#: ../src/viktrwlayer.c:432
+msgid "Edit Trac_kpoint"
+msgstr "Editatu _arrasto-puntua"
+
+#: ../src/viktrwlayer.c:432
+msgid "Edit Trackpoint"
+msgstr "Editatu arrasto-puntua"
+
+#: ../src/viktrwlayer.c:442
+msgid "Show P_icture"
+msgstr "Ikusi _irudia"
+
+#: ../src/viktrwlayer.c:442
+msgid "Show Picture"
+msgstr "Ikusi irudia"
+
+#: ../src/viktrwlayer.c:448
+msgid "Route _Finder"
+msgstr "Ibilbideen _bilatzailea"
+
+#: ../src/viktrwlayer.c:448
+msgid "Route Finder"
+msgstr "Ibilbideen bilatzailea"
+
+#. ***** PARAMETERS *****
+#: ../src/viktrwlayer.c:468 ../src/viktrwlayer.c:2324
+msgid "Waypoints"
+msgstr "Bide-puntuak"
+
+#: ../src/viktrwlayer.c:468 ../src/viktrwlayer.c:2319
+msgid "Tracks"
+msgstr "Arrastoak"
+
+#: ../src/viktrwlayer.c:468
+msgid "Waypoint Images"
+msgstr "Bide-puntu irudiak"
+
+#: ../src/viktrwlayer.c:468
+msgid "Tracks Advanced"
+msgstr ""
+
+#: ../src/viktrwlayer.c:471
+msgid "Draw by Track"
+msgstr "Irudikatu arrastoaren bidez"
+
+#: ../src/viktrwlayer.c:471
+msgid "Draw by Speed"
+msgstr "Irudikatu abiaduraren bidez"
+
+#: ../src/viktrwlayer.c:471
+msgid "All Tracks Same Color"
+msgstr "Arrasto guztiek kolore bera"
+
+#: ../src/viktrwlayer.c:472
+msgid "Filled Square"
+msgstr "Karratu betea"
+
+#: ../src/viktrwlayer.c:472
+msgid "Square"
+msgstr "Karratua"
+
+#: ../src/viktrwlayer.c:472
+msgid "Circle"
+msgstr "Zirkulua"
+
+#: ../src/viktrwlayer.c:472
+msgid "X"
+msgstr "X"
+
+#: ../src/viktrwlayer.c:498
+msgid "Extra Extra Small"
+msgstr "Txiki txiki txikia"
+
+#: ../src/viktrwlayer.c:499
+msgid "Extra Small"
+msgstr "Txiki txikia"
+
+#: ../src/viktrwlayer.c:500
+msgid "Small"
+msgstr "Txikia"
+
+#: ../src/viktrwlayer.c:501
+msgid "Medium"
+msgstr "Ertaina"
+
+#: ../src/viktrwlayer.c:502
+msgid "Large"
+msgstr "Handia"
+
+#: ../src/viktrwlayer.c:503
+msgid "Extra Large"
+msgstr "Handi handia"
+
+#: ../src/viktrwlayer.c:504
+msgid "Extra Extra Large"
+msgstr "Handi handi handia"
+
+#: ../src/viktrwlayer.c:510
+msgid "Name Ascending"
+msgstr ""
+
+#: ../src/viktrwlayer.c:511
+msgid "Name Descending"
+msgstr ""
+
+#: ../src/viktrwlayer.c:552 ../src/viktrwlayer.c:576
+msgid "Draw Labels"
+msgstr "Marraztu etiketak"
+
+#: ../src/viktrwlayer.c:553
+msgid "Note: the individual track controls what labels may be displayed"
+msgstr ""
+
+#: ../src/viktrwlayer.c:554
+msgid "Track Labels Font Size:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:555
+msgid "Track Drawing Mode:"
+msgstr "Arrasto-marrazketa modua"
+
+#: ../src/viktrwlayer.c:556
+msgid "All Tracks Color:"
+msgstr "Kolore guztietako arrastoak:"
+
+#: ../src/viktrwlayer.c:557
+msgid "The color used when 'All Tracks Same Color' drawing mode is selected"
+msgstr ""
+"'Arrasto guztiek kolore bera' marrazketa moduan erabili beharreko kolorea "
+"hautatu da"
+
+#: ../src/viktrwlayer.c:558
+msgid "Draw Track Lines"
+msgstr "Marraztu arrasto-lerroak"
+
+#: ../src/viktrwlayer.c:559
+msgid "Track Thickness:"
+msgstr "Arrastoaren lodiera"
+
+#: ../src/viktrwlayer.c:560
+msgid "Draw Track Direction"
+msgstr "Marraztu arrastoaren norabidea"
+
+#: ../src/viktrwlayer.c:561
+msgid "Direction Size:"
+msgstr "Norabidearen tamaina:"
+
+#: ../src/viktrwlayer.c:562
+msgid "Draw Trackpoints"
+msgstr "Marraztu arrasto-puntuak"
+
+#: ../src/viktrwlayer.c:563
+msgid "Trackpoint Size:"
+msgstr "Arrasto-puntuaren tamaina"
+
+#: ../src/viktrwlayer.c:564
+msgid "Draw Elevation"
+msgstr "Marraztu altitudea"
+
+#: ../src/viktrwlayer.c:565
+msgid "Draw Elevation Height %:"
+msgstr "Marraztu altitudearen altuera %:"
+
+#: ../src/viktrwlayer.c:566
+msgid "Draw Stops"
+msgstr "Marraztu geldialdiak"
+
+#: ../src/viktrwlayer.c:567
+msgid ""
+"Whether to draw a marker when trackpoints are at the same position but over "
+"the minimum stop length apart in time"
+msgstr ""
+"Ea marraztu ala ez marraztu markatzaile bat arrasto-puntuak leku berean "
+"daudenean baina geldiune jakin baten iraupena gainditu baldin bada"
+
+#: ../src/viktrwlayer.c:568
+msgid "Min Stop Length (seconds):"
+msgstr "Geldialdiaren luzera minimoa (segundoak)"
+
+#: ../src/viktrwlayer.c:570
+msgid "Track BG Thickness:"
+msgstr "Arrastoaren atzeko planoaren lodiera"
+
+#: ../src/viktrwlayer.c:571
+msgid "Track Background Color"
+msgstr "Arrastoaren atzeko planoaren kolorea"
+
+#: ../src/viktrwlayer.c:572
+msgid "Draw by Speed Factor (%):"
+msgstr "Marraztu abiadura faktorearen bidez (%):"
+
+#: ../src/viktrwlayer.c:573
+msgid ""
+"The percentage factor away from the average speed determining the color used"
+msgstr ""
+"Batez besteko abiadurarekiko faktoreak zehazten du erabilitako kolorea"
+
+#: ../src/viktrwlayer.c:574
+msgid "Track Sort Order:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:577
+msgid "Waypoint Font Size:"
+msgstr "Bide-puntuaren letra-mota"
+
+#: ../src/viktrwlayer.c:578
+msgid "Waypoint Color:"
+msgstr "Bide-puntuaren kolorea"
+
+#: ../src/viktrwlayer.c:579
+msgid "Waypoint Text:"
+msgstr "Bide-puntuaren testua:"
+
+#: ../src/viktrwlayer.c:580
+msgid "Background:"
+msgstr "Atzeko planoa:"
+
+#: ../src/viktrwlayer.c:581
+msgid "Fake BG Color Translucency:"
+msgstr "Balizko BG Color gardentasuna:"
+
+#: ../src/viktrwlayer.c:582
+msgid "Waypoint marker:"
+msgstr "Bide-puntuaren markatzailea:"
+
+#: ../src/viktrwlayer.c:583
+msgid "Waypoint size:"
+msgstr "Bide-puntuaren tamaina:"
+
+#: ../src/viktrwlayer.c:584
+msgid "Draw Waypoint Symbols:"
+msgstr "Marraztu bide-puntuen ikurrak:"
+
+#: ../src/viktrwlayer.c:585
+msgid "Waypoint Sort Order:"
+msgstr ""
+
+#: ../src/viktrwlayer.c:587
+msgid "Draw Waypoint Images"
+msgstr "Marraztu bide-puntuen irudiak:"
+
+#: ../src/viktrwlayer.c:588
+msgid "Image Size (pixels):"
+msgstr "Irudiaren tamaina (pixelak):"
+
+#: ../src/viktrwlayer.c:589
+msgid "Image Alpha:"
+msgstr "Irudiaren alfa:"
+
+#: ../src/viktrwlayer.c:590
+msgid "Image Memory Cache Size:"
+msgstr "Irudiaren cache-memoriaren tamaina:"
+
+#: ../src/viktrwlayer.c:678
+msgid "TrackWaypoint"
+msgstr "Arrasto-puntua"
+
+#: ../src/viktrwlayer.c:1534 ../src/vikutils.c:204
+msgid "miles"
+msgstr ""
+
+#. VIK_UNITS_DISTANCE_KILOMETRES:
+#: ../src/viktrwlayer.c:1538 ../src/vikutils.c:209
+msgid "km"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1648
+msgid "start/end"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1660
+msgid "start"
+msgstr ""
+
+#: ../src/viktrwlayer.c:1669
+msgid "end"
+msgstr ""
+
+#: ../src/viktrwlayer.c:2329
+msgid "Routes"
+msgstr "Ibilbideak"
+
+#: ../src/viktrwlayer.c:2519
+#, c-format
+msgid " in %d:%02d hrs:mins"
+msgstr " %d:%02d ordu:min"
+
+#: ../src/viktrwlayer.c:2523
+#, c-format
+msgid ""
+"\n"
+"%sTotal Length %.1f %s%s"
+msgstr ""
+"\n"
+"Luzera %sOsoa %.1f %s%s"
+
+#: ../src/viktrwlayer.c:2529
+#, c-format
+msgid "Tracks: %d - Waypoints: %d - Routes: %d%s"
+msgstr "Arrastoak: %d - Bide-puntuak: %d - Ibilbideak: %d%s"
+
+#: ../src/viktrwlayer.c:2549
+#, c-format
+msgid "Tracks: %d"
+msgstr "Arrastoak: %d"
+
+#: ../src/viktrwlayer.c:2559
+#, c-format
+msgid "Routes: %d"
+msgstr "Ibilbideak: %d"
+
+#: ../src/viktrwlayer.c:2590
+#, c-format
+msgid "- %d:%02d hrs:mins"
+msgstr "- %d:%02d ordu:min"
+
+#: ../src/viktrwlayer.c:2598
+#, c-format
+msgid "%s%.1f km %s"
+msgstr "%s%.1f km %s"
+
+#: ../src/viktrwlayer.c:2601
+#, c-format
+msgid "%s%.1f miles %s"
+msgstr "%s%.1f milia %s"
+
+#: ../src/viktrwlayer.c:2615
+#, c-format
+msgid "Waypoints: %d"
+msgstr "Bide-puntuak: %d"
+
+#: ../src/viktrwlayer.c:2671
+#, c-format
+msgid "Wpt: Alt %dft"
+msgstr "Bide-puntu: Alt %d oin"
+
+#. VIK_UNITS_HEIGHT_METRES:
+#: ../src/viktrwlayer.c:2675
+#, c-format
+msgid "Wpt: Alt %dm"
+msgstr "Bide-puntu: Alt %d m"
+
+#. Add comment if available
+#: ../src/viktrwlayer.c:2690
+#, c-format
+msgid "%s | %s %s | Comment: %s"
+msgstr "%s | %s %s | Iruzkina: %s"
+
+#: ../src/viktrwlayer.c:2692
+#, c-format
+msgid "%s | %s %s"
+msgstr "%s | %s %s"
+
+#: ../src/viktrwlayer.c:2939 ../src/viktrwlayer.c:3010
+msgid "This layer has no waypoints or trackpoints."
+msgstr "Geruza honek ez dauka bide-punturik ez arrato-punturik"
+
+#: ../src/viktrwlayer.c:3045 ../src/vikwindow.c:2754 ../src/vikwindow.c:3407
+#, c-format
+msgid "The file \"%s\" exists, do you wish to overwrite it?"
+msgstr "Lehendik badago \"%s\" izeneko fitxategia, gainidatzi nahi duzu?"
+
+#: ../src/viktrwlayer.c:3057 ../src/vikwindow.c:2778
+msgid "The filename you requested could not be opened for writing."
+msgstr "Eskatu duzun fitxategia ezin da ireki idazteko"
+
+#: ../src/viktrwlayer.c:3062 ../src/viktrwlayer.c:3067
+#: ../src/viktrwlayer.c:3077 ../src/viktrwlayer.c:3089
+msgid "Export Layer"
+msgstr "Esportatu geruza"
+
+#: ../src/viktrwlayer.c:3108
+msgid "Could not create temporary file for export."
+msgstr "Ezin da esportatzeko aldi baterako fitxategia sortu"
+
+#: ../src/viktrwlayer.c:3117
+#, c-format
+msgid "Could not launch %s."
+msgstr "Ezin izan da %s abiatu."
+
+#: ../src/viktrwlayer.c:3161
+msgid "Export Track as GPX"
+msgstr "Esportatu arrastoa GPX formatuan."
+
+#: ../src/viktrwlayer.c:3183
+msgid "Find"
+msgstr "Aurkitu"
+
+#: ../src/viktrwlayer.c:3193
+msgid "Waypoint Name:"
+msgstr "Bide-puntuaren izena:"
+
+#: ../src/viktrwlayer.c:3210
+msgid "Waypoint not found in this layer."
+msgstr "Bide-puntua ez da aurkitu geruza honetan."
+
+#: ../src/viktrwlayer.c:3476
+msgid "Can not upload invisible track."
+msgstr "Ezin da kargatu arrato ikustezina."
+
+#: ../src/viktrwlayer.c:3581 ../src/viktrwlayer.c:9283
+msgid "Track"
+msgstr "Arrastoa"
+
+#: ../src/viktrwlayer.c:3606 ../src/viktrwlayer.c:9316
+msgid "Route"
+msgstr "Ibilbidea"
+
+#: ../src/viktrwlayer.c:3691 ../src/viktrwlayer.c:7460
+#: ../src/viktrwlayer.c:7566
+msgid "_Finish Route"
+msgstr "_Bukatu ibilbidea"
+
+#: ../src/viktrwlayer.c:3693 ../src/viktrwlayer.c:7383
+#: ../src/viktrwlayer.c:7564
+msgid "_Finish Track"
+msgstr "_Bukatu arrastoa"
+
+#. Now with icons
+#: ../src/viktrwlayer.c:3705
+msgid "_View Layer"
+msgstr "_Ikusi geruza"
+
+#: ../src/viktrwlayer.c:3712
+msgid "V_iew"
+msgstr "_Ikusi"
+
+#: ../src/viktrwlayer.c:3718
+msgid "View All _Tracks"
+msgstr "_Ikusi arrasto guztiak"
+
+#: ../src/viktrwlayer.c:3723
+msgid "View All _Routes"
+msgstr "_Ikusi ibilbide guztiak"
+
+#: ../src/viktrwlayer.c:3728
+msgid "View All _Waypoints"
+msgstr "_Ikusi bide-puntu guztiak"
+
+#: ../src/viktrwlayer.c:3733
+msgid "_Goto Center of Layer"
+msgstr "_Joan geruzaren erdira"
+
+#: ../src/viktrwlayer.c:3739 ../src/viktrwlayer.c:7335
+msgid "Goto _Waypoint..."
+msgstr "_Joan bide-puntura"
+
+#: ../src/viktrwlayer.c:3745
+msgid "_Export Layer"
+msgstr "_Esportatu geruza"
+
+#: ../src/viktrwlayer.c:3751
+msgid "Export as GPS_Point..."
+msgstr "Esportatu GPS_Point gisa..."
+
+#: ../src/viktrwlayer.c:3756
+msgid "Export as GPS_Mapper..."
+msgstr "Esportatu GPS_Mapper gisa..."
+
+#: ../src/viktrwlayer.c:3761
+msgid "Export as _GPX..."
+msgstr "_Esportatu GPX gisa..."
+
+#: ../src/viktrwlayer.c:3766
+msgid "Export as _KML..."
+msgstr "_Esportatu KML gisa..."
+
+#: ../src/viktrwlayer.c:3771
+msgid "Open with External Program_1: "
+msgstr "Zabaldu honekin: External Program_1: "
+
+#: ../src/viktrwlayer.c:3778
+msgid "Open with External Program_2: "
+msgstr "Zabaldu honekin: External Program_2: "
+
+#: ../src/viktrwlayer.c:3786 ../src/vikwindow.c:3704
+msgid "_New"
+msgstr "_Berria"
+
+#: ../src/viktrwlayer.c:3792
+msgid "New _Waypoint..."
+msgstr "Bide-puntu berria"
+
+#: ../src/viktrwlayer.c:3798
+msgid "New _Track"
+msgstr "_Arrasto berria"
+
+#: ../src/viktrwlayer.c:3806
+msgid "New _Route"
+msgstr "_Ibilbide berria"
+
+#: ../src/viktrwlayer.c:3815 ../src/viktrwlayer.c:7938
+msgid "Geotag _Images..."
+msgstr "_Geo-etiketatutako irudiak..."
+
+#: ../src/viktrwlayer.c:3822
+msgid "_Acquire"
+msgstr "_Eskuratu"
+
+#: ../src/viktrwlayer.c:3828 ../src/vikwindow.c:3711
+msgid "From _GPS..."
+msgstr "_GPStik"
+
+#. FIXME: only add menu when at least a routing engine has support for Directions
+#: ../src/viktrwlayer.c:3834
+msgid "From _Directions..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:3840
+msgid "From _OSM Traces..."
+msgstr "_OSM Traces-etik..."
+
+#: ../src/viktrwlayer.c:3845
+msgid "From _My OSM Traces..."
+msgstr "_My OSM Traces-etik..."
+
+#: ../src/viktrwlayer.c:3853 ../src/vikwindow.c:3725
+msgid "From _Wikipedia Waypoints"
+msgstr "Wikipedia Waypoints-etik"
+
+#: ../src/viktrwlayer.c:3859
+msgid "Within _Layer Bounds"
+msgstr "Geruzaren mugen barruan"
+
+#: ../src/viktrwlayer.c:3865
+msgid "Within _Current View"
+msgstr "Uneko ikuspegiaren barruan"
+
+#: ../src/viktrwlayer.c:3873
+msgid "From Geo_caching..."
+msgstr "Geo_cachin-etik..."
+
+#: ../src/viktrwlayer.c:3880 ../src/vikwindow.c:3722
+msgid "From Geotagged _Images..."
+msgstr "Geotagged _Images-etik..."
+
+#: ../src/viktrwlayer.c:3886
+msgid "From _File..."
+msgstr "Fitxategitik..."
+
+#: ../src/viktrwlayer.c:3894 ../src/viktrwlayer.c:7883
+msgid "_Upload"
+msgstr "_Kargatu"
+
+#: ../src/viktrwlayer.c:3900
+msgid "Upload to _GPS..."
+msgstr "_Kargatu GPSra..."
+
+#: ../src/viktrwlayer.c:3907 ../src/viktrwlayer.c:7911
+msgid "Upload to _OSM..."
+msgstr "_Kargatu OSMra..."
+
+#: ../src/viktrwlayer.c:3915
+msgid "De_lete"
+msgstr "_Ezabatu"
+
+#: ../src/viktrwlayer.c:3921
+msgid "Delete All _Tracks"
+msgstr "_Ezabatu arrasto guztiak"
+
+#: ../src/viktrwlayer.c:3927
+msgid "Delete Tracks _From Selection..."
+msgstr "_Ezabatu hautatutako arrastoak"
+
+#: ../src/viktrwlayer.c:3933 ../src/viktrwlayer.c:7485
+msgid "Delete _All Routes"
+msgstr "_Ezabatu ibilbide guztiak"
+
+#: ../src/viktrwlayer.c:3939 ../src/viktrwlayer.c:7491
+msgid "_Delete Routes From Selection..."
+msgstr "_Ezabatu hautatutako ibilbideak..."
+
+#: ../src/viktrwlayer.c:3945
+msgid "Delete All _Waypoints"
+msgstr "_Ezabatu bide-puntu guztiak"
+
+#: ../src/viktrwlayer.c:3951
+msgid "Delete Waypoints From _Selection..."
+msgstr "_Ezabatu hautatutako bide-puntuak..."
+
+#: ../src/viktrwlayer.c:4574
+#, c-format
+msgid "Are you sure you want to delete all tracks in %s?"
+msgstr "Seguru zaude %s-ko arrasto guztiak ezabatu nahi dituzula?"
+
+#: ../src/viktrwlayer.c:4584
+#, c-format
+msgid "Are you sure you want to delete all routes in %s?"
+msgstr "Seguru zaude %s-ko ibilbide guztiak ezabatu nahi dituzula?"
+
+#: ../src/viktrwlayer.c:4594
+#, c-format
+msgid "Are you sure you want to delete all waypoints in %s?"
+msgstr "Seguru zaude %s-ko bide-puntu guztiak ezabatu nahi dituzula?"
+
+#: ../src/viktrwlayer.c:4611
+#, c-format
+msgid "Are you sure you want to delete the waypoint \"%s\"?"
+msgstr ""
+
+#: ../src/viktrwlayer.c:4624
+#, c-format
+msgid "Are you sure you want to delete the track \"%s\"?"
+msgstr ""
+
+#: ../src/viktrwlayer.c:4637
+#, c-format
+msgid "Are you sure you want to delete the route \"%s\"?"
+msgstr ""
+
+#: ../src/viktrwlayer.c:4849 ../src/viktrwlayer.c:5677
+msgid ""
+"Converting a track to a route removes extra track data such as segments, "
+"timestamps, etc...\n"
+"Do you want to continue?"
+msgstr ""
+"Arrasto bat ibilbidea bihurtzean arrastoaren hainbat datu, hala nola "
+"segmentuak, denborak eta abar galduko dira.\n"
+"Aurrera egin nahi duzu?"
+
+#: ../src/viktrwlayer.c:4944
+msgid "No DEM layers available, thus no DEM values can be applied."
+msgstr ""
+
+#: ../src/viktrwlayer.c:4964 ../src/viktrwlayer.c:5005
+#, c-format
+msgid "%ld point adjusted"
+msgid_plural "%ld points adjusted"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/viktrwlayer.c:5049
+#, c-format
+msgid "%ld waypoint changed"
+msgid_plural "%ld waypoints changed"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/viktrwlayer.c:5233
+#, c-format
+msgid ""
+"Refining a track with many points (%d) is unlikely to yield sensible "
+"results. Do you want to Continue?"
+msgstr ""
+
+#. Select engine from dialog
+#: ../src/viktrwlayer.c:5241
+msgid "Refine Route with Routing Engine..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:5249
+msgid "Select routing engine"
+msgstr ""
+
+#: ../src/viktrwlayer.c:5467
+msgid "Failed. No other tracks with timestamps in this layer found"
+msgstr ""
+"Errorea. Ez da topatu denbora-datuak dituen  beste arrastorik geruza honetan"
+
+#: ../src/viktrwlayer.c:5469
+msgid "Failed. No other tracks without timestamps in this layer found"
+msgstr ""
+"Errorea. Ez da topatu denbora-daturik gabeko  beste arrastorik geruza honetan"
+
+#: ../src/viktrwlayer.c:5488
+msgid "Merge with..."
+msgstr "Batu honekin..."
+
+#: ../src/viktrwlayer.c:5489
+msgid "Select route to merge with"
+msgstr "Hautatu ibilbidea batzeko honekin"
+
+#: ../src/viktrwlayer.c:5489
+msgid "Select track to merge with"
+msgstr "Hautatu arrastoa batzeko honekin"
+
+#: ../src/viktrwlayer.c:5573 ../src/viktrwlayer.c:5650
+msgid "Append Route"
+msgstr "Erantsi ibilbidea"
+
+#: ../src/viktrwlayer.c:5573 ../src/viktrwlayer.c:5650
+msgid "Append Track"
+msgstr "Erantsi arrastoa"
+
+#: ../src/viktrwlayer.c:5574
+msgid "Select the route to append after the current route"
+msgstr "Hautatu ibilbidea uneko ibilbidearen ostean eransteko"
+
+#: ../src/viktrwlayer.c:5575
+msgid "Select the track to append after the current track"
+msgstr "Hautatu arrastoa uneko arrastoaren ostean eransteko"
+
+#: ../src/viktrwlayer.c:5651
+msgid "Select the track to append after the current route"
+msgstr "Hautatu arrastoa uneko ibilbidearen ostean eransteko"
+
+#: ../src/viktrwlayer.c:5652
+msgid "Select the route to append after the current track"
+msgstr "Hautatu ibilbidea uneko arrastoaren ostean eransteko"
+
+#: ../src/viktrwlayer.c:5711
+#, c-format
+msgid "%d segment merged"
+msgid_plural "%d segments merged"
+msgstr[0] "%d segmentua batuta"
+msgstr[1] "%d segmentuak batuta"
+
+#: ../src/viktrwlayer.c:5727
+msgid "Failed. This track does not have timestamp"
+msgstr "Errorea. Arrasto honek ez dauka denbora-daturik"
+
+#: ../src/viktrwlayer.c:5739
+msgid "Failed. No other track in this layer has timestamp"
+msgstr ""
+"Errorea. Geruza honetan denbora-daturik duen beste arrastorik ez dago."
+
+#: ../src/viktrwlayer.c:5746
+msgid "Merge Threshold..."
+msgstr "Batzeko mugak..."
+
+#: ../src/viktrwlayer.c:5747
+msgid "Merge when time between tracks less than:"
+msgstr "Batu arrastoen arteko denbora hau baino txikiagoa denean:"
+
+#: ../src/viktrwlayer.c:5889
+msgid "Split Threshold..."
+msgstr "Zatitzeko mugak..."
+
+#: ../src/viktrwlayer.c:5890
+msgid "Split when time between trackpoints exceeds:"
+msgstr "Zatitu arrasto-puntuen arteko denbora hau baino handiagoa denean:"
+
+#: ../src/viktrwlayer.c:5907
+#, c-format
+msgid ""
+"Can not split track due to trackpoints not ordered in time - such as at %s.\n"
+"\n"
+"Goto this trackpoint?"
+msgstr ""
+
+#: ../src/viktrwlayer.c:5976
+msgid "Split Every Nth Point"
+msgstr "Zatitu n-puntuka"
+
+#: ../src/viktrwlayer.c:5977
+msgid "Split on every Nth point:"
+msgstr "Zatitu n-puntuka"
+
+#: ../src/viktrwlayer.c:6087
+msgid "Can not split track as it has no segments"
+msgstr "Ezin da zatitu arratoa segmenturik ez badu"
+
+#: ../src/viktrwlayer.c:6169 ../src/viktrwlayer.c:6199
+#, c-format
+msgid "Deleted %ld point"
+msgid_plural "Deleted %ld points"
+msgstr[0] "%ld puntua ezabau da"
+msgstr[1] "%ld puntuak ezabatu dira"
+
+#: ../src/viktrwlayer.c:6392
+msgid "Internal Error in vik_trw_layer_uniquify_tracks"
+msgstr "Barne errorea bertan: vik_trw_layer_uniquify_tracks"
+
+#: ../src/viktrwlayer.c:6496 ../src/viktrwlayer.c:6543
+#: ../src/viktrwlayer.c:6704
+msgid ""
+"Multiple entries with the same name exist. This method only works with "
+"unique names. Force unique names now?"
+msgstr ""
+"Izen bereko hainbat sarrera daude. Metodo honek soilik izan bakarrarekin lan "
+"egiten du. Behartu izan bakarra orain?"
+
+#: ../src/viktrwlayer.c:6507
+msgid "No tracks found"
+msgstr "Ez da arrastorik aurkitu"
+
+#: ../src/viktrwlayer.c:6515 ../src/viktrwlayer.c:6562
+#: ../src/viktrwlayer.c:6724
+msgid "Delete Selection"
+msgstr "Ezabatu hautapena"
+
+#: ../src/viktrwlayer.c:6516
+msgid "Select tracks to delete"
+msgstr "Hautatu ezabatu beharreko arrastoak"
+
+#: ../src/viktrwlayer.c:6554
+msgid "No routes found"
+msgstr "Ez da ibilbiderik aurkitu"
+
+#: ../src/viktrwlayer.c:6563
+msgid "Select routes to delete"
+msgstr "Hautatu ezabatu beharreko ibilbideak"
+
+#: ../src/viktrwlayer.c:6669
+msgid "Internal Error in vik_trw_layer_uniquify_waypoints"
+msgstr "Barne-errorea hemen:  vik_trw_layer_uniquify_waypoints"
+
+#: ../src/viktrwlayer.c:6714
+msgid "No waypoints found"
+msgstr "Ez da bide-punturik aurkitu"
+
+#: ../src/viktrwlayer.c:6725
+msgid "Select waypoints to delete"
+msgstr "Hautatu ezabatu beharreko bide-puntuak"
+
+#: ../src/viktrwlayer.c:7033
+#, c-format
+msgid ""
+"A waypoint with the name \"%s\" already exists. Really rename to the same "
+"name?"
+msgstr ""
+"Lehendik badago \"%s\" izeneko bide-puntua. Benetan nahi duzu izen berarekin "
+"berrizendatu?"
+
+#: ../src/viktrwlayer.c:7063
+#, c-format
+msgid ""
+"A track with the name \"%s\" already exists. Really rename to the same name?"
+msgstr ""
+"Lehendik badago  \"%s\" izeneko arrastoa. Benetan izen berarekin "
+"berrizendatu nahi duzu?"
+
+#: ../src/viktrwlayer.c:7100
+#, c-format
+msgid ""
+"A route with the name \"%s\" already exists. Really rename to the same name?"
+msgstr ""
+"Lehendik badago  \"%s\" izeneko ibilbidea. Benetan izen berarekin "
+"berrizendatu nahi duzu?"
+
+#: ../src/viktrwlayer.c:7221 ../src/viktrwlayer.c:7594
+msgid "_Goto"
+msgstr "_Joan hona"
+
+#: ../src/viktrwlayer.c:7240
+msgid "_Visit Geocache Webpage"
+msgstr "_Bisitatu Geocache web-orria"
+
+#: ../src/viktrwlayer.c:7259
+msgid "_Show Picture..."
+msgstr "_Erakutsi irudia..."
+
+#: ../src/viktrwlayer.c:7267
+msgid "Update Geotag on _Image"
+msgstr "_Eguneratu irudiaren Geo-etiketa"
+
+#: ../src/viktrwlayer.c:7273
+msgid "_Update"
+msgstr "_Eguneratu"
+
+#: ../src/viktrwlayer.c:7278
+msgid "Update and _Keep File Timestamp"
+msgstr "Eguneratu eta mantendu denbora-datuak"
+
+#: ../src/viktrwlayer.c:7289
+msgid "Visit _Webpage"
+msgstr "_Bisitatu web-orria"
+
+#: ../src/viktrwlayer.c:7320
+msgid "_New Waypoint..."
+msgstr "_Bide-puntu berria"
+
+#: ../src/viktrwlayer.c:7329
+msgid "_View All Waypoints"
+msgstr "_Ikusi bideko puntu guztiak"
+
+#: ../src/viktrwlayer.c:7341
+msgid "Delete _All Waypoints"
+msgstr "_Ezabatu bideko puntu guztiak"
+
+#: ../src/viktrwlayer.c:7347
+msgid "_Delete Waypoints From Selection..."
+msgstr "_Ezabatu hautatuako bide-puntu guztiak"
+
+#: ../src/viktrwlayer.c:7359
+msgid "_Show All Waypoints"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7365
+msgid "_Hide All Waypoints"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7393
+msgid "_View All Tracks"
+msgstr "_Ikusi arrasto guztiak"
+
+#: ../src/viktrwlayer.c:7399
+msgid "_New Track"
+msgstr "_Arrasto berria"
+
+#: ../src/viktrwlayer.c:7407
+msgid "Delete _All Tracks"
+msgstr "_Ezabatu arrasto guztiak"
+
+#: ../src/viktrwlayer.c:7413
+msgid "_Delete Tracks From Selection..."
+msgstr "_Ezabatu hautatutako arrasto guztiak"
+
+#: ../src/viktrwlayer.c:7425
+msgid "_Show All Tracks"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7431
+msgid "_Hide All Tracks"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7442
+msgid "_List Tracks..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:7471
+msgid "_View All Routes"
+msgstr "_Ikusi ibilbide guztiak"
+
+#: ../src/viktrwlayer.c:7477
+msgid "_New Route"
+msgstr "_Ibilbide berria"
+
+#: ../src/viktrwlayer.c:7503
+msgid "_Show All Routes"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7509
+msgid "_Hide All Routes"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7520
+msgid "_List Routes..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:7579
+msgid "_View Track"
+msgstr "_Ikusi arrastoa"
+
+#: ../src/viktrwlayer.c:7581
+msgid "_View Route"
+msgstr "_Ikusi ibilbidea"
+
+#: ../src/viktrwlayer.c:7600
+msgid "_Startpoint"
+msgstr "_Hasierako puntua"
+
+#: ../src/viktrwlayer.c:7606
+msgid "\"_Center\""
+msgstr "_Erdia"
+
+#: ../src/viktrwlayer.c:7612
+msgid "_Endpoint"
+msgstr "_Bukaerako puntua"
+
+#: ../src/viktrwlayer.c:7618
+msgid "_Highest Altitude"
+msgstr "_Altituderik handiena"
+
+#: ../src/viktrwlayer.c:7624
+msgid "_Lowest Altitude"
+msgstr "_Altituderik txikiena"
+
+#: ../src/viktrwlayer.c:7632
+msgid "_Maximum Speed"
+msgstr "_Abiadurarik handiena"
+
+#: ../src/viktrwlayer.c:7641
+msgid "Co_mbine"
+msgstr "_Konbinatu"
+
+#: ../src/viktrwlayer.c:7649
+msgid "_Merge By Time..."
+msgstr "_Batu denboraren arabera"
+
+#: ../src/viktrwlayer.c:7654
+msgid "Merge _Segments"
+msgstr "_Batu segmentuak"
+
+#: ../src/viktrwlayer.c:7660
+msgid "Merge _With Other Tracks..."
+msgstr "_Batu beste arrastoekin"
+
+#: ../src/viktrwlayer.c:7666
+msgid "_Append Track..."
+msgstr "_Erantsi arrastoa"
+
+#: ../src/viktrwlayer.c:7668
+msgid "_Append Route..."
+msgstr "_Erantsi ibilbidea..."
+
+#: ../src/viktrwlayer.c:7674
+msgid "Append _Route..."
+msgstr "Erantsi ibilbidea"
+
+#: ../src/viktrwlayer.c:7676
+msgid "Append _Track..."
+msgstr "_Erantsi arrastoa"
+
+#: ../src/viktrwlayer.c:7683
+msgid "_Split"
+msgstr "_Zatitu"
+
+#: ../src/viktrwlayer.c:7691
+msgid "_Split By Time..."
+msgstr "_Zatitu denboraren arabera..."
+
+#. ATM always enable this entry - don't want to have to analyse the track before displaying the menu - to keep the menu speedy
+#: ../src/viktrwlayer.c:7697
+msgid "Split Se_gments"
+msgstr "_Zatitu segmentuak"
+
+#: ../src/viktrwlayer.c:7703
+msgid "Split By _Number of Points..."
+msgstr "_Zatitu puntu-kopuruaren arabera"
+
+#: ../src/viktrwlayer.c:7708
+msgid "Split at _Trackpoint"
+msgstr "_Zatitu arrato-puntuan"
+
+#: ../src/viktrwlayer.c:7716
+msgid "_Insert Points"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7722
+msgid "Insert Point _Before Selected Point"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7729
+msgid "Insert Point _After Selected Point"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7738
+msgid "Delete Poi_nts"
+msgstr "_Ezabatu puntuak"
+
+#: ../src/viktrwlayer.c:7744
+msgid "Delete _Selected Point"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7752
+msgid "Delete Points With The Same _Position"
+msgstr "_Ezabatu posizio bereko puntuak"
+
+#: ../src/viktrwlayer.c:7757
+msgid "Delete Points With The Same _Time"
+msgstr "_Ezabatu une bereko puntuak"
+
+#: ../src/viktrwlayer.c:7764 ../src/viktrwlayer.c:7964
+msgid "_Transform"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7772 ../src/viktrwlayer.c:7972
+msgid "_Apply DEM Data"
+msgstr "_Aplikatu DEM datuak"
+
+#: ../src/viktrwlayer.c:7777 ../src/viktrwlayer.c:7977
+msgid "_Overwrite"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7780 ../src/viktrwlayer.c:7980
+msgid "Overwrite any existing elevation values with DEM values"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7783 ../src/viktrwlayer.c:7983
+msgid "_Keep Existing"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7786 ../src/viktrwlayer.c:7986
+msgid "Keep existing elevation values, only attempt for missing values"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7791
+msgid "_Smooth Missing Elevation Data"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7796
+msgid "_Interpolated"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7799
+msgid ""
+"Interpolate between known elevation values to derive values for the missing "
+"elevations"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7802
+msgid "_Flat"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7805
+msgid "Set unknown elevation values to the last known value"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7809
+msgid "C_onvert to a Route"
+msgstr "Ibilbidea bihurtu"
+
+#: ../src/viktrwlayer.c:7811
+msgid "C_onvert to a Track"
+msgstr "_Arrastoa bihurtu"
+
+#: ../src/viktrwlayer.c:7819
+msgid "_Anonymize Times"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7822
+msgid "Shift timestamps to a relative offset from 1901-01-01"
+msgstr ""
+
+#: ../src/viktrwlayer.c:7827
+msgid "_Reverse Track"
+msgstr "_Alderantzizkatu arrastoa"
+
+#: ../src/viktrwlayer.c:7829
+msgid "_Reverse Route"
+msgstr "_Alderantzizkatu ibilbidea"
+
+#: ../src/viktrwlayer.c:7836
+msgid "Refine Route..."
+msgstr ""
+
+#: ../src/viktrwlayer.c:7846
+msgid "Down_load Maps Along Track..."
+msgstr "_Deskargatu arrastoko mapak"
+
+#: ../src/viktrwlayer.c:7848
+msgid "Down_load Maps Along Route..."
+msgstr "_Deskargatu ibilbideko mapak"
+
+#: ../src/viktrwlayer.c:7856
+msgid "_Export Track as GPX..."
+msgstr "_Esportatu arrastoa GPX gisa..."
+
+#: ../src/viktrwlayer.c:7858
+msgid "_Export Route as GPX..."
+msgstr "_Esportatu ibilbidea GPX gisa..."
+
+#: ../src/viktrwlayer.c:7865
+msgid "E_xtend Track End"
+msgstr "_Zabaldutako arrastoaren bukaera"
+
+#: ../src/viktrwlayer.c:7867
+msgid "E_xtend Route End"
+msgstr "_Zabaldutako ibilbidearen bukaera"
+
+#: ../src/viktrwlayer.c:7874
+msgid "Extend _Using Route Finder"
+msgstr "_Zabaldu ibilbide-bilatzailearen bidez"
+
+#: ../src/viktrwlayer.c:7889
+msgid "_Upload to GPS..."
+msgstr "_GPSra kargatu"
+
+#: ../src/viktrwlayer.c:7900
+msgid "_View Google Directions"
+msgstr "_Ikusi Google Directions"
+
+#: ../src/viktrwlayer.c:7920
+msgid "Use with _Filter"
+msgstr "_Iragazkia erabili"
+
+#: ../src/viktrwlayer.c:7953
+msgid "_Edit Trackpoint"
+msgstr "_Editatu arrasto-puntua"
+
+#: ../src/viktrwlayer.c:9017
+#, c-format
+msgid " - Gain %dm:Loss %dm"
+msgstr " - Lortu %dm:Galdu %dm"
+
+#: ../src/viktrwlayer.c:9019
+#, c-format
+msgid " - Gain %dft:Loss %dft"
+msgstr " - Lortu %dft:Galdu %dft"
+
+#: ../src/viktrwlayer.c:9024
+#, c-format
+msgid " - Bearing %3.1f° - Step %s"
+msgstr " - Portaera: %3.1f° - Urratsa: %s"
+
+#: ../src/viktrwlayer.c:9628
+#, c-format
+msgid "Could not launch %s to open file."
+msgstr "Ezin dut %s abiatu fitxategia irekitzeko"
+
+#: ../src/viktrwlayer.c:9709
+#, c-format
+msgid "Creating %d Image Thumbnails..."
+msgstr "%d irudiaren miniaturak sortzen"
+
+#: ../src/viktrwlayer.c:10106
+msgid "No map layer in use. Create one first"
+msgstr "Ez dago mapa-geruzarik. Sortu bat lehenago"
+
+#: ../src/viktrwlayer.c:10225
+#, c-format
+msgid "%s: Track List"
+msgstr ""
+
+#: ../src/viktrwlayer.c:10227
+#, c-format
+msgid "%s: Route List"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:828 ../src/viktrwlayer_propwin.c:1085
+#, c-format
+msgid "%.1f kph"
+msgstr "%.1f k/h"
+
+#: ../src/viktrwlayer_propwin.c:831 ../src/viktrwlayer_propwin.c:1088
+#: ../src/viktrwlayer_analysis.c:290
+#, c-format
+msgid "%.1f mph"
+msgstr "%.1f m/h"
+
+#: ../src/viktrwlayer_propwin.c:834 ../src/viktrwlayer_propwin.c:1091
+#, c-format
+msgid "%.1f knots"
+msgstr "%.1f korapilo"
+
+#. VIK_UNITS_SPEED_METRES_PER_SECOND:
+#: ../src/viktrwlayer_propwin.c:838 ../src/viktrwlayer_propwin.c:1095
+#, c-format
+msgid "%.1f m/s"
+msgstr "%.1f m/s"
+
+#: ../src/viktrwlayer_propwin.c:1662 ../src/viktrwlayer_analysis.c:267
+#, c-format
+msgid "%.1f miles"
+msgstr "%.1f milia"
+
+#. VIK_UNITS_DISTANCE_KILOMETRES
+#: ../src/viktrwlayer_propwin.c:1664 ../src/viktrwlayer_analysis.c:271
+#, c-format
+msgid "%.1f km"
+msgstr "%.1f km"
+
+#: ../src/viktrwlayer_propwin.c:2582
+msgid "Failed spliting track. Track unchanged"
+msgstr "Errorea arraztoa zatitzen. Arrastoa ez da aldatu"
+
+#: ../src/viktrwlayer_propwin.c:2724 ../src/viktrwlayer_propwin.c:3140
+#, c-format
+msgid "%s - Track Properties"
+msgstr "%s - arrastoaren propietatateak"
+
+#: ../src/viktrwlayer_propwin.c:2729
+msgid "Split at _Marker"
+msgstr "_Zatitu markatzailean"
+
+#: ../src/viktrwlayer_propwin.c:2730
+msgid "Split _Segments"
+msgstr "_Zatitu segmentuak"
+
+#: ../src/viktrwlayer_propwin.c:2731
+msgid "_Reverse"
+msgstr "_Alderantzikatu"
+
+#: ../src/viktrwlayer_propwin.c:2732
+msgid "_Delete Dupl."
+msgstr "_Ezabatu bikoiztutakoak"
+
+#: ../src/viktrwlayer_propwin.c:2757
+msgid "<b>Comment:</b>"
+msgstr "<b>Iruzkina:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2758
+msgid "<b>Description:</b>"
+msgstr "<b>Deskribapena:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2759
+msgid "<b>Color:</b>"
+msgstr "<b>Kolorea::</b>"
+
+#: ../src/viktrwlayer_propwin.c:2760
+msgid "<b>Draw Name:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2761
+msgid "<b>Distance Labels:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2764
+msgid "<b>Track Length:</b>"
+msgstr "<b>Arrastoaren luzera::</b>"
+
+#: ../src/viktrwlayer_propwin.c:2765
+msgid "<b>Trackpoints:</b>"
+msgstr "<b>Arrasto-puntuak:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2766
+msgid "<b>Segments:</b>"
+msgstr "<b>Segmentuak:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2767
+msgid "<b>Duplicate Points:</b>"
+msgstr "<b>Bikoiztutako puntuak:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2768
+msgid "<b>Max Speed:</b>"
+msgstr "<b>Abiadura handiena:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2769
+msgid "<b>Avg. Speed:</b>"
+msgstr "<b>Batez besteko abiadura:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2770
+msgid "<b>Moving Avg. Speed:</b>"
+msgstr "<b>Batez besteko abiadura mugimenduan:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2771
+msgid "<b>Avg. Dist. Between TPs:</b>"
+msgstr "<b>Arrasto-puntuen batez besteko distantzia:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2772
+msgid "<b>Elevation Range:</b>"
+msgstr "<b>Altitude-tartea:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2773
+msgid "<b>Total Elevation Gain/Loss:</b>"
+msgstr "<b>Altitudea denetara  Lortua/Galdua:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2774
+msgid "<b>Start:</b>"
+msgstr "Copy<b>Hasi:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2775
+msgid "<b>End:</b>"
+msgstr "<b>Bukaera:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2776
+msgid "<b>Duration:</b>"
+msgstr "<b>Iraupena:</b>"
+
+#: ../src/viktrwlayer_propwin.c:2797
+msgid "No"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2798
+msgid "Centre"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2799
+msgid "Start only"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2800
+msgid "End only"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2801
+msgid "Start and End"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2802
+msgid "Centre, Start and End"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2814
+msgid "Maximum number of distance labels to be shown"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2818
+msgid "Properties"
+msgstr ""
+
+#: ../src/viktrwlayer_propwin.c:2856 ../src/viktrwlayer_propwin.c:2880
+#: ../src/viktrwlayer_propwin.c:2908 ../src/viktrwlayer_propwin.c:2945
+#: ../src/viktrwlayer_propwin.c:2963 ../src/viktrwlayer_propwin.c:3009
+#: ../src/viktrwlayer_propwin.c:3010 ../src/viktrwlayer_propwin.c:3011
+#: ../src/viktrwlayer_propwin.c:3020 ../src/viktrwlayer_propwin.c:3021
+#: ../src/viktrwlayer_propwin.c:3036 ../src/viktrwlayer_propwin.c:3037
+#: ../src/viktrwlayer_propwin.c:3050 ../src/viktrwlayer_propwin.c:3051
+#: ../src/viktrwlayer_propwin.c:3064 ../src/viktrwlayer_propwin.c:3065
+#: ../src/viktrwlayer_propwin.c:3078 ../src/viktrwlayer_propwin.c:3079
+#: ../src/viktrwlayer_propwin.c:3092 ../src/viktrwlayer_propwin.c:3093
+#: ../src/viktrwlayer_analysis.c:257
+#, c-format
+msgid "No Data"
+msgstr "Daturik ez"
+
+#: ../src/viktrwlayer_propwin.c:3006
+#, c-format
+msgid "%d minutes"
+msgstr "%d minutu"
+
+#: ../src/viktrwlayer_propwin.c:3016 ../src/viktrwlayer_analysis.c:515
+msgid "Statistics"
+msgstr "Estatistikak"
+
+#: ../src/viktrwlayer_propwin.c:3022
+msgid "Show D_EM"
+msgstr "_Erakutsi DEM"
+
+#: ../src/viktrwlayer_propwin.c:3023 ../src/viktrwlayer_propwin.c:3038
+#: ../src/viktrwlayer_propwin.c:3052 ../src/viktrwlayer_propwin.c:3094
+msgid "Show _GPS Speed"
+msgstr "_Erakutsi GPS-abiadura"
+
+#: ../src/viktrwlayer_propwin.c:3025 ../src/viktrwlayer_propwin.c:3040
+#: ../src/viktrwlayer_propwin.c:3068 ../src/viktrwlayer_propwin.c:3096
+msgid "<b>Track Distance:</b>"
+msgstr "<b>Arrastoaren distantzia:</b>"
+
+#: ../src/viktrwlayer_propwin.c:3026 ../src/viktrwlayer_propwin.c:3083
+msgid "<b>Track Height:</b>"
+msgstr "<b>Arrastoaren altuera:</b>"
+
+#: ../src/viktrwlayer_propwin.c:3031
+msgid "Elevation-distance"
+msgstr "Altuera-distantzia"
+
+#: ../src/viktrwlayer_propwin.c:3041
+msgid "<b>Track Gradient:</b>"
+msgstr "<b>Arrastoaren gradientea:</b>"
+
+#: ../src/viktrwlayer_propwin.c:3045
+msgid "Gradient-distance"
+msgstr "Gradiente-distantzia"
+
+#: ../src/viktrwlayer_propwin.c:3054 ../src/viktrwlayer_propwin.c:3069
+#: ../src/viktrwlayer_propwin.c:3082
+msgid "<b>Track Time:</b>"
+msgstr "<b>Arrastoaren denbora:</b>"
+
+#: ../src/viktrwlayer_propwin.c:3055 ../src/viktrwlayer_propwin.c:3097
+msgid "<b>Track Speed:</b>"
+msgstr "<b>Arrastoaren abiadura:</b>"
+
+#: ../src/viktrwlayer_propwin.c:3059
+msgid "Speed-time"
+msgstr "Abiadura-denbora"
+
+#: ../src/viktrwlayer_propwin.c:3066 ../src/viktrwlayer_propwin.c:3080
+msgid "Show S_peed"
+msgstr "_Erakutsi abiadura"
+
+#: ../src/viktrwlayer_propwin.c:3073
+msgid "Distance-time"
+msgstr "Distantzia-denbora"
+
+#: ../src/viktrwlayer_propwin.c:3087
+msgid "Elevation-time"
+msgstr "Altuera-denbora"
+
+#: ../src/viktrwlayer_propwin.c:3101
+msgid "Speed-distance"
+msgstr "Abiadura-distantzia"
+
+#: ../src/viktrwlayer_tpwin.c:119
+msgid "<b>Part of Track:</b>"
+msgstr "<b>arrasto-zatia:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:120
+msgid "<b>Latitude:</b>"
+msgstr "<b>Latitudea:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:121
+msgid "<b>Longitude:</b>"
+msgstr "<b>Longitudea:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:122
+msgid "<b>Altitude:</b>"
+msgstr "<b>Altitudea:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:123
+msgid "<b>Course:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:124
+msgid "<b>Timestamp:</b>"
+msgstr "<b>Denbora-marka:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:125
+msgid "<b>Time:</b>"
+msgstr "<b>Denbora:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:126
+msgid "<b>Distance Difference:</b>"
+msgstr "<b>Distantzia aldea:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:127
+msgid "<b>Time Difference:</b>"
+msgstr "<b>Denbora aldea:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:128
+msgid "<b>\"Speed\" Between:</b>"
+msgstr "<b>\"Lastertasuna\" hauen artean:</b>"
+
+#: ../src/viktrwlayer_tpwin.c:129
+msgid "<b>Speed:</b>"
+msgstr ""
+
+#: ../src/viktrwlayer_tpwin.c:130
+msgid "<b>VDOP:</b>"
+msgstr ""
+"<b>VDOP (Vertical Dilution of Position; Kokapenaren diluzio bertikala):</b>"
+
+#: ../src/viktrwlayer_tpwin.c:131
+msgid "<b>HDOP:</b>"
+msgstr ""
+"<b>HDOP (Horizontal Dilution of Position; Kokapenaren diluzio "
+"horizontala):</b>"
+
+#: ../src/viktrwlayer_tpwin.c:132
+msgid "<b>PDOP:</b>"
+msgstr ""
+"<b>PDOP (Position Dilution of Precision; Kokapenaren zehaztasunezko "
+"diluzioa):</b>"
+
+#: ../src/viktrwlayer_tpwin.c:133
+msgid "<b>SAT/FIX:</b>"
+msgstr "<b>SAT/FIX (konpondu satelitearekikoa):</b>"
+
+#: ../src/viktrwlayer_tpwin.c:141
+msgid "Trackpoint"
+msgstr "Arrasto-puntua"
+
+#: ../src/viktrwlayer_tpwin.c:144
+msgid "_Insert After"
+msgstr "_Txertatu ondoren"
+
+#: ../src/viktrwlayer_tpwin.c:146
+msgid "Split Here"
+msgstr "Moztu hemen"
+
+#. 
+#. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
+#. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
+#. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_select), values );
+#. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+#. gtk_widget_show ( item );
+#. 
+#. ATM view auto selects, so don't bother with separate select menu entry
+#: ../src/viktrwlayer_tracklist.c:231 ../src/vikwindow.c:3695
+msgid "_View"
+msgstr "_Ikusi"
+
+#. Insert column for the layer name when viewing multi layers
+#: ../src/viktrwlayer_tracklist.c:514
+msgid "Layer"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:526
+msgid "Date"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:529
+msgid "Visible"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:536
+msgid ""
+"Distance\n"
+"(miles)"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:539
+msgid ""
+"Distance\n"
+"(km)"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:545
+msgid ""
+"Length\n"
+"(minutes)"
+msgstr ""
+
+#. VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+#: ../src/viktrwlayer_tracklist.c:549 ../src/vikutils.c:72
+msgid "km/h"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:550 ../src/vikutils.c:62
+msgid "mph"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:551 ../src/vikutils.c:68
+msgid "knots"
+msgstr ""
+
+#. VIK_UNITS_SPEED_METRES_PER_SECOND:
+#: ../src/viktrwlayer_tracklist.c:553 ../src/vikutils.c:65
+msgid "m/s"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:556
+#, c-format
+msgid ""
+"Av. Speed\n"
+"(%s)"
+msgstr ""
+
+#. Apply own formatting of the data
+#: ../src/viktrwlayer_tracklist.c:561
+#, c-format
+msgid ""
+"Max Speed\n"
+"(%s)"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:569
+msgid ""
+"Max Height\n"
+"(Feet)"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:571
+msgid ""
+"Max Height\n"
+"(Metres)"
+msgstr ""
+
+#: ../src/viktrwlayer_geotag.c:481
+#, c-format
+msgid "Geotagging %d Images..."
+msgstr "%d irudiak geo-etiketatzen..."
+
+#: ../src/viktrwlayer_geotag.c:545
+msgid "Geotag Images"
+msgstr "Geo-etiketatu irudiak"
+
+#: ../src/viktrwlayer_geotag.c:551
+msgid "Images"
+msgstr "Irudiak"
+
+#: ../src/viktrwlayer_geotag.c:555
+msgid "Overwrite Existing Waypoints:"
+msgstr "Gainidatzi dauden bide-puntuak"
+
+#: ../src/viktrwlayer_geotag.c:558
+msgid "Overwrite Existing GPS Information:"
+msgstr "Gainidatzi dagoen GPS-informazioa"
+
+#: ../src/viktrwlayer_geotag.c:560
+msgid "Keep File Modification Timestamp:"
+msgstr "Mantendu fitxategi aldatuaren denbora"
+
+#: ../src/viktrwlayer_geotag.c:592
+msgid "Create Waypoints:"
+msgstr "Sortu bide-puntuak:"
+
+#: ../src/viktrwlayer_geotag.c:600
+msgid "Write EXIF:"
+msgstr "Idatzi EXIF:"
+
+#: ../src/viktrwlayer_geotag.c:612
+msgid "Interpolate Between Track Segments:"
+msgstr "Interpolatu arraso-segmentuen artean"
+
+#: ../src/viktrwlayer_geotag.c:616
+msgid "Image Time Offset (Seconds):"
+msgstr "Irudiarekiko denbora jauzia (segundoak):"
+
+#: ../src/viktrwlayer_geotag.c:618
+msgid ""
+"The number of seconds to ADD to the photos time to make it match the GPS "
+"data. Calculate this with (GPS - Photo). Can be negative or positive. Useful "
+"to adjust times when a camera's timestamp was incorrect."
+msgstr ""
+"Argazkien denbora-marketara GEHITU beharreko segundo kopurua GPS datuekin "
+"bat egiteko. Kalkula ezazu  (GPS - Photo) hori erabiliz. Positibo zein "
+"negatibo izan daiteke. Erabilgarria oso argazki-kameraren denbora-zigiluak "
+"huts egin duenean."
+
+#: ../src/viktrwlayer_geotag.c:621
+msgid "Image Timezone:"
+msgstr "Irudiaren denbora-zona"
+
+#: ../src/viktrwlayer_geotag.c:623
+msgid ""
+"The timezone that was used when the images were created. For example, if a "
+"camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct "
+"adjustment to the images' time can be made. GPS data is always in UTC."
+msgstr ""
+"Ordu-zonaldea erabili izan da irudiak sortzerakoan. Esate baterako, kamera "
+"batean lehenetsita baldin badago +8:00 ordua, sartu +8:00 hemen ere eta "
+"horrela konponduko dituzu aurretik behar bada egin dituzun beste doiketa "
+"batzuk. GPS datuak beti daude UTC (Ordu Unibertsal Koordinatua) horren "
+"arabera doiturik."
+
+#: ../src/viktrwlayer_geotag.c:627
+#, c-format
+msgid "Using track: %s"
+msgstr "Arrastoa erabiltzen: %s"
+
+#: ../src/viktrwlayer_geotag.c:629
+#, c-format
+msgid "Using all tracks in: %s"
+msgstr "Hemengo arrasto guztiak erabiltzen: %s"
+
+#: ../src/viktrwlayer_analysis.c:193
+msgid "Number of Tracks"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:194
+msgid "Date Range"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:195
+msgid "Total Length"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:196
+msgid "Average Length"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:197
+msgid "Max Speed"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:198
+msgid "Avg. Speed"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:199
+msgid "Minimum Altitude"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:200
+msgid "Maximum Altitude"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:201
+msgid "Total Elevation Gain/Loss"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:202
+msgid "Avg. Elevation Gain/Loss"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:203
+msgid "Total Duration"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:204
+msgid "Avg. Duration"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:278
+#, c-format
+msgid "%.2f miles"
+msgstr ""
+
+#. VIK_UNITS_DISTANCE_KILOMETRES
+#: ../src/viktrwlayer_analysis.c:282
+#, c-format
+msgid "%.2f km"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:297
+#, c-format
+msgid "%.2f m/s"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:306
+#, c-format
+msgid "%.2f knots\n"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:309
+#, c-format
+msgid "%.2f knots"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:316 ../src/viktrwlayer_analysis.c:319
+#, c-format
+msgid "%.2f km/h"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:330 ../src/viktrwlayer_analysis.c:336
+#, c-format
+msgid "%d feet"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:341 ../src/viktrwlayer_analysis.c:343
+#, c-format
+msgid "%d feet / %d feet"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:348 ../src/viktrwlayer_analysis.c:354
+#, c-format
+msgid "%d m"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:359 ../src/viktrwlayer_analysis.c:361
+#, c-format
+msgid "%d m / %d m"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:373
+#, c-format
+msgid "%d:%02d:%02d days:hrs:mins"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:380
+#, c-format
+msgid "%d:%02d hrs:mins"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:550
+msgid "Include Invisible Items"
+msgstr ""
+
+#: ../src/vikstatus.c:107
+msgid "Current number of background tasks. Click to see the background jobs."
+msgstr ""
+
+#: ../src/vikstatus.c:113
+msgid "Current zoom level. Click to select a new one."
+msgstr "Uneko zoom maila. Klikatu beste bat hautatzeko."
+
+#: ../src/vikutils.c:80
+msgid "GPSD"
+msgstr ""
+
+#. GPS Preamble
+#: ../src/vikutils.c:81
+msgid "Trkpt"
+msgstr ""
+
+#: ../src/vikutils.c:121
+#, c-format
+msgid "%sSpeed%s %.1f%s"
+msgstr ""
+
+#: ../src/vikutils.c:130
+#, c-format
+msgid "%sAlt %dfeet"
+msgstr ""
+
+#. VIK_UNITS_HEIGHT_METRES:
+#: ../src/vikutils.c:134
+#, c-format
+msgid "%sAlt %dm"
+msgstr ""
+
+#: ../src/vikutils.c:142
+#, c-format
+msgid "%sCourse %03d°"
+msgstr ""
+
+#: ../src/vikutils.c:155
+msgid "yards"
+msgstr ""
+
+#. VIK_UNITS_DISTANCE_KILOMETRES:
+#: ../src/vikutils.c:159
+msgid "m"
+msgstr ""
+
+#: ../src/vikutils.c:163
+#, c-format
+msgid "%sDistance diff %d%s"
+msgstr ""
+
+#: ../src/vikutils.c:179
+#, c-format
+msgid "%sTime %s"
+msgstr ""
+
+#: ../src/vikutils.c:187
+#, c-format
+msgid "%sTime diff %lds"
+msgstr ""
+
+#: ../src/vikutils.c:193
+#, c-format
+msgid "%sNo. of Sats %d"
+msgstr ""
+
+#: ../src/vikutils.c:213
+#, c-format
+msgid "%sDistance along %.2f%s"
+msgstr ""
+
+#. Name of track
+#: ../src/vikutils.c:232
+#, c-format
+msgid "%sTrack: %s"
+msgstr ""
+
+#: ../src/vikwaypoint.c:36
+msgid "Waypoint"
+msgstr "Bide-puntua"
+
+#. TODO get rid of this as this is unnecessary duplication...
+#: ../src/vikwindow.c:224
+msgid "Pan"
+msgstr "Desplazamendua"
+
+#: ../src/vikwindow.c:224
+msgid "Zoom"
+msgstr "Zooma"
+
+#: ../src/vikwindow.c:224
+msgid "Ruler"
+msgstr "Erregela"
+
+#: ../src/vikwindow.c:224
+msgid "Select"
+msgstr "Hautatu"
+
+#: ../src/vikwindow.c:381
+msgid "Location lookup aborted"
+msgstr ""
+
+#: ../src/vikwindow.c:401
+#, c-format
+msgid "Location found: %s"
+msgstr ""
+
+#: ../src/vikwindow.c:410
+msgid "Unable to determine location"
+msgstr ""
+
+#: ../src/vikwindow.c:434
+msgid "Default Map"
+msgstr ""
+
+#: ../src/vikwindow.c:444
+msgid "Trying to determine location..."
+msgstr ""
+
+#: ../src/vikwindow.c:447
+msgid "Determining location"
+msgstr ""
+
+#. Create tooltip
+#: ../src/vikwindow.c:605
+msgid "Select zoom level"
+msgstr "Hautatu zoom-maila"
+
+#: ../src/vikwindow.c:923
+#, c-format
+msgid ""
+"Do you want to save the changes you made to the document \"%s\"?\n"
+"\n"
+"Your changes will be lost if you don't save them."
+msgstr ""
+"Gorde nahi duzu \"%s\" dokumentuan egindako aldaketak?\n"
+"\n"
+"Zuk egindako aldaketak gal daitezke gordetzen ez baduzu."
+
+#: ../src/vikwindow.c:927
+msgid "Don't Save"
+msgstr "Ez gorde"
+
+#: ../src/vikwindow.c:1005
+msgid "mpp"
+msgstr "mpp"
+
+#: ../src/vikwindow.c:1005
+msgid "pixelfact"
+msgstr "pixel-faktorea"
+
+#: ../src/vikwindow.c:1169
+#, c-format
+msgid "%s %s %dm"
+msgstr "%s %s %dm"
+
+#: ../src/vikwindow.c:1171
+#, c-format
+msgid "%s %s %dft"
+msgstr "%s %s %doin"
+
+#: ../src/vikwindow.c:1174
+#, c-format
+msgid "%s %s"
+msgstr "%s %s"
+
+#. NB Ctrl+Shift+R is used for Refresh (deemed more important), so use 'U' instead
+#: ../src/vikwindow.c:1562
+msgid "_Ruler"
+msgstr "_Erregela"
+
+#: ../src/vikwindow.c:1562
+msgid "Ruler Tool"
+msgstr "Erregela-tresna"
+
+#: ../src/vikwindow.c:1810 ../src/vikwindow.c:3697
+msgid "_Zoom"
+msgstr "_Zooma"
+
+#: ../src/vikwindow.c:1810
+msgid "Zoom Tool"
+msgstr "Zoom tresna"
+
+#: ../src/vikwindow.c:1855 ../src/vikwindow.c:3698
+msgid "_Pan"
+msgstr "_Desplazamendu"
+
+#: ../src/vikwindow.c:1855
+msgid "Pan Tool"
+msgstr "Desplazamentu tresna"
+
+#: ../src/vikwindow.c:1972
+msgid "_Select"
+msgstr "_Hautatu"
+
+#: ../src/vikwindow.c:1972
+msgid "Select Tool"
+msgstr "Hautatze-tresna"
+
+#: ../src/vikwindow.c:2123
+msgid "You must select a layer to show its properties."
+msgstr "Aurekatu geruza bat bere propietateak ikusteko."
+
+#. No error to show, so unlikely this will get called
+#: ../src/vikwindow.c:2137
+msgid "The help system is not available."
+msgstr "Laguntza sistema ez dago eskuragarri."
+
+#. Main error path
+#: ../src/vikwindow.c:2140
+#, c-format
+msgid ""
+"Help is not available because: %s.\n"
+"Ensure a Mime Type ghelp handler program is installed (e.g. yelp)."
+msgstr ""
+"Laguntza ez dago eskuragarri honengatik: %s\n"
+"Instalatu ghelp laguntza kudeatzen duen Mime motatako programa bat (hala "
+"nola yelp)."
+
+#: ../src/vikwindow.c:2160
+msgid "You must select a layer to delete."
+msgstr "Aukeratu behar duzu ezabatu nahi duzun geruza."
+
+#: ../src/vikwindow.c:2396
+msgid "Untitled"
+msgstr "Titulugabea"
+
+#: ../src/vikwindow.c:2503
+#, c-format
+msgid "Unable to add '%s' to the list of recently used documents"
+msgstr "Ezin da  '%s'  gehitu erabili berri diren dokumentuen zerrendara"
+
+#: ../src/vikwindow.c:2540
+msgid "The file you requested could not be opened."
+msgstr "Eskatu duzun fitxategia ezin da ireki."
+
+#: ../src/vikwindow.c:2543
+msgid ""
+"GPSBabel is required to load files of this type or GPSBabel encountered "
+"problems."
+msgstr ""
+"GPSBabel eskatzen du mota horretako fitxategiak kargatzeko edo GPSBabel-ek "
+"arazoak izan ditu."
+
+#: ../src/vikwindow.c:2546
+#, c-format
+msgid "Unable to load malformed GPX file %s"
+msgstr "Ezin da gaizki eratutako %s GPX fitxategia kargatu"
+
+#: ../src/vikwindow.c:2549
+#, c-format
+msgid "Unsupported file type for %s"
+msgstr "Onartzen ez den fitxategi mota % s"
+
+#. Since we can process .vik files with issues just show a warning in the status bar
+#. Not that a user can do much about it... or tells them what this issue is yet...
+#: ../src/vikwindow.c:2555
+#, c-format
+msgid "WARNING: issues encountered loading %s"
+msgstr "Kontuz: erroreak %s kargatzean"
+
+#: ../src/vikwindow.c:2613
+msgid "Please select a GPS data file to open. "
+msgstr "Hautatu GPS datu-fitxategia irekitzeko. "
+
+#: ../src/vikwindow.c:2629
+msgid "Geocaching"
+msgstr "Geocaching"
+
+#: ../src/vikwindow.c:2635
+msgid "Google Earth"
+msgstr "Google Earth"
+
+#: ../src/vikwindow.c:2640
+msgid "GPX"
+msgstr "GPX"
+
+#: ../src/vikwindow.c:2645 ../src/vikwindow.c:2734
+#: ../src/viking.desktop.in.h:1
+msgid "Viking"
+msgstr "Viking"
+
+#: ../src/vikwindow.c:2715
+msgid "Save as Viking File."
+msgstr "Gorde Viking fitxategi gisa"
+
+#: ../src/vikwindow.c:2841
+msgid "Exporting to file: "
+msgstr ""
+
+#. Confirm what happened.
+#: ../src/vikwindow.c:2858
+#, c-format
+msgid "Exported files: %d"
+msgstr ""
+
+#: ../src/vikwindow.c:2870
+msgid "Nothing to Export!"
+msgstr ""
+
+#: ../src/vikwindow.c:2874
+msgid "Export to directory"
+msgstr ""
+
+#: ../src/vikwindow.c:2896
+msgid "Could not convert all files"
+msgstr ""
+
+#: ../src/vikwindow.c:2932
+#, c-format
+msgid "%d bytes"
+msgstr ""
+
+#: ../src/vikwindow.c:2934
+#, c-format
+msgid "%3.1f kB"
+msgstr ""
+
+#: ../src/vikwindow.c:2936
+#, c-format
+msgid "%3.1f MB"
+msgstr ""
+
+#: ../src/vikwindow.c:2937
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"%s\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../src/vikwindow.c:2942
+msgid "File not accessible"
+msgstr ""
+
+#: ../src/vikwindow.c:2945
+msgid "No Viking File"
+msgstr ""
+
+#: ../src/vikwindow.c:3035
+msgid "This layer has no configurable properties."
+msgstr ""
+
+#. Try harder...
+#: ../src/vikwindow.c:3169 ../src/vikwindow.c:3175
+msgid "Generating image file..."
+msgstr "Irudi-fitxategia sortzen..."
+
+#: ../src/vikwindow.c:3197
+msgid ""
+"Failed to generate internal image.\n"
+"\n"
+"Try creating a smaller image."
+msgstr ""
+"Errorea  barne irudi-fitxategia sortzen.\n"
+"\n"
+"Saiatu irudi txikiagoa sortzen."
+
+#: ../src/vikwindow.c:3205
+msgid "Failed to generate image file."
+msgstr "Ezin izan da irudi-fitxategia sortu."
+
+#. Success
+#: ../src/vikwindow.c:3210
+msgid "Image file generated."
+msgstr "Irudi-fitxategia sortu da."
+
+#: ../src/vikwindow.c:3314
+msgid ""
+"Viewable region outside allowable pixel size bounds for image. Clipping "
+"width/height values."
+msgstr ""
+"Ikusgai dagoen erregioa onartzen den irudiaren mugatik kanpo dago. Txikitu "
+"luze-zabaleraren balioak."
+
+#: ../src/vikwindow.c:3339
+#, c-format
+msgid "Total area: %ldm x %ldm (%.3f sq. km)"
+msgstr "Area osoa: %ldm x %ldm (%.3f  km koadro)"
+
+#: ../src/vikwindow.c:3342
+#, c-format
+msgid "Total area: %ldm x %ldm (%.3f sq. miles)"
+msgstr "Area osoa: %ldm x %ldm (%.3f  milia koadro)"
+
+#: ../src/vikwindow.c:3363
+msgid "Save Image"
+msgstr "Gorde irudia"
+
+#: ../src/vikwindow.c:3393
+msgid "PNG"
+msgstr "PNG"
+
+#: ../src/vikwindow.c:3416
+msgid "You must be in UTM mode to use this feature"
+msgstr "Eginbide hau erabili ahal izateko UTM moeuan egon behar zara."
+
+#: ../src/vikwindow.c:3421
+msgid "Choose a directory to hold images"
+msgstr "Hautatu direktorio bat irudiak sartzeko"
+
+#. todo: default for answers inside VikWindow or static (thruout instance)
+#: ../src/vikwindow.c:3442
+msgid "Save to Image File"
+msgstr "Gorde irudi-fitxategian"
+
+#: ../src/vikwindow.c:3459
+msgid "Width (pixels):"
+msgstr "Zabalera (pixel):"
+
+#: ../src/vikwindow.c:3461
+msgid "Height (pixels):"
+msgstr "Altuera (pixeletan):"
+
+#: ../src/vikwindow.c:3464
+msgid ""
+"WARNING: USING LARGE IMAGES OVER 10000x10000\n"
+"MAY CRASH THE PROGRAM!"
+msgstr ""
+"Kontuz! 10000x10000 pixel edo handiagoak diren irudiak erabiltzeak\n"
+"programa blokea dezake."
+
+#: ../src/vikwindow.c:3466
+msgid "Zoom (meters per pixel):"
+msgstr "Zooma (metroak pixeleko):"
+
+#: ../src/vikwindow.c:3482
+msgid "Area in current viewable window"
+msgstr "Area ikusgai den huneko leihoan"
+
+#: ../src/vikwindow.c:3492
+msgid "Save as PNG"
+msgstr "Gorde PNG gisa"
+
+#: ../src/vikwindow.c:3493
+msgid "Save as JPEG"
+msgstr "Gorde JPEG gisa"
+
+#: ../src/vikwindow.c:3515
+msgid "East-west image tiles:"
+msgstr "Ekialde-mendebalde irudi-lauzak"
+
+#: ../src/vikwindow.c:3517
+msgid "North-south image tiles:"
+msgstr "Iparra-Hegoa irudi-lauzak"
+
+#: ../src/vikwindow.c:3656
+msgid "Choose a background color"
+msgstr "Aukeratu atzeko planoko kolorea"
+
+#: ../src/vikwindow.c:3672
+msgid "Choose a track highlight color"
+msgstr "Aukeratu arrastoa nabarmentzeko kolorea"
+
+#: ../src/vikwindow.c:3693
+msgid "_File"
+msgstr "_Fitxategia"
+
+#: ../src/vikwindow.c:3694
+msgid "_Edit"
+msgstr "_Editatu"
+
+#: ../src/vikwindow.c:3696
+msgid "_Show"
+msgstr "_Erakutsi"
+
+#: ../src/vikwindow.c:3699
+msgid "_Layers"
+msgstr "_Geruzak"
+
+#: ../src/vikwindow.c:3700
+msgid "_Tools"
+msgstr "_Tresnak"
+
+#: ../src/vikwindow.c:3701
+msgid "_Webtools"
+msgstr "_Web-tresnak"
+
+#: ../src/vikwindow.c:3702 ../src/vikwindow.c:3763
+msgid "_Help"
+msgstr "_Laguntza"
+
+#: ../src/vikwindow.c:3704
+msgid "New file"
+msgstr "Fitxategi berria"
+
+#: ../src/vikwindow.c:3705
+msgid "_Open..."
+msgstr "_Ireki..."
+
+#: ../src/vikwindow.c:3705
+msgid "Open a file"
+msgstr "Ireki fitxategi bat"
+
+#: ../src/vikwindow.c:3706
+msgid "Open _Recent File"
+msgstr "Azken fitxategiak"
+
+#: ../src/vikwindow.c:3707
+msgid "Append _File..."
+msgstr "Erantsi fitxatgia..."
+
+#: ../src/vikwindow.c:3707
+msgid "Append data from a different file"
+msgstr "Erantsi beste fitxategi baten datuak"
+
+#: ../src/vikwindow.c:3708
+msgid "_Export All"
+msgstr ""
+
+#: ../src/vikwindow.c:3708
+msgid "Export All TrackWaypoint Layers"
+msgstr ""
+
+#: ../src/vikwindow.c:3709
+msgid "_GPX..."
+msgstr ""
+
+#: ../src/vikwindow.c:3709
+msgid "Export as GPX"
+msgstr ""
+
+#: ../src/vikwindow.c:3710
+msgid "A_cquire"
+msgstr "Eskuratu"
+
+#: ../src/vikwindow.c:3711
+msgid "Transfer data from a GPS device"
+msgstr "Ekarri datuak GPS batetik"
+
+#: ../src/vikwindow.c:3712
+msgid "Import File With GPS_Babel..."
+msgstr "Inportatu datuak GPSBabel-en bidez"
+
+#: ../src/vikwindow.c:3712
+msgid "Import file via GPSBabel converter"
+msgstr "Inportatu datuak GPSBabel bihurgailuaren bidez"
+
+#: ../src/vikwindow.c:3713
+msgid "_Directions..."
+msgstr ""
+
+#: ../src/vikwindow.c:3713
+msgid "Get driving directions"
+msgstr ""
+
+#: ../src/vikwindow.c:3715
+msgid "_OSM Traces..."
+msgstr "_OSM Traces..."
+
+#: ../src/vikwindow.c:3715
+msgid "Get traces from OpenStreetMap"
+msgstr "Lortu arrastoak OpenStreetMap-etik"
+
+#: ../src/vikwindow.c:3716
+msgid "_My OSM Traces..."
+msgstr "_My OSM Traces..."
+
+#: ../src/vikwindow.c:3716
+msgid "Get Your Own Traces from OpenStreetMap"
+msgstr "Lortu zure arrastoak OpenStreetMaps-etik"
+
+#: ../src/vikwindow.c:3719
+msgid "Geo_caches..."
+msgstr "Geo_cache-ak..."
+
+#: ../src/vikwindow.c:3719
+msgid "Get Geocaches from geocaching.com"
+msgstr "Lortu Geocache-ak geocaching.com orritik"
+
+#: ../src/vikwindow.c:3722
+msgid "Create waypoints from geotagged images"
+msgstr "Sortu bide-puntuak geo-etiketatutako irudietatik"
+
+#: ../src/vikwindow.c:3725
+msgid "Create waypoints from Wikipedia items in the current view"
+msgstr "Sortu bide-puntuak Wikipedia elementuetatik uneko ikuspegian"
+
+#: ../src/vikwindow.c:3727
+msgid "_Save"
+msgstr "_Gorde"
+
+#: ../src/vikwindow.c:3727
+msgid "Save the file"
+msgstr "Gorde fitxategia"
+
+#: ../src/vikwindow.c:3728
+msgid "Save _As..."
+msgstr "Gorde _honela..."
+
+#: ../src/vikwindow.c:3728
+msgid "Save the file under different name"
+msgstr "Gorde fitxategia beste izen batez"
+
+#: ../src/vikwindow.c:3729
+msgid "Properties..."
+msgstr ""
+
+#: ../src/vikwindow.c:3729
+msgid "File Properties"
+msgstr ""
+
+#: ../src/vikwindow.c:3730
+msgid "_Generate Image File..."
+msgstr "_Sortu irudi-fitxategia..."
+
+#: ../src/vikwindow.c:3730
+msgid "Save a snapshot of the workspace into a file"
+msgstr "Gorde lan-arearen pantaila-argazkia fitxategi batean"
+
+#: ../src/vikwindow.c:3731
+msgid "Generate _Directory of Images..."
+msgstr "Sortu irudi-direktorio bat"
+
+#: ../src/vikwindow.c:3731
+msgid "FIXME:IMGDIR"
+msgstr "FIXME:IMGDIR"
+
+#: ../src/vikwindow.c:3732
+msgid "_Print..."
+msgstr "_Inprimatu..."
+
+#: ../src/vikwindow.c:3732
+msgid "Print maps"
+msgstr "Inprimatu mapak"
+
+#: ../src/vikwindow.c:3733
+msgid "E_xit"
+msgstr "I_rten"
+
+#: ../src/vikwindow.c:3733
+msgid "Exit the program"
+msgstr "Irten programatik"
+
+#: ../src/vikwindow.c:3734
+msgid "Save and Exit"
+msgstr "Gorde eta Atera"
+
+#: ../src/vikwindow.c:3734
+msgid "Save and Exit the program"
+msgstr "Gorde eta atera programatik"
+
+#: ../src/vikwindow.c:3736
+msgid "Go to the _Default Location"
+msgstr "Joan lehenetsitako kokalekura"
+
+#: ../src/vikwindow.c:3736
+msgid "Go to the default location"
+msgstr "Joan lehenetsitako kokalekura"
+
+#: ../src/vikwindow.c:3737
+msgid "Go to _Location..."
+msgstr "Joan kokalekura..."
+
+#: ../src/vikwindow.c:3737
+msgid "Go to address/place using text search"
+msgstr "Joan helbidera/tokira testu bilaketaren bidez"
+
+#: ../src/vikwindow.c:3738
+msgid "_Go to Lat/Lon..."
+msgstr "_Joan Lat/Lon kokalekura..."
+
+#: ../src/vikwindow.c:3738
+msgid "Go to arbitrary lat/lon coordinate"
+msgstr "Joan lat/lon kokaleku arbitrario batera"
+
+#: ../src/vikwindow.c:3739
+msgid "Go to UTM..."
+msgstr "Joan UTMra...."
+
+#: ../src/vikwindow.c:3739
+msgid "Go to arbitrary UTM coordinate"
+msgstr "Joan UTM koordinatu arbitrario batera"
+
+#: ../src/vikwindow.c:3740
+msgid "_Refresh"
+msgstr "_Freskatu"
+
+#: ../src/vikwindow.c:3740
+msgid "Refresh any maps displayed"
+msgstr "Freskatu bistaratutako mapa guztiak"
+
+#: ../src/vikwindow.c:3741
+msgid "Set _Highlight Color..."
+msgstr "Ezarri nabarmentzeko kolorea..."
+
+#: ../src/vikwindow.c:3742
+msgid "Set Bac_kground Color..."
+msgstr "Ezarri atzeko planoko kolorea"
+
+#: ../src/vikwindow.c:3743
+msgid "Zoom _In"
+msgstr "_Handiagotu"
+
+#: ../src/vikwindow.c:3744
+msgid "Zoom _Out"
+msgstr "_Txikiagotu"
+
+#: ../src/vikwindow.c:3745
+msgid "Zoom _To..."
+msgstr "Zoom hona..."
+
+#: ../src/vikwindow.c:3746
+msgid "Pan _North"
+msgstr "Desplazatu iparrera"
+
+#: ../src/vikwindow.c:3747
+msgid "Pan _East"
+msgstr "Desplazatu ekialdera"
+
+#: ../src/vikwindow.c:3748
+msgid "Pan _South"
+msgstr "Desplazatu hegoaldera"
+
+#: ../src/vikwindow.c:3749
+msgid "Pan _West"
+msgstr "Desplazatu mendebaldera"
+
+#: ../src/vikwindow.c:3750
+msgid "Background _Jobs"
+msgstr "Atzeko planoko lanak"
+
+#: ../src/vikwindow.c:3752
+msgid "Cu_t"
+msgstr "_Ebaki"
+
+#: ../src/vikwindow.c:3756
+msgid "Delete All"
+msgstr "Ezabatu guztiak"
+
+#: ../src/vikwindow.c:3757
+msgid "_Flush Map Cache"
+msgstr "_Hustu mapen cache-a"
+
+#: ../src/vikwindow.c:3758
+msgid "_Set the Default Location"
+msgstr "_Ezarri lehenetsitako kokalekua"
+
+#: ../src/vikwindow.c:3758
+msgid "Set the Default Location to the current position"
+msgstr "_Ezarri lehenetsitako kokalekua uneko posizioan"
+
+#: ../src/vikwindow.c:3759
+msgid "_Preferences"
+msgstr "_Hobespenak"
+
+#: ../src/vikwindow.c:3760
+msgid "_Layer Defaults"
+msgstr ""
+
+#: ../src/vikwindow.c:3761
+msgid "_Properties"
+msgstr "_Propietateak"
+
+#: ../src/vikwindow.c:3764
+msgid "_About"
+msgstr "Honi _buruz"
+
+#: ../src/vikwindow.c:3768
+msgid "_KML..."
+msgstr ""
+
+#: ../src/vikwindow.c:3768
+msgid "Export as KML"
+msgstr ""
+
+#: ../src/vikwindow.c:3774
+msgid "_UTM Mode"
+msgstr "_UTM modua"
+
+#: ../src/vikwindow.c:3775
+msgid "_Expedia Mode"
+msgstr "_Expedia modua"
+
+#: ../src/vikwindow.c:3776
+msgid "_Mercator Mode"
+msgstr "_Mercator modua"
+
+#: ../src/vikwindow.c:3777
+msgid "Lat_/Lon Mode"
+msgstr "Lat_/Lon modua"
+
+#: ../src/vikwindow.c:3781
+msgid "Show _Scale"
+msgstr "Erakutsi eskala"
+
+#: ../src/vikwindow.c:3781
+msgid "Show Scale"
+msgstr "Erakutsi eskala"
+
+#: ../src/vikwindow.c:3782
+msgid "Show _Center Mark"
+msgstr "Erakutsi erdiko marka"
+
+#: ../src/vikwindow.c:3782
+msgid "Show Center Mark"
+msgstr "Erakutsi erdiko marka"
+
+#: ../src/vikwindow.c:3783
+msgid "Show _Highlight"
+msgstr "Erakutsi nabarmen"
+
+#: ../src/vikwindow.c:3783
+msgid "Show Highlight"
+msgstr "Erakutsi nabarmen"
+
+#: ../src/vikwindow.c:3784
+msgid "_Full Screen"
+msgstr "_Pantaila osoa"
+
+#: ../src/vikwindow.c:3784
+msgid "Activate full screen mode"
+msgstr "Aktibatu pantaila osoa modua"
+
+#: ../src/vikwindow.c:3785
+msgid "Show Side _Panel"
+msgstr "Erakutsi alboko panela"
+
+#: ../src/vikwindow.c:3785
+msgid "Show Side Panel"
+msgstr "Erakutsi alboko panela"
+
+#: ../src/vikwindow.c:3786
+msgid "Show Status_bar"
+msgstr "Erakutsi egoera-barra"
+
+#: ../src/vikwindow.c:3786
+msgid "Show Statusbar"
+msgstr "Erakutsi egoera-barra"
+
+#: ../src/vikwindow.c:3787
+msgid "Show _Toolbar"
+msgstr "Erakutsi _tresna-barra"
+
+#: ../src/vikwindow.c:3787
+msgid "Show Toolbar"
+msgstr "Erakutsi tresna barra"
+
+#: ../src/vikwindow.c:3788
+msgid "Show _Menu"
+msgstr "Erakutsi _menua"
+
+#: ../src/vikwindow.c:3788
+msgid "Show Menu"
+msgstr "Erakutsi menua"
+
+#: ../src/vikwindow.c:3862
+#, c-format
+msgid "New _%s Layer"
+msgstr "_%s geruza berria"
+
+#: ../src/viking.desktop.in.h:2
+msgid "GPS Data Manager"
+msgstr "GPS datu-kudeatzailea"
+
+#: ../src/viking.desktop.in.h:3
+msgid "Map Based GPS Data Manager (live data capable)."
+msgstr ""
+"GPS Data Manager horretan oinarrituriko mapa (bat-bateko datuak zuzenean "
+"erabiltzeko gai)."
+
+#: ../src/libjpeg/jpeg-data.c:206
+msgid "Data does not follow JPEG specification."
+msgstr "Datuek ez dute JPEG espezifikazioak betetzen."
+
+#: ../src/libjpeg/jpeg-data.c:291
+#, c-format
+msgid "Path '%s' invalid."
+msgstr "'%s'  ez baliozko bide-izena"
+
+#: ../src/libjpeg/jpeg-data.c:309
+#, c-format
+msgid "Could not read '%s'."
+msgstr "Ezin da irakurri  '%s'."
