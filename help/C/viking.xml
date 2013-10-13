@@ -1606,8 +1606,12 @@ This table may be invoked from a variety of different layer levels and will then
 <para>
 <figure>
 <title>Track List Dialog: Example</title>
+<blockquote>
+<para>
 This is showing all tracks and routes (although there are no actual routes here!) in multiple TrackWaypoint layers, that has been sorted by height.
 Note that routes will not have timestamps or speeds, but may have elevations and should have some distance!
+</para>
+</blockquote>
 <screenshot>
   <graphic format="PNG" fileref="figures/LayersTracksList.png"/>
 </screenshot>
@@ -1641,7 +1645,11 @@ This table may be invoked from a variety of different layer levels and will then
 <para>
 <figure>
 <title>Waypoint List Dialog: Example</title>
+<blockquote>
+<para>
 This was invoked on a TrackWaypoint layer and shows all waypoints from that single layer. It has been sorted by the symbols.
+</para>
+</blockquote>
 <screenshot>
   <graphic format="PNG" fileref="figures/WaypointsList.png"/>
 </screenshot>
