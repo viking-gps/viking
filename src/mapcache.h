@@ -28,8 +28,8 @@
 G_BEGIN_DECLS
 
 void a_mapcache_init ();
-void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor );
-GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor );
+void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar *name );
+GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar *name );
 void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, guint zoom );
 void a_mapcache_flush ();
 void a_mapcache_uninit ();

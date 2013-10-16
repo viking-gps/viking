@@ -125,7 +125,7 @@ Example:
 Export Viking's cache files of a map type to an mbtiles file:
 $ viking-cache-mbtile.py -t 17 ~/.viking-maps OSM_Cycle.mbtiles
     
-Import from an MB Tiles into Viking's cache file layour is not available [yet]
+Import from an MB Tiles file into Viking's cache file layout is not available [yet]
 
 Note you can use the http://github.com/mapbox/mbutil mbutil script to further handle .mbtiles
 such as converting it into an OSM tile layout and then pointing a new Viking Map at that location with the map type of 'On Disk OSM Layout'""")

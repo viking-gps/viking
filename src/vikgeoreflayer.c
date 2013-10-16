@@ -132,6 +132,7 @@ VikLayerInterface vik_georef_layer_interface = {
 
   (VikLayerFuncSetParam)                georef_layer_set_param,
   (VikLayerFuncGetParam)                georef_layer_get_param,
+  (VikLayerFuncChangeParam)             NULL,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,
@@ -548,7 +549,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
   gtk_widget_set_tooltip_text ( GTK_WIDGET(yspin), _("the scale of the map in the Y direction (meters per pixel)") );
 
   imagelabel = gtk_label_new ( _("Map Image:") );
-  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
+  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE);
 
   if (*vgl)
   {

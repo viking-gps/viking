@@ -78,7 +78,6 @@ void osm_init () {
                                 "license", "CC-BY-SA",
                                 "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
-
   VikMapSource *mapquest_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", 19,
@@ -114,12 +113,24 @@ void osm_init () {
                                 "use-direct-file-access", TRUE,
                                 NULL));
 
+  // NB no cache needed for this type!!
+  VikMapSource *mbtiles_type =
+    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+                                "id", 23,
+                                "label", _("MBTiles File"),
+                                // For using your own generated data assumed you know the license already!
+                                "copyright", "© OpenStreetMap contributors", // probably
+                                "use-direct-file-access", TRUE,
+                                "is-mbtiles", TRUE,
+                                NULL));
+
   maps_layer_register_map_source (mapquest_type);
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (cycle_type);
   maps_layer_register_map_source (transport_type);
   maps_layer_register_map_source (hot_type);
   maps_layer_register_map_source (direct_type);
+  maps_layer_register_map_source (mbtiles_type);
 
   // Webtools
   VikWebtoolCenter *webtool = NULL;

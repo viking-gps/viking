@@ -188,7 +188,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_FILEENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
+        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, GPOINTER_TO_INT(param->widget_data));
         if ( vlpd.s )
           vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), vlpd.s );
       }
@@ -196,7 +196,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_FOLDERENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, VF_FILTER_NONE);
         if ( vlpd.s )
           vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), vlpd.s );
       }
@@ -309,13 +309,20 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
   return rv;
 }
 
-gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
-				      guint16 params_count, gchar **groups, guint8 groups_count,
-				      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
-				      gpointer pass_along1, gpointer pass_along2,
-				      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
-				      gpointer pass_along_getparam )
-				      /* pass_along1 and pass_along2 are for set_param first and last params */
+//static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointer *pass_along)
+gint a_uibuilder_properties_factory ( const gchar *dialog_name,
+                                      GtkWindow *parent,
+                                      VikLayerParam *params,
+                                      guint16 params_count,
+                                      gchar **groups,
+                                      guint8 groups_count,
+                                      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
+                                      gpointer pass_along1,
+                                      gpointer pass_along2,
+                                      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
+                                      gpointer pass_along_getparam,
+                                      void (*changeparam) (GtkWidget*, ui_change_values) )
+                                      /* pass_along1 and pass_along2 are for set_param first and last params */
 {
   guint16 i, j, widget_count = 0;
   gboolean must_redraw = FALSE;
@@ -348,7 +355,9 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
     GtkWidget **tables = NULL; /* for more than one group */
 
     GtkWidget *notebook = NULL;
+    GtkWidget **labels = g_malloc ( sizeof(GtkWidget *) * widget_count );
     GtkWidget **widgets = g_malloc ( sizeof(GtkWidget *) * widget_count );
+    ui_change_values *change_values = g_malloc ( sizeof(ui_change_values) * widget_count );
 
     if ( groups && groups_count > 1 )
     {
@@ -390,10 +399,45 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
         widgets[j] = a_uibuilder_new_widget ( &(params[i]), getparam ( pass_along_getparam, i, FALSE ) );
 
         if ( widgets[j] ) {
-          gtk_table_attach ( GTK_TABLE(table), gtk_label_new(_(params[i].title)), 0, 1, j, j+1, 0, 0, 0, 0 );
+          labels[j] = gtk_label_new(_(params[i].title));
+          gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
           gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL, 0, 2, 2 );
+
+          if ( changeparam )
+          {
+            change_values[j][UI_CHG_LAYER] = pass_along1;
+            change_values[j][UI_CHG_PARAM] = &params[i];
+            change_values[j][UI_CHG_PARAM_ID] = GINT_TO_POINTER((gint)i);
+            change_values[j][UI_CHG_WIDGETS] = widgets;
+            change_values[j][UI_CHG_LABELS] = labels;
+
+            switch ( params[i].widget_type )
+            {
+              // Change conditions for other widget types can be added when needed
+              case VIK_LAYER_WIDGET_COMBOBOX:
+                g_signal_connect ( G_OBJECT(widgets[j]), "changed", G_CALLBACK(changeparam), change_values[j] );
+                break;
+              case VIK_LAYER_WIDGET_CHECKBUTTON:
+                g_signal_connect ( G_OBJECT(widgets[j]), "toggled", G_CALLBACK(changeparam), change_values[j] );
+                break;
+              default: break;
+            }
+          }
         }
         j++;
+      }
+    }
+
+    // Repeat run through to force changeparam callbacks now that the widgets have been created
+    // This primarily so the widget sensitivities get set up
+    if ( changeparam ) {
+      for ( i = 0, j = 0; i < params_count; i++ ) {
+        if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
+          if ( widgets[j] ) {
+            changeparam ( widgets[j], change_values[j] );
+          }
+          j++;
+        }
       }
     }
 
@@ -421,6 +465,8 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name, GtkWindow *paren
 
       gtk_widget_destroy ( dialog ); /* hide before redrawing. */
       g_free ( widgets );
+      g_free ( labels );
+      g_free ( change_values );
       if ( tables )
         g_free ( tables );
 
@@ -469,7 +515,8 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
 					  paramdatas, 
 					  params,
 					  (gpointer) uibuilder_run_getparam, 
-					  params_defaults ) > 0 ) {
+					  params_defaults,
+					  NULL ) > 0 ) {
 
       return paramdatas;
     }

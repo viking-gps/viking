@@ -49,8 +49,8 @@ static GHashTable *cache = NULL;
 
 static GMutex *mc_mutex = NULL;
 
-#define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%.3f-%.3f"
-#define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-"
+#define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%d-%.3f-%.3f"
+#define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-%d-"
 
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */
@@ -124,9 +124,10 @@ static void list_add_entry ( gchar *key )
   }
 }
 
-void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
+void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
-  gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, x, y, z, type, zoom, alpha, xshrinkfactor, yshrinkfactor );
+  guint nn = name ? g_str_hash ( name ) : 0;
+  gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, x, y, z, type, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
   static int tmp = 0;
 
   g_mutex_lock(mc_mutex);
@@ -155,16 +156,20 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
   if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d size=%u\n", queue_count, queue_size ); tmp=0; }
 }
 
-GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor )
+GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
-  static char key[48];
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, x, y, z, type, zoom, alpha, xshrinkfactor, yshrinkfactor );
+  static char key[64];
+  guint nn = name ? g_str_hash ( name ) : 0;
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, x, y, z, type, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
   return g_hash_table_lookup ( cache, key );
 }
 
+/**
+ * Appears this is only used when redownloading tiles (i.e. to invalidate old images)
+ */
 void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, guint zoom )
 {
-  char key[40];
+  char key[64];
   List *loop = queue_tail;
   List *tmp;
   gint len;
@@ -172,7 +177,7 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
   if ( queue_tail == NULL )
     return;
 
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, x, y, z, type, zoom );
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, x, y, z, type, zoom, 0 );
   len = strlen(key);
 
   g_mutex_lock(mc_mutex);

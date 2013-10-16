@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005, Evan Battaglia <viking@greentorch.org>
  * Copyright (C) 2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (c) 2013, Rob Norris <rw_norris@hotmail.com>
  * UTM multi-zone stuff by Kit Transue <notlostyet@didactek.com>
  * Dynamic map type by Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
@@ -52,6 +53,11 @@
 #include "vikmapslayer.h"
 #include "icons/icons.h"
 
+#ifdef HAVE_SQLITE3_H
+#include "sqlite3.h"
+#include <gio/gio.h>
+#endif
+
 #define VIK_SETTINGS_MAP_MAX_TILES "maps_max_tiles"
 static gint MAX_TILES = 1000;
 
@@ -92,6 +98,7 @@ static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation );
 static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, gboolean is_file_operation );
+static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values );
 static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp );
 static VikMapsLayer *maps_layer_new ( VikViewport *vvp );
 static void maps_layer_free ( VikMapsLayer *vml );
@@ -117,12 +124,20 @@ static VikLayerParamData directory_default ( void )
   if (pref) data.s = g_strdup ( pref->s ); else data.s = "";
   return data;
 }
+static VikLayerParamData file_default ( void )
+{
+  VikLayerParamData data;
+  data.s = "";
+  return data;
+}
 static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
 static VikLayerParamData mapzoom_default ( void ) { return VIK_LPD_UINT ( 0 ); }
 
 VikLayerParam maps_layer_params[] = {
   { VIK_LAYER_MAPS, "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, mode_default, NULL, NULL },
   { VIK_LAYER_MAPS, "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, NULL, directory_default, NULL, NULL },
+  { VIK_LAYER_MAPS, "mapfile", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Map File:"), VIK_LAYER_WIDGET_FILEENTRY, GINT_TO_POINTER(VF_FILTER_MBTILES), NULL,
+    N_("An MBTiles file. Only applies when the map type method is 'MBTiles'"), file_default, NULL, NULL },
   { VIK_LAYER_MAPS, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
     N_("Control the Alpha value for transparency effects"), alpha_default, NULL, NULL },
   { VIK_LAYER_MAPS, "autodownload", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Autodownload maps:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
@@ -136,6 +151,7 @@ VikLayerParam maps_layer_params[] = {
 enum {
   PARAM_MAPTYPE=0,
   PARAM_CACHE_DIR,
+  PARAM_FILE,
   PARAM_ALPHA,
   PARAM_AUTODOWNLOAD,
   PARAM_ONLYMISSING,
@@ -208,6 +224,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   (VikLayerFuncSetParam)                maps_layer_set_param,
   (VikLayerFuncGetParam)                maps_layer_get_param,
+  (VikLayerFuncChangeParam)             maps_layer_change_param,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,
@@ -244,6 +261,10 @@ struct _VikMapsLayer {
   GtkMenu *dl_right_click_menu;
   VikCoord redownload_ul, redownload_br; /* right click menu only */
   VikViewport *redownload_vvp;
+  gchar *filename;
+#ifdef HAVE_SQLITE3_H
+  sqlite3 *mbtiles;
+#endif
 };
 
 enum { REDOWNLOAD_NONE = 0,    /* download only missing maps */
@@ -454,6 +475,13 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
   maps_layer_mkdir_if_default_dir ( vml );
 }
 
+static void maps_layer_set_file ( VikMapsLayer *vml, const gchar *name )
+{
+  if ( vml->filename )
+    g_free (vml->filename);
+  vml->filename = g_strdup (name);
+}
+
 /****************************************/
 /******** GOBJECT STUFF *****************/
 /****************************************/
@@ -519,6 +547,7 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerPa
   switch ( id )
   {
     case PARAM_CACHE_DIR: maps_layer_set_cache_dir ( vml, data.s ); break;
+    case PARAM_FILE: maps_layer_set_file ( vml, data.s ); break;
     case PARAM_MAPTYPE: {
       gint maptype = map_uniq_id_to_index(data.u);
       if ( maptype == NUM_MAP_TYPES )
@@ -585,6 +614,7 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
 	rv.s = vml->cache_dir ? vml->cache_dir : "";
       break;
     }
+    case PARAM_FILE: rv.s = vml->filename; break;
     case PARAM_MAPTYPE: rv.u = map_index_to_uniq_id ( vml->maptype ); break;
     case PARAM_ALPHA: rv.u = vml->alpha; break;
     case PARAM_AUTODOWNLOAD: rv.u = vml->autodownload; break;
@@ -592,6 +622,59 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
     case PARAM_MAPZOOM: rv.u = vml->mapzoom_id; break;
   }
   return rv;
+}
+
+static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values )
+{
+  switch ( GPOINTER_TO_INT(values[UI_CHG_PARAM_ID]) ) {
+    // Alter sensitivity of download option widgets according to the maptype setting.
+    case PARAM_MAPTYPE: {
+      // Get new value
+      VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+      // Is it *not* the OSM On Disk Tile Layout or the MBTiles type
+      gboolean sensitive = ( 21 != vlpd.u && 23 != vlpd.u);
+      GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+      GtkWidget **ww2 = values[UI_CHG_LABELS];
+      GtkWidget *w1 = ww1[PARAM_ONLYMISSING];
+      GtkWidget *w2 = ww2[PARAM_ONLYMISSING];
+      GtkWidget *w3 = ww1[PARAM_AUTODOWNLOAD];
+      GtkWidget *w4 = ww2[PARAM_AUTODOWNLOAD];
+      // Depends on autodownload value
+      gboolean missing_sense = sensitive && VIK_MAPS_LAYER(values[UI_CHG_LAYER])->autodownload;
+      if ( w1 ) gtk_widget_set_sensitive ( w1, missing_sense );
+      if ( w2 ) gtk_widget_set_sensitive ( w2, missing_sense );
+      if ( w3 ) gtk_widget_set_sensitive ( w3, sensitive );
+      if ( w4 ) gtk_widget_set_sensitive ( w4, sensitive );
+
+      // File only applicable for MBTiles type
+      // Directory for all other types
+      sensitive = ( 23 == vlpd.u);
+      GtkWidget *w5 = ww1[PARAM_FILE];
+      GtkWidget *w6 = ww2[PARAM_FILE];
+      GtkWidget *w7 = ww1[PARAM_CACHE_DIR];
+      GtkWidget *w8 = ww2[PARAM_CACHE_DIR];
+      if ( w5 ) gtk_widget_set_sensitive ( w5, sensitive );
+      if ( w6 ) gtk_widget_set_sensitive ( w6, sensitive );
+      if ( w7 ) gtk_widget_set_sensitive ( w7, !sensitive );
+      if ( w8 ) gtk_widget_set_sensitive ( w8, !sensitive );
+
+      break;
+    }
+
+    // Alter sensitivity of 'download only missing' widgets according to the autodownload setting.
+    case PARAM_AUTODOWNLOAD: {
+      // Get new value
+      VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+      GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+      GtkWidget **ww2 = values[UI_CHG_LABELS];
+      GtkWidget *w1 = ww1[PARAM_ONLYMISSING];
+      GtkWidget *w2 = ww2[PARAM_ONLYMISSING];
+      if ( w1 ) gtk_widget_set_sensitive ( w1, vlpd.b );
+      if ( w2 ) gtk_widget_set_sensitive ( w2, vlpd.b );
+      break;
+    }
+    default: break;
+  }
 }
 
 /****************************************/
@@ -611,8 +694,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   vml->last_ympp = 0.0;
 
   vml->dl_right_click_menu = NULL;
-  //vml->license_notice_shown = FALSE;
-
+  vml->filename = NULL;
   return vml;
 }
 
@@ -624,21 +706,36 @@ static void maps_layer_free ( VikMapsLayer *vml )
     g_object_ref_sink ( G_OBJECT(vml->dl_right_click_menu) );
   g_free(vml->last_center);
   vml->last_center = NULL;
+  g_free ( vml->filename );
+  vml->filename = NULL;
+
+#ifdef HAVE_SQLITE3_H
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+  if ( vik_map_source_is_mbtiles ( map ) ) {
+    if ( vml->mbtiles ) {
+      int ans = sqlite3_close ( vml->mbtiles );
+      if ( ans != SQLITE_OK ) {
+        // Only to console for information purposes only
+        g_warning ( "SQL Close problem: %d", ans );
+      }
+    }
+  }
+#endif
 }
 
 static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file)
 {
+  VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
   if (from_file != TRUE)
   {
     /* If this method is not called in file reading context
      * it is called in GUI context.
      * So, we can check if we have to inform the user about inconsistency */
     VikViewportDrawMode vp_drawmode;
-    VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
-    VikMapSource *map = NULL;
- 
     vp_drawmode = vik_viewport_get_drawmode ( vp );
-    map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
     if (vik_map_source_get_drawmode(map) != vp_drawmode) {
       const gchar *drawmode_name = vik_viewport_get_drawmode_name (vp, vik_map_source_get_drawmode(map));
       gchar *msg = g_strdup_printf(_("New map cannot be displayed in the current drawmode.\nSelect \"%s\" from View menu to view it."), drawmode_name);
@@ -646,6 +743,32 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
       g_free(msg);
     }
   }
+  
+  // Performed in post read as we now know the map type
+#ifdef HAVE_SQLITE3_H
+  // Do some SQL stuff
+  if ( vik_map_source_is_mbtiles ( map ) ) {
+    int ans = sqlite3_open_v2 ( vml->filename,
+                                &(vml->mbtiles),
+                                SQLITE_OPEN_READONLY,
+                                NULL );
+    if ( ans != SQLITE_OK ) {
+      // That didn't work, so here's why:
+      g_warning ( "%s: %s", __FUNCTION__, sqlite3_errmsg ( vml->mbtiles ) );
+
+      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
+                                 _("Failed to open MBTiles file: %s"),
+                                 vml->filename );
+      vml->mbtiles = NULL;
+    }
+  }
+#endif
+
+  // If the on Disk OSM Tile Layout type
+  if ( vml->maptype == 21 )
+    // Copy the directory into filename
+    //  thus the mapcache look up will be unique when using more than one of these map types
+    vml->filename = g_strdup (vml->cache_dir);
 }
 
 static const gchar* maps_layer_tooltip ( VikMapsLayer *vml )
@@ -705,18 +828,153 @@ static GdkPixbuf *pixbuf_shrink ( GdkPixbuf *pixbuf, gdouble xshrinkfactor, gdou
   return tmp;
 }
 
+#ifdef HAVE_SQLITE3_H
+/*
+static int sql_select_tile_dump_cb (void *data, int cols, char **fields, char **col_names )
+{
+  g_warning ( "Found %d columns", cols );
+  int i;
+  for ( i = 0; i < cols; i++ ) {
+    g_warning ( "SQL processing %s = %s", col_names[i], fields[i] );
+  }
+  return 0;
+}
+*/
+
+/**
+ *
+ */
+static GdkPixbuf *get_pixbuf_sql_exec ( sqlite3 *sql, gint xx, gint yy, gint zoom )
+{
+  GdkPixbuf *pixbuf = NULL;
+
+  // MBTiles stored internally with the flipping y thingy (i.e. TMS scheme).
+  gint flip_y = (gint) pow(2, zoom)-1 - yy;
+  gchar *statement = g_strdup_printf ( "SELECT tile_data FROM tiles WHERE zoom_level=%d AND tile_column=%d AND tile_row=%d;", zoom, xx, flip_y );
+
+  gboolean finished = FALSE;
+
+  sqlite3_stmt *sql_stmt = NULL;
+  int ans = sqlite3_prepare_v2 ( sql, statement, -1, &sql_stmt, NULL );
+  if ( ans != SQLITE_OK ) {
+    g_warning ( "%s: %s - %d", __FUNCTION__, "prepare failure", ans );
+    finished = TRUE;
+  }
+
+  while ( !finished ) {
+    ans = sqlite3_step ( sql_stmt );
+    switch (ans) {
+      case SQLITE_ROW: {
+        // Get tile_data blob
+        int count = sqlite3_column_count(sql_stmt);
+        if ( count != 1 )  {
+          g_warning ( "%s: %s - %d", __FUNCTION__, "count not one", count );
+          finished = TRUE;
+        }
+        else {
+          const void *data = sqlite3_column_blob ( sql_stmt, 0 );
+          int bytes = sqlite3_column_bytes ( sql_stmt, 0 );
+          if ( bytes < 1 )  {
+            g_warning ( "%s: %s (%d)", __FUNCTION__, "not enough bytes", bytes );
+            finished = TRUE;
+          }
+          else {
+            // Convert these blob bytes into a pixbuf via these streaming operations
+            GInputStream *stream = g_memory_input_stream_new_from_data ( data, bytes, NULL );
+            GError *error = NULL;
+            pixbuf = gdk_pixbuf_new_from_stream ( stream, NULL, &error );
+            if (error || (!pixbuf)) {
+              g_warning ( "%s: %s", __FUNCTION__, error->message );
+              g_error_free ( error );
+            }
+            g_input_stream_close ( stream, NULL, NULL );
+          }
+        }
+        break;
+      }
+      default:
+       // e.g. SQLITE_DONE | SQLITE_ERROR | SQLITE_MISUSE | etc...
+       // Finished normally
+       //  and give up on any errors
+       if ( ans != SQLITE_DONE )
+         g_warning ( "%s: %s - %d", __FUNCTION__, "step issue", ans );
+       finished = TRUE;
+       break;
+    }
+  }
+  ans = sqlite3_finalize ( sql_stmt );
+  
+  g_free ( statement );
+
+  return pixbuf;
+}
+#endif
+
+static GdkPixbuf *get_mbtiles_pixbuf ( VikMapsLayer *vml, gint xx, gint yy, gint zoom )
+{
+  GdkPixbuf *pixbuf = NULL;
+
+#ifdef HAVE_SQLITE3_H
+  if ( vml->mbtiles ) {
+    /*
+    gchar *statement = g_strdup_printf ( "SELECT name FROM sqlite_master WHERE type='table';" );
+    char *errMsg = NULL;
+    int ans = sqlite3_exec ( vml->mbtiles, statement, sql_select_tile_dump_cb, pixbuf, &errMsg );
+    if ( ans != SQLITE_OK ) {
+      // Only to console for information purposes only
+      g_warning ( "SQL problem: %d for %s - error: %s", ans, statement, errMsg );
+      sqlite3_free( errMsg );
+    }
+    g_free ( statement );
+    */
+
+    // Reading BLOBS is a bit more involved and so can't use the simpler sqlite3_exec ()
+    // Hence this specific function
+    pixbuf = get_pixbuf_sql_exec ( vml->mbtiles, xx, yy, zoom );
+  }
+#endif
+
+  return pixbuf;
+}
+
+static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, MapCoord *mapcoord, gdouble xshrinkfactor, gdouble yshrinkfactor )
+{
+  // Apply alpha setting
+  if ( pixbuf && vml->alpha < 255 )
+    pixbuf = pixbuf_set_alpha ( pixbuf, vml->alpha );
+
+  if ( pixbuf && ( xshrinkfactor != 1.0 || yshrinkfactor != 1.0 ) )
+    pixbuf = pixbuf_shrink ( pixbuf, xshrinkfactor, yshrinkfactor );
+
+  if ( pixbuf )
+    a_mapcache_add ( pixbuf, mapcoord->x, mapcoord->y,
+                     mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
+                     mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
+
+  return pixbuf;
+}
+
 static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, gchar *filename_buf, gint buf_len, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   GdkPixbuf *pixbuf;
 
   /* get the thing */
   pixbuf = a_mapcache_get ( mapcoord->x, mapcoord->y, mapcoord->z,
-                            mode, mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
+                            mode, mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
 
   if ( ! pixbuf ) {
-    if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) )
-      g_snprintf ( filename_buf, buf_len, DIRECTDIRACCESS,
-		   vml->cache_dir, (17 - mapcoord->scale), mapcoord->x, mapcoord->y, ".png" );
+    if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
+      // ATM MBTiles must be 'a direct access type'
+      if ( vik_map_source_is_mbtiles (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
+        pixbuf = get_mbtiles_pixbuf ( vml, mapcoord->x, mapcoord->y, (17 - mapcoord->scale) );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, mapcoord, xshrinkfactor, yshrinkfactor );
+        // return now to avoid file tests that aren't appropriate for this map type
+        return pixbuf;
+      }
+      else
+        g_snprintf ( filename_buf, buf_len, DIRECTDIRACCESS,
+                     vml->cache_dir, (17 - mapcoord->scale), mapcoord->x, mapcoord->y, ".png" );
+    }
     else
       g_snprintf ( filename_buf, buf_len, DIRSTRUCTURE,
 		   vml->cache_dir, mode,
@@ -738,15 +996,7 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
           g_object_unref ( G_OBJECT(pixbuf) );
         pixbuf = NULL;
       } else {
-          if ( vml->alpha < 255 )
-            pixbuf = pixbuf_set_alpha ( pixbuf, vml->alpha );
-          if ( xshrinkfactor != 1.0 || yshrinkfactor != 1.0 )
-            pixbuf = pixbuf_shrink ( pixbuf, xshrinkfactor, yshrinkfactor );
-
-          if ( pixbuf )
-            a_mapcache_add ( pixbuf, mapcoord->x, mapcoord->y,
-                             mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
-                             mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, mapcoord, xshrinkfactor, yshrinkfactor );
       }
     }
   }
@@ -1371,8 +1621,35 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
   gchar *source = NULL;
 
   if ( vik_map_source_is_direct_file_access ( map ) ) {
-    filename = g_strdup_printf ( DIRECTDIRACCESS, vml->cache_dir, ulm.scale, ulm.x, ulm.y, ".png" );
-    source = g_strconcat ( "file://", filename, NULL );
+    if ( vik_map_source_is_mbtiles ( map ) ) {
+      filename = g_strdup ( vml->filename );
+#ifdef HAVE_SQLITE3_H
+      // And whether to bother going into the SQL to check it's really there or not...
+      gchar *exists = NULL;
+      if ( vml->mbtiles ) {
+        GdkPixbuf *pixbuf = get_pixbuf_sql_exec ( vml->mbtiles, ulm.x, ulm.y, (17 - ulm.scale) );
+        if ( pixbuf ) {
+          exists = g_strdup ( _("YES") );
+          g_object_unref ( G_OBJECT(pixbuf) );
+        }
+        else {
+          exists = g_strdup ( _("NO") );
+        }
+      }
+      else
+        exists = g_strdup ( _("NO") );
+      gint flip_y = (gint) pow(2, (17 - ulm.scale))-1 - ulm.y;
+      // NB Also handles .jpg automatically due to pixbuf_new_from () support - although just print png for now.
+      source = g_strdup_printf ( "%s (%d%s%d%s%d.%s %s)", filename, ulm.scale, G_DIR_SEPARATOR_S, ulm.x, G_DIR_SEPARATOR_S, flip_y, "png", exists );
+      g_free ( exists );
+#else
+      source = g_strdup ( _("Not available") );
+#endif
+    }
+    else {
+      filename = g_strdup_printf ( DIRECTDIRACCESS, vml->cache_dir, ulm.scale, ulm.x, ulm.y, ".png" );
+      source = g_strconcat ( "file://", filename, NULL );
+    }
   }
   else {
 	filename = g_strdup_printf ( DIRSTRUCTURE, vml->cache_dir, vik_map_source_get_uniq_id(map), ulm.scale, ulm.z, ulm.x, ulm.y );

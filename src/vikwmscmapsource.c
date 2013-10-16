@@ -42,6 +42,7 @@ static gboolean _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gd
 static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest );
 static gboolean _supports_download_only_new ( VikMapSource *self );
 static gboolean _is_direct_file_access ( VikMapSource *self );
+static gboolean _is_mbtiles ( VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
@@ -202,6 +203,7 @@ vik_wmsc_map_source_class_init (VikWmscMapSourceClass *klass)
 	grandparent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	grandparent_class->supports_download_only_new = _supports_download_only_new;
 	grandparent_class->is_direct_file_access = _is_direct_file_access;
+	grandparent_class->is_mbtiles = _is_mbtiles;
 	
 	parent_class->get_uri = _get_uri;
 	parent_class->get_hostname = _get_hostname;
@@ -261,6 +263,12 @@ _supports_download_only_new ( VikMapSource *self )
 
 static gboolean
 _is_direct_file_access ( VikMapSource *self )
+{
+	return FALSE;
+}
+
+static gboolean
+_is_mbtiles ( VikMapSource *self )
 {
 	return FALSE;
 }

@@ -308,11 +308,12 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 	                                      layer_params_count,
 	                                      vik_layer_get_interface(layer)->params_groups,
 	                                      vik_layer_get_interface(layer)->params_groups_count,
-				                          (gboolean (*) (gpointer,guint16,VikLayerParamData,gpointer,gboolean)) defaults_run_setparam,
+	                                      (gboolean (*) (gpointer,guint16,VikLayerParamData,gpointer,gboolean)) defaults_run_setparam,
 	                                      GINT_TO_POINTER ( index ),
 	                                      params,
 	                                      defaults_run_getparam,
-	                                      GINT_TO_POINTER ( index ) ) ) {
+	                                      GINT_TO_POINTER ( index ),
+	                                      NULL ) ) {
 		// Save
 		layer_defaults_save_to_file();
     }

@@ -272,7 +272,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   descriptionentry = gtk_entry_new ();
 
   imagelabel = gtk_label_new (_("Image:"));
-  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN);
+  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE);
 
   {
     GtkCellRenderer *r;
@@ -837,6 +837,9 @@ void a_dialog_about ( GtkWindow *parent )
 #endif
 #ifdef HAVE_LIBBZ2
     "libbz2",
+#endif
+#ifdef HAVE_LIBSQLITE3
+    "libsqlite3",
 #endif
     NULL
   };

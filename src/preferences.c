@@ -192,7 +192,7 @@ void a_preferences_show_window(GtkWindow *parent) {
 				(gchar **) groups_names->pdata, groups_names->len, // groups, groups_count, // groups? what groups?!
 				(gboolean (*) (gpointer,guint16,VikLayerParamData,gpointer,gboolean)) preferences_run_setparam,
 				NULL /* not used */, contiguous_params,
-                                preferences_run_getparam, NULL /* not used */ ) ) {
+                                preferences_run_getparam, NULL, NULL /* not used */ ) ) {
       a_preferences_save_to_file();
     }
     g_free ( contiguous_params );

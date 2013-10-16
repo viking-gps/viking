@@ -141,6 +141,17 @@ typedef struct {
 VikLayerParamData vik_lpd_true_default ( void );
 VikLayerParamData vik_lpd_false_default ( void );
 
+typedef enum {
+  UI_CHG_LAYER = 0,
+  UI_CHG_PARAM,
+  UI_CHG_PARAM_ID,
+  UI_CHG_WIDGETS,
+  UI_CHG_LABELS,
+  UI_CHG_LAST
+} ui_change_index;
+
+typedef gpointer ui_change_values[UI_CHG_LAST];
+
 GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data );
 VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerParam *param );
 gint a_uibuilder_properties_factory ( const gchar *dialog_name,
@@ -149,11 +160,12 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       guint16 params_count,
                                       gchar **groups,
                                       guint8 groups_count,
-                                      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
+                                      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean), // AKA VikLayerFuncSetParam in viklayer.h
                                       gpointer pass_along1,
                                       gpointer pass_along2,
-                                      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
-                                      gpointer pass_along_getparam );
+                                      VikLayerParamData (*getparam) (gpointer,guint16,gboolean),  // AKA VikLayerFuncGetParam in viklayer.h
+                                      gpointer pass_along_getparam,
+                                      void (*changeparam) (GtkWidget*, ui_change_values) ); // AKA VikLayerFuncChangeParam in viklayer.h
                                       /* pass_along1 and pass_along2 are for set_param first and last params */
 
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,

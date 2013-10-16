@@ -71,6 +71,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->get_tilesize_y = NULL;
 	klass->get_drawmode = NULL;
 	klass->is_direct_file_access = NULL;
+	klass->is_mbtiles = NULL;
 	klass->supports_download_only_new = _supports_download_only_new;
 	klass->coord_to_mapcoord = NULL;
 	klass->mapcoord_to_center_coord = NULL;
@@ -233,6 +234,27 @@ vik_map_source_is_direct_file_access (VikMapSource * self)
 	g_return_val_if_fail (klass->is_direct_file_access != NULL, 0);
 
 	return (*klass->is_direct_file_access)(self);
+}
+
+/**
+ * vik_map_source_is_mbtiles:
+ * @self: the VikMapSource of interest.
+ *
+ *   Return true when the map is in an MB Tiles format.
+ *   See http://github.com/mapbox/mbtiles-spec
+ *   (Read Only ATM)
+ */
+gboolean
+vik_map_source_is_mbtiles (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->is_mbtiles != NULL, 0);
+
+	return (*klass->is_mbtiles)(self);
 }
 
 gboolean

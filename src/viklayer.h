@@ -156,6 +156,8 @@ typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, guint16,
 typedef VikLayerParamData
                       (*VikLayerFuncGetParam)              (VikLayer *, guint16, gboolean);
 
+typedef void          (*VikLayerFuncChangeParam)           (GtkWidget *, ui_change_values );
+
 typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *); // Should report success or failure
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *);
 
@@ -234,6 +236,7 @@ struct _VikLayerInterface {
   /* for I/O */
   VikLayerFuncSetParam              set_param;
   VikLayerFuncGetParam              get_param;
+  VikLayerFuncChangeParam           change_param;
 
   /* for I/O -- extra non-param data like TrwLayer data */
   VikLayerFuncReadFileData          read_file_data;
