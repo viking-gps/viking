@@ -2875,25 +2875,22 @@ static void export_to_common ( VikWindow *vw, VikFileType_t vft, const gchar *ex
     return;
   }
 
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Export to directory"),
+  GtkWidget *dialog = gtk_file_chooser_dialog_new ( _("Export to directory"),
                                                     GTK_WINDOW(vw),
-                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
                                                     GTK_STOCK_CANCEL,
                                                     GTK_RESPONSE_REJECT,
                                                     GTK_STOCK_OK,
                                                     GTK_RESPONSE_ACCEPT,
                                                     NULL );
-
-  GtkWidget *gw = gtk_file_chooser_widget_new ( GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), gw, TRUE, TRUE, 0 );
-
-  // try to make it a nice size - otherwise seems to default to something impractically small
-  gtk_window_set_default_size ( GTK_WINDOW(dialog), 600, 300 );
+  gtk_window_set_transient_for ( GTK_WINDOW(dialog), GTK_WINDOW(vw) );
+  gtk_window_set_destroy_with_parent ( GTK_WINDOW(dialog), TRUE );
+  gtk_window_set_modal ( GTK_WINDOW(dialog), TRUE );
 
   gtk_widget_show_all ( dialog );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
-    gchar *dir = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(gw) );
+    gchar *dir = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(dialog) );
     gtk_widget_destroy ( dialog );
     if ( dir ) {
       if ( !export_to ( vw, gl, vft, dir, extension ) )
