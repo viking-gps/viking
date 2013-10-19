@@ -2842,7 +2842,7 @@ static gboolean export_to ( VikWindow *vw, GList *gl, VikFileType_t vft, const g
       // Show some progress
       if ( this_success ) {
         export_count++;
-        gchar *message = g_strconcat ( _("Exporting to file: "), fn, NULL );
+        gchar *message = g_strdup_printf ( _("Exporting to file: %s"), fn );
         vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, message );
         while ( gtk_events_pending() )
           gtk_main_iteration ();
