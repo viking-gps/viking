@@ -306,7 +306,7 @@ AC_CACHE_CHECK([whether to enable MBTiles Support],
                [ac_cv_enable_mbtiles], [ac_cv_enable_mbtiles=yes])
 case $ac_cv_enable_mbtiles in
   yes)
-    AC_CHECK_HEADERS([sqlite3.h],[],[AC_MSG_ERROR([sqlite3.h is needed but not found - you will need to install package 'libmagic-dev' or similar. The feature can be disabled with --disable-mbtiles])])
+    AC_CHECK_HEADERS([sqlite3.h],[],[AC_MSG_ERROR([sqlite3.h is needed but not found - you will need to install package 'libsqlite3-dev' or similar. The feature can be disabled with --disable-mbtiles])])
     AC_CHECK_LIB(sqlite3, sqlite3_open, [], [AC_MSG_ERROR([libsqlite3 is needed but not found.])])
     ;;
 esac
