@@ -94,7 +94,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 		case 'S': {
 			gdouble speed = 0.0;
 			gchar *speedtype = NULL;
-			if ( !isnan(trkpt->speed) && trkpt_prev ) {
+			if ( isnan(trkpt->speed) && trkpt_prev ) {
 				if ( trkpt->has_timestamp && trkpt_prev->has_timestamp ) {
 					if ( trkpt->timestamp == trkpt_prev->timestamp ) {
 
