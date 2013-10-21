@@ -1,20 +1,5 @@
 SUBDIRS = examples
 
-EXTRA_DIST = GPSMAPPER \
-  viking.xml
+EXTRA_DIST = GPSMAPPER
 
 CLEANFILES=
-
-# man pages processing
-# TODO conditional processing
-# (availability of docbook stylesheet and xsltproc)
-if GEN_MANPAGES
-MANPAGES=viking.1
-man_MANS = $(MANPAGES)
-CLEANFILES+=$(MANPAGES)
-endif
-DB2MAN=@DB2MAN_XSL@
-XP=@XP@ -''-nonet
-
-%.1: %.xml
-	$(XP) -o $@ $(DB2MAN) $<

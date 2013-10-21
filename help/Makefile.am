@@ -46,3 +46,20 @@ DOC_FIGURES = \
     figures/Viking-OSM-CycleMap-ManyTracks.jpg \
     figures/DEM_file_info_dialog.png
 DOC_LINGUAS =
+
+EXTRA_DIST = viking.xml
+
+CLEANFILES=
+# man pages processing
+# TODO conditional processing
+# (availability of docbook stylesheet and xsltproc)
+if GEN_MANPAGES
+MANPAGES=viking.1
+man_MANS = $(MANPAGES)
+CLEANFILES+=$(MANPAGES)
+endif
+DB2MAN=@DB2MAN_XSL@
+XP=@XP@ -''-nonet
+
+%.1: %.xml
+	$(XP) -o $@ $(DB2MAN) $<

@@ -40,7 +40,6 @@ data/Makefile.in
 # /doc/
 /doc/Makefile.in
 /doc/Makefile
-/doc/viking.1
 
 # /doc/dev/
 /doc/dev/Makefile.in
@@ -60,6 +59,8 @@ doc/reference/viking*
 doc/reference/sgml*
 doc/reference/*stamp
 
+# help/
+help/viking.1
 # help/C/
 help/C/viking.pdf
 help/C/*html
