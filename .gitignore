@@ -40,7 +40,6 @@ data/Makefile.in
 # /doc/
 /doc/Makefile.in
 /doc/Makefile
-/doc/viking-remote.1
 /doc/viking.1
 
 # /doc/dev/
