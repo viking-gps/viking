@@ -16,17 +16,20 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	curl-devel
 BuildRequires:	expat-devel
-BuildRequires:	gtk2-devel >= 2.2.0
+BuildRequires:	gtk2-devel >= 2.16
 BuildRequires:	pkgconfig
 BuildRequires:	gpsd-devel
 BuildRequires:	gettext perl(XML::Parser)
 BuildRequires:	intltool
 BuildRequires:	libxslt
 BuildRequires:  libexif-devel
+BuildRequires:  libbz2-devel
+BuildRequires:  libmagic-devel
+BuildRequires:  libsqlite3-devel
 
 %description
 Viking is a free/open source program to manage GPS data.
-You can import, plot and create tracks and waypoints, show OSM, Terraserver and other maps, see real-time GPS position, get geocaches, control items, etc.
+You can import, plot and create tracks, routes and waypoints, show OSM, Terraserver and other maps, see real-time GPS position, get geocaches, control items, etc.
 It is written in C with the GTK+2 toolkit.
 
 %prep
@@ -53,7 +56,6 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING NEWS README TODO doc/
 %{_bindir}/viking
-%{_bindir}/viking-remote
 %{_datadir}/applications/viking.desktop
 %{_datadir}/icons/hicolor/48x48/apps/viking.png
 
