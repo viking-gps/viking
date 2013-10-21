@@ -775,6 +775,81 @@ GType vik_trw_layer_get_type ()
   return vtl_type;
 }
 
+typedef struct {
+  gboolean found;
+  const gchar *date_str;
+  const VikTrack *trk;
+  const VikWaypoint *wpt;
+  gpointer *trk_id;
+  gpointer *wpt_id;
+} date_finder_type;
+
+static gboolean trw_layer_find_date_track ( const gpointer id, const VikTrack *trk, date_finder_type *df )
+{
+  gchar date_buf[20];
+  date_buf[0] = '\0';
+  // Might be an easier way to compare dates rather than converting the strings all the time...
+  if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+    strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp)));
+
+    if ( ! g_strcmp0 ( df->date_str, date_buf ) ) {
+      df->found = TRUE;
+      df->trk = trk;
+      df->trk_id = id;
+    }
+  }
+  return df->found;
+}
+
+static gboolean trw_layer_find_date_waypoint ( const gpointer id, const VikWaypoint *wpt, date_finder_type *df )
+{
+  gchar date_buf[20];
+  date_buf[0] = '\0';
+  // Might be an easier way to compare dates rather than converting the strings all the time...
+  if ( wpt->has_timestamp ) {
+    strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&(wpt->timestamp)));
+
+    if ( ! g_strcmp0 ( df->date_str, date_buf ) ) {
+      df->found = TRUE;
+      df->wpt = wpt;
+      df->wpt_id = id;
+    }
+  }
+  return df->found;
+}
+
+/**
+ * Find an item by date
+ */
+gboolean vik_trw_layer_find_date ( VikTrwLayer *vtl, const gchar *date_str, VikCoord *position, VikViewport *vvp, gboolean do_tracks, gboolean select )
+{
+  date_finder_type df;
+  df.found = FALSE;
+  df.date_str = date_str;
+  df.trk = NULL;
+  df.wpt = NULL;
+  // Only tracks ATM
+  if ( do_tracks )
+    g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_find_date_track, &df );
+  else
+    g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_find_date_waypoint, &df );
+
+  if ( select && df.found ) {
+    if ( do_tracks && df.trk ) {
+      struct LatLon maxmin[2] = { {0,0}, {0,0} };
+      trw_layer_find_maxmin_tracks ( NULL, df.trk, maxmin );
+      trw_layer_zoom_to_show_latlons ( vtl, vvp, maxmin );
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup (vtl->tracks_iters, df.trk_id), TRUE );
+    }
+    else if ( df.wpt ) {
+      vik_viewport_set_center_coord ( vvp, &(df.wpt->coord) );
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup (vtl->waypoints_iters, df.wpt_id), TRUE );
+    }
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+  }
+  return df.found;
+}
+
 static void trw_layer_del_item ( VikTrwLayer *vtl, gint subtype, gpointer sublayer )
 {
   static menu_array_sublayer values;

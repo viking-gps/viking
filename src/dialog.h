@@ -62,6 +62,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
 
 gchar *a_dialog_new_track ( GtkWindow *parent, gchar *default_name, gboolean is_route );
 
+gchar *a_dialog_get_date ( GtkWindow *parent, const gchar *title );
 gboolean a_dialog_yes_or_no ( GtkWindow *parent, const gchar *message, const gchar *extra );
 gboolean a_dialog_custom_zoom ( GtkWindow *parent, gdouble *xmpp, gdouble *ympp );
 gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint *thr );

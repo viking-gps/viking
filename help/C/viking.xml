@@ -1679,6 +1679,14 @@ This offers a quick way to set all the visibilities of each item within the cont
 </para>
 </section>
 
+<section id="search_date" xreflabel="Search by Date"><title>Search by Date</title>
+<para>
+This opens calendar dialog to select a date to search by within this Aggregate layer.
+The first item that is found on that date will be selected.
+Tracks are searched first in preference over waypoints.
+</para>
+</section>
+
 </section><!-- End Agg -->
 
 <section id="GeoRef" xreflabel="GeoRef"><title>GeoRef Layer</title>

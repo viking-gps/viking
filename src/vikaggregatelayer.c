@@ -495,6 +495,47 @@ static void aggregate_layer_waypoint_list_dialog ( menu_array_values values )
 }
 
 /**
+ * Search all TrackWaypoint layers in this aggregate layer for an item on the user specified date
+ */
+static void aggregate_layer_search_date ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  VikCoord position;
+  gchar *date_str = a_dialog_get_date ( VIK_GTK_WINDOW_FROM_LAYER(val), _("Search by Date") );
+
+  if ( !date_str )
+    return;
+
+  VikViewport *vvp = vik_window_viewport ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
+
+  GList *gl = NULL;
+  gl = vik_aggregate_layer_get_all_layers_of_type ( val, gl, VIK_LAYER_TRW, TRUE );
+  gboolean found = FALSE;
+  // Search tracks first
+  while ( gl && !found ) {
+    // Make it auto select the item if found
+    found = vik_trw_layer_find_date ( VIK_TRW_LAYER(gl->data), date_str, &position, vvp, TRUE, TRUE );
+    gl = g_list_next ( gl );
+  }
+  g_list_free ( gl );
+  if ( !found ) {
+    // Reset and try on Waypoints
+    gl = NULL;
+    gl = vik_aggregate_layer_get_all_layers_of_type ( val, gl, VIK_LAYER_TRW, TRUE );
+    while ( gl && !found ) {
+      // Make it auto select the item if found
+      found = vik_trw_layer_find_date ( VIK_TRW_LAYER(gl->data), date_str, &position, vvp, FALSE, TRUE );
+      gl = g_list_next ( gl );
+    }
+    g_list_free ( gl );
+  }
+
+  if ( !found )
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(val), _("No items found with the requested date.") );
+  g_free ( date_str );
+}
+
+/**
  * aggregate_layer_track_create_list:
  * @vl:        The layer that should create the track and layers list
  * @user_data: Not used in this function
@@ -631,6 +672,13 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_waypoint_list_dialog), values );
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Search _by Date...") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_search_date), values );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_widget_set_tooltip_text (item, _("Find the first item with a specified date"));
   gtk_widget_show ( item );
 }
 

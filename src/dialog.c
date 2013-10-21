@@ -550,6 +550,45 @@ gchar *a_dialog_new_track ( GtkWindow *parent, gchar *default_name, gboolean is_
   return NULL;
 }
 
+/**
+ * a_dialog_get_date:
+ *
+ * Returns: a date as a string - always in ISO8601 format (YYYY-MM-DD)
+ *  This string can be NULL (especially when the dialog is cancelled)
+ *  Free the string after use
+ */
+gchar *a_dialog_get_date ( GtkWindow *parent, const gchar *title )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( title,
+                                                    parent,
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CANCEL,
+                                                    GTK_RESPONSE_REJECT,
+                                                    GTK_STOCK_OK,
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL);
+  GtkWidget *cal = gtk_calendar_new ();
+
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), cal, FALSE, FALSE, 0);
+
+  gtk_widget_show ( cal );
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
+  gchar *date_str = NULL;
+  if ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
+  {
+    guint year;
+    guint month;
+    guint day;
+    gtk_calendar_get_date ( GTK_CALENDAR(cal), &year, &month, &day );
+    month = month+1;
+    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month, day );
+  }
+  gtk_widget_destroy ( dialog );
+  return date_str;
+}
+
 /* creates a vbox full of labels */
 GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count, gint spacing, gint padding )
 {

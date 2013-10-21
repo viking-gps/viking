@@ -57,6 +57,8 @@ GType vik_trw_layer_get_type ();
 
 typedef struct _VikTrwLayer VikTrwLayer;
 
+gboolean vik_trw_layer_find_date ( VikTrwLayer *vtl, const gchar *date_str, VikCoord *position, VikViewport *vvp, gboolean do_tracks, gboolean select );
+
 /* These are meant for use in file loaders (gpspoint.c, gpx.c, etc).
  * These copy the name, so you should free it if necessary. */
 void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
