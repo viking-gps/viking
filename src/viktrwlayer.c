@@ -8958,14 +8958,11 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
   params.y = event->y;
   params.draw_images = vtl->drawimages;
   params.closest_wp_id = NULL;
-  /* TODO: should get track listitem so we can break it up, make a new track, mess it up, all that. */
   params.closest_wp = NULL;
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &params);
-  if ( vtl->current_wp == params.closest_wp && vtl->current_wp != NULL )
+  if ( vtl->current_wp && (vtl->current_wp == params.closest_wp) )
   {
-    // how do we get here?
     marker_begin_move(t, event->x, event->y);
-    g_critical("shouldn't be here");
     return FALSE;
   }
   else if ( params.closest_wp )
