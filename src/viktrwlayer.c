@@ -8670,6 +8670,15 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       vtl->current_wp =    wp_params.closest_wp;
       vtl->current_wp_id = wp_params.closest_wp_id;
 
+      if ( event->type == GDK_2BUTTON_PRESS ) {
+        if ( vtl->current_wp->image ) {
+          menu_array_sublayer values;
+          values[MA_VTL] = vtl;
+          values[MA_MISC] = vtl->current_wp->image;
+          trw_layer_show_picture ( values );
+        }
+      }
+
       vik_layer_emit_update ( VIK_LAYER(vtl) );
 
       return TRUE;
