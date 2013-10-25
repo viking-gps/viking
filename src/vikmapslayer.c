@@ -1778,10 +1778,20 @@ static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *e
 #endif
 }
 
-static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
+// A slightly better way of defining the menu callback information
+// This should be easier to extend/rework compared to previously
+typedef enum {
+  MA_VML = 0,
+  MA_VVP,
+  MA_LAST
+} menu_array_index;
+
+typedef gpointer menu_array_values[MA_LAST];
+
+static void download_onscreen_maps ( menu_array_values values, gint redownload )
 {
-  VikMapsLayer *vml = vml_vvp[0];
-  VikViewport *vvp = vml_vvp[1];
+  VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
+  VikViewport *vvp = VIK_VIEWPORT(values[MA_VVP]);
   VikViewportDrawMode vp_drawmode = vik_viewport_get_drawmode ( vvp );
 
   gdouble xzoom = vml->xmapzoom ? vml->xmapzoom : vik_viewport_get_xmpp ( vvp );
@@ -1809,19 +1819,19 @@ static void download_onscreen_maps ( gpointer vml_vvp[2], gint redownload )
 
 }
 
-static void maps_layer_download_missing_onscreen_maps ( gpointer vml_vvp[2] )
+static void maps_layer_download_missing_onscreen_maps ( menu_array_values values )
 {
-  download_onscreen_maps( vml_vvp, REDOWNLOAD_NONE);
+  download_onscreen_maps( values, REDOWNLOAD_NONE);
 }
 
-static void maps_layer_download_new_onscreen_maps ( gpointer vml_vvp[2] )
+static void maps_layer_download_new_onscreen_maps ( menu_array_values values )
 {
-  download_onscreen_maps( vml_vvp, REDOWNLOAD_NEW);
+  download_onscreen_maps( values, REDOWNLOAD_NEW);
 }
 
-static void maps_layer_redownload_all_onscreen_maps ( gpointer vml_vvp[2] )
+static void maps_layer_redownload_all_onscreen_maps ( menu_array_values values )
 {
-  download_onscreen_maps( vml_vvp, REDOWNLOAD_ALL);
+  download_onscreen_maps( values, REDOWNLOAD_ALL);
 }
 
 static void maps_layers_about ( gpointer vml_vvp[2] )
@@ -2003,10 +2013,10 @@ gboolean maps_dialog_zoom_between ( GtkWindow *parent,
  * Get all maps in the region for zoom levels specified by the user
  * Sort of similar to trw_layer_download_map_along_track_cb function
  */
-static void maps_layer_download_all ( gpointer vml_vvp[2] )
+static void maps_layer_download_all ( menu_array_values values )
 {
-  VikMapsLayer *vml = vml_vvp[0];
-  VikViewport *vvp = vml_vvp[1];
+  VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
+  VikViewport *vvp = VIK_VIEWPORT(values[MA_VVP]);
 
   // I don't think we should allow users to hammer the servers too much...
   // Delibrately not allowing lowest zoom levels
@@ -2098,10 +2108,10 @@ static void maps_layer_download_all ( gpointer vml_vvp[2] )
 
 static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp )
 {
-  static gpointer pass_along[2];
   GtkWidget *item;
-  pass_along[0] = vml;
-  pass_along[1] = vik_layers_panel_get_viewport( VIK_LAYERS_PANEL(vlp) );
+  static menu_array_values values;
+  values[MA_VML] = vml;
+  values[MA_VVP] = vik_layers_panel_get_viewport( VIK_LAYERS_PANEL(vlp) );
 
   item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
@@ -2110,32 +2120,32 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   /* Now with icons */
   item = gtk_image_menu_item_new_with_mnemonic ( _("Download _Missing Onscreen Maps") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_missing_onscreen_maps), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_missing_onscreen_maps), values );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
   if ( vik_map_source_supports_download_only_new (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
     item = gtk_image_menu_item_new_with_mnemonic ( _("Download _New Onscreen Maps") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REDO, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), pass_along );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
   }
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("Reload _All Onscreen Maps") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), values );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("Download Maps in _Zoom Levels...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DND_MULTIPLE, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), values );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 
   item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layers_about), pass_along );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layers_about), values );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 }
@@ -2148,14 +2158,14 @@ void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean onl
   if ( !vml ) return;
   if ( !vvp ) return;
 
-  static gpointer pass_along[2];
-  pass_along[0] = vml;
-  pass_along[1] = vvp;
+  static menu_array_values values;
+  values[MA_VML] = vml;
+  values[MA_VVP] = vvp;
 
   if ( only_new )
     // Get only new maps
-    maps_layer_download_new_onscreen_maps ( pass_along );
+    maps_layer_download_new_onscreen_maps ( values );
   else
     // Redownload everything
-    maps_layer_redownload_all_onscreen_maps ( pass_along );
+    maps_layer_redownload_all_onscreen_maps ( values );
 }

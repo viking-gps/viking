@@ -389,7 +389,7 @@ void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry)
  * @param vtl VikTrwLayer
  * @param trk if not null, the track to upload
  */
-static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
+void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 {
   GtkWidget *dia = gtk_dialog_new_with_buttons (_("OSM upload"),
                                                  VIK_GTK_WINDOW_FROM_LAYER(vtl),
@@ -539,25 +539,4 @@ static void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
     g_free ( title ); title = NULL;
   }
   gtk_widget_destroy ( dia );
-}
-
-/**
- * Function called by the entry menu of a TrwLayer
- */
-void osm_traces_upload_cb ( gpointer layer_and_vlp[2], guint file_type )
-{
-  osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(layer_and_vlp[0]), NULL);
-}
-
-/**
- * Function called by the entry menu of a single track
- */
-// TODO: Fix this dodgy usage of magic 8 ball array sized numbering
-//       At least have some common definition somewhere...
-void osm_traces_upload_track_cb ( gpointer pass_along[8] )
-{
-  if ( pass_along[7] ) {
-    VikTrack *trk = VIK_TRACK(pass_along[7]);
-    osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(pass_along[0]), trk);
-  }
 }

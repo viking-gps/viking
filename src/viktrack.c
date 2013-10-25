@@ -1363,6 +1363,22 @@ VikTrackpoint* vik_track_get_tp_by_min_alt ( const VikTrack *tr )
   return min_alt_tp;
 }
 
+VikTrackpoint *vik_track_get_tp_first( const VikTrack *tr )
+{
+  if ( !tr->trackpoints )
+    return NULL;
+
+  return (VikTrackpoint*)g_list_first(tr->trackpoints)->data;
+}
+
+VikTrackpoint *vik_track_get_tp_last ( const VikTrack *tr )
+{
+  if ( !tr->trackpoints )
+    return NULL;
+
+  return (VikTrackpoint*)g_list_last(tr->trackpoints)->data;
+}
+
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
   *min_alt = 25000;

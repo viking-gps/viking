@@ -46,7 +46,6 @@
 #include "vikutils.h"
 #endif
 
-#define DISCONNECT_UPDATE_SIGNAL(vl, val) g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, val)
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
 static void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void vik_gps_layer_free ( VikGpsLayer *val );
@@ -62,7 +61,6 @@ static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl );
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *val, VikCoordMode mode );
 static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
-static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 
 static void gps_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_download_cb( gpointer layer_and_vlp[2] );
@@ -290,7 +288,7 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
-  (VikLayerFuncDragDropRequest)		gps_layer_drag_drop_request,
+  (VikLayerFuncDragDropRequest)         NULL,
 
   (VikLayerFuncSelectClick)             NULL,
   (VikLayerFuncSelectMove)              NULL,
@@ -484,7 +482,8 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
     child_layer = vik_layer_unmarshall ( data + sizeof(gint), alm_size, vvp );
     if (child_layer) {
       rv->trw_children[i++] = (VikTrwLayer *)child_layer;
-      g_signal_connect_swapped ( G_OBJECT(child_layer), "update", G_CALLBACK(vik_layer_emit_update_secondary), rv );
+      // NB no need to attach signal update handler here
+      //  as this will always be performed later on in vik_gps_layer_realize()
     }
     alm_next;
   }
@@ -797,14 +796,9 @@ static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer 
 
 static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
 {
-  guint number_handlers = DISCONNECT_UPDATE_SIGNAL(vl,vgl);
+  guint number_handlers = g_signal_handlers_disconnect_matched(vl, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, vgl);
   if ( number_handlers != 1 ) {
-    /*
-      NB It's not fatal if this gives 2 for example! Hence removal of the g_assert
-      This happens when copied GPS layer is deleted (not sure why the number_handlers would be 2)
-      I don't think there's any side effects and certainly better than the program just aborting
-    */
-    g_warning(_("Unexpected number of disconnected handlers: %d"), number_handlers);
+    g_critical(_("Unexpected number of disconnected handlers: %d"), number_handlers);
   }
 }
 
@@ -827,23 +821,6 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
   if (vgl->realtime_track_pt2_gc != NULL)
     g_object_unref(vgl->realtime_track_pt2_gc);
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-}
-
-gboolean vik_gps_layer_delete ( VikGpsLayer *vgl, GtkTreeIter *iter )
-{
-  gint i;
-  VikLayer *l = VIK_LAYER( vik_treeview_item_get_pointer ( VIK_LAYER(vgl)->vt, iter ) );
-  gboolean was_visible = l->visible;
-
-  vik_treeview_item_delete ( VIK_LAYER(vgl)->vt, iter );
-  for (i = 0; i < NUM_TRW; i++) {
-    if (VIK_LAYER(vgl->trw_children[i]) == l)
-      vgl->trw_children[i] = NULL;
-  }
-  g_assert(DISCONNECT_UPDATE_SIGNAL(l,vgl)==1);
-  g_object_unref ( l );
-
-  return was_visible;
 }
 
 static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
@@ -894,22 +871,6 @@ gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl )
   if ( vgl->trw_children[0] )
     return FALSE;
   return TRUE;
-}
-
-static void gps_layer_drag_drop_request ( VikGpsLayer *val_src, VikGpsLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path )
-{
-  VikTreeview *vt = VIK_LAYER(val_src)->vt;
-  VikLayer *vl = vik_treeview_item_get_pointer(vt, src_item_iter);
-  gchar *dp;
-
-  dp = gtk_tree_path_to_string(dest_path);
-
-  /* vik_gps_layer_delete unrefs, but we don't want that here.
-   * we're still using the layer. */
-  g_object_ref ( vl );
-  vik_gps_layer_delete(val_src, src_item_iter);
-
-  g_free(dp);
 }
 
 static void gps_session_delete(GpsSession *sess)

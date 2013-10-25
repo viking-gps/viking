@@ -200,12 +200,11 @@ static void trw_layer_waypoint_view ( menu_array_values values )
 
 static void trw_layer_show_picture ( menu_array_values values )
 {
-	VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
 	VikWaypoint *wpt = VIK_WAYPOINT(values[MA_WPT]);
-
 #ifdef WINDOWS
 	ShellExecute(NULL, "open", wpt->image, NULL, NULL, SW_SHOWNORMAL);
 #else
+	VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
 	GError *err = NULL;
 	gchar *quoted_file = g_shell_quote ( wpt->image );
 	gchar *cmd = g_strdup_printf ( "%s %s", a_vik_get_image_viewer(), quoted_file );
