@@ -1,4 +1,4 @@
-# This is the Makefile for the viking gps viewer program.
+# This is the Makefile for the Viking GPS viewer program.
 # This file is licensed through the GPL version 2 or newer.
 
 SUBDIRS = icons
@@ -33,10 +33,10 @@ vikenumtypes.h: vikenumtypes.h.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
 vikenumtypes.c: vikenumtypes.c.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
 	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.c.template $(ENUM_H_FILES)) > $@
 
-EXTRA_DIST =                         \
-        docbook2documenters.xsl      \
-        vikenumtypes.h.template      \
-        vikenumtypes.c.template
+EXTRA_DIST = \
+	docbook2documenters.xsl \
+	vikenumtypes.h.template \
+	vikenumtypes.c.template
 
 BUILT_SOURCES += vikenumtypes.h vikenumtypes.c
 
@@ -51,7 +51,7 @@ libviking_a_SOURCES = \
 	curl_download.c curl_download.h \
 	compression.c compression.h \
 	menu.xml.h \
-    degrees_converters.c degrees_converters.h \
+	degrees_converters.c degrees_converters.h \
 	globals.c globals.h \
 	viking.h mapcoord.h config.h \
 	viktrack.c viktrack.h \
@@ -108,7 +108,7 @@ libviking_a_SOURCES = \
 	vikslippymapsource.c vikslippymapsource.h \
 	vikwmscmapsource.c vikwmscmapsource.h \
 	viktmsmapsource.c viktmsmapsource.h \
-        gpx.c gpx.h \
+	gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
 	babel.c babel.h \
@@ -149,7 +149,7 @@ endif
 
 if GOOGLE
 libviking_a_SOURCES += \
-       google.c google.h
+	google.c google.h
 endif
 
 if TERRASERVER
