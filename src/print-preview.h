@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if GTK_CHECK_VERSION(2,10,0)
-
 #ifndef __VIK_PRINT_PREVIEW_H__
 #define __VIK_PRINT_PREVIEW_H__
 
@@ -91,5 +89,3 @@ void        vik_print_preview_set_use_full_page (VikPrintPreview *preview,
 G_END_DECLS
 
 #endif /* __VIK_PRINT_PREVIEW_H__ */
-
-#endif
