@@ -3773,11 +3773,11 @@ void trw_layer_osm_traces_upload_cb ( menu_array_layer values )
   osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(values[MA_VTL]), NULL);
 }
 
-void trw_layer_osm_traces_upload_track_cb ( gpointer pass_along[8] )
+void trw_layer_osm_traces_upload_track_cb ( menu_array_sublayer values )
 {
-  if ( pass_along[7] ) {
-    VikTrack *trk = VIK_TRACK(pass_along[7]);
-    osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(pass_along[0]), trk);
+  if ( values[MA_MISC] ) {
+    VikTrack *trk = VIK_TRACK(values[MA_MISC]);
+    osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(values[MA_VTL]), trk);
   }
 }
 
@@ -8058,8 +8058,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
 #ifdef VIK_CONFIG_OPENSTREETMAP
     item = gtk_image_menu_item_new_with_mnemonic ( _("Upload to _OSM...") );
-    // Convert internal pointer into actual track for usage outside this file
-    pass_along[7] = g_hash_table_lookup ( l->tracks, sublayer);
+    // Convert internal pointer into track
+    pass_along[MA_MISC] = g_hash_table_lookup ( l->tracks, sublayer);
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_osm_traces_upload_track_cb), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(upload_submenu), item );
