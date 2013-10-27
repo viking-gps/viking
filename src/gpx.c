@@ -947,37 +947,6 @@ static int gpx_track_compare_name(const void *x, const void *y)
   return strcmp(a->name,b->name);
 }
 
-/* Function to compare two tracks by their first timestamp */
-static int gpx_track_compare_timestamp (const void *x, const void *y)
-{
-  VikTrack *a = (VikTrack *)x;
-  VikTrack *b = (VikTrack *)y;
-
-  VikTrackpoint *tpa = NULL;
-  VikTrackpoint *tpb = NULL;
-
-  if ( a->trackpoints )
-    tpa = VIK_TRACKPOINT(g_list_first(a->trackpoints)->data);
-
-  if ( b->trackpoints )
-    tpb = VIK_TRACKPOINT(g_list_first(b->trackpoints)->data);
-
-  if ( tpa && tpb ) {
-    if ( tpa->timestamp < tpb->timestamp )
-      return -1;
-    if ( tpa->timestamp > tpb->timestamp )
-      return 1;
-  }
-
-  if ( tpa && !tpb )
-    return 1;
-
-  if ( !tpa && tpb )
-    return -1;
-
-  return 0;
-}
-
 void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 {
   GpxWritingContext context = { options, f };
@@ -1009,7 +978,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 
   // Sort method determined by preference
   if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_TIME )
-    gl = g_list_sort ( gl, gpx_track_compare_timestamp );
+    gl = g_list_sort ( gl, vik_track_compare_timestamp );
   else if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_ALPHA )
     gl = g_list_sort ( gl, gpx_track_compare_name );
 

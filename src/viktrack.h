@@ -156,6 +156,8 @@ void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 );
 
 VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr );
 
+int vik_track_compare_timestamp (const void *x, const void *y);
+
 void vik_track_set_property_dialog(VikTrack *tr, GtkWidget *dialog);
 void vik_track_clear_property_dialog(VikTrack *tr);
 

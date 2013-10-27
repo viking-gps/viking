@@ -1765,3 +1765,35 @@ VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr )
   return rv;
 }
 
+/**
+ * Function to compare two tracks by their first timestamp
+ **/
+int vik_track_compare_timestamp (const void *x, const void *y)
+{
+  VikTrack *a = (VikTrack *)x;
+  VikTrack *b = (VikTrack *)y;
+
+  VikTrackpoint *tpa = NULL;
+  VikTrackpoint *tpb = NULL;
+
+  if ( a->trackpoints )
+    tpa = VIK_TRACKPOINT(g_list_first(a->trackpoints)->data);
+
+  if ( b->trackpoints )
+    tpb = VIK_TRACKPOINT(g_list_first(b->trackpoints)->data);
+
+  if ( tpa && tpb ) {
+    if ( tpa->timestamp < tpb->timestamp )
+      return -1;
+    if ( tpa->timestamp > tpb->timestamp )
+      return 1;
+  }
+
+  if ( tpa && !tpb )
+    return 1;
+
+  if ( !tpa && tpb )
+    return -1;
+
+  return 0;
+}
