@@ -2431,15 +2431,14 @@ static void menu_tool_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
     vw->current_tool = TOOL_SELECT;
   }
   else {
-    /* TODO: only enable tools from active layer */
     VikLayerTypeEnum layer_id;
     for (layer_id=0; layer_id<VIK_LAYER_NUM_TYPES; layer_id++) {
       for ( tool_id = 0; tool_id < vik_layer_get_interface(layer_id)->tools_count; tool_id++ ) {
-	if (!strcmp(vik_layer_get_interface(layer_id)->tools[tool_id].radioActionEntry.name, gtk_action_get_name(a))) {
+        if (!strcmp(vik_layer_get_interface(layer_id)->tools[tool_id].radioActionEntry.name, gtk_action_get_name(a))) {
            vw->current_tool = TOOL_LAYER;
            vw->tool_layer_id = layer_id;
            vw->tool_tool_id = tool_id;
-	}
+        }
       }
     }
   }
