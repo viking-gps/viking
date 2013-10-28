@@ -111,6 +111,10 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk );
 
 void vik_trw_layer_reset_waypoints ( VikTrwLayer *vtl );
 
+void vik_trw_layer_draw_highlight ( VikTrwLayer *vtl, VikViewport *vvp );
+void vik_trw_layer_draw_highlight_item ( VikTrwLayer *vtl, VikTrack *trk, VikWaypoint *wpt, VikViewport *vvp );
+void vik_trw_layer_draw_highlight_items ( VikTrwLayer *vtl, GHashTable *trks, GHashTable *wpts, VikViewport *vvp );
+
 // For creating a list of tracks with the corresponding layer it is in
 //  (thus a selection of tracks may be from differing layers)
 typedef struct {

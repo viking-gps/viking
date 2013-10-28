@@ -45,6 +45,7 @@ struct _VikLayersPanelClass
   GtkVBoxClass vbox_class;
 
   void (* update) (VikLayersPanel *vlp);
+  void (* delete_layer) (VikLayersPanel *vlp); // NB Just before (actual layer *not* specified ATM) it is deleted
 };
 
 GType vik_layers_panel_get_type ();

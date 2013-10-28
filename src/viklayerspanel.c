@@ -32,6 +32,7 @@
 
 enum {
   VLP_UPDATE_SIGNAL,
+  VLP_DELETE_LAYER_SIGNAL,
   VLP_LAST_SIGNAL
 };
 
@@ -81,6 +82,7 @@ static void vik_layers_panel_class_init ( VikLayersPanelClass *klass )
   parent_class = g_type_class_peek_parent (klass);
 
   layers_panel_signals[VLP_UPDATE_SIGNAL] = g_signal_new ( "update", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayersPanelClass, update), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+  layers_panel_signals[VLP_DELETE_LAYER_SIGNAL] = g_signal_new ( "delete_layer", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayersPanelClass, update), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
 VikLayersPanel *vik_layers_panel_new ()
@@ -642,6 +644,9 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
         vik_viewport_set_trigger ( vlp->vvp, NULL );
 
       if (IS_VIK_AGGREGATE_LAYER(parent)) {
+
+        g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );
+
         if ( vik_aggregate_layer_delete ( parent, &iter ) )
 	  vik_layers_panel_emit_update ( vlp );
       }
@@ -731,8 +736,10 @@ VikAggregateLayer *vik_layers_panel_get_top_layer ( VikLayersPanel *vlp )
 
 void vik_layers_panel_clear ( VikLayersPanel *vlp )
 {
-  if ( (! vik_aggregate_layer_is_empty(vlp->toplayer)) && a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Are you sure you wish to delete all layers?"), NULL ) )
+  if ( (! vik_aggregate_layer_is_empty(vlp->toplayer)) && a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Are you sure you wish to delete all layers?"), NULL ) ) {
+    g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );
     vik_aggregate_layer_clear ( vlp->toplayer ); /* simply deletes all layers */
+  }
 }
 
 void vik_layers_panel_change_coord_mode ( VikLayersPanel *vlp, VikCoordMode mode )

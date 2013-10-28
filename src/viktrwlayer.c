@@ -250,6 +250,7 @@ struct DrawingParams {
   gboolean one_zone, lat_lon;
   gdouble ce1, ce2, cn1, cn2;
   LatLonBBox bbox;
+  gboolean highlight;
 };
 
 static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp );
@@ -362,7 +363,6 @@ static void trw_layer_waypoint_webpage ( menu_array_sublayer values );
 
 static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer pass_along[5] );
 static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] );
-static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp );
 
 static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
@@ -1575,10 +1575,11 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   g_queue_free ( trwlayer->image_cache );
 }
 
-static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp )
+static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
 {
   dp->vtl = vtl;
   dp->vp = vp;
+  dp->highlight = highlight;
   dp->vw = (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(dp->vtl);
   dp->xmpp = vik_viewport_get_xmpp ( vp );
   dp->ympp = vik_viewport_get_ympp ( vp );
@@ -1952,18 +1953,11 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
   if ( track == dp->vtl->current_track )
     main_gc = dp->vtl->current_track_gc;
   else {
-    if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
-      /* Draw all tracks of the layer in special colour */
-      /* if track is member of selected layer or is the current selected track
-	 then draw in the highlight colour.
-	 NB this supercedes the drawmode */
-      if ( ( dp->vtl == vik_window_get_selected_trw_layer ( dp->vw ) ) ||
-           ( !track->is_route && ( dp->vtl->tracks == vik_window_get_selected_tracks ( dp->vw ) ) ) ||
-           ( track->is_route && ( dp->vtl->routes == vik_window_get_selected_tracks ( dp->vw ) ) ) ||
-           ( track == vik_window_get_selected_track ( dp->vw ) ) ) {
-	main_gc = vik_viewport_get_gc_highlight (dp->vp);
-	drawing_highlight = TRUE;
-      }
+    if ( dp->highlight ) {
+      /* Draw all tracks of the layer in special colour
+         NB this supercedes the drawmode */
+      main_gc = vik_viewport_get_gc_highlight (dp->vp);
+      drawing_highlight = TRUE;
     }
     if ( !drawing_highlight ) {
       // Still need to figure out the gc according to the drawing mode:
@@ -2273,18 +2267,15 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
 
         if ( x+(w/2) > 0 && y+(h/2) > 0 && x-(w/2) < dp->width && y-(h/2) < dp->height ) /* always draw within boundaries */
         {
-	  if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
-            if ( dp->vtl == vik_window_get_selected_trw_layer ( dp->vw ) ||
-                 dp->vtl->waypoints == vik_window_get_selected_waypoints ( dp->vw ) ||
-                 wp == vik_window_get_selected_waypoint ( dp->vw ) ) {
-	      // Highlighted - so draw a little border around the chosen one
-	      // single line seems a little weak so draw 2 of them
-	      vik_viewport_draw_rectangle (dp->vp, vik_viewport_get_gc_highlight (dp->vp), FALSE,
-					   x - (w/2) - 1, y - (h/2) - 1, w + 2, h + 2 );
-	      vik_viewport_draw_rectangle (dp->vp, vik_viewport_get_gc_highlight (dp->vp), FALSE,
-					   x - (w/2) - 2, y - (h/2) - 2, w + 4, h + 4 );
-	    }
-	  }
+          if ( dp->highlight ) {
+            // Highlighted - so draw a little border around the chosen one
+            // single line seems a little weak so draw 2 of them
+            vik_viewport_draw_rectangle (dp->vp, vik_viewport_get_gc_highlight (dp->vp), FALSE,
+                                         x - (w/2) - 1, y - (h/2) - 1, w + 2, h + 2 );
+            vik_viewport_draw_rectangle (dp->vp, vik_viewport_get_gc_highlight (dp->vp), FALSE,
+                                         x - (w/2) - 2, y - (h/2) - 2, w + 4, h + 4 );
+          }
+
           if ( dp->vtl->image_alpha == 255 )
             vik_viewport_draw_pixbuf ( dp->vp, pixbuf, 0, 0, x - (w/2), y - (h/2), w, h );
           else
@@ -2343,17 +2334,10 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
         label_y = y - dp->vtl->wp_size - height - 2;
 
       /* if highlight mode on, then draw background text in highlight colour */
-      if ( vik_viewport_get_draw_highlight ( dp->vp ) ) {
-	if ( dp->vtl == vik_window_get_selected_trw_layer ( dp->vw ) ||
-             dp->vtl->waypoints == vik_window_get_selected_waypoints ( dp->vw ) ||
-             wp == vik_window_get_selected_waypoint ( dp->vw ) )
-	  vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, label_x - 1, label_y-1,width+2,height+2);
-	else
-	  vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
-      }
-      else {
-	vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
-      }
+      if ( dp->highlight )
+        vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, label_x - 1, label_y-1,width+2,height+2);
+      else
+        vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2);
       vik_viewport_draw_layout ( dp->vp, dp->vtl->waypoint_text_gc, label_x, label_y, dp->vtl->wplabellayout );
     }
   }
@@ -2366,12 +2350,12 @@ static void trw_layer_draw_waypoint_cb ( gpointer id, VikWaypoint *wp, struct Dr
   }
 }
 
-static void trw_layer_draw ( VikTrwLayer *l, gpointer data )
+static void trw_layer_draw_with_highlight ( VikTrwLayer *l, gpointer data, gboolean highlight )
 {
   static struct DrawingParams dp;
   g_assert ( l != NULL );
 
-  init_drawing_params ( &dp, l, VIK_VIEWPORT(data) );
+  init_drawing_params ( &dp, l, VIK_VIEWPORT(data), highlight );
 
   if ( l->tracks_visible )
     g_hash_table_foreach ( l->tracks, (GHFunc) trw_layer_draw_track_cb, &dp );
@@ -2381,6 +2365,75 @@ static void trw_layer_draw ( VikTrwLayer *l, gpointer data )
 
   if (l->waypoints_visible)
     g_hash_table_foreach ( l->waypoints, (GHFunc) trw_layer_draw_waypoint_cb, &dp );
+}
+
+static void trw_layer_draw ( VikTrwLayer *l, gpointer data )
+{
+	// TODO: learn which highlight vtl in dp somehow or just ask vikwindow here,
+	//  then check if highlighted vtl and skip drawing if (highlight mode off)
+	//  as it will then get redrawn
+	//  may seem slightly inefficient - but for very large vtls, this should save redraws...
+  trw_layer_draw_with_highlight ( l, data, FALSE ) ;
+}
+
+void vik_trw_layer_draw_highlight ( VikTrwLayer *vtl, VikViewport *vvp )
+{
+  // Check the layer for visibility (including all the parents visibilities)
+  if ( !vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) )
+    return;
+  trw_layer_draw_with_highlight ( vtl, vvp, TRUE );
+}
+
+/**
+ * vik_trw_layer_draw_highlight_item:
+ *
+ * Only handles a single track or waypoint ATM
+ * It assumes the track or waypoint belongs to the TRW Layer (it doesn't check this is the case)
+ */
+void vik_trw_layer_draw_highlight_item ( VikTrwLayer *vtl, VikTrack *trk, VikWaypoint *wpt, VikViewport *vvp )
+{
+  // Check the layer for visibility (including all the parents visibilities)
+  if ( !vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) )
+    return;
+
+  static struct DrawingParams dp;
+  init_drawing_params ( &dp, vtl, vvp, TRUE );
+
+  if ( trk ) {
+    gboolean draw = ( trk->is_route && vtl->routes_visible ) || ( !trk->is_route && vtl->tracks_visible );
+    if ( draw )
+      trw_layer_draw_track_cb ( NULL, trk, &dp );
+  }
+  if ( vtl->waypoints_visible && wpt ) {
+    trw_layer_draw_waypoint_cb ( NULL, wpt, &dp );
+  }
+}
+
+/**
+ * vik_trw_layer_draw_highlight_item:
+ *
+ * Generally for drawing all tracks or routes or waypoints
+ * trks may be actually routes
+ * It assumes they belong to the TRW Layer (it doesn't check this is the case)
+ */
+void vik_trw_layer_draw_highlight_items ( VikTrwLayer *vtl, GHashTable *trks, GHashTable *wpts, VikViewport *vvp )
+{
+  // Check the layer for visibility (including all the parents visibilities)
+  if ( !vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) )
+    return;
+
+  static struct DrawingParams dp;
+  init_drawing_params ( &dp, vtl, vvp, TRUE );
+
+  if ( trks ) {
+    gboolean is_routes = (trks == vtl->routes);
+    gboolean draw = ( is_routes && vtl->routes_visible ) || ( !is_routes && vtl->tracks_visible );
+    if ( draw )
+      g_hash_table_foreach ( trks, (GHFunc) trw_layer_draw_track_cb, &dp );
+  }
+
+  if ( vtl->waypoints_visible && wpts )
+    g_hash_table_foreach ( wpts, (GHFunc) trw_layer_draw_waypoint_cb, &dp );
 }
 
 static void trw_layer_free_track_gcs ( VikTrwLayer *vtl )
@@ -4474,7 +4527,6 @@ gboolean trw_layer_track_find_uuid ( const gpointer id, const VikTrack *trk, gpo
 gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk )
 {
   gboolean was_visible = FALSE;
-
   if ( trk && trk->name ) {
 
     if ( trk == vtl->current_track ) {
@@ -4515,6 +4567,8 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk )
           vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter) );
 	}
       }
+      // Incase it was selected (no item delete signal ATM)
+      vik_window_clear_highlight ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
     }
   }
   return was_visible;
@@ -4564,6 +4618,8 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
           vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter) );
         }
       }
+      // Incase it was selected (no item delete signal ATM)
+      vik_window_clear_highlight ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
     }
   }
   return was_visible;
@@ -4605,6 +4661,8 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
           vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter) );
 	}
       }
+      // Incase it was selected (no item delete signal ATM)
+      vik_window_clear_highlight ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
     }
 
   }

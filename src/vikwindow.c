@@ -761,7 +761,9 @@ static void vik_window_init ( VikWindow *vw )
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_press_event", G_CALLBACK(draw_click), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_release_event", G_CALLBACK(draw_release), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "motion_notify_event", G_CALLBACK(draw_mouse_motion), vw);
+
   g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "update", G_CALLBACK(draw_update), vw);
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "delete_layer", G_CALLBACK(vik_window_clear_highlight), vw);
 
   // Allow key presses to be processed anywhere
   g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
@@ -1067,7 +1069,21 @@ static void draw_redraw ( VikWindow *vw )
 
   /* actually draw */
   vik_viewport_clear ( vw->viking_vvp);
+  // Main layer drawing
   vik_layers_panel_draw_all ( vw->viking_vlp );
+  // Draw highlight (possibly again but ensures it is on top - especially for when tracks overlap)
+  if ( vik_viewport_get_draw_highlight (vw->viking_vvp) ) {
+    if ( vw->containing_vtl && (vw->selected_tracks || vw->selected_waypoints ) ) {
+      vik_trw_layer_draw_highlight_items ( vw->containing_vtl, vw->selected_tracks, vw->selected_waypoints, vw->viking_vvp );
+    }
+    else if ( vw->containing_vtl && (vw->selected_track || vw->selected_waypoint) ) {
+      vik_trw_layer_draw_highlight_item ( vw->containing_vtl, vw->selected_track, vw->selected_waypoint, vw->viking_vvp );
+    }
+    else if ( vw->selected_vtl ) {
+      vik_trw_layer_draw_highlight ( vw->selected_vtl, vw->viking_vvp );
+    }
+  }
+  // Other viewport decoration items on top if they are enabled/in use
   vik_viewport_draw_scale ( vw->viking_vvp );
   vik_viewport_draw_copyright ( vw->viking_vvp );
   vik_viewport_draw_centermark ( vw->viking_vvp );
