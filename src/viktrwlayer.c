@@ -149,6 +149,9 @@ struct _VikTrwLayer {
   guint8 bg_line_thickness;
   vik_layer_sort_order_t track_sort_order;
 
+  // Metadata
+  VikTRWMetadata *metadata;
+
   PangoLayout *tracklabellayout;
   font_size_t track_font_size;
   gchar *track_fsize_str;
@@ -481,8 +484,8 @@ enum {
 
 /****** PARAMETERS ******/
 
-static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images"), N_("Tracks Advanced") };
-enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES, GROUP_TRACKS_ADV };
+static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images"), N_("Tracks Advanced"), N_("Metadata") };
+enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES, GROUP_TRACKS_ADV, GROUP_METADATA };
 
 static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Speed"), N_("All Tracks Same Color"), NULL };
 static gchar *params_wpsymbols[] = { N_("Filled Square"), N_("Square"), N_("Circle"), N_("X"), 0 };
@@ -560,6 +563,13 @@ static VikLayerParamData image_cache_size_default ( void ) { return VIK_LPD_UINT
 
 static VikLayerParamData sort_order_default ( void ) { return VIK_LPD_UINT ( 0 ); }
 
+static VikLayerParamData string_default ( void )
+{
+  VikLayerParamData data;
+  data.s = "";
+  return data;
+}
+
 VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "tracks_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "waypoints_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
@@ -604,6 +614,11 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "image_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Size (pixels):"), VIK_LAYER_WIDGET_HSCALE, &params_scales[3], NULL, NULL, image_size_default, NULL, NULL },
   { VIK_LAYER_TRW, "image_alpha", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Alpha:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[4], NULL, NULL, image_alpha_default, NULL, NULL },
   { VIK_LAYER_TRW, "image_cache_size", VIK_LAYER_PARAM_UINT, GROUP_IMAGES, N_("Image Memory Cache Size:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[5], NULL, NULL, image_cache_size_default, NULL, NULL },
+
+  { VIK_LAYER_TRW, "metadatadesc", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Description"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "metadataauthor", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Author"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "metadatatime", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Creation Time"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "metadatakeywords", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Keywords"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
 };
 
 // ENUMERATION MUST BE IN THE SAME ORDER AS THE NAMED PARAMS ABOVE
@@ -647,6 +662,11 @@ enum {
   PARAM_IS,
   PARAM_IA,
   PARAM_ICS,
+  // Metadata
+  PARAM_MDDESC,
+  PARAM_MDAUTH,
+  PARAM_MDTIME,
+  PARAM_MDKEYS,
   NUM_PARAMS
 };
 
@@ -773,6 +793,28 @@ GType vik_trw_layer_get_type ()
   }
 
   return vtl_type;
+}
+
+VikTRWMetadata *vik_trw_metadata_new()
+{
+  return (VikTRWMetadata*)g_malloc0(sizeof(VikTRWMetadata));
+}
+
+void vik_trw_metadata_free ( VikTRWMetadata *metadata)
+{
+  g_free (metadata);
+}
+
+VikTRWMetadata *vik_trw_layer_get_metadata ( VikTrwLayer *vtl )
+{
+  return vtl->metadata;
+}
+
+void vik_trw_layer_set_metadata ( VikTrwLayer *vtl, VikTRWMetadata *metadata)
+{
+  if ( vtl->metadata )
+    vik_trw_metadata_free ( vtl->metadata );
+  vtl->metadata = metadata;
 }
 
 typedef struct {
@@ -1156,6 +1198,12 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
       }
       break;
     case PARAM_WPSO: if ( data.u < VL_SO_LAST ) vtl->wp_sort_order = data.u; break;
+    // Metadata
+    case PARAM_MDDESC: if ( data.s && vtl->metadata ) vtl->metadata->description = g_strdup (data.s); break;
+    case PARAM_MDAUTH: if ( data.s && vtl->metadata ) vtl->metadata->author = g_strdup (data.s); break;
+    case PARAM_MDTIME: if ( data.s && vtl->metadata ) vtl->metadata->timestamp = g_strdup (data.s); break;
+    case PARAM_MDKEYS: if ( data.s && vtl->metadata ) vtl->metadata->keywords = g_strdup (data.s); break;
+    default: break;
   }
   return TRUE;
 }
@@ -1200,6 +1248,12 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
     case PARAM_WPFONTSIZE: rv.u = vtl->wp_font_size; break;
     case PARAM_WPSO: rv.u = vtl->wp_sort_order; break;
+    // Metadata
+    case PARAM_MDDESC: if (vtl->metadata) { rv.s = vtl->metadata->description; } break;
+    case PARAM_MDAUTH: if (vtl->metadata) { rv.s = vtl->metadata->author; } break;
+    case PARAM_MDTIME: if (vtl->metadata) { rv.s = vtl->metadata->timestamp; } break;
+    case PARAM_MDKEYS: if (vtl->metadata) { rv.s = vtl->metadata->keywords; } break;
+    default: break;
   }
   return rv;
 }
@@ -1266,6 +1320,12 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
       if ( w1 ) gtk_widget_set_sensitive ( w1, sensitive );
       if ( w2 ) gtk_widget_set_sensitive ( w2, sensitive );
       break;
+    }
+    case PARAM_MDTIME: {
+      // Force metadata->timestamp to be always read-only for now.
+      GtkWidget **ww = values[UI_CHG_WIDGETS];
+      GtkWidget *w1 = ww[OFFSET + PARAM_MDTIME];
+      if ( w1 ) gtk_widget_set_sensitive ( w1, FALSE );
     }
     // NB Since other track settings have been split across tabs,
     // I don't think it's useful to set sensitivities on widgets you can't immediately see
@@ -1460,6 +1520,7 @@ static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
   // Force to on after processing params (which defaults them to off with a zero value)
   rv->waypoints_visible = rv->tracks_visible = rv->routes_visible = TRUE;
 
+  rv->metadata = vik_trw_metadata_new ();
   rv->draw_sync_done = TRUE;
   rv->draw_sync_do = TRUE;
   // Everything else is 0, FALSE or NULL
@@ -10099,6 +10160,64 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean fro
   //  since the sorting of a treeview section is now very quick
   // NB sorting is also performed after every name change as well to maintain the list order
   trw_layer_sort_all ( vtl );
+
+  // Setting metadata time if not otherwise set
+  if ( vtl->metadata ) {
+
+    gboolean need_to_set_time = TRUE;
+    if ( vtl->metadata->timestamp ) {
+      need_to_set_time = FALSE;
+      if ( !g_strcmp0(vtl->metadata->timestamp, "" ) )
+        need_to_set_time = TRUE;
+    }
+
+    if ( need_to_set_time ) {
+      // Could rewrite this as a general get first time of a TRW Layer function
+      GTimeVal timestamp;
+      timestamp.tv_usec = 0;
+      gboolean has_timestamp = FALSE;
+
+      GList *gl = NULL;
+      gl = g_hash_table_get_values ( vtl->tracks );
+      gl = g_list_sort ( gl, vik_track_compare_timestamp );
+      gl = g_list_first ( gl );
+
+      // Check times of tracks
+      if ( gl ) {
+        // Only need to check the first track as they have been sorted by time
+        VikTrack *trk = (VikTrack*)gl->data;
+        // Assume trackpoints already sorted by time
+        VikTrackpoint *tpt = vik_track_get_tp_first(trk);
+        if ( tpt && tpt->has_timestamp ) {
+          timestamp.tv_sec = tpt->timestamp;
+          has_timestamp = TRUE;
+        }
+        g_list_free ( gl );
+      }
+
+      if ( !has_timestamp ) {
+        // 'Last' resort - current time
+        // Get before waypoint tests - so that if a waypoint time value (in the past) is found it should be used
+        g_get_current_time ( &timestamp );
+
+        // Check times of waypoints
+        gl = g_hash_table_get_values ( vtl->waypoints );
+        GList *iter;
+        for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
+          VikWaypoint *wpt = (VikWaypoint*)iter->data;
+          if ( wpt->has_timestamp ) {
+            if ( timestamp.tv_sec > wpt->timestamp ) {
+              timestamp.tv_sec = wpt->timestamp;
+              has_timestamp = TRUE;
+            }
+          }
+        }
+        g_list_free ( gl );
+      }
+
+      vtl->metadata->timestamp = g_time_val_to_iso8601 ( &timestamp );
+    }
+  }
 }
 
 VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl )

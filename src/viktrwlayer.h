@@ -57,6 +57,19 @@ GType vik_trw_layer_get_type ();
 
 typedef struct _VikTrwLayer VikTrwLayer;
 
+typedef struct {
+  gchar *description;
+  gchar *author;
+  //gboolean has_time;
+  gchar *timestamp; // TODO: Consider storing as proper time_t.
+  gchar *keywords; // TODO: handling/storing a GList of individual tags?
+} VikTRWMetadata;
+
+VikTRWMetadata *vik_trw_metadata_new();
+void vik_trw_metadata_free ( VikTRWMetadata *metadata);
+VikTRWMetadata *vik_trw_layer_get_metadata ( VikTrwLayer *vtl );
+void vik_trw_layer_set_metadata ( VikTrwLayer *vtl, VikTRWMetadata *metadata);
+
 gboolean vik_trw_layer_find_date ( VikTrwLayer *vtl, const gchar *date_str, VikCoord *position, VikViewport *vvp, gboolean do_tracks, gboolean select );
 
 /* These are meant for use in file loaders (gpspoint.c, gpx.c, etc).

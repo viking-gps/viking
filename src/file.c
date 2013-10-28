@@ -647,6 +647,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     gboolean success = TRUE; // Detect load failures - mainly to remove the layer created as it's not required
 
     VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, NULL, FALSE );
+    vik_layer_rename ( vtl, a_file_basename ( filename ) );
 
     // In fact both kml & gpx files start the same as they are in xml
     if ( check_file_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
@@ -677,7 +678,6 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     }
     else {
       // Complete the setup from the successful load
-      vik_layer_rename ( vtl, a_file_basename ( filename ) );
       vik_layer_post_read ( vtl, vp, TRUE );
       vik_aggregate_layer_add_layer ( top, vtl, FALSE );
       vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );

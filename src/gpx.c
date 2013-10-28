@@ -48,6 +48,11 @@ typedef enum {
         tt_unknown = 0,
 
         tt_gpx,
+        tt_gpx_name,
+        tt_gpx_desc,
+        tt_gpx_author,
+        tt_gpx_time,
+        tt_gpx_keywords,
 
         tt_wpt,
         tt_wpt_cmt,
@@ -70,7 +75,7 @@ typedef enum {
         tt_trk_trkseg_trkpt_ele,
         tt_trk_trkseg_trkpt_time,
         tt_trk_trkseg_trkpt_name,
-	/* extended */
+        /* extended */
         tt_trk_trkseg_trkpt_course,
         tt_trk_trkseg_trkpt_speed,
         tt_trk_trkseg_trkpt_fix,
@@ -96,12 +101,26 @@ typedef struct {
 } GpxWritingContext;
 
 /*
- * xpath(ish) mappings between full tag paths and internal identifers.
+ * xpath(ish) mappings between full tag paths and internal identifiers.
  * These appear in the order they appear in the GPX specification.
- * If it's not a tag we explictly handle, it doesn't go here.
+ * If it's not a tag we explicitly handle, it doesn't go here.
  */
 
 tag_mapping tag_path_map[] = {
+
+        { tt_gpx, "/gpx" },
+        { tt_gpx_name, "/gpx/name" },
+        { tt_gpx_desc, "/gpx/desc" },
+        { tt_gpx_time, "/gpx/time" },
+        { tt_gpx_author, "/gpx/author" },
+        { tt_gpx_keywords, "/gpx/keywords" },
+
+        // GPX 1.1 variant - basic properties moved into metadata namespace
+        { tt_gpx_name, "/gpx/metadata/name" },
+        { tt_gpx_desc, "/gpx/metadata/desc" },
+        { tt_gpx_time, "/gpx/metadata/time" },
+        { tt_gpx_author, "/gpx/metadata/author" },
+        { tt_gpx_keywords, "/gpx/metadata/keywords" },
 
         { tt_wpt, "/gpx/wpt" },
 
@@ -127,8 +146,8 @@ tag_mapping tag_path_map[] = {
         { tt_trk_trkseg_trkpt_ele, "/gpx/trk/trkseg/trkpt/ele" },
         { tt_trk_trkseg_trkpt_time, "/gpx/trk/trkseg/trkpt/time" },
         { tt_trk_trkseg_trkpt_name, "/gpx/trk/trkseg/trkpt/name" },
-	/* extended */
-	{ tt_trk_trkseg_trkpt_course, "/gpx/trk/trkseg/trkpt/course" },
+        /* extended */
+        { tt_trk_trkseg_trkpt_course, "/gpx/trk/trkseg/trkpt/course" },
         { tt_trk_trkseg_trkpt_speed, "/gpx/trk/trkseg/trkpt/speed" },
         { tt_trk_trkseg_trkpt_fix, "/gpx/trk/trkseg/trkpt/fix" },
         { tt_trk_trkseg_trkpt_sat, "/gpx/trk/trkseg/trkpt/sat" },
@@ -168,6 +187,7 @@ GString *c_cdata = NULL;
 VikTrackpoint *c_tp = NULL;
 VikWaypoint *c_wp = NULL;
 VikTrack *c_tr = NULL;
+VikTRWMetadata *c_md = NULL;
 
 gchar *c_wp_name = NULL;
 gchar *c_tr_name = NULL;
@@ -212,6 +232,10 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
 
   switch ( current_tag ) {
 
+     case tt_gpx:
+       c_md = vik_trw_metadata_new();
+       break;
+
      case tt_wpt:
        if ( set_c_ll( attr ) ) {
          c_wp = vik_waypoint_new ();
@@ -249,6 +273,11 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
        }
        break;
 
+     case tt_gpx_name:
+     case tt_gpx_author:
+     case tt_gpx_desc:
+     case tt_gpx_keywords:
+     case tt_gpx_time:
      case tt_trk_trkseg_trkpt_name:
      case tt_trk_trkseg_trkpt_ele:
      case tt_trk_trkseg_trkpt_time:
@@ -295,6 +324,44 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
   g_string_truncate ( xpath, xpath->len - strlen(el) - 1 );
 
   switch ( current_tag ) {
+
+     case tt_gpx:
+       vik_trw_layer_set_metadata ( vtl, c_md );
+       c_md = NULL;
+       break;
+
+     case tt_gpx_name:
+       vik_layer_rename ( VIK_LAYER(vtl), c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_gpx_author:
+       if ( c_md->author )
+         g_free ( c_md->description );
+       c_md->author = g_strdup ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_gpx_desc:
+       if ( c_md->description )
+         g_free ( c_md->description );
+       c_md->description = g_strdup ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_gpx_keywords:
+       if ( c_md->keywords )
+         g_free ( c_md->keywords );
+       c_md->keywords = g_strdup ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_gpx_time:
+       if ( c_md->timestamp )
+         g_free ( c_md->timestamp );
+       c_md->timestamp = g_strdup ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
 
      case tt_waypoint:
      case tt_wpt:
@@ -445,6 +512,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
 static void gpx_cdata(void *dta, const XML_Char *s, int len)
 {
   switch ( current_tag ) {
+    case tt_gpx_name:
+    case tt_gpx_author:
+    case tt_gpx_desc:
+    case tt_gpx_keywords:
+    case tt_gpx_time:
     case tt_wpt_name:
     case tt_trk_name:
     case tt_wpt_ele:
@@ -952,6 +1024,38 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
   GpxWritingContext context = { options, f };
 
   gpx_write_header ( f );
+
+  gchar *tmp;
+  const gchar *name = vik_layer_get_name(VIK_LAYER(vtl));
+  if ( name ) {
+    tmp = entitize ( name );
+    fprintf ( f, "  <name>%s</name>\n", tmp );
+    g_free ( tmp );
+  }
+
+  VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
+  if ( md ) {
+    if ( md->author ) {
+      tmp = entitize ( md->author );
+      fprintf ( f, "  <author>%s</author>\n", tmp );
+      g_free ( tmp );
+    }
+    if ( md->description ) {
+      tmp = entitize ( md->description );
+      fprintf ( f, "  <desc>%s</desc>\n", tmp );
+      g_free ( tmp );
+    }
+    if ( md->timestamp ) {
+      tmp = entitize ( md->timestamp );
+      fprintf ( f, "  <time>%s</time>\n", tmp );
+      g_free ( tmp );
+    }
+    if ( md->keywords ) {
+      tmp = entitize ( md->keywords );
+      fprintf ( f, "  <keywords>%s</keywords>\n", tmp );
+      g_free ( tmp );
+    }
+  }
 
   // gather waypoints in a list, then sort
   // g_hash_table_get_values: glib 2.14+
