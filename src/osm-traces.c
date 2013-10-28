@@ -444,6 +444,15 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 
   description_label = gtk_label_new(_("Description:"));
   description_entry = gtk_entry_new();
+  const gchar *description = NULL;
+  if (trk != NULL)
+    description = trk->description;
+  else {
+    VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
+    description = md ? md->description : NULL;
+  }
+  if (description)
+    gtk_entry_set_text(GTK_ENTRY(description_entry), description);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), description_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), description_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_text(GTK_WIDGET(description_entry),
@@ -461,6 +470,9 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 
   tags_label = gtk_label_new(_("Tags:"));
   tags_entry = gtk_entry_new();
+  VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
+  if (md->keywords)
+    gtk_entry_set_text(GTK_ENTRY(tags_entry), md->keywords);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), tags_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), tags_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_text(GTK_WIDGET(tags_entry),
