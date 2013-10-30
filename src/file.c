@@ -620,25 +620,33 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
   if ( ! f )
     return LOAD_TYPE_READ_FAILURE;
 
-  // Enables relative paths in a .vik file to work
-  // Also allows us to remember what directory we where using
-  gchar *dir = g_path_get_dirname ( filename );
-  if ( dir ) {
-    if ( g_chdir ( dir ) ) {
-      g_warning ( "Could not change directory to %s", dir );
-    }
-    g_free (dir);
-  }
-
   VikLoadType_t load_answer = LOAD_TYPE_OTHER_SUCCESS;
 
   // Attempt loading the primary file type first - our internal .vik file:
   if ( check_magic ( f, VIK_MAGIC ) )
   {
+    // Enables relative paths in a .vik file to work
+    gchar *cwd = g_get_current_dir();
+    gchar *dir = g_path_get_dirname ( filename );
+    if ( dir ) {
+      if ( g_chdir ( dir ) ) {
+        g_warning ( "Could not change directory to %s", dir );
+      }
+      g_free (dir);
+    }
+
     if ( file_read ( top, f, vp ) )
       load_answer = LOAD_TYPE_VIK_SUCCESS;
     else
       load_answer = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
+
+    // Restore previous working directory
+    if ( cwd ) {
+      if ( g_chdir ( cwd ) ) {
+        g_warning ( "Could not return to directory %s", cwd );
+      }
+      g_free (cwd);
+    }
   }
   else
   {
@@ -700,7 +708,7 @@ gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filenam
     return FALSE;
 
   // Enable relative paths in .vik files to work
-  // Also allows us to remember what directory we where using
+  gchar *cwd = g_get_current_dir();
   gchar *dir = g_path_get_dirname ( filename );
   if ( dir ) {
     if ( g_chdir ( dir ) ) {
@@ -710,6 +718,14 @@ gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filenam
   }
 
   file_write ( top, f, vp );
+
+  // Restore previous working directory
+  if ( cwd ) {
+    if ( g_chdir ( cwd ) ) {
+      g_warning ( "Could not return to directory %s", cwd );
+    }
+    g_free (cwd);
+  }
 
   fclose(f);
   f = NULL;
