@@ -296,10 +296,16 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
       d = get_param(vl, i, FALSE);
       switch ( params[i].type )
       {
-      case VIK_LAYER_PARAM_STRING: 
-	vlm_append(d.s, strlen(d.s));
-	break;
-
+      case VIK_LAYER_PARAM_STRING:
+        // Remember need braces as these are macro calls, not single statement functions!
+        if ( d.s ) {
+          vlm_append(d.s, strlen(d.s));
+        }
+        else {
+          // Need to insert empty string otherwise the unmarshall will get confused
+          vlm_append("", 0);
+        }
+        break;
       /* print out the string list in the array */
       case VIK_LAYER_PARAM_STRING_LIST: {
         GList *list = d.sl;
