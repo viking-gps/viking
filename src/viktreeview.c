@@ -296,6 +296,32 @@ gboolean vik_treeview_get_iter_from_path_str ( VikTreeview *vt, GtkTreeIter *ite
   return gtk_tree_model_get_iter_from_string ( GTK_TREE_MODEL(vt->model), iter, path_str );
 }
 
+/**
+ * Get visibility of an item considering visibility of all parents
+ *  i.e. if any parent is off then this item will also be considered off
+ *   (even though itself may be marked as on.)
+ */
+gboolean vik_treeview_item_get_visible_tree ( VikTreeview *vt, GtkTreeIter *iter )
+{
+  gboolean ans;
+  TREEVIEW_GET ( vt->model, iter, VISIBLE_COLUMN, &ans );
+
+  if ( !ans )
+    return ans;
+
+  GtkTreeIter parent;
+  GtkTreeIter child = *iter;
+  while ( gtk_tree_model_iter_parent (vt->model, &parent, &child) ) {
+    // Visibility of this parent
+    TREEVIEW_GET ( vt->model, &parent, VISIBLE_COLUMN, &ans );
+    // If not visible, no need to check further ancestors
+    if ( !ans )
+      break;
+    child = parent;
+  }
+  return ans;
+}
+
 static void vik_treeview_add_columns ( VikTreeview *vt )
 {
   gint col_offset;
