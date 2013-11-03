@@ -272,6 +272,10 @@ gdouble vik_track_get_length_to_trackpoint (const VikTrack *tr, const VikTrackpo
   gdouble len = 0.0;
   if ( tr->trackpoints )
   {
+    // Is it the very first track point?
+    if ( VIK_TRACKPOINT(tr->trackpoints->data) == tp )
+      return len;
+
     GList *iter = tr->trackpoints->next;
     while (iter)
     {
@@ -282,7 +286,7 @@ gdouble vik_track_get_length_to_trackpoint (const VikTrack *tr, const VikTrackpo
 
       // Exit when we reach the desired point
       if ( tp1 == tp )
-	break;
+        break;
 
       iter = iter->next;
     }
