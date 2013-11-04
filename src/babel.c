@@ -74,6 +74,31 @@ GList *a_babel_file_list;
 GList *a_babel_device_list;
 
 /**
+ * Run a function on all file formats supporting a given mode.
+ */
+void a_babel_foreach_file_with_mode (BabelMode mode, GFunc func, gpointer user_data)
+{
+  GList *current;
+  for ( current = g_list_first (a_babel_file_list) ;
+        current != NULL ;
+        current = g_list_next (current) )
+  {
+    BabelFile *currentFile = current->data;
+    /* Check compatibility of modes */
+    gboolean compat = TRUE;
+    if (mode.waypointsRead  && ! currentFile->mode.waypointsRead)  compat = FALSE;
+    if (mode.waypointsWrite && ! currentFile->mode.waypointsWrite) compat = FALSE;
+    if (mode.tracksRead     && ! currentFile->mode.tracksRead)     compat = FALSE;
+    if (mode.tracksWrite    && ! currentFile->mode.tracksWrite)    compat = FALSE;
+    if (mode.routesRead     && ! currentFile->mode.routesRead)     compat = FALSE;
+    if (mode.routesWrite    && ! currentFile->mode.routesWrite)    compat = FALSE;
+    /* Do call */
+    if (compat)
+      func (currentFile, user_data);
+  }
+}
+
+/**
  * a_babel_convert:
  * @vt:        The TRW layer to modify. All data will be deleted, and replaced by what gpsbabel outputs.
  * @babelargs: A string containing gpsbabel command line filter options. No file types or names should

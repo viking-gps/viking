@@ -31,6 +31,7 @@
 #include "viking.h"
 #include "babel.h"
 #include "gpx.h"
+#include "babel_ui.h"
 #include "acquire.h"
 
 typedef struct {
@@ -79,12 +80,6 @@ static gpointer datasource_file_init ( acq_vik_t *avt )
 {
   datasource_file_widgets_t *widgets = g_malloc(sizeof(*widgets));
   return widgets;
-}
-
-static void fill_combo_box (gpointer data, gpointer user_data)
-{
-  const gchar *label = ((BabelFile*) data)->label;
-  vik_combo_box_text_append (GTK_WIDGET(user_data), label);
 }
 
 static void add_file_filter (gpointer data, gpointer user_data)
@@ -140,9 +135,14 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
 
   /* The file format selector */
   type_label = gtk_label_new (_("File type:"));
-  widgets->type = vik_combo_box_text_new ();
-  g_list_foreach (a_babel_file_list, fill_combo_box, widgets->type);
-  gtk_combo_box_set_active (GTK_COMBO_BOX (widgets->type), last_type);
+  /* Propose all readable file */
+  BabelMode mode = { 1, 0, 1, 0, 1, 0 };
+  widgets->type = a_babel_ui_file_type_selector_new ( mode );
+  g_signal_connect ( G_OBJECT(widgets->type), "changed",
+      G_CALLBACK(a_babel_ui_type_selector_dialog_sensitivity_cb), dialog );
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(widgets->type), last_type );
+  /* Manually call the callback to fix the state */
+  a_babel_ui_type_selector_dialog_sensitivity_cb ( widgets->type, dialog );
 
   /* Packing all these widgets */
   GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
@@ -171,8 +171,7 @@ static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets,
   /* Retrieve and memorize file format selected */
   gchar *type = NULL;
   last_type = gtk_combo_box_get_active ( GTK_COMBO_BOX (widgets->type) );
-  if ( a_babel_file_list )
-    type = ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name;
+  type = (a_babel_ui_file_type_selector_get ( widgets->type ))->name;
 
   /* Build the string */
   *cmd = g_strdup_printf( "-i %s", type);

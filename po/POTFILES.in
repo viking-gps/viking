@@ -1,4 +1,5 @@
 src/acquire.c
+src/babel_ui.c
 src/background.c
 src/bing.c
 src/bingmapsource.c
