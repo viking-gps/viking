@@ -49,6 +49,7 @@ src/vikmapslayer.c
 src/vikrouting.c
 src/viktreeview.c
 src/viktrwlayer.c
+src/viktrwlayer_export.c
 src/viktrwlayer_propwin.c
 src/viktrwlayer_tpwin.c
 src/viktrwlayer_tracklist.c

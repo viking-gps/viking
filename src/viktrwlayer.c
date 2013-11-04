@@ -33,6 +33,7 @@
 #include "viking.h"
 #include "vikmapslayer.h"
 #include "vikgpslayer.h"
+#include "viktrwlayer_export.h"
 #include "viktrwlayer_tpwin.h"
 #include "viktrwlayer_propwin.h"
 #include "viktrwlayer_analysis.h"
@@ -307,7 +308,6 @@ static void trw_layer_gps_upload_any ( menu_array_sublayer values );
 
 static void trw_layer_centerize ( menu_array_layer values );
 static void trw_layer_auto_view ( menu_array_layer values );
-static void trw_layer_export ( menu_array_layer values, const gchar* title, const gchar* default_name, VikTrack* trk, guint file_type );
 static void trw_layer_goto_wp ( menu_array_layer values );
 static void trw_layer_new_wp ( menu_array_layer values );
 static void trw_layer_new_track ( menu_array_layer values );
@@ -3245,123 +3245,51 @@ static void trw_layer_auto_view ( menu_array_layer values )
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This layer has no waypoints or trackpoints.") );
 }
 
-static void trw_layer_export ( menu_array_layer values, const gchar *title, const gchar* default_name, VikTrack* trk, guint file_type )
-{
-  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
-  GtkWidget *file_selector;
-  const gchar *fn;
-  gboolean failed = FALSE;
-  file_selector = gtk_file_chooser_dialog_new (title,
-					       NULL,
-					       GTK_FILE_CHOOSER_ACTION_SAVE,
-					       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					       GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
-					       NULL);
-  gchar *cwd = g_get_current_dir();
-  if ( cwd ) {
-    gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(file_selector), cwd );
-    g_free ( cwd );
-  }
-
-  gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(file_selector), default_name);
-
-  while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
-  {
-    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(file_selector) );
-    if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE ||
-         a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
-    {
-      gtk_widget_hide ( file_selector );
-      vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-      failed = ! a_file_export ( vtl, fn, file_type, trk, TRUE );
-      vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-      break;
-    }
-  }
-  gtk_widget_destroy ( file_selector );
-  if ( failed )
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("The filename you requested could not be opened for writing.") );
-}
-
 static void trw_layer_export_gpspoint ( menu_array_layer values )
 {
-  trw_layer_export ( values, _("Export Layer"), vik_layer_get_name(VIK_LAYER(values[MA_VTL])), NULL, FILE_TYPE_GPSPOINT );
+  gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GPSPOINT );
+
+  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPSPOINT );
+
+  g_free ( auto_save_name );
 }
 
 static void trw_layer_export_gpsmapper ( menu_array_layer values )
 {
-  trw_layer_export ( values, _("Export Layer"), vik_layer_get_name(VIK_LAYER(values[MA_VTL])), NULL, FILE_TYPE_GPSMAPPER );
+  gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GPSMAPPER );
+
+  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPSMAPPER );
+
+  g_free ( auto_save_name );
 }
 
 static void trw_layer_export_gpx ( menu_array_layer values )
 {
-  /* Auto append '.gpx' to track name (providing it's not already there) for the default filename */
-  gchar *auto_save_name = g_strdup ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])) );
-  if ( ! check_file_ext ( auto_save_name, ".gpx" ) )
-    auto_save_name = g_strconcat ( auto_save_name, ".gpx", NULL );
+  gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GPX );
 
-  trw_layer_export ( values, _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPX );
+  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPX );
 
   g_free ( auto_save_name );
 }
 
 static void trw_layer_export_kml ( menu_array_layer values )
 {
-  /* Auto append '.kml' to the name (providing it's not already there) for the default filename */
-  gchar *auto_save_name = g_strdup ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])) );
-  if ( ! check_file_ext ( auto_save_name, ".kml" ) )
-    auto_save_name = g_strconcat ( auto_save_name, ".kml", NULL );
+  gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_KML );
 
-  trw_layer_export ( values, _("Export Layer"), auto_save_name, NULL, FILE_TYPE_KML );
+  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_KML );
 
   g_free ( auto_save_name );
 }
 
-/**
- * Convert the given TRW layer into a temporary GPX file and open it with the specified program
- *
- */
-static void trw_layer_export_external_gpx ( menu_array_layer values, const gchar* external_program )
-{
-  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
-  gchar *name_used = NULL;
-  int fd;
-
-  if ((fd = g_file_open_tmp("tmp-viking.XXXXXX.gpx", &name_used, NULL)) >= 0) {
-    vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-    gboolean failed = ! a_file_export ( vtl, name_used, FILE_TYPE_GPX, NULL, TRUE);
-    vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-    if (failed) {
-      a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not create temporary file for export.") );
-    }
-    else {
-      GError *err = NULL;
-      gchar *quoted_file = g_shell_quote ( name_used );
-      gchar *cmd = g_strdup_printf ( "%s %s", external_program, quoted_file );
-      g_free ( quoted_file );
-      if ( ! g_spawn_command_line_async ( cmd, &err ) )
-      {
-        a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s."), external_program );
-        g_error_free ( err );
-      }
-      g_free ( cmd );
-    }
-    // Note ATM the 'temporary' file is not deleted, as loading via another program is not instantaneous
-    //g_remove ( name_used );
-    // Perhaps should be deleted when the program ends?
-    // For now leave it to the user to delete it / use system temp cleanup methods.
-    g_free ( name_used );
-  }
-}
 
 static void trw_layer_export_external_gpx_1 ( menu_array_layer values )
 {
-  trw_layer_export_external_gpx ( values, a_vik_get_external_gpx_program_1() );
+  vik_trw_layer_export_external_gpx ( VIK_TRW_LAYER (values[MA_VTL]), a_vik_get_external_gpx_program_1() );
 }
 
 static void trw_layer_export_external_gpx_2 ( menu_array_layer values )
 {
-  trw_layer_export_external_gpx ( values, a_vik_get_external_gpx_program_2() );
+  vik_trw_layer_export_external_gpx ( VIK_TRW_LAYER (values[MA_VTL]), a_vik_get_external_gpx_program_2() );
 }
 
 static void trw_layer_export_gpx_track ( menu_array_sublayer values )
@@ -3380,17 +3308,14 @@ static void trw_layer_export_gpx_track ( menu_array_sublayer values )
   if ( !trk || !trk->name )
     return;
 
-  /* Auto append '.gpx' to track name (providing it's not already there) for the default filename */
-  gchar *auto_save_name = g_strdup ( trk->name );
-  if ( ! check_file_ext ( auto_save_name, ".gpx" ) )
-    auto_save_name = g_strconcat ( auto_save_name, ".gpx", NULL );
+  gchar *auto_save_name = append_file_ext ( trk->name, FILE_TYPE_GPX );
 
   gchar *label = NULL;
   if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
     label = _("Export Route as GPX");
   else
     label = _("Export Track as GPX");
-  trw_layer_export ( data, label, auto_save_name, trk, FILE_TYPE_GPX );
+  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), label, auto_save_name, trk, FILE_TYPE_GPX );
 
   g_free ( auto_save_name );
 }

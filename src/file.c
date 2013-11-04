@@ -603,6 +603,44 @@ gboolean check_file_magic_vik ( const gchar *filename )
   return result;
 }
 
+/**
+ * append_file_ext:
+ *
+ * Append a file extension, if not already present.
+ *
+ * Returns: a newly allocated string
+ */
+gchar *append_file_ext ( const gchar *filename, VikLoadType_t type )
+{
+  gchar *new_name = NULL;
+  const gchar *ext = NULL;
+
+  /* Select an extension */
+  switch (type)
+  {
+  case FILE_TYPE_GPX:
+    ext = ".gpx";
+    break;
+  case FILE_TYPE_KML:
+    ext = ".kml";
+    break;
+  case FILE_TYPE_GPSMAPPER:
+  case FILE_TYPE_GPSPOINT:
+  default:
+    /* Do nothing, ext already set to NULL */
+    break;
+  }
+
+  /* Do */
+  if ( ext != NULL && ! check_file_ext ( filename, ext ) )
+    new_name = g_strconcat ( filename, ext, NULL );
+  else
+    /* Simply duplicate */
+    new_name = g_strdup ( filename );
+
+  return new_name;
+}
+
 VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename_or_uri )
 {
   g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );

@@ -84,6 +84,7 @@ libviking_a_SOURCES = \
 	vikgototool.c vikgototool.h \
 	vikgotoxmltool.c vikgotoxmltool.h \
 	vikgoto.c vikgoto.h \
+	viktrwlayer_export.c viktrwlayer_export.h \
 	viktrwlayer_tpwin.c viktrwlayer_tpwin.h \
 	viktrwlayer_propwin.c viktrwlayer_propwin.h \
 	viktrwlayer_analysis.c viktrwlayer_analysis.h \
