@@ -754,7 +754,7 @@ You are probably better off expanding the waypoint list and directly start typin
 
 <section><title>Export Layer</title>
 <para>
-The layer (all tracks, routes and waypoints) can be exported to a file GPX, GPSPoint, GPSMapper or Google's KML format.
+The layer (all tracks, routes and waypoints) can be exported to a file GPX, GPSPoint, GPSMapper, Google's KML format or any other format supported by GPSbabel.
 </para>
 <para>
 Version1.1+: An individual track can be exported to a GPX file via the track menu.

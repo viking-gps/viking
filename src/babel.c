@@ -555,11 +555,11 @@ static void load_feature_parse_line (gchar *line)
         file->label = g_strdup (tokens[4]);
         a_babel_file_list = g_list_append (a_babel_file_list, file);
         g_debug ("New gpsbabel file: %s, %d%d%d%d%d%d(%s)",
-        			file->name,
-        			file->mode.waypointsRead, file->mode.waypointsWrite,
-        			file->mode.tracksRead, file->mode.tracksWrite,
-        			file->mode.routesRead, file->mode.routesWrite,
-        			tokens[1]);
+			file->name,
+			file->mode.waypointsRead, file->mode.waypointsWrite,
+			file->mode.tracksRead, file->mode.tracksWrite,
+			file->mode.routesRead, file->mode.routesWrite,
+			tokens[1]);
       } else {
         g_warning ( "Unexpected gpsbabel format string: %s", line);
       }

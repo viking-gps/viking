@@ -867,6 +867,22 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
 }
 
 /**
+ * a_file_export_babel:
+ */
+gboolean a_file_export_babel ( VikTrwLayer *vtl, const gchar *filename, const gchar *format,
+                               gboolean tracks, gboolean routes, gboolean waypoints )
+{
+  gchar *args = g_strdup_printf("%s %s %s -o %s",
+                                tracks ? "-t" : "",
+                                routes ? "-r" : "",
+                                waypoints ? "-w" : "",
+                                format);
+  gboolean result = a_babel_convert_to ( vtl, NULL, args, filename, NULL, NULL );
+  g_free(args);
+  return result;
+}
+
+/**
  * Just a wrapper around realpath, which itself is platform dependent
  */
 char *file_realpath ( const char *path, char *real )
