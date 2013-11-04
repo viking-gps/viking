@@ -3835,7 +3835,7 @@ static void window_create_ui( VikWindow *window )
   gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 4, (GCallback)window_change_coord_mode_cb, window);
 
   // Use this to see if GPSBabel is available:
-  if ( a_babel_device_list ) {
+  if ( a_babel_available () ) {
 	// If going to add more entries then might be worth creating a menu_gpsbabel.xml.h file
 	if ( gtk_ui_manager_add_ui_from_string ( uim,
 	  "<ui><menubar name='MainMenu'><menu action='File'><menu action='Export'><menuitem action='ExportKML'/></menu></menu></menubar></ui>",

@@ -105,6 +105,8 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
 void a_babel_init ();
 void a_babel_uninit ();
 
+gboolean a_babel_available ();
+
 G_END_DECLS
 
 #endif

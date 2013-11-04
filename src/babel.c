@@ -631,3 +631,15 @@ void a_babel_uninit ()
   }
 
 }
+
+/**
+ * a_babel_available:
+ *
+ * Indicates if babel is available or not.
+ *
+ * Returns: true if babel available
+ */
+gboolean a_babel_available ()
+{
+  return a_babel_device_list != NULL;
+}
