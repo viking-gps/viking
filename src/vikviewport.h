@@ -54,6 +54,7 @@ typedef struct _VikViewportClass VikViewportClass;
 struct _VikViewportClass
 {
   GtkDrawingAreaClass drawing_area_class;
+  void (*updated_center) (VikViewport *vw);
 };
 GType vik_viewport_get_type ();
 
@@ -82,16 +83,20 @@ void vik_viewport_zoom_out ( VikViewport *vvp );
 
 /* viewport position */
 const VikCoord *vik_viewport_get_center ( VikViewport *vvp );
-void vik_viewport_set_center_coord ( VikViewport *vvp, const VikCoord *coord );
+void vik_viewport_set_center_coord ( VikViewport *vvp, const VikCoord *coord, gboolean save_position );
 void vik_viewport_set_center_screen ( VikViewport *vvp, int x, int y );
 void vik_viewport_center_for_zonen ( VikViewport *vvp, struct UTM *center, int zone);
 gchar vik_viewport_leftmost_zone ( VikViewport *vvp );
 gchar vik_viewport_rightmost_zone ( VikViewport *vvp );
-void vik_viewport_set_center_utm ( VikViewport *vvp, const struct UTM *utm );
-void vik_viewport_set_center_latlon ( VikViewport *vvp, const struct LatLon *ll );
+void vik_viewport_set_center_utm ( VikViewport *vvp, const struct UTM *utm, gboolean save_position );
+void vik_viewport_set_center_latlon ( VikViewport *vvp, const struct LatLon *ll, gboolean save_position );
 void vik_viewport_corners_for_zonen ( VikViewport *vvp, int zone, VikCoord *ul, VikCoord *br );
 void vik_viewport_get_min_max_lat_lon ( VikViewport *vp, gdouble *min_lat, gdouble *max_lat, gdouble *min_lon, gdouble *max_lon );
 
+gboolean vik_viewport_go_back ( VikViewport *vvp );
+gboolean vik_viewport_go_forward ( VikViewport *vvp );
+gboolean vik_viewport_back_available ( const VikViewport *vvp );
+gboolean vik_viewport_forward_available ( const VikViewport *vvp );
 
 /* drawmode management */
 typedef enum {

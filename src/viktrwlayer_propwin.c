@@ -305,13 +305,13 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
   if ( trackpoint ) {
     VikCoord coord = trackpoint->coord;
     if ( vlp ) {
-      vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord );
+      vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord, TRUE );
       vik_layers_panel_emit_update ( vlp );
     }
     else {
       /* since vlp not set, vvp should be valid instead! */
       if ( vvp )
-	vik_viewport_set_center_coord ( vvp, &coord );
+        vik_viewport_set_center_coord ( vvp, &coord, TRUE );
       vik_layer_emit_update ( VIK_LAYER(vtl) );
     }
   }

@@ -884,7 +884,7 @@ gboolean vik_trw_layer_find_date ( VikTrwLayer *vtl, const gchar *date_str, VikC
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup (vtl->tracks_iters, df.trk_id), TRUE );
     }
     else if ( df.wpt ) {
-      vik_viewport_set_center_coord ( vvp, &(df.wpt->coord) );
+      vik_viewport_set_center_coord ( vvp, &(df.wpt->coord), TRUE );
       vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup (vtl->waypoints_iters, df.wpt_id), TRUE );
     }
     vik_layer_emit_update ( VIK_LAYER(vtl) );
@@ -3235,7 +3235,7 @@ void trw_layer_zoom_to_show_latlons ( VikTrwLayer *vtl, VikViewport *vvp, struct
   struct LatLon average = { (maxmin[0].lat+maxmin[1].lat)/2, (maxmin[0].lon+maxmin[1].lon)/2 };
   VikCoord coord;
   vik_coord_load_from_latlon ( &coord, vtl->coord_mode, &average );
-  vik_viewport_set_center_coord ( vvp, &coord );
+  vik_viewport_set_center_coord ( vvp, &coord, TRUE );
 
   /* Convert into definite 'smallest' and 'largest' positions */
   struct LatLon minmin;
@@ -3420,7 +3420,7 @@ static void trw_layer_goto_wp ( menu_array_layer values )
       a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Waypoint not found in this layer.") );
     else
     {
-      vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &(wp->coord) );
+      vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &(wp->coord), TRUE );
       vik_layers_panel_emit_update ( vlp );
 
       // Find and select on the side panel
@@ -3858,7 +3858,7 @@ static void trw_layer_auto_tracks_view ( menu_array_layer values )
 static void trw_layer_single_waypoint_jump ( const gpointer id, const VikWaypoint *wp, gpointer vvp )
 {
   /* NB do not care if wp is visible or not */
-  vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), &(wp->coord) );
+  vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), &(wp->coord), TRUE );
 }
 
 static void trw_layer_auto_waypoints_view ( menu_array_layer values )
@@ -5050,13 +5050,13 @@ void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk )
 static void goto_coord ( gpointer *vlp, gpointer vl, gpointer vvp, const VikCoord *coord )
 {
   if ( vlp ) {
-    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport (VIK_LAYERS_PANEL(vlp)), coord );
+    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport (VIK_LAYERS_PANEL(vlp)), coord, TRUE );
     vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vlp) );
   }
   else {
     /* since vlp not set, vl & vvp should be valid instead! */
     if ( vl && vvp ) {
-      vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), coord );
+      vik_viewport_set_center_coord ( VIK_VIEWPORT(vvp), coord, TRUE );
       vik_layer_emit_update ( VIK_LAYER(vl) );
     }
   }

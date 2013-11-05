@@ -95,6 +95,7 @@ static gboolean delete_event( VikWindow *vw );
 
 static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer data );
 
+static void center_changed_cb ( VikWindow *vw );
 static void window_configure_event ( VikWindow *vw );
 static void draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
@@ -404,7 +405,7 @@ static int determine_location_thread ( VikWindow *vw, gpointer threaddata )
     }
 
     vik_viewport_set_zoom ( vw->viking_vvp, zoom );
-    vik_viewport_set_center_latlon ( vw->viking_vvp, &ll );
+    vik_viewport_set_center_latlon ( vw->viking_vvp, &ll, FALSE );
 
     gchar *message = g_strdup_printf ( _("Location found: %s"), name );
     vik_window_statusbar_update ( vw, message, VIK_STATUSBAR_INFO );
@@ -754,6 +755,9 @@ static void vik_window_init ( VikWindow *vw )
 
   g_signal_connect (G_OBJECT (vw), "delete_event", G_CALLBACK (delete_event), NULL);
 
+  // Own signals
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "updated_center", G_CALLBACK(center_changed_cb), vw);
+  // Signals from GTK
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
   gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK );
@@ -767,6 +771,9 @@ static void vik_window_init ( VikWindow *vw )
 
   // Allow key presses to be processed anywhere
   g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
+
+  // Set initial button sensitivity
+  center_changed_cb ( vw );
 
   hpaned = gtk_hpaned_new ();
   gtk_paned_pack1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
@@ -1790,7 +1797,7 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
 
     VikCoord new_center;
     vik_coord_load_from_latlon ( &new_center, vik_viewport_get_coord_mode ( zts->vw->viking_vvp ), &average );
-    vik_viewport_set_center_coord ( zts->vw->viking_vvp, &new_center );
+    vik_viewport_set_center_coord ( zts->vw->viking_vvp, &new_center, FALSE );
 
     /* Convert into definite 'smallest' and 'largest' positions */
     struct LatLon minmin;
@@ -2100,8 +2107,50 @@ static void draw_goto_cb ( GtkAction *a, VikWindow *vw )
     return;
   }
 
-  vik_viewport_set_center_coord ( vw->viking_vvp, &new_center );
+  vik_viewport_set_center_coord ( vw->viking_vvp, &new_center, TRUE );
   draw_update ( vw );
+}
+
+/**
+ * center_changed_cb:
+ */
+static void center_changed_cb ( VikWindow *vw )
+{
+// ATM Keep back always available, so when we pan - we can jump to the last requested position
+/*
+  GtkAction* action_back = gtk_action_group_get_action ( vw->action_group, "GoBack" );
+  if ( action_back ) {
+    gtk_action_set_sensitive ( action_back, vik_viewport_back_available(vw->viking_vvp) );
+  }
+*/
+  GtkAction* action_forward = gtk_action_group_get_action ( vw->action_group, "GoForward" );
+  if ( action_forward ) {
+    gtk_action_set_sensitive ( action_forward, vik_viewport_forward_available(vw->viking_vvp) );
+  }
+}
+
+/**
+ * draw_goto_back_and_forth:
+ */
+static void draw_goto_back_and_forth ( GtkAction *a, VikWindow *vw )
+{
+  gboolean changed = FALSE;
+  if (!strcmp(gtk_action_get_name(a), "GoBack")) {
+    changed = vik_viewport_go_back ( vw->viking_vvp );
+  }
+  else if (!strcmp(gtk_action_get_name(a), "GoForward")) {
+    changed = vik_viewport_go_forward ( vw->viking_vvp );
+  }
+  else {
+    return;
+  }
+
+  // Recheck buttons sensitivities, as the center changed signal is not sent on back/forward changes
+  //  (otherwise we would get stuck in an infinite loop!)
+  center_changed_cb ( vw );
+
+  if ( changed )
+    draw_update ( vw );
 }
 
 /**
@@ -3061,7 +3110,7 @@ static void goto_default_location( GtkAction *a, VikWindow *vw)
   struct LatLon ll;
   ll.lat = a_vik_get_default_lat();
   ll.lon = a_vik_get_default_long();
-  vik_viewport_set_center_latlon(vw->viking_vvp, &ll);
+  vik_viewport_set_center_latlon(vw->viking_vvp, &ll, TRUE);
   vik_layers_panel_emit_update(vw->viking_vlp);
 }
 
@@ -3319,7 +3368,7 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
         utm.northing -= ((gdouble)y - (((gdouble)tiles_h)+1)/2) * (h*zoom);
 
       /* move to correct place. */
-      vik_viewport_set_center_utm ( vw->viking_vvp, &utm );
+      vik_viewport_set_center_utm ( vw->viking_vvp, &utm, FALSE );
 
       draw_redraw ( vw );
 
@@ -3336,7 +3385,7 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
     }
   }
 
-  vik_viewport_set_center_utm ( vw->viking_vvp, &utm_orig );
+  vik_viewport_set_center_utm ( vw->viking_vvp, &utm_orig, FALSE );
   vik_viewport_set_xmpp ( vw->viking_vvp, old_xmpp );
   vik_viewport_set_ympp ( vw->viking_vvp, old_ympp );
   vik_viewport_configure ( vw->viking_vvp );
@@ -3788,6 +3837,8 @@ static GtkActionEntry entries[] = {
   { "Exit",      GTK_STOCK_QUIT,         N_("E_xit"),                         "<control>W", N_("Exit the program"),                             (GCallback)window_close          },
   { "SaveExit",  GTK_STOCK_QUIT,         N_("Save and Exit"),                 NULL, N_("Save and Exit the program"),                             (GCallback)save_file_and_exit          },
 
+  { "GoBack",    GTK_STOCK_GO_BACK,      N_("Go to the Pre_vious Location"),  NULL,         N_("Go to the previous location"),              (GCallback)draw_goto_back_and_forth },
+  { "GoForward", GTK_STOCK_GO_FORWARD,   N_("Go to the _Next Location"),      NULL,         N_("Go to the next location"),                  (GCallback)draw_goto_back_and_forth },
   { "GotoDefaultLocation", GTK_STOCK_HOME, N_("Go to the _Default Location"),  NULL,         N_("Go to the default location"),                     (GCallback)goto_default_location },
   { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to _Location..."),    	      NULL,         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },

@@ -546,7 +546,7 @@ name=this
   }
 
   if ( ll.lat != 0.0 || ll.lon != 0.0 )
-    vik_viewport_set_center_latlon ( VIK_VIEWPORT(vp), &ll );
+    vik_viewport_set_center_latlon ( VIK_VIEWPORT(vp), &ll, TRUE );
 
   if ( ( ! VIK_LAYER(top)->visible ) && VIK_LAYER(top)->realized )
     vik_treeview_item_set_visible ( VIK_LAYER(top)->vt, &(VIK_LAYER(top)->iter), FALSE ); 

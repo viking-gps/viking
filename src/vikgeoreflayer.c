@@ -644,7 +644,7 @@ static void georef_layer_goto_center ( gpointer vgl_vlp[2] )
   utm.northing = vgl->corner.northing - (vgl->height * vgl->mpp_northing / 2);
 
   vik_coord_load_from_utm ( &coord, vik_viewport_get_coord_mode ( vp ), &utm );
-  vik_viewport_set_center_coord ( vp, &coord );
+  vik_viewport_set_center_coord ( vp, &coord, TRUE );
 
   vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vgl_vlp[1]) );
 }

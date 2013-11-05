@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2007, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * Lat/Lon plotting functions calcxy* are from GPSDrive
  * GPSDrive Copyright (C) 2001-2004 Fritz Ganter <ganter@ganter.at>
@@ -57,6 +58,8 @@ static gint PAD = 10;
 
 static void viewport_finalize ( GObject *gob );
 static void viewport_utm_zone_check ( VikViewport *vvp );
+static void update_centers ( VikViewport *vvp );
+static void free_centers ( VikViewport *vvp, guint start );
 
 static gboolean calcxy(double *x, double *y, double lg, double lt, double zero_long, double zero_lat, double pixelfact_x, double pixelfact_y, gint mapSizeX2, gint mapSizeY2 );
 static gboolean calcxy_rev(double *lg, double *lt, gint x, gint y, double zero_long, double zero_lat, double pixelfact_x, double pixelfact_y, gint mapSizeX2, gint mapSizeY2 );
@@ -67,7 +70,6 @@ static void viewport_init_ra();
 
 static GObjectClass *parent_class;
 
-
 struct _VikViewport {
   GtkDrawingArea drawing_area;
   GdkPixmap *scr_buffer;
@@ -77,6 +79,10 @@ struct _VikViewport {
   VikCoordMode coord_mode;
   gdouble xmpp, ympp;
   gdouble xmfactor, ymfactor;
+  GList *centers;         // The history of requested positions
+  guint centers_index;    // current position within the history list
+  guint centers_max;      // configurable maximum size of the history list
+  guint centers_radius;   // Metres
 
   GdkPixbuf *alpha_pixbuf;
   guint8 alpha_pixbuf_width;
@@ -127,6 +133,12 @@ viewport_utm_zone_width ( VikViewport *vvp )
     return 0.0;
 }
 
+enum {
+  VW_UPDATED_CENTER_SIGNAL = 0,
+  VW_LAST_SIGNAL,
+};
+static guint viewport_signals[VW_LAST_SIGNAL] = { 0 };
+
 G_DEFINE_TYPE (VikViewport, vik_viewport, GTK_TYPE_DRAWING_AREA)
 
 static void
@@ -140,6 +152,10 @@ vik_viewport_class_init ( VikViewportClass *klass )
   object_class->finalize = viewport_finalize;
 
   parent_class = g_type_class_peek_parent (klass);
+
+  viewport_signals[VW_UPDATED_CENTER_SIGNAL] = g_signal_new ( "updated_center", G_TYPE_FROM_CLASS (klass),
+      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikViewportClass, updated_center), NULL, NULL,
+      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
 VikViewport *vik_viewport_new ()
@@ -152,6 +168,8 @@ VikViewport *vik_viewport_new ()
 #define VIK_SETTINGS_VIEW_LAST_LONGITUDE "viewport_last_longitude"
 #define VIK_SETTINGS_VIEW_LAST_ZOOM_X "viewport_last_zoom_xpp"
 #define VIK_SETTINGS_VIEW_LAST_ZOOM_Y "viewport_last_zoom_ypp"
+#define VIK_SETTINGS_VIEW_HISTORY_SIZE "viewport_history_size"
+#define VIK_SETTINGS_VIEW_HISTORY_DIFF_DIST "viewport_history_diff_dist"
 
 static void
 vik_viewport_init ( VikViewport *vvp )
@@ -199,6 +217,15 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->scale_bg_gc = NULL;
 
   vvp->copyrights = NULL;
+  vvp->centers = NULL;
+  vvp->centers_index = 0;
+  vvp->centers_max = 20;
+  gint tmp = vvp->centers_max;
+  if ( a_settings_get_integer ( VIK_SETTINGS_VIEW_HISTORY_SIZE, &tmp ) )
+    vvp->centers_max = tmp;
+  vvp->centers_radius = 500;
+  if ( a_settings_get_integer ( VIK_SETTINGS_VIEW_HISTORY_DIFF_DIST, &tmp ) )
+    vvp->centers_radius = tmp;
 
   vvp->draw_scale = TRUE;
   vvp->draw_centermark = TRUE;
@@ -207,6 +234,9 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->trigger = NULL;
   vvp->snapshot_buffer = NULL;
   vvp->half_drawn = FALSE;
+
+  // Initiate center history
+  update_centers ( vvp );
 
   g_signal_connect (G_OBJECT(vvp), "configure_event", G_CALLBACK(vik_viewport_configure), NULL);
 
@@ -392,6 +422,9 @@ static void viewport_finalize ( GObject *gob )
     a_settings_set_double ( VIK_SETTINGS_VIEW_LAST_ZOOM_X, vvp->xmpp );
     a_settings_set_double ( VIK_SETTINGS_VIEW_LAST_ZOOM_Y, vvp->ympp );
   }
+
+  if ( vvp->centers )
+   free_centers ( vvp, 0 );
 
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
@@ -815,23 +848,197 @@ static void viewport_utm_zone_check ( VikViewport *vvp )
   }
 }
 
-void vik_viewport_set_center_latlon ( VikViewport *vvp, const struct LatLon *ll )
+/**
+ * Free an individual center position in the history list
+ */
+static void free_center ( VikViewport *vvp, guint index )
+{
+  VikCoord *coord = g_list_nth_data ( vvp->centers, index );
+  if ( coord )
+    g_free ( coord );
+  GList *gl = g_list_nth ( vvp->centers, index );
+  if ( gl )
+    vvp->centers = g_list_delete_link ( vvp->centers, gl );
+}
+
+/**
+ * Free a set of center positions in the history list,
+ *  from the indicated start index to the end of the list
+ */
+static void free_centers ( VikViewport *vvp, guint start )
+{
+  // Have to work backward since we delete items referenced by the '_nth()' values,
+  //  otherwise if processed forward - removing the lower nth index entries would change the subsequent indexing
+  for ( guint i = g_list_length(vvp->centers)-1; i > start; i-- )
+    free_center ( vvp, i );
+}
+
+/**
+ * Store the current center position into the history list
+ *  and emit a signal to notify clients the list has been updated
+ */
+static void update_centers ( VikViewport *vvp )
+{
+  VikCoord *new_center = g_malloc(sizeof (VikCoord));
+  *new_center = vvp->center;
+
+  if ( vvp->centers_index ) {
+
+    if ( vvp->centers_index == vvp->centers_max-1 ) {
+      // List is full, so drop the oldest value to make room for the new one
+      free_center ( vvp, 0 );
+      vvp->centers_index--;
+    }
+    else {
+      // Reset the now unused section of the list
+      // Free from the index to the end
+      free_centers ( vvp, vvp->centers_index+1 );
+    }
+
+  }
+
+  // Store new position
+  // NB ATM this can be the same location as the last one in the list
+  vvp->centers = g_list_append ( vvp->centers, new_center );
+
+  // Reset to the end (NB should be same as centers_index++)
+  vvp->centers_index = g_list_length ( vvp->centers ) - 1;
+
+  // Inform interested subscribers that this change has occurred
+  g_signal_emit ( G_OBJECT(vvp), viewport_signals[VW_UPDATED_CENTER_SIGNAL], 0 );
+}
+
+/**
+ * vik_viewport_go_back:
+ *
+ * Move back in the position history
+ *
+ * Returns: %TRUE one success
+ */
+gboolean vik_viewport_go_back ( VikViewport *vvp )
+{
+  // see if the current position is different from the last saved center position within a certain radius
+  VikCoord *center = g_list_nth_data ( vvp->centers, vvp->centers_index );
+  if ( center ) {
+    // Consider an exclusion size (should it zoom level dependent, rather than a fixed value?)
+    // When still near to the last saved position we'll jump over it to the one before
+    if ( vik_coord_diff ( center, &vvp->center ) > vvp->centers_radius ) {
+
+      if ( vvp->centers_index == g_list_length(vvp->centers)-1 ) {
+        // Only when we haven't already moved back in the list
+        // Remember where this request came from
+        //   (alternatively we could insert in the list on every back attempt)
+        update_centers ( vvp );
+      }
+
+    }
+    // 'Go back' if possible
+    // NB if we inserted a position above, then this will then move to the last saved position
+    //  otherwise this will skip to the previous saved position, as it's probably somewhere else.
+    if ( vvp->centers_index > 0 )
+      vvp->centers_index--;
+  }
+  else {
+    return FALSE;
+  }
+
+  VikCoord *new_center = g_list_nth_data ( vvp->centers, vvp->centers_index );
+  if ( new_center ) {
+    vik_viewport_set_center_coord ( vvp, new_center, FALSE );
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * vik_viewport_go_forward:
+ *
+ * Move forward in the position history
+ *
+ * Returns: %TRUE one success
+ */
+gboolean vik_viewport_go_forward ( VikViewport *vvp )
+{
+  if ( vvp->centers_index == vvp->centers_max-1 )
+    return FALSE;
+
+  vvp->centers_index++;
+  VikCoord *new_center = g_list_nth_data ( vvp->centers, vvp->centers_index );
+  if ( new_center ) {
+    vik_viewport_set_center_coord ( vvp, new_center, FALSE );
+    return TRUE;
+  }
+  else
+    // Set to end of list
+    vvp->centers_index = g_list_length(vvp->centers) - 1;
+
+  return FALSE;
+}
+
+/**
+ * vik_viewport_back_available:
+ *
+ * Returns: %TRUE when a previous position in the history is available
+ */
+gboolean vik_viewport_back_available ( const VikViewport *vvp )
+{
+  return ( vvp->centers_index > 0 );
+}
+
+/**
+ * vik_viewport_forward_available:
+ *
+ * Returns: %TRUE when a next position in the history is available
+ */
+gboolean vik_viewport_forward_available ( const VikViewport *vvp )
+{
+  return ( vvp->centers_index < g_list_length(vvp->centers)-1 );
+}
+
+/**
+ * vik_viewport_set_center_latlon:
+ * @vvp:           The viewport to reposition.
+ * @ll:            The new center position in Lat/Lon format
+ * @save_position: Whether this new position should be saved into the history of positions
+ *                 Normally only specific user requests should be saved (i.e. to not include Pan and Zoom repositions)
+ */
+void vik_viewport_set_center_latlon ( VikViewport *vvp, const struct LatLon *ll, gboolean save_position )
 {
   vik_coord_load_from_latlon ( &(vvp->center), vvp->coord_mode, ll );
+  if ( save_position )
+    update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
 }
 
-void vik_viewport_set_center_utm ( VikViewport *vvp, const struct UTM *utm )
+/**
+ * vik_viewport_set_center_utm:
+ * @vvp:           The viewport to reposition.
+ * @utm:           The new center position in UTM format
+ * @save_position: Whether this new position should be saved into the history of positions
+ *                 Normally only specific user requests should be saved (i.e. to not include Pan and Zoom repositions)
+ */
+void vik_viewport_set_center_utm ( VikViewport *vvp, const struct UTM *utm, gboolean save_position )
 {
   vik_coord_load_from_utm ( &(vvp->center), vvp->coord_mode, utm );
+  if ( save_position )
+    update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
 }
 
-void vik_viewport_set_center_coord ( VikViewport *vvp, const VikCoord *coord )
+/**
+ * vik_viewport_set_center_coord:
+ * @vvp:           The viewport to reposition.
+ * @coord:         The new center position in a VikCoord type
+ * @save_position: Whether this new position should be saved into the history of positions
+ *                 Normally only specific user requests should be saved (i.e. to not include Pan and Zoom repositions)
+ */
+void vik_viewport_set_center_coord ( VikViewport *vvp, const VikCoord *coord, gboolean save_position )
 {
   vvp->center = *coord;
+  if ( save_position )
+    update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
 }
@@ -894,7 +1101,7 @@ void vik_viewport_set_center_screen ( VikViewport *vvp, int x, int y )
   } else {
     VikCoord tmp;
     vik_viewport_screen_to_coord ( vvp, x, y, &tmp );
-    vik_viewport_set_center_coord ( vvp, &tmp );
+    vik_viewport_set_center_coord ( vvp, &tmp, FALSE );
   }
 }
 

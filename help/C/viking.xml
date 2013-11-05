@@ -2989,6 +2989,17 @@ Accept: */*
 	    <para>trkpt_selected_statusbar_format=KEATDN</para>
 	    <para>This string is in the Message Format Code</para>
 	  </listitem>
+	  <listitem>
+	    <para>viewport_history_size=20</para>
+	  </listitem>
+	  <listitem>
+	    <para>viewport_history_diff_dist=500</para>
+	    <para>In metres.</para>
+	    <para>
+	      Go Back or Go Forward requests over this range from the last history location will move back to that position.
+	      If within this range it will skip over this location and move on to the next saved history location.
+	    </para>
+	  </listitem>
 	</orderedlist>
 
 	<section>

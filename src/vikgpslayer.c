@@ -1629,7 +1629,7 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
 
     if ((vgl->vehicle_position == VEHICLE_POSITION_CENTERED) ||
         (vgl->realtime_jump_to_start && vgl->first_realtime_trackpoint)) {
-      vik_viewport_set_center_coord(vvp, &vehicle_coord);
+      vik_viewport_set_center_coord(vvp, &vehicle_coord, FALSE);
       update_all = TRUE;
     }
     else if (vgl->vehicle_position == VEHICLE_POSITION_ON_SCREEN) {
