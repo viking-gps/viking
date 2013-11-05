@@ -25,7 +25,7 @@ if test -z `which autopoint`; then
 fi
 
 autopoint --force
-AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose
+AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose || exit 1
 
 cd "$olddir"
 test -n "$NOCONFIGURE" || "$srcdir/configure" "$@"
