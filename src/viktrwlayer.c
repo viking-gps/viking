@@ -3283,7 +3283,7 @@ static void trw_layer_export_kml ( menu_array_layer values )
 
 static void trw_layer_export_babel ( gpointer layer_and_vlp[2] )
 {
-  gchar *auto_save_name = vik_layer_get_name(VIK_LAYER(layer_and_vlp[0]));
+  const gchar *auto_save_name = vik_layer_get_name(VIK_LAYER(layer_and_vlp[0]));
   vik_trw_layer_export_gpsbabel ( VIK_TRW_LAYER (layer_and_vlp[0]), _("Export Layer"), auto_save_name );
 }
 
@@ -3299,10 +3299,6 @@ static void trw_layer_export_external_gpx_2 ( menu_array_layer values )
 
 static void trw_layer_export_gpx_track ( menu_array_sublayer values )
 {
-  menu_array_layer data;
-  data[MA_VTL] = values[MA_VTL];
-  data[MA_VLP] = values[MA_VLP];
-
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   VikTrack *trk;
   if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
