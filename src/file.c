@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2012, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2012-2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -264,7 +265,7 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
  * TODO flow up line number(s) / error messages of problems encountered...
  *
  */
-static gboolean file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
+static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpath, VikViewport *vp )
 {
   Stack *stack;
   struct LatLon ll = { 0.0, 0.0 };
@@ -383,7 +384,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, VikViewport *vp )
         if ( stack->data && vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data )
         {
           /* must read until hits ~EndLayerData */
-          if ( ! vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data ( VIK_LAYER(stack->data), f ) )
+          if ( ! vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data ( VIK_LAYER(stack->data), f, dirpath ) )
             successful_read = FALSE;
         }
         else
@@ -660,31 +661,14 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
 
   VikLoadType_t load_answer = LOAD_TYPE_OTHER_SUCCESS;
 
+  gchar *dirpath = g_path_get_dirname ( filename );
   // Attempt loading the primary file type first - our internal .vik file:
   if ( check_magic ( f, VIK_MAGIC ) )
   {
-    // Enables relative paths in a .vik file to work
-    gchar *cwd = g_get_current_dir();
-    gchar *dir = g_path_get_dirname ( filename );
-    if ( dir ) {
-      if ( g_chdir ( dir ) ) {
-        g_warning ( "Could not change directory to %s", dir );
-      }
-      g_free (dir);
-    }
-
-    if ( file_read ( top, f, vp ) )
+    if ( file_read ( top, f, dirpath, vp ) )
       load_answer = LOAD_TYPE_VIK_SUCCESS;
     else
       load_answer = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
-
-    // Restore previous working directory
-    if ( cwd ) {
-      if ( g_chdir ( cwd ) ) {
-        g_warning ( "Could not return to directory %s", cwd );
-      }
-      g_free (cwd);
-    }
   }
   else
   {
@@ -711,11 +695,12 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     }
     else {
       // Try final supported file type
-      if ( ! ( success = a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f ) ) ) {
-		// Failure here means we don't know how to handle the file
+      if ( ! ( success = a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f, dirpath ) ) ) {
+        // Failure here means we don't know how to handle the file
         load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
-	  }
+      }
     }
+    g_free ( dirpath );
 
     // Clean up when we can't handle the file
     if ( ! success ) {
@@ -890,6 +875,24 @@ char *file_realpath ( const char *path, char *real )
   return realpath ( path, real );
 }
 
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 1024
+#endif
+/**
+ * Always return the canonical filename in a newly allocated string
+ */
+char *file_realpath_dup ( const char *path )
+{
+	char real[MAXPATHLEN];
+
+	g_return_val_if_fail(path != NULL, NULL);
+
+	if (file_realpath(path, real))
+		return g_strdup(real);
+
+	return g_strdup(path);
+}
+
 /**
  * Permission granted to use this code after personal correspondance
  * Slightly reworked for better cross platform use, glibisms, function rename and a compacter format
@@ -901,10 +904,6 @@ char *file_realpath ( const char *path, char *real )
 // rfisher@iee.org
 // http://come.to/robfisher
 
-// defines
-#ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
 // The number of characters at the start of an absolute filename.  e.g. in DOS,
 // absolute filenames start with "X:\" so this value should be 3, in UNIX they start
 // with "\" so this value should be 1.

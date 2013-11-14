@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@ typedef struct {
 static void a_gpspoint_write_track ( const gpointer id, const VikTrack *t, FILE *f );
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type *write_info );
 static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f );
-
 
 /* outline for file gpspoint.c
 
@@ -157,7 +156,7 @@ static gchar *deslashndup ( const gchar *str, guint16 len )
  * No obvious way to test for a 'gpspoint' file,
  *  thus set a flag if any actual tag found during processing of the file
  */
-gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
+gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) {
   VikCoordMode coord_mode = vik_trw_layer_get_coord_mode ( trw );
   gchar *tag_start, *tag_end;
   g_assert ( f != NULL && trw != NULL );
@@ -237,8 +236,19 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f ) {
       if ( line_description )
         vik_waypoint_set_description ( wp, line_description );
 
-      if ( line_image )
-        vik_waypoint_set_image ( wp, line_image );
+      if ( line_image ) {
+        // Ensure the filename is absolute
+        if ( g_path_is_absolute ( line_image ) )
+          vik_waypoint_set_image ( wp, line_image );
+        else {
+          // Otherwise create the absolute filename from the directory of the .vik file & and the relative filename
+          gchar *full = g_strconcat(dirpath, G_DIR_SEPARATOR_S, line_image, NULL);
+          gchar *absolute = file_realpath_dup ( full ); // resolved into the canonical name
+          vik_waypoint_set_image ( wp, absolute );
+          g_free ( absolute );
+          g_free ( full );
+        }
+      }
 
       if ( line_symbol )
         vik_waypoint_set_symbol ( wp, line_symbol );

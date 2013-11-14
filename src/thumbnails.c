@@ -72,12 +72,7 @@
 
 #define PIXMAP_THUMB_SIZE  128
 
-#ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
-
 static char *md5_hash(const char *message);
-static char *pathdup(const char *path);
 static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full);
 static GdkPixbuf *child_create_thumbnail(const gchar *path);
 
@@ -187,7 +182,7 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	ssize = g_strdup_printf(ST_SIZE_FMT, info.st_size);
 	smtime = g_strdup_printf("%ld", (long) info.st_mtime);
 
-	path = pathdup(pathname);
+	path = file_realpath_dup(pathname);
 	uri = g_strconcat("file://", path, NULL);
 	md5 = md5_hash(uri);
 	g_free(path);
@@ -255,7 +250,7 @@ GdkPixbuf *a_thumbnails_get(const gchar *pathname)
 	const char *ssize, *smtime;
 	struct stat info;
 
-	path = pathdup(pathname);
+	path = file_realpath_dup(pathname);
 	uri = g_strconcat("file://", path, NULL);
 	md5 = md5_hash(uri);
 	g_free(uri);
@@ -292,20 +287,6 @@ out:
 	g_free(path);
 	g_free(thumb_path);
 	return thumb;
-}
-
-/* pathdup() stuff */
-
-static char *pathdup(const char *path)
-{
-	char real[MAXPATHLEN];
-
-	g_return_val_if_fail(path != NULL, NULL);
-
-	if (file_realpath(path, real))
-		return g_strdup(real);
-
-	return g_strdup(path);
 }
 
 /*

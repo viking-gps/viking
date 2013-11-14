@@ -56,6 +56,7 @@ struct _VikLayer {
   gboolean visible;
 
   gboolean realized;
+  VikViewport *vvp;/* simply a reference */
   VikTreeview *vt; /* simply a reference */
   GtkTreeIter iter;
 
@@ -158,7 +159,7 @@ typedef VikLayerParamData
 
 typedef void          (*VikLayerFuncChangeParam)           (GtkWidget *, ui_change_values );
 
-typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *); // Should report success or failure
+typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *, const gchar *); // gchar* is the directory path. Function should report success or failure
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *);
 
 /* item manipulation */

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005, Alex Foobarian <foobarian@gmail.com>
  * Copyright (C) 2003-2007, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -631,6 +632,8 @@ VikLayerTypedParamData *vik_layer_data_typed_param_copy_from_string ( VikLayerPa
  */
 void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
 {
+  // Sneaky initialize of the viewport value here
+  vl->vvp = vvp;
   VikLayerInterface *vli = vik_layer_get_interface ( vl->type );
   const gchar *layer_name = vli->fixed_layer_name;
   VikLayerParamData data;

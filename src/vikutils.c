@@ -441,3 +441,41 @@ void vu_set_auto_features_on_first_run ( void )
 		a_preferences_save_to_file ();
 	}
 }
+
+/**
+ * vu_get_canonical_filename:
+ *
+ * Returns: Canonical absolute filename
+ *
+ * Any time a path may contain a relative component, so need to prepend that directory it is relative to
+ * Then resolve the full path to get the normal canonical filename
+ */
+gchar *vu_get_canonical_filename ( VikLayer *vl, const gchar *filename )
+{
+  gchar *canonical = NULL;
+  if ( !filename )
+    return NULL;
+
+  if ( g_path_is_absolute ( filename ) )
+    canonical = g_strdup ( filename );
+  else {
+    const gchar *vw_filename = vik_window_get_filename ( VIK_WINDOW_FROM_WIDGET (vl->vvp) );
+    gchar *dirpath = NULL;
+    if ( vw_filename )
+      dirpath = g_path_get_dirname ( vw_filename );
+    else
+      dirpath = g_get_current_dir(); // Fallback - if here then probably can't create the correct path
+
+    gchar *full = NULL;
+    if ( g_path_is_absolute ( dirpath ) )
+      full = g_strconcat ( dirpath, G_DIR_SEPARATOR_S, filename, NULL );
+    else
+      full = g_strconcat ( g_get_current_dir(), G_DIR_SEPARATOR_S, dirpath, G_DIR_SEPARATOR_S, filename, NULL );
+
+    canonical = file_realpath_dup ( full ); // resolved
+    g_free ( full );
+    g_free ( dirpath );
+  }
+
+  return canonical;
+}

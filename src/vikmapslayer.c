@@ -46,6 +46,7 @@
 
 #include "viking.h"
 #include "vikmapsourcedefault.h"
+#include "vikutils.h"
 #include "maputils.h"
 #include "mapcache.h"
 #include "background.h"
@@ -448,7 +449,6 @@ static void maps_layer_mkdir_if_default_dir ( VikMapsLayer *vml )
 
 static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
 {
-  guint len;
   g_assert ( vml != NULL);
   g_free ( vml->cache_dir );
   vml->cache_dir = NULL;
@@ -460,17 +460,18 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
       mydir = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir")->s;
   }
 
+  gchar *canonical_dir = vu_get_canonical_filename ( VIK_LAYER(vml), mydir );
+
   // Ensure cache_dir always ends with a separator
-  len = strlen(mydir);
-  if ( mydir[len-1] != G_DIR_SEPARATOR )
+  guint len = strlen(canonical_dir);
+  if ( canonical_dir[len-1] != G_DIR_SEPARATOR )
   {
-    vml->cache_dir = g_malloc ( len+2 );
-    strncpy ( vml->cache_dir, mydir, len );
-    vml->cache_dir[len] = G_DIR_SEPARATOR;
-    vml->cache_dir[len+1] = '\0';
+    vml->cache_dir = g_strconcat ( canonical_dir, G_DIR_SEPARATOR_S, NULL );
+    g_free ( canonical_dir );
   }
-  else
-    vml->cache_dir = g_strdup ( mydir );
+  else {
+    vml->cache_dir = canonical_dir;
+  }
 
   maps_layer_mkdir_if_default_dir ( vml );
 }

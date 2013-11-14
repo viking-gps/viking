@@ -24,6 +24,7 @@
 #endif
 
 #include "viking.h"
+#include "vikutils.h"
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
@@ -406,7 +407,11 @@ static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image )
   }
   if ( image == NULL )
     vgl->image = NULL;
-  vgl->image = g_strdup ( image );
+
+  if ( g_strcmp0 (image, "") != 0 )
+    vgl->image = vu_get_canonical_filename ( VIK_LAYER(vgl), image );
+  else
+    vgl->image = g_strdup (image);
 }
 
 static gboolean world_file_read_line ( gchar *buffer, gint size, FILE *f, GtkWidget *widget, gboolean use_value )

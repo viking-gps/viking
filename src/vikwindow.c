@@ -243,6 +243,14 @@ VikStatusbar * vik_window_get_statusbar ( VikWindow *vw )
   return vw->viking_vs;
 }
 
+/**
+ *  Returns the 'project' filename
+ */
+const gchar *vik_window_get_filename (VikWindow *vw)
+{
+  return vw->filename;
+}
+
 typedef struct {
   VikStatusbar *vs;
   vik_statusbar_type_t vs_type;
@@ -2537,6 +2545,14 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
 void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename )
 {
   vik_window_set_busy_cursor ( vw );
+
+  // Enable the *new* filename to be accessible by the Layers codez
+  gchar *original_filename = g_strdup ( vw->filename );
+  g_free ( vw->filename );
+  vw->filename = g_strdup ( filename );
+  gboolean success = FALSE;
+  gboolean restore_original_filename = FALSE;
+
   vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename );
   switch ( vw->loaded_type )
   {
@@ -2563,6 +2579,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       // No break, carry on to show any data
     case LOAD_TYPE_VIK_SUCCESS:
     {
+      restore_original_filename = TRUE; // NB Will actually get inverted by the 'success' component below
       GtkWidget *mode_button;
       /* Update UI */
       if ( change_filename )
@@ -2586,12 +2603,21 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       g_assert ( mode_button );
       gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_highlight (vw->viking_vvp) );
     }
+      // NB No break, carry on to redraw
     //case LOAD_TYPE_OTHER_SUCCESS:
     default:
+      success = TRUE;
+      // When LOAD_TYPE_OTHER_SUCCESS *only*, this will maintain the existing Viking project
+      restore_original_filename = ! restore_original_filename;
       update_recently_used_document(filename);
       draw_update ( vw );
       break;
   }
+
+  if ( ! success || restore_original_filename )
+    // Load didn't work or want to keep as the existing Viking project, keep using the original name
+    window_set_filename ( vw, original_filename );
+  g_free ( original_filename );
 
   vik_window_clear_busy_cursor ( vw );
 }

@@ -33,6 +33,8 @@ void vu_check_latest_version ( GtkWindow *window );
 
 void vu_set_auto_features_on_first_run ( void );
 
+gchar *vu_get_canonical_filename ( VikLayer *vl, const gchar *filename );
+
 G_END_DECLS
 
 #endif
