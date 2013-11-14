@@ -276,8 +276,8 @@ void vik_layer_emit_update ( VikLayer *vl );
 void vik_layer_set_menu_items_selection(VikLayer *l, guint16 selection);
 guint16 vik_layer_get_menu_items_selection(VikLayer *l);
 void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp );
-VikLayer *vik_layer_create ( VikLayerTypeEnum type, gpointer vp, GtkWindow *w, gboolean interactive );
-gboolean vik_layer_properties ( VikLayer *layer, gpointer vp );
+VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, GtkWindow *w, gboolean interactive );
+gboolean vik_layer_properties ( VikLayer *layer, VikViewport *vp );
 
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter * layer_iter );
 void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file );

@@ -202,7 +202,7 @@ const gchar *vik_layer_get_name ( VikLayer *l )
   return l->name;
 }
 
-VikLayer *vik_layer_create ( VikLayerTypeEnum type, gpointer vp, GtkWindow *w, gboolean interactive )
+VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, GtkWindow *w, gboolean interactive )
 {
   VikLayer *new_layer = NULL;
   g_assert ( type < VIK_LAYER_NUM_TYPES );
@@ -227,7 +227,7 @@ VikLayer *vik_layer_create ( VikLayerTypeEnum type, gpointer vp, GtkWindow *w, g
 }
 
 /* returns TRUE if OK was pressed */
-gboolean vik_layer_properties ( VikLayer *layer, gpointer vp )
+gboolean vik_layer_properties ( VikLayer *layer, VikViewport *vp )
 {
   if ( vik_layer_interfaces[layer->type]->properties )
     return vik_layer_interfaces[layer->type]->properties ( layer, vp );
