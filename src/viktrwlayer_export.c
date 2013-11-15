@@ -164,7 +164,7 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
   /* Add some dynamic: only allow dialog's validation when format selection is done */
   g_signal_connect (babel_selector, "changed", G_CALLBACK(a_babel_ui_type_selector_dialog_sensitivity_cb), file_selector);
   /* Manually call the callback to fix the state */
-  a_babel_ui_type_selector_dialog_sensitivity_cb (babel_selector, file_selector);
+  a_babel_ui_type_selector_dialog_sensitivity_cb ( GTK_COMBO_BOX(babel_selector), file_selector);
 
   /* Set possible name of the file */
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(file_selector), default_name);
