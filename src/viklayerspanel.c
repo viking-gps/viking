@@ -582,8 +582,11 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
       a_clipboard_copy_selected ( vlp );
 
       if (IS_VIK_AGGREGATE_LAYER(parent)) {
-	if ( vik_aggregate_layer_delete ( parent, &iter ) )
-	  vik_layers_panel_emit_update ( vlp );
+
+        g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );
+
+        if ( vik_aggregate_layer_delete ( parent, &iter ) )
+          vik_layers_panel_emit_update ( vlp );
       }
     }
     else

@@ -2369,11 +2369,13 @@ static void trw_layer_draw_with_highlight ( VikTrwLayer *l, gpointer data, gbool
 
 static void trw_layer_draw ( VikTrwLayer *l, gpointer data )
 {
-	// TODO: learn which highlight vtl in dp somehow or just ask vikwindow here,
-	//  then check if highlighted vtl and skip drawing if (highlight mode off)
-	//  as it will then get redrawn
-	//  may seem slightly inefficient - but for very large vtls, this should save redraws...
-  trw_layer_draw_with_highlight ( l, data, FALSE ) ;
+  // If this layer is to be highlighted - then don't draw now - as it will be drawn later on in the specific highlight draw stage
+  // This may seem slightly inefficient to test each time for every layer
+  //  but for a layer with *lots* of tracks & waypoints this can save some effort by not drawing the items twice
+  if ( vik_viewport_get_draw_highlight ( (VikViewport*)data ) &&
+       vik_window_get_selected_trw_layer ((VikWindow*)VIK_GTK_WINDOW_FROM_LAYER((VikLayer*)l)) == l )
+    return;
+  trw_layer_draw_with_highlight ( l, data, FALSE );
 }
 
 void vik_trw_layer_draw_highlight ( VikTrwLayer *vtl, VikViewport *vvp )
