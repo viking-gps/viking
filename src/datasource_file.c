@@ -142,7 +142,7 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
       G_CALLBACK(a_babel_ui_type_selector_dialog_sensitivity_cb), dialog );
   gtk_combo_box_set_active ( GTK_COMBO_BOX(widgets->type), last_type );
   /* Manually call the callback to fix the state */
-  a_babel_ui_type_selector_dialog_sensitivity_cb ( widgets->type, dialog );
+  a_babel_ui_type_selector_dialog_sensitivity_cb ( GTK_COMBO_BOX(widgets->type), dialog );
 
   /* Packing all these widgets */
   GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
