@@ -2622,6 +2622,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           vik_trw_layer_add_route(vtl, r_name, tr_right);
         else
           vik_trw_layer_add_track(vtl, r_name, tr_right);
+        vik_track_calculate_bounds ( tr );
         vik_track_calculate_bounds ( tr_right );
 
         g_free ( r_name );
