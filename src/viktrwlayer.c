@@ -771,6 +771,45 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSelectedViewportMenu)    trw_layer_show_selected_viewport_menu,
 };
 
+static gboolean have_diary_program = FALSE;
+
+// NB Only performed once per program run
+static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
+{
+  if ( g_find_program_in_path( "rednotebook" ) ) {
+    gchar *stdout = NULL;
+    gchar *stderr = NULL;
+    // Needs RedNotebook 1.7.3+ for support of opening on a specified date
+    if ( g_spawn_command_line_sync ( "rednotebook --version", &stdout, &stderr, NULL, NULL ) ) {
+      // Annoyingly 1.7.1|2|3 versions of RedNotebook prints the version to stderr!!
+      if ( stdout )
+        g_debug ("Diary: %s", stdout ); // Should be something like 'RedNotebook 1.4'
+      if ( stderr )
+        g_warning ("Diary: stderr: %s", stderr );
+
+      gchar **tokens = NULL;
+      if ( stdout && g_strcmp0(stdout, "") )
+        tokens = g_strsplit(stdout, " ", 0);
+      else if ( stderr )
+        tokens = g_strsplit(stderr, " ", 0);
+
+      gint num = 0;
+      gchar *token = tokens[num];
+      while ( token && num < 2 ) {
+        if (num == 1) {
+          if ( viking_version_to_number(token) >= viking_version_to_number("1.7.3") )
+            have_diary_program = TRUE;
+        }
+        num++;
+        token = tokens[num];
+      }
+      g_strfreev ( tokens );
+    }
+    g_free ( stdout );
+    g_free ( stderr );
+  }
+}
+
 GType vik_trw_layer_get_type ()
 {
   static GType vtl_type = 0;
@@ -782,7 +821,7 @@ GType vik_trw_layer_get_type ()
       sizeof (VikTrwLayerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      NULL, /* class init */
+      (GClassInitFunc) vik_trwlayer_class_init, /* class init */
       NULL, /* class_finalize */
       NULL, /* class_data */
       sizeof (VikTrwLayer),
@@ -791,7 +830,6 @@ GType vik_trw_layer_get_type ()
     };
     vtl_type = g_type_register_static ( VIK_LAYER_TYPE, "VikTrwLayer", &vtl_info, 0 );
   }
-
   return vtl_type;
 }
 
@@ -6509,6 +6547,57 @@ static void trw_layer_reverse ( menu_array_sublayer values )
 }
 
 /**
+ * Open a diary at the specified date
+ */
+static void trw_layer_diary_open ( VikTrwLayer *vtl, const gchar *date_str )
+{
+  GError *err = NULL;
+  gchar *cmd = g_strdup_printf ( "%s%s", "rednotebook --date=", date_str );
+  if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), "rednotebook" );
+    g_error_free ( err );
+  }
+  g_free ( cmd );
+}
+
+/**
+ * Open a diary at the date of the track or waypoint
+ */
+static void trw_layer_diary ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+
+  if ( GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
+    VikTrack *trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+    if ( ! trk )
+      return;
+
+    gchar date_buf[20];
+    date_buf[0] = '\0';
+    if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+      strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp)));
+      trw_layer_diary_open ( vtl, date_buf );
+    }
+    else
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This track has no date information.") );
+  }
+  else if ( GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
+    VikWaypoint *wpt = (VikWaypoint *) g_hash_table_lookup ( vtl->waypoints, values[MA_SUBLAYER_ID] );
+    if ( ! wpt )
+      return;
+
+    gchar date_buf[20];
+    date_buf[0] = '\0';
+    if ( wpt->has_timestamp ) {
+      strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&(wpt->timestamp)));
+      trw_layer_diary_open ( vtl, date_buf );
+    }
+    else
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This waypoint has no date information.") );
+  }
+}
+
+/**
  * Similar to trw_layer_enum_item, but this uses a sorted method
  */
 /* Currently unused
@@ -8166,6 +8255,17 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_MENU) );
       g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_gps_upload_any), pass_along );
       gtk_menu_shell_append ( GTK_MENU_SHELL(upload_submenu), item );
+      gtk_widget_show ( item );
+    }
+  }
+
+  // Only made available if a suitable program is installed
+  if ( have_diary_program ) {
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("Diar_y") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SPELL_CHECK, GTK_ICON_SIZE_MENU) );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_diary), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
       gtk_widget_show ( item );
     }
   }
