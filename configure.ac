@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT(viking, 1.5, , viking, http://viking.sf.net/)
-AM_INIT_AUTOMAKE([dist-bzip2 dist-zip])
+AM_INIT_AUTOMAKE([dist-bzip2 dist-zip subdir-objects])
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
 GTK_DOC_CHECK(1.0)
