@@ -5612,7 +5612,7 @@ static void trw_layer_edit_trackpoint ( menu_array_sublayer values )
  */
 typedef struct {
   GList **result;
-  GList  *exclude;
+  VikTrack *exclude;
   gboolean with_timestamps;
 } twt_udata;
 static void find_tracks_with_timestamp_type(gpointer key, gpointer value, gpointer udata)
@@ -5620,7 +5620,7 @@ static void find_tracks_with_timestamp_type(gpointer key, gpointer value, gpoint
   twt_udata *user_data = udata;
   VikTrackpoint *p1, *p2;
   VikTrack *trk = VIK_TRACK(value);
-  if (trk == (VikTrack *)user_data->exclude) {
+  if (trk == user_data->exclude) {
     return;
   }
 
@@ -5654,15 +5654,15 @@ static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer u
   VikTrack *trk = VIK_TRACK(value);
 
   GList **nearby_tracks = ((gpointer *)user_data)[0];
-  GList *tpoints = ((gpointer *)user_data)[1];
 
   /* outline: 
    * detect reasons for not merging, and return
    * if no reason is found not to merge, then do it.
    */
 
+  twt_udata *udata = user_data;
   // Exclude the original track from the compiled list
-  if (trk->trackpoints == tpoints) {
+  if (trk == udata->exclude) {
     return;
   }
 
@@ -5757,7 +5757,7 @@ static void trw_layer_merge_with_other ( menu_array_sublayer values )
 
   twt_udata udata;
   udata.result = &other_tracks;
-  udata.exclude = track->trackpoints;
+  udata.exclude = track;
   // Allow merging with 'similar' time type time tracks
   // i.e. either those times, or those without
   udata.with_timestamps = vik_track_get_tp_first(track)->has_timestamp;
@@ -5827,7 +5827,7 @@ static void trw_layer_sorted_track_id_by_name_list_exclude_self (const gpointer 
   twt_udata *user_data = udata;
 
   // Skip self
-  if (trk->trackpoints == user_data->exclude) {
+  if (trk == user_data->exclude) {
     return;
   }
 
@@ -5863,7 +5863,7 @@ static void trw_layer_append_track ( menu_array_sublayer values )
   // TODO: Need to consider how to work best when we can have multiple tracks the same name...
   twt_udata udata;
   udata.result = &other_tracks_names;
-  udata.exclude = trk->trackpoints;
+  udata.exclude = trk;
 
   g_hash_table_foreach(ght_tracks, (GHFunc) trw_layer_sorted_track_id_by_name_list_exclude_self, (gpointer)&udata);
 
@@ -5940,7 +5940,7 @@ static void trw_layer_append_other ( menu_array_sublayer values )
   // TODO: Need to consider how to work best when we can have multiple tracks the same name...
   twt_udata udata;
   udata.result = &other_tracks_names;
-  udata.exclude = trk->trackpoints;
+  udata.exclude = trk;
 
   g_hash_table_foreach(ght_others, (GHFunc) trw_layer_sorted_track_id_by_name_list_exclude_self, (gpointer)&udata);
 
@@ -6033,7 +6033,7 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
 
   twt_udata udata;
   udata.result = &tracks_with_timestamp;
-  udata.exclude = orig_trk->trackpoints;
+  udata.exclude = orig_trk;
   udata.with_timestamps = TRUE;
   g_hash_table_foreach(vtl->tracks, find_tracks_with_timestamp_type, (gpointer)&udata);
   tracks_with_timestamp = g_list_reverse(tracks_with_timestamp);
