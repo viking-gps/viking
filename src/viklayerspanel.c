@@ -447,7 +447,7 @@ gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type
 {
   VikLayer *l;
   g_assert ( vlp->vvp );
-  l = vik_layer_create ( type, vlp->vvp, VIK_GTK_WINDOW_FROM_WIDGET(vlp), TRUE );
+  l = vik_layer_create ( type, vlp->vvp, TRUE );
   if ( l )
   {
     vik_layers_panel_add_layer ( vlp, l );

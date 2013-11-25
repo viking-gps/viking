@@ -1440,7 +1440,7 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
 
 static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
 {
-  VikTrwLayer *vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, NULL, FALSE ));
+  VikTrwLayer *vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, FALSE ));
   gint pl;
   gint consumed_length;
 

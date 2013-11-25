@@ -203,7 +203,7 @@ const gchar *vik_layer_get_name ( VikLayer *l )
   return l->name;
 }
 
-VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, GtkWindow *w, gboolean interactive )
+VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean interactive )
 {
   VikLayer *new_layer = NULL;
   g_assert ( type < VIK_LAYER_NUM_TYPES );

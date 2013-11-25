@@ -380,7 +380,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
       wi->vtl = VIK_TRW_LAYER(current_selected);
   }
   if ( wi->creating_new_layer ) {
-    wi->vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, NULL, FALSE ) );
+    wi->vtl = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, w->vvp, FALSE ) );
     vik_layer_rename ( VIK_LAYER ( wi->vtl ), _(source_interface->layer_title) );
   }
 

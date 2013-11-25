@@ -627,7 +627,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 
 		if ( create_new_layer ) {
 			// Have data but no layer - so create one
-			vtlX = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, vik_window_viewport(adw->vw), NULL, FALSE ) );
+			vtlX = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, adw->vvp, FALSE ) );
 			if ( ((gpx_meta_data_t*)selected_iterator->data)->name )
 				vik_layer_rename ( VIK_LAYER ( vtlX ), ((gpx_meta_data_t*)selected_iterator->data)->name );
 			else
