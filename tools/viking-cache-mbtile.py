@@ -93,6 +93,9 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
                                 # Sometimes have random tmp files left around so skip over these
                                 if "tmp" in y.lower():
                                     continue
+                                # Skip etag files...
+                                if "etag" in y.lower():
+                                    continue
                                 f = open(os.path.join(directory_path, ff, x, y), 'rb')
                                 # Viking in xyz so always flip
                                 y = flip_y(int(z), int(y))
