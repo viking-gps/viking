@@ -674,10 +674,16 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Search _by Date...") );
+  GtkWidget *search_submenu = gtk_menu_new ();
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Searc_h") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_MENU) );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), search_submenu );
+
+  item = gtk_menu_item_new_with_mnemonic ( _("By _Date...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_search_date), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(search_submenu), item );
   gtk_widget_set_tooltip_text (item, _("Find the first item with a specified date"));
   gtk_widget_show ( item );
 }
