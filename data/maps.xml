@@ -1,5 +1,5 @@
 <objects>
-<!-- Built in -->
+<!-- Built in
   <object class="VikSlippyMapSource">
     <property name="label">OpenStreetMap (Mapnik)</property>
     <property name="hostname">tile.openstreetmap.org</property>
@@ -10,7 +10,8 @@
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
     <property name="use-etag">TRUE</property>
   </object>
-<!-- Built in -->
+-->
+<!-- Built in
   <object class="VikSlippyMapSource">
     <property name="label">OpenStreetMap (Cycle)</property>
     <property name="hostname">b.tile.opencyclemap.org</property>
@@ -21,6 +22,8 @@
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
     <property name="check-file-server-time">TRUE</property>
   </object>
+-->
+<!-- WMSC Example - not active
   <object class="VikWmscMapSource">
     <property name="id">18</property>
     <property name="label">OpenStreetMap (WMS)</property>
@@ -31,6 +34,7 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
+-->
   <object class="VikSlippyMapSource">
     <property name="id">29</property>
     <property name="label">CalTopo USGS 7.5" Topos</property>
@@ -40,6 +44,7 @@
     <property name="license">CalTopo Terms of Use</property>
     <property name="license-url">http://caltopo.com/</property>
   </object>
+<!-- Built in
   <object class="VikTmsMapSource">
     <property name="id">50</property>
     <property name="label">SPOTMaps</property>
@@ -50,6 +55,7 @@
     <property name="license">CC-by-SA 2.0 / ODBl</property>
     <property name="license-url">http://www.youmapps.org/licenses/EULA-OSM-en.html</property>
   </object>
+-->
   <object class="VikSlippyMapSource">
     <property name="label">Letuffe/hiking</property>
     <property name="hostname">beta.letuffe.org</property>
