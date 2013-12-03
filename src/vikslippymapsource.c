@@ -72,6 +72,8 @@ struct _VikSlippyMapSourcePrivate
   DownloadMapOptions options;
   gboolean is_direct_file_access;
   gboolean is_mbtiles;
+  // Mainly for ARCGIS Tile Server URL Layout // http://help.arcgis.com/EN/arcgisserver/10.0/apis/rest/tile.html
+  gboolean switch_xy;
 };
 
 #define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_SLIPPY_MAP_SOURCE, VikSlippyMapSourcePrivate))
@@ -89,6 +91,7 @@ enum
   PROP_USE_ETAG,
   PROP_IS_DIRECT_FILE_ACCESS,
   PROP_IS_MBTILES,
+  PROP_SWITCH_XY,
 };
 
 G_DEFINE_TYPE (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
@@ -108,6 +111,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   priv->options.use_etag = FALSE;
   priv->is_direct_file_access = FALSE;
   priv->is_mbtiles = FALSE;
+  priv->switch_xy = FALSE;
 
   g_object_set (G_OBJECT (self),
                 "tilesize-x", 256,
@@ -178,6 +182,10 @@ vik_slippy_map_source_set_property (GObject      *object,
       priv->is_mbtiles = g_value_get_boolean (value);
       break;
 
+    case PROP_SWITCH_XY:
+      priv->switch_xy = g_value_get_boolean (value);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -226,6 +234,10 @@ vik_slippy_map_source_get_property (GObject    *object,
 
     case PROP_IS_MBTILES:
       g_value_set_boolean (value, priv->is_mbtiles);
+      break;
+
+    case PROP_SWITCH_XY:
+      g_value_set_boolean (value, priv->switch_xy);
       break;
 
     default:
@@ -314,6 +326,14 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                              FALSE  /* default value */,
 	                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_IS_MBTILES, pspec);
+
+	pspec = g_param_spec_boolean ("switch-xy",
+	                              "Switch the order of x,y components in the URL",
+	                              "Switch the order of x,y components in the URL (such as used by ARCGIS Tile Server",
+	                              FALSE  /* default value */,
+	                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_SWITCH_XY, pspec);
+
 	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
 	
 	object_class->finalize = vik_slippy_map_source_finalize;
@@ -386,8 +406,16 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
 	
-    VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
-	gchar *uri = g_strdup_printf (priv->url, 17 - src->scale, src->x, src->y);
+	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+
+	gchar *uri = NULL;
+	if ( priv->switch_xy )
+		// 'ARC GIS' Tile Server layout ordering
+		uri = g_strdup_printf (priv->url, 17 - src->scale, src->y, src->x);
+	else
+		// (Default) Standard OSM Tile Server layout ordering
+		uri = g_strdup_printf (priv->url, 17 - src->scale, src->x, src->y);
+
 	return uri;
 } 
 
