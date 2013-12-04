@@ -21,4 +21,16 @@
     <property name="license">CC-by-SA 2.0 / ODBl</property>
     <property name="license-url">http://www.youmapps.org/licenses/EULA-OSM-en.html</property>
   </object>
+  <!-- ArcGIS Server - Notice use of the "switch-xy" property -->
+  <object>
+    <object class="VikSlippyMapSource">
+    <property name="id">60</property>
+    <property name="label">ArcGIS World Street Map</property>
+    <property name="hostname">services.arcgisonline.com</property>
+    <property name="url">/ArcGIS/rest/services/World_Street_Map/MapServer/tile/%d/%d/%d</property>
+    <property name="switch-xy">TRUE</property>
+    <property name="copyright">Sources: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2013</property>
+    <property name="license">ArcGIS Specific</property>
+    <property name="license-url">http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer</property>
+  </object>
 </objects>
