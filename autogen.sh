@@ -13,6 +13,18 @@ if test -z $INTLTOOLIZE; then
         exit 1
 fi
 
+GTK_DOC=`which gtkdocize`
+if test -z $GTK_DOC; then
+        echo "*** No gtkdocize found, please install the gtk-doc-tools package ***"
+        exit 1
+fi
+
+GNOME_DOC=`which gnome-doc-prepare`
+if test -z $GNOME_DOC; then
+        echo "*** No gnome-doc-prepare found, please install the gnome-doc-utils package ***"
+        exit 1
+fi
+
 AUTORECONF=`which autoreconf`
 if test -z $AUTORECONF; then
         echo "*** No autoreconf found, please install it ***"
@@ -24,7 +36,9 @@ if test -z `which autopoint`; then
         exit 1
 fi
 
-autopoint --force
+gnome-doc-prepare --automake --copy --force || exit $?
+gtkdocize --copy || exit $?
+autopoint --force || exit $?
 AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose || exit $?
 
 cd "$olddir"
