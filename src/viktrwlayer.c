@@ -9198,7 +9198,10 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &params);
   if ( vtl->current_wp && (vtl->current_wp == params.closest_wp) )
   {
-    marker_begin_move(t, event->x, event->y);
+    if ( event->button == 3 )
+      vtl->waypoint_rightclick = TRUE; /* remember that we're clicking; other layers will ignore release signal */
+    else
+      marker_begin_move(t, event->x, event->y);
     return FALSE;
   }
   else if ( params.closest_wp )
