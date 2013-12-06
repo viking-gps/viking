@@ -1785,6 +1785,12 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</key
 <para>
 <keycap>Shift</keycap> (and hold) + left mouse button: Draws a bounding box area on which to zoom in. The zoom action is performed when the left mouse button is released.
 </para>
+<para>
+<keycap>Shift</keycap> + left click button: Jump Zoom In by up to factor of 3 standard zooms.
+</para>
+<para>
+<keycap>Shift</keycap> + right click button: Jump Zoom Out by up to factor of 3 standard zooms.
+</para>
 </section>
 
 <section><title>Ruler</title>

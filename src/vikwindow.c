@@ -1817,6 +1817,9 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
       draw_buf_done = FALSE;
     }
   }
+  else
+    zts->bounds_active = FALSE;
+
   return VIK_LAYER_TOOL_ACK;
 }
 
@@ -1824,11 +1827,11 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
 {
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
 
-  zts->bounds_active = FALSE;
-
   // Ensure haven't just released on the exact same position
   //  i.e. probably haven't moved the mouse at all
-  if ( modifiers == GDK_SHIFT_MASK && !( ( event->x == zts->start_x ) && ( event->y == zts->start_y )) ) {
+  if ( zts->bounds_active && modifiers == GDK_SHIFT_MASK &&
+     ( event->x < zts->start_x-5 || event->x > zts->start_x+5 ) &&
+     ( event->y < zts->start_y-5 || event->y > zts->start_y+5 ) ) {
 
     VikCoord coord1, coord2;
     vik_viewport_screen_to_coord ( zts->vw->viking_vvp, zts->start_x, zts->start_y, &coord1);
@@ -1883,9 +1886,30 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
       zoom = zoom * 2;
       vik_viewport_set_zoom ( zts->vw->viking_vvp, zoom );
     }
-
-    draw_update ( zts->vw );
   }
+  else {
+     // When pressing shift and clicking for zoom, then jump three levels
+     if ( modifiers == GDK_SHIFT_MASK ) {
+       // Zoom in/out by three if possible
+       vik_viewport_set_center_screen ( zts->vw->viking_vvp, event->x, event->y );
+       if ( event->button == 1 ) {
+          vik_viewport_zoom_in ( zts->vw->viking_vvp );
+          vik_viewport_zoom_in ( zts->vw->viking_vvp );
+          vik_viewport_zoom_in ( zts->vw->viking_vvp );
+       }
+       else if ( event->button == 3 ) {
+          vik_viewport_zoom_out ( zts->vw->viking_vvp );
+          vik_viewport_zoom_out ( zts->vw->viking_vvp );
+          vik_viewport_zoom_out ( zts->vw->viking_vvp );
+       }
+     }
+  }
+
+  draw_update ( zts->vw );
+
+  // Reset
+  zts->bounds_active = FALSE;
+
   return VIK_LAYER_TOOL_ACK;
 }
 
