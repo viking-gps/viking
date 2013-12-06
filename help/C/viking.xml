@@ -2730,7 +2730,11 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>url</term>
-              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "/%d/%d/%d.png")</para></listitem>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for Z, X and Y (in that order) (eg. "/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>switch-xy (optional)</term>
+              <listitem><para>Swap the X,Y values around in the URL parametrized ordering.</para></listitem>
             </varlistentry>
           </variablelist>
         </para>
