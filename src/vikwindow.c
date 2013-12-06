@@ -173,6 +173,8 @@ struct _VikWindow {
 
   gboolean pan_move;
   gint pan_x, pan_y;
+  gint delayed_pan_x, delayed_pan_y; // Temporary storage
+  gboolean single_click_pending;
 
   guint draw_image_width, draw_image_height;
   gboolean draw_image_save_as_png;
@@ -720,6 +722,7 @@ static void vik_window_init ( VikWindow *vw )
  
   vw->pan_move = FALSE; 
   vw->pan_x = vw->pan_y = -1;
+  vw->single_click_pending = FALSE;
 
   gint draw_image_width;
   if ( a_settings_get_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, &draw_image_width ) )
@@ -1222,16 +1225,61 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   /* gdk_event_request_motions ( event ); */
 }
 
+/**
+ * Action the single click after a small timeout
+ * If a double click has occurred then this will do nothing
+ */
+static gboolean vik_window_pan_timeout (VikWindow *vw)
+{
+  if ( ! vw->single_click_pending ) {
+    // Double click happened, so don't do anything
+    return FALSE;
+  }
+
+  /* set panning origin */
+  vw->pan_move = FALSE;
+  vw->single_click_pending = FALSE;
+  vik_viewport_set_center_screen ( vw->viking_vvp, vw->delayed_pan_x, vw->delayed_pan_y );
+  draw_update ( vw );
+
+  // Really turn off the pan moving!!
+  vw->pan_x = vw->pan_y = -1;
+  return FALSE;
+}
+
 static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
 {
-  if ( vw->pan_move == FALSE )
-    vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
-  else
+  if ( vw->pan_move == FALSE ) {
+    vw->single_click_pending = !vw->single_click_pending;
+
+    if ( vw->single_click_pending ) {
+      // Store offset to use
+      vw->delayed_pan_x = vw->pan_x;
+      vw->delayed_pan_y = vw->pan_y;
+      // Get double click time
+      GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(vw) );
+      GValue dct = G_VALUE_INIT;
+      g_value_init ( &dct, G_TYPE_INT );
+      g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &dct );
+      // Give chance for a double click to occur
+      gint timer = g_value_get_int ( &dct ) + 50;
+      g_timeout_add ( timer, (GSourceFunc)vik_window_pan_timeout, vw );
+      goto skip_draw;
+    }
+    else {
+      vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
+    }
+  }
+  else {
      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
                                       vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
+  }
+
+  draw_update ( vw );
+
+ skip_draw:
   vw->pan_move = FALSE;
   vw->pan_x = vw->pan_y = -1;
-  draw_update ( vw );
 }
 
 static void draw_release ( VikWindow *vw, GdkEventButton *event )
@@ -1864,12 +1912,31 @@ static gpointer pantool_create (VikWindow *vw, VikViewport *vvp)
   return vw;
 }
 
+// NB Double clicking means this gets called THREE times!!!
 static VikLayerToolFuncStatus pantool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
 {
   vw->modified = TRUE;
-  if ( event->button == 1 )
-    vik_window_pan_click ( vw, event );
-  draw_update ( vw );
+
+  if ( event->type == GDK_2BUTTON_PRESS ) {
+    // Zoom in / out on double click
+    // No need to change the center as that has already occurred in the first click of a double click occurrence
+    if ( event->button == 1 ) {
+      guint modifier = event->state & GDK_SHIFT_MASK;
+      if ( modifier )
+        vik_viewport_zoom_out ( vw->viking_vvp );
+      else
+        vik_viewport_zoom_in ( vw->viking_vvp );
+    }
+    else if ( event->button == 3 )
+      vik_viewport_zoom_out ( vw->viking_vvp );
+
+    draw_update ( vw );
+  }
+  else
+    // Standard pan click
+    if ( event->button == 1 )
+      vik_window_pan_click ( vw, event );
+
   return VIK_LAYER_TOOL_ACK;
 }
 

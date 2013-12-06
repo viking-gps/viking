@@ -1762,6 +1762,11 @@ This is the default tool.
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</keycap>
 </para>
+<para>
+Double clicking the left mouse button will zoom the map in.
+<keycap>Shift</keycap> + double clicking the left mouse button will zoom the map out.
+Double clicking the right mouse button will also zoom the map out.
+</para>
 </section>
 
 <section><title>Zoom</title>
