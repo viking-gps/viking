@@ -66,7 +66,13 @@ VikDataSourceInterface vik_datasource_gps_interface = {
   (VikDataSourceProgressFunc)		datasource_gps_progress,
   (VikDataSourceAddProgressWidgetsFunc)	datasource_gps_add_progress_widgets,
   (VikDataSourceCleanupFunc)		datasource_gps_cleanup,
-  (VikDataSourceOffFunc)                datasource_gps_off
+  (VikDataSourceOffFunc)                datasource_gps_off,
+
+  NULL,
+  0,
+  NULL,
+  NULL,
+  0
 };
 
 /*********************************************************

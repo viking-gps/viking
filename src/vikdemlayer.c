@@ -136,7 +136,7 @@ static VikToolInterface dem_tools[] = {
     (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_demdl_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_demdl_pixbuf, NULL },
 };
 
 
@@ -950,7 +950,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 		(intlon >= 0) ? 'E' : 'W',
 		ABS(intlon) );
 
-  static DownloadMapOptions options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL };
+  static DownloadMapOptions options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL, NULL };
   a_http_download_get_url ( SRTM_HTTP_SITE, src_fn, p->dest, &options, NULL );
   g_free ( src_fn );
 }

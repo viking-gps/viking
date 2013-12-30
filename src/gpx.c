@@ -1094,7 +1094,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
   // so process each list separately
 
   GpxWritingContext context_tmp = context;
-  GpxWritingOptions opt_tmp = { FALSE, FALSE, FALSE };
+  GpxWritingOptions opt_tmp = { FALSE, FALSE, FALSE, FALSE };
   // Force trackpoints on tracks
   if ( !context.options )
     context_tmp.options = &opt_tmp;

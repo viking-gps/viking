@@ -73,6 +73,12 @@ VikDataSourceInterface vik_datasource_file_interface = {
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_file_cleanup,
   (VikDataSourceOffFunc)                NULL,
+
+  NULL,
+  0,
+  NULL,
+  NULL,
+  0
 };
 
 /* See VikDataSourceInterface */

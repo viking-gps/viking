@@ -1654,7 +1654,8 @@ static VikToolInterface ruler_tool =
     (VikToolKeyFunc) ruler_key_press,
     FALSE,
     GDK_CURSOR_IS_PIXMAP,
-    &cursor_ruler_pixbuf };
+    &cursor_ruler_pixbuf,
+    NULL };
 /*** end ruler code ********************************************************/
 
 
@@ -1926,7 +1927,8 @@ static VikToolInterface zoom_tool =
     NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP,
-    &cursor_zoom_pixbuf };
+    &cursor_zoom_pixbuf,
+    NULL };
 /*** end zoom code ********************************************************/
 
 /********************************************************************************
@@ -1989,7 +1991,9 @@ static VikToolInterface pan_tool =
     (VikToolMouseFunc) pantool_release,
     NULL,
     FALSE,
-    GDK_FLEUR };
+    GDK_FLEUR,
+    NULL,
+    NULL };
 /*** end pan code ********************************************************/
 
 /********************************************************************************
@@ -3289,6 +3293,7 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
       NULL,
       NULL,
       NULL,
+      NULL,
     },
   };
   VikLayerParam pref_lon[] = {
@@ -3298,6 +3303,7 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
       VIK_LOCATION_LONG,
       NULL,
       VIK_LAYER_WIDGET_SPINBUTTON,
+      NULL,
       NULL,
       NULL,
       NULL,

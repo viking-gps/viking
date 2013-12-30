@@ -81,14 +81,14 @@ static VikToolInterface georef_tools[] = {
     (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_geomove_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_geomove_pixbuf, NULL },
 
   { { "GeorefZoomTool", "vik-icon-Georef Zoom Tool",  N_("Georef Z_oom Tool"), NULL,  N_("Georef Zoom Tool"), 0 },
     (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_geozoom_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_geozoom_pixbuf, NULL },
 };
 
 VikLayerInterface vik_georef_layer_interface = {

@@ -65,6 +65,12 @@ VikDataSourceInterface vik_datasource_osm_interface = {
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_osm_cleanup,
   (VikDataSourceOffFunc)                NULL,
+
+  NULL,
+  0,
+  NULL,
+  NULL,
+  0
 };
 
 static gpointer datasource_osm_init ( acq_vik_t *avt )

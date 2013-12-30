@@ -66,6 +66,12 @@ VikDataSourceInterface vik_datasource_routing_interface = {
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_routing_cleanup,
   (VikDataSourceOffFunc)                NULL,
+
+  NULL,
+  0,
+  NULL,
+  NULL,
+  0
 };
 
 static gpointer datasource_routing_init ( acq_vik_t *avt )

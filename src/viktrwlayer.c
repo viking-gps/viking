@@ -418,7 +418,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL,
     (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_addwp_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_addwp_pixbuf, NULL },
 
   { { "CreateTrack", "vik-icon-Create Track", N_("Create _Track"), "<control><shift>T", N_("Create Track"), 0 },
     (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL,
@@ -427,7 +427,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseFunc) tool_new_track_release,
     (VikToolKeyFunc) tool_new_track_key_press,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
-    GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf, NULL },
 
   { { "CreateRoute", "vik-icon-Create Route", N_("Create _Route"), "<control><shift>B", N_("Create Route"), 0 },
     (VikToolConstructorFunc) tool_new_route_create,       NULL, NULL, NULL,
@@ -436,7 +436,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseFunc) tool_new_track_release,  //   -> Reuse these track methods on a route
     (VikToolKeyFunc) tool_new_track_key_press,  // -/#
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
-    GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf, NULL },
 
   { { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
     (VikToolConstructorFunc) tool_edit_waypoint_create,
@@ -446,7 +446,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_waypoint_move,
     (VikToolMouseFunc) tool_edit_waypoint_release, (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf, NULL },
 
   { { "EditTrackpoint", "vik-icon-Edit Trackpoint", N_("Edit Trac_kpoint"), "<control><shift>K", N_("Edit Trackpoint"), 0 },
     (VikToolConstructorFunc) tool_edit_trackpoint_create,
@@ -456,19 +456,19 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_trackpoint_move,
     (VikToolMouseFunc) tool_edit_trackpoint_release, (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_edtr_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_edtr_pixbuf, NULL },
 
   { { "ShowPicture", "vik-icon-Show Picture", N_("Show P_icture"), "<control><shift>I", N_("Show Picture"), 0 },
     (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL,
     (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf, NULL },
 
   { { "RouteFinder", "vik-icon-Route Finder", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
     (VikToolConstructorFunc) tool_route_finder_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_route_finder_click, NULL, NULL, (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf },
+    GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
 };
 
 enum {
@@ -2802,7 +2802,7 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
 
   // Safety check - I think these should always be valid
   if ( vtl->tracks && vtl->waypoints ) {
-    tooltip_tracks tt = { 0.0, 0, 0 };
+    tooltip_tracks tt = { 0.0, 0, 0, 0 };
     g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_tracks_tooltip, &tt );
 
     GDate* gdate_start = g_date_new ();
