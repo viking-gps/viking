@@ -575,7 +575,7 @@ if "[LayerData]"
 
 /* ---------------------------------------------------- */
 
-static FILE *xfopen ( const char *fn, const char *mode )
+static FILE *xfopen ( const char *fn )
 {
   if ( strcmp(fn,"-") == 0 )
     return stdin;
@@ -597,7 +597,7 @@ static void xfclose ( FILE *f )
 gboolean check_file_magic_vik ( const gchar *filename )
 {
   gboolean result = FALSE;
-  FILE *ff = xfopen ( filename, "r" );
+  FILE *ff = xfopen ( filename );
   if ( ff ) {
     result = check_magic ( ff, VIK_MAGIC );
     xfclose ( ff );
@@ -655,7 +655,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     filename = filename + 7;
     g_debug ( "Loading file %s from URI %s", filename, filename_or_uri );
   }
-  FILE *f = xfopen ( filename, "r" );
+  FILE *f = xfopen ( filename );
 
   if ( ! f )
     return LOAD_TYPE_READ_FAILURE;
