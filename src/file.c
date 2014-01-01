@@ -26,6 +26,7 @@
 #endif
 #include "viking.h"
 
+#include "jpg.h"
 #include "gpx.h"
 #include "babel.h"
 
@@ -669,6 +670,10 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
       load_answer = LOAD_TYPE_VIK_SUCCESS;
     else
       load_answer = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
+  }
+  else if ( a_jpg_magic_check ( filename ) ) {
+    if ( ! a_jpg_load_file ( top, filename, vp ) )
+      load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
   }
   else
   {

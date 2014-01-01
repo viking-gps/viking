@@ -2828,6 +2828,11 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
 
     filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name ( filter, _("JPG") );
+    gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(vw->open_dia), filter);
+
+    filter = gtk_file_filter_new ();
     gtk_file_filter_set_name( filter, _("Viking") );
     gtk_file_filter_add_pattern ( filter, "*.vik" );
     gtk_file_filter_add_pattern ( filter, "*.viking" );

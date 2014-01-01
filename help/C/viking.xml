@@ -421,10 +421,11 @@ This opens a file chooser dialog to select one (or more) files of the supported 
 <listitem><para>Viking</para></listitem>
 <listitem><para>GPX</para></listitem>
 <listitem><para>KML</para></listitem>
+<listitem><para>JPG</para></listitem>
 </itemizedlist>
 </para>
 <para>
-GPX and KML files will be loaded into the existing &appname; view. A <emphasis>Viking</emphasis> file will be given a new window if the current window is already assigned.
+GPX, KML and JPG files will be loaded into the existing &appname; view. A <emphasis>Viking</emphasis> file will be given a new window if the current window is already assigned.
 </para>
 <tip>
 <para>

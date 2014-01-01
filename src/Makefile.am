@@ -67,6 +67,7 @@ libviking_a_SOURCES = \
 	dialog.c dialog.h \
 	util.c util.h \
 	download.c download.h \
+	jpg.c jpg.h \
 	vikenumtypes.c vikenumtypes.h \
 	viktreeview.c viktreeview.h \
 	viktrwlayer.c viktrwlayer.h \
