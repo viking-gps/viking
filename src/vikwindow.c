@@ -2639,6 +2639,7 @@ static void setup_recent_files (VikWindow *self)
   menu = gtk_recent_chooser_menu_new_for_manager (manager);
   gtk_recent_chooser_set_sort_type (GTK_RECENT_CHOOSER (menu), GTK_RECENT_SORT_MRU);
   gtk_recent_chooser_add_filter (GTK_RECENT_CHOOSER (menu), filter);
+  gtk_recent_chooser_set_limit (GTK_RECENT_CHOOSER (menu), a_vik_get_recent_number_files() );
 
   menu_item = gtk_ui_manager_get_widget (self->uim, "/ui/MainMenu/File/OpenRecentFile");
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), menu);

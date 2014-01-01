@@ -106,10 +106,14 @@ static VikLayerParam io_prefs_external_gpx[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_2", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("External GPX Program 2:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL, NULL, NULL, NULL },
 };
 
+static VikLayerParamScale params_recent_files[] = { {-1, 25, 1, 0} };
+
 static VikLayerParam prefs_advanced[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "save_file_reference_mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Save File Reference Mode:"), VIK_LAYER_WIDGET_COMBOBOX, params_vik_fileref, NULL,
     N_("When saving a Viking .vik file, this determines how the directory paths of filenames are written."), NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "create_track_tooltip", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Tooltip during Track Creation:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "number_recent_files", VIK_LAYER_PARAM_INT, VIK_LAYER_GROUP_NONE, N_("The number of recent files:"), VIK_LAYER_WIDGET_SPINBUTTON, params_recent_files, NULL,
+    N_("Only applies to new windows or on application restart. -1 means all available files."), NULL, NULL, NULL },
 };
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
@@ -234,6 +238,9 @@ void a_vik_preferences_init ()
 
   tmp.b = TRUE;
   a_preferences_register(&prefs_advanced[1], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
+
+  tmp.i = 10; // Seemingly GTK's default for the number of recent files
+  a_preferences_register(&prefs_advanced[2], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -325,6 +332,7 @@ const gchar* a_vik_get_external_gpx_program_2 ( )
   return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_2")->s;
 }
 
+// Advanced Options
 vik_file_ref_format_t a_vik_get_file_ref_format ( )
 {
   vik_file_ref_format_t format;
@@ -335,6 +343,11 @@ vik_file_ref_format_t a_vik_get_file_ref_format ( )
 gboolean a_vik_get_create_track_tooltip ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "create_track_tooltip")->b;
+}
+
+gint a_vik_get_recent_number_files ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "number_recent_files")->i;
 }
 
 // Startup Options

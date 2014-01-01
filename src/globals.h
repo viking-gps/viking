@@ -192,6 +192,8 @@ const gchar *a_vik_get_startup_file ( );
 
 gboolean a_vik_get_check_version ( );
 
+gint a_vik_get_recent_number_files ( );
+
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
 #define VIKING_PREFERENCES_NAMESPACE "viking.globals."
