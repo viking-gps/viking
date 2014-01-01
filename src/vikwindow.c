@@ -1249,6 +1249,8 @@ static gboolean vik_window_pan_timeout (VikWindow *vw)
 
 static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
 {
+  gboolean do_draw = TRUE;
+
   if ( vw->pan_move == FALSE ) {
     vw->single_click_pending = !vw->single_click_pending;
 
@@ -1264,7 +1266,7 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
       // Give chance for a double click to occur
       gint timer = g_value_get_int ( &dct ) + 50;
       g_timeout_add ( timer, (GSourceFunc)vik_window_pan_timeout, vw );
-      goto skip_draw;
+      do_draw = FALSE;
     }
     else {
       vik_viewport_set_center_screen ( vw->viking_vvp, vw->pan_x, vw->pan_y );
@@ -1275,11 +1277,10 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
                                       vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
   }
 
-  draw_update ( vw );
-
- skip_draw:
   vw->pan_move = FALSE;
   vw->pan_x = vw->pan_y = -1;
+  if ( do_draw )
+    draw_update ( vw );
 }
 
 static void draw_release ( VikWindow *vw, GdkEventButton *event )
