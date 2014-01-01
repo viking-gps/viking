@@ -633,7 +633,7 @@ gchar *append_file_ext ( const gchar *filename, VikLoadType_t type )
   }
 
   /* Do */
-  if ( ext != NULL && ! check_file_ext ( filename, ext ) )
+  if ( ext != NULL && ! a_file_check_ext ( filename, ext ) )
     new_name = g_strconcat ( filename, ext, NULL );
   else
     /* Simply duplicate */
@@ -680,7 +680,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     vik_layer_rename ( vtl, a_file_basename ( filename ) );
 
     // In fact both kml & gpx files start the same as they are in xml
-    if ( check_file_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
+    if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
       // Implicit Conversion
       if ( ! ( success = a_babel_convert_from ( VIK_TRW_LAYER(vtl), "-i kml", filename, NULL, NULL, NULL ) ) ) {
         load_answer = LOAD_TYPE_GPSBABEL_FAILURE;
@@ -688,7 +688,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     }
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
     //    - which currently confuses our check_magic function
-    else if ( check_file_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC ) ) {
+    else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC ) ) {
       if ( ! ( success = a_gpx_read_file ( VIK_TRW_LAYER(vtl), f ) ) ) {
         load_answer = LOAD_TYPE_GPX_FAILURE;
       }
@@ -769,9 +769,9 @@ const gchar *a_file_basename ( const gchar *filename )
 }
 
 /* example: 
-     gboolean is_gpx = check_file_ext ( "a/b/c.gpx", ".gpx" );
+     gboolean is_gpx = a_file_check_ext ( "a/b/c.gpx", ".gpx" );
 */
-gboolean check_file_ext ( const gchar *filename, const gchar *fileext )
+gboolean a_file_check_ext ( const gchar *filename, const gchar *fileext )
 {
   g_return_val_if_fail ( filename != NULL, FALSE );
   g_return_val_if_fail ( fileext && fileext[0]=='.', FALSE );

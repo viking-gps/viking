@@ -2929,7 +2929,7 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
   }
   // Auto append / replace extension with '.vik' to the suggested file name as it's going to be a Viking File
   gchar* auto_save_name = g_strdup ( window_get_filename ( vw ) );
-  if ( ! check_file_ext ( auto_save_name, ".vik" ) )
+  if ( ! a_file_check_ext ( auto_save_name, ".vik" ) )
     auto_save_name = g_strconcat ( auto_save_name, ".vik", NULL );
 
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(vw->save_dia), auto_save_name);
