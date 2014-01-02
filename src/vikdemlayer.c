@@ -434,6 +434,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
       }
       break;
     }
+    default: break;
   }
   return TRUE;
 }
@@ -469,6 +470,7 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gbo
       else
         rv.d = vdl->max_elev;
       break;
+    default: break;
   }
   return rv;
 }

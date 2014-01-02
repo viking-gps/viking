@@ -220,6 +220,7 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLay
     case PARAM_CE: vgl->corner.easting = data.d; break;
     case PARAM_MN: vgl->mpp_northing = data.d; break;
     case PARAM_ME:  vgl->mpp_easting = data.d; break;
+    default: break;
   }
   return TRUE;
 }
@@ -249,6 +250,7 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
     case PARAM_CE: rv.d = vgl->corner.easting; break;
     case PARAM_MN: rv.d = vgl->mpp_northing; break;
     case PARAM_ME: rv.d = vgl->mpp_easting; break;
+    default: break;
   }
   return rv;
 }

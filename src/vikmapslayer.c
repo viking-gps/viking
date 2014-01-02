@@ -582,6 +582,7 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerPa
                           vml->xmapzoom = __mapzooms_x [data.u];
                           vml->ymapzoom = __mapzooms_y [data.u];
                         }else g_warning (_("Unknown Map Zoom")); break;
+    default: break;
   }
   return TRUE;
 }
@@ -621,6 +622,7 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
     case PARAM_AUTODOWNLOAD: rv.u = vml->autodownload; break;
     case PARAM_ONLYMISSING: rv.u = vml->adl_only_missing; break;
     case PARAM_MAPZOOM: rv.u = vml->mapzoom_id; break;
+    default: break;
   }
   return rv;
 }

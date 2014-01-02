@@ -238,6 +238,7 @@ static void draw_page_cairo(GtkPrintContext *context, PrintData *data)
       case 4:
         copy_row_from_rgba (surface_pixels, pixbuf_pixels, data->width);
         break;
+      default: break;
     }
   }
 
@@ -483,7 +484,9 @@ static void update_offsets (CustomWidgetInfo *info)
       data->offset_x = offset_x_max / 2.0;
       data->offset_y = offset_y_max / 2.0;
       break;
-    }
+
+    default: break;
+  }
 }
 
 static void center_changed_cb (GtkWidget *combo, CustomWidgetInfo *info)

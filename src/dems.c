@@ -231,6 +231,7 @@ static gboolean get_elev_by_coord(gpointer key, LoadedDEM *ldem, CoordElev *ce)
     case VIK_DEM_INTERPOL_BEST:
       ce->elev = vik_dem_get_shepard_interpol(dem, lon, lat);
       break;
+    default: break;
   }
   return (ce->elev != VIK_DEM_INVALID_ELEVATION);
 }

@@ -219,6 +219,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         gtk_scale_set_digits ( GTK_SCALE(rv), scale->digits );
         gtk_range_set_value ( GTK_RANGE(rv), init_val );
       }
+    default: break;
   }
   if ( rv && !gtk_widget_get_tooltip_text ( rv ) ) {
     if ( param->tooltip )
@@ -300,6 +301,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       else
         rv.d = gtk_range_get_value ( GTK_RANGE(widget) );
       break;
+    default: break;
   }
 
   // Perform conversion if necessary

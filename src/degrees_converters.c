@@ -190,6 +190,7 @@ gdouble convert_dms_to_dec(const gchar *dms)
       			case 3:
       				s = value;
       				break;
+      			default: break;
       		}
 			}
 		} while (ptr != NULL && endptr != NULL);
