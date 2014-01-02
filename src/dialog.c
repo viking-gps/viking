@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2008, Hein Ragas <viking@ragas.nl>
- * Copyright (C) 2010-2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2010-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "documenters.h"
 #include "vikgoto.h"
 #include "util.h"
+#include "geotag_exif.h"
 
 #include <glib/gi18n.h>
 
@@ -213,6 +214,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   GtkWidget *commentlabel, *commententry, *descriptionlabel, *descriptionentry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
   GtkWidget *timelabel = NULL;
   GtkWidget *timevaluelabel = NULL; // No editing of time allowed ATM
+  GtkWidget *hasGeotagCB = NULL;
+  GtkWidget *consistentGeotagCB = NULL;
   GtkListStore *store;
 
   gchar *lat, *lon, *alt;
@@ -322,8 +325,26 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   if ( !is_new && wp->description )
     gtk_entry_set_text ( GTK_ENTRY(descriptionentry), wp->description );
 
-  if ( !is_new && wp->image )
+  if ( !is_new && wp->image ) {
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
+
+    // Geotag Info [readonly]
+    hasGeotagCB = gtk_check_button_new_with_label ( _("Has Geotag") );
+    gtk_widget_set_sensitive ( hasGeotagCB, FALSE );
+    gboolean hasGeotag;
+    gchar *ignore = a_geotag_get_exif_date_from_file ( wp->image, &hasGeotag );
+    g_free ( ignore );
+    gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(hasGeotagCB), hasGeotag );
+
+    consistentGeotagCB = gtk_check_button_new_with_label ( _("Consistent Position") );
+    gtk_widget_set_sensitive ( consistentGeotagCB, FALSE );
+    if ( hasGeotag ) {
+      struct LatLon ll = a_geotag_get_position ( wp->image );
+      VikCoord coord;
+      vik_coord_load_from_latlon ( &coord, coord_mode, &ll );
+      gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(consistentGeotagCB), vik_coord_equals(&coord, &wp->coord) );
+    }
+  }
 
   if ( !is_new && wp->has_timestamp ) {
     gchar tmp_str[64];
@@ -349,6 +370,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), descriptionentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imagelabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imageentry, FALSE, FALSE, 0);
+  if ( hasGeotagCB ) {
+    GtkWidget *hbox =  gtk_hbox_new ( FALSE, 0 );
+    gtk_box_pack_start (GTK_BOX(hbox), hasGeotagCB, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(hbox), consistentGeotagCB, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox, FALSE, FALSE, 0);
+  }
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), symbollabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
