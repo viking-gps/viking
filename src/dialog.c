@@ -550,6 +550,16 @@ gchar *a_dialog_new_track ( GtkWindow *parent, gchar *default_name, gboolean is_
   return NULL;
 }
 
+static guint today_year = 0;
+static guint today_month = 0;
+static guint today_day = 0;
+
+static void today_clicked (GtkWidget *cal)
+{
+  gtk_calendar_select_month ( GTK_CALENDAR(cal), today_month, today_year );
+  gtk_calendar_select_day ( GTK_CALENDAR(cal), today_day );
+}
+
 /**
  * a_dialog_get_date:
  *
@@ -568,22 +578,39 @@ gchar *a_dialog_get_date ( GtkWindow *parent, const gchar *title )
                                                     GTK_RESPONSE_ACCEPT,
                                                     NULL);
   GtkWidget *cal = gtk_calendar_new ();
+  GtkWidget *today = gtk_button_new_with_label ( _("Today") );
 
+  static guint year = 0;
+  static guint month = 0;
+  static guint day = 0;
+
+  if ( year == 0 ) {
+    // Store today's date so we can return to it on the button callback
+    gtk_calendar_get_date ( GTK_CALENDAR(cal), &year, &month, &day );
+    today_year = year;
+    today_month = month;
+    today_day = day;
+  }
+  else {
+    // Otherwise restore the last selected date
+    gtk_calendar_select_month ( GTK_CALENDAR(cal), month, year );
+    gtk_calendar_select_day ( GTK_CALENDAR(cal), day );
+  }
+
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), today, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), cal, FALSE, FALSE, 0);
 
-  gtk_widget_show ( cal );
+  g_signal_connect_swapped ( G_OBJECT(today), "clicked", G_CALLBACK(today_clicked), cal );
+
+  gtk_widget_show_all ( dialog );
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   gchar *date_str = NULL;
   if ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
   {
-    guint year;
-    guint month;
-    guint day;
     gtk_calendar_get_date ( GTK_CALENDAR(cal), &year, &month, &day );
-    month = month+1;
-    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month, day );
+    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month+1, day );
   }
   gtk_widget_destroy ( dialog );
   return date_str;
