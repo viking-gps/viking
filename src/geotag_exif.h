@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2011-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name, VikWaypoint *wp );
 
 gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_GPS_info );
+
+struct LatLon a_geotag_get_position ( const gchar *filename );
 
 gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble alt, gboolean no_change_mtime );
 

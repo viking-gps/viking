@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2011-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,6 +118,82 @@ static gdouble Rational2Double ( unsigned char *data, int offset, ExifByteOrder 
 	return ans;
 }
 
+static struct LatLon get_latlon ( ExifData *ed )
+{
+	struct LatLon ll = { 0.0, 0.0 };
+	const struct LatLon ll0 = { 0.0, 0.0 };
+
+	gchar str[128];
+	ExifEntry *ee;
+	//
+	// Lat & Long is necessary to form a waypoint.
+	//
+	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LATITUDE);
+	if ( ! ( ee && ee->components == 3 && ee->format == EXIF_FORMAT_RATIONAL ) )
+		return ll0;
+
+	ll.lat = Rational2Double ( ee->data,
+							   exif_format_get_size(ee->format),
+							   exif_data_get_byte_order(ed) );
+
+	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LATITUDE_REF);
+	if ( ee ) {
+		exif_entry_get_value ( ee, str, 128 );
+		if ( str[0] == 'S' )
+			ll.lat = -ll.lat;
+	}
+
+	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LONGITUDE);
+	if ( ! ( ee && ee->components == 3 && ee->format == EXIF_FORMAT_RATIONAL ) )
+		return ll0;
+
+	ll.lon = Rational2Double ( ee->data,
+							   exif_format_get_size(ee->format),
+							   exif_data_get_byte_order(ed) );
+
+	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LONGITUDE_REF);
+	if ( ee ) {
+		exif_entry_get_value ( ee, str, 128 );
+		if ( str[0] == 'W' )
+			ll.lon = -ll.lon;
+	}
+
+	return ll;
+}
+
+/**
+ * a_geotag_get_position:
+ *
+ * @filename: The (JPG) file with EXIF information in it
+ *
+ * Returns: The position in LatLon format.
+ *  It will be 0,0 if some kind of failure occurs.
+ */
+struct LatLon a_geotag_get_position ( const gchar *filename )
+{
+	struct LatLon ll = { 0.0, 0.0 };
+
+	// open image with libexif
+	ExifData *ed = exif_data_new_from_file ( filename );
+
+	// Detect EXIF load failure
+	if ( !ed )
+		return ll;
+
+	ExifEntry *ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_VERSION_ID);
+	// Confirm this has a GPS Id - normally "2.0.0.0" or "2.2.0.0"
+	if ( ! ( ee && ee->components == 4 ) )
+		goto MyReturn0;
+
+	ll = get_latlon ( ed );
+
+MyReturn0:
+	// Finished with EXIF
+	exif_data_free ( ed );
+
+	return ll;
+}
+
 /**
  * a_geotag_create_waypoint_from_file:
  * @filename: The image file to process
@@ -157,38 +233,11 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 	//if ( ! ( ee->data[0] == 2 && ee->data[2] == 0 && ee->data[3] == 0 ) )
 	//	goto MyReturn;
 
-	//
-	// Lat & Long is necessary to form a waypoint.
-	//
-	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LATITUDE);
-	if ( ! ( ee && ee->components == 3 && ee->format == EXIF_FORMAT_RATIONAL ) )
+	ll = get_latlon ( ed );
+
+	// Hopefully won't have valid images at 0,0!
+	if ( ll.lat == 0.0 && ll.lon == 0.0 )
 		goto MyReturn;
-  
-	ll.lat = Rational2Double ( ee->data,
-							   exif_format_get_size(ee->format),
-							   exif_data_get_byte_order(ed) );
-
-	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LATITUDE_REF);
-	if ( ee ) {
-		exif_entry_get_value ( ee, str, 128 );
-		if ( str[0] == 'S' )
-			ll.lat = -ll.lat;
-	}
-
-	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LONGITUDE);
-	if ( ! ( ee && ee->components == 3 && ee->format == EXIF_FORMAT_RATIONAL ) )
-		goto MyReturn;
-
-	ll.lon = Rational2Double ( ee->data,
-							   exif_format_get_size(ee->format),
-							   exif_data_get_byte_order(ed) );
-
-	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_LONGITUDE_REF);
-	if ( ee ) {
-		exif_entry_get_value ( ee, str, 128 );
-		if ( str[0] == 'W' )
-			ll.lon = -ll.lon;
-	}
 
 	//
 	// Not worried if none of the other fields exist, as can default the values to something
