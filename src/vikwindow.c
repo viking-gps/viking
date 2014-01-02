@@ -3751,8 +3751,8 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
     if ( !fn )
       return;
 
-    gint active = gtk_combo_box_get_active ( GTK_COMBO_BOX(zoom_combo) );
-    gdouble zoom = pow (2, active-2 );
+    gint active_z = gtk_combo_box_get_active ( GTK_COMBO_BOX(zoom_combo) );
+    gdouble zoom = pow (2, active_z-2 );
 
     if ( one_image_only )
       save_image_file ( vw, fn, 

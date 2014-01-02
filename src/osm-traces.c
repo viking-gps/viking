@@ -52,12 +52,12 @@ static gint last_active = -1;
 /**
  * Login to use for OSM uploading.
  */
-static gchar *user = NULL;
+static gchar *osm_user = NULL;
 
 /**
  * Password to use for OSM uploading.
  */
-static gchar *password = NULL;
+static gchar *osm_password = NULL;
 
 /**
  * Mutex to protect auth. token
@@ -125,7 +125,7 @@ static const gchar *get_default_user()
   return default_user;
 }
 
-void osm_set_login(const gchar *user_, const gchar *password_)
+void osm_set_login(const gchar *user, const gchar *password)
 {
   /* Allocate mutex */
   if (login_mutex == NULL)
@@ -133,10 +133,10 @@ void osm_set_login(const gchar *user_, const gchar *password_)
     login_mutex = g_mutex_new();
   }
   g_mutex_lock(login_mutex);
-  g_free(user); user = NULL;
-  g_free(password); password = NULL;
-  user        = g_strdup(user_);
-  password    = g_strdup(password_);
+  g_free(osm_user); osm_user = NULL;
+  g_free(osm_password); osm_password = NULL;
+  osm_user        = g_strdup(user);
+  osm_password    = g_strdup(password);
   g_mutex_unlock(login_mutex);
 }
 
@@ -144,7 +144,7 @@ gchar *osm_get_login()
 {
   gchar *user_pass = NULL;
   g_mutex_lock(login_mutex);
-  user_pass = g_strdup_printf("%s:%s", user, password);
+  user_pass = g_strdup_printf("%s:%s", osm_user, osm_password);
   g_mutex_unlock(login_mutex);
   return user_pass;
 }
@@ -311,7 +311,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   file = NULL;
 
   /* finally, upload it */
-  gint ans = osm_traces_upload_file(user, password, filename,
+  gint ans = osm_traces_upload_file(osm_user, osm_password, filename,
                    oti->name, oti->description, oti->tags, oti->vistype);
 
   //
@@ -368,15 +368,15 @@ void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry)
   const gchar *pref_user = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "username")->s;
   const gchar *pref_password = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "password")->s;
 
-  if (user != NULL && user[0] != '\0')
-    gtk_entry_set_text(GTK_ENTRY(user_entry), user);
+  if (osm_user != NULL && osm_user[0] != '\0')
+    gtk_entry_set_text(GTK_ENTRY(user_entry), osm_user);
   else if (pref_user != NULL && pref_user[0] != '\0')
     gtk_entry_set_text(GTK_ENTRY(user_entry), pref_user);
   else if (default_user != NULL)
     gtk_entry_set_text(GTK_ENTRY(user_entry), default_user);
 
-  if (password != NULL && password[0] != '\0')
-    gtk_entry_set_text(GTK_ENTRY(password_entry), password);
+  if (osm_password != NULL && osm_password[0] != '\0')
+    gtk_entry_set_text(GTK_ENTRY(password_entry), osm_password);
   else if (pref_password != NULL)
     gtk_entry_set_text(GTK_ENTRY(password_entry), pref_password);
   /* This is a password -> invisible */

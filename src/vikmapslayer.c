@@ -1133,7 +1133,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
       gint tilesize_y_ceil = ceil ( tilesize_y );
       gint8 xinc = (ulm.x == xmin) ? 1 : -1;
       gint8 yinc = (ulm.y == ymin) ? 1 : -1;
-      gdouble xx, yy; gint xx_tmp, yy_tmp;
+      gint xx_tmp, yy_tmp;
       gint base_yy, xend, yend;
 
       xend = (xinc == 1) ? (xmax+1) : (xmin-1);

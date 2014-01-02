@@ -288,14 +288,14 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
     span = s;
   }
   for (i=0; i<strlen(span); i++) {
-    gchar c = span[i];
-    if (c == '<') {
+    gchar ch = span[i];
+    if (ch == '<') {
       tag++;
     }
     if (tag>0) {
       span[i] = ' ';
     }
-    if (c == '>') {
+    if (ch == '>') {
       if (tag>0) tag--;
     }
   }

@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 void osm_traces_init();
 void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk );
 
-void osm_set_login (const gchar *user_, const gchar *password_);
+void osm_set_login (const gchar *user, const gchar *password);
 gchar *osm_get_login();
 void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry);
 

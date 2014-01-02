@@ -119,17 +119,17 @@ static gboolean preferences_load_from_file()
   return FALSE;
 }
 
-static void preferences_run_setparam ( gpointer notused, guint16 i, VikLayerParamData data, VikLayerParam *params )
+static void preferences_run_setparam ( gpointer notused, guint16 i, VikLayerParamData data, VikLayerParam *vlparams )
 {
-  if ( params[i].type == VIK_LAYER_PARAM_STRING_LIST )
+  if ( vlparams[i].type == VIK_LAYER_PARAM_STRING_LIST )
     g_critical ( "Param strings not implemented in preferences"); //fake it
-  g_hash_table_insert ( values, (gchar *)(params[i].name), vik_layer_typed_param_data_copy_from_data(params[i].type, data) );
+  g_hash_table_insert ( values, (gchar *)(vlparams[i].name), vik_layer_typed_param_data_copy_from_data(vlparams[i].type, data) );
 }
 
 /* Allow preferences to be manipulated externally */
-void a_preferences_run_setparam ( VikLayerParamData data, VikLayerParam *params )
+void a_preferences_run_setparam ( VikLayerParamData data, VikLayerParam *vlparams )
 {
-  preferences_run_setparam (NULL, 0, data, params);
+  preferences_run_setparam (NULL, 0, data, vlparams);
 }
 
 static VikLayerParamData preferences_run_getparam ( gpointer notused, guint16 i, gboolean notused2 )

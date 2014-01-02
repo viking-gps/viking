@@ -1704,7 +1704,6 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     max_speed = widgets->max_speed * 110 / 100;
 
     // This is just an indicator - no actual values can be inferred by user
-    gint i;
     for ( i = 0; i < widgets->profile_width; i++ ) {
       int y_speed = widgets->profile_height - (widgets->profile_height * widgets->speeds[i])/max_speed;
       gdk_draw_rectangle(GDK_DRAWABLE(pix), dist_speed_gc, TRUE, i+MARGIN-2, y_speed-2, 4, 4);
@@ -1803,7 +1802,6 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     max_speed = widgets->max_speed * 110 / 100;
 
     // This is just an indicator - no actual values can be inferred by user
-    gint i;
     for ( i = 0; i < widgets->profile_width; i++ ) {
       int y_speed = widgets->profile_height - (widgets->profile_height * widgets->speeds[i])/max_speed;
       gdk_draw_rectangle(GDK_DRAWABLE(pix), elev_speed_gc, TRUE, i+MARGIN-2, y_speed-2, 4, 4);

@@ -522,13 +522,13 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
 
   while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
   {
-    GList *names = NULL;
+    GList *names_selected = NULL;
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
-    gtk_tree_selection_selected_foreach(selection, get_selected_foreach_func, &names);
-    if (names)
+    gtk_tree_selection_selected_foreach(selection, get_selected_foreach_func, &names_selected);
+    if (names_selected)
     {
       gtk_widget_destroy ( dialog );
-      return (names);
+      return names_selected;
     }
     a_dialog_error_msg(parent, _("Nothing was selected"));
   }

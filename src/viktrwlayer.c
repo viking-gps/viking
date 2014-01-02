@@ -10492,16 +10492,16 @@ void vik_track_download_map(VikTrack *tr, VikMapsLayer *vml, VikViewport *vvp, g
     g_message("%s: this feature works only in Mercator mode", __FUNCTION__);
 
   if (fillins) {
-    GList *iter = fillins;
-    while (iter) {
-      cur_coord = (VikCoord *)(iter->data);
+    GList *fiter = fillins;
+    while (fiter) {
+      cur_coord = (VikCoord *)(fiter->data);
       vik_coord_set_area(cur_coord, &wh, &tl, &br);
       rect = g_malloc(sizeof(Rect));
       rect->tl = tl;
       rect->br = br;
       rect->center = *cur_coord;
       rects_to_download = g_list_prepend(rects_to_download, rect);
-      iter = iter->next;
+      fiter = fiter->next;
     }
   }
 
