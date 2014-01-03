@@ -353,15 +353,6 @@ gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_G
 	if ( !ed )
 		return datetime;
 
-	// Also allows us to remember what directory we where using
-	gchar *dir = g_path_get_dirname ( filename );
-	if ( dir ) {
-		if ( g_chdir ( dir ) ) {
-			g_warning ( "Could not change directory to %s", dir );
-		}
-		g_free (dir);
-	}
-
 	gchar str[128];
 	ExifEntry *ee;
 
