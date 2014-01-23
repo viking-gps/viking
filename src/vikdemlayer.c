@@ -1181,7 +1181,8 @@ static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
 
   gchar *source = NULL;
   if ( continent_dir )
-    source = g_strdup_printf ( "http:/%s%s/%c%02d%c%03d.hgt.zip",
+    source = g_strdup_printf ( "http://%s%s%s/%c%02d%c%03d.hgt.zip",
+                               SRTM_HTTP_SITE,
                                SRTM_HTTP_URI,
                                continent_dir,
                                (intlat >= 0) ? 'N' : 'S',
