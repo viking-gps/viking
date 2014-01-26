@@ -1863,6 +1863,31 @@ This operates in exactly the same way as the <link linkend="track_create">Create
 <para>
 One must finish the current route to be able to create another route.
 </para>
+<para>
+One can switch between the <link linkend="route_create">Create Route</link> and <link linkend="route_finder">Route Finder</link> tools while editing routes.
+</para>
+</section>
+
+<section id="route_finder" xreflabel="Route Finder"><title>Create Route Using the Route Finder</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/route_finder_18.png"/></guiicon>
+</para>
+<para>
+Requires an internet connection.
+Left click to create a new trackpoint.
+If it's the initial trackpoint you will be asked to enter a name for the route, otherwise the default routing engine will be queried to find a route to the new trackpoint.
+Right click or <keycap>Backspace</keycap>: remove the last added route.
+</para>
+<para>
+<keycap>Escape</keycap>: to finish route creation.
+Finishing the track is also available via the right click <xref linkend="TrackWaypoint"/> and track menus.
+</para>
+<para>
+One must finish the current route to be able to create another route.
+</para>
+<para>
+One can switch between the <link linkend="route_create">Create Route</link> and <link linkend="route_finder">Route Finder</link> tools while editing routes.
+</para>
 </section>
 
 <section><title>Edit Waypoint</title>
@@ -1930,22 +1955,6 @@ Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic filere
 Opens an image viewer with the picture associated with the waypoint.
 By default this uses the default system image viewer.
 For Linux you can override this with the setting in the <xref linkend="prefs_external"/>
-</para>
-</section>
-
-<section id="route_finder" xreflabel="Route Finder"><title>Route Finder</title>
-<para>
-Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/route_finder_18.png"/></guiicon>
-</para>
-<para>Creates a track using default routing engine between two points.
-Requires an internet connection. Click one point, then click another to
-create a track.
-</para>
-<para>
-Right-click: undo last routing (only track removed - not any waypoints)
-</para>
-<para>
-<keycap>Ctrl</keycap>: continue previous track
 </para>
 </section>
 
