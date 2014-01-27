@@ -5,7 +5,7 @@
  * Copyright (C) 2007, Quy Tonthat <qtonthat@gmail.com>
  * Copyright (C) 2008, Hein Ragas <viking@ragas.nl>
  * Copyright (C) 2009, Tal B <tal.bav@gmail.com>
- * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2012-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * Some of the code adapted from GPSBabel 1.2.7
  * http://gpsbabel.sf.net/
@@ -61,6 +61,7 @@ typedef enum {
         tt_wpt_ele,
         tt_wpt_sym,
         tt_wpt_time,
+        tt_wpt_url,
         tt_wpt_link,            /* New in GPX 1.1 */
 
         tt_trk,
@@ -135,6 +136,7 @@ tag_mapping tag_path_map[] = {
         { tt_wpt_desc, "/gpx/wpt/desc" },
         { tt_wpt_sym, "/gpx/wpt/sym" },
         { tt_wpt_sym, "/loc/waypoint/type" },
+        { tt_wpt_url, "/gpx/wpt/url" },
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
 
         { tt_trk, "/gpx/trk" },
@@ -286,6 +288,7 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_wpt_name:
      case tt_wpt_ele:
      case tt_wpt_time:
+     case tt_wpt_url:
      case tt_wpt_link:
      case tt_trk_cmt:
      case tt_trk_desc:
@@ -421,6 +424,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_wpt_url:
+       vik_waypoint_set_url ( c_wp, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_wpt_link:
        vik_waypoint_set_image ( c_wp, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
@@ -524,6 +532,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_wpt_cmt:
     case tt_wpt_desc:
     case tt_wpt_sym:
+    case tt_wpt_url:
     case tt_wpt_link:
     case tt_trk_cmt:
     case tt_trk_desc:
@@ -807,6 +816,12 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   {
     tmp = entitize(wp->description);
     fprintf ( f, "  <desc>%s</desc>\n", tmp );
+    g_free ( tmp );
+  }
+  if ( wp->url )
+  {
+    tmp = entitize(wp->url);
+    fprintf ( f, "  <url>%s</url>\n", tmp );
     g_free ( tmp );
   }
   if ( wp->image )

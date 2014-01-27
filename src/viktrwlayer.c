@@ -7388,7 +7388,9 @@ static void trw_layer_waypoint_webpage ( menu_array_sublayer values )
   VikWaypoint *wp = g_hash_table_lookup ( vtl->waypoints, values[MA_SUBLAYER_ID] );
   if ( !wp )
     return;
-  if ( !strncmp(wp->comment, "http", 4) ) {
+  if ( wp->url ) {
+    open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(vtl)), wp->url);
+  } else if ( !strncmp(wp->comment, "http", 4) ) {
     open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(vtl)), wp->comment);
   } else if ( !strncmp(wp->description, "http", 4) ) {
     open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(vtl)), wp->description);
@@ -7654,7 +7656,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
       if ( wp )
       {
-        if ( ( wp->comment && !strncmp(wp->comment, "http", 4) ) ||
+        if ( wp->url ||
+             ( wp->comment && !strncmp(wp->comment, "http", 4) ) ||
              ( wp->description && !strncmp(wp->description, "http", 4) )) {
           item = gtk_image_menu_item_new_with_mnemonic ( _("Visit _Webpage") );
           gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_NETWORK, GTK_ICON_SIZE_MENU) );
