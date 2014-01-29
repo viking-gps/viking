@@ -367,6 +367,7 @@ AC_ARG_WITH(tileage,
              [VIK_CONFIG_DEFAULT_TILE_AGE=604800])
 AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
                    [Age of tiles before checking it (in seconds)])
+AC_DEFINE(HAVE_VIKING, 1, [Enable Viking specifics in otherwise reusable code])
 
 dnl man pages processing
 DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
