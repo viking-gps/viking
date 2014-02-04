@@ -1742,11 +1742,13 @@ VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr )
 
 
   while ( iter->prev ) {
-    if ( vik_coord_equals((VikCoord *)iter->data, (VikCoord *)iter->prev->data) ) {
+    VikCoord *cur_coord = &((VikTrackpoint*)iter->data)->coord;
+    VikCoord *prev_coord = &((VikTrackpoint*)iter->prev->data)->coord;
+    if ( vik_coord_equals(cur_coord, prev_coord) ) {
       GList *prev = iter->prev;
 
       rv = g_malloc(sizeof(VikCoord));
-      *rv = *((VikCoord *) iter->data);
+      *rv = *cur_coord;
 
       /* truncate trackpoint list */
       iter->prev = NULL; /* pretend it's the end */
@@ -1762,7 +1764,7 @@ VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr )
 
   /* no double point found! */
   rv = g_malloc(sizeof(VikCoord));
-  *rv = *((VikCoord *) tr->trackpoints->data);
+  *rv = ((VikTrackpoint*) tr->trackpoints->data)->coord;
   g_list_foreach ( tr->trackpoints, (GFunc) g_free, NULL );
   g_list_free( tr->trackpoints );
   tr->trackpoints = NULL;
