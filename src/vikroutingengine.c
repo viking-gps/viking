@@ -210,7 +210,7 @@ vik_routing_engine_finalize ( GObject *self )
  * 
  * Returns: indicates success or not.
  */
-int
+gboolean
 vik_routing_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end )
 {
 	VikRoutingEngineClass *klass;
@@ -316,7 +316,7 @@ vik_routing_engine_get_cmd_from_directions ( VikRoutingEngine *self, const gchar
  *
  * Returns: indicates success or not.
  */
-int
+gboolean
 vik_routing_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *vt )
 {
   VikRoutingEngineClass *klass;

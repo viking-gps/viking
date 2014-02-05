@@ -42,10 +42,10 @@
 
 static void vik_routing_web_engine_finalize ( GObject *gob );
 
-static int vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end );
+static gboolean vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end );
 static gchar *vik_routing_web_engine_get_cmd_from_directions(VikRoutingEngine *self, const gchar *start, const gchar *end);
 static gboolean vik_routing_web_engine_supports_direction(VikRoutingEngine *self);
-static int vik_routing_web_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *vt );
+static gboolean vik_routing_web_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *vt );
 static gboolean vik_routing_web_engine_supports_refine ( VikRoutingEngine *self );
 
 typedef struct _VikRoutingWebEnginePrivate VikRoutingWebEnginePrivate;
@@ -417,11 +417,11 @@ vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLo
 	return url;
 }
 
-static int
+static gboolean
 vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end )
 {
   gchar *uri;
-  int ret = 0;  /* OK */
+  gboolean ret = TRUE; // Can't fail ATM!
 
   uri = vik_routing_web_engine_get_url_for_coords(self, start, end);
 
@@ -551,11 +551,11 @@ vik_routing_web_engine_get_url_for_track ( VikRoutingEngine *self, VikTrack *vt 
   return url;
 }
 
-static int
+static gboolean
 vik_routing_web_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *vt )
 {
   gchar *uri;
-  int ret = 0;  /* OK */
+  int ret = TRUE; // Can't fail ATM!
 
   /* Compute URL */
   uri = vik_routing_web_engine_get_url_for_track ( self, vt );

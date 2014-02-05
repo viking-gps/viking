@@ -134,7 +134,7 @@ vik_routing_default_find(VikTrwLayer *vt, struct LatLon start, struct LatLon end
   /* The engine */
   VikRoutingEngine *engine = vik_routing_default_engine ( );
   /* The route computation */
-  return (gboolean)vik_routing_engine_find ( engine, vt, start, end );
+  return vik_routing_engine_find ( engine, vt, start, end );
 }
 
 /**
