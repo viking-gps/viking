@@ -28,7 +28,7 @@
 G_BEGIN_DECLS
 
 /* Default */
-void vik_routing_default_find ( VikTrwLayer *vt, struct LatLon start, struct LatLon end );
+gboolean vik_routing_default_find ( VikTrwLayer *vt, struct LatLon start, struct LatLon end );
 
 /* Routing engines management */
 void vik_routing_prefs_init();
@@ -40,6 +40,10 @@ void vik_routing_foreach_engine ( GFunc func, gpointer user_data );
 typedef gboolean (*Predicate)( gpointer data, gpointer user_data );
 GtkWidget *vik_routing_ui_selector_new ( Predicate func, gpointer user_data );
 VikRoutingEngine *vik_routing_ui_selector_get_nth ( GtkWidget *combo, int pos );
+
+/* Needs to be visible to display info about which routing engine is getting the route in viktrwlayer.c  */
+VikRoutingEngine * vik_routing_default_engine ( void );
+
 
 G_END_DECLS
 
