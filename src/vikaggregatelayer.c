@@ -33,7 +33,7 @@ static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, gin
 static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
-
+static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val );
 static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp );
 
 VikLayerInterface vik_aggregate_layer_interface = {
@@ -70,7 +70,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncSublayerRenameRequest)   NULL,
   (VikLayerFuncSublayerToggleVisible)   NULL,
   (VikLayerFuncSublayerTooltip)         NULL,
-  (VikLayerFuncLayerTooltip)            NULL,
+  (VikLayerFuncLayerTooltip)            aggregate_layer_tooltip,
   (VikLayerFuncLayerSelected)           NULL,
 
   (VikLayerFuncMarshall)		aggregate_layer_marshall,
@@ -895,3 +895,20 @@ static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikA
   g_free(dp);
 }
 
+/**
+ * Generate tooltip text for the layer.
+ */
+static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
+{
+  static gchar tmp_buf[128];
+  tmp_buf[0] = '\0';
+
+  GList *children = val->children;
+  if ( children ) {
+    gint nn = g_list_length (children);
+    // Could have a more complicated tooltip that numbers each type of layers,
+    //  but for now a simple overall count
+    g_snprintf (tmp_buf, sizeof(tmp_buf), ngettext("One layer", "%d layers", nn), nn );
+  }
+  return tmp_buf;
+}
