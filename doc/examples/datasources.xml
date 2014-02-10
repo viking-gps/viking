@@ -1,5 +1,4 @@
 <objects>
-  <!-- NB In built, but this is the equivalent -->
   <object class="VikWebtoolDatasource">
     <property name="label">OpenStreetBugs</property>
     <property name="url_format_code">LRBT</property>

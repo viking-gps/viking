@@ -148,10 +148,6 @@ void osm_init () {
   vik_ext_tool_datasources_register ( VIK_EXT_TOOL ( vwtds ) );
   g_object_unref ( vwtds );
 
-  vwtds = vik_webtool_datasource_new_with_members ( _("OpenStreetBugs"), "http://openstreetbugs.schokokeks.org/api/0.1/getGPX?l=%s&r=%s&b=%s&t=%s&open=only_open_bugs", "LRBT", NULL );
-  vik_ext_tool_datasources_register ( VIK_EXT_TOOL ( vwtds ) );
-  g_object_unref ( vwtds );
-
   // Goto
   VikGotoXmlTool *nominatim = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM Nominatim",
     "url-format", "http://nominatim.openstreetmap.org/search?q=%s&format=xml",
