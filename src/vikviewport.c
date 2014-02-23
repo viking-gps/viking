@@ -986,25 +986,54 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
   }
 }
 
+// Clip functions continually reduce the value by a factor until it is in the acceptable range
+//  whilst also scaling the other coordinate value.
+static void clip_x ( gint *x1, gint *y1, gint *x2, gint *y2 )
+{
+  while ( ABS(*x1) > 32768 ) {
+    *x1 = *x2 + (0.5 * (*x1-*x2));
+    *y1 = *y2 + (0.5 * (*y1-*y2));
+  }
+}
+
+static void clip_y ( gint *x1, gint *y1, gint *x2, gint *y2 )
+{
+  while ( ABS(*y1) > 32767 ) {
+    *x1 = *x2 + (0.5 * (*x1-*x2));
+    *y1 = *y2 + (0.5 * (*y1-*y2));
+  }
+}
+
+/**
+ * a_viewport_clip_line:
+ * @x1: screen coord
+ * @y1: screen coord
+ * @x2: screen coord
+ * @y2: screen coord
+ *
+ * Due to the seemingly undocumented behaviour of gdk_draw_line(), we need to restrict the range of values passed in.
+ * So despite it accepting gints, the effective range seems to be the actually the minimum C int range (2^16).
+ * This seems to be limitations coming from the X Window System.
+ *
+ * See http://www.rahul.net/kenton/40errs.html
+ * ERROR 7. Boundary conditions.
+ * "The X coordinate space is not infinite.
+ *  Most drawing functions limit position, width, and height to 16 bit integers (sometimes signed, sometimes unsigned) of accuracy.
+ *  Because most C compilers use 32 bit integers, Xlib will not complain if you exceed the 16 bit limit, but your results will usually not be what you expected.
+ *  You should be especially careful of this if you are implementing higher level scalable graphics packages."
+ *
+ * This function should be called before calling gdk_draw_line().
+ */
 void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 )
 {
-  if ( *x1 > 20000 || *x1 < -20000 ) {
-    gdouble shrinkfactor = ABS(20000.0 / *x1);
-    *x1 = *x2 + (shrinkfactor * (*x1-*x2));
-    *y1 = *y2 + (shrinkfactor * (*y1-*y2));
-  } else if ( *y1 > 20000 || *y1 < -20000 ) {
-    gdouble shrinkfactor = ABS(20000.0 / *x1);
-    *x1 = *x2 + (shrinkfactor * (*x1-*x2));
-    *y1 = *y2 + (shrinkfactor * (*y1-*y2));
-  } else if ( *x2 > 20000 || *x2 < -20000 ) {
-    gdouble shrinkfactor = ABS(20000.0 / (gdouble)*x2);
-    *x2 = *x1 + (shrinkfactor * (*x2-*x1));
-    *y2 = *y1 + (shrinkfactor * (*y2-*y1));
-  } else if ( *y2 > 20000 || *y2 < -20000 ) {
-    gdouble shrinkfactor = ABS(20000.0 / (gdouble)*x2);
-    *x2 = *x1 + (shrinkfactor * (*x2-*x1));
-    *y2 = *y1 + (shrinkfactor * (*y2-*y1));
-  }
+  if ( *x1 > 32768 || *x1 < -32767 )
+    clip_x ( x1, y1, x2, y2 );
+  if ( *y1 > 32768 || *y1 < -32767 )
+    clip_y ( x1, y1, x2, y2 );
+  if ( *x2 > 32768 || *x2 < -32767 )
+    clip_x ( x2, y2, x1, y1 );
+  if ( *y2 > 32768 || *y2 < -32767 )
+    clip_y ( x2, y2, x1, y1 );
 }
 
 void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2 )
