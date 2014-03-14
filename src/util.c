@@ -32,11 +32,11 @@
 #include "util.h"
 #include "dialog.h"
 
-/*
 #ifdef WINDOWS
 #include <windows.h>
 #endif
 
+/*
 #ifndef WINDOWS
 static gboolean spawn_command_line_async(const gchar * cmd,
                                          const gchar * arg)
@@ -56,14 +56,21 @@ static gboolean spawn_command_line_async(const gchar * cmd,
 #endif
 */
 
+// Annoyingly gtk_show_uri() doesn't work so resort to ShellExecute method
+//   (non working at least in our Windows build with GTK+2.24.10 on Windows 7)
+
 void open_url(GtkWindow *parent, const gchar * url)
 {
+#ifdef WINDOWS
+  ShellExecute(NULL, NULL, (char *) url, NULL, ".\\", 0);
+#else
   GError *error = NULL;
   gtk_show_uri ( gtk_widget_get_screen (GTK_WIDGET(parent)), url, GDK_CURRENT_TIME, &error );
   if ( error ) {
     a_dialog_error_msg_extra ( parent, _("Could not launch web browser. %s"), error->message );
     g_error_free ( error );
   }
+#endif
 }
 
 void new_email(GtkWindow *parent, const gchar * address)
