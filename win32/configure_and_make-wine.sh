@@ -4,6 +4,7 @@
 # First ensure we have a configure script:
 rm -rf ../src/.deps
 rm -rf ../src/icons/.deps
+rm -rf ../src/libjpeg/.deps
 pushd ..
 ./autogen.sh
 make distclean
