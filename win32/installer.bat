@@ -5,13 +5,8 @@
 ::
 echo STARTING INSTALLER PROCESS...
 
-:: For windres + strip
+:: For strip
 set PATH=%PATH%;%SystemDrive%\MinGW\bin
-
-echo Create Icon
-pushd installer\pixmaps
-windres.exe viking_icon.rc -o viking_icon.o
-popd
 
 echo Remove debugging symbols
 pushd ..\src

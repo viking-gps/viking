@@ -50,6 +50,20 @@ AC_CHECK_LIB(m, tan)
 AC_CHECK_LIB(z, inflate)
 AC_CHECK_LIB(X11, XSetErrorHandler)
 
+# ATM not running automake under Windows
+#AC_CHECK_PROG(USE_WINDOWS, cmd.exe, yes, no)
+#AM_CONDITIONAL([WINDOWS], [test x$USE_WINDOWS = xyes])
+# So pass in as an option instead
+# This is only to perform slightly different build steps
+#  (the code uses standard WINDOWS defines for any specific different behaviour)
+AC_ARG_ENABLE(windows, AC_HELP_STRING([--enable-windows],
+              [Perform specific Windows build steps (default is no)]),
+              [ac_cv_enable_windows=$enableval],
+              [ac_cv_enable_windows=no])
+AC_CACHE_CHECK([whether to enable Windows build steps],
+               [ac_cv_enable_windows], [ac_cv_enable_windows=no])
+AM_CONDITIONAL([WINDOWS], [test x$ac_cv_enable_windows = xyes])
+
 # Expat
 AM_WITH_EXPAT
 
