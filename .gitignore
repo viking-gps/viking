@@ -15,9 +15,13 @@ gnome-doc-utils.m4
 /configure
 /config.log
 /config.status
+/config.guess
+/config.rpath
+/config.sub
 /depcomp
 /gnome-doc-utils.make
 /gtk-doc.make
+/gtk-doc.m4
 /install-sh
 /intltool-extract.in
 /intltool-merge.in
@@ -83,6 +87,11 @@ help/C/*html
 /src/vikenumtypes.h
 /src/vikenumtypes.c
 /src/documenters.h
+
+# /src/libjpeg
+/src/libjpeg/*.o
+/src/libjpeg/.deps
+/src/libjpeg/.dirstamp
 
 # /src/icons/
 /src/icons/.deps
