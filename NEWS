@@ -1,3 +1,28 @@
+Viking 1.5.1.0 (2013-03-16)
+Bug Fix Release
+* [WINDOWS] Ensure an icon is embedded in the executable.
+* [WINDOWS] Fix opening URLs in Windows build only.
+* Shift code around to reduce dependencies required for DEM access.
+* SF Bugs#105: Fix Display of Lines (Clipping) at High Zoom Levels.
+* Remove built in OpenStreetBugs datasource as this service is being phased out.
+* Isolate Viking specific code in otherwise reusable code.
+* Fix DEM layer URL reference output.
+* Remove mistaken need to change directory.
+* Remove repeating of built in types in data files.
+* External tools don't use ids
+* Skip etag files in mbtile converter tool
+* Fix crashing when copying layers with null strings as parameters.
+* Fix translatable string with variable argument
+* Fix 'export_to_common' dialog
+* Fix needing to calculate bounds of *both* tracks when a track is split via the marker.
+* Fix vik_track_get_length_to_trackpoint() so with the first track point it returns zero, not the entire track length!
+* Fix opening files on command line in different directories.
+* Move man files from doc to help directory so they will be included in the output from make distcheck.
+* Update spec file
+* [QA] Remove build references to things that don't exist anymore.
+* SF Bugs #104: Fix GStatBuf not available on Glib < 2.26
+* Fix the display of speed in statusbar output.
+
 Viking 1.5 (2013-10-13)
 New features since 1.4.2
 * Startup preferences for ease of use.
