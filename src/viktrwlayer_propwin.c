@@ -794,6 +794,17 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
   g_list_free(child);
 }
 
+//
+static void time_label_update (GtkWidget *widget, time_t seconds_from_start)
+{
+  static gchar tmp_buf[20];
+  guint h = seconds_from_start/3600;
+  guint m = (seconds_from_start - h*3600)/60;
+  guint s = seconds_from_start - (3600*h) - (60*m);
+  g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
+  gtk_label_set_text(GTK_LABEL(widget), tmp_buf);
+}
+
 void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
 {
   int mouse_x, mouse_y;
@@ -815,14 +826,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   time_t seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_time) {
-    static gchar tmp_buf[20];
-    guint h, m, s;
-    h = seconds_from_start/3600;
-    m = (seconds_from_start - h*3600)/60;
-    s = seconds_from_start - (3600*h) - (60*m);
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
-
-    gtk_label_set_text(GTK_LABEL(widgets->w_cur_time), tmp_buf);
+    time_label_update ( widgets->w_cur_time, seconds_from_start );
   }
 
   gint ix = (gint)x;
@@ -912,14 +916,7 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   time_t seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_dist_time) {
-    static gchar tmp_buf[20];
-    guint h, m, s;
-    h = seconds_from_start/3600;
-    m = (seconds_from_start - h*3600)/60;
-    s = seconds_from_start - (3600*h) - (60*m);
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
-
-    gtk_label_set_text(GTK_LABEL(widgets->w_cur_dist_time), tmp_buf);
+    time_label_update ( widgets->w_cur_dist_time, seconds_from_start );
   }
 
   gint ix = (gint)x;
@@ -994,14 +991,7 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   time_t seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_elev_time) {
-    static gchar tmp_buf[20];
-    guint h, m, s;
-    h = seconds_from_start/3600;
-    m = (seconds_from_start - h*3600)/60;
-    s = seconds_from_start - (3600*h) - (60*m);
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%02d:%02d:%02d", h, m, s);
-
-    gtk_label_set_text(GTK_LABEL(widgets->w_cur_elev_time), tmp_buf);
+    time_label_update ( widgets->w_cur_elev_time, seconds_from_start );
   }
 
   gint ix = (gint)x;
