@@ -23,18 +23,6 @@
     <property name="check-file-server-time">TRUE</property>
   </object>
 -->
-<!-- WMSC Example - not active
-  <object class="VikWmscMapSource">
-    <property name="id">18</property>
-    <property name="label">OpenStreetMap (WMS)</property>
-    <property name="hostname">full.wms.geofabrik.de</property>
-    <property name="url">/std/demo_key?LAYERS=osm-full&amp;FORMAT=image/png&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=&amp;SRS=EPSG:4326&amp;BBOX=%s,%s,%s,%s&amp;WIDTH=256&amp;HEIGHT=256</property>
-    <property name="check-file-server-time">FALSE</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
--->
   <object class="VikSlippyMapSource">
     <property name="id">29</property>
     <property name="label">CalTopo USGS 7.5" Topos</property>
@@ -45,37 +33,10 @@
     <property name="license-url">http://caltopo.com/</property>
   </object>
   <object class="VikSlippyMapSource">
-    <property name="label">Letuffe/hiking</property>
-    <property name="hostname">beta.letuffe.org</property>
-    <property name="url">/tiles/renderer.py/hiking/%d/%d/%d.png</property>
-    <property name="id">100</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-  <object class="VikSlippyMapSource">
     <property name="label">Public Transport Map </property>
     <property name="hostname">tile.xn--pnvkarte-m4a.de</property>
     <property name="url">/tilegen/%0d/%d/%d.png</property>
     <property name="id">101</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Cyclemap (Cloudmade)</property>
-    <property name="hostname">a.andy.sandbox.cloudmade.com</property>
-    <property name="url">/tiles/cycle/%d/%d/%d.png</property>
-    <property name="id">102</property>
-    <property name="copyright">© OpenStreetMap contributors</property>
-    <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
-  </object>
-  <object class="VikSlippyMapSource">
-    <property name="label">Bridle Map</property>
-    <property name="hostname">opentiles.com</property>
-    <property name="url">/nop/tiles/%d/%d/%d.png</property>
-    <property name="id">103</property>
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>

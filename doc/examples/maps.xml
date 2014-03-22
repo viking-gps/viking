@@ -23,6 +23,14 @@
     <property name="license-url">http://www.youmapps.org/licenses/EULA-OSM-en.html</property>
   </object>
   -->
+  <!-- Partial WMSC Example - No known public service to demonstrate this
+  <object class="VikWmscMapSource">
+    <property name="id">18</property>
+    <property name="label">WMSC</property>
+    <property name="hostname">example.com</property>
+    <property name="url">/wms</property>
+  </object>
+  -->
   <!-- ArcGIS Server - Notice use of the "switch-xy" property -->
   <object>
     <object class="VikSlippyMapSource">
