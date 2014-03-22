@@ -2756,31 +2756,32 @@ static void trw_layer_tracks_tooltip ( const gchar *name, VikTrack *tr, tooltip_
   tt->length = tt->length + vik_track_get_length (tr);
 
   // Ensure times are available
-  if ( tr->trackpoints &&
-       vik_track_get_tp_first(tr)->has_timestamp &&
-       vik_track_get_tp_last(tr)->has_timestamp ) {
+  if ( tr->trackpoints && vik_track_get_tp_first(tr)->has_timestamp ) {
+    // Get trkpt only once - as using vik_track_get_tp_last() iterates whole track each time
+    VikTrackpoint *trkpt_last = vik_track_get_tp_last(tr);
+    if ( trkpt_last->has_timestamp ) {
+      time_t t1, t2;
+      t1 = vik_track_get_tp_first(tr)->timestamp;
+      t2 = trkpt_last->timestamp;
 
-    time_t t1, t2;
-    t1 = vik_track_get_tp_first(tr)->timestamp;
-    t2 = vik_track_get_tp_last(tr)->timestamp;
+      // Assume never actually have a track with a time of 0 (1st Jan 1970)
+      // Hence initialize to the first 'proper' value
+      if ( tt->start_time == 0 )
+        tt->start_time = t1;
+      if ( tt->end_time == 0 )
+        tt->end_time = t2;
 
-    // Assume never actually have a track with a time of 0 (1st Jan 1970)
-    // Hence initialize to the first 'proper' value
-    if ( tt->start_time == 0 )
-	tt->start_time = t1;
-    if ( tt->end_time == 0 )
-	tt->end_time = t2;
+      // Update find the earliest / last times
+      if ( t1 < tt->start_time )
+        tt->start_time = t1;
+      if ( t2 > tt->end_time )
+        tt->end_time = t2;
 
-    // Update find the earliest / last times
-    if ( t1 < tt->start_time )
-	tt->start_time = t1;
-    if ( t2 > tt->end_time )
-	tt->end_time = t2;
-
-    // Keep track of total time
-    //  there maybe gaps within a track (eg segments)
-    //  but this should be generally good enough for a simple indicator
-    tt->duration = tt->duration + (int)(t2-t1);
+      // Keep track of total time
+      //  there maybe gaps within a track (eg segments)
+      //  but this should be generally good enough for a simple indicator
+      tt->duration = tt->duration + (int)(t2-t1);
+    }
   }
 }
 
@@ -2915,8 +2916,9 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	if ( tr->trackpoints && vik_track_get_tp_first(tr)->has_timestamp ) {
 	  // %x     The preferred date representation for the current locale without the time.
 	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&(vik_track_get_tp_first(tr)->timestamp)));
-	  if ( vik_track_get_tp_last(tr)->has_timestamp ) {
-	    gint dur = ( (vik_track_get_tp_last(tr)->timestamp) - (vik_track_get_tp_first(tr)->timestamp) );
+	  VikTrackpoint *trkpt = vik_track_get_tp_last(tr);
+	  if ( trkpt->has_timestamp ) {
+	    gint dur = ( trkpt->timestamp - (vik_track_get_tp_first(tr)->timestamp) );
 	    if ( dur > 0 )
 	      g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)round(dur/3600), (int)round((dur/60)%60) );
 	  }
