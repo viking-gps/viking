@@ -57,6 +57,9 @@ forward_signal (GObject *object, gpointer user_data)
     // Clicking on the items field will bring up the background jobs window
     if ( item == VIK_STATUSBAR_ITEMS )
       a_background_show_window();
+    else if ( item == VIK_STATUSBAR_INFO )
+      // Clear current info message
+      vik_statusbar_set_message ( vs, VIK_STATUSBAR_INFO, "" );
     else
       g_signal_emit (G_OBJECT (vs),
                      vik_statusbar_signals[CLICKED], 0,
@@ -81,6 +84,26 @@ vik_statusbar_class_init (VikStatusbarClass *klass)
   klass->clicked = NULL;
 }
 
+static gboolean button_release_event (GtkWidget* widget, GdkEvent *event, gpointer *user_data)
+{
+  if ( ((GdkEventButton*)event)->button == 3 ) {
+    gint type = GPOINTER_TO_INT (g_object_get_data ( G_OBJECT(widget), "type" ));
+    VikStatusbar *vs = VIK_STATUSBAR (user_data);
+    // Right Click: so copy the text in the INFO buffer only ATM
+    if ( type == VIK_STATUSBAR_INFO ) {
+      const gchar* msg = gtk_button_get_label (GTK_BUTTON(vs->status[VIK_STATUSBAR_INFO]));
+      if ( msg ) {
+        GtkClipboard *clipboard = gtk_clipboard_get ( GDK_SELECTION_CLIPBOARD );
+        gtk_clipboard_set_text  ( clipboard, msg, -1 );
+      }
+    }
+    // We've handled the event
+    return TRUE;
+  }
+  // Otherwise carry on with other event handlers - i.e. ensure forward_signal() is called
+  return FALSE;
+}
+
 static void
 vik_statusbar_init (VikStatusbar *vs)
 {
@@ -89,7 +112,7 @@ vik_statusbar_init (VikStatusbar *vs)
   for ( i = 0; i < VIK_STATUSBAR_NUM_TYPES; i++ ) {
     vs->empty[i] = TRUE;
     
-    if (i == VIK_STATUSBAR_ITEMS || i == VIK_STATUSBAR_ZOOM )
+    if (i == VIK_STATUSBAR_ITEMS || i == VIK_STATUSBAR_ZOOM || i == VIK_STATUSBAR_INFO )
       vs->status[i] = gtk_button_new();
     else
     {
@@ -117,6 +140,10 @@ vik_statusbar_init (VikStatusbar *vs)
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_POSITION], FALSE, FALSE, 1);
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_POSITION], 275, -1 );
 
+  g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_INFO]), "button-release-event", G_CALLBACK (button_release_event), vs);
+  g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_INFO]), "clicked", G_CALLBACK (forward_signal), vs);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_INFO]), _("Left click to clear the message. Right click to copy the message."));
+  gtk_button_set_alignment ( GTK_BUTTON(vs->status[VIK_STATUSBAR_INFO]), 0.0, 0.5 ); // Left align the text
   gtk_box_pack_end ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_INFO], TRUE, TRUE, 1);
 
   // Set minimum overall size
@@ -153,7 +180,7 @@ vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const 
 {
   if ( field >= 0 && field < VIK_STATUSBAR_NUM_TYPES )
   {
-    if ( field == VIK_STATUSBAR_ITEMS || field == VIK_STATUSBAR_ZOOM  )
+    if ( field == VIK_STATUSBAR_ITEMS || field == VIK_STATUSBAR_ZOOM || field == VIK_STATUSBAR_INFO )
     {
       gtk_button_set_label ( GTK_BUTTON(vs->status[field]), message);
     }
