@@ -148,9 +148,9 @@ esac
 AM_CONDITIONAL([GOOGLE], [test x$ac_cv_enable_google = xyes])
 
 AC_ARG_ENABLE(terraserver, AC_HELP_STRING([--enable-terraserver],
-              [enable Terraserver stuff (default is enable)]),
+              [enable Terraserver stuff (default is disabled as the tileserver is no longer available)]),
               [ac_cv_enable_terraserver=$enableval],
-              [ac_cv_enable_terraserver=yes])
+              [ac_cv_enable_terraserver=no])
 AC_CACHE_CHECK([whether to enable Terraserver stuff],
                [ac_cv_enable_terraserver], [ac_cv_enable_terraserver=yes])
 case $ac_cv_enable_terraserver in
