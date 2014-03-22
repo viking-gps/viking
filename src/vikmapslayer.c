@@ -1371,8 +1371,27 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       mdi->mapcoord.x = x; mdi->mapcoord.y = y;
 
       if (need_download) {
-        if ( vik_map_source_download( MAPS_LAYER_NTH_TYPE(mdi->maptype), &(mdi->mapcoord), mdi->filename_buf, handle))
-          continue;
+        DownloadResult_t dr = vik_map_source_download( MAPS_LAYER_NTH_TYPE(mdi->maptype), &(mdi->mapcoord), mdi->filename_buf, handle);
+        switch ( dr ) {
+          case DOWNLOAD_HTTP_ERROR:
+          case DOWNLOAD_CONTENT_ERROR: {
+            // TODO: ?? count up the number of download errors somehow...
+            gchar* msg = g_strdup_printf ( "%s: %s", vik_maps_layer_get_map_label (mdi->vml), _("Failed to download tile") );
+            vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(mdi->vml), msg, VIK_STATUSBAR_INFO );
+            g_free (msg);
+            break;
+          }
+          case DOWNLOAD_FILE_WRITE_ERROR: {
+            gchar* msg = g_strdup_printf ( "%s: %s", vik_maps_layer_get_map_label (mdi->vml), _("Unable to save tile") );
+            vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(mdi->vml), msg, VIK_STATUSBAR_INFO );
+            g_free (msg);
+            break;
+          }
+          case DOWNLOAD_SUCCESS:
+          case DOWNLOAD_NOT_REQUIRED:
+          default:
+            break;
+        }
       }
 
       g_mutex_lock(mdi->mutex);

@@ -31,7 +31,7 @@
 #include "vikviewport.h"
 #include "vikcoord.h"
 #include "mapcoord.h"
-
+#include "download.h"
 #include "vikmapsource.h"
 
 static void vik_map_source_init (VikMapSource *object);
@@ -296,7 +296,16 @@ vik_map_source_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikC
 	(*klass->mapcoord_to_center_coord)(self, src, dest);
 }
 
-int
+/**
+ * vik_map_source_download:
+ * @self:    The VikMapSource of interest.
+ * @src:     The map location to download
+ * @dest_fn: The filename to save the result in
+ * @handle:  Potential reusable Curl Handle (may be NULL)
+ *
+ * Returns: How successful the download was as per the type #DownloadResult_t
+ */
+DownloadResult_t
 vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void *handle)
 {
 	VikMapSourceClass *klass;

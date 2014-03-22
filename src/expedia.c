@@ -169,12 +169,11 @@ static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest )
   dest->north_south = (((gdouble)src->y) / expedia_altis_freq(src->scale)) - 90;
 }
 
-static int expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle )
+static DownloadResult_t expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle )
 {
   gint height, width;
   struct LatLon ll;
   gchar *uri;
-  int res = -1;
 
   expedia_xy_to_latlon_middle ( src->scale, src->x, src->y, &ll );
 
@@ -187,7 +186,8 @@ static int expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle 
   uri = g_strdup_printf ( "/pub/agent.dll?qscr=mrdt&ID=3XNsF.&CenP=%lf,%lf&Lang=%s&Alti=%d&Size=%d,%d&Offs=0.000000,0.000000&BCheck&tpid=1",
                ll.lat, ll.lon, (ll.lon > -30) ? "EUR0809" : "USA0409", src->scale, width, height );
 
-  if ((res = a_http_download_get_url ( EXPEDIA_SITE, uri, dest_fn, &expedia_options, NULL )) == 0)	/* All OK */
+  DownloadResult_t res = a_http_download_get_url ( EXPEDIA_SITE, uri, dest_fn, &expedia_options, NULL );
+  if (res == DOWNLOAD_SUCCESS)
   	expedia_snip ( dest_fn );
   g_free(uri);
   return(res);

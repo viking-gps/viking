@@ -28,6 +28,11 @@
 
 G_BEGIN_DECLS
 
+/* Error messages returned by download functions */
+enum { CURL_DOWNLOAD_NO_ERROR = 0,
+       CURL_DOWNLOAD_NO_NEWER_FILE,
+       CURL_DOWNLOAD_ERROR };
+
 void curl_download_init ();
 void curl_download_uninit ();
 int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadMapOptions *options, gboolean ftp, DownloadFileOptions *file_options, void *handle );

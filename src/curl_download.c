@@ -125,7 +125,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
 
   curl = handle ? handle : curl_easy_init ();
   if ( !curl ) {
-    return DOWNLOAD_ERROR;
+    return CURL_DOWNLOAD_ERROR;
   }
   if (vik_verbose)
     curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
@@ -176,7 +176,7 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
     glong response;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response);
     if (response == 304) {         // 304 = Not Modified
-      res = DOWNLOAD_NO_NEWER_FILE;
+      res = CURL_DOWNLOAD_NO_NEWER_FILE;
     } else if (response == 200 ||  // http: 200 = Ok
                response == 226) {  // ftp:  226 = sucess
       gdouble size;
@@ -184,15 +184,15 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
          when the server has a (incorrect) time earlier than the time on the file we already have */
       curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &size);
       if (size == 0)
-        res = DOWNLOAD_ERROR;
+        res = CURL_DOWNLOAD_ERROR;
       else
-        res = DOWNLOAD_NO_ERROR;
+        res = CURL_DOWNLOAD_NO_ERROR;
     } else {
       g_warning("%s: http response: %ld for uri %s\n", __FUNCTION__, response, uri);
-      res = DOWNLOAD_ERROR;
+      res = CURL_DOWNLOAD_ERROR;
     }
   } else {
-    res = DOWNLOAD_ERROR;
+    res = CURL_DOWNLOAD_ERROR;
   }
   if (!handle)
      curl_easy_cleanup ( curl );

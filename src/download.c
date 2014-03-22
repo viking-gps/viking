@@ -237,7 +237,7 @@ void a_try_decompress_file (gchar *name)
 #endif
 }
 
-static int download( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *options, gboolean ftp, void *handle)
+static DownloadResult_t download( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *options, gboolean ftp, void *handle)
 {
   FILE *f;
   int ret;
@@ -251,7 +251,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     if (options == NULL || (!options->check_file_server_time &&
                             !options->use_etag)) {
       /* Nothing to do as file already exists and we don't want to check server */
-      return -3;
+      return DOWNLOAD_NOT_REQUIRED;
     }
 
     time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
@@ -261,7 +261,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     time_t file_time = buf.st_mtime;
     if ( (time(NULL) - file_time) < tile_age ) {
       /* File cache is too recent, so return */
-      return -3;
+      return DOWNLOAD_NOT_REQUIRED;
     }
 
     if (options->check_file_server_time) {
@@ -296,7 +296,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_free ( tmpfilename );
     if (options->use_etag)
       g_free ( file_options.etag );
-    return -4;
+    return DOWNLOAD_FILE_WRITE_ERROR;
   }
   f = g_fopen ( tmpfilename, "w+b" );  /* truncate file and open it */
   if ( ! f ) {
@@ -304,20 +304,24 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_free ( tmpfilename );
     if (options->use_etag)
       g_free ( file_options.etag );
-    return -4;
+    return DOWNLOAD_FILE_WRITE_ERROR;
   }
 
   /* Call the backend function */
   ret = curl_download_get_url ( hostname, uri, f, options, ftp, &file_options, handle );
 
-  if (ret != DOWNLOAD_NO_ERROR && ret != DOWNLOAD_NO_NEWER_FILE) {
+  DownloadResult_t result = DOWNLOAD_SUCCESS;
+
+  if (ret != CURL_DOWNLOAD_NO_ERROR && ret != CURL_DOWNLOAD_NO_NEWER_FILE) {
     g_debug("%s: download failed: curl_download_get_url=%d", __FUNCTION__, ret);
     failure = TRUE;
+    result = DOWNLOAD_HTTP_ERROR;
   }
 
   if (!failure && options != NULL && options->check_file != NULL && ! options->check_file(f)) {
     g_debug("%s: file content checking failed", __FUNCTION__);
     failure = TRUE;
+    result = DOWNLOAD_CONTENT_ERROR;
   }
 
   fclose ( f );
@@ -333,7 +337,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
       g_free ( file_options.etag );
       g_free ( file_options.new_etag );
     }
-    return -1;
+    return result;
   }
 
   if ( options->convert_file )
@@ -349,7 +353,7 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     }
   }
 
-  if (ret == DOWNLOAD_NO_NEWER_FILE)  {
+  if (ret == CURL_DOWNLOAD_NO_NEWER_FILE)  {
     g_remove ( tmpfilename );
 #if GLIB_CHECK_VERSION(2,18,0)
     g_utime ( fn, NULL ); /* update mtime of local copy */
@@ -366,18 +370,19 @@ static int download( const char *hostname, const char *uri, const char *fn, Down
     g_free ( file_options.etag );
     g_free ( file_options.new_etag );
   }
-  return 0;
+  return DOWNLOAD_SUCCESS;
 }
 
-/* success = 0, -1 = couldn't connect, -2 HTTP error, -3 file exists, -4 couldn't write to file... */
-/* uri: like "/uri.html?whatever" */
-/* only reason for the "wrapper" is so we can do redirects. */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
+/**
+ * uri: like "/uri.html?whatever"
+ * only reason for the "wrapper" is so we can do redirects.
+ */
+DownloadResult_t a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, FALSE, handle );
 }
 
-int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
+DownloadResult_t a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, TRUE, handle );
 }

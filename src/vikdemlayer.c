@@ -953,7 +953,26 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 		ABS(intlon) );
 
   static DownloadMapOptions options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL, NULL };
-  a_http_download_get_url ( SRTM_HTTP_SITE, src_fn, p->dest, &options, NULL );
+  DownloadResult_t result = a_http_download_get_url ( SRTM_HTTP_SITE, src_fn, p->dest, &options, NULL );
+  switch ( result ) {
+    case DOWNLOAD_CONTENT_ERROR:
+    case DOWNLOAD_HTTP_ERROR: {
+      gchar *msg = g_strdup_printf ( _("DEM download failure for %f, %f"), p->lat, p->lon );
+      vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(p->vdl), msg, VIK_STATUSBAR_INFO );
+      g_free ( msg );
+      break;
+    }
+    case DOWNLOAD_FILE_WRITE_ERROR: {
+      gchar *msg = g_strdup_printf ( _("DEM write failure for %s"), p->dest );
+      vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(p->vdl), msg, VIK_STATUSBAR_INFO );
+      g_free ( msg );
+      break;
+    }
+    case DOWNLOAD_SUCCESS:
+    case DOWNLOAD_NOT_REQUIRED:
+    default:
+      break;
+  }
   g_free ( src_fn );
 }
 

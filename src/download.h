@@ -96,18 +96,21 @@ typedef struct {
 
 void a_download_init(void);
 
+typedef enum {
+  DOWNLOAD_FILE_WRITE_ERROR = -4, // Can't write downloaded file :(
+  DOWNLOAD_HTTP_ERROR = -2,
+  DOWNLOAD_CONTENT_ERROR = -1,
+  DOWNLOAD_SUCCESS = 0,
+  DOWNLOAD_NOT_REQUIRED = 1, // Also 'successful'. e.g. Because file already exists and no time checks used
+} DownloadResult_t;
+
 /* TODO: convert to Glib */
-int a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
-int a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
+DownloadResult_t a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
+DownloadResult_t a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
 void *a_download_handle_init ();
 void a_download_handle_cleanup ( void *handle );
 
 gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadMapOptions *options );
-
-/* Error messages returned by download functions */
-enum { DOWNLOAD_NO_ERROR = 0,
-       DOWNLOAD_NO_NEWER_FILE,
-       DOWNLOAD_ERROR };
 
 G_END_DECLS
 

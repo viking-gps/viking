@@ -31,6 +31,7 @@
 
 #include "vikmaptype.h"
 #include "vikmapslayer_compat.h"
+#include "download.h"
 
 static guint16 map_type_get_uniq_id (VikMapSource *self);
 static const gchar *map_type_get_label (VikMapSource *self);
@@ -39,7 +40,7 @@ static guint16 map_type_get_tilesize_y (VikMapSource *self);
 static VikViewportDrawMode map_type_get_drawmode (VikMapSource *self);
 static gboolean map_type_coord_to_mapcoord (VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void map_type_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikCoord *dest);
-static int map_type_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle);
+static DownloadResult_t map_type_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle);
 static void * map_type_download_handle_init (VikMapSource * self);
 static void map_type_download_handle_cleanup (VikMapSource * self, void * handle);
 
@@ -168,7 +169,7 @@ map_type_mapcoord_to_center_coord (VikMapSource *self, MapCoord *src, VikCoord *
 	(priv->map_type.mapcoord_to_center_coord)(src, dest);
 }
 
-static int
+static DownloadResult_t
 map_type_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle)
 {
     VikMapTypePrivate *priv = VIK_MAP_TYPE_PRIVATE(self);
@@ -194,4 +195,3 @@ map_type_download_handle_cleanup (VikMapSource * self, void * handle)
 
 	(priv->map_type.download_handle_cleanup)(handle);
 }
-

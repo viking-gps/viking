@@ -41,7 +41,7 @@ static guint16 map_source_get_tilesize_x (VikMapSource *self);
 static guint16 map_source_get_tilesize_y (VikMapSource *self);
 static VikViewportDrawMode map_source_get_drawmode (VikMapSource *self);
 
-static int _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
+static DownloadResult_t _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
 static void * _download_handle_init ( VikMapSource *self );
 static void _download_handle_cleanup ( VikMapSource *self, void *handle );
 
@@ -409,14 +409,13 @@ map_source_get_drawmode (VikMapSource *self)
 	return priv->drawmode;
 }
 
-static int
+static DownloadResult_t
 _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle )
 {
-   int res;
    gchar *uri = vik_map_source_default_get_uri(VIK_MAP_SOURCE_DEFAULT(self), src);
    gchar *host = vik_map_source_default_get_hostname(VIK_MAP_SOURCE_DEFAULT(self));
    DownloadMapOptions *options = vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self));
-   res = a_http_download_get_url ( host, uri, dest_fn, options, handle );
+   DownloadResult_t res = a_http_download_get_url ( host, uri, dest_fn, options, handle );
    g_free ( uri );
    g_free ( host );
    return res;
