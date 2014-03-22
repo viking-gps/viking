@@ -4,7 +4,7 @@
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005-2007, Alex Foobarian <foobarian@gmail.com>
  * Copyright (C) 2007-2008, Quy Tonthat <qtonthat@gmail.com>
- * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,12 +121,15 @@ typedef struct _propwidgets {
   GtkWidget *w_cur_elevation;
   GtkWidget *w_cur_gradient_dist; /*< Current distance on gradient graph */
   GtkWidget *w_cur_gradient_gradient; /*< Current gradient on gradient graph */
-  GtkWidget *w_cur_time; /*< Current time */
+  GtkWidget *w_cur_time; /*< Current track time */
+  GtkWidget *w_cur_time_real; /*< Actual time as on a clock */
   GtkWidget *w_cur_speed;
   GtkWidget *w_cur_dist_dist; /*< Current distance on distance graph */
-  GtkWidget *w_cur_dist_time; /*< Current time on distance graph */
+  GtkWidget *w_cur_dist_time; /*< Current track time on distance graph */
+  GtkWidget *w_cur_dist_time_real; // Clock time
   GtkWidget *w_cur_elev_elev;
-  GtkWidget *w_cur_elev_time;
+  GtkWidget *w_cur_elev_time; // Track time
+  GtkWidget *w_cur_elev_time_real; // Clock time
   GtkWidget *w_cur_speed_dist;
   GtkWidget *w_cur_speed_speed;
   GtkWidget *w_show_dem;
@@ -805,6 +808,19 @@ static void time_label_update (GtkWidget *widget, time_t seconds_from_start)
   gtk_label_set_text(GTK_LABEL(widget), tmp_buf);
 }
 
+//
+static void real_time_label_update (GtkWidget *widget, VikTrackpoint *trackpoint)
+{
+  static gchar tmp_buf[64];
+  if ( trackpoint->has_timestamp )
+    // Alternatively could use %c format but I prefer a slightly more compact form here
+    //  The full date can of course be seen on the Statistics tab
+    strftime (tmp_buf, sizeof(tmp_buf), "%x %X %Z", localtime(&(trackpoint->timestamp)));
+  else
+    g_snprintf (tmp_buf, sizeof(tmp_buf), _("No Data"));
+  gtk_label_set_text(GTK_LABEL(widget), tmp_buf);
+}
+
 void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
 {
   int mouse_x, mouse_y;
@@ -827,6 +843,10 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_time) {
     time_label_update ( widgets->w_cur_time, seconds_from_start );
+  }
+
+  if (trackpoint && widgets->w_cur_time_real) {
+    real_time_label_update ( widgets->w_cur_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -919,6 +939,10 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     time_label_update ( widgets->w_cur_dist_time, seconds_from_start );
   }
 
+  if (trackpoint && widgets->w_cur_dist_time_real) {
+    real_time_label_update ( widgets->w_cur_dist_time_real, trackpoint );
+  }
+
   gint ix = (gint)x;
   // Ensure ix is inbounds
   if (ix == widgets->profile_width)
@@ -992,6 +1016,10 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_elev_time) {
     time_label_update ( widgets->w_cur_elev_time, seconds_from_start );
+  }
+
+  if (trackpoint && widgets->w_cur_elev_time_real) {
+    real_time_label_update ( widgets->w_cur_elev_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -2648,6 +2676,8 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
 				      GtkWidget *value,
 				      const gchar *markup2,
 				      GtkWidget *value2,
+				      const gchar *markup3,
+				      GtkWidget *value3,
 				      GtkWidget *checkbutton1,
 				      gboolean checkbutton1_default,
 				      GtkWidget *checkbutton2,
@@ -2657,13 +2687,19 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
   GtkWidget *vbox = gtk_vbox_new ( FALSE, 10 );
   GtkWidget *label = gtk_label_new (NULL);
   GtkWidget *label2 = gtk_label_new (NULL);
+  GtkWidget *label3 = gtk_label_new (NULL);
   gtk_box_pack_start (GTK_BOX(vbox), graph, FALSE, FALSE, 0);
   gtk_label_set_markup ( GTK_LABEL(label), markup );
   gtk_label_set_markup ( GTK_LABEL(label2), markup2 );
+  gtk_label_set_markup ( GTK_LABEL(label3), markup3 );
   gtk_box_pack_start (GTK_BOX(hbox), label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), value, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), label2, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(hbox), value2, FALSE, FALSE, 0);
+  if ( value3 ) {
+    gtk_box_pack_start (GTK_BOX(hbox), label3, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(hbox), value3, FALSE, FALSE, 0);
+  }
   if (checkbutton2) {
     gtk_box_pack_end (GTK_BOX(hbox), checkbutton2, FALSE, FALSE, 0);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbutton2), checkbutton2_default);
@@ -3033,10 +3069,11 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->w_show_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
     widgets->w_show_alt_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->elev_box,
-			      _("<b>Track Distance:</b>"), widgets->w_cur_dist,
-			      _("<b>Track Height:</b>"), widgets->w_cur_elevation,
-			      widgets->w_show_dem, TRUE,
-			      widgets->w_show_alt_gps_speed, TRUE);
+                              _("<b>Track Distance:</b>"), widgets->w_cur_dist,
+                              _("<b>Track Height:</b>"), widgets->w_cur_elevation,
+                              NULL, NULL,
+                              widgets->w_show_dem, TRUE,
+                              widgets->w_show_alt_gps_speed, TRUE);
     g_signal_connect (widgets->w_show_dem, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     g_signal_connect (widgets->w_show_alt_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
@@ -3048,10 +3085,11 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->w_cur_gradient_gradient = gtk_label_new(_("No Data"));
     widgets->w_show_gradient_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->gradient_box,
-			      _("<b>Track Distance:</b>"), widgets->w_cur_gradient_dist,
-			      _("<b>Track Gradient:</b>"), widgets->w_cur_gradient_gradient,
-			      widgets->w_show_gradient_gps_speed, TRUE,
-                  NULL, FALSE);
+                              _("<b>Track Distance:</b>"), widgets->w_cur_gradient_dist,
+                              _("<b>Track Gradient:</b>"), widgets->w_cur_gradient_gradient,
+                              NULL, NULL,
+                              widgets->w_show_gradient_gps_speed, TRUE,
+                              NULL, FALSE);
     g_signal_connect (widgets->w_show_gradient_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Gradient-distance")));
   }
@@ -3060,12 +3098,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     GtkWidget *page = NULL;
     widgets->w_cur_time = gtk_label_new(_("No Data"));
     widgets->w_cur_speed = gtk_label_new(_("No Data"));
+    widgets->w_cur_time_real = gtk_label_new(_("No Data"));
     widgets->w_show_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->speed_box,
-			      _("<b>Track Time:</b>"), widgets->w_cur_time,
-			      _("<b>Track Speed:</b>"), widgets->w_cur_speed,
-			      widgets->w_show_gps_speed, TRUE,
-			      NULL, FALSE);
+                              _("<b>Track Time:</b>"), widgets->w_cur_time,
+                              _("<b>Track Speed:</b>"), widgets->w_cur_speed,
+                              _("<b>Date/Time:</b>"), widgets->w_cur_time_real,
+                              widgets->w_show_gps_speed, TRUE,
+                              NULL, FALSE);
     g_signal_connect (widgets->w_show_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
   }
@@ -3074,12 +3114,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     GtkWidget *page = NULL;
     widgets->w_cur_dist_time = gtk_label_new(_("No Data"));
     widgets->w_cur_dist_dist = gtk_label_new(_("No Data"));
+    widgets->w_cur_dist_time_real = gtk_label_new(_("No Data"));
     widgets->w_show_dist_speed = gtk_check_button_new_with_mnemonic(_("Show S_peed"));
     page = create_graph_page (widgets->dist_box,
-			      _("<b>Track Distance:</b>"), widgets->w_cur_dist_dist,
-			      _("<b>Track Time:</b>"), widgets->w_cur_dist_time,
-			      widgets->w_show_dist_speed, FALSE,
-			      NULL, FALSE);
+                              _("<b>Track Distance:</b>"), widgets->w_cur_dist_dist,
+                              _("<b>Track Time:</b>"), widgets->w_cur_dist_time,
+                              _("<b>Date/Time:</b>"), widgets->w_cur_dist_time_real,
+                              widgets->w_show_dist_speed, FALSE,
+                              NULL, FALSE);
     g_signal_connect (widgets->w_show_dist_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Distance-time")));
   }
@@ -3088,12 +3130,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     GtkWidget *page = NULL;
     widgets->w_cur_elev_time = gtk_label_new(_("No Data"));
     widgets->w_cur_elev_elev = gtk_label_new(_("No Data"));
+    widgets->w_cur_elev_time_real = gtk_label_new(_("No Data"));
     widgets->w_show_elev_speed = gtk_check_button_new_with_mnemonic(_("Show S_peed"));
     page = create_graph_page (widgets->elev_time_box,
-			      _("<b>Track Time:</b>"), widgets->w_cur_elev_time,
-			      _("<b>Track Height:</b>"), widgets->w_cur_elev_elev,
-			      widgets->w_show_elev_speed, FALSE,
-			      NULL, FALSE);
+                              _("<b>Track Time:</b>"), widgets->w_cur_elev_time,
+                              _("<b>Track Height:</b>"), widgets->w_cur_elev_elev,
+                              _("<b>Date/Time:</b>"), widgets->w_cur_elev_time_real,
+                              widgets->w_show_elev_speed, FALSE,
+                              NULL, FALSE);
     g_signal_connect (widgets->w_show_elev_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-time")));
   }
@@ -3104,10 +3148,11 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->w_cur_speed_speed = gtk_label_new(_("No Data"));
     widgets->w_show_sd_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->speed_dist_box,
-			      _("<b>Track Distance:</b>"), widgets->w_cur_speed_dist,
-			      _("<b>Track Speed:</b>"), widgets->w_cur_speed_speed,
-			      widgets->w_show_sd_gps_speed, TRUE,
-			      NULL, FALSE);
+                              _("<b>Track Distance:</b>"), widgets->w_cur_speed_dist,
+                              _("<b>Track Speed:</b>"), widgets->w_cur_speed_speed,
+                              NULL, NULL,
+                              widgets->w_show_sd_gps_speed, TRUE,
+                              NULL, FALSE);
     g_signal_connect (widgets->w_show_sd_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-distance")));
   }
