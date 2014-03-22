@@ -11,6 +11,7 @@
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <!-- The VikTmsMapSource allows to declare any TMS service. -->
+  <!-- Note this service is no longer working
   <object class="VikTmsMapSource">
     <property name="id">50</property>
     <property name="label">SPOTMaps</property>
@@ -21,6 +22,7 @@
     <property name="license">CC-by-SA 2.0 / ODBl</property>
     <property name="license-url">http://www.youmapps.org/licenses/EULA-OSM-en.html</property>
   </object>
+  -->
   <!-- ArcGIS Server - Notice use of the "switch-xy" property -->
   <object>
     <object class="VikSlippyMapSource">

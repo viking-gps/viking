@@ -32,7 +32,6 @@
 #include "modules.h"
 
 #include "bing.h"
-#include "spotmaps.h"
 #include "google.h"
 #include "terraserver.h"
 #include "expedia.h"
@@ -253,9 +252,6 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_GEONAMES
   geonames_init();
-#endif
-#ifdef VIK_CONFIG_SPOTMAPS
-  spotmaps_init();
 #endif
 
   register_loadable_types ();

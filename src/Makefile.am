@@ -184,11 +184,6 @@ libviking_a_SOURCES += \
 	geonamessearch.c geonamessearch.h
 endif
 
-#if SPOTMAPS
-libviking_a_SOURCES += \
-	spotmaps.c spotmaps.h
-#endif
-
 if GEOTAG
 libviking_a_SOURCES += \
 	datasource_geotag.c \

@@ -242,20 +242,6 @@ case $ac_cv_enable_geotag in
 esac
 AM_CONDITIONAL([GEOTAG], [test x$ac_cv_enable_geotag = xyes])
 
-AC_ARG_ENABLE(spotmaps, AC_HELP_STRING([--enable-spotmaps],
-	      [enable SPOTMaps map (default is enable).]),
-              [ac_cv_enable_spotmaps=$enableval],
-              [ac_cv_enable_spotmaps=yes])
-AC_CACHE_CHECK([whether to enable SPOTMaps map],
-               [ac_cv_enable_spotmaps], [ac_cv_enable_spotmaps=yes])
-case $ac_cv_enable_spotmaps in
-  yes)
-    AC_DEFINE(VIK_CONFIG_SPOTMAPS, [], [SPOTMAPS STUFF])
-    ;;
-esac
-AM_CONDITIONAL([SPOTMAPS], [test x$ac_cv_enable_spotmaps = xyes])
-
-
 AC_ARG_ENABLE(dem24k, AC_HELP_STRING([--enable-dem24k],
 	      [enable USGS 24k DEM (default is disable) download source. Requires dem24k.pl script in path.]),
               [ac_cv_enable_dem24k=$enableval],
@@ -431,7 +417,6 @@ echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
 echo "Expedia Maps                     : $ac_cv_enable_expedia"
 echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
 echo "BlueMarble                       : $ac_cv_enable_bluemarble"
-echo "SPOTMaps                         : $ac_cv_enable_spotmaps"
 echo "Geonames                         : $ac_cv_enable_geonames"
 echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
 echo "Geotag Support                   : $ac_cv_enable_geotag"
