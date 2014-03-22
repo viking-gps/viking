@@ -1260,7 +1260,7 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
       vw->delayed_pan_y = vw->pan_y;
       // Get double click time
       GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(vw) );
-      GValue dct; // = G_VALUE_INIT; // GLIB 2.30+ only
+      GValue dct = { 0 }; // = G_VALUE_INIT; // GLIB 2.30+ only
       g_value_init ( &dct, G_TYPE_INT );
       g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &dct );
       // Give chance for a double click to occur
