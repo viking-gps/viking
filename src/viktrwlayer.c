@@ -2916,12 +2916,9 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	if ( tr->trackpoints && vik_track_get_tp_first(tr)->has_timestamp ) {
 	  // %x     The preferred date representation for the current locale without the time.
 	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&(vik_track_get_tp_first(tr)->timestamp)));
-	  VikTrackpoint *trkpt = vik_track_get_tp_last(tr);
-	  if ( trkpt->has_timestamp ) {
-	    gint dur = ( trkpt->timestamp - (vik_track_get_tp_first(tr)->timestamp) );
-	    if ( dur > 0 )
-	      g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)round(dur/3600), (int)round((dur/60)%60) );
-	  }
+	  time_t dur = vik_track_get_duration ( tr );
+	  if ( dur > 0 )
+	    g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)round(dur/3600), (int)round((dur/60)%60) );
 	}
 	// Get length and consider the appropriate distance units
 	gdouble tr_len = vik_track_get_length(tr);

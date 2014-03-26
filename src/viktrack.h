@@ -113,6 +113,7 @@ guint vik_track_get_segment_count(const VikTrack *tr);
 VikTrack **vik_track_split_into_segments(VikTrack *tr, guint *ret_len);
 guint vik_track_merge_segments(VikTrack *tr);
 void vik_track_reverse(VikTrack *tr);
+time_t vik_track_get_duration(const VikTrack *trk);
 
 gulong vik_track_get_dup_point_count ( const VikTrack *vt );
 gulong vik_track_remove_dup_points ( VikTrack *vt );

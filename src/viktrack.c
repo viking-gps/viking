@@ -555,6 +555,31 @@ void vik_track_reverse ( VikTrack *tr )
   }
 }
 
+/**
+ * vik_track_get_duration:
+ * @trk: The track
+ *
+ * Returns: The time in seconds that covers the whole track including gaps
+ *  NB this may be negative particularly if the track has been reversed
+ */
+time_t vik_track_get_duration(const VikTrack *trk)
+{
+  time_t duration = 0;
+  if ( trk->trackpoints ) {
+    // Ensure times are available
+    if ( vik_track_get_tp_first(trk)->has_timestamp ) {
+      // Get trkpt only once - as using vik_track_get_tp_last() iterates whole track each time
+      VikTrackpoint *trkpt_last = vik_track_get_tp_last(trk);
+      if ( trkpt_last->has_timestamp ) {
+        time_t t1 = vik_track_get_tp_first(trk)->timestamp;
+        time_t t2 = trkpt_last->timestamp;
+        duration = t2 - t1;
+      }
+    }
+  }
+  return duration;
+}
+
 gdouble vik_track_get_average_speed(const VikTrack *tr)
 {
   gdouble len = 0.0;
