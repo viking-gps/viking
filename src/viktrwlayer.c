@@ -5654,16 +5654,22 @@ static void find_tracks_with_timestamp_type(gpointer key, gpointer value, gpoint
   *(user_data->result) = g_list_prepend(*(user_data->result), key);
 }
 
-/* called for each key in track hash table. if original track user_data[1] is close enough
- * to the passed one, add it to list in user_data[0] 
+/**
+ * find_nearby_tracks_by_time:
+ *
+ * Called for each track in track hash table.
+ *  If the original track (in user_data[1]) is close enough (threshold period in user_data[2])
+ *  to the current track, then the current track is added to the list in user_data[0]
  */
 static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer user_data)
 {
-  time_t t1, t2;
-  VikTrackpoint *p1, *p2;
   VikTrack *trk = VIK_TRACK(value);
 
   GList **nearby_tracks = ((gpointer *)user_data)[0];
+  VikTrack *orig_trk = VIK_TRACK(((gpointer *)user_data)[1]);
+
+  if ( !orig_trk || !orig_trk->trackpoints )
+    return;
 
   /* outline: 
    * detect reasons for not merging, and return
@@ -5676,12 +5682,13 @@ static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer u
     return;
   }
 
-  t1 = vik_track_get_tp_first(trk)->timestamp;
-  t2 = vik_track_get_tp_last(trk)->timestamp;
+  time_t t1 = vik_track_get_tp_first(orig_trk)->timestamp;
+  time_t t2 = vik_track_get_tp_last(orig_trk)->timestamp;
 
   if (trk->trackpoints) {
-    p1 = vik_track_get_tp_first(trk);
-    p2 = vik_track_get_tp_last(trk);
+
+    VikTrackpoint *p1 = vik_track_get_tp_first(trk);
+    VikTrackpoint *p2 = vik_track_get_tp_last(trk);
 
     if (!p1->has_timestamp || !p2->has_timestamp) {
       //g_print("no timestamp\n");
@@ -6083,7 +6090,7 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
     }
 
     params[0] = &nearby_tracks;
-    params[1] = (gpointer)trps;
+    params[1] = orig_trk;
     params[2] = GUINT_TO_POINTER (threshold_in_minutes*60); // In seconds
 
     /* get a list of adjacent-in-time tracks */
