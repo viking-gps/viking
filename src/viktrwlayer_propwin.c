@@ -76,7 +76,7 @@ static const gdouble chunkss[] = {1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 10.0,
 				  750.0, 1000.0, 10000.0};
 
 /* (Hopefully!) Human friendly distance grid sizes - note no fixed 'ratio' just numbers that look nice...*/
-static const gdouble chunksd[] = {0.1, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 10.0,
+static const gdouble chunksd[] = {0.1, 0.2, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 10.0,
 				  15.0, 20.0, 25.0, 40.0, 50.0, 75.0,
 				  100.0, 150.0, 200.0, 250.0, 375.0, 500.0,
 				  750.0, 1000.0, 10000.0};
@@ -315,6 +315,32 @@ static guint get_time_chunk_index (time_t duration)
 
   // Loop through to find best match
   while (myduration > chunkst[ci]) {
+    ci++;
+    // Last Resort Check
+    if ( ci == last_chunk )
+      break;
+  }
+  // Use previous value
+  if ( ci != 0 )
+   ci--;
+
+  return ci;
+}
+
+/**
+ *
+ */
+static guint get_distance_chunk_index (gdouble length)
+{
+  // Grid split
+  gdouble mylength = length / LINES;
+
+  // Search nearest chunk index
+  guint ci = 0;
+  guint last_chunk = G_N_ELEMENTS(chunksd);
+
+  // Loop through to find best match
+  while (mylength > chunksd[ci]) {
     ci++;
     // Last Resort Check
     if ( ci == last_chunk )
@@ -1358,6 +1384,44 @@ static void draw_grid_x_time ( GtkWidget *window, GtkWidget *image, PropWidgets 
 }
 
 /**
+ * draw_grid_x_distance:
+ *
+ * A common way to draw the grid with x axis labels for distance graphs
+ *
+ */
+static void draw_grid_x_distance ( GtkWidget *window, GtkWidget *image, PropWidgets *widgets, GdkPixmap *pix, guint ii, gdouble dd, guint xx, vik_units_distance_t dist_units )
+{
+  gchar *label_markup = NULL;
+  if ( dist_units == VIK_UNITS_DISTANCE_MILES )
+    if ( ii > 4 )
+      label_markup = g_strdup_printf ( "<span size=\"small\">%d %s</span>", (guint)dd, _("miles") );
+    else
+      label_markup = g_strdup_printf ( "<span size=\"small\">%.1f %s</span>", dd, _("miles") );
+  else
+    if ( ii > 4 )
+      label_markup = g_strdup_printf ( "<span size=\"small\">%d %s</span>", (guint)dd, _("km") );
+    else
+      label_markup = g_strdup_printf ( "<span size=\"small\">%.1f %s</span>", dd, _("km") );
+
+  if ( label_markup ) {
+    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
+
+    pango_layout_set_markup ( pl, label_markup, -1 );
+    g_free ( label_markup );
+    int ww, hh;
+    pango_layout_get_pixel_size ( pl, &ww, &hh );
+
+    gdk_draw_layout ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0],
+                      MARGIN_X+xx-ww/2, MARGIN_Y/2-hh/2, pl );
+    g_object_unref ( G_OBJECT ( pl ) );
+  }
+
+  gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
+                  MARGIN_X+xx, MARGIN_Y, MARGIN_X+xx, MARGIN_Y+widgets->profile_height );
+}
+
+/**
  * clear the images (scale texts & actual graph)
  */
 static void clear_images (GdkPixmap *pix, GtkWidget *window, PropWidgets *widgets)
@@ -1366,6 +1430,27 @@ static void clear_images (GdkPixmap *pix, GtkWidget *window, PropWidgets *widget
                      TRUE, 0, 0, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y);
   gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
                      TRUE, 0, 0, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y);
+}
+
+/**
+ *
+ */
+static void draw_distance_divisions ( GtkWidget *window, GtkWidget *image, GdkPixmap *pix, PropWidgets *widgets, vik_units_distance_t dist_units )
+{
+  // Set to display units from length in metres.
+  gdouble length = widgets->track_length_inc_gaps;
+  if ( dist_units == VIK_UNITS_DISTANCE_MILES )
+    length = VIK_METERS_TO_MILES(length);
+  else
+    // KM
+    length = length/1000.0;
+
+  guint index = get_distance_chunk_index ( length );
+  gdouble dist_per_pixel = length/widgets->profile_width;
+
+  for (guint i=1; chunksd[index]*i <= length; i++) {
+    draw_grid_x_distance ( window, image, widgets, pix, index, chunksd[index]*i, (guint)(chunksd[index]*i/dist_per_pixel), dist_units );
+  }
 }
 
 /**
@@ -1436,6 +1521,8 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
     draw_grid_y ( window, image, widgets, pix, s, i );
   }
+
+  draw_distance_divisions ( window, image, pix, widgets, a_vik_get_units_distance() );
 
   /* draw elevations */
   guint height = MARGIN_Y+widgets->profile_height;
@@ -1564,6 +1651,8 @@ static void draw_gradients (GtkWidget *image, VikTrack *tr, PropWidgets *widgets
 
     draw_grid_y ( window, image, widgets, pix, s, i );
   }
+
+  draw_distance_divisions ( window, image, pix, widgets, a_vik_get_units_distance() );
 
   /* draw gradients */
   guint height = widgets->profile_height + MARGIN_Y;
@@ -2035,6 +2124,8 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
     draw_grid_y ( window, image, widgets, pix, s, i );
   }
+
+  draw_distance_divisions ( window, image, pix, widgets, a_vik_get_units_distance() );
 
   /* draw speeds */
   guint height = widgets->profile_height + MARGIN_Y;
