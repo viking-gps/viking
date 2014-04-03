@@ -2,7 +2,7 @@
 if VIKING_DOC
 	DO_DOCS = "doc"
 endif
-SUBDIRS = src test data po win32 help $(DO_DOCS)
+SUBDIRS = src test data po win32 help tools $(DO_DOCS)
 
 INTLTOOL = \
 	intltool-extract.in \

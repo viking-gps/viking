@@ -1,6 +1,40 @@
-Try this:
-./googledirections "boston, ma" "new york, ny" | ../src/viking -
+	TOOLS
+	-----
 
-Or edit gcget with your geocaching.com username and password and try this:
-./gcget 34.25,-118.25 50 2>/dev/null | ../src/viking -
-(new python script no longer works with zip code, but this should be trivial to add.)
+
+A collection of miscellaneous scripts which may help with Viking usage.
+
+
+- viking-cache-mbtile.py
+
+A Python2 script to create an MBTiles file from a Viking map cache.
+
+Running the script (with no parameters) will explain the usage.
+
+
+- googledirections
+
+A bash script to get a route from Google in GPX format.
+
+  ./googledirections "boston, ma" "new york, ny" | ../src/viking -
+
+Note: routing via online services is built into Viking so this script is now redundant.
+
+
+- images2waypoints.pl
+
+A Perl script to auto generate basic Viking .vik files for directories containing images.
+
+View the script itself for a more detailed description.
+
+Note: Viking can now image open files and creates waypoints for them with the EXIF information.
+ So again this script less useful.
+
+
+- geo-* scripts
+-- geo-html2gpx
+-- geo-nearest
+
+If Viking is compiled with 'enable-geocaches' (the default without it) then it will enable acquire Geocaches from http://www.geocaching.com via these scripts (which will need to be on your $PATH).
+The scripts are Public Domain from http://geo.rkkda.com/
+Note if you don't have a premium Geocaching account, getting public available geocaches is very slow.
