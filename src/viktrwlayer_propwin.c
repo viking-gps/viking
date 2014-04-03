@@ -1262,6 +1262,9 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
     max_speed = max_speed_in * 110 / 100;
 
   gdouble dist = 0;
+  gint h2 = height + MARGIN_Y; // Adjust height for x axis labelling offset
+  gint achunk = chunksa[cia]*LINES;
+
   for (iter = tr->trackpoints->next; iter; iter = iter->next) {
     int x;
     dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
@@ -1276,16 +1279,16 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
 	  elev =  VIK_METERS_TO_FEET(elev);
 	// No conversion needed if already in metres
 
-	// consider chunk size
-	int y_alt = height - ((height * elev)/(chunksa[cia]*LINES) );
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
+        // consider chunk size
+        int y_alt = h2 - ((height * elev)/achunk );
+        gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
       }
     }
     if (do_speed) {
       // This is just a speed indicator - no actual values can be inferred by user
       if (!isnan(VIK_TRACKPOINT(iter->data)->speed)) {
-	int y_speed = height - (height * VIK_TRACKPOINT(iter->data)->speed)/max_speed;
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), speed_gc, TRUE, x-2, y_speed-2, 4, 4);
+        int y_speed = h2 - (height * VIK_TRACKPOINT(iter->data)->speed)/max_speed;
+        gdk_draw_rectangle(GDK_DRAWABLE(pix), speed_gc, TRUE, x-2, y_speed-2, 4, 4);
       }
     }
   }
@@ -1559,7 +1562,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 			    widgets->max_speed,
 			    widgets->cia,
 			    widgets->profile_width,
-			    widgets->profile_height+MARGIN_Y,
+			    widgets->profile_height,
 			    MARGIN_X,
 			    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_dem)),
 			    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed)));
