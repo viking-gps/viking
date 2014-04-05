@@ -612,7 +612,7 @@ gboolean check_file_magic_vik ( const gchar *filename )
  *
  * Returns: a newly allocated string
  */
-gchar *append_file_ext ( const gchar *filename, VikLoadType_t type )
+gchar *append_file_ext ( const gchar *filename, VikFileType_t type )
 {
   gchar *new_name = NULL;
   const gchar *ext = NULL;

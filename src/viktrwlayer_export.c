@@ -32,7 +32,7 @@
 #include "viking.h"
 #include "viktrwlayer_export.h"
 
-void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, guint file_type )
+void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {
   GtkWidget *file_selector;
   const gchar *fn;
