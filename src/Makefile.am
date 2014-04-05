@@ -60,6 +60,7 @@ libviking_a_SOURCES = \
 	coords.c coords.h \
 	gpsmapper.c gpsmapper.h \
 	gpspoint.c gpspoint.h \
+	geojson.c geojson.h \
 	dir.c dir.h \
 	file.c file.h \
 	fileutils.c fileutils.h \

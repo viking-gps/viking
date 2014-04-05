@@ -8,6 +8,7 @@ src/curl_download.c
 src/dialog.c
 src/expedia.c
 src/geonamessearch.c
+src/geojson.c
 src/globals.c
 src/google.c
 src/googlesearch.c

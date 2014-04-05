@@ -36,6 +36,7 @@ FILE_TYPE_GPSPOINT=1,
 FILE_TYPE_GPSMAPPER=2,
 FILE_TYPE_GPX=3,
 FILE_TYPE_KML=4,
+FILE_TYPE_GEOJSON=5,
 } VikFileType_t;
 
 gboolean a_file_check_ext ( const gchar *filename, const gchar *fileext );

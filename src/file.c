@@ -28,6 +28,7 @@
 
 #include "jpg.h"
 #include "gpx.h"
+#include "geojson.h"
 #include "babel.h"
 
 #include <string.h>
@@ -626,6 +627,9 @@ gchar *append_file_ext ( const gchar *filename, VikFileType_t type )
   case FILE_TYPE_KML:
     ext = ".kml";
     break;
+  case FILE_TYPE_GEOJSON:
+    ext = ".geojson";
+    break;
   case FILE_TYPE_GPSMAPPER:
   case FILE_TYPE_GPSPOINT:
   default:
@@ -797,6 +801,8 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {
+    gboolean result = TRUE;
+
     if ( trk ) {
       switch ( file_type ) {
         case FILE_TYPE_GPX:
@@ -817,6 +823,9 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
           break;
         case FILE_TYPE_GPSPOINT:
           a_gpspoint_write_file ( vtl, f );
+          break;
+        case FILE_TYPE_GEOJSON:
+          result = a_geojson_write_file ( vtl, f );
           break;
         case FILE_TYPE_KML:
 	  fclose ( f );
@@ -840,7 +849,7 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
     }
     fclose ( f );
     f = NULL;
-    return TRUE;
+    return result;
   }
   return FALSE;
 }

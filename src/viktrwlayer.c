@@ -47,6 +47,7 @@
 #include "thumbnails.h"
 #include "background.h"
 #include "gpx.h"
+#include "geojson.h"
 #include "babel.h"
 #include "dem.h"
 #include "dems.h"
@@ -775,6 +776,8 @@ VikLayerInterface vik_trw_layer_interface = {
 };
 
 static gboolean have_diary_program = FALSE;
+static gboolean have_geojson_export = FALSE;
+
 
 // NB Only performed once per program run
 static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
@@ -810,6 +813,10 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
     }
     g_free ( stdout );
     g_free ( stderr );
+  }
+
+  if ( g_find_program_in_path ( a_geojson_program_export() ) ) {
+    have_geojson_export = TRUE;
   }
 }
 
@@ -3379,6 +3386,15 @@ static void trw_layer_export_kml ( menu_array_layer values )
   g_free ( auto_save_name );
 }
 
+static void trw_layer_export_geojson ( menu_array_layer values )
+{
+  gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GEOJSON );
+
+  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GEOJSON );
+
+  g_free ( auto_save_name );
+}
+
 static void trw_layer_export_babel ( gpointer layer_and_vlp[2] )
 {
   const gchar *auto_save_name = vik_layer_get_name(VIK_LAYER(layer_and_vlp[0]));
@@ -4030,6 +4046,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_kml), pass_along );
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
+
+  if ( have_geojson_export ) {
+    item = gtk_menu_item_new_with_mnemonic ( _("Export as GEO_JSON...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_geojson), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
+    gtk_widget_show ( item );
+  }
 
   item = gtk_menu_item_new_with_mnemonic ( _("Export via GPSbabel...") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_babel), pass_along );

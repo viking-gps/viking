@@ -755,8 +755,30 @@ You are probably better off expanding the waypoint list and directly start typin
 
 <section><title>Export Layer</title>
 <para>
-The layer (all tracks, routes and waypoints) can be exported to a file GPX, GPSPoint, GPSMapper, Google's KML format or any other format supported by GPSbabel.
+The layer (all tracks, routes and waypoints) can be exported to following file formats:
 </para>
+<orderedlist>
+	<listitem>
+		<para>GPX</para>
+	</listitem>
+	<listitem>
+		<para>GPSPoint</para>
+	</listitem>
+	<listitem>
+		<para>GPSMapper</para>
+	</listitem>
+	<listitem>
+		<para>Google's KML</para>
+	</listitem>
+	<listitem>
+		<para>Any GPSBabel <ulink url="http://www.gpsbabel.org/capabilities.html">File Formats</ulink></para>
+	</listitem>
+	<listitem>
+		<para>GeoJSON. Via the program <ulink url="https://github.com/mapbox/togeojson">togeojson</ulink></para>
+		<para>This option will not be available if the program is not detected on your system.
+		See <ulink url="https://www.npmjs.org/package/togeojson">here</ulink> for the installation method.</para>
+	</listitem>
+</orderedlist>
 <para>
 Version1.1+: An individual track can be exported to a GPX file via the track menu.
 </para>
