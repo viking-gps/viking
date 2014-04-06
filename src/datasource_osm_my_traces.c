@@ -644,9 +644,12 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 			// http://developer.gnome.org/gtk/2.24/GtkProgressBar.html
 
 			got_something = got_something || result;
-			// TODO feedback to UI to inform which traces failed
-			if ( !result )
-				g_warning ( _("Unable to get trace: %s"), url );
+			if ( !result ) {
+				// Report errors to the status bar
+				gchar* msg = g_strdup_printf ( _("Unable to get trace: %s"), url );
+				vik_window_statusbar_update ( adw->vw, msg, VIK_STATUSBAR_INFO );
+				g_free (msg);
+			}
 			g_free ( url );
 		}
 

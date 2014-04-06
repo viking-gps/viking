@@ -2652,7 +2652,10 @@ static void setup_recent_files (VikWindow *self)
                     G_CALLBACK (on_activate_recent_item), (gpointer) self);
 }
 
-static void update_recently_used_document(const gchar *filename)
+/*
+ *
+ */
+static void update_recently_used_document (VikWindow *vw, const gchar *filename)
 {
   /* Update Recently Used Document framework */
   GtkRecentManager *manager = gtk_recent_manager_get_default();
@@ -2673,7 +2676,9 @@ static void update_recently_used_document(const gchar *filename)
   recent_data->is_private     = FALSE;
   if (!gtk_recent_manager_add_full (manager, uri, recent_data))
   {
-    g_warning (_("Unable to add '%s' to the list of recently used documents"), uri);
+    gchar *msg = g_strdup_printf (_("Unable to add '%s' to the list of recently used documents"), uri);
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, msg );
+    g_free ( msg );
   }
 
   g_free (uri);
@@ -2770,7 +2775,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       success = TRUE;
       // When LOAD_TYPE_OTHER_SUCCESS *only*, this will maintain the existing Viking project
       restore_original_filename = ! restore_original_filename;
-      update_recently_used_document(filename);
+      update_recently_used_document (vw, filename);
       draw_update ( vw );
       break;
   }
@@ -2967,7 +2972,7 @@ static gboolean window_save ( VikWindow *vw )
 
   if ( a_file_save ( vik_layers_panel_get_top_layer ( vw->viking_vlp ), vw->viking_vvp, vw->filename ) )
   {
-    update_recently_used_document ( vw->filename );
+    update_recently_used_document ( vw, vw->filename );
   }
   else
   {
@@ -3480,7 +3485,9 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
       gdk_pixbuf_save ( pixbuf_to_save, name_of_file, save_as_png ? "png" : "jpeg", &error, NULL );
       if (error)
       {
-        g_warning("Unable to write to file %s: %s", name_of_file, error->message );
+        gchar *msg = g_strdup_printf (_("Unable to write to file %s: %s"), name_of_file, error->message );
+        vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, msg );
+        g_free ( msg );
         g_error_free (error);
       }
 

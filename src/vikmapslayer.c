@@ -991,8 +991,14 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, MapCoord *mapcoord, 
       /* free the pixbuf on error */
       if (gx)
       {
-        if ( gx->domain != GDK_PIXBUF_ERROR || gx->code != GDK_PIXBUF_ERROR_CORRUPT_IMAGE )
-          g_warning ( _("Couldn't open image file: %s"), gx->message );
+        if ( gx->domain != GDK_PIXBUF_ERROR || gx->code != GDK_PIXBUF_ERROR_CORRUPT_IMAGE ) {
+          // Report a warning
+          if ( IS_VIK_WINDOW ((VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(vml)) ) {
+            gchar* msg = g_strdup_printf ( _("Couldn't open image file: %s"), gx->message );
+            vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(vml), msg, VIK_STATUSBAR_INFO );
+            g_free (msg);
+          }
+        }
 
         g_error_free ( gx );
         if ( pixbuf )
@@ -1063,7 +1069,12 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         existence_only = TRUE;
       }
       else {
-        g_warning ( _("Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out factor"), (int)( 1.0/REAL_MIN_SHRINKFACTOR));
+        // Report the reason for not drawing
+        if ( IS_VIK_WINDOW ((VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(vml)) ) {
+          gchar* msg = g_strdup_printf ( _("Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out factor"), (int)( 1.0/REAL_MIN_SHRINKFACTOR));
+          vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(vml), msg, VIK_STATUSBAR_INFO );
+          g_free (msg);
+        }
         return;
       }
     }

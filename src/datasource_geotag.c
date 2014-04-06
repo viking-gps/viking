@@ -165,7 +165,9 @@ static gboolean datasource_geotag_process ( VikTrwLayer *vtl, const gchar *cmd, 
 			g_free ( name );
 		}
 		else {
-			g_warning ( _("Unable to create waypoint from %s"), filename );
+			gchar* msg = g_strdup_printf ( _("Unable to create waypoint from %s"), filename );
+			vik_window_statusbar_update ( adw->vw, msg, VIK_STATUSBAR_INFO );
+			g_free (msg);
 		}
 		g_free ( filename );
 		cur_file = g_slist_next ( cur_file );
