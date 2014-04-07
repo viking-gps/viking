@@ -115,3 +115,74 @@ const gchar* a_geojson_program_export ( void )
 {
 	return "togeojson";
 }
+
+//
+// https://github.com/tyrasd/togpx
+//
+// https://www.npmjs.org/package/togpx
+//
+// Tested with version 0.3.1
+const gchar* a_geojson_program_import ( void )
+{
+	return "togpx";
+}
+
+/**
+ * a_geojson_import_to_gpx:
+ *
+ * @filename: The source GeoJSON file
+ *
+ * Returns: The name of newly created temporary GPX file
+ *          This file should be removed once used and the string freed.
+ *          If NULL then the process failed.
+ */
+gchar* a_geojson_import_to_gpx ( const gchar *filename )
+{
+	gchar *gpx_filename = NULL;
+	GError *error = NULL;
+	// Opening temporary file
+	int fd = g_file_open_tmp("vik_geojson_XXXXXX.gpx", &gpx_filename, &error);
+	if (fd < 0) {
+		g_warning ( _("failed to open temporary file: %s"), error->message );
+		g_clear_error ( &error );
+		return NULL;
+	}
+	g_debug ( "%s: temporary file = %s", __FUNCTION__, gpx_filename );
+
+	GPid pid;
+	gint stdout;
+
+	// geojson program should be on the $PATH
+	gchar **argv;
+	argv = g_new (gchar*, 3);
+	argv[0] = g_strdup (a_geojson_program_import());
+	argv[1] = g_strdup (filename);
+	argv[2] = NULL;
+
+	FILE *gpxfile = fdopen (fd, "w");
+
+	// TODO: monitor stderr?
+	if (!g_spawn_async_with_pipes (NULL, argv, NULL, (GSpawnFlags) G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &stdout, NULL, &error)) {
+		g_warning ("Async command failed: %s", error->message);
+		g_error_free(error);
+	}
+	else {
+		// Probably should use GIOChannels...
+		gchar line[512];
+		FILE *fout = fdopen(stdout, "r");
+		setvbuf(fout, NULL, _IONBF, 0);
+
+		while (fgets(line, sizeof(line), fout)) {
+			fprintf ( gpxfile, line );
+		}
+
+		fclose(fout);
+		g_child_watch_add ( pid, (GChildWatchFunc) my_watch, NULL );
+	}
+
+	fclose (gpxfile);
+
+	g_strfreev (argv);
+
+	return gpx_filename;
+}

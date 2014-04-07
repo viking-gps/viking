@@ -17,6 +17,7 @@ src/datasource_bfilter.c
 src/datasource_file.c
 src/datasource_gc.c
 src/datasource_geotag.c
+src/datasource_geojson.c
 src/datasource_gps.c
 src/datasource_osm.c
 src/datasource_osm_my_traces.c

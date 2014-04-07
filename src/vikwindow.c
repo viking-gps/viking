@@ -29,6 +29,7 @@
 #include "background.h"
 #include "acquire.h"
 #include "datasources.h"
+#include "geojson.h"
 #include "vikgoto.h"
 #include "dems.h"
 #include "mapcache.h"
@@ -3169,6 +3170,11 @@ static void acquire_from_file ( GtkAction *a, VikWindow *vw )
   my_acquire ( vw, &vik_datasource_file_interface );
 }
 
+static void acquire_from_geojson ( GtkAction *a, VikWindow *vw )
+{
+  my_acquire ( vw, &vik_datasource_geojson_interface );
+}
+
 static void acquire_from_routing ( GtkAction *a, VikWindow *vw )
 {
   my_acquire ( vw, &vik_datasource_routing_interface );
@@ -3985,6 +3991,10 @@ static GtkActionEntry entries_gpsbabel[] = {
   { "ExportKML", NULL,                   N_("_KML..."),           	      NULL,         N_("Export as KML"),                                (GCallback)export_to_kml },
 };
 
+static GtkActionEntry entries_geojson[] = {
+  { "AcquireGeoJSON",   NULL,            N_("Import Geo_JSON File..."),   NULL,         N_("Import GeoJSON file"),                          (GCallback)acquire_from_geojson },
+};
+
 /* Radio items */
 /* FIXME use VIEWPORT_DRAWMODE values */
 static GtkRadioActionEntry mode_entries[] = {
@@ -4045,6 +4055,14 @@ static void window_create_ui( VikWindow *window )
 	  "<ui><menubar name='MainMenu'><menu action='File'><menu action='Export'><menuitem action='ExportKML'/></menu></menu></menubar></ui>",
 	  -1, &error ) )
       gtk_action_group_add_actions ( action_group, entries_gpsbabel, G_N_ELEMENTS (entries_gpsbabel), window );
+  }
+
+  // GeoJSON import capability
+  if ( g_find_program_in_path ( a_geojson_program_import() ) ) {
+    if ( gtk_ui_manager_add_ui_from_string ( uim,
+         "<ui><menubar name='MainMenu'><menu action='File'><menu action='Acquire'><menuitem action='AcquireGeoJSON'/></menu></menu></menubar></ui>",
+         -1, &error ) )
+      gtk_action_group_add_actions ( action_group, entries_geojson, G_N_ELEMENTS (entries_geojson), window );
   }
 
   icon_factory = gtk_icon_factory_new ();

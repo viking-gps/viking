@@ -574,6 +574,21 @@ You need to select the type of the file that is going to be returned, since ther
 </note>
 </section>
 
+<section>
+<title>Import GeoJSON File</title>
+<para>
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>Import GeoJSON File</guimenuitem></menuchoice>
+</para>
+<para>
+This uses the program <ulink url="https://github.com/tyrasd/togpx">togpx</ulink> to load .geojson files.
+If the program is not detected on your system, then this option will not be available.
+See <ulink url="https://www.npmjs.org/package/togpx">here</ulink> for the installation method.
+</para>
+<para>
+The current version (1.4.4) of GPSBabel does not support the <ulink url="http://geojson.org/">GeoJSON</ulink> file format.
+</para>
+</section>
+
 </section> <!-- End Acquire -->
 
 <section><title>Print</title>
