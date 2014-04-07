@@ -28,6 +28,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "viking.h"
 #include "vikutils.h"
 #include "globals.h"
 #include "download.h"

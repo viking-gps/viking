@@ -23,7 +23,7 @@
 #define __VIKING_UTILS_H
 
 #include <glib.h>
-#include "viking.h"
+#include "viktrwlayer.h"
 
 G_BEGIN_DECLS
 
