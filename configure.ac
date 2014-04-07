@@ -390,6 +390,7 @@ AC_CONFIG_FILES([
 		src/icons/Makefile
 		po/Makefile.in
 		data/Makefile
+		tools/Makefile
 		test/Makefile
 		help/Makefile
 		win32/Makefile

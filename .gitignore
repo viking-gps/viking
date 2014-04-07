@@ -130,6 +130,10 @@ help/C/*html
 /po/remove-potcdate.sin
 /po/viking/
 
+# tools/
+tools/Makefile.in
+tools/Makefile
+
 # m4/
 m4/*m4
 
