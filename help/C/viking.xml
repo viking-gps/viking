@@ -1480,17 +1480,15 @@ You will need an open internet connection when you are downloading maps, but onc
 Some maps are continually improving over time (e.g. OpenStreetMap) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - <emphasis>Tile Age</emphasis> to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
 </para>
 <para>
-Inbuilt maps include various <ulink url="http://en.wikipedia.org/wiki/TerraServer-USA">Terraserver</ulink> (Primarily USA coverage) and <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
+Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
 <itemizedlist>
 <listitem><para>Bing Bird's Eye (Aerial) Maps (&appname; Version1.2+)</para></listitem>
-<listitem><para>Terraserver Topos</para></listitem>
-<listitem><para>Terraserver Aerials</para></listitem>
-<listitem><para>Terraserver Urban Areas</para></listitem>
 <listitem><para>OpenStreetMap (Mapquest) - This is the default (&appname; Version1.3+)</para></listitem>
 <listitem><para>OpenStreetMap (Mapnik)</para></listitem>
 <listitem><para>OpenStreetMap (Cycle)</para></listitem>
 <listitem><para>OpenStreetMap (Transport) (&appname; Version1.3+)</para></listitem>
+<listitem><para>OpenStreetMap (Humanitarian) (&appname; Version1.5+)</para></listitem>
 <listitem><para>NASA BlueMarble</para></listitem>
 </itemizedlist>
 
