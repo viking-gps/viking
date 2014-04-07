@@ -39,6 +39,8 @@
 #include <string.h>
 #endif
 #include <glib.h>
+#include <glib/gstdio.h>
+#include <glib/gi18n.h>
 #ifdef HAVE_MATH_H
 #include <math.h>
 #endif
@@ -1138,4 +1140,60 @@ void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options
   gpx_write_header ( f );
   gpx_write_track ( trk, &context );
   gpx_write_footer ( f );
+}
+
+/**
+ * Common write of a temporary GPX file
+ */
+static gchar* write_tmp_file ( VikTrwLayer *vtl, VikTrack *trk, GpxWritingOptions *options )
+{
+	gchar *tmp_filename = NULL;
+	GError *error = NULL;
+	// Opening temporary file
+	int fd = g_file_open_tmp("viking_XXXXXX.gpx", &tmp_filename, &error);
+	if (fd < 0) {
+		g_warning ( _("failed to open temporary file: %s"), error->message );
+		g_clear_error ( &error );
+		return NULL;
+	}
+	g_debug ("%s: temporary file = %s", __FUNCTION__, tmp_filename);
+
+	FILE *ff = fdopen (fd, "w");
+
+	if ( trk )
+		a_gpx_write_track_file ( trk, ff, options );
+	else
+		a_gpx_write_file ( vtl, ff, options );
+
+	fclose (ff);
+
+	return tmp_filename;
+}
+
+/*
+ * a_gpx_write_tmp_file:
+ * @vtl:     The #VikTrwLayer to write
+ * @options: Possible ways of writing the file data (can be NULL)
+ *
+ * Returns: The name of newly created temporary GPX file
+ *          This file should be removed once used and the string freed.
+ *          If NULL then the process failed.
+ */
+gchar* a_gpx_write_tmp_file ( VikTrwLayer *vtl, GpxWritingOptions *options )
+{
+	return write_tmp_file ( vtl, NULL, options );
+}
+
+/*
+ * a_gpx_write_track_tmp_file:
+ * @trk:     The #VikTrack to write
+ * @options: Possible ways of writing the file data (can be NULL)
+ *
+ * Returns: The name of newly created temporary GPX file
+ *          This file should be removed once used and the string freed.
+ *          If NULL then the process failed.
+ */
+gchar* a_gpx_write_track_tmp_file ( VikTrack *trk, GpxWritingOptions *options )
+{
+	return write_tmp_file ( NULL, trk, options );
 }

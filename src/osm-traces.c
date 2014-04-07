@@ -265,25 +265,11 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   /* Due to OSM limits, we have to enforce ele and time fields
    also don't upload invisible tracks */
   static GpxWritingOptions options = { TRUE, TRUE, FALSE, FALSE };
-  FILE *file = NULL;
-  gchar *filename = NULL;
-  int fd;
-  GError *error = NULL;
-  int ret;
 
-  g_assert(oti != NULL);
-
-  /* Opening temporary file */
-  fd = g_file_open_tmp("viking_osm_upload_XXXXXX.gpx", &filename, &error);
-  if (fd < 0) {
-    g_error(_("failed to open temporary file: %s"), strerror(errno));
+  if (!oti)
     return;
-  }
-  g_clear_error(&error);
-  g_debug("%s: temporary file = %s", __FUNCTION__, filename);
 
-  /* Creating FILE* */
-  file = fdopen(fd, "w");
+  gchar *filename = NULL;
 
   /* writing gpx file */
   if (oti->trk != NULL)
@@ -293,22 +279,20 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
     {
       VikTrack *trk = vik_track_copy(oti->trk, TRUE);
       vik_track_anonymize_times(trk);
-      a_gpx_write_track_file(trk, file, &options);
+      filename = a_gpx_write_track_tmp_file(trk, &options);
       vik_track_free(trk);
     }
     else
-      a_gpx_write_track_file(oti->trk, file, &options);
+      filename = a_gpx_write_track_tmp_file (oti->trk, &options);
   }
   else
   {
     /* Upload the whole VikTrwLayer */
-    a_gpx_write_file(oti->vtl, file, &options);
+    filename = a_gpx_write_tmp_file (oti->vtl, &options);
   }
   
-  /* We can close the file */
-  /* This also close the associated fd */
-  fclose(file);
-  file = NULL;
+  if ( !filename )
+    return;
 
   /* finally, upload it */
   gint ans = osm_traces_upload_file(osm_user, osm_password, filename,
@@ -350,7 +334,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
     g_free (msg);
   }
   /* Removing temporary file */
-  ret = g_unlink(filename);
+  int ret = g_unlink(filename);
   if (ret != 0) {
     g_critical(_("failed to unlink temporary file: %s"), strerror(errno));
   }

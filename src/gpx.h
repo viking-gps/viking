@@ -41,6 +41,9 @@ gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options );
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options );
 
+gchar* a_gpx_write_tmp_file ( VikTrwLayer *vtl, GpxWritingOptions *options );
+gchar* a_gpx_write_track_tmp_file ( VikTrack *trk, GpxWritingOptions *options );
+
 G_END_DECLS
 
 #endif

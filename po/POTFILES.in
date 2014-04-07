@@ -11,6 +11,7 @@ src/geonamessearch.c
 src/globals.c
 src/google.c
 src/googlesearch.c
+src/gpx.c
 src/datasource_bfilter.c
 src/datasource_file.c
 src/datasource_gc.c

@@ -31,6 +31,7 @@
 #include "babel_ui.h"
 #include "viking.h"
 #include "viktrwlayer_export.h"
+#include "gpx.h"
 
 void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {
@@ -76,34 +77,26 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
  */
 void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external_program )
 {
-  gchar *name_used = NULL;
-  int fd;
+  gchar *name_used = a_gpx_write_tmp_file ( vtl, NULL );
 
-  if ((fd = g_file_open_tmp("tmp-viking.XXXXXX.gpx", &name_used, NULL)) >= 0) {
-    vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-    gboolean failed = ! a_file_export ( VIK_TRW_LAYER(vtl), name_used, FILE_TYPE_GPX, NULL, TRUE);
-    vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-    if (failed) {
-      a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not create temporary file for export.") );
+  if ( name_used ) {
+    GError *err = NULL;
+    gchar *quoted_file = g_shell_quote ( name_used );
+    gchar *cmd = g_strdup_printf ( "%s %s", external_program, quoted_file );
+    g_free ( quoted_file );
+    if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
+      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), external_program );
+      g_error_free ( err );
     }
-    else {
-      GError *err = NULL;
-      gchar *quoted_file = g_shell_quote ( name_used );
-      gchar *cmd = g_strdup_printf ( "%s %s", external_program, quoted_file );
-      g_free ( quoted_file );
-      if ( ! g_spawn_command_line_async ( cmd, &err ) )
-        {
-          a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), external_program );
-          g_error_free ( err );
-        }
-      g_free ( cmd );
-    }
+    g_free ( cmd );
     // Note ATM the 'temporary' file is not deleted, as loading via another program is not instantaneous
     //g_remove ( name_used );
     // Perhaps should be deleted when the program ends?
     // For now leave it to the user to delete it / use system temp cleanup methods.
     g_free ( name_used );
   }
+  else
+    a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not create temporary file for export.") );
 }
 
 

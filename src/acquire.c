@@ -177,38 +177,6 @@ static void get_from_anything ( w_and_interface_t *wi )
   g_thread_exit ( NULL );
 }
 
-
-static gchar *write_tmp_trwlayer ( VikTrwLayer *vtl )
-{
-  int fd_src;
-  gchar *name_src;
-  FILE *f;
-  g_assert ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0);
-  g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
-  f = fdopen(fd_src, "w");
-  a_gpx_write_file(vtl, f, NULL);
-  fclose(f);
-  f = NULL;
-  return name_src;
-}
-
-/* TODO: write with name of old track */
-static gchar *write_tmp_track ( VikTrack *track )
-{
-  int fd_src;
-  gchar *name_src;
-  FILE *f;
-  g_assert ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0);
-  g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
-  f = fdopen(fd_src, "w");
-  a_gpx_write_track_file(track, f, NULL); /* Thank you Guilhem! Just when I needed this function... -- Evan */
-  fclose(f);
-  f = NULL;
-  return name_src;
-}
-
-/* TODO: cleanup, getr rid of redundancy */
-
 /* depending on type of filter, often only vtl or track will be given.
  * the other can be NULL.
  */
@@ -301,7 +269,7 @@ static void acquire ( VikWindow *vw,
   /* CREATE INPUT DATA & GET COMMAND STRING */
 
   if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER ) {
-    gchar *name_src = write_tmp_trwlayer ( vtl );
+    gchar *name_src = a_gpx_write_tmp_file ( vtl, NULL );
 
     ((VikDataSourceGetCmdStringFuncWithInput) source_interface->get_cmd_string_func)
 	( pass_along_data, &cmd, &extra, name_src );
@@ -309,8 +277,8 @@ static void acquire ( VikWindow *vw,
     g_free ( name_src );
     /* TODO: delete the tmp file? or delete it only after we're done with it? */
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK ) {
-    gchar *name_src = write_tmp_trwlayer ( vtl );
-    gchar *name_src_track = write_tmp_track ( track );
+    gchar *name_src = a_gpx_write_tmp_file ( vtl, NULL );
+    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, NULL );
 
     ((VikDataSourceGetCmdStringFuncWithInputInput) source_interface->get_cmd_string_func)
 	( pass_along_data, &cmd, &extra, name_src, name_src_track );
@@ -318,7 +286,7 @@ static void acquire ( VikWindow *vw,
     g_free ( name_src );
     g_free ( name_src_track );
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRACK ) {
-    gchar *name_src_track = write_tmp_track ( track );
+    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, NULL );
 
     ((VikDataSourceGetCmdStringFuncWithInput) source_interface->get_cmd_string_func)
 	( pass_along_data, &cmd, &extra, name_src_track );

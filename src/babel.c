@@ -115,18 +115,11 @@ void a_babel_foreach_file_with_mode (BabelMode mode, GFunc func, gpointer user_d
  */
 gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data, gpointer not_used )
 {
-  int fd_src;
-  FILE *f;
-  gchar *name_src = NULL;
   gboolean ret = FALSE;
   gchar *bargs = g_strconcat(babelargs, " -i gpx", NULL);
+  gchar *name_src = a_gpx_write_tmp_file ( vt, NULL );
 
-  if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
-    g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
-    f = fdopen(fd_src, "w");
-    a_gpx_write_file(vt, f, NULL);
-    fclose(f);
-    f = NULL;
+  if ( name_src ) {
     ret = a_babel_convert_from ( vt, bargs, name_src, cb, user_data, not_used );
     g_remove(name_src);
     g_free(name_src);
