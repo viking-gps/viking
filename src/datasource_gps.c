@@ -53,7 +53,7 @@ static void datasource_gps_off ( gpointer add_widgets_data_not_used, gchar **bab
 VikDataSourceInterface vik_datasource_gps_interface = {
   N_("Acquire from GPS"),
   N_("Acquired from GPS"),
-  VIK_DATASOURCE_CREATENEWLAYER,
+  VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
   TRUE,

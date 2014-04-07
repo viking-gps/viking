@@ -31,7 +31,7 @@ static gboolean datasource_wikipedia_process ( VikTrwLayer *vtl, const gchar *cm
 VikDataSourceInterface vik_datasource_wikipedia_interface = {
   N_("Create Waypoints from Wikipedia Articles"),
   N_("Wikipedia Waypoints"),
-  VIK_DATASOURCE_CREATENEWLAYER,
+  VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   FALSE,
   FALSE, // Not even using the dialog

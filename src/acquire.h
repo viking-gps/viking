@@ -57,8 +57,9 @@ typedef struct {
 } acq_dialog_widgets_t;
 
 typedef enum {
-  VIK_DATASOURCE_CREATENEWLAYER,
-  VIK_DATASOURCE_ADDTOLAYER,
+  VIK_DATASOURCE_CREATENEWLAYER, // Generally Datasources shouldn't use these and let the HCI decide
+  VIK_DATASOURCE_ADDTOLAYER,     //    between the create or add to layer options
+  VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT,
   VIK_DATASOURCE_MANUAL_LAYER_MANAGEMENT,
 } vik_datasource_mode_t;
 /* TODO: replace track/layer? */
@@ -179,8 +180,13 @@ struct _VikDataSourceInterface {
 
 /**********************************/
 
-void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface,
-                 gpointer userdata, VikDataSourceCleanupFunc cleanup_function );
+void a_acquire ( VikWindow *vw,
+                 VikLayersPanel *vlp,
+                 VikViewport *vvp,
+                 vik_datasource_mode_t mode,
+                 VikDataSourceInterface *source_interface,
+                 gpointer userdata,
+                 VikDataSourceCleanupFunc cleanup_function );
 
 GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl);
 

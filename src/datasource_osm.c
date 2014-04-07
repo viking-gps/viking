@@ -51,7 +51,7 @@ static void datasource_osm_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_osm_interface = {
   N_("OSM traces"),
   N_("OSM traces"),
-  VIK_DATASOURCE_ADDTOLAYER,
+  VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
   TRUE,

@@ -3607,7 +3607,10 @@ static void trw_layer_acquire ( menu_array_layer values, VikDataSourceInterface 
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp =  vik_window_viewport(vw);
 
-  a_acquire ( vw, vlp, vvp, datasource, NULL, NULL );
+  vik_datasource_mode_t mode = datasource->mode;
+  if ( mode == VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT )
+    mode = VIK_DATASOURCE_ADDTOLAYER;
+  a_acquire ( vw, vlp, vvp, mode, datasource, NULL, NULL );
 }
 
 /*
@@ -3615,7 +3618,6 @@ static void trw_layer_acquire ( menu_array_layer values, VikDataSourceInterface 
  */
 static void trw_layer_acquire_gps_cb ( menu_array_layer values )
 {
-  vik_datasource_gps_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
   trw_layer_acquire ( values, &vik_datasource_gps_interface );
 }
 
@@ -3632,7 +3634,6 @@ static void trw_layer_acquire_routing_cb ( menu_array_layer values )
  */
 static void trw_layer_acquire_url_cb ( menu_array_layer values )
 {
-  vik_datasource_url_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
   trw_layer_acquire ( values, &vik_datasource_url_interface );
 }
 
@@ -3672,7 +3673,6 @@ static void trw_layer_acquire_geotagged_cb ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
 
-  vik_datasource_geotag_interface.mode = VIK_DATASOURCE_ADDTOLAYER;
   trw_layer_acquire ( values, &vik_datasource_geotag_interface );
 
   // Reverify thumbnails as they may have changed
@@ -3680,6 +3680,14 @@ static void trw_layer_acquire_geotagged_cb ( menu_array_layer values )
   trw_layer_verify_thumbnails ( vtl, NULL );
 }
 #endif
+
+/*
+ * Acquire into this TRW Layer from any GPS Babel supported file
+ */
+static void trw_layer_acquire_file_cb ( menu_array_layer values )
+{
+  trw_layer_acquire ( values, &vik_datasource_file_interface );
+}
 
 static void trw_layer_gps_upload ( menu_array_layer values )
 {
@@ -3786,19 +3794,6 @@ static void trw_layer_gps_upload_any ( menu_array_sublayer values )
                  do_routes,
                  do_waypoints,
                  turn_off );
-}
-
-/*
- * Acquire into this TRW Layer from any GPS Babel supported file
- */
-static void trw_layer_acquire_file_cb ( menu_array_layer values )
-{
-  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
-  VikLayersPanel *vlp = VIK_LAYERS_PANEL(values[MA_VLP]);
-  VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
-  VikViewport *vvp =  vik_window_viewport(vw);
-
-  a_acquire ( vw, vlp, vvp, &vik_datasource_file_interface, NULL, NULL );
 }
 
 static void trw_layer_new_wp ( menu_array_layer values )

@@ -46,7 +46,7 @@ static void datasource_url_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_url_interface = {
 	N_("Acquire from URL"),
 	N_("URL"),
-	VIK_DATASOURCE_CREATENEWLAYER,
+	VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT,
 	VIK_DATASOURCE_INPUTTYPE_NONE,
 	TRUE,
 	TRUE,

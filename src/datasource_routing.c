@@ -52,7 +52,7 @@ static void datasource_routing_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_routing_interface = {
   N_("Directions"),
   N_("Directions"),
-  VIK_DATASOURCE_ADDTOLAYER,
+  VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
   TRUE,

@@ -3151,64 +3151,65 @@ static void file_properties_cb ( GtkAction *a, VikWindow *vw )
   g_free ( message );
 }
 
+static void my_acquire ( VikWindow *vw, VikDataSourceInterface *datasource )
+{
+  vik_datasource_mode_t mode = datasource->mode;
+  if ( mode == VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT )
+    mode = VIK_DATASOURCE_CREATENEWLAYER;
+  a_acquire ( vw, vw->viking_vlp, vw->viking_vvp, mode, datasource, NULL, NULL );
+}
+
 static void acquire_from_gps ( GtkAction *a, VikWindow *vw )
 {
-  // Via the file menu, acquiring from a GPS makes a new layer
-  //  this has always been the way (not entirely sure if this was the real intention!)
-  //  thus maintain the behaviour ATM.
-  // Hence explicit setting here (as the value may be changed elsewhere)
-  vik_datasource_gps_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gps_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_gps_interface );
 }
 
 static void acquire_from_file ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_file_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_file_interface );
 }
 
 static void acquire_from_routing ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_routing_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_routing_interface );
 }
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
 static void acquire_from_osm ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_osm_interface );
 }
 
 static void acquire_from_my_osm ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_osm_my_traces_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_osm_my_traces_interface );
 }
 #endif
 
 #ifdef VIK_CONFIG_GEOCACHES
 static void acquire_from_gc ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_gc_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_gc_interface );
 }
 #endif
 
 #ifdef VIK_CONFIG_GEOTAG
 static void acquire_from_geotag ( GtkAction *a, VikWindow *vw )
 {
-  vik_datasource_geotag_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_geotag_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_geotag_interface );
 }
 #endif
 
 #ifdef VIK_CONFIG_GEONAMES
 static void acquire_from_wikipedia ( GtkAction *a, VikWindow *vw )
 {
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_wikipedia_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_wikipedia_interface );
 }
 #endif
 
 static void acquire_from_url ( GtkAction *a, VikWindow *vw )
 {
-  vik_datasource_url_interface.mode = VIK_DATASOURCE_CREATENEWLAYER;
-  a_acquire(vw, vw->viking_vlp, vw->viking_vvp, &vik_datasource_url_interface, NULL, NULL );
+  my_acquire ( vw, &vik_datasource_url_interface );
 }
 
 static void goto_default_location( GtkAction *a, VikWindow *vw)

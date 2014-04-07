@@ -469,7 +469,7 @@ GPX and KML files may also be appended, but this is exactly the same as the norm
 Available on the <menuchoice><guimenu>File</guimenu><guisubmenu>Acquire</guisubmenu></menuchoice> menu and from the <xref linkend="TrackWaypoint"/> layer menu.
 </para>
 <para>
-If used from the <guimenu>File</guimenu> menu and a TrackWaypoint layer is not currently selected, these methods place the results in a new TrackWaypoint layer. When a TrackWaypoint layer is selected, then using the <menuchoice><guimenu>File</guimenu><guisubmenu>Acquire</guisubmenu></menuchoice> will put the results into the selected TrackWaypoint layer.
+If used from the <guimenu>File</guimenu> menu these methods place the results in a new TrackWaypoint layer.
 </para>
 <para>
 If used from the <xref linkend="TrackWaypoint"/> layer menu these methods place the results in that TrackWaypoint layer.

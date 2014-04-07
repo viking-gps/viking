@@ -212,8 +212,15 @@ static gchar *write_tmp_track ( VikTrack *track )
 /* depending on type of filter, often only vtl or track will be given.
  * the other can be NULL.
  */
-static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface,
-		      VikTrwLayer *vtl, VikTrack *track, gpointer userdata, VikDataSourceCleanupFunc cleanup_function )
+static void acquire ( VikWindow *vw,
+                      VikLayersPanel *vlp,
+                      VikViewport *vvp,
+                      vik_datasource_mode_t mode,
+                      VikDataSourceInterface *source_interface,
+                      VikTrwLayer *vtl,
+                      VikTrack *track,
+                      gpointer userdata,
+                      VikDataSourceCleanupFunc cleanup_function )
 {
   /* for manual dialogs */
   GtkWidget *dialog = NULL;
@@ -341,7 +348,7 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   wi->extra = extra; /* usually input data type (?) */
   wi->options = options;
   wi->vtl = vtl;
-  wi->creating_new_layer = (!vtl);
+  wi->creating_new_layer = (!vtl); // Default if Auto Layer Management is passed in
 
   dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_dialog_set_response_sensitive ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT, FALSE );
@@ -365,14 +372,17 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
   }
   w->user_data = user_data;
 
-  if (source_interface->mode == VIK_DATASOURCE_ADDTOLAYER) {
+  if ( mode == VIK_DATASOURCE_ADDTOLAYER ) {
     VikLayer *current_selected = vik_layers_panel_get_selected ( w->vlp );
     if ( IS_VIK_TRW_LAYER(current_selected) ) {
       wi->vtl = VIK_TRW_LAYER(current_selected);
       wi->creating_new_layer = FALSE;
     }
   }
-  else if ( source_interface->mode == VIK_DATASOURCE_MANUAL_LAYER_MANAGEMENT ) {
+  else if ( mode == VIK_DATASOURCE_CREATENEWLAYER ) {
+    wi->creating_new_layer = TRUE;
+  }
+  else if ( mode == VIK_DATASOURCE_MANUAL_LAYER_MANAGEMENT ) {
     // Don't create in acquire - as datasource will perform the necessary actions
     wi->creating_new_layer = FALSE;
     VikLayer *current_selected = vik_layers_panel_get_selected ( w->vlp );
@@ -447,16 +457,22 @@ static void acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikD
  * @vw: The #VikWindow to work with
  * @vlp: The #VikLayersPanel in which a #VikTrwLayer layer may be created/appended
  * @vvp: The #VikViewport defining the current view
+ * @mode: How layers should be managed
  * @source_interface: The #VikDataSourceInterface determining how and what actions to take
  * @userdata: External data to be passed into the #VikDataSourceInterface
  * @cleanup_function: The function to dispose the #VikDataSourceInterface if necessary
  *
  * Process the given VikDataSourceInterface for sources with no input data.
  */
-void a_acquire ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikDataSourceInterface *source_interface,
-                 gpointer userdata, VikDataSourceCleanupFunc cleanup_function )
+void a_acquire ( VikWindow *vw,
+                 VikLayersPanel *vlp,
+                 VikViewport *vvp,
+                 vik_datasource_mode_t mode,
+                 VikDataSourceInterface *source_interface,
+                 gpointer userdata,
+                 VikDataSourceCleanupFunc cleanup_function )
 {
-  acquire ( vw, vlp, vvp, source_interface, NULL, NULL, userdata, cleanup_function );
+  acquire ( vw, vlp, vvp, mode, source_interface, NULL, NULL, userdata, cleanup_function );
 }
 
 static void acquire_trwlayer_callback ( GObject *menuitem, gpointer *pass_along )
@@ -468,7 +484,7 @@ static void acquire_trwlayer_callback ( GObject *menuitem, gpointer *pass_along 
   VikTrwLayer *vtl =	pass_along[3];
   VikTrack *tr =	pass_along[4];
 
-  acquire ( vw, vlp, vvp, iface, vtl, tr, NULL, NULL );
+  acquire ( vw, vlp, vvp, iface->mode, iface, vtl, tr, NULL, NULL );
 }
 
 static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp,

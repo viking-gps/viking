@@ -59,7 +59,7 @@ static void datasource_file_cleanup ( gpointer data );
 VikDataSourceInterface vik_datasource_file_interface = {
   N_("Import file with GPSBabel"),
   N_("Imported file"),
-  VIK_DATASOURCE_ADDTOLAYER,
+  VIK_DATASOURCE_AUTO_LAYER_MANAGEMENT,
   VIK_DATASOURCE_INPUTTYPE_NONE,
   TRUE,
   TRUE,
