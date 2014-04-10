@@ -38,6 +38,9 @@ GList * str_array_to_glist(gchar* data[]);
 
 gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar **val );
 
+void util_add_to_deletion_list ( const gchar* filename );
+void util_remove_all_in_deletion_list ( void );
+
 G_END_DECLS
 
 #endif

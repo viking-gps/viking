@@ -32,6 +32,7 @@
 #include "babel.h"
 #include "gpx.h"
 #include "acquire.h"
+#include "util.h"
 
 /************************ FILTER LIST *******************/
 // extern VikDataSourceInterface vik_datasource_gps_interface;
@@ -274,14 +275,18 @@ static void acquire ( VikWindow *vw,
     ((VikDataSourceGetCmdStringFuncWithInput) source_interface->get_cmd_string_func)
 	( pass_along_data, &cmd, &extra, name_src );
 
+    util_add_to_deletion_list ( name_src );
+
     g_free ( name_src );
-    /* TODO: delete the tmp file? or delete it only after we're done with it? */
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK ) {
     gchar *name_src = a_gpx_write_tmp_file ( vtl, NULL );
     gchar *name_src_track = a_gpx_write_track_tmp_file ( track, NULL );
 
     ((VikDataSourceGetCmdStringFuncWithInputInput) source_interface->get_cmd_string_func)
 	( pass_along_data, &cmd, &extra, name_src, name_src_track );
+
+    util_add_to_deletion_list ( name_src );
+    util_add_to_deletion_list ( name_src_track );
 
     g_free ( name_src );
     g_free ( name_src_track );

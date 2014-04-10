@@ -32,6 +32,7 @@
 #include "viking.h"
 #include "viktrwlayer_export.h"
 #include "gpx.h"
+#include "util.h"
 
 void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {
@@ -89,10 +90,7 @@ void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external
       g_error_free ( err );
     }
     g_free ( cmd );
-    // Note ATM the 'temporary' file is not deleted, as loading via another program is not instantaneous
-    //g_remove ( name_used );
-    // Perhaps should be deleted when the program ends?
-    // For now leave it to the user to delete it / use system temp cleanup methods.
+    util_add_to_deletion_list ( name_used );
     g_free ( name_used );
   }
   else

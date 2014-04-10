@@ -36,6 +36,7 @@
 #include "vikmapslayer.h"
 #include "vikrouting.h"
 #include "vikutils.h"
+#include "util.h"
 
 #ifdef VIK_CONFIG_GEOCACHES
 void a_datasource_gc_init();
@@ -238,6 +239,9 @@ int main( int argc, char *argv[] )
   a_settings_uninit ();
 
   curl_download_uninit();
+
+  // Clean up any temporary files
+  util_remove_all_in_deletion_list ();
 
   return 0;
 }

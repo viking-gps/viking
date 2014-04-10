@@ -1,6 +1,7 @@
 /*
  *    Viking - GPS data editor
  *    Copyright (C) 2007, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ *    Copyright (C) 2014, Rob Norris <rw_norris@hotmail.com>
  *    Based on:
  *    Copyright (C) 2003-2007, Leandro A. F. Pereira <leandro@linuxmag.com.br>
  *
@@ -168,4 +169,34 @@ gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar
   *val = g_strstrip ( *val );
 
   return TRUE;
+}
+
+static GSList* deletion_list = NULL;
+
+/**
+ * util_add_to_deletion_list:
+ *
+ * Add a name of a file into the list that is to be deleted on program exit
+ * Normally this is for files that get used asynchronously,
+ *  so we don't know when it's time to delete them - other than at this program's end
+ */
+void util_add_to_deletion_list ( const gchar* filename )
+{
+	deletion_list = g_slist_append ( deletion_list, g_strdup (filename) );
+}
+
+/**
+ * util_remove_all_in_deletion_list:
+ *
+ * Delete all the files in the deletion list
+ * This should only be called on program exit
+ */
+void util_remove_all_in_deletion_list ( void )
+{
+	while ( deletion_list )
+	{
+		g_remove ( deletion_list->data );
+		g_free ( deletion_list->data );
+		deletion_list = g_slist_delete_link ( deletion_list, deletion_list );
+	}
 }
