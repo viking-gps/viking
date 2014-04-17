@@ -882,7 +882,7 @@ static void real_time_label_update (GtkWidget *widget, VikTrackpoint *trackpoint
   if ( trackpoint->has_timestamp )
     // Alternatively could use %c format but I prefer a slightly more compact form here
     //  The full date can of course be seen on the Statistics tab
-    strftime (tmp_buf, sizeof(tmp_buf), "%x %X %Z", localtime(&(trackpoint->timestamp)));
+    strftime (tmp_buf, sizeof(tmp_buf), "%X %x %Z", localtime(&(trackpoint->timestamp)));
   else
     g_snprintf (tmp_buf, sizeof(tmp_buf), _("No Data"));
   gtk_label_set_text(GTK_LABEL(widget), tmp_buf);
@@ -3309,7 +3309,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     page = create_graph_page (widgets->speed_box,
                               _("<b>Track Time:</b>"), widgets->w_cur_time,
                               _("<b>Track Speed:</b>"), widgets->w_cur_speed,
-                              _("<b>Date/Time:</b>"), widgets->w_cur_time_real,
+                              _("<b>Time/Date:</b>"), widgets->w_cur_time_real,
                               widgets->w_show_gps_speed, TRUE,
                               NULL, FALSE);
     g_signal_connect (widgets->w_show_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
@@ -3325,7 +3325,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     page = create_graph_page (widgets->dist_box,
                               _("<b>Track Distance:</b>"), widgets->w_cur_dist_dist,
                               _("<b>Track Time:</b>"), widgets->w_cur_dist_time,
-                              _("<b>Date/Time:</b>"), widgets->w_cur_dist_time_real,
+                              _("<b>Time/Date:</b>"), widgets->w_cur_dist_time_real,
                               widgets->w_show_dist_speed, FALSE,
                               NULL, FALSE);
     g_signal_connect (widgets->w_show_dist_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
@@ -3341,7 +3341,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     page = create_graph_page (widgets->elev_time_box,
                               _("<b>Track Time:</b>"), widgets->w_cur_elev_time,
                               _("<b>Track Height:</b>"), widgets->w_cur_elev_elev,
-                              _("<b>Date/Time:</b>"), widgets->w_cur_elev_time_real,
+                              _("<b>Time/Date:</b>"), widgets->w_cur_elev_time_real,
                               widgets->w_show_elev_speed, FALSE,
                               NULL, FALSE);
     g_signal_connect (widgets->w_show_elev_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
