@@ -38,9 +38,9 @@
 
 struct _VikTrwLayerTpwin {
   GtkDialog parent;
-  GtkSpinButton *lat, *lon, *alt;
+  GtkSpinButton *lat, *lon, *alt, *ts;
   GtkWidget *trkpt_name;
-  GtkLabel *course, *ts, *localtime, *diff_dist, *diff_time, *diff_speed, *speed, *hdop, *vdop, *pdop, *sat;
+  GtkLabel *course, *localtime, *diff_dist, *diff_time, *diff_speed, *speed, *hdop, *vdop, *pdop, *sat;
   // Previously these buttons were in a glist, however I think the ordering behaviour is implicit
   //  thus control manually to ensure operating on the correct button
   GtkWidget *button_close;
@@ -75,6 +75,24 @@ GType vik_trw_layer_tpwin_get_type (void)
   }
 
   return tpwin_type;
+}
+
+/**
+ *  Just update the display for the time fields
+ */
+static void tpwin_update_times ( VikTrwLayerTpwin *tpwin, VikTrackpoint *tp )
+{
+  char tmp_str[64];
+
+  if ( tp->has_timestamp ) {
+    gtk_spin_button_set_value ( tpwin->ts, tp->timestamp );
+    strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(tp->timestamp)) );
+    gtk_label_set_text ( tpwin->localtime, tmp_str );
+  }
+  else {
+    gtk_spin_button_set_value ( tpwin->ts, 0 );
+    gtk_label_set_text (tpwin->localtime, NULL );
+  }
 }
 
 static void tpwin_sync_ll_to_tp ( VikTrwLayerTpwin *tpwin )
@@ -112,6 +130,18 @@ static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
       tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt );
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
+  }
+}
+
+/**
+ *
+ */
+static void tpwin_sync_ts_to_tp ( VikTrwLayerTpwin *tpwin )
+{
+  if ( tpwin->cur_tp && (!tpwin->sync_to_tp_block) ) {
+    tpwin->cur_tp->timestamp = gtk_spin_button_get_value_as_int ( tpwin->ts );
+
+    tpwin_update_times ( tpwin, tpwin->cur_tp );
   }
 }
 
@@ -174,7 +204,6 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   g_signal_connect_swapped ( G_OBJECT(tpwin->trkpt_name), "focus-out-event", G_CALLBACK(tpwin_set_name), tpwin );
 
   tpwin->course = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->ts = GTK_LABEL(gtk_label_new(NULL));
   tpwin->localtime = GTK_LABEL(gtk_label_new(NULL));
 
   tpwin->lat = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT(gtk_adjustment_new (
@@ -189,6 +218,10 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
                                  0, -1000, 25000, 10, 100, 0 )), 10, 2));
 
   g_signal_connect_swapped ( G_OBJECT(tpwin->alt), "value-changed", G_CALLBACK(tpwin_sync_alt_to_tp), tpwin );
+
+  tpwin->ts = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(0,2147483647,1)); //pow(2,31)-1 limit input to ~2038 for now
+  g_signal_connect_swapped ( G_OBJECT(tpwin->ts), "value-changed", G_CALLBACK(tpwin_sync_ts_to_tp), tpwin );
+  gtk_spin_button_set_digits ( tpwin->ts, 0 );
 
   right_vbox = gtk_vbox_new ( TRUE, 1 );
   gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->trkpt_name), FALSE, FALSE, 3 );
@@ -248,13 +281,13 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_editable_delete_text ( GTK_EDITABLE(tpwin->trkpt_name), 0, -1 );
   gtk_widget_set_sensitive ( tpwin->trkpt_name, FALSE );
 
-  gtk_label_set_text ( tpwin->ts, NULL );
   gtk_label_set_text ( tpwin->localtime, NULL );
   gtk_label_set_text ( tpwin->course, NULL );
 
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lat), FALSE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), FALSE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), FALSE );
+  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), FALSE );
 
   // Only keep close button enabled
   gtk_widget_set_sensitive ( tpwin->button_insert, FALSE );
@@ -300,6 +333,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lat), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), TRUE );
+  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), tp->has_timestamp );
 
   vik_trw_layer_tpwin_set_track_name ( tpwin, track_name );
 
@@ -321,20 +355,9 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     g_critical("Houston, we've had a problem. height=%d", height_units);
   }
 
-  tpwin->sync_to_tp_block = FALSE; // don't update while setting data.
+  tpwin_update_times ( tpwin, tp );
 
-  if ( tp->has_timestamp )
-  {
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%ld", tp->timestamp );
-    gtk_label_set_text ( tpwin->ts, tmp_str );
-    strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(tp->timestamp)) );
-    gtk_label_set_text ( tpwin->localtime, tmp_str );
-  }
-  else
-  {
-    gtk_label_set_text (tpwin->ts, NULL );
-    gtk_label_set_text (tpwin->localtime, NULL );
-  }
+  tpwin->sync_to_tp_block = FALSE; // don't update while setting data.
 
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
