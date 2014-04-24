@@ -35,12 +35,14 @@
 #include "vikwaypoint.h"
 #include "dialog.h"
 #include "globals.h"
+#include "vikdatetime_edit_dialog.h"
 
 struct _VikTrwLayerTpwin {
   GtkDialog parent;
   GtkSpinButton *lat, *lon, *alt, *ts;
   GtkWidget *trkpt_name;
-  GtkLabel *course, *localtime, *diff_dist, *diff_time, *diff_speed, *speed, *hdop, *vdop, *pdop, *sat;
+  GtkWidget *localtime;
+  GtkLabel *course, *diff_dist, *diff_time, *diff_speed, *speed, *hdop, *vdop, *pdop, *sat;
   // Previously these buttons were in a glist, however I think the ordering behaviour is implicit
   //  thus control manually to ensure operating on the correct button
   GtkWidget *button_close;
@@ -87,11 +89,11 @@ static void tpwin_update_times ( VikTrwLayerTpwin *tpwin, VikTrackpoint *tp )
   if ( tp->has_timestamp ) {
     gtk_spin_button_set_value ( tpwin->ts, tp->timestamp );
     strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(tp->timestamp)) );
-    gtk_label_set_text ( tpwin->localtime, tmp_str );
+    gtk_button_set_label ( GTK_BUTTON(tpwin->localtime), tmp_str );
   }
   else {
     gtk_spin_button_set_value ( tpwin->ts, 0 );
-    gtk_label_set_text (tpwin->localtime, NULL );
+    gtk_button_set_label ( GTK_BUTTON(tpwin->localtime), "" );
   }
 }
 
@@ -143,6 +145,36 @@ static void tpwin_sync_ts_to_tp ( VikTrwLayerTpwin *tpwin )
 
     tpwin_update_times ( tpwin, tpwin->cur_tp );
   }
+}
+
+/**
+ * tpwin_sync_time_to_tp:
+ *
+ */
+static void tpwin_sync_time_to_tp ( VikTrwLayerTpwin *tpwin )
+{
+  if ( !tpwin->cur_tp || tpwin->sync_to_tp_block )
+    return;
+  // Currently disable setting the time via this way when the point doesn't have one
+  if ( !tpwin->cur_tp->has_timestamp )
+    return;
+
+  GTimeZone *gtz = g_time_zone_new_local ();
+  guint mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(&tpwin->parent))),
+                                            _("Date/Time Edit"),
+                                            tpwin->cur_tp->timestamp,
+                                            gtz );
+  g_time_zone_unref ( gtz );
+
+  // Was the dialog cancelled?
+  if ( mytime == 0 )
+    return;
+
+  // Otherwise use the new value
+  tpwin->cur_tp->timestamp = mytime;
+  // TODO: consider warning about unsorted times?
+
+  tpwin_update_times ( tpwin, tpwin->cur_tp );
 }
 
 static gboolean tpwin_set_name ( VikTrwLayerTpwin *tpwin )
@@ -204,7 +236,9 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   g_signal_connect_swapped ( G_OBJECT(tpwin->trkpt_name), "focus-out-event", G_CALLBACK(tpwin_set_name), tpwin );
 
   tpwin->course = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->localtime = GTK_LABEL(gtk_label_new(NULL));
+  tpwin->localtime = gtk_button_new();
+  gtk_button_set_relief ( GTK_BUTTON(tpwin->localtime), GTK_RELIEF_NONE );
+  g_signal_connect_swapped ( G_OBJECT(tpwin->localtime), "clicked", G_CALLBACK(tpwin_sync_time_to_tp), tpwin );
 
   tpwin->lat = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT(gtk_adjustment_new (
                                  0, -90, 90, 0.00005, 0.01, 0 )), 0.00005, 6));
@@ -281,13 +315,14 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_editable_delete_text ( GTK_EDITABLE(tpwin->trkpt_name), 0, -1 );
   gtk_widget_set_sensitive ( tpwin->trkpt_name, FALSE );
 
-  gtk_label_set_text ( tpwin->localtime, NULL );
+  gtk_button_set_label ( GTK_BUTTON(tpwin->localtime), "" );
   gtk_label_set_text ( tpwin->course, NULL );
 
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lat), FALSE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), FALSE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), FALSE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), FALSE );
+  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->localtime), FALSE );
 
   // Only keep close button enabled
   gtk_widget_set_sensitive ( tpwin->button_insert, FALSE );
@@ -334,6 +369,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), tp->has_timestamp );
+  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->localtime), tp->has_timestamp );
 
   vik_trw_layer_tpwin_set_track_name ( tpwin, track_name );
 

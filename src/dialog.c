@@ -34,6 +34,7 @@
 #include "vikgoto.h"
 #include "util.h"
 #include "geotag_exif.h"
+#include "vikdatetime_edit_dialog.h"
 
 #include <glib/gi18n.h>
 
@@ -180,6 +181,34 @@ void a_dialog_response_accept ( GtkDialog *dialog )
   gtk_dialog_response ( dialog, GTK_RESPONSE_ACCEPT );
 }
 
+static void update_time ( GtkWidget *widget, time_t timestamp )
+{
+  gchar tmp_str[64];
+  strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(timestamp)) );
+  gtk_button_set_label ( GTK_BUTTON(widget), tmp_str );
+}
+
+static VikWaypoint *edit_wp;
+
+static void time_edit_click ( GtkWidget *widget, VikWaypoint *wp )
+{
+  GTimeZone *gtz = g_time_zone_new_local ();
+  time_t mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                                             _("Date/Time Edit"),
+                                             wp->timestamp,
+                                             gtz );
+  g_time_zone_unref ( gtz );
+
+  // Was the dialog cancelled?
+  if ( mytime == 0 )
+    return;
+
+  // Otherwise use new value in the edit buffer
+  edit_wp->timestamp = mytime;
+
+  update_time ( widget, edit_wp->timestamp );
+}
+
 static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
 {
   GtkTreeIter iter;
@@ -213,7 +242,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL;
   GtkWidget *commentlabel, *commententry, *descriptionlabel, *descriptionentry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
   GtkWidget *timelabel = NULL;
-  GtkWidget *timevaluelabel = NULL; // No editing of time allowed ATM
+  GtkWidget *timevaluebutton = NULL;
   GtkWidget *hasGeotagCB = NULL;
   GtkWidget *consistentGeotagCB = NULL;
   GtkListStore *store;
@@ -346,12 +375,15 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     }
   }
 
+
+  if ( !edit_wp )
+    edit_wp = vik_waypoint_new ();
   if ( !is_new && wp->has_timestamp ) {
-    gchar tmp_str[64];
     timelabel = gtk_label_new ( _("Time:") );
-    timevaluelabel = gtk_label_new ( NULL );
-    strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(wp->timestamp)) );
-    gtk_label_set_text ( GTK_LABEL(timevaluelabel), tmp_str );
+    timevaluebutton = gtk_button_new();
+    gtk_button_set_relief ( GTK_BUTTON(timevaluebutton), GTK_RELIEF_NONE );
+    update_time ( timevaluebutton, wp->timestamp );
+    g_signal_connect ( G_OBJECT(timevaluebutton), "clicked", G_CALLBACK(time_edit_click), edit_wp );
   }
 
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel, FALSE, FALSE, 0);
@@ -360,7 +392,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonentry, FALSE, FALSE, 0);
   if ( timelabel ) {
     gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timevaluelabel, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timevaluebutton, FALSE, FALSE, 0);
   }
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altentry, FALSE, FALSE, 0);
@@ -420,6 +452,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
       if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
         a_thumbnails_create ( wp->image );
+      if ( edit_wp->timestamp ) {
+        wp->timestamp = edit_wp->timestamp;
+        wp->has_timestamp = TRUE;
+      }
 
       GtkTreeIter iter, first;
       gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );

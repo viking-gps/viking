@@ -128,6 +128,7 @@ libviking_a_SOURCES = \
 	googlesearch.c googlesearch.h \
 	dem.c dem.h \
 	vikdemlayer.h vikdemlayer.c \
+	vikdatetime_edit_dialog.c vikdatetime_edit_dialog.h \
 	vikfilelist.c vikfilelist.h \
 	vikexttool.c vikexttool.h \
 	vikexttools.c vikexttools.h \
