@@ -258,8 +258,12 @@ static void track_recalculate_bounds_last_tp ( VikTrack *trk )
  */
 void vik_track_add_trackpoint ( VikTrack *tr, VikTrackpoint *tp, gboolean recalculate )
 {
+  // When it's the first trackpoint need to ensure the bounding box is initialized correctly
+  gboolean adding_first_point = tr->trackpoints ? FALSE : TRUE;
   tr->trackpoints = g_list_append ( tr->trackpoints, tp );
-  if ( recalculate )
+  if ( adding_first_point )
+    vik_track_calculate_bounds ( tr );
+  else if ( recalculate )
     track_recalculate_bounds_last_tp ( tr );
 }
 
