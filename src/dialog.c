@@ -206,6 +206,10 @@ static void time_edit_click ( GtkWidget *widget, VikWaypoint *wp )
   // Otherwise use new value in the edit buffer
   edit_wp->timestamp = mytime;
 
+  // Clear the previous 'Add' image as now a time is set
+  if ( gtk_button_get_image ( GTK_BUTTON(widget) ) )
+    gtk_button_set_image ( GTK_BUTTON(widget), NULL );
+
   update_time ( widget, edit_wp->timestamp );
 }
 
@@ -375,25 +379,34 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     }
   }
 
+  timelabel = gtk_label_new ( _("Time:") );
+  timevaluebutton = gtk_button_new();
+  gtk_button_set_relief ( GTK_BUTTON(timevaluebutton), GTK_RELIEF_NONE );
 
   if ( !edit_wp )
     edit_wp = vik_waypoint_new ();
+
+  // TODO: Consider if there should be a remove time button...
+
   if ( !is_new && wp->has_timestamp ) {
-    timelabel = gtk_label_new ( _("Time:") );
-    timevaluebutton = gtk_button_new();
-    gtk_button_set_relief ( GTK_BUTTON(timevaluebutton), GTK_RELIEF_NONE );
     update_time ( timevaluebutton, wp->timestamp );
-    g_signal_connect ( G_OBJECT(timevaluebutton), "clicked", G_CALLBACK(time_edit_click), edit_wp );
   }
+  else {
+    GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
+    gtk_button_set_image ( GTK_BUTTON(timevaluebutton), img );
+    // Initially use current time or otherwise whatever the last value used was
+    if ( edit_wp->timestamp == 0 ) {
+      time ( &edit_wp->timestamp );
+    }
+  }
+  g_signal_connect ( G_OBJECT(timevaluebutton), "clicked", G_CALLBACK(time_edit_click), edit_wp );
 
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonentry, FALSE, FALSE, 0);
-  if ( timelabel ) {
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timevaluebutton, FALSE, FALSE, 0);
-  }
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timevaluebutton, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), commentlabel, FALSE, FALSE, 0);

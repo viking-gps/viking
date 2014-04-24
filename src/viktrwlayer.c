@@ -8507,7 +8507,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   if ( response == VIK_TRW_LAYER_TPWIN_SPLIT && vtl->current_tpl->next && vtl->current_tpl->prev )
   {
     trw_layer_split_at_selected_trackpoint ( vtl, vtl->current_tp_track->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK );
-    vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+    vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DELETE )
   {
@@ -8521,20 +8521,20 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
 
     if ( vtl->current_tpl )
       // Reset dialog with the available adjacent trackpoint
-      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
 
     vik_layer_emit_update(VIK_LAYER(vtl));
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_FORWARD && vtl->current_tpl->next )
   {
     if ( vtl->current_tp_track )
-      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->next, vtl->current_tp_track->name );
+      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->next, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
     vik_layer_emit_update(VIK_LAYER(vtl)); /* TODO longone: either move or only update if tp is inside drawing window */
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_BACK && vtl->current_tpl->prev )
   {
     if ( vtl->current_tp_track )
-      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->prev, vtl->current_tp_track->name );
+      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl = vtl->current_tpl->prev, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
     vik_layer_emit_update(VIK_LAYER(vtl));
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_INSERT && vtl->current_tpl->next )
@@ -8661,7 +8661,7 @@ static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
 
   if ( vtl->current_tpl )
     if ( vtl->current_tp_track )
-      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
   /* set layer name and TP data */
 }
 
@@ -8869,7 +8869,7 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
 
         if ( vtl->tpwin )
           if ( vtl->current_tp_track )
-            vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+            vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
         // NB don't reset the selected trackpoint, thus ensuring it's still in the tpwin
       }
     }
@@ -8984,7 +8984,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       set_statusbar_msg_info_trkpt ( vtl, tp_params.closest_tp );
 
       if ( vtl->tpwin )
-	vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+        vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
 
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       return TRUE;
@@ -9019,7 +9019,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       set_statusbar_msg_info_trkpt ( vtl, tp_params.closest_tp );
 
       if ( vtl->tpwin )
-	vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+        vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
 
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       return TRUE;
@@ -9928,7 +9928,7 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
 
     /* diff dist is diff from orig */
     if ( vtl->tpwin )
-      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name );
+      vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, vtl->current_tp_track->name, vtl->current_tp_track->is_route );
 
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;

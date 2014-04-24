@@ -147,6 +147,8 @@ static void tpwin_sync_ts_to_tp ( VikTrwLayerTpwin *tpwin )
   }
 }
 
+static time_t last_edit_time = 0;
+
 /**
  * tpwin_sync_time_to_tp:
  *
@@ -155,15 +157,17 @@ static void tpwin_sync_time_to_tp ( VikTrwLayerTpwin *tpwin )
 {
   if ( !tpwin->cur_tp || tpwin->sync_to_tp_block )
     return;
-  // Currently disable setting the time via this way when the point doesn't have one
-  if ( !tpwin->cur_tp->has_timestamp )
-    return;
+
+  if ( tpwin->cur_tp->has_timestamp )
+    last_edit_time = tpwin->cur_tp->timestamp;
+  else if ( last_edit_time == 0 )
+    time ( &last_edit_time );
 
   GTimeZone *gtz = g_time_zone_new_local ();
-  guint mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(&tpwin->parent))),
-                                            _("Date/Time Edit"),
-                                            tpwin->cur_tp->timestamp,
-                                            gtz );
+  time_t mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(&tpwin->parent))),
+                                             _("Date/Time Edit"),
+                                             last_edit_time,
+                                             gtz );
   g_time_zone_unref ( gtz );
 
   // Was the dialog cancelled?
@@ -172,7 +176,12 @@ static void tpwin_sync_time_to_tp ( VikTrwLayerTpwin *tpwin )
 
   // Otherwise use the new value
   tpwin->cur_tp->timestamp = mytime;
+  tpwin->cur_tp->has_timestamp = TRUE;
   // TODO: consider warning about unsorted times?
+
+  // Clear the previous 'Add' image as now a time is set
+  if ( gtk_button_get_image ( GTK_BUTTON(tpwin->localtime) ) )
+    gtk_button_set_image ( GTK_BUTTON(tpwin->localtime), NULL );
 
   tpwin_update_times ( tpwin, tpwin->cur_tp );
 }
@@ -343,7 +352,17 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_window_set_title ( GTK_WINDOW(tpwin), _("Trackpoint") );
 }
 
-void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gchar *track_name )
+/**
+ * vik_trw_layer_tpwin_set_tp:
+ * @tpwin:      The Trackpoint Edit Window
+ * @tpl:        The #Glist of trackpoints pointing at the current trackpoint
+ * @track_name: The name of the track in which the trackpoint belongs
+ * @is_route:   Is the track of the trackpoint actually a route?
+ *
+ * Sets the Trackpoint Edit Window to the values of the current trackpoint given in @tpl.
+ *
+ */
+void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gchar *track_name, gboolean is_route )
 {
   static char tmp_str[64];
   static struct LatLon ll;
@@ -370,6 +389,13 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), tp->has_timestamp );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->localtime), tp->has_timestamp );
+  // Enable adding timestamps - but not on routepoints
+  if ( !tp->has_timestamp && !is_route ) {
+    gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->localtime), TRUE );
+    GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
+    gtk_button_set_image ( GTK_BUTTON(tpwin->localtime), img );
+  }
+  else
 
   vik_trw_layer_tpwin_set_track_name ( tpwin, track_name );
 
