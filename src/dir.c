@@ -105,7 +105,13 @@ a_get_viking_data_home()
 gchar **
 a_get_viking_data_path()
 {
+#ifdef WINDOWS
+  // Try to use from the install directory - normally the working directory of Viking is where ever it's install location is
+  const gchar *xdg_data_dirs = "./data";
+  //const gchar *xdg_data_dirs = g_strdup ( "%s/%s/data", g_getenv("ProgramFiles"), PACKAGE );
+#else
   const gchar *xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
+#endif
   if (xdg_data_dirs == NULL)
   {
     /* Default value specified in 
@@ -114,6 +120,7 @@ a_get_viking_data_path()
     xdg_data_dirs = "/usr/local/share/:/usr/share/";
   }
   gchar **data_path = g_strsplit(xdg_data_dirs, ":", 0);
+#ifndef WINDOWS
   /* Append the viking dir */
   gchar **path;
   for (path = data_path ; *path != NULL ; path++)
@@ -122,5 +129,6 @@ a_get_viking_data_path()
     *path = g_build_filename(dir, PACKAGE, NULL);
     g_free(dir);
   }
+#endif
   return data_path;
 }
