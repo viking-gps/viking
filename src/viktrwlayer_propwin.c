@@ -156,6 +156,7 @@ typedef struct _propwidgets {
   GtkWidget *w_show_gradient_gps_speed;
   GtkWidget *w_show_dist_speed;
   GtkWidget *w_show_elev_speed;
+  GtkWidget *w_show_elev_dem;
   GtkWidget *w_show_sd_gps_speed;
   gdouble   track_length;
   gdouble   track_length_inc_gaps;
@@ -1491,7 +1492,6 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
   // Assign locally
   gdouble mina = widgets->draw_min_altitude;
-  gdouble maxa = widgets->max_altitude;
 
   GtkWidget *window = gtk_widget_get_toplevel (widgets->elev_box);
   GdkPixmap *pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
@@ -1558,7 +1558,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 			    dem_alt_gc,
 			    gps_speed_gc,
 			    mina,
-			    maxa - mina,
+			    widgets->max_altitude - mina,
 			    widgets->max_speed,
 			    widgets->cia,
 			    widgets->profile_width,
@@ -2019,21 +2019,52 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
                     i + MARGIN_X, height, i + MARGIN_X, height-widgets->profile_height*(widgets->ats[i]-mina)/(chunksa[widgets->ciat]*LINES) );
 
-  // Show speed indicator
-  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed)) ) {
-    GdkGC *elev_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
+  // Show DEMS
+  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_elev_dem)) )  {
     GdkColor color;
+    GdkGC *dem_alt_gc = gdk_gc_new ( gtk_widget_get_window(window) );
+    gdk_color_parse ( "green", &color );
+    gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
+
+    gint h2 = widgets->profile_height + MARGIN_Y; // Adjust height for x axis labelling offset
+    gint achunk = chunksa[widgets->ciat]*LINES;
+
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      // This could be slow doing this each time...
+      VikTrackpoint *tp = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, ((gdouble)i/(gdouble)widgets->profile_width), NULL );
+      if ( tp ) {
+        gint16 elev = a_dems_get_elev_by_coord(&(tp->coord), VIK_DEM_INTERPOL_SIMPLE);
+        elev -= mina; //?
+        if ( elev != VIK_DEM_INVALID_ELEVATION ) {
+          // Convert into height units
+          if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+            elev = VIK_METERS_TO_FEET(elev);
+          // No conversion needed if already in metres
+
+          // consider chunk size
+          int y_alt = h2 - ((widgets->profile_height * elev)/achunk );
+          gdk_draw_rectangle(GDK_DRAWABLE(pix), dem_alt_gc, TRUE, i+MARGIN_X-2, y_alt-2, 4, 4);
+        }
+      }
+    }
+    g_object_unref ( G_OBJECT(dem_alt_gc) );
+  }
+
+  // Show speeds
+  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed)) ) {
+    GdkColor color;
+    // This is just an indicator - no actual values can be inferred by user
+    GdkGC *elev_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
     gdk_color_parse ( "red", &color );
     gdk_gc_set_rgb_fg_color ( elev_speed_gc, &color);
 
-    gdouble max_speed = 0;
-    max_speed = widgets->max_speed * 110 / 100;
+    gdouble max_speed = widgets->max_speed * 110 / 100;
 
-    // This is just an indicator - no actual values can be inferred by user
     for ( i = 0; i < widgets->profile_width; i++ ) {
       int y_speed = widgets->profile_height - (widgets->profile_height * widgets->speeds[i])/max_speed;
       gdk_draw_rectangle(GDK_DRAWABLE(pix), elev_speed_gc, TRUE, i+MARGIN_X-2, y_speed-2, 4, 4);
     }
+
     g_object_unref ( G_OBJECT(elev_speed_gc) );
   }
 
@@ -3338,12 +3369,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->w_cur_elev_elev = gtk_label_new(_("No Data"));
     widgets->w_cur_elev_time_real = gtk_label_new(_("No Data"));
     widgets->w_show_elev_speed = gtk_check_button_new_with_mnemonic(_("Show S_peed"));
+    widgets->w_show_elev_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
     page = create_graph_page (widgets->elev_time_box,
                               _("<b>Track Time:</b>"), widgets->w_cur_elev_time,
                               _("<b>Track Height:</b>"), widgets->w_cur_elev_elev,
                               _("<b>Time/Date:</b>"), widgets->w_cur_elev_time_real,
-                              widgets->w_show_elev_speed, FALSE,
-                              NULL, FALSE);
+                              widgets->w_show_elev_dem, FALSE,
+                              widgets->w_show_elev_speed, FALSE);
+    g_signal_connect (widgets->w_show_elev_dem, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     g_signal_connect (widgets->w_show_elev_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-time")));
   }
