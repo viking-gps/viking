@@ -32,6 +32,7 @@
 #include "authors.h"
 #include "documenters.h"
 #include "vikgoto.h"
+#include "vikutils.h"
 #include "util.h"
 #include "geotag_exif.h"
 #include "vikdatetime_edit_dialog.h"
@@ -181,11 +182,11 @@ void a_dialog_response_accept ( GtkDialog *dialog )
   gtk_dialog_response ( dialog, GTK_RESPONSE_ACCEPT );
 }
 
-static void update_time ( GtkWidget *widget, time_t timestamp )
+static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 {
-  gchar tmp_str[64];
-  strftime ( tmp_str, sizeof(tmp_str), "%c", localtime(&(timestamp)) );
-  gtk_button_set_label ( GTK_BUTTON(widget), tmp_str );
+  gchar *msg = vu_get_time_string ( &(wp->timestamp), "%c", &(wp->coord), NULL );
+  gtk_button_set_label ( GTK_BUTTON(widget), msg );
+  g_free ( msg );
 }
 
 static VikWaypoint *edit_wp;
@@ -210,7 +211,7 @@ static void time_edit_click ( GtkWidget *widget, VikWaypoint *wp )
   if ( gtk_button_get_image ( GTK_BUTTON(widget) ) )
     gtk_button_set_image ( GTK_BUTTON(widget), NULL );
 
-  update_time ( widget, edit_wp->timestamp );
+  update_time ( widget, edit_wp );
 }
 
 static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
@@ -385,11 +386,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
 
   if ( !edit_wp )
     edit_wp = vik_waypoint_new ();
+  edit_wp = vik_waypoint_copy ( wp );
 
   // TODO: Consider if there should be a remove time button...
 
   if ( !is_new && wp->has_timestamp ) {
-    update_time ( timevaluebutton, wp->timestamp );
+    update_time ( timevaluebutton, wp );
   }
   else {
     GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );

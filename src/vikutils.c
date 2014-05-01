@@ -480,3 +480,48 @@ gchar *vu_get_canonical_filename ( VikLayer *vl, const gchar *filename )
 
   return canonical;
 }
+
+/**
+ * vu_get_time_string:
+ *
+ * @time_t: The time of which the string is wanted
+ * @format  The format of the time string - such as "%c"
+ * @vc:     Position of object for the time output - maybe NULL
+ *          (only applicable for VIK_TIME_REF_WORLD)
+ * @tz:     TimeZone string - maybe NULL.
+ *          (only applicable for VIK_TIME_REF_WORLD)
+ *
+ * Returns: A string of the time according to the time display property
+ */
+gchar* vu_get_time_string ( time_t *time, const gchar *format, const VikCoord* vc, const gchar *tz )
+{
+	if ( !format ) return NULL;
+	gchar *str = NULL;
+	switch ( a_vik_get_time_ref_frame() ) {
+		case VIK_TIME_REF_UTC:
+			str = g_malloc ( 64 );
+			strftime ( str, 64, format, gmtime(time) ); // Always 'GMT'
+			break;
+		case VIK_TIME_REF_WORLD:
+			// Highly simplistic method that doesn't take into account Timezones of countries.
+			// This will become the fallback method when a Timezone lookup is implemented.
+			if ( vc ) {
+				struct LatLon ll;
+				vik_coord_to_latlon ( vc, &ll );
+				gint offset_hours = round ( ll.lon / 15.0 );
+				str = g_malloc ( 64 );
+				struct tm* mytime = gmtime(time);
+				mytime->tm_hour = mytime->tm_hour + offset_hours;
+				// Normalize result
+				mktime(mytime);
+				// Append asterisks to indicate use of simplistic model
+				strftime ( str, 64, "%a %X %x **", mytime );
+			}
+			break;
+		default: // VIK_TIME_REF_LOCALE
+			str = g_malloc ( 64 );
+			strftime ( str, 64, format, localtime(time) );
+			break;
+	}
+	return str;
+}
