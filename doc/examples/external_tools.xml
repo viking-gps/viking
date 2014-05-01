@@ -2,9 +2,10 @@
 <objects>
   <!-- The VikWebtoolCenter allows to declare any Webtool using a logic based on center coordinates and zoom level value. -->
   <object class="VikWebtoolCenter">
-    <property name="label">Yahoo! Maps</property>
-    <property name="url">http://maps.yahoo.com/#lat=%s&amp;lon=%s&amp;zoom=%d</property>
+    <property name="label">NLS: Historic Map of GB</property>
+    <property name="url">http://nls.tileserver.com?lat=%s&amp;lng=%s&amp;zoom=%d</property>
   </object>
+  <!-- NB The JOSM link is built into the source code - see osm.c -->
   <!-- The VikWebtoolBounds allows to declare any Webtool using a logic based on bounds coordinates. -->
   <object class="VikWebtoolBounds">
     <property name="label">Local port 8111 (eg JOSM)</property>
