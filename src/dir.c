@@ -119,7 +119,9 @@ a_get_viking_data_path()
      */
     xdg_data_dirs = "/usr/local/share/:/usr/share/";
   }
-  gchar **data_path = g_strsplit(xdg_data_dirs, ":", 0);
+
+  gchar **data_path = g_strsplit(xdg_data_dirs, G_SEARCHPATH_SEPARATOR_S, 0);
+
 #ifndef WINDOWS
   /* Append the viking dir */
   gchar **path;
