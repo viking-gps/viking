@@ -99,6 +99,16 @@ static const time_t chunkst[] = {
   2419200,// 4 weeks
 };
 
+// Local show settings to restore on dialog opening
+static gboolean show_dem                = TRUE;
+static gboolean show_alt_gps_speed      = TRUE;
+static gboolean show_gps_speed          = TRUE;
+static gboolean show_gradient_gps_speed = TRUE;
+static gboolean show_dist_speed         = FALSE;
+static gboolean show_elev_speed         = FALSE;
+static gboolean show_elev_dem           = FALSE;
+static gboolean show_sd_gps_speed       = TRUE;
+
 typedef struct _propsaved {
   gboolean saved;
   GdkImage *img;
@@ -2765,8 +2775,19 @@ GtkWidget *vik_trw_layer_create_sddiag ( GtkWidget *window, PropWidgets *widgets
 
 static void save_values ( PropWidgets *widgets )
 {
+  // Session settings
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, widgets->profile_width );
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, widgets->profile_height );
+
+  // Just for this session ATM
+  show_dem                = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem) );
+  show_alt_gps_speed      = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed) );
+  show_gps_speed          = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_gps_speed) );
+  show_gradient_gps_speed = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_gradient_gps_speed) );
+  show_dist_speed         = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dist_speed) );
+  show_elev_dem           = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_elev_dem) );
+  show_elev_speed         = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed) );
+  show_sd_gps_speed       = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_sd_gps_speed) );
 }
 
 static void destroy_cb ( GtkDialog *dialog, PropWidgets *widgets )
@@ -3309,8 +3330,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                               _("<b>Track Distance:</b>"), widgets->w_cur_dist,
                               _("<b>Track Height:</b>"), widgets->w_cur_elevation,
                               NULL, NULL,
-                              widgets->w_show_dem, TRUE,
-                              widgets->w_show_alt_gps_speed, TRUE);
+                              widgets->w_show_dem, show_dem,
+                              widgets->w_show_alt_gps_speed, show_alt_gps_speed);
     g_signal_connect (widgets->w_show_dem, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     g_signal_connect (widgets->w_show_alt_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
@@ -3325,7 +3346,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                               _("<b>Track Distance:</b>"), widgets->w_cur_gradient_dist,
                               _("<b>Track Gradient:</b>"), widgets->w_cur_gradient_gradient,
                               NULL, NULL,
-                              widgets->w_show_gradient_gps_speed, TRUE,
+                              widgets->w_show_gradient_gps_speed, show_gradient_gps_speed,
                               NULL, FALSE);
     g_signal_connect (widgets->w_show_gradient_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Gradient-distance")));
@@ -3341,7 +3362,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                               _("<b>Track Time:</b>"), widgets->w_cur_time,
                               _("<b>Track Speed:</b>"), widgets->w_cur_speed,
                               _("<b>Time/Date:</b>"), widgets->w_cur_time_real,
-                              widgets->w_show_gps_speed, TRUE,
+                              widgets->w_show_gps_speed, show_gps_speed,
                               NULL, FALSE);
     g_signal_connect (widgets->w_show_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
@@ -3357,7 +3378,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                               _("<b>Track Distance:</b>"), widgets->w_cur_dist_dist,
                               _("<b>Track Time:</b>"), widgets->w_cur_dist_time,
                               _("<b>Time/Date:</b>"), widgets->w_cur_dist_time_real,
-                              widgets->w_show_dist_speed, FALSE,
+                              widgets->w_show_dist_speed, show_dist_speed,
                               NULL, FALSE);
     g_signal_connect (widgets->w_show_dist_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Distance-time")));
@@ -3374,8 +3395,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                               _("<b>Track Time:</b>"), widgets->w_cur_elev_time,
                               _("<b>Track Height:</b>"), widgets->w_cur_elev_elev,
                               _("<b>Time/Date:</b>"), widgets->w_cur_elev_time_real,
-                              widgets->w_show_elev_dem, FALSE,
-                              widgets->w_show_elev_speed, FALSE);
+                              widgets->w_show_elev_dem, show_elev_dem,
+                              widgets->w_show_elev_speed, show_elev_speed);
     g_signal_connect (widgets->w_show_elev_dem, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     g_signal_connect (widgets->w_show_elev_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-time")));
@@ -3390,7 +3411,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                               _("<b>Track Distance:</b>"), widgets->w_cur_speed_dist,
                               _("<b>Track Speed:</b>"), widgets->w_cur_speed_speed,
                               NULL, NULL,
-                              widgets->w_show_sd_gps_speed, TRUE,
+                              widgets->w_show_sd_gps_speed, show_sd_gps_speed,
                               NULL, FALSE);
     g_signal_connect (widgets->w_show_sd_gps_speed, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-distance")));
