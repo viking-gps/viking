@@ -1659,8 +1659,9 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
 #ifdef HAVE_SQLITE3_H
       // And whether to bother going into the SQL to check it's really there or not...
       gchar *exists = NULL;
+      gint zoom = 17 - ulm.scale;
       if ( vml->mbtiles ) {
-        GdkPixbuf *pixbuf = get_pixbuf_sql_exec ( vml->mbtiles, ulm.x, ulm.y, (17 - ulm.scale) );
+        GdkPixbuf *pixbuf = get_pixbuf_sql_exec ( vml->mbtiles, ulm.x, ulm.y, zoom );
         if ( pixbuf ) {
           exists = g_strdup ( _("YES") );
           g_object_unref ( G_OBJECT(pixbuf) );
@@ -1671,9 +1672,9 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
       }
       else
         exists = g_strdup ( _("NO") );
-      gint flip_y = (gint) pow(2, (17 - ulm.scale))-1 - ulm.y;
+      gint flip_y = (gint) pow(2, zoom)-1 - ulm.y;
       // NB Also handles .jpg automatically due to pixbuf_new_from () support - although just print png for now.
-      source = g_strdup_printf ( "%s (%d%s%d%s%d.%s %s)", filename, ulm.scale, G_DIR_SEPARATOR_S, ulm.x, G_DIR_SEPARATOR_S, flip_y, "png", exists );
+      source = g_strdup_printf ( "%s (%d%s%d%s%d.%s %s)", filename, zoom, G_DIR_SEPARATOR_S, ulm.x, G_DIR_SEPARATOR_S, flip_y, "png", exists );
       g_free ( exists );
 #else
       source = g_strdup ( _("Not available") );
