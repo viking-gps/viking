@@ -39,6 +39,7 @@
 
 /*** Input is TRWLayer ***/
 extern VikDataSourceInterface vik_datasource_bfilter_simplify_interface;
+extern VikDataSourceInterface vik_datasource_bfilter_compress_interface;
 extern VikDataSourceInterface vik_datasource_bfilter_dup_interface;
 
 /*** Input is a track and a TRWLayer ***/
@@ -49,6 +50,7 @@ extern VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface;
 
 const VikDataSourceInterface *filters[] = {
   &vik_datasource_bfilter_simplify_interface,
+  &vik_datasource_bfilter_compress_interface,
   &vik_datasource_bfilter_dup_interface,
   &vik_datasource_bfilter_polygon_interface,
   &vik_datasource_bfilter_exclude_polygon_interface,
