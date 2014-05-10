@@ -902,6 +902,15 @@ The password is transferred <emphasis role="bold">unencrypted</emphasis> in ever
 This opens dialog to request the number of points each track will be simplified using <application>GPSBabel</application>. The result is put into a new layer. The simplification method removes points considered to be in a 'near straight line', thus reducing the number of points and attempting to keep the most important turning points.
 </para>
 </section>
+<section><title>Compress Tracks</title>
+<para>
+Enables compression of tracks and routes via <application>GPSBabel</application>'s <emphasis>Crosstrack</emphasis> simplify method.
+It opens a dialog to request the Error factor value which is the maximum allowable error that may be introduced by removing a single point.
+It is expressed a distance in units as specified by the <xref linkend="prefs"/> distance option.
+Thus a higher value will remove more points.
+The result is put into a new layer.
+</para>
+</section>
 <section><title>Remove Duplicate Waypoints</title>
 <para>
 Remove Duplicate Waypoints - fairly self explainatory, with the results created in a new layer.
