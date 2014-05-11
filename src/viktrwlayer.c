@@ -9606,6 +9606,13 @@ static void undo_trackpoint_add ( VikTrwLayer *vtl )
 static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
 {
   if ( vtl->current_track && event->keyval == GDK_Escape ) {
+    // Bin track if only one point as it's not very useful
+    if ( vik_track_get_tp_count(vtl->current_track) == 1 ) {
+      if ( vtl->current_track->is_route )
+        vik_trw_layer_delete_route ( vtl, vtl->current_track );
+      else
+        vik_trw_layer_delete_track ( vtl, vtl->current_track );
+    }
     vtl->current_track = NULL;
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
