@@ -29,8 +29,8 @@ mapzoom=0
 
 
 ~Layer Map
-name=OSM Osmarender
-mode=12
+name=MapQuest
+mode=19
 directory=
 alpha=255
 autodownload=t
