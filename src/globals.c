@@ -111,6 +111,7 @@ static VikLayerParamScale params_recent_files[] = { {-1, 25, 1, 0} };
 static VikLayerParam prefs_advanced[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "save_file_reference_mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Save File Reference Mode:"), VIK_LAYER_WIDGET_COMBOBOX, params_vik_fileref, NULL,
     N_("When saving a Viking .vik file, this determines how the directory paths of filenames are written."), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "ask_for_create_track_name", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Ask for Name before Track Creation:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "create_track_tooltip", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Tooltip during Track Creation:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "number_recent_files", VIK_LAYER_PARAM_INT, VIK_LAYER_GROUP_NONE, N_("The number of recent files:"), VIK_LAYER_WIDGET_SPINBUTTON, params_recent_files, NULL,
     N_("Only applies to new windows or on application restart. -1 means all available files."), NULL, NULL, NULL },
@@ -239,8 +240,11 @@ void a_vik_preferences_init ()
   tmp.b = TRUE;
   a_preferences_register(&prefs_advanced[1], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 
-  tmp.i = 10; // Seemingly GTK's default for the number of recent files
+  tmp.b = TRUE;
   a_preferences_register(&prefs_advanced[2], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
+
+  tmp.i = 10; // Seemingly GTK's default for the number of recent files
+  a_preferences_register(&prefs_advanced[3], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -338,6 +342,11 @@ vik_file_ref_format_t a_vik_get_file_ref_format ( )
   vik_file_ref_format_t format;
   format = a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "save_file_reference_mode")->u;
   return format;
+}
+
+gboolean a_vik_get_ask_for_create_track_name ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "ask_for_create_track_name")->b;
 }
 
 gboolean a_vik_get_create_track_tooltip ( )
