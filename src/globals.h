@@ -90,6 +90,7 @@ typedef enum {
   VIK_DEGREE_FORMAT_DDD,
   VIK_DEGREE_FORMAT_DMM,
   VIK_DEGREE_FORMAT_DMS,
+  VIK_DEGREE_FORMAT_RAW,
 } vik_degree_format_t;
 
 vik_degree_format_t a_vik_get_degree_format ( );

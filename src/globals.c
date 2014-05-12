@@ -64,7 +64,7 @@ gint viking_version_to_number ( gchar *version )
   return version_number;
 }
 
-static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", NULL};
+static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", N_("Raw"), NULL};
 static gchar * params_units_distance[] = {"Kilometres", "Miles", NULL};
 static gchar * params_units_speed[] = {"km/h", "mph", "m/s", "knots", NULL};
 static gchar * params_units_height[] = {"Metres", "Feet", NULL};

@@ -277,6 +277,10 @@ void a_coords_latlon_to_string ( const struct LatLon *latlon,
     *lat = convert_lat_dec_to_dms ( latlon->lat );
     *lon = convert_lon_dec_to_dms ( latlon->lon );
     break;
+  case VIK_DEGREE_FORMAT_RAW:
+    *lat = g_strdup_printf ( "%.6f", latlon->lat );
+    *lon = g_strdup_printf ( "%.6f", latlon->lon );
+    break;
   default:
     g_critical("Houston, we've had a problem. format=%d", format);
   }
