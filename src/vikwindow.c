@@ -693,6 +693,7 @@ static void drag_data_received_cb ( GtkWidget *widget,
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH "window_save_image_width"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT "window_save_image_height"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_PNG "window_save_image_as_png"
+#define VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT "window_copy_centre_full_format"
 
 static void vik_window_init ( VikWindow *vw )
 {
@@ -1157,11 +1158,34 @@ static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
   }
 }
 
+/**
+ * get_location_strings:
+ *
+ * Utility function to get positional strings for the given location
+ * lat and lon strings will get allocated and so need to be freed after use
+ */
+static void get_location_strings ( VikWindow *vw, struct UTM utm, gchar **lat, gchar **lon )
+{
+  if ( vik_viewport_get_drawmode ( vw->viking_vvp ) == VIK_VIEWPORT_DRAWMODE_UTM ) {
+    // Reuse lat for the first part (Zone + N or S, and lon for the second part (easting and northing) of a UTM format:
+    //  ZONE[N|S] EASTING NORTHING
+    *lat = g_malloc(4*sizeof(gchar));
+    // NB zone is stored in a char but is an actual number
+    g_snprintf (*lat, 4, "%d%c", utm.zone, utm.letter);
+    *lon = g_malloc(16*sizeof(gchar));
+    g_snprintf (*lon, 16, "%d %d", (gint)utm.easting, (gint)utm.northing);
+  }
+  else {
+    struct LatLon ll;
+    a_coords_utm_to_latlon ( &utm, &ll );
+    a_coords_latlon_to_string ( &ll, lat, lon );
+  }
+}
+
 static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 {
   static VikCoord coord;
   static struct UTM utm;
-  static struct LatLon ll;
   #define BUFFER_SIZE 50
   static char pointer_buf[BUFFER_SIZE];
   gchar *lat = NULL, *lon = NULL;
@@ -1181,19 +1205,7 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
   vik_coord_to_utm ( &coord, &utm );
 
-  if ( vik_viewport_get_drawmode ( vw->viking_vvp ) == VIK_VIEWPORT_DRAWMODE_UTM ) {
-    // Reuse lat for the first part (Zone + N or S, and lon for the second part (easting and northing) of a UTM format:
-    //  ZONE[N|S] EASTING NORTHING
-    lat = g_malloc(4*sizeof(gchar));
-    // NB zone is stored in a char but is an actual number
-    g_snprintf (lat, 4, "%d%c", utm.zone, utm.letter);
-    lon = g_malloc(16*sizeof(gchar));
-    g_snprintf (lon, 16, "%d %d", (gint)utm.easting, (gint)utm.northing);
-  }
-  else {
-    a_coords_utm_to_latlon ( &utm, &ll );
-    a_coords_latlon_to_string ( &ll, &lat, &lon );
-  }
+  get_location_strings ( vw, utm, &lat, &lon );
 
   /* Change interpolate method according to scale */
   zoom = vik_viewport_get_zoom(vw->viking_vvp);
@@ -3239,6 +3251,38 @@ static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
   a_mapcache_flush();
 }
 
+static void menu_copy_centre_cb ( GtkAction *a, VikWindow *vw )
+{
+  const VikCoord* coord;
+  struct UTM utm;
+  gchar *lat = NULL, *lon = NULL;
+
+  coord = vik_viewport_get_center ( vw->viking_vvp );
+  vik_coord_to_utm ( coord, &utm );
+
+  gboolean full_format = FALSE;
+  a_settings_get_boolean ( VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT, &full_format );
+
+  if ( full_format )
+    // Bells & Whistles - may include degrees, minutes and second symbols
+    get_location_strings ( vw, utm, &lat, &lon );
+  else {
+    // Simple x.xx y.yy format
+    struct LatLon ll;
+    a_coords_utm_to_latlon ( &utm, &ll );
+    lat = g_strdup_printf ( "%.6f", ll.lat );
+    lon = g_strdup_printf ( "%.6f", ll.lon );
+  }
+
+  gchar *msg = g_strdup_printf ( "%s %s", lat, lon );
+  g_free (lat);
+  g_free (lon);
+
+  a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, msg, NULL );
+
+  g_free ( msg );
+}
+
 static void layer_defaults_cb ( GtkAction *a, VikWindow *vw )
 {
   gchar **texts = g_strsplit ( gtk_action_get_name(a), "Layer", 0 );
@@ -3977,6 +4021,7 @@ static GtkActionEntry entries[] = {
   { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         NULL,                                           (GCallback)menu_paste_layer_cb   },
   { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         NULL,                                           (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
+  { "CopyCentre",NULL,                   N_("Copy Centre _Location"),     "<control>h",     NULL,                                           (GCallback)menu_copy_centre_cb   },
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         NULL,                                           (GCallback)preferences_cb              },

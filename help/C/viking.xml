@@ -3044,6 +3044,9 @@ Accept: */*
 	    <para>window_menubar=true</para>
 	  </listitem>
 	  <listitem>
+	    <para>window_copy_centre_full_format=false</para>
+	  </listitem>
+	  <listitem>
 	    <para>version_check_period_days=14</para>
 	  </listitem>
 	  <listitem>

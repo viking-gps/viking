@@ -50,6 +50,7 @@ static const char *menu_xml =
 	"      <menuitem action='Delete'/>"
 	"      <menuitem action='DeleteAll'/>"
 	"      <separator/>"
+	"      <menuitem action='CopyCentre'/>"
 	"      <menuitem action='MapCacheFlush'/>"
 	"      <menuitem action='SetDefaultLocation'/>"
 	"      <menuitem action='Preferences'/>"
