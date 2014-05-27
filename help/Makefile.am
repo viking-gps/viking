@@ -12,7 +12,7 @@ get-icons:
 dist-hook: get-icons doc-dist-hook
 
 DOC_MODULE = viking
-DOC_ENTITIES = legal.xml
+DOC_ENTITIES = legal.xml attribution.xml
 DOC_INCLUDES =
 DOC_FIGURES = \
     figures/addtr_18.png \
