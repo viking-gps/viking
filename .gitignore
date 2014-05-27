@@ -102,6 +102,11 @@ help/C/*html
 /src/icons/icons.o
 /src/icons/libicons.a
 
+# src/misc/
+src/misc/.deps
+src/misc/.dirstamp
+src/misc/*.o
+
 # /test/
 /test/.deps
 /test/Makefile.in

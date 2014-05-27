@@ -45,6 +45,7 @@
 #include <glib/gi18n.h>
 
 #include "file.h"
+#include "misc/strtod.h"
 
 #define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 #define VIK_MAGIC "#VIK"
@@ -433,13 +434,13 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
         // However we'll still carry and attempt to read whatever we can
       }
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "xmpp", eq_pos ) == 0) /* "hard coded" params: global & for all layer-types */
-        vik_viewport_set_xmpp ( VIK_VIEWPORT(vp), strtod ( line+5, NULL ) );
+        vik_viewport_set_xmpp ( VIK_VIEWPORT(vp), strtod_i8n ( line+5, NULL ) );
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "ympp", eq_pos ) == 0)
-        vik_viewport_set_ympp ( VIK_VIEWPORT(vp), strtod ( line+5, NULL ) );
+        vik_viewport_set_ympp ( VIK_VIEWPORT(vp), strtod_i8n ( line+5, NULL ) );
       else if ( stack->under == NULL && eq_pos == 3 && strncasecmp ( line, "lat", eq_pos ) == 0 )
-        ll.lat = strtod ( line+4, NULL );
+        ll.lat = strtod_i8n ( line+4, NULL );
       else if ( stack->under == NULL && eq_pos == 3 && strncasecmp ( line, "lon", eq_pos ) == 0 )
-        ll.lon = strtod ( line+4, NULL );
+        ll.lon = strtod_i8n ( line+4, NULL );
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "utm" ) == 0)
         vik_viewport_set_drawmode ( VIK_VIEWPORT(vp), VIK_VIEWPORT_DRAWMODE_UTM);
       else if ( stack->under == NULL && eq_pos == 4 && strncasecmp ( line, "mode", eq_pos ) == 0 && strcasecmp ( line+5, "expedia" ) == 0)
@@ -500,7 +501,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
             } else {
               switch ( params[i].type )
               {
-                case VIK_LAYER_PARAM_DOUBLE: x.d = strtod(line, NULL); break;
+                case VIK_LAYER_PARAM_DOUBLE: x.d = strtod_i8n(line, NULL); break;
                 case VIK_LAYER_PARAM_UINT: x.u = strtoul(line, NULL, 10); break;
                 case VIK_LAYER_PARAM_INT: x.i = strtol(line, NULL, 10); break;
 	        case VIK_LAYER_PARAM_BOOLEAN: x.b = TEST_BOOLEAN(line); break;

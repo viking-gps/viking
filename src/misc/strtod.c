@@ -31,13 +31,16 @@
 // SUCH DAMAGE.
 // 
 
+// Tweaked version for Viking project to read in values containing ',' or '.' as the decimal separator
+// Modified functions to prevent clashing with the system ones
+
 #include <errno.h>
 #include <ctype.h>
 #include <math.h>
 #include <float.h>
 #include <stdlib.h>
 
-double strtod(const char *str, char **endptr) {
+double strtod_i8n(const char *str, char **endptr) {
   double number;
   int exponent;
   int negative;
@@ -70,7 +73,7 @@ double strtod(const char *str, char **endptr) {
   }
 
   // Process decimal part
-  if (*p == '.') {
+  if (*p == '.' || *p == ',') {
     p++;
 
     while (isdigit(*p)) {
@@ -141,15 +144,15 @@ double strtod(const char *str, char **endptr) {
   return number;
 }
 
-float strtof(const char *str, char **endptr) {
-  return (float) strtod(str, endptr);
+float strtof_i8n(const char *str, char **endptr) {
+  return (float) strtod_i8n(str, endptr);
 }
 
 
-long double strtold(const char *str, char **endptr) {
-  return strtod(str, endptr);
+long double strtold_i8n(const char *str, char **endptr) {
+  return strtod_i8n(str, endptr);
 }
 
-double atof(const char *str) {
-  return strtod(str, NULL);
+double atof_i8n(const char *str) {
+  return strtod_i8n(str, NULL);
 }
