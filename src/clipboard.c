@@ -141,7 +141,8 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
  */
 static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord ) 
 {
-  gint latdeg, londeg;
+  gint latdeg, londeg, latmi, lonmi;
+  gdouble lats, lons;
   gdouble latm, lonm;
   gdouble lat, lon;
   gchar *cand;
@@ -159,7 +160,7 @@ static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
     if (g_ascii_isdigit (s[i]) && s[i+1] != '.' && !g_ascii_isdigit (s[i+1])) {
       s[i+1] = ' ';
       if (!g_ascii_isalnum (s[i+2]) && s[i+2] != '-') {
-	s[i+2] = ' ';
+        s[i+2] = ' ';
       }
     }
   }
@@ -172,42 +173,63 @@ static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
       gint j, k;
       cand = s+i;
 
+      // First try matching strings containing the cardinal directions
       for (j=0; j<2; j++) {
-	for (k=0; k<2; k++) {
-	  gchar fmt1[] = "N %d%*[ ]%lf W %d%*[ ]%lf";
-	  gchar fmt2[] = "%d%*[ ]%lf N %d%*[ ]%lf W";
-	  gchar fmt3[] = "N %lf W %lf";
-	  gchar fmt4[] = "%lf N %lf W";
+        for (k=0; k<2; k++) {
+          // DMM
+          gchar fmt1[] = "N %d%*[ ]%lf W %d%*[ ]%lf";
+          gchar fmt2[] = "%d%*[ ]%lf N %d%*[ ]%lf W";
+          // DDD
+          gchar fmt3[] = "N %lf W %lf";
+          gchar fmt4[] = "%lf N %lf W";
+          // DMS
+          gchar fmt5[] = "N%d%*[ ]%d%*[ ]%lf%*[ ]W%d%*[ ]%d%*[ ]%lf";
 
-	  fmt1[0]  = latc[j];	  fmt1[13] = lonc[k];
-	  fmt2[11] = latc[j];	  fmt2[24] = lonc[k];
-	  fmt3[0]  = latc[j];	  fmt3[6]  = lonc[k];
-	  fmt4[4]  = latc[j];	  fmt4[10] = lonc[k];
+          // Substitute in 'N','E','S' or 'W' values for each attempt
+          fmt1[0]  = latc[j];	  fmt1[13] = lonc[k];
+          fmt2[11] = latc[j];	  fmt2[24] = lonc[k];
+          fmt3[0]  = latc[j];	  fmt3[6]  = lonc[k];
+          fmt4[4]  = latc[j];	  fmt4[10] = lonc[k];
+          fmt5[0]  = latc[j];	  fmt5[23] = lonc[k];
 
-	  if (sscanf(cand, fmt1, &latdeg, &latm, &londeg, &lonm) == 4 ||
-	      sscanf(cand, fmt2, &latdeg, &latm, &londeg, &lonm) == 4) {
-	    lat = (j*2-1) * (latdeg + latm / 60);
-	    lon = (k*2-1) * (londeg + lonm / 60);
-	    break;
-	  }
-	  if (sscanf(cand, fmt3, &lat, &lon) == 2 ||
-	      sscanf(cand, fmt4, &lat, &lon) == 2) {
-	    lat *= (j*2-1);
-	    lon *= (k*2-1);
-	    break;
-	  }
-	}
-	if (k!=2) break;
+          if (sscanf(cand, fmt1, &latdeg, &latm, &londeg, &lonm) == 4 ||
+              sscanf(cand, fmt2, &latdeg, &latm, &londeg, &lonm) == 4) {
+            lat = (j*2-1) * (latdeg + latm / 60);
+            lon = (k*2-1) * (londeg + lonm / 60);
+            break;
+          }
+          if (sscanf(cand, fmt3, &lat, &lon) == 2 ||
+              sscanf(cand, fmt4, &lat, &lon) == 2) {
+            lat *= (j*2-1);
+            lon *= (k*2-1);
+            break;
+          }
+          gint am = sscanf(cand, fmt5, &latdeg, &latmi, &lats, &londeg, &lonmi, &lons);
+          if ( am == 6 ) {
+            lat = (j*2-1) * (latdeg + latmi / 60.0 + lats / 3600.0);
+            lon = (k*2-1) * (londeg + lonmi / 60.0 + lons / 3600.0);
+            break;
+          }
+        }
+        if (k!=2) break;
       }
       if (j!=2) break;
 
-      if (sscanf(cand, "%d%*[ ]%lf %d%*[ ]%lf", &latdeg, &latm, &londeg, &lonm) == 4) {
-	lat = latdeg/abs(latdeg) * (abs(latdeg) + latm / 60);
-	lon = londeg/abs(londeg) * (abs(londeg) + lonm / 60);
-	break;
+      // DMM without Cardinal directions
+      if (sscanf(cand, "%d%*[ ]%lf*[ ]%d%*[ ]%lf", &latdeg, &latm, &londeg, &lonm) == 4) {
+        lat = latdeg/abs(latdeg) * (abs(latdeg) + latm / 60);
+        lon = londeg/abs(londeg) * (abs(londeg) + lonm / 60);
+        break;
       }
+      // DMS without Cardinal directions
+      if (sscanf(cand, "%d%*[ ]%d%*[ ]%lf%*[ ]%d%*[ ]%d%*[ ]%lf", &latdeg, &latmi, &lats, &londeg, &lonmi, &lons) == 6) {
+        lat = latdeg/abs(latdeg) * (abs(latdeg) + latm / 60.0 + lats / 3600.0);
+        lon = londeg/abs(londeg) * (abs(londeg) + lonm / 60.0 + lons / 3600.0);
+        break;
+      }
+      // Raw values
       if (sscanf(cand, "%lf %lf", &lat, &lon) == 2) {
-	break;
+        break;
       }
     }
   }
