@@ -141,7 +141,7 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
 
   /* The file format selector */
   type_label = gtk_label_new (_("File type:"));
-  /* Propose all readable file */
+  /* Propose any readable file */
   BabelMode mode = { 1, 0, 1, 0, 1, 0 };
   widgets->type = a_babel_ui_file_type_selector_new ( mode );
   g_signal_connect ( G_OBJECT(widgets->type), "changed",

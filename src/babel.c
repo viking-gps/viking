@@ -99,6 +99,30 @@ void a_babel_foreach_file_with_mode (BabelMode mode, GFunc func, gpointer user_d
 }
 
 /**
+ * a_babel_foreach_file_read_any:
+ * @func:      The function to be called on any file format with a read method
+ * @user_data: Data passed into the function
+ *
+ * Run a function on all file formats with any kind of read method
+ *  (which is almost all but not quite - e.g. with GPSBabel v1.4.4 - PalmDoc is write only waypoints)
+ */
+void a_babel_foreach_file_read_any (GFunc func, gpointer user_data)
+{
+  GList *current;
+  for ( current = g_list_first (a_babel_file_list) ;
+        current != NULL ;
+        current = g_list_next (current) )
+  {
+    BabelFile *currentFile = current->data;
+    // Call function when any read mode found
+    if ( currentFile->mode.waypointsRead ||
+         currentFile->mode.tracksRead ||
+         currentFile->mode.routesRead)
+      func (currentFile, user_data);
+  }
+}
+
+/**
  * a_babel_convert:
  * @vt:        The TRW layer to modify. All data will be deleted, and replaced by what gpsbabel outputs.
  * @babelargs: A string containing gpsbabel command line filter options. No file types or names should

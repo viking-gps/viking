@@ -96,6 +96,7 @@ GList *a_babel_file_list;
 GList *a_babel_device_list;
 
 void a_babel_foreach_file_with_mode (BabelMode mode, GFunc func, gpointer user_data);
+void a_babel_foreach_file_read_any (GFunc func, gpointer user_data);
 
 gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data, gpointer options );
 gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, const char *file, BabelStatusFunc cb, gpointer user_data, gpointer options );

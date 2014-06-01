@@ -82,7 +82,11 @@ GtkWidget *a_babel_ui_file_type_selector_new ( BabelMode mode )
   g_object_set_data ( G_OBJECT(combo), "formats", formats );
 
   /* Add all known and compatible file formats */
-  a_babel_foreach_file_with_mode ( mode, babel_ui_selector_add_entry_cb, combo );
+  if ( mode.tracksRead && mode.routesRead && mode.waypointsRead &&
+       !mode.tracksWrite && !mode.routesWrite && !mode.waypointsWrite )
+    a_babel_foreach_file_read_any ( babel_ui_selector_add_entry_cb, combo );
+  else
+    a_babel_foreach_file_with_mode ( mode, babel_ui_selector_add_entry_cb, combo );
 
   /* Initialize the selection with the really first entry */
   gtk_combo_box_set_active ( GTK_COMBO_BOX(combo), 0 );
