@@ -626,14 +626,12 @@ gchar *a_dialog_new_track ( GtkWindow *parent, gchar *default_name, gboolean is_
   return NULL;
 }
 
-static guint today_year = 0;
-static guint today_month = 0;
-static guint today_day = 0;
-
 static void today_clicked (GtkWidget *cal)
 {
-  gtk_calendar_select_month ( GTK_CALENDAR(cal), today_month, today_year );
-  gtk_calendar_select_day ( GTK_CALENDAR(cal), today_day );
+  GDateTime *now = g_date_time_new_now_local ();
+  gtk_calendar_select_month ( GTK_CALENDAR(cal), g_date_time_get_month(now)-1, g_date_time_get_year(now) );
+  gtk_calendar_select_day ( GTK_CALENDAR(cal), g_date_time_get_day_of_month(now) );
+  g_date_time_unref ( now );
 }
 
 /**
@@ -660,15 +658,8 @@ gchar *a_dialog_get_date ( GtkWindow *parent, const gchar *title )
   static guint month = 0;
   static guint day = 0;
 
-  if ( year == 0 ) {
-    // Store today's date so we can return to it on the button callback
-    gtk_calendar_get_date ( GTK_CALENDAR(cal), &year, &month, &day );
-    today_year = year;
-    today_month = month;
-    today_day = day;
-  }
-  else {
-    // Otherwise restore the last selected date
+  if ( year != 0 ) {
+    // restore the last selected date
     gtk_calendar_select_month ( GTK_CALENDAR(cal), month, year );
     gtk_calendar_select_day ( GTK_CALENDAR(cal), day );
   }
