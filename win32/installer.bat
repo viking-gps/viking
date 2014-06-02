@@ -37,6 +37,7 @@ echo Copying Viking
 echo Copying Extension Configuration Data
 mkdir %DESTINATION%\data
 %MYCOPY% ..\data\*.xml %DESTINATION%\data
+%MYCOPY% ..\data\latlontz.txt %DESTINATION%\data
 
 echo Copying Libraries
 set MINGW=C:\MinGW
