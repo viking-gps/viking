@@ -213,6 +213,7 @@ typedef struct _propwidgets {
   VikTrackpoint *blob_tp;
   gboolean  is_blob_drawn;
   time_t    duration;
+  gchar     *tz; // TimeZone at track's location
 } PropWidgets;
 
 static PropWidgets *prop_widgets_new()
@@ -888,7 +889,7 @@ static void time_label_update (GtkWidget *widget, time_t seconds_from_start)
 }
 
 //
-static void real_time_label_update (GtkWidget *widget, VikTrackpoint *trackpoint)
+static void real_time_label_update ( PropWidgets *widgets, GtkWidget *widget, VikTrackpoint *trackpoint)
 {
   static gchar tmp_buf[64];
   if ( trackpoint->has_timestamp ) {
@@ -926,7 +927,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   }
 
   if (trackpoint && widgets->w_cur_time_real) {
-    real_time_label_update ( widgets->w_cur_time_real, trackpoint );
+    real_time_label_update ( widgets, widgets->w_cur_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -1020,7 +1021,7 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   }
 
   if (trackpoint && widgets->w_cur_dist_time_real) {
-    real_time_label_update ( widgets->w_cur_dist_time_real, trackpoint );
+    real_time_label_update ( widgets, widgets->w_cur_dist_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -1099,7 +1100,7 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   }
 
   if (trackpoint && widgets->w_cur_elev_time_real) {
-    real_time_label_update ( widgets->w_cur_elev_time_real, trackpoint );
+    real_time_label_update ( widgets, widgets->w_cur_elev_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -3309,12 +3310,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     struct LatLon center = { (tr->bbox.north+tr->bbox.south)/2, (tr->bbox.east+tr->bbox.west)/2 };
     vik_coord_load_from_latlon ( &vc, vik_trw_layer_get_coord_mode(vtl), &center );
 
+    widgets->tz = vu_get_tz_at_location ( &vc );
+
     gchar *msg;
-    msg = vu_get_time_string ( &t1, "%c", &vc, NULL );
+    msg = vu_get_time_string ( &t1, "%c", &vc, widgets->tz );
     widgets->w_time_start = content[cnt++] = gtk_label_new(msg);
     g_free ( msg );
 
-    msg = vu_get_time_string ( &t2, "%c", &vc, NULL );
+    msg = vu_get_time_string ( &t2, "%c", &vc, widgets->tz );
     widgets->w_time_end = content[cnt++] = gtk_label_new(msg);
     g_free ( msg );
 

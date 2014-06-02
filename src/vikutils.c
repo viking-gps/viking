@@ -36,6 +36,8 @@
 #include "vikmapslayer.h"
 #include "settings.h"
 #include "util.h"
+#include "dir.h"
+#include "misc/kdtree.h"
 
 #define FMT_MAX_NUMBER_CODES 9
 
@@ -180,15 +182,15 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 		}
 
 		case 'T': {
-			gchar tmp[64];
-			tmp[0] = '\0';
+			gchar *msg;
 			if ( trkpt->has_timestamp ) {
 				// Compact date time format
-				strftime (tmp, sizeof(tmp), "%x %X", localtime(&(trkpt->timestamp)));
+				msg = vu_get_time_string ( &(trkpt->timestamp), "%x %X", &(trkpt->coord), NULL );
 			}
 			else
-				g_snprintf (tmp, sizeof(tmp), "--");
-			values[i] = g_strdup_printf ( _("%sTime %s"), separator, tmp );
+				msg = g_strdup ("--");
+			values[i] = g_strdup_printf ( _("%sTime %s"), separator, msg );
+			g_free ( msg );
 			break;
 		}
 
@@ -481,6 +483,153 @@ gchar *vu_get_canonical_filename ( VikLayer *vl, const gchar *filename )
   return canonical;
 }
 
+static struct kdtree *kd = NULL;
+
+static void load_ll_tz_dir ( const gchar *dir )
+{
+	gchar *lltz = g_build_filename ( dir, "latlontz.txt", NULL );
+	if ( g_access(lltz, R_OK) == 0 ) {
+		gchar buffer[4096];
+		long line_num = 0;
+		FILE *ff = g_fopen ( lltz, "r" );
+
+		while ( fgets ( buffer, 4096, ff ) ) {
+			line_num++;
+			gchar **components = g_strsplit (buffer, " ", 3);
+			guint nn = g_strv_length ( components );
+			if ( nn == 3 ) {
+				double pt[2] = { g_ascii_strtod (components[0], NULL), g_ascii_strtod (components[1], NULL) };
+				gchar *timezone = g_strchomp ( components[2] );
+				if ( kd_insert ( kd, pt, timezone ) )
+					g_critical ( "Insertion problem of %s for line %ld of latlontz.txt", timezone, line_num );
+				// NB Don't free timezone as it's part of the kdtree data now
+				g_free ( components[0] );
+				g_free ( components[1] );
+			} else {
+				g_warning ( "Line %ld of latlontz.txt does not have 3 parts", line_num );
+			}
+			g_free ( components );
+		}
+		fclose ( ff );
+	}
+	g_free ( lltz );
+}
+
+/**
+ * vu_setup_lat_lon_tz_lookup:
+ *
+ * Can be called multiple times but only initializes the lookup once
+ */
+void vu_setup_lat_lon_tz_lookup ()
+{
+	// Only setup once
+	if ( kd )
+		return;
+
+	kd = kd_create(2);
+
+	// Look in the directories of data path
+	gchar **data_dirs = a_get_viking_data_path();
+	// Process directories in reverse order for priority
+	guint n_data_dirs = g_strv_length ( data_dirs );
+	for (; n_data_dirs > 0; n_data_dirs--) {
+		load_ll_tz_dir(data_dirs[n_data_dirs-1]);
+	}
+	g_strfreev ( data_dirs );
+}
+
+/**
+ * vu_finalize_lat_lon_tz_lookup:
+ *
+ * Clear memory used by the lookup.
+ *  only call on program exit
+ */
+void vu_finalize_lat_lon_tz_lookup ()
+{
+	if ( kd ) {
+		kd_data_destructor ( kd, g_free );
+		kd_free ( kd );
+	}
+}
+
+static double dist_sq( double *a1, double *a2, int dims ) {
+  double dist_sq = 0, diff;
+  while( --dims >= 0 ) {
+    diff = (a1[dims] - a2[dims]);
+    dist_sq += diff*diff;
+  }
+  return dist_sq;
+}
+
+static gchar* time_string_adjusted ( time_t *time, gint offset_s )
+{
+	time_t *mytime = time;
+	*mytime = *mytime + offset_s;
+	gchar *str = g_malloc ( 64 );
+	// Append asterisks to indicate use of simplistic model (i.e. no TZ)
+	strftime ( str, 64, "%a %X %x **", gmtime(mytime) );
+	return str;
+}
+
+static gchar* time_string_tz ( time_t *time, const gchar *format, GTimeZone *tz )
+{
+	GDateTime *utc = g_date_time_new_from_unix_utc (*time);
+	GDateTime *local = g_date_time_to_timezone ( utc, tz );
+	if ( !local ) {
+		g_date_time_unref ( utc );
+		return NULL;
+	}
+	gchar *str = g_date_time_format ( local, format );
+
+	g_date_time_unref ( local );
+	g_date_time_unref ( utc );
+	return str;
+}
+
+#define VIK_SETTINGS_NEAREST_TZ_FACTOR "utils_nearest_tz_factor"
+/**
+ * vu_get_tz_at_location:
+ *
+ * @vc:     Position for which the time zone is desired
+ *
+ * Returns: TimeZone string of the nearest known location. String may be NULL.
+ *
+ * Use the k-d tree method (http://en.wikipedia.org/wiki/Kd-tree) to quickly retreive
+ *  the nearest location to the given position.
+ */
+gchar* vu_get_tz_at_location ( const VikCoord* vc )
+{
+	gchar *tz = NULL;
+	if ( !vc || !kd )
+		return tz;
+
+	struct LatLon ll;
+	vik_coord_to_latlon ( vc, &ll );
+	double pt[2] = { ll.lat, ll.lon };
+
+	gdouble nearest;
+	if ( !a_settings_get_double(VIK_SETTINGS_NEAREST_TZ_FACTOR, &nearest) )
+		nearest = 1.0;
+
+	struct kdres *presults = kd_nearest_range ( kd, pt, nearest );
+	while( !kd_res_end( presults ) ) {
+		double pos[2];
+		gchar *ans = (gchar*)kd_res_item ( presults, pos );
+		// compute the distance of the current result from the pt
+		double dist = sqrt( dist_sq( pt, pos, 2 ) );
+		if ( dist < nearest ) {
+			//printf( "NEARER node at (%.3f, %.3f, %.3f) is %.3f away is %s\n", pos[0], pos[1], pos[2], dist, ans );
+			nearest = dist;
+			tz = ans;
+		}
+		kd_res_next ( presults );
+	}
+	g_debug ( "TZ lookup found %d results - picked %s", kd_res_size(presults), tz );
+	kd_res_free ( presults );
+
+	return tz;
+}
+
 /**
  * vu_get_time_string:
  *
@@ -490,6 +639,7 @@ gchar *vu_get_canonical_filename ( VikLayer *vl, const gchar *filename )
  *          (only applicable for VIK_TIME_REF_WORLD)
  * @tz:     TimeZone string - maybe NULL.
  *          (only applicable for VIK_TIME_REF_WORLD)
+ *          Useful to pass in the cached value from vu_get_tz_at_location() to save looking it up again for the same position
  *
  * Returns: A string of the time according to the time display property
  */
@@ -503,19 +653,27 @@ gchar* vu_get_time_string ( time_t *time, const gchar *format, const VikCoord* v
 			strftime ( str, 64, format, gmtime(time) ); // Always 'GMT'
 			break;
 		case VIK_TIME_REF_WORLD:
-			// Highly simplistic method that doesn't take into account Timezones of countries.
-			// This will become the fallback method when a Timezone lookup is implemented.
-			if ( vc ) {
-				struct LatLon ll;
-				vik_coord_to_latlon ( vc, &ll );
-				gint offset_hours = round ( ll.lon / 15.0 );
-				str = g_malloc ( 64 );
-				struct tm* mytime = gmtime(time);
-				mytime->tm_hour = mytime->tm_hour + offset_hours;
-				// Normalize result
-				mktime(mytime);
-				// Append asterisks to indicate use of simplistic model
-				strftime ( str, 64, "%a %X %x **", mytime );
+			if ( vc && !tz ) {
+				// No timezone specified so work it out
+				gchar *mytz = vu_get_tz_at_location ( vc );
+				if ( mytz ) {
+					GTimeZone *gtz = g_time_zone_new ( mytz );
+					str = time_string_tz ( time, format, gtz );
+					g_time_zone_unref ( gtz );
+				}
+				else {
+					// No results (e.g. could be in the middle of a sea)
+					// Fallback to simplistic method that doesn't take into account Timezones of countries.
+					struct LatLon ll;
+					vik_coord_to_latlon ( vc, &ll );
+					str = time_string_adjusted ( time, round ( ll.lon / 15.0 ) * 3600 );
+				}
+			}
+			else {
+				// Use specified timezone
+				GTimeZone *gtz = g_time_zone_new ( tz );
+				str = time_string_tz ( time, format, gtz );
+				g_time_zone_unref ( gtz );
 			}
 			break;
 		default: // VIK_TIME_REF_LOCALE

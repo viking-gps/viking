@@ -42,6 +42,7 @@
 #include "garminsymbols.h"
 #include "vikmapslayer.h"
 #include "geonamessearch.h"
+#include "vikutils.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -3331,6 +3332,10 @@ static void preferences_cb ( GtkAction *a, VikWindow *vw )
     // Update all windows
     g_slist_foreach ( window_list, (GFunc) preferences_change_update, NULL );
   }
+
+  // Ensure TZ Lookup initialized
+  if ( a_vik_get_time_ref_frame() == VIK_TIME_REF_WORLD )
+    vu_setup_lat_lon_tz_lookup();
 }
 
 static void default_location_cb ( GtkAction *a, VikWindow *vw )

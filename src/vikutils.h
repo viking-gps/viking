@@ -37,6 +37,11 @@ gchar *vu_get_canonical_filename ( VikLayer *vl, const gchar *filename );
 
 gchar* vu_get_time_string ( time_t *time, const gchar *format, const VikCoord *vc, const gchar *gtz );
 
+gchar* vu_get_tz_at_location ( const VikCoord* vc );
+
+void vu_setup_lat_lon_tz_lookup ();
+void vu_finalize_lat_lon_tz_lookup ();
+
 G_END_DECLS
 
 #endif

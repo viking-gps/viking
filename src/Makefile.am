@@ -145,7 +145,8 @@ libviking_a_SOURCES = \
 	viklayer_defaults.c viklayer_defaults.h \
 	settings.c settings.h \
 	preferences.c preferences.h \
-	misc/strtod.c misc/strtod.h
+	misc/strtod.c misc/strtod.h \
+	misc/kdtree.c misc/kdtree.h
 
 if BING
 libviking_a_SOURCES += \
