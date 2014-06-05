@@ -41,6 +41,7 @@ The source code used in this product is available on the project website <ulink 
 
 <section>
 	<title>strtod.c</title>
+	<para>Source: <ulink url="http://www.jbox.dk/sanos/"></ulink></para>
 	<para> Available under license:</para>
 <screen>
 // Copyright (C) 2002 Michael Ringgaard. All rights reserved.
