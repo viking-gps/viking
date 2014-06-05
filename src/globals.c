@@ -70,7 +70,7 @@ static gchar * params_units_speed[] = {"km/h", "mph", "m/s", "knots", NULL};
 static gchar * params_units_height[] = {"Metres", "Feet", NULL};
 static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
-static gchar * params_vik_fileref[] = {N_("Absolute"), N_("Relative"), NULL};
+static gchar * params_time_ref_frame[] = {N_("Locale"), N_("World"), N_("UTC"), NULL};
 
 static VikLayerParam general_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL, NULL, NULL, NULL, NULL },
@@ -80,6 +80,8 @@ static VikLayerParam general_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default latitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default longitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "time_reference_frame", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Time Display:"), VIK_LAYER_WIDGET_COMBOBOX, params_time_ref_frame, NULL,
+    N_("Display times according to the reference frame. Locale is the user's system setting. World is relative to the location of the object."), NULL, NULL, NULL },
 };
 
 /* External/Export Options */
@@ -106,6 +108,7 @@ static VikLayerParam io_prefs_external_gpx[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "external_gpx_2", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("External GPX Program 2:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
+static gchar * params_vik_fileref[] = {N_("Absolute"), N_("Relative"), NULL};
 static VikLayerParamScale params_recent_files[] = { {-1, 25, 1, 0} };
 
 static VikLayerParam prefs_advanced[] = {
@@ -188,6 +191,9 @@ void a_vik_preferences_init ()
   a_preferences_register(&general_prefs[5], tmp, VIKING_PREFERENCES_GROUP_KEY);
   tmp.d = -74.007130;
   a_preferences_register(&general_prefs[6], tmp, VIKING_PREFERENCES_GROUP_KEY);
+
+  tmp.u = VIK_TIME_REF_LOCALE;
+  a_preferences_register(&general_prefs[7], tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   // New Tab
   a_preferences_register_group ( VIKING_PREFERENCES_STARTUP_GROUP_KEY, _("Startup") );
@@ -294,6 +300,11 @@ gdouble a_vik_get_default_long ( )
   gdouble data;
   data = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "default_longitude")->d;
   return data;
+}
+
+vik_time_ref_frame_t a_vik_get_time_ref_frame ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_NAMESPACE "time_reference_frame")->u;
 }
 
 /* External/Export Options */

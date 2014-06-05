@@ -41,6 +41,7 @@
 #include "dems.h"
 #include "viking.h"
 #include "vikviewport.h" /* ugh */
+#include "vikutils.h"
 #include <gdk-pixbuf/gdk-pixdata.h>
 
 typedef enum {
@@ -212,6 +213,7 @@ typedef struct _propwidgets {
   VikTrackpoint *blob_tp;
   gboolean  is_blob_drawn;
   time_t    duration;
+  gchar     *tz; // TimeZone at track's location
 } PropWidgets;
 
 static PropWidgets *prop_widgets_new()
@@ -887,13 +889,14 @@ static void time_label_update (GtkWidget *widget, time_t seconds_from_start)
 }
 
 //
-static void real_time_label_update (GtkWidget *widget, VikTrackpoint *trackpoint)
+static void real_time_label_update ( PropWidgets *widgets, GtkWidget *widget, VikTrackpoint *trackpoint)
 {
   static gchar tmp_buf[64];
-  if ( trackpoint->has_timestamp )
+  if ( trackpoint->has_timestamp ) {
     // Alternatively could use %c format but I prefer a slightly more compact form here
     //  The full date can of course be seen on the Statistics tab
     strftime (tmp_buf, sizeof(tmp_buf), "%X %x %Z", localtime(&(trackpoint->timestamp)));
+  }
   else
     g_snprintf (tmp_buf, sizeof(tmp_buf), _("No Data"));
   gtk_label_set_text(GTK_LABEL(widget), tmp_buf);
@@ -924,7 +927,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   }
 
   if (trackpoint && widgets->w_cur_time_real) {
-    real_time_label_update ( widgets->w_cur_time_real, trackpoint );
+    real_time_label_update ( widgets, widgets->w_cur_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -1018,7 +1021,7 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   }
 
   if (trackpoint && widgets->w_cur_dist_time_real) {
-    real_time_label_update ( widgets->w_cur_dist_time_real, trackpoint );
+    real_time_label_update ( widgets, widgets->w_cur_dist_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -1097,7 +1100,7 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   }
 
   if (trackpoint && widgets->w_cur_elev_time_real) {
-    real_time_label_update ( widgets->w_cur_elev_time_real, trackpoint );
+    real_time_label_update ( widgets, widgets->w_cur_elev_time_real, trackpoint );
   }
 
   gint ix = (gint)x;
@@ -3302,11 +3305,21 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
     t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
 
-    strftime (tmp_buf, sizeof(tmp_buf), "%c", localtime(&(t1)));
-    widgets->w_time_start = content[cnt++] = gtk_label_new(tmp_buf);
+    VikCoord vc;
+    // Notional center of a track is simply an average of the bounding box extremities
+    struct LatLon center = { (tr->bbox.north+tr->bbox.south)/2, (tr->bbox.east+tr->bbox.west)/2 };
+    vik_coord_load_from_latlon ( &vc, vik_trw_layer_get_coord_mode(vtl), &center );
 
-    strftime (tmp_buf, sizeof(tmp_buf), "%c", localtime(&(t2)));
-    widgets->w_time_end = content[cnt++] = gtk_label_new(tmp_buf);
+    widgets->tz = vu_get_tz_at_location ( &vc );
+
+    gchar *msg;
+    msg = vu_get_time_string ( &t1, "%c", &vc, widgets->tz );
+    widgets->w_time_start = content[cnt++] = gtk_label_new(msg);
+    g_free ( msg );
+
+    msg = vu_get_time_string ( &t2, "%c", &vc, widgets->tz );
+    widgets->w_time_end = content[cnt++] = gtk_label_new(msg);
+    g_free ( msg );
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes"), (int)(t2-t1)/60);
     widgets->w_time_dur = content[cnt++] = gtk_label_new(tmp_buf);

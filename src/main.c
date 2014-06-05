@@ -193,6 +193,9 @@ int main( int argc, char *argv[] )
 
   vik_routing_prefs_init();
 
+  if ( a_vik_get_time_ref_frame() == VIK_TIME_REF_WORLD )
+    vu_setup_lat_lon_tz_lookup();
+
   /* Set the icon */
   main_icon = gdk_pixbuf_from_pixdata(&viking_pixbuf, FALSE, NULL);
   gtk_window_set_default_icon(main_icon);
@@ -239,6 +242,8 @@ int main( int argc, char *argv[] )
   a_settings_uninit ();
 
   curl_download_uninit();
+
+  vu_finalize_lat_lon_tz_lookup ();
 
   // Clean up any temporary files
   util_remove_all_in_deletion_list ();

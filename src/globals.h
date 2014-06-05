@@ -132,6 +132,15 @@ typedef enum {
 gdouble a_vik_get_default_lat ( );
 gdouble a_vik_get_default_long ( );
 
+// Time display format
+typedef enum {
+  VIK_TIME_REF_LOCALE, // User's locale
+  VIK_TIME_REF_WORLD,  // Derive the local timezone at the object's position
+  VIK_TIME_REF_UTC,
+} vik_time_ref_frame_t;
+
+vik_time_ref_frame_t a_vik_get_time_ref_frame ( );
+
 /* KML export preferences */
 typedef enum {
   VIK_KML_EXPORT_UNITS_METRIC,
