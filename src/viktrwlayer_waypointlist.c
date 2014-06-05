@@ -29,6 +29,7 @@
 
 #include "viking.h"
 #include "viktrwlayer_waypointlist.h"
+#include "viktrwlayer_wpwin.h"
 
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!
 #define WAYPOINT_LIST_DATE_FORMAT "%Y-%m-%d %H:%M"
