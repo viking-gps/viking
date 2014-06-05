@@ -175,19 +175,13 @@ modules_load_config(void)
      But our logic is to load all existing files and overwrite
      overlapping config with last recent one.
      So, we have to process directories in reverse order. */
-  /* First: find the last element */
-  gchar * * ptr = data_dirs;
-  while (*ptr != NULL) ptr++;
-  /* Second: deduce the number of directories */
-  int nb_data_dirs = 0;
-  nb_data_dirs = ptr - data_dirs;
-  /* Last: parse them in reverse order */
+  int nb_data_dirs = g_strv_length ( data_dirs );
   for (; nb_data_dirs > 0 ; nb_data_dirs--)
   {
     modules_load_config_dir(data_dirs[nb_data_dirs-1]);
   }
   g_strfreev(data_dirs);
-	
+
   /* Check if system config is set */
   modules_load_config_dir(VIKING_SYSCONFDIR);
 
@@ -196,7 +190,7 @@ modules_load_config(void)
   {
     modules_load_config_dir(data_home);
   }
-	
+
   /* Check user's home config */
   modules_load_config_dir(a_get_viking_dir());
 }
