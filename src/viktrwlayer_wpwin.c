@@ -147,7 +147,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   gtk_entry_set_text ( GTK_ENTRY(altentry), alt );
   g_free ( alt );
 
-  commentlabel = gtk_label_new (_("Comment:"));
+  if ( wp->comment && !strncmp(wp->comment, "http", 4) )
+    commentlabel = gtk_link_button_new_with_label (wp->comment, _("Comment:") );
+  else
+    commentlabel = gtk_label_new (_("Comment:"));
   commententry = gtk_entry_new ();
   gchar *cmt =  NULL;
   // Auto put in some kind of 'name' as a comment if one previously 'goto'ed this exact location
@@ -155,7 +158,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   if (cmt)
     gtk_entry_set_text(GTK_ENTRY(commententry), cmt);
 
-  descriptionlabel = gtk_label_new (_("Description:"));
+  if ( wp->description && !strncmp(wp->description, "http", 4) )
+    descriptionlabel = gtk_link_button_new_with_label (wp->description, _("Description:") );
+  else
+    descriptionlabel = gtk_label_new (_("Description:"));
   descriptionentry = gtk_entry_new ();
 
   imagelabel = gtk_label_new (_("Image:"));
