@@ -357,7 +357,6 @@ static gboolean trw_layer_waypoint_button_pressed ( GtkWidget *tree_view,
  */
 static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
                                           GtkTreeStore *store,
-                                          vik_units_distance_t dist_units,
                                           vik_units_height_t height_units )
 {
 	GtkTreeIter t_iter;
@@ -470,14 +469,13 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 
 	//gtk_tree_selection_set_select_function ( gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), vik_treeview_selection_filter, vt, NULL );
 
-	vik_units_distance_t dist_units = a_vik_get_units_distance ();
 	vik_units_height_t height_units = a_vik_get_units_height ();
 
 	//GList *gl = get_waypoints_and_layers_cb ( vl, user_data );
 	//g_list_foreach ( waypoints_and_layers, (GFunc) trw_layer_waypoint_list_add, store );
 	GList *gl = waypoints_and_layers;
 	while ( gl ) {
-		trw_layer_waypoint_list_add ( (vik_trw_waypoint_list_t*)gl->data, store, dist_units, height_units );
+		trw_layer_waypoint_list_add ( (vik_trw_waypoint_list_t*)gl->data, store, height_units );
 		gl = g_list_next ( gl );
 	}
 
