@@ -503,6 +503,10 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       // in 0.1 miles (copes better when zoomed in as 1 mile can be too big)
       base = VIK_METERS_TO_MILES(vik_coord_diff ( &left, &right )) * 10.0;
       break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      // in 0.1 NM (copes better when zoomed in as 1 NM can be too big)
+      base = VIK_METERS_TO_NAUTICAL_MILES(vik_coord_diff ( &left, &right )) * 10.0;
+      break;
     default:
       base = 1; // Keep the compiler happy
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
@@ -561,21 +565,33 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     switch (dist_units) {
     case VIK_UNITS_DISTANCE_KILOMETRES:
       if (unit >= 1000) {
-	sprintf(s, "%d km", (int)unit/1000);
+        sprintf(s, "%d km", (int)unit/1000);
       } else {
-	sprintf(s, "%d m", (int)unit);
+        sprintf(s, "%d m", (int)unit);
       }
       break;
     case VIK_UNITS_DISTANCE_MILES:
       // Handle units in 0.1 miles
       if (unit < 10.0) {
-	sprintf(s, "%0.1f miles", unit/10.0);
+        sprintf(s, "%0.1f miles", unit/10.0);
       }
       else if ((int)unit == 10.0) {
-	sprintf(s, "1 mile");
+        sprintf(s, "1 mile");
       }
       else {
-	sprintf(s, "%d miles", (int)(unit/10.0));
+        sprintf(s, "%d miles", (int)(unit/10.0));
+      }
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      // Handle units in 0.1 NM
+      if (unit < 10.0) {
+        sprintf(s, "%0.1f NM", unit/10.0);
+      }
+      else if ((int)unit == 10.0) {
+        sprintf(s, "1 NM");
+      }
+      else {
+        sprintf(s, "%d NMs", (int)(unit/10.0));
       }
       break;
     default:

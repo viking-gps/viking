@@ -1740,6 +1740,9 @@ static gdouble distance_in_preferred_units ( gdouble dist )
   case VIK_UNITS_DISTANCE_MILES:
     mydist = VIK_METERS_TO_MILES(dist);
     break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    mydist = VIK_METERS_TO_NAUTICAL_MILES(dist);
+    break;
   // VIK_UNITS_DISTANCE_KILOMETRES:
   default:
     mydist = dist/1000.0;
@@ -1784,6 +1787,9 @@ static void trw_layer_draw_dist_labels ( struct DrawingParams *dp, VikTrack *trk
     switch (dist_units) {
     case VIK_UNITS_DISTANCE_MILES:
       dist_i = VIK_MILES_TO_METERS(dist_i);
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      dist_i = VIK_NAUTICAL_MILES_TO_METERS(dist_i);
       break;
       // VIK_UNITS_DISTANCE_KILOMETRES:
     default:
@@ -2843,13 +2849,19 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
       gdouble len_in_units;
 
       // Setup info dependent on distance units
-      if ( a_vik_get_units_distance() == VIK_UNITS_DISTANCE_MILES ) {
-	g_snprintf (tbuf4, sizeof(tbuf4), "miles");
-	len_in_units = VIK_METERS_TO_MILES(tt.length);
-      }
-      else {
-	g_snprintf (tbuf4, sizeof(tbuf4), "kms");
-	len_in_units = tt.length/1000.0;
+      switch ( a_vik_get_units_distance() ) {
+      case VIK_UNITS_DISTANCE_MILES:
+        g_snprintf (tbuf4, sizeof(tbuf4), "miles");
+        len_in_units = VIK_METERS_TO_MILES(tt.length);
+        break;
+      case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+        g_snprintf (tbuf4, sizeof(tbuf4), "NM");
+        len_in_units = VIK_METERS_TO_NAUTICAL_MILES(tt.length);
+        break;
+      default:
+        g_snprintf (tbuf4, sizeof(tbuf4), "kms");
+        len_in_units = tt.length/1000.0;
+        break;
       }
 
       // Timing information if available
@@ -2937,6 +2949,9 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	  break;
 	case VIK_UNITS_DISTANCE_MILES:
 	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f miles %s"), time_buf1, VIK_METERS_TO_MILES(tr_len), time_buf2);
+	  break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f NM %s"), time_buf1, VIK_METERS_TO_NAUTICAL_MILES(tr_len), time_buf2);
 	  break;
 	default:
 	  break;
@@ -9419,6 +9434,15 @@ static gchar* distance_string (gdouble distance)
       g_sprintf(str, "%d yards", (int)(distance*1.0936133));
     } else {
       g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
+    }
+    break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    if (distance >= VIK_NAUTICAL_MILES_TO_METERS(1) && distance < VIK_NAUTICAL_MILES_TO_METERS(100)) {
+      g_sprintf(str, "%3.2f NM", VIK_METERS_TO_NAUTICAL_MILES(distance));
+    } else if (distance < VIK_NAUTICAL_MILES_TO_METERS(1)) {
+      g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+    } else {
+      g_sprintf(str, "%d NM", (int)VIK_METERS_TO_NAUTICAL_MILES(distance));
     }
     break;
   default:

@@ -166,6 +166,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 				// expect the difference between track points to be small hence use metres or yards
 				switch (dist_units) {
 				case VIK_UNITS_DISTANCE_MILES:
+				case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
 					dist_units_str = g_strdup ( _("yards") );
 					break;
 				default:
@@ -212,11 +213,14 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 				gdouble distd =	vik_track_get_length_to_trackpoint (trk, trkpt);
 				gchar *dist_units_str = NULL;
 				vik_units_distance_t dist_units = a_vik_get_units_distance ();
-				// expect the difference between track points to be small hence use metres or yards
 				switch (dist_units) {
 				case VIK_UNITS_DISTANCE_MILES:
 					dist_units_str = g_strdup ( _("miles") );
 					distd = VIK_METERS_TO_MILES(distd);
+					break;
+				case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+					dist_units_str = g_strdup ( _("NM") );
+					distd = VIK_METERS_TO_NAUTICAL_MILES(distd);
 					break;
 				default:
 					// VIK_UNITS_DISTANCE_KILOMETRES:

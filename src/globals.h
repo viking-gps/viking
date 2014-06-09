@@ -43,6 +43,10 @@ G_BEGIN_DECLS
 #define VIK_METERS_TO_MILES(X) ((X)*VIK_MILES_IN_METER)
 #define VIK_MILES_TO_METERS(X) ((X)/VIK_MILES_IN_METER)
 
+#define VIK_NAUTICAL_MILES_IN_METER 0.000539957
+#define VIK_METERS_TO_NAUTICAL_MILES(X) ((X)*VIK_NAUTICAL_MILES_IN_METER)
+#define VIK_NAUTICAL_MILES_TO_METERS(X) ((X)/VIK_NAUTICAL_MILES_IN_METER)
+
 /* MPS - Metres Per Second */
 /* MPH - Metres Per Hour */
 #define VIK_MPH_IN_MPS 2.23693629
@@ -99,6 +103,7 @@ vik_degree_format_t a_vik_get_degree_format ( );
 typedef enum {
   VIK_UNITS_DISTANCE_KILOMETRES,
   VIK_UNITS_DISTANCE_MILES,
+  VIK_UNITS_DISTANCE_NAUTICAL_MILES,
 } vik_units_distance_t;
 
 vik_units_distance_t a_vik_get_units_distance ( );

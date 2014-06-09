@@ -748,6 +748,9 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
     case VIK_UNITS_DISTANCE_MILES:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", VIK_METERS_TO_MILES(meters_from_start) );
       break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f NM", VIK_METERS_TO_NAUTICAL_MILES(meters_from_start) );
+      break;
     default:
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
     }
@@ -827,6 +830,9 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
       break;
     case VIK_UNITS_DISTANCE_MILES:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", VIK_METERS_TO_MILES(meters_from_start) );
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f NM", VIK_METERS_TO_NAUTICAL_MILES(meters_from_start) );
       break;
     default:
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
@@ -1031,10 +1037,17 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 
   if (trackpoint && widgets->w_cur_dist_dist) {
     static gchar tmp_buf[20];
-    if ( a_vik_get_units_distance () == VIK_UNITS_DISTANCE_MILES )
+    switch ( a_vik_get_units_distance () ) {
+    case VIK_UNITS_DISTANCE_MILES:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", widgets->distances[ix]);
-    else
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f NM", widgets->distances[ix]);
+      break;
+    default:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km", widgets->distances[ix]);
+      break;
+    }
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_dist_dist), tmp_buf);
   }
 
@@ -1180,6 +1193,9 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
       break;
     case VIK_UNITS_DISTANCE_MILES:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", VIK_METERS_TO_MILES(meters_from_start) );
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f NM", VIK_METERS_TO_NAUTICAL_MILES(meters_from_start) );
       break;
     default:
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
@@ -1409,16 +1425,27 @@ static void draw_grid_x_time ( GtkWidget *window, GtkWidget *image, PropWidgets 
 static void draw_grid_x_distance ( GtkWidget *window, GtkWidget *image, PropWidgets *widgets, GdkPixmap *pix, guint ii, gdouble dd, guint xx, vik_units_distance_t dist_units )
 {
   gchar *label_markup = NULL;
-  if ( dist_units == VIK_UNITS_DISTANCE_MILES )
+  switch ( dist_units ) {
+  case VIK_UNITS_DISTANCE_MILES:
     if ( ii > 4 )
       label_markup = g_strdup_printf ( "<span size=\"small\">%d %s</span>", (guint)dd, _("miles") );
     else
       label_markup = g_strdup_printf ( "<span size=\"small\">%.1f %s</span>", dd, _("miles") );
-  else
+    break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    if ( ii > 4 )
+      label_markup = g_strdup_printf ( "<span size=\"small\">%d %s</span>", (guint)dd, _("NM") );
+    else
+      label_markup = g_strdup_printf ( "<span size=\"small\">%.1f %s</span>", dd, _("NM") );
+    break;
+  default:
+    // VIK_UNITS_DISTANCE_KILOMETRES:
     if ( ii > 4 )
       label_markup = g_strdup_printf ( "<span size=\"small\">%d %s</span>", (guint)dd, _("km") );
     else
       label_markup = g_strdup_printf ( "<span size=\"small\">%.1f %s</span>", dd, _("km") );
+    break;
+  }
 
   if ( label_markup ) {
     PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
@@ -1456,12 +1483,18 @@ static void draw_distance_divisions ( GtkWidget *window, GtkWidget *image, GdkPi
 {
   // Set to display units from length in metres.
   gdouble length = widgets->track_length_inc_gaps;
-  if ( dist_units == VIK_UNITS_DISTANCE_MILES )
-    length = VIK_METERS_TO_MILES(length);
-  else
-    // KM
-    length = length/1000.0;
-
+  switch (dist_units) {
+    case VIK_UNITS_DISTANCE_MILES:
+      length = VIK_METERS_TO_MILES(length);
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      length = VIK_METERS_TO_NAUTICAL_MILES(length);
+      break;
+    default:
+      // KM
+      length = length/1000.0;
+      break;
+  }
   guint index = get_distance_chunk_index ( length );
   gdouble dist_per_pixel = length/widgets->profile_width;
 
@@ -1875,16 +1908,23 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   // Convert into appropriate units
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
-  if ( dist_units == VIK_UNITS_DISTANCE_MILES ) {
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->distances[i] = VIK_METERS_TO_MILES(widgets->distances[i]);
-    }
-  }
-  else {
-    // Metres - but want in kms
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->distances[i] = widgets->distances[i]/1000.0;
-    }
+  switch ( dist_units ) {
+    case VIK_UNITS_DISTANCE_MILES:
+      for ( i = 0; i < widgets->profile_width; i++ ) {
+        widgets->distances[i] = VIK_METERS_TO_MILES(widgets->distances[i]);
+      }
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      for ( i = 0; i < widgets->profile_width; i++ ) {
+        widgets->distances[i] = VIK_METERS_TO_NAUTICAL_MILES(widgets->distances[i]);
+      }
+      break;
+    default:
+      // Metres - but want in kms
+      for ( i = 0; i < widgets->profile_width; i++ ) {
+        widgets->distances[i] = widgets->distances[i]/1000.0;
+      }
+      break;
   }
 
   widgets->duration = vik_track_get_duration ( widgets->tr );
@@ -1901,10 +1941,17 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   // Assign locally
   // mind = 0.0; - Thus not used
   gdouble maxd;
-  if ( dist_units == VIK_UNITS_DISTANCE_MILES )
+  switch ( dist_units ) {
+  case VIK_UNITS_DISTANCE_MILES:
     maxd = VIK_METERS_TO_MILES(vik_track_get_length_including_gaps (tr));
-  else
+    break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    maxd = VIK_METERS_TO_NAUTICAL_MILES(vik_track_get_length_including_gaps (tr));
+    break;
+  default:
     maxd = vik_track_get_length_including_gaps (tr) / 1000.0;
+    break;
+  }
 
   /* Find suitable chunk index */
   gdouble dummy = 0.0; // expect this to remain the same! (not that it's used)
@@ -1917,10 +1964,17 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   for (i=0; i<=LINES; i++) {
     gchar s[32];
 
-    if ( dist_units == VIK_UNITS_DISTANCE_MILES )
+    switch ( dist_units ) {
+    case VIK_UNITS_DISTANCE_MILES:
       sprintf(s, _("%.1f miles"), ((LINES-i)*chunksd[widgets->cid]));
-    else
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      sprintf(s, _("%.1f NM"), ((LINES-i)*chunksd[widgets->cid]));
+      break;
+    default:
       sprintf(s, _("%.1f km"), ((LINES-i)*chunksd[widgets->cid]));
+      break;
+    }
 
     draw_grid_y ( window, image, widgets, pix, s, i );
   }
@@ -3142,6 +3196,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   case VIK_UNITS_DISTANCE_MILES:
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", VIK_METERS_TO_MILES(tr_len) );
     break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f NM", VIK_METERS_TO_NAUTICAL_MILES(tr_len) );
+    break;
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);
   }
@@ -3242,6 +3299,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     break;
   case VIK_UNITS_DISTANCE_MILES:
     g_snprintf(tmp_buf, sizeof(tmp_buf), "%.3f miles", (tp_count - seg_count) == 0 ? 0 : VIK_METERS_TO_MILES(tr_len / ( tp_count - seg_count )) );
+    break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.3f NM", (tp_count - seg_count) == 0 ? 0 : VIK_METERS_TO_NAUTICAL_MILES(tr_len / ( tp_count - seg_count )) );
     break;
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);

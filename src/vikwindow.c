@@ -1447,20 +1447,29 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     switch (dist_units) {
     case VIK_UNITS_DISTANCE_KILOMETRES:
       if (distance >= 1000 && distance < 100000) {
-	g_sprintf(str, "%3.2f km", distance/1000.0);
+        g_sprintf(str, "%3.2f km", distance/1000.0);
       } else if (distance < 1000) {
-	g_sprintf(str, "%d m", (int)distance);
+        g_sprintf(str, "%d m", (int)distance);
       } else {
-	g_sprintf(str, "%d km", (int)distance/1000);
+        g_sprintf(str, "%d km", (int)distance/1000);
       }
       break;
     case VIK_UNITS_DISTANCE_MILES:
       if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
-	g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
+        g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
       } else if (distance < VIK_MILES_TO_METERS(1)) {
-	g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+        g_sprintf(str, "%d yards", (int)(distance*1.0936133));
       } else {
-	g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
+        g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
+      }
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      if (distance >= VIK_NAUTICAL_MILES_TO_METERS(1) && distance < VIK_NAUTICAL_MILES_TO_METERS(100)) {
+        g_sprintf(str, "%3.2f NM", VIK_METERS_TO_NAUTICAL_MILES(distance));
+      } else if (distance < VIK_NAUTICAL_MILES_TO_METERS(1)) {
+        g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+      } else {
+        g_sprintf(str, "%d NM", (int)VIK_METERS_TO_NAUTICAL_MILES(distance));
       }
       break;
     default:
@@ -1547,14 +1556,17 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
       vik_units_distance_t dist_units = a_vik_get_units_distance ();
       switch (dist_units) {
       case VIK_UNITS_DISTANCE_KILOMETRES:
-	temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
-	break;
+        temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
+        break;
       case VIK_UNITS_DISTANCE_MILES:
-	temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, VIK_METERS_TO_MILES(vik_coord_diff( &coord, &(s->oldcoord) )) );
-	break;
+        temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, VIK_METERS_TO_MILES(vik_coord_diff( &coord, &(s->oldcoord) )) );
+        break;
+      case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+        temp = g_strdup_printf ( "%s %s DIFF %f NM", lat, lon, VIK_METERS_TO_NAUTICAL_MILES(vik_coord_diff( &coord, &(s->oldcoord) )) );
+        break;
       default:
-	temp = g_strdup_printf ("Just to keep the compiler happy");
-	g_critical("Houston, we've had a problem. distance=%d", dist_units);
+        temp = g_strdup_printf ("Just to keep the compiler happy");
+        g_critical("Houston, we've had a problem. distance=%d", dist_units);
       }
 
       s->has_oldcoord = FALSE;
@@ -1623,6 +1635,9 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
       break;
     case VIK_UNITS_DISTANCE_MILES:
       temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, VIK_METERS_TO_MILES (vik_coord_diff( &coord, &(s->oldcoord) )) );
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      temp = g_strdup_printf ( "%s %s DIFF %f NM", lat, lon, VIK_METERS_TO_NAUTICAL_MILES (vik_coord_diff( &coord, &(s->oldcoord) )) );
       break;
     default:
       temp = g_strdup_printf ("Just to keep the compiler happy");
@@ -3608,6 +3623,9 @@ static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointe
     break;
   case VIK_UNITS_DISTANCE_MILES:
     label_text = g_strdup_printf ( _("Total area: %ldm x %ldm (%.3f sq. miles)"), (glong)w, (glong)h, (w*h/2589988.11));
+    break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    label_text = g_strdup_printf ( _("Total area: %ldm x %ldm (%.3f sq. NM)"), (glong)w, (glong)h, (w*h/(1852.0*1852.0)));
     break;
   default:
     label_text = g_strdup_printf ("Just to keep the compiler happy");
