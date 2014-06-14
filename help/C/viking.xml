@@ -334,8 +334,15 @@ Other function keys control turn on/off visibility of various elements:
 </itemizedlist>
 <para>
 Standard shortcuts are provided for normal GUI operations: such as creating new files, opening, saving and exitting.
-Then there are shortcuts specific to &appname; to switch projection modes, zoom in/out, create layers and switch the active tool mode.
-For these combinations see the menu entry themselves.
+Then there are shortcuts specific to &appname; to switch projection modes, zoom in/out, create layers,switch the active tool mode and move the map:
+<itemizedlist>
+<listitem><para><keycap>Ctrl+Up</keycap> Pan the viewport North</para></listitem>
+<listitem><para><keycap>Ctrl+Right</keycap> Pan the viewport East</para></listitem>
+<listitem><para><keycap>Ctrl+Down</keycap> Pan the viewport South</para></listitem>
+<listitem><para><keycap>Ctrl+Left</keycap> Pan the viewport West</para></listitem>
+<listitem><note><para>These work irrespective of the <xref linkend="tools"/> mode selected</para></note></listitem>
+</itemizedlist>
+For other combinations see the menu entry themselves.
 </para>
 </section>
 
