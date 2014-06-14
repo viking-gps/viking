@@ -68,6 +68,7 @@ libviking_a_SOURCES = \
 	documenters.h \
 	dialog.c dialog.h \
 	util.c util.h \
+	ui_util.c ui_util.h \
 	download.c download.h \
 	jpg.c jpg.h \
 	vikenumtypes.c vikenumtypes.h \

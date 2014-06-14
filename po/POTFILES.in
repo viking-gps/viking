@@ -31,6 +31,7 @@ src/geotag_exif.c
 src/osm-traces.c
 src/mapcache.c
 src/print.c
+src/ui_util.c
 src/util.c
 src/vikcoordlayer.c
 src/main.c

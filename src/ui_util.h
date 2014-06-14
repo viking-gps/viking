@@ -1,9 +1,8 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2007-2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * Based on:
- * Copyright (C) 2003-2007, Leandro A. F. Pereira <leandro@linuxmag.com.br>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,21 +20,16 @@
  *
  */
 
-#ifndef _VIKING_UTIL_H
-#define _VIKING_UTIL_H
+#ifndef _VIKING_UI_UTIL_H
+#define _VIKING_UI_UTIL_H
 
 #include <glib.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-gchar *uri_escape(gchar *str);
-
-GList * str_array_to_glist(gchar* data[]);
-
-gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar **val );
-
-void util_add_to_deletion_list ( const gchar* filename );
-void util_remove_all_in_deletion_list ( void );
+void open_url(GtkWindow *parent, const gchar * url);
+void new_email(GtkWindow *parent, const gchar * address);
 
 G_END_DECLS
 
