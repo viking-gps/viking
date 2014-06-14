@@ -3102,6 +3102,7 @@ Accept: */*
               <para>M = Time diff of a Trackpoint from the previous trackpoint</para>
               <para>X = Number of satellites used in the trackpoint fix</para>
               <para>D = Distance of the trackpoint from the start of a track (following along the track)</para>
+              <para>F = Distance of the trackpoint from the finish (end) of a track (following along the track)</para>
               <para>P = Distance difference of the trackpoint from the previous trackpoint</para>
               <para>N = Name of track to which the trackpoint belongs</para>
               <para>E = Name of the trackpoint</para>

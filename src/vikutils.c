@@ -207,6 +207,35 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 
 		case 'X': values[i] = g_strdup_printf ( _("%sNo. of Sats %d"), separator, trkpt->nsats ); break;
 
+		case 'F': {
+			if ( trk ) {
+				// Distance to the end 'Finish' (along the track)
+				gdouble distd =	vik_track_get_length_to_trackpoint (trk, trkpt);
+				gdouble diste =	vik_track_get_length_including_gaps ( trk );
+				gdouble dist = diste - distd;
+				gchar *dist_units_str = NULL;
+				vik_units_distance_t dist_units = a_vik_get_units_distance ();
+				switch (dist_units) {
+				case VIK_UNITS_DISTANCE_MILES:
+					dist_units_str = g_strdup ( _("miles") );
+					dist = VIK_METERS_TO_MILES(dist);
+					break;
+				case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+					dist_units_str = g_strdup ( _("NM") );
+					dist = VIK_METERS_TO_NAUTICAL_MILES(dist);
+					break;
+				default:
+					// VIK_UNITS_DISTANCE_KILOMETRES:
+					dist_units_str = g_strdup ( _("km") );
+					dist = dist / 1000.0;
+					break;
+				}
+				values[i] = g_strdup_printf ( _("%sTo End %.2f%s"), separator, dist, dist_units_str );
+				g_free ( dist_units_str );
+			}
+			break;
+		}
+
 		case 'D': {
 			if ( trk ) {
 				// Distance from start (along the track)
