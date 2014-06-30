@@ -40,7 +40,7 @@ mkdir %DESTINATION%\data
 %MYCOPY% ..\data\latlontz.txt %DESTINATION%\data
 
 echo Copying Libraries
-set MINGW=C:\MinGW
+set MINGW=%SystemDrive%:\MinGW
 if not exist "%MINGW%" (
 	echo Required %MINGW% does not exist
 	goto Tidy
