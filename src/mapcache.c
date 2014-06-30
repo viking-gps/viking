@@ -137,15 +137,16 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
   max_queue_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
 
   if ( queue_size > max_queue_size ) {
-    gchar *oldkey = list_shift_add_entry ( key );
-    cache_remove(oldkey);
-
-    while ( queue_size > max_queue_size &&
-        (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
-      oldkey = list_shift ();
+    if ( queue_tail ) {
+      gchar *oldkey = list_shift_add_entry ( key );
       cache_remove(oldkey);
-    }
 
+      while ( queue_size > max_queue_size &&
+             (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
+        oldkey = list_shift ();
+        cache_remove(oldkey);
+      }
+    }
     /* chop off 'start' etc */
   } else {
     list_add_entry ( key );
