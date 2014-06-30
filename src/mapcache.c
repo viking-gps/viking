@@ -124,7 +124,7 @@ static void list_add_entry ( gchar *key )
   }
 }
 
-void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
+void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
   guint nn = name ? g_str_hash ( name ) : 0;
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, x, y, z, type, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
@@ -156,7 +156,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
   if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d size=%u\n", queue_count, queue_size ); tmp=0; }
 }
 
-GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, guint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
+GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
   static char key[64];
   guint nn = name ? g_str_hash ( name ) : 0;
@@ -167,7 +167,7 @@ GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, guint zoom, gu
 /**
  * Appears this is only used when redownloading tiles (i.e. to invalidate old images)
  */
-void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, guint zoom )
+void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, gint zoom )
 {
   char key[64];
   List *loop = queue_tail;
