@@ -32,6 +32,7 @@
 #include "vikwmscmapsource.h"
 #include "vikwebtoolcenter.h"
 #include "vikwebtoolbounds.h"
+#include "vikwebtoolformat.h"
 #include "vikwebtool_datasource.h"
 #include "vikexttools.h"
 #include "vikexttool_datasources.h"
@@ -152,6 +153,13 @@ void osm_init () {
   webtoolbounds = vik_webtool_bounds_new_with_members ( _("Local port 8111 (eg JOSM)"), "http://localhost:8111/load_and_zoom?left=%s&right=%s&bottom=%s&top=%s" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtoolbounds ) );
   g_object_unref ( webtoolbounds );
+
+  VikWebtoolFormat *vwtf = NULL;
+  vwtf = vik_webtool_format_new_with_members ( _("Geofabrik Map Compare"),
+                                               "http://tools.geofabrik.de/mc/#%s/%s/%s",
+                                               "ZAO" );
+  vik_ext_tools_register ( VIK_EXT_TOOL ( vwtf ) );
+  g_object_unref ( vwtf );
 
   // Datasource
   VikWebtoolDatasource *vwtds = NULL;

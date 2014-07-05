@@ -11,4 +11,21 @@
     <property name="label">Local port 8111 (eg JOSM)</property>
     <property name="url">http://localhost:8111/load_and_zoom?left=%s&amp;right=%s&amp;bottom=%s&amp;top=%s</property>
   </object>
+  <!-- Built In - but this example uses 6 maps
+       Note you need to specify a different name compared to the built in one
+       ATM You can't override built in ones.
+  <object class="VikWebtoolFormat">
+    <property name="label">Geofabrik Map Compare x6</property>
+    <property name="url">http://tools.geofabrik.de/mc/#%s/%s/%s&num=6</property>
+    <property name="url_format_code">AOZ</property>
+  </object>
+  -->
+  <!-- url_format_code describes the order and what each of the substitution values are in the URL -->
+  <!-- B = Bottom of the current view  i.e. minimum latitude -->
+  <!-- L = Left of the current view  i.e. minimum longitude -->
+  <!-- T = Top of the current view  i.e. maximum latitude -->
+  <!-- R = Right of the current view i.e. maximum longitude -->
+  <!-- A = center lAtitude of the current view -->
+  <!-- O = center lOngitude of the current view -->
+  <!-- Z = OSM Zoom value of the current view (http://wiki.openstreetmap.org/wiki/Zoom_levels) -->
 </objects>
