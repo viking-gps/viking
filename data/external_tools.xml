@@ -11,4 +11,8 @@
     <property name="label">Yahoo! Maps</property>
     <property name="url">http://maps.yahoo.com/#lat=%s&amp;lon=%s&amp;zoom=%d</property>
   </object>
+  <object class="VikWebtoolCenter">
+    <property name="label">HERE Maps</property>
+    <property name="url">http://here.com/%s,%s,%d</property>
+  </object>
 </objects>
