@@ -65,7 +65,7 @@ gchar **routing_engine_ids = NULL;
 void
 vik_routing_prefs_init()
 {
-  a_preferences_register_group ( VIKING_ROUTING_PARAMS_GROUP_KEY, "Routing" );
+  a_preferences_register_group ( VIKING_ROUTING_PARAMS_GROUP_KEY, _("Routing") );
 
   VikLayerParamData tmp;
   tmp.s = NULL;
