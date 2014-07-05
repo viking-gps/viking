@@ -22,14 +22,12 @@
 #include "config.h"
 #endif
 
-#include <gtk/gtk.h>
+#include <glib.h>
 #include <glib/gi18n.h>
 #include <string.h>
 #include "globals.h"
 #include "mapcache.h"
 #include "preferences.h"
-
-#include "config.h"
 
 typedef struct _List {
   struct _List *next;
@@ -41,16 +39,15 @@ typedef struct _List {
 static List *queue_tail = NULL;
 static int queue_count = 0;
 
-static guint32 queue_size = 0;
-static guint32 max_queue_size = VIK_CONFIG_MAPCACHE_SIZE * 1024 * 1024;
-
+static guint32 cache_size = 0;
+static guint32 max_cache_size = VIK_CONFIG_MAPCACHE_SIZE * 1024 * 1024;
 
 static GHashTable *cache = NULL;
 
 static GMutex *mc_mutex = NULL;
 
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%d-%.3f-%.3f"
-#define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-%d-"
+#define HASHKEY_FORMAT_STRING_NOSHRINK "%d-%d-%d-%d-%d-%d-"
 
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */
@@ -73,22 +70,20 @@ void a_mapcache_init ()
 
 static void cache_add(gchar *key, GdkPixbuf *pixbuf)
 {
-  /* TODO: Check if already exists */
-  g_hash_table_insert ( cache, key, pixbuf );
-  queue_size += gdk_pixbuf_get_rowstride(pixbuf) * gdk_pixbuf_get_height(pixbuf);
-  queue_size += 100;
-  queue_count++;
+  if ( g_hash_table_insert ( cache, key, pixbuf ) ) {
+    cache_size += gdk_pixbuf_get_rowstride(pixbuf) * gdk_pixbuf_get_height(pixbuf);
+    cache_size += 100;
+  }
 }
 
 static void cache_remove(const gchar *key)
 {
-    GdkPixbuf *buf = g_hash_table_lookup ( cache, key );
-    if (buf) {
-      queue_size -= gdk_pixbuf_get_rowstride(buf) * gdk_pixbuf_get_height(buf);
-      queue_size -= 100;
-      queue_count --;
-      g_hash_table_remove ( cache, key );
-    }
+  GdkPixbuf *buf = g_hash_table_lookup ( cache, key );
+  if (buf) {
+    cache_size -= gdk_pixbuf_get_rowstride(buf) * gdk_pixbuf_get_height(buf);
+    cache_size -= 100;
+    g_hash_table_remove ( cache, key );
+  }
 }
 
 /* returns key from head, adds on newtailkey to tail. */
@@ -106,6 +101,7 @@ static gchar *list_shift ()
   List *oldhead = queue_tail->next;
   queue_tail->next = queue_tail->next->next;
   g_free ( oldhead );
+  queue_count--;
   return oldheadkey;
 }
 
@@ -122,6 +118,7 @@ static void list_add_entry ( gchar *key )
     newlist->next = newlist;
     queue_tail = newlist;
   }
+  queue_count++;
 }
 
 void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
@@ -134,14 +131,14 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
   cache_add(key, pixbuf);
 
   // TODO: that should be done on preference change only...
-  max_queue_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
+  max_cache_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
 
-  if ( queue_size > max_queue_size ) {
+  if ( cache_size > max_cache_size ) {
     if ( queue_tail ) {
       gchar *oldkey = list_shift_add_entry ( key );
       cache_remove(oldkey);
 
-      while ( queue_size > max_queue_size &&
+      while ( cache_size > max_cache_size &&
              (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
         oldkey = list_shift ();
         cache_remove(oldkey);
@@ -154,7 +151,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
   }
   g_mutex_unlock(mc_mutex);
 
-  if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d size=%u\n", queue_count, queue_size ); tmp=0; }
+  if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d size=%u\n", queue_count, cache_size ); tmp=0; }
 }
 
 GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
@@ -178,7 +175,7 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
   if ( queue_tail == NULL )
     return;
 
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, x, y, z, type, zoom, 0 );
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK, x, y, z, type, zoom, 0 );
   len = strlen(key);
 
   g_mutex_lock(mc_mutex);
@@ -197,6 +194,7 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
       }
       g_free ( tmp );
       tmp = NULL;
+      queue_count--;
     }
     else
       loop = tmp;
@@ -237,5 +235,3 @@ void a_mapcache_uninit ()
   /* free list */
   cache = NULL;
 }
-
-
