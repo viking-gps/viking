@@ -34,6 +34,9 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
 void a_mapcache_flush ();
 void a_mapcache_uninit ();
 
+gint a_mapcache_get_size ();
+gint a_mapcache_get_count ();
+
 G_END_DECLS
 
 #endif

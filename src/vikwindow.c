@@ -2351,6 +2351,14 @@ static void help_about_cb ( GtkAction *a, VikWindow *vw )
   a_dialog_about(GTK_WINDOW(vw));
 }
 
+static void help_cache_info_cb ( GtkAction *a, VikWindow *vw )
+{
+  // NB: No i18n as this is just for debug
+  char sz[64];
+  g_sprintf(sz, "Map Cache size is %d with %d items", a_mapcache_get_size(), a_mapcache_get_count());
+  a_dialog_info_msg_extra ( GTK_WINDOW(vw), "%s", sz );
+}
+
 static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
 {
   if ( vik_layers_panel_get_selected ( vw->viking_vlp ) )
@@ -4055,6 +4063,10 @@ static GtkActionEntry entries[] = {
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         NULL,                                           (GCallback)help_about_cb    },
 };
 
+static GtkActionEntry debug_entries[] = {
+  { "MapCacheInfo", NULL,                "_Map Cache Info",                   NULL,         NULL,                                           (GCallback)help_cache_info_cb    },
+};
+
 static GtkActionEntry entries_gpsbabel[] = {
   { "ExportKML", NULL,                   N_("_KML..."),           	      NULL,         N_("Export as KML"),                                (GCallback)export_to_kml },
 };
@@ -4115,6 +4127,14 @@ static void window_create_ui( VikWindow *window )
   gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), window);
   gtk_action_group_add_toggle_actions (action_group, toggle_entries, G_N_ELEMENTS (toggle_entries), window);
   gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 4, (GCallback)window_change_coord_mode_cb, window);
+  if ( vik_debug ) {
+    if ( gtk_ui_manager_add_ui_from_string ( uim,
+         "<ui><menubar name='MainMenu'><menu action='Help'><menuitem action='MapCacheInfo'/></menu></menubar></ui>",
+         -1, NULL ) ) {
+      gtk_action_group_add_actions (action_group, debug_entries, G_N_ELEMENTS (debug_entries), window);
+    }
+  }
+
 
   // Use this to see if GPSBabel is available:
   if ( a_babel_available () ) {

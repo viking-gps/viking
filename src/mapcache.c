@@ -125,7 +125,6 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
 {
   guint nn = name ? g_str_hash ( name ) : 0;
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, x, y, z, type, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
-  static int tmp = 0;
 
   g_mutex_lock(mc_mutex);
   cache_add(key, pixbuf);
@@ -151,7 +150,8 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
   }
   g_mutex_unlock(mc_mutex);
 
-  if ( (++tmp == 100 ))  { g_print("DEBUG: queue count=%d size=%u\n", queue_count, cache_size ); tmp=0; }
+  static int tmp = 0;
+  if ( (++tmp == 100 )) { g_debug("DEBUG: cache count=%d size=%u list count=%d\n", g_hash_table_size(cache), cache_size, queue_count ); tmp=0; }
 }
 
 GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
@@ -234,4 +234,16 @@ void a_mapcache_uninit ()
   g_hash_table_destroy ( cache );
   /* free list */
   cache = NULL;
+}
+
+// Size of mapcache in memory
+gint a_mapcache_get_size ()
+{
+  return cache_size;
+}
+
+// Count of items in the mapcache
+gint a_mapcache_get_count ()
+{
+  return g_hash_table_size ( cache );
 }
