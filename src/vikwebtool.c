@@ -29,7 +29,7 @@
 
 #include <glib/gi18n.h>
 
-#include "util.h"
+#include "ui_util.h"
 
 static GObjectClass *parent_class;
 

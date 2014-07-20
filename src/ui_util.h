@@ -3,6 +3,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2007-2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,10 @@ G_BEGIN_DECLS
 
 void open_url(GtkWindow *parent, const gchar * url);
 void new_email(GtkWindow *parent, const gchar * address);
+
+GtkWidget *ui_button_new_with_image(const gchar *stock_id, const gchar *text);
+gint ui_get_gtk_settings_integer(const gchar *property_name, gint default_value);
+GtkWidget *ui_lookup_widget(GtkWidget *widget, const gchar *widget_name);
 
 G_END_DECLS
 

@@ -61,6 +61,7 @@
 #include "datasource_gps.h"
 #include "vikexttool_datasources.h"
 #include "util.h"
+#include "ui_util.h"
 #include "vikutils.h"
 
 #include "vikrouting.h"

@@ -94,3 +94,77 @@ void new_email(GtkWindow *parent, const gchar * address)
   g_free(uri);
   uri = NULL;
 }
+
+/** Creates a @c GtkButton with custom text and a stock image similar to
+ * @c gtk_button_new_from_stock().
+ * @param stock_id A @c GTK_STOCK_NAME string.
+ * @param text Button label text, can include mnemonics.
+ * @return The new @c GtkButton.
+ */
+GtkWidget *ui_button_new_with_image(const gchar *stock_id, const gchar *text)
+{
+	GtkWidget *image, *button;
+
+	button = gtk_button_new_with_mnemonic(text);
+	gtk_widget_show(button);
+	image = gtk_image_new_from_stock(stock_id, GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image(GTK_BUTTON(button), image);
+	// note: image is shown by gtk
+	return button;
+}
+
+/** Reads an integer from the GTK default settings registry
+ * (see http://library.gnome.org/devel/gtk/stable/GtkSettings.html).
+ * @param property_name The property to read.
+ * @param default_value The default value in case the value could not be read.
+ * @return The value for the property if it exists, otherwise the @a default_value.
+ */
+gint ui_get_gtk_settings_integer(const gchar *property_name, gint default_value)
+{
+	if (g_object_class_find_property(G_OBJECT_GET_CLASS(G_OBJECT(
+		gtk_settings_get_default())), property_name))
+	{
+		gint value;
+		g_object_get(G_OBJECT(gtk_settings_get_default()), property_name, &value, NULL);
+		return value;
+	}
+	else
+		return default_value;
+}
+
+
+/** Returns a widget from a name in a component, usually created by Glade.
+ * Call it with the toplevel widget in the component (i.e. a window/dialog),
+ * or alternatively any widget in the component, and the name of the widget
+ * you want returned.
+ * @param widget Widget with the @a widget_name property set.
+ * @param widget_name Name to lookup.
+ * @return The widget found.
+ * @see ui_hookup_widget().
+ *
+ */
+GtkWidget *ui_lookup_widget(GtkWidget *widget, const gchar *widget_name)
+{
+	GtkWidget *parent, *found_widget;
+
+	g_return_val_if_fail(widget != NULL, NULL);
+	g_return_val_if_fail(widget_name != NULL, NULL);
+
+	for (;;)
+	{
+		if (GTK_IS_MENU(widget))
+			parent = gtk_menu_get_attach_widget(GTK_MENU(widget));
+		else
+			parent = gtk_widget_get_parent(widget);
+		if (parent == NULL)
+			parent = (GtkWidget*) g_object_get_data(G_OBJECT(widget), "GladeParentKey");
+		if (parent == NULL)
+			break;
+		widget = parent;
+	}
+
+	found_widget = (GtkWidget*) g_object_get_data(G_OBJECT(widget), widget_name);
+	if (G_UNLIKELY(found_widget == NULL))
+		g_warning("Widget not found: %s", widget_name);
+	return found_widget;
+}
