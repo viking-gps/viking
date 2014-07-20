@@ -47,7 +47,7 @@ static GHashTable *cache = NULL;
 static GMutex *mc_mutex = NULL;
 
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%d-%.3f-%.3f"
-#define HASHKEY_FORMAT_STRING_NOSHRINK "%d-%d-%d-%d-%d-%d-"
+#define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-%d-"
 
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */
@@ -175,7 +175,7 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
   if ( queue_tail == NULL )
     return;
 
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK, x, y, z, type, zoom, 0 );
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, x, y, z, type, zoom, 0 );
   len = strlen(key);
 
   g_mutex_lock(mc_mutex);
