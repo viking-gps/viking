@@ -35,6 +35,7 @@ typedef union {
   const gchar *s;
   GdkColor c;
   GList *sl;
+  gpointer ptr; // For internal usage - don't save this value in a file!
 } VikLayerParamData;
 
 typedef enum {
@@ -50,6 +51,7 @@ typedef enum {
   VIK_LAYER_WIDGET_COLOR,
   VIK_LAYER_WIDGET_COMBOBOX,
   VIK_LAYER_WIDGET_FILELIST,
+  VIK_LAYER_WIDGET_BUTTON,
 } VikLayerWidgetType;
 
 /* id is index */
@@ -71,6 +73,7 @@ VIK_LAYER_PARAM_COLOR,
  */
 
 VIK_LAYER_PARAM_STRING_LIST,
+VIK_LAYER_PARAM_PTR, // Not really a 'parameter' but useful to route to extended configuration (e.g. toolbar order)
 } VikLayerParamType;
 
 typedef enum {

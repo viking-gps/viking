@@ -165,8 +165,9 @@ gboolean a_preferences_save_to_file()
     for ( i = 0; i < params->len; i++ ) {
       param = (VikLayerParam *) g_ptr_array_index(params,i);
       val = (VikLayerTypedParamData *) g_hash_table_lookup ( values, param->name );
-      g_assert ( val != NULL );
-      file_write_layer_param ( f, param->name, val->type, val->data );
+      if ( val )
+        if ( val->type != VIK_LAYER_PARAM_PTR )
+          file_write_layer_param ( f, param->name, val->type, val->data );
     }
     fclose(f);
     f = NULL;
