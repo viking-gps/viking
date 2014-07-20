@@ -182,6 +182,7 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
   /* TODO: check logic here */
   do {
     tmp = loop->next;
+    if ( tmp ) {
     if ( strncmp(tmp->key, key, len) == 0 )
     {
       cache_remove(tmp->key);
@@ -198,7 +199,8 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
     }
     else
       loop = tmp;
-
+    } else
+      loop = NULL;
   } while ( loop && (loop != queue_tail || tmp == NULL) );
 
   /* loop thru list, looking for the one, compare first whatever chars */
