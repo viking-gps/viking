@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2007-2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2014, Rob Norris <rw_norris@hotmail.com>
  * Based on:
  * Copyright (C) 2003-2007, Leandro A. F. Pereira <leandro@linuxmag.com.br>
  *
@@ -36,6 +37,31 @@ gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar
 
 void util_add_to_deletion_list ( const gchar* filename );
 void util_remove_all_in_deletion_list ( void );
+
+gchar *util_str_remove_chars(gchar *string, const gchar *chars);
+
+/** Returns @c TRUE if @a ptr is @c NULL or @c *ptr is @c FALSE. */
+#define EMPTY(ptr) \
+	(!(ptr) || !*(ptr))
+
+/** Iterates all the nodes in @a list.
+ * @param node should be a (@c GList*).
+ * @param list @c GList to traverse. */
+#define foreach_list(node, list) \
+	for (node = list; node != NULL; node = node->next)
+
+/** Iterates all the nodes in @a list.
+ * @param node should be a (@c GSList*).
+ * @param list @c GSList to traverse. */
+#define foreach_slist(node, list) \
+	foreach_list(node, list)
+
+/** Iterates through each character in @a string.
+ * @param char_ptr Pointer to character.
+ * @param string String to traverse.
+ * @warning Doesn't include null terminating character. */
+#define foreach_str(char_ptr, string) \
+	for (char_ptr = string; *char_ptr; char_ptr++)
 
 G_END_DECLS
 

@@ -19,7 +19,8 @@
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
  /*
-  * Ideally dependencies should just be on Glib, Gtk,
+  * Dependencies must be just on Glib
+  * see ui_utils for thing that depend on Gtk
   * see vikutils for things that further depend on other Viking types
   */
 #ifdef HAVE_CONFIG_H
@@ -137,4 +138,33 @@ void util_remove_all_in_deletion_list ( void )
 		g_free ( deletion_list->data );
 		deletion_list = g_slist_delete_link ( deletion_list, deletion_list );
 	}
+}
+
+/**
+ *  Removes characters from a string, in place.
+ *
+ *  @param string String to search.
+ *  @param chars Characters to remove.
+ *
+ *  @return @a string - return value is only useful when nesting function calls, e.g.:
+ *  @code str = utils_str_remove_chars(g_strdup("f_o_o"), "_"); @endcode
+ *
+ *  @see @c g_strdelimit.
+ **/
+gchar *util_str_remove_chars(gchar *string, const gchar *chars)
+{
+	const gchar *r;
+	gchar *w = string;
+
+	g_return_val_if_fail(string, NULL);
+	if (G_UNLIKELY(EMPTY(chars)))
+		return string;
+
+	foreach_str(r, string)
+	{
+		if (!strchr(chars, *r))
+			*w++ = *r;
+	}
+	*w = 0x0;
+	return string;
 }
