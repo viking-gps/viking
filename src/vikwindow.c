@@ -2354,9 +2354,18 @@ static void help_about_cb ( GtkAction *a, VikWindow *vw )
 static void help_cache_info_cb ( GtkAction *a, VikWindow *vw )
 {
   // NB: No i18n as this is just for debug
-  char sz[64];
-  g_sprintf(sz, "Map Cache size is %d with %d items", a_mapcache_get_size(), a_mapcache_get_count());
-  a_dialog_info_msg_extra ( GTK_WINDOW(vw), "%s", sz );
+  gint byte_size = a_mapcache_get_size();
+  gchar *msg_sz = NULL;
+  gchar *msg = NULL;
+#if GLIB_CHECK_VERSION(2,30,0)
+  msg_sz = g_format_size_full ( byte_size, G_FORMAT_SIZE_LONG_FORMAT );
+#else
+  msg_sz = g_format_size_for_display ( byte_size );
+#endif
+  msg = g_strdup_printf ( "Map Cache size is %s with %d items", msg_sz, a_mapcache_get_count());
+  a_dialog_info_msg_extra ( GTK_WINDOW(vw), "%s", msg );
+  g_free ( msg_sz );
+  g_free ( msg );
 }
 
 static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
@@ -3162,19 +3171,15 @@ static void file_properties_cb ( GtkAction *a, VikWindow *vw )
       if ( g_stat ( vw->filename, &stat_buf ) == 0 ) {
         gchar time_buf[64];
         strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
-	gchar *size = NULL;
-	gint byte_size = stat_buf.st_size;
-	// See http://en.wikipedia.org/wiki/Megabyte (and Kilobyte)
-	//  hence using 1000 rather than 1024
-	//  so get output as per 'ls' or the Gtk file open dialog
-	if ( byte_size < 1000 )
-	  size = g_strdup_printf ( _("%d bytes"), byte_size );
-	else if ( byte_size < 1000*1000 )
-	  size = g_strdup_printf ( _("%3.1f kB"), (gdouble)byte_size / 1000 );
-	else
-	  size = g_strdup_printf ( _("%3.1f MB"), (gdouble)byte_size / (1000*1000) );
-        message = g_strdup_printf ( _("%s\n\n%s\n\n%s"), vw->filename, time_buf, size );
-	g_free (size);
+        gchar *size = NULL;
+        gint byte_size = stat_buf.st_size;
+#if GLIB_CHECK_VERSION(2,30,0)
+        size = g_format_size_full ( byte_size, G_FORMAT_SIZE_DEFAULT );
+#else
+        size = g_format_size_for_display ( byte_size );
+#endif
+        message = g_strdup_printf ( "%s\n\n%s\n\n%s", vw->filename, time_buf, size );
+        g_free (size);
       }
     }
     else
