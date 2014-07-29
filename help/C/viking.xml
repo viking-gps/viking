@@ -340,6 +340,8 @@ Then there are shortcuts specific to &appname; to switch projection modes, zoom 
 <listitem><para><keycap>Ctrl+Right</keycap> Pan the viewport East</para></listitem>
 <listitem><para><keycap>Ctrl+Down</keycap> Pan the viewport South</para></listitem>
 <listitem><para><keycap>Ctrl+Left</keycap> Pan the viewport West</para></listitem>
+<listitem><para><keycap>Ctrl+Keypad+</keycap> Zoom In</para></listitem>
+<listitem><para><keycap>Ctrl+Keypad-</keycap> Zoom Out</para></listitem>
 <listitem><note><para>These work irrespective of the <xref linkend="tools"/> mode selected</para></note></listitem>
 </itemizedlist>
 For other combinations see the menu entry themselves.

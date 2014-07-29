@@ -900,6 +900,17 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
 	map_download = TRUE;
 	map_download_only_new = FALSE;
   }
+  // Standard Ctrl+KP+ / Ctrl+KP- to zoom in/out respectively
+  else if ( event->keyval == GDK_KEY_KP_Add && (event->state & modifiers) == GDK_CONTROL_MASK ) {
+    vik_viewport_zoom_in ( vw->viking_vvp );
+    draw_update(vw);
+    return TRUE; // handled keypress
+  }
+  else if ( event->keyval == GDK_KEY_KP_Subtract && (event->state & modifiers) == GDK_CONTROL_MASK ) {
+    vik_viewport_zoom_out ( vw->viking_vvp );
+    draw_update(vw);
+    return TRUE; // handled keypress
+  }
 
   if ( map_download ) {
     simple_map_update ( vw, map_download_only_new );
