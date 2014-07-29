@@ -914,6 +914,7 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
 
   if ( map_download ) {
     simple_map_update ( vw, map_download_only_new );
+    return TRUE; // handled keypress
   }
 
   VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
