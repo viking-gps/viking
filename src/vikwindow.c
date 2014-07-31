@@ -156,6 +156,7 @@ static gboolean window_save ( VikWindow *vw );
 
 struct _VikWindow {
   GtkWindow gtkwindow;
+  GtkWidget *hpaned;
   VikViewport *viking_vvp;
   VikLayersPanel *viking_vlp;
   VikStatusbar *viking_vs;
@@ -691,6 +692,7 @@ static void drag_data_received_cb ( GtkWidget *widget,
 #define VIK_SETTINGS_WIN_FULLSCREEN "window_fullscreen"
 #define VIK_SETTINGS_WIN_WIDTH "window_width"
 #define VIK_SETTINGS_WIN_HEIGHT "window_height"
+#define VIK_SETTINGS_WIN_PANE_POSITION "window_horizontal_pane_position"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH "window_save_image_width"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT "window_save_image_height"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_PNG "window_save_image_as_png"
@@ -699,7 +701,6 @@ static void drag_data_received_cb ( GtkWidget *widget,
 static void vik_window_init ( VikWindow *vw )
 {
   GtkWidget *main_vbox;
-  GtkWidget *hpaned;
 
   vw->action_group = NULL;
 
@@ -781,12 +782,12 @@ static void vik_window_init ( VikWindow *vw )
   // Set initial button sensitivity
   center_changed_cb ( vw );
 
-  hpaned = gtk_hpaned_new ();
-  gtk_paned_pack1 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
-  gtk_paned_pack2 ( GTK_PANED(hpaned), GTK_WIDGET (vw->viking_vvp), TRUE, TRUE );
+  vw->hpaned = gtk_hpaned_new ();
+  gtk_paned_pack1 ( GTK_PANED(vw->hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
+  gtk_paned_pack2 ( GTK_PANED(vw->hpaned), GTK_WIDGET (vw->viking_vvp), TRUE, TRUE );
 
   /* This packs the button into the window (a gtk container). */
-  gtk_box_pack_start (GTK_BOX(main_vbox), hpaned, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX(main_vbox), vw->hpaned, TRUE, TRUE, 0);
 
   gtk_box_pack_end (GTK_BOX(main_vbox), GTK_WIDGET(vw->viking_vs), FALSE, TRUE, 0);
 
@@ -829,6 +830,12 @@ static void vik_window_init ( VikWindow *vw )
         gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
       }
     }
+
+    gint position = -1; // Let GTK determine default positioning
+    if ( !a_settings_get_integer ( VIK_SETTINGS_WIN_PANE_POSITION, &position ) ) {
+      position = -1;
+    }
+    gtk_paned_set_position ( GTK_PANED(vw->hpaned), position );
   }
 
   gtk_window_set_default_size ( GTK_WINDOW(vw), width, height );
@@ -995,6 +1002,8 @@ static gboolean delete_event( VikWindow *vw )
         a_settings_set_integer ( VIK_SETTINGS_WIN_WIDTH, width );
         a_settings_set_integer ( VIK_SETTINGS_WIN_HEIGHT, height );
       }
+
+      a_settings_set_integer ( VIK_SETTINGS_WIN_PANE_POSITION, gtk_paned_get_position (GTK_PANED(vw->hpaned)) );
     }
 
     a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, vw->draw_image_width );
