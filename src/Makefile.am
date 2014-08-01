@@ -99,6 +99,7 @@ libviking_a_SOURCES = \
 	vikroutingengine.c vikroutingengine.h \
 	vikroutingwebengine.c vikroutingwebengine.h \
 	vikutils.c vikutils.h \
+	toolbar.c toolbar.h toolbar.xml.h \
 	thumbnails.c thumbnails.h \
 	background.c background.h \
 	vikradiogroup.c vikradiogroup.h \
