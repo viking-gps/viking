@@ -1,8 +1,10 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
- *      toolbar.h - this file is part of Geany, a fast and lightweight IDE
+ *      toolbar.h - this file was part of Geany (v1.24.1), a fast and lightweight IDE
  *
  *      Copyright 2009-2012 Enrico Tröger <enrico(dot)troeger(at)uvena(dot)de>
  *      Copyright 2009-2012 Nick Treleaven <nick(dot)treleaven(at)btinternet(dot)com>
+ *      Copyright 2014 Rob Norris <rw_norris@hotmail.com>
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -19,47 +21,59 @@
  *      51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GEANY_TOOLBAR_H
-#define GEANY_TOOLBAR_H
+#ifndef VIKING_TOOLBAR_H
+#define VIKING_TOOLBAR_H 1
+
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-/** Toolbar settings. */
-typedef struct GeanyToolbarPrefs
-{
-	gboolean		visible;
-	GtkIconSize		icon_size;
-	GtkToolbarStyle	icon_style;	/**< Icon style. */
-	gboolean		use_gtk_default_style;
-	gboolean		use_gtk_default_icon;
-	gboolean		append_to_menu;
-}
-GeanyToolbarPrefs;
+#define VIK_TOOLBAR_TYPE             (vik_toolbar_get_type ())
+#define VIK_TOOLBAR(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_TOOLBAR_TYPE, VikToolbar))
+#define VIK_TOOLBAR_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_TOOLBAR_TYPE, VikToolbarClass))
+#define VIK_IS_TOOLBAR(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_TOOLBAR_TYPE))
+#define VIK_IS_TOOLBAR_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), VIK_TOOLBAR_TYPE))
+#define VIK_TOOLBAR_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), VIK_TOOLBAR_TYPE, VikToolbarClass))
 
-extern GeanyToolbarPrefs toolbar_prefs;
+typedef struct _VikToolbarClass VikToolbarClass;
+typedef struct _VikToolbar VikToolbar;
 
+GType vik_toolbar_get_type ();
 
-GtkWidget *toolbar_get_widget_child_by_name(const gchar *name);
+VikToolbar *vik_toolbar_new (void);
+void vik_toolbar_finalize ( VikToolbar *vtb );
 
-GtkWidget *toolbar_get_widget_by_name(const gchar *name);
+GtkWidget *toolbar_get_widget_by_name(VikToolbar *vtb, const gchar *name);
+GtkAction *toolbar_get_action_by_name(VikToolbar *vtb, const gchar *name);
 
-GtkAction *toolbar_get_action_by_name(const gchar *name);
+void toolbar_action_tool_entry_register(VikToolbar *vtb, GtkRadioActionEntry *action);
+void toolbar_action_mode_entry_register(VikToolbar *vtb, GtkRadioActionEntry *action);
+void toolbar_action_toggle_entry_register(VikToolbar *vtb, GtkToggleActionEntry *action, gpointer callback);
+void toolbar_action_entry_register(VikToolbar *vtb, GtkActionEntry *action);
 
-gint toolbar_get_insert_position(void);
+void toolbar_action_set_sensitive (VikToolbar *vtb, const gchar *name, gboolean sensitive);
 
-void toolbar_update_ui(void);
+typedef void (ToolCB) (GtkAction *, GtkAction *, gpointer); // gpointer is actually a VikWindow
+typedef void (ReloadCB) (GtkActionGroup *, gpointer); // gpointer is actually a VikWindow
 
-void toolbar_apply_settings(void);
+void toolbar_init(VikToolbar *vtb,
+                  GtkWindow *parent,
+                  GtkWidget *vbox,
+                  GtkWidget *hbox,
+                  ToolCB tool_cb,
+                  ReloadCB reload_cb,
+                  gpointer user_data);
 
-void toolbar_show_hide(void);
+void toolbar_apply_settings(VikToolbar *vtb,
+                            GtkWidget *vbox,
+                            GtkWidget *hbox,
+                            gboolean reset);
 
-void toolbar_item_ref(GtkToolItem *item);
+GtkWidget* toolbar_get_widget(VikToolbar *vtb);
 
-GtkWidget *toolbar_init(void);
+void a_toolbar_init (void);
 
-void toolbar_finalize(void);
-
-void toolbar_configure(GtkWindow *parent);
+void a_toolbar_uninit (void);
 
 G_END_DECLS
 
