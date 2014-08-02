@@ -47,8 +47,20 @@ GType vik_maps_layer_get_type ();
 
 typedef struct _VikMapsLayer VikMapsLayer;
 
+typedef enum {
+  VIK_MAPS_CACHE_LAYOUT_VIKING=0, // CacheDir/t<MapId>s<VikingZoom>z0/X/Y (NB no file extension) - Legacy default layout
+  VIK_MAPS_CACHE_LAYOUT_OSM,      // CacheDir/OSMZoomLevel/X/Y.ext (Default ext=png)
+  VIK_MAPS_CACHE_LAYOUT_NUM       // Last enum
+} VikMapsCacheLayout;
+
+// OSM definition is a TMS derivative, (Global Mercator profile with Flipped Y)
+//  http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+//  http://wiki.openstreetmap.org/wiki/TMS
+//  http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
+
 void maps_layer_init ();
 void maps_layer_set_autodownload_default ( gboolean autodownload );
+void maps_layer_set_cache_default ( VikMapsCacheLayout layout );
 void maps_layer_register_map_source ( VikMapSource *map );
 void vik_maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom );
 gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
