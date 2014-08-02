@@ -1786,30 +1786,6 @@ static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *e
     return TRUE;
   }
   return FALSE;
-
- 
-#if 0
-  if ( __map_types[vml->maptype].drawmode == vik_viewport_get_drawmode ( vvp ) )
-  {
-    VikCoord coord;
-    MapCoord mapcoord;
-    vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
-    if ( __map_types[vml->maptype].coord_to_mapcoord ( &coord,
-                vml->xmapzoom ? vml->xmapzoom : vik_viewport_get_xmpp ( vvp ),
-                vml->ymapzoom ? vml->ymapzoom : vik_viewport_get_ympp ( vvp ),
-                &mapcoord ) ) {
-      gchar *filename_buf = g_strdup_printf ( DIRSTRUCTURE,
-                     vml->cache_dir, __map_types[vml->maptype].uniq_id,
-                     mapcoord.scale, mapcoord.z, mapcoord.x, mapcoord.y );
-
-      __map_types[vml->maptype].download ( &mapcoord, filename_buf );
-      g_free ( filename_buf );
-      vik_layer_emit_update ( VIK_LAYER(vml) );
-      return TRUE;
-    }
-  }
-  return FALSE;
-#endif
 }
 
 // A slightly better way of defining the menu callback information
