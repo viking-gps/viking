@@ -70,7 +70,14 @@ void a_mapcache_init ()
 
 static void cache_add(gchar *key, GdkPixbuf *pixbuf)
 {
-  if ( g_hash_table_insert ( cache, key, pixbuf ) ) {
+#if !GLIB_CHECK_VERSION(2,26,0)
+  // Only later versions of GLib actually return a value for this function
+  // Annoyingly the documentation doesn't say anything about this interface change :(
+  if ( g_hash_table_insert ( cache, key, pixbuf ) )
+#else
+  g_hash_table_insert ( cache, key, pixbuf );
+#endif
+  {
     cache_size += gdk_pixbuf_get_rowstride(pixbuf) * gdk_pixbuf_get_height(pixbuf);
     cache_size += 100;
   }
