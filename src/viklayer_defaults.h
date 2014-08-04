@@ -35,6 +35,8 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 
 VikLayerParamData a_layer_defaults_get ( const gchar *layername, const gchar *param_name, VikLayerParamType param_type );
 
+gboolean a_layer_defaults_save ();
+
 G_END_DECLS
 
 #endif
