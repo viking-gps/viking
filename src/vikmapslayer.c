@@ -117,7 +117,7 @@ static VikLayerParamScale params_scales[] = {
  { 0, 255, 3, 0 }, /* alpha */
 };
 
-static VikLayerParamData mode_default ( void ) { return VIK_LPD_UINT ( 19 ); } // OSM MapQuest maps
+static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( 19 ); } // OSM MapQuest maps
 static VikLayerParamData directory_default ( void )
 {
   VikLayerParamData data;
@@ -139,7 +139,8 @@ static VikMapsCacheLayout cache_layout_default_value = VIK_MAPS_CACHE_LAYOUT_VIK
 static VikLayerParamData cache_layout_default ( void ) { return VIK_LPD_UINT ( cache_layout_default_value ); }
 
 VikLayerParam maps_layer_params[] = {
-  { VIK_LAYER_MAPS, "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, mode_default, NULL, NULL },
+  // NB mode => id - But can't break file format just to rename something better
+  { VIK_LAYER_MAPS, "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, id_default, NULL, NULL },
   { VIK_LAYER_MAPS, "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, NULL, directory_default, NULL, NULL },
   { VIK_LAYER_MAPS, "cache_type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Cache Layout:"), VIK_LAYER_WIDGET_COMBOBOX, cache_types, NULL, 
     N_("This determines the tile storage layout on disk"), cache_layout_default, NULL, NULL },
@@ -317,7 +318,7 @@ void maps_layer_init ()
 /******** MAPS LAYER TYPES **************/
 /****************************************/
 
-void _add_map_source ( guint id, const char *label, VikMapSource *map )
+void _add_map_source ( guint16 id, const char *label, VikMapSource *map )
 {
   gsize len = 0;
   if (params_maptypes)
@@ -370,7 +371,7 @@ void maps_layer_register_map_source ( VikMapSource *map )
 {
   g_assert(map != NULL);
   
-  guint id = vik_map_source_get_uniq_id(map);
+  guint16 id = vik_map_source_get_uniq_id(map);
   const char *label = vik_map_source_get_label(map);
   g_assert(label != NULL);
 
@@ -982,7 +983,7 @@ static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, 
 
 static void get_filename ( const gchar *cache_dir,
                            VikMapsCacheLayout cl,
-                           gint mode,
+                           guint16 id,
                            const gchar *name,
                            gint scale,
                            gint z,
@@ -1005,18 +1006,18 @@ static void get_filename ( const gchar *cache_dir,
         g_snprintf ( filename_buf, buf_len, DIRECTDIRACCESS, cache_dir, (17 - scale), x, y, ".png" );
       break;
     default:
-      g_snprintf ( filename_buf, buf_len, DIRSTRUCTURE, cache_dir, mode, scale, z, x, y );
+      g_snprintf ( filename_buf, buf_len, DIRSTRUCTURE, cache_dir, id, scale, z, x, y );
       break;
   }
 }
 
-static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, const gchar* mapname, MapCoord *mapcoord, gchar *filename_buf, gint buf_len, gdouble xshrinkfactor, gdouble yshrinkfactor )
+static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, guint16 id, const gchar* mapname, MapCoord *mapcoord, gchar *filename_buf, gint buf_len, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   GdkPixbuf *pixbuf;
 
   /* get the thing */
   pixbuf = a_mapcache_get ( mapcoord->x, mapcoord->y, mapcoord->z,
-                            mode, mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
+                            id, mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
 
   if ( ! pixbuf ) {
     if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
@@ -1028,11 +1029,11 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, gint mode, const gchar* mapname
         return pixbuf;
       }
       else
-        get_filename ( vml->cache_dir, VIK_MAPS_CACHE_LAYOUT_OSM, mode, NULL,
+        get_filename ( vml->cache_dir, VIK_MAPS_CACHE_LAYOUT_OSM, id, NULL,
                        mapcoord->scale, mapcoord->z, mapcoord->x, mapcoord->y, filename_buf, buf_len );
     }
     else
-      get_filename ( vml->cache_dir, vml->cache_layout, mode, mapname,
+      get_filename ( vml->cache_dir, vml->cache_layout, id, mapname,
                      mapcoord->scale, mapcoord->z, mapcoord->x, mapcoord->y, filename_buf, buf_len );
 
     if ( g_file_test ( filename_buf, G_FILE_TEST_EXISTS ) == TRUE)
@@ -1141,7 +1142,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     gint x, y;
     gint xmin = MIN(ulm.x, brm.x), xmax = MAX(ulm.x, brm.x);
     gint ymin = MIN(ulm.y, brm.y), ymax = MAX(ulm.y, brm.y);
-    gint mode = vik_map_source_get_uniq_id(map);
+    guint16 id = vik_map_source_get_uniq_id(map);
     const gchar *mapname = vik_map_source_get_name(map);
 
     VikCoord coord;
@@ -1175,7 +1176,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         for ( y = ymin; y <= ymax; y++ ) {
           ulm.x = x;
           ulm.y = y;
-          pixbuf = get_pixbuf ( vml, mode, mapname, &ulm, path_buf, max_path_len, xshrinkfactor, yshrinkfactor );
+          pixbuf = get_pixbuf ( vml, id, mapname, &ulm, path_buf, max_path_len, xshrinkfactor, yshrinkfactor );
           if ( pixbuf ) {
             width = gdk_pixbuf_get_width ( pixbuf );
             height = gdk_pixbuf_get_height ( pixbuf );
@@ -1219,10 +1220,10 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 
           if ( existence_only ) {
             if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) )
-              get_filename ( vml->cache_dir, VIK_MAPS_CACHE_LAYOUT_OSM, mode, vik_map_source_get_name(map),
+              get_filename ( vml->cache_dir, VIK_MAPS_CACHE_LAYOUT_OSM, id, vik_map_source_get_name(map),
                              ulm.scale, ulm.z, ulm.x, ulm.y, path_buf, max_path_len );
             else
-              get_filename ( vml->cache_dir, vml->cache_layout, mode, vik_map_source_get_name(map),
+              get_filename ( vml->cache_dir, vml->cache_layout, id, vik_map_source_get_name(map),
                              ulm.scale, ulm.z, ulm.x, ulm.y, path_buf, max_path_len );
 
             if ( g_file_test ( path_buf, G_FILE_TEST_EXISTS ) == TRUE ) {
@@ -1238,7 +1239,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
               ulm2.x = ulm.x / scale_factor;
               ulm2.y = ulm.y / scale_factor;
               ulm2.scale = ulm.scale + scale_inc;
-              pixbuf = get_pixbuf ( vml, mode, mapname, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
+              pixbuf = get_pixbuf ( vml, id, mapname, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
               if ( pixbuf ) {
                 gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
                 gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
@@ -1264,7 +1265,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
                     MapCoord ulm3 = ulm2;
                     ulm3.x += pict_x;
                     ulm3.y += pict_y;
-                    pixbuf = get_pixbuf ( vml, mode, mapname, &ulm3, path_buf, max_path_len, xshrinkfactor / scale_factor, yshrinkfactor / scale_factor );
+                    pixbuf = get_pixbuf ( vml, id, mapname, &ulm3, path_buf, max_path_len, xshrinkfactor / scale_factor, yshrinkfactor / scale_factor );
                     if ( pixbuf ) {
                       gint src_x = 0;
                       gint src_y = 0;
