@@ -196,6 +196,10 @@ and docbook-xsl in your Build-Depends control field.
               <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
             </varlistentry>
             <varlistentry>
+              <term>name</term>
+              <listitem><para>a string (should be unique) that is used for the OSM style cache directory name when the Map Cache directory is the default (<filename>~/.viking-maps</filename>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
               <term>label</term>
               <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
             </varlistentry>

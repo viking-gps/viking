@@ -522,6 +522,7 @@ bing_map_source_new_with_id (guint16 id, const gchar *label, const gchar *key)
 	return g_object_new(BING_TYPE_MAP_SOURCE,
 	                    "id", id,
 						"label", label,
+						"name", "Bing-Aerial",
 						"hostname", "ecn.t2.tiles.virtualearth.net",
 						"url", "/tiles/a%s.jpeg?g=587",
 						"api-key", key,

@@ -65,6 +65,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->get_license = NULL;
 	klass->get_license_url = NULL;
 	klass->get_logo = NULL;
+	klass->get_name = NULL;
 	klass->get_uniq_id = NULL;
 	klass->get_label = NULL;
 	klass->get_tilesize_x = NULL;
@@ -149,6 +150,19 @@ vik_map_source_get_logo (VikMapSource *self)
 	g_return_val_if_fail (klass->get_logo != NULL, NULL);
 
 	return (*klass->get_logo)(self);
+}
+
+const gchar *
+vik_map_source_get_name (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_name != NULL, NULL);
+
+	return (*klass->get_name)(self);
 }
 
 guint16

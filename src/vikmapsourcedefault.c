@@ -35,6 +35,7 @@ static const gchar *map_source_get_license (VikMapSource *self);
 static const gchar *map_source_get_license_url (VikMapSource *self);
 static const GdkPixbuf *map_source_get_logo (VikMapSource *self);
 
+static const gchar *map_source_get_name (VikMapSource *self);
 static guint16 map_source_get_uniq_id (VikMapSource *self);
 static const gchar *map_source_get_label (VikMapSource *self);
 static guint16 map_source_get_tilesize_x (VikMapSource *self);
@@ -54,6 +55,7 @@ struct _VikMapSourceDefaultPrivate
 	gchar *license_url;
 	GdkPixbuf *logo;
 
+	gchar *name;
 	guint16 uniq_id;
 	gchar *label;
 	guint16 tilesize_x;
@@ -68,6 +70,7 @@ enum
 {
   PROP_0,
 
+  PROP_NAME,
   PROP_ID,
   PROP_LABEL,
   PROP_TILESIZE_X,
@@ -91,6 +94,7 @@ vik_map_source_default_init (VikMapSourceDefault *object)
   priv->license = NULL;
   priv->license_url = NULL;
   priv->logo = NULL;
+  priv->name = NULL;
 }
 
 static void
@@ -109,7 +113,9 @@ vik_map_source_default_finalize (GObject *object)
   priv->license_url = NULL;
   g_free (priv->logo);
   priv->license_url = NULL;
-	
+  g_free (priv->name);
+  priv->name = NULL;
+
   G_OBJECT_CLASS (vik_map_source_default_parent_class)->finalize (object);
 }
 
@@ -124,6 +130,14 @@ vik_map_source_default_set_property (GObject      *object,
 
   switch (property_id)
     {
+    case PROP_NAME:
+      // Sanitize the name here for file usage
+      // A simple check just to prevent containing slashes ATM
+      g_free (priv->name);
+      priv->name = g_strdup(g_value_get_string (value));
+      g_strdelimit (priv->name, "\\/", 'x' );
+      break;
+
     case PROP_ID:
       priv->uniq_id = g_value_get_uint (value);
       break;
@@ -178,6 +192,10 @@ vik_map_source_default_get_property (GObject    *object,
 
   switch (property_id)
     {
+    case PROP_NAME:
+      g_value_set_string (value, priv->name);
+      break;
+
     case PROP_ID:
       g_value_set_uint (value, priv->uniq_id);
       break;
@@ -232,6 +250,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	parent_class->get_license =     map_source_get_license;
 	parent_class->get_license_url = map_source_get_license_url;
 	parent_class->get_logo =        map_source_get_logo;
+	parent_class->get_name =        map_source_get_name;
 	parent_class->get_uniq_id =    map_source_get_uniq_id;
 	parent_class->get_label =      map_source_get_label;
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
@@ -245,6 +264,13 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	klass->get_uri = NULL;
 	klass->get_hostname = NULL;
 	klass->get_download_options = NULL;
+
+	pspec = g_param_spec_string ("name",
+	                             "Name",
+	                             "The name of the map that may be used as the file cache directory",
+	                             "Unknown" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_NAME, pspec);
 
 	pspec = g_param_spec_uint ("id",
 	                           "Id of the tool",
@@ -357,6 +383,14 @@ map_source_get_logo (VikMapSource *self)
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->logo;
+}
+
+static const gchar *
+map_source_get_name (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	return priv->name;
 }
 
 static guint16

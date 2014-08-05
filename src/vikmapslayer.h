@@ -49,7 +49,7 @@ typedef struct _VikMapsLayer VikMapsLayer;
 
 typedef enum {
   VIK_MAPS_CACHE_LAYOUT_VIKING=0, // CacheDir/t<MapId>s<VikingZoom>z0/X/Y (NB no file extension) - Legacy default layout
-  VIK_MAPS_CACHE_LAYOUT_OSM,      // CacheDir/OSMZoomLevel/X/Y.ext (Default ext=png)
+  VIK_MAPS_CACHE_LAYOUT_OSM,      // CacheDir/<OptionalMapName>/OSMZoomLevel/X/Y.ext (Default ext=png)
   VIK_MAPS_CACHE_LAYOUT_NUM       // Last enum
 } VikMapsCacheLayout;
 
