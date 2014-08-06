@@ -558,16 +558,16 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerPa
 
         // When loading from a file don't need the license reminder - ensure it's saved into the 'seen' list
         if ( is_file_operation ) {
-          a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, maptype );
+          a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, data.u );
         }
         else {
           VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
           if (vik_map_source_get_license (map) != NULL) {
             // Check if licence for this map type has been shown before
-            if ( ! a_settings_get_integer_list_contains ( VIK_SETTINGS_MAP_LICENSE_SHOWN, maptype ) ) {
+            if ( ! a_settings_get_integer_list_contains ( VIK_SETTINGS_MAP_LICENSE_SHOWN, data.u ) ) {
               if ( vvp )
                 maps_show_license ( VIK_GTK_WINDOW_FROM_WIDGET(vvp), map );
-              a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, maptype );
+              a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, data.u );
             }
           }
         }
