@@ -361,7 +361,9 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     utimes ( fn, NULL ); /* update mtime of local copy */
 #endif
   } else {
-    g_rename ( tmpfilename, fn ); /* move completely-downloaded file to permanent location */
+     /* move completely-downloaded file to permanent location */
+     if ( g_rename ( tmpfilename, fn ) )
+        g_warning ("%s: file rename failed [%s] to [%s]", __FUNCTION__, tmpfilename, fn );
   }
   unlock_file ( tmpfilename );
   g_free ( tmpfilename );
