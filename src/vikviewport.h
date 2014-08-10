@@ -97,6 +97,7 @@ gboolean vik_viewport_go_back ( VikViewport *vvp );
 gboolean vik_viewport_go_forward ( VikViewport *vvp );
 gboolean vik_viewport_back_available ( const VikViewport *vvp );
 gboolean vik_viewport_forward_available ( const VikViewport *vvp );
+void vik_viewport_show_centers ( VikViewport *vvp, GtkWindow *parent );
 
 /* drawmode management */
 typedef enum {

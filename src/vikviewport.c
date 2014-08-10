@@ -49,6 +49,7 @@
 /* for ALTI_TO_MPP */
 #include "globals.h"
 #include "settings.h"
+#include "dialog.h"
 
 #define MERCATOR_FACTOR(x) ( (65536.0 / 180 / (x)) * 256.0 )
 
@@ -79,7 +80,7 @@ struct _VikViewport {
   VikCoordMode coord_mode;
   gdouble xmpp, ympp;
   gdouble xmfactor, ymfactor;
-  GList *centers;         // The history of requested positions
+  GList *centers;         // The history of requested positions (of VikCoord type)
   guint centers_index;    // current position within the history list
   guint centers_max;      // configurable maximum size of the history list
   guint centers_radius;   // Metres
@@ -922,6 +923,50 @@ static void update_centers ( VikViewport *vvp )
 
   // Inform interested subscribers that this change has occurred
   g_signal_emit ( G_OBJECT(vvp), viewport_signals[VW_UPDATED_CENTER_SIGNAL], 0 );
+}
+
+/**
+ * Show the list of forward/backward positions
+ * ATM only for debug usage
+ */
+void vik_viewport_show_centers ( VikViewport *vvp, GtkWindow *parent )
+{
+  GList* node = NULL;
+  GList* texts = NULL;
+  gint index = 0;
+  for (node = vvp->centers; node != NULL; node = g_list_next(node)) {
+    gchar *lat = NULL, *lon = NULL;
+    struct LatLon ll;
+    vik_coord_to_latlon (node->data, &ll);
+    a_coords_latlon_to_string ( &ll, &lat, &lon );
+    gchar *extra = NULL;
+    if ( index == vvp->centers_index-1 )
+      extra = g_strdup ( " [Back]" );
+    else if ( index == vvp->centers_index+1 )
+      extra = g_strdup ( " [Forward]" );
+    else
+      extra = g_strdup ( "" );
+    texts = g_list_prepend ( texts , g_strdup_printf ( "%s %s%s", lat, lon, extra ) );
+    g_free ( lat );
+    g_free ( lon );
+    g_free ( extra );
+    index++;
+  }
+
+  // NB: No i18n as this is just for debug
+  // Using this function the dialog allows sorting of the list which isn't appropriate here
+  //  but this doesn't matter much for debug purposes of showing stuff...
+  GList *ans = a_dialog_select_from_list(parent,
+                                         texts,
+                                         FALSE,
+                                         "Back/Forward Locations",
+                                         "Back/Forward Locations");
+  for (node = ans; node != NULL; node = g_list_next(node))
+    g_free(node->data);
+  g_list_free(ans);
+  for (node = texts; node != NULL; node = g_list_next(node))
+    g_free(node->data);
+  g_list_free(texts);
 }
 
 /**

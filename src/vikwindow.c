@@ -2389,6 +2389,11 @@ static void help_cache_info_cb ( GtkAction *a, VikWindow *vw )
   g_free ( msg );
 }
 
+static void back_forward_info_cb ( GtkAction *a, VikWindow *vw )
+{
+  vik_viewport_show_centers ( vw->viking_vvp, GTK_WINDOW(vw) );
+}
+
 static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
 {
   if ( vik_layers_panel_get_selected ( vw->viking_vlp ) )
@@ -4091,6 +4096,7 @@ static GtkActionEntry entries[] = {
 
 static GtkActionEntry debug_entries[] = {
   { "MapCacheInfo", NULL,                "_Map Cache Info",                   NULL,         NULL,                                           (GCallback)help_cache_info_cb    },
+  { "BackForwardInfo", NULL,             "_Back/Forward Info",                NULL,         NULL,                                           (GCallback)back_forward_info_cb  },
 };
 
 static GtkActionEntry entries_gpsbabel[] = {
@@ -4155,7 +4161,10 @@ static void window_create_ui( VikWindow *window )
   gtk_action_group_add_radio_actions (action_group, mode_entries, G_N_ELEMENTS (mode_entries), 4, (GCallback)window_change_coord_mode_cb, window);
   if ( vik_debug ) {
     if ( gtk_ui_manager_add_ui_from_string ( uim,
-         "<ui><menubar name='MainMenu'><menu action='Help'><menuitem action='MapCacheInfo'/></menu></menubar></ui>",
+         "<ui><menubar name='MainMenu'><menu action='Help'>"
+           "<menuitem action='MapCacheInfo'/>"
+           "<menuitem action='BackForwardInfo'/>"
+         "</menu></menubar></ui>",
          -1, NULL ) ) {
       gtk_action_group_add_actions (action_group, debug_entries, G_N_ELEMENTS (debug_entries), window);
     }
