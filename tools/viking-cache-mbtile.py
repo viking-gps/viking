@@ -118,20 +118,68 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
         optimize_database(con)
     return
 
+def mbtiles_to_vikcache(mbtiles_file, directory_path, **kwargs):
+    logger.debug("Exporting MBTiles to disk")
+    logger.debug("%s --> %s" % (mbtiles_file, directory_path))
+    con = mbtiles_connect(mbtiles_file)
+    count = con.execute('select count(zoom_level) from tiles;').fetchone()[0]
+    done = 0
+    msg = ''
+    base_path = directory_path
+    if not os.path.isdir(base_path):
+        os.makedirs(base_path)
+
+    start_time = time.time()
+
+    tiles = con.execute('select zoom_level, tile_column, tile_row, tile_data from tiles;')
+    t = tiles.fetchone()
+    while t:
+        z = t[0]
+        x = t[1]
+        y = t[2]
+        # Viking in xyz so always flip
+        y = flip_y(int(z), int(y))
+        # For some reason Viking does '17-zoom level' - so need to reverse that
+        vz = 17 - int(t[0])
+        tile_dir = os.path.join(base_path, 't'+ kwargs.get('tileid') + 's' + str(vz) + 'z0', str(x))
+        if not os.path.isdir(tile_dir):
+            os.makedirs(tile_dir)
+        # NB no extension for VikCache files
+        tile = os.path.join(tile_dir,'%s' % (y))
+        # Only overwrite existing tile if specified
+        if not os.path.isfile(tile) or kwargs.get('force'):
+            f = open(tile, 'wb')
+            f.write(t[3])
+            f.close()
+        done = done + 1
+        if (done % 100) == 0:
+            for c in msg: sys.stdout.write(chr(8))
+            msg = "%s / %s tiles imported (%d tiles/sec)" % (done, count, done / (time.time() - start_time))
+            sys.stdout.write(msg)
+        t = tiles.fetchone()
+    msg = "\nTotal tiles imported %s \n" %(done)
+    sys.stdout.write(msg)
+    return
+
 ##
 ## Start of code here
 ##
-parser = OptionParser(usage="""usage: %prog [options] in-map-cache-directory-root  out-file.mbtile
-    
-Example:
-    
+parser = OptionParser(usage="""usage: %prog [options] input output
+
+When either the input or output refers to a viking cache, is it the root directory of the cache, typically ~/.viking-maps
+
+Examples:
+
 Export Viking's cache files of a map type to an mbtiles file:
 $ viking-cache-mbtile.py -t 17 ~/.viking-maps OSM_Cycle.mbtiles
-    
-Import from an MB Tiles file into Viking's cache file layout is not available [yet]
 
 Note you can use the http://github.com/mapbox/mbutil mbutil script to further handle .mbtiles
-such as converting it into an OSM tile layout and then pointing a new Viking Map at that location with the map type of 'On Disk OSM Layout'""")
+such as converting it into an OSM tile layout and then pointing a new Viking Map at that location with the map type of 'On Disk OSM Layout'
+
+Import from an MB Tiles file into Viking's cache file layout, forcing overwrite of existing tiles:
+$ viking-cache-mbtile.py -t 321 -f world.mbtiles ~/.viking-maps
+NB: You'll need to a have a corresponding ~/.viking/maps.xml definition for the tileset id when it is not a built in id
+""")
    
 parser.add_option('-t', '--tileid', dest='tileid',
     action="store",
@@ -144,21 +192,31 @@ parser.add_option('-n', '--nooptimize', dest='nooptimize',
     help='''Do not attempt to optimize the mbtiles output file''',
     default=False)
 
+parser.add_option('-f', '--force', dest='force',
+    action="store_true",
+    help='''Force overwrite of existing tiles''',
+    default=False)
+
 (options, args) = parser.parse_args()
 
 if len(args) != 2:
     parser.print_help()
     sys.exit(1)
 
-if not os.path.isdir(args[0]):
-    sys.stderr.write('Viking Map Cache directory not specified\n')
-    sys.exit(1)
+#if not os.path.isdir(args[0]):
+#    sys.stderr.write('Viking Map Cache directory not specified\n')
+#    sys.exit(1)
 
-if os.path.isfile(args[1]):
-    sys.stderr.write('Output file already exists!\n')
-    sys.exit(1)
+#if os.path.isfile(args[1]):
+#    sys.stderr.write('Output file already exists!\n')
+#    sys.exit(1)
 
 # to mbtiles
 if os.path.isdir(args[0]) and not os.path.isfile(args[0]):
     directory_path, mbtiles_file = args
     vikcache_to_mbtiles(directory_path, mbtiles_file, **options.__dict__)
+
+# to VikCache
+if os.path.isfile(args[0]):
+    mbtiles_file, directory_path = args
+    mbtiles_to_vikcache(mbtiles_file, directory_path, **options.__dict__)
