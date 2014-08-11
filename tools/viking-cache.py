@@ -69,6 +69,7 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     count = 0
     start_time = time.time()
     msg = ""
+    onlydigits_re = re.compile ('^\d+$')
 
     #print ('tileid ' + kwargs.get('tileid'))
     # Need to split tDddsDdzD
@@ -80,42 +81,45 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
         if m:
             s = p.split(ff)
             if len(s) > 2:
-                #print s[1]
+                #print (s[1])
                 # For some reason Viking does '17-zoom level' - so need to reverse that
                 z = 17 - int(s[1])
-                #print z
+                #print (z)
                 for r2, xs, ignore in os.walk(os.path.join(directory_path, ff)):
                     for x in xs:
-                        #print('x:'+directory_path+'/'+ff+'/'+x)
-                        for r3, ignore, ys in os.walk(os.path.join(directory_path, ff, x)):
-                            for y in ys:
-                                #print('tile:'+directory_path+'/'+ff+'/'+x+'/'+y)
-                                # Sometimes have random tmp files left around so skip over these
-                                if "tmp" in y.lower():
-                                    continue
-                                # Skip etag files...
-                                if "etag" in y.lower():
-                                    continue
-                                f = open(os.path.join(directory_path, ff, x, y), 'rb')
-                                # Viking in xyz so always flip
-                                y = flip_y(int(z), int(y))
-                                cur.execute("""insert into tiles (zoom_level,
-                                             tile_column, tile_row, tile_data) values
-                                             (?, ?, ?, ?);""",
-                                            (z, x, y, sqlite3.Binary(f.read())))
-                                f.close()
-                                count = count + 1
-                                if (count % 100) == 0:
-                                    for c in msg: sys.stdout.write(chr(8))
-                                    msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
-                                    sys.stdout.write(msg)
+                        # Try to ignore any non cache directories
+                        m2 = onlydigits_re.match(x);
+                        if m2:
+                            #print('x:'+directory_path+'/'+ff+'/'+x)
+                            for r3, ignore, ys in os.walk(os.path.join(directory_path, ff, x)):
+                                for y in ys:
+                                    # Legacy viking cache file names only made from digits
+                                    m3 = onlydigits_re.match(y);
+                                    if m3:
+                                        #print('tile:'+directory_path+'/'+ff+'/'+x+'/'+y)
+                                        f = open(os.path.join(directory_path, ff, x, y), 'rb')
+                                        # Viking in xyz so always flip
+                                        y = flip_y(int(z), int(y))
+                                        cur.execute("""insert into tiles (zoom_level,
+                                                     tile_column, tile_row, tile_data) values
+                                                     (?, ?, ?, ?);""",
+                                                     (z, x, y, sqlite3.Binary(f.read())))
+                                        f.close()
+                                        count = count + 1
+                                        if (count % 100) == 0:
+                                            for c in msg: sys.stdout.write(chr(8))
+                                            msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
+                                            sys.stdout.write(msg)
 
     msg = "\nTotal tiles inserted %s \n" %(count)
     sys.stdout.write(msg)
-    write_database(cur)
-    if not kwargs.get('nooptimize'):
-        sys.stdout.write("Optimizing...\n")
-        optimize_database(con)
+    if count == 0:
+        print ("No tiles inserted. NB This method only works with the Legacy Viking cache layout")
+    else:
+        write_database(cur)
+        if not kwargs.get('nooptimize'):
+            sys.stdout.write("Optimizing...\n")
+            optimize_database(con)
     return
 
 def mbtiles_to_vikcache(mbtiles_file, directory_path, **kwargs):
