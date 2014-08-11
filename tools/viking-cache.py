@@ -36,7 +36,7 @@ def mbtiles_connect(mbtiles_file):
     try:
         con = sqlite3.connect(mbtiles_file)
         return con
-    except Exception, e:
+    except Exception as e:
         logger.error("Could not connect to database")
         logger.exception(e)
         sys.exit(1)
