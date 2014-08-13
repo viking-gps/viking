@@ -168,20 +168,20 @@ def mbtiles_to_vikcache(mbtiles_file, directory_path, **kwargs):
 ##
 ## Start of code here
 ##
-parser = OptionParser(usage="""usage: %prog [options] input output
+parser = OptionParser(usage="""usage: %prog -m <mode> [options] input output
 
-When either the input or output refers to a viking cache, is it the root directory of the cache, typically ~/.viking-maps
+When either the input or output refers to a Viking legacy cache ('vcl'), is it the root directory of the cache, typically ~/.viking-maps
 
 Examples:
 
-Export Viking's cache files of a map type to an mbtiles file:
-$ viking-cache-mbtile.py -t 17 ~/.viking-maps OSM_Cycle.mbtiles
+Export Viking's legacy cache files of a map type to an mbtiles file:
+$ ./viking-cache.py -m vlc2mbtiles -t 17 ~/.viking-maps OSM_Cycle.mbtiles
 
 Note you can use the http://github.com/mapbox/mbutil mbutil script to further handle .mbtiles
 such as converting it into an OSM tile layout and then pointing a new Viking Map at that location with the map type of 'On Disk OSM Layout'
 
-Import from an MB Tiles file into Viking's cache file layout, forcing overwrite of existing tiles:
-$ viking-cache-mbtile.py -t 321 -f world.mbtiles ~/.viking-maps
+Import from an MB Tiles file into Viking's legacy cache file layout, forcing overwrite of existing tiles:
+$ ./viking-cache.py -m mbtiles2vlc -t 321 -f world.mbtiles ~/.viking-maps
 NB: You'll need to a have a corresponding ~/.viking/maps.xml definition for the tileset id when it is not a built in id
 """)
    
@@ -201,26 +201,32 @@ parser.add_option('-f', '--force', dest='force',
     help='''Force overwrite of existing tiles''',
     default=False)
 
+parser.add_option('-m', '--mode', dest='mode',
+    action="store",
+    help='''Mode of operation which must be specified. "vlc2mbtiles", "mbtiles2vlc", "vlc2osm", "osm2vlc"''',
+    type='string',
+    default='none')
+
 (options, args) = parser.parse_args()
+
+if options.__dict__.get('mode') ==  'none':
+    sys.stderr.write ("\nError: Mode not specified\n")
+    parser.print_help()
+    sys.exit(1)
 
 if len(args) != 2:
     parser.print_help()
     sys.exit(1)
 
-#if not os.path.isdir(args[0]):
-#    sys.stderr.write('Viking Map Cache directory not specified\n')
-#    sys.exit(1)
+in_fd, out_fd = args
 
-#if os.path.isfile(args[1]):
-#    sys.stderr.write('Output file already exists!\n')
-#    sys.exit(1)
+if options.__dict__.get('mode') == 'vlc2mbtiles':
+    # to mbtiles
+    if os.path.isdir(args[0]) and not os.path.isfile(args[0]):
+        vikcache_to_mbtiles(in_fd, out_fd, **options.__dict__)
+else:
+    if options.__dict__.get('mode') == 'mbtiles2vlc':
+        # to VikCache
+        if os.path.isfile(args[0]):
+            mbtiles_to_vikcache(in_fd, out_fd, **options.__dict__)
 
-# to mbtiles
-if os.path.isdir(args[0]) and not os.path.isfile(args[0]):
-    directory_path, mbtiles_file = args
-    vikcache_to_mbtiles(directory_path, mbtiles_file, **options.__dict__)
-
-# to VikCache
-if os.path.isfile(args[0]):
-    mbtiles_file, directory_path = args
-    mbtiles_to_vikcache(mbtiles_file, directory_path, **options.__dict__)
