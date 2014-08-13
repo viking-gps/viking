@@ -165,6 +165,149 @@ def mbtiles_to_vikcache(mbtiles_file, directory_path, **kwargs):
     sys.stdout.write(msg)
     return
 
+def cache_converter_to_osm (vc_path, target_path, **kwargs):
+    msg = ''
+    count = 0
+    onlydigits_re = re.compile ('^\d+$')
+    etag_re = re.compile ('\.etag$')
+    path_re = re.compile ('^t'+kwargs.get('tileid')+'s(-?\d+)z\d+$')
+
+    if not os.path.isdir(target_path):
+        os.makedirs(target_path)
+
+    start_time = time.time()
+    for ff in os.listdir(vc_path):
+        # Find only dirs related to this tileset
+        m = path_re.match(ff);
+        if m:
+            s = path_re.split(ff)
+            if len(s) > 2:
+                #print (s[1])
+                # For some reason Viking does '17-zoom level' - so need to reverse that
+                z = 17 - int(s[1])
+                tile_dirz = os.path.join(target_path, str(z))
+
+                if not os.path.isdir(tile_dirz):
+                    #print (os.path.join(vc_path, ff) +":"+ tile_dirz)
+                    os.rename(os.path.join(vc_path, ff), tile_dirz)
+
+                for r2, xs, ignore in os.walk(tile_dirz):
+                    for x in xs:
+                        tile_dirx = os.path.join(tile_dirz, str(x))
+
+                        # No need to move X dir
+
+                        for r3, ignore, ys in os.walk(tile_dirx):
+                            for y in ys:
+                                m2 = onlydigits_re.match(y);
+                                if m2:
+                                    # Move and append extension to everything else
+                                    # OSM also in flipped y, so no need to change y
+
+                                    # Only overwrite existing tile if specified
+                                    target_tile = os.path.join(tile_dirx, y + ".png")
+                                    if not os.path.isfile(target_tile) or kwargs.get('force'):
+                                        os.rename(os.path.join(tile_dirx, y), target_tile)
+
+                                    count = count + 1
+                                    if (count % 100) == 0:
+                                        for c in msg: sys.stdout.write(chr(8))
+                                        msg = "%s tiles moved (%d tiles/sec)" % (count, count / (time.time() - start_time))
+                                        sys.stdout.write(msg)
+                                else:
+                                    # Also rename etag files appropriately
+                                    m3 = etag_re.search(y);
+                                    if m3:
+                                        target_etag = y.replace (".etag", ".png.etag")
+                                        if not os.path.isfile(os.path.join(tile_dirx,target_etag)) or kwargs.get('force'):
+                                            os.rename(os.path.join(tile_dirx, y), os.path.join(tile_dirx, target_etag))
+                                    else:
+                                        # Ignore all other files
+                                        continue
+
+    msg = "\nTotal tiles moved %s \n" %(count)
+    sys.stdout.write(msg)
+    return
+
+#
+# Mainly for testing usage.
+# Don't expect many people would want to convert back to the old layout
+#
+def cache_converter_to_viking (osm_path, target_path, **kwargs):
+    msg = ''
+    count = 0
+    ispng = re.compile ('\.png$')
+
+    if not os.path.isdir(target_path):
+        os.makedirs(target_path)
+
+    start_time = time.time()
+    for r1, zs, ignore in os.walk(osm_path):
+        for z in zs:
+            # For some reason Viking does '17-zoom level' - so need to reverse that
+            vz = 17 - int(z)
+            tile_dirz = os.path.join(target_path, 't'+ kwargs.get('tileid') + 's' + str(vz) + 'z0')
+
+            if not os.path.isdir(tile_dirz):
+                os.rename(os.path.join(osm_path, z), tile_dirz)
+
+            for r2, xs, ignore in os.walk(tile_dirz):
+                for x in xs:
+
+                    tile_dirx = os.path.join(tile_dirz, x)
+                    # No need to move X dir
+
+                    for r3, ignore, ys in os.walk(tile_dirx):
+                        for y in ys:
+                            m = ispng.search(y);
+                            if m:
+                                # Move and remove extension to everything else
+                                # OSM also in flipped y, so no need to change y
+
+                                # Only overwrite existing tile if specified
+                                y_noext = y
+                                y_noext = y_noext.replace (".png", "")
+                                target_tile = os.path.join(tile_dirx, y_noext)
+                                if not os.path.isfile(target_tile) or kwargs.get('force'):
+                                    os.rename(os.path.join(tile_dirx, y), target_tile)
+
+                                count = count + 1
+                                if (count % 100) == 0:
+                                    for c in msg: sys.stdout.write(chr(8))
+                                    msg = "%s tiles moved (%d tiles/sec)" % (count, count / (time.time() - start_time))
+                                    sys.stdout.write(msg)
+
+    msg = "\nTotal tiles moved %s \n" %(count)
+    sys.stdout.write(msg)
+    return
+
+def get_tile_path (tid):
+    # Built in Tile Ids
+    tile_id = int(tid)
+    if tile_id == 13:
+        return "OSM-Mapnik"
+    elif tile_id == 15:
+      return "BlueMarble"
+    elif tile_id == 17:
+        return "OSM-Cyle"
+    elif tile_id == 19:
+        return "OSM-MapQuest"
+    elif tile_id == 21:
+        return "OSM-Transport"
+    elif tile_id == 22:
+        return "OSM-Humanitarian"
+    elif tile_id == 212:
+        return "Bing-Aerial"
+    # Default extension Map ids (from data/maps.xml)
+    elif tile_id == 29:
+        return "CalTopo"
+    elif tile_id == 101:
+        return "pnvkarte"
+    elif tile_id == 600:
+        return "OpenSeaMap"
+    else:
+        return "unknown"
+
 ##
 ## Start of code here
 ##
@@ -183,8 +326,18 @@ such as converting it into an OSM tile layout and then pointing a new Viking Map
 Import from an MB Tiles file into Viking's legacy cache file layout, forcing overwrite of existing tiles:
 $ ./viking-cache.py -m mbtiles2vlc -t 321 -f world.mbtiles ~/.viking-maps
 NB: You'll need to a have a corresponding ~/.viking/maps.xml definition for the tileset id when it is not a built in id
+
+Convert from Viking's Legacy cache format to the more standard OSM layout style for a built in map type:
+$ ./viking-cache.py -m vlc2osm -t 13 -f ~/.viking-maps ~/.viking-maps
+Here the tiles get automatically moved to ~/.viking-maps/OSM-Mapnik
+
+Correspondingly change the Map layer property to use OSM style cache layout in Viking.
+
+Convert from Viking's Legacy cache format to the more standard OSM layout style for a extension map type:
+$ ./viking-cache.py -m vlc2osm -t 110 -f ~/.viking-maps ~/.viking-maps/StamenWaterColour
+Here one must specify the output directory name explicitly and set your maps.xml file with the name=StamenWaterColour for the id=110 entry
 """)
-   
+
 parser.add_option('-t', '--tileid', dest='tileid',
     action="store",
     help='''Tile id of Viking map cache to use (19 if not specified as this is Viking's default (MaqQuest))''',
@@ -229,4 +382,28 @@ else:
         # to VikCache
         if os.path.isfile(args[0]):
             mbtiles_to_vikcache(in_fd, out_fd, **options.__dict__)
+    else:
+        if options.__dict__.get('mode') == 'vlc2osm':
+            # Main forward conversion
+            is_default_re = re.compile ("\.viking-maps\/?$")
+            out_fd2 = is_default_re.search(out_fd)
+            if out_fd2:
+                # Auto append default tile name to the path
+                tile_path = get_tile_path(options.__dict__.get('tileid'))
+                if tile_path == "unknown":
+                    sys.stderr.write ("Could not convert tile id to a name")
+                    sys.stderr.write ("Specifically set the output directory to something other than the default")
+                    sys.exit(2)
+                else:
+                    print ("Using tile name %s" %(tile_path) )
+                    out_fd2 = os.path.join(out_fd, tile_path)
+            else:
+                out_fd2 = out_fd
 
+            if os.path.isdir(args[0]):
+                cache_converter_to_osm(in_fd, out_fd2, **options.__dict__)
+        else:
+            if options.__dict__.get('mode') == 'osm2vlc':
+                # Convert back if needs be
+                if os.path.isdir(args[0]):
+                    cache_converter_to_viking(in_fd, out_fd, **options.__dict__)
