@@ -527,6 +527,8 @@ bing_map_source_new_with_id (guint16 id, const gchar *label, const gchar *key)
 						"url", "/tiles/a%s.jpeg?g=587",
 						"api-key", key,
 						"check-file-server-time", TRUE,
+						"zoom-min", 0,
+						"zoom-max", 19, // NB: Might be regionally different rather than the same across the world
 						"copyright", "© 2011 Microsoft Corporation and/or its suppliers",
 						"license", "Microsoft Bing Maps Specific",
 						"license-url", "http://www.microsoft.com/maps/assets/docs/terms.aspx",

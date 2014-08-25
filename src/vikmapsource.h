@@ -58,6 +58,8 @@ struct _VikMapSourceClass
 	gboolean (* is_direct_file_access) (VikMapSource * self);
 	gboolean (* is_mbtiles) (VikMapSource * self);
 	gboolean (* supports_download_only_new) (VikMapSource * self);
+	guint8 (* get_zoom_min) (VikMapSource * self);
+	guint8 (* get_zoom_max) (VikMapSource * self);
 	gboolean (* coord_to_mapcoord) (VikMapSource * self, const VikCoord * src, gdouble xzoom, gdouble yzoom, MapCoord * dest);
 	void (* mapcoord_to_center_coord) (VikMapSource * self, MapCoord * src, VikCoord * dest);
 	int (* download) (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle);
@@ -86,6 +88,8 @@ VikViewportDrawMode vik_map_source_get_drawmode (VikMapSource * self);
 gboolean vik_map_source_is_direct_file_access (VikMapSource * self);
 gboolean vik_map_source_is_mbtiles (VikMapSource * self);
 gboolean vik_map_source_supports_download_only_new (VikMapSource * self);
+guint8 vik_map_source_get_zoom_min (VikMapSource * self);
+guint8 vik_map_source_get_zoom_max (VikMapSource * self);
 gboolean vik_map_source_coord_to_mapcoord (VikMapSource * self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 void vik_map_source_mapcoord_to_center_coord (VikMapSource * self, MapCoord *src, VikCoord *dest);
 int vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void * handle);

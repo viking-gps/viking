@@ -5,6 +5,8 @@
     <property name="label">OpenStreetMap (Mapnik)</property>
     <property name="hostname">tile.openstreetmap.org</property>
     <property name="url">/%d/%d/%d.png</property>
+    <property name="zoom-min">0</property>
+    <property name="zoom-max">19</property>
     <property name="id">13</property>
     <property name="name">OSM-Mapnik</property>
     <property name="copyright">© OpenStreetMap contributors</property>

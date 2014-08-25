@@ -74,6 +74,8 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->is_direct_file_access = NULL;
 	klass->is_mbtiles = NULL;
 	klass->supports_download_only_new = _supports_download_only_new;
+	klass->get_zoom_min = NULL;
+	klass->get_zoom_max = NULL;
 	klass->coord_to_mapcoord = NULL;
 	klass->mapcoord_to_center_coord = NULL;
 	klass->download = NULL;
@@ -282,6 +284,34 @@ vik_map_source_supports_download_only_new (VikMapSource * self)
 	g_return_val_if_fail (klass->supports_download_only_new != NULL, 0);
 
 	return (*klass->supports_download_only_new)(self);
+}
+
+/**
+ *
+ */
+guint8
+vik_map_source_get_zoom_min (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_zoom_min != NULL, 0);
+	return (*klass->get_zoom_min)(self);
+}
+
+/**
+ *
+ */
+guint8
+vik_map_source_get_zoom_max (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 18);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 18);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_zoom_max != NULL, 18);
+	return (*klass->get_zoom_max)(self);
 }
 
 gboolean

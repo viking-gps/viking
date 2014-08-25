@@ -212,6 +212,17 @@ and docbook-xsl in your Build-Depends control field.
               <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for Z, X and Y (in that order) (eg. "/%d/%d/%d.png")</para></listitem>
             </varlistentry>
             <varlistentry>
+              <term>zoom-min (optional)</term>
+              <listitem><para>The minimum zoom value supported by the tile server. The Default is 0 if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+              <listitem>
+                 <para>The maximum zoom value supported by the tile server. The Default is 18 if not specified.</para>
+                 <para>See <ulink url="http://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>switch-xy (optional)</term>
               <listitem><para>Swap the X,Y values around in the URL parametrized ordering.</para></listitem>
             </varlistentry>

@@ -1073,12 +1073,11 @@ static gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
     /* D'n'D pan in action: do not download */
     return FALSE;
 
-  // TEMPORARY HACK
-  // Prevent requests for downloading tiles at Zoom Level 19 and above for most map types
-  // Allow MapQuest Zoom Level up to 19
-  // TODO: This should be made a property of the map source and then use that value
+  // Don't attempt to download unsupported zoom levels
   gdouble xzoom = vik_viewport_get_xmpp ( vvp );
-  if ( (vml->maptype != 19 && map_utils_mpp_to_scale (xzoom) < -1) || (vml->maptype == 19 && map_utils_mpp_to_scale (xzoom) < -2) )
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+  guint8 zl = map_utils_mpp_to_zoom_level ( xzoom );
+  if ( zl < vik_map_source_get_zoom_min(map) || zl > vik_map_source_get_zoom_max(map) )
     return FALSE;
 
   if (vml->last_center == NULL) {
