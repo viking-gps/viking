@@ -1772,12 +1772,16 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
       strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
       message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: %s"), source, filename, time_buf );
     }
+    else {
+      message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: Not Available"), source, filename );
+    }
+    // Show the info
+    a_dialog_info_msg (  VIK_GTK_WINDOW_FROM_LAYER(vml), message );
   }
-  else
-    message = g_strdup_printf ( _("Source: %s\n\nNo Tile File!"), source );
-
-  // Show the info
-  a_dialog_info_msg (  VIK_GTK_WINDOW_FROM_LAYER(vml), message );
+  else {
+    message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s [Not Available]"), source, filename );
+    a_dialog_warning_msg (  VIK_GTK_WINDOW_FROM_LAYER(vml), message );
+  }
 
   g_free ( message );
   g_free ( source );
