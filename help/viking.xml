@@ -223,6 +223,17 @@ and docbook-xsl in your Build-Depends control field.
               </listitem>
             </varlistentry>
             <varlistentry>
+              <term>file-extension (optional)</term>
+              <listitem>
+                <para>The file extension of the files on disk. The default is <emphasis>.png</emphasis></para>
+                <para>If the tile source URL ends in something other than .png, then this parameter will need to match it.</para>
+                <para>This can also be useful in reading a tileset from other software which may name tiles in an alternative form,
+                      e.g. for Mobile Atlas creator it names them <emphasis>.png.tile</emphasis></para>
+                <note><para>The file types actually usable are those supported by GDK Pixbuf Library, which includes at least PNG and JPEG.</para></note>
+                <note><para>Remember to include the beginning <emphasis>'.'</emphasis> when specifying this parameter.</para></note>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>switch-xy (optional)</term>
               <listitem><para>Swap the X,Y values around in the URL parametrized ordering.</para></listitem>
             </varlistentry>

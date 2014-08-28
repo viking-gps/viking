@@ -314,6 +314,28 @@ vik_map_source_get_zoom_max (VikMapSource * self)
 	return (*klass->get_zoom_max)(self);
 }
 
+
+/**
+ * vik_map_source_get_file_extension:
+ * @self: the VikMapSource of interest.
+ *
+ * Returns the file extension of files held on disk.
+ *  Typically .png but may be .jpg or whatever the user defines
+ *
+ */
+const gchar *
+vik_map_source_get_file_extension (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_file_extension != NULL, NULL);
+
+	return (*klass->get_file_extension)(self);
+}
+
 gboolean
 vik_map_source_coord_to_mapcoord (VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
 {

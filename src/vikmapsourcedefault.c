@@ -41,6 +41,7 @@ static const gchar *map_source_get_label (VikMapSource *self);
 static guint16 map_source_get_tilesize_x (VikMapSource *self);
 static guint16 map_source_get_tilesize_y (VikMapSource *self);
 static VikViewportDrawMode map_source_get_drawmode (VikMapSource *self);
+static const gchar *map_source_get_file_extension (VikMapSource *self);
 
 static DownloadResult_t _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
 static void * _download_handle_init ( VikMapSource *self );
@@ -61,6 +62,7 @@ struct _VikMapSourceDefaultPrivate
 	guint16 tilesize_x;
 	guint16 tilesize_y;
 	VikViewportDrawMode drawmode;
+	gchar *file_extension;
 };
 
 #define VIK_MAP_SOURCE_DEFAULT_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_MAP_SOURCE_DEFAULT, VikMapSourceDefaultPrivate))
@@ -79,6 +81,7 @@ enum
   PROP_COPYRIGHT,
   PROP_LICENSE,
   PROP_LICENSE_URL,
+  PROP_FILE_EXTENSION,
 };
 
 G_DEFINE_ABSTRACT_TYPE (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE);
@@ -95,6 +98,7 @@ vik_map_source_default_init (VikMapSourceDefault *object)
   priv->license_url = NULL;
   priv->logo = NULL;
   priv->name = NULL;
+  priv->file_extension = NULL;
 }
 
 static void
@@ -115,6 +119,8 @@ vik_map_source_default_finalize (GObject *object)
   priv->license_url = NULL;
   g_free (priv->name);
   priv->name = NULL;
+  g_free (priv->file_extension);
+  priv->file_extension = NULL;
 
   G_OBJECT_CLASS (vik_map_source_default_parent_class)->finalize (object);
 }
@@ -174,6 +180,11 @@ vik_map_source_default_set_property (GObject      *object,
       priv->license_url = g_strdup(g_value_get_string (value));
       break;
 
+    case PROP_FILE_EXTENSION:
+      g_free (priv->file_extension);
+      priv->file_extension = g_strdup(g_value_get_string(value));
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -228,6 +239,10 @@ vik_map_source_default_get_property (GObject    *object,
       g_value_set_string (value, priv->license_url);
       break;
 
+    case PROP_FILE_EXTENSION:
+      g_value_set_string (value, priv->file_extension);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -256,6 +271,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
 	parent_class->get_tilesize_y = map_source_get_tilesize_y;
 	parent_class->get_drawmode =   map_source_get_drawmode;
+	parent_class->get_file_extension = map_source_get_file_extension;
 	parent_class->download =                 _download;
 	parent_class->download_handle_init =     _download_handle_init;
 	parent_class->download_handle_cleanup =  _download_handle_cleanup;
@@ -334,6 +350,13 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	                             NULL,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_LICENSE_URL, pspec);
+
+	pspec = g_param_spec_string ("file-extension",
+	                             "File Extension",
+	                             "The file extension of tile files on disk",
+	                             ".png" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_FILE_EXTENSION, pspec);
 
 	g_type_class_add_private (klass, sizeof (VikMapSourceDefaultPrivate));
 
@@ -453,6 +476,14 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handl
    g_free ( uri );
    g_free ( host );
    return res;
+}
+
+static const gchar *
+map_source_get_file_extension (VikMapSource *self)
+{
+    g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+    VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+    return priv->file_extension;
 }
 
 static void *
