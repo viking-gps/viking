@@ -171,7 +171,7 @@ and docbook-xsl in your Build-Depends control field.
   <refsect1>
     <title>Extending Viking</title>
 
-      <para>Currently, &dhpackage; has some extention points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
+      <para>Currently, &dhpackage; has some extension points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
       <para>Here is an example:
 <literallayout><![CDATA[
 <objects>
