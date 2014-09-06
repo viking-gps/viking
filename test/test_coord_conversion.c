@@ -28,8 +28,10 @@ void test_mapcoord_to_center_coord (VikMapSource *source, int x, int y, int scal
 
 int main(int argc, char *argv[])
 {
+#if ! GLIB_CHECK_VERSION (2, 36, 0)
   g_type_init();
-  
+#endif
+
   VikMapSource *spotmaps4osm_wmsc_type = 
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_WMSC_MAP_SOURCE,
                                 "id", 202,
