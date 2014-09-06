@@ -53,6 +53,7 @@
 #include "preferences.h"
 #include "vikmapslayer.h"
 #include "icons/icons.h"
+#include "metatile.h"
 
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
@@ -652,8 +653,8 @@ static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values
     case PARAM_MAPTYPE: {
       // Get new value
       VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
-      // Is it *not* the OSM On Disk Tile Layout or the MBTiles type
-      gboolean sensitive = ( 21 != vlpd.u && 23 != vlpd.u);
+      // Is it *not* the OSM On Disk Tile Layout or the MBTiles type or the OSM Metatiles type
+      gboolean sensitive = ( 21 != vlpd.u && 23 != vlpd.u && 24 != vlpd.u );
       GtkWidget **ww1 = values[UI_CHG_WIDGETS];
       GtkWidget **ww2 = values[UI_CHG_LABELS];
       GtkWidget *w1 = ww1[PARAM_ONLYMISSING];
@@ -964,6 +965,51 @@ static GdkPixbuf *get_mbtiles_pixbuf ( VikMapsLayer *vml, gint xx, gint yy, gint
   return pixbuf;
 }
 
+static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy, gint zz )
+{
+  const int tile_max = METATILE_MAX_SIZE;
+  char err_msg[PATH_MAX];
+  char *buf;
+  int len;
+  int compressed;
+
+  buf = malloc(tile_max);
+  if (!buf) {
+      return NULL;
+  }
+
+  err_msg[0] = 0;
+  len = metatile_read(vml->cache_dir, xx, yy, zz, buf, tile_max, &compressed, err_msg);
+
+  if (len > 0) {
+    if (compressed) {
+      // Not handled yet - I don't think this is used often - so implement later if necessary
+      g_warning ( "Compressed metatiles not implemented:%s\n", __FUNCTION__);
+      return NULL;
+    }
+
+    // Convert these buf bytes into a pixbuf via these streaming operations
+    GdkPixbuf *pixbuf = NULL;
+
+    GInputStream *stream = g_memory_input_stream_new_from_data ( buf, len, NULL );
+    GError *error = NULL;
+    pixbuf = gdk_pixbuf_new_from_stream ( stream, NULL, &error );
+    if (error || (!pixbuf)) {
+      g_warning ( "%s: %s", __FUNCTION__, error->message );
+      g_error_free ( error );
+    }
+    g_input_stream_close ( stream, NULL, NULL );
+
+    free(buf);
+    return pixbuf;
+  }
+  else {
+    g_warning ( "FAILED:%s %s", __FUNCTION__, err_msg);
+    return NULL;
+  }
+}
+
+
 static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, MapCoord *mapcoord, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   // Apply alpha setting
@@ -1028,6 +1074,11 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, guint16 id, const gchar* mapnam
         pixbuf = get_mbtiles_pixbuf ( vml, mapcoord->x, mapcoord->y, (17 - mapcoord->scale) );
         pixbuf = pixbuf_apply_settings ( pixbuf, vml, mapcoord, xshrinkfactor, yshrinkfactor );
         // return now to avoid file tests that aren't appropriate for this map type
+        return pixbuf;
+      }
+      else if ( vik_map_source_is_osm_meta_tiles(map) ) {
+        pixbuf = get_pixbuf_from_metatile ( vml, mapcoord->x, mapcoord->y, (17 - mapcoord->scale) );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, mapcoord, xshrinkfactor, yshrinkfactor );
         return pixbuf;
       }
       else
@@ -1748,6 +1799,12 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
 #else
       source = g_strdup ( _("Not available") );
 #endif
+    }
+    else if ( vik_map_source_is_osm_meta_tiles ( map ) ) {
+      char path[PATH_MAX];
+      xyz_to_meta(path, sizeof(path), vml->cache_dir, ulm.x, ulm.y, 17-ulm.scale );
+      source = g_strdup ( path );
+      filename = g_strdup ( path );
     }
     else {
       guint max_path_len = strlen(vml->cache_dir) + 40;

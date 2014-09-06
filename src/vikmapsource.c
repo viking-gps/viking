@@ -273,6 +273,25 @@ vik_map_source_is_mbtiles (VikMapSource * self)
 	return (*klass->is_mbtiles)(self);
 }
 
+/**
+ * vik_map_source_is_osm_meta_tiles:
+ * @self: the VikMapSource of interest.
+ *
+ *   Treat the files as a pre generated data set directly by tirex or renderd
+ *     tiledir/Z/[xxxxyyyy]/[xxxxyyyy]/[xxxxyyyy]/[xxxxyyyy]/[xxxxyyyy].meta
+ */
+gboolean vik_map_source_is_osm_meta_tiles (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->is_osm_meta_tiles != NULL, 0);
+
+	return (*klass->is_osm_meta_tiles)(self);
+}
+
 gboolean
 vik_map_source_supports_download_only_new (VikMapSource * self)
 {

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2007,2013, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2012-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -140,6 +140,17 @@ void osm_init () {
                                 "is-mbtiles", TRUE,
                                 NULL));
 
+  // NB no cache needed for this type!!
+  VikMapSource *metatiles_type =
+    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+                                "id", 24,
+                                "label", _("OSM Metatiles"),
+                                // For using your own generated data assumed you know the license already!
+                                "copyright", "© OpenStreetMap contributors", // probably
+                                "use-direct-file-access", TRUE,
+                                "is-osm-meta-tiles", TRUE,
+                                NULL));
+
   maps_layer_register_map_source (mapquest_type);
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (cycle_type);
@@ -147,6 +158,7 @@ void osm_init () {
   maps_layer_register_map_source (hot_type);
   maps_layer_register_map_source (direct_type);
   maps_layer_register_map_source (mbtiles_type);
+  maps_layer_register_map_source (metatiles_type);
 
   // Webtools
   VikWebtoolCenter *webtool = NULL;

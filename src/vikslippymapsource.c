@@ -58,6 +58,7 @@ static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCo
 
 static gboolean _is_direct_file_access (VikMapSource *self );
 static gboolean _is_mbtiles (VikMapSource *self );
+static gboolean _is_osm_meta_tiles (VikMapSource *self );
 static gboolean _supports_download_only_new (VikMapSource *self );
 static guint8 _get_zoom_min(VikMapSource *self );
 static guint8 _get_zoom_max(VikMapSource *self );
@@ -77,6 +78,7 @@ struct _VikSlippyMapSourcePrivate
   guint zoom_max; // TMS Zoom level: Often 18 for zoomed in.
   gboolean is_direct_file_access;
   gboolean is_mbtiles;
+  gboolean is_osm_meta_tiles; // http://wiki.openstreetmap.org/wiki/Meta_tiles as used by tirex or renderd
   // Mainly for ARCGIS Tile Server URL Layout // http://help.arcgis.com/EN/arcgisserver/10.0/apis/rest/tile.html
   gboolean switch_xy;
 };
@@ -98,6 +100,7 @@ enum
   PROP_USE_ETAG,
   PROP_IS_DIRECT_FILE_ACCESS,
   PROP_IS_MBTILES,
+  PROP_IS_OSM_META_TILES,
   PROP_SWITCH_XY,
 };
 
@@ -120,6 +123,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   priv->options.use_etag = FALSE;
   priv->is_direct_file_access = FALSE;
   priv->is_mbtiles = FALSE;
+  priv->is_osm_meta_tiles = FALSE;
   priv->switch_xy = FALSE;
 
   g_object_set (G_OBJECT (self),
@@ -199,6 +203,10 @@ vik_slippy_map_source_set_property (GObject      *object,
       priv->is_mbtiles = g_value_get_boolean (value);
       break;
 
+    case PROP_IS_OSM_META_TILES:
+      priv->is_osm_meta_tiles = g_value_get_boolean (value);
+      break;
+
     case PROP_SWITCH_XY:
       priv->switch_xy = g_value_get_boolean (value);
       break;
@@ -261,6 +269,10 @@ vik_slippy_map_source_get_property (GObject    *object,
       g_value_set_boolean (value, priv->is_mbtiles);
       break;
 
+    case PROP_IS_OSM_META_TILES:
+      g_value_set_boolean (value, priv->is_osm_meta_tiles);
+      break;
+
     case PROP_SWITCH_XY:
       g_value_set_boolean (value, priv->switch_xy);
       break;
@@ -288,6 +300,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	grandparent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	grandparent_class->is_direct_file_access = _is_direct_file_access;
 	grandparent_class->is_mbtiles = _is_mbtiles;
+	grandparent_class->is_osm_meta_tiles = _is_osm_meta_tiles;
 	grandparent_class->supports_download_only_new = _supports_download_only_new;
 	grandparent_class->get_zoom_min = _get_zoom_min;
 	grandparent_class->get_zoom_max = _get_zoom_max;
@@ -372,6 +385,13 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_IS_MBTILES, pspec);
 
+	pspec = g_param_spec_boolean ("is-osm-meta-tiles",
+	                              "Is in OSM Meta Tile format",
+	                              "Read from OSM Meta Tiles - Should be 'use-direct-file-access' as well",
+	                              FALSE  /* default value */,
+	                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_IS_OSM_META_TILES, pspec);
+
 	pspec = g_param_spec_boolean ("switch-xy",
 	                              "Switch the order of x,y components in the URL",
 	                              "Switch the order of x,y components in the URL (such as used by ARCGIS Tile Server",
@@ -402,6 +422,17 @@ _is_mbtiles (VikMapSource *self)
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 
   return priv->is_mbtiles;
+}
+
+/**
+ *
+ */
+static gboolean
+_is_osm_meta_tiles (VikMapSource *self)
+{
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+  return priv->is_osm_meta_tiles;
 }
 
 static gboolean

@@ -57,6 +57,7 @@ struct _VikMapSourceClass
 	VikViewportDrawMode (* get_drawmode) (VikMapSource * self);
 	gboolean (* is_direct_file_access) (VikMapSource * self);
 	gboolean (* is_mbtiles) (VikMapSource * self);
+	gboolean (* is_osm_meta_tiles) (VikMapSource * self);
 	gboolean (* supports_download_only_new) (VikMapSource * self);
 	guint8 (* get_zoom_min) (VikMapSource * self);
 	guint8 (* get_zoom_max) (VikMapSource * self);
@@ -88,6 +89,7 @@ guint16 vik_map_source_get_tilesize_y (VikMapSource * self);
 VikViewportDrawMode vik_map_source_get_drawmode (VikMapSource * self);
 gboolean vik_map_source_is_direct_file_access (VikMapSource * self);
 gboolean vik_map_source_is_mbtiles (VikMapSource * self);
+gboolean vik_map_source_is_osm_meta_tiles (VikMapSource * self);
 gboolean vik_map_source_supports_download_only_new (VikMapSource * self);
 guint8 vik_map_source_get_zoom_min (VikMapSource * self);
 guint8 vik_map_source_get_zoom_max (VikMapSource * self);
