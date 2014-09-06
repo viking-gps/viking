@@ -114,6 +114,7 @@ libviking_a_SOURCES = \
 	vikslippymapsource.c vikslippymapsource.h \
 	vikwmscmapsource.c vikwmscmapsource.h \
 	viktmsmapsource.c viktmsmapsource.h \
+	metatile.c metatile.h \
 	gpx.c gpx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
