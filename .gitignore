@@ -116,6 +116,7 @@ src/misc/*.o
 /test/degrees_converter
 /test/test_vikgotoxmltool
 /test/test_coord_conversion
+/test/test_babel
 
 # /po/
 /po/Makefile.in.in
