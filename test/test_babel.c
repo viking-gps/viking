@@ -1,7 +1,12 @@
+// Decide the Babel file types capability you wish to list
+// e.g. for read support of waypoints, tracks and routes:
+// run like: ./test_babel 1 0 1 0 1 0
+#include <stdlib.h>
 #include <babel.h>
 
-void print_file_format (BabelFile *file, gconstpointer user_data)
+static void print_file_format (gpointer data, gpointer user_data)
 {
+	BabelFile *file = (BabelFile*)data;
 	printf("%s : %d%d%d%d%d%d\n",
 		file->label,
 		file->mode.waypointsRead, file->mode.waypointsWrite,
