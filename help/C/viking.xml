@@ -249,7 +249,7 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </figure>
 </section>
 
-<section><title>Projections</title>
+<section id="projection" xreflabel="Projection"><title>Projections</title>
 <para>
 &appname; supports differents projections:
 <itemizedlist>
@@ -266,7 +266,7 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </para>
 </section>
 
-<section><title>Map Cache</title>
+<section id="mapcache" xreflabel="Map Cache"><title>Map Cache</title>
 <para>
 &appname; stores downloaded map tiles to disk for a couple of reasons:
 </para>
@@ -298,6 +298,19 @@ The &appname; automatic caching strategy is two fold:
   This can be useful if you contribute to OpenStreetMap and wish to see your modifications (of course give time for the server to have processed your changes - see <ulink url="http://help.openstreetmap.org/questions/102/i-have-made-edits-but-they-dont-show-up-on-the-map">I have made edits but they don't show up on the map</ulink>)
 </para>
 </note>
+
+<para>
+The layout of the cache on disk itself can be controlled via a per Map Layer property.
+<itemizedlist>
+<listitem><para>Viking - Legacy default in a private cache layout scheme</para></listitem>
+<listitem><para>OSM - Newer available default (1.6+)</para>
+<para>
+This is to increase the compatibility between &appname; and similar applications that cache tiles on disk so that the tiles can be shared.
+</para>
+</listitem>
+</itemizedlist>
+
+</para>
 </section>
 
 <section id="shortcut_keys" xreflabel="Shortcut Keys"><title>Shortcut Keys</title>
@@ -1528,13 +1541,15 @@ Using many DEMs is CPU/memory intensive. Depending on your computer's capability
 
 <section id="Maps" xreflabel="Maps"><title>Maps Layer</title>
 <para>
-This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible.
-You will need an open internet connection when you are downloading maps, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
+This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible (subject to the Alpha compositing property).
 </para>
 <para>
-Some maps are continually improving over time (e.g. OpenStreetMap) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - <emphasis>Tile Age</emphasis> to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
+Some maps are continually improving over time (e.g. OpenStreetMap) thus &appname; employs a caching mechanism to avoid redownloading data (see <xref linkend="mapcache"/>).
+However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option or <keycap>Ctrl+F5</keycap>.
 </para>
+<formalpara><title>Online Map Tile Providers</title>
 <para>
+You will need an open internet connection when you are downloading maps these following map types, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
 Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
 <itemizedlist>
@@ -1546,10 +1561,54 @@ Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMa
 <listitem><para>OpenStreetMap (Humanitarian) (&appname; Version1.5+)</para></listitem>
 <listitem><para>NASA BlueMarble</para></listitem>
 </itemizedlist>
+</formalpara>
 
 <para>
-&appname; can be configured to handle additional maps. See <xref linkend="extend_viking"/> for further detail.
+&appname; can be configured to handle additional online map resources. See <xref linkend="extend_viking"/> for further detail.
 </para>
+
+<formalpara><title>Offline Map Tilesets</title>
+<para>
+Some map types supported are for on disk tile formats:
+</para>
+<itemizedlist>
+<listitem>
+	<para>On Disk OSM Tile Format</para>
+	<para>This is equivalent to any map set with <emphasis>OSM</emphasis> Cache Layput.</para>
+</listitem>
+<listitem><para><ulink url="https://github.com/mapbox/mbtiles-spec">MBTiles File</ulink></para></listitem>
+<listitem><para><ulink url="http://wiki.openstreetmap.org/wiki/Meta_tiles">OSM Metatiles</ulink></para></listitem>
+</itemizedlist>
+<para>
+Of course you need to have acquired or generated these tilesets yourself.
+</para>
+</formalpara>
+
+<section><title>Map Layer Properties</title>
+<para>
+Configurable properties:
+</para>
+<itemizedlist>
+<listitem>
+	<para>Map Type. The kind of map this layer displays.</para>
+	<note><para>Map types are dependent on the current <xref linkend="projection"/> mode.</para></note>
+</listitem>
+<listitem><para>Maps Directory. Not applicable for MBTiles Map type since it is a single file.</para></listitem>
+<listitem><para>Cache Layout. Viking or OSM. See <xref linkend="mapcache"/>. Only applies to maps from online tile providers.</para></listitem>
+<listitem><para>Map File. Ony applicable for MBTiles Map type since it is a single file.</para></listitem>
+<listitem>
+	<para>Alpha. Control the Alpha value for transparency effect using a value between 0 and 255 with the default being 255 for a fully solid image.</para>
+	<para>Zero is fully transparent. A value of around 160 can be useful for blending views of multiple map layers (when applied to the upper most map layer).</para>
+</listitem>
+<listitem><para>Autodownload Maps. This can be useful to turn off when you are not online to avoid pointless download requests or may be keep a map in a 'historical' state.
+e.g. perhaps in case a current map rendering is broken.</para></listitem>
+<listitem><para>Autodownload Only Gets Missing Maps. Using this option avoids attempting to update already acquired tiles.
+This can be useful if you want to restrict the network usage, without having to resort to manual control. Only applies when <emphasis>Autodownload Maps</emphasis> is on.</para></listitem>
+<listitem><para>Zoom Level. Determines the method of displaying map tiles for the current zoom level.
+<emphasis>Viking Zoom Level</emphasis> uses the best matching level, otherwise setting a fixed value will always use map tiles of the specified value regardless of the actual zoom level.</para></listitem>
+</itemizedlist>
+</section><!-- Map Prop END -->
+
 
 <section><title>Layer Operations</title>
 <section><title>Download Missing Onscreen Maps</title>
@@ -2835,6 +2894,14 @@ Accept: */*
                       e.g. for Mobile Atlas creator it names them <emphasis>.png.tile</emphasis></para>
                 <note><para>The file types actually usable are those supported by GDK Pixbuf Library, which includes at least PNG and JPEG.</para></note>
                 <note><para>Remember to include the beginning <emphasis>'.'</emphasis> when specifying this parameter.</para></note>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>use-direct-file-access (optional)</term>
+              <listitem>
+                <para>Only use files on disk. The default is <emphasis>FALSE</emphasis></para>
+                <para>This can also be useful for tilesets already on disk as it will avoid attempting to download any tiles.</para>
+                <para>Thus with this type the <emphasis>hostname</emphasis> and <emphasis>url</emphasis> parameters are not necessary and are ignored.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
