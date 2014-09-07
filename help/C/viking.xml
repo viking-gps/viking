@@ -112,7 +112,7 @@ Uploading and downloading waypoints, tracks and routes to/from GPS.
 </para>
 </listitem>
 <listitem>
-<para>Preparing tracks, routes and waypoints for trips using maps from services such as OpenStreetMap (OSM) and/or Terrasever.
+<para>Preparing tracks, routes and waypoints for trips using maps from services such as OpenStreetMap (OSM).
 The data is only needed to be uploaded to your GPS before you leave.
 The maps together with your tracks, routes and waypoints can also be printed and used during the trip.
 </para>
@@ -150,7 +150,7 @@ Analyzing speed at different places (to some degree), adding waypoints where you
 </listitem>
 <listitem>
 <para>
-Downloading and storing OpenStreetMap and/or Terraserver maps on your hard drive and looking at them later.
+Downloading and storing OpenStreetMap and/or other map types on your hard drive and looking at them later.
 </para>
 </listitem>
 <listitem>
