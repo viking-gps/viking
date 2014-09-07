@@ -32,7 +32,6 @@
 #include "viking.h"
 #include "viktrwlayer_export.h"
 #include "gpx.h"
-#include "util.h"
 
 void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {

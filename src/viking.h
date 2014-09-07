@@ -59,5 +59,6 @@
 #include "gpspoint.h"
 #include "gpsmapper.h"
 #include "settings.h"
+#include "util.h"
 
 #endif

@@ -30,7 +30,6 @@
 #include <glib/gi18n.h>
 
 #include "viking.h"
-#include "util.h"
 #include "curl_download.h"
 
 #include "googlesearch.h"

@@ -31,7 +31,6 @@
 #include <glib/gi18n.h>
 
 #include "viking.h"
-#include "util.h"
 #include "vikgototool.h"
 #include "vikgoto.h"
 

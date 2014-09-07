@@ -32,7 +32,6 @@
 #include "babel.h"
 #include "gpx.h"
 #include "acquire.h"
-#include "util.h"
 
 /************************ FILTER LIST *******************/
 // extern VikDataSourceInterface vik_datasource_gps_interface;
