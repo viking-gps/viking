@@ -63,6 +63,8 @@ gchar *util_str_remove_chars(gchar *string, const gchar *chars);
 #define foreach_str(char_ptr, string) \
 	for (char_ptr = string; *char_ptr; char_ptr++)
 
+int util_remove ( const gchar *filename );
+
 G_END_DECLS
 
 #endif

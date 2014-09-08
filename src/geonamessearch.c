@@ -475,7 +475,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   free_geoname_list(selected);
   g_free(uri);
   if (tmpname) {
-    g_remove(tmpname);
+    util_remove(tmpname);
     g_free(tmpname);
   }
 }

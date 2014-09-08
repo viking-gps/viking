@@ -441,7 +441,7 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
         }
       }
     }
-    g_remove(name_src);
+    util_remove(name_src);
     g_free(babelargs);
     g_free(name_src);
   }

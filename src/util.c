@@ -32,6 +32,7 @@
 #include <glib/gprintf.h>
 
 #include "util.h"
+#include "globals.h"
 
 gchar *uri_escape(gchar *str)
 {
@@ -167,4 +168,21 @@ gchar *util_str_remove_chars(gchar *string, const gchar *chars)
 	}
 	*w = 0x0;
 	return string;
+}
+
+/**
+ * In 'extreme' debug mode don't remove temporary files
+ *  thus the contents can be inspected if things go wrong
+ *  with the trade off the user may need to delete tmp files manually
+ * Only use this for 'occasional' downloaded temporary files that need interpretation,
+ *  rather than large volume items such as Bing attributions.
+ */
+int util_remove ( const gchar *filename )
+{
+	if ( vik_debug && vik_verbose ) {
+		g_warning ( "Not removing file: %s", filename );
+		return 0;
+	}
+	else
+		return g_remove ( filename );
 }

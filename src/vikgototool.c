@@ -232,7 +232,7 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
 done:
   g_free(escaped_srch_str);
   g_free(uri);
-  g_remove(tmpname);
+  util_remove(tmpname);
   g_free(tmpname);
   return ret;
 }

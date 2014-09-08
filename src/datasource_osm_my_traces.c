@@ -584,7 +584,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 	//result = read_gpx_files_metadata_xml ( "/tmp/viking-download.GI47PW", xd );
 
 	if ( tmpname ) {
-		g_remove ( tmpname );
+		util_remove ( tmpname );
 		g_free ( tmpname );
 	}
 
