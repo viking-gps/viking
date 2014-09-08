@@ -3319,6 +3319,8 @@ Accept: */*
 </formalpara>
 </section>
 
+<xi:include href="commandline.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
 <xi:include href="attribution.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
 </article>

@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [<!ENTITY appname          "Viking">]
+>
+<section id="commandline">
+<title>Command Line</title>
+<para>
+&appname; being a Graphical User Interface program only has a few command line options.
+</para>
+
+<para>
+<screen>viking [OPTIONS...] files+</screen>
+</para>
+
+<para>
+Note that the ordering of files can be important depending on their file type.
+Subsequent non Viking project files are loaded into the previous Viking project, with the files being processed left to right.
+Some examples:
+</para>
+<itemizedlist>
+<listitem><para><literal>viking file1.gpx file2.gpx file3.gpx</literal></para><para> Here all GPX files are loaded into a new &appname; project in one window.</para></listitem>
+<listitem><para><literal>viking file1.vik file2.vik</literal></para><para> Each &appname; project file is opened in a new window.</para></listitem>
+<listitem><para><literal>viking file1.vik file2.gpx file3.gpx</literal></para><para> The GPX files are loaded into the &appname; project in one window.</para></listitem>
+<listitem><para><literal>viking file2.gpx file3.gpx file1.vik</literal></para><para> The GPX files are loaded into a new &appname; project in a one window and the &appname; project is loaded seperately in a seperate window.</para></listitem>
+</itemizedlist>
+
+<table frame='all'><title>Command Line Reference</title>
+<tgroup cols='3' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Short Option</entry>
+  <entry>Long Option</entry>
+  <entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+  <entry>-h</entry>
+  <entry>--help</entry>
+  <entry>Show the command line options and then exit.</entry>
+</row>
+<row>
+  <entry>-V</entry>
+  <entry>--verbose</entry>
+  <entry>Run in verbose mode. Some information about what &appname; is doing is shown in stdout.</entry>
+</row>
+<row>
+  <entry>-d</entry>
+  <entry>--debug</entry>
+  <entry>Run in debug mode. Even more information about what &appname; is doing is shown in stdout.
+This also enables some extra information features in the GUI itself, primarily of interest to developers.
+  </entry>
+</row>
+<row>
+  <entry>-v</entry>
+  <entry>--version</entry>
+  <entry>Show the version and then exit.</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+<note>
+<para>
+As a special combination when both <emphasis>-V and -d</emphasis> are both enabled at the same time, &appname; will not delete some of the temporary files created during the program run.
+This is especially useful to monitor results of download requests (which need to be interpreted) if they suddenly start failing, as the file will have often more detailed information about the failure mode.
+</para>
+</note>
+
+<para>
+&appname; being a GTK+ program means some options are processed by GTK+ itself such as --display. Use the following to find out what they are for your system:
+<screen>viking --help-gtk</screen>
+</para>
+
+</section>
