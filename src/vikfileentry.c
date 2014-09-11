@@ -119,6 +119,11 @@ static void choose_file ( VikFileEntry *vfe )
         gtk_file_filter_add_mime_type ( filter, "image/png");
         gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
 
+        filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("TIFF") );
+        gtk_file_filter_add_mime_type ( filter, "image/tiff");
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+
         break;
       }
       case VF_FILTER_MBTILES: {
