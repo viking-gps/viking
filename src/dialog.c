@@ -29,7 +29,7 @@
 #include "degrees_converters.h"
 #include "authors.h"
 #include "documenters.h"
-#include "util.h"
+#include "ui_util.h"
 
 #include <glib/gi18n.h>
 

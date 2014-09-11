@@ -68,6 +68,7 @@ libviking_a_SOURCES = \
 	documenters.h \
 	dialog.c dialog.h \
 	util.c util.h \
+	ui_util.c ui_util.h \
 	download.c download.h \
 	jpg.c jpg.h \
 	vikenumtypes.c vikenumtypes.h \
@@ -98,6 +99,7 @@ libviking_a_SOURCES = \
 	vikroutingengine.c vikroutingengine.h \
 	vikroutingwebengine.c vikroutingwebengine.h \
 	vikutils.c vikutils.h \
+	toolbar.c toolbar.h toolbar.xml.h \
 	thumbnails.c thumbnails.h \
 	background.c background.h \
 	vikradiogroup.c vikradiogroup.h \

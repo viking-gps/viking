@@ -37,6 +37,7 @@
 #include "vikrouting.h"
 #include "vikutils.h"
 #include "util.h"
+#include "toolbar.h"
 
 #ifdef VIK_CONFIG_GEOCACHES
 void a_datasource_gc_init();
@@ -191,6 +192,7 @@ int main( int argc, char *argv[] )
   a_datasource_gc_init();
 #endif
 
+  a_toolbar_init();
   vik_routing_prefs_init();
 
   if ( a_vik_get_time_ref_frame() == VIK_TIME_REF_WORLD )
@@ -233,7 +235,7 @@ int main( int argc, char *argv[] )
   gdk_threads_leave ();
 
   a_babel_uninit ();
-
+  a_toolbar_uninit ();
   a_background_uninit ();
   a_mapcache_uninit ();
   a_dems_uninit ();

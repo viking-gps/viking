@@ -36,6 +36,7 @@
 #include "vikmapslayer.h"
 #include "settings.h"
 #include "util.h"
+#include "ui_util.h"
 #include "dir.h"
 #include "misc/kdtree.h"
 
