@@ -114,6 +114,10 @@ static void draw_status ( VikWindow *vw );
 
 /* End Drawing Functions */
 
+static void toggle_draw_scale ( GtkAction *a, VikWindow *vw );
+static void toggle_draw_centermark ( GtkAction *a, VikWindow *vw );
+static void toggle_draw_highlight ( GtkAction *a, VikWindow *vw );
+
 static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw );
 static void menu_properties_cb ( GtkAction *a, VikWindow *vw );
 static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw );
@@ -3069,18 +3073,30 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       vw->only_updating_coord_mode_ui = FALSE;
 
       vik_layers_panel_change_coord_mode ( vw->viking_vlp, vik_viewport_get_coord_mode ( vw->viking_vvp ) );
-      
-      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowScale" );
-      g_assert ( mode_button );
-      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_scale(vw->viking_vvp) );
 
-      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCenterMark" );
-      g_assert ( mode_button );
-      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_centermark(vw->viking_vvp) );
-      
-      mode_button = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowHighlight" );
-      g_assert ( mode_button );
-      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(mode_button),vik_viewport_get_draw_highlight (vw->viking_vvp) );
+      // Slightly long winded methods to align loaded viewport settings with the UI
+      //  Since the rewrite for toolbar + menu actions
+      //  there no longer exists a simple way to directly change the UI to a value for toggle settings
+      //  it only supports toggling the existing setting (otherwise get infinite loops in trying to align tb+menu elements)
+      // Thus get state, compare them, if different then invert viewport setting and (re)sync the setting (via toggling)
+      gboolean vp_state_scale = vik_viewport_get_draw_scale ( vw->viking_vvp );
+      gboolean ui_state_scale = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(get_show_widget_by_name(vw, "ShowScale")) );
+      if ( vp_state_scale != ui_state_scale ) {
+        vik_viewport_set_draw_scale ( vw->viking_vvp, !vp_state_scale );
+        toggle_draw_scale ( NULL, vw );
+      }
+      gboolean vp_state_centermark = vik_viewport_get_draw_centermark ( vw->viking_vvp );
+      gboolean ui_state_centermark = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(get_show_widget_by_name(vw, "ShowCenterMark")) );
+      if ( vp_state_centermark != ui_state_centermark ) {
+        vik_viewport_set_draw_centermark ( vw->viking_vvp, !vp_state_centermark );
+        toggle_draw_centermark ( NULL, vw );
+      }
+      gboolean vp_state_highlight = vik_viewport_get_draw_highlight ( vw->viking_vvp );
+      gboolean ui_state_highlight = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(get_show_widget_by_name(vw, "ShowHighlight")) );
+      if ( vp_state_highlight != ui_state_highlight ) {
+        vik_viewport_set_draw_highlight ( vw->viking_vvp, !vp_state_highlight );
+        toggle_draw_highlight ( NULL, vw );
+      }
     }
       // NB No break, carry on to redraw
     //case LOAD_TYPE_OTHER_SUCCESS:
@@ -4198,7 +4214,7 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
   }
 }
 
-static void set_draw_scale ( GtkAction *a, VikWindow *vw )
+static void toggle_draw_scale ( GtkAction *a, VikWindow *vw )
 {
   gboolean state = !vik_viewport_get_draw_scale ( vw->viking_vvp );
   GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowScale" );
@@ -4209,7 +4225,7 @@ static void set_draw_scale ( GtkAction *a, VikWindow *vw )
   draw_update ( vw );
 }
 
-static void set_draw_centermark ( GtkAction *a, VikWindow *vw )
+static void toggle_draw_centermark ( GtkAction *a, VikWindow *vw )
 {
   gboolean state = !vik_viewport_get_draw_centermark ( vw->viking_vvp );
   GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCenterMark" );
@@ -4220,26 +4236,15 @@ static void set_draw_centermark ( GtkAction *a, VikWindow *vw )
   draw_update ( vw );
 }
 
-static void set_draw_highlight ( GtkAction *a, VikWindow *vw )
+static void toggle_draw_highlight ( GtkAction *a, VikWindow *vw )
 {
-  gboolean next_state = !vik_viewport_get_draw_highlight ( vw->viking_vvp );
-  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
-  if ( !check_box )
-    return;
-  gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
-  if ( next_state != menu_state )
-    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
-  else {
-    vik_viewport_set_draw_highlight ( vw->viking_vvp, next_state );
-    draw_update ( vw );
-  }
-/*
   gboolean state = !vik_viewport_get_draw_highlight ( vw->viking_vvp );
   GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowHighlight" );
   if ( !check_box )
     return;
   gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), state );
-  */
+  vik_viewport_set_draw_highlight ( vw->viking_vvp, state );
+  draw_update ( vw );
 }
 
 static void set_bg_color ( GtkAction *a, VikWindow *vw )
@@ -4380,9 +4385,9 @@ static GtkRadioActionEntry mode_entries[] = {
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-  { "ShowScale",      NULL,                 N_("Show _Scale"),               "<shift>F5",  N_("Show Scale"),                              (GCallback)set_draw_scale, TRUE },
-  { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)set_draw_centermark, TRUE },
-  { "ShowHighlight",  GTK_STOCK_UNDERLINE,  N_("Show _Highlight"),           "F7",         N_("Show Highlight"),                          (GCallback)set_draw_highlight, TRUE },
+  { "ShowScale",      NULL,                 N_("Show _Scale"),               "<shift>F5",  N_("Show Scale"),                              (GCallback)toggle_draw_scale, TRUE },
+  { "ShowCenterMark", NULL,                 N_("Show _Center Mark"),         "F6",         N_("Show Center Mark"),                        (GCallback)toggle_draw_centermark, TRUE },
+  { "ShowHighlight",  GTK_STOCK_UNDERLINE,  N_("Show _Highlight"),           "F7",         N_("Show Highlight"),                          (GCallback)toggle_draw_highlight, TRUE },
   { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },
   { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side _Panel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
   { "ViewStatusBar",  NULL,                 N_("Show Status_bar"),           "F12",        N_("Show Statusbar"),                          (GCallback)view_statusbar_cb, TRUE },
