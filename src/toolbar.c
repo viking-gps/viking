@@ -943,7 +943,7 @@ static void tb_editor_write_markup(TBEditorWidget *tbw)
 This is Viking's toolbar UI definition.\nThe DTD can be found at \n\
 http://library.gnome.org/devel/gtk/stable/GtkUIManager.html#GtkUIManager.description.\n\n\
 Generally one should use the toolbar editor in Viking rather than editing this file.\n\n\
-For manual changes this file to take effect, you need to restart Viking.\n\n\
+For manual changes to this file to take effect, you need to restart Viking.\n-->\n\
 \t<toolbar name='MainToolbar'>\n";
 	GString *str = g_string_new(template);
 
