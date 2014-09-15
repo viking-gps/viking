@@ -76,6 +76,10 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->supports_download_only_new = _supports_download_only_new;
 	klass->get_zoom_min = NULL;
 	klass->get_zoom_max = NULL;
+	klass->get_lat_min = NULL;
+	klass->get_lat_max = NULL;
+	klass->get_lon_min = NULL;
+	klass->get_lon_max = NULL;
 	klass->coord_to_mapcoord = NULL;
 	klass->mapcoord_to_center_coord = NULL;
 	klass->download = NULL;
@@ -333,6 +337,61 @@ vik_map_source_get_zoom_max (VikMapSource * self)
 	return (*klass->get_zoom_max)(self);
 }
 
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lat_max (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 90.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 90.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lat_max != NULL, 90.0);
+	return (*klass->get_lat_max)(self);
+}
+
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lat_min (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, -90.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), -90.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lat_min != NULL, -90.0);
+	return (*klass->get_lat_min)(self);
+}
+
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lon_max (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 180.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 180.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lon_max != NULL, 180.0);
+	return (*klass->get_lon_max)(self);
+}
+
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lon_min (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, -180.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), -180.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lon_min != NULL, -180.0);
+	return (*klass->get_lon_min)(self);
+}
 
 /**
  * vik_map_source_get_file_extension:

@@ -62,6 +62,10 @@ static gboolean _is_osm_meta_tiles (VikMapSource *self );
 static gboolean _supports_download_only_new (VikMapSource *self );
 static guint8 _get_zoom_min(VikMapSource *self );
 static guint8 _get_zoom_max(VikMapSource *self );
+static gdouble _get_lat_min(VikMapSource *self );
+static gdouble _get_lat_max(VikMapSource *self );
+static gdouble _get_lon_min(VikMapSource *self );
+static gdouble _get_lon_max(VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
@@ -76,6 +80,10 @@ struct _VikSlippyMapSourcePrivate
   // NB Probably best to keep the above fields in same order to be common across Slippy, TMS & WMS map definitions
   guint zoom_min; // TMS Zoom level: 0 = Whole World // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   guint zoom_max; // TMS Zoom level: Often 18 for zoomed in.
+  gdouble lat_min; // Degrees
+  gdouble lat_max; // Degrees
+  gdouble lon_min; // Degrees
+  gdouble lon_max; // Degrees
   gboolean is_direct_file_access;
   gboolean is_mbtiles;
   gboolean is_osm_meta_tiles; // http://wiki.openstreetmap.org/wiki/Meta_tiles as used by tirex or renderd
@@ -94,6 +102,10 @@ enum
   PROP_URL,
   PROP_ZOOM_MIN,
   PROP_ZOOM_MAX,
+  PROP_LAT_MIN,
+  PROP_LAT_MAX,
+  PROP_LON_MIN,
+  PROP_LON_MAX,
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
   PROP_CHECK_FILE_SERVER_TIME,
@@ -116,6 +128,10 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   priv->url = NULL;
   priv->zoom_min = 0;
   priv->zoom_max = 18;
+  priv->lat_min = -90.0;
+  priv->lat_max = 90.0;
+  priv->lon_min = -180.0;
+  priv->lon_max = 180.0;
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
   priv->options.check_file = a_check_map_file;
@@ -176,6 +192,22 @@ vik_slippy_map_source_set_property (GObject      *object,
 
     case PROP_ZOOM_MAX:
       priv->zoom_max = g_value_get_uint (value);
+      break;
+
+    case PROP_LAT_MIN:
+      priv->lat_min = g_value_get_double (value);
+      break;
+
+    case PROP_LAT_MAX:
+      priv->lat_max = g_value_get_double (value);
+      break;
+
+    case PROP_LON_MIN:
+      priv->lon_min = g_value_get_double (value);
+      break;
+
+    case PROP_LON_MAX:
+      priv->lon_max = g_value_get_double (value);
       break;
 
     case PROP_REFERER:
@@ -245,6 +277,22 @@ vik_slippy_map_source_get_property (GObject    *object,
       g_value_set_uint (value, priv->zoom_max);
       break;
 
+    case PROP_LON_MIN:
+      g_value_set_double (value, priv->lon_min);
+      break;
+
+    case PROP_LON_MAX:
+      g_value_set_double (value, priv->lon_max);
+      break;
+
+    case PROP_LAT_MIN:
+      g_value_set_double (value, priv->lat_min);
+      break;
+
+    case PROP_LAT_MAX:
+      g_value_set_double (value, priv->lat_max);
+      break;
+
     case PROP_REFERER:
       g_value_set_string (value, priv->options.referer);
       break;
@@ -304,6 +352,10 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	grandparent_class->supports_download_only_new = _supports_download_only_new;
 	grandparent_class->get_zoom_min = _get_zoom_min;
 	grandparent_class->get_zoom_max = _get_zoom_max;
+	grandparent_class->get_lat_min = _get_lat_min;
+	grandparent_class->get_lat_max = _get_lat_max;
+	grandparent_class->get_lon_min = _get_lon_min;
+	grandparent_class->get_lon_max = _get_lon_max;
 
 	parent_class->get_uri = _get_uri;
 	parent_class->get_hostname = _get_hostname;
@@ -340,6 +392,42 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                           18, // default value
 	                           G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_ZOOM_MAX, pspec);
+
+	pspec = g_param_spec_double ("lat-min",
+	                             "Minimum latitude",
+	                             "Minimum latitude in degrees supported by the map provider",
+	                             -90.0,  // minimum value
+	                             90.0, // maximum value
+	                             -90.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LAT_MIN, pspec);
+
+	pspec = g_param_spec_double ("lat-max",
+	                             "Maximum latitude",
+	                             "Maximum latitude in degrees supported by the map provider",
+	                             -90.0,  // minimum value
+	                             90.0, // maximum value
+	                             90.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LAT_MAX, pspec);
+
+	pspec = g_param_spec_double ("lon-min",
+	                             "Minimum longitude",
+	                             "Minimum longitude in degrees supported by the map provider",
+	                             -180.0,  // minimum value
+	                             180.0, // maximum value
+	                             -180.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LON_MIN, pspec);
+
+	pspec = g_param_spec_double ("lon-max",
+	                             "Maximum longitude",
+	                             "Maximum longitude in degrees supported by the map provider",
+	                             -180.0,  // minimum value
+	                             180.0, // maximum value
+	                             180.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LON_MAX, pspec);
 
 	pspec = g_param_spec_string ("referer",
 	                             "Referer",
@@ -465,6 +553,50 @@ _get_zoom_max (VikMapSource *self)
   g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
   return priv->zoom_max;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lat_min (VikMapSource *self)
+{
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+  return priv->lat_min;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lat_max (VikMapSource *self)
+{
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+  return priv->lat_max;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lon_min (VikMapSource *self)
+{
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+  return priv->lon_min;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lon_max (VikMapSource *self)
+{
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
+  return priv->lon_max;
 }
 
 static gboolean

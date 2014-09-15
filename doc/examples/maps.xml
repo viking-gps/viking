@@ -48,4 +48,21 @@
     <property name="license">ArcGIS Specific</property>
     <property name="license-url">http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer</property>
   </object>
+
+  <!-- An example with zoom and area limits - UK Only -->
+  <object>
+    <object class="VikSlippyMapSource">
+    <property name="label">OS NPE</property>
+    <property name="hostname">ooc.openstreetmap.org</property>
+    <property name="url">/npe/%d/%d/%d.png</property>
+    <property name="id">245</property>
+    <property name="name">NPE</property>
+    <property name="file-extension">.png</property>
+    <property name="zoom-min">7</property>
+    <property name="zoom-max">18</property>
+    <property name="lat-min">49.8</property>
+    <property name="lat-max">55.8</property>
+    <property name="lon-min">-5.8</property>
+    <property name="lon-max">1.9</property>
+  </object>
 </objects>

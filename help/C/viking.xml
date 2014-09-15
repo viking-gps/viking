@@ -2886,6 +2886,22 @@ Accept: */*
               </listitem>
             </varlistentry>
             <varlistentry>
+              <term>lat-min (optional)</term>
+              <listitem><para>The minimum latitude value in degrees supported by the tile server. The Default is -90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+              <listitem><para>The maximum latitude value in degrees supported by the tile server. The Default is 90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+              <listitem><para>The minimum longitude value in degrees supported by the tile server. The Default is -180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
+              <listitem><para>The maximum longitude value in degrees supported by the tile server. The Default is 180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
               <term>file-extension (optional)</term>
               <listitem>
                 <para>The file extension of the files on disk. The default is <emphasis>.png</emphasis></para>
