@@ -2960,6 +2960,24 @@ Accept: */*
             <varlistentry>
               <term>check-file-server-time (optional)</term>
             </varlistentry>
+            <varlistentry>
+              <term>zoom-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
+            </varlistentry>
           </variablelist>
         </para>
         <para>The <classname>VikWmscMapSource</classname> allows to declare any WMS or WMS-C service. It supports the following properties  (as per VikSlippyMapSource above):
@@ -2978,6 +2996,24 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>check-file-server-time (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
             </varlistentry>
           </variablelist>
         </para>

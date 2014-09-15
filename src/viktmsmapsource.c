@@ -50,6 +50,13 @@ static void _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCo
 static gboolean _supports_download_only_new ( VikMapSource *self );
 static gboolean _is_direct_file_access ( VikMapSource *self );
 static gboolean _is_mbtiles ( VikMapSource *self );
+static gboolean _is_osm_meta_tiles (VikMapSource *self );
+static guint8 _get_zoom_min(VikMapSource *self );
+static guint8 _get_zoom_max(VikMapSource *self );
+static gdouble _get_lat_min(VikMapSource *self );
+static gdouble _get_lat_max(VikMapSource *self );
+static gdouble _get_lon_min(VikMapSource *self );
+static gdouble _get_lon_max(VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
@@ -61,6 +68,12 @@ struct _VikTmsMapSourcePrivate
   gchar *hostname;
   gchar *url;
   DownloadMapOptions options;
+  guint zoom_min; // TMS Zoom level: 0 = Whole World // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+  guint zoom_max; // TMS Zoom level: Often 18 for zoomed in.
+  gdouble lat_min; // Degrees
+  gdouble lat_max; // Degrees
+  gdouble lon_min; // Degrees
+  gdouble lon_max; // Degrees
 };
 
 #define VIK_TMS_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_TMS_MAP_SOURCE, VikTmsMapSourcePrivate))
@@ -75,6 +88,12 @@ enum
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
   PROP_CHECK_FILE_SERVER_TIME,
+  PROP_ZOOM_MIN,
+  PROP_ZOOM_MAX,
+  PROP_LAT_MIN,
+  PROP_LAT_MAX,
+  PROP_LON_MIN,
+  PROP_LON_MAX,
 };
 
 G_DEFINE_TYPE (VikTmsMapSource, vik_tms_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
@@ -91,6 +110,12 @@ vik_tms_map_source_init (VikTmsMapSource *self)
   priv->options.follow_location = 0;
   priv->options.check_file = a_check_map_file;
   priv->options.check_file_server_time = FALSE;
+  priv->zoom_min = 0;
+  priv->zoom_max = 18;
+  priv->lat_min = -90.0;
+  priv->lat_max = 90.0;
+  priv->lon_min = -180.0;
+  priv->lon_max = 180.0;
 
   g_object_set (G_OBJECT (self),
                 "tilesize-x", 256,
@@ -149,6 +174,30 @@ vik_tms_map_source_set_property (GObject      *object,
       priv->options.check_file_server_time = g_value_get_boolean (value);
       break;
 
+    case PROP_ZOOM_MIN:
+      priv->zoom_min = g_value_get_uint (value);
+      break;
+
+    case PROP_ZOOM_MAX:
+      priv->zoom_max = g_value_get_uint (value);
+      break;
+
+    case PROP_LAT_MIN:
+      priv->lat_min = g_value_get_double (value);
+      break;
+
+    case PROP_LAT_MAX:
+      priv->lat_max = g_value_get_double (value);
+      break;
+
+    case PROP_LON_MIN:
+      priv->lon_min = g_value_get_double (value);
+      break;
+
+    case PROP_LON_MAX:
+      priv->lon_max = g_value_get_double (value);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -186,7 +235,31 @@ vik_tms_map_source_get_property (GObject    *object,
     case PROP_CHECK_FILE_SERVER_TIME:
       g_value_set_boolean (value, priv->options.check_file_server_time);
       break;
-	  
+
+    case PROP_ZOOM_MIN:
+      g_value_set_uint (value, priv->zoom_min);
+      break;
+
+    case PROP_ZOOM_MAX:
+      g_value_set_uint (value, priv->zoom_max);
+      break;
+
+    case PROP_LON_MIN:
+      g_value_set_double (value, priv->lon_min);
+      break;
+
+    case PROP_LON_MAX:
+      g_value_set_double (value, priv->lon_max);
+      break;
+
+    case PROP_LAT_MIN:
+      g_value_set_double (value, priv->lat_min);
+      break;
+
+    case PROP_LAT_MAX:
+      g_value_set_double (value, priv->lat_max);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -211,7 +284,14 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
 	grandparent_class->supports_download_only_new = _supports_download_only_new;
 	grandparent_class->is_direct_file_access = _is_direct_file_access;
 	grandparent_class->is_mbtiles = _is_mbtiles;
-	
+	grandparent_class->is_osm_meta_tiles = _is_osm_meta_tiles;
+	grandparent_class->get_zoom_min = _get_zoom_min;
+	grandparent_class->get_zoom_max = _get_zoom_max;
+	grandparent_class->get_lat_min = _get_lat_min;
+	grandparent_class->get_lat_max = _get_lat_max;
+	grandparent_class->get_lon_min = _get_lon_min;
+	grandparent_class->get_lon_max = _get_lon_max;
+
 	parent_class->get_uri = _get_uri;
 	parent_class->get_hostname = _get_hostname;
 	parent_class->get_download_options = _get_download_options;
@@ -253,6 +333,60 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
                                   G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_CHECK_FILE_SERVER_TIME, pspec);
 
+	pspec = g_param_spec_uint ("zoom-min",
+	                           "Minimum zoom",
+	                           "Minimum Zoom level supported by the map provider",
+	                           0,  // minimum value,
+	                           22, // maximum value
+	                           0, // default value
+	                           G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_ZOOM_MIN, pspec);
+
+	pspec = g_param_spec_uint ("zoom-max",
+	                           "Maximum zoom",
+	                           "Maximum Zoom level supported by the map provider",
+	                           0,  // minimum value,
+	                           22, // maximum value
+	                           18, // default value
+	                           G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_ZOOM_MAX, pspec);
+
+	pspec = g_param_spec_double ("lat-min",
+	                             "Minimum latitude",
+	                             "Minimum latitude in degrees supported by the map provider",
+	                             -90.0,  // minimum value
+	                             90.0, // maximum value
+	                             -90.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LAT_MIN, pspec);
+
+	pspec = g_param_spec_double ("lat-max",
+	                             "Maximum latitude",
+	                             "Maximum latitude in degrees supported by the map provider",
+	                             -90.0,  // minimum value
+	                             90.0, // maximum value
+	                             90.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LAT_MAX, pspec);
+
+	pspec = g_param_spec_double ("lon-min",
+	                             "Minimum longitude",
+	                             "Minimum longitude in degrees supported by the map provider",
+	                             -180.0,  // minimum value
+	                             180.0, // maximum value
+	                             -180.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LON_MIN, pspec);
+
+	pspec = g_param_spec_double ("lon-max",
+	                             "Maximum longitude",
+	                             "Maximum longitude in degrees supported by the map provider",
+	                             -180.0,  // minimum value
+	                             180.0, // maximum value
+	                             180.0, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_LON_MAX, pspec);
+
 	g_type_class_add_private (klass, sizeof (VikTmsMapSourcePrivate));
 	
 	object_class->finalize = vik_tms_map_source_finalize;
@@ -266,6 +400,12 @@ _is_direct_file_access ( VikMapSource *self )
 
 static gboolean
 _is_mbtiles ( VikMapSource *self )
+{
+	return FALSE;
+}
+
+static gboolean
+_is_osm_meta_tiles ( VikMapSource *self )
 {
 	return FALSE;
 }
@@ -358,6 +498,72 @@ _get_download_options( VikMapSourceDefault *self )
 	
 	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
 	return &(priv->options);
+}
+
+/**
+ *
+ */
+static guint8
+_get_zoom_min (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
+	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	return priv->zoom_min;
+}
+
+/**
+ *
+ */
+static guint8
+_get_zoom_max (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
+	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	return priv->zoom_max;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lat_min (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
+	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	return priv->lat_min;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lat_max (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
+	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	return priv->lat_max;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lon_min (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
+	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	return priv->lon_min;
+}
+
+/**
+ *
+ */
+static gdouble
+_get_lon_max (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
+	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	return priv->lon_max;
 }
 
 VikTmsMapSource *
