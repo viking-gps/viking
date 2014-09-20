@@ -55,7 +55,7 @@ gboolean a_geojson_write_file ( VikTrwLayer *vtl, FILE *ff )
 		return result;
 
 	GPid pid;
-	gint stdout;
+	gint mystdout;
 
 	// geojson program should be on the $PATH
 	gchar **argv;
@@ -68,7 +68,7 @@ gboolean a_geojson_write_file ( VikTrwLayer *vtl, FILE *ff )
 
 	GError *error = NULL;
 	// TODO: monitor stderr?
-	if (!g_spawn_async_with_pipes (NULL, argv, NULL, (GSpawnFlags) G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &stdout, NULL, &error)) {
+	if (!g_spawn_async_with_pipes (NULL, argv, NULL, (GSpawnFlags) G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &mystdout, NULL, &error)) {
 
 		if ( IS_VIK_WINDOW ((VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(vtl)) ) {
 			gchar* msg = g_strdup_printf ( _("%s command failed: %s"), argv[0], error->message );
@@ -83,7 +83,7 @@ gboolean a_geojson_write_file ( VikTrwLayer *vtl, FILE *ff )
 	else {
 		// Probably should use GIOChannels...
 		gchar line[512];
-		FILE *fout = fdopen(stdout, "r");
+		FILE *fout = fdopen(mystdout, "r");
 		setvbuf(fout, NULL, _IONBF, 0);
 
 		while (fgets(line, sizeof(line), fout)) {
@@ -150,7 +150,7 @@ gchar* a_geojson_import_to_gpx ( const gchar *filename )
 	g_debug ( "%s: temporary file = %s", __FUNCTION__, gpx_filename );
 
 	GPid pid;
-	gint stdout;
+	gint mystdout;
 
 	// geojson program should be on the $PATH
 	gchar **argv;
@@ -162,14 +162,14 @@ gchar* a_geojson_import_to_gpx ( const gchar *filename )
 	FILE *gpxfile = fdopen (fd, "w");
 
 	// TODO: monitor stderr?
-	if (!g_spawn_async_with_pipes (NULL, argv, NULL, (GSpawnFlags) G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &stdout, NULL, &error)) {
+	if (!g_spawn_async_with_pipes (NULL, argv, NULL, (GSpawnFlags) G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &mystdout, NULL, &error)) {
 		g_warning ("Async command failed: %s", error->message);
 		g_error_free(error);
 	}
 	else {
 		// Probably should use GIOChannels...
 		gchar line[512];
-		FILE *fout = fdopen(stdout, "r");
+		FILE *fout = fdopen(mystdout, "r");
 		setvbuf(fout, NULL, _IONBF, 0);
 
 		while (fgets(line, sizeof(line), fout)) {

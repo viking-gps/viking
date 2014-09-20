@@ -784,21 +784,21 @@ static gboolean have_geojson_export = FALSE;
 static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 {
   if ( g_find_program_in_path( "rednotebook" ) ) {
-    gchar *stdout = NULL;
-    gchar *stderr = NULL;
+    gchar *mystdout = NULL;
+    gchar *mystderr = NULL;
     // Needs RedNotebook 1.7.3+ for support of opening on a specified date
-    if ( g_spawn_command_line_sync ( "rednotebook --version", &stdout, &stderr, NULL, NULL ) ) {
+    if ( g_spawn_command_line_sync ( "rednotebook --version", &mystdout, &mystderr, NULL, NULL ) ) {
       // Annoyingly 1.7.1|2|3 versions of RedNotebook prints the version to stderr!!
       if ( stdout )
-        g_debug ("Diary: %s", stdout ); // Should be something like 'RedNotebook 1.4'
+        g_debug ("Diary: %s", mystdout ); // Should be something like 'RedNotebook 1.4'
       if ( stderr )
-        g_warning ("Diary: stderr: %s", stderr );
+        g_warning ("Diary: stderr: %s", mystderr );
 
       gchar **tokens = NULL;
-      if ( stdout && g_strcmp0(stdout, "") )
-        tokens = g_strsplit(stdout, " ", 0);
+      if ( stdout && g_strcmp0(mystdout, "") )
+        tokens = g_strsplit(mystdout, " ", 0);
       else if ( stderr )
-        tokens = g_strsplit(stderr, " ", 0);
+        tokens = g_strsplit(mystderr, " ", 0);
 
       gint num = 0;
       gchar *token = tokens[num];
@@ -812,8 +812,8 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
       }
       g_strfreev ( tokens );
     }
-    g_free ( stdout );
-    g_free ( stderr );
+    g_free ( mystdout );
+    g_free ( mystderr );
   }
 
   if ( g_find_program_in_path ( a_geojson_program_export() ) ) {
