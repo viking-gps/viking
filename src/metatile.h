@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,24 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef __VIKING_LAYER_DEFAULTS_H
-#define __VIKING_LAYER_DEFAULTS_H
 
-#include "uibuilder.h"
+// MAX_SIZE is the biggest file which we will return to the user
+#define METATILE_MAX_SIZE (1 * 1024 * 1024)
 
-G_BEGIN_DECLS
+int xyz_to_meta(char *path, size_t len, const char *dir, int x, int y, int z);
 
-void a_layer_defaults_init();
-void a_layer_defaults_uninit();
-
-void a_layer_defaults_register ( VikLayerParam *vlp, VikLayerParamData defaultval, const gchar *layername );
-
-gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layername );
-
-VikLayerParamData a_layer_defaults_get ( const gchar *layername, const gchar *param_name, VikLayerParamType param_type );
-
-gboolean a_layer_defaults_save ();
-
-G_END_DECLS
-
-#endif
+int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, int * compressed, char * log_msg);

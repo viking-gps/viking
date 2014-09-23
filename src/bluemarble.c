@@ -29,9 +29,12 @@ void bluemarble_init ()
 {
   VikMapSource *bluemarble_type = VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
 							      "id", 15,
+							      "name", "BlueMarble",
 							      "label", "BlueMarble",
 							      "hostname", "s3.amazonaws.com",
 							      "url", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg",
+							      "zoom-min", 0,
+							      "zoom-max", 9,
 							      "copyright", "© NASA's Earth Observatory",
 							      "license", "NASA Terms of Use",
 							      "license-url", "http://visibleearth.nasa.gov/useterms.php",

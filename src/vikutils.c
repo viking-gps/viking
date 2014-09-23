@@ -437,6 +437,8 @@ void vu_check_latest_version ( GtkWindow *window )
 void vu_set_auto_features_on_first_run ( void )
 {
 	gboolean auto_features = FALSE;
+	gboolean set_defaults = FALSE;
+
 	if ( a_vik_very_first_run () ) {
 
 		GtkWidget *win = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
@@ -444,12 +446,17 @@ void vu_set_auto_features_on_first_run ( void )
 		if ( a_dialog_yes_or_no ( GTK_WINDOW(win),
 		                          _("This appears to be Viking's very first run.\n\nDo you wish to enable automatic internet features?\n\nIndividual settings can be controlled in the Preferences."), NULL ) )
 			auto_features = TRUE;
+
+		// Default to more standard cache layout for new users (well new installs at least)
+		maps_layer_set_cache_default ( VIK_MAPS_CACHE_LAYOUT_OSM );
+		set_defaults = TRUE;
 	}
 
 	if ( auto_features ) {
 		// Set Maps to autodownload
 		// Ensure the default is true
 		maps_layer_set_autodownload_default ( TRUE );
+		set_defaults = TRUE;
 
 		// Simplistic repeat of preference settings
 		//  Only the name & type are important for setting a preference via this 'external' way
@@ -477,6 +484,10 @@ void vu_set_auto_features_on_first_run ( void )
 		// Ensure settings are saved for next time
 		a_preferences_save_to_file ();
 	}
+
+	// Ensure defaults are saved if changed
+	if ( set_defaults )
+		a_layer_defaults_save ();
 }
 
 /**

@@ -35,11 +35,13 @@ static const gchar *map_source_get_license (VikMapSource *self);
 static const gchar *map_source_get_license_url (VikMapSource *self);
 static const GdkPixbuf *map_source_get_logo (VikMapSource *self);
 
+static const gchar *map_source_get_name (VikMapSource *self);
 static guint16 map_source_get_uniq_id (VikMapSource *self);
 static const gchar *map_source_get_label (VikMapSource *self);
 static guint16 map_source_get_tilesize_x (VikMapSource *self);
 static guint16 map_source_get_tilesize_y (VikMapSource *self);
 static VikViewportDrawMode map_source_get_drawmode (VikMapSource *self);
+static const gchar *map_source_get_file_extension (VikMapSource *self);
 
 static DownloadResult_t _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
 static void * _download_handle_init ( VikMapSource *self );
@@ -54,11 +56,13 @@ struct _VikMapSourceDefaultPrivate
 	gchar *license_url;
 	GdkPixbuf *logo;
 
+	gchar *name;
 	guint16 uniq_id;
 	gchar *label;
 	guint16 tilesize_x;
 	guint16 tilesize_y;
 	VikViewportDrawMode drawmode;
+	gchar *file_extension;
 };
 
 #define VIK_MAP_SOURCE_DEFAULT_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_MAP_SOURCE_DEFAULT, VikMapSourceDefaultPrivate))
@@ -68,6 +72,7 @@ enum
 {
   PROP_0,
 
+  PROP_NAME,
   PROP_ID,
   PROP_LABEL,
   PROP_TILESIZE_X,
@@ -76,6 +81,7 @@ enum
   PROP_COPYRIGHT,
   PROP_LICENSE,
   PROP_LICENSE_URL,
+  PROP_FILE_EXTENSION,
 };
 
 G_DEFINE_ABSTRACT_TYPE (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE);
@@ -91,6 +97,8 @@ vik_map_source_default_init (VikMapSourceDefault *object)
   priv->license = NULL;
   priv->license_url = NULL;
   priv->logo = NULL;
+  priv->name = NULL;
+  priv->file_extension = NULL;
 }
 
 static void
@@ -109,7 +117,11 @@ vik_map_source_default_finalize (GObject *object)
   priv->license_url = NULL;
   g_free (priv->logo);
   priv->license_url = NULL;
-	
+  g_free (priv->name);
+  priv->name = NULL;
+  g_free (priv->file_extension);
+  priv->file_extension = NULL;
+
   G_OBJECT_CLASS (vik_map_source_default_parent_class)->finalize (object);
 }
 
@@ -124,6 +136,14 @@ vik_map_source_default_set_property (GObject      *object,
 
   switch (property_id)
     {
+    case PROP_NAME:
+      // Sanitize the name here for file usage
+      // A simple check just to prevent containing slashes ATM
+      g_free (priv->name);
+      priv->name = g_strdup(g_value_get_string (value));
+      g_strdelimit (priv->name, "\\/", 'x' );
+      break;
+
     case PROP_ID:
       priv->uniq_id = g_value_get_uint (value);
       break;
@@ -160,6 +180,11 @@ vik_map_source_default_set_property (GObject      *object,
       priv->license_url = g_strdup(g_value_get_string (value));
       break;
 
+    case PROP_FILE_EXTENSION:
+      g_free (priv->file_extension);
+      priv->file_extension = g_strdup(g_value_get_string(value));
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -178,6 +203,10 @@ vik_map_source_default_get_property (GObject    *object,
 
   switch (property_id)
     {
+    case PROP_NAME:
+      g_value_set_string (value, priv->name);
+      break;
+
     case PROP_ID:
       g_value_set_uint (value, priv->uniq_id);
       break;
@@ -210,6 +239,10 @@ vik_map_source_default_get_property (GObject    *object,
       g_value_set_string (value, priv->license_url);
       break;
 
+    case PROP_FILE_EXTENSION:
+      g_value_set_string (value, priv->file_extension);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -232,11 +265,13 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	parent_class->get_license =     map_source_get_license;
 	parent_class->get_license_url = map_source_get_license_url;
 	parent_class->get_logo =        map_source_get_logo;
+	parent_class->get_name =        map_source_get_name;
 	parent_class->get_uniq_id =    map_source_get_uniq_id;
 	parent_class->get_label =      map_source_get_label;
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
 	parent_class->get_tilesize_y = map_source_get_tilesize_y;
 	parent_class->get_drawmode =   map_source_get_drawmode;
+	parent_class->get_file_extension = map_source_get_file_extension;
 	parent_class->download =                 _download;
 	parent_class->download_handle_init =     _download_handle_init;
 	parent_class->download_handle_cleanup =  _download_handle_cleanup;
@@ -245,6 +280,13 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	klass->get_uri = NULL;
 	klass->get_hostname = NULL;
 	klass->get_download_options = NULL;
+
+	pspec = g_param_spec_string ("name",
+	                             "Name",
+	                             "The name of the map that may be used as the file cache directory",
+	                             "Unknown" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_NAME, pspec);
 
 	pspec = g_param_spec_uint ("id",
 	                           "Id of the tool",
@@ -309,6 +351,13 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_LICENSE_URL, pspec);
 
+	pspec = g_param_spec_string ("file-extension",
+	                             "File Extension",
+	                             "The file extension of tile files on disk",
+	                             ".png" /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_FILE_EXTENSION, pspec);
+
 	g_type_class_add_private (klass, sizeof (VikMapSourceDefaultPrivate));
 
 	object_class->finalize = vik_map_source_default_finalize;
@@ -357,6 +406,14 @@ map_source_get_logo (VikMapSource *self)
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->logo;
+}
+
+static const gchar *
+map_source_get_name (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	return priv->name;
 }
 
 static guint16
@@ -419,6 +476,14 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handl
    g_free ( uri );
    g_free ( host );
    return res;
+}
+
+static const gchar *
+map_source_get_file_extension (VikMapSource *self)
+{
+    g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
+    VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+    return priv->file_extension;
 }
 
 static void *

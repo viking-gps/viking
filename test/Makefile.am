@@ -7,7 +7,7 @@ endif
 
 TESTS = check_degrees_conversions.sh
 
-check_PROGRAMS = degrees_converter gpx2gpx test_vikgotoxmltool test_coord_conversion test_babel
+check_PROGRAMS = degrees_converter gpx2gpx test_vikgotoxmltool test_coord_conversion test_babel test_metatile
 
 check_SCRIPTS = check_degrees_conversions.sh
 
@@ -38,3 +38,7 @@ test_babel_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 
+test_metatile_SOURCES = test_metatile.c
+test_metatile_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)

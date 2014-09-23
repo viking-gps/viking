@@ -112,7 +112,7 @@ Uploading and downloading waypoints, tracks and routes to/from GPS.
 </para>
 </listitem>
 <listitem>
-<para>Preparing tracks, routes and waypoints for trips using maps from services such as OpenStreetMap (OSM) and/or Terrasever.
+<para>Preparing tracks, routes and waypoints for trips using maps from services such as OpenStreetMap (OSM).
 The data is only needed to be uploaded to your GPS before you leave.
 The maps together with your tracks, routes and waypoints can also be printed and used during the trip.
 </para>
@@ -150,7 +150,7 @@ Analyzing speed at different places (to some degree), adding waypoints where you
 </listitem>
 <listitem>
 <para>
-Downloading and storing OpenStreetMap and/or Terraserver maps on your hard drive and looking at them later.
+Downloading and storing OpenStreetMap and/or other map types on your hard drive and looking at them later.
 </para>
 </listitem>
 <listitem>
@@ -249,7 +249,7 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </figure>
 </section>
 
-<section><title>Projections</title>
+<section id="projection" xreflabel="Projection"><title>Projections</title>
 <para>
 &appname; supports differents projections:
 <itemizedlist>
@@ -266,7 +266,7 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </para>
 </section>
 
-<section><title>Map Cache</title>
+<section id="mapcache" xreflabel="Map Cache"><title>Map Cache</title>
 <para>
 &appname; stores downloaded map tiles to disk for a couple of reasons:
 </para>
@@ -298,6 +298,19 @@ The &appname; automatic caching strategy is two fold:
   This can be useful if you contribute to OpenStreetMap and wish to see your modifications (of course give time for the server to have processed your changes - see <ulink url="http://help.openstreetmap.org/questions/102/i-have-made-edits-but-they-dont-show-up-on-the-map">I have made edits but they don't show up on the map</ulink>)
 </para>
 </note>
+
+<para>
+The layout of the cache on disk itself can be controlled via a per Map Layer property.
+<itemizedlist>
+<listitem><para>Viking - Legacy default in a private cache layout scheme</para></listitem>
+<listitem><para>OSM - Newer available default (1.6+)</para>
+<para>
+This is to increase the compatibility between &appname; and similar applications that cache tiles on disk so that the tiles can be shared.
+</para>
+</listitem>
+</itemizedlist>
+
+</para>
 </section>
 
 <section id="shortcut_keys" xreflabel="Shortcut Keys"><title>Shortcut Keys</title>
@@ -1528,13 +1541,15 @@ Using many DEMs is CPU/memory intensive. Depending on your computer's capability
 
 <section id="Maps" xreflabel="Maps"><title>Maps Layer</title>
 <para>
-This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible.
-You will need an open internet connection when you are downloading maps, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
+This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible (subject to the Alpha compositing property).
 </para>
 <para>
-Some maps are continually improving over time (e.g. OpenStreetMap) and so in order to not to have to (re)download the data all the time &appname; employs a timeout method - <emphasis>Tile Age</emphasis> to determine whether to access the server. However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option.
+Some maps are continually improving over time (e.g. OpenStreetMap) thus &appname; employs a caching mechanism to avoid redownloading data (see <xref linkend="mapcache"/>).
+However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option or <keycap>Ctrl+F5</keycap>.
 </para>
+<formalpara><title>Online Map Tile Providers</title>
 <para>
+You will need an open internet connection when you are downloading maps these following map types, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
 Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
 <itemizedlist>
@@ -1546,10 +1561,54 @@ Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMa
 <listitem><para>OpenStreetMap (Humanitarian) (&appname; Version1.5+)</para></listitem>
 <listitem><para>NASA BlueMarble</para></listitem>
 </itemizedlist>
+</formalpara>
 
 <para>
-&appname; can be configured to handle additional maps. See <xref linkend="extend_viking"/> for further detail.
+&appname; can be configured to handle additional online map resources. See <xref linkend="extend_viking"/> for further detail.
 </para>
+
+<formalpara><title>Offline Map Tilesets</title>
+<para>
+Some map types supported are for on disk tile formats:
+</para>
+<itemizedlist>
+<listitem>
+	<para>On Disk OSM Tile Format</para>
+	<para>This is equivalent to any map set with <emphasis>OSM</emphasis> Cache Layput.</para>
+</listitem>
+<listitem><para><ulink url="https://github.com/mapbox/mbtiles-spec">MBTiles File</ulink></para></listitem>
+<listitem><para><ulink url="http://wiki.openstreetmap.org/wiki/Meta_tiles">OSM Metatiles</ulink></para></listitem>
+</itemizedlist>
+<para>
+Of course you need to have acquired or generated these tilesets yourself.
+</para>
+</formalpara>
+
+<section><title>Map Layer Properties</title>
+<para>
+Configurable properties:
+</para>
+<itemizedlist>
+<listitem>
+	<para>Map Type. The kind of map this layer displays.</para>
+	<note><para>Map types are dependent on the current <xref linkend="projection"/> mode.</para></note>
+</listitem>
+<listitem><para>Maps Directory. Not applicable for MBTiles Map type since it is a single file.</para></listitem>
+<listitem><para>Cache Layout. Viking or OSM. See <xref linkend="mapcache"/>. Only applies to maps from online tile providers.</para></listitem>
+<listitem><para>Map File. Ony applicable for MBTiles Map type since it is a single file.</para></listitem>
+<listitem>
+	<para>Alpha. Control the Alpha value for transparency effect using a value between 0 and 255 with the default being 255 for a fully solid image.</para>
+	<para>Zero is fully transparent. A value of around 160 can be useful for blending views of multiple map layers (when applied to the upper most map layer).</para>
+</listitem>
+<listitem><para>Autodownload Maps. This can be useful to turn off when you are not online to avoid pointless download requests or may be keep a map in a 'historical' state.
+e.g. perhaps in case a current map rendering is broken.</para></listitem>
+<listitem><para>Autodownload Only Gets Missing Maps. Using this option avoids attempting to update already acquired tiles.
+This can be useful if you want to restrict the network usage, without having to resort to manual control. Only applies when <emphasis>Autodownload Maps</emphasis> is on.</para></listitem>
+<listitem><para>Zoom Level. Determines the method of displaying map tiles for the current zoom level.
+<emphasis>Viking Zoom Level</emphasis> uses the best matching level, otherwise setting a fixed value will always use map tiles of the specified value regardless of the actual zoom level.</para></listitem>
+</itemizedlist>
+</section><!-- Map Prop END -->
+
 
 <section><title>Layer Operations</title>
 <section><title>Download Missing Onscreen Maps</title>
@@ -2790,7 +2849,7 @@ Accept: */*
       <para>You can find more examples in the documentation part of the distribution.</para>
       <section>
         <title>Map Source</title>
-        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems and <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark>.</para>
+        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems, <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark> or <filename>C:\Users\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows 7</trademark> onwards.</para>
         <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Maps">Maps Wiki</ulink></para>
 
         <para>The <classname>VikSlippyMapSource</classname> allows to declare any map's source working like OpenStreetMap. It supports the following properties:
@@ -2798,6 +2857,10 @@ Accept: */*
             <varlistentry>
               <term>id</term>
               <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>name</term>
+              <listitem><para>a string (should be unique) that is used for the OSM style cache directory name when the Map Cache directory is the default (<filename>~/.viking-maps</filename>)</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>label</term>
@@ -2812,48 +2875,145 @@ Accept: */*
               <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for Z, X and Y (in that order) (eg. "/%d/%d/%d.png")</para></listitem>
             </varlistentry>
             <varlistentry>
+              <term>zoom-min (optional)</term>
+              <listitem><para>The minimum zoom value supported by the tile server. The Default is 0 if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+              <listitem>
+                 <para>The maximum zoom value supported by the tile server. The Default is 18 if not specified.</para>
+                 <para>See <ulink url="http://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+              <listitem><para>The minimum latitude value in degrees supported by the tile server. The Default is -90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+              <listitem><para>The maximum latitude value in degrees supported by the tile server. The Default is 90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+              <listitem><para>The minimum longitude value in degrees supported by the tile server. The Default is -180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
+              <listitem><para>The maximum longitude value in degrees supported by the tile server. The Default is 180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>file-extension (optional)</term>
+              <listitem>
+                <para>The file extension of the files on disk. The default is <emphasis>.png</emphasis></para>
+                <para>If the tile source URL ends in something other than .png, then this parameter will need to match it.</para>
+                <para>This can also be useful in reading a tileset from other software which may name tiles in an alternative form,
+                      e.g. for Mobile Atlas creator it names them <emphasis>.png.tile</emphasis></para>
+                <note><para>The file types actually usable are those supported by GDK Pixbuf Library, which includes at least PNG and JPEG.</para></note>
+                <note><para>Remember to include the beginning <emphasis>'.'</emphasis> when specifying this parameter.</para></note>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>use-direct-file-access (optional)</term>
+              <listitem>
+                <para>Only use files on disk. The default is <emphasis>FALSE</emphasis></para>
+                <para>This can also be useful for tilesets already on disk as it will avoid attempting to download any tiles.</para>
+                <para>Thus with this type the <emphasis>hostname</emphasis> and <emphasis>url</emphasis> parameters are not necessary and are ignored.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>switch-xy (optional)</term>
-              <listitem><para>Swap the X,Y values around in the URL parametrized ordering.</para></listitem>
+              <listitem>
+                <para>Swap the X,Y values around in the URL parametrized ordering.</para>
+                <para>The default is false.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>check-file-server-time (optional)</term>
+              <listitem>
+                <para>Sends the timestamp of the tile to the server, so the server can decide whether it should send a new tile or not.</para>
+                <para>The default is false.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>use-etag (optional)</term>
+              <listitem>
+                <para>Use and compare the <ulink url="http://en.wikipedia.org/wiki/HTTP_ETag">ETag</ulink> value in determining whether to download a newer tile. The default is false.</para>
+                <para>The ETag value is stored in a separate file in the same directory as the tile to enable checking the value across multiple runs of the program.</para>
+              </listitem>
             </varlistentry>
           </variablelist>
         </para>
-        <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties:
+        <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):
           <variablelist>
             <varlistentry>
               <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>label</term>
-              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>hostname</term>
-              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url</term>
-              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>check-file-server-time (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
             </varlistentry>
           </variablelist>
         </para>
-        <para>The <classname>VikWmscMapSource</classname> allows to declare any WMS or WMS-C service. It supports the following properties:
+        <para>The <classname>VikWmscMapSource</classname> allows to declare any WMS or WMS-C service. It supports the following properties  (as per VikSlippyMapSource above):
           <variablelist>
             <varlistentry>
               <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>label</term>
-              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>hostname</term>
-              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url</term>
-              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 4 "%s" fields for bounding box coordinates (eg. "/coord=%s,%s,%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>check-file-server-time (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
             </varlistentry>
           </variablelist>
         </para>

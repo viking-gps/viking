@@ -65,6 +65,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->get_license = NULL;
 	klass->get_license_url = NULL;
 	klass->get_logo = NULL;
+	klass->get_name = NULL;
 	klass->get_uniq_id = NULL;
 	klass->get_label = NULL;
 	klass->get_tilesize_x = NULL;
@@ -73,6 +74,12 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->is_direct_file_access = NULL;
 	klass->is_mbtiles = NULL;
 	klass->supports_download_only_new = _supports_download_only_new;
+	klass->get_zoom_min = NULL;
+	klass->get_zoom_max = NULL;
+	klass->get_lat_min = NULL;
+	klass->get_lat_max = NULL;
+	klass->get_lon_min = NULL;
+	klass->get_lon_max = NULL;
 	klass->coord_to_mapcoord = NULL;
 	klass->mapcoord_to_center_coord = NULL;
 	klass->download = NULL;
@@ -149,6 +156,19 @@ vik_map_source_get_logo (VikMapSource *self)
 	g_return_val_if_fail (klass->get_logo != NULL, NULL);
 
 	return (*klass->get_logo)(self);
+}
+
+const gchar *
+vik_map_source_get_name (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_name != NULL, NULL);
+
+	return (*klass->get_name)(self);
 }
 
 guint16
@@ -257,6 +277,25 @@ vik_map_source_is_mbtiles (VikMapSource * self)
 	return (*klass->is_mbtiles)(self);
 }
 
+/**
+ * vik_map_source_is_osm_meta_tiles:
+ * @self: the VikMapSource of interest.
+ *
+ *   Treat the files as a pre generated data set directly by tirex or renderd
+ *     tiledir/Z/[xxxxyyyy]/[xxxxyyyy]/[xxxxyyyy]/[xxxxyyyy]/[xxxxyyyy].meta
+ */
+gboolean vik_map_source_is_osm_meta_tiles (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->is_osm_meta_tiles != NULL, 0);
+
+	return (*klass->is_osm_meta_tiles)(self);
+}
+
 gboolean
 vik_map_source_supports_download_only_new (VikMapSource * self)
 {
@@ -268,6 +307,111 @@ vik_map_source_supports_download_only_new (VikMapSource * self)
 	g_return_val_if_fail (klass->supports_download_only_new != NULL, 0);
 
 	return (*klass->supports_download_only_new)(self);
+}
+
+/**
+ *
+ */
+guint8
+vik_map_source_get_zoom_min (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_zoom_min != NULL, 0);
+	return (*klass->get_zoom_min)(self);
+}
+
+/**
+ *
+ */
+guint8
+vik_map_source_get_zoom_max (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 18);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 18);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_zoom_max != NULL, 18);
+	return (*klass->get_zoom_max)(self);
+}
+
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lat_max (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 90.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 90.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lat_max != NULL, 90.0);
+	return (*klass->get_lat_max)(self);
+}
+
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lat_min (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, -90.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), -90.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lat_min != NULL, -90.0);
+	return (*klass->get_lat_min)(self);
+}
+
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lon_max (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, 180.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 180.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lon_max != NULL, 180.0);
+	return (*klass->get_lon_max)(self);
+}
+
+/**
+ *
+ */
+gdouble
+vik_map_source_get_lon_min (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, -180.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), -180.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+	g_return_val_if_fail (klass->get_lon_min != NULL, -180.0);
+	return (*klass->get_lon_min)(self);
+}
+
+/**
+ * vik_map_source_get_file_extension:
+ * @self: the VikMapSource of interest.
+ *
+ * Returns the file extension of files held on disk.
+ *  Typically .png but may be .jpg or whatever the user defines
+ *
+ */
+const gchar *
+vik_map_source_get_file_extension (VikMapSource * self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_file_extension != NULL, NULL);
+
+	return (*klass->get_file_extension)(self);
 }
 
 gboolean

@@ -196,6 +196,10 @@ and docbook-xsl in your Build-Depends control field.
               <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
             </varlistentry>
             <varlistentry>
+              <term>name</term>
+              <listitem><para>a string (should be unique) that is used for the OSM style cache directory name when the Map Cache directory is the default (<filename>~/.viking-maps</filename>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
               <term>label</term>
               <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
             </varlistentry>
@@ -208,48 +212,137 @@ and docbook-xsl in your Build-Depends control field.
               <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for Z, X and Y (in that order) (eg. "/%d/%d/%d.png")</para></listitem>
             </varlistentry>
             <varlistentry>
+              <term>zoom-min (optional)</term>
+              <listitem><para>The minimum zoom value supported by the tile server. The Default is 0 if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+              <listitem>
+                 <para>The maximum zoom value supported by the tile server. The Default is 18 if not specified.</para>
+                 <para>See <ulink url="http://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+              <listitem><para>The minimum latitude value in degrees supported by the tile server. The Default is -90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+              <listitem><para>The maximum latitude value in degrees supported by the tile server. The Default is 90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+              <listitem><para>The minimum longitude value in degrees supported by the tile server. The Default is -180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
+              <listitem><para>The maximum longitude value in degrees supported by the tile server. The Default is 180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>file-extension (optional)</term>
+              <listitem>
+                <para>The file extension of the files on disk. The default is <emphasis>.png</emphasis></para>
+                <para>If the tile source URL ends in something other than .png, then this parameter will need to match it.</para>
+                <para>This can also be useful in reading a tileset from other software which may name tiles in an alternative form,
+                      e.g. for Mobile Atlas creator it names them <emphasis>.png.tile</emphasis></para>
+                <note><para>The file types actually usable are those supported by GDK Pixbuf Library, which includes at least PNG and JPEG.</para></note>
+                <note><para>Remember to include the beginning <emphasis>'.'</emphasis> when specifying this parameter.</para></note>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>switch-xy (optional)</term>
-              <listitem><para>Swap the X,Y values around in the URL parametrized ordering.</para></listitem>
+              <listitem>
+                <para>Swap the X,Y values around in the URL parametrized ordering.</para>
+                <para>The default is false.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>check-file-server-time (optional)</term>
+              <listitem>
+                <para>Sends the timestamp of the tile to the server, so the server can decide whether it should send a new tile or not.</para>
+                <para>The default is false.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>use-etag (optional)</term>
+              <listitem>
+                <para>Use and compare the <ulink url="http://en.wikipedia.org/wiki/HTTP_ETag">ETag</ulink> value in determining whether to download a newer tile. The default is false.</para>
+                <para>The ETag value is stored in a separate file in the same directory as the tile to enable checking the value across multiple runs of the program.</para>
+              </listitem>
             </varlistentry>
           </variablelist>
         </para>
-        <para>The VikTmsMapSource allows to declare any TMS service. It supports the following properties:
+        <para>The VikTmsMapSource allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):
           <variablelist>
             <varlistentry>
               <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>label</term>
-              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>hostname</term>
-              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url</term>
-              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for X, Y and Z (zoom level) (eg. "/%d/%d/%d.png")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>check-file-server-time (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
             </varlistentry>
           </variablelist>
         </para>
-        <para>The VikWmscMapSource allows to declare any WMS or WMS-C service. It supports the following properties:
+        <para>The VikWmscMapSource allows to declare any WMS or WMS-C service. It supports the following properties  (as per VikSlippyMapSource above):
           <variablelist>
             <varlistentry>
               <term>id</term>
-              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>label</term>
-              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>hostname</term>
-              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url</term>
-              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 4 "%s" fields for bounding box coordinates (eg. "/coord=%s,%s,%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>check-file-server-time (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
             </varlistentry>
           </variablelist>
         </para>
