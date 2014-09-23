@@ -4940,6 +4940,7 @@ static void trw_layer_delete_item ( menu_array_sublayer values )
             wp->name ) )
           return;
       was_visible = trw_layer_delete_waypoint ( vtl, wp );
+      trw_layer_calculate_bounds_waypoints ( vtl );
     }
   }
   else if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_TRACK )
