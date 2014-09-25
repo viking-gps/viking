@@ -1,7 +1,8 @@
 Viking is a free/open source program to manage GPS data. You can
-import, plot and create tracks and waypoints, show OSM, Terraserver
-and other maps, see real-time GPS position, get geocaches, control
-items, etc. It is written in C & the GTK+2 toolkit.
+import, plot and create tracks, routes and waypoints, show OSM
+and other maps, see real-time GPS position, Geotag Images,
+control items, upload/download OSM Traces and more.
+It is written in C & the GTK+2 toolkit.
 
 Website: http://viking.sf.net/
 
@@ -13,8 +14,8 @@ You can download tarball of latest released version at
 http://sourceforge.net/projects/viking/files
 
 You can also retrieve the latest development version on the official
-Git repo:
-  $ git clone git://viking.git.sourceforge.net/gitroot/viking/viking
+Git repository:
+  $ git clone git://git.code.sf.net/p/viking/code viking
 
 Installing Viking
 =================
