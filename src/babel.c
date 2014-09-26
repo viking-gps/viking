@@ -37,6 +37,7 @@
 #include "viking.h"
 #include "gpx.h"
 #include "babel.h"
+#include "preferences.h"
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -44,6 +45,7 @@
 #include <string.h>
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n.h>
 
 /* TODO in the future we could have support for other shells (change command strings), or not use a shell at all */
 #define BASH_LOCATION "/bin/bash"
@@ -668,19 +670,35 @@ static gboolean load_feature ()
   return ret;
 }
 
+static VikLayerParam prefs[] = {
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpsbabel", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("GPSBabel:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,
+      N_("Allow setting the specific instance of GPSBabel. You must restart Viking for this value to take effect."), NULL, NULL, NULL },
+};
+
 /**
  * a_babel_init:
  * 
  * Initialises babel module.
  * Mainly check existence of gpsbabel progam
- * and load all features available in ths version.
+ * and load all features available in that version.
  */
 void a_babel_init ()
 {
-  /* TODO allow to set gpsbabel path via command line */
-  gpsbabel_loc = g_find_program_in_path( "gpsbabel" );
-  if ( !gpsbabel_loc )
-    g_critical( "gpsbabel not found in PATH" );
+  // Set the defaults
+  VikLayerParamData vlpd;
+  vlpd.s = "gpsbabel";
+  a_preferences_register(&prefs[0], vlpd, VIKING_PREFERENCES_IO_GROUP_KEY);
+
+  // Read the current preference
+  const gchar *gpsbabel = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpsbabel")->s;
+  // If setting is still the UNIX default then lookup in the path - otherwise attempt to use the specified value directly.
+  if ( g_strcmp0 ( gpsbabel, "gpsbabel" ) == 0 ) {
+    gpsbabel_loc = g_find_program_in_path( "gpsbabel" );
+    if ( !gpsbabel_loc )
+      g_critical( "gpsbabel not found in PATH" );
+  }
+  else
+    gpsbabel_loc = (gchar*)gpsbabel;
 
   // Unlikely to package unbuffer on Windows so ATM don't even bother trying
   // Highly unlikely unbuffer is available on a Windows system otherwise
