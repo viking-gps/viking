@@ -32,6 +32,7 @@
 #include "googlesearch.h"
 #include "vikrouting.h"
 #include "vikroutingwebengine.h"
+#include "babel.h"
 
 void google_init () {
   // Webtools
@@ -52,17 +53,19 @@ void google_init () {
    *
    * gpsbabel supports this format.
    */
-  VikRoutingEngine *routing = g_object_new ( VIK_ROUTING_WEB_ENGINE_TYPE,
-    "id", "google",
-    "label", "Google",
-    "format", "google",
-    "url-base", "http://maps.google.com/maps?output=js&q=",
-    "url-start-ll", "from:%s,%s",
-    "url-stop-ll", "+to:%s,%s",
-    "url-start-dir", "from:%s",
-    "url-stop-dir", "+to:%s",
-    "referer", "http://maps.google.com/",
-    NULL);
-  vik_routing_register ( VIK_ROUTING_ENGINE ( routing ) );
-  g_object_unref ( routing );
+  if ( a_babel_available() ) {
+    VikRoutingEngine *routing = g_object_new ( VIK_ROUTING_WEB_ENGINE_TYPE,
+      "id", "google",
+      "label", "Google",
+      "format", "google",
+      "url-base", "http://maps.google.com/maps?output=js&q=",
+      "url-start-ll", "from:%s,%s",
+      "url-stop-ll", "+to:%s,%s",
+      "url-start-dir", "from:%s",
+      "url-stop-dir", "+to:%s",
+      "referer", "http://maps.google.com/",
+      NULL);
+    vik_routing_register ( VIK_ROUTING_ENGINE ( routing ) );
+    g_object_unref ( routing );
+  }
 }
