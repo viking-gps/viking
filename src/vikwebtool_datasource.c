@@ -48,6 +48,7 @@ struct _VikWebtoolDatasourcePrivate
 	gchar *url;
 	gchar *url_format_code;
 	gchar *file_type;
+	gchar *babel_filter_args;
 };
 
 #define WEBTOOL_DATASOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
@@ -62,6 +63,7 @@ enum
 	PROP_URL,
 	PROP_URL_FORMAT_CODE,
 	PROP_FILE_TYPE,
+	PROP_BABEL_FILTER_ARGS
 };
 
 static void webtool_datasource_set_property (GObject      *object,
@@ -91,11 +93,17 @@ static void webtool_datasource_set_property (GObject      *object,
 		g_debug ( "VikWebtoolDatasource.file_type: %s", priv->url_format_code );
 		break;
 
+	case PROP_BABEL_FILTER_ARGS:
+		g_free ( priv->babel_filter_args );
+		priv->babel_filter_args = g_value_dup_string ( value );
+		g_debug ( "VikWebtoolDatasource.babel_filter_args: %s", priv->babel_filter_args );
+		break;
+
 	default:
 		/* We don't have any other property... */
 		G_OBJECT_WARN_INVALID_PROPERTY_ID ( object, property_id, pspec );
 		break;
-    }
+	}
 }
 
 static void webtool_datasource_get_property (GObject    *object,
@@ -108,15 +116,16 @@ static void webtool_datasource_get_property (GObject    *object,
 
 	switch ( property_id ) {
 
-	case PROP_URL:              g_value_set_string ( value, priv->url ); break;
-	case PROP_URL_FORMAT_CODE:	g_value_set_string ( value, priv->url_format_code ); break;
-	case PROP_FILE_TYPE:        g_value_set_string ( value, priv->url ); break;
+	case PROP_URL:               g_value_set_string ( value, priv->url ); break;
+	case PROP_URL_FORMAT_CODE:	 g_value_set_string ( value, priv->url_format_code ); break;
+	case PROP_FILE_TYPE:         g_value_set_string ( value, priv->url ); break;
+	case PROP_BABEL_FILTER_ARGS: g_value_set_string ( value, priv->babel_filter_args ); break;
 
 	default:
 		/* We don't have any other property... */
 		G_OBJECT_WARN_INVALID_PROPERTY_ID ( object, property_id, pspec );
 		break;
-    }
+	}
 }
 
 typedef struct {
@@ -163,10 +172,11 @@ static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar *
 
 static gboolean datasource_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options )
 {
-	//datasource_t *data = (datasource_t *)adw->user_data;
+	datasource_t *data = (datasource_t *)adw->user_data;
+	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( data->self );
 	// Dependent on the ExtTool / what extra has been set to...
 	// When extra is NULL - then it interprets results as a GPX
-	gboolean result = a_babel_convert_from_url ( vtl, cmd, extra, status_cb, adw, options);
+	gboolean result = a_babel_convert_from_url_filter ( vtl, cmd, extra, priv->babel_filter_args, status_cb, adw, options);
 	return result;
 }
 
@@ -250,6 +260,16 @@ static void vik_webtool_datasource_class_init ( VikWebtoolDatasourceClass *klass
 	                                 PROP_FILE_TYPE,
 	                                 pspec);
 
+	pspec = g_param_spec_string ("babel_filter_args",
+	                             "The command line filter options to pass to gpsbabel",
+	                             "Set the command line filter options for gpsbabel",
+	                             NULL, // default value ~ equates to internal GPX reading
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class,
+	                                 PROP_BABEL_FILTER_ARGS,
+	                                 pspec);
+
+
 	parent_class = g_type_class_peek_parent (klass);
 
 	base_class = VIK_WEBTOOL_CLASS ( klass );
@@ -270,13 +290,15 @@ VikWebtoolDatasource *vik_webtool_datasource_new ()
 VikWebtoolDatasource *vik_webtool_datasource_new_with_members ( const gchar *label,
                                                                 const gchar *url,
                                                                 const gchar *url_format_code,
-                                                                const gchar *file_type )
+                                                                const gchar *file_type,
+                                                                const gchar *babel_filter_args )
 {
 	VikWebtoolDatasource *result = VIK_WEBTOOL_DATASOURCE ( g_object_new ( VIK_WEBTOOL_DATASOURCE_TYPE,
 	                                                        "label", label,
 	                                                        "url", url,
 	                                                        "url_format_code", url_format_code,
 	                                                        "file_type", file_type,
+	                                                        "babel_filter_args", babel_filter_args,
 	                                                        NULL ) );
 
 	return result;
@@ -288,6 +310,7 @@ static void vik_webtool_datasource_init ( VikWebtoolDatasource *self )
 	priv->url = NULL;
 	priv->url_format_code = NULL;
 	priv->file_type = NULL;
+	priv->babel_filter_args = NULL;
 }
 
 static void webtool_datasource_finalize ( GObject *gob )
@@ -296,6 +319,7 @@ static void webtool_datasource_finalize ( GObject *gob )
 	g_free ( priv->url ); priv->url = NULL;
 	g_free ( priv->url_format_code ); priv->url_format_code = NULL;
 	g_free ( priv->file_type ); priv->file_type = NULL;
+	g_free ( priv->babel_filter_args); priv->babel_filter_args = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
