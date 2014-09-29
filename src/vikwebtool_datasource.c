@@ -41,6 +41,8 @@ static void webtool_datasource_finalize ( GObject *gob );
 
 static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw );
 
+static gboolean webtool_needs_search_term ( VikWebtool *self );
+
 typedef struct _VikWebtoolDatasourcePrivate VikWebtoolDatasourcePrivate;
 
 struct _VikWebtoolDatasourcePrivate
@@ -49,6 +51,7 @@ struct _VikWebtoolDatasourcePrivate
 	gchar *url_format_code;
 	gchar *file_type;
 	gchar *babel_filter_args;
+	gchar *search_term;
 };
 
 #define WEBTOOL_DATASOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
@@ -132,6 +135,7 @@ typedef struct {
 	VikExtTool *self;
 	VikWindow *vw;
 	VikViewport *vvp;
+	GtkWidget *search_term;
 } datasource_t;
 
 static gpointer datasource_init ( acq_vik_t *avt )
@@ -140,14 +144,36 @@ static gpointer datasource_init ( acq_vik_t *avt )
 	data->self = avt->userdata;
 	data->vw = avt->vw;
 	data->vvp = avt->vvp;
+	data->search_term = NULL;
 	return data;
 }
+
+static void datasource_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
+{
+	datasource_t *widgets = (datasource_t *)user_data;
+	GtkWidget *search_term_label;
+	search_term_label = gtk_label_new (_("Search term:"));
+	widgets->search_term = gtk_entry_new ( );
+
+	/* Packing all widgets */
+	GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+	gtk_box_pack_start ( box, search_term_label, FALSE, FALSE, 5 );
+	gtk_box_pack_start ( box, widgets->search_term, FALSE, FALSE, 5 );
+	gtk_widget_show_all(dialog);
+}
+
+
 
 static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar **extra, DownloadMapOptions *options )
 {
 	datasource_t *data = (datasource_t*) user_data;
 
 	VikWebtool *vwd = VIK_WEBTOOL ( data->self );
+	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( data->self );
+
+	if ( webtool_needs_search_term ( vwd ) )
+		priv->search_term = g_strdup ( gtk_entry_get_text ( GTK_ENTRY ( data->search_term ) ) );
+
 	gchar *url = vik_webtool_get_url ( vwd, data->vw );
 	g_debug ("%s: %s", __FUNCTION__, url );
 
@@ -157,7 +183,6 @@ static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar *
 	// One can't use values like 'kml -x transform,rte=wpt' in order to do fancy things
 	//  since it won't be in the right order for the overall GPSBabel command
 	// So prevent any potentially dangerous behaviour
-	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( data->self );
 	gchar **parts = NULL;
 	if ( priv->file_type )
 		parts = g_strsplit ( priv->file_type, " ", 0);
@@ -187,6 +212,8 @@ static void cleanup ( gpointer data )
 
 static void webtool_datasource_open ( VikExtTool *self, VikWindow *vw )
 {
+	gboolean search = webtool_needs_search_term ( VIK_WEBTOOL ( self ) );
+
 	// Use VikDataSourceInterface to give thready goodness controls of downloading stuff (i.e. can cancel the request)
 
 	// Can now create a 'VikDataSourceInterface' on the fly...
@@ -203,7 +230,7 @@ static void webtool_datasource_open ( VikExtTool *self, VikWindow *vw )
 		TRUE,
 		(VikDataSourceInitFunc)               datasource_init,
 		(VikDataSourceCheckExistenceFunc)     NULL,
-		(VikDataSourceAddSetupWidgetsFunc)    NULL,
+		(VikDataSourceAddSetupWidgetsFunc)    (search ? datasource_add_setup_widgets : NULL),
 		(VikDataSourceGetCmdStringFunc)       datasource_get_cmd_string,
 		(VikDataSourceProcessFunc)            datasource_process,
 		(VikDataSourceProgressFunc)           NULL,
@@ -311,6 +338,7 @@ static void vik_webtool_datasource_init ( VikWebtoolDatasource *self )
 	priv->url_format_code = NULL;
 	priv->file_type = NULL;
 	priv->babel_filter_args = NULL;
+	priv->search_term = NULL;
 }
 
 static void webtool_datasource_finalize ( GObject *gob )
@@ -320,6 +348,7 @@ static void webtool_datasource_finalize ( GObject *gob )
 	g_free ( priv->url_format_code ); priv->url_format_code = NULL;
 	g_free ( priv->file_type ); priv->file_type = NULL;
 	g_free ( priv->babel_filter_args); priv->babel_filter_args = NULL;
+	g_free ( priv->search_term); priv->search_term = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 
@@ -388,6 +417,7 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 		case 'A': values[i] = g_strdup ( scenterlat ); break;
 		case 'O': values[i] = g_strdup ( scenterlon ); break;
 		case 'Z': values[i] = g_strdup ( szoom ); break;
+		case 'S': values[i] = g_strdup ( priv->search_term ); break;
 		default: break;
 		}
 	}
@@ -400,4 +430,14 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 	}
 	
 	return url;
+}
+
+/**
+ * Returns true if the URL format contains 'S' -- that is, a search term entry
+ * box needs to be displayed
+ */
+static gboolean webtool_needs_search_term ( VikWebtool *self )
+{
+	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( self );
+	return (strcasestr(priv->url_format_code, "S") != NULL);
 }
