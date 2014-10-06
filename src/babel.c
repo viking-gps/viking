@@ -686,7 +686,16 @@ void a_babel_init ()
 {
   // Set the defaults
   VikLayerParamData vlpd;
+#ifdef WINDOWS
+  // Basic guesses - could use %ProgramFiles% but this is simpler:
+  if ( g_file_test ( "C:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe", G_FILE_TEST_EXISTS ) )
+    // 32 bit location on a 64 bit system
+    vlpd.s = "C:\\Program Files (x86)\\GPSBabel\gpsbabel.exe";
+  else
+    vlpd.s = "C:\\Program Files\\GPSBabel\\gpsbabel.exe";
+#else
   vlpd.s = "gpsbabel";
+#endif
   a_preferences_register(&prefs[0], vlpd, VIKING_PREFERENCES_IO_GROUP_KEY);
 
   // Read the current preference
