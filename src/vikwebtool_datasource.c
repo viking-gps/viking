@@ -205,8 +205,6 @@ static void datasource_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, 
 	gtk_box_pack_start ( box, widgets->user_string, FALSE, FALSE, 5 );
 	gtk_widget_show_all ( dialog );
 
-    gtk_widget_grab_focus ( widgets->user_string );
-
     g_free ( label );
 }
 
