@@ -36,7 +36,7 @@
 #include "maputils.h"
 
 static GObjectClass *parent_class;
-static gchar *last_user_string = NULL; 
+static GHashTable *last_user_strings = NULL;
 
 static void webtool_datasource_finalize ( GObject *gob );
 
@@ -81,7 +81,8 @@ static void webtool_datasource_set_property (GObject      *object,
 	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( self );
 
 	switch ( property_id ) {
-	case PROP_URL:
+	
+    case PROP_URL:
 		g_free ( priv->url );
 		priv->url = g_value_dup_string ( value );
 		g_debug ( "VikWebtoolDatasource.url: %s", priv->url );
@@ -148,6 +149,33 @@ typedef struct {
 	GtkWidget *user_string;
 } datasource_t;
 
+
+static void ensure_last_user_strings_hash() {
+    if ( last_user_strings == NULL ) {
+        last_user_strings = g_hash_table_new_full ( g_str_hash, 
+                                                    g_str_equal,
+                                                    g_free,
+                                                    g_free ); 
+    }
+}
+
+
+static gchar *get_last_user_string ( const datasource_t *source ) {
+    ensure_last_user_strings_hash();
+    gchar *label = vik_ext_tool_get_label ( source->self );
+    gchar *last_str = g_hash_table_lookup ( last_user_strings, label );
+    g_free( label );
+    return last_str;
+}
+
+
+static void set_last_user_string ( const datasource_t *source, const gchar *s ) {
+    ensure_last_user_strings_hash();
+    g_hash_table_insert ( last_user_strings, 
+                          vik_ext_tool_get_label ( source->self ), 
+                          g_strdup ( s ) );
+}
+
 static gpointer datasource_init ( acq_vik_t *avt )
 {
 	datasource_t *data = g_malloc(sizeof(*data));
@@ -167,8 +195,9 @@ static void datasource_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, 
 	user_string_label = gtk_label_new ( label );
 	widgets->user_string = gtk_entry_new ( );
 
-    if ( last_user_string )
-        gtk_entry_set_text( GTK_ENTRY( widgets->user_string ), last_user_string );
+    gchar *last_str = get_last_user_string ( widgets );
+    if ( last_str )
+        gtk_entry_set_text( GTK_ENTRY( widgets->user_string ), last_str );
 
 	/* Packing all widgets */
 	GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
@@ -194,9 +223,7 @@ static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar *
 		priv->user_string = g_strdup ( gtk_entry_get_text ( GTK_ENTRY ( data->user_string ) ) );
 
         if ( priv->user_string[0] != '\0' ) {
-            if ( last_user_string )
-                g_free( last_user_string );
-            last_user_string = g_strdup( priv->user_string );
+            set_last_user_string ( data, priv->user_string );
         }
     }
 
