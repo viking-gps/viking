@@ -2244,6 +2244,16 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <section><title>KML Export Units</title>
 <para>Allows setting the units used when saved as the KML file type, such as Metric or Statue units</para>
 </section>
+<section><title>GPX Track Order</title>
+<para>
+	Other software may display tracks in a particular order (often the order saved into the file).
+	This allows you to control the order they are saved when exporting to a GPX file.
+</para>
+</section>
+<section><title>GPX Waypoint Symbols</title>
+<para>Some GPS devices require waypoint symbols to be in a particular case.</para>
+<para>E.g. On a Garmin Oregon 450 they must be in <emphasis>Title Case</emphasis> to be recognized.</para>
+</section>
 <section><title>Image Viewer (Not Windows)</title>
 <para>Allows setting the program used to view images associated with Waypoints.</para>
 <para>By default this is set to <application>xdg-open</application> which should open the system's default image viewer, however this can be overridden with this setting.</para>
