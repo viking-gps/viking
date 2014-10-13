@@ -446,6 +446,7 @@ and docbook-xsl in your Build-Depends control field.
                 <para>A = center lAtitude of the current view</para>
                 <para>O = center lOngitude of the current view</para>
                 <para>Z = OSM Zoom value of the current view. See <ulink url="http://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+                <para>S = A user specified input string requested from the user via a dialog box</para>
                 <para>Thus for the url example above then the format code should be <emphasis>AO</emphasis></para>
               </listitem>
             </varlistentry>
@@ -455,6 +456,20 @@ and docbook-xsl in your Build-Depends control field.
                 <para>This value is passed on for the -i parameter in interfacing with GPSBabel.</para>
                 <para>If it is not defined then the returned file is interpreted internally as a GPX file.</para>
                 <para>Possible values such as 'kml', 'mapsource' etc.. can be used. See <ulink url="http://www.gpsbabel.org/capabilities.html">GPSBabel File Formats</ulink> for the full list.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>babel_filter_args</term>
+              <listitem>
+                <para>This value is passed on for the filter arguments interfacing with GPSBabel.</para>
+                <para>E.g. "-x nuketypes,routes" can be used to filter all routes from the results.</para>
+              </listitem>
+            </varlistentry>
+             <varlistentry>
+              <term>input_label</term>
+              <listitem>
+                <para>This value is used when requesting input from the user.</para>
+                <para>It is the label of the text input box.</para>
               </listitem>
             </varlistentry>
           </variablelist>
