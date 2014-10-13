@@ -294,7 +294,7 @@ gboolean a_babel_convert_from_filter( VikTrwLayer *vt, const char *babelargs, co
       args[i++] = "-f";
       args[i++] = (char *)from;
       if (babelfilters) {
-        gchar **sub_filters = g_strsplit(babelfilters, " ", 0);
+        sub_filters = g_strsplit(babelfilters, " ", 0);
         for (j = 0; sub_filters[j]; j++) {
           /* some version of gpsbabel can not take extra blank arg */
           if (sub_filters[j][0] != '\0')
