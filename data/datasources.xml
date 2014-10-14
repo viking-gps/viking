@@ -1,0 +1,8 @@
+<objects>
+  <object class="VikWebtoolDatasource">
+    <property name="label">OpenStreetMap Amenity POIs</property>
+    <property name="url_format_code">BLTRS</property>
+    <property name="file_type">osm</property>
+    <property name="url">http://overpass-api.de/api/interpreter?data=[bbox:%s,%s,%s,%s];node[amenity="%s"];out%%20center;</property>
+  </object>
+</objects>

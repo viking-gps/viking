@@ -37,4 +37,17 @@
     <property name="url">http://openplaques.org/plaques.kml?box=[%s,%s],[%s,%s]</property>
     <property name="file_type">kml</property>
   </object>
+
+  <!-- Requires GPSBabel build after SVNr4915 to generate waypoints from OSM way centers -->
+  <!-- At time of writing (October 2014) this is not in a formal release yet -->
+  </object>
+    <object class="VikWebtoolDatasource">
+    <property name="label">OpenStreetMap Amenity</property>
+    <property name="url_format_code">BLTRS</property>
+    <property name="babel_filter_args">-x nuketypes,routes,tracks</property>
+    <property name="input_label">Amenity Search</property>
+    <property name="file_type">osm</property>
+    <property name="url">http://overpass-api.de/api/interpreter?data=[bbox:%s,%s,%s,%s];(node[amenity="%5$s"];way[amenity="%5$s"];);out%%20center;</property>
+  </object>
+
 </objects>
