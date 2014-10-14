@@ -19,44 +19,120 @@ set ERRORLEVEL=0
 if not exist cache mkdir cache
 pushd cache
 
+:: We need a program to be able to extract not only zips, but bz2 and *lzma*
+set PATH=%PATH%;%ProgramFiles%\7-Zip
+echo =+=+=
+echo Checking 7Zip is Available...
+echo =+=+=
+set ZIP_INST=7z920.exe
+if not exist "%ProgramFiles%\7-Zip\7z.exe" (
+	call :Download %ZIP_INST% http://downloads.sourceforge.net/sevenzip/%ZIP_INST%
+	%ZIP_INST% /S
+	if ERRORLEVEL 1 goto Error
+)
+
 echo =+=+=
 echo Checking mingw...
 echo =+=+=
-set MINGW_EXE=MinGW-5.1.6.exe
-set BIN_UTILS=binutils-2.19.1-mingw32-bin.tar.gz
-set GCC_CORE=gcc-core-3.4.5-20060117-3.tar.gz
-set GCC_GPP=gcc-g++-3.4.5-20060117-3.tar.gz
-set MINGWRTDLL=mingwrt-3.15.2-mingw32-dll.tar.gz
-set MINGWRTDEV=mingwrt-3.15.2-mingw32-dev.tar.gz
-set W32API=w32api-3.13-mingw32-dev.tar.gz
+set MINGW_BASE_URL=http://sourceforge.net/projects/mingw/files/MinGW/Base
+set BIN_UTILS_LZ=binutils-2.23.2-1-mingw32-bin.tar.lzma
+set BIN_UTILS_URL=%MINGW_BASE_URL%/binutils/binutils-2.23.2-1/%BIN_UTILS_LZ%/download
+::GCC dependencies::
+set MPC_DEV_LZ=mpc-1.0.1-2-mingw32-dev.tar.lzma
+set MPC_DEV_URL=%MINGW_BASE_URL%/mpc/mpc-1.0.1-2/%MPC_DEV_LZ%/download
+set MPC_DLL_LZ=mpc-1.0.1-2-mingw32-dll.tar.lzma
+set MPC_DLL_URL=%MINGW_BASE_URL%/mpc/mpc-1.0.1-2/%MPC_DLL_LZ%/download
+set MPFR_DEV_LZ=mpfr-3.1.2-2-mingw32-dev.tar.lzma
+set MPFR_DEV_URL=%MINGW_BASE_URL%/mpfr/mpfr-3.1.2-2/%MPFR_DEV_LZ%/download
+set MPFR_DLL_LZ=mpfr-3.1.2-2-mingw32-dll.tar.lzma
+set MPFR_DLL_URL=%MINGW_BASE_URL%/mpfr/mpfr-3.1.2-2/%MPFR_DLL_LZ%/download
+set GMP_DEV_LZ=gmp-5.1.2-1-mingw32-dev.tar.lzma
+set GMP_DEV_URL=%MINGW_BASE_URL%/gmp/gmp-5.1.2/%GMP_DEV_LZ%/download
+set GMP_DLL_LZ=gmp-5.1.2-1-mingw32-dll.tar.lzma
+set GMP_DLL_URL=%MINGW_BASE_URL%/gmp/gmp-5.1.2/%GMP_DLL_LZ%/download
+set PTHREADS_DEV_LZ=pthreads-w32-2.9.1-1-mingw32-dev.tar.lzma
+set PTHREADS_DEV_URL=%MINGW_BASE_URL%/pthreads-w32/pthreads-w32-2.9.1/%PTHREADS_DEV_LZ%/download
+set PTHREADS_DLL_LZ=pthreads-w32-2.9.1-1-mingw32-dll.tar.lzma
+set PTHREADS_DLL_URL=%MINGW_BASE_URL%/pthreads-w32/pthreads-w32-2.9.1/%PTHREADS_DLL_LZ%/download
+set ICONV_DEV_LZ=libiconv-1.14-3-mingw32-dev.tar.lzma
+set ICONV_DEV_URL=%MINGW_BASE_URL%/libiconv/libiconv-1.14-3/%ICONV_DEV_LZ%/download
+set ICONV_DLL_LZ=libiconv-1.14-3-mingw32-dll.tar.lzma
+set ICONV_DLL_URL=%MINGW_BASE_URL%/libiconv/libiconv-1.14-3/%ICONV_DLL_LZ%/download
+set GCC_CORE_BIN_LZ=gcc-core-4.8.1-4-mingw32-bin.tar.lzma
+set GCC_CORE_BIN_URL=%MINGW_BASE_URL%/gcc/Version4/gcc-4.8.1-4/%GCC_CORE_BIN_LZ%/download
+set GCC_CORE_DEV_LZ=gcc-core-4.8.1-4-mingw32-dev.tar.lzma
+set GCC_CORE_DEV_URL=%MINGW_BASE_URL%/gcc/Version4/gcc-4.8.1-4/%GCC_CORE_DEV_LZ%/download
+set GCC_CORE_DLL_LZ=gcc-core-4.8.1-4-mingw32-dll.tar.lzma
+set GCC_CORE_DLL_URL=%MINGW_BASE_URL%/gcc/Version4/gcc-4.8.1-4/%GCC_CORE_DLL_LZ%/download
+set MINGWRTDLL_LZ=mingwrt-4.0.3-1-mingw32-dll.tar.lzma
+set MINGWRTDLL_URL=%MINGW_BASE_URL%/mingw-rt/mingwrt-4.0.3/%MINGWRTDLL_LZ%/download
+set MINGWRTDEV_LZ=mingwrt-4.0.3-1-mingw32-dev.tar.lzma
+set MINGWRTDEV_URL=%MINGW_BASE_URL%/mingw-rt/mingwrt-4.0.3/%MINGWRTDEV_LZ%/download
+set W32API_LZ=w32api-4.0.3-1-mingw32-dev.tar.lzma
+set W32API_URL=%MINGW_BASE_URL%/w32api/w32api-4.0.3/%W32API_LZ%/download
+set ZLIB_LZ=zlib-1.2.8-1-mingw32-dll.tar.lzma
+set ZLIB_URL=%MINGW_BASE_URL%/zlib/zlib-1.2.8/%ZLIB_LZ%/download
+set GETTEXT_LZ=gettext-0.18.3.1-1-mingw32-dll.tar.lzma
+set GETTEXT_URL=%MINGW_BASE_URL%/gettext/gettext-0.18.3.1-1/%GETTEXT_LZ%/download
 
 if not exist "%MINGW_BIN%" (
 	:: Here we download all default components manually in an attempt to get autoinstall to work...
-	if not exist %MINGW_EXE% (
-		wget "http://sourceforge.net/projects/mingw/files/OldFiles/MinGW 5.1.6/%MINGW_EXE%"
-	)
-	if not exist %BIN_UTILS% (
-		wget "http://sourceforge.net/projects/mingw/files/MinGW/Base/binutils/binutils-2.19.1/%BIN_UTILS%/download"
-	)
-	if not exist %GCC_CORE% (
-		wget "http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version3/Current Release_ gcc-3.4.5-20060117-3/%GCC_CORE%/download"
-	)
-	if not exist %GCC_GPP% (
-		wget "http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version3/Current Release_ gcc-3.4.5-20060117-3/%GCC_GPP%/download"
-	)
-	if not exist %MINGWRTDEV% (
-		wget http://sourceforge.net/projects/mingw/files/MinGW/Base/mingw-rt/mingwrt-3.15.2/%MINGWRTDEV%/download
-	)
-	if not exist %MINGWRTDLL% (
-		wget http://sourceforge.net/projects/mingw/files/MinGW/Base/mingw-rt/mingwrt-3.15.2/%MINGWRTDLL%/download
-	)
-	if not exist %W32API% (
-		wget http://sourceforge.net/projects/mingw/files/MinGW/Base/w32api/w32api-3.13/%W32API%/download
-	)
-	:: Can't get it to silent install. As a NSIS installer it supports /S, but it doesn't seem to work - it just hangs
-	:: Have to click through manually
-	%MINGW_EXE%
-	if ERRORLEVEL 1 goto Error
+	call :Download "%BIN_UTILS_LZ%" "%BIN_UTILS_URL%"
+	call :InstallLZMA "%BIN_UTILS_LZ%"
+
+	call :Download "%MPC_DLL_LZ%" "%MPC_DLL_URL%"
+	call :InstallLZMA "%MPC_DLL_LZ%"
+
+	call :Download "%MPC_DEV_LZ%" "%MPC_DEV_URL%"
+	call :InstallLZMA "%MPC_DEV_LZ%"
+
+	call :Download "%MPFR_DLL_LZ%" "%MPFR_DLL_URL%"
+	call :InstallLZMA "%MPFR_DLL_LZ%"
+
+	call :Download "%MPFR_DEV_LZ%" "%MPFR_DEV_URL%"
+	call :InstallLZMA "%MPFR_DEV_LZ%"
+
+	call :Download "%GMP_DEV_LZ%" "%GMP_DEV_URL%"
+	call :InstallLZMA "%GMP_DEV_LZ%"
+
+	call :Download "%GMP_DLL_LZ%" "%GMP_DLL_URL%"
+	call :InstallLZMA "%GMP_DLL_LZ%"
+
+	call :Download "%PTHREADS_DLL_LZ%" "%PTHREADS_DLL_URL%"
+	call :InstallLZMA "%PTHREADS_DLL_LZ%"
+
+	call :Download "%PTHREADS_DEV_LZ%" "%PTHREADS_DEV_URL%"
+	call :InstallLZMA "%PTHREADS_DEV_LZ%"
+
+	call :Download "%ICONV_DEV_LZ%" "%ICONV_DEV_URL%"
+	call :InstallLZMA "%ICONV_DEV_LZ%"
+
+	call :Download "%ICONV_DLL_LZ%" "%ICONV_DLL_URL%"
+	call :InstallLZMA "%ICONV_DLL_LZ%"
+
+	call :Download "%GCC_CORE_DEV_LZ%" "%GCC_CORE_DEV_URL%"
+	call :InstallLZMA "%GCC_CORE_DEV_LZ%"
+
+	call :Download "%GCC_CORE_DLL_LZ%" "%GCC_CORE_DLL_URL%"
+	call :InstallLZMA "%GCC_CORE_DLL_LZ%"
+
+	call :Download "%GCC_CORE_BIN_LZ%" "%GCC_CORE_BIN_URL%"
+	call :InstallLZMA "%GCC_CORE_BIN_LZ%"
+
+	call :Download "%MINGWRTDEV_LZ%" "%MINGWRTDEV_URL%"
+	call :InstallLZMA "%MINGWRTDEV_LZ%"
+
+	call :Download "%MINGWRTDLL_LZ%" "%MINGWRTDLL_URL%"
+	call :InstallLZMA "%MINGWRTDLL_LZ%"
+
+	call :Download "%W32API_LZ%" "%W32API_URL%"
+	call :InstallLZMA "%W32API_LZ%"
+
+	call :Download "%ZLIB_LZ%" "%ZLIB_URL%"
+	call :InstallLZMA "%ZLIB_LZ%"
+
+	call :Download "%GETTEXT_LZ%" "%GETTEXT_URL%"
+	call :InstallLZMA "%GETTEXT_LZ%"
 )
 
 echo =+=+=
@@ -67,25 +143,11 @@ if not exist "%SystemDrive%\msys" (
 	if not exist %MSYS_EXE% (
 		wget http://downloads.sourceforge.net/mingw/%MSYS_EXE%
 	)
-	if not [%WINELOADER%]==[] (
+	if not [%WINELOADERNOEXEC%]==[] (
 		echo Running under WINE - Requires MSYS install fixes: run msys-pi-wine.sh when msys install halts..."
 		echo Ctrl-C to stop and then rerun the installation if necessary
 	)
 	%MSYS_EXE% /sp- /silent
-	if ERRORLEVEL 1 goto Error
-)
-
-:: We need a program to be able to extract not only zips, but bz2 and *lzma*
-set PATH=%PATH%;%ProgramFiles%\7-Zip
-echo =+=+=
-echo Checking 7Zip is Available...
-echo =+=+=
-set ZIP_INST=7z920.exe
-if not exist "%ProgramFiles%\7-Zip\7z.exe" (
-	if not exist %ZIP_INST% (
-		wget http://downloads.sourceforge.net/sevenzip/%ZIP_INST%
-	)
-	%ZIP_INST% /S
 	if ERRORLEVEL 1 goto Error
 )
 
@@ -95,10 +157,8 @@ echo Checking gtk+-bundle...
 echo =+=+=
 set GTK_ZIP=gtk+-bundle_2.24.10-20120208_win32.zip
 if not exist "%MINGW_BIN%\gtk-update-icon-cache.exe" (
-	if not exist %GTK_ZIP% (
-		wget http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/%GTK_ZIP%
-	)
-	7z x %GTK_ZIP% -o"%MinGW%"
+	call :Download %GTK_ZIP% http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/%GTK_ZIP%
+	7z x %GTK_ZIP% -o"%MinGW%" -y
 	if ERRORLEVEL 1 goto Error
 )
 
@@ -107,33 +167,29 @@ echo =+=+=
 echo Checking expat-dev...
 echo =+=+=
 if not exist "%MINGW%\include\expat.h" (
-	if not exist %EXPAT_ZIP% (
-		wget http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/%EXPAT_ZIP%
-	)
+	call :Download  %EXPAT_ZIP% http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/%EXPAT_ZIP%
 	7z x %EXPAT_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
 )
 
-set GTT_ZIP=gettext-tools-dev_0.18.1.1-2_win32.zip
-echo =+=+=
-echo Checking gettext-tools-dev...
-echo =+=+=
-if not exist "%MINGW_BIN%\libgettextlib-0-18-1.dll" (
-	if not exist %GTT_ZIP% (
-		wget http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/%GTT_ZIP%
-	)
-	7z x -y %GTT_ZIP% -o"%MinGW%"
-	if ERRORLEVEL 1 goto Error
-)
+::set GTT_ZIP=gettext-tools-dev_0.18.1.1-2_win32.zip
+::echo =+=+=
+::echo Checking gettext-tools-dev...
+::echo =+=+=
+::if not exist "%MINGW_BIN%\libgettextlib-0-18-1.dll" (
+::	if not exist %GTT_ZIP% (
+::		wget http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/%GTT_ZIP%
+::	)
+::	7z x -y %GTT_ZIP% -o"%MinGW%"
+::	if ERRORLEVEL 1 goto Error
+::)
 
 echo =+=+=
 echo Checking intltool...
 echo =+=+=
 set INTLTOOL_ZIP=intltool_0.40.4-1_win32.zip
 if not exist "%MINGW_BIN%\intltoolize" (
-	if not exist %INTLTOOL_ZIP% (
-		wget http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/%INTLTOOL_ZIP%
-	)
+	call :Download %INTLTOOL_ZIP% http://ftp.acc.umu.se/pub/GNOME/binaries/win32/intltool/0.40/%INTLTOOL_ZIP%
 	7z x %INTLTOOL_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
 )
@@ -143,9 +199,7 @@ echo Checking iconv...
 echo =+=+=
 set ICONV_ZIP=libiconv-1.9.2-1-bin.zip
 if not exist "%MINGW_BIN%\iconv.exe" (
-	if not exist %ICONV_ZIP% (
-		wget http://sourceforge.net/projects/gnuwin32/files/libiconv/1.9.2-1/%ICONV_ZIP%
-	)
+	call :Download %ICONV_ZIP% http://sourceforge.net/projects/gnuwin32/files/libiconv/1.9.2-1/%ICONV_ZIP%
 	7z x -y %ICONV_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
 )
@@ -156,11 +210,20 @@ echo =+=+=
 :: Needed by iconv
 set LIBINTL_ZIP=libintl-0.14.4-bin.zip
 if not exist "%MINGW_BIN%\libintl3.dll" (
-	if not exist %LIBINTL_ZIP% (
-		wget http://sourceforge.net/projects/gnuwin32/files/libintl/0.14.4/%LIBINTL_ZIP%
-	)
+	call :Download %LIBINTL_ZIP% http://sourceforge.net/projects/gnuwin32/files/libintl/0.14.4/%LIBINTL_ZIP%
 	7z x -y %LIBINTL_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
+)
+
+echo =+=+=
+echo Checking gettext tools...
+echo =+=+=
+:: Needed by intltool
+set GETTEXT_BIN_LZ=gettext-0.18.3.1-1-mingw32-bin.tar.lzma
+set GETTEXT_BIN_URL=%MINGW_BASE_URL%/gettext/gettext-0.18.3.1-1/%GETTEXT_BIN_LZ%/download
+if not exist "%MINGW_BIN%\xgettext.exe" (
+	call :Download %GETTEXT_BIN_LZ% %GETTEXT_BIN_URL%
+	call :InstallLZMA "%GETTEXT_BIN_LZ%"
 )
 
 echo =+=+=
@@ -191,17 +254,21 @@ if not exist "%MINGW_BIN%\libcurl.dll" (
 echo =+=+=
 echo Checking libexif...
 echo =+=+=
-set EXIF=libexif-0.6.20_winxp_mingw
+set EXIF=libexif-0.6.21.1_winxp_mingw
 set EXIF_7Z=%EXIF%.7z
 if not exist "%MINGW_BIN%\libexif-12.dll" (
-	if not exist %EXIF_7Z% (
+	:: Space in URL so function call doesn't work ATM
+	::call :Download %EXIF_7Z% "http://sourceforge.net/projects/maille/files/Extern libs/%EXIF_7Z%/download"
+	if not exist "%EXIF_7Z%" (
 		wget "http://sourceforge.net/projects/maille/files/Extern libs/%EXIF_7Z%/download"
+		if ERRORLEVEL 1 goto Error
 	)
+
 	echo Extracting libexif...
 	7z x %EXIF_7Z%
 	if ERRORLEVEL 1 goto Error
 
-	echo Using *xcopy* (to get all subdirs) libexif into place...
+	echo Using xcopy to get all subdirs of libexif into place...
 	@echo ON
 	xcopy /Y /S %EXIF%\*.* "%MinGW%"
 	rmdir /S /Q %EXIF%
@@ -211,17 +278,11 @@ if not exist "%MINGW_BIN%\libexif-12.dll" (
 echo =+=+=
 echo Checking libstdc++...
 echo =+=+=
-set STDCPP_TAR=libstdc++-4.6.2-1-mingw32-dll-6.tar
+set STDCPP_TAR=gcc-c++-4.8.1-4-mingw32-dll.tar
 set STDCPP_LZ=%STDCPP_TAR%.lzma
 if not exist "%MINGW_BIN%\libstdc++-6.dll" (
-	if not exist %STDCPP_LZ% (
-		wget http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.6.2-1/%STDCPP_LZ%
-	)
-	echo Extracting lidstdc++...
-	7z e %STDCPP_LZ%
-	7z x %STDCPP_TAR% -o"%MinGW%"
-	if ERRORLEVEL 1 goto Error
-	del %STDCPP_TAR%
+  call :Download "%STDCPP_LZ%" "http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.8.1-4/%STDCPP_LZ%/download"
+  call :InstallLZMA "%STDCPP_LZ%"
 )
 
 echo =+=+=
@@ -230,14 +291,8 @@ echo =+=+=
 set BZ2_TAR=bzip2-1.0.6-4-mingw32-dev.tar
 set BZ2_LZ=%BZ2_TAR%.lzma
 if not exist "%MINGW%\include\bzlib.h" (
-	if not exist %BZ2_LZ% (
-		wget "http://sourceforge.net/projects/mingw/files/MinGW/Extension/bzip2/bzip2-1.0.6-4/%BZ2_LZ%"
-	)
-	echo Extracting libbz2 header...
-	7z e %BZ2_LZ%
-	7z x %BZ2_TAR% -o"%MinGW%"
-	if ERRORLEVEL 1 goto Error
-	del %BZ2_TAR%
+	call :Download %BZ2_LZ% "http://sourceforge.net/projects/mingw/files/MinGW/Extension/bzip2/bzip2-1.0.6-4/%BZ2_LZ%"
+	call :InstallLZMA "%BZ2_LZ%"
 )
 
 echo =+=+=
@@ -246,14 +301,8 @@ echo =+=+=
 set BZ2DLL_TAR=libbz2-1.0.6-4-mingw32-dll-2.tar
 set BZ2DLL_LZ=%BZ2DLL_TAR%.lzma
 if not exist "%MINGW_BIN%\libbz2-2.dll" (
-	if not exist %BZ2DLL_LZ% (
-		wget "http://sourceforge.net/projects/mingw/files/MinGW/Extension/bzip2/bzip2-1.0.6-4/%BZ2DLL_LZ%"
-	)
-	echo Extracting libbz2...
-	7z e %BZ2DLL_LZ%
-	7z x %BZ2DLL_TAR% -o"%MinGW%"
-	if ERRORLEVEL 1 goto Error
-	del %BZ2DLL_TAR%
+	call :Download %BZ2DLL_LZ% "http://sourceforge.net/projects/mingw/files/MinGW/Extension/bzip2/bzip2-1.0.6-4/%BZ2DLL_LZ%"
+	call :InstallLZMA "%BZ2DLL_LZ%"
 )
 
 echo =+=+=
@@ -261,9 +310,7 @@ echo Checking magic dev...
 echo =+=+=
 set MAGIC_ZIP=file-5.03-lib.zip
 if not exist "%MINGW%\include\magic.h" (
-	if not exist %MAGIC_ZIP% (
-		wget http://downloads.sourceforge.net/gnuwin32/%MAGIC_ZIP%
-	)
+	call :Download %MAGIC_ZIP% http://downloads.sourceforge.net/gnuwin32/%MAGIC_ZIP%
 	7z x %MAGIC_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
 )
@@ -273,9 +320,7 @@ echo Checking magic DLL...
 echo =+=+=
 set MAGICDLL_ZIP=file-5.03-bin.zip
 if not exist "%MINGW_BIN%\magic1.dll" (
-	if not exist %MAGICDLL_ZIP% (
-		wget http://downloads.sourceforge.net/gnuwin32/%MAGICDLL_ZIP%
-	)
+	call :Download %MAGICDLL_ZIP% http://downloads.sourceforge.net/gnuwin32/%MAGICDLL_ZIP%
 	7z x %MAGICDLL_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
 )
@@ -285,9 +330,7 @@ echo Checking regex DLL (required by magic)...
 echo =+=+=
 set REGDLL_ZIP=regex-2.7-bin.zip
 if not exist "%MINGW_BIN%\regex2.dll" (
-	if not exist %REGDLL_ZIP% (
-		wget http://downloads.sourceforge.net/gnuwin32/%REGDLL_ZIP%
-	)
+	call :Download %REGDLL_ZIP% http://downloads.sourceforge.net/gnuwin32/%REGDLL_ZIP%
 	7z x %REGDLL_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
 )
@@ -297,9 +340,7 @@ echo Checking SQLite dev...
 echo =+=+=
 set SQL_ZIP=sqlite-amalgamation-3080002.zip
 if not exist "%MINGW%\include\sqlite3.h" (
-	if not exist %SQL_ZIP% (
-		wget http://www.sqlite.org/2013/%SQL_ZIP%
-	)
+	call :Download %SQL_ZIP% http://www.sqlite.org/2013/%SQL_ZIP%
 	7z x %SQL_ZIP%
 	if ERRORLEVEL 1 goto Error
 	copy /Y sqlite-amalgamation-3080002\s* "%MinGW%\include"
@@ -311,17 +352,15 @@ echo Checking SQL DLL...
 echo =+=+=
 set SQLDLL_ZIP=sqlite-dll-win32-x86-3080002.zip
 if not exist "%MINGW_BIN%\sqlite3.dll" (
-	if not exist %SQLDLL_ZIP% (
-		wget http://www.sqlite.org/2013/%SQLDLL_ZIP%
-	)
+	call :Download %SQLDLL_ZIP% http://www.sqlite.org/2013/%SQLDLL_ZIP%
 	7z x %SQLDLL_ZIP% -o"%MinGW_BIN%"
 	if ERRORLEVEL 1 goto Error
 	REM Annoyingly SQL doesn't come with a .lib file so have to generate it ourselves:
 	REM Possibly need to insert the line 'LIBRARY sqlite3.dll' at the beginning of the def file?
 	REM  but this may not be needed as the --dllname option may suffice
-	popd %MinGW_BIN%
-	dlltool -d sqlite3.def --dllname sqlite3.dll -l ..\lib\sqlite3.lib
-	pushd
+	set PATH=%PATH%;%MinGW_BIN%
+	dlltool.exe -d %MinGW_BIN%\sqlite3.def --dllname %MinGW_BIN%\sqlite3.dll -l %MinGW%\lib\sqlite3.lib
+	if ERRORLEVEL 1 goto Error
 )
 
 ::
@@ -333,9 +372,7 @@ echo Checking Gnome Doc Utils...
 echo =+=+=
 set GNOME_DOC_ZIP=gnome-doc-utils-0.12.0.zip
 if not exist "%MINGW_BIN%\gnome-doc-prepare" (
-	if not exist %GNOME_DOC_ZIP% (
-		wget http://ftp.gnome.org/pub/gnome/binaries/win32/gnome-doc-utils/0.12/%GNOME_DOC_ZIP%
-	)
+	call :Download %GNOME_DOC_ZIP% http://ftp.gnome.org/pub/gnome/binaries/win32/gnome-doc-utils/0.12/%GNOME_DOC_ZIP%
 	echo Extracting Gnome Doc Utils...
 	7z x %GNOME_DOC_ZIP% -o"%MinGW%"
 	if ERRORLEVEL 1 goto Error
@@ -347,9 +384,7 @@ echo =+=+=
 set XLST=libxslt-1.1.26.win32
 set XLST_ZIP=%XLST%.zip
 if not exist "%MINGW_BIN%\xsltproc.exe" (
-	if not exist %XLST_ZIP% (
-		wget ftp://ftp.zlatkovic.com/libxml/%XLST_ZIP%
-	)
+	call :Download %XLST_ZIP% ftp://ftp.zlatkovic.com/libxml/%XLST_ZIP%
 	echo Extracting XLST...
 	7z x %XLST_ZIP%
 	xcopy /Y /S "%XLST%\bin\*" "%MinGW_BIN%"
@@ -363,9 +398,7 @@ echo =+=+=
 set XML2=libxml2-2.7.8.win32
 set XML2_ZIP=%XML2%.zip
 if not exist "%MINGW_BIN%\xmllint.exe" (
-	if not exist %XML2_ZIP% (
-		wget ftp://ftp.zlatkovic.com/libxml/%XML2_ZIP%
-	)
+	call :Download %XML2_ZIP% ftp://ftp.zlatkovic.com/libxml/%XML2_ZIP%
 	echo Extracting xmllint...
 	7z x %XML2_ZIP%
 	xcopy /Y /S "%XML2%\bin\*" "%MinGW_BIN%"
@@ -379,9 +412,7 @@ echo =+=+=
 set ICONV=iconv-1.9.2.win32
 set ICONV_ZIP=%ICONV%.zip
 if not exist "%MINGW_BIN%\iconv.dll" (
-	if not exist %ICONV_ZIP% (
-		wget ftp://ftp.zlatkovic.com/libxml/%ICONV_ZIP%
-	)
+	call :Download %ICONV_ZIP% ftp://ftp.zlatkovic.com/libxml/%ICONV_ZIP%
 	echo Extracting iconv...
 	7z x %ICONV_ZIP%
 	xcopy /Y /S "%ICONV%\bin\*" "%MinGW_BIN%"
@@ -398,17 +429,18 @@ if not exist "%ProgramFiles%\GPSBabel" (
 	if exist %GPSBABEL_INST% (
 		%GPSBABEL_INST% /silent
 		if ERRORLEVEL 1 goto Error
+	) else (
+		echo Required %GPSBABEL_INST% not found. Exitting
+		exit /b
 	)
 )
 
 echo =+=+=
 echo Checking Perl Installation...
 echo =+=+=
-set PERL_MSI=ActivePerl-5.14.3.1404-MSWin32-x86-296513.msi
+set PERL_MSI=ActivePerl-5.18.2.1802-MSWin32-x86-64int-298023.msi
 if not exist "%SystemDrive%\Perl" (
-	if not exist %PERL_MSI% (
-		wget http://downloads.activestate.com/ActivePerl/releases/5.14.3.1404/%PERL_MSI%
-	)
+	call :Download %PERL_MSI% http://downloads.activestate.com/ActivePerl/releases/5.18.2.1802/%PERL_MSI%
 	echo Installing Perl takes a little time...
 	msiexec /qb /i %PERL_MSI% PERL_PATH=Yes PERL_EXT=Yes
 	if ERRORLEVEL 1 goto Error
@@ -419,9 +451,7 @@ echo Checking NSIS installed...
 echo =+=+=
 set NSIS_INST=nsis-2.46-setup.exe
 if not exist "%ProgramFiles%\NSIS" (
-	if not exist %NSIS_INST% (
-		wget http://prdownloads.sourceforge.net/nsis/nsis-2.46-setup.exe?download
-	)
+	call :Download %NSIS_INST% http://prdownloads.sourceforge.net/nsis/nsis-2.46-setup.exe?download
 	echo Installing NSIS...
 	%NSIS_INST% /S
 	if ERRORLEVEL 1 goto Error
@@ -432,9 +462,7 @@ echo Checking NSIS Plugins installed...
 echo =+=+=
 set FPDLLZIP=FindProc.zip
 if not exist "%ProgramFiles%\NSIS\Plugins\FindProcDLL.dll" (
-	if not exist %FPDLLZIP% (
-		wget http://nsis.sourceforge.net/mediawiki/images/3/3c/%FPDLLZIP%
-	)
+	call :Download %FPDLLZIP% http://nsis.sourceforge.net/mediawiki/images/3/3c/%FPDLLZIP%
 	echo Extracting NSIS Plugins...
 	7z e %FPDLLZIP% -o"%ProgramFiles%\NSIS\Plugins"
 	if ERRORLEVEL 1 goto Error
@@ -443,13 +471,28 @@ if not exist "%ProgramFiles%\NSIS\Plugins\FindProcDLL.dll" (
 popd
 
 echo Fixing Perl reference
-REM Sadly '-i' for in place changes doesn't seem available with Windows sed 3.02
+
 set PATH=%PATH%;C:\msys\1.0\bin
-sed -e 's:#! /bin/perl:#! /opt/perl/bin/perl:' %MINGW_BIN%\glib-mkenums > tmp.enums
+
+call :FixPerlRef %MINGW_BIN%\glib-mkenums s:/bin/perl:perl:
+call :FixPerlRef %MINGW_BIN%\intltool-extract s:/opt/perl/bin/perl:perl:
+call :FixPerlRef %MINGW_BIN%\intltool-merge s:/opt/perl/bin/perl:perl:
+call :FixPerlRef %MINGW_BIN%\intltool-prepare s:/opt/perl/bin/perl:perl:
+call :FixPerlRef %MINGW_BIN%\intltool-update s:/opt/perl/bin/perl:perl:
+
+goto End
+
+:FixPerlRef
+:: Param %1 = File
+:: Param %2 = sed command
+:: Sadly '-i' for in place changes doesn't seem available with Windows sed 3.02
+sed -e '%2' %1 > %1.tmp
 if ERRORLEVEL 1 goto Error
-xcopy /Y tmp.enums %MINGW_BIN%\glib-mkenums
+xcopy /Y %1.tmp %1
 if ERRORLEVEL 1 goto Error
-del tmp.enums
+del %1.tmp
+:: End function
+exit /b
 
 :: Potentially Clean Up
 :: If any parameters given on the command line then remove all downloaded items
@@ -461,9 +504,53 @@ if not [%1]==[] (
 
 goto End
 
+
+::Function to try to download something via wget
+:: (obviously needs 7zip to be installed first and available on the path!)
+:: Param %1 = File
+:: Param %2 = URL (which should retrieve %1) [ URL can't contain a space or %20:( ]
+:Download
+if not exist "%1" (
+	wget "%2"
+	if ERRORLEVEL 1 goto Error
+)
+:: End function
+exit /b
+
+::Function to install something via 7zip
+:: (obviously needs 7zip to be installed first and available on the path!)
+:: Param %1 = LZMA file
+:: Param %2 = Internal file (normally the .tar file)
+:InstallBy7Zip
+echo Extracting "%1" from "%2"
+7z e "%1"
+if ERRORLEVEL 1 goto Error
+7z x "%2" -o"%MinGW%"
+if ERRORLEVEL 1 goto Error
+del "%2"
+if ERRORLEVEL 1 goto Error
+:: End function
+exit /b
+
+::Function to install LZMA file containing a tar file (via 7zip)
+:: (obviously needs 7zip to be installed first and available on the path!)
+:: Param %1 = LZMA file
+:InstallLZMA
+7z e "%1"
+if ERRORLEVEL 1 goto Error
+set param=%1
+:: Remove the .lzma extension to get the tar file
+set file=%param:.lzma=%
+7z x "%file%" -o"%MinGW%" -y
+if ERRORLEVEL 1 goto Error
+del "%file%"
+if ERRORLEVEL 1 goto Error
+:: End function
+exit /b
+
 :Error
 echo exitting due to error: %ERRORLEVEL%
-exit
+exit /b
 
 :End
 echo Finished
