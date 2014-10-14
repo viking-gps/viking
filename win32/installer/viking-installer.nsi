@@ -288,6 +288,14 @@ Section $(VIKING_FILE_ASSOCIATION_SECTION_TITLE) SecFileAssociation
   ${registerExtension} "$INSTDIR\viking.exe" ".vik" "Viking File"
 SectionEnd
 
+;--------------------------------
+; GPSBabel Install Section
+;
+Section $(VIKING_GPSBABEL_SECTION_TITLE) SecGPSBabel
+  File "bin\Optional\GPSBabel-1.5.1-Setup.exe"
+  ExecWait '"$INSTDIR\GPSBabel-1.5.1-Setup.exe" /SILENT'
+  Delete "$INSTDIR\GPSBabel-1.5.1-Setup.exe"
+SectionEnd
 
 ;--------------------------------
 ;Uninstaller Section
@@ -355,6 +363,8 @@ SectionEnd ; end of uninstall section
         $(VIKING_STARTMENU_SHORTCUT_DESC)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecFileAssociation} \
         $(VIKING_FILE_ASSOCIATION_DESC)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecGPSBabel} \
+        $(VIKING_INSTALL_GPSBABEL_DESC)
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 

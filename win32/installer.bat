@@ -120,21 +120,15 @@ set /p PWD=<tmp.tmp
 del tmp.tmp
 cache\%GTK_RUNTIME% /sideeffects=no /setpath=no /dllpath=root /translations=no /compatdlls=yes /S /D=%PWD%\%DESTINATION%
 
+echo Copying GPSBabel Installer
+mkdir %DESTINATION%\Optional
+%MYCOPY% cache\GPSBabel-1.5.1-Setup.exe %DESTINATION%\Optional
+if ERRORLEVEL 1 goto Error
+
 ::
 echo Copying Translations
 %MYCOPY% installer\translations\*nsh %DESTINATION%
-
-echo Copying GPSBabel
-:: Install it from http://www.gpsbabel.org/download.html
-::  Thus GPSBabel should be here
-:: NB GPSBabel has standard GPL2 COPYING.txt file so don't need another copy
-if exist "%ProgramFiles%\GPSBabel\gpsbabel.exe" (
-	%MYCOPY% "%ProgramFiles%\GPSBabel\gpsbabel.exe" %DESTINATION%
-	%MYCOPY% "%ProgramFiles%\GPSBabel\libexpat.dll" %DESTINATION%
-) else (
-	echo GPSBabel missing
-	goto Tidy
-)
+if ERRORLEVEL 1 goto Error
 
 echo Running NSIS (command line version)
 pushd installer
@@ -145,6 +139,11 @@ if exist "%ProgramFiles%\NSIS" (
 )
 popd
 
-echo Tidy Up
+goto Tidy
+
+:Error
+echo Exitting due to error: %ERRORLEVEL%
+
 :Tidy
+echo Tidy Up
 rmdir /S /Q %DESTINATION%
