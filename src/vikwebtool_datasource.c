@@ -34,6 +34,7 @@
 #include "globals.h"
 #include "acquire.h"
 #include "maputils.h"
+#include "dialog.h"
 
 static GObjectClass *parent_class;
 static GHashTable *last_user_strings = NULL;
@@ -199,11 +200,17 @@ static void datasource_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, 
     if ( last_str )
         gtk_entry_set_text( GTK_ENTRY( widgets->user_string ), last_str );
 
+	// 'ok' when press return in the entry
+	g_signal_connect_swapped (widgets->user_string, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
+
 	/* Packing all widgets */
 	GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
 	gtk_box_pack_start ( box, user_string_label, FALSE, FALSE, 5 );
 	gtk_box_pack_start ( box, widgets->user_string, FALSE, FALSE, 5 );
 	gtk_widget_show_all ( dialog );
+	gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+	// NB presently the focus is overridden later on by the acquire.c code.
+	gtk_widget_grab_focus ( widgets->user_string );
 
     g_free ( label );
 }
@@ -350,7 +357,7 @@ static void vik_webtool_datasource_class_init ( VikWebtoolDatasourceClass *klass
 	pspec = g_param_spec_string ("input_label",
 	                             "The label for the user input box if input is required.",
 	                             "Set the label to be shown next to the user input box if an input term is required",
-	                             "Search Term", 
+	                             _("Search Term"),
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class,
 	                                 PROP_INPUT_LABEL,
