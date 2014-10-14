@@ -150,7 +150,11 @@ void a_toolbar_init (void)
 	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
 	tmp.u = 0;
 	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
+#ifdef WINDOWS
+	tmp.u = 1; // Small Icons for Windows by default as 'System Defaults' is more GNOME Theme driven.
+#else
 	tmp.u = 0;
+#endif
 	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
 	tmp.ptr = toolbar_configure_cb;
 	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
