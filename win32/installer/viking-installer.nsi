@@ -139,6 +139,9 @@ VIAddVersionKey "FileDescription" "Viking Installer"
 ;; Start Install Sections ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+LicenseData ".\bin\COPYING_GPL.txt"
+LicenseForceSelection checkbox
+
 ;--------------------------------
 ;Uninstall any old version of Viking
 
