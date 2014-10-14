@@ -32,7 +32,7 @@
 !insertmacro VIKING_MACRO_DEFAULT_STRING VIKING_SHORTCUTS_SECTION_DESCRIPTION	"Shortcuts for starting Viking"
 !insertmacro VIKING_MACRO_DEFAULT_STRING VIKING_DESKTOP_SHORTCUT_DESC		"Create a shortcut to Viking on the Desktop"
 !insertmacro VIKING_MACRO_DEFAULT_STRING VIKING_STARTMENU_SHORTCUT_DESC		"Create a Start Menu entry for Viking"
-!insertmacro VIKING_MACRO_DEFAULT_STRING VIKING_FILE_ASSOCIATION_DESC	  "Associate .vik files with Viking"
+!insertmacro VIKING_MACRO_DEFAULT_STRING VIKING_FILE_ASSOCIATION_DESC	  "Associate .gpx files with Viking"
 !insertmacro VIKING_MACRO_DEFAULT_STRING VIKING_INSTALL_GPSBABEL_DESC	  "Install GPSBabel Program"
 
 ; Installer Finish Page

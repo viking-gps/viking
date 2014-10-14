@@ -257,6 +257,8 @@ Section $(VIKING_SECTION_TITLE) SecViking
     WriteUninstaller "$INSTDIR\${VIKING_UNINST_EXE}"
     SetOverwrite off
 
+    ; Always associate Viking file type
+    ${registerExtension} "$INSTDIR\viking.exe" ".vik" "Viking File"
   done:
 SectionEnd ; end of default Viking section
 
@@ -285,7 +287,7 @@ SectionGroupEnd
 ;File association
 
 Section $(VIKING_FILE_ASSOCIATION_SECTION_TITLE) SecFileAssociation
-  ${registerExtension} "$INSTDIR\viking.exe" ".vik" "Viking File"
+  ${registerExtension} "$INSTDIR\viking.exe" ".gpx" "GPX File"
 SectionEnd
 
 ;--------------------------------
@@ -335,6 +337,7 @@ Section Uninstall
 
     ; File association
     ${unregisterExtension} ".vik" "Viking File"
+    ${unregisterExtension} ".gpx" "GPX File"
 
     Goto done
 
