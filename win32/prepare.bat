@@ -229,25 +229,20 @@ if not exist "%MINGW_BIN%\xgettext.exe" (
 echo =+=+=
 echo Checking libcurl...
 echo =+=+=
-set CURL_TAR=libcurl-7.14.0_nossl-1sid.tar
-set CURL_BZ2=%CURL_TAR%.bz2
+REM Win32 - Generic - http://curl.haxx.se/download.html
+set CURL=curl-7.34.0-devel-mingw32
+set CURL_ZIP=%CURL%.zip
 if not exist "%MINGW_BIN%\libcurl.dll" (
-	if not exist %CURL_BZ2% (
-		wget http://downloads.sourceforge.net/devpaks/libcurl-7.14.0_nossl-1sid.DevPak?download
-		move libcurl-7.14.0_nossl-1sid.DevPak %CURL_BZ2%
-	)
+	call :Download %CURL_ZIP% http://curl.haxx.se/gknw.net/7.34.0/dist-w32/%CURL_ZIP%
 	echo Extracting libcurl...
-	7z e %CURL_BZ2%
-	7z x %CURL_TAR% -o"libcurl"
+	7z x -y %CURL_ZIP% -o"libcurl"
 	if ERRORLEVEL 1 goto Error
 	@echo ON
-	move libcurl\include "%MinGW%\include\curl
-	copy /Y libcurl\bin\*.* "%MinGW_BIN%"
-	copy /Y libcurl\lib\*.* "%MinGW%\lib"
-	copy /Y libcurl\docs\*.* "%MinGW%\doc"
-	copy /Y COPYING.txt "%MinGW%\COPYING_curl.txt"
+	xcopy /S /Y libcurl\%CURL%\include\*.* "%MinGW%\include"
+	xcopy /S /Y libcurl\%CURL%\bin\*.* "%MinGW_BIN%"
+	xcopy /S /Y libcurl\%CURL%\lib\*.a "%MinGW%\lib"
+	copy /Y libcurl\%CURL%\COPYING "%MinGW%\COPYING_curl.txt"
 	rmdir /S /Q libcurl
-	del %CURL_TAR%
 	@echo OFF
 )
 

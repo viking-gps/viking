@@ -50,11 +50,17 @@ if not exist "%MINGW%" (
 
 set MINGW_BIN=%MINGW%\Bin
 
+REM Curl 7.17+ has quite a few dependencies for SSL support
 set LIBCURL=%MINGW_BIN%\libcurl.dll
 if exist "%LIBCURL%" (
 	%MYCOPY% "%LIBCURL%" %DESTINATION%
+	%MYCOPY% "%MINGW_BIN%\libeay32.dll" %DESTINATION%
+	%MYCOPY% "%MINGW_BIN%\librtmp.dll" %DESTINATION%
+	%MYCOPY% "%MINGW_BIN%\libssh2.dll" %DESTINATION%
+	%MYCOPY% "%MINGW_BIN%\libidn-11.dll" %DESTINATION%
+	%MYCOPY% "%MINGW_BIN%\ssleay32.dll" %DESTINATION%
+::	%MYCOPY% "%MINGW_BIN%\zlib1.dll" %DESTINATION%
 	%MYCOPY% "%MINGW%\COPYING_curl.txt" %DESTINATION%
-
 ) else (
 	echo %LIBCURL% does not exist
 	goto Tidy
