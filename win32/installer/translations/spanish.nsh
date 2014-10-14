@@ -44,3 +44,5 @@
 ; Uninstall Section Prompts
 !define un.VIKING_UNINSTALL_ERROR_1		"El programa de desinstalación no ha encontrado las entradas de Viking en la base de registros.$\rLa aplicación quizá haya sido instalada por un usuario distinto."
 !define un.VIKING_UNINSTALL_ERROR_2		"Usted no tiene los permisos necesarios para suprimir esta aplicación."
+
+!define VIKING_UNINSTALL_COMMENTS		"Edición y de análisis de datos GPS"

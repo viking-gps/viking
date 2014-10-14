@@ -202,6 +202,7 @@ Section -SecUninstallOldViking
   done:
 SectionEnd
 
+
 ;--------------------------------
 ;Viking Install Section
 
@@ -218,28 +219,12 @@ Section $(VIKING_SECTION_TITLE) SecViking
   viking_hklm:
     WriteRegStr HKLM "${HKLM_APP_PATHS_KEY}" "" "$INSTDIR\viking.exe"
     WriteRegStr HKLM "${HKLM_APP_PATHS_KEY}" "Path" "$R1\bin"
-    WriteRegStr HKLM ${VIKING_REG_KEY} "" "$INSTDIR"
-    WriteRegStr HKLM ${VIKING_REG_KEY} "Version" "${VIKING_VERSION}"
-    WriteRegStr HKLM "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking"
-    WriteRegStr HKLM "${VIKING_UNINSTALL_KEY}" "DisplayVersion" "${VIKING_VERSION}"
-    WriteRegStr HKLM "${VIKING_UNINSTALL_KEY}" "HelpLink" "http://sourceforge.net/apps/mediawiki/viking/"
-    WriteRegDWORD HKLM "${VIKING_UNINSTALL_KEY}" "NoModify" 1
-    WriteRegDWORD HKLM "${VIKING_UNINSTALL_KEY}" "NoRepair" 1
-    WriteRegStr HKLM "${VIKING_UNINSTALL_KEY}" "UninstallString" "$INSTDIR\${VIKING_UNINST_EXE}"
     ; Sets scope of the desktop and Start Menu entries for all users.
     SetShellVarContext "all"
     Goto viking_install_files
 
     ;Install rights for Current User only 
   viking_hkcu:
-    WriteRegStr HKCU ${VIKING_REG_KEY} "" "$INSTDIR"
-    WriteRegStr HKCU ${VIKING_REG_KEY} "Version" "${VIKING_VERSION}"
-    WriteRegStr HKCU "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking"
-    WriteRegStr HKCU "${VIKING_UNINSTALL_KEY}" "DisplayVersion" "${VIKING_VERSION}"
-    WriteRegStr HKCU "${VIKING_UNINSTALL_KEY}" "HelpLink" "http://sourceforge.net/apps/mediawiki/viking/"
-    WriteRegDWORD HKCU "${VIKING_UNINSTALL_KEY}" "NoModify" 1
-    WriteRegDWORD HKCU "${VIKING_UNINSTALL_KEY}" "NoRepair" 1
-    WriteRegStr HKCU "${VIKING_UNINSTALL_KEY}" "UninstallString" "$INSTDIR\${VIKING_UNINST_EXE}"
     Goto viking_install_files
   
   ;No install rights!
@@ -249,7 +234,39 @@ Section $(VIKING_SECTION_TITLE) SecViking
     SetOutPath "$INSTDIR"
     SetOverwrite on
 
-    File /r .\bin\*.*
+    ; Common settings
+    WriteRegStr SHCTX ${VIKING_REG_KEY} "" "$INSTDIR"
+    WriteRegStr SHCTX ${VIKING_REG_KEY} "Version" "${VIKING_VERSION}"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayVersion" "${VIKING_VERSION}"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayIcon" "$INSTDIR\viking_icon.ico"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "HelpLink" "http://sourceforge.net/p/viking/wikiallura"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "URLInfoAbout" "http://sourceforge.net/projects/viking/"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "Publisher" "The Viking developer community"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "Comments" "$(VIKING_UNINSTALL_COMMENTS)"
+    WriteRegDWORD SHCTX "${VIKING_UNINSTALL_KEY}" "NoModify" 1
+    WriteRegDWORD SHCTX "${VIKING_UNINSTALL_KEY}" "NoRepair" 1
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "UninstallString" "$INSTDIR\${VIKING_UNINST_EXE}"
+
+    ; Copy only specific items as now some components (e.g. GPSBabel) are optional.
+    ; This is mostly to get a more accurate install size value (especially as saved into the registry)
+    File .\bin\viking*
+    ; Not sure we really need any of the gtk executables but copy them anyway:
+    File .\bin\*.exe
+    File .\bin\*.dll
+    File .\bin\*.txt
+    File .\bin\magic.mgc
+    File /r .\bin\data
+    File /r .\bin\etc
+    File /r .\bin\gtk2-runtime
+    File /r .\bin\lib
+    File /r .\bin\locale
+    File /r .\bin\share
+
+    ; Estimate install size based on files in $INSTDIR
+    ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+    IntFmt $0 "0x%08X" $0
+    WriteRegDWORD SHCTX "${VIKING_UNINSTALL_KEY}" "EstimatedSize" "$0"
 
     ; If we don't have install rights we're done
     StrCmp $R0 "NONE" done
@@ -332,8 +349,32 @@ Section Uninstall
 
   cont_uninstall:
 
-    ;Simply wipe the Viking install dir
-    RMDir /r "$INSTDIR"
+    ; http://nsis.sourceforge.net/Docs/Chapter4.html
+    ; Don't use:
+    ;RMDir /r "$INSTDIR"
+    ; Warning: is not safe. Can delete entire Program Files directory!
+
+    ; TODO try this method instead:
+    ; http://nsis.sourceforge.net/Uninstall_only_installed_files
+
+    ; Specific remove files
+    ; Thus alsos leaves any files the user has saved (particularly .vik or .gpx) into the Viking directory
+    Delete "$INSTDIR\viking-cache.py"
+    Delete "$INSTDIR\viking.pdf"
+    Delete "$INSTDIR\viking_icon.ico"
+    Delete "$INSTDIR\*.exe"
+    Delete "$INSTDIR\*.dll"
+    Delete "$INSTDIR\*.txt"
+    Delete "$INSTDIR\magic.mgc"
+    Delete "$INSTDIR\data\*txt"
+    Delete "$INSTDIR\data\*xml"
+    RMDir "$INSTDIR\data"
+    RMDir /r "$INSTDIR\etc"
+    RMDir /r "$INSTDIR\gtk2-runtime"
+    RMDir /r "$INSTDIR\lib"
+    RMDir /r "$INSTDIR\locale"
+    RMDir /r "$INSTDIR\share"
+    RMDir "$INSTDIR"
 
     ; Shortcuts..
     Delete "$DESKTOP\Viking.lnk"

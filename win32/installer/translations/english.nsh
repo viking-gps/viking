@@ -44,3 +44,5 @@
 ; Uninstall Section Prompts
 !insertmacro VIKING_MACRO_DEFAULT_STRING un.VIKING_UNINSTALL_ERROR_1		"The uninstaller could not find registry entries for Viking.$\rIt is likely that another user installed this application."
 !insertmacro VIKING_MACRO_DEFAULT_STRING un.VIKING_UNINSTALL_ERROR_2		"You do not have permission to uninstall this application."
+
+!insertmacro VIKING_MACRO_DEFAULT_STRING VIKING_UNINSTALL_COMMENTS			"GPS data editor and analyser"
