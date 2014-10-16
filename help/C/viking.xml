@@ -1552,6 +1552,7 @@ However a forced refresh for the current view can be made via the <guilabel>Relo
 You will need an open internet connection when you are downloading maps these following map types, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
 Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
+</formalpara>
 <itemizedlist>
 <listitem><para>Bing Bird's Eye (Aerial) Maps (&appname; Version1.2+)</para></listitem>
 <listitem><para>OpenStreetMap (Mapquest) - This is the default (&appname; Version1.3+)</para></listitem>
@@ -1561,7 +1562,6 @@ Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMa
 <listitem><para>OpenStreetMap (Humanitarian) (&appname; Version1.5+)</para></listitem>
 <listitem><para>NASA BlueMarble</para></listitem>
 </itemizedlist>
-</formalpara>
 
 <para>
 &appname; can be configured to handle additional online map resources. See <xref linkend="extend_viking"/> for further detail.
@@ -1571,6 +1571,7 @@ Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMa
 <para>
 Some map types supported are for on disk tile formats:
 </para>
+</formalpara>
 <itemizedlist>
 <listitem>
 	<para>On Disk OSM Tile Format</para>
@@ -1582,7 +1583,6 @@ Some map types supported are for on disk tile formats:
 <para>
 Of course you need to have acquired or generated these tilesets yourself.
 </para>
-</formalpara>
 
 <section><title>Map Layer Properties</title>
 <para>
@@ -2960,74 +2960,74 @@ Accept: */*
         <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):
           <variablelist>
             <varlistentry>
-              <term>id</term>
+              <term>id</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>label</term>
+              <term>label</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>hostname</term>
+              <term>hostname</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>url</term>
+              <term>url</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>check-file-server-time (optional)</term>
+              <term>check-file-server-time (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>zoom-min (optional)</term>
+              <term>zoom-min (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>zoom-max (optional)</term>
+              <term>zoom-max (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lat-min (optional)</term>
+              <term>lat-min (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lat-max (optional)</term>
+              <term>lat-max (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lon-min (optional)</term>
+              <term>lon-min (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lon-max (optional)</term>
+              <term>lon-max (optional)</term><listitem><para></para></listitem>
             </varlistentry>
           </variablelist>
         </para>
         <para>The <classname>VikWmscMapSource</classname> allows to declare any WMS or WMS-C service. It supports the following properties  (as per VikSlippyMapSource above):
           <variablelist>
             <varlistentry>
-              <term>id</term>
+              <term>id</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>label</term>
+              <term>label</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>hostname</term>
+              <term>hostname</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>url</term>
+              <term>url</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>check-file-server-time (optional)</term>
+              <term>check-file-server-time (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>zoom-min (optional)</term>
+              <term>zoom-min (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>zoom-max (optional)</term>
+              <term>zoom-max (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lat-min (optional)</term>
+              <term>lat-min (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lat-max (optional)</term>
+              <term>lat-max (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lon-min (optional)</term>
+              <term>lon-min (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>lon-max (optional)</term>
+              <term>lon-max (optional)</term><listitem><para></para></listitem>
             </varlistentry>
           </variablelist>
         </para>
