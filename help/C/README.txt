@@ -4,8 +4,8 @@ xmlto xhtml -m config.xsl viking.xml
 
 # To generate a block of text for the Wiki:
 html2wiki --dialect=MediaWiki \
---wiki-uri=http://sourceforge.net/apps/mediawiki/viking \
---base-uri=http://sourceforge.net/apps/mediawiki/viking \
+--wiki-uri=http://sourceforge.net/p/viking/wikiallura \
+--base-uri=http://sourceforge.net/p/viking/wikiallura \
 index.html > help.wiki
 
 # To generate the PDF:
