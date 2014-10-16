@@ -2267,6 +2267,10 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <listitem><para>Some other user defined program</para></listitem>
 </itemizedlist>
 </section>
+<section><title>GPSBabel</title>
+<para>This allows setting the specific location of GPSBabel.</para>
+<para>&appname; will need to be restarted for this setting to take effect.</para>
+</section>
 </section>
 
 <section id="prefs_osm" xreflabel="OpenStreetMap Traces Preferences"><title>OpenStreetMap Traces</title>
@@ -3317,17 +3321,7 @@ Accept: */*
 </section>
 <!-- End of Extending Viking -->
 
-<section><title>Dependencies</title>
-<formalpara><title>gpsbabel</title>
-<para>&appname; uses <ulink url="http://gpsbabel.org/">GPSBabel</ulink> to convert data.</para>
-</formalpara>
-<formalpara><title>unbuffer (optional)</title>
-<para>&appname; uses unbuffer command to optimize conversion calls.</para>
-</formalpara>
-<formalpara><title>gpsd (optional - but not <trademark>Windows</trademark>)</title>
-<para>&appname; can use <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to get the current location.</para>
-</formalpara>
-</section>
+<xi:include href="recommends.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
 <xi:include href="commandline.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 

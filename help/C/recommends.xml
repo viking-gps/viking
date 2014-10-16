@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [<!ENTITY appname          "Viking">]
+>
+
+<section id="recommeds">
+<title>Recommended Programs</title>
+
+<formalpara><title>gpsbabel</title>
+<para>&appname; uses <ulink url="http://gpsbabel.org/">GPSBabel</ulink> for several important functions, such as:</para>
+</formalpara>
+<itemizedlist>
+<listitem><para>Importing Files from many formats (including KML)</para></listitem>
+<listitem><para>Exporting Files to various formats</para></listitem>
+<listitem><para>Transfer Data to/from GPS Devices via serial connections</para></listitem>
+<listitem><para>Using Google Directions for routes</para></listitem>
+</itemizedlist>
+<para>Thus these will not be available if the program can not be found.</para>
+<para>For <trademark>Unix</trademark> like systems this will search the system path to find the program, as it is typically installed via the System's package manager.</para>
+<para>
+	From &appname; 1.6 onwards GPSBabel is not deployed automatically on <trademark>Windows</trademark> systems,
+	as it is made an optional install component (using the official GPSBabel installation program).
+	If GPSBabel is not installed in a typical <trademark>Windows</trademark> location that &appname; can find,
+	then the GPSBabel preference can be set to specify the exact location. See <xref linkend="prefs_external"/>.
+</para>
+<para>&appname; will need to be restarted to use the new GPSBabel location preference.</para>
+
+<formalpara><title>unbuffer</title>
+<para>&appname; uses unbuffer command to optimize conversion calls.</para>
+</formalpara>
+<para>This mainly applies to <trademark>Unix</trademark> like systems when invoking GPSBabel commands.</para>
+
+<formalpara><title>gpsd (not available for <trademark>Windows</trademark>)</title>
+<para>&appname; can use <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to get the current location.</para>
+</formalpara>
+
+<formalpara><title>togpx</title>
+<para>&appname; will use <ulink url="https://github.com/tyrasd/togpx">togpx</ulink> to open GeoJSON files if the program is available on the system.</para>
+</formalpara>
+
+<formalpara><title>togeojson</title>
+<para>&appname; will use <ulink url="https://github.com/mapbox/togeojson">togeojson</ulink> to export to GeoJSON files if the program is available on the system.</para>
+</formalpara>
+
+</section>

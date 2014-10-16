@@ -14,7 +14,8 @@ dist-hook: get-icons doc-dist-hook
 DOC_MODULE = viking
 DOC_ENTITIES = legal.xml \
     attribution.xml \
-    commandline.xml
+    commandline.xml \
+    recommends.xml
 DOC_INCLUDES =
 DOC_FIGURES = \
     figures/addtr_18.png \
