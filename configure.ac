@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.64)
 AC_INIT(viking, 1.5, , viking, http://viking.sf.net/)
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip subdir-objects])
 dnl AC_CONFIG_SRCDIR([src/main.c])
@@ -82,7 +82,7 @@ dnl | Pkgconfig checks |---------------------------------------
 dnl  ------------------
 
 PKG_CHECK_MODULES(PACKAGE, [
-        glib-2.0          >= 2.16
+        glib-2.0          >= 2.26
         gthread-2.0       >= 2.2
         gtk+-2.0          >= 2.16
         gio-2.0           >= 2.12
@@ -410,7 +410,7 @@ AC_OUTPUT([
 dnl Output the configuration summary
 echo ""
 echo "==========================================="
-echo "$PACKAGE $VERSION"
+echo "$PACKAGE $PACKAGE_URL $VERSION"
 echo "-------------------------------------------"
 echo "Bing Maps                        : $ac_cv_enable_bing"
 echo "Google                           : $ac_cv_enable_google"
@@ -432,4 +432,3 @@ echo "Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_d
 echo "-------------------------------------------"
 echo ""
 echo "Configure finished, type 'make' to build."
-
