@@ -25,7 +25,7 @@
 #endif
 
 #include "vikwebtool_datasource.h"
-
+#include <ctype.h>
 #include <string.h>
 
 #include <glib.h>
@@ -502,6 +502,26 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 	return url;
 }
 
+// NB Only works for ascii strings
+char* strcasestr2(const char *dst, const char *src)
+{
+	if ( !dst || !src )
+		return NULL;
+
+	if(src[0] == '\0')
+		return (char*)dst;
+
+	int len = strlen(src) - 1;
+	char sc = tolower(src[0]);
+	for(char dc = *dst; (dc = *dst); dst++) {
+		dc = tolower(dc);
+		if(sc == dc && (len == 0 || !strncasecmp(dst+1, src+1, len)))
+			return (char*)dst;
+	}
+
+	return NULL;
+}
+
 /**
  * Returns true if the URL format contains 'S' -- that is, a search term entry
  * box needs to be displayed
@@ -509,5 +529,10 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 static gboolean webtool_needs_user_string ( VikWebtool *self )
 {
 	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( self );
+	// For some reason (my) Windows build gets built with -D_GNU_SOURCE
+#if (_GNU_SOURCE && !WINDOWS)
 	return (strcasestr(priv->url_format_code, "S") != NULL);
+#else
+	return (strcasestr2(priv->url_format_code, "S") != NULL);
+#endif
 }
