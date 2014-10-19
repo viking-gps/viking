@@ -121,6 +121,9 @@ static gboolean preferences_load_from_file()
 
 static void preferences_run_setparam ( gpointer notused, guint16 i, VikLayerParamData data, VikLayerParam *vlparams )
 {
+  // Don't change stored pointer values
+  if ( vlparams[i].type == VIK_LAYER_PARAM_PTR )
+    return;
   if ( vlparams[i].type == VIK_LAYER_PARAM_STRING_LIST )
     g_critical ( "Param strings not implemented in preferences"); //fake it
   g_hash_table_insert ( values, (gchar *)(vlparams[i].name), vik_layer_typed_param_data_copy_from_data(vlparams[i].type, data) );
