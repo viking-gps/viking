@@ -473,20 +473,23 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
         }
       }
 
-      gtk_widget_destroy ( dialog ); /* hide before redrawing. */
       g_free ( widgets );
       g_free ( labels );
       g_free ( change_values );
       if ( tables )
         g_free ( tables );
+      gtk_widget_destroy ( dialog ); /* hide before redrawing. */
 
       return must_redraw ? 2 : 3; /* user clicked OK */
     }
 
+    g_free ( widgets );
+    g_free ( labels );
+    g_free ( change_values );
     if ( tables )
       g_free ( tables );
     gtk_widget_destroy ( dialog );
-    g_free ( widgets );
+
     return 0;
   }
 }
