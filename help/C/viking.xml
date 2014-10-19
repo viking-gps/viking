@@ -249,6 +249,13 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 </figure>
 </section>
 
+<section id="toolbar" xreflabel="Toolbar"><title>Toolbar</title>
+<para>The toolbar is an area for buttons that perform common actions.</para>
+<para>Some actions are modal, so the appropriate layer needs selected before these toolbar buttons are enabled. See <xref linkend="tools"/> more detail.</para>
+<para>The display of the toolbar is influenced by the <xref linkend="prefs_toolbar"/></para>
+<para>Right clicking on the toolbar and selecting <menuchoice><guimenu>Customize</guimenu></menuchoice> allows jumping to the <xref linkend="prefs_toolbar_customize"/> directly.</para>
+</section>
+
 <section id="projection" xreflabel="Projection"><title>Projections</title>
 <para>
 &appname; supports differents projections:
@@ -2313,6 +2320,28 @@ Your OSM password will be stored in plain text.
 </section>
 <section><title>Check For New Version</title>
 <para>Periodically (no more than once every 14 days), check to see if there is a new version of &appname; available.</para>
+</section>
+</section>
+
+<section id="prefs_toolbar" xreflabel="Toolbar Preferences"><title>Toolbar</title>
+<section><title>Append to Menu</title>
+<para>Allows setting the toolbar on the same vertical space as the menu, thus increasing vertical space for the map.</para>
+</section>
+<section><title>Icon Size</title>
+<para>Allows configuration of the icon size, including overiding the system's default preference to the setting desired just for &appname;</para>
+</section>
+<section><title>Icon Style</title>
+<para>Allows configuration of the icon style, including overiding the system's default preference to the setting desired just for &appname;</para>
+</section>
+<section id="prefs_toolbar_customize" xreflabel="Customize Toolbar"><title>Customize</title>
+<para>Opens the Customize Toolbar dialog.</para>
+<para>From this dialog the items in the toolbar can be added, removed and reordered. Reordering of items is performed by drag and drop.</para>
+<figure>
+<title>Customize Toolbar dialog</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/customize_toolbar_dialog.png"/>
+</screenshot>
+</figure>
 </section>
 </section>
 
