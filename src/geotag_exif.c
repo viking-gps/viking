@@ -709,5 +709,7 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 		utime ( filename, &utb );
 	}
 
+	exif_data_free ( ed );
+
 	return result;
 }
