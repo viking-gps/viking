@@ -4,7 +4,9 @@
 
 int main(int argc, char *argv[])
 {
-  g_type_init ();
+#if !GLIB_CHECK_VERSION (2, 36, 0)
+  g_type_init();
+#endif
   VikLayer *vl = vik_layer_create (VIK_LAYER_TRW, NULL, FALSE);
   VikTrwLayer *trw = VIK_TRW_LAYER (vl);
   a_gpx_read_file(trw, stdin);

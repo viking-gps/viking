@@ -14,8 +14,10 @@ void parse(VikGotoTool *tool, gchar *filename)
 
 int main(int argc, char *argv[])
 {
+#if !GLIB_CHECK_VERSION (2, 36, 0)
   g_type_init();
-  
+#endif
+
   VikGotoXmlTool *with_element = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM",
     "url-format", "http://ws.geonames.org/search?q=%s&maxRows=1&lang=es&style=short",
     "lat-path", "/geonames/geoname/lat",
