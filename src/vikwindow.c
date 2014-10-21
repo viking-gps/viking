@@ -44,6 +44,7 @@
 #include "vikmapslayer.h"
 #include "geonamessearch.h"
 #include "vikutils.h"
+#include "dir.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -731,6 +732,8 @@ static void toolbar_reload_cb ( GtkActionGroup *grp, gpointer gp )
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_PNG "window_save_image_as_png"
 #define VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT "window_copy_centre_full_format"
 
+#define VIKING_ACCELERATOR_KEY_FILE "keys.rc"
+
 static void vik_window_init ( VikWindow *vw )
 {
   vw->action_group = NULL;
@@ -907,6 +910,10 @@ static void vik_window_init ( VikWindow *vw )
   // Set the default tool + mode
   gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
   gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "ModeMercator" ) );
+
+  gchar *accel_file_name = g_build_filename ( a_get_viking_dir(), VIKING_ACCELERATOR_KEY_FILE, NULL );
+  gtk_accel_map_load ( accel_file_name );
+  g_free ( accel_file_name );
 }
 
 static VikWindow *window_new ()
@@ -1062,6 +1069,10 @@ static gboolean delete_event( VikWindow *vw )
     a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, vw->draw_image_width );
     a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT, vw->draw_image_height );
     a_settings_set_boolean ( VIK_SETTINGS_WIN_SAVE_IMAGE_PNG, vw->draw_image_save_as_png );
+
+    gchar *accel_file_name = g_build_filename ( a_get_viking_dir(), VIKING_ACCELERATOR_KEY_FILE, NULL );
+    gtk_accel_map_save ( accel_file_name );
+    g_free ( accel_file_name );
   }
 
   return FALSE;

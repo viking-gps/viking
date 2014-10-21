@@ -325,7 +325,7 @@ This is to increase the compatibility between &appname; and similar applications
 &appname; has several shortcut keys or key combinations for commands as listed in the main window along side the command.
 </para>
 <para>
-Some function keys follow standard GUI behaviour:
+By default some function keys follow standard GUI behaviour:
 </para>
 <itemizedlist>
 <listitem><para><keycap>F1</keycap> Help (view this manual)</para></listitem>
@@ -362,10 +362,31 @@ Then there are shortcuts specific to &appname; to switch projection modes, zoom 
 <listitem><para><keycap>Ctrl+Left</keycap> Pan the viewport West</para></listitem>
 <listitem><para><keycap>Ctrl+Keypad+</keycap> Zoom In</para></listitem>
 <listitem><para><keycap>Ctrl+Keypad-</keycap> Zoom Out</para></listitem>
-<listitem><note><para>These work irrespective of the <xref linkend="tools"/> mode selected</para></note></listitem>
 </itemizedlist>
+<important><para>These work irrespective of the <xref linkend="tools"/> mode selected</para></important>
 For other combinations see the menu entry themselves.
 </para>
+</section>
+
+<section>
+<title>Keyboard Configuration</title>
+<para>Keyboard configuration is supported by the standard GTK+ way of changing shortcuts for menu entries.</para>
+<para>Hover over the menu option with the mouse pointer and press the keyboard shortcut you want to bind it to.</para>
+<para>To delete a keyboard assignment, press <keycap>Backspace</keycap> whilst over the menu entry.</para>
+<note>
+<para>
+	If the keyboard shortcut is already in use you will not receive any notification that new action replaces the old action.
+	This is probably why most distributions have this facility disabled by default.
+	Thus you will need to enable <emphasis>Editable menu accelerators</emphasis> for your system.
+	Check the Desktop Menu and Toolbar Control or other User Interface preferences for this setting.
+</para>
+</note>
+<note>
+<para>
+	For Windows systems this can be done by adding the line <emphasis>gtk-can-change-accels=1</emphasis> to <filename>%USERPROFILE%\.gtkrc-2.0</filename> (create the file if it does not exist).
+</para>
+</note>
+<para>From &app; 1.6+ the keyboard configuration is automatically loaded and saved between sessions in the <xref linkend="config_keys"/></para>
 </section>
 
 <section><title>Tracks vs Routes</title>
@@ -3345,7 +3366,15 @@ Accept: */*
           </variablelist>
 	  </para>
 	</section>
+
       </section>
+
+    <section id="config_keys" xreflabel="Keyboard Shortcuts File">
+      <title>Keyboard Shortcuts (Accelerator) Settings</title>
+      <para>This is held in the file <filename>~/.viking/keys.rc</filename></para>
+      <para>It is in the standard GTK Accelerator map format. Values are automatically read in and saved between &app; sessions.</para>
+      <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
+    </section>
 
 </section>
 <!-- End of Extending Viking -->

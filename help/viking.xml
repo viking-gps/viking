@@ -530,6 +530,13 @@ and docbook-xsl in your Build-Depends control field.
         </listitem>
       </varlistentry>
       <varlistentry>
+        <term><filename>~/.viking/keys.rc</filename></term>
+        <listitem>
+          <para>File containing short cut key accelerators.</para>
+          <para>This is in the standard GTK Accelerator map format.</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><filename>~/.viking/cookies.txt</filename></term>
         <listitem>
           <para>File hosting cookies used by &dhpackage;.</para>
