@@ -1074,38 +1074,42 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
     }
   }
 
-  // gather waypoints in a list, then sort
-  // g_hash_table_get_values: glib 2.14+
-  GList *gl = g_hash_table_get_values ( vik_trw_layer_get_waypoints ( vtl ) );
-  gl = g_list_sort ( gl, gpx_waypoint_compare );
+  if ( vik_trw_layer_get_waypoints_visibility(vtl) || (options && options->hidden) ) {
+    // gather waypoints in a list, then sort
+    GList *gl = g_hash_table_get_values ( vik_trw_layer_get_waypoints ( vtl ) );
+    gl = g_list_sort ( gl, gpx_waypoint_compare );
 
-  GList *iter;
-  for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
-    gpx_write_waypoint ( (VikWaypoint*)iter->data, &context );
+    for (GList *iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
+      gpx_write_waypoint ( (VikWaypoint*)iter->data, &context );
+    }
+    g_list_free ( gl );
   }
 
-  g_list_free ( gl );
+  GList *gl = NULL;
+  if ( vik_trw_layer_get_tracks_visibility(vtl) || (options && options->hidden) ) {
+    //gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
+    // Forming the list manually seems to produce one that is more likely to be nearer to the creation order
+    gpointer key, value;
+    GHashTableIter ght_iter;
+    g_hash_table_iter_init ( &ght_iter, vik_trw_layer_get_tracks ( vtl ) );
+    while ( g_hash_table_iter_next (&ght_iter, &key, &value) ) {
+      gl = g_list_prepend ( gl ,value );
+    }
+    gl = g_list_reverse ( gl );
 
-  //gl = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
-  // Forming the list manually seems to produce one that is more likely to be nearer to the creation order
-  gl = NULL;
-  gpointer key, value;
-  GHashTableIter ght_iter;
-  g_hash_table_iter_init ( &ght_iter, vik_trw_layer_get_tracks ( vtl ) );
-  while ( g_hash_table_iter_next (&ght_iter, &key, &value) ) {
-    gl = g_list_prepend ( gl ,value );
+    // Sort method determined by preference
+    if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_TIME )
+      gl = g_list_sort ( gl, vik_track_compare_timestamp );
+    else if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_ALPHA )
+      gl = g_list_sort ( gl, gpx_track_compare_name );
   }
-  gl = g_list_reverse ( gl );
 
-  // Sort method determined by preference
-  if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_TIME )
-    gl = g_list_sort ( gl, vik_track_compare_timestamp );
-  else if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_ALPHA )
-    gl = g_list_sort ( gl, gpx_track_compare_name );
-
+  GList *glrte = NULL;
   // Routes sorted by name
-  GList *glrte = g_hash_table_get_values ( vik_trw_layer_get_routes ( vtl ) );
-  glrte = g_list_sort ( glrte, gpx_track_compare_name );
+  if ( vik_trw_layer_get_tracks_visibility(vtl) || (options && options->hidden) ) {
+    glrte = g_hash_table_get_values ( vik_trw_layer_get_routes ( vtl ) );
+    glrte = g_list_sort ( glrte, gpx_track_compare_name );
+  }
 
   // g_list_concat doesn't copy memory properly
   // so process each list separately
@@ -1118,13 +1122,13 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
   context_tmp.options->is_route = FALSE;
 
   // Loop around each list and write each one
-  for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
+  for (GList *iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
     gpx_write_track ( (VikTrack*)iter->data, &context_tmp );
   }
 
   // Routes (to get routepoints)
   context_tmp.options->is_route = TRUE;
-  for (iter = g_list_first (glrte); iter != NULL; iter = g_list_next (iter)) {
+  for (GList *iter = g_list_first (glrte); iter != NULL; iter = g_list_next (iter)) {
     gpx_write_track ( (VikTrack*)iter->data, &context_tmp );
   }
 

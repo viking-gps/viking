@@ -60,7 +60,8 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
     {
       gtk_widget_hide ( file_selector );
       vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-      failed = ! a_file_export ( vtl, fn, file_type, trk, TRUE );
+      // Don't Export invisible items - unless requested on this specific track
+      failed = ! a_file_export ( vtl, fn, file_type, trk, trk ? TRUE : FALSE );
       vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
       break;
     }
@@ -77,7 +78,9 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
  */
 void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external_program )
 {
-  gchar *name_used = a_gpx_write_tmp_file ( vtl, NULL );
+  // Don't Export invisible items
+  static GpxWritingOptions options = { TRUE, TRUE, FALSE, FALSE };
+  gchar *name_used = a_gpx_write_tmp_file ( vtl, &options );
 
   if ( name_used ) {
     GError *err = NULL;
