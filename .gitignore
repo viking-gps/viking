@@ -112,8 +112,11 @@ src/misc/*.o
 /test/Makefile.in
 /test/Makefile
 /test/*.o
-/test/check_degrees_conversions.sh.*
+/test/*.sh.log
+/test/*.sh.trs
 /test/test-suite.log
+/test/geotag_read
+/test/geotag_write
 /test/gpx2gpx
 /test/degrees_converter
 /test/test_vikgotoxmltool

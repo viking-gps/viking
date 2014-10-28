@@ -7,19 +7,47 @@ endif
 
 TESTS = check_degrees_conversions.sh \
 	check_metatile.sh
+if GEOTAG
+TESTS += check_geotag.sh
+endif
 
-check_PROGRAMS = degrees_converter gpx2gpx test_vikgotoxmltool test_coord_conversion test_babel test_metatile
+check_PROGRAMS = degrees_converter \
+	gpx2gpx \
+	test_vikgotoxmltool \
+	test_coord_conversion \
+	test_babel \
+	test_metatile
+
+if GEOTAG
+check_PROGRAMS += geotag_read geotag_write
+endif
 
 check_SCRIPTS = check_degrees_conversions.sh \
 	check_metatile.sh
+if GEOTAG
+check_SCRIPTS += check_geotag.sh
+endif
 
 EXTRA_DIST = check_degrees_conversions.sh \
-	check_metatile.sh
+	check_metatile.sh \
+	check_geotag.sh
 
 degrees_converter_SOURCES = degrees_converter.c
 degrees_converter_LDADD = \
   $(top_builddir)/src/degrees_converters.o \
   $(LDADD)
+
+if GEOTAG
+geotag_read_SOURCES = geotag_read.c
+geotag_read_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+geotag_write_SOURCES = geotag_write.c
+geotag_write_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+endif
 
 gpx2gpx_SOURCES = gpx2gpx.c
 gpx2gpx_LDADD = \
