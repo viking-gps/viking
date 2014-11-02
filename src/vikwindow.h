@@ -96,6 +96,7 @@ typedef struct {
   VikViewport *vvp;
   gpointer *vtl; // VikTrwlayer
   gboolean holding;
+  gboolean moving;
   gboolean is_waypoint; // otherwise a track
   GdkGC *gc;
   int oldx, oldy;

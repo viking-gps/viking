@@ -710,7 +710,7 @@ static gboolean trw_layer_paste_item ( VikTrwLayer *vtl, gint subtype, guint8 *i
 static void trw_layer_free_copied_item ( gint subtype, gpointer item );
 static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
-static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
+static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 /* End Layer Interface function definitions */
@@ -8821,7 +8821,7 @@ static void marker_moveto ( tool_ed_t *t, gint x, gint y );
 static void marker_end_move ( tool_ed_t *t );
 //
 
-static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t* t )
+static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp, tool_ed_t* t )
 {
   if ( t->holding ) {
     VikCoord new_coord;
@@ -8861,6 +8861,11 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
 {
   if ( t->holding && event->button == 1 )
   {
+    // Prevent accidental (small) shifts when specific movement has not been requested
+    //  (as the click release has occurred within the click object detection area)
+    if ( !t->moving )
+      return FALSE;
+
     VikCoord new_coord;
     vik_viewport_screen_to_coord ( vvp, event->x, event->y, &new_coord );
 
@@ -9183,6 +9188,7 @@ static void marker_begin_move ( tool_ed_t *t, gint x, gint y )
   vik_viewport_sync(t->vvp);
   t->oldx = x;
   t->oldy = y;
+  t->moving = FALSE;
 }
 
 static void marker_moveto ( tool_ed_t *t, gint x, gint y )
@@ -9192,6 +9198,7 @@ static void marker_moveto ( tool_ed_t *t, gint x, gint y )
   vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, x-3, y-3, 6, 6 );
   t->oldx = x;
   t->oldy = y;
+  t->moving = TRUE;
 
   if (tool_sync_done) {
     g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, tool_sync, vvp, NULL);
@@ -9204,6 +9211,7 @@ static void marker_end_move ( tool_ed_t *t )
   vik_viewport_draw_rectangle ( t->vvp, t->gc, FALSE, t->oldx-3, t->oldy-3, 6, 6 );
   g_object_unref ( t->gc );
   t->holding = FALSE;
+  t->moving = FALSE;
 }
 
 /*** Edit waypoint ****/

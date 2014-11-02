@@ -191,6 +191,7 @@ struct _VikWindow {
   gboolean show_toolbar;
   gboolean show_main_menu;
 
+  gboolean select_move;
   gboolean pan_move;
   gint pan_x, pan_y;
   gint delayed_pan_x, delayed_pan_y; // Temporary storage
@@ -754,7 +755,8 @@ static void vik_window_init ( VikWindow *vw )
   vw->loaded_type = LOAD_TYPE_READ_FAILURE; //AKA none
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
- 
+
+  vw->select_move = FALSE;
   vw->pan_move = FALSE; 
   vw->pan_x = vw->pan_y = -1;
   vw->single_click_pending = FALSE;
@@ -2147,6 +2149,7 @@ static void click_layer_selected (VikLayer *vl, clicker *ck)
 
 static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
+  t->vw->select_move = FALSE;
   /* Only allow selection on primary button */
   if ( event->button == 1 ) {
     /* Enable click to apply callback to potentially all track/waypoint layers */
@@ -2177,6 +2180,10 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
 	}
       }
     }
+    else {
+      // Something found - so enable movement
+      t->vw->select_move = TRUE;
+    }
   }
   else if ( ( event->button == 3 ) && ( vl && ( vl->type == VIK_LAYER_TRW ) ) ) {
     if ( vl->visible )
@@ -2189,27 +2196,30 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
   return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
+static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventMotion *event, tool_ed_t *t)
 {
-  /* Only allow selection on primary button */
-  if ( event->button == 1 ) {
+  if ( t->vw->select_move ) {
     // Don't care about vl here
     if ( t->vtl )
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_move )
-	vik_layer_get_interface(VIK_LAYER_TRW)->select_move ( vl, event, t->vvp, t );
+        vik_layer_get_interface(VIK_LAYER_TRW)->select_move ( vl, event, t->vvp, t );
   }
   return VIK_LAYER_TOOL_ACK;
 }
 
 static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
-  /* Only allow selection on primary button */
+  /* Only allow deselection on primary button */
   if ( event->button == 1 ) {
     // Don't care about vl here
     if ( t->vtl )
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_release )
-	vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
+        vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
   }
+
+  // End of this select movement
+  t->vw->select_move = FALSE;
+
   return VIK_LAYER_TOOL_ACK;
 }
 
