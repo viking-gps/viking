@@ -178,7 +178,7 @@ gdouble convert_dms_to_dec(const gchar *dms)
 			gdouble value;
 			ptr = strpbrk (endptr, "0123456789,.");
 			if (ptr != NULL) {
-				gchar *tmpptr = endptr;
+				const gchar *tmpptr = endptr;
 				value = g_strtod((const gchar *)ptr, (gchar **)&endptr);
 				// Detect when endptr hasn't changed (which may occur if no conversion took place)
 				//  particularly if the last character is a ',' or there are multiple '.'s like '5.5.'
