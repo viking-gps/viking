@@ -64,7 +64,7 @@ static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp );
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp );
 static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp );
 static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image );
-static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWindow *w );
+static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w );
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file );
 
 /* tools */
@@ -353,7 +353,7 @@ static VikGeorefLayer *georef_layer_create ( VikViewport *vp )
 
 static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp )
 {
-  return georef_layer_dialog ( &vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp) );
+  return georef_layer_dialog ( vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp) );
 }
 
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file )
@@ -497,7 +497,7 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
 }
 
 /* returns TRUE if OK was pressed. */
-static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWindow *w )
+static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Layer Properties"),
                                                   w,
@@ -546,26 +546,12 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
   imagelabel = gtk_label_new ( _("Map Image:") );
   imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE);
 
-  if (*vgl)
-  {
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(ce_spin), (*vgl)->corner.easting );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cn_spin), (*vgl)->corner.northing );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(xspin), (*vgl)->mpp_easting );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(yspin), (*vgl)->mpp_northing );
-    if ( (*vgl)->image )
-    vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), (*vgl)->image );
-  }
-  else
-  {
-    VikCoord corner_coord;
-    struct UTM utm;
-    vik_viewport_screen_to_coord ( VIK_VIEWPORT(vp), 0, 0, &corner_coord );
-    vik_coord_to_utm ( &corner_coord, &utm );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(ce_spin), utm.easting );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cn_spin), utm.northing );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(xspin), vik_viewport_get_xmpp ( VIK_VIEWPORT(vp) ) );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(yspin), vik_viewport_get_ympp ( VIK_VIEWPORT(vp) ) );
-  }
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(ce_spin), vgl->corner.easting );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cn_spin), vgl->corner.northing );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(xspin), vgl->mpp_easting );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(yspin), vgl->mpp_northing );
+  if ( vgl->image )
+    vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), vgl->image );
 
   gtk_table_attach_defaults ( GTK_TABLE(table), imagelabel, 0, 1, 0, 1 );
   gtk_table_attach_defaults ( GTK_TABLE(table), imageentry, 1, 2, 0, 1 );
@@ -592,19 +578,14 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
-    if (! *vgl)
+    vgl->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(ce_spin) );
+    vgl->corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cn_spin) );
+    vgl->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(xspin) );
+    vgl->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(yspin) );
+    if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) ) != 0 )
     {
-      *vgl = georef_layer_new ( VIK_VIEWPORT(vp) );
-       vik_layer_rename ( VIK_LAYER(*vgl), vik_georef_layer_interface.name );
-    }
-    (*vgl)->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(ce_spin) );
-    (*vgl)->corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cn_spin) );
-    (*vgl)->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(xspin) );
-    (*vgl)->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(yspin) );
-    if ( (!(*vgl)->image) || strcmp( (*vgl)->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) ) != 0 )
-    {
-      georef_layer_set_image ( *vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) );
-      georef_layer_load_image ( *vgl, VIK_VIEWPORT(vp), FALSE );
+      georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) );
+      georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
     }
 
     gtk_widget_destroy ( GTK_WIDGET(dialog) );
