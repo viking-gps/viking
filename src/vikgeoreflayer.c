@@ -281,9 +281,6 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
 
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 {
-  if ( vik_viewport_get_drawmode(vp) != VIK_VIEWPORT_DRAWMODE_UTM )
-    return;
-
   if ( vgl->pixbuf )
   {
     struct UTM utm_middle;
@@ -385,15 +382,6 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboo
   {
     vgl->width = gdk_pixbuf_get_width ( vgl->pixbuf );
     vgl->height = gdk_pixbuf_get_height ( vgl->pixbuf );
-  }
-
-  if ( !from_file )
-  {
-    if ( vik_viewport_get_drawmode(vp) != VIK_VIEWPORT_DRAWMODE_UTM )
-    {
-      a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
-                             _("GeoRef map cannot be displayed in the current drawmode.\nSelect \"UTM Mode\" from View menu to view it.") );
-    }
   }
   /* should find length and width here too */
 }
