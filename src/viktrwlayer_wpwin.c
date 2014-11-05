@@ -165,7 +165,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   descriptionentry = gtk_entry_new ();
 
   imagelabel = gtk_label_new (_("Image:"));
-  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE);
+  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, NULL, NULL);
 
   {
     GtkCellRenderer *r;

@@ -36,6 +36,8 @@ struct _VikFileEntry {
   GtkWidget *file_selector;
   GtkFileChooserAction action;
   gint filter_type;
+  VikFileEntryFunc on_finish;
+  gpointer user_data;
 };
 
 GType vik_file_entry_get_type (void)
@@ -63,14 +65,16 @@ GType vik_file_entry_get_type (void)
 }
 
 /**
- * Create a file entry with an optional file filter
+ * Create a file entry with an optional file filter and an optional callback on completion
  */
-GtkWidget *vik_file_entry_new (GtkFileChooserAction action, vf_filter_type filter_type)
+GtkWidget *vik_file_entry_new (GtkFileChooserAction action, vf_filter_type filter_type, VikFileEntryFunc cb, gpointer user_data )
 {
   VikFileEntry *vfe = VIK_FILE_ENTRY ( g_object_new ( VIK_FILE_ENTRY_TYPE, NULL ) );
   vfe->entry = gtk_entry_new ();
   vfe->button = gtk_button_new_with_label ( _("Browse...") );
   vfe->action = action;
+  vfe->on_finish = cb;
+  vfe->user_data = user_data;
   g_signal_connect_swapped ( G_OBJECT(vfe->button), "clicked", G_CALLBACK(choose_file), vfe );
 
   gtk_box_pack_start ( GTK_BOX(vfe), vfe->entry, TRUE, TRUE, 3 );
@@ -146,8 +150,11 @@ static void choose_file ( VikFileEntry *vfe )
     }
   }
 
-  if ( gtk_dialog_run ( GTK_DIALOG(vfe->file_selector) ) == GTK_RESPONSE_ACCEPT )
+  if ( gtk_dialog_run ( GTK_DIALOG(vfe->file_selector) ) == GTK_RESPONSE_ACCEPT ) {
     gtk_entry_set_text ( GTK_ENTRY (vfe->entry), gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(vfe->file_selector) ) );
+    // Ideally this should only be called if the entry has changed, but ATM it's any time OK is selected.
+    if ( vfe->on_finish )
+      vfe->on_finish(vfe, vfe->user_data);
+  }
   gtk_widget_hide ( vfe->file_selector );
 }
-
