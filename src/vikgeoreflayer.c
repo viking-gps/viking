@@ -32,6 +32,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "preferences.h"
 #include "icons/icons.h"
 /*
 static VikLayerParamData image_default ( void )
@@ -165,7 +166,17 @@ struct _VikGeorefLayer {
   gint click_x, click_y;
 };
 
+static VikLayerParam io_prefs[] = {
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "georef_auto_read_world_file", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Read World Files:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Automatically attempt to read associated world file of a new image for a GeoRef layer"), NULL, NULL, NULL}
+};
 
+void vik_georef_layer_init (void)
+{
+  VikLayerParamData tmp;
+  tmp.b = TRUE;
+  a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+}
 
 GType vik_georef_layer_get_type ()
 {
@@ -528,6 +539,42 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
    gtk_widget_destroy ( file_selector ); 
 }
 
+/**
+ * Auto attempt to read the world file associated with the image used for the georef
+ *  Based on simple file name conventions
+ * Only attempted if the preference is on.
+ */
+static void maybe_read_world_file ( VikFileEntry *vfe, gpointer user_data )
+{
+  if ( a_preferences_get (VIKING_PREFERENCES_IO_NAMESPACE "georef_auto_read_world_file")->b ) {
+    const gchar* filename = vik_file_entry_get_filename(VIK_FILE_ENTRY(vfe));
+    gdouble values[4];
+    if ( filename && user_data ) {
+
+      changeable_widgets *cw = user_data;
+
+      gboolean upper = g_ascii_isupper (filename[strlen(filename)-1]);
+      gchar* filew = g_strconcat ( filename, (upper ? "W" : "w") , NULL );
+
+      if ( world_file_read_file ( filew, values ) == 0 ) {
+        set_widget_values ( cw, values );
+      }
+      else {
+        if ( strlen(filename) > 3 ) {
+          gchar* file0 = g_strndup ( filename, strlen(filename)-2 );
+          gchar* file1 = g_strdup_printf ( "%s%c%c", file0, filename[strlen(filename)-1], (upper ? 'W' : 'w')  );
+          if ( world_file_read_file ( file1, values ) == 0 ) {
+            set_widget_values ( cw, values );
+          }
+          g_free ( file1 );
+          g_free ( file0 );
+        }
+      }
+      g_free ( filew );
+    }
+  }
+}
+
 /* returns TRUE if OK was pressed. */
 static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w )
 {
@@ -575,7 +622,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
   gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.y_spin), _("the scale of the map in the Y direction (meters per pixel)") );
 
   imagelabel = gtk_label_new ( _("Map Image:") );
-  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, NULL, NULL);
+  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, maybe_read_world_file, &cw);
 
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.ce_spin), vgl->corner.easting );
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.cn_spin), vgl->corner.northing );

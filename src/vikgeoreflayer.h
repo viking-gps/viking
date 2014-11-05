@@ -42,6 +42,8 @@ GType vik_georef_layer_get_type ();
 
 typedef struct _VikGeorefLayer VikGeorefLayer;
 
+void vik_georef_layer_init (void);
+
 G_END_DECLS
 
 #endif
