@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "preferences.h"
 #include "icons/icons.h"
@@ -49,9 +51,19 @@ VikLayerParam georef_layer_params[] = {
   { VIK_LAYER_GEOREF, "corner_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "mpp_easting", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "mpp_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "corner_zone", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "corner_letter_as_int", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
-enum { PARAM_IMAGE = 0, PARAM_CE, PARAM_CN, PARAM_ME, PARAM_MN, NUM_PARAMS };
+enum {
+  PARAM_IMAGE = 0,
+  PARAM_CE,
+  PARAM_CN,
+  PARAM_ME,
+  PARAM_MN,
+  PARAM_CZ,
+  PARAM_CL,
+  NUM_PARAMS };
 
 static const gchar* georef_layer_tooltip ( VikGeorefLayer *vgl );
 static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len );
@@ -152,18 +164,38 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncSelectedViewportMenu)    NULL,
 };
 
+typedef struct {
+  GtkWidget *x_spin;
+  GtkWidget *y_spin;
+  // UTM widgets
+  GtkWidget *ce_spin; // top left
+  GtkWidget *cn_spin; //    "
+  GtkWidget *utm_zone_spin;
+  GtkWidget *utm_letter_entry;
+
+  GtkWidget *lat_tl_spin;
+  GtkWidget *lon_tl_spin;
+  GtkWidget *lat_br_spin;
+  GtkWidget *lon_br_spin;
+  //
+  GtkWidget *tabs;
+  GtkWidget *imageentry;
+} changeable_widgets;
+
 struct _VikGeorefLayer {
   VikLayer vl;
   gchar *image;
   GdkPixbuf *pixbuf;
-  struct UTM corner;
+  struct UTM corner; // Top Left
   gdouble mpp_easting, mpp_northing;
+  struct LatLon ll_br; // Bottom Right
   guint width, height;
 
   GdkPixbuf *scaled;
   guint32 scaled_width, scaled_height;
 
   gint click_x, click_y;
+  changeable_widgets cw;
 };
 
 static VikLayerParam io_prefs[] = {
@@ -230,7 +262,9 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLay
     case PARAM_CN: vgl->corner.northing = data.d; break;
     case PARAM_CE: vgl->corner.easting = data.d; break;
     case PARAM_MN: vgl->mpp_northing = data.d; break;
-    case PARAM_ME:  vgl->mpp_easting = data.d; break;
+    case PARAM_ME: vgl->mpp_easting = data.d; break;
+    case PARAM_CZ: if ( data.u <= 60 ) vgl->corner.zone = data.u; break;
+    case PARAM_CL: if ( data.u >= 65 || data.u <= 90 ) vgl->corner.letter = data.u; break;
     default: break;
   }
   return TRUE;
@@ -261,6 +295,8 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
     case PARAM_CE: rv.d = vgl->corner.easting; break;
     case PARAM_MN: rv.d = vgl->mpp_northing; break;
     case PARAM_ME: rv.d = vgl->mpp_easting; break;
+    case PARAM_CZ: rv.u = vgl->corner.zone; break;
+    case PARAM_CL: rv.u = vgl->corner.letter; break;
     default: break;
   }
   return rv;
@@ -287,6 +323,8 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   vgl->scaled = NULL;
   vgl->scaled_width = 0;
   vgl->scaled_height = 0;
+  vgl->ll_br.lat = 0.0;
+  vgl->ll_br.lon = 0.0;
   return vgl;
 }
 
@@ -294,18 +332,13 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 {
   if ( vgl->pixbuf )
   {
-    struct UTM utm_middle;
     gdouble xmpp = vik_viewport_get_xmpp(vp), ympp = vik_viewport_get_ympp(vp);
     GdkPixbuf *pixbuf = vgl->pixbuf;
     guint layer_width = vgl->width;
     guint layer_height = vgl->height;
 
-    vik_coord_to_utm ( vik_viewport_get_center ( vp ), &utm_middle );
-
     guint width = vik_viewport_get_width(vp), height = vik_viewport_get_height(vp);
     gint32 x, y;
-    vgl->corner.zone = utm_middle.zone;
-    vgl->corner.letter = utm_middle.letter;
     VikCoord corner_coord;
     vik_coord_load_from_utm ( &corner_coord, vik_viewport_get_coord_mode(vp), &(vgl->corner) );
     vik_viewport_coord_to_screen ( vp, &corner_coord, &x, &y );
@@ -414,13 +447,6 @@ static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image )
   else
     vgl->image = g_strdup (image);
 }
-
-typedef struct {
-  GtkWidget *ce_spin;
-  GtkWidget *cn_spin;
-  GtkWidget *x_spin;
-  GtkWidget *y_spin;
-} changeable_widgets;
 
 // Only positive values allowed here
 static void gdouble2spinwidget ( GtkWidget *widget, gdouble val )
@@ -575,6 +601,148 @@ static void maybe_read_world_file ( VikFileEntry *vfe, gpointer user_data )
   }
 }
 
+static struct LatLon get_ll_tl (VikGeorefLayer *vgl)
+{
+  struct LatLon ll_tl;
+  ll_tl.lat = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lat_tl_spin) );
+  ll_tl.lon = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lon_tl_spin) );
+  return ll_tl;
+}
+
+static struct LatLon get_ll_br (VikGeorefLayer *vgl)
+{
+  struct LatLon ll_br;
+  ll_br.lat = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lat_br_spin) );
+  ll_br.lon = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lon_br_spin) );
+  return ll_br;
+}
+
+// Align displayed UTM values with displayed Lat/Lon values
+static void align_utm2ll (VikGeorefLayer *vgl)
+{
+  struct LatLon ll_tl = get_ll_tl (vgl);
+
+  struct UTM utm;
+  a_coords_latlon_to_utm ( &ll_tl, &utm );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.ce_spin), utm.easting );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.cn_spin), utm.northing );
+
+  gchar tmp_letter[2];
+  tmp_letter[0] = utm.letter;
+  tmp_letter[1] = '\0';
+  gtk_entry_set_text ( GTK_ENTRY(vgl->cw.utm_letter_entry), tmp_letter );
+
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.utm_zone_spin), utm.zone );
+}
+
+// Align displayed Lat/Lon values with displayed UTM values
+static void align_ll2utm (VikGeorefLayer *vgl)
+{
+  struct UTM corner;
+  const gchar *letter = gtk_entry_get_text ( GTK_ENTRY(vgl->cw.utm_letter_entry) );
+  if (*letter)
+    corner.letter = toupper(*letter);
+  corner.zone = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(vgl->cw.utm_zone_spin) );
+  corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.ce_spin) );
+  corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.cn_spin) );
+
+  struct LatLon ll;
+  a_coords_utm_to_latlon ( &corner, &ll );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.lat_tl_spin), ll.lat );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.lon_tl_spin), ll.lon );
+}
+
+/**
+ * Align coordinates between tabs as the user may have changed the values
+ *   Use this before acting on the user input
+ * This is easier then trying to use the 'value-changed' signal for each individual coordinate
+ *  especiallly since it tends to end up in an infinite loop continually updating each other.
+ */
+static void align_coords ( VikGeorefLayer *vgl )
+{
+  if (gtk_notebook_get_current_page(GTK_NOTEBOOK(vgl->cw.tabs)) == 0)
+    align_ll2utm ( vgl );
+  else
+    align_utm2ll ( vgl );
+}
+
+static void switch_tab (GtkNotebook *notebook, gpointer tab, guint tab_num, gpointer user_data)
+{
+  VikGeorefLayer *vgl = user_data;
+  if ( tab_num == 0 )
+    align_utm2ll (vgl);
+  else
+    align_ll2utm (vgl);
+}
+
+/**
+ *
+ */
+static void check_br_is_good_or_msg_user ( VikGeorefLayer *vgl )
+{
+  // if a 'blank' ll value that's alright
+  if ( vgl->ll_br.lat == 0.0 && vgl->ll_br.lon == 0.0 )
+    return;
+
+  struct LatLon ll_tl = get_ll_tl (vgl);
+  if ( ll_tl.lat < vgl->ll_br.lat || ll_tl.lon > vgl->ll_br.lon )
+    a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vgl), _("Lower right corner values may not be consistent with upper right values") );
+}
+
+/**
+ *
+ */
+static void calculate_mpp_from_coords ( GtkWidget *ww, VikGeorefLayer *vgl )
+{
+  const gchar* filename = vik_file_entry_get_filename(VIK_FILE_ENTRY(vgl->cw.imageentry));
+  if ( !filename ) {
+    return;
+  }
+  GError *gx = NULL;
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( filename, &gx );
+  if ( gx ) {
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(ww), _("Couldn't open image file: %s"), gx->message );
+    g_error_free ( gx );
+    return;
+  }
+
+  guint width = gdk_pixbuf_get_width ( pixbuf );
+  guint height = gdk_pixbuf_get_height ( pixbuf );
+
+  if ( width == 0 || height == 0 ) {
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(ww), _("Invalid image size: %s"), filename);
+  }
+  else {
+    align_coords ( vgl );
+
+    struct LatLon ll_tl = get_ll_tl (vgl);
+    struct LatLon ll_br = get_ll_br (vgl);
+
+    struct LatLon ll_tr;
+    ll_tr.lat = ll_tl.lat;
+    ll_tr.lon = ll_br.lon;
+
+    struct LatLon ll_bl;
+    ll_bl.lat = ll_br.lat;
+    ll_bl.lon = ll_tl.lon;
+
+    gdouble diffx = a_coords_latlon_diff ( &ll_tl, &ll_tr );
+    gdouble xmpp = diffx / width;
+
+    gdouble diffy = a_coords_latlon_diff ( &ll_tl, &ll_bl );
+    gdouble ympp = diffy / height;
+
+    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.x_spin), xmpp );
+    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.y_spin), ympp );
+
+    check_br_is_good_or_msg_user ( vgl );
+  }
+
+  g_object_unref ( G_OBJECT(pixbuf) );
+}
+
+#define VIK_SETTINGS_GEOREF_TAB "georef_coordinate_tab"
+
 /* returns TRUE if OK was pressed. */
 static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w )
 {
@@ -592,11 +760,12 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
 #if GTK_CHECK_VERSION (2, 20, 0)
   response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
 #endif
-  GtkWidget *table, *wfp_hbox, *wfp_label, *wfp_button, *ce_label, *cn_label, *xlabel, *ylabel, *imagelabel, *imageentry;
+  GtkWidget *table, *wfp_hbox, *wfp_label, *wfp_button, *ce_label, *cn_label, *xlabel, *ylabel, *imagelabel;
   changeable_widgets cw;
 
-  table = gtk_table_new ( 6, 2, FALSE );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0 );
+  GtkBox *dgbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  table = gtk_table_new ( 4, 2, FALSE );
+  gtk_box_pack_start ( dgbox, table, TRUE, TRUE, 0 );
 
   wfp_hbox = gtk_hbox_new ( FALSE, 0 );
   wfp_label = gtk_label_new ( _("World File Parameters:") );
@@ -622,45 +791,123 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
   gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.y_spin), _("the scale of the map in the Y direction (meters per pixel)") );
 
   imagelabel = gtk_label_new ( _("Map Image:") );
-  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, maybe_read_world_file, &cw);
+  cw.imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, maybe_read_world_file, &cw);
 
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.ce_spin), vgl->corner.easting );
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.cn_spin), vgl->corner.northing );
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.x_spin), vgl->mpp_easting );
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.y_spin), vgl->mpp_northing );
   if ( vgl->image )
-    vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), vgl->image );
+    vik_file_entry_set_filename ( VIK_FILE_ENTRY(cw.imageentry), vgl->image );
 
   gtk_table_attach_defaults ( GTK_TABLE(table), imagelabel, 0, 1, 0, 1 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), imageentry, 1, 2, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), cw.imageentry, 1, 2, 0, 1 );
   gtk_table_attach_defaults ( GTK_TABLE(table), wfp_hbox, 0, 2, 1, 2 );
   gtk_table_attach_defaults ( GTK_TABLE(table), xlabel, 0, 1, 2, 3 );
   gtk_table_attach_defaults ( GTK_TABLE(table), cw.x_spin, 1, 2, 2, 3 );
   gtk_table_attach_defaults ( GTK_TABLE(table), ylabel, 0, 1, 3, 4 );
   gtk_table_attach_defaults ( GTK_TABLE(table), cw.y_spin, 1, 2, 3, 4 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), ce_label, 0, 1, 4, 5 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), cw.ce_spin, 1, 2, 4, 5 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), cn_label, 0, 1, 5, 6 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), cw.cn_spin, 1, 2, 5, 6 );
+
+  cw.tabs = gtk_notebook_new();
+  GtkWidget *table_utm = gtk_table_new ( 3, 2, FALSE );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), ce_label, 0, 1, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), cw.ce_spin, 1, 2, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), cn_label, 0, 1, 1, 2 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), cw.cn_spin, 1, 2, 1, 2 );
+
+  GtkWidget *utm_hbox = gtk_hbox_new ( FALSE, 0 );
+  cw.utm_zone_spin = gtk_spin_button_new ((GtkAdjustment*)gtk_adjustment_new( vgl->corner.zone, 1, 60, 1, 5, 0 ), 1, 0 );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), gtk_label_new(_("Zone:")), TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), cw.utm_zone_spin, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), gtk_label_new(_("Letter:")), TRUE, TRUE, 0 );
+  cw.utm_letter_entry = gtk_entry_new ();
+  gtk_entry_set_max_length ( GTK_ENTRY(cw.utm_letter_entry), 1 );
+  gtk_entry_set_width_chars ( GTK_ENTRY(cw.utm_letter_entry), 2 );
+  gchar tmp_letter[2];
+  tmp_letter[0] = vgl->corner.letter;
+  tmp_letter[1] = '\0';
+  gtk_entry_set_text ( GTK_ENTRY(cw.utm_letter_entry), tmp_letter );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), cw.utm_letter_entry, TRUE, TRUE, 0 );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), utm_hbox, 0, 2, 2, 3 );
+
+  // Lat/Lon
+  GtkWidget *table_ll = gtk_table_new ( 5, 2, FALSE );
+
+  GtkWidget *lat_tl_label = gtk_label_new ( _("Upper left latitude:") );
+  cw.lat_tl_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-90,90.0,0.05,0.1,0), 0.1, 6 );
+  GtkWidget *lon_tl_label = gtk_label_new ( _("Upper left longitude:") );
+  cw.lon_tl_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-180,180.0,0.05,0.1,0), 0.1, 6 );
+  GtkWidget *lat_br_label = gtk_label_new ( _("Lower right latitude:") );
+  cw.lat_br_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-90,90.0,0.05,0.1,0), 0.1, 6 );
+  GtkWidget *lon_br_label = gtk_label_new ( _("Lower right longitude:") );
+  cw.lon_br_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-180.0,180.0,0.05,0.1,0), 0.1, 6 );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lat_tl_label, 0, 1, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lat_tl_spin, 1, 2, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lon_tl_label, 0, 1, 1, 2 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lon_tl_spin, 1, 2, 1, 2 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lat_br_label, 0, 1, 2, 3 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lat_br_spin, 1, 2, 2, 3 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lon_br_label, 0, 1, 3, 4 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lon_br_spin, 1, 2, 3, 4 );
+
+  GtkWidget *calc_mpp_button = gtk_button_new_with_label ( _("Calculate MPP values from coordinates") );
+  gtk_widget_set_tooltip_text ( calc_mpp_button, _("Enter all corner coordinates before calculating the MPP values from the image size") );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), calc_mpp_button, 0, 2, 4, 5 );
+
+  VikCoord vc;
+  vik_coord_load_from_utm (&vc, VIK_COORD_LATLON, &(vgl->corner));
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lat_tl_spin), vc.north_south );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lon_tl_spin), vc.east_west );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lat_br_spin), vgl->ll_br.lat );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lon_br_spin), vgl->ll_br.lon );
+
+  gtk_notebook_append_page(GTK_NOTEBOOK(cw.tabs), GTK_WIDGET(table_utm), gtk_label_new(_("UTM")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(cw.tabs), GTK_WIDGET(table_ll), gtk_label_new(_("Latitude/Longitude")));
+  gtk_box_pack_start ( dgbox, cw.tabs, TRUE, TRUE, 0 );
+
+  vgl->cw = cw;
+
+  g_signal_connect ( G_OBJECT(vgl->cw.tabs), "switch-page", G_CALLBACK(switch_tab), vgl );
+  g_signal_connect ( G_OBJECT(calc_mpp_button), "clicked", G_CALLBACK(calculate_mpp_from_coords), vgl );
 
   g_signal_connect_swapped ( G_OBJECT(wfp_button), "clicked", G_CALLBACK(georef_layer_dialog_load), &cw );
 
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
 
-  gtk_widget_show_all ( table );
+  gtk_widget_show_all ( dialog );
+
+  // Remember setting the notebook page must be done after the widget is visible.
+  gint page_num = 0;
+  if ( a_settings_get_integer ( VIK_SETTINGS_GEOREF_TAB, &page_num ) )
+    if ( page_num < 0 || page_num > 1 )
+      page_num = 0;
+  gtk_notebook_set_current_page ( GTK_NOTEBOOK(cw.tabs), page_num );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
+    align_coords ( vgl );
+
     vgl->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.ce_spin) );
     vgl->corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.cn_spin) );
+    vgl->corner.zone = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(cw.utm_zone_spin) );
+    const gchar *letter = gtk_entry_get_text ( GTK_ENTRY(cw.utm_letter_entry) );
+    if (*letter)
+       vgl->corner.letter = toupper(*letter);
     vgl->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.x_spin) );
     vgl->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.y_spin) );
-    if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) ) != 0 )
+    vgl->ll_br = get_ll_br (vgl);
+    check_br_is_good_or_msg_user ( vgl );
+    if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 )
     {
-      georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) );
+      georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
       georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
     }
+
+    a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
 
     gtk_widget_destroy ( GTK_WIDGET(dialog) );
     return TRUE;
