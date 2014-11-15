@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include "ui_util.h"
 #include "preferences.h"
 #include "icons/icons.h"
 /*
@@ -53,6 +54,7 @@ VikLayerParam georef_layer_params[] = {
   { VIK_LAYER_GEOREF, "mpp_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "corner_zone", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "corner_letter_as_int", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
 enum {
@@ -63,6 +65,7 @@ enum {
   PARAM_MN,
   PARAM_CZ,
   PARAM_CL,
+  PARAM_AA,
   NUM_PARAMS };
 
 static const gchar* georef_layer_tooltip ( VikGeorefLayer *vgl );
@@ -186,6 +189,8 @@ struct _VikGeorefLayer {
   VikLayer vl;
   gchar *image;
   GdkPixbuf *pixbuf;
+  guint8 alpha;
+
   struct UTM corner; // Top Left
   gdouble mpp_easting, mpp_northing;
   struct LatLon ll_br; // Bottom Right
@@ -265,6 +270,7 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLay
     case PARAM_ME: vgl->mpp_easting = data.d; break;
     case PARAM_CZ: if ( data.u <= 60 ) vgl->corner.zone = data.u; break;
     case PARAM_CL: if ( data.u >= 65 || data.u <= 90 ) vgl->corner.letter = data.u; break;
+    case PARAM_AA: if ( data.u <= 255 ) vgl->alpha = data.u; break;
     default: break;
   }
   return TRUE;
@@ -297,6 +303,7 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
     case PARAM_ME: rv.d = vgl->mpp_easting; break;
     case PARAM_CZ: rv.u = vgl->corner.zone; break;
     case PARAM_CL: rv.u = vgl->corner.letter; break;
+    case PARAM_AA: rv.u = vgl->alpha; break;
     default: break;
   }
   return rv;
@@ -325,6 +332,7 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   vgl->scaled_height = 0;
   vgl->ll_br.lat = 0.0;
   vgl->ll_br.lon = 0.0;
+  vgl->alpha = 255;
   return vgl;
 }
 
@@ -426,6 +434,9 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboo
   {
     vgl->width = gdk_pixbuf_get_width ( vgl->pixbuf );
     vgl->height = gdk_pixbuf_get_height ( vgl->pixbuf );
+
+    if ( vgl->pixbuf && vgl->alpha < 255 )
+      vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
   }
   /* should find length and width here too */
 }
@@ -868,6 +879,15 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
   gtk_notebook_append_page(GTK_NOTEBOOK(cw.tabs), GTK_WIDGET(table_ll), gtk_label_new(_("Latitude/Longitude")));
   gtk_box_pack_start ( dgbox, cw.tabs, TRUE, TRUE, 0 );
 
+  GtkWidget *alpha_hbox = gtk_hbox_new ( FALSE, 0 );
+  // GTK3 => GtkWidget *alpha_scale = gtk_scale_new_with_range ( GTK_ORIENTATION_HORIZONTAL, 0, 255, 1 );
+  GtkWidget *alpha_scale = gtk_hscale_new_with_range ( 0, 255, 1 );
+  gtk_scale_set_digits ( GTK_SCALE(alpha_scale), 0 );
+  gtk_range_set_value ( GTK_RANGE(alpha_scale), vgl->alpha );
+  gtk_box_pack_start ( GTK_BOX(alpha_hbox), gtk_label_new(_("Alpha:")), TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(alpha_hbox), alpha_scale, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( dgbox, alpha_hbox, TRUE, TRUE, 0 );
+
   vgl->cw = cw;
 
   g_signal_connect ( G_OBJECT(vgl->cw.tabs), "switch-page", G_CALLBACK(switch_tab), vgl );
@@ -906,6 +926,12 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
       georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
       georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
     }
+
+    vgl->alpha = (guint8) gtk_range_get_value ( GTK_RANGE(alpha_scale) );
+    if ( vgl->pixbuf && vgl->alpha < 255 )
+      vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
+    if ( vgl->scaled && vgl->alpha < 255 )
+      vgl->scaled = ui_pixbuf_set_alpha ( vgl->scaled, vgl->alpha );
 
     a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
 
