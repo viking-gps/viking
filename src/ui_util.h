@@ -36,6 +36,8 @@ GtkWidget *ui_button_new_with_image(const gchar *stock_id, const gchar *text);
 gint ui_get_gtk_settings_integer(const gchar *property_name, gint default_value);
 GtkWidget *ui_lookup_widget(GtkWidget *widget, const gchar *widget_name);
 
+GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
+
 G_END_DECLS
 
 #endif

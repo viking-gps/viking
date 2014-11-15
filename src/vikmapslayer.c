@@ -54,6 +54,7 @@
 #include "vikmapslayer.h"
 #include "icons/icons.h"
 #include "metatile.h"
+#include "ui_util.h"
 
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
@@ -820,33 +821,6 @@ static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport 
 /****** DRAWING ******/
 /*********************/
 
-static GdkPixbuf *pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
-{
-  guchar *pixels;
-  gint width, height, iii, jjj;
-
-  if ( ! gdk_pixbuf_get_has_alpha ( pixbuf ) )
-  {
-    GdkPixbuf *tmp = gdk_pixbuf_add_alpha(pixbuf,FALSE,0,0,0);
-    g_object_unref(G_OBJECT(pixbuf));
-    pixbuf = tmp;
-    if ( !pixbuf )
-      return NULL;
-  }
-
-  pixels = gdk_pixbuf_get_pixels(pixbuf);
-  width = gdk_pixbuf_get_width(pixbuf);
-  height = gdk_pixbuf_get_height(pixbuf);
-
-  /* r,g,b,a,r,g,b,a.... */
-  for (iii = 0; iii < width; iii++) for (jjj = 0; jjj < height; jjj++)
-  {
-    pixels += 3;
-    *pixels++ = alpha;
-  }
-  return pixbuf;
-}
-
 static GdkPixbuf *pixbuf_shrink ( GdkPixbuf *pixbuf, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   GdkPixbuf *tmp;
@@ -1014,7 +988,7 @@ static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, 
 {
   // Apply alpha setting
   if ( pixbuf && vml->alpha < 255 )
-    pixbuf = pixbuf_set_alpha ( pixbuf, vml->alpha );
+    pixbuf = ui_pixbuf_set_alpha ( pixbuf, vml->alpha );
 
   if ( pixbuf && ( xshrinkfactor != 1.0 || yshrinkfactor != 1.0 ) )
     pixbuf = pixbuf_shrink ( pixbuf, xshrinkfactor, yshrinkfactor );
