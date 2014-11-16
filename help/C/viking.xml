@@ -2075,7 +2075,7 @@ For Linux you can override this with the setting in the <xref linkend="prefs_ext
 
 </section>
 
-<section><title>Georef Map Layer Tools</title>
+<section id="georef_tools"><title>Georef Map Layer Tools</title>
 <para>
 You must have a <xref linkend="GeoRef"/> Map Layer selected to use these tools.
 </para>
@@ -2274,6 +2274,10 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <section><title>GPSBabel</title>
 <para>This allows setting the specific location of GPSBabel.</para>
 <para>&appname; will need to be restarted for this setting to take effect.</para>
+</section>
+<section><title>Auto Read World Files</title>
+<para>If this is on, when a new image is selected for the GeoRef layer then the associated world file will be read to find the scale and positional properties.</para>
+<para>The associated file is based on filename patterns; e.g. if the image is <filename>filename.jpg</filename> - then the world file may be <filename>filename.jpgw</filename> or <filename>filename.jgw</filename></para>
 </section>
 </section>
 
