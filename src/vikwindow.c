@@ -2147,42 +2147,56 @@ static void click_layer_selected (VikLayer *vl, clicker *ck)
 	ck->cont = !vik_layer_get_interface(vl->type)->select_click ( vl, ck->event, ck->vvp, ck->tool_edit );
 }
 
+#ifdef WINDOWS
+// Hopefully Alt keys by default
+#define VIK_MOVE_MODIFIER GDK_MOD1_MASK
+#else
+// Alt+mouse on Linux desktops tend to be used by the desktop manager
+// Thus use an alternate modifier - you may need to set something into this group
+#define VIK_MOVE_MODIFIER GDK_MOD5_MASK
+#endif
+
 static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
   t->vw->select_move = FALSE;
   /* Only allow selection on primary button */
   if ( event->button == 1 ) {
-    /* Enable click to apply callback to potentially all track/waypoint layers */
-    /* Useful as we can find things that aren't necessarily in the currently selected layer */
-    GList* gl = vik_layers_panel_get_all_layers_of_type ( t->vw->viking_vlp, VIK_LAYER_TRW, FALSE ); // Don't get invisible layers
-    clicker ck;
-    ck.cont = TRUE;
-    ck.vvp = t->vw->viking_vvp;
-    ck.event = event;
-    ck.tool_edit = t;
-    g_list_foreach ( gl, (GFunc) click_layer_selected, &ck );
-    g_list_free ( gl );
 
-    // If nothing found then deselect & redraw screen if necessary to remove the highlight
-    if ( ck.cont ) {
-      GtkTreeIter iter;
-      VikTreeview *vtv = vik_layers_panel_get_treeview ( t->vw->viking_vlp );
-
-      if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
-	// Only clear if selected thing is a TrackWaypoint layer or a sublayer
-	gint type = vik_treeview_item_get_type ( vtv, &iter );
-	if ( type == VIK_TREEVIEW_TYPE_SUBLAYER ||
-	     VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ))->type == VIK_LAYER_TRW ) {
-   
-	  vik_treeview_item_unselect ( vtv, &iter );
-	  if ( vik_window_clear_highlight ( t->vw ) )
-	    draw_update ( t->vw );
-	}
-      }
-    }
+    if ( event->state & VIK_MOVE_MODIFIER )
+      vik_window_pan_click ( t->vw, event );
     else {
-      // Something found - so enable movement
-      t->vw->select_move = TRUE;
+      /* Enable click to apply callback to potentially all track/waypoint layers */
+      /* Useful as we can find things that aren't necessarily in the currently selected layer */
+      GList* gl = vik_layers_panel_get_all_layers_of_type ( t->vw->viking_vlp, VIK_LAYER_TRW, FALSE ); // Don't get invisible layers
+      clicker ck;
+      ck.cont = TRUE;
+      ck.vvp = t->vw->viking_vvp;
+      ck.event = event;
+      ck.tool_edit = t;
+      g_list_foreach ( gl, (GFunc) click_layer_selected, &ck );
+      g_list_free ( gl );
+
+      // If nothing found then deselect & redraw screen if necessary to remove the highlight
+      if ( ck.cont ) {
+        GtkTreeIter iter;
+        VikTreeview *vtv = vik_layers_panel_get_treeview ( t->vw->viking_vlp );
+
+        if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
+          // Only clear if selected thing is a TrackWaypoint layer or a sublayer
+          gint type = vik_treeview_item_get_type ( vtv, &iter );
+          if ( type == VIK_TREEVIEW_TYPE_SUBLAYER ||
+            VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ))->type == VIK_LAYER_TRW ) {
+   
+            vik_treeview_item_unselect ( vtv, &iter );
+            if ( vik_window_clear_highlight ( t->vw ) )
+              draw_update ( t->vw );
+          }
+        }
+      }
+      else {
+        // Something found - so enable movement
+        t->vw->select_move = TRUE;
+      }
     }
   }
   else if ( ( event->button == 3 ) && ( vl && ( vl->type == VIK_LAYER_TRW ) ) ) {
@@ -2204,18 +2218,29 @@ static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventMotion *eve
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_move )
         vik_layer_get_interface(VIK_LAYER_TRW)->select_move ( vl, event, t->vvp, t );
   }
+  else
+    // Optional Panning
+    if ( event->state & VIK_MOVE_MODIFIER )
+      vik_window_pan_move ( t->vw, event );
+
   return VIK_LAYER_TOOL_ACK;
 }
 
 static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
-  /* Only allow deselection on primary button */
-  if ( event->button == 1 ) {
+  if ( t->vw->select_move ) {
     // Don't care about vl here
     if ( t->vtl )
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_release )
         vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
   }
+
+  if ( event->button == 1 && (event->state & VIK_MOVE_MODIFIER) )
+      vik_window_pan_release ( t->vw, event );
+
+  // Force pan off incase it was on
+  t->vw->pan_move = FALSE;
+  t->vw->pan_x = t->vw->pan_y = -1;
 
   // End of this select movement
   t->vw->select_move = FALSE;
