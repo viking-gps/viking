@@ -34,6 +34,7 @@
 #include "viklayer_defaults.h"
 #include "globals.h"
 #include "vikmapslayer.h"
+#include "vikgeoreflayer.h"
 #include "vikrouting.h"
 #include "vikutils.h"
 #include "util.h"
@@ -184,6 +185,7 @@ int main( int argc, char *argv[] )
   /* Init modules/plugins */
   modules_init();
 
+  vik_georef_layer_init ();
   maps_layer_init ();
   a_mapcache_init ();
   a_background_init ();

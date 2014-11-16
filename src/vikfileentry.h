@@ -51,7 +51,9 @@ typedef enum {
   VF_FILTER_LAST
 } vf_filter_type;
 
-GtkWidget *vik_file_entry_new (GtkFileChooserAction action, vf_filter_type filter_type);
+typedef void (*VikFileEntryFunc) (VikFileEntry *, gpointer);
+
+GtkWidget *vik_file_entry_new (GtkFileChooserAction action, vf_filter_type filter_type, VikFileEntryFunc cb, gpointer user_data);
 const gchar *vik_file_entry_get_filename ( VikFileEntry *vfe );
 void vik_file_entry_set_filename ( VikFileEntry *vfe, const gchar *filename );
 

@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +32,10 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <ctype.h>
 
+#include "ui_util.h"
+#include "preferences.h"
 #include "icons/icons.h"
 /*
 static VikLayerParamData image_default ( void )
@@ -48,9 +52,21 @@ VikLayerParam georef_layer_params[] = {
   { VIK_LAYER_GEOREF, "corner_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "mpp_easting", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "mpp_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "corner_zone", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "corner_letter_as_int", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
-enum { PARAM_IMAGE = 0, PARAM_CE, PARAM_CN, PARAM_ME, PARAM_MN, NUM_PARAMS };
+enum {
+  PARAM_IMAGE = 0,
+  PARAM_CE,
+  PARAM_CN,
+  PARAM_ME,
+  PARAM_MN,
+  PARAM_CZ,
+  PARAM_CL,
+  PARAM_AA,
+  NUM_PARAMS };
 
 static const gchar* georef_layer_tooltip ( VikGeorefLayer *vgl );
 static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len );
@@ -64,7 +80,7 @@ static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp );
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp );
 static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp );
 static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image );
-static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWindow *w );
+static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w );
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file );
 
 /* tools */
@@ -151,21 +167,53 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncSelectedViewportMenu)    NULL,
 };
 
+typedef struct {
+  GtkWidget *x_spin;
+  GtkWidget *y_spin;
+  // UTM widgets
+  GtkWidget *ce_spin; // top left
+  GtkWidget *cn_spin; //    "
+  GtkWidget *utm_zone_spin;
+  GtkWidget *utm_letter_entry;
+
+  GtkWidget *lat_tl_spin;
+  GtkWidget *lon_tl_spin;
+  GtkWidget *lat_br_spin;
+  GtkWidget *lon_br_spin;
+  //
+  GtkWidget *tabs;
+  GtkWidget *imageentry;
+} changeable_widgets;
+
 struct _VikGeorefLayer {
   VikLayer vl;
   gchar *image;
   GdkPixbuf *pixbuf;
-  struct UTM corner;
+  guint8 alpha;
+
+  struct UTM corner; // Top Left
   gdouble mpp_easting, mpp_northing;
+  struct LatLon ll_br; // Bottom Right
   guint width, height;
 
   GdkPixbuf *scaled;
   guint32 scaled_width, scaled_height;
 
   gint click_x, click_y;
+  changeable_widgets cw;
 };
 
+static VikLayerParam io_prefs[] = {
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "georef_auto_read_world_file", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Read World Files:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Automatically attempt to read associated world file of a new image for a GeoRef layer"), NULL, NULL, NULL}
+};
 
+void vik_georef_layer_init (void)
+{
+  VikLayerParamData tmp;
+  tmp.b = TRUE;
+  a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+}
 
 GType vik_georef_layer_get_type ()
 {
@@ -219,7 +267,10 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLay
     case PARAM_CN: vgl->corner.northing = data.d; break;
     case PARAM_CE: vgl->corner.easting = data.d; break;
     case PARAM_MN: vgl->mpp_northing = data.d; break;
-    case PARAM_ME:  vgl->mpp_easting = data.d; break;
+    case PARAM_ME: vgl->mpp_easting = data.d; break;
+    case PARAM_CZ: if ( data.u <= 60 ) vgl->corner.zone = data.u; break;
+    case PARAM_CL: if ( data.u >= 65 || data.u <= 90 ) vgl->corner.letter = data.u; break;
+    case PARAM_AA: if ( data.u <= 255 ) vgl->alpha = data.u; break;
     default: break;
   }
   return TRUE;
@@ -250,6 +301,9 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
     case PARAM_CE: rv.d = vgl->corner.easting; break;
     case PARAM_MN: rv.d = vgl->mpp_northing; break;
     case PARAM_ME: rv.d = vgl->mpp_easting; break;
+    case PARAM_CZ: rv.u = vgl->corner.zone; break;
+    case PARAM_CL: rv.u = vgl->corner.letter; break;
+    case PARAM_AA: rv.u = vgl->alpha; break;
     default: break;
   }
   return rv;
@@ -276,28 +330,23 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   vgl->scaled = NULL;
   vgl->scaled_width = 0;
   vgl->scaled_height = 0;
+  vgl->ll_br.lat = 0.0;
+  vgl->ll_br.lon = 0.0;
+  vgl->alpha = 255;
   return vgl;
 }
 
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 {
-  if ( vik_viewport_get_drawmode(vp) != VIK_VIEWPORT_DRAWMODE_UTM )
-    return;
-
   if ( vgl->pixbuf )
   {
-    struct UTM utm_middle;
     gdouble xmpp = vik_viewport_get_xmpp(vp), ympp = vik_viewport_get_ympp(vp);
     GdkPixbuf *pixbuf = vgl->pixbuf;
     guint layer_width = vgl->width;
     guint layer_height = vgl->height;
 
-    vik_coord_to_utm ( vik_viewport_get_center ( vp ), &utm_middle );
-
     guint width = vik_viewport_get_width(vp), height = vik_viewport_get_height(vp);
     gint32 x, y;
-    vgl->corner.zone = utm_middle.zone;
-    vgl->corner.letter = utm_middle.letter;
     VikCoord corner_coord;
     vik_coord_load_from_utm ( &corner_coord, vik_viewport_get_coord_mode(vp), &(vgl->corner) );
     vik_viewport_coord_to_screen ( vp, &corner_coord, &x, &y );
@@ -356,7 +405,7 @@ static VikGeorefLayer *georef_layer_create ( VikViewport *vp )
 
 static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp )
 {
-  return georef_layer_dialog ( &vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp) );
+  return georef_layer_dialog ( vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp) );
 }
 
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file )
@@ -385,15 +434,9 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboo
   {
     vgl->width = gdk_pixbuf_get_width ( vgl->pixbuf );
     vgl->height = gdk_pixbuf_get_height ( vgl->pixbuf );
-  }
 
-  if ( !from_file )
-  {
-    if ( vik_viewport_get_drawmode(vp) != VIK_VIEWPORT_DRAWMODE_UTM )
-    {
-      a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
-                             _("GeoRef map cannot be displayed in the current drawmode.\nSelect \"UTM Mode\" from View menu to view it.") );
-    }
+    if ( vgl->pixbuf && vgl->alpha < 255 )
+      vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
   }
   /* should find length and width here too */
 }
@@ -416,25 +459,69 @@ static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image )
     vgl->image = g_strdup (image);
 }
 
-static gboolean world_file_read_line ( gchar *buffer, gint size, FILE *f, GtkWidget *widget, gboolean use_value )
+// Only positive values allowed here
+static void gdouble2spinwidget ( GtkWidget *widget, gdouble val )
 {
-  if (!fgets ( buffer, 1024, f ))
-  {
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(widget), _("Unexpected end of file reading World file.") );
-    g_free ( buffer );
-    fclose ( f );
-    f = NULL;
-    return FALSE;
-  }
-  if ( use_value )
-  {
-    gdouble val = g_strtod ( buffer, NULL );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(widget), val > 0 ? val : -val );
-  }
-  return TRUE;
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(widget), val > 0 ? val : -val );
 }
 
-static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
+static void set_widget_values ( changeable_widgets *cw, gdouble values[4] )
+{
+  gdouble2spinwidget ( cw->x_spin, values[0] );
+  gdouble2spinwidget ( cw->y_spin, values[1] );
+  gdouble2spinwidget ( cw->ce_spin, values[2] );
+  gdouble2spinwidget ( cw->cn_spin, values[3] );
+}
+
+static gboolean world_file_read_line ( FILE *ff, gdouble *value, gboolean use_value )
+{
+  gboolean answer = TRUE; // Success
+  gchar buffer[1024];
+  if ( !fgets ( buffer, 1024, ff ) ) {
+    answer = FALSE;
+  }
+  if ( answer && use_value )
+      *value = g_strtod ( buffer, NULL );
+
+  return answer;
+}
+
+/**
+ * http://en.wikipedia.org/wiki/World_file
+ *
+ * Note world files do not define the units and nor are the units standardized :(
+ * Currently Viking only supports:
+ *  x&y scale as meters per pixel
+ *  x&y coords as UTM eastings and northings respectively
+ */
+static gint world_file_read_file ( const gchar* filename, gdouble values[4] )
+{
+  g_debug ("%s - trying world file %s", __FUNCTION__, filename);
+
+  FILE *f = g_fopen ( filename, "r" );
+  if ( !f )
+    return 1;
+  else {
+    gint answer = 2; // Not enough info read yet
+    // **We do not handle 'skew' values ATM - normally they are a value of 0 anyway to align with the UTM grid
+    if ( world_file_read_line ( f, &values[0], TRUE ) // x scale
+      && world_file_read_line ( f, NULL, FALSE ) // Ignore value in y-skew line**
+      && world_file_read_line ( f, NULL, FALSE ) // Ignore value in x-skew line**
+      && world_file_read_line ( f, &values[1], TRUE ) // y scale
+      && world_file_read_line ( f, &values[2], TRUE ) // x-coordinate of the upper left pixel
+      && world_file_read_line ( f, &values[3], TRUE ) // y-coordinate of the upper left pixel
+       )
+    {
+       // Success
+       g_debug ("%s - %s - world file read success", __FUNCTION__, filename);
+       answer = 0;
+    }
+    fclose ( f );
+    return answer;
+  }
+}
+
+static void georef_layer_dialog_load ( changeable_widgets *cw )
 {
   GtkWidget *file_selector = gtk_file_chooser_dialog_new (_("Choose World file"),
 				      NULL,
@@ -445,37 +532,18 @@ static void georef_layer_dialog_load ( GtkWidget *pass_along[4] )
 
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
-    FILE *f = g_fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "r" );
-    gtk_widget_destroy ( file_selector ); 
-    if ( !f )
-    {
-      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(pass_along[0]), _("The World file you requested could not be opened for reading.") );
-      return;
-    }
-    else
-    {
-      gchar *buffer = g_malloc ( 1024 * sizeof(gchar) );
-      if ( world_file_read_line ( buffer, 1024, f, pass_along[0], TRUE ) && world_file_read_line ( buffer, 1024, f, pass_along[0], FALSE)
-        && world_file_read_line ( buffer, 1024, f, pass_along[0], FALSE ) && world_file_read_line ( buffer, 1024, f, pass_along[1], TRUE)
-        && world_file_read_line ( buffer, 1024, f, pass_along[2], TRUE ) && world_file_read_line ( buffer, 1024, f, pass_along[3], TRUE ) )
-      {
-        g_free ( buffer );
-        fclose ( f );
-	f = NULL;
-      }
-    }
+     gdouble values[4];
+     gint answer = world_file_read_file ( gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_selector)), values );
+     if ( answer == 1 )
+       a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(cw->x_spin), _("The World file you requested could not be opened for reading.") );
+     else if ( answer == 2 )
+       a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(cw->x_spin), _("Unexpected end of file reading World file.") );
+     else
+       // NB answer should == 0 for success
+       set_widget_values ( cw, values );
   }
-  else
-    gtk_widget_destroy ( file_selector ); 
-/* do your jazz
-We need a
-  file selection dialog
-  file opener for reading, if NULL, send error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(pass_along[0]) )
-  does that catch directories too?
-  read lines -- if not enough lines, give error.
-  if anything outside, give error. define range with #define CONSTANTS
-  put 'em in thar widgets, and that's it.
-*/
+
+  gtk_widget_destroy ( file_selector );
 }
 
 static void georef_layer_export_params ( gpointer *pass_along[2] )
@@ -508,8 +576,186 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
    gtk_widget_destroy ( file_selector ); 
 }
 
+/**
+ * Auto attempt to read the world file associated with the image used for the georef
+ *  Based on simple file name conventions
+ * Only attempted if the preference is on.
+ */
+static void maybe_read_world_file ( VikFileEntry *vfe, gpointer user_data )
+{
+  if ( a_preferences_get (VIKING_PREFERENCES_IO_NAMESPACE "georef_auto_read_world_file")->b ) {
+    const gchar* filename = vik_file_entry_get_filename(VIK_FILE_ENTRY(vfe));
+    gdouble values[4];
+    if ( filename && user_data ) {
+
+      changeable_widgets *cw = user_data;
+
+      gboolean upper = g_ascii_isupper (filename[strlen(filename)-1]);
+      gchar* filew = g_strconcat ( filename, (upper ? "W" : "w") , NULL );
+
+      if ( world_file_read_file ( filew, values ) == 0 ) {
+        set_widget_values ( cw, values );
+      }
+      else {
+        if ( strlen(filename) > 3 ) {
+          gchar* file0 = g_strndup ( filename, strlen(filename)-2 );
+          gchar* file1 = g_strdup_printf ( "%s%c%c", file0, filename[strlen(filename)-1], (upper ? 'W' : 'w')  );
+          if ( world_file_read_file ( file1, values ) == 0 ) {
+            set_widget_values ( cw, values );
+          }
+          g_free ( file1 );
+          g_free ( file0 );
+        }
+      }
+      g_free ( filew );
+    }
+  }
+}
+
+static struct LatLon get_ll_tl (VikGeorefLayer *vgl)
+{
+  struct LatLon ll_tl;
+  ll_tl.lat = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lat_tl_spin) );
+  ll_tl.lon = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lon_tl_spin) );
+  return ll_tl;
+}
+
+static struct LatLon get_ll_br (VikGeorefLayer *vgl)
+{
+  struct LatLon ll_br;
+  ll_br.lat = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lat_br_spin) );
+  ll_br.lon = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.lon_br_spin) );
+  return ll_br;
+}
+
+// Align displayed UTM values with displayed Lat/Lon values
+static void align_utm2ll (VikGeorefLayer *vgl)
+{
+  struct LatLon ll_tl = get_ll_tl (vgl);
+
+  struct UTM utm;
+  a_coords_latlon_to_utm ( &ll_tl, &utm );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.ce_spin), utm.easting );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.cn_spin), utm.northing );
+
+  gchar tmp_letter[2];
+  tmp_letter[0] = utm.letter;
+  tmp_letter[1] = '\0';
+  gtk_entry_set_text ( GTK_ENTRY(vgl->cw.utm_letter_entry), tmp_letter );
+
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.utm_zone_spin), utm.zone );
+}
+
+// Align displayed Lat/Lon values with displayed UTM values
+static void align_ll2utm (VikGeorefLayer *vgl)
+{
+  struct UTM corner;
+  const gchar *letter = gtk_entry_get_text ( GTK_ENTRY(vgl->cw.utm_letter_entry) );
+  if (*letter)
+    corner.letter = toupper(*letter);
+  corner.zone = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(vgl->cw.utm_zone_spin) );
+  corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.ce_spin) );
+  corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(vgl->cw.cn_spin) );
+
+  struct LatLon ll;
+  a_coords_utm_to_latlon ( &corner, &ll );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.lat_tl_spin), ll.lat );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.lon_tl_spin), ll.lon );
+}
+
+/**
+ * Align coordinates between tabs as the user may have changed the values
+ *   Use this before acting on the user input
+ * This is easier then trying to use the 'value-changed' signal for each individual coordinate
+ *  especiallly since it tends to end up in an infinite loop continually updating each other.
+ */
+static void align_coords ( VikGeorefLayer *vgl )
+{
+  if (gtk_notebook_get_current_page(GTK_NOTEBOOK(vgl->cw.tabs)) == 0)
+    align_ll2utm ( vgl );
+  else
+    align_utm2ll ( vgl );
+}
+
+static void switch_tab (GtkNotebook *notebook, gpointer tab, guint tab_num, gpointer user_data)
+{
+  VikGeorefLayer *vgl = user_data;
+  if ( tab_num == 0 )
+    align_utm2ll (vgl);
+  else
+    align_ll2utm (vgl);
+}
+
+/**
+ *
+ */
+static void check_br_is_good_or_msg_user ( VikGeorefLayer *vgl )
+{
+  // if a 'blank' ll value that's alright
+  if ( vgl->ll_br.lat == 0.0 && vgl->ll_br.lon == 0.0 )
+    return;
+
+  struct LatLon ll_tl = get_ll_tl (vgl);
+  if ( ll_tl.lat < vgl->ll_br.lat || ll_tl.lon > vgl->ll_br.lon )
+    a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vgl), _("Lower right corner values may not be consistent with upper right values") );
+}
+
+/**
+ *
+ */
+static void calculate_mpp_from_coords ( GtkWidget *ww, VikGeorefLayer *vgl )
+{
+  const gchar* filename = vik_file_entry_get_filename(VIK_FILE_ENTRY(vgl->cw.imageentry));
+  if ( !filename ) {
+    return;
+  }
+  GError *gx = NULL;
+  GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( filename, &gx );
+  if ( gx ) {
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(ww), _("Couldn't open image file: %s"), gx->message );
+    g_error_free ( gx );
+    return;
+  }
+
+  guint width = gdk_pixbuf_get_width ( pixbuf );
+  guint height = gdk_pixbuf_get_height ( pixbuf );
+
+  if ( width == 0 || height == 0 ) {
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(ww), _("Invalid image size: %s"), filename);
+  }
+  else {
+    align_coords ( vgl );
+
+    struct LatLon ll_tl = get_ll_tl (vgl);
+    struct LatLon ll_br = get_ll_br (vgl);
+
+    struct LatLon ll_tr;
+    ll_tr.lat = ll_tl.lat;
+    ll_tr.lon = ll_br.lon;
+
+    struct LatLon ll_bl;
+    ll_bl.lat = ll_br.lat;
+    ll_bl.lon = ll_tl.lon;
+
+    gdouble diffx = a_coords_latlon_diff ( &ll_tl, &ll_tr );
+    gdouble xmpp = diffx / width;
+
+    gdouble diffy = a_coords_latlon_diff ( &ll_tl, &ll_bl );
+    gdouble ympp = diffy / height;
+
+    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.x_spin), xmpp );
+    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.y_spin), ympp );
+
+    check_br_is_good_or_msg_user ( vgl );
+  }
+
+  g_object_unref ( G_OBJECT(pixbuf) );
+}
+
+#define VIK_SETTINGS_GEOREF_TAB "georef_coordinate_tab"
+
 /* returns TRUE if OK was pressed. */
-static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWindow *w )
+static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Layer Properties"),
                                                   w,
@@ -525,12 +771,12 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
 #if GTK_CHECK_VERSION (2, 20, 0)
   response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
 #endif
-  GtkWidget *table, *wfp_hbox, *wfp_label, *wfp_button, *ce_label, *ce_spin, *cn_label, *cn_spin, *xlabel, *xspin, *ylabel, *yspin, *imagelabel, *imageentry;
+  GtkWidget *table, *wfp_hbox, *wfp_label, *wfp_button, *ce_label, *cn_label, *xlabel, *ylabel, *imagelabel;
+  changeable_widgets cw;
 
-  GtkWidget *pass_along[4];
-
-  table = gtk_table_new ( 6, 2, FALSE );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0 );
+  GtkBox *dgbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  table = gtk_table_new ( 4, 2, FALSE );
+  gtk_box_pack_start ( dgbox, table, TRUE, TRUE, 0 );
 
   wfp_hbox = gtk_hbox_new ( FALSE, 0 );
   wfp_label = gtk_label_new ( _("World File Parameters:") );
@@ -540,84 +786,154 @@ static gboolean georef_layer_dialog ( VikGeorefLayer **vgl, gpointer vp, GtkWind
   gtk_box_pack_start ( GTK_BOX(wfp_hbox), wfp_button, FALSE, FALSE, 3 );
 
   ce_label = gtk_label_new ( _("Corner pixel easting:") );
-  ce_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 1500000.0, 1, 5, 0 ), 1, 4 );
-  gtk_widget_set_tooltip_text ( GTK_WIDGET(ce_spin), _("the UTM \"easting\" value of the upper-left corner pixel of the map") );
+  cw.ce_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 1500000.0, 1, 5, 0 ), 1, 4 );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.ce_spin), _("the UTM \"easting\" value of the upper-left corner pixel of the map") );
 
   cn_label = gtk_label_new ( _("Corner pixel northing:") );
-  cn_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 9000000.0, 1, 5, 0 ), 1, 4 );
-  gtk_widget_set_tooltip_text ( GTK_WIDGET(cn_spin), _("the UTM \"northing\" value of the upper-left corner pixel of the map") );
+  cw.cn_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 9000000.0, 1, 5, 0 ), 1, 4 );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.cn_spin), _("the UTM \"northing\" value of the upper-left corner pixel of the map") );
 
   xlabel = gtk_label_new ( _("X (easting) scale (mpp): "));
   ylabel = gtk_label_new ( _("Y (northing) scale (mpp): "));
 
-  xspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
-  gtk_widget_set_tooltip_text ( GTK_WIDGET(xspin), _("the scale of the map in the X direction (meters per pixel)") );
-  yspin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
-  gtk_widget_set_tooltip_text ( GTK_WIDGET(yspin), _("the scale of the map in the Y direction (meters per pixel)") );
+  cw.x_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.x_spin), _("the scale of the map in the X direction (meters per pixel)") );
+  cw.y_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.y_spin), _("the scale of the map in the Y direction (meters per pixel)") );
 
   imagelabel = gtk_label_new ( _("Map Image:") );
-  imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE);
+  cw.imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, maybe_read_world_file, &cw);
 
-  if (*vgl)
-  {
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(ce_spin), (*vgl)->corner.easting );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cn_spin), (*vgl)->corner.northing );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(xspin), (*vgl)->mpp_easting );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(yspin), (*vgl)->mpp_northing );
-    if ( (*vgl)->image )
-    vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), (*vgl)->image );
-  }
-  else
-  {
-    VikCoord corner_coord;
-    struct UTM utm;
-    vik_viewport_screen_to_coord ( VIK_VIEWPORT(vp), 0, 0, &corner_coord );
-    vik_coord_to_utm ( &corner_coord, &utm );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(ce_spin), utm.easting );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cn_spin), utm.northing );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(xspin), vik_viewport_get_xmpp ( VIK_VIEWPORT(vp) ) );
-    gtk_spin_button_set_value ( GTK_SPIN_BUTTON(yspin), vik_viewport_get_ympp ( VIK_VIEWPORT(vp) ) );
-  }
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.ce_spin), vgl->corner.easting );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.cn_spin), vgl->corner.northing );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.x_spin), vgl->mpp_easting );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.y_spin), vgl->mpp_northing );
+  if ( vgl->image )
+    vik_file_entry_set_filename ( VIK_FILE_ENTRY(cw.imageentry), vgl->image );
 
   gtk_table_attach_defaults ( GTK_TABLE(table), imagelabel, 0, 1, 0, 1 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), imageentry, 1, 2, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), cw.imageentry, 1, 2, 0, 1 );
   gtk_table_attach_defaults ( GTK_TABLE(table), wfp_hbox, 0, 2, 1, 2 );
   gtk_table_attach_defaults ( GTK_TABLE(table), xlabel, 0, 1, 2, 3 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), xspin, 1, 2, 2, 3 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), cw.x_spin, 1, 2, 2, 3 );
   gtk_table_attach_defaults ( GTK_TABLE(table), ylabel, 0, 1, 3, 4 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), yspin, 1, 2, 3, 4 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), ce_label, 0, 1, 4, 5 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), ce_spin, 1, 2, 4, 5 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), cn_label, 0, 1, 5, 6 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), cn_spin, 1, 2, 5, 6 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), cw.y_spin, 1, 2, 3, 4 );
 
-  pass_along[0] = xspin;
-  pass_along[1] = yspin;
-  pass_along[2] = ce_spin;
-  pass_along[3] = cn_spin;
-  g_signal_connect_swapped ( G_OBJECT(wfp_button), "clicked", G_CALLBACK(georef_layer_dialog_load), pass_along );
+  cw.tabs = gtk_notebook_new();
+  GtkWidget *table_utm = gtk_table_new ( 3, 2, FALSE );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), ce_label, 0, 1, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), cw.ce_spin, 1, 2, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), cn_label, 0, 1, 1, 2 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), cw.cn_spin, 1, 2, 1, 2 );
+
+  GtkWidget *utm_hbox = gtk_hbox_new ( FALSE, 0 );
+  cw.utm_zone_spin = gtk_spin_button_new ((GtkAdjustment*)gtk_adjustment_new( vgl->corner.zone, 1, 60, 1, 5, 0 ), 1, 0 );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), gtk_label_new(_("Zone:")), TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), cw.utm_zone_spin, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), gtk_label_new(_("Letter:")), TRUE, TRUE, 0 );
+  cw.utm_letter_entry = gtk_entry_new ();
+  gtk_entry_set_max_length ( GTK_ENTRY(cw.utm_letter_entry), 1 );
+  gtk_entry_set_width_chars ( GTK_ENTRY(cw.utm_letter_entry), 2 );
+  gchar tmp_letter[2];
+  tmp_letter[0] = vgl->corner.letter;
+  tmp_letter[1] = '\0';
+  gtk_entry_set_text ( GTK_ENTRY(cw.utm_letter_entry), tmp_letter );
+  gtk_box_pack_start ( GTK_BOX(utm_hbox), cw.utm_letter_entry, TRUE, TRUE, 0 );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table_utm), utm_hbox, 0, 2, 2, 3 );
+
+  // Lat/Lon
+  GtkWidget *table_ll = gtk_table_new ( 5, 2, FALSE );
+
+  GtkWidget *lat_tl_label = gtk_label_new ( _("Upper left latitude:") );
+  cw.lat_tl_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-90,90.0,0.05,0.1,0), 0.1, 6 );
+  GtkWidget *lon_tl_label = gtk_label_new ( _("Upper left longitude:") );
+  cw.lon_tl_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-180,180.0,0.05,0.1,0), 0.1, 6 );
+  GtkWidget *lat_br_label = gtk_label_new ( _("Lower right latitude:") );
+  cw.lat_br_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-90,90.0,0.05,0.1,0), 0.1, 6 );
+  GtkWidget *lon_br_label = gtk_label_new ( _("Lower right longitude:") );
+  cw.lon_br_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new (0.0,-180.0,180.0,0.05,0.1,0), 0.1, 6 );
+
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lat_tl_label, 0, 1, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lat_tl_spin, 1, 2, 0, 1 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lon_tl_label, 0, 1, 1, 2 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lon_tl_spin, 1, 2, 1, 2 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lat_br_label, 0, 1, 2, 3 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lat_br_spin, 1, 2, 2, 3 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), lon_br_label, 0, 1, 3, 4 );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), cw.lon_br_spin, 1, 2, 3, 4 );
+
+  GtkWidget *calc_mpp_button = gtk_button_new_with_label ( _("Calculate MPP values from coordinates") );
+  gtk_widget_set_tooltip_text ( calc_mpp_button, _("Enter all corner coordinates before calculating the MPP values from the image size") );
+  gtk_table_attach_defaults ( GTK_TABLE(table_ll), calc_mpp_button, 0, 2, 4, 5 );
+
+  VikCoord vc;
+  vik_coord_load_from_utm (&vc, VIK_COORD_LATLON, &(vgl->corner));
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lat_tl_spin), vc.north_south );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lon_tl_spin), vc.east_west );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lat_br_spin), vgl->ll_br.lat );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.lon_br_spin), vgl->ll_br.lon );
+
+  gtk_notebook_append_page(GTK_NOTEBOOK(cw.tabs), GTK_WIDGET(table_utm), gtk_label_new(_("UTM")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(cw.tabs), GTK_WIDGET(table_ll), gtk_label_new(_("Latitude/Longitude")));
+  gtk_box_pack_start ( dgbox, cw.tabs, TRUE, TRUE, 0 );
+
+  GtkWidget *alpha_hbox = gtk_hbox_new ( FALSE, 0 );
+  // GTK3 => GtkWidget *alpha_scale = gtk_scale_new_with_range ( GTK_ORIENTATION_HORIZONTAL, 0, 255, 1 );
+  GtkWidget *alpha_scale = gtk_hscale_new_with_range ( 0, 255, 1 );
+  gtk_scale_set_digits ( GTK_SCALE(alpha_scale), 0 );
+  gtk_range_set_value ( GTK_RANGE(alpha_scale), vgl->alpha );
+  gtk_box_pack_start ( GTK_BOX(alpha_hbox), gtk_label_new(_("Alpha:")), TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(alpha_hbox), alpha_scale, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( dgbox, alpha_hbox, TRUE, TRUE, 0 );
+
+  vgl->cw = cw;
+
+  g_signal_connect ( G_OBJECT(vgl->cw.tabs), "switch-page", G_CALLBACK(switch_tab), vgl );
+  g_signal_connect ( G_OBJECT(calc_mpp_button), "clicked", G_CALLBACK(calculate_mpp_from_coords), vgl );
+
+  g_signal_connect_swapped ( G_OBJECT(wfp_button), "clicked", G_CALLBACK(georef_layer_dialog_load), &cw );
 
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
 
-  gtk_widget_show_all ( table );
+  gtk_widget_show_all ( dialog );
+
+  // Remember setting the notebook page must be done after the widget is visible.
+  gint page_num = 0;
+  if ( a_settings_get_integer ( VIK_SETTINGS_GEOREF_TAB, &page_num ) )
+    if ( page_num < 0 || page_num > 1 )
+      page_num = 0;
+  gtk_notebook_set_current_page ( GTK_NOTEBOOK(cw.tabs), page_num );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
-    if (! *vgl)
+    align_coords ( vgl );
+
+    vgl->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.ce_spin) );
+    vgl->corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.cn_spin) );
+    vgl->corner.zone = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(cw.utm_zone_spin) );
+    const gchar *letter = gtk_entry_get_text ( GTK_ENTRY(cw.utm_letter_entry) );
+    if (*letter)
+       vgl->corner.letter = toupper(*letter);
+    vgl->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.x_spin) );
+    vgl->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.y_spin) );
+    vgl->ll_br = get_ll_br (vgl);
+    check_br_is_good_or_msg_user ( vgl );
+    if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 )
     {
-      *vgl = georef_layer_new ( VIK_VIEWPORT(vp) );
-       vik_layer_rename ( VIK_LAYER(*vgl), vik_georef_layer_interface.name );
+      georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
+      georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
     }
-    (*vgl)->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(ce_spin) );
-    (*vgl)->corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cn_spin) );
-    (*vgl)->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(xspin) );
-    (*vgl)->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(yspin) );
-    if ( (!(*vgl)->image) || strcmp( (*vgl)->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) ) != 0 )
-    {
-      georef_layer_set_image ( *vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(imageentry)) );
-      georef_layer_load_image ( *vgl, VIK_VIEWPORT(vp), FALSE );
-    }
+
+    vgl->alpha = (guint8) gtk_range_get_value ( GTK_RANGE(alpha_scale) );
+    if ( vgl->pixbuf && vgl->alpha < 255 )
+      vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
+    if ( vgl->scaled && vgl->alpha < 255 )
+      vgl->scaled = ui_pixbuf_set_alpha ( vgl->scaled, vgl->alpha );
+
+    a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
 
     gtk_widget_destroy ( GTK_WIDGET(dialog) );
     return TRUE;
