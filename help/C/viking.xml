@@ -1829,31 +1829,7 @@ Tracks are searched first in preference over waypoints.
 
 </section><!-- End Agg -->
 
-<section id="GeoRef" xreflabel="GeoRef"><title>GeoRef Layer</title>
-<para>
-This layer allows one to use any image as a map. You will need to tell it how to align the map to a position in the world and the scale of map.
-</para>
-<section><title>Layer Operations</title>
-<section><title>Zoom to Fit Map</title>
-<para>
-Automatically set a zoom level to see the entire map coverage.
-</para>
-</section>
-
-<section><title>Goto Map Center</title>
-<para>
-Center the viewport on this map.
-</para>
-
-</section>
-<section><title>Export to World File</title>
-<para>
-Opens a file save dialog to save the scale and position information as a <ulink url="http://en.wikipedia.org/wiki/World_file">World File</ulink>.
-</para>
-</section>
-</section>
-
-</section><!-- End GeoRef -->
+<xi:include href="georef_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
 <section id="Coordinate" xreflabel="Coordinate"><title>Coordinate Layer</title>
 <para>
