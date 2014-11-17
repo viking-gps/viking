@@ -198,7 +198,12 @@ if GEOTAG
 libviking_a_SOURCES += \
 	datasource_geotag.c \
 	geotag_exif.c geotag_exif.h \
-	viktrwlayer_geotag.c viktrwlayer_geotag.h \
+	viktrwlayer_geotag.c viktrwlayer_geotag.h
+endif
+
+# libexif doesn't have write support of EXIF info - so reused this code from command line exif tool
+if LIBEXIF
+libviking_a_SOURCES += \
 	libjpeg/jpeg-data.c libjpeg/jpeg-data.h \
 	libjpeg/jpeg-marker.c libjpeg/jpeg-marker.h
 endif

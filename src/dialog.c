@@ -636,6 +636,9 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBGPS
     "libgps",
 #endif
+#ifdef HAVE_LIBGEXIV2
+    "libgexiv2",
+#endif
 #ifdef HAVE_LIBEXIF
     "libexif",
 #endif

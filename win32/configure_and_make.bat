@@ -6,6 +6,7 @@
 ::
 set PATH=%PATH%;%SystemDrive%\Mingw\bin;%SystemDrive%\msys\1.0\bin
 pushd ..
-sh configure CFLAGS="-DWINDOWS -mwindows" LIBCURL=-lcurldll LIBS=-lzdll --disable-realtime-gps-tracking --disable-scrollkeeper --enable-windows
+:: ATM Don't have build method for libgexiv2, so use the fallback of libexif
+sh configure CFLAGS="-DWINDOWS -mwindows" LIBCURL=-lcurldll LIBS=-lzdll --with-libexif --disable-realtime-gps-tracking --disable-scrollkeeper --enable-windows
 popd
 make.bat
