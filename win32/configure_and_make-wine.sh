@@ -5,6 +5,7 @@
 rm -rf ../src/.deps
 rm -rf ../src/icons/.deps
 rm -rf ../src/libjpeg/.deps
+rm -rf ../src/misc/.deps
 pushd ..
 ./autogen.sh
 make distclean
