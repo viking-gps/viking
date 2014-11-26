@@ -40,6 +40,7 @@
 #include "bluemarble.h"
 #include "geonames.h"
 #include "dir.h"
+#include "datasources.h"
 #include "vikmapslayer.h"
 #include "vikexttools.h"
 #include "vikexttool_datasources.h"
@@ -246,6 +247,9 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_GEONAMES
   geonames_init();
+#endif
+#ifdef VIK_CONFIG_GEOCACHES
+  a_datasource_gc_init();
 #endif
 
   register_loadable_types ();

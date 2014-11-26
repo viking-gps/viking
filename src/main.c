@@ -40,10 +40,6 @@
 #include "util.h"
 #include "toolbar.h"
 
-#ifdef VIK_CONFIG_GEOCACHES
-void a_datasource_gc_init();
-#endif
-
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -189,10 +185,6 @@ int main( int argc, char *argv[] )
   maps_layer_init ();
   a_mapcache_init ();
   a_background_init ();
-
-#ifdef VIK_CONFIG_GEOCACHES
-  a_datasource_gc_init();
-#endif
 
   a_toolbar_init();
   vik_routing_prefs_init();
