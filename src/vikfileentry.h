@@ -48,6 +48,7 @@ typedef enum {
   VF_FILTER_NONE = 0,
   VF_FILTER_IMAGE,   // JPG+PNG+TIFF
   VF_FILTER_MBTILES,
+  VF_FILTER_XML,
   VF_FILTER_LAST
 } vf_filter_type;
 
