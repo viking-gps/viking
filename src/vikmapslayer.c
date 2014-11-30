@@ -2405,6 +2405,15 @@ static void maps_layer_download_all ( menu_array_values values )
   }
 }
 
+/**
+ *
+ */
+static void maps_layer_flush ( menu_array_values values )
+{
+  VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
+  a_mapcache_flush_type ( vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)) );
+}
+
 static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp )
 {
   GtkWidget *item;
@@ -2447,6 +2456,15 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_about), values );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
+
+  // Typical users shouldn't need to use this functionality - so debug only ATM
+  if ( vik_debug ) {
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Flush Map Cache") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_flush), values );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+  }
 }
 
 /**

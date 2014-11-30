@@ -30,6 +30,8 @@
 #include "preferences.h"
 #include "vik_compat.h"
 
+#define MC_KEY_SIZE 64
+
 typedef struct _List {
   struct _List *next;
   gchar *key;
@@ -49,6 +51,7 @@ static GMutex *mc_mutex = NULL;
 
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%d-%.3f-%.3f"
 #define HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA "%d-%d-%d-%d-%d-%d-"
+#define HASHKEY_FORMAT_STRING_TYPE "%d-"
 
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */
@@ -132,7 +135,7 @@ static void list_add_entry ( gchar *key )
 void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
   guint nn = name ? g_str_hash ( name ) : 0;
-  gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, x, y, z, type, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
+  gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
 
   g_mutex_lock(mc_mutex);
   cache_add(key, pixbuf);
@@ -164,34 +167,29 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, g
 
 GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
-  static char key[64];
+  static char key[MC_KEY_SIZE];
   guint nn = name ? g_str_hash ( name ) : 0;
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, x, y, z, type, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
   return g_hash_table_lookup ( cache, key );
 }
 
 /**
- * Appears this is only used when redownloading tiles (i.e. to invalidate old images)
+ * Common function to remove cache items for keys starting with the specified string
  */
-void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, gint zoom )
+static void flush_matching ( gchar *str )
 {
-  char key[64];
-  List *loop = queue_tail;
-  List *tmp;
-  gint len;
-
   if ( queue_tail == NULL )
     return;
 
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, x, y, z, type, zoom, 0 );
-  len = strlen(key);
+  List *loop = queue_tail;
+  List *tmp;
+  gint len = strlen(str);
 
   g_mutex_lock(mc_mutex);
-  /* TODO: check logic here */
   do {
     tmp = loop->next;
     if ( tmp ) {
-    if ( strncmp(tmp->key, key, len) == 0 )
+    if ( strncmp(tmp->key, str, len) == 0 )
     {
       cache_remove(tmp->key);
       if ( tmp == loop ) /* we deleted the last thing in the queue! */
@@ -210,10 +208,20 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
     } else
       loop = NULL;
   } while ( loop && (loop != queue_tail || tmp == NULL) );
-
   /* loop thru list, looking for the one, compare first whatever chars */
-  cache_remove(key);
+
+  cache_remove(str);
   g_mutex_unlock(mc_mutex);
+}
+
+/**
+ * Appears this is only used when redownloading tiles (i.e. to invalidate old images)
+ */
+void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, gint zoom )
+{
+  char key[MC_KEY_SIZE];
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, type, x, y, z, zoom, 0 );
+  flush_matching ( key );
 }
 
 void a_mapcache_flush ()
@@ -237,6 +245,20 @@ void a_mapcache_flush ()
   } while ( loop );
 
   g_mutex_unlock(mc_mutex);
+}
+
+/**
+ * a_mapcache_flush_type:
+ *  @type: Specified map type
+ *
+ * Just remove cache items for the specified map type
+ *  i.e. all related xyz+zoom+alpha+etc...
+ */
+void a_mapcache_flush_type ( guint16 type )
+{
+  char key[MC_KEY_SIZE];
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_TYPE, type );
+  flush_matching ( key );
 }
 
 void a_mapcache_uninit ()
