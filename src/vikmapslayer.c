@@ -2000,7 +2000,7 @@ static void maps_layer_redownload_all_onscreen_maps ( menu_array_values values )
   download_onscreen_maps( values, REDOWNLOAD_ALL);
 }
 
-static void maps_layers_about ( gpointer vml_vvp[2] )
+static void maps_layer_about ( gpointer vml_vvp[2] )
 {
   VikMapsLayer *vml = vml_vvp[0];
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
@@ -2320,7 +2320,7 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   gtk_widget_show ( item );
 
   item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layers_about), values );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_about), values );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
   gtk_widget_show ( item );
 }
