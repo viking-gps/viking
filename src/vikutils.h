@@ -27,7 +27,7 @@
 
 G_BEGIN_DECLS
 
-gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkpt, VikTrackpoint *trkpt_prev, VikTrack *trk );
+gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkpt, VikTrackpoint *trkpt_prev, VikTrack *trk, gdouble climb );
 
 void vu_check_latest_version ( GtkWindow *window );
 

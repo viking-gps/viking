@@ -3324,6 +3324,7 @@ Accept: */*
               <para>K = Some text to display at the start of the message - <emphasis>Trkpt</emphasis></para>
               <para>A = Altitude of a Trackpoint</para>
               <para>S = Speed of a Trackpoint</para>
+              <para>B = Vertical Speed (Climb)</para>
               <para>C = Course of a Trackpoint</para>
               <para>L = Location of a Trackpoint</para>
               <para>T = Time of a Trackpoint</para>

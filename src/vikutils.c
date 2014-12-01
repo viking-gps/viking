@@ -47,12 +47,13 @@
  * @trkpt:        The trackpoint for which the message is generated about
  * @trkpt_prev:   A trackpoint (presumed previous) for interpolating values with the other trackpoint (such as speed)
  * @trk:          The track in which the trackpoints reside
+ * @climb:        Vertical speed (Out of band (i.e. not in a trackpoint) value for display currently only for GPSD usage)
  *
  *  TODO: One day replace this cryptic format code with some kind of tokenizer parsing
  *    thus would make it more user friendly and maybe even GUI controlable.
  * However for now at least there is some semblance of user control
  */
-gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkpt, VikTrackpoint *trkpt_prev, VikTrack *trk )
+gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkpt, VikTrackpoint *trkpt_prev, VikTrack *trk, gdouble climb )
 {
 	if ( !trkpt )
 		return NULL;
@@ -133,6 +134,48 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			}
 
 			values[i] = g_strdup_printf ( _("%sSpeed%s %.1f%s"), separator, speedtype, speed, speed_units_str );
+			g_free ( speedtype );
+			break;
+		}
+
+		case 'B': {
+			gdouble speed = 0.0;
+			gchar *speedtype = NULL;
+			if ( isnan(climb) && trkpt_prev ) {
+				if ( trkpt->has_timestamp && trkpt_prev->has_timestamp ) {
+					if ( trkpt->timestamp != trkpt_prev->timestamp ) {
+						// Work out from previous trackpoint altitudes and time difference
+						// 'speed' can be negative if going downhill
+						speed = (trkpt->altitude - trkpt_prev->altitude) / ABS(trkpt->timestamp - trkpt_prev->timestamp);
+						speedtype = g_strdup ( "*" ); // Interpolated
+					}
+					else
+						speedtype = g_strdup ( "**" ); // Unavailable
+				}
+				else
+					speedtype = g_strdup ( "**" );
+			}
+			else {
+				speed = climb;
+				speedtype = g_strdup ( "" );
+			}
+			switch (speed_units) {
+			case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+				speed = VIK_MPS_TO_KPH(speed);
+				break;
+			case VIK_UNITS_SPEED_MILES_PER_HOUR:
+				speed = VIK_MPS_TO_MPH(speed);
+				break;
+			case VIK_UNITS_SPEED_KNOTS:
+				speed = VIK_MPS_TO_KNOTS(speed);
+				break;
+			default:
+				// VIK_UNITS_SPEED_METRES_PER_SECOND:
+				// Already in m/s so nothing to do
+				break;
+			}
+			// Go for 2dp as expect low values for vertical speeds
+			values[i] = g_strdup_printf ( _("%sClimb%s %.2f%s"), separator, speedtype, speed, speed_units_str );
 			g_free ( speedtype );
 			break;
 		}
