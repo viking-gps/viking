@@ -1412,6 +1412,27 @@ VikTrackpoint *vik_track_get_tp_last ( const VikTrack *tr )
   return (VikTrackpoint*)g_list_last(tr->trackpoints)->data;
 }
 
+VikTrackpoint *vik_track_get_tp_prev ( const VikTrack *tr, VikTrackpoint *tp )
+{
+  if ( !tr->trackpoints )
+    return NULL;
+
+  GList *iter = tr->trackpoints;
+  VikTrackpoint *tp_prev = NULL;
+
+  while (iter) {
+    if (iter->prev) {
+      if ( VIK_TRACKPOINT(iter->data) == tp ) {
+        tp_prev = VIK_TRACKPOINT(iter->prev->data);
+        break;
+      }
+    }
+    iter = iter->next;
+  }
+
+  return tp_prev;
+}
+
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
   *min_alt = 25000;

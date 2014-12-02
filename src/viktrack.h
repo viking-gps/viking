@@ -137,6 +137,7 @@ VikTrackpoint *vik_track_get_tp_by_max_alt ( const VikTrack *tr );
 VikTrackpoint *vik_track_get_tp_by_min_alt ( const VikTrack *tr );
 VikTrackpoint *vik_track_get_tp_first ( const VikTrack *tr );
 VikTrackpoint *vik_track_get_tp_last ( const VikTrack *tr );
+VikTrackpoint *vik_track_get_tp_prev ( const VikTrack *tr, VikTrackpoint *tp );
 gdouble *vik_track_make_gradient_map ( const VikTrack *tr, guint16 num_chunks );
 gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks );
 gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks );
