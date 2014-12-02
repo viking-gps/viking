@@ -369,10 +369,6 @@ map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, voi
 	/* Just ignore bbox and zoom level */
 	g_return_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self));
 
-	g_debug ("%s: %g %g %g %g %g", __FUNCTION__,
-		bbox.south, bbox.north, bbox.east, bbox.west,
-		zoom);
-	
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	(*fct) (data, priv->copyright);
