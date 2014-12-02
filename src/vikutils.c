@@ -100,26 +100,10 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			gchar *speedtype = NULL;
 			if ( isnan(trkpt->speed) && trkpt_prev ) {
 				if ( trkpt->has_timestamp && trkpt_prev->has_timestamp ) {
-					if ( trkpt->timestamp == trkpt_prev->timestamp ) {
+					if ( trkpt->timestamp != trkpt_prev->timestamp ) {
 
 						// Work out from previous trackpoint location and time difference
 						speed = vik_coord_diff(&(trkpt->coord), &(trkpt_prev->coord)) / ABS(trkpt->timestamp - trkpt_prev->timestamp);
-
-						switch (speed_units) {
-						case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-							speed = VIK_MPS_TO_KPH(speed);
-							break;
-						case VIK_UNITS_SPEED_MILES_PER_HOUR:
-							speed = VIK_MPS_TO_MPH(speed);
-							break;
-						case VIK_UNITS_SPEED_KNOTS:
-							speed = VIK_MPS_TO_KNOTS(speed);
-							break;
-						default:
-							// VIK_UNITS_SPEED_METRES_PER_SECOND:
-							// Already in m/s so nothing to do
-							break;
-						}
 						speedtype = g_strdup ( "*" ); // Interpolated
 					}
 					else
@@ -131,6 +115,21 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			else {
 				speed = trkpt->speed;
 				speedtype = g_strdup ( "" );
+			}
+			switch (speed_units) {
+			case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+				speed = VIK_MPS_TO_KPH(speed);
+				break;
+			case VIK_UNITS_SPEED_MILES_PER_HOUR:
+				speed = VIK_MPS_TO_MPH(speed);
+				break;
+			case VIK_UNITS_SPEED_KNOTS:
+				speed = VIK_MPS_TO_KNOTS(speed);
+				break;
+			default:
+				// VIK_UNITS_SPEED_METRES_PER_SECOND:
+				// Already in m/s so nothing to do
+				break;
 			}
 
 			values[i] = g_strdup_printf ( _("%sSpeed%s %.1f%s"), separator, speedtype, speed, speed_units_str );
