@@ -20,6 +20,8 @@
  *
  */
 #include "maputils.h"
+#include "globals.h"
+#include <math.h>
 
 // World Scale: VIK_GZ(17)
 //  down to
@@ -71,4 +73,73 @@ guint8 map_utils_mpp_to_zoom_level ( gdouble mpp )
 	if ( answer < 0 )
 		answer = 17;
 	return answer;
+}
+
+/**
+ * SECTION:maputils
+ * @short_description: Notes about TMS / Spherical Mercator conversion
+ *
+ * VikCoords are in Spherical Mercator projection (#VIK_COORD_LATLON)
+ * MapCoords are in Inverse TMS
+ *
+ * See: http://docs.openlayers.org/library/spherical_mercator.html
+ * See: http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
+ * NB: the Y axis is inverted, ie the origin is at top-left corner.
+ */
+
+/**
+ * map_utils_vikcoord_to_iTMS:
+ * @src:   Original #VikCoord in #VIK_COORD_LATLON format
+ * @xzoom: Viking zoom level in x direction
+ * @yzoom: Viking zoom level in y direction (actually needs to be same as xzoom)
+ * @dest:  The resulting Inverse TMS coordinates in #MapCoord
+ *
+ * Convert a #VikCoord in VIK_COORD_LATLON format into Inverse TMS coordinates
+ *
+ * Returns: whether the conversion was performed
+ */
+gboolean map_utils_vikcoord_to_iTMS ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
+{
+  if ( src->mode != VIK_COORD_LATLON )
+    return FALSE;
+
+  if ( xzoom != yzoom )
+    return FALSE;
+
+  dest->scale = map_utils_mpp_to_scale ( xzoom );
+  if ( dest->scale == 255 )
+    return FALSE;
+
+  dest->x = (src->east_west + 180) / 360 * VIK_GZ(17) / xzoom;
+  dest->y = (180 - MERCLAT(src->north_south)) / 360 * VIK_GZ(17) / xzoom;
+  dest->z = 0;
+
+  return TRUE;
+}
+
+// Internal convenience function
+static void _to_vikcoord_with_offset ( const MapCoord *src, VikCoord *dest, gdouble offset )
+{
+  gdouble socalled_mpp;
+  if (src->scale >= 0)
+    socalled_mpp = VIK_GZ(src->scale);
+  else
+    socalled_mpp = 1.0/VIK_GZ(-src->scale);
+  dest->mode = VIK_COORD_LATLON;
+  dest->east_west = ((src->x+offset) / VIK_GZ(17) * socalled_mpp * 360) - 180;
+  dest->north_south = DEMERCLAT(180 - ((src->y+offset) / VIK_GZ(17) * socalled_mpp * 360));
+}
+
+/**
+ * map_utils_iTMS_to_center_vikcoord:
+ * @src:   Original #MapCoord in Inverse TMS format
+ * @dest:  The resulting Spherical Mercator coordinates in #VikCoord
+ *
+ * Convert a #MapCoord in Inverse TMS format into Spherical Mercator coordinates for the center of the TMS area
+ *
+ * Returns: whether the conversion was performed
+ */
+void map_utils_iTMS_to_center_vikcoord ( const MapCoord *src, VikCoord *dest )
+{
+	_to_vikcoord_with_offset ( src, dest, 0.5 );
 }
