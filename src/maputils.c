@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,4 +142,19 @@ static void _to_vikcoord_with_offset ( const MapCoord *src, VikCoord *dest, gdou
 void map_utils_iTMS_to_center_vikcoord ( const MapCoord *src, VikCoord *dest )
 {
 	_to_vikcoord_with_offset ( src, dest, 0.5 );
+}
+
+/**
+ * map_utils_iTMS_to_vikcoord:
+ * @src:   Original #MapCoord in Inverse TMS format
+ * @dest:  The resulting Spherical Mercator coordinates in #VikCoord
+ *
+ * Convert a #MapCoord in Inverse TMS format into Spherical Mercator coordinates
+ *  (for the top left corner of the Inverse TMS area)
+ *
+ * Returns: whether the conversion was performed
+ */
+void map_utils_iTMS_to_vikcoord ( const MapCoord *src, VikCoord *dest )
+{
+	_to_vikcoord_with_offset ( src, dest, 0.0 );
 }
