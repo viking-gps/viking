@@ -29,6 +29,8 @@
 
 G_BEGIN_DECLS
 
+guint util_get_number_of_cpus (void);
+
 gchar *uri_escape(gchar *str);
 
 GList * str_array_to_glist(gchar* data[]);

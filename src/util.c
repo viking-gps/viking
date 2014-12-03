@@ -34,6 +34,33 @@
 #include "util.h"
 #include "globals.h"
 
+#ifdef WINDOWS
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
+guint util_get_number_of_cpus ()
+{
+#if GLIB_CHECK_VERSION (2, 36, 0)
+  return g_get_num_processors();
+#else
+  long nprocs = 1;
+#ifdef WINDOWS
+  SYSTEM_INFO info;
+  GetSystemInfo(&info);
+  nprocs = info.dwNumberOfProcessors;
+#else
+#ifdef _SC_NPROCESSORS_ONLN
+  nprocs = sysconf(_SC_NPROCESSORS_ONLN);
+  if (nprocs < 1)
+    nprocs = 1;
+#endif
+#endif
+  return nprocs;
+#endif
+}
+
 gchar *uri_escape(gchar *str)
 {
   gchar *esc_str = g_malloc(3*strlen(str));
@@ -107,7 +134,6 @@ gboolean split_string_from_file_on_equals ( const gchar *buf, gchar **key, gchar
   // Remove newline from val and also any other whitespace
   *key = g_strstrip ( *key );
   *val = g_strstrip ( *val );
-
   return TRUE;
 }
 
