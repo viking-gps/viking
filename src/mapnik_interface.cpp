@@ -49,12 +49,57 @@
 #include <mapnik/box2d.hpp>
 #endif
 
-static mapnik::Map myMap;
+#define MAPNIK_INTERFACE_TYPE            (mapnik_interface_get_type ())
+#define MAPNIK_INTERFACE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MAPNIK_INTERFACE_TYPE, MapnikInterface))
+#define MAPNIK_INTERFACE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MAPNIK_INTERFACE_TYPE, MapnikInterfaceClass))
+#define IS_MAPNIK_INTERFACE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MAPNIK_INTERFACE_TYPE))
+#define IS_MAPNIK_INTERFACE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MAPNIK_INTERFACE_TYPE))
+
+typedef struct _MapnikInterfaceClass MapnikInterfaceClass;
+typedef struct _MapnikInterface MapnikInterface;
+
+GType mapnik_interface_get_type ();
+struct _MapnikInterfaceClass
+{
+	GObjectClass object_class;
+};
+
+static void mapnik_interface_class_init ( MapnikInterfaceClass *mic )
+{
+}
+
+static void mapnik_interface_init ( MapnikInterface *mi )
+{
+}
+
+struct _MapnikInterface {
+	GObject obj;
+	mapnik::Map *myMap;
+};
+
+G_DEFINE_TYPE (MapnikInterface, mapnik_interface, G_TYPE_OBJECT)
 
 // Can't change prj after init - but ATM only support drawing in Spherical Mercator
 static mapnik::projection prj( mapnik::MAPNIK_GMERC_PROJ );
 
-void mapnik_interface_init (const char *plugins_dir, const char* font_dir, int font_dir_recurse)
+MapnikInterface* mapnik_interface_new ()
+{
+	MapnikInterface* mi = MAPNIK_INTERFACE ( g_object_new ( MAPNIK_INTERFACE_TYPE, NULL ) );
+	mi->myMap = new mapnik::Map;
+	return mi;
+}
+
+void mapnik_interface_free (MapnikInterface* mi)
+{
+	if ( mi )
+		delete mi->myMap;
+	g_object_unref ( G_OBJECT(mi) );
+}
+
+/**
+ * mapnik_interface_initialize:
+ */
+void mapnik_interface_initialize (const char *plugins_dir, const char* font_dir, int font_dir_recurse)
 {
 	g_debug ("using mapnik version %s", MAPNIK_VERSION_STRING );
 	try {
@@ -87,30 +132,33 @@ void mapnik_interface_init (const char *plugins_dir, const char* font_dir, int f
  *
  * Returns 0 on success.
  */
-int mapnik_interface_load_map_file ( const gchar *filename,
+int mapnik_interface_load_map_file ( MapnikInterface* mi,
+                                     const gchar *filename,
                                      guint width,
                                      guint height )
 {
+	if ( !mi ) return 1;
 	try {
-		mapnik::load_map(myMap, filename);
+		mi->myMap->remove_all(); // Support reloading
+		mapnik::load_map(*mi->myMap, filename);
 
-		myMap.resize(width,height);
-		myMap.set_srs ( mapnik::MAPNIK_GMERC_PROJ ); // ONLY WEB MERCATOR output supported ATM
+		mi->myMap->resize(width,height);
+		mi->myMap->set_srs ( mapnik::MAPNIK_GMERC_PROJ ); // ONLY WEB MERCATOR output supported ATM
 
 		// IIRC This size is the number of pixels outside the tile to be considered so stuff is shown (i.e. particularly labels)
 		// Only set buffer size if the buffer size isn't explicitly set in the mapnik stylesheet.
 		// Alternatively render a bigger 'virtual' tile and then only use the appropriate subset
-		if (myMap.buffer_size() == 0) {
-			myMap.set_buffer_size((width+height/4)); // e.g. 128 for a 256x256 image.
+		if (mi->myMap->buffer_size() == 0) {
+			mi->myMap->set_buffer_size((width+height/4)); // e.g. 128 for a 256x256 image.
 		}
 
-		g_debug ("%s layers: %d", __FUNCTION__, myMap.layer_count() );
+		g_debug ("%s layers: %d", __FUNCTION__, mi->myMap->layer_count() );
 	} catch (std::exception const& ex) {
 		g_debug ("An error occurred while loading the mapnik config '%s': %s", filename, ex.what());
 		return 2;
 	} catch (...) {
 		g_debug ("An unknown error occurred while loading the mapnik config '%s': %s", filename );
-		return 1;
+		return 3;
 	}
 	return 0;
 }
@@ -149,8 +197,10 @@ convert_argb32_to_gdkpixbuf_data (unsigned char const *Source, unsigned int widt
  *
  * Returns a #GdkPixbuf of the specified area. #GdkPixbuf may be NULL
  */
-GdkPixbuf* mapnik_interface_render ( double lat_tl, double lon_tl, double lat_br, double lon_br )
+GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double lon_tl, double lat_br, double lon_br )
 {
+	if ( !mi ) return NULL;
+
 	// Note prj & bbox want stuff in lon,lat order!
 	double p0x = lon_tl;
 	double p0y = lat_tl;
@@ -163,13 +213,13 @@ GdkPixbuf* mapnik_interface_render ( double lat_tl, double lon_tl, double lat_br
 
 	GdkPixbuf *pixbuf = NULL;
 	try {
-		unsigned width  = myMap.width();
-		unsigned height = myMap.height();
+		unsigned width  = mi->myMap->width();
+		unsigned height = mi->myMap->height();
 		mapnik::image_32 image(width,height);
 		mapnik::box2d<double> bbox(p0x, p0y, p1x, p1y);
-		myMap.zoom_to_box(bbox);
+		mi->myMap->zoom_to_box(bbox);
 		// FUTURE: option to use cairo / grid renderers?
-		mapnik::agg_renderer<mapnik::image_32> render(myMap,image);
+		mapnik::agg_renderer<mapnik::image_32> render(*mi->myMap,image);
 		render.apply();
 
 		if ( image.painted() ) {

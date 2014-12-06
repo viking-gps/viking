@@ -28,13 +28,19 @@ extern "C" {
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-void mapnik_interface_init (const char *plugins_dir, const char* font_dir, int font_dir_recurse);
+typedef struct _MapnikInterface MapnikInterface;
 
-int mapnik_interface_load_map_file ( const gchar *filename,
+void mapnik_interface_initialize (const char *plugins_dir, const char* font_dir, int font_dir_recurse);
+
+MapnikInterface* mapnik_interface_new ();
+void mapnik_interface_free (MapnikInterface* mi);
+
+int mapnik_interface_load_map_file ( MapnikInterface* mi,
+                                     const gchar *filename,
                                      guint width,
                                      guint height );
 
-GdkPixbuf* mapnik_interface_render ( double lat_tl, double lon_tl, double lat_br, double lon_br );
+GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double lon_tl, double lat_br, double lon_br );
 
 #ifdef __cplusplus
 }

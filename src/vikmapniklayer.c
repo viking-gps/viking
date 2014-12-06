@@ -162,6 +162,7 @@ struct _VikMapnikLayer {
 
 	guint tile_size_x; // Y is the same as X ATM
 	gboolean loaded;
+	MapnikInterface* mi;
 };
 
 #define MAPNIK_PREFS_GROUP_KEY "mapnik"
@@ -208,9 +209,9 @@ static VikLayerParam prefs[] = {
 // NB Only performed once per program run
 static void mapnik_layer_class_init ( VikMapnikLayerClass *klass )
 {
-	mapnik_interface_init ( a_preferences_get (MAPNIK_PREFS_NAMESPACE"plugins_directory")->s,
-	                        a_preferences_get (MAPNIK_PREFS_NAMESPACE"fonts_directory")->s,
-	                        a_preferences_get (MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory")->b );
+	mapnik_interface_initialize ( a_preferences_get (MAPNIK_PREFS_NAMESPACE"plugins_directory")->s,
+	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"fonts_directory")->s,
+	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory")->b );
 }
 
 void vik_mapnik_layer_init (void)
@@ -322,6 +323,7 @@ static VikMapnikLayer *mapnik_layer_new ( VikViewport *vvp )
 	vik_layer_set_defaults ( VIK_LAYER(vml), vvp );
 	vml->tile_size_x = size_default().u; // FUTURE: Is there any use in this being configurable?
 	vml->loaded = FALSE;
+	vml->mi = mapnik_interface_new();
 	return vml;
 }
 
@@ -332,7 +334,7 @@ static void mapnik_layer_post_read (VikLayer *vl, VikViewport *vvp, gboolean fro
 {
 	VikMapnikLayer *vml = VIK_MAPNIK_LAYER(vl);
 
-	if ( mapnik_interface_load_map_file ( vml->filename_xml, vml->tile_size_x, vml->tile_size_x ) ) {
+	if ( mapnik_interface_load_map_file ( vml->mi, vml->filename_xml, vml->tile_size_x, vml->tile_size_x ) ) {
 		if ( !from_file )
 			a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vvp),
 			                         _("Mapnik error loading configuration file: %s"),
@@ -458,6 +460,7 @@ static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vvp )
  */
 static void mapnik_layer_free ( VikMapnikLayer *vml )
 {
+	mapnik_interface_free ( vml->mi );
 	if ( vml->filename_xml )
 		g_free ( vml->filename_xml );
 }
