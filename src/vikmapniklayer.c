@@ -64,6 +64,8 @@ static VikLayerParamScale scales[] = {
 };
 
 VikLayerParam mapnik_layer_params[] = {
+  { VIK_LAYER_MAPNIK, "config-file-mml", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("CSS (MML) Config File:"), VIK_LAYER_WIDGET_FILEENTRY, GINT_TO_POINTER(VF_FILTER_CARTO), NULL,
+    N_("CartoCSS configuration file"), file_default, NULL, NULL },
   { VIK_LAYER_MAPNIK, "config-file-xml", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("XML Config File:"), VIK_LAYER_WIDGET_FILEENTRY, GINT_TO_POINTER(VF_FILTER_XML), NULL,
     N_("Mapnik XML configuration file"), file_default, NULL, NULL },
   { VIK_LAYER_MAPNIK, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, &scales[0], NULL,
@@ -71,9 +73,10 @@ VikLayerParam mapnik_layer_params[] = {
 };
 
 enum {
-	PARAM_CONFIG_XML = 0,
-	PARAM_ALPHA,
-	NUM_PARAMS };
+  PARAM_CONFIG_CSS = 0,
+  PARAM_CONFIG_XML,
+  PARAM_ALPHA,
+  NUM_PARAMS };
 
 static const gchar* mapnik_layer_tooltip ( VikMapnikLayer *vml );
 static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, gint *len );
@@ -157,6 +160,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 
 struct _VikMapnikLayer {
 	VikLayer vl;
+	gchar *filename_css; // CartoCSS MML File - use 'carto' to convert into xml
 	gchar *filename_xml;
 	guint8 alpha;
 
@@ -204,6 +208,8 @@ static VikLayerParam prefs[] = {
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"plugins_directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Plugins Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), plugins_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"fonts_directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Fonts Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), fonts_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Recurse Fonts Directory:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), vik_lpd_true_default, NULL, NULL },
+	// Changeable any time
+	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"carto", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("CartoCSS:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,  N_("The program to convert CartoCSS files into Mapnik XML"), NULL, NULL, NULL },
 };
 
 // NB Only performed once per program run
@@ -226,6 +232,9 @@ void vik_mapnik_layer_init (void)
 	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
 
 	tmp.b = TRUE;
+	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
+
+	tmp.s = "carto";
 	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
 }
 
@@ -263,6 +272,13 @@ static void mapnik_layer_set_file_xml ( VikMapnikLayer *vml, const gchar *name )
 	vml->filename_xml = g_strdup (name);
 }
 
+static void mapnik_layer_set_file_css ( VikMapnikLayer *vml, const gchar *name )
+{
+	if ( vml->filename_css )
+		g_free (vml->filename_css);
+	vml->filename_css = g_strdup (name);
+}
+
 static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, gint *len )
 {
 	vik_layer_marshall_params ( VIK_LAYER(vml), data, len );
@@ -278,6 +294,7 @@ static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, gint len, VikViewp
 static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
 	switch ( id ) {
+		case PARAM_CONFIG_CSS: mapnik_layer_set_file_css (vml, data.s); break;
 		case PARAM_CONFIG_XML: mapnik_layer_set_file_xml (vml, data.s); break;
 		case PARAM_ALPHA: if ( data.u <= 255 ) vml->alpha = data.u; break;
 		default: break;
@@ -289,6 +306,23 @@ static VikLayerParamData mapnik_layer_get_param ( VikMapnikLayer *vml, guint16 i
 {
 	VikLayerParamData data;
 	switch ( id ) {
+		case PARAM_CONFIG_CSS: {
+			data.s = vml->filename_css;
+			gboolean set = FALSE;
+			if ( is_file_operation ) {
+				if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE ) {
+					gchar *cwd = g_get_current_dir();
+					if ( cwd ) {
+						data.s = file_GetRelativeFilename ( cwd, vml->filename_css );
+						if ( !data.s ) data.s = "";
+						set = TRUE;
+					}
+				}
+			}
+			if ( !set )
+				data.s = vml->filename_css ? vml->filename_css : "";
+			break;
+		}
 		case PARAM_CONFIG_XML: {
 			data.s = vml->filename_xml;
 			gboolean set = FALSE;
@@ -328,12 +362,132 @@ static VikMapnikLayer *mapnik_layer_new ( VikViewport *vvp )
 }
 
 /**
+ * Run carto command
+ * ATM don't have any version issues AFAIK
+ * Tested with carto 0.14.0
+ */
+gboolean carto_load ( VikMapnikLayer *vml, VikViewport *vvp )
+{
+	gchar *mystdout = NULL;
+	gchar *mystderr = NULL;
+	GError *error = NULL;
+
+	VikLayerParamData *vlpd = a_preferences_get(MAPNIK_PREFS_NAMESPACE"carto");
+	gchar *command = g_strdup_printf ( "%s %s", vlpd->s, vml->filename_css );
+
+	gboolean answer = TRUE;
+	//gchar *args[2]; args[0] = vlpd->s; args[1] = vml->filename_css;
+	//GPid pid;
+	//if ( g_spawn_async_with_pipes ( NULL, args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &pid, NULL, &carto_stdout, &carto_error, &error ) ) {
+	// cf code in babel.c to handle stdout
+
+	// NB Running carto may take several seconds
+	//  especially for large style sheets like the default OSM Mapnik style (~6 seconds on my system)
+	VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vvp));
+	if ( vw ) {
+		gchar *msg = g_strdup_printf ( "%s: %s", _("Running"), command );
+		vik_window_statusbar_update ( vw, msg, VIK_STATUSBAR_INFO );
+		vik_window_set_busy_cursor ( vw );
+	}
+
+	gint64 tt1 = 0;
+	gint64 tt2 = 0;
+	// You won't get a sensible timing measurement if running too old a GLIB
+#if GLIB_CHECK_VERSION (2, 28, 0)
+	tt1 = g_get_real_time ();
+#endif
+
+	if ( g_spawn_command_line_sync ( command, &mystdout, &mystderr, NULL, &error ) ) {
+#if GLIB_CHECK_VERSION (2, 28, 0)
+		tt2 = g_get_real_time ();
+#endif
+		if ( mystderr )
+			if ( strlen(mystderr) > 1 ) {
+				a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vvp), _("Error running carto command:\n%s"), mystderr );
+				answer = FALSE;
+			}
+		if ( mystdout ) {
+			// NB This will overwrite the specified XML file
+			if ( ! ( vml->filename_xml && strlen (vml->filename_xml) > 1 ) ) {
+				// XML Not specified so try to create based on CSS file name
+				GRegex *regex = g_regex_new ( "\\.mml$|\\.mss|\\.css$", G_REGEX_CASELESS, 0, &error );
+				if ( error )
+					g_critical ("%s: %s", __FUNCTION__, error->message );
+				if ( vml->filename_xml )
+					g_free (vml->filename_xml);
+				vml->filename_xml = g_regex_replace_literal ( regex, vml->filename_css, -1, 0, ".xml", 0, &error );
+				if ( error )
+					g_warning ("%s: %s", __FUNCTION__, error->message );
+				// Prevent overwriting self
+				if ( !g_strcmp0 ( vml->filename_xml, vml->filename_css ) ) {
+					vml->filename_xml = g_strconcat ( vml->filename_css, ".xml", NULL );
+				}
+			}
+			if ( !g_file_set_contents (vml->filename_xml, mystdout, -1, &error)  ) {
+				g_warning ("%s: %s", __FUNCTION__, error->message );
+				g_error_free (error);
+			}
+		}
+		g_free ( mystdout );
+		g_free ( mystderr );
+	}
+	else {
+		g_warning ("%s: %s", __FUNCTION__, error->message );
+		g_error_free (error);
+	}
+	g_free ( command );
+
+	if ( vw ) {
+		gchar *msg = g_strdup_printf ( "%s %s %.1f %s",  vlpd->s, _(" completed in "), (gdouble)(tt2-tt1)/G_USEC_PER_SEC, _("seconds") );
+		vik_window_statusbar_update ( vw, msg, VIK_STATUSBAR_INFO );
+		g_free ( msg );
+		vik_window_clear_busy_cursor ( vw );
+	}
+	return answer;
+}
+
+#if !GLIB_CHECK_VERSION(2,26,0)
+typedef struct stat GStatBuf;
+#endif
+
+/**
  *
  */
 static void mapnik_layer_post_read (VikLayer *vl, VikViewport *vvp, gboolean from_file)
 {
 	VikMapnikLayer *vml = VIK_MAPNIK_LAYER(vl);
 
+	// Determine if carto needs to be run
+	gboolean do_carto = FALSE;
+	if ( vml->filename_css && strlen(vml->filename_css) > 1 ) {
+		if ( vml->filename_xml && strlen(vml->filename_xml) > 1) {
+			// Compare timestamps
+			GStatBuf gsb1;
+			if ( g_stat ( vml->filename_xml, &gsb1 ) == 0 ) {
+				GStatBuf gsb2;
+				if ( g_stat ( vml->filename_css, &gsb2 ) == 0 ) {
+					// Is CSS file newer than the XML file
+					if ( gsb2.st_mtime > gsb1.st_mtime )
+						do_carto = TRUE;
+					else
+						g_debug ( "No need to run carto" );
+				}
+			}
+			else {
+				// XML file doesn't exist
+				do_carto = TRUE;
+			}
+		}
+		else {
+			// No XML specified thus need to generate
+			do_carto = TRUE;
+		}
+	}
+
+	if ( do_carto )
+		// Don't load the XML config if carto load fails
+		if ( !carto_load ( vml, vvp ) )
+			return;
 	if ( mapnik_interface_load_map_file ( vml->mi, vml->filename_xml, vml->tile_size_x, vml->tile_size_x ) ) {
 		if ( !from_file )
 			a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vvp),
@@ -461,6 +615,8 @@ static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vvp )
 static void mapnik_layer_free ( VikMapnikLayer *vml )
 {
 	mapnik_interface_free ( vml->mi );
+	if ( vml->filename_css )
+		g_free ( vml->filename_css );
 	if ( vml->filename_xml )
 		g_free ( vml->filename_xml );
 }
