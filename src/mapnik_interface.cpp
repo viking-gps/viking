@@ -35,6 +35,7 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n.h>
 
 #include "mapnik_interface.h"
 #include "globals.h"
@@ -106,20 +107,12 @@ void mapnik_interface_initialize (const char *plugins_dir, const char* font_dir,
 		if ( plugins_dir )
 #if MAPNIK_VERSION >= 200200
 			mapnik::datasource_cache::instance().register_datasources(plugins_dir);
-			// FUTURE: Make this an 'about' property
-			if ( vik_verbose ) {
-				//for (auto& name in mapnik::datasource_cache::instance().plugin_names()) std::cout << name << '\n';// C++11
-				std::vector<std::string> plugins = mapnik::datasource_cache::instance().plugin_names();
-				for (int nn = 0; nn < plugins.size(); nn++ )
-					g_printf ("mapnik enabled plugin: %s\n", plugins[nn].c_str());
-			}
 #else
 			mapnik::datasource_cache::instance()->register_datasources(plugins_dir);
 #endif
 		if ( font_dir )
 			if ( ! mapnik::freetype_engine::register_fonts(font_dir, font_dir_recurse ? true : false) )
 				g_warning ("%s: No fonts found", __FUNCTION__);
-		g_debug ("mapnik font faces found: %d", mapnik::freetype_engine::face_names().size());
 	} catch (std::exception const& ex) {
 		g_warning ("An error occurred while initialising mapnik: %s", ex.what());
 	} catch (...) {
@@ -239,4 +232,31 @@ GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double 
 	}
 
 	return pixbuf;
+}
+
+/**
+ * General information about Mapnik
+ *
+ * Free the returned string after use
+ */
+gchar * mapnik_interface_about ( void )
+{
+	// Normally about 10 plugins so list them all
+#if MAPNIK_VERSION >= 200200
+	std::vector<std::string> plugins = mapnik::datasource_cache::instance().plugin_names();
+#else
+	std::vector<std::string> plugins = mapnik::datasource_cache::instance()->plugin_names();
+#endif
+	std::string str;
+	for (int nn = 0; nn < plugins.size(); nn++ )
+		str += plugins[nn] + ',';
+	str += '\n';
+	// NB Can have a couple hundred fonts loaded when using system directories
+	//  So ATM don't list them all - otherwise need better GUI feedback display.
+	gchar *msg = g_strdup_printf ( _("%s %s\nPlugins=%sFonts loaded=%d"),
+	                               _("Mapnik"),
+	                               MAPNIK_VERSION_STRING,
+	                               str.c_str(),
+	                               mapnik::freetype_engine::face_names().size() );
+	return msg;
 }

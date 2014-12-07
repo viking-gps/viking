@@ -645,6 +645,17 @@ static void mapnik_layer_flush_memory ( menu_array_values values )
 /**
  *
  */
+static void mapnik_layer_about ( menu_array_values values )
+{
+	VikMapnikLayer *vml = values[MA_VML];
+	gchar *msg = mapnik_interface_about();
+	a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml),  msg );
+	g_free ( msg );
+}
+
+/**
+ *
+ */
 static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gpointer vlp )
 {
 	static menu_array_values values;
@@ -663,4 +674,9 @@ static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gp
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 		gtk_widget_show ( item );
 	}
+
+	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_about), values );
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show ( item );
 }

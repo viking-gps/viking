@@ -42,6 +42,8 @@ int mapnik_interface_load_map_file ( MapnikInterface* mi,
 
 GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double lon_tl, double lat_br, double lon_br );
 
+gchar * mapnik_interface_about ( void );
+
 #ifdef __cplusplus
 }
 #endif
