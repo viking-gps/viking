@@ -1265,7 +1265,7 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdoub
     }
     /* we've gone past the dist already, was prev trackpoint closer? */
     /* should do a vik_coord_average_weighted() thingy. */
-    if ( iter->prev && abs(current_dist-current_inc-dist) < abs(current_dist-dist) ) {
+    if ( iter->prev && fabs(current_dist-current_inc-dist) < fabs(current_dist-dist) ) {
       if (meters_from_start)
         *meters_from_start = last_dist;
       iter = iter->prev;
