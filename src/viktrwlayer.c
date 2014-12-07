@@ -789,15 +789,15 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
     // Needs RedNotebook 1.7.3+ for support of opening on a specified date
     if ( g_spawn_command_line_sync ( "rednotebook --version", &mystdout, &mystderr, NULL, NULL ) ) {
       // Annoyingly 1.7.1|2|3 versions of RedNotebook prints the version to stderr!!
-      if ( stdout )
+      if ( mystdout )
         g_debug ("Diary: %s", mystdout ); // Should be something like 'RedNotebook 1.4'
-      if ( stderr )
+      if ( mystderr )
         g_warning ("Diary: stderr: %s", mystderr );
 
       gchar **tokens = NULL;
-      if ( stdout && g_strcmp0(mystdout, "") )
+      if ( mystdout && g_strcmp0(mystdout, "") )
         tokens = g_strsplit(mystdout, " ", 0);
-      else if ( stderr )
+      else if ( mystderr )
         tokens = g_strsplit(mystderr, " ", 0);
 
       gint num = 0;
