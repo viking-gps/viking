@@ -123,14 +123,16 @@ void mapnik_interface_initialize (const char *plugins_dir, const char* font_dir,
 /**
  * mapnik_interface_load_map_file:
  *
- * Returns 0 on success.
+ * Returns NULL on success otherwise a string about what went wrong.
+ *  This string should be freed once it has been used.
  */
-int mapnik_interface_load_map_file ( MapnikInterface* mi,
-                                     const gchar *filename,
-                                     guint width,
-                                     guint height )
+gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
+                                        const gchar *filename,
+                                        guint width,
+                                        guint height )
 {
-	if ( !mi ) return 1;
+	gchar *msg = NULL;
+	if ( !mi ) return g_strdup ("Internal Error");
 	try {
 		mi->myMap->remove_all(); // Support reloading
 		mapnik::load_map(*mi->myMap, filename);
@@ -147,13 +149,11 @@ int mapnik_interface_load_map_file ( MapnikInterface* mi,
 
 		g_debug ("%s layers: %d", __FUNCTION__, mi->myMap->layer_count() );
 	} catch (std::exception const& ex) {
-		g_debug ("An error occurred while loading the mapnik config '%s': %s", filename, ex.what());
-		return 2;
+		msg = g_strdup ( ex.what() );
 	} catch (...) {
-		g_debug ("An unknown error occurred while loading the mapnik config '%s': %s", filename );
-		return 3;
+		msg = g_strdup ("unknown error");
 	}
-	return 0;
+	return msg;
 }
 
 // These two functions copied from gpsdrive 2.11

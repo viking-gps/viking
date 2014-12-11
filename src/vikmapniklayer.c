@@ -488,13 +488,13 @@ static void mapnik_layer_post_read (VikLayer *vl, VikViewport *vvp, gboolean fro
 		// Don't load the XML config if carto load fails
 		if ( !carto_load ( vml, vvp ) )
 			return;
-	if ( mapnik_interface_load_map_file ( vml->mi, vml->filename_xml, vml->tile_size_x, vml->tile_size_x ) ) {
-		if ( !from_file )
-			a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vvp),
-			                         _("Mapnik error loading configuration file: %s"),
-			                         vml->filename_xml );
-		else
-			g_warning ( _("Mapnik error loading configuration file: %s"), vml->filename_xml );
+
+	gchar* ans = mapnik_interface_load_map_file ( vml->mi, vml->filename_xml, vml->tile_size_x, vml->tile_size_x );
+	if ( ans ) {
+		a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vvp),
+		                           _("Mapnik error loading configuration file:\n%s"),
+		                           ans );
+		g_free ( ans );
 	}
 	else {
 		vml->loaded = TRUE;
