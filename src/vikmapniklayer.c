@@ -773,6 +773,17 @@ static void mapnik_layer_flush_memory ( menu_array_values values )
 /**
  *
  */
+static void mapnik_layer_reload ( menu_array_values values )
+{
+	VikMapnikLayer *vml = values[MA_VML];
+	VikViewport *vvp = values[MA_VVP];
+	mapnik_layer_post_read (VIK_LAYER(vml), vvp, FALSE);
+	mapnik_layer_draw ( vml, vvp );
+}
+
+/**
+ *
+ */
 static void mapnik_layer_about ( menu_array_values values )
 {
 	VikMapnikLayer *vml = values[MA_VML];
@@ -802,6 +813,11 @@ static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gp
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 		gtk_widget_show ( item );
 	}
+
+	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_REFRESH, NULL );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_reload), values );
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show ( item );
 
 	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
 	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_about), values );
