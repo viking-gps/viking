@@ -3272,6 +3272,15 @@ Accept: */*
 	    <para>maps_real_min_shrinkfactor=0.0039062499</para>
 	  </listitem>
 	  <listitem>
+	    <para>maps_scale_inc_down=4</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_scale_inc_up=2</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_scale_smaller_zoom_first=true</para>
+	  </listitem>
+	  <listitem>
 	    <para>background_max_threads=10</para>
 	  </listitem>
 	  <listitem>
