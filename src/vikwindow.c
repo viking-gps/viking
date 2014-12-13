@@ -305,12 +305,17 @@ static gboolean statusbar_idle_update ( statusbar_idle_data *sid )
  */
 void vik_window_statusbar_update ( VikWindow *vw, const gchar* message, vik_statusbar_type_t vs_type )
 {
+  GThread *thread = vik_window_get_thread ( vw );
+  if ( !thread )
+    // Do nothing
+    return;
+
   statusbar_idle_data *sid = g_malloc ( sizeof (statusbar_idle_data) );
   sid->vs = vw->viking_vs;
   sid->vs_type = vs_type;
   sid->message = g_strdup ( message );
 
-  if ( g_thread_self() == vik_window_get_thread ( vw ) ) {
+  if ( g_thread_self() == thread ) {
     g_idle_add ( (GSourceFunc) statusbar_idle_update, sid );
   }
   else {
@@ -4795,7 +4800,12 @@ gboolean vik_window_clear_highlight ( VikWindow *vw )
   return need_redraw;
 }
 
+/**
+ * May return NULL if the window no longer exists
+ */
 GThread *vik_window_get_thread ( VikWindow *vw )
 {
-  return vw->thread;
+  if ( vw )
+    return vw->thread;
+  return NULL;
 }

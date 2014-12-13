@@ -93,10 +93,15 @@ static gboolean idle_draw ( VikLayer *vl )
 void vik_layer_emit_update ( VikLayer *vl )
 {
   if ( vl->visible && vl->realized ) {
+    GThread *thread = vik_window_get_thread ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
+    if ( !thread )
+      // Do nothing
+      return;
+
     vik_window_set_redraw_trigger(vl);
 
     // Only ever draw when there is time to do so
-    if ( g_thread_self() != vik_window_get_thread (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl))) )
+    if ( g_thread_self() != thread )
       // Drawing requested from another (background) thread, so handle via the gdk thread method
       gdk_threads_add_idle ( (GSourceFunc) idle_draw, vl );
     else
