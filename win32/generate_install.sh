@@ -23,3 +23,6 @@ if [ ! -e ~/.wine/drive_c/Program\ Files/GnuWin32/bin/wget.exe ]; then
 fi
 
 wine ~/.wine/drive_c/windows/system32/cmd.exe /c prepare.bat
+
+# Fix broken Mapnik 2.2.0 shipped unicode headers
+cp -f /usr/include/x86_64-linux-gnu/unicode/*.h ~/.wine/drive_c/MinGW/include/unicode/
