@@ -37,12 +37,19 @@
 #include "maputils.h"
 #include "mapcoord.h"
 #include "mapcache.h"
+#include "dir.h"
 #include "util.h"
 #include "ui_util.h"
 #include "preferences.h"
 #include "icons/icons.h"
 #include "mapnik_interface.h"
 #include "background.h"
+
+#include "vikmapslayer.h"
+
+#if !GLIB_CHECK_VERSION(2,26,0)
+typedef struct stat GStatBuf;
+#endif
 
 struct _VikMapnikLayerClass
 {
@@ -59,9 +66,17 @@ static VikLayerParamData file_default ( void )
 static VikLayerParamData size_default ( void ) { return VIK_LPD_UINT ( 256 ); }
 static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
 
+static VikLayerParamData cache_dir_default ( void )
+{
+	VikLayerParamData data;
+	data.s = g_strconcat ( maps_layer_default_dir(), "MapnikRendering", NULL );
+	return data;
+}
+
 static VikLayerParamScale scales[] = {
 	{ 0, 255, 5, 0 }, // Alpha
 	{ 64, 1024, 8, 0 }, // Tile size
+	{ 0, 1024, 12, 0 }, // Rerender timeout hours
 };
 
 VikLayerParam mapnik_layer_params[] = {
@@ -71,12 +86,18 @@ VikLayerParam mapnik_layer_params[] = {
     N_("Mapnik XML configuration file"), file_default, NULL, NULL },
   { VIK_LAYER_MAPNIK, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, &scales[0], NULL,
     NULL, alpha_default, NULL, NULL },
+  { VIK_LAYER_MAPNIK, "use-file-cache", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use File Cache:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_MAPNIK, "file-cache-dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("File Cache Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL,
+    NULL, cache_dir_default, NULL, NULL },
 };
 
 enum {
   PARAM_CONFIG_CSS = 0,
   PARAM_CONFIG_XML,
   PARAM_ALPHA,
+  PARAM_USE_FILE_CACHE,
+  PARAM_FILE_CACHE_DIR,
   NUM_PARAMS };
 
 static const gchar* mapnik_layer_tooltip ( VikMapnikLayer *vml );
@@ -168,6 +189,10 @@ struct _VikMapnikLayer {
 	guint tile_size_x; // Y is the same as X ATM
 	gboolean loaded;
 	MapnikInterface* mi;
+	guint rerender_timeout;
+
+	gboolean use_file_cache;
+	gchar *file_cache_dir;
 };
 
 #define MAPNIK_PREFS_GROUP_KEY "mapnik"
@@ -209,9 +234,12 @@ static VikLayerParam prefs[] = {
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"plugins_directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Plugins Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), plugins_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"fonts_directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Fonts Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), fonts_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Recurse Fonts Directory:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), vik_lpd_true_default, NULL, NULL },
+	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"rerender_after", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Rerender Timeout (hours):"), VIK_LAYER_WIDGET_SPINBUTTON, &scales[2], NULL, N_("You need to restart Viking for a change to this value to be used"), NULL, NULL, NULL },
 	// Changeable any time
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"carto", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("CartoCSS:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,  N_("The program to convert CartoCSS files into Mapnik XML"), NULL, NULL, NULL },
 };
+
+static time_t planet_import_time;
 
 static GMutex *tp_mutex;
 static GHashTable *requests = NULL;
@@ -235,6 +263,7 @@ void vik_mapnik_layer_init (void)
 	tmp.b = TRUE;
 	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
 
+	tmp.u = 168; // One week
 	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
 
 	tmp.s = "carto";
@@ -244,6 +273,23 @@ void vik_mapnik_layer_init (void)
 
 	// Just storing keys only
 	requests = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+
+	guint hours = a_preferences_get (MAPNIK_PREFS_NAMESPACE"rerender_after")->u;
+	GDateTime *now = g_date_time_new_now_local ();
+	GDateTime *then = g_date_time_add_hours (now, -hours);
+	planet_import_time = g_date_time_to_unix (then);
+	g_date_time_unref ( now );
+	g_date_time_unref ( then );
+
+	GStatBuf gsb;
+	// Similar to mod_tile method to mark DB has been imported/significantly changed to cause a rerendering of all tiles
+	gchar *import_time_file = g_strconcat ( a_get_viking_dir(), G_DIR_SEPARATOR_S, "planet-import-complete", NULL );
+	if ( g_stat ( import_time_file, &gsb ) == 0 ) {
+		// Only update if newer
+		if ( planet_import_time > gsb.st_mtime )
+			planet_import_time = gsb.st_mtime;
+	}
+	g_free ( import_time_file );
 }
 
 void vik_mapnik_layer_uninit ()
@@ -300,6 +346,13 @@ static void mapnik_layer_set_file_css ( VikMapnikLayer *vml, const gchar *name )
 	vml->filename_css = g_strdup (name);
 }
 
+static void mapnik_layer_set_cache_dir ( VikMapnikLayer *vml, const gchar *name )
+{
+	if ( vml->file_cache_dir )
+		g_free (vml->file_cache_dir);
+	vml->file_cache_dir = g_strdup (name);
+}
+
 static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, gint *len )
 {
 	vik_layer_marshall_params ( VIK_LAYER(vml), data, len );
@@ -318,6 +371,8 @@ static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, guint16 id, VikLay
 		case PARAM_CONFIG_CSS: mapnik_layer_set_file_css (vml, data.s); break;
 		case PARAM_CONFIG_XML: mapnik_layer_set_file_xml (vml, data.s); break;
 		case PARAM_ALPHA: if ( data.u <= 255 ) vml->alpha = data.u; break;
+		case PARAM_USE_FILE_CACHE: vml->use_file_cache = data.b; break;
+		case PARAM_FILE_CACHE_DIR: mapnik_layer_set_cache_dir (vml, data.s); break;
 		default: break;
 	}
 	return TRUE;
@@ -362,7 +417,8 @@ static VikLayerParamData mapnik_layer_get_param ( VikMapnikLayer *vml, guint16 i
 			break;
 		}
 		case PARAM_ALPHA: data.u = vml->alpha; break;
-		//case PARAM_TILE_X: data.u = vml->tile_size_x; break;
+		case PARAM_USE_FILE_CACHE: data.b = vml->use_file_cache; break;
+		case PARAM_FILE_CACHE_DIR: data.s = vml->file_cache_dir; break;
 		default: break;
 	}
 	return data;
@@ -467,10 +523,6 @@ gboolean carto_load ( VikMapnikLayer *vml, VikViewport *vvp )
 	return answer;
 }
 
-#if !GLIB_CHECK_VERSION(2,26,0)
-typedef struct stat GStatBuf;
-#endif
-
 /**
  *
  */
@@ -524,6 +576,35 @@ static void mapnik_layer_post_read (VikLayer *vl, VikViewport *vvp, gboolean fro
 	}
 }
 
+#define MAPNIK_LAYER_FILE_CACHE_LAYOUT "%s"G_DIR_SEPARATOR_S"%d"G_DIR_SEPARATOR_S"%d"G_DIR_SEPARATOR_S"%d.png"
+
+// Free returned string after use
+static gchar *get_filename ( gchar *dir, guint x, guint y, guint z)
+{
+	return g_strdup_printf ( MAPNIK_LAYER_FILE_CACHE_LAYOUT, dir, (17-z), x, y );
+}
+
+static void possibly_save_pixbuf ( VikMapnikLayer *vml, GdkPixbuf *pixbuf, MapCoord *ulm )
+{
+	if ( vml->use_file_cache ) {
+		if ( vml->file_cache_dir ) {
+			GError *error = NULL;
+			gchar *filename = get_filename ( vml->file_cache_dir, ulm->x, ulm->y, ulm->scale );
+
+			gchar *dir = g_path_get_dirname ( filename );
+			if ( !g_file_test ( filename, G_FILE_TEST_EXISTS ) )
+				g_mkdir_with_parents ( dir , 0777 );
+			g_free ( dir );
+
+			if ( !gdk_pixbuf_save (pixbuf, filename, "png", &error, NULL ) ) {
+				g_warning ("%s: %s", __FUNCTION__, error->message );
+				g_error_free (error);
+			}
+			g_free (filename);
+		}
+	}
+}
+
 typedef struct
 {
 	VikMapnikLayer *vml;
@@ -548,6 +629,7 @@ static void render ( VikMapnikLayer *vml, VikCoord *ul, VikCoord *br, MapCoord *
 		// A pixbuf to stick into cache incase of an unrenderable area - otherwise will get continually re-requested
 		pixbuf = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata(&vikmapniklayer_pixbuf, FALSE, NULL), vml->tile_size_x, vml->tile_size_x, GDK_INTERP_BILINEAR );
 	}
+	possibly_save_pixbuf ( vml, pixbuf, ulm );
 
 	// NB Mapnik can apply alpha, but use our own function for now
 	if ( vml->alpha < 255 )
@@ -632,6 +714,39 @@ void thread_add (VikMapnikLayer *vml, MapCoord *mul, VikCoord *ul, VikCoord *br,
 }
 
 /**
+ * load_pixbuf:
+ */
+static GdkPixbuf *load_pixbuf ( VikMapnikLayer *vml, MapCoord *ulm, MapCoord *brm, gboolean *rerender )
+{
+	*rerender = FALSE;
+	GdkPixbuf *pixbuf = NULL;
+	gchar *filename = get_filename ( vml->file_cache_dir, ulm->x, ulm->y, ulm->scale );
+
+	GStatBuf gsb;
+	if ( g_stat ( filename, &gsb ) == 0 ) {
+		// Get from disk
+		GError *error = NULL;
+		pixbuf = gdk_pixbuf_new_from_file ( filename, &error );
+		if ( error ) {
+			g_warning ("%s: %s", __FUNCTION__, error->message );
+			g_error_free ( error );
+		}
+		else {
+			if ( vml->alpha < 255 )
+				pixbuf = ui_pixbuf_set_alpha ( pixbuf, vml->alpha );
+			a_mapcache_add ( pixbuf, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
+		}
+		// If file is too old mark for rerendering
+		if ( planet_import_time < gsb.st_mtime ) {
+			*rerender = TRUE;
+		}
+	}
+	g_free ( filename );
+
+	return pixbuf;
+}
+
+/**
  *
  */
 static GdkPixbuf *get_pixbuf ( VikMapnikLayer *vml, MapCoord *ulm, MapCoord *brm )
@@ -645,7 +760,10 @@ static GdkPixbuf *get_pixbuf ( VikMapnikLayer *vml, MapCoord *ulm, MapCoord *brm
 	pixbuf = a_mapcache_get ( ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
 
 	if ( ! pixbuf ) {
-		if ( ! pixbuf ) {
+		gboolean rerender = FALSE;
+		if ( vml->use_file_cache && vml->file_cache_dir )
+			pixbuf = load_pixbuf ( vml, ulm, brm, &rerender );
+		if ( ! pixbuf || rerender ) {
 			if ( TRUE )
 				thread_add (vml, ulm, &ul, &br, ulm->x, ulm->y, ulm->z, ulm->scale, vml->filename_xml );
 			else {
