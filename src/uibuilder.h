@@ -23,6 +23,7 @@
 
 #include <gtk/gtk.h>
 #include "vik_compat.h"
+#include "config.h"
 
 G_BEGIN_DECLS
 
@@ -85,6 +86,9 @@ typedef enum {
   VIK_LAYER_GPS,
   VIK_LAYER_MAPS,
   VIK_LAYER_DEM,
+#ifdef HAVE_LIBMAPNIK
+  VIK_LAYER_MAPNIK,
+#endif
   VIK_LAYER_NUM_TYPES // Also use this value to indicate no layer association
 } VikLayerTypeEnum;
 

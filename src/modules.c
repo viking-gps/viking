@@ -59,6 +59,10 @@
 
 #include "vikgobjectbuilder.h"
 
+#ifdef HAVE_LIBMAPNIK
+#include "vikmapniklayer.h"
+#endif
+
 #define VIKING_MAPS_FILE "maps.xml"
 #define VIKING_EXTTOOLS_FILE "external_tools.xml"
 #define VIKING_DATASOURCES_FILE "datasources.xml"
@@ -250,6 +254,10 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
   a_datasource_gc_init();
+#endif
+
+#ifdef HAVE_LIBMAPNIK
+  vik_mapnik_layer_init();
 #endif
 
   register_loadable_types ();

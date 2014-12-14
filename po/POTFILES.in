@@ -51,6 +51,7 @@ src/vikgototool.c
 src/vikgpslayer.c
 src/viklayer.c
 src/viklayerspanel.c
+src/vikmapniklayer.c
 src/vikmapslayer.c
 src/vikrouting.c
 src/viktreeview.c

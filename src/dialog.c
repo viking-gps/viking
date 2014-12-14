@@ -681,6 +681,9 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBSQLITE3
     "libsqlite3",
 #endif
+#ifdef HAVE_LIBMAPNIK
+    "libmapnik",
+#endif
     NULL
   };
   // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program

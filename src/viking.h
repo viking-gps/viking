@@ -52,6 +52,9 @@
 #include "vikfileentry.h"
 #include "viktrwlayer.h"
 #include "vikgpslayer.h"
+#ifdef HAVE_LIBMAPNIK
+#include "vikmapniklayer.h"
+#endif
 #include "clipboard.h"
 #include "dialog.h"
 #include "file.h"

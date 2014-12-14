@@ -26,6 +26,7 @@ BuildRequires:  libgexiv2-devel
 BuildRequires:  libbz2-devel
 BuildRequires:  libmagic-devel
 BuildRequires:  libsqlite3-devel
+BuildRequires:  libmapnik-devel
 
 %description
 Viking is a free/open source program to manage GPS data.
