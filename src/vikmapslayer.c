@@ -1367,8 +1367,34 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         }
         xx += tilesize_x;
       }
-    }
 
+      // ATM Only show tile grid lines in extreme debug mode
+      if ( vik_debug && vik_verbose ) {
+        /* Grid drawing here so it gets drawn on top of the map */
+        /* Thus loop around x & y again, but this time separately */
+        /* Only showing grid for the current scale */
+        GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
+        /* Draw single grid lines across the whole screen */
+        gint width = vik_viewport_get_width(vvp);
+        gint height = vik_viewport_get_height(vvp);
+        xx = xx_tmp; yy = yy_tmp;
+        gint base_xx = xx - (tilesize_x/2);
+        base_yy = yy - (tilesize_y/2);
+
+        xx = base_xx;
+        for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
+          vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height );
+          xx += tilesize_x;
+        }
+
+        yy = base_yy;
+        for ( y = ((yinc == 1) ? ymin : ymax); y != yend; y+=yinc ) {
+          vik_viewport_draw_line ( vvp, black_gc, base_xx, yy, width, yy );
+          yy += tilesize_y;
+        }
+      }
+
+    }
     g_free ( path_buf );
   }
 }
