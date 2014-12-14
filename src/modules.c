@@ -274,4 +274,7 @@ void modules_uninit()
 #ifdef VIK_CONFIG_OPENSTREETMAP
   osm_traces_uninit();
 #endif
+#ifdef HAVE_LIBMAPNIK
+  vik_mapnik_layer_uninit();
+#endif
 }

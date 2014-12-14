@@ -194,6 +194,10 @@ GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double 
 {
 	if ( !mi ) return NULL;
 
+	// Copy main object to local map variable
+	//  This enables rendering to work when this function is called from different threads
+	mapnik::Map myMap(*mi->myMap);
+
 	// Note prj & bbox want stuff in lon,lat order!
 	double p0x = lon_tl;
 	double p0y = lat_tl;
@@ -206,13 +210,13 @@ GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double 
 
 	GdkPixbuf *pixbuf = NULL;
 	try {
-		unsigned width  = mi->myMap->width();
-		unsigned height = mi->myMap->height();
+		unsigned width  = myMap.width();
+		unsigned height = myMap.height();
 		mapnik::image_32 image(width,height);
 		mapnik::box2d<double> bbox(p0x, p0y, p1x, p1y);
-		mi->myMap->zoom_to_box(bbox);
+		myMap.zoom_to_box(bbox);
 		// FUTURE: option to use cairo / grid renderers?
-		mapnik::agg_renderer<mapnik::image_32> render(*mi->myMap,image);
+		mapnik::agg_renderer<mapnik::image_32> render(myMap,image);
 		render.apply();
 
 		if ( image.painted() ) {

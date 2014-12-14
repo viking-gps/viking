@@ -39,6 +39,7 @@ GType vik_mapnik_layer_get_type ();
 typedef struct _VikMapnikLayer VikMapnikLayer;
 
 void vik_mapnik_layer_init (void);
+void vik_mapnik_layer_uninit (void);
 
 G_END_DECLS
 

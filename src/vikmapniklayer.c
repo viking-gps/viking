@@ -42,6 +42,7 @@
 #include "preferences.h"
 #include "icons/icons.h"
 #include "mapnik_interface.h"
+#include "background.h"
 
 struct _VikMapnikLayerClass
 {
@@ -212,14 +213,14 @@ static VikLayerParam prefs[] = {
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"carto", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("CartoCSS:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,  N_("The program to convert CartoCSS files into Mapnik XML"), NULL, NULL, NULL },
 };
 
-// NB Only performed once per program run
-static void mapnik_layer_class_init ( VikMapnikLayerClass *klass )
-{
-	mapnik_interface_initialize ( a_preferences_get (MAPNIK_PREFS_NAMESPACE"plugins_directory")->s,
-	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"fonts_directory")->s,
-	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory")->b );
-}
+static GMutex *tp_mutex;
+static GHashTable *requests = NULL;
 
+/**
+ * vik_mapnik_layer_init:
+ *
+ * Mostly to initialize preferences
+ */
 void vik_mapnik_layer_init (void)
 {
 	a_preferences_register_group ( MAPNIK_PREFS_GROUP_KEY, "Mapnik" );
@@ -234,8 +235,28 @@ void vik_mapnik_layer_init (void)
 	tmp.b = TRUE;
 	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
 
+	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
+
 	tmp.s = "carto";
 	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
+
+	tp_mutex = vik_mutex_new();
+
+	// Just storing keys only
+	requests = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+}
+
+void vik_mapnik_layer_uninit ()
+{
+	vik_mutex_free (tp_mutex);
+}
+
+// NB Only performed once per program run
+static void mapnik_layer_class_init ( VikMapnikLayerClass *klass )
+{
+	mapnik_interface_initialize ( a_preferences_get (MAPNIK_PREFS_NAMESPACE"plugins_directory")->s,
+	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"fonts_directory")->s,
+	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory")->b );
 }
 
 GType vik_mapnik_layer_get_type ()
@@ -503,13 +524,120 @@ static void mapnik_layer_post_read (VikLayer *vl, VikViewport *vvp, gboolean fro
 	}
 }
 
+typedef struct
+{
+	VikMapnikLayer *vml;
+	VikCoord *ul;
+	VikCoord *br;
+	MapCoord *ulmc;
+	const gchar* request;
+} RenderInfo;
+
+/**
+ * render:
+ *
+ * Common render function which can run in separate thread
+ */
+static void render ( VikMapnikLayer *vml, VikCoord *ul, VikCoord *br, MapCoord *ulm )
+{
+	gint64 tt1 = g_get_real_time ();
+	GdkPixbuf *pixbuf = mapnik_interface_render ( vml->mi, ul->north_south, ul->east_west, br->north_south, br->east_west );
+	gint64 tt2 = g_get_real_time ();
+	g_debug ( "Mapnik rendering completed in %.3f seconds", (gdouble)(tt2-tt1)/1000000 );
+	if ( !pixbuf ) {
+		// A pixbuf to stick into cache incase of an unrenderable area - otherwise will get continually re-requested
+		pixbuf = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata(&vikmapniklayer_pixbuf, FALSE, NULL), vml->tile_size_x, vml->tile_size_x, GDK_INTERP_BILINEAR );
+	}
+
+	// NB Mapnik can apply alpha, but use our own function for now
+	if ( vml->alpha < 255 )
+		pixbuf = ui_pixbuf_set_alpha ( pixbuf, vml->alpha );
+	a_mapcache_add ( pixbuf, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
+}
+
+static void render_info_free ( RenderInfo *data )
+{
+	g_free ( data->ul );
+	g_free ( data->br );
+	g_free ( data->ulmc );
+	// NB No need to free the request/key - as this is freed by the hash table destructor
+	g_free ( data );
+}
+
+static void background ( RenderInfo *data, gpointer threaddata )
+{
+	int res = a_background_thread_progress ( threaddata, 0 );
+	if (res == 0) {
+		render ( data->vml, data->ul, data->br, data->ulmc );
+	}
+
+	g_mutex_lock(tp_mutex);
+	g_hash_table_remove (requests, data->request);
+	g_mutex_unlock(tp_mutex);
+
+	if (res == 0)
+		vik_layer_emit_update ( VIK_LAYER(data->vml) ); // NB update display from background
+}
+
+static void render_cancel_cleanup (RenderInfo *data)
+{
+	// Anything?
+}
+
+#define REQUEST_HASHKEY_FORMAT "%d-%d-%d-%d-%d"
+
+/**
+ * Thread
+ */
+void thread_add (VikMapnikLayer *vml, MapCoord *mul, VikCoord *ul, VikCoord *br, gint x, gint y, gint z, gint zoom, const gchar* name )
+{
+	// Create request
+	guint nn = name ? g_str_hash ( name ) : 0;
+	gchar *request = g_strdup_printf ( REQUEST_HASHKEY_FORMAT, x, y, z, zoom, nn );
+
+	g_mutex_lock(tp_mutex);
+
+	if ( g_hash_table_lookup_extended (requests, request, NULL, NULL ) ) {
+		g_free ( request );
+		g_mutex_unlock (tp_mutex);
+		return;
+	}
+
+	RenderInfo *ri = g_malloc ( sizeof(RenderInfo) );
+	ri->vml = vml;
+	ri->ul = g_malloc ( sizeof(VikCoord) );
+	ri->br = g_malloc ( sizeof(VikCoord) );
+	ri->ulmc = g_malloc ( sizeof(MapCoord) );
+	memcpy(ri->ul, ul, sizeof(VikCoord));
+	memcpy(ri->br, br, sizeof(VikCoord));
+	memcpy(ri->ulmc, mul, sizeof(MapCoord));
+	ri->request = request;
+
+	g_hash_table_insert ( requests, request, NULL );
+
+	g_mutex_unlock (tp_mutex);
+
+	gchar *basename = g_path_get_basename (name);
+	gchar *description = g_strdup_printf ( _("Mapnik Render %d:%d:%d %s"), zoom, x, y, basename );
+	g_free ( basename );
+	a_background_thread ( BACKGROUND_POOL_LOCAL,
+	                      VIK_GTK_WINDOW_FROM_LAYER(vml),
+	                      description,
+	                      (vik_thr_func) background,
+	                      ri,
+	                      (vik_thr_free_func) render_info_free,
+	                      (vik_thr_free_func) render_cancel_cleanup,
+	                      1 );
+	g_free ( description );
+}
+
 /**
  *
  */
 static GdkPixbuf *get_pixbuf ( VikMapnikLayer *vml, MapCoord *ulm, MapCoord *brm )
 {
 	VikCoord ul; VikCoord br;
-	GdkPixbuf *pixbuf;
+	GdkPixbuf *pixbuf = NULL;
 
 	map_utils_iTMS_to_vikcoord (ulm, &ul);
 	map_utils_iTMS_to_vikcoord (brm, &br);
@@ -517,12 +645,14 @@ static GdkPixbuf *get_pixbuf ( VikMapnikLayer *vml, MapCoord *ulm, MapCoord *brm
 	pixbuf = a_mapcache_get ( ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
 
 	if ( ! pixbuf ) {
-		pixbuf = mapnik_interface_render ( vml->mi, ul.north_south, ul.east_west, br.north_south, br.east_west );
-		if ( pixbuf ) {
-			// NB Mapnik can apply alpha, but use our own function for now
-			if ( vml->alpha < 255 )
-				pixbuf = ui_pixbuf_set_alpha ( pixbuf, vml->alpha );
-			a_mapcache_add ( pixbuf, ulm->x, ulm->y, ulm->z, MAPNIK_LAYER_MAP_TYPE, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
+		if ( ! pixbuf ) {
+			if ( TRUE )
+				thread_add (vml, ulm, &ul, &br, ulm->x, ulm->y, ulm->z, ulm->scale, vml->filename_xml );
+			else {
+				// Run in the foreground
+				render ( vml, &ul, &br, ulm );
+				vik_layer_emit_update ( VIK_LAYER(vml) );
+			}
 		}
 	}
 
@@ -566,8 +696,6 @@ static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vvp )
 
 		// Split rendering into a grid for the current viewport
 		//  thus each individual 'tile' can then be stored in the map cache
-		// TODO: Also potentially allows using multi threads for each individual tile
-		//   this is more important for complicated stylesheets/datasources as each rendering may take some time
 		for (gint x = xmin; x <= xmax; x++ ) {
 			for (gint y = ymin; y <= ymax; y++ ) {
 				ulm.x = x;
