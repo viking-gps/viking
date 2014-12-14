@@ -580,7 +580,7 @@ static void zoom_changed (GtkMenuShell *menushell,
   GtkWidget *aw = gtk_menu_get_active ( GTK_MENU (menushell) );
   gint active = GPOINTER_TO_INT(g_object_get_data ( G_OBJECT (aw), "position" ));
 
-  gdouble zoom_request = pow (2, active-2 );
+  gdouble zoom_request = pow (2, active-5 );
 
   // But has it really changed?
   gdouble current_zoom = vik_viewport_get_zoom ( vw->viking_vvp );
@@ -597,7 +597,7 @@ static void zoom_changed (GtkMenuShell *menushell,
 static GtkWidget *create_zoom_menu_all_levels ( gdouble mpp )
 {
   GtkWidget *menu = gtk_menu_new ();
-  char *itemLabels[] = { "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768" };
+  char *itemLabels[] = { "0.031", "0.063", "0.125", "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768" };
 
   int i;
   for (i = 0 ; i < G_N_ELEMENTS(itemLabels) ; i++)
@@ -608,7 +608,7 @@ static GtkWidget *create_zoom_menu_all_levels ( gdouble mpp )
       g_object_set_data (G_OBJECT (item), "position", GINT_TO_POINTER(i));
     }
 
-  gint active = 2 + round ( log (mpp) / log (2) );
+  gint active = 5 + round ( log (mpp) / log (2) );
   // Ensure value derived from mpp is in bounds of the menu
   if ( active >= G_N_ELEMENTS(itemLabels) )
     active = G_N_ELEMENTS(itemLabels) - 1;
