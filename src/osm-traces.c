@@ -127,11 +127,6 @@ static const gchar *get_default_user()
 
 void osm_set_login(const gchar *user, const gchar *password)
 {
-  /* Allocate mutex */
-  if (login_mutex == NULL)
-  {
-    login_mutex = g_mutex_new();
-  }
   g_mutex_lock(login_mutex);
   g_free(osm_user); osm_user = NULL;
   g_free(osm_password); osm_password = NULL;
@@ -160,6 +155,12 @@ void osm_traces_init () {
   tmp.s = "";
   a_preferences_register(prefs+1, tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
 
+  login_mutex = vik_mutex_new();
+}
+
+void osm_traces_uninit()
+{
+  vik_mutex_free(login_mutex);
 }
 
 /*

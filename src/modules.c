@@ -258,3 +258,12 @@ void modules_init()
   modules_load_config ();
 }
 
+/**
+ *
+ */
+void modules_uninit()
+{
+#ifdef VIK_CONFIG_OPENSTREETMAP
+  osm_traces_uninit();
+#endif
+}

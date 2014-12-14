@@ -137,7 +137,11 @@ void a_download_init (void)
 	tmp.u = VIK_CONFIG_DEFAULT_TILE_AGE / 86400; // Now in days
 	a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
 	file_list_mutex = vik_mutex_new();
+}
 
+void a_download_uninit (void)
+{
+	vik_mutex_free(file_list_mutex);
 }
 
 static gboolean lock_file(const char *fn)

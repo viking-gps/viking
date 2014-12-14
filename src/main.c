@@ -237,6 +237,8 @@ int main( int argc, char *argv[] )
   a_preferences_uninit ();
   a_settings_uninit ();
 
+  modules_uninit();
+
   curl_download_uninit();
 
   vu_finalize_lat_lon_tz_lookup ();

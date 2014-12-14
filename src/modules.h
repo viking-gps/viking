@@ -24,4 +24,6 @@
 
 void modules_init();
 
+void modules_uninit();
+
 #endif
