@@ -50,6 +50,7 @@
 #include "curl_download.h"
 #include "preferences.h"
 #include "globals.h"
+#include "vik_compat.h"
 
 static gboolean check_file_first_line(FILE* f, gchar *patterns[])
 {
@@ -135,8 +136,8 @@ void a_download_init (void)
 	VikLayerParamData tmp;
 	tmp.u = VIK_CONFIG_DEFAULT_TILE_AGE / 86400; // Now in days
 	a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+	file_list_mutex = vik_mutex_new();
 
-	file_list_mutex = g_mutex_new();
 }
 
 static gboolean lock_file(const char *fn)

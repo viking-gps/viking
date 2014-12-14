@@ -875,12 +875,9 @@ gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl )
 
 static void gps_session_delete(GpsSession *sess)
 {
-  /* TODO */
-  g_mutex_free(sess->mutex);
+  vik_mutex_free(sess->mutex);
   g_free(sess->cmd_args);
-
   g_free(sess);
-
 }
 
 static void set_total_count(gint cnt, GpsSession *sess)
@@ -1261,7 +1258,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
   char *routes = NULL;
   char *waypoints = NULL;
 
-  sess->mutex = g_mutex_new();
+  sess->mutex = vik_mutex_new();
   sess->direction = dir;
   sess->vtl = vtl;
   sess->track = track;

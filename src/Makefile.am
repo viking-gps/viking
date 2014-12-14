@@ -54,6 +54,7 @@ libviking_a_SOURCES = \
 	degrees_converters.c degrees_converters.h \
 	globals.c globals.h \
 	viking.h mapcoord.h config.h \
+	vik_compat.c vik_compat.h \
 	viktrack.c viktrack.h \
 	vikwaypoint.c vikwaypoint.h \
 	clipboard.c clipboard.h \

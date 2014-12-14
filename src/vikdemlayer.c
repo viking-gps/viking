@@ -1179,7 +1179,7 @@ static void dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
 
 static void free_dem_download_params ( DEMDownloadParams *p )
 {
-  g_mutex_free ( p->mutex );
+  vik_mutex_free ( p->mutex );
   g_free ( p->dest );
   g_free ( p );
 }
@@ -1282,7 +1282,7 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
       p->lat = ll.lat;
       p->lon = ll.lon;
       p->vdl = vdl;
-      p->mutex = g_mutex_new();
+      p->mutex = vik_mutex_new();
       p->source = vdl->source;
       g_object_weak_ref(G_OBJECT(p->vdl), weak_ref_cb, p );
 

@@ -1433,7 +1433,7 @@ typedef struct {
 
 static void mdi_free ( MapDownloadInfo *mdi )
 {
-  g_mutex_free(mdi->mutex);
+  vik_mutex_free(mdi->mutex);
   g_free ( mdi->cache_dir );
   mdi->cache_dir = NULL;
   g_free ( mdi->filename_buf );
@@ -1628,7 +1628,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
     mdi->vml = vml;
     mdi->vvp = vvp;
     mdi->map_layer_alive = TRUE;
-    mdi->mutex = g_mutex_new();
+    mdi->mutex = vik_mutex_new();
     mdi->refresh_display = TRUE;
 
     /* cache_dir and buffer for dest filename */
@@ -1732,7 +1732,7 @@ static void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, V
   mdi->vml = vml;
   mdi->vvp = vvp;
   mdi->map_layer_alive = TRUE;
-  mdi->mutex = g_mutex_new();
+  mdi->mutex = vik_mutex_new();
   mdi->refresh_display = TRUE;
 
   mdi->cache_dir = g_strdup ( vml->cache_dir );
@@ -2092,7 +2092,7 @@ static gint maps_layer_how_many_maps ( VikMapsLayer *vml, VikViewport *vvp, VikC
   mdi->vml = vml;
   mdi->vvp = vvp;
   mdi->map_layer_alive = TRUE;
-  mdi->mutex = g_mutex_new();
+  mdi->mutex = vik_mutex_new();
   mdi->refresh_display = FALSE;
 
   mdi->cache_dir = g_strdup ( vml->cache_dir );

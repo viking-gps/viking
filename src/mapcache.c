@@ -28,6 +28,7 @@
 #include "globals.h"
 #include "mapcache.h"
 #include "preferences.h"
+#include "vik_compat.h"
 
 typedef struct _List {
   struct _List *next;
@@ -64,7 +65,7 @@ void a_mapcache_init ()
   tmp.u = VIK_CONFIG_MAPCACHE_SIZE;
   a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
 
-  mc_mutex = g_mutex_new();
+  mc_mutex = vik_mutex_new ();
   cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, g_object_unref );
 }
 
@@ -243,6 +244,7 @@ void a_mapcache_uninit ()
   g_hash_table_destroy ( cache );
   /* free list */
   cache = NULL;
+  vik_mutex_free (mc_mutex);
 }
 
 // Size of mapcache in memory

@@ -36,6 +36,7 @@
 #include "globals.h"
 #include "coords.h"
 #include "vikcoord.h"
+#include "vik_compat.h"
 #include "download.h"
 #include "vikwaypoint.h"
 #include "viktrack.h"
