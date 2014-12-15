@@ -39,7 +39,7 @@
 /* initialisation */
 void bing_init () {
 	VikMapSource *bing_aerial = VIK_MAP_SOURCE
-	  (bing_map_source_new_with_id (MAP_ID_BING_AERIAL, "Bing Bird's Eye Maps", API_KEY));
+	  (bing_map_source_new_with_id (MAP_ID_BING_AERIAL, _("Bing Aerial"), API_KEY));
 
 	maps_layer_register_map_source (bing_aerial);
 
