@@ -31,6 +31,7 @@
 #include <math.h>
 #endif
 
+#include "map_ids.h"
 #include "globals.h"
 #include "coords.h"
 #include "vikcoord.h"
@@ -49,8 +50,8 @@ static void expedia_handle_cleanup ( void *handle );
 static DownloadMapOptions expedia_options = { FALSE, FALSE, NULL, 2, a_check_map_file, NULL };
 
 void expedia_init() {
-  VikMapsLayer_MapType map_type = { 5, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download, expedia_handle_init, expedia_handle_cleanup };
-  maps_layer_register_type(_("Expedia Street Maps"), 5, &map_type);
+  VikMapsLayer_MapType map_type = { MAP_ID_EXPEDIA, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download, expedia_handle_init, expedia_handle_cleanup };
+  maps_layer_register_type(_("Expedia Street Maps"), MAP_ID_EXPEDIA, &map_type);
 }
 
 #define EXPEDIA_SITE "expedia.com"

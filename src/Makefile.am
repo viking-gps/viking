@@ -47,6 +47,7 @@ ENUM_H_FILES = \
 
 libviking_a_SOURCES = \
 	bbox.h \
+	map_ids.h \
 	modules.h modules.c \
 	curl_download.c curl_download.h \
 	compression.c compression.h \

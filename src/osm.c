@@ -27,6 +27,7 @@
 #include <glib/gi18n.h>
 
 #include "osm.h"
+#include "map_ids.h"
 #include "vikmapslayer.h"
 #include "vikslippymapsource.h"
 #include "vikwmscmapsource.h"
@@ -45,7 +46,7 @@
 void osm_init () {
   VikMapSource *mapnik_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 13,
+                                "id", MAP_ID_OSM_MAPNIK,
                                 "label", "OpenStreetMap (Mapnik)",
                                 "name", "OSM-Mapnik",
                                 "hostname", "tile.openstreetmap.org",
@@ -60,7 +61,7 @@ void osm_init () {
                                 NULL));
   VikMapSource *cycle_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 17,
+                                "id", MAP_ID_OSM_CYCLE,
                                 "label", "OpenStreetMap (Cycle)",
                                 "name", "OSM-Cycle",
                                 "hostname", "tile.opencyclemap.org",
@@ -75,7 +76,7 @@ void osm_init () {
                                 NULL));
   VikMapSource *transport_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 20,
+                                "id", MAP_ID_OSM_TRANSPORT,
                                 "label", "OpenStreetMap (Transport)",
                                 "name", "OSM-Transport",
                                 "hostname", "tile2.opencyclemap.org",
@@ -90,7 +91,7 @@ void osm_init () {
                                 NULL));
   VikMapSource *mapquest_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 19,
+                                "id", MAP_ID_MAPQUEST_OSM,
                                 "name", "OSM-MapQuest",
                                 "label", "OpenStreetMap (MapQuest)",
                                 "hostname", "otile1.mqcdn.com",
@@ -105,7 +106,7 @@ void osm_init () {
                                 NULL));
   VikMapSource *hot_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 22,
+                                "id", MAP_ID_OSM_HUMANITARIAN,
                                 "name", "OSM-Humanitarian",
                                 "label", "OpenStreetMap (Humanitarian)",
                                 "hostname", "c.tile.openstreetmap.fr",
@@ -122,7 +123,7 @@ void osm_init () {
   // NB no cache needed for this type!!
   VikMapSource *direct_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 21,
+                                "id", MAP_ID_OSM_ON_DISK,
                                 "label", _("On Disk OSM Tile Format"),
                                 // For using your own generated data assumed you know the license already!
                                 "copyright", "© OpenStreetMap contributors", // probably
@@ -132,7 +133,7 @@ void osm_init () {
   // NB no cache needed for this type!!
   VikMapSource *mbtiles_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 23,
+                                "id", MAP_ID_MBTILES,
                                 "label", _("MBTiles File"),
                                 // For using your own generated data assumed you know the license already!
                                 "copyright", "© OpenStreetMap contributors", // probably
@@ -143,7 +144,7 @@ void osm_init () {
   // NB no cache needed for this type!!
   VikMapSource *metatiles_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", 24,
+                                "id", MAP_ID_OSM_METATILES,
                                 "label", _("OSM Metatiles"),
                                 // For using your own generated data assumed you know the license already!
                                 "copyright", "© OpenStreetMap contributors", // probably

@@ -31,6 +31,7 @@
 #include "bingmapsource.h"
 #include "vikwebtoolcenter.h"
 #include "vikexttools.h"
+#include "map_ids.h"
 
 /** API key registered by Guilhem Bonnefille */
 #define API_KEY "AqsTAipaBBpKLXhcaGgP8kceYukatmtDLS1x0CXEhRZnpl1RELF9hlI8j4mNIkrE"
@@ -38,7 +39,7 @@
 /* initialisation */
 void bing_init () {
 	VikMapSource *bing_aerial = VIK_MAP_SOURCE
-	  (bing_map_source_new_with_id (212, "Bing Bird's Eye Maps", API_KEY));
+	  (bing_map_source_new_with_id (MAP_ID_BING_AERIAL, "Bing Bird's Eye Maps", API_KEY));
 
 	maps_layer_register_map_source (bing_aerial);
 

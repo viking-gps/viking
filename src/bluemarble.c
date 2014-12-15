@@ -23,12 +23,13 @@
 #include "bluemarble.h"
 #include "vikmapslayer.h"
 #include "vikslippymapsource.h"
+#include "map_ids.h"
 
 /* initialisation */
 void bluemarble_init ()
 {
   VikMapSource *bluemarble_type = VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-							      "id", 15,
+							      "id", MAP_ID_BLUE_MARBLE,
 							      "name", "BlueMarble",
 							      "label", "BlueMarble",
 							      "hostname", "s3.amazonaws.com",
