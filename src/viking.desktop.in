@@ -8,5 +8,5 @@ Icon=viking
 Terminal=false
 Type=Application
 StartupNotify=true
-Categories=GTK;Science;Maps;Geography;
+Categories=GTK;Science;Maps;Geography;Education;
 MimeType=application/vnd.google-earth.kml+xml;application/gpx+xml;
