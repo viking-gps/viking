@@ -777,17 +777,33 @@ VikLayerInterface vik_trw_layer_interface = {
 };
 
 static gboolean have_diary_program = FALSE;
-static gboolean have_geojson_export = FALSE;
+static gchar *diary_program = NULL;
+#define VIK_SETTINGS_EXTERNAL_DIARY_PROGRAM "external_diary_program"
 
+static gboolean have_geojson_export = FALSE;
 
 // NB Only performed once per program run
 static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 {
-  if ( g_find_program_in_path( "rednotebook" ) ) {
+  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_DIARY_PROGRAM, &diary_program ) ) {
+#ifdef WINDOWS
+    //diary_program = g_strdup ( "C:\\Program Files\\Rednotebook\\rednotebook.exe" );
+    diary_program = g_strdup ( "C:/Progra~1/Rednotebook/rednotebook.exe" );
+#else
+    diary_program = g_strdup ( "rednotebook" );
+#endif
+  }
+  else {
+    // User specified so assume it works
+    have_diary_program = TRUE;
+  }
+
+  if ( g_find_program_in_path( diary_program ) ) {
     gchar *mystdout = NULL;
     gchar *mystderr = NULL;
     // Needs RedNotebook 1.7.3+ for support of opening on a specified date
-    if ( g_spawn_command_line_sync ( "rednotebook --version", &mystdout, &mystderr, NULL, NULL ) ) {
+    gchar *cmd = g_strconcat ( diary_program, " --version", NULL ); // "rednotebook --version"
+    if ( g_spawn_command_line_sync ( cmd, &mystdout, &mystderr, NULL, NULL ) ) {
       // Annoyingly 1.7.1|2|3 versions of RedNotebook prints the version to stderr!!
       if ( mystdout )
         g_debug ("Diary: %s", mystdout ); // Should be something like 'RedNotebook 1.4'
@@ -814,6 +830,7 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
     }
     g_free ( mystdout );
     g_free ( mystderr );
+    g_free ( cmd );
   }
 
   if ( g_find_program_in_path ( a_geojson_program_export() ) ) {
@@ -6601,14 +6618,17 @@ static void trw_layer_reverse ( menu_array_sublayer values )
 }
 
 /**
- * Open a diary at the specified date
+ * Open a program at the specified date
+ * Mainly for RedNotebook - http://rednotebook.sourceforge.net/
+ * But could work with any program that accepts a command line of --date=<date>
+ * FUTURE: Allow configuring of command line options + date format
  */
 static void trw_layer_diary_open ( VikTrwLayer *vtl, const gchar *date_str )
 {
   GError *err = NULL;
-  gchar *cmd = g_strdup_printf ( "%s%s", "rednotebook --date=", date_str );
+  gchar *cmd = g_strdup_printf ( "%s %s%s", diary_program, "--date=", date_str );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
-    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), "rednotebook" );
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), diary_program );
     g_error_free ( err );
   }
   g_free ( cmd );

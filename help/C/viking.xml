@@ -3317,6 +3317,10 @@ Accept: */*
 	      If within this range it will skip over this location and move on to the next saved history location.
 	    </para>
 	  </listitem>
+	  <listitem>
+	    <para>external_diary_program=rednotebook</para>
+	    <para>Or in Windows it uses <filename>C:/Progra~1/Rednotebook/rednotebook.exe</filename> - This string value must use Unix separators and not have spaces.</para>
+	  </listitem>
 	</orderedlist>
 
 	<section>
