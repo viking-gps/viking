@@ -134,7 +134,7 @@ static gchar *convert_dec_to_dms(gdouble dec, gchar pos_c, gchar neg_c)
   tmp = (tmp - val_d) * 60;
   val_m = (gint)tmp;
 
-  /* Minutes */
+  /* Seconds */
   val_s = (tmp - val_m) * 60;
 
   /* Format */
