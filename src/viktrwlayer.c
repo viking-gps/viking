@@ -782,6 +782,10 @@ static gchar *diary_program = NULL;
 
 static gboolean have_geojson_export = FALSE;
 
+static gboolean have_astro_program = FALSE;
+static gchar *astro_program = NULL;
+#define VIK_SETTINGS_EXTERNAL_ASTRO_PROGRAM "external_astro_program"
+
 // NB Only performed once per program run
 static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 {
@@ -835,6 +839,23 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 
   if ( g_find_program_in_path ( a_geojson_program_export() ) ) {
     have_geojson_export = TRUE;
+  }
+
+  // Astronomy Domain
+  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_ASTRO_PROGRAM, &astro_program ) ) {
+#ifdef WINDOWS
+    //astro_program = g_strdup ( "C:\\Program Files\\Stellarium\\stellarium.exe" );
+    astro_program = g_strdup ( "C:/Progra~1/Stellarium/stellarium.exe" );
+#else
+    astro_program = g_strdup ( "stellarium" );
+#endif
+  }
+  else {
+    // User specified so assume it works
+    have_astro_program = TRUE;
+  }
+  if ( g_find_program_in_path( astro_program ) ) {
+    have_astro_program = TRUE;
   }
 }
 
@@ -6672,6 +6693,131 @@ static void trw_layer_diary ( menu_array_sublayer values )
 }
 
 /**
+ * Open a program at the specified date
+ * Mainly for Stellarium - http://stellarium.org/
+ * But could work with any program that accepts the same command line options...
+ * FUTURE: Allow configuring of command line options + format or parameters
+ */
+static void trw_layer_astro_open ( VikTrwLayer *vtl, const gchar *date_str, const gchar *time_str, const gchar *lat_str, const gchar *lon_str, const gchar *alt_str )
+{
+  GError *err = NULL;
+  gchar *tmp;
+  g_file_open_tmp ( "vik-astro-XXXXXX.ini", &tmp, NULL );
+  gchar *cmd = g_strdup_printf ( "%s %s %s %s %s %s %s %s %s %s %s %s %s %s",
+                                  astro_program, "-c", tmp, "--full-screen no", "--sky-date", date_str, "--sky-time", time_str, "--latitude", lat_str, "--longitude", lon_str, "--altitude", alt_str );
+  g_warning ( "%s", cmd );
+  if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s"), astro_program );
+    g_warning ( "%s", err->message );
+    g_error_free ( err );
+  }
+  util_add_to_deletion_list ( tmp );
+  g_free ( tmp );
+  g_free ( cmd );
+}
+
+// Format of stellarium lat & lon seems designed to be particularly awkward
+//  who uses ' & " in the parameters for the command line?!
+// -1d4'27.48"
+// +53d58'16.65"
+static gchar *convert_to_dms ( gdouble dec )
+{
+  gdouble tmp;
+  gchar sign_c = ' ';
+  gint val_d, val_m;
+  gdouble val_s;
+  gchar *result = NULL;
+
+  if ( dec > 0 )
+    sign_c = '+';
+  else if ( dec < 0 )
+    sign_c = '-';
+  else // Nul value
+    sign_c = ' ';
+
+  // Degrees
+  tmp = fabs(dec);
+  val_d = (gint)tmp;
+
+  // Minutes
+  tmp = (tmp - val_d) * 60;
+  val_m = (gint)tmp;
+
+  // Seconds
+  val_s = (tmp - val_m) * 60;
+
+  // Format
+  result = g_strdup_printf ( "%c%dd%d\\\'%.4f\\\"", sign_c, val_d, val_m, val_s );
+  return result;
+}
+
+/**
+ * Open an astronomy program at the date & position of the track center, trackpoint or waypoint
+ */
+static void trw_layer_astro ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+
+  if ( GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
+    VikTrack *trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+    if ( ! trk )
+      return;
+
+    VikTrackpoint *tp = NULL;
+    if ( vtl->current_tpl )
+      // Current Trackpoint
+      tp = VIK_TRACKPOINT(vtl->current_tpl->data);
+    else if ( trk->trackpoints )
+      // Otherwise first trackpoint
+      tp = VIK_TRACKPOINT(trk->trackpoints->data);
+    else
+      // Give up
+      return;
+
+    if ( tp->has_timestamp ) {
+      gchar date_buf[20];
+      strftime (date_buf, sizeof(date_buf), "%Y%m%d", gmtime(&(tp->timestamp)));
+      gchar time_buf[20];
+      strftime (time_buf, sizeof(time_buf), "%H:%M:%S", gmtime(&(tp->timestamp)));
+      struct LatLon ll;
+      vik_coord_to_latlon ( &tp->coord, &ll );
+      gchar *lat_str = convert_to_dms ( ll.lat );
+      gchar *lon_str = convert_to_dms ( ll.lon );
+      gchar alt_buf[20];
+      snprintf (alt_buf, sizeof(alt_buf), "%d", (gint)round(tp->altitude) );
+      trw_layer_astro_open ( vtl, date_buf, time_buf, lat_str, lon_str, alt_buf);
+      g_free ( lat_str );
+      g_free ( lon_str );
+    }
+    else
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This track has no date information.") );
+  }
+  else if ( GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
+    VikWaypoint *wpt = (VikWaypoint *) g_hash_table_lookup ( vtl->waypoints, values[MA_SUBLAYER_ID] );
+    if ( ! wpt )
+      return;
+
+    if ( wpt->has_timestamp ) {
+      gchar date_buf[20];
+      strftime (date_buf, sizeof(date_buf), "%Y%m%d", gmtime(&(wpt->timestamp)));
+      gchar time_buf[20];
+      strftime (time_buf, sizeof(time_buf), "%H:%M:%S", gmtime(&(wpt->timestamp)));
+      struct LatLon ll;
+      vik_coord_to_latlon ( &wpt->coord, &ll );
+      gchar *lat_str = convert_to_dms ( ll.lat );
+      gchar *lon_str = convert_to_dms ( ll.lon );
+      gchar alt_buf[20];
+      snprintf (alt_buf, sizeof(alt_buf), "%d", (gint)round(wpt->altitude) );
+      trw_layer_astro_open ( vtl, date_buf, time_buf, lat_str, lon_str, alt_buf );
+      g_free ( lat_str );
+      g_free ( lon_str );
+    }
+    else
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This waypoint has no date information.") );
+  }
+}
+
+/**
  * Similar to trw_layer_enum_item, but this uses a sorted method
  */
 /* Currently unused
@@ -8337,12 +8483,28 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
   }
 
   // Only made available if a suitable program is installed
-  if ( have_diary_program ) {
-    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
-      item = gtk_image_menu_item_new_with_mnemonic ( _("Diar_y") );
+  if ( (have_astro_program || have_diary_program) &&
+       (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) ) {
+    GtkWidget *external_submenu;
+    external_submenu = gtk_menu_new ();
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Externa_l") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU) );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), external_submenu );
+
+    if ( have_diary_program ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Diary") );
       gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SPELL_CHECK, GTK_ICON_SIZE_MENU) );
       g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_diary), pass_along );
-      gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(external_submenu), item );
+      gtk_widget_show ( item );
+    }
+
+    if ( have_astro_program ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Astronomy") );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_astro), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(external_submenu), item );
       gtk_widget_show ( item );
     }
   }

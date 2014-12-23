@@ -3321,6 +3321,11 @@ Accept: */*
 	    <para>external_diary_program=rednotebook</para>
 	    <para>Or in Windows it uses <filename>C:/Progra~1/Rednotebook/rednotebook.exe</filename> - This string value must use Unix separators and not have spaces.</para>
 	  </listitem>
+	  <listitem>
+	    <para>external_astro_program=stellarium</para>
+	    <para>Or in Windows use <filename>C:/Progra~1/Stellarium/stellarium.exe</filename> - This string value must use Unix separators and not have spaces.
+	          Further note due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> in Stellarium means this does not actually work. You will need to reference a shortcut, rather than the executable directly.</para>
+	  </listitem>
 	</orderedlist>
 
 	<section>
