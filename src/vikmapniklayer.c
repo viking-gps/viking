@@ -111,11 +111,29 @@ static void mapnik_layer_free ( VikMapnikLayer *vml );
 static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vp );
 static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gpointer vlp );
 
+static gpointer mapnik_feature_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *event, VikViewport *vvp );
+
 // See comment in viktrwlayer.c for advice on values used
 // FUTURE:
 static VikToolInterface mapnik_tools[] = {
 	// Layer Info
 	// Zoom All?
+  { { "MapnikFeatures", GTK_STOCK_INFO, N_("_Mapnik Features"), NULL, N_("Mapnik Features"), 0 },
+    (VikToolConstructorFunc) mapnik_feature_create,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    (VikToolMouseFunc) mapnik_feature_release,
+    NULL,
+    FALSE,
+    GDK_LEFT_PTR, NULL, NULL },
 };
 
 static void mapnik_layer_post_read (VikLayer *vl, VikViewport *vvp, gboolean from_file);
@@ -193,6 +211,11 @@ struct _VikMapnikLayer {
 
 	gboolean use_file_cache;
 	gchar *file_cache_dir;
+
+	VikCoord rerender_ul;
+	VikCoord rerender_br;
+	gdouble rerender_zoom;
+	GtkWidget *right_click_menu;
 };
 
 #define MAPNIK_PREFS_GROUP_KEY "mapnik"
@@ -941,4 +964,47 @@ static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gp
 	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_about), values );
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 	gtk_widget_show ( item );
+}
+
+/**
+ * Rerender a specific tile
+ */
+static void mapnik_layer_rerender ( VikMapnikLayer *vml )
+{
+	MapCoord ulm;
+	// Requested position to map coord
+	map_utils_vikcoord_to_iTMS ( &vml->rerender_ul, vml->rerender_zoom, vml->rerender_zoom, &ulm );
+	// Reconvert back - thus getting the coordinate at the tile *ul corner*
+	map_utils_iTMS_to_vikcoord (&ulm, &vml->rerender_ul );
+	// Bottom right bound is simply +1 in TMS coords
+	MapCoord brm = ulm;
+	brm.x = brm.x+1;
+	brm.y = brm.y+1;
+	map_utils_iTMS_to_vikcoord (&brm, &vml->rerender_br );
+	thread_add (vml, &ulm, &vml->rerender_ul, &vml->rerender_br, ulm.x, ulm.y, ulm.z, ulm.scale, vml->filename_xml );
+}
+
+static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *event, VikViewport *vvp )
+{
+	if ( !vml )
+		return FALSE;
+	if ( event->button == 3 ) {
+		vik_viewport_screen_to_coord ( vvp, MAX(0, event->x), MAX(0, event->y), &vml->rerender_ul );
+		vml->rerender_zoom = vik_viewport_get_zoom ( vvp );
+
+		if ( ! vml->right_click_menu ) {
+			GtkWidget *item;
+			vml->right_click_menu = gtk_menu_new ();
+
+			item = gtk_image_menu_item_new_with_mnemonic ( _("_Rerender Tile") );
+			gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+			g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_rerender), vml );
+			gtk_menu_shell_append ( GTK_MENU_SHELL(vml->right_click_menu), item );
+		}
+
+		gtk_menu_popup ( GTK_MENU(vml->right_click_menu), NULL, NULL, NULL, NULL, event->button, event->time );
+		gtk_widget_show_all ( GTK_WIDGET(vml->right_click_menu) );
+	}
+
+	return FALSE;
 }

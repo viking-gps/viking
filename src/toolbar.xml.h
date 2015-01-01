@@ -1,3 +1,4 @@
+#include "config.h"
 #ifndef __VIKING_TOOBAR_XML_H
 #define __VIKING_TOOBAR_XML_H
 
@@ -38,6 +39,10 @@ static const char *toolbar_xml =
 "      <separator/>"
 "      <toolitem action='DEMDownload'/>"
 "      <separator/>"
+#ifdef HAVE_LIBMAPNIK
+"      <toolitem action='MapnikFeatures'/>"
+"      <separator/>"
+#endif
 "  </toolbar>"
 "</ui>"
 ;
