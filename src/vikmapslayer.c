@@ -1756,7 +1756,8 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
  
       g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
       /* launch the thread */
-      a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */
+      a_background_thread ( BACKGROUND_POOL_REMOTE,
+                            VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */
                             tmp,                                              /* description string */
                             (vik_thr_func) map_download_thread,               /* function to call within thread */
                             mdi,                                              /* pass along data */
@@ -1840,14 +1841,16 @@ static void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, V
     tmp = g_strdup_printf ( fmt, mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype) );
 
     g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
-      /* launch the thread */
-    a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */
-      tmp,                                /* description string */
-      (vik_thr_func) map_download_thread, /* function to call within thread */
-      mdi,                                /* pass along data */
-      (vik_thr_free_func) mdi_free,       /* function to free pass along data */
-      (vik_thr_free_func) mdi_cancel_cleanup,
-      mdi->mapstoget );
+
+    // launch the thread
+    a_background_thread ( BACKGROUND_POOL_REMOTE,
+                          VIK_GTK_WINDOW_FROM_LAYER(vml), /* parent window */
+                          tmp,                                /* description string */
+                          (vik_thr_func) map_download_thread, /* function to call within thread */
+                          mdi,                                /* pass along data */
+                          (vik_thr_free_func) mdi_free,       /* function to free pass along data */
+                          (vik_thr_free_func) mdi_cancel_cleanup,
+                          mdi->mapstoget );
     g_free ( tmp );
   }
   else

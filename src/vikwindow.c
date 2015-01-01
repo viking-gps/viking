@@ -479,7 +479,8 @@ void vik_window_new_window_finish ( VikWindow *vw )
 
       vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, _("Trying to determine location...") );
 
-      a_background_thread ( GTK_WINDOW(vw),
+      a_background_thread ( BACKGROUND_POOL_REMOTE,
+                            GTK_WINDOW(vw),
                             _("Determining location"),
                             (vik_thr_func) determine_location_thread,
                             vw,

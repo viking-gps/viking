@@ -525,14 +525,15 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 
     title = g_strdup_printf(_("Uploading %s to OSM"), info->name);
 
-    /* launch the thread */
-    a_background_thread(VIK_GTK_WINDOW_FROM_LAYER(vtl),          /* parent window */
-			title,                                   /* description string */
-			(vik_thr_func) osm_traces_upload_thread, /* function to call within thread */
-			info,                                    /* pass along data */
-			(vik_thr_free_func) oti_free,            /* function to free pass along data */
-			(vik_thr_free_func) NULL,
-			1 );
+    // launch the thread
+    a_background_thread( BACKGROUND_POOL_REMOTE,
+                         VIK_GTK_WINDOW_FROM_LAYER(vtl),          /* parent window */
+                         title,                                   /* description string */
+                         (vik_thr_func) osm_traces_upload_thread, /* function to call within thread */
+                         info,                                    /* pass along data */
+                         (vik_thr_free_func) oti_free,            /* function to free pass along data */
+                         (vik_thr_free_func) NULL,
+                         1 );
     g_free ( title ); title = NULL;
   }
   gtk_widget_destroy ( dia );

@@ -3284,6 +3284,9 @@ Accept: */*
 	    <para>background_max_threads=10</para>
 	  </listitem>
 	  <listitem>
+	    <para>background_max_threads_local=<emphasis>Number of CPUs</emphasis></para>
+	  </listitem>
+	  <listitem>
 	    <para>window_menubar=true</para>
 	  </listitem>
 	  <listitem>

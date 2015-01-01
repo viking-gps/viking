@@ -495,13 +495,14 @@ _load_attributions_thread ( BingMapSource *self, gpointer threaddata )
 static void
 _async_load_attributions ( BingMapSource *self )
 {
-	a_background_thread ( /*VIK_GTK_WINDOW_FROM_WIDGET(vp)*/NULL,
-			    _("Bing attribution Loading"),
-			    (vik_thr_func) _load_attributions_thread,
-			    self,
-			    NULL,
-			    NULL,
-			    1 );
+	a_background_thread ( BACKGROUND_POOL_REMOTE,
+	                      /*VIK_GTK_WINDOW_FROM_WIDGET(vp)*/NULL,
+	                      _("Bing attribution Loading"),
+	                      (vik_thr_func) _load_attributions_thread,
+	                      self,
+	                      NULL,
+	                      NULL,
+	                      1 );
      
 }
 

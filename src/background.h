@@ -32,8 +32,12 @@ G_BEGIN_DECLS
 typedef void(*vik_thr_free_func)(gpointer);
 typedef void(*vik_thr_func)(gpointer,gpointer);
 
-/* the new way */
-void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items );
+typedef enum {
+  BACKGROUND_POOL_REMOTE, // i.e. Network requests - can have an arbitary large pool
+  BACKGROUND_POOL_LOCAL,  // i.e. CPU bound tasks - pool should be no larger than available CPUs for best performance
+} Background_Pool_Type;
+
+void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items );
 int a_background_thread_progress ( gpointer callbackdata, gdouble fraction );
 int a_background_testcancel ( gpointer callbackdata );
 void a_background_show_window ();

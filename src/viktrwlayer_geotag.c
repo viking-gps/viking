@@ -516,13 +516,14 @@ static void trw_layer_geotag_response_cb ( GtkDialog *dialog, gint resp, GeoTagW
 		gchar *tmp = g_strdup_printf ( _("Geotagging %d Images..."), len );
 
 		// Processing lots of files can take time - so run a background effort
-		a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(options->vtl),
-							  tmp,
-							  (vik_thr_func) trw_layer_geotag_thread,
-							  options,
-							  (vik_thr_free_func) trw_layer_geotag_thread_free,
-							  NULL,
-							  len );
+		a_background_thread ( BACKGROUND_POOL_LOCAL,
+		                      VIK_GTK_WINDOW_FROM_LAYER(options->vtl),
+		                      tmp,
+		                      (vik_thr_func) trw_layer_geotag_thread,
+		                      options,
+		                      (vik_thr_free_func) trw_layer_geotag_thread_free,
+		                      NULL,
+		                      len );
 
 		g_free ( tmp );
 
