@@ -26,6 +26,7 @@
 #include "background.h"
 #include "settings.h"
 #include "util.h"
+#include "math.h"
 
 static GThreadPool *thread_pool_remote = NULL;
 static GThreadPool *thread_pool_local = NULL;
@@ -62,13 +63,21 @@ static void background_thread_update ()
   g_slist_foreach ( windows_to_update, (GFunc) a_background_update_status, NULL );
 }
 
+/**
+ * a_background_thread_progress:
+ * @callbackdata: Thread data
+ * @fraction:     The value should be between 0.0 and 1.0 indicating percentage of the task complete
+ */
 int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
 {
   gpointer *args = (gpointer *) callbackdata;
   int res = a_background_testcancel ( callbackdata );
   if (args[5] != NULL) {
+    gdouble myfraction = fabs(fraction);
+    if ( myfraction > 1.0 )
+      myfraction = 1.0;
     gdk_threads_enter();
-    gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, fraction*100, -1 );
+    gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, myfraction*100, -1 );
     gdk_threads_leave();
   }
 
