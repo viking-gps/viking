@@ -923,6 +923,33 @@ static void mapnik_layer_reload ( menu_array_values values )
 }
 
 /**
+ * Force carto run
+ *
+ * Most carto projects will consist of many files
+ * ATM don't have a way of detecting when any of the included files have changed
+ * Thus allow a manual method to force re-running carto
+ */
+static void mapnik_layer_carto ( menu_array_values values )
+{
+	VikMapnikLayer *vml = values[MA_VML];
+	VikViewport *vvp = values[MA_VVP];
+
+	// Don't load the XML config if carto load fails
+	if ( !carto_load ( vml, vvp ) )
+		return;
+
+	gchar* ans = mapnik_interface_load_map_file ( vml->mi, vml->filename_xml, vml->tile_size_x, vml->tile_size_x );
+	if ( ans ) {
+		a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vvp),
+		                           _("Mapnik error loading configuration file:\n%s"),
+		                           ans );
+		g_free ( ans );
+	}
+	else
+		mapnik_layer_draw ( vml, vvp );
+}
+
+/**
  *
  */
 static void mapnik_layer_about ( menu_array_values values )
@@ -959,6 +986,14 @@ static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gp
 	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_reload), values );
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 	gtk_widget_show ( item );
+
+	if ( g_strcmp0 ("", vml->filename_css) ) {
+		item = gtk_image_menu_item_new_with_mnemonic ( _("_Run Carto Command") );
+		gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU) );
+		g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_carto), values );
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+		gtk_widget_show ( item );
+	}
 
 	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
 	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_about), values );
