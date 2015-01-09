@@ -37,6 +37,7 @@
 #include "dialog.h"
 #include "globals.h"
 #include "vikdatetime_edit_dialog.h"
+#include "ui_util.h"
 
 struct _VikTrwLayerTpwin {
   GtkDialog parent;
@@ -244,7 +245,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   tpwin->trkpt_name = gtk_entry_new();
   g_signal_connect_swapped ( G_OBJECT(tpwin->trkpt_name), "focus-out-event", G_CALLBACK(tpwin_set_name), tpwin );
 
-  tpwin->course = GTK_LABEL(gtk_label_new(NULL));
+  tpwin->course = GTK_LABEL(ui_label_new_selectable(NULL));
   tpwin->time = gtk_button_new();
   gtk_button_set_relief ( GTK_BUTTON(tpwin->time), GTK_RELIEF_NONE );
   g_signal_connect_swapped ( G_OBJECT(tpwin->time), "clicked", G_CALLBACK(tpwin_sync_time_to_tp), tpwin );
@@ -278,15 +279,15 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   /* diff info */
   diff_left_vbox = a_dialog_create_label_vbox ( right_label_texts, G_N_ELEMENTS(right_label_texts), 1, 3 );
 
-  tpwin->diff_dist = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->diff_time = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->diff_speed = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->speed = GTK_LABEL(gtk_label_new(NULL));
+  tpwin->diff_dist = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->diff_time = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->diff_speed = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->speed = GTK_LABEL(ui_label_new_selectable(NULL));
 
-  tpwin->vdop = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->hdop = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->pdop = GTK_LABEL(gtk_label_new(NULL));
-  tpwin->sat = GTK_LABEL(gtk_label_new(NULL));
+  tpwin->vdop = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->hdop = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->pdop = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->sat = GTK_LABEL(ui_label_new_selectable(NULL));
 
   diff_right_vbox = gtk_vbox_new ( TRUE, 1 );
   gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->diff_dist), FALSE, FALSE, 3 );

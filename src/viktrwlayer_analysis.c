@@ -30,6 +30,7 @@
 
 #include "viking.h"
 #include "viktrwlayer_analysis.h"
+#include "ui_util.h"
 
 // Units of each item are in SI Units
 // (as returned by the appropriate internal viking track functions)
@@ -213,7 +214,7 @@ static GtkWidget *create_layout ( GtkWidget *content[] )
 {
 	int cnt = 0;
 	for ( cnt = 0; cnt < G_N_ELEMENTS(label_texts); cnt++ )
-		content[cnt] = gtk_label_new ( NULL );
+		content[cnt] = ui_label_new_selectable ( NULL );
 
 	return create_table (cnt, label_texts, content);
 }

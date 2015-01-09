@@ -42,6 +42,7 @@
 #include "viking.h"
 #include "vikviewport.h" /* ugh */
 #include "vikutils.h"
+#include "ui_util.h"
 #include <gdk-pixbuf/gdk-pixdata.h>
 
 typedef enum {
@@ -3202,18 +3203,18 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);
   }
-  widgets->w_track_length = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_track_length = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   tp_count = vik_track_get_tp_count(tr);
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", tp_count );
-  widgets->w_tp_count = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_tp_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   seg_count = vik_track_get_segment_count(tr) ;
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", seg_count );
-  widgets->w_segment_count = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_segment_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", vik_track_get_dup_point_count(tr) );
-  widgets->w_duptp_count = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_duptp_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
   tmp_speed = vik_track_get_max_speed(tr);
@@ -3238,7 +3239,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
     }
   }
-  widgets->w_max_speed = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_max_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   tmp_speed = vik_track_get_average_speed(tr);
   if ( tmp_speed == 0 )
@@ -3262,7 +3263,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
     }
   }
-  widgets->w_avg_speed = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_avg_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   // Use 60sec as the default period to be considered stopped
   //  this is the TrackWaypoint draw stops default value 'vtl->stop_length'
@@ -3290,7 +3291,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
     }
   }
-  widgets->w_mvg_speed = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_mvg_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   switch (dist_units) {
   case VIK_UNITS_DISTANCE_KILOMETRES:
@@ -3306,7 +3307,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);
   }
-  widgets->w_avg_dist = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_avg_dist = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_units_height_t height_units = a_vik_get_units_height ();
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
@@ -3324,7 +3325,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
   }
-  widgets->w_elev_range = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_elev_range = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
   if ( min_alt == VIK_DEFAULT_ALTITUDE )
@@ -3342,7 +3343,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
   }
-  widgets->w_elev_gain = content[cnt++] = gtk_label_new ( tmp_buf );
+  widgets->w_elev_gain = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
 #if 0
 #define PACK(w) gtk_box_pack_start (GTK_BOX(right_vbox), w, FALSE, FALSE, 0);
@@ -3374,15 +3375,15 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
     gchar *msg;
     msg = vu_get_time_string ( &t1, "%c", &vc, widgets->tz );
-    widgets->w_time_start = content[cnt++] = gtk_label_new(msg);
+    widgets->w_time_start = content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
     msg = vu_get_time_string ( &t2, "%c", &vc, widgets->tz );
-    widgets->w_time_end = content[cnt++] = gtk_label_new(msg);
+    widgets->w_time_end = content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes"), (int)(t2-t1)/60);
-    widgets->w_time_dur = content[cnt++] = gtk_label_new(tmp_buf);
+    widgets->w_time_dur = content[cnt++] = ui_label_new_selectable(tmp_buf);
   } else {
     widgets->w_time_start = content[cnt++] = gtk_label_new(_("No Data"));
     widgets->w_time_end = content[cnt++] = gtk_label_new(_("No Data"));
@@ -3395,8 +3396,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( widgets->elev_box ) {
     GtkWidget *page = NULL;
-    widgets->w_cur_dist = gtk_label_new(_("No Data"));
-    widgets->w_cur_elevation = gtk_label_new(_("No Data"));
+    widgets->w_cur_dist = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_elevation = ui_label_new_selectable(_("No Data"));
     widgets->w_show_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
     widgets->w_show_alt_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->elev_box,
@@ -3412,8 +3413,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( widgets->gradient_box ) {
     GtkWidget *page = NULL;
-    widgets->w_cur_gradient_dist = gtk_label_new(_("No Data"));
-    widgets->w_cur_gradient_gradient = gtk_label_new(_("No Data"));
+    widgets->w_cur_gradient_dist = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_gradient_gradient = ui_label_new_selectable(_("No Data"));
     widgets->w_show_gradient_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->gradient_box,
                               _("<b>Track Distance:</b>"), widgets->w_cur_gradient_dist,
@@ -3427,9 +3428,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( widgets->speed_box ) {
     GtkWidget *page = NULL;
-    widgets->w_cur_time = gtk_label_new(_("No Data"));
-    widgets->w_cur_speed = gtk_label_new(_("No Data"));
-    widgets->w_cur_time_real = gtk_label_new(_("No Data"));
+    widgets->w_cur_time = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_speed = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_time_real = ui_label_new_selectable(_("No Data"));
     widgets->w_show_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->speed_box,
                               _("<b>Track Time:</b>"), widgets->w_cur_time,
@@ -3443,9 +3444,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( widgets->dist_box ) {
     GtkWidget *page = NULL;
-    widgets->w_cur_dist_time = gtk_label_new(_("No Data"));
-    widgets->w_cur_dist_dist = gtk_label_new(_("No Data"));
-    widgets->w_cur_dist_time_real = gtk_label_new(_("No Data"));
+    widgets->w_cur_dist_time = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_dist_dist = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_dist_time_real = ui_label_new_selectable(_("No Data"));
     widgets->w_show_dist_speed = gtk_check_button_new_with_mnemonic(_("Show S_peed"));
     page = create_graph_page (widgets->dist_box,
                               _("<b>Track Distance:</b>"), widgets->w_cur_dist_dist,
@@ -3459,9 +3460,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( widgets->elev_time_box ) {
     GtkWidget *page = NULL;
-    widgets->w_cur_elev_time = gtk_label_new(_("No Data"));
-    widgets->w_cur_elev_elev = gtk_label_new(_("No Data"));
-    widgets->w_cur_elev_time_real = gtk_label_new(_("No Data"));
+    widgets->w_cur_elev_time = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_elev_elev = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_elev_time_real = ui_label_new_selectable(_("No Data"));
     widgets->w_show_elev_speed = gtk_check_button_new_with_mnemonic(_("Show S_peed"));
     widgets->w_show_elev_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
     page = create_graph_page (widgets->elev_time_box,
@@ -3477,8 +3478,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( widgets->speed_dist_box ) {
     GtkWidget *page = NULL;
-    widgets->w_cur_speed_dist = gtk_label_new(_("No Data"));
-    widgets->w_cur_speed_speed = gtk_label_new(_("No Data"));
+    widgets->w_cur_speed_dist = ui_label_new_selectable(_("No Data"));
+    widgets->w_cur_speed_speed = ui_label_new_selectable(_("No Data"));
     widgets->w_show_sd_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->speed_dist_box,
                               _("<b>Track Distance:</b>"), widgets->w_cur_speed_dist,
