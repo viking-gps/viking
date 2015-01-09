@@ -1046,7 +1046,7 @@ static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, 
     pixbuf = pixbuf_shrink ( pixbuf, xshrinkfactor, yshrinkfactor );
 
   if ( pixbuf )
-    a_mapcache_add ( pixbuf, mapcoord->x, mapcoord->y,
+    a_mapcache_add ( pixbuf, (mapcache_extra_t) {0.0}, mapcoord->x, mapcoord->y,
                      mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
                      mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
 

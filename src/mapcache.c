@@ -47,6 +47,11 @@ static guint32 max_cache_size = VIK_CONFIG_MAPCACHE_SIZE * 1024 * 1024;
 
 static GHashTable *cache = NULL;
 
+typedef struct {
+  GdkPixbuf *pixbuf;
+  mapcache_extra_t extra;
+} cache_item_t;
+
 static GMutex *mc_mutex = NULL;
 
 #define HASHKEY_FORMAT_STRING "%d-%d-%d-%d-%d-%d-%d-%.3f-%.3f"
@@ -62,6 +67,12 @@ static VikLayerParam prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "mapcache_size", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map cache memory size (MB):"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL, NULL, NULL, NULL, NULL },
 };
 
+static void cache_item_free (cache_item_t *ci)
+{
+  g_object_unref ( ci->pixbuf );
+  g_free ( ci );
+}
+
 void a_mapcache_init ()
 {
   VikLayerParamData tmp;
@@ -69,29 +80,34 @@ void a_mapcache_init ()
   a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
 
   mc_mutex = vik_mutex_new ();
-  cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, g_object_unref );
+  cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, (GDestroyNotify) cache_item_free );
 }
 
-static void cache_add(gchar *key, GdkPixbuf *pixbuf)
+static void cache_add(gchar *key, GdkPixbuf *pixbuf, mapcache_extra_t extra)
 {
+  cache_item_t *ci = g_malloc ( sizeof(cache_item_t) );
+  ci->pixbuf = pixbuf;
+  ci->extra = extra;
 #if !GLIB_CHECK_VERSION(2,26,0)
   // Only later versions of GLib actually return a value for this function
   // Annoyingly the documentation doesn't say anything about this interface change :(
-  if ( g_hash_table_insert ( cache, key, pixbuf ) )
+  if ( g_hash_table_insert ( cache, key, ci ) )
 #else
-  g_hash_table_insert ( cache, key, pixbuf );
+  g_hash_table_insert ( cache, key, ci );
 #endif
   {
     cache_size += gdk_pixbuf_get_rowstride(pixbuf) * gdk_pixbuf_get_height(pixbuf);
+    // ATM size of 'extra' data hardly worth trying to count (compared to pixbuf sizes)
+    // Not sure what this 100 represents anyway - probably a guess at an average pixbuf metadata size
     cache_size += 100;
   }
 }
 
 static void cache_remove(const gchar *key)
 {
-  GdkPixbuf *buf = g_hash_table_lookup ( cache, key );
-  if (buf) {
-    cache_size -= gdk_pixbuf_get_rowstride(buf) * gdk_pixbuf_get_height(buf);
+  cache_item_t *ci = g_hash_table_lookup ( cache, key );
+  if (ci && ci->pixbuf) {
+    cache_size -= gdk_pixbuf_get_rowstride(ci->pixbuf) * gdk_pixbuf_get_height(ci->pixbuf);
     cache_size -= 100;
     g_hash_table_remove ( cache, key );
   }
@@ -132,13 +148,13 @@ static void list_add_entry ( gchar *key )
   queue_count++;
 }
 
-void a_mapcache_add ( GdkPixbuf *pixbuf, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
+void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
   guint nn = name ? g_str_hash ( name ) : 0;
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
 
   g_mutex_lock(mc_mutex);
-  cache_add(key, pixbuf);
+  cache_add(key, pixbuf, extra);
 
   // TODO: that should be done on preference change only...
   max_cache_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
@@ -170,7 +186,23 @@ GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, gui
   static char key[MC_KEY_SIZE];
   guint nn = name ? g_str_hash ( name ) : 0;
   g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
-  return g_hash_table_lookup ( cache, key );
+  cache_item_t *ci = g_hash_table_lookup ( cache, key );
+  if ( ci )
+    return ci->pixbuf;
+  else
+    return NULL;
+}
+
+mapcache_extra_t a_mapcache_get_extra ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
+{
+  static char key[MC_KEY_SIZE];
+  guint nn = name ? g_str_hash ( name ) : 0;
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
+  cache_item_t *ci = g_hash_table_lookup ( cache, key );
+  if ( ci )
+    return ci->extra;
+  else
+    return (mapcache_extra_t) { 0.0 };
 }
 
 /**

@@ -647,7 +647,8 @@ static void render ( VikMapnikLayer *vml, VikCoord *ul, VikCoord *br, MapCoord *
 	gint64 tt1 = g_get_real_time ();
 	GdkPixbuf *pixbuf = mapnik_interface_render ( vml->mi, ul->north_south, ul->east_west, br->north_south, br->east_west );
 	gint64 tt2 = g_get_real_time ();
-	g_debug ( "Mapnik rendering completed in %.3f seconds", (gdouble)(tt2-tt1)/1000000 );
+	gdouble tt = (gdouble)(tt2-tt1)/1000000;
+	g_debug ( "Mapnik rendering completed in %.3f seconds", tt );
 	if ( !pixbuf ) {
 		// A pixbuf to stick into cache incase of an unrenderable area - otherwise will get continually re-requested
 		pixbuf = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata(&vikmapniklayer_pixbuf, FALSE, NULL), vml->tile_size_x, vml->tile_size_x, GDK_INTERP_BILINEAR );
@@ -657,7 +658,7 @@ static void render ( VikMapnikLayer *vml, VikCoord *ul, VikCoord *br, MapCoord *
 	// NB Mapnik can apply alpha, but use our own function for now
 	if ( vml->alpha < 255 )
 		pixbuf = ui_pixbuf_set_alpha ( pixbuf, vml->alpha );
-	a_mapcache_add ( pixbuf, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
+	a_mapcache_add ( pixbuf, (mapcache_extra_t){ tt }, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
 }
 
 static void render_info_free ( RenderInfo *data )
@@ -757,7 +758,7 @@ static GdkPixbuf *load_pixbuf ( VikMapnikLayer *vml, MapCoord *ulm, MapCoord *br
 		else {
 			if ( vml->alpha < 255 )
 				pixbuf = ui_pixbuf_set_alpha ( pixbuf, vml->alpha );
-			a_mapcache_add ( pixbuf, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
+			a_mapcache_add ( pixbuf, (mapcache_extra_t) { -42.0 }, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
 		}
 		// If file is too old mark for rerendering
 		if ( planet_import_time < gsb.st_mtime ) {
