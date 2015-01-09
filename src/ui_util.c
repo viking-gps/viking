@@ -170,6 +170,18 @@ GtkWidget *ui_lookup_widget(GtkWidget *widget, const gchar *widget_name)
 }
 
 /**
+ * Returns a label widget that is made selectable (i.e. the user can copy the text)
+ * @param text String to display - maybe NULL
+ * @return The label widget
+ */
+GtkWidget* ui_label_new_selectable ( const gchar* text )
+{
+	GtkWidget *widget = gtk_label_new ( text );
+	gtk_label_set_selectable ( GTK_LABEL(widget), TRUE );
+	return widget;
+}
+
+/**
  * Apply the alpha value to the specified pixbuf
  */
 GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
