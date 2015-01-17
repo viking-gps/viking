@@ -833,6 +833,7 @@ static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport 
 {
   VikMapsLayer *rv = maps_layer_new ( vvp );
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
+  maps_layer_post_read ( VIK_LAYER(rv), vvp, FALSE );
   return rv;
 }
 
