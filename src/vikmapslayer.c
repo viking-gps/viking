@@ -776,7 +776,7 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
   VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
 
-  if (from_file != TRUE)
+  if (!from_file)
   {
     /* If this method is not called in file reading context
      * it is called in GUI context.
