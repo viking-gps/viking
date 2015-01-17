@@ -34,7 +34,8 @@ particular, it is possible to disable some features, like
 If you wish to install Viking, you have to (as root):
   # make install
 
-For detailled explaination on install, see INSTALL file.
+For detailed explanation on the install on Unix like systems,
+see the INSTALL file.
 
 Examples
 ========
