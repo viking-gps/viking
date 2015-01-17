@@ -39,6 +39,7 @@
 
 #include "mapnik_interface.h"
 #include "globals.h"
+#include "settings.h"
 
 #if MAPNIK_VERSION < 200000
 #include <mapnik/envelope.hpp>
@@ -120,6 +121,8 @@ void mapnik_interface_initialize (const char *plugins_dir, const char* font_dir,
 	}
 }
 
+#define VIK_SETTINGS_MAPNIK_BUFFER_SIZE "mapnik_buffer_size"
+
 /**
  * mapnik_interface_load_map_file:
  *
@@ -144,7 +147,12 @@ gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
 		// Only set buffer size if the buffer size isn't explicitly set in the mapnik stylesheet.
 		// Alternatively render a bigger 'virtual' tile and then only use the appropriate subset
 		if (mi->myMap->buffer_size() == 0) {
-			mi->myMap->set_buffer_size((width+height/4)); // e.g. 128 for a 256x256 image.
+			gint buffer_size = (width+height/4); // e.g. 128 for a 256x256 image.
+			gint tmp;
+			if ( a_settings_get_integer ( VIK_SETTINGS_MAPNIK_BUFFER_SIZE, &tmp ) )
+				buffer_size = tmp;
+
+			mi->myMap->set_buffer_size(buffer_size);
 		}
 
 		g_debug ("%s layers: %d", __FUNCTION__, mi->myMap->layer_count() );
