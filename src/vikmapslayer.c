@@ -1867,7 +1867,6 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
     return;
 
   gchar *filename = NULL;
-  gchar *message = NULL;
   gchar *source = NULL;
 
   if ( vik_map_source_is_direct_file_access ( map ) ) {
@@ -1891,10 +1890,10 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
         exists = g_strdup ( _("NO") );
       gint flip_y = (gint) pow(2, zoom)-1 - ulm.y;
       // NB Also handles .jpg automatically due to pixbuf_new_from () support - although just print png for now.
-      source = g_strdup_printf ( "%s (%d%s%d%s%d.%s %s)", filename, zoom, G_DIR_SEPARATOR_S, ulm.x, G_DIR_SEPARATOR_S, flip_y, "png", exists );
+      source = g_strdup_printf ( "Source: %s (%d%s%d%s%d.%s %s)", filename, zoom, G_DIR_SEPARATOR_S, ulm.x, G_DIR_SEPARATOR_S, flip_y, "png", exists );
       g_free ( exists );
 #else
-      source = g_strdup ( _("Not available") );
+      source = g_strdup ( _("Source: Not available") );
 #endif
     }
     else if ( vik_map_source_is_osm_meta_tiles ( map ) ) {
@@ -1911,7 +1910,7 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
                      NULL,
                      ulm.scale, ulm.z, ulm.x, ulm.y, filename, max_path_len,
                      vik_map_source_get_file_extension(map) );
-      source = g_strconcat ( "file://", filename, NULL );
+      source = g_strconcat ( "Source: file://", filename, NULL );
     }
   }
   else {
@@ -1922,32 +1921,42 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
                    vik_map_source_get_name(map),
                    ulm.scale, ulm.z, ulm.x, ulm.y, filename, max_path_len,
                    vik_map_source_get_file_extension(map) );
-    source = g_strdup_printf ( "http://%s%s",
+    source = g_strdup_printf ( "Source: http://%s%s",
                                vik_map_source_default_get_hostname ( VIK_MAP_SOURCE_DEFAULT(map) ),
                                vik_map_source_default_get_uri ( VIK_MAP_SOURCE_DEFAULT(map), &ulm ) );
   }
 
-  if ( g_file_test ( filename, G_FILE_TEST_EXISTS ) ) {
+  GArray *array = g_array_new (FALSE, TRUE, sizeof(gchar*));
+  g_array_append_val ( array, source );
 
+  gchar *filemsg = NULL;
+  gchar *timemsg = NULL;
+
+  if ( g_file_test ( filename, G_FILE_TEST_EXISTS ) ) {
+    filemsg = g_strconcat ( "Tile File: ", filename, NULL );
     // Get some timestamp information of the tile
     struct stat stat_buf;
     if ( g_stat ( filename, &stat_buf ) == 0 ) {
       gchar time_buf[64];
       strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
-      message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: %s"), source, filename, time_buf );
+      timemsg = g_strdup_printf ( _("Tile File Timestamp: %s"), time_buf );
     }
     else {
-      message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s\nTile File Timestamp: Not Available"), source, filename );
+      timemsg = g_strdup ( _("Tile File Timestamp: Not Available") );
     }
-    // Show the info
-    a_dialog_info_msg (  VIK_GTK_WINDOW_FROM_LAYER(vml), message );
+    g_array_append_val ( array, filemsg );
+    g_array_append_val ( array, timemsg );
   }
   else {
-    message = g_strdup_printf ( _("\nSource: %s\n\nTile File: %s [Not Available]"), source, filename );
-    a_dialog_warning_msg (  VIK_GTK_WINDOW_FROM_LAYER(vml), message );
+    filemsg = g_strdup_printf ( "Tile File: %s [Not Available]", filename );
+    g_array_append_val ( array, filemsg );
   }
 
-  g_free ( message );
+  a_dialog_list (  VIK_GTK_WINDOW_FROM_LAYER(vml), _("Tile Information"), array, 5 );
+  g_array_free ( array, FALSE );
+
+  g_free ( timemsg );
+  g_free ( filemsg );
   g_free ( source );
   g_free ( filename );
 }
