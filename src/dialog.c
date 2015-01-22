@@ -591,6 +591,33 @@ static void about_email_hook (GtkAboutDialog *about,
 }
 #endif
 
+/**
+ *  Creates a dialog with list of text
+ *  Mostly useful for longer messages that have several lines of information.
+ */
+void a_dialog_list ( GtkWindow *parent, const gchar *title, GArray *array, gint padding )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( title,
+                                                    parent,
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CLOSE,
+                                                    GTK_RESPONSE_CLOSE,
+                                                    NULL);
+
+  GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  GtkWidget *label;
+
+  for ( int i = 0; i < array->len; i++ ) {
+    label = ui_label_new_selectable (NULL);
+    gtk_label_set_markup ( GTK_LABEL(label), g_array_index(array,gchar*,i) );
+    gtk_box_pack_start ( GTK_BOX(vbox), label, FALSE, TRUE, padding );
+  }
+
+  gtk_widget_show_all ( dialog );
+  gtk_dialog_run ( GTK_DIALOG(dialog) );
+  gtk_widget_destroy ( dialog );
+}
+
 void a_dialog_about ( GtkWindow *parent )
 {
   const gchar *program_name = PACKAGE_NAME;

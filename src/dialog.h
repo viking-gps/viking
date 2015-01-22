@@ -44,6 +44,8 @@ void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar
 
 void a_dialog_response_accept ( GtkDialog *dialog );
 
+void a_dialog_list ( GtkWindow *parent, const gchar *title, GArray *array, gint padding );
+
 void a_dialog_about ( GtkWindow *parent );
 
 /* okay, everthing below here is an architechtural flaw. */
