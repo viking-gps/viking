@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
-   [<!ENTITY appname          "Viking">]
+   [
+    <!ENTITY appname          "Viking">
+    <!ENTITY dhpackage        "viking">
+   ]
 >
 <section id="commandline">
 <title>Command Line</title>
@@ -9,9 +12,52 @@
 &appname; being a Graphical User Interface program only has a few command line options.
 </para>
 
-<para>
-<screen>viking [OPTIONS...] files+</screen>
-</para>
+<!-- keep this cmdsynopsis aligned with the man page version -->
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="opt">
+        <arg choice="plain"><option>-d</option></arg>
+        <arg choice="plain"><option>--debug</option></arg>
+      </group>
+      <group choice="opt">
+        <arg choice="plain"><option>-V</option></arg>
+        <arg choice="plain"><option>--verbose</option></arg>
+      </group>
+      <sbr/>
+      <group choice="opt">
+        <arg choice="plain"><option>--latitude</option> <replaceable>degrees</replaceable></arg>
+      </group>
+      <group choice="opt">
+        <arg choice="plain"><option>--longitude</option> <replaceable>degrees</replaceable></arg>
+      </group>
+      <sbr/>
+      <group choice="opt">
+        <arg choice="plain"><option>-z</option></arg>
+        <arg choice="plain"><option>--zoom</option> <replaceable>ZoomLevelOSM</replaceable></arg>
+      </group>
+      <group choice="opt">
+        <arg choice="plain"><option>-m</option></arg>
+        <arg choice="plain"><option>--map</option> <replaceable>MapId</replaceable></arg>
+      </group>
+      <sbr/>
+      <arg rep="repeat"><replaceable>file</replaceable></arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="opt">
+        <arg choice="plain"><option>-h</option></arg>
+        <arg choice="plain"><option>--help</option></arg>
+      </group>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="opt">
+        <arg choice="plain"><option>-v</option></arg>
+        <arg choice="plain"><option>--version</option></arg>
+      </group>
+    </cmdsynopsis>
+  </refsynopsisdiv>
 
 <para>
 Note that the ordering of files can be important depending on their file type.
