@@ -1020,6 +1020,59 @@ static void mapnik_layer_rerender ( VikMapnikLayer *vml )
 	thread_add (vml, &ulm, &vml->rerender_ul, &vml->rerender_br, ulm.x, ulm.y, ulm.z, ulm.scale, vml->filename_xml );
 }
 
+/**
+ * Info
+ */
+static void mapnik_layer_tile_info ( VikMapnikLayer *vml )
+{
+	MapCoord ulm;
+	// Requested position to map coord
+	map_utils_vikcoord_to_iTMS ( &vml->rerender_ul, vml->rerender_zoom, vml->rerender_zoom, &ulm );
+
+	mapcache_extra_t extra = a_mapcache_get_extra ( ulm.x, ulm.y, ulm.z, MAP_ID_MAPNIK_RENDER, ulm.scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
+
+	gchar *filename = get_filename ( vml->file_cache_dir, ulm.x, ulm.y, ulm.scale );
+	gchar *filemsg = NULL;
+	gchar *timemsg = NULL;
+
+	if ( g_file_test ( filename, G_FILE_TEST_EXISTS ) ) {
+		filemsg = g_strconcat ( "Tile File: ", filename, NULL );
+		// Get some timestamp information of the tile
+		struct stat stat_buf;
+		if ( g_stat ( filename, &stat_buf ) == 0 ) {
+			gchar time_buf[64];
+			strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
+			timemsg = g_strdup_printf ( _("Tile File Timestamp: %s"), time_buf );
+		}
+		else {
+			timemsg = g_strdup ( _("Tile File Timestamp: Not Available") );
+		}
+	}
+	else {
+		filemsg = g_strdup_printf ( "Tile File: %s [Not Available]", filename );
+		timemsg = g_strdup("");
+	}
+
+	GArray *array = g_array_new (FALSE, TRUE, sizeof(gchar*));
+	g_array_append_val ( array, filemsg );
+	g_array_append_val ( array, timemsg );
+
+	gchar *rendmsg = NULL;
+	// Show the info
+	if ( extra.duration > 0.0 ) {
+		rendmsg = g_strdup_printf ( _("Rendering time %.2f seconds"), extra.duration );
+		g_array_append_val ( array, rendmsg );
+	}
+
+	a_dialog_list (  VIK_GTK_WINDOW_FROM_LAYER(vml), _("Tile Information"), array, 5 );
+	g_array_free ( array, FALSE );
+
+	g_free ( rendmsg );
+	g_free ( timemsg );
+	g_free ( filemsg );
+	g_free ( filename );
+}
+
 static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *event, VikViewport *vvp )
 {
 	if ( !vml )
@@ -1035,6 +1088,11 @@ static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *ev
 			item = gtk_image_menu_item_new_with_mnemonic ( _("_Rerender Tile") );
 			gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
 			g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_rerender), vml );
+			gtk_menu_shell_append ( GTK_MENU_SHELL(vml->right_click_menu), item );
+
+			item = gtk_image_menu_item_new_with_mnemonic ( _("_Info") );
+			gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_MENU) );
+			g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_tile_info), vml );
 			gtk_menu_shell_append ( GTK_MENU_SHELL(vml->right_click_menu), item );
 		}
 
