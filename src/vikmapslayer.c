@@ -55,6 +55,7 @@
 #include "icons/icons.h"
 #include "metatile.h"
 #include "ui_util.h"
+#include "map_ids.h"
 
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
@@ -126,7 +127,7 @@ static VikLayerParamScale params_scales[] = {
  { 0, 255, 3, 0 }, /* alpha */
 };
 
-static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( 19 ); } // OSM MapQuest maps
+static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( MAP_ID_MAPQUEST_OSM ); }
 static VikLayerParamData directory_default ( void )
 {
   VikLayerParamData data;
