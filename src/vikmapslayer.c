@@ -422,6 +422,32 @@ guint vik_maps_layer_get_map_type(VikMapsLayer *vml)
   return MAPS_LAYER_NTH_ID(vml->maptype);
 }
 
+/**
+ * vik_maps_layer_set_map_type:
+ *
+ */
+void vik_maps_layer_set_map_type(VikMapsLayer *vml, guint map_type)
+{
+   gint maptype = map_uniq_id_to_index(map_type);
+   if ( maptype == NUM_MAP_TYPES )
+      g_warning(_("Unknown map type"));
+   else
+      vml->maptype = maptype;
+}
+
+/**
+ * vik_maps_layer_get_default_map_type:
+ *
+ */
+guint vik_maps_layer_get_default_map_type ()
+{
+  VikLayerInterface *vli = vik_layer_get_interface ( VIK_LAYER_MAPS );
+  VikLayerParamData vlpd = a_layer_defaults_get ( vli->fixed_layer_name, "mode", VIK_LAYER_PARAM_UINT );
+  if ( vlpd.u == 0 )
+    vlpd = id_default();
+  return vlpd.u;
+}
+
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
 {
   return(g_strdup(MAPS_LAYER_NTH_LABEL(vml->maptype)));

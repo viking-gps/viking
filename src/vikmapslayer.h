@@ -61,9 +61,11 @@ typedef enum {
 void maps_layer_init ();
 void maps_layer_set_autodownload_default ( gboolean autodownload );
 void maps_layer_set_cache_default ( VikMapsCacheLayout layout );
+guint vik_maps_layer_get_default_map_type ();
 void maps_layer_register_map_source ( VikMapSource *map );
 void vik_maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom );
 guint vik_maps_layer_get_map_type(VikMapsLayer *vml);
+void vik_maps_layer_set_map_type(VikMapsLayer *vml, guint map_type);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);
 gchar *maps_layer_default_dir ();
 void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean only_new );
