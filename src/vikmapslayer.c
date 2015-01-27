@@ -412,9 +412,14 @@ void maps_layer_register_map_source ( VikMapSource *map )
 #define MAPS_LAYER_NTH_ID(n) (params_maptypes_ids[n])
 #define MAPS_LAYER_NTH_TYPE(n) (VIK_MAP_SOURCE(g_list_nth_data(__map_types, (n))))
 
-gint vik_maps_layer_get_map_type(VikMapsLayer *vml)
+/**
+ * vik_maps_layer_get_map_type:
+ *
+ * Returns the actual map id (rather than the internal type index value)
+ */
+guint vik_maps_layer_get_map_type(VikMapsLayer *vml)
 {
-  return(vml->maptype);
+  return MAPS_LAYER_NTH_ID(vml->maptype);
 }
 
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)

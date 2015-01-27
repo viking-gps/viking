@@ -63,7 +63,7 @@ void maps_layer_set_autodownload_default ( gboolean autodownload );
 void maps_layer_set_cache_default ( VikMapsCacheLayout layout );
 void maps_layer_register_map_source ( VikMapSource *map );
 void vik_maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br, gdouble zoom );
-gint vik_maps_layer_get_map_type(VikMapsLayer *vml);
+guint vik_maps_layer_get_map_type(VikMapsLayer *vml);
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml);
 gchar *maps_layer_default_dir ();
 void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean only_new );
