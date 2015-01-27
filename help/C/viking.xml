@@ -2891,7 +2891,7 @@ Accept: */*
 </programlisting>
 </para>
       <para>You can find more examples in the documentation part of the distribution.</para>
-      <section>
+      <section id="map_source" xreflabel="Map Source Extensions">
         <title>Map Source</title>
         <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems, <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark> or <filename>C:\Users\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows 7</trademark> onwards.</para>
         <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Maps">Maps Wiki</ulink></para>

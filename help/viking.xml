@@ -91,6 +91,23 @@ and docbook-xsl in your Build-Depends control field.
         <arg choice="plain"><option>-V</option></arg>
         <arg choice="plain"><option>--verbose</option></arg>
       </group>
+      <sbr/>
+      <group choice="opt">
+        <arg choice="plain"><option>--latitude</option> <replaceable>degrees</replaceable></arg>
+      </group>
+      <group choice="opt">
+        <arg choice="plain"><option>--longitude</option> <replaceable>degrees</replaceable></arg>
+      </group>
+      <sbr/>
+      <group choice="opt">
+        <arg choice="plain"><option>-z</option></arg>
+        <arg choice="plain"><option>--zoom</option> <replaceable>ZoomLevelOSM</replaceable></arg>
+      </group>
+      <group choice="opt">
+        <arg choice="plain"><option>-m</option></arg>
+        <arg choice="plain"><option>--map</option> <replaceable>MapId</replaceable></arg>
+      </group>
+      <sbr/>
       <arg rep="repeat"><replaceable>file</replaceable></arg>
     </cmdsynopsis>
     <cmdsynopsis>
@@ -163,6 +180,41 @@ and docbook-xsl in your Build-Depends control field.
         <term><option>--version</option></term>
         <listitem>
           <para>Show version.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--latitude</option></term>
+        <listitem>
+          <para>Set the initial position to the specified latitude in decimal degrees.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--longitude</option></term>
+        <listitem>
+          <para>Set the initial position to the specified longitude in decimal degrees.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-z</option></term>
+        <term><option>--zoom</option></term>
+        <listitem>
+          <para>Set the initial zoom level. The value is the OSM zoom level (0 - 22).</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-m</option></term>
+        <term><option>--map</option></term>
+        <listitem>
+          <para>Add a map layer by specifying the map id. The value needs to match one of the internal ids or an id from the maps configuration extension (see below).
+          Specifying a value of 0 will use the configured map layer default.</para>
+<variablelist>
+  <varlistentry>
+    <listitem><para>Internal Map Ids:</para></listitem>
+    <listitem><para>OSM Mapnik = 13</para></listitem>
+    <listitem><para>OSM Cycle = 17</para></listitem>
+    <listitem><para>Mapquest OSM = 19</para></listitem>
+  </varlistentry>
+</variablelist>
         </listitem>
       </varlistentry>
     </variablelist>

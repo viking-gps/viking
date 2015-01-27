@@ -57,9 +57,45 @@ This also enables some extra information features in the GUI itself, primarily o
   <entry>--version</entry>
   <entry>Show the version and then exit.</entry>
 </row>
+<row>
+  <entry>N/A</entry>
+  <entry>--latitude</entry>
+  <entry>Set the initial position to the specified latitude in decimal degrees.</entry>
+</row>
+<row>
+  <entry>N/A</entry>
+  <entry>--longitude</entry>
+  <entry>Set the initial position to the specified longitude in decimal degrees.</entry>
+</row>
+<row>
+  <entry>-z</entry>
+  <entry>--zoom</entry>
+  <entry>Set the initial zoom level. The value is the OSM zoom level (0 - 22).</entry>
+</row>
+<row>
+  <entry>-m</entry>
+  <entry>--map</entry>
+  <entry>Add a map layer by specifying the map id. The value needs to match one of the internal ids or an id from the <xref linkend="map_source"/>.
+   Specifying a value of 0 will use the configured map layer default.</entry>
+</row>
 </tbody>
 </tgroup>
 </table>
+
+<variablelist>
+  <varlistentry>
+    <listitem><para>Internal Map Ids:</para></listitem>
+    <listitem><para>OSM Mapnik = 13</para></listitem>
+    <listitem><para>OSM Cycle = 17</para></listitem>
+    <listitem><para>Mapquest OSM = 19</para></listitem>
+  </varlistentry>
+</variablelist>
+
+<para>
+An example to open at a specified location with an OSM Mapnik map layer:
+<screen>viking --latitude 51.4 --longitude -1.3 --zoom 12 --map 13</screen>
+If a file is also specified on the command line, the command line location and zoom parameters will take precendence.
+</para>
 
 <note>
 <para>

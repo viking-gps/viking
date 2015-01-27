@@ -769,3 +769,62 @@ gchar* vu_get_time_string ( time_t *time, const gchar *format, const VikCoord* v
 	}
 	return str;
 }
+
+/**
+ * vu_command_line:
+ *
+ * Apply any startup values that have been specified from the command line
+ * Values are defaulted in such a manner not to be applied when they haven't been specified
+ *
+ */
+void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint zoom_osm_level, gint map_id )
+{
+	if ( !vw )
+		return;
+
+	VikViewport *vvp = vik_window_viewport(vw);
+
+	if ( latitude != 0.0 || longitude != 0.0 ) {
+		struct LatLon ll;
+		ll.lat = latitude;
+		ll.lon = longitude;
+		vik_viewport_set_center_latlon ( vvp, &ll, TRUE );
+	}
+
+	if ( zoom_osm_level >= 0 ) {
+		// Convert OSM zoom level into Viking zoom level
+		gdouble mpp = exp ( (17-zoom_osm_level) * log(2) );
+		if ( mpp > 1.0 )
+			mpp = round (mpp);
+		vik_viewport_set_zoom ( vvp, mpp );
+	}
+
+	if ( map_id >= 0 ) {
+		guint my_map_id = map_id;
+		if ( my_map_id == 0 )
+			my_map_id = vik_maps_layer_get_default_map_type ();
+
+		// Don't add map layer if one already exists
+		GList *vmls = vik_layers_panel_get_all_layers_of_type(vik_window_layers_panel(vw), VIK_LAYER_MAPS, TRUE);
+		int num_maps = g_list_length(vmls);
+		gboolean add_map = TRUE;
+
+		for (int i = 0; i < num_maps; i++) {
+			VikMapsLayer *vml = (VikMapsLayer*)(vmls->data);
+			gint id = vik_maps_layer_get_map_type(vml);
+			if ( my_map_id == id ) {
+				add_map = FALSE;
+				break;
+			}
+			vmls = vmls->next;
+		}
+
+		if ( add_map ) {
+			VikMapsLayer *vml = VIK_MAPS_LAYER ( vik_layer_create(VIK_LAYER_MAPS, vvp, FALSE) );
+			vik_maps_layer_set_map_type ( vml, my_map_id );
+			vik_layer_rename ( VIK_LAYER(vml), _("Map") );
+			vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vik_window_layers_panel(vw)), VIK_LAYER(vml), TRUE );
+			vik_layer_emit_update ( VIK_LAYER(vml) );
+		}
+	}
+}

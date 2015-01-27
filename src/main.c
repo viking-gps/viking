@@ -98,12 +98,22 @@ static int myXErrorHandler(Display *display, XErrorEvent *theEvent)
 }
 #endif
 
+// Default values that won't actually get applied unless changed by command line parameter values
+static gdouble latitude = 0.0;
+static gdouble longitude = 0.0;
+static gint zoom_level_osm = -1;
+static gint map_id = -1;
+
 /* Options */
 static GOptionEntry entries[] = 
 {
   { "debug", 'd', 0, G_OPTION_ARG_NONE, &vik_debug, N_("Enable debug output"), NULL },
   { "verbose", 'V', 0, G_OPTION_ARG_NONE, &vik_verbose, N_("Enable verbose output"), NULL },
   { "version", 'v', 0, G_OPTION_ARG_NONE, &vik_version, N_("Show version"), NULL },
+  { "latitude", 0, 0, G_OPTION_ARG_DOUBLE, &latitude, N_("Latitude in decimal degrees"), NULL },
+  { "longitude", 0, 0, G_OPTION_ARG_DOUBLE, &longitude, N_("Longitude in decimal degrees"), NULL },
+  { "zoom", 'z', 0, G_OPTION_ARG_INT, &zoom_level_osm, N_("Zoom Level (OSM). Value can be 0 - 22"), NULL },
+  { "map", 'm', 0, G_OPTION_ARG_INT, &map_id, N_("Add a map layer by id value. Use 0 for the default map."), NULL },
   { NULL }
 };
 
@@ -224,6 +234,8 @@ int main( int argc, char *argv[] )
   }
 
   vik_window_new_window_finish ( first_window );
+
+  vu_command_line ( first_window, latitude, longitude, zoom_level_osm, map_id );
 
   gtk_main ();
   gdk_threads_leave ();

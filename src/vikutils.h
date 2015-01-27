@@ -42,6 +42,8 @@ gchar* vu_get_tz_at_location ( const VikCoord* vc );
 void vu_setup_lat_lon_tz_lookup ();
 void vu_finalize_lat_lon_tz_lookup ();
 
+void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint zoom_osm_level, gint map_id );
+
 G_END_DECLS
 
 #endif
