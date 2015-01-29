@@ -249,10 +249,11 @@ static void flush_matching ( gchar *str )
 /**
  * Appears this is only used when redownloading tiles (i.e. to invalidate old images)
  */
-void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, gint zoom )
+void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type, gint zoom, const gchar* name )
 {
   char key[MC_KEY_SIZE];
-  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, type, x, y, z, zoom, 0 );
+  guint nn = name ? g_str_hash ( name ) : 0;
+  g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING_NOSHRINK_NOR_ALPHA, type, x, y, z, zoom, nn );
   flush_matching ( key );
 }
 
