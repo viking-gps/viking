@@ -1,8 +1,9 @@
 Viking is a free/open source program to manage GPS data. You can
 import, plot and create tracks, routes and waypoints, show OSM
-and other maps, see real-time GPS position, Geotag Images,
+and other maps, generate maps (using Mapnik),
+see real-time GPS position, Geotag Images,
 control items, upload/download OSM Traces and more.
-It is written in C & the GTK+2 toolkit.
+It is written mainly in C with some C++ and uses the GTK+2 toolkit.
 
 Website: http://viking.sf.net/
 

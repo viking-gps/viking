@@ -704,6 +704,7 @@ Layers supported by &appname; are:
 <listitem><para><xref linkend="Coordinate"/></para></listitem>
 <listitem><para><xref linkend="Maps"/></para></listitem>
 <listitem><para><xref linkend="GeoRef"/></para></listitem>
+<listitem><para><xref linkend="MapnikRendering"/></para></listitem>
 </itemizedlist>
 <para>
 For each layer there are a few standard options:
@@ -1831,6 +1832,8 @@ Tracks are searched first in preference over waypoints.
 
 <xi:include href="georef_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
+<xi:include href="mapnik_rendering_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
 <section id="Coordinate" xreflabel="Coordinate"><title>Coordinate Layer</title>
 <para>
 This layer is allows drawing of grid lines on the viewport.
@@ -2289,6 +2292,33 @@ Generally if you have a system with lots of memory it's recommended to increase 
 Your OSM password will be stored in plain text.
 </para>
 </warning>
+</section>
+</section>
+
+<section id="prefs_mapnik" xreflabel="Mapnik Preferences"><title>Mapnik</title>
+<note>
+<para>If any changes to these settings are made, you will need to restart &appname; to make them be applied.
+</para>
+</note>
+<section><title>Plugins Directory</title>
+<para>The location of Mapnik plugins. An attempt is made to automatically determine the initial value,
+ however if this is wrong or Mapnik is upgraded then the directory can be set here.</para>
+</section>
+<section><title>Fonts Directory</title>
+<para>
+The location of fonts for use with Mapnik. Normally it is best to simply use the System's font directory.
+</para>
+</section>
+<section><title>Recurse Fonts Directory</title>
+<para>Load fonts in any sub-directories of the main font directory.</para>
+</section>
+<section><title>Rerender Timeout</title>
+<para>The time in hours before any tile is rerendered.</para>
+<para>This is useful in case the underlying source data for the tiles changes (e.g. OSM data is continually evovling).
+ &appname; normally has no way of knowing when the data has changed, so this simple timeout method is provided to maintain consistency of the tile images.</para>
+</section>
+<section><title>CartoCSS</title>
+<para>This allows setting the specific location of the <emphasis>carto</emphasis> executable.</para>
 </section>
 </section>
 
@@ -3279,6 +3309,9 @@ Accept: */*
 	  </listitem>
 	  <listitem>
 	    <para>maps_scale_smaller_zoom_first=true</para>
+	  </listitem>
+	  <listitem>
+	    <para>mapnik_buffer_size=128 (in pixels)</para>
 	  </listitem>
 	  <listitem>
 	    <para>background_max_threads=10</para>

@@ -16,6 +16,7 @@ DOC_ENTITIES = legal.xml \
     attribution.xml \
     commandline.xml \
     georef_layer.xml \
+    mapnik_rendering_layer.xml \
     recommends.xml
 DOC_INCLUDES =
 DOC_FIGURES = \

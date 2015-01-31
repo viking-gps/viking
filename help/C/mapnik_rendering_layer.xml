@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [
+    <!ENTITY appname          "Viking">
+   ]
+>
+<section id="MapnikRendering" xreflabel="Mapnik Rendering">
+<title>Mapnik Rendering Layer</title>
+
+<para>
+The Mapnik Rendering Layer uses the <ulink url="http://mapnik.org/">Mapnik Library</ulink> to generate map images according to the Mapnik configuration.
+</para>
+
+<para>
+When using the this layer it is useful to review the <xref linkend="prefs_mapnik"/> to ensure the settings are correct for your system.
+</para>
+
+<para>
+Mapnik configurations can be created via the CartoCSS Mapnik stylesheet pre-processor.
+&appname; will automatically invoke the <emphasis>carto</emphasis> program when a carto project file is specified.
+Currently &appname; can not tell when an included file of the project has changed, so there is an option to manually run the carto command.
+</para>
+
+<para>
+&appname; will only (re)render tiles when it believes it is necessary - such as when there is no tile in the file cache,
+when there is a new Mapnik configuration style or the tile is over a certain age.
+To force &appname; to (re)render all tiles - create the file <filename>~/.viking/planet-import-complete</filename>
+ and/or update its timestamp. (e.g. using the <emphasis>touch</emphasis> command).
+</para>
+
+<para>
+Creating a Carto project or an initial Mapnik configuration file and maintaining the datasource is beyond the scope of this documentation.
+There are various existing Carto projects such as <ulink url="https://github.com/gravitystorm/openstreetmap-carto">OSM Carto</ulink>
+or <ulink url="https://github.com/mapbox/osm-bright">OSM Bright</ulink>. These use OSM data and contain guides on how to setup the datasource.
+Further detail about using OSM data can be found on the <ulink url="http://switch2osm.org/loading-osm-data/">Switch2OSM</ulink> website.
+</para>
+
+<para>
+If you use a simple Mapnik configuration then the tile rendering time can be negligible and you can avoid having a tile cache.
+However for most systems using a stylesheet of similar complexity to the OSM Carto styling,
+rendering a tile (including reading/acquiring the data) can take some time and thus several seconds to generate a display screen's worth of tiles.
+Hence &appname; runs these tasks in the background and uses the tile cache to save this output.
+</para>
+
+<para>
+Generated tiles are stored in the <emphasis>PNG</emphasis> format in the standard <ulink url="http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames">OSM Tile name</ulink> layout.
+</para>
+
+<note>
+<para>
+Currently due to code build and dependency complexities, Mapnik Rendering is not available in the <trademark>Windows</trademark> version of &appname;
+</para>
+</note>
+
+<section><title>Layer Properties</title>
+<para>
+Configurable properties:
+</para>
+<formalpara><title>Carto project file</title>
+	<para>When specified, this is used to generate the mapnik configuration file.</para>
+</formalpara>
+<formalpara><title>Mapnik configuration file</title>
+	<para>Specify the Mapnik configuration file or leave it blank when using a Carto project file.</para>
+</formalpara>
+<formalpara><title>Alpha</title>
+	<para>Control the Alpha value for transparency effects using a value between 0 and 255 with the default being 255 for a fully solid image, whereas 0 is transparent.</para>
+</formalpara>
+<formalpara><title>Use File Cache</title>
+	<para>The default is to use a file cache.</para>
+</formalpara>
+<formalpara><title>Tile cache directory</title>
+	<para>The top level directory of where the generated tiles are stored.</para>
+</formalpara>
+</section>
+
+<section><title>Layer Operations</title>
+<para>These extra options are available when right clicking on the Mapnik Rendering Layer in the Layers Panel.</para>
+<formalpara><title>Refresh</title>
+<para>Reload the Mapnik configuration.</para>
+</formalpara>
+<formalpara><title>Run Carto Command</title>
+<para>Force running the carto command and reload the generated Mapnik configuration.</para>
+</formalpara>
+<formalpara><title>About</title>
+<para>Show some information about the Mapnik version in use.</para>
+</formalpara>
+</section>
+
+<section><title>Viewport Tools</title>
+<para>
+When a Mapnik Rendering Layer is selected in the Layers Panel, the <guilabel>Mapnik Features</guilabel> tool can be selected from the toolbar.
+This enables location dependent actions to be invoked by right clicking on the viewport and selecting an action from the drop down menu.
+</para>
+<itemizedlist>
+<listitem>
+	<para>Rerender Tile.</para>
+</listitem>
+<listitem>
+	<para>Tile Info</para>
+</listitem>
+</itemizedlist>
+</section>
+
+</section>
