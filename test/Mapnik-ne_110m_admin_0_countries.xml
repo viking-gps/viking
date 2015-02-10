@@ -1,5 +1,11 @@
 <Map background-color="steelblue" srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
 
+<Parameters>
+  <Parameter name="name"><![CDATA[Admin Countries]]></Parameter>
+  <Parameter name="description"><![CDATA[Simple country boundaries]]></Parameter>
+  <Parameter name="attribution"><![CDATA[Natural Earth]]></Parameter>
+</Parameters>
+
   <Style name="My Style">
     <Rule>
       <PolygonSymbolizer fill="#f2eff9" />

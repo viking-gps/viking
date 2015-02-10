@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+#include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 typedef struct _MapnikInterface MapnikInterface;
@@ -41,6 +42,8 @@ gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
                                         guint height );
 
 GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double lon_tl, double lat_br, double lon_br );
+
+GArray* mapnik_interface_get_parameters ( MapnikInterface* mi );
 
 gchar * mapnik_interface_about ( void );
 

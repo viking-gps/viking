@@ -247,6 +247,29 @@ GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double 
 }
 
 /**
+ * 'Parameter' information about the Map configuration
+ *
+ * Free every string element and the returned GArray itself after use
+ */
+GArray* mapnik_interface_get_parameters ( MapnikInterface* mi )
+{
+	GArray *array = g_array_new (FALSE, TRUE, sizeof(gchar*));
+
+	mapnik::parameters pmts = mi->myMap->get_extra_parameters();
+	for (mapnik::parameters::const_iterator ii = pmts.begin(); ii != pmts.end(); ii++) {
+		// Dodgy hacking to avoid using boost or mapnik::utils visitor stuff (not available in mapnik 2.2)
+		// Simply want the strings of each parameter so we can display something...
+		std::stringstream ss;
+		ss << ii->first << ": " << ii->second;
+		// Copy - otherwise ss goes output scope and junk memory would be referenced.
+		gchar *str2 = g_strdup ( (gchar*)ss.str().c_str() );
+		g_array_append_val ( array, str2 );
+	}
+
+	return array;
+}
+
+/**
  * General information about Mapnik
  *
  * Free the returned string after use
