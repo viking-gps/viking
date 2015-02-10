@@ -2284,6 +2284,27 @@ Generally if you have a system with lots of memory it's recommended to increase 
 </section>
 </section>
 
+<section id="prefs_advanced" xreflabel="Advanced Preferences"><title>Advanced</title>
+<section><title>Save File Reference Mode</title>
+<para>
+	Files referenced within project files can be saved with either absolute or relative paths.
+	Using relative paths can be useful when copying the project file and the associated files between different systems.
+</para>
+</section>
+<section><title>Ask for Name before Track Creation</title>
+<para>A setting to control whether an automatic name is used when creating a new track or route, or whether you are asked to enter a name.</para>
+</section>
+<section><title>Show Tooltip during Track Creation</title>
+<para>A setting to control whether the tooltip with the cumulative track or route distance is shown when creating tracks and routes.</para>
+</section>
+<section><title>The number of recent files</title>
+<para>
+	The number of recent files shown in the <menuchoice><guimenu>File</guimenu><guisubmenu>Open Recent File</guisubmenu></menuchoice> menu.
+	A value of -1 means all files. The new value applies to New Windows only (or on application restart).
+</para>
+</section>
+</section>
+
 <section id="prefs_osm" xreflabel="OpenStreetMap Traces Preferences"><title>OpenStreetMap Traces</title>
 <section><title>OSM Username + Password</title>
 <para>Store your OSM details here, so that you don't need to enter it in every time in the <xref linkend="osm_upload"/> procedure.</para>
