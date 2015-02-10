@@ -77,6 +77,7 @@ static void mapnik_interface_init ( MapnikInterface *mi )
 struct _MapnikInterface {
 	GObject obj;
 	mapnik::Map *myMap;
+	gchar *copyright; // Cached Mapnik parameter to save looking it up each time
 };
 
 G_DEFINE_TYPE (MapnikInterface, mapnik_interface, G_TYPE_OBJECT)
@@ -88,13 +89,16 @@ MapnikInterface* mapnik_interface_new ()
 {
 	MapnikInterface* mi = MAPNIK_INTERFACE ( g_object_new ( MAPNIK_INTERFACE_TYPE, NULL ) );
 	mi->myMap = new mapnik::Map;
+	mi->copyright = NULL;
 	return mi;
 }
 
 void mapnik_interface_free (MapnikInterface* mi)
 {
-	if ( mi )
+	if ( mi ) {
+		g_free ( mi->copyright );
 		delete mi->myMap;
+	}
 	g_object_unref ( G_OBJECT(mi) );
 }
 
@@ -118,6 +122,25 @@ void mapnik_interface_initialize (const char *plugins_dir, const char* font_dir,
 		g_warning ("An error occurred while initialising mapnik: %s", ex.what());
 	} catch (...) {
 		g_warning ("An unknown error occurred while initialising mapnik");
+	}
+}
+
+/**
+ *  caching this answer instead of looking it up each time
+ */
+static void set_copyright ( MapnikInterface* mi )
+{
+	if ( mi->copyright )
+		g_free ( mi->copyright );
+
+	mapnik::parameters pmts = mi->myMap->get_extra_parameters();
+	for (mapnik::parameters::const_iterator ii = pmts.begin(); ii != pmts.end(); ii++) {
+		if ( ii->first == "attribution" || ii->first == "copyright" ) {
+			std::stringstream ss;
+			ss << ii->second;
+			// Copy it
+			mi->copyright = g_strdup ( (gchar*)ss.str().c_str() );
+		}
 	}
 }
 
@@ -154,6 +177,8 @@ gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
 
 			mi->myMap->set_buffer_size(buffer_size);
 		}
+
+		set_copyright ( mi );
 
 		g_debug ("%s layers: %d", __FUNCTION__, mi->myMap->layer_count() );
 	} catch (std::exception const& ex) {
@@ -244,6 +269,17 @@ GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double 
 	}
 
 	return pixbuf;
+}
+
+/**
+ * Copyright/Attribution information about the Map - string maybe NULL
+ *
+ * Free returned string  after use
+ */
+gchar* mapnik_interface_get_copyright ( MapnikInterface* mi )
+{
+	if ( !mi ) return NULL;
+	return mi->copyright;
 }
 
 /**

@@ -819,6 +819,13 @@ static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vvp )
 		return;
 	}
 
+	if ( vml->mi ) {
+		gchar *copyright = mapnik_interface_get_copyright ( vml->mi );
+		if ( copyright ) {
+			vik_viewport_add_copyright ( vvp, copyright );
+		}
+	}
+
 	VikCoord ul, br;
 	ul.mode = VIK_COORD_LATLON;
 	br.mode = VIK_COORD_LATLON;
