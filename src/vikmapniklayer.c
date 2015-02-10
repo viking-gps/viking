@@ -730,7 +730,7 @@ void thread_add (VikMapnikLayer *vml, MapCoord *mul, VikCoord *ul, VikCoord *br,
 	gchar *basename = g_path_get_basename (name);
 	gchar *description = g_strdup_printf ( _("Mapnik Render %d:%d:%d %s"), zoom, x, y, basename );
 	g_free ( basename );
-	a_background_thread ( BACKGROUND_POOL_LOCAL,
+	a_background_thread ( BACKGROUND_POOL_LOCAL_MAPNIK,
 	                      VIK_GTK_WINDOW_FROM_LAYER(vml),
 	                      description,
 	                      (vik_thr_func) background,

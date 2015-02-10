@@ -2320,6 +2320,13 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 <section><title>CartoCSS</title>
 <para>This allows setting the specific location of the <emphasis>carto</emphasis> executable.</para>
 </section>
+<section><title>Threads</title>
+<para>
+	The number of threads to use for Mapnik rendering tasks.
+	By default the value is set to the 1 in case of any multi-threading rendering code chain crashes.
+	Otherwise trying setting the value to the number of the CPUs of the system minus one (so as not to overload the system), in order to minimise the overall rendering times.
+</para>
+</section>
 </section>
 
 <section id="prefs_routing" xreflabel="Routing Preferences"><title>Routing</title>

@@ -27,9 +27,15 @@
 #include "settings.h"
 #include "util.h"
 #include "math.h"
+#include "uibuilder.h"
+#include "globals.h"
+#include "preferences.h"
 
 static GThreadPool *thread_pool_remote = NULL;
 static GThreadPool *thread_pool_local = NULL;
+#ifdef HAVE_LIBMAPNIK
+static GThreadPool *thread_pool_local_mapnik = NULL;
+#endif
 static gboolean stop_all_threads = FALSE;
 
 static GtkWidget *bgwindow = NULL;
@@ -177,6 +183,10 @@ void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gch
   /* run the thread in the background */
   if ( bp == BACKGROUND_POOL_REMOTE )
     g_thread_pool_push( thread_pool_remote, args, NULL );
+#ifdef HAVE_LIBMAPNIK
+  else if ( bp == BACKGROUND_POOL_LOCAL_MAPNIK )
+    g_thread_pool_push( thread_pool_local_mapnik, args, NULL );
+#endif
   else
     g_thread_pool_push( thread_pool_local, args, NULL );
 }
@@ -238,6 +248,15 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
 #define VIK_SETTINGS_BACKGROUND_MAX_THREADS "background_max_threads"
 #define VIK_SETTINGS_BACKGROUND_MAX_THREADS_LOCAL "background_max_threads_local"
 
+#ifdef HAVE_LIBMAPNIK
+VikLayerParamScale params_threads[] = { {1, 64, 1, 0} }; // 64 threads should be enough for anyone...
+// implicit use of 'MAPNIK_PREFS_NAMESPACE' to avoid dependency issues
+static VikLayerParam prefs_mapnik[] = {
+  { VIK_LAYER_NUM_TYPES, "mapnik.background_max_threads_local_mapnik", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Threads:"), VIK_LAYER_WIDGET_SPINBUTTON, params_threads, NULL,
+    N_("Number of threads to use for Mapnik tasks. You need to restart Viking for a change to this value to be used"), NULL, NULL, NULL },
+};
+#endif
+
 /**
  * a_background_init:
  *
@@ -261,6 +280,15 @@ void a_background_init()
   }
 
   thread_pool_local = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
+
+#ifdef HAVE_LIBMAPNIK
+  VikLayerParamData tmp;
+  // implicit use of 'MAPNIK_PREFS_NAMESPACE' to avoid dependency issues
+  tmp.u = 1; // Default to 1 thread due to potential crashing issues
+  a_preferences_register(&prefs_mapnik[0], tmp, "mapnik");
+  guint mapnik_threads = a_preferences_get("mapnik.background_max_threads_local_mapnik")->u;
+  thread_pool_local_mapnik = g_thread_pool_new ( (GFunc) thread_helper, NULL, mapnik_threads, FALSE, NULL );
+#endif
 
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
@@ -319,6 +347,9 @@ void a_background_uninit()
   g_thread_pool_free ( thread_pool_remote, TRUE, TRUE );
   // Don't wait for these
   g_thread_pool_free ( thread_pool_local, TRUE, FALSE );
+#ifdef HAVE_LIBMAPNIK
+  g_thread_pool_free ( thread_pool_local_mapnik, TRUE, FALSE );
+#endif
 
   gtk_list_store_clear ( bgstore );
   g_object_unref ( bgstore );

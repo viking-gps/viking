@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "vikwindow.h"
+#include "config.h"
 
 G_BEGIN_DECLS
 
@@ -35,6 +36,9 @@ typedef void(*vik_thr_func)(gpointer,gpointer);
 typedef enum {
   BACKGROUND_POOL_REMOTE, // i.e. Network requests - can have an arbitary large pool
   BACKGROUND_POOL_LOCAL,  // i.e. CPU bound tasks - pool should be no larger than available CPUs for best performance
+#ifdef HAVE_LIBMAPNIK
+  BACKGROUND_POOL_LOCAL_MAPNIK,  // Due to potential issues with multi-threading a separate configurable pool for Mapnik
+#endif
 } Background_Pool_Type;
 
 void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items );
