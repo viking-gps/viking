@@ -24,8 +24,9 @@
 #include "config.h"
 #endif
 #include "jpg.h"
+#ifdef HAVE_LIBEXIF
 #include "geotag_exif.h"
-
+#endif
 #ifdef HAVE_MAGIC_H
 #include <magic.h>
 #endif
@@ -94,8 +95,11 @@ gboolean a_jpg_load_file ( VikAggregateLayer *top, const gchar *filename, VikVie
 		create_layer = TRUE;
 	}
 
-	gchar *name;
-	VikWaypoint *wp = a_geotag_create_waypoint_from_file ( filename, vik_viewport_get_coord_mode (vvp), &name );
+	gchar *name = NULL;
+	VikWaypoint *wp = NULL;
+#ifdef HAVE_LIBEXIF
+	wp = a_geotag_create_waypoint_from_file ( filename, vik_viewport_get_coord_mode (vvp), &name );
+#endif
 	if ( wp ) {
 		// Create name if geotag method didn't return one
 		if ( !name )

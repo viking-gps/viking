@@ -25,7 +25,9 @@
 #include "viktrwlayer_wpwin.h"
 #include "degrees_converters.h"
 #include "garminsymbols.h"
+#ifdef HAVE_LIBEXIF
 #include "geotag_exif.h"
+#endif
 #include "thumbnails.h"
 #include "viking.h"
 #include "vikdatetime_edit_dialog.h"
@@ -218,6 +220,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   if ( !is_new && wp->image ) {
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
+#ifdef HAVE_LIBEXIF
     // Geotag Info [readonly]
     hasGeotagCB = gtk_check_button_new_with_label ( _("Has Geotag") );
     gtk_widget_set_sensitive ( hasGeotagCB, FALSE );
@@ -234,6 +237,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       vik_coord_load_from_latlon ( &coord, coord_mode, &ll );
       gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(consistentGeotagCB), vik_coord_equals(&coord, &wp->coord) );
     }
+#endif
   }
 
   timelabel = gtk_label_new ( _("Time:") );
