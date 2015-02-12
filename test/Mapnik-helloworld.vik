@@ -1,8 +1,8 @@
 #VIKING GPS Data file http://viking.sf.net/
 FILE_VERSION=1
 
-xmpp=512.000000
-ympp=512.000000
+xmpp=2048.000000
+ympp=2048.000000
 lat=51.5
 lon=0.0
 mode=mercator
