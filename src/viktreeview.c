@@ -54,7 +54,6 @@ enum
   ITEM_PARENT_COLUMN,
   ITEM_POINTER_COLUMN,
   ITEM_DATA_COLUMN,
-  HAS_VISIBLE_COLUMN,
   EDITABLE_COLUMN,
   /* properties dialog, delete, rename, etc. */
   NUM_COLUMNS
@@ -378,10 +377,6 @@ static void vik_treeview_add_columns ( VikTreeview *vt )
 							    renderer,
 							    "active",
 							    VISIBLE_COLUMN,
-							    "visible",
-							    HAS_VISIBLE_COLUMN,
-							    "activatable",
-							    HAS_VISIBLE_COLUMN,
 							    NULL);
 
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (vt), col_offset - 1);
@@ -467,7 +462,7 @@ void vik_treeview_init ( VikTreeview *vt )
   vt->was_a_toggle = FALSE;
   vt->editing = FALSE;
 
-  vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN ));
+  vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_BOOLEAN ));
 
   /* create tree view */
   gtk_tree_selection_set_select_function(gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), vik_treeview_selection_filter, vt, NULL);
@@ -655,7 +650,7 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
     gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
-    ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
+    ITEM_DATA_COLUMN, data, EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
     ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL, -1 );
 }
 
@@ -677,17 +672,17 @@ void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
 
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
     TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
-    ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, TRUE, EDITABLE_COLUMN, TRUE,
+    ITEM_DATA_COLUMN, data, EDITABLE_COLUMN, TRUE,
     ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL, -1 );
 }
 
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                                 gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable )
+                                 gint data, GdkPixbuf *icon, gboolean editable )
 {
   g_assert ( iter != NULL );
 
   gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, ITEM_DATA_COLUMN, data, HAS_VISIBLE_COLUMN, has_visible, EDITABLE_COLUMN, editable, ICON_COLUMN, icon, -1 );
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, ITEM_DATA_COLUMN, data, EDITABLE_COLUMN, editable, ICON_COLUMN, icon, -1 );
 }
 
 // Inspired by the internals of GtkTreeView sorting itself

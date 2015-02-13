@@ -94,7 +94,7 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
 void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
                               gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling );
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                                 gint data, GdkPixbuf *icon, gboolean has_visible, gboolean editable );
+                                 gint data, GdkPixbuf *icon, gboolean editable );
 
 gboolean vik_treeview_get_iter_with_name ( VikTreeview *vt, GtkTreeIter *iter, GtkTreeIter *parent_iter, const gchar *name );
 

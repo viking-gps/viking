@@ -2668,7 +2668,7 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
     gdk_pixbuf_fill ( pixbuf, pixel );
   }
 
-  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, TRUE );
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE );
 
   if ( pixbuf )
     g_object_unref (pixbuf);
@@ -2687,7 +2687,7 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
-  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, TRUE );
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE );
 
   *new_iter = *((GtkTreeIter *) pass_along[1]);
   g_hash_table_insert ( VIK_TRW_LAYER(pass_along[2])->waypoints_iters, id, new_iter );
@@ -2698,17 +2698,17 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
 
 static void trw_layer_add_sublayer_tracks ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, FALSE );
 }
 
 static void trw_layer_add_sublayer_waypoints ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, FALSE );
 }
 
 static void trw_layer_add_sublayer_routes ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->routes_iter), _("Routes"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->routes_iter), _("Rutes"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES, NULL, FALSE );
 }
 
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
@@ -4358,7 +4358,7 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
 
     // Visibility column always needed for waypoints
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE );
 
     // Actual setting of visibility dependent on the waypoint
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
@@ -4392,7 +4392,7 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
     // Visibility column always needed for tracks
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, GUINT_TO_POINTER(tr_uuid), VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, GUINT_TO_POINTER(tr_uuid), VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE );
 
     // Actual setting of visibility dependent on the track
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
@@ -4426,7 +4426,7 @@ void vik_trw_layer_add_route ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
     // Visibility column always needed for routes
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), iter, name, vtl, GUINT_TO_POINTER(rt_uuid), VIK_TRW_LAYER_SUBLAYER_ROUTE, NULL, TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), iter, name, vtl, GUINT_TO_POINTER(rt_uuid), VIK_TRW_LAYER_SUBLAYER_ROUTE, NULL, TRUE );
     // Actual setting of visibility dependent on the route
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
 
