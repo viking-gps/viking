@@ -6972,9 +6972,9 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
       if ( it ) {
         vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, newname );
         if ( ontrack )
-          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->wp_sort_order );
-	else
-          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->wp_sort_order );
+          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->track_sort_order );
+        else
+          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->track_sort_order );
       }
     }
 
