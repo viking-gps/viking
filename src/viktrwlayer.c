@@ -6993,50 +6993,40 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
   vik_layers_panel_emit_update ( vlp );
 }
 
-static void trw_layer_sort_order_a2z ( menu_array_sublayer values )
+static void trw_layer_sort_order_specified ( VikTrwLayer *vtl, guint sublayer_type, vik_layer_sort_order_t order )
 {
-  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   GtkTreeIter *iter;
 
-  switch (GPOINTER_TO_INT (values[MA_SUBTYPE])) {
+  switch (sublayer_type) {
   case VIK_TRW_LAYER_SUBLAYER_TRACKS:
     iter = &(vtl->tracks_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    vtl->track_sort_order = order;
     break;
   case VIK_TRW_LAYER_SUBLAYER_ROUTES:
     iter = &(vtl->routes_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    vtl->track_sort_order = order;
     break;
   default: // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
     iter = &(vtl->waypoints_iter);
-    vtl->wp_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    vtl->wp_sort_order = order;
     break;
   }
 
-  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, VL_SO_ALPHABETICAL_ASCENDING );
+  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, order );
+}
+
+static void trw_layer_sort_order_a2z ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_ALPHABETICAL_ASCENDING );
 }
 
 static void trw_layer_sort_order_z2a ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
-  GtkTreeIter *iter;
+  trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_ALPHABETICAL_DESCENDING );
 
-  switch (GPOINTER_TO_INT (values[MA_SUBTYPE])) {
-  case VIK_TRW_LAYER_SUBLAYER_TRACKS:
-    iter = &(vtl->tracks_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
-    break;
-  case VIK_TRW_LAYER_SUBLAYER_ROUTES:
-    iter = &(vtl->routes_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
-    break;
-  default: // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
-    iter = &(vtl->waypoints_iter);
-    vtl->wp_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
-    break;
-  }
 
-  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, VL_SO_ALPHABETICAL_DESCENDING );
 }
 
 /**
