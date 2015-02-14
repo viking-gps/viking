@@ -689,6 +689,7 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean fro
 static void trw_layer_free ( VikTrwLayer *trwlayer );
 static void trw_layer_draw ( VikTrwLayer *l, gpointer data );
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
+static time_t trw_layer_get_timestamp ( VikTrwLayer *vtl );
 static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, guint16 );
 static guint16 trw_layer_get_menu_selection ( VikTrwLayer *vtl );
 static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp );
@@ -10559,6 +10560,74 @@ static void trw_layer_sort_all ( VikTrwLayer *vtl )
     vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
 }
 
+/**
+ * Get the earliest timestamp available from all tracks
+ */
+static time_t trw_layer_get_timestamp_tracks ( VikTrwLayer *vtl )
+{
+  time_t timestamp = 0;
+  GList *gl = g_hash_table_get_values ( vtl->tracks );
+  gl = g_list_sort ( gl, vik_track_compare_timestamp );
+  gl = g_list_first ( gl );
+
+  if ( gl ) {
+    // Only need to check the first track as they have been sorted by time
+    VikTrack *trk = (VikTrack*)gl->data;
+    // Assume trackpoints already sorted by time
+    VikTrackpoint *tpt = vik_track_get_tp_first(trk);
+    if ( tpt && tpt->has_timestamp ) {
+      timestamp = tpt->timestamp;
+    }
+    g_list_free ( gl );
+  }
+  return timestamp;
+}
+
+/**
+ * Get the earliest timestamp available from all waypoints
+ */
+static time_t trw_layer_get_timestamp_waypoints ( VikTrwLayer *vtl )
+{
+  time_t timestamp = 0;
+  GList *gl = g_hash_table_get_values ( vtl->waypoints );
+  GList *iter;
+  for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
+    VikWaypoint *wpt = (VikWaypoint*)iter->data;
+    if ( wpt->has_timestamp ) {
+      // When timestamp not set yet - use the first value encountered
+      if ( timestamp == 0 )
+        timestamp = wpt->timestamp;
+      else if ( timestamp > wpt->timestamp )
+        timestamp = wpt->timestamp;
+    }
+  }
+  g_list_free ( gl );
+
+  return timestamp;
+}
+
+/**
+ * Get the earliest timestamp available for this layer
+ */
+static time_t trw_layer_get_timestamp ( VikTrwLayer *vtl )
+{
+  time_t timestamp_tracks = trw_layer_get_timestamp_tracks ( vtl );
+  time_t timestamp_waypoints = trw_layer_get_timestamp_waypoints ( vtl );
+  // NB routes don't have timestamps - hence they are not considered
+
+  if ( !timestamp_tracks && !timestamp_waypoints ) {
+    // Fallback to get time from the metadata when no other timestamps available
+    GTimeVal gtv;
+    if  ( vtl->metadata && vtl->metadata->timestamp && g_time_val_from_iso8601 ( vtl->metadata->timestamp, &gtv ) )
+      return gtv.tv_sec;
+  }
+  if ( timestamp_tracks && !timestamp_waypoints )
+    return timestamp_tracks;
+  if ( timestamp_tracks && timestamp_waypoints && (timestamp_tracks < timestamp_waypoints) )
+    return timestamp_tracks;
+  return timestamp_waypoints;
+}
+
 static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean from_file )
 {
   if ( VIK_LAYER(vtl)->realized )
@@ -10586,47 +10655,13 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean fro
     }
 
     if ( need_to_set_time ) {
-      // Could rewrite this as a general get first time of a TRW Layer function
       GTimeVal timestamp;
       timestamp.tv_usec = 0;
-      gboolean has_timestamp = FALSE;
+      timestamp.tv_sec = trw_layer_get_timestamp ( vtl );
 
-      GList *gl = NULL;
-      gl = g_hash_table_get_values ( vtl->tracks );
-      gl = g_list_sort ( gl, vik_track_compare_timestamp );
-      gl = g_list_first ( gl );
-
-      // Check times of tracks
-      if ( gl ) {
-        // Only need to check the first track as they have been sorted by time
-        VikTrack *trk = (VikTrack*)gl->data;
-        // Assume trackpoints already sorted by time
-        VikTrackpoint *tpt = vik_track_get_tp_first(trk);
-        if ( tpt && tpt->has_timestamp ) {
-          timestamp.tv_sec = tpt->timestamp;
-          has_timestamp = TRUE;
-        }
-        g_list_free ( gl );
-      }
-
-      if ( !has_timestamp ) {
-        // 'Last' resort - current time
-        // Get before waypoint tests - so that if a waypoint time value (in the past) is found it should be used
+      // No time found - so use 'now' for the metadata time
+      if ( timestamp.tv_sec == 0 ) {
         g_get_current_time ( &timestamp );
-
-        // Check times of waypoints
-        gl = g_hash_table_get_values ( vtl->waypoints );
-        GList *iter;
-        for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
-          VikWaypoint *wpt = (VikWaypoint*)iter->data;
-          if ( wpt->has_timestamp ) {
-            if ( timestamp.tv_sec > wpt->timestamp ) {
-              timestamp.tv_sec = wpt->timestamp;
-              has_timestamp = TRUE;
-            }
-          }
-        }
-        g_list_free ( gl );
       }
 
       vtl->metadata->timestamp = g_time_val_to_iso8601 ( &timestamp );
