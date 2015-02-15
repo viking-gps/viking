@@ -1020,7 +1020,7 @@ Opens a new dialog with the list. As described in the Aggregrate layer <xref lin
 </itemizedlist>
 <para>Also gives other options for handling multiple items:</para>
 <itemizedlist>
-<listitem><para>Sort. Gives the ability to sort the items in the treeview alphabetically</para></listitem>
+<listitem><para>Sort. Gives the ability to sort the items in the treeview alphabetically or by date.</para></listitem>
 <listitem><para>Visibility. Offers options to quickly control the visibility of all items within the sublayer, as per <xref linkend="vis_options"/></para></listitem>
 </itemizedlist>
 </section>
@@ -1411,6 +1411,11 @@ The record of the Google route is stored in the track's comment, so if the comme
 <listitem><para>Delete Waypoints from Selection. Same as the layer <link linkend="delete_selection_waypoints">Delete Waypoints from Selection</link></para></listitem>
 <listitem><para>List Waypoints. Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="waypoint_list"/></para></listitem>
 </itemizedlist>
+<para>Also gives other options for handling multiple items:</para>
+<itemizedlist>
+<listitem><para>Sort. Gives the ability to sort the items in the treeview alphabetically or by date.</para></listitem>
+<listitem><para>Visibility. Offers options to quickly control the visibility of all items within the sublayer, as per <xref linkend="vis_options"/></para></listitem>
+</itemizedlist>
 </section>
 
 <section><title>Waypoint Properties</title>
@@ -1726,8 +1731,13 @@ Add a new layer of the selected type.
 The list within the treeview can be sorted.
 </para>
 <para>
-Currently alphabetical (A to Z or Z to A) sorts are available, since only the name can be seen in the treeview.
+Alphabetical and Date sorts are available.
 </para>
+<note>
+<para>
+Generally it is not useful to sort the Top most layer. Sort is mainly intended for Aggregate groups of TrackWaypoint layers.
+</para>
+</note>
 </section>
 
 <section id="track_list" xreflabel="Track List"><title>Track List</title>

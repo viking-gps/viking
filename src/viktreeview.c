@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2010-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +56,7 @@ enum
   ITEM_POINTER_COLUMN,
   ITEM_DATA_COLUMN,
   EDITABLE_COLUMN,
-  /* properties dialog, delete, rename, etc. */
+  ITEM_TIMESTAMP_COLUMN, // Date timestamp stored in tree model to enable sorting on this value
   NUM_COLUMNS
 };
 
@@ -462,7 +463,19 @@ void vik_treeview_init ( VikTreeview *vt )
   vt->was_a_toggle = FALSE;
   vt->editing = FALSE;
 
-  vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, GDK_TYPE_PIXBUF, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_BOOLEAN ));
+  // ATM The date is stored only on initial creation
+  //  this should be good enough for most purposes, although it may get inaccurate especially if items are deleted
+  // NB implicit conversion of time_t to G_INT64
+  vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS,
+                                                  G_TYPE_STRING,  // Name
+                                                  G_TYPE_BOOLEAN, // Visibility
+                                                  GDK_TYPE_PIXBUF,// The Icon
+                                                  G_TYPE_INT,     // Layer Type
+                                                  G_TYPE_POINTER, // pointer to TV parent
+                                                  G_TYPE_POINTER, // pointer to the layer or sublayer
+                                                  G_TYPE_INT,     // type of the sublayer
+                                                  G_TYPE_BOOLEAN, // Editable
+                                                  G_TYPE_INT64 )); // Timestamp
 
   /* create tree view */
   gtk_tree_selection_set_select_function(gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), vik_treeview_selection_filter, vt, NULL);
@@ -641,21 +654,28 @@ void vik_treeview_item_unselect ( VikTreeview *vt, GtkTreeIter *iter )
 }
 
 void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, VikLayerTypeEnum layer_type )
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, time_t timestamp )
 {
   g_assert ( iter != NULL );
   if ( above )
     gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   else
     gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
-    TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
-    ITEM_DATA_COLUMN, data, EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
-    ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL, -1 );
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter,
+    NAME_COLUMN, name,
+    VISIBLE_COLUMN, TRUE,
+    TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER,
+    ITEM_PARENT_COLUMN, parent,
+    ITEM_POINTER_COLUMN, item,
+    ITEM_DATA_COLUMN, data,
+    EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
+    ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
+    ITEM_TIMESTAMP_COLUMN, timestamp,
+    -1 );
 }
 
 void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling )
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling, time_t timestamp )
 {
   g_assert ( iter != NULL );
   if (sibling) {
@@ -670,19 +690,36 @@ void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
       gtk_tree_store_prepend ( GTK_TREE_STORE(vt->model), iter, parent_iter );
   }
 
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, 
-    TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, 
-    ITEM_DATA_COLUMN, data, EDITABLE_COLUMN, TRUE,
-    ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL, -1 );
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter,
+                       NAME_COLUMN, name,
+                       VISIBLE_COLUMN, TRUE,
+                       TYPE_COLUMN, VIK_TREEVIEW_TYPE_LAYER,
+                       ITEM_PARENT_COLUMN, parent,
+                       ITEM_POINTER_COLUMN, item,
+                       ITEM_DATA_COLUMN, data,
+                       EDITABLE_COLUMN, TRUE,
+                       ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
+                       ITEM_TIMESTAMP_COLUMN, timestamp,
+                       -1 );
 }
 
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                                 gint data, GdkPixbuf *icon, gboolean editable )
+                                 gint data, GdkPixbuf *icon, gboolean editable, time_t timestamp )
 {
   g_assert ( iter != NULL );
 
   gtk_tree_store_append ( GTK_TREE_STORE(vt->model), iter, parent_iter );
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, NAME_COLUMN, name, VISIBLE_COLUMN, TRUE, TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER, ITEM_PARENT_COLUMN, parent, ITEM_POINTER_COLUMN, item, ITEM_DATA_COLUMN, data, EDITABLE_COLUMN, editable, ICON_COLUMN, icon, -1 );
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter,
+                       NAME_COLUMN, name,
+                       VISIBLE_COLUMN, TRUE,
+                       TYPE_COLUMN, VIK_TREEVIEW_TYPE_SUBLAYER,
+                       ITEM_PARENT_COLUMN, parent,
+                       ITEM_POINTER_COLUMN, item,
+                       ITEM_DATA_COLUMN, data,
+                       EDITABLE_COLUMN, editable,
+                       ICON_COLUMN, icon,
+                       ITEM_TIMESTAMP_COLUMN, time,
+                       -1 );
 }
 
 // Inspired by the internals of GtkTreeView sorting itself
@@ -690,24 +727,33 @@ typedef struct _SortTuple
 {
   gint offset;
   gchar *name;
+  time_t timestamp;
 } SortTuple;
 
 /**
- * If order is true sort ascending, otherwise a descending sort
+ *
  */
 static gint sort_tuple_compare ( gconstpointer a, gconstpointer b, gpointer order )
 {
   SortTuple *sa = (SortTuple *)a;
   SortTuple *sb = (SortTuple *)b;
 
-  // Default ascending order
-  gint answer = g_strcmp0 ( sa->name, sb->name );
-
-  if ( !GPOINTER_TO_INT(order) ) {
+  gint answer = 0;
+  if ( GPOINTER_TO_INT(order) < VL_SO_DATE_ASCENDING ) {
+    // Alphabetical comparison
+    // Default ascending order
+    answer = g_strcmp0 ( sa->name, sb->name );
     // Invert sort order for descending order
-    answer = -answer;
+    if ( GPOINTER_TO_INT(order) == VL_SO_ALPHABETICAL_DESCENDING )
+      answer = -answer;
   }
-
+  else {
+    // Date comparison
+    answer = ( sa->timestamp > sb->timestamp );
+    // Invert sort order for descending order
+    if ( GPOINTER_TO_INT(order) == VL_SO_DATE_DESCENDING )
+      answer = !answer;
+  }
   return answer;
 }
 
@@ -752,17 +798,16 @@ void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_laye
   do {
     sort_array[ii].offset = ii;
     gtk_tree_model_get ( model, &child, NAME_COLUMN, &(sort_array[ii].name), -1 );
+    gtk_tree_model_get ( model, &child, ITEM_TIMESTAMP_COLUMN, &(sort_array[ii].timestamp), -1 );
     ii++;
   } while ( gtk_tree_model_iter_next (model, &child) );
-
-  gboolean sort_order = (order == VL_SO_ALPHABETICAL_ASCENDING );
 
   // Sort list...
   g_qsort_with_data (sort_array,
                      length,
                      sizeof (SortTuple),
                      sort_tuple_compare,
-                     GINT_TO_POINTER(sort_order));
+                     GINT_TO_POINTER(order));
 
   // As the sorted list contains the reordered position offsets, extract this and then apply to the treeview
   gint *positions = g_malloc ( sizeof(gdouble) * length );

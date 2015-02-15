@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncDraw)                    vik_aggregate_layer_draw,
   (VikLayerFuncChangeCoordMode)         aggregate_layer_change_coord_mode,
   
+  (VikLayerFuncGetTimestamp)            NULL,
+
   (VikLayerFuncSetMenuItemsSelection)	NULL,
   (VikLayerFuncGetMenuItemsSelection)	NULL,
 
@@ -216,7 +218,7 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
 
   if ( vl->realized )
   {
-    vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, replace_iter );
+    vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, replace_iter, vik_layer_get_timestamp(l) );
     if ( ! l->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
     vik_layer_realize ( l, vl->vt, &iter );
@@ -264,7 +266,7 @@ void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l, gboole
 
   if ( vl->realized )
   {
-    vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type);
+    vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, vik_layer_get_timestamp(l) );
     if ( ! l->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
     vik_layer_realize ( l, vl->vt, &iter );
@@ -453,6 +455,40 @@ static void aggregate_layer_sort_z2a ( menu_array_values values )
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
   vik_treeview_sort_children ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), VL_SO_ALPHABETICAL_DESCENDING );
   val->children = g_list_sort_with_data ( val->children, sort_layer_compare, GINT_TO_POINTER(FALSE) );
+}
+
+/**
+ * If order is true sort ascending, otherwise a descending sort
+ */
+static gint sort_layer_compare_timestamp ( gconstpointer a, gconstpointer b, gpointer order )
+{
+  VikLayer *sa = (VikLayer *)a;
+  VikLayer *sb = (VikLayer *)b;
+
+  // Default ascending order
+  // NB This might be relatively slow...
+  gint answer = ( vik_layer_get_timestamp(sa) > vik_layer_get_timestamp(sb) );
+
+  if ( GPOINTER_TO_INT(order) ) {
+    // Invert sort order for ascending order
+    answer = !answer;
+  }
+
+  return answer;
+}
+
+static void aggregate_layer_sort_timestamp_ascend ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  vik_treeview_sort_children ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), VL_SO_DATE_ASCENDING );
+  val->children = g_list_sort_with_data ( val->children, sort_layer_compare_timestamp, GINT_TO_POINTER(TRUE) );
+}
+
+static void aggregate_layer_sort_timestamp_descend ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  vik_treeview_sort_children ( VIK_LAYER(val)->vt, &(VIK_LAYER(val)->iter), VL_SO_DATE_DESCENDING );
+  val->children = g_list_sort_with_data ( val->children, sort_layer_compare_timestamp, GINT_TO_POINTER(FALSE) );
 }
 
 /**
@@ -657,6 +693,18 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
   gtk_widget_show ( item );
 
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Date Ascending") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_ASCENDING, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_timestamp_ascend), values );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Date Descending") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_DESCENDING, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_timestamp_descend), values );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
+  gtk_widget_show ( item );
+
   item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_analyse), values );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
@@ -851,7 +899,7 @@ void vik_aggregate_layer_realize ( VikAggregateLayer *val, VikTreeview *vt, GtkT
   {
     vli = VIK_LAYER(i->data);
     vik_treeview_add_layer ( vl->vt, layer_iter, &iter, vli->name, val, TRUE,
-        vli, vli->type, vli->type );
+                             vli, vli->type, vli->type, vik_layer_get_timestamp(vli) );
     if ( ! vli->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
     vik_layer_realize ( vli, vl->vt, &iter );

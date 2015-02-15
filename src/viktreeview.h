@@ -90,11 +90,11 @@ void vik_treeview_expand_toplevel ( VikTreeview *vt );
 void vik_treeview_expand ( VikTreeview *vt, GtkTreeIter *iter );
 
 void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, VikLayerTypeEnum layer_type );
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, time_t timestamp );
 void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling );
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling, time_t timestamp );
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                                 gint data, GdkPixbuf *icon, gboolean editable );
+                                 gint data, GdkPixbuf *icon, gboolean editable, time_t timestamp );
 
 gboolean vik_treeview_get_iter_with_name ( VikTreeview *vt, GtkTreeIter *iter, GtkTreeIter *parent_iter, const gchar *name );
 

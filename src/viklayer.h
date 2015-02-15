@@ -181,6 +181,8 @@ typedef gboolean      (*VikLayerFuncSelectMove)            (VikLayer *, GdkEvent
 typedef gboolean      (*VikLayerFuncSelectRelease)         (VikLayer *, GdkEventButton *, VikViewport *, tool_ed_t*);
 typedef gboolean      (*VikLayerFuncSelectedViewportMenu)  (VikLayer *, GdkEventButton *, VikViewport *);
 
+typedef time_t        (*VikLayerFuncGetTimestamp)          (VikLayer *);
+
 typedef enum {
   VIK_MENU_ITEM_PROPERTY=1,
   VIK_MENU_ITEM_CUT=2,
@@ -219,6 +221,8 @@ struct _VikLayerInterface {
   VikLayerFuncProperties            properties;
   VikLayerFuncDraw                  draw;
   VikLayerFuncChangeCoordMode       change_coord_mode;
+
+  VikLayerFuncGetTimestamp          get_timestamp;
 
   VikLayerFuncSetMenuItemsSelection set_menu_selection;
   VikLayerFuncGetMenuItemsSelection get_menu_selection;
@@ -266,6 +270,8 @@ void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode );
 void vik_layer_rename ( VikLayer *l, const gchar *new_name );
 void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name );
 const gchar *vik_layer_get_name ( VikLayer *l );
+
+time_t vik_layer_get_timestamp ( VikLayer *vl );
 
 gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation);
 
