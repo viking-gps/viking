@@ -284,6 +284,11 @@ void vik_treeview_item_set_pointer ( VikTreeview *vt, GtkTreeIter *iter, gpointe
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_POINTER_COLUMN, pointer, -1 );
 }
 
+void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, time_t timestamp )
+{
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_TIMESTAMP_COLUMN, timestamp, -1 );
+}
+
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter )
 {
   gpointer rv;
@@ -463,8 +468,8 @@ void vik_treeview_init ( VikTreeview *vt )
   vt->was_a_toggle = FALSE;
   vt->editing = FALSE;
 
-  // ATM The date is stored only on initial creation
-  //  this should be good enough for most purposes, although it may get inaccurate especially if items are deleted
+  // ATM The dates are stored on initial creation and updated when items are deleted
+  //  this should be good enough for most purposes, although it may get inaccurate if items are edited in a particular manner
   // NB implicit conversion of time_t to G_INT64
   vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS,
                                                   G_TYPE_STRING,  // Name

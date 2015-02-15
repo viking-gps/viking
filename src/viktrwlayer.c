@@ -4595,6 +4595,9 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
     vik_trw_layer_add_track ( vtl_dest, newname, trk2 );
     g_free ( newname );
     vik_trw_layer_delete_track ( vtl_src, trk );
+    // Reset layer timestamps in case they have now changed
+    vik_treeview_item_set_timestamp ( vtl_dest->vl.vt, &vtl_dest->vl.iter, trw_layer_get_timestamp(vtl_dest) );
+    vik_treeview_item_set_timestamp ( vtl_src->vl.vt, &vtl_src->vl.iter, trw_layer_get_timestamp(vtl_src) );
   }
 
   if (type == VIK_TRW_LAYER_SUBLAYER_ROUTE) {
@@ -4629,6 +4632,9 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
     // Recalculate bounds even if not renamed as maybe dragged between layers
     trw_layer_calculate_bounds_waypoints ( vtl_dest );
     trw_layer_calculate_bounds_waypoints ( vtl_src );
+    // Reset layer timestamps in case they have now changed
+    vik_treeview_item_set_timestamp ( vtl_dest->vl.vt, &vtl_dest->vl.iter, trw_layer_get_timestamp(vtl_dest) );
+    vik_treeview_item_set_timestamp ( vtl_src->vl.vt, &vtl_src->vl.iter, trw_layer_get_timestamp(vtl_src) );
   }
 }
 
@@ -5007,6 +5013,8 @@ static void trw_layer_delete_item ( menu_array_sublayer values )
           return;
       was_visible = trw_layer_delete_waypoint ( vtl, wp );
       trw_layer_calculate_bounds_waypoints ( vtl );
+      // Reset layer timestamp in case it has now changed
+      vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
     }
   }
   else if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_TRACK )
@@ -5020,6 +5028,8 @@ static void trw_layer_delete_item ( menu_array_sublayer values )
 				  trk->name ) )
           return;
       was_visible = vik_trw_layer_delete_track ( vtl, trk );
+      // Reset layer timestamp in case it has now changed
+      vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
     }
   }
   else
@@ -7105,6 +7115,9 @@ static void trw_layer_delete_tracks_from_selection ( menu_array_layer values )
       trw_layer_delete_track_by_name (vtl, l->data, vtl->tracks);
     }
     g_list_free(delete_list);
+    // Reset layer timestamps in case they have now changed
+    vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
+
     vik_layer_emit_update( VIK_LAYER(vtl) );
   }
 }
@@ -7316,6 +7329,8 @@ static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values 
     g_list_free(delete_list);
 
     trw_layer_calculate_bounds_waypoints ( vtl );
+    // Reset layer timestamp in case it has now changed
+    vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
     vik_layer_emit_update( VIK_LAYER(vtl) );
   }
 

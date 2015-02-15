@@ -64,6 +64,7 @@ gint vik_treeview_item_get_type ( VikTreeview *vt, GtkTreeIter *iter );
 gchar *vik_treeview_item_get_name ( VikTreeview *vt, GtkTreeIter *iter );
 gpointer vik_treeview_item_get_pointer ( VikTreeview *vt, GtkTreeIter *iter );
 void vik_treeview_item_set_pointer ( VikTreeview *vt, GtkTreeIter *iter, gpointer pointer );
+void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, time_t timestamp );
 
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter );
 gboolean vik_treeview_item_get_visible_tree ( VikTreeview *vt, GtkTreeIter *iter );
