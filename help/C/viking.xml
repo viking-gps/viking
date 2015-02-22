@@ -704,6 +704,7 @@ Layers supported by &appname; are:
 <listitem><para><xref linkend="Coordinate"/></para></listitem>
 <listitem><para><xref linkend="Maps"/></para></listitem>
 <listitem><para><xref linkend="GeoRef"/></para></listitem>
+<listitem><para><xref linkend="MapnikRendering"/></para></listitem>
 </itemizedlist>
 <para>
 For each layer there are a few standard options:
@@ -1831,6 +1832,8 @@ Tracks are searched first in preference over waypoints.
 
 <xi:include href="georef_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
+<xi:include href="mapnik_rendering_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
 <section id="Coordinate" xreflabel="Coordinate"><title>Coordinate Layer</title>
 <para>
 This layer is allows drawing of grid lines on the viewport.
@@ -2281,6 +2284,27 @@ Generally if you have a system with lots of memory it's recommended to increase 
 </section>
 </section>
 
+<section id="prefs_advanced" xreflabel="Advanced Preferences"><title>Advanced</title>
+<section><title>Save File Reference Mode</title>
+<para>
+	Files referenced within project files can be saved with either absolute or relative paths.
+	Using relative paths can be useful when copying the project file and the associated files between different systems.
+</para>
+</section>
+<section><title>Ask for Name before Track Creation</title>
+<para>A setting to control whether an automatic name is used when creating a new track or route, or whether you are asked to enter a name.</para>
+</section>
+<section><title>Show Tooltip during Track Creation</title>
+<para>A setting to control whether the tooltip with the cumulative track or route distance is shown when creating tracks and routes.</para>
+</section>
+<section><title>The number of recent files</title>
+<para>
+	The number of recent files shown in the <menuchoice><guimenu>File</guimenu><guisubmenu>Open Recent File</guisubmenu></menuchoice> menu.
+	A value of -1 means all files. The new value applies to New Windows only (or on application restart).
+</para>
+</section>
+</section>
+
 <section id="prefs_osm" xreflabel="OpenStreetMap Traces Preferences"><title>OpenStreetMap Traces</title>
 <section><title>OSM Username + Password</title>
 <para>Store your OSM details here, so that you don't need to enter it in every time in the <xref linkend="osm_upload"/> procedure.</para>
@@ -2289,6 +2313,40 @@ Generally if you have a system with lots of memory it's recommended to increase 
 Your OSM password will be stored in plain text.
 </para>
 </warning>
+</section>
+</section>
+
+<section id="prefs_mapnik" xreflabel="Mapnik Preferences"><title>Mapnik</title>
+<note>
+<para>If any changes to these settings are made, you will need to restart &appname; to make them be applied.
+</para>
+</note>
+<section><title>Plugins Directory</title>
+<para>The location of Mapnik plugins. An attempt is made to automatically determine the initial value,
+ however if this is wrong or Mapnik is upgraded then the directory can be set here.</para>
+</section>
+<section><title>Fonts Directory</title>
+<para>
+The location of fonts for use with Mapnik. Normally it is best to simply use the System's font directory.
+</para>
+</section>
+<section><title>Recurse Fonts Directory</title>
+<para>Load fonts in any sub-directories of the main font directory.</para>
+</section>
+<section><title>Rerender Timeout</title>
+<para>The time in hours before any tile is rerendered.</para>
+<para>This is useful in case the underlying source data for the tiles changes (e.g. OSM data is continually evovling).
+ &appname; normally has no way of knowing when the data has changed, so this simple timeout method is provided to maintain consistency of the tile images.</para>
+</section>
+<section><title>CartoCSS</title>
+<para>This allows setting the specific location of the <emphasis>carto</emphasis> executable.</para>
+</section>
+<section><title>Threads</title>
+<para>
+	The number of threads to use for Mapnik rendering tasks.
+	By default the value is set to the 1 in case of any multi-threading rendering code chain crashes.
+	Otherwise trying setting the value to the number of the CPUs of the system minus one (so as not to overload the system), in order to minimise the overall rendering times.
+</para>
 </section>
 </section>
 
@@ -3281,7 +3339,13 @@ Accept: */*
 	    <para>maps_scale_smaller_zoom_first=true</para>
 	  </listitem>
 	  <listitem>
+	    <para>mapnik_buffer_size=128 (in pixels)</para>
+	  </listitem>
+	  <listitem>
 	    <para>background_max_threads=10</para>
+	  </listitem>
+	  <listitem>
+	    <para>background_max_threads_local=<emphasis>Number of CPUs</emphasis></para>
 	  </listitem>
 	  <listitem>
 	    <para>window_menubar=true</para>

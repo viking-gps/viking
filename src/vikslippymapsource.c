@@ -45,11 +45,6 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-
-#include "globals.h"
 #include "vikslippymapsource.h"
 #include "maputils.h"
 
@@ -602,33 +597,13 @@ _get_lon_max (VikMapSource *self)
 static gboolean
 _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest )
 {
-  g_assert ( src->mode == VIK_COORD_LATLON );
-
-  if ( xzoom != yzoom )
-    return FALSE;
-
-  dest->scale = map_utils_mpp_to_scale ( xzoom );
-  if ( dest->scale == 255 )
-    return FALSE;
-
-  dest->x = (src->east_west + 180) / 360 * VIK_GZ(17) / xzoom;
-  dest->y = (180 - MERCLAT(src->north_south)) / 360 * VIK_GZ(17) / xzoom;
-  dest->z = 0;
-
-  return TRUE;
+	return map_utils_vikcoord_to_iTMS ( src, xzoom, yzoom, dest );
 }
 
 static void
 _mapcoord_to_center_coord ( VikMapSource *self, MapCoord *src, VikCoord *dest )
 {
-  gdouble socalled_mpp;
-  if (src->scale >= 0)
-    socalled_mpp = VIK_GZ(src->scale);
-  else
-    socalled_mpp = 1.0/VIK_GZ(-src->scale);
-  dest->mode = VIK_COORD_LATLON;
-  dest->east_west = ((src->x+0.5) / VIK_GZ(17) * socalled_mpp * 360) - 180;
-  dest->north_south = DEMERCLAT(180 - ((src->y+0.5) / VIK_GZ(17) * socalled_mpp * 360));
+	map_utils_iTMS_to_center_vikcoord ( src, dest );
 }
 
 static gchar *

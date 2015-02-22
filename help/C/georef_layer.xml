@@ -25,7 +25,7 @@ If you do not know the scale of the map but know the coordinates of both upper l
 The map once loaded can be repositioned via <xref linkend="georef_tools"/>, which may be easier than trying to edit the raw property values.
 </para>
 
-<section><title>Map Layer Properties</title>
+<section><title>Layer Properties</title>
 <para>
 Configurable properties:
 </para>

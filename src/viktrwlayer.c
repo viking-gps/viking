@@ -10420,7 +10420,8 @@ void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
       thumbnail_create_thread_data *tctd = g_malloc ( sizeof(thumbnail_create_thread_data) );
       tctd->vtl = vtl;
       tctd->pics = pics;
-      a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+      a_background_thread ( BACKGROUND_POOL_LOCAL,
+                            VIK_GTK_WINDOW_FROM_LAYER(vtl),
 			    tmp,
 			    (vik_thr_func) create_thumbnails_thread,
 			    tctd,

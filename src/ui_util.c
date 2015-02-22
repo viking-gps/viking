@@ -210,3 +210,19 @@ GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
   }
   return pixbuf;
 }
+
+/**
+ *
+ */
+void ui_add_recent_file ( const gchar *filename )
+{
+	if ( filename ) {
+		GtkRecentManager *manager = gtk_recent_manager_get_default();
+		GFile *file = g_file_new_for_commandline_arg ( filename );
+		gchar *uri = g_file_get_uri ( file );
+		if ( uri && manager )
+			gtk_recent_manager_add_item ( manager, uri );
+		g_object_unref( file );
+		g_free (uri);
+	}
+}

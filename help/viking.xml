@@ -132,9 +132,9 @@ and docbook-xsl in your Build-Depends control field.
       Viking is a program to manage GPS data.
     </para>
     <para>  
-      You can import and plot tracks, routes and waypoints, show OpenStreetMap (OSM) maps and/or
-      Terraserver maps under it, add coordinate lines, make new tracks, routes and waypoints, hide different things, etc.
-      It is written in C with the GTK+ 2 toolkit, available for Linux, other POSIX operating systems and Windows.
+      You can import and plot tracks, routes and waypoints, show OpenStreetMap (OSM) and/or other maps, generate maps (using Mapnik),
+       geotag images, add coordinate lines, make new tracks, routes and waypoints, hide different things, etc.
+      It is written mainly in C with some C++ and uses the GTK+ 2 toolkit. It is available for Linux, other POSIX operating systems and Windows.
     </para>
     <para>  
       Homepage: <ulink type="http" url="http://viking.sf.net">http://viking.sf.net</ulink>
@@ -597,7 +597,7 @@ and docbook-xsl in your Build-Depends control field.
       <varlistentry>
         <term><filename>~/.viking-maps/</filename></term>
         <listitem>
-          <para>Map cache of tiles downloaded by &dhpackage;.</para>
+          <para>Default location of the map cache of tiles downloaded or created by &dhpackage;.</para>
         </listitem>
       </varlistentry>
     </variablelist>

@@ -424,7 +424,8 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData d
         dltd->vdl = vdl;
         dltd->vdl->files = data.sl;
 
-        a_background_thread ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
+        a_background_thread ( BACKGROUND_POOL_LOCAL,
+                              VIK_GTK_WINDOW_FROM_WIDGET(vp),
                               _("DEM Loading"),
                               (vik_thr_func) dem_layer_load_list_thread,
                               dltd,
@@ -1286,7 +1287,8 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
       p->source = vdl->source;
       g_object_weak_ref(G_OBJECT(p->vdl), weak_ref_cb, p );
 
-      a_background_thread ( VIK_GTK_WINDOW_FROM_LAYER(vdl), tmp,
+      a_background_thread ( BACKGROUND_POOL_REMOTE,
+                            VIK_GTK_WINDOW_FROM_LAYER(vdl), tmp,
                             (vik_thr_func) dem_download_thread, p,
                             (vik_thr_free_func) free_dem_download_params, NULL, 1 );
 

@@ -210,6 +210,12 @@ libviking_a_SOURCES += \
 	libjpeg/jpeg-marker.c libjpeg/jpeg-marker.h
 endif
 
+if MAPNIK
+libviking_a_SOURCES += \
+	vikmapniklayer.c vikmapniklayer.h \
+	mapnik_interface.cpp mapnik_interface.h
+endif
+
 viking_SOURCES = main.c
 
 LDADD           = libviking.a $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
@@ -222,6 +228,7 @@ AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
 	$(PACKAGE_CFLAGS) \
 	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 AM_CPPFLAGS		= \
+	$(PACKAGE_CFLAGS) \
 	-DVIKING_DATADIR=\""$(pkgdatadir)"\" \
 	-DVIKING_SYSCONFDIR=\""$(sysconfdir)/$(PACKAGE)"\"
 

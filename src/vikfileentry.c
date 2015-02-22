@@ -139,6 +139,25 @@ static void choose_file ( VikFileEntry *vfe )
         gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
         break;
       }
+      case VF_FILTER_XML: {
+        GtkFileFilter *filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("XML") );
+        gtk_file_filter_add_pattern ( filter, "*.xml" );
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+        break;
+      }
+      case VF_FILTER_CARTO: {
+        GtkFileFilter *filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("MML") );
+        gtk_file_filter_add_pattern ( filter, "*.mml" );
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+
+        filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("MSS") );
+        gtk_file_filter_add_pattern ( filter, "*.mss" );
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+        break;
+      }
       default: break;
     }
     if ( vfe->filter_type ) {

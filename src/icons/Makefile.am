@@ -226,6 +226,7 @@ ICONS = \
 	vikgeoreflayer.png \
 	vikgpslayer.png \
 	vikmapslayer.png \
+	vikmapniklayer.png \
 	viktrwlayer.png
 
 CURSORS = \

@@ -75,6 +75,13 @@ set ZLIB_URL=%MINGW_BASE_URL%/zlib/zlib-1.2.8/%ZLIB_LZ%/download
 set GETTEXT_LZ=gettext-0.18.3.1-1-mingw32-dll.tar.lzma
 set GETTEXT_URL=%MINGW_BASE_URL%/gettext/gettext-0.18.3.1-1/%GETTEXT_LZ%/download
 
+set GCC-CPP_BIN_LZ=gcc-c++-4.8.1-4-mingw32-bin.tar.lzma
+set GCC-CPP_BIN_URL=%MINGW_BASE_URL%/gcc/Version4/gcc-4.8.1-4/%GCC-CPP_BIN_LZ%/download
+set GCC-CPP_DEV_LZ=gcc-c++-4.8.1-4-mingw32-dev.tar.lzma
+set GCC-CPP_DEV_URL=%MINGW_BASE_URL%/gcc/Version4/gcc-4.8.1-4/%GCC-CPP_DEV_LZ%/download
+set GCC-CPP_DLL_LZ=gcc-c++-4.8.1-4-mingw32-dll.tar.lzma
+set GCC-CPP_DLL_URL=%MINGW_BASE_URL%/gcc/Version4/gcc-4.8.1-4/%GCC-CPP_DLL_LZ%/download
+
 if not exist "%MINGW_BIN%" (
 	:: Here we download all default components manually in an attempt to get autoinstall to work...
 	call :Download "%BIN_UTILS_LZ%" "%BIN_UTILS_URL%"
@@ -133,6 +140,27 @@ if not exist "%MINGW_BIN%" (
 
 	call :Download "%GETTEXT_LZ%" "%GETTEXT_URL%"
 	call :InstallLZMA "%GETTEXT_LZ%"
+
+	REM Seems '+' in the filename screws things up for script function calls :(
+	REM call :Download "%GCC_CPP_DEV_LZ%" "%GCC_CPP_DEV_URL%"
+	REM call :InstallLZMA "%GCC_CPP_DEV_LZ%"
+
+	REM call :Download "%GCC_CPP_DLL_LZ%" "%GCC_CPP_DLL_URL%"
+	REM call :InstallLZMA "%GCC_CPP_DLL_LZ%"
+
+	REM call :Download "%GCC_CPP_BIN_LZ%" "%GCC_CPP_BIN_URL%"
+	REM call :InstallLZMA "%GCC_CPP_BIN_LZ%"
+
+	REM Do it every time...
+	wget http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.8.1-4/gcc-c++-4.8.1-4-mingw32-bin.tar.lzma/download
+	wget http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.8.1-4/gcc-c++-4.8.1-4-mingw32-dev.tar.lzma/download
+	wget http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/gcc-4.8.1-4/gcc-c++-4.8.1-4-mingw32-dll.tar.lzma/download
+	7z e gcc-c++-4.8.1-4-mingw32-bin.tar.lzma
+	7z e gcc-c++-4.8.1-4-mingw32-dev.tar.lzma
+	7z e gcc-c++-4.8.1-4-mingw32-dll.tar.lzma
+	7z x gcc-c++-4.8.1-4-mingw32-bin.tar -o"%MinGW%" -y
+	7z x gcc-c++-4.8.1-4-mingw32-dev.tar -o"%MinGW%" -y
+	7z x gcc-c++-4.8.1-4-mingw32-dll.tar -o"%MinGW%" -y
 )
 
 echo =+=+=
@@ -356,6 +384,26 @@ if not exist "%MINGW_BIN%\sqlite3.dll" (
 	set PATH=%PATH%;%MinGW_BIN%
 	dlltool.exe -d %MinGW_BIN%\sqlite3.def --dllname %MinGW_BIN%\sqlite3.dll -l %MinGW%\lib\sqlite3.lib
 	if ERRORLEVEL 1 goto Error
+)
+
+
+echo =+=+=
+echo Mapnik...
+echo =+=+=
+set MAPNIK_ZIP=mapnik-win-sdk-v2.2.0.zip
+set MAPNIK_URL=http://mapnik.s3.amazonaws.com/dist/v2.2.0/%MAPNIK_ZIP%
+if not exist "%MINGW_BIN%\mapnik.dll" (
+	call :Download "%MAPNIK_ZIP%" "%MAPNIK_URL%"
+	7z x %MAPNIK_ZIP%
+	if ERRORLEVEL 1 goto Error
+	copy /Y mapnik-v2.2.0\include\* "%MinGW%\include"
+	copy /Y mapnik-v2.2.0\lib\*.lib "%MinGW%\lib\"
+	copy /Y mapnik-v2.2.0\lib\*.dll "%MinGW%\bin"
+	copy /Y mapnik-v2.2.0\lib\mapnik\input "\"
+	rmdir /S /Q mapnik-v2.2.0
+	REM Mapnik 2.2.0 seems to ship with a unicode copy which is missing ptypes.h
+	REM Copy headers from a known good version...
+	REM See fix in calling shell script when using wine
 )
 
 ::

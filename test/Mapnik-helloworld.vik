@@ -1,0 +1,25 @@
+#VIKING GPS Data file http://viking.sf.net/
+FILE_VERSION=1
+
+xmpp=2048.000000
+ympp=2048.000000
+lat=51.5
+lon=0.0
+mode=mercator
+color=#cccccc
+highlightcolor=#eea500
+drawscale=t
+drawcentermark=f
+drawhighlight=t
+
+#
+# Need to unzip the ne_110m_admin_0_countries.zip first
+#
+~Layer Mapnik Rendering
+name=Mapnik NE Admin 110
+config-file-mml=
+config-file-xml=Mapnik-ne_110m_admin_0_countries.xml
+alpha=255
+use-file-cache=f
+~EndLayer
+

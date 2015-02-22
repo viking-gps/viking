@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2014, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 #define _MAP_UTILS_H
 
 #include <glib.h>
+#include "mapcoord.h"
+#include "vikcoord.h"
 
 G_BEGIN_DECLS
 
@@ -33,6 +35,12 @@ G_BEGIN_DECLS
 gint map_utils_mpp_to_scale ( gdouble mpp );
 
 guint8 map_utils_mpp_to_zoom_level ( gdouble mpp );
+
+gboolean map_utils_vikcoord_to_iTMS ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
+
+void map_utils_iTMS_to_center_vikcoord ( const MapCoord *src, VikCoord *dest );
+
+void map_utils_iTMS_to_vikcoord ( const MapCoord *src, VikCoord *dest );
 
 G_BEGIN_DECLS
 

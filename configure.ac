@@ -327,7 +327,36 @@ case $ac_cv_enable_mbtiles in
 esac
 AM_CONDITIONAL([SQLITE], [test x$ac_cv_enable_mbtiles = xyes])
 
+# Mapnik rendering layer
+AC_ARG_ENABLE(mapnik, AC_HELP_STRING([--enable-mapnik],
+              [enable Mapnik (default is enable)]),
+              [ac_cv_enable_mapnik=$enableval],
+              [ac_cv_enable_mapnik=yes])
+AC_CACHE_CHECK([whether to enable Mapnik],
+               [ac_cv_enable_mapnik], [ac_cv_enable_mapnik=yes])
+case $ac_cv_enable_mapnik in
+  yes)
+    # C++
+    AC_LANG_CPLUSPLUS
+    AC_LANG_SAVE
+    AC_PROG_CXX
+    # Too difficult to get check working under Windows (extra dependencies needed probably Boost)- so just skip it
+    if test "x$ac_cv_enable_windows" = "xno"; then
+      AC_CHECK_HEADER([mapnik/map.hpp],[],[AC_MSG_ERROR([mapnik/map.hpp is needed but not found - you will need to install package 'libmapnik-dev' or similar. The feature can be disabled with --disable-mapnik])])
+    fi
+    AC_CHECK_LIB([mapnik], [main], [], [AC_MSG_ERROR([libmapnik is needed but not found.])])
+    AC_CHECK_LIB([stdc++], [main], [], [AC_MSG_ERROR([libstdc++ is needed but not found.])])
+    AC_LANG_RESTORE
+    ;;
+esac
+AM_CONDITIONAL([MAPNIK], [test x$ac_cv_enable_mapnik = xyes])
 ###
+
+## WORK AROUND BROKEN autoconf - see http://lists.gnu.org/archive/html/bug-automake/2002-11/msg00020.html
+m4_pushdef([AC_MSG_ERROR])
+AC_PROG_CXX
+m4_popdef([AC_MSG_ERROR])
+##
 
 AC_ARG_WITH(search,
             [AC_HELP_STRING([--with-search],
@@ -438,6 +467,7 @@ echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
 echo "bzip2 Support                    : $ac_cv_enable_bzip2"
 echo "File Magic Support               : $ac_cv_enable_magic"
 echo "MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles"
+echo "Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
 echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"
 echo "Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})"

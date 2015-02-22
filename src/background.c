@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +25,17 @@
 
 #include "background.h"
 #include "settings.h"
+#include "util.h"
+#include "math.h"
+#include "uibuilder.h"
+#include "globals.h"
+#include "preferences.h"
 
-static GThreadPool *thread_pool = NULL;
+static GThreadPool *thread_pool_remote = NULL;
+static GThreadPool *thread_pool_local = NULL;
+#ifdef HAVE_LIBMAPNIK
+static GThreadPool *thread_pool_local_mapnik = NULL;
+#endif
 static gboolean stop_all_threads = FALSE;
 
 static GtkWidget *bgwindow = NULL;
@@ -59,13 +69,21 @@ static void background_thread_update ()
   g_slist_foreach ( windows_to_update, (GFunc) a_background_update_status, NULL );
 }
 
+/**
+ * a_background_thread_progress:
+ * @callbackdata: Thread data
+ * @fraction:     The value should be between 0.0 and 1.0 indicating percentage of the task complete
+ */
 int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
 {
   gpointer *args = (gpointer *) callbackdata;
   int res = a_background_testcancel ( callbackdata );
   if (args[5] != NULL) {
+    gdouble myfraction = fabs(fraction);
+    if ( myfraction > 1.0 )
+      myfraction = 1.0;
     gdk_threads_enter();
-    gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, fraction*100, -1 );
+    gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, myfraction*100, -1 );
     gdk_threads_leave();
   }
 
@@ -127,6 +145,7 @@ static void thread_helper ( gpointer args[VIK_BG_NUM_ARGS], gpointer user_data )
 
 /**
  * a_background_thread:
+ * @bp:      Which pool this thread should run in
  * @parent:
  * @message:
  * @func: worker function
@@ -137,7 +156,7 @@ static void thread_helper ( gpointer args[VIK_BG_NUM_ARGS], gpointer user_data )
  *
  * Function to enlist new background function.
  */
-void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items )
+void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items )
 {
   GtkTreeIter *piter = g_malloc ( sizeof ( GtkTreeIter ) );
   gpointer *args = g_malloc ( sizeof(gpointer) * VIK_BG_NUM_ARGS );
@@ -162,7 +181,14 @@ void a_background_thread ( GtkWindow *parent, const gchar *message, vik_thr_func
 		       -1 );
 
   /* run the thread in the background */
-  g_thread_pool_push( thread_pool, args, NULL );
+  if ( bp == BACKGROUND_POOL_REMOTE )
+    g_thread_pool_push( thread_pool_remote, args, NULL );
+#ifdef HAVE_LIBMAPNIK
+  else if ( bp == BACKGROUND_POOL_LOCAL_MAPNIK )
+    g_thread_pool_push( thread_pool_local_mapnik, args, NULL );
+#endif
+  else
+    g_thread_pool_push( thread_pool_local, args, NULL );
 }
 
 /**
@@ -220,6 +246,16 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
 }
 
 #define VIK_SETTINGS_BACKGROUND_MAX_THREADS "background_max_threads"
+#define VIK_SETTINGS_BACKGROUND_MAX_THREADS_LOCAL "background_max_threads_local"
+
+#ifdef HAVE_LIBMAPNIK
+VikLayerParamScale params_threads[] = { {1, 64, 1, 0} }; // 64 threads should be enough for anyone...
+// implicit use of 'MAPNIK_PREFS_NAMESPACE' to avoid dependency issues
+static VikLayerParam prefs_mapnik[] = {
+  { VIK_LAYER_NUM_TYPES, "mapnik.background_max_threads_local_mapnik", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Threads:"), VIK_LAYER_WIDGET_SPINBUTTON, params_threads, NULL,
+    N_("Number of threads to use for Mapnik tasks. You need to restart Viking for a change to this value to be used"), NULL, NULL, NULL },
+};
+#endif
 
 /**
  * a_background_init:
@@ -228,13 +264,31 @@ static void bgwindow_response (GtkDialog *dialog, gint arg1 )
  */
 void a_background_init()
 {
-  /* initialize thread pool */
+  // initialize thread pools
   gint max_threads = 10;  /* limit maximum number of threads running at one time */
   gint maxt;
   if ( a_settings_get_integer ( VIK_SETTINGS_BACKGROUND_MAX_THREADS, &maxt ) )
     max_threads = maxt;
 
-  thread_pool = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
+  thread_pool_remote = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
+
+  if ( a_settings_get_integer ( VIK_SETTINGS_BACKGROUND_MAX_THREADS_LOCAL, &maxt ) )
+    max_threads = maxt;
+  else {
+    guint cpus = util_get_number_of_cpus ();
+    max_threads = cpus > 1 ? cpus-1 : 1; // Don't use all available CPUs!
+  }
+
+  thread_pool_local = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
+
+#ifdef HAVE_LIBMAPNIK
+  VikLayerParamData tmp;
+  // implicit use of 'MAPNIK_PREFS_NAMESPACE' to avoid dependency issues
+  tmp.u = 1; // Default to 1 thread due to potential crashing issues
+  a_preferences_register(&prefs_mapnik[0], tmp, "mapnik");
+  guint mapnik_threads = a_preferences_get("mapnik.background_max_threads_local_mapnik")->u;
+  thread_pool_local_mapnik = g_thread_pool_new ( (GFunc) thread_helper, NULL, mapnik_threads, FALSE, NULL );
+#endif
 
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
@@ -288,9 +342,14 @@ void a_background_init()
  */
 void a_background_uninit()
 {
-  /* wait until all running threads stop */
   stop_all_threads = TRUE;
-  g_thread_pool_free ( thread_pool, TRUE, TRUE );
+  // wait until these threads stop
+  g_thread_pool_free ( thread_pool_remote, TRUE, TRUE );
+  // Don't wait for these
+  g_thread_pool_free ( thread_pool_local, TRUE, FALSE );
+#ifdef HAVE_LIBMAPNIK
+  g_thread_pool_free ( thread_pool_local_mapnik, TRUE, FALSE );
+#endif
 
   gtk_list_store_clear ( bgstore );
   g_object_unref ( bgstore );
