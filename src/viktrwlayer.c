@@ -5,7 +5,7 @@
  * Copyright (C) 2005-2008, Alex Foobarian <foobarian@gmail.com>
  * Copyright (C) 2007, Quy Tonthat <qtonthat@gmail.com>
  * Copyright (C) 2009, Hein Ragas <viking@ragas.nl>
- * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2012-2015, Rob Norris <rw_norris@hotmail.com>
  * Copyright (c) 2012-2013, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -533,6 +533,8 @@ static gchar* params_sort_order[] = {
   N_("None"),
   N_("Name Ascending"),
   N_("Name Descending"),
+  N_("Date Ascending"),
+  N_("Date Descending"),
   NULL
 };
 
@@ -689,6 +691,7 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean fro
 static void trw_layer_free ( VikTrwLayer *trwlayer );
 static void trw_layer_draw ( VikTrwLayer *l, gpointer data );
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
+static time_t trw_layer_get_timestamp ( VikTrwLayer *vtl );
 static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, guint16 );
 static guint16 trw_layer_get_menu_selection ( VikTrwLayer *vtl );
 static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp );
@@ -739,6 +742,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    trw_layer_draw,
   (VikLayerFuncChangeCoordMode)         trw_layer_change_coord_mode,
+  (VikLayerFuncGetTimestamp)            trw_layer_get_timestamp,
 
   (VikLayerFuncSetMenuItemsSelection)   trw_layer_set_menu_selection,
   (VikLayerFuncGetMenuItemsSelection)   trw_layer_get_menu_selection,
@@ -2668,7 +2672,12 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
     gdk_pixbuf_fill ( pixbuf, pixel );
   }
 
-  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, TRUE );
+  time_t timestamp = 0;
+  VikTrackpoint *tpt = vik_track_get_tp_first(track);
+  if ( tpt && tpt->has_timestamp )
+    timestamp = tpt->timestamp;
+
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, timestamp );
 
   if ( pixbuf )
     g_object_unref (pixbuf);
@@ -2687,7 +2696,11 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
-  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, TRUE );
+  time_t timestamp = 0;
+  if ( wp->has_timestamp )
+    timestamp = wp->timestamp;
+
+  vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, timestamp );
 
   *new_iter = *((GtkTreeIter *) pass_along[1]);
   g_hash_table_insert ( VIK_TRW_LAYER(pass_along[2])->waypoints_iters, id, new_iter );
@@ -2698,17 +2711,17 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
 
 static void trw_layer_add_sublayer_tracks ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->tracks_iter), _("Tracks"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS, NULL, FALSE, 0 );
 }
 
 static void trw_layer_add_sublayer_waypoints ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->waypoints_iter), _("Waypoints"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, NULL, FALSE, 0 );
 }
 
 static void trw_layer_add_sublayer_routes ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
-  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->routes_iter), _("Routes"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES, NULL, TRUE, FALSE );
+  vik_treeview_add_sublayer ( (VikTreeview *) vt, layer_iter, &(vtl->routes_iter), _("Routes"), vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES, NULL, FALSE, 0 );
 }
 
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
@@ -4357,8 +4370,12 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
 
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
 
+    time_t timestamp = 0;
+    if ( wp->has_timestamp )
+      timestamp = wp->timestamp;
+
     // Visibility column always needed for waypoints
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, timestamp );
 
     // Actual setting of visibility dependent on the waypoint
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
@@ -4391,8 +4408,14 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
     }
 
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
+
+    time_t timestamp = 0;
+    VikTrackpoint *tpt = vik_track_get_tp_first(t);
+    if ( tpt && tpt->has_timestamp )
+      timestamp = tpt->timestamp;
+
     // Visibility column always needed for tracks
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, GUINT_TO_POINTER(tr_uuid), VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), iter, name, vtl, GUINT_TO_POINTER(tr_uuid), VIK_TRW_LAYER_SUBLAYER_TRACK, NULL, TRUE, timestamp );
 
     // Actual setting of visibility dependent on the track
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
@@ -4426,7 +4449,7 @@ void vik_trw_layer_add_route ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
     // Visibility column always needed for routes
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), iter, name, vtl, GUINT_TO_POINTER(rt_uuid), VIK_TRW_LAYER_SUBLAYER_ROUTE, NULL, TRUE, TRUE );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), iter, name, vtl, GUINT_TO_POINTER(rt_uuid), VIK_TRW_LAYER_SUBLAYER_ROUTE, NULL, TRUE, 0 ); // Routes don't have times
     // Actual setting of visibility dependent on the route
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, t->visible );
 
@@ -4572,6 +4595,9 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
     vik_trw_layer_add_track ( vtl_dest, newname, trk2 );
     g_free ( newname );
     vik_trw_layer_delete_track ( vtl_src, trk );
+    // Reset layer timestamps in case they have now changed
+    vik_treeview_item_set_timestamp ( vtl_dest->vl.vt, &vtl_dest->vl.iter, trw_layer_get_timestamp(vtl_dest) );
+    vik_treeview_item_set_timestamp ( vtl_src->vl.vt, &vtl_src->vl.iter, trw_layer_get_timestamp(vtl_src) );
   }
 
   if (type == VIK_TRW_LAYER_SUBLAYER_ROUTE) {
@@ -4606,6 +4632,9 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
     // Recalculate bounds even if not renamed as maybe dragged between layers
     trw_layer_calculate_bounds_waypoints ( vtl_dest );
     trw_layer_calculate_bounds_waypoints ( vtl_src );
+    // Reset layer timestamps in case they have now changed
+    vik_treeview_item_set_timestamp ( vtl_dest->vl.vt, &vtl_dest->vl.iter, trw_layer_get_timestamp(vtl_dest) );
+    vik_treeview_item_set_timestamp ( vtl_src->vl.vt, &vtl_src->vl.iter, trw_layer_get_timestamp(vtl_src) );
   }
 }
 
@@ -4984,6 +5013,8 @@ static void trw_layer_delete_item ( menu_array_sublayer values )
           return;
       was_visible = trw_layer_delete_waypoint ( vtl, wp );
       trw_layer_calculate_bounds_waypoints ( vtl );
+      // Reset layer timestamp in case it has now changed
+      vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
     }
   }
   else if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_TRACK )
@@ -4997,6 +5028,8 @@ static void trw_layer_delete_item ( menu_array_sublayer values )
 				  trk->name ) )
           return;
       was_visible = vik_trw_layer_delete_track ( vtl, trk );
+      // Reset layer timestamp in case it has now changed
+      vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
     }
   }
   else
@@ -6972,9 +7005,9 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
       if ( it ) {
         vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, it, newname );
         if ( ontrack )
-          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->wp_sort_order );
-	else
-          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->wp_sort_order );
+          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter), vtl->track_sort_order );
+        else
+          vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->track_sort_order );
       }
     }
 
@@ -6993,50 +7026,50 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
   vik_layers_panel_emit_update ( vlp );
 }
 
-static void trw_layer_sort_order_a2z ( menu_array_sublayer values )
+static void trw_layer_sort_order_specified ( VikTrwLayer *vtl, guint sublayer_type, vik_layer_sort_order_t order )
 {
-  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   GtkTreeIter *iter;
 
-  switch (GPOINTER_TO_INT (values[MA_SUBTYPE])) {
+  switch (sublayer_type) {
   case VIK_TRW_LAYER_SUBLAYER_TRACKS:
     iter = &(vtl->tracks_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    vtl->track_sort_order = order;
     break;
   case VIK_TRW_LAYER_SUBLAYER_ROUTES:
     iter = &(vtl->routes_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    vtl->track_sort_order = order;
     break;
   default: // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
     iter = &(vtl->waypoints_iter);
-    vtl->wp_sort_order = VL_SO_ALPHABETICAL_ASCENDING;
+    vtl->wp_sort_order = order;
     break;
   }
 
-  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, VL_SO_ALPHABETICAL_ASCENDING );
+  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, order );
+}
+
+static void trw_layer_sort_order_a2z ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_ALPHABETICAL_ASCENDING );
 }
 
 static void trw_layer_sort_order_z2a ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
-  GtkTreeIter *iter;
+  trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_ALPHABETICAL_DESCENDING );
+}
 
-  switch (GPOINTER_TO_INT (values[MA_SUBTYPE])) {
-  case VIK_TRW_LAYER_SUBLAYER_TRACKS:
-    iter = &(vtl->tracks_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
-    break;
-  case VIK_TRW_LAYER_SUBLAYER_ROUTES:
-    iter = &(vtl->routes_iter);
-    vtl->track_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
-    break;
-  default: // VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
-    iter = &(vtl->waypoints_iter);
-    vtl->wp_sort_order = VL_SO_ALPHABETICAL_DESCENDING;
-    break;
-  }
+static void trw_layer_sort_order_timestamp_ascend ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_DATE_ASCENDING );
+}
 
-  vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, iter, VL_SO_ALPHABETICAL_DESCENDING );
+static void trw_layer_sort_order_timestamp_descend ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_DATE_DESCENDING );
 }
 
 /**
@@ -7082,6 +7115,9 @@ static void trw_layer_delete_tracks_from_selection ( menu_array_layer values )
       trw_layer_delete_track_by_name (vtl, l->data, vtl->tracks);
     }
     g_list_free(delete_list);
+    // Reset layer timestamps in case they have now changed
+    vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
+
     vik_layer_emit_update( VIK_LAYER(vtl) );
   }
 }
@@ -7293,6 +7329,8 @@ static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values 
     g_list_free(delete_list);
 
     trw_layer_calculate_bounds_waypoints ( vtl );
+    // Reset layer timestamp in case it has now changed
+    vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
     vik_layer_emit_update( VIK_LAYER(vtl) );
   }
 
@@ -8136,6 +8174,18 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     item = gtk_image_menu_item_new_with_mnemonic ( _("Name _Descending") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_DESCENDING, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_sort_order_z2a), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Date Ascending") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_ASCENDING, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_sort_order_timestamp_ascend), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Date Descending") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_DESCENDING, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_sort_order_timestamp_descend), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
     gtk_widget_show ( item );
   }
@@ -10569,6 +10619,74 @@ static void trw_layer_sort_all ( VikTrwLayer *vtl )
     vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
 }
 
+/**
+ * Get the earliest timestamp available from all tracks
+ */
+static time_t trw_layer_get_timestamp_tracks ( VikTrwLayer *vtl )
+{
+  time_t timestamp = 0;
+  GList *gl = g_hash_table_get_values ( vtl->tracks );
+  gl = g_list_sort ( gl, vik_track_compare_timestamp );
+  gl = g_list_first ( gl );
+
+  if ( gl ) {
+    // Only need to check the first track as they have been sorted by time
+    VikTrack *trk = (VikTrack*)gl->data;
+    // Assume trackpoints already sorted by time
+    VikTrackpoint *tpt = vik_track_get_tp_first(trk);
+    if ( tpt && tpt->has_timestamp ) {
+      timestamp = tpt->timestamp;
+    }
+    g_list_free ( gl );
+  }
+  return timestamp;
+}
+
+/**
+ * Get the earliest timestamp available from all waypoints
+ */
+static time_t trw_layer_get_timestamp_waypoints ( VikTrwLayer *vtl )
+{
+  time_t timestamp = 0;
+  GList *gl = g_hash_table_get_values ( vtl->waypoints );
+  GList *iter;
+  for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
+    VikWaypoint *wpt = (VikWaypoint*)iter->data;
+    if ( wpt->has_timestamp ) {
+      // When timestamp not set yet - use the first value encountered
+      if ( timestamp == 0 )
+        timestamp = wpt->timestamp;
+      else if ( timestamp > wpt->timestamp )
+        timestamp = wpt->timestamp;
+    }
+  }
+  g_list_free ( gl );
+
+  return timestamp;
+}
+
+/**
+ * Get the earliest timestamp available for this layer
+ */
+static time_t trw_layer_get_timestamp ( VikTrwLayer *vtl )
+{
+  time_t timestamp_tracks = trw_layer_get_timestamp_tracks ( vtl );
+  time_t timestamp_waypoints = trw_layer_get_timestamp_waypoints ( vtl );
+  // NB routes don't have timestamps - hence they are not considered
+
+  if ( !timestamp_tracks && !timestamp_waypoints ) {
+    // Fallback to get time from the metadata when no other timestamps available
+    GTimeVal gtv;
+    if  ( vtl->metadata && vtl->metadata->timestamp && g_time_val_from_iso8601 ( vtl->metadata->timestamp, &gtv ) )
+      return gtv.tv_sec;
+  }
+  if ( timestamp_tracks && !timestamp_waypoints )
+    return timestamp_tracks;
+  if ( timestamp_tracks && timestamp_waypoints && (timestamp_tracks < timestamp_waypoints) )
+    return timestamp_tracks;
+  return timestamp_waypoints;
+}
+
 static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean from_file )
 {
   if ( VIK_LAYER(vtl)->realized )
@@ -10596,47 +10714,13 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean fro
     }
 
     if ( need_to_set_time ) {
-      // Could rewrite this as a general get first time of a TRW Layer function
       GTimeVal timestamp;
       timestamp.tv_usec = 0;
-      gboolean has_timestamp = FALSE;
+      timestamp.tv_sec = trw_layer_get_timestamp ( vtl );
 
-      GList *gl = NULL;
-      gl = g_hash_table_get_values ( vtl->tracks );
-      gl = g_list_sort ( gl, vik_track_compare_timestamp );
-      gl = g_list_first ( gl );
-
-      // Check times of tracks
-      if ( gl ) {
-        // Only need to check the first track as they have been sorted by time
-        VikTrack *trk = (VikTrack*)gl->data;
-        // Assume trackpoints already sorted by time
-        VikTrackpoint *tpt = vik_track_get_tp_first(trk);
-        if ( tpt && tpt->has_timestamp ) {
-          timestamp.tv_sec = tpt->timestamp;
-          has_timestamp = TRUE;
-        }
-        g_list_free ( gl );
-      }
-
-      if ( !has_timestamp ) {
-        // 'Last' resort - current time
-        // Get before waypoint tests - so that if a waypoint time value (in the past) is found it should be used
+      // No time found - so use 'now' for the metadata time
+      if ( timestamp.tv_sec == 0 ) {
         g_get_current_time ( &timestamp );
-
-        // Check times of waypoints
-        gl = g_hash_table_get_values ( vtl->waypoints );
-        GList *iter;
-        for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
-          VikWaypoint *wpt = (VikWaypoint*)iter->data;
-          if ( wpt->has_timestamp ) {
-            if ( timestamp.tv_sec > wpt->timestamp ) {
-              timestamp.tv_sec = wpt->timestamp;
-              has_timestamp = TRUE;
-            }
-          }
-        }
-        g_list_free ( gl );
       }
 
       vtl->metadata->timestamp = g_time_val_to_iso8601 ( &timestamp );

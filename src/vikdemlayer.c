@@ -208,6 +208,8 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncDraw)                    dem_layer_draw,
   (VikLayerFuncChangeCoordMode)         NULL,
 
+  (VikLayerFuncGetTimestamp)            NULL,
+
   (VikLayerFuncSetMenuItemsSelection)   NULL,
   (VikLayerFuncGetMenuItemsSelection)   NULL,
 

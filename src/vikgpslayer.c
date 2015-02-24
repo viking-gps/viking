@@ -261,6 +261,8 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncDraw)                    vik_gps_layer_draw,
   (VikLayerFuncChangeCoordMode)         gps_layer_change_coord_mode,
 
+  (VikLayerFuncGetTimestamp)            NULL,
+
   (VikLayerFuncSetMenuItemsSelection)   NULL,
   (VikLayerFuncGetMenuItemsSelection)   NULL,
 
@@ -837,7 +839,7 @@ static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIt
     VikLayer * trw = VIK_LAYER(vgl->trw_children[ix]);
     vik_treeview_add_layer ( VIK_LAYER(vgl)->vt, layer_iter, &iter,
         _(trw_names[ix]), vgl, TRUE,
-        trw, trw->type, trw->type );
+        trw, trw->type, trw->type, vik_layer_get_timestamp(trw) );
     if ( ! trw->visible )
       vik_treeview_item_set_visible ( VIK_LAYER(vgl)->vt, &iter, FALSE );
     vik_layer_realize ( trw, VIK_LAYER(vgl)->vt, &iter );

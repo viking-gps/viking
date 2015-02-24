@@ -232,6 +232,8 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncDraw)                    maps_layer_draw,
   (VikLayerFuncChangeCoordMode)         NULL,
 
+  (VikLayerFuncGetTimestamp)            NULL,
+
   (VikLayerFuncSetMenuItemsSelection)   NULL,
   (VikLayerFuncGetMenuItemsSelection)   NULL,
 

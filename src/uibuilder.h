@@ -183,12 +183,12 @@ VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow 
 /* frees data from last (if ness) */
 void a_uibuilder_free_paramdatas ( VikLayerParamData *paramdatas, VikLayerParam *params, guint16 params_count );
 
-// Consider adding sort options such as by time
-//  However use within the treeview then is more complicated as one would need to store that data in the treeview...
 typedef enum {
   VL_SO_NONE = 0,
   VL_SO_ALPHABETICAL_ASCENDING,
   VL_SO_ALPHABETICAL_DESCENDING,
+  VL_SO_DATE_ASCENDING,
+  VL_SO_DATE_DESCENDING,
   VL_SO_LAST
 } vik_layer_sort_order_t;
 

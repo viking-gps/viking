@@ -163,6 +163,8 @@ VikLayerInterface vik_mapnik_layer_interface = {
 	(VikLayerFuncDraw)                    mapnik_layer_draw,
 	(VikLayerFuncChangeCoordMode)         NULL,
 
+	(VikLayerFuncGetTimestamp)            NULL,
+
 	(VikLayerFuncSetMenuItemsSelection)   NULL,
 	(VikLayerFuncGetMenuItemsSelection)   NULL,
 

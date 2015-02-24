@@ -86,6 +86,8 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncDraw)                    coord_layer_draw,
   (VikLayerFuncChangeCoordMode)         NULL,
 
+  (VikLayerFuncGetTimestamp)            NULL,
+
   (VikLayerFuncSetMenuItemsSelection)   NULL,
   (VikLayerFuncGetMenuItemsSelection)   NULL,
 

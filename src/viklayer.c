@@ -214,6 +214,13 @@ const gchar *vik_layer_get_name ( VikLayer *l )
   return l->name;
 }
 
+time_t vik_layer_get_timestamp ( VikLayer *vl )
+{
+  if ( vik_layer_interfaces[vl->type]->get_timestamp )
+    return vik_layer_interfaces[vl->type]->get_timestamp ( vl );
+  return 0;
+}
+
 VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean interactive )
 {
   VikLayer *new_layer = NULL;
