@@ -444,7 +444,7 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
 	                     5, trk_len_time,
 	                     6, av_speed,
 	                     7, max_speed,
-	                     8, (guint)round(max_alt),
+	                     8, (gint)round(max_alt),
 	                     TRW_COL_NUM, vtl,
 	                     TRK_COL_NUM, trk,
 	                     -1 );
@@ -487,7 +487,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	                                           G_TYPE_UINT,      // 5: Length in time
 	                                           G_TYPE_DOUBLE,    // 6: Av. Speed
 	                                           G_TYPE_DOUBLE,    // 7: Max Speed
-	                                           G_TYPE_UINT,      // 8: Max Height
+	                                           G_TYPE_INT,       // 8: Max Height
 	                                           G_TYPE_POINTER,   // 9: TrackWaypoint Layer pointer
 	                                           G_TYPE_POINTER ); // 10: Track pointer
 
