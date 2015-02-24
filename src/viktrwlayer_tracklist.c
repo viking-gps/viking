@@ -207,6 +207,65 @@ static void trw_layer_track_view ( menu_array_values values )
 	trw_layer_track_select (values);
 }
 
+typedef struct {
+  gboolean has_layer_names;
+  GString *str;
+} copy_data_t;
+
+static void copy_selection (GtkTreeModel *model,
+                            GtkTreePath *path,
+                            GtkTreeIter *iter,
+                            gpointer data)
+{
+	copy_data_t *cd = (copy_data_t*) data;
+
+	gchar* layername; gtk_tree_model_get ( model, iter, 0, &layername, -1 );
+	gchar* name; gtk_tree_model_get ( model, iter, 1, &name, -1 );
+	gchar* date; gtk_tree_model_get ( model, iter, 2, &date, -1 );
+	gdouble d1; gtk_tree_model_get ( model, iter, 4, &d1, -1 );
+	guint d2; gtk_tree_model_get ( model, iter, 5, &d2, -1 );
+	gdouble d3; gtk_tree_model_get ( model, iter, 6, &d3, -1 );
+	gdouble d4; gtk_tree_model_get ( model, iter, 7, &d4, -1 );
+	gint d5; gtk_tree_model_get ( model, iter, 8, &d5, -1 );
+	gchar sep = '\t'; // Could make this configurable - but simply always make it a tab character for now
+	// NB Even if the columns have been reordered - this copies it out only in the original default order
+	// if col 0 is displayed then also copy the layername
+	if ( cd->has_layer_names )
+		g_string_append_printf ( cd->str, "%s%c%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", layername, sep, name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
+	else
+		g_string_append_printf ( cd->str, "%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
+	g_free ( layername );
+	g_free ( name );
+	g_free ( date );
+}
+
+static void trw_layer_copy_selected ( GtkWidget *tree_view )
+{
+	GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(tree_view) );
+	// NB GTK3 has gtk_tree_view_get_n_columns() but we're GTK2 ATM
+	GList *gl = gtk_tree_view_get_columns ( GTK_TREE_VIEW(tree_view) );
+	guint count = g_list_length ( gl );
+	g_list_free ( gl );
+	copy_data_t cd;
+	cd.has_layer_names = (count > TRK_LIST_COLS-3);
+	// Or use gtk_tree_view_column_get_visible()?
+	cd.str = g_string_new ( NULL );
+	gtk_tree_selection_selected_foreach ( selection, copy_selection, &cd );
+
+	a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, cd.str->str, NULL );
+
+	g_string_free ( cd.str, TRUE );
+}
+
+static void add_copy_menu_item ( GtkMenu *menu, GtkWidget *tree_view )
+{
+	GtkWidget *item = gtk_image_menu_item_new_with_mnemonic ( _("_Copy Data") );
+	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_COPY, GTK_ICON_SIZE_MENU) );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected), tree_view );
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show ( item );
+}
+
 static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk, gpointer trk_uuid, VikViewport *vvp, GtkWidget *tree_view, gpointer data )
 {
 	static menu_array_values values;
@@ -239,6 +298,21 @@ static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk,
 	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
 	gtk_widget_show ( item );
 
+	add_copy_menu_item ( menu, tree_view );
+
+	return TRUE;
+}
+
+static gboolean trw_layer_track_menu_popup_multi  ( GtkWidget *tree_view,
+                                                    GdkEventButton *event,
+                                                    gpointer data )
+{
+	GtkWidget *menu = gtk_menu_new();
+
+	add_copy_menu_item ( GTK_MENU(menu), tree_view );
+
+	gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+
 	return TRUE;
 }
 
@@ -252,7 +326,7 @@ static gboolean trw_layer_track_menu_popup ( GtkWidget *tree_view,
 	// This relies on an row being selected as part of the right click
 	GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(tree_view) );
 	if ( gtk_tree_selection_count_selected_rows (selection) != 1 )
-		return FALSE;
+		return trw_layer_track_menu_popup_multi ( tree_view, event, data );
 
 	GtkTreePath *path;
 	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW(tree_view) );
@@ -582,7 +656,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		column = my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
 
 	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
-	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_BROWSE ); // GTK_SELECTION_MULTIPLE
+	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_MULTIPLE );
 	gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
 
 	g_object_unref(store);

@@ -1744,6 +1744,7 @@ Generally it is not useful to sort the Top most layer. Sort is mainly intended f
 <para>
 Selecting this opens a dialog listing all the tracks in a table along side statistics such as track length and maximum speed.
 Each column header is clickable and will reorder the list according to that particular column.
+You can also rearrange the columns via dragging the column header to the new location.
 </para>
 <para>
 This table may be invoked from a variety of different layer levels and will then list only the relevant tracks (and/or routes).
@@ -1776,7 +1777,13 @@ Each entry in the track list can be selected and on mouse right click offers the
 <itemizedlist>
 <listitem><para>View. Move the viewport to the area of the item and highlight it.</para></listitem>
 <listitem><para>Statistics. Opens the Properties dialog on the <xref linkend="track_statistics"/> tab. Note this will close the track list dialog.</para></listitem>
+<listitem><para>Copy Data. Copy the data fields as text.</para></listitem>
 </itemizedlist>
+</para>
+<para>
+If multiple entries are selected the only right click option is <emphasis>Copy Data</emphasis>.
+This copies the individual data fields as plain text separated by tab characters, ideal for pasting into other applications in particular spreadsheet programs.
+Note that the order of the fields copied is the default column ordering (irrespective to how they may have been rearranged).
 </para>
 </section>
 
@@ -1784,6 +1791,7 @@ Each entry in the track list can be selected and on mouse right click offers the
 <para>
 Selecting this opens a dialog listing all the waypoints to give a overview of the waypoint information.
 Each column header is clickable and will reorder the list according to that particular column.
+You can also rearrange the columns via dragging the column header to the new location.
 </para>
 <para>
 This table may be invoked from a variety of different layer levels and will then list only the relevant waypoints.
@@ -1815,7 +1823,13 @@ Each entry in the list can be selected and on mouse right click offers these opt
 <listitem><para>View. Move the viewport to the area of the item and highlight it.</para></listitem>
 <listitem><para>Properties. This will open the properties dialog. Note this will close the waypoint list dialog.</para></listitem>
 <listitem><para>Show Picture. If enabled, this will open the associated image in an external Image Viewer program.</para></listitem>
+<listitem><para>Copy Data. Copy the data fields as text.</para></listitem>
 </itemizedlist>
+</para>
+<para>
+If multiple entries are selected the only right click option is <emphasis>Copy Data</emphasis>.
+This copies the individual data fields as plain text separated by tab characters, ideal for pasting into other applications in particular spreadsheet programs.
+Note that the order of the fields copied is the default column ordering (irrespective to how they may have been rearranged).
 </para>
 </section>
 

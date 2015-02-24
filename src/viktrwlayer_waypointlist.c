@@ -219,6 +219,64 @@ static void trw_layer_show_picture ( menu_array_values values )
 }
 
 
+typedef struct {
+  gboolean has_layer_names;
+  GString *str;
+} copy_data_t;
+
+static void copy_selection (GtkTreeModel *model,
+                            GtkTreePath *path,
+                            GtkTreeIter *iter,
+                            gpointer data)
+{
+	copy_data_t *cd = (copy_data_t*) data;
+
+	gchar* layername; gtk_tree_model_get ( model, iter, 0, &layername, -1 );
+	gchar* name; gtk_tree_model_get ( model, iter, 1, &name, -1 );
+	gchar* date; gtk_tree_model_get ( model, iter, 2, &date, -1 );
+	gchar* comment; gtk_tree_model_get ( model, iter, 4, &comment, -1 );
+	if ( comment == NULL )
+		comment = g_strdup ( "" );
+	gint hh; gtk_tree_model_get ( model, iter, 5, &hh, -1 );
+	gchar sep = '\t'; // Could make this configurable - but simply always make it a tab character for now
+	// NB Even if the columns have been reordered - this copies it out only in the original default order
+	// if col 0 is displayed then also copy the layername
+	if ( cd->has_layer_names )
+		g_string_append_printf ( cd->str, "%s%c%s%c%s%c%s%c%d\n", layername, sep, name, sep, date, sep, comment, sep, hh );
+	else
+		g_string_append_printf ( cd->str, "%s%c%s%c%s%c%d\n", name, sep, date, sep, comment, sep, hh );
+	g_free ( layername );
+	g_free ( name );
+	g_free ( date );
+	g_free ( comment );
+}
+
+static void trw_layer_copy_selected ( GtkWidget *tree_view )
+{
+	GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(tree_view) );
+	// NB GTK3 has gtk_tree_view_get_n_columns() but we're GTK2 ATM
+	GList *gl = gtk_tree_view_get_columns ( GTK_TREE_VIEW(tree_view) );
+	guint count = g_list_length ( gl );
+	g_list_free ( gl );
+	copy_data_t cd;
+	cd.has_layer_names = (count > WPT_LIST_COLS-3);
+	cd.str = g_string_new ( NULL );
+	gtk_tree_selection_selected_foreach ( selection, copy_selection, &cd );
+
+	a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, cd.str->str, NULL );
+
+	g_string_free ( cd.str, TRUE );
+}
+
+static void add_copy_menu_item ( GtkMenu *menu, GtkWidget *tree_view )
+{
+	GtkWidget *item = gtk_image_menu_item_new_with_mnemonic ( _("_Copy Data") );
+	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_COPY, GTK_ICON_SIZE_MENU) );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected), tree_view );
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show ( item );
+}
+
 static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikWaypoint *wpt, gpointer wpt_uuid, VikViewport *vvp, GtkWidget *tree_view, gpointer data )
 {
 	static menu_array_values values;
@@ -259,6 +317,21 @@ static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikWaypoint *w
 	gtk_widget_show ( item );
 	gtk_widget_set_sensitive ( item, GPOINTER_TO_INT(wpt->image) );
 
+	add_copy_menu_item ( menu, tree_view );
+
+	return TRUE;
+}
+
+static gboolean trw_layer_waypoint_menu_popup_multi  ( GtkWidget *tree_view,
+                                                       GdkEventButton *event,
+                                                       gpointer data )
+{
+	GtkWidget *menu = gtk_menu_new();
+
+	add_copy_menu_item ( GTK_MENU(menu), tree_view );
+
+	gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+
 	return TRUE;
 }
 
@@ -272,7 +345,7 @@ static gboolean trw_layer_waypoint_menu_popup ( GtkWidget *tree_view,
 	// This relies on an row being selected as part of the right click
 	GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(tree_view) );
 	if ( gtk_tree_selection_count_selected_rows (selection) != 1 )
-		return FALSE;
+		return trw_layer_waypoint_menu_popup_multi ( tree_view, event, data );
 
 	GtkTreePath *path;
 	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW(tree_view) );
@@ -529,7 +602,7 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
 
 	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
-	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_BROWSE ); // GTK_SELECTION_MULTIPLE
+	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_MULTIPLE );
 	gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
 
 	g_object_unref(store);
