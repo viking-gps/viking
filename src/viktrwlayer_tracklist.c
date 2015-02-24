@@ -232,9 +232,9 @@ static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk,
 	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
 	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_view), values );
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-
 	gtk_widget_show ( item );
-    item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
+
+	item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
 	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_stats), values );
 	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
 	gtk_widget_show ( item );
@@ -300,7 +300,7 @@ static gboolean trw_layer_track_menu_popup ( GtkWidget *tree_view,
 		                 trk,
 		                 udataU.uuid,
 		                 vvp,
-						 tree_view,
+		                 tree_view,
 		                 data );
 
 		gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
@@ -342,7 +342,7 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
                                        GtkTreeStore *store,
                                        vik_units_distance_t dist_units,
                                        vik_units_speed_t speed_units,
-									   vik_units_height_t height_units )
+                                       vik_units_height_t height_units )
 {
 	GtkTreeIter t_iter;
 	VikTrack *trk = vtdl->trk;
