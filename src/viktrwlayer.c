@@ -9488,8 +9488,8 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     gint x, y;
     vik_viewport_coord_to_screen ( vvp, &(vtl->current_wp->coord), &x, &y );
 
-    if ( abs(x - event->x) <= WAYPOINT_SIZE_APPROX &&
-         abs(y - event->y) <= WAYPOINT_SIZE_APPROX )
+    if ( abs(x - (int)round(event->x)) <= WAYPOINT_SIZE_APPROX &&
+         abs(y - (int)round(event->y)) <= WAYPOINT_SIZE_APPROX )
     {
       if ( event->button == 3 )
         vtl->waypoint_rightclick = TRUE; /* remember that we're clicking; other layers will ignore release signal */
@@ -10117,8 +10117,8 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     vik_viewport_coord_to_screen ( vvp, &(tp->coord), &x, &y );
 
     if ( current_tr->visible && 
-         abs(x - event->x) < TRACKPOINT_SIZE_APPROX &&
-         abs(y - event->y) < TRACKPOINT_SIZE_APPROX ) {
+         abs(x - (int)round(event->x)) < TRACKPOINT_SIZE_APPROX &&
+         abs(y - (int)round(event->y)) < TRACKPOINT_SIZE_APPROX ) {
       marker_begin_move ( t, event->x, event->y );
       return TRUE;
     }
