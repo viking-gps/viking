@@ -87,7 +87,7 @@ gboolean a_geojson_write_file ( VikTrwLayer *vtl, FILE *ff )
 		setvbuf(fout, NULL, _IONBF, 0);
 
 		while (fgets(line, sizeof(line), fout)) {
-			fprintf ( ff, line );
+			fprintf ( ff, "%s", line );
 		}
 
 		fclose(fout);
@@ -173,7 +173,7 @@ gchar* a_geojson_import_to_gpx ( const gchar *filename )
 		setvbuf(fout, NULL, _IONBF, 0);
 
 		while (fgets(line, sizeof(line), fout)) {
-			fprintf ( gpxfile, line );
+			fprintf ( gpxfile, "%s", line );
 		}
 
 		fclose(fout);
