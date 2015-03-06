@@ -5805,11 +5805,11 @@ static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer u
 
     guint threshold = GPOINTER_TO_UINT (((gpointer *)user_data)[2]);
     //g_print("Got track named %s, times %d, %d\n", trk->name, p1->timestamp, p2->timestamp);
-    if (! (abs(t1 - p2->timestamp) < threshold ||
-	/*  p1 p2      t1 t2 */
-	   abs(p1->timestamp - t2) < threshold)
-	/*  t1 t2      p1 p2 */
-	) {
+    if (! (labs(t1 - p2->timestamp) < threshold ||
+      /*  p1 p2      t1 t2 */
+      labs(p1->timestamp - t2) < threshold)
+      /*  t1 t2      p1 p2 */
+    ) {
       return;
     }
   }

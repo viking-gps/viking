@@ -461,7 +461,7 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
 		time_t t1, t2;
 		t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
 		t2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
-		trk_len_time = (int)round (abs(t2-t1)/60);
+		trk_len_time = (int)round (labs(t2-t1)/60);
 	}
 
 	gdouble av_speed = 0.0;
