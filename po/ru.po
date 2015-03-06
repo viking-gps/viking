@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-03 21:58+0200\n"
-"PO-Revision-Date: 2013-09-17 15:00+0000\n"
-"Last-Translator: Alexander <alexandr.savin@gmail.com>\n"
+"PO-Revision-Date: 2015-02-10 08:07+0000\n"
+"Last-Translator: Aleksey Kabanov <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2013-10-12 09:04+0000\n"
-"X-Generator: Launchpad (build 16799)\n"
+"X-Launchpad-Export-Date: 2015-03-06 19:16+0000\n"
+"X-Generator: Launchpad (build 17383)\n"
 
 #: ../src/acquire.c:103 ../src/vikgpslayer.c:1235
 msgid "Done."
@@ -41,6 +41,8 @@ msgid ""
 "Unable to create command\n"
 "Acquire method failed."
 msgstr ""
+"Не удалось создать команду\n"
+"Сбой метода получения."
 
 #: ../src/acquire.c:517
 msgid "_Filter"
@@ -107,7 +109,7 @@ msgstr ""
 
 #: ../src/dialog.c:53
 msgid "Go to Lat/Lon"
-msgstr "Перейти к Широте/Долготе"
+msgstr "Перейти к широте/долготе"
 
 #: ../src/dialog.c:65 ../src/dialog.c:244
 msgid "Latitude:"
@@ -123,11 +125,11 @@ msgstr "Перейти к UTM"
 
 #: ../src/dialog.c:116
 msgid "Northing:"
-msgstr "Ничего:"
+msgstr "Северное отклонение:"
 
 #: ../src/dialog.c:122
 msgid "Easting:"
-msgstr "Движение на восток:"
+msgstr "Восточное отклонение:"
 
 #: ../src/dialog.c:129
 msgid "Zone:"
@@ -135,7 +137,7 @@ msgstr "Зона:"
 
 #: ../src/dialog.c:132
 msgid "Letter:"
-msgstr "Письмо:"
+msgstr "Буква:"
 
 # Свойства пункта
 #: ../src/dialog.c:199
@@ -177,7 +179,7 @@ msgstr "Время:"
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:363
 msgid "Please enter a name for the waypoint."
-msgstr "Введите имя для нового пункта."
+msgstr "Введите имя для путевой точки."
 
 #: ../src/dialog.c:502 ../src/geonamessearch.c:244
 #: ../src/datasource_osm_my_traces.c:507
@@ -190,27 +192,27 @@ msgstr "Добавить маршрут"
 
 #: ../src/dialog.c:510
 msgid "Add Track"
-msgstr "Добавить маршрут"
+msgstr "Добавить трек"
 
 #: ../src/dialog.c:518
 msgid "Route Name:"
-msgstr "Наименование маршрута:"
+msgstr "Имя маршрута:"
 
 #: ../src/dialog.c:518
 msgid "Track Name:"
-msgstr "Имя маршрута:"
+msgstr "Имя трека:"
 
 #: ../src/dialog.c:538
 msgid "Please enter a name for the track."
-msgstr "Введите имя маршрута"
+msgstr "Введите имя для трека."
 
 #: ../src/dialog.c:596
 msgid "Zoom Factors..."
-msgstr "Величины приближения..."
+msgstr "Масштабные коэффициенты..."
 
 #: ../src/dialog.c:610
 msgid "Zoom factor (in meters per pixel):"
-msgstr "Величина приближения (в метрах на пиксел):"
+msgstr "Масштабный коэффициент (в метрах на пиксел):"
 
 #: ../src/dialog.c:611
 msgid "X (easting): "
@@ -222,7 +224,7 @@ msgstr "Y (севернее): "
 
 #: ../src/dialog.c:617
 msgid "X and Y zoom factors must be equal"
-msgstr "Величины приближения по X и по Y должны совпадать."
+msgstr "Масштабные коффициенты по X и Y должны совпадать"
 
 #: ../src/dialog.c:672
 msgid "1 min"
@@ -276,7 +278,7 @@ msgstr ""
 
 #: ../src/dialog.c:852
 msgid "Translation is coordinated on http://launchpad.net/viking"
-msgstr "Перевод координируется http://launchpad.net/viking"
+msgstr "Перевод координируется на http://launchpad.net/viking"
 
 #: ../src/dialog.c:861
 msgid "Download along track"
@@ -341,7 +343,7 @@ msgstr ""
 #. Translators may wish to change this setting as appropriate to get Wikipedia articles in that language
 #: ../src/geonamessearch.c:46
 msgid "en"
-msgstr ""
+msgstr "ru"
 
 #: ../src/geonamessearch.c:121
 msgid "Search"
@@ -357,11 +359,11 @@ msgstr "Записи не найдены!"
 #: ../src/geonamessearch.c:177 ../src/datasource_osm_my_traces.c:424
 #: ../src/viktrwlayer_tracklist.c:521
 msgid "Name"
-msgstr ""
+msgstr "Название"
 
 #: ../src/geonamessearch.c:182
 msgid "Feature"
-msgstr ""
+msgstr "Объект"
 
 #: ../src/geonamessearch.c:187 ../src/datasource_osm_my_traces.c:439
 msgid "Lat/Lon"
@@ -369,15 +371,15 @@ msgstr "Широта/долгота"
 
 #: ../src/geonamessearch.c:270 ../src/googlesearch.c:100 ../src/vikgoto.c:306
 msgid "couldn't map temp file"
-msgstr ""
+msgstr "ошибка загрузки временного файла"
 
 #: ../src/globals.c:73
 msgid "Absolute"
-msgstr ""
+msgstr "Абсолютный"
 
 #: ../src/globals.c:73
 msgid "Relative"
-msgstr ""
+msgstr "Относительный"
 
 #: ../src/globals.c:76
 msgid "Degree format:"
@@ -397,7 +399,7 @@ msgstr "Единица высоты:"
 
 #: ../src/globals.c:80
 msgid "Use large waypoint icons:"
-msgstr "Большие иконки пунктов:"
+msgstr "Крупные значки путевых точек:"
 
 #: ../src/globals.c:81
 msgid "Default latitude:"
@@ -413,119 +415,128 @@ msgstr "По алфавиту"
 
 #: ../src/globals.c:88 ../src/datasource_osm_my_traces.c:434
 msgid "Time"
-msgstr "Время"
+msgstr "По времени"
 
 #: ../src/globals.c:88
 msgid "Creation"
-msgstr ""
+msgstr "По порядку создания"
 
 #: ../src/globals.c:89
 msgid "Title Case"
-msgstr ""
+msgstr "С заглавной буквы"
 
 #: ../src/globals.c:89
 msgid "Lowercase"
-msgstr ""
+msgstr "Строчные буквы"
 
 #: ../src/globals.c:92
 msgid "KML File Export Units:"
-msgstr ""
+msgstr "Ед.измерения для экспорта в KML:"
 
 #: ../src/globals.c:93
 msgid "GPX Track Order:"
-msgstr ""
+msgstr "Порядок треков GPX:"
 
 #: ../src/globals.c:94
 msgid "GPX Waypoint Symbols:"
-msgstr ""
+msgstr "Символы путевых точек GPX:"
 
 #: ../src/globals.c:95
 msgid ""
 "Save GPX Waypoint Symbol names in the specified case. May be useful for "
 "compatibility with various devices"
 msgstr ""
+"Сохранять названия символов путевых точек GPX в указанном регистре. Может "
+"быть полезно для совместимости с различными устройствами"
 
 #: ../src/globals.c:100
 msgid "Image Viewer:"
-msgstr ""
+msgstr "Программа для просмотра изображений:"
 
 #: ../src/globals.c:105
 msgid "External GPX Program 1:"
-msgstr "Внешняя GPX Программа 1:"
+msgstr "Внешняя GPX-программа 1:"
 
 #: ../src/globals.c:106
 msgid "External GPX Program 2:"
-msgstr "Внешняя GPX Программа 2:"
+msgstr "Внешняя GPX-программа 2:"
 
 #: ../src/globals.c:110
 msgid "Save File Reference Mode:"
-msgstr ""
+msgstr "Режим сохранения пути к файлу:"
 
 #: ../src/globals.c:111
 msgid ""
 "When saving a Viking .vik file, this determines how the directory paths of "
 "filenames are written."
 msgstr ""
+"При сохранении .vik-файла этот параметр определяет, как Viking будет "
+"записывать путь к файлу."
 
 #: ../src/globals.c:112
 msgid "Show Tooltip during Track Creation:"
-msgstr ""
+msgstr "Всплывающая подсказка при создании трека:"
 
 #: ../src/globals.c:115
 msgid "Home Location"
-msgstr ""
+msgstr "Домашнее местоположение"
 
 #: ../src/globals.c:115
 msgid "Last Location"
-msgstr ""
+msgstr "Последнее местоположение"
 
 #: ../src/globals.c:115
 msgid "Specified File"
-msgstr ""
+msgstr "Указанный файл"
 
 #: ../src/globals.c:115
 msgid "Auto Location"
-msgstr ""
+msgstr "Автоматическое местоположение"
 
 #: ../src/globals.c:118
 msgid "Restore Window Setup:"
-msgstr ""
+msgstr "Восстановить настройки окна:"
 
 #: ../src/globals.c:119
 msgid "Restore window size and layout"
-msgstr ""
+msgstr "Восстановить размер и расположение окна"
 
 #: ../src/globals.c:120
 msgid "Add a Default Map Layer:"
-msgstr ""
+msgstr "Добавлять слой карты по умолчанию:"
 
 #: ../src/globals.c:121
 msgid ""
 "The default map layer added is defined by the Layer Defaults. Use the menu "
 "Edit->Layer Defaults->Map... to change the map type and other values."
 msgstr ""
+"Будет добавляться по умолчанию слой карты, определённый в меню «Параметры "
+"слоёв по умолчанию». Используйте меню Правка->Параметры слоёв по умолчанию-"
+">Карта... для изменения типа карты и других значений."
 
 #: ../src/globals.c:122
 msgid "Startup Method:"
-msgstr ""
+msgstr "Метод запуска:"
 
 #: ../src/globals.c:123
 msgid "Startup File:"
-msgstr ""
+msgstr "Загружать файл:"
 
 #: ../src/globals.c:124
 msgid ""
 "The default file to load on startup. Only applies when the startup method is "
 "set to 'Specified File'"
 msgstr ""
+"Файл, по умолчанию загружаемый при запуске. Применяется только когда выбран "
+"метод запуска 'Указанный файл'"
 
 #: ../src/globals.c:125
 msgid "Check For New Version:"
-msgstr ""
+msgstr "Проверка обновлений:"
 
 #: ../src/globals.c:126
 msgid "Periodically check to see if a new version of Viking is available"
-msgstr ""
+msgstr "Периодически проверять доступность новых версий Viking"
 
 #. Defaults for the options are setup here
 #: ../src/globals.c:163
@@ -535,17 +546,17 @@ msgstr "Общие"
 #. New Tab
 #: ../src/globals.c:188
 msgid "Startup"
-msgstr ""
+msgstr "Запуск"
 
 #. New Tab
 #: ../src/globals.c:206
 msgid "Export/External"
-msgstr "Экспорт/Внешний"
+msgstr "Экспорт/Внешние"
 
 #. 'Advanced' Properties
 #: ../src/globals.c:230
 msgid "Advanced"
-msgstr ""
+msgstr "Расширенные"
 
 #. Webtools
 #: ../src/google.c:38
@@ -581,11 +592,11 @@ msgstr "Тип файла:"
 #: ../src/datasource_file.c:184
 #, c-format
 msgid "using babel args '%s' and file '%s'"
-msgstr ""
+msgstr "используются аргументы babel '%s' и файл '%s'"
 
 #: ../src/datasource_gc.c:66
 msgid "Download Geocaches"
-msgstr "Загрузить Геокэши"
+msgstr "Загрузить геокэши"
 
 #: ../src/datasource_gc.c:67
 msgid "Geocaching.com Caches"
@@ -615,11 +626,11 @@ msgstr "Вокруг:"
 
 #: ../src/datasource_gc.c:230
 msgid "Broken input - using some defaults"
-msgstr ""
+msgstr "Неверный ввод — использую некоторые умолчания"
 
 #: ../src/datasource_geotag.c:51
 msgid "Create Waypoints from Geotagged Images"
-msgstr ""
+msgstr "Создать путевые точки из изображений с геотегами"
 
 #: ../src/datasource_geotag.c:52
 msgid "Geotagged Images"
@@ -656,24 +667,25 @@ msgstr "используя команду '%s' и файл '%s'\n"
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
-msgstr[0] "Скачивается %d пункт..."
-msgstr[1] "Скачивается %d пункта..."
-msgstr[2] "Скачивается %d пунктов..."
+msgstr[0] "Скачивается %d путевая точка..."
+msgstr[1] "Скачивается %d путевых точки..."
+msgstr[2] "Скачивается %d путевых точек..."
 
 #: ../src/datasource_gps.c:328 ../src/vikgpslayer.c:935
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
-msgstr[0] "Скачивается %d узел..."
-msgstr[1] "Скачивается %d узла..."
-msgstr[2] "Скачивается %d узлов..."
+msgstr[0] "Скачивается %d узел трека..."
+msgstr[1] "Скачивается %d узла трека..."
+msgstr[2] "Скачивается %d узлов трека..."
 
 #: ../src/datasource_gps.c:333 ../src/vikgpslayer.c:940
 #, c-format
 msgid "Downloading %d routepoint..."
 msgid_plural "Downloading %d routepoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Скачивается %d маршрутная точка..."
+msgstr[1] "Скачивается %d маршрутных точки..."
+msgstr[2] "Скачивается %d маршрутных точек..."
 
 #: ../src/datasource_gps.c:355 ../src/datasource_gps.c:356
 #: ../src/datasource_gps.c:357
@@ -690,12 +702,12 @@ msgstr "Скачано %d %s."
 #: ../src/datasource_gps.c:377 ../src/vikgpslayer.c:1018
 #, c-format
 msgid "GPS Device: %s"
-msgstr "GPS : %s"
+msgstr "GPS-устройство: %s"
 
 #: ../src/datasource_gps.c:400 ../src/vikgpslayer.c:1092
 #: ../src/vikgpslayer.c:1160
 msgid "Status: Working..."
-msgstr ""
+msgstr "Статус: Работает..."
 
 #. NB gps_layer_inst_init() is performed after parameter registeration
 #. thus to give the protocols some potential values use the old static list
@@ -719,11 +731,11 @@ msgstr ""
 
 #: ../src/datasource_gps.c:583
 msgid "Tracks:"
-msgstr "Маршруты"
+msgstr "Треки:"
 
 #: ../src/datasource_gps.c:590
 msgid "Routes:"
-msgstr ""
+msgstr "Маршруты:"
 
 #: ../src/datasource_gps.c:597
 msgid "Waypoints:"
@@ -731,11 +743,11 @@ msgstr "Путевые точки:"
 
 #: ../src/datasource_gps.c:675 ../src/vikgpslayer.c:1355
 msgid "GPS device: N/A"
-msgstr "GPS устройство: необнаружено"
+msgstr "GPS устройство: недоступно"
 
 #: ../src/datasource_osm.c:52 ../src/datasource_osm.c:53
 msgid "OSM traces"
-msgstr "Контуры OSM"
+msgstr "Треки OSM"
 
 #: ../src/datasource_osm.c:82
 msgid "Page number:"
@@ -743,15 +755,15 @@ msgstr "Номер страницы:"
 
 #: ../src/datasource_osm_my_traces.c:59 ../src/datasource_osm_my_traces.c:60
 msgid "OSM My Traces"
-msgstr ""
+msgstr "Мои треки OSM"
 
 #: ../src/datasource_osm_my_traces.c:104
 msgid "Username:"
-msgstr ""
+msgstr "Имя пользователя:"
 
 #: ../src/datasource_osm_my_traces.c:109
 msgid "The email or username used to login to OSM"
-msgstr ""
+msgstr "Адрес эл. почты или имя пользователя для входа в OSM"
 
 #: ../src/datasource_osm_my_traces.c:111 ../src/osm-traces.c:421
 msgid "Password:"
@@ -759,15 +771,15 @@ msgstr "Пароль:"
 
 #: ../src/datasource_osm_my_traces.c:114
 msgid "The password used to login to OSM"
-msgstr ""
+msgstr "Пароль для входа в OSM"
 
 #: ../src/datasource_osm_my_traces.c:429
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: ../src/datasource_osm_my_traces.c:444
 msgid "Privacy"
-msgstr ""
+msgstr "Конфиденциальность"
 
 #: ../src/datasource_osm_my_traces.c:451
 msgid "Within Current View"
@@ -775,29 +787,29 @@ msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:518
 msgid "GPS Traces"
-msgstr ""
+msgstr "GPS-треки"
 
 #: ../src/datasource_osm_my_traces.c:520
 msgid "None found!"
-msgstr ""
+msgstr "Ничего не найдено!"
 
 #: ../src/datasource_osm_my_traces.c:634
 msgid "My OSM Traces"
-msgstr ""
+msgstr "Мои треки OSM"
 
 #: ../src/datasource_osm_my_traces.c:649
 #, c-format
 msgid "Unable to get trace: %s"
-msgstr ""
+msgstr "Не удалось получить трек: %s"
 
 #: ../src/datasource_routing.c:53 ../src/datasource_routing.c:54
 msgid "Directions"
-msgstr ""
+msgstr "Маршрут"
 
 #. Engine selector
 #: ../src/datasource_routing.c:83
 msgid "Engine:"
-msgstr ""
+msgstr "Движок:"
 
 #. From and To entries
 #: ../src/datasource_routing.c:88
@@ -810,11 +822,11 @@ msgstr "в:"
 
 #: ../src/datasource_wikipedia.c:32
 msgid "Create Waypoints from Wikipedia Articles"
-msgstr ""
+msgstr "Создать путевые точки из статей Википедии"
 
 #: ../src/datasource_wikipedia.c:33
 msgid "Wikipedia Waypoints"
-msgstr ""
+msgstr "Путевые точки из Википедии"
 
 #: ../src/dem.c:65 ../src/dem.c:79
 msgid "Invalid DEM"
@@ -831,11 +843,11 @@ msgstr "Неправильная запись DEM Class B: ожидается 1"
 #: ../src/dem.c:288 ../src/download.c:170
 #, c-format
 msgid "Couldn't map file %s: %s"
-msgstr ""
+msgstr "Ошибка загрузки файла %s: %s"
 
 #: ../src/download.c:130
 msgid "Tile age (days):"
-msgstr ""
+msgstr "Срок хранения сегмента (дней):"
 
 #: ../src/download.c:321
 #, c-format
@@ -882,11 +894,11 @@ msgstr "Предупреждение: указано слишком много �
 
 #: ../src/osm-traces.c:76
 msgid "Identifiable (public w/ timestamps)"
-msgstr ""
+msgstr "Идентифицируемый (публичный с временными метками)"
 
 #: ../src/osm-traces.c:77
 msgid "Trackable (private w/ timestamps)"
-msgstr ""
+msgstr "Отслеживаемый (личный с временными метками)"
 
 #: ../src/osm-traces.c:78
 msgid "Public"
@@ -907,7 +919,7 @@ msgstr "OSM пароль:"
 #. Preferences
 #: ../src/osm-traces.c:155
 msgid "OpenStreetMap Traces"
-msgstr "Контуры OpenStreetMap"
+msgstr "Треки OpenStreetMap"
 
 #: ../src/osm-traces.c:238
 #, c-format
@@ -994,11 +1006,11 @@ msgstr ""
 
 #: ../src/osm-traces.c:450
 msgid "The description of the trace"
-msgstr "Описание контура"
+msgstr "Описание трека"
 
 #: ../src/osm-traces.c:453
 msgid "Anonymize Times:"
-msgstr ""
+msgstr "Анонимизировать время:"
 
 #: ../src/osm-traces.c:458
 msgid ""
@@ -1006,6 +1018,9 @@ msgid ""
 "<small>You may choose to make the trace identifiable, yet mask the actual "
 "real time values</small>"
 msgstr ""
+"Анонимизировать временные метки трека.\n"
+"<small>Вы можете сделать трек идентифицируемым, но замаскировать реальные "
+"значения времени</small>"
 
 #: ../src/osm-traces.c:462
 msgid "Tags:"
@@ -1013,7 +1028,7 @@ msgstr "Тэги:"
 
 #: ../src/osm-traces.c:467
 msgid "The tags associated to the trace"
-msgstr "Метки, связанные с маршрутом"
+msgstr "Тэги, связанные с треком"
 
 #: ../src/osm-traces.c:529
 #, c-format
@@ -1022,7 +1037,7 @@ msgstr "%s загружается в OSM"
 
 #: ../src/mapcache.c:61
 msgid "Map cache memory size (MB):"
-msgstr ""
+msgstr "Размер кэша карт (МБ):"
 
 #: ../src/print.c:51 ../src/viktrwlayer.c:509
 msgid "None"
@@ -1030,15 +1045,15 @@ msgstr "Нет"
 
 #: ../src/print.c:52
 msgid "Horizontally"
-msgstr "Горизонтально"
+msgstr "По горизонтали"
 
 #: ../src/print.c:53
 msgid "Vertically"
-msgstr "Вертикально"
+msgstr "По вертикали"
 
 #: ../src/print.c:54
 msgid "Both"
-msgstr "Оба"
+msgstr "По горизонтали и вертикали"
 
 #: ../src/print.c:118
 msgid "Image Settings"
@@ -1051,30 +1066,30 @@ msgstr "завершено"
 #. Page Size
 #: ../src/print.c:577
 msgid "_Adjust Page Size and Orientation"
-msgstr "Установить размер и ориентацию страницы"
+msgstr "На_строить размер и ориентацию страницы"
 
 #: ../src/print.c:593
 msgid "C_enter:"
-msgstr "Центр:"
+msgstr "_Центрировать:"
 
 #. ignore page margins
 #: ../src/print.c:611
 msgid "Ignore Page _Margins"
-msgstr "Игнорироват_ь края страницы"
+msgstr "_Игнорировать поля страницы"
 
 #: ../src/print.c:630
 msgid "Image S_ize:"
-msgstr "Размер картинки:"
+msgstr "Р_азмер изображения:"
 
 #: ../src/util.c:65
 #, c-format
 msgid "Could not launch web browser. %s"
-msgstr ""
+msgstr "Не удалось запустить веб-браузер. %s"
 
 #: ../src/util.c:76
 #, c-format
 msgid "Could not create new email. %s"
-msgstr ""
+msgstr "Не удалось создать почтовое сообщение. %s"
 
 #: ../src/util.c:177
 #, c-format
@@ -1083,6 +1098,9 @@ msgid ""
 "\n"
 "Do you wish to go to Viking's website now?"
 msgstr ""
+"Доступна более новая версия Viking: %s\n"
+"\n"
+"Хотите перейти на веб-сайт Viking сейчас?"
 
 #: ../src/util.c:304
 msgid ""
@@ -1092,6 +1110,11 @@ msgid ""
 "\n"
 "Individual settings can be controlled in the Preferences."
 msgstr ""
+"Похоже, это самый первый запуск Viking.\n"
+"\n"
+"Хотите включить автоматические интернет-функции?\n"
+"\n"
+"Отдельные настройки можно изменить в меню «Предпочтения»."
 
 #: ../src/vikcoordlayer.c:57
 msgid "Color:"
@@ -1107,7 +1130,7 @@ msgstr "Толщина линий"
 
 #: ../src/vikcoordlayer.c:66
 msgid "Coordinate"
-msgstr ""
+msgstr "Координатная сетка"
 
 #: ../src/datasource_bfilter.c:46
 msgid "Max number of points:"
@@ -1115,11 +1138,11 @@ msgstr "Максимальное количество точек"
 
 #: ../src/datasource_bfilter.c:60
 msgid "Simplify All Tracks..."
-msgstr "Упростить все маршруты"
+msgstr "Упростить все треки"
 
 #: ../src/datasource_bfilter.c:61
 msgid "Simplified Tracks"
-msgstr "Упрощенные маршруты"
+msgstr "Упрощенные треки"
 
 #: ../src/datasource_bfilter.c:96 ../src/datasource_bfilter.c:97
 msgid "Remove Duplicate Waypoints"
@@ -1127,15 +1150,15 @@ msgstr "Удалить повторяющиеся точки"
 
 #: ../src/datasource_bfilter.c:129
 msgid "Waypoints Inside This"
-msgstr ""
+msgstr "Путевые точки внутри"
 
 #: ../src/datasource_bfilter.c:130
 msgid "Polygonized Layer"
-msgstr ""
+msgstr "Слой полигонов"
 
 #: ../src/datasource_bfilter.c:165
 msgid "Waypoints Outside This"
-msgstr ""
+msgstr "Путевые точки вне"
 
 # typo
 #: ../src/datasource_bfilter.c:166
@@ -1145,7 +1168,7 @@ msgstr ""
 #: ../src/main.c:92
 #, c-format
 msgid "Ignoring Xlib error: error code %d request code %d\n"
-msgstr ""
+msgstr "Игнорируется ошибка Xlib: код ошибки %d, код запроса %d\n"
 
 #: ../src/main.c:105
 msgid "Enable debug output"
@@ -1179,15 +1202,15 @@ msgstr "OSM (отрисовка)"
 #. JOSM or merkaartor must already be running with remote interface enabled
 #: ../src/osm.c:128
 msgid "Local port 8111 (eg JOSM)"
-msgstr ""
+msgstr "Локальный порт 8111 (напр., JOSM)"
 
 #: ../src/osm.c:134
 msgid "OpenStreetMap Notes"
-msgstr ""
+msgstr "Заметки OpenStreetMap"
 
 #: ../src/osm.c:138
 msgid "OpenStreetBugs"
-msgstr ""
+msgstr "OpenStreetBugs"
 
 #. Not really OSM but can't be bothered to create somewhere else to put it...
 #: ../src/osm.c:164
@@ -1201,11 +1224,11 @@ msgstr "Предпочтения"
 #: ../src/viklayer_defaults.c:232
 #, c-format
 msgid "Could not open file: %s"
-msgstr ""
+msgstr "Не удалось открыть файл: %s"
 
 #: ../src/viklayer_defaults.c:303
 msgid "Layer Defaults"
-msgstr ""
+msgstr "Параметры слоёв по умолчанию"
 
 #: ../src/uibuilder.c:185
 msgid "Take care that this password will be stored clearly in a plain file."
@@ -1219,47 +1242,47 @@ msgstr ""
 #: ../src/vikaggregatelayer.c:484 ../src/viktrwlayer.c:10238
 #, c-format
 msgid "%s: Track and Route List"
-msgstr ""
+msgstr "%s: Список треков и маршрутов"
 
 #: ../src/vikaggregatelayer.c:529 ../src/viktrwlayer.c:7354
 #: ../src/viktrwlayer.c:7420 ../src/viktrwlayer.c:7498
 msgid "_Visibility"
-msgstr ""
+msgstr "_Видимость"
 
 #: ../src/vikaggregatelayer.c:534
 msgid "_Show All"
-msgstr ""
+msgstr "_Показать все"
 
 #: ../src/vikaggregatelayer.c:540
 msgid "_Hide All"
-msgstr ""
+msgstr "С_крыть все"
 
 #: ../src/vikaggregatelayer.c:546 ../src/viktrwlayer.c:7371
 #: ../src/viktrwlayer.c:7437 ../src/viktrwlayer.c:7515
 msgid "_Toggle"
-msgstr ""
+msgstr "П_ереключить"
 
 #: ../src/vikaggregatelayer.c:553 ../src/viktrwlayer.c:7536
 msgid "_Sort"
-msgstr ""
+msgstr "С_ортировка"
 
 #: ../src/vikaggregatelayer.c:559 ../src/viktrwlayer.c:7542
 msgid "Name _Ascending"
-msgstr ""
+msgstr "По имени (по _возрастанию)"
 
 #: ../src/vikaggregatelayer.c:565 ../src/viktrwlayer.c:7548
 msgid "Name _Descending"
-msgstr ""
+msgstr "По имени (по _убыванию)"
 
 #: ../src/vikaggregatelayer.c:571 ../src/viktrwlayer.c:7449
 #: ../src/viktrwlayer.c:7527 ../src/viktrwlayer.c:7587
 #: ../src/viktrwlayer_tracklist.c:237
 msgid "_Statistics"
-msgstr ""
+msgstr "_Статистика"
 
 #: ../src/vikaggregatelayer.c:576 ../src/viktrwlayer.c:3971
 msgid "Track _List..."
-msgstr ""
+msgstr "С_писок треков..."
 
 #: ../src/vikdemlayer.c:92
 msgid "Absolute height"
@@ -1267,7 +1290,7 @@ msgstr "Абсолютная высота"
 
 #: ../src/vikdemlayer.c:93
 msgid "Height gradient"
-msgstr ""
+msgstr "Градиент высоты"
 
 #: ../src/vikdemlayer.c:118
 msgid "DEM Files:"
@@ -1279,7 +1302,7 @@ msgstr "Источник загрузки:"
 
 #: ../src/vikdemlayer.c:120
 msgid "Min Elev Color:"
-msgstr ""
+msgstr "Цвет мин. высоты:"
 
 #: ../src/vikdemlayer.c:121
 msgid "Type:"
@@ -1303,7 +1326,7 @@ msgstr ""
 
 #: ../src/vikdemlayer.c:188
 msgid "DEM"
-msgstr ""
+msgstr "DEM"
 
 #: ../src/vikdemlayer.c:287
 #, c-format
@@ -1322,7 +1345,7 @@ msgstr "Нет данных SRTM для %f, %f"
 #. Probably not over any land...
 #: ../src/vikdemlayer.c:1193
 msgid "No DEM File Available"
-msgstr ""
+msgstr "Нет доступного файла DEM"
 
 #: ../src/vikdemlayer.c:1212
 #, c-format
@@ -1333,6 +1356,11 @@ msgid ""
 "DEM File: %s\n"
 "DEM File Timestamp: %s"
 msgstr ""
+"\n"
+"Источник: %s\n"
+"\n"
+"Файл DEM: %s\n"
+"Метка времени файла: %s"
 
 #: ../src/vikdemlayer.c:1216
 #, c-format
@@ -1341,6 +1369,9 @@ msgid ""
 "\n"
 "No DEM File!"
 msgstr ""
+"Источник: %s\n"
+"\n"
+"Нет файла DEM!"
 
 #: ../src/vikdemlayer.c:1256
 #, c-format
@@ -1349,7 +1380,7 @@ msgstr "Скачивание DEM %s"
 
 #: ../src/vikdemlayer.c:1280
 msgid "_Show DEM File Information"
-msgstr ""
+msgstr "_Показать сведения о DEM-файле"
 
 #: ../src/vikfileentry.c:68
 msgid "Browse..."
@@ -1401,6 +1432,8 @@ msgid ""
 "GeoRef map cannot be displayed in the current drawmode.\n"
 "Select \"UTM Mode\" from View menu to view it."
 msgstr ""
+"Карту GeoRef нельзя показать в текущем режиме отображения.\n"
+"Выберите для её просмотра \"Режим UTM\" в меню «Вид»."
 
 #: ../src/vikgeoreflayer.c:415
 msgid "Unexpected end of file reading World file."
@@ -1432,27 +1465,27 @@ msgstr "Загрузить из файла..."
 
 #: ../src/vikgeoreflayer.c:534
 msgid "Corner pixel easting:"
-msgstr ""
+msgstr "Вост. откл. углового пиксела:"
 
 #: ../src/vikgeoreflayer.c:536
 msgid "the UTM \"easting\" value of the upper-left corner pixel of the map"
-msgstr ""
+msgstr "Восточное отклонение верхнего левого пиксела карты в системе UTM"
 
 #: ../src/vikgeoreflayer.c:538
 msgid "Corner pixel northing:"
-msgstr ""
+msgstr "Сев. откл. углового пиксела:"
 
 #: ../src/vikgeoreflayer.c:540
 msgid "the UTM \"northing\" value of the upper-left corner pixel of the map"
-msgstr ""
+msgstr "Северное отклонение верхнего левого пиксела карты в системе UTM"
 
 #: ../src/vikgeoreflayer.c:542
 msgid "X (easting) scale (mpp): "
-msgstr ""
+msgstr "масштаб по X (восточное отклонение) в метрах/пиксел: "
 
 #: ../src/vikgeoreflayer.c:543
 msgid "Y (northing) scale (mpp): "
-msgstr ""
+msgstr "масштаб по Y (северное отклонение) в метрах/пиксел: "
 
 #: ../src/vikgeoreflayer.c:546
 msgid "the scale of the map in the X direction (meters per pixel)"
@@ -1464,20 +1497,20 @@ msgstr "масштаб карты по оси Y (метров на пиксел)
 
 #: ../src/vikgeoreflayer.c:550
 msgid "Map Image:"
-msgstr ""
+msgstr "Графический файл карты:"
 
 #. Now with icons
 #: ../src/vikgeoreflayer.c:658
 msgid "_Zoom to Fit Map"
-msgstr "Масштабировать к размеру карты"
+msgstr "_Масштабировать к размеру карты"
 
 #: ../src/vikgeoreflayer.c:664
 msgid "_Goto Map Center"
-msgstr "Перейти к центру карты"
+msgstr "Перейти к _центру карты"
 
 #: ../src/vikgeoreflayer.c:670
 msgid "_Export to World File"
-msgstr "Экспортировать в файл привязки"
+msgstr "_Экспортировать в файл привязки"
 
 #: ../src/vikgoto.c:81
 msgid "No goto tool available."
@@ -1501,11 +1534,11 @@ msgstr "Введите адрес или название места:"
 
 #: ../src/vikgoto.c:363
 msgid "Locality"
-msgstr ""
+msgstr "Местоположение"
 
 #: ../src/vikgpslayer.c:128
 msgid "Data Mode"
-msgstr ""
+msgstr "Режим данных"
 
 #: ../src/vikgpslayer.c:130
 msgid "Realtime Tracking Mode"
@@ -1513,43 +1546,43 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:167
 msgid "Keep vehicle at center"
-msgstr ""
+msgstr "Удерживать транспортное средство в центре"
 
 #: ../src/vikgpslayer.c:168
 msgid "Keep vehicle on screen"
-msgstr ""
+msgstr "Удерживать транспортное средство на экране"
 
 #: ../src/vikgpslayer.c:169
 msgid "Disable"
-msgstr ""
+msgstr "Отключить"
 
 #: ../src/vikgpslayer.c:209
 msgid "Download Tracks:"
-msgstr "Скачать маршруты:"
+msgstr "Скачать треки:"
 
 #: ../src/vikgpslayer.c:210
 msgid "Upload Tracks:"
-msgstr "Загрузить маршруты:"
+msgstr "Загрузить треки:"
 
 #: ../src/vikgpslayer.c:211
 msgid "Download Routes:"
-msgstr ""
+msgstr "Скачать маршруты:"
 
 #: ../src/vikgpslayer.c:212
 msgid "Upload Routes:"
-msgstr ""
+msgstr "Загрузить маршруты:"
 
 #: ../src/vikgpslayer.c:213
 msgid "Download Waypoints:"
-msgstr "Скачать пункты:"
+msgstr "Скачать путевые точки:"
 
 #: ../src/vikgpslayer.c:214
 msgid "Upload Waypoints:"
-msgstr "Загрузить пункты:"
+msgstr "Загрузить путевые точки:"
 
 #: ../src/vikgpslayer.c:216
 msgid "Recording tracks"
-msgstr "Запись маршрутов"
+msgstr "Запись треков"
 
 #: ../src/vikgpslayer.c:217
 msgid "Jump to current position on start"
@@ -1557,15 +1590,15 @@ msgstr "Перемещаться в текущее расположение пр
 
 #: ../src/vikgpslayer.c:218
 msgid "Moving Map Method:"
-msgstr ""
+msgstr "Метод перемещения карты:"
 
 #: ../src/vikgpslayer.c:219
 msgid "Update Statusbar:"
-msgstr ""
+msgstr "Обновлять строку состояния:"
 
 #: ../src/vikgpslayer.c:219
 msgid "Display information in the statusbar on GPS updates"
-msgstr ""
+msgstr "Отображать информацию в строке состояния при обновлениях GPS"
 
 #: ../src/vikgpslayer.c:220
 msgid "Gpsd Host:"
@@ -1577,11 +1610,11 @@ msgstr "Порт gpsd:"
 
 #: ../src/vikgpslayer.c:222
 msgid "Gpsd Retry Interval (seconds):"
-msgstr ""
+msgstr "Интервал повтора Gpsd (секунды):"
 
 #: ../src/vikgpslayer.c:243
 msgid "GPS"
-msgstr ""
+msgstr "GPS"
 
 #: ../src/vikgpslayer.c:306 ../src/vikgpslayer.c:1308
 msgid "GPS Download"
@@ -1648,32 +1681,33 @@ msgstr ""
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
-msgstr[0] "Загружается %d пункт..."
-msgstr[1] "Загружается %d пункта..."
-msgstr[2] "Загружается %d пунктов..."
+msgstr[0] "Загружается %d путевая точка..."
+msgstr[1] "Загружается %d путевых точки..."
+msgstr[2] "Загружается %d путевых точек..."
 
 #: ../src/vikgpslayer.c:949
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
-msgstr[0] "Загружается %d узел..."
-msgstr[1] "Загружается %d узла..."
-msgstr[2] "Загружается %d узлов..."
+msgstr[0] "Загружается %d узел трека..."
+msgstr[1] "Загружается %d узла трека..."
+msgstr[2] "Загружается %d узлов трека..."
 
 #: ../src/vikgpslayer.c:950
 #, c-format
 msgid "Uploading %d routepoint..."
 msgid_plural "Uploading %d routepoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Загружается %d маршрутная точка..."
+msgstr[1] "Загружается %d маршрутных точки..."
+msgstr[2] "Загружается %d маршрутных точек..."
 
 #: ../src/vikgpslayer.c:975
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
-msgstr[0] "Скачано %d из %d пункта..."
-msgstr[1] "Скачано %d из %d пунктов..."
-msgstr[2] "Скачано %d из %d пунктов..."
+msgstr[0] "Скачано %d из %d путевых точек..."
+msgstr[1] "Скачано %d из %d путевых точек..."
+msgstr[2] "Скачано %d из %d путевых точек..."
 
 #: ../src/vikgpslayer.c:976
 #, c-format
@@ -1687,16 +1721,17 @@ msgstr[2] "Скачано %d из %d узлов..."
 #, c-format
 msgid "Downloaded %d out of %d routepoint..."
 msgid_plural "Downloaded %d out of %d routepoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Скачано %d из %d маршрутной точки..."
+msgstr[1] "Скачано %d из %d маршрутных точек..."
+msgstr[2] "Скачано %d из %d маршрутных точек..."
 
 #: ../src/vikgpslayer.c:982
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
-msgstr[0] "Загружено %d из %d пункта..."
-msgstr[1] "Загружено %d из %d пунктов..."
-msgstr[2] "Загружено %d из %d пунктов..."
+msgstr[0] "Загружено %d из %d путевых точек..."
+msgstr[1] "Загружено %d из %d путевых точек..."
+msgstr[2] "Загружено %d из %d путевых точек..."
 
 #: ../src/vikgpslayer.c:983
 #, c-format
@@ -1710,54 +1745,57 @@ msgstr[2] "Загружено %d из %d узлов..."
 #, c-format
 msgid "Uploaded %d out of %d routepoint..."
 msgid_plural "Uploaded %d out of %d routepoints..."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Загружена %d из %d маршрутной точки..."
+msgstr[1] "Загружено %d из %d маршрутных точек..."
+msgstr[2] "Загружено %d из %d маршрутных точек..."
 
 #: ../src/vikgpslayer.c:992
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
-msgstr[0] "Скачан %d пункт"
-msgstr[1] "Скачано %d пункта"
-msgstr[2] "Скачано %d пунктов"
+msgstr[0] "Скачана %d путевая точка"
+msgstr[1] "Скачано %d путевых точки"
+msgstr[2] "Скачано %d путевых точек"
 
 #: ../src/vikgpslayer.c:993
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
-msgstr[0] "Скачан %d узел"
-msgstr[1] "Скачано %d узла"
-msgstr[2] "Скачано %d узлов"
+msgstr[0] "Скачан %d узел трека"
+msgstr[1] "Скачано %d узла трека"
+msgstr[2] "Скачано %d узлов трека"
 
 #: ../src/vikgpslayer.c:994
 #, c-format
 msgid "Downloaded %d routepoint"
 msgid_plural "Downloaded %d routepoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Скачана %d маршрутная точка"
+msgstr[1] "Скачаны %d маршрутных точки"
+msgstr[2] "Скачано %d маршрутных точек"
 
 #: ../src/vikgpslayer.c:999
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
-msgstr[0] "Загружен %d узел"
-msgstr[1] "Загружено %d узла"
-msgstr[2] "Загружено %d узлов"
+msgstr[0] "Загружен %d узел трека"
+msgstr[1] "Загружено %d узла трека"
+msgstr[2] "Загружено %d узлов трека"
 
 #: ../src/vikgpslayer.c:1000
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
-msgstr[0] "Загружен %d пункт"
-msgstr[1] "Загружено %d пункта"
-msgstr[2] "Загружено %d пунктов"
+msgstr[0] "Загружена %d путевая точка"
+msgstr[1] "Загружено %d путевых точки"
+msgstr[2] "Загружено %d путевых точек"
 
 #: ../src/vikgpslayer.c:1001
 #, c-format
 msgid "Uploaded %d routepoint"
 msgid_plural "Uploaded %d routepoints"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Загружена %d маршрутная точка"
+msgstr[1] "Загружено %d маршрутных точки"
+msgstr[2] "Загружено %d маршрутных точек"
 
 #: ../src/vikgpslayer.c:1230
 msgid "Error: couldn't find gpsbabel."
@@ -1773,11 +1811,11 @@ msgstr "Статус: поиск gpsbabel"
 
 #: ../src/vikgpslayer.c:1386
 msgid "No GPS items selected for transfer."
-msgstr ""
+msgstr "Нет выбранных объектов GPS для передачи."
 
 #: ../src/vikgpslayer.c:1401
 msgid "Could not turn off device."
-msgstr ""
+msgstr "Не удалось отключить устройство."
 
 #: ../src/vikgpslayer.c:1439
 msgid "Are you sure you want to delete GPS Upload data?"
@@ -1793,27 +1831,27 @@ msgstr ""
 
 #: ../src/vikgpslayer.c:1479
 msgid "Are you sure you want to delete All GPS data?"
-msgstr ""
+msgstr "Действительно удалить все данные GPS?"
 
 #: ../src/viklayerspanel.c:53
 msgid "C_ut"
-msgstr ""
+msgstr "Вы_резать"
 
 #: ../src/viklayerspanel.c:54 ../src/vikwindow.c:3753
 msgid "_Copy"
-msgstr "Копировать"
+msgstr "_Копировать"
 
 #: ../src/viklayerspanel.c:55 ../src/vikwindow.c:3754
 msgid "_Paste"
-msgstr "Вставить"
+msgstr "_Вставить"
 
 #: ../src/viklayerspanel.c:56 ../src/vikwindow.c:3755
 msgid "_Delete"
-msgstr "Удалить"
+msgstr "_Удалить"
 
 #: ../src/viklayerspanel.c:133
 msgid "New Layer"
-msgstr ""
+msgstr "Новый слой"
 
 #: ../src/viklayerspanel.c:178
 msgid "Top Layer"
@@ -1846,11 +1884,11 @@ msgstr "Копировать выбранный слой"
 #: ../src/viklayerspanel.c:236
 msgid ""
 "Paste layer into selected container layer or otherwise above selected layer"
-msgstr ""
+msgstr "Вставить слой в выбранный слой-контейнер или над выбранным слоем"
 
 #: ../src/viklayerspanel.c:300
 msgid "New name can not be blank."
-msgstr ""
+msgstr "Новое имя не может быть пустым."
 
 #: ../src/viklayerspanel.c:544
 msgid "Aggregate Layers have no settable properties."
@@ -1892,7 +1930,7 @@ msgstr "Прозрачность:"
 
 #: ../src/vikmapslayer.c:127
 msgid "Control the Alpha value for transparency effects"
-msgstr ""
+msgstr "Управление альфа-значением для эффектов прозрачности"
 
 #: ../src/vikmapslayer.c:128
 msgid "Autodownload maps:"
@@ -1900,7 +1938,7 @@ msgstr "Автоматически скачивать карты:"
 
 #: ../src/vikmapslayer.c:129
 msgid "Autodownload Only Gets Missing Maps:"
-msgstr ""
+msgstr "Автоскачивание только отсутствующих карт:"
 
 #: ../src/vikmapslayer.c:130
 msgid ""
@@ -1908,6 +1946,10 @@ msgid ""
 "can be useful if you want to restrict the network usage, without having to "
 "resort to manual control. Only applies when 'Autodownload Maps' is on."
 msgstr ""
+"Эта опция поможет избежать обновления уже скачанных квадратов. Это может "
+"быть полезно для уменьшения сетевого трафика без перехода в ручной режим "
+"управления. Применяется только при включенной опции 'Автоматически скачивать "
+"карты'."
 
 #: ../src/vikmapslayer.c:131
 msgid "Zoom Level:"
@@ -1923,7 +1965,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:156
 msgid "_Maps Download"
-msgstr ""
+msgstr "С_качивание карт"
 
 #: ../src/vikmapslayer.c:156
 msgid "Maps Download"
@@ -1935,11 +1977,12 @@ msgstr "Карта"
 
 #: ../src/vikmapslayer.c:259
 msgid "Default map layer directory:"
-msgstr ""
+msgstr "Каталог карт по умолчанию для слоя:"
 
 #: ../src/vikmapslayer.c:259
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr ""
+"Выберите каталог для хранения кэшированных квадратов карт для этого слоя"
 
 #: ../src/vikmapslayer.c:523
 msgid "Unknown map type"
@@ -1947,7 +1990,7 @@ msgstr "Неизвестный тип карты"
 
 #: ../src/vikmapslayer.c:534
 msgid "Unknown Map Zoom"
-msgstr ""
+msgstr "Неизвестный масштаб карты"
 
 #: ../src/vikmapslayer.c:624
 #, c-format
@@ -1997,6 +2040,11 @@ msgid ""
 "Tile File: %s\n"
 "Tile File Timestamp: %s"
 msgstr ""
+"\n"
+"Источник: %s\n"
+"\n"
+"Файл квадрата: %s\n"
+"Метка времени файла: %s"
 
 #: ../src/vikmapslayer.c:1380
 #, c-format
@@ -2005,6 +2053,9 @@ msgid ""
 "\n"
 "No Tile File!"
 msgstr ""
+"Источник: %s\n"
+"\n"
+"Нет файла квадрата!"
 
 #: ../src/vikmapslayer.c:1418
 msgid "Redownload _Bad Map(s)"
@@ -2033,7 +2084,7 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:1516
 msgid "Wrong zoom level for this map."
-msgstr ""
+msgstr "Неверный масштаб для этой карты."
 
 #: ../src/vikmapslayer.c:1647
 msgid "Zoom Start:"
@@ -2045,52 +2096,52 @@ msgstr ""
 
 #: ../src/vikmapslayer.c:1660
 msgid "Download Maps Method:"
-msgstr ""
+msgstr "Метод скачивания карт:"
 
 #. redownload method - needs to align with REDOWNLOAD* macro values
 #: ../src/vikmapslayer.c:1732
 msgid "Missing"
-msgstr ""
+msgstr "Отсутствующие"
 
 #: ../src/vikmapslayer.c:1732
 msgid "Bad"
-msgstr ""
+msgstr "Ошибочные"
 
 #: ../src/vikmapslayer.c:1732
 msgid "New"
-msgstr ""
+msgstr "Новые"
 
 #: ../src/vikmapslayer.c:1732
 msgid "Reload All"
-msgstr ""
+msgstr "Скачать повторно все"
 
 #: ../src/vikmapslayer.c:1734
 msgid "Download for Zoom Levels"
-msgstr ""
+msgstr "Скачать для уровней масштаба"
 
 #: ../src/vikmapslayer.c:1774
 #, c-format
 msgid ""
 "You are not allowed to download more than %d tiles in one go (requested %d)"
-msgstr ""
+msgstr "Нельзя скачать более %d квадратов за один раз (запрошено %d)"
 
 #: ../src/vikmapslayer.c:1782
 #, c-format
 msgid "Do you really want to download %d tiles?"
-msgstr ""
+msgstr "Вы действительно хотите скачать %d квадратов?"
 
 #. Now with icons
 #: ../src/vikmapslayer.c:1807
 msgid "Download _Missing Onscreen Maps"
-msgstr "Скачать отсутствующие экранные карты"
+msgstr "Скачать _отсутствующие экранные карты"
 
 #: ../src/vikmapslayer.c:1814
 msgid "Download _New Onscreen Maps"
-msgstr "Скачать новые экранные карты"
+msgstr "Скачать _новые экранные карты"
 
 #: ../src/vikmapslayer.c:1821
 msgid "Reload _All Onscreen Maps"
-msgstr "Скачать все экранные карты"
+msgstr "Скачать _все экранные карты"
 
 #: ../src/vikmapslayer.c:1827
 msgid "Download Maps in _Zoom Levels..."
@@ -2098,7 +2149,7 @@ msgstr ""
 
 #: ../src/vikrouting.c:54
 msgid "Default engine:"
-msgstr ""
+msgstr "Движок по умолчанию:"
 
 #: ../src/viktreeview.c:316
 msgid "Layer Name"
@@ -2111,47 +2162,47 @@ msgstr "удалить данные %s\n"
 
 #: ../src/viktrwlayer.c:398
 msgid "Create _Waypoint"
-msgstr ""
+msgstr "Создать _путевую точку"
 
 #: ../src/viktrwlayer.c:398
 msgid "Create Waypoint"
-msgstr "Создать пункт"
+msgstr "Создать путевую точку"
 
 #: ../src/viktrwlayer.c:404
 msgid "Create _Track"
-msgstr ""
+msgstr "Создать _трек"
 
 #: ../src/viktrwlayer.c:404
 msgid "Create Track"
-msgstr "Создать маршрут"
+msgstr "Создать трек"
 
 #: ../src/viktrwlayer.c:413
 msgid "Create _Route"
-msgstr ""
+msgstr "Создать _маршрут"
 
 #: ../src/viktrwlayer.c:413
 msgid "Create Route"
-msgstr ""
+msgstr "Создать маршрут"
 
 #: ../src/viktrwlayer.c:422
 msgid "_Edit Waypoint"
-msgstr ""
+msgstr "_Редактировать путевую точку"
 
 #: ../src/viktrwlayer.c:422
 msgid "Edit Waypoint"
-msgstr "Редактироватаь пункт"
+msgstr "Редактировать путевую точку"
 
 #: ../src/viktrwlayer.c:432
 msgid "Edit Trac_kpoint"
-msgstr ""
+msgstr "Р_едактировать узел трека"
 
 #: ../src/viktrwlayer.c:432
 msgid "Edit Trackpoint"
-msgstr "Редактировать узел"
+msgstr "Редактировать узел трека"
 
 #: ../src/viktrwlayer.c:442
 msgid "Show P_icture"
-msgstr ""
+msgstr "Показать и_зображение"
 
 #: ../src/viktrwlayer.c:442
 msgid "Show Picture"
@@ -2159,11 +2210,11 @@ msgstr "Показать картинку"
 
 #: ../src/viktrwlayer.c:448
 msgid "Route _Finder"
-msgstr ""
+msgstr "По_иск маршрута"
 
 #: ../src/viktrwlayer.c:448
 msgid "Route Finder"
-msgstr ""
+msgstr "Поиск маршрута"
 
 #. ***** PARAMETERS *****
 #: ../src/viktrwlayer.c:468 ../src/viktrwlayer.c:2324
@@ -2172,11 +2223,11 @@ msgstr "Пункты"
 
 #: ../src/viktrwlayer.c:468 ../src/viktrwlayer.c:2319
 msgid "Tracks"
-msgstr "Маршруты"
+msgstr "Треки"
 
 #: ../src/viktrwlayer.c:468
 msgid "Waypoint Images"
-msgstr "Картинки пунктов"
+msgstr "Картинки путевых точек"
 
 #: ../src/viktrwlayer.c:468
 msgid "Tracks Advanced"
@@ -2192,7 +2243,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:471
 msgid "All Tracks Same Color"
-msgstr ""
+msgstr "Все треки одного цвета"
 
 #: ../src/viktrwlayer.c:472
 msgid "Filled Square"
@@ -2212,39 +2263,39 @@ msgstr "X"
 
 #: ../src/viktrwlayer.c:498
 msgid "Extra Extra Small"
-msgstr ""
+msgstr "Супермелкий"
 
 #: ../src/viktrwlayer.c:499
 msgid "Extra Small"
-msgstr ""
+msgstr "Очень мелкий"
 
 #: ../src/viktrwlayer.c:500
 msgid "Small"
-msgstr ""
+msgstr "Мелкий"
 
 #: ../src/viktrwlayer.c:501
 msgid "Medium"
-msgstr ""
+msgstr "Средний"
 
 #: ../src/viktrwlayer.c:502
 msgid "Large"
-msgstr ""
+msgstr "Крупный"
 
 #: ../src/viktrwlayer.c:503
 msgid "Extra Large"
-msgstr ""
+msgstr "Очень крупный"
 
 #: ../src/viktrwlayer.c:504
 msgid "Extra Extra Large"
-msgstr ""
+msgstr "Суперкрупный"
 
 #: ../src/viktrwlayer.c:510
 msgid "Name Ascending"
-msgstr ""
+msgstr "По имени (по возрастанию)"
 
 #: ../src/viktrwlayer.c:511
 msgid "Name Descending"
-msgstr ""
+msgstr "По имени (по убыванию)"
 
 #: ../src/viktrwlayer.c:552 ../src/viktrwlayer.c:576
 msgid "Draw Labels"
@@ -2253,46 +2304,47 @@ msgstr "Нарисовать названия"
 #: ../src/viktrwlayer.c:553
 msgid "Note: the individual track controls what labels may be displayed"
 msgstr ""
+"Примечание: на отображение названий могут влиять настройки отдельного трека"
 
 #: ../src/viktrwlayer.c:554
 msgid "Track Labels Font Size:"
-msgstr ""
+msgstr "Резмер шрифта надписей:"
 
 #: ../src/viktrwlayer.c:555
 msgid "Track Drawing Mode:"
-msgstr "Режим рисования маршрутов:"
+msgstr "Режим рисования треков:"
 
 #: ../src/viktrwlayer.c:556
 msgid "All Tracks Color:"
-msgstr ""
+msgstr "Цвет всех треков:"
 
 #: ../src/viktrwlayer.c:557
 msgid "The color used when 'All Tracks Same Color' drawing mode is selected"
-msgstr ""
+msgstr "Цвет, используемый при включенной опции 'Все треки одного цвета'"
 
 #: ../src/viktrwlayer.c:558
 msgid "Draw Track Lines"
-msgstr "Нарисовать линии маршрута"
+msgstr "Нарисовать линии треков"
 
 #: ../src/viktrwlayer.c:559
 msgid "Track Thickness:"
-msgstr "Толщина маршрута:"
+msgstr "Толщина трека:"
 
 #: ../src/viktrwlayer.c:560
 msgid "Draw Track Direction"
-msgstr ""
+msgstr "Рисовать направление трека"
 
 #: ../src/viktrwlayer.c:561
 msgid "Direction Size:"
-msgstr ""
+msgstr "Размер указателя направления:"
 
 #: ../src/viktrwlayer.c:562
 msgid "Draw Trackpoints"
-msgstr "Нарисовать узлы"
+msgstr "Рисовать узлы трека"
 
 #: ../src/viktrwlayer.c:563
 msgid "Trackpoint Size:"
-msgstr ""
+msgstr "Размер узлов трека:"
 
 #: ../src/viktrwlayer.c:564
 msgid "Draw Elevation"
@@ -2335,19 +2387,19 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:574
 msgid "Track Sort Order:"
-msgstr ""
+msgstr "Порядок сортировки треков:"
 
 #: ../src/viktrwlayer.c:577
 msgid "Waypoint Font Size:"
-msgstr ""
+msgstr "Размер шрифта"
 
 #: ../src/viktrwlayer.c:578
 msgid "Waypoint Color:"
-msgstr "Цвет пунктов:"
+msgstr "Цвет путевых точек:"
 
 #: ../src/viktrwlayer.c:579
 msgid "Waypoint Text:"
-msgstr "Текст пунктов:"
+msgstr "Текст путевых точек:"
 
 #: ../src/viktrwlayer.c:580
 msgid "Background:"
@@ -2359,23 +2411,23 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:582
 msgid "Waypoint marker:"
-msgstr "Маркер пункта:"
+msgstr "Маркер путевых точек:"
 
 #: ../src/viktrwlayer.c:583
 msgid "Waypoint size:"
-msgstr "Размер пунктов:"
+msgstr "Размер путевых точек:"
 
 #: ../src/viktrwlayer.c:584
 msgid "Draw Waypoint Symbols:"
-msgstr "Рисовать символы пунктов:"
+msgstr "Рисовать символы путевых точек:"
 
 #: ../src/viktrwlayer.c:585
 msgid "Waypoint Sort Order:"
-msgstr ""
+msgstr "Сортировка путевых точек:"
 
 #: ../src/viktrwlayer.c:587
 msgid "Draw Waypoint Images"
-msgstr "Рисовать картинки пунктов"
+msgstr "Рисовать картинки путевых точек"
 
 #: ../src/viktrwlayer.c:588
 msgid "Image Size (pixels):"
@@ -2395,12 +2447,12 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:1534 ../src/vikutils.c:204
 msgid "miles"
-msgstr ""
+msgstr "мили"
 
 #. VIK_UNITS_DISTANCE_KILOMETRES:
 #: ../src/viktrwlayer.c:1538 ../src/vikutils.c:209
 msgid "km"
-msgstr ""
+msgstr "км"
 
 #: ../src/viktrwlayer.c:1648
 msgid "start/end"
@@ -2416,7 +2468,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2329
 msgid "Routes"
-msgstr ""
+msgstr "Маршруты"
 
 #: ../src/viktrwlayer.c:2519
 #, c-format
@@ -2435,17 +2487,17 @@ msgstr ""
 #: ../src/viktrwlayer.c:2529
 #, c-format
 msgid "Tracks: %d - Waypoints: %d - Routes: %d%s"
-msgstr ""
+msgstr "Треки: %d - Путевые точки: %d - Маршруты: %d%s"
 
 #: ../src/viktrwlayer.c:2549
 #, c-format
 msgid "Tracks: %d"
-msgstr ""
+msgstr "Треки: %d"
 
 #: ../src/viktrwlayer.c:2559
 #, c-format
 msgid "Routes: %d"
-msgstr ""
+msgstr "Маршруты: %d"
 
 #: ../src/viktrwlayer.c:2590
 #, c-format
@@ -2465,7 +2517,7 @@ msgstr "%s%.1f миль %s"
 #: ../src/viktrwlayer.c:2615
 #, c-format
 msgid "Waypoints: %d"
-msgstr ""
+msgstr "Путевые точки: %d"
 
 #: ../src/viktrwlayer.c:2671
 #, c-format
@@ -2482,7 +2534,7 @@ msgstr ""
 #: ../src/viktrwlayer.c:2690
 #, c-format
 msgid "%s | %s %s | Comment: %s"
-msgstr ""
+msgstr "%s | %s %s | Комментарий: %s"
 
 #: ../src/viktrwlayer.c:2692
 #, c-format
@@ -2491,7 +2543,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:2939 ../src/viktrwlayer.c:3010
 msgid "This layer has no waypoints or trackpoints."
-msgstr "В этом слое нет пунктов или маршрутных узлов."
+msgstr "В этом слое нет путевых точек или узлов треков."
 
 #: ../src/viktrwlayer.c:3045 ../src/vikwindow.c:2754 ../src/vikwindow.c:3407
 #, c-format
@@ -2509,16 +2561,16 @@ msgstr "Экспортировать слой"
 
 #: ../src/viktrwlayer.c:3108
 msgid "Could not create temporary file for export."
-msgstr ""
+msgstr "Не удалось создать временный файл для экспорта."
 
 #: ../src/viktrwlayer.c:3117
 #, c-format
 msgid "Could not launch %s."
-msgstr ""
+msgstr "Не удалось запустить %s."
 
 #: ../src/viktrwlayer.c:3161
 msgid "Export Track as GPX"
-msgstr "Экспортировать маршруты в GPX"
+msgstr "Экспортировать треки в GPX"
 
 #: ../src/viktrwlayer.c:3183
 msgid "Find"
@@ -2526,7 +2578,7 @@ msgstr "Найти"
 
 #: ../src/viktrwlayer.c:3193
 msgid "Waypoint Name:"
-msgstr "Имя пункта:"
+msgstr "Имя путевой точки:"
 
 #: ../src/viktrwlayer.c:3210
 msgid "Waypoint not found in this layer."
@@ -2534,30 +2586,30 @@ msgstr "Пункт не найден в этом слое."
 
 #: ../src/viktrwlayer.c:3476
 msgid "Can not upload invisible track."
-msgstr ""
+msgstr "Невозможно загрузить невидимый трек."
 
 #: ../src/viktrwlayer.c:3581 ../src/viktrwlayer.c:9283
 msgid "Track"
-msgstr "Маршрут"
+msgstr "Трек"
 
 #: ../src/viktrwlayer.c:3606 ../src/viktrwlayer.c:9316
 msgid "Route"
-msgstr ""
+msgstr "Маршрут"
 
 #: ../src/viktrwlayer.c:3691 ../src/viktrwlayer.c:7460
 #: ../src/viktrwlayer.c:7566
 msgid "_Finish Route"
-msgstr ""
+msgstr "_Завершить маршрут"
 
 #: ../src/viktrwlayer.c:3693 ../src/viktrwlayer.c:7383
 #: ../src/viktrwlayer.c:7564
 msgid "_Finish Track"
-msgstr ""
+msgstr "_Завершить трек"
 
 #. Now with icons
 #: ../src/viktrwlayer.c:3705
 msgid "_View Layer"
-msgstr ""
+msgstr "_Показать слой"
 
 #: ../src/viktrwlayer.c:3712
 msgid "V_iew"
@@ -2565,15 +2617,15 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:3718
 msgid "View All _Tracks"
-msgstr ""
+msgstr "Показать все _треки"
 
 #: ../src/viktrwlayer.c:3723
 msgid "View All _Routes"
-msgstr ""
+msgstr "Показать всем _маршруты"
 
 #: ../src/viktrwlayer.c:3728
 msgid "View All _Waypoints"
-msgstr ""
+msgstr "Показать все путевые _точки"
 
 #: ../src/viktrwlayer.c:3733
 msgid "_Goto Center of Layer"
@@ -2581,7 +2633,7 @@ msgstr "Перейти к центру слоя"
 
 #: ../src/viktrwlayer.c:3739 ../src/viktrwlayer.c:7335
 msgid "Goto _Waypoint..."
-msgstr ""
+msgstr "Перейти к п_утевой точке..."
 
 #: ../src/viktrwlayer.c:3745
 msgid "_Export Layer"
@@ -2597,35 +2649,35 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:3761
 msgid "Export as _GPX..."
-msgstr ""
+msgstr "Экспортировать как _GPX..."
 
 #: ../src/viktrwlayer.c:3766
 msgid "Export as _KML..."
-msgstr ""
+msgstr "Экспортировать как _KML..."
 
 #: ../src/viktrwlayer.c:3771
 msgid "Open with External Program_1: "
-msgstr ""
+msgstr "Открыть во внешней программе_1: "
 
 #: ../src/viktrwlayer.c:3778
 msgid "Open with External Program_2: "
-msgstr ""
+msgstr "Открыть во внешней программе_2: "
 
 #: ../src/viktrwlayer.c:3786 ../src/vikwindow.c:3704
 msgid "_New"
-msgstr "Новый"
+msgstr "_Новый"
 
 #: ../src/viktrwlayer.c:3792
 msgid "New _Waypoint..."
-msgstr ""
+msgstr "Новая _путевая точка..."
 
 #: ../src/viktrwlayer.c:3798
 msgid "New _Track"
-msgstr ""
+msgstr "Новый _трек"
 
 #: ../src/viktrwlayer.c:3806
 msgid "New _Route"
-msgstr ""
+msgstr "Новый _маршрут"
 
 #: ../src/viktrwlayer.c:3815 ../src/viktrwlayer.c:7938
 msgid "Geotag _Images..."
@@ -2633,7 +2685,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:3822
 msgid "_Acquire"
-msgstr ""
+msgstr "_Получить"
 
 #: ../src/viktrwlayer.c:3828 ../src/vikwindow.c:3711
 msgid "From _GPS..."
@@ -2646,15 +2698,15 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:3840
 msgid "From _OSM Traces..."
-msgstr ""
+msgstr "Из треков _OSM..."
 
 #: ../src/viktrwlayer.c:3845
 msgid "From _My OSM Traces..."
-msgstr ""
+msgstr "Из _моих треков OSM..."
 
 #: ../src/viktrwlayer.c:3853 ../src/vikwindow.c:3725
 msgid "From _Wikipedia Waypoints"
-msgstr ""
+msgstr "Из путевых точек _Википедии"
 
 #: ../src/viktrwlayer.c:3859
 msgid "Within _Layer Bounds"
@@ -2666,85 +2718,85 @@ msgstr "Внутри текущего вида"
 
 #: ../src/viktrwlayer.c:3873
 msgid "From Geo_caching..."
-msgstr ""
+msgstr "Из _геокэшинга..."
 
 #: ../src/viktrwlayer.c:3880 ../src/vikwindow.c:3722
 msgid "From Geotagged _Images..."
-msgstr ""
+msgstr "Из _изображений с геотегами..."
 
 #: ../src/viktrwlayer.c:3886
 msgid "From _File..."
-msgstr ""
+msgstr "Из _файла..."
 
 #: ../src/viktrwlayer.c:3894 ../src/viktrwlayer.c:7883
 msgid "_Upload"
-msgstr ""
+msgstr "_Загрузить"
 
 #: ../src/viktrwlayer.c:3900
 msgid "Upload to _GPS..."
-msgstr ""
+msgstr "Загрузить в _GPS..."
 
 #: ../src/viktrwlayer.c:3907 ../src/viktrwlayer.c:7911
 msgid "Upload to _OSM..."
-msgstr ""
+msgstr "Загрузить в _OSM..."
 
 #: ../src/viktrwlayer.c:3915
 msgid "De_lete"
-msgstr ""
+msgstr "_Удалить"
 
 #: ../src/viktrwlayer.c:3921
 msgid "Delete All _Tracks"
-msgstr ""
+msgstr "Удалить все _треки"
 
 #: ../src/viktrwlayer.c:3927
 msgid "Delete Tracks _From Selection..."
-msgstr ""
+msgstr "Удалить треки _из выделения..."
 
 #: ../src/viktrwlayer.c:3933 ../src/viktrwlayer.c:7485
 msgid "Delete _All Routes"
-msgstr ""
+msgstr "Удалить все _маршруты"
 
 #: ../src/viktrwlayer.c:3939 ../src/viktrwlayer.c:7491
 msgid "_Delete Routes From Selection..."
-msgstr ""
+msgstr "У_далить маршруты из выделения..."
 
 #: ../src/viktrwlayer.c:3945
 msgid "Delete All _Waypoints"
-msgstr ""
+msgstr "Удалить все _путевые точки"
 
 #: ../src/viktrwlayer.c:3951
 msgid "Delete Waypoints From _Selection..."
-msgstr ""
+msgstr "У_далить путевые точки из выделения..."
 
 #: ../src/viktrwlayer.c:4574
 #, c-format
 msgid "Are you sure you want to delete all tracks in %s?"
-msgstr ""
+msgstr "Действительно удалить все треки из %s?"
 
 #: ../src/viktrwlayer.c:4584
 #, c-format
 msgid "Are you sure you want to delete all routes in %s?"
-msgstr ""
+msgstr "Действительно удалить все маршруты из %s?"
 
 #: ../src/viktrwlayer.c:4594
 #, c-format
 msgid "Are you sure you want to delete all waypoints in %s?"
-msgstr ""
+msgstr "Действительно удалить все путевые точки из %s?"
 
 #: ../src/viktrwlayer.c:4611
 #, c-format
 msgid "Are you sure you want to delete the waypoint \"%s\"?"
-msgstr ""
+msgstr "Действительно удалить путевую точку \"%s\"?"
 
 #: ../src/viktrwlayer.c:4624
 #, c-format
 msgid "Are you sure you want to delete the track \"%s\"?"
-msgstr ""
+msgstr "Действительно удалить трек \"%s\"?"
 
 #: ../src/viktrwlayer.c:4637
 #, c-format
 msgid "Are you sure you want to delete the route \"%s\"?"
-msgstr ""
+msgstr "Действительно удалить маршрут \"%s\"?"
 
 #: ../src/viktrwlayer.c:4849 ../src/viktrwlayer.c:5677
 msgid ""
@@ -2752,10 +2804,13 @@ msgid ""
 "timestamps, etc...\n"
 "Do you want to continue?"
 msgstr ""
+"Преобразование трека в маршрут удалит дополнительные данные, такие как "
+"сегменты, метки времени и т.п...\n"
+"Вы действительно хотите продолжить?"
 
 #: ../src/viktrwlayer.c:4944
 msgid "No DEM layers available, thus no DEM values can be applied."
-msgstr ""
+msgstr "Нет доступного слоя DEM, поэтому нельзя применить значения DEM."
 
 #: ../src/viktrwlayer.c:4964 ../src/viktrwlayer.c:5005
 #, c-format
@@ -2768,8 +2823,9 @@ msgstr[1] ""
 #, c-format
 msgid "%ld waypoint changed"
 msgid_plural "%ld waypoints changed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld путевая точка изменена"
+msgstr[1] "%ld путевых точки изменены"
+msgstr[2] "%ld путевых точек изменены"
 
 #: ../src/viktrwlayer.c:5233
 #, c-format
@@ -2789,11 +2845,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:5467
 msgid "Failed. No other tracks with timestamps in this layer found"
-msgstr ""
+msgstr "Неудача. Не найдено других треков с метками времени в этом слое"
 
 #: ../src/viktrwlayer.c:5469
 msgid "Failed. No other tracks without timestamps in this layer found"
-msgstr ""
+msgstr "Неудача. Не найдено других треков без меток времени в этом слое"
 
 #: ../src/viktrwlayer.c:5488
 msgid "Merge with..."
@@ -2801,42 +2857,43 @@ msgstr "Объединить с..."
 
 #: ../src/viktrwlayer.c:5489
 msgid "Select route to merge with"
-msgstr ""
+msgstr "Выберите маршрут для объединения"
 
 #: ../src/viktrwlayer.c:5489
 msgid "Select track to merge with"
-msgstr "Выберите маршрут для объединения"
+msgstr "Выберите трек для объединения"
 
 #: ../src/viktrwlayer.c:5573 ../src/viktrwlayer.c:5650
 msgid "Append Route"
-msgstr ""
+msgstr "Добавить маршрут"
 
 #: ../src/viktrwlayer.c:5573 ../src/viktrwlayer.c:5650
 msgid "Append Track"
-msgstr ""
+msgstr "Добавить трек"
 
 #: ../src/viktrwlayer.c:5574
 msgid "Select the route to append after the current route"
-msgstr ""
+msgstr "Выберите маршрут для добавления после текущего маршрута"
 
 #: ../src/viktrwlayer.c:5575
 msgid "Select the track to append after the current track"
-msgstr ""
+msgstr "Выберите трек для добавления после текущего трека"
 
 #: ../src/viktrwlayer.c:5651
 msgid "Select the track to append after the current route"
-msgstr ""
+msgstr "Выберите трек для добавления после текущего маршрута"
 
 #: ../src/viktrwlayer.c:5652
 msgid "Select the route to append after the current track"
-msgstr ""
+msgstr "Выберите маршрут для добавления после текущего трека"
 
 #: ../src/viktrwlayer.c:5711
 #, c-format
 msgid "%d segment merged"
 msgid_plural "%d segments merged"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d сегмент объединён"
+msgstr[1] "%d сегмента объединено"
+msgstr[2] "%d сегментов объединено"
 
 #: ../src/viktrwlayer.c:5727
 msgid "Failed. This track does not have timestamp"
@@ -2852,7 +2909,7 @@ msgstr "Порог объединения..."
 
 #: ../src/viktrwlayer.c:5747
 msgid "Merge when time between tracks less than:"
-msgstr "Объединить если время между маршрутами меньше:"
+msgstr "Объединить, если время между треками меньше:"
 
 #: ../src/viktrwlayer.c:5889
 msgid "Split Threshold..."
@@ -2880,18 +2937,19 @@ msgstr "Разделить в каждой N-ой точке:"
 
 #: ../src/viktrwlayer.c:6087
 msgid "Can not split track as it has no segments"
-msgstr ""
+msgstr "Нельзя разделит трек, т.к. он не содержит сегментов"
 
 #: ../src/viktrwlayer.c:6169 ../src/viktrwlayer.c:6199
 #, c-format
 msgid "Deleted %ld point"
 msgid_plural "Deleted %ld points"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Удалена %ld точка"
+msgstr[1] "Удалены %ld точки"
+msgstr[2] "Удалено %ld точек"
 
 #: ../src/viktrwlayer.c:6392
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
-msgstr ""
+msgstr "Внутренняя ошибка в vik_trw_layer_uniquify_tracks"
 
 #: ../src/viktrwlayer.c:6496 ../src/viktrwlayer.c:6543
 #: ../src/viktrwlayer.c:6704
@@ -2902,36 +2960,36 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:6507
 msgid "No tracks found"
-msgstr ""
+msgstr "Не найдено треков"
 
 #: ../src/viktrwlayer.c:6515 ../src/viktrwlayer.c:6562
 #: ../src/viktrwlayer.c:6724
 msgid "Delete Selection"
-msgstr ""
+msgstr "Удалить выделение"
 
 #: ../src/viktrwlayer.c:6516
 msgid "Select tracks to delete"
-msgstr ""
+msgstr "Выделите треки для удаления"
 
 #: ../src/viktrwlayer.c:6554
 msgid "No routes found"
-msgstr ""
+msgstr "Не найдено маршрутов"
 
 #: ../src/viktrwlayer.c:6563
 msgid "Select routes to delete"
-msgstr ""
+msgstr "Выделите маршруты для удаления"
 
 #: ../src/viktrwlayer.c:6669
 msgid "Internal Error in vik_trw_layer_uniquify_waypoints"
-msgstr ""
+msgstr "Внутренняя ошибка в vik_trw_layer_uniquify_waypoints"
 
 #: ../src/viktrwlayer.c:6714
 msgid "No waypoints found"
-msgstr ""
+msgstr "Не найдено путевых точек"
 
 #: ../src/viktrwlayer.c:6725
 msgid "Select waypoints to delete"
-msgstr ""
+msgstr "Выберите путевые точки для удаления"
 
 #: ../src/viktrwlayer.c:7033
 #, c-format
@@ -2939,18 +2997,22 @@ msgid ""
 "A waypoint with the name \"%s\" already exists. Really rename to the same "
 "name?"
 msgstr ""
+"Путевая точка с именем \"%s\" уже существует. Действительно дать такое же "
+"имя?"
 
 #: ../src/viktrwlayer.c:7063
 #, c-format
 msgid ""
 "A track with the name \"%s\" already exists. Really rename to the same name?"
 msgstr ""
+"Трек с именем \"%s\" уже существует. Действительно дать такое же имя?"
 
 #: ../src/viktrwlayer.c:7100
 #, c-format
 msgid ""
 "A route with the name \"%s\" already exists. Really rename to the same name?"
 msgstr ""
+"Маршрут с именем \"%s\" уже существует. Действительно дать такое же имя?"
 
 #: ../src/viktrwlayer.c:7221 ../src/viktrwlayer.c:7594
 msgid "_Goto"
@@ -2962,7 +3024,7 @@ msgstr "Посетить web-страницу геотайника"
 
 #: ../src/viktrwlayer.c:7259
 msgid "_Show Picture..."
-msgstr ""
+msgstr "Показать _изображение..."
 
 #: ../src/viktrwlayer.c:7267
 msgid "Update Geotag on _Image"
@@ -2970,7 +3032,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7273
 msgid "_Update"
-msgstr ""
+msgstr "О_бновить"
 
 #: ../src/viktrwlayer.c:7278
 msgid "Update and _Keep File Timestamp"
@@ -2978,111 +3040,111 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7289
 msgid "Visit _Webpage"
-msgstr ""
+msgstr "Посетить _веб-страницу"
 
 #: ../src/viktrwlayer.c:7320
 msgid "_New Waypoint..."
-msgstr ""
+msgstr "_Новая путевая точка..."
 
 #: ../src/viktrwlayer.c:7329
 msgid "_View All Waypoints"
-msgstr ""
+msgstr "_Показать все путевые точки"
 
 #: ../src/viktrwlayer.c:7341
 msgid "Delete _All Waypoints"
-msgstr ""
+msgstr "Удалить _все путевые точки"
 
 #: ../src/viktrwlayer.c:7347
 msgid "_Delete Waypoints From Selection..."
-msgstr ""
+msgstr "_Удалить путевые точки из выделения..."
 
 #: ../src/viktrwlayer.c:7359
 msgid "_Show All Waypoints"
-msgstr ""
+msgstr "По_казать все путевые точки"
 
 #: ../src/viktrwlayer.c:7365
 msgid "_Hide All Waypoints"
-msgstr ""
+msgstr "С_крыть все путевые точки"
 
 #: ../src/viktrwlayer.c:7393
 msgid "_View All Tracks"
-msgstr ""
+msgstr "_Показать все треки"
 
 #: ../src/viktrwlayer.c:7399
 msgid "_New Track"
-msgstr ""
+msgstr "_Новый трек"
 
 #: ../src/viktrwlayer.c:7407
 msgid "Delete _All Tracks"
-msgstr ""
+msgstr "Удалить _все треки"
 
 #: ../src/viktrwlayer.c:7413
 msgid "_Delete Tracks From Selection..."
-msgstr ""
+msgstr "_Удалить треки из выделения..."
 
 #: ../src/viktrwlayer.c:7425
 msgid "_Show All Tracks"
-msgstr ""
+msgstr "По_казать все треки"
 
 #: ../src/viktrwlayer.c:7431
 msgid "_Hide All Tracks"
-msgstr ""
+msgstr "С_крыть все треки"
 
 #: ../src/viktrwlayer.c:7442
 msgid "_List Tracks..."
-msgstr ""
+msgstr "_Список треков..."
 
 #: ../src/viktrwlayer.c:7471
 msgid "_View All Routes"
-msgstr ""
+msgstr "_Показать все маршруты"
 
 #: ../src/viktrwlayer.c:7477
 msgid "_New Route"
-msgstr ""
+msgstr "_Новый маршрут"
 
 #: ../src/viktrwlayer.c:7503
 msgid "_Show All Routes"
-msgstr ""
+msgstr "По_казать все маршруты"
 
 #: ../src/viktrwlayer.c:7509
 msgid "_Hide All Routes"
-msgstr ""
+msgstr "С_крыть все маршруты"
 
 #: ../src/viktrwlayer.c:7520
 msgid "_List Routes..."
-msgstr ""
+msgstr "_Список маршрутов..."
 
 #: ../src/viktrwlayer.c:7579
 msgid "_View Track"
-msgstr ""
+msgstr "_Показать трек"
 
 #: ../src/viktrwlayer.c:7581
 msgid "_View Route"
-msgstr ""
+msgstr "_Показать маршрут"
 
 #: ../src/viktrwlayer.c:7600
 msgid "_Startpoint"
-msgstr "Начало"
+msgstr "_Начало"
 
 #: ../src/viktrwlayer.c:7606
 msgid "\"_Center\""
-msgstr "\"Центр\""
+msgstr "\"_Центр\""
 
 #: ../src/viktrwlayer.c:7612
 msgid "_Endpoint"
-msgstr "Конец"
+msgstr "_Конец"
 
 #: ../src/viktrwlayer.c:7618
 msgid "_Highest Altitude"
-msgstr "Наибольшая высота"
+msgstr "Наи_большая высота"
 
 #: ../src/viktrwlayer.c:7624
 msgid "_Lowest Altitude"
-msgstr "Наименьшая высота"
+msgstr "Наи_меньшая высота"
 
 #: ../src/viktrwlayer.c:7632
 msgid "_Maximum Speed"
-msgstr "Максимальная скорость"
+msgstr "Ма_ксимальная скорость"
 
 #: ../src/viktrwlayer.c:7641
 msgid "Co_mbine"
@@ -3094,44 +3156,44 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7654
 msgid "Merge _Segments"
-msgstr ""
+msgstr "Объединить _сегменты"
 
 #: ../src/viktrwlayer.c:7660
 msgid "Merge _With Other Tracks..."
-msgstr "Объединить с другими маршрутами..."
+msgstr "Объ_единить с другими треками..."
 
 #: ../src/viktrwlayer.c:7666
 msgid "_Append Track..."
-msgstr ""
+msgstr "_Добавить трек..."
 
 #: ../src/viktrwlayer.c:7668
 msgid "_Append Route..."
-msgstr ""
+msgstr "_Добавить маршрут..."
 
 #: ../src/viktrwlayer.c:7674
 msgid "Append _Route..."
-msgstr ""
+msgstr "Добавить _маршрут..."
 
 #: ../src/viktrwlayer.c:7676
 msgid "Append _Track..."
-msgstr ""
+msgstr "Добавить _трек..."
 
 #: ../src/viktrwlayer.c:7683
 msgid "_Split"
-msgstr ""
+msgstr "_Разделить"
 
 #: ../src/viktrwlayer.c:7691
 msgid "_Split By Time..."
-msgstr ""
+msgstr "_Разделить по времени..."
 
 #. ATM always enable this entry - don't want to have to analyse the track before displaying the menu - to keep the menu speedy
 #: ../src/viktrwlayer.c:7697
 msgid "Split Se_gments"
-msgstr ""
+msgstr "Разделить се_гменты"
 
 #: ../src/viktrwlayer.c:7703
 msgid "Split By _Number of Points..."
-msgstr ""
+msgstr "Разделить по _числу точек..."
 
 #: ../src/viktrwlayer.c:7708
 msgid "Split at _Trackpoint"
@@ -3139,55 +3201,56 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7716
 msgid "_Insert Points"
-msgstr ""
+msgstr "_Вставить точки"
 
 #: ../src/viktrwlayer.c:7722
 msgid "Insert Point _Before Selected Point"
-msgstr ""
+msgstr "Вставить точку _перед выделенной точкой"
 
 #: ../src/viktrwlayer.c:7729
 msgid "Insert Point _After Selected Point"
-msgstr ""
+msgstr "Вставить точку п_осле выделенной точки"
 
 #: ../src/viktrwlayer.c:7738
 msgid "Delete Poi_nts"
-msgstr ""
+msgstr "Удалить то_чки"
 
 #: ../src/viktrwlayer.c:7744
 msgid "Delete _Selected Point"
-msgstr ""
+msgstr "Удалить в_ыделенную точку"
 
 #: ../src/viktrwlayer.c:7752
 msgid "Delete Points With The Same _Position"
-msgstr ""
+msgstr "Удалить точку с той же по_зицией"
 
 #: ../src/viktrwlayer.c:7757
 msgid "Delete Points With The Same _Time"
-msgstr ""
+msgstr "Удалить точку с тем же в_ременем"
 
 #: ../src/viktrwlayer.c:7764 ../src/viktrwlayer.c:7964
 msgid "_Transform"
-msgstr ""
+msgstr "Пр_еобразовать"
 
 #: ../src/viktrwlayer.c:7772 ../src/viktrwlayer.c:7972
 msgid "_Apply DEM Data"
-msgstr ""
+msgstr "_Применить данные DEM"
 
 #: ../src/viktrwlayer.c:7777 ../src/viktrwlayer.c:7977
 msgid "_Overwrite"
-msgstr ""
+msgstr "Пере_записать"
 
 #: ../src/viktrwlayer.c:7780 ../src/viktrwlayer.c:7980
 msgid "Overwrite any existing elevation values with DEM values"
-msgstr ""
+msgstr "Заменить существующие значения высоты значениями DEM"
 
 #: ../src/viktrwlayer.c:7783 ../src/viktrwlayer.c:7983
 msgid "_Keep Existing"
-msgstr ""
+msgstr "_Оставить существующие"
 
 #: ../src/viktrwlayer.c:7786 ../src/viktrwlayer.c:7986
 msgid "Keep existing elevation values, only attempt for missing values"
 msgstr ""
+"Оставить существующие значения высоты, только попытка добавить отсуствующие"
 
 #: ../src/viktrwlayer.c:7791
 msgid "_Smooth Missing Elevation Data"
@@ -3202,6 +3265,8 @@ msgid ""
 "Interpolate between known elevation values to derive values for the missing "
 "elevations"
 msgstr ""
+"Создать отсутствующие значения высоты с помощью интерполяции между "
+"известными значениями"
 
 #: ../src/viktrwlayer.c:7802
 msgid "_Flat"
@@ -3213,11 +3278,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7809
 msgid "C_onvert to a Route"
-msgstr ""
+msgstr "П_реобразовать в маршрут"
 
 #: ../src/viktrwlayer.c:7811
 msgid "C_onvert to a Track"
-msgstr ""
+msgstr "П_реобразовать в трек"
 
 #: ../src/viktrwlayer.c:7819
 msgid "_Anonymize Times"
@@ -3229,11 +3294,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7827
 msgid "_Reverse Track"
-msgstr ""
+msgstr "_Обратить трек"
 
 #: ../src/viktrwlayer.c:7829
 msgid "_Reverse Route"
-msgstr ""
+msgstr "_Обратить маршрут"
 
 #: ../src/viktrwlayer.c:7836
 msgid "Refine Route..."
@@ -3241,27 +3306,27 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7846
 msgid "Down_load Maps Along Track..."
-msgstr "Скачать карты вдоль маршрута..."
+msgstr "Ска_чать карты вдоль трека..."
 
 #: ../src/viktrwlayer.c:7848
 msgid "Down_load Maps Along Route..."
-msgstr ""
+msgstr "Ска_чать карты вдоль маршрута..."
 
 #: ../src/viktrwlayer.c:7856
 msgid "_Export Track as GPX..."
-msgstr ""
+msgstr "_Экспортировать трек в GPX..."
 
 #: ../src/viktrwlayer.c:7858
 msgid "_Export Route as GPX..."
-msgstr ""
+msgstr "_Экспортировать маршрут в GPX..."
 
 #: ../src/viktrwlayer.c:7865
 msgid "E_xtend Track End"
-msgstr "Продолжить конец маршрута"
+msgstr "Пр_одолжить конец трека"
 
 #: ../src/viktrwlayer.c:7867
 msgid "E_xtend Route End"
-msgstr ""
+msgstr "Пр_одолжить конец маршрута"
 
 #: ../src/viktrwlayer.c:7874
 msgid "Extend _Using Route Finder"
@@ -3269,7 +3334,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7889
 msgid "_Upload to GPS..."
-msgstr ""
+msgstr "_Загрузить в GPS..."
 
 #: ../src/viktrwlayer.c:7900
 msgid "_View Google Directions"
@@ -3281,7 +3346,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7953
 msgid "_Edit Trackpoint"
-msgstr ""
+msgstr "_Редактировать узел трека"
 
 #: ../src/viktrwlayer.c:9017
 #, c-format
@@ -3301,7 +3366,7 @@ msgstr ""
 #: ../src/viktrwlayer.c:9628
 #, c-format
 msgid "Could not launch %s to open file."
-msgstr ""
+msgstr "Не удалось запустить %s, чтобы открыть файл."
 
 #: ../src/viktrwlayer.c:9709
 #, c-format
@@ -3315,17 +3380,17 @@ msgstr "Нет слоя карты. Создайте его сначала"
 #: ../src/viktrwlayer.c:10225
 #, c-format
 msgid "%s: Track List"
-msgstr ""
+msgstr "%s: Список треков"
 
 #: ../src/viktrwlayer.c:10227
 #, c-format
 msgid "%s: Route List"
-msgstr ""
+msgstr "%s: Список маршрутов"
 
 #: ../src/viktrwlayer_propwin.c:828 ../src/viktrwlayer_propwin.c:1085
 #, c-format
 msgid "%.1f kph"
-msgstr ""
+msgstr "%.1f км/ч"
 
 #: ../src/viktrwlayer_propwin.c:831 ../src/viktrwlayer_propwin.c:1088
 #: ../src/viktrwlayer_analysis.c:290
@@ -3336,33 +3401,33 @@ msgstr ""
 #: ../src/viktrwlayer_propwin.c:834 ../src/viktrwlayer_propwin.c:1091
 #, c-format
 msgid "%.1f knots"
-msgstr ""
+msgstr "%.1f узлов"
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:838 ../src/viktrwlayer_propwin.c:1095
 #, c-format
 msgid "%.1f m/s"
-msgstr ""
+msgstr "%.1f м/с"
 
 #: ../src/viktrwlayer_propwin.c:1662 ../src/viktrwlayer_analysis.c:267
 #, c-format
 msgid "%.1f miles"
-msgstr ""
+msgstr "%.1f миль"
 
 #. VIK_UNITS_DISTANCE_KILOMETRES
 #: ../src/viktrwlayer_propwin.c:1664 ../src/viktrwlayer_analysis.c:271
 #, c-format
 msgid "%.1f km"
-msgstr ""
+msgstr "%.1f км"
 
 #: ../src/viktrwlayer_propwin.c:2582
 msgid "Failed spliting track. Track unchanged"
-msgstr "Не удалось разделить маршрут. Маршрут не изменен."
+msgstr "Не удалось разделить трек. Трек не изменён."
 
 #: ../src/viktrwlayer_propwin.c:2724 ../src/viktrwlayer_propwin.c:3140
 #, c-format
 msgid "%s - Track Properties"
-msgstr "%s - свойства маршрута"
+msgstr "%s - свойства трека"
 
 #: ../src/viktrwlayer_propwin.c:2729
 msgid "Split at _Marker"
@@ -3370,11 +3435,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:2730
 msgid "Split _Segments"
-msgstr ""
+msgstr "Разделить се_гменты"
 
 #: ../src/viktrwlayer_propwin.c:2731
 msgid "_Reverse"
-msgstr ""
+msgstr "О_братить"
 
 #: ../src/viktrwlayer_propwin.c:2732
 msgid "_Delete Dupl."
@@ -3386,11 +3451,11 @@ msgstr "<b>Комментарий:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2758
 msgid "<b>Description:</b>"
-msgstr ""
+msgstr "<b>Описание:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2759
 msgid "<b>Color:</b>"
-msgstr ""
+msgstr "<b>Цвет:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2760
 msgid "<b>Draw Name:</b>"
@@ -3402,7 +3467,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:2764
 msgid "<b>Track Length:</b>"
-msgstr "<b>Длина маршрута:</b>"
+msgstr "<b>Длина трека:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2765
 msgid "<b>Trackpoints:</b>"
@@ -3426,7 +3491,7 @@ msgstr "<b>Средняя скорость:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2770
 msgid "<b>Moving Avg. Speed:</b>"
-msgstr ""
+msgstr "<b>Ср. скорость движения:</b>"
 
 #: ../src/viktrwlayer_propwin.c:2771
 msgid "<b>Avg. Dist. Between TPs:</b>"
@@ -3482,7 +3547,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:2818
 msgid "Properties"
-msgstr ""
+msgstr "Свойства"
 
 #: ../src/viktrwlayer_propwin.c:2856 ../src/viktrwlayer_propwin.c:2880
 #: ../src/viktrwlayer_propwin.c:2908 ../src/viktrwlayer_propwin.c:2945
@@ -3520,11 +3585,11 @@ msgstr ""
 #: ../src/viktrwlayer_propwin.c:3025 ../src/viktrwlayer_propwin.c:3040
 #: ../src/viktrwlayer_propwin.c:3068 ../src/viktrwlayer_propwin.c:3096
 msgid "<b>Track Distance:</b>"
-msgstr "<b>Длина маршрута:</b>"
+msgstr "<b>Длина трека:</b>"
 
 #: ../src/viktrwlayer_propwin.c:3026 ../src/viktrwlayer_propwin.c:3083
 msgid "<b>Track Height:</b>"
-msgstr ""
+msgstr "<b>Высота трека:</b>"
 
 #: ../src/viktrwlayer_propwin.c:3031
 msgid "Elevation-distance"
@@ -3541,11 +3606,11 @@ msgstr ""
 #: ../src/viktrwlayer_propwin.c:3054 ../src/viktrwlayer_propwin.c:3069
 #: ../src/viktrwlayer_propwin.c:3082
 msgid "<b>Track Time:</b>"
-msgstr "<b>Время маршрута:</b>"
+msgstr "<b>Время трека:</b>"
 
 #: ../src/viktrwlayer_propwin.c:3055 ../src/viktrwlayer_propwin.c:3097
 msgid "<b>Track Speed:</b>"
-msgstr ""
+msgstr "<b>Скорость трека:</b>"
 
 #: ../src/viktrwlayer_propwin.c:3059
 msgid "Speed-time"
@@ -3553,23 +3618,23 @@ msgstr "Скорость-время"
 
 #: ../src/viktrwlayer_propwin.c:3066 ../src/viktrwlayer_propwin.c:3080
 msgid "Show S_peed"
-msgstr ""
+msgstr "Показать _скорость"
 
 #: ../src/viktrwlayer_propwin.c:3073
 msgid "Distance-time"
-msgstr ""
+msgstr "Расстояние-время"
 
 #: ../src/viktrwlayer_propwin.c:3087
 msgid "Elevation-time"
-msgstr ""
+msgstr "Высота-время"
 
 #: ../src/viktrwlayer_propwin.c:3101
 msgid "Speed-distance"
-msgstr ""
+msgstr "Скорость-расстояние"
 
 #: ../src/viktrwlayer_tpwin.c:119
 msgid "<b>Part of Track:</b>"
-msgstr "<b>Часть маршрута:</b>"
+msgstr "<b>Часть трека:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:120
 msgid "<b>Latitude:</b>"
@@ -3609,7 +3674,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:129
 msgid "<b>Speed:</b>"
-msgstr ""
+msgstr "<b>Скорость:</b>"
 
 #: ../src/viktrwlayer_tpwin.c:130
 msgid "<b>VDOP:</b>"
@@ -3649,32 +3714,36 @@ msgstr "Разделить здесь"
 #. ATM view auto selects, so don't bother with separate select menu entry
 #: ../src/viktrwlayer_tracklist.c:231 ../src/vikwindow.c:3695
 msgid "_View"
-msgstr "Просмотр"
+msgstr "_Вид"
 
 #. Insert column for the layer name when viewing multi layers
 #: ../src/viktrwlayer_tracklist.c:514
 msgid "Layer"
-msgstr ""
+msgstr "Слой"
 
 #: ../src/viktrwlayer_tracklist.c:526
 msgid "Date"
-msgstr ""
+msgstr "Дата"
 
 #: ../src/viktrwlayer_tracklist.c:529
 msgid "Visible"
-msgstr ""
+msgstr "Видимый"
 
 #: ../src/viktrwlayer_tracklist.c:536
 msgid ""
 "Distance\n"
 "(miles)"
 msgstr ""
+"Расстояние\n"
+"(миль)"
 
 #: ../src/viktrwlayer_tracklist.c:539
 msgid ""
 "Distance\n"
 "(km)"
 msgstr ""
+"Расстояние\n"
+"(км)"
 
 #: ../src/viktrwlayer_tracklist.c:545
 msgid ""
@@ -3685,20 +3754,20 @@ msgstr ""
 #. VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
 #: ../src/viktrwlayer_tracklist.c:549 ../src/vikutils.c:72
 msgid "km/h"
-msgstr ""
+msgstr "км/ч"
 
 #: ../src/viktrwlayer_tracklist.c:550 ../src/vikutils.c:62
 msgid "mph"
-msgstr ""
+msgstr "миль/ч"
 
 #: ../src/viktrwlayer_tracklist.c:551 ../src/vikutils.c:68
 msgid "knots"
-msgstr ""
+msgstr "узлов"
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_tracklist.c:553 ../src/vikutils.c:65
 msgid "m/s"
-msgstr ""
+msgstr "м/с"
 
 #: ../src/viktrwlayer_tracklist.c:556
 #, c-format
@@ -3742,11 +3811,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_geotag.c:555
 msgid "Overwrite Existing Waypoints:"
-msgstr ""
+msgstr "Заменить существующие путевые точки:"
 
 #: ../src/viktrwlayer_geotag.c:558
 msgid "Overwrite Existing GPS Information:"
-msgstr ""
+msgstr "Заменить существующую информацию GPS:"
 
 #: ../src/viktrwlayer_geotag.c:560
 msgid "Keep File Modification Timestamp:"
@@ -3754,11 +3823,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_geotag.c:592
 msgid "Create Waypoints:"
-msgstr ""
+msgstr "Создать путевые точки:"
 
 #: ../src/viktrwlayer_geotag.c:600
 msgid "Write EXIF:"
-msgstr ""
+msgstr "Записать EXIF:"
 
 #: ../src/viktrwlayer_geotag.c:612
 msgid "Interpolate Between Track Segments:"
@@ -3798,35 +3867,35 @@ msgstr ""
 
 #: ../src/viktrwlayer_analysis.c:193
 msgid "Number of Tracks"
-msgstr ""
+msgstr "Количество треков"
 
 #: ../src/viktrwlayer_analysis.c:194
 msgid "Date Range"
-msgstr ""
+msgstr "Диапазон дат"
 
 #: ../src/viktrwlayer_analysis.c:195
 msgid "Total Length"
-msgstr ""
+msgstr "Общая длина"
 
 #: ../src/viktrwlayer_analysis.c:196
 msgid "Average Length"
-msgstr ""
+msgstr "Средняя длина"
 
 #: ../src/viktrwlayer_analysis.c:197
 msgid "Max Speed"
-msgstr ""
+msgstr "Макс. скорость"
 
 #: ../src/viktrwlayer_analysis.c:198
 msgid "Avg. Speed"
-msgstr ""
+msgstr "Ср. скорость"
 
 #: ../src/viktrwlayer_analysis.c:199
 msgid "Minimum Altitude"
-msgstr ""
+msgstr "Мин. высота"
 
 #: ../src/viktrwlayer_analysis.c:200
 msgid "Maximum Altitude"
-msgstr ""
+msgstr "Макс. высота"
 
 #: ../src/viktrwlayer_analysis.c:201
 msgid "Total Elevation Gain/Loss"
@@ -3847,38 +3916,38 @@ msgstr ""
 #: ../src/viktrwlayer_analysis.c:278
 #, c-format
 msgid "%.2f miles"
-msgstr ""
+msgstr "%.2f миль"
 
 #. VIK_UNITS_DISTANCE_KILOMETRES
 #: ../src/viktrwlayer_analysis.c:282
 #, c-format
 msgid "%.2f km"
-msgstr ""
+msgstr "%.2f км"
 
 #: ../src/viktrwlayer_analysis.c:297
 #, c-format
 msgid "%.2f m/s"
-msgstr ""
+msgstr "%.2f м/с"
 
 #: ../src/viktrwlayer_analysis.c:306
 #, c-format
 msgid "%.2f knots\n"
-msgstr ""
+msgstr "%.2f узлов\n"
 
 #: ../src/viktrwlayer_analysis.c:309
 #, c-format
 msgid "%.2f knots"
-msgstr ""
+msgstr "%.2f узлов"
 
 #: ../src/viktrwlayer_analysis.c:316 ../src/viktrwlayer_analysis.c:319
 #, c-format
 msgid "%.2f km/h"
-msgstr ""
+msgstr "%.2f км/ч"
 
 #: ../src/viktrwlayer_analysis.c:330 ../src/viktrwlayer_analysis.c:336
 #, c-format
 msgid "%d feet"
-msgstr ""
+msgstr "%d футов"
 
 #: ../src/viktrwlayer_analysis.c:341 ../src/viktrwlayer_analysis.c:343
 #, c-format
@@ -3888,7 +3957,7 @@ msgstr ""
 #: ../src/viktrwlayer_analysis.c:348 ../src/viktrwlayer_analysis.c:354
 #, c-format
 msgid "%d m"
-msgstr ""
+msgstr "%d м"
 
 #: ../src/viktrwlayer_analysis.c:359 ../src/viktrwlayer_analysis.c:361
 #, c-format
@@ -3898,12 +3967,12 @@ msgstr ""
 #: ../src/viktrwlayer_analysis.c:373
 #, c-format
 msgid "%d:%02d:%02d days:hrs:mins"
-msgstr ""
+msgstr "%d:%02d:%02d дней:час:мин"
 
 #: ../src/viktrwlayer_analysis.c:380
 #, c-format
 msgid "%d:%02d hrs:mins"
-msgstr ""
+msgstr "%d:%02d час:мин"
 
 #: ../src/viktrwlayer_analysis.c:550
 msgid "Include Invisible Items"
@@ -3919,7 +3988,7 @@ msgstr ""
 
 #: ../src/vikutils.c:80
 msgid "GPSD"
-msgstr ""
+msgstr "GPSD"
 
 #. GPS Preamble
 #: ../src/vikutils.c:81
@@ -3949,12 +4018,12 @@ msgstr ""
 
 #: ../src/vikutils.c:155
 msgid "yards"
-msgstr ""
+msgstr "ярды"
 
 #. VIK_UNITS_DISTANCE_KILOMETRES:
 #: ../src/vikutils.c:159
 msgid "m"
-msgstr ""
+msgstr "м"
 
 #: ../src/vikutils.c:163
 #, c-format
@@ -4006,7 +4075,7 @@ msgstr "Линейка"
 
 #: ../src/vikwindow.c:224
 msgid "Select"
-msgstr ""
+msgstr "Выделение"
 
 #: ../src/vikwindow.c:381
 msgid "Location lookup aborted"
@@ -4036,7 +4105,7 @@ msgstr ""
 #. Create tooltip
 #: ../src/vikwindow.c:605
 msgid "Select zoom level"
-msgstr ""
+msgstr "Выбрать масштаб"
 
 #: ../src/vikwindow.c:923
 #, c-format
@@ -4103,11 +4172,11 @@ msgstr "Инструмент рука"
 
 #: ../src/vikwindow.c:1972
 msgid "_Select"
-msgstr ""
+msgstr "_Выделение"
 
 #: ../src/vikwindow.c:1972
 msgid "Select Tool"
-msgstr ""
+msgstr "Инструмент выделения"
 
 #: ../src/vikwindow.c:2123
 msgid "You must select a layer to show its properties."
@@ -4116,7 +4185,7 @@ msgstr "Для просмотра свойств нужно выбрать сл�
 #. No error to show, so unlikely this will get called
 #: ../src/vikwindow.c:2137
 msgid "The help system is not available."
-msgstr ""
+msgstr "Справочная система недоступна."
 
 #. Main error path
 #: ../src/vikwindow.c:2140
@@ -4125,6 +4194,9 @@ msgid ""
 "Help is not available because: %s.\n"
 "Ensure a Mime Type ghelp handler program is installed (e.g. yelp)."
 msgstr ""
+"Справка недоступна, так как: %s.\n"
+"Убедитесь, что установлена программа-обработчик Mime-типа ghelp (например, "
+"yelp)."
 
 #: ../src/vikwindow.c:2160
 msgid "You must select a layer to delete."
@@ -4157,14 +4229,14 @@ msgstr ""
 #: ../src/vikwindow.c:2549
 #, c-format
 msgid "Unsupported file type for %s"
-msgstr ""
+msgstr "Не поддерживаемый тип файла для %s"
 
 #. Since we can process .vik files with issues just show a warning in the status bar
 #. Not that a user can do much about it... or tells them what this issue is yet...
 #: ../src/vikwindow.c:2555
 #, c-format
 msgid "WARNING: issues encountered loading %s"
-msgstr ""
+msgstr "ВНИМАНИЕ: обнаружены проблемы при загрузке %s"
 
 #: ../src/vikwindow.c:2613
 msgid "Please select a GPS data file to open. "
@@ -4172,20 +4244,20 @@ msgstr "Пожалуйста, выберите файл с данными GPS. "
 
 #: ../src/vikwindow.c:2629
 msgid "Geocaching"
-msgstr ""
+msgstr "Геокэшинг"
 
 #: ../src/vikwindow.c:2635
 msgid "Google Earth"
-msgstr ""
+msgstr "Google Earth"
 
 #: ../src/vikwindow.c:2640
 msgid "GPX"
-msgstr ""
+msgstr "GPX"
 
 #: ../src/vikwindow.c:2645 ../src/vikwindow.c:2734
 #: ../src/viking.desktop.in.h:1
 msgid "Viking"
-msgstr "Викинг"
+msgstr "Viking"
 
 #: ../src/vikwindow.c:2715
 msgid "Save as Viking File."
@@ -4193,40 +4265,40 @@ msgstr "Сохранить файл Viking."
 
 #: ../src/vikwindow.c:2841
 msgid "Exporting to file: "
-msgstr ""
+msgstr "Экспорт в файл: "
 
 #. Confirm what happened.
 #: ../src/vikwindow.c:2858
 #, c-format
 msgid "Exported files: %d"
-msgstr ""
+msgstr "Экспортированы файлы: %d"
 
 #: ../src/vikwindow.c:2870
 msgid "Nothing to Export!"
-msgstr ""
+msgstr "Экспортировать нечего!"
 
 #: ../src/vikwindow.c:2874
 msgid "Export to directory"
-msgstr ""
+msgstr "Экспортировать в каталог"
 
 #: ../src/vikwindow.c:2896
 msgid "Could not convert all files"
-msgstr ""
+msgstr "Не удалось преобразовать все файлы"
 
 #: ../src/vikwindow.c:2932
 #, c-format
 msgid "%d bytes"
-msgstr ""
+msgstr "%d байт"
 
 #: ../src/vikwindow.c:2934
 #, c-format
 msgid "%3.1f kB"
-msgstr ""
+msgstr "%3.1f кБ"
 
 #: ../src/vikwindow.c:2936
 #, c-format
 msgid "%3.1f MB"
-msgstr ""
+msgstr "%3.1f МБ"
 
 #: ../src/vikwindow.c:2937
 #, c-format
@@ -4237,23 +4309,28 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"%s\n"
+"\n"
+"%s\n"
+"\n"
+"%s"
 
 #: ../src/vikwindow.c:2942
 msgid "File not accessible"
-msgstr ""
+msgstr "Файл недоступен"
 
 #: ../src/vikwindow.c:2945
 msgid "No Viking File"
-msgstr ""
+msgstr "Нет файла Viking"
 
 #: ../src/vikwindow.c:3035
 msgid "This layer has no configurable properties."
-msgstr ""
+msgstr "У этого слоя нет настраиваемых свойств."
 
 #. Try harder...
 #: ../src/vikwindow.c:3169 ../src/vikwindow.c:3175
 msgid "Generating image file..."
-msgstr ""
+msgstr "Создание файла изображения..."
 
 #: ../src/vikwindow.c:3197
 msgid ""
@@ -4261,21 +4338,26 @@ msgid ""
 "\n"
 "Try creating a smaller image."
 msgstr ""
+"Не удалось сгенерировать внутреннее изображение.\n"
+"\n"
+"Попробуйте создать изображение поменьше."
 
 #: ../src/vikwindow.c:3205
 msgid "Failed to generate image file."
-msgstr ""
+msgstr "Не удалось сгенерировать файл изображения."
 
 #. Success
 #: ../src/vikwindow.c:3210
 msgid "Image file generated."
-msgstr ""
+msgstr "Файл изображения создан."
 
 #: ../src/vikwindow.c:3314
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
 msgstr ""
+"Видимая область за пределами разрешённого размера рамки изображения. "
+"Уменьшение значений ширины/высоты."
 
 #: ../src/vikwindow.c:3339
 #, c-format
@@ -4293,7 +4375,7 @@ msgstr "Сохранить изображение"
 
 #: ../src/vikwindow.c:3393
 msgid "PNG"
-msgstr ""
+msgstr "PNG"
 
 #: ../src/vikwindow.c:3416
 msgid "You must be in UTM mode to use this feature"
@@ -4321,6 +4403,8 @@ msgid ""
 "WARNING: USING LARGE IMAGES OVER 10000x10000\n"
 "MAY CRASH THE PROGRAM!"
 msgstr ""
+"ВНИМАНИЕ: БОЛЬШИЕ ИЗОБРАЖЕНИЯ (БОЛЬШЕ 10000x10000)\n"
+"МОГУТ ПРИВЕСТИ К СБОЮ ПРОГРАММЫ!"
 
 #: ../src/vikwindow.c:3466
 msgid "Zoom (meters per pixel):"
@@ -4340,11 +4424,11 @@ msgstr "Сохранить в JPEG"
 
 #: ../src/vikwindow.c:3515
 msgid "East-west image tiles:"
-msgstr ""
+msgstr "Квадраты изображения восток-запад:"
 
 #: ../src/vikwindow.c:3517
 msgid "North-south image tiles:"
-msgstr ""
+msgstr "Квадраты изображения север-юг:"
 
 #: ../src/vikwindow.c:3656
 msgid "Choose a background color"
@@ -4352,7 +4436,7 @@ msgstr "Выберите цвет фона"
 
 #: ../src/vikwindow.c:3672
 msgid "Choose a track highlight color"
-msgstr ""
+msgstr "Выберите цвет выделенного трека"
 
 #: ../src/vikwindow.c:3693
 msgid "_File"
@@ -4376,7 +4460,7 @@ msgstr "Инструменты"
 
 #: ../src/vikwindow.c:3701
 msgid "_Webtools"
-msgstr ""
+msgstr "_Веб-инструменты"
 
 #: ../src/vikwindow.c:3702 ../src/vikwindow.c:3763
 msgid "_Help"
@@ -4408,19 +4492,19 @@ msgstr "Добавить данные из другого файла"
 
 #: ../src/vikwindow.c:3708
 msgid "_Export All"
-msgstr ""
+msgstr "Экспортировать _все"
 
 #: ../src/vikwindow.c:3708
 msgid "Export All TrackWaypoint Layers"
-msgstr ""
+msgstr "Экспортировать все слои TrackWaypoint"
 
 #: ../src/vikwindow.c:3709
 msgid "_GPX..."
-msgstr ""
+msgstr "_GPX..."
 
 #: ../src/vikwindow.c:3709
 msgid "Export as GPX"
-msgstr ""
+msgstr "Экспортировать в GPX"
 
 #: ../src/vikwindow.c:3710
 msgid "A_cquire"
@@ -4432,11 +4516,11 @@ msgstr "Передать данные из устройства GPS"
 
 #: ../src/vikwindow.c:3712
 msgid "Import File With GPS_Babel..."
-msgstr ""
+msgstr "Импортировать файл с помощью GPS_Babel..."
 
 #: ../src/vikwindow.c:3712
 msgid "Import file via GPSBabel converter"
-msgstr ""
+msgstr "Импортировать файл через конвертер GPSBabel"
 
 #: ../src/vikwindow.c:3713
 msgid "_Directions..."
@@ -4448,19 +4532,19 @@ msgstr ""
 
 #: ../src/vikwindow.c:3715
 msgid "_OSM Traces..."
-msgstr ""
+msgstr "Треки _OSM..."
 
 #: ../src/vikwindow.c:3715
 msgid "Get traces from OpenStreetMap"
-msgstr ""
+msgstr "Получить треки с OpenStreetMap"
 
 #: ../src/vikwindow.c:3716
 msgid "_My OSM Traces..."
-msgstr ""
+msgstr "_Мои треки OSM..."
 
 #: ../src/vikwindow.c:3716
 msgid "Get Your Own Traces from OpenStreetMap"
-msgstr ""
+msgstr "Получить ваши собственные треки с OpenStreetMap"
 
 #: ../src/vikwindow.c:3719
 msgid "Geo_caches..."
@@ -4472,11 +4556,11 @@ msgstr "Получить тайники с geocaching.com"
 
 #: ../src/vikwindow.c:3722
 msgid "Create waypoints from geotagged images"
-msgstr ""
+msgstr "Создать путевые точки из изображений с геотегами"
 
 #: ../src/vikwindow.c:3725
 msgid "Create waypoints from Wikipedia items in the current view"
-msgstr ""
+msgstr "Создать путевые точки по видимым в окне объектам Википедии"
 
 #: ../src/vikwindow.c:3727
 msgid "_Save"
@@ -4496,11 +4580,11 @@ msgstr "Сохранить файл под другим именем"
 
 #: ../src/vikwindow.c:3729
 msgid "Properties..."
-msgstr ""
+msgstr "Свойства..."
 
 #: ../src/vikwindow.c:3729
 msgid "File Properties"
-msgstr ""
+msgstr "Свойства файла"
 
 #: ../src/vikwindow.c:3730
 msgid "_Generate Image File..."
@@ -4576,19 +4660,19 @@ msgstr "Перейти к заданной координате UTM"
 
 #: ../src/vikwindow.c:3740
 msgid "_Refresh"
-msgstr ""
+msgstr "_Обновить"
 
 #: ../src/vikwindow.c:3740
 msgid "Refresh any maps displayed"
-msgstr ""
+msgstr "Обновить все отображаемые карты"
 
 #: ../src/vikwindow.c:3741
 msgid "Set _Highlight Color..."
-msgstr ""
+msgstr "Выбрать цвет _выделения..."
 
 #: ../src/vikwindow.c:3742
 msgid "Set Bac_kground Color..."
-msgstr "Выбрать цвет фона..."
+msgstr "Выбрать цвет _фона..."
 
 #: ../src/vikwindow.c:3743
 msgid "Zoom _In"
@@ -4648,7 +4732,7 @@ msgstr "Предпочтения"
 
 #: ../src/vikwindow.c:3760
 msgid "_Layer Defaults"
-msgstr ""
+msgstr "П_араметры слоёв по умолчанию"
 
 #: ../src/vikwindow.c:3761
 msgid "_Properties"
@@ -4660,11 +4744,11 @@ msgstr "О программе"
 
 #: ../src/vikwindow.c:3768
 msgid "_KML..."
-msgstr ""
+msgstr "_KML..."
 
 #: ../src/vikwindow.c:3768
 msgid "Export as KML"
-msgstr ""
+msgstr "Экспортировать в KML"
 
 #: ../src/vikwindow.c:3774
 msgid "_UTM Mode"
@@ -4700,11 +4784,11 @@ msgstr "Показать отметку центра"
 
 #: ../src/vikwindow.c:3783
 msgid "Show _Highlight"
-msgstr ""
+msgstr "Показать _выделение"
 
 #: ../src/vikwindow.c:3783
 msgid "Show Highlight"
-msgstr ""
+msgstr "Показать выделение"
 
 #: ../src/vikwindow.c:3784
 msgid "_Full Screen"
@@ -4749,7 +4833,7 @@ msgstr "Показать меню"
 #: ../src/vikwindow.c:3862
 #, c-format
 msgid "New _%s Layer"
-msgstr ""
+msgstr "Новый слой _%s"
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"
@@ -4761,14 +4845,14 @@ msgstr ""
 
 #: ../src/libjpeg/jpeg-data.c:206
 msgid "Data does not follow JPEG specification."
-msgstr ""
+msgstr "Данные не соответствуют спецификации JPEG."
 
 #: ../src/libjpeg/jpeg-data.c:291
 #, c-format
 msgid "Path '%s' invalid."
-msgstr ""
+msgstr "Неверный путь '%s'."
 
 #: ../src/libjpeg/jpeg-data.c:309
 #, c-format
 msgid "Could not read '%s'."
-msgstr ""
+msgstr "Не удалось прочитать '%s'."

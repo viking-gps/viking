@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-03 21:58+0200\n"
-"PO-Revision-Date: 2013-09-05 15:21+0000\n"
+"PO-Revision-Date: 2014-01-17 12:17+0000\n"
 "Last-Translator: Radek Stastny <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2013-10-12 09:04+0000\n"
-"X-Generator: Launchpad (build 16799)\n"
+"X-Launchpad-Export-Date: 2015-03-06 19:16+0000\n"
+"X-Generator: Launchpad (build 17383)\n"
 "Language: cs\n"
 
 #: ../src/acquire.c:103 ../src/vikgpslayer.c:1235
@@ -550,7 +550,7 @@ msgstr "Export/Externí"
 #. 'Advanced' Properties
 #: ../src/globals.c:230
 msgid "Advanced"
-msgstr ""
+msgstr "Pokročilé"
 
 #. Webtools
 #: ../src/google.c:38
@@ -1079,7 +1079,7 @@ msgstr ""
 #: ../src/util.c:76
 #, c-format
 msgid "Could not create new email. %s"
-msgstr ""
+msgstr "Nelze vytvořit nový mail. %s"
 
 #: ../src/util.c:177
 #, c-format
@@ -1088,6 +1088,9 @@ msgid ""
 "\n"
 "Do you wish to go to Viking's website now?"
 msgstr ""
+"K dispozici je nová verze: %s\n"
+"\n"
+"Chcete přejít na domácí stránku projektu Viking?"
 
 #: ../src/util.c:304
 msgid ""
@@ -1097,6 +1100,11 @@ msgid ""
 "\n"
 "Individual settings can be controlled in the Preferences."
 msgstr ""
+"Vypadá to, že spouštíte Viking poprvé.\n"
+"\n"
+"Přejete si povolit funkce využívající internet?\n"
+"\n"
+"Úprava je možná v nastaveních."
 
 #: ../src/vikcoordlayer.c:57
 msgid "Color:"
@@ -1187,11 +1195,11 @@ msgstr "Lokální port 8111 (např. JOSM)"
 
 #: ../src/osm.c:134
 msgid "OpenStreetMap Notes"
-msgstr ""
+msgstr "OpenStreetMap poznámky"
 
 #: ../src/osm.c:138
 msgid "OpenStreetBugs"
-msgstr ""
+msgstr "OpenStreetBugs"
 
 #. Not really OSM but can't be bothered to create somewhere else to put it...
 #: ../src/osm.c:164
@@ -1205,7 +1213,7 @@ msgstr "Nastavení"
 #: ../src/viklayer_defaults.c:232
 #, c-format
 msgid "Could not open file: %s"
-msgstr ""
+msgstr "Nelze otevřít soubor: %s"
 
 #: ../src/viklayer_defaults.c:303
 msgid "Layer Defaults"
@@ -1232,16 +1240,16 @@ msgstr ""
 
 #: ../src/vikaggregatelayer.c:534
 msgid "_Show All"
-msgstr ""
+msgstr "_Zobrazit vše"
 
 #: ../src/vikaggregatelayer.c:540
 msgid "_Hide All"
-msgstr ""
+msgstr "_Skrýt vše"
 
 #: ../src/vikaggregatelayer.c:546 ../src/viktrwlayer.c:7371
 #: ../src/viktrwlayer.c:7437 ../src/viktrwlayer.c:7515
 msgid "_Toggle"
-msgstr ""
+msgstr "Přepnou_t"
 
 #: ../src/vikaggregatelayer.c:553 ../src/viktrwlayer.c:7536
 msgid "_Sort"
@@ -1259,7 +1267,7 @@ msgstr ""
 #: ../src/viktrwlayer.c:7527 ../src/viktrwlayer.c:7587
 #: ../src/viktrwlayer_tracklist.c:237
 msgid "_Statistics"
-msgstr ""
+msgstr "_Statistiky"
 
 #: ../src/vikaggregatelayer.c:576 ../src/viktrwlayer.c:3971
 msgid "Track _List..."
@@ -1806,7 +1814,7 @@ msgstr "Opravdu chcete odstranit všechna GPS data?"
 
 #: ../src/viklayerspanel.c:53
 msgid "C_ut"
-msgstr ""
+msgstr "_Vyjmout"
 
 #: ../src/viklayerspanel.c:54 ../src/vikwindow.c:3753
 msgid "_Copy"
@@ -1822,7 +1830,7 @@ msgstr "_Smazat"
 
 #: ../src/viklayerspanel.c:133
 msgid "New Layer"
-msgstr ""
+msgstr "Nová vrstva"
 
 #: ../src/viklayerspanel.c:178
 msgid "Top Layer"
@@ -1859,7 +1867,7 @@ msgstr ""
 
 #: ../src/viklayerspanel.c:300
 msgid "New name can not be blank."
-msgstr ""
+msgstr "Nové jméno nemůže být prázdné."
 
 #: ../src/viklayerspanel.c:544
 msgid "Aggregate Layers have no settable properties."

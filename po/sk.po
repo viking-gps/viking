@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-09-03 21:58+0200\n"
-"PO-Revision-Date: 2013-05-22 21:27+0000\n"
+"PO-Revision-Date: 2014-02-20 23:23+0000\n"
 "Last-Translator: Ján Neščivera <jan.nescivera@gmail.com>\n"
 "Language-Team: Slovak <sk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 1 : (n>=2 && n<=4) ? 2 : 0;\n"
-"X-Launchpad-Export-Date: 2013-10-12 09:04+0000\n"
-"X-Generator: Launchpad (build 16799)\n"
+"X-Launchpad-Export-Date: 2015-03-06 19:16+0000\n"
+"X-Generator: Launchpad (build 17383)\n"
 
 #: ../src/acquire.c:103 ../src/vikgpslayer.c:1235
 msgid "Done."
@@ -32,7 +32,7 @@ msgstr "Chyba: získavavanie zlyhalo"
 
 #: ../src/acquire.c:352
 msgid "Working..."
-msgstr ""
+msgstr "Pracuje sa...."
 
 #. This shouldn't happen...
 #: ../src/acquire.c:415
@@ -43,7 +43,7 @@ msgstr ""
 
 #: ../src/acquire.c:517
 msgid "_Filter"
-msgstr ""
+msgstr "_Filter"
 
 #: ../src/acquire.c:532
 #, c-format
@@ -69,11 +69,11 @@ msgstr "Priebeh"
 
 #: ../src/background.c:274
 msgid "Viking Background Jobs"
-msgstr ""
+msgstr "Viking úlohy na pozadi"
 
 #: ../src/bing.c:47
 msgid "Bing"
-msgstr ""
+msgstr "Bing"
 
 #. VIK_GTK_WINDOW_FROM_WIDGET(vp)
 #: ../src/bingmapsource.c:499
@@ -86,7 +86,7 @@ msgstr "vloženie zlyhalo"
 
 #: ../src/clipboard.c:105
 msgid "wrong clipboard data size"
-msgstr ""
+msgstr "zlá veľkosť dát v schránke"
 
 #: ../src/clipboard.c:124
 #, c-format
@@ -94,6 +94,8 @@ msgid ""
 "The clipboard contains sublayer data for %s layers. You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
+"Schránka obsahuje podvrstvové dáta pre %s vrstvy. Musíte vybrať vrstvu tohto "
+"typu, aby ste mohli vložiť dáta zo schránky"
 
 #: ../src/clipboard.c:236
 msgid ""
@@ -131,7 +133,7 @@ msgstr "Pásmo:"
 
 #: ../src/dialog.c:132
 msgid "Letter:"
-msgstr ""
+msgstr "Písmeno:"
 
 #: ../src/dialog.c:199
 msgid "Waypoint Properties"
@@ -167,7 +169,7 @@ msgstr ""
 
 #: ../src/dialog.c:326
 msgid "Time:"
-msgstr ""
+msgstr "Čas:"
 
 #. TODO: other checks (isalpha or whatever )
 #: ../src/dialog.c:363
@@ -197,15 +199,15 @@ msgstr "Meno Stopy"
 
 #: ../src/dialog.c:538
 msgid "Please enter a name for the track."
-msgstr ""
+msgstr "Vložte prosím meno stopy"
 
 #: ../src/dialog.c:596
 msgid "Zoom Factors..."
-msgstr ""
+msgstr "Faktory priblíženia..."
 
 #: ../src/dialog.c:610
 msgid "Zoom factor (in meters per pixel):"
-msgstr ""
+msgstr "Faktory priblíženia (v metroch na pixel):"
 
 #: ../src/dialog.c:611
 msgid "X (easting): "
@@ -217,7 +219,7 @@ msgstr ""
 
 #: ../src/dialog.c:617
 msgid "X and Y zoom factors must be equal"
-msgstr ""
+msgstr "Faktory priblíženia X a Y musia byť rovnaké"
 
 #: ../src/dialog.c:672
 msgid "1 min"
@@ -233,7 +235,7 @@ msgstr "1 deň"
 
 #: ../src/dialog.c:675
 msgid "Custom (in minutes):"
-msgstr ""
+msgstr "Vlastné (v minútach)"
 
 #: ../src/dialog.c:786
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
@@ -258,7 +260,7 @@ msgstr ""
 
 #: ../src/dialog.c:852
 msgid "Translation is coordinated on http://launchpad.net/viking"
-msgstr ""
+msgstr "Preklady sú koordinované na http://launchpad.net/viking"
 
 #: ../src/dialog.c:861
 msgid "Download along track"
@@ -275,7 +277,7 @@ msgstr "Úroveň prblíženia:"
 #: ../src/dialog.c:914
 #, c-format
 msgid "The map data is licensed: %s."
-msgstr ""
+msgstr "Dáta máp sú licencované: %s."
 
 #: ../src/dialog.c:917
 #, c-format
@@ -284,10 +286,13 @@ msgid ""
 "<b>%s</b>.\n"
 "Please, read the license before continuing."
 msgstr ""
+"Dáta poskytované '<b>%s</b>' sú licencované nasledovnou licenciou: "
+"<b>%s</b>\n"
+"Prečítajte si, prosím, licenciu pred tým, než budete pokračovať."
 
 #: ../src/dialog.c:922
 msgid "Open license"
-msgstr ""
+msgstr "Otvorená licencia"
 
 #: ../src/expedia.c:53
 msgid "Expedia Street Maps"
@@ -325,7 +330,7 @@ msgstr "Hľadať"
 
 #: ../src/geonamessearch.c:123
 msgid "No entries found!"
-msgstr ""
+msgstr "Neboli nájdené žiadne záznamy"
 
 #. NB could allow columns to be shifted around by doing this after each new
 #. gtk_tree_view_column_set_reorderable ( column, TRUE );
@@ -333,7 +338,7 @@ msgstr ""
 #: ../src/geonamessearch.c:177 ../src/datasource_osm_my_traces.c:424
 #: ../src/viktrwlayer_tracklist.c:521
 msgid "Name"
-msgstr ""
+msgstr "Názov"
 
 #: ../src/geonamessearch.c:182
 msgid "Feature"
@@ -349,59 +354,59 @@ msgstr ""
 
 #: ../src/globals.c:73
 msgid "Absolute"
-msgstr ""
+msgstr "Absolútna"
 
 #: ../src/globals.c:73
 msgid "Relative"
-msgstr ""
+msgstr "Relatívna"
 
 #: ../src/globals.c:76
 msgid "Degree format:"
-msgstr ""
+msgstr "Formát stupňov:"
 
 #: ../src/globals.c:77
 msgid "Distance units:"
-msgstr ""
+msgstr "Jednotky vzdialenosti:"
 
 #: ../src/globals.c:78
 msgid "Speed units:"
-msgstr ""
+msgstr "Jednotky rýchlosti:"
 
 #: ../src/globals.c:79
 msgid "Height units:"
-msgstr ""
+msgstr "Jednotky výšky:"
 
 #: ../src/globals.c:80
 msgid "Use large waypoint icons:"
-msgstr ""
+msgstr "Použiť veľké ikony bodov trasy"
 
 #: ../src/globals.c:81
 msgid "Default latitude:"
-msgstr ""
+msgstr "Východzia zemepisná šírka"
 
 #: ../src/globals.c:82
 msgid "Default longitude:"
-msgstr ""
+msgstr "Východzia zemepisná dĺžka"
 
 #: ../src/globals.c:88
 msgid "Alphabetical"
-msgstr ""
+msgstr "Abecedne"
 
 #: ../src/globals.c:88 ../src/datasource_osm_my_traces.c:434
 msgid "Time"
-msgstr ""
+msgstr "Čas"
 
 #: ../src/globals.c:88
 msgid "Creation"
-msgstr ""
+msgstr "Vytvorenie"
 
 #: ../src/globals.c:89
 msgid "Title Case"
-msgstr ""
+msgstr "Štýl nadpisu"
 
 #: ../src/globals.c:89
 msgid "Lowercase"
-msgstr ""
+msgstr "Malé písmená"
 
 #: ../src/globals.c:92
 msgid "KML File Export Units:"
@@ -423,15 +428,15 @@ msgstr ""
 
 #: ../src/globals.c:100
 msgid "Image Viewer:"
-msgstr ""
+msgstr "Prehliadač Obrázkov"
 
 #: ../src/globals.c:105
 msgid "External GPX Program 1:"
-msgstr ""
+msgstr "Externý GPX program 1:"
 
 #: ../src/globals.c:106
 msgid "External GPX Program 2:"
-msgstr ""
+msgstr "Externý GPX program 2:"
 
 #: ../src/globals.c:110
 msgid "Save File Reference Mode:"
@@ -449,15 +454,15 @@ msgstr ""
 
 #: ../src/globals.c:115
 msgid "Home Location"
-msgstr ""
+msgstr "Domovská Pozícia"
 
 #: ../src/globals.c:115
 msgid "Last Location"
-msgstr ""
+msgstr "Posledná Pozícia"
 
 #: ../src/globals.c:115
 msgid "Specified File"
-msgstr ""
+msgstr "Zvolený súbor"
 
 #: ../src/globals.c:115
 msgid "Auto Location"
@@ -465,11 +470,11 @@ msgstr ""
 
 #: ../src/globals.c:118
 msgid "Restore Window Setup:"
-msgstr ""
+msgstr "Obnoviť Nastavenia Okna"
 
 #: ../src/globals.c:119
 msgid "Restore window size and layout"
-msgstr ""
+msgstr "Obnoviť veľkosť a rozloženie okna"
 
 #: ../src/globals.c:120
 msgid "Add a Default Map Layer:"
@@ -483,17 +488,19 @@ msgstr ""
 
 #: ../src/globals.c:122
 msgid "Startup Method:"
-msgstr ""
+msgstr "Spúšťacia metóda:"
 
 #: ../src/globals.c:123
 msgid "Startup File:"
-msgstr ""
+msgstr "Spúšťací súbor:"
 
 #: ../src/globals.c:124
 msgid ""
 "The default file to load on startup. Only applies when the startup method is "
 "set to 'Specified File'"
 msgstr ""
+"Východzí súbor spustený pri štarte. Použije sa len v prípade, že spúšťacia "
+"metóda je nastavená na 'Zvolený súbor'"
 
 #: ../src/globals.c:125
 msgid "Check For New Version:"
@@ -506,12 +513,12 @@ msgstr ""
 #. Defaults for the options are setup here
 #: ../src/globals.c:163
 msgid "General"
-msgstr ""
+msgstr "Všeobecné"
 
 #. New Tab
 #: ../src/globals.c:188
 msgid "Startup"
-msgstr ""
+msgstr "Spustenie"
 
 #. New Tab
 #: ../src/globals.c:206
@@ -521,12 +528,12 @@ msgstr ""
 #. 'Advanced' Properties
 #: ../src/globals.c:230
 msgid "Advanced"
-msgstr ""
+msgstr "Pokročilé"
 
 #. Webtools
 #: ../src/google.c:38
 msgid "Google"
-msgstr ""
+msgstr "Google"
 
 #: ../src/datasource_file.c:59
 msgid "Import file with GPSBabel"
@@ -534,25 +541,25 @@ msgstr ""
 
 #: ../src/datasource_file.c:60
 msgid "Imported file"
-msgstr ""
+msgstr "Importovaný súbor"
 
 #. The file selector
 #: ../src/datasource_file.c:127
 msgid "File:"
-msgstr ""
+msgstr "Súbor:"
 
 #: ../src/datasource_file.c:128
 msgid "File to import"
-msgstr ""
+msgstr "Súbor na import"
 
 #: ../src/datasource_file.c:135
 msgid "All files"
-msgstr ""
+msgstr "Všetky súbory"
 
 #. The file format selector
 #: ../src/datasource_file.c:142
 msgid "File type:"
-msgstr ""
+msgstr "Typ súboru:"
 
 #: ../src/datasource_file.c:184
 #, c-format
