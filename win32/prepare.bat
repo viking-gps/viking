@@ -466,7 +466,7 @@ if not exist "%MINGW_BIN%\iconv.dll" (
 :: Note GPSBabel can not be directly downloaded via wget
 :: ATM get it manually from here:
 ::   http://www.gpsbabel.org/download.html
-set GPSBABEL_INST=GPSBabel-1.5.1-Setup.exe
+set GPSBABEL_INST=GPSBabel-1.5.2-Setup.exe
 if not exist %GPSBABEL_INST% (
 	echo Required %GPSBABEL_INST% not found. Exitting
 	exit /b

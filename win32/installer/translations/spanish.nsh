@@ -27,7 +27,7 @@
 !define VIKING_STARTMENU_SHORTCUT_SECTION_TITLE	"Menú Inicio"
 !define VIKING_FILE_ASSOCIATION_SECTION_TITLE	"Extensión.gpx"
 !define VIKING_SECTION_DESCRIPTION		"Ficheros y DLLs de base de Viking"
-!define VIKING_GPSBABEL_SECTION_TITLE	"GPSBabel 1.5.1"
+!define VIKING_GPSBABEL_SECTION_TITLE	"GPSBabel 1.5.2"
 
 !define VIKING_SHORTCUTS_SECTION_DESCRIPTION	"Accesos directos para lanzar Viking"
 !define VIKING_DESKTOP_SHORTCUT_DESC		"Crear un acceso directo a Viking en el escritorio"
