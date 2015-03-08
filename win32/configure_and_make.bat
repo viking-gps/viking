@@ -9,4 +9,4 @@ pushd ..
 :: ATM Don't have build method for libgexiv2, so use the fallback of libexif
 sh configure CFLAGS="-DWINDOWS -DWIN32 -mwindows" LIBCURL=-lcurldll LIBS=-lzdll --with-libexif --disable-realtime-gps-tracking --disable-scrollkeeper --enable-windows --disable-mapnik
 popd
-make.bat
+make.bat %*

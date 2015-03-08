@@ -10,4 +10,4 @@ popd
 
 :: Change to root directory and build
 cd ..
-make
+make %*

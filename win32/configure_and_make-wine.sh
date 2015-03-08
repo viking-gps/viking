@@ -12,8 +12,11 @@ make distclean
 popd
 
 # Note the configure stage under wine** is really slow can easily be over 15 minutes
-# make of the icons is also very slow** - can easily over 5 minutes
-# compartively the make of the actual src code is not too bad
-wine cmd.exe /c configure_and_make.bat
+# make of the icons is also very slow** - can easily be over 5 minutes on a single CPU
+# comparatively the make of the actual src code is not too bad
+
+# Speed up the build by using all CPUs available.
+# Note that a simple '-j' on it's own overloads the system under Wine - hence put in the specific CPU limit here
+wine cmd.exe /c configure_and_make.bat -j $(grep -c ^processor /proc/cpuinfo)
 
 # ** slowness is probably due to lots of forking going on starting many new small processes
