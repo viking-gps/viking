@@ -470,7 +470,7 @@ void vik_treeview_init ( VikTreeview *vt )
 
   // ATM The dates are stored on initial creation and updated when items are deleted
   //  this should be good enough for most purposes, although it may get inaccurate if items are edited in a particular manner
-  // NB implicit conversion of time_t to G_INT64
+  // NB implicit conversion of time_t to gint64
   vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS,
                                                   G_TYPE_STRING,  // Name
                                                   G_TYPE_BOOLEAN, // Visibility
@@ -723,7 +723,7 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
                        ITEM_DATA_COLUMN, data,
                        EDITABLE_COLUMN, editable,
                        ICON_COLUMN, icon,
-                       ITEM_TIMESTAMP_COLUMN, time,
+                       ITEM_TIMESTAMP_COLUMN, timestamp,
                        -1 );
 }
 
