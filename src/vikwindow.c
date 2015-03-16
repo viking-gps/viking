@@ -836,7 +836,7 @@ static void vik_window_init ( VikWindow *vw )
   center_changed_cb ( vw );
 
   vw->hpaned = gtk_hpaned_new ();
-  gtk_paned_pack1 ( GTK_PANED(vw->hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, FALSE );
+  gtk_paned_pack1 ( GTK_PANED(vw->hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, TRUE );
   gtk_paned_pack2 ( GTK_PANED(vw->hpaned), GTK_WIDGET (vw->viking_vvp), TRUE, TRUE );
 
   /* This packs the button into the window (a gtk container). */
