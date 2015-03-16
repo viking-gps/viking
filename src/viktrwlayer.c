@@ -10111,6 +10111,8 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     VikTrackpoint *tp = VIK_TRACKPOINT(vtl->current_tpl->data);
     VikTrack *current_tr = VIK_TRACK(g_hash_table_lookup(vtl->tracks, vtl->current_tp_id));
     if ( !current_tr )
+      current_tr = VIK_TRACK(g_hash_table_lookup(vtl->routes, vtl->current_tp_id));
+    if ( !current_tr )
       return FALSE;
 
     gint x, y;
