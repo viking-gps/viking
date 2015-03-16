@@ -10102,7 +10102,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return FALSE;
 
-  if ( !vtl->vl.visible || !vtl->tracks_visible || !vtl->routes_visible )
+  if ( !vtl->vl.visible || !(vtl->tracks_visible || vtl->routes_visible) )
     return FALSE;
 
   if ( vtl->current_tpl )
