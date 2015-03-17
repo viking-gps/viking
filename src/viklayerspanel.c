@@ -24,6 +24,7 @@
 #endif
 
 #include "viking.h"
+#include "settings.h"
 
 #include <string.h>
 
@@ -442,6 +443,7 @@ static void layers_popup_cb ( VikLayersPanel *vlp )
   layers_popup ( vlp, NULL, 0 );
 }
 
+#define VIK_SETTINGS_LAYERS_TRW_CREATE_DEFAULT "layers_create_trw_auto_default"
 /**
  * vik_layers_panel_new_layer:
  * @type: type of the new layer
@@ -452,7 +454,11 @@ gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type
 {
   VikLayer *l;
   g_assert ( vlp->vvp );
-  l = vik_layer_create ( type, vlp->vvp, TRUE );
+  gboolean ask_user = FALSE;
+  if ( type == VIK_LAYER_TRW )
+    a_settings_get_boolean ( VIK_SETTINGS_LAYERS_TRW_CREATE_DEFAULT, &ask_user );
+  ask_user = !ask_user;
+  l = vik_layer_create ( type, vlp->vvp, ask_user );
   if ( l )
   {
     vik_layers_panel_add_layer ( vlp, l );

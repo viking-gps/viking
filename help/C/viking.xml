@@ -3342,6 +3342,10 @@ Accept: */*
         <para>Here is the list of the <emphasis>read only</emphasis> keys and their default values.</para>
 	<orderedlist>
 	  <listitem>
+	    <para>layers_create_trw_auto_default=false</para>
+	    <para>Create new TrackWaypoint layers without showing the layer properties dialog first.</para>
+	  </listitem>
+	  <listitem>
 	    <para>maps_max_tiles=1000</para>
 	  </listitem>
 	  <listitem>
