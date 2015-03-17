@@ -10076,22 +10076,24 @@ static void tool_edit_trackpoint_destroy ( tool_ed_t *t )
   g_free ( t );
 }
 
+/**
+ * tool_edit_trackpoint_click:
+ *
+ * On 'initial' click: search for the nearest trackpoint or routepoint and store it as the current trackpoint
+ * Then update the viewport, statusbar and edit dialog to draw the point as being selected and it's information.
+ * On subsequent clicks: (as the current trackpoint is defined) and the click is very near the same point
+ *  then initiate the move operation to drag the point to a new destination.
+ * NB The current trackpoint will get reset elsewhere.
+ */
 static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
 {
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
   TPSearchParams params;
-  /* OUTDATED DOCUMENTATION:
-   find 5 pixel range on each side. then put these UTM, and a pointer
-   to the winning track name (and maybe the winning track itself), and a
-   pointer to the winning trackpoint, inside an array or struct. pass 
-   this along, do a foreach on the tracks which will do a foreach on the 
-   trackpoints. */
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
   params.closest_track_id = NULL;
-  /* TODO: should get track listitem so we can break it up, make a new track, mess it up, all that. */
   params.closest_tp = NULL;
   params.closest_tpl = NULL;
   vik_viewport_get_min_max_lat_lon ( vvp, &(params.bbox.south), &(params.bbox.north), &(params.bbox.west), &(params.bbox.east) );
