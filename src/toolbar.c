@@ -182,12 +182,12 @@ static gboolean prefs_get_append_to_menu (void)
 
 static guint prefs_get_icon_size (void)
 {
-  return a_preferences_get(TOOLBAR_PARAMS_NAMESPACE "icon_size")->b;
+  return a_preferences_get(TOOLBAR_PARAMS_NAMESPACE "icon_size")->u;
 }
 
 static guint prefs_get_icon_style (void)
 {
-  return a_preferences_get(TOOLBAR_PARAMS_NAMESPACE "icon_style")->b;
+  return a_preferences_get(TOOLBAR_PARAMS_NAMESPACE "icon_style")->u;
 }
 
 /* Note: The returned widget pointer is only valid until the toolbar is reloaded. So, either
