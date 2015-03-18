@@ -260,9 +260,24 @@ static VikLayerParam prefs_mapnik[] = {
 /**
  * a_background_init:
  *
+ * Just setup any preferences.
+ */
+void a_background_init ()
+{
+#ifdef HAVE_LIBMAPNIK
+  VikLayerParamData tmp;
+  // implicit use of 'MAPNIK_PREFS_NAMESPACE' to avoid dependency issues
+  tmp.u = 1; // Default to 1 thread due to potential crashing issues
+  a_preferences_register(&prefs_mapnik[0], tmp, "mapnik");
+#endif
+}
+
+/**
+ * a_background_post_init:
+ *
  * Initialize background feature.
  */
-void a_background_init()
+void a_background_post_init()
 {
   // initialize thread pools
   gint max_threads = 10;  /* limit maximum number of threads running at one time */
@@ -282,10 +297,7 @@ void a_background_init()
   thread_pool_local = g_thread_pool_new ( (GFunc) thread_helper, NULL, max_threads, FALSE, NULL );
 
 #ifdef HAVE_LIBMAPNIK
-  VikLayerParamData tmp;
   // implicit use of 'MAPNIK_PREFS_NAMESPACE' to avoid dependency issues
-  tmp.u = 1; // Default to 1 thread due to potential crashing issues
-  a_preferences_register(&prefs_mapnik[0], tmp, "mapnik");
   guint mapnik_threads = a_preferences_get("mapnik.background_max_threads_local_mapnik")->u;
   thread_pool_local_mapnik = g_thread_pool_new ( (GFunc) thread_helper, NULL, mapnik_threads, FALSE, NULL );
 #endif

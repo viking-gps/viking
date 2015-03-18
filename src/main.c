@@ -179,6 +179,15 @@ int main( int argc, char *argv[] )
   a_settings_init ();
   a_preferences_init ();
 
+ /*
+  * First stage initialization
+  *
+  * Should not use a_preferences_get() yet
+  *
+  * Since the first time a_preferences_get() is called it loads any preferences values from disk,
+  *  but of course for preferences not registered yet it can't actually understand them
+  *  so subsequent initial attempts to get those preferences return the default value, until the values have changed
+  */
   a_vik_preferences_init ();
 
   a_layer_defaults_init ();
@@ -199,6 +208,16 @@ int main( int argc, char *argv[] )
   a_toolbar_init();
   vik_routing_prefs_init();
 
+  /*
+   * Second stage initialization
+   *
+   * Can now use a_preferences_get()
+   */
+  a_background_post_init ();
+  a_babel_post_init ();
+  modules_post_init ();
+
+  // May need to initialize the Positonal TimeZone lookup
   if ( a_vik_get_time_ref_frame() == VIK_TIME_REF_WORLD )
     vu_setup_lat_lon_tz_lookup();
 

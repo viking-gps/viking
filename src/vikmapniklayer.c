@@ -272,7 +272,7 @@ static GHashTable *requests = NULL;
 /**
  * vik_mapnik_layer_init:
  *
- * Mostly to initialize preferences
+ * Just initialize preferences
  */
 void vik_mapnik_layer_init (void)
 {
@@ -293,7 +293,15 @@ void vik_mapnik_layer_init (void)
 
 	tmp.s = "carto";
 	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
+}
 
+/**
+ * vik_mapnik_layer_post_init:
+ *
+ * Initialize data structures - now that reading preferences is OK to perform
+ */
+void vik_mapnik_layer_post_init (void)
+{
 	tp_mutex = vik_mutex_new();
 
 	// Just storing keys only

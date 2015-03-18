@@ -23,7 +23,7 @@
 #define __VIKING_MODULES_H
 
 void modules_init();
-
+void modules_post_init ();
 void modules_uninit();
 
 #endif

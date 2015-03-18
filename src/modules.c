@@ -228,6 +228,11 @@ register_loadable_types(void)
   g_debug("%d types loaded", (int)sizeof(types)/(int)sizeof(GType));
 }
 
+/**
+ * First stage initialization
+ * Can not use a_get_preferences() yet...
+ * See comment in main.c
+ */
 void modules_init()
 {
 #ifdef VIK_CONFIG_BING
@@ -264,6 +269,19 @@ void modules_init()
 
   /* As modules are loaded, we can load configuration files */
   modules_load_config ();
+}
+
+/**
+ * modules_post_init:
+ *
+ * Secondary stage initialization
+ * Can now use a_get_preferences()
+ */
+void modules_post_init ()
+{
+#ifdef HAVE_LIBMAPNIK
+  vik_mapnik_layer_post_init();
+#endif
 }
 
 /**

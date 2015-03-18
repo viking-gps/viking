@@ -108,6 +108,7 @@ gboolean a_babel_convert_from_url_or_shell ( VikTrwLayer *vt, const char *input,
 gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babelargs, const char *file, BabelStatusFunc cb, gpointer user_data );
 
 void a_babel_init ();
+void a_babel_post_init ();
 void a_babel_uninit ();
 
 gboolean a_babel_available ();

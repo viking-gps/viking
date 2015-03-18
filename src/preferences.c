@@ -204,6 +204,9 @@ void a_preferences_show_window(GtkWindow *parent) {
 
 void a_preferences_register(VikLayerParam *pref, VikLayerParamData defaultval, const gchar *group_key )
 {
+  // All preferences should be registered before loading
+  if ( loaded )
+    g_critical ( "REGISTERING preference %s after LOADING from " VIKING_PREFS_FILE, pref->name );
   /* copy value */
   VikLayerParam *newpref = g_new(VikLayerParam,1);
   *newpref = *pref;
@@ -242,6 +245,7 @@ void a_preferences_uninit()
 VikLayerParamData *a_preferences_get(const gchar *key)
 {
   if ( ! loaded ) {
+    g_debug ( "%s: First time: %s\n", __FUNCTION__, key );
     /* since we can't load the file in a_preferences_init (no params registered yet),
      * do it once before we get the first key. */
     preferences_load_from_file();

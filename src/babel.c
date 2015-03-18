@@ -678,9 +678,7 @@ static VikLayerParam prefs[] = {
 /**
  * a_babel_init:
  * 
- * Initialises babel module.
- * Mainly check existence of gpsbabel progam
- * and load all features available in that version.
+ * Just setup preferences first
  */
 void a_babel_init ()
 {
@@ -697,7 +695,17 @@ void a_babel_init ()
   vlpd.s = "gpsbabel";
 #endif
   a_preferences_register(&prefs[0], vlpd, VIKING_PREFERENCES_IO_GROUP_KEY);
+}
 
+/**
+ * a_babel_post_init:
+ *
+ * Initialises babel module.
+ * Mainly check existence of gpsbabel progam
+ * and load all features available in that version.
+ */
+void a_babel_post_init ()
+{
   // Read the current preference
   const gchar *gpsbabel = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpsbabel")->s;
   // If setting is still the UNIX default then lookup in the path - otherwise attempt to use the specified value directly.
