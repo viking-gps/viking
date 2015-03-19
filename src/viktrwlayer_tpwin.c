@@ -301,7 +301,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->sat), FALSE, FALSE, 3 );
 
   main_hbox = gtk_hbox_new( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), left_vbox, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), left_vbox, TRUE, TRUE, 3 );
   gtk_box_pack_start ( GTK_BOX(main_hbox), right_vbox, TRUE, TRUE, 0 );
   gtk_box_pack_start ( GTK_BOX(main_hbox), diff_left_vbox, TRUE, TRUE, 0 );
   gtk_box_pack_start ( GTK_BOX(main_hbox), diff_right_vbox, TRUE, TRUE, 0 );

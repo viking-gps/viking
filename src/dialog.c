@@ -371,6 +371,10 @@ GtkWidget *a_dialog_create_label_vbox ( gchar **texts, int label_count, gint spa
   {
     label = gtk_label_new(NULL);
     gtk_label_set_markup ( GTK_LABEL(label), _(texts[i]) );
+    if ( strchr(texts[i], ':') ) {
+      // Align label to the right
+      gtk_misc_set_alignment ( GTK_MISC(label), 1.0, 0.5 );
+    }
     gtk_box_pack_start ( GTK_BOX(vbox), label, FALSE, TRUE, padding );
   }
   return vbox;
