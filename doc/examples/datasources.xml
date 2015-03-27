@@ -38,8 +38,8 @@
     <property name="file_type">kml</property>
   </object>
 
-  <!-- Requires GPSBabel build after SVNr4915 to generate waypoints from OSM way centers -->
-  <!-- At time of writing (October 2014) this is not in a formal release yet -->
+  <!-- Requires GPSBabel 1.5.2 to generate waypoints from OSM way centers -->
+  <!-- Note the use of positional parameters, in this case: %5$s to repeat a value -->
   </object>
     <object class="VikWebtoolDatasource">
     <property name="label">OpenStreetMap Amenity</property>
