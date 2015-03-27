@@ -24,6 +24,7 @@
 #include <glib.h>
 
 #include "vikwindow.h"
+#include "vikcoord.h"
 
 G_BEGIN_DECLS
 
@@ -43,6 +44,7 @@ struct _VikExtToolClass
   GObjectClass object_class;
   gchar *(* get_label) (VikExtTool *self);
   void (* open) (VikExtTool *self, VikWindow *vwindow);
+  void (* open_at_position) (VikExtTool *self, VikWindow *vwindow, VikCoord *vc);
 };
 
 GType vik_ext_tool_get_type ();
@@ -53,6 +55,7 @@ struct _VikExtTool {
 
 gchar *vik_ext_tool_get_label ( VikExtTool *self );
 void vik_ext_tool_open ( VikExtTool *self, VikWindow *vwindow );
+void vik_ext_tool_open_at_position ( VikExtTool *self, VikWindow *vwindow, VikCoord *vc );
 
 G_END_DECLS
 

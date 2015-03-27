@@ -177,3 +177,9 @@ void vik_ext_tool_open ( VikExtTool *self, VikWindow *vwindow )
 {
   VIK_EXT_TOOL_GET_CLASS( self )->open( self, vwindow );
 }
+
+void vik_ext_tool_open_at_position ( VikExtTool *self, VikWindow *vwindow, VikCoord *vc )
+{
+  if ( VIK_EXT_TOOL_GET_CLASS( self )->open_at_position )
+    VIK_EXT_TOOL_GET_CLASS( self )->open_at_position( self, vwindow, vc );
+}

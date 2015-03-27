@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2011-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@
 static GObjectClass *parent_class;
 
 static void webtool_bounds_finalize ( GObject *gob );
-
 static gchar *webtool_bounds_get_url ( VikWebtool *vw, VikWindow *vwindow );
+static gchar *webtool_bounds_get_url_at_position ( VikWebtool *vw, VikWindow *vwindow, VikCoord *vc );
 
 typedef struct _VikWebtoolBoundsPrivate VikWebtoolBoundsPrivate;
 
@@ -131,8 +131,7 @@ vik_webtool_bounds_class_init ( VikWebtoolBoundsClass *klass )
 
   base_class = VIK_WEBTOOL_CLASS ( klass );
   base_class->get_url = webtool_bounds_get_url;
-
-  //klass->mpp_to_zoom = webtool_bounds_mpp_to_zoom;
+  base_class->get_url_at_position = webtool_bounds_get_url_at_position;
 
   g_type_class_add_private (klass, sizeof (VikWebtoolBoundsPrivate));
 }
@@ -190,4 +189,11 @@ static gchar *webtool_bounds_get_url ( VikWebtool *self, VikWindow *vwindow )
   g_ascii_dtostr (smaxlat, G_ASCII_DTOSTR_BUF_SIZE, max_lat);
 
   return g_strdup_printf ( priv->url, sminlon, smaxlon, sminlat, smaxlat );
+}
+
+static gchar *webtool_bounds_get_url_at_position ( VikWebtool *self, VikWindow *vwindow, VikCoord *vc )
+{
+  // TODO: could use zoom level to generate an offset from center lat/lon to get the bounds
+  // For now simply use the existing function to use bounds from the viewport
+  return webtool_bounds_get_url ( self, vwindow );
 }

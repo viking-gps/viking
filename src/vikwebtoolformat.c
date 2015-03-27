@@ -39,6 +39,7 @@ static void webtool_format_finalize ( GObject *gob );
 
 static guint8 webtool_format_mpp_to_zoom ( VikWebtool *self, gdouble mpp );
 static gchar *webtool_format_get_url ( VikWebtool *vw, VikWindow *vwindow );
+static gchar *webtool_format_get_url_at_position ( VikWebtool *vw, VikWindow *vwindow, VikCoord *vc );
 
 typedef struct _VikWebtoolFormatPrivate VikWebtoolFormatPrivate;
 
@@ -150,6 +151,7 @@ vik_webtool_format_class_init ( VikWebtoolFormatClass *klass )
 
 	base_class = VIK_WEBTOOL_CLASS ( klass );
 	base_class->get_url = webtool_format_get_url;
+	base_class->get_url_at_position = webtool_format_get_url_at_position;
 
 	klass->mpp_to_zoom = webtool_format_mpp_to_zoom;
 
@@ -194,9 +196,9 @@ static guint8 webtool_format_mpp_to_zoom ( VikWebtool *self, gdouble mpp ) {
 	return map_utils_mpp_to_zoom_level ( mpp );
 }
 
-#define MAX_NUMBER_CODES 7
+#define MAX_NUMBER_CODES 9
 
-static gchar *webtool_format_get_url ( VikWebtool *self, VikWindow *vw )
+static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *vw, VikCoord *vc )
 {
 	VikWebtoolFormatPrivate *priv = NULL;
 	priv = WEBTOOL_FORMAT_GET_PRIVATE (self);
@@ -228,6 +230,16 @@ static gchar *webtool_format_get_url ( VikWebtool *self, VikWindow *vw )
 	g_ascii_dtostr (scenterlat, G_ASCII_DTOSTR_BUF_SIZE, ll.lat);
 	g_ascii_dtostr (scenterlon, G_ASCII_DTOSTR_BUF_SIZE, ll.lon);
 
+	struct LatLon llpt;
+	llpt.lat = 0.0;
+	llpt.lon = 0.0;
+	if ( vc )
+	  vik_coord_to_latlon ( vc, &ll );
+	gchar spointlat[G_ASCII_DTOSTR_BUF_SIZE];
+	gchar spointlon[G_ASCII_DTOSTR_BUF_SIZE];
+	g_ascii_dtostr (spointlat, G_ASCII_DTOSTR_BUF_SIZE, llpt.lat);
+	g_ascii_dtostr (spointlon, G_ASCII_DTOSTR_BUF_SIZE, llpt.lon);
+
 	guint8 zoom = 17; // A zoomed in default
 	// zoom - ideally x & y factors need to be the same otherwise use the default
 	if ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) )
@@ -257,11 +269,13 @@ static gchar *webtool_format_get_url ( VikWebtool *self, VikWindow *vw )
 		case 'A': values[i] = g_strdup ( scenterlat ); break;
 		case 'O': values[i] = g_strdup ( scenterlon ); break;
 		case 'Z': values[i] = g_strdup ( szoom ); break;
+		case 'P': values[i] = g_strdup ( spointlat ); break;
+		case 'N': values[i] = g_strdup ( spointlon ); break;
 		default: break;
 		}
 	}
 
-	gchar *url = g_strdup_printf ( priv->url, values[0], values[1], values[2], values[3], values[4], values[5], values[6] );
+	gchar *url = g_strdup_printf ( priv->url, values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8] );
 
 	for ( i = 0; i < MAX_NUMBER_CODES; i++ ) {
 		if ( values[i] != '\0' )
@@ -270,6 +284,11 @@ static gchar *webtool_format_get_url ( VikWebtool *self, VikWindow *vw )
 
 	g_debug ("%s %s", __FUNCTION__, url);
 	return url;
+}
+
+static gchar *webtool_format_get_url ( VikWebtool *self, VikWindow *vw )
+{
+  return webtool_format_get_url_at_position ( self, vw, NULL );
 }
 
 guint8 vik_webtool_format_mpp_to_zoom (VikWebtool *self, gdouble mpp)

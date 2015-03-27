@@ -59,6 +59,7 @@
 #include "acquire.h"
 #include "datasources.h"
 #include "datasource_gps.h"
+#include "vikexttools.h"
 #include "vikexttool_datasources.h"
 #include "ui_util.h"
 #include "vikutils.h"
@@ -4025,6 +4026,17 @@ void trw_layer_osm_traces_upload_track_cb ( menu_array_sublayer values )
   }
 }
 
+static GtkWidget* create_external_submenu ( GtkMenu *menu )
+{
+  GtkWidget *external_submenu = gtk_menu_new ();
+  GtkWidget *item = gtk_image_menu_item_new_with_mnemonic ( _("Externa_l") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU) );
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+  gtk_widget_show ( item );
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), external_submenu );
+  return external_submenu;
+}
+
 static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp )
 {
   static menu_array_layer pass_along;
@@ -4350,6 +4362,10 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
   gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->waypoints)) );
+
+  GtkWidget *external_submenu = create_external_submenu ( menu );
+  // TODO: Should use selected layer's centre - rather than implicitly using the current viewport
+  vik_ext_tools_add_menu_items_to_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), GTK_MENU (external_submenu), NULL );
 }
 
 // Fake Waypoint UUIDs vi simple increasing integer
@@ -8532,22 +8548,18 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     }
   }
 
-  // Only made available if a suitable program is installed
+  GtkWidget *external_submenu = create_external_submenu ( menu );
+
+  // These are only made available if a suitable program is installed
   if ( (have_astro_program || have_diary_program) &&
        (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) ) {
-    GtkWidget *external_submenu;
-    external_submenu = gtk_menu_new ();
-    item = gtk_image_menu_item_new_with_mnemonic ( _("Externa_l") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU) );
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    gtk_widget_show ( item );
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), external_submenu );
 
     if ( have_diary_program ) {
       item = gtk_image_menu_item_new_with_mnemonic ( _("_Diary") );
       gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SPELL_CHECK, GTK_ICON_SIZE_MENU) );
       g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_diary), pass_along );
       gtk_menu_shell_append ( GTK_MENU_SHELL(external_submenu), item );
+      gtk_widget_set_tooltip_text (item, _("Open diary program at this date"));
       gtk_widget_show ( item );
     }
 
@@ -8555,9 +8567,26 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       item = gtk_image_menu_item_new_with_mnemonic ( _("_Astronomy") );
       g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_astro), pass_along );
       gtk_menu_shell_append ( GTK_MENU_SHELL(external_submenu), item );
+      gtk_widget_set_tooltip_text (item, _("Open astronomy program at this date and location"));
       gtk_widget_show ( item );
     }
   }
+
+  if ( l->current_tpl || l->current_wp ) {
+    // For the selected point
+    VikCoord *vc;
+    if ( l->current_tpl )
+      vc = &(VIK_TRACKPOINT(l->current_tpl->data)->coord);
+    else
+      vc = &(l->current_wp->coord);
+    vik_ext_tools_add_menu_items_to_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(l)), GTK_MENU (external_submenu), vc );
+  }
+  else {
+    // Otherwise for the selected sublayer
+    // TODO: Should use selected items centre - rather than implicitly using the current viewport
+    vik_ext_tools_add_menu_items_to_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(l)), GTK_MENU (external_submenu), NULL );
+  }
+
 
 #ifdef VIK_CONFIG_GOOGLE
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE && is_valid_google_route ( l, sublayer ) )

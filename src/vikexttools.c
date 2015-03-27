@@ -30,6 +30,7 @@
 #include <glib/gi18n.h>
 
 #define VIK_TOOL_DATA_KEY "vik-tool-data"
+#define VIK_TOOL_WIN_KEY "vik-tool-win"
 
 static GList *ext_tools_list = NULL;
 
@@ -76,6 +77,43 @@ void vik_ext_tools_add_action_items ( VikWindow *vwindow, GtkUIManager *uim, Gtk
       g_object_unref ( action );
 
       g_free ( label ); label = NULL;
+    }
+  }
+}
+
+static void ext_tool_open_at_position_cb ( GtkWidget *widget, VikCoord *vc )
+{
+  gpointer ptr = g_object_get_data ( G_OBJECT(widget), VIK_TOOL_DATA_KEY );
+  VikExtTool *ext_tool = VIK_EXT_TOOL ( ptr );
+  gpointer wptr = g_object_get_data ( G_OBJECT(widget), VIK_TOOL_WIN_KEY );
+  VikWindow *vw = VIK_WINDOW ( wptr );
+  vik_ext_tool_open_at_position ( ext_tool, vw, vc );
+}
+
+/**
+ * Add to any menu
+ *  mostly for allowing to assign for TrackWaypoint layer menus
+ */
+void vik_ext_tools_add_menu_items_to_menu ( VikWindow *vw, GtkMenu *menu, VikCoord *vc )
+{
+  for (GList *iter = ext_tools_list; iter; iter = iter->next)  {
+    VikExtTool *ext_tool = NULL;
+    gchar *label = NULL;
+    ext_tool = VIK_EXT_TOOL ( iter->data );
+    label = vik_ext_tool_get_label ( ext_tool );
+    if ( label ) {
+      GtkWidget *item = NULL;
+      item = gtk_menu_item_new_with_label ( _(label) );
+      g_free ( label ); label = NULL;
+      // Store some data into the menu entry
+      g_object_set_data ( G_OBJECT(item), VIK_TOOL_DATA_KEY, ext_tool );
+      g_object_set_data ( G_OBJECT(item), VIK_TOOL_WIN_KEY, vw );
+      if ( vc )
+        g_signal_connect ( G_OBJECT(item), "activate", G_CALLBACK(ext_tool_open_at_position_cb), vc );
+      else
+        g_signal_connect ( G_OBJECT(item), "activate", G_CALLBACK(ext_tools_open_cb), vw );
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+      gtk_widget_show ( item );
     }
   }
 }

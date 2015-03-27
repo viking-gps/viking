@@ -40,6 +40,7 @@ static void webtool_center_finalize ( GObject *gob );
 
 static guint8 webtool_center_mpp_to_zoom ( VikWebtool *self, gdouble mpp );
 static gchar *webtool_center_get_url ( VikWebtool *vw, VikWindow *vwindow );
+static gchar *webtool_center_get_url_at_position ( VikWebtool *vw, VikWindow *vwindow, VikCoord *vc );
 
 typedef struct _VikWebtoolCenterPrivate VikWebtoolCenterPrivate;
 
@@ -133,6 +134,7 @@ vik_webtool_center_class_init ( VikWebtoolCenterClass *klass )
 
   base_class = VIK_WEBTOOL_CLASS ( klass );
   base_class->get_url = webtool_center_get_url;
+  base_class->get_url_at_position = webtool_center_get_url_at_position;
 
   klass->mpp_to_zoom = webtool_center_mpp_to_zoom;
 
@@ -172,21 +174,25 @@ static guint8 webtool_center_mpp_to_zoom ( VikWebtool *self, gdouble mpp ) {
   return map_utils_mpp_to_zoom_level ( mpp );
 }
 
-static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
+static gchar *webtool_center_get_url_at_position ( VikWebtool *self, VikWindow *vwindow, VikCoord *vc )
 {
   VikWebtoolCenterPrivate *priv = NULL;
   VikViewport *viewport = NULL;
-  const VikCoord *coord = NULL;
   guint8 zoom = 17;
   struct LatLon ll;
   gchar strlat[G_ASCII_DTOSTR_BUF_SIZE], strlon[G_ASCII_DTOSTR_BUF_SIZE];
 
   priv = WEBTOOL_CENTER_GET_PRIVATE (self);
   viewport = vik_window_viewport ( vwindow );
-
   // Coords
-  coord = vik_viewport_get_center ( viewport );
-  vik_coord_to_latlon ( coord, &ll );
+  // Use the provided position otherwise use center of the viewport
+  if ( vc )
+    vik_coord_to_latlon ( vc, &ll );
+  else {
+    const VikCoord *coord = NULL;
+    coord = vik_viewport_get_center ( viewport );
+    vik_coord_to_latlon ( coord, &ll );
+  }
 
   // zoom - ideally x & y factors need to be the same otherwise use the default
   if ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) )
@@ -198,6 +204,11 @@ static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
   g_ascii_dtostr (strlon, G_ASCII_DTOSTR_BUF_SIZE, ll.lon);
 
   return g_strdup_printf ( priv->url, strlat, strlon, zoom );
+}
+
+static gchar *webtool_center_get_url ( VikWebtool *self, VikWindow *vwindow )
+{
+  return webtool_center_get_url_at_position ( self, vwindow, NULL );
 }
 
 guint8 vik_webtool_center_mpp_to_zoom (VikWebtool *self, gdouble mpp)

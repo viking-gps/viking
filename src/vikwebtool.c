@@ -36,6 +36,7 @@ static GObjectClass *parent_class;
 static void webtool_finalize ( GObject *gob );
 
 static void webtool_open ( VikExtTool *self, VikWindow *vwindow );
+static void webtool_open_at_position ( VikExtTool *self, VikWindow *vwindow, VikCoord *vc );
 
 G_DEFINE_ABSTRACT_TYPE (VikWebtool, vik_webtool, VIK_EXT_TOOL_TYPE)
 
@@ -52,6 +53,7 @@ static void vik_webtool_class_init ( VikWebtoolClass *klass )
 
   ext_tool_class = VIK_EXT_TOOL_CLASS ( klass );
   ext_tool_class->open = webtool_open;
+  ext_tool_class->open_at_position = webtool_open_at_position;
 }
 
 VikWebtool *vik_webtool_new ()
@@ -78,7 +80,25 @@ static void webtool_open ( VikExtTool *self, VikWindow *vwindow )
   g_free ( url );
 }
 
+static void webtool_open_at_position ( VikExtTool *self, VikWindow *vwindow, VikCoord *vc )
+{
+  VikWebtool *vwd = VIK_WEBTOOL ( self );
+  gchar *url = vik_webtool_get_url_at_position ( vwd, vwindow, vc );
+  if ( url ) {
+    open_url ( GTK_WINDOW(vwindow), url );
+    g_free ( url );
+  }
+}
+
 gchar *vik_webtool_get_url ( VikWebtool *self, VikWindow *vwindow )
 {
   return VIK_WEBTOOL_GET_CLASS( self )->get_url( self, vwindow );
+}
+
+gchar *vik_webtool_get_url_at_position ( VikWebtool *self, VikWindow *vwindow, VikCoord *vc )
+{
+  if ( VIK_WEBTOOL_GET_CLASS( self )->get_url_at_position )
+    return VIK_WEBTOOL_GET_CLASS( self )->get_url_at_position( self, vwindow, vc );
+  else
+    return NULL;
 }
