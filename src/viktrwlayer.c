@@ -1859,6 +1859,9 @@ static void trw_layer_draw_dist_labels ( struct DrawingParams *dp, VikTrack *trk
       case VIK_UNITS_DISTANCE_MILES:
         units = g_strdup ( _("miles") );
         break;
+      case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+        units = g_strdup ( _("NM") );
+        break;
         // VIK_UNITS_DISTANCE_KILOMETRES:
       default:
         units = g_strdup ( _("km") );
