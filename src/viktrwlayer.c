@@ -2817,7 +2817,7 @@ typedef struct {
 /*
  * Build up layer multiple track information via updating the tooltip_tracks structure
  */
-static void trw_layer_tracks_tooltip ( const gchar *name, VikTrack *tr, tooltip_tracks *tt )
+static void trw_layer_tracks_tooltip ( const gpointer id, VikTrack *tr, tooltip_tracks *tt )
 {
   tt->length = tt->length + vik_track_get_length (tr);
 
