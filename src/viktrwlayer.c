@@ -2809,6 +2809,14 @@ gint vik_trw_layer_get_property_tracks_line_thickness ( VikTrwLayer *vtl )
   return vtl->line_thickness;
 }
 
+/*
+ * Build up multiple routes information
+ */
+static void trw_layer_routes_tooltip ( const gpointer id, VikTrack *tr, gdouble *length )
+{
+  *length = *length + vik_track_get_length (tr);
+}
+
 // Structure to hold multiple track information for a layer
 typedef struct {
   gdouble length;
@@ -2862,7 +2870,7 @@ static void trw_layer_tracks_tooltip ( const gpointer id, VikTrack *tr, tooltip_
  */
 static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
 {
-  gchar tbuf1[32];
+  gchar tbuf1[64];
   gchar tbuf2[64];
   gchar tbuf3[64];
   gchar tbuf4[10];
@@ -2931,14 +2939,36 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
 		  tbuf3, len_in_units, tbuf4, tbuf1);
     }
 
+    tbuf1[0] = '\0';
+    gdouble rlength = 0.0;
+    g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_routes_tooltip, &rlength );
+    if ( rlength > 0.0 ) {
+      gdouble len_in_units;
+      // Setup info dependent on distance units
+      switch ( a_vik_get_units_distance() ) {
+      case VIK_UNITS_DISTANCE_MILES:
+        g_snprintf (tbuf4, sizeof(tbuf4), "miles");
+        len_in_units = VIK_METERS_TO_MILES(rlength);
+        break;
+      case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+        g_snprintf (tbuf4, sizeof(tbuf4), "NM");
+        len_in_units = VIK_METERS_TO_NAUTICAL_MILES(rlength);
+        break;
+      default:
+        g_snprintf (tbuf4, sizeof(tbuf4), "kms");
+        len_in_units = rlength/1000.0;
+        break;
+      }
+      g_snprintf (tbuf1, sizeof(tbuf1), _("\nTotal route length %.1f %s"), len_in_units, tbuf4);
+    }
+
     // Put together all the elements to form compact tooltip text
     g_snprintf (tmp_buf, sizeof(tmp_buf),
-		_("Tracks: %d - Waypoints: %d - Routes: %d%s"),
-		g_hash_table_size (vtl->tracks), g_hash_table_size (vtl->waypoints), g_hash_table_size (vtl->routes), tbuf2);
+                _("Tracks: %d - Waypoints: %d - Routes: %d%s%s"),
+                g_hash_table_size (vtl->tracks), g_hash_table_size (vtl->waypoints), g_hash_table_size (vtl->routes), tbuf2, tbuf1);
 
     g_date_free (gdate_start);
     g_date_free (gdate_end);
-
   }
 
   return tmp_buf;
