@@ -1657,6 +1657,8 @@ void vik_track_interpolate_times ( VikTrack *tr )
           tp->timestamp = (cur_dist / tr_dist) * tsdiff + tsfirst;
           tp->has_timestamp = TRUE;
         }
+        // Some points may now have the same time so remove them.
+        vik_track_remove_same_time_points ( tr );
       }
     }
   }
