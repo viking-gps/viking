@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,8 +155,22 @@ static time_t last_edit_time = 0;
  * tpwin_sync_time_to_tp:
  *
  */
-static void tpwin_sync_time_to_tp ( VikTrwLayerTpwin *tpwin )
+static void tpwin_sync_time_to_tp ( GtkWidget* widget, GdkEventButton *event, VikTrwLayerTpwin *tpwin )
 {
+  if ( !tpwin->cur_tp || tpwin->sync_to_tp_block )
+    return;
+
+  if ( event->button == 3 ) {
+    // On right click and when a time is available, allow a method to copy the displayed time as text
+    if ( !gtk_button_get_image ( GTK_BUTTON(widget) ) ) {
+       vu_copy_label_menu ( widget, event->button );
+    }
+    return;
+  }
+  else if ( event->button == 2 ) {
+    return;
+  }
+
   if ( !tpwin->cur_tp || tpwin->sync_to_tp_block )
     return;
 
@@ -248,7 +263,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   tpwin->course = GTK_LABEL(ui_label_new_selectable(NULL));
   tpwin->time = gtk_button_new();
   gtk_button_set_relief ( GTK_BUTTON(tpwin->time), GTK_RELIEF_NONE );
-  g_signal_connect_swapped ( G_OBJECT(tpwin->time), "clicked", G_CALLBACK(tpwin_sync_time_to_tp), tpwin );
+  g_signal_connect ( G_OBJECT(tpwin->time), "button-release-event", G_CALLBACK(tpwin_sync_time_to_tp), tpwin );
 
   tpwin->lat = GTK_SPIN_BUTTON(gtk_spin_button_new( GTK_ADJUSTMENT(gtk_adjustment_new (
                                  0, -90, 90, 0.00005, 0.01, 0 )), 0.00005, 6));

@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2010-2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2010-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,22 @@ static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 
 static VikWaypoint *edit_wp;
 
-static void time_edit_click ( GtkWidget *widget, VikWaypoint *wp )
+/**
+ * time_edit_click:
+ */
+static void time_edit_click ( GtkWidget* widget, GdkEventButton *event, VikWaypoint *wp )
 {
+  if ( event->button == 3 ) {
+    // On right click and when a time is available, allow a method to copy the displayed time as text
+    if ( !gtk_button_get_image ( GTK_BUTTON(widget) ) ) {
+      vu_copy_label_menu ( widget, event->button );
+    }
+    return;
+  }
+  else if ( event->button == 2 ) {
+    return;
+  }
+
   GTimeZone *gtz = g_time_zone_new_local ();
   time_t mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(widget)),
                                              _("Date/Time Edit"),
@@ -261,7 +275,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       time ( &edit_wp->timestamp );
     }
   }
-  g_signal_connect ( G_OBJECT(timevaluebutton), "clicked", G_CALLBACK(time_edit_click), edit_wp );
+  g_signal_connect ( G_OBJECT(timevaluebutton), "button-release-event", G_CALLBACK(time_edit_click), edit_wp );
 
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latentry, FALSE, FALSE, 0);
