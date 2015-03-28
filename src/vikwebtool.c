@@ -74,7 +74,7 @@ static void webtool_open ( VikExtTool *self, VikWindow *vwindow )
 {
   VikWebtool *vwd = VIK_WEBTOOL ( self );
   gchar *url = vik_webtool_get_url ( vwd, vwindow );
-  open_url ( NULL, url );
+  open_url ( GTK_WINDOW(vwindow), url );
   g_free ( url );
 }
 
