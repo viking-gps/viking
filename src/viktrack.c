@@ -1614,6 +1614,53 @@ void vik_track_anonymize_times ( VikTrack *tr )
   }
 }
 
+/**
+ * vik_track_interpolate_times:
+ *
+ * Interpolate the timestamps between first and last trackpoint,
+ * so that the track is driven at equal speed, regardless of the
+ * distance between individual trackpoints.
+ *
+ * NB This will overwrite any existing trackpoint timestamps
+ */
+void vik_track_interpolate_times ( VikTrack *tr )
+{
+  gdouble tr_dist, cur_dist;
+  time_t tsdiff, tsfirst;
+
+  GList *iter;
+  iter = tr->trackpoints;
+
+  VikTrackpoint *tp = VIK_TRACKPOINT(iter->data);
+  if ( tp->has_timestamp ) {
+    tsfirst = tp->timestamp;
+
+    // Find the end of the track and the last timestamp
+    while ( iter->next ) {
+      iter = iter->next;
+    }
+    tp = VIK_TRACKPOINT(iter->data);
+    if ( tp->has_timestamp ) {
+      tsdiff = tp->timestamp - tsfirst;
+
+      tr_dist = vik_track_get_length_including_gaps ( tr );
+      cur_dist = 0.0;
+
+      if ( tr_dist > 0 ) {
+        iter = tr->trackpoints;
+        // Apply the calculated timestamp to all trackpoints except the first and last ones
+        while ( iter->next && iter->next->next ) {
+          iter = iter->next;
+          tp = VIK_TRACKPOINT(iter->data);
+          cur_dist += vik_coord_diff ( &(tp->coord), &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+
+          tp->timestamp = (cur_dist / tr_dist) * tsdiff + tsfirst;
+          tp->has_timestamp = TRUE;
+        }
+      }
+    }
+  }
+}
 
 /**
  * vik_track_apply_dem_data:

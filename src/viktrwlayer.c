@@ -5367,6 +5367,19 @@ static void trw_layer_anonymize_times ( menu_array_sublayer values )
     vik_track_anonymize_times ( track );
 }
 
+static void trw_layer_interpolate_times ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->routes, values[MA_SUBLAYER_ID] );
+  else
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+
+  if ( track )
+    vik_track_interpolate_times ( track );
+}
+
 static void trw_layer_extend_track_end ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
@@ -8501,12 +8514,18 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
     gtk_widget_show ( item );
 
-    // Routes don't have timestamps - so this is only available for tracks
+    // Routes don't have timestamps - so these are only available for tracks
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
       item = gtk_image_menu_item_new_with_mnemonic ( _("_Anonymize Times") );
       g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_anonymize_times), pass_along );
       gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
       gtk_widget_set_tooltip_text (item, _("Shift timestamps to a relative offset from 1901-01-01"));
+      gtk_widget_show ( item );
+
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Interpolate Times") );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_interpolate_times), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(transform_submenu), item );
+      gtk_widget_set_tooltip_text (item, _("Reset trackpoint timestamps between the first and last points such that track is traveled at equal speed"));
       gtk_widget_show ( item );
     }
 
