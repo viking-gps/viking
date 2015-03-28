@@ -1314,6 +1314,20 @@ This is not available for routes, as they have no timestamps.
 </para>
 </note>
 </section>
+<section>
+<title>Interpolate Times</title>
+<para>
+Trackpoint timestamps between the first and last points are calculated such that track is travelled at equal speed.
+This is mostly useful when tracks don't have timestamps and you wish to recreate your trip (e.g. you've forgotten to turn on your GPS or the batteries have run out)
+Thus edit the first and last trackpoints to set the approximate times of your trip and then use this to give approximate times along the track.
+When used on tracks with timestamps this will overwrite the existing timestamps.
+</para>
+<note>
+<para>
+This is not available for routes, as they have no timestamps.
+</para>
+</note>
+</section>
 </section>
 
 <section><title>Export Track as GPX</title>
