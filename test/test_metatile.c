@@ -57,7 +57,10 @@ int main ( int argc, char *argv[] )
 
     err_msg[0] = 0;
 
-    len = metatile_read(dir, x, y, z, buf, tile_max, &compressed, err_msg);
+    if ( argc > 1 )
+      len = metatile_read(argv[1], x, y, z, buf, tile_max, &compressed, err_msg);
+    else
+      len = metatile_read(dir, x, y, z, buf, tile_max, &compressed, err_msg);
 
     if (len > 0) {
         // Do something with buf

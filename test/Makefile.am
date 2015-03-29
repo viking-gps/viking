@@ -28,9 +28,13 @@ if GEOTAG
 check_SCRIPTS += check_geotag.sh
 endif
 
+# Scripts and the test data that they use
 EXTRA_DIST = check_degrees_conversions.sh \
 	check_metatile.sh \
-	check_geotag.sh
+	metatile_example/13/0/0/250/220/0.meta \
+	check_geotag.sh \
+	Stonehenge.jpg \
+	ViewFromCribyn-Wales-GPS.jpg
 
 degrees_converter_SOURCES = degrees_converter.c
 degrees_converter_LDADD = \

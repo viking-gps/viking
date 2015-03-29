@@ -24,16 +24,22 @@ check_success_read_lon ()
   fi
 }
 
-# Read test
+# Enable running in test directory or via make distcheck when $srcdir is defined
+if [ -z "$srcdir" ]; then
+  srcdir=.
+fi
 
-check_success_read_lat 51.881861 ViewFromCribyn-Wales-GPS.jpg
-check_success_read_lon -3.419592 ViewFromCribyn-Wales-GPS.jpg
+# Read test
+check_success_read_lat 51.881861 $srcdir/ViewFromCribyn-Wales-GPS.jpg
+check_success_read_lon -3.419592 $srcdir/ViewFromCribyn-Wales-GPS.jpg
 
 # Write and then re-read test
-cp Stonehenge.jpg tmp.jpg
+cp $srcdir/Stonehenge.jpg tmp.jpg
+chmod +w tmp.jpg
+
 result=$(./geotag_write tmp.jpg)
-if [ $result != 0 ]; then
-  echo "geotag_write failure"
+if [ $? != 0 ]; then
+  echo "geotag_write failure - result is=$result"
   exit 1
 fi
 check_success_read_lat 51.179489 tmp.jpg
