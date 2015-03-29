@@ -1364,7 +1364,7 @@ msgstr "_Zeige DEM Datei Informationen"
 
 #: ../src/vikfileentry.c:68
 msgid "Browse..."
-msgstr "_Durchsuchen..."
+msgstr "Durchsuchen..."
 
 #: ../src/vikfileentry.c:96
 msgid "Choose file"
