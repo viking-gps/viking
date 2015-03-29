@@ -202,7 +202,8 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	g_free(md5);
 
 	old_mask = umask(0077);
-	gdk_pixbuf_save(thumb, to->str, "png", NULL,
+	GError *error = NULL;
+	gdk_pixbuf_save(thumb, to->str, "png", &error,
 			"tEXt::Thumb::Image::Width", swidth,
 			"tEXt::Thumb::Image::Height", sheight,
 			"tEXt::Thumb::Size", ssize,
@@ -213,7 +214,14 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 			NULL);
 	umask(old_mask);
 
-	/* We create the file ###.png.ROX-Filer-PID and rename it to avoid
+	if (error) {
+		g_warning ( "%s::%s", __FUNCTION__, error->message );
+		g_error_free ( error );
+		g_object_unref ( G_OBJECT(thumb) );
+		thumb = NULL; /* return NULL */
+	}
+	else
+	/* We create the file ###.png.Viking-PID and rename it to avoid
 	 * a race condition if two programs create the same thumb at
 	 * once.
 	 */
