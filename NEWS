@@ -1,3 +1,52 @@
+Viking 1.6 (2015-03-29)
+New features since 1.5.1
+* Mapnik Rendering Layer (not available in Windows build ATM) - with preprocessor CartoCSS option.
+** Build system dependency on C++. Source dependency on libmapnik-dev.
+* Export files via GPSBabel
+* Extended GPSBabel filtering support - Enables limited/simple OSM Overpass API support.
+* Support reading of MBTiles files.
+* Support reading of OSM Metatiles.
+* Configurable Toolbar
+* Configurable Menu keys
+* Various time related features:
+** Edit trackpoint and waypoint times.
+** Sort layers by time.
+** Preference option 'World' to display time values based on the position (i.e. in the local timezone) of the track or waypoint.
+** Show time axis values on time graphs
+** Quick search of tracks by date
+** Open external programs Rednotebook or Stellarium at the specific time (and place) of a point.
+* Improved route finder UI usage
+* GeoJSON support via external programs 'togpx' and 'togeojson'
+* New default Map Cache layout to be more compatible with standard OSM/TMS structure.
+** Also python tool available to migrate cache layouts
+* Support GPX Metadata values common to GPX1.0 and GPX1.1
+* Extended map type configuration options (zoom levels + area extents limits)
+* Build compatibility with GPSD 3.12
+* Allow starting Viking with command line parameters to set position, zoom and map type.
+** --latitude <degrees>
+** --longitude <degrees>
+** --zoom <ZoomLevelOSM>
+** --map <MapID>
+** eg: $> viking --latitude 51.4 --longitude -1.3 --zoom 12 --map 13
+* Improved Windows install information and options
+* Export Track, Route and Waypoint Lists as text.
+* Many internal improvements, fixes, more translations and various other small improvements.
+
+Fixes since 1.5.1
+* SF Bugs#104: Fix GStatBuf not available on Glib < 2.26
+* SF Bugs#105: Fix Display of Lines (Clipping) at High Zoom Levels.
+* SF Bugs#106: Fix incorrect location on opening .vik file saved in different locale.
+* SF Bugs#109: Ctrl+Keypad+/- to Zoom In/Out respectively.
+* SF Bugs#112: Enable using libgexiv2 for writing geotag image data to void XMP data loss.
+** Thus default source dependency on libgexiv2-dev
+** Not available in Windows build ATM
+* SF Bugs#113: Fix waypoints can be accidentally moved on (re)selection by the select tool
+* SF Bugs#114: Fix Shortcut keys get reset next start
+* SF Bugs#115: Fix application hanging on degrees input ending in a comma.
+* SF Bugs#118: Fix route point selection via the Edit Trackpoint tool.
+* Debian #761966: Remove an incorrect accelerator in the German translation.
+* Debian #746815: Fix loading image thumbnails when some Unicode chars in the pathname
+
 Viking 1.5 (2013-10-13)
 New features since 1.4.2
 * Startup preferences for ease of use.
