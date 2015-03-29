@@ -4,4 +4,4 @@ EXTRA_DIST = README \
 	geo-nearest \
 	googledirections \
 	images2waypoints.pl \
-	viking-cache-mbtile.py
+	viking-cache.py
