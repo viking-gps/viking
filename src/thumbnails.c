@@ -204,7 +204,13 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	// Thumb::URI must be in ISO-8859-1 encoding otherwise gdk_pixbuf_save() will fail
 	// - e.g. if characters such as 'ě' are encountered
 	// Also see http://en.wikipedia.org/wiki/ISO/IEC_8859-1
+	// ATM GLIB Manual doesn't specify in which version this function became available
+	//  find out that it's fairly recent so may break builds without this test
+#if GLIB_CHECK_VERSION(2,40,0)
 	char *thumb_uri = g_str_to_ascii ( uri, NULL );
+#else
+	char *thumb_uri = g_strdup ( uri );
+#endif
 	old_mask = umask(0077);
 	GError *error = NULL;
 	gdk_pixbuf_save(thumb, to->str, "png", &error,
