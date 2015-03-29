@@ -1,4 +1,5 @@
 src/acquire.c
+src/babel.c
 src/babel_ui.c
 src/background.c
 src/bing.c
@@ -68,6 +69,7 @@ src/viktrwlayer_analysis.c
 src/vikstatus.c
 src/vikutils.c
 src/vikwaypoint.c
+src/vikwebtool_datasource.c
 src/vikwindow.c
 src/viking.desktop.in
 src/libjpeg/jpeg-data.c
