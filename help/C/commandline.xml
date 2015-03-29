@@ -8,11 +8,18 @@
 >
 <section id="commandline">
 <title>Command Line</title>
+<section>
+<title>Overview</title>
 <para>
 &appname; being a Graphical User Interface program only has a few command line options.
 </para>
 
 <!-- keep this cmdsynopsis aligned with the man page version -->
+<refentry>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+    <refpurpose>program to manage GPS data</refpurpose>
+  </refnamediv>
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>&dhpackage;</command>
@@ -58,7 +65,14 @@
       </group>
     </cmdsynopsis>
   </refsynopsisdiv>
+  <!-- Blank to keep xmllint parsing happy -->
+  <refsection>
+    <title></title><para></para>
+  </refsection>
+</refentry>
+</section>
 
+<section><title>Details</title>
 <para>
 Note that the ordering of files can be important depending on their file type.
 Subsequent non Viking project files are loaded into the previous Viking project, with the files being processed left to right.
@@ -129,12 +143,10 @@ This also enables some extra information features in the GUI itself, primarily o
 </table>
 
 <variablelist>
-  <varlistentry>
-    <listitem><para>Internal Map Ids:</para></listitem>
-    <listitem><para>OSM Mapnik = 13</para></listitem>
-    <listitem><para>OSM Cycle = 17</para></listitem>
-    <listitem><para>Mapquest OSM = 19</para></listitem>
-  </varlistentry>
+  <varlistentry><term></term><listitem><para>Internal Map Ids:</para></listitem></varlistentry>
+  <varlistentry><term></term><listitem><para>OSM Mapnik = 13</para></listitem></varlistentry>
+  <varlistentry><term></term><listitem><para>OSM Cycle = 17</para></listitem></varlistentry>
+  <varlistentry><term></term><listitem><para>Mapquest OSM = 19</para></listitem></varlistentry>
 </variablelist>
 
 <para>
@@ -155,4 +167,5 @@ This is especially useful to monitor results of download requests (which need to
 <screen>viking --help-gtk</screen>
 </para>
 
+</section>
 </section>
