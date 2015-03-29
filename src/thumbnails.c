@@ -100,7 +100,7 @@ void a_thumbnails_create(const gchar *filename)
 
   if ( ! pixbuf )
     pixbuf = child_create_thumbnail(filename);
-  
+
   if ( pixbuf )
     g_object_unref (  G_OBJECT ( pixbuf ) );
 }
@@ -138,14 +138,14 @@ static GdkPixbuf *child_create_thumbnail(const gchar *path)
 
 	image = gdk_pixbuf_new_from_file(path, NULL);
 	if (!image)
-	  return NULL;
+		return NULL;
 
 	tmpbuf = gdk_pixbuf_apply_embedded_orientation(image);
 	g_object_unref(G_OBJECT(image));
 	image = tmpbuf;
 
 	if (image)
-        {
+	{
 		GdkPixbuf *thumb = save_thumbnail(path, image);
 		g_object_unref ( G_OBJECT ( image ) );
 		return thumb;
@@ -186,7 +186,7 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	uri = g_strconcat("file://", path, NULL);
 	md5 = md5_hash(uri);
 	g_free(path);
-		
+
 	to = g_string_new(HOME_DIR);
 	g_string_append(to, THUMB_DIR);
 	g_string_append(to, THUMB_SUB_DIR);
@@ -204,14 +204,14 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	old_mask = umask(0077);
 	GError *error = NULL;
 	gdk_pixbuf_save(thumb, to->str, "png", &error,
-			"tEXt::Thumb::Image::Width", swidth,
-			"tEXt::Thumb::Image::Height", sheight,
-			"tEXt::Thumb::Size", ssize,
-			"tEXt::Thumb::MTime", smtime,
-			"tEXt::Thumb::URI", uri,
-			"tEXt::Software", PROJECT,
-			"tEXt::Software::Orientation", orientation ? orientation : "0",
-			NULL);
+	                "tEXt::Thumb::Image::Width", swidth,
+	                "tEXt::Thumb::Image::Height", sheight,
+	                "tEXt::Thumb::Size", ssize,
+	                "tEXt::Thumb::MTime", smtime,
+	                "tEXt::Thumb::URI", uri,
+	                "tEXt::Software", PROJECT,
+	                "tEXt::Software::Orientation", orientation ? orientation : "0",
+	                NULL);
 	umask(old_mask);
 
 	if (error) {
@@ -262,7 +262,7 @@ GdkPixbuf *a_thumbnails_get(const gchar *pathname)
 	uri = g_strconcat("file://", path, NULL);
 	md5 = md5_hash(uri);
 	g_free(uri);
-	
+
 	thumb_path = g_strdup_printf("%s%s%s%s.png", HOME_DIR, THUMB_DIR, THUMB_SUB_DIR, md5);
 
 	g_free(md5);
