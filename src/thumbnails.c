@@ -201,6 +201,10 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 
 	g_free(md5);
 
+	// Thumb::URI must be in ISO-8859-1 encoding otherwise gdk_pixbuf_save() will fail
+	// - e.g. if characters such as 'ě' are encountered
+	// Also see http://en.wikipedia.org/wiki/ISO/IEC_8859-1
+	char *thumb_uri = g_str_to_ascii ( uri, NULL );
 	old_mask = umask(0077);
 	GError *error = NULL;
 	gdk_pixbuf_save(thumb, to->str, "png", &error,
@@ -208,11 +212,12 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	                "tEXt::Thumb::Image::Height", sheight,
 	                "tEXt::Thumb::Size", ssize,
 	                "tEXt::Thumb::MTime", smtime,
-	                "tEXt::Thumb::URI", uri,
+	                "tEXt::Thumb::URI", thumb_uri,
 	                "tEXt::Software", PROJECT,
 	                "tEXt::Software::Orientation", orientation ? orientation : "0",
 	                NULL);
 	umask(old_mask);
+	g_free(thumb_uri);
 
 	if (error) {
 		g_warning ( "%s::%s", __FUNCTION__, error->message );
