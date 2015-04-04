@@ -76,7 +76,7 @@ int main ( int argc, char *argv[] )
           fclose(fp);
         }
         else
-          fprintf(stderr, "Failed to open file because: \n", strerror(errno));
+          fprintf(stderr, "Failed to open file because: %s\n", strerror(errno));
 
         free(buf);
         return 0;
