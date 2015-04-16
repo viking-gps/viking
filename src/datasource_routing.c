@@ -123,7 +123,7 @@ static void datasource_routing_get_cmd_string ( datasource_routing_widgets_t *wi
   last_engine = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->engines_combo) );
   VikRoutingEngine *engine = vik_routing_ui_selector_get_nth ( widgets->engines_combo, last_engine );
   
-  *cmd = vik_routing_engine_get_cmd_from_directions ( engine, from, to );
+  *cmd = vik_routing_engine_get_url_from_directions ( engine, from, to );
   *input_file_type = g_strdup ( vik_routing_engine_get_format (engine) );
   options = NULL;
 

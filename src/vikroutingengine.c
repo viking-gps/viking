@@ -143,7 +143,7 @@ vik_routing_engine_class_init ( VikRoutingEngineClass *klass )
   routing_class->find = NULL;
 
   routing_class->supports_direction = NULL;
-  routing_class->get_cmd_from_directions = NULL;
+  routing_class->get_url_from_directions = NULL;
 
   routing_class->refine = NULL;
   routing_class->supports_refine = NULL;
@@ -281,25 +281,25 @@ vik_routing_engine_supports_direction ( VikRoutingEngine *self )
 }
 
 /**
- * vik_routing_engine_get_cmd_from_directions:
+ * vik_routing_engine_get_url_from_directions:
  * @self: routing engine
  * @start: the start direction
  * @end: the end direction
  *
- * Compute a "cmd" for acquire framework.
+ * Compute the URL used with the acquire framework.
  *
- * Returns: the computed cmd
+ * Returns: the computed URL
  */
 gchar *
-vik_routing_engine_get_cmd_from_directions ( VikRoutingEngine *self, const gchar *start, const gchar *end )
+vik_routing_engine_get_url_from_directions ( VikRoutingEngine *self, const gchar *start, const gchar *end )
 {
   VikRoutingEngineClass *klass;
 
   g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), NULL );
   klass = VIK_ROUTING_ENGINE_GET_CLASS( self );
-  g_return_val_if_fail ( klass->get_cmd_from_directions != NULL, NULL );
+  g_return_val_if_fail ( klass->get_url_from_directions != NULL, NULL );
 
-  return klass->get_cmd_from_directions( self, start, end );
+  return klass->get_url_from_directions( self, start, end );
 }
 
 /**

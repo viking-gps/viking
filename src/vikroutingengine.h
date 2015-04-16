@@ -46,7 +46,7 @@ struct _VikRoutingEngineClass
 {
   GObjectClass object_class;
   gboolean (*find)(VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end);
-  gchar *(*get_cmd_from_directions)(VikRoutingEngine *self, const gchar *start, const gchar *end);
+  gchar *(*get_url_from_directions)(VikRoutingEngine *self, const gchar *start, const gchar *end);
   gboolean (*supports_direction)(VikRoutingEngine *self);
   gboolean (*refine)(VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *vt);
   gboolean (*supports_refine)(VikRoutingEngine *self);
@@ -60,7 +60,7 @@ struct _VikRoutingEngine {
 
 gboolean vik_routing_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end );
 gboolean vik_routing_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *vt );
-gchar *vik_routing_engine_get_cmd_from_directions ( VikRoutingEngine *self, const gchar *start, const gchar *end );
+gchar *vik_routing_engine_get_url_from_directions ( VikRoutingEngine *self, const gchar *start, const gchar *end );
 
 /* Acessors */
 gchar *vik_routing_engine_get_id ( VikRoutingEngine *self );
