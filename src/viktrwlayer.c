@@ -7823,11 +7823,13 @@ static gboolean is_valid_geocache_name ( gchar *str )
   return len >= 3 && len <= 7 && str[0] == 'G' && str[1] == 'C' && isalnum(str[2]) && (len < 4 || isalnum(str[3])) && (len < 5 || isalnum(str[4])) && (len < 6 || isalnum(str[5])) && (len < 7 || isalnum(str[6]));
 }
 
+#ifndef WINDOWS
 static void trw_layer_track_use_with_filter ( menu_array_sublayer values )
 {
   VikTrack *trk = g_hash_table_lookup ( VIK_TRW_LAYER(values[MA_VTL])->tracks, values[MA_SUBLAYER_ID] );
   a_acquire_set_filter_track ( trk );
 }
+#endif
 
 #ifdef VIK_CONFIG_GOOGLE
 static gboolean is_valid_google_route ( VikTrwLayer *vtl, const gpointer track_id )
@@ -8663,11 +8665,14 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_widget_show ( item );
 #endif
 
+    // Currently filter with functions all use shellcommands and thus don't work in Windows
+#ifndef WINDOWS
     item = gtk_image_menu_item_new_with_mnemonic ( _("Use with _Filter") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_use_with_filter), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
+#endif
 
     /* ATM This function is only available via the layers panel, due to needing a vlp */
     if ( vlp ) {
