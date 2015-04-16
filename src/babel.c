@@ -688,7 +688,7 @@ void a_babel_init ()
   // Basic guesses - could use %ProgramFiles% but this is simpler:
   if ( g_file_test ( "C:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe", G_FILE_TEST_EXISTS ) )
     // 32 bit location on a 64 bit system
-    vlpd.s = "C:\\Program Files (x86)\\GPSBabel\gpsbabel.exe";
+    vlpd.s = "C:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe";
   else
     vlpd.s = "C:\\Program Files\\GPSBabel\\gpsbabel.exe";
 #else
