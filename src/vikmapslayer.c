@@ -1958,9 +1958,9 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
                    vik_map_source_get_name(map),
                    ulm.scale, ulm.z, ulm.x, ulm.y, filename, max_path_len,
                    vik_map_source_get_file_extension(map) );
-    source = g_strdup_printf ( "Source: http://%s%s",
-                               vik_map_source_default_get_hostname ( VIK_MAP_SOURCE_DEFAULT(map) ),
-                               vik_map_source_default_get_uri ( VIK_MAP_SOURCE_DEFAULT(map), &ulm ) );
+    source = g_markup_printf_escaped ( "Source: http://%s%s",
+                                       vik_map_source_default_get_hostname ( VIK_MAP_SOURCE_DEFAULT(map) ),
+                                       vik_map_source_default_get_uri ( VIK_MAP_SOURCE_DEFAULT(map), &ulm ) );
   }
 
   GArray *array = g_array_new (FALSE, TRUE, sizeof(gchar*));
