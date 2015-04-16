@@ -23,5 +23,6 @@
 #define __VIKING_GOOGLE_H
 
 void google_init();
+void google_post_init();
 
 #endif

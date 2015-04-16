@@ -44,7 +44,13 @@ void google_init () {
   GoogleGotoTool *gototool = google_goto_tool_new (  );
   vik_goto_register ( VIK_GOTO_TOOL ( gototool ) );
   g_object_unref ( gototool );
+}
 
+/**
+ * Delayed initialization part as the check for gpsbabel availability needs to have been performed
+ */
+void google_post_init ()
+{
   // Routing
   /* Google Directions service as routing engine.
    * 

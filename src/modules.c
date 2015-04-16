@@ -275,10 +275,13 @@ void modules_init()
  * modules_post_init:
  *
  * Secondary stage initialization
- * Can now use a_get_preferences()
+ * Can now use a_get_preferences() and a_babel_available()
  */
 void modules_post_init ()
 {
+#ifdef VIK_CONFIG_GOOGLE
+  google_post_init();
+#endif
 #ifdef HAVE_LIBMAPNIK
   vik_mapnik_layer_post_init();
 #endif
