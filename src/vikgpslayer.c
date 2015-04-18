@@ -1202,11 +1202,12 @@ static void gps_comm_thread(GpsSession *sess)
       if (!sess->realtime_tracking)
 #endif
       {
-	if ( sess->vvp && sess->direction == GPS_DOWN ) {
-	  /* View the data available */
-	  vik_trw_layer_auto_set_view ( sess->vtl, sess->vvp) ;
-	  vik_layer_emit_update ( VIK_LAYER(sess->vtl) ); // NB update from background thread
-	}
+        if ( sess->vvp && sess->direction == GPS_DOWN ) {
+          vik_layer_post_read ( VIK_LAYER(sess->vtl), sess->vvp, TRUE );
+          /* View the data available */
+          vik_trw_layer_auto_set_view ( sess->vtl, sess->vvp ) ;
+          vik_layer_emit_update ( VIK_LAYER(sess->vtl) ); // NB update from background thread
+        }
       }
     } else {
       /* canceled */
