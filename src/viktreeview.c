@@ -286,7 +286,7 @@ void vik_treeview_item_set_pointer ( VikTreeview *vt, GtkTreeIter *iter, gpointe
 
 void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, time_t timestamp )
 {
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_TIMESTAMP_COLUMN, timestamp, -1 );
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_TIMESTAMP_COLUMN, (gint64)timestamp, -1 );
 }
 
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter )
@@ -675,7 +675,7 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
     ITEM_DATA_COLUMN, data,
     EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
     ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
-    ITEM_TIMESTAMP_COLUMN, timestamp,
+    ITEM_TIMESTAMP_COLUMN, (gint64)timestamp,
     -1 );
 }
 
@@ -704,7 +704,7 @@ void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
                        ITEM_DATA_COLUMN, data,
                        EDITABLE_COLUMN, TRUE,
                        ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
-                       ITEM_TIMESTAMP_COLUMN, timestamp,
+                       ITEM_TIMESTAMP_COLUMN, (gint64)timestamp,
                        -1 );
 }
 
@@ -723,7 +723,7 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
                        ITEM_DATA_COLUMN, data,
                        EDITABLE_COLUMN, editable,
                        ICON_COLUMN, icon,
-                       ITEM_TIMESTAMP_COLUMN, timestamp,
+                       ITEM_TIMESTAMP_COLUMN, (gint64)timestamp,
                        -1 );
 }
 
@@ -732,7 +732,7 @@ typedef struct _SortTuple
 {
   gint offset;
   gchar *name;
-  time_t timestamp;
+  gint64 timestamp;
 } SortTuple;
 
 /**
