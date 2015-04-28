@@ -425,7 +425,8 @@ vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct L
   DownloadMapOptions *options = vik_routing_web_engine_get_download_options(self);
   
   gchar *format = vik_routing_engine_get_format ( self );
-  gboolean ret = a_babel_convert_from_url ( vtl, uri, format, NULL, NULL, options );
+  ProcessOptions po = { NULL, NULL, format, uri, NULL, NULL };
+  gboolean ret = a_babel_convert_from ( vtl, &po, NULL, NULL, options );
 
   g_free(uri);
 
@@ -559,7 +560,8 @@ vik_routing_web_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTra
 
   /* Convert and insert data in model */
   gchar *format = vik_routing_engine_get_format ( self );
-  gboolean ret = a_babel_convert_from_url ( vtl, uri, format, NULL, NULL, options );
+  ProcessOptions po = { NULL, NULL, format, uri, NULL, NULL };
+  gboolean ret = a_babel_convert_from ( vtl, &po, NULL, NULL, options );
 
   g_free(uri);
 

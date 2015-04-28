@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2011, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +54,7 @@ static int last_type = 0;
 
 static gpointer datasource_file_init ( acq_vik_t *avt );
 static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used );
+static void datasource_file_get_process_options ( datasource_file_widgets_t *widgets, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_file_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_file_interface = {
@@ -67,8 +68,8 @@ VikDataSourceInterface vik_datasource_file_interface = {
   (VikDataSourceInitFunc)		datasource_file_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_file_add_setup_widgets,
-  (VikDataSourceGetCmdStringFunc)	datasource_file_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from,
+  (VikDataSourceGetProcessOptionsFunc)  datasource_file_get_process_options,
+  (VikDataSourceProcessFunc)            a_babel_convert_from,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_file_cleanup,
@@ -160,7 +161,7 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
 }
 
 /* See VikDataSourceInterface */
-static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets, gchar **cmd, gchar **input_file, gpointer not_used )
+static void datasource_file_get_process_options ( datasource_file_widgets_t *widgets, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 )
 {
   /* Retrieve the file selected */
   gchar *filename = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(widgets->file) );
@@ -179,14 +180,14 @@ static void datasource_file_get_cmd_string ( datasource_file_widgets_t *widgets,
   last_type = gtk_combo_box_get_active ( GTK_COMBO_BOX (widgets->type) );
   type = (a_babel_ui_file_type_selector_get ( widgets->type ))->name;
 
-  /* Build the string */
-  *cmd = g_strdup_printf( "-i %s", type);
-  *input_file = g_strdup(filename);
+  /* Generate the process options */
+  po->babelargs = g_strdup_printf( "-i %s", type);
+  po->filename = g_strdup(filename);
 
   /* Free memory */
   g_free (filename);
 
-  g_debug(_("using babel args '%s' and file '%s'"), *cmd, *input_file);
+  g_debug(_("using babel args '%s' and file '%s'"), po->babelargs, po->filename);
 }
 
 /* See VikDataSourceInterface */

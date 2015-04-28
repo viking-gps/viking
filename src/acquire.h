@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,33 +94,30 @@ typedef gchar *(*VikDataSourceCheckExistenceFunc) ();
 typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 
 /**
- * VikDataSourceGetCmdStringFunc:
+ * VikDataSourceGetProcessOptionsFunc:
  * @user_data: provided by #VikDataSourceInterface.init_func or dialog with params
- * @args: the arguments computed for #VikDataSourceInterface.process_func
- * @extra: extra arguments for #VikDataSourceInterface.process_func
- * @options: even more options for #VikDataSourceInterface.process_func
+ * @process_options: main options controlling the behaviour of #VikDataSourceInterface.process_func
+ * @download_options: optional options for downloads from URLs for #VikDataSourceInterface.process_func
+ * @input_file_name:
+ * @input_track_file_name:
  * 
  * set both to %NULL to signal refusal (ie already downloading).
  */
-typedef void (*VikDataSourceGetCmdStringFunc) ( gpointer user_data, gchar **args, gchar **extra, gpointer options );
-
-typedef void (*VikDataSourceGetCmdStringFuncWithInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name );
-typedef void (*VikDataSourceGetCmdStringFuncWithInputInput) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, const gchar *input_file_name, const gchar *input_track_file_name );
+typedef void (*VikDataSourceGetProcessOptionsFunc) ( gpointer user_data, ProcessOptions *process_options, gpointer download_options, const gchar *input_file_name, const gchar *input_track_file_name );
 
 /**
  * VikDataSourceProcessFunc:
  * @vtl:
- * @cmd: the arguments computed by #VikDataSourceInterface.get_cmd_string_func
- * @extra: the extra arguments computed by #VikDataSourceInterface.get_cmd_string_func
+ * @process_options: options to control the behaviour of this function (see #ProcessOptions)
  * @status_cb: the #VikDataSourceInterface.progress_func
  * @adw: the widgets and data used by #VikDataSourceInterface.progress_func
- * @options: more options returned by #VikDataSourceInterface.get_cmd_string_func
+ * @download_options: Optional options used if downloads from URLs is used.
  * 
  * The actual function to do stuff - must report success/failure.
  */
-typedef gboolean (*VikDataSourceProcessFunc)  ( gpointer vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer options );
+typedef gboolean (*VikDataSourceProcessFunc) ( gpointer vtl, ProcessOptions *process_options, BabelStatusFunc, acq_dialog_widgets_t *adw, gpointer download_options );
 
-/* */
+/* NB Same as BabelStatusFunc */
 typedef void  (*VikDataSourceProgressFunc)  ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w );
 
 /**
@@ -136,7 +134,7 @@ typedef void  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog, gpoint
  */
 typedef void (*VikDataSourceCleanupFunc) ( gpointer user_data );
 
-typedef void (*VikDataSourceOffFunc) ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype );;
+typedef void (*VikDataSourceOffFunc) ( gpointer user_data, gchar **babelargs, gchar **file_descriptor );
 
 /**
  * VikDataSourceInterface:
@@ -159,8 +157,7 @@ struct _VikDataSourceInterface {
   VikDataSourceAddSetupWidgetsFunc add_setup_widgets_func;      
   /***                    ***/
 
-  /* or VikDataSourceGetCmdStringFuncWithInput, if inputtype is not NONE */
-  VikDataSourceGetCmdStringFunc get_cmd_string_func; 
+  VikDataSourceGetProcessOptionsFunc get_process_options_func;
 
   VikDataSourceProcessFunc process_func;
 

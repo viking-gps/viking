@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,8 +64,7 @@ VikTrack *filter_track = NULL;
 /* passed along to worker thread */
 typedef struct {
   acq_dialog_widgets_t *w;
-  gchar *cmd;
-  gchar *extra;
+  ProcessOptions *po;
   gboolean creating_new_layer;
   VikTrwLayer *vtl;
   gpointer options;
@@ -135,20 +134,30 @@ static void on_complete_process (w_and_interface_t *wi)
   }
 }
 
+static void free_process_options ( ProcessOptions *po )
+{
+  if ( po ) {
+    g_free ( po->babelargs );
+    g_free ( po->filename );
+    g_free ( po->input_file_type );
+    g_free ( po->babel_filters );
+    g_free ( po->url );
+    g_free ( po->shell_command );
+    g_free ( po );
+  }
+}
+
 /* this routine is the worker thread.  there is only one simultaneous download allowed */
 static void get_from_anything ( w_and_interface_t *wi )
 {
-  gchar *cmd = wi->cmd;
-  gchar *extra = wi->extra;
   gboolean result = TRUE;
 
   VikDataSourceInterface *source_interface = wi->w->source_interface;
 
-  if ( source_interface->process_func )
-    result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, wi->w, wi->options );
-
-  g_free ( cmd );
-  g_free ( extra );
+  if ( source_interface->process_func ) {
+    result = source_interface->process_func ( wi->vtl, wi->po, (BabelStatusFunc)progress_func, wi->w, wi->options );
+  }
+  free_process_options ( wi->po );
   g_free ( wi->options );
 
   if (wi->w->running && !result) {
@@ -195,10 +204,8 @@ static void acquire ( VikWindow *vw,
   /* for manual dialogs */
   GtkWidget *dialog = NULL;
   GtkWidget *status;
-  gchar *cmd = NULL;
-  gchar *extra = NULL;
-  gchar *cmd_off = NULL;
-  gchar *extra_off = NULL;
+  gchar *args_off = NULL;
+  gchar *fd_off = NULL;
   acq_dialog_widgets_t *w;
   gpointer user_data;
   gpointer options = NULL;
@@ -268,13 +275,13 @@ static void acquire ( VikWindow *vw,
       return; /* TODO: do we have to free anything here? */
   }
 
-  /* CREATE INPUT DATA & GET COMMAND STRING */
+  /* CREATE INPUT DATA & GET OPTIONS */
+  ProcessOptions *po = g_malloc0 ( sizeof(ProcessOptions) );
 
   if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER ) {
     gchar *name_src = a_gpx_write_tmp_file ( vtl, NULL );
 
-    ((VikDataSourceGetCmdStringFuncWithInput) source_interface->get_cmd_string_func)
-	( pass_along_data, &cmd, &extra, name_src );
+    source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, NULL );
 
     util_add_to_deletion_list ( name_src );
 
@@ -283,8 +290,7 @@ static void acquire ( VikWindow *vw,
     gchar *name_src = a_gpx_write_tmp_file ( vtl, NULL );
     gchar *name_src_track = a_gpx_write_track_tmp_file ( track, NULL );
 
-    ((VikDataSourceGetCmdStringFuncWithInputInput) source_interface->get_cmd_string_func)
-	( pass_along_data, &cmd, &extra, name_src, name_src_track );
+    source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, name_src_track );
 
     util_add_to_deletion_list ( name_src );
     util_add_to_deletion_list ( name_src_track );
@@ -294,16 +300,15 @@ static void acquire ( VikWindow *vw,
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRACK ) {
     gchar *name_src_track = a_gpx_write_track_tmp_file ( track, NULL );
 
-    ((VikDataSourceGetCmdStringFuncWithInput) source_interface->get_cmd_string_func)
-	( pass_along_data, &cmd, &extra, name_src_track );
+    source_interface->get_process_options_func ( pass_along_data, po, NULL, NULL, name_src_track );
 
     g_free ( name_src_track );
-  } else if ( source_interface->get_cmd_string_func )
-    source_interface->get_cmd_string_func ( pass_along_data, &cmd, &extra, &options );
+  } else if ( source_interface->get_process_options_func )
+    source_interface->get_process_options_func ( pass_along_data, po, &options, NULL, NULL );
 
   /* Get data for Off command */
   if ( source_interface->off_func ) {
-    source_interface->off_func ( pass_along_data, &cmd_off, &extra_off );
+    source_interface->off_func ( pass_along_data, &args_off, &fd_off );
   }
 
   /* cleanup for option dialogs */
@@ -318,8 +323,7 @@ static void acquire ( VikWindow *vw,
   wi = g_malloc(sizeof(*wi));
   wi->w = w;
   wi->w->source_interface = source_interface;
-  wi->cmd = cmd;
-  wi->extra = extra; /* usually input data type (?) */
+  wi->po = po;
   wi->options = options;
   wi->vtl = vtl;
   wi->creating_new_layer = (!vtl); // Default if Auto Layer Management is passed in
@@ -369,7 +373,7 @@ static void acquire ( VikWindow *vw,
   }
 
   if ( source_interface->is_thread ) {
-    if ( cmd ) {
+    if ( po->babelargs || po->url || po->shell_command ) {
 #if GLIB_CHECK_VERSION (2, 32, 0)
       g_thread_try_new ( "get_from_anything", (GThreadFunc)get_from_anything, wi, NULL );
 #else
@@ -381,13 +385,14 @@ static void acquire ( VikWindow *vw,
         w->running = FALSE;
         // NB Thread will free memory
       } else {
-        if ( cmd_off ) {
+        if ( args_off ) {
           /* Turn off */
-          a_babel_convert_from (NULL, cmd_off, extra_off, NULL, NULL, NULL);
-          g_free ( cmd_off );
+          ProcessOptions off_po = { args_off, fd_off, NULL, NULL, NULL };
+          a_babel_convert_from (NULL, &off_po, NULL, NULL, NULL);
+          g_free ( args_off );
         }
-        if ( extra_off )
-          g_free ( extra_off );
+        if ( fd_off )
+          g_free ( fd_off );
 
         // Thread finished by normal completion - free memory
         g_free ( w );
@@ -403,12 +408,11 @@ static void acquire ( VikWindow *vw,
   else {
     // bypass thread method malarkly - you'll just have to wait...
     if ( source_interface->process_func ) {
-      gboolean result = source_interface->process_func ( wi->vtl, cmd, extra, (BabelStatusFunc) progress_func, w, options );
+      gboolean result = source_interface->process_func ( wi->vtl, po, (BabelStatusFunc) progress_func, w, options );
       if ( !result )
         a_dialog_msg ( GTK_WINDOW(vw), GTK_MESSAGE_ERROR, _("Error: acquisition failed."), NULL );
     }
-    g_free ( cmd );
-    g_free ( extra );
+    free_process_options ( po );
     g_free ( options );
 
     on_complete_process ( wi );

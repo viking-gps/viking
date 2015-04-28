@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@ static gchar *last_folder_uri = NULL;
 
 static gpointer datasource_geotag_init ( acq_vik_t *avt );
 static void datasource_geotag_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, gpointer not_used );
-static gboolean datasource_geotag_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used );
+static void datasource_geotag_get_process_options ( gpointer user_data, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 );
+static gboolean datasource_geotag_process ( VikTrwLayer *vtl, ProcessOptions *po, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used );
 static void datasource_geotag_cleanup ( gpointer user_data );
 
 VikDataSourceInterface vik_datasource_geotag_interface = {
@@ -58,8 +58,8 @@ VikDataSourceInterface vik_datasource_geotag_interface = {
   (VikDataSourceInitFunc)		        datasource_geotag_init,
   (VikDataSourceCheckExistenceFunc)	    NULL,
   (VikDataSourceAddSetupWidgetsFunc)    datasource_geotag_add_setup_widgets,
-  (VikDataSourceGetCmdStringFunc)	    datasource_geotag_get_cmd_string,
-  (VikDataSourceProcessFunc)		    datasource_geotag_process,
+  (VikDataSourceGetProcessOptionsFunc)  datasource_geotag_get_process_options,
+  (VikDataSourceProcessFunc)            datasource_geotag_process,
   (VikDataSourceProgressFunc)		    NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		    datasource_geotag_cleanup,
@@ -125,7 +125,7 @@ static void datasource_geotag_add_setup_widgets ( GtkWidget *dialog, VikViewport
 	gtk_widget_show_all ( dialog );
 }
 
-static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babelargs_or_shellcmd, gchar **inputfile_or_inputtype, gpointer not_used )
+static void datasource_geotag_get_process_options ( gpointer user_data, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 )
 {
 	datasource_geotag_user_data_t *userdata = (datasource_geotag_user_data_t *)user_data;
 	/* Retrieve the files selected */
@@ -140,13 +140,13 @@ static void datasource_geotag_get_cmd_string ( gpointer user_data, gchar **babel
 	//GtkFileFilter *filter = gtk_file_chooser_get_filter ( GTK_FILE_CHOOSER(userdata->files) );
 
 	// return some value so *thread* processing will continue
-	*babelargs_or_shellcmd = g_strdup ("fake command"); // Not really used, thus no translations
+	po->babelargs = g_strdup ("fake command"); // Not really used, thus no translations
 }
 
 /**
  * Process selected files and try to generate waypoints storing them in the given vtl
  */
-static gboolean datasource_geotag_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used )
+static gboolean datasource_geotag_process ( VikTrwLayer *vtl, ProcessOptions *po, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used )
 {
 	datasource_geotag_user_data_t *user_data = (datasource_geotag_user_data_t *)adw->user_data;
 

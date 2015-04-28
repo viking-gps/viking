@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include "acquire.h"
 #include "geonamessearch.h"
 
-static gboolean datasource_wikipedia_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw );
+static gboolean datasource_wikipedia_process ( VikTrwLayer *vtl, ProcessOptions *po, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw );
 
 VikDataSourceInterface vik_datasource_wikipedia_interface = {
   N_("Create Waypoints from Wikipedia Articles"),
@@ -39,7 +39,7 @@ VikDataSourceInterface vik_datasource_wikipedia_interface = {
   (VikDataSourceInitFunc)               NULL,
   (VikDataSourceCheckExistenceFunc)	    NULL,
   (VikDataSourceAddSetupWidgetsFunc)    NULL,
-  (VikDataSourceGetCmdStringFunc)       NULL,
+  (VikDataSourceGetProcessOptionsFunc)  NULL,
   (VikDataSourceProcessFunc)            datasource_wikipedia_process,
   (VikDataSourceProgressFunc)           NULL,
   (VikDataSourceAddProgressWidgetsFunc) NULL,
@@ -56,7 +56,7 @@ VikDataSourceInterface vik_datasource_wikipedia_interface = {
 /**
  * Process selected files and try to generate waypoints storing them in the given vtl
  */
-static gboolean datasource_wikipedia_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw )
+static gboolean datasource_wikipedia_process ( VikTrwLayer *vtl, ProcessOptions *po, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw )
 {
 	struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
 

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005, Alex Foobarian <foobarian@gmail.com>
+ * Copyright (C) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +50,22 @@ typedef enum {
  * Callback function.
  */
 typedef void (*BabelStatusFunc)(BabelProgressCode, gpointer, gpointer);
+
+/**
+ * ProcessOptions:
+ *
+ * All values are defaulted to NULL
+ *
+ * Need to specify at least one of babelargs, URL or shell_command
+ */
+typedef struct {
+  gchar* babelargs; // The standard initial arguments to gpsbabel (if gpsbabel is to be used) - normally should include the input file type (-i) option.
+  gchar* filename; // Input filename (or device port e.g. /dev/ttyS0)
+  gchar* input_file_type; // If NULL then uses internal file format handler (GPX only ATM), otherwise specify gpsbabel input type like "kml","tcx", etc...
+  gchar* url; // URL input rather than a filename
+  gchar* babel_filters; // Optional filter arguments to gpsbabel
+  gchar* shell_command; // Optional shell command to run instead of gpsbabel - but will be (Unix) platform specific
+} ProcessOptions;
 
 /**
  * BabelMode:
@@ -98,13 +115,9 @@ GList *a_babel_device_list;
 void a_babel_foreach_file_with_mode (BabelMode mode, GFunc func, gpointer user_data);
 void a_babel_foreach_file_read_any (GFunc func, gpointer user_data);
 
-gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFunc cb, gpointer user_data, gpointer options );
-gboolean a_babel_convert_from_filter( VikTrwLayer *vt, const char *babelargs, const char *file, const char *babelfilters, BabelStatusFunc cb, gpointer user_data, gpointer options );
-gboolean a_babel_convert_from( VikTrwLayer *vt, const char *babelargs, const char *file, BabelStatusFunc cb, gpointer user_data, gpointer options );
-gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_cmd, const char *input_file_type, BabelStatusFunc cb, gpointer user_data, gpointer options );
-gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, const char *input_type, const char *filter, BabelStatusFunc cb, gpointer user_data, DownloadMapOptions *options );
-gboolean a_babel_convert_from_url ( VikTrwLayer *vt, const char *url, const char *input_type, BabelStatusFunc cb, gpointer user_data, DownloadMapOptions *options );
-gboolean a_babel_convert_from_url_or_shell ( VikTrwLayer *vt, const char *input, const char *input_type, BabelStatusFunc cb, gpointer user_data, DownloadMapOptions *options );
+// NB needs to match typedef VikDataSourceProcessFunc in acquire.h
+gboolean a_babel_convert_from ( VikTrwLayer *vt, ProcessOptions *process_options, BabelStatusFunc cb, gpointer user_data, gpointer download_options );
+
 gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babelargs, const char *file, BabelStatusFunc cb, gpointer user_data );
 
 void a_babel_init ();

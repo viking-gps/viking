@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2007, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2014-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,11 +33,6 @@
 
 /************************************ Simplify (Count) *****************************/
 
-static void datasource_bfilter_simplify_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used );
-
-/* TODO: shell_escape stuff */
-/* TODO: name is useless for filters */
-
 /* spin button scales */
 VikLayerParamScale simplify_params_scales[] = {
   {1, 10000, 10, 0},
@@ -57,6 +52,11 @@ VikLayerParamData bfilter_simplify_params_defaults[] = {
 #endif
 };
 
+static void datasource_bfilter_simplify_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *not_used3 )
+{
+  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -x simplify,count=%d -o gpx -F -", input_filename, paramdatas[0].u );
+}
+
 VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   N_("Simplify All Tracks..."),
   N_("Simplified Tracks"),
@@ -66,8 +66,8 @@ VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   FALSE, /* keep dialog open after success */
   TRUE,
   NULL, NULL, NULL,
-  (VikDataSourceGetCmdStringFunc)	datasource_bfilter_simplify_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
+  (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_simplify_get_process_options,
+  (VikDataSourceProcessFunc)           a_babel_convert_from,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -78,18 +78,7 @@ VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   0
 };
 
-
-static void datasource_bfilter_simplify_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used )
-{
-  *input_file_type = NULL;
-  *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -x simplify,count=%d -o gpx -F -", input_filename, paramdatas[0].u );
-}
-
 /**************************** Compress (Simplify by Error Factor Method) *****************************/
-
-static void datasource_bfilter_compress_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used );
-
-/* TODO: shell_escape stuff */
 
 static VikLayerParamScale compress_spin_scales[] = { {0.0, 1.000, 0.001, 3} };
 
@@ -110,6 +99,21 @@ VikLayerParamData bfilter_compress_params_defaults[] = {
 };
 
 /**
+ * http://www.gpsbabel.org/htmldoc-development/filter_simplify.html
+ */
+static void datasource_bfilter_compress_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *not_used3 )
+{
+  gchar units = a_vik_get_units_distance() == VIK_UNITS_DISTANCE_KILOMETRES ? 'k' : ' ';
+  // I toyed with making the length,crosstrack or relative methods selectable
+  // However several things:
+  // - mainly that typical values to use for the error relate to method being used - so hard to explain and then give a default sensible value in the UI
+  // - also using relative method fails when track doesn't have HDOP info - error reported to stderr - which we don't capture ATM
+  // - options make this more complicated to use - is even that useful to be allowed to change the error value?
+  // NB units not applicable if relative method used - defaults to Miles when not specified
+  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -x simplify,crosstrack,error=%-.5f%c -o gpx -F -", input_filename, paramdatas[0].d, units );
+}
+
+/**
  * Allow 'compressing' tracks/routes using the Simplify by Error Factor method
  */
 VikDataSourceInterface vik_datasource_bfilter_compress_interface = {
@@ -121,8 +125,8 @@ VikDataSourceInterface vik_datasource_bfilter_compress_interface = {
   FALSE, // Close the dialog after successful operation
   TRUE,
   NULL, NULL, NULL,
-  (VikDataSourceGetCmdStringFunc)   datasource_bfilter_compress_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
+  (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_compress_get_process_options,
+  (VikDataSourceProcessFunc)           a_babel_convert_from,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -133,29 +137,12 @@ VikDataSourceInterface vik_datasource_bfilter_compress_interface = {
   0
 };
 
-/**
- * http://www.gpsbabel.org/htmldoc-development/filter_simplify.html
- */
-static void datasource_bfilter_compress_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used )
-{
-  *input_file_type = NULL;
-  gchar units = a_vik_get_units_distance() == VIK_UNITS_DISTANCE_KILOMETRES ? 'k' : ' ';
-  // I toyed with making the length,crosstrack or relative methods selectable
-  // However several things:
-  // - mainly that typical values to use for the error relate to method being used - so hard to explain and then give a default sensible value in the UI
-  // - also using relative method fails when track doesn't have HDOP info - error reported to stderr - which we don't capture ATM
-  // - options make this more complicated to use - is even that useful to be allowed to change the error value?
-  // NB units not applicable if relative method used - defaults to Miles when not specified
-  *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -x simplify,crosstrack,error=%-.5f%c -o gpx -F -", input_filename, paramdatas[0].d, units );
-}
-
 /************************************ Duplicate Location ***********************************/
 
-static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used );
-
-/* TODO: shell_escape stuff */
-/* TODO: name is useless for filters */
-
+static void datasource_bfilter_dup_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *not_used3 )
+{
+  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -x duplicate,location -o gpx -F -", input_filename );
+}
 
 VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
   N_("Remove Duplicate Waypoints"),
@@ -166,8 +153,8 @@ VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
   FALSE, /* keep dialog open after success */
   TRUE,
   NULL, NULL, NULL,
-  (VikDataSourceGetCmdStringFunc)	datasource_bfilter_dup_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
+  (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_dup_get_process_options,
+  (VikDataSourceProcessFunc)           a_babel_convert_from,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -175,20 +162,13 @@ VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
 };
 
 
-static void datasource_bfilter_dup_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, gpointer not_used )
-{
-  *input_file_type = NULL;
-  *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -x duplicate,location -o gpx -F -", input_filename );
-}
-
-
 /************************************ Polygon ***********************************/
 
-static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used );
-
+static void datasource_bfilter_polygon_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *input_track_filename )
+{
+  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -o arc -F - | gpsbabel -i gpx -f %s -x polygon,file=- -o gpx -F -", input_track_filename, input_filename );
+}
 /* TODO: shell_escape stuff */
-/* TODO: name is useless for filters */
-
 
 VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
   N_("Waypoints Inside This"),
@@ -199,8 +179,8 @@ VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
   FALSE, /* keep dialog open after success */
   TRUE,
   NULL, NULL, NULL,
-  (VikDataSourceGetCmdStringFunc)	datasource_bfilter_polygon_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
+  (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_polygon_get_process_options,
+  (VikDataSourceProcessFunc)           a_babel_convert_from,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -211,20 +191,13 @@ VikDataSourceInterface vik_datasource_bfilter_polygon_interface = {
   0
 };
 
-
-static void datasource_bfilter_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used )
-{
-  *input_file_type = NULL;
-  *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -o arc -F - | gpsbabel -i gpx -f %s -x polygon,file=- -o gpx -F -", input_track_filename, input_filename );
-}
-
 /************************************ Exclude Polygon ***********************************/
 
-static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used );
-
+static void datasource_bfilter_exclude_polygon_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *input_track_filename )
+{
+  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -o arc -F - | gpsbabel -i gpx -f %s -x polygon,exclude,file=- -o gpx -F -", input_track_filename, input_filename );
+}
 /* TODO: shell_escape stuff */
-/* TODO: name is useless for filters */
-
 
 VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
   N_("Waypoints Outside This"),
@@ -235,8 +208,8 @@ VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
   FALSE, /* keep dialog open after success */
   TRUE,
   NULL, NULL, NULL,
-  (VikDataSourceGetCmdStringFunc)	datasource_bfilter_exclude_polygon_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from_shellcommand,
+  (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_exclude_polygon_get_process_options,
+  (VikDataSourceProcessFunc)           a_babel_convert_from,
   NULL, NULL, NULL,
   (VikDataSourceOffFunc) NULL,
 
@@ -246,11 +219,3 @@ VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
   NULL,
   0
 };
-
-
-static void datasource_bfilter_exclude_polygon_get_cmd_string ( VikLayerParamData *paramdatas, gchar **cmd, gchar **input_file_type, const gchar *input_filename, const gchar *input_track_filename, gpointer not_used )
-{
-  *input_file_type = NULL;
-  *cmd = g_strdup_printf ( "gpsbabel -i gpx -f %s -o arc -F - | gpsbabel -i gpx -f %s -x polygon,exclude,file=- -o gpx -F -", input_track_filename, input_filename );
-}
-

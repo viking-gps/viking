@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2014-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,8 @@ static gchar *last_folder_uri = NULL;
 
 static gpointer datasource_geojson_init ( acq_vik_t *avt );
 static void datasource_geojson_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_geojson_get_cmd_string ( datasource_geojson_user_data_t *ud, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
-static gboolean datasource_geojson_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used );
+static void datasource_geojson_get_process_options ( datasource_geojson_user_data_t *user_data, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 );
+static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused );
 static void datasource_geojson_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_geojson_interface = {
@@ -53,7 +53,7 @@ VikDataSourceInterface vik_datasource_geojson_interface = {
 	(VikDataSourceInitFunc)               datasource_geojson_init,
 	(VikDataSourceCheckExistenceFunc)     NULL,
 	(VikDataSourceAddSetupWidgetsFunc)    datasource_geojson_add_setup_widgets,
-	(VikDataSourceGetCmdStringFunc)       datasource_geojson_get_cmd_string,
+	(VikDataSourceGetProcessOptionsFunc)  datasource_geojson_get_process_options,
 	(VikDataSourceProcessFunc)            datasource_geojson_process,
 	(VikDataSourceProgressFunc)           NULL,
 	(VikDataSourceAddProgressWidgetsFunc) NULL,
@@ -112,7 +112,7 @@ static void datasource_geojson_add_setup_widgets ( GtkWidget *dialog, VikViewpor
 	gtk_widget_show_all ( dialog );
 }
 
-static void datasource_geojson_get_cmd_string ( datasource_geojson_user_data_t *userdata, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options )
+static void datasource_geojson_get_process_options ( datasource_geojson_user_data_t *userdata, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 )
 {
 	// Retrieve the files selected
 	userdata->filelist = gtk_file_chooser_get_filenames ( GTK_FILE_CHOOSER(userdata->files) ); // Not reusable !!
@@ -126,13 +126,13 @@ static void datasource_geojson_get_cmd_string ( datasource_geojson_user_data_t *
 	//GtkFileFilter *filter = gtk_file_chooser_get_filter ( GTK_FILE_CHOOSER(userdata->files) );
 
 	// return some value so *thread* processing will continue
-	*cmd = g_strdup ("fake command"); // Not really used, thus no translations
+	po->babelargs = g_strdup ("fake command"); // Not really used, thus no translations
 }
 
 /**
  * Process selected files and try to generate waypoints storing them in the given vtl
  */
-static gboolean datasource_geojson_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, gpointer not_used )
+static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused )
 {
 	datasource_geojson_user_data_t *user_data = (datasource_geojson_user_data_t *)adw->user_data;
 

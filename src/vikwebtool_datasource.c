@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -217,7 +217,7 @@ static void datasource_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, 
 
 
 
-static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar **extra, DownloadMapOptions *options )
+static void datasource_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2 )
 {
 	datasource_t *data = (datasource_t*) user_data;
 
@@ -235,7 +235,7 @@ static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar *
 	gchar *url = vik_webtool_get_url ( vwd, data->vw );
 	g_debug ("%s: %s", __FUNCTION__, url );
 
-	*cmd = g_strdup ( url );
+	po->url = g_strdup ( url );
 
 	// Only use first section of the file_type string
 	// One can't use values like 'kml -x transform,rte=wpt' in order to do fancy things
@@ -245,22 +245,13 @@ static void datasource_get_cmd_string ( gpointer user_data, gchar **cmd, gchar *
 	if ( priv->file_type )
 		parts = g_strsplit ( priv->file_type, " ", 0);
 	if ( parts )
-		*extra = g_strdup ( parts[0] );
+		po->input_file_type = g_strdup ( parts[0] );
 	else
-		*extra = NULL;
+		po->input_file_type = NULL;
 	g_strfreev ( parts );
 
 	options = NULL;
-}
-
-static gboolean datasource_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options )
-{
-	datasource_t *data = (datasource_t *)adw->user_data;
-	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( data->self );
-	// Dependent on the ExtTool / what extra has been set to...
-	// When extra is NULL - then it interprets results as a GPX
-	gboolean result = a_babel_convert_from_url_filter ( vtl, cmd, extra, priv->babel_filter_args, status_cb, adw, options);
-	return result;
+	po->babel_filters = priv->babel_filter_args;
 }
 
 static void cleanup ( gpointer data )
@@ -289,8 +280,8 @@ static void webtool_datasource_open ( VikExtTool *self, VikWindow *vw )
 		(VikDataSourceInitFunc)               datasource_init,
 		(VikDataSourceCheckExistenceFunc)     NULL,
 		(VikDataSourceAddSetupWidgetsFunc)    (search ? datasource_add_setup_widgets : NULL),
-		(VikDataSourceGetCmdStringFunc)       datasource_get_cmd_string,
-		(VikDataSourceProcessFunc)            datasource_process,
+		(VikDataSourceGetProcessOptionsFunc)  datasource_get_process_options,
+		(VikDataSourceProcessFunc)            a_babel_convert_from,
 		(VikDataSourceProgressFunc)           NULL,
 		(VikDataSourceAddProgressWidgetsFunc) NULL,
 		(VikDataSourceCleanupFunc)            cleanup,

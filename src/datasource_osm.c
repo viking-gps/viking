@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2011, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +46,7 @@ static gdouble last_page_number = 0;
 
 static gpointer datasource_osm_init ( acq_vik_t *avt );
 static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
+static void datasource_osm_get_process_options ( datasource_osm_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2);
 static void datasource_osm_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_osm_interface = {
@@ -59,8 +60,8 @@ VikDataSourceInterface vik_datasource_osm_interface = {
   (VikDataSourceInitFunc)		datasource_osm_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_osm_add_setup_widgets,
-  (VikDataSourceGetCmdStringFunc)	datasource_osm_get_cmd_string,
-  (VikDataSourceProcessFunc)            a_babel_convert_from_url,
+  (VikDataSourceGetProcessOptionsFunc)  datasource_osm_get_process_options,
+  (VikDataSourceProcessFunc)            a_babel_convert_from,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_osm_cleanup,
@@ -96,7 +97,7 @@ static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   gtk_widget_show_all(dialog);
 }
 
-static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options )
+static void datasource_osm_get_process_options ( datasource_osm_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2)
 {
   int page = 0;
   gdouble min_lat, max_lat, min_lon, max_lon;
@@ -118,9 +119,9 @@ static void datasource_osm_get_cmd_string ( datasource_osm_widgets_t *widgets, g
   last_page_number = gtk_spin_button_get_value(GTK_SPIN_BUTTON(widgets->page_number));
   page = last_page_number;
 
-  *cmd = g_strdup_printf( DOWNLOAD_URL_FMT, sminlon, sminlat, smaxlon, smaxlat, page );
-  *input_file_type = NULL;
-  options = NULL;
+  // NB Download is of GPX type
+  po->url = g_strdup_printf( DOWNLOAD_URL_FMT, sminlon, sminlat, smaxlon, smaxlat, page );
+  options = NULL; // i.e. use the default download settings
 }
 
 static void datasource_osm_cleanup ( gpointer data )

@@ -692,7 +692,8 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     // In fact both kml & gpx files start the same as they are in xml
     if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
       // Implicit Conversion
-      if ( ! ( success = a_babel_convert_from ( VIK_TRW_LAYER(vtl), "-i kml", filename, NULL, NULL, NULL ) ) ) {
+      ProcessOptions po = { "-i kml", filename, NULL, NULL, NULL, NULL };
+      if ( ! ( success = a_babel_convert_from ( VIK_TRW_LAYER(vtl), &po, NULL, NULL, NULL ) ) ) {
         load_answer = LOAD_TYPE_GPSBABEL_FAILURE;
       }
     }

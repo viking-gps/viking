@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2007, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (C) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +57,7 @@ typedef struct {
 
 static gpointer datasource_gc_init ( acq_vik_t *avt );
 static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used );
+static void datasource_gc_get_process_options ( datasource_gc_widgets_t *widgets, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_gc_cleanup ( datasource_gc_widgets_t *widgets );
 static gchar *datasource_gc_check_existence ();
 
@@ -73,8 +74,8 @@ VikDataSourceInterface vik_datasource_gc_interface = {
   (VikDataSourceInitFunc)		datasource_gc_init,
   (VikDataSourceCheckExistenceFunc)	datasource_gc_check_existence,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_gc_add_setup_widgets,
-  (VikDataSourceGetCmdStringFunc)	datasource_gc_get_cmd_string,
-  (VikDataSourceProcessFunc)		a_babel_convert_from_shellcommand,
+  (VikDataSourceGetProcessOptionsFunc)  datasource_gc_get_process_options,
+  (VikDataSourceProcessFunc)            a_babel_convert_from,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_gc_cleanup,
@@ -219,7 +220,7 @@ static void datasource_gc_add_setup_widgets ( GtkWidget *dialog, VikViewport *vv
   gtk_widget_show_all(dialog);
 }
 
-static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gchar **cmd, gchar **input_file_type, gpointer not_used )
+static void datasource_gc_get_process_options ( datasource_gc_widgets_t *widgets, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 )
 {
   //gchar *safe_string = g_shell_quote ( gtk_entry_get_text ( GTK_ENTRY(widgets->center_entry) ) );
   gchar *safe_user = g_shell_quote ( a_preferences_get ( VIKING_GC_PARAMS_NAMESPACE "username")->s );
@@ -241,7 +242,7 @@ static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gch
   // 3. Converts webpages into a single waypoint file, ignoring zero location waypoints '-z'
   //       Probably as they are premium member only geocaches and user is only a basic member
   //  Final output is piped into GPSbabel - hence removal of *html is done at beginning of the command sequence
-  *cmd = g_strdup_printf( "rm -f ~/.geo/caches/*html ; %s -P -n%d -r%.1fM -u %s -p %s %s %s ; %s -z ~/.geo/caches/*html ",
+  po->shell_command = g_strdup_printf( "rm -f ~/.geo/caches/*html ; %s -P -n%d -r%.1fM -u %s -p %s %s %s ; %s -z ~/.geo/caches/*html ",
 			  GC_PROGRAM1,
 			  gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->num_spin) ),
 			  gtk_spin_button_get_value_as_float ( GTK_SPIN_BUTTON(widgets->miles_radius_spin) ),
@@ -249,7 +250,6 @@ static void datasource_gc_get_cmd_string ( datasource_gc_widgets_t *widgets, gch
 			  safe_pass,
 			  slat, slon,
 			  GC_PROGRAM2 );
-  *input_file_type = NULL;
   //g_free ( safe_string );
   g_free ( safe_user );
   g_free ( safe_pass );

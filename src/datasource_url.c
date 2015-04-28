@@ -40,7 +40,7 @@ static int last_type = -1;
 
 static gpointer datasource_url_init ( acq_vik_t *avt );
 static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_url_get_cmd_string ( datasource_url_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
+static void datasource_url_get_process_options ( datasource_url_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *download_options, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_url_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_url_interface = {
@@ -54,8 +54,8 @@ VikDataSourceInterface vik_datasource_url_interface = {
 	(VikDataSourceInitFunc)               datasource_url_init,
 	(VikDataSourceCheckExistenceFunc)     NULL,
 	(VikDataSourceAddSetupWidgetsFunc)    datasource_url_add_setup_widgets,
-	(VikDataSourceGetCmdStringFunc)       datasource_url_get_cmd_string,
-	(VikDataSourceProcessFunc)            a_babel_convert_from_url,
+	(VikDataSourceGetProcessOptionsFunc)  datasource_url_get_process_options,
+	(VikDataSourceProcessFunc)            a_babel_convert_from,
 	(VikDataSourceProgressFunc)           NULL,
 	(VikDataSourceAddProgressWidgetsFunc) NULL,
 	(VikDataSourceCleanupFunc)            datasource_url_cleanup,
@@ -139,7 +139,7 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 	gtk_widget_show_all(dialog);
 }
 
-static void datasource_url_get_cmd_string ( datasource_url_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options )
+static void datasource_url_get_process_options ( datasource_url_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *download_options, const gchar *not_used2, const gchar *not_used3 )
 {
 	// Retrieve the user entered value
 	const gchar *value = gtk_entry_get_text ( GTK_ENTRY(widgets->url) );
@@ -147,12 +147,12 @@ static void datasource_url_get_cmd_string ( datasource_url_widgets_t *widgets, g
 	if (GTK_IS_COMBO_BOX (widgets->type) )
 		last_type = gtk_combo_box_get_active ( GTK_COMBO_BOX (widgets->type) );
 
-	*input_file_type = NULL; // Default to gpx
+	po->input_file_type = NULL; // Default to gpx
 	if ( a_babel_file_list )
-		*input_file_type = g_strdup ( ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name );
+		po->input_file_type = g_strdup ( ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name );
 
-	*cmd = g_strdup ( value );
-	options = NULL;
+	po->url = g_strdup ( value );
+	download_options = NULL;
 }
 
 static void datasource_url_cleanup ( gpointer data )

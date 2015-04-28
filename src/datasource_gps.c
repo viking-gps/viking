@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2006, Alex Foobarian <foobarian@gmail.com>
- * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ static gboolean gps_acquire_in_progress = FALSE;
 static gint last_active = -1;
 
 static gpointer datasource_gps_init_func ( acq_vik_t *avt );
-static void datasource_gps_get_cmd_string ( gpointer add_widgets_data_not_used, gchar **babelargs, gchar **input_file, gpointer not_used );
+static void datasource_gps_get_process_options ( gpointer user_data, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_gps_cleanup ( gpointer user_data );
 static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_dialog_widgets_t *w );
 static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
@@ -61,8 +61,8 @@ VikDataSourceInterface vik_datasource_gps_interface = {
   (VikDataSourceInitFunc)		datasource_gps_init_func,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_gps_add_setup_widgets,
-  (VikDataSourceGetCmdStringFunc)	datasource_gps_get_cmd_string,
-  (VikDataSourceProcessFunc)        a_babel_convert_from,
+  (VikDataSourceGetProcessOptionsFunc)  datasource_gps_get_process_options,
+  (VikDataSourceProcessFunc)            a_babel_convert_from,
   (VikDataSourceProgressFunc)		datasource_gps_progress,
   (VikDataSourceAddProgressWidgetsFunc)	datasource_gps_add_progress_widgets,
   (VikDataSourceCleanupFunc)		datasource_gps_cleanup,
@@ -209,7 +209,7 @@ gboolean datasource_gps_get_do_waypoints ( gpointer user_data )
   return get_waypoints;
 }
 
-static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelargs, gchar **input_file, gpointer not_used )
+static void datasource_gps_get_process_options ( gpointer user_data, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 )
 {
   char *device = NULL;
   char *tracks = NULL;
@@ -217,7 +217,7 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   char *waypoints = NULL;
 
   if (gps_acquire_in_progress) {
-    *babelargs = *input_file = NULL;
+    po->babelargs = po->filename = NULL;
   }
   
   gps_acquire_in_progress = TRUE;
@@ -239,16 +239,16 @@ static void datasource_gps_get_cmd_string ( gpointer user_data, gchar **babelarg
   else
     waypoints = "";
 
-  *babelargs = g_strdup_printf("-D 9 %s %s %s -i %s", tracks, routes, waypoints, device);
+  po->babelargs = g_strdup_printf("-D 9 %s %s %s -i %s", tracks, routes, waypoints, device);
   /* device points to static content => no free */
   device = NULL;
   tracks = NULL;
   routes = NULL;
   waypoints = NULL;
 
-  *input_file = g_strdup(datasource_gps_get_descriptor(user_data));
+  po->filename = g_strdup(datasource_gps_get_descriptor(user_data));
 
-  g_debug(_("using cmdline '%s' and file '%s'\n"), *babelargs, *input_file);
+  g_debug(_("using cmd '%s' and file '%s'\n"), po->babelargs, po->filename);
 }
 
 /**
@@ -264,14 +264,14 @@ gboolean datasource_gps_get_off ( gpointer user_data )
   return power_off;
 }
 
-static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **input_file )
+static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **file_descriptor )
 {
   char *ser = NULL;
   char *device = NULL;
   gps_user_data_t *w = (gps_user_data_t *)user_data;
 
   if (gps_acquire_in_progress) {
-    *babelargs = *input_file = NULL;
+    *babelargs = *file_descriptor = NULL;
   }
 
   /* See if we should turn off the device */
@@ -302,7 +302,7 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
 #else
   ser = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w->ser_b));
 #endif
-  *input_file = g_strdup(ser);
+  *file_descriptor = g_strdup(ser);
 }
 
 

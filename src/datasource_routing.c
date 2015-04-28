@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2013, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +47,7 @@ static gchar *last_to_str = NULL;
 
 static gpointer datasource_routing_init ( acq_vik_t *avt );
 static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_routing_get_cmd_string ( datasource_routing_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options );
+static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_routing_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_routing_interface = {
@@ -60,8 +61,8 @@ VikDataSourceInterface vik_datasource_routing_interface = {
   (VikDataSourceInitFunc)		datasource_routing_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_routing_add_setup_widgets,
-  (VikDataSourceGetCmdStringFunc)	datasource_routing_get_cmd_string,
-  (VikDataSourceProcessFunc)            a_babel_convert_from_url_or_shell,
+  (VikDataSourceGetProcessOptionsFunc)  datasource_routing_get_process_options,
+  (VikDataSourceProcessFunc)            a_babel_convert_from,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_routing_cleanup,
@@ -111,7 +112,7 @@ static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewpor
   gtk_widget_show_all(dialog);
 }
 
-static void datasource_routing_get_cmd_string ( datasource_routing_widgets_t *widgets, gchar **cmd, gchar **input_file_type, DownloadMapOptions *options )
+static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *not_used2, const gchar *not_used3 )
 {
   const gchar *from, *to;
   
@@ -122,13 +123,11 @@ static void datasource_routing_get_cmd_string ( datasource_routing_widgets_t *wi
   /* Retrieve engine */
   last_engine = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->engines_combo) );
   VikRoutingEngine *engine = vik_routing_ui_selector_get_nth ( widgets->engines_combo, last_engine );
-
-  // Give up if no engine available
   if ( !engine ) return;
 
-  *cmd = vik_routing_engine_get_url_from_directions ( engine, from, to );
-  *input_file_type = g_strdup ( vik_routing_engine_get_format (engine) );
-  options = NULL;
+  po->url = vik_routing_engine_get_url_from_directions ( engine, from, to );
+  po->input_file_type = g_strdup ( vik_routing_engine_get_format (engine) );
+  options = NULL; // i.e. use the default download settings
 
   /* Save last selection */
   g_free ( last_from_str );

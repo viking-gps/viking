@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,8 @@ typedef struct {
 
 static gpointer datasource_osm_my_traces_init ( acq_vik_t *avt );
 static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_osm_my_traces_get_cmd_string ( gpointer user_data, gchar **args, gchar **extra, DownloadMapOptions *options );
-static gboolean datasource_osm_my_traces_process  ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused );
+static void datasource_osm_my_traces_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2 );
+static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused );
 static void datasource_osm_my_traces_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_osm_my_traces_interface = {
@@ -66,8 +66,8 @@ VikDataSourceInterface vik_datasource_osm_my_traces_interface = {
   (VikDataSourceInitFunc)		    datasource_osm_my_traces_init,
   (VikDataSourceCheckExistenceFunc)	NULL,
   (VikDataSourceAddSetupWidgetsFunc)datasource_osm_my_traces_add_setup_widgets,
-  (VikDataSourceGetCmdStringFunc)	datasource_osm_my_traces_get_cmd_string,
-  (VikDataSourceProcessFunc)		datasource_osm_my_traces_process,
+  (VikDataSourceGetProcessOptionsFunc) datasource_osm_my_traces_get_process_options,
+  (VikDataSourceProcessFunc)           datasource_osm_my_traces_process,
   (VikDataSourceProgressFunc)		NULL,
   (VikDataSourceAddProgressWidgetsFunc)	NULL,
   (VikDataSourceCleanupFunc)		datasource_osm_my_traces_cleanup,
@@ -125,7 +125,7 @@ static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikV
 	data->vvp = vvp;
 }
 
-static void datasource_osm_my_traces_get_cmd_string ( gpointer user_data, gchar **args, gchar **extra, DownloadMapOptions *options )
+static void datasource_osm_my_traces_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2 )
 {
 	datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t*) user_data;
 
@@ -133,10 +133,8 @@ static void datasource_osm_my_traces_get_cmd_string ( gpointer user_data, gchar 
 	osm_set_login ( gtk_entry_get_text ( GTK_ENTRY(data->user_entry) ),
 	                gtk_entry_get_text ( GTK_ENTRY(data->password_entry) ) );
 
-	// If going to use the values passed back into the process function parameters then these need to be set.
+	// If going to use the values passed back into the process function parameters then they need to be set.
 	// But ATM we aren't
-	*args = NULL;
-	*extra = NULL;
 	options = NULL;
 }
 
@@ -560,7 +558,7 @@ static void set_in_current_view_property ( VikTrwLayer *vtl, datasource_osm_my_t
 	}
 }
 
-static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar *cmd, const gchar *extra, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused )
+static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused )
 {
 	//datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t *)adw->user_data;
 
@@ -639,7 +637,10 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, const gchar
 		if ( gpx_id ) {
 			gchar *url = g_strdup_printf ( DS_OSM_TRACES_GPX_URL_FMT, gpx_id );
 
-			result = a_babel_convert_from_url ( vtlX, url, "gpx", status_cb, adw, &options );
+			// NB download type is GPX (or a compressed version)
+			ProcessOptions my_po = *process_options;
+			my_po.url = url;
+			result = a_babel_convert_from ( vtlX, &my_po, status_cb, adw, &options );
 			// TODO investigate using a progress bar:
 			// http://developer.gnome.org/gtk/2.24/GtkProgressBar.html
 

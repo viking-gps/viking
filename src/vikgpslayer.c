@@ -103,7 +103,7 @@ typedef struct {
   gint count;
   VikTrwLayer *vtl;
   VikTrack *track;
-  gchar *cmd_args;
+  gchar *babelargs;
   gchar *window_title;
   GtkWidget *dialog;
   GtkWidget *status_label;
@@ -878,7 +878,7 @@ gboolean vik_gps_layer_is_empty ( VikGpsLayer *vgl )
 static void gps_session_delete(GpsSession *sess)
 {
   vik_mutex_free(sess->mutex);
-  g_free(sess->cmd_args);
+  g_free(sess->babelargs);
   g_free(sess);
 }
 
@@ -1179,11 +1179,12 @@ static void gps_comm_thread(GpsSession *sess)
 {
   gboolean result;
 
-  if (sess->direction == GPS_DOWN)
-    result = a_babel_convert_from (sess->vtl, sess->cmd_args, sess->port,
-        (BabelStatusFunc) gps_download_progress_func, sess, NULL);
+  if (sess->direction == GPS_DOWN) {
+    ProcessOptions po = { sess->babelargs, sess->port, NULL, NULL, NULL, NULL };
+    result = a_babel_convert_from (sess->vtl, &po, (BabelStatusFunc) gps_download_progress_func, sess, NULL);
+  }
   else {
-    result = a_babel_convert_to (sess->vtl, sess->track, sess->cmd_args, sess->port,
+    result = a_babel_convert_to (sess->vtl, sess->track, sess->babelargs, sess->port,
         (BabelStatusFunc) gps_upload_progress_func, sess);
   }
 
@@ -1298,7 +1299,7 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
   else
     waypoints = "";
 
-  sess->cmd_args = g_strdup_printf("-D 9 %s %s %s -%c %s",
+  sess->babelargs = g_strdup_printf("-D 9 %s %s %s -%c %s",
 				   tracks, routes, waypoints, (dir == GPS_DOWN) ? 'i' : 'o', protocol);
   tracks = NULL;
   waypoints = NULL;
@@ -1358,7 +1359,8 @@ gint vik_gps_comm ( VikTrwLayer *vtl,
     if ( turn_off ) {
       // No need for thread for powering off device (should be quick operation...) - so use babel command directly:
       gchar *device_off = g_strdup_printf("-i %s,%s", protocol, "power_off");
-      gboolean result = a_babel_convert_from (NULL, (const char*)device_off, (const char*)port, NULL, NULL, NULL);
+      ProcessOptions po = { device_off, port, NULL, NULL, NULL, NULL };
+      gboolean result = a_babel_convert_from (NULL, &po, NULL, NULL, NULL);
       if ( !result )
         a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not turn off device.") );
       g_free ( device_off );
