@@ -54,7 +54,9 @@ VikLayerParamData bfilter_simplify_params_defaults[] = {
 
 static void datasource_bfilter_simplify_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *not_used3 )
 {
-  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -x simplify,count=%d -o gpx -F -", input_filename, paramdatas[0].u );
+  po->babelargs = g_strdup ( "-i gpx" );
+  po->filename = g_strdup ( input_filename );
+  po->babel_filters = g_strdup_printf ( "-x simplify,count=%d", paramdatas[0].u );
 }
 
 VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
@@ -110,7 +112,9 @@ static void datasource_bfilter_compress_get_process_options ( VikLayerParamData 
   // - also using relative method fails when track doesn't have HDOP info - error reported to stderr - which we don't capture ATM
   // - options make this more complicated to use - is even that useful to be allowed to change the error value?
   // NB units not applicable if relative method used - defaults to Miles when not specified
-  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -x simplify,crosstrack,error=%-.5f%c -o gpx -F -", input_filename, paramdatas[0].d, units );
+  po->babelargs = g_strdup ( "-i gpx" );
+  po->filename = g_strdup ( input_filename );
+  po->babel_filters = g_strdup_printf ( "-x simplify,crosstrack,error=%-.5f%c", paramdatas[0].d, units );
 }
 
 /**
@@ -141,7 +145,9 @@ VikDataSourceInterface vik_datasource_bfilter_compress_interface = {
 
 static void datasource_bfilter_dup_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *not_used3 )
 {
-  po->shell_command = g_strdup_printf ( "gpsbabel -i gpx -f %s -x duplicate,location -o gpx -F -", input_filename );
+  po->babelargs = g_strdup ( "-i gpx" );
+  po->filename = g_strdup ( input_filename );
+  po->babel_filters = g_strdup ( "-x duplicate,location" );
 }
 
 VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
