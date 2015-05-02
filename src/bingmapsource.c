@@ -79,6 +79,7 @@ struct _BingMapSourcePrivate
 	GList *attributions;
 	/* Current attribution, when parsing */
 	gchar *attribution;
+	gboolean loading_attributions;
 };
 
 /* The pixbuf to store the logo */
@@ -109,6 +110,7 @@ bing_map_source_init (BingMapSource *self)
 	priv->api_key = NULL;
 	priv->attributions = NULL;
 	priv->attribution = NULL;
+	priv->loading_attributions = FALSE;
 }
 
 static void
@@ -297,7 +299,11 @@ _get_copyright(VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(V
 	/* Loop over all known attributions */
 	GList *attribution = priv->attributions;
 	if (attribution == NULL && g_strcmp0 ("<no-set>", priv->api_key)) {
-		_async_load_attributions (BING_MAP_SOURCE (self));
+		if ( ! priv->loading_attributions )
+			_async_load_attributions (BING_MAP_SOURCE (self));
+		else
+			// Wait until attributions loaded before processing them
+			return;
 	}
 	while (attribution != NULL) {
 		struct _Attribution *current = (struct _Attribution*)attribution->data;
@@ -462,6 +468,7 @@ _load_attributions ( BingMapSource *self )
 	}
 
 done:
+	priv->loading_attributions = FALSE;
 	g_free(uri);
 	g_remove(tmpname);
 	g_free(tmpname);
