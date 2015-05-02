@@ -2112,6 +2112,16 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
       tp = VIK_TRACKPOINT(list->data);
       tp_size = (list == dp->vtl->current_tpl) ? tp_size_cur : tp_size_reg;
 
+      VikTrackpoint *tp2 = VIK_TRACKPOINT(list->prev->data);
+      // See if in a different lat/lon 'quadrant' so don't draw massively long lines (presumably wrong way around the Earth)
+      //  Mainly to prevent wrong lines drawn when a track crosses the 180 degrees East-West longitude boundary
+      //  (since vik_viewport_draw_line() only copes with pixel value and has no concept of the globe)
+      if ( dp->lat_lon &&
+           (( tp2->coord.east_west < -90.0 && tp->coord.east_west > 90.0 ) ||
+            ( tp2->coord.east_west > 90.0 && tp->coord.east_west < -90.0 )) ) {
+        useoldvals = FALSE;
+        continue;
+      }
       /* check some stuff -- but only if we're in UTM and there's only ONE ZONE; or lat lon */
       if ( (!dp->one_zone && !dp->lat_lon) ||     /* UTM & zones; do everything */
              ( ((!dp->one_zone) || tp->coord.utm_zone == dp->center->utm_zone) &&   /* only check zones if UTM & one_zone */
@@ -2133,7 +2143,6 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
 	  goto skip;
 	}
 
-        VikTrackpoint *tp2 = VIK_TRACKPOINT(list->prev->data);
         if ( drawpoints || dp->vtl->drawlines ) {
           // setup main_gc for both point and line drawing
           if ( !drawing_highlight && (dp->vtl->drawmode == DRAWMODE_BY_SPEED) ) {
@@ -2231,7 +2240,6 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
       else {
         if (useoldvals && dp->vtl->drawlines && (!tp->newsegment))
         {
-          VikTrackpoint *tp2 = VIK_TRACKPOINT(list->prev->data);
           if ( dp->vtl->coord_mode != VIK_COORD_UTM || tp->coord.utm_zone == dp->center->utm_zone )
           {
             vik_viewport_coord_to_screen ( dp->vp, &(tp->coord), &x, &y );
