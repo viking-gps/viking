@@ -211,6 +211,40 @@ GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
   return pixbuf;
 }
 
+
+/**
+ * Reduce the alpha value of the specified pixbuf by alpha / 255
+ */
+GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
+{
+  guchar *pixels;
+  gint width, height, iii, jjj;
+
+  if ( ! gdk_pixbuf_get_has_alpha ( pixbuf ) )
+  {
+    GdkPixbuf *tmp = gdk_pixbuf_add_alpha(pixbuf,FALSE,0,0,0);
+    g_object_unref(G_OBJECT(pixbuf));
+    pixbuf = tmp;
+    if ( !pixbuf )
+      return NULL;
+  }
+
+  pixels = gdk_pixbuf_get_pixels(pixbuf);
+  width = gdk_pixbuf_get_width(pixbuf);
+  height = gdk_pixbuf_get_height(pixbuf);
+
+  /* r,g,b,a,r,g,b,a.... */
+  for (iii = 0; iii < width; iii++) for (jjj = 0; jjj < height; jjj++)
+  {
+    pixels += 3;
+    *pixels = (guint8)(((guint16)*pixels * (guint16)alpha) / 255);
+    pixels++;
+  }
+  return pixbuf;
+}
+
+
+
 /**
  *
  */

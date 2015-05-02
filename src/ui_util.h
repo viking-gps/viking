@@ -38,6 +38,7 @@ GtkWidget *ui_lookup_widget(GtkWidget *widget, const gchar *widget_name);
 GtkWidget* ui_label_new_selectable ( const gchar* text );
 
 GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
+GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 void ui_add_recent_file ( const gchar *filename );
 
 G_END_DECLS

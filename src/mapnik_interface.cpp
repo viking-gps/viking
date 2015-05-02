@@ -189,34 +189,6 @@ gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
 	return msg;
 }
 
-// These two functions copied from gpsdrive 2.11
-/**
- * convert the color channel
- */
-inline unsigned char
-convert_color_channel (unsigned char Source, unsigned char Alpha)
-{
-	return Alpha ? ((Source << 8) - Source) / Alpha : 0;
-}
-
-/**
- * converting argb32 to gdkpixbuf
- */
-static void
-convert_argb32_to_gdkpixbuf_data (unsigned char const *Source, unsigned int width, unsigned int height, unsigned char *Dest)
-{
-	unsigned char const *SourcePixel = Source;
-	unsigned char *DestPixel = Dest;
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			DestPixel[0] = convert_color_channel(SourcePixel[0], SourcePixel[3]);
-			DestPixel[1] = convert_color_channel(SourcePixel[1], SourcePixel[3]);
-			DestPixel[2] = convert_color_channel(SourcePixel[2], SourcePixel[3]);
-			DestPixel += 3;
-			SourcePixel += 4;
-		}
-	}
-}
 
 /**
  * mapnik_interface_render:
@@ -253,11 +225,11 @@ GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double 
 		render.apply();
 
 		if ( image.painted() ) {
-			unsigned char *ImageRawDataPtr = (unsigned char *) g_malloc(width * 3 * height);
+			unsigned char *ImageRawDataPtr = (unsigned char *) g_malloc(width * 4 * height);
 			if (!ImageRawDataPtr)
 				return NULL;
-			convert_argb32_to_gdkpixbuf_data(image.raw_data(), width, height, ImageRawDataPtr);
-			pixbuf = gdk_pixbuf_new_from_data(ImageRawDataPtr, GDK_COLORSPACE_RGB, FALSE, 8, width, height, width * 3, NULL, NULL);
+			memcpy(ImageRawDataPtr, image.raw_data(), width * height * 4);
+			pixbuf = gdk_pixbuf_new_from_data(ImageRawDataPtr, GDK_COLORSPACE_RGB, TRUE, 8, width, height, width * 4, NULL, NULL);
 		}
 		else
 			g_warning ("%s not rendered", __FUNCTION__ );
