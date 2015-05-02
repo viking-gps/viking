@@ -326,7 +326,7 @@ bstart_element (GMarkupParseContext *context,
 	const gchar *element = g_markup_parse_context_get_element (context);
 	if (strcmp (element, "CoverageArea") == 0) {
 		/* New Attribution */
-		struct _Attribution *attribution = g_malloc (sizeof(struct _Attribution));
+		struct _Attribution *attribution = g_malloc0 (sizeof(struct _Attribution));
 		priv->attributions = g_list_append (priv->attributions, attribution);
 		attribution->attribution = g_strdup (priv->attribution);
 	}
@@ -372,12 +372,6 @@ btext (GMarkupParseContext *context,
 			attribution->bounds.east = g_ascii_strtod (textl, NULL);
 		}
 	}
-	if (attribution)
-		g_debug("Current attribution %s from %d to %d %g %g %g %g",
-		        attribution->attribution,
-		        attribution->minZoom, attribution->maxZoom,
-		        attribution->bounds.south, attribution->bounds.north, attribution->bounds.west, attribution->bounds.east);
-
 	g_free(textl);
 }
 
@@ -438,6 +432,15 @@ _parse_file_for_attributions(BingMapSource *self, gchar *filename)
 	xml_context = NULL;
 	fclose (file);
 
+	if (vik_debug) {
+		GList *attribution = priv->attributions;
+		while (attribution != NULL) {
+			struct _Attribution *aa = (struct _Attribution*)attribution->data;
+			g_debug ("Bing Attribution: %s from %d to %d %g %g %g %g", aa->attribution, aa->minZoom, aa->maxZoom, aa->bounds.south, aa->bounds.north, aa->bounds.east, aa->bounds.west);
+			attribution = attribution->next;
+		}
+	}
+
 	return TRUE;
 }
 
@@ -447,6 +450,7 @@ _load_attributions ( BingMapSource *self )
 	int ret = 0;  /* OK */
 
 	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	priv->loading_attributions = TRUE;
 	gchar *uri = g_strdup_printf(URL_ATTR_FMT, priv->api_key);
 
 	gchar *tmpname = a_download_uri_to_tmp_file ( uri, vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self)) );
