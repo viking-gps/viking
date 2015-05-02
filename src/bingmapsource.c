@@ -55,8 +55,8 @@
 /* Format for URL */
 #define URL_ATTR_FMT "http://dev.virtualearth.net/REST/v1/Imagery/Metadata/Aerial/0,0?zl=1&mapVersion=v1&key=%s&include=ImageryProviders&output=xml"
 
-static gchar *_get_uri ( VikMapSourceDefault *self, MapCoord *src );
-static gchar *_get_hostname ( VikMapSourceDefault *self );
+static gchar *bget_uri ( VikMapSourceDefault *self, MapCoord *src );
+static gchar *bget_hostname ( VikMapSourceDefault *self );
 static void _get_copyright (VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 static const GdkPixbuf *_get_logo ( VikMapSource *self );
 static int _load_attributions ( BingMapSource *self );
@@ -201,8 +201,8 @@ bing_map_source_class_init (BingMapSourceClass *klass)
 	/* Overiding methods */
 	object_class->set_property = _set_property;
 	object_class->get_property = _get_property;
-	grandparent_class->get_uri = _get_uri;
-	grandparent_class->get_hostname = _get_hostname;
+	grandparent_class->get_uri = bget_uri;
+	grandparent_class->get_hostname = bget_hostname;
 	base_class->get_logo      = _get_logo;
 	base_class->get_copyright = _get_copyright;
 
@@ -258,7 +258,7 @@ compute_quad_tree(int zoom, int tilex, int tiley)
 }
 
 static gchar *
-_get_uri( VikMapSourceDefault *self, MapCoord *src )
+bget_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (BING_IS_MAP_SOURCE(self), NULL);
 
@@ -270,7 +270,7 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 } 
 
 static gchar *
-_get_hostname( VikMapSourceDefault *self )
+bget_hostname( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (BING_IS_MAP_SOURCE(self), NULL);
 
@@ -314,7 +314,7 @@ _get_copyright(VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(V
 
 /* Called for open tags <foo bar="baz"> */
 static void
-_start_element (GMarkupParseContext *context,
+bstart_element (GMarkupParseContext *context,
                 const gchar         *element_name,
                 const gchar        **attribute_names,
                 const gchar        **attribute_values,
@@ -335,7 +335,7 @@ _start_element (GMarkupParseContext *context,
 /* Called for character data */
 /* text is not nul-terminated */
 static void
-_text (GMarkupParseContext *context,
+btext (GMarkupParseContext *context,
        const gchar         *text,
        gsize                text_len,  
        gpointer             user_data,
@@ -396,9 +396,9 @@ _parse_file_for_attributions(BingMapSource *self, gchar *filename)
 		return FALSE;
 	
 	/* setup context parse (ie callbacks) */
-	xml_parser.start_element = &_start_element;
+	xml_parser.start_element = &bstart_element;
 	xml_parser.end_element = NULL;
-	xml_parser.text = &_text;
+	xml_parser.text = &btext;
 	xml_parser.passthrough = NULL;
 	xml_parser.error = NULL;
 	
