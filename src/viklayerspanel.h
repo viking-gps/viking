@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 #define VIK_LAYERS_PANEL_TYPE            (vik_layers_panel_get_type ())
 #define VIK_LAYERS_PANEL(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_LAYERS_PANEL_TYPE, VikLayersPanel))
 #define VIK_LAYERS_PANEL_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_LAYERS_PANEL_TYPE, VikLayersPanelClass))
-#define IS_VIK_LAYERS_PANEL(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_LLAYERS_PANEL_TYPE))
+#define IS_VIK_LAYERS_PANEL(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_LAYERS_PANEL_TYPE))
 #define IS_VIK_LAYERS_PANEL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), VIK_LAYERS_PANEL_TYPE))
 
 typedef struct _VikLayersPanel VikLayersPanel;
