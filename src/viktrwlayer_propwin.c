@@ -2838,14 +2838,22 @@ static void save_values ( PropWidgets *widgets )
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, widgets->profile_height );
 
   // Just for this session ATM
-  show_dem                = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem) );
-  show_alt_gps_speed      = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed) );
-  show_gps_speed          = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_gps_speed) );
-  show_gradient_gps_speed = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_gradient_gps_speed) );
-  show_dist_speed         = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dist_speed) );
-  show_elev_dem           = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_elev_dem) );
-  show_elev_speed         = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed) );
-  show_sd_gps_speed       = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_sd_gps_speed) );
+  if ( widgets->w_show_dem )
+    show_dem                = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem) );
+  if ( widgets->w_show_alt_gps_speed )
+    show_alt_gps_speed      = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_alt_gps_speed) );
+  if ( widgets->w_show_gps_speed )
+    show_gps_speed          = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_gps_speed) );
+  if ( widgets->w_show_gradient_gps_speed )
+    show_gradient_gps_speed = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_gradient_gps_speed) );
+  if ( widgets->w_show_dist_speed )
+    show_dist_speed         = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dist_speed) );
+  if ( widgets->w_show_elev_dem )
+    show_elev_dem           = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_elev_dem) );
+  if ( widgets->w_show_elev_speed )
+    show_elev_speed         = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_elev_speed) );
+  if ( widgets->w_show_sd_gps_speed )
+    show_sd_gps_speed       = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_sd_gps_speed) );
 }
 
 static void destroy_cb ( GtkDialog *dialog, PropWidgets *widgets )
