@@ -51,6 +51,8 @@ struct _VikTrackpoint {
 #define VIK_GPS_MODE_NO_FIX	1	/* none */
 #define VIK_GPS_MODE_2D  	2	/* good for latitude/longitude */
 #define VIK_GPS_MODE_3D  	3	/* good for altitude/climb too */
+#define VIK_GPS_MODE_DGPS	4
+#define VIK_GPS_MODE_PPS 	5	/* military signal used */
   gint fix_mode;    /* VIK_GPS_MODE_NOT_SEEN if data unavailable */
   gdouble hdop;     /* VIK_DEFAULT_DOP if data unavailable */
   gdouble vdop;     /* VIK_DEFAULT_DOP if data unavailable */

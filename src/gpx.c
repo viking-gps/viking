@@ -488,7 +488,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
          c_tp->fix_mode = VIK_GPS_MODE_2D;
        else if (!strcmp("3d", c_cdata->str))
          c_tp->fix_mode = VIK_GPS_MODE_3D;
-       else  /* TODO: more fix modes here */
+       else if (!strcmp("dgps", c_cdata->str))
+         c_tp->fix_mode = VIK_GPS_MODE_DGPS;
+       else if (!strcmp("pps", c_cdata->str))
+         c_tp->fix_mode = VIK_GPS_MODE_PPS;
+       else
          c_tp->fix_mode = VIK_GPS_MODE_NOT_SEEN;
        g_string_erase ( c_cdata, 0, -1 );
        break;
@@ -920,6 +924,10 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
     fprintf ( f, "    <fix>2d</fix>\n");
   if (tp->fix_mode == VIK_GPS_MODE_3D)
     fprintf ( f, "    <fix>3d</fix>\n");
+  if (tp->fix_mode == VIK_GPS_MODE_DGPS)
+    fprintf ( f, "    <fix>dgps</fix>\n");
+  if (tp->fix_mode == VIK_GPS_MODE_PPS)
+    fprintf ( f, "    <fix>pps</fix>\n");
   if (tp->nsats > 0)
     fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
 
