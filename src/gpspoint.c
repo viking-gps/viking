@@ -92,6 +92,9 @@ static gdouble line_speed = NAN;
 static gdouble line_course = NAN;
 static gint line_sat = 0;
 static gint line_fix = 0;
+static gdouble line_hdop = VIK_DEFAULT_DOP;
+static gdouble line_vdop = VIK_DEFAULT_DOP;
+static gdouble line_pdop = VIK_DEFAULT_DOP;
 /* other possible properties go here */
 
 
@@ -309,6 +312,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
         tp->course = line_course;
         tp->nsats = line_sat;
         tp->fix_mode = line_fix;
+        tp->hdop = line_hdop;
+        tp->vdop = line_vdop;
+        tp->pdop = line_pdop;
       }
       current_track->trackpoints = g_list_append ( current_track->trackpoints, tp );
     }
@@ -344,6 +350,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_course = NAN;
     line_sat = 0;
     line_fix = 0;
+    line_hdop = VIK_DEFAULT_DOP;
+    line_vdop = VIK_DEFAULT_DOP;
+    line_pdop = VIK_DEFAULT_DOP;
     line_name_label = 0;
     line_dist_label = 0;
   }
@@ -511,6 +520,18 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   {
     line_fix = atoi(value);
   }
+  else if (key_len == 4 && strncasecmp( key, "hdop", key_len ) == 0 && value != NULL)
+  {
+    line_hdop = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 4 && strncasecmp( key, "vdop", key_len ) == 0 && value != NULL)
+  {
+    line_vdop = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 4 && strncasecmp( key, "pdop", key_len ) == 0 && value != NULL)
+  {
+    line_pdop = g_ascii_strtod(value, NULL);
+  }
 }
 
 static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f )
@@ -634,6 +655,22 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
       fprintf ( f, " sat=\"%d\"", tp->nsats );
     if (tp->fix_mode > 0)
       fprintf ( f, " fix=\"%d\"", tp->fix_mode );
+
+    if ( tp->hdop != VIK_DEFAULT_DOP ) {
+      gchar *ss = a_coords_dtostr(tp->hdop);
+      fprintf ( f, " hdop=\"%s\"", ss );
+      g_free(ss);
+    }
+    if ( tp->vdop != VIK_DEFAULT_DOP ) {
+      gchar *ss = a_coords_dtostr(tp->vdop);
+      fprintf ( f, " vdop=\"%s\"", ss );
+     g_free(ss);
+    }
+    if ( tp->pdop != VIK_DEFAULT_DOP ) {
+      gchar *ss = a_coords_dtostr(tp->pdop);
+      fprintf ( f, " pdop=\"%s\"", ss );
+      g_free(ss);
+    }
   }
   fprintf ( f, "\n" );
 }
