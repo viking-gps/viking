@@ -76,6 +76,10 @@ static GSList *window_list = NULL;
 #define DRAW_IMAGE_DEFAULT_HEIGHT 1024
 #define DRAW_IMAGE_DEFAULT_SAVE_AS_PNG TRUE
 
+// The last used directories
+static gchar *last_folder_files_uri = NULL;
+static gchar *last_folder_images_uri = NULL;
+
 static void window_finalize ( GObject *gob );
 static GObjectClass *parent_class;
 
@@ -328,8 +332,11 @@ void vik_window_statusbar_update ( VikWindow *vw, const gchar* message, vik_stat
 static void destroy_window ( GtkWidget *widget,
                              gpointer   data )
 {
-    if ( ! --window_count )
+    if ( ! --window_count ) {
+      g_free ( last_folder_files_uri );
+      g_free ( last_folder_images_uri );
       gtk_main_quit ();
+    }
 }
 
 #define VIK_SETTINGS_WIN_SIDEPANEL "window_sidepanel"
@@ -3193,11 +3200,8 @@ static void load_file ( GtkAction *a, VikWindow *vw )
                                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                                 GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
                                                 NULL);
-    gchar *cwd = g_get_current_dir();
-    if ( cwd ) {
-      gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(vw->open_dia), cwd );
-      g_free ( cwd );
-    }
+    if ( last_folder_files_uri )
+      gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(vw->open_dia), last_folder_files_uri );
 
     GtkFileFilter *filter;
     // NB file filters are listed this way for alphabetical ordering
@@ -3246,6 +3250,9 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   }
   if ( gtk_dialog_run ( GTK_DIALOG(vw->open_dia) ) == GTK_RESPONSE_ACCEPT )
   {
+    g_free ( last_folder_files_uri );
+    last_folder_files_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(vw->open_dia) );
+
     gtk_widget_hide ( vw->open_dia );
 #ifdef VIKING_PROMPT_IF_MODIFIED
     if ( (vw->modified || vw->filename) && newwindow )
@@ -3254,6 +3261,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 #endif
       g_signal_emit ( G_OBJECT(vw), window_signals[VW_OPENWINDOW_SIGNAL], 0, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(vw->open_dia) ) );
     else {
+
       files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(vw->open_dia) );
       gboolean change_fn = newwindow && (g_slist_length(files)==1); /* only change fn if one file */
       gboolean first_vik_file = TRUE;
@@ -3300,11 +3308,8 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
                                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                                 GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
                                                 NULL);
-    gchar *cwd = g_get_current_dir();
-    if ( cwd ) {
-      gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(vw->save_dia), cwd );
-      g_free ( cwd );
-    }
+    if ( last_folder_files_uri )
+      gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(vw->save_dia), last_folder_files_uri );
 
     GtkFileFilter *filter;
     filter = gtk_file_filter_new ();
@@ -3337,7 +3342,11 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
     {
       window_set_filename ( vw, fn );
       rv = window_save ( vw );
-      vw->modified = FALSE;
+      if ( rv ) {
+        vw->modified = FALSE;
+        g_free ( last_folder_files_uri );
+        last_folder_files_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(vw->save_dia) );
+      }
       break;
     }
   }
@@ -4002,12 +4011,8 @@ static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
                                                       GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                                       GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
                                                       NULL);
-
-      gchar *cwd = g_get_current_dir();
-      if ( cwd ) {
-        gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(vw->save_img_dia), cwd );
-        g_free ( cwd );
-      }
+      if ( last_folder_images_uri )
+        gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(vw->save_img_dia), last_folder_images_uri );
 
       GtkFileChooser *chooser = GTK_FILE_CHOOSER ( vw->save_img_dia );
       /* Add filters */

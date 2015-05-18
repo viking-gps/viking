@@ -33,6 +33,8 @@
 #include "viktrwlayer_export.h"
 #include "gpx.h"
 
+static gchar *last_folder_uri = NULL;
+
 void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {
   GtkWidget *file_selector;
@@ -44,11 +46,8 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
                                                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                                GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
                                                NULL);
-  gchar *cwd = g_get_current_dir();
-  if ( cwd ) {
-    gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(file_selector), cwd );
-    g_free ( cwd );
-  }
+  if ( last_folder_uri )
+    gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(file_selector), last_folder_uri );
 
   gtk_file_chooser_set_current_name ( GTK_FILE_CHOOSER(file_selector), default_name );
 
@@ -58,6 +57,9 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
     if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE ||
          a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
     {
+      g_free ( last_folder_uri );
+      last_folder_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(file_selector) );
+
       gtk_widget_hide ( file_selector );
       vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
       // Don't Export invisible items - unless requested on this specific track
