@@ -120,7 +120,6 @@ static void datasource_geojson_get_process_options ( datasource_geojson_user_dat
 	// Memorize the directory for later reuse
 	g_free ( last_folder_uri );
 	last_folder_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(userdata->files) );
-	last_folder_uri = g_strdup ( last_folder_uri );
 
 	// TODO Memorize the file filter for later reuse?
 	//GtkFileFilter *filter = gtk_file_chooser_get_filter ( GTK_FILE_CHOOSER(userdata->files) );

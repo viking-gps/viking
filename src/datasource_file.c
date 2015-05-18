@@ -169,7 +169,6 @@ static void datasource_file_get_process_options ( datasource_file_widgets_t *wid
   /* Memorize the directory for later use */
   g_free (last_folder_uri);
   last_folder_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(widgets->file) );
-  last_folder_uri = g_strdup (last_folder_uri);
 
   /* Memorize the file filter for later use */
   GtkFileFilter *filter = gtk_file_chooser_get_filter ( GTK_FILE_CHOOSER(widgets->file) );
