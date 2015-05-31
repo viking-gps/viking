@@ -708,7 +708,7 @@ static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values
       // Get new value
       VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
       // Is it *not* the OSM On Disk Tile Layout or the MBTiles type or the OSM Metatiles type
-      gboolean sensitive = ( 21 != vlpd.u && 23 != vlpd.u && 24 != vlpd.u );
+      gboolean sensitive = ( MAP_ID_OSM_ON_DISK != vlpd.u && MAP_ID_OSM_ON_DISK != vlpd.u && MAP_ID_OSM_ON_DISK != vlpd.u );
       GtkWidget **ww1 = values[UI_CHG_WIDGETS];
       GtkWidget **ww2 = values[UI_CHG_LABELS];
       GtkWidget *w1 = ww1[PARAM_ONLYMISSING];
@@ -730,7 +730,7 @@ static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values
 
       // File only applicable for MBTiles type
       // Directory for all other types
-      sensitive = ( 23 == vlpd.u);
+      sensitive = ( MAP_ID_MBTILES == vlpd.u);
       GtkWidget *w5 = ww1[PARAM_FILE];
       GtkWidget *w6 = ww2[PARAM_FILE];
       GtkWidget *w7 = ww1[PARAM_CACHE_DIR];
