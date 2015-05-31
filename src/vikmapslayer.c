@@ -847,10 +847,12 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
 #endif
 
   // If the on Disk OSM Tile Layout type
-  if ( vml->maptype == 21 )
+  if ( vik_map_source_get_uniq_id(map) == MAP_ID_OSM_ON_DISK ) {
     // Copy the directory into filename
     //  thus the mapcache look up will be unique when using more than one of these map types
+    g_free ( vml->filename );
     vml->filename = g_strdup (vml->cache_dir);
+  }
 }
 
 static const gchar* maps_layer_tooltip ( VikMapsLayer *vml )
