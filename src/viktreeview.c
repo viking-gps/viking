@@ -743,7 +743,7 @@ static gint sort_tuple_compare ( gconstpointer a, gconstpointer b, gpointer orde
   SortTuple *sa = (SortTuple *)a;
   SortTuple *sb = (SortTuple *)b;
 
-  gint answer = 0;
+  gint answer = -1;
   if ( GPOINTER_TO_INT(order) < VL_SO_DATE_ASCENDING ) {
     // Alphabetical comparison
     // Default ascending order
@@ -754,10 +754,12 @@ static gint sort_tuple_compare ( gconstpointer a, gconstpointer b, gpointer orde
   }
   else {
     // Date comparison
-    answer = ( sa->timestamp > sb->timestamp );
+    gboolean ans = ( sa->timestamp > sb->timestamp );
+    if ( ans )
+      answer = 1;
     // Invert sort order for descending order
     if ( GPOINTER_TO_INT(order) == VL_SO_DATE_DESCENDING )
-      answer = !answer;
+      answer = -answer;
   }
   return answer;
 }
