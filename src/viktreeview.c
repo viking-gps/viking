@@ -815,7 +815,7 @@ void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_laye
                      GINT_TO_POINTER(order));
 
   // As the sorted list contains the reordered position offsets, extract this and then apply to the treeview
-  gint *positions = g_malloc ( sizeof(gdouble) * length );
+  gint *positions = g_malloc ( sizeof(gint) * length );
   for ( ii = 0; ii < length; ii++ ) {
     positions[ii] = sort_array[ii].offset;
     g_free ( sort_array[ii].name );
