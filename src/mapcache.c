@@ -150,6 +150,11 @@ static void list_add_entry ( gchar *key )
 
 void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
+  if ( ! GDK_IS_PIXBUF(pixbuf) ) {
+    g_debug ( "Not caching corrupt pixbuf for maptype %d at %d %d %d %d", type, x, y, z, zoom );
+    return;
+  }
+
   guint nn = name ? g_str_hash ( name ) : 0;
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
 
