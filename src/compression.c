@@ -35,6 +35,7 @@
 #endif
 
 #include "compression.h"
+#include "string.h"
 #include <gio/gio.h>
 #include <glib/gstdio.h>
 
@@ -118,6 +119,17 @@ void *unzip_file(gchar *zip_file, gulong *unzip_size)
 	//  (e.g. when using DEMs) so more potential for failure.
 	if ( !unzip_data )
 		goto end;
+
+	g_debug ("%s: method %d: from size %d to %ld", __FUNCTION__, GUINT16_FROM_LE(local_file_header->comp_method), GUINT32_FROM_LE(local_file_header->compressed_size), uncompressed_size);
+
+	if ( GUINT16_FROM_LE(local_file_header->comp_method) == 0 &&
+		(uncompressed_size == GUINT32_FROM_LE(local_file_header->compressed_size)) ) {
+		// Stored only - no need to 'uncompress'
+		// Thus just copy
+		memcpy ( unzip_data, zip_data, uncompressed_size );
+		*unzip_size = uncompressed_size;
+		goto end;
+	}
 
 	if (!(*unzip_size = uncompress_data(unzip_data, uncompressed_size, zip_data, GUINT32_FROM_LE(local_file_header->compressed_size)))) {
 		g_free(unzip_data);
