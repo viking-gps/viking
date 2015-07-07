@@ -86,6 +86,7 @@ void *unzip_file(gchar *zip_file, gulong *unzip_size)
 	goto end;
 #else
 	gchar *zip_data;
+	// See http://en.wikipedia.org/wiki/Zip_(file_format)
 	struct _lfh {
 		guint32 sig;
 		guint16 extract_version;
@@ -98,12 +99,16 @@ void *unzip_file(gchar *zip_file, gulong *unzip_size)
 		guint32 uncompressed_size;
 		guint16 filename_len;
 		guint16 extra_field_len;
-	}  __attribute__ ((__packed__)) *local_file_header = NULL;
+	}  __attribute__ ((gcc_struct,__packed__)) *local_file_header = NULL;
 
+	if ( sizeof(struct _lfh) != 30 ) {
+		g_critical ("Incorrect internal zip header size, should be 30 but is %zd", sizeof(struct _lfh) );
+		goto end;
+	}
 
 	local_file_header = (struct _lfh *) zip_file;
 	if (GUINT32_FROM_LE(local_file_header->sig) != 0x04034b50) {
-		g_warning("%s(): wrong format", __PRETTY_FUNCTION__);
+		g_warning("%s(): wrong format (%d)", __PRETTY_FUNCTION__, GUINT32_FROM_LE(local_file_header->sig));
 		g_free(unzip_data);
 		goto end;
 	}
