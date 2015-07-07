@@ -113,6 +113,12 @@ void *unzip_file(gchar *zip_file, gulong *unzip_size)
 	gulong uncompressed_size = GUINT32_FROM_LE(local_file_header->uncompressed_size);
 	unzip_data = g_malloc(uncompressed_size);
 
+	// Protection against malloc failures
+	// ATM not normally been checking malloc failures in Viking but sometimes using zip files can be quite large
+	//  (e.g. when using DEMs) so more potential for failure.
+	if ( !unzip_data )
+		goto end;
+
 	if (!(*unzip_size = uncompress_data(unzip_data, uncompressed_size, zip_data, GUINT32_FROM_LE(local_file_header->compressed_size)))) {
 		g_free(unzip_data);
 		unzip_data = NULL;
