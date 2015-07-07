@@ -303,8 +303,11 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
   g_byte_array_append ( b, (guint8 *)&len, sizeof(len) );	\
   g_byte_array_append ( b, (guint8 *)(obj), len );
 
+  // Store the internal properties first
+  vlm_append(&vl->visible, sizeof(vl->visible));
   vlm_append(vl->name, strlen(vl->name));
 
+  // Now the actual parameters
   if ( params && get_param )
   {
     VikLayerParamData d;
@@ -367,13 +370,13 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
 #define vlm_read(obj)				\
   memcpy((obj), b+sizeof(gint), vlm_size);	\
   b += sizeof(gint) + vlm_size;
-  
+
+  vlm_read(&vl->visible);
+
   s = g_malloc(vlm_size + 1);
   s[vlm_size]=0;
   vlm_read(s);
-  
   vik_layer_rename(vl, s);
-  
   g_free(s);
 
   if ( params && set_param )
