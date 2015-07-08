@@ -2023,6 +2023,9 @@ static void trw_layer_draw_point_names ( struct DrawingParams *dp, VikTrack *trk
 {
   VikTrackpoint *tp_last = vik_track_get_tp_last(trk);
   VikTrackpoint *tp_current = vik_track_get_tp_prev(trk,tp_last);
+  GList *list=trk->trackpoints;
+  if(!list) return;
+  VikTrackpoint *tp = VIK_TRACKPOINT(list->data);
   gchar *fgcolour;
   if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
     fgcolour = gdk_color_to_string ( &(trk->color) );
@@ -2033,15 +2036,16 @@ static void trw_layer_draw_point_names ( struct DrawingParams *dp, VikTrack *trk
     bgcolour = g_strdup ( vik_viewport_get_highlight_color ( dp->vp ) );
   else
     bgcolour = gdk_color_to_string ( &(dp->vtl->track_bg_color) );
-  
-  while ( tp_current )
+  if ( tp->name )
+    trw_layer_draw_track_label ( tp->name, fgcolour, bgcolour, dp, &tp->coord );
+  while ((list = g_list_next(list)))
   {
-    if ( tp_current->name )
-      trw_layer_draw_track_label ( tp_current->name, fgcolour, bgcolour, dp, &tp_current->coord );
-    tp_current = vik_track_get_tp_prev ( trk, tp_current );
-  };     
-  g_free ( fgcolour );
-  g_free ( bgcolour );
+    tp = VIK_TRACKPOINT(list->data);
+    if ( tp->name )
+      trw_layer_draw_track_label ( tp->name, fgcolour, bgcolour, dp, &tp->coord );
+  };
+    g_free ( fgcolour );
+    g_free ( bgcolour );
 }
 
 static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct DrawingParams *dp, gboolean draw_track_outline )
