@@ -4366,7 +4366,7 @@ static GtkActionEntry entries[] = {
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },
   { "FileProperties", NULL,              N_("Properties..."),                    NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
-  { "GenImg",    GTK_STOCK_CLEAR,        N_("_Generate Image File..."),          NULL,  N_("Save a snapshot of the workspace into a file"), (GCallback)draw_to_image_file_cb },
+  { "GenImg",    GTK_STOCK_FILE,         N_("_Generate Image File..."),          NULL,  N_("Save a snapshot of the workspace into a file"), (GCallback)draw_to_image_file_cb },
   { "GenImgDir", GTK_STOCK_DND_MULTIPLE, N_("Generate _Directory of Images..."), NULL,  N_("Generate _Directory of Images"),                (GCallback)draw_to_image_dir_cb },
   { "Print",    GTK_STOCK_PRINT,        N_("_Print..."),          NULL,         N_("Print maps"), (GCallback)print_cb },
   { "Exit",      GTK_STOCK_QUIT,         N_("E_xit"),                         "<control>W", N_("Exit the program"),                             (GCallback)window_close          },
