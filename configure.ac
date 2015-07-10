@@ -340,12 +340,17 @@ case $ac_cv_enable_mapnik in
     AC_LANG_CPLUSPLUS
     AC_LANG_SAVE
     AC_PROG_CXX
+    # Mapnik3 requires C++11. Viking will use C++11 as well.
+    CXXFLAGS="$CXXFLAGS -std=c++11"
     # Too difficult to get check working under Windows (extra dependencies needed probably Boost)- so just skip it
     if test "x$ac_cv_enable_windows" = "xno"; then
       AC_CHECK_HEADER([mapnik/map.hpp],[],[AC_MSG_ERROR([mapnik/map.hpp is needed but not found - you will need to install package 'libmapnik-dev' or similar. The feature can be disabled with --disable-mapnik])])
     fi
     AC_CHECK_LIB([mapnik], [main], [], [AC_MSG_ERROR([libmapnik is needed but not found.])])
     AC_CHECK_LIB([stdc++], [main], [], [AC_MSG_ERROR([libstdc++ is needed but not found.])])
+    # Required for Mapnik3 build (it's also in Mapnik2 but does not need to be specified for some reason)
+    #  it's part of libmapnik install dependencies
+    AC_CHECK_LIB([icuuc], [main], [], [AC_MSG_ERROR([libicuuc is needed but not found.])])
     AC_LANG_RESTORE
     ;;
 esac

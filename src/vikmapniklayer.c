@@ -231,8 +231,10 @@ static VikLayerParamData plugins_default ( void )
 #else
 	if ( g_file_test ( "/usr/lib/mapnik/input", G_FILE_TEST_EXISTS ) )
 		data.s = g_strdup ( "/usr/lib/mapnik/input" );
+		// Current Debian locations
+	else if ( g_file_test ( "/usr/lib/mapnik/3.0/input", G_FILE_TEST_EXISTS ) )
+		data.s = g_strdup ( "/usr/lib/mapnik/3.0/input" );
 	else if ( g_file_test ( "/usr/lib/mapnik/2.2/input", G_FILE_TEST_EXISTS ) )
-		// Current Debian location
 		data.s = g_strdup ( "/usr/lib/mapnik/2.2/input" );
 	else
 		data.s = g_strdup ( "" );
