@@ -165,7 +165,9 @@ static void unlock_file(const char *fn)
 	g_mutex_unlock(file_list_mutex);
 }
 
-
+/**
+ * Unzip a file - replacing the file with the unzipped contents of the self
+ */
 static void uncompress_zip ( gchar *name )
 {
 	GError *error = NULL;
@@ -186,7 +188,7 @@ static void uncompress_zip ( gchar *name )
 		return;
 	}
 
-	// This overwrires any previous file contents
+	// This overwrites any previous file contents
 	if ( ! g_file_set_contents ( name, unzip_mem, ucsize, &error ) ) {
 		g_critical ( "Couldn't write file '%s', because of %s", name, error->message );
 		g_error_free ( error );
