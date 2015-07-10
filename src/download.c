@@ -427,6 +427,8 @@ gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadMapOptions *option
   }
 
   tmp_file = fdopen(tmp_fd, "r+");
+  if ( !tmp_file )
+    return NULL;
 
   if ( curl_download_uri ( uri, tmp_file, options, NULL, NULL ) ) {
     // error
