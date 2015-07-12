@@ -36,6 +36,9 @@ static const char *menu_xml =
 #endif
 	"      </menu>"
 	"      <separator/>"
+#ifdef HAVE_ZIP_H
+	"      <menuitem action='GenKMZ'/>"
+#endif
 	"      <menuitem action='GenImg'/>"
 	"      <menuitem action='GenImgDir'/>"
 	"      <menuitem action='Print'/>"

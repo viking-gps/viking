@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005-2006, Alex Foobarian <foobarian@gmail.com>
- * Copyright (C) 2012-2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@
 #include "geonamessearch.h"
 #include "vikutils.h"
 #include "dir.h"
+#include "kmz.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -3784,7 +3785,7 @@ static void zoom_to_cb ( GtkAction *a, VikWindow *vw )
   }
 }
 
-static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, gdouble zoom, gboolean save_as_png )
+static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, gdouble zoom, gboolean save_as_png, gboolean save_kmz )
 {
   /* more efficient way: stuff draws directly to pixbuf (fork viewport) */
   GdkPixbuf *pixbuf_to_save;
@@ -3827,17 +3828,27 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
     goto cleanup;
   }
 
-  gdk_pixbuf_save ( pixbuf_to_save, fn, save_as_png ? "png" : "jpeg", &error, NULL );
-  if (error)
-  {
-    g_warning("Unable to write to file %s: %s", fn, error->message );
-    gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Failed to generate image file.") );
-    g_error_free (error);
+  int ans = 0; // Default to success
+
+  if ( save_kmz ) {
+    gdouble north, east, south, west;
+    vik_viewport_get_min_max_lat_lon ( vw->viking_vvp, &south, &north, &west, &east );
+    ans = kmz_save_file ( pixbuf_to_save, fn, north, east, south, west );
   }
   else {
-    // Success
-    gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Image file generated.") );
+    gdk_pixbuf_save ( pixbuf_to_save, fn, save_as_png ? "png" : "jpeg", &error, NULL );
+    if (error) {
+      g_warning("Unable to write to file %s: %s", fn, error->message );
+      g_error_free (error);
+      ans = 42;
+    }
   }
+
+  if ( ans == 0 )
+    gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Image file generated.") );
+  else
+    gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Failed to generate image file.") );
+
   g_object_unref ( G_OBJECT(pixbuf_to_save) );
 
  cleanup:
@@ -3985,13 +3996,19 @@ static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointe
   g_free ( label_text );
 }
 
+typedef enum {
+  VW_GEN_SINGLE_IMAGE,
+  VW_GEN_DIRECTORY_OF_IMAGES,
+  VW_GEN_KMZ_FILE,
+} img_generation_t;
+
 /*
  * Get an allocated filename (or directory as specified)
  */
-static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
+static gchar* draw_image_filename ( VikWindow *vw, img_generation_t img_gen )
 {
   gchar *fn = NULL;
-  if ( one_image_only )
+  if ( img_gen != VW_GEN_DIRECTORY_OF_IMAGES )
   {
     // Single file
     GtkWidget *dialog = gtk_file_chooser_dialog_new (_("Save Image"),
@@ -4011,21 +4028,31 @@ static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
     gtk_file_filter_add_pattern ( filter, "*" );
     gtk_file_chooser_add_filter ( chooser, filter );
 
-    filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name ( filter, _("JPG") );
-    gtk_file_filter_add_mime_type ( filter, "image/jpeg");
-    gtk_file_chooser_add_filter ( chooser, filter );
-
-    if ( !vw->draw_image_save_as_png )
+    if ( img_gen == VW_GEN_KMZ_FILE ) {
+      filter = gtk_file_filter_new ();
+      gtk_file_filter_set_name ( filter, _("KMZ") );
+      gtk_file_filter_add_mime_type ( filter, "vnd.google-earth.kmz");
+      gtk_file_filter_add_pattern ( filter, "*.kmz" );
+      gtk_file_chooser_add_filter ( chooser, filter );
       gtk_file_chooser_set_filter ( chooser, filter );
+    }
+    else {
+      filter = gtk_file_filter_new ();
+      gtk_file_filter_set_name ( filter, _("JPG") );
+      gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+      gtk_file_chooser_add_filter ( chooser, filter );
 
-    filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name ( filter, _("PNG") );
-    gtk_file_filter_add_mime_type ( filter, "image/png");
-    gtk_file_chooser_add_filter ( chooser, filter );
+      if ( !vw->draw_image_save_as_png )
+        gtk_file_chooser_set_filter ( chooser, filter );
 
-    if ( vw->draw_image_save_as_png )
-      gtk_file_chooser_set_filter ( chooser, filter );
+      filter = gtk_file_filter_new ();
+      gtk_file_filter_set_name ( filter, _("PNG") );
+      gtk_file_filter_add_mime_type ( filter, "image/png");
+      gtk_file_chooser_add_filter ( chooser, filter );
+
+      if ( vw->draw_image_save_as_png )
+        gtk_file_chooser_set_filter ( chooser, filter );
+    }
 
     gtk_window_set_transient_for ( GTK_WINDOW(dialog), GTK_WINDOW(vw) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(dialog), TRUE );
@@ -4066,7 +4093,7 @@ static gchar* draw_image_filename ( VikWindow *vw, gboolean one_image_only )
   return fn;
 }
 
-static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
+static void draw_to_image_file ( VikWindow *vw, img_generation_t img_gen )
 {
   /* todo: default for answers inside VikWindow or static (thruout instance) */
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Save to Image File"), GTK_WINDOW(vw),
@@ -4077,13 +4104,12 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL );
   GtkWidget *width_label, *width_spin, *height_label, *height_spin;
-  GtkWidget *png_radio, *jpeg_radio;
   GtkWidget *current_window_button;
   gpointer current_window_pass_along[7];
   GtkWidget *zoom_label, *zoom_combo;
   GtkWidget *total_size_label;
 
-  /* only used if (!one_image_only) */
+  // only used for VW_GEN_DIRECTORY_OF_IMAGES
   GtkWidget *tiles_width_spin = NULL, *tiles_height_spin = NULL;
 
   width_label = gtk_label_new ( _("Width (pixels):") );
@@ -4114,16 +4140,22 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   current_window_pass_along [1] = width_spin;
   current_window_pass_along [2] = height_spin;
   current_window_pass_along [3] = zoom_combo;
-  current_window_pass_along [4] = NULL; /* used for one_image_only != 1 */
-  current_window_pass_along [5] = NULL;
+  current_window_pass_along [4] = NULL; // Only for directory of tiles: width
+  current_window_pass_along [5] = NULL; // Only for directory of tiles: height
   current_window_pass_along [6] = total_size_label;
   g_signal_connect ( G_OBJECT(current_window_button), "button_press_event", G_CALLBACK(draw_to_image_file_current_window_cb), current_window_pass_along );
 
-  png_radio = gtk_radio_button_new_with_label ( NULL, _("Save as PNG") );
-  jpeg_radio = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(png_radio), _("Save as JPEG") );
+  GtkWidget *png_radio = gtk_radio_button_new_with_label ( NULL, _("Save as PNG") );
+  GtkWidget *jpeg_radio = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(png_radio), _("Save as JPEG") );
 
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), png_radio, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), jpeg_radio, FALSE, FALSE, 0);
+  if ( img_gen == VW_GEN_KMZ_FILE ) {
+    // Don't show image type selection if creating a KMZ (always JPG internally)
+    // Start with viewable area by default
+    draw_to_image_file_current_window_cb ( current_window_button, NULL, current_window_pass_along );
+  } else {
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), jpeg_radio, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), png_radio, FALSE, FALSE, 0);
+  }
 
   if ( ! vw->draw_image_save_as_png )
     gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(jpeg_radio), TRUE );
@@ -4139,7 +4171,7 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zoom_label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zoom_combo, FALSE, FALSE, 0);
 
-  if ( ! one_image_only )
+  if ( img_gen == VW_GEN_DIRECTORY_OF_IMAGES )
   {
     GtkWidget *tiles_width_label, *tiles_height_label;
 
@@ -4172,19 +4204,44 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   {
     gtk_widget_hide ( GTK_WIDGET(dialog) );
 
-    gchar *fn = draw_image_filename ( vw, one_image_only );
+    gchar *fn = draw_image_filename ( vw, img_gen );
     if ( !fn )
       return;
 
     gint active_z = gtk_combo_box_get_active ( GTK_COMBO_BOX(zoom_combo) );
     gdouble zoom = pow (2, active_z-2 );
 
-    if ( one_image_only )
+    if ( img_gen == VW_GEN_SINGLE_IMAGE )
       save_image_file ( vw, fn, 
                       vw->draw_image_width = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(width_spin) ),
                       vw->draw_image_height = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(height_spin) ),
                       zoom,
-                      vw->draw_image_save_as_png = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(png_radio) ) );
+                      vw->draw_image_save_as_png = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(png_radio) ),
+                      FALSE );
+    else if ( img_gen == VW_GEN_KMZ_FILE ) {
+      // Remove some viewport overlays as these aren't useful in KMZ file.
+      gboolean restore_xhair = vik_viewport_get_draw_centermark ( vw->viking_vvp );
+      if ( restore_xhair )
+        vik_viewport_set_draw_centermark ( vw->viking_vvp, FALSE );
+      gboolean restore_scale = vik_viewport_get_draw_scale ( vw->viking_vvp );
+      if ( restore_scale )
+        vik_viewport_set_draw_scale ( vw->viking_vvp, FALSE );
+
+      save_image_file ( vw,
+                        fn,
+                        gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(width_spin) ),
+                        gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(height_spin) ),
+                        zoom,
+                        FALSE, // JPG
+                        TRUE );
+
+      if ( restore_xhair )
+        vik_viewport_set_draw_centermark ( vw->viking_vvp, TRUE );
+      if ( restore_scale )
+        vik_viewport_set_draw_scale ( vw->viking_vvp, TRUE );
+      if ( restore_xhair || restore_scale )
+        draw_update ( vw );
+    }
     else {
       // NB is in UTM mode ATM
       save_image_dir ( vw, fn,
@@ -4201,15 +4258,25 @@ static void draw_to_image_file ( VikWindow *vw, gboolean one_image_only )
   gtk_widget_destroy ( GTK_WIDGET(dialog) );
 }
 
+static void draw_to_kmz_file_cb ( GtkAction *a, VikWindow *vw )
+{
+  if ( vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ) {
+    a_dialog_error_msg ( GTK_WINDOW(vw), _("This feature is not available in UTM mode") );
+    return;
+  }
+  // NB ATM This only generates a KMZ file with the current viewport image - intended mostly for map images [but will include any lines/icons from track & waypoints that are drawn]
+  // (it does *not* include a full KML dump of every track, waypoint etc...)
+  draw_to_image_file ( vw, VW_GEN_KMZ_FILE );
+}
 
 static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
 {
-  draw_to_image_file ( vw, TRUE );
+  draw_to_image_file ( vw, VW_GEN_SINGLE_IMAGE );
 }
 
 static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
 {
-  draw_to_image_file ( vw, FALSE );
+  draw_to_image_file ( vw, VW_GEN_DIRECTORY_OF_IMAGES );
 }
 
 static void print_cb ( GtkAction *a, VikWindow *vw )
@@ -4369,6 +4436,9 @@ static GtkActionEntry entries[] = {
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },
   { "FileProperties", NULL,              N_("Properties..."),                    NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
+#ifdef HAVE_ZIP_H
+  { "GenKMZ",    GTK_STOCK_DND,          N_("Generate _KMZ Map File..."),        NULL,  N_("Generate a KMZ file with an overlay of the current view"), (GCallback)draw_to_kmz_file_cb },
+#endif
   { "GenImg",    GTK_STOCK_FILE,         N_("_Generate Image File..."),          NULL,  N_("Save a snapshot of the workspace into a file"), (GCallback)draw_to_image_file_cb },
   { "GenImgDir", GTK_STOCK_DND_MULTIPLE, N_("Generate _Directory of Images..."), NULL,  N_("Generate _Directory of Images"),                (GCallback)draw_to_image_dir_cb },
   { "Print",    GTK_STOCK_PRINT,        N_("_Print..."),          NULL,         N_("Print maps"), (GCallback)print_cb },
