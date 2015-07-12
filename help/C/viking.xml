@@ -135,7 +135,8 @@ maps exist for it.
 </listitem>
 <listitem>
 <para>
-Making maps with coordinate lines.
+Making maps with using <ulink url="http://mapnik.org/">Mapnik</ulink>.
+Not on <trademark>Windows</trademark> at the moment.
 </para>
 </listitem>
 <listitem>
@@ -165,7 +166,7 @@ Show the live GPS position on the map (for use on a mobile device - e.g. a lapto
 </listitem>
 <listitem>
 <para>
-Import track, route and waypoint files of various types via <application>GPSBabel</application>
+Import and export track, route and waypoint files of various types via <application>GPSBabel</application>
 </para>
 </listitem>
 <listitem>
