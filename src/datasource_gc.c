@@ -242,7 +242,7 @@ static void datasource_gc_get_process_options ( datasource_gc_widgets_t *widgets
   // 3. Converts webpages into a single waypoint file, ignoring zero location waypoints '-z'
   //       Probably as they are premium member only geocaches and user is only a basic member
   //  Final output is piped into GPSbabel - hence removal of *html is done at beginning of the command sequence
-  po->shell_command = g_strdup_printf( "rm -f ~/.geo/caches/*html ; %s -P -n%d -r%.1fM -u %s -p %s %s %s ; %s -z ~/.geo/caches/*html ",
+  po->shell_command = g_strdup_printf( "rm -f ~/.geo/caches/*.html ; %s -H ~/.geo/caches -P -n%d -r%.1fM -u %s -p %s %s %s ; %s -z ~/.geo/caches/*.html ",
 			  GC_PROGRAM1,
 			  gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->num_spin) ),
 			  gtk_spin_button_get_value_as_float ( GTK_SPIN_BUTTON(widgets->miles_radius_spin) ),
