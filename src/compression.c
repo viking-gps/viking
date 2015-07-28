@@ -159,7 +159,7 @@ end:
 gchar* uncompress_bzip2 ( gchar *name )
 {
 #ifdef HAVE_BZLIB_H
-	FILE *ff = g_fopen ( name, "r" );
+	FILE *ff = g_fopen ( name, "rb" );
 	if ( !ff )
 		return NULL;
 
@@ -220,6 +220,9 @@ gchar* uncompress_bzip2 ( gchar *name )
 	g_output_stream_close ( gos, NULL, &error );
 
  end:
+	g_object_unref ( gios );
+	fclose ( ff );
+
 	return tmpname;
 #else
 	return NULL;
