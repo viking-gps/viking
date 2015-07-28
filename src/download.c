@@ -204,6 +204,11 @@ static void uncompress_zip ( gchar *name )
 void a_try_decompress_file (gchar *name)
 {
 #ifdef HAVE_MAGIC_H
+#ifdef MAGIC_VERSION
+	// Or magic_version() if available - probably need libmagic 5.18 or so
+	//  (can't determine exactly which version the versioning became available)
+	g_debug ("%s: magic version: %d", __FUNCTION__, MAGIC_VERSION );
+#endif
 	magic_t myt = magic_open ( MAGIC_CONTINUE|MAGIC_ERROR|MAGIC_MIME );
 	gboolean zip = FALSE;
 	gboolean bzip2 = FALSE;
@@ -211,19 +216,24 @@ void a_try_decompress_file (gchar *name)
 #ifdef WINDOWS
 		// We have to 'package' the magic database ourselves :(
 		//  --> %PROGRAM FILES%\Viking\magic.mgc
-		magic_load ( myt, "magic.mgc" );
+		int ml = magic_load ( myt, ".\\magic.mgc" );
 #else
 		// Use system default
-		magic_load ( myt, NULL );
+		int ml = magic_load ( myt, NULL );
 #endif
-		const char* magic = magic_file (myt, name);
-		g_debug ("%s: magic output: %s", __FUNCTION__, magic );
+		if ( ml == 0 ) {
+			const char* magic = magic_file (myt, name);
+			g_debug ("%s: magic output: %s", __FUNCTION__, magic );
 
-		if ( g_strcmp0 (magic, "application/zip; charset=binary") == 0 )
-			zip = TRUE;
+			if ( g_strcmp0 (magic, "application/zip; charset=binary") == 0 )
+				zip = TRUE;
 
-		if ( g_strcmp0 (magic, "application/x-bzip2; charset=binary") == 0 )
-			bzip2 = TRUE;
+			if ( g_strcmp0 (magic, "application/x-bzip2; charset=binary") == 0 )
+				bzip2 = TRUE;
+		}
+		else {
+			g_critical ("%s: magic load database failure", __FUNCTION__ );
+		}
 
 		magic_close ( myt );
 	}
