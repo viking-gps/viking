@@ -159,6 +159,8 @@ end:
 gchar* uncompress_bzip2 ( gchar *name )
 {
 #ifdef HAVE_BZLIB_H
+	g_debug ( "%s: bzip2 %s", __FUNCTION__, BZ2_bzlibVersion() );
+
 	FILE *ff = g_fopen ( name, "rb" );
 	if ( !ff )
 		return NULL;
@@ -198,7 +200,7 @@ gchar* uncompress_bzip2 ( gchar *name )
 	// Process in arbitary sized chunks
 	char buf[4096];
 	bzerror = BZ_OK;
-	int nBuf;
+	int nBuf = 0;
 	// Now process the actual compression data
 	while ( bzerror == BZ_OK ) {
 		nBuf = BZ2_bzRead ( &bzerror, bf, buf, 4096 );
@@ -214,7 +216,7 @@ gchar* uncompress_bzip2 ( gchar *name )
 	}
 	if ( bzerror != BZ_STREAM_END ) {
 		// handle error...
-		g_warning ( "%s: BZ error :( %d", __FUNCTION__, bzerror );
+		g_warning ( "%s: BZ error :( %d. read %d", __FUNCTION__, bzerror, nBuf );
 	}
 	BZ2_bzReadClose ( &bzerror, bf );
 	g_output_stream_close ( gos, NULL, &error );

@@ -236,8 +236,12 @@ void a_try_decompress_file (gchar *name)
 	}
 	else if ( bzip2 ) {
 		gchar* bz2_name = uncompress_bzip2 ( name );
-		g_remove ( name );
-		g_rename ( bz2_name, name );
+		if ( bz2_name ) {
+			if ( g_remove ( name ) )
+				g_critical ("%s: remove file failed [%s]", __FUNCTION__, name );
+			if ( g_rename (bz2_name, name) )
+				g_critical ("%s: file rename failed [%s] to [%s]", __FUNCTION__, bz2_name, name );
+		}
 	}
 
 	return;
