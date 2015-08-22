@@ -283,7 +283,7 @@ esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])
 
 # BZIP2
-AC_ARG_ENABLE(bz2, AC_HELP_STRING([--enable-bzip2],
+AC_ARG_ENABLE(bzip2, AC_HELP_STRING([--enable-bzip2],
 	      [enable bzip2 Support (default is enable).]),
               [ac_cv_enable_bzip2=$enableval],
               [ac_cv_enable_bzip2=yes])
