@@ -11059,8 +11059,8 @@ static void trw_layer_download_map_along_track_cb ( menu_array_sublayer values )
   }
 
   // Convert from list of vmls to list of names. Allowing the user to select one of them
-  gchar **map_names = g_malloc(1 + num_maps * sizeof(gpointer));
-  VikMapsLayer **map_layers = g_malloc(1 + num_maps * sizeof(gpointer));
+  gchar **map_names = g_malloc_n(1 + num_maps, sizeof(gpointer));
+  VikMapsLayer **map_layers = g_malloc_n(1 + num_maps, sizeof(gpointer));
 
   gchar **np = map_names;
   VikMapsLayer **lp = map_layers;
