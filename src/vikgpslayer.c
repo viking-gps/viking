@@ -374,7 +374,7 @@ static void gps_layer_inst_init ( VikGpsLayer *self )
 {
   gint new_proto = 0;
   // +1 for luck (i.e the NULL terminator)
-  gchar **new_protocols = g_malloc(1 + g_list_length(a_babel_device_list)*sizeof(gpointer));
+  gchar **new_protocols = g_malloc_n(1 + g_list_length(a_babel_device_list), sizeof(gpointer));
 
   GList *gl = g_list_first ( a_babel_device_list );
   while ( gl ) {
