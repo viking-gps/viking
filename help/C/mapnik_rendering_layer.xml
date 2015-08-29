@@ -13,7 +13,7 @@ The Mapnik Rendering Layer uses the <ulink url="http://mapnik.org/">Mapnik Libra
 </para>
 
 <para>
-When using the this layer it is useful to review the <xref linkend="prefs_mapnik"/> to ensure the settings are correct for your system.
+When using this layer it is useful to review the <xref linkend="prefs_mapnik"/> to ensure the settings are correct for your system.
 </para>
 
 <para>
