@@ -23,7 +23,7 @@
 /*
  * This uses EXIF information from images to create waypoints at those positions
  *
- * The intial implementation uses libexif, which keeps Viking a pure C program.
+ * The initial implementation uses libexif, which keeps Viking a pure C program.
  * Now libgexiv2 is available (in C as a wrapper around the more powerful libexiv2 [C++]) so this is the preferred build.
  *  The attentative reader will notice the use of gexiv2 is a lot simpler as well.
  * For the time being the libexif code + build is still made available.
