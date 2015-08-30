@@ -44,8 +44,8 @@ static void file_list_add ( VikFileList *vfl )
   
   if ( ! vfl->file_selector )
   {
-    GtkWidget *win;
-    g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfl))) );
+    GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(vfl));
+    g_assert ( win );
     vfl->file_selector = gtk_file_chooser_dialog_new (_("Choose file(s)"),
 				      GTK_WINDOW(win),
 				      GTK_FILE_CHOOSER_ACTION_OPEN,

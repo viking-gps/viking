@@ -894,8 +894,8 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
 	       vik_treeview_item_get_type(vt, &dest_parent) != VIK_TREEVIEW_TYPE_LAYER);
 
       
-      g_assert ( vik_treeview_item_get_parent(vt, &src_iter) );
       vl_src = vik_treeview_item_get_parent(vt, &src_iter);
+      g_assert ( vl_src );
       vl_dest = vik_treeview_item_get_pointer(vt, &dest_parent);
 
       /* TODO: might want to allow different types, and let the clients handle how they want */

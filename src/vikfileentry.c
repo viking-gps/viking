@@ -100,8 +100,8 @@ static void choose_file ( VikFileEntry *vfe )
 {
   if ( ! vfe->file_selector )
   {
-    GtkWidget *win;
-    g_assert ( (win = gtk_widget_get_toplevel(GTK_WIDGET(vfe))) );
+    GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(vfe));
+    g_assert ( win );
     vfe->file_selector = gtk_file_chooser_dialog_new (_("Choose file"),
 				      GTK_WINDOW(win),
 				      vfe->action,   /* open file or directory */
