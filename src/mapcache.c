@@ -269,14 +269,13 @@ void a_mapcache_remove_all_shrinkfactors ( gint x, gint y, gint z, guint16 type,
 
 void a_mapcache_flush ()
 {
+  // Everything happens within the mutex lock section
+  g_mutex_lock(mc_mutex);
+
   List *loop = queue_tail;
   List *tmp;
 
-  if ( queue_tail == NULL )
-    return;
-
-  g_mutex_lock(mc_mutex);
-  do {
+  while ( loop ) {
     tmp = loop->next;
     cache_remove(tmp->key);
     if ( tmp == queue_tail ) /* we deleted the last thing in the queue */
@@ -285,7 +284,7 @@ void a_mapcache_flush ()
       loop->next = tmp->next;
     g_free ( tmp );
     tmp = NULL;
-  } while ( loop );
+  }
 
   g_mutex_unlock(mc_mutex);
 }
