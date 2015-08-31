@@ -215,14 +215,19 @@ mapcache_extra_t a_mapcache_get_extra ( gint x, gint y, gint z, guint16 type, gi
  */
 static void flush_matching ( gchar *str )
 {
-  if ( queue_tail == NULL )
-    return;
+  g_mutex_lock(mc_mutex);
 
+  if ( queue_tail == NULL ) {
+    g_mutex_unlock(mc_mutex);
+    return;
+  }
+
+  // The 'loop' variable must be assigned within the mutex lock section,
+  //  otherwise where it points to might not be valid anymore when the actual processing occurs
   List *loop = queue_tail;
   List *tmp;
   gint len = strlen(str);
 
-  g_mutex_lock(mc_mutex);
   do {
     tmp = loop->next;
     if ( tmp ) {
