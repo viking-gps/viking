@@ -439,6 +439,7 @@ AC_CONFIG_FILES([
 		tools/Makefile
 		test/Makefile
 		help/Makefile
+		help/viking.xml
 		win32/Makefile
 		win32/installer/Makefile
 		win32/installer/pixmaps/Makefile

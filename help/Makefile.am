@@ -53,7 +53,7 @@ DOC_FIGURES = \
     figures/customize_toolbar_dialog.png
 DOC_LINGUAS =
 
-EXTRA_DIST = viking.xml
+EXTRA_DIST = viking.xml.in
 
 CLEANFILES=
 # man pages processing
