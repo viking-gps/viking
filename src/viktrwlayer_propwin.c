@@ -1303,12 +1303,14 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
     x = (width * dist)/total_length + margin;
     if (do_dem) {
       gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord), VIK_DEM_INTERPOL_BEST);
-      elev -= alt_offset;
       if ( elev != VIK_DEM_INVALID_ELEVATION ) {
 	// Convert into height units
 	if (a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET)
 	  elev =  VIK_METERS_TO_FEET(elev);
 	// No conversion needed if already in metres
+
+        // offset is in current height units
+        elev -= alt_offset;
 
         // consider chunk size
         int y_alt = h2 - ((height * elev)/achunk );
@@ -2102,12 +2104,14 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
       VikTrackpoint *tp = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, ((gdouble)i/(gdouble)widgets->profile_width), NULL );
       if ( tp ) {
         gint16 elev = a_dems_get_elev_by_coord(&(tp->coord), VIK_DEM_INTERPOL_SIMPLE);
-        elev -= mina; //?
         if ( elev != VIK_DEM_INVALID_ELEVATION ) {
           // Convert into height units
           if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
             elev = VIK_METERS_TO_FEET(elev);
           // No conversion needed if already in metres
+
+          // offset is in current height units
+          elev -= mina;
 
           // consider chunk size
           int y_alt = h2 - ((widgets->profile_height * elev)/achunk );
