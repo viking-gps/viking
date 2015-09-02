@@ -71,11 +71,12 @@ INCLUDES        = @PACKAGE_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
 GTKDOC_LIBS     =  -L$(top_srcdir)/src -lviking -L$(top_srcdir)/src/icons -licons @PACKAGE_LIBS@ @EXPAT_LIBS@ @LIBCURL@ $(LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
+if ENABLE_GTK_DOC
 include $(top_srcdir)/gtk-doc.make
+endif
 
 # Other files to distribute
 # e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST +=
 
 # Files not to distribute
 # for --rebuild-types in $(SCAN_OPTIONS), e.g. $(DOC_MODULE).types

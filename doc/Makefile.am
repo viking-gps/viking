@@ -1,4 +1,4 @@
-SUBDIRS = examples
+SUBDIRS = examples reference
 
 EXTRA_DIST = GPSMAPPER
 

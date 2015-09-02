@@ -6,7 +6,13 @@ AC_INIT(viking, 1.6, , viking, http://viking.sf.net/)
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip subdir-objects])
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
-GTK_DOC_CHECK(1.0)
+
+# check for gtk-doc
+m4_ifdef([GTK_DOC_CHECK], [
+GTK_DOC_CHECK([1.0],[--flavour no-tmpl])
+],[
+AM_CONDITIONAL([ENABLE_GTK_DOC], false)
+])
 
 AC_PROG_CC
 AC_PROG_CC_STDC
@@ -427,8 +433,6 @@ dnl correct flags to aclocal.
 ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
 AC_SUBST(ACLOCAL_AMFLAGS)
 
-AM_CONDITIONAL([VIKING_DOC], test x${enable_gtk_doc} = xyes)
-
 # Configuration
 AC_CONFIG_FILES([
 		Makefile
@@ -443,12 +447,10 @@ AC_CONFIG_FILES([
 		win32/Makefile
 		win32/installer/Makefile
 		win32/installer/pixmaps/Makefile
-		win32/installer/translations/Makefile])
-AM_COND_IF([VIKING_DOC],
-	[AC_CONFIG_FILES([
+		win32/installer/translations/Makefile
 		doc/Makefile
 		doc/reference/Makefile
-		doc/examples/Makefile])])
+		doc/examples/Makefile])
 
 AC_OUTPUT([
 	   viking.spec
