@@ -428,11 +428,6 @@ AC_PATH_PROG(XP,xsltproc)
 AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
 AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"])
 
-dnl This will cause the automake generated makefiles to pass the
-dnl correct flags to aclocal.
-ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
-AC_SUBST(ACLOCAL_AMFLAGS)
-
 # Configuration
 AC_CONFIG_FILES([
 		Makefile
