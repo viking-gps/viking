@@ -335,9 +335,14 @@ void vik_mapnik_layer_uninit ()
 // NB Only performed once per program run
 static void mapnik_layer_class_init ( VikMapnikLayerClass *klass )
 {
-	mapnik_interface_initialize ( a_preferences_get (MAPNIK_PREFS_NAMESPACE"plugins_directory")->s,
-	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"fonts_directory")->s,
-	                              a_preferences_get (MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory")->b );
+	VikLayerParamData *pd = a_preferences_get (MAPNIK_PREFS_NAMESPACE"plugins_directory");
+	VikLayerParamData *fd = a_preferences_get (MAPNIK_PREFS_NAMESPACE"fonts_directory");
+	VikLayerParamData *rfd = a_preferences_get (MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory");
+
+	if ( pd && fd && rfd )
+		mapnik_interface_initialize ( pd->s, fd->s, rfd->b );
+	else
+		g_critical ( "Unable to initialize mapnik interface from preferences" );
 }
 
 GType vik_mapnik_layer_get_type ()
