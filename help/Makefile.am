@@ -1,4 +1,6 @@
+if GEN_MANPAGES
 include $(top_srcdir)/gnome-doc-utils.make
+endif
 
 # Annoyingly in the XML, yelp refuses to load relative images fileref, i.e. ../../src/icons/file.png
 #  whereas the PDF generation inserts these references OK
@@ -56,9 +58,8 @@ DOC_LINGUAS =
 EXTRA_DIST = viking.xml.in
 
 CLEANFILES=
+
 # man pages processing
-# TODO conditional processing
-# (availability of docbook stylesheet and xsltproc)
 if GEN_MANPAGES
 MANPAGES=viking.1
 man_MANS = $(MANPAGES)

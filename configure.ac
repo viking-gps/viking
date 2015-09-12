@@ -426,7 +426,8 @@ DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
 AC_SUBST(DB2MAN_XSL)
 AC_PATH_PROG(XP,xsltproc)
 AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
-AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"])
+AC_CHECK_PROG([HAVE_SCROLLKEEPER],scrollkeeper-config,"yes")
+AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && test "${HAVE_SCROLLKEEPER}" == "yes" )
 
 # Configuration
 AC_CONFIG_FILES([
@@ -473,6 +474,8 @@ echo "MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles"
 echo "Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
 echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"
+echo -n "Man page generation              : "
+AM_COND_IF([GEN_MANPAGES], [echo "yes"], [echo "no"])
 echo "Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})"
 echo "-------------------------------------------"
 echo ""
