@@ -299,6 +299,21 @@ case $ac_cv_enable_dem24k in
 esac
 AM_CONDITIONAL([DEM24K], [test x$ac_cv_enable_dem24k = xyes])
 
+# OAuth
+AC_ARG_ENABLE(oauth, AC_HELP_STRING([--enable-oauth],
+              [enable OAuth Support (default is enable).]),
+              [ac_cv_enable_oauth=$enableval],
+              [ac_cv_enable_oauth=yes])
+AC_CACHE_CHECK([whether to enable OAuth Support],
+               [ac_cv_enable_oauth], [ac_cv_enable_oauth=yes])
+case $ac_cv_enable_oauth in
+  yes)
+    AC_CHECK_HEADERS([oauth.h],[],[AC_MSG_ERROR([oauth.h is needed but not found - you will need to install package 'liboauth-dev' or similar. The feature can be disabled with --disable-oauth])])
+    AC_CHECK_LIB(oauth, oauth_sign_url2, [], [AC_MSG_ERROR([liboauth is needed but not found.])])
+    ;;
+esac
+AM_CONDITIONAL([OAUTH], [test x$ac_cv_enable_oauth = xyes])
+
 # Realtime GPS tracking
 AC_ARG_ENABLE(realtime-gps-tracking, AC_HELP_STRING([--enable-realtime-gps-tracking],
               [enable realtime GPS tracking (default is enable)]),
@@ -598,6 +613,7 @@ MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles
 Zip File Support (with libzip)   : $ac_cv_enable_zip
 MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
+OAuth                            : $ac_cv_enable_oauth
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
 Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}
 GeoNames user                    : ${VIK_CONFIG_GEONAMES_USERNAME}

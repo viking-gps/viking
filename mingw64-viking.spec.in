@@ -45,6 +45,7 @@ BuildRequires:	mingw64-sqlite-devel
 BuildRequires:	mingw64-libzip-devel
 BuildRequires:	mingw64-libnettle-devel
 BuildRequires:	mingw64-libgps-devel
+BuildRequires:	mingw64-liboauth-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 Requires:	mingw64-gtk2
@@ -55,6 +56,7 @@ Requires:	mingw64-libstdc++6
 Requires:	mingw64-libsqlite3-0
 Requires:	mingw64-libzip4
 Requires:	mingw64-libnettle
+Requires:	mingw64-liboauth
 # Currently running makensis in seperate script - so you will need it then
 # NB No 64bit version available
 #Requires:	mingw32-cross-nsis

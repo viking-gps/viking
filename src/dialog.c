@@ -686,6 +686,9 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBGEOCLUE_2
     "libgeoclue2",
 #endif
+#ifdef HAVE_LIBOAUTH
+    "liboauth",
+#endif
     NULL
   };
   // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program

@@ -37,6 +37,9 @@ void osm_set_login (const gchar *user, const gchar *password);
 gchar *osm_get_login();
 void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry);
 
+gboolean osm_use_basic_auth();
+gchar* osm_oauth_sign_url ( const gchar* url, const char *method );
+
 G_END_DECLS
 
 #endif

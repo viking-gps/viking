@@ -39,8 +39,8 @@
 /**
  * See http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces
  */
-#define DS_OSM_TRACES_GPX_URL_FMT "api.openstreetmap.org/api/0.6/gpx/%d/data"
-#define DS_OSM_TRACES_GPX_FILES "api.openstreetmap.org/api/0.6/user/gpx_files"
+#define DS_OSM_TRACES_GPX_URL_FMT "https://api.openstreetmap.org/api/0.6/gpx/%d/data"
+#define DS_OSM_TRACES_GPX_FILES "https://api.openstreetmap.org/api/0.6/user/gpx_files"
 
 typedef struct {
 	GtkWidget *user_entry;
@@ -83,6 +83,8 @@ VikDataSourceInterface vik_datasource_osm_my_traces_interface = {
 static gpointer datasource_osm_my_traces_init ( acq_vik_t *avt )
 {
   datasource_osm_my_traces_t *data = g_malloc(sizeof(*data));
+  /* Keep reference to viewport */
+  data->vvp = avt->vvp;
   // Reuse GPS functions
   // Haven't been able to get the thread method to work reliably (or get progress feedback)
   // So thread version is disabled ATM
@@ -97,42 +99,40 @@ static gpointer datasource_osm_my_traces_init ( acq_vik_t *avt )
 
 static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )
 {
-	datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t *)user_data;
+	if ( osm_use_basic_auth() ) {
+		datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t *)user_data;
+		GtkWidget *user_label;
+		GtkWidget *password_label;
+		user_label = gtk_label_new(_("Email/username:"));
+		data->user_entry = gtk_entry_new();
 
-	GtkWidget *user_label;
-	GtkWidget *password_label;
-	user_label = gtk_label_new(_("Email/username:"));
-	data->user_entry = gtk_entry_new();
+		gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), user_label, FALSE, FALSE, 0 );
+		gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), data->user_entry, FALSE, FALSE, 0 );
+		gtk_widget_set_tooltip_markup ( GTK_WIDGET(data->user_entry), _("The email or username used to login to OSM") );
 
-	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), user_label, FALSE, FALSE, 0 );
-	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), data->user_entry, FALSE, FALSE, 0 );
-	gtk_widget_set_tooltip_markup ( GTK_WIDGET(data->user_entry), _("The email or username used to login to OSM") );
+		password_label = gtk_label_new ( _("Password:") );
+		data->password_entry = gtk_entry_new ();
 
-	password_label = gtk_label_new ( _("Password:") );
-	data->password_entry = gtk_entry_new ();
+		gtk_widget_set_tooltip_markup ( GTK_WIDGET(data->password_entry), _("The password used to login to OSM") );
 
-	gtk_widget_set_tooltip_markup ( GTK_WIDGET(data->password_entry), _("The password used to login to OSM") );
+		osm_login_widgets (data->user_entry, data->password_entry);
 
-	osm_login_widgets (data->user_entry, data->password_entry);
-
-	/* Packing all widgets */
-	GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
-	gtk_box_pack_start ( box, password_label, FALSE, FALSE, 0 );
-	gtk_box_pack_start ( box, data->password_entry, FALSE, FALSE, 0 );
+		/* Packing all widgets */
+		GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+		gtk_box_pack_start ( box, password_label, FALSE, FALSE, 0 );
+		gtk_box_pack_start ( box, data->password_entry, FALSE, FALSE, 0 );
+	}
 	gtk_widget_show_all ( dialog );
-
-	/* Keep reference to viewport */
-	data->vvp = vvp;
 }
 
 static void datasource_osm_my_traces_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadFileOptions *options, const gchar *notused1, const gchar *notused2 )
 {
-	datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t*) user_data;
-
-    /* overwrite authentication info */
-	osm_set_login ( gtk_entry_get_text ( GTK_ENTRY(data->user_entry) ),
-	                gtk_entry_get_text ( GTK_ENTRY(data->password_entry) ) );
-
+	if ( osm_use_basic_auth() ) {
+		datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t*) user_data;
+		/* overwrite authentication info */
+		osm_set_login ( gtk_entry_get_text ( GTK_ENTRY(data->user_entry) ),
+		                gtk_entry_get_text ( GTK_ENTRY(data->password_entry) ) );
+	}
 	// If going to use the values passed back into the process function parameters then they need to be set.
 	// But ATM we aren't
 	options = NULL;
@@ -553,17 +553,31 @@ static void set_in_current_view_property ( VikTrwLayer *vtl, datasource_osm_my_t
 
 static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadFileOptions *options_unused )
 {
-	//datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t *)adw->user_data;
-
 	gboolean result;
 
-	gchar *user_pass = osm_get_login();
+	gchar *user_pass = NULL;
+	gchar *uri = NULL;
+	if ( osm_use_basic_auth() ) {
+		uri = g_strdup ( DS_OSM_TRACES_GPX_FILES );
+		user_pass = osm_get_login();
+	}
+#ifdef HAVE_OAUTH_H
+	else {
+		datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t *)adw->user_data;
+		uri = osm_oauth_sign_url ( DS_OSM_TRACES_GPX_FILES, NULL );
+		if ( !uri ) {
+			a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(data->vvp), _("Ensure the OSM access token preferences are setup.") );
+			return FALSE;
+		}
+	}
+#endif
 
 	// Support .zip + bzip2 files directly
 	DownloadFileOptions options = { FALSE, FALSE, NULL, 2, NULL, user_pass, a_try_decompress_file }; // Allow a couple of redirects
 
-	gchar *tmpname = a_download_uri_to_tmp_file ( DS_OSM_TRACES_GPX_FILES, &options );
-	if ( !tmpname )
+	gchar *tmpname = a_download_uri_to_tmp_file ( uri, &options );
+	g_free ( uri );
+    if ( !tmpname )
 		return FALSE;
 
 	xml_data *xd = g_malloc ( sizeof (xml_data) );
@@ -638,7 +652,11 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOpti
 
 			// NB download type is GPX (or a compressed version)
 			ProcessOptions my_po = *process_options;
+#ifdef HAVE_OAUTH_H
+			my_po.url = osm_oauth_sign_url ( url, NULL );
+#else
 			my_po.url = url;
+#endif
 			result = a_babel_convert_from ( vtlX, &my_po, status_cb, adw, &options );
 			// TODO investigate using a progress bar:
 			// http://developer.gnome.org/gtk/2.24/GtkProgressBar.html

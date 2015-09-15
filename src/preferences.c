@@ -155,9 +155,8 @@ gboolean a_preferences_save_to_file()
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
 
   FILE *f = g_fopen(fn, "w");
-  /* Since preferences files saves OSM login credentials,
-   * it'll be better to store it in secret.
-   */
+  // Since preferences file may contain sensitive information,
+  //  it'll be better to store it so it can only be read by the user
   if ( g_chmod(fn, 0600) != 0 )
     g_warning ( "%s: Failed to set permissions on %s", __FUNCTION__, fn );
   g_free ( fn );
