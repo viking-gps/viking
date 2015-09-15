@@ -270,7 +270,7 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
  */
 static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpath, VikViewport *vp )
 {
-  Stack *stack;
+  Stack *stack = NULL;
   struct LatLon ll = { 0.0, 0.0 };
   gchar buffer[4096];
   gchar *line;

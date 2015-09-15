@@ -85,7 +85,8 @@ static gboolean preferences_load_from_file()
 
   if ( f ) {
     gchar buf[4096];
-    gchar *key, *val;
+    gchar *key = NULL;
+    gchar *val = NULL;
     VikLayerTypedParamData *oldval, *newval;
     while ( ! feof (f) ) {
       if (fgets(buf,sizeof(buf),f) == NULL)
