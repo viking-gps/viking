@@ -444,7 +444,7 @@ static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
 #if GLIB_CHECK_VERSION(2,26,0)
 		GDateTime* gdt = g_date_time_new_from_unix_utc ( wpt->timestamp );
 		gchar *time = g_date_time_format ( gdt, WAYPOINT_LIST_DATE_FORMAT );
-		strncpy ( time_buf, time, sizeof(time_buf) );
+		g_strlcpy ( time_buf, time, sizeof(time_buf) );
 		g_free ( time );
 		g_date_time_unref ( gdt);
 #else
