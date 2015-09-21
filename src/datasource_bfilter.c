@@ -168,6 +168,45 @@ VikDataSourceInterface vik_datasource_bfilter_dup_interface = {
 };
 
 
+/************************************ Swap Lat<->Lon ***********************************/
+
+VikLayerParamData bfilter_manual_params_defaults[] = {
+  { .s = NULL },
+};
+
+VikLayerParam bfilter_manual_params[] = {
+  { VIK_LAYER_NUM_TYPES, "manual", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Manual filter:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL,
+      N_("Manual filter command: e.g. 'swap'."), NULL, NULL, NULL },
+};
+
+static void datasource_bfilter_manual_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *not_used3 )
+{
+  po->babelargs = g_strdup ( "-i gpx" );
+  po->filename = g_strdup ( input_filename );
+  po->babel_filters = g_strconcat ( "-x ", paramdatas[0].s, NULL );
+}
+
+VikDataSourceInterface vik_datasource_bfilter_manual_interface = {
+  N_("Manual filter"),
+  N_("Manual filter"),
+  VIK_DATASOURCE_CREATENEWLAYER,
+  VIK_DATASOURCE_INPUTTYPE_TRWLAYER,
+  TRUE,
+  FALSE, /* keep dialog open after success */
+  TRUE,
+  NULL, NULL, NULL,
+  (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_manual_get_process_options,
+  (VikDataSourceProcessFunc)           a_babel_convert_from,
+  NULL, NULL, NULL,
+  (VikDataSourceOffFunc) NULL,
+
+  bfilter_manual_params,
+  sizeof(bfilter_manual_params)/sizeof(bfilter_manual_params[0]),
+  bfilter_manual_params_defaults,
+  NULL,
+  0
+};
+
 /************************************ Polygon ***********************************/
 
 static void datasource_bfilter_polygon_get_process_options ( VikLayerParamData *paramdatas, ProcessOptions *po, gpointer not_used, const gchar *input_filename, const gchar *input_track_filename )
