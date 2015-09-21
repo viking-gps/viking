@@ -535,16 +535,20 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
 
   // Ensure cache_dir always ends with a separator
   guint len = strlen(canonical_dir);
-  if ( canonical_dir[len-1] != G_DIR_SEPARATOR )
+  // Unless the dir is not valid
+  if ( len > 0 )
   {
-    vml->cache_dir = g_strconcat ( canonical_dir, G_DIR_SEPARATOR_S, NULL );
-    g_free ( canonical_dir );
-  }
-  else {
-    vml->cache_dir = canonical_dir;
-  }
+    if ( canonical_dir[len-1] != G_DIR_SEPARATOR )
+    {
+      vml->cache_dir = g_strconcat ( canonical_dir, G_DIR_SEPARATOR_S, NULL );
+      g_free ( canonical_dir );
+    }
+    else {
+      vml->cache_dir = canonical_dir;
+    }
 
-  maps_layer_mkdir_if_default_dir ( vml );
+    maps_layer_mkdir_if_default_dir ( vml );
+  }
 }
 
 static void maps_layer_set_file ( VikMapsLayer *vml, const gchar *name )
