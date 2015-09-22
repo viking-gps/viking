@@ -204,6 +204,20 @@ gboolean vik_goto_tool_parse_file_for_latlon (VikGotoTool *self, gchar *filename
   return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_latlon( self, filename, ll );
 }
 
+/**
+ * vik_goto_tool_get_coord:
+ *
+ * @self:      The #VikGotoTool
+ * @vvp:       The #VikViewport
+ * @srch_str:  The string to search with
+ * @coord:     Returns the top match position for a successful search
+ *
+ * Returns: An integer value indicating:
+ *  0  = search found something
+ *  -1 = search place not found by the #VikGotoTool
+ *  1  = search unavailable in the #VikGotoTool due to communication issue
+ *
+ */
 int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
 {
   gchar *tmpname;
@@ -222,6 +236,12 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
 
   tmpname = a_download_uri_to_tmp_file ( uri, vik_goto_tool_get_download_options(self) );
 
+  if ( !tmpname ) {
+    // Some kind of download error, so no tmp file
+    ret = 1;
+    goto done_no_file;
+  }
+
   g_debug("%s: %s", __FILE__, tmpname);
   if (!vik_goto_tool_parse_file_for_latlon(self, tmpname, &ll)) {
     ret = -1;
@@ -230,9 +250,10 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
   vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
 
 done:
+  util_remove(tmpname);
+done_no_file:
+  g_free(tmpname);
   g_free(escaped_srch_str);
   g_free(uri);
-  util_remove(tmpname);
-  g_free(tmpname);
   return ret;
 }

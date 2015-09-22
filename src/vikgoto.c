@@ -84,7 +84,7 @@ static void display_no_tool(VikWindow *vw)
   gtk_widget_destroy(dialog);
 }
 
-static gboolean prompt_try_again(VikWindow *vw)
+static gboolean prompt_try_again(VikWindow *vw, const gchar *msg)
 {
   GtkWidget *dialog = NULL;
   gboolean ret = TRUE;
@@ -92,7 +92,7 @@ static gboolean prompt_try_again(VikWindow *vw)
   dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_window_set_title(GTK_WINDOW(dialog), _("goto"));
 
-  GtkWidget *goto_label = gtk_label_new(_("I don't know that place. Do you want another goto?"));
+  GtkWidget *goto_label = gtk_label_new(msg);
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), goto_label, FALSE, FALSE, 5 );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all(dialog);
@@ -240,20 +240,26 @@ void a_vik_goto(VikWindow *vw, VikViewport *vvp)
     if ((!s_str) || (s_str[0] == 0)) {
       more = FALSE;
     }
-
-    else if (!vik_goto_tool_get_coord(g_list_nth_data (goto_tools_list, last_goto_tool), vw, vvp, s_str, &new_center)) {
-      if (last_coord)
-        g_free(last_coord);
-      last_coord = g_malloc(sizeof(VikCoord));
-      *last_coord = new_center;
-      if (last_successful_goto_str)
-        g_free(last_successful_goto_str);
-      last_successful_goto_str = g_strdup(last_goto_str);
-      vik_viewport_set_center_coord(vvp, &new_center, TRUE);
-      more = FALSE;
-    }
-    else if (!prompt_try_again(vw))
+    else {
+      int ans = vik_goto_tool_get_coord(g_list_nth_data (goto_tools_list, last_goto_tool), vw, vvp, s_str, &new_center);
+      if ( ans == 0 ) {
+        if (last_coord)
+          g_free(last_coord);
+        last_coord = g_malloc(sizeof(VikCoord));
+        *last_coord = new_center;
+        if (last_successful_goto_str)
+          g_free(last_successful_goto_str);
+        last_successful_goto_str = g_strdup(last_goto_str);
+        vik_viewport_set_center_coord(vvp, &new_center, TRUE);
         more = FALSE;
+      }
+      else if ( ans == -1 ) {
+        if (!prompt_try_again(vw, _("I don't know that place. Do you want another goto?")))
+          more = FALSE;
+      }
+      else if (!prompt_try_again(vw, _("Service request failure. Do you want another goto?")))
+        more = FALSE;
+    }
     g_free(s_str);
   } while (more);
 }
