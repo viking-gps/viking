@@ -25,7 +25,7 @@
 #include "viktrwlayer_wpwin.h"
 #include "degrees_converters.h"
 #include "garminsymbols.h"
-#ifdef HAVE_LIBEXIF
+#ifdef VIK_CONFIG_GEOTAG
 #include "geotag_exif.h"
 #endif
 #include "thumbnails.h"
@@ -234,7 +234,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   if ( !is_new && wp->image ) {
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
-#ifdef HAVE_LIBEXIF
+#ifdef VIK_CONFIG_GEOTAG
     // Geotag Info [readonly]
     hasGeotagCB = gtk_check_button_new_with_label ( _("Has Geotag") );
     gtk_widget_set_sensitive ( hasGeotagCB, FALSE );
