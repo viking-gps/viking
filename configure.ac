@@ -369,27 +369,6 @@ AC_PROG_CXX
 m4_popdef([AC_MSG_ERROR])
 ##
 
-AC_ARG_WITH(search,
-            [AC_HELP_STRING([--with-search],
-                            [specify google or geonames for searching (default is google)])],
-            [case "x$withval" in
-               "xgoogle")
-                 VIK_CONFIG_SEARCH=VIK_CONFIG_SEARCH_GOOGLE
-                 ;;
-               "xgeonames")
-                 VIK_CONFIG_SEARCH=VIK_CONFIG_SEARCH_GEONAMES
-                 ;;
-               *)
-                AC_MSG_ERROR([Please, set a value for search method])
-             esac],
-             [VIK_CONFIG_SEARCH=VIK_CONFIG_SEARCH_GOOGLE])
-AC_DEFINE_UNQUOTED(VIK_CONFIG_SEARCH_GOOGLE, 1,
-                   [Id. for searching via GOOGLE])
-AC_DEFINE_UNQUOTED(VIK_CONFIG_SEARCH_GEONAMES, 2,
-                   [Id. for searching via GEONAMES])
-AC_DEFINE_UNQUOTED(VIK_CONFIG_SEARCH, ${VIK_CONFIG_SEARCH},
-                   [Method for the search])
-
 
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
