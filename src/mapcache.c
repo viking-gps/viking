@@ -148,6 +148,10 @@ static void list_add_entry ( gchar *key )
   queue_count++;
 }
 
+/**
+ * Function increments reference counter of pixbuf.
+ * Caller may (and should) decrease it's reference.
+ */
 void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
   if ( ! GDK_IS_PIXBUF(pixbuf) ) {
@@ -159,6 +163,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y,
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
 
   g_mutex_lock(mc_mutex);
+  g_object_ref(pixbuf);
   cache_add(key, pixbuf, extra);
 
   // TODO: that should be done on preference change only...
@@ -186,16 +191,25 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y,
   if ( (++tmp == 100 )) { g_debug("DEBUG: cache count=%d size=%u list count=%d\n", g_hash_table_size(cache), cache_size, queue_count ); tmp=0; }
 }
 
+/**
+ * Function increases reference counter of pixels buffer in behalf of caller.
+ * Caller have to decrease references counter, when buffer is no longer needed.
+ */
 GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
   static char key[MC_KEY_SIZE];
   guint nn = name ? g_str_hash ( name ) : 0;
   g_snprintf ( key, sizeof(key), HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
+  g_mutex_lock(mc_mutex); /* prevent returning pixbuf when cache is being cleared */
   cache_item_t *ci = g_hash_table_lookup ( cache, key );
-  if ( ci )
+  if ( ci ) {
+    g_object_ref(ci->pixbuf);
+    g_mutex_unlock(mc_mutex);
     return ci->pixbuf;
-  else
+  } else {
+    g_mutex_unlock(mc_mutex);
     return NULL;
+  }
 }
 
 mapcache_extra_t a_mapcache_get_extra ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )

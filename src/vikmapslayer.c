@@ -1043,7 +1043,10 @@ static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy
   }
 }
 
-
+/**
+ * Caller has to decrease reference counter of returned
+ * GdkPixbuf, when buffer is no longer needed.
+ */
 static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, MapCoord *mapcoord, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   // Apply alpha setting
@@ -1092,6 +1095,10 @@ static void get_filename ( const gchar *cache_dir,
   }
 }
 
+/**
+ * Caller has to decrease reference counter of returned
+ * GdkPixbuf, when buffer is no longer needed.
+ */
 static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, guint16 id, const gchar* mapname, MapCoord *mapcoord, gchar *filename_buf, gint buf_len, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   GdkPixbuf *pixbuf;
@@ -1210,6 +1217,7 @@ gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm,
       gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
       gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
       vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+      g_object_unref(pixbuf);
       return TRUE;
     }
   }
@@ -1244,6 +1252,7 @@ gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm, g
           gint dest_x = xx + pict_x * (tilesize_x_ceil / scale_factor);
           gint dest_y = yy + pict_y * (tilesize_y_ceil / scale_factor);
           vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, dest_x, dest_y, tilesize_x_ceil / scale_factor, tilesize_y_ceil / scale_factor );
+          g_object_unref(pixbuf);
           return TRUE;
         }
       }
@@ -1337,6 +1346,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
             yy -= (height/2);
 
             vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, xx, yy, width, height );
+            g_object_unref(pixbuf);
           }
         }
       }
@@ -1388,6 +1398,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
               gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
               gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
               vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+              g_object_unref(pixbuf);
             }
             else {
               // Otherwise try different scales
