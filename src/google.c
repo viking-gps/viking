@@ -41,9 +41,13 @@ void google_init () {
   g_object_unref ( webtool );
 
   // Goto
+  /*
+   * Google no longer supports the API we used
+   *
   GoogleGotoTool *gototool = google_goto_tool_new (  );
   vik_goto_register ( VIK_GOTO_TOOL ( gototool ) );
   g_object_unref ( gototool );
+  */
 }
 
 /**
@@ -59,6 +63,9 @@ void google_post_init ()
    *
    * gpsbabel supports this format.
    */
+  /*
+   * Google no longer supports the API we used
+   *
   if ( a_babel_available() ) {
     VikRoutingEngine *routing = g_object_new ( VIK_ROUTING_WEB_ENGINE_TYPE,
       "id", "google",
@@ -74,4 +81,5 @@ void google_post_init ()
     vik_routing_register ( VIK_ROUTING_ENGINE ( routing ) );
     g_object_unref ( routing );
   }
+  */
 }
