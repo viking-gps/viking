@@ -1007,7 +1007,7 @@ static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy
   int len;
   int compressed;
 
-  buf = malloc(tile_max);
+  buf = g_malloc(tile_max);
   if (!buf) {
       return NULL;
   }
@@ -1019,6 +1019,7 @@ static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy
     if (compressed) {
       // Not handled yet - I don't think this is used often - so implement later if necessary
       g_warning ( "Compressed metatiles not implemented:%s\n", __FUNCTION__);
+      g_free(buf);
       return NULL;
     }
 
@@ -1028,16 +1029,17 @@ static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy
     GInputStream *stream = g_memory_input_stream_new_from_data ( buf, len, NULL );
     GError *error = NULL;
     pixbuf = gdk_pixbuf_new_from_stream ( stream, NULL, &error );
-    if (error || (!pixbuf)) {
+    if (error) {
       g_warning ( "%s: %s", __FUNCTION__, error->message );
       g_error_free ( error );
     }
     g_input_stream_close ( stream, NULL, NULL );
 
-    free(buf);
+    g_free(buf);
     return pixbuf;
   }
   else {
+    g_free(buf);
     g_warning ( "FAILED:%s %s", __FUNCTION__, err_msg);
     return NULL;
   }
