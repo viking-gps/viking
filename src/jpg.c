@@ -24,7 +24,7 @@
 #include "config.h"
 #endif
 #include "jpg.h"
-#ifdef HAVE_LIBEXIF
+#ifdef VIK_CONFIG_GEOTAG
 #include "geotag_exif.h"
 #endif
 #ifdef HAVE_MAGIC_H
@@ -97,7 +97,7 @@ gboolean a_jpg_load_file ( VikAggregateLayer *top, const gchar *filename, VikVie
 
 	gchar *name = NULL;
 	VikWaypoint *wp = NULL;
-#ifdef HAVE_LIBEXIF
+#ifdef VIK_CONFIG_GEOTAG
 	wp = a_geotag_create_waypoint_from_file ( filename, vik_viewport_get_coord_mode (vvp), &name );
 #endif
 	if ( wp ) {
