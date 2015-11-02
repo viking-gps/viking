@@ -219,6 +219,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         gtk_scale_set_digits ( GTK_SCALE(rv), scale->digits );
         gtk_range_set_value ( GTK_RANGE(rv), init_val );
       }
+      break;
 
     case VIK_LAYER_WIDGET_BUTTON:
       if ( param->type == VIK_LAYER_PARAM_PTR && param->widget_data ) {
