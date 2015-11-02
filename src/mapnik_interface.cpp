@@ -200,7 +200,7 @@ gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
 
 		set_copyright ( mi );
 
-		g_debug ("%s layers: %d", __FUNCTION__, mi->myMap->layer_count() );
+		g_debug ("%s layers: %d", __FUNCTION__, (guint)mi->myMap->layer_count() );
 	} catch (std::exception const& ex) {
 		msg = g_strdup ( ex.what() );
 	} catch (...) {
@@ -325,6 +325,6 @@ gchar * mapnik_interface_about ( void )
 	                               _("Mapnik"),
 	                               MAPNIK_VERSION_STRING,
 	                               str.c_str(),
-	                               mapnik::freetype_engine::face_names().size() );
+	                               (guint)mapnik::freetype_engine::face_names().size() );
 	return msg;
 }
