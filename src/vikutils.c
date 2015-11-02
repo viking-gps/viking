@@ -578,25 +578,32 @@ static void load_ll_tz_dir ( const gchar *dir )
 		gchar buffer[4096];
 		long line_num = 0;
 		FILE *ff = g_fopen ( lltz, "r" );
-
-		while ( fgets ( buffer, 4096, ff ) ) {
-			line_num++;
-			gchar **components = g_strsplit (buffer, " ", 3);
-			guint nn = g_strv_length ( components );
-			if ( nn == 3 ) {
-				double pt[2] = { g_ascii_strtod (components[0], NULL), g_ascii_strtod (components[1], NULL) };
-				gchar *timezone = g_strchomp ( components[2] );
-				if ( kd_insert ( kd, pt, timezone ) )
-					g_critical ( "Insertion problem of %s for line %ld of latlontz.txt", timezone, line_num );
-				// NB Don't free timezone as it's part of the kdtree data now
-				g_free ( components[0] );
-				g_free ( components[1] );
-			} else {
-				g_warning ( "Line %ld of latlontz.txt does not have 3 parts", line_num );
+		if ( ff ) {
+			while ( fgets ( buffer, 4096, ff ) ) {
+				line_num++;
+				gchar **components = g_strsplit (buffer, " ", 3);
+				guint nn = g_strv_length ( components );
+				if ( nn == 3 ) {
+					double pt[2] = { g_ascii_strtod (components[0], NULL), g_ascii_strtod (components[1], NULL) };
+					gchar *timezone = g_strchomp ( components[2] );
+					if ( kd_insert ( kd, pt, timezone ) )
+						g_critical ( "Insertion problem of %s for line %ld of latlontz.txt", timezone, line_num );
+					// NB Don't free timezone as it's part of the kdtree data now
+					g_free ( components[0] );
+					g_free ( components[1] );
+				} else {
+					g_warning ( "Line %ld of latlontz.txt does not have 3 parts", line_num );
+				}
+				g_free ( components );
 			}
-			g_free ( components );
+			fclose ( ff );
 		}
-		fclose ( ff );
+		else {
+			g_warning ( "Could not open %s", lltz);
+		}
+	}
+	else {
+		g_warning ( "Could not access %s", lltz);
 	}
 	g_free ( lltz );
 }
