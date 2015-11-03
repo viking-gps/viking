@@ -6806,7 +6806,12 @@ static void trw_layer_astro_open ( VikTrwLayer *vtl, const gchar *date_str, cons
 {
   GError *err = NULL;
   gchar *tmp;
-  g_file_open_tmp ( "vik-astro-XXXXXX.ini", &tmp, NULL );
+  gint fd = g_file_open_tmp ( "vik-astro-XXXXXX.ini", &tmp, &err );
+  if (fd < 0) {
+    g_warning ( "%s: Failed to open temporary file: %s", __FUNCTION__, err->message );
+    g_clear_error ( &err );
+    return;
+  }
   gchar *cmd = g_strdup_printf ( "%s %s %s %s %s %s %s %s %s %s %s %s %s %s",
                                   astro_program, "-c", tmp, "--full-screen no", "--sky-date", date_str, "--sky-time", time_str, "--latitude", lat_str, "--longitude", lon_str, "--altitude", alt_str );
   g_warning ( "%s", cmd );
