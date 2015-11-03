@@ -456,7 +456,7 @@ gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type
   g_assert ( vlp->vvp );
   gboolean ask_user = FALSE;
   if ( type == VIK_LAYER_TRW )
-    a_settings_get_boolean ( VIK_SETTINGS_LAYERS_TRW_CREATE_DEFAULT, &ask_user );
+    (void)a_settings_get_boolean ( VIK_SETTINGS_LAYERS_TRW_CREATE_DEFAULT, &ask_user );
   ask_user = !ask_user;
   l = vik_layer_create ( type, vlp->vvp, ask_user );
   if ( l )

@@ -3621,7 +3621,7 @@ static void menu_copy_centre_cb ( GtkAction *a, VikWindow *vw )
   vik_coord_to_utm ( coord, &utm );
 
   gboolean full_format = FALSE;
-  a_settings_get_boolean ( VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT, &full_format );
+  (void)a_settings_get_boolean ( VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT, &full_format );
 
   if ( full_format )
     // Bells & Whistles - may include degrees, minutes and second symbols
