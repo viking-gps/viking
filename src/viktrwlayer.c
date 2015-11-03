@@ -2941,7 +2941,7 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
       if ( tt.duration > 0 ) {
         g_snprintf (tbuf1, sizeof(tbuf1),
                     _(" in %d:%02d hrs:mins"),
-                    (int)(tt.duration/3600), (int)round((tt.duration/60)%60));
+                    (int)(tt.duration/3600), (int)round(tt.duration/60.0)%60);
       }
       g_snprintf (tbuf2, sizeof(tbuf2),
 		  _("\n%sTotal Length %.1f %s%s"),
@@ -3032,7 +3032,7 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&(vik_track_get_tp_first(tr)->timestamp)));
 	  time_t dur = vik_track_get_duration ( tr );
 	  if ( dur > 0 )
-	    g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)(dur/3600), (int)round((dur/60)%60) );
+	    g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)(dur/3600), (int)round(dur/60.0)%60 );
 	}
 	// Get length and consider the appropriate distance units
 	gdouble tr_len = vik_track_get_length(tr);
