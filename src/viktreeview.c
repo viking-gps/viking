@@ -561,7 +561,7 @@ gboolean vik_treeview_move_item ( VikTreeview *vt, GtkTreeIter *iter, gboolean u
 gboolean vik_treeview_get_iter_at_pos ( VikTreeview *vt, GtkTreeIter *iter, gint x, gint y )
 {
   GtkTreePath *path;
-  gtk_tree_view_get_path_at_pos ( GTK_TREE_VIEW(vt), x, y, &path, NULL, NULL, NULL );
+  (void)gtk_tree_view_get_path_at_pos ( GTK_TREE_VIEW(vt), x, y, &path, NULL, NULL, NULL );
   if ( ! path )
     return FALSE;
 
