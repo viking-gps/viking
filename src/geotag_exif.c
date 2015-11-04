@@ -843,7 +843,7 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 		// Restore mtime, using the saved value
 		struct stat stat_tmp;
 		struct utimbuf utb;
-		stat ( filename, &stat_tmp );
+		(void)stat ( filename, &stat_tmp );
 		utb.actime = stat_tmp.st_atime;
 		utb.modtime = stat_save.st_mtime;
 		utime ( filename, &utb );

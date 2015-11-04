@@ -61,10 +61,12 @@ static gboolean check_file_first_line(FILE* f, gchar *patterns[])
   size_t nr;
 
   memset(buf, 0, sizeof(buf));
-  fgetpos(f, &pos);
+  if ( !fgetpos(f, &pos) )
+    return FALSE;
   rewind(f);
   nr = fread(buf, 1, sizeof(buf) - 1, f);
-  fsetpos(f, &pos);
+  if ( !fgetpos(f, &pos) )
+    return FALSE;
   for (bp = buf; (bp < (buf + sizeof(buf) - 1)) && (nr > (bp - buf)); bp++) {
     if (!(isspace(*bp)))
       break;
@@ -278,7 +280,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
     /* Get the modified time of this file */
     struct stat buf;
-    g_stat ( fn, &buf );
+    (void)g_stat ( fn, &buf );
     time_t file_time = buf.st_mtime;
     if ( (time(NULL) - file_time) < tile_age ) {
       /* File cache is too recent, so return */

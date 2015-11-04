@@ -387,7 +387,8 @@ void a_clipboard_copy_selected ( VikLayersPanel *vlp )
   if ( ! sel )
     return;
 
-  vik_treeview_get_selected_iter ( sel->vt, &iter );
+  if ( !vik_treeview_get_selected_iter ( sel->vt, &iter ) )
+    return;
   layer_type = sel->type;
 
   // Since we intercept copy and paste keyboard operations, this is called even when a cell is being edited

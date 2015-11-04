@@ -3873,7 +3873,8 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
 
   g_assert ( vik_viewport_get_coord_mode ( vw->viking_vvp ) == VIK_COORD_UTM );
 
-  g_mkdir(fn,0777);
+  if ( g_mkdir(fn,0777) != 0 )
+    g_warning ( "%s: Failed to create directory %s", __FUNCTION__, fn );
 
   utm_orig = *((const struct UTM *)vik_viewport_get_center ( vw->viking_vvp ));
 

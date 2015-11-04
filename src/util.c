@@ -161,7 +161,8 @@ void util_remove_all_in_deletion_list ( void )
 {
 	while ( deletion_list )
 	{
-		g_remove ( deletion_list->data );
+		if ( g_remove ( (const char*)deletion_list->data ) )
+			g_warning ( "%s: Failed to remove %s", __FUNCTION__, (char*)deletion_list->data );
 		g_free ( deletion_list->data );
 		deletion_list = g_slist_delete_link ( deletion_list, deletion_list );
 	}

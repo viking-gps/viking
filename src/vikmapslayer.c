@@ -514,7 +514,8 @@ static void maps_layer_mkdir_if_default_dir ( VikMapsLayer *vml )
 {
   if ( vml->cache_dir && strcmp ( vml->cache_dir, MAPS_CACHE_DIR ) == 0 && g_file_test ( vml->cache_dir, G_FILE_TEST_EXISTS ) == FALSE )
   {
-    g_mkdir ( vml->cache_dir, 0777 );
+    if ( g_mkdir ( vml->cache_dir, 0777 ) != 0 )
+      g_warning ( "%s: Failed to create directory %s", __FUNCTION__, vml->cache_dir );
   }
 }
 
@@ -1594,7 +1595,8 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
               GError *gx = NULL;
               GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( mdi->filename_buf, &gx );
               if (gx || (!pixbuf)) {
-                g_remove ( mdi->filename_buf );
+                if ( g_remove ( mdi->filename_buf ) )
+                  g_warning ( "REDOWNLOAD failed to remove: %s", mdi->filename_buf );
                 need_download = TRUE;
                 remove_mem_cache = TRUE;
                 g_error_free ( gx );
@@ -1612,7 +1614,8 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
             case REDOWNLOAD_ALL:
               /* FIXME: need a better way than to erase file in case of server/network problem */
-              g_remove ( mdi->filename_buf );
+              if ( g_remove ( mdi->filename_buf ) )
+                g_warning ( "REDOWNLOAD failed to remove: %s", mdi->filename_buf );
               need_download = TRUE;
               remove_mem_cache = TRUE;
               break;
@@ -1683,7 +1686,8 @@ static void mdi_cancel_cleanup ( MapDownloadInfo *mdi )
                    vik_map_source_get_file_extension(MAPS_LAYER_NTH_TYPE(mdi->maptype)) );
     if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == TRUE)
     {
-      g_remove ( mdi->filename_buf );
+      if ( g_remove ( mdi->filename_buf ) )
+        g_warning ( "Cleanup failed to remove: %s", mdi->filename_buf );
     }
   }
 }

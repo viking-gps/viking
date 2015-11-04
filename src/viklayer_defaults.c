@@ -233,9 +233,10 @@ static gboolean layer_defaults_save_to_file()
 		answer = FALSE;
 		goto tidy;
 	}
-    // Layer defaults not that secret, but just incase...
-	g_chmod ( fn, 0600 );
-	
+	// Layer defaults not that secret, but just incase...
+	if ( g_chmod ( fn, 0600 ) != 0 )
+		g_warning ( "%s: Failed to set permissions on %s", __FUNCTION__, fn );
+
 	fputs ( keyfilestr, ff );
 	fclose ( ff );
 
