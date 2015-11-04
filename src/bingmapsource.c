@@ -357,25 +357,29 @@ btext (GMarkupParseContext *context,
 	int len = g_slist_length ((GSList *)stack);
 
 	const gchar *parent = len > 1 ? g_slist_nth_data ((GSList *)stack, 1) : NULL;
-	
 	if (strcmp (element, "Attribution") == 0) {
 		g_free (priv->attribution);
 		priv->attribution = g_strdup (textl);
-	} else if (parent != NULL && strcmp (parent, "CoverageArea") == 0) {
-		if (strcmp (element, "ZoomMin") == 0) {
-			attribution->minZoom = atoi (textl);
-		} else if (strcmp (element, "ZoomMax") == 0) {
-			attribution->maxZoom = atoi (textl);
-		}
-	} else if (parent != NULL && strcmp (parent, "BoundingBox") == 0) {
-		if (strcmp (element, "SouthLatitude") == 0) {
-			attribution->bounds.south = g_ascii_strtod (textl, NULL);
-		} else if (strcmp (element, "WestLongitude") == 0) {
-			attribution->bounds.west = g_ascii_strtod (textl, NULL);
-		} else if (strcmp (element, "NorthLatitude") == 0) {
-			attribution->bounds.north = g_ascii_strtod (textl, NULL);
-		} else if (strcmp (element, "EastLongitude") == 0) {
-			attribution->bounds.east = g_ascii_strtod (textl, NULL);
+	}
+	else {
+		if ( attribution ) {
+			if (parent != NULL && strcmp (parent, "CoverageArea") == 0) {
+				if (strcmp (element, "ZoomMin") == 0) {
+					attribution->minZoom = atoi (textl);
+				} else if (strcmp (element, "ZoomMax") == 0) {
+					attribution->maxZoom = atoi (textl);
+				}
+			} else if (parent != NULL && strcmp (parent, "BoundingBox") == 0) {
+				if (strcmp (element, "SouthLatitude") == 0) {
+					attribution->bounds.south = g_ascii_strtod (textl, NULL);
+				} else if (strcmp (element, "WestLongitude") == 0) {
+					attribution->bounds.west = g_ascii_strtod (textl, NULL);
+				} else if (strcmp (element, "NorthLatitude") == 0) {
+					attribution->bounds.north = g_ascii_strtod (textl, NULL);
+				} else if (strcmp (element, "EastLongitude") == 0) {
+					attribution->bounds.east = g_ascii_strtod (textl, NULL);
+				}
+			}
 		}
 	}
 	g_free(textl);
