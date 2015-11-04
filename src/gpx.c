@@ -342,7 +342,7 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
 
      case tt_gpx_author:
        if ( c_md->author )
-         g_free ( c_md->description );
+         g_free ( c_md->author );
        c_md->author = g_strdup ( c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
        break;
