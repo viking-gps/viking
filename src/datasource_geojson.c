@@ -145,7 +145,7 @@ static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *p
 			// Important that this process is run in the main thread
 			vik_window_open_file ( adw->vw, gpx_filename, FALSE );
 			// Delete the temporary file
-			g_remove (gpx_filename);
+			(void)g_remove (gpx_filename);
 			g_free (gpx_filename);
 		}
 		else {

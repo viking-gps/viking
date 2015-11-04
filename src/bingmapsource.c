@@ -470,7 +470,7 @@ _load_attributions ( BingMapSource *self )
 done:
 	priv->loading_attributions = FALSE;
 	g_free(uri);
-	g_remove(tmpname);
+	(void)g_remove(tmpname);
 	g_free(tmpname);
 	return ret;
 }

@@ -375,7 +375,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   }
 
   if (ret == CURL_DOWNLOAD_NO_NEWER_FILE)  {
-    g_remove ( tmpfilename );
+    (void)g_remove ( tmpfilename );
 #if GLIB_CHECK_VERSION(2,18,0)
     g_utime ( fn, NULL ); /* update mtime of local copy */
 #else
@@ -447,7 +447,7 @@ gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadMapOptions *option
   if ( curl_download_uri ( uri, tmp_file, options, NULL, NULL ) ) {
     // error
     fclose ( tmp_file );
-    g_remove ( tmpname );
+    (void)g_remove ( tmpname );
     g_free ( tmpname );
     return NULL;
   }

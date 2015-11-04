@@ -317,7 +317,7 @@ gboolean a_babel_convert_from_filter( VikTrwLayer *vt, const char *babelargs, co
           g_strfreev(sub_filters);
     } else
       g_critical("gpsbabel not found in PATH");
-    g_remove(name_dst);
+    (void)g_remove(name_dst);
     g_free(name_dst);
   }
 
@@ -367,7 +367,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
     ret = babel_general_convert_from ( vt, cb, args, name_dst, user_data );
     g_free ( args );
     g_free ( shell_command );
-    g_remove(name_dst);
+    (void)g_remove(name_dst);
     g_free(name_dst);
   }
 
@@ -407,7 +407,7 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
     g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
     close(fd_src);
-    g_remove(name_src);
+    (void)g_remove(name_src);
 
     fetch_ret = a_http_download_get_url(url, "", name_src, &myoptions, NULL);
     if (fetch_ret == DOWNLOAD_SUCCESS) {
@@ -425,7 +425,7 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
         }
       }
     }
-    util_remove(name_src);
+    (void)util_remove(name_src);
     g_free(babelargs);
     g_free(name_src);
   }
@@ -522,7 +522,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
       g_strfreev(sub_args);
     } else
       g_critical("gpsbabel not found in PATH");
-    g_remove(name_src);
+    (void)g_remove(name_src);
     g_free(name_src);
   }
 
