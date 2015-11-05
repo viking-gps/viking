@@ -235,6 +235,11 @@ register_loadable_types(void)
  */
 void modules_init()
 {
+// OSM done first so this will be the default service for searching/routing/etc...
+#ifdef VIK_CONFIG_OPENSTREETMAP
+  osm_init();
+  osm_traces_init();
+#endif
 #ifdef VIK_CONFIG_BING
   bing_init();
 #endif
@@ -246,10 +251,6 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_TERRASERVER
   terraserver_init();
-#endif
-#ifdef VIK_CONFIG_OPENSTREETMAP
-  osm_init();
-  osm_traces_init();
 #endif
 #ifdef VIK_CONFIG_BLUEMARBLE
   bluemarble_init();
