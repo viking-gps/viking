@@ -4635,19 +4635,17 @@ static void trw_layer_enum_item ( gpointer id, GList **tr, GList **l )
  */
 static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, gpointer id, gint type )
 {
+  // When an item is moved the name is checked to see if it clashes with an existing name
+  //  in the destination layer and if so then it is allocated a new name
+
   // TODO reconsider strategy when moving within layer (if anything...)
-  gboolean rename = ( vtl_src != vtl_dest );
-  if ( ! rename )
+  if ( vtl_src == vtl_dest )
     return;
 
   if (type == VIK_TRW_LAYER_SUBLAYER_TRACK) {
     VikTrack *trk = g_hash_table_lookup ( vtl_src->tracks, id );
 
-    gchar *newname;
-    if ( rename )
-      newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, trk->name );
-    else
-      newname = g_strdup ( trk->name );
+    gchar *newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, trk->name );
 
     VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_track ( vtl_dest, newname, trk2 );
@@ -4661,11 +4659,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
   if (type == VIK_TRW_LAYER_SUBLAYER_ROUTE) {
     VikTrack *trk = g_hash_table_lookup ( vtl_src->routes, id );
 
-    gchar *newname;
-    if ( rename )
-      newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, trk->name );
-    else
-      newname = g_strdup ( trk->name );
+    gchar *newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, trk->name );
 
     VikTrack *trk2 = vik_track_copy ( trk, TRUE );
     vik_trw_layer_add_route ( vtl_dest, newname, trk2 );
@@ -4676,11 +4670,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
   if (type == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) {
     VikWaypoint *wp = g_hash_table_lookup ( vtl_src->waypoints, id );
 
-    gchar *newname;
-    if ( rename )
-      newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, wp->name );
-    else
-      newname = g_strdup ( wp->name );
+    gchar *newname = trw_layer_new_unique_sublayer_name ( vtl_dest, type, wp->name );
 
     VikWaypoint *wp2 = vik_waypoint_copy ( wp );
     vik_trw_layer_add_waypoint ( vtl_dest, newname, wp2 );
