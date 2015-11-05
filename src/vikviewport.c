@@ -547,9 +547,9 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       int i;
       for (i=1; i<5; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
-			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+                               PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
         vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
-			     PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+                               PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
       }
     } else {
       int i;
