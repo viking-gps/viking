@@ -681,9 +681,14 @@ static gchar* time_string_adjusted ( time_t *time, gint offset_s )
 static gchar* time_string_tz ( time_t *time, const gchar *format, GTimeZone *tz )
 {
 	GDateTime *utc = g_date_time_new_from_unix_utc (*time);
+	if ( !utc ) {
+		g_warning ( "%s: result from g_date_time_new_from_unix_utc() is NULL", __FUNCTION__ );
+		return NULL;
+	}
 	GDateTime *local = g_date_time_to_timezone ( utc, tz );
 	if ( !local ) {
 		g_date_time_unref ( utc );
+		g_warning ( "%s: result from g_date_time_to_timezone() is NULL", __FUNCTION__ );
 		return NULL;
 	}
 	gchar *str = g_date_time_format ( local, format );
