@@ -67,6 +67,8 @@ gchar *util_str_remove_chars(gchar *string, const gchar *chars);
 
 int util_remove ( const gchar *filename );
 
+gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count );
+
 G_END_DECLS
 
 #endif

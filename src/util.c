@@ -30,6 +30,7 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
+#include <gio/gio.h>
 
 #include "util.h"
 #include "globals.h"
@@ -212,4 +213,56 @@ int util_remove ( const gchar *filename )
 	}
 	else
 		return g_remove ( filename );
+}
+
+/**
+ * Stream write buffer to a temporary file (in one go)
+ *
+ * @param buffer The buffer to write
+ * @param count Size of the buffer to write
+ *
+ * @return the filename of the buffer that was written
+ */
+gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count )
+{
+	GFileIOStream *gios;
+	GError *error = NULL;
+	gchar *tmpname = NULL;
+
+#if GLIB_CHECK_VERSION(2,32,0)
+	GFile *gf = g_file_new_tmp ( "vik-tmp.XXXXXX", &gios, &error );
+	tmpname = g_file_get_path (gf);
+#else
+	gint fd = g_file_open_tmp ( "vik-tmp.XXXXXX", &tmpname, &error );
+	if ( error ) {
+		g_warning ( "%s", error->message );
+		g_error_free ( error );
+		return NULL;
+	}
+	gios = g_file_open_readwrite ( g_file_new_for_path (tmpname), NULL, &error );
+	if ( error ) {
+		g_warning ( "%s", error->message );
+		g_error_free ( error );
+		return NULL;
+	}
+#endif
+
+	gios = g_file_open_readwrite ( g_file_new_for_path (tmpname), NULL, &error );
+	if ( error ) {
+		g_warning ( "%s", error->message );
+		g_error_free ( error );
+		return NULL;
+	}
+
+	GOutputStream *gos = g_io_stream_get_output_stream ( G_IO_STREAM(gios) );
+	if ( g_output_stream_write ( gos, buffer, count, NULL, &error ) < 0 ) {
+		g_critical ( "Couldn't write tmp %s file due to %s", tmpname, error->message );
+		g_free (tmpname);
+		tmpname = NULL;
+	}
+
+	g_output_stream_close ( gos, NULL, &error );
+	g_object_unref ( gios );
+
+	return tmpname;
 }
