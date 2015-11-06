@@ -30,6 +30,7 @@
 #include "babel.h"
 #include "gpx.h"
 #include "acquire.h"
+#include "settings.h"
 
 /************************************ Simplify (Count) *****************************/
 
@@ -59,6 +60,23 @@ static void datasource_bfilter_simplify_get_process_options ( VikLayerParamData 
   po->babel_filters = g_strdup_printf ( "-x simplify,count=%d", paramdatas[0].u );
 }
 
+#define VIK_SETTINGS_BFILTER_SIMPLIFY "bfilter_simplify"
+static gboolean bfilter_simplify_default_set = FALSE;
+
+static gpointer datasource_bfilter_simplify_init ( acq_vik_t *not_used )
+{
+  if ( !bfilter_simplify_default_set ) {
+    gint tmp;
+    if ( !a_settings_get_integer ( VIK_SETTINGS_BFILTER_SIMPLIFY, &tmp ) )
+      tmp = 100;
+
+    bfilter_simplify_params_defaults[0].u = tmp;
+    bfilter_simplify_default_set = TRUE;
+  }
+
+  return NULL;
+}
+
 VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   N_("Simplify All Tracks..."),
   N_("Simplified Tracks"),
@@ -67,7 +85,8 @@ VikDataSourceInterface vik_datasource_bfilter_simplify_interface = {
   TRUE,
   FALSE, /* keep dialog open after success */
   TRUE,
-  NULL, NULL, NULL,
+  (VikDataSourceInitFunc)              datasource_bfilter_simplify_init,
+  NULL, NULL,
   (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_simplify_get_process_options,
   (VikDataSourceProcessFunc)           a_babel_convert_from,
   NULL, NULL, NULL,
@@ -117,6 +136,23 @@ static void datasource_bfilter_compress_get_process_options ( VikLayerParamData 
   po->babel_filters = g_strdup_printf ( "-x simplify,crosstrack,error=%-.5f%c", paramdatas[0].d, units );
 }
 
+#define VIK_SETTINGS_BFILTER_COMPRESS "bfilter_compress"
+static gboolean bfilter_compress_default_set = FALSE;
+
+static gpointer datasource_bfilter_compress_init ( acq_vik_t *not_used )
+{
+  if ( !bfilter_compress_default_set ) {
+    gdouble tmp;
+    if ( !a_settings_get_double ( VIK_SETTINGS_BFILTER_COMPRESS, &tmp ) )
+      tmp = 0.001;
+
+    bfilter_compress_params_defaults[0].d = tmp;
+    bfilter_compress_default_set = TRUE;
+  }
+
+  return NULL;
+}
+
 /**
  * Allow 'compressing' tracks/routes using the Simplify by Error Factor method
  */
@@ -128,7 +164,8 @@ VikDataSourceInterface vik_datasource_bfilter_compress_interface = {
   TRUE,
   FALSE, // Close the dialog after successful operation
   TRUE,
-  NULL, NULL, NULL,
+  (VikDataSourceInitFunc)              datasource_bfilter_compress_init,
+  NULL, NULL,
   (VikDataSourceGetProcessOptionsFunc) datasource_bfilter_compress_get_process_options,
   (VikDataSourceProcessFunc)           a_babel_convert_from,
   NULL, NULL, NULL,
