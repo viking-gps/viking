@@ -3509,6 +3509,12 @@ Accept: */*
 	    <para>Or in Windows use <filename>C:/Progra~1/Stellarium/stellarium.exe</filename> - This string value must use Unix separators and not have spaces.
 	          Further note due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> in Stellarium means this does not actually work. You will need to reference a shortcut, rather than the executable directly.</para>
 	  </listitem>
+	  <listitem>
+	    <para>bfilter_simplify=100</para>
+	  </listitem>
+	  <listitem>
+	    <para>bfilter_compress=0.001</para>
+	  </listitem>
 	</orderedlist>
 
 	<section>

@@ -58,6 +58,9 @@ static void datasource_bfilter_simplify_get_process_options ( VikLayerParamData 
   po->babelargs = g_strdup ( "-i gpx" );
   po->filename = g_strdup ( input_filename );
   po->babel_filters = g_strdup_printf ( "-x simplify,count=%d", paramdatas[0].u );
+
+  // Store for subsequent default use
+  bfilter_simplify_params_defaults[0].u = paramdatas[0].u;
 }
 
 #define VIK_SETTINGS_BFILTER_SIMPLIFY "bfilter_simplify"
@@ -134,6 +137,9 @@ static void datasource_bfilter_compress_get_process_options ( VikLayerParamData 
   po->babelargs = g_strdup ( "-i gpx" );
   po->filename = g_strdup ( input_filename );
   po->babel_filters = g_strdup_printf ( "-x simplify,crosstrack,error=%-.5f%c", paramdatas[0].d, units );
+
+  // Store for subsequent default use
+  bfilter_compress_params_defaults[0].d = paramdatas[0].d;
 }
 
 #define VIK_SETTINGS_BFILTER_COMPRESS "bfilter_compress"
