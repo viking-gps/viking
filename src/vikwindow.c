@@ -497,12 +497,14 @@ void vik_window_new_window_finish ( VikWindow *vw )
 
 static void open_window ( VikWindow *vw, GSList *files )
 {
+  if ( !vw  )
+    return;
   gboolean change_fn = (g_slist_length(files) == 1); /* only change fn if one file */
   GSList *cur_file = files;
   while ( cur_file ) {
     // Only open a new window if a viking file
     gchar *file_name = cur_file->data;
-    if (vw != NULL && vw->filename && check_file_magic_vik ( file_name ) ) {
+    if (vw->filename && check_file_magic_vik ( file_name ) ) {
       VikWindow *newvw = vik_window_new_window ();
       if (newvw)
         vik_window_open_file ( newvw, file_name, TRUE );

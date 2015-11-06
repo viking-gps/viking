@@ -10315,7 +10315,8 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
 
     /* diff dist is diff from orig */
     if ( vtl->tpwin )
-      my_tpwin_set_tp ( vtl );
+      if ( vtl->current_tp_track )
+        my_tpwin_set_tp ( vtl );
 
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
