@@ -308,7 +308,8 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
 
   } else {
     gchar *dir = g_path_get_dirname ( fn );
-    g_mkdir_with_parents ( dir , 0777 );
+    if ( g_mkdir_with_parents ( dir , 0777 ) != 0)
+      g_warning ("%s: Failed to mkdir %s", __FUNCTION__, dir );
     g_free ( dir );
   }
 

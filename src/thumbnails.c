@@ -190,7 +190,8 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	to = g_string_new(HOME_DIR);
 	g_string_append(to, THUMB_DIR);
 	g_string_append(to, THUMB_SUB_DIR);
-	g_mkdir_with_parents(to->str, 0700);
+	if ( g_mkdir_with_parents(to->str, 0700) != 0 )
+		g_warning ("%s: Failed to mkdir %s", __FUNCTION__, to->str );
 	g_string_append(to, md5);
 	name_len = to->len + 4; /* Truncate to this length when renaming */
 #ifdef WINDOWS
