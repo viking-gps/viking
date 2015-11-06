@@ -338,6 +338,39 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   return vgl;
 }
 
+/**
+ * Return mpp for the given coords, coord mode and image size.
+ */
+static void georef_layer_mpp_from_coords ( VikCoordMode mode, struct LatLon ll_tl, struct LatLon ll_br, guint width, guint height, gdouble *xmpp, gdouble *ympp )
+{
+  struct LatLon ll_tr;
+  ll_tr.lat = ll_tl.lat;
+  ll_tr.lon = ll_br.lon;
+
+  struct LatLon ll_bl;
+  ll_bl.lat = ll_br.lat;
+  ll_bl.lon = ll_tl.lon;
+
+  // UTM mode should be exact MPP
+  gdouble factor = 1.0;
+  if ( mode == VIK_COORD_LATLON ) {
+    // NB the 1.193 - is at the Equator.
+    // http://wiki.openstreetmap.org/wiki/Zoom_levels
+
+    // Convert from actual image MPP to Viking 'pixelfact'
+    gdouble mid_lat = (ll_bl.lat + ll_tr.lat ) / 2.0;
+    // Protect against div by zero (but shouldn't have 90 degrees for mid latitude...)
+    if ( fabs(mid_lat) < 89.9 )
+      factor = cos(DEG2RAD(mid_lat)) * 1.193;
+  }
+
+  gdouble diffx = a_coords_latlon_diff ( &ll_tl, &ll_tr );
+  *xmpp = (diffx / width) / factor;
+
+  gdouble diffy = a_coords_latlon_diff ( &ll_tl, &ll_bl );
+  *ympp = (diffy / height) / factor;
+}
+
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 {
   if ( vgl->pixbuf )
@@ -731,19 +764,8 @@ static void calculate_mpp_from_coords ( GtkWidget *ww, VikGeorefLayer *vgl )
     struct LatLon ll_tl = get_ll_tl (vgl);
     struct LatLon ll_br = get_ll_br (vgl);
 
-    struct LatLon ll_tr;
-    ll_tr.lat = ll_tl.lat;
-    ll_tr.lon = ll_br.lon;
-
-    struct LatLon ll_bl;
-    ll_bl.lat = ll_br.lat;
-    ll_bl.lon = ll_tl.lon;
-
-    gdouble diffx = a_coords_latlon_diff ( &ll_tl, &ll_tr );
-    gdouble xmpp = diffx / width;
-
-    gdouble diffy = a_coords_latlon_diff ( &ll_tl, &ll_bl );
-    gdouble ympp = diffy / height;
+    gdouble xmpp, ympp;
+    georef_layer_mpp_from_coords ( VIK_COORD_LATLON, ll_tl, ll_br, width, height, &xmpp, &ympp );
 
     gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.x_spin), xmpp );
     gtk_spin_button_set_value ( GTK_SPIN_BUTTON(vgl->cw.y_spin), ympp );
