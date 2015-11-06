@@ -542,6 +542,10 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 
     a_coords_utm_to_latlon(&dem_northeast_utm, &dem_northeast);
     a_coords_utm_to_latlon(&dem_southwest_utm, &dem_southwest);
+  } else {
+    // Unknown horiz_units - this shouldn't normally happen
+    // Thus can't work out positions to use
+    return;
   }
 
   if ( (max_lat > dem_northeast.lat && min_lat > dem_northeast.lat) ||
