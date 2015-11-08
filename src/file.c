@@ -831,7 +831,6 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
           break;
         case FILE_TYPE_KML:
 	  fclose ( f );
-	  f = NULL;
 	  switch ( a_vik_get_kml_export_units () ) {
 	    case VIK_KML_EXPORT_UNITS_STATUTE:
 	      return a_babel_convert_to ( vtl, NULL, "-o kml", filename, NULL, NULL );
@@ -850,7 +849,6 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
       }
     }
     fclose ( f );
-    f = NULL;
     return result;
   }
   return FALSE;
