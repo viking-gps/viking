@@ -942,7 +942,7 @@ const gchar *file_GetRelativeFilename ( gchar *currentDirectory, gchar *absolute
   // Handle DOS names that are on different drives:
   if (currentDirectory[0] != absoluteFilename[0]) {
     // not on the same drive, so only absolute filename will do
-    strcpy(relativeFilename, absoluteFilename);
+    g_strlcpy(relativeFilename, absoluteFilename, MAXPATHLEN+1);
     return relativeFilename;
   }
 
@@ -963,7 +963,7 @@ const gchar *file_GetRelativeFilename ( gchar *currentDirectory, gchar *absolute
       i++;
     }
 
-    strcpy(relativeFilename, &absoluteFilename[i]);
+    g_strlcpy(relativeFilename, &absoluteFilename[i], MAXPATHLEN+1);
     return relativeFilename;
   }
 
