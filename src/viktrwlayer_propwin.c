@@ -3394,7 +3394,11 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->w_time_end = content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
-    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes"), (int)(t2-t1)/60);
+    gint total_duration_s = (gint)(t2-t1);
+    gint segments_duration_s = (gint)vik_track_get_duration(tr,FALSE);
+    gint total_duration_m = total_duration_s/60;
+    gint segments_duration_m = segments_duration_s/60;
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes - %d minutes moving"), total_duration_m, segments_duration_m);
     widgets->w_time_dur = content[cnt++] = ui_label_new_selectable(tmp_buf);
   } else {
     widgets->w_time_start = content[cnt++] = gtk_label_new(_("No Data"));
