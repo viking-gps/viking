@@ -35,6 +35,9 @@ static const char *menu_xml =
 	"        <menuitem action='AcquireWikipedia'/>"
 #endif
 	"      </menu>"
+#ifdef HAVE_ZIP_H
+	"      <menuitem action='ImportKMZ'/>"
+#endif
 	"      <separator/>"
 #ifdef HAVE_ZIP_H
 	"      <menuitem action='GenKMZ'/>"

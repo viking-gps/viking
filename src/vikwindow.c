@@ -4279,6 +4279,45 @@ static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
   draw_to_image_file ( vw, VW_GEN_DIRECTORY_OF_IMAGES );
 }
 
+/**
+ *
+ */
+static void import_kmz_file_cb ( GtkAction *a, VikWindow *vw )
+{
+  GtkWidget *dialog = gtk_file_chooser_dialog_new (_("Open File"),
+                                                   GTK_WINDOW(vw),
+                                                   GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                                   NULL);
+
+  GtkFileFilter *filter;
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name ( filter, _("KMZ") );
+  gtk_file_filter_add_mime_type ( filter, "vnd.google-earth.kmz");
+  gtk_file_filter_add_pattern ( filter, "*.kmz" );
+  gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
+  gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
+
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name( filter, _("All") );
+  gtk_file_filter_add_pattern ( filter, "*" );
+  gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
+  // Default to any file - same as before open filters were added
+  gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )  {
+    gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(dialog) );
+    // TODO convert ans value into readable explaination of failure...
+    int ans = kmz_open_file ( fn, vw->viking_vvp, vw->viking_vlp );
+    if ( ans )
+      a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unable to import %s."), fn );
+
+    draw_update ( vw );
+  }
+  gtk_widget_destroy ( dialog );
+}
+
 static void print_cb ( GtkAction *a, VikWindow *vw )
 {
   a_print(vw, vw->viking_vvp);
@@ -4437,6 +4476,7 @@ static GtkActionEntry entries[] = {
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },
   { "FileProperties", NULL,              N_("Properties..."),                    NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
 #ifdef HAVE_ZIP_H
+  { "ImportKMZ", GTK_STOCK_CONVERT,      N_("Import KMZ _Map File..."),        NULL,  N_("Import a KMZ file"), (GCallback)import_kmz_file_cb },
   { "GenKMZ",    GTK_STOCK_DND,          N_("Generate _KMZ Map File..."),        NULL,  N_("Generate a KMZ file with an overlay of the current view"), (GCallback)draw_to_kmz_file_cb },
 #endif
   { "GenImg",    GTK_STOCK_FILE,         N_("_Generate Image File..."),          NULL,  N_("Save a snapshot of the workspace into a file"), (GCallback)draw_to_image_file_cb },

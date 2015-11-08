@@ -23,10 +23,14 @@
 
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include "vikviewport.h"
+#include "viklayerspanel.h"
 
 G_BEGIN_DECLS
 
 int kmz_save_file ( GdkPixbuf *pixbuf, const gchar* filename, gdouble north, gdouble east, gdouble south, gdouble west );
+
+int kmz_open_file ( const gchar* filename, VikViewport *vvp, VikLayersPanel *vlp );
 
 G_END_DECLS
 

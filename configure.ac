@@ -349,7 +349,7 @@ case $ac_cv_enable_zip in
     # Thus supporting old versions via simple #if #else #endif directives is seemingly not possible
     # Resort to checking versioning only via pkgconfig
     PKG_CHECK_MODULES([LIBZIP], [libzip >= 0.11],
-      [ AC_CHECK_HEADERS([zip.h],[],[AC_MSG_ERROR([zip.h is needed but not found - you will need to install package 'libzip-dev' or similar. The feature can be disabled with --disable-zip])]) 
+      [ AC_CHECK_HEADERS([zip.h],[],[AC_MSG_ERROR([zip.h is needed but not found - you will need to install package 'libzip-dev' or similar. The feature can be disabled with --disable-zip])])
         AC_CHECK_LIB(zip, [main], [], [AC_MSG_ERROR([libzip is needed but not found.])]) ],
       [ AC_MSG_WARN([libzip version needs to be at least 0.11, use of libzip is disabled])
         ac_cv_enable_zip=no ]
