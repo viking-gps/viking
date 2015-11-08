@@ -46,6 +46,8 @@ void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint 
 
 void vu_copy_label_menu ( GtkWidget *widget, guint button );
 
+void vu_zoom_to_show_latlons ( VikCoordMode mode, VikViewport *vvp, struct LatLon maxmin[2] );
+
 G_END_DECLS
 
 #endif
