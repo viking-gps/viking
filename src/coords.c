@@ -215,7 +215,6 @@ void a_coords_utm_to_latlon( const struct UTM *utm, struct LatLon *latlon )
     double N1, T1, C1, R1, D, M;
     double long_origin;
     double mu, phi1_rad;
-    int northernHemisphere;	/* 1 for northern hemisphere, 0 for southern */
     double latitude, longitude;
 
     northing = utm->northing;
@@ -226,13 +225,11 @@ void a_coords_utm_to_latlon( const struct UTM *utm, struct LatLon *latlon )
     /* Now convert. */
     x = easting - 500000.0;	/* remove 500000 meter offset */
     y = northing;
-    if ( ( *letter - 'N' ) >= 0 )
-	northernHemisphere = 1;	/* northern hemisphere */
-    else
-	{
-	northernHemisphere = 0;	/* southern hemisphere */
-	y -= 10000000.0;	/* remove 1e7 meter offset */
-	}
+    if ( ( *letter - 'N' ) < 0 ) {
+      /* southern hemisphere */
+      y -= 10000000.0;	/* remove 1e7 meter offset */
+    }
+
     long_origin = ( zone - 1 ) * 6 - 180 + 3;	/* +3 puts origin in middle of zone */
     eccPrimeSquared = EccentricitySquared / ( 1.0 - EccentricitySquared );
     e1 = ( 1.0 - sqrt( 1.0 - EccentricitySquared ) ) / ( 1.0 + sqrt( 1.0 - EccentricitySquared ) );
