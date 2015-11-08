@@ -1770,7 +1770,7 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
   if ( widgets->speeds == NULL )
     return;
 
-  widgets->duration = vik_track_get_duration ( tr );
+  widgets->duration = vik_track_get_duration ( tr, TRUE );
   // Negative time or other problem
   if ( widgets->duration <= 0 )
     return;
@@ -1930,7 +1930,7 @@ static void draw_dt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
       break;
   }
 
-  widgets->duration = vik_track_get_duration ( widgets->tr );
+  widgets->duration = vik_track_get_duration ( widgets->tr, TRUE );
   // Negative time or other problem
   if ( widgets->duration <= 0 )
     return;
@@ -2048,7 +2048,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
   // Assign locally
   gdouble mina = widgets->draw_min_altitude_time;
 
-  widgets->duration = vik_track_get_duration ( widgets->tr );
+  widgets->duration = vik_track_get_duration ( widgets->tr, TRUE );
   // Negative time or other problem
   if ( widgets->duration <= 0 )
     return;

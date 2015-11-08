@@ -562,22 +562,38 @@ void vik_track_reverse ( VikTrack *tr )
 /**
  * vik_track_get_duration:
  * @trk: The track
+ * @segment_gaps: Whether the duration should include gaps between segments
  *
- * Returns: The time in seconds that covers the whole track including gaps
+ * Returns: The time in seconds
  *  NB this may be negative particularly if the track has been reversed
  */
-time_t vik_track_get_duration(const VikTrack *trk)
+time_t vik_track_get_duration(const VikTrack *trk, gboolean segment_gaps)
 {
   time_t duration = 0;
   if ( trk->trackpoints ) {
     // Ensure times are available
     if ( vik_track_get_tp_first(trk)->has_timestamp ) {
       // Get trkpt only once - as using vik_track_get_tp_last() iterates whole track each time
-      VikTrackpoint *trkpt_last = vik_track_get_tp_last(trk);
-      if ( trkpt_last->has_timestamp ) {
-        time_t t1 = vik_track_get_tp_first(trk)->timestamp;
-        time_t t2 = trkpt_last->timestamp;
-        duration = t2 - t1;
+      if (segment_gaps) {
+        // Simple duration
+        VikTrackpoint *trkpt_last = vik_track_get_tp_last(trk);
+        if ( trkpt_last->has_timestamp ) {
+          time_t t1 = vik_track_get_tp_first(trk)->timestamp;
+          time_t t2 = trkpt_last->timestamp;
+          duration = t2 - t1;
+        }
+      }
+      else {
+        // Total within segments
+        GList *iter = trk->trackpoints->next;
+        while (iter) {
+          if ( VIK_TRACKPOINT(iter->data)->has_timestamp &&
+               VIK_TRACKPOINT(iter->prev->data)->has_timestamp &&
+              (!VIK_TRACKPOINT(iter->data)->newsegment) ) {
+            duration += ABS(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
+          }
+          iter = iter->next;
+        }
       }
     }
   }

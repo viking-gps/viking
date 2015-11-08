@@ -3075,7 +3075,7 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	if ( tr->trackpoints && vik_track_get_tp_first(tr)->has_timestamp ) {
 	  // %x     The preferred date representation for the current locale without the time.
 	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&(vik_track_get_tp_first(tr)->timestamp)));
-	  time_t dur = vik_track_get_duration ( tr );
+	  time_t dur = vik_track_get_duration ( tr, TRUE );
 	  if ( dur > 0 )
 	    g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)(dur/3600), (int)round(dur/60.0)%60 );
 	}
