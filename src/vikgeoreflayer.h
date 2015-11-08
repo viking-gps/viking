@@ -44,6 +44,13 @@ typedef struct _VikGeorefLayer VikGeorefLayer;
 
 void vik_georef_layer_init (void);
 
+VikGeorefLayer *vik_georef_layer_create ( VikViewport *vp,
+                                          VikLayersPanel *vlp,
+                                          const gchar *name,
+                                          GdkPixbuf *pibxbuf,
+                                          VikCoord *coord_tr,
+                                          VikCoord *coord_br );
+
 G_END_DECLS
 
 #endif
