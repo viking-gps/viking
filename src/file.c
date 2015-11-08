@@ -51,6 +51,7 @@
 #define VIK_MAGIC "#VIK"
 #define GPX_MAGIC "<?xm"
 #define VIK_MAGIC_LEN 4
+#define GPX_MAGIC_LEN 4
 
 #define VIKING_FILE_VERSION 1
 
@@ -74,9 +75,9 @@ static void push(Stack **stack)
   *stack = tmp;
 }
 
-static gboolean check_magic ( FILE *f, const gchar *magic_number )
+static gboolean check_magic ( FILE *f, const gchar *magic_number, guint magic_length )
 {
-  gchar magic[VIK_MAGIC_LEN];
+  gchar magic[magic_length];
   gboolean rv = FALSE;
   gint8 i;
   if ( fread(magic, 1, sizeof(magic), f) == sizeof(magic) &&
@@ -601,7 +602,7 @@ gboolean check_file_magic_vik ( const gchar *filename )
   gboolean result = FALSE;
   FILE *ff = xfopen ( filename );
   if ( ff ) {
-    result = check_magic ( ff, VIK_MAGIC );
+    result = check_magic ( ff, VIK_MAGIC, VIK_MAGIC_LEN );
     xfclose ( ff );
   }
   return result;
@@ -669,7 +670,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
 
   gchar *dirpath = g_path_get_dirname ( filename );
   // Attempt loading the primary file type first - our internal .vik file:
-  if ( check_magic ( f, VIK_MAGIC ) )
+  if ( check_magic ( f, VIK_MAGIC, VIK_MAGIC_LEN ) )
   {
     if ( file_read ( top, f, dirpath, vp ) )
       load_answer = LOAD_TYPE_VIK_SUCCESS;
@@ -690,7 +691,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     vik_layer_rename ( vtl, a_file_basename ( filename ) );
 
     // In fact both kml & gpx files start the same as they are in xml
-    if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
+    if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
       // Implicit Conversion
       ProcessOptions po = { "-i kml", filename, NULL, NULL, NULL, NULL };
       if ( ! ( success = a_babel_convert_from ( VIK_TRW_LAYER(vtl), &po, NULL, NULL, NULL ) ) ) {
@@ -699,7 +700,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     }
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
     //    - which currently confuses our check_magic function
-    else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC ) ) {
+    else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
       if ( ! ( success = a_gpx_read_file ( VIK_TRW_LAYER(vtl), f ) ) ) {
         load_answer = LOAD_TYPE_GPX_FAILURE;
       }
