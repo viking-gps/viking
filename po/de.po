@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-03 21:58+0200\n"
-"PO-Revision-Date: 2015-02-05 14:04+0000\n"
+"PO-Revision-Date: 2015-05-06 08:07+0000\n"
 "Last-Translator: Nitin Ullal <nitin@ullal.ch>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2015-03-06 19:16+0000\n"
-"X-Generator: Launchpad (build 17383)\n"
+"X-Launchpad-Export-Date: 2015-11-09 21:52+0000\n"
+"X-Generator: Launchpad (build 17843)\n"
 "Language: de\n"
 
 #: ../src/acquire.c:103 ../src/vikgpslayer.c:1235
@@ -473,11 +473,11 @@ msgstr ""
 
 #: ../src/globals.c:112
 msgid "Show Tooltip during Track Creation:"
-msgstr ""
+msgstr "Tooltips während der Anlage eines Tracks anzeigen"
 
 #: ../src/globals.c:115
 msgid "Home Location"
-msgstr ""
+msgstr "Heimatort"
 
 #: ../src/globals.c:115
 msgid "Last Location"
@@ -511,17 +511,19 @@ msgstr ""
 
 #: ../src/globals.c:122
 msgid "Startup Method:"
-msgstr ""
+msgstr "Start Methode:"
 
 #: ../src/globals.c:123
 msgid "Startup File:"
-msgstr ""
+msgstr "Datei, die beim Start geladen wird:"
 
 #: ../src/globals.c:124
 msgid ""
 "The default file to load on startup. Only applies when the startup method is "
 "set to 'Specified File'"
 msgstr ""
+"Die Datei, die geladen wird. Nur wenn Startmethode \"ausgewählte Datei\" "
+"selektiert ist"
 
 #: ../src/globals.c:125
 msgid "Check For New Version:"
@@ -529,7 +531,7 @@ msgstr "Auf neue Version prüfen:"
 
 #: ../src/globals.c:126
 msgid "Periodically check to see if a new version of Viking is available"
-msgstr ""
+msgstr "Periodisch prüfen ob neue Versionen von Viking verfügbar sind"
 
 #. Defaults for the options are setup here
 #: ../src/globals.c:163
@@ -539,7 +541,7 @@ msgstr "Allgemeines"
 #. New Tab
 #: ../src/globals.c:188
 msgid "Startup"
-msgstr ""
+msgstr "Start"
 
 #. New Tab
 #: ../src/globals.c:206
@@ -816,7 +818,7 @@ msgstr "Zu:"
 
 #: ../src/datasource_wikipedia.c:32
 msgid "Create Waypoints from Wikipedia Articles"
-msgstr ""
+msgstr "Wegpunkte aus Wikipedia Einträgen erstellen"
 
 #: ../src/datasource_wikipedia.c:33
 msgid "Wikipedia Waypoints"
@@ -1080,7 +1082,7 @@ msgstr "Konnte den Webbrowser nicht starten. %s"
 #: ../src/util.c:76
 #, c-format
 msgid "Could not create new email. %s"
-msgstr ""
+msgstr "Konnte neue Email nicht anlegen. %s"
 
 #: ../src/util.c:177
 #, c-format
@@ -1169,7 +1171,7 @@ msgstr "Version anzeigen"
 
 #: ../src/osm.c:99
 msgid "On Disk OSM Tile Format"
-msgstr ""
+msgstr "OSM Kachel Format auf lokaler Platte"
 
 #: ../src/osm.c:113
 msgid "OSM (view)"
@@ -1227,7 +1229,7 @@ msgstr "Zusammenfassen"
 #: ../src/vikaggregatelayer.c:484 ../src/viktrwlayer.c:10238
 #, c-format
 msgid "%s: Track and Route List"
-msgstr ""
+msgstr "%s: Track und routen Liste"
 
 #: ../src/vikaggregatelayer.c:529 ../src/viktrwlayer.c:7354
 #: ../src/viktrwlayer.c:7420 ../src/viktrwlayer.c:7498
@@ -1364,7 +1366,7 @@ msgstr "_Zeige DEM Datei Informationen"
 
 #: ../src/vikfileentry.c:68
 msgid "Browse..."
-msgstr "Durchsuchen..."
+msgstr "_Durchsuchen..."
 
 #: ../src/vikfileentry.c:96
 msgid "Choose file"
@@ -1577,7 +1579,7 @@ msgstr "Statuszeile aktualisieren"
 
 #: ../src/vikgpslayer.c:219
 msgid "Display information in the statusbar on GPS updates"
-msgstr ""
+msgstr "GPS Aktualisierungen in der Statuszeile anzeigen"
 
 #: ../src/vikgpslayer.c:220
 msgid "Gpsd Host:"
@@ -1768,6 +1770,8 @@ msgstr "Fehler: gpsbabel nicht gefunden."
 #: ../src/vikgpslayer.c:1319
 msgid "Warning - GPS Upload items may overwrite each other"
 msgstr ""
+"Achtung - Das Hochladen auf das GPS wird ggfs. bestehende Einträge "
+"überschreiben"
 
 #: ../src/vikgpslayer.c:1351
 msgid "Status: detecting gpsbabel"
@@ -1904,7 +1908,7 @@ msgstr "Karten automatisch herunterladen:"
 
 #: ../src/vikmapslayer.c:129
 msgid "Autodownload Only Gets Missing Maps:"
-msgstr ""
+msgstr "Automatisches Herunterladen holt nur fehlende Karten"
 
 #: ../src/vikmapslayer.c:130
 msgid ""
@@ -2049,7 +2053,7 @@ msgstr "Vergrösserung-Ende"
 
 #: ../src/vikmapslayer.c:1660
 msgid "Download Maps Method:"
-msgstr ""
+msgstr "Methode für das Herunterladen von Karten:"
 
 #. redownload method - needs to align with REDOWNLOAD* macro values
 #: ../src/vikmapslayer.c:1732
@@ -2100,11 +2104,11 @@ msgstr "Alle _Bildschirmkarten erneut laden"
 
 #: ../src/vikmapslayer.c:1827
 msgid "Download Maps in _Zoom Levels..."
-msgstr ""
+msgstr "Karten in _Zoom Stufen herunterladen"
 
 #: ../src/vikrouting.c:54
 msgid "Default engine:"
-msgstr ""
+msgstr "Standard engine:"
 
 #: ../src/viktreeview.c:316
 msgid "Layer Name"
@@ -2262,7 +2266,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:554
 msgid "Track Labels Font Size:"
-msgstr ""
+msgstr "Fontgrösse der Trackbeschriftungen"
 
 #: ../src/viktrwlayer.c:555
 msgid "Track Drawing Mode:"
@@ -2286,7 +2290,7 @@ msgstr "Spur-Dicke:"
 
 #: ../src/viktrwlayer.c:560
 msgid "Draw Track Direction"
-msgstr ""
+msgstr "Zeichne die Track Richtung"
 
 #: ../src/viktrwlayer.c:561
 msgid "Direction Size:"
@@ -2341,7 +2345,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:574
 msgid "Track Sort Order:"
-msgstr ""
+msgstr "Track Sortierreihenfolge:"
 
 #: ../src/viktrwlayer.c:577
 msgid "Waypoint Font Size:"
@@ -2745,7 +2749,7 @@ msgstr "Sie Sie sicher, dass Sie alle Wegpunkte in \"%s\" löschen wollen?"
 #: ../src/viktrwlayer.c:4624
 #, c-format
 msgid "Are you sure you want to delete the track \"%s\"?"
-msgstr ""
+msgstr "Soll der Track wirklich gelöscht werden \"%s\"?"
 
 #: ../src/viktrwlayer.c:4637
 #, c-format
@@ -2769,15 +2773,15 @@ msgstr ""
 #, c-format
 msgid "%ld point adjusted"
 msgid_plural "%ld points adjusted"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld Punkt angepasst"
+msgstr[1] "%ld Punkte angepasst"
 
 #: ../src/viktrwlayer.c:5049
 #, c-format
 msgid "%ld waypoint changed"
 msgid_plural "%ld waypoints changed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld Wegpunkt angepasst"
+msgstr[1] "%ld Wegpunkte angepasst"
 
 #: ../src/viktrwlayer.c:5233
 #, c-format
@@ -2811,7 +2815,7 @@ msgstr "Vereinen mit..."
 
 #: ../src/viktrwlayer.c:5489
 msgid "Select route to merge with"
-msgstr ""
+msgstr "Route zum Zusammenführen auswählen"
 
 #: ../src/viktrwlayer.c:5489
 msgid "Select track to merge with"
@@ -2827,19 +2831,19 @@ msgstr "Track anhängen"
 
 #: ../src/viktrwlayer.c:5574
 msgid "Select the route to append after the current route"
-msgstr ""
+msgstr "Route zum Anhängen an aktuelle Route auswählen"
 
 #: ../src/viktrwlayer.c:5575
 msgid "Select the track to append after the current track"
-msgstr ""
+msgstr "Track zum Anhängen an aktuellen Track auswählen"
 
 #: ../src/viktrwlayer.c:5651
 msgid "Select the track to append after the current route"
-msgstr ""
+msgstr "Track zum Anhängen an aktuelle Route auswählen"
 
 #: ../src/viktrwlayer.c:5652
 msgid "Select the route to append after the current track"
-msgstr ""
+msgstr "route zum Anhängen an aktuellen Track auswählen"
 
 #: ../src/viktrwlayer.c:5711
 #, c-format
@@ -2890,7 +2894,7 @@ msgstr "Trenne auf dem n'ten Punkt"
 
 #: ../src/viktrwlayer.c:6087
 msgid "Can not split track as it has no segments"
-msgstr ""
+msgstr "Der Track kann nicht geteilt werden, da er keine Segmente hat"
 
 #: ../src/viktrwlayer.c:6169 ../src/viktrwlayer.c:6199
 #, c-format
