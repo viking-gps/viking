@@ -10,6 +10,7 @@ full:
 	make
 
 EXTRA_DIST = \
+	HACKING \
 	gnome-doc-utils.make \
 	ChangeLog.0 \
 	viking.spec \
