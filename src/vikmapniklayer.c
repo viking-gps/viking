@@ -637,7 +637,7 @@ static void possibly_save_pixbuf ( VikMapnikLayer *vml, GdkPixbuf *pixbuf, MapCo
 
 			gchar *dir = g_path_get_dirname ( filename );
 			if ( !g_file_test ( filename, G_FILE_TEST_EXISTS ) )
-				if ( g_mkdir_with_parents ( dir , 0777 ) != 0 );
+				if ( g_mkdir_with_parents ( dir , 0777 ) != 0 )
 					g_warning ("%s: Failed to mkdir %s", __FUNCTION__, dir );
 			g_free ( dir );
 
