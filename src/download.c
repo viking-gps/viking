@@ -287,10 +287,10 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
       return DOWNLOAD_NOT_REQUIRED;
     }
 
-    if (options->check_file_server_time) {
+    if (options != NULL && options->check_file_server_time) {
       file_options.time_condition = file_time;
     }
-    if (options->use_etag) {
+    if (options != NULL && options->use_etag) {
       gchar *etag_filename = g_strdup_printf("%s.etag", fn);
       gsize etag_length = 0;
       g_file_get_contents (etag_filename, &(file_options.etag), &etag_length, NULL);
@@ -357,17 +357,17 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     g_remove ( tmpfilename );
     unlock_file ( tmpfilename );
     g_free ( tmpfilename );
-    if (options->use_etag) {
+    if ( options != NULL && options->use_etag ) {
       g_free ( file_options.etag );
       g_free ( file_options.new_etag );
     }
     return result;
   }
 
-  if ( options->convert_file )
-	  options->convert_file ( tmpfilename );
+  if ( options != NULL && options->convert_file )
+    options->convert_file ( tmpfilename );
 
-  if (options->use_etag) {
+  if ( options != NULL && options->use_etag ) {
     if (file_options.new_etag) {
       /* server returned an etag value */
       gchar *etag_filename = g_strdup_printf("%s.etag", fn);
@@ -392,7 +392,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   unlock_file ( tmpfilename );
   g_free ( tmpfilename );
 
-  if (options->use_etag) {
+  if ( options != NULL && options->use_etag ) {
     g_free ( file_options.etag );
     g_free ( file_options.new_etag );
   }

@@ -463,7 +463,7 @@ static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, con
   {
     line_altitude = g_ascii_strtod(value, NULL);
   }
-  else if (key_len == 7 && strncasecmp( key, "visible", key_len ) == 0 && value[0] != 'y' && value[0] != 'Y' && value[0] != 't' && value[0] != 'T')
+  else if (key_len == 7 && strncasecmp( key, "visible", key_len ) == 0 && value != NULL && value[0] != 'y' && value[0] != 'Y' && value[0] != 't' && value[0] != 'T')
   {
     line_visible = FALSE;
   }
@@ -507,10 +507,12 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
 {
   static struct LatLon ll;
   gchar *s_lat, *s_lon;
-  // Sanity clause
-  if ( wp && !(wp->name) ) {
+  // Sanity clauses
+  if ( !wp )
     return;
-  }
+  if ( !(wp->name) )
+    return;
+
   vik_coord_to_latlon ( &(wp->coord), &ll );
   s_lat = a_coords_dtostr(ll.lat);
   s_lon = a_coords_dtostr(ll.lon);
