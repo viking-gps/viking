@@ -208,7 +208,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
           inside_quote = !inside_quote;
       }
 
-      gpspoint_process_tag ( tag_start, tag_end - tag_start );
+      // Won't have super massively long strings, so potential truncation in cast to gint is acceptable.
+      gint len = (gint)(tag_end - tag_start);
+      gpspoint_process_tag ( tag_start, len );
 
       if (*tag_end == '\0' )
         break;
