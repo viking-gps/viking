@@ -1282,15 +1282,15 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdoub
 
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reltime, time_t *seconds_from_start )
 {
+  if ( !tr->trackpoints )
+    return NULL;
+
   time_t t_pos, t_start, t_end, t_total;
   t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   t_end = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
   t_total = t_end - t_start;
 
   t_pos = t_start + t_total * reltime;
-
-  if ( !tr->trackpoints )
-    return NULL;
 
   GList *iter = tr->trackpoints;
 

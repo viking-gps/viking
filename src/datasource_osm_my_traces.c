@@ -569,6 +569,10 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOpti
 	// Support .zip + bzip2 files directly
 	DownloadMapOptions options = { FALSE, FALSE, NULL, 2, NULL, user_pass, a_try_decompress_file }; // Allow a couple of redirects
 
+	gchar *tmpname = a_download_uri_to_tmp_file ( DS_OSM_TRACES_GPX_FILES, &options );
+	if ( !tmpname )
+		return FALSE;
+
 	xml_data *xd = g_malloc ( sizeof (xml_data) );
 	//xd->xpath = g_string_new ( "" );
 	xd->c_cdata = g_string_new ( "" );
@@ -576,7 +580,6 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOpti
 	xd->current_gpx_meta_data = new_gpx_meta_data_t();
 	xd->list_of_gpx_meta_data = NULL;
 
-	gchar *tmpname = a_download_uri_to_tmp_file ( DS_OSM_TRACES_GPX_FILES, &options );
 	result = read_gpx_files_metadata_xml ( tmpname, xd );
 	// Test already downloaded metadata file: eg:
 	//result = read_gpx_files_metadata_xml ( "/tmp/viking-download.GI47PW", xd );
