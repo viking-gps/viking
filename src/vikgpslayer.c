@@ -898,8 +898,9 @@ static void set_total_count(gint cnt, GpsSession *sess)
         {
           // Maybe a gpsbabel bug/feature (upto at least v1.4.3 or maybe my Garmin device) but the count always seems x2 too many for routepoints
           gint mycnt = (cnt / 2) + 1;
-          tmp_str = ngettext("Downloading %d routepoint...", "Downloading %d routepoints...", mycnt); break;
+          tmp_str = ngettext("Downloading %d routepoint...", "Downloading %d routepoints...", mycnt);
           sess->total_count = mycnt;
+          break;
         }
       }
     }
