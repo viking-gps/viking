@@ -579,9 +579,7 @@ gint16 vik_dem_get_shepard_interpol ( VikDEM *dem, gdouble east, gdouble north )
 
 void vik_dem_east_north_to_xy ( VikDEM *dem, gdouble east, gdouble north, guint *col, guint *row )
 {
-  *col = (gint) floor((east - dem->min_east) / dem->east_scale);
-  *row = (gint) floor((north - dem->min_north) / dem->north_scale);
-  if ( *col < 0 ) *col = 0;
-  if ( *row < 0 ) *row = 0;
+  *col = (guint) floor((east - dem->min_east) / dem->east_scale);
+  *row = (guint) floor((north - dem->min_north) / dem->north_scale);
 }
 
