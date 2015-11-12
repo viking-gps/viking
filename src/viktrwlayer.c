@@ -825,15 +825,17 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
       else if ( mystderr )
         tokens = g_strsplit(mystderr, " ", 0);
 
-      gint num = 0;
-      gchar *token = tokens[num];
-      while ( token && num < 2 ) {
-        if (num == 1) {
-          if ( viking_version_to_number(token) >= viking_version_to_number("1.7.3") )
-            have_diary_program = TRUE;
+      if ( tokens ) {
+        gint num = 0;
+        gchar *token = tokens[num];
+        while ( token && num < 2 ) {
+          if (num == 1) {
+            if ( viking_version_to_number(token) >= viking_version_to_number("1.7.3") )
+              have_diary_program = TRUE;
+          }
+          num++;
+          token = tokens[num];
         }
-        num++;
-        token = tokens[num];
       }
       g_strfreev ( tokens );
     }
