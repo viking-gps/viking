@@ -189,7 +189,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       /* my addition: find first non-whitespace character. if the null, skip line. */
       while (*tag_start != '\0' && isspace(*tag_start))
         tag_start++;
-      if (tag_start == '\0')
+      if (*tag_start == '\0')
         break;
 
       if (*tag_start == '#')
