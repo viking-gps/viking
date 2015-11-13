@@ -354,7 +354,8 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   if (failure)
   {
     g_warning(_("Download error: %s"), fn);
-    g_remove ( tmpfilename );
+    if ( g_remove ( tmpfilename ) != 0 )
+      g_warning( ("Failed to remove: %s"), tmpfilename);
     unlock_file ( tmpfilename );
     g_free ( tmpfilename );
     if ( options != NULL && options->use_etag ) {

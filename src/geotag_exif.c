@@ -735,7 +735,8 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 	// Save mtime for later use
 	struct stat stat_save;
 	if ( no_change_mtime )
-		stat ( filename, &stat_save );
+		if ( stat ( filename, &stat_save ) != 0 )
+			g_warning ( "%s couldn't read: %s", __FUNCTION__, filename );
 
 #ifdef HAVE_LIBGEXIV2
 	GExiv2Metadata *gemd = gexiv2_metadata_new ();
