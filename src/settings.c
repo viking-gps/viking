@@ -255,13 +255,13 @@ gboolean a_settings_get_integer_list_contains ( const gchar *name, gint val )
 void a_settings_set_integer_list_containing ( const gchar *name, gint val )
 {
 	gint* vals = NULL;
-	gsize length;
+	gsize length = 0;
 	gboolean need_to_add = TRUE;
 	gint ii = 0;
 	// Get current list
 	if ( a_settings_get_integer_list ( name, &vals, &length ) ) {
 		// See if it's not already there
-		if ( vals && length ) {
+		if ( vals ) {
 			while ( ii < length ) {
 				if ( vals[ii] == val ) {
 					need_to_add = FALSE;
@@ -272,7 +272,7 @@ void a_settings_set_integer_list_containing ( const gchar *name, gint val )
 		}
 	}
 	// Add value into array if necessary
-	if ( need_to_add ) {
+	if ( vals && need_to_add ) {
 		// NB not bothering to sort this 'list' ATM as there is not much to be gained
 		guint new_length = length + 1;
 		gint new_vals[new_length];

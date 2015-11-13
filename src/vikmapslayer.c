@@ -679,15 +679,15 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
         rv.s = "";
         set = TRUE;
       }
-      else if ( is_file_operation ) {
+      else if ( is_file_operation && vml->cache_dir ) {
         if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE ) {
           gchar *cwd = g_get_current_dir();
           if ( cwd ) {
             rv.s = file_GetRelativeFilename ( cwd, vml->cache_dir );
             if ( !rv.s ) rv.s = "";
             set = TRUE;
-	  }
-	}
+          }
+        }
       }
       if ( !set )
 	rv.s = vml->cache_dir ? vml->cache_dir : "";
@@ -946,7 +946,7 @@ static GdkPixbuf *get_pixbuf_sql_exec ( sqlite3 *sql, gint xx, gint yy, gint zoo
             GInputStream *stream = g_memory_input_stream_new_from_data ( data, bytes, NULL );
             GError *error = NULL;
             pixbuf = gdk_pixbuf_new_from_stream ( stream, NULL, &error );
-            if (error || (!pixbuf)) {
+            if ( error ) {
               g_warning ( "%s: %s", __FUNCTION__, error->message );
               g_error_free ( error );
             }
