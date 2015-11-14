@@ -1412,7 +1412,6 @@ static gboolean calcxy_rev(double *lg, double *lt, gint x, gint y, double zero_l
   py = (-mapSizeY2 + y) * pixelfact_y;
 
   lat = zero_lat - py / Ra;
-  lat = zero_lat - py / Ra;
   lon =
     zero_long -
     px / (Ra *
