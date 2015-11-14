@@ -35,7 +35,9 @@
 #include "file.h"
 
 #include <sys/stat.h>
+#ifdef HAVE_UTIME_H
 #include <utime.h>
+#endif
 #include <stdlib.h>
 #include <ctype.h>
 #include <math.h>
@@ -847,7 +849,10 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 		(void)stat ( filename, &stat_tmp );
 		utb.actime = stat_tmp.st_atime;
 		utb.modtime = stat_save.st_mtime;
-		utime ( filename, &utb );
+		// Not security critical, thus potential Time of Check Time of Use race condition is not bad
+		// coverity[toctou]
+		if ( g_utime ( filename, &utb ) != 0 )
+			g_warning ( "%s couldn't set time on: %s", __FUNCTION__, filename );
 	}
 
 	return result;

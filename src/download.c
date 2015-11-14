@@ -380,11 +380,11 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
 
   if (ret == CURL_DOWNLOAD_NO_NEWER_FILE)  {
     (void)g_remove ( tmpfilename );
-#if GLIB_CHECK_VERSION(2,18,0)
-    g_utime ( fn, NULL ); /* update mtime of local copy */
-#else
-    utimes ( fn, NULL ); /* update mtime of local copy */
-#endif
+     // update mtime of local copy
+     // Not security critical, thus potential Time of Check Time of Use race condition is not bad
+     // coverity[toctou]
+     if ( g_utime ( fn, NULL ) != 0 )
+       g_warning ( "%s couldn't set time on: %s", __FUNCTION__, fn );
   } else {
      /* move completely-downloaded file to permanent location */
      if ( g_rename ( tmpfilename, fn ) )
