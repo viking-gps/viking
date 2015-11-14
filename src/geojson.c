@@ -99,7 +99,7 @@ gboolean a_geojson_write_file ( VikTrwLayer *vtl, FILE *ff )
 	g_strfreev (argv);
 
 	// Delete the temporary file
-	g_remove (tmp_filename);
+	(void)g_remove (tmp_filename);
 	g_free (tmp_filename);
 
 	return result;

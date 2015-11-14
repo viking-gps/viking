@@ -143,7 +143,7 @@ gboolean a_babel_convert( VikTrwLayer *vt, const char *babelargs, BabelStatusFun
   if ( name_src ) {
     ProcessOptions po = { bargs, name_src, NULL, NULL, NULL };
     ret = a_babel_convert_from ( vt, &po, cb, user_data, not_used );
-    g_remove(name_src);
+    (void)g_remove(name_src);
     g_free(name_src);
   }
 

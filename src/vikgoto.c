@@ -409,7 +409,7 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
   
  tidy:
   g_mapped_file_unref ( mf );
-  g_remove ( tmpname );
+  (void)g_remove ( tmpname );
   g_free ( tmpname );
   return result;
 }

@@ -250,7 +250,7 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
   vik_coord_load_from_latlon ( coord, vik_viewport_get_coord_mode(vvp), &ll );
 
 done:
-  util_remove(tmpname);
+  (void)util_remove(tmpname);
 done_no_file:
   g_free(tmpname);
   g_free(escaped_srch_str);
