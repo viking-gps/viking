@@ -572,8 +572,15 @@ gchar *vu_get_canonical_filename ( VikLayer *vl, const gchar *filename )
 
 static struct kdtree *kd = NULL;
 
-static void load_ll_tz_dir ( const gchar *dir )
+/**
+ * load_ll_tz_dir
+ * @dir: The directory from which to load the latlontz.txt file
+ *
+ * Returns: The number of elements within the latlontz.txt loaded
+ */
+static gint load_ll_tz_dir ( const gchar *dir )
 {
+	gint inserted = 0;
 	gchar *lltz = g_build_filename ( dir, "latlontz.txt", NULL );
 	if ( g_access(lltz, R_OK) == 0 ) {
 		gchar buffer[4096];
@@ -589,6 +596,8 @@ static void load_ll_tz_dir ( const gchar *dir )
 					gchar *timezone = g_strchomp ( components[2] );
 					if ( kd_insert ( kd, pt, timezone ) )
 						g_critical ( "Insertion problem of %s for line %ld of latlontz.txt", timezone, line_num );
+					else
+						inserted++;
 					// NB Don't free timezone as it's part of the kdtree data now
 					g_free ( components[0] );
 					g_free ( components[1] );
@@ -600,13 +609,12 @@ static void load_ll_tz_dir ( const gchar *dir )
 			fclose ( ff );
 		}
 		else {
-			g_warning ( "Could not open %s", lltz);
+			g_warning ( "%s: Could not open %s", __FUNCTION__, lltz);
 		}
 	}
-	else {
-		g_warning ( "Could not access %s", lltz);
-	}
 	g_free ( lltz );
+
+	return inserted;
 }
 
 /**
@@ -624,12 +632,17 @@ void vu_setup_lat_lon_tz_lookup ()
 
 	// Look in the directories of data path
 	gchar **data_dirs = a_get_viking_data_path();
+	guint loaded = 0;
 	// Process directories in reverse order for priority
 	guint n_data_dirs = g_strv_length ( data_dirs );
 	for (; n_data_dirs > 0; n_data_dirs--) {
-		load_ll_tz_dir(data_dirs[n_data_dirs-1]);
+		loaded += load_ll_tz_dir(data_dirs[n_data_dirs-1]);
 	}
 	g_strfreev ( data_dirs );
+
+	g_debug ( "%s: Loaded %d elements", __FUNCTION__, loaded );
+	if ( loaded == 0 )
+		g_critical ( "%s: No lat/lon/timezones loaded", __FUNCTION__ );
 }
 
 /**
