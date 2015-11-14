@@ -464,18 +464,21 @@ _load_attributions ( BingMapSource *self )
 	gchar *uri = g_strdup_printf(URL_ATTR_FMT, priv->api_key);
 
 	gchar *tmpname = a_download_uri_to_tmp_file ( uri, vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self)) );
-
-	g_debug("%s: %s", __FUNCTION__, tmpname);
-	if (!_parse_file_for_attributions(self, tmpname)) {
+	if ( !tmpname ) {
 		ret = -1;
 		goto done;
 	}
 
+	g_debug("%s: %s", __FUNCTION__, tmpname);
+	if (!_parse_file_for_attributions(self, tmpname)) {
+		ret = -1;
+	}
+
+	(void)g_remove(tmpname);
+	g_free(tmpname);
 done:
 	priv->loading_attributions = FALSE;
 	g_free(uri);
-	(void)g_remove(tmpname);
-	g_free(tmpname);
 	return ret;
 }
 
