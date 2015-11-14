@@ -674,7 +674,8 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 	  box_height -= box_y;
           // catch box at borders
 	  if(box_width < 0 || box_height < 0)
-		  continue; // skip this. this is out of our viewport anyway. FIXME: why?
+	    // skip this as is out of the viewport (e.g. zoomed in so this point is way off screen)
+	    continue;
 
 	  gboolean below_minimum = FALSE;
           if(vdl->type == DEM_TYPE_HEIGHT) {
@@ -688,9 +689,6 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
           }
 
           {
-	    if(box_width < 0 || box_height < 0) // FIXME: why does this happen?
-              continue;
-
             if(vdl->type == DEM_TYPE_GRADIENT) {
               if( elev == VIK_DEM_INVALID_ELEVATION ) {
                 /* don't draw it */
