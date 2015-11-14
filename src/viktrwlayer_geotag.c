@@ -333,7 +333,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 					VikWaypoint *current_wp = vik_trw_layer_get_waypoint ( options->vtl, name );
 					if ( current_wp ) {
 						// Existing wp found, so set new position, comment and image
-						current_wp = a_geotag_waypoint_positioned ( options->image, wp->coord, wp->altitude, &name, current_wp );
+						(void)a_geotag_waypoint_positioned ( options->image, wp->coord, wp->altitude, &name, current_wp );
 						updated_waypoint = TRUE;
 					}
 				}
@@ -388,7 +388,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 					VikWaypoint *wp = vik_trw_layer_get_waypoint ( options->vtl, name );
 					if ( wp ) {
 						// Found, so set new position, comment and image
-						wp = a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, wp );
+						(void)a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, wp );
 						updated_waypoint = TRUE;
 					}
 					g_free ( name );

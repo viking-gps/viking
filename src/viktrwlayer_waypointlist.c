@@ -589,9 +589,9 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gtk_tree_view_column_set_expand ( column, TRUE );
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
-		column = my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
+		(void)my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
 	else
-		column = my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+		(void)my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
 
 	GtkCellRenderer *renderer_pixbuf = gtk_cell_renderer_pixbuf_new ();
 	g_object_set (G_OBJECT (renderer_pixbuf), "xalign", 0.5, NULL);

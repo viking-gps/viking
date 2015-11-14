@@ -965,7 +965,7 @@ static GdkPixbuf *get_pixbuf_sql_exec ( sqlite3 *sql, gint xx, gint yy, gint zoo
        break;
     }
   }
-  ans = sqlite3_finalize ( sql_stmt );
+  (void)sqlite3_finalize ( sql_stmt );
   
   g_free ( statement );
 

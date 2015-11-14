@@ -627,7 +627,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	// Apply own formatting of the data
 	gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL);
 
-	column = my_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
+	(void)my_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
 
 	gchar *spd_units = NULL;
 	switch (speed_units) {
@@ -651,9 +651,9 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	g_free ( spd_units );
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
-		column = my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
+		(void)my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
 	else
-		column = my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+		(void)my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
 
 	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
 	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_MULTIPLE );
