@@ -589,12 +589,15 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOpti
 		g_free ( tmpname );
 	}
 
-	if ( ! result )
+	if ( ! result ) {
+		g_free ( xd );
 		return FALSE;
+	}
 
 	if ( g_list_length ( xd->list_of_gpx_meta_data ) == 0 ) {
 		if (!vik_datasource_osm_my_traces_interface.is_thread)
 			none_found ( GTK_WINDOW(adw->vw) );
+		g_free ( xd );
 		return FALSE;
 	}
 
