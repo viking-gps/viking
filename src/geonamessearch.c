@@ -441,7 +441,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   wiki_places = get_entries_from_file(tmpname);
   if (g_list_length(wiki_places) == 0) {
     none_found(vw);
-    return;
+    goto done;
   }
   selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), wiki_places, TRUE, "Select articles", "Select the articles you want to add.");
   wp_runner = selected;
@@ -474,8 +474,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   free_geoname_list(wiki_places);
   free_geoname_list(selected);
   g_free(uri);
-  if (tmpname) {
-    (void)util_remove(tmpname);
-    g_free(tmpname);
-  }
+done:
+  (void)util_remove(tmpname);
+  g_free(tmpname);
 }
