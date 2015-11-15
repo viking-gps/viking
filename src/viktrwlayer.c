@@ -3935,9 +3935,10 @@ static void trw_layer_new_wp ( menu_array_layer values )
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(values[MA_VLP]);
   /* TODO longone: okay, if layer above (aggregate) is invisible but vtl->visible is true, this redraws for no reason.
      instead return true if you want to update. */
-  if ( vik_trw_layer_new_waypoint ( vtl, VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_viewport_get_center(vik_layers_panel_get_viewport(vlp))) && VIK_LAYER(vtl)->visible ) {
+  if ( vik_trw_layer_new_waypoint ( vtl, VIK_GTK_WINDOW_FROM_LAYER(vtl), vik_viewport_get_center(vik_layers_panel_get_viewport(vlp))) ) {
     trw_layer_calculate_bounds_waypoints ( vtl );
-    vik_layers_panel_emit_update ( vlp );
+    if ( VIK_LAYER(vtl)->visible )
+      vik_layers_panel_emit_update ( vlp );
   }
 }
 
@@ -10145,9 +10146,10 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return FALSE;
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
-  if (vik_trw_layer_new_waypoint ( vtl, VIK_GTK_WINDOW_FROM_LAYER(vtl), &coord ) && VIK_LAYER(vtl)->visible) {
+  if ( vik_trw_layer_new_waypoint (vtl, VIK_GTK_WINDOW_FROM_LAYER(vtl), &coord) ) {
     trw_layer_calculate_bounds_waypoints ( vtl );
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    if ( VIK_LAYER(vtl)->visible )
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
   }
   return TRUE;
 }
