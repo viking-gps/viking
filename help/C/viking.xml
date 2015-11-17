@@ -485,6 +485,19 @@ GPX, KML and JPG files will be loaded into the existing &appname; view. A <empha
 </tip>
 </section>
 
+<section><title>Open Recent File</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Open Recent File</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+The most recently opened files are available for opening again.
+The number of files remembered is controlled by a value in the <xref linkend="prefs_advanced"/>.
+</para>
+<para>
+Note that files imported via the Acquire mechanism are not available in this list.
+</para>
+</section>
+
 <section><title>Save</title>
 <para>
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Save</guisubmenu></menuchoice> menu and on the toolbar <guibutton>Save</guibutton>.
@@ -504,13 +517,38 @@ This will ask for a <emphasis>new name</emphasis> to save as a <emphasis>Viking<
 </para>
 </section>
 
-<section><title>Append</title>
+<section><title>Append File</title>
 <para>
-Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Append</guisubmenu></menuchoice> menu only.
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Append File...</guisubmenu></menuchoice> menu only.
 </para>
 <para>
 Selecting a <emphasis>Viking</emphasis> file from this method will join the file contents to the current window (instead of creating a new one).
 GPX and KML files may also be appended, but this is exactly the same as the normal file open method.
+</para>
+</section>
+
+<section><title>Properties</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Properties</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+Displays some simple properties about the loaded Viking project file (if any), such as full filename including the path, the filesize and the date/time of the file.
+</para>
+</section>
+
+<section><title>Export All</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Export All</guisubmenu></menuchoice> menu only.
+Choose either the <menuchoice><guimenu>GPX</guimenu></menuchoice> or <menuchoice><guimenu>KML</guimenu></menuchoice> option.</para>
+<para>
+This allows converting every <xref linkend="TrackWaypoint"/> layer from the existing project into files of the type choosen.
+You will be prompted for a directory into which a new file for each layer will be saved.
+</para>
+<para>
+The KML option uses <application>GPSBabel</application> and so will not be available if <application>GPSBabel</application> can not be detected.
+</para>
+<para>
+Note that some data properties are not supported by the target export file type. Such as item visibility or track colours.
 </para>
 </section>
 
