@@ -10,33 +10,12 @@
   <homepage rdf:resource="http://viking.sf.net/" />
   <mailing-list rdf:resource="http://lists.sourceforge.net/mailman/listinfo/viking-devel" />
   <download-page rdf:resource="http://sourceforge.net/projects/viking/files/" />
-  <bug-database rdf:resource="http://sourceforge.net/tracker/?group_id=83870" />
-
-  <maintainer>
-    <foaf:Person>
-      <foaf:name>Evan Battaglia</foaf:name>
-      <foaf:mbox rdf:resource="gtoevan@gmx.net" />
-    </foaf:Person>
-  </maintainer>
+  <bug-database rdf:resource="https://sourceforge.net/p/viking/bugs/" />
 
   <maintainer>
     <foaf:Person>
       <foaf:name>Guilhem Bonnefille</foaf:name>
       <foaf:mbox rdf:resource="guilhem.bonnefille@gmail.com" />
-    </foaf:Person>
-  </maintainer>
-
-  <maintainer>
-    <foaf:Person>
-      <foaf:name>Alex Foobarian</foaf:name>
-      <foaf:mbox rdf:resource="foobarian@gmail.com" />
-    </foaf:Person>
-  </maintainer>
-
-  <maintainer>
-    <foaf:Person>
-      <foaf:name>Quy Tonthat</foaf:name>
-      <foaf:mbox rdf:resource="qtonthat@gmail.com" />
     </foaf:Person>
   </maintainer>
 
@@ -51,9 +30,9 @@
 
   <repository>
     <GitRepository>
-      <location rdf:resource="git://viking.git.sourceforge.net/gitroot/viking/viking" />
-      <browse rdf:resource="http://viking.git.sourceforge.net/" />
-    </SVNRepository>
+      <location rdf:resource="git://git.code.sf.net/p/viking/code" />
+      <browse rdf:resource="https://sourceforge.net/p/viking/code/" />
+    </GitRepository>
   </repository>
 </Project>
 
