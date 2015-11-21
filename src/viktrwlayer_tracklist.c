@@ -416,7 +416,8 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
                                        GtkTreeStore *store,
                                        vik_units_distance_t dist_units,
                                        vik_units_speed_t speed_units,
-                                       vik_units_height_t height_units )
+                                       vik_units_height_t height_units,
+                                       const gchar* date_format )
 {
 	GtkTreeIter t_iter;
 	VikTrack *trk = vtdl->trk;
@@ -440,14 +441,14 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
 
 #if GLIB_CHECK_VERSION(2,26,0)
 		GDateTime* gdt = g_date_time_new_from_unix_utc ( VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
-		gchar *time = g_date_time_format ( gdt, TRACK_LIST_DATE_FORMAT );
+		gchar *time = g_date_time_format ( gdt, date_format );
 		g_strlcpy ( time_buf, time, sizeof(time_buf) );
 		g_free ( time );
 		g_date_time_unref ( gdt);
 #else
 		GDate* gdate_start = g_date_new ();
 		g_date_set_time_t ( gdate_start, VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
-		g_date_strftime ( time_buf, sizeof(time_buf), TRACK_LIST_DATE_FORMAT, gdate_start );
+		g_date_strftime ( time_buf, sizeof(time_buf), date_format, gdate_start );
 		g_date_free ( gdate_start );
 #endif
 	}
@@ -573,11 +574,16 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 
 	//GList *gl = get_tracks_and_layers_cb ( vl, user_data );
 	//g_list_foreach ( tracks_and_layers, (GFunc) trw_layer_track_list_add, store );
+	gchar *date_format = NULL;
+	if ( !a_settings_get_string ( VIK_SETTINGS_LIST_DATE_FORMAT, &date_format ) )
+		date_format = g_strdup ( TRACK_LIST_DATE_FORMAT );
+
 	GList *gl = tracks_and_layers;
 	while ( gl ) {
-		trw_layer_track_list_add ( (vik_trw_track_list_t*)gl->data, store, dist_units, speed_units, height_units );
+		trw_layer_track_list_add ( (vik_trw_track_list_t*)gl->data, store, dist_units, speed_units, height_units, date_format );
 		gl = g_list_next ( gl );
 	}
+	g_free ( date_format );
 
 	GtkWidget *view = gtk_tree_view_new();
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();

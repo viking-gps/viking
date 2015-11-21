@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2015, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -430,7 +430,8 @@ static gboolean trw_layer_waypoint_button_pressed ( GtkWidget *tree_view,
  */
 static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
                                           GtkTreeStore *store,
-                                          vik_units_height_t height_units )
+                                          vik_units_height_t height_units,
+                                          const gchar* date_format )
 {
 	GtkTreeIter t_iter;
 	VikWaypoint *wpt = vtdl->wpt;
@@ -443,14 +444,14 @@ static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
 
 #if GLIB_CHECK_VERSION(2,26,0)
 		GDateTime* gdt = g_date_time_new_from_unix_utc ( wpt->timestamp );
-		gchar *time = g_date_time_format ( gdt, WAYPOINT_LIST_DATE_FORMAT );
+		gchar *time = g_date_time_format ( gdt, date_format );
 		g_strlcpy ( time_buf, time, sizeof(time_buf) );
 		g_free ( time );
 		g_date_time_unref ( gdt);
 #else
 		GDate* gdate_start = g_date_new ();
 		g_date_set_time_t ( gdate_start, wpt->timestamp );
-		g_date_strftime ( time_buf, sizeof(time_buf), WAYPOINT_LIST_DATE_FORMAT, gdate_start );
+		g_date_strftime ( time_buf, sizeof(time_buf), date_format, gdate_start );
 		g_date_free ( gdate_start );
 #endif
 	}
@@ -546,11 +547,16 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 
 	//GList *gl = get_waypoints_and_layers_cb ( vl, user_data );
 	//g_list_foreach ( waypoints_and_layers, (GFunc) trw_layer_waypoint_list_add, store );
+	gchar *date_format = NULL;
+	if ( !a_settings_get_string ( VIK_SETTINGS_LIST_DATE_FORMAT, &date_format ) )
+		date_format = g_strdup ( WAYPOINT_LIST_DATE_FORMAT );
+
 	GList *gl = waypoints_and_layers;
 	while ( gl ) {
-		trw_layer_waypoint_list_add ( (vik_trw_waypoint_list_t*)gl->data, store, height_units );
+		trw_layer_waypoint_list_add ( (vik_trw_waypoint_list_t*)gl->data, store, height_units, date_format );
 		gl = g_list_next ( gl );
 	}
+	g_free ( date_format );
 
 	GtkWidget *view = gtk_tree_view_new();
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();

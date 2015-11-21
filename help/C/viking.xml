@@ -3515,6 +3515,12 @@ Accept: */*
 	  <listitem>
 	    <para>bfilter_compress=0.001</para>
 	  </listitem>
+	  <listitem>
+	    <para>list_date_format=%Y-%m-%d %H:%M</para>
+	    <para>A <ulink url="http://pubs.opengroup.org/onlinepubs/007908799/xsh/strftime.html">date format description</ulink> as passed on to strftime().
+	          Note that when displayed in tables sorting by this column simply uses the text value, rather than the underlying date/time value.
+	    </para>
+	  </listitem>
 	</orderedlist>
 
 	<section>
