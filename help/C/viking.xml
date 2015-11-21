@@ -728,6 +728,42 @@ This is only available in UTM mode.
 </note>
 </section>
 
+<section><title>KMZ Map File Overview</title>
+<para>
+A <ulink url="https://developers.google.com/kml/documentation/kmzarchives">KMZ file</ulink> is a compressed version of a KML file and associated supporting files.
+</para>
+<para>
+A <ulink url="https://garminbasecamp.wikispaces.com/Custom+Maps">KMZ Map file</ulink> is a KMZ file with an image overlay often for use as a Custom Map on Garmin GPSr devices.
+</para>
+<para>
+&appname; only supports basic properties in KMZ Map files, primarily intended for use with Garmin GPSr devices although KMZ exports are known to be work with Google Earth.
+</para>
+</section>
+
+<section><title>Import KMZ Map File</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu></menuchoice> menu only.
+</para>
+<para>
+Enables loading of a selected KMZ map file.
+This generates a new <xref linkend="GeoRef"/> map layer using the overlay image contained within the KMZ file.
+</para>
+</section>
+
+<section><title>Generate KMZ Map File</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu></menuchoice> menu only.
+</para>
+<para>
+Enables exporting the current viewport as a KMZ map file.
+The area and zoom level covered by the KMZ map can be adjusted before saving.
+</para>
+<para>
+Note that Garmin GPSr devices have limits in using images if they are too large (e.g. over 3Mb big) in KMZ files.
+&appname; does not enforce any limits on the KMZ files it generates.
+</para>
+</section>
+
 </section> <!-- End File Types -->
 
 <section><title>Layers</title>
