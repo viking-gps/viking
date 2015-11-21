@@ -492,8 +492,8 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     PangoLayout *pl;
     gchar s[128];
 
-    vik_viewport_screen_to_coord ( vvp, 0, vvp->height, &left );
-    vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height, &right );
+    vik_viewport_screen_to_coord ( vvp, 0, vvp->height/2, &left );
+    vik_viewport_screen_to_coord ( vvp, vvp->width/SCSIZE, vvp->height/2, &right );
 
     vik_units_distance_t dist_units = a_vik_get_units_distance ();
     switch (dist_units) {
