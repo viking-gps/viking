@@ -1,3 +1,20 @@
+Viking 1.6.1 (2015-11-24)
+Bug Fix Release + updated translations
+* Several fixes and many code improvements from Coverity scans
+* Fix heap-buffer-overflows
+* Mapnik3 support.
+** C++ standard required is now C++11
+* Reactivate building of the reference documentation
+* SF Bugs#126: Fix crash in gdk_rgb_convert_0888 due to using deallocated memory.
+* SF Bugs#121: Fix crash when invalidating previously acquired tiles.
+* SF Bugs#123: Fix bzip2 decompression on Windows.
+* SF Bugs#122: Fix memory cache confusion with multiple "On Disk OSM Tile Format" maps
+* SF Bugs#120: Fix Track drawing bug across the 180th Meridian.
+* Red Hat Bugzilla – Bug 1210403: Only download and process one Bing attribution list.
+* Fix Geocaches acquiring with latest geo-* software
+* Import latest Launchpad translation updates
+* Many other small fixes - see the ChangeLog for the full details.
+
 Viking 1.6 (2015-03-29)
 New features since 1.5.1
 * Mapnik Rendering Layer (not available in Windows build ATM) - with preprocessor CartoCSS option.
