@@ -221,9 +221,16 @@ static void trw_layer_show_picture ( menu_array_values values )
 
 typedef struct {
   gboolean has_layer_names;
+  gboolean include_positions;
   GString *str;
 } copy_data_t;
 
+/**
+ * At the moment allow copying the data displayed** with or without the positions
+ *  (since the position data is not shown in the list but is useful in copying to external apps)
+ *
+ * ** ATM The visibility flag is not copied and neither is a text representation of the waypoint symbol
+ */
 static void copy_selection (GtkTreeModel *model,
                             GtkTreePath *path,
                             GtkTreeIter *iter,
@@ -238,20 +245,35 @@ static void copy_selection (GtkTreeModel *model,
 	if ( comment == NULL )
 		comment = g_strdup ( "" );
 	gint hh; gtk_tree_model_get ( model, iter, 5, &hh, -1 );
+
+	VikWaypoint *wpt; gtk_tree_model_get ( model, iter, WPT_COL_NUM, &wpt, -1 );
+	struct LatLon ll;
+	if ( wpt ) {
+		vik_coord_to_latlon ( &wpt->coord, &ll );
+	}
 	gchar sep = '\t'; // Could make this configurable - but simply always make it a tab character for now
 	// NB Even if the columns have been reordered - this copies it out only in the original default order
 	// if col 0 is displayed then also copy the layername
-	if ( cd->has_layer_names )
-		g_string_append_printf ( cd->str, "%s%c%s%c%s%c%s%c%d\n", layername, sep, name, sep, date, sep, comment, sep, hh );
-	else
-		g_string_append_printf ( cd->str, "%s%c%s%c%s%c%d\n", name, sep, date, sep, comment, sep, hh );
+	// Note that the lat/lon data copy is using the users locale
+	if ( cd->has_layer_names ) {
+		if ( cd->include_positions )
+			g_string_append_printf ( cd->str, "%s%c%s%c%s%c%s%c%d%c%.6f%c%.6f\n", layername, sep, name, sep, date, sep, comment, sep, hh, sep, ll.lat, sep, ll.lon );
+		else
+			g_string_append_printf ( cd->str, "%s%c%s%c%s%c%s%c%d\n", layername, sep, name, sep, date, sep, comment, sep, hh );
+	}
+	else {
+		if ( cd->include_positions )
+			g_string_append_printf ( cd->str, "%s%c%s%c%s%c%d%c%.6f%c%.6f\n", name, sep, date, sep, comment, sep, hh, sep, ll.lat, sep, ll.lon );
+		else
+			g_string_append_printf ( cd->str, "%s%c%s%c%s%c%d\n", name, sep, date, sep, comment, sep, hh );
+	}
 	g_free ( layername );
 	g_free ( name );
 	g_free ( date );
 	g_free ( comment );
 }
 
-static void trw_layer_copy_selected ( GtkWidget *tree_view )
+static void trw_layer_copy_selected ( GtkWidget *tree_view, gboolean include_positions )
 {
 	GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(tree_view) );
 	// NB GTK3 has gtk_tree_view_get_n_columns() but we're GTK2 ATM
@@ -261,6 +283,7 @@ static void trw_layer_copy_selected ( GtkWidget *tree_view )
 	copy_data_t cd;
 	cd.has_layer_names = (count > WPT_LIST_COLS-3);
 	cd.str = g_string_new ( NULL );
+	cd.include_positions = include_positions;
 	gtk_tree_selection_selected_foreach ( selection, copy_selection, &cd );
 
 	a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, cd.str->str, NULL );
@@ -268,11 +291,27 @@ static void trw_layer_copy_selected ( GtkWidget *tree_view )
 	g_string_free ( cd.str, TRUE );
 }
 
-static void add_copy_menu_item ( GtkMenu *menu, GtkWidget *tree_view )
+static void trw_layer_copy_selected_only_visible_columns ( GtkWidget *tree_view )
+{
+	trw_layer_copy_selected ( tree_view, FALSE );
+}
+
+static void trw_layer_copy_selected_with_position ( GtkWidget *tree_view )
+{
+	trw_layer_copy_selected ( tree_view, TRUE );
+}
+
+static void add_copy_menu_items ( GtkMenu *menu, GtkWidget *tree_view )
 {
 	GtkWidget *item = gtk_image_menu_item_new_with_mnemonic ( _("_Copy Data") );
 	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_COPY, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected), tree_view );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected_only_visible_columns), tree_view );
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show ( item );
+
+	item = gtk_image_menu_item_new_with_mnemonic ( _("Copy Data (with _positions)") );
+	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_COPY, GTK_ICON_SIZE_MENU) );
+	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected_with_position), tree_view );
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 	gtk_widget_show ( item );
 }
@@ -317,7 +356,7 @@ static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikWaypoint *w
 	gtk_widget_show ( item );
 	gtk_widget_set_sensitive ( item, GPOINTER_TO_INT(wpt->image) );
 
-	add_copy_menu_item ( menu, tree_view );
+	add_copy_menu_items ( menu, tree_view );
 
 	return TRUE;
 }
@@ -328,7 +367,7 @@ static gboolean trw_layer_waypoint_menu_popup_multi  ( GtkWidget *tree_view,
 {
 	GtkWidget *menu = gtk_menu_new();
 
-	add_copy_menu_item ( GTK_MENU(menu), tree_view );
+	add_copy_menu_items ( GTK_MENU(menu), tree_view );
 
 	gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
 
