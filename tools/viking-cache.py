@@ -86,30 +86,31 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
                 z = 17 - int(s[1])
                 #print (z)
                 for r2, xs, ignore in os.walk(os.path.join(directory_path, ff)):
-                    for x in xs:
-                        # Try to ignore any non cache directories
-                        m2 = onlydigits_re.match(x);
-                        if m2:
-                            #print('x:'+directory_path+'/'+ff+'/'+x)
-                            for r3, ignore, ys in os.walk(os.path.join(directory_path, ff, x)):
-                                for y in ys:
-                                    # Legacy viking cache file names only made from digits
-                                    m3 = onlydigits_re.match(y);
-                                    if m3:
-                                        #print('tile:'+directory_path+'/'+ff+'/'+x+'/'+y)
-                                        f = open(os.path.join(directory_path, ff, x, y), 'rb')
-                                        # Viking in xyz so always flip
-                                        y = flip_y(int(z), int(y))
-                                        cur.execute("""insert into tiles (zoom_level,
-                                                     tile_column, tile_row, tile_data) values
-                                                     (?, ?, ?, ?);""",
-                                                     (z, x, y, sqlite3.Binary(f.read())))
-                                        f.close()
-                                        count = count + 1
-                                        if (count % 100) == 0:
-                                            for c in msg: sys.stdout.write(chr(8))
-                                            msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
-                                            sys.stdout.write(msg)
+                    if z <= kwargs.get('maxzoom') and z >= kwargs.get('minzoom'):
+                        for x in xs:
+                            # Try to ignore any non cache directories
+                            m2 = onlydigits_re.match(x);
+                            if m2:
+                                #print('x:'+directory_path+'/'+ff+'/'+x)
+                                for r3, ignore, ys in os.walk(os.path.join(directory_path, ff, x)):
+                                    for y in ys:
+                                        # Legacy viking cache file names only made from digits
+                                        m3 = onlydigits_re.match(y);
+                                        if m3:
+                                            #print('tile:'+directory_path+'/'+ff+'/'+x+'/'+y)
+                                            f = open(os.path.join(directory_path, ff, x, y), 'rb')
+                                            # Viking in xyz so always flip
+                                            y = flip_y(int(z), int(y))
+                                            cur.execute("""insert into tiles (zoom_level,
+                                                         tile_column, tile_row, tile_data) values
+                                                         (?, ?, ?, ?);""",
+                                                         (z, x, y, sqlite3.Binary(f.read())))
+                                            f.close()
+                                            count = count + 1
+                                            if (count % 100) == 0:
+                                                for c in msg: sys.stdout.write(chr(8))
+                                                msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
+                                                sys.stdout.write(msg)
 
     msg = "\nTotal tiles inserted %s \n" %(count)
     sys.stdout.write(msg)
@@ -359,6 +360,19 @@ parser.add_option('-m', '--mode', dest='mode',
     help='''Mode of operation which must be specified. "vlc2mbtiles", "mbtiles2vlc", "vlc2osm", "osm2vlc"''',
     type='string',
     default='none')
+
+# Primary to help in limiting the generated DB size
+parser.add_option('', '--max-zoom', dest='maxzoom',
+    action="store",
+    help='''Maximum (OSM) zoom level to use in writing to mbtiles''',
+    type='int',
+    default=25)
+
+parser.add_option('', '--min-zoom', dest='minzoom',
+    action="store",
+    help='''Minimum (OSM) zoom level to use in writing to mbtiles''',
+    type='int',
+    default=1)
 
 (options, args) = parser.parse_args()
 
