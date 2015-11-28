@@ -391,33 +391,30 @@ if options.__dict__.get('mode') == 'vlc2mbtiles':
     # to mbtiles
     if os.path.isdir(args[0]) and not os.path.isfile(args[0]):
         vikcache_to_mbtiles(in_fd, out_fd, **options.__dict__)
-else:
-    if options.__dict__.get('mode') == 'mbtiles2vlc':
-        # to VikCache
-        if os.path.isfile(args[0]):
-            mbtiles_to_vikcache(in_fd, out_fd, **options.__dict__)
-    else:
-        if options.__dict__.get('mode') == 'vlc2osm':
-            # Main forward conversion
-            is_default_re = re.compile ("\.viking-maps\/?$")
-            out_fd2 = is_default_re.search(out_fd)
-            if out_fd2:
-                # Auto append default tile name to the path
-                tile_path = get_tile_path(options.__dict__.get('tileid'))
-                if tile_path == "unknown":
-                    sys.stderr.write ("Could not convert tile id to a name")
-                    sys.stderr.write ("Specifically set the output directory to something other than the default")
-                    sys.exit(2)
-                else:
-                    print ("Using tile name %s" %(tile_path) )
-                    out_fd2 = os.path.join(out_fd, tile_path)
-            else:
-                out_fd2 = out_fd
-
-            if os.path.isdir(args[0]):
-                cache_converter_to_osm(in_fd, out_fd2, **options.__dict__)
+elif options.__dict__.get('mode') == 'mbtiles2vlc':
+    # to VikCache
+    if os.path.isfile(args[0]):
+        mbtiles_to_vikcache(in_fd, out_fd, **options.__dict__)
+elif options.__dict__.get('mode') == 'vlc2osm':
+    # Main forward conversion
+    is_default_re = re.compile ("\.viking-maps\/?$")
+    out_fd2 = is_default_re.search(out_fd)
+    if out_fd2:
+        # Auto append default tile name to the path
+        tile_path = get_tile_path(options.__dict__.get('tileid'))
+        if tile_path == "unknown":
+            sys.stderr.write ("Could not convert tile id to a name")
+            sys.stderr.write ("Specifically set the output directory to something other than the default")
+            sys.exit(2)
         else:
-            if options.__dict__.get('mode') == 'osm2vlc':
-                # Convert back if needs be
-                if os.path.isdir(args[0]):
-                    cache_converter_to_viking(in_fd, out_fd, **options.__dict__)
+            print ("Using tile name %s" %(tile_path) )
+            out_fd2 = os.path.join(out_fd, tile_path)
+    else:
+        out_fd2 = out_fd
+
+    if os.path.isdir(args[0]):
+        cache_converter_to_osm(in_fd, out_fd2, **options.__dict__)
+elif options.__dict__.get('mode') == 'osm2vlc':
+    # Convert back if needs be
+    if os.path.isdir(args[0]):
+        cache_converter_to_viking(in_fd, out_fd, **options.__dict__)
