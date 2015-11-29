@@ -54,9 +54,66 @@ def optimize_database(cur):
     logger.debug('cleaning db')
     cur.execute("""VACUUM;""")
 
+def getDirs(path):
+    return [name for name in os.listdir(path)
+        if os.path.isdir(os.path.join(path, name))]
 #
 # End functions from mbutils
 #
+
+#
+# Reworked from mbutils disk_to_mbtiles()
+#
+def osm_to_mbtiles(directory_path, mbtiles_file, **kwargs):
+    logger.debug("%s --> %s" % (directory_path, mbtiles_file))
+    con = mbtiles_connect(mbtiles_file)
+    cur = con.cursor()
+    optimize_connection(cur)
+    mbtiles_setup(cur)
+    image_format = 'png'
+    count = 0
+    start_time = time.time()
+    msg = ""
+    onlydigits_re = re.compile ('^\d+$')
+
+    for zoomDir in getDirs(directory_path):
+        digitsz = onlydigits_re.match(zoomDir);
+        if digitsz:
+            z = int(zoomDir)
+            if z <= kwargs.get('maxzoom') and z >= kwargs.get('minzoom'):
+                for rowDir in getDirs(os.path.join(directory_path, zoomDir)):
+                    digitsx = onlydigits_re.match(rowDir);
+                    if digitsx:
+                        x = int(rowDir)
+                        for current_file in os.listdir(os.path.join(directory_path, zoomDir, rowDir)):
+                            file_name, ext = current_file.split('.',1)
+                            f = open(os.path.join(directory_path, zoomDir, rowDir, current_file), 'rb')
+                            file_content = f.read()
+                            f.close()
+
+                            y = flip_y(int(z), int(file_name))
+
+                            if (ext == image_format):
+                                cur.execute("""insert into tiles (zoom_level,
+                                    tile_column, tile_row, tile_data) values
+                                    (?, ?, ?, ?);""",
+                                    (z, x, y, sqlite3.Binary(file_content)))
+                                count = count + 1
+                                if (count % 100) == 0:
+                                    for c in msg: sys.stdout.write(chr(8))
+                                    msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
+                                    sys.stdout.write(msg)
+
+    msg = "\nTotal tiles inserted %s \n" %(count)
+    sys.stdout.write(msg)
+    if count == 0:
+        print ("No tiles inserted")
+    else:
+        write_database(cur)
+        if not kwargs.get('nooptimize'):
+            sys.stdout.write("Optimizing...\n")
+            optimize_database(con)
+    return
 
 # Based on disk_to_mbtiles in mbutil
 def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
@@ -357,7 +414,7 @@ parser.add_option('-f', '--force', dest='force',
 
 parser.add_option('-m', '--mode', dest='mode',
     action="store",
-    help='''Mode of operation which must be specified. "vlc2mbtiles", "mbtiles2vlc", "vlc2osm", "osm2vlc"''',
+    help='''Mode of operation which must be specified. "vlc2mbtiles", "mbtiles2vlc", "vlc2osm", "osm2vlc", "osm2mbtiles"''',
     type='string',
     default='none')
 
@@ -418,3 +475,6 @@ elif options.__dict__.get('mode') == 'osm2vlc':
     # Convert back if needs be
     if os.path.isdir(args[0]):
         cache_converter_to_viking(in_fd, out_fd, **options.__dict__)
+elif options.__dict__.get('mode') == 'osm2mbtiles':
+    if os.path.isdir(args[0]):
+        osm_to_mbtiles(in_fd, out_fd, **options.__dict__)
