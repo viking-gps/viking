@@ -453,16 +453,6 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     return result;
   }
 
-  if ( options != NULL && options->convert_file )
-    options->convert_file ( tmpfilename );
-
-  if ( options != NULL && options->use_etag ) {
-    if (file_options.new_etag) {
-      /* server returned an etag value */
-      set_etag(fn, tmpfilename, &file_options);
-    }
-  }
-
   if (ret == CURL_DOWNLOAD_NO_NEWER_FILE)  {
     (void)g_remove ( tmpfilename );
      // update mtime of local copy
@@ -471,6 +461,16 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
      if ( g_utime ( fn, NULL ) != 0 )
        g_warning ( "%s couldn't set time on: %s", __FUNCTION__, fn );
   } else {
+    if ( options != NULL && options->convert_file )
+      options->convert_file ( tmpfilename );
+
+    if ( options != NULL && options->use_etag ) {
+      if (file_options.new_etag) {
+        /* server returned an etag value */
+        set_etag(fn, tmpfilename, &file_options);
+      }
+    }
+
      /* move completely-downloaded file to permanent location */
      if ( g_rename ( tmpfilename, fn ) )
         g_warning ("%s: file rename failed [%s] to [%s]", __FUNCTION__, tmpfilename, fn );
