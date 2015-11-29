@@ -438,6 +438,7 @@ AC_SUBST(ISODATE)
 
 # Configuration
 AC_CONFIG_FILES([
+		viking.spec
 		Makefile
 		src/Makefile
 		src/icons/Makefile
@@ -455,9 +456,7 @@ AC_CONFIG_FILES([
 		doc/reference/Makefile
 		doc/examples/Makefile])
 
-AC_OUTPUT([
-	   viking.spec
-	   ])
+AC_OUTPUT
 
 dnl Output the configuration summary
 echo ""
