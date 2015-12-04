@@ -2025,10 +2025,8 @@ static void trw_layer_draw_track_name_labels ( struct DrawingParams *dp, VikTrac
  */
 static void trw_layer_draw_point_names ( struct DrawingParams *dp, VikTrack *trk, gboolean drawing_highlight )
 {
-  VikTrackpoint *tp_last = vik_track_get_tp_last(trk);
-  VikTrackpoint *tp_current = vik_track_get_tp_prev(trk,tp_last);
-  GList *list=trk->trackpoints;
-  if(!list) return;
+  GList *list = trk->trackpoints;
+  if (!list) return;
   VikTrackpoint *tp = VIK_TRACKPOINT(list->data);
   gchar *fgcolour;
   if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
@@ -2048,8 +2046,8 @@ static void trw_layer_draw_point_names ( struct DrawingParams *dp, VikTrack *trk
     if ( tp->name )
       trw_layer_draw_track_label ( tp->name, fgcolour, bgcolour, dp, &tp->coord );
   };
-    g_free ( fgcolour );
-    g_free ( bgcolour );
+  g_free ( fgcolour );
+  g_free ( bgcolour );
 }
 
 static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct DrawingParams *dp, gboolean draw_track_outline )
