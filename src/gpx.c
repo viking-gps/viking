@@ -1114,7 +1114,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 
   GList *glrte = NULL;
   // Routes sorted by name
-  if ( vik_trw_layer_get_tracks_visibility(vtl) || (options && options->hidden) ) {
+  if ( vik_trw_layer_get_routes_visibility(vtl) || (options && options->hidden) ) {
     glrte = g_hash_table_get_values ( vik_trw_layer_get_routes ( vtl ) );
     glrte = g_list_sort ( glrte, gpx_track_compare_name );
   }
