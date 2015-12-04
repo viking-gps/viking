@@ -2014,6 +2014,42 @@ static void trw_layer_draw_track_name_labels ( struct DrawingParams *dp, VikTrac
   g_free ( ename );
 }
 
+
+/**
+ * trw_layer_draw_point_names:
+ *
+ * Draw a point labels along a track
+ * This might slow things down if there's many tracks being displayed with this on.
+ */
+static void trw_layer_draw_point_names ( struct DrawingParams *dp, VikTrack *trk, gboolean drawing_highlight )
+{
+  VikTrackpoint *tp_last = vik_track_get_tp_last(trk);
+  VikTrackpoint *tp_current = vik_track_get_tp_prev(trk,tp_last);
+  GList *list=trk->trackpoints;
+  if(!list) return;
+  VikTrackpoint *tp = VIK_TRACKPOINT(list->data);
+  gchar *fgcolour;
+  if ( dp->vtl->drawmode == DRAWMODE_BY_TRACK )
+    fgcolour = gdk_color_to_string ( &(trk->color) );
+  else
+    fgcolour = gdk_color_to_string ( &(dp->vtl->track_color) );
+  gchar *bgcolour;
+  if ( drawing_highlight )
+    bgcolour = g_strdup ( vik_viewport_get_highlight_color ( dp->vp ) );
+  else
+    bgcolour = gdk_color_to_string ( &(dp->vtl->track_bg_color) );
+  if ( tp->name )
+    trw_layer_draw_track_label ( tp->name, fgcolour, bgcolour, dp, &tp->coord );
+  while ((list = g_list_next(list)))
+  {
+    tp = VIK_TRACKPOINT(list->data);
+    if ( tp->name )
+      trw_layer_draw_track_label ( tp->name, fgcolour, bgcolour, dp, &tp->coord );
+  };
+    g_free ( fgcolour );
+    g_free ( bgcolour );
+}
+
 static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct DrawingParams *dp, gboolean draw_track_outline )
 {
   if ( ! track->visible )
@@ -2282,6 +2318,7 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
       if ( track->max_number_dist_labels > 0 ) {
         trw_layer_draw_dist_labels ( dp, track, drawing_highlight );
       }
+      trw_layer_draw_point_names (dp, track, drawing_highlight );
 
       if ( track->draw_name_mode != TRACK_DRAWNAME_NO ) {
         trw_layer_draw_track_name_labels ( dp, track, drawing_highlight );
