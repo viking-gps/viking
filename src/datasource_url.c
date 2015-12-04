@@ -40,7 +40,7 @@ static int last_type = -1;
 
 static gpointer datasource_url_init ( acq_vik_t *avt );
 static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_url_get_process_options ( datasource_url_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *download_options, const gchar *not_used2, const gchar *not_used3 );
+static void datasource_url_get_process_options ( datasource_url_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *download_options, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_url_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_url_interface = {
@@ -139,7 +139,7 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 	gtk_widget_show_all(dialog);
 }
 
-static void datasource_url_get_process_options ( datasource_url_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *download_options, const gchar *not_used2, const gchar *not_used3 )
+static void datasource_url_get_process_options ( datasource_url_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *download_options, const gchar *not_used2, const gchar *not_used3 )
 {
 	// Retrieve the user entered value
 	const gchar *value = gtk_entry_get_text ( GTK_ENTRY(widgets->url) );

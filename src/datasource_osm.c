@@ -46,7 +46,7 @@ static gdouble last_page_number = 0;
 
 static gpointer datasource_osm_init ( acq_vik_t *avt );
 static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_osm_get_process_options ( datasource_osm_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2);
+static void datasource_osm_get_process_options ( datasource_osm_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *options, const gchar *notused1, const gchar *notused2);
 static void datasource_osm_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_osm_interface = {
@@ -97,7 +97,7 @@ static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   gtk_widget_show_all(dialog);
 }
 
-static void datasource_osm_get_process_options ( datasource_osm_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2)
+static void datasource_osm_get_process_options ( datasource_osm_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *options, const gchar *notused1, const gchar *notused2)
 {
   int page = 0;
   gdouble min_lat, max_lat, min_lon, max_lon;

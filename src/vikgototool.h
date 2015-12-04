@@ -44,7 +44,7 @@ struct _VikGotoToolClass
   GObjectClass object_class;
   gchar *(* get_label) (VikGotoTool *self);
   gchar *(* get_url_format) (VikGotoTool *self);
-  DownloadMapOptions *(* get_download_options) (VikGotoTool *self);
+  DownloadFileOptions *(* get_download_options) (VikGotoTool *self);
   gboolean (* parse_file_for_latlon) (VikGotoTool *self, gchar *filename, struct LatLon *ll);
 };
 
@@ -56,7 +56,7 @@ struct _VikGotoTool {
 
 gchar *vik_goto_tool_get_label ( VikGotoTool *self );
 gchar *vik_goto_tool_get_url_format ( VikGotoTool *self );
-DownloadMapOptions *vik_goto_tool_get_download_options ( VikGotoTool *self );
+DownloadFileOptions *vik_goto_tool_get_download_options ( VikGotoTool *self );
 gboolean vik_goto_tool_parse_file_for_latlon ( VikGotoTool *self, gchar *filename, struct LatLon *ll );
 int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
 

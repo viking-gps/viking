@@ -62,7 +62,7 @@ struct _VikRoutingWebEnginePrivate
 	gchar *url_start_dir_fmt;
 	gchar *url_stop_dir_fmt;
 
-	DownloadMapOptions options;
+	DownloadFileOptions options;
 };
 
 #define VIK_ROUTING_WEB_ENGINE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_ROUTING_WEB_ENGINE_TYPE, VikRoutingWebEnginePrivate))
@@ -371,7 +371,7 @@ static void vik_routing_web_engine_finalize ( GObject *gob )
   G_OBJECT_CLASS (vik_routing_web_engine_parent_class)->finalize(gob);
 }
 
-static DownloadMapOptions *
+static DownloadFileOptions *
 vik_routing_web_engine_get_download_options ( VikRoutingEngine *self )
 {
 	g_return_val_if_fail (VIK_IS_ROUTING_WEB_ENGINE(self), NULL);
@@ -422,7 +422,7 @@ vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct L
 {
   gchar *uri = vik_routing_web_engine_get_url_for_coords(self, start, end);
 
-  DownloadMapOptions *options = vik_routing_web_engine_get_download_options(self);
+  DownloadFileOptions *options = vik_routing_web_engine_get_download_options(self);
   
   gchar *format = vik_routing_engine_get_format ( self );
   ProcessOptions po = { NULL, NULL, format, uri, NULL, NULL };
@@ -556,7 +556,7 @@ vik_routing_web_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTra
   gchar *uri = vik_routing_web_engine_get_url_for_track ( self, vt );
 
   /* Download data */
-  DownloadMapOptions *options = vik_routing_web_engine_get_download_options ( self );
+  DownloadFileOptions *options = vik_routing_web_engine_get_download_options ( self );
 
   /* Convert and insert data in model */
   gchar *format = vik_routing_engine_get_format ( self );

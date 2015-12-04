@@ -36,7 +36,7 @@ static GObjectClass *parent_class;
 
 static void goto_tool_finalize ( GObject *gob );
 static gchar *goto_tool_get_label ( VikGotoTool *vw );
-static DownloadMapOptions *goto_tool_get_download_options ( VikGotoTool *self );
+static DownloadFileOptions *goto_tool_get_download_options ( VikGotoTool *self );
 
 typedef struct _VikGotoToolPrivate VikGotoToolPrivate;
 
@@ -178,7 +178,7 @@ static gchar *goto_tool_get_label ( VikGotoTool *self )
   return g_strdup ( priv->label );
 }
 
-static DownloadMapOptions *goto_tool_get_download_options ( VikGotoTool *self )
+static DownloadFileOptions *goto_tool_get_download_options ( VikGotoTool *self )
 {
   // Default: return NULL
   return NULL;
@@ -194,7 +194,7 @@ gchar *vik_goto_tool_get_url_format ( VikGotoTool *self )
   return VIK_GOTO_TOOL_GET_CLASS( self )->get_url_format( self );
 }
 
-DownloadMapOptions *vik_goto_tool_get_download_options ( VikGotoTool *self )
+DownloadFileOptions *vik_goto_tool_get_download_options ( VikGotoTool *self )
 {
   return VIK_GOTO_TOOL_GET_CLASS( self )->get_download_options( self );
 }

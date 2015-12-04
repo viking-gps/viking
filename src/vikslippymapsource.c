@@ -64,14 +64,14 @@ static gdouble _get_lon_max(VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
-static DownloadMapOptions *_get_download_options( VikMapSourceDefault *self );
+static DownloadFileOptions *_get_download_options( VikMapSourceDefault *self );
 
 typedef struct _VikSlippyMapSourcePrivate VikSlippyMapSourcePrivate;
 struct _VikSlippyMapSourcePrivate
 {
   gchar *hostname;
   gchar *url;
-  DownloadMapOptions options;
+  DownloadFileOptions options;
   // NB Probably best to keep the above fields in same order to be common across Slippy, TMS & WMS map definitions
   guint zoom_min; // TMS Zoom level: 0 = Whole World // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   guint zoom_max; // TMS Zoom level: Often 18 for zoomed in.
@@ -633,7 +633,7 @@ _get_hostname( VikMapSourceDefault *self )
 	return g_strdup( priv->hostname );
 }
 
-static DownloadMapOptions *
+static DownloadFileOptions *
 _get_download_options( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);

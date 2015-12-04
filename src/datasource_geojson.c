@@ -39,7 +39,7 @@ static gchar *last_folder_uri = NULL;
 static gpointer datasource_geojson_init ( acq_vik_t *avt );
 static void datasource_geojson_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_geojson_get_process_options ( datasource_geojson_user_data_t *user_data, ProcessOptions *po, gpointer not_used, const gchar *not_used2, const gchar *not_used3 );
-static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused );
+static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadFileOptions *options_unused );
 static void datasource_geojson_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_geojson_interface = {
@@ -131,7 +131,7 @@ static void datasource_geojson_get_process_options ( datasource_geojson_user_dat
 /**
  * Process selected files and try to generate waypoints storing them in the given vtl
  */
-static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused )
+static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadFileOptions *options_unused )
 {
 	datasource_geojson_user_data_t *user_data = (datasource_geojson_user_data_t *)adw->user_data;
 

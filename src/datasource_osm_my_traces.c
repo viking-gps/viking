@@ -51,8 +51,8 @@ typedef struct {
 
 static gpointer datasource_osm_my_traces_init ( acq_vik_t *avt );
 static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_osm_my_traces_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2 );
-static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused );
+static void datasource_osm_my_traces_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadFileOptions *options, const gchar *notused1, const gchar *notused2 );
+static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadFileOptions *options_unused );
 static void datasource_osm_my_traces_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_osm_my_traces_interface = {
@@ -125,7 +125,7 @@ static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikV
 	data->vvp = vvp;
 }
 
-static void datasource_osm_my_traces_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2 )
+static void datasource_osm_my_traces_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadFileOptions *options, const gchar *notused1, const gchar *notused2 )
 {
 	datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t*) user_data;
 
@@ -558,7 +558,7 @@ static void set_in_current_view_property ( VikTrwLayer *vtl, datasource_osm_my_t
 	}
 }
 
-static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadMapOptions *options_unused )
+static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOptions *process_options, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw, DownloadFileOptions *options_unused )
 {
 	//datasource_osm_my_traces_t *data = (datasource_osm_my_traces_t *)adw->user_data;
 
@@ -567,7 +567,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOpti
 	gchar *user_pass = osm_get_login();
 
 	// Support .zip + bzip2 files directly
-	DownloadMapOptions options = { FALSE, FALSE, NULL, 2, NULL, user_pass, a_try_decompress_file }; // Allow a couple of redirects
+	DownloadFileOptions options = { FALSE, FALSE, NULL, 2, NULL, user_pass, a_try_decompress_file }; // Allow a couple of redirects
 
 	gchar *tmpname = a_download_uri_to_tmp_file ( DS_OSM_TRACES_GPX_FILES, &options );
 	if ( !tmpname )

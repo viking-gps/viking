@@ -76,22 +76,6 @@ typedef struct {
    */
   VikFileContentConvertFunc convert_file;
 
-} DownloadMapOptions;
-
-typedef struct {
-  /**
-   * Time sent to server on header If-Modified-Since
-   */
-  time_t time_condition;
-  /**
-   * Etag sent by server on previous download
-   */
-  char *etag;
-  /**
-   * Etag sent by server on this download
-   */
-  char *new_etag;
-
 } DownloadFileOptions;
 
 void a_download_init(void);
@@ -106,12 +90,12 @@ typedef enum {
 } DownloadResult_t;
 
 /* TODO: convert to Glib */
-DownloadResult_t a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
-DownloadResult_t a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle );
+DownloadResult_t a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadFileOptions *opt, void *handle );
+DownloadResult_t a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadFileOptions *opt, void *handle );
 void *a_download_handle_init ();
 void a_download_handle_cleanup ( void *handle );
 
-gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadMapOptions *options );
+gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadFileOptions *options );
 
 G_END_DECLS
 

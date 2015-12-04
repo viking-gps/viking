@@ -217,7 +217,7 @@ static void datasource_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, 
 
 
 
-static void datasource_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadMapOptions *options, const gchar *notused1, const gchar *notused2 )
+static void datasource_get_process_options ( gpointer user_data, ProcessOptions *po, DownloadFileOptions *options, const gchar *notused1, const gchar *notused2 )
 {
 	datasource_t *data = (datasource_t*) user_data;
 

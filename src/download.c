@@ -262,7 +262,7 @@ void a_try_decompress_file (gchar *name)
 
 #define VIKING_ETAG_XATTR "xattr::viking.etag"
 
-static gboolean get_etag_xattr(const char *fn, DownloadFileOptions *file_options)
+static gboolean get_etag_xattr(const char *fn, CurlDownloadOptions *cdo)
 {
   gboolean result = FALSE;
   GFileInfo *fileinfo;
@@ -273,100 +273,100 @@ static gboolean get_etag_xattr(const char *fn, DownloadFileOptions *file_options
   if (fileinfo) {
     const char *etag = g_file_info_get_attribute_string(fileinfo, VIKING_ETAG_XATTR);
     if (etag) {
-      file_options->etag = g_strdup(etag);
-      result = !!file_options->etag;
+      cdo->etag = g_strdup(etag);
+      result = !!cdo->etag;
     }
     g_object_unref(fileinfo);
   }
   g_object_unref(file);
 
   if (result)
-    g_debug("%s: Get etag (xattr) from %s: %s", __FUNCTION__, fn, file_options->etag);
+    g_debug("%s: Get etag (xattr) from %s: %s", __FUNCTION__, fn, cdo->etag);
 
   return result;
 }
 
-static gboolean get_etag_file(const char *fn, DownloadFileOptions *file_options)
+static gboolean get_etag_file(const char *fn, CurlDownloadOptions *cdo)
 {
   gboolean result = FALSE;
   gchar *etag_filename;
 
   etag_filename = g_strdup_printf("%s.etag", fn);
   if (etag_filename) {
-    result = g_file_get_contents(etag_filename, &file_options->etag, NULL, NULL);
+    result = g_file_get_contents(etag_filename, &cdo->etag, NULL, NULL);
     g_free(etag_filename);
   }
 
   if (result)
-    g_debug("%s: Get etag (file) from %s: %s", __FUNCTION__, fn, file_options->etag);
+    g_debug("%s: Get etag (file) from %s: %s", __FUNCTION__, fn, cdo->etag);
 
   return result;
 }
 
-static void get_etag(const char *fn, DownloadFileOptions *file_options)
+static void get_etag(const char *fn, CurlDownloadOptions *cdo)
 {
   /* first try to get etag from xattr, then fall back to plain file  */
-  if (!get_etag_xattr(fn, file_options) && !get_etag_file(fn, file_options)) {
+  if (!get_etag_xattr(fn, cdo) && !get_etag_file(fn, cdo)) {
     g_debug("%s: Failed to get etag from %s", __FUNCTION__, fn);
     return;
   }
 
   /* check if etag is short enough */
-  if (strlen(file_options->etag) > 100) {
-    g_free(file_options->etag);
-    file_options->etag = NULL;
+  if (strlen(cdo->etag) > 100) {
+    g_free(cdo->etag);
+    cdo->etag = NULL;
   }
 
   /* TODO: should check that etag is a valid string */
 }
 
-static gboolean set_etag_xattr(const char *fn, DownloadFileOptions *file_options)
+static gboolean set_etag_xattr(const char *fn, CurlDownloadOptions *cdo)
 {
   gboolean result = FALSE;
   GFile *file;
 
   file = g_file_new_for_path(fn);
-  result = g_file_set_attribute_string(file, VIKING_ETAG_XATTR, file_options->new_etag, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+  result = g_file_set_attribute_string(file, VIKING_ETAG_XATTR, cdo->new_etag, G_FILE_QUERY_INFO_NONE, NULL, NULL);
   g_object_unref(file);
 
   if (result)
-    g_debug("%s: Set etag (xattr) on %s: %s", __FUNCTION__, fn, file_options->new_etag);
+    g_debug("%s: Set etag (xattr) on %s: %s", __FUNCTION__, fn, cdo->new_etag);
 
   return result;
 }
 
-static gboolean set_etag_file(const char *fn, DownloadFileOptions *file_options)
+static gboolean set_etag_file(const char *fn, CurlDownloadOptions *cdo)
 {
   gboolean result = FALSE;
   gchar *etag_filename;
 
   etag_filename = g_strdup_printf("%s.etag", fn);
   if (etag_filename) {
-    result = g_file_set_contents(etag_filename, file_options->new_etag, -1, NULL);
+    result = g_file_set_contents(etag_filename, cdo->new_etag, -1, NULL);
     g_free(etag_filename);
   }
 
   if (result)
-    g_debug("%s: Set etag (file) on %s: %s", __FUNCTION__, fn, file_options->new_etag);
+    g_debug("%s: Set etag (file) on %s: %s", __FUNCTION__, fn, cdo->new_etag);
 
   return result;
 }
 
-static void set_etag(const char *fn, const char *fntmp, DownloadFileOptions *file_options)
+static void set_etag(const char *fn, const char *fntmp, CurlDownloadOptions *cdo)
 {
   /* first try to store etag in extended attribute, then fall back to plain file */
-  if (!set_etag_xattr(fntmp, file_options) && !set_etag_file(fn, file_options)) {
+  if (!set_etag_xattr(fntmp, cdo) && !set_etag_file(fn, cdo)) {
     g_debug("%s: Failed to set etag on %s", __FUNCTION__, fn);
   }
 }
 
-static DownloadResult_t download( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *options, gboolean ftp, void *handle)
+static DownloadResult_t download( const char *hostname, const char *uri, const char *fn, DownloadFileOptions *options, gboolean ftp, void *handle)
 {
   FILE *f;
   int ret;
   gchar *tmpfilename;
   gboolean failure = FALSE;
-  DownloadFileOptions file_options = {0, NULL, NULL};
+  CurlDownloadOptions cdo = {0, NULL, NULL};
 
   /* Check file */
   if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
@@ -388,10 +388,10 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     }
 
     if (options != NULL && options->check_file_server_time) {
-      file_options.time_condition = file_time;
+      cdo.time_condition = file_time;
     }
     if (options != NULL && options->use_etag) {
-      get_etag(fn, &file_options);
+      get_etag(fn, &cdo);
     }
 
   } else {
@@ -407,7 +407,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     g_debug("%s: Couldn't take lock on temporary file \"%s\"\n", __FUNCTION__, tmpfilename);
     g_free ( tmpfilename );
     if (options->use_etag)
-      g_free ( file_options.etag );
+      g_free ( cdo.etag );
     return DOWNLOAD_FILE_WRITE_ERROR;
   }
   f = g_fopen ( tmpfilename, "w+b" );  /* truncate file and open it */
@@ -415,12 +415,12 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     g_warning("Couldn't open temporary file \"%s\": %s", tmpfilename, g_strerror(errno));
     g_free ( tmpfilename );
     if (options->use_etag)
-      g_free ( file_options.etag );
+      g_free ( cdo.etag );
     return DOWNLOAD_FILE_WRITE_ERROR;
   }
 
   /* Call the backend function */
-  ret = curl_download_get_url ( hostname, uri, f, options, ftp, &file_options, handle );
+  ret = curl_download_get_url ( hostname, uri, f, options, ftp, &cdo, handle );
 
   DownloadResult_t result = DOWNLOAD_SUCCESS;
 
@@ -447,8 +447,8 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     unlock_file ( tmpfilename );
     g_free ( tmpfilename );
     if ( options != NULL && options->use_etag ) {
-      g_free ( file_options.etag );
-      g_free ( file_options.new_etag );
+      g_free ( cdo.etag );
+      g_free ( cdo.new_etag );
     }
     return result;
   }
@@ -465,9 +465,9 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
       options->convert_file ( tmpfilename );
 
     if ( options != NULL && options->use_etag ) {
-      if (file_options.new_etag) {
+      if ( cdo.new_etag ) {
         /* server returned an etag value */
-        set_etag(fn, tmpfilename, &file_options);
+        set_etag(fn, tmpfilename, &cdo);
       }
     }
 
@@ -479,8 +479,8 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   g_free ( tmpfilename );
 
   if ( options != NULL && options->use_etag ) {
-    g_free ( file_options.etag );
-    g_free ( file_options.new_etag );
+    g_free ( cdo.etag );
+    g_free ( cdo.new_etag );
   }
   return DOWNLOAD_SUCCESS;
 }
@@ -489,12 +489,12 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
  * uri: like "/uri.html?whatever"
  * only reason for the "wrapper" is so we can do redirects.
  */
-DownloadResult_t a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
+DownloadResult_t a_http_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadFileOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, FALSE, handle );
 }
 
-DownloadResult_t a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadMapOptions *opt, void *handle )
+DownloadResult_t a_ftp_download_get_url ( const char *hostname, const char *uri, const char *fn, DownloadFileOptions *opt, void *handle )
 {
   return download ( hostname, uri, fn, opt, TRUE, handle );
 }
@@ -518,7 +518,7 @@ void a_download_handle_cleanup ( void *handle )
  *  this string needs to be freed once used
  *  the file needs to be removed once used
  */
-gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadMapOptions *options )
+gchar *a_download_uri_to_tmp_file ( const gchar *uri, DownloadFileOptions *options )
 {
   FILE *tmp_file;
   int tmp_fd;

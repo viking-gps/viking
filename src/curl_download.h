@@ -33,10 +33,26 @@ enum { CURL_DOWNLOAD_NO_ERROR = 0,
        CURL_DOWNLOAD_NO_NEWER_FILE,
        CURL_DOWNLOAD_ERROR };
 
+typedef struct {
+  /**
+   * Time sent to server on header If-Modified-Since
+   */
+  time_t time_condition;
+  /**
+   * Etag sent by server on previous download
+   */
+  char *etag;
+  /**
+   * Etag sent by server on this download
+   */
+  char *new_etag;
+
+} CurlDownloadOptions;
+
 void curl_download_init ();
 void curl_download_uninit ();
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadMapOptions *options, gboolean ftp, DownloadFileOptions *file_options, void *handle );
-int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, DownloadFileOptions *file_options, void *handle );
+int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadFileOptions *options, gboolean ftp, CurlDownloadOptions *curl_options, void *handle );
+int curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, CurlDownloadOptions *curl_options, void *handle );
 void * curl_download_handle_init ();
 void curl_download_handle_cleanup ( void * handle );
 

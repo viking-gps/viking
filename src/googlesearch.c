@@ -44,12 +44,12 @@
 #define GOOGLE_GOTO_PATTERN_2 ",lng:"
 #define GOOGLE_GOTO_NOT_FOUND "not understand the location"
 
-static DownloadMapOptions googlesearch_options = { FALSE, FALSE, "http://maps.google.com/", 2, a_check_map_file, NULL, NULL };
+static DownloadFileOptions googlesearch_options = { FALSE, FALSE, "http://maps.google.com/", 2, a_check_map_file, NULL, NULL };
 
 static void google_goto_tool_finalize ( GObject *gob );
 
 static gchar *google_goto_tool_get_url_format ( VikGotoTool *self );
-static DownloadMapOptions *google_goto_tool_get_download_options ( VikGotoTool *self );
+static DownloadFileOptions *google_goto_tool_get_download_options ( VikGotoTool *self );
 static gboolean google_goto_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
 
 G_DEFINE_TYPE (GoogleGotoTool, google_goto_tool, VIK_GOTO_TOOL_TYPE)
@@ -157,7 +157,7 @@ static gchar *google_goto_tool_get_url_format ( VikGotoTool *self )
   return GOOGLE_GOTO_URL_FMT;
 }
 
-DownloadMapOptions *google_goto_tool_get_download_options ( VikGotoTool *self )
+DownloadFileOptions *google_goto_tool_get_download_options ( VikGotoTool *self )
 {
   return &googlesearch_options;
 }

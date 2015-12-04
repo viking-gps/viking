@@ -34,10 +34,10 @@ static gboolean _is_mbtiles ( VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
-static DownloadMapOptions *_get_download_options( VikMapSourceDefault *self );
+static DownloadFileOptions *_get_download_options( VikMapSourceDefault *self );
 
 /* FIXME Huge gruik */
-static DownloadMapOptions terraserver_options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL, NULL };
+static DownloadFileOptions terraserver_options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL, NULL };
 
 typedef struct _TerraserverMapSourcePrivate TerraserverMapSourcePrivate;
 struct _TerraserverMapSourcePrivate
@@ -253,7 +253,7 @@ _get_hostname( VikMapSourceDefault *self )
 	return g_strdup( TERRASERVER_SITE );
 }
 
-static DownloadMapOptions *
+static DownloadFileOptions *
 _get_download_options( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (TERRASERVER_IS_MAP_SOURCE(self), NULL);

@@ -47,7 +47,7 @@ static gchar *last_to_str = NULL;
 
 static gpointer datasource_routing_init ( acq_vik_t *avt );
 static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
-static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *not_used2, const gchar *not_used3 );
+static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *options, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_routing_cleanup ( gpointer data );
 
 VikDataSourceInterface vik_datasource_routing_interface = {
@@ -112,7 +112,7 @@ static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewpor
   gtk_widget_show_all(dialog);
 }
 
-static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadMapOptions *options, const gchar *not_used2, const gchar *not_used3 )
+static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *options, const gchar *not_used2, const gchar *not_used3 )
 {
   const gchar *from, *to;
   
