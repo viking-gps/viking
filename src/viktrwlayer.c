@@ -370,6 +370,8 @@ static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
 
+static void trw_layer_sort_all ( VikTrwLayer *vtl );
+
 static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp);
 static void tool_edit_trackpoint_destroy ( tool_ed_t *t );
 static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
@@ -2811,6 +2813,8 @@ static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *
   }
 
   trw_layer_verify_thumbnails ( vtl, NULL );
+
+  trw_layer_sort_all ( vtl );
 }
 
 static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer )
