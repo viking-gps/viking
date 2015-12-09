@@ -54,7 +54,8 @@ gboolean a_jpg_magic_check ( const gchar *filename )
 		magic_load ( myt, NULL );
 #endif
 		const char* magic = magic_file (myt, filename);
-		if ( g_strcmp0 (magic, "image/jpeg; charset=binary") == 0 )
+		g_debug ( "%s:%s", __FUNCTION__, magic );
+		if ( g_ascii_strncasecmp (magic, "image/jpeg", 10) == 0 )
 			is_jpg = TRUE;
 
 		magic_close ( myt );
