@@ -29,8 +29,7 @@ and docbook-xsl in your Build-Depends control field.
   <!-- Fill in your name for FIRSTNAME and SURNAME. -->
   <!ENTITY dhfirstname "<firstname>Ralf</firstname>">
   <!ENTITY dhsurname   "<surname>Meyer</surname>">
-  <!-- Please adjust the date whenever revising the manpage. -->
-  <!ENTITY dhdate      "<date>2015-11-24</date>">
+  <!ENTITY dhdate      "<date>@ISODATE@</date>">
   <!ENTITY dhsource      "Viking">
   <!ENTITY dhversion     "@PACKAGE_VERSION@">
   <!-- SECTION should be 1-8, maybe w/ subsection other parameters are

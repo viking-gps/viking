@@ -408,6 +408,9 @@ AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
 AC_CHECK_PROG([HAVE_SCROLLKEEPER],scrollkeeper-config,"yes")
 AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && test "${HAVE_SCROLLKEEPER}" == "yes" )
 
+ISODATE=`date +%Y-%m-%d`
+AC_SUBST(ISODATE)
+
 # Configuration
 AC_CONFIG_FILES([
 		Makefile
