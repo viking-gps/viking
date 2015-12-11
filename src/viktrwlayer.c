@@ -1527,23 +1527,27 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
       // Reuse pl to read the subtype from the data stream
       memcpy(&pl, data+sizeof(gint), sizeof(pl));
 
+      // Also remember to (attempt to) convert each coordinate in case this is pasted into a different drawmode
       if ( pl == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
         VikTrack *trk = vik_track_unmarshall ( data + sizeof_len_and_subtype, 0 );
         gchar *name = g_strdup ( trk->name );
         vik_trw_layer_add_track ( vtl, name, trk );
         g_free ( name );
+        vik_track_convert (trk, vtl->coord_mode);
       }
       if ( pl == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
         VikWaypoint *wp = vik_waypoint_unmarshall ( data + sizeof_len_and_subtype, 0 );
         gchar *name = g_strdup ( wp->name );
         vik_trw_layer_add_waypoint ( vtl, name, wp );
         g_free ( name );
+        waypoint_convert (NULL, wp, &vtl->coord_mode);
       }
       if ( pl == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
         VikTrack *trk = vik_track_unmarshall ( data + sizeof_len_and_subtype, 0 );
         gchar *name = g_strdup ( trk->name );
         vik_trw_layer_add_route ( vtl, name, trk );
         g_free ( name );
+        vik_track_convert (trk, vtl->coord_mode);
       }
     }
     consumed_length += tlm_size + sizeof_len_and_subtype;
