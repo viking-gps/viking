@@ -19,6 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <math.h>
 #include <stdlib.h>
 #include <glib/gi18n.h>
 
@@ -79,6 +80,39 @@ static void time_edit_click ( GtkWidget* widget, GdkEventButton *event, VikWaypo
   update_time ( widget, edit_wp );
 }
 
+static void update_direction ( GtkWidget *widget, gdouble value )
+{
+  gchar *direction_str = g_strdup_printf ( "%05.1f", value );
+  gtk_entry_set_text ( GTK_ENTRY(widget), direction_str );
+  g_free ( direction_str );
+}
+
+/**
+ * direction_edit_click:
+ */
+static void direction_edit_click ( GtkWidget* widget, GdkEventButton *event, GtkWidget *direction )
+{
+  gdouble bearing = 0.0;
+  gboolean answered = a_dialog_get_spin_number_double ( GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                                                        _("Enter bearing"), "",
+                                                        0.0, 359.0, 5.0, 1, &bearing );
+
+  // Was the dialog cancelled?
+  if ( !answered )
+    return;
+
+  // Otherwise use new value in the edit buffer
+  edit_wp->image_direction = bearing;
+
+  // Clear the previous 'Add' image as now a value is set
+  if ( gtk_button_get_image ( GTK_BUTTON(widget) ) )
+    gtk_button_set_image ( GTK_BUTTON(widget), NULL );
+  gtk_button_set_label ( GTK_BUTTON(widget), _("True") );
+
+  gtk_widget_set_sensitive ( direction, TRUE );
+  update_direction ( direction, bearing );
+}
+
 static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
 {
   GtkTreeIter iter;
@@ -117,6 +151,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   GtkWidget *timevaluebutton = NULL;
   GtkWidget *hasGeotagCB = NULL;
   GtkWidget *consistentGeotagCB = NULL;
+  GtkWidget *direction = NULL;
+  GtkWidget *direction_hb = NULL;
   GtkListStore *store;
 
   gchar *lat, *lon, *alt;
@@ -244,6 +280,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   if ( !is_new && wp->description )
     gtk_entry_set_text ( GTK_ENTRY(descriptionentry), wp->description );
 
+  if ( !edit_wp )
+    edit_wp = vik_waypoint_new ();
+  edit_wp = vik_waypoint_copy ( wp );
+
   if ( !is_new && wp->image ) {
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(imageentry), wp->image );
 
@@ -264,16 +304,43 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       vik_coord_load_from_latlon ( &coord, coord_mode, &ll );
       gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(consistentGeotagCB), vik_coord_equals(&coord, &wp->coord) );
     }
+
+    // ATM the direction value box is always shown, even when their is no information.
+    // It would be nice to be able to hide it until the 'Add' has been performed,
+    //  however I've not been able to achieve this.
+    // Thus simply sensistizing it instead.
+    GtkWidget *direction_label = gtk_label_new ( _("Image Direction:") );
+    direction_hb = gtk_hbox_new ( FALSE, 0 );
+    gtk_box_pack_start (GTK_BOX(direction_hb), direction_label, FALSE, FALSE, 0);
+    // TODO make this a spinbox effort
+    direction = gtk_entry_new ();
+
+    if ( !is_new && !isnan(wp->image_direction) ) {
+      GtkWidget *direction_ref = gtk_label_new ( NULL );
+      if ( wp->image_direction_ref == WP_IMAGE_DIRECTION_REF_MAGNETIC )
+        gtk_label_set_label ( GTK_LABEL(direction_ref), _("Magnetic") );
+      else
+        gtk_label_set_label ( GTK_LABEL(direction_ref), _("True") );
+
+      gtk_box_pack_start (GTK_BOX(direction_hb), direction_ref, TRUE, FALSE, 0);
+      update_direction ( direction, wp->image_direction );
+    }
+    else {
+      GtkWidget *direction_ref_button = gtk_button_new ();
+      gtk_button_set_relief ( GTK_BUTTON(direction_ref_button), GTK_RELIEF_NONE );
+      GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
+      gtk_button_set_image ( GTK_BUTTON(direction_ref_button), img );
+      gtk_box_pack_start (GTK_BOX(direction_hb), direction_ref_button, TRUE, FALSE, 0);
+      gtk_widget_set_sensitive ( direction, FALSE );
+      g_signal_connect ( G_OBJECT(direction_ref_button), "button-release-event", G_CALLBACK(direction_edit_click), direction );
+    }
+
 #endif
   }
 
   timelabel = gtk_label_new ( _("Time:") );
   timevaluebutton = gtk_button_new();
   gtk_button_set_relief ( GTK_BUTTON(timevaluebutton), GTK_RELIEF_NONE );
-
-  if ( !edit_wp )
-    edit_wp = vik_waypoint_new ();
-  edit_wp = vik_waypoint_copy ( wp );
 
   // TODO: Consider if there should be a remove time button...
 
@@ -318,6 +385,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     gtk_box_pack_start (GTK_BOX(hbox), consistentGeotagCB, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox, FALSE, FALSE, 0);
   }
+  if ( direction_hb )
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), direction_hb, FALSE, FALSE, 0);
+  if ( direction )
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), direction, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), symbollabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
@@ -369,6 +440,13 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       if ( edit_wp->timestamp ) {
         wp->timestamp = edit_wp->timestamp;
         wp->has_timestamp = TRUE;
+      }
+
+      if ( !isnan(edit_wp->image_direction) ) {
+        wp->image_direction = edit_wp->image_direction;
+        wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
+        // TODO modify the underlying image file
+        // Also need to limit writing only when the value has actually changed...
       }
 
       GtkTreeIter iter, first;

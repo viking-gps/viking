@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include <math.h>
 #include "coords.h"
 #include "vikcoord.h"
 #include "vikwaypoint.h"
@@ -34,6 +35,7 @@ VikWaypoint *vik_waypoint_new()
   VikWaypoint *wp = g_malloc0 ( sizeof ( VikWaypoint ) );
   wp->altitude = VIK_DEFAULT_ALTITUDE;
   wp->name = g_strdup(_("Waypoint"));
+  wp->image_direction = NAN;
   return wp;
 }
 
@@ -120,6 +122,15 @@ void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image)
   // NOTE - ATM the image (thumbnail) size is calculated on demand when needed to be first drawn
 }
 
+/**
+ * Set both direction value and reference at the same time
+ */
+void vik_waypoint_set_image_direction_info(VikWaypoint *wp, gdouble direction, VikWaypointImageDirectionRef direction_ref)
+{
+  wp->image_direction = direction;
+  wp->image_direction_ref = direction_ref;
+}
+
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname)
 {
   const gchar *hashed_symname;
@@ -179,6 +190,8 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   vik_waypoint_set_url(new_wp,wp->url);
   vik_waypoint_set_image(new_wp,wp->image);
   vik_waypoint_set_symbol(new_wp,wp->symbol);
+  new_wp->image_direction = wp->image_direction;
+  new_wp->image_direction_ref = wp->image_direction_ref;
   return new_wp;
 }
 

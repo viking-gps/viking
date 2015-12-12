@@ -299,6 +299,26 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 				*name = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPTitle" ) );
 			wp->comment = geotag_get_exif_comment ( gemd );
 
+			// Direction
+			VikWaypointImageDirectionRef ref = WP_IMAGE_DIRECTION_REF_TRUE;
+			if ( gexiv2_metadata_has_tag ( gemd, "Exif.GPSInfo.GPSImgDirectionRef" ) ) {
+				gchar* ref_str = gexiv2_metadata_get_tag_interpreted_string(gemd, "Exif.GPSInfo.GPSImgDirectionRef");
+				if ( ref_str && g_ascii_strncasecmp ("M", ref_str, 1) == 0 )
+					ref = WP_IMAGE_DIRECTION_REF_MAGNETIC;
+				g_free ( ref_str );
+			}
+			if ( gexiv2_metadata_has_tag ( gemd, "Exif.GPSInfo.GPSImgDirection" ) ) {
+				gint nom;
+				gint den;
+				gdouble direction = NAN;
+				if ( gexiv2_metadata_get_exif_tag_rational (gemd, "Exif.GPSInfo.GPSImgDirection", &nom, &den) )
+					if ( den != 0 )
+						direction = (gdouble)nom/(gdouble)den;
+
+				if ( !isnan(direction) )
+					vik_waypoint_set_image_direction_info ( wp, direction, ref );
+			}
+
 			vik_waypoint_set_image ( wp, filename );
 		}
 	}
