@@ -3704,7 +3704,7 @@ static void trw_layer_geotagging_waypoint_mtime_keep ( menu_array_sublayer value
   VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(values[MA_VTL])->waypoints, values[MA_SUBLAYER_ID] );
   if ( wp )
     // Update directly - not changing the mtime
-    a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, TRUE );
+    a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, wp->image_direction, wp->image_direction_ref, TRUE );
 }
 
 static void trw_layer_geotagging_waypoint_mtime_update ( menu_array_sublayer values )
@@ -3712,7 +3712,7 @@ static void trw_layer_geotagging_waypoint_mtime_update ( menu_array_sublayer val
   VikWaypoint *wp = g_hash_table_lookup ( VIK_TRW_LAYER(values[MA_VTL])->waypoints, values[MA_SUBLAYER_ID] );
   if ( wp )
     // Update directly
-    a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, FALSE );
+    a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, wp->image_direction, wp->image_direction_ref, FALSE );
 }
 
 /*

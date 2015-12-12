@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2010-2015, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2010-2018, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "viking.h"
 #include "vikdatetime_edit_dialog.h"
 #include "vikgoto.h"
+#include "ui_util.h"
 
 static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 {
@@ -42,6 +43,7 @@ static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 }
 
 static VikWaypoint *edit_wp;
+static gulong direction_signal_id;
 
 /**
  * time_edit_click:
@@ -80,37 +82,20 @@ static void time_edit_click ( GtkWidget* widget, GdkEventButton *event, VikWaypo
   update_time ( widget, edit_wp );
 }
 
-static void update_direction ( GtkWidget *widget, gdouble value )
-{
-  gchar *direction_str = g_strdup_printf ( "%05.1f", value );
-  gtk_entry_set_text ( GTK_ENTRY(widget), direction_str );
-  g_free ( direction_str );
-}
-
 /**
  * direction_edit_click:
  */
-static void direction_edit_click ( GtkWidget* widget, GdkEventButton *event, GtkWidget *direction )
+static void direction_add_click ( GtkWidget* widget, GdkEventButton *event, GtkWidget *direction )
 {
-  gdouble bearing = 0.0;
-  gboolean answered = a_dialog_get_spin_number_double ( GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-                                                        _("Enter bearing"), "",
-                                                        0.0, 359.0, 5.0, 1, &bearing );
-
-  // Was the dialog cancelled?
-  if ( !answered )
-    return;
-
-  // Otherwise use new value in the edit buffer
-  edit_wp->image_direction = bearing;
-
-  // Clear the previous 'Add' image as now a value is set
+  // Replace 'Add' with text and stop further callbacks
   if ( gtk_button_get_image ( GTK_BUTTON(widget) ) )
     gtk_button_set_image ( GTK_BUTTON(widget), NULL );
   gtk_button_set_label ( GTK_BUTTON(widget), _("True") );
+  g_signal_handler_disconnect ( G_OBJECT(widget), direction_signal_id );
 
+  // Enable direction value
   gtk_widget_set_sensitive ( direction, TRUE );
-  update_direction ( direction, bearing );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(direction), 0.0 );
 }
 
 static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
@@ -151,7 +136,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   GtkWidget *timevaluebutton = NULL;
   GtkWidget *hasGeotagCB = NULL;
   GtkWidget *consistentGeotagCB = NULL;
-  GtkWidget *direction = NULL;
+  GtkWidget *direction_sb = NULL;
   GtkWidget *direction_hb = NULL;
   GtkListStore *store;
 
@@ -305,15 +290,14 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(consistentGeotagCB), vik_coord_equals(&coord, &wp->coord) );
     }
 
-    // ATM the direction value box is always shown, even when their is no information.
+    // ATM the direction value box is always shown, even when there is no information.
     // It would be nice to be able to hide it until the 'Add' has been performed,
     //  however I've not been able to achieve this.
     // Thus simply sensistizing it instead.
     GtkWidget *direction_label = gtk_label_new ( _("Image Direction:") );
     direction_hb = gtk_hbox_new ( FALSE, 0 );
     gtk_box_pack_start (GTK_BOX(direction_hb), direction_label, FALSE, FALSE, 0);
-    // TODO make this a spinbox effort
-    direction = gtk_entry_new ();
+    direction_sb = gtk_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new (0, 0.0, 359.9, 5.0, 1, 0 ), 1, 1 );
 
     if ( !is_new && !isnan(wp->image_direction) ) {
       GtkWidget *direction_ref = gtk_label_new ( NULL );
@@ -323,7 +307,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         gtk_label_set_label ( GTK_LABEL(direction_ref), _("True") );
 
       gtk_box_pack_start (GTK_BOX(direction_hb), direction_ref, TRUE, FALSE, 0);
-      update_direction ( direction, wp->image_direction );
+      gtk_spin_button_set_value ( GTK_SPIN_BUTTON(direction_sb), wp->image_direction );
     }
     else {
       GtkWidget *direction_ref_button = gtk_button_new ();
@@ -331,8 +315,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
       gtk_button_set_image ( GTK_BUTTON(direction_ref_button), img );
       gtk_box_pack_start (GTK_BOX(direction_hb), direction_ref_button, TRUE, FALSE, 0);
-      gtk_widget_set_sensitive ( direction, FALSE );
-      g_signal_connect ( G_OBJECT(direction_ref_button), "button-release-event", G_CALLBACK(direction_edit_click), direction );
+      gtk_widget_set_sensitive ( direction_sb, FALSE );
+      direction_signal_id = g_signal_connect ( G_OBJECT(direction_ref_button), "button-release-event", G_CALLBACK(direction_add_click), direction_sb );
     }
 
 #endif
@@ -387,8 +371,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   }
   if ( direction_hb )
     gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), direction_hb, FALSE, FALSE, 0);
-  if ( direction )
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), direction, FALSE, FALSE, 0);
+  if ( direction_sb )
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), direction_sb, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), symbollabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
@@ -442,11 +426,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         wp->has_timestamp = TRUE;
       }
 
-      if ( !isnan(edit_wp->image_direction) ) {
-        wp->image_direction = edit_wp->image_direction;
-        wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
-        // TODO modify the underlying image file
-        // Also need to limit writing only when the value has actually changed...
+      if ( direction_sb ) {
+        if ( gtk_widget_get_sensitive (direction_sb) ) {
+          wp->image_direction = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(direction_sb) );
+          if ( wp->image_direction != edit_wp->image_direction )
+            a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, wp->image_direction, wp->image_direction_ref, TRUE );
+        }
       }
 
       GtkTreeIter iter, first;

@@ -280,7 +280,9 @@ static void trw_layer_geotag_waypoint ( geotag_options_t *options )
 		gchar* datetime = a_geotag_get_exif_date_from_file ( options->image, &has_gps_exif );
 		// If image already has gps info - don't attempt to change it unless forced
 		if ( options->ov.overwrite_gps_exif || !has_gps_exif ) {
-			gint ans = a_geotag_write_exif_gps ( options->image, options->wpt->coord, options->wpt->altitude, options->ov.no_change_mtime );
+			gint ans = a_geotag_write_exif_gps ( options->image, options->wpt->coord, options->wpt->altitude,
+			                                     options->wpt->image_direction, options->wpt->image_direction_ref,
+			                                     options->ov.no_change_mtime );
 			if ( ans != 0 ) {
 				gchar *message = g_strdup_printf ( _("Failed updating EXIF on %s"), options->image );
 				vik_window_statusbar_update ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(options->vtl)), message, VIK_STATUSBAR_INFO );
@@ -409,7 +411,11 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 
 			// Write EXIF if specified
 			if ( options->ov.write_exif ) {
-				gint ans = a_geotag_write_exif_gps ( options->image, options->coord, options->altitude, options->ov.no_change_mtime );
+				// NB Can't determine image direction from a track
+				//  Potentially could guess that it is in the direction of travel, but for now leave it unset
+				gint ans = a_geotag_write_exif_gps ( options->image, options->coord, options->altitude,
+				                                     NAN, WP_IMAGE_DIRECTION_REF_TRUE,
+				                                     options->ov.no_change_mtime );
 				if ( ans != 0 ) {
 					gchar *message = g_strdup_printf ( _("Failed updating EXIF on %s"), options->image );
 					vik_window_statusbar_update ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(options->vtl)), message, VIK_STATUSBAR_INFO );

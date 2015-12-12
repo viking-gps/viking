@@ -51,6 +51,9 @@
 #include "libjpeg/jpeg-data.h"
 #endif
 
+#define EXIF_GPS_IMGDIR "Exif.GPSInfo.GPSImgDirection"
+#define EXIF_GPS_IMGDIR_REF "Exif.GPSInfo.GPSImgDirectionRef"
+
 #ifdef HAVE_LIBGEXIV2
 // Compatibility
 static void metadata_free ( GExiv2Metadata *gemd )
@@ -301,17 +304,17 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 
 			// Direction
 			VikWaypointImageDirectionRef ref = WP_IMAGE_DIRECTION_REF_TRUE;
-			if ( gexiv2_metadata_has_tag ( gemd, "Exif.GPSInfo.GPSImgDirectionRef" ) ) {
-				gchar* ref_str = gexiv2_metadata_get_tag_interpreted_string(gemd, "Exif.GPSInfo.GPSImgDirectionRef");
+			if ( gexiv2_metadata_has_tag ( gemd, EXIF_GPS_IMGDIR_REF ) ) {
+				gchar* ref_str = gexiv2_metadata_get_tag_interpreted_string(gemd, EXIF_GPS_IMGDIR_REF);
 				if ( ref_str && g_ascii_strncasecmp ("M", ref_str, 1) == 0 )
 					ref = WP_IMAGE_DIRECTION_REF_MAGNETIC;
 				g_free ( ref_str );
 			}
-			if ( gexiv2_metadata_has_tag ( gemd, "Exif.GPSInfo.GPSImgDirection" ) ) {
+			if ( gexiv2_metadata_has_tag ( gemd, EXIF_GPS_IMGDIR ) ) {
 				gint nom;
 				gint den;
 				gdouble direction = NAN;
-				if ( gexiv2_metadata_get_exif_tag_rational (gemd, "Exif.GPSInfo.GPSImgDirection", &nom, &den) )
+				if ( gexiv2_metadata_get_exif_tag_rational (gemd, EXIF_GPS_IMGDIR, &nom, &den) )
 					if ( den != 0 )
 						direction = (gdouble)nom/(gdouble)den;
 
@@ -756,11 +759,15 @@ static void convert_to_entry (const char *set_value, gdouble gdvalue, ExifEntry 
  * @filename: The image file to save information in
  * @coord:    The location
  * @alt:      The elevation
+ * @direction:     The image direction (if NAN then these direction fields are not written)
+ * @direction_ref: The image direction value type
  *
  * Returns: A value indicating success: 0, or some other value for failure
  *
  */
-gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble alt, gboolean no_change_mtime )
+gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble alt,
+                               gdouble direction, VikWaypointImageDirectionRef direction_ref,
+                               gboolean no_change_mtime )
 {
 	gint result = 0; // OK so far...
 
@@ -779,11 +786,21 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 			result = 1; // Failed
 		}
 		else {
-			GError *error = NULL;
-			if ( ! gexiv2_metadata_save_file ( gemd, filename, &error ) ) {
-				result = 2;
-				g_warning ( "Write EXIF failure:%s" , error->message );
-				g_error_free ( error );
+			if ( !isnan(direction) ) {
+				gint nom = (gint)round(direction * 10.0);
+				gboolean set_d = gexiv2_metadata_set_exif_tag_rational ( gemd, EXIF_GPS_IMGDIR, nom, 10 );
+				if ( !set_d ) result = 1; // Failed
+				gboolean set_r = gexiv2_metadata_set_tag_string ( gemd, EXIF_GPS_IMGDIR_REF, direction_ref == WP_IMAGE_DIRECTION_REF_TRUE ? "T" : "M" );
+				if ( !set_r ) result = 1; // Failed
+			}
+			// Still OK to save - no fails yet
+			if ( result == 0 ) {
+				GError *error = NULL;
+				if ( ! gexiv2_metadata_save_file ( gemd, filename, &error ) ) {
+					result = 2;
+					g_warning ( "Write EXIF failure:%s" , error->message );
+					g_error_free ( error );
+				}
 			}
 		}
 	}
