@@ -682,6 +682,9 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBBZ2
     "libbz2",
 #endif
+#ifdef HAVE_LIBZIP
+    "libzip",
+#endif
 #ifdef HAVE_LIBSQLITE3
     "libsqlite3",
 #endif

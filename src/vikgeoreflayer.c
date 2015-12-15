@@ -37,6 +37,8 @@
 #include "ui_util.h"
 #include "preferences.h"
 #include "icons/icons.h"
+#include "vikmapslayer.h"
+
 /*
 static VikLayerParamData image_default ( void )
 {
@@ -278,6 +280,22 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLay
   return TRUE;
 }
 
+static void create_image_file ( VikGeorefLayer *vgl )
+{
+  // Create in .viking-maps
+  gchar *filename = g_strconcat ( maps_layer_default_dir(), vik_layer_get_name(VIK_LAYER(vgl)), ".jpg", NULL );
+  GError *error = NULL;
+  gdk_pixbuf_save ( vgl->pixbuf, filename, "jpeg", &error, NULL );
+  if ( error ) {
+    g_warning ( "%s", error->message );
+    g_error_free ( error );
+  }
+  else
+    vgl->image = g_strdup ( filename );
+
+  g_free ( filename );
+}
+
 static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id, gboolean is_file_operation )
 {
   VikLayerParamData rv;
@@ -286,14 +304,18 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
     case PARAM_IMAGE: {
       gboolean set = FALSE;
       if ( is_file_operation ) {
+        if ( vgl->pixbuf && !vgl->image ) {
+          // Force creation of image file
+          create_image_file ( vgl );
+        }
         if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE ) {
           gchar *cwd = g_get_current_dir();
           if ( cwd ) {
             rv.s = file_GetRelativeFilename ( cwd, vgl->image );
-	    if ( !rv.s ) rv.s = "";
-            set = TRUE;
-	  }
-	}
+            if ( !rv.s ) rv.s = "";
+              set = TRUE;
+          }
+        }
       }
       if ( !set )
         rv.s = vgl->image ? vgl->image : "";
@@ -945,10 +967,14 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
     vgl->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.y_spin) );
     vgl->ll_br = get_ll_br (vgl);
     check_br_is_good_or_msg_user ( vgl );
-    if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 )
+    // TODO check if image has changed otherwise no need to regenerate pixbuf
+    if ( !vgl->pixbuf )
     {
-      georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
-      georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
+      if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 )
+      {
+        georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
+        georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
+      }
     }
 
     vgl->alpha = (guint8) gtk_range_get_value ( GTK_RANGE(alpha_scale) );
@@ -1081,4 +1107,68 @@ static gboolean georef_layer_move_press ( VikGeorefLayer *vgl, GdkEventButton *e
   vgl->click_x = event->x;
   vgl->click_y = event->y;
   return TRUE;
+}
+
+static void goto_center_ll ( VikViewport *vp,
+                             struct LatLon ll_tl,
+                             struct LatLon ll_br )
+{
+  VikCoord vc_center;
+  struct LatLon ll_center;
+
+  ll_center.lat = (ll_tl.lat + ll_br.lat) / 2.0;
+  ll_center.lon = (ll_tl.lon + ll_br.lon) / 2.0;
+
+  vik_coord_load_from_latlon ( &vc_center, vik_viewport_get_coord_mode (vp), &ll_center );
+  vik_viewport_set_center_coord ( vp, &vc_center, TRUE );
+}
+
+/**
+ *
+ */
+VikGeorefLayer *vik_georef_layer_create ( VikViewport *vp,
+                                          VikLayersPanel *vlp,
+                                          const gchar *name,
+                                          GdkPixbuf *pixbuf,
+                                          VikCoord *coord_tl,
+                                          VikCoord *coord_br )
+{
+  VikGeorefLayer *vgl = georef_layer_new ( vp );
+  vik_layer_rename ( VIK_LAYER(vgl), name );
+
+  vgl->pixbuf = pixbuf;
+
+  vik_coord_to_utm ( coord_tl, &(vgl->corner) );
+  vik_coord_to_latlon ( coord_br, &(vgl->ll_br) );
+
+  if ( vgl->pixbuf ) {
+    vgl->width = gdk_pixbuf_get_width ( vgl->pixbuf );
+    vgl->height = gdk_pixbuf_get_height ( vgl->pixbuf );
+
+    if ( vgl->width > 0 && vgl->height > 0 ) {
+
+      struct LatLon ll_tl;
+      vik_coord_to_latlon ( coord_tl, &ll_tl);
+      struct LatLon ll_br;
+      vik_coord_to_latlon ( coord_br, &ll_br);
+
+      VikCoordMode mode = vik_viewport_get_coord_mode (vp);
+
+      gdouble xmpp, ympp;
+      georef_layer_mpp_from_coords ( mode, ll_tl, ll_br, vgl->width, vgl->height, &xmpp, &ympp );
+      vgl->mpp_easting = xmpp;
+      vgl->mpp_northing = ympp;
+
+      goto_center_ll ( vp, ll_tl, ll_br);
+      // Set best zoom level
+      struct LatLon maxmin[2] = { ll_tl, ll_br };
+      vu_zoom_to_show_latlons ( vik_viewport_get_coord_mode(vp), vp, maxmin );
+
+      return vgl;
+    }
+  }
+
+  // Bad image
+  georef_layer_free ( vgl );
+  return NULL;
 }

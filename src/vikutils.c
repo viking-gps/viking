@@ -870,3 +870,55 @@ void vu_copy_label_menu ( GtkWidget *widget, guint button )
 	gtk_widget_show ( item );
 	gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, button, gtk_get_current_event_time() );
 }
+
+/**
+ * Work out the best zoom level for the LatLon area and set the viewport to that zoom level
+ */
+void vu_zoom_to_show_latlons ( VikCoordMode mode, VikViewport *vvp, struct LatLon maxmin[2] )
+{
+	/* First set the center [in case previously viewing from elsewhere] */
+	/* Then loop through zoom levels until provided positions are in view */
+	/* This method is not particularly fast - but should work well enough */
+	struct LatLon average = { (maxmin[0].lat+maxmin[1].lat)/2, (maxmin[0].lon+maxmin[1].lon)/2 };
+	VikCoord coord;
+	vik_coord_load_from_latlon ( &coord, mode, &average );
+	vik_viewport_set_center_coord ( vvp, &coord, TRUE );
+
+	/* Convert into definite 'smallest' and 'largest' positions */
+	struct LatLon minmin;
+	if ( maxmin[0].lat < maxmin[1].lat )
+		minmin.lat = maxmin[0].lat;
+	else
+		minmin.lat = maxmin[1].lat;
+
+	struct LatLon maxmax;
+	if ( maxmin[0].lon > maxmin[1].lon )
+		maxmax.lon = maxmin[0].lon;
+	else
+		maxmax.lon = maxmin[1].lon;
+
+	/* Never zoom in too far - generally not that useful, as too close ! */
+	/* Always recalculate the 'best' zoom level */
+	gdouble zoom = 1.0;
+	vik_viewport_set_zoom ( vvp, zoom );
+
+	gdouble min_lat, max_lat, min_lon, max_lon;
+	/* Should only be a maximum of about 18 iterations from min to max zoom levels */
+	while ( zoom <= VIK_VIEWPORT_MAX_ZOOM ) {
+		vik_viewport_get_min_max_lat_lon ( vvp, &min_lat, &max_lat, &min_lon, &max_lon );
+		/* NB I think the logic used in this test to determine if the bounds is within view
+		   fails if track goes across 180 degrees longitude.
+		   Hopefully that situation is not too common...
+		   Mind you viking doesn't really do edge locations to well anyway */
+		if ( min_lat < minmin.lat &&
+		     max_lat > minmin.lat &&
+		     min_lon < maxmax.lon &&
+		     max_lon > maxmax.lon )
+			/* Found within zoom level */
+			break;
+
+		/* Try next */
+		zoom = zoom * 2;
+		vik_viewport_set_zoom ( vvp, zoom );
+	}
+}

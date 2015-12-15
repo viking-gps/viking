@@ -333,6 +333,31 @@ case $ac_cv_enable_mbtiles in
 esac
 AM_CONDITIONAL([SQLITE], [test x$ac_cv_enable_mbtiles = xyes])
 
+# Standard compression is handled by libz
+# libzip enables a friendlier file based interface
+# libzip itself depends on libz (which is required in the Viking build ATM)
+# ZIP
+AC_ARG_ENABLE(zip, AC_HELP_STRING([--enable-zip],
+              [enable zip support (default is enable).]),
+              [ac_cv_enable_zip=$enableval],
+              [ac_cv_enable_zip=yes])
+AC_CACHE_CHECK([whether to enable zip Support],
+               [ac_cv_enable_zip], [ac_cv_enable_zip=yes])
+case $ac_cv_enable_zip in
+  yes)
+    # NB As far as I can tell libzip doesn't provide any versioning info within the header code itself
+    # Thus supporting old versions via simple #if #else #endif directives is seemingly not possible
+    # Resort to checking versioning only via pkgconfig
+    PKG_CHECK_MODULES([LIBZIP], [libzip >= 0.11],
+      [ AC_CHECK_HEADERS([zip.h],[],[AC_MSG_ERROR([zip.h is needed but not found - you will need to install package 'libzip-dev' or similar. The feature can be disabled with --disable-zip])])
+        AC_CHECK_LIB(zip, [main], [], [AC_MSG_ERROR([libzip is needed but not found.])]) ],
+      [ AC_MSG_WARN([libzip version needs to be at least 0.11, use of libzip is disabled])
+        ac_cv_enable_zip=no ]
+  )
+    ;;
+esac
+AM_CONDITIONAL([ZIP], [test x$ac_cv_enable_zip = xyes])
+
 # Mapnik rendering layer
 AC_ARG_ENABLE(mapnik, AC_HELP_STRING([--enable-mapnik],
               [enable Mapnik (default is enable)]),
@@ -453,6 +478,7 @@ echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
 echo "bzip2 Support                    : $ac_cv_enable_bzip2"
 echo "File Magic Support               : $ac_cv_enable_magic"
 echo "MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles"
+echo "Zip File Support (with libzip)   : $ac_cv_enable_zip"
 echo "Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik"
 echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
 echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"

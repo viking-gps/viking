@@ -463,6 +463,31 @@ if not exist "%MINGW_BIN%\iconv.dll" (
 	rmdir /Q /S %ICONV%
 )
 
+
+echo =+=+=
+echo Checking libzip...
+echo =+=+=
+REM Originally planned to extract from an existing MINGW32 RPM,
+REM  which worked OK to compile+link but Viking did not run up after install
+REM I think the dll is linked to a different gcc runtime
+set LIBZIP=mingw32-libzip-1.0.1-3
+set LIBZIP_RPM=mingw32-libzip-1.0.1-3.fc24.noarch.rpm
+if not exist "%MINGW_BIN%\libzip.dll" (
+	echo MANUALLY NEED TO ACQUIRE AND INSTALL LIBZIP
+	EXIT
+REM 	Instead build libzip from source
+REM 	http://www.nih.at/libzip/ - download latest source (31d625ae55b5 on 16/11/15)
+REM 	Use CMake (v3.4.0) on Windows
+REM 	wine cmd
+REM 	set CC=gcc
+REM 	set PATH=%PATH%;%SystemDrive%\Mingw\bin
+REM 	cmake -DCMAKE_C_COMPILER:FILEPATH='gcc' -G "MSYS Makefiles" .
+REM 	set PATH=%PATH%;%SystemDrive%\msys\1.0\bin
+REM 	make
+REM 	(needed to fix zipint.h to include limits.h for a successful compile)
+REM 	Copy libzip.dll.a,libzip.dll,zip.h+zipconf.h to appropraite places.
+)
+
 :: Note GPSBabel can not be directly downloaded via wget
 :: ATM get it manually from here:
 ::   http://www.gpsbabel.org/download.html
