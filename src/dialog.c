@@ -663,6 +663,9 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBCURL
     "libcurl",
 #endif
+#ifdef HAVE_EXPAT_H
+    "libexpat",
+#endif
     // Actually optional libs
 #ifdef HAVE_LIBGPS
     "libgps",
