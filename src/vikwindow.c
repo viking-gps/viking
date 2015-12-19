@@ -3750,11 +3750,20 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
   a_preferences_save_to_file();
 }
 
+/**
+ * Delete All
+ */
 static void clear_cb ( GtkAction *a, VikWindow *vw )
 {
-  vik_layers_panel_clear ( vw->viking_vlp );
-  window_set_filename ( vw, NULL );
-  draw_update ( vw );
+  // Do nothing if empty
+  VikAggregateLayer *top = vik_layers_panel_get_top_layer(vw->viking_vlp);
+  if ( ! vik_aggregate_layer_is_empty(top) ) {
+    if ( a_dialog_yes_or_no ( GTK_WINDOW(vw), _("Are you sure you wish to delete all layers?"), NULL ) ) {
+      vik_layers_panel_clear ( vw->viking_vlp );
+      window_set_filename ( vw, NULL );
+      draw_update ( vw );
+    }
+  }
 }
 
 static void window_close ( GtkAction *a, VikWindow *vw )
