@@ -411,6 +411,8 @@ AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && t
 ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
 
+AC_DEFINE_UNQUOTED(THEYEAR, "`date +%Y`", [The Year])
+
 # Configuration
 AC_CONFIG_FILES([
 		Makefile
