@@ -1,3 +1,13 @@
+Viking 1.6.2 (2015-12-21)
+Bug Fix Release
+* Don't remove project name if one decides not to delete all layers.
+* Fix routes not saved in GPX when tracks are made invisible.
+* SF Bugs#103: Fix TrackWaypoint layer items may not be displayed when pasted
+* Enable Catalan and Turkish translations.
+* Restore opening of JPG files.
+* SF Bugs#127: Fix initial display of Waypoint sort order.
+* Fix map layer widget sensitivity dependent on map type.
+
 Viking 1.6.1 (2015-11-24)
 Bug Fix Release + updated translations
 * Several fixes and many code improvements from Coverity scans
