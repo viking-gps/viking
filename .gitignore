@@ -67,6 +67,7 @@ doc/reference/*stamp
 
 # help/
 help/viking.1
+help/viking.xml
 # help/C/
 help/C/viking.pdf
 help/C/*html
