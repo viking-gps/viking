@@ -15,9 +15,16 @@ Var name
 ;The name var is set in .onInit
 Name $name
 
+;Allow overiding location of binary components for the install
+!ifndef BINARIES
+  !define BINARIES ".\bin"
+!endif
+
 OutFile "viking-${VIKING_VERSION}.exe"
 
-SetCompressor /SOLID lzma
+;NB Using /SOLID method on a mingw32 setup seems to generate an exe that fails the CRC check
+;So now don't set the compressor here - it can be set by the calling command/script if necessary.
+;SetCompressor /SOLID bzip2
 ShowInstDetails show
 ShowUninstDetails show
 SetDateSave on
@@ -90,7 +97,7 @@ VIAddVersionKey "FileDescription" "Viking Installer"
 ;Pages
 
   !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE			".\bin\COPYING_GPL.txt"
+  !insertmacro MUI_PAGE_LICENSE			"${BINARIES}\COPYING_GPL.txt"
   !insertmacro MUI_PAGE_COMPONENTS
 
   ; Viking install dir page
@@ -139,7 +146,7 @@ VIAddVersionKey "FileDescription" "Viking Installer"
 ;; Start Install Sections ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-LicenseData ".\bin\COPYING_GPL.txt"
+LicenseData "${BINARIES}\COPYING_GPL.txt"
 LicenseForceSelection checkbox
 
 ;--------------------------------
@@ -250,18 +257,13 @@ Section $(VIKING_SECTION_TITLE) SecViking
 
     ; Copy only specific items as now some components (e.g. GPSBabel) are optional.
     ; This is mostly to get a more accurate install size value (especially as saved into the registry)
-    File .\bin\viking*
-    ; Not sure we really need any of the gtk executables but copy them anyway:
-    File .\bin\*.exe
-    File .\bin\*.dll
-    File .\bin\*.txt
-    File .\bin\magic.mgc
-    File /r .\bin\data
-    File /r .\bin\etc
-    File /r .\bin\gtk2-runtime
-    File /r .\bin\lib
-    File /r .\bin\locale
-    File /r .\bin\share
+    File ${BINARIES}\viking*
+    File ${BINARIES}\g*.exe
+    File ${BINARIES}\*.dll
+    File ${BINARIES}\*.txt
+    File ${BINARIES}\magic.mgc
+    File /r ${BINARIES}\data
+    File /r ${BINARIES}\locale
 
     ; Estimate install size based on files in $INSTDIR
     ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
@@ -314,7 +316,7 @@ SectionEnd
 ; GPSBabel Install Section
 ;
 Section $(VIKING_GPSBABEL_SECTION_TITLE) SecGPSBabel
-  File "bin\Optional\GPSBabel-1.5.2-Setup.exe"
+  File "${BINARIES}\Optional\GPSBabel-1.5.2-Setup.exe"
   ExecWait '"$INSTDIR\GPSBabel-1.5.2-Setup.exe" /SILENT'
   Delete "$INSTDIR\GPSBabel-1.5.2-Setup.exe"
 SectionEnd
@@ -369,11 +371,7 @@ Section Uninstall
     Delete "$INSTDIR\data\*txt"
     Delete "$INSTDIR\data\*xml"
     RMDir "$INSTDIR\data"
-    RMDir /r "$INSTDIR\etc"
-    RMDir /r "$INSTDIR\gtk2-runtime"
-    RMDir /r "$INSTDIR\lib"
     RMDir /r "$INSTDIR\locale"
-    RMDir /r "$INSTDIR\share"
     RMDir "$INSTDIR"
 
     ; Shortcuts..
@@ -470,8 +468,8 @@ Function ${UN}RunCheck
 FunctionEnd
 !macroend
 
-!insertmacro RunCheckMacro ""
-!insertmacro RunCheckMacro "un."
+;!insertmacro RunCheckMacro ""
+;!insertmacro RunCheckMacro "un."
 
 ;Installer extra configuration at execution time: language, path, ...
 Function .onInit
@@ -481,7 +479,7 @@ Function .onInit
   Push $R2
 
   ;Check if viking is running
-  Call RunCheck
+  ;Call RunCheck
   StrCpy $name "Viking ${VIKING_VERSION}"
 
   ClearErrors
@@ -565,7 +563,7 @@ FunctionEnd
 
 Function un.onInit
   ;Check if viking is running
-  Call un.RunCheck
+  ;Call un.RunCheck
   StrCpy $name "Viking ${VIKING_VERSION}"
 
   ; Get stored language preference

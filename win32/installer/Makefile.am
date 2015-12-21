@@ -1,5 +1,6 @@
 
 EXTRA_DIST = \
+	FileAssociation.nsh \
 	viking-installer.nsi \
 	langmacros.nsh
 

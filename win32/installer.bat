@@ -140,7 +140,7 @@ if ERRORLEVEL 1 goto Error
 echo Running NSIS (command line version)
 pushd installer
 if exist "%ProgramFiles%\NSIS" (
-	"%ProgramFiles%\NSIS\makensis.exe" viking-installer.nsi
+	"%ProgramFiles%\NSIS\makensis.exe" /X"SetCompressor /SOLID lzma" viking-installer.nsi
 ) else (
 	echo NSIS Not installed in known location
 )

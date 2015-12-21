@@ -14,6 +14,7 @@ EXTRA_DIST = \
 	gnome-doc-utils.make \
 	ChangeLog.0 \
 	viking.spec \
+	mingw-viking.spec \
 	$(INTLTOOL)
 
 .PHONY: generate-changelog

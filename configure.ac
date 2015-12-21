@@ -3,6 +3,10 @@
 
 AC_PREREQ(2.64)
 AC_INIT(viking, 1.6.1, , viking, http://viking.sf.net/)
+
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
 AM_INIT_AUTOMAKE([dist-bzip2 dist-zip subdir-objects])
 dnl AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -20,6 +24,15 @@ AC_PROG_CC_STDC
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)
+
+ac_mingw32=no
+case $target_os in
+  *mingw32*)
+    ac_mingw32=yes
+  ;;
+  *)
+  ;;
+esac
 
 # I18N
 GETTEXT_PACKAGE=viking
@@ -298,7 +311,16 @@ AC_CACHE_CHECK([whether to enable bzip2 Support],
 case $ac_cv_enable_bzip2 in
   yes)
     AC_CHECK_HEADERS([bzlib.h],[],[AC_MSG_ERROR([bzlib.h is needed but not found - you will need to install package 'libbz2-dev' or similar. The feature can be disabled with --disable-bzip2])])
-    AC_CHECK_LIB(bz2, BZ2_bzBuffToBuffDecompress, [], [AC_MSG_ERROR([libbz2 is needed but not found.])])
+    if test "$ac_mingw32" = "yes"; then
+      # Using the cross compiler it bizarrely fails to detect BZ2_bzRead during the configure stage
+      # I SWEAR THIS WORKED AT SOME POINT - BUT ON A DIFFERENT DAY IT DOESN'T = MORE SWEARING
+      BZ2FUNC=main
+      AC_CHECK_LIB(bz2, [$BZ2FUNC], [], [LIBS="-lbz2 $LIBS"
+                                         AC_MSG_WARN([libbz2 not found! Forcing it anyway!])])
+    else
+      BZ2FUNC=BZ2_bzRead
+      AC_CHECK_LIB(bz2, [$BZ2FUNC], [], [AC_MSG_ERROR([libbz2 is needed but not found.])])
+    fi
     ;;
 esac
 AM_CONDITIONAL([BZIP2], [test x$ac_cv_enable_bzip2 = xyes])
@@ -441,6 +463,7 @@ AC_DEFINE_UNQUOTED(THEYEAR, "`date +%Y`", [The Year])
 # Configuration
 AC_CONFIG_FILES([
 		viking.spec
+		mingw-viking.spec
 		Makefile
 		src/Makefile
 		src/icons/Makefile
