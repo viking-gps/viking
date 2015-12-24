@@ -102,7 +102,9 @@ cp $MINGW_BIN/nss*.dll $DESTINATION
 cp $MINGW_BIN/ssl*.dll $DESTINATION
 cp /usr/share/doc/packages/mingw32-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
 
-cp $MINGW_BIN/libexif*.dll $DESTINATION
+cp $MINGW_BIN/libexiv2.dll $DESTINATION
+cp $MINGW_BIN/libgexiv2*.dll $DESTINATION
+cp $MINGW_BIN/libstdc++*.dll $DESTINATION
 cp $MINGW_BIN/libbz*.dll $DESTINATION
 cp $MINGW_BIN/libmagic*.dll $DESTINATION
 cp $MINGW/share/misc/magic* $DESTINATION
