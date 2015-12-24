@@ -454,6 +454,7 @@ AC_PATH_PROG(XP,xsltproc)
 AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
 AC_CHECK_PROG([HAVE_SCROLLKEEPER],scrollkeeper-config,"yes")
 AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && test "${HAVE_SCROLLKEEPER}" == "yes" )
+AM_COND_IF([GEN_MANPAGES], [ac_cv_enable_man=yes], [ac_cv_enable_man=no])
 
 ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
@@ -484,31 +485,31 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 
 dnl Output the configuration summary
-echo ""
-echo "==========================================="
-echo "$PACKAGE $PACKAGE_URL $VERSION"
-echo "-------------------------------------------"
-echo "Bing Maps                        : $ac_cv_enable_bing"
-echo "Google                           : $ac_cv_enable_google"
-echo "Terraserver Maps                 : $ac_cv_enable_terraserver"
-echo "Expedia Maps                     : $ac_cv_enable_expedia"
-echo "Open Street Map                  : $ac_cv_enable_openstreetmap"
-echo "BlueMarble                       : $ac_cv_enable_bluemarble"
-echo "Geonames                         : $ac_cv_enable_geonames"
-echo "Geocaches Acquire                : $ac_cv_enable_geocaches"
-echo "Geotag Support                   : $ac_cv_enable_geotag (libgexiv2=$ac_cv_lib_gexiv2_gexiv2_metadata_new libexif=$ac_cv_lib_exif_exif_loader_new)"
-echo "USGS 24k DEM                     : $ac_cv_enable_dem24k"
-echo "Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking"
-echo "bzip2 Support                    : $ac_cv_enable_bzip2"
-echo "File Magic Support               : $ac_cv_enable_magic"
-echo "MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles"
-echo "Zip File Support (with libzip)   : $ac_cv_enable_zip"
-echo "Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik"
-echo "Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}"
-echo "Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}"
-echo -n "Man page generation              : "
-AM_COND_IF([GEN_MANPAGES], [echo "yes"], [echo "no"])
-echo "Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})"
-echo "-------------------------------------------"
-echo ""
-echo "Configure finished, type 'make' to build."
+AC_MSG_NOTICE(["
+===========================================
+$PACKAGE $PACKAGE_URL $VERSION
+-------------------------------------------
+Bing Maps                        : $ac_cv_enable_bing
+Google                           : $ac_cv_enable_google
+Terraserver Maps                 : $ac_cv_enable_terraserver
+Expedia Maps                     : $ac_cv_enable_expedia
+Open Street Map                  : $ac_cv_enable_openstreetmap
+BlueMarble                       : $ac_cv_enable_bluemarble
+Geonames                         : $ac_cv_enable_geonames
+Geocaches Acquire                : $ac_cv_enable_geocaches
+Geotag Support                   : $ac_cv_enable_geotag (libgexiv2=$ac_cv_lib_gexiv2_gexiv2_metadata_new libexif=$ac_cv_lib_exif_exif_loader_new)
+USGS 24k DEM                     : $ac_cv_enable_dem24k
+Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking
+bzip2 Support                    : $ac_cv_enable_bzip2
+File Magic Support               : $ac_cv_enable_magic
+MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles
+Zip File Support (with libzip)   : $ac_cv_enable_zip
+Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
+Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
+Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}
+Man page generation              : $ac_cv_enable_man
+Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})
+-------------------------------------------
+
+Configure finished, type 'make' to build.
+"])
