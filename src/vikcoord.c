@@ -21,6 +21,8 @@
 
 #include "coords.h"
 #include "vikcoord.h"
+#include "globals.h"
+#include <math.h>
 
 /* all coord operations MUST BE ABSTRACTED!!! */
 
@@ -169,4 +171,35 @@ gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCo
   if ((ll.lat  < br_ll.lat) || (ll.lon > br_ll.lon))
     return FALSE;
   return TRUE;
+}
+
+/**
+ * vik_coord_angle:
+ *
+ * Get angle of the second coord from the first one in degrees
+ *
+ */
+gdouble vik_coord_angle (const VikCoord *vc1, const VikCoord *vc2)
+{
+  struct LatLon ll1, ll2;
+  vik_coord_to_latlon ( vc1, &ll1 );
+  vik_coord_to_latlon ( vc2, &ll2 );
+
+  // Convert to radians for use in the algorithm
+  gdouble rlat1 = DEG2RAD(ll1.lat);
+  gdouble rlong1 = DEG2RAD(ll1.lon);
+  gdouble rlat2 = DEG2RAD(ll2.lat);
+  gdouble rlong2 = DEG2RAD(ll2.lon);
+
+  // This formula is for the initial bearing (ometimes referred to as forward azimuth)
+  //θ = atan2( sin Δλ ⋅ cos φ2 , cos φ1 ⋅ sin φ2 − sin φ1 ⋅ cos φ2 ⋅ cos Δλ )
+  // in -pi to +pi radians
+  gdouble dLon = (rlong2 - rlong1);
+  gdouble y = sin(dLon) * cos(rlat2);
+  gdouble x = (cos(rlat1) * sin(rlat2)) - (sin(rlat1) * cos(rlat2) * cos(dLon));
+  gdouble angle = atan2(y, x);
+
+  // Bring into range 0..360 degrees
+  angle = fmod (RAD2DEG(angle) + 360.0, 360);
+  return angle;
 }

@@ -60,6 +60,8 @@ void vik_coord_set_area(const VikCoord *coord, const struct LatLon *wh, VikCoord
 gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCoord *br);
 /* all coord operations MUST BE ABSTRACTED!!! */
 
+gdouble vik_coord_angle (const VikCoord *vc1, const VikCoord *vc2);
+
 G_END_DECLS
 
 #endif
