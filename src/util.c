@@ -237,6 +237,20 @@ gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count )
 }
 
 /**
+ * util_formatd:
+ *
+ * Convert a double to a string WITHOUT LOCALE in the specified format
+ *
+ * The returned value must be freed by g_free.
+ */
+gchar* util_formatd ( const gchar *format, gdouble dd )
+{
+  gchar *buffer = g_malloc(G_ASCII_DTOSTR_BUF_SIZE*sizeof(gchar));
+  g_ascii_formatd (buffer, G_ASCII_DTOSTR_BUF_SIZE, format, dd);
+  return buffer;
+}
+
+/**
  * util_make_absolute_filename:
  *
  * Returns a newly allocated string of the absolute filename or

@@ -72,6 +72,8 @@ void util_make_absolute_filenames ( GList *filenames, const gchar *dirpath );
 
 time_t util_timegm (struct tm *tm);
 
+gchar* util_formatd ( const gchar *format, gdouble dd );
+
 G_END_DECLS
 
 #endif
