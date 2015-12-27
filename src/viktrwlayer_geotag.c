@@ -273,8 +273,10 @@ static void trw_layer_geotag_track ( const gpointer id, VikTrack *track, geotag_
 			 * in time between the two points. Ie, a number between 0 and 1 -
 			 * 0 is the first point, 1 is the next point, and 0.5 would be
 			 * half way. */
-			gdouble scale = (gdouble)trkpt_next->timestamp - (gdouble)trkpt->timestamp;
-			scale = ((gdouble)options->PhotoTime - (gdouble)trkpt->timestamp) / scale;
+			gdouble tdiff = (gdouble)trkpt_next->timestamp - (gdouble)trkpt->timestamp;
+			gdouble scale = ((gdouble)options->PhotoTime - (gdouble)trkpt->timestamp) / tdiff;
+
+			options->PhotoTime = options->PhotoTime + (time_t)(tdiff * scale);
 
 			struct LatLon ll_result, ll1, ll2;
 
@@ -424,6 +426,8 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 						(void)a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, wp );
 						wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 						wp->image_direction = options->image_direction;
+						wp->has_timestamp = TRUE;
+						wp->timestamp = options->PhotoTime;
 						updated_waypoint = TRUE;
 					}
 					g_free ( name );
@@ -437,6 +441,8 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 						name = g_strdup ( a_file_basename ( options->image ) );
 					wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 					wp->image_direction = options->image_direction;
+					wp->has_timestamp = TRUE;
+					wp->timestamp = options->PhotoTime;
 					vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
 					g_free ( name );
 				}
