@@ -35,6 +35,7 @@ SetDateSave on
 !include "Sections.nsh"
 !include "WinVer.nsh"
 !include "LogicLib.nsh"
+!include "x64.nsh"
 ;; http://nsis.sourceforge.net/File_Association
 !include "FileAssociation.nsh"
 
@@ -244,7 +245,11 @@ Section $(VIKING_SECTION_TITLE) SecViking
     ; Common settings
     WriteRegStr SHCTX ${VIKING_REG_KEY} "" "$INSTDIR"
     WriteRegStr SHCTX ${VIKING_REG_KEY} "Version" "${VIKING_VERSION}"
-    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking"
+    ${If} ${RunningX64}
+      WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking (x86)"
+    ${Else}
+      WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking (x64)"
+    ${EndIf}
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayVersion" "${VIKING_VERSION}"
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayIcon" "$INSTDIR\viking_icon.ico"
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "HelpLink" "http://sourceforge.net/p/viking/wikiallura"
@@ -546,8 +551,12 @@ Function .onInit
   Pop $R0
 
   StrCmp $R0 "HKLM" 0 user_dir
-    StrCpy $INSTDIR "$PROGRAMFILES\Viking"
-    Goto instdir_done
+  ${If} ${RunningX64}
+    StrCpy $INSTDIR "$PROGRAMFILES64\Viking"
+  ${Else}
+    StrCpy $INSTDIR "$PROGRAMFILES\Viking" ; $PROGRAMFILES32 also works
+  ${EndIf}
+  Goto instdir_done
   user_dir:
     Push $SMPROGRAMS
     ${GetParent} $SMPROGRAMS $R2

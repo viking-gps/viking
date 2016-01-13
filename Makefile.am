@@ -15,6 +15,7 @@ EXTRA_DIST = \
 	ChangeLog.0 \
 	viking.spec \
 	mingw-viking.spec \
+	mingw64-viking.spec \
 	$(INTLTOOL)
 
 .PHONY: generate-changelog

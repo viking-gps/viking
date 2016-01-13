@@ -1,7 +1,7 @@
 # Public Domain CC0
 %{?mingw_package_header}
 %define _pkg_name viking
-Name:		mingw32-%{_pkg_name}
+Name:		mingw64-%{_pkg_name}
 Version:	@VERSION@
 Release:	1
 Summary:	GPS data editor and analyzer
@@ -9,50 +9,51 @@ Group:		Applications/Productivity
 License:	GPLv2
 URL:		http://sourceforge.net/projects/viking/
 Source0:	%{_pkg_name}-%{version}.tar.gz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot:	%{_tmppath}/%{name}-%{version}-build
 BuildArch:	noarch
 
-# 32bit version only in this file. See mingw64-viking.spec for the 64bit version
+# 64bit version only in this file. See mingw-viking.spec for the 32bit version
 
 # Programs to enable the cross build
-BuildRequires:	mingw32-filesystem
-BuildRequires:	mingw32-binutils
-BuildRequires:	mingw32-runtime
-BuildRequires:	mingw32-cross-binutils
-BuildRequires:	mingw32-cross-gcc
-BuildRequires:	mingw32-cross-pkg-config
-BuildRequires:	mingw32-gettext-tools
-BuildRequires:	mingw32-gnome-doc-utils-devel
+BuildRequires:	mingw64-filesystem
+BuildRequires:	mingw64-binutils
+BuildRequires:	mingw64-runtime
+BuildRequires:	mingw64-cross-binutils
+BuildRequires:	mingw64-cross-gcc
+BuildRequires:	mingw64-cross-pkg-config
+BuildRequires:	mingw64-gettext-tools
+BuildRequires:	mingw64-gnome-doc-utils-devel
 BuildRequires:	intltool
 BuildRequires:	gdk-pixbuf-devel
 # ^For gdk-pixbuf-csource
 
 # Code
 # Not worried about versions ATM
-BuildRequires:	mingw32-gtk2-devel
+BuildRequires:	mingw64-gtk2-devel
 # ATM gtk2-devel auto includes at least devel versions of glib2, gobject, zlib and more
 
 # Mandatory libraries
-BuildRequires:	mingw32-libexpat-devel
-BuildRequires:	mingw32-libcurl-devel
+BuildRequires:	mingw64-libexpat-devel
+BuildRequires:	mingw64-libcurl-devel
 # Optional libraries
-BuildRequires:	mingw32-libgexiv2-devel
-BuildRequires:	mingw32-libbz2-devel
-BuildRequires:	mingw32-file-devel
-BuildRequires:	mingw32-libmagic1
-BuildRequires:	mingw32-libbz2-1
-BuildRequires:	mingw32-sqlite-devel
-BuildRequires:	mingw32-libzip-devel
+BuildRequires:	mingw64-libgexiv2-devel
+BuildRequires:	mingw64-libbz2-devel
+BuildRequires:	mingw64-file-devel
+BuildRequires:	mingw64-libmagic1
+BuildRequires:	mingw64-libbz2-1
+BuildRequires:	mingw64-sqlite-devel
+BuildRequires:	mingw64-libzip-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
-Requires:	mingw32-gtk2
-Requires:	mingw32-libexpat1
-Requires:	mingw32-libcurl4
-Requires:	mingw32-libgexiv2
-Requires:	mingw32-libstdc++6
-Requires:	mingw32-libsqlite3-0
-Requires:	mingw32-libzip4
+Requires:	mingw64-gtk2
+Requires:	mingw64-libexpat1
+Requires:	mingw64-libcurl4
+Requires:	mingw64-libgexiv2
+Requires:	mingw64-libstdc++6
+Requires:	mingw64-libsqlite3-0
+Requires:	mingw64-libzip4
 # Currently running makensis in seperate script - so you will need it then
+# NB No 64bit version available
 #Requires:	mingw32-cross-nsis
 
 %description
@@ -67,23 +68,24 @@ It is written in mainly in C with some C++ and uses the GTK+2 toolkit.
 %build
 # Create Icon
 pushd win32/installer/pixmaps
-%{_mingw32_windres} viking_icon.rc -o viking_icon.o
+%{_mingw64_windres} viking_icon.rc -o viking_icon.o
 popd
 
 #
 # Specifics for Windows build - i.e. no Mapnik & no GPSD
-%{_mingw32_configure}\
+%{_mingw64_configure}\
   --disable-realtime-gps-tracking \
   --disable-mapnik \
   --disable-scrollkeeper \
   --enable-windows \
   CFLAGS="-DWINDOWS -DWIN32 -mwindows"
+# NB not sure if '-DWIN32' is necessary/applicable for a 64bit build...
 
-%{_mingw32_make} %{?_smp_mflags}
-
+%{_mingw64_make} %{?_smp_mflags}
+ 
 %install
 pushd src
-%{_mingw32_strip} -g %{_pkg_name}.exe
+%{_mingw64_strip} -g %{_pkg_name}.exe
 popd
 
 %make_install
@@ -91,16 +93,15 @@ popd
 %find_lang %{_pkg_name}
 
 %clean
-#rm -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files -f %{_pkg_name}.lang
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README doc/
-%{_mingw32_bindir}/*%{_pkg_name}.exe
-%{_mingw32_datadir}/applications/%{_pkg_name}.desktop
-%{_mingw32_datadir}/%{_pkg_name}
-%{_mingw32_datadir}/icons/hicolor/*/apps/%{_pkg_name}.*
-%exclude %{_mingw32_datadir}/icons/hicolor/icon-theme.cache
-#%{_mingw32_mandir}/man1/*
+%{_mingw64_bindir}/*%{_pkg_name}.exe
+%{_mingw64_datadir}/applications/%{_pkg_name}.desktop
+%{_mingw64_datadir}/%{_pkg_name}
+%{_mingw64_datadir}/icons/hicolor/*/apps/%{_pkg_name}.*
+%exclude %{_mingw64_datadir}/icons/hicolor/icon-theme.cache
 
 %changelog

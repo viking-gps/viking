@@ -16,11 +16,12 @@ This could be done in the VM but installing dblatex requires ~650Mb install (so 
 
 ### Guest Preparation (root) ###
 
-In the guest ensure availability of build dependent mingw32 packages (not in standard Tumbleweed repo ATM)
+In the guest ensure availability of build dependent mingw32 / mingw64 packages (not in standard Tumbleweed repo ATM)
 	# As root
 	zypper ar -f http://download.opensuse.org/repositories/windows:/mingw:/win32/openSUSE_Tumbleweed windows
+	zypper ar -f http://download.opensuse.org/repositories/windows:/mingw:/win64/openSUSE_Tumbleweed windows64
 	zypper ar -f http://download.opensuse.org/repositories/home:/ecsos/openSUSE_Tumbleweed windows-extra-ecsos
-	zypper ar -f http://download.opensuse.org/repositories/home:/ecsos:/pipelight/openSUSE_Tumbleweed windows-extra-ecsos
+	zypper ar -f http://download.opensuse.org/repositories/home:/ecsos:/pipelight/openSUSE_Tumbleweed windows-extra-ecsos2
 	# Ensure a standard user account is available for the build e.g:
 	#useradd -m build
 	#passwd build
@@ -58,7 +59,7 @@ Now perform the build
 	rpmbuild -ba mingw-viking.spec
 
 Install locally
-	rpm -i /home/build/rpmbuild/RPMS/noarch/viking-*.noarch.rpm
+	sudo rpm -i /home/build/rpmbuild/RPMS/noarch/ming*-viking-*.noarch.rpm
 
 Generate .msi
 	cd win32

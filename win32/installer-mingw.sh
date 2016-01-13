@@ -15,10 +15,18 @@
 if [ -z "$DESTINATION" ]; then
 	DESTINATION=installer/bin
 fi
+# General clean out tmp copy location so 32v64 versions can't conflict
+if [ -z "$NOCLEAN" ]; then
+	rm -rf installer/bin
+fi
 mkdir -p $DESTINATION
 
 if [ -z "$MINGW" ]; then
-  MINGW=/usr/i686-w64-mingw32/sys-root/mingw
+	if [ "$HOSTTYPE" == "x86_64" ]; then
+		MINGW=/usr/x86_64-w64-mingw32/sys-root/mingw
+	else
+		MINGW=/usr/i686-w64-mingw32/sys-root/mingw
+	fi
 fi
 MINGW_BIN=$MINGW/bin
 echo MINGW=$MINGW
@@ -56,7 +64,11 @@ cp ../data/latlontz.txt $DESTINATION/data
 
 echo Copying Helper Apps
 # Needed when spawning other programs (e.g. when invoking GPSBabel)
-cp $MINGW_BIN/gspawn-win32-helper.exe $DESTINATION
+if [ "$HOSTTYPE" == "x86_64" ]; then
+	cp $MINGW_BIN/gspawn-win64-helper.exe $DESTINATION
+else
+	cp $MINGW_BIN/gspawn-win32-helper.exe $DESTINATION
+fi
 
 echo Copying Libraries
 # Core libs
@@ -100,7 +112,11 @@ cp $MINGW_BIN/libplc*.dll $DESTINATION
 cp $MINGW_BIN/libplds*.dll $DESTINATION
 cp $MINGW_BIN/nss*.dll $DESTINATION
 cp $MINGW_BIN/ssl*.dll $DESTINATION
-cp /usr/share/doc/packages/mingw32-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
+if [ "$HOSTTYPE" == "x86_64" ]; then
+	cp /usr/share/doc/packages/mingw64-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
+else
+	cp /usr/share/doc/packages/mingw32-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
+fi
 
 cp $MINGW_BIN/libexiv2.dll $DESTINATION
 cp $MINGW_BIN/libgexiv2*.dll $DESTINATION
@@ -121,5 +137,11 @@ if [ -z "$DEBUG" ]; then
 else
 	# Speedier install generation when testing
 	makensis -X"SetCompress off" viking-installer.nsi
+fi
+
+if [ "$HOSTTYPE" == "x86_64" ]; then
+	rename viking viking-win64 viking-[0-9].[0-9].[0-9].[0-9].exe
+else
+	rename viking viking-win32 viking-[0-9].[0-9].[0-9].[0-9].exe
 fi
 popd

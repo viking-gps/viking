@@ -32,6 +32,7 @@ gnome-doc-utils.m4
 /omf.make
 /viking.spec
 /mingw-viking.spec
+/mingw64-viking.spec
 /xmldocs.make
 /test-driver
 /compile

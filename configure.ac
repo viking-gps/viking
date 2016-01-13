@@ -465,6 +465,7 @@ AC_DEFINE_UNQUOTED(THEYEAR, "`date +%Y`", [The Year])
 AC_CONFIG_FILES([
 		viking.spec
 		mingw-viking.spec
+		mingw64-viking.spec
 		Makefile
 		src/Makefile
 		src/icons/Makefile
