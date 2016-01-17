@@ -1173,6 +1173,12 @@ static void trw_layer_free_copied_item ( gint subtype, gpointer item )
   }
 }
 
+static void image_cache_free ( VikTrwLayer *vtl )
+{
+  g_list_foreach ( vtl->image_cache->head, (GFunc)cached_pixbuf_free, NULL );
+  g_queue_free ( vtl->image_cache );
+}
+
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
 {
   switch ( id )
@@ -1244,8 +1250,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
     case PARAM_IS: if ( data.u != vtl->image_size )
       {
         vtl->image_size = data.u;
-        g_list_foreach ( vtl->image_cache->head, (GFunc) cached_pixbuf_free, NULL );
-        g_queue_free ( vtl->image_cache );
+        image_cache_free ( vtl );
         vtl->image_cache = g_queue_new ();
       }
       break;
@@ -1670,8 +1675,7 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   if ( trwlayer->tracks_analysis_dialog != NULL )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tracks_analysis_dialog) );
 
-  g_list_foreach ( trwlayer->image_cache->head, (GFunc) cached_pixbuf_free, NULL );
-  g_queue_free ( trwlayer->image_cache );
+  image_cache_free ( trwlayer );
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
