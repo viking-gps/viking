@@ -69,7 +69,7 @@ typedef struct {
   ProcessOptions *po;
   gboolean creating_new_layer;
   VikTrwLayer *vtl;
-  gpointer options;
+  DownloadFileOptions *options;
 } w_and_interface_t;
 
 
@@ -210,7 +210,7 @@ static void acquire ( VikWindow *vw,
   gchar *fd_off = NULL;
   acq_dialog_widgets_t *w;
   gpointer user_data;
-  gpointer options = NULL;
+  DownloadFileOptions *options = g_malloc0 ( sizeof(DownloadFileOptions) );
 
   acq_vik_t avt;
   avt.vlp = vlp;
@@ -306,7 +306,7 @@ static void acquire ( VikWindow *vw,
 
     g_free ( name_src_track );
   } else if ( source_interface->get_process_options_func )
-    source_interface->get_process_options_func ( pass_along_data, po, &options, NULL, NULL );
+    source_interface->get_process_options_func ( pass_along_data, po, options, NULL, NULL );
 
   /* Get data for Off command */
   if ( source_interface->off_func ) {

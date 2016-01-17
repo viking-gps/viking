@@ -447,7 +447,7 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
  *
  * Returns: %TRUE on success
  */
-gboolean a_babel_convert_from ( VikTrwLayer *vt, ProcessOptions *process_options, BabelStatusFunc cb, gpointer user_data, gpointer download_options )
+gboolean a_babel_convert_from ( VikTrwLayer *vt, ProcessOptions *process_options, BabelStatusFunc cb, gpointer user_data, DownloadFileOptions *download_options )
 {
   if ( !process_options ) return FALSE;
   if ( process_options->url )

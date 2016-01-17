@@ -116,7 +116,7 @@ void a_babel_foreach_file_with_mode (BabelMode mode, GFunc func, gpointer user_d
 void a_babel_foreach_file_read_any (GFunc func, gpointer user_data);
 
 // NB needs to match typedef VikDataSourceProcessFunc in acquire.h
-gboolean a_babel_convert_from ( VikTrwLayer *vt, ProcessOptions *process_options, BabelStatusFunc cb, gpointer user_data, gpointer download_options );
+gboolean a_babel_convert_from ( VikTrwLayer *vt, ProcessOptions *process_options, BabelStatusFunc cb, gpointer user_data, DownloadFileOptions *download_options );
 
 gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babelargs, const char *file, BabelStatusFunc cb, gpointer user_data );
 
