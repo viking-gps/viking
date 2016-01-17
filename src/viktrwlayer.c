@@ -3590,9 +3590,9 @@ static void trw_layer_goto_wp ( menu_array_layer values )
 
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), entry, FALSE, FALSE, 0);
-  gtk_widget_show_all ( label );
-  gtk_widget_show_all ( entry );
-
+  gtk_widget_show_all ( dia );
+  // 'ok' when press return in the entry
+  g_signal_connect_swapped ( entry, "activate", G_CALLBACK(a_dialog_response_accept), dia );
   gtk_dialog_set_default_response ( GTK_DIALOG(dia), GTK_RESPONSE_ACCEPT );
 
   while ( gtk_dialog_run ( GTK_DIALOG(dia) ) == GTK_RESPONSE_ACCEPT )
