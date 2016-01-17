@@ -306,3 +306,19 @@ GtkWidget *ui_entry_new ( const gchar *str, GtkEntryIconPosition position )
 	g_signal_connect ( entry, "icon-release", G_CALLBACK(ui_icon_clear_entry), GINT_TO_POINTER(position) );
 	return entry;
 }
+
+/**
+ * Create a spinbutton with an icon to clear the entry
+ *
+ * Ideal for entries used for getting user entered transitory data,
+ *  so it is easy to delete the number and start again.
+ */
+GtkWidget *ui_spin_button_new ( GtkAdjustment *adjustment,
+                                gdouble climb_rate,
+                                guint digits )
+{
+	GtkWidget *spin = gtk_spin_button_new ( adjustment, climb_rate, digits );
+	gtk_entry_set_icon_from_stock ( GTK_ENTRY(spin), GTK_ENTRY_ICON_PRIMARY, GTK_STOCK_CLEAR );
+	g_signal_connect ( spin, "icon-release", G_CALLBACK(ui_icon_clear_entry), GINT_TO_POINTER(GTK_ENTRY_ICON_PRIMARY) );
+	return spin;
+}

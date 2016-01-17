@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2008, Hein Ragas <viking@ragas.nl>
- * Copyright (C) 2010-2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2010-2016, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,17 @@ void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar
   gtk_widget_destroy ( msgbox );
 }
 
+/**
+ * a_dialog_goto_latlon:
+ *
+ * @parent:  Parent window
+ * @ll:      The returned #LatLon location
+ * @old:     Initialize the dialog with this #LatLon location
+ *
+ * A simple dialog to get a lat/lon location
+ *
+ * Returns: FALSE if the dialog was cancelled
+ */
 gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const struct LatLon *old )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to Lat/Lon"),
@@ -54,37 +65,25 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL);
-  GtkWidget *latlabel, *lonlabel;
-  GtkWidget *lat, *lon;
-  gchar *tmp_lat, *tmp_lon;
 
-  latlabel = gtk_label_new (_("Latitude:"));
-  lat = gtk_entry_new ();
-  tmp_lat = g_strdup_printf ( "%f", old->lat );
-  gtk_entry_set_text ( GTK_ENTRY(lat), tmp_lat );
-  g_free ( tmp_lat );
+  GtkWidget *latlabel = gtk_label_new (_("Latitude:"));
+  GtkWidget *lat = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(old->lat,-90,90.0,0.05,0.1,0), 0.1, 6 );
 
-  lonlabel = gtk_label_new (_("Longitude:"));
-  lon = gtk_entry_new ();
-  tmp_lon = g_strdup_printf ( "%f", old->lon );
-  gtk_entry_set_text ( GTK_ENTRY(lon), tmp_lon );
-  g_free ( tmp_lon );
-
-  gtk_widget_show ( latlabel );
-  gtk_widget_show ( lonlabel );
-  gtk_widget_show ( lat );
-  gtk_widget_show ( lon );
+  GtkWidget *lonlabel = gtk_label_new (_("Longitude:"));
+  GtkWidget *lon = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(old->lon,-180.0,180.0,0.05,0.1,0), 0.1, 6 );
 
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel,  FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lat, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonlabel,  FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lon,  FALSE, FALSE, 0);
 
-  // 'ok' when press return in the entry
+  // 'ok' when press return on an entry
   g_signal_connect_swapped (lat, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
   g_signal_connect_swapped (lon, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
+  gtk_widget_show_all ( dialog );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
@@ -110,20 +109,13 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
                                                   NULL);
   GtkWidget *norlabel, *easlabel, *nor, *eas;
   GtkWidget *zonehbox, *zonespin, *letterentry;
-  gchar *tmp_eas, *tmp_nor;
   gchar tmp_letter[2];
 
   norlabel = gtk_label_new (_("Northing:"));
-  nor = gtk_entry_new ();
-  tmp_nor = g_strdup_printf("%ld", (long) old->northing );
-  gtk_entry_set_text ( GTK_ENTRY(nor), tmp_nor );
-  g_free ( tmp_nor );
+  nor = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(old->northing,0,9999999,1,250,0), 1, 0 );
 
   easlabel = gtk_label_new (_("Easting:"));
-  eas = gtk_entry_new ();
-  tmp_eas = g_strdup_printf("%ld", (long) old->easting );
-  gtk_entry_set_text ( GTK_ENTRY(eas), tmp_eas );
-  g_free ( tmp_eas );
+  eas = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(old->easting,0,9999999,1,250,0), 1, 0 );
 
   zonehbox = gtk_hbox_new ( FALSE, 0 );
   gtk_box_pack_start ( GTK_BOX(zonehbox), gtk_label_new ( _("Zone:") ), FALSE, FALSE, 5 );
@@ -138,20 +130,15 @@ gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UT
   gtk_entry_set_text ( GTK_ENTRY(letterentry), tmp_letter );
   gtk_box_pack_start ( GTK_BOX(zonehbox), letterentry, FALSE, FALSE, 5 );
 
-  gtk_widget_show ( norlabel );
-  gtk_widget_show ( easlabel );
-  gtk_widget_show ( nor );
-  gtk_widget_show ( eas );
-
-  gtk_widget_show_all ( zonehbox );
-
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), norlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nor, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), easlabel,  FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), eas,  FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zonehbox,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), zonehbox,  FALSE, FALSE, 2);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
+  gtk_widget_show_all ( dialog );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
