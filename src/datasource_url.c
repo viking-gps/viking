@@ -152,7 +152,10 @@ static void datasource_url_get_process_options ( datasource_url_widgets_t *widge
 		po->input_file_type = g_strdup ( ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name );
 
 	po->url = g_strdup ( value );
-	download_options = NULL;
+
+	// Support .zip + bzip2 files directly
+	download_options->convert_file = a_try_decompress_file;
+	download_options->follow_location = 5;
 }
 
 static void datasource_url_cleanup ( gpointer data )
