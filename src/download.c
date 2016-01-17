@@ -227,10 +227,10 @@ void a_try_decompress_file (gchar *name)
 			const char* magic = magic_file (myt, name);
 			g_debug ("%s: magic output: %s", __FUNCTION__, magic );
 
-			if ( g_strcmp0 (magic, "application/zip; charset=binary") == 0 )
+			if ( g_ascii_strncasecmp(magic, "application/zip", 15) == 0 )
 				zip = TRUE;
 
-			if ( g_strcmp0 (magic, "application/x-bzip2; charset=binary") == 0 )
+			if ( g_ascii_strncasecmp(magic, "application/x-bzip2", 19) == 0 )
 				bzip2 = TRUE;
 		}
 		else {
