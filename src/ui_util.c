@@ -206,7 +206,9 @@ GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
   for (iii = 0; iii < width; iii++) for (jjj = 0; jjj < height; jjj++)
   {
     pixels += 3;
-    *pixels++ = alpha;
+    if ( *pixels != 0 )
+      *pixels = alpha;
+    pixels++;
   }
   return pixbuf;
 }
@@ -237,7 +239,8 @@ GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
   for (iii = 0; iii < width; iii++) for (jjj = 0; jjj < height; jjj++)
   {
     pixels += 3;
-    *pixels = (guint8)(((guint16)*pixels * (guint16)alpha) / 255);
+    if ( *pixels != 0 )
+      *pixels = (guint8)(((guint16)*pixels * (guint16)alpha) / 255);
     pixels++;
   }
   return pixbuf;
