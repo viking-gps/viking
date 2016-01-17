@@ -180,7 +180,6 @@ struct _VikTrwLayer {
   GdkGC *waypoint_text_gc; GdkColor waypoint_text_color;
   GdkGC *waypoint_bg_gc; GdkColor waypoint_bg_color;
   gboolean wpbgand;
-  GdkFont *waypoint_font;
   VikTrack *current_track; // ATM shared between new tracks and new routes
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
   gboolean draw_sync_done;
