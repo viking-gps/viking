@@ -34,6 +34,7 @@
 #include "gpx.h"
 #include "acquire.h"
 #include "vikrouting.h"
+#include "ui_util.h"
 
 typedef struct {
   GtkWidget *engines_combo;
@@ -93,14 +94,10 @@ static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewpor
   
   /* From and To entries */
   from_label = gtk_label_new (_("From:"));
-  widgets->from_entry = gtk_entry_new();
   to_label = gtk_label_new (_("To:"));
-  widgets->to_entry = gtk_entry_new();
-  if (last_from_str)
-    gtk_entry_set_text(GTK_ENTRY(widgets->from_entry), last_from_str);
-  if (last_to_str)
-    gtk_entry_set_text(GTK_ENTRY(widgets->to_entry), last_to_str);
-  
+  widgets->from_entry = ui_entry_new ( last_from_str, GTK_ENTRY_ICON_SECONDARY );
+  widgets->to_entry = ui_entry_new ( last_from_str, GTK_ENTRY_ICON_SECONDARY );
+
   /* Packing all these widgets */
   GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
   gtk_box_pack_start ( box, engine_label, FALSE, FALSE, 5 );

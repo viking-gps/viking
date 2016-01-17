@@ -25,6 +25,7 @@
 #include "viking.h"
 #include "acquire.h"
 #include "babel.h"
+#include "ui_util.h"
 
 // Initially was just going to be a URL and always in GPX format
 // But might as well specify the file type as per datasource_file.c
@@ -98,7 +99,9 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 {
 	datasource_url_widgets_t *widgets = (datasource_url_widgets_t *)user_data;
 	GtkWidget *label = gtk_label_new (_("URL:"));
-	widgets->url = gtk_entry_new ( );
+	widgets->url = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+	// 'ok' when press return in the entry
+	g_signal_connect_swapped ( widgets->url, "activate", G_CALLBACK(a_dialog_response_accept), dialog );
 
 	GtkWidget *type_label = gtk_label_new (_("File type:"));
 

@@ -263,3 +263,46 @@ void ui_add_recent_file ( const gchar *filename )
 		g_free (uri);
 	}
 }
+
+/**
+ * Clear the entry text if the specified icon is pressed
+ */
+static void ui_icon_clear_entry ( GtkEntry             *entry,
+                                  GtkEntryIconPosition position,
+                                  GdkEventButton       *event,
+                                  gpointer             data )
+{
+	if ( position == GPOINTER_TO_INT(data) )
+		gtk_entry_set_text ( entry, "" );
+}
+
+static void
+text_changed_cb (GtkEntry   *entry,
+                 GParamSpec *pspec,
+                 gpointer   data)
+{
+	if ( data ) {
+		gboolean has_text = gtk_entry_get_text_length(entry) > 0;
+		gtk_entry_set_icon_sensitive ( entry, GPOINTER_TO_INT(data), has_text );
+	}
+}
+
+/**
+ * Create an entry field with an icon to clear the entry
+ *
+ * Ideal for entries used for getting user entered transitory data,
+ *  so it is easy to delete the text and start again.
+ */
+GtkWidget *ui_entry_new ( const gchar *str, GtkEntryIconPosition position )
+{
+	GtkWidget *entry = gtk_entry_new();
+	if ( str )
+		gtk_entry_set_text ( GTK_ENTRY(entry), str );
+	gtk_entry_set_icon_from_stock ( GTK_ENTRY(entry), position, GTK_STOCK_CLEAR );
+#if GTK_CHECK_VERSION (2,20,0)
+	text_changed_cb ( GTK_ENTRY(entry), NULL, GINT_TO_POINTER(position) );
+	g_signal_connect ( entry, "notify::text", G_CALLBACK(text_changed_cb), GINT_TO_POINTER(position) );
+#endif
+	g_signal_connect ( entry, "icon-release", G_CALLBACK(ui_icon_clear_entry), GINT_TO_POINTER(position) );
+	return entry;
+}

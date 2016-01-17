@@ -33,6 +33,7 @@
 #include "viking.h"
 #include "vikgototool.h"
 #include "vikgoto.h"
+#include "ui_util.h"
 
 /* Compatibility */
 #if ! GLIB_CHECK_VERSION(2,22,0)
@@ -172,9 +173,7 @@ static gchar *a_prompt_for_goto_string(VikWindow *vw)
   gtk_combo_box_set_active ( GTK_COMBO_BOX( tool_list ), last_goto_tool );
 
   GtkWidget *goto_label = gtk_label_new(_("Enter address or place name:"));
-  GtkWidget *goto_entry = gtk_entry_new();
-  if (last_goto_str)
-    gtk_entry_set_text(GTK_ENTRY(goto_entry), last_goto_str);
+  GtkWidget *goto_entry = ui_entry_new ( last_goto_str, GTK_ENTRY_ICON_SECONDARY );
 
   // 'ok' when press return in the entry
   g_signal_connect_swapped (goto_entry, "activate", G_CALLBACK(a_dialog_response_accept), dialog);

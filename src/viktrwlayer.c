@@ -3586,7 +3586,7 @@ static void trw_layer_goto_wp ( menu_array_layer values )
 
   GtkWidget *label, *entry;
   label = gtk_label_new(_("Waypoint Name:"));
-  entry = gtk_entry_new();
+  entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
 
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), entry, FALSE, FALSE, 0);
