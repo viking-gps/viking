@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -115,6 +116,36 @@ void curl_download_uninit()
 
 /**
  *
+ * Common curl options
+ */
+static void common_opts ( CURL *curl, const char *uri, DownloadFileOptions *options )
+{
+  g_debug ( "%s: uri=%s", __FUNCTION__, uri );
+  if ( vik_verbose )
+    curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
+  curl_easy_setopt ( curl, CURLOPT_NOSIGNAL, 1 ); // Yep, we're a multi-threaded program so don't let signals mess it up!
+  if ( options != NULL ) {
+    if ( options->user_pass != NULL ) {
+      curl_easy_setopt ( curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+      curl_easy_setopt ( curl, CURLOPT_USERPWD, options->user_pass );
+    }
+    if ( options->referer != NULL )
+      curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer );
+    if ( options->follow_location != 0 ) {
+      curl_easy_setopt ( curl, CURLOPT_FOLLOWLOCATION, 1 );
+      curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location );
+    }
+  }
+  curl_easy_setopt ( curl, CURLOPT_URL, uri );
+  curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
+  // Allow download to be aborted (if called in a thread)
+  curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0 );
+  curl_easy_setopt ( curl, CURLOPT_PROGRESSDATA, NULL );
+  curl_easy_setopt ( curl, CURLOPT_PROGRESSFUNCTION, curl_progress_func);
+}
+
+/**
+ *
  */
 CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, CurlDownloadOptions *cdo, void *handle )
 {
@@ -122,32 +153,14 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
   struct curl_slist *curl_send_headers = NULL;
   CURLcode res = CURLE_FAILED_INIT;
 
-  g_debug("%s: uri=%s", __PRETTY_FUNCTION__, uri);
-
   curl = handle ? handle : curl_easy_init ();
   if ( !curl ) {
     return CURL_DOWNLOAD_ERROR;
   }
-  if (vik_verbose)
-    curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
-  curl_easy_setopt ( curl, CURLOPT_NOSIGNAL, 1 ); // Yep, we're a multi-threaded program so don't let signals mess it up!
-  if ( options != NULL && options->user_pass ) {
-    curl_easy_setopt ( curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
-    curl_easy_setopt ( curl, CURLOPT_USERPWD, options->user_pass );
-  }
-  curl_easy_setopt ( curl, CURLOPT_URL, uri );
+  common_opts ( curl, uri, options );
   curl_easy_setopt ( curl, CURLOPT_WRITEDATA, f );
   curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, curl_write_func);
-  curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0 );
-  curl_easy_setopt ( curl, CURLOPT_PROGRESSDATA, NULL );
-  curl_easy_setopt ( curl, CURLOPT_PROGRESSFUNCTION, curl_progress_func);
   if (options != NULL) {
-    if(options->referer != NULL)
-      curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer);
-    if(options->follow_location != 0) {
-      curl_easy_setopt ( curl, CURLOPT_FOLLOWLOCATION, 1);
-      curl_easy_setopt ( curl, CURLOPT_MAXREDIRS, options->follow_location);
-    }
     if (cdo != NULL) {
       if(options->check_file_server_time && cdo->time_condition != 0) {
         /* if file exists, check against server if file is recent enough */
@@ -176,7 +189,7 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
 
   res = curl_easy_perform ( curl );
 
-  if (res == 0) {
+  if (res == CURLE_OK) {
     glong response;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response);
     if (response == 304) {         // 304 = Not Modified
@@ -196,6 +209,7 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
       res = CURL_DOWNLOAD_ERROR;
     }
   } else {
+    g_warning ( "%s: curl error: %d for uri %s", __FUNCTION__, res, uri );
     res = CURL_DOWNLOAD_ERROR;
   }
   if (!handle)
@@ -241,6 +255,66 @@ CURL_download_t curl_download_get_url ( const char *hostname, const char *uri, F
     g_free ( full );
 
   return ret;
+}
+
+
+struct MemoryStruct {
+  char *data;
+  size_t size;
+};
+
+static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
+{
+  size_t realsize = size * nmemb;
+  struct MemoryStruct *mem = (struct MemoryStruct *)data;
+
+  mem->data = (char *)realloc(mem->data, mem->size + realsize + 1);
+  if (mem->data) {
+    memcpy(&(mem->data[mem->size]), ptr, realsize);
+    mem->size += realsize;
+    mem->data[mem->size] = 0;
+  }
+  return realsize;
+}
+
+/**
+ * Download data from an URL into a memory buffer
+ *  (hence no need to save to a temporary file)
+ * Ideal for when the expected returned data is a string
+ *
+ * Free the returned data after use
+ */
+char* curl_download_get_ptr ( const char *uri, DownloadFileOptions *options )
+{
+  struct MemoryStruct mem;
+  CURL *curl = curl_easy_init ();
+  if ( !curl )
+    return NULL;
+
+  mem.data = NULL;
+  mem.size = 0;
+  common_opts ( curl, uri, options );
+
+  curl_easy_setopt ( curl, CURLOPT_WRITEDATA, (void *)&mem );
+  curl_easy_setopt ( curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback );
+
+  CURLcode result = curl_easy_perform ( curl );
+
+  curl_easy_cleanup ( curl );
+
+  if ( result != CURLE_OK ) {
+    g_warning ( "%s: curl error: %d for uri %s\n", __FUNCTION__, result, uri );
+    return NULL;
+  }
+  else if ( vik_debug ) {
+      glong response;
+      curl_easy_getinfo ( curl, CURLINFO_RESPONSE_CODE, &response );
+      gdouble size;
+      curl_easy_getinfo ( curl, CURLINFO_SIZE_DOWNLOAD, &size );
+      g_debug ( "%s: received %.0f bytes in response %ld", __FUNCTION__, size, response );
+  }
+
+  return mem.data;
 }
 
 void * curl_download_handle_init ()
