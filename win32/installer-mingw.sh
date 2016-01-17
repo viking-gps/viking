@@ -125,6 +125,7 @@ cp $MINGW_BIN/libbz*.dll $DESTINATION
 cp $MINGW_BIN/libmagic*.dll $DESTINATION
 cp $MINGW/share/misc/magic* $DESTINATION
 cp $MINGW_BIN/libsqlite3*.dll $DESTINATION
+cp $MINGW_BIN/libnettle*.dll $DESTINATION
 
 echo Copying GPSBabel Installer
 mkdir $DESTINATION/Optional

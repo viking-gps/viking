@@ -694,6 +694,9 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBMAPNIK
     "libmapnik",
 #endif
+#ifdef HAVE_LIBNETTLE
+    "libnettle",
+#endif
     NULL
   };
   // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program

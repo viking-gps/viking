@@ -11,12 +11,16 @@ TESTS = check_degrees_conversions.sh \
 if GEOTAG
 TESTS += check_geotag.sh
 endif
+if MD5_HASH
+TESTS += check_md5_hash.sh
+endif
 
 check_PROGRAMS = degrees_converter \
 	gpx2gpx \
 	test_vikgotoxmltool \
 	test_coord_conversion \
 	test_babel \
+	test_md5_hash \
 	test_metatile
 
 if GEOTAG
@@ -28,9 +32,13 @@ check_SCRIPTS = check_degrees_conversions.sh \
 if GEOTAG
 check_SCRIPTS += check_geotag.sh
 endif
+if MD5_HASH
+check_SCRIPTS += check_md5_hash.sh
+endif
 
 # Scripts and the test data that they use
 EXTRA_DIST = check_degrees_conversions.sh \
+	check_md5_hash.sh \
 	check_metatile.sh \
 	metatile_example/13/0/0/250/220/0.meta \
 	check_geotag.sh \
@@ -71,6 +79,11 @@ test_coord_conversion_LDADD = \
 
 test_babel_SOURCES = test_babel.c
 test_babel_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+test_md5_hash_SOURCES = test_md5_hash.c
+test_md5_hash_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 

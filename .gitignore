@@ -123,6 +123,7 @@ src/misc/*.o
 /test/gpx2gpx
 /test/degrees_converter
 /test/test_vikgotoxmltool
+/test/test_md5_hash
 /test/test_metatile
 /test/test_coord_conversion
 /test/test_babel

@@ -380,6 +380,21 @@ case $ac_cv_enable_zip in
 esac
 AM_CONDITIONAL([ZIP], [test x$ac_cv_enable_zip = xyes])
 
+# ATM only for MD5 Hashing which is currently only used for filename of image thumbnails
+AC_ARG_ENABLE(nettle, AC_HELP_STRING([--enable-nettle],
+              [enable MD5 Hash support (default is enable)]),
+              [ac_cv_enable_nettle=$enableval],
+              [ac_cv_enable_nettle=yes])
+AC_CACHE_CHECK([whether to enable MD5 Hash support],
+               [ac_cv_enable_nettle], [ac_cv_enable_nettle=yes])
+case $ac_cv_enable_nettle in
+  yes)
+    AC_CHECK_HEADER([nettle/md5-compat.h],[],[AC_MSG_ERROR([nettle/md5-compat.h is needed but not found - you will need to install package 'nettle-dev' or similar. The feature can be disabled with --disable-nettle])])
+    AC_CHECK_LIB([nettle], [main], [], [AC_MSG_ERROR([libnettle is needed but not found.])])
+    ;;
+esac
+AM_CONDITIONAL([MD5_HASH], [test x$ac_cv_enable_nettle = xyes])
+
 # Mapnik rendering layer
 AC_ARG_ENABLE(mapnik, AC_HELP_STRING([--enable-mapnik],
               [enable Mapnik (default is enable)]),
@@ -505,6 +520,7 @@ bzip2 Support                    : $ac_cv_enable_bzip2
 File Magic Support               : $ac_cv_enable_magic
 MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles
 Zip File Support (with libzip)   : $ac_cv_enable_zip
+MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
 Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}
