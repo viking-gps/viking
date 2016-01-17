@@ -85,10 +85,6 @@ struct _VikViewport {
   guint centers_max;      // configurable maximum size of the history list
   guint centers_radius;   // Metres
 
-  GdkPixbuf *alpha_pixbuf;
-  guint8 alpha_pixbuf_width;
-  guint8 alpha_pixbuf_height;
-
   gdouble utm_zone_width;
   gboolean one_utm_zone;
 
@@ -210,8 +206,6 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->center.utm_zone = (int)utm.zone;
   vvp->center.utm_letter = utm.letter;
   vvp->scr_buffer = NULL;
-  vvp->alpha_pixbuf = NULL;
-  vvp->alpha_pixbuf_width = vvp->alpha_pixbuf_height = 0;
   vvp->utm_zone_width = 0.0;
   vvp->background_gc = NULL;
   vvp->highlight_gc = NULL;
@@ -432,9 +426,6 @@ static void viewport_finalize ( GObject *gob )
 
   if ( vvp->snapshot_buffer )
     g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
-
-  if ( vvp->alpha_pixbuf )
-    g_object_unref ( G_OBJECT ( vvp->alpha_pixbuf ) );
 
   if ( vvp->background_gc )
     g_object_unref ( G_OBJECT ( vvp->background_gc ) );
@@ -1327,44 +1318,6 @@ void vik_viewport_draw_string ( VikViewport *vvp, GdkFont *font, GdkGC *gc, gint
 {
   if ( x1 > -100 && x1 < vvp->width + 100 && y1 > -100 && y1 < vvp->height + 100 )
     gdk_draw_string ( vvp->scr_buffer, font, gc, x1, y1, string );
-}
-
-/* shouldn't use this -- slow -- change the alpha channel instead. */
-void vik_viewport_draw_pixbuf_with_alpha ( VikViewport *vvp, GdkPixbuf *pixbuf, gint alpha,
-                                           gint src_x, gint src_y, gint dest_x, gint dest_y, gint w, gint h )
-{
-  gint real_dest_x = MAX(dest_x,0);
-  gint real_dest_y = MAX(dest_y,0);
-
-  if ( alpha == 0 )
-    return; /* don't waste your time */
-
-  if ( w > vvp->alpha_pixbuf_width || h > vvp->alpha_pixbuf_height )
-  {
-    if ( vvp->alpha_pixbuf )
-      g_object_unref ( G_OBJECT ( vvp->alpha_pixbuf ) );
-    vvp->alpha_pixbuf_width = MAX(w,vvp->alpha_pixbuf_width);
-    vvp->alpha_pixbuf_height = MAX(h,vvp->alpha_pixbuf_height);
-    vvp->alpha_pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, FALSE, 8, vvp->alpha_pixbuf_width, vvp->alpha_pixbuf_height );
-  }
-
-  w = MIN(w,vvp->width - dest_x);
-  h = MIN(h,vvp->height - dest_y);
-
-  /* check that we are drawing within boundaries. */
-  src_x += (real_dest_x - dest_x);
-  src_y += (real_dest_y - dest_y);
-  w -= (real_dest_x - dest_x);
-  h -= (real_dest_y - dest_y);
-
-  gdk_pixbuf_get_from_drawable ( vvp->alpha_pixbuf, vvp->scr_buffer, NULL,
-                                 real_dest_x, real_dest_y, 0, 0, w, h );
-
-  /* do a composite */
-  gdk_pixbuf_composite ( pixbuf, vvp->alpha_pixbuf, 0, 0, w, h, -src_x, -src_y, 1, 1, 0, alpha );
-
-  /* draw pixbuf_tmp */
-  vik_viewport_draw_pixbuf ( vvp, vvp->alpha_pixbuf, 0, 0, real_dest_x, real_dest_y, w, h );
 }
 
 void vik_viewport_draw_pixbuf ( VikViewport *vvp, GdkPixbuf *pixbuf, gint src_x, gint src_y,
