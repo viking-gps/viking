@@ -83,28 +83,10 @@ static int curl_progress_func(void *clientp, double dltotal, double dlnow, doubl
   return a_background_testcancel(NULL);
 }
 
-static gchar *get_cookie_file(gboolean init)
-{
-  static gchar *cookie_file = NULL;
-
-  // Wipe any previous cookies set on startup (for some reason??)
-  // Startup is single threaded so don't care about mutexes
-  if (init) {
-    static gchar *cookie_fn = "cookies.txt";
-    const gchar *viking_dir = a_get_viking_dir();
-    cookie_file = g_build_filename(viking_dir, cookie_fn, NULL);
-    g_unlink(cookie_file);
-    return NULL;
-  }
-
-  return(cookie_file);
-}
-
 /* This should to be called from main() to make sure thread safe */
 void curl_download_init()
 {
   curl_global_init(CURL_GLOBAL_ALL);
-  get_cookie_file(TRUE);
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 }
 
@@ -119,7 +101,6 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, 
   CURL *curl;
   struct curl_slist *curl_send_headers = NULL;
   CURLcode res = CURLE_FAILED_INIT;
-  const gchar *cookie_file;
 
   g_debug("%s: uri=%s", __PRETTY_FUNCTION__, uri);
 
@@ -168,8 +149,6 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, 
     }
   }
   curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
-  if ((cookie_file = get_cookie_file(FALSE)) != NULL)
-    curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
   res = curl_easy_perform ( curl );
 
   if (res == 0) {
