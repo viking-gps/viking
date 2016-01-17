@@ -1254,7 +1254,13 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, guint16 id, VikLayerPara
         vtl->image_cache = g_queue_new ();
       }
       break;
-    case PARAM_IA: vtl->image_alpha = data.u; break;
+    case PARAM_IA: if ( data.u != vtl->image_alpha )
+      {
+        vtl->image_alpha = data.u;
+        image_cache_free ( vtl );
+        vtl->image_cache = g_queue_new ();
+      }
+      break;
     case PARAM_ICS: vtl->image_cache_size = data.u;
       while ( vtl->image_cache->length > vtl->image_cache_size ) /* if shrinking cache_size, free pixbuf ASAP */
           cached_pixbuf_free ( g_queue_pop_tail ( vtl->image_cache ) );
@@ -2398,6 +2404,10 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
           }
           cp->image = g_strdup ( image );
 
+          // Apply alpha setting to the image before the pixbuf gets stored in the cache
+          if ( dp->vtl->image_alpha != 255 )
+            cp->pixbuf = ui_pixbuf_set_alpha ( cp->pixbuf, dp->vtl->image_alpha );
+
           /* needed so 'click picture' tool knows how big the pic is; we don't
            * store it in cp because they may have been freed already. */
           wp->image_width = gdk_pixbuf_get_width ( cp->pixbuf );
@@ -2431,10 +2441,7 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
                                          x - (w/2) - 2, y - (h/2) - 2, w + 4, h + 4 );
           }
 
-          if ( dp->vtl->image_alpha == 255 )
-            vik_viewport_draw_pixbuf ( dp->vp, pixbuf, 0, 0, x - (w/2), y - (h/2), w, h );
-          else
-            vik_viewport_draw_pixbuf_with_alpha ( dp->vp, pixbuf, dp->vtl->image_alpha, 0, 0, x - (w/2), y - (h/2), w, h );
+          vik_viewport_draw_pixbuf ( dp->vp, pixbuf, 0, 0, x - (w/2), y - (h/2), w, h );
         }
         return; /* if failed to draw picture, default to drawing regular waypoint (below) */
       }
