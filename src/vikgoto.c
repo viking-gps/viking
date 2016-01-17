@@ -139,6 +139,16 @@ static void get_provider ()
   }
 }
 
+static void
+text_changed_cb (GtkEntry   *entry,
+                 GParamSpec *pspec,
+                 GtkWidget  *button)
+{
+  gboolean has_text = gtk_entry_get_text_length(entry) > 0;
+  gtk_entry_set_icon_sensitive ( entry, GTK_ENTRY_ICON_SECONDARY, has_text );
+  gtk_widget_set_sensitive ( button, has_text );
+}
+
 static gchar *a_prompt_for_goto_string(VikWindow *vw)
 {
   GtkWidget *dialog = NULL;
@@ -169,6 +179,11 @@ static gchar *a_prompt_for_goto_string(VikWindow *vw)
   // 'ok' when press return in the entry
   g_signal_connect_swapped (goto_entry, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
 
+#if GTK_CHECK_VERSION (2,20,0)
+  GtkWidget *ok_button = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  text_changed_cb ( GTK_ENTRY(goto_entry), NULL, ok_button );
+  g_signal_connect ( goto_entry, "notify::text", G_CALLBACK (text_changed_cb), ok_button );
+#endif
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_list, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), goto_label, FALSE, FALSE, 5 );
