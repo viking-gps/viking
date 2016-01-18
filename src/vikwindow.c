@@ -2807,8 +2807,7 @@ static const GdkCursor *toolbox_get_cursor(toolbox_tools_t *vt, const gchar *too
   toolbox_tool_t *t = &vt->tools[tool];
   if (t->ti.cursor == NULL) {
     if (t->ti.cursor_type == GDK_CURSOR_IS_PIXMAP && t->ti.cursor_data != NULL) {
-      GError *cursor_load_err = NULL;
-      GdkPixbuf *cursor_pixbuf = gdk_pixbuf_from_pixdata (t->ti.cursor_data, FALSE, &cursor_load_err);
+      GdkPixbuf *cursor_pixbuf = gdk_pixbuf_from_pixdata (t->ti.cursor_data, FALSE, NULL);
       /* TODO: settable offeset */
       t->ti.cursor = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 3, 3 );
       g_object_unref ( G_OBJECT(cursor_pixbuf) );
