@@ -4613,10 +4613,12 @@ void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t
     // enforce end of current track equal to start of tr
     VikTrackpoint *cur_end = vik_track_get_tp_last ( vtl->current_track );
     VikTrackpoint *new_start = vik_track_get_tp_first ( tr );
-    if ( ! vik_coord_equals ( &cur_end->coord, &new_start->coord ) ) {
-        vik_track_add_trackpoint ( vtl->current_track,
-                                   vik_trackpoint_copy ( cur_end ),
-                                   FALSE );
+    if ( cur_end && new_start ) {
+      if ( ! vik_coord_equals ( &cur_end->coord, &new_start->coord ) ) {
+          vik_track_add_trackpoint ( vtl->current_track,
+                                     vik_trackpoint_copy ( cur_end ),
+                                     FALSE );
+      }
     }
 
     vik_track_steal_and_append_trackpoints ( vtl->current_track, tr );
