@@ -4588,7 +4588,19 @@ gchar *trw_layer_new_unique_sublayer_name (VikTrwLayer *vtl, gint sublayer_type,
     }
     // If found a name already in use try adding 1 to it and we try again
     if ( id ) {
-      gchar *new_newname = g_strdup_printf("%s#%d", name, i);
+      const gchar *corename = newname;
+      gint newi = i;
+      // If name is already of the form text#N
+      //  set name to text and i to N+1
+      gchar **tokens = g_regex_split_simple ( "#(\\d+)", newname, G_REGEX_CASELESS, 0 );
+      if ( tokens ) {
+        corename = tokens[0];
+        if ( tokens[1] ) {
+          newi = atoi ( tokens[1] ) + 1;
+        }
+      }
+      gchar *new_newname = g_strdup_printf("%s#%d", corename, newi);
+      g_strfreev ( tokens );
       g_free(newname);
       newname = new_newname;
       i++;
