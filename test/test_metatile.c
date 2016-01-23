@@ -35,7 +35,6 @@ int main ( int argc, char *argv[] )
 {
     const int tile_max = METATILE_MAX_SIZE;
     char err_msg[PATH_MAX];
-    char id[PATH_MAX];
     char *buf;
     int len;
     int compressed;
