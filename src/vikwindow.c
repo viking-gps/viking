@@ -3490,10 +3490,6 @@ static void export_to_kml ( GtkAction *a, VikWindow *vw )
   export_to_common ( vw, FILE_TYPE_KML, ".kml" );
 }
 
-#if !GLIB_CHECK_VERSION(2,26,0)
-typedef struct stat GStatBuf;
-#endif
-
 static void file_properties_cb ( GtkAction *a, VikWindow *vw )
 {
   gchar *message = NULL;

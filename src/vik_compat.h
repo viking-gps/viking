@@ -27,6 +27,10 @@
 
 G_BEGIN_DECLS
 
+#if !GLIB_CHECK_VERSION(2,26,0)
+typedef struct stat GStatBuf;
+#endif
+
 // Hide ifdef complexities of function variants here
 
 GMutex * vik_mutex_new ();

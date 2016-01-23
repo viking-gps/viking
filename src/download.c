@@ -379,7 +379,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
 
     time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
     /* Get the modified time of this file */
-    struct stat buf;
+    GStatBuf buf;
     (void)g_stat ( fn, &buf );
     time_t file_time = buf.st_mtime;
     if ( (time(NULL) - file_time) < tile_age ) {

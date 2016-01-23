@@ -1914,6 +1914,10 @@ static void maps_layer_redownload_new ( VikMapsLayer *vml )
   start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_NEW );
 }
 
+#if !GLIB_CHECK_VERSION(2,26,0)
+typedef struct stat GStatBuf;
+#endif
+
 /**
  * Display a simple dialog with information about this particular map tile
  */
@@ -1997,7 +2001,7 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
   if ( g_file_test ( filename, G_FILE_TEST_EXISTS ) ) {
     filemsg = g_strconcat ( "Tile File: ", filename, NULL );
     // Get some timestamp information of the tile
-    struct stat stat_buf;
+    GStatBuf stat_buf;
     if ( g_stat ( filename, &stat_buf ) == 0 ) {
       gchar time_buf[64];
       strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );

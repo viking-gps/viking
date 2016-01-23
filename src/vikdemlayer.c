@@ -1233,7 +1233,7 @@ static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
 
   if ( g_file_test ( filename, G_FILE_TEST_EXISTS ) ) {
     // Get some timestamp information of the file
-    struct stat stat_buf;
+    GStatBuf stat_buf;
     if ( g_stat ( filename, &stat_buf ) == 0 ) {
       gchar time_buf[64];
       strftime ( time_buf, sizeof(time_buf), "%c", gmtime((const time_t *)&stat_buf.st_mtime) );
