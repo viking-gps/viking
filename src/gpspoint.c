@@ -95,13 +95,13 @@ static gint line_fix = 0;
 /* other possible properties go here */
 
 
-static void gpspoint_process_tag ( const gchar *tag, gint len );
-static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, const gchar *value, gint value_len );
+static void gpspoint_process_tag ( const gchar *tag, guint len );
+static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, const gchar *value, guint value_len );
 
 static gchar *slashdup(const gchar *str)
 {
-  guint16 len = strlen(str);
-  guint16 need_bs_count, i, j;
+  size_t len = strlen(str);
+  size_t need_bs_count, i, j;
   gchar *rv;
   for ( i = 0, need_bs_count = 0; i < len; i++ )
     if ( str[i] == '\\' || str[i] == '"' )
@@ -212,8 +212,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
           inside_quote = !inside_quote;
       }
 
-      // Won't have super massively long strings, so potential truncation in cast to gint is acceptable.
-      gint len = (gint)(tag_end - tag_start);
+      // Won't have super massively long strings, so potential truncation in cast is acceptable.
+      guint len = (guint)(tag_end - tag_start);
       gpspoint_process_tag ( tag_start, len );
 
       if (*tag_end == '\0' )
@@ -359,7 +359,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
 
 So we must determine end of tag name, start of value, end of value.
 */
-static void gpspoint_process_tag ( const gchar *tag, gint len )
+static void gpspoint_process_tag ( const gchar *tag, guint len )
 {
   const gchar *key_end, *value_start, *value_end;
 
@@ -406,7 +406,7 @@ static void gpspoint_process_tag ( const gchar *tag, gint len )
 /*
 value = NULL for none
 */
-static void gpspoint_process_key_and_value ( const gchar *key, gint key_len, const gchar *value, gint value_len )
+static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, const gchar *value, guint value_len )
 {
   if (key_len == 4 && strncasecmp( key, "type", key_len ) == 0 )
   {
