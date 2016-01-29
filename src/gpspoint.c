@@ -383,13 +383,17 @@ static void gpspoint_process_tag ( const gchar *tag, gint len )
       else
       {
         if (*(tag+len-1) == '"')
-        value_end = tag + len - 1;
+          value_end = tag + len - 1;
         else
           return; /* bogus */
       }
     }
     else
       value_end = tag + len; /* value start really IS value start. */
+
+    // Detect broken lines which end without any text or the enclosing ". i.e. like: comment="
+    if ( (value_end - value_start) < 0 )
+      return;
 
     gpspoint_process_key_and_value(tag, key_end - tag, value_start, value_end - value_start);
   }
