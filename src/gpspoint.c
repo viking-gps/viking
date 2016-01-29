@@ -112,6 +112,10 @@ static gchar *slashdup(const gchar *str)
     if ( str[i] == '\\' || str[i] == '"' )
       rv[j++] = '\\';
     rv[j] = str[i];
+    // Basic normalization of strings - replace Linefeed and Carriage returns as blanks.
+    //  although allowed in GPX Spec - Viking file format can't handle multi-line strings yet...
+    if ( str[i] == '\n' || str[i] == '\r' )
+      rv[j] = ' ';
   }
   rv[j] = '\0';
   return rv;
