@@ -714,7 +714,7 @@ static void render_cancel_cleanup (RenderInfo *data)
 /**
  * Thread
  */
-void thread_add (VikMapnikLayer *vml, MapCoord *mul, VikCoord *ul, VikCoord *br, gint x, gint y, gint z, gint zoom, const gchar* name )
+static void thread_add (VikMapnikLayer *vml, MapCoord *mul, VikCoord *ul, VikCoord *br, gint x, gint y, gint z, gint zoom, const gchar* name )
 {
 	// Create request
 	guint nn = name ? g_str_hash ( name ) : 0;
