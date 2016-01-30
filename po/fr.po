@@ -5,15 +5,15 @@ msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-03 21:58+0200\n"
-"PO-Revision-Date: 2015-08-29 12:05+0000\n"
-"Last-Translator: Jocelyn <Unknown>\n"
+"PO-Revision-Date: 2016-01-10 16:41+0000\n"
+"Last-Translator: Djiboun <Unknown>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2015-11-09 21:52+0000\n"
-"X-Generator: Launchpad (build 17843)\n"
+"X-Launchpad-Export-Date: 2016-01-30 18:56+0000\n"
+"X-Generator: Launchpad (build 17908)\n"
 "Language: \n"
 "X-Poedit-Language: French\n"
 
@@ -292,7 +292,7 @@ msgstr "Niveau de zoom :"
 #: ../src/dialog.c:914
 #, c-format
 msgid "The map data is licensed: %s."
-msgstr "La carte est soumise à licence : %s."
+msgstr "La carte est sous licence : %s."
 
 #: ../src/dialog.c:917
 #, c-format
@@ -468,11 +468,11 @@ msgstr ""
 
 #: ../src/globals.c:112
 msgid "Show Tooltip during Track Creation:"
-msgstr "Montrer la bulle d'aide lors de la création de la trace"
+msgstr "Afficher l'info-bulle lors de la création de la trace"
 
 #: ../src/globals.c:115
 msgid "Home Location"
-msgstr ""
+msgstr "Position d'origine"
 
 #: ../src/globals.c:115
 msgid "Last Location"
@@ -797,7 +797,7 @@ msgstr ""
 #. Engine selector
 #: ../src/datasource_routing.c:83
 msgid "Engine:"
-msgstr ""
+msgstr "Moteur :"
 
 #. From and To entries
 #: ../src/datasource_routing.c:88
@@ -831,7 +831,7 @@ msgstr "Enregistrement DEM Class B incorrect: la valeur devrait être 1"
 #: ../src/dem.c:288 ../src/download.c:170
 #, c-format
 msgid "Couldn't map file %s: %s"
-msgstr ""
+msgstr "Impossible de cartographier le fichier %s : %s"
 
 #: ../src/download.c:130
 msgid "Tile age (days):"
@@ -1133,7 +1133,7 @@ msgstr "Simplifie Toutes les Traces"
 
 #: ../src/datasource_bfilter.c:61
 msgid "Simplified Tracks"
-msgstr "Simplifier les traces"
+msgstr "Traces simplifiées"
 
 #: ../src/datasource_bfilter.c:96 ../src/datasource_bfilter.c:97
 msgid "Remove Duplicate Waypoints"
@@ -1218,7 +1218,7 @@ msgstr "Impossible d'ouvrir le fichier : %s"
 
 #: ../src/viklayer_defaults.c:303
 msgid "Layer Defaults"
-msgstr ""
+msgstr "Paramètres par défaut du calque"
 
 #: ../src/uibuilder.c:185
 msgid "Take care that this password will be stored clearly in a plain file."
@@ -1955,6 +1955,8 @@ msgstr "Dossier par défaut des calques de carte :"
 #: ../src/vikmapslayer.c:259
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr ""
+"Choisir un dossier pour enregistrer les tuiles de carte mises en mémoire-"
+"cache pour ce calque"
 
 #: ../src/vikmapslayer.c:523
 msgid "Unknown map type"
@@ -2070,11 +2072,11 @@ msgstr "Manquant"
 
 #: ../src/vikmapslayer.c:1732
 msgid "Bad"
-msgstr ""
+msgstr "Mauvais"
 
 #: ../src/vikmapslayer.c:1732
 msgid "New"
-msgstr ""
+msgstr "Nouveau"
 
 #: ../src/vikmapslayer.c:1732
 msgid "Reload All"
@@ -2089,11 +2091,13 @@ msgstr ""
 msgid ""
 "You are not allowed to download more than %d tiles in one go (requested %d)"
 msgstr ""
+"Vous n'êtes pas autorisé(e) à télécharger plus de %d tuiles à la fois "
+"(requête %d)"
 
 #: ../src/vikmapslayer.c:1782
 #, c-format
 msgid "Do you really want to download %d tiles?"
-msgstr ""
+msgstr "Souhaitez-vous vraiment télécharger %d tuiles ?"
 
 #. Now with icons
 #: ../src/vikmapslayer.c:1807
@@ -2421,7 +2425,7 @@ msgstr "km"
 
 #: ../src/viktrwlayer.c:1648
 msgid "start/end"
-msgstr ""
+msgstr "départ/arrivée"
 
 #: ../src/viktrwlayer.c:1660
 msgid "start"
@@ -2429,7 +2433,7 @@ msgstr "départ"
 
 #: ../src/viktrwlayer.c:1669
 msgid "end"
-msgstr ""
+msgstr "arrivée"
 
 #: ../src/viktrwlayer.c:2329
 msgid "Routes"
@@ -2446,6 +2450,8 @@ msgid ""
 "\n"
 "%sTotal Length %.1f %s%s"
 msgstr ""
+"\n"
+"%sDistance totale %.1f %s%s"
 
 #: ../src/viktrwlayer.c:2529
 #, c-format
@@ -2596,7 +2602,7 @@ msgstr "_Aller au centre du calque"
 
 #: ../src/viktrwlayer.c:3739 ../src/viktrwlayer.c:7335
 msgid "Goto _Waypoint..."
-msgstr ""
+msgstr "Aller au _point de cheminement..."
 
 #: ../src/viktrwlayer.c:3745
 msgid "_Export Layer"
@@ -2604,7 +2610,7 @@ msgstr "_Exporter le calque"
 
 #: ../src/viktrwlayer.c:3751
 msgid "Export as GPS_Point..."
-msgstr ""
+msgstr "Experter en _point GPS..."
 
 #: ../src/viktrwlayer.c:3756
 msgid "Export as GPS_Mapper..."
@@ -2632,7 +2638,7 @@ msgstr "_Nouveau"
 
 #: ../src/viktrwlayer.c:3792
 msgid "New _Waypoint..."
-msgstr ""
+msgstr "Nouveau _point de cheminement..."
 
 #: ../src/viktrwlayer.c:3798
 msgid "New _Track"
@@ -2751,6 +2757,7 @@ msgstr "Êtes-vous certain de vouloir supprimer tous les waypoints de %s ?"
 #, c-format
 msgid "Are you sure you want to delete the waypoint \"%s\"?"
 msgstr ""
+"Êtes-vous certain de vouloir supprimer le point de cheminement « %s » ?"
 
 #: ../src/viktrwlayer.c:4624
 #, c-format
@@ -2780,15 +2787,15 @@ msgstr ""
 #, c-format
 msgid "%ld point adjusted"
 msgid_plural "%ld points adjusted"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld point ajusté"
+msgstr[1] "%ld points ajustés"
 
 #: ../src/viktrwlayer.c:5049
 #, c-format
 msgid "%ld waypoint changed"
 msgid_plural "%ld waypoints changed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld point de cheminement modifié"
+msgstr[1] "%ld points de cheminement modifiés"
 
 #: ../src/viktrwlayer.c:5233
 #, c-format
@@ -2910,8 +2917,8 @@ msgstr "Impossible de découper la trace car elle n'a aucun segment"
 #, c-format
 msgid "Deleted %ld point"
 msgid_plural "Deleted %ld points"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld point supprimé"
+msgstr[1] "%ld points supprimés"
 
 #: ../src/viktrwlayer.c:6392
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
@@ -2951,11 +2958,11 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:6714
 msgid "No waypoints found"
-msgstr ""
+msgstr "Aucun point de cheminement trouvé"
 
 #: ../src/viktrwlayer.c:6725
 msgid "Select waypoints to delete"
-msgstr ""
+msgstr "Sélectionnez le point de cheminement à supprimer"
 
 #: ../src/viktrwlayer.c:7033
 #, c-format
@@ -2963,6 +2970,8 @@ msgid ""
 "A waypoint with the name \"%s\" already exists. Really rename to the same "
 "name?"
 msgstr ""
+"Un point de cheminement nommé « %s » existe déjà. Souhaitez-vous conserver "
+"le même nom ?"
 
 #: ../src/viktrwlayer.c:7063
 #, c-format
@@ -2990,7 +2999,7 @@ msgstr "_Ouvrir la page web de Geocache"
 
 #: ../src/viktrwlayer.c:7259
 msgid "_Show Picture..."
-msgstr ""
+msgstr "_Afficher la photo..."
 
 #: ../src/viktrwlayer.c:7267
 msgid "Update Geotag on _Image"
@@ -2998,7 +3007,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7273
 msgid "_Update"
-msgstr ""
+msgstr "Mettre à jo_ur"
 
 #: ../src/viktrwlayer.c:7278
 msgid "Update and _Keep File Timestamp"
@@ -3014,23 +3023,23 @@ msgstr "Nouveau Waypoint"
 
 #: ../src/viktrwlayer.c:7329
 msgid "_View All Waypoints"
-msgstr ""
+msgstr "_Afficher tous les points de cheminement"
 
 #: ../src/viktrwlayer.c:7341
 msgid "Delete _All Waypoints"
-msgstr ""
+msgstr "Supprimer tous les points de cheminement"
 
 #: ../src/viktrwlayer.c:7347
 msgid "_Delete Waypoints From Selection..."
-msgstr ""
+msgstr "Supprimer les points de cheminement de la sélection"
 
 #: ../src/viktrwlayer.c:7359
 msgid "_Show All Waypoints"
-msgstr ""
+msgstr "_Afficher tous les points de cheminement"
 
 #: ../src/viktrwlayer.c:7365
 msgid "_Hide All Waypoints"
-msgstr ""
+msgstr "_Masquer tous les points de cheminement"
 
 #: ../src/viktrwlayer.c:7393
 msgid "_View All Tracks"
@@ -3042,15 +3051,15 @@ msgstr "_Nouvelle Trace"
 
 #: ../src/viktrwlayer.c:7407
 msgid "Delete _All Tracks"
-msgstr ""
+msgstr "Supprimer toutes les tr_aces"
 
 #: ../src/viktrwlayer.c:7413
 msgid "_Delete Tracks From Selection..."
-msgstr ""
+msgstr "Supprimer les traces _de la sélection ..."
 
 #: ../src/viktrwlayer.c:7425
 msgid "_Show All Tracks"
-msgstr ""
+msgstr "_Afficher toutes les traces"
 
 #: ../src/viktrwlayer.c:7431
 msgid "_Hide All Tracks"
@@ -3070,7 +3079,7 @@ msgstr "_Nouvel Itinéraire"
 
 #: ../src/viktrwlayer.c:7503
 msgid "_Show All Routes"
-msgstr ""
+msgstr "Afficher tou_s les itinéraires"
 
 #: ../src/viktrwlayer.c:7509
 msgid "_Hide All Routes"
@@ -3114,15 +3123,15 @@ msgstr "Vitesse _Maximale"
 
 #: ../src/viktrwlayer.c:7641
 msgid "Co_mbine"
-msgstr ""
+msgstr "Co_mbiner"
 
 #: ../src/viktrwlayer.c:7649
 msgid "_Merge By Time..."
-msgstr ""
+msgstr "Fusionner par te_mps..."
 
 #: ../src/viktrwlayer.c:7654
 msgid "Merge _Segments"
-msgstr ""
+msgstr "Fusionner les _segments"
 
 #: ../src/viktrwlayer.c:7660
 msgid "Merge _With Other Tracks..."
@@ -3130,11 +3139,11 @@ msgstr "Fusionner _avec d'autre traces..."
 
 #: ../src/viktrwlayer.c:7666
 msgid "_Append Track..."
-msgstr ""
+msgstr "_Joindre une tr_ace..."
 
 #: ../src/viktrwlayer.c:7668
 msgid "_Append Route..."
-msgstr ""
+msgstr "Joindre un itinér_aire..."
 
 #: ../src/viktrwlayer.c:7674
 msgid "Append _Route..."
@@ -3171,15 +3180,15 @@ msgstr "_Insérer des points"
 
 #: ../src/viktrwlayer.c:7722
 msgid "Insert Point _Before Selected Point"
-msgstr ""
+msgstr "Insérer un point avant le point sélectionné"
 
 #: ../src/viktrwlayer.c:7729
 msgid "Insert Point _After Selected Point"
-msgstr ""
+msgstr "Insérer un point _après le point sélectionné"
 
 #: ../src/viktrwlayer.c:7738
 msgid "Delete Poi_nts"
-msgstr ""
+msgstr "Supprimer les poi_nts"
 
 #: ../src/viktrwlayer.c:7744
 msgid "Delete _Selected Point"
@@ -3191,7 +3200,7 @@ msgstr "Supprimer les points avec la même _position"
 
 #: ../src/viktrwlayer.c:7757
 msgid "Delete Points With The Same _Time"
-msgstr ""
+msgstr "Supprimer les points avec le même horoda_tage"
 
 #: ../src/viktrwlayer.c:7764 ../src/viktrwlayer.c:7964
 msgid "_Transform"
@@ -3233,11 +3242,12 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7802
 msgid "_Flat"
-msgstr ""
+msgstr "_Plat"
 
 #: ../src/viktrwlayer.c:7805
 msgid "Set unknown elevation values to the last known value"
 msgstr ""
+"Fixer les valeurs d'altitude inconnues avec la dernière valeur connue"
 
 #: ../src/viktrwlayer.c:7809
 msgid "C_onvert to a Route"
@@ -3257,7 +3267,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:7827
 msgid "_Reverse Track"
-msgstr ""
+msgstr "Inve_rser la trace"
 
 #: ../src/viktrwlayer.c:7829
 msgid "_Reverse Route"
@@ -3297,7 +3307,7 @@ msgstr "Étendre en _utilisant le calculateur d'itinéraire"
 
 #: ../src/viktrwlayer.c:7889
 msgid "_Upload to GPS..."
-msgstr ""
+msgstr "Envoyer a_u GPS..."
 
 #: ../src/viktrwlayer.c:7900
 msgid "_View Google Directions"
@@ -3359,12 +3369,12 @@ msgstr "%.1f km/h"
 #: ../src/viktrwlayer_analysis.c:290
 #, c-format
 msgid "%.1f mph"
-msgstr ""
+msgstr "%.1f mi/h"
 
 #: ../src/viktrwlayer_propwin.c:834 ../src/viktrwlayer_propwin.c:1091
 #, c-format
 msgid "%.1f knots"
-msgstr ""
+msgstr "%.1f nœuds"
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:838 ../src/viktrwlayer_propwin.c:1095
@@ -3498,7 +3508,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:2801
 msgid "Start and End"
-msgstr ""
+msgstr "Départ et arrivée"
 
 #: ../src/viktrwlayer_propwin.c:2802
 msgid "Centre, Start and End"
@@ -3581,7 +3591,7 @@ msgstr "Vitesse/temps"
 
 #: ../src/viktrwlayer_propwin.c:3066 ../src/viktrwlayer_propwin.c:3080
 msgid "Show S_peed"
-msgstr ""
+msgstr "Afficher la vite_sse"
 
 #: ../src/viktrwlayer_propwin.c:3073
 msgid "Distance-time"
@@ -3723,7 +3733,7 @@ msgstr "km/h"
 
 #: ../src/viktrwlayer_tracklist.c:550 ../src/vikutils.c:62
 msgid "mph"
-msgstr ""
+msgstr "mi/h"
 
 #: ../src/viktrwlayer_tracklist.c:551 ../src/vikutils.c:68
 msgid "knots"
@@ -3740,6 +3750,8 @@ msgid ""
 "Av. Speed\n"
 "(%s)"
 msgstr ""
+"Vitesse moy.\n"
+"(%s)"
 
 #. Apply own formatting of the data
 #: ../src/viktrwlayer_tracklist.c:561
@@ -3778,7 +3790,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_geotag.c:551
 msgid "Images"
-msgstr ""
+msgstr "Photos"
 
 #: ../src/viktrwlayer_geotag.c:555
 msgid "Overwrite Existing Waypoints:"
@@ -3794,11 +3806,11 @@ msgstr ""
 
 #: ../src/viktrwlayer_geotag.c:592
 msgid "Create Waypoints:"
-msgstr ""
+msgstr "Créer des points de cheminement :"
 
 #: ../src/viktrwlayer_geotag.c:600
 msgid "Write EXIF:"
-msgstr ""
+msgstr "Ajouter les informations EXIF :"
 
 #: ../src/viktrwlayer_geotag.c:612
 msgid "Interpolate Between Track Segments:"
@@ -3846,11 +3858,11 @@ msgstr "Plage de dates"
 
 #: ../src/viktrwlayer_analysis.c:195
 msgid "Total Length"
-msgstr ""
+msgstr "Distance totale"
 
 #: ../src/viktrwlayer_analysis.c:196
 msgid "Average Length"
-msgstr ""
+msgstr "Distance moyenne"
 
 #: ../src/viktrwlayer_analysis.c:197
 msgid "Max Speed"
@@ -3858,15 +3870,15 @@ msgstr "Vitesse Max."
 
 #: ../src/viktrwlayer_analysis.c:198
 msgid "Avg. Speed"
-msgstr ""
+msgstr "Vitesse moy."
 
 #: ../src/viktrwlayer_analysis.c:199
 msgid "Minimum Altitude"
-msgstr ""
+msgstr "Altitude minimum"
 
 #: ../src/viktrwlayer_analysis.c:200
 msgid "Maximum Altitude"
-msgstr ""
+msgstr "Altitude maximum"
 
 #: ../src/viktrwlayer_analysis.c:201
 msgid "Total Elevation Gain/Loss"
@@ -3947,7 +3959,7 @@ msgstr "%d:%02d h:min"
 
 #: ../src/viktrwlayer_analysis.c:550
 msgid "Include Invisible Items"
-msgstr ""
+msgstr "Inclure les éléments invisibles"
 
 #: ../src/vikstatus.c:107
 msgid "Current number of background tasks. Click to see the background jobs."
@@ -3969,7 +3981,7 @@ msgstr ""
 #: ../src/vikutils.c:121
 #, c-format
 msgid "%sSpeed%s %.1f%s"
-msgstr ""
+msgstr "%sVitesse%s %.1f%s"
 
 #: ../src/vikutils.c:130
 #, c-format
@@ -4004,7 +4016,7 @@ msgstr ""
 #: ../src/vikutils.c:179
 #, c-format
 msgid "%sTime %s"
-msgstr ""
+msgstr "%sTemps %s"
 
 #: ../src/vikutils.c:187
 #, c-format
@@ -4029,7 +4041,7 @@ msgstr ""
 
 #: ../src/vikwaypoint.c:36
 msgid "Waypoint"
-msgstr ""
+msgstr "Point de cheminement"
 
 #. TODO get rid of this as this is unnecessary duplication...
 #: ../src/vikwindow.c:224
