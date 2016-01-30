@@ -19,7 +19,6 @@
  *
  */
 
-#include <gtk/gtk.h>
 #include "coords.h"
 #include "vikcoord.h"
 
