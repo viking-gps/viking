@@ -1145,7 +1145,7 @@ static gboolean dem_layer_add_file ( VikDEMLayer *vdl, const gchar *filename )
 {
   if ( g_file_test(filename, G_FILE_TEST_EXISTS) == TRUE ) {
     /* only load if file size is not 0 (not in progress) */
-    struct stat sb;
+    GStatBuf sb;
     (void)stat ( filename, &sb );
     if ( sb.st_size ) {
       gchar *duped_path = g_strdup(filename);
