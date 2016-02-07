@@ -76,6 +76,7 @@ static struct LatLon line_latlon;
 static gchar *line_name;
 static gchar *line_comment;
 static gchar *line_description;
+static gchar *line_source;
 static gchar *line_color;
 static gint line_name_label = 0;
 static gint line_dist_label = 0;
@@ -245,6 +246,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       if ( line_description )
         vik_waypoint_set_description ( wp, line_description );
 
+      if ( line_source )
+        vik_waypoint_set_source ( wp, line_source );
+
       if ( line_image ) {
         // Ensure the filename is absolute
         if ( g_path_is_absolute ( line_image ) )
@@ -280,6 +284,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
 
       if ( line_description )
         vik_track_set_description ( pl, line_description );
+
+      if ( line_source )
+        vik_track_set_source ( pl, line_source );
 
       if ( line_color )
       {
@@ -326,6 +333,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       g_free ( line_comment );
     if (line_description)
       g_free ( line_description );
+    if (line_source)
+      g_free ( line_source );
     if (line_color)
       g_free ( line_color );
     if (line_image)
@@ -334,6 +343,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       g_free ( line_symbol );
     line_comment = NULL;
     line_description = NULL;
+    line_source = NULL;
     line_color = NULL;
     line_image = NULL;
     line_symbol = NULL;
@@ -451,6 +461,11 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   {
     if (line_description == NULL)
       line_description = deslashndup ( value, value_len );
+  }
+  else if (key_len == 6 && strncasecmp( key, "source", key_len ) == 0 && value != NULL)
+  {
+    if (line_source == NULL)
+      line_source = deslashndup ( value, value_len );
   }
   else if (key_len == 5 && strncasecmp( key, "color", key_len ) == 0 && value != NULL)
   {
@@ -571,6 +586,12 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
     gchar *tmp_description = slashdup(wp->description);
     fprintf ( f, " description=\"%s\"", tmp_description );
     g_free ( tmp_description );
+  }
+  if ( wp->source )
+  {
+    gchar *tmp_source = slashdup(wp->source);
+    fprintf ( f, " source=\"%s\"", tmp_source );
+    g_free ( tmp_source );
   }
   if ( wp->image )
   {
@@ -697,6 +718,12 @@ static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FIL
   if ( trk->description ) {
     gchar *tmp = slashdup(trk->description);
     fprintf ( f, " description=\"%s\"", tmp );
+    g_free ( tmp );
+  }
+
+  if ( trk->source ) {
+    gchar *tmp = slashdup(trk->source);
+    fprintf ( f, " source=\"%s\"", tmp );
     g_free ( tmp );
   }
 

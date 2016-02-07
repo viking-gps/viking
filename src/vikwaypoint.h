@@ -42,6 +42,7 @@ struct _VikWaypoint {
   gchar *name;
   gchar *comment;
   gchar *description;
+  gchar *source;
   gchar *url;
   gchar *image;
   /* a rather misleading, ugly hack needed for trwlayer's click image.
@@ -58,6 +59,7 @@ VikWaypoint *vik_waypoint_new();
 void vik_waypoint_set_name(VikWaypoint *wp, const gchar *name);
 void vik_waypoint_set_comment(VikWaypoint *wp, const gchar *comment);
 void vik_waypoint_set_description(VikWaypoint *wp, const gchar *description);
+void vik_waypoint_set_source(VikWaypoint *wp, const gchar *source);
 void vik_waypoint_set_url(VikWaypoint *wp, const gchar *url);
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image);
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);

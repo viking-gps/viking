@@ -112,6 +112,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   struct LatLon ll;
   GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL;
   GtkWidget *commentlabel, *commententry, *descriptionlabel, *descriptionentry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
+  GtkWidget *sourcelabel = NULL, *sourceentry = NULL;
   GtkWidget *timelabel = NULL;
   GtkWidget *timevaluebutton = NULL;
   GtkWidget *hasGeotagCB = NULL;
@@ -179,6 +180,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   else
     descriptionlabel = gtk_label_new (_("Description:"));
   descriptionentry = gtk_entry_new ();
+
+  sourcelabel = gtk_label_new (_("Source:"));
+  if ( wp->source ) {
+    sourceentry = gtk_entry_new ();
+    gtk_entry_set_text(GTK_ENTRY(sourceentry), wp->source);
+  }
 
   imagelabel = gtk_label_new (_("Image:"));
   imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, NULL, NULL);
@@ -289,6 +296,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), commententry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), descriptionlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), descriptionentry, FALSE, FALSE, 0);
+  if ( wp->source ) {
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), sourcelabel, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), sourceentry, FALSE, FALSE, 0);
+  }
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imagelabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imageentry, FALSE, FALSE, 0);
   if ( hasGeotagCB ) {
@@ -339,6 +350,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         vik_waypoint_set_description ( wp, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) );
       if ( g_strcmp0 ( wp->image, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) ) )
         vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
+      if ( g_strcmp0 ( wp->source, gtk_entry_get_text ( GTK_ENTRY(sourceentry) ) ) )
+        vik_waypoint_set_source ( wp, gtk_entry_get_text ( GTK_ENTRY(sourceentry) ) );
       if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
         a_thumbnails_create ( wp->image );
       if ( edit_wp->timestamp ) {

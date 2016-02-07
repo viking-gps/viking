@@ -105,6 +105,17 @@ void vik_track_set_description(VikTrack *tr, const gchar *description)
     tr->description = NULL;
 }
 
+void vik_track_set_source(VikTrack *tr, const gchar *source)
+{
+  if ( tr->source )
+    g_free ( tr->source );
+
+  if ( source && source[0] != '\0' )
+    tr->source = g_strdup(source);
+  else
+    tr->source = NULL;
+}
+
 void vik_track_ref(VikTrack *tr)
 {
   tr->ref_count++;
@@ -132,6 +143,8 @@ void vik_track_free(VikTrack *tr)
     g_free ( tr->comment );
   if ( tr->description )
     g_free ( tr->description );
+  if ( tr->source )
+    g_free ( tr->source );
   g_list_foreach ( tr->trackpoints, (GFunc) vik_trackpoint_free, NULL );
   g_list_free( tr->trackpoints );
   if (tr->property_dialog)
@@ -177,6 +190,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   vik_track_set_name(new_tr,tr->name);
   vik_track_set_comment(new_tr,tr->comment);
   vik_track_set_description(new_tr,tr->description);
+  vik_track_set_source(new_tr,tr->source);
   return new_tr;
 }
 
@@ -1503,6 +1517,7 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   vtm_append(tr->name);
   vtm_append(tr->comment);
   vtm_append(tr->description);
+  vtm_append(tr->source);
 
   *data = b->data;
   *datalen = b->len;
@@ -1557,6 +1572,7 @@ VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
   vtu_get(new_tr->name);
   vtu_get(new_tr->comment);
   vtu_get(new_tr->description);
+  vtu_get(new_tr->source);
 
   return new_tr;
 }

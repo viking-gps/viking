@@ -131,6 +131,7 @@ typedef struct _propwidgets {
   GtkWidget *dialog;
   GtkWidget *w_comment;
   GtkWidget *w_description;
+  GtkWidget *w_source;
   GtkWidget *w_track_length;
   GtkWidget *w_tp_count;
   GtkWidget *w_segment_count;
@@ -2881,6 +2882,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
     case GTK_RESPONSE_ACCEPT:
       vik_track_set_comment(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_comment)));
       vik_track_set_description(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_description)));
+      vik_track_set_source(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_source)));
       gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
       tr->draw_name_mode = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->w_namelabel) );
       tr->max_number_dist_labels = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number_distlabels) );
@@ -3131,6 +3133,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   static gchar *label_texts[] = {
     N_("<b>Comment:</b>"),
     N_("<b>Description:</b>"),
+    N_("<b>Source:</b>"),
     N_("<b>Color:</b>"),
     N_("<b>Draw Name:</b>"),
     N_("<b>Distance Labels:</b>"),
@@ -3163,6 +3166,11 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if ( tr->description )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_description), tr->description );
   content_prop[cnt_prop++] = widgets->w_description;
+
+  widgets->w_source = gtk_entry_new ();
+  if ( tr->source )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_source), tr->source );
+  content_prop[cnt_prop++] = widgets->w_source;
 
   widgets->w_color = content_prop[cnt_prop++] = gtk_color_button_new_with_color ( &(tr->color) );
 

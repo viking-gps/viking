@@ -59,6 +59,7 @@ typedef enum {
         tt_wpt,
         tt_wpt_cmt,
         tt_wpt_desc,
+        tt_wpt_src,
         tt_wpt_name,
         tt_wpt_ele,
         tt_wpt_sym,
@@ -69,6 +70,7 @@ typedef enum {
         tt_trk,
         tt_trk_cmt,
         tt_trk_desc,
+        tt_trk_src,
         tt_trk_name,
 
         tt_rte,
@@ -136,6 +138,7 @@ tag_mapping tag_path_map[] = {
         { tt_wpt_name, "/gpx/wpt/name" },
         { tt_wpt_cmt, "/gpx/wpt/cmt" },
         { tt_wpt_desc, "/gpx/wpt/desc" },
+        { tt_wpt_src, "/gpx/wpt/src" },
         { tt_wpt_sym, "/gpx/wpt/sym" },
         { tt_wpt_sym, "/loc/waypoint/type" },
         { tt_wpt_url, "/gpx/wpt/url" },
@@ -145,6 +148,7 @@ tag_mapping tag_path_map[] = {
         { tt_trk_name, "/gpx/trk/name" },
         { tt_trk_cmt, "/gpx/trk/cmt" },
         { tt_trk_desc, "/gpx/trk/desc" },
+        { tt_trk_src, "/gpx/trk/src" },
         { tt_trk_trkseg, "/gpx/trk/trkseg" },
         { tt_trk_trkseg_trkpt, "/gpx/trk/trkseg/trkpt" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/trk/trkseg/trkpt/ele" },
@@ -165,6 +169,7 @@ tag_mapping tag_path_map[] = {
         { tt_trk_name, "/gpx/rte/name" },
         { tt_trk_cmt, "/gpx/rte/cmt" },
         { tt_trk_desc, "/gpx/rte/desc" },
+        { tt_trk_src, "/gpx/rte/src" },
         { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
         { tt_trk_trkseg_trkpt_name, "/gpx/rte/rtept/name" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/rte/rtept/ele" },
@@ -287,6 +292,7 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_trk_trkseg_trkpt_time:
      case tt_wpt_cmt:
      case tt_wpt_desc:
+     case tt_wpt_src:
      case tt_wpt_name:
      case tt_wpt_ele:
      case tt_wpt_time:
@@ -294,6 +300,7 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_wpt_link:
      case tt_trk_cmt:
      case tt_trk_desc:
+     case tt_trk_src:
      case tt_trk_name:
        g_string_erase ( c_cdata, 0, -1 ); /* clear the cdata buffer */
        break;
@@ -426,6 +433,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_wpt_src:
+       vik_waypoint_set_source ( c_wp, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_wpt_url:
        vik_waypoint_set_url ( c_wp, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
@@ -444,6 +456,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
 
      case tt_trk_desc:
        vik_track_set_description ( c_tr, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_src:
+       vik_track_set_source ( c_tr, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
@@ -537,11 +554,13 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_trk_trkseg_trkpt_ele:
     case tt_wpt_cmt:
     case tt_wpt_desc:
+    case tt_wpt_src:
     case tt_wpt_sym:
     case tt_wpt_url:
     case tt_wpt_link:
     case tt_trk_cmt:
     case tt_trk_desc:
+    case tt_trk_src:
     case tt_trk_trkseg_trkpt_time:
     case tt_wpt_time:
     case tt_trk_trkseg_trkpt_name:
@@ -824,6 +843,12 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     fprintf ( f, "  <desc>%s</desc>\n", tmp );
     g_free ( tmp );
   }
+  if ( wp->source )
+  {
+    tmp = entitize(wp->source);
+    fprintf ( f, "  <src>%s</src>\n", tmp );
+    g_free ( tmp );
+  }
   if ( wp->url )
   {
     tmp = entitize(wp->url);
@@ -995,6 +1020,13 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   {
     tmp = entitize ( t->description );
     fprintf ( f, "  <desc>%s</desc>\n", tmp );
+    g_free ( tmp );
+  }
+
+  if ( t->source )
+  {
+    tmp = entitize ( t->source );
+    fprintf ( f, "  <src>%s</src>\n", tmp );
     g_free ( tmp );
   }
 
