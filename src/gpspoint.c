@@ -59,8 +59,8 @@ if trackpoint, make trackpoint, store to current track (error / skip if none)
 */
 
 /* Thanks to etrex-cache's gpsbabel's gpspoint.c for starting me off! */
-
-static char line_buffer[2048];
+#define VIKING_LINE_SIZE 4096
+static char line_buffer[VIKING_LINE_SIZE];
 
 #define GPSPOINT_TYPE_NONE 0
 #define GPSPOINT_TYPE_WAYPOINT 1
@@ -177,7 +177,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
   current_track = NULL;
   gboolean have_read_something = FALSE;
 
-  while (fgets(line_buffer, 2048, f))
+  while (fgets(line_buffer, VIKING_LINE_SIZE, f))
   {
     gboolean inside_quote = 0;
     gboolean backslash = 0;
