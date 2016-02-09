@@ -3157,13 +3157,11 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->w_comment = gtk_entry_new ();
   if ( tr->comment )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_comment), tr->comment );
-  g_signal_connect_swapped ( widgets->w_comment, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
   content_prop[cnt_prop++] = widgets->w_comment;
 
   widgets->w_description = gtk_entry_new ();
   if ( tr->description )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_description), tr->description );
-  g_signal_connect_swapped ( widgets->w_description, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
   content_prop[cnt_prop++] = widgets->w_description;
 
   widgets->w_color = content_prop[cnt_prop++] = gtk_color_button_new_with_color ( &(tr->color) );
