@@ -113,6 +113,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   GtkWidget *latlabel, *lonlabel, *namelabel, *latentry, *lonentry, *altentry, *altlabel, *nameentry=NULL;
   GtkWidget *commentlabel, *commententry, *descriptionlabel, *descriptionentry, *imagelabel, *imageentry, *symbollabel, *symbolentry;
   GtkWidget *sourcelabel = NULL, *sourceentry = NULL;
+  GtkWidget *typelabel = NULL, *typeentry = NULL;
   GtkWidget *timelabel = NULL;
   GtkWidget *timevaluebutton = NULL;
   GtkWidget *hasGeotagCB = NULL;
@@ -185,6 +186,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   if ( wp->source ) {
     sourceentry = gtk_entry_new ();
     gtk_entry_set_text(GTK_ENTRY(sourceentry), wp->source);
+  }
+
+  typelabel = gtk_label_new (_("Type:"));
+  if ( wp->type ) {
+    typeentry = gtk_entry_new ();
+    gtk_entry_set_text(GTK_ENTRY(typeentry), wp->type);
   }
 
   imagelabel = gtk_label_new (_("Image:"));
@@ -300,6 +307,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), sourcelabel, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), sourceentry, FALSE, FALSE, 0);
   }
+  if ( wp->type ) {
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), typelabel, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), typeentry, FALSE, FALSE, 0);
+  }
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imagelabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imageentry, FALSE, FALSE, 0);
   if ( hasGeotagCB ) {
@@ -352,6 +363,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
       if ( g_strcmp0 ( wp->source, gtk_entry_get_text ( GTK_ENTRY(sourceentry) ) ) )
         vik_waypoint_set_source ( wp, gtk_entry_get_text ( GTK_ENTRY(sourceentry) ) );
+      if ( g_strcmp0 ( wp->type, gtk_entry_get_text ( GTK_ENTRY(typeentry) ) ) )
+        vik_waypoint_set_type ( wp, gtk_entry_get_text ( GTK_ENTRY(typeentry) ) );
       if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
         a_thumbnails_create ( wp->image );
       if ( edit_wp->timestamp ) {

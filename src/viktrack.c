@@ -116,6 +116,17 @@ void vik_track_set_source(VikTrack *tr, const gchar *source)
     tr->source = NULL;
 }
 
+void vik_track_set_type(VikTrack *tr, const gchar *type)
+{
+  if ( tr->type )
+    g_free ( tr->type );
+
+  if ( type && type[0] != '\0' )
+    tr->type = g_strdup(type);
+  else
+    tr->type = NULL;
+}
+
 void vik_track_ref(VikTrack *tr)
 {
   tr->ref_count++;
@@ -145,6 +156,8 @@ void vik_track_free(VikTrack *tr)
     g_free ( tr->description );
   if ( tr->source )
     g_free ( tr->source );
+  if ( tr->type )
+    g_free ( tr->type );
   g_list_foreach ( tr->trackpoints, (GFunc) vik_trackpoint_free, NULL );
   g_list_free( tr->trackpoints );
   if (tr->property_dialog)
