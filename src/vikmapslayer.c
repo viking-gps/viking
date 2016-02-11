@@ -922,7 +922,7 @@ static GdkPixbuf *get_pixbuf_sql_exec ( sqlite3 *sql, gint xx, gint yy, gint zoo
   sqlite3_stmt *sql_stmt = NULL;
   int ans = sqlite3_prepare_v2 ( sql, statement, -1, &sql_stmt, NULL );
   if ( ans != SQLITE_OK ) {
-    g_warning ( "%s: %s - %d", __FUNCTION__, "prepare failure", ans );
+    g_warning ( "%s: %s - %d: %s", __FUNCTION__, "prepare failure", ans, statement );
     finished = TRUE;
   }
 
