@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<gpx version="1.0" creator="Viking -- http://viking.sf.net/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://www.topografix.com/GPX/1/0"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+  <name>SF#022</name>
+  <time>2016-04-04T19:03:55.423045Z</time>
+<wpt lat="40.97486" lon="-3.20034">
+  <name>Gorgocil</name>
+  <ele>834</ele>
+  <time>2016-04-04T19:04:05Z</time>
+  <cmt>40.97486, -3.20034, 834m</cmt>
+  <sym>Golf Course</sym>
+</wpt>
+</gpx>

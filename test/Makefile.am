@@ -7,6 +7,7 @@ LDADD           += -lgps
 endif
 
 TESTS = check_degrees_conversions.sh \
+	check_gpx.sh \
 	check_metatile.sh
 if GEOTAG
 TESTS += check_geotag.sh
@@ -28,6 +29,7 @@ check_PROGRAMS += geotag_read geotag_write
 endif
 
 check_SCRIPTS = check_degrees_conversions.sh \
+	check_gpx.sh \
 	check_metatile.sh
 if GEOTAG
 check_SCRIPTS += check_geotag.sh
@@ -38,6 +40,8 @@ endif
 
 # Scripts and the test data that they use
 EXTRA_DIST = check_degrees_conversions.sh \
+	check_gpx.sh \
+	SF\#022.gpx \
 	check_md5_hash.sh \
 	check_metatile.sh \
 	metatile_example/13/0/0/250/220/0.meta \
