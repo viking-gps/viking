@@ -7,6 +7,7 @@ LDADD           += -lgps
 endif
 
 TESTS = check_degrees_conversions.sh \
+	check_babel.sh \
 	check_gpx.sh \
 	check_metatile.sh
 if GEOTAG
@@ -40,6 +41,7 @@ endif
 
 # Scripts and the test data that they use
 EXTRA_DIST = check_degrees_conversions.sh \
+	check_babel.sh \
 	check_gpx.sh \
 	SF\#022.gpx \
 	check_md5_hash.sh \
