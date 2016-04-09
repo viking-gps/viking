@@ -2,7 +2,8 @@
 // e.g. for read support of waypoints, tracks and routes:
 // run like: ./test_babel 1 0 1 0 1 0
 #include <stdlib.h>
-#include <babel.h>
+#include "babel.h"
+#include "preferences.h"
 
 static void print_file_format (gpointer data, gpointer user_data)
 {
@@ -16,7 +17,11 @@ static void print_file_format (gpointer data, gpointer user_data)
 
 int main(int argc, char*argv[])
 {
+	// Preferences must be initialized as it gets auto used
+	a_preferences_init ();
+
 	a_babel_init();
+	a_babel_post_init ();
 
 	if (argc != 7) return 1;
 	BabelMode mode = { atoi(argv[1]),atoi(argv[2]),atoi(argv[3]),atoi(argv[4]),atoi(argv[5]),atoi(argv[6]) };
