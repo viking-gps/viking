@@ -354,7 +354,7 @@ static gboolean trw_layer_track_menu_popup ( GtkWidget *tree_view,
 	udataU.trk  = trk;
 	udataU.uuid = NULL;
 
-	gpointer *trkf;
+	gpointer trkf;
 	if ( trk->is_route )
 		trkf = g_hash_table_find ( vik_trw_layer_get_routes(vtl), (GHRFunc) trw_layer_track_find_uuid, &udataU );
 	else

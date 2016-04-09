@@ -59,7 +59,7 @@ typedef struct _Stack Stack;
 
 struct _Stack {
   Stack *under;
-  gpointer *data;
+  gpointer data;
 };
 
 static void pop(Stack **stack) {

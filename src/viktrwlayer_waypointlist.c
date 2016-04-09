@@ -412,7 +412,7 @@ static gboolean trw_layer_waypoint_menu_popup ( GtkWidget *tree_view,
 	udataU.wp   = wpt;
 	udataU.uuid = NULL;
 
-	gpointer *wptf;
+	gpointer wptf;
 	wptf = g_hash_table_find ( vik_trw_layer_get_waypoints(vtl), (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
 
 	if ( wptf && udataU.uuid ) {

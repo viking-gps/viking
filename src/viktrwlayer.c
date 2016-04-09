@@ -917,8 +917,8 @@ typedef struct {
   const gchar *date_str;
   const VikTrack *trk;
   const VikWaypoint *wpt;
-  gpointer *trk_id;
-  gpointer *wpt_id;
+  gpointer trk_id;
+  gpointer wpt_id;
 } date_finder_type;
 
 static gboolean trw_layer_find_date_track ( const gpointer id, const VikTrack *trk, date_finder_type *df )
@@ -1030,7 +1030,7 @@ static void trw_layer_copy_item_cb ( menu_array_sublayer values)
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   gint subtype = GPOINTER_TO_INT (values[MA_SUBTYPE]);
-  gpointer * sublayer = values[MA_SUBLAYER_ID];
+  gpointer sublayer = values[MA_SUBLAYER_ID];
   guint8 *data = NULL;
   guint len;
 
@@ -3614,7 +3614,7 @@ static void trw_layer_goto_wp ( menu_array_layer values )
       udata.uuid = NULL;
 
       // Hmmm, want key of it
-      gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, (gpointer) &udata );
+      gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, (gpointer) &udata );
 
       if ( wpf && udata.uuid ) {
         GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udata.uuid );
@@ -4783,7 +4783,7 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk )
     udata.uuid = NULL;
 
     // Hmmm, want key of it
-    gpointer *trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
+    gpointer trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
 
     if ( trkf && udata.uuid ) {
       /* could be current_tp, so we have to check */
@@ -4831,7 +4831,7 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
     udata.uuid = NULL;
 
     // Hmmm, want key of it
-    gpointer *trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udata );
+    gpointer trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udata );
 
     if ( trkf && udata.uuid ) {
       /* could be current_tp, so we have to check */
@@ -4875,7 +4875,7 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
     udata.uuid = NULL;
 
     // Hmmm, want key of it
-    gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, (gpointer) &udata );
+    gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, (gpointer) &udata );
 
     if ( wpf && udata.uuid ) {
       GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udata.uuid );
@@ -4927,7 +4927,7 @@ static gboolean trw_layer_delete_waypoint_by_name ( VikTrwLayer *vtl, const gcha
   udata.uuid = NULL;
 
   // Hmmm, want key of it
-  gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid_by_name, (gpointer) &udata );
+  gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid_by_name, (gpointer) &udata );
 
   vik_waypoint_free (udata.wp);
 
@@ -4968,7 +4968,7 @@ static gboolean trw_layer_delete_track_by_name ( VikTrwLayer *vtl, const gchar *
   udata.uuid = NULL;
 
   // Hmmm, want key of it
-  gpointer *trkf = g_hash_table_find ( ht_tracks, (GHRFunc) trw_layer_track_find_uuid_by_name, &udata );
+  gpointer trkf = g_hash_table_find ( ht_tracks, (GHRFunc) trw_layer_track_find_uuid_by_name, &udata );
 
   vik_track_free (udata.trk);
 
@@ -5136,7 +5136,7 @@ void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar 
   udataU.uuid = NULL;
 
   // Need key of it for treeview update
-  gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
+  gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
 
   if ( wpf && udataU.uuid ) {
     GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
@@ -5159,7 +5159,7 @@ void trw_layer_waypoint_reset_icon ( VikTrwLayer *vtl, VikWaypoint *wp )
   udataU.uuid = NULL;
 
   // Need key of it for treeview update
-  gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
+  gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
 
   if ( wpf && udataU.uuid ) {
     GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
@@ -5246,7 +5246,7 @@ void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk )
   udata.trk  = trk;
   udata.uuid = NULL;
 
-  gpointer *trkf = NULL;
+  gpointer trkf = NULL;
   if ( trk->is_route )
     trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udata );
   else
@@ -6352,7 +6352,7 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl, gint subt
       udata.uuid = NULL;
 
       // Also need id of newly created track
-      gpointer *trkf;
+      gpointer trkf;
       if ( tr->is_route )
          trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udata );
       else
@@ -7084,7 +7084,7 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
     udataU.uuid = NULL;
 
     // Need want key of it for treeview update
-    gpointer *trkf = g_hash_table_find ( track_table, (GHRFunc) trw_layer_track_find_uuid, &udataU );
+    gpointer trkf = g_hash_table_find ( track_table, (GHRFunc) trw_layer_track_find_uuid, &udataU );
 
     if ( trkf && udataU.uuid ) {
 
@@ -9059,7 +9059,7 @@ typedef struct {
   gint x, y;
   gint closest_x, closest_y;
   gboolean draw_images;
-  gpointer *closest_wp_id;
+  gpointer closest_wp_id;
   VikWaypoint *closest_wp;
   VikViewport *vvp;
 } WPSearchParams;
@@ -9454,7 +9454,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
       udataU.trk  = track;
       udataU.uuid = NULL;
 
-      gpointer *trkf;
+      gpointer trkf;
       if ( track->is_route )
         trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udataU );
       else
@@ -9497,7 +9497,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
       udata.wp   = waypoint;
       udata.uuid = NULL;
 
-      gpointer *wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, (gpointer) &udata );
+      gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, (gpointer) &udata );
 
       if ( wpf && udata.uuid ) {
         GtkTreeIter *iter = g_hash_table_lookup ( vtl->waypoints_iters, udata.uuid );
