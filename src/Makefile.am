@@ -222,7 +222,7 @@ endif
 
 viking_SOURCES = main.c
 
-LDADD           = libviking.a $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
+LDADD           = $(noinst_LIBRARIES) $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
 if WINDOWS
 LDADD += \
 	../win32/installer/pixmaps/viking_icon.o
