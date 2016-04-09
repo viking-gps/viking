@@ -72,10 +72,10 @@ gchar *uri_escape(gchar *str)
     if (*src == ' ')
      *dst++ = '+';
     else if (g_ascii_isalnum(*src))
-     *dst++ = *src;
+      *dst++ = *src;
     else {
-      g_sprintf(dst, "%%%02hhX", *src);
-      dst += 3;
+      int x = g_snprintf(dst, 3, "%%%02hX", *src);
+      dst += x;
     }
   }
   *dst = '\0';
