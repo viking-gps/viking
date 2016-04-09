@@ -20,12 +20,15 @@
 =head1 Overview
 
 A script to auto generate basic Viking .vik files for directories containing images.
+Note that from Viking 1.3 onwards it can load geotagged images directly,
+ although it does not have recursive directory capabilities.
 
 Simply recursively search down the directory tree (from the current location) for suitable image files
  [normally jpg|JPG (probably photographs)] and then extract any location data from the EXIF part.
 
 For each directory this info is output to a file into either Viking (default) or GPX data file formats.
 Output filename is waypoints.vik (or waypoints.gpx in GPX mode) unless the -o option is specified.
+
 
 Options:
 -g put into outputting GPX file mode
@@ -34,11 +37,6 @@ Options:
 
 Required programs:
 . exiftool - getting location data from EXIF (Debian package libimage-exiftool-perl)
-
-Recommended programs:
-. viking - Obviously when viking mode used to view the output [can view gpx as well]
-. gpscorrelate[-gui] - Correlates digital photos with GPS data filling EXIF fields 
-                       i.e. something to put EXIF info into files to begin with
 
 Various improvements can be:
 . Command line options to control things eg:
@@ -341,7 +339,7 @@ sub Process_File {
 # Default filename
 my $out_file_start = "waypoints";
 
-if (defined @ARGV) {
+if (@ARGV) {
     for (my $arg=0; $arg < $#ARGV+1; $arg++) {
 	if ("$ARGV[$arg]" eq "-o") {
 	    # Set filename to next arg
