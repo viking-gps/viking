@@ -66,7 +66,7 @@ Generate .msi
 	./installer-mingw.sh
 
 Install .msi
-	wine install/viking-*.exe
+	wine installer/viking-*.exe
 
 Run viking.exe with wine
 	cd ~/.wine/drive_c/Program\ Files/Viking/
