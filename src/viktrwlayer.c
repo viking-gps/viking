@@ -1633,6 +1633,7 @@ static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
   rv->metadata = vik_trw_metadata_new ();
   rv->draw_sync_done = TRUE;
   rv->draw_sync_do = TRUE;
+  rv->coord_mode = VIK_COORD_LATLON;
   // Everything else is 0, FALSE or NULL
 
   return rv;
