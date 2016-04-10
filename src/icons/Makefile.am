@@ -267,7 +267,7 @@ icons.h: $(ALL_ICONS_HEADER)
 icons.c: $(ALL_ICONS_HEADER)
 	echo "/* Generated file */" > $@
 	echo "#include <gdk-pixbuf/gdk-pixdata.h>" >> $@
-	for file in *_pixmap.h ; do echo "#include \"$$file\"" >> $@ ; done
+	for file in $(ALL_ICONS_HEADER) ; do echo "#include \"$$file\"" >> $@ ; done
 
 $(BUILT_SOURCES): $(srcdir)/Makefile.am
 
