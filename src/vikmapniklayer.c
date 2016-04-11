@@ -539,6 +539,7 @@ gboolean carto_load ( VikMapnikLayer *vml, VikViewport *vvp )
 				if ( !g_strcmp0 ( vml->filename_xml, vml->filename_css ) ) {
 					vml->filename_xml = g_strconcat ( vml->filename_css, ".xml", NULL );
 				}
+				g_regex_unref ( regex );
 			}
 			if ( !g_file_set_contents (vml->filename_xml, mystdout, -1, &error)  ) {
 				g_warning ("%s: %s", __FUNCTION__, error->message );
