@@ -333,6 +333,7 @@ struct _VikGpsLayer {
   int cur_read_child;   /* used only for reading file */
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   VglGpsd *vgpsd;
+  gboolean connected_to_gpsd;
   gboolean realtime_tracking;
   gboolean first_realtime_trackpoint;
   GpsFix realtime_fix;
@@ -432,7 +433,26 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
 
 static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
 {
-  return vgl->protocol;
+  static gchar buf1[256];
+  buf1[0] = '\0';
+  static gchar rbuf[512];
+  rbuf[0] = '\0';
+
+  g_snprintf (buf1, sizeof(buf1), "%s:%s", vgl->protocol, vgl->serial_port);
+
+#if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+  static gchar buf2[256];
+  buf2[0] = '\0';
+  if ( vgl->connected_to_gpsd )
+    g_snprintf (buf2, sizeof(buf2), "GPSD:%s:%s %s", vgl->gpsd_host, vgl->gpsd_port, _("Connected"));
+  else
+    g_snprintf (buf2, sizeof(buf2), "GPSD:%s:%s %s", vgl->gpsd_host, vgl->gpsd_port, _("Disconnected"));
+
+  g_snprintf (rbuf, sizeof(rbuf), "%s\n%s", buf1, buf2);
+#else
+  g_snprintf (rbuf, sizeof(rbuf), "%s", buf1);
+#endif
+  return rbuf;
 }
 
 /* "Copy" */
@@ -1777,6 +1797,8 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
     g_free(name);
   }
 
+  vgl->connected_to_gpsd = TRUE;
+
 #if GPSD_API_MAJOR_VERSION == 3 || GPSD_API_MAJOR_VERSION == 4
   gps_set_raw_hook(&vgl->vgpsd->gpsd, gpsd_raw_hook);
 #endif
@@ -1863,6 +1885,7 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
       vik_trw_layer_delete_track(vgl->trw_children[TRW_REALTIME], vgl->realtime_track);
     vgl->realtime_track = NULL;
   }
+  vgl->connected_to_gpsd = FALSE;
 }
 
 static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
