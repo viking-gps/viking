@@ -1762,7 +1762,8 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   gps_query(&vgl->vgpsd->gpsd, "w+x");
 #endif
 #if GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
-  gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL);
+   if ( gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL) == -1 )
+     g_critical ( "gps_stream error" );
 #endif
 
   return FALSE;  /* no longer called by timeout */
