@@ -1689,7 +1689,7 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
     else {
       g_warning("Disconnected from gpsd. Trying to reconnect");
       rt_gpsd_disconnect(vgl);
-      rt_gpsd_connect(vgl, FALSE);
+      (void)rt_gpsd_connect(vgl, FALSE);
     }
   }
   return FALSE; /* no further calling */
