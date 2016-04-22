@@ -215,6 +215,7 @@ static VikLayerParam gps_layer_params[] = {
   { VIK_LAYER_GPS, "center_start_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Jump to current position on start"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_GPS, "moving_map_method", VIK_LAYER_PARAM_UINT, GROUP_REALTIME_MODE, N_("Moving Map Method:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_vehicle_position, NULL, NULL, moving_map_method_default, NULL, NULL },
   { VIK_LAYER_GPS, "realtime_update_statusbar", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Update Statusbar:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Display information in the statusbar on GPS updates"), vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_GPS, "auto_connect", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Auto Connect"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Automatically connect to GPSD"), vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_GPS, "gpsd_host", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Host:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, gpsd_host_default, NULL, NULL },
   { VIK_LAYER_GPS, "gpsd_port", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Port:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, gpsd_port_default, NULL, NULL },
   { VIK_LAYER_GPS, "gpsd_retry_interval", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Retry Interval (seconds):"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, gpsd_retry_interval_default, NULL, NULL },
@@ -230,6 +231,7 @@ enum {
   PARAM_REALTIME_CENTER_START,
   PARAM_VEHICLE_POSITION,
   PARAM_REALTIME_UPDATE_STATUSBAR,
+  PARAM_GPSD_CONNECT,
   PARAM_GPSD_HOST,
   PARAM_GPSD_PORT,
   PARAM_GPSD_RETRY_INTERVAL,
@@ -331,7 +333,7 @@ struct _VikGpsLayer {
   int cur_read_child;   /* used only for reading file */
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   VglGpsd *vgpsd;
-  gboolean realtime_tracking;  /* set/reset only by the callback */
+  gboolean realtime_tracking;
   gboolean first_realtime_trackpoint;
   GpsFix realtime_fix;
   GpsFix last_fix;
@@ -348,6 +350,7 @@ struct _VikGpsLayer {
   GdkGC *realtime_track_pt2_gc;
 
   /* params */
+  gboolean auto_connect_to_gpsd;
   gchar *gpsd_host;
   gchar *gpsd_port;
   gint gpsd_retry_interval;
@@ -556,6 +559,9 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerPara
       vgl->upload_waypoints = data.b;
       break;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+    case PARAM_GPSD_CONNECT:
+      vgl->auto_connect_to_gpsd = data.b;
+      break;
     case PARAM_GPSD_HOST:
       if (data.s) {
         if (vgl->gpsd_host)
@@ -625,6 +631,9 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
       rv.b = vgl->upload_waypoints;
       break;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+    case PARAM_GPSD_CONNECT:
+      rv.b = vgl->auto_connect_to_gpsd;
+      break;
     case PARAM_GPSD_HOST:
       rv.s = vgl->gpsd_host ? vgl->gpsd_host : "";
       break;
@@ -846,6 +855,14 @@ static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIt
     vik_layer_realize ( trw, VIK_LAYER(vgl)->vt, &iter );
     g_signal_connect_swapped ( G_OBJECT(trw), "update", G_CALLBACK(vik_layer_emit_update_secondary), vgl );
   }
+
+#if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+  if ( vgl->auto_connect_to_gpsd ) {
+    vgl->realtime_tracking = TRUE;
+    vgl->first_realtime_trackpoint = TRUE;
+    (void)rt_gpsd_connect ( vgl, FALSE );
+  }
+#endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 }
 
 const GList *vik_gps_layer_get_children ( VikGpsLayer *vgl )
@@ -1736,8 +1753,8 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
 #else
 // Delibrately break compilation...
 #endif
-    g_warning("Failed to connect to gpsd at %s (port %s). Will retry in %d seconds",
-                     vgl->gpsd_host, vgl->gpsd_port, vgl->gpsd_retry_interval);
+    g_debug("Failed to connect to gpsd at %s (port %s). Will retry in %d seconds",
+            vgl->gpsd_host, vgl->gpsd_port, vgl->gpsd_retry_interval);
     return TRUE;   /* keep timer running */
   }
 
