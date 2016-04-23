@@ -34,6 +34,7 @@ vikenumtypes.c: vikenumtypes.c.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
 	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.c.template $(ENUM_H_FILES)) > $@
 
 EXTRA_DIST = \
+	misc/fpconv-license.txt \
 	docbook2documenters.xsl \
 	vikenumtypes.h.template \
 	vikenumtypes.c.template
@@ -154,6 +155,7 @@ libviking_a_SOURCES = \
 	viklayer_defaults.c viklayer_defaults.h \
 	settings.c settings.h \
 	preferences.c preferences.h \
+	misc/fpconv.c misc/fpconv.h misc/powers.h \
 	misc/strtod.c misc/strtod.h \
 	misc/kdtree.c misc/kdtree.h
 

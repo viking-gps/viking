@@ -51,6 +51,8 @@ struct LatLon {
   gdouble lon;
 };
 
+#define COORDS_STR_BUFFER_SIZE 24
+
 int a_coords_utm_equal( const struct UTM *utm1, const struct UTM *utm2 );
 void a_coords_latlon_to_utm ( const struct LatLon *latlon, struct UTM *utm );
 void a_coords_utm_to_latlon ( const struct UTM *utm, struct LatLon *latlon );
@@ -66,6 +68,13 @@ double a_coords_latlon_diff ( const struct LatLon *ll1, const struct LatLon *ll2
  * The returned value must be freed by g_free.
  */
 char *a_coords_dtostr ( double d );
+
+/**
+ * Similar to a_coords_dtostr() above, but uses an existing allocated
+ *  buffer thus avoiding the need for malloc/free
+ * Ideal for use where this may be called a lot (e.g. in file saving)
+ */
+void a_coords_dtostr_buffer ( double d, char buffer[COORDS_STR_BUFFER_SIZE] );
 
 /**
  * Convert a LatLon to strings.

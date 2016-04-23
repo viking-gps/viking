@@ -58,6 +58,19 @@ renaming functions and defining LatLon and UTM structs.
 #define RAD2DEG(x) ((x)*(180/M_PI))
 #endif
 #include "degrees_converters.h"
+#include "misc/fpconv.h"
+
+/**
+ *
+ */
+void a_coords_dtostr_buffer ( double d, char buffer[COORDS_STR_BUFFER_SIZE] )
+{
+  int str_len = fpconv_dtoa(d, buffer);
+  if ( str_len < COORDS_STR_BUFFER_SIZE )
+    buffer[str_len] = '\0';
+  else
+    buffer[COORDS_STR_BUFFER_SIZE-1] = '\0';
+}
 
 /**
  * Convert a double to a string WITHOUT LOCALE.
@@ -70,7 +83,10 @@ renaming functions and defining LatLon and UTM structs.
 char *a_coords_dtostr ( double d )
 {
   gchar *buffer = g_malloc(G_ASCII_DTOSTR_BUF_SIZE*sizeof(gchar));
-  g_ascii_dtostr (buffer, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) d);
+  // Note that this doesn't necessary produce the shortest string
+  //g_ascii_formatd (buffer, G_ASCII_DTOSTR_BUF_SIZE, "%.9lf", (gdouble)d);
+  // Thus use third party code:
+  a_coords_dtostr_buffer ( d, buffer );
   return buffer;
 }
 

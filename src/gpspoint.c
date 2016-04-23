@@ -568,7 +568,8 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
 static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f )
 {
   struct LatLon ll;
-  gchar *s_lat, *s_lon;
+  gchar s_lat[COORDS_STR_BUFFER_SIZE];
+  gchar s_lon[COORDS_STR_BUFFER_SIZE];
   // Sanity clauses
   if ( !wp )
     return;
@@ -576,18 +577,16 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
     return;
 
   vik_coord_to_latlon ( &(wp->coord), &ll );
-  s_lat = a_coords_dtostr(ll.lat);
-  s_lon = a_coords_dtostr(ll.lon);
+  a_coords_dtostr_buffer ( ll.lat, s_lat );
+  a_coords_dtostr_buffer ( ll.lon, s_lon );
   gchar *tmp_name = slashdup(wp->name);
   fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, tmp_name );
   g_free ( tmp_name );
-  g_free ( s_lat ); 
-  g_free ( s_lon );
 
   if ( wp->altitude != VIK_DEFAULT_ALTITUDE ) {
-    gchar *s_alt = a_coords_dtostr(wp->altitude);
+    gchar s_alt[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( wp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
-    g_free(s_alt);
   }
   if ( wp->has_timestamp )
     fprintf ( f, " unixtime=\"%ld\"", wp->timestamp );
@@ -653,18 +652,16 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type *write_info )
 {
   struct LatLon ll;
-  gchar *s_lat, *s_lon;
+  gchar s_lat[COORDS_STR_BUFFER_SIZE];
+  gchar s_lon[COORDS_STR_BUFFER_SIZE];
+  gchar s_alt[COORDS_STR_BUFFER_SIZE];
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
   FILE *f = write_info->f;
 
-  /* TODO: modify a_coords_dtostr() to accept (optional) buffer
-   * instead of doing malloc/free everytime */
-  s_lat = a_coords_dtostr(ll.lat);
-  s_lon = a_coords_dtostr(ll.lon);
+  a_coords_dtostr_buffer ( ll.lat, s_lat );
+  a_coords_dtostr_buffer ( ll.lon, s_lon );
   fprintf ( f, "type=\"%spoint\" latitude=\"%s\" longitude=\"%s\"", write_info->is_route ? "route" : "track", s_lat, s_lon );
-  g_free ( s_lat ); 
-  g_free ( s_lon );
 
   if ( tp->name ) {
     gchar *name = slashdup(tp->name);
@@ -673,9 +670,8 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
   }
 
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE ) {
-    gchar *s_alt = a_coords_dtostr(tp->altitude);
+    a_coords_dtostr_buffer ( tp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
-    g_free(s_alt);
   }
   if ( tp->has_timestamp )
     fprintf ( f, " unixtime=\"%ld\"", tp->timestamp );
@@ -685,14 +681,14 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
   if (!isnan(tp->speed) || !isnan(tp->course) || tp->nsats > 0) {
     fprintf ( f, " extended=\"yes\"" );
     if (!isnan(tp->speed)) {
-      gchar *s_speed = a_coords_dtostr(tp->speed);
+      gchar s_speed[COORDS_STR_BUFFER_SIZE];
+      a_coords_dtostr_buffer ( tp->speed, s_speed );
       fprintf ( f, " speed=\"%s\"", s_speed );
-      g_free(s_speed);
     }
     if (!isnan(tp->course)) {
-      gchar *s_course = a_coords_dtostr(tp->course);
+      gchar s_course[COORDS_STR_BUFFER_SIZE];
+      a_coords_dtostr_buffer ( tp->course, s_course );
       fprintf ( f, " course=\"%s\"", s_course );
-      g_free(s_course);
     }
     if (tp->nsats > 0)
       fprintf ( f, " sat=\"%d\"", tp->nsats );
@@ -700,19 +696,19 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
       fprintf ( f, " fix=\"%d\"", tp->fix_mode );
 
     if ( tp->hdop != VIK_DEFAULT_DOP ) {
-      gchar *ss = a_coords_dtostr(tp->hdop);
+      gchar ss[COORDS_STR_BUFFER_SIZE];
+      a_coords_dtostr_buffer ( tp->hdop, ss );
       fprintf ( f, " hdop=\"%s\"", ss );
-      g_free(ss);
     }
     if ( tp->vdop != VIK_DEFAULT_DOP ) {
-      gchar *ss = a_coords_dtostr(tp->vdop);
+      gchar ss[COORDS_STR_BUFFER_SIZE];
+      a_coords_dtostr_buffer ( tp->vdop, ss );
       fprintf ( f, " vdop=\"%s\"", ss );
-     g_free(ss);
     }
     if ( tp->pdop != VIK_DEFAULT_DOP ) {
-      gchar *ss = a_coords_dtostr(tp->pdop);
+      gchar ss[COORDS_STR_BUFFER_SIZE];
+      a_coords_dtostr_buffer ( tp->pdop, ss );
       fprintf ( f, " pdop=\"%s\"", ss );
-      g_free(ss);
     }
   }
   fprintf ( f, "\n" );

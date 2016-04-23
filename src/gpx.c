@@ -810,17 +810,16 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 
   FILE *f = context->file;
   struct LatLon ll;
-  gchar *s_lat,*s_lon;
+  gchar s_lat[COORDS_STR_BUFFER_SIZE];
+  gchar s_lon[COORDS_STR_BUFFER_SIZE];
   gchar *tmp;
   vik_coord_to_latlon ( &(wp->coord), &ll );
-  s_lat = a_coords_dtostr( ll.lat );
-  s_lon = a_coords_dtostr( ll.lon );
+  a_coords_dtostr_buffer ( ll.lat, s_lat );
+  a_coords_dtostr_buffer ( ll.lon, s_lon );
   // NB 'hidden' is not part of any GPX standard - this appears to be a made up Viking 'extension'
   //  luckily most other GPX processing software ignores things they don't understand
   fprintf ( f, "<wpt lat=\"%s\" lon=\"%s\"%s>\n",
                s_lat, s_lon, wp->visible ? "" : " hidden=\"hidden\"" );
-  g_free ( s_lat );
-  g_free ( s_lon );
 
   // Sanity clause
   if ( wp->name )
@@ -833,9 +832,9 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 
   if ( wp->altitude != VIK_DEFAULT_ALTITUDE )
   {
-    tmp = a_coords_dtostr ( wp->altitude );
-    fprintf ( f, "  <ele>%s</ele>\n", tmp );
-    g_free ( tmp );
+    gchar s_alt[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( wp->altitude, s_alt );
+    fprintf ( f, "  <ele>%s</ele>\n", s_alt );
   }
 
   if ( wp->has_timestamp ) {
@@ -906,7 +905,10 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
 {
   FILE *f = context->file;
   struct LatLon ll;
-  gchar *s_lat,*s_lon, *s_alt, *s_dop;
+  gchar s_lat[COORDS_STR_BUFFER_SIZE];
+  gchar s_lon[COORDS_STR_BUFFER_SIZE];
+  gchar s_alt[COORDS_STR_BUFFER_SIZE];
+  gchar s_dop[COORDS_STR_BUFFER_SIZE];
   gchar *time_iso8601;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
@@ -914,11 +916,9 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   if ( context->options && !context->options->is_route && tp->newsegment )
     fprintf ( f, "  </trkseg>\n  <trkseg>\n" );
 
-  s_lat = a_coords_dtostr( ll.lat );
-  s_lon = a_coords_dtostr( ll.lon );
+  a_coords_dtostr_buffer ( ll.lat, s_lat );
+  a_coords_dtostr_buffer ( ll.lon, s_lon );
   fprintf ( f, "  <%spt lat=\"%s\" lon=\"%s\">\n", (context->options && context->options->is_route) ? "rte" : "trk", s_lat, s_lon );
-  g_free ( s_lat ); s_lat = NULL;
-  g_free ( s_lon ); s_lon = NULL;
 
   if (tp->name) {
     gchar *s_name = entitize(tp->name);
@@ -926,18 +926,16 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
     g_free(s_name);
   }
 
-  s_alt = NULL;
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
   {
-    s_alt = a_coords_dtostr ( tp->altitude );
+    a_coords_dtostr_buffer ( tp->altitude, s_alt );
   }
   else if ( context->options != NULL && context->options->force_ele )
   {
-    s_alt = a_coords_dtostr ( 0 );
+    a_coords_dtostr_buffer ( 0, s_alt );
   }
   if (s_alt != NULL)
     fprintf ( f, "    <ele>%s</ele>\n", s_alt );
-  g_free ( s_alt ); s_alt = NULL;
   
   time_iso8601 = NULL;
   if ( tp->has_timestamp ) {
@@ -960,14 +958,14 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   time_iso8601 = NULL;
   
   if (!isnan(tp->course)) {
-    gchar *s_course = a_coords_dtostr(tp->course);
+    gchar s_course[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( tp->course, s_course );
     fprintf ( f, "    <course>%s</course>\n", s_course );
-    g_free(s_course);
   }
   if (!isnan(tp->speed)) {
-    gchar *s_speed = a_coords_dtostr(tp->speed);
+    gchar s_speed[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( tp->speed, s_speed );
     fprintf ( f, "    <speed>%s</speed>\n", s_speed );
-    g_free(s_speed);
   }
   if (tp->fix_mode == VIK_GPS_MODE_2D)
     fprintf ( f, "    <fix>2d</fix>\n");
@@ -980,30 +978,20 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   if (tp->nsats > 0)
     fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
 
-  s_dop = NULL;
-  if ( tp->hdop != VIK_DEFAULT_DOP )
-  {
-    s_dop = a_coords_dtostr ( tp->hdop );
-  }
-  if (s_dop != NULL)
+  if ( tp->hdop != VIK_DEFAULT_DOP ) {
+    a_coords_dtostr_buffer ( tp->hdop, s_dop );
     fprintf ( f, "    <hdop>%s</hdop>\n", s_dop );
-  g_free ( s_dop ); s_dop = NULL;
-
-  if ( tp->vdop != VIK_DEFAULT_DOP )
-  {
-    s_dop = a_coords_dtostr ( tp->vdop );
   }
-  if (s_dop != NULL)
+
+  if ( tp->vdop != VIK_DEFAULT_DOP ) {
+    a_coords_dtostr_buffer ( tp->vdop, s_dop );
     fprintf ( f, "    <vdop>%s</vdop>\n", s_dop );
-  g_free ( s_dop ); s_dop = NULL;
-
-  if ( tp->pdop != VIK_DEFAULT_DOP )
-  {
-    s_dop = a_coords_dtostr ( tp->pdop );
   }
-  if (s_dop != NULL)
+
+  if ( tp->pdop != VIK_DEFAULT_DOP ) {
+    a_coords_dtostr_buffer ( tp->pdop, s_dop );
     fprintf ( f, "    <pdop>%s</pdop>\n", s_dop );
-  g_free ( s_dop ); s_dop = NULL;
+  }
 
   fprintf ( f, "  </%spt>\n", (context->options && context->options->is_route) ? "rte" : "trk" );
 }
