@@ -4181,10 +4181,12 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
   gtk_widget_show ( item );
 
-  item = gtk_menu_item_new_with_mnemonic ( _("Export as _KML...") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_kml), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
-  gtk_widget_show ( item );
+  if ( a_babel_available () ) {
+    item = gtk_menu_item_new_with_mnemonic ( _("Export as _KML...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_kml), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
+    gtk_widget_show ( item );
+  }
 
   if ( have_geojson_export ) {
     item = gtk_menu_item_new_with_mnemonic ( _("Export as GEO_JSON...") );
@@ -4193,10 +4195,12 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
     gtk_widget_show ( item );
   }
 
-  item = gtk_menu_item_new_with_mnemonic ( _("Export via GPSbabel...") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_babel), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
-  gtk_widget_show ( item );
+  if ( a_babel_available () ) {
+    item = gtk_menu_item_new_with_mnemonic ( _("Export via GPSbabel...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_export_babel), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (export_submenu), item);
+    gtk_widget_show ( item );
+  }
 
   gchar* external1 = g_strdup_printf ( _("Open with External Program_1: %s"), a_vik_get_external_gpx_program_1() );
   item = gtk_menu_item_new_with_mnemonic ( external1 );
@@ -4318,11 +4322,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_widget_show ( item );
 #endif
 
-  item = gtk_menu_item_new_with_mnemonic ( _("From _File...") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_file_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
-  gtk_widget_set_tooltip_text (item, _("Import File With GPS_Babel..."));
-  gtk_widget_show ( item );
+  if ( a_babel_available () ) {
+    item = gtk_menu_item_new_with_mnemonic ( _("From _File...") );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_acquire_file_cb), pass_along );
+    gtk_menu_shell_append (GTK_MENU_SHELL (acquire_submenu), item);
+    gtk_widget_set_tooltip_text (item, _("Import File With GPS_Babel..."));
+    gtk_widget_show ( item );
+  }
 
   vik_ext_tool_datasources_add_menu_items_to_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), GTK_MENU (acquire_submenu) );
 

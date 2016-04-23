@@ -4453,8 +4453,6 @@ static GtkActionEntry entries[] = {
   { "Export",    GTK_STOCK_CONVERT,      N_("_Export All"),               NULL,         N_("Export All TrackWaypoint Layers"),              (GCallback)NULL                  },
   { "ExportGPX", NULL,                   N_("_GPX..."),           	      NULL,         N_("Export as GPX"),                                (GCallback)export_to_gpx         },
   { "Acquire",   GTK_STOCK_GO_DOWN,      N_("A_cquire"),                  NULL,         NULL,                                               (GCallback)NULL },
-  { "AcquireGPS",   NULL,                N_("From _GPS..."),           	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
-  { "AcquireGPSBabel",   NULL,                N_("Import File With GPS_Babel..."),           	  NULL,         N_("Import file via GPSBabel converter"),              (GCallback)acquire_from_file      },
   { "AcquireRouting",   NULL,             N_("_Directions..."),     NULL,         N_("Get driving directions"),           (GCallback)acquire_from_routing   },
 #ifdef VIK_CONFIG_OPENSTREETMAP
   { "AcquireOSM",   NULL,                 N_("_OSM Traces..."),    	  NULL,         N_("Get traces from OpenStreetMap"),            (GCallback)acquire_from_osm       },
@@ -4524,6 +4522,8 @@ static GtkActionEntry debug_entries[] = {
 
 static GtkActionEntry entries_gpsbabel[] = {
   { "ExportKML", NULL,                   N_("_KML..."),           	      NULL,         N_("Export as KML"),                                (GCallback)export_to_kml },
+  { "AcquireGPS",   NULL,                N_("From _GPS..."),           	  NULL,         N_("Transfer data from a GPS device"),              (GCallback)acquire_from_gps      },
+  { "AcquireGPSBabel", NULL,             N_("Import File With GPS_Babel..."), NULL,     N_("Import file via GPSBabel converter"),           (GCallback)acquire_from_file },
 };
 
 static GtkActionEntry entries_geojson[] = {
@@ -4629,10 +4629,16 @@ static void window_create_ui( VikWindow *window )
 
   // Use this to see if GPSBabel is available:
   if ( a_babel_available () ) {
-	// If going to add more entries then might be worth creating a menu_gpsbabel.xml.h file
-	if ( gtk_ui_manager_add_ui_from_string ( uim,
-	  "<ui><menubar name='MainMenu'><menu action='File'><menu action='Export'><menuitem action='ExportKML'/></menu></menu></menubar></ui>",
-	  -1, &error ) )
+    // If going to add more entries then might be worth creating a menu_gpsbabel.xml.h file
+    if ( gtk_ui_manager_add_ui_from_string ( uim,
+         "<ui>" \
+         "<menubar name='MainMenu'>" \
+         "<menu action='File'><menu action='Export'><menuitem action='ExportKML'/></menu></menu>" \
+         "<menu action='File'><menu action='Acquire'><menuitem action='AcquireGPS'/></menu></menu>" \
+         "<menu action='File'><menu action='Acquire'><menuitem action='AcquireGPSBabel'/></menu></menu>" \
+         "</menubar>" \
+         "</ui>",
+         -1, &error ) )
       gtk_action_group_add_actions ( action_group, entries_gpsbabel, G_N_ELEMENTS (entries_gpsbabel), window );
   }
 
