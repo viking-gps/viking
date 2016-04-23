@@ -493,6 +493,26 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
       }
       g_strfreev(tokens);
     }
+    /* Capture some potential errors */
+    if (strstr(line, "[ERROR] GPS")) {
+      gchar **tokens = g_strsplit(line, "\n", 0);
+      gps_data->info = g_strdup(tokens[0]);
+      gps_data->id_info = gdk_threads_add_idle ( (GSourceFunc)show_gps_info, w );
+      g_strfreev(tokens);
+    }
+    if (strstr(line, "an't in")) {
+      gchar **tokens = g_strsplit(line, "\n", 0);
+      gps_data->info = g_strdup(tokens[0]);
+      gps_data->id_info = gdk_threads_add_idle ( (GSourceFunc)show_gps_info, w );
+      g_strfreev(tokens);
+    }
+
+    if (strstr(line, "Can't get waypoint")) {
+      gchar **tokens = g_strsplit(line, "\n", 0);
+      gps_data->info = g_strdup(tokens[0]);
+      gps_data->id_info = gdk_threads_add_idle ( (GSourceFunc)show_gps_info, w );
+      g_strfreev(tokens);
+    }
     /* tells us how many items there will be */
     if (strstr(line, "RECORD")) {
       int lsb, msb, cnt;

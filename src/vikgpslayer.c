@@ -1176,6 +1176,28 @@ static void process_line_for_gps_info ( const gchar *line, GpsSession *sess )
     g_strfreev(tokens);
   }
 
+  if (strstr(line, "[ERROR] GPS")) {
+    gchar **tokens = g_strsplit(line, "\n", 0);
+    sess->info = g_strdup(tokens[0]);
+    sess->id_info = gdk_threads_add_idle ( (GSourceFunc)show_gps_info, sess );
+    g_strfreev(tokens);
+  }
+
+  if (strstr(line, "an't in")) {
+    gchar **tokens = g_strsplit(line, "\n", 0);
+    sess->info = g_strdup(tokens[0]);
+    sess->id_info = gdk_threads_add_idle ( (GSourceFunc)show_gps_info, sess );
+    g_strfreev(tokens);
+  }
+
+  if (strstr(line, "Can't get waypoint")) {
+    gchar **tokens = g_strsplit(line, "\n", 0);
+    sess->info = g_strdup(tokens[0]);
+    sess->id_info = gdk_threads_add_idle ( (GSourceFunc)show_gps_info, sess );
+    g_strfreev(tokens);
+  }
+}
+
 static gboolean show_gps_status_working ( GpsSession *sess )
 {
   g_mutex_lock(sess->mutex);
