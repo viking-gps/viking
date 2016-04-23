@@ -180,8 +180,10 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
   gint babel_stdout;
 
   if ( vik_debug ) {
+    g_printf ( "%s:", __FUNCTION__ );
     for ( guint i=0; args[i]; i++ )
-      g_debug ("%s: %s", __FUNCTION__, args[i] );
+      g_printf ( " %s", args[i] );
+    g_printf ( "\n" );
   }
 
   if (!g_spawn_async_with_pipes (NULL, args, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {
@@ -206,6 +208,9 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
 
     g_child_watch_add ( pid, (GChildWatchFunc) babel_watch, NULL );
 
+    // Useful to see in case of any errors,
+    //  although they don't always occur on the last line output
+    g_debug ( "%s: last received line is=\"%s\"", __FUNCTION__, line );
     ret = TRUE;
   }
     
