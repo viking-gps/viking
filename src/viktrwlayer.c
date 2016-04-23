@@ -9535,10 +9535,8 @@ static gboolean tool_sync_done = TRUE;
 static gboolean tool_sync(gpointer data)
 {
   VikViewport *vvp = data;
-  gdk_threads_enter();
   vik_viewport_sync(vvp);
   tool_sync_done = TRUE;
-  gdk_threads_leave();
   return FALSE;
 }
 
@@ -9780,13 +9778,11 @@ static gboolean draw_sync ( gpointer data )
   //  normally because another update has taken precedent such as panning the display
   //   which means this pixmap is no longer valid
   if ( ds->vtl->draw_sync_do ) {
-    gdk_threads_enter();
     gdk_draw_drawable (ds->drawable,
                        ds->gc,
                        ds->pixmap,
                        0, 0, 0, 0, -1, -1);
     ds->vtl->draw_sync_done = TRUE;
-    gdk_threads_leave();
   }
   g_free ( ds );
   return FALSE;

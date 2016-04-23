@@ -133,7 +133,6 @@ int main( int argc, char *argv[] )
 #if ! GLIB_CHECK_VERSION (2, 32, 0)
   g_thread_init ( NULL );
 #endif
-  gdk_threads_init ();
 
   gui_initialized = gtk_init_with_args (&argc, &argv, "files+", entries, NULL, &error);
   if (!gui_initialized)
@@ -228,8 +227,6 @@ int main( int argc, char *argv[] )
   main_icon = gdk_pixbuf_from_pixdata(&viking_pixbuf, FALSE, NULL);
   gtk_window_set_default_icon(main_icon);
 
-  gdk_threads_enter ();
-
   // Ask for confirmation of default settings on first run
   vu_set_auto_features_on_first_run ();
 
@@ -275,7 +272,6 @@ int main( int argc, char *argv[] )
   vu_command_line ( first_window, latitude, longitude, zoom_level_osm, map_id );
 
   gtk_main ();
-  gdk_threads_leave ();
 
   a_babel_uninit ();
   a_toolbar_uninit ();

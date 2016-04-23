@@ -38,10 +38,11 @@ static GThreadPool *thread_pool_local_mapnik = NULL;
 #endif
 static gboolean stop_all_threads = FALSE;
 
-static GtkWidget *bgwindow = NULL;
-static GtkWidget *bgtreeview = NULL;
+// A single store of background items for all Windows
+// Must always be accessed in the main thread
 static GtkListStore *bgstore = NULL;
 
+G_LOCK_DEFINE_STATIC(window_list);
 // Still only actually updating the statusbar though
 static GSList *windows_to_update = NULL;
 
@@ -64,15 +65,37 @@ void a_background_update_status ( VikWindow *vw, gpointer data )
   vik_window_statusbar_update ( vw, buf, VIK_STATUSBAR_ITEMS );
 }
 
+// NB can be called from any thread
 static void background_thread_update ()
 {
+  G_LOCK(window_list);
   g_slist_foreach ( windows_to_update, (GFunc) a_background_update_status, NULL );
+  G_UNLOCK(window_list);
+}
+
+typedef struct {
+  GtkTreeIter *iter;
+  gdouble percent;
+} progress_t;
+
+// In main thread
+static gboolean idle_progress_update ( gpointer user_data )
+{
+  progress_t *progress = user_data;
+  if ( bgstore )
+    gtk_list_store_set ( GTK_LIST_STORE(bgstore), progress->iter, PROGRESS_COLUMN, progress->percent, -1 );
+  g_free ( progress );
+  return FALSE;
 }
 
 /**
  * a_background_thread_progress:
  * @callbackdata: Thread data
  * @fraction:     The value should be between 0.0 and 1.0 indicating percentage of the task complete
+ *
+ * Called from other threads
+ *
+ * Returns a non zero number if the thread should be terminated
  */
 int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
 {
@@ -82,9 +105,10 @@ int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
     gdouble myfraction = fabs(fraction);
     if ( myfraction > 1.0 )
       myfraction = 1.0;
-    gdk_threads_enter();
-    gtk_list_store_set( GTK_LIST_STORE(bgstore), (GtkTreeIter *) args[5], PROGRESS_COLUMN, myfraction*100, -1 );
-    gdk_threads_leave();
+    progress_t *progress = g_malloc0 ( sizeof(progress_t) );
+    progress->percent = myfraction * 100;
+    progress->iter = (GtkTreeIter*)args[5];
+    gdk_threads_add_idle ( idle_progress_update, progress );
   }
 
   args[6] = GINT_TO_POINTER(GPOINTER_TO_INT(args[6])-1);
@@ -106,10 +130,11 @@ static void thread_die ( gpointer args[VIK_BG_NUM_ARGS] )
     background_thread_update ();
   }
 
-  g_free ( args[5] ); /* free iter */
   g_free ( args );
 }
 
+// Called from other threads
+// Returns a non zero number if the thread should be terminated
 int a_background_testcancel ( gpointer callbackdata )
 {
   gpointer *args = (gpointer *) callbackdata;
@@ -125,6 +150,21 @@ int a_background_testcancel ( gpointer callbackdata )
   return 0;
 }
 
+typedef struct {
+  GtkTreeIter *iter;
+} remove_t;
+
+// Called from the main thread
+static gboolean idle_remove ( gpointer user_data )
+{
+  remove_t *remove = user_data;
+  if ( bgstore )
+    gtk_list_store_remove ( bgstore, remove->iter );
+  g_free ( remove->iter );
+  return FALSE;
+}
+
+// Called from other threads
 static void thread_helper ( gpointer args[VIK_BG_NUM_ARGS], gpointer user_data )
 {
   /* unpack args */
@@ -135,11 +175,11 @@ static void thread_helper ( gpointer args[VIK_BG_NUM_ARGS], gpointer user_data )
 
   func ( userdata, args );
 
-  gdk_threads_enter();
-  if ( ! args[0] )
-    gtk_list_store_remove ( bgstore, (GtkTreeIter *) args[5] );
-  gdk_threads_leave();
-
+  if ( ! args[0] ) {
+    remove_t *remove = g_malloc0 ( sizeof(remove_t) );
+    remove->iter = args[5];
+    gdk_threads_add_idle ( idle_remove, remove );
+  }
   thread_die ( args );
 }
 
@@ -191,16 +231,7 @@ void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gch
     g_thread_pool_push( thread_pool_local, args, NULL );
 }
 
-/**
- * a_background_show_window:
- *
- * Display the background window.
- */
-void a_background_show_window ()
-{
-  gtk_widget_show_all ( bgwindow );
-}
-
+// In main thread
 static void cancel_job_with_iter ( GtkTreeIter *piter )
 {
     gpointer *args;
@@ -214,35 +245,36 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
     args[0] = GINT_TO_POINTER(1); /* set killswitch */
 
     gtk_list_store_remove ( bgstore, piter );
+    g_free ( piter );
     args[5] = NULL;
 }
 
-static void bgwindow_response (GtkDialog *dialog, gint arg1 )
+// In main thread
+static void bgwindow_response (GtkDialog *dialog, gint response_id, GtkTreeView *bgtreeview )
 {
-  /* note this function is a signal handler called back from the GTK main loop, 
-   * so GDK is already locked.  We need to release the lock before calling 
-   * thread-safe routines
-   */
-  if ( arg1 == 1 ) /* cancel */
+  switch ( response_id ) {
+  case GTK_RESPONSE_DELETE_EVENT:
+    // Delibrate fall through
+  case GTK_RESPONSE_CLOSE:
+    gtk_widget_destroy ( GTK_WIDGET(dialog) );
+    break;
+  case 1: // Delete / Cancel selected item
     {
       GtkTreeIter iter;
-      if ( gtk_tree_selection_get_selected ( gtk_tree_view_get_selection ( GTK_TREE_VIEW(bgtreeview) ), NULL, &iter ) )
-	cancel_job_with_iter ( &iter );
-      gdk_threads_leave();
+      if ( gtk_tree_selection_get_selected ( gtk_tree_view_get_selection(bgtreeview), NULL, &iter ) )
+        cancel_job_with_iter ( &iter );
       background_thread_update();
-      gdk_threads_enter();
     }
-  else if ( arg1 == 2 ) /* clear */
+    break;
+  case 2: // Clear All jobs
     {
       GtkTreeIter iter;
       while ( gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(bgstore), &iter ) )
-	cancel_job_with_iter ( &iter );
-      gdk_threads_leave();
+        cancel_job_with_iter ( &iter );
       background_thread_update();
-      gdk_threads_enter();
     }
-  else /* OK */
-    gtk_widget_hide ( bgwindow );
+    default: break;
+  }
 }
 
 #define VIK_SETTINGS_BACKGROUND_MAX_THREADS "background_max_threads"
@@ -302,14 +334,23 @@ void a_background_post_init()
   thread_pool_local_mapnik = g_thread_pool_new ( (GFunc) thread_helper, NULL, mapnik_threads, FALSE, NULL );
 #endif
 
+  bgstore = gtk_list_store_new ( N_COLUMNS, G_TYPE_STRING, G_TYPE_DOUBLE, G_TYPE_POINTER );
+}
+
+/**
+ * a_background_show_window:
+ *
+ * Display the background window.
+ */
+void a_background_show_window ()
+{
+  GtkWidget *bgwindow = NULL;
+  GtkWidget *bgtreeview = NULL;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
   GtkWidget *scrolled_window;
 
-  g_debug(__FUNCTION__);
-
   /* store & treeview */
-  bgstore = gtk_list_store_new ( N_COLUMNS, G_TYPE_STRING, G_TYPE_DOUBLE, G_TYPE_POINTER );
   bgtreeview = gtk_tree_view_new_with_model ( GTK_TREE_MODEL(bgstore) );
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (bgtreeview), TRUE);
   gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (bgtreeview)),
@@ -329,7 +370,7 @@ void a_background_post_init()
   gtk_container_add ( GTK_CONTAINER(scrolled_window), bgtreeview );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
 
-  bgwindow = gtk_dialog_new_with_buttons ( "", NULL, 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_DELETE, 1, GTK_STOCK_CLEAR, 2, NULL );
+  bgwindow = gtk_dialog_new_with_buttons ( _("Viking Background Jobs"), NULL, 0, GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, GTK_STOCK_DELETE, 1, GTK_STOCK_CLEAR, 2, NULL );
   gtk_dialog_set_default_response ( GTK_DIALOG(bgwindow), GTK_RESPONSE_ACCEPT );
   GtkWidget *response_w = NULL;
 #if GTK_CHECK_VERSION (2, 20, 0)
@@ -337,14 +378,14 @@ void a_background_post_init()
 #endif
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(bgwindow))), scrolled_window, TRUE, TRUE, 0 );
   gtk_window_set_default_size ( GTK_WINDOW(bgwindow), 400, 400 );
-  gtk_window_set_title ( GTK_WINDOW(bgwindow), _("Viking Background Jobs") );
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
-  /* don't destroy win */
-  g_signal_connect ( G_OBJECT(bgwindow), "delete-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL );
 
-  g_signal_connect ( G_OBJECT(bgwindow), "response", G_CALLBACK(bgwindow_response), 0 );
+  g_signal_connect ( G_OBJECT(bgwindow), "response", G_CALLBACK(bgwindow_response), GTK_TREE_VIEW(bgtreeview) );
 
+  gtk_widget_show_all ( bgwindow );
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(bgwindow), GTK_RESPONSE_CLOSE );
 }
 
 /**
@@ -355,26 +396,27 @@ void a_background_post_init()
 void a_background_uninit()
 {
   stop_all_threads = TRUE;
-  // wait until these threads stop
-  g_thread_pool_free ( thread_pool_remote, TRUE, TRUE );
-  // Don't wait for these
+  // Don't wait for these threads to complete - i.e. end now.
+  g_thread_pool_free ( thread_pool_remote, TRUE, FALSE );
   g_thread_pool_free ( thread_pool_local, TRUE, FALSE );
 #ifdef HAVE_LIBMAPNIK
   g_thread_pool_free ( thread_pool_local_mapnik, TRUE, FALSE );
 #endif
-
   gtk_list_store_clear ( bgstore );
   g_object_unref ( bgstore );
-
-  gtk_widget_destroy ( bgwindow );
+  bgstore = NULL;
 }
 
 void a_background_add_window (VikWindow *vw)
 {
+  G_LOCK(window_list);
   windows_to_update = g_slist_prepend(windows_to_update,vw);
+  G_UNLOCK(window_list);
 }
 
 void a_background_remove_window (VikWindow *vw)
 {
+  G_LOCK(window_list);
   windows_to_update = g_slist_remove(windows_to_update,vw);
+  G_UNLOCK(window_list);
 }

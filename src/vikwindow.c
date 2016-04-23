@@ -1205,11 +1205,9 @@ gboolean draw_buf_done = TRUE;
 static gboolean draw_buf(gpointer data)
 {
   gpointer *pass_along = data;
-  gdk_threads_enter();
   gdk_draw_drawable (pass_along[0], pass_along[1],
 		     pass_along[2], 0, 0, 0, 0, -1, -1);
   draw_buf_done = TRUE;
-  gdk_threads_leave();
   return FALSE;
 }
 

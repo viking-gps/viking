@@ -482,15 +482,12 @@ done:
 	return ret;
 }
 
-static int
+static gboolean
 _emit_update ( gpointer data )
 {
-	gdk_threads_enter();
-	/* TODO
-	vik_layers_panel_emit_update ( VIK_LAYERS_PANEL (data) );
-	*/
-	gdk_threads_leave();
-	return 0;
+	//if ( data )
+	//	vik_layers_panel_emit_update ( VIK_LAYERS_PANEL (data) );
+	return FALSE;
 }
 
 static int
@@ -502,10 +499,9 @@ _load_attributions_thread ( BingMapSource *self, gpointer threaddata )
 		return -1; /* Abort thread */
 
 	/* Emit update */
-	/* As we are on a download thread,
-	 * it's better to fire the update from the main loop.
-	 */
-	g_idle_add ( (GSourceFunc)_emit_update, NULL /* FIXME */ );
+	// As we are on a download thread, must the update GUI from the main loop
+	// TODO: have reference to the window/viewport/layerspanel to update...
+	(void)gdk_threads_add_idle ( _emit_update, NULL );
 
 	return 0;
 }
