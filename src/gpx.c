@@ -809,7 +809,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     return;
 
   FILE *f = context->file;
-  static struct LatLon ll;
+  struct LatLon ll;
   gchar *s_lat,*s_lon;
   gchar *tmp;
   vik_coord_to_latlon ( &(wp->coord), &ll );
@@ -905,7 +905,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context )
 {
   FILE *f = context->file;
-  static struct LatLon ll;
+  struct LatLon ll;
   gchar *s_lat,*s_lon, *s_alt, *s_dop;
   gchar *time_iso8601;
   vik_coord_to_latlon ( &(tp->coord), &ll );

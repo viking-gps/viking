@@ -567,7 +567,7 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
 
 static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f )
 {
-  static struct LatLon ll;
+  struct LatLon ll;
   gchar *s_lat, *s_lon;
   // Sanity clauses
   if ( !wp )
@@ -652,7 +652,7 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
 
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type *write_info )
 {
-  static struct LatLon ll;
+  struct LatLon ll;
   gchar *s_lat, *s_lon;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
