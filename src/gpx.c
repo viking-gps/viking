@@ -1123,12 +1123,12 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
 
   VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
   if ( md ) {
-    if ( md->author ) {
+    if ( md->author && strlen(md->author) > 0 ) {
       tmp = entitize ( md->author );
       fprintf ( f, "  <author>%s</author>\n", tmp );
       g_free ( tmp );
     }
-    if ( md->description ) {
+    if ( md->description && strlen(md->description) > 0) {
       tmp = entitize ( md->description );
       fprintf ( f, "  <desc>%s</desc>\n", tmp );
       g_free ( tmp );
@@ -1138,7 +1138,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
       fprintf ( f, "  <time>%s</time>\n", tmp );
       g_free ( tmp );
     }
-    if ( md->keywords ) {
+    if ( md->keywords && strlen(md->keywords) > 0) {
       tmp = entitize ( md->keywords );
       fprintf ( f, "  <keywords>%s</keywords>\n", tmp );
       g_free ( tmp );
