@@ -492,7 +492,7 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboo
     vgl->width = gdk_pixbuf_get_width ( vgl->pixbuf );
     vgl->height = gdk_pixbuf_get_height ( vgl->pixbuf );
 
-    if ( vgl->pixbuf && vgl->alpha < 255 )
+    if ( vgl->pixbuf && vgl->alpha <= 255 )
       vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
   }
   /* should find length and width here too */
@@ -978,9 +978,9 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
     }
 
     vgl->alpha = (guint8) gtk_range_get_value ( GTK_RANGE(alpha_scale) );
-    if ( vgl->pixbuf && vgl->alpha < 255 )
+    if ( vgl->pixbuf && vgl->alpha <= 255 )
       vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
-    if ( vgl->scaled && vgl->alpha < 255 )
+    if ( vgl->scaled && vgl->alpha <= 255 )
       vgl->scaled = ui_pixbuf_set_alpha ( vgl->scaled, vgl->alpha );
 
     a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
