@@ -929,13 +929,12 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
   {
     a_coords_dtostr_buffer ( tp->altitude, s_alt );
+    fprintf ( f, "    <ele>%s</ele>\n", s_alt );
   }
   else if ( context->options != NULL && context->options->force_ele )
   {
-    a_coords_dtostr_buffer ( 0, s_alt );
+    fprintf ( f, "    <ele>0</ele>\n" );
   }
-  if (s_alt != NULL)
-    fprintf ( f, "    <ele>%s</ele>\n", s_alt );
   
   time_iso8601 = NULL;
   if ( tp->has_timestamp ) {
