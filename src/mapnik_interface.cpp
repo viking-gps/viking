@@ -316,7 +316,7 @@ gchar * mapnik_interface_about ( void )
 	std::vector<std::string> plugins = mapnik::datasource_cache::instance()->plugin_names();
 #endif
 	std::string str;
-	for (int nn = 0; nn < plugins.size(); nn++ )
+	for (uint nn = 0; nn < plugins.size(); nn++ )
 		str += plugins[nn] + ',';
 	str += '\n';
 	// NB Can have a couple hundred fonts loaded when using system directories
