@@ -3323,7 +3323,7 @@ GHashTable *vik_trw_layer_get_routes_iters ( VikTrwLayer *vtl )
 
 GHashTable *vik_trw_layer_get_waypoints_iters ( VikTrwLayer *vtl )
 {
-  return vtl->waypoints;
+  return vtl->waypoints_iters;
 }
 
 gboolean vik_trw_layer_is_empty ( VikTrwLayer *vtl )
