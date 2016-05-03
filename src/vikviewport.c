@@ -1638,7 +1638,7 @@ void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, 
     vik_coord_to_latlon ( &test, &ll );
     ll.lat += vik_viewport_get_ympp ( vp ) * vik_viewport_get_height ( vp ) / 11000.0; // about 11km per degree latitude
     a_coords_latlon_to_utm ( &ll, &u );
-    vik_coord_load_from_utm ( &test, VIK_VIEWPORT_DRAWMODE_UTM, &u );
+    vik_coord_load_from_utm ( &test, VIK_COORD_UTM, &u );
     vik_viewport_coord_to_screen ( vp, &test, &tx, &ty );
 
     *baseangle = M_PI - atan2(tx-x1, ty-y1);
