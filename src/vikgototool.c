@@ -228,7 +228,7 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
 
   g_debug("%s: raw goto: %s", __FUNCTION__, srch_str);
 
-  escaped_srch_str = uri_escape(srch_str);
+  escaped_srch_str = g_uri_escape_string(srch_str, NULL, TRUE);
 
   g_debug("%s: escaped goto: %s", __FUNCTION__, escaped_srch_str);
 

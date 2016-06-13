@@ -62,28 +62,6 @@ guint util_get_number_of_cpus ()
 #endif
 }
 
-gchar *uri_escape(gchar *str)
-{
-  gchar *esc_str = g_malloc(3*strlen(str));
-  gchar *dst = esc_str;
-  gchar *src;
-
-  for (src = str; *src; src++) {
-    if (*src == ' ')
-     *dst++ = '+';
-    else if (g_ascii_isalnum(*src))
-      *dst++ = *src;
-    else {
-      int x = g_snprintf(dst, 3, "%%%02hX", *src);
-      dst += x;
-    }
-  }
-  *dst = '\0';
-
-  return(esc_str);
-}
-
-
 GList * str_array_to_glist(gchar* data[])
 {
   GList *gl = NULL;

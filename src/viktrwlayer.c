@@ -7873,7 +7873,7 @@ static void trw_layer_google_route_webpage ( menu_array_sublayer values )
 {
   VikTrack *tr = g_hash_table_lookup ( VIK_TRW_LAYER(values[MA_VTL])->routes, values[MA_SUBLAYER_ID] );
   if ( tr ) {
-    gchar *escaped = uri_escape ( tr->comment );
+    gchar *escaped = g_uri_escape_string ( tr->comment, NULL, TRUE );
     gchar *webpage = g_strdup_printf("http://maps.google.com/maps?f=q&hl=en&q=%s", escaped );
     open_url(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(values[MA_VTL])), webpage);
     g_free ( escaped );
