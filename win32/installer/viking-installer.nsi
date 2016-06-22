@@ -269,6 +269,8 @@ Section $(VIKING_SECTION_TITLE) SecViking
     File ${BINARIES}\magic.mgc
     File /r ${BINARIES}\data
     File /r ${BINARIES}\locale
+    File /r ${BINARIES}\share
+    File /r ${BINARIES}\lib
 
     ; Estimate install size based on files in $INSTDIR
     ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
@@ -377,6 +379,8 @@ Section Uninstall
     Delete "$INSTDIR\data\*xml"
     RMDir "$INSTDIR\data"
     RMDir /r "$INSTDIR\locale"
+    RMDir /r "$INSTDIR\lib"
+    RMDir /r "$INSTDIR\share"
     RMDir "$INSTDIR"
 
     ; Shortcuts..

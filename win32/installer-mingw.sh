@@ -127,6 +127,12 @@ cp $MINGW/share/misc/magic* $DESTINATION
 cp $MINGW_BIN/libsqlite3*.dll $DESTINATION
 cp $MINGW_BIN/libnettle*.dll $DESTINATION
 
+# Extra GTK stuff required for (default) theme to work in Windows
+mkdir -p $DESTINATION/lib
+cp -a $MINGW/lib/gtk-2.0 $DESTINATION/lib
+mkdir -p $DESTINATION/share/themes
+cp -a $MINGW/share/themes/MS-Windows $DESTINATION/share/themes
+
 echo Copying GPSBabel Installer
 mkdir $DESTINATION/Optional
 # ATM GPSBabel needs to be in 'cache' dir
