@@ -67,6 +67,7 @@ libviking_a_SOURCES = \
 	dir.c dir.h \
 	file.c file.h \
 	fileutils.c fileutils.h \
+	file_magic.c file_magic.h \
 	authors.h \
 	documenters.h \
 	dialog.c dialog.h \

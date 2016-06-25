@@ -40,11 +40,8 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
-#ifdef HAVE_MAGIC_H
-#include <magic.h>
-#endif
+#include "file_magic.h"
 #include "compression.h"
-
 #include "download.h"
 
 #include "curl_download.h"
@@ -205,48 +202,10 @@ static void uncompress_zip ( gchar *name )
  */
 void a_try_decompress_file (gchar *name)
 {
-#ifdef HAVE_MAGIC_H
-#ifdef MAGIC_VERSION
-	// Or magic_version() if available - probably need libmagic 5.18 or so
-	//  (can't determine exactly which version the versioning became available)
-	g_debug ("%s: magic version: %d", __FUNCTION__, MAGIC_VERSION );
-#endif
-	magic_t myt = magic_open ( MAGIC_CONTINUE|MAGIC_ERROR|MAGIC_MIME );
-	gboolean zip = FALSE;
-	gboolean bzip2 = FALSE;
-	if ( myt ) {
-#ifdef WINDOWS
-		// We have to 'package' the magic database ourselves :(
-		//  --> %PROGRAM FILES%\Viking\magic.mgc
-		int ml = magic_load ( myt, ".\\magic.mgc" );
-#else
-		// Use system default
-		int ml = magic_load ( myt, NULL );
-#endif
-		if ( ml == 0 ) {
-			const char* magic = magic_file (myt, name);
-			g_debug ("%s: magic output: %s", __FUNCTION__, magic );
-
-			if ( g_ascii_strncasecmp(magic, "application/zip", 15) == 0 )
-				zip = TRUE;
-
-			if ( g_ascii_strncasecmp(magic, "application/x-bzip2", 19) == 0 )
-				bzip2 = TRUE;
-		}
-		else {
-			g_critical ("%s: magic load database failure", __FUNCTION__ );
-		}
-
-		magic_close ( myt );
-	}
-
-	if ( !(zip || bzip2) )
-		return;
-
-	if ( zip ) {
+	if ( file_magic_check (name, "application/zip", ".zip") ) {
 		uncompress_zip ( name );
 	}
-	else if ( bzip2 ) {
+	else if ( file_magic_check (name, "application/x-bzip2", ".bz2") ) {
 		gchar* bz2_name = uncompress_bzip2 ( name );
 		if ( bz2_name ) {
 			if ( g_remove ( name ) )
@@ -255,9 +214,6 @@ void a_try_decompress_file (gchar *name)
 				g_critical ("%s: file rename failed [%s] to [%s]", __FUNCTION__, bz2_name, name );
 		}
 	}
-
-	return;
-#endif
 }
 
 #define VIKING_ETAG_XATTR "xattr::viking.etag"
@@ -379,7 +335,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
 
     time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
     /* Get the modified time of this file */
-    GStatBuf buf;
+    struct stat buf;
     (void)g_stat ( fn, &buf );
     time_t file_time = buf.st_mtime;
     if ( (time(NULL) - file_time) < tile_age ) {

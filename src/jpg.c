@@ -24,47 +24,20 @@
 #include "config.h"
 #endif
 #include "jpg.h"
+#include "file_magic.h"
 #ifdef VIK_CONFIG_GEOTAG
 #include "geotag_exif.h"
-#endif
-#ifdef HAVE_MAGIC_H
-#include <magic.h>
 #endif
 
 /**
  * a_jpg_magic_check:
  * @filename: The file
  *
- * Returns: Whether the file is a JPG.
- *  Uses Magic library if available to determine the jpgness.
- *  Otherwise uses a rudimentary extension name check.
+ * Returns: Whether the file is a JPG
  */
 gboolean a_jpg_magic_check ( const gchar *filename )
 {
-	gboolean is_jpg = FALSE;
-#ifdef HAVE_MAGIC_H
-	magic_t myt = magic_open ( MAGIC_CONTINUE|MAGIC_ERROR|MAGIC_MIME );
-	if ( myt ) {
-#ifdef WINDOWS
-		// We have to 'package' the magic database ourselves :(
-		//  --> %PROGRAM FILES%\Viking\magic.mgc
-		magic_load ( myt, "magic.mgc" );
-#else
-		// Use system default
-		magic_load ( myt, NULL );
-#endif
-		const char* magic = magic_file (myt, filename);
-		g_debug ( "%s:%s", __FUNCTION__, magic );
-		if ( g_ascii_strncasecmp (magic, "image/jpeg", 10) == 0 )
-			is_jpg = TRUE;
-
-		magic_close ( myt );
-	}
-	else
-#endif
-		is_jpg = a_file_check_ext ( filename, ".jpg" );
-
-	return is_jpg;
+	return file_magic_check ( filename, "image/jpeg", ".jpg" );
 }
 
 /**
