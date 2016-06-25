@@ -235,6 +235,21 @@ int main( int argc, char *argv[] )
 
   vu_check_latest_version ( GTK_WINDOW(first_window) );
 
+  // Load startup file first so that subsequent files are loaded on top
+  // Especially so that new tracks+waypoints will be above any maps in a startup file
+  if ( a_vik_get_startup_method () == VIK_STARTUP_METHOD_SPECIFIED_FILE ) {
+    gboolean load_startup_file = TRUE;
+    // When a viking file is to be loaded via the command line
+    //  then we'll skip loading any startup file
+    int jj = 0;
+    while ( ++jj < argc ) {
+      if ( check_file_magic_vik(argv[jj]) )
+        load_startup_file = FALSE;
+    }
+    if ( load_startup_file )
+      vik_window_open_file ( first_window, a_vik_get_startup_file(), TRUE );
+  }
+
   while ( ++i < argc ) {
     if ( strcmp(argv[i],"--") == 0 && !dashdash_already )
       dashdash_already = TRUE; /* hack to open '-' */

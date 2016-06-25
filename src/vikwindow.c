@@ -463,12 +463,6 @@ void vik_window_new_window_finish ( VikWindow *vw )
   if ( vw->filename )
     return;
 
-  if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_SPECIFIED_FILE ) {
-    vik_window_open_file ( vw, a_vik_get_startup_file(), TRUE );
-    if ( vw->filename )
-      return;
-  }
-
   // Maybe add a default map layer
   if ( a_vik_get_add_default_map_layer () ) {
     VikMapsLayer *vml = VIK_MAPS_LAYER ( vik_layer_create(VIK_LAYER_MAPS, vw->viking_vvp, FALSE) );
