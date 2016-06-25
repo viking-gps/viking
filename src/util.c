@@ -62,15 +62,6 @@ guint util_get_number_of_cpus ()
 #endif
 }
 
-GList * str_array_to_glist(gchar* data[])
-{
-  GList *gl = NULL;
-  gpointer * p;
-  for (p = (gpointer)data; *p; p++)
-    gl = g_list_prepend(gl, *p);
-  return g_list_reverse(gl);
-}
-
 /**
  * split_string_from_file_on_equals:
  *
