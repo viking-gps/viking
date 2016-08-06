@@ -1210,7 +1210,7 @@ gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm,
 {
   GdkPixbuf *pixbuf;
   int scale_inc;
-  for (scale_inc = 1; scale_inc < SCALE_INC_DOWN; scale_inc ++) {
+  for (scale_inc = 1; scale_inc <= SCALE_INC_DOWN; scale_inc++) {
     // Try with smaller zooms
     int scale_factor = 1 << scale_inc;  /*  2^scale_inc */
     MapCoord ulm2 = ulm;
@@ -1238,7 +1238,7 @@ gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm, g
   GdkPixbuf *pixbuf;
   // Try with bigger zooms
   int scale_dec;
-  for (scale_dec = 1; scale_dec < SCALE_INC_UP; scale_dec ++) {
+  for (scale_dec = 1; scale_dec <= SCALE_INC_UP; scale_dec++) {
     int pict_x, pict_y;
     int scale_factor = 1 << scale_dec;  /*  2^scale_dec */
     MapCoord ulm2 = ulm;
