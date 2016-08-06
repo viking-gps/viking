@@ -180,10 +180,10 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
   gint babel_stdout;
 
   if ( vik_debug ) {
-    g_printf ( "%s:", __FUNCTION__ );
+    (void)g_printf ( "%s:", __FUNCTION__ );
     for ( guint i=0; args[i]; i++ )
-      g_printf ( " %s", args[i] );
-    g_printf ( "\n" );
+      (void)g_printf ( " %s", args[i] );
+    (void)g_printf ( "\n" );
   }
 
   if (!g_spawn_async_with_pipes (NULL, args, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {

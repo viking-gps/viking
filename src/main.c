@@ -87,10 +87,10 @@ static void mute_log(const gchar *log_domain,
 #if HAVE_X11_XLIB_H
 static int myXErrorHandler(Display *display, XErrorEvent *theEvent)
 {
-  g_fprintf (stderr,
-             _("Ignoring Xlib error: error code %d request code %d\n"),
-             theEvent->error_code,
-             theEvent->request_code);
+  (void)g_fprintf (stderr,
+                   _("Ignoring Xlib error: error code %d request code %d\n"),
+                   theEvent->error_code,
+                   theEvent->request_code);
   // No exit on X errors!
   //  mainly to handle out of memory error when requesting large pixbuf from user request
   //  see vikwindow.c::save_image_file ()
@@ -143,21 +143,21 @@ int main( int argc, char *argv[] )
     {
       /* no error message, the GUI initialization failed */
       const gchar *display_name = gdk_get_display_arg_name ();
-      g_fprintf (stderr, "Failed to open display: %s\n", (display_name != NULL) ? display_name : " ");
+      (void)g_fprintf (stderr, "Failed to open display: %s\n", (display_name != NULL) ? display_name : " ");
     }
     else
     {
       /* yep, there's an error, so print it */
-      g_fprintf (stderr, "Parsing command line options failed: %s\n", error->message);
+      (void)g_fprintf (stderr, "Parsing command line options failed: %s\n", error->message);
       g_error_free (error);
-      g_fprintf (stderr, "Run \"%s --help\" to see the list of recognized options.\n",argv[0]);
+      (void)g_fprintf (stderr, "Run \"%s --help\" to see the list of recognized options.\n",argv[0]);
     }
     return EXIT_FAILURE;
   }
    
   if (vik_version)
   {
-    g_printf ("%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-"THEYEAR" Viking's contributors\n", PACKAGE_NAME, PACKAGE_VERSION);
+    (void)g_printf ("%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-"THEYEAR" Viking's contributors\n", PACKAGE_NAME, PACKAGE_VERSION);
     return EXIT_SUCCESS;
   }
 
