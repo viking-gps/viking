@@ -330,6 +330,7 @@ void vik_window_statusbar_update ( VikWindow *vw, const gchar* message, vik_stat
 static void destroy_window ( GtkWidget *widget,
                              gpointer   data )
 {
+    g_debug ( "%s", __FUNCTION__ );
     if ( ! --window_count ) {
       g_free ( last_folder_files_uri );
       g_free ( last_folder_images_uri );
@@ -2966,6 +2967,22 @@ gboolean vik_window_get_pan_move ( VikWindow *vw )
   return vw->pan_move;
 }
 
+/**
+ * Remove the potentially auto added map
+ */
+static void remove_default_map_layer ( VikWindow *vw )
+{
+  if ( a_vik_get_add_default_map_layer () ) {
+    VikAggregateLayer *top = vik_layers_panel_get_top_layer(vw->viking_vlp);
+    if ( vik_aggregate_layer_count(top) == 1 ) {
+      VikLayer *vl = vik_aggregate_layer_get_top_visible_layer_of_type (top, VIK_LAYER_MAPS);
+      // Could try to compare name vs _("Default Map") but this might have i8n issues if not translated
+      if ( vl )
+        vik_aggregate_layer_delete_layer ( top, vl );
+    }
+  }
+}
+
 static void on_activate_recent_item (GtkRecentChooser *chooser,
                                      VikWindow *self)
 {
@@ -2985,6 +3002,7 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
       // NB: GSList & contents are freed by main.open_window
     }
     else {
+      remove_default_map_layer ( self );
       vik_window_open_file ( self, path, TRUE );
       g_free ( path );
     }
@@ -3257,6 +3275,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
         if ( newwindow && check_file_magic_vik ( file_name ) ) {
           // Load first of many .vik files in current window
           if ( first_vik_file ) {
+            remove_default_map_layer ( vw );
             vik_window_open_file ( vw, file_name, TRUE );
             first_vik_file = FALSE;
           }
