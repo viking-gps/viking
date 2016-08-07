@@ -319,7 +319,6 @@ static void set_etag(const char *fn, const char *fntmp, CurlDownloadOptions *cdo
 static DownloadResult_t download( const char *hostname, const char *uri, const char *fn, DownloadFileOptions *options, gboolean ftp, void *handle)
 {
   FILE *f;
-  int ret;
   gchar *tmpfilename;
   gboolean failure = FALSE;
   CurlDownloadOptions cdo = {0, NULL, NULL};
@@ -357,6 +356,12 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
     g_free ( dir );
   }
 
+  // Early test for valid hostname & uri to avoid unnecessary tmp file
+  if ( !hostname && !uri ) {
+    g_warning ( "%s: Parameter error - neither hostname nor uri defined", __FUNCTION__ );
+    return DOWNLOAD_PARAMETERS_ERROR;
+  }
+
   tmpfilename = g_strdup_printf("%s.tmp", fn);
   if (!lock_file ( tmpfilename ) )
   {
@@ -376,7 +381,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   }
 
   /* Call the backend function */
-  ret = curl_download_get_url ( hostname, uri, f, options, ftp, &cdo, handle );
+  CURL_download_t ret = curl_download_get_url ( hostname, uri, f, options, ftp, &cdo, handle );
 
   DownloadResult_t result = DOWNLOAD_SUCCESS;
 

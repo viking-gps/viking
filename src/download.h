@@ -82,6 +82,7 @@ void a_download_init(void);
 void a_download_uninit(void);
 
 typedef enum {
+  DOWNLOAD_PARAMETERS_ERROR = -8, // Configuration issue
   DOWNLOAD_FILE_WRITE_ERROR = -4, // Can't write downloaded file :(
   DOWNLOAD_HTTP_ERROR = -2,
   DOWNLOAD_CONTENT_ERROR = -1,

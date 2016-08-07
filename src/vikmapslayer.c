@@ -1636,6 +1636,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         if (need_download) {
           DownloadResult_t dr = vik_map_source_download( MAPS_LAYER_NTH_TYPE(mdi->maptype), &(mdi->mapcoord), mdi->filename_buf, handle);
           switch ( dr ) {
+            case DOWNLOAD_PARAMETERS_ERROR:
             case DOWNLOAD_HTTP_ERROR:
             case DOWNLOAD_CONTENT_ERROR: {
               // TODO: ?? count up the number of download errors somehow...

@@ -96,7 +96,10 @@ void curl_download_uninit()
   curl_global_cleanup();
 }
 
-int curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, CurlDownloadOptions *cdo, void *handle )
+/**
+ *
+ */
+CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, CurlDownloadOptions *cdo, void *handle )
 {
   CURL *curl;
   struct curl_slist *curl_send_headers = NULL;
@@ -183,25 +186,30 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, 
   return res;
 }
 
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadFileOptions *options, gboolean ftp, CurlDownloadOptions *cdo, void *handle )
+/**
+ * curl_download_get_url:
+ *  Either hostname or uri should be defined
+ *
+ */
+CURL_download_t curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadFileOptions *options, gboolean ftp, CurlDownloadOptions *cdo, void *handle )
 {
-  int ret;
   gchar *full = NULL;
 
-  if ( strstr ( hostname, "://" ) != NULL )
+  if ( hostname && strstr ( hostname, "://" ) != NULL )
     /* Already full url */
     full = (gchar *) hostname;
-  else if ( strstr ( uri, "://" ) != NULL )
+  else if ( uri && strstr ( uri, "://" ) != NULL )
     /* Already full url */
     full = (gchar *) uri;
-  else
+  else if ( hostname && uri )
     /* Compose the full url */
     full = g_strdup_printf ( "%s://%s%s", (ftp?"ftp":"http"), hostname, uri );
-  ret = curl_download_uri ( full, f, options, cdo, handle );
-  /* Free newly allocated memory, but do not free uri */
-  if ( hostname != full && uri != full )
-    g_free ( full );
-  full = NULL;
+  else {
+    return CURL_DOWNLOAD_ERROR;
+  }
+
+  CURL_download_t ret = curl_download_uri ( full, f, options, cdo, handle );
+  g_free ( full );
 
   return ret;
 }

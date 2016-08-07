@@ -29,9 +29,11 @@
 G_BEGIN_DECLS
 
 /* Error messages returned by download functions */
-enum { CURL_DOWNLOAD_NO_ERROR = 0,
-       CURL_DOWNLOAD_NO_NEWER_FILE,
-       CURL_DOWNLOAD_ERROR };
+typedef enum {
+  CURL_DOWNLOAD_NO_ERROR = 0,
+  CURL_DOWNLOAD_NO_NEWER_FILE,
+  CURL_DOWNLOAD_ERROR
+} CURL_download_t;
 
 typedef struct {
   /**
@@ -51,8 +53,8 @@ typedef struct {
 
 void curl_download_init ();
 void curl_download_uninit ();
-int curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadFileOptions *options, gboolean ftp, CurlDownloadOptions *curl_options, void *handle );
-int curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, CurlDownloadOptions *curl_options, void *handle );
+CURL_download_t curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadFileOptions *options, gboolean ftp, CurlDownloadOptions *curl_options, void *handle );
+CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOptions *options, CurlDownloadOptions *curl_options, void *handle );
 void * curl_download_handle_init ();
 void curl_download_handle_cleanup ( void * handle );
 
