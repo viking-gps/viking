@@ -314,6 +314,7 @@ static gchar * trw_names[] = {
 typedef struct {
   struct gps_data_t gpsd;
   VikGpsLayer *vgl;
+  int gpsd_open;
 } VglGpsd;
 
 typedef struct {
@@ -1724,7 +1725,8 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   if (gps_open_r(vgl->gpsd_host, vgl->gpsd_port, /*(struct gps_data_t *)*/vgl->vgpsd) != 0) {
 #elif GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
   vgl->vgpsd = g_malloc(sizeof(VglGpsd));
-  if (gps_open(vgl->gpsd_host, vgl->gpsd_port, &vgl->vgpsd->gpsd) != 0) {
+  vgl->vgpsd->gpsd_open = gps_open ( vgl->gpsd_host, vgl->gpsd_port, &vgl->vgpsd->gpsd );
+  if ( vgl->vgpsd->gpsd_open != 0 ) {
 #else
 // Delibrately break compilation...
 #endif
@@ -1821,7 +1823,8 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
 #if GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
     gps_stream(&vgl->vgpsd->gpsd, WATCH_DISABLE, NULL);
 #endif
-    gps_close(&vgl->vgpsd->gpsd);
+    if ( vgl->vgpsd->gpsd_open == 0 )
+      (void)gps_close(&vgl->vgpsd->gpsd);
 #if GPSD_API_MAJOR_VERSION == 3
     free(vgl->vgpsd);
 #elif GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
