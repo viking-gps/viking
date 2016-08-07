@@ -1915,10 +1915,6 @@ static void maps_layer_redownload_new ( VikMapsLayer *vml )
   start_download_thread ( vml, vml->redownload_vvp, &(vml->redownload_ul), &(vml->redownload_br), REDOWNLOAD_NEW );
 }
 
-#if !GLIB_CHECK_VERSION(2,26,0)
-typedef struct stat GStatBuf;
-#endif
-
 /**
  * Display a simple dialog with information about this particular map tile
  */
