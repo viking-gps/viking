@@ -278,14 +278,14 @@ void a_vik_goto(VikWindow *vw, VikViewport *vvp)
   } while (more);
 }
 
-#define HOSTIP_LATITUDE_PATTERN "\"lat\":\""
-#define HOSTIP_LONGITUDE_PATTERN "\"lng\":\""
-#define HOSTIP_CITY_PATTERN "\"city\":\""
-#define HOSTIP_COUNTRY_PATTERN "\"country_name\":\""
+#define JSON_LATITUDE_PATTERN "\"geoplugin_latitude\":\""
+#define JSON_LONGITUDE_PATTERN "\"geoplugin_longitude\":\""
+#define JSON_CITY_PATTERN "\"geoplugin_city\":\""
+#define JSON_COUNTRY_PATTERN "\"geoplugin_countryName\":\""
 
 /**
  * Automatic attempt to find out where you are using:
- *   1. http://www.hostip.info ++
+ *   1. http://www.geoplugin.com ++
  *   2. if not specific enough fallback to using the default goto tool with a country name
  * ++ Using returned JSON information
  *  c.f. with googlesearch.c - similar implementation is used here
@@ -302,8 +302,8 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
   gint result = 0;
   *name = NULL;
 
-  gchar *tmpname = a_download_uri_to_tmp_file ( "http://api.hostip.info/get_json.php?position=true", NULL );
-  //gchar *tmpname = g_strdup ("../test/hostip2.json");
+  gchar *tmpname = a_download_uri_to_tmp_file ( "http://www.geoplugin.net/json.gp", NULL );
+  //gchar *tmpname = g_strdup ("../test/www.geoplugin.net-slash-json.gp.result");
   if (!tmpname) {
     return result;
   }
@@ -329,8 +329,8 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
   gsize len = g_mapped_file_get_length(mf);
   gchar *text = g_mapped_file_get_contents(mf);
 
-  if ((pat = g_strstr_len(text, len, HOSTIP_COUNTRY_PATTERN))) {
-    pat += strlen(HOSTIP_COUNTRY_PATTERN);
+  if ((pat = g_strstr_len(text, len, JSON_COUNTRY_PATTERN))) {
+    pat += strlen(JSON_COUNTRY_PATTERN);
     fragment_len = 0;
     ss = pat;
     while (*pat != '"') {
@@ -340,8 +340,8 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
     country = g_strndup(ss, fragment_len);
   }
 
-  if ((pat = g_strstr_len(text, len, HOSTIP_CITY_PATTERN))) {
-    pat += strlen(HOSTIP_CITY_PATTERN);
+  if ((pat = g_strstr_len(text, len, JSON_CITY_PATTERN))) {
+    pat += strlen(JSON_CITY_PATTERN);
     fragment_len = 0;
     ss = pat;
     while (*pat != '"') {
@@ -351,8 +351,8 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
     city = g_strndup(ss, fragment_len);
   }
 
-  if ((pat = g_strstr_len(text, len, HOSTIP_LATITUDE_PATTERN))) {
-    pat += strlen(HOSTIP_LATITUDE_PATTERN);
+  if ((pat = g_strstr_len(text, len, JSON_LATITUDE_PATTERN))) {
+    pat += strlen(JSON_LATITUDE_PATTERN);
     ss = lat_buf;
     if (*pat == '-')
       *ss++ = *pat++;
@@ -363,8 +363,8 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
     ll->lat = g_ascii_strtod(lat_buf, NULL);
   }
 
-  if ((pat = g_strstr_len(text, len, HOSTIP_LONGITUDE_PATTERN))) {
-    pat += strlen(HOSTIP_LONGITUDE_PATTERN);
+  if ((pat = g_strstr_len(text, len, JSON_LONGITUDE_PATTERN))) {
+    pat += strlen(JSON_LONGITUDE_PATTERN);
     ss = lon_buf;
     if (*pat == '-')
       *ss++ = *pat++;
@@ -384,7 +384,7 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
   }
   else {
     // Hopefully city name is unique enough to lookup position on
-    // Maybe for American places where hostip appends the State code on the end
+    // For American places the service may append the State code on the end
     // But if the country code is not appended if could easily get confused
     //  e.g. 'Portsmouth' could be at least
     //   Portsmouth, Hampshire, UK or
