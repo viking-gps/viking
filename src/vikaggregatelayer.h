@@ -52,6 +52,7 @@ void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp );
 void vik_aggregate_layer_free ( VikAggregateLayer *val );
 void vik_aggregate_layer_clear ( VikAggregateLayer *val );
 gboolean vik_aggregate_layer_delete ( VikAggregateLayer *val, GtkTreeIter *iter );
+gboolean vik_aggregate_layer_delete_layer ( VikAggregateLayer *val, VikLayer *vl );
 VikAggregateLayer *vik_aggregate_layer_create (VikViewport *vp);
 
 /* returns: 0 = success, 1 = none appl. found, 2 = found but rejected */
@@ -64,6 +65,7 @@ gboolean vik_aggregate_layer_is_empty ( VikAggregateLayer *val );
 
 const GList *vik_aggregate_layer_get_children ( VikAggregateLayer *val );
 GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, VikLayerTypeEnum type, gboolean include_invisible);
+guint vik_aggregate_layer_count ( VikAggregateLayer *val );
 
 G_END_DECLS
 

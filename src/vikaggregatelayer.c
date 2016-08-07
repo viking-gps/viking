@@ -767,15 +767,34 @@ void vik_aggregate_layer_clear ( VikAggregateLayer *val )
   val->children = NULL;
 }
 
+static void aggregate_layer_delete_common ( VikAggregateLayer *val, VikLayer *vl )
+{
+  val->children = g_list_remove ( val->children, vl );
+  disconnect_layer_signal ( vl, val );
+  g_object_unref ( vl );
+}
+
 gboolean vik_aggregate_layer_delete ( VikAggregateLayer *val, GtkTreeIter *iter )
 {
   VikLayer *l = VIK_LAYER( vik_treeview_item_get_pointer ( VIK_LAYER(val)->vt, iter ) );
   gboolean was_visible = l->visible;
 
   vik_treeview_item_delete ( VIK_LAYER(val)->vt, iter );
-  val->children = g_list_remove ( val->children, l );
-  disconnect_layer_signal ( l, val );
-  g_object_unref ( l );
+  aggregate_layer_delete_common ( val, l );
+
+  return was_visible;
+}
+
+/**
+ * Delete a child layer from the aggregate layer
+ */
+gboolean vik_aggregate_layer_delete_layer ( VikAggregateLayer *val, VikLayer *vl )
+{
+  gboolean was_visible = vl->visible;
+
+  if ( vl->realized && &vl->iter )
+    vik_treeview_item_delete ( VIK_LAYER(val)->vt, &vl->iter );
+  aggregate_layer_delete_common ( val, vl );
 
   return was_visible;
 }
@@ -959,4 +978,17 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
     g_snprintf (tmp_buf, sizeof(tmp_buf), ngettext("One layer", "%d layers", nn), nn );
   }
   return tmp_buf;
+}
+
+/**
+ * Return number of layers held
+ */
+guint vik_aggregate_layer_count ( VikAggregateLayer *val )
+{
+  guint nn = 0;
+  GList *children = val->children;
+  if ( children ) {
+    nn = g_list_length (children);
+  }
+  return nn;
 }
