@@ -4,6 +4,9 @@
 
 ## Using OpenSUSE Tumbleweed in a VM ##
 
+This is for 32 bit version, but very similar for 64 version.
+Just use mingw64-viking.spec file instead, install the appropriate 64bit dependencies and it produce a viking-win64-*.exe file.
+
 ### Host Preparation ###
 
 On the host need to ensure the viking-1.X.tar.gz file is available:
@@ -62,11 +65,11 @@ Install locally
 	sudo rpm -i /home/build/rpmbuild/RPMS/noarch/ming*-viking-*.noarch.rpm
 
 Generate .msi
-	cd win32
+	cd windows
 	./installer-mingw.sh
 
 Install .msi
-	wine installer/viking-*.exe
+	wine installer/viking-win32-*.exe
 
 Run viking.exe with wine
 	cd ~/.wine/drive_c/Program\ Files/Viking/

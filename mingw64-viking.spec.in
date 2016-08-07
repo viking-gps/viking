@@ -69,7 +69,7 @@ It is written in mainly in C with some C++ and uses the GTK+2 toolkit.
 
 %build
 # Create Icon
-pushd win32/installer/pixmaps
+pushd windows/installer/pixmaps
 %{_mingw64_windres} viking_icon.rc -o viking_icon.o
 popd
 

@@ -1,4 +1,4 @@
-; Installer script for win32 Viking
+; Installer script for Windows (32 & 64 bit) Viking
 ; Based on Win32 Pidgin installer by Herman Bloggs <hermanator12002@yahoo.com>
 ; and Daniel Atallah <daniel_atallah@yahoo.com>
 ; Heavily modified for Viking by Mathieu Albinet <mathieu_a@users.sourceforge.net>

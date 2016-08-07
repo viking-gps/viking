@@ -533,10 +533,10 @@ AC_CONFIG_FILES([
 		test/Makefile
 		help/Makefile
 		help/viking.xml
-		win32/Makefile
-		win32/installer/Makefile
-		win32/installer/pixmaps/Makefile
-		win32/installer/translations/Makefile
+		windows/Makefile
+		windows/installer/Makefile
+		windows/installer/pixmaps/Makefile
+		windows/installer/translations/Makefile
 		doc/Makefile
 		doc/reference/Makefile
 		doc/examples/Makefile])

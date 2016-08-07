@@ -232,7 +232,7 @@ viking_SOURCES = main.c
 LDADD           = $(noinst_LIBRARIES) $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
 if WINDOWS
 LDADD += \
-	../win32/installer/pixmaps/viking_icon.o
+	../windows/installer/pixmaps/viking_icon.o
 endif
 
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
