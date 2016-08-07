@@ -27,13 +27,3 @@ autodownload=t
 mapzoom=0
 ~EndLayer
 
-
-~Layer Map
-name=MapQuest
-mode=19
-directory=
-alpha=255
-autodownload=t
-mapzoom=0
-~EndLayer
-

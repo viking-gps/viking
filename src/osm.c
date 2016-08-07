@@ -89,21 +89,6 @@ void osm_init () {
                                 "license", "CC-BY-SA",
                                 "license-url", "http://www.openstreetmap.org/copyright",
                                 NULL));
-  VikMapSource *mapquest_type =
-    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", MAP_ID_MAPQUEST_OSM,
-                                "name", "OSM-MapQuest",
-                                "label", "OpenStreetMap (MapQuest)",
-                                "hostname", "otile1.mqcdn.com",
-                                "url", "/tiles/1.0.0/osm/%d/%d/%d.png",
-                                "check-file-server-time", TRUE,
-                                "use-etag", FALSE,
-                                "zoom-min", 0,
-                                "zoom-max", 19,
-                                "copyright", "Tiles Courtesy of MapQuest © OpenStreetMap contributors",
-                                "license", "MapQuest Specific",
-                                "license-url", "http://developer.mapquest.com/web/info/terms-of-use",
-                                NULL));
   VikMapSource *hot_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", MAP_ID_OSM_HUMANITARIAN,
@@ -152,7 +137,28 @@ void osm_init () {
                                 "is-osm-meta-tiles", TRUE,
                                 NULL));
 
-  maps_layer_register_map_source (mapquest_type);
+  // Note using a single global Viking registered key for the Mapbox Tileservice
+  //  which is not secret since it's right here!
+  // Thus not only will the (free) service allocation limit be reached by normal users
+  //  but by anymore who cares to read this source and use it themselves.
+  VikMapSource *mapbox_type =
+    VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
+                                "id", MAP_ID_MAPBOX_OUTDOORS,
+                                "name", "Mapbox-Outdoors",
+                                "label", "Mapbox Outdoors",
+                                "url", "https://api.tiles.mapbox.com/styles/v1/mapbox/outdoors-v9/tiles/256/%d/%d/%d?access_token=pk.eyJ1Ijoicndub3JyaXMiLCJhIjoiY2lxc294anN2MDA5bWhzbWFseWsxMW1ydiJ9.HcybKtZsiG6RVuOHg481Kg",
+                                "check-file-server-time", TRUE,
+                                "use-etag", FALSE,
+                                "zoom-min", 0,
+                                "zoom-max", 19,
+                                "copyright", "© Mapbox © OpenStreetMap",
+                                "license", "Mapbox Specific",
+                                "license-url", "https://www.mapbox.com/tos",
+                                NULL));
+
+  // NB The first registered map source is the default
+  //  (unless the user has specified Map Layer defaults)
+  maps_layer_register_map_source (mapbox_type);
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (cycle_type);
   maps_layer_register_map_source (transport_type);

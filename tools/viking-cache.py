@@ -354,6 +354,8 @@ def get_tile_path (tid):
         return "OSM-Transport"
     elif tile_id == 22:
         return "OSM-Humanitarian"
+    elif tile_id == 25:
+        return "Mapbox-Outdoors"
     elif tile_id == 212:
         return "Bing-Aerial"
     # Default extension Map ids (from data/maps.xml)

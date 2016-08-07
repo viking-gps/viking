@@ -1678,7 +1678,7 @@ Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMa
 </formalpara>
 <itemizedlist>
 <listitem><para>Bing Bird's Eye (Aerial) Maps (&appname; Version1.2+)</para></listitem>
-<listitem><para>OpenStreetMap (Mapquest) - This is the default (&appname; Version1.3+)</para></listitem>
+<listitem><para>Mapbox Outdoors - This is the default (&appname; Version1.7+)</para></listitem>
 <listitem><para>OpenStreetMap (Mapnik)</para></listitem>
 <listitem><para>OpenStreetMap (Cycle)</para></listitem>
 <listitem><para>OpenStreetMap (Transport) (&appname; Version1.3+)</para></listitem>
