@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# Copyright: CC0
 test_string="Test hash of this string"
 
 expected_result=$(echo -n "$test_string" | md5sum | awk '{print $1}')

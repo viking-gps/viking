@@ -1,3 +1,4 @@
+// Copyright: CC0
 // Print md5 hash of the given string
 #include <glib.h>
 #include <glib/gstdio.h>
