@@ -188,7 +188,7 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
 
 /**
  * curl_download_get_url:
- *  Either hostname or uri should be defined
+ *  Either hostname and/or uri should be defined
  *
  */
 CURL_download_t curl_download_get_url ( const char *hostname, const char *uri, FILE *f, DownloadFileOptions *options, gboolean ftp, CurlDownloadOptions *cdo, void *handle )
@@ -209,7 +209,9 @@ CURL_download_t curl_download_get_url ( const char *hostname, const char *uri, F
   }
 
   CURL_download_t ret = curl_download_uri ( full, f, options, cdo, handle );
-  g_free ( full );
+  // Only free newly allocated memory
+  if ( hostname != full && uri != full )
+    g_free ( full );
 
   return ret;
 }
