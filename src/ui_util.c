@@ -1,12 +1,15 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*- */
 /*
  *    Viking - GPS data editor
- *    Copyright (C) 2007, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
  *    Copyright (C) 2014, Rob Norris <rw_norris@hotmail.com>
+ *    Copyright 2006-2012 Enrico Tröger <enrico(dot)troeger(at)uvena(dot)de>
+ *    Copyright 2006-2012 Nick Treleaven <nick(dot)treleaven(at)btinternet(dot)com>
+ *    Copyright 2011-2012 Matthew Brush <mbrush(at)codebrainz(dot)ca>
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation, version 2.
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
  *
  *    This program is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,12 +35,13 @@
 
 #include "util.h"
 #include "dialog.h"
+#include "settings.h"
 
 #ifdef WINDOWS
 #include <windows.h>
 #endif
 
-/*
+
 #ifndef WINDOWS
 static gboolean spawn_command_line_async(const gchar * cmd,
                                          const gchar * arg)
@@ -55,7 +59,7 @@ static gboolean spawn_command_line_async(const gchar * cmd,
   return status;
 }
 #endif
-*/
+
 
 // Annoyingly gtk_show_uri() doesn't work so resort to ShellExecute method
 //   (non working at least in our Windows build with GTK+2.24.10 on Windows 7)
@@ -65,11 +69,25 @@ void open_url(GtkWindow *parent, const gchar * url)
 #ifdef WINDOWS
   ShellExecute(NULL, NULL, (char *) url, NULL, ".\\", 0);
 #else
-  GError *error = NULL;
-  gtk_show_uri ( gtk_widget_get_screen (GTK_WIDGET(parent)), url, GDK_CURRENT_TIME, &error );
-  if ( error ) {
-    a_dialog_error_msg_extra ( parent, _("Could not launch web browser. %s"), error->message );
-    g_error_free ( error );
+  gboolean use_browser = FALSE;
+  if ( a_settings_get_boolean ( "use_env_browser", &use_browser ) ) {
+    const gchar *browser = g_getenv("BROWSER");
+    if (browser == NULL || browser[0] == '\0') {
+      browser = "firefox";
+    }
+    if (spawn_command_line_async(browser, url)) {
+      return;
+    }
+    else
+      g_warning("Failed to run: %s on %s", browser, url);
+  }
+  else {
+    GError *error = NULL;
+    gtk_show_uri ( gtk_widget_get_screen (GTK_WIDGET(parent)), url, GDK_CURRENT_TIME, &error );
+    if ( error ) {
+      a_dialog_error_msg_extra ( parent, _("Could not launch web browser. %s"), error->message );
+      g_error_free ( error );
+    }
   }
 #endif
 }
