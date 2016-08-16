@@ -429,6 +429,9 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
 	case VIK_UNITS_DISTANCE_MILES:
 		trk_dist = VIK_METERS_TO_MILES(trk_dist);
 		break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+		trk_dist = VIK_METERS_TO_NAUTICAL_MILES(trk_dist);
+		break;
 	default:
 		trk_dist = trk_dist/1000.0;
 		break;
@@ -625,6 +628,9 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	switch ( dist_units ) {
 	case VIK_UNITS_DISTANCE_MILES:
 		column = my_new_column_text ( _("Distance\n(miles)"), renderer, view, column_runner++ );
+		break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+		column = my_new_column_text ( _("Distance\n(NM)"), renderer, view, column_runner++ );
 		break;
 	default:
 		column = my_new_column_text ( _("Distance\n(km)"), renderer, view, column_runner++ );

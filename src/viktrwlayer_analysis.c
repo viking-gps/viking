@@ -267,6 +267,9 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 	case VIK_UNITS_DISTANCE_MILES:
 		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f miles"), VIK_METERS_TO_MILES(ts.length) );
 		break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f NM"), VIK_METERS_TO_NAUTICAL_MILES(ts.length) );
+		break;
 	default:
 		//VIK_UNITS_DISTANCE_KILOMETRES
 		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f km"), ts.length/1000.0 );
@@ -277,6 +280,9 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 	switch (a_vik_get_units_distance ()) {
 	case VIK_UNITS_DISTANCE_MILES:
 		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f miles"), (VIK_METERS_TO_MILES(ts.length)/ts.count) );
+		break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f NM"), (VIK_METERS_TO_NAUTICAL_MILES(ts.length)/ts.count) );
 		break;
 	default:
 		//VIK_UNITS_DISTANCE_KILOMETRES

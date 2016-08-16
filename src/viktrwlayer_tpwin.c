@@ -523,6 +523,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
     gtk_label_set_text ( tpwin->pdop, tmp_str );
     break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
   case VIK_UNITS_DISTANCE_MILES:
     g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->hdop*1.0936133 );
     gtk_label_set_text ( tpwin->hdop, tmp_str );
