@@ -286,12 +286,16 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
 	// I'm sure this could be cleaner...
+	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 	switch (a_vik_get_units_speed()) {
 	case VIK_UNITS_SPEED_MILES_PER_HOUR:
-		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f mph"), (double)VIK_MPS_TO_MPH(ts.max_speed) );
+		if ( ts.max_speed > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f mph"), (double)VIK_MPS_TO_MPH(ts.max_speed) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 		if ( ts.duration > 0 )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), ("%.1f mph"), (double)VIK_MPS_TO_MPH(ts.length/ts.duration) );
+		else
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 		break;
 	case VIK_UNITS_SPEED_METRES_PER_SECOND:
 		if ( ts.max_speed > 0 )
