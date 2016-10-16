@@ -131,6 +131,7 @@ static struct {
   { "U Marina",              "marina",         191,   "U marina symbol",                   NULL,                NULL,            NULL },
   { "Bait and Tackle",     "bait_tackle",    192,   "U bait and tackle symbol",          NULL,                NULL,            NULL },
   { "Stump",               "stump",          193,   "U stump symbol",                    NULL,                NULL,            NULL },
+  { "Lodge",               "lodge",          194,   "lodge symbol",                      NULL,                &wp_lodge_large_pixbuf,  NULL },
   { "Ground Transportation", "grnd_trans",   229,   "ground transportation",                    NULL,                &wp_grnd_trans_large_pixbuf,        NULL },
   /*---------------------------------------------------------------
     User customizable symbols

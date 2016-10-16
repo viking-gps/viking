@@ -151,6 +151,7 @@ WAYPOINT_ICONS_LARGE += wp_info_large.png
 WAYPOINT_ICONS_LARGE += wp_knife_large.png
 WAYPOINT_ICONS_LARGE += wp_light_large.png
 WAYPOINT_ICONS_LARGE += wp_lodging_large.png
+WAYPOINT_ICONS_LARGE += wp_lodge_large.png
 WAYPOINT_ICONS_LARGE += wp_lrg_cty_large.png
 WAYPOINT_ICONS_LARGE += wp_med_cty_large.png
 WAYPOINT_ICONS_LARGE += wp_mine_large.png
