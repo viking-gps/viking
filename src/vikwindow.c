@@ -2727,7 +2727,7 @@ static void view_main_menu_cb ( GtkAction *a, VikWindow *vw )
       toggle_main_menu ( vw );
   }
   else
-    toggle_toolbar ( vw );
+    toggle_main_menu ( vw );
 }
 
 /***************************************
