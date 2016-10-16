@@ -158,7 +158,8 @@ libviking_a_SOURCES = \
 	preferences.c preferences.h \
 	misc/fpconv.c misc/fpconv.h misc/powers.h \
 	misc/strtod.c misc/strtod.h \
-	misc/kdtree.c misc/kdtree.h
+	misc/kdtree.c misc/kdtree.h \
+	misc/gtkhtml.c misc/gtkhtml-private.h
 
 if BING
 libviking_a_SOURCES += \
