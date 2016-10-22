@@ -712,8 +712,6 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
         load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
       }
     }
-    g_free ( dirpath );
-
     // Clean up when we can't handle the file
     if ( ! success ) {
       // free up layer
@@ -726,6 +724,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
       vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
     }
   }
+  g_free ( dirpath );
   xfclose(f);
   return load_answer;
 }
