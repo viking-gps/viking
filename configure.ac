@@ -468,7 +468,7 @@ AC_SUBST(DB2MAN_XSL)
 AC_PATH_PROG(XP,xsltproc)
 AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
 AC_CHECK_PROG([HAVE_SCROLLKEEPER],scrollkeeper-config,"yes")
-AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && test "${HAVE_SCROLLKEEPER}" == "yes" )
+AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && test "${HAVE_SCROLLKEEPER}" = "yes" )
 AM_COND_IF([GEN_MANPAGES], [ac_cv_enable_man=yes], [ac_cv_enable_man=no])
 
 ISODATE=`date +%Y-%m-%d`
