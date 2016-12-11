@@ -505,6 +505,7 @@ gboolean carto_load ( VikMapnikLayer *vml, VikViewport *vvp )
 		gchar *msg = g_strdup_printf ( "%s: %s", _("Running"), command );
 		vik_window_statusbar_update ( vw, msg, VIK_STATUSBAR_INFO );
 		vik_window_set_busy_cursor ( vw );
+		g_free ( msg );
 	}
 
 	gint64 tt1 = 0;
