@@ -240,7 +240,7 @@ fill_engine_box (gpointer data, gpointer user_data)
   /* Retrieve combo */
   GtkWidget *widget = (GtkWidget*) user_data;
 
-  /* Only register engine fulliling expected behavior */
+  /* Only register engine fulfilling expected behaviour */
   Predicate predicate = g_object_get_data ( G_OBJECT ( widget ), "func" );
   gpointer predicate_data = g_object_get_data ( G_OBJECT ( widget ), "user_data" );
   /* No predicate means to register all engines */
@@ -265,7 +265,7 @@ fill_engine_box (gpointer data, gpointer user_data)
  *
  * Creates a combo box to allow selection of a routing engine.
  *
- * We use GObject data hastable to store and retrieve the VikRoutingEngine
+ * We use GObject data hashtable to store and retrieve the VikRoutingEngine
  * associated to the selection.
  *
  * Returns: the combo box
