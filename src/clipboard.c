@@ -163,6 +163,10 @@ static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
         s[i+2] = ' ';
       }
     }
+    if ( g_ascii_iscntrl (s[i]) ) {
+      // Replace any control characters (i.e. mainly for tabs) with a space
+      s[i] = ' ';
+    }
   }
 
   /* now try reading coordinates */
