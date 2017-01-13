@@ -7109,6 +7109,7 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
           vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter), vtl->track_sort_order );
       }
     }
+    g_free ( newname );
 
     // Start trying to find same names again...
     track_names = NULL;
@@ -7366,6 +7367,8 @@ static void vik_trw_layer_uniquify_waypoints ( VikTrwLayer *vtl, VikLayersPanel 
     gchar *newname = trw_layer_new_unique_sublayer_name ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, udata.same_waypoint_name );
 
     trw_layer_waypoint_rename ( vtl, waypoint, newname );
+
+    g_free (newname);
 
     // Start trying to find same names again...
     waypoint_names = NULL;
