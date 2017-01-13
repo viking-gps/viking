@@ -1696,6 +1696,13 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
   return FALSE; /* no further calling */
 }
 
+/**
+ * make_track_name:
+ *
+ * returns allocated string for a new realtime track name
+ * NB no i18n ATM
+ * free string after use
+ */
 static gchar *make_track_name(VikTrwLayer *vtl)
 {
   const gchar basename[] = "REALTIME";
@@ -1709,7 +1716,6 @@ static gchar *make_track_name(VikTrwLayer *vtl)
     i++;
   }
   return(name);
-
 }
 
 static gboolean rt_gpsd_try_connect(gpointer *data)
@@ -1749,7 +1755,9 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
     VikTrwLayer *vtl = vgl->trw_children[TRW_REALTIME];
     vgl->realtime_track = vik_track_new();
     vgl->realtime_track->visible = TRUE;
-    vik_trw_layer_add_track(vtl, make_track_name(vtl), vgl->realtime_track);
+    gchar *name = make_track_name(vtl);
+    vik_trw_layer_add_track(vtl, name, vgl->realtime_track);
+    g_free(name);
   }
 
 #if GPSD_API_MAJOR_VERSION == 3 || GPSD_API_MAJOR_VERSION == 4
