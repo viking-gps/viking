@@ -49,7 +49,7 @@
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
-#define SRTM_HTTP_BASE_URL "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3"
+#define SRTM_HTTP_BASE_URL "https://dds.cr.usgs.gov/srtm/version2_1/SRTM3"
 
 #ifdef VIK_CONFIG_DEM24K
 #define DEM24K_DOWNLOAD_SCRIPT "dem24k.pl"
