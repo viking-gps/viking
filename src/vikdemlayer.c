@@ -49,8 +49,7 @@
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
-#define SRTM_HTTP_SITE "dds.cr.usgs.gov"
-#define SRTM_HTTP_URI  "/srtm/version2_1/SRTM3/"
+#define SRTM_HTTP_BASE_URL "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3"
 
 #ifdef VIK_CONFIG_DEM24K
 #define DEM24K_DOWNLOAD_SCRIPT "dem24k.pl"
@@ -949,8 +948,8 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
     return;
   }
 
-  gchar *src_fn = g_strdup_printf("%s%s/%c%02d%c%03d.hgt.zip",
-                SRTM_HTTP_URI,
+  gchar *src_url = g_strdup_printf("%s/%s/%c%02d%c%03d.hgt.zip",
+                SRTM_HTTP_BASE_URL,
                 continent_dir,
 		(intlat >= 0) ? 'N' : 'S',
 		ABS(intlat),
@@ -958,7 +957,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 		ABS(intlon) );
 
   static DownloadFileOptions options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL, NULL };
-  DownloadResult_t result = a_http_download_get_url ( SRTM_HTTP_SITE, src_fn, p->dest, &options, NULL );
+  DownloadResult_t result = a_http_download_get_url ( src_url, NULL, p->dest, &options, NULL );
   switch ( result ) {
     case DOWNLOAD_PARAMETERS_ERROR:
     case DOWNLOAD_CONTENT_ERROR:
@@ -979,7 +978,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
     default:
       break;
   }
-  g_free ( src_fn );
+  g_free ( src_url );
 }
 
 static gchar *srtm_lat_lon_to_dest_fn ( gdouble lat, gdouble lon )
@@ -1209,9 +1208,8 @@ static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
 
   gchar *source = NULL;
   if ( continent_dir )
-    source = g_strdup_printf ( "http://%s%s%s/%c%02d%c%03d.hgt.zip",
-                               SRTM_HTTP_SITE,
-                               SRTM_HTTP_URI,
+    source = g_strdup_printf ( "%s/%s/%c%02d%c%03d.hgt.zip",
+                               SRTM_HTTP_BASE_URL,
                                continent_dir,
                                (intlat >= 0) ? 'N' : 'S',
                                ABS(intlat),
