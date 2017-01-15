@@ -956,7 +956,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 		(intlon >= 0) ? 'E' : 'W',
 		ABS(intlon) );
 
-  static DownloadFileOptions options = { FALSE, FALSE, NULL, 0, a_check_map_file, NULL, NULL };
+  static DownloadFileOptions options = { FALSE, FALSE, NULL, 5, a_check_map_file, NULL, NULL };
   DownloadResult_t result = a_http_download_get_url ( src_url, NULL, p->dest, &options, NULL );
   switch ( result ) {
     case DOWNLOAD_PARAMETERS_ERROR:
