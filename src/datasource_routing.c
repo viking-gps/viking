@@ -47,6 +47,7 @@ static gchar *last_from_str = NULL;
 static gchar *last_to_str = NULL;
 
 static gpointer datasource_routing_init ( acq_vik_t *avt );
+static gchar *datasource_routing_check_existence ();
 static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
 static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *options, const gchar *not_used2, const gchar *not_used3 );
 static void datasource_routing_cleanup ( gpointer data );
@@ -60,7 +61,7 @@ VikDataSourceInterface vik_datasource_routing_interface = {
   TRUE,
   TRUE,
   (VikDataSourceInitFunc)		datasource_routing_init,
-  (VikDataSourceCheckExistenceFunc)	NULL,
+  (VikDataSourceCheckExistenceFunc)	datasource_routing_check_existence,
   (VikDataSourceAddSetupWidgetsFunc)	datasource_routing_add_setup_widgets,
   (VikDataSourceGetProcessOptionsFunc)  datasource_routing_get_process_options,
   (VikDataSourceProcessFunc)            a_babel_convert_from,
@@ -80,6 +81,13 @@ static gpointer datasource_routing_init ( acq_vik_t *avt )
 {
   datasource_routing_widgets_t *widgets = g_malloc(sizeof(*widgets));
   return widgets;
+}
+
+static gchar *datasource_routing_check_existence ()
+{
+  if ( vik_routing_number_of_engines (VIK_ROUTING_METHOD_DIRECTIONS) > 0 )
+    return NULL;
+  return g_strdup ( _("No routing engines with directions available") );
 }
 
 static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data )

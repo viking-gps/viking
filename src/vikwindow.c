@@ -42,6 +42,7 @@
 #include "vikexttool_datasources.h"
 #include "garminsymbols.h"
 #include "vikmapslayer.h"
+#include "vikrouting.h"
 #include "geonamessearch.h"
 #include "vikutils.h"
 #include "dir.h"
@@ -4773,6 +4774,14 @@ static void window_create_ui( VikWindow *window )
   gtk_ui_manager_ensure_update (uim);
   
   setup_recent_files(window);
+
+  if ( vik_routing_number_of_engines(VIK_ROUTING_METHOD_DIRECTIONS) == 0 ) {
+    GtkWidget *widget = gtk_ui_manager_get_widget ( uim, "/ui/MainMenu/File/Acquire/AcquireRouting" );
+    if ( widget ) {
+      g_object_set ( widget, "sensitive", FALSE, NULL );
+    }
+    g_warning ( "No direction routing engines available" );
+  }
 }
 
 
