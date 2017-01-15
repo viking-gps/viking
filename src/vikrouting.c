@@ -305,3 +305,32 @@ vik_routing_ui_selector_get_nth (GtkWidget *combo, int pos)
 
   return engine;
 }
+
+// For simplicity a variable with visibility to multiple functions
+static guint engine_count = 0;
+
+static void
+count_engine_directions (gpointer data, gpointer user_data)
+{
+  VikRoutingEngine *engine = (VikRoutingEngine*) data;
+  if ( vik_routing_engine_supports_direction ( engine ) )
+    engine_count++;
+}
+
+/**
+ * vik_routing_number_of_engines:
+ *
+ * Returns: the number of engines available
+ */
+guint vik_routing_number_of_engines ( VikRoutingMethodType method )
+{
+  engine_count = 0;
+  if ( routing_engine_list ) {
+    if ( method == VIK_ROUTING_METHOD_DIRECTIONS )
+      vik_routing_foreach_engine ( count_engine_directions, NULL );
+    else
+      // ATM Every engine supports Lat/Lon requests
+      engine_count = g_list_length ( routing_engine_list );
+  }
+  return engine_count;
+}

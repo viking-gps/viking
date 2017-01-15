@@ -36,6 +36,13 @@ void vik_routing_register( VikRoutingEngine *engine );
 void vik_routing_unregister_all ();
 void vik_routing_foreach_engine ( GFunc func, gpointer user_data );
 
+/* How many are available ? */
+typedef enum {
+  VIK_ROUTING_METHOD_DIRECTIONS,
+  VIK_ROUTING_METHOD_LATLON
+} VikRoutingMethodType;
+guint vik_routing_number_of_engines ( VikRoutingMethodType method );
+
 /* UI */
 typedef gboolean (*Predicate)( gpointer data, gpointer user_data );
 GtkWidget *vik_routing_ui_selector_new ( Predicate func, gpointer user_data );
