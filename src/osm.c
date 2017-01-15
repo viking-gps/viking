@@ -231,18 +231,5 @@ void osm_init () {
   webtool = vik_webtool_center_new_with_members ( _("Wikimedia Toolserver GeoHack"), "http://tools.wmflabs.org/geohack/geohack.php?params=%s;%s" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
-  
-  /* See API references: https://github.com/DennisOSRM/Project-OSRM/wiki/Server-api */
-  VikRoutingEngine *osrm = g_object_new ( VIK_ROUTING_WEB_ENGINE_TYPE,
-    "id", "osrm",
-    "label", "OSRM",
-    "format", "gpx",
-    "url-base", "http://router.project-osrm.org/viaroute?output=gpx",
-    "url-start-ll", "&loc=%s,%s",
-    "url-stop-ll", "&loc=%s,%s",
-    "url-via-ll", "&loc=%s,%s",
-    NULL);
-  vik_routing_register ( VIK_ROUTING_ENGINE ( osrm ) );
-  g_object_unref ( osrm );
 }
 
