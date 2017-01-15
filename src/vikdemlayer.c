@@ -47,9 +47,11 @@
 #include "icons/icons.h"
 
 #define MAPS_CACHE_DIR maps_layer_default_dir()
-
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
+
 #define SRTM_HTTP_BASE_URL "https://dds.cr.usgs.gov/srtm/version2_1/SRTM3"
+static gchar *base_url = NULL;
+#define VIK_SETTINGS_SRTM_HTTP_BASE_URL "srtm_http_base_url"
 
 #ifdef VIK_CONFIG_DEM24K
 #define DEM24K_DOWNLOAD_SCRIPT "dem24k.pl"
@@ -259,6 +261,16 @@ struct _VikDEMLayer {
   GtkMenu *right_click_menu;
 };
 
+// NB Only performed once per program run
+static void vik_dem_class_init ( VikDEMLayerClass *klass )
+{
+  // Note if suppling your own base URL - the site must still follow the Continent directory layout
+  if ( ! a_settings_get_string ( VIK_SETTINGS_SRTM_HTTP_BASE_URL, &base_url ) ) {
+    // Otherwise use the default
+    base_url = g_strdup ( SRTM_HTTP_BASE_URL );
+  }
+}
+
 GType vik_dem_layer_get_type ()
 {
   static GType vdl_type = 0;
@@ -270,7 +282,7 @@ GType vik_dem_layer_get_type ()
       sizeof (VikDEMLayerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      NULL, /* class init */
+      (GClassInitFunc) vik_dem_class_init, /* class init */
       NULL, /* class_finalize */
       NULL, /* class_data */
       sizeof (VikDEMLayer),
@@ -949,7 +961,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
   }
 
   gchar *src_url = g_strdup_printf("%s/%s/%c%02d%c%03d.hgt.zip",
-                SRTM_HTTP_BASE_URL,
+                base_url,
                 continent_dir,
 		(intlat >= 0) ? 'N' : 'S',
 		ABS(intlat),
@@ -1209,7 +1221,7 @@ static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
   gchar *source = NULL;
   if ( continent_dir )
     source = g_strdup_printf ( "%s/%s/%c%02d%c%03d.hgt.zip",
-                               SRTM_HTTP_BASE_URL,
+                               base_url,
                                continent_dir,
                                (intlat >= 0) ? 'N' : 'S',
                                ABS(intlat),

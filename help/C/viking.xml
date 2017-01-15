@@ -3458,6 +3458,11 @@ Accept: */*
 	    <para>maps_scale_smaller_zoom_first=true</para>
 	  </listitem>
 	  <listitem>
+	    <para>srtm_http_base_url=https://dds.cr.usgs.gov/srtm/version2_1/SRTM3</para>
+	    <para>Allows using an alternative service for acquiring DEM SRTM files.
+	    Note that the layout on the server needs to be split into Continent directories.</para>
+	  </listitem>
+	  <listitem>
 	    <para>mapnik_buffer_size=128 (in pixels)</para>
 	  </listitem>
 	  <listitem>
