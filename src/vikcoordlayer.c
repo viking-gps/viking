@@ -36,7 +36,7 @@ static void coord_layer_free ( VikCoordLayer *vcl );
 static VikCoordLayer *coord_layer_create ( VikViewport *vp );
 static void coord_layer_marshall( VikCoordLayer *vcl, guint8 **data, gint *len );
 static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static gboolean coord_layer_set_param ( VikCoordLayer *vcl, VikLayerSetParam *vlsp );
 static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id, gboolean is_file_operation );
 static void coord_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
 static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp );
@@ -169,13 +169,13 @@ static VikCoordLayer *coord_layer_unmarshall( guint8 *data, gint len, VikViewpor
 }
 
 // NB VikViewport can be null as it's not used ATM
-gboolean coord_layer_set_param ( VikCoordLayer *vcl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
+gboolean coord_layer_set_param ( VikCoordLayer *vcl, VikLayerSetParam *vlsp )
 {
-  switch ( id )
+  switch ( vlsp->id )
   {
-    case PARAM_COLOR: vcl->color = data.c; break;
-    case PARAM_MIN_INC: vcl->deg_inc = data.d / 60.0; break;
-    case PARAM_LINE_THICKNESS: if ( data.u >= 1 && data.u <= 15 ) vcl->line_thickness = data.u; break;
+    case PARAM_COLOR: vcl->color = vlsp->data.c; break;
+    case PARAM_MIN_INC: vcl->deg_inc = vlsp->data.d / 60.0; break;
+    case PARAM_LINE_THICKNESS: if ( vlsp->data.u >= 1 && vlsp->data.u <= 15 ) vcl->line_thickness = vlsp->data.u; break;
     default: break;
   }
   return TRUE;

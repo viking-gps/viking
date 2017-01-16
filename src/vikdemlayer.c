@@ -66,7 +66,7 @@ static VikDEMLayer *dem_layer_create ( VikViewport *vp );
 static const gchar* dem_layer_tooltip( VikDEMLayer *vdl );
 static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp );
 static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation );
 static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
 static void srtm_draw_existence ( VikViewport *vp );
@@ -400,50 +400,50 @@ static GList *dem_layer_convert_to_relative_filenaming ( GList *files )
   return files;
 }
 
-gboolean dem_layer_set_param ( VikDEMLayer *vdl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
+gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
 {
-  switch ( id )
+  switch ( vlsp->id )
   {
-    case PARAM_COLOR: vdl->color = data.c; gdk_gc_set_rgb_fg_color ( vdl->gcs[0], &(vdl->color) ); break;
-    case PARAM_SOURCE: vdl->source = data.u; break;
-    case PARAM_TYPE: vdl->type = data.u; break;
+    case PARAM_COLOR: vdl->color = vlsp->data.c; gdk_gc_set_rgb_fg_color ( vdl->gcs[0], &(vdl->color) ); break;
+    case PARAM_SOURCE: vdl->source = vlsp->data.u; break;
+    case PARAM_TYPE: vdl->type = vlsp->data.u; break;
     case PARAM_MIN_ELEV:
       /* Convert to store internally
          NB file operation always in internal units (metres) */
-      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
-        vdl->min_elev = VIK_FEET_TO_METERS(data.d);
+      if (!vlsp->is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        vdl->min_elev = VIK_FEET_TO_METERS(vlsp->data.d);
       else
-        vdl->min_elev = data.d;
+        vdl->min_elev = vlsp->data.d;
       break;
     case PARAM_MAX_ELEV:
       /* Convert to store internally
          NB file operation always in internal units (metres) */
-      if (!is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
-        vdl->max_elev = VIK_FEET_TO_METERS(data.d);
+      if (!vlsp->is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+        vdl->max_elev = VIK_FEET_TO_METERS(vlsp->data.d);
       else
-        vdl->max_elev = data.d;
+        vdl->max_elev = vlsp->data.d;
       break;
     case PARAM_FILES:
     {
       // Clear out old settings - if any commonalities with new settings they will have to be read again
       a_dems_list_free ( vdl->files );
       // Set file list so any other intermediate screen drawing updates will show currently loaded DEMs by the working thread
-      vdl->files = data.sl;
+      vdl->files = vlsp->data.sl;
       // No need for thread if no files
       if ( vdl->files ) {
         // Thread Load
         dem_load_thread_data *dltd = g_malloc ( sizeof(dem_load_thread_data) );
         dltd->vdl = vdl;
-        dltd->vdl->files = data.sl;
+        dltd->vdl->files = vlsp->data.sl;
 
         a_background_thread ( BACKGROUND_POOL_LOCAL,
-                              VIK_GTK_WINDOW_FROM_WIDGET(vp),
+                              VIK_GTK_WINDOW_FROM_WIDGET(vlsp->vp),
                               _("DEM Loading"),
                               (vik_thr_func) dem_layer_load_list_thread,
                               dltd,
                               (vik_thr_free_func) dem_layer_thread_data_free,
                               (vik_thr_free_func) dem_layer_thread_cancel,
-                              g_list_length ( data.sl ) ); // Number of DEM files
+                              g_list_length ( vlsp->data.sl ) ); // Number of DEM files
       }
       break;
     }

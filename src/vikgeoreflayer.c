@@ -72,7 +72,7 @@ enum {
 static const gchar* georef_layer_tooltip ( VikGeorefLayer *vgl );
 static void georef_layer_marshall( VikGeorefLayer *vgl, guint8 **data, gint *len );
 static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, VikLayerSetParam *vlsp );
 static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 id, gboolean is_file_operation );
 static VikGeorefLayer *georef_layer_new ( VikViewport *vvp );
 static VikGeorefLayer *georef_layer_create ( VikViewport *vp );
@@ -264,18 +264,18 @@ static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, gint len, VikViewp
   return rv;
 }
 
-static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
+static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, VikLayerSetParam *vlsp )
 {
-  switch ( id )
+  switch ( vlsp->id )
   {
-    case PARAM_IMAGE: georef_layer_set_image ( vgl, data.s ); break;
-    case PARAM_CN: vgl->corner.northing = data.d; break;
-    case PARAM_CE: vgl->corner.easting = data.d; break;
-    case PARAM_MN: vgl->mpp_northing = data.d; break;
-    case PARAM_ME: vgl->mpp_easting = data.d; break;
-    case PARAM_CZ: if ( data.u <= 60 ) vgl->corner.zone = data.u; break;
-    case PARAM_CL: if ( data.u >= 65 || data.u <= 90 ) vgl->corner.letter = data.u; break;
-    case PARAM_AA: if ( data.u <= 255 ) vgl->alpha = data.u; break;
+    case PARAM_IMAGE: georef_layer_set_image ( vgl, vlsp->data.s ); break;
+    case PARAM_CN: vgl->corner.northing = vlsp->data.d; break;
+    case PARAM_CE: vgl->corner.easting = vlsp->data.d; break;
+    case PARAM_MN: vgl->mpp_northing = vlsp->data.d; break;
+    case PARAM_ME: vgl->mpp_easting = vlsp->data.d; break;
+    case PARAM_CZ: if ( vlsp->data.u <= 60 ) vgl->corner.zone = vlsp->data.u; break;
+    case PARAM_CL: if ( vlsp->data.u >= 65 || vlsp->data.u <= 90 ) vgl->corner.letter = vlsp->data.u; break;
+    case PARAM_AA: if ( vlsp->data.u <= 255 ) vgl->alpha = vlsp->data.u; break;
     default: break;
   }
   return TRUE;

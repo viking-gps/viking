@@ -333,13 +333,13 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       guint16 params_count,
                                       gchar **groups,
                                       guint8 groups_count,
-                                      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean),
+                                      gboolean (*setparam) (gpointer,gpointer),
+                                      gboolean (*setparam4) (gpointer,guint16,VikLayerParamData,gpointer),
                                       gpointer pass_along1,
                                       gpointer pass_along2,
                                       VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
                                       gpointer pass_along_getparam,
                                       void (*changeparam) (GtkWidget*, ui_change_values) )
-                                      /* pass_along1 and pass_along2 are for set_param first and last params */
 {
   guint16 i, j, widget_count = 0;
   gboolean must_redraw = FALSE;
@@ -466,15 +466,20 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     resp = gtk_dialog_run (GTK_DIALOG (dialog));
     if ( resp == GTK_RESPONSE_ACCEPT )
     {
+      VikLayerSetParam vlsp;
+      vlsp.is_file_operation = FALSE;
       for ( i = 0, j = 0; i < params_count; i++ )
       {
         if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES )
         {
-          if ( setparam ( pass_along1,
-			  i,
-			  a_uibuilder_widget_get_value ( widgets[j], &(params[i]) ),
-			  pass_along2,
-			  FALSE ) )
+          vlsp.id = i;
+          vlsp.vp = pass_along2;
+          vlsp.data = a_uibuilder_widget_get_value ( widgets[j], &(params[i]) );
+          // Main callback into each layer's setparam
+          if ( setparam && setparam ( pass_along1, &vlsp ) )
+            must_redraw = TRUE;
+          // Or a basic callback for each parameter
+          else if ( setparam4 && setparam4 ( pass_along1, i, vlsp.data, pass_along2 ) )
             must_redraw = TRUE;
           j++;
         }
@@ -531,6 +536,7 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
 					  params_count, 
 					  groups, 
 					  groups_count,
+					  NULL,
 					  (gpointer) uibuilder_run_setparam, 
 					  paramdatas, 
 					  params,

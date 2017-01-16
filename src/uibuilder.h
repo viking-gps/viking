@@ -40,6 +40,13 @@ typedef union {
   gpointer ptr; // For internal usage - don't save this value in a file!
 } VikLayerParamData;
 
+typedef struct {
+  guint16             id;
+  VikLayerParamData   data;
+  gpointer            vp; // AKA VikViewport*
+  gboolean            is_file_operation; // denotes if for file I/O, as opposed to display/cut/copy etc... operations
+} VikLayerSetParam;
+
 typedef enum {
   VIK_LAYER_WIDGET_CHECKBUTTON=0,
   VIK_LAYER_WIDGET_RADIOGROUP,
@@ -168,13 +175,13 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       guint16 params_count,
                                       gchar **groups,
                                       guint8 groups_count,
-                                      gboolean (*setparam) (gpointer,guint16,VikLayerParamData,gpointer,gboolean), // AKA VikLayerFuncSetParam in viklayer.h
-                                      gpointer pass_along1,
-                                      gpointer pass_along2,
+                                      gboolean (*setparam) (gpointer,gpointer), // AKA VikLayerFuncSetParam in viklayer.h
+                                      gboolean (*setparam4) (gpointer,guint16,VikLayerParamData,gpointer), // Fixed 4 Parameter version
+                                      gpointer pass_along1, // Possibly VikLayer* or own type for 4 param call used as first parameter
+                                      gpointer pass_along2, // Possibly VikViewport* or own type for 4 param call used as last parameter
                                       VikLayerParamData (*getparam) (gpointer,guint16,gboolean),  // AKA VikLayerFuncGetParam in viklayer.h
                                       gpointer pass_along_getparam,
                                       void (*changeparam) (GtkWidget*, ui_change_values) ); // AKA VikLayerFuncChangeParam in viklayer.h
-                                      /* pass_along1 and pass_along2 are for set_param first and last params */
 
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,

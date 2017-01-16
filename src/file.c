@@ -254,9 +254,13 @@ static void string_list_delete ( gpointer key, gpointer l, gpointer user_data )
 
 static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
 {
-  VikLayerParamData x;
-  x.sl = list;
-  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), i, x, layer_and_vp[1], TRUE );
+  VikLayerSetParam vlsp;
+  vlsp.id                  = i;
+  vlsp.data.sl             = list;
+  vlsp.vp                  = layer_and_vp[1];
+  vlsp.is_file_operation   = TRUE;
+
+  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), &vlsp );
 }
 
 /**
@@ -358,9 +362,10 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
         else
         {
           /* add any string lists we've accumulated */
-          gpointer layer_and_vp[2];
+          gpointer layer_and_vp[3];
           layer_and_vp[0] = stack->data;
           layer_and_vp[1] = vp;
+          layer_and_vp[2] = (gpointer)dirpath;
           g_hash_table_foreach ( string_lists, (GHFunc) string_list_set_param, layer_and_vp );
           g_hash_table_remove_all ( string_lists );
 
@@ -509,7 +514,13 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
                 /* STRING or STRING_LIST -- if STRING_LIST, just set param to add a STRING */
                 default: x.s = line;
               }
-              vik_layer_set_param ( VIK_LAYER(stack->data), i, x, vp, TRUE );
+
+              VikLayerSetParam vlsp;
+              vlsp.id                  = i;
+              vlsp.data                = x;
+              vlsp.vp                  = vp;
+              vlsp.is_file_operation   = TRUE;
+              vik_layer_set_param ( VIK_LAYER(stack->data), &vlsp );
             }
             found_match = TRUE;
             break;

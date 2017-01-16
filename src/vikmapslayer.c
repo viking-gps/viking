@@ -106,7 +106,7 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
 static const gchar* maps_layer_tooltip ( VikMapsLayer *vml );
 static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
 static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation );
+static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp );
 static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, gboolean is_file_operation );
 static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values );
 static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp );
@@ -619,46 +619,49 @@ static void maps_show_license ( GtkWindow *parent, VikMapSource *map )
 		     vik_map_source_get_license_url (map) );
 }
 
-static gboolean maps_layer_set_param ( VikMapsLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vvp, gboolean is_file_operation )
+static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp )
 {
-  switch ( id )
+  switch ( vlsp->id )
   {
-    case PARAM_CACHE_DIR: maps_layer_set_cache_dir ( vml, data.s ); break;
-    case PARAM_CACHE_LAYOUT: if ( data.u < VIK_MAPS_CACHE_LAYOUT_NUM ) vml->cache_layout = data.u; break;
-    case PARAM_FILE: maps_layer_set_file ( vml, data.s ); break;
+    case PARAM_CACHE_DIR: maps_layer_set_cache_dir ( vml, vlsp->data.s ); break;
+    case PARAM_CACHE_LAYOUT: if ( vlsp->data.u < VIK_MAPS_CACHE_LAYOUT_NUM ) vml->cache_layout = vlsp->data.u; break;
+    case PARAM_FILE: maps_layer_set_file ( vml, vlsp->data.s ); break;
     case PARAM_MAPTYPE: {
-      gint maptype = map_uniq_id_to_index(data.u);
+      gint maptype = map_uniq_id_to_index(vlsp->data.u);
       if ( maptype == NUM_MAP_TYPES )
         g_warning(_("Unknown map type"));
       else {
         vml->maptype = maptype;
 
         // When loading from a file don't need the license reminder - ensure it's saved into the 'seen' list
-        if ( is_file_operation ) {
-          a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, data.u );
+        if ( vlsp->is_file_operation ) {
+          a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, vlsp->data.u );
         }
         else {
           VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
           if (vik_map_source_get_license (map) != NULL) {
             // Check if licence for this map type has been shown before
-            if ( ! a_settings_get_integer_list_contains ( VIK_SETTINGS_MAP_LICENSE_SHOWN, data.u ) ) {
-              if ( vvp )
-                maps_show_license ( VIK_GTK_WINDOW_FROM_WIDGET(vvp), map );
-              a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, data.u );
+            if ( ! a_settings_get_integer_list_contains ( VIK_SETTINGS_MAP_LICENSE_SHOWN, vlsp->data.u ) ) {
+              if ( vlsp->vp )
+                maps_show_license ( VIK_GTK_WINDOW_FROM_WIDGET(vlsp->vp), map );
+              a_settings_set_integer_list_containing ( VIK_SETTINGS_MAP_LICENSE_SHOWN, vlsp->data.u );
             }
           }
         }
       }
       break;
     }
-    case PARAM_ALPHA: if ( data.u <= 255 ) vml->alpha = data.u; break;
-    case PARAM_AUTODOWNLOAD: vml->autodownload = data.b; break;
-    case PARAM_ONLYMISSING: vml->adl_only_missing = data.b; break;
-    case PARAM_MAPZOOM: if ( data.u < NUM_MAPZOOMS ) {
-                          vml->mapzoom_id = data.u;
-                          vml->xmapzoom = __mapzooms_x [data.u];
-                          vml->ymapzoom = __mapzooms_y [data.u];
-                        }else g_warning (_("Unknown Map Zoom")); break;
+    case PARAM_ALPHA: if ( vlsp->data.u <= 255 ) vml->alpha = vlsp->data.u; break;
+    case PARAM_AUTODOWNLOAD: vml->autodownload = vlsp->data.b; break;
+    case PARAM_ONLYMISSING: vml->adl_only_missing = vlsp->data.b; break;
+    case PARAM_MAPZOOM:
+      if ( vlsp->data.u < NUM_MAPZOOMS ) {
+        vml->mapzoom_id = vlsp->data.u;
+        vml->xmapzoom = __mapzooms_x [vlsp->data.u];
+        vml->ymapzoom = __mapzooms_y [vlsp->data.u];
+      } else
+	g_warning (_("Unknown Map Zoom"));
+      break;
     default: break;
   }
   return TRUE;

@@ -56,7 +56,7 @@ static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vp, gboolea
 
 static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, gint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
-static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp );
 static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation );
 
 static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl );
@@ -531,96 +531,96 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *v
 #undef alm_next
 }
 
-static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
+static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp )
 {
-  switch ( id )
+  switch ( vlsp->id )
   {
     case PARAM_PROTOCOL:
-      if (data.s) {
+      if (vlsp->data.s) {
         g_free(vgl->protocol);
         // Backwards Compatibility: previous versions <v1.4 stored protocol as an array index
-        int index = data.s[0] - '0';
-        if (data.s[0] != '\0' &&
-            g_ascii_isdigit (data.s[0]) &&
-            data.s[1] == '\0' &&
+        int index = vlsp->data.s[0] - '0';
+        if (vlsp->data.s[0] != '\0' &&
+            g_ascii_isdigit (vlsp->data.s[0]) &&
+            vlsp->data.s[1] == '\0' &&
             index < OLD_NUM_PROTOCOLS)
           // It is a single digit: activate compatibility
           vgl->protocol = g_strdup(protocols_args[index]);
         else
-          vgl->protocol = g_strdup(data.s);
+          vgl->protocol = g_strdup(vlsp->data.s);
         g_debug("%s: %s", __FUNCTION__, vgl->protocol);
       }
       else
         g_warning(_("Unknown GPS Protocol"));
       break;
     case PARAM_PORT:
-      if (data.s) {
+      if (vlsp->data.s) {
         g_free(vgl->serial_port);
         // Backwards Compatibility: previous versions <v0.9.91 stored serial_port as an array index
-        int index = data.s[0] - '0';
-        if (data.s[0] != '\0' &&
-            g_ascii_isdigit (data.s[0]) &&
-            data.s[1] == '\0' &&
+        int index = vlsp->data.s[0] - '0';
+        if (vlsp->data.s[0] != '\0' &&
+            g_ascii_isdigit (vlsp->data.s[0]) &&
+            vlsp->data.s[1] == '\0' &&
             index < OLD_NUM_PORTS)
           /* It is a single digit: activate compatibility */
           vgl->serial_port = g_strdup(old_params_ports[index]);
         else
-          vgl->serial_port = g_strdup(data.s);
+          vgl->serial_port = g_strdup(vlsp->data.s);
         g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
       }
       else
         g_warning(_("Unknown serial port device"));
       break;
     case PARAM_DOWNLOAD_TRACKS:
-      vgl->download_tracks = data.b;
+      vgl->download_tracks = vlsp->data.b;
       break;
     case PARAM_UPLOAD_TRACKS:
-      vgl->upload_tracks = data.b;
+      vgl->upload_tracks = vlsp->data.b;
       break;
     case PARAM_DOWNLOAD_ROUTES:
-      vgl->download_routes = data.b;
+      vgl->download_routes = vlsp->data.b;
       break;
     case PARAM_UPLOAD_ROUTES:
-      vgl->upload_routes = data.b;
+      vgl->upload_routes = vlsp->data.b;
       break;
     case PARAM_DOWNLOAD_WAYPOINTS:
-      vgl->download_waypoints = data.b;
+      vgl->download_waypoints = vlsp->data.b;
       break;
     case PARAM_UPLOAD_WAYPOINTS:
-      vgl->upload_waypoints = data.b;
+      vgl->upload_waypoints = vlsp->data.b;
       break;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
     case PARAM_GPSD_CONNECT:
-      vgl->auto_connect_to_gpsd = data.b;
+      vgl->auto_connect_to_gpsd = vlsp->data.b;
       break;
     case PARAM_GPSD_HOST:
-      if (data.s) {
+      if (vlsp->data.s) {
         if (vgl->gpsd_host)
           g_free(vgl->gpsd_host);
-        vgl->gpsd_host = g_strdup(data.s);
+        vgl->gpsd_host = g_strdup(vlsp->data.s);
       }
       break;
     case PARAM_GPSD_PORT:
-      if (data.s) {
+      if (vlsp->data.s) {
         if (vgl->gpsd_port)
           g_free(vgl->gpsd_port);
-        vgl->gpsd_port = g_strdup(data.s);
+        vgl->gpsd_port = g_strdup(vlsp->data.s);
       }
       break;
     case PARAM_GPSD_RETRY_INTERVAL:
-      vgl->gpsd_retry_interval = strtol(data.s, NULL, 10);
+      vgl->gpsd_retry_interval = strtol(vlsp->data.s, NULL, 10);
       break;
     case PARAM_REALTIME_REC:
-      vgl->realtime_record = data.b;
+      vgl->realtime_record = vlsp->data.b;
       break;
     case PARAM_REALTIME_CENTER_START:
-      vgl->realtime_jump_to_start = data.b;
+      vgl->realtime_jump_to_start = vlsp->data.b;
       break;
     case PARAM_VEHICLE_POSITION:
-      vgl->vehicle_position = data.u;
+      vgl->vehicle_position = vlsp->data.u;
       break;
     case PARAM_REALTIME_UPDATE_STATUSBAR:
-      vgl->realtime_update_statusbar = data.b;
+      vgl->realtime_update_statusbar = vlsp->data.b;
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
     default:

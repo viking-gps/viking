@@ -151,8 +151,7 @@ typedef void          (*VikLayerFuncMarshall)              (VikLayer *, guint8 *
 typedef VikLayer *    (*VikLayerFuncUnmarshall)            (guint8 *, gint, VikViewport *);
 
 /* returns TRUE if needs to redraw due to changed param */
-/* in parameter gboolean denotes if for file I/O, as opposed to display/cut/copy etc... operations */
-typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, guint16, VikLayerParamData, VikViewport *, gboolean);
+typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, VikLayerSetParam* );
 
 /* in parameter gboolean denotes if for file I/O, as opposed to display/cut/copy etc... operations */
 typedef VikLayerParamData
@@ -274,7 +273,7 @@ const gchar *vik_layer_get_name ( VikLayer *l );
 
 time_t vik_layer_get_timestamp ( VikLayer *vl );
 
-gboolean vik_layer_set_param (VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation);
+gboolean vik_layer_set_param ( VikLayer *vl, VikLayerSetParam *vlsp );
 
 void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp );
 

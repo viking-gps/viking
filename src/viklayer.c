@@ -381,10 +381,13 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
 
   if ( params && set_param )
   {
-    VikLayerParamData d;
+    VikLayerSetParam vlsp;
+    vlsp.vp                 = vvp;
+    vlsp.is_file_operation  = FALSE;
     guint16 i, params_count = vik_layer_get_interface(vl->type)->params_count;
     for ( i = 0; i < params_count; i++ )
     {
+      vlsp.id = i;
       g_debug("%s: %s", __FUNCTION__, params[i].name);
       switch ( params[i].type )
       {
@@ -392,8 +395,8 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
 	s = g_malloc(vlm_size + 1);
 	s[vlm_size]=0;
 	vlm_read(s);
-	d.s = s;
-	set_param(vl, i, d, vvp, FALSE);
+	vlsp.data.s = s;
+	set_param(vl, &vlsp);
 	g_free(s);
 	break;
       case VIK_LAYER_PARAM_STRING_LIST:  {
@@ -408,16 +411,16 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
 	  vlm_read(s);
           list = g_list_append ( list, s );
         }
-        d.sl = list;
-        set_param(vl, i, d, vvp, FALSE);
+        vlsp.data.sl = list;
+        set_param(vl, &vlsp);
         /* don't free -- string list is responsibility of the layer */
 
         break;
         }
       default:
-	vlm_read(&d);
-	set_param(vl, i, d, vvp, FALSE);
-	break;
+        vlm_read(&vlsp.data);
+        set_param(vl, &vlsp);
+        break;
       }
     }
   }
@@ -528,10 +531,10 @@ GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type )
   return NULL;
 }
 
-gboolean vik_layer_set_param ( VikLayer *layer, guint16 id, VikLayerParamData data, gpointer vp, gboolean is_file_operation )
+gboolean vik_layer_set_param ( VikLayer *vl, VikLayerSetParam *vlsp )
 {
-  if ( vik_layer_interfaces[layer->type]->set_param )
-    return vik_layer_interfaces[layer->type]->set_param ( layer, id, data, vp, is_file_operation );
+  if ( vik_layer_interfaces[vl->type]->set_param )
+    return vik_layer_interfaces[vl->type]->set_param ( vl, vlsp );
   return FALSE;
 }
 
@@ -549,7 +552,8 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp )
 					    vik_layer_interfaces[vl->type]->params_count,
 					    vik_layer_interfaces[vl->type]->params_groups,
 					    vik_layer_interfaces[vl->type]->params_groups_count,
-					    (gpointer) vik_layer_interfaces[vl->type]->set_param, 
+					    (gpointer) vik_layer_interfaces[vl->type]->set_param,
+					    NULL,
 					    vl, 
 					    vp,
 					    (gpointer) vik_layer_interfaces[vl->type]->get_param, 
@@ -657,17 +661,20 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
   vl->vvp = vvp;
   VikLayerInterface *vli = vik_layer_get_interface ( vl->type );
   const gchar *layer_name = vli->fixed_layer_name;
-  VikLayerParamData data;
+  VikLayerSetParam vlsp;
 
+  vlsp.is_file_operation = TRUE; // Possibly come from a file
+  vlsp.vp = vvp;
   int i;
   for ( i = 0; i < vli->params_count; i++ ) {
+    vlsp.id = i;
     // Ensure parameter is for use
     if ( vli->params[i].group > VIK_LAYER_NOT_IN_PROPERTIES ) {
       // ATM can't handle string lists
       // only DEM files uses this currently
       if ( vli->params[i].type != VIK_LAYER_PARAM_STRING_LIST ) {
-        data = a_layer_defaults_get ( layer_name, vli->params[i].name, vli->params[i].type );
-        vik_layer_set_param ( vl, i, data, vvp, TRUE ); // Possibly come from a file
+        vlsp.data = a_layer_defaults_get ( layer_name, vli->params[i].name, vli->params[i].type );
+        vik_layer_set_param ( vl, &vlsp );
       }
     }
   }
