@@ -67,12 +67,6 @@ gboolean a_file_export_babel ( VikTrwLayer *vtl, const gchar *filename, const gc
 
 void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type, VikLayerParamData data );
 
-char *file_realpath ( const char *path, char *real );
-
-char *file_realpath_dup ( const char *path );
-
-const gchar *file_GetRelativeFilename ( gchar *currentDirectory, gchar *absoluteFilename );
-
 G_END_DECLS
 
 #endif

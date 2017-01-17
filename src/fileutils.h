@@ -27,6 +27,12 @@ G_BEGIN_DECLS
 
 const gchar *a_file_basename ( const gchar *filename );
 
+char *file_realpath ( const char *path, char *real );
+
+char *file_realpath_dup ( const char *path );
+
+const gchar *file_GetRelativeFilename ( gchar *currentDirectory, gchar *absoluteFilename );
+
 G_END_DECLS
 
 #endif
