@@ -649,7 +649,7 @@ gchar *append_file_ext ( const gchar *filename, VikFileType_t type )
   return new_name;
 }
 
-VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar *filename_or_uri )
+VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename_or_uri )
 {
   g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );
 
@@ -687,8 +687,12 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
 	//  must be loaded into a new TrackWaypoint layer (hence it be created)
     gboolean success = TRUE; // Detect load failures - mainly to remove the layer created as it's not required
 
-    VikLayer *vtl = vik_layer_create ( VIK_LAYER_TRW, vp, FALSE );
-    vik_layer_rename ( vtl, a_file_basename ( filename ) );
+    // Add to specified layer
+    gboolean add_new = !IS_VIK_TRW_LAYER(vtl);
+    if (add_new) {
+      vtl = vik_layer_create ( VIK_LAYER_TRW, vp, FALSE );
+      vik_layer_rename ( vtl, a_file_basename ( filename ) );
+    }
 
     // In fact both kml & gpx files start the same as they are in xml
     if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
@@ -720,8 +724,10 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, const gchar
     else {
       // Complete the setup from the successful load
       vik_layer_post_read ( vtl, vp, TRUE );
-      vik_aggregate_layer_add_layer ( top, vtl, FALSE );
-      vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
+      if (add_new) {
+        vik_aggregate_layer_add_layer ( top, vtl, FALSE );
+        vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
+      }
     }
   }
   g_free ( dirpath );

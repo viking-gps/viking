@@ -3100,8 +3100,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   vw->filename = g_strdup ( filename );
   gboolean success = FALSE;
   gboolean restore_original_filename = FALSE;
-
-  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, filename );
+  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename );
   switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:
