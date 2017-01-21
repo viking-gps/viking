@@ -289,7 +289,7 @@ static void datasource_bfilter_exclude_polygon_get_process_options ( VikLayerPar
 
 VikDataSourceInterface vik_datasource_bfilter_exclude_polygon_interface = {
   N_("Waypoints Outside This"),
-  N_("Polygonzied Layer"),
+  N_("Polygonized Layer"),
   VIK_DATASOURCE_CREATENEWLAYER,
   VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK,
   TRUE,
