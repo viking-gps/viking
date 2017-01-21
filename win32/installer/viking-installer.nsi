@@ -323,9 +323,9 @@ SectionEnd
 ; GPSBabel Install Section
 ;
 Section $(VIKING_GPSBABEL_SECTION_TITLE) SecGPSBabel
-  File "${BINARIES}\Optional\GPSBabel-1.5.2-Setup.exe"
-  ExecWait '"$INSTDIR\GPSBabel-1.5.2-Setup.exe" /SILENT'
-  Delete "$INSTDIR\GPSBabel-1.5.2-Setup.exe"
+  File "${BINARIES}\Optional\GPSBabel-1.5.4-Setup.exe"
+  ExecWait '"$INSTDIR\GPSBabel-1.5.4-Setup.exe" /SILENT'
+  Delete "$INSTDIR\GPSBabel-1.5.4-Setup.exe"
 SectionEnd
 
 ;--------------------------------

@@ -136,7 +136,7 @@ cp -a $MINGW/share/themes/MS-Windows $DESTINATION/share/themes
 echo Copying GPSBabel Installer
 mkdir $DESTINATION/Optional
 # ATM GPSBabel needs to be in 'cache' dir
-cp cache/GPSBabel-1.5.2-Setup.exe $DESTINATION/Optional
+cp cache/GPSBabel-1.5.4-Setup.exe $DESTINATION/Optional
 
 pushd installer
 if [ -z "$DEBUG" ]; then

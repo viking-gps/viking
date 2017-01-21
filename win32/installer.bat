@@ -129,7 +129,7 @@ cache\%GTK_RUNTIME% /sideeffects=no /setpath=no /dllpath=root /translations=no /
 
 echo Copying GPSBabel Installer
 mkdir %DESTINATION%\Optional
-%MYCOPY% cache\GPSBabel-1.5.2-Setup.exe %DESTINATION%\Optional
+%MYCOPY% cache\GPSBabel-1.5.4-Setup.exe %DESTINATION%\Optional
 if ERRORLEVEL 1 goto Error
 
 ::
