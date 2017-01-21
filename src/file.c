@@ -690,28 +690,28 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
     // Add to specified layer
     gboolean add_new = !IS_VIK_TRW_LAYER(vtl);
     if (add_new) {
-      vtl = vik_layer_create ( VIK_LAYER_TRW, vp, FALSE );
-      vik_layer_rename ( vtl, a_file_basename ( filename ) );
+      vtl = VIK_TRW_LAYER (vik_layer_create ( VIK_LAYER_TRW, vp, FALSE ));
+      vik_layer_rename ( VIK_LAYER(vtl), a_file_basename ( filename ) );
     }
 
     // In fact both kml & gpx files start the same as they are in xml
     if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
       // Implicit Conversion
       ProcessOptions po = { "-i kml", filename, NULL, NULL, NULL, NULL };
-      if ( ! ( success = a_babel_convert_from ( VIK_TRW_LAYER(vtl), &po, NULL, NULL, NULL ) ) ) {
+      if ( ! ( success = a_babel_convert_from ( vtl, &po, NULL, NULL, NULL ) ) ) {
         load_answer = LOAD_TYPE_GPSBABEL_FAILURE;
       }
     }
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
     //    - which currently confuses our check_magic function
     else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
-      if ( ! ( success = a_gpx_read_file ( VIK_TRW_LAYER(vtl), f ) ) ) {
+      if ( ! ( success = a_gpx_read_file ( vtl, f ) ) ) {
         load_answer = LOAD_TYPE_GPX_FAILURE;
       }
     }
     else {
       // Try final supported file type
-      if ( ! ( success = a_gpspoint_read_file ( VIK_TRW_LAYER(vtl), f, dirpath ) ) ) {
+      if ( ! ( success = a_gpspoint_read_file ( vtl, f, dirpath ) ) ) {
         // Failure here means we don't know how to handle the file
         load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
       }
@@ -723,11 +723,11 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
     }
     else {
       // Complete the setup from the successful load
-      vik_layer_post_read ( vtl, vp, TRUE );
+      vik_layer_post_read ( VIK_LAYER(vtl), vp, TRUE );
       if (add_new) {
-        vik_aggregate_layer_add_layer ( top, vtl, FALSE );
-        vik_trw_layer_auto_set_view ( VIK_TRW_LAYER(vtl), vp );
+        vik_aggregate_layer_add_layer ( top, VIK_LAYER(vtl), FALSE );
       }
+      vik_trw_layer_auto_set_view ( vtl, vp );
     }
   }
   g_free ( dirpath );
