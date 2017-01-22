@@ -353,6 +353,10 @@ VikWindow *vik_window_new_window ()
   {
     VikWindow *vw = window_new ();
 
+    if ( window_count == 0 ) {
+       vik_window_statusbar_update ( vw, _("This is Viking "VIKING_VERSION), VIK_STATUSBAR_INFO );
+    }
+
     g_signal_connect (G_OBJECT (vw), "destroy",
 		      G_CALLBACK (destroy_window), NULL);
     g_signal_connect (G_OBJECT (vw), "newwindow",
