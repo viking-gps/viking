@@ -611,7 +611,6 @@ void a_dialog_list ( GtkWindow *parent, const gchar *title, GArray *array, gint 
 
 void a_dialog_about ( GtkWindow *parent )
 {
-  const gchar *program_name = PACKAGE_NAME;
   const gchar *version = VIKING_VERSION;
   const gchar *website = VIKING_URL;
   const gchar *copyright = "2003-2008, Evan Battaglia\n2008-"THEYEAR", Viking's contributors";
@@ -694,8 +693,6 @@ void a_dialog_about ( GtkWindow *parent )
 #endif
 
   gtk_show_about_dialog (parent,
-	/* TODO do not set program-name and correctly set info for g_get_application_name */
-  	"program-name", program_name,
 	"version", version,
 	"website", website,
 	"comments", comments,

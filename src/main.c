@@ -173,6 +173,9 @@ int main( int argc, char *argv[] )
   XSetErrorHandler(myXErrorHandler);
 #endif
 
+  // Ensure correct capitalization of the program name
+  g_set_application_name ("Viking");
+
   // Discover if this is the very first run
   a_vik_very_first_run ();
 
