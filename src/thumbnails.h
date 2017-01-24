@@ -27,6 +27,9 @@
 
 G_BEGIN_DECLS
 
+void a_thumbnails_init ();
+void a_thumbnails_uninit ();
+
 gboolean a_thumbnails_exists ( const gchar *filename );
 void a_thumbnails_create ( const gchar *filename );
 GdkPixbuf *a_thumbnails_get(const gchar *filename);

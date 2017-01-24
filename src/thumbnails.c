@@ -61,14 +61,22 @@
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #endif
 
-#define HOME_DIR g_get_home_dir()
+static gchar* thumb_dir = NULL;
 
 #ifdef WINDOWS
-#define THUMB_DIR "\\THUMBNAILS\\" /* viking maps default viking\maps */
-#define THUMB_SUB_DIR "normal\\"
+static void set_thumb_dir ()
+{
+  thumb_dir = g_strconcat ( g_get_home_dir(), "\\THUMBNAILS\\normal\\", NULL ) ;
+}
 #else
-#define THUMB_DIR "/.thumbnails/"
-#define THUMB_SUB_DIR "normal/"
+static void set_thumb_dir ()
+{
+  const gchar *xdg_cache_home = g_getenv("XDG_CACHE_HOME");
+  if ( xdg_cache_home && g_strcmp0 (xdg_cache_home, "") != 0 )
+    thumb_dir = g_strconcat ( xdg_cache_home, "/thumbnails/normal/", NULL );
+  else
+    thumb_dir = g_strconcat ( g_get_home_dir(), "/.cache/thumbnails/normal/", NULL );
+}
 #endif
 
 #define PIXMAP_THUMB_SIZE  128
@@ -187,9 +195,7 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	md5 = md5_hash(uri);
 	g_free(path);
 
-	to = g_string_new(HOME_DIR);
-	g_string_append(to, THUMB_DIR);
-	g_string_append(to, THUMB_SUB_DIR);
+	to = g_string_new ( thumb_dir );
 	if ( g_mkdir_with_parents(to->str, 0700) != 0 )
 		g_warning ("%s: Failed to mkdir %s", __FUNCTION__, to->str );
 	g_string_append(to, md5);
@@ -275,7 +281,7 @@ GdkPixbuf *a_thumbnails_get(const gchar *pathname)
 	md5 = md5_hash(uri);
 	g_free(uri);
 
-	thumb_path = g_strdup_printf("%s%s%s%s.png", HOME_DIR, THUMB_DIR, THUMB_SUB_DIR, md5);
+	thumb_path = g_strdup_printf("%s%s.png", thumb_dir, md5);
 
 	g_free(md5);
 
@@ -307,4 +313,18 @@ out:
 	g_free(path);
 	g_free(thumb_path);
 	return thumb;
+}
+
+/*
+ * Startup and finish routines
+ */
+
+void a_thumbnails_init ()
+{
+  set_thumb_dir ();
+}
+
+void a_thumbnails_uninit ()
+{
+  g_free ( thumb_dir );
 }

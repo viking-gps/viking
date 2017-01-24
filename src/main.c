@@ -38,6 +38,7 @@
 #include "vikrouting.h"
 #include "util.h"
 #include "toolbar.h"
+#include "thumbnails.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -179,6 +180,7 @@ int main( int argc, char *argv[] )
 
   a_settings_init ();
   a_preferences_init ();
+  a_thumbnails_init ();
 
  /*
   * First stage initialization
@@ -278,6 +280,7 @@ int main( int argc, char *argv[] )
   a_mapcache_uninit ();
   a_dems_uninit ();
   a_layer_defaults_uninit ();
+  a_thumbnails_uninit ();
   a_preferences_uninit ();
   a_settings_uninit ();
 
