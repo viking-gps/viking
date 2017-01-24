@@ -52,6 +52,16 @@
 #endif
 
 #ifdef HAVE_LIBGEXIV2
+// Compatibility
+static void metadata_free ( GExiv2Metadata *gemd )
+{
+#if GEXIV2_CHECK_VERSION (0,10,4)
+	g_object_unref ( gemd );
+#else
+	gexiv2_metadata_free  ( gemd );
+#endif
+}
+
 /**
  * Attempt to get a single comment from the various exif fields
  */
@@ -222,7 +232,7 @@ struct LatLon a_geotag_get_position ( const gchar *filename )
 			ll.lon = lon;
 		}
 	}
-	gexiv2_metadata_free  ( gemd );
+	metadata_free  ( gemd );
 #else
 #ifdef HAVE_LIBEXIF
 	// open image with libexif
@@ -292,7 +302,7 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 			vik_waypoint_set_image ( wp, filename );
 		}
 	}
-	gexiv2_metadata_free ( gemd );
+	metadata_free ( gemd );
 #else
 #ifdef HAVE_LIBEXIF
 	// TODO use log?
@@ -403,7 +413,7 @@ VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coor
 			if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPTitle" ) )
 				*name = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPTitle" ) );
 	}
-	gexiv2_metadata_free ( gemd );
+	metadata_free ( gemd );
 #else
 #ifdef HAVE_LIBEXIF
 	ExifData *ed = exif_data_new_from_file ( filename );
@@ -459,7 +469,7 @@ gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_G
 		else
 			datetime = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.DateTimeOriginal" ) );
 	}
-	gexiv2_metadata_free ( gemd );
+	metadata_free ( gemd );
 #else
 #ifdef HAVE_LIBEXIF
 	ExifData *ed = exif_data_new_from_file ( filename );
@@ -757,7 +767,7 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 			}
 		}
 	}
-	gexiv2_metadata_free ( gemd );
+	metadata_free ( gemd );
 #else
 #ifdef HAVE_LIBEXIF
 	/*
