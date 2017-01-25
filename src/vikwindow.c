@@ -4526,7 +4526,7 @@ static GtkActionEntry entries[] = {
   { "Copy",      GTK_STOCK_COPY,         N_("_Copy"),                         NULL,         N_("Copy selected layer"),                      (GCallback)menu_copy_layer_cb    },
   { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         N_("Paste layer into selected container layer or otherwise above selected layer"), (GCallback)menu_paste_layer_cb },
   { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         N_("Remove selected layer"),                    (GCallback)menu_delete_layer_cb  },
-  { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
+  { "DeleteAll", NULL,                   N_("Delete _All"),                   NULL,         NULL,                                           (GCallback)clear_cb              },
   { "CopyCentre",NULL,                   N_("Copy Centre _Location"),     "<control>h",     NULL,                                           (GCallback)menu_copy_centre_cb   },
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
@@ -4702,7 +4702,7 @@ static void window_create_ui( VikWindow *window )
 
     action.name = vik_layer_get_interface(i)->name;
     action.stock_id = vik_layer_get_interface(i)->name;
-    action.label = g_strdup_printf( _("New _%s Layer"), vik_layer_get_interface(i)->name);
+    action.label = g_strdup_printf( _("New _%s Layer"), _(vik_layer_get_interface(i)->name));
     action.accelerator = vik_layer_get_interface(i)->accelerator;
     action.tooltip = NULL;
     action.callback = (GCallback)menu_addlayer_cb;
@@ -4745,7 +4745,7 @@ static void window_create_ui( VikWindow *window )
     // This is to avoid clashing with just the layer name used above for the tool actions
     action_dl.name = g_strconcat("Layer", vik_layer_get_interface(i)->fixed_layer_name, NULL);
     action_dl.stock_id = NULL;
-    action_dl.label = g_strconcat("_", vik_layer_get_interface(i)->name, "...", NULL); // Prepend marker for keyboard accelerator
+    action_dl.label = g_strconcat("_", _(vik_layer_get_interface(i)->name), _("..."), NULL);
     action_dl.accelerator = NULL;
     action_dl.tooltip = NULL;
     action_dl.callback = (GCallback)layer_defaults_cb;

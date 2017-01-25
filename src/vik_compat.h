@@ -42,10 +42,10 @@ void vik_mutex_free (GMutex *mutex);
  */
 #if GTK_CHECK_VERSION (2, 24, 0)
 #define vik_combo_box_text_new gtk_combo_box_text_new
-#define vik_combo_box_text_append(X,Y) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(X),Y)
+#define vik_combo_box_text_append(X,Y) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(X),_(Y))
 #else
 #define vik_combo_box_text_new gtk_combo_box_new_text
-#define vik_combo_box_text_append(X,Y) gtk_combo_box_append_text(GTK_COMBO_BOX(X),Y)
+#define vik_combo_box_text_append(X,Y) gtk_combo_box_append_text(GTK_COMBO_BOX(X),_(Y))
 #endif
 
 G_END_DECLS
