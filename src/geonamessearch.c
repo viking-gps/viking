@@ -38,11 +38,6 @@
 #define g_mapped_file_unref g_mapped_file_free
 #endif
 
-/**
- * See http://www.geonames.org/export/wikipedia-webservice.html#wikipediaBoundingBox
- */
-// Translators may wish to change this setting as appropriate to get Wikipedia articles in that language
-#define GEONAMES_LANG N_("en")
 // TODO - offer configuration of this value somewhere
 //  ATM decided it's not essential enough to warrant putting in the preferences
 #define GEONAMES_MAX_ENTRIES 20
@@ -412,7 +407,6 @@ static GList *get_entries_from_file(gchar *file_name)
   return(found_places);
 }
 
-
 void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon maxmin[2] )
 {
   gchar *uri;
@@ -423,12 +417,31 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   VikWaypoint *wiki_wp;
   found_geoname *wiki_geoname;
 
+  /**
+   * See http://www.geonames.org/export/wikipedia-webservice.html#wikipediaBoundingBox
+   */
+  // Wikipedia articles supported languages are de,en,es,fr,it,nl,pl,pt,ru,zh (default = en)
+  gboolean got_language = FALSE;
+  const gchar *language = g_getenv("LANGUAGE");
+  gchar lang[3] = "en";
+  if (strlen(language) > 1) {
+    got_language = TRUE;
+  } else {
+    language = g_getenv("LANG");
+    if (strlen(language) > 1)
+      got_language = TRUE;
+  }
+  if ( got_language ) {
+    lang[0] = language[0];
+    lang[1] = language[1];
+  }
+
   /* encode doubles in a C locale */
   gchar *north = a_coords_dtostr(maxmin[0].lat);
   gchar *south = a_coords_dtostr(maxmin[1].lat);
   gchar *east = a_coords_dtostr(maxmin[0].lon);
   gchar *west = a_coords_dtostr(maxmin[1].lon);
-  uri = g_strdup_printf ( GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, GEONAMES_LANG, GEONAMES_MAX_ENTRIES );
+  uri = g_strdup_printf ( GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, lang, GEONAMES_MAX_ENTRIES );
   g_free(north); north = NULL;
   g_free(south); south = NULL;
   g_free(east);  east = NULL;
