@@ -38,11 +38,6 @@
 #define g_mapped_file_unref g_mapped_file_free
 #endif
 
-/**
- * See http://www.geonames.org/export/wikipedia-webservice.html#wikipediaBoundingBox
- */
-// Translators may wish to change this setting as appropriate to get Wikipedia articles in that language
-#define GEONAMES_LANG N_("en")
 // TODO - offer configuration of this value somewhere
 //  ATM decided it's not essential enough to warrant putting in the preferences
 #define GEONAMES_MAX_ENTRIES 20
@@ -412,7 +407,6 @@ static GList *get_entries_from_file(gchar *file_name)
   return(found_places);
 }
 
-
 void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon maxmin[2] )
 {
   gchar *uri;
@@ -423,12 +417,24 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   VikWaypoint *wiki_wp;
   found_geoname *wiki_geoname;
 
+  /**
+   * See http://www.geonames.org/export/wikipedia-webservice.html#wikipediaBoundingBox
+   */
+  // Wikipedia articles supported languages are de,en,es,fr,it,nl,pl,pt,ru,zh (default = en)
+  const gchar *language = g_getenv("LANGUAGE");
+  gchar lang[3] = "en";
+  if (strlen(language) > 1)
+  {
+      lang[0] = language[0];
+      lang[1] = language[1];
+  }
+
   /* encode doubles in a C locale */
   gchar *north = a_coords_dtostr(maxmin[0].lat);
   gchar *south = a_coords_dtostr(maxmin[1].lat);
   gchar *east = a_coords_dtostr(maxmin[0].lon);
   gchar *west = a_coords_dtostr(maxmin[1].lon);
-  uri = g_strdup_printf ( GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, GEONAMES_LANG, GEONAMES_MAX_ENTRIES );
+  uri = g_strdup_printf ( GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, lang, GEONAMES_MAX_ENTRIES );
   g_free(north); north = NULL;
   g_free(south); south = NULL;
   g_free(east);  east = NULL;
@@ -443,7 +449,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
     none_found(vw);
     goto done;
   }
-  selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), wiki_places, TRUE, "Select articles", "Select the articles you want to add.");
+  selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), wiki_places, TRUE, _("Select articles"), _("Select the articles you want to add."));
   wp_runner = selected;
   while (wp_runner) {
     wiki_geoname = (found_geoname *)wp_runner->data;
@@ -456,17 +462,21 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
     // Use the featue type to generate a suitable waypoint icon
     //  http://www.geonames.org/wikipedia/wikipedia_features.html
     // Only a few values supported as only a few symbols make sense
+    // The feature name may not be translated
+    // Double check the english and the translated
     if ( wiki_geoname->feature ) {
-      if ( !strcmp (wiki_geoname->feature, "city") )
-        vik_waypoint_set_symbol(wiki_wp, "city (medium)");
-      if ( !strcmp (wiki_geoname->feature, "edu") )
-        vik_waypoint_set_symbol(wiki_wp, "school");
-      if ( !strcmp (wiki_geoname->feature, "airport") )
-        vik_waypoint_set_symbol(wiki_wp, "airport");
-      if ( !strcmp (wiki_geoname->feature, "mountain") )
-        vik_waypoint_set_symbol(wiki_wp, "summit");
-      if ( !strcmp (wiki_geoname->feature, "forest") )
-        vik_waypoint_set_symbol(wiki_wp, "forest");
+      if ( !strcmp (wiki_geoname->feature, "city") || !strcmp (wiki_geoname->feature, _("city")))
+        vik_waypoint_set_symbol(wiki_wp, _("city (medium)"));
+      if ( !strcmp (wiki_geoname->feature, "edu") || !strcmp (wiki_geoname->feature, _("edu")))
+        vik_waypoint_set_symbol(wiki_wp, _("school"));
+      if ( !strcmp (wiki_geoname->feature, "airport") || !strcmp (wiki_geoname->feature, _("airport")))
+        vik_waypoint_set_symbol(wiki_wp, _("airport"));
+      if ( !strcmp (wiki_geoname->feature, "mountain") || !strcmp (wiki_geoname->feature, _("mountain")))
+        vik_waypoint_set_symbol(wiki_wp, _("summit"));
+      if ( !strcmp (wiki_geoname->feature, "forest") || !strcmp (wiki_geoname->feature, _("forest")))
+        vik_waypoint_set_symbol(wiki_wp, _("forest"));
+      if ( !strcmp (wiki_geoname->feature, "landmark") || !strcmp (wiki_geoname->feature, _("landmark")))
+        vik_waypoint_set_symbol(wiki_wp, _("landmark"));
     }
     vik_trw_layer_filein_add_waypoint ( vtl, wiki_geoname->name, wiki_wp );
     wp_runner = g_list_next(wp_runner);

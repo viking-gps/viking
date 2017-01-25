@@ -223,7 +223,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
 
     case VIK_LAYER_WIDGET_BUTTON:
       if ( param->type == VIK_LAYER_PARAM_PTR && param->widget_data ) {
-        rv = gtk_button_new_with_label ( param->widget_data );
+        rv = gtk_button_new_with_label ( _(param->widget_data) );
         g_signal_connect ( G_OBJECT(rv), "clicked", G_CALLBACK (vlpd.ptr), param->extra_widget_data );
       }
       break;
@@ -390,7 +390,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
         if ( tab_widget_count )
         {
           tables[current_group] = gtk_table_new ( tab_widget_count, 1, FALSE );
-          gtk_notebook_append_page ( GTK_NOTEBOOK(notebook), tables[current_group], gtk_label_new(groups[current_group]) );
+          gtk_notebook_append_page ( GTK_NOTEBOOK(notebook), tables[current_group], gtk_label_new(_(groups[current_group])) );
         }
       }
     }

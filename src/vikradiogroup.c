@@ -84,7 +84,7 @@ GtkWidget *vik_radio_group_new ( GList *options )
   vrg = VIK_RADIO_GROUP ( g_object_new ( VIK_RADIO_GROUP_TYPE, NULL ) );
 
   label = g_list_nth_data(options, 0);
-  t = gtk_radio_button_new_with_label ( NULL, gettext(label) );
+  t = gtk_radio_button_new_with_label ( NULL, _(label) );
   gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(t), TRUE );
   gtk_box_pack_start ( GTK_BOX(vrg), t, FALSE, FALSE, 0 );
 
@@ -95,7 +95,7 @@ GtkWidget *vik_radio_group_new ( GList *options )
   {
     label = option->data;
     t = gtk_radio_button_new_with_label_from_widget (
-            GTK_RADIO_BUTTON(vrg->radios->data), gettext(label));
+            GTK_RADIO_BUTTON(vrg->radios->data), _(label));
     vrg->radios = g_slist_append( vrg->radios, t );
     gtk_box_pack_start ( GTK_BOX(vrg), GTK_WIDGET(t), FALSE, FALSE, 0 );
     vrg->options_count++;
@@ -114,7 +114,7 @@ GtkWidget *vik_radio_group_new_static ( const gchar **options )
 
   vrg = VIK_RADIO_GROUP ( g_object_new ( VIK_RADIO_GROUP_TYPE, NULL ) );
 
-  t = gtk_radio_button_new_with_label ( NULL, options[0] );
+  t = gtk_radio_button_new_with_label ( NULL, _(options[0]) );
   gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(t), TRUE );
   gtk_box_pack_start ( GTK_BOX(vrg), t, FALSE, FALSE, 0 );
 
@@ -123,7 +123,7 @@ GtkWidget *vik_radio_group_new_static ( const gchar **options )
 
   for ( options++ ; *options ; options++ )
   {
-    t = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(vrg->radios->data), *options );
+    t = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(vrg->radios->data), _(*options) );
     vrg->radios = g_slist_append( vrg->radios, t );
     gtk_box_pack_start ( GTK_BOX(vrg), GTK_WIDGET(t), FALSE, FALSE, 0 );
     vrg->options_count++;

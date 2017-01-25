@@ -62,7 +62,7 @@ void osm_init () {
   VikMapSource *cycle_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", MAP_ID_OSM_CYCLE,
-                                "label", "OpenStreetMap (Cycle)",
+                                "label", _("OpenStreetMap (Cycle)"),
                                 "name", "OSM-Cycle",
                                 "hostname", "tile.opencyclemap.org",
                                 "url", "/cycle/%d/%d/%d.png",
@@ -145,14 +145,14 @@ void osm_init () {
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", MAP_ID_MAPBOX_OUTDOORS,
                                 "name", "Mapbox-Outdoors",
-                                "label", "Mapbox Outdoors",
+                                "label", _("Mapbox Outdoors"),
                                 "url", "https://api.tiles.mapbox.com/styles/v1/mapbox/outdoors-v9/tiles/256/%d/%d/%d?access_token=pk.eyJ1Ijoicndub3JyaXMiLCJhIjoiY2lxc294anN2MDA5bWhzbWFseWsxMW1ydiJ9.HcybKtZsiG6RVuOHg481Kg",
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "zoom-min", 0,
                                 "zoom-max", 19,
                                 "copyright", "© Mapbox © OpenStreetMap",
-                                "license", "Mapbox Specific",
+                                "license", _("Mapbox Specific"),
                                 "license-url", "https://www.mapbox.com/tos",
                                 NULL));
 

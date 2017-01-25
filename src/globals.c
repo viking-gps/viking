@@ -64,10 +64,10 @@ gint viking_version_to_number ( gchar *version )
   return version_number;
 }
 
-static gchar * params_degree_formats[] = {"DDD", "DMM", "DMS", N_("Raw"), NULL};
+static gchar * params_degree_formats[] = {N_("DDD"), N_("DMM"), N_("DMS"), N_("Raw"), NULL};
 static gchar * params_units_distance[] = {N_("Kilometres"), N_("Miles"), N_("Nautical Miles"), NULL};
-static gchar * params_units_speed[] = {"km/h", "mph", "m/s", "knots", NULL};
-static gchar * params_units_height[] = {"Metres", "Feet", NULL};
+static gchar * params_units_speed[] = {N_("km/h"), N_("mph"), N_("m/s"), N_("knots"), NULL};
+static gchar * params_units_height[] = {N_("Metres"), N_("Feet"), NULL};
 static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
 static gchar * params_time_ref_frame[] = {N_("Locale"), N_("World"), N_("UTC"), NULL};

@@ -154,7 +154,7 @@ msgstr "经度："
 
 #: ../src/dialog.c:102
 msgid "Go to UTM"
-msgstr "去UTM"
+msgstr "去通用横墨卡托投影"
 
 #: ../src/dialog.c:114
 msgid "Northing:"
@@ -177,9 +177,49 @@ msgstr "字母："
 msgid "Nothing was selected"
 msgstr "无任何选择"
 
-#: ../src/dialog.c:254
-msgid "Add Route"
-msgstr "添加路线"
+#: ../src/geonamessearch.c:446
+msgid "Select articles"
+msgstr "选择文章"
+
+#: ../src/geonamessearch.c:446
+msgid "Select the articles you want to add."
+msgstr "选择要添加的文章。"
+
+#: ../src/geonamessearch.c:460
+msgid "city"
+msgstr "城市"
+
+#: ../src/geonamessearch.c:461
+msgid "city (medium)"
+msgstr "城市（中等）"
+
+#: ../src/geonamessearch.c:462
+msgid "edu"
+msgstr "教育"
+
+#: ../src/geonamessearch.c:463
+msgid "school"
+msgstr "学校"
+
+#: ../src/geonamessearch.c:464 ../src/geonamessearch.c:465
+msgid "airport"
+msgstr "机场"
+
+#: ../src/geonamessearch.c:466
+msgid "mountain"
+msgstr "山脉"
+
+#: ../src/geonamessearch.c:467
+msgid "summit"
+msgstr "山峰"
+
+#: ../src/geonamessearch.c:468 ../src/geonamessearch.c:469
+msgid "forest"
+msgstr "森林"
+
+#: ../src/geonamessearch.c:470 ../src/geonamessearch.c:470
+msgid "landmark"
+msgstr "地标"
 
 #: ../src/dialog.c:254
 msgid "Add Track"
@@ -203,11 +243,11 @@ msgstr "今天"
 
 #: ../src/dialog.c:401
 msgid "Zoom Factors..."
-msgstr "缩放参数…"
+msgstr "缩放因子…"
 
 #: ../src/dialog.c:415
 msgid "Zoom factor (in meters per pixel):"
-msgstr "放大系数（米每像素）："
+msgstr "缩放因子（米每像素）："
 
 #: ../src/dialog.c:416
 msgid "X (easting): "
@@ -219,7 +259,7 @@ msgstr "Y (北进)： "
 
 #: ../src/dialog.c:422
 msgid "X and Y zoom factors must be equal"
-msgstr "X和Y缩放参数必须相等"
+msgstr "使X和Y缩放因子相等"
 
 #: ../src/dialog.c:477
 msgid "1 min"
@@ -236,6 +276,11 @@ msgstr "1天"
 #: ../src/dialog.c:480
 msgid "Custom (in minutes):"
 msgstr "定制（分钟）："
+
+#: ../src/dialog.c:616
+#, c-format
+msgid "2003-2008, Evan Battaglia\n2008-%s, Viking's contributors"
+msgstr "2003-2008, 埃文·巴塔利亚\n2008-%s, 维京贡献者们"
 
 #: ../src/dialog.c:617
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
@@ -363,6 +408,18 @@ msgid "failed to open temporary file: %s"
 msgstr "打不开临时文件：%s"
 
 #: ../src/globals.c:67
+msgid "DDD"
+msgstr "度度度"
+
+#: ../src/globals.c:67
+msgid "DMM"
+msgstr "度分分"
+
+#: ../src/globals.c:67
+msgid "DMS"
+msgstr "度分秒"
+
+#: ../src/globals.c:67
 msgid "Raw"
 msgstr "原始的"
 
@@ -378,6 +435,30 @@ msgstr "英里"
 msgid "Nautical Miles"
 msgstr "海里"
 
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:646 ../src/vikutils.c:87
+msgid "km/h"
+msgstr "公里/小时"
+
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:647 ../src/vikutils.c:77
+msgid "mph"
+msgstr "英里/小时"
+
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:650 ../src/vikutils.c:80
+msgid "m/s"
+msgstr "米/秒"
+
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:648 ../src/vikutils.c:83
+msgid "knots"
+msgstr "节"
+
+#: ../src/globals.c:70
+msgid "Metres"
+msgstr "米制"
+
+#: ../src/globals.c:70
+msgid "Feet"
+msgstr "英制"
+
 #: ../src/globals.c:73
 msgid "Locale"
 msgstr "本地"
@@ -388,7 +469,7 @@ msgstr "世界"
 
 #: ../src/globals.c:73
 msgid "UTC"
-msgstr "UTC"
+msgstr "协调世界时"
 
 #: ../src/globals.c:76
 msgid "Degree format:"
@@ -606,7 +687,7 @@ msgstr "简化轨迹"
 
 #: ../src/datasource_bfilter.c:111
 msgid "Error Factor:"
-msgstr "容错因子："
+msgstr "误差因子："
 
 #: ../src/datasource_bfilter.c:112
 msgid ""
@@ -1029,7 +1110,7 @@ msgstr "OSM（OpenStreetMap开源街图）密码："
 
 #: ../src/osm-traces.c:150
 msgid "OpenStreetMap Traces"
-msgstr "OpenStreetMap（开源街图）轨迹"
+msgstr "OSM轨迹"
 
 #: ../src/osm-traces.c:239
 #, c-format
@@ -1248,11 +1329,32 @@ msgstr "经度用十进制"
 
 #: ../src/main.c:115
 msgid "Zoom Level (OSM). Value can be 0 - 22"
-msgstr "缩放比例（OSM）。值在0至22之间"
+msgstr "缩放等级（OSM）。值在0至22之间"
 
 #: ../src/main.c:116
 msgid "Add a map layer by id value. Use 0 for the default map."
 msgstr "以指定识别号添加图层。用0指代默认层。"
+
+#: ../src/main.c:160
+#, c-format
+msgid "%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-%s Viking's contributors\n"
+msgstr "%s %s\n版权所有© 2003-2008 埃文·巴塔利亚\n版权所有© 2008-%s 维京贡献者们\n"
+
+#: ../src/osm.c:50
+msgid "OpenStreetMap (Mapnik)"
+msgstr "OpenStreetMap（Mapnik）"
+
+#: ../src/osm.c:65
+msgid "OpenStreetMap (Cycle)"
+msgstr "OpenStreetMap（骑行）"
+
+#: ../src/osm.c:79
+msgid "OpenStreetMap (Transport)"
+msgstr "OpenStreetMap（交通）"
+
+#: ../src/osm.c:79
+msgid "OpenStreetMap (Humanitarian)"
+msgstr "OpenStreetMap（人道）"
 
 #: ../src/osm.c:112
 msgid "On Disk OSM Tile Format"
@@ -1265,6 +1367,10 @@ msgstr "MBTiles文件"
 #: ../src/osm.c:133
 msgid "OSM Metatiles"
 msgstr "OSM元数据"
+
+#: ../src/osm.c:148
+msgid "Mapbox Outdoors"
+msgstr "Mapbox户外"
 
 #: ../src/osm.c:172
 msgid "OSM (view)"
@@ -1495,6 +1601,10 @@ msgid "One layer"
 msgid_plural "%d layers"
 msgstr[0] "%d层"
 
+#: ../src/vikdemlayer.c:85
+msgid "SRTM Global 90m (3 arcsec)"
+msgstr "SRTM全球90米（3角秒）"
+
 #: ../src/vikdemlayer.c:93
 msgid "Absolute height"
 msgstr "绝对高度"
@@ -1537,7 +1647,7 @@ msgstr "DEM下载"
 
 #: ../src/vikdemlayer.c:189
 msgid "DEM"
-msgstr "DEM（数字高程模型）"
+msgstr "DEM高程"
 
 #: ../src/vikdemlayer.c:301
 #, c-format
@@ -1664,7 +1774,7 @@ msgstr "Georef缩放工具"
 
 #: ../src/vikgeoreflayer.c:114
 msgid "GeoRef Map"
-msgstr "Georef地图"
+msgstr "GeoRef地图"
 
 #: ../src/vikgeoreflayer.c:211
 msgid "Auto Read World Files:"
@@ -1717,7 +1827,7 @@ msgstr "世界文件参数："
 
 #: ../src/vikgeoreflayer.c:829
 msgid "Load From File..."
-msgstr "从文件装入…"
+msgstr "从文件加载…"
 
 #: ../src/vikgeoreflayer.c:834
 msgid "Corner pixel easting:"
@@ -1725,7 +1835,7 @@ msgstr "角像素东进："
 
 #: ../src/vikgeoreflayer.c:836
 msgid "the UTM \"easting\" value of the upper-left corner pixel of the map"
-msgstr "地图左上方像素的UTM（通用横墨卡托投影）“东进”值"
+msgstr "地图左上方像素的通用横墨卡托投影“东进”值"
 
 #: ../src/vikgeoreflayer.c:838
 msgid "Corner pixel northing:"
@@ -1733,23 +1843,23 @@ msgstr "角像素北进："
 
 #: ../src/vikgeoreflayer.c:840
 msgid "the UTM \"northing\" value of the upper-left corner pixel of the map"
-msgstr "地图左上方像素的UTM（通用横墨卡托投影）“北进”值"
+msgstr "地图左上方像素的通用横墨卡托投影“北进”值"
 
 #: ../src/vikgeoreflayer.c:842
 msgid "X (easting) scale (mpp): "
-msgstr "X(东进)放大系数（米每像素）: "
+msgstr "X（东进）缩放参数（米每像素）: "
 
 #: ../src/vikgeoreflayer.c:843
 msgid "Y (northing) scale (mpp): "
-msgstr "Y(北进)放大系数（米每像素）: "
+msgstr "Y（北进）缩放参数（米每像素）: "
 
 #: ../src/vikgeoreflayer.c:846
 msgid "the scale of the map in the X direction (meters per pixel)"
-msgstr "X方向地图放大系数（米每像素）"
+msgstr "X方向地图缩放参数（米每像素）"
 
 #: ../src/vikgeoreflayer.c:848
 msgid "the scale of the map in the Y direction (meters per pixel)"
-msgstr "Y方向地图放大系数（米每像素）"
+msgstr "Y方向地图缩放参数（米每像素）"
 
 #: ../src/vikgeoreflayer.c:850
 msgid "Map Image:"
@@ -1783,7 +1893,7 @@ msgstr "请从图像大小计算米每像素值前输入全部坐标"
 
 #: ../src/vikgeoreflayer.c:924
 msgid "UTM"
-msgstr "UTM（通用横墨卡托投影）"
+msgstr "通用横墨卡托投影"
 
 #: ../src/vikgeoreflayer.c:925
 msgid "Latitude/Longitude"
@@ -1912,7 +2022,7 @@ msgstr "Gpsd重试间隔(秒)："
 
 #: ../src/vikgpslayer.c:241
 msgid "GPS"
-msgstr "GPS"
+msgstr "GPS定位"
 
 #: ../src/vikgpslayer.c:307 ../src/vikgpslayer.c:1273
 msgid "GPS Download"
@@ -2316,7 +2426,7 @@ msgstr "使用维京缩放等级"
 
 #: ../src/vikmapslayer.c:147
 msgid "OSM"
-msgstr "OSM"
+msgstr "OSM（OpenStreetMap开源街图）"
 
 #: ../src/vikmapslayer.c:153
 msgid "Map Type:"
@@ -2423,7 +2533,7 @@ msgstr "打不开MBTiles文件：%s"
 msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
-msgstr "无法绘制瓦片或瓦片超出%d缩放大小"
+msgstr "无法绘制瓦片或瓦片超出%d缩放因子"
 
 #: ../src/vikmapslayer.c:1643
 msgid "Failed to download tile"
@@ -2518,7 +2628,7 @@ msgstr "新建"
 
 #: ../src/vikmapslayer.c:2376
 msgid "Reload All"
-msgstr "全部重新装入"
+msgstr "全部重新加载"
 
 #: ../src/vikmapslayer.c:2378
 msgid "Download for Zoom Levels"
@@ -3054,23 +3164,23 @@ msgstr "导出图层(_E)"
 
 #: ../src/viktrwlayer.c:4169
 msgid "Export as GPS_Point..."
-msgstr "导出为GPS_Point…"
+msgstr "导出为GPS Point(_P)…"
 
 #: ../src/viktrwlayer.c:4174
 msgid "Export as GPS_Mapper..."
-msgstr "导出为GPS_Mapper…"
+msgstr "导出为GPS Mapper(_M)…"
 
 #: ../src/viktrwlayer.c:4179
 msgid "Export as _GPX..."
-msgstr "导出为_GPX…"
+msgstr "导出为GPX(_G)…"
 
 #: ../src/viktrwlayer.c:4185
-msgid "Export as _KML..."
-msgstr "导出为_KML…"
+msgid "Export as KML..."
+msgstr "导出为KML(_K)…"
 
 #: ../src/viktrwlayer.c:4192
 msgid "Export as GEO_JSON..."
-msgstr "导出为GEO_JSON…"
+msgstr "导出为GEOJSON(_J)…"
 
 #: ../src/viktrwlayer.c:4199
 msgid "Export via GPSbabel..."
@@ -3113,7 +3223,7 @@ msgstr "获取(_A)"
 
 #: ../src/viktrwlayer.c:4262 ../src/vikwindow.c:4548
 msgid "From _GPS..."
-msgstr "从_GPS…"
+msgstr "从GPS(_G)…"
 
 #: ../src/viktrwlayer.c:4268
 msgid "From _Directions..."
@@ -3121,7 +3231,7 @@ msgstr "从方向(_D)…"
 
 #: ../src/viktrwlayer.c:4274
 msgid "From _OSM Traces..."
-msgstr "从_OSM踪迹…"
+msgstr "从OSM踪迹(_O)…"
 
 #: ../src/viktrwlayer.c:4279
 msgid "From _My OSM Traces..."
@@ -3157,7 +3267,7 @@ msgstr "从文件(_F)…"
 
 #: ../src/viktrwlayer.c:4329 ../src/vikwindow.c:4549
 msgid "Import File With GPS_Babel..."
-msgstr "用GPS_Babel程序从文件导入…"
+msgstr "用GPSBabel程序从文件导入(_B)…"
 
 #: ../src/viktrwlayer.c:4336 ../src/viktrwlayer.c:8631
 msgid "_Upload"
@@ -3165,11 +3275,11 @@ msgstr "上传(_U)"
 
 #: ../src/viktrwlayer.c:4342
 msgid "Upload to _GPS..."
-msgstr "上传到_GPS设备…"
+msgstr "上传到GPS设备(_G)…"
 
 #: ../src/viktrwlayer.c:4349 ../src/viktrwlayer.c:8699
 msgid "Upload to _OSM..."
-msgstr "上传到_OSM…"
+msgstr "上传到OSM(_O)…"
 
 #: ../src/viktrwlayer.c:4357
 msgid "De_lete"
@@ -4133,12 +4243,12 @@ msgstr "统计"
 
 #: ../src/viktrwlayer_propwin.c:3444 ../src/viktrwlayer_propwin.c:3510
 msgid "Show D_EM"
-msgstr "显示D_EM"
+msgstr "显示DEM(_E)"
 
 #: ../src/viktrwlayer_propwin.c:3445 ../src/viktrwlayer_propwin.c:3461
 #: ../src/viktrwlayer_propwin.c:3477 ../src/viktrwlayer_propwin.c:3526
 msgid "Show _GPS Speed"
-msgstr "显示_GPS速度"
+msgstr "显示GPS速度(_G)"
 
 #: ../src/viktrwlayer_propwin.c:3447 ../src/viktrwlayer_propwin.c:3463
 #: ../src/viktrwlayer_propwin.c:3495 ../src/viktrwlayer_propwin.c:3528
@@ -4325,22 +4435,6 @@ msgstr ""
 "时长\n"
 "(分钟)"
 
-#: ../src/viktrwlayer_tracklist.c:646 ../src/vikutils.c:87
-msgid "km/h"
-msgstr "公里/小时"
-
-#: ../src/viktrwlayer_tracklist.c:647 ../src/vikutils.c:77
-msgid "mph"
-msgstr "英里/小时"
-
-#: ../src/viktrwlayer_tracklist.c:648 ../src/vikutils.c:83
-msgid "knots"
-msgstr "节"
-
-#: ../src/viktrwlayer_tracklist.c:650 ../src/vikutils.c:80
-msgid "m/s"
-msgstr "米/秒"
-
 #: ../src/viktrwlayer_tracklist.c:653
 #, c-format
 msgid ""
@@ -4377,7 +4471,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_waypointlist.c:312
 msgid "Copy Data (with _positions)"
-msgstr "复制数据(和位置)(_p)"
+msgstr "复制数据（和位置）(_p)"
 
 #: ../src/viktrwlayer_waypointlist.c:633
 msgid "Comment"
@@ -5048,7 +5142,7 @@ msgstr "KMZ文件"
 
 #: ../src/vikwindow.c:4096
 msgid "You must be in UTM mode to use this feature"
-msgstr "须在UTM（通用横墨卡托投影）模式中用此特性"
+msgstr "须在通用横墨卡托投影模式下用此特性"
 
 #: ../src/vikwindow.c:4100
 msgid "Choose a directory to hold images"
@@ -5100,7 +5194,7 @@ msgstr "南北向图像瓦片："
 
 #: ../src/vikwindow.c:4285
 msgid "This feature is not available in UTM mode"
-msgstr "该特性在UTM（通用横墨卡托投影）模式下不可用"
+msgstr "该特性在通用横墨卡托投影模式下不可用"
 
 #: ../src/vikwindow.c:4308
 msgid "Open File"
@@ -5181,7 +5275,7 @@ msgstr "导出全部轨迹路标层"
 
 #: ../src/vikwindow.c:4477
 msgid "_GPX..."
-msgstr "_GPX文件…"
+msgstr "GPX文件(_G)…"
 
 #: ../src/vikwindow.c:4477
 msgid "Export as GPX"
@@ -5201,7 +5295,7 @@ msgstr "获取驾驶方向"
 
 #: ../src/vikwindow.c:4481
 msgid "_OSM Traces..."
-msgstr "_OSM踪迹…"
+msgstr "OSM踪迹(_O)…"
 
 #: ../src/vikwindow.c:4481
 msgid "Get traces from OpenStreetMap"
@@ -5209,7 +5303,7 @@ msgstr "从OpenStreetMap（开源街图）获取踪迹"
 
 #: ../src/vikwindow.c:4482
 msgid "_My OSM Traces..."
-msgstr "我的OS_M踪迹…"
+msgstr "我的OSM踪迹(_M)…"
 
 #: ../src/vikwindow.c:4482
 msgid "Get Your Own Traces from OpenStreetMap"
@@ -5357,11 +5451,11 @@ msgstr "去任意经纬度座标"
 
 #: ../src/vikwindow.c:4512
 msgid "Go to UTM..."
-msgstr "去UTM（通用横墨卡托投影）…"
+msgstr "去（通用横墨卡托投影…"
 
 #: ../src/vikwindow.c:4512
 msgid "Go to arbitrary UTM coordinate"
-msgstr "去任意的UTM（通用横墨卡托投影）座标"
+msgstr "去任意的通用横墨卡托投影座标"
 
 #: ../src/vikwindow.c:4513
 msgid "_Refresh"
@@ -5440,12 +5534,12 @@ msgid "Cu_t"
 msgstr "剪切(_t)"
 
 #: ../src/vikwindow.c:4529
-msgid "Delete All"
-msgstr "删除全部"
+msgid "Delete _All"
+msgstr "删除全部(_A)"
 
 #: ../src/vikwindow.c:4530
 msgid "Copy Centre _Location"
-msgstr "复制居中位置"
+msgstr "复制居中位置(_L)"
 
 #: ../src/vikwindow.c:4531
 msgid "_Flush Map Cache"
@@ -5489,7 +5583,7 @@ msgstr "关于"
 
 #: ../src/vikwindow.c:4547
 msgid "_KML..."
-msgstr "_KML文件…"
+msgstr "KML文件(_K)…"
 
 #: ../src/vikwindow.c:4547
 msgid "Export as KML"
@@ -5505,7 +5599,7 @@ msgstr "从GPSBabel转换器导入文件"
 
 #: ../src/vikwindow.c:4553
 msgid "Import Geo_JSON File..."
-msgstr "导入Geo_JSON文件…"
+msgstr "导入GeoJSON文件(_J)…"
 
 #: ../src/vikwindow.c:4553
 msgid "Import GeoJSON file"
@@ -5513,15 +5607,15 @@ msgstr "导入GeoJSON文件"
 
 #: ../src/vikwindow.c:4558
 msgid "_UTM Mode"
-msgstr "_UTM（通用横墨卡托投影）模式"
+msgstr "通用横墨卡托投影模式(_U)"
 
 #: ../src/vikwindow.c:4559
 msgid "_Expedia Mode"
-msgstr "_Expedia（亿客行）模式"
+msgstr "Expedia（亿客行）模式(_E)"
 
 #: ../src/vikwindow.c:4560
 msgid "_Mercator Mode"
-msgstr "_Mercator（墨卡托投影）模式"
+msgstr "墨卡托投影模式(_M)"
 
 #: ../src/vikwindow.c:4561
 msgid "Lat_/Lon Mode"
@@ -5594,7 +5688,11 @@ msgstr "显示菜单"
 #: ../src/vikwindow.c:4705
 #, c-format
 msgid "New _%s Layer"
-msgstr "新建%s图层"
+msgstr "新建_%s图层"
+
+#: ../src/vikwindow.c:4748
+msgid "..."
+msgstr "…"
 
 #: ../src/viking.desktop.in:8
 msgid "viking"
