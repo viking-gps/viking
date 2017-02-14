@@ -4917,6 +4917,7 @@ void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer v
 gboolean vik_window_clear_highlight ( VikWindow *vw )
 {
   gboolean need_redraw = FALSE;
+  vw->containing_vtl = NULL;
   if ( vw->selected_vtl != NULL ) {
     vw->selected_vtl = NULL;
     need_redraw = TRUE;
