@@ -195,9 +195,14 @@ CURL_download_t curl_download_get_url ( const char *hostname, const char *uri, F
 {
   gchar *full = NULL;
 
-  if ( hostname && strstr ( hostname, "://" ) != NULL )
-    /* Already full url */
-    full = (gchar *) hostname;
+  if ( hostname && strstr ( hostname, "://" ) != NULL ) {
+    if ( uri && strlen ( uri ) > 1 )
+      // Simply append them together
+      full = g_strdup_printf ( "%s%s", hostname, uri );
+    else
+      /* Already full url */
+      full = (gchar *) hostname;
+  }
   else if ( uri && strstr ( uri, "://" ) != NULL )
     /* Already full url */
     full = (gchar *) uri;
