@@ -55,6 +55,7 @@ GType vik_map_source_default_get_type (void) G_GNUC_CONST;
 gchar * vik_map_source_default_get_uri( VikMapSourceDefault *self, MapCoord *src );
 gchar * vik_map_source_default_get_hostname( VikMapSourceDefault *self );
 DownloadFileOptions * vik_map_source_default_get_download_options( VikMapSourceDefault *self );
+gchar * vik_map_source_default_get_url_display( VikMapSourceDefault *self, MapCoord *src );
 
 G_END_DECLS
 

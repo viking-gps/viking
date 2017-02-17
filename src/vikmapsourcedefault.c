@@ -29,6 +29,7 @@
 #include "vikmapsourcedefault.h"
 #include "vikenumtypes.h"
 #include "download.h"
+#include "string.h"
 
 static void map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 static const gchar *map_source_get_license (VikMapSource *self);
@@ -532,4 +533,41 @@ vik_map_source_default_get_download_options( VikMapSourceDefault *self )
 	g_return_val_if_fail (klass->get_download_options != NULL, 0);
 
 	return (*klass->get_download_options)(self);
+}
+
+gchar *
+vik_map_source_default_get_url_display( VikMapSourceDefault *self, MapCoord *src )
+{
+	VikMapSourceDefaultClass *klass;
+	g_return_val_if_fail (self != NULL, 0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_uri != NULL, 0);
+	g_return_val_if_fail (klass->get_hostname != NULL, 0);
+
+	gchar *newstr = NULL;
+	gchar *hostname = (*klass->get_hostname)(self);
+	gchar *url = (*klass->get_uri)(self, src);
+	if ( hostname && strlen(hostname)>1 ) {
+		if ( strstr (hostname, "://") == NULL ) {
+			//prepend http
+			newstr = g_strdup_printf ( "http://%s", hostname );
+		}
+		else {
+			newstr = g_strdup ( hostname );
+		}
+	}
+	if ( url && strlen(url)>1 ) {
+		if ( newstr ) {
+			gchar *tmp = g_strdup ( newstr );
+			newstr = g_strdup_printf ( "%s%s", newstr, url );
+			g_free ( tmp );
+		}
+		else {
+			newstr = g_strdup ( url );
+		}
+	}
+
+	return newstr;
 }
