@@ -613,7 +613,7 @@ void a_dialog_about ( GtkWindow *parent )
 {
   const gchar *version = VIKING_VERSION;
   const gchar *website = VIKING_URL;
-  const gchar *copyright = "2003-2008, Evan Battaglia\n2008-"THEYEAR", Viking's contributors";
+  gchar *copyright = g_strdup_printf(_("2003-2008, Evan Battaglia\n2008-%s, Viking's contributors"), THEYEAR);
   const gchar *comments = _("GPS Data and Topo Analyzer, Explorer, and Manager.");
   const gchar *license = _("This program is free software; you can redistribute it and/or modify "
 			"it under the terms of the GNU General Public License as published by "
@@ -705,6 +705,7 @@ void a_dialog_about ( GtkWindow *parent )
 	"translator-credits", _("Translation is coordinated on http://launchpad.net/viking"),
 	"artists", libs,
 	NULL);
+  g_free(copyright);
 }
 
 gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_map, gchar *zoom_list[], gint default_zoom, gint *selected_map, gint *selected_zoom)

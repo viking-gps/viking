@@ -274,7 +274,7 @@ static GHashTable *requests = NULL;
  */
 void vik_mapnik_layer_init (void)
 {
-	a_preferences_register_group ( MAPNIK_PREFS_GROUP_KEY, "Mapnik" );
+	a_preferences_register_group ( MAPNIK_PREFS_GROUP_KEY, _("Mapnik") );
 
 	guint i = 0;
 	VikLayerParamData tmp = plugins_default();

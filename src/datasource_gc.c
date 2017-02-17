@@ -89,7 +89,7 @@ static VikLayerParam prefs[] = {
 
 void a_datasource_gc_init()
 {
-  a_preferences_register_group ( VIKING_GC_PARAMS_GROUP_KEY, "Geocaching" );
+  a_preferences_register_group ( VIKING_GC_PARAMS_GROUP_KEY, _("Geocaching") );
 
   VikLayerParamData tmp;
   tmp.s = "username";

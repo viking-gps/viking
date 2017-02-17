@@ -82,7 +82,7 @@ static VikLayerParamScale param_scales[] = {
 };
 
 static gchar *params_source[] = {
-	"SRTM Global 90m (3 arcsec)",
+	N_("SRTM Global 90m (3 arcsec)"),
 #ifdef VIK_CONFIG_DEM24K
 	"USA 10m (USGS 24k)",
 #endif

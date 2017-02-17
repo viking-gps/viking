@@ -456,7 +456,7 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
     none_found(vw);
     goto done;
   }
-  selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), wiki_places, TRUE, "Select articles", "Select the articles you want to add.");
+  selected = a_select_geoname_from_list(VIK_GTK_WINDOW_FROM_WIDGET(vw), wiki_places, TRUE, _("Select articles"), _("Select the articles you want to add."));
   wp_runner = selected;
   while (wp_runner) {
     wiki_geoname = (found_geoname *)wp_runner->data;
@@ -469,16 +469,18 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
     // Use the featue type to generate a suitable waypoint icon
     //  http://www.geonames.org/wikipedia/wikipedia_features.html
     // Only a few values supported as only a few symbols make sense
+    // The feature name may not be translated
+    // Double check the english and the translated
     if ( wiki_geoname->feature ) {
-      if ( !strcmp (wiki_geoname->feature, "city") )
+      if ( !strcmp (wiki_geoname->feature, "city") || !strcmp (wiki_geoname->feature, _("city")))
         vik_waypoint_set_symbol(wiki_wp, "city (medium)");
-      if ( !strcmp (wiki_geoname->feature, "edu") )
+      if ( !strcmp (wiki_geoname->feature, "edu") || !strcmp (wiki_geoname->feature, _("edu")))
         vik_waypoint_set_symbol(wiki_wp, "school");
-      if ( !strcmp (wiki_geoname->feature, "airport") )
+      if ( !strcmp (wiki_geoname->feature, "airport") || !strcmp (wiki_geoname->feature, _("airport")))
         vik_waypoint_set_symbol(wiki_wp, "airport");
-      if ( !strcmp (wiki_geoname->feature, "mountain") )
+      if ( !strcmp (wiki_geoname->feature, "mountain") || !strcmp (wiki_geoname->feature, _("mountain")))
         vik_waypoint_set_symbol(wiki_wp, "summit");
-      if ( !strcmp (wiki_geoname->feature, "forest") )
+      if ( !strcmp (wiki_geoname->feature, "forest") || !strcmp (wiki_geoname->feature, _("forest")))
         vik_waypoint_set_symbol(wiki_wp, "forest");
     }
     vik_trw_layer_filein_add_waypoint ( vtl, wiki_geoname->name, wiki_wp );
