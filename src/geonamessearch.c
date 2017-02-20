@@ -482,6 +482,8 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
         vik_waypoint_set_symbol(wiki_wp, "summit");
       if ( !strcmp (wiki_geoname->feature, "forest") || !strcmp (wiki_geoname->feature, _("forest")))
         vik_waypoint_set_symbol(wiki_wp, "forest");
+      if ( !strcmp (wiki_geoname->feature, "church") || !strcmp (wiki_geoname->feature, _("church")))
+        vik_waypoint_set_symbol(wiki_wp, "church");
     }
     vik_trw_layer_filein_add_waypoint ( vtl, wiki_geoname->name, wiki_wp );
     wp_runner = g_list_next(wp_runner);
