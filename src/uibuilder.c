@@ -32,6 +32,12 @@
 VikLayerParamData vik_lpd_true_default ( void ) { return VIK_LPD_BOOLEAN ( TRUE ); }
 VikLayerParamData vik_lpd_false_default ( void ) { return VIK_LPD_BOOLEAN ( FALSE ); }
 
+/** i18n note
+ * Since UI builder often uses static structures, the text is marked with N_()
+ *  however to actually get it to apply the widget (e.g. to a label) then
+ *  an additional call to _() needs to occur on that string
+ **/
+
 GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data )
 {
   // Perform pre conversion if necessary
@@ -62,7 +68,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         gchar **pstr = param->widget_data;
         rv = vik_combo_box_text_new ();
         while ( *pstr )
-          vik_combo_box_text_append ( rv, *(pstr++) );
+          vik_combo_box_text_append ( rv, _(*(pstr++)) );
         if ( param->extra_widget_data ) /* map of alternate uint values for options */
         {
           /* Set the effective default value */
@@ -88,9 +94,9 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         rv = gtk_combo_box_entry_new_text ();
 #endif
         if ( vlpd.s )
-          vik_combo_box_text_append ( rv, vlpd.s );
+          vik_combo_box_text_append ( rv, _(vlpd.s) );
         while ( *pstr )
-          vik_combo_box_text_append ( rv, *(pstr++) );
+          vik_combo_box_text_append ( rv, _(*(pstr++)) );
         if ( vlpd.s )
           gtk_combo_box_set_active ( GTK_COMBO_BOX ( rv ), 0 );
       }
@@ -100,7 +106,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
         gchar **pstr = param->widget_data;
         rv = GTK_WIDGET ( vik_combo_box_text_new () );
         while ( *pstr )
-          vik_combo_box_text_append ( rv, *(pstr++) );
+          vik_combo_box_text_append ( rv, _(*(pstr++)) );
         if ( vlpd.s )
         {
           /* Set the effective default value */
@@ -223,7 +229,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
 
     case VIK_LAYER_WIDGET_BUTTON:
       if ( param->type == VIK_LAYER_PARAM_PTR && param->widget_data ) {
-        rv = gtk_button_new_with_label ( param->widget_data );
+        rv = gtk_button_new_with_label ( _(param->widget_data) );
         g_signal_connect ( G_OBJECT(rv), "clicked", G_CALLBACK (vlpd.ptr), param->extra_widget_data );
       }
       break;

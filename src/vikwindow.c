@@ -4702,7 +4702,7 @@ static void window_create_ui( VikWindow *window )
 
     action.name = vik_layer_get_interface(i)->name;
     action.stock_id = vik_layer_get_interface(i)->name;
-    action.label = g_strdup_printf( _("New _%s Layer"), vik_layer_get_interface(i)->name);
+    action.label = g_strdup_printf( _("New _%s Layer"), _(vik_layer_get_interface(i)->name));
     action.accelerator = vik_layer_get_interface(i)->accelerator;
     action.tooltip = NULL;
     action.callback = (GCallback)menu_addlayer_cb;
@@ -4745,7 +4745,7 @@ static void window_create_ui( VikWindow *window )
     // This is to avoid clashing with just the layer name used above for the tool actions
     action_dl.name = g_strconcat("Layer", vik_layer_get_interface(i)->fixed_layer_name, NULL);
     action_dl.stock_id = NULL;
-    action_dl.label = g_strconcat("_", vik_layer_get_interface(i)->name, "...", NULL); // Prepend marker for keyboard accelerator
+    action_dl.label = g_strconcat(_(vik_layer_get_interface(i)->name), _("..."), NULL);
     action_dl.accelerator = NULL;
     action_dl.tooltip = NULL;
     action_dl.callback = (GCallback)layer_defaults_cb;

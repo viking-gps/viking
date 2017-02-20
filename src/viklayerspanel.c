@@ -143,11 +143,11 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
 
   for ( ii = 0; ii < VIK_LAYER_NUM_TYPES; ii++ ) {
     if ( vik_layer_get_interface(ii)->icon ) {
-      menuitem = gtk_image_menu_item_new_with_mnemonic ( vik_layer_get_interface(ii)->name );
+      menuitem = gtk_image_menu_item_new_with_mnemonic ( _(vik_layer_get_interface(ii)->name) );
       gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_pixbuf ( vik_layer_load_icon (ii) ) );
     }
     else
-      menuitem = gtk_menu_item_new_with_mnemonic ( vik_layer_get_interface(ii)->name );
+      menuitem = gtk_menu_item_new_with_mnemonic ( _(vik_layer_get_interface(ii)->name) );
 
     lpnl[ii][0] = vlp;
     lpnl[ii][1] = GINT_TO_POINTER(ii);
