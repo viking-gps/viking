@@ -1953,7 +1953,7 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
         exists = g_strdup ( _("NO") );
       gint flip_y = (gint) pow(2, zoom)-1 - ulm.y;
       // NB Also handles .jpg automatically due to pixbuf_new_from () support - although just print png for now.
-      source = g_strdup_printf ( "Source: %s (%d%s%d%s%d.%s %s)", filename, zoom, G_DIR_SEPARATOR_S, ulm.x, G_DIR_SEPARATOR_S, flip_y, "png", exists );
+      source = g_strdup_printf ( _("Source: %s (%d%s%d%s%d.%s %s)"), filename, zoom, G_DIR_SEPARATOR_S, ulm.x, G_DIR_SEPARATOR_S, flip_y, "png", exists );
       g_free ( exists );
 #else
       source = g_strdup ( _("Source: Not available") );
@@ -1973,7 +1973,7 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
                      NULL,
                      ulm.scale, ulm.z, ulm.x, ulm.y, filename, max_path_len,
                      vik_map_source_get_file_extension(map) );
-      source = g_strconcat ( "Source: file://", filename, NULL );
+      source = g_strconcat ( _("Source: file://"), filename, NULL );
     }
   }
   else {
@@ -2011,7 +2011,7 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
     g_array_append_val ( array, timemsg );
   }
   else {
-    filemsg = g_strdup_printf ( "Tile File: %s [Not Available]", filename );
+    filemsg = g_strdup_printf ( _("Tile File: %s [Not Available]"), filename );
     g_array_append_val ( array, filemsg );
   }
 
