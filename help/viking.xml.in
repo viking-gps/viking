@@ -257,7 +257,13 @@ and docbook-xsl in your Build-Depends control field.
             </varlistentry>
             <varlistentry>
               <term>url</term>
-              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for Z, X and Y (in that order) (eg. "/%d/%d/%d.png")</para></listitem>
+              <listitem>
+		<para>the parametrized address of the tile, in the spirit of C printf format, with 3 "%d" fields for Z, X and Y (in that order) (eg. "/%d/%d/%d.png")</para>
+		<note>
+		  <para>The full parametrized address can just be put in the URL field and the hostname field doesn't need specifying.</para>
+		  <para>e.g. "https://tile.openstreetmap.org/%d/%d/%d.png"</para>
+		</note>
+	      </listitem>
             </varlistentry>
             <varlistentry>
               <term>zoom-min (optional)</term>
