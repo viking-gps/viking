@@ -361,9 +361,9 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         vik_waypoint_set_description ( wp, gtk_entry_get_text ( GTK_ENTRY(descriptionentry) ) );
       if ( g_strcmp0 ( wp->image, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) ) )
         vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(imageentry) ) );
-      if ( g_strcmp0 ( wp->source, gtk_entry_get_text ( GTK_ENTRY(sourceentry) ) ) )
+      if ( sourceentry && g_strcmp0 ( wp->source, gtk_entry_get_text ( GTK_ENTRY(sourceentry) ) ) )
         vik_waypoint_set_source ( wp, gtk_entry_get_text ( GTK_ENTRY(sourceentry) ) );
-      if ( g_strcmp0 ( wp->type, gtk_entry_get_text ( GTK_ENTRY(typeentry) ) ) )
+      if ( typeentry && g_strcmp0 ( wp->type, gtk_entry_get_text ( GTK_ENTRY(typeentry) ) ) )
         vik_waypoint_set_type ( wp, gtk_entry_get_text ( GTK_ENTRY(typeentry) ) );
       if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
         a_thumbnails_create ( wp->image );
