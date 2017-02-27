@@ -11147,7 +11147,7 @@ static gint highest_wp_number_name_to_number(const gchar *name) {
 
 static void highest_wp_number_reset(VikTrwLayer *vtl)
 {
-  vtl->highest_wp_number = -1;
+  vtl->highest_wp_number = 0;
 }
 
 static void highest_wp_number_add_wp(VikTrwLayer *vtl, const gchar *new_wp_name)
