@@ -78,6 +78,7 @@ popd
 %{_mingw64_configure}\
   --disable-realtime-gps-tracking \
   --disable-mapnik \
+  --disable-geoclue \
   --disable-scrollkeeper \
   --enable-windows \
   CFLAGS="-DWINDOWS -DWIN32 -mwindows"

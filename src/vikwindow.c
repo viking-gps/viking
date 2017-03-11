@@ -46,6 +46,9 @@
 #include "geonamessearch.h"
 #include "dir.h"
 #include "kmz.h"
+#ifdef HAVE_LIBGEOCLUE_2
+#include "libgeoclue.h"
+#endif
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -459,6 +462,49 @@ static int determine_location_thread ( VikWindow *vw, gpointer threaddata )
   return 0;
 }
 
+void determine_location_fallback ( VikWindow *vw )
+{
+  a_background_thread ( BACKGROUND_POOL_REMOTE,
+                        GTK_WINDOW(vw),
+                        _("Determining location"),
+                        (vik_thr_func) determine_location_thread,
+                        vw,
+                        NULL,
+                        NULL,
+                        1 );
+}
+
+#ifdef HAVE_LIBGEOCLUE_2
+void update_from_geoclue ( VikWindow *vw, struct LatLon ll, gdouble accuracy )
+{
+  // See if we received sensible answers
+  gboolean fallback = FALSE;
+  if ( isnan(ll.lat) ) fallback = TRUE;
+  if ( isnan(accuracy) || accuracy > 10000000 ) fallback = TRUE;
+
+  if ( fallback ) {
+    determine_location_fallback ( vw );
+    return;
+   }
+
+  // Guestimate zoom level relative to accuracy
+  gdouble zoom_vals[] = {2, 4, 8, 16, 32, 64, 128, 256, 512};
+  guint zlevel = (guint)log10(accuracy);
+  if ( zlevel > 8 )
+    zlevel = 8;
+
+  vik_viewport_set_zoom ( vw->viking_vvp, zoom_vals[zlevel] );
+  vik_viewport_set_center_latlon ( vw->viking_vvp, &ll, FALSE );
+
+  gchar *message = g_strdup_printf ( _("Location found via geoclue") );
+  vik_window_statusbar_update ( vw, message, VIK_STATUSBAR_INFO );
+  g_free ( message );
+
+  // Signal to redraw from the background
+  vik_layers_panel_emit_update ( vw->viking_vlp );
+}
+#endif
+
 /**
  * Steps to be taken once initial loading has completed
  */
@@ -482,15 +528,11 @@ void vik_window_new_window_finish ( VikWindow *vw )
     if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_AUTO_LOCATION ) {
 
       vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, _("Trying to determine location...") );
-
-      a_background_thread ( BACKGROUND_POOL_REMOTE,
-                            GTK_WINDOW(vw),
-                            _("Determining location"),
-                            (vik_thr_func) determine_location_thread,
-                            vw,
-                            NULL,
-                            NULL,
-                            1 );
+#ifdef HAVE_LIBGEOCLUE_2
+      libgeoclue_where_am_i ( vw, update_from_geoclue );
+#else
+      determine_location_fallback ( vw );
+#endif
     }
   }
 }

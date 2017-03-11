@@ -245,6 +245,21 @@ case $ac_cv_enable_geocaches in
 esac
 AM_CONDITIONAL([GEOCACHES], [test x$ac_cv_enable_geocaches = xyes])
 
+# GeoClue
+AC_ARG_ENABLE(geoclue, AC_HELP_STRING([--enable-geoclue],
+              [enable GeoClue support (default is enable).]),
+              [ac_cv_enable_geoclue=$enableval],
+              [ac_cv_enable_geoclue=yes])
+AC_CACHE_CHECK([whether to enable GeoClue Support],
+               [ac_cv_enable_geoclue], [ac_cv_enable_geoclue=yes])
+case $ac_cv_enable_geoclue in
+  yes)
+    PKG_CHECK_MODULES( [LIBGEOCLUE], [libgeoclue-2.0 >= 2],
+                       AC_CHECK_LIB(geoclue-2, main,, AC_MSG_ERROR([libgeoclue is needed but not found - you will need to install package 'libgeoclue-2-dev' or similar ])) )
+    ;;
+esac
+AM_CONDITIONAL([GEOCLUE], [test x$ac_cv_enable_geoclue = xyes])
+
 # Geotagging
 AC_ARG_WITH(libexif, AC_HELP_STRING([--with-libexif], [Force usage of libexif instead of libgexiv2]))
 AC_ARG_ENABLE(geotag, AC_HELP_STRING([--enable-geotag],
@@ -539,6 +554,7 @@ Terraserver Maps                 : $ac_cv_enable_terraserver
 Expedia Maps                     : $ac_cv_enable_expedia
 Open Street Map                  : $ac_cv_enable_openstreetmap
 BlueMarble                       : $ac_cv_enable_bluemarble
+GeoClue Support                  : $ac_cv_enable_geoclue
 Geonames                         : $ac_cv_enable_geonames
 Geocaches Acquire                : $ac_cv_enable_geocaches
 Geotag Support                   : $ac_cv_enable_geotag (libgexiv2=$ac_cv_lib_gexiv2_gexiv2_metadata_new libexif=$ac_cv_lib_exif_exif_loader_new)

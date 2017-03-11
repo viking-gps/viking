@@ -2494,7 +2494,11 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 <listitem><para>Home Location (default) - Position as set by the <guilabel>Set the Default Location</guilabel></para></listitem>
 <listitem><para>Last Location - Uses the last position viewed on the viewport</para></listitem>
 <listitem><para>Specified File - Load the file as specified below</para></listitem>
-<listitem><para>Auto Location - Use the web service <ulink url="http://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup</para></listitem>
+<listitem>
+	<para>Auto Location - Uses the <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service if available
+	or otherwise the web service <ulink url="http://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup
+	</para>
+</listitem>
 </itemizedlist>
 </section>
 <section><title>Startup File</title>

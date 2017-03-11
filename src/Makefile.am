@@ -222,6 +222,11 @@ libviking_a_SOURCES += \
 	mapnik_interface.cpp mapnik_interface.h
 endif
 
+if GEOCLUE
+libviking_a_SOURCES += \
+	libgeoclue.c libgeoclue.h
+endif
+
 viking_SOURCES = main.c
 
 LDADD           = $(noinst_LIBRARIES) $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ icons/libicons.a
@@ -232,7 +237,7 @@ endif
 
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
 	$(PACKAGE_CFLAGS) \
-	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
+	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@ @LIBGEOCLUE_CFLAGS@
 AM_CPPFLAGS		= \
 	$(PACKAGE_CFLAGS) \
 	-DVIKING_DATADIR=\""$(pkgdatadir)"\" \
