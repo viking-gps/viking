@@ -10728,7 +10728,7 @@ static void trw_layer_calculate_bounds_track ( gpointer id, VikTrack *trk )
   vik_track_calculate_bounds ( trk );
 }
 
-static void trw_layer_calculate_bounds_tracks ( VikTrwLayer *vtl )
+void trw_layer_calculate_bounds_tracks ( VikTrwLayer *vtl )
 {
   g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_calculate_bounds_track, NULL );
   g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_calculate_bounds_track, NULL );

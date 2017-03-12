@@ -32,6 +32,7 @@
 #include "viking.h"
 #include "icons/icons.h"
 #include "babel.h"
+#include "viktrwlayer.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -52,6 +53,7 @@ static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIt
 static void vik_gps_layer_free ( VikGpsLayer *vgl );
 static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp );
 static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
+static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vp, gboolean from_file );
 
 static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, gint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
@@ -266,7 +268,7 @@ VikLayerInterface vik_gps_layer_interface = {
 
   (VikLayerFuncCreate)                  vik_gps_layer_create,
   (VikLayerFuncRealize)                 vik_gps_layer_realize,
-  (VikLayerFuncPostRead)                NULL,
+  (VikLayerFuncPostRead)                vik_gps_layer_post_read,
   (VikLayerFuncFree)                    vik_gps_layer_free,
 
   (VikLayerFuncProperties)              NULL,
@@ -725,6 +727,14 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vik_layer_set_defaults ( VIK_LAYER(vgl), vp );
 
   return vgl;
+}
+
+static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vvp, gboolean from_file )
+{
+  for (guint i = 0; i < NUM_TRW; i++) {
+    trw_layer_calculate_bounds_waypoints ( vgl->trw_children[i] );
+    trw_layer_calculate_bounds_tracks ( vgl->trw_children[i] );
+  }
 }
 
 static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp )
