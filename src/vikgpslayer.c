@@ -1970,18 +1970,12 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
 
 static gboolean rt_ask_retry(VikGpsLayer *vgl)
 {
-  GtkWidget *dialog = gtk_message_dialog_new (VIK_GTK_WINDOW_FROM_LAYER(vgl),
-                          GTK_DIALOG_DESTROY_WITH_PARENT,
-                          GTK_MESSAGE_QUESTION,
-                          GTK_BUTTONS_YES_NO,
-                          "Failed to connect to gpsd at %s (port %s)\n"
-                          "Should Viking keep trying (every %d seconds)?",
-                          vgl->gpsd_host, vgl->gpsd_port,
-                          vgl->gpsd_retry_interval);
-
-  gint res = gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy(dialog);
-  return (res == GTK_RESPONSE_YES);
+  gchar *msg = g_strdup_printf ( _("Failed to connect to gpsd at %s (port %s)\n"
+                                   "Should Viking keep trying (every %d seconds)?"),
+                                   vgl->gpsd_host, vgl->gpsd_port, vgl->gpsd_retry_interval );
+  gboolean ans = a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vgl), msg, NULL );
+  g_free ( msg );
+  return ans;
 }
 
 static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed)
