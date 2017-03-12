@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [<!ENTITY appname          "Viking">]
+>
+
+<section id="GeoClue" xreflabel="GeoClue"><title>GeoClue Layer</title>
+<para>
+  Enable following and/or creating a track from the position returned by the
+  <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service.
+</para>
+<para>
+  On some systems you will need to enable location services, otherwise &appname; will encounter errors along the lines of <emphasis role="italic">"GDBus.Error:org.freedesktop.DBus.Error.AccessDenied: Geolocation disabled for UID ..."</emphasis>
+</para>
+<para>
+ For the Ubuntu Linux distribution this is in the System Settings: Settings->Privacy->Location Services
+</para>
+<note>
+<para>
+  GeoClue runs using the <ulink url="https://www.freedesktop.org/wiki/Software/dbus/">dbus</ulink> messaging service.
+  This is currently disabled in the <trademark>Windows</trademark> build of &appname; due to system distribution complexities.
+</para>
+</note>
+
+<section><title>Layer Properties</title>
+<para>
+Configurable properties:
+</para>
+<itemizedlist>
+<listitem>
+	<para>Auto Connect</para>
+</listitem>
+<listitem>
+	<para>Recording tracks - Whether to form a track on the location updates.</para>
+</listitem>
+<listitem>
+	<para>Jump to the position on start.</para>
+</listitem>
+<listitem>
+	<para>Moving method - How the viewport is moved upon location updates: centered, keep the position in the viewport or none.</para>
+</listitem>
+<listitem>
+	<para>Update Statusbar - Whether the Statusbar is also updated on location updates</para>
+</listitem>
+<listitem>
+	<para>Colour - set the colour of the position indicator</para>
+</listitem>
+</itemizedlist>
+</section><!-- Prop END -->
+
+<section><title>Layer Operations</title>
+
+<section><title>Start / Stop Tracking</title>
+<para>
+Offers manual control over the start or stop tracking as appropriate.
+</para>
+</section>
+
+<section><title>Empty</title>
+<para>
+Quick access to remove all data from the tracking layer.
+</para>
+</section>
+
+</section><!-- End Layer Ops -->
+
+</section><!-- End GeoClue -->

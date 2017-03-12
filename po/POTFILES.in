@@ -47,6 +47,7 @@ src/vikaggregatelayer.c
 src/vikdemlayer.c
 src/vikfileentry.c
 src/vikfilelist.c
+src/vikgeocluelayer.c
 src/vikgeoreflayer.c
 src/vikgoto.c
 src/vikgototool.c

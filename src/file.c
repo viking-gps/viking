@@ -30,6 +30,7 @@
 #include "compression.h"
 #include "file_magic.h"
 #include "vikgpslayer.h"
+#include "vikgeocluelayer.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -341,6 +342,14 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
             params = vik_layer_get_interface(type)->params;
             params_count = vik_layer_get_interface(type)->params_count;
           }
+#ifdef HAVE_LIBGEOCLUE_2
+          else if (parent_type == VIK_LAYER_GEOCLUE)
+          {
+            stack->data = (gpointer) vik_geoclue_layer_get_trw(VIK_GEOCLUE_LAYER(stack->under->data));
+            params = vik_layer_get_interface(type)->params;
+            params_count = vik_layer_get_interface(type)->params_count;
+          }
+#endif
           else
           {
             stack->data = (gpointer) vik_layer_create ( type, vp, FALSE );

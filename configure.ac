@@ -254,7 +254,7 @@ AC_CACHE_CHECK([whether to enable GeoClue Support],
                [ac_cv_enable_geoclue], [ac_cv_enable_geoclue=yes])
 case $ac_cv_enable_geoclue in
   yes)
-    PKG_CHECK_MODULES( [LIBGEOCLUE], [libgeoclue-2.0 >= 2],
+    PKG_CHECK_MODULES( [LIBGEOCLUE], [libgeoclue-2.0 >= 2.4.4],
                        AC_CHECK_LIB(geoclue-2, main,, AC_MSG_ERROR([libgeoclue is needed but not found - you will need to install package 'libgeoclue-2-dev' or similar ])) )
     ;;
 esac

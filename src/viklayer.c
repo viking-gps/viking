@@ -36,6 +36,9 @@ extern VikLayerInterface vik_dem_layer_interface;
 #ifdef HAVE_LIBMAPNIK
 extern VikLayerInterface vik_mapnik_layer_interface;
 #endif
+#ifdef HAVE_LIBMAPNIK
+extern VikLayerInterface vik_geoclue_layer_interface;
+#endif
 
 enum {
   VL_UPDATE_SIGNAL,
@@ -91,6 +94,9 @@ static VikLayerInterface *vik_layer_interfaces[VIK_LAYER_NUM_TYPES] = {
   &vik_dem_layer_interface,
 #ifdef HAVE_LIBMAPNIK
   &vik_mapnik_layer_interface,
+#endif
+#ifdef HAVE_LIBGEOCLUE_2
+  &vik_geoclue_layer_interface,
 #endif
 };
 

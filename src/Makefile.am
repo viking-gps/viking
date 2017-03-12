@@ -230,6 +230,7 @@ endif
 
 if GEOCLUE
 libviking_a_SOURCES += \
+	vikgeocluelayer.c vikgeocluelayer.h \
 	libgeoclue.c libgeoclue.h
 endif
 

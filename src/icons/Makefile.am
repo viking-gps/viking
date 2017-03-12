@@ -241,6 +241,7 @@ ICONS = \
 	vikaggregatelayer.png \
 	vikcoordlayer.png \
 	vikdemlayer.png \
+	vikgeocluelayer.png \
 	vikgeoreflayer.png \
 	vikgpslayer.png \
 	vikmapslayer.png \

@@ -98,6 +98,9 @@ typedef enum {
 #ifdef HAVE_LIBMAPNIK
   VIK_LAYER_MAPNIK,
 #endif
+#ifdef HAVE_LIBGEOCLUE_2
+  VIK_LAYER_GEOCLUE,
+#endif
   VIK_LAYER_NUM_TYPES // Also use this value to indicate no layer association
 } VikLayerTypeEnum;
 

@@ -21,6 +21,7 @@
  */
 #include "viking.h"
 #include "vikgpslayer.h"
+#include "vikgeocluelayer.h"
 #include "viktrwlayer_analysis.h"
 #include "viktrwlayer_tracklist.h"
 #include "viktrwlayer_waypointlist.h"
@@ -909,6 +910,15 @@ GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList 
 	  }
 	}
       }
+#ifdef HAVE_LIBGEOCLUE_2
+      else if (VIK_LAYER(children->data)->type == VIK_LAYER_GEOCLUE) {
+	if (VIK_LAYER(children->data)->visible || include_invisible) {
+	  if (!vik_geoclue_layer_is_empty(VIK_GEOCLUE_LAYER(children->data))) {
+	    l = g_list_prepend(l, vik_geoclue_layer_get_trw(VIK_GEOCLUE_LAYER(children->data)));
+	  }
+	}
+      }
+#endif
     }
     children = children->next;
   }
