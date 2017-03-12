@@ -689,7 +689,7 @@ enum {
 /* Layer Interface function definitions */
 static VikTrwLayer* trw_layer_create ( VikViewport *vp );
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter );
-static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean from_file );
+static void trw_layer_post_read ( VikTrwLayer *vtl, VikViewport *vvp, gboolean from_file );
 static void trw_layer_free ( VikTrwLayer *trwlayer );
 static void trw_layer_draw ( VikTrwLayer *l, gpointer data );
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
@@ -2825,7 +2825,7 @@ static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *
     vik_treeview_item_set_visible ( (VikTreeview *) vt, &(vtl->waypoints_iter), vtl->waypoints_visible );
   }
 
-  trw_layer_verify_thumbnails ( vtl, NULL );
+  trw_layer_verify_thumbnails ( vtl );
 
   trw_layer_sort_all ( vtl );
 }
@@ -3820,7 +3820,7 @@ static void trw_layer_acquire_geotagged_cb ( menu_array_layer values )
 
   // Reverify thumbnails as they may have changed
   vtl->has_verified_thumbnails = FALSE;
-  trw_layer_verify_thumbnails ( vtl, NULL );
+  trw_layer_verify_thumbnails ( vtl );
 }
 #endif
 
@@ -10588,7 +10588,7 @@ static void thumbnail_create_thread_free ( thumbnail_create_thread_data *tctd )
   g_free ( tctd );
 }
 
-void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp )
+void trw_layer_verify_thumbnails ( VikTrwLayer *vtl )
 {
   if ( ! vtl->has_verified_thumbnails )
   {
@@ -10818,10 +10818,10 @@ static time_t trw_layer_get_timestamp ( VikTrwLayer *vtl )
   return timestamp_waypoints;
 }
 
-static void trw_layer_post_read ( VikTrwLayer *vtl, GtkWidget *vvp, gboolean from_file )
+static void trw_layer_post_read ( VikTrwLayer *vtl, VikViewport *vvp, gboolean from_file )
 {
   if ( VIK_LAYER(vtl)->realized )
-    trw_layer_verify_thumbnails ( vtl, vvp );
+    trw_layer_verify_thumbnails ( vtl );
   trw_layer_track_alloc_colors ( vtl );
 
   trw_layer_calculate_bounds_waypoints ( vtl );

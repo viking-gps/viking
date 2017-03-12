@@ -139,7 +139,7 @@ GdkPixbuf* get_wp_sym_small ( gchar *symbol );
 
 /* Exposed Layer Interface function definitions */
 // Intended only for use by other trw_layer subwindows
-void trw_layer_verify_thumbnails ( VikTrwLayer *vtl, GtkWidget *vp );
+void trw_layer_verify_thumbnails ( VikTrwLayer *vtl );
 // Other functions only for use by other trw_layer subwindows
 gchar *trw_layer_new_unique_sublayer_name ( VikTrwLayer *vtl, gint sublayer_type, const gchar *name );
 void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name );
