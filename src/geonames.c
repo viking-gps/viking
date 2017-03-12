@@ -33,7 +33,7 @@
 void geonames_init () {
   // Goto
   VikGotoXmlTool *geonames = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "Geonames",
-    "url-format", "http://api.geonames.org/search?q=%s&maxRows=1&lang=en&style=short&username=viking",
+    "url-format", "http://api.geonames.org/search?q=%s&maxRows=1&lang=en&style=short&username="VIK_CONFIG_GEONAMES_USERNAME,
     "lat-path", "/geonames/geoname/lat",
     "lon-path", "/geonames/geoname/lng",
     NULL ) );

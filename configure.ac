@@ -432,6 +432,16 @@ m4_popdef([AC_MSG_ERROR])
 ##
 
 
+AC_ARG_WITH(geonames_username,
+            [AC_HELP_STRING([--with-geonames_username],
+	     [Username for the GeoNames webservice.
+              Please register your own if you're going to distribute the
+              package, as requests are limited per username.])],
+	    [VIK_CONFIG_GEONAMES_USERNAME="\"${withval}\""],
+	    [VIK_CONFIG_GEONAMES_USERNAME="\"$PACKAGE\""])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_GEONAMES_USERNAME, ${VIK_CONFIG_GEONAMES_USERNAME}, [geonames username])
+
+
 AC_ARG_WITH(mapcache,
             [AC_HELP_STRING([--with-mapcache],
                             [specify the size of the map cache in MB (default is 128)])],
@@ -524,6 +534,7 @@ MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
 Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}
+GeoNames user                    : ${VIK_CONFIG_GEONAMES_USERNAME}
 Man page generation              : $ac_cv_enable_man
 Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})
 -------------------------------------------
