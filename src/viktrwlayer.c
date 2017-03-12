@@ -5006,9 +5006,10 @@ void vik_trw_layer_delete_all_routes ( VikTrwLayer *vtl )
 
   g_hash_table_foreach(vtl->routes_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
   g_hash_table_remove_all(vtl->routes_iters);
-  g_hash_table_remove_all(vtl->routes);
 
-  vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter) );
+  if ( g_hash_table_size (vtl->routes) > 0 )
+    vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter) );
+  g_hash_table_remove_all(vtl->routes);
 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
@@ -5023,9 +5024,10 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
 
   g_hash_table_foreach(vtl->tracks_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
   g_hash_table_remove_all(vtl->tracks_iters);
-  g_hash_table_remove_all(vtl->tracks);
 
-  vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter) );
+  if ( g_hash_table_size (vtl->tracks) > 0 )
+    vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter) );
+  g_hash_table_remove_all(vtl->tracks);
 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
@@ -5040,9 +5042,10 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
 
   g_hash_table_foreach(vtl->waypoints_iters, (GHFunc) remove_item_from_treeview, VIK_LAYER(vtl)->vt);
   g_hash_table_remove_all(vtl->waypoints_iters);
-  g_hash_table_remove_all(vtl->waypoints);
 
-  vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter) );
+  if ( g_hash_table_size (vtl->waypoints) > 0 )
+    vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter) );
+  g_hash_table_remove_all(vtl->waypoints);
 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
