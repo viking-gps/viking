@@ -1977,7 +1977,7 @@ static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed)
   vgl->realtime_retry_timer = 0;
   if (rt_gpsd_try_connect((gpointer *)vgl)) {
     if (vgl->gpsd_retry_interval <= 0) {
-      g_warning("Failed to connect to gpsd but will not retry because retry intervel was set to %d (which is 0 or negative)", vgl->gpsd_retry_interval);
+      g_warning("Failed to connect to gpsd but will not retry because retry interval was set to %d (which is 0 or negative)", vgl->gpsd_retry_interval);
       return FALSE;
     }
     else if (ask_if_failed && !rt_ask_retry(vgl))
