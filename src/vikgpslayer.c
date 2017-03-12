@@ -48,19 +48,19 @@
 #endif
 
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
-static void vik_gps_layer_realize ( VikGpsLayer *val, VikTreeview *vt, GtkTreeIter *layer_iter );
-static void vik_gps_layer_free ( VikGpsLayer *val );
-static void vik_gps_layer_draw ( VikGpsLayer *val, VikViewport *vp );
+static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
+static void vik_gps_layer_free ( VikGpsLayer *vgl );
+static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp );
 static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
 
-static void gps_layer_marshall( VikGpsLayer *val, guint8 **data, gint *len );
+static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, gint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
 static gboolean gps_layer_set_param ( VikGpsLayer *vgl, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
 static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation );
 
 static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl );
 
-static void gps_layer_change_coord_mode ( VikGpsLayer *val, VikCoordMode mode );
+static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode );
 static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
 
 static void gps_upload_cb( gpointer layer_and_vlp[2] );
