@@ -137,16 +137,15 @@ void osm_init () {
                                 "is-osm-meta-tiles", TRUE,
                                 NULL));
 
-  // Note using a single global Viking registered key for the Mapbox Tileservice
-  //  which is not secret since it's right here!
+  // Note using a registered token for the Mapbox Tileservice
   // Thus not only will the (free) service allocation limit be reached by normal users
-  //  but by anymore who cares to read this source and use it themselves.
+  //  but by anymore who cares to read these sources and use the default themselves.
   VikMapSource *mapbox_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", MAP_ID_MAPBOX_OUTDOORS,
                                 "name", "Mapbox-Outdoors",
                                 "label", _("Mapbox Outdoors"),
-                                "url", "https://api.tiles.mapbox.com/styles/v1/mapbox/outdoors-v9/tiles/256/%d/%d/%d?access_token=pk.eyJ1Ijoicndub3JyaXMiLCJhIjoiY2lxc294anN2MDA5bWhzbWFseWsxMW1ydiJ9.HcybKtZsiG6RVuOHg481Kg",
+                                "url", "https://api.tiles.mapbox.com/styles/v1/mapbox/outdoors-v9/tiles/256/%d/%d/%d?access_token="VIK_CONFIG_MAPBOX_TOKEN,
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "zoom-min", 0,
