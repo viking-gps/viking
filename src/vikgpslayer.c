@@ -1609,6 +1609,7 @@ static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] )
     return;
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);
+  vik_trw_layer_delete_all_routes ( vgl-> trw_children[TRW_REALTIME]);
 }
 #endif
 
@@ -1629,6 +1630,7 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   vik_trw_layer_delete_all_waypoints ( vgl-> trw_children[TRW_REALTIME]);
   vik_trw_layer_delete_all_tracks ( vgl-> trw_children[TRW_REALTIME]);
+  vik_trw_layer_delete_all_routes ( vgl-> trw_children[TRW_REALTIME]);
 #endif
 }
 
