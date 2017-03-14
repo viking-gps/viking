@@ -811,6 +811,28 @@ static void maps_layer_free ( VikMapsLayer *vml )
 #endif
 }
 
+static void maps_layer_mbtiles_open ( VikMapsLayer *vml, VikViewport *vp, VikMapSource *map )
+{
+#ifdef HAVE_SQLITE3_H
+  // Do some SQL stuff
+  if ( vik_map_source_is_mbtiles ( map ) ) {
+    int ans = sqlite3_open_v2 ( vml->filename,
+                                &(vml->mbtiles),
+                                SQLITE_OPEN_READONLY,
+                                NULL );
+    if ( ans != SQLITE_OK ) {
+      // That didn't work, so here's why:
+      g_warning ( "%s: %s", __FUNCTION__, sqlite3_errmsg ( vml->mbtiles ) );
+
+      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
+                                 _("Failed to open MBTiles file: %s"),
+                                 vml->filename );
+      vml->mbtiles = NULL;
+    }
+  }
+#endif
+}
+
 static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file)
 {
   VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
@@ -833,24 +855,7 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
   }
   
   // Performed in post read as we now know the map type
-#ifdef HAVE_SQLITE3_H
-  // Do some SQL stuff
-  if ( vik_map_source_is_mbtiles ( map ) ) {
-    int ans = sqlite3_open_v2 ( vml->filename,
-                                &(vml->mbtiles),
-                                SQLITE_OPEN_READONLY,
-                                NULL );
-    if ( ans != SQLITE_OK ) {
-      // That didn't work, so here's why:
-      g_warning ( "%s: %s", __FUNCTION__, sqlite3_errmsg ( vml->mbtiles ) );
-
-      a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
-                                 _("Failed to open MBTiles file: %s"),
-                                 vml->filename );
-      vml->mbtiles = NULL;
-    }
-  }
-#endif
+  maps_layer_mbtiles_open ( vml, vp, map );
 
   // If the on Disk OSM Tile Layout type
   if ( vik_map_source_get_uniq_id(map) == MAP_ID_OSM_ON_DISK ) {
@@ -2174,6 +2179,15 @@ static void maps_layer_about ( menu_array_values values )
                         vik_map_source_get_label (map) );
 }
 
+static void maps_layer_mbtiles_open_cb ( menu_array_values values )
+{
+  VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
+  VikViewport *vvp = VIK_VIEWPORT(values[MA_VVP]);
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  maps_layer_mbtiles_open ( vml, vvp, map );
+}
+
 /**
  * maps_layer_how_many_maps:
  * Copied from maps_layer_download_section but without the actual download and this returns a value
@@ -2495,6 +2509,17 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), values );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
+  }
+
+  // Quick way to reopen MBTiles file - e.g. if it wasn't available at the time of a .vik file load
+  if ( vik_map_source_is_mbtiles ( map ) ) {
+    if ( !vml->mbtiles ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Open MBTiles Files") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_OPEN, GTK_ICON_SIZE_MENU) );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_mbtiles_open_cb), values );
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+      gtk_widget_show ( item );
+    }
   }
 
   item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
