@@ -2050,19 +2050,27 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
 
       if ( ! vml->dl_right_click_menu ) {
         GtkWidget *item;
+        VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
         vml->dl_right_click_menu = GTK_MENU ( gtk_menu_new () );
 
-        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _Bad Map(s)") );
-        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
-        gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+        // Download options aren't for on disk only maps
+        if ( ! (vik_map_source_is_mbtiles(map) ||
+                vik_map_source_is_direct_file_access(map) ||
+                vik_map_source_is_osm_meta_tiles(map)) ) {
 
-        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _New Map(s)") );
-        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_new), vml );
-        gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+          item = gtk_menu_item_new_with_mnemonic ( _("Redownload _Bad Map(s)") );
+          g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
+          gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
 
-        item = gtk_menu_item_new_with_mnemonic ( _("Redownload _All Map(s)") );
-        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all), vml );
-        gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+          item = gtk_menu_item_new_with_mnemonic ( _("Redownload _New Map(s)") );
+          g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_new), vml );
+          gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+
+          item = gtk_menu_item_new_with_mnemonic ( _("Redownload _All Map(s)") );
+          g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all), vml );
+          gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+        }
 
         item = gtk_image_menu_item_new_with_mnemonic ( _("_Show Tile Information") );
         gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_MENU) );
@@ -2452,36 +2460,43 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   values[MA_VML] = vml;
   values[MA_VVP] = vik_layers_panel_get_viewport( VIK_LAYERS_PANEL(vlp) );
 
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
   item = gtk_menu_item_new();
   gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 
-  /* Now with icons */
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Download _Missing Onscreen Maps") );
+  // Download options aren't for on disk only maps
+  if ( ! (vik_map_source_is_mbtiles(map) ||
+          vik_map_source_is_direct_file_access(map) ||
+          vik_map_source_is_osm_meta_tiles(map)) ) {
+    /* Now with icons */
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Download _Missing Onscreen Maps") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_missing_onscreen_maps), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_missing_onscreen_maps), values );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
 
-  if ( vik_map_source_supports_download_only_new (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
-    item = gtk_image_menu_item_new_with_mnemonic ( _("Download _New Onscreen Maps") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REDO, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
+    if ( vik_map_source_supports_download_only_new (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
+      item = gtk_image_menu_item_new_with_mnemonic ( _("Download _New Onscreen Maps") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REDO, GTK_ICON_SIZE_MENU) );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+      gtk_widget_show ( item );
+    }
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Reload _All Onscreen Maps") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), values );
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Download Maps in _Zoom Levels...") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DND_MULTIPLE, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), values );
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
   }
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Reload _All Onscreen Maps") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Download Maps in _Zoom Levels...") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DND_MULTIPLE, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
 
   item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_about), values );
