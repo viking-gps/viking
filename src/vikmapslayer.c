@@ -2163,9 +2163,9 @@ static void maps_layer_redownload_all_onscreen_maps ( menu_array_values values )
   download_onscreen_maps( values, REDOWNLOAD_ALL);
 }
 
-static void maps_layer_about ( gpointer vml_vvp[2] )
+static void maps_layer_about ( menu_array_values values )
 {
-  VikMapsLayer *vml = vml_vvp[0];
+  VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
 
   if ( vik_map_source_get_license (map) )
