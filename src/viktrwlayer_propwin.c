@@ -41,7 +41,6 @@
 #include "dems.h"
 #include "viking.h"
 #include "vikviewport.h" /* ugh */
-#include "vikutils.h"
 #include "ui_util.h"
 #include <gdk-pixbuf/gdk-pixdata.h>
 

@@ -62,8 +62,6 @@
 #include "vikexttools.h"
 #include "vikexttool_datasources.h"
 #include "ui_util.h"
-#include "vikutils.h"
-
 #include "vikrouting.h"
 
 #include "icons/icons.h"

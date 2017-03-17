@@ -45,7 +45,6 @@
 #include <glib/gi18n.h>
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
 #include <gps.h>
-#include "vikutils.h"
 #endif
 
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);

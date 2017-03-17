@@ -32,7 +32,6 @@
 #include "viking.h"
 #include "vikdatetime_edit_dialog.h"
 #include "vikgoto.h"
-#include "vikutils.h"
 
 static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 {

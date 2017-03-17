@@ -36,7 +36,6 @@
 #include "vikmapslayer.h"
 #include "vikgeoreflayer.h"
 #include "vikrouting.h"
-#include "vikutils.h"
 #include "util.h"
 #include "toolbar.h"
 

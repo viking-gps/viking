@@ -44,7 +44,6 @@
 #include "vikmapslayer.h"
 #include "vikrouting.h"
 #include "geonamessearch.h"
-#include "vikutils.h"
 #include "dir.h"
 #include "kmz.h"
 

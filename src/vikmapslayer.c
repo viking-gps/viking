@@ -46,7 +46,6 @@
 
 #include "viking.h"
 #include "vikmapsourcedefault.h"
-#include "vikutils.h"
 #include "maputils.h"
 #include "mapcache.h"
 #include "background.h"
