@@ -2407,7 +2407,7 @@ static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw )
 {
  VikLayerTypeEnum type;
   for ( type = 0; type < VIK_LAYER_NUM_TYPES; type++ ) {
-    if (!strcmp(vik_layer_get_interface(type)->name, gtk_action_get_name(a))) {
+    if (!strcmp(vik_layer_get_interface(type)->fixed_layer_name, gtk_action_get_name(a))) {
       if ( vik_layers_panel_new_layer ( vw->viking_vlp, type ) ) {
         draw_update ( vw );
         vw->modified = TRUE;
@@ -4689,15 +4689,15 @@ static void window_create_ui( VikWindow *window )
   for (i=0; i<VIK_LAYER_NUM_TYPES; i++) {
     GtkActionEntry action;
     gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Layers/", 
-			  vik_layer_get_interface(i)->name,
-			  vik_layer_get_interface(i)->name,
+			  vik_layer_get_interface(i)->fixed_layer_name,
+			  vik_layer_get_interface(i)->fixed_layer_name,
 			  GTK_UI_MANAGER_MENUITEM, FALSE);
 
     icon_set = gtk_icon_set_new_from_pixbuf (gdk_pixbuf_from_pixdata (vik_layer_get_interface(i)->icon, FALSE, NULL ));
     gtk_icon_factory_add (icon_factory, vik_layer_get_interface(i)->name, icon_set);
     gtk_icon_set_unref (icon_set);
 
-    action.name = vik_layer_get_interface(i)->name;
+    action.name = vik_layer_get_interface(i)->fixed_layer_name;
     action.stock_id = vik_layer_get_interface(i)->name;
     action.label = g_strdup_printf( _("New _%s Layer"), _(vik_layer_get_interface(i)->name));
     action.accelerator = vik_layer_get_interface(i)->accelerator;
@@ -4708,7 +4708,10 @@ static void window_create_ui( VikWindow *window )
     g_free ( (gchar*)action.label );
 
     if ( vik_layer_get_interface(i)->tools_count ) {
-      gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Tools/", vik_layer_get_interface(i)->name, NULL, GTK_UI_MANAGER_SEPARATOR, FALSE);
+      gtk_ui_manager_add_ui ( uim, mid,  "/ui/MainMenu/Tools/",
+                              vik_layer_get_interface(i)->fixed_layer_name,
+                              vik_layer_get_interface(i)->fixed_layer_name,
+                              GTK_UI_MANAGER_SEPARATOR, FALSE );
     }
 
     // Further tool copying for to apply to the UI, also apply menu UI setup
@@ -4733,7 +4736,7 @@ static void window_create_ui( VikWindow *window )
     GtkActionEntry action_dl;
     gchar *layername = g_strdup_printf ( "Layer%s", vik_layer_get_interface(i)->fixed_layer_name );
     gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Edit/LayerDefaults",
-			  vik_layer_get_interface(i)->name,
+			  vik_layer_get_interface(i)->fixed_layer_name,
 			  layername,
 			  GTK_UI_MANAGER_MENUITEM, FALSE);
     g_free (layername);
