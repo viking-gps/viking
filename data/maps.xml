@@ -30,6 +30,19 @@
   </object>
 -->
   <object class="VikSlippyMapSource">
+    <property name="label">OSM GPS Traces</property>
+    <property name="hostname">https://gps-c.tile.openstreetmap.org</property>
+    <property name="url">/lines/%d/%d/%d.png</property>
+    <property name="zoom-min">0</property>
+    <property name="zoom-max">18</property>
+    <property name="id">33</property>
+    <property name="name">OSM-GPS</property>
+    <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
+    <property name="use-etag">TRUE</property>
+  </object>
+  <object class="VikSlippyMapSource">
     <property name="id">29</property>
     <property name="name">CalTopo</property>
     <property name="label">CalTopo USGS 7.5" Topos</property>
