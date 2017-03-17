@@ -30,6 +30,7 @@
 #include "gpx.h"
 #include "geojson.h"
 #include "babel.h"
+#include "gpsmapper.h"
 
 #include <string.h>
 #include <stdlib.h>

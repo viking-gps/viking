@@ -61,7 +61,6 @@
 #include "fileutils.h"
 #include "vikwindow.h"
 #include "gpspoint.h"
-#include "gpsmapper.h"
 #include "settings.h"
 #include "util.h"
 #include "vikutils.h"
