@@ -193,7 +193,8 @@ void maps_layer_set_cache_default ( VikMapsCacheLayout layout )
 }
 
 static VikToolInterface maps_tools[] = {
-  { { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
+  { &mapdl_18_pixbuf,
+    { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
     (VikToolConstructorFunc) maps_layer_download_create,
     NULL,
     NULL,

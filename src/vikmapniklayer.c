@@ -118,7 +118,8 @@ static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *ev
 static VikToolInterface mapnik_tools[] = {
 	// Layer Info
 	// Zoom All?
-  { { "MapnikFeatures", GTK_STOCK_INFO, N_("_Mapnik Features"), NULL, N_("Mapnik Features"), 0 },
+  { NULL,
+    { "MapnikFeatures", GTK_STOCK_INFO, N_("_Mapnik Features"), NULL, N_("Mapnik Features"), 0 },
     (VikToolConstructorFunc) mapnik_feature_create,
     NULL,
     NULL,

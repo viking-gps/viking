@@ -415,13 +415,15 @@ static void highest_wp_number_remove_wp(VikTrwLayer *vtl, const gchar *old_wp_na
 //  the second N_ text value is used for the button tooltip (i.e. generally don't want an underscore here)
 //  the value is always set to 0 and the tool loader in VikWindow will set the actual appropriate value used
 static VikToolInterface trw_layer_tools[] = {
-  { { "CreateWaypoint", "vik-icon-Create Waypoint", N_("Create _Waypoint"), "<control><shift>W", N_("Create Waypoint"), 0 },
+  { &addwp_18_pixbuf,
+    { "CreateWaypoint", "vik-icon-Create Waypoint", N_("Create _Waypoint"), "<control><shift>W", N_("Create Waypoint"), 0 },
     (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL,
     (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_addwp_pixbuf, NULL },
 
-  { { "CreateTrack", "vik-icon-Create Track", N_("Create _Track"), "<control><shift>T", N_("Create Track"), 0 },
+  { &addtr_18_pixbuf,
+    { "CreateTrack", "vik-icon-Create Track", N_("Create _Track"), "<control><shift>T", N_("Create Track"), 0 },
     (VikToolConstructorFunc) tool_new_track_create,       NULL, NULL, NULL,
     (VikToolMouseFunc) tool_new_track_click,
     (VikToolMouseMoveFunc) tool_new_track_move,
@@ -430,7 +432,8 @@ static VikToolInterface trw_layer_tools[] = {
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf, NULL },
 
-  { { "CreateRoute", "vik-icon-Create Route", N_("Create _Route"), "<control><shift>B", N_("Create Route"), 0 },
+  { &vik_new_route_18_pixbuf,
+    { "CreateRoute", "vik-icon-Create Route", N_("Create _Route"), "<control><shift>B", N_("Create Route"), 0 },
     (VikToolConstructorFunc) tool_new_route_create,       NULL, NULL, NULL,
     (VikToolMouseFunc) tool_new_route_click,
     (VikToolMouseMoveFunc) tool_new_track_move, // -\#
@@ -439,7 +442,8 @@ static VikToolInterface trw_layer_tools[] = {
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf, NULL },
 
-  { { "ExtendedRouteFinder", "vik-icon-Route Finder", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
+  { &route_finder_18_pixbuf,
+    { "ExtendedRouteFinder", "vik-icon-Route Finder", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
     (VikToolConstructorFunc) tool_extended_route_finder_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_extended_route_finder_click,
     (VikToolMouseMoveFunc) tool_new_track_move, // -\#
@@ -448,7 +452,8 @@ static VikToolInterface trw_layer_tools[] = {
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
 
-  { { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
+  { &edwp_18_pixbuf,
+    { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
     (VikToolConstructorFunc) tool_edit_waypoint_create,
     (VikToolDestructorFunc) tool_edit_waypoint_destroy,
     NULL, NULL,
@@ -458,7 +463,8 @@ static VikToolInterface trw_layer_tools[] = {
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf, NULL },
 
-  { { "EditTrackpoint", "vik-icon-Edit Trackpoint", N_("Edit Trac_kpoint"), "<control><shift>K", N_("Edit Trackpoint"), 0 },
+  { &edtr_18_pixbuf,
+    { "EditTrackpoint", "vik-icon-Edit Trackpoint", N_("Edit Trac_kpoint"), "<control><shift>K", N_("Edit Trackpoint"), 0 },
     (VikToolConstructorFunc) tool_edit_trackpoint_create,
     (VikToolDestructorFunc) tool_edit_trackpoint_destroy,
     NULL, NULL,
@@ -468,7 +474,8 @@ static VikToolInterface trw_layer_tools[] = {
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_edtr_pixbuf, NULL },
 
-  { { "ShowPicture", "vik-icon-Show Picture", N_("Show P_icture"), "<control><shift>I", N_("Show Picture"), 0 },
+  { NULL, // a pixbuf for this one is already made globally available
+    { "ShowPicture", VIK_ICON_SHOW_PICTURE, N_("Show P_icture"), "<control><shift>I", N_("Show Picture"), 0 },
     (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL,
     (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL,
     FALSE,

@@ -1764,7 +1764,8 @@ static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, ruler_tool_st
 
 static VikToolInterface ruler_tool =
   // NB Ctrl+Shift+R is used for Refresh (deemed more important), so use 'U' instead
-  { { "Ruler", "vik-icon-ruler", N_("_Ruler"), "<control><shift>U", N_("Ruler Tool"), 2 },
+  { &ruler_18_pixbuf,
+    { "Ruler", "vik-icon-ruler", N_("_Ruler"), "<control><shift>U", N_("Ruler Tool"), 2 },
     (VikToolConstructorFunc) ruler_create,
     (VikToolDestructorFunc) ruler_destroy,
     (VikToolActivationFunc) NULL,
@@ -2037,7 +2038,8 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
 }
 
 static VikToolInterface zoom_tool = 
-  { { "Zoom", "vik-icon-zoom", N_("_Zoom"), "<control><shift>Z", N_("Zoom Tool"), 1 },
+  { &zoom_18_pixbuf,
+    { "Zoom", "vik-icon-zoom", N_("_Zoom"), "<control><shift>Z", N_("Zoom Tool"), 1 },
     (VikToolConstructorFunc) zoomtool_create,
     (VikToolDestructorFunc) zoomtool_destroy,
     (VikToolActivationFunc) NULL,
@@ -2102,7 +2104,8 @@ static VikLayerToolFuncStatus pantool_release (VikLayer *vl, GdkEventButton *eve
 }
 
 static VikToolInterface pan_tool = 
-  { { "Pan", "vik-icon-pan", N_("_Pan"), "<control><shift>P", N_("Pan Tool"), 0 },
+  { &mover_22_pixbuf,
+    { "Pan", "vik-icon-pan", N_("_Pan"), "<control><shift>P", N_("Pan Tool"), 0 },
     (VikToolConstructorFunc) pantool_create,
     (VikToolDestructorFunc) NULL,
     (VikToolActivationFunc) NULL,
@@ -2254,7 +2257,8 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
 }
 
 static VikToolInterface select_tool =
-  { { "Select", "vik-icon-select", N_("_Select"), "<control><shift>S", N_("Select Tool"), 3 },
+  { &select_18_pixbuf,
+    { "Select", "vik-icon-select", N_("_Select"), "<control><shift>S", N_("Select Tool"), 3 },
     (VikToolConstructorFunc) selecttool_create,
     (VikToolDestructorFunc) selecttool_destroy,
     (VikToolActivationFunc) NULL,
@@ -4453,6 +4457,20 @@ static void set_highlight_color ( GtkAction *a, VikWindow *vw )
 /***********************************************************************************************
  ** GUI Creation
  ***********************************************************************************************/
+typedef struct {
+  const GdkPixdata *data;
+  const gchar *name;
+} icon_definition_t;
+
+static void
+a_register_icon ( GtkIconFactory *icon_factory, icon_definition_t icon )
+{
+  if ( !icon.data ) return;
+  GtkIconSet *icon_set = gtk_icon_set_new_from_pixbuf (gdk_pixbuf_from_pixdata ( icon.data, FALSE, NULL ));
+  gtk_icon_factory_add ( icon_factory, icon.name, icon_set );
+  gtk_icon_set_unref ( icon_set );
+}
+
 
 static GtkActionEntry entries[] = {
   { "File", NULL, N_("_File"), 0, 0, 0 },
@@ -4590,7 +4608,6 @@ static void window_create_ui( VikWindow *window )
   GError *error;
   guint i, j, mid;
   GtkIconFactory *icon_factory;
-  GtkIconSet *icon_set; 
   GtkRadioActionEntry *tools = NULL, *radio;
   guint ntools;
   
@@ -4693,12 +4710,12 @@ static void window_create_ui( VikWindow *window )
 			  vik_layer_get_interface(i)->fixed_layer_name,
 			  GTK_UI_MANAGER_MENUITEM, FALSE);
 
-    icon_set = gtk_icon_set_new_from_pixbuf (gdk_pixbuf_from_pixdata (vik_layer_get_interface(i)->icon, FALSE, NULL ));
-    gtk_icon_factory_add (icon_factory, vik_layer_get_interface(i)->name, icon_set);
-    gtk_icon_set_unref (icon_set);
+    icon_definition_t icon = { vik_layer_get_interface(i)->icon,
+                               vik_layer_get_interface(i)->fixed_layer_name };
+    a_register_icon ( icon_factory, icon );
 
     action.name = vik_layer_get_interface(i)->fixed_layer_name;
-    action.stock_id = vik_layer_get_interface(i)->name;
+    action.stock_id = vik_layer_get_interface(i)->fixed_layer_name;
     action.label = g_strdup_printf( _("New _%s Layer"), _(vik_layer_get_interface(i)->name));
     action.accelerator = vik_layer_get_interface(i)->accelerator;
     action.tooltip = NULL;
@@ -4719,7 +4736,11 @@ static void window_create_ui( VikWindow *window )
       tools = g_renew(GtkRadioActionEntry, tools, ntools+1);
       radio = &tools[ntools];
       ntools++;
-      
+
+      icon_definition_t icon = { vik_layer_get_interface(i)->tools[j].icon,
+                                 vik_layer_get_interface(i)->tools[j].radioActionEntry.stock_id };
+      a_register_icon ( icon_factory, icon );
+
       gtk_ui_manager_add_ui(uim, mid,  "/ui/MainMenu/Tools", 
 			    vik_layer_get_interface(i)->tools[j].radioActionEntry.label,
 			    vik_layer_get_interface(i)->tools[j].radioActionEntry.name,
@@ -4744,7 +4765,7 @@ static void window_create_ui( VikWindow *window )
     // For default layers use action names of the form 'Layer<LayerName>'
     // This is to avoid clashing with just the layer name used above for the tool actions
     action_dl.name = g_strconcat("Layer", vik_layer_get_interface(i)->fixed_layer_name, NULL);
-    action_dl.stock_id = NULL;
+    action_dl.stock_id = vik_layer_get_interface(i)->fixed_layer_name;
     action_dl.label = g_strconcat(_(vik_layer_get_interface(i)->name), _("..."), NULL);
     action_dl.accelerator = NULL;
     action_dl.tooltip = NULL;
@@ -4788,43 +4809,21 @@ static void window_create_ui( VikWindow *window )
   }
 }
 
-
-// TODO - add method to add tool icons defined from outside this file
-//  and remove the reverse dependency on icon definition from this file
-static struct { 
-  const GdkPixdata *data;
-  gchar *stock_id;
-} stock_icons[] = {
+static icon_definition_t vik_icons[] = {
+  // Vikwindow specific icons:
   { &mover_22_pixbuf,		"vik-icon-pan"      },
   { &zoom_18_pixbuf,		"vik-icon-zoom"     },
   { &ruler_18_pixbuf,		"vik-icon-ruler"    },
   { &select_18_pixbuf,		"vik-icon-select"   },
-  { &vik_new_route_18_pixbuf,   "vik-icon-Create Route"     },
-  { &route_finder_18_pixbuf,	"vik-icon-Route Finder"     },
-  { &demdl_18_pixbuf,		"vik-icon-DEM Download"     },
-  { &showpic_18_pixbuf,		"vik-icon-Show Picture"     },
-  { &addtr_18_pixbuf,		"vik-icon-Create Track"     },
-  { &edtr_18_pixbuf,		"vik-icon-Edit Trackpoint"  },
-  { &addwp_18_pixbuf,		"vik-icon-Create Waypoint"  },
-  { &edwp_18_pixbuf,		"vik-icon-Edit Waypoint"    },
-  { &geozoom_18_pixbuf,		"vik-icon-Georef Zoom Tool" },
-  { &geomove_18_pixbuf,		"vik-icon-Georef Move Map"  },
-  { &mapdl_18_pixbuf,		"vik-icon-Maps Download"    },
+  // Generic icons for use anywhere:
+  { &showpic_18_pixbuf,		VIK_ICON_SHOW_PICTURE },
 };
- 
-static gint n_stock_icons = G_N_ELEMENTS (stock_icons);
 
 static void
-register_vik_icons (GtkIconFactory *icon_factory)
+register_vik_icons ( GtkIconFactory *icon_factory )
 {
-  GtkIconSet *icon_set; 
-  gint i;
-
-  for (i = 0; i < n_stock_icons; i++) {
-    icon_set = gtk_icon_set_new_from_pixbuf (gdk_pixbuf_from_pixdata (
-                   stock_icons[i].data, FALSE, NULL ));
-    gtk_icon_factory_add (icon_factory, stock_icons[i].stock_id, icon_set);
-    gtk_icon_set_unref (icon_set);
+  for (guint i = 0; i < G_N_ELEMENTS(vik_icons); i++) {
+    a_register_icon ( icon_factory, vik_icons[i] );
   }
 }
 
