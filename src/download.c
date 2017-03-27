@@ -212,6 +212,7 @@ void a_try_decompress_file (gchar *name)
 				g_critical ("%s: remove file failed [%s]", __FUNCTION__, name );
 			if ( g_rename (bz2_name, name) )
 				g_critical ("%s: file rename failed [%s] to [%s]", __FUNCTION__, bz2_name, name );
+			g_free ( bz2_name );
 		}
 	}
 }
