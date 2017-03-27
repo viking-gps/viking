@@ -136,8 +136,6 @@ static void _to_vikcoord_with_offset ( const MapCoord *src, VikCoord *dest, gdou
  * @dest:  The resulting Spherical Mercator coordinates in #VikCoord
  *
  * Convert a #MapCoord in Inverse TMS format into Spherical Mercator coordinates for the center of the TMS area
- *
- * Returns: whether the conversion was performed
  */
 void map_utils_iTMS_to_center_vikcoord ( const MapCoord *src, VikCoord *dest )
 {
@@ -151,8 +149,6 @@ void map_utils_iTMS_to_center_vikcoord ( const MapCoord *src, VikCoord *dest )
  *
  * Convert a #MapCoord in Inverse TMS format into Spherical Mercator coordinates
  *  (for the top left corner of the Inverse TMS area)
- *
- * Returns: whether the conversion was performed
  */
 void map_utils_iTMS_to_vikcoord ( const MapCoord *src, VikCoord *dest )
 {
