@@ -815,7 +815,7 @@ void vik_viewport_set_xmpp ( VikViewport *vvp, gdouble xmpp )
 {
   if ( xmpp >= VIK_VIEWPORT_MIN_ZOOM && xmpp <= VIK_VIEWPORT_MAX_ZOOM ) {
     vvp->xmpp = xmpp;
-    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
+    vvp->xmfactor = MERCATOR_FACTOR(vvp->xmpp);
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
       viewport_utm_zone_check(vvp);
   }
@@ -1235,14 +1235,14 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
     struct LatLon *ll = (struct LatLon *) coord;
     double xx,yy;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
-      *x = vvp->width_2 + ( MERCATOR_FACTOR(vvp->xmpp) * (ll->lon - center->lon) );
-      *y = vvp->height_2 + ( MERCATOR_FACTOR(vvp->ympp) * (center->lat - ll->lat) );
+      *x = vvp->width_2 + ( vvp->xmfactor * (ll->lon - center->lon) );
+      *y = vvp->height_2 + ( vvp->ymfactor * (center->lat - ll->lat) );
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA ) {
       calcxy ( &xx, &yy, center->lon, center->lat, ll->lon, ll->lat, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width_2, vvp->height_2 );
       *x = xx; *y = yy;
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
-      *x = vvp->width_2 + ( MERCATOR_FACTOR(vvp->xmpp) * (ll->lon - center->lon) );
-      *y = vvp->height_2 + ( MERCATOR_FACTOR(vvp->ympp) * ( MERCLAT(center->lat) - MERCLAT(ll->lat) ) );
+      *x = vvp->width_2 + ( vvp->xmfactor * (ll->lon - center->lon) );
+      *y = vvp->height_2 + ( vvp->ymfactor * ( MERCLAT(center->lat) - MERCLAT(ll->lat) ) );
     }
   }
 }
