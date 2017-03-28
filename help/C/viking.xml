@@ -3162,6 +3162,14 @@ Accept: */*
                 <para>The ETag value is stored in a separate file in the same directory as the tile to enable checking the value across multiple runs of the program.</para>
               </listitem>
             </varlistentry>
+            <varlistentry>
+              <term>tilesize-x (optional)</term>
+              <listitem><para>The tile x size. The default is 256 pixels if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>tilesize-y (optional)</term>
+              <listitem><para>The tile y size. The default is 256 pixels if not specified.</para></listitem>
+            </varlistentry>
           </variablelist>
         </para>
         <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):
