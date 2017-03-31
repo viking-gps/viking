@@ -437,7 +437,7 @@ AC_ARG_WITH(mapbox_access_token,
               package, as requests are limited per token.])],
 	    [VIK_CONFIG_MAPBOX_TOKEN="\"${withval}\""],
 	    [VIK_CONFIG_MAPBOX_TOKEN="\"pk.eyJ1Ijoicndub3JyaXMiLCJhIjoiY2lxc294anN2MDA5bWhzbWFseWsxMW1ydiJ9.HcybKtZsiG6RVuOHg481Kg\""])
-AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPBOX_TOKEN, ${VIK_CONFIG_MAPBOX_TOKEN}, [geonames username])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPBOX_TOKEN, ${VIK_CONFIG_MAPBOX_TOKEN}, [Mapbox Token])
 
 
 AC_ARG_WITH(geonames_username,
