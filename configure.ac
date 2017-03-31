@@ -440,6 +440,16 @@ AC_ARG_WITH(mapbox_access_token,
 AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPBOX_TOKEN, ${VIK_CONFIG_MAPBOX_TOKEN}, [Mapbox Token])
 
 
+dnl Compile time defined key
+AC_ARG_WITH(thunderforest_apikey,
+            [AC_HELP_STRING([--with-thunderforest_apikey],
+	     [API Key for Thunderforest (OSM Cyclemap) tiles.
+              Please register your own if you're going to distribute the
+              package, as requests are limited per key.])],
+	    [VIK_CONFIG_THUNDERFOREST_KEY="\"${withval}\""],
+	    [VIK_CONFIG_THUNDERFOREST_KEY="\"7387c111d85642b18f63608bd4cb8b4f\""])
+AC_DEFINE_UNQUOTED(VIK_CONFIG_THUNDERFOREST_KEY, ${VIK_CONFIG_THUNDERFOREST_KEY}, [Thunderforest key])
+
 AC_ARG_WITH(geonames_username,
             [AC_HELP_STRING([--with-geonames_username],
 	     [Username for the GeoNames webservice.
