@@ -54,6 +54,7 @@ struct _VikMapSourceClass
 	const gchar * (* get_label) (VikMapSource * self);
 	guint16 (* get_tilesize_x) (VikMapSource * self);
 	guint16 (* get_tilesize_y) (VikMapSource * self);
+	gdouble (* get_scale) (VikMapSource * self);
 	VikViewportDrawMode (* get_drawmode) (VikMapSource * self);
 	gboolean (* is_direct_file_access) (VikMapSource * self);
 	gboolean (* is_mbtiles) (VikMapSource * self);
@@ -90,6 +91,7 @@ guint16 vik_map_source_get_uniq_id (VikMapSource * self);
 const gchar *vik_map_source_get_label (VikMapSource * self);
 guint16 vik_map_source_get_tilesize_x (VikMapSource * self);
 guint16 vik_map_source_get_tilesize_y (VikMapSource * self);
+gdouble vik_map_source_get_scale (VikMapSource * self);
 VikViewportDrawMode vik_map_source_get_drawmode (VikMapSource * self);
 gboolean vik_map_source_is_direct_file_access (VikMapSource * self);
 gboolean vik_map_source_is_mbtiles (VikMapSource * self);

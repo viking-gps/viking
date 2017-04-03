@@ -851,7 +851,7 @@ static void vik_window_init ( VikWindow *vw )
   vw->viking_vvp = vik_viewport_new();
   vw->viking_vlp = vik_layers_panel_new();
   vik_layers_panel_set_viewport ( vw->viking_vlp, vw->viking_vvp );
-  vw->viking_vs = vik_statusbar_new();
+  vw->viking_vs = vik_statusbar_new ( vik_viewport_get_scale(vw->viking_vvp) );
 
   vw->vt = toolbox_create(vw);
   vw->viking_vtb = vik_toolbar_new ();
@@ -1837,13 +1837,12 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
     vik_coord_to_latlon ( &coord, &ll );
     vik_viewport_coord_to_screen ( vvp, &s->oldcoord, &oldx, &oldy );
 
-    gdk_draw_drawable (buf, gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc,
-		       vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
-    draw_ruler(vvp, buf, gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
+    gdk_draw_drawable (buf, vik_viewport_get_black_gc(vvp), vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
+    draw_ruler(vvp, buf, vik_viewport_get_black_gc(vvp), oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
     if (draw_buf_done) {
       static gpointer pass_along[3];
       pass_along[0] = gtk_widget_get_window(GTK_WIDGET(vvp));
-      pass_along[1] = gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc;
+      pass_along[1] = vik_viewport_get_black_gc ( vvp );
       pass_along[2] = buf;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
@@ -2039,9 +2038,9 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
 
     // Blank out currently drawn area
     gdk_draw_drawable ( zts->pixmap,
-                        gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc,
+                        vik_viewport_get_black_gc(zts->vw->viking_vvp),
                         vik_viewport_get_pixmap(zts->vw->viking_vvp),
-                        0, 0, 0, 0, -1, -1);
+                        0, 0, 0, 0, -1, -1 );
 
     // Calculate new box starting point & size in pixels
     int xx, yy, width, height;
@@ -2063,13 +2062,13 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
     }
 
     // Draw the box
-    gdk_draw_rectangle (zts->pixmap, gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc, FALSE, xx, yy, width, height);
+    gdk_draw_rectangle (zts->pixmap, vik_viewport_get_black_gc(zts->vw->viking_vvp), FALSE, xx, yy, width, height);
 
     // Only actually draw when there's time to do so
     if (draw_buf_done) {
       static gpointer pass_along[3];
       pass_along[0] = gtk_widget_get_window(GTK_WIDGET(zts->vw->viking_vvp));
-      pass_along[1] = gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc;
+      pass_along[1] = vik_viewport_get_black_gc ( zts->vw->viking_vvp );
       pass_along[2] = zts->pixmap;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;

@@ -51,7 +51,10 @@
 #include "settings.h"
 #include "dialog.h"
 
-#define MERCATOR_FACTOR(x) ( (65536.0 / 180 / (x)) * 256.0 )
+static gdouble mercator_factor ( gdouble x, guint scale )
+{
+  return (65536.0 / 180 / x) * 256.0 * scale;
+}
 
 static gdouble EASTING_OFFSET = 500000.0;
 
@@ -80,6 +83,7 @@ struct _VikViewport {
   VikCoordMode coord_mode;
   gdouble xmpp, ympp;
   gdouble xmfactor, ymfactor;
+  guint scale;          // Permanent scale regardless of the zoom level
   GList *centers;         // The history of requested positions (of VikCoord type)
   guint centers_index;    // current position within the history list
   guint centers_max;      // configurable maximum size of the history list
@@ -91,6 +95,7 @@ struct _VikViewport {
   GdkGC *background_gc;
   GdkColor background_color;
   GdkGC *scale_bg_gc;
+  GdkGC *black_gc;
 
   GSList *copyrights;
   GSList *logos;
@@ -167,6 +172,42 @@ VikViewport *vik_viewport_new ()
 #define VIK_SETTINGS_VIEW_LAST_ZOOM_Y "viewport_last_zoom_ypp"
 #define VIK_SETTINGS_VIEW_HISTORY_SIZE "viewport_history_size"
 #define VIK_SETTINGS_VIEW_HISTORY_DIFF_DIST "viewport_history_diff_dist"
+#define VIK_SETTINGS_VIEW_SCALE "viewport_scale"
+
+// Hacky method to enable to return a scale value
+// Mostly for places in code, such as initializers, where they have no knowledge of any vvp in use.
+// Even if there were multiple ones - it's unlikely they would have different scales.
+static VikViewport* default_vvp = NULL;
+
+guint vik_viewport_get_scale ( VikViewport *vvp )
+{
+  if ( vvp )
+    return vvp->scale;
+  else if ( default_vvp )
+    return default_vvp->scale;
+  else
+    return 1;
+}
+
+void init_scale ( VikViewport *vvp )
+{
+  // The default scale
+  vvp->scale = 1;
+  // GTK3+ required
+  // gtk_widget_get_scale_factor (GTK_WIDGET(x));
+  // Further note the scale can change during runtime
+  // ATM Just initialize only
+  gint res = gdk_screen_get_resolution ( gdk_screen_get_default() );
+  g_debug ( "%s: Screen Resolution is '%d'\n", __FUNCTION__, res );
+  if ( res > 50 ) {
+    vvp->scale = round (res / 96.0);
+    g_debug ( "%s: Scale set to '%d'\n", __FUNCTION__, vvp->scale );
+  }
+  // Allow override by user
+  gint tmp = vvp->scale;
+  if ( a_settings_get_integer ( VIK_SETTINGS_VIEW_SCALE, &tmp ) )
+    vvp->scale = (guint)tmp;
+}
 
 static void
 vik_viewport_init ( VikViewport *vvp )
@@ -196,8 +237,9 @@ vik_viewport_init ( VikViewport *vvp )
 
   vvp->xmpp = zoom_x;
   vvp->ympp = zoom_y;
-  vvp->xmfactor = MERCATOR_FACTOR (vvp->xmpp);
-  vvp->ymfactor = MERCATOR_FACTOR (vvp->ympp);
+  init_scale ( vvp );
+  vvp->xmfactor = mercator_factor ( vvp->xmpp, vvp->scale );
+  vvp->ymfactor = mercator_factor ( vvp->ympp, vvp->scale );
   vvp->coord_mode = VIK_COORD_LATLON;
   vvp->drawmode = VIK_VIEWPORT_DRAWMODE_MERCATOR;
   vvp->center.mode = VIK_COORD_LATLON;
@@ -209,6 +251,7 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->utm_zone_width = 0.0;
   vvp->background_gc = NULL;
   vvp->highlight_gc = NULL;
+  vvp->black_gc = NULL;
   vvp->scale_bg_gc = NULL;
 
   vvp->copyrights = NULL;
@@ -240,6 +283,8 @@ vik_viewport_init ( VikViewport *vvp )
 #else
   GTK_WIDGET_SET_FLAGS(vvp, GTK_CAN_FOCUS); /* allow VVP to have focus -- enabling key events, etc */
 #endif
+
+  default_vvp = vvp;
 }
 
 GdkColor *vik_viewport_get_background_gdkcolor ( VikViewport *vvp )
@@ -337,6 +382,11 @@ GdkGC *vik_viewport_new_gc_from_color ( VikViewport *vvp, GdkColor *color, gint 
   return rv;
 }
 
+GdkGC* vik_viewport_get_black_gc ( VikViewport *vvp )
+{
+  return vvp->black_gc;
+}
+
 void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint height )
 {
   vvp->width = width;
@@ -396,10 +446,14 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
     vvp->highlight_gc = vik_viewport_new_gc ( vvp, DEFAULT_HIGHLIGHT_COLOR, 1 );
     vik_viewport_set_highlight_color ( vvp, DEFAULT_HIGHLIGHT_COLOR );
   }
+
   if ( !vvp->scale_bg_gc) {
-    vvp->scale_bg_gc = vik_viewport_new_gc(vvp, "grey", 3);
+    vvp->scale_bg_gc = vik_viewport_new_gc(vvp, "grey", 3*vvp->scale);
   }
 
+  if ( !vvp->black_gc ) {
+    vvp->black_gc = vik_viewport_new_gc ( vvp, "black", vvp->scale );
+  }
   return FALSE;	
 }
 
@@ -436,6 +490,11 @@ static void viewport_finalize ( GObject *gob )
   if ( vvp->scale_bg_gc ) {
     g_object_unref ( G_OBJECT ( vvp->scale_bg_gc ) );
     vvp->scale_bg_gc = NULL;
+  }
+
+  if ( vvp->black_gc ) {
+    g_object_unref ( G_OBJECT ( vvp->black_gc ) );
+    vvp->black_gc = NULL;
   }
 
   G_OBJECT_CLASS(parent_class)->finalize(gob);
@@ -520,7 +579,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     unit = old_unit;
     len = unit * ratio;
 
-    /* white background */
+    /* grey background */
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
 			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
@@ -528,18 +587,18 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
 			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
     /* black scale */
-    vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+    vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
-    vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+    vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
-    vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+    vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
 			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
     if (odd%2) {
       int i;
       for (i=1; i<5; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
                                PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
-        vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+        vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
                                PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
       }
     } else {
@@ -547,7 +606,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       for (i=1; i<10; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
   			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
-        vik_viewport_draw_line(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+        vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
   			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
       }
     }
@@ -590,8 +649,10 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       g_critical("Houston, we've had a problem. distance=%d", dist_units);
     }
     pango_layout_set_text(pl, s, -1);
-    vik_viewport_draw_layout(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
-			   PAD + len + PAD, vvp->height - PAD - 10, pl);
+    int ww, hh;
+    pango_layout_get_pixel_size ( pl, &ww, &hh );
+    vik_viewport_draw_layout(vvp, vvp->black_gc,
+                             PAD + len + PAD, vvp->height - PAD - HEIGHT/2 - hh/2, pl);
     g_object_unref(pl);
     pl = NULL;
   }
@@ -676,18 +737,17 @@ void vik_viewport_draw_centermark ( VikViewport *vvp )
   const int gap = 4;
   int center_x = vvp->width/2;
   int center_y = vvp->height/2;
-  GdkGC * black_gc = gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc;
 
-  /* white back ground */
+  // white background
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x - gap, center_y);
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x + gap, center_y, center_x + len, center_y);
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y - len, center_x, center_y - gap);
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y + gap, center_x, center_y + len);
-  /* black fore ground */
-  vik_viewport_draw_line(vvp, black_gc, center_x - len, center_y, center_x - gap, center_y);
-  vik_viewport_draw_line(vvp, black_gc, center_x + gap, center_y, center_x + len, center_y);
-  vik_viewport_draw_line(vvp, black_gc, center_x, center_y - len, center_x, center_y - gap);
-  vik_viewport_draw_line(vvp, black_gc, center_x, center_y + gap, center_x, center_y + len);
+  // black foreground
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x - len, center_y, center_x - gap, center_y);
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x + gap, center_y, center_x + len, center_y);
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x, center_y - len, center_x, center_y - gap);
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x, center_y + gap, center_x, center_y + len);
   
 }
 
@@ -756,7 +816,7 @@ void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
   if ( xympp >= VIK_VIEWPORT_MIN_ZOOM && xympp <= VIK_VIEWPORT_MAX_ZOOM ) {
     vvp->xmpp = vvp->ympp = xympp;
     // Since xmpp & ympp are the same it doesn't matter which one is used here
-    vvp->xmfactor = vvp->ymfactor = MERCATOR_FACTOR(vvp->xmpp);
+    vvp->xmfactor = vvp->ymfactor = mercator_factor ( vvp->xmpp, vvp->scale );
   }
 
   if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
@@ -772,8 +832,8 @@ void vik_viewport_zoom_in ( VikViewport *vvp )
     vvp->xmpp /= 2;
     vvp->ympp /= 2;
 
-    vvp->xmfactor = MERCATOR_FACTOR(vvp->xmpp);
-    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
+    vvp->xmfactor = mercator_factor ( vvp->xmpp, vvp->scale );
+    vvp->ymfactor = mercator_factor ( vvp->ympp, vvp->scale );
 
     viewport_utm_zone_check(vvp);
   }
@@ -787,8 +847,8 @@ void vik_viewport_zoom_out ( VikViewport *vvp )
     vvp->xmpp *= 2;
     vvp->ympp *= 2;
 
-    vvp->xmfactor = MERCATOR_FACTOR(vvp->xmpp);
-    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
+    vvp->xmfactor = mercator_factor ( vvp->xmpp, vvp->scale );
+    vvp->ymfactor = mercator_factor ( vvp->ympp, vvp->scale );
 
     viewport_utm_zone_check(vvp);
   }
@@ -815,7 +875,7 @@ void vik_viewport_set_xmpp ( VikViewport *vvp, gdouble xmpp )
 {
   if ( xmpp >= VIK_VIEWPORT_MIN_ZOOM && xmpp <= VIK_VIEWPORT_MAX_ZOOM ) {
     vvp->xmpp = xmpp;
-    vvp->xmfactor = MERCATOR_FACTOR(vvp->xmpp);
+    vvp->xmfactor = mercator_factor ( vvp->xmpp, vvp->scale );
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
       viewport_utm_zone_check(vvp);
   }
@@ -825,7 +885,7 @@ void vik_viewport_set_ympp ( VikViewport *vvp, gdouble ympp )
 {
   if ( ympp >= VIK_VIEWPORT_MIN_ZOOM && ympp <= VIK_VIEWPORT_MAX_ZOOM ) {
     vvp->ympp = ympp;
-    vvp->ymfactor = MERCATOR_FACTOR(vvp->ympp);
+    vvp->ymfactor = mercator_factor ( vvp->ympp, vvp->scale );
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
       viewport_utm_zone_check(vvp);
   }
@@ -1188,14 +1248,14 @@ void vik_viewport_screen_to_coord ( VikViewport *vvp, int x, int y, VikCoord *co
   } else if ( vvp->coord_mode == VIK_COORD_LATLON ) {
     coord->mode = VIK_COORD_LATLON;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
-      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width_2));
-      coord->north_south = vvp->center.north_south + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height_2 - y));
+      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width_2)) / vvp->scale;
+      coord->north_south = vvp->center.north_south + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height_2 - y) / vvp->scale);
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA )
       calcxy_rev(&(coord->east_west), &(coord->north_south), x, y, vvp->center.east_west, vvp->center.north_south, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width_2, vvp->height_2);
     else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
       /* This isn't called with a high frequently so less need to optimize */
-      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width_2));
-      coord->north_south = DEMERCLAT ( MERCLAT(vvp->center.north_south) + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height_2 - y)) );
+      coord->east_west = vvp->center.east_west + (180.0 * vvp->xmpp / 65536 / 256 * (x - vvp->width_2) / vvp->scale);
+      coord->north_south = DEMERCLAT ( MERCLAT(vvp->center.north_south) + (180.0 * vvp->ympp / 65536 / 256 * (vvp->height_2 - y)) / vvp->scale );
     }
   }
 }

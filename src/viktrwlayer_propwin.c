@@ -44,6 +44,8 @@
 #include "ui_util.h"
 #include <gdk-pixbuf/gdk-pixdata.h>
 
+#define BLOB_SIZE 4
+
 typedef enum {
   PROPWIN_GRAPH_TYPE_ELEVATION_DISTANCE,
   PROPWIN_GRAPH_TYPE_GRADIENT_DISTANCE,
@@ -416,6 +418,7 @@ static void save_image_and_draw_graph_marks (GtkWidget *image,
 					     PropSaved *saved_img,
 					     gint PROFILE_WIDTH,
 					     gint PROFILE_HEIGHT,
+					     guint blob_size,
 					     gboolean *marker_drawn,
 					     gboolean *blob_drawn)
 {
@@ -445,7 +448,7 @@ static void save_image_and_draw_graph_marks (GtkWidget *image,
 
   // Draw a square blob to indicate where we are on track for this graph
   if ( (blob_x >= MARGIN_X) && (blob_x < (PROFILE_WIDTH + MARGIN_X)) && (blob_y < PROFILE_HEIGHT+MARGIN_Y) ) {
-    gdk_draw_rectangle (GDK_DRAWABLE(pix), gc, TRUE, blob_x-3, blob_y-3, 6, 6);
+    gdk_draw_rectangle (GDK_DRAWABLE(pix), gc, TRUE, blob_x-3, blob_y-3, blob_size, blob_size);
     *blob_drawn = TRUE;
   }
   else
@@ -582,6 +585,7 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 					graph_saved_img,
 					widgets->profile_width,
 					widgets->profile_height,
+					BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 					&widgets->is_marker_drawn,
 					&widgets->is_blob_drawn);
       }
@@ -796,6 +800,7 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
 				   &widgets->elev_graph_saved_img,
 				   widgets->profile_width,
 				   widgets->profile_height,
+				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
 
@@ -879,6 +884,7 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
 				   &widgets->gradient_graph_saved_img,
 				   widgets->profile_width,
 				   widgets->profile_height,
+				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
 
@@ -1006,6 +1012,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   &widgets->speed_graph_saved_img,
 				   widgets->profile_width,
 				   widgets->profile_height,
+				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
 
@@ -1092,6 +1099,7 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   &widgets->dist_graph_saved_img,
 				   widgets->profile_width,
 				   widgets->profile_height,
+				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
 
@@ -1171,6 +1179,7 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   &widgets->elev_time_graph_saved_img,
 				   widgets->profile_width,
 				   widgets->profile_height,
+				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
 
@@ -1285,6 +1294,7 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   &widgets->speed_dist_graph_saved_img,
 				   widgets->profile_width,
 				   widgets->profile_height,
+				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
 
@@ -1783,7 +1793,7 @@ static void draw_time_lines ( GtkWidget *window, GtkWidget *image, GdkPixmap *pi
 /**
  * Draw just the speed (velocity)/time image
  */
-static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
+static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 {
   guint i;
 
@@ -2455,6 +2465,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 				       &widgets->elev_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
+				       BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				       &widgets->is_marker_drawn,
 				       &widgets->is_blob_drawn);
     }
@@ -2503,6 +2514,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 				       &widgets->gradient_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
+				       BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				       &widgets->is_marker_drawn,
 				       &widgets->is_blob_drawn);
     }
@@ -2553,6 +2565,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 				       &widgets->speed_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
+				       BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				       &widgets->is_marker_drawn,
 				       &widgets->is_blob_drawn);
     }
@@ -2603,6 +2616,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 				       &widgets->dist_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
+				       BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				       &widgets->is_marker_drawn,
 				       &widgets->is_blob_drawn);
     }
@@ -2652,6 +2666,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 				       &widgets->elev_time_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
+				       BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				       &widgets->is_marker_drawn,
 				       &widgets->is_blob_drawn);
     }
@@ -2700,6 +2715,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 				       &widgets->speed_dist_graph_saved_img,
 				       widgets->profile_width,
 				       widgets->profile_height,
+				       BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				       &widgets->is_marker_drawn,
 				       &widgets->is_blob_drawn);
     }
@@ -3202,12 +3218,12 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   gint profile_size_value;
   // Ensure minimum values
-  widgets->profile_width = 600;
+  widgets->profile_width = 600 * vik_viewport_get_scale(vvp);
   if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, &profile_size_value ) )
     if ( profile_size_value > widgets->profile_width )
       widgets->profile_width = profile_size_value;
 
-  widgets->profile_height = 300;
+  widgets->profile_height = 300 * vik_viewport_get_scale(vvp);
   if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, &profile_size_value ) )
     if ( profile_size_value > widgets->profile_height )
       widgets->profile_height = profile_size_value;

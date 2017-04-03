@@ -3392,6 +3392,15 @@ Accept: */*
               <term>tilesize-y (optional)</term>
               <listitem><para>The tile y size. The default is 256 pixels if not specified.</para></listitem>
             </varlistentry>
+            <varlistentry>
+              <term>scale (optional)</term>
+              <listitem>
+		<para>The tile scale. The scale is 1 if not specified.</para>
+                <note><para>Use a value of 2 to represent high res tiles.
+		Don't change the tilesize as the internal display size is still based on 256 pixels.
+		</para></note>
+              </listitem>
+            </varlistentry>
           </variablelist>
         </para>
         <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):
@@ -3777,6 +3786,12 @@ Accept: */*
 	    <para>
 	      Go Back or Go Forward requests over this range from the last history location will move back to that position.
 	      If within this range it will skip over this location and move on to the next saved history location.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>viewport_scale=1</para>
+	    <para>
+	      If Viking doesn't automatically detect a high resolution display, you can force the setting here - typically by setting this to 2.
 	    </para>
 	  </listitem>
 	  <listitem>

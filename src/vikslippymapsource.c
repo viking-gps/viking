@@ -140,6 +140,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   g_object_set (G_OBJECT (self),
                 "tilesize-x", 256,
                 "tilesize-y", 256,
+                "scale", 1.0,
                 "drawmode", VIK_VIEWPORT_DRAWMODE_MERCATOR,
                 NULL);
 }

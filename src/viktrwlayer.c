@@ -569,9 +569,9 @@ static VikLayerParamData black_color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#000000", &data.c ); return data; // Black
 }
 static VikLayerParamData drawmode_default ( void ) { return VIK_LPD_UINT ( DRAWMODE_BY_TRACK ); }
-static VikLayerParamData line_thickness_default ( void ) { return VIK_LPD_UINT ( 1 ); }
-static VikLayerParamData trkpointsize_default ( void ) { return VIK_LPD_UINT ( MIN_POINT_SIZE ); }
-static VikLayerParamData trkdirectionsize_default ( void ) { return VIK_LPD_UINT ( 5 ); }
+static VikLayerParamData line_thickness_default ( void ) { return VIK_LPD_UINT ( 1  * vik_viewport_get_scale(NULL) ); }
+static VikLayerParamData trkpointsize_default ( void ) { return VIK_LPD_UINT ( MIN_POINT_SIZE * vik_viewport_get_scale (NULL) ); }
+static VikLayerParamData trkdirectionsize_default ( void ) { return VIK_LPD_UINT ( 5 * vik_viewport_get_scale(NULL) ); }
 static VikLayerParamData bg_line_thickness_default ( void ) { return VIK_LPD_UINT ( 0 ); }
 static VikLayerParamData trackbgcolor_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#FFFFFF", &data.c ); return data; // White
@@ -580,19 +580,34 @@ static VikLayerParamData elevation_factor_default ( void ) { return VIK_LPD_UINT
 static VikLayerParamData stop_length_default ( void ) { return VIK_LPD_UINT ( 60 ); }
 static VikLayerParamData speed_factor_default ( void ) { return VIK_LPD_DOUBLE ( 30.0 ); }
 
-static VikLayerParamData tnfontsize_default ( void ) { return VIK_LPD_UINT ( FS_MEDIUM ); }
-static VikLayerParamData wpfontsize_default ( void ) { return VIK_LPD_UINT ( FS_MEDIUM ); }
+static VikLayerParamData tnfontsize_default ( void )
+{
+  if ( vik_viewport_get_scale(NULL) < 2 )
+    return VIK_LPD_UINT ( FS_MEDIUM );
+  else
+    return VIK_LPD_UINT ( FS_LARGE );
+}
+
+static VikLayerParamData wpfontsize_default ( void )
+{
+  if ( vik_viewport_get_scale(NULL) < 2 )
+    return VIK_LPD_UINT ( FS_MEDIUM );
+  else
+    return VIK_LPD_UINT ( FS_LARGE );
+}
+
 static VikLayerParamData wptextcolor_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#FFFFFF", &data.c ); return data; // White
 }
 static VikLayerParamData wpbgcolor_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#8383C4", &data.c ); return data; // Kind of Blue
 }
-static VikLayerParamData wpsize_default ( void ) { return VIK_LPD_UINT ( 4 ); }
+static VikLayerParamData wpsize_default ( void ) { return VIK_LPD_UINT ( 4 * vik_viewport_get_scale(NULL) );
+}
 static VikLayerParamData wpsymbol_default ( void ) { return VIK_LPD_UINT ( WP_SYMBOL_FILLED_SQUARE ); }
 
-static VikLayerParamData image_size_default ( void ) { return VIK_LPD_UINT ( 64 ); }
-static VikLayerParamData image_alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
+static VikLayerParamData image_size_default ( void ) { return VIK_LPD_UINT ( 64 * vik_viewport_get_scale(NULL) ); }
+static VikLayerParamData image_alpha_default ( void ) { return VIK_LPD_UINT ( 255 * vik_viewport_get_scale(NULL) ); }
 static VikLayerParamData image_cache_size_default ( void ) { return VIK_LPD_UINT ( 300 ); }
 
 static VikLayerParamData sort_order_default ( void ) { return VIK_LPD_UINT ( 0 ); }

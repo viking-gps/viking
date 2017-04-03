@@ -1060,18 +1060,31 @@ static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy
  * Caller has to decrease reference counter of returned
  * GdkPixbuf, when buffer is no longer needed.
  */
-static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, MapCoord *mapcoord, gdouble xshrinkfactor, gdouble yshrinkfactor )
+static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, guint vp_scale,
+                                          MapCoord *mapcoord, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
   // Apply alpha setting
   if ( pixbuf && vml->alpha < 255 )
     pixbuf = ui_pixbuf_set_alpha ( pixbuf, vml->alpha );
 
   if ( pixbuf && ( xshrinkfactor != 1.0 || yshrinkfactor != 1.0 ) )
-    pixbuf = pixbuf_shrink ( pixbuf, xshrinkfactor, yshrinkfactor );
+     pixbuf = pixbuf_shrink ( pixbuf, xshrinkfactor, yshrinkfactor );
+
+  // TODO reconsider combining with shrinkfactors above...
+  if ( pixbuf && ( vp_scale != 1 || vik_map_source_get_scale(map) != 1 ) ) {
+    gdouble xscale = vp_scale;
+    gdouble yscale = vp_scale;
+    if ( vik_map_source_get_scale(map) != 0.0 ) {
+      xscale = vp_scale / vik_map_source_get_scale(map);
+      yscale = vp_scale / vik_map_source_get_scale(map);
+    }
+    pixbuf = pixbuf_shrink ( pixbuf, xscale, yscale );
+  }
 
   if ( pixbuf )
     a_mapcache_add ( pixbuf, (mapcache_extra_t) {0.0}, mapcoord->x, mapcoord->y,
-                     mapcoord->z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)),
+                     mapcoord->z, vik_map_source_get_uniq_id(map),
                      mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
 
   return pixbuf;
@@ -1112,7 +1125,8 @@ static void get_filename ( const gchar *cache_dir,
  * Caller has to decrease reference counter of returned
  * GdkPixbuf, when buffer is no longer needed.
  */
-static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, guint16 id, const gchar* mapname, MapCoord *mapcoord, gchar *filename_buf, gint buf_len, gdouble xshrinkfactor, gdouble yshrinkfactor )
+static GdkPixbuf *get_pixbuf ( VikMapsLayer *vml, guint16 id, guint vp_scale, const gchar* mapname, MapCoord *mapcoord,
+                               gchar *filename_buf, gint buf_len, gdouble xshrinkfactor, gdouble yshrinkfactor )
 {
   GdkPixbuf *pixbuf;
 
@@ -1126,13 +1140,13 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, guint16 id, const gchar* mapnam
       // ATM MBTiles must be 'a direct access type'
       if ( vik_map_source_is_mbtiles(map) ) {
         pixbuf = get_mbtiles_pixbuf ( vml, mapcoord->x, mapcoord->y, (17 - mapcoord->scale) );
-        pixbuf = pixbuf_apply_settings ( pixbuf, vml, mapcoord, xshrinkfactor, yshrinkfactor );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor );
         // return now to avoid file tests that aren't appropriate for this map type
         return pixbuf;
       }
       else if ( vik_map_source_is_osm_meta_tiles(map) ) {
         pixbuf = get_pixbuf_from_metatile ( vml, mapcoord->x, mapcoord->y, (17 - mapcoord->scale) );
-        pixbuf = pixbuf_apply_settings ( pixbuf, vml, mapcoord, xshrinkfactor, yshrinkfactor );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor );
         return pixbuf;
       }
       else
@@ -1167,7 +1181,7 @@ static GdkPixbuf *get_pixbuf( VikMapsLayer *vml, guint16 id, const gchar* mapnam
           g_object_unref ( G_OBJECT(pixbuf) );
         pixbuf = NULL;
       } else {
-        pixbuf = pixbuf_apply_settings ( pixbuf, vml, mapcoord, xshrinkfactor, yshrinkfactor );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor );
       }
     }
   }
@@ -1213,7 +1227,7 @@ static gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
 /**
  *
  */
-gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm, gint xx, gint yy, gint tilesize_x_ceil, gint tilesize_y_ceil,
+gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale, MapCoord ulm, gint xx, gint yy, gint tilesize_x_ceil, gint tilesize_y_ceil,
                               gdouble xshrinkfactor, gdouble yshrinkfactor, guint id, const gchar *mapname, gchar *path_buf, guint max_path_len)
 {
   GdkPixbuf *pixbuf;
@@ -1225,7 +1239,7 @@ gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm,
     ulm2.x = ulm.x / scale_factor;
     ulm2.y = ulm.y / scale_factor;
     ulm2.scale = ulm.scale + scale_inc;
-    pixbuf = get_pixbuf ( vml, id, mapname, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
+    pixbuf = get_pixbuf ( vml, id, vp_scale, mapname, &ulm2, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
     if ( pixbuf ) {
       gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
       gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
@@ -1240,7 +1254,7 @@ gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm,
 /**
  *
  */
-gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm, gint xx, gint yy, gint tilesize_x_ceil, gint tilesize_y_ceil,
+gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale, MapCoord ulm, gint xx, gint yy, gint tilesize_x_ceil, gint tilesize_y_ceil,
                             gdouble xshrinkfactor, gdouble yshrinkfactor, guint id, const gchar *mapname, gchar *path_buf, guint max_path_len)
 {
   GdkPixbuf *pixbuf;
@@ -1258,7 +1272,7 @@ gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, MapCoord ulm, g
         MapCoord ulm3 = ulm2;
         ulm3.x += pict_x;
         ulm3.y += pict_y;
-        pixbuf = get_pixbuf ( vml, id, mapname, &ulm3, path_buf, max_path_len, xshrinkfactor / scale_factor, yshrinkfactor / scale_factor );
+        pixbuf = get_pixbuf ( vml, id, vp_scale, mapname, &ulm3, path_buf, max_path_len, xshrinkfactor / scale_factor, yshrinkfactor / scale_factor );
         if ( pixbuf ) {
           gint src_x = 0;
           gint src_y = 0;
@@ -1333,6 +1347,8 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     guint max_path_len = strlen(vml->cache_dir) + 40;
     gchar *path_buf = g_malloc ( max_path_len * sizeof(char) );
 
+    guint vp_scale = vik_viewport_get_scale ( vvp );
+    
     if ( (!existence_only) && vml->autodownload  && should_start_autodownload(vml, vvp)) {
       g_debug("%s: Starting autodownload", __FUNCTION__);
       if ( !vml->adl_only_missing && vik_map_source_supports_download_only_new (map) )
@@ -1348,7 +1364,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         for ( y = ymin; y <= ymax; y++ ) {
           ulm.x = x;
           ulm.y = y;
-          pixbuf = get_pixbuf ( vml, id, mapname, &ulm, path_buf, max_path_len, xshrinkfactor, yshrinkfactor );
+          pixbuf = get_pixbuf ( vml, id, vp_scale, mapname, &ulm, path_buf, max_path_len, xshrinkfactor, yshrinkfactor );
           if ( pixbuf ) {
             width = gdk_pixbuf_get_width ( pixbuf );
             height = gdk_pixbuf_get_height ( pixbuf );
@@ -1364,8 +1380,8 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         }
       }
     } else { /* tilesize is known, don't have to keep converting coords */
-      gdouble tilesize_x = vik_map_source_get_tilesize_x(map) * xshrinkfactor;
-      gdouble tilesize_y = vik_map_source_get_tilesize_y(map) * yshrinkfactor;
+      gdouble tilesize_x = vik_map_source_get_tilesize_x(map) * xshrinkfactor * vp_scale;
+      gdouble tilesize_y = vik_map_source_get_tilesize_y(map) * yshrinkfactor * vp_scale;
       /* ceiled so tiles will be maximum size in the case of funky shrinkfactor */
       gint tilesize_x_ceil = ceil ( tilesize_x );
       gint tilesize_y_ceil = ceil ( tilesize_y );
@@ -1406,7 +1422,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
           } else {
             // Try correct scale first
             int scale_factor = 1;
-            pixbuf = get_pixbuf ( vml, id, mapname, &ulm, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
+            pixbuf = get_pixbuf ( vml, id, vp_scale, mapname, &ulm, path_buf, max_path_len, xshrinkfactor * scale_factor, yshrinkfactor * scale_factor );
             if ( pixbuf ) {
               gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
               gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
@@ -1416,13 +1432,13 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
             else {
               // Otherwise try different scales
               if ( SCALE_SMALLER_ZOOM_FIRST ) {
-                if ( !try_draw_scale_down(vml,vvp,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len) ) {
-                  try_draw_scale_up(vml,vvp,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len);
+                if ( !try_draw_scale_down(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len) ) {
+                  try_draw_scale_up(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len);
                 }
               }
               else {
-                if ( !try_draw_scale_up(vml,vvp,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len) ) {
-                  try_draw_scale_down(vml,vvp,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len);
+                if ( !try_draw_scale_up(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len) ) {
+                  try_draw_scale_down(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len);
                 }
               }
             }
