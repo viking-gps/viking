@@ -977,6 +977,8 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
     //  but for now a simple overall count
     g_snprintf (tmp_buf, sizeof(tmp_buf), ngettext("One layer", "%d layers", nn), nn );
   }
+  else
+    g_snprintf (tmp_buf, sizeof(tmp_buf), _("Empty") );
   return tmp_buf;
 }
 
