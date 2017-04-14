@@ -54,13 +54,6 @@
 #define ST_SIZE_FMT "%ld"
 #endif
 
-#undef MIN /* quit yer whining, gcc */
-#undef MAX
-#ifndef MAX
-/* We need MAX macro and some system does not offer it */
-#define MAX(a,b) (((a)>(b))?(a):(b))
-#endif
-
 static gchar* thumb_dir = NULL;
 
 #ifdef WINDOWS
