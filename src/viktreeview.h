@@ -87,7 +87,6 @@ void vik_treeview_item_select ( VikTreeview *vt, GtkTreeIter *iter );
 void vik_treeview_item_unselect ( VikTreeview *vt, GtkTreeIter *iter );
 
 gboolean vik_treeview_item_get_parent_iter ( VikTreeview *vt, GtkTreeIter *iter,  GtkTreeIter *parent );
-void vik_treeview_expand_toplevel ( VikTreeview *vt );
 void vik_treeview_expand ( VikTreeview *vt, GtkTreeIter *iter );
 
 void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
