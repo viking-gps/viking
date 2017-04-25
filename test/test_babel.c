@@ -29,6 +29,8 @@ int main(int argc, char*argv[])
 
 	a_babel_uninit();
 
+	a_preferences_uninit ();
+
 	return 0;
 }
 
