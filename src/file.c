@@ -736,6 +736,10 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
       if (add_new) {
         vik_aggregate_layer_add_layer ( top, VIK_LAYER(vtl), FALSE );
       }
+      else {
+	// Make it more accessible in layers panel
+	vik_layer_expand_tree ( VIK_LAYER(vtl) );
+      }
       vik_trw_layer_auto_set_view ( vtl, vp );
     }
   }

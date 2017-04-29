@@ -679,3 +679,11 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
     }
   }
 }
+
+/**
+ * Make the layer more accessible within the treeview
+ */
+void vik_layer_expand_tree ( VikLayer *vl )
+{
+  vik_treeview_expand ( vl->vt, &vl->iter );
+}
