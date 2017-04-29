@@ -282,6 +282,16 @@ gboolean a_babel_convert_from_filter( VikTrwLayer *vt, const char *babelargs, co
   gboolean ret = FALSE;
   gchar *args[64];
 
+  /* directly read GPX file */
+  if ((babelargs != NULL && strcmp("-i gpx", babelargs) == 0) || a_file_check_ext(from, ".gpx")) {
+    FILE *f = g_fopen(from, "r");
+    if (f) {
+      ret = a_gpx_read_file(vt, f);
+      fclose(f);
+      return ret;
+    }
+  }
+
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
     g_debug ("%s: temporary file: %s", __FUNCTION__, name_dst);
     close(fd_dst);
