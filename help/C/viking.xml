@@ -3457,7 +3457,7 @@ Accept: */*
         <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
         <para>Some values in this file are <emphasis>read only</emphasis>, in the sense that there is no way to set it other than by manually entering in the keys and values (the key will not exist in the file otherwise). This allows some fine tuning of &app; behaviours, without resorting to recompiling the code. However is it not expected that these values should need to be changed for a normal user, hence no GUI options for these have been provided.</para>
         <para>Here is the list of the <emphasis>read only</emphasis> keys and their default values.</para>
-	<orderedlist>
+	<itemizedlist>
 	  <listitem>
 	    <para>gpx_tidy_points=true</para>
 	    <para>ATM Only attempts to remove a suspicious first point of a GPX track
@@ -3561,7 +3561,7 @@ Accept: */*
 	          Note that when displayed in tables sorting by this column simply uses the text value, rather than the underlying date/time value.
 	    </para>
 	  </listitem>
-	</orderedlist>
+	</itemizedlist>
 
 	<section>
           <title>Message Format Code</title>
