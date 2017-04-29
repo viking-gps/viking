@@ -334,6 +334,35 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
   }
 }
 
+// Allow user override / refinement of GPX tidying
+#define VIK_SETTINGS_GPX_TIDY "gpx_tidy_points"
+#define VIK_SETTINGS_GPX_TIDY_SPEED "gpx_tidy_points_max_speed"
+
+/**
+ *
+ */
+static void track_tidy_processing ( VikTrwLayer *vtl )
+{
+  // Default to automatically attempt tiding
+  gboolean do_tidy = TRUE;
+  gboolean btmp = TRUE;
+  if ( a_settings_get_boolean ( VIK_SETTINGS_GPX_TIDY, &btmp ) )
+     do_tidy = btmp;
+
+  if ( do_tidy ) {
+    // highly unlikely to be going faster than this, especially for the first point
+    guint speed = 340; // Speed of Sound
+
+    gint itmp = 0;
+    if ( a_settings_get_integer ( VIK_SETTINGS_GPX_TIDY_SPEED, &itmp ) )
+      speed = (guint)itmp;
+
+    // NB bounds calculated in subsequent layer post read,
+    //  so no need to do it now
+    vik_trw_layer_tidy_tracks ( vtl, speed, FALSE );
+  }
+}
+
 static void gpx_end(VikTrwLayer *vtl, const char *el)
 {
   static GTimeVal tp_time;
@@ -346,6 +375,11 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
      case tt_gpx:
        vik_trw_layer_set_metadata ( vtl, c_md );
        c_md = NULL;
+
+       // Essentially the end for a TrackWaypoint layer,
+       //  so any specific GPX post processing can occur here
+       track_tidy_processing ( vtl );
+
        break;
 
      case tt_gpx_name:

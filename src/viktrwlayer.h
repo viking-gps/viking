@@ -77,6 +77,8 @@ gboolean vik_trw_layer_find_date ( VikTrwLayer *vtl, const gchar *date_str, VikC
 void vik_trw_layer_filein_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );
 void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *tr );
 
+void vik_trw_layer_tidy_tracks ( VikTrwLayer *vtl, guint speed, gboolean recalc_bounds );
+
 gint vik_trw_layer_get_property_tracks_line_thickness ( VikTrwLayer *vtl );
 
 void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp );

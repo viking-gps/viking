@@ -4666,6 +4666,22 @@ void vik_trw_layer_filein_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t
   }
 }
 
+/**
+ * ATM Only for removing bad first points
+ */
+void vik_trw_layer_tidy_tracks ( VikTrwLayer *vtl, guint speed, gboolean recalc_bounds )
+{
+  GHashTableIter iter;
+  gpointer key, value;
+
+  g_hash_table_iter_init ( &iter, vtl->tracks );
+  while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+    VikTrack *trk = VIK_TRACK(value);
+    if ( vik_track_remove_dodgy_first_point ( trk, speed, FALSE ) )
+      g_printf ( "%s: Removed dodgy first point from track: %s\n", __FUNCTION__, trk->name );
+  }
+}
+
 static void trw_layer_enum_item ( gpointer id, GList **tr, GList **l )
 {
   *l = g_list_append(*l, id);

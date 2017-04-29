@@ -3459,6 +3459,15 @@ Accept: */*
         <para>Here is the list of the <emphasis>read only</emphasis> keys and their default values.</para>
 	<orderedlist>
 	  <listitem>
+	    <para>gpx_tidy_points=true</para>
+	    <para>ATM Only attempts to remove a suspicious first point of a GPX track
+	                (as opposed to any points within a track).</para>
+	  </listitem>
+	  <listitem>
+	    <para>gpx_tidy_points_max_speed=340</para>
+	    <para>Over this speed (in metres per second) for the first pair of points - the first point is removed.</para>
+	  </listitem>
+	  <listitem>
 	    <para>layers_create_trw_auto_default=false</para>
 	    <para>Create new TrackWaypoint layers without showing the layer properties dialog first.</para>
 	  </listitem>

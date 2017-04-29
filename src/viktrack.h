@@ -126,6 +126,8 @@ gulong vik_track_remove_dup_points ( VikTrack *vt );
 gulong vik_track_get_same_time_point_count ( const VikTrack *vt );
 gulong vik_track_remove_same_time_points ( VikTrack *vt );
 
+gboolean vik_track_remove_dodgy_first_point ( VikTrack *vt, guint speed, gboolean recalc_bounds );
+
 void vik_track_to_routepoints ( VikTrack *tr );
 
 gdouble vik_track_get_max_speed(const VikTrack *tr);

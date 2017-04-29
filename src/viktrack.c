@@ -461,6 +461,54 @@ gulong vik_track_remove_same_time_points ( VikTrack *tr )
   return num;
 }
 
+/**
+ * vik_track_remove_dodgy_first_point:
+ * @vt:            The track
+ * @speed:         Maximum speed in m/s between points allowed
+ * @recalc_bounds: Whether track bounds should be recalculated
+ *           (i.e. can be skipped if bounds will get calculated later on)
+ *
+ * Returns: Whether the first point was removed
+ *
+ * ATM Primarily to remove dodgy first point inserted back at previous
+ *  location by some Garmin GPS Etrex units after being significantly moved
+ * e.g. you've driven somewhere else and start recording a new cycle/walk etc...
+ *
+ * NB This function is limited to just handling first point issues,
+ *  rather than a more comprehensive attempt to remove any suspicious points
+ *  through-out the track.
+ */
+gboolean vik_track_remove_dodgy_first_point ( VikTrack *vt, guint speed, gboolean recalc_bounds )
+{
+  gboolean deleted = FALSE;
+
+  if ( vt->trackpoints ) {
+    GList *iter = g_list_first ( vt->trackpoints );
+    VikTrackpoint *tp1 = VIK_TRACKPOINT(iter->data);
+
+    if ( tp1->has_timestamp ) {
+      if ( iter->next ) {
+        VikTrackpoint *tp2 = VIK_TRACKPOINT(iter->next->data);
+        if ( tp2->has_timestamp ) {
+          gdouble dist_diff = vik_coord_diff ( &tp1->coord, &tp2->coord );
+          time_t time_diff = tp2->timestamp - tp1->timestamp;
+
+	  gdouble spd = fabs(dist_diff / (gint)time_diff);
+          if ( spd > speed ) {
+            deleted = TRUE;
+            vik_trackpoint_free ( tp1 );
+            vt->trackpoints = g_list_delete_link ( vt->trackpoints, iter );
+            if ( recalc_bounds )
+              vik_track_calculate_bounds ( vt );
+	  }
+	}
+      }
+    }
+  }
+
+  return deleted;
+}
+
 /*
  * Deletes all 'extra' trackpoint information
  *  such as time stamps, speed, course etc...
