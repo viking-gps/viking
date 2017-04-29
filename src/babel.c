@@ -672,7 +672,7 @@ void a_babel_post_init ()
       g_critical( "gpsbabel not found in PATH" );
   }
   else
-    gpsbabel_loc = (gchar*)gpsbabel;
+    gpsbabel_loc = g_strdup ( gpsbabel );
 
   // Unlikely to package unbuffer on Windows so ATM don't even bother trying
   // Highly unlikely unbuffer is available on a Windows system otherwise
