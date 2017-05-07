@@ -259,6 +259,7 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
   vlsp.data.sl             = list;
   vlsp.vp                  = layer_and_vp[1];
   vlsp.is_file_operation   = TRUE;
+  vlsp.dirpath             = (const gchar*)layer_and_vp[2];
 
   vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), &vlsp );
 }
@@ -520,6 +521,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
               vlsp.data                = x;
               vlsp.vp                  = vp;
               vlsp.is_file_operation   = TRUE;
+              vlsp.dirpath             = dirpath;
               vik_layer_set_param ( VIK_LAYER(stack->data), &vlsp );
             }
             found_match = TRUE;

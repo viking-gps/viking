@@ -45,6 +45,7 @@ typedef struct {
   VikLayerParamData   data;
   gpointer            vp; // AKA VikViewport*
   gboolean            is_file_operation; // denotes if for file I/O, as opposed to display/cut/copy etc... operations
+  const gchar*        dirpath; // The directory - so if the data is a relative file path, we know what it is relative to
 } VikLayerSetParam;
 
 typedef enum {

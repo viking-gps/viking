@@ -384,6 +384,7 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
     VikLayerSetParam vlsp;
     vlsp.vp                 = vvp;
     vlsp.is_file_operation  = FALSE;
+    vlsp.dirpath            = NULL;
     guint16 i, params_count = vik_layer_get_interface(vl->type)->params_count;
     for ( i = 0; i < params_count; i++ )
     {

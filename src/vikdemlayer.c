@@ -427,14 +427,16 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
     {
       // Clear out old settings - if any commonalities with new settings they will have to be read again
       a_dems_list_free ( vdl->files );
+
       // Set file list so any other intermediate screen drawing updates will show currently loaded DEMs by the working thread
-      vdl->files = vlsp->data.sl;
+      // Ensure resolving of any relative path names
+      util_make_absolute_filenames ( vdl->files, vlsp->dirpath );
+
       // No need for thread if no files
       if ( vdl->files ) {
         // Thread Load
         dem_load_thread_data *dltd = g_malloc ( sizeof(dem_load_thread_data) );
         dltd->vdl = vdl;
-        dltd->vdl->files = vlsp->data.sl;
 
         a_background_thread ( BACKGROUND_POOL_LOCAL,
                               VIK_GTK_WINDOW_FROM_WIDGET(vlsp->vp),
