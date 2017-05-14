@@ -82,4 +82,52 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Waymarked Trails Hiking</property>
+    <property name="hostname">tile.waymarkedtrails.org</property>
+    <property name="url">/hiking/%d/%d/%d.png</property>
+    <property name="id">701</property>
+    <property name="license">CC-by-SA 3.0 / ODBl</property>
+    <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Waymarked Trails Cycling</property>
+    <property name="hostname">tile.waymarkedtrails.org</property>
+    <property name="url">/cycling/%d/%d/%d.png</property>
+    <property name="id">702</property>
+    <property name="license">CC-by-SA 3.0 / ODBl</property>
+    <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Waymarked Trails MTB</property>
+    <property name="hostname">tile.waymarkedtrails.org</property>
+    <property name="url">/mtb/%d/%d/%d.png</property>
+    <property name="id">703</property>
+    <property name="license">CC-by-SA 3.0 / ODBl</property>
+    <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Waymarked Trails Inline Skating</property>
+    <property name="hostname">tile.waymarkedtrails.org</property>
+    <property name="url">/skating/%d/%d/%d.png</property>
+    <property name="id">704</property>
+    <property name="license">CC-by-SA 3.0 / ODBl</property>
+    <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Waymarked Trails Riding</property>
+    <property name="hostname">tile.waymarkedtrails.org</property>
+    <property name="url">/riding/%d/%d/%d.png</property>
+    <property name="id">705</property>
+    <property name="license">CC-by-SA 3.0 / ODBl</property>
+    <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
+  </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">Waymarked Trails Winter Sport Slopes</property>
+    <property name="hostname">tile.waymarkedtrails.org</property>
+    <property name="url">/slopes/%d/%d/%d.png</property>
+    <property name="id">706</property>
+    <property name="license">CC-by-SA 3.0 / ODBl</property>
+    <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
+  </object>
 </objects>
