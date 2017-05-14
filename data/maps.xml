@@ -130,4 +130,14 @@
     <property name="license">CC-by-SA 3.0 / ODBl</property>
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
   </object>
+  <object class="VikSlippyMapSource">
+    <property name="label">OpenTopoMap</property>
+    <property name="hostname">a.tile.opentopomap.org</property>
+    <property name="url">/%d/%d/%d.png</property>
+    <property name="follow-location">2</property>
+    <property name="copyright">Kartendaten: © OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: © OpenTopoMap</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">https://creativecommons.org/licenses/by-sa/3.0/</property>
+    <property name="id">901</property>
+  </object>
 </objects>
