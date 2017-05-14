@@ -131,6 +131,15 @@
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="label">4UMaps</property>
+    <property name="hostname">tileserver.4umaps.eu</property>
+    <property name="url">/%d/%d/%d.png</property>
+    <property name="copyright">© 4UMaps.eu © OpenStreetMap and contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.4umaps.eu/terms-of-use-copyright.aspx</property>
+    <property name="id">801</property>
+  </object>
+  <object class="VikSlippyMapSource">
     <property name="label">OpenTopoMap</property>
     <property name="hostname">a.tile.opentopomap.org</property>
     <property name="url">/%d/%d/%d.png</property>
