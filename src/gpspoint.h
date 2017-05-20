@@ -27,7 +27,7 @@
 G_BEGIN_DECLS
 
 gboolean a_gpspoint_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
-void a_gpspoint_write_file ( VikTrwLayer *trw, FILE *f );
+void a_gpspoint_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
 
 G_END_DECLS
 

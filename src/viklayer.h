@@ -110,7 +110,6 @@ struct _VikToolInterface {
 /* Parameters (for I/O and Properties) */
 /* --> moved to uibuilder.h */
 
-
 /* layer interface functions */
 
 /* Create a new layer of a certain type. Should be filled with defaults */
@@ -160,7 +159,7 @@ typedef VikLayerParamData
 typedef void          (*VikLayerFuncChangeParam)           (GtkWidget *, ui_change_values );
 
 typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *, const gchar *); // gchar* is the directory path. Function should report success or failure
-typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *);
+typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *, const gchar *); // gchar* is the directory path.
 
 /* item manipulation */
 typedef void          (*VikLayerFuncDeleteItem)            (VikLayer *, gint, gpointer);

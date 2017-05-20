@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2017, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "ui_util.h"
 #include "dir.h"
 #include "misc/kdtree.h"
+#include "misc/gtkhtml-private.h"
 
 #define FMT_MAX_NUMBER_CODES 9
 
@@ -925,5 +926,22 @@ void vu_zoom_to_show_latlons ( VikCoordMode mode, VikViewport *vvp, struct LatLo
 		/* Try next */
 		zoom = zoom * 2;
 		vik_viewport_set_zoom ( vvp, zoom );
+	}
+}
+
+/**
+ * Set the waypoint image given a URI
+ */
+void vu_waypoint_set_image_uri ( VikWaypoint *wp, const gchar *uri, const gchar *dirpath )
+{
+	gchar *filename = gtk_html_filename_from_uri ( uri );
+	if ( g_path_is_absolute ( filename ) ) {
+		vik_waypoint_set_image ( wp, filename );
+	}
+	else {
+		// Try to form full path
+		gchar *full = g_strconcat ( dirpath, G_DIR_SEPARATOR_S, filename, NULL );
+		vik_waypoint_set_image ( wp, full );
+		g_free ( full );
 	}
 }

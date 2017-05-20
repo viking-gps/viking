@@ -28,6 +28,7 @@
 #endif
 
 #include "viking.h"
+#include "vikutils.h"
 
 #include <ctype.h>
 #ifdef HAVE_STRING_H
@@ -44,7 +45,6 @@ typedef struct {
 
 static void a_gpspoint_write_track ( const gpointer id, const VikTrack *t, FILE *f );
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type *write_info );
-static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f );
 
 /* outline for file gpspoint.c
 
@@ -254,17 +254,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
         vik_waypoint_set_type ( wp, line_xtype );
 
       if ( line_image ) {
-        // Ensure the filename is absolute
-        if ( g_path_is_absolute ( line_image ) )
-          vik_waypoint_set_image ( wp, line_image );
-        else {
-          // Otherwise create the absolute filename from the directory of the .vik file & and the relative filename
-          gchar *full = g_strconcat(dirpath, G_DIR_SEPARATOR_S, line_image, NULL);
-          gchar *absolute = file_realpath_dup ( full ); // resolved into the canonical name
-          vik_waypoint_set_image ( wp, absolute );
-          g_free ( absolute );
-          g_free ( full );
-        }
+        gchar *fn = util_make_absolute_filename ( line_image, dirpath );
+        vik_waypoint_set_image ( wp, fn ? fn : line_image );
+        g_free ( fn );
       }
 
       if ( line_symbol )
@@ -565,7 +557,12 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   }
 }
 
-static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, FILE *f )
+typedef struct {
+  FILE *file;
+  const gchar *dirpath;
+} WritingContext;
+
+static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, WritingContext *wc )
 {
   struct LatLon ll;
   gchar s_lat[COORDS_STR_BUFFER_SIZE];
@@ -575,6 +572,10 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
     return;
   if ( !(wp->name) )
     return;
+  if ( !wc )
+    return;
+
+  FILE *f = wc->file;
 
   vik_coord_to_latlon ( &(wp->coord), &ll );
   a_coords_dtostr_buffer ( ll.lat, s_lat );
@@ -617,22 +618,19 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
   if ( wp->image )
   {
     gchar *tmp_image = NULL;
-    gchar *cwd = NULL;
     if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE ) {
-      cwd = g_get_current_dir();
-      if ( cwd )
-        tmp_image = g_strdup ( file_GetRelativeFilename ( cwd, wp->image ) );
+      if ( wc->dirpath )
+        tmp_image = g_strdup ( file_GetRelativeFilename ( (gchar*)wc->dirpath, wp->image ) );
     }
 
-    // if cwd not available - use image filename as is
+    // if tmp_image not available - use image filename as is
     // this should be an absolute path as set in thumbnails
-    if ( !cwd )
+    if ( !tmp_image )
       tmp_image = slashdup(wp->image);
 
     if ( tmp_image )
       fprintf ( f, " image=\"%s\"", tmp_image );
 
-    g_free ( cwd );
     g_free ( tmp_image );
   }
   if ( wp->symbol )
@@ -771,14 +769,15 @@ static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FIL
   fprintf ( f, "type=\"%send\"\n", trk->is_route ? "route" : "track" );
 }
 
-void a_gpspoint_write_file ( VikTrwLayer *trw, FILE *f )
+void a_gpspoint_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
 {
   GHashTable *tracks = vik_trw_layer_get_tracks ( trw );
   GHashTable *routes = vik_trw_layer_get_routes ( trw );
   GHashTable *waypoints = vik_trw_layer_get_waypoints ( trw );
 
+  WritingContext wc = { f, dirpath };
   fprintf ( f, "type=\"waypointlist\"\n" );
-  g_hash_table_foreach ( waypoints, (GHFunc) a_gpspoint_write_waypoint, f );
+  g_hash_table_foreach ( waypoints, (GHFunc) a_gpspoint_write_waypoint, &wc );
   fprintf ( f, "type=\"waypointlistend\"\n" );
   g_hash_table_foreach ( tracks, (GHFunc) a_gpspoint_write_track, f );
   g_hash_table_foreach ( routes, (GHFunc) a_gpspoint_write_track, f );

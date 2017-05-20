@@ -34,7 +34,9 @@
 
 #include "gpx.h"
 #include "viking.h"
+#include "vikutils.h"
 #include <expat.h>
+#include "misc/gtkhtml-private.h"
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
@@ -105,6 +107,7 @@ typedef struct tag_mapping {
 typedef struct {
 	GpxWritingOptions *options;
 	FILE *file;
+	const gchar *dirpath;
 } GpxWritingContext;
 
 /*
@@ -211,9 +214,15 @@ struct LatLon c_ll;
 
 /* specialty flags / etc */
 gboolean f_tr_newseg;
+const gchar *c_link = NULL;
 guint unnamed_waypoints = 0;
 guint unnamed_tracks = 0;
 guint unnamed_routes = 0;
+
+typedef struct {
+	VikTrwLayer *vtl;
+	const gchar *dirpath;
+} UserDataT;
 
 static const char *get_attr ( const char **attr, const char *key )
 {
@@ -235,9 +244,10 @@ static gboolean set_c_ll ( const char **attr )
   return FALSE;
 }
 
-static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
+static void gpx_start(UserDataT *ud, const char *el, const char **attr)
 {
   static const gchar *tmp;
+  VikTrwLayer *vtl = ud->vtl;
 
   g_string_append_c ( xpath, '/' );
   g_string_append ( xpath, el );
@@ -286,6 +296,9 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
        }
        break;
 
+     case tt_wpt_link:
+       c_link = get_attr ( attr, "href" );
+       break;
      case tt_gpx_name:
      case tt_gpx_author:
      case tt_gpx_desc:
@@ -302,7 +315,6 @@ static void gpx_start(VikTrwLayer *vtl, const char *el, const char **attr)
      case tt_wpt_ele:
      case tt_wpt_time:
      case tt_wpt_url:
-     case tt_wpt_link:
      case tt_trk_cmt:
      case tt_trk_desc:
      case tt_trk_src:
@@ -363,10 +375,11 @@ static void track_tidy_processing ( VikTrwLayer *vtl )
   }
 }
 
-static void gpx_end(VikTrwLayer *vtl, const char *el)
+static void gpx_end(UserDataT *ud, const char *el)
 {
   static GTimeVal tp_time;
   static GTimeVal wp_time;
+  VikTrwLayer *vtl = ud->vtl;
 
   g_string_truncate ( xpath, xpath->len - strlen(el) - 1 );
 
@@ -489,7 +502,18 @@ static void gpx_end(VikTrwLayer *vtl, const char *el)
        break;
 
      case tt_wpt_link:
-       vik_waypoint_set_image ( c_wp, c_cdata->str );
+       if ( c_link ) {
+         // Correct <link href="uri"></link> format
+         vu_waypoint_set_image_uri ( c_wp, c_link, ud->dirpath );
+       }
+       else {
+         // Fallback for incorrect GPX <link> format (probably from previous versions of Viking!)
+         //  of the form <link>file</link>
+         gchar *fn = util_make_absolute_filename ( c_cdata->str, ud->dirpath );
+         vik_waypoint_set_image ( c_wp, fn ? fn : c_cdata->str );
+         g_free ( fn );
+       }
+       c_link = NULL;
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
@@ -634,13 +658,17 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
 // make like a "stack" of tag names
 // like gpspoint's separated like /gpx/wpt/whatever
 
-gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
+gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath ) {
   XML_Parser parser = XML_ParserCreate(NULL);
   int done=0, len;
   enum XML_Status status = XML_STATUS_ERROR;
 
+  UserDataT *ud = g_malloc (sizeof(UserDataT));
+  ud->vtl     = vtl;
+  ud->dirpath = dirpath;
+
   XML_SetElementHandler(parser, (XML_StartElementHandler) gpx_start, (XML_EndElementHandler) gpx_end);
-  XML_SetUserData(parser, vtl); /* in the future we could remove all global variables */
+  XML_SetUserData(parser, ud);
   XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler) gpx_cdata);
 
   gchar buf[4096];
@@ -659,8 +687,9 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f ) {
     done = feof(f) || !len;
     status = XML_Parse(parser, buf, len, done);
   }
- 
+
   XML_ParserFree (parser);
+  g_free ( ud );
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
 
@@ -914,8 +943,18 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   }
   if ( wp->image )
   {
-    tmp = entitize(wp->image);
-    fprintf ( f, "  <link>%s</link>\n", tmp );
+    gchar *tmp = NULL;
+    if ( a_vik_get_file_ref_format() == VIK_FILE_REF_FORMAT_RELATIVE ) {
+      if ( context->dirpath ) {
+        gchar *rtmp = g_strdup ( file_GetRelativeFilename ( (gchar*)context->dirpath, wp->image ) );
+        if ( rtmp ) {
+          tmp = gtk_html_filename_to_uri ( rtmp );
+        }
+      }
+    }
+    if ( !tmp )
+      tmp = gtk_html_filename_to_uri ( wp->image );
+    fprintf ( f, "  <link href=\"%s\"></link>\n", tmp );
     g_free ( tmp );
   }
   if ( wp->symbol ) 
@@ -1128,9 +1167,9 @@ static int gpx_track_compare_name(const void *x, const void *y)
   return strcmp(a->name,b->name);
 }
 
-void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
+void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, const gchar* dirpath )
 {
-  GpxWritingContext context = { options, f };
+  GpxWritingContext context = { options, f, dirpath };
 
   gpx_write_header ( f );
 
@@ -1259,7 +1298,7 @@ static gchar* write_tmp_file ( VikTrwLayer *vtl, VikTrack *trk, GpxWritingOption
 	if ( trk )
 		a_gpx_write_track_file ( trk, ff, options );
 	else
-		a_gpx_write_file ( vtl, ff, options );
+		a_gpx_write_file ( vtl, ff, options, NULL );
 
 	fclose (ff);
 

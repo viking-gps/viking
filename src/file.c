@@ -129,7 +129,7 @@ void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type
       }
 }
 
-static void write_layer_params_and_data ( VikLayer *l, FILE *f )
+static void write_layer_params_and_data ( VikLayer *l, FILE *f, const gchar *dirpath )
 {
   VikLayerParam *params = vik_layer_get_interface(l->type)->params;
   VikLayerFuncGetParam get_param = vik_layer_get_interface(l->type)->get_param;
@@ -151,7 +151,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
   if ( vik_layer_get_interface(l->type)->write_file_data )
   {
     fprintf ( f, "\n\n~LayerData\n" );
-    vik_layer_get_interface(l->type)->write_file_data ( l, f );
+    vik_layer_get_interface(l->type)->write_file_data ( l, f, dirpath );
     fprintf ( f, "~EndLayerData\n" );
   }
   /* foreach param:
@@ -160,7 +160,7 @@ static void write_layer_params_and_data ( VikLayer *l, FILE *f )
   */
 }
 
-static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
+static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp, const gchar *dirpath )
 {
   Stack *stack = NULL;
   VikLayer *current_layer;
@@ -202,7 +202,7 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp )
   {
     current_layer = VIK_LAYER(((GList *)stack->data)->data);
     fprintf ( f, "\n~Layer %s\n", vik_layer_get_interface(current_layer->type)->fixed_layer_name );
-    write_layer_params_and_data ( current_layer, f );
+    write_layer_params_and_data ( current_layer, f, dirpath );
     if ( current_layer->type == VIK_LAYER_AGGREGATE && !vik_aggregate_layer_is_empty(VIK_AGGREGATE_LAYER(current_layer)) )
     {
       push(&stack);
@@ -679,7 +679,12 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
 
   VikLoadType_t load_answer = LOAD_TYPE_OTHER_SUCCESS;
 
-  gchar *dirpath = g_path_get_dirname ( filename );
+  gchar *absolute = file_realpath_dup ( filename );
+  gchar *dirpath = NULL;
+  if ( absolute )
+    dirpath = g_path_get_dirname ( absolute );
+  g_free ( absolute );
+
   // Attempt loading the primary file type first - our internal .vik file:
   if ( check_magic ( f, VIK_MAGIC, VIK_MAGIC_LEN ) )
   {
@@ -716,7 +721,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
     //    - which currently confuses our check_magic function
     else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
-      if ( ! ( success = a_gpx_read_file ( vtl, f ) ) ) {
+      if ( ! ( success = a_gpx_read_file ( vtl, f, dirpath ) ) ) {
         load_answer = LOAD_TYPE_GPX_FAILURE;
       }
     }
@@ -769,10 +774,10 @@ gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filenam
     if ( g_chdir ( dir ) ) {
       g_warning ( "Could not change directory to %s", dir );
     }
-    g_free (dir);
   }
 
-  file_write ( top, f, vp );
+  file_write ( top, f, vp, dir );
+  g_free (dir);
 
   // Restore previous working directory
   if ( cwd ) {
@@ -825,6 +830,7 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
   if ( f )
   {
     gboolean result = TRUE;
+    gchar *dirpath = g_path_get_dirname ( filename );
 
     if ( trk ) {
       switch ( file_type ) {
@@ -842,10 +848,10 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
           a_gpsmapper_write_file ( vtl, f );
           break;
         case FILE_TYPE_GPX:
-          a_gpx_write_file ( vtl, f, &options );
+          a_gpx_write_file ( vtl, f, &options, dirpath );
           break;
         case FILE_TYPE_GPSPOINT:
-          a_gpspoint_write_file ( vtl, f );
+          a_gpspoint_write_file ( vtl, f, dirpath );
           break;
         case FILE_TYPE_GEOJSON:
           result = a_geojson_write_file ( vtl, f );
@@ -869,6 +875,7 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
           g_critical("Houston, we've had a problem. file_type=%d", file_type);
       }
     }
+    g_free ( dirpath );
     fclose ( f );
     return result;
   }

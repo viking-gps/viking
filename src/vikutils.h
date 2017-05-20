@@ -48,6 +48,8 @@ void vu_copy_label_menu ( GtkWidget *widget, guint button );
 
 void vu_zoom_to_show_latlons ( VikCoordMode mode, VikViewport *vvp, struct LatLon maxmin[2] );
 
+void vu_waypoint_set_image_uri ( VikWaypoint *wp, const gchar *uri, const gchar *dirpath );
+
 G_END_DECLS
 
 #endif

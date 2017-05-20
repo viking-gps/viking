@@ -37,8 +37,8 @@ typedef struct {
 	gboolean is_route; /// For internal convenience
 } GpxWritingOptions;
 
-gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f );
-void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options );
+gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f, const gchar* dirpath );
+void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options, const gchar *dirpath );
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options );
 
 gchar* a_gpx_write_tmp_file ( VikTrwLayer *vtl, GpxWritingOptions *options );
