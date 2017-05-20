@@ -468,6 +468,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     {
       VikLayerSetParam vlsp;
       vlsp.is_file_operation = FALSE;
+      vlsp.dirpath = NULL;
       for ( i = 0, j = 0; i < params_count; i++ )
       {
         if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES )

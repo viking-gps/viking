@@ -665,7 +665,8 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
   VikLayerSetParam vlsp;
 
   vlsp.is_file_operation = TRUE; // Possibly come from a file
-  vlsp.vp = vvp;
+  vlsp.dirpath = NULL;
+  vlsp.vp      = vvp;
   int i;
   for ( i = 0; i < vli->params_count; i++ ) {
     vlsp.id = i;
