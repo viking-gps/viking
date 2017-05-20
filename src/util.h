@@ -65,6 +65,10 @@ int util_remove ( const gchar *filename );
 
 gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count );
 
+gchar* util_make_absolute_filename ( const gchar *filename, const gchar *dirpath );
+
+void util_make_absolute_filenames ( GList *filenames, const gchar *dirpath );
+
 G_END_DECLS
 
 #endif

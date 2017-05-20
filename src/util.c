@@ -33,6 +33,7 @@
 
 #include "util.h"
 #include "globals.h"
+#include "fileutils.h"
 
 #ifdef WINDOWS
 #include <windows.h>
@@ -233,4 +234,47 @@ gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count )
 	g_object_unref ( gios );
 
 	return tmpname;
+}
+
+/**
+ * util_make_absolute_filename:
+ *
+ * Returns a newly allocated string of the absolute filename or
+ *   NULL if name is already absolute (or dirpath is unusable)
+ */
+gchar* util_make_absolute_filename ( const gchar *filename, const gchar *dirpath )
+{
+	if ( !dirpath ) return NULL;
+
+	// Is it ready absolute?
+	if ( g_path_is_absolute ( filename ) ) {
+		return NULL;
+	}
+	else {
+		// Otherwise create the absolute filename from the given directory and filename
+		gchar *full = g_strconcat ( dirpath, G_DIR_SEPARATOR_S, filename, NULL );
+		gchar *absolute = file_realpath_dup ( full ); // resolved into the canonical name
+		g_free ( full );
+		return absolute;
+	}
+}
+
+/**
+ * util_make_absolute_filenames:
+ *
+ * Ensures the supplied list of filenames are all absolute
+ */
+void util_make_absolute_filenames ( GList *filenames, const gchar *dirpath )
+{
+	if ( !filenames ) return;
+	if ( !dirpath ) return;
+
+	GList *gl;
+	foreach_list ( gl, filenames ) {
+		gchar *fn = util_make_absolute_filename ( gl->data, dirpath );
+		if ( fn ) {
+			g_free ( gl->data );
+			gl->data = fn;
+		}
+	}
 }
