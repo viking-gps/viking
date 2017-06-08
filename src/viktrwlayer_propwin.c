@@ -3353,7 +3353,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->w_elev_range = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
-  if ( min_alt == VIK_DEFAULT_ALTITUDE )
+  if ( (min_alt == VIK_DEFAULT_ALTITUDE) && (max_alt == VIK_DEFAULT_ALTITUDE) )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
     switch (height_units) {
