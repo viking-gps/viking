@@ -3335,7 +3335,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->w_avg_dist = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_units_height_t height_units = a_vik_get_units_height ();
-  if ( min_alt == VIK_DEFAULT_ALTITUDE )
+  if ( (min_alt == VIK_DEFAULT_ALTITUDE) && (max_alt == VIK_DEFAULT_ALTITUDE) )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
     switch (height_units) {
