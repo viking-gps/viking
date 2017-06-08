@@ -33,6 +33,8 @@ void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external
 
 void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name );
 
+void vik_trw_layer_export_init ();
+
 G_END_DECLS
 
 #endif

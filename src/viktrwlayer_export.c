@@ -33,8 +33,137 @@
 #include "viking.h"
 #include "viktrwlayer_export.h"
 #include "gpx.h"
+#include "preferences.h"
 
 static gchar *last_folder_uri = NULL;
+
+#define VIK_PREFS_EXPORT_DEVICE_SIMPLIFY VIKING_PREFERENCES_IO_NAMESPACE"external_auto_device_gpx_simplify"
+
+#define VIK_SETTINGS_EXPORT_DEVICE_PATH "export_device_path"
+#define VIK_SETTINGS_EXPORT_DEVICE_SIMPLIFY_TRACKPOINT_LIMIT "export_device_trackpoint_limit"
+#define VIK_SETTINGS_EXPORT_DEVICE_SIMPLIFY_ROUTEPOINT_LIMIT "export_device_routepoint_limit"
+
+static VikLayerParam io_prefs[] = {
+  { VIK_LAYER_NUM_TYPES, VIK_PREFS_EXPORT_DEVICE_SIMPLIFY, VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Device GPX Simplify:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+     N_("GPX saves to certain devices will be simplified for device compatibility."), NULL, NULL, NULL },
+};
+
+void vik_trw_layer_export_init ()
+{
+  VikLayerParamData tmp;
+  tmp.b = FALSE;
+  a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+}
+
+static gboolean gpx_export_simplify_layer ( VikTrwLayer *vtl, const gchar *fn, VikTrack* trk )
+{
+  // Note GPSBabel simplify has single value applied to tracks and routes
+  // Try to use the best value
+  // However this means if there is a mixture of tracks and routes,
+  //  the tracks will be over-simplified
+  // The defaults are for Garmin Edge series
+  gint tmp;
+  guint limit = 10000; // ETrex 20 is 500
+  if ( a_settings_get_integer ( VIK_SETTINGS_EXPORT_DEVICE_SIMPLIFY_TRACKPOINT_LIMIT, &tmp ) )
+    limit = tmp;
+
+  // If any routes - apply route limit as that's normally alot lower
+  gboolean got_route = FALSE;
+  if ( trk )
+    got_route = trk->is_route;
+
+  if ( !got_route ) {
+    if ( g_hash_table_size (vik_trw_layer_get_routes(vtl)) ) {
+      gint tmp;
+      if ( a_settings_get_integer ( VIK_SETTINGS_EXPORT_DEVICE_SIMPLIFY_ROUTEPOINT_LIMIT, &tmp ) )
+         limit = tmp;
+      else
+         limit = 250; // Route capacity is relatively limited
+    }
+    // NB If there are tracks and trackpoints much > (route)limit,
+    //  could warn that tracks may be overily simplified
+    // and ask to continue...
+  }
+
+  gboolean need_simplify = FALSE;
+  if ( trk ) {
+    if ( vik_track_get_tp_count(trk) > limit )
+      need_simplify = TRUE;
+  }
+  else {
+    // Check all tracks & routes in the layer
+    gpointer key, value;
+    GHashTableIter ght_iter;
+    // See if any tracks exceed point number limit
+    g_hash_table_iter_init ( &ght_iter, vik_trw_layer_get_tracks ( vtl ) );
+    while ( g_hash_table_iter_next (&ght_iter, &key, &value) ) {
+      if ( vik_track_get_tp_count (VIK_TRACK(value)) > limit ) {
+        need_simplify = TRUE;
+        break;
+      }
+    }
+    if ( !need_simplify ) {
+      // See if any routes exceed point number limit
+      g_hash_table_iter_init ( &ght_iter, vik_trw_layer_get_routes ( vtl ) );
+      while ( g_hash_table_iter_next (&ght_iter, &key, &value) ) {
+        if ( vik_track_get_tp_count (VIK_TRACK(value)) > limit ) {
+          need_simplify = TRUE;
+          break;
+        }
+      }
+    }
+  }
+
+  gboolean ans = FALSE;
+
+  if ( need_simplify ) {
+    if ( a_babel_available() ) {
+      gchar *filter = g_strdup_printf ( "-x simplify,count=%d -o gpx", limit );
+      ans = a_babel_convert_to ( vtl, trk, filter, fn, NULL, NULL );
+      g_free ( filter );
+      if ( ans ) {
+         gchar *msg = g_strdup_printf ( _("Export of GPX file simplified using point limit: %d"), limit ); 
+         a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), msg );
+         g_free ( msg );
+      }
+    }
+  }
+
+  return ans;
+}
+
+static gboolean gpx_export ( VikTrwLayer *vtl, const gchar *fn, VikTrack* trk )
+{
+  // Note one could attempt to detect which device it is being saved to
+  // e.g. using libusb-1.0 - example:
+  // https://github.com/libusb/libusb/blob/master/examples/testlibusb.c +
+  // http://www.linux-usb.org/usb.ids
+  // And then knowledge of which GPSes have differing limits.
+  // It might not be possible to differentiate between devices if the USB id is the same
+  // e.g. Etrex 20 vs Etrex 30 - but I think these have the same limitations.
+  //  and whether file is actually being saved on to the device(s) detected
+  gboolean auto_simplify = a_preferences_get (VIK_PREFS_EXPORT_DEVICE_SIMPLIFY)->b;
+  if ( auto_simplify ) {
+    // Check path of 'fn' for device match
+    gchar *device_path = NULL;
+    if ( !a_settings_get_string ( VIK_SETTINGS_EXPORT_DEVICE_PATH, &device_path ) ) {
+#ifdef WINDOWS
+      device_path = g_strdup (":\Garmin\GPX");
+#else
+      device_path = g_strdup_printf ( "/media/%s/GARMIN/Garmin/GPX", g_getenv("USER") );
+#endif
+    }
+    gboolean simplified = FALSE;
+    if ( g_strrstr(fn, device_path) ) {
+      simplified = gpx_export_simplify_layer ( vtl, fn, trk );
+    }
+    g_free ( device_path );
+    if ( simplified )
+      return TRUE;
+  }
+
+  return a_file_export ( vtl, fn, FILE_TYPE_GPX, trk, trk ? TRUE : FALSE );
+}
 
 void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {
@@ -64,15 +193,10 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
       gtk_widget_hide ( file_selector );
       vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
       // Don't Export invisible items - unless requested on this specific track
-      failed = ! a_file_export ( vtl, fn, file_type, trk, trk ? TRUE : FALSE );
-      // Typically exporting (to a GPX file) will be directly to a GPS Device
-      // Under Linux it sometimes doesn't actually write it to the disk in a timely manner
-      //  and one unplugs the device only to subsequently find it hasn't actually got the file
-      //  which is not ideal when you where planning to follow that route/track!
-      // Thus force a disk sync which may help
-#ifndef WINDOWS
-      sync();
-#endif
+      if ( file_type == FILE_TYPE_GPX )
+        failed = ! gpx_export ( vtl, fn, trk );
+      else
+        failed = ! a_file_export ( vtl, fn, file_type, trk, trk ? TRUE : FALSE );
       vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
       break;
     }

@@ -39,6 +39,7 @@
 #include "util.h"
 #include "toolbar.h"
 #include "thumbnails.h"
+#include "viktrwlayer_export.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -210,6 +211,7 @@ int main( int argc, char *argv[] )
 
   a_toolbar_init();
   vik_routing_prefs_init();
+  vik_trw_layer_export_init();
 
   /*
    * Second stage initialization

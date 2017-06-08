@@ -393,33 +393,27 @@ For other combinations see the menu entry themselves.
 
 <section><title>Tracks vs Routes</title>
 <para>
-In theory a route is path you are planning to follow and a track of where you have actually been. The GPX specification splits these into two separate catergories, although tracks contain everything route may have.
+In theory a route is path you are planning to follow and a track is of where you have actually been. The GPX specification splits these into two separate categories, although tracks contain everything route may have.
 </para>
 <para>
 Q. When planning a <emphasis>route</emphasis> what difference does it make if it's a route or a track?
 </para>
 <para>
 A. One difference is in how a GPS device navigates following the route or track.
-Or you may want to consider interoperability with other software.
-Otherwise it is probably best to use tracks as they are a superset of the route functionality.
+The capability, the options and data on a particular device also effect how the navigation is performed.
+Often the how a device actually works doesn't seem to be formally documented by the manufacturer (and can be firmware dependent too).
+Web searches can reveal people's experiences with specific devices on blogs and various forums.
+For some devices it will attempt to navigate between route points, which may then suggest various roads and tracks between the points using an internal routing algorithm with some kind of transport profile.
+However this is limited to the quality of data available and how well the profile matches ones actual need.
+If the points are close enough then the 'best' route for any form of transport will typically be the straight line between the points.
+</para>
+<note><para>
+There are often restrictions on the numbers of route (or track) points the GPS Device can handle - may be 250 or as little as 50.
+This generally not a problem for shorter routes, but needs managing for longer or detailed routes.
+The number of track points is normally alot higher (e.g. 500 or typically with latest devices 10,000 or more) and less of a problem.
 </para>
 <para>
-For example on Garmin Etrex:
-</para>
-<itemizedlist>
-<listitem>
-<para>Route following: Uses navigation mode with compass and estimated time to next point.</para>
-<para>If following on road it can calculate a route on fly.</para>
-<para>I (RN) always use this mode to follow pre planned routes.</para>
-</listitem>
-<listitem>
-<para>Track following: Uses a <trademark>TracBack</trademark> mode</para>
-<para>I (RN) never use this so I can't comment on how it actually compares to the route mode.</para>
-</listitem>
-</itemizedlist>
-<note><para>
-There are often restrictions on the numbers of route points the GPS Device can handle - may be 250 or as little as 50.
-This generally not a problem for single day routes, but needs managing for multi-day events or for highly detailed routes.
+  See <xref linkend="gpx_simplify"/> for helping to manage this.
 </para></note>
 </section>
 
@@ -1023,7 +1017,7 @@ The password is transferred <emphasis role="bold">unencrypted</emphasis> in ever
 </section>
 </section>
 
-<section><title>Filter</title>
+<section id="filter" xreflabel="Filter"><title>Filter</title>
 <section><title>Simplify All Tracks</title>
 <para>
 This opens dialog to request the number of points each track will be simplified using <application>GPSBabel</application>. The result is put into a new layer. The simplification method removes points considered to be in a 'near straight line', thus reducing the number of points and attempting to keep the most important turning points.
@@ -2406,6 +2400,17 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <para>If this is on, when a new image is selected for the GeoRef layer then the associated world file will be read to find the scale and positional properties.</para>
 <para>The associated file is based on filename patterns; e.g. if the image is <filename>filename.jpg</filename> - then the world file may be <filename>filename.jpgw</filename> or <filename>filename.jgw</filename></para>
 </section>
+<section id="gpx_simplify" xreflabel="Auto GPX Simplify"><title>Auto Device GPX Simplify</title>
+<para>If this is on, GPX files will be simplified (using <application>GPSBabel</application>) if they are saved into a special location (by default a Garmin device location in OS file system).</para>
+<para>Extra parameters used in process such as the location and limits applied can be refined by <emphasis>export_device_*</emphasis> values in <xref linkend="misc_settings"/>.</para>
+<para>A warning message is displayed when this occurs so one can consider if manually managing the tracks is needed, e.g. see <xref linkend="filter"/> methods.</para>
+<para>The main intention for this is to prevent writing GPX files that are only partially useful.
+For instance on a GPS Etrex 20 device: if a track with 1000 points is saved to it, the device will only read in the first 500 points,
+thus effectively making only 1/2 of the track available.
+Hopefully a simplified track will be more useful to follow to your destination when one is out in the wilds, than only a section of it.
+</para>
+<note><para>You will need to set the appropriate limits for your device, as this is not currently auto detected.</para></note>
+</section>
 </section>
 
 <section id="prefs_advanced" xreflabel="Advanced Preferences"><title>Advanced</title>
@@ -3469,7 +3474,7 @@ Accept: */*
       </section>
 
 
-      <section>
+      <section id="misc_settings" xreflabel="viking.ini file settings">
         <title>Miscellaneous Settings</title>
         <para>Various individual values are automatically saved between &app; sessions in the <filename>~/.viking/viking.ini</filename> file.</para>
         <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
@@ -3578,6 +3583,18 @@ Accept: */*
 	    <para>A <ulink url="http://pubs.opengroup.org/onlinepubs/007908799/xsh/strftime.html">date format description</ulink> as passed on to strftime().
 	          Note that when displayed in tables sorting by this column simply uses the text value, rather than the underlying date/time value.
 	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>export_device_path=OS Specific</para>
+	    <para>UNIX = "/media/<emphasis role="italic">user</emphasis>/GARMIN/Garmin/GPX"</para>
+	    <para>WINDOWS = ":/Garmin/GPX"</para>
+	  </listitem>
+	  <listitem>
+	    <para>export_device_trackpoint_limit=10000 (Typical Garmin Edge limit)</para>
+	    <para>Older Garmins limits are typically much lower - Etrex 20/30 is 500</para>
+	  </listitem>
+	  <listitem>
+	    <para>export_device_routepoint_limit=250</para>
 	  </listitem>
 	</itemizedlist>
 
