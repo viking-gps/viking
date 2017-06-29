@@ -481,8 +481,8 @@ static gboolean babel_general_convert_to( VikTrwLayer *vt, VikTrack *trk, BabelS
  * a_babel_convert_to:
  * @vt:             The TRW layer from which data is taken.
  * @track:          Operate on the individual track if specified. Use NULL when operating on a TRW layer
- * @babelargs:      A string containing gpsbabel command line options.  In addition to any filters, this string
- *                 must include the input file type (-i) option.
+ * @babelargs:      A string containing gpsbabel output command line options.
+ *                   (i.e. must the contain '-o' file type and possibly any filter parameters)
  * @to:             Filename or device the data is written to.
  * @cb:		   Optional callback function. Same usage as in a_babel_convert.
  * @user_data: passed along to cb
@@ -514,12 +514,12 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
       args[i++] = gpsbabel_loc;
       args[i++] = "-i";
       args[i++] = "gpx";
+      args[i++] = "-f";
+      args[i++] = name_src;
       for (j = 0; sub_args[j]; j++)
         /* some version of gpsbabel can not take extra blank arg */
         if (sub_args[j][0] != '\0')
           args[i++] = sub_args[j];
-      args[i++] = "-f";
-      args[i++] = name_src;
       args[i++] = "-F";
       args[i++] = (char *)to;
       args[i] = NULL;
