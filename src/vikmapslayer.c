@@ -2265,10 +2265,11 @@ static gint maps_layer_how_many_maps ( VikMapsLayer *vml, VikViewport *vvp, VikC
             else {
               if ( mdi->redownload == REDOWNLOAD_BAD ) {
                 /* see if this one is bad or what */
-                GError *gx = NULL;
-                GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( mdi->filename_buf, &gx );
-                if (gx || (!pixbuf)) {
+                GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file ( mdi->filename_buf, NULL );
+                if ( !pixbuf ) {
                   mdi->mapstoget++;
+                } else {
+                  g_object_unref ( pixbuf );
                 }
                 break;
                 // Other download cases already considered or just ignored
