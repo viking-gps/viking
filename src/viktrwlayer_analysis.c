@@ -321,6 +321,46 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 		else
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 		break;
+        case VIK_UNITS_SPEED_SECONDS_PER_KM:
+		if ( ts.max_speed > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d s/km"), (int)VIK_MPS_TO_PACE_SPK(ts.max_speed) );
+		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		if ( ts.duration > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d s/km"), (int)VIK_MPS_TO_PACE_SPK(ts.length/ts.duration) );
+		else
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
+		break;
+
+        case VIK_UNITS_SPEED_MINUTES_PER_KM:
+		if ( ts.max_speed > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), (double)VIK_MPS_TO_PACE_MPK(ts.max_speed) );
+		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		if ( ts.duration > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), (double)VIK_MPS_TO_PACE_MPK(ts.length/ts.duration) );
+		else
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
+		break;
+
+        case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+		if ( ts.max_speed > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d sec/mi"), (int)VIK_MPS_TO_PACE_SPM(ts.max_speed) );
+		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		if ( ts.duration > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d sec/mi"), (int)VIK_MPS_TO_PACE_SPM(ts.length/ts.duration) );
+		else
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
+		break;
+
+        case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+		if ( ts.max_speed > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), (double)VIK_MPS_TO_PACE_MPM(ts.max_speed) );
+		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		if ( ts.duration > 0 )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), (double)VIK_MPS_TO_PACE_MPM(ts.length/ts.duration) );
+		else
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
+		break;
+
 	default:
 		//VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
 		if ( ts.max_speed > 0 )
