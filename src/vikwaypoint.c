@@ -144,6 +144,8 @@ void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname)
 
 void vik_waypoint_free(VikWaypoint *wp)
 {
+  if ( wp->name )
+    g_free ( wp->name );
   if ( wp->comment )
     g_free ( wp->comment );
   if ( wp->description )
