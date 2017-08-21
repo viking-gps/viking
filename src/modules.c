@@ -195,6 +195,7 @@ modules_load_config(void)
   {
     modules_load_config_dir(data_home);
   }
+  g_free ( (gchar*)data_home );
 
   /* Check user's home config */
   modules_load_config_dir(a_get_viking_dir());
