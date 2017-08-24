@@ -2896,7 +2896,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       break;
     case VIK_TRW_LAYER_PROPWIN_DEL_DUP:
       vik_track_remove_dup_points(tr); // NB ignore the returned answer
-      // As we could have seen the nuber of dulplicates that would be deleted in the properties statistics tab,
+      // As we could have seen the number of duplicates that would be deleted in the properties statistics tab,
       //   choose not to inform the user unnecessarily
 
       /* above operation could have deleted current_tp or last_tp */
