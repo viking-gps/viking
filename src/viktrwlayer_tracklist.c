@@ -655,7 +655,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: spd_units = g_strdup (_("km/h")); break;
 	case VIK_UNITS_SPEED_MILES_PER_HOUR:      spd_units = g_strdup (_("mph")); break;
 	case VIK_UNITS_SPEED_KNOTS:               spd_units = g_strdup (_("knots")); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM:      spd_units = g_strdup (_("s/mk")); break;
+	case VIK_UNITS_SPEED_SECONDS_PER_KM:      spd_units = g_strdup (_("s/km")); break;
 	case VIK_UNITS_SPEED_MINUTES_PER_KM:      spd_units = g_strdup (_("min/km")); break;
 	case VIK_UNITS_SPEED_SECONDS_PER_MILE:    spd_units = g_strdup (_("sec/mi")); break;
 	case VIK_UNITS_SPEED_MINUTES_PER_MILE:    spd_units = g_strdup (_("min/mi")); break;
