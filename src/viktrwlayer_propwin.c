@@ -959,6 +959,18 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     case VIK_UNITS_SPEED_KNOTS:
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f knots"), widgets->speeds[ix]);
       break;
+    case VIK_UNITS_SPEED_SECONDS_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f s/km"), widgets->speeds[ix]);
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), widgets->speeds[ix]);
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f sec/mi"), widgets->speeds[ix]);
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), widgets->speeds[ix]);
+      break;
     default:
       // VIK_UNITS_SPEED_METRES_PER_SECOND:
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f m/s"), widgets->speeds[ix]);
@@ -1228,6 +1240,18 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
       break;
     case VIK_UNITS_SPEED_KNOTS:
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f knots"), widgets->speeds_dist[ix]);
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f s/km"), widgets->speeds_dist[ix]);
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), widgets->speeds_dist[ix]);
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f sec/mi"), widgets->speeds_dist[ix]);
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), widgets->speeds_dist[ix]);
       break;
     default:
       // VIK_UNITS_SPEED_METRES_PER_SECOND:
@@ -1794,6 +1818,26 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
       widgets->speeds[i] = VIK_MPS_TO_KNOTS(widgets->speeds[i]);
     }
     break;
+  case VIK_UNITS_SPEED_SECONDS_PER_KM:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds[i] = VIK_MPS_TO_PACE_SPK(widgets->speeds[i]);
+    }
+  break;
+  case VIK_UNITS_SPEED_MINUTES_PER_KM:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds[i] = VIK_MPS_TO_PACE_MPK(widgets->speeds[i]);
+    }
+  break;
+  case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds[i] = VIK_MPS_TO_PACE_SPM(widgets->speeds[i]);
+    }
+  break;
+  case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds[i] = VIK_MPS_TO_PACE_MPM(widgets->speeds[i]);
+    }
+  break;
   default:
     // VIK_UNITS_SPEED_METRES_PER_SECOND:
     // No need to convert as already in m/s
@@ -1836,6 +1880,18 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     case VIK_UNITS_SPEED_KNOTS:
       sprintf(s, "%8dknots", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
       break;
+    case VIK_UNITS_SPEED_SECONDS_PER_KM:
+      sprintf(s, "%8ds/km", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_KM:
+      sprintf(s, "%8dmin/km", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+      sprintf(s, "%8dsec/mi", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+      sprintf(s, "%8dmin/mi", (int)(mins + (LINES-i)*chunkss[widgets->cis]));
+      break;
     default:
       sprintf(s, "--");
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
@@ -1876,6 +1932,18 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 	break;
       case VIK_UNITS_SPEED_KNOTS:
 	gps_speed = VIK_MPS_TO_KNOTS(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_SECONDS_PER_KM:
+	gps_speed = VIK_MPS_TO_PACE_SPK(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_MINUTES_PER_KM:
+	gps_speed = VIK_MPS_TO_PACE_MPK(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+	gps_speed = VIK_MPS_TO_PACE_SPM(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+	gps_speed = VIK_MPS_TO_PACE_MPM(gps_speed);
 	break;
       default:
 	// VIK_UNITS_SPEED_METRES_PER_SECOND:
@@ -2181,6 +2249,27 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
       widgets->speeds_dist[i] = VIK_MPS_TO_KNOTS(widgets->speeds_dist[i]);
     }
     break;
+  case VIK_UNITS_SPEED_SECONDS_PER_KM:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_SPK(widgets->speeds_dist[i]);
+    }
+    break;
+  case VIK_UNITS_SPEED_MINUTES_PER_KM:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_MPK(widgets->speeds_dist[i]);
+    }
+    break;
+  case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_SPM(widgets->speeds_dist[i]);
+    }
+    break;
+  case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+    for ( i = 0; i < widgets->profile_width; i++ ) {
+      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_MPM(widgets->speeds_dist[i]);
+    }
+    break;
+
   default:
     // VIK_UNITS_SPEED_METRES_PER_SECOND:
     // No need to convert as already in m/s
@@ -2224,6 +2313,18 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
     case VIK_UNITS_SPEED_KNOTS:
       sprintf(s, "%8dknots", (int)(mins + (LINES-i)*chunkss[widgets->cisd]));
       break;
+    case VIK_UNITS_SPEED_SECONDS_PER_KM:
+      sprintf(s, "%8ds/km", (int)(mins + (LINES-i)*chunkss[widgets->cisd]));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_KM:
+      sprintf(s, "%8dmin/km", (int)(mins + (LINES-i)*chunkss[widgets->cisd]));
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+      sprintf(s, "%8dsec/mi", (int)(mins + (LINES-i)*chunkss[widgets->cisd]));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+      sprintf(s, "%8dmin/mi", (int)(mins + (LINES-i)*chunkss[widgets->cisd]));
+      break;
     default:
       sprintf(s, "--");
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
@@ -2265,6 +2366,18 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 	break;
       case VIK_UNITS_SPEED_KNOTS:
 	gps_speed = VIK_MPS_TO_KNOTS(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_SECONDS_PER_KM:
+	gps_speed = VIK_MPS_TO_PACE_SPK(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_MINUTES_PER_KM:
+	gps_speed = VIK_MPS_TO_PACE_MPK(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+	gps_speed = VIK_MPS_TO_PACE_SPM(gps_speed);
+	break;
+      case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+	gps_speed = VIK_MPS_TO_PACE_MPM(gps_speed);
 	break;
       default:
 	// VIK_UNITS_SPEED_METRES_PER_SECOND:
@@ -3259,6 +3372,18 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     case VIK_UNITS_SPEED_KNOTS:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
       break;
+    case VIK_UNITS_SPEED_SECONDS_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed));
+      break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
       g_critical("Houston, we've had a problem. speed=%d", speed_units);
@@ -3282,6 +3407,18 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       break;
     case VIK_UNITS_SPEED_KNOTS:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed));
       break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
@@ -3310,6 +3447,18 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       break;
     case VIK_UNITS_SPEED_KNOTS:
       g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_KM:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed));
+      break;
+    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed));
       break;
     default:
       g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );

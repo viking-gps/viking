@@ -83,6 +83,18 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 	case VIK_UNITS_SPEED_KNOTS:
 		speed_units_str = g_strdup ( _("knots") );
 		break;
+	case VIK_UNITS_SPEED_SECONDS_PER_KM:
+		speed_units_str = g_strdup ( _("s/km") );
+		break;
+	case VIK_UNITS_SPEED_MINUTES_PER_KM:
+		speed_units_str = g_strdup ( _("min/km") );
+		break;
+	case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+		speed_units_str = g_strdup ( _("sec/mi") );
+		break;
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+		speed_units_str = g_strdup ( _("min/mi") );
+		break;
 	default:
 		// VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
 		speed_units_str = g_strdup ( _("km/h") );
@@ -127,6 +139,18 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			case VIK_UNITS_SPEED_KNOTS:
 				speed = VIK_MPS_TO_KNOTS(speed);
 				break;
+			case VIK_UNITS_SPEED_SECONDS_PER_KM:
+				speed = VIK_MPS_TO_PACE_SPK(speed);
+				break;
+			case VIK_UNITS_SPEED_MINUTES_PER_KM:
+				speed = VIK_MPS_TO_PACE_MPK(speed);
+				break;
+			case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+				speed = VIK_MPS_TO_PACE_SPM(speed);
+				break;
+			case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+				speed = VIK_MPS_TO_PACE_SPK(speed);
+				break;
 			default:
 				// VIK_UNITS_SPEED_METRES_PER_SECOND:
 				// Already in m/s so nothing to do
@@ -168,6 +192,18 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 				break;
 			case VIK_UNITS_SPEED_KNOTS:
 				speed = VIK_MPS_TO_KNOTS(speed);
+				break;
+			case VIK_UNITS_SPEED_SECONDS_PER_KM:
+				speed = VIK_MPS_TO_PACE_SPK(speed);
+				break;
+			case VIK_UNITS_SPEED_MINUTES_PER_KM:
+				speed = VIK_MPS_TO_PACE_MPK(speed);
+				break;
+			case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+				speed = VIK_MPS_TO_PACE_SPM(speed);
+				break;
+			case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+				speed = VIK_MPS_TO_PACE_SPK(speed);
 				break;
 			default:
 				// VIK_UNITS_SPEED_METRES_PER_SECOND:
