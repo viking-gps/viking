@@ -73,16 +73,16 @@ avoid the graph y-scale being overwhelmed by these numbers,
 a cutting at 60s/km or equivalent (in other units) has been set*/
 
 /* PACE_SPK, Seconds per Kilometer */
-#define VIK_MPS_TO_PACE_SPK(X) ((X) > 1.?  3600./(X)      : 0)
+#define VIK_MPS_TO_PACE_SPK(X) ((X) > 1.0 ?  3600./((X)      * VIK_KPH_IN_MPS) : 0)
 
 /* PACE_MPK, Minutes per Kilometer */
-#define VIK_MPS_TO_PACE_MPK(X) ((X) > 1.?  60./(X)        : 0)
+#define VIK_MPS_TO_PACE_MPK(X) ((X) > 1.0 ?  60./((X)        * VIK_KPH_IN_MPS) : 0)
 
 /* PACE_SPM, Seconds per Mile */
-#define VIK_MPS_TO_PACE_SPM(X) ((X) > 1.?  5793.6384 /(X) : 0)
+#define VIK_MPS_TO_PACE_SPM(X) ((X) > 1.0 ?  5793.6384 /((X) * VIK_KPH_IN_MPS) : 0)
 
 /* PACE_MPM, Minutes per Mile */
-#define VIK_MPS_TO_PACE_MPM(X) ((X) > 1.?  96.56064 /(X)  : 0)
+#define VIK_MPS_TO_PACE_MPM(X) ((X) > 1.0 ?  96.56064 /((X)  * VIK_KPH_IN_MPS) : 0)
 
 #define VIK_KNOTS_IN_MPS 1.94384449
 #define VIK_MPS_TO_KNOTS(X) ((X)*VIK_KNOTS_IN_MPS)
