@@ -37,6 +37,8 @@ gchar *convert_lon_dec_to_dms(gdouble lon);
 
 gdouble convert_dms_to_dec(const gchar *dms);
 
+gboolean convert_txt_to_lat_lon(const char *txt, gdouble *lat, gdouble *lon);
+
 G_END_DECLS
 
 #endif

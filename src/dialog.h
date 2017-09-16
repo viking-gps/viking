@@ -50,6 +50,7 @@ void a_dialog_about ( GtkWindow *parent );
 
 /* okay, everthing below here is an architechtural flaw. */
 gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const struct LatLon *old );
+gboolean a_dialog_goto_latlon_ff ( GtkWindow *parent, struct LatLon *ll, const struct LatLon *old );
 gboolean a_dialog_goto_utm ( GtkWindow *parent, struct UTM *utm, const struct UTM *old );
 
 gchar *a_dialog_new_track ( GtkWindow *parent, gchar *default_name, gboolean is_route );

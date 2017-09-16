@@ -28,7 +28,9 @@
 #include <string.h>
 #include "degrees_converters.h"
 
-#define DEGREE_SYMBOL "\302\260"
+#include <stdio.h>  // printf for debug
+
+#define DEGREE_SYMBOL "\302\260"	// UTF-8: 0xc2 0xb0
 
 /**
  * @param pos_c char for positive value
@@ -207,4 +209,59 @@ gdouble convert_dms_to_dec(const gchar *dms)
 	if (neg) result = - result;
 	
 	return result;
+}
+
+gboolean convert_txt_to_lat_lon(const char *txt, gdouble *lat, gdouble *lon)
+{
+	GMatchInfo *match_info;
+
+	// N51° 52.238¿ E5° 50.293¿
+	GRegex *regex = g_regex_new("^\\s*([NSns])\\s*(\\d+)\302\260\\s*(\\d+\\.\\d+)(.)", 0, 0, NULL);
+	if (g_regex_match(regex, txt, 0, &match_info)) {
+		gchar *min_txt = g_match_info_fetch(match_info, 4);
+		printf("\"%s\" did match \"%s\". Last char has code 0x", txt, g_regex_get_pattern(regex));
+		gchar *ptr = min_txt;
+		while (*ptr++ != 0) {
+			printf("%02x", *ptr);
+		}
+		printf("\n");
+		gunichar unichar = g_utf8_get_char_validated(min_txt, -1);
+		printf("Unicode code point is 0x%x\n", unichar);
+		g_free(min_txt);
+	} else {
+		printf("\"%s\" did NOT match \"%s\"\n", txt, g_regex_get_pattern(regex));
+	}
+	g_match_info_free(match_info);
+	g_regex_unref(regex);
+
+	regex = g_regex_new("^\\s*([NSns])\\s*(\\d+)\302\260\\s*(\\d+\\.\\d+)['¿]\\s*([EWew])\\s*(\\d+)\302\260\\s*(\\d+\\.\\d+)['¿]\\s*$", 0, 0, NULL);
+	g_assert(regex);
+	
+	if (g_regex_match(regex, txt, 0, &match_info)) {
+		g_assert(g_match_info_get_match_count(match_info) == 7);	// whole matched text plus six matched substrings
+		gchar *n_or_s  = g_match_info_fetch(match_info, 1);
+		gchar *lat_deg = g_match_info_fetch(match_info, 2);
+		gchar *lat_min = g_match_info_fetch(match_info, 3);
+		gchar *e_or_w  = g_match_info_fetch(match_info, 4);
+		gchar *lon_deg = g_match_info_fetch(match_info, 5);
+		gchar *lon_min = g_match_info_fetch(match_info, 6);
+
+		*lat = g_ascii_strtod(lat_deg, NULL) + g_ascii_strtod(lat_min, NULL) / 60.0;
+		if ( (n_or_s[0] == 'S') || (n_or_s[0] == 's') ) *lat = - *lat;
+
+		*lon = g_ascii_strtod(lon_deg, NULL) + g_ascii_strtod(lon_min, NULL) / 60.0;
+		if ( (e_or_w[0] == 'W') || (e_or_w[0] == 'w') ) *lon = - *lon;
+
+		g_free(n_or_s); 
+		g_free(lat_deg);
+		g_free(e_or_w); 
+		g_free(lon_deg);
+		g_free(lon_min);
+		g_match_info_free(match_info);
+		g_regex_unref(regex);
+		return TRUE;
+	}
+	g_match_info_free(match_info);
+	g_regex_unref(regex);
+	return FALSE;
 }

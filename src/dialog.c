@@ -89,8 +89,53 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
   {
     ll->lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lat) ) );
     ll->lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lon) ) );
+    printf("\"%s\",\"%s\" converted to %f, %f\n", gtk_entry_get_text ( GTK_ENTRY(lat) ), gtk_entry_get_text ( GTK_ENTRY(lon) ), ll->lat, ll->lon);
     gtk_widget_destroy ( dialog );
     return TRUE;
+  }
+
+  gtk_widget_destroy ( dialog );
+  return FALSE;
+}
+
+gboolean a_dialog_goto_latlon_ff ( GtkWindow *parent, struct LatLon *ll, const struct LatLon *old )
+{
+  // Free-Format version of Lat/Lon, paste in your coordinate and we try to undecypher it
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Go to Lat/Lon"),
+                                                  parent,
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_STOCK_CANCEL,
+                                                  GTK_RESPONSE_REJECT,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+
+
+  GtkWidget *txtlabel = gtk_label_new (_("Free-format lat/lon text:"));
+  GtkWidget *txt = gtk_entry_new ();
+
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), txtlabel,  FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), txt, FALSE, FALSE, 0);
+
+  // 'ok' when press return on an entry
+  g_signal_connect_swapped (txt, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
+  gtk_widget_show_all ( dialog );
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
+  {
+    if (convert_txt_to_lat_lon(gtk_entry_get_text ( GTK_ENTRY(txt) ), &ll->lat, &ll->lon )) {
+      printf("\"%s\" converted to %f, %f\n", gtk_entry_get_text ( GTK_ENTRY(txt) ), ll->lat, ll->lon);
+      gtk_widget_destroy ( dialog );
+      return TRUE;
+    } else {
+      // Make error pop-up
+      printf("Conversion of \"%s\" failed.\n", gtk_entry_get_text ( GTK_ENTRY(txt) ));
+      gtk_widget_destroy ( dialog );
+      return FALSE;
+    }
   }
 
   gtk_widget_destroy ( dialog );

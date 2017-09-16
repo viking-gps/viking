@@ -2337,6 +2337,14 @@ static void draw_goto_cb ( GtkAction *a, VikWindow *vw )
     else
       return;
   }
+  else if (!strcmp(gtk_action_get_name(a), "GotoLLFF")) {
+    struct LatLon ll, llold;
+    vik_coord_to_latlon ( vik_viewport_get_center ( vw->viking_vvp ), &llold );
+    if ( a_dialog_goto_latlon_ff ( GTK_WINDOW(vw), &ll, &llold ) )
+      vik_coord_load_from_latlon ( &new_center, vik_viewport_get_coord_mode(vw->viking_vvp), &ll );
+    else
+      return;
+  }
   else if (!strcmp(gtk_action_get_name(a), "GotoUTM")) {
     struct UTM utm, utmold;
     vik_coord_to_utm ( vik_viewport_get_center ( vw->viking_vvp ), &utmold );
@@ -4524,6 +4532,7 @@ static GtkActionEntry entries[] = {
   { "GotoDefaultLocation", GTK_STOCK_HOME, N_("Go to the _Default Location"),  NULL,         N_("Go to the default location"),                     (GCallback)goto_default_location },
   { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to _Location..."),     "<control>F",         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },
+  { "GotoLLFF",  GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon Free-Format..."), NULL,         N_("Go to arbitrary lat/lon (free-format)"),    (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
   { "Refresh",   GTK_STOCK_REFRESH,      N_("_Refresh"),                      "F5",         N_("Refresh any maps displayed"),               (GCallback)draw_refresh_cb       },
   { "SetHLColor",GTK_STOCK_SELECT_COLOR, N_("Set _Highlight Color..."),       NULL,         N_("Set Highlight Color"),                      (GCallback)set_highlight_color },

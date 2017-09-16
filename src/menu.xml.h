@@ -71,6 +71,7 @@ static const char *menu_xml =
 	"      <menuitem action='GotoDefaultLocation'/>"
 	"      <menuitem action='GotoSearch'/>"
 	"      <menuitem action='GotoLL'/>"
+	"      <menuitem action='GotoLLFF'/>"
 	"      <menuitem action='GotoUTM'/>"
 	"      <menuitem action='GoBack'/>"
 	"      <menuitem action='GoForward'/>"
