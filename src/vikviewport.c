@@ -1622,12 +1622,6 @@ void vik_viewport_add_logo ( VikViewport *vp, const GdkPixbuf *logo )
  */
 void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, gint y2, gdouble *angle, gdouble *baseangle )
 {
-  gdouble len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-  gdouble dx = (x2-x1)/len*10;
-  gdouble dy = (y2-y1)/len*10;
-
-  *angle = atan2(dy, dx) + M_PI_2;
-
   if ( vik_viewport_get_drawmode ( vp ) == VIK_VIEWPORT_DRAWMODE_UTM) {
     VikCoord test;
     struct LatLon ll;
@@ -1643,6 +1637,8 @@ void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, 
 
     *baseangle = M_PI - atan2(tx-x1, ty-y1);
     *angle -= *baseangle;
+  } else{
+    *angle = atan2((y2-y1), (x2-x1)) + M_PI_2;
   }
 
   if (*angle < 0)
