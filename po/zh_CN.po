@@ -2,10 +2,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Viking\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-03 21:58+0200\n"
+"POT-Creation-Date: 2017-10-01 18:15+0100\n"
 "PO-Revision-Date: 2017-01-17 00:48+0000\n"
 "Last-Translator: huobos <Unknown>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,7 +15,7 @@ msgstr ""
 "X-Generator: Launchpad (build 18302)\n"
 "X-Poedit-Language: Simplified Chinese\n"
 
-#: ../src/acquire.c:106 ../src/vikgpslayer.c:1199
+#: ../src/acquire.c:106 ../src/vikgpslayer.c:1367
 msgid "Done."
 msgstr "完成。"
 
@@ -30,6 +31,7 @@ msgstr "错误: 接收失败。"
 msgid "Working..."
 msgstr "工作中…"
 
+#. This shouldn't happen...
 #: ../src/acquire.c:406
 msgid ""
 "Unable to create command\n"
@@ -51,58 +53,57 @@ msgstr "用%s过滤"
 msgid "Filter"
 msgstr "过滤"
 
-#: ../src/babel.c:631
+#: ../src/babel.c:633
 msgid "GPSBabel:"
 msgstr "GPSBabel程序："
 
-#: ../src/babel.c:632
+#: ../src/babel.c:634
 msgid ""
 "Allow setting the specific instance of GPSBabel. You must restart Viking for "
 "this value to take effect."
-msgstr "允许设置指定的GPSBabel实例。"
-"重启程序使其生效。"
+msgstr "允许设置指定的GPSBabel实例。重启程序使其生效。"
 
 #: ../src/babel_ui.c:79
 msgid "Select a file format"
 msgstr "选择文件格式"
 
-#: ../src/babel_ui.c:144 ../src/viktrwlayer.c:494 ../src/viktrwlayer.c:2780
+#: ../src/babel_ui.c:144 ../src/viktrwlayer.c:499 ../src/viktrwlayer.c:2788
 msgid "Tracks"
 msgstr "轨迹"
 
-#: ../src/babel_ui.c:149 ../src/viktrwlayer.c:2790
+#: ../src/babel_ui.c:149 ../src/viktrwlayer.c:2798
 msgid "Routes"
 msgstr "路线"
 
-#: ../src/babel_ui.c:154 ../src/viktrwlayer.c:494 ../src/viktrwlayer.c:2785
+#. ***** PARAMETERS *****
+#: ../src/babel_ui.c:154 ../src/viktrwlayer.c:499 ../src/viktrwlayer.c:2793
 msgid "Waypoints"
 msgstr "路标"
 
-#: ../src/background.c:63
+#: ../src/background.c:64
 #, c-format
 msgid "%d items"
 msgstr "%d项"
 
-#: ../src/background.c:255
+#: ../src/background.c:287
 msgid "Threads:"
 msgstr "线程："
 
-#: ../src/background.c:256
+#: ../src/background.c:288
 msgid ""
 "Number of threads to use for Mapnik tasks. You need to restart Viking for a "
 "change to this value to be used"
-msgstr "供Mapnik任务使用的线程数。"
-"重启程序使其生效。"
+msgstr "供Mapnik任务使用的线程数。重启程序使其生效。"
 
-#: ../src/background.c:320
+#: ../src/background.c:361
 msgid "Job"
 msgstr "任务"
 
-#: ../src/background.c:324
+#: ../src/background.c:365
 msgid "Progress"
 msgstr "进度"
 
-#: ../src/background.c:340
+#: ../src/background.c:373
 msgid "Viking Background Jobs"
 msgstr "Viking后台任务"
 
@@ -114,7 +115,8 @@ msgstr "必应航空"
 msgid "Bing"
 msgstr "必应"
 
-#: ../src/bingmapsource.c:518
+#. VIK_GTK_WINDOW_FROM_WIDGET(vp)
+#: ../src/bingmapsource.c:514
 msgid "Bing attribution Loading"
 msgstr "必应属性正加载"
 
@@ -131,8 +133,7 @@ msgstr "剪贴版数据尺寸错误"
 msgid ""
 "The clipboard contains sublayer data for %s layers. You must select a layer "
 "of this type to paste the clipboard data."
-msgstr "剪贴板含有%s层的子层数据。"
-"须选择该类型的层才能粘帖。"
+msgstr "剪贴板含有%s层的子层数据。须选择该类型的层才能粘帖。"
 
 #: ../src/clipboard.c:264
 msgid ""
@@ -144,11 +145,11 @@ msgstr "请选择合适的层来粘帖路标。"
 msgid "Go to Lat/Lon"
 msgstr "到纬度/经度坐标"
 
-#: ../src/dialog.c:69 ../src/viktrwlayer_wpwin.c:153
+#: ../src/dialog.c:69 ../src/viktrwlayer_wpwin.c:152
 msgid "Latitude:"
 msgstr "纬度："
 
-#: ../src/dialog.c:72 ../src/viktrwlayer_wpwin.c:158
+#: ../src/dialog.c:72 ../src/viktrwlayer_wpwin.c:157
 msgid "Longitude:"
 msgstr "经度："
 
@@ -164,58 +165,23 @@ msgstr "北进："
 msgid "Easting:"
 msgstr "东进："
 
-#: ../src/dialog.c:121 ../src/vikgeoreflayer.c:878
+#: ../src/dialog.c:121 ../src/vikgeoreflayer.c:879
 msgid "Zone:"
 msgstr "区域："
 
-#: ../src/dialog.c:124 ../src/vikgeoreflayer.c:880
+#: ../src/dialog.c:124 ../src/vikgeoreflayer.c:881
 msgid "Letter:"
 msgstr "字母："
 
-#: ../src/dialog.c:246 ../src/geonamessearch.c:243
+#: ../src/dialog.c:246 ../src/geonamessearch.c:238
 #: ../src/datasource_osm_my_traces.c:505
 msgid "Nothing was selected"
 msgstr "无任何选择"
 
-#: ../src/geonamessearch.c:446
-msgid "Select articles"
-msgstr "选择文章"
-
-#: ../src/geonamessearch.c:446
-msgid "Select the articles you want to add."
-msgstr "选择要添加的文章。"
-
-#: ../src/geonamessearch.c:460
-msgid "city"
-msgstr "城市"
-
-#: ../src/geonamessearch.c:461
-msgid "city (medium)"
-msgstr "城市（中等）"
-
-#: ../src/geonamessearch.c:462
-msgid "edu"
-msgstr "教育"
-
-#: ../src/geonamessearch.c:463
-msgid "school"
-msgstr "学校"
-
-#: ../src/geonamessearch.c:464 ../src/geonamessearch.c:465
-msgid "airport"
-msgstr "机场"
-
-#: ../src/geonamessearch.c:466
-msgid "mountain"
-msgstr "山脉"
-
-#: ../src/geonamessearch.c:467
-msgid "summit"
-msgstr "山峰"
-
-#: ../src/geonamessearch.c:468 ../src/geonamessearch.c:469
-msgid "forest"
-msgstr "森林"
+#: ../src/dialog.c:254
+#, fuzzy
+msgid "Add Route"
+msgstr "扩展路线"
 
 #: ../src/dialog.c:254
 msgid "Add Track"
@@ -275,8 +241,12 @@ msgstr "定制（分钟）："
 
 #: ../src/dialog.c:616
 #, c-format
-msgid "2003-2008, Evan Battaglia\n2008-%s, Viking's contributors"
-msgstr "2003-2008, 埃文·巴塔利亚\n2008-%s, 维京贡献者们"
+msgid ""
+"2003-2008, Evan Battaglia\n"
+"2008-%s, Viking's contributors"
+msgstr ""
+"2003-2008, 埃文·巴塔利亚\n"
+"2008-%s, 维京贡献者们"
 
 #: ../src/dialog.c:617
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
@@ -298,47 +268,45 @@ msgid ""
 "this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
-"本程序为自由软件；您可依据自由软件基金会所发表的GNU通用公共授权条款规定，"
-"就本程序再为发布与／或修改；"
-"无论您依据的是本授权的第二版或（您自行选择的）任一日后发行的版本。\n"
+"本程序为自由软件；您可依据自由软件基金会所发表的GNU通用公共授权条款规定，就本"
+"程序再为发布与／或修改；无论您依据的是本授权的第二版或（您自行选择的）任一日"
+"后发行的版本。\n"
 "\n"
-"本程序是基于使用目的而加以发布，然而不负任何担保责任；"
-"亦无对适售性或特定目的适用性所为的默示性担保。"
-"详情请参照GNU通用公共授权。\n"
+"本程序是基于使用目的而加以发布，然而不负任何担保责任；亦无对适售性或特定目的"
+"适用性所为的默示性担保。详情请参照GNU通用公共授权。\n"
 "\n"
-"您应已收到附随于本程序的GNU通用公共授权的副本；"
-"如果没有，请写信至自由软件基金会："
-"59 Temple Place - Suite 330, Boston, Ma 02111-1307, USA。"
+"您应已收到附随于本程序的GNU通用公共授权的副本；如果没有，请写信至自由软件基金"
+"会：59 Temple Place - Suite 330, Boston, Ma 02111-1307, USA。"
 
 #: ../src/dialog.c:705
 msgid "Translation is coordinated on http://launchpad.net/viking"
 msgstr "翻译在网站http://launchpad.net/viking协作完成"
 
-#: ../src/dialog.c:714
+#: ../src/dialog.c:715
 msgid "Download along track"
 msgstr "沿轨迹下载"
 
-#: ../src/dialog.c:721
+#: ../src/dialog.c:722
 msgid "Map type:"
 msgstr "地图类型："
 
-#: ../src/dialog.c:727
+#: ../src/dialog.c:728
 msgid "Zoom level:"
 msgstr "缩放等级："
 
-#: ../src/dialog.c:767
+#: ../src/dialog.c:768
 #, c-format
 msgid "The map data is licensed: %s."
 msgstr "地图数据许可证是：%s。"
 
-#: ../src/dialog.c:770
+#: ../src/dialog.c:771
 #, c-format
 msgid ""
 "The data provided by '<b>%s</b>' are licensed under the following license: "
 "<b>%s</b>."
 msgstr "数据由‘<b>%s</b>’ 提供，许可证<b>%s</b>。"
 
-#: ../src/dialog.c:774
+#: ../src/dialog.c:775
 msgid "Open license"
 msgstr "开源许可证"
 
@@ -355,50 +323,85 @@ msgstr "无效的Expedia（亿客行）海拔"
 msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
-msgstr "打不开EXPEDIA（亿客行）图像文件（在成功下载后！请发送错误报告并删除图像文件！）：%s"
+msgstr ""
+"打不开EXPEDIA（亿客行）图像文件（在成功下载后！请发送错误报告并删除图像文"
+"件！）：%s"
 
 #: ../src/expedia.c:126
 #, c-format
 msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
-msgstr "不能保存EXPEDIA（亿客行）图像文件（在成功下载后！请发送错误报告并删除图像文件！）：%s"
+msgstr ""
+"不能保存EXPEDIA（亿客行）图像文件（在成功下载后！请发送错误报告并删除图像文"
+"件！）：%s"
 
-#: ../src/geonamessearch.c:45
-msgid "en"
-msgstr "英语"
-
-#: ../src/geonamessearch.c:120
+#: ../src/geonamessearch.c:115
 msgid "Search"
 msgstr "搜索"
 
-#: ../src/geonamessearch.c:122
+#: ../src/geonamessearch.c:117
 msgid "No entries found!"
 msgstr "找不到条目！"
 
-#: ../src/geonamessearch.c:176 ../src/datasource_osm_my_traces.c:422
-#: ../src/viktrwlayer_tracklist.c:612 ../src/viktrwlayer_waypointlist.c:618
+#. NB could allow columns to be shifted around by doing this after each new
+#. gtk_tree_view_column_set_reorderable ( column, TRUE );
+#. However I don't think is that useful, so I haven't put it in
+#: ../src/geonamessearch.c:171 ../src/datasource_osm_my_traces.c:422
+#: ../src/viktrwlayer_tracklist.c:621 ../src/viktrwlayer_waypointlist.c:618
 msgid "Name"
 msgstr "名字"
 
-#: ../src/geonamessearch.c:181
+#: ../src/geonamessearch.c:176
 msgid "Feature"
 msgstr "特性"
 
-#: ../src/geonamessearch.c:186 ../src/datasource_osm_my_traces.c:437
+#: ../src/geonamessearch.c:181 ../src/datasource_osm_my_traces.c:437
 msgid "Lat/Lon"
 msgstr "纬度/经度"
 
-#: ../src/geonamessearch.c:269 ../src/googlesearch.c:99 ../src/vikgoto.c:325
+#: ../src/geonamessearch.c:264 ../src/googlesearch.c:99 ../src/vikgoto.c:325
 msgid "couldn't map temp file"
 msgstr "无法映射临时文件"
+
+#: ../src/geonamessearch.c:459
+msgid "Select articles"
+msgstr "选择文章"
+
+#: ../src/geonamessearch.c:459
+msgid "Select the articles you want to add."
+msgstr "选择要添加的文章。"
+
+#: ../src/geonamessearch.c:475
+msgid "city"
+msgstr "城市"
+
+#: ../src/geonamessearch.c:477
+msgid "edu"
+msgstr "教育"
+
+#: ../src/geonamessearch.c:479
+msgid "airport"
+msgstr "机场"
+
+#: ../src/geonamessearch.c:481
+msgid "mountain"
+msgstr "山脉"
+
+#: ../src/geonamessearch.c:483
+msgid "forest"
+msgstr "森林"
+
+#: ../src/geonamessearch.c:485
+msgid "church"
+msgstr ""
 
 #: ../src/geojson.c:74
 #, c-format
 msgid "%s command failed: %s"
 msgstr "%s命令失败：%s"
 
-#: ../src/geojson.c:146 ../src/gpx.c:1217
+#: ../src/geojson.c:146 ../src/gpx.c:1290
 #, c-format
 msgid "failed to open temporary file: %s"
 msgstr "打不开临时文件：%s"
@@ -431,21 +434,39 @@ msgstr "英里"
 msgid "Nautical Miles"
 msgstr "海里"
 
-#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:646 ../src/vikutils.c:87
+#. VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:655 ../src/vikutils.c:100
 msgid "km/h"
 msgstr "公里/小时"
 
-#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:647 ../src/vikutils.c:77
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:656 ../src/vikutils.c:78
 msgid "mph"
 msgstr "英里/小时"
 
-#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:650 ../src/vikutils.c:80
+#. VIK_UNITS_SPEED_METRES_PER_SECOND:
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:663 ../src/vikutils.c:81
 msgid "m/s"
 msgstr "米/秒"
 
-#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:648 ../src/vikutils.c:83
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:657 ../src/vikutils.c:84
 msgid "knots"
 msgstr "节"
+
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:658 ../src/vikutils.c:87
+msgid "s/km"
+msgstr ""
+
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:659 ../src/vikutils.c:90
+msgid "min/km"
+msgstr ""
+
+#: ../src/globals.c:69
+msgid "s/mi"
+msgstr ""
+
+#: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:661 ../src/vikutils.c:96
+msgid "min/mi"
+msgstr ""
 
 #: ../src/globals.c:70
 msgid "Metres"
@@ -503,8 +524,9 @@ msgstr "时间显示："
 msgid ""
 "Display times according to the reference frame. Locale is the user's system "
 "setting. World is relative to the location of the object."
-msgstr "根据参考区域显示时间。本地是指根据用户的系统设置显示时间。"
-"世界是指根据目标的地点显示时间。"
+msgstr ""
+"根据参考区域显示时间。本地是指根据用户的系统设置显示时间。世界是指根据目标的"
+"地点显示时间。"
 
 #: ../src/globals.c:90
 msgid "Alphabetical"
@@ -624,8 +646,9 @@ msgstr "添加默认地图层："
 msgid ""
 "The default map layer added is defined by the Layer Defaults. Use the menu "
 "Edit->Layer Defaults->Map... to change the map type and other values."
-msgstr "默认地图层由图层默认设置决定。"
-"用菜单->图层默认设置->地图...来改变地图类型及其他值。"
+msgstr ""
+"默认地图层由图层默认设置决定。用菜单->图层默认设置->地图...来改变地图类型及其"
+"他值。"
 
 #: ../src/globals.c:130
 msgid "Startup Method:"
@@ -649,22 +672,27 @@ msgstr "检查新版本："
 msgid "Periodically check to see if a new version of Viking is available"
 msgstr "定期检查新版本。"
 
+#. Defaults for the options are setup here
 #: ../src/globals.c:171
 msgid "General"
 msgstr "常规"
 
+#. New Tab
 #: ../src/globals.c:199
 msgid "Startup"
 msgstr "启动"
 
+#. New Tab
 #: ../src/globals.c:217
 msgid "Export/External"
 msgstr "导出/外部程序"
 
+#. 'Advanced' Properties
 #: ../src/globals.c:241
 msgid "Advanced"
 msgstr "高级"
 
+#. Webtools
 #: ../src/google.c:39
 msgid "Google"
 msgstr "谷歌"
@@ -681,6 +709,7 @@ msgstr "简化全部轨迹…"
 msgid "Simplified Tracks"
 msgstr "简化轨迹"
 
+#. { VIK_LAYER_NUM_TYPES, "compressmethod", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Simplify Method:"), VIK_LAYER_WIDGET_COMBOBOX, compress_method, NULL, NULL, NULL, NULL, NULL },
 #: ../src/datasource_bfilter.c:111
 msgid "Error Factor:"
 msgstr "误差因子："
@@ -690,8 +719,9 @@ msgid ""
 "Specifies the maximum allowable error that may be introduced by removing a "
 "single point by the crosstrack method. See the manual or GPSBabel Simplify "
 "Filter documentation for more detail."
-msgstr "指定由交叉轨迹法删除一个点导致的最大容许错误值。"
-"详情请查阅手册或GPSBabel程序里的简化过滤器文档。"
+msgstr ""
+"指定由交叉轨迹法删除一个点导致的最大容许错误值。详情请查阅手册或GPSBabel程序"
+"里的简化过滤器文档。"
 
 #: ../src/datasource_bfilter.c:166
 msgid "Compress Tracks..."
@@ -737,6 +767,7 @@ msgstr "从GPSBabel程序导入"
 msgid "Imported file"
 msgstr "已导入文件"
 
+#. The file selector
 #: ../src/datasource_file.c:129
 msgid "File:"
 msgstr "文件："
@@ -749,6 +780,7 @@ msgstr "要导入的文件"
 msgid "All files"
 msgstr "全部文件"
 
+#. The file format selector
 #: ../src/datasource_file.c:144 ../src/datasource_url.c:106
 msgid "File type:"
 msgstr "文件类型："
@@ -773,6 +805,10 @@ msgstr "geocaching.com（地理藏宝网站）用户名："
 #: ../src/datasource_gc.c:87
 msgid "geocaching.com password:"
 msgstr "geocaching.com（地理藏宝网站）密码："
+
+#: ../src/datasource_gc.c:92 ../src/vikwindow.c:3219
+msgid "Geocaching"
+msgstr "地理藏宝"
 
 #: ../src/datasource_gc.c:128
 #, c-format
@@ -801,14 +837,14 @@ msgid "Geotagged Images"
 msgstr "有地理标记的图像"
 
 #: ../src/datasource_geotag.c:102 ../src/datasource_geojson.c:93
-#: ../src/vikfileentry.c:166 ../src/vikwindow.c:3249 ../src/vikwindow.c:3322
-#: ../src/vikwindow.c:4048 ../src/vikwindow.c:4324
+#: ../src/vikfileentry.c:166 ../src/vikwindow.c:3250 ../src/vikwindow.c:3323
+#: ../src/vikwindow.c:4049 ../src/vikwindow.c:4325
 msgid "All"
 msgstr "全选"
 
 #: ../src/datasource_geotag.c:107 ../src/vikfileentry.c:117
-#: ../src/viktrwlayer_geotag.c:591 ../src/vikwindow.c:3234
-#: ../src/vikwindow.c:4062
+#: ../src/viktrwlayer_geotag.c:591 ../src/vikwindow.c:3235
+#: ../src/vikwindow.c:4063
 msgid "JPG"
 msgstr "JPG文件"
 
@@ -838,60 +874,63 @@ msgstr "从GPS获取"
 msgid "Acquired from GPS"
 msgstr "已从GPS获取"
 
-#: ../src/datasource_gps.c:251
+#: ../src/datasource_gps.c:258
 #, c-format
 msgid "using cmd '%s' and file '%s'\n"
 msgstr "用‘%s’命令和文件‘%s’\n"
 
-#: ../src/datasource_gps.c:333 ../src/vikgpslayer.c:896
+#: ../src/datasource_gps.c:353 ../src/vikgpslayer.c:966
 #, c-format
 msgid "Downloading %d waypoint..."
 msgid_plural "Downloading %d waypoints..."
 msgstr[0] "下载%d路标…"
 
-#: ../src/datasource_gps.c:334 ../src/vikgpslayer.c:897
+#: ../src/datasource_gps.c:358 ../src/vikgpslayer.c:971
 #, c-format
 msgid "Downloading %d trackpoint..."
 msgid_plural "Downloading %d trackpoints..."
 msgstr[0] "正下载%d轨迹点…"
 
-#: ../src/datasource_gps.c:339 ../src/vikgpslayer.c:902
+#: ../src/datasource_gps.c:363 ../src/vikgpslayer.c:976
 #, c-format
 msgid "Downloading %d routepoint..."
 msgid_plural "Downloading %d routepoints..."
 msgstr[0] "正下载%d路线点…"
 
-#: ../src/datasource_gps.c:361 ../src/datasource_gps.c:362
-#: ../src/datasource_gps.c:363
+#: ../src/datasource_gps.c:386 ../src/datasource_gps.c:393
+#: ../src/datasource_gps.c:400
 #, c-format
 msgid "Downloaded %d out of %d %s..."
 msgstr "已下载%d，总共%d %s…"
 
-#: ../src/datasource_gps.c:367 ../src/datasource_gps.c:368
-#: ../src/datasource_gps.c:369
+#: ../src/datasource_gps.c:388 ../src/datasource_gps.c:395
+#: ../src/datasource_gps.c:402
 #, c-format
 msgid "Downloaded %d %s."
 msgstr "已下载%d %s。"
 
-#: ../src/datasource_gps.c:383 ../src/vikgpslayer.c:981
+#: ../src/datasource_gps.c:416 ../src/vikgpslayer.c:1134
 #, c-format
 msgid "GPS Device: %s"
 msgstr "GPS设备：%s"
 
-#: ../src/datasource_gps.c:406 ../src/vikgpslayer.c:1055
-#: ../src/vikgpslayer.c:1123
+#: ../src/datasource_gps.c:428 ../src/vikgpslayer.c:1214
 msgid "Status: Working..."
 msgstr "状态：工作中…"
 
-#: ../src/datasource_gps.c:505 ../src/vikgpslayer.c:205
+#. NB gps_layer_inst_init() is performed after parameter registeration
+#. thus to give the protocols some potential values use the old static list
+#. TODO: find another way to use gps_layer_inst_init()?
+#: ../src/datasource_gps.c:584 ../src/vikgpslayer.c:216
 msgid "GPS Protocol:"
 msgstr "GPS协议："
 
-#: ../src/datasource_gps.c:529 ../src/vikgpslayer.c:206
+#. List reassigned at runtime
+#: ../src/datasource_gps.c:608 ../src/vikgpslayer.c:217
 msgid "Serial Port:"
 msgstr "串口："
 
-#: ../src/datasource_gps.c:579
+#: ../src/datasource_gps.c:658
 msgid ""
 "Turn Off After Transfer\n"
 "(Garmin/NAViLink Only)"
@@ -899,19 +938,19 @@ msgstr ""
 "传送完成后关闭设备\n"
 "（仅对Garmin/NAViLink有效）"
 
-#: ../src/datasource_gps.c:586
+#: ../src/datasource_gps.c:665
 msgid "Tracks:"
 msgstr "轨迹："
 
-#: ../src/datasource_gps.c:593
+#: ../src/datasource_gps.c:672
 msgid "Routes:"
 msgstr "路线："
 
-#: ../src/datasource_gps.c:600
+#: ../src/datasource_gps.c:679
 msgid "Waypoints:"
 msgstr "路标："
 
-#: ../src/datasource_gps.c:678 ../src/vikgpslayer.c:1320
+#: ../src/datasource_gps.c:755 ../src/vikgpslayer.c:1509
 msgid "GPS device: N/A"
 msgstr "GPS设备：无"
 
@@ -943,7 +982,7 @@ msgstr "密码："
 msgid "The password used to login to OSM"
 msgstr "登录OSM（OpenStreetMap开源街图）的密码"
 
-#: ../src/datasource_osm_my_traces.c:427 ../src/viktrwlayer.c:627
+#: ../src/datasource_osm_my_traces.c:427 ../src/viktrwlayer.c:632
 msgid "Description"
 msgstr "说明"
 
@@ -967,6 +1006,7 @@ msgstr "找不到！"
 msgid "My OSM Traces"
 msgstr "我的OSM踪迹"
 
+#. Report errors to the status bar
 #: ../src/datasource_osm_my_traces.c:656
 #, c-format
 msgid "Unable to get trace: %s"
@@ -980,10 +1020,12 @@ msgstr "方向"
 msgid "No routing engines with directions available"
 msgstr "无路线引擎可指示方向"
 
+#. Engine selector
 #: ../src/datasource_routing.c:99
 msgid "Engine:"
 msgstr "引擎："
 
+#. From and To entries
 #: ../src/datasource_routing.c:104
 msgid "From:"
 msgstr "从："
@@ -1004,7 +1046,8 @@ msgstr "网址"
 msgid "URL:"
 msgstr "网址："
 
-#: ../src/datasource_url.c:132 ../src/vikwindow.c:3229
+#. Only GPX (not using GPSbabel)
+#: ../src/datasource_url.c:132 ../src/vikwindow.c:3230
 msgid "GPX"
 msgstr "GPX文件"
 
@@ -1037,46 +1080,46 @@ msgstr "无法映射文件%s：%s"
 msgid "Tile age (days):"
 msgstr "瓦片寿命（天）"
 
-#: ../src/download.c:405
+#: ../src/download.c:406
 #, c-format
 msgid "Download error: %s"
 msgstr "下载错误：%s"
 
-#: ../src/download.c:489
+#: ../src/download.c:490
 msgid "couldn't open temp file"
 msgstr "打不开临时文件"
 
-#: ../src/file.c:452 ../src/file.c:457
+#: ../src/file.c:456 ../src/file.c:461
 #, c-format
 msgid "Draw mode '%s' no more supported"
 msgstr "已不再支持绘制模式‘%s’"
 
-#: ../src/geotag_exif.c:588
+#: ../src/geotag_exif.c:598
 msgid "Not enough memory."
 msgstr "内存不足。"
 
-#: ../src/geotag_exif.c:606
+#: ../src/geotag_exif.c:616
 msgid "Setting a value for this tag is unsupported!"
 msgstr "不支持给该标签赋值！"
 
-#: ../src/geotag_exif.c:625
+#: ../src/geotag_exif.c:635
 #, c-format
 msgid "Too few components specified (need %d, found %d)\n"
 msgstr "指定组件数量太少（需要%d，找到%d）\n"
 
-#: ../src/geotag_exif.c:629
+#: ../src/geotag_exif.c:639
 msgid "Numeric value expected\n"
 msgstr "需要数值\n"
 
-#: ../src/geotag_exif.c:637
+#: ../src/geotag_exif.c:647
 msgid "This shouldn't happen!"
 msgstr "这个不可能发生！"
 
-#: ../src/geotag_exif.c:707
+#: ../src/geotag_exif.c:717
 msgid "Not yet implemented!"
 msgstr "还没实现！"
 
-#: ../src/geotag_exif.c:720
+#: ../src/geotag_exif.c:730
 msgid "Warning; Too many components specified!"
 msgstr "警告；太多指定组件！"
 
@@ -1104,6 +1147,7 @@ msgstr "OSM（OpenStreetMap开源街图）用户名："
 msgid "OSM password:"
 msgstr "OSM（OpenStreetMap开源街图）密码："
 
+#. Preferences
 #: ../src/osm-traces.c:150
 msgid "OpenStreetMap Traces"
 msgstr "OSM轨迹"
@@ -1123,6 +1167,7 @@ msgstr "curl_easy_getinfo函数失效：%d"
 msgid "curl request failed: %s"
 msgstr "curl程序请求失败：%s"
 
+#. Success
 #: ../src/osm-traces.c:325
 msgid "Uploaded to OSM"
 msgstr "已上传到OSM（OpenStreetMap开源街图）"
@@ -1182,8 +1227,8 @@ msgstr ""
 "位于OSM（OpenStreetMap开源街图）上的文件名\n"
 "<small>指要在服务器上创建的文件的名字。不是本机的文件的名字。</small>"
 
-#: ../src/osm-traces.c:430 ../src/viktrwlayer_wpwin.c:180
-#: ../src/viktrwlayer_wpwin.c:182
+#: ../src/osm-traces.c:430 ../src/viktrwlayer_wpwin.c:179
+#: ../src/viktrwlayer_wpwin.c:181
 msgid "Description:"
 msgstr "说明："
 
@@ -1219,6 +1264,8 @@ msgstr "上传%s到OSM（OpenStreetMap开源街图）"
 msgid "Map cache memory size (MB):"
 msgstr "地图缓存的内存大小："
 
+#. NB Can have a couple hundred fonts loaded when using system directories
+#. So ATM don't list them all - otherwise need better GUI feedback display.
 #: ../src/mapnik_interface.cpp:324
 #, c-format
 msgid ""
@@ -1228,11 +1275,11 @@ msgstr ""
 "%s %s\n"
 "插件=%s已加载字体=%d"
 
-#: ../src/mapnik_interface.cpp:325
+#: ../src/mapnik_interface.cpp:325 ../src/vikmapniklayer.c:277
 msgid "Mapnik"
 msgstr "Mapnik程序"
 
-#: ../src/print.c:51 ../src/viktrwlayer.c:535
+#: ../src/print.c:51 ../src/viktrwlayer.c:540
 msgid "None"
 msgstr "无"
 
@@ -1256,6 +1303,7 @@ msgstr "图像设置"
 msgid "done"
 msgstr "完成"
 
+#. Page Size
 #: ../src/print.c:580
 msgid "_Adjust Page Size and Orientation"
 msgstr "调整页面大小和方向(_A)"
@@ -1264,6 +1312,7 @@ msgstr "调整页面大小和方向(_A)"
 msgid "C_enter:"
 msgstr "中心(_e)："
 
+#. ignore page margins
 #: ../src/print.c:614
 msgid "Ignore Page _Margins"
 msgstr "忽略页边距(_M)"
@@ -1331,10 +1380,16 @@ msgstr "缩放等级（OSM）。值在0至22之间"
 msgid "Add a map layer by id value. Use 0 for the default map."
 msgstr "以指定识别号添加图层。用0指代默认层。"
 
-#: ../src/main.c:160
+#: ../src/main.c:159
 #, c-format
-msgid "%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-%s Viking's contributors\n"
-msgstr "%s %s\n版权所有© 2003-2008 埃文·巴塔利亚\n版权所有© 2008-%s 维京贡献者们\n"
+msgid ""
+"%s %s\n"
+"Copyright (c) 2003-2008 Evan Battaglia\n"
+"Copyright (c) 2008-%s Viking's contributors\n"
+msgstr ""
+"%s %s\n"
+"版权所有© 2003-2008 埃文·巴塔利亚\n"
+"版权所有© 2008-%s 维京贡献者们\n"
 
 #: ../src/osm.c:50
 msgid "OpenStreetMap (Mapnik)"
@@ -1348,55 +1403,63 @@ msgstr "OpenStreetMap（骑行）"
 msgid "OpenStreetMap (Transport)"
 msgstr "OpenStreetMap（交通）"
 
-#: ../src/osm.c:79
+#: ../src/osm.c:95
 msgid "OpenStreetMap (Humanitarian)"
 msgstr "OpenStreetMap（人道）"
 
-#: ../src/osm.c:112
+#: ../src/osm.c:111
 msgid "On Disk OSM Tile Format"
 msgstr "保存在磁盘上的OSM瓦片文件格式"
 
-#: ../src/osm.c:122
+#: ../src/osm.c:121
 msgid "MBTiles File"
 msgstr "MBTiles文件"
 
-#: ../src/osm.c:133
+#: ../src/osm.c:132
 msgid "OSM Metatiles"
 msgstr "OSM元数据"
 
-#: ../src/osm.c:148
+#: ../src/osm.c:146
 msgid "Mapbox Outdoors"
 msgstr "Mapbox户外"
 
-#: ../src/osm.c:172
+#: ../src/osm.c:153
+msgid "Mapbox Specific"
+msgstr ""
+
+#: ../src/osm.c:170
 msgid "OSM (view)"
 msgstr "OSM（查看）"
 
-#: ../src/osm.c:176
+#: ../src/osm.c:174
 msgid "OSM (edit)"
 msgstr "OSM（编辑）"
 
-#: ../src/osm.c:181
+#. Note the use of positional parameters
+#: ../src/osm.c:179
 msgid "OSM (query)"
 msgstr "OSM（查询）"
 
-#: ../src/osm.c:185
+#: ../src/osm.c:183
 msgid "OSM (render)"
 msgstr "OSM（渲染）"
 
-#: ../src/osm.c:192
+#. Example: http://127.0.0.1:8111/load_and_zoom?left=8.19&right=8.20&top=48.605&bottom=48.590&select=node413602999
+#. JOSM or merkaartor must already be running with remote interface enabled
+#: ../src/osm.c:190
 msgid "Local port 8111 (eg JOSM)"
 msgstr "本地端口8111（比如JOSM）"
 
-#: ../src/osm.c:197
+#: ../src/osm.c:195
 msgid "Geofabrik Map Compare"
 msgstr "Geofabrik地图对比"
 
-#: ../src/osm.c:205
+#: ../src/osm.c:203
 msgid "OpenStreetMap Notes"
 msgstr "OpenStreetMap（开源街图）注释"
 
-#: ../src/osm.c:231
+#. Not really OSM but can't be bothered to create somewhere else to put it...
+#: ../src/osm.c:229
 msgid "Wikimedia Toolserver GeoHack"
 msgstr "维基百科工具服务器GeoHack"
 
@@ -1408,15 +1471,15 @@ msgstr "首选项"
 msgid "System Default"
 msgstr "系统默认"
 
-#: ../src/toolbar.c:91 ../src/viktrwlayer.c:526
+#: ../src/toolbar.c:91 ../src/viktrwlayer.c:531
 msgid "Small"
 msgstr "小"
 
-#: ../src/toolbar.c:91 ../src/viktrwlayer.c:527
+#: ../src/toolbar.c:91 ../src/viktrwlayer.c:532
 msgid "Medium"
 msgstr "中"
 
-#: ../src/toolbar.c:91 ../src/viktrwlayer.c:528
+#: ../src/toolbar.c:91 ../src/viktrwlayer.c:533
 msgid "Large"
 msgstr "大"
 
@@ -1456,6 +1519,7 @@ msgstr "定制："
 msgid "Customize Buttons"
 msgstr "定制按钮"
 
+#. Preferences
 #: ../src/toolbar.c:145
 msgid "Toolbar"
 msgstr "工具栏"
@@ -1499,7 +1563,7 @@ msgstr "不能打开文件：%s"
 msgid "Layer Defaults"
 msgstr "层的默认设置"
 
-#: ../src/uibuilder.c:185
+#: ../src/uibuilder.c:191
 msgid "Take care that this password will be stored clearly in a plain file."
 msgstr "请注意此密码将以明文保存在文本文件中。"
 
@@ -1507,7 +1571,7 @@ msgstr "请注意此密码将以明文保存在文本文件中。"
 msgid "Aggregate"
 msgstr "聚集"
 
-#: ../src/vikaggregatelayer.c:528 ../src/viktrwlayer.c:11231
+#: ../src/vikaggregatelayer.c:528 ../src/viktrwlayer.c:11254
 #, c-format
 msgid "%s: Waypoint List"
 msgstr "%s：路标列表"
@@ -1520,13 +1584,13 @@ msgstr "用日期搜索"
 msgid "No items found with the requested date."
 msgstr "找不到与该请求数据相关条目。"
 
-#: ../src/vikaggregatelayer.c:609 ../src/viktrwlayer.c:11222
+#: ../src/vikaggregatelayer.c:609 ../src/viktrwlayer.c:11245
 #, c-format
 msgid "%s: Track and Route List"
 msgstr "%s：轨迹和路线列表"
 
-#: ../src/vikaggregatelayer.c:654 ../src/viktrwlayer.c:8080
-#: ../src/viktrwlayer.c:8151 ../src/viktrwlayer.c:8228
+#: ../src/vikaggregatelayer.c:654 ../src/viktrwlayer.c:8107
+#: ../src/viktrwlayer.c:8178 ../src/viktrwlayer.c:8255
 msgid "_Visibility"
 msgstr "可见性(_V)"
 
@@ -1538,44 +1602,44 @@ msgstr "显示全部(_S)"
 msgid "_Hide All"
 msgstr "隐藏全部(_H)"
 
-#: ../src/vikaggregatelayer.c:671 ../src/viktrwlayer.c:8097
-#: ../src/viktrwlayer.c:8168 ../src/viktrwlayer.c:8245
+#: ../src/vikaggregatelayer.c:671 ../src/viktrwlayer.c:8124
+#: ../src/viktrwlayer.c:8195 ../src/viktrwlayer.c:8272
 msgid "_Toggle"
 msgstr "切换(_T)"
 
-#: ../src/vikaggregatelayer.c:678 ../src/viktrwlayer.c:8266
+#: ../src/vikaggregatelayer.c:678 ../src/viktrwlayer.c:8293
 msgid "_Sort"
 msgstr "排序(_S)"
 
-#: ../src/vikaggregatelayer.c:684 ../src/viktrwlayer.c:8272
+#: ../src/vikaggregatelayer.c:684 ../src/viktrwlayer.c:8299
 msgid "Name _Ascending"
 msgstr "名字升序(_A)"
 
-#: ../src/vikaggregatelayer.c:690 ../src/viktrwlayer.c:8278
+#: ../src/vikaggregatelayer.c:690 ../src/viktrwlayer.c:8305
 msgid "Name _Descending"
 msgstr "名字降序(_D)"
 
-#: ../src/vikaggregatelayer.c:696 ../src/viktrwlayer.c:538
-#: ../src/viktrwlayer.c:8284
+#: ../src/vikaggregatelayer.c:696 ../src/viktrwlayer.c:543
+#: ../src/viktrwlayer.c:8311
 msgid "Date Ascending"
 msgstr "日期升序"
 
-#: ../src/vikaggregatelayer.c:702 ../src/viktrwlayer.c:539
-#: ../src/viktrwlayer.c:8290
+#: ../src/vikaggregatelayer.c:702 ../src/viktrwlayer.c:544
+#: ../src/viktrwlayer.c:8317
 msgid "Date Descending"
 msgstr "日期降序"
 
-#: ../src/vikaggregatelayer.c:708 ../src/viktrwlayer.c:8179
-#: ../src/viktrwlayer.c:8257 ../src/viktrwlayer.c:8329
+#: ../src/vikaggregatelayer.c:708 ../src/viktrwlayer.c:8206
+#: ../src/viktrwlayer.c:8284 ../src/viktrwlayer.c:8356
 #: ../src/viktrwlayer_tracklist.c:296
 msgid "_Statistics"
 msgstr "统计(_S)"
 
-#: ../src/vikaggregatelayer.c:713 ../src/viktrwlayer.c:4413
+#: ../src/vikaggregatelayer.c:713 ../src/viktrwlayer.c:4421
 msgid "Track _List..."
 msgstr "轨迹列表(_L)…"
 
-#: ../src/vikaggregatelayer.c:719 ../src/viktrwlayer.c:4420
+#: ../src/vikaggregatelayer.c:719 ../src/viktrwlayer.c:4428
 msgid "_Waypoint List..."
 msgstr "路标列表(_W)…"
 
@@ -1591,11 +1655,18 @@ msgstr "按日期(_D)…"
 msgid "Find the first item with a specified date"
 msgstr "以指定日期查找第一个条目"
 
+#. Could have a more complicated tooltip that numbers each type of layers,
+#. but for now a simple overall count
 #: ../src/vikaggregatelayer.c:978
 #, c-format
 msgid "One layer"
 msgid_plural "%d layers"
 msgstr[0] "%d层"
+
+#: ../src/vikaggregatelayer.c:981
+#, fuzzy, c-format
+msgid "Empty"
+msgstr "清空全部(_A)"
 
 #: ../src/vikdemlayer.c:85
 msgid "SRTM Global 90m (3 arcsec)"
@@ -1621,7 +1692,7 @@ msgstr "下载源："
 msgid "Min Elev Color:"
 msgstr "最低高程颜色："
 
-#: ../src/vikdemlayer.c:122 ../src/viktrwlayer_wpwin.c:191
+#: ../src/vikdemlayer.c:122 ../src/viktrwlayer_wpwin.c:190
 msgid "Type:"
 msgstr "类型："
 
@@ -1633,47 +1704,48 @@ msgstr "最低高程："
 msgid "Max Elev:"
 msgstr "最高高程："
 
-#: ../src/vikdemlayer.c:135
+#: ../src/vikdemlayer.c:136
 msgid "_DEM Download"
 msgstr "DEM下载(_D)"
 
-#: ../src/vikdemlayer.c:135
+#: ../src/vikdemlayer.c:136
 msgid "DEM Download"
 msgstr "DEM下载"
 
-#: ../src/vikdemlayer.c:189
+#: ../src/vikdemlayer.c:190
 msgid "DEM"
 msgstr "DEM高程"
 
-#: ../src/vikdemlayer.c:301
+#: ../src/vikdemlayer.c:302
 #, c-format
 msgid "Number of files: %d"
 msgstr "文件数量：%d"
 
-#: ../src/vikdemlayer.c:442
+#: ../src/vikdemlayer.c:443
 msgid "DEM Loading"
 msgstr "正加载DEM（数字高程模型）"
 
-#: ../src/vikdemlayer.c:956
+#: ../src/vikdemlayer.c:957
 #, c-format
 msgid "No SRTM data available for %f, %f"
 msgstr "无可用SRTM（航天飞机雷达测地任务）数据给%f，%f"
 
-#: ../src/vikdemlayer.c:977
+#: ../src/vikdemlayer.c:978
 #, c-format
 msgid "DEM download failure for %f, %f"
 msgstr "DEM（数字高程模型）加载失败%f，%f"
 
-#: ../src/vikdemlayer.c:983
+#: ../src/vikdemlayer.c:984
 #, c-format
 msgid "DEM write failure for %s"
 msgstr "DEM（数字高程模型）写入失败%s"
 
-#: ../src/vikdemlayer.c:1232
+#. Probably not over any land...
+#: ../src/vikdemlayer.c:1231
 msgid "No DEM File Available"
 msgstr "无可用DEM（数字高程模型）文件"
 
-#: ../src/vikdemlayer.c:1251
+#: ../src/vikdemlayer.c:1250
 #, c-format
 msgid ""
 "\n"
@@ -1688,7 +1760,7 @@ msgstr ""
 "DEM文件：%s\n"
 "DEM文件时间戳：%s"
 
-#: ../src/vikdemlayer.c:1255
+#: ../src/vikdemlayer.c:1254
 #, c-format
 msgid ""
 "Source: %s\n"
@@ -1699,12 +1771,12 @@ msgstr ""
 "\n"
 "无DEM文件！"
 
-#: ../src/vikdemlayer.c:1295
+#: ../src/vikdemlayer.c:1294
 #, c-format
 msgid "Downloading DEM %s"
 msgstr "正下载DEM%s"
 
-#: ../src/vikdemlayer.c:1320
+#: ../src/vikdemlayer.c:1319
 msgid "_Show DEM File Information"
 msgstr "显示DEM文件信息(_S)"
 
@@ -1716,7 +1788,7 @@ msgstr "浏览…"
 msgid "Choose file"
 msgstr "选择文件"
 
-#: ../src/vikfileentry.c:122 ../src/vikwindow.c:4070
+#: ../src/vikfileentry.c:122 ../src/vikwindow.c:4071
 msgid "PNG"
 msgstr "PNG文件"
 
@@ -1760,155 +1832,156 @@ msgstr "Georef移动地图(_G)"
 msgid "Georef Move Map"
 msgstr "Georef移动地图"
 
-#: ../src/vikgeoreflayer.c:104
+#: ../src/vikgeoreflayer.c:105
 msgid "Georef Z_oom Tool"
 msgstr "Georef缩放工具(_o)"
 
-#: ../src/vikgeoreflayer.c:104
+#: ../src/vikgeoreflayer.c:105
 msgid "Georef Zoom Tool"
 msgstr "Georef缩放工具"
 
-#: ../src/vikgeoreflayer.c:114
+#: ../src/vikgeoreflayer.c:115
 msgid "GeoRef Map"
 msgstr "GeoRef地图"
 
-#: ../src/vikgeoreflayer.c:211
+#: ../src/vikgeoreflayer.c:212
 msgid "Auto Read World Files:"
 msgstr "自动读取世界文件："
 
-#: ../src/vikgeoreflayer.c:212
+#: ../src/vikgeoreflayer.c:213
 msgid ""
 "Automatically attempt to read associated world file of a new image for a "
 "GeoRef layer"
 msgstr "自动尝试读取GeoRef图层新图像相关世界文件"
 
-#: ../src/vikgeoreflayer.c:487 ../src/vikgeoreflayer.c:772
-#: ../src/vikmapslayer.c:1151
+#: ../src/vikgeoreflayer.c:488 ../src/vikgeoreflayer.c:773
+#: ../src/vikmapslayer.c:1159
 #, c-format
 msgid "Couldn't open image file: %s"
 msgstr "打不开图像文件：%s"
 
-#: ../src/vikgeoreflayer.c:583 ../src/vikgeoreflayer.c:609
+#: ../src/vikgeoreflayer.c:584 ../src/vikgeoreflayer.c:610
 msgid "Choose World file"
 msgstr "选择世界文件"
 
-#: ../src/vikgeoreflayer.c:595
+#: ../src/vikgeoreflayer.c:596
 msgid "The World file you requested could not be opened for reading."
 msgstr "所求世界文件打不开来读取。"
 
-#: ../src/vikgeoreflayer.c:597
+#: ../src/vikgeoreflayer.c:598
 msgid "Unexpected end of file reading World file."
 msgstr "未料到的文件尾于读取世界文件时。"
 
-#: ../src/vikgeoreflayer.c:622
+#: ../src/vikgeoreflayer.c:623
 msgid "The file you requested could not be opened for writing."
 msgstr "打不开指定文件来写入内容。"
 
-#: ../src/vikgeoreflayer.c:757
+#: ../src/vikgeoreflayer.c:758
 msgid "Lower right corner values may not be consistent with upper right values"
 msgstr "右下角值与右上角值不一致"
 
-#: ../src/vikgeoreflayer.c:781
+#: ../src/vikgeoreflayer.c:782
 #, c-format
 msgid "Invalid image size: %s"
 msgstr "无效的图像大小：%s"
 
-#: ../src/vikgeoreflayer.c:806 ../src/viklayer.c:546 ../src/vikwindow.c:4535
+#: ../src/vikgeoreflayer.c:807 ../src/viklayer.c:550 ../src/vikwindow.c:4550
 msgid "Layer Properties"
 msgstr "图层属性"
 
-#: ../src/vikgeoreflayer.c:828
+#: ../src/vikgeoreflayer.c:829
 msgid "World File Parameters:"
 msgstr "世界文件参数："
 
-#: ../src/vikgeoreflayer.c:829
+#: ../src/vikgeoreflayer.c:830
 msgid "Load From File..."
 msgstr "从文件加载…"
 
-#: ../src/vikgeoreflayer.c:834
+#: ../src/vikgeoreflayer.c:835
 msgid "Corner pixel easting:"
 msgstr "角像素东进："
 
-#: ../src/vikgeoreflayer.c:836
+#: ../src/vikgeoreflayer.c:837
 msgid "the UTM \"easting\" value of the upper-left corner pixel of the map"
 msgstr "地图左上方像素的通用横墨卡托投影“东进”值"
 
-#: ../src/vikgeoreflayer.c:838
+#: ../src/vikgeoreflayer.c:839
 msgid "Corner pixel northing:"
 msgstr "角像素北进："
 
-#: ../src/vikgeoreflayer.c:840
+#: ../src/vikgeoreflayer.c:841
 msgid "the UTM \"northing\" value of the upper-left corner pixel of the map"
 msgstr "地图左上方像素的通用横墨卡托投影“北进”值"
 
-#: ../src/vikgeoreflayer.c:842
+#: ../src/vikgeoreflayer.c:843
 msgid "X (easting) scale (mpp): "
 msgstr "X（东进）缩放参数（米每像素）: "
 
-#: ../src/vikgeoreflayer.c:843
+#: ../src/vikgeoreflayer.c:844
 msgid "Y (northing) scale (mpp): "
 msgstr "Y（北进）缩放参数（米每像素）: "
 
-#: ../src/vikgeoreflayer.c:846
+#: ../src/vikgeoreflayer.c:847
 msgid "the scale of the map in the X direction (meters per pixel)"
 msgstr "X方向地图缩放参数（米每像素）"
 
-#: ../src/vikgeoreflayer.c:848
+#: ../src/vikgeoreflayer.c:849
 msgid "the scale of the map in the Y direction (meters per pixel)"
 msgstr "Y方向地图缩放参数（米每像素）"
 
-#: ../src/vikgeoreflayer.c:850
+#: ../src/vikgeoreflayer.c:851
 msgid "Map Image:"
 msgstr "地图图像："
 
-#: ../src/vikgeoreflayer.c:895
+#: ../src/vikgeoreflayer.c:896
 msgid "Upper left latitude:"
 msgstr "左上角纬度："
 
-#: ../src/vikgeoreflayer.c:897
+#: ../src/vikgeoreflayer.c:898
 msgid "Upper left longitude:"
 msgstr "左上角经度："
 
-#: ../src/vikgeoreflayer.c:899
+#: ../src/vikgeoreflayer.c:900
 msgid "Lower right latitude:"
 msgstr "右下角维度："
 
-#: ../src/vikgeoreflayer.c:901
+#: ../src/vikgeoreflayer.c:902
 msgid "Lower right longitude:"
 msgstr "右下角经度："
 
-#: ../src/vikgeoreflayer.c:913
+#: ../src/vikgeoreflayer.c:914
 msgid "Calculate MPP values from coordinates"
 msgstr "从坐标计算米每像素值"
 
-#: ../src/vikgeoreflayer.c:914
+#: ../src/vikgeoreflayer.c:915
 msgid ""
 "Enter all corner coordinates before calculating the MPP values from the "
 "image size"
 msgstr "请从图像大小计算米每像素值前输入全部坐标"
 
-#: ../src/vikgeoreflayer.c:924
+#: ../src/vikgeoreflayer.c:925
 msgid "UTM"
 msgstr "通用横墨卡托投影"
 
-#: ../src/vikgeoreflayer.c:925
+#: ../src/vikgeoreflayer.c:926
 msgid "Latitude/Longitude"
 msgstr "维度/经度"
 
-#: ../src/vikgeoreflayer.c:933 ../src/vikmapniklayer.c:83
-#: ../src/vikmapslayer.c:159
+#: ../src/vikgeoreflayer.c:934 ../src/vikmapniklayer.c:82
+#: ../src/vikmapslayer.c:158
 msgid "Alpha:"
 msgstr "透明度："
 
-#: ../src/vikgeoreflayer.c:1032
+#. Now with icons
+#: ../src/vikgeoreflayer.c:1033
 msgid "_Zoom to Fit Map"
 msgstr "缩放到布满地图(_Z)"
 
-#: ../src/vikgeoreflayer.c:1038
+#: ../src/vikgeoreflayer.c:1039
 msgid "_Goto Map Center"
 msgstr "去地图中心(_G)"
 
-#: ../src/vikgeoreflayer.c:1044
+#: ../src/vikgeoreflayer.c:1045
 msgid "_Export to World File"
 msgstr "导出到世界文件(_E)"
 
@@ -1940,279 +2013,304 @@ msgstr "服务请求失败。确定要去另一地点？"
 msgid "Locality"
 msgstr "所在地"
 
-#: ../src/vikgpslayer.c:126
+#: ../src/vikgpslayer.c:137
 msgid "Data Mode"
 msgstr "数据模式"
 
-#: ../src/vikgpslayer.c:128
+#: ../src/vikgpslayer.c:139
 msgid "Realtime Tracking Mode"
 msgstr "实时跟踪模式"
 
-#: ../src/vikgpslayer.c:165
+#: ../src/vikgpslayer.c:176
 msgid "Keep vehicle at center"
 msgstr "保持车辆在中心"
 
-#: ../src/vikgpslayer.c:166
+#: ../src/vikgpslayer.c:177
 msgid "Keep vehicle on screen"
 msgstr "保存车辆在屏幕内"
 
-#: ../src/vikgpslayer.c:167
+#: ../src/vikgpslayer.c:178
 msgid "Disable"
 msgstr "停用"
 
-#: ../src/vikgpslayer.c:207
+#: ../src/vikgpslayer.c:218
 msgid "Download Tracks:"
 msgstr "下载轨迹："
 
-#: ../src/vikgpslayer.c:208
+#: ../src/vikgpslayer.c:219
 msgid "Upload Tracks:"
 msgstr "上传轨迹："
 
-#: ../src/vikgpslayer.c:209
+#: ../src/vikgpslayer.c:220
 msgid "Download Routes:"
 msgstr "下载路线："
 
-#: ../src/vikgpslayer.c:210
+#: ../src/vikgpslayer.c:221
 msgid "Upload Routes:"
 msgstr "上传路线："
 
-#: ../src/vikgpslayer.c:211
+#: ../src/vikgpslayer.c:222
 msgid "Download Waypoints:"
 msgstr "下载路标："
 
-#: ../src/vikgpslayer.c:212
+#: ../src/vikgpslayer.c:223
 msgid "Upload Waypoints:"
 msgstr "上传路标："
 
-#: ../src/vikgpslayer.c:214
+#: ../src/vikgpslayer.c:225
 msgid "Recording tracks"
 msgstr "正在纪录轨迹"
 
-#: ../src/vikgpslayer.c:215
+#: ../src/vikgpslayer.c:226
 msgid "Jump to current position on start"
 msgstr "开始时到当前位置"
 
-#: ../src/vikgpslayer.c:216
+#: ../src/vikgpslayer.c:227
 msgid "Moving Map Method:"
 msgstr "移动地图方法："
 
-#: ../src/vikgpslayer.c:217
+#: ../src/vikgpslayer.c:228
 msgid "Update Statusbar:"
 msgstr "更新状态栏："
 
-#: ../src/vikgpslayer.c:217
+#: ../src/vikgpslayer.c:228
 msgid "Display information in the statusbar on GPS updates"
 msgstr "GPS更新时在状态栏显示信息"
 
-#: ../src/vikgpslayer.c:218
+#: ../src/vikgpslayer.c:229
+#, fuzzy
+msgid "Auto Connect"
+msgstr "自动定位"
+
+#: ../src/vikgpslayer.c:229
+msgid "Automatically connect to GPSD"
+msgstr ""
+
+#: ../src/vikgpslayer.c:230
 msgid "Gpsd Host:"
 msgstr "Gpsd主机："
 
-#: ../src/vikgpslayer.c:219
+#: ../src/vikgpslayer.c:231
 msgid "Gpsd Port:"
 msgstr "Gpsd端口："
 
-#: ../src/vikgpslayer.c:220
+#: ../src/vikgpslayer.c:232
 msgid "Gpsd Retry Interval (seconds):"
 msgstr "Gpsd重试间隔(秒)："
 
-#: ../src/vikgpslayer.c:241
+#: ../src/vikgpslayer.c:254
 msgid "GPS"
 msgstr "GPS定位"
 
-#: ../src/vikgpslayer.c:307 ../src/vikgpslayer.c:1273
+#: ../src/vikgpslayer.c:320 ../src/vikgpslayer.c:1504
 msgid "GPS Download"
 msgstr "GPS下载"
 
-#: ../src/vikgpslayer.c:307 ../src/vikgpslayer.c:1273 ../src/viktrwlayer.c:3885
+#: ../src/vikgpslayer.c:320 ../src/vikgpslayer.c:1504 ../src/viktrwlayer.c:3893
 msgid "GPS Upload"
 msgstr "GPS上传"
 
-#: ../src/vikgpslayer.c:309
+#: ../src/vikgpslayer.c:322
 msgid "GPS Realtime Tracking"
 msgstr "GPS实时跟踪"
 
-#: ../src/vikgpslayer.c:520
+#: ../src/vikgpslayer.c:458
+msgid "Connected"
+msgstr ""
+
+#: ../src/vikgpslayer.c:460
+msgid "Disconnected"
+msgstr ""
+
+#: ../src/vikgpslayer.c:554
 msgid "Unknown GPS Protocol"
 msgstr "未知GPS协议"
 
-#: ../src/vikgpslayer.c:538
+#: ../src/vikgpslayer.c:572
 msgid "Unknown serial port device"
 msgstr "未知串口设备"
 
-#: ../src/vikgpslayer.c:651
+#: ../src/vikgpslayer.c:691
 #, c-format
 msgid "%s: unknown parameter"
 msgstr "%s：未知参数"
 
-#: ../src/vikgpslayer.c:746
+#. Now with icons
+#: ../src/vikgpslayer.c:794
 msgid "_Upload to GPS"
 msgstr "上传到GPS(_U)"
 
-#: ../src/vikgpslayer.c:752
+#: ../src/vikgpslayer.c:800
 msgid "Download from _GPS"
 msgstr "从_GPS下载"
 
-#: ../src/vikgpslayer.c:773
+#: ../src/vikgpslayer.c:821
 msgid "Empty _Realtime"
 msgstr "清空实时(_R)"
 
-#: ../src/vikgpslayer.c:780
+#: ../src/vikgpslayer.c:828
 msgid "E_mpty Upload"
 msgstr "清空上传(_m)"
 
-#: ../src/vikgpslayer.c:786
+#: ../src/vikgpslayer.c:834
 msgid "_Empty Download"
 msgstr "清空下载(_E)"
 
-#: ../src/vikgpslayer.c:792
+#: ../src/vikgpslayer.c:840
 msgid "Empty _All"
 msgstr "清空全部(_A)"
 
-#: ../src/vikgpslayer.c:804
+#: ../src/vikgpslayer.c:852
 #, c-format
 msgid "Unexpected number of disconnected handlers: %d"
 msgstr "未料到数量的断开的处理程序：%d"
 
-#: ../src/vikgpslayer.c:911
+#: ../src/vikgpslayer.c:995
 #, c-format
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
 msgstr[0] "正上传%d路标…"
 
-#: ../src/vikgpslayer.c:912
+#: ../src/vikgpslayer.c:1000
 #, c-format
 msgid "Uploading %d trackpoint..."
 msgid_plural "Uploading %d trackpoints..."
 msgstr[0] "正上传%d轨迹点…"
 
-#: ../src/vikgpslayer.c:913
+#: ../src/vikgpslayer.c:1005
 #, c-format
 msgid "Uploading %d routepoint..."
 msgid_plural "Uploading %d routepoints..."
 msgstr[0] "正上传%d路线点…"
 
-#: ../src/vikgpslayer.c:938
+#: ../src/vikgpslayer.c:1034
 #, c-format
 msgid "Downloaded %d out of %d waypoint..."
 msgid_plural "Downloaded %d out of %d waypoints..."
 msgstr[0] "已下载%d，总共%d路标…"
 
-#: ../src/vikgpslayer.c:939
+#: ../src/vikgpslayer.c:1040
 #, c-format
 msgid "Downloaded %d out of %d trackpoint..."
 msgid_plural "Downloaded %d out of %d trackpoints..."
 msgstr[0] "已下载%d，总共%d轨迹点…"
 
-#: ../src/vikgpslayer.c:940
+#: ../src/vikgpslayer.c:1046
 #, c-format
 msgid "Downloaded %d out of %d routepoint..."
 msgid_plural "Downloaded %d out of %d routepoints..."
 msgstr[0] "已下载%d，总共%d路线点…"
 
-#: ../src/vikgpslayer.c:945
+#: ../src/vikgpslayer.c:1056
 #, c-format
 msgid "Uploaded %d out of %d waypoint..."
 msgid_plural "Uploaded %d out of %d waypoints..."
 msgstr[0] "已上传%d，总共%d路标…"
 
-#: ../src/vikgpslayer.c:946
+#: ../src/vikgpslayer.c:1062
 #, c-format
 msgid "Uploaded %d out of %d trackpoint..."
 msgid_plural "Uploaded %d out of %d trackpoints..."
 msgstr[0] "已上传%d，总共%d轨迹点…"
 
-#: ../src/vikgpslayer.c:947
+#: ../src/vikgpslayer.c:1068
 #, c-format
 msgid "Uploaded %d out of %d routepoint..."
 msgid_plural "Uploaded %d out of %d routepoints..."
 msgstr[0] "已上传%d，总共%d路线点…"
 
-#: ../src/vikgpslayer.c:955
+#: ../src/vikgpslayer.c:1079
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
 msgstr[0] "已下载%d路标"
 
-#: ../src/vikgpslayer.c:956
+#: ../src/vikgpslayer.c:1085
 #, c-format
 msgid "Downloaded %d trackpoint"
 msgid_plural "Downloaded %d trackpoints"
 msgstr[0] "已下载%d轨迹点"
 
-#: ../src/vikgpslayer.c:957
+#: ../src/vikgpslayer.c:1091
 #, c-format
 msgid "Downloaded %d routepoint"
 msgid_plural "Downloaded %d routepoints"
 msgstr[0] "已下载%d路线点"
 
-#: ../src/vikgpslayer.c:962
+#: ../src/vikgpslayer.c:1101
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
 msgstr[0] "已上传%d路标"
 
-#: ../src/vikgpslayer.c:963
+#: ../src/vikgpslayer.c:1107
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
 msgstr[0] "已上传%d轨迹点"
 
-#: ../src/vikgpslayer.c:964
+#: ../src/vikgpslayer.c:1113
 #, c-format
 msgid "Uploaded %d routepoint"
 msgid_plural "Uploaded %d routepoints"
 msgstr[0] "已上传%d路线点"
 
-#: ../src/vikgpslayer.c:1194
-msgid "Error: couldn't find gpsbabel."
-msgstr "错误: 未发现gpsbabel程序。"
+#: ../src/vikgpslayer.c:1363
+msgid "Error: No result."
+msgstr ""
 
-#: ../src/vikgpslayer.c:1284
+#: ../src/vikgpslayer.c:1471
 msgid "Warning - GPS Upload items may overwrite each other"
 msgstr "警告-GPS上传条目可能覆盖彼此"
 
-#: ../src/vikgpslayer.c:1316
+#: ../src/vikgpslayer.c:1506
 msgid "Status: detecting gpsbabel"
 msgstr "状态: 正在检测gpsbabel程序"
 
-#: ../src/vikgpslayer.c:1351
+#: ../src/vikgpslayer.c:1533
 msgid "No GPS items selected for transfer."
 msgstr "无GPS条目选中来发送。"
 
-#: ../src/vikgpslayer.c:1367
+#: ../src/vikgpslayer.c:1546
 msgid "Could not turn off device."
 msgstr "无法关闭设备。"
 
-#: ../src/vikgpslayer.c:1405
+#: ../src/vikgpslayer.c:1589
 msgid "Are you sure you want to delete GPS Upload data?"
 msgstr "确定要删除GPS上传数据？"
 
-#: ../src/vikgpslayer.c:1418
+#: ../src/vikgpslayer.c:1602
 msgid "Are you sure you want to delete GPS Download data?"
 msgstr "确定要删除GPS下载数据？"
 
-#: ../src/vikgpslayer.c:1432
+#: ../src/vikgpslayer.c:1616
 msgid "Are you sure you want to delete GPS Realtime data?"
 msgstr "确定要删除GPS实时数据？"
 
-#: ../src/vikgpslayer.c:1445
+#: ../src/vikgpslayer.c:1630
 msgid "Are you sure you want to delete All GPS data?"
 msgstr "确定要删除全部GPS数据？"
+
+#: ../src/vikgpslayer.c:1972
+#, c-format
+msgid ""
+"Failed to connect to gpsd at %s (port %s)\n"
+"Should Viking keep trying (every %d seconds)?"
+msgstr ""
 
 #: ../src/viklayerspanel.c:55
 msgid "C_ut"
 msgstr "剪切(_U)"
 
-#: ../src/viklayerspanel.c:56 ../src/vikwindow.c:4526
+#: ../src/viklayerspanel.c:56 ../src/vikwindow.c:4541
 msgid "_Copy"
 msgstr "拷贝(_C)"
 
-#: ../src/viklayerspanel.c:57 ../src/vikwindow.c:4527
+#: ../src/viklayerspanel.c:57 ../src/vikwindow.c:4542
 msgid "_Paste"
 msgstr "粘贴(_P)"
 
-#: ../src/viklayerspanel.c:58 ../src/vikwindow.c:4528
+#: ../src/viklayerspanel.c:58 ../src/vikwindow.c:4543
 msgid "_Delete"
 msgstr "删除(_D)"
 
@@ -2228,7 +2326,7 @@ msgstr "顶层"
 msgid "Add new layer"
 msgstr "添加新层"
 
-#: ../src/viklayerspanel.c:204 ../src/vikwindow.c:4528
+#: ../src/viklayerspanel.c:204 ../src/vikwindow.c:4543
 msgid "Remove selected layer"
 msgstr "删除所选层"
 
@@ -2240,15 +2338,15 @@ msgstr "移上所选层"
 msgid "Move selected layer down"
 msgstr "移下所选层"
 
-#: ../src/viklayerspanel.c:225 ../src/vikwindow.c:4525
+#: ../src/viklayerspanel.c:225 ../src/vikwindow.c:4540
 msgid "Cut selected layer"
 msgstr "剪切所选层"
 
-#: ../src/viklayerspanel.c:232 ../src/vikwindow.c:4526
+#: ../src/viklayerspanel.c:232 ../src/vikwindow.c:4541
 msgid "Copy selected layer"
 msgstr "复制所选层"
 
-#: ../src/viklayerspanel.c:239 ../src/vikwindow.c:4527
+#: ../src/viklayerspanel.c:239 ../src/vikwindow.c:4542
 msgid ""
 "Paste layer into selected container layer or otherwise above selected layer"
 msgstr "黏贴图层到所选容器层否则到所选层上部"
@@ -2274,27 +2372,27 @@ msgstr "确定要删除%s？"
 msgid "You cannot delete the Top Layer."
 msgstr "不能删除顶层。"
 
-#: ../src/vikmapniklayer.c:79
+#: ../src/vikmapniklayer.c:78
 msgid "CSS (MML) Config File:"
 msgstr "CSS（MML）配置文件："
 
-#: ../src/vikmapniklayer.c:80
+#: ../src/vikmapniklayer.c:79
 msgid "CartoCSS configuration file"
 msgstr "CartoCSS配置文件："
 
-#: ../src/vikmapniklayer.c:81
+#: ../src/vikmapniklayer.c:80
 msgid "XML Config File:"
 msgstr "XML配置文件："
 
-#: ../src/vikmapniklayer.c:82
+#: ../src/vikmapniklayer.c:81
 msgid "Mapnik XML configuration file"
 msgstr "Mapnik程序的XML配置文件"
 
-#: ../src/vikmapniklayer.c:85
+#: ../src/vikmapniklayer.c:84
 msgid "Use File Cache:"
 msgstr "使用文件缓存："
 
-#: ../src/vikmapniklayer.c:87
+#: ../src/vikmapniklayer.c:86
 msgid "File Cache Directory:"
 msgstr "文件缓存目录："
 
@@ -2310,6 +2408,7 @@ msgstr "Mapnik特性"
 msgid "Mapnik Rendering"
 msgstr "Mapnik渲染"
 
+#. Changing these values only applies before first mapnik layer is 'created'
 #: ../src/vikmapniklayer.c:257
 msgid "Plugins Directory:"
 msgstr "插件目录："
@@ -2331,6 +2430,7 @@ msgstr "递归字体目录："
 msgid "Rerender Timeout (hours):"
 msgstr "重新渲染限时（小时）："
 
+#. Changeable any time
 #: ../src/vikmapniklayer.c:262
 msgid "CartoCSS:"
 msgstr "CartoCSS："
@@ -2390,12 +2490,12 @@ msgstr "清理内存缓存(_F)"
 msgid "_Run Carto Command"
 msgstr "运行Carto命令(_R)"
 
-#: ../src/vikmapniklayer.c:1101 ../src/vikmapslayer.c:2005
+#: ../src/vikmapniklayer.c:1101 ../src/vikmapslayer.c:2013
 #, c-format
 msgid "Tile File Timestamp: %s"
 msgstr "瓦片文件时间戳：%s"
 
-#: ../src/vikmapniklayer.c:1104 ../src/vikmapslayer.c:2008
+#: ../src/vikmapniklayer.c:1104 ../src/vikmapslayer.c:2016
 msgid "Tile File Timestamp: Not Available"
 msgstr "瓦片文件时间戳：不可用"
 
@@ -2404,7 +2504,7 @@ msgstr "瓦片文件时间戳：不可用"
 msgid "Rendering time %.2f seconds"
 msgstr "渲染时间为%.2f秒"
 
-#: ../src/vikmapniklayer.c:1123 ../src/vikmapslayer.c:2018
+#: ../src/vikmapniklayer.c:1123 ../src/vikmapslayer.c:2026
 msgid "Tile Information"
 msgstr "瓦片信息"
 
@@ -2416,71 +2516,74 @@ msgstr "重新渲染瓦片(_R)"
 msgid "_Info"
 msgstr "信息(_I)"
 
-#: ../src/vikmapslayer.c:97
+#. ******* MAPZOOMS ********
+#: ../src/vikmapslayer.c:96
 msgid "Use Viking Zoom Level"
 msgstr "使用维京缩放等级"
 
-#: ../src/vikmapslayer.c:147
+#: ../src/vikmapslayer.c:146
 msgid "OSM"
 msgstr "OSM（OpenStreetMap开源街图）"
 
-#: ../src/vikmapslayer.c:153
+#. NB mode => id - But can't break file format just to rename something better
+#: ../src/vikmapslayer.c:152
 msgid "Map Type:"
 msgstr "地图类型："
 
-#: ../src/vikmapslayer.c:154
+#: ../src/vikmapslayer.c:153
 msgid "Maps Directory:"
 msgstr "地图目录："
 
-#: ../src/vikmapslayer.c:155
+#: ../src/vikmapslayer.c:154
 msgid "Cache Layout:"
 msgstr "缓存布局："
 
-#: ../src/vikmapslayer.c:156
+#: ../src/vikmapslayer.c:155
 msgid "This determines the tile storage layout on disk"
 msgstr "本项决定瓦片在磁盘中的存放布局"
 
-#: ../src/vikmapslayer.c:157
+#: ../src/vikmapslayer.c:156
 msgid "Map File:"
 msgstr "地图文件："
 
-#: ../src/vikmapslayer.c:158
+#: ../src/vikmapslayer.c:157
 msgid "An MBTiles file. Only applies when the map type method is 'MBTiles'"
 msgstr "MBTiles文件。仅适用于地图类型为‘MBTiles’"
 
-#: ../src/vikmapslayer.c:160
+#: ../src/vikmapslayer.c:159
 msgid "Control the Alpha value for transparency effects"
 msgstr "控制透明度值实现透明效果"
 
-#: ../src/vikmapslayer.c:161
+#: ../src/vikmapslayer.c:160
 msgid "Autodownload maps:"
 msgstr "自动下载地图："
 
-#: ../src/vikmapslayer.c:162
+#: ../src/vikmapslayer.c:161
 msgid "Autodownload Only Gets Missing Maps:"
 msgstr "自动下载仅用于获取缺失地图："
 
-#: ../src/vikmapslayer.c:163
+#: ../src/vikmapslayer.c:162
 msgid ""
 "Using this option avoids attempting to update already acquired tiles. This "
 "can be useful if you want to restrict the network usage, without having to "
 "resort to manual control. Only applies when 'Autodownload Maps' is on."
-msgstr "使用本项可避免更新已获得的瓦片。用于减少网络流量和人工干预。"
-"仅适用于‘自动下载地图’已启用。"
+msgstr ""
+"使用本项可避免更新已获得的瓦片。用于减少网络流量和人工干预。仅适用于‘自动下载"
+"地图’已启用。"
 
-#: ../src/vikmapslayer.c:164
+#: ../src/vikmapslayer.c:163
 msgid "Zoom Level:"
 msgstr "缩放等级："
 
-#: ../src/vikmapslayer.c:165
+#: ../src/vikmapslayer.c:164
 msgid ""
 "Determines the method of displaying map tiles for the current zoom level. "
 "'Viking Zoom Level' uses the best matching level, otherwise setting a fixed "
 "value will always use map tiles of the specified value regardless of the "
 "actual zoom level."
-msgstr "决定了为当前缩放等级显示地图瓦片的方法。"
-"‘维京缩放等级’使用最佳匹配等级，"
-"否则设置固定值会一直使用指定值的地图瓦片而不管实际的缩放等级。"
+msgstr ""
+"决定了为当前缩放等级显示地图瓦片的方法。‘维京缩放等级’使用最佳匹配等级，否则"
+"设置固定值会一直使用指定值的地图瓦片而不管实际的缩放等级。"
 
 #: ../src/vikmapslayer.c:197
 msgid "_Maps Download"
@@ -2490,7 +2593,7 @@ msgstr "已下载地图(_M)"
 msgid "Maps Download"
 msgstr "地图下载"
 
-#: ../src/vikmapslayer.c:212 ../src/vikutils.c:851
+#: ../src/vikmapslayer.c:212 ../src/vikutils.c:887
 msgid "Map"
 msgstr "地图"
 
@@ -2506,11 +2609,16 @@ msgstr "选择目录来保存该层已缓存地图瓦片"
 msgid "Unknown map type"
 msgstr "未知地图类型"
 
-#: ../src/vikmapslayer.c:661
+#: ../src/vikmapslayer.c:663
 msgid "Unknown Map Zoom"
 msgstr "未知地图缩放"
 
-#: ../src/vikmapslayer.c:830
+#: ../src/vikmapslayer.c:832
+#, c-format
+msgid "Failed to open MBTiles file: %s"
+msgstr "打不开MBTiles文件：%s"
+
+#: ../src/vikmapslayer.c:855
 #, c-format
 msgid ""
 "New map cannot be displayed in the current drawmode.\n"
@@ -2519,73 +2627,90 @@ msgstr ""
 "新地图无法在当前绘制模式下显示。\n"
 "在显示菜单中选择‘%s’。"
 
-#: ../src/vikmapslayer.c:849
-#, c-format
-msgid "Failed to open MBTiles file: %s"
-msgstr "打不开MBTiles文件：%s"
-
-#: ../src/vikmapslayer.c:1291
+#: ../src/vikmapslayer.c:1299
 #, c-format
 msgid ""
 "Cowardly refusing to draw tiles or existence of tiles beyond %d zoom out "
 "factor"
 msgstr "无法绘制瓦片或瓦片超出%d缩放因子"
 
-#: ../src/vikmapslayer.c:1643
+#. TODO: ?? count up the number of download errors somehow...
+#: ../src/vikmapslayer.c:1651
 msgid "Failed to download tile"
 msgstr "无法下载瓦片"
 
-#: ../src/vikmapslayer.c:1649
+#: ../src/vikmapslayer.c:1657
 msgid "Unable to save tile"
 msgstr "无法保存瓦片"
 
-#: ../src/vikmapslayer.c:1775
+#: ../src/vikmapslayer.c:1783
 #, c-format
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
 msgstr[0] "重新下载了%d %s地图…"
 
-#: ../src/vikmapslayer.c:1777
+#: ../src/vikmapslayer.c:1785
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
 msgstr[0] "正重新下载%d %s地图…"
 
-#: ../src/vikmapslayer.c:1781 ../src/vikmapslayer.c:1866
+#: ../src/vikmapslayer.c:1789 ../src/vikmapslayer.c:1874
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
 msgstr[0] "正下载%d %s地图…"
 
-#: ../src/vikmapslayer.c:1945
+#: ../src/vikmapslayer.c:1953
 msgid "YES"
 msgstr "是"
 
-#: ../src/vikmapslayer.c:1949 ../src/vikmapslayer.c:1953
+#: ../src/vikmapslayer.c:1957 ../src/vikmapslayer.c:1961
 msgid "NO"
 msgstr "否"
 
-#: ../src/vikmapslayer.c:1959
+#. NB Also handles .jpg automatically due to pixbuf_new_from () support - although just print png for now.
+#: ../src/vikmapslayer.c:1964
+#, c-format
+msgid "Source: %s (%d%s%d%s%d.%s %s)"
+msgstr ""
+
+#: ../src/vikmapslayer.c:1967
 msgid "Source: Not available"
 msgstr "来源：不可用"
 
-#: ../src/vikmapslayer.c:2055
+#: ../src/vikmapslayer.c:1984
+#, fuzzy
+msgid "Source: file://"
+msgstr "来源："
+
+#: ../src/vikmapslayer.c:1996
+#, fuzzy, c-format
+msgid "Source: %s"
+msgstr "来源："
+
+#: ../src/vikmapslayer.c:2022
+#, fuzzy, c-format
+msgid "Tile File: %s [Not Available]"
+msgstr "瓦片文件时间戳：不可用"
+
+#: ../src/vikmapslayer.c:2070
 msgid "Redownload _Bad Map(s)"
 msgstr "重新下载坏的地图(_B)"
 
-#: ../src/vikmapslayer.c:2059
+#: ../src/vikmapslayer.c:2074
 msgid "Redownload _New Map(s)"
 msgstr "重新下载新的地图(_N)"
 
-#: ../src/vikmapslayer.c:2063
+#: ../src/vikmapslayer.c:2078
 msgid "Redownload _All Map(s)"
 msgstr "重新下载全部地图(_A)"
 
-#: ../src/vikmapslayer.c:2067
+#: ../src/vikmapslayer.c:2083
 msgid "_Show Tile Information"
 msgstr "显示瓦片信息(_S)"
 
-#: ../src/vikmapslayer.c:2134
+#: ../src/vikmapslayer.c:2150
 #, c-format
 msgid ""
 "Wrong drawmode for this map.\n"
@@ -2594,70 +2719,77 @@ msgstr ""
 "绘制模式不适合该地图。\n"
 "选择“%s”在显示菜单再重试。"
 
-#: ../src/vikmapslayer.c:2139
+#: ../src/vikmapslayer.c:2155
 msgid "Wrong zoom level for this map."
 msgstr "本地图无此缩放等级。"
 
-#: ../src/vikmapslayer.c:2291
+#: ../src/vikmapslayer.c:2317
 msgid "Zoom Start:"
 msgstr "缩放开始："
 
-#: ../src/vikmapslayer.c:2298
+#: ../src/vikmapslayer.c:2324
 msgid "Zoom End:"
 msgstr "缩放结束："
 
-#: ../src/vikmapslayer.c:2304
+#: ../src/vikmapslayer.c:2330
 msgid "Download Maps Method:"
 msgstr "下载地图方法："
 
-#: ../src/vikmapslayer.c:2376
+#. redownload method - needs to align with REDOWNLOAD* macro values
+#: ../src/vikmapslayer.c:2402
 msgid "Missing"
 msgstr "缺失"
 
-#: ../src/vikmapslayer.c:2376
+#: ../src/vikmapslayer.c:2402
 msgid "Bad"
 msgstr "坏"
 
-#: ../src/vikmapslayer.c:2376
+#: ../src/vikmapslayer.c:2402
 msgid "New"
 msgstr "新建"
 
-#: ../src/vikmapslayer.c:2376
+#: ../src/vikmapslayer.c:2402
 msgid "Reload All"
 msgstr "全部重新加载"
 
-#: ../src/vikmapslayer.c:2378
+#: ../src/vikmapslayer.c:2404
 msgid "Download for Zoom Levels"
 msgstr "下载在缩放等级"
 
-#: ../src/vikmapslayer.c:2418
+#: ../src/vikmapslayer.c:2444
 #, c-format
 msgid ""
 "You are not allowed to download more than %d tiles in one go (requested %d)"
 msgstr "每次不能下载多于%d的瓦片(请求了%d)"
 
-#: ../src/vikmapslayer.c:2426
+#: ../src/vikmapslayer.c:2452
 #, c-format
 msgid "Do you really want to download %d tiles?"
 msgstr "确定要下载%d瓦片？"
 
-#: ../src/vikmapslayer.c:2460
+#. Now with icons
+#: ../src/vikmapslayer.c:2492
 msgid "Download _Missing Onscreen Maps"
 msgstr "下载缺失的Onscreen地图(_M)"
 
-#: ../src/vikmapslayer.c:2467
+#: ../src/vikmapslayer.c:2499
 msgid "Download _New Onscreen Maps"
 msgstr "下载新的Onscreend地图(_N)"
 
-#: ../src/vikmapslayer.c:2474
+#: ../src/vikmapslayer.c:2506
 msgid "Reload _All Onscreen Maps"
 msgstr "重新加载全部Onscreen地图(_A)"
 
-#: ../src/vikmapslayer.c:2480
+#: ../src/vikmapslayer.c:2512
 msgid "Download Maps in _Zoom Levels..."
 msgstr "下载地图在缩放等级(_Z)…"
 
-#: ../src/vikmapslayer.c:2493
+#: ../src/vikmapslayer.c:2522
+#, fuzzy
+msgid "_Open MBTiles Files"
+msgstr "MBTiles文件"
+
+#: ../src/vikmapslayer.c:2537
 msgid "Flush Map Cache"
 msgstr "清理地图缓存"
 
@@ -2678,11 +2810,11 @@ msgstr "图层名"
 msgid "delete data from %s\n"
 msgstr "从%s删除数据\n"
 
-#: ../src/viktrwlayer.c:420
+#: ../src/viktrwlayer.c:419
 msgid "Create _Waypoint"
 msgstr "创建路标(_W)"
 
-#: ../src/viktrwlayer.c:420
+#: ../src/viktrwlayer.c:419
 msgid "Create Waypoint"
 msgstr "创建路标"
 
@@ -2694,305 +2826,307 @@ msgstr "创建轨迹(_T)"
 msgid "Create Track"
 msgstr "创建轨迹"
 
-#: ../src/viktrwlayer.c:435
+#: ../src/viktrwlayer.c:436
 msgid "Create _Route"
 msgstr "创建路线(_R)"
 
-#: ../src/viktrwlayer.c:435
+#: ../src/viktrwlayer.c:436
 msgid "Create Route"
 msgstr "创建路线"
 
-#: ../src/viktrwlayer.c:444
+#: ../src/viktrwlayer.c:446
 msgid "Route _Finder"
 msgstr "路线查找(_F)"
 
-#: ../src/viktrwlayer.c:444
+#: ../src/viktrwlayer.c:446
 msgid "Route Finder"
 msgstr "路线查找"
 
-#: ../src/viktrwlayer.c:453
+#: ../src/viktrwlayer.c:456
 msgid "_Edit Waypoint"
 msgstr "编辑路标(_E)"
 
-#: ../src/viktrwlayer.c:453
+#: ../src/viktrwlayer.c:456
 msgid "Edit Waypoint"
 msgstr "编辑路标"
 
-#: ../src/viktrwlayer.c:463
+#: ../src/viktrwlayer.c:467
 msgid "Edit Trac_kpoint"
 msgstr "编辑轨迹点(_k)"
 
-#: ../src/viktrwlayer.c:463
+#: ../src/viktrwlayer.c:467
 msgid "Edit Trackpoint"
 msgstr "编辑轨迹点"
 
-#: ../src/viktrwlayer.c:473
+#. a pixbuf for this one is already made globally available
+#: ../src/viktrwlayer.c:478
 msgid "Show P_icture"
 msgstr "显示图像(_i)"
 
-#: ../src/viktrwlayer.c:473
+#: ../src/viktrwlayer.c:478
 msgid "Show Picture"
 msgstr "显示图片"
 
-#: ../src/viktrwlayer.c:494
+#: ../src/viktrwlayer.c:499
 msgid "Waypoint Images"
 msgstr "路标图像"
 
-#: ../src/viktrwlayer.c:494
+#: ../src/viktrwlayer.c:499
 msgid "Tracks Advanced"
 msgstr "轨迹进阶"
 
-#: ../src/viktrwlayer.c:494
+#: ../src/viktrwlayer.c:499
 msgid "Metadata"
 msgstr "元数据"
 
-#: ../src/viktrwlayer.c:497
+#: ../src/viktrwlayer.c:502
 msgid "Draw by Track"
 msgstr "按轨迹绘制"
 
-#: ../src/viktrwlayer.c:497
+#: ../src/viktrwlayer.c:502
 msgid "Draw by Speed"
 msgstr "按速度绘制"
 
-#: ../src/viktrwlayer.c:497
+#: ../src/viktrwlayer.c:502
 msgid "All Tracks Same Color"
 msgstr "全部轨迹相同颜色"
 
-#: ../src/viktrwlayer.c:498
+#: ../src/viktrwlayer.c:503
 msgid "Filled Square"
 msgstr "填充方块"
 
-#: ../src/viktrwlayer.c:498
+#: ../src/viktrwlayer.c:503
 msgid "Square"
 msgstr "正方形"
 
-#: ../src/viktrwlayer.c:498
+#: ../src/viktrwlayer.c:503
 msgid "Circle"
 msgstr "圆形"
 
-#: ../src/viktrwlayer.c:498
+#: ../src/viktrwlayer.c:503
 msgid "X"
 msgstr "X"
 
-#: ../src/viktrwlayer.c:524
+#: ../src/viktrwlayer.c:529
 msgid "Extra Extra Small"
 msgstr "超超小"
 
-#: ../src/viktrwlayer.c:525
+#: ../src/viktrwlayer.c:530
 msgid "Extra Small"
 msgstr "超小"
 
-#: ../src/viktrwlayer.c:529
+#: ../src/viktrwlayer.c:534
 msgid "Extra Large"
 msgstr "超大"
 
-#: ../src/viktrwlayer.c:530
+#: ../src/viktrwlayer.c:535
 msgid "Extra Extra Large"
 msgstr "超超大"
 
-#: ../src/viktrwlayer.c:536
+#: ../src/viktrwlayer.c:541
 msgid "Name Ascending"
 msgstr "名字升序"
 
-#: ../src/viktrwlayer.c:537
+#: ../src/viktrwlayer.c:542
 msgid "Name Descending"
 msgstr "名字降序"
 
-#: ../src/viktrwlayer.c:587 ../src/viktrwlayer.c:611
+#: ../src/viktrwlayer.c:592 ../src/viktrwlayer.c:616
 msgid "Draw Labels"
 msgstr "绘制图层"
 
-#: ../src/viktrwlayer.c:588
+#: ../src/viktrwlayer.c:593
 msgid "Note: the individual track controls what labels may be displayed"
 msgstr "注意：单个轨迹控制了要显示的标签内容"
 
-#: ../src/viktrwlayer.c:589
+#: ../src/viktrwlayer.c:594
 msgid "Track Labels Font Size:"
 msgstr "轨迹标签字体大小："
 
-#: ../src/viktrwlayer.c:590
+#: ../src/viktrwlayer.c:595
 msgid "Track Drawing Mode:"
 msgstr "轨迹绘制模式："
 
-#: ../src/viktrwlayer.c:591
+#: ../src/viktrwlayer.c:596
 msgid "All Tracks Color:"
 msgstr "全部轨迹颜色："
 
-#: ../src/viktrwlayer.c:592
+#: ../src/viktrwlayer.c:597
 msgid "The color used when 'All Tracks Same Color' drawing mode is selected"
 msgstr "选择‘全部轨迹相同颜色’所用颜色"
 
-#: ../src/viktrwlayer.c:593
+#: ../src/viktrwlayer.c:598
 msgid "Draw Track Lines"
 msgstr "绘制轨迹线段"
 
-#: ../src/viktrwlayer.c:594
+#: ../src/viktrwlayer.c:599
 msgid "Track Thickness:"
 msgstr "轨迹宽度："
 
-#: ../src/viktrwlayer.c:595
+#: ../src/viktrwlayer.c:600
 msgid "Draw Track Direction"
 msgstr "绘制轨迹方向"
 
-#: ../src/viktrwlayer.c:596
+#: ../src/viktrwlayer.c:601
 msgid "Direction Size:"
 msgstr "方向的大小："
 
-#: ../src/viktrwlayer.c:597
+#: ../src/viktrwlayer.c:602
 msgid "Draw Trackpoints"
 msgstr "绘制路标"
 
-#: ../src/viktrwlayer.c:598
+#: ../src/viktrwlayer.c:603
 msgid "Trackpoint Size:"
 msgstr "路标的大小："
 
-#: ../src/viktrwlayer.c:599
+#: ../src/viktrwlayer.c:604
 msgid "Draw Elevation"
 msgstr "绘制高程"
 
-#: ../src/viktrwlayer.c:600
+#: ../src/viktrwlayer.c:605
 msgid "Draw Elevation Height %:"
 msgstr "绘制高程高度百分比："
 
-#: ../src/viktrwlayer.c:601
+#: ../src/viktrwlayer.c:606
 msgid "Draw Stops"
 msgstr "绘制停止点"
 
-#: ../src/viktrwlayer.c:602
+#: ../src/viktrwlayer.c:607
 msgid ""
 "Whether to draw a marker when trackpoints are at the same position but over "
 "the minimum stop length apart in time"
 msgstr "是否要绘制记号在相同轨迹点当不同时间在相同位置但超过了最小停止长度"
 
-#: ../src/viktrwlayer.c:603
+#: ../src/viktrwlayer.c:608
 msgid "Min Stop Length (seconds):"
 msgstr "最小停止长度（秒）："
 
-#: ../src/viktrwlayer.c:605
+#: ../src/viktrwlayer.c:610
 msgid "Track BG Thickness:"
 msgstr "轨迹背景宽度："
 
-#: ../src/viktrwlayer.c:606
+#: ../src/viktrwlayer.c:611
 msgid "Track Background Color"
 msgstr "轨迹背景颜色"
 
-#: ../src/viktrwlayer.c:607
+#: ../src/viktrwlayer.c:612
 msgid "Draw by Speed Factor (%):"
 msgstr "按速度因子绘制（百分比）:"
 
-#: ../src/viktrwlayer.c:608
+#: ../src/viktrwlayer.c:613
 msgid ""
 "The percentage factor away from the average speed determining the color used"
 msgstr "离均速所至百分比决定了所用颜色"
 
-#: ../src/viktrwlayer.c:609
+#: ../src/viktrwlayer.c:614
 msgid "Track Sort Order:"
 msgstr "轨迹排列顺序："
 
-#: ../src/viktrwlayer.c:612
+#: ../src/viktrwlayer.c:617
 msgid "Waypoint Font Size:"
 msgstr "路标字体大小："
 
-#: ../src/viktrwlayer.c:613
+#: ../src/viktrwlayer.c:618
 msgid "Waypoint Color:"
 msgstr "路标颜色："
 
-#: ../src/viktrwlayer.c:614
+#: ../src/viktrwlayer.c:619
 msgid "Waypoint Text:"
 msgstr "路标文字："
 
-#: ../src/viktrwlayer.c:615
+#: ../src/viktrwlayer.c:620
 msgid "Background:"
 msgstr "背景："
 
-#: ../src/viktrwlayer.c:616
+#: ../src/viktrwlayer.c:621
 msgid "Fake BG Color Translucency:"
 msgstr "改动背景颜色透明度："
 
-#: ../src/viktrwlayer.c:617
+#: ../src/viktrwlayer.c:622
 msgid "Waypoint marker:"
 msgstr "路标记号："
 
-#: ../src/viktrwlayer.c:618
+#: ../src/viktrwlayer.c:623
 msgid "Waypoint size:"
 msgstr "路标大小："
 
-#: ../src/viktrwlayer.c:619
+#: ../src/viktrwlayer.c:624
 msgid "Draw Waypoint Symbols:"
 msgstr "绘制路标符号："
 
-#: ../src/viktrwlayer.c:620
+#: ../src/viktrwlayer.c:625
 msgid "Waypoint Sort Order:"
 msgstr "路标排列顺序："
 
-#: ../src/viktrwlayer.c:622
+#: ../src/viktrwlayer.c:627
 msgid "Draw Waypoint Images"
 msgstr "绘制路标图像"
 
-#: ../src/viktrwlayer.c:623
+#: ../src/viktrwlayer.c:628
 msgid "Image Size (pixels):"
 msgstr "图像大小(像素):"
 
-#: ../src/viktrwlayer.c:624
+#: ../src/viktrwlayer.c:629
 msgid "Image Alpha:"
 msgstr "图像透明度："
 
-#: ../src/viktrwlayer.c:625
+#: ../src/viktrwlayer.c:630
 msgid "Image Memory Cache Size:"
 msgstr "图像内存缓存尺寸："
 
-#: ../src/viktrwlayer.c:628
+#: ../src/viktrwlayer.c:633
 msgid "Author"
 msgstr "作者"
 
-#: ../src/viktrwlayer.c:629
+#: ../src/viktrwlayer.c:634
 msgid "Creation Time"
 msgstr "创建时间"
 
-#: ../src/viktrwlayer.c:630
+#: ../src/viktrwlayer.c:635
 msgid "Keywords"
 msgstr "关键词"
 
-#: ../src/viktrwlayer.c:725
+#: ../src/viktrwlayer.c:730
 msgid "TrackWaypoint"
 msgstr "轨迹路标"
 
-#: ../src/viktrwlayer.c:1878 ../src/viktrwlayer_propwin.c:1436
-#: ../src/viktrwlayer_propwin.c:1438 ../src/vikutils.c:262
-#: ../src/vikutils.c:289
+#: ../src/viktrwlayer.c:1886 ../src/viktrwlayer_propwin.c:1459
+#: ../src/viktrwlayer_propwin.c:1461 ../src/vikutils.c:299
+#: ../src/vikutils.c:326
 msgid "miles"
 msgstr "英里"
 
-#: ../src/viktrwlayer.c:1881 ../src/viktrwlayer_propwin.c:1442
-#: ../src/viktrwlayer_propwin.c:1444 ../src/vikutils.c:266
-#: ../src/vikutils.c:293
+#: ../src/viktrwlayer.c:1889 ../src/viktrwlayer_propwin.c:1465
+#: ../src/viktrwlayer_propwin.c:1467 ../src/vikutils.c:303
+#: ../src/vikutils.c:330
 msgid "NM"
 msgstr "海里"
 
-#: ../src/viktrwlayer.c:1885 ../src/viktrwlayer_propwin.c:1449
-#: ../src/viktrwlayer_propwin.c:1451 ../src/vikutils.c:271
-#: ../src/vikutils.c:298
+#. VIK_UNITS_DISTANCE_KILOMETRES:
+#: ../src/viktrwlayer.c:1893 ../src/viktrwlayer_propwin.c:1472
+#: ../src/viktrwlayer_propwin.c:1474 ../src/vikutils.c:308
+#: ../src/vikutils.c:335
 msgid "km"
 msgstr "公里"
 
-#: ../src/viktrwlayer.c:2000
+#: ../src/viktrwlayer.c:2008
 msgid "start/end"
 msgstr "开始/结束"
 
-#: ../src/viktrwlayer.c:2012
+#: ../src/viktrwlayer.c:2020
 msgid "start"
 msgstr "开始"
 
-#: ../src/viktrwlayer.c:2021
+#: ../src/viktrwlayer.c:2029
 msgid "end"
 msgstr "结束"
 
-#: ../src/viktrwlayer.c:2999
+#: ../src/viktrwlayer.c:3007
 #, c-format
 msgid " in %d:%02d hrs:mins"
 msgstr "在%d时：%02d分"
 
-#: ../src/viktrwlayer.c:3003
+#: ../src/viktrwlayer.c:3011
 #, c-format
 msgid ""
 "\n"
@@ -3001,7 +3135,7 @@ msgstr ""
 "\n"
 "%s总长%.1f %s%s"
 
-#: ../src/viktrwlayer.c:3027
+#: ../src/viktrwlayer.c:3035
 #, c-format
 msgid ""
 "\n"
@@ -3010,444 +3144,451 @@ msgstr ""
 "\n"
 "路线总长%.1f %s"
 
-#: ../src/viktrwlayer.c:3032
+#: ../src/viktrwlayer.c:3040
 #, c-format
 msgid "Tracks: %d - Waypoints: %d - Routes: %d%s%s"
 msgstr "轨迹：%d-路标：%d-路线：%d%s%s"
 
-#: ../src/viktrwlayer.c:3051
+#: ../src/viktrwlayer.c:3059
 #, c-format
 msgid "Tracks: %d"
 msgstr "轨迹：%d"
 
-#: ../src/viktrwlayer.c:3061
+#: ../src/viktrwlayer.c:3069
 #, c-format
 msgid "Routes: %d"
 msgstr "路线：%d"
 
-#: ../src/viktrwlayer.c:3091
+#: ../src/viktrwlayer.c:3099
 #, c-format
 msgid "- %d:%02d hrs:mins"
 msgstr "-%d时：%02d分"
 
-#: ../src/viktrwlayer.c:3098
+#: ../src/viktrwlayer.c:3106
 #, c-format
 msgid "%s%.1f km %s"
 msgstr "%s%.1f公里%s"
 
-#: ../src/viktrwlayer.c:3101
+#: ../src/viktrwlayer.c:3109
 #, c-format
 msgid "%s%.1f miles %s"
 msgstr "%s%.1f英里%s"
 
-#: ../src/viktrwlayer.c:3104
+#: ../src/viktrwlayer.c:3112
 #, c-format
 msgid "%s%.1f NM %s"
 msgstr "%s%.1f海里%s"
 
-#: ../src/viktrwlayer.c:3118
+#: ../src/viktrwlayer.c:3126
 #, c-format
 msgid "Waypoints: %d"
 msgstr "路标：%d"
 
-#: ../src/viktrwlayer.c:3179
+#: ../src/viktrwlayer.c:3187
 #, c-format
 msgid "Wpt: Alt %dft"
 msgstr "路标：海拔%d英尺"
 
-#: ../src/viktrwlayer.c:3183
+#. VIK_UNITS_HEIGHT_METRES:
+#: ../src/viktrwlayer.c:3191
 #, c-format
 msgid "Wpt: Alt %dm"
 msgstr "路标：海拔%d米"
 
-#: ../src/viktrwlayer.c:3198
+#. Add comment if available
+#: ../src/viktrwlayer.c:3206
 #, c-format
 msgid "%s | %s %s | Comment: %s"
 msgstr "%s | %s%s | 注释：%s"
 
-#: ../src/viktrwlayer.c:3200
+#: ../src/viktrwlayer.c:3208
 #, c-format
 msgid "%s | %s %s"
 msgstr "%s | %s %s"
 
-#: ../src/viktrwlayer.c:3448 ../src/viktrwlayer.c:3477
+#: ../src/viktrwlayer.c:3456 ../src/viktrwlayer.c:3485
 msgid "This layer has no waypoints or trackpoints."
 msgstr "本层无路标和轨迹点。"
 
-#: ../src/viktrwlayer.c:3484 ../src/viktrwlayer.c:3493
-#: ../src/viktrwlayer.c:3502 ../src/viktrwlayer.c:3511
-#: ../src/viktrwlayer.c:3520 ../src/viktrwlayer.c:3528
+#: ../src/viktrwlayer.c:3492 ../src/viktrwlayer.c:3501
+#: ../src/viktrwlayer.c:3510 ../src/viktrwlayer.c:3519
+#: ../src/viktrwlayer.c:3528 ../src/viktrwlayer.c:3536
 msgid "Export Layer"
 msgstr "输出图层"
 
-#: ../src/viktrwlayer.c:3557
+#: ../src/viktrwlayer.c:3565
 msgid "Export Route as GPX"
 msgstr "导出路线为GPX文件"
 
-#: ../src/viktrwlayer.c:3559
+#: ../src/viktrwlayer.c:3567
 msgid "Export Track as GPX"
 msgstr "导出轨迹为GPX文件"
 
-#: ../src/viktrwlayer.c:3579
+#: ../src/viktrwlayer.c:3587
 msgid "Find"
 msgstr "查找"
 
-#: ../src/viktrwlayer.c:3589
+#: ../src/viktrwlayer.c:3597
 msgid "Waypoint Name:"
 msgstr "路标名："
 
-#: ../src/viktrwlayer.c:3606
+#: ../src/viktrwlayer.c:3614
 msgid "Waypoint not found in this layer."
 msgstr "在此图层中找不到路标。"
 
-#: ../src/viktrwlayer.c:3881
+#: ../src/viktrwlayer.c:3889
 msgid "Can not upload invisible track."
 msgstr "不能上传不可见轨迹。"
 
-#: ../src/viktrwlayer.c:3974 ../src/viktrwlayer.c:10120
+#: ../src/viktrwlayer.c:3982 ../src/viktrwlayer.c:10143
 msgid "Track"
 msgstr "轨迹"
 
-#: ../src/viktrwlayer.c:3999 ../src/viktrwlayer.c:10157
+#: ../src/viktrwlayer.c:4007 ../src/viktrwlayer.c:10180
 msgid "Route"
 msgstr "路线"
 
-#: ../src/viktrwlayer.c:4087
+#: ../src/viktrwlayer.c:4095
 msgid "Externa_l"
 msgstr "外部(_l)"
 
-#: ../src/viktrwlayer.c:4109 ../src/viktrwlayer.c:8190
-#: ../src/viktrwlayer.c:8308
+#: ../src/viktrwlayer.c:4117 ../src/viktrwlayer.c:8217
+#: ../src/viktrwlayer.c:8335
 msgid "_Finish Route"
 msgstr "结束路线(_F)"
 
-#: ../src/viktrwlayer.c:4111 ../src/viktrwlayer.c:8114
-#: ../src/viktrwlayer.c:8306
+#: ../src/viktrwlayer.c:4119 ../src/viktrwlayer.c:8141
+#: ../src/viktrwlayer.c:8333
 msgid "_Finish Track"
 msgstr "结束轨迹(_F)"
 
-#: ../src/viktrwlayer.c:4123
+#. Now with icons
+#: ../src/viktrwlayer.c:4131
 msgid "_View Layer"
 msgstr "显示图层(_V)"
 
-#: ../src/viktrwlayer.c:4130
+#: ../src/viktrwlayer.c:4138
 msgid "V_iew"
 msgstr "显示(_i)"
 
-#: ../src/viktrwlayer.c:4136
+#: ../src/viktrwlayer.c:4144
 msgid "View All _Tracks"
 msgstr "显示全部轨迹(_T)"
 
-#: ../src/viktrwlayer.c:4141
+#: ../src/viktrwlayer.c:4149
 msgid "View All _Routes"
 msgstr "显示全部路线(_R)"
 
-#: ../src/viktrwlayer.c:4146
+#: ../src/viktrwlayer.c:4154
 msgid "View All _Waypoints"
 msgstr "显示全部路标(_W)"
 
-#: ../src/viktrwlayer.c:4151
+#: ../src/viktrwlayer.c:4159
 msgid "_Goto Center of Layer"
 msgstr "去图层中心(_G)"
 
-#: ../src/viktrwlayer.c:4157 ../src/viktrwlayer.c:8061
+#: ../src/viktrwlayer.c:4165 ../src/viktrwlayer.c:8088
 msgid "Goto _Waypoint..."
 msgstr "去路标(_W)…"
 
-#: ../src/viktrwlayer.c:4163
+#: ../src/viktrwlayer.c:4171
 msgid "_Export Layer"
 msgstr "导出图层(_E)"
 
-#: ../src/viktrwlayer.c:4169
+#: ../src/viktrwlayer.c:4177
 msgid "Export as GPS_Point..."
 msgstr "导出为GPS Point(_P)…"
 
-#: ../src/viktrwlayer.c:4174
+#: ../src/viktrwlayer.c:4182
 msgid "Export as GPS_Mapper..."
 msgstr "导出为GPS Mapper(_M)…"
 
-#: ../src/viktrwlayer.c:4179
+#: ../src/viktrwlayer.c:4187
 msgid "Export as _GPX..."
 msgstr "导出为GPX(_G)…"
 
-#: ../src/viktrwlayer.c:4185
-msgid "Export as KML..."
+#: ../src/viktrwlayer.c:4193
+#, fuzzy
+msgid "Export as _KML..."
 msgstr "导出为KML(_K)…"
 
-#: ../src/viktrwlayer.c:4192
+#: ../src/viktrwlayer.c:4200
 msgid "Export as GEO_JSON..."
 msgstr "导出为GEOJSON(_J)…"
 
-#: ../src/viktrwlayer.c:4199
+#: ../src/viktrwlayer.c:4207
 msgid "Export via GPSbabel..."
 msgstr "通过GPSbabel程序导出…"
 
-#: ../src/viktrwlayer.c:4205
+#: ../src/viktrwlayer.c:4213
 #, c-format
 msgid "Open with External Program_1: %s"
 msgstr "用外部程序1打开：%s"
 
-#: ../src/viktrwlayer.c:4212
+#: ../src/viktrwlayer.c:4220
 #, c-format
 msgid "Open with External Program_2: %s"
 msgstr "用外部程序2打开：%s"
 
-#: ../src/viktrwlayer.c:4220 ../src/vikwindow.c:4472
+#: ../src/viktrwlayer.c:4228 ../src/vikwindow.c:4487
 msgid "_New"
 msgstr "新建(_N)"
 
-#: ../src/viktrwlayer.c:4226
+#: ../src/viktrwlayer.c:4234
 msgid "New _Waypoint..."
 msgstr "新建路标(_W)…"
 
-#: ../src/viktrwlayer.c:4232
+#: ../src/viktrwlayer.c:4240
 msgid "New _Track"
 msgstr "新建轨迹(_T)"
 
-#: ../src/viktrwlayer.c:4240
+#: ../src/viktrwlayer.c:4248
 msgid "New _Route"
 msgstr "新建路线(_R)"
 
-#: ../src/viktrwlayer.c:4249 ../src/viktrwlayer.c:7972
-#: ../src/viktrwlayer.c:8729
+#: ../src/viktrwlayer.c:4257 ../src/viktrwlayer.c:7999
+#: ../src/viktrwlayer.c:8756
 msgid "Geotag _Images..."
 msgstr "地理标签图像(_I)…"
 
-#: ../src/viktrwlayer.c:4256
+#: ../src/viktrwlayer.c:4264
 msgid "_Acquire"
 msgstr "获取(_A)"
 
-#: ../src/viktrwlayer.c:4262 ../src/vikwindow.c:4548
+#: ../src/viktrwlayer.c:4270 ../src/vikwindow.c:4563
 msgid "From _GPS..."
 msgstr "从GPS(_G)…"
 
-#: ../src/viktrwlayer.c:4268
+#. FIXME: only add menu when at least a routing engine has support for Directions
+#: ../src/viktrwlayer.c:4276
 msgid "From _Directions..."
 msgstr "从方向(_D)…"
 
-#: ../src/viktrwlayer.c:4274
+#: ../src/viktrwlayer.c:4282
 msgid "From _OSM Traces..."
 msgstr "从OSM踪迹(_O)…"
 
-#: ../src/viktrwlayer.c:4279
+#: ../src/viktrwlayer.c:4287
 msgid "From _My OSM Traces..."
 msgstr "从我的OSM踪迹(_M)…"
 
-#: ../src/viktrwlayer.c:4285 ../src/vikwindow.c:4490
+#: ../src/viktrwlayer.c:4293 ../src/vikwindow.c:4505
 msgid "From _URL..."
 msgstr "从网址(_U)…"
 
-#: ../src/viktrwlayer.c:4292 ../src/vikwindow.c:4492
+#: ../src/viktrwlayer.c:4300 ../src/vikwindow.c:4507
 msgid "From _Wikipedia Waypoints"
 msgstr "从维基百科路标(_W)"
 
-#: ../src/viktrwlayer.c:4298
+#: ../src/viktrwlayer.c:4306
 msgid "Within _Layer Bounds"
 msgstr "在图层边界内(_L)"
 
-#: ../src/viktrwlayer.c:4304
+#: ../src/viktrwlayer.c:4312
 msgid "Within _Current View"
 msgstr "在当前视图内(_C)"
 
-#: ../src/viktrwlayer.c:4312
+#: ../src/viktrwlayer.c:4320
 msgid "From Geo_caching..."
 msgstr "从地理藏宝(_c)…"
 
-#: ../src/viktrwlayer.c:4319 ../src/vikwindow.c:4488
+#: ../src/viktrwlayer.c:4327 ../src/vikwindow.c:4503
 msgid "From Geotagged _Images..."
 msgstr "从有地理标签的图像(_I)…"
 
-#: ../src/viktrwlayer.c:4326
+#: ../src/viktrwlayer.c:4334
 msgid "From _File..."
 msgstr "从文件(_F)…"
 
-#: ../src/viktrwlayer.c:4329 ../src/vikwindow.c:4549
+#: ../src/viktrwlayer.c:4337 ../src/vikwindow.c:4564
 msgid "Import File With GPS_Babel..."
 msgstr "用GPSBabel程序从文件导入(_B)…"
 
-#: ../src/viktrwlayer.c:4336 ../src/viktrwlayer.c:8631
+#: ../src/viktrwlayer.c:4344 ../src/viktrwlayer.c:8658
 msgid "_Upload"
 msgstr "上传(_U)"
 
-#: ../src/viktrwlayer.c:4342
+#: ../src/viktrwlayer.c:4350
 msgid "Upload to _GPS..."
 msgstr "上传到GPS设备(_G)…"
 
-#: ../src/viktrwlayer.c:4349 ../src/viktrwlayer.c:8699
+#: ../src/viktrwlayer.c:4357 ../src/viktrwlayer.c:8726
 msgid "Upload to _OSM..."
 msgstr "上传到OSM(_O)…"
 
-#: ../src/viktrwlayer.c:4357
+#: ../src/viktrwlayer.c:4365
 msgid "De_lete"
 msgstr "删除(_l)"
 
-#: ../src/viktrwlayer.c:4363
+#: ../src/viktrwlayer.c:4371
 msgid "Delete All _Tracks"
 msgstr "删除全部轨迹(_T)"
 
-#: ../src/viktrwlayer.c:4369
+#: ../src/viktrwlayer.c:4377
 msgid "Delete Tracks _From Selection..."
 msgstr "删除所选轨迹(_F)…"
 
-#: ../src/viktrwlayer.c:4375 ../src/viktrwlayer.c:8215
+#: ../src/viktrwlayer.c:4383 ../src/viktrwlayer.c:8242
 msgid "Delete _All Routes"
 msgstr "删除全部路线(_A)"
 
-#: ../src/viktrwlayer.c:4381 ../src/viktrwlayer.c:8221
+#: ../src/viktrwlayer.c:4389 ../src/viktrwlayer.c:8248
 msgid "_Delete Routes From Selection..."
 msgstr "删除所选轨迹(_D)…"
 
-#: ../src/viktrwlayer.c:4387
+#: ../src/viktrwlayer.c:4395
 msgid "Delete All _Waypoints"
 msgstr "删除全部路标(_W)"
 
-#: ../src/viktrwlayer.c:4393
+#: ../src/viktrwlayer.c:4401
 msgid "Delete Waypoints From _Selection..."
 msgstr "删除所选路标(_S)…"
 
-#: ../src/viktrwlayer.c:5055
+#: ../src/viktrwlayer.c:5082
 #, c-format
 msgid "Are you sure you want to delete all tracks in %s?"
 msgstr "确定要删除%s中全部轨迹？"
 
-#: ../src/viktrwlayer.c:5065
+#: ../src/viktrwlayer.c:5092
 #, c-format
 msgid "Are you sure you want to delete all routes in %s?"
 msgstr "确定要删除%s中全部路线？"
 
-#: ../src/viktrwlayer.c:5075
+#: ../src/viktrwlayer.c:5102
 #, c-format
 msgid "Are you sure you want to delete all waypoints in %s?"
 msgstr "确定要删除%s中全部路标？"
 
-#: ../src/viktrwlayer.c:5092
+#: ../src/viktrwlayer.c:5119
 #, c-format
 msgid "Are you sure you want to delete the waypoint \"%s\"?"
 msgstr "确定要删除路标“%s”？"
 
-#: ../src/viktrwlayer.c:5108
+#: ../src/viktrwlayer.c:5135
 #, c-format
 msgid "Are you sure you want to delete the track \"%s\"?"
 msgstr "确定要删除轨迹“%s”？"
 
-#: ../src/viktrwlayer.c:5123
+#: ../src/viktrwlayer.c:5150
 #, c-format
 msgid "Are you sure you want to delete the route \"%s\"?"
 msgstr "确定要删除路线“%s”？"
 
-#: ../src/viktrwlayer.c:5357 ../src/viktrwlayer.c:6199
+#: ../src/viktrwlayer.c:5384 ../src/viktrwlayer.c:6226
 msgid ""
 "Converting a track to a route removes extra track data such as segments, "
 "timestamps, etc...\n"
 "Do you want to continue?"
 msgstr "转换轨迹成路线会删除多余轨迹数据，比如线段，时间戳等。确定要继续？"
 
-#: ../src/viktrwlayer.c:5462
+#: ../src/viktrwlayer.c:5489
 msgid "No DEM layers available, thus no DEM values can be applied."
-msgstr "无DEM（Digital Elevation Model数字高程模型）图层可用，因此无DEM值可用。"
+msgstr ""
+"无DEM（Digital Elevation Model数字高程模型）图层可用，因此无DEM值可用。"
 
-#: ../src/viktrwlayer.c:5482 ../src/viktrwlayer.c:5523
+#: ../src/viktrwlayer.c:5509 ../src/viktrwlayer.c:5550
 #, c-format
 msgid "%ld point adjusted"
 msgid_plural "%ld points adjusted"
 msgstr[0] "%ld点已调整"
 
-#: ../src/viktrwlayer.c:5567
+#: ../src/viktrwlayer.c:5594
 #, c-format
 msgid "%ld waypoint changed"
 msgid_plural "%ld waypoints changed"
 msgstr[0] "%ld路标已改变"
 
-#: ../src/viktrwlayer.c:5748
+#: ../src/viktrwlayer.c:5775
 #, c-format
 msgid ""
 "Refining a track with many points (%d) is unlikely to yield sensible "
 "results. Do you want to Continue?"
 msgstr "用很多点（%d）改善轨迹是不可能产生可观结果的。确定要继续？"
 
-#: ../src/viktrwlayer.c:5756
+#. Select engine from dialog
+#: ../src/viktrwlayer.c:5783
 msgid "Refine Route with Routing Engine..."
 msgstr "用路线引擎改善路线…"
 
-#: ../src/viktrwlayer.c:5764
+#: ../src/viktrwlayer.c:5791
 msgid "Select routing engine"
 msgstr "选择路线引擎"
 
-#: ../src/viktrwlayer.c:5989
+#: ../src/viktrwlayer.c:6016
 msgid "Failed. No other tracks with timestamps in this layer found"
 msgstr "失败。本层已无更多含时间戳的轨迹"
 
-#: ../src/viktrwlayer.c:5991
+#: ../src/viktrwlayer.c:6018
 msgid "Failed. No other tracks without timestamps in this layer found"
 msgstr "失败。本层已无更多不含时间戳的轨迹"
 
-#: ../src/viktrwlayer.c:6010
+#: ../src/viktrwlayer.c:6037
 msgid "Merge with..."
 msgstr "合并…"
 
-#: ../src/viktrwlayer.c:6011
+#: ../src/viktrwlayer.c:6038
 msgid "Select route to merge with"
 msgstr "选择路线来合并"
 
-#: ../src/viktrwlayer.c:6011
+#: ../src/viktrwlayer.c:6038
 msgid "Select track to merge with"
 msgstr "选择轨迹来合并"
 
-#: ../src/viktrwlayer.c:6095 ../src/viktrwlayer.c:6172
+#: ../src/viktrwlayer.c:6122 ../src/viktrwlayer.c:6199
 msgid "Append Route"
 msgstr "扩展路线"
 
-#: ../src/viktrwlayer.c:6095 ../src/viktrwlayer.c:6172
+#: ../src/viktrwlayer.c:6122 ../src/viktrwlayer.c:6199
 msgid "Append Track"
 msgstr "扩展轨迹"
 
-#: ../src/viktrwlayer.c:6096
+#: ../src/viktrwlayer.c:6123
 msgid "Select the route to append after the current route"
 msgstr "选择路线扩展到当前路线"
 
-#: ../src/viktrwlayer.c:6097
+#: ../src/viktrwlayer.c:6124
 msgid "Select the track to append after the current track"
 msgstr "选择轨迹扩展到当前轨迹"
 
-#: ../src/viktrwlayer.c:6173
+#: ../src/viktrwlayer.c:6200
 msgid "Select the track to append after the current route"
 msgstr "选择轨迹扩展到当前路线"
 
-#: ../src/viktrwlayer.c:6174
+#: ../src/viktrwlayer.c:6201
 msgid "Select the route to append after the current track"
 msgstr "选择路线扩展到当前轨迹"
 
-#: ../src/viktrwlayer.c:6233
+#: ../src/viktrwlayer.c:6260
 #, c-format
 msgid "%d segment merged"
 msgid_plural "%d segments merged"
 msgstr[0] "%d段已合并"
 
-#: ../src/viktrwlayer.c:6249
+#: ../src/viktrwlayer.c:6276
 msgid "Failed. This track does not have timestamp"
 msgstr "失败。该轨迹无时间戳"
 
-#: ../src/viktrwlayer.c:6261
+#: ../src/viktrwlayer.c:6288
 msgid "Failed. No other track in this layer has timestamp"
 msgstr "失败。本层无更多轨迹有时间戳"
 
-#: ../src/viktrwlayer.c:6268
+#: ../src/viktrwlayer.c:6295
 msgid "Merge Threshold..."
 msgstr "合并界限…"
 
-#: ../src/viktrwlayer.c:6269
+#: ../src/viktrwlayer.c:6296
 msgid "Merge when time between tracks less than:"
 msgstr "合并条件为当轨迹时间间隔小于："
 
-#: ../src/viktrwlayer.c:6396
+#: ../src/viktrwlayer.c:6423
 msgid "Split Threshold..."
 msgstr "分割界限…"
 
-#: ../src/viktrwlayer.c:6397
+#: ../src/viktrwlayer.c:6424
 msgid "Split when time between trackpoints exceeds:"
 msgstr "分割条件为当轨迹点时间间隔小于："
 
-#: ../src/viktrwlayer.c:6414
+#: ../src/viktrwlayer.c:6441
 #, c-format
 msgid ""
 "Can not split track due to trackpoints not ordered in time - such as at %s.\n"
@@ -3458,527 +3599,528 @@ msgstr ""
 "\n"
 "去此轨迹点？"
 
-#: ../src/viktrwlayer.c:6481
+#: ../src/viktrwlayer.c:6508
 msgid "Split Every Nth Point"
 msgstr "在第若干点分割"
 
-#: ../src/viktrwlayer.c:6482
+#: ../src/viktrwlayer.c:6509
 msgid "Split on every Nth point:"
 msgstr "每若干点分割："
 
-#: ../src/viktrwlayer.c:6592
+#: ../src/viktrwlayer.c:6619
 msgid "Can not split track as it has no segments"
 msgstr "无法分割轨迹因为未分段"
 
-#: ../src/viktrwlayer.c:6674 ../src/viktrwlayer.c:6704
+#: ../src/viktrwlayer.c:6701 ../src/viktrwlayer.c:6731
 #, c-format
 msgid "Deleted %ld point"
 msgid_plural "Deleted %ld points"
 msgstr[0] "删除%ld点"
 
-#: ../src/viktrwlayer.c:6779 ../src/viktrwlayer.c:10520
+#: ../src/viktrwlayer.c:6806 ../src/viktrwlayer.c:10543
 #: ../src/viktrwlayer_waypointlist.c:214
 #, c-format
 msgid "Could not launch %s to open file."
 msgstr "无法启动%s来打开文件"
 
-#: ../src/viktrwlayer.c:6804 ../src/viktrwlayer.c:6925
+#: ../src/viktrwlayer.c:6831 ../src/viktrwlayer.c:6952
 msgid "This track has no date information."
 msgstr "本轨迹无数据信息"
 
-#: ../src/viktrwlayer.c:6818 ../src/viktrwlayer.c:6948
+#: ../src/viktrwlayer.c:6845 ../src/viktrwlayer.c:6975
 msgid "This waypoint has no date information."
 msgstr "本路标无数据信息"
 
-#: ../src/viktrwlayer.c:6842
+#: ../src/viktrwlayer.c:6869
 #, c-format
 msgid "Could not launch %s"
 msgstr "无法启动%s"
 
-#: ../src/viktrwlayer.c:7081
+#: ../src/viktrwlayer.c:7108
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
 msgstr "内部错误在vik_trw_layer_uniquify_tracks函数"
 
-#: ../src/viktrwlayer.c:7186 ../src/viktrwlayer.c:7236
-#: ../src/viktrwlayer.c:7399
+#: ../src/viktrwlayer.c:7213 ../src/viktrwlayer.c:7263
+#: ../src/viktrwlayer.c:7426
 msgid ""
 "Multiple entries with the same name exist. This method only works with "
 "unique names. Force unique names now?"
 msgstr "多处条目含有相同名字。此方法仅适用于独有名字。要强制使用独有名字吗？"
 
-#: ../src/viktrwlayer.c:7197
+#: ../src/viktrwlayer.c:7224
 msgid "No tracks found"
 msgstr "找不到轨迹"
 
-#: ../src/viktrwlayer.c:7205 ../src/viktrwlayer.c:7255
-#: ../src/viktrwlayer.c:7419
+#: ../src/viktrwlayer.c:7232 ../src/viktrwlayer.c:7282
+#: ../src/viktrwlayer.c:7446
 msgid "Delete Selection"
 msgstr "删除所选项"
 
-#: ../src/viktrwlayer.c:7206
+#: ../src/viktrwlayer.c:7233
 msgid "Select tracks to delete"
 msgstr "选择轨迹来删除"
 
-#: ../src/viktrwlayer.c:7247
+#: ../src/viktrwlayer.c:7274
 msgid "No routes found"
 msgstr "找不到路线"
 
-#: ../src/viktrwlayer.c:7256
+#: ../src/viktrwlayer.c:7283
 msgid "Select routes to delete"
 msgstr "选择路线来删除"
 
-#: ../src/viktrwlayer.c:7362
+#: ../src/viktrwlayer.c:7389
 msgid "Internal Error in vik_trw_layer_uniquify_waypoints"
 msgstr "内部错误在vik_trw_layer_uniquify_waypoints函数"
 
-#: ../src/viktrwlayer.c:7409
+#: ../src/viktrwlayer.c:7436
 msgid "No waypoints found"
 msgstr "找不到路标"
 
-#: ../src/viktrwlayer.c:7420
+#: ../src/viktrwlayer.c:7447
 msgid "Select waypoints to delete"
 msgstr "选择路标来删除"
 
-#: ../src/viktrwlayer.c:7768
+#: ../src/viktrwlayer.c:7795
 #, c-format
 msgid ""
 "A waypoint with the name \"%s\" already exists. Really rename to the same "
 "name?"
 msgstr "含有名字“%s”的路标已存在。确定要重命名到相同名字？"
 
-#: ../src/viktrwlayer.c:7798
+#: ../src/viktrwlayer.c:7825
 #, c-format
 msgid ""
 "A track with the name \"%s\" already exists. Really rename to the same name?"
 msgstr "含有名字“%s”的轨迹已存在。确定要重命名到相同名字？"
 
-#: ../src/viktrwlayer.c:7835
+#: ../src/viktrwlayer.c:7862
 #, c-format
 msgid ""
 "A route with the name \"%s\" already exists. Really rename to the same name?"
 msgstr "含有名字“%s”的路线已存在。确定要重命名到相同名字？"
 
-#: ../src/viktrwlayer.c:7955 ../src/viktrwlayer.c:8336
+#: ../src/viktrwlayer.c:7982 ../src/viktrwlayer.c:8363
 msgid "_Goto"
 msgstr "转到(_G)"
 
-#: ../src/viktrwlayer.c:7966
+#: ../src/viktrwlayer.c:7993
 msgid "_Visit Geocache Webpage"
 msgstr "访问地理藏宝网页(_V)"
 
-#: ../src/viktrwlayer.c:7975
+#: ../src/viktrwlayer.c:8002
 msgid "Geotag multiple images against this waypoint"
 msgstr "用该路标地理标记多个图像"
 
-#: ../src/viktrwlayer.c:7985 ../src/viktrwlayer_waypointlist.c:352
+#: ../src/viktrwlayer.c:8012 ../src/viktrwlayer_waypointlist.c:352
 msgid "_Show Picture..."
 msgstr "显示图片(_S)…"
 
-#: ../src/viktrwlayer.c:7993
+#: ../src/viktrwlayer.c:8020
 msgid "Update Geotag on _Image"
 msgstr "更新图像上的地理标记(_I)"
 
-#: ../src/viktrwlayer.c:7999
+#: ../src/viktrwlayer.c:8026
 msgid "_Update"
 msgstr "更新(_U)"
 
-#: ../src/viktrwlayer.c:8004
+#: ../src/viktrwlayer.c:8031
 msgid "Update and _Keep File Timestamp"
 msgstr "更新但保持文件的时间戳(_K)"
 
-#: ../src/viktrwlayer.c:8016
+#: ../src/viktrwlayer.c:8043
 msgid "Visit _Webpage"
 msgstr "访问网页(_W)"
 
-#: ../src/viktrwlayer.c:8046
+#: ../src/viktrwlayer.c:8073
 msgid "_New Waypoint..."
 msgstr "新建路标(_N)…"
 
-#: ../src/viktrwlayer.c:8055
+#: ../src/viktrwlayer.c:8082
 msgid "_View All Waypoints"
 msgstr "显示全部路标(_V)"
 
-#: ../src/viktrwlayer.c:8067
+#: ../src/viktrwlayer.c:8094
 msgid "Delete _All Waypoints"
 msgstr "删除全部路标(_A)"
 
-#: ../src/viktrwlayer.c:8073
+#: ../src/viktrwlayer.c:8100
 msgid "_Delete Waypoints From Selection..."
 msgstr "删除所选路标(_D)…"
 
-#: ../src/viktrwlayer.c:8085
+#: ../src/viktrwlayer.c:8112
 msgid "_Show All Waypoints"
 msgstr "显示全部路标(_S)"
 
-#: ../src/viktrwlayer.c:8091
+#: ../src/viktrwlayer.c:8118
 msgid "_Hide All Waypoints"
 msgstr "隐藏全部路标(_H)"
 
-#: ../src/viktrwlayer.c:8103
+#: ../src/viktrwlayer.c:8130
 msgid "_List Waypoints..."
 msgstr "列出路标(_L)…"
 
-#: ../src/viktrwlayer.c:8124
+#: ../src/viktrwlayer.c:8151
 msgid "_View All Tracks"
 msgstr "显示全部轨迹(_V)"
 
-#: ../src/viktrwlayer.c:8130
+#: ../src/viktrwlayer.c:8157
 msgid "_New Track"
 msgstr "新建轨迹(_N)"
 
-#: ../src/viktrwlayer.c:8138
+#: ../src/viktrwlayer.c:8165
 msgid "Delete _All Tracks"
 msgstr "删除全部轨迹(_A)"
 
-#: ../src/viktrwlayer.c:8144
+#: ../src/viktrwlayer.c:8171
 msgid "_Delete Tracks From Selection..."
 msgstr "删除所选轨迹(_D)…"
 
-#: ../src/viktrwlayer.c:8156
+#: ../src/viktrwlayer.c:8183
 msgid "_Show All Tracks"
 msgstr "显示全部轨迹(_S)"
 
-#: ../src/viktrwlayer.c:8162
+#: ../src/viktrwlayer.c:8189
 msgid "_Hide All Tracks"
 msgstr "隐藏全部轨迹(_H)"
 
-#: ../src/viktrwlayer.c:8173
+#: ../src/viktrwlayer.c:8200
 msgid "_List Tracks..."
 msgstr "列出全部轨迹(_L)…"
 
-#: ../src/viktrwlayer.c:8201
+#: ../src/viktrwlayer.c:8228
 msgid "_View All Routes"
 msgstr "显示全部路线(_V)"
 
-#: ../src/viktrwlayer.c:8207
+#: ../src/viktrwlayer.c:8234
 msgid "_New Route"
 msgstr "新建路线(_N)"
 
-#: ../src/viktrwlayer.c:8233
+#: ../src/viktrwlayer.c:8260
 msgid "_Show All Routes"
 msgstr "显示全部路线(_S)"
 
-#: ../src/viktrwlayer.c:8239
+#: ../src/viktrwlayer.c:8266
 msgid "_Hide All Routes"
 msgstr "隐藏全部路线(_H)"
 
-#: ../src/viktrwlayer.c:8250
+#: ../src/viktrwlayer.c:8277
 msgid "_List Routes..."
 msgstr "列出路线(_L)…"
 
-#: ../src/viktrwlayer.c:8321
+#: ../src/viktrwlayer.c:8348
 msgid "_View Track"
 msgstr "显示轨迹(_V)"
 
-#: ../src/viktrwlayer.c:8323
+#: ../src/viktrwlayer.c:8350
 msgid "_View Route"
 msgstr "显示路线(_V)"
 
-#: ../src/viktrwlayer.c:8342
+#: ../src/viktrwlayer.c:8369
 msgid "_Startpoint"
 msgstr "开始点(_S)"
 
-#: ../src/viktrwlayer.c:8348
+#: ../src/viktrwlayer.c:8375
 msgid "\"_Center\""
 msgstr "“中心”(_C)"
 
-#: ../src/viktrwlayer.c:8354
+#: ../src/viktrwlayer.c:8381
 msgid "_Endpoint"
 msgstr "结束点(_E)"
 
-#: ../src/viktrwlayer.c:8360
+#: ../src/viktrwlayer.c:8387
 msgid "_Highest Altitude"
 msgstr "最高海拔(_H)"
 
-#: ../src/viktrwlayer.c:8366
+#: ../src/viktrwlayer.c:8393
 msgid "_Lowest Altitude"
 msgstr "最低海拔(_L)"
 
-#: ../src/viktrwlayer.c:8374
+#: ../src/viktrwlayer.c:8401
 msgid "_Maximum Speed"
 msgstr "极速(_M)"
 
-#: ../src/viktrwlayer.c:8383
+#: ../src/viktrwlayer.c:8410
 msgid "Co_mbine"
 msgstr "组合(_m)"
 
-#: ../src/viktrwlayer.c:8391
+#: ../src/viktrwlayer.c:8418
 msgid "_Merge By Time..."
 msgstr "按时间合并(_M)…"
 
-#: ../src/viktrwlayer.c:8396
+#: ../src/viktrwlayer.c:8423
 msgid "Merge _Segments"
 msgstr "合并线段(_S)"
 
-#: ../src/viktrwlayer.c:8402
+#: ../src/viktrwlayer.c:8429
 msgid "Merge _With Other Tracks..."
 msgstr "跟其他轨迹合并(_W)…"
 
-#: ../src/viktrwlayer.c:8408
+#: ../src/viktrwlayer.c:8435
 msgid "_Append Track..."
 msgstr "扩展轨迹(_A)…"
 
-#: ../src/viktrwlayer.c:8410
+#: ../src/viktrwlayer.c:8437
 msgid "_Append Route..."
 msgstr "扩展路线(_A)…"
 
-#: ../src/viktrwlayer.c:8416
+#: ../src/viktrwlayer.c:8443
 msgid "Append _Route..."
 msgstr "扩展路线(_R)…"
 
-#: ../src/viktrwlayer.c:8418
+#: ../src/viktrwlayer.c:8445
 msgid "Append _Track..."
 msgstr "扩展轨迹(_T)…"
 
-#: ../src/viktrwlayer.c:8425
+#: ../src/viktrwlayer.c:8452
 msgid "_Split"
 msgstr "分割(_S)"
 
-#: ../src/viktrwlayer.c:8433
+#: ../src/viktrwlayer.c:8460
 msgid "_Split By Time..."
 msgstr "以时间分割(_S)…"
 
-#: ../src/viktrwlayer.c:8439
+#. ATM always enable this entry - don't want to have to analyse the track before displaying the menu - to keep the menu speedy
+#: ../src/viktrwlayer.c:8466
 msgid "Split Se_gments"
 msgstr "分割线段(_g)"
 
-#: ../src/viktrwlayer.c:8445
+#: ../src/viktrwlayer.c:8472
 msgid "Split By _Number of Points..."
 msgstr "以点数分割(_N)…"
 
-#: ../src/viktrwlayer.c:8450
+#: ../src/viktrwlayer.c:8477
 msgid "Split at _Trackpoint"
 msgstr "在轨迹点分割(_T)"
 
-#: ../src/viktrwlayer.c:8458
+#: ../src/viktrwlayer.c:8485
 msgid "_Insert Points"
 msgstr "插入点(_I)"
 
-#: ../src/viktrwlayer.c:8464
+#: ../src/viktrwlayer.c:8491
 msgid "Insert Point _Before Selected Point"
 msgstr "在所选点前插入(_B)"
 
-#: ../src/viktrwlayer.c:8471
+#: ../src/viktrwlayer.c:8498
 msgid "Insert Point _After Selected Point"
 msgstr "在所选点后插入(_A)"
 
-#: ../src/viktrwlayer.c:8480
+#: ../src/viktrwlayer.c:8507
 msgid "Delete Poi_nts"
 msgstr "删除点(_n)"
 
-#: ../src/viktrwlayer.c:8486
+#: ../src/viktrwlayer.c:8513
 msgid "Delete _Selected Point"
 msgstr "删除所选点(_S)"
 
-#: ../src/viktrwlayer.c:8494
+#: ../src/viktrwlayer.c:8521
 msgid "Delete Points With The Same _Position"
 msgstr "删除相同位置点(_P)"
 
-#: ../src/viktrwlayer.c:8499
+#: ../src/viktrwlayer.c:8526
 msgid "Delete Points With The Same _Time"
 msgstr "删除相同时间点(_T)"
 
-#: ../src/viktrwlayer.c:8506 ../src/viktrwlayer.c:8755
+#: ../src/viktrwlayer.c:8533 ../src/viktrwlayer.c:8782
 msgid "_Transform"
 msgstr "变换(_T)"
 
-#: ../src/viktrwlayer.c:8514 ../src/viktrwlayer.c:8763
+#: ../src/viktrwlayer.c:8541 ../src/viktrwlayer.c:8790
 msgid "_Apply DEM Data"
 msgstr "应用DEM数据(_A)"
 
-#: ../src/viktrwlayer.c:8519 ../src/viktrwlayer.c:8768
+#: ../src/viktrwlayer.c:8546 ../src/viktrwlayer.c:8795
 msgid "_Overwrite"
 msgstr "覆盖(_O)"
 
-#: ../src/viktrwlayer.c:8522 ../src/viktrwlayer.c:8771
+#: ../src/viktrwlayer.c:8549 ../src/viktrwlayer.c:8798
 msgid "Overwrite any existing elevation values with DEM values"
 msgstr "以DEM（Digital Elevation Model数字高程模型）值覆盖任何已有高程值"
 
-#: ../src/viktrwlayer.c:8525 ../src/viktrwlayer.c:8774
+#: ../src/viktrwlayer.c:8552 ../src/viktrwlayer.c:8801
 msgid "_Keep Existing"
 msgstr "保持已有的(_K)"
 
-#: ../src/viktrwlayer.c:8528 ../src/viktrwlayer.c:8777
+#: ../src/viktrwlayer.c:8555 ../src/viktrwlayer.c:8804
 msgid "Keep existing elevation values, only attempt for missing values"
 msgstr "保持已有高程值, 仅应用于缺失的值"
 
-#: ../src/viktrwlayer.c:8533
+#: ../src/viktrwlayer.c:8560
 msgid "_Smooth Missing Elevation Data"
 msgstr "光顺缺失的高程数据"
 
-#: ../src/viktrwlayer.c:8538
+#: ../src/viktrwlayer.c:8565
 msgid "_Interpolated"
 msgstr "插值(_I)"
 
-#: ../src/viktrwlayer.c:8541
+#: ../src/viktrwlayer.c:8568
 msgid ""
 "Interpolate between known elevation values to derive values for the missing "
 "elevations"
 msgstr "从已有高程值插值得到缺失的高程"
 
-#: ../src/viktrwlayer.c:8544
+#: ../src/viktrwlayer.c:8571
 msgid "_Flat"
 msgstr "平直(_F)"
 
-#: ../src/viktrwlayer.c:8547
+#: ../src/viktrwlayer.c:8574
 msgid "Set unknown elevation values to the last known value"
 msgstr "把未知高程值设成最后的已知值"
 
-#: ../src/viktrwlayer.c:8551
+#: ../src/viktrwlayer.c:8578
 msgid "C_onvert to a Route"
 msgstr "转换成路线(_o)"
 
-#: ../src/viktrwlayer.c:8553
+#: ../src/viktrwlayer.c:8580
 msgid "C_onvert to a Track"
 msgstr "转换成轨迹(_o)"
 
-#: ../src/viktrwlayer.c:8561
+#: ../src/viktrwlayer.c:8588
 msgid "_Anonymize Times"
 msgstr "匿名化时间(_A)"
 
-#: ../src/viktrwlayer.c:8564
+#: ../src/viktrwlayer.c:8591
 msgid "Shift timestamps to a relative offset from 1901-01-01"
 msgstr "相对于1901年1月1日偏置时间戳"
 
-#: ../src/viktrwlayer.c:8567
+#: ../src/viktrwlayer.c:8594
 msgid "_Interpolate Times"
 msgstr "插值时间(_I)"
 
-#: ../src/viktrwlayer.c:8570
+#: ../src/viktrwlayer.c:8597
 msgid ""
 "Reset trackpoint timestamps between the first and last points such that "
 "track is traveled at equal speed"
 msgstr "重置轨迹点的时间戳到最先和最后点使轨迹以均速进行"
 
-#: ../src/viktrwlayer.c:8575
+#: ../src/viktrwlayer.c:8602
 msgid "_Reverse Track"
 msgstr "反转轨迹(_R)"
 
-#: ../src/viktrwlayer.c:8577
+#: ../src/viktrwlayer.c:8604
 msgid "_Reverse Route"
 msgstr "反转路线(_R)"
 
-#: ../src/viktrwlayer.c:8584
+#: ../src/viktrwlayer.c:8611
 msgid "Refine Route..."
 msgstr "改善路线…"
 
-#: ../src/viktrwlayer.c:8594
+#: ../src/viktrwlayer.c:8621
 msgid "Down_load Maps Along Track..."
 msgstr "沿轨迹下载地图(_l)…"
 
-#: ../src/viktrwlayer.c:8596
+#: ../src/viktrwlayer.c:8623
 msgid "Down_load Maps Along Route..."
 msgstr "沿路线下载地图(_l)…"
 
-#: ../src/viktrwlayer.c:8604
+#: ../src/viktrwlayer.c:8631
 msgid "_Export Track as GPX..."
 msgstr "导出轨迹为GPX(_E)…"
 
-#: ../src/viktrwlayer.c:8606
+#: ../src/viktrwlayer.c:8633
 msgid "_Export Route as GPX..."
 msgstr "导出路线为GPX(_E)…"
 
-#: ../src/viktrwlayer.c:8613
+#: ../src/viktrwlayer.c:8640
 msgid "E_xtend Track End"
 msgstr "延伸轨迹尾部(_x)"
 
-#: ../src/viktrwlayer.c:8615
+#: ../src/viktrwlayer.c:8642
 msgid "E_xtend Route End"
 msgstr "延伸路线尾部(_x)"
 
-#: ../src/viktrwlayer.c:8622
+#: ../src/viktrwlayer.c:8649
 msgid "Extend _Using Route Finder"
 msgstr "用路线查找器延伸"
 
-#: ../src/viktrwlayer.c:8637
+#: ../src/viktrwlayer.c:8664
 msgid "_Upload to GPS..."
 msgstr "上传到GPS设备(_U)…"
 
-#: ../src/viktrwlayer.c:8652
+#: ../src/viktrwlayer.c:8679
 msgid "_Diary"
 msgstr "日记(_D)"
 
-#: ../src/viktrwlayer.c:8656
+#: ../src/viktrwlayer.c:8683
 msgid "Open diary program at this date"
 msgstr "在该日期打开日记程序"
 
-#: ../src/viktrwlayer.c:8661
+#: ../src/viktrwlayer.c:8688
 msgid "_Astronomy"
 msgstr "天文(_A)"
 
-#: ../src/viktrwlayer.c:8664
+#: ../src/viktrwlayer.c:8691
 msgid "Open astronomy program at this date and location"
 msgstr "在该日期和地点打开天文程序"
 
-#: ../src/viktrwlayer.c:8688
+#: ../src/viktrwlayer.c:8715
 msgid "_View Google Directions"
 msgstr "显示Google Directions（谷歌方向）(_V)"
 
-#: ../src/viktrwlayer.c:8710
+#: ../src/viktrwlayer.c:8737
 msgid "Use with _Filter"
 msgstr "使用过滤器(_F)"
 
-#: ../src/viktrwlayer.c:8744
+#: ../src/viktrwlayer.c:8771
 msgid "_Edit Trackpoint"
 msgstr "编辑轨迹点(_E)"
 
-#: ../src/viktrwlayer.c:9848
+#: ../src/viktrwlayer.c:9871
 #, c-format
 msgid " - Gain %dm:Loss %dm"
 msgstr " -爬升%d米：下降%d米"
 
-#: ../src/viktrwlayer.c:9850
+#: ../src/viktrwlayer.c:9873
 #, c-format
 msgid " - Gain %dft:Loss %dft"
 msgstr " -爬升%d英尺：下降%d英尺"
 
-#: ../src/viktrwlayer.c:9855
+#: ../src/viktrwlayer.c:9878
 #, c-format
 msgid " - Bearing %3.1f° - Step %s"
 msgstr " -方位%3.1f° -步调%s"
 
-#: ../src/viktrwlayer.c:10427
+#: ../src/viktrwlayer.c:10450
 #, c-format
 msgid "Querying %s for route between (%.3f, %.3f) and (%.3f, %.3f)."
 msgstr "查询%s于路线（%.3f, %.3f）至（%.3f, %.3f）。"
 
-#: ../src/viktrwlayer.c:10443
+#: ../src/viktrwlayer.c:10466
 #, c-format
 msgid "%s returned route between (%.3f, %.3f) and (%.3f, %.3f)."
 msgstr "%s返回路线于（%.3f, %.3f）至（%.3f, %.3f）。"
 
-#: ../src/viktrwlayer.c:10446
+#: ../src/viktrwlayer.c:10469
 #, c-format
 msgid "Error getting route from %s."
 msgstr "从%s获得路线有错。"
 
-#: ../src/viktrwlayer.c:10601
+#: ../src/viktrwlayer.c:10624
 #, c-format
 msgid "Creating %d Image Thumbnails..."
 msgstr "正创建%d图像概略…"
 
-#: ../src/viktrwlayer.c:11091
+#: ../src/viktrwlayer.c:11114
 msgid "No map layer in use. Create one first"
 msgstr "无所用地图。创建一个先"
 
-#: ../src/viktrwlayer.c:11210
+#: ../src/viktrwlayer.c:11233
 #, c-format
 msgid "%s: Track List"
 msgstr "%s：轨迹列表"
 
-#: ../src/viktrwlayer.c:11212
+#: ../src/viktrwlayer.c:11235
 #, c-format
 msgid "%s: Route List"
 msgstr "%s：路线列表"
 
 #: ../src/viktrwlayer_export.c:58 ../src/viktrwlayer_export.c:171
-#: ../src/vikwindow.c:3347 ../src/vikwindow.c:4087
+#: ../src/vikwindow.c:3348 ../src/vikwindow.c:4088
 #, c-format
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "文件“%s”已存在。确定要覆盖？"
 
 #: ../src/viktrwlayer_export.c:73 ../src/viktrwlayer_export.c:190
-#: ../src/vikwindow.c:3375
+#: ../src/vikwindow.c:3376
 msgid "The filename you requested could not be opened for writing."
 msgstr "所求文件名打不开来写入。"
 
@@ -4014,294 +4156,324 @@ msgstr ""
 msgid "You did not select a valid file format."
 msgstr "还未选择有效文件格式。"
 
-#: ../src/viktrwlayer_propwin.c:910 ../src/viktrwlayer_propwin.c:3248
-#: ../src/viktrwlayer_propwin.c:3272 ../src/viktrwlayer_propwin.c:3300
-#: ../src/viktrwlayer_propwin.c:3340 ../src/viktrwlayer_propwin.c:3358
-#: ../src/viktrwlayer_propwin.c:3431 ../src/viktrwlayer_propwin.c:3432
-#: ../src/viktrwlayer_propwin.c:3433 ../src/viktrwlayer_propwin.c:3442
-#: ../src/viktrwlayer_propwin.c:3443 ../src/viktrwlayer_propwin.c:3459
-#: ../src/viktrwlayer_propwin.c:3460 ../src/viktrwlayer_propwin.c:3474
-#: ../src/viktrwlayer_propwin.c:3475 ../src/viktrwlayer_propwin.c:3476
-#: ../src/viktrwlayer_propwin.c:3490 ../src/viktrwlayer_propwin.c:3491
-#: ../src/viktrwlayer_propwin.c:3492 ../src/viktrwlayer_propwin.c:3506
-#: ../src/viktrwlayer_propwin.c:3507 ../src/viktrwlayer_propwin.c:3508
-#: ../src/viktrwlayer_propwin.c:3524 ../src/viktrwlayer_propwin.c:3525
+#: ../src/viktrwlayer_propwin.c:909 ../src/viktrwlayer_propwin.c:3360
+#: ../src/viktrwlayer_propwin.c:3396 ../src/viktrwlayer_propwin.c:3436
+#: ../src/viktrwlayer_propwin.c:3488 ../src/viktrwlayer_propwin.c:3506
+#: ../src/viktrwlayer_propwin.c:3579 ../src/viktrwlayer_propwin.c:3580
+#: ../src/viktrwlayer_propwin.c:3581 ../src/viktrwlayer_propwin.c:3590
+#: ../src/viktrwlayer_propwin.c:3591 ../src/viktrwlayer_propwin.c:3607
+#: ../src/viktrwlayer_propwin.c:3608 ../src/viktrwlayer_propwin.c:3622
+#: ../src/viktrwlayer_propwin.c:3623 ../src/viktrwlayer_propwin.c:3624
+#: ../src/viktrwlayer_propwin.c:3638 ../src/viktrwlayer_propwin.c:3639
+#: ../src/viktrwlayer_propwin.c:3640 ../src/viktrwlayer_propwin.c:3654
+#: ../src/viktrwlayer_propwin.c:3655 ../src/viktrwlayer_propwin.c:3656
+#: ../src/viktrwlayer_propwin.c:3672 ../src/viktrwlayer_propwin.c:3673
 #: ../src/viktrwlayer_analysis.c:258
+#, c-format
 msgid "No Data"
 msgstr "无数据"
 
-#: ../src/viktrwlayer_propwin.c:955 ../src/viktrwlayer_propwin.c:1225
+#: ../src/viktrwlayer_propwin.c:954 ../src/viktrwlayer_propwin.c:1236
 #, c-format
 msgid "%.1f kph"
 msgstr "%.1f公里/小时"
 
-#: ../src/viktrwlayer_propwin.c:958 ../src/viktrwlayer_propwin.c:1228
+#: ../src/viktrwlayer_propwin.c:957 ../src/viktrwlayer_propwin.c:1239
 #: ../src/viktrwlayer_analysis.c:299
 #, c-format
 msgid "%.1f mph"
 msgstr "%.1f英里/小时"
 
-#: ../src/viktrwlayer_propwin.c:961 ../src/viktrwlayer_propwin.c:1231
+#: ../src/viktrwlayer_propwin.c:960 ../src/viktrwlayer_propwin.c:1242
 #, c-format
 msgid "%.1f knots"
 msgstr "%.1f节"
 
-#: ../src/viktrwlayer_propwin.c:965 ../src/viktrwlayer_propwin.c:1235
+#: ../src/viktrwlayer_propwin.c:963 ../src/viktrwlayer_propwin.c:1245
+#, fuzzy, c-format
+msgid "%.1f s/km"
+msgstr "%.1f公里"
+
+#: ../src/viktrwlayer_propwin.c:966 ../src/viktrwlayer_propwin.c:1248
+#: ../src/viktrwlayer_analysis.c:336 ../src/viktrwlayer_analysis.c:339
+#, fuzzy, c-format
+msgid "%.1f min/km"
+msgstr "%.1f公里"
+
+#: ../src/viktrwlayer_propwin.c:969 ../src/viktrwlayer_propwin.c:1251
+#, fuzzy, c-format
+msgid "%.1f sec/mi"
+msgstr "%.1f英里"
+
+#: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1254
+#: ../src/viktrwlayer_analysis.c:356 ../src/viktrwlayer_analysis.c:359
+#, fuzzy, c-format
+msgid "%.1f min/mi"
+msgstr "%.1f米/秒"
+
+#. VIK_UNITS_SPEED_METRES_PER_SECOND:
+#: ../src/viktrwlayer_propwin.c:976 ../src/viktrwlayer_propwin.c:1258
 #, c-format
 msgid "%.1f m/s"
 msgstr "%.1f米/秒"
 
-#: ../src/viktrwlayer_propwin.c:1378
+#. Minutes
+#: ../src/viktrwlayer_propwin.c:1401
 msgid "mins"
 msgstr "分"
 
-#: ../src/viktrwlayer_propwin.c:1385
+#. Hours
+#: ../src/viktrwlayer_propwin.c:1408
 msgid "h"
 msgstr "时"
 
-#: ../src/viktrwlayer_propwin.c:1391
+#. Days
+#: ../src/viktrwlayer_propwin.c:1414
 msgid "d"
 msgstr "天"
 
-#: ../src/viktrwlayer_propwin.c:1396
+#. Weeks
+#: ../src/viktrwlayer_propwin.c:1419
 msgid "w"
 msgstr "周"
 
-#: ../src/viktrwlayer_propwin.c:1400
+#. 'Months'
+#: ../src/viktrwlayer_propwin.c:1423
 msgid "M"
 msgstr "月"
 
-#: ../src/viktrwlayer_propwin.c:1974 ../src/viktrwlayer_analysis.c:268
+#: ../src/viktrwlayer_propwin.c:2041 ../src/viktrwlayer_analysis.c:268
 #, c-format
 msgid "%.1f miles"
 msgstr "%.1f英里"
 
-#: ../src/viktrwlayer_propwin.c:1977 ../src/viktrwlayer_analysis.c:271
+#: ../src/viktrwlayer_propwin.c:2044 ../src/viktrwlayer_analysis.c:271
 #, c-format
 msgid "%.1f NM"
 msgstr "%.1f海里"
 
-#: ../src/viktrwlayer_propwin.c:1980 ../src/viktrwlayer_analysis.c:275
+#. VIK_UNITS_DISTANCE_KILOMETRES
+#: ../src/viktrwlayer_propwin.c:2047 ../src/viktrwlayer_analysis.c:275
 #, c-format
 msgid "%.1f km"
 msgstr "%.1f公里"
 
-#: ../src/viktrwlayer_propwin.c:2952
+#: ../src/viktrwlayer_propwin.c:3064
 msgid "Failed spliting track. Track unchanged"
 msgstr "分割轨迹失败。轨迹未变"
 
-#: ../src/viktrwlayer_propwin.c:3103 ../src/viktrwlayer_propwin.c:3573
+#: ../src/viktrwlayer_propwin.c:3215 ../src/viktrwlayer_propwin.c:3721
 #, c-format
 msgid "%s - Track Properties"
 msgstr "%s-轨迹属性"
 
-#: ../src/viktrwlayer_propwin.c:3108
+#: ../src/viktrwlayer_propwin.c:3220
 msgid "Split at _Marker"
 msgstr "在记号处分割(_M)"
 
-#: ../src/viktrwlayer_propwin.c:3109
+#: ../src/viktrwlayer_propwin.c:3221
 msgid "Split _Segments"
 msgstr "分割线段(_S)"
 
-#: ../src/viktrwlayer_propwin.c:3110
+#: ../src/viktrwlayer_propwin.c:3222
 msgid "_Reverse"
 msgstr "反转(_R)"
 
-#: ../src/viktrwlayer_propwin.c:3111
+#: ../src/viktrwlayer_propwin.c:3223
 msgid "_Delete Dupl."
 msgstr "删除重复(_D)"
 
-#: ../src/viktrwlayer_propwin.c:3136
+#: ../src/viktrwlayer_propwin.c:3248
 msgid "<b>Comment:</b>"
 msgstr "<b>注释：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3137
+#: ../src/viktrwlayer_propwin.c:3249
 msgid "<b>Description:</b>"
 msgstr "<b>描述：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3138
+#: ../src/viktrwlayer_propwin.c:3250
 msgid "<b>Source:</b>"
 msgstr "<b>来源：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3139
+#: ../src/viktrwlayer_propwin.c:3251
 msgid "<b>Type:</b>"
 msgstr "<b>类型：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3140
+#: ../src/viktrwlayer_propwin.c:3252
 msgid "<b>Color:</b>"
 msgstr "<b>颜色：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3141
+#: ../src/viktrwlayer_propwin.c:3253
 msgid "<b>Draw Name:</b>"
 msgstr "<b>绘制名字：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3142
+#: ../src/viktrwlayer_propwin.c:3254
 msgid "<b>Distance Labels:</b>"
 msgstr "<b>距离标签：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3145
+#: ../src/viktrwlayer_propwin.c:3257
 msgid "<b>Track Length:</b>"
 msgstr "<b>轨迹长度：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3146
+#: ../src/viktrwlayer_propwin.c:3258
 msgid "<b>Trackpoints:</b>"
 msgstr "<b>路标：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3147
+#: ../src/viktrwlayer_propwin.c:3259
 msgid "<b>Segments:</b>"
 msgstr "<b>线段：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3148
+#: ../src/viktrwlayer_propwin.c:3260
 msgid "<b>Duplicate Points:</b>"
 msgstr "<b>重复点：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3149
+#: ../src/viktrwlayer_propwin.c:3261
 msgid "<b>Max Speed:</b>"
 msgstr "<b>极速：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3150
+#: ../src/viktrwlayer_propwin.c:3262
 msgid "<b>Avg. Speed:</b>"
 msgstr "<b>均速：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3151
+#: ../src/viktrwlayer_propwin.c:3263
 msgid "<b>Moving Avg. Speed:</b>"
 msgstr "<b>移动均速：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3152
+#: ../src/viktrwlayer_propwin.c:3264
 msgid "<b>Avg. Dist. Between TPs:</b>"
 msgstr "<b>均距：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3153
+#: ../src/viktrwlayer_propwin.c:3265
 msgid "<b>Elevation Range:</b>"
 msgstr "<b>高程范围：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3154
+#: ../src/viktrwlayer_propwin.c:3266
 msgid "<b>Total Elevation Gain/Loss:</b>"
 msgstr "<b>总爬升/下降：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3155
+#: ../src/viktrwlayer_propwin.c:3267
 msgid "<b>Start:</b>"
 msgstr "<b>开始：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3156
+#: ../src/viktrwlayer_propwin.c:3268
 msgid "<b>End:</b>"
 msgstr "<b>结束：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3157
+#: ../src/viktrwlayer_propwin.c:3269
 msgid "<b>Duration:</b>"
 msgstr "<b>时间：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3186
+#: ../src/viktrwlayer_propwin.c:3298
 msgid "No"
 msgstr "否"
 
-#: ../src/viktrwlayer_propwin.c:3187
+#: ../src/viktrwlayer_propwin.c:3299
 msgid "Centre"
 msgstr "居中"
 
-#: ../src/viktrwlayer_propwin.c:3188
+#: ../src/viktrwlayer_propwin.c:3300
 msgid "Start only"
 msgstr "仅开始"
 
-#: ../src/viktrwlayer_propwin.c:3189
+#: ../src/viktrwlayer_propwin.c:3301
 msgid "End only"
 msgstr "仅结束"
 
-#: ../src/viktrwlayer_propwin.c:3190
+#: ../src/viktrwlayer_propwin.c:3302
 msgid "Start and End"
 msgstr "开始和结束"
 
-#: ../src/viktrwlayer_propwin.c:3191
+#: ../src/viktrwlayer_propwin.c:3303
 msgid "Centre, Start and End"
 msgstr "居中，开始和结束"
 
-#: ../src/viktrwlayer_propwin.c:3203
+#: ../src/viktrwlayer_propwin.c:3315
 msgid "Maximum number of distance labels to be shown"
 msgstr "最多数量的距离标签能够显示"
 
-#: ../src/viktrwlayer_propwin.c:3207
+#: ../src/viktrwlayer_propwin.c:3319
 msgid "Properties"
 msgstr "属性"
 
-#: ../src/viktrwlayer_propwin.c:3415
+#: ../src/viktrwlayer_propwin.c:3563
 #, c-format
 msgid "%d minutes - %d minutes moving"
 msgstr "%d分-%d分在移动"
 
-#: ../src/viktrwlayer_propwin.c:3427
+#: ../src/viktrwlayer_propwin.c:3575
 #, c-format
 msgid "%s total - %s in segments"
 msgstr "%s总计-%s在线段中"
 
-#: ../src/viktrwlayer_propwin.c:3438 ../src/viktrwlayer_analysis.c:526
+#: ../src/viktrwlayer_propwin.c:3586 ../src/viktrwlayer_analysis.c:566
 msgid "Statistics"
 msgstr "统计"
 
-#: ../src/viktrwlayer_propwin.c:3444 ../src/viktrwlayer_propwin.c:3510
+#: ../src/viktrwlayer_propwin.c:3592 ../src/viktrwlayer_propwin.c:3658
 msgid "Show D_EM"
 msgstr "显示DEM(_E)"
 
-#: ../src/viktrwlayer_propwin.c:3445 ../src/viktrwlayer_propwin.c:3461
-#: ../src/viktrwlayer_propwin.c:3477 ../src/viktrwlayer_propwin.c:3526
+#: ../src/viktrwlayer_propwin.c:3593 ../src/viktrwlayer_propwin.c:3609
+#: ../src/viktrwlayer_propwin.c:3625 ../src/viktrwlayer_propwin.c:3674
 msgid "Show _GPS Speed"
 msgstr "显示GPS速度(_G)"
 
-#: ../src/viktrwlayer_propwin.c:3447 ../src/viktrwlayer_propwin.c:3463
-#: ../src/viktrwlayer_propwin.c:3495 ../src/viktrwlayer_propwin.c:3528
+#: ../src/viktrwlayer_propwin.c:3595 ../src/viktrwlayer_propwin.c:3611
+#: ../src/viktrwlayer_propwin.c:3643 ../src/viktrwlayer_propwin.c:3676
 msgid "<b>Track Distance:</b>"
 msgstr "<b>轨迹距离：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3448 ../src/viktrwlayer_propwin.c:3513
+#: ../src/viktrwlayer_propwin.c:3596 ../src/viktrwlayer_propwin.c:3661
 msgid "<b>Track Height:</b>"
 msgstr "<b>轨迹高度：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3454
+#: ../src/viktrwlayer_propwin.c:3602
 msgid "Elevation-distance"
 msgstr "高程-距离"
 
-#: ../src/viktrwlayer_propwin.c:3464
+#: ../src/viktrwlayer_propwin.c:3612
 msgid "<b>Track Gradient:</b>"
 msgstr "<b>轨迹梯度：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3469
+#: ../src/viktrwlayer_propwin.c:3617
 msgid "Gradient-distance"
 msgstr "梯度-距离"
 
-#: ../src/viktrwlayer_propwin.c:3479 ../src/viktrwlayer_propwin.c:3496
-#: ../src/viktrwlayer_propwin.c:3512
+#: ../src/viktrwlayer_propwin.c:3627 ../src/viktrwlayer_propwin.c:3644
+#: ../src/viktrwlayer_propwin.c:3660
 msgid "<b>Track Time:</b>"
 msgstr "<b>轨迹时间：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3480 ../src/viktrwlayer_propwin.c:3529
+#: ../src/viktrwlayer_propwin.c:3628 ../src/viktrwlayer_propwin.c:3677
 msgid "<b>Track Speed:</b>"
 msgstr "<b>轨迹速度：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3481 ../src/viktrwlayer_propwin.c:3497
-#: ../src/viktrwlayer_propwin.c:3514
+#: ../src/viktrwlayer_propwin.c:3629 ../src/viktrwlayer_propwin.c:3645
+#: ../src/viktrwlayer_propwin.c:3662
 msgid "<b>Time/Date:</b>"
 msgstr "<b>时间/日期：</b>"
 
-#: ../src/viktrwlayer_propwin.c:3485
+#: ../src/viktrwlayer_propwin.c:3633
 msgid "Speed-time"
 msgstr "速度-时间"
 
-#: ../src/viktrwlayer_propwin.c:3493 ../src/viktrwlayer_propwin.c:3509
+#: ../src/viktrwlayer_propwin.c:3641 ../src/viktrwlayer_propwin.c:3657
 msgid "Show S_peed"
 msgstr "显示速度(_p)"
 
-#: ../src/viktrwlayer_propwin.c:3501
+#: ../src/viktrwlayer_propwin.c:3649
 msgid "Distance-time"
 msgstr "距离-时间"
 
-#: ../src/viktrwlayer_propwin.c:3519
+#: ../src/viktrwlayer_propwin.c:3667
 msgid "Elevation-time"
 msgstr "高程-时间"
 
-#: ../src/viktrwlayer_propwin.c:3534
+#: ../src/viktrwlayer_propwin.c:3682
 msgid "Speed-distance"
 msgstr "速度-距离"
 
-#: ../src/viktrwlayer_tpwin.c:184 ../src/viktrwlayer_wpwin.c:64
+#: ../src/viktrwlayer_tpwin.c:184 ../src/viktrwlayer_wpwin.c:63
 msgid "Date/Time Edit"
 msgstr "日期/时间编辑"
 
@@ -4366,7 +4538,7 @@ msgid "<b>SAT/FIX:</b>"
 msgstr "<b>卫星/定位：</b>"
 
 #: ../src/viktrwlayer_tpwin.c:236 ../src/viktrwlayer_tpwin.c:368
-#: ../src/viktrwlayer_tpwin.c:558
+#: ../src/viktrwlayer_tpwin.c:582
 msgid "Trackpoint"
 msgstr "轨迹点"
 
@@ -4382,24 +4554,42 @@ msgstr "在此拆分"
 msgid "_Copy Data"
 msgstr "复制数据(_C)"
 
+#.
+#. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
+#. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
+#. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_select), values );
+#. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+#. gtk_widget_show ( item );
+#.
+#. ATM view auto selects, so don't bother with separate select menu entry
+#.
+#. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
+#. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
+#. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_select), values );
+#. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+#. gtk_widget_show ( item );
+#.
+#. AUTO SELECT NOT TRUE YET...
+#. ATM view auto selects, so don't bother with separate select menu entry
 #: ../src/viktrwlayer_tracklist.c:290 ../src/viktrwlayer_waypointlist.c:341
-#: ../src/vikwindow.c:4463
+#: ../src/vikwindow.c:4478
 msgid "_View"
 msgstr "显示(_V)"
 
-#: ../src/viktrwlayer_tracklist.c:604 ../src/viktrwlayer_waypointlist.c:609
+#. Insert column for the layer name when viewing multi layers
+#: ../src/viktrwlayer_tracklist.c:613 ../src/viktrwlayer_waypointlist.c:609
 msgid "Layer"
 msgstr "图层"
 
-#: ../src/viktrwlayer_tracklist.c:618 ../src/viktrwlayer_waypointlist.c:624
+#: ../src/viktrwlayer_tracklist.c:627 ../src/viktrwlayer_waypointlist.c:624
 msgid "Date"
 msgstr "日期"
 
-#: ../src/viktrwlayer_tracklist.c:622 ../src/viktrwlayer_waypointlist.c:628
+#: ../src/viktrwlayer_tracklist.c:631 ../src/viktrwlayer_waypointlist.c:628
 msgid "Visible"
 msgstr "可见"
 
-#: ../src/viktrwlayer_tracklist.c:630
+#: ../src/viktrwlayer_tracklist.c:639
 msgid ""
 "Distance\n"
 "(miles)"
@@ -4407,7 +4597,7 @@ msgstr ""
 "距离\n"
 "(英里)"
 
-#: ../src/viktrwlayer_tracklist.c:633
+#: ../src/viktrwlayer_tracklist.c:642
 msgid ""
 "Distance\n"
 "(NM)"
@@ -4415,7 +4605,7 @@ msgstr ""
 "距离\n"
 "（海里）"
 
-#: ../src/viktrwlayer_tracklist.c:636
+#: ../src/viktrwlayer_tracklist.c:645
 msgid ""
 "Distance\n"
 "(km)"
@@ -4423,7 +4613,7 @@ msgstr ""
 "距离\n"
 "(公里)"
 
-#: ../src/viktrwlayer_tracklist.c:642
+#: ../src/viktrwlayer_tracklist.c:651
 msgid ""
 "Length\n"
 "(minutes)"
@@ -4431,7 +4621,11 @@ msgstr ""
 "时长\n"
 "(分钟)"
 
-#: ../src/viktrwlayer_tracklist.c:653
+#: ../src/viktrwlayer_tracklist.c:660 ../src/vikutils.c:93
+msgid "sec/mi"
+msgstr ""
+
+#: ../src/viktrwlayer_tracklist.c:666
 #, c-format
 msgid ""
 "Av. Speed\n"
@@ -4440,7 +4634,8 @@ msgstr ""
 "均速\n"
 "（%s）"
 
-#: ../src/viktrwlayer_tracklist.c:658
+#. Apply own formatting of the data
+#: ../src/viktrwlayer_tracklist.c:671
 #, c-format
 msgid ""
 "Max Speed\n"
@@ -4449,7 +4644,7 @@ msgstr ""
 "极速\n"
 "（%s）"
 
-#: ../src/viktrwlayer_tracklist.c:666 ../src/viktrwlayer_waypointlist.c:637
+#: ../src/viktrwlayer_tracklist.c:679 ../src/viktrwlayer_waypointlist.c:637
 msgid ""
 "Max Height\n"
 "(Feet)"
@@ -4457,7 +4652,7 @@ msgstr ""
 "最大高度\n"
 "（英尺）"
 
-#: ../src/viktrwlayer_tracklist.c:668 ../src/viktrwlayer_waypointlist.c:639
+#: ../src/viktrwlayer_tracklist.c:681 ../src/viktrwlayer_waypointlist.c:639
 msgid ""
 "Max Height\n"
 "(Metres)"
@@ -4477,51 +4672,53 @@ msgstr "注释"
 msgid "Symbol"
 msgstr "符号"
 
-#: ../src/viktrwlayer_wpwin.c:104
+#: ../src/viktrwlayer_wpwin.c:103
 msgid "Waypoint Properties"
 msgstr "路标属性"
 
-#: ../src/viktrwlayer_wpwin.c:144
+#: ../src/viktrwlayer_wpwin.c:143
 msgid "Name:"
 msgstr "名字："
 
-#: ../src/viktrwlayer_wpwin.c:163
+#: ../src/viktrwlayer_wpwin.c:162
 msgid "Altitude:"
 msgstr "海拔："
 
-#: ../src/viktrwlayer_wpwin.c:169 ../src/viktrwlayer_wpwin.c:171
+#: ../src/viktrwlayer_wpwin.c:168 ../src/viktrwlayer_wpwin.c:170
 msgid "Comment:"
 msgstr "注释："
 
-#: ../src/viktrwlayer_wpwin.c:185
+#: ../src/viktrwlayer_wpwin.c:184
 msgid "Source:"
 msgstr "来源："
 
-#: ../src/viktrwlayer_wpwin.c:197
+#: ../src/viktrwlayer_wpwin.c:196
 msgid "Image:"
 msgstr "图像："
 
-#: ../src/viktrwlayer_wpwin.c:202
+#: ../src/viktrwlayer_wpwin.c:201
 msgid "Symbol:"
 msgstr "符号："
 
-#: ../src/viktrwlayer_wpwin.c:211
+#: ../src/viktrwlayer_wpwin.c:210
 msgid "(none)"
 msgstr "（无）"
 
-#: ../src/viktrwlayer_wpwin.c:253
+#. Geotag Info [readonly]
+#: ../src/viktrwlayer_wpwin.c:252
 msgid "Has Geotag"
 msgstr "含地理标记"
 
-#: ../src/viktrwlayer_wpwin.c:260
+#: ../src/viktrwlayer_wpwin.c:259
 msgid "Consistent Position"
 msgstr "持续位置"
 
-#: ../src/viktrwlayer_wpwin.c:271
+#: ../src/viktrwlayer_wpwin.c:270
 msgid "Time:"
 msgstr "时间："
 
-#: ../src/viktrwlayer_wpwin.c:337
+#. TODO: other checks (isalpha or whatever )
+#: ../src/viktrwlayer_wpwin.c:336
 msgid "Please enter a name for the waypoint."
 msgstr "请为此路标取名。"
 
@@ -4576,9 +4773,9 @@ msgid ""
 "The number of seconds to ADD to the photos time to make it match the GPS "
 "data. Calculate this with (GPS - Photo). Can be negative or positive. Useful "
 "to adjust times when a camera's timestamp was incorrect."
-msgstr "所加秒数给拍照时间使其符合GPS（全球定位系统）数据。"
-"计算自（GPS减去照片）。可正可负。"
-"可用于调整时间，尤当相机时间戳有误时。"
+msgstr ""
+"所加秒数给拍照时间使其符合GPS（全球定位系统）数据。计算自（GPS减去照片）。可"
+"正可负。可用于调整时间，尤当相机时间戳有误时。"
 
 #: ../src/viktrwlayer_geotag.c:668
 msgid "Image Timezone:"
@@ -4590,8 +4787,7 @@ msgid ""
 "camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct "
 "adjustment to the images' time can be made. GPS data is always in UTC."
 msgstr ""
-"图像创建时所在时区。如相机为AWST或+8:00时区。"
-"输入+8:00以适当调整图像的时间。"
+"图像创建时所在时区。如相机为AWST或+8:00时区。输入+8:00以适当调整图像的时间。"
 "GPS（全球定位系统）数据总是UTC（协调世界时）。"
 
 #: ../src/viktrwlayer_geotag.c:675
@@ -4667,6 +4863,7 @@ msgstr "%.2f英里"
 msgid "%.2f NM"
 msgstr "%.2f海里"
 
+#. VIK_UNITS_DISTANCE_KILOMETRES
 #: ../src/viktrwlayer_analysis.c:289
 #, c-format
 msgid "%.2f km"
@@ -4677,52 +4874,57 @@ msgstr "%.2f公里"
 msgid "%.2f m/s"
 msgstr "%.2f米/秒"
 
-#: ../src/viktrwlayer_analysis.c:317
-#, c-format
-msgid "%.2f knots\n"
-msgstr "%.2f节\n"
-
-#: ../src/viktrwlayer_analysis.c:320
+#: ../src/viktrwlayer_analysis.c:317 ../src/viktrwlayer_analysis.c:320
 #, c-format
 msgid "%.2f knots"
 msgstr "%.2f节"
 
-#: ../src/viktrwlayer_analysis.c:327 ../src/viktrwlayer_analysis.c:330
+#: ../src/viktrwlayer_analysis.c:326 ../src/viktrwlayer_analysis.c:329
+#, c-format
+msgid "%d s/km"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:346 ../src/viktrwlayer_analysis.c:349
+#, c-format
+msgid "%d sec/mi"
+msgstr ""
+
+#: ../src/viktrwlayer_analysis.c:367 ../src/viktrwlayer_analysis.c:370
 #, c-format
 msgid "%.2f km/h"
 msgstr "%.2f公里/小时"
 
-#: ../src/viktrwlayer_analysis.c:341 ../src/viktrwlayer_analysis.c:347
+#: ../src/viktrwlayer_analysis.c:381 ../src/viktrwlayer_analysis.c:387
 #, c-format
 msgid "%d feet"
 msgstr "%d英尺"
 
-#: ../src/viktrwlayer_analysis.c:352 ../src/viktrwlayer_analysis.c:354
+#: ../src/viktrwlayer_analysis.c:392 ../src/viktrwlayer_analysis.c:394
 #, c-format
 msgid "%d feet / %d feet"
 msgstr "%d英尺/%d英尺"
 
-#: ../src/viktrwlayer_analysis.c:359 ../src/viktrwlayer_analysis.c:365
+#: ../src/viktrwlayer_analysis.c:399 ../src/viktrwlayer_analysis.c:405
 #, c-format
 msgid "%d m"
 msgstr "%d米"
 
-#: ../src/viktrwlayer_analysis.c:370 ../src/viktrwlayer_analysis.c:372
+#: ../src/viktrwlayer_analysis.c:410 ../src/viktrwlayer_analysis.c:412
 #, c-format
 msgid "%d m / %d m"
 msgstr "%d米/%d米"
 
-#: ../src/viktrwlayer_analysis.c:384
+#: ../src/viktrwlayer_analysis.c:424
 #, c-format
 msgid "%d:%02d:%02d days:hrs:mins"
 msgstr "%d天：%02d时：%02d分"
 
-#: ../src/viktrwlayer_analysis.c:391
+#: ../src/viktrwlayer_analysis.c:431
 #, c-format
 msgid "%d:%02d hrs:mins"
 msgstr "%d天：%02d时"
 
-#: ../src/viktrwlayer_analysis.c:561
+#: ../src/viktrwlayer_analysis.c:601
 msgid "Include Invisible Items"
 msgstr "包括不可见条目"
 
@@ -4738,83 +4940,87 @@ msgstr "当前缩放等级。点击可选新的。"
 msgid "Left click to clear the message. Right click to copy the message."
 msgstr "左键清除消息。右键复制消息。"
 
-#: ../src/vikutils.c:95
+#: ../src/vikutils.c:108
 msgid "GPSD"
 msgstr "GPSD（GPS守护进程）"
 
-#: ../src/vikutils.c:96
+#. GPS Preamble
+#: ../src/vikutils.c:109
 msgid "Trkpt"
 msgstr "轨迹点"
 
-#: ../src/vikutils.c:135
+#: ../src/vikutils.c:160
 #, c-format
 msgid "%sSpeed%s %.1f%s"
 msgstr "%s速度%s %.1f%s"
 
-#: ../src/vikutils.c:177
+#. Go for 2dp as expect low values for vertical speeds
+#: ../src/vikutils.c:214
 #, c-format
 msgid "%sClimb%s %.2f%s"
 msgstr "%s爬升%s %.2f%s"
 
-#: ../src/vikutils.c:186
+#: ../src/vikutils.c:223
 #, c-format
 msgid "%sAlt %dfeet"
 msgstr "%s海拔%d英尺"
 
-#: ../src/vikutils.c:190
+#. VIK_UNITS_HEIGHT_METRES:
+#: ../src/vikutils.c:227
 #, c-format
 msgid "%sAlt %dm"
 msgstr "%s海拔%d米"
 
-#: ../src/vikutils.c:198
+#: ../src/vikutils.c:235
 #, c-format
 msgid "%sCourse %03d°"
 msgstr "%s航线%03d°"
 
-#: ../src/vikutils.c:212
+#: ../src/vikutils.c:249
 msgid "yards"
 msgstr "码"
 
-#: ../src/vikutils.c:216
+#. VIK_UNITS_DISTANCE_KILOMETRES:
+#: ../src/vikutils.c:253
 msgid "m"
 msgstr "米"
 
-#: ../src/vikutils.c:220
+#: ../src/vikutils.c:257
 #, c-format
 msgid "%sDistance diff %d%s"
 msgstr "%s距离差%d%s"
 
-#: ../src/vikutils.c:235
+#: ../src/vikutils.c:272
 #, c-format
 msgid "%sTime %s"
 msgstr "%s时间%s"
 
-#: ../src/vikutils.c:244
+#: ../src/vikutils.c:281
 #, c-format
 msgid "%sTime diff %lds"
 msgstr "%s时间差%ld秒"
 
-#: ../src/vikutils.c:250
+#: ../src/vikutils.c:287
 #, c-format
 msgid "%sNo. of Sats %d"
 msgstr "%s卫星数量%d"
 
-#: ../src/vikutils.c:275
+#: ../src/vikutils.c:312
 #, c-format
 msgid "%sTo End %.2f%s"
 msgstr "%s到结束%.2f%s"
 
-#: ../src/vikutils.c:302
+#: ../src/vikutils.c:339
 #, c-format
 msgid "%sDistance along %.2f%s"
 msgstr "%s沿途距离%.2f%s"
 
-#: ../src/vikutils.c:322
+#: ../src/vikutils.c:359
 #, c-format
 msgid "%sTrack: %s"
 msgstr "%s轨迹：%s"
 
-#: ../src/vikutils.c:360
+#: ../src/vikutils.c:396
 #, c-format
 msgid ""
 "There is a newer version of Viking available: %s\n"
@@ -4825,7 +5031,7 @@ msgstr ""
 "\n"
 "确定要去本程序网站？"
 
-#: ../src/vikutils.c:489
+#: ../src/vikutils.c:525
 msgid ""
 "This appears to be Viking's very first run.\n"
 "\n"
@@ -4847,56 +5053,58 @@ msgstr "路标"
 msgid "Search Term"
 msgstr "搜索项目"
 
-#: ../src/vikwindow.c:251
+#. TODO get rid of this as this is unnecessary duplication...
+#: ../src/vikwindow.c:250
 msgid "Pan"
 msgstr "移动"
 
-#: ../src/vikwindow.c:251
+#: ../src/vikwindow.c:250
 msgid "Zoom"
 msgstr "缩放"
 
-#: ../src/vikwindow.c:251
+#: ../src/vikwindow.c:250
 msgid "Ruler"
 msgstr "测距"
 
-#: ../src/vikwindow.c:251
+#: ../src/vikwindow.c:250
 msgid "Select"
 msgstr "选择"
 
-#: ../src/vikwindow.c:357
+#: ../src/vikwindow.c:356
 msgid "This is Viking "
 msgstr "这是维京"
 
-#: ../src/vikwindow.c:429
+#: ../src/vikwindow.c:428
 msgid "Location lookup aborted"
 msgstr "位置查找已终止"
 
-#: ../src/vikwindow.c:449
+#: ../src/vikwindow.c:448
 #, c-format
 msgid "Location found: %s"
 msgstr "位置已找到：%s"
 
-#: ../src/vikwindow.c:458
+#: ../src/vikwindow.c:457
 msgid "Unable to determine location"
 msgstr "无法确定位置"
 
-#: ../src/vikwindow.c:475
+#: ../src/vikwindow.c:474
 msgid "Default Map"
 msgstr "默认地图"
 
-#: ../src/vikwindow.c:485
+#: ../src/vikwindow.c:484
 msgid "Trying to determine location..."
 msgstr "尝试确定位置…"
 
-#: ../src/vikwindow.c:489
+#: ../src/vikwindow.c:488
 msgid "Determining location"
 msgstr "正在确定位置"
 
-#: ../src/vikwindow.c:652
+#. Create tooltip
+#: ../src/vikwindow.c:651
 msgid "Select zoom level"
 msgstr "选择缩放等级"
 
-#: ../src/vikwindow.c:1039
+#: ../src/vikwindow.c:1038
 #, c-format
 msgid ""
 "Do you want to save the changes you made to the document \"%s\"?\n"
@@ -4907,50 +5115,50 @@ msgstr ""
 "\n"
 "所改将丢失若不保存。"
 
-#: ../src/vikwindow.c:1043
+#: ../src/vikwindow.c:1042
 msgid "Don't Save"
 msgstr "不保存"
 
-#: ../src/vikwindow.c:1127
+#: ../src/vikwindow.c:1126
 msgid "mpp"
 msgstr "米每像素"
 
-#: ../src/vikwindow.c:1127
+#: ../src/vikwindow.c:1126
 msgid "pixelfact"
 msgstr "像素因子"
 
-#: ../src/vikwindow.c:1316
+#: ../src/vikwindow.c:1313
 #, c-format
 msgid "%s %s %dm"
 msgstr "%s %s %d米"
 
-#: ../src/vikwindow.c:1318
+#: ../src/vikwindow.c:1315
 #, c-format
 msgid "%s %s %dft"
 msgstr "%s %s %d英尺"
 
-#: ../src/vikwindow.c:1321
+#: ../src/vikwindow.c:1318
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
-#: ../src/vikwindow.c:1770
+#: ../src/vikwindow.c:1768
 msgid "_Ruler"
 msgstr "测距(_R)"
 
-#: ../src/vikwindow.c:1770
+#: ../src/vikwindow.c:1768
 msgid "Ruler Tool"
 msgstr "测距工具"
 
-#: ../src/vikwindow.c:2043 ../src/vikwindow.c:4465
+#: ../src/vikwindow.c:2042 ../src/vikwindow.c:4480
 msgid "_Zoom"
 msgstr "缩放(_Z)"
 
-#: ../src/vikwindow.c:2043
+#: ../src/vikwindow.c:2042
 msgid "Zoom Tool"
 msgstr "缩放工具"
 
-#: ../src/vikwindow.c:2108 ../src/vikwindow.c:4466
+#: ../src/vikwindow.c:2108 ../src/vikwindow.c:4481
 msgid "_Pan"
 msgstr "平移(_P)"
 
@@ -4958,23 +5166,25 @@ msgstr "平移(_P)"
 msgid "Pan Tool"
 msgstr "平移工具"
 
-#: ../src/vikwindow.c:2260
+#: ../src/vikwindow.c:2261
 msgid "_Select"
 msgstr "选择(_S)"
 
-#: ../src/vikwindow.c:2260
+#: ../src/vikwindow.c:2261
 msgid "Select Tool"
 msgstr "选择工具"
 
-#: ../src/vikwindow.c:2444
+#: ../src/vikwindow.c:2445
 msgid "You must select a layer to show its properties."
 msgstr "须选一个层才能显示它的属性"
 
-#: ../src/vikwindow.c:2458
+#. No error to show, so unlikely this will get called
+#: ../src/vikwindow.c:2459
 msgid "The help system is not available."
 msgstr "帮助系统不可用。"
 
-#: ../src/vikwindow.c:2461
+#. Main error path
+#: ../src/vikwindow.c:2462
 #, c-format
 msgid ""
 "Help is not available because: %s.\n"
@@ -4983,107 +5193,107 @@ msgstr ""
 "帮助不可用是因为：%s。\n"
 "确保MIME（多用途互联网邮件扩展）类型ghelp程序已安装（比如yelp）。"
 
-#: ../src/vikwindow.c:2660
+#: ../src/vikwindow.c:2661
 msgid "You must select a layer to delete."
 msgstr "须选一个层才能删除。"
 
-#: ../src/vikwindow.c:2938
+#: ../src/vikwindow.c:2939
 msgid "Untitled"
 msgstr "无标题"
 
-#: ../src/vikwindow.c:3066
+#: ../src/vikwindow.c:3067
 #, c-format
 msgid "Unable to add '%s' to the list of recently used documents"
 msgstr "无法添加‘%s’到新开档列表"
 
-#: ../src/vikwindow.c:3112
+#: ../src/vikwindow.c:3113
 msgid "The file you requested could not be opened."
 msgstr "打不开文件。"
 
-#: ../src/vikwindow.c:3115
+#: ../src/vikwindow.c:3116
 msgid ""
 "GPSBabel is required to load files of this type or GPSBabel encountered "
 "problems."
 msgstr "须有GPSBabel程序才能加载此类文件或GPSBabel遇到困难。"
 
-#: ../src/vikwindow.c:3118
+#: ../src/vikwindow.c:3119
 #, c-format
 msgid "Unable to load malformed GPX file %s"
 msgstr "无法加载格式错误的GPX文件%s"
 
-#: ../src/vikwindow.c:3121
+#: ../src/vikwindow.c:3122
 #, c-format
 msgid "Unsupported file type for %s"
 msgstr "不支持文件类型%s"
 
-#: ../src/vikwindow.c:3127
+#. Since we can process .vik files with issues just show a warning in the status bar
+#. Not that a user can do much about it... or tells them what this issue is yet...
+#: ../src/vikwindow.c:3128
 #, c-format
 msgid "WARNING: issues encountered loading %s"
 msgstr "警告：遇到麻烦于加载%s"
 
-#: ../src/vikwindow.c:3205
+#: ../src/vikwindow.c:3206
 msgid "Please select a GPS data file to open. "
 msgstr "请选择GPS数据文件来打开。"
 
-#: ../src/vikwindow.c:3218
-msgid "Geocaching"
-msgstr "地理藏宝"
-
-#: ../src/vikwindow.c:3224
+#: ../src/vikwindow.c:3225
 msgid "Google Earth"
 msgstr "谷歌地球"
 
-#: ../src/vikwindow.c:3239 ../src/vikwindow.c:3327
+#: ../src/vikwindow.c:3240 ../src/vikwindow.c:3328 ../src/viking.desktop.in.h:1
 msgid "Viking"
 msgstr "维京"
 
-#: ../src/vikwindow.c:3311
+#: ../src/vikwindow.c:3312
 msgid "Save as Viking File."
 msgstr "另存为维京文件。"
 
-#: ../src/vikwindow.c:3438
+#: ../src/vikwindow.c:3439
 #, c-format
 msgid "Exporting to file: %s"
 msgstr "导出到文件：%s"
 
-#: ../src/vikwindow.c:3455
+#. Confirm what happened.
+#: ../src/vikwindow.c:3456
 #, c-format
 msgid "Exported files: %d"
 msgstr "导出到文件：%d"
 
-#: ../src/vikwindow.c:3467
+#: ../src/vikwindow.c:3468
 msgid "Nothing to Export!"
 msgstr "无东西可导出："
 
-#: ../src/vikwindow.c:3471
+#: ../src/vikwindow.c:3472
 msgid "Export to directory"
 msgstr "导出到目录"
 
-#: ../src/vikwindow.c:3490
+#: ../src/vikwindow.c:3491
 msgid "Could not convert all files"
 msgstr "无法转换全部文件"
 
-#: ../src/vikwindow.c:3532
+#: ../src/vikwindow.c:3533
 msgid "File not accessible"
 msgstr "文件无权获取"
 
-#: ../src/vikwindow.c:3535
+#: ../src/vikwindow.c:3536
 msgid "No Viking File"
 msgstr "无维京文件"
 
-#: ../src/vikwindow.c:3669
+#: ../src/vikwindow.c:3670
 msgid "This layer has no configurable properties."
 msgstr "本层无可设置属性。"
 
-#: ../src/vikwindow.c:3774
+#: ../src/vikwindow.c:3775
 msgid "Are you sure you wish to delete all layers?"
 msgstr "确定要删除全部图层？"
 
-#: ../src/vikwindow.c:3820 ../src/vikwindow.c:3826
+#. Try harder...
+#: ../src/vikwindow.c:3821 ../src/vikwindow.c:3827
 msgid "Generating image file..."
 msgstr "正生成图像文件…"
 
-#: ../src/vikwindow.c:3848
+#: ../src/vikwindow.c:3849
 msgid ""
 "Failed to generate internal image.\n"
 "\n"
@@ -5093,70 +5303,71 @@ msgstr ""
 "\n"
 "正尝试创建小点的图像。"
 
-#: ../src/vikwindow.c:3869
+#: ../src/vikwindow.c:3870
 msgid "Image file generated."
 msgstr "图像文件已生成。"
 
-#: ../src/vikwindow.c:3871
+#: ../src/vikwindow.c:3872
 msgid "Failed to generate image file."
 msgstr "生成图像文件失败。"
 
-#: ../src/vikwindow.c:3940
+#: ../src/vikwindow.c:3941
 #, c-format
 msgid "Unable to write to file %s: %s"
 msgstr "无法写入文件%s：%s"
 
-#: ../src/vikwindow.c:3978
+#: ../src/vikwindow.c:3979
 msgid ""
 "Viewable region outside allowable pixel size bounds for image. Clipping "
 "width/height values."
-msgstr "可显示区域超出允许图像像素大小界限。"
-"修剪宽度/高度值。"
+msgstr "可显示区域超出允许图像像素大小界限。修剪宽度/高度值。"
 
-#: ../src/vikwindow.c:4003
+#: ../src/vikwindow.c:4004
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. km)"
 msgstr "全部区域：%ld米乘%ld米（%.3f平方公里）"
 
-#: ../src/vikwindow.c:4006
+#: ../src/vikwindow.c:4007
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. miles)"
 msgstr "总面积：%ld米乘%ld米（%.3f平方英里）"
 
-#: ../src/vikwindow.c:4009
+#: ../src/vikwindow.c:4010
 #, c-format
 msgid "Total area: %ldm x %ldm (%.3f sq. NM)"
 msgstr "总面积：%ld米乘%ld米（%.3f平方海里）"
 
-#: ../src/vikwindow.c:4035
+#. Single file
+#: ../src/vikwindow.c:4036
 msgid "Save Image"
 msgstr "保存图像"
 
-#: ../src/vikwindow.c:4054 ../src/vikwindow.c:4317
+#: ../src/vikwindow.c:4055 ../src/vikwindow.c:4318
 msgid "KMZ"
 msgstr "KMZ文件"
 
-#: ../src/vikwindow.c:4096
+#: ../src/vikwindow.c:4097
 msgid "You must be in UTM mode to use this feature"
 msgstr "须在通用横墨卡托投影模式下用此特性"
 
-#: ../src/vikwindow.c:4100
+#: ../src/vikwindow.c:4101
 msgid "Choose a directory to hold images"
 msgstr "选择目录存放图像"
 
-#: ../src/vikwindow.c:4120
+#. todo: default for answers inside VikWindow or static (thruout instance)
+#: ../src/vikwindow.c:4121
 msgid "Save to Image File"
 msgstr "保存为图像文件"
 
-#: ../src/vikwindow.c:4136
+#: ../src/vikwindow.c:4137
 msgid "Width (pixels):"
 msgstr "宽度（像素）："
 
-#: ../src/vikwindow.c:4138
+#: ../src/vikwindow.c:4139
 msgid "Height (pixels):"
 msgstr "高度（像素）："
 
-#: ../src/vikwindow.c:4141
+#: ../src/vikwindow.c:4142
 msgid ""
 "WARNING: USING LARGE IMAGES OVER 10000x10000\n"
 "MAY CRASH THE PROGRAM!"
@@ -5164,535 +5375,540 @@ msgstr ""
 "警告：若图像大小超过10000乘10000\n"
 "会使程序崩溃！"
 
-#: ../src/vikwindow.c:4143
+#: ../src/vikwindow.c:4144
 msgid "Zoom (meters per pixel):"
 msgstr "缩放（米每像素）："
 
-#: ../src/vikwindow.c:4159
+#: ../src/vikwindow.c:4160
 msgid "Area in current viewable window"
 msgstr "当前可见窗口面积"
 
-#: ../src/vikwindow.c:4169
+#: ../src/vikwindow.c:4170
 msgid "Save as PNG"
 msgstr "保存为PNG文件"
 
-#: ../src/vikwindow.c:4170
+#: ../src/vikwindow.c:4171
 msgid "Save as JPEG"
 msgstr "保存为JPEG文件"
 
-#: ../src/vikwindow.c:4199
+#: ../src/vikwindow.c:4200
 msgid "East-west image tiles:"
 msgstr "东西向图像瓦片："
 
-#: ../src/vikwindow.c:4201
+#: ../src/vikwindow.c:4202
 msgid "North-south image tiles:"
 msgstr "南北向图像瓦片："
 
-#: ../src/vikwindow.c:4285
+#: ../src/vikwindow.c:4286
 msgid "This feature is not available in UTM mode"
 msgstr "该特性在通用横墨卡托投影模式下不可用"
 
-#: ../src/vikwindow.c:4308
+#: ../src/vikwindow.c:4309
 msgid "Open File"
 msgstr "打开文件"
 
-#: ../src/vikwindow.c:4335
+#: ../src/vikwindow.c:4336
 #, c-format
 msgid "Unable to import %s."
 msgstr "无法导入%s。"
 
-#: ../src/vikwindow.c:4425
+#: ../src/vikwindow.c:4426
 msgid "Choose a background color"
 msgstr "选择背景色"
 
-#: ../src/vikwindow.c:4441
+#: ../src/vikwindow.c:4442
 msgid "Choose a track highlight color"
 msgstr "选择轨迹高亮颜色"
 
-#: ../src/vikwindow.c:4461
+#: ../src/vikwindow.c:4476
 msgid "_File"
 msgstr "文件(_F)"
 
-#: ../src/vikwindow.c:4462
+#: ../src/vikwindow.c:4477
 msgid "_Edit"
 msgstr "编辑(_E)"
 
-#: ../src/vikwindow.c:4464
+#: ../src/vikwindow.c:4479
 msgid "_Show"
 msgstr "显示(_S)"
 
-#: ../src/vikwindow.c:4467
+#: ../src/vikwindow.c:4482
 msgid "_Layers"
 msgstr "图层(_L)"
 
-#: ../src/vikwindow.c:4468
+#: ../src/vikwindow.c:4483
 msgid "_Tools"
 msgstr "工具(_T)"
 
-#: ../src/vikwindow.c:4469
+#: ../src/vikwindow.c:4484
 msgid "_Webtools"
 msgstr "网络工具(_W)"
 
-#: ../src/vikwindow.c:4470 ../src/vikwindow.c:4537
+#: ../src/vikwindow.c:4485 ../src/vikwindow.c:4552
 msgid "_Help"
 msgstr "帮助(_H)"
 
-#: ../src/vikwindow.c:4472
+#: ../src/vikwindow.c:4487
 msgid "New file"
 msgstr "新建文件"
 
-#: ../src/vikwindow.c:4473
+#: ../src/vikwindow.c:4488
 msgid "_Open..."
 msgstr "打开(_O)…"
 
-#: ../src/vikwindow.c:4473
+#: ../src/vikwindow.c:4488
 msgid "Open a file"
 msgstr "打开一个文件"
 
-#: ../src/vikwindow.c:4474
+#: ../src/vikwindow.c:4489
 msgid "Open _Recent File"
 msgstr "打开新近文件(_R)"
 
-#: ../src/vikwindow.c:4475
+#: ../src/vikwindow.c:4490
 msgid "Append _File..."
 msgstr "添加文件(_F)…"
 
-#: ../src/vikwindow.c:4475
+#: ../src/vikwindow.c:4490
 msgid "Append data from a different file"
 msgstr "从不同的文件中添加数据"
 
-#: ../src/vikwindow.c:4476
+#: ../src/vikwindow.c:4491
 msgid "_Export All"
 msgstr "导出全部(_E)"
 
-#: ../src/vikwindow.c:4476
+#: ../src/vikwindow.c:4491
 msgid "Export All TrackWaypoint Layers"
 msgstr "导出全部轨迹路标层"
 
-#: ../src/vikwindow.c:4477
+#: ../src/vikwindow.c:4492
 msgid "_GPX..."
 msgstr "GPX文件(_G)…"
 
-#: ../src/vikwindow.c:4477
+#: ../src/vikwindow.c:4492
 msgid "Export as GPX"
 msgstr "导出为GPX文件"
 
-#: ../src/vikwindow.c:4478
+#: ../src/vikwindow.c:4493
 msgid "A_cquire"
 msgstr "获取(_c)"
 
-#: ../src/vikwindow.c:4479
+#: ../src/vikwindow.c:4494
 msgid "_Directions..."
 msgstr "方向(_D)…"
 
-#: ../src/vikwindow.c:4479
+#: ../src/vikwindow.c:4494
 msgid "Get driving directions"
 msgstr "获取驾驶方向"
 
-#: ../src/vikwindow.c:4481
+#: ../src/vikwindow.c:4496
 msgid "_OSM Traces..."
 msgstr "OSM踪迹(_O)…"
 
-#: ../src/vikwindow.c:4481
+#: ../src/vikwindow.c:4496
 msgid "Get traces from OpenStreetMap"
 msgstr "从OpenStreetMap（开源街图）获取踪迹"
 
-#: ../src/vikwindow.c:4482
+#: ../src/vikwindow.c:4497
 msgid "_My OSM Traces..."
 msgstr "我的OSM踪迹(_M)…"
 
-#: ../src/vikwindow.c:4482
+#: ../src/vikwindow.c:4497
 msgid "Get Your Own Traces from OpenStreetMap"
 msgstr "从OpenStreetMap（开源街图）获取自己的踪迹"
 
-#: ../src/vikwindow.c:4485
+#: ../src/vikwindow.c:4500
 msgid "Geo_caches..."
 msgstr "地理藏宝(_c)…"
 
-#: ../src/vikwindow.c:4485
+#: ../src/vikwindow.c:4500
 msgid "Get Geocaches from geocaching.com"
 msgstr "从geocaching.com获取地理藏宝"
 
-#: ../src/vikwindow.c:4488
+#: ../src/vikwindow.c:4503
 msgid "Create waypoints from geotagged images"
 msgstr "从有地理标签的图像创建路标"
 
-#: ../src/vikwindow.c:4490
+#: ../src/vikwindow.c:4505
 msgid "Get a file from a URL"
 msgstr "从网址获取文件"
 
-#: ../src/vikwindow.c:4492
+#: ../src/vikwindow.c:4507
 msgid "Create waypoints from Wikipedia items in the current view"
 msgstr "从当前视图中的维基百科条目创建路标"
 
-#: ../src/vikwindow.c:4494
+#: ../src/vikwindow.c:4509
 msgid "_Save"
 msgstr "保存(_S)"
 
-#: ../src/vikwindow.c:4494
+#: ../src/vikwindow.c:4509
 msgid "Save the file"
 msgstr "保存文件"
 
-#: ../src/vikwindow.c:4495
+#: ../src/vikwindow.c:4510
 msgid "Save _As..."
 msgstr "另存为(_A)…"
 
-#: ../src/vikwindow.c:4495
+#: ../src/vikwindow.c:4510
 msgid "Save the file under different name"
 msgstr "保存为其它名字的文件"
 
-#: ../src/vikwindow.c:4496
+#: ../src/vikwindow.c:4511
 msgid "Properties..."
 msgstr "属性…"
 
-#: ../src/vikwindow.c:4496
+#: ../src/vikwindow.c:4511
 msgid "File Properties"
 msgstr "文件属性"
 
-#: ../src/vikwindow.c:4498
+#: ../src/vikwindow.c:4513
 msgid "Import KMZ _Map File..."
 msgstr "导入KMZ地图文件(_M)…"
 
-#: ../src/vikwindow.c:4498
+#: ../src/vikwindow.c:4513
 msgid "Import a KMZ file"
 msgstr "导入KMZ文件"
 
-#: ../src/vikwindow.c:4499
+#: ../src/vikwindow.c:4514
 msgid "Generate _KMZ Map File..."
 msgstr "生成KMZ地图文件(_K)…"
 
-#: ../src/vikwindow.c:4499
+#: ../src/vikwindow.c:4514
 msgid "Generate a KMZ file with an overlay of the current view"
 msgstr "生成带当前视图覆盖的KMZ文件"
 
-#: ../src/vikwindow.c:4501
+#: ../src/vikwindow.c:4516
 msgid "_Generate Image File..."
 msgstr "生成图像文件(_G)…"
 
-#: ../src/vikwindow.c:4501
+#: ../src/vikwindow.c:4516
 msgid "Save a snapshot of the workspace into a file"
 msgstr "保存工作区快照到文件"
 
-#: ../src/vikwindow.c:4502
+#: ../src/vikwindow.c:4517
 msgid "Generate _Directory of Images..."
 msgstr "创建图像目录(_D)…"
 
-#: ../src/vikwindow.c:4502
+#: ../src/vikwindow.c:4517
 msgid "Generate _Directory of Images"
 msgstr "生成图像目录(_D)"
 
-#: ../src/vikwindow.c:4503
+#: ../src/vikwindow.c:4518
 msgid "_Print..."
 msgstr "打印(_P)…"
 
-#: ../src/vikwindow.c:4503
+#: ../src/vikwindow.c:4518
 msgid "Print maps"
 msgstr "打印地图"
 
-#: ../src/vikwindow.c:4504
+#: ../src/vikwindow.c:4519
 msgid "E_xit"
 msgstr "退出(_x)"
 
-#: ../src/vikwindow.c:4504
+#: ../src/vikwindow.c:4519
 msgid "Exit the program"
 msgstr "退出程序"
 
-#: ../src/vikwindow.c:4505
+#: ../src/vikwindow.c:4520
 msgid "Save and Exit"
 msgstr "保存并退出"
 
-#: ../src/vikwindow.c:4505
+#: ../src/vikwindow.c:4520
 msgid "Save and Exit the program"
 msgstr "保存并退出程序"
 
-#: ../src/vikwindow.c:4507
+#: ../src/vikwindow.c:4522
 msgid "Go to the Pre_vious Location"
 msgstr "去上个位置(_v)"
 
-#: ../src/vikwindow.c:4507
+#: ../src/vikwindow.c:4522
 msgid "Go to the previous location"
 msgstr "去上个位置"
 
-#: ../src/vikwindow.c:4508
+#: ../src/vikwindow.c:4523
 msgid "Go to the _Next Location"
 msgstr "去下个位置(_N)"
 
-#: ../src/vikwindow.c:4508
+#: ../src/vikwindow.c:4523
 msgid "Go to the next location"
 msgstr "去下个位置"
 
-#: ../src/vikwindow.c:4509
+#: ../src/vikwindow.c:4524
 msgid "Go to the _Default Location"
 msgstr "去默认位置(_D)"
 
-#: ../src/vikwindow.c:4509
+#: ../src/vikwindow.c:4524
 msgid "Go to the default location"
 msgstr "去默认位置"
 
-#: ../src/vikwindow.c:4510
+#: ../src/vikwindow.c:4525
 msgid "Go to _Location..."
 msgstr "去位置(_L)…"
 
-#: ../src/vikwindow.c:4510
+#: ../src/vikwindow.c:4525
 msgid "Go to address/place using text search"
 msgstr "去地址/地点用文本搜索"
 
-#: ../src/vikwindow.c:4511
+#: ../src/vikwindow.c:4526
 msgid "_Go to Lat/Lon..."
 msgstr "去纬度/经度(_G)…"
 
-#: ../src/vikwindow.c:4511
+#: ../src/vikwindow.c:4526
 msgid "Go to arbitrary lat/lon coordinate"
 msgstr "去任意经纬度座标"
 
-#: ../src/vikwindow.c:4512
+#: ../src/vikwindow.c:4527
 msgid "Go to UTM..."
 msgstr "去（通用横墨卡托投影…"
 
-#: ../src/vikwindow.c:4512
+#: ../src/vikwindow.c:4527
 msgid "Go to arbitrary UTM coordinate"
 msgstr "去任意的通用横墨卡托投影座标"
 
-#: ../src/vikwindow.c:4513
+#: ../src/vikwindow.c:4528
 msgid "_Refresh"
 msgstr "刷新(_R)"
 
-#: ../src/vikwindow.c:4513
+#: ../src/vikwindow.c:4528
 msgid "Refresh any maps displayed"
 msgstr "刷新已显示的任何地图"
 
-#: ../src/vikwindow.c:4514
+#: ../src/vikwindow.c:4529
 msgid "Set _Highlight Color..."
 msgstr "设置高亮颜色(_H)…"
 
-#: ../src/vikwindow.c:4514
+#: ../src/vikwindow.c:4529
 msgid "Set Highlight Color"
 msgstr "设置高亮颜色"
 
-#: ../src/vikwindow.c:4515
+#: ../src/vikwindow.c:4530
 msgid "Set Bac_kground Color..."
 msgstr "设置背景色(_k)…"
 
-#: ../src/vikwindow.c:4515
+#: ../src/vikwindow.c:4530
 msgid "Set Background Color"
 msgstr "设置背景色"
 
-#: ../src/vikwindow.c:4516
+#: ../src/vikwindow.c:4531
 msgid "Zoom _In"
 msgstr "放大(_I)"
 
-#: ../src/vikwindow.c:4516
+#: ../src/vikwindow.c:4531
 msgid "Zoom In"
 msgstr "放大"
 
-#: ../src/vikwindow.c:4517
+#: ../src/vikwindow.c:4532
 msgid "Zoom _Out"
 msgstr "缩小(_O)"
 
-#: ../src/vikwindow.c:4517
+#: ../src/vikwindow.c:4532
 msgid "Zoom Out"
 msgstr "缩小"
 
-#: ../src/vikwindow.c:4518
+#: ../src/vikwindow.c:4533
 msgid "Zoom _To..."
 msgstr "缩放到(_T)…"
 
-#: ../src/vikwindow.c:4518
+#: ../src/vikwindow.c:4533
 msgid "Zoom To"
 msgstr "缩放到"
 
-#: ../src/vikwindow.c:4519
+#: ../src/vikwindow.c:4534
 msgid "Pan _North"
 msgstr "平移往北"
 
-#: ../src/vikwindow.c:4520
+#: ../src/vikwindow.c:4535
 msgid "Pan _East"
 msgstr "平移往东"
 
-#: ../src/vikwindow.c:4521
+#: ../src/vikwindow.c:4536
 msgid "Pan _South"
 msgstr "平移往南"
 
-#: ../src/vikwindow.c:4522
+#: ../src/vikwindow.c:4537
 msgid "Pan _West"
 msgstr "平移往西"
 
-#: ../src/vikwindow.c:4523
+#: ../src/vikwindow.c:4538
 msgid "Background _Jobs"
 msgstr "后台任务(_J)"
 
-#: ../src/vikwindow.c:4523
+#: ../src/vikwindow.c:4538
 msgid "Background Jobs"
 msgstr "后台任务"
 
-#: ../src/vikwindow.c:4525
+#: ../src/vikwindow.c:4540
 msgid "Cu_t"
 msgstr "剪切(_t)"
 
-#: ../src/vikwindow.c:4529
-msgid "Delete _All"
+#: ../src/vikwindow.c:4544
+#, fuzzy
+msgid "Delete All"
 msgstr "删除全部(_A)"
 
-#: ../src/vikwindow.c:4530
+#: ../src/vikwindow.c:4545
 msgid "Copy Centre _Location"
 msgstr "复制居中位置(_L)"
 
-#: ../src/vikwindow.c:4531
+#: ../src/vikwindow.c:4546
 msgid "_Flush Map Cache"
 msgstr "清理地图缓存(_F)"
 
-#: ../src/vikwindow.c:4532
+#: ../src/vikwindow.c:4547
 msgid "_Set the Default Location"
 msgstr "设为默认位置(_S)"
 
-#: ../src/vikwindow.c:4532
+#: ../src/vikwindow.c:4547
 msgid "Set the Default Location to the current position"
 msgstr "设默认位置为当前位置"
 
-#: ../src/vikwindow.c:4533
+#: ../src/vikwindow.c:4548
 msgid "_Preferences"
 msgstr "首选项(_P)"
 
-#: ../src/vikwindow.c:4533
+#: ../src/vikwindow.c:4548
 msgid "Program Preferences"
 msgstr "程序首选项"
 
-#: ../src/vikwindow.c:4534
+#: ../src/vikwindow.c:4549
 msgid "_Layer Defaults"
 msgstr "图层默认设置(_L)"
 
-#: ../src/vikwindow.c:4535
+#: ../src/vikwindow.c:4550
 msgid "_Properties"
 msgstr "属性(_P)"
 
-#: ../src/vikwindow.c:4537
+#: ../src/vikwindow.c:4552
 msgid "Help"
 msgstr "帮助"
 
-#: ../src/vikwindow.c:4538
+#: ../src/vikwindow.c:4553
 msgid "_About"
 msgstr "关于(_A)"
 
-#: ../src/vikwindow.c:4538
+#: ../src/vikwindow.c:4553
 msgid "About"
 msgstr "关于"
 
-#: ../src/vikwindow.c:4547
+#: ../src/vikwindow.c:4562
 msgid "_KML..."
 msgstr "KML文件(_K)…"
 
-#: ../src/vikwindow.c:4547
+#: ../src/vikwindow.c:4562
 msgid "Export as KML"
 msgstr "导出为KML文件"
 
-#: ../src/vikwindow.c:4548
+#: ../src/vikwindow.c:4563
 msgid "Transfer data from a GPS device"
 msgstr "从GPS设备获取数据"
 
-#: ../src/vikwindow.c:4549
+#: ../src/vikwindow.c:4564
 msgid "Import file via GPSBabel converter"
 msgstr "从GPSBabel转换器导入文件"
 
-#: ../src/vikwindow.c:4553
+#: ../src/vikwindow.c:4568
 msgid "Import Geo_JSON File..."
 msgstr "导入GeoJSON文件(_J)…"
 
-#: ../src/vikwindow.c:4553
+#: ../src/vikwindow.c:4568
 msgid "Import GeoJSON file"
 msgstr "导入GeoJSON文件"
 
-#: ../src/vikwindow.c:4558
+#: ../src/vikwindow.c:4573
 msgid "_UTM Mode"
 msgstr "通用横墨卡托投影模式(_U)"
 
-#: ../src/vikwindow.c:4559
+#: ../src/vikwindow.c:4574
 msgid "_Expedia Mode"
 msgstr "Expedia（亿客行）模式(_E)"
 
-#: ../src/vikwindow.c:4560
+#: ../src/vikwindow.c:4575
 msgid "_Mercator Mode"
 msgstr "墨卡托投影模式(_M)"
 
-#: ../src/vikwindow.c:4561
+#: ../src/vikwindow.c:4576
 msgid "Lat_/Lon Mode"
 msgstr "纬度_/经度模式"
 
-#: ../src/vikwindow.c:4565
+#: ../src/vikwindow.c:4580
 msgid "Show _Scale"
 msgstr "显示比例尺(_S)"
 
-#: ../src/vikwindow.c:4565
+#: ../src/vikwindow.c:4580
 msgid "Show Scale"
 msgstr "显示比例尺"
 
-#: ../src/vikwindow.c:4566
+#: ../src/vikwindow.c:4581
 msgid "Show _Center Mark"
 msgstr "显示中心记号(_C)"
 
-#: ../src/vikwindow.c:4566
+#: ../src/vikwindow.c:4581
 msgid "Show Center Mark"
 msgstr "显示中心记号"
 
-#: ../src/vikwindow.c:4567
+#: ../src/vikwindow.c:4582
 msgid "Show _Highlight"
 msgstr "显示高亮(_H)"
 
-#: ../src/vikwindow.c:4567
+#: ../src/vikwindow.c:4582
 msgid "Show Highlight"
 msgstr "显示高亮"
 
-#: ../src/vikwindow.c:4568
+#: ../src/vikwindow.c:4583
 msgid "_Full Screen"
 msgstr "全屏(_F)"
 
-#: ../src/vikwindow.c:4568
+#: ../src/vikwindow.c:4583
 msgid "Activate full screen mode"
 msgstr "启用全屏模式"
 
-#: ../src/vikwindow.c:4569
+#: ../src/vikwindow.c:4584
 msgid "Show Side _Panel"
 msgstr "显示侧边板(_P)"
 
-#: ../src/vikwindow.c:4569
+#: ../src/vikwindow.c:4584
 msgid "Show Side Panel"
 msgstr "显示侧边板"
 
-#: ../src/vikwindow.c:4570
+#: ../src/vikwindow.c:4585
 msgid "Show Status_bar"
 msgstr "显示状态栏(_b)"
 
-#: ../src/vikwindow.c:4570
+#: ../src/vikwindow.c:4585
 msgid "Show Statusbar"
 msgstr "显示状态栏"
 
-#: ../src/vikwindow.c:4571
+#: ../src/vikwindow.c:4586
 msgid "Show _Toolbar"
 msgstr "显示工具栏(_T)"
 
-#: ../src/vikwindow.c:4571
+#: ../src/vikwindow.c:4586
 msgid "Show Toolbar"
 msgstr "显示工具栏"
 
-#: ../src/vikwindow.c:4572
+#: ../src/vikwindow.c:4587
 msgid "Show _Menu"
 msgstr "显示菜单(_M)"
 
-#: ../src/vikwindow.c:4572
+#: ../src/vikwindow.c:4587
 msgid "Show Menu"
 msgstr "显示菜单"
 
-#: ../src/vikwindow.c:4705
+#: ../src/vikwindow.c:4719
 #, c-format
 msgid "New _%s Layer"
 msgstr "新建_%s图层"
 
-#: ../src/vikwindow.c:4748
+#: ../src/vikwindow.c:4769
 msgid "..."
 msgstr "…"
 
-#: ../src/viking.desktop.in:8
-msgid "viking"
-msgstr "维京"
+#: ../src/viking.desktop.in.h:2
+msgid "GPS Data Manager"
+msgstr ""
+
+#: ../src/viking.desktop.in.h:3
+msgid "Map Based GPS Data Manager (live data capable)."
+msgstr ""
 
 #: ../src/libjpeg/jpeg-data.c:205
 msgid "Data does not follow JPEG specification."
@@ -5707,3 +5923,24 @@ msgstr "路径‘%s’无效"
 #, c-format
 msgid "Could not read '%s'."
 msgstr "无法读取‘%s’。"
+
+#~ msgid "city (medium)"
+#~ msgstr "城市（中等）"
+
+#~ msgid "school"
+#~ msgstr "学校"
+
+#~ msgid "summit"
+#~ msgstr "山峰"
+
+#~ msgid "en"
+#~ msgstr "英语"
+
+#~ msgid "Error: couldn't find gpsbabel."
+#~ msgstr "错误: 未发现gpsbabel程序。"
+
+#~ msgid "%.2f knots\n"
+#~ msgstr "%.2f节\n"
+
+#~ msgid "viking"
+#~ msgstr "维京"
