@@ -79,7 +79,9 @@ void a_coords_dtostr_buffer ( double d, char buffer[COORDS_STR_BUFFER_SIZE] );
 /**
  * Convert a LatLon to strings.
  *
- * Use the prefered representation.
+ * Using the preferred representation.
+ *
+ * Strings are allocated and thus should be freed after use
  */
 void a_coords_latlon_to_string ( const struct LatLon *latlon, gchar **lat, gchar **lon );
 
