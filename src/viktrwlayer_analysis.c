@@ -314,7 +314,7 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 		break;
 	case VIK_UNITS_SPEED_KNOTS:
 		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f knots\n"), (double)VIK_MPS_TO_KNOTS(ts.max_speed) );
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f knots"), (double)VIK_MPS_TO_KNOTS(ts.max_speed) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 		if ( ts.duration > 0 )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f knots"), (double)VIK_MPS_TO_KNOTS(ts.length/ts.duration) );
