@@ -1670,6 +1670,8 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
 
     vik_statusbar_set_message ( s->vw->viking_vs, VIK_STATUSBAR_INFO, temp );
     g_free ( temp );
+    g_free ( lat );
+    g_free ( lon );
 
     s->oldcoord = coord;
   }
@@ -1737,6 +1739,8 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
     }
     vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, temp );
     g_free ( temp );
+    g_free ( lat );
+    g_free ( lon );
   }
   return VIK_LAYER_TOOL_ACK;
 }
