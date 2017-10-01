@@ -573,6 +573,7 @@ static gint world_file_read_file ( const gchar* filename, gdouble values[4] )
        // Success
        g_debug ("%s - %s - world file read success", __FUNCTION__, filename);
        answer = 0;
+       printf("x-scale = %.4f, y-scale = %.4f, x-pos = %.4f, y-pos = %.4f\n", values[0], values[1], values[2], values[3]);
     }
     fclose ( f );
     return answer;
@@ -833,11 +834,11 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
   gtk_box_pack_start ( GTK_BOX(wfp_hbox), wfp_button, FALSE, FALSE, 3 );
 
   ce_label = gtk_label_new ( _("Corner pixel easting:") );
-  cw.ce_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 1500000.0, 1, 5, 0 ), 1, 4 );
+  cw.ce_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, -15000000.0, 1500000.0, 1, 5, 0 ), 1, 4 );
   gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.ce_spin), _("the UTM \"easting\" value of the upper-left corner pixel of the map") );
 
   cn_label = gtk_label_new ( _("Corner pixel northing:") );
-  cw.cn_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, 0.0, 9000000.0, 1, 5, 0 ), 1, 4 );
+  cw.cn_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, -15000000.0, 15000000.0, 1, 5, 0 ), 1, 4 );
   gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.cn_spin), _("the UTM \"northing\" value of the upper-left corner pixel of the map") );
 
   xlabel = gtk_label_new ( _("X (easting) scale (mpp): "));
