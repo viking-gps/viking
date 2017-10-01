@@ -462,7 +462,7 @@ gboolean a_babel_convert_from ( VikTrwLayer *vt, ProcessOptions *process_options
   if ( process_options->babelargs )
     return a_babel_convert_from_filter ( vt, process_options->babelargs, process_options->filename, process_options->babel_filters, cb, user_data, download_options );
   if ( process_options->shell_command )
-    return a_babel_convert_from_shellcommand ( vt, process_options->shell_command, process_options->filename, cb, user_data, download_options );
+    return a_babel_convert_from_shellcommand ( vt, process_options->shell_command, process_options->input_file_type, cb, user_data, download_options );
   return FALSE;
 }
 
