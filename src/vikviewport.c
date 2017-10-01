@@ -1247,24 +1247,6 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
   }
 }
 
-// Clip functions continually reduce the value by a factor until it is in the acceptable range
-//  whilst also scaling the other coordinate value.
-static void clip_x ( gint *x1, gint *y1, gint *x2, gint *y2 )
-{
-  while ( ABS(*x1) > 32768 ) {
-    *x1 = *x2 + (0.5 * (*x1-*x2));
-    *y1 = *y2 + (0.5 * (*y1-*y2));
-  }
-}
-
-static void clip_y ( gint *x1, gint *y1, gint *x2, gint *y2 )
-{
-  while ( ABS(*y1) > 32767 ) {
-    *x1 = *x2 + (0.5 * (*x1-*x2));
-    *y1 = *y2 + (0.5 * (*y1-*y2));
-  }
-}
-
 /**
  * a_viewport_clip_line:
  * @x1: screen coord
@@ -1287,14 +1269,58 @@ static void clip_y ( gint *x1, gint *y1, gint *x2, gint *y2 )
  */
 void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 )
 {
-  if ( *x1 > 32768 || *x1 < -32767 )
-    clip_x ( x1, y1, x2, y2 );
-  if ( *y1 > 32768 || *y1 < -32767 )
-    clip_y ( x1, y1, x2, y2 );
-  if ( *x2 > 32768 || *x2 < -32767 )
-    clip_x ( x2, y2, x1, y1 );
-  if ( *y2 > 32768 || *y2 < -32767 )
-    clip_y ( x2, y2, x1, y1 );
+  gboolean clip_x1, clip_y1, clip_x2, clip_y2;
+
+  /* First check if there is a need to clip */
+  clip_x1 = ( *x1 > G_MAXINT16 ) || ( *x1 < G_MININT16 );
+  clip_y1 = ( *y1 > G_MAXINT16 ) || ( *y1 < G_MININT16 );
+  clip_x2 = ( *x2 > G_MAXINT16 ) || ( *x2 < G_MININT16 );
+  clip_y2 = ( *y2 > G_MAXINT16 ) || ( *y2 < G_MININT16 );
+
+  if ( clip_x1 || clip_y1 || clip_x2 || clip_y2 ) {
+    /* y = slope * x + offset */
+    gdouble slope = (gdouble)(*y1 - *y2) / (gdouble)(*x1 - *x2);
+    gdouble offset = *y1 - slope * *x1;
+
+    if ( clip_x1 ) {
+      if ( *x1 > G_MAXINT16 ) {
+        *x1 = G_MAXINT16;
+        *y1 = (int)round( slope * G_MAXINT16 + offset );
+      } else {
+        *x1 = G_MININT16;
+        *y1 = (int)round( slope * G_MININT16 + offset );
+      }
+      clip_y1 = ( *y1 > G_MAXINT16 ) || ( *y1 < G_MININT16 );
+    }
+    if ( clip_y1 ) {
+      if ( *y1 > G_MAXINT16 ) {
+        *y1 = G_MAXINT16;
+        *x1 = (int)round( ( G_MAXINT16 - offset ) / slope );
+      } else {
+        *y1 = G_MININT16;
+        *x1 = (int)round( ( G_MININT16 - offset ) / slope );
+      }
+    }
+    if ( clip_x2 ) {
+      if ( *x2 > G_MAXINT16 ) {
+        *x2 = G_MAXINT16;
+        *y2 = (int)round( slope * G_MAXINT16 + offset );
+      } else {
+        *x2 = G_MININT16;
+        *y2 = (int)round( slope * G_MININT16 + offset );
+      }
+      clip_y2 = ( *y2 > G_MAXINT16 ) || ( *y2 < G_MININT16 );
+    }
+    if ( clip_y2 ) {
+      if ( *y2 > G_MAXINT16 ) {
+        *y2 = G_MAXINT16;
+        *x2 = (int)round( ( G_MAXINT16 - offset ) / slope );
+      } else {
+        *y2 = G_MININT16;
+        *x2 = (int)round( ( G_MININT16 - offset ) / slope );
+      }
+    }
+  }
 }
 
 void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2 )
