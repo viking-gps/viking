@@ -179,7 +179,6 @@ void vik_track_free(VikTrack *tr)
 VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
 {
   VikTrack *new_tr = vik_track_new();
-  new_tr->name = g_strdup(tr->name);
   new_tr->visible = tr->visible;
   new_tr->is_route = tr->is_route;
   new_tr->draw_name_mode = tr->draw_name_mode;
