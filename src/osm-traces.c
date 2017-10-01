@@ -395,13 +395,13 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   GtkWidget *anonymize_checkbutton = NULL;
   const OsmTraceVis_t *vis_t;
 
-  user_label = gtk_label_new(_("Email:"));
+  user_label = gtk_label_new(_("Email/username:"));
   user_entry = gtk_entry_new();
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_label, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_entry, FALSE, FALSE, 0);
   gtk_widget_set_tooltip_markup(GTK_WIDGET(user_entry),
-                        _("The email used as login\n"
-                        "<small>Enter the email you use to login into www.openstreetmap.org.</small>"));
+                        _("The email/username used as login\n"
+                        "<small>Enter the email/username you use to login into www.openstreetmap.org.</small>"));
 
   password_label = gtk_label_new(_("Password:"));
   password_entry = gtk_entry_new();
