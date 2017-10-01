@@ -278,8 +278,7 @@ static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *
 	gchar *url = g_strdup_printf ( priv->url, values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8] );
 
 	for ( i = 0; i < MAX_NUMBER_CODES; i++ ) {
-		if ( values[i] != '\0' )
-			g_free ( values[i] );
+		g_free ( values[i] );
 	}
 
 	g_debug ("%s %s", __FUNCTION__, url);

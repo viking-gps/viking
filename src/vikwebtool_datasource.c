@@ -486,8 +486,7 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 	gchar *url = g_strdup_printf ( priv->url, values[0], values[1], values[2], values[3], values[4], values[5], values[6] );
 
 	for ( i = 0; i < MAX_NUMBER_CODES; i++ ) {
-		if ( values[i] != '\0' )
-			g_free ( values[i] );
+		g_free ( values[i] );
 	}
 	
 	return url;
