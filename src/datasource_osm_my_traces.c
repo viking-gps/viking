@@ -101,7 +101,7 @@ static void datasource_osm_my_traces_add_setup_widgets ( GtkWidget *dialog, VikV
 
 	GtkWidget *user_label;
 	GtkWidget *password_label;
-	user_label = gtk_label_new(_("Username:"));
+	user_label = gtk_label_new(_("Email/username:"));
 	data->user_entry = gtk_entry_new();
 
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), user_label, FALSE, FALSE, 0 );
