@@ -222,7 +222,7 @@ void a_vik_preferences_init ()
   tmp.u = VIK_GPX_EXPORT_TRK_SORT_TIME;
   a_preferences_register(&io_prefs[1], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 
-  tmp.b = VIK_GPX_EXPORT_WPT_SYM_NAME_TITLECASE;
+  tmp.u = VIK_GPX_EXPORT_WPT_SYM_NAME_TITLECASE;
   a_preferences_register(&io_prefs[2], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 
 #ifndef WINDOWS
@@ -326,7 +326,7 @@ vik_gpx_export_trk_sort_t a_vik_get_gpx_export_trk_sort ( )
 vik_gpx_export_wpt_sym_name_t a_vik_gpx_export_wpt_sym_name ( )
 {
   gboolean val;
-  val = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_sym_names")->b;
+  val = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_sym_names")->u;
   return val;
 }
 
