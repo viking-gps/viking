@@ -429,6 +429,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
       a_dems_list_free ( vdl->files );
 
       // Set file list so any other intermediate screen drawing updates will show currently loaded DEMs by the working thread
+      vdl->files = vlsp->data.sl;
       // Ensure resolving of any relative path names
       util_make_absolute_filenames ( vdl->files, vlsp->dirpath );
 
