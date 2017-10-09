@@ -573,7 +573,6 @@ static gint world_file_read_file ( const gchar* filename, gdouble values[4] )
        // Success
        g_debug ("%s - %s - world file read success", __FUNCTION__, filename);
        answer = 0;
-       printf("x-scale = %.4f, y-scale = %.4f, x-pos = %.4f, y-pos = %.4f\n", values[0], values[1], values[2], values[3]);
     }
     fclose ( f );
     return answer;
