@@ -703,8 +703,18 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
 	//  must be loaded into a new TrackWaypoint layer (hence it be created)
     gboolean success = TRUE; // Detect load failures - mainly to remove the layer created as it's not required
 
-    // Add to specified layer
-    gboolean add_new = !IS_VIK_TRW_LAYER(vtl);
+    // Normally load the file as a new layer
+    gboolean add_new = TRUE;
+
+    // However if a layer is specified, then load into that one
+    if ( IS_VIK_TRW_LAYER(vtl) ) {
+      // Provided that the is layer will be visible
+      //  (otherwise possibly confusing to load but not display it)
+      if ( vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) ) {
+        add_new = FALSE;
+      }
+    }
+
     if (add_new) {
       vtl = VIK_TRW_LAYER (vik_layer_create ( VIK_LAYER_TRW, vp, FALSE ));
       vik_layer_rename ( VIK_LAYER(vtl), a_file_basename ( filename ) );
