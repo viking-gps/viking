@@ -22,6 +22,8 @@
 #ifndef __BOUNDING_BOX_H
 #define __BOUNDING_BOX_H
 
+#include <glib.h>
+
 typedef struct {
   gdouble south, north;
   gdouble east, west;
