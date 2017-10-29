@@ -1472,8 +1472,7 @@ static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp )
 
     /* Copyright */
     gdouble level = vik_viewport_get_zoom ( vvp );
-    LatLonBBox bbox;
-    vik_viewport_get_min_max_lat_lon ( vvp, &bbox.south, &bbox.north, &bbox.west, &bbox.east );
+    LatLonBBox bbox = vik_viewport_get_bbox ( vvp );
     vik_map_source_get_copyright ( MAPS_LAYER_NTH_TYPE(vml->maptype), bbox, level, vik_viewport_add_copyright, vvp );
 
     /* Logo */

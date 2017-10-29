@@ -407,7 +407,7 @@ static GList *get_entries_from_file(gchar *file_name)
   return(found_places);
 }
 
-void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon maxmin[2] )
+void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, LatLonBBox bbox )
 {
   gchar *uri;
   gchar *tmpname;
@@ -437,10 +437,10 @@ void a_geonames_wikipedia_box ( VikWindow *vw, VikTrwLayer *vtl, struct LatLon m
   }
 
   /* encode doubles in a C locale */
-  gchar *north = a_coords_dtostr(maxmin[0].lat);
-  gchar *south = a_coords_dtostr(maxmin[1].lat);
-  gchar *east = a_coords_dtostr(maxmin[0].lon);
-  gchar *west = a_coords_dtostr(maxmin[1].lon);
+  gchar *north = a_coords_dtostr(bbox.north);
+  gchar *south = a_coords_dtostr(bbox.south);
+  gchar *east = a_coords_dtostr(bbox.east);
+  gchar *west = a_coords_dtostr(bbox.west);
   uri = g_strdup_printf ( GEONAMES_WIKIPEDIA_URL_FMT, north, south, east, west, lang, GEONAMES_MAX_ENTRIES );
   g_free(north); north = NULL;
   g_free(south); south = NULL;

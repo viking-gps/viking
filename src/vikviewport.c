@@ -1584,6 +1584,35 @@ void vik_viewport_get_min_max_lat_lon ( VikViewport *vp, gdouble *min_lat, gdoub
   *min_lon = MIN(tleft.east_west, bleft.east_west);
 }
 
+/**
+ * vik_viewport_get_bbox:
+ * @vp: self object
+ *
+ * Returns: The viewport area as a #LatLonBBox.
+ */
+LatLonBBox vik_viewport_get_bbox ( VikViewport *vp )
+{
+  VikCoord tleft, tright, bleft, bright;
+
+  vik_viewport_screen_to_coord ( vp, 0, 0, &tleft );
+  vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), 0, &tright );
+  vik_viewport_screen_to_coord ( vp, 0, vik_viewport_get_height(vp), &bleft );
+  vik_viewport_screen_to_coord ( vp, vp->width, vp->height, &bright );
+
+  vik_coord_convert ( &tleft, VIK_COORD_LATLON );
+  vik_coord_convert ( &tright, VIK_COORD_LATLON );
+  vik_coord_convert ( &bleft, VIK_COORD_LATLON );
+  vik_coord_convert ( &bright, VIK_COORD_LATLON );
+
+  LatLonBBox bbox;
+  bbox.south = MIN(bleft.north_south, bright.north_south);
+  bbox.north = MAX(tleft.north_south, tright.north_south);
+  bbox.east  = MAX(tright.east_west, bright.east_west);
+  bbox.west  = MIN(tleft.east_west, bleft.east_west);
+
+  return bbox;
+}
+
 void vik_viewport_reset_copyrights ( VikViewport *vp ) 
 {
   g_return_if_fail ( vp != NULL );

@@ -54,17 +54,13 @@ VikDataSourceInterface vik_datasource_wikipedia_interface = {
 };
 
 /**
- * Process selected files and try to generate waypoints storing them in the given vtl
+ * Process to generate waypoints of the current view storing them in the given vtl
  */
 static gboolean datasource_wikipedia_process ( VikTrwLayer *vtl, ProcessOptions *po, BabelStatusFunc status_cb, acq_dialog_widgets_t *adw )
 {
-	struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
-
-	// Note the order is max part first then min part - thus reverse order of use in min_max function:
-	vik_viewport_get_min_max_lat_lon ( adw->vvp, &maxmin[1].lat, &maxmin[0].lat, &maxmin[1].lon, &maxmin[0].lon );
-
 	if ( vtl ) {
-		a_geonames_wikipedia_box ( adw->vw, vtl, maxmin );
+		LatLonBBox bbox = vik_viewport_get_bbox ( adw->vvp );
+		a_geonames_wikipedia_box ( adw->vw, vtl, bbox );
 		return TRUE;
 	}
 	else

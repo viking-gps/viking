@@ -529,15 +529,8 @@ static void none_found ( GtkWindow *gw )
  */
 static void set_in_current_view_property ( VikTrwLayer *vtl, datasource_osm_my_traces_t *data, GList *gl )
 {
-	gdouble min_lat, max_lat, min_lon, max_lon;
-	/* get Viewport bounding box */
-	vik_viewport_get_min_max_lat_lon ( data->vvp, &min_lat, &max_lat, &min_lon, &max_lon );
-
-	LatLonBBox bbox;
-	bbox.north = max_lat;
-	bbox.east = max_lon;
-	bbox.south = min_lat;
-	bbox.west = min_lon;
+	// get viewport bounding box
+	LatLonBBox bbox = vik_viewport_get_bbox ( data->vvp );
 
 	GList *iterator = gl;
 	while ( iterator ) {

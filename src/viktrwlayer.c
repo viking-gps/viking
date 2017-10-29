@@ -1733,7 +1733,7 @@ static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, Vi
     dp->cn2 = upperleft.north_south;
   }
 
-  vik_viewport_get_min_max_lat_lon ( vp, &(dp->bbox.south), &(dp->bbox.north), &(dp->bbox.west), &(dp->bbox.east) );
+  dp->bbox = vik_viewport_get_bbox ( vp );
 }
 
 /*
@@ -3431,6 +3431,18 @@ static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2])
   g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_find_maxmin_tracks, maxmin );
 }
 
+static LatLonBBox trw_layer_get_bbox ( VikTrwLayer *vtl )
+{
+  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
+  trw_layer_find_maxmin (vtl, maxmin);
+  LatLonBBox bbox;
+  bbox.south = maxmin[1].lat;
+  bbox.north = maxmin[0].lat;
+  bbox.east  = maxmin[0].lon;
+  bbox.west  = maxmin[1].lon;
+  return bbox;
+}
+
 gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest )
 {
   /* TODO: what if there's only one waypoint @ 0,0, it will think nothing found. like I don't have more important things to worry about... */
@@ -3667,15 +3679,12 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
 
 static void trw_layer_new_wikipedia_wp_viewport ( menu_array_layer values )
 {
-  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(values[MA_VLP]);
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
-  VikViewport *vvp =  vik_window_viewport(vw);
-
-  // Note the order is max part first then min part - thus reverse order of use in min_max function:
-  vik_viewport_get_min_max_lat_lon ( vvp, &maxmin[1].lat, &maxmin[0].lat, &maxmin[1].lon, &maxmin[0].lon );
-  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, maxmin);
+  VikViewport *vvp = vik_window_viewport(vw);
+  LatLonBBox bbox = vik_viewport_get_bbox ( vvp );
+  a_geonames_wikipedia_box ( (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, bbox );
   trw_layer_calculate_bounds_waypoints ( vtl );
   vik_layers_panel_emit_update ( vlp );
 }
@@ -3684,10 +3693,7 @@ static void trw_layer_new_wikipedia_wp_layer ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(values[MA_VLP]);
-  struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
-  
-  trw_layer_find_maxmin (vtl, maxmin);
-  a_geonames_wikipedia_box((VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, maxmin);
+  a_geonames_wikipedia_box ( (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, trw_layer_get_bbox(vtl) );
   trw_layer_calculate_bounds_waypoints ( vtl );
   vik_layers_panel_emit_update ( vlp );
 }
@@ -9186,7 +9192,7 @@ static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikV
   params.vvp = vvp;
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
-  vik_viewport_get_min_max_lat_lon ( params.vvp, &(params.bbox.south), &(params.bbox.north), &(params.bbox.west), &(params.bbox.east) );
+  params.bbox = vik_viewport_get_bbox ( params.vvp );
   g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
   return params.closest_tp;
 }
@@ -9322,8 +9328,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   if ( !vtl->tracks_visible && !vtl->waypoints_visible && !vtl->routes_visible )
     return FALSE;
 
-  LatLonBBox bbox;
-  vik_viewport_get_min_max_lat_lon ( vvp, &(bbox.south), &(bbox.north), &(bbox.west), &(bbox.east) );
+  LatLonBBox bbox = vik_viewport_get_bbox ( vvp );
 
   // Go for waypoints first as these often will be near a track, but it's likely the wp is wanted rather then the track
 
@@ -10246,7 +10251,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
   params.closest_tpl = NULL;
-  vik_viewport_get_min_max_lat_lon ( vvp, &(params.bbox.south), &(params.bbox.north), &(params.bbox.west), &(params.bbox.east) );
+  params.bbox = vik_viewport_get_bbox ( vvp );
 
   if ( event->button != 1 ) 
     return FALSE;

@@ -21,14 +21,13 @@
 
 #ifndef _VIKING_VIEWPORT_H
 #define _VIKING_VIEWPORT_H
-/* Requires <gtk/gtk.h> or glib, and coords.h*/
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
 #include "vikcoord.h"
-
+#include "bbox.h"
 
 G_BEGIN_DECLS
 
@@ -92,6 +91,7 @@ void vik_viewport_set_center_utm ( VikViewport *vvp, const struct UTM *utm, gboo
 void vik_viewport_set_center_latlon ( VikViewport *vvp, const struct LatLon *ll, gboolean save_position );
 void vik_viewport_corners_for_zonen ( VikViewport *vvp, int zone, VikCoord *ul, VikCoord *br );
 void vik_viewport_get_min_max_lat_lon ( VikViewport *vp, gdouble *min_lat, gdouble *max_lat, gdouble *min_lon, gdouble *max_lon );
+LatLonBBox vik_viewport_get_bbox ( VikViewport *vp );
 
 gboolean vik_viewport_go_back ( VikViewport *vvp );
 gboolean vik_viewport_go_forward ( VikViewport *vvp );
