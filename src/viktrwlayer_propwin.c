@@ -3232,6 +3232,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gulong tp_count;
   guint seg_count;
 
+  gboolean DEM_available = a_dems_overlaps_bbox (tr->bbox);
+
   gdouble min_alt, max_alt;
   widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), widgets, &min_alt, &max_alt);
   widgets->gradient_box = vik_trw_layer_create_gradient(GTK_WIDGET(parent), widgets);
@@ -3590,6 +3592,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->w_cur_dist = ui_label_new_selectable(_("No Data"));
     widgets->w_cur_elevation = ui_label_new_selectable(_("No Data"));
     widgets->w_show_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
+    gtk_widget_set_sensitive ( widgets->w_show_dem, DEM_available );
     widgets->w_show_alt_gps_speed = gtk_check_button_new_with_mnemonic(_("Show _GPS Speed"));
     page = create_graph_page (widgets->elev_box,
                               _("<b>Track Distance:</b>"), widgets->w_cur_dist,
@@ -3656,6 +3659,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->w_cur_elev_time_real = ui_label_new_selectable(_("No Data"));
     widgets->w_show_elev_speed = gtk_check_button_new_with_mnemonic(_("Show S_peed"));
     widgets->w_show_elev_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
+    gtk_widget_set_sensitive ( widgets->w_show_elev_dem, DEM_available );
     page = create_graph_page (widgets->elev_time_box,
                               _("<b>Track Time:</b>"), widgets->w_cur_elev_time,
                               _("<b>Track Height:</b>"), widgets->w_cur_elev_elev,

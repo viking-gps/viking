@@ -1107,6 +1107,16 @@ Moving the mouse pointer over the graph displays values related to that point al
 You can click on these graphs to jump to the point in the track.
 You can reverse it, delete duplicates, split at marked position or split a track from its component segments (discontinuous breaks in a track) into separate tracks.
 </para>
+<para>
+For the elevation related graphs the <guibutton>Show DEM</guibutton> check button is only enabled if a suitable <xref linkend="DEM"/> is available that overlaps the track.
+</para>
+<para>
+Graphs either have a <guibutton>Show GPS Speed</guibutton> or <guibutton>Show Speed</guibutton> button.
+Each of these overlays relative speed markers along the graph.
+The difference between Speed vs GPS Speed is that GPS Speed is taken directly from a field reporting the speed value in the source data.
+Typically speeds used in Viking are calculated between the points time and position differences.
+This is due to the reporting of speed values in source data is not mandatory and often not present.
+</para>
 <section id='track_properties' xreflabel="Track and Route Properties"><title>Track and Route Properties Tab</title>
 <para>
 <figure>

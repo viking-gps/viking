@@ -23,6 +23,7 @@
 
 #include "dem.h"
 #include "vikcoord.h"
+#include "bbox.h"
 
 G_BEGIN_DECLS
 
@@ -41,6 +42,8 @@ void a_dems_list_free ( GList *dems );
 GList *a_dems_list_copy ( GList *dems );
 gint16 a_dems_list_get_elev_by_coord ( GList *dems, const VikCoord *coord );
 gint16 a_dems_get_elev_by_coord ( const VikCoord *coord, VikDemInterpol method);
+
+gboolean a_dems_overlaps_bbox ( LatLonBBox bbox );
 
 G_END_DECLS
 

@@ -252,3 +252,30 @@ gint16 a_dems_get_elev_by_coord ( const VikCoord *coord, VikDemInterpol method )
     return VIK_DEM_INVALID_ELEVATION;
   return ce.elev;
 }
+
+/**
+ * a_dems_overlaps_bbox
+ *
+ * Potentially could return first DEM that overlaps the bbox
+ *  but as yet that doesn't seem too useful
+ */
+gboolean a_dems_overlaps_bbox ( LatLonBBox bbox )
+{
+  if (!loaded_dems)
+    return FALSE;
+
+  gboolean ans = FALSE;
+  LatLonBBox dem_bbox;
+
+  gpointer key, value;
+  GHashTableIter ght_iter;
+  g_hash_table_iter_init ( &ght_iter, loaded_dems );
+  while ( g_hash_table_iter_next (&ght_iter, &key, &value) ) {
+    dem_bbox = vik_dem_get_bbox ( ((LoadedDEM*)value)->dem );
+    if ( BBOX_INTERSECT(dem_bbox, bbox) ) {
+      ans = TRUE;
+      break;
+    }
+  }
+  return ans;
+}
