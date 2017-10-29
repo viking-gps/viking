@@ -583,3 +583,35 @@ void vik_dem_east_north_to_xy ( VikDEM *dem, gdouble east, gdouble north, guint 
   *row = (guint) floor((north - dem->min_north) / dem->north_scale);
 }
 
+/**
+ *
+ */
+LatLonBBox vik_dem_get_bbox ( const VikDEM *dem )
+{
+  LatLonBBox bbox = {0.0, 0.0, 0.0, 0.0};
+
+  if ( dem->horiz_units == VIK_DEM_HORIZ_LL_ARCSECONDS ) {
+    bbox.north = dem->max_north / 3600.0;
+    bbox.east = dem->max_east / 3600.0;
+    bbox.south = dem->min_north / 3600.0;
+    bbox.west = dem->min_east / 3600.0;
+  } else if ( dem->horiz_units == VIK_DEM_HORIZ_UTM_METERS ) {
+    struct UTM dem_northeast_utm, dem_southwest_utm;
+    dem_northeast_utm.northing = dem->max_north;
+    dem_northeast_utm.easting = dem->max_east;
+    dem_southwest_utm.northing = dem->min_north;
+    dem_southwest_utm.easting = dem->min_east;
+    dem_northeast_utm.zone = dem_southwest_utm.zone = dem->utm_zone;
+    dem_northeast_utm.letter = dem_southwest_utm.letter = dem->utm_letter;
+
+    struct LatLon dem_northeast, dem_southwest;
+    a_coords_utm_to_latlon(&dem_northeast_utm, &dem_northeast);
+    a_coords_utm_to_latlon(&dem_southwest_utm, &dem_southwest);
+
+    bbox.north = dem_northeast.lat;
+    bbox.east  = dem_northeast.lon;
+    bbox.south = dem_southwest.lat;
+    bbox.west  = dem_southwest.lon;
+  }
+  return bbox;
+}

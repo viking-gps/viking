@@ -23,6 +23,7 @@
 #define __VIKING_DEM_H
 
 #include <glib.h>
+#include "bbox.h"
 
 G_BEGIN_DECLS
 
@@ -75,6 +76,8 @@ gint16 vik_dem_get_shepard_interpol ( VikDEM *dem, gdouble east, gdouble north )
 gint16 vik_dem_get_best_interpol ( VikDEM *dem, gdouble east, gdouble north );
 
 void vik_dem_east_north_to_xy ( VikDEM *dem, gdouble east, gdouble north, guint *col, guint *row );
+
+LatLonBBox vik_dem_get_bbox ( const VikDEM *dem );
 
 G_END_DECLS
 

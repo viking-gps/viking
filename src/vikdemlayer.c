@@ -45,6 +45,7 @@
 #include "dem.h"
 #include "dems.h"
 #include "icons/icons.h"
+#include "bbox.h"
 
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
@@ -525,51 +526,18 @@ static inline guint16 get_height_difference(gint16 elev, gint16 new_elev)
     return abs(new_elev - elev);
 }
 
-
 static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *dem )
 {
   VikDEMColumn *column, *prevcolumn, *nextcolumn;
 
-  struct LatLon dem_northeast, dem_southwest;
-  gdouble max_lat, max_lon, min_lat, min_lon;
+  LatLonBBox vp_bbox = vik_viewport_get_bbox ( vp );
+  LatLonBBox dem_bbox = vik_dem_get_bbox ( dem );
 
   /**** Check if viewport and DEM data overlap ****/
-
-  /* get min, max lat/lon of viewport */
-  vik_viewport_get_min_max_lat_lon ( vp, &min_lat, &max_lat, &min_lon, &max_lon );
-
-  /* get min, max lat/lon of DEM data */
-  if ( dem->horiz_units == VIK_DEM_HORIZ_LL_ARCSECONDS ) {
-    dem_northeast.lat = dem->max_north / 3600.0;
-    dem_northeast.lon = dem->max_east / 3600.0;
-    dem_southwest.lat = dem->min_north / 3600.0;
-    dem_southwest.lon = dem->min_east / 3600.0;
-  } else if ( dem->horiz_units == VIK_DEM_HORIZ_UTM_METERS ) {
-    struct UTM dem_northeast_utm, dem_southwest_utm;
-    dem_northeast_utm.northing = dem->max_north;
-    dem_northeast_utm.easting = dem->max_east;
-    dem_southwest_utm.northing = dem->min_north;
-    dem_southwest_utm.easting = dem->min_east;
-    dem_northeast_utm.zone = dem_southwest_utm.zone = dem->utm_zone;
-    dem_northeast_utm.letter = dem_southwest_utm.letter = dem->utm_letter;
-
-    a_coords_utm_to_latlon(&dem_northeast_utm, &dem_northeast);
-    a_coords_utm_to_latlon(&dem_southwest_utm, &dem_southwest);
-  } else {
-    // Unknown horiz_units - this shouldn't normally happen
-    // Thus can't work out positions to use
+  if ( ! BBOX_INTERSECT(dem_bbox, vp_bbox) ) {
     return;
   }
 
-  if ( (max_lat > dem_northeast.lat && min_lat > dem_northeast.lat) ||
-       (max_lat < dem_southwest.lat && min_lat < dem_southwest.lat) )
-    return;
-  else if ( (max_lon > dem_northeast.lon && min_lon > dem_northeast.lon) ||
-            (max_lon < dem_southwest.lon && min_lon < dem_southwest.lon) )
-    return;
-  /* else they overlap */
-
-  /**** End Overlap Check ****/
   /* boxes to show where we have DEM instead of actually drawing the DEM.
    * useful if we want to see what areas we have coverage for (if we want
    * to get elevation data for a track) but don't want to cover the map.
@@ -617,10 +585,10 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
     gdouble nscale_deg = dem->north_scale / ((gdouble) 3600);
     gdouble escale_deg = dem->east_scale / ((gdouble) 3600);
 
-    max_lat_as = max_lat * 3600;
-    min_lat_as = min_lat * 3600;
-    max_lon_as = max_lon * 3600;
-    min_lon_as = min_lon * 3600;
+    max_lat_as = vp_bbox.north * 3600;
+    min_lat_as = vp_bbox.south * 3600;
+    max_lon_as = vp_bbox.east * 3600;
+    min_lon_as = vp_bbox.west * 3600;
 
     start_lat_as = MAX(min_lat_as, dem->min_north);
     end_lat_as   = MIN(max_lat_as, dem->max_north);
