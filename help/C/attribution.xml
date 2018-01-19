@@ -119,7 +119,7 @@ The Data is provided "as is" without warranty or any representation of accuracy,
 <section>
 	<title>Data: Response to online request made in vikgoto.c</title>
 	<para>Use of geoPlugin services making use of geolocation data is under condition of acceptance of the <ulink url="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</ulink>.</para>
-	<para>This product includes GeoLite data created by MaxMind, available from  <ulink url="http://www.maxmind.com"></ulink></para>.
+	<para>This product includes GeoLite data created by MaxMind, available from <ulink url="http://www.maxmind.com"></ulink>.</para>
 </section>
 
 </section>
