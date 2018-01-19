@@ -278,3 +278,34 @@ void util_make_absolute_filenames ( GList *filenames, const gchar *dirpath )
 		}
 	}
 }
+
+/**
+ * Some systems don't have timegm()
+ */
+time_t util_timegm (struct tm *tm)
+{
+#ifdef _DEFAULT_SOURCE
+	return timegm ( tm );
+#else
+	// Assumed tm is mostly valid
+	// array access is constrained by use of '%'
+	// Not bothered with leapseconds
+	static const gint yeardays[12] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+
+	gint year = 1900 + tm->tm_year + tm->tm_mon / 12;
+	gint leapdays = ((year - 1968) / 4) - ((year - 1900) / 100) + ((year - 1600) / 400);
+	// First in days
+	// Check if passed in year is a leapyear but not gone past the leapday
+	if ( (year % 4) == 0 && ((year % 100) != 0 || (year % 400) == 0) && (tm->tm_mon % 12) < 2 )
+		leapdays--;
+	// Sum up days, hours, minutes & seconds
+	time_t result = ((((year - 1970) * 365) + yeardays[tm->tm_mon % 12] + tm->tm_mday-1 + leapdays) * 24); // days
+	result = ((result + tm->tm_hour ) * 60 ) + tm->tm_min; // minutes
+	result = (result * 60) + tm->tm_sec; // seconds
+
+	if ( tm->tm_isdst == 1 )
+	  result -= 3600;
+
+	return result;
+#endif
+}

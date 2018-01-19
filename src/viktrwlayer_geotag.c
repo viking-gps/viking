@@ -61,28 +61,27 @@ time_t ConvertToUnixTime(char* StringTime, char* Format, int TZOffsetHours, int 
 	struct tm Time;
 	Time.tm_wday = 0;
 	Time.tm_yday = 0;
-	Time.tm_isdst = -1;
+	Time.tm_isdst = 0; // there is no DST in UTC
 
 	/* Read out the time from the string using our format. */
 	sscanf(StringTime, Format, &Time.tm_year, &Time.tm_mon,
 			&Time.tm_mday, &Time.tm_hour,
 			&Time.tm_min, &Time.tm_sec);
 
-	/* Adjust the years for the mktime function to work. */
+	/* Adjust the years & months for valid tm struct values. */
 	Time.tm_year -= 1900;
 	Time.tm_mon  -= 1;
 
-	/* Add our timezone offset to the time.
-	 * We don't check to see if it overflowed anything;
-	 * mktime does this and fixes it for us. */
+	/* Calculate the unix time. */
+	time_t thetime = util_timegm ( &Time );
+
+	/* Add our timezone offset to the time. */
 	/* Note also that we SUBTRACT these times. We want the
 	 * result to be in UTC. */
+	thetime -= TZOffsetHours * 60 * 60;
+	thetime -= TZOffsetMinutes * 60;
 
-	Time.tm_hour -= TZOffsetHours;
-	Time.tm_min  -= TZOffsetMinutes;
-
-	/* Calculate and return the unix time. */
-	return mktime(&Time);
+	return thetime;
 }
 
 // GPSCorrelate END

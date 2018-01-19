@@ -26,6 +26,7 @@
 #define _VIKING_UTIL_H
 
 #include <glib.h>
+#include <time.h>
 
 G_BEGIN_DECLS
 
@@ -68,6 +69,8 @@ gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count );
 gchar* util_make_absolute_filename ( const gchar *filename, const gchar *dirpath );
 
 void util_make_absolute_filenames ( GList *filenames, const gchar *dirpath );
+
+time_t util_timegm (struct tm *tm);
 
 G_END_DECLS
 
