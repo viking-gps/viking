@@ -67,7 +67,9 @@ static char line_buffer[VIKING_LINE_SIZE];
 #define GPSPOINT_TYPE_TRACKPOINT 2
 #define GPSPOINT_TYPE_ROUTEPOINT 3
 #define GPSPOINT_TYPE_TRACK 4
-#define GPSPOINT_TYPE_ROUTE 5
+#define GPSPOINT_TYPE_TRACK_END 5
+#define GPSPOINT_TYPE_ROUTE 6
+#define GPSPOINT_TYPE_ROUTE_END 7
 
 static VikTrack *current_track; /* pointer to pointer to first GList */
 
@@ -160,6 +162,16 @@ static gchar *deslashndup ( const gchar *str, guint16 len )
   return rv;
 }
 
+
+static void trackpoints_end ()
+{
+  if ( current_track )
+    if ( current_track->trackpoints ) {
+      current_track->trackpoints = g_list_reverse ( current_track->trackpoints );
+      current_track = NULL;
+    }
+}
+
 /*
  * Returns whether file read was a success
  * No obvious way to test for a 'gpspoint' file,
@@ -169,7 +181,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
   VikCoordMode coord_mode = vik_trw_layer_get_coord_mode ( trw );
   gchar *tag_start, *tag_end;
   g_assert ( f != NULL && trw != NULL );
-  line_type = 0;
+  line_type = GPSPOINT_TYPE_NONE;
   line_timestamp = 0;
   line_newsegment = FALSE;
   line_image = NULL;
@@ -226,8 +238,13 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       else
         tag_start = tag_end+1;
     }
+    if (line_type == GPSPOINT_TYPE_TRACK_END || line_type == GPSPOINT_TYPE_ROUTE_END) {
+      trackpoints_end ();
+    }
     if (line_type == GPSPOINT_TYPE_WAYPOINT && line_name)
     {
+      // Handle a badly formatted file in case of missing explicit track/route end (this shouldn't happen)
+      trackpoints_end ();
       have_read_something = TRUE;
       VikWaypoint *wp = vik_waypoint_new();
       wp->visible = line_visible;
@@ -264,6 +281,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     }
     else if ((line_type == GPSPOINT_TYPE_TRACK || line_type == GPSPOINT_TYPE_ROUTE) && line_name)
     {
+      // Handle a badly formatted file in case of missing explicit track/route end (this shouldn't happen)
+      trackpoints_end ();
       have_read_something = TRUE;
       VikTrack *pl = vik_track_new();
       // NB don't set defaults here as all properties are stored in the GPS_POINT format
@@ -322,7 +341,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
         tp->vdop = line_vdop;
         tp->pdop = line_pdop;
       }
-      current_track->trackpoints = g_list_append ( current_track->trackpoints, tp );
+      // Much faster to prepend and then reverse list once all points read in
+      // Especially if hunderds of thousands or more trackpoints in a file
+      current_track->trackpoints = g_list_prepend ( current_track->trackpoints, tp );
     }
 
     if (line_name) 
@@ -368,6 +389,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_name_label = 0;
     line_dist_label = 0;
   }
+
+  // Handle a badly formatted file in case of missing explicit track/route end (this shouldn't happen)
+  trackpoints_end ();
 
   return have_read_something;
 }
@@ -435,12 +459,16 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
       line_type = GPSPOINT_TYPE_NONE;
     else if (value_len == 5 && strncasecmp( value, "track", value_len ) == 0 )
       line_type = GPSPOINT_TYPE_TRACK;
+    else if (value_len == 8 && strncasecmp( value, "trackend", value_len ) == 0 )
+      line_type = GPSPOINT_TYPE_TRACK_END;
     else if (value_len == 10 && strncasecmp( value, "trackpoint", value_len ) == 0 )
       line_type = GPSPOINT_TYPE_TRACKPOINT;
     else if (value_len == 8 && strncasecmp( value, "waypoint", value_len ) == 0 )
       line_type = GPSPOINT_TYPE_WAYPOINT;
     else if (value_len == 5 && strncasecmp( value, "route", value_len ) == 0 )
       line_type = GPSPOINT_TYPE_ROUTE;
+    else if (value_len == 8 && strncasecmp( value, "routeend", value_len ) == 0 )
+      line_type = GPSPOINT_TYPE_ROUTE_END;
     else if (value_len == 10 && strncasecmp( value, "routepoint", value_len ) == 0 )
       line_type = GPSPOINT_TYPE_ROUTEPOINT;
     else
