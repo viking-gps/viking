@@ -684,7 +684,7 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w->get_waypoints_b), get_waypoints);
 
   box = GTK_TABLE(gtk_table_new(2, 4, FALSE));
-  data_type_box = GTK_TABLE(gtk_table_new(4, 1, FALSE));
+  data_type_box = GTK_TABLE(gtk_table_new(6, 1, FALSE));
 
   gtk_table_attach_defaults(box, GTK_WIDGET(w->proto_l), 0, 1, 0, 1);
   gtk_table_attach_defaults(box, GTK_WIDGET(w->proto_b), 1, 2, 0, 1);
