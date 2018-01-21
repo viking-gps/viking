@@ -83,17 +83,17 @@ static VikLayerParamScale param_scales[] = {
 };
 
 static gchar *params_source[] = {
-	N_("SRTM Global 90m (3 arcsec)"),
+        N_("SRTM Global 90m (3 arcsec)"),
 #ifdef VIK_CONFIG_DEM24K
-	"USA 10m (USGS 24k)",
+        "USA 10m (USGS 24k)",
 #endif
-	NULL
-	};
+        NULL
+        };
 
 static gchar *params_type[] = {
-	N_("Absolute height"),
-	N_("Height gradient"),
-	NULL
+        N_("Absolute height"),
+        N_("Height gradient"),
+        NULL
 };
 
 enum { DEM_SOURCE_SRTM,
@@ -225,8 +225,8 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncLayerTooltip)            dem_layer_tooltip,
   (VikLayerFuncLayerSelected)           NULL,
 
-  (VikLayerFuncMarshall)		dem_layer_marshall,
-  (VikLayerFuncUnmarshall)		dem_layer_unmarshall,
+  (VikLayerFuncMarshall)                dem_layer_marshall,
+  (VikLayerFuncUnmarshall)                dem_layer_unmarshall,
 
   (VikLayerFuncSetParam)                dem_layer_set_param,
   (VikLayerFuncGetParam)                dem_layer_get_param,
@@ -240,7 +240,7 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncCopyItem)                NULL,
   (VikLayerFuncPasteItem)               NULL,
   (VikLayerFuncFreeCopiedItem)          NULL,
-  (VikLayerFuncDragDropRequest)		NULL,
+  (VikLayerFuncDragDropRequest)                NULL,
 
   (VikLayerFuncSelectClick)             NULL,
   (VikLayerFuncSelectMove)              NULL,
@@ -561,7 +561,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
     if ( x2 < 0 ) x2 = 0;
     if ( y1 < 0 ) y1 = 0;
     vik_viewport_draw_rectangle ( vp, gtk_widget_get_style(GTK_WIDGET(vp))->black_gc,
-	FALSE, x2, y1, x1-x2, y2-y1 );
+        FALSE, x2, y1, x1-x2, y2-y1 );
     return;
   }
   #endif
@@ -603,7 +603,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
     vik_dem_east_north_to_xy ( dem, start_lon_as, start_lat_as, &start_x, &start_y );
     guint gradient_skip_factor = 1;
     if(vdl->type == DEM_TYPE_GRADIENT)
-	    gradient_skip_factor = skip_factor;
+      gradient_skip_factor = skip_factor;
 
     /* verify sane elev interval */
     if ( vdl->max_elev <= vdl->min_elev )
@@ -615,14 +615,14 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
       if ( x < dem->n_columns ) {
         column = g_ptr_array_index ( dem->columns, x );
         // get previous and next column. catch out-of-bound.
-	gint32 new_x = x;
-	new_x -= gradient_skip_factor;
+        gint32 new_x = x;
+        new_x -= gradient_skip_factor;
         if(new_x < 1)
           prevcolumn = g_ptr_array_index ( dem->columns, x+1);
         else
           prevcolumn = g_ptr_array_index ( dem->columns, new_x);
-	new_x = x;
-	new_x += gradient_skip_factor;
+        new_x = x;
+        new_x += gradient_skip_factor;
         if(new_x >= dem->n_columns)
           nextcolumn = g_ptr_array_index ( dem->columns, x-1);
         else
@@ -634,37 +634,37 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 
           elev = column->points[y];
 
-	  // calculate bounding box for drawing
-	  gint box_x, box_y, box_width, box_height;
-	  struct LatLon box_c;
-	  box_c = counter;
-	  box_c.lat += (nscale_deg * skip_factor)/2;
+          // calculate bounding box for drawing
+          gint box_x, box_y, box_width, box_height;
+          struct LatLon box_c;
+          box_c = counter;
+          box_c.lat += (nscale_deg * skip_factor)/2;
           box_c.lon -= (escale_deg * skip_factor)/2;
-	  vik_coord_load_from_latlon(&tmp, vik_viewport_get_coord_mode(vp), &box_c);
-	  vik_viewport_coord_to_screen(vp, &tmp, &box_x, &box_y);
-	  // catch box at borders
-	  if(box_x < 0)
-	          box_x = 0;
-	  if(box_y < 0)
-	          box_y = 0;
-          box_c.lat -= nscale_deg * skip_factor;
-	  box_c.lon += escale_deg * skip_factor;
-	  vik_coord_load_from_latlon(&tmp, vik_viewport_get_coord_mode(vp), &box_c);
-	  vik_viewport_coord_to_screen(vp, &tmp, &box_width, &box_height);
-	  box_width -= box_x;
-	  box_height -= box_y;
+          vik_coord_load_from_latlon(&tmp, vik_viewport_get_coord_mode(vp), &box_c);
+          vik_viewport_coord_to_screen(vp, &tmp, &box_x, &box_y);
           // catch box at borders
-	  if(box_width < 0 || box_height < 0)
-	    // skip this as is out of the viewport (e.g. zoomed in so this point is way off screen)
-	    continue;
+          if(box_x < 0)
+                  box_x = 0;
+          if(box_y < 0)
+                  box_y = 0;
+          box_c.lat -= nscale_deg * skip_factor;
+          box_c.lon += escale_deg * skip_factor;
+          vik_coord_load_from_latlon(&tmp, vik_viewport_get_coord_mode(vp), &box_c);
+          vik_viewport_coord_to_screen(vp, &tmp, &box_width, &box_height);
+          box_width -= box_x;
+          box_height -= box_y;
+          // catch box at borders
+          if(box_width < 0 || box_height < 0)
+            // skip this as is out of the viewport (e.g. zoomed in so this point is way off screen)
+            continue;
 
-	  gboolean below_minimum = FALSE;
+          gboolean below_minimum = FALSE;
           if(vdl->type == DEM_TYPE_HEIGHT) {
             if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev ) {
               // Prevent 'elev - vdl->min_elev' from being negative so can safely use as array index
               elev = ceil ( vdl->min_elev );
-	      below_minimum = TRUE;
-	    }
+              below_minimum = TRUE;
+            }
             if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
               elev = vdl->max_elev;
           }
@@ -676,27 +676,27 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
               } else {
                 // calculate and sum gradient in all directions
                 gint16 change = 0;
-		gint32 new_y;
+                gint32 new_y;
 
-		// calculate gradient from height points all around the current one
-		new_y = y - gradient_skip_factor;
-		if(new_y < 0)
-			new_y = y;
-		change += get_height_difference(elev, prevcolumn->points[new_y]);
-		change += get_height_difference(elev, column->points[new_y]);
-		change += get_height_difference(elev, nextcolumn->points[new_y]);
+                // calculate gradient from height points all around the current one
+                new_y = y - gradient_skip_factor;
+                if(new_y < 0)
+                  new_y = y;
+                change += get_height_difference(elev, prevcolumn->points[new_y]);
+                change += get_height_difference(elev, column->points[new_y]);
+                change += get_height_difference(elev, nextcolumn->points[new_y]);
 
-		change += get_height_difference(elev, prevcolumn->points[y]);
-		change += get_height_difference(elev, nextcolumn->points[y]);
+                change += get_height_difference(elev, prevcolumn->points[y]);
+                change += get_height_difference(elev, nextcolumn->points[y]);
 
-		new_y = y + gradient_skip_factor;
-		if(new_y >= column->n_points)
-			new_y = y;
-		change += get_height_difference(elev, prevcolumn->points[new_y]);
-		change += get_height_difference(elev, column->points[new_y]);
-		change += get_height_difference(elev, nextcolumn->points[new_y]);
+                new_y = y + gradient_skip_factor;
+                if(new_y >= column->n_points)
+                  new_y = y;
+                change += get_height_difference(elev, prevcolumn->points[new_y]);
+                change += get_height_difference(elev, column->points[new_y]);
+                change += get_height_difference(elev, nextcolumn->points[new_y]);
 
-		change = change / ((skip_factor > 1) ? log(skip_factor) : 0.55); // FIXME: better calc.
+                change = change / ((skip_factor > 1) ? log(skip_factor) : 0.55); // FIXME: better calc.
 
                 if(change < vdl->min_elev)
                   // Prevent 'change - vdl->min_elev' from being negative so can safely use as array index
@@ -713,7 +713,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
                 if ( elev == VIK_DEM_INVALID_ELEVATION )
                   ; /* don't draw it */
                 else if ( elev <= 0 || below_minimum )
-		  /* If 'sea' colour or below the defined mininum draw in the configurable colour */
+                  /* If 'sea' colour or below the defined mininum draw in the configurable colour */
                   vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, box_x, box_y, box_width, box_height);
                 else
                   vik_viewport_draw_rectangle(vp, vdl->gcs[(gint)floor(((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev))*(DEM_N_HEIGHT_COLORS-2))+1], TRUE, box_x, box_y, box_width, box_height);
@@ -796,7 +796,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
           {
             gint a, b;
             vik_coord_load_from_utm(&tmp, vik_viewport_get_coord_mode(vp), &counter);
-	            vik_viewport_coord_to_screen(vp, &tmp, &a, &b);
+            vik_viewport_coord_to_screen(vp, &tmp, &a, &b);
             if ( elev == VIK_DEM_INVALID_ELEVATION )
               ; /* don't draw it */
             else if ( elev <= 0 )
@@ -835,7 +835,7 @@ static const gchar *srtm_continent_dir ( gint lat, gint lon )
   }
   g_snprintf(name, sizeof(name), "%c%02d%c%03d",
                   (lat >= 0) ? 'N' : 'S', ABS(lat),
-		  (lon >= 0) ? 'E' : 'W', ABS(lon));
+                  (lon >= 0) ? 'E' : 'W', ABS(lon));
 
   return(g_hash_table_lookup(srtm_continent, name));
 }
@@ -933,10 +933,10 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
   gchar *src_url = g_strdup_printf("%s/%s/%c%02d%c%03d.hgt.zip",
                 base_url,
                 continent_dir,
-		(intlat >= 0) ? 'N' : 'S',
-		ABS(intlat),
-		(intlon >= 0) ? 'E' : 'W',
-		ABS(intlon) );
+                (intlat >= 0) ? 'N' : 'S',
+                ABS(intlat),
+                (intlon >= 0) ? 'E' : 'W',
+                ABS(intlon) );
 
   static DownloadFileOptions options = { FALSE, FALSE, NULL, 5, a_check_map_file, NULL, NULL };
   DownloadResult_t result = a_http_download_get_url ( src_url, NULL, p->dest, &options, NULL );
@@ -978,10 +978,10 @@ static gchar *srtm_lat_lon_to_dest_fn ( gdouble lat, gdouble lon )
   return g_strdup_printf("srtm3-%s%s%c%02d%c%03d.hgt.zip",
                 continent_dir,
                 G_DIR_SEPARATOR_S,
-		(intlat >= 0) ? 'N' : 'S',
-		ABS(intlat),
-		(intlon >= 0) ? 'E' : 'W',
-		ABS(intlon) );
+                (intlat >= 0) ? 'N' : 'S',
+                ABS(intlat),
+                (intlon >= 0) ? 'E' : 'W',
+                ABS(intlon) );
 
 }
 
@@ -1003,10 +1003,10 @@ static void srtm_draw_existence ( VikViewport *vp )
                 MAPS_CACHE_DIR,
                 continent_dir,
                 G_DIR_SEPARATOR_S,
-		(i >= 0) ? 'N' : 'S',
-		ABS(i),
-		(j >= 0) ? 'E' : 'W',
-		ABS(j) );
+                (i >= 0) ? 'N' : 'S',
+                ABS(i),
+                (j >= 0) ? 'E' : 'W',
+                ABS(j) );
       if ( g_file_test(buf, G_FILE_TEST_EXISTS ) == TRUE ) {
         VikCoord ne, sw;
         gint x1, y1, x2, y2;
@@ -1021,7 +1021,7 @@ static void srtm_draw_existence ( VikViewport *vp )
         if ( x1 < 0 ) x1 = 0;
         if ( y2 < 0 ) y2 = 0;
         vik_viewport_draw_rectangle ( vp, gtk_widget_get_style(GTK_WIDGET(vp))->black_gc,
-		FALSE, x1, y2, x2-x1, y1-y2 );
+                FALSE, x1, y2, x2-x1, y1-y2 );
       }
     }
   }
@@ -1038,9 +1038,9 @@ static void dem24k_dem_download_thread ( DEMDownloadParams *p, gpointer threadda
 {
   /* TODO: dest dir */
   gchar *cmdline = g_strdup_printf("%s %.03f %.03f",
-	DEM24K_DOWNLOAD_SCRIPT,
-	floor(p->lat*8)/8,
-	ceil(p->lon*8)/8 );
+        DEM24K_DOWNLOAD_SCRIPT,
+        floor(p->lat*8)/8,
+        ceil(p->lon*8)/8 );
   /* FIX: don't use system, use execv or something. check for existence */
   system(cmdline);
   g_free ( cmdline );
@@ -1049,10 +1049,10 @@ static void dem24k_dem_download_thread ( DEMDownloadParams *p, gpointer threadda
 static gchar *dem24k_lat_lon_to_dest_fn ( gdouble lat, gdouble lon )
 {
   return g_strdup_printf("dem24k/%d/%d/%.03f,%.03f.dem",
-	(gint) lat,
-	(gint) lon,
-	floor(lat*8)/8,
-	ceil(lon*8)/8);
+        (gint) lat,
+        (gint) lon,
+        floor(lat*8)/8,
+        ceil(lon*8)/8);
 }
 
 /* TODO: generalize */
@@ -1068,23 +1068,23 @@ static void dem24k_draw_existence ( VikViewport *vp )
     /* check lat dir first -- faster */
     g_snprintf(buf, sizeof(buf), "%sdem24k/%d/",
         MAPS_CACHE_DIR,
-	(gint) i );
+        (gint) i );
     if ( g_file_test(buf, G_FILE_TEST_EXISTS) == FALSE )
       continue;
     for (j = floor(min_lon*8)/8; j <= floor(max_lon*8)/8; j+=0.125) {
       /* check lon dir first -- faster */
       g_snprintf(buf, sizeof(buf), "%sdem24k/%d/%d/",
         MAPS_CACHE_DIR,
-	(gint) i,
+        (gint) i,
         (gint) j );
       if ( g_file_test(buf, G_FILE_TEST_EXISTS) == FALSE )
         continue;
       g_snprintf(buf, sizeof(buf), "%sdem24k/%d/%d/%.03f,%.03f.dem",
-	        MAPS_CACHE_DIR,
-		(gint) i,
-		(gint) j,
-		floor(i*8)/8,
-		floor(j*8)/8 );
+                MAPS_CACHE_DIR,
+                (gint) i,
+                (gint) j,
+                floor(i*8)/8,
+                floor(j*8)/8 );
       if ( g_file_test(buf, G_FILE_TEST_EXISTS ) == TRUE ) {
         VikCoord ne, sw;
         gint x1, y1, x2, y2;
@@ -1099,7 +1099,7 @@ static void dem24k_draw_existence ( VikViewport *vp )
         if ( x1 < 0 ) x1 = 0;
         if ( y2 < 0 ) y2 = 0;
         vik_viewport_draw_rectangle ( vp, gtk_widget_get_style(GTK_WIDGET(vp))->black_gc,
-		FALSE, x1, y2, x2-x1, y1-y2 );
+                                    FALSE, x1, y2, x2-x1, y1-y2 );
       }
     }
   }
