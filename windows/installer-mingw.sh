@@ -126,6 +126,8 @@ cp $MINGW_BIN/libmagic*.dll $DESTINATION
 cp $MINGW/share/misc/magic* $DESTINATION
 cp $MINGW_BIN/libsqlite3*.dll $DESTINATION
 cp $MINGW_BIN/libnettle*.dll $DESTINATION
+cp $MINGW_BIN/libgps*.dll $DESTINATION
+cp $MINGW_BIN/libwinpthread*.dll $DESTINATION
 
 # Extra GTK stuff required for (default) theme to work in Windows
 mkdir -p $DESTINATION/lib

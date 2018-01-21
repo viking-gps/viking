@@ -1853,6 +1853,24 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
   }
 }
 
+#ifdef WINDOWS
+/**
+ * Simple version for use with polling method
+ */
+static gboolean gpsd_data_check(gpointer user_data)
+{
+  VikGpsLayer *vgl = user_data;
+#if GPSD_API_MAJOR_VERSION >= 5
+  if (gps_read(&vgl->vgpsd->gpsd) > -1) {
+    gpsd_raw_hook(vgl->vgpsd, NULL);
+  }
+#endif
+  return TRUE;
+}
+#else
+/**
+ * Version for use with IO watch
+ */
 static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, gpointer data)
 {
   VikGpsLayer *vgl = data;
@@ -1876,6 +1894,7 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
   }
   return FALSE; /* no further calling */
 }
+#endif
 
 /**
  * make_track_name:
@@ -1922,6 +1941,7 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
     return TRUE;   /* keep timer running */
   }
 
+  vgl->connected_to_gpsd = TRUE;
 #if GPSD_API_MAJOR_VERSION == 3
   vgl->vgpsd = realloc(gpsd, sizeof(VglGpsd));
 #endif
@@ -1947,16 +1967,21 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   gps_set_raw_hook(&vgl->vgpsd->gpsd, gpsd_raw_hook);
 #endif
 
+#ifdef WINDOWS
+  // On Windows use a simple polling mechanism to read any latest gpsd data
+  vgl->realtime_io_watch_id = g_timeout_add (500, gpsd_data_check, vgl);
+#else
   vgl->realtime_io_channel = g_io_channel_unix_new(vgl->vgpsd->gpsd.gps_fd);
   vgl->realtime_io_watch_id = g_io_add_watch( vgl->realtime_io_channel,
-                    G_IO_IN | G_IO_ERR | G_IO_HUP, gpsd_data_available, vgl);
+                                              G_IO_IN | G_IO_ERR | G_IO_HUP, gpsd_data_available, vgl);
+#endif
 
 #if GPSD_API_MAJOR_VERSION == 3
   gps_query(&vgl->vgpsd->gpsd, "w+x");
 #endif
 #if GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
-   if ( gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL) == -1 )
-     g_critical ( "gps_stream error" );
+  if ( gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL) == -1 )
+    g_critical ( "gps_stream error" );
 #endif
 
   return FALSE;  /* no longer called by timeout */

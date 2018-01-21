@@ -44,6 +44,7 @@ BuildRequires:	mingw64-libbz2-1
 BuildRequires:	mingw64-sqlite-devel
 BuildRequires:	mingw64-libzip-devel
 BuildRequires:	mingw64-libnettle-devel
+BuildRequires:	mingw64-libgps-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 Requires:	mingw64-gtk2
@@ -74,9 +75,8 @@ pushd windows/installer/pixmaps
 popd
 
 #
-# Specifics for Windows build - i.e. no Mapnik & no GPSD
+# Specifics for Windows build - i.e. no Mapnik yet
 %{_mingw64_configure}\
-  --disable-realtime-gps-tracking \
   --disable-mapnik \
   --disable-geoclue \
   --disable-scrollkeeper \

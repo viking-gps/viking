@@ -5,7 +5,9 @@ SUBDIRS = icons
 
 bin_PROGRAMS = viking
 
-noinst_LIBRARIES = libviking.a
+noinst_LIBRARIES = \
+	libviking.a
+#	libdtoa.a
 
 authors.h: $(top_srcdir)/AUTHORS
 	rm -f $@
@@ -56,6 +58,7 @@ libviking_a_SOURCES = \
 	degrees_converters.c degrees_converters.h \
 	globals.c globals.h \
 	viking.h mapcoord.h config.h \
+	viktrwlayer.c viktrwlayer.h \
 	vik_compat.c vik_compat.h \
 	viktrack.c viktrack.h \
 	vikwaypoint.c vikwaypoint.h \
@@ -77,7 +80,6 @@ libviking_a_SOURCES = \
 	jpg.c jpg.h \
 	vikenumtypes.c vikenumtypes.h \
 	viktreeview.c viktreeview.h \
-	viktrwlayer.c viktrwlayer.h \
 	viklayer.c viklayer.h \
 	viklayerspanel.c viklayerspanel.h \
 	vikcoordlayer.c vikcoordlayer.h \
@@ -160,6 +162,10 @@ libviking_a_SOURCES = \
 	misc/strtod.c misc/strtod.h \
 	misc/kdtree.c misc/kdtree.h \
 	misc/gtkhtml.c misc/gtkhtml-private.h
+
+#libdtoa_a_SOURCES = misc/dtoa.c misc/dtoa.h
+# Note especially not defining 'USE_LOCALE' to ensure dtoa() always writes a '.' for the decimal point
+#libdtoa_a_CFLAGS = $(PACKAGE_CFLAGS) -DIEEE_8087
 
 if BING
 libviking_a_SOURCES += \

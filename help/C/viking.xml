@@ -2936,11 +2936,9 @@ This list can be sorted on each column so that it easier to find an individual t
 </section>
 </section>
 
-<section><title>GPS Real Time Location (Not <trademark>Windows</trademark>)</title>
+<section><title>GPS Real Time Location</title>
 <para>
 	&appname; relies on <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
-	Unfortunately <application>gpsd</application> is not available on <trademark>Windows</trademark>,
-	so currently this functionality is disabled in <trademark>Windows</trademark> builds of &appname;
 </para>
 <para>
 	This assumes you already have a <xref linkend="Maps"/> layer enabled for ease of use (if not see above to get one).
