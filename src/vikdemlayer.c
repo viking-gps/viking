@@ -78,8 +78,8 @@ static void dem24k_draw_existence ( VikViewport *vp );
 
 /* Upped upper limit incase units are feet */
 static VikLayerParamScale param_scales[] = {
-  { 0, 30000, 10, 1 },
-  { 1, 30000, 10, 1 },
+  { -100, 30000, 10, 1 },
+  {    0, 30000, 10, 1 },
 };
 
 static gchar *params_source[] = {
@@ -712,7 +712,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
               if(vdl->type == DEM_TYPE_HEIGHT) {
                 if ( elev == VIK_DEM_INVALID_ELEVATION )
                   ; /* don't draw it */
-                else if ( elev <= 0 || below_minimum )
+                else if ( below_minimum )
                   /* If 'sea' colour or below the defined mininum draw in the configurable colour */
                   vik_viewport_draw_rectangle(vp, vdl->gcs[0], TRUE, box_x, box_y, box_width, box_height);
                 else
