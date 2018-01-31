@@ -127,6 +127,7 @@ src/misc/*.o
 /test/test_metatile
 /test/test_coord_conversion
 /test/test_babel
+/test/test_time
 
 # /po/
 /po/Makefile.in.in

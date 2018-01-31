@@ -20,6 +20,7 @@ endif
 check_PROGRAMS = degrees_converter \
 	gpx2gpx \
 	test_vikgotoxmltool \
+	test_time \
 	test_coord_conversion \
 	test_babel \
 	test_md5_hash \
@@ -75,6 +76,11 @@ gpx2gpx_LDADD = \
 
 test_vikgotoxmltool_SOURCES = test_vikgotoxmltool.c
 test_vikgotoxmltool_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+test_time_SOURCES = test_time.c
+test_time_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 
