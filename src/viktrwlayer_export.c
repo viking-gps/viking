@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <glib.h>
+#include <unistd.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
@@ -64,6 +65,14 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
       vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
       // Don't Export invisible items - unless requested on this specific track
       failed = ! a_file_export ( vtl, fn, file_type, trk, trk ? TRUE : FALSE );
+      // Typically exporting (to a GPX file) will be directly to a GPS Device
+      // Under Linux it sometimes doesn't actually write it to the disk in a timely manner
+      //  and one unplugs the device only to subsequently find it hasn't actually got the file
+      //  which is not ideal when you where planning to follow that route/track!
+      // Thus force a disk sync which may help
+#ifndef WINDOWS
+      sync();
+#endif
       vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
       break;
     }
