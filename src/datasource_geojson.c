@@ -143,7 +143,7 @@ static gboolean datasource_geojson_process ( VikTrwLayer *vtl, ProcessOptions *p
 		gchar *gpx_filename = a_geojson_import_to_gpx ( filename );
 		if ( gpx_filename ) {
 			// Important that this process is run in the main thread
-			vik_window_open_file ( adw->vw, gpx_filename, FALSE );
+			vik_window_open_file ( adw->vw, gpx_filename, FALSE, TRUE, TRUE );
 			// Delete the temporary file
 			(void)g_remove (gpx_filename);
 			g_free (gpx_filename);

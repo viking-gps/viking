@@ -292,7 +292,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
            c_tp->newsegment = TRUE;
            f_tr_newseg = FALSE;
          }
-         c_tr->trackpoints = g_list_append ( c_tr->trackpoints, c_tp );
+         c_tr->trackpoints = g_list_prepend ( c_tr->trackpoints, c_tp );
        }
        break;
 
@@ -445,6 +445,7 @@ static void gpx_end(UserDataT *ud, const char *el)
      case tt_rte:
        if ( ! c_tr_name )
          c_tr_name = g_strdup_printf("VIKING_RT%03d", unnamed_routes++);
+       c_tr->trackpoints = g_list_reverse ( c_tr->trackpoints );
        vik_trw_layer_filein_add_track ( vtl, c_tr_name, c_tr );
        g_free ( c_tr_name );
        c_tr = NULL;
