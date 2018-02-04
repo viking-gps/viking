@@ -55,7 +55,7 @@ static guint layer_signals[VL_LAST_SIGNAL] = { 0 };
 static GObjectClass *parent_class;
 
 static void vik_layer_finalize ( VikLayer *vl );
-static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp );
+static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gboolean have_apply );
 static gboolean layer_defaults_register ( VikLayerTypeEnum type );
 
 G_DEFINE_TYPE (VikLayer, vik_layer, G_TYPE_OBJECT)
@@ -232,7 +232,7 @@ VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean in
 
   if ( interactive )
   {
-    if ( vik_layer_properties ( new_layer, vp ) )
+    if ( vik_layer_properties ( new_layer, vp, FALSE ) )
       /* We translate the name here */
       /* in order to avoid translating name set by user */
       vik_layer_rename ( VIK_LAYER(new_layer), _(vik_layer_interfaces[type]->name) );
@@ -245,12 +245,18 @@ VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean in
   return new_layer;
 }
 
-/* returns TRUE if OK was pressed */
-gboolean vik_layer_properties ( VikLayer *layer, VikViewport *vp )
+/**
+ * @have_apply: Whether the properties dialog should have an apply button
+ *
+ * Returns:
+ *   TRUE if OK was pressed
+ *   (i.e. should redraw as the properties could have changed)
+ */
+gboolean vik_layer_properties ( VikLayer *layer, VikViewport *vp, gboolean have_apply )
 {
   if ( vik_layer_interfaces[layer->type]->properties )
-    return vik_layer_interfaces[layer->type]->properties ( layer, vp );
-  return vik_layer_properties_factory ( layer, vp );
+    return vik_layer_interfaces[layer->type]->properties ( layer, vp, have_apply );
+  return vik_layer_properties_factory ( layer, vp, have_apply );
 }
 
 void vik_layer_draw ( VikLayer *l, VikViewport *vp )
@@ -545,7 +551,13 @@ void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file 
     vik_layer_interfaces[layer->type]->post_read ( layer, vp, from_file );
 }
 
-static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp )
+// Wrapper function to keep compiler happy
+static void layer_emit_update_internal ( gpointer gp )
+{
+  vik_layer_emit_update ( VIK_LAYER(gp));
+}
+
+static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gboolean have_apply )
 {
   switch ( a_uibuilder_properties_factory ( _("Layer Properties"),
 					    VIK_GTK_WINDOW_FROM_WIDGET(vp),
@@ -559,7 +571,10 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp )
 					    vp,
 					    (gpointer) vik_layer_interfaces[vl->type]->get_param, 
 					    vl,
-					    (gpointer) vik_layer_interfaces[vl->type]->change_param ) ) {
+					    (gpointer) vik_layer_interfaces[vl->type]->change_param,
+					    have_apply,
+					    layer_emit_update_internal,
+					    (gpointer)vl) ) {
     case 0:
     case 3:
       return FALSE;

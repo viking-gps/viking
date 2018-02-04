@@ -182,7 +182,10 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       gpointer pass_along2, // Possibly VikViewport* or own type for 4 param call used as last parameter
                                       VikLayerParamData (*getparam) (gpointer,guint16,gboolean),  // AKA VikLayerFuncGetParam in viklayer.h
                                       gpointer pass_along_getparam,
-                                      void (*changeparam) (GtkWidget*, ui_change_values) ); // AKA VikLayerFuncChangeParam in viklayer.h
+                                      void (*changeparam) (GtkWidget*, ui_change_values), // AKA VikLayerFuncChangeParam in viklayer.h
+                                      gboolean have_apply_button,
+                                      void (*redraw) (gpointer), // Normally vik_layer_emit_update()
+                                      gpointer redraw_param ); // Normally VikLayer*
 
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,

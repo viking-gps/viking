@@ -77,11 +77,11 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
 static VikGeorefLayer *georef_layer_new ( VikViewport *vvp );
 static VikGeorefLayer *georef_layer_create ( VikViewport *vp );
 static void georef_layer_free ( VikGeorefLayer *vgl );
-static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp );
+static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp, gboolean have_apply );
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp );
 static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp );
 static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image );
-static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w );
+static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w, gboolean have_apply_button );
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file );
 
 /* tools */
@@ -461,9 +461,9 @@ static VikGeorefLayer *georef_layer_create ( VikViewport *vp )
   return georef_layer_new ( vp );
 }
 
-static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp )
+static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp, gboolean have_apply )
 {
-  return georef_layer_dialog ( vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp) );
+  return georef_layer_dialog ( vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp), have_apply );
 }
 
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file )
@@ -802,16 +802,15 @@ static void calculate_mpp_from_coords ( GtkWidget *ww, VikGeorefLayer *vgl )
 #define VIK_SETTINGS_GEOREF_TAB "georef_coordinate_tab"
 
 /* returns TRUE if OK was pressed. */
-static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w )
+static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w, gboolean have_apply_button )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Layer Properties"),
-                                                  w,
-                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                  GTK_STOCK_CANCEL,
-                                                  GTK_RESPONSE_REJECT,
-                                                  GTK_STOCK_OK,
-                                                  GTK_RESPONSE_ACCEPT,
-                                                  NULL );
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Layer Properties"), w,
+                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                   GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,  NULL );
+  if ( have_apply_button )
+    gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY );
+  gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_OK, GTK_RESPONSE_ACCEPT );
+
   /* Default to reject as user really needs to specify map file first */
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
   GtkWidget *response_w = NULL;
@@ -954,43 +953,49 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
       page_num = 0;
   gtk_notebook_set_current_page ( GTK_NOTEBOOK(cw.tabs), page_num );
 
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
-  {
-    align_coords ( vgl );
+  gboolean answer = FALSE;
+  gint resp = GTK_RESPONSE_APPLY;
+  while ( resp == GTK_RESPONSE_APPLY )  {
+    resp = gtk_dialog_run ( GTK_DIALOG(dialog) );
+    if ( resp == GTK_RESPONSE_ACCEPT || resp == GTK_RESPONSE_APPLY ) {
+      align_coords ( vgl );
 
-    vgl->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.ce_spin) );
-    vgl->corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.cn_spin) );
-    vgl->corner.zone = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(cw.utm_zone_spin) );
-    const gchar *letter = gtk_entry_get_text ( GTK_ENTRY(cw.utm_letter_entry) );
-    if (*letter)
-       vgl->corner.letter = toupper(*letter);
-    vgl->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.x_spin) );
-    vgl->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.y_spin) );
-    vgl->ll_br = get_ll_br (vgl);
-    check_br_is_good_or_msg_user ( vgl );
-    // TODO check if image has changed otherwise no need to regenerate pixbuf
-    if ( !vgl->pixbuf )
-    {
-      if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 )
-      {
-        georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
-        georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
+      vgl->corner.easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.ce_spin) );
+      vgl->corner.northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.cn_spin) );
+      vgl->corner.zone = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(cw.utm_zone_spin) );
+      const gchar *letter = gtk_entry_get_text ( GTK_ENTRY(cw.utm_letter_entry) );
+      if (*letter)
+         vgl->corner.letter = toupper(*letter);
+      vgl->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.x_spin) );
+      vgl->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.y_spin) );
+      vgl->ll_br = get_ll_br (vgl);
+      check_br_is_good_or_msg_user ( vgl );
+      // TODO check if image has changed otherwise no need to regenerate pixbuf
+      if ( !vgl->pixbuf ) {
+        if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 ) {
+          georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
+          georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
+        }
       }
+
+      vgl->alpha = (guint8) gtk_range_get_value ( GTK_RANGE(alpha_scale) );
+      if ( vgl->pixbuf && vgl->alpha <= 255 )
+        vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
+      if ( vgl->scaled && vgl->alpha <= 255 )
+        vgl->scaled = ui_pixbuf_set_alpha ( vgl->scaled, vgl->alpha );
+
+      a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
+
+      if ( resp == GTK_RESPONSE_APPLY ) {
+        vik_layer_emit_update ( VIK_LAYER(vgl) );
+        answer = FALSE;
+      }
+      else
+        answer = TRUE;
     }
-
-    vgl->alpha = (guint8) gtk_range_get_value ( GTK_RANGE(alpha_scale) );
-    if ( vgl->pixbuf && vgl->alpha <= 255 )
-      vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
-    if ( vgl->scaled && vgl->alpha <= 255 )
-      vgl->scaled = ui_pixbuf_set_alpha ( vgl->scaled, vgl->alpha );
-
-    a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
-
-    gtk_widget_destroy ( GTK_WIDGET(dialog) );
-    return TRUE;
   }
   gtk_widget_destroy ( GTK_WIDGET(dialog) );
-  return FALSE;
+  return answer;
 }
 
 static void georef_layer_zoom_to_fit ( gpointer vgl_vlp[2] )

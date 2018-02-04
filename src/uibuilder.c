@@ -326,7 +326,18 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
   return rv;
 }
 
-//static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointer *pass_along)
+/**
+ * @have_apply_button: Whether the dialog should have an apply button
+ * @redraw:            Function to be invoked to redraw when apply button is pressed
+ *                     Typically expected to be #vik_layer_emit_update()
+ * @redraw_param:      Parameter to be passed to the redraw(), so typically a VikLayer*
+ *
+ * Returns:
+ *  0 = Dialog cancelled
+ *  1 = No parameters to be displayed
+ *  2 = Parameter changed that needs redraw
+ *  3 = Parameter changed but redraw not necessary
+ */
 gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       GtkWindow *parent,
                                       VikLayerParam *params,
@@ -339,7 +350,10 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       gpointer pass_along2,
                                       VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
                                       gpointer pass_along_getparam,
-                                      void (*changeparam) (GtkWidget*, ui_change_values) )
+                                      void (*changeparam) (GtkWidget*, ui_change_values),
+                                      gboolean have_apply_button,
+                                      void (*redraw) (gpointer),
+                                      gpointer redraw_param )
 {
   guint16 i, j, widget_count = 0;
   gboolean must_redraw = FALSE;
@@ -356,18 +370,18 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
   else
   {
     /* create widgets and titles; place in table */
-    GtkWidget *dialog = gtk_dialog_new_with_buttons ( dialog_name,
-						      parent,
-						      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-						      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-						      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, NULL );
+    GtkWidget *dialog = gtk_dialog_new_with_buttons ( dialog_name, parent,
+                                                      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+    if ( have_apply_button )
+      gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY );
+    gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_OK, GTK_RESPONSE_ACCEPT );
+
     gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
     GtkWidget *response_w = NULL;
 #if GTK_CHECK_VERSION (2, 20, 0)
     response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 #endif
-    gint resp;
-
     GtkWidget *table = NULL;
     GtkWidget **tables = NULL; /* for more than one group */
 
@@ -463,37 +477,37 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
 
     gtk_widget_show_all ( dialog );
 
-    resp = gtk_dialog_run (GTK_DIALOG (dialog));
-    if ( resp == GTK_RESPONSE_ACCEPT )
-    {
-      VikLayerSetParam vlsp;
-      vlsp.is_file_operation = FALSE;
-      vlsp.dirpath = NULL;
-      for ( i = 0, j = 0; i < params_count; i++ )
-      {
-        if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES )
-        {
-          vlsp.id = i;
-          vlsp.vp = pass_along2;
-          vlsp.data = a_uibuilder_widget_get_value ( widgets[j], &(params[i]) );
-          // Main callback into each layer's setparam
-          if ( setparam && setparam ( pass_along1, &vlsp ) )
-            must_redraw = TRUE;
-          // Or a basic callback for each parameter
-          else if ( setparam4 && setparam4 ( pass_along1, i, vlsp.data, pass_along2 ) )
-            must_redraw = TRUE;
-          j++;
+    gint resp = GTK_RESPONSE_APPLY;
+    gint answer = 0;
+    while ( resp == GTK_RESPONSE_APPLY ) {
+      resp = gtk_dialog_run (GTK_DIALOG (dialog));
+      if ( resp == GTK_RESPONSE_ACCEPT || resp == GTK_RESPONSE_APPLY ) {
+	VikLayerSetParam vlsp;
+	vlsp.is_file_operation = FALSE;
+	vlsp.dirpath = NULL;
+	for ( i = 0, j = 0; i < params_count; i++ ) {
+	  if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
+            vlsp.id = i;
+            vlsp.vp = pass_along2;
+            vlsp.data = a_uibuilder_widget_get_value ( widgets[j], &(params[i]) );
+            // Main callback into each layer's setparam
+            if ( setparam && setparam ( pass_along1, &vlsp ) )
+              must_redraw = TRUE;
+            // Or a basic callback for each parameter
+            else if ( setparam4 && setparam4 ( pass_along1, i, vlsp.data, pass_along2 ) )
+              must_redraw = TRUE;
+            j++;
+          }
         }
+
+        if ( resp == GTK_RESPONSE_APPLY ) {
+          if ( redraw && redraw_param )
+            redraw ( redraw_param );
+          answer = 0;
+        }
+        else
+          answer = must_redraw ? 2 : 3; // user clicked OK
       }
-
-      g_free ( widgets );
-      g_free ( labels );
-      g_free ( change_values );
-      if ( tables )
-        g_free ( tables );
-      gtk_widget_destroy ( dialog ); /* hide before redrawing. */
-
-      return must_redraw ? 2 : 3; /* user clicked OK */
     }
 
     g_free ( widgets );
@@ -503,7 +517,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
       g_free ( tables );
     gtk_widget_destroy ( dialog );
 
-    return 0;
+    return answer;
   }
 }
 
@@ -543,7 +557,10 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
 					  params,
 					  (gpointer) uibuilder_run_getparam, 
 					  params_defaults,
-					  NULL ) > 0 ) {
+					  NULL,
+					  FALSE,
+					  NULL,
+					  NULL) > 0 ) {
 
       return paramdatas;
     }

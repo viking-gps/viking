@@ -315,7 +315,10 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 	                                      params,
 	                                      defaults_run_getparam,
 	                                      GINT_TO_POINTER ( index ),
-	                                      NULL ) ) {
+	                                      NULL,
+	                                      FALSE,
+	                                      NULL,
+	                                      NULL) ) {
 		// Save
 		layer_defaults_save_to_file();
     }
