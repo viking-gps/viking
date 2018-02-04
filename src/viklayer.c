@@ -397,7 +397,7 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
 	s[vlm_size]=0;
 	vlm_read(s);
 	vlsp.data.s = s;
-	set_param(vl, &vlsp);
+	(void)set_param(vl, &vlsp);
 	g_free(s);
 	break;
       case VIK_LAYER_PARAM_STRING_LIST:  {
@@ -413,14 +413,14 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
           list = g_list_append ( list, s );
         }
         vlsp.data.sl = list;
-        set_param(vl, &vlsp);
+        (void)set_param(vl, &vlsp);
         /* don't free -- string list is responsibility of the layer */
 
         break;
         }
       default:
         vlm_read(&vlsp.data);
-        set_param(vl, &vlsp);
+        (void)set_param(vl, &vlsp);
         break;
       }
     }
@@ -676,7 +676,7 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
       // only DEM files uses this currently
       if ( vli->params[i].type != VIK_LAYER_PARAM_STRING_LIST ) {
         vlsp.data = a_layer_defaults_get ( layer_name, vli->params[i].name, vli->params[i].type );
-        vik_layer_set_param ( vl, &vlsp );
+        (void)vik_layer_set_param ( vl, &vlsp );
       }
     }
   }
