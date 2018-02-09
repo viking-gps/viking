@@ -1814,7 +1814,7 @@ static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, ruler_tool_st
 static VikToolInterface ruler_tool =
   // NB Ctrl+Shift+R is used for Refresh (deemed more important), so use 'U' instead
   { &ruler_18_pixbuf,
-    { "Ruler", "vik-icon-ruler", N_("_Ruler"), "<control><shift>U", N_("Ruler Tool"), 2 },
+    { "Ruler", "vik-icon-ruler", N_("_Ruler"), "<control><shift>U", N_("Ruler Tool"), TOOL_RULER },
     (VikToolConstructorFunc) ruler_create,
     (VikToolDestructorFunc) ruler_destroy,
     (VikToolActivationFunc) NULL,
@@ -2088,7 +2088,7 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
 
 static VikToolInterface zoom_tool = 
   { &zoom_18_pixbuf,
-    { "Zoom", "vik-icon-zoom", N_("_Zoom"), "<control><shift>Z", N_("Zoom Tool"), 1 },
+    { "Zoom", "vik-icon-zoom", N_("_Zoom"), "<control><shift>Z", N_("Zoom Tool"), TOOL_ZOOM },
     (VikToolConstructorFunc) zoomtool_create,
     (VikToolDestructorFunc) zoomtool_destroy,
     (VikToolActivationFunc) NULL,
@@ -2154,7 +2154,7 @@ static VikLayerToolFuncStatus pantool_release (VikLayer *vl, GdkEventButton *eve
 
 static VikToolInterface pan_tool = 
   { &mover_22_pixbuf,
-    { "Pan", "vik-icon-pan", N_("_Pan"), "<control><shift>P", N_("Pan Tool"), 0 },
+    { "Pan", "vik-icon-pan", N_("_Pan"), "<control><shift>P", N_("Pan Tool"), TOOL_PAN },
     (VikToolConstructorFunc) pantool_create,
     (VikToolDestructorFunc) NULL,
     (VikToolActivationFunc) NULL,
@@ -2307,7 +2307,7 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
 
 static VikToolInterface select_tool =
   { &select_18_pixbuf,
-    { "Select", "vik-icon-select", N_("_Select"), "<control><shift>S", N_("Select Tool"), 3 },
+    { "Select", "vik-icon-select", N_("_Select"), "<control><shift>S", N_("Select Tool"), TOOL_SELECT },
     (VikToolConstructorFunc) selecttool_create,
     (VikToolDestructorFunc) selecttool_destroy,
     (VikToolActivationFunc) NULL,
