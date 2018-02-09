@@ -3530,6 +3530,10 @@ Accept: */*
 	    <para>background_max_threads_local=<emphasis>Number of CPUs</emphasis></para>
 	  </listitem>
 	  <listitem>
+	    <para>window_default_tool=Pan</para>
+	    <para>Options are: Pan, Zoom, Ruler or Select</para>
+	  </listitem>
+	  <listitem>
 	    <para>window_menubar=true</para>
 	  </listitem>
 	  <listitem>

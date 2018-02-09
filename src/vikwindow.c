@@ -341,6 +341,8 @@ static void destroy_window ( GtkWidget *widget,
     }
 }
 
+#define VIK_SETTINGS_WIN_DEFAULT_TOOL "window_default_tool"
+
 #define VIK_SETTINGS_WIN_SIDEPANEL "window_sidepanel"
 #define VIK_SETTINGS_WIN_STATUSBAR "window_statusbar"
 #define VIK_SETTINGS_WIN_TOOLBAR "window_toolbar"
@@ -780,6 +782,42 @@ static void toolbar_reload_cb ( GtkActionGroup *grp, gpointer gp )
   center_changed_cb ( vw );
 }
 
+static void default_tool_enable ( VikWindow *vw )
+{
+  gchar *tool_str = NULL;
+  if ( a_settings_get_string ( VIK_SETTINGS_WIN_DEFAULT_TOOL, &tool_str ) ) {
+    if ( !g_ascii_strcasecmp(tool_str,"Pan") )
+      vw->current_tool = TOOL_PAN;
+    else if ( !g_ascii_strcasecmp(tool_str,"Zoom") )
+      vw->current_tool = TOOL_ZOOM;
+    else if ( !g_ascii_strcasecmp(tool_str,"Ruler") )
+      vw->current_tool = TOOL_RULER;
+    else if ( !g_ascii_strcasecmp(tool_str,"Select") )
+      vw->current_tool = TOOL_SELECT;
+    else {
+      g_warning ("%s: Couldn't understand '%s' for the default tool", __FUNCTION__, tool_str);
+      vw->current_tool = TOOL_PAN;
+    }
+  }
+  else
+    vw->current_tool = TOOL_PAN;
+
+  switch ( vw->current_tool ) {
+  case TOOL_ZOOM:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Zoom" ) );
+    break;
+  case TOOL_RULER:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Ruler" ) );
+    break;
+  case TOOL_SELECT:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Select" ) );
+    break;
+  default:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
+    break;
+  }
+}
+
 #define VIK_SETTINGS_WIN_MAX "window_maximized"
 #define VIK_SETTINGS_WIN_FULLSCREEN "window_fullscreen"
 #define VIK_SETTINGS_WIN_WIDTH "window_width"
@@ -962,7 +1000,7 @@ static void vik_window_init ( VikWindow *vw )
   vw->thread = g_thread_self();
 
   // Set the default tool + mode
-  gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
+  default_tool_enable ( vw );
   gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "ModeMercator" ) );
 
   gchar *accel_file_name = g_build_filename ( a_get_viking_dir(), VIKING_ACCELERATOR_KEY_FILE, NULL );
@@ -1192,13 +1230,25 @@ void vik_window_set_redraw_trigger(VikLayer *vl)
 
 static void window_configure_event ( VikWindow *vw )
 {
-  static int first = 1;
+  static gboolean first = TRUE;
   draw_redraw ( vw );
-  if (first) {
-    // This is a hack to set the cursor corresponding to the first tool
-    // FIXME find the correct way to initialize both tool and its cursor
-    first = 0;
-    vw->viewport_cursor = (GdkCursor *)toolbox_get_cursor(vw->vt, "Pan");
+  if ( first ) {
+    // This is a hack to initialize the cursor to the corresponding tool
+    first = FALSE;
+    switch ( vw->current_tool ) {
+    case TOOL_ZOOM:
+      vw->viewport_cursor = (GdkCursor*)toolbox_get_cursor(vw->vt, "Zoom");
+      break;
+    case TOOL_RULER:
+      vw->viewport_cursor = (GdkCursor*)toolbox_get_cursor(vw->vt, "Ruler");
+      break;
+    case TOOL_SELECT:
+      vw->viewport_cursor = (GdkCursor*)toolbox_get_cursor(vw->vt, "Select");
+      break;
+    default:
+      vw->viewport_cursor = (GdkCursor*)toolbox_get_cursor(vw->vt, "Pan");
+      break;
+    }
     /* We set cursor, even if it is NULL: it resets to default */
     gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
   }
