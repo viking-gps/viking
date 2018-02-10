@@ -1076,33 +1076,45 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
     return TRUE; // handled keypress
   }
 
+  gboolean handled = FALSE;
   VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
   if (vl && vw->vt->active_tool != -1 && vw->vt->tools[vw->vt->active_tool].ti.key_press ) {
     gint ltype = vw->vt->tools[vw->vt->active_tool].layer_type;
     if ( vl && ltype == vl->type )
-      return vw->vt->tools[vw->vt->active_tool].ti.key_press(vl, event, vw->vt->tools[vw->vt->active_tool].state);
+      handled = vw->vt->tools[vw->vt->active_tool].ti.key_press(vl, event, vw->vt->tools[vw->vt->active_tool].state);
+    if ( handled )
+      return TRUE;
+  }
+
+
+  /* Restore Main Menu via Escape key if the user has hidden it */
+  /* This key is more likely to be used as they may not remember the function key */
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
+  if ( check_box ) {
+    gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+    if ( !state ) {
+      if ( event->keyval == GDK_Escape ) {
+	gtk_widget_show ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
+	gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
+	return TRUE; /* handled keypress */
+      }
+    }
   }
 
   // Ensure called only on window tools (i.e. not on any of the Layer tools since the layer is NULL)
   if ( vw->current_tool < TOOL_LAYER ) {
     // No layer - but enable window tool keypress processing - these should be able to handle a NULL layer
     if ( vw->vt->tools[vw->vt->active_tool].ti.key_press ) {
-      return vw->vt->tools[vw->vt->active_tool].ti.key_press ( vl, event, vw->vt->tools[vw->vt->active_tool].state );
+      handled = vw->vt->tools[vw->vt->active_tool].ti.key_press ( vl, event, vw->vt->tools[vw->vt->active_tool].state );
+    if ( handled )
+      return TRUE;
     }
   }
 
-  /* Restore Main Menu via Escape key if the user has hidden it */
-  /* This key is more likely to be used as they may not remember the function key */
+  // Default Tool
   if ( event->keyval == GDK_Escape ) {
-    GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
-    if ( check_box ) {
-      gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
-      if ( !state ) {
-	gtk_widget_show ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
-	gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
-	return TRUE; /* handled keypress */
-      }
-    }
+    default_tool_enable ( vw );
+    return TRUE;
   }
 
   return FALSE; /* don't handle the keypress */
@@ -1713,6 +1725,7 @@ typedef struct {
   VikViewport *vvp;
   gboolean has_oldcoord;
   VikCoord oldcoord;
+  gboolean displayed;
 } ruler_tool_state_t;
 
 static gpointer ruler_create (VikWindow *vw, VikViewport *vvp) 
@@ -1721,6 +1734,7 @@ static gpointer ruler_create (VikWindow *vw, VikViewport *vvp)
   s->vw = vw;
   s->vvp = vvp;
   s->has_oldcoord = FALSE;
+  s->displayed = FALSE;
   return s;
 }
 
@@ -1736,6 +1750,7 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
   gchar *temp;
   if ( event->button == 1 ) {
     gchar *lat=NULL, *lon=NULL;
+    s->displayed = TRUE;
     vik_viewport_screen_to_coord ( s->vvp, (gint) event->x, (gint) event->y, &coord );
     vik_coord_to_latlon ( &coord, &ll );
     a_coords_latlon_to_string ( &ll, &lat, &lon );
@@ -1853,9 +1868,12 @@ static void ruler_deactivate (VikLayer *vl, ruler_tool_state_t *s)
 static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, ruler_tool_state_t *s)
 {
   if (event->keyval == GDK_Escape) {
-    s->has_oldcoord = FALSE;
-    ruler_deactivate ( vl, s );
-    return TRUE;
+    if ( s->displayed ) {
+      s->has_oldcoord = FALSE;
+      ruler_deactivate ( NULL, s );
+      s->displayed = FALSE;
+      return TRUE;
+    }
   }
   // Regardless of whether we used it, return false so other GTK things may use it
   return FALSE;

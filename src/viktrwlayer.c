@@ -10493,12 +10493,15 @@ static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventBut
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
 {
   if ( vtl->current_track && event->keyval == GDK_Escape ) {
-    vtl->route_finder_started = FALSE;
-    vtl->current_track = NULL;
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
+    if ( vtl->route_finder_started ) {
+      vtl->route_finder_started = FALSE;
+      vtl->current_track = NULL;
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      return TRUE;
+    }
   } else if ( vtl->current_track && event->keyval == GDK_BackSpace ) {
     tool_extended_route_finder_undo ( vtl );
+    return TRUE;
   }
   return FALSE;
 }
