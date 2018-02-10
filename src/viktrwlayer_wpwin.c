@@ -287,7 +287,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       struct LatLon ll = a_geotag_get_position ( wp->image );
       VikCoord coord;
       vik_coord_load_from_latlon ( &coord, coord_mode, &ll );
-      gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(consistentGeotagCB), vik_coord_equals(&coord, &wp->coord) );
+      gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(consistentGeotagCB), vik_coord_equalish(&coord, &wp->coord) );
     }
 
     // ATM the direction value box is always shown, even when there is no information.
