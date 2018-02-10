@@ -117,6 +117,28 @@ gboolean vik_coord_equals ( const VikCoord *coord1, const VikCoord *coord2 )
     return coord1->utm_zone == coord2->utm_zone && coord1->north_south == coord2->north_south && coord1->east_west == coord2->east_west;
 }
 
+/**
+ * vik_coord_equalish:
+ * A more sensible comparsion that allows for some small tolerance in comparing floating point numbers
+ */
+gboolean vik_coord_equalish ( const VikCoord *coord1, const VikCoord *coord2 )
+{
+  static const gdouble TOLERANCE = 0.000005; // ATM use for both coordinate modes
+  if ( coord1->mode != coord2->mode )
+    return FALSE;
+  if ( coord1->mode == VIK_COORD_LATLON )
+    return coord1->north_south >= coord2->north_south - TOLERANCE &&
+           coord1->north_south <= coord2->north_south + TOLERANCE &&
+	   coord1->east_west >= coord2->east_west - TOLERANCE &&
+	   coord1->east_west <= coord2->east_west + TOLERANCE;
+  else /* VIK_COORD_UTM */
+    return coord1->utm_zone == coord2->utm_zone &&
+           coord1->north_south >= coord2->north_south - TOLERANCE &&
+           coord1->north_south <= coord2->north_south + TOLERANCE &&
+           coord1->east_west >= coord2->east_west - TOLERANCE &&
+           coord1->east_west <= coord2->east_west + TOLERANCE;
+}
+
 static void get_north_west(struct LatLon *center, struct LatLon *dist, struct LatLon *nw) 
 {
   nw->lat = center->lat + dist->lat;
