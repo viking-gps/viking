@@ -866,6 +866,9 @@ entitize(const char * str)
 
 /* export GPX */
 
+/**
+ * Note that elements are written in the schema specification order
+ */
 static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 {
   // Don't write invisible waypoints when specified
@@ -885,15 +888,6 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   fprintf ( f, "<wpt lat=\"%s\" lon=\"%s\"%s>\n",
                s_lat, s_lon, wp->visible ? "" : " hidden=\"hidden\"" );
 
-  // Sanity clause
-  if ( wp->name )
-    tmp = entitize ( wp->name );
-  else
-    tmp = g_strdup ("waypoint");
-
-  fprintf ( f, "  <name>%s</name>\n", tmp );
-  g_free ( tmp);
-
   if ( wp->altitude != VIK_DEFAULT_ALTITUDE )
   {
     gchar s_alt[COORDS_STR_BUFFER_SIZE];
@@ -912,6 +906,15 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     g_free ( time_iso8601 );
   }
 
+  // Sanity clause
+  if ( wp->name )
+    tmp = entitize ( wp->name );
+  else
+    tmp = g_strdup ("waypoint");
+
+  fprintf ( f, "  <name>%s</name>\n", tmp );
+  g_free ( tmp);
+
   if ( wp->comment )
   {
     tmp = entitize(wp->comment);
@@ -928,12 +931,6 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   {
     tmp = entitize(wp->source);
     fprintf ( f, "  <src>%s</src>\n", tmp );
-    g_free ( tmp );
-  }
-  if ( wp->type )
-  {
-    tmp = entitize(wp->type);
-    fprintf ( f, "  <type>%s</type>\n", tmp );
     g_free ( tmp );
   }
   if ( wp->url )
@@ -971,10 +968,19 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
       fprintf ( f, "  <sym>%s</sym>\n", tmp);
     g_free ( tmp );
   }
+  if ( wp->type )
+  {
+    tmp = entitize(wp->type);
+    fprintf ( f, "  <type>%s</type>\n", tmp );
+    g_free ( tmp );
+  }
 
   fprintf ( f, "</wpt>\n" );
 }
 
+/**
+ * Note that elements are written in the schema specification order
+ */
 static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context )
 {
   FILE *f = context->file;
@@ -993,12 +999,6 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   a_coords_dtostr_buffer ( ll.lat, s_lat );
   a_coords_dtostr_buffer ( ll.lon, s_lon );
   fprintf ( f, "  <%spt lat=\"%s\" lon=\"%s\">\n", (context->options && context->options->is_route) ? "rte" : "trk", s_lat, s_lon );
-
-  if (tp->name) {
-    gchar *s_name = entitize(tp->name);
-    fprintf ( f, "    <name>%s</name>\n", s_name );
-    g_free(s_name);
-  }
 
   if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
   {
@@ -1040,6 +1040,13 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
     a_coords_dtostr_buffer ( tp->speed, s_speed );
     fprintf ( f, "    <speed>%s</speed>\n", s_speed );
   }
+
+  if (tp->name) {
+    gchar *s_name = entitize(tp->name);
+    fprintf ( f, "    <name>%s</name>\n", s_name );
+    g_free(s_name);
+  }
+
   if (tp->fix_mode == VIK_GPS_MODE_2D)
     fprintf ( f, "    <fix>2d</fix>\n");
   if (tp->fix_mode == VIK_GPS_MODE_3D)

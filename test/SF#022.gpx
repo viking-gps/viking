@@ -6,9 +6,9 @@ xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/
   <name>SF#022</name>
   <time>2016-04-04T19:03:55.423045Z</time>
 <wpt lat="40.97486" lon="-3.20034">
-  <name>Gorgocil</name>
   <ele>834</ele>
   <time>2016-04-04T19:04:05Z</time>
+  <name>Gorgocil</name>
   <cmt>40.97486, -3.20034, 834m</cmt>
   <sym>Golf Course</sym>
 </wpt>
