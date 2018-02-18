@@ -257,6 +257,12 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
 
      case tt_gpx:
        c_md = vik_trw_metadata_new();
+       // Store creator information if possible
+       const gchar *crt = get_attr ( attr, "creator" );
+       if ( crt ) {
+         // If there is an actual description field it will overwrite this value
+         c_md->description = g_strdup_printf ( _("Created by: %s"), crt );
+       }
        break;
 
      case tt_wpt:
