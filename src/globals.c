@@ -95,6 +95,8 @@ static VikLayerParam io_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_track_sort", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Track Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_trk_sort, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_sym_names", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Waypoint Symbols:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_wpt_symbols, NULL,
       N_("Save GPX Waypoint Symbol names in the specified case. May be useful for compatibility with various devices"), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_creator", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("GPX Creator:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL,
+      N_("The creator value when writing a GPX file. Otherwise when blank a default is used."), NULL, NULL, NULL },
 };
 
 #ifndef WINDOWS
@@ -225,6 +227,9 @@ void a_vik_preferences_init ()
   tmp.u = VIK_GPX_EXPORT_WPT_SYM_NAME_TITLECASE;
   a_preferences_register(&io_prefs[2], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
 
+  tmp.s = "";
+  a_preferences_register(&io_prefs[3], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+
 #ifndef WINDOWS
   tmp.s = "xdg-open";
   a_preferences_register(&io_prefs_non_windows[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
@@ -328,6 +333,11 @@ vik_gpx_export_wpt_sym_name_t a_vik_gpx_export_wpt_sym_name ( )
   gboolean val;
   val = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_sym_names")->u;
   return val;
+}
+
+const gchar* a_vik_gpx_export_creator ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_creator")->s;
 }
 
 #ifndef WINDOWS

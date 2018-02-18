@@ -200,6 +200,8 @@ typedef enum {
 
 vik_gpx_export_wpt_sym_name_t a_vik_gpx_export_wpt_sym_name ( );
 
+const gchar* a_vik_gpx_export_creator ( );
+
 #ifndef WINDOWS
 /* Windows automatically uses the system defined viewer
    ATM for other systems need to specify the program to use */

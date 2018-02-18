@@ -1149,11 +1149,20 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 
 static void gpx_write_header( FILE *f )
 {
+  // Allow overriding the creator value
+  // E.g. if something actually cares about it, see for example:
+  //   http://strava.github.io/api/v3/uploads/
+  gchar *creator = g_strdup(a_vik_gpx_export_creator());
+  if ( g_strcmp0(creator, "") == 0 )
+    creator = g_strdup_printf("Viking %s -- %s", PACKAGE_VERSION, PACKAGE_URL);
+
   fprintf(f, "<?xml version=\"1.0\"?>\n"
-          "<gpx version=\"1.0\" creator=\"Viking -- http://viking.sf.net/\"\n"
-          "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-          "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
-          "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
+             "<gpx version=\"1.0\"\n");
+  fprintf(f, "creator=\"%s\"\n", creator);
+  fprintf(f,"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+            "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
+            "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
+  g_free(creator);
 }
 
 static void gpx_write_footer( FILE *f )
