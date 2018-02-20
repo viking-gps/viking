@@ -256,3 +256,26 @@ VikLayerParamData *a_preferences_get(const gchar *key)
   }
   return g_hash_table_lookup ( values, key );
 }
+
+/**
+ * a_preferences_get_param:
+ * @key: The name of a preference
+ *
+ * Returns the #VikLayerParam of the specified preference.
+ * This may be NULL if the preference doesn't exist.
+ */
+VikLayerParam *a_preferences_get_param(const gchar *key)
+{
+  if ( ! loaded ) {
+    g_debug ( "%s: First time: %s\n", __FUNCTION__, key );
+    preferences_load_from_file();
+    loaded = TRUE;
+  }
+  // Search GPtrArray *params for the name
+  for ( int ii = 0; ii < params->len; ii++ ) {
+    VikLayerParam *param = (VikLayerParam*)g_ptr_array_index ( params,ii );
+    if ( g_strcmp0 (key, param->name) == 0 )
+      return param;
+  }
+  return NULL;
+}

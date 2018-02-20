@@ -3927,38 +3927,13 @@ static void preferences_cb ( GtkAction *a, VikWindow *vw )
 
 static void default_location_cb ( GtkAction *a, VikWindow *vw )
 {
-  /* Simplistic repeat of preference setting
-     Only the name & type are important for setting the preference via this 'external' way */
-  VikLayerParam pref_lat[] = {
-    { VIK_LAYER_NUM_TYPES,
-      VIKING_PREFERENCES_NAMESPACE "default_latitude",
-      VIK_LAYER_PARAM_DOUBLE,
-      VIK_LAYER_GROUP_NONE,
-      NULL,
-      VIK_LAYER_WIDGET_SPINBUTTON,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-    },
-  };
-  VikLayerParam pref_lon[] = {
-    { VIK_LAYER_NUM_TYPES,
-      VIKING_PREFERENCES_NAMESPACE "default_longitude",
-      VIK_LAYER_PARAM_DOUBLE,
-      VIK_LAYER_GROUP_NONE,
-      NULL,
-      VIK_LAYER_WIDGET_SPINBUTTON,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-    },
-  };
+  // Get relevant preferences - these should always be available
+  VikLayerParam *pref_lat = a_preferences_get_param ( VIKING_PREFERENCES_NAMESPACE "default_latitude" );
+  VikLayerParam *pref_lon = a_preferences_get_param ( VIKING_PREFERENCES_NAMESPACE "default_longitude" );
+  if ( !pref_lat || !pref_lon ) {
+    g_critical ( "%s: preference not found", __FUNCTION__ );
+    return;
+  }
 
   /* Get current center */
   struct LatLon ll;
