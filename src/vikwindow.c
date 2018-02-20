@@ -4638,6 +4638,21 @@ static void set_highlight_color ( GtkAction *a, VikWindow *vw )
   gtk_widget_destroy ( colorsd );
 }
 
+/**
+ * a_vik_window_get_a_window:
+ *
+ * Returns a #VikWindow for cases when the calling code otherwise has no access visibility of what #VikWindow called it.
+ *  This should only be used in special cases e.g. inside a callback that no data can be passed into it.
+ *  Ideally this should also be only used for new dialogs like messages, so the actual #VikWindow is less relevant
+ *  (rather than trying to get a viewport or similar as it won't necessarily be the right one when there is one than one Window).
+ */
+VikWindow* a_vik_window_get_a_window ( void )
+{
+  GSList *item = g_slist_last (window_list);
+  if ( item )
+    return (VikWindow*)item->data;
+  return NULL;
+}
 
 /***********************************************************************************************
  ** GUI Creation

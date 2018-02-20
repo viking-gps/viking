@@ -102,6 +102,8 @@ typedef struct {
   int oldx, oldy;
 } tool_ed_t;
 
+VikWindow *a_vik_window_get_a_window ();
+
 G_END_DECLS
 
 #define VIK_WINDOW_FROM_WIDGET(x) VIK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(x)))
