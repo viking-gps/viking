@@ -339,6 +339,18 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
   return rv;
 }
 
+static GtkWidget *dialog = NULL;
+
+/**
+ * Hacky method to enable closing the dialog within preference code
+ */
+void a_uibuilder_factory_close ( gint response_id )
+{
+  if ( dialog ) {
+    gtk_dialog_response ( GTK_DIALOG(dialog), response_id );
+  }
+}
+
 /**
  * @have_apply_button: Whether the dialog should have an apply button
  * @redraw:            Function to be invoked to redraw when apply button is pressed
@@ -383,9 +395,9 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
   else
   {
     /* create widgets and titles; place in table */
-    GtkWidget *dialog = gtk_dialog_new_with_buttons ( dialog_name, parent,
-                                                      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+    dialog = gtk_dialog_new_with_buttons ( dialog_name, parent,
+                                           GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                           GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
     if ( have_apply_button )
       gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY );
     gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_OK, GTK_RESPONSE_ACCEPT );
@@ -529,11 +541,11 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     if ( tables )
       g_free ( tables );
     gtk_widget_destroy ( dialog );
+    dialog = NULL;
 
     return answer;
   }
 }
-
 
 static void uibuilder_run_setparam ( VikLayerParamData *paramdatas, guint16 i, VikLayerParamData data, VikLayerParam *params )
 {
