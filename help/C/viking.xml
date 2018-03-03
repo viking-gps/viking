@@ -3458,7 +3458,7 @@ Accept: */*
       </section>
 
       <section>
-        <title>More</title>
+        <title>System Extension File Locations</title>
         <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>external_tools.xml</filename>, <filename>datasources.xml</filename>) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
         <para>The <envar>XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
         <para>The <envar>XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
