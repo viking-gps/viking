@@ -412,7 +412,7 @@ static void acquire ( VikWindow *vw,
     if ( source_interface->process_func ) {
       gboolean result = source_interface->process_func ( wi->vtl, po, (BabelStatusFunc) progress_func, w, options );
       if ( !result )
-        a_dialog_msg ( GTK_WINDOW(vw), GTK_MESSAGE_ERROR, _("Error: acquisition failed."), NULL );
+        a_dialog_error_msg ( GTK_WINDOW(vw), _("Error: acquisition failed.") );
     }
     free_process_options ( po );
     g_free ( options );
