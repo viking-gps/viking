@@ -279,3 +279,43 @@ VikLayerParam *a_preferences_get_param(const gchar *key)
   }
   return NULL;
 }
+
+/**
+ * a_preferences_lookup:
+ * @key: The name of a preference
+ *
+ * See if a key exists in the preferences file
+ *  (without actually processing the file into preferences)
+ */
+gboolean a_preferences_lookup(const gchar *key)
+{
+  gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
+  FILE *f = g_fopen(fn, "r");
+  g_free ( fn );
+
+  gboolean ans = FALSE;
+
+  if ( f ) {
+    gchar buf[4096];
+    gchar *fkey = NULL;
+    gchar *val = NULL;
+    gboolean exit_now = FALSE;
+
+    while ( ! feof (f) ) {
+      if (fgets(buf,sizeof(buf),f) == NULL)
+        break;
+      if ( split_string_from_file_on_equals ( buf, &fkey, &val ) ) {
+        if ( g_strcmp0 (key, fkey) == 0 ) {
+          ans = TRUE;
+          exit_now = TRUE;
+        }
+        g_free(fkey);
+        g_free(val);
+        if ( exit_now )
+          break;
+      }
+    }
+    fclose(f);
+  }
+  return ans;
+}
