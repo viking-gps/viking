@@ -57,6 +57,7 @@ struct _VikRoutingWebEnginePrivate
 	gchar *url_start_ll_fmt;
 	gchar *url_stop_ll_fmt;
 	gchar *url_via_ll_fmt;
+	gboolean url_ll_lat_first_fmt;
 
 	/* Directions */
 	gchar *url_start_dir_fmt;
@@ -77,6 +78,7 @@ enum
   /* LatLon */
   PROP_URL_START_LL,
   PROP_URL_STOP_LL,
+  PROP_URL_LL_LAT_FIRST,
   PROP_URL_VIA_LL,
 
   /* Direction */
@@ -112,6 +114,10 @@ vik_routing_web_engine_set_property (GObject      *object,
     case PROP_URL_STOP_LL:
       g_free (priv->url_stop_ll_fmt);
       priv->url_stop_ll_fmt = g_strdup(g_value_get_string (value));
+      break;
+
+    case PROP_URL_LL_LAT_FIRST:
+      priv->url_ll_lat_first_fmt = g_value_get_boolean (value);
       break;
 
     case PROP_URL_VIA_LL:
@@ -165,6 +171,10 @@ vik_routing_web_engine_get_property (GObject    *object,
 
     case PROP_URL_STOP_LL:
       g_value_set_string (value, priv->url_stop_ll_fmt);
+      break;
+
+    case PROP_URL_LL_LAT_FIRST:
+      g_value_set_boolean (value, priv->url_ll_lat_first_fmt);
       break;
 
     case PROP_URL_VIA_LL:
@@ -238,7 +248,20 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
                                "<no-set>" /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_URL_START_LL, pspec);
-    
+
+
+  /**
+   * VikRoutingWebEngine:url-ll-lat-first:
+   *
+   * Coordinates are in latitude,longitude form if true (longitude,latitue else).
+   */
+  pspec = g_param_spec_boolean ("url-ll-lat-first",
+                                "Latitude first",
+                                "Coordinates in latitude,longitude (instead of default longitude,latitude)",
+                                TRUE/* default value */,
+                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_URL_LL_LAT_FIRST, pspec);
+   
 
   /**
    * VikRoutingWebEngine:url-stop-ll:
@@ -332,6 +355,7 @@ static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
   priv->url_start_ll_fmt = NULL;
   priv->url_stop_ll_fmt = NULL;
   priv->url_via_ll_fmt = NULL;
+  priv->url_ll_lat_first_fmt = TRUE;
 
   /* Directions */
   priv->url_start_dir_fmt = NULL;
@@ -358,6 +382,7 @@ static void vik_routing_web_engine_finalize ( GObject *gob )
   priv->url_stop_ll_fmt = NULL;
   g_free (priv->url_via_ll_fmt);
   priv->url_via_ll_fmt = NULL;
+  priv->url_ll_lat_first_fmt = TRUE;
 
   /* Directions */
   g_free (priv->url_start_dir_fmt);
@@ -392,6 +417,16 @@ substitute_latlon ( const gchar *fmt, struct LatLon ll )
 }
 
 static gchar *
+substitute_lonlat ( const gchar *fmt, struct LatLon ll )
+{
+	gchar lat[G_ASCII_DTOSTR_BUF_SIZE], lon[G_ASCII_DTOSTR_BUF_SIZE];
+	gchar *substituted = g_strdup_printf(fmt,
+                          g_ascii_dtostr (lon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) ll.lon),
+                          g_ascii_dtostr (lat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) ll.lat));
+	return substituted;
+}
+
+static gchar *
 vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLon start, struct LatLon end )
 {
 	gchar *startURL;
@@ -406,8 +441,12 @@ vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLo
 	g_return_val_if_fail ( priv->url_start_ll_fmt != NULL, NULL);
 	g_return_val_if_fail ( priv->url_stop_ll_fmt != NULL, NULL);
 
-	startURL = substitute_latlon ( priv->url_start_ll_fmt, start );
-	endURL = substitute_latlon ( priv->url_stop_ll_fmt, end );
+	startURL = (priv->url_ll_lat_first_fmt) ?
+			substitute_latlon ( priv->url_start_ll_fmt, start ):
+			substitute_lonlat ( priv->url_start_ll_fmt, start );
+	endURL =  (priv->url_ll_lat_first_fmt) ?
+			substitute_latlon ( priv->url_stop_ll_fmt, end ):
+			substitute_lonlat ( priv->url_stop_ll_fmt, end );
 	url = g_strconcat ( priv->url_base, startURL, endURL, NULL );
 
 	/* Free memory */
@@ -493,7 +532,9 @@ _append_stringified_coords ( gpointer data, gpointer user_data )
   /* Stringify coordinate */
   struct LatLon position;
   vik_coord_to_latlon ( &(vtp->coord), &position );
-  gchar *string = substitute_latlon ( ctx->priv->url_via_ll_fmt, position );
+  gchar *string = (ctx->priv->url_ll_lat_first_fmt) ?
+	  	substitute_latlon ( ctx->priv->url_via_ll_fmt, position ):
+	  	substitute_lonlat ( ctx->priv->url_via_ll_fmt, position );
   
   /* Append */
   ctx->urlParts[ctx->nb] = string;
@@ -533,11 +574,15 @@ vik_routing_web_engine_get_url_for_track ( VikRoutingEngine *self, VikTrack *vt 
   g_free ( urlParts[1] );
   vtp = g_list_first ( vt->trackpoints )->data;
   vik_coord_to_latlon ( &(vtp->coord ), &position );
-  urlParts[1] = substitute_latlon ( priv->url_start_ll_fmt, position );
+  urlParts[1] = (priv->url_ll_lat_first_fmt) ?
+	  	substitute_latlon ( priv->url_start_ll_fmt, position ):
+	  	substitute_lonlat ( priv->url_start_ll_fmt, position );
   g_free ( urlParts[len-2] );
   vtp = g_list_last ( vt->trackpoints )->data;
   vik_coord_to_latlon ( &(vtp->coord), &position );
-  urlParts[len-2] = substitute_latlon ( priv->url_stop_ll_fmt, position );
+  urlParts[len-2] = (priv->url_ll_lat_first_fmt) ?
+	  	substitute_latlon ( priv->url_stop_ll_fmt, position ):
+	  	substitute_lonlat ( priv->url_stop_ll_fmt, position );
 
   /* Concat */
   url = g_strjoinv ( NULL, urlParts );
