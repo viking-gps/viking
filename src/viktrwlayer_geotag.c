@@ -99,6 +99,7 @@ typedef struct {
 	GtkLabel *overwrite_gps_exif_l; // Referenced so the sensitivity can be changed
 	GtkCheckButton *overwrite_gps_exif_b;
 	GtkLabel *no_change_mtime_l; // Referenced so the sensitivity can be changed
+	GtkCheckButton *auto_image_direction_b;
 	GtkCheckButton *no_change_mtime_b;
 	GtkCheckButton *interpolate_segments_b;
 	GtkEntry *time_zone_b; // TODO consider a more user friendly tz widget eg libtimezonemap or similar
@@ -122,6 +123,7 @@ typedef struct {
 	gboolean overwrite_waypoints;
 	gboolean write_exif;
 	gboolean overwrite_gps_exif;
+	gboolean auto_image_direction;
 	gboolean no_change_mtime;
 	gboolean interpolate_segments;
 	gint time_offset;
@@ -142,6 +144,7 @@ typedef struct {
 	gboolean found_match;
 	VikCoord coord;
 	gdouble altitude;
+	gdouble image_direction;
 	// If anything has changed
 	gboolean redraw;
 } geotag_options_t;
@@ -150,6 +153,7 @@ typedef struct {
 #define VIK_SETTINGS_GEOTAG_OVERWRITE_WAYPOINTS  "geotag_overwrite_waypoints"
 #define VIK_SETTINGS_GEOTAG_WRITE_EXIF           "geotag_write_exif"
 #define VIK_SETTINGS_GEOTAG_OVERWRITE_GPS_EXIF   "geotag_overwrite_gps"
+#define VIK_SETTINGS_GEOTAG_AUTO_IMAGE_DIRECTION "geotag_auto_image_direction"
 #define VIK_SETTINGS_GEOTAG_NO_CHANGE_MTIME      "geotag_no_change_mtime"
 #define VIK_SETTINGS_GEOTAG_INTERPOLATE_SEGMENTS "geotag_interpolate_segments"
 #define VIK_SETTINGS_GEOTAG_TIME_OFFSET          "geotag_time_offset"
@@ -162,6 +166,7 @@ static void save_default_values ( option_values_t default_values )
 	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_OVERWRITE_WAYPOINTS, default_values.overwrite_waypoints );
 	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_WRITE_EXIF, default_values.write_exif );
 	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_OVERWRITE_GPS_EXIF, default_values.overwrite_gps_exif );
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_AUTO_IMAGE_DIRECTION, default_values.auto_image_direction );
 	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_NO_CHANGE_MTIME, default_values.no_change_mtime );
 	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_INTERPOLATE_SEGMENTS, default_values.interpolate_segments );
 	a_settings_set_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET, default_values.time_offset );
@@ -180,6 +185,8 @@ static option_values_t get_default_values ( )
 		default_values.write_exif = TRUE;
 	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_OVERWRITE_GPS_EXIF, &default_values.overwrite_gps_exif ) )
 		default_values.overwrite_gps_exif = FALSE;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_AUTO_IMAGE_DIRECTION, &default_values.auto_image_direction ) )
+		default_values.auto_image_direction = FALSE;
 	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_NO_CHANGE_MTIME, &default_values.no_change_mtime ) )
 		default_values.no_change_mtime = TRUE;
 	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_INTERPOLATE_SEGMENTS, &default_values.interpolate_segments ) )
@@ -191,6 +198,24 @@ static option_values_t get_default_values ( )
 	if ( ! a_settings_get_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS, &default_values.TimeZoneMins ) )
 		default_values.TimeZoneMins = 0;
 	return default_values;
+}
+
+/**
+ * Get a heading from a single trkpoint
+ *
+ * Try using the adjacent trkpoints to get a direction
+ */
+static gdouble get_heading_from_trackpoint ( GList *mytrkpt )
+{
+	VikTrackpoint *trkpt = VIK_TRACKPOINT(mytrkpt->data);
+
+	if ( mytrkpt->prev )
+		return vik_coord_angle ( &VIK_TRACKPOINT(mytrkpt->prev->data)->coord, &trkpt->coord );
+	else if ( mytrkpt->next )
+		return vik_coord_angle ( &trkpt->coord, &VIK_TRACKPOINT(mytrkpt->prev->data)->coord );
+
+	// In the unlikely event of a single trackpoint track - can't guess a direction
+	return NAN;
 }
 
 /**
@@ -217,6 +242,8 @@ static void trw_layer_geotag_track ( const gpointer id, VikTrack *track, geotag_
 			options->coord = trkpt->coord;
 			options->altitude = trkpt->altitude;
 			options->found_match = TRUE;
+			if ( options->ov.auto_image_direction )
+				options->image_direction = get_heading_from_trackpoint ( mytrkpt );
 			break;
 		}
 
@@ -246,8 +273,10 @@ static void trw_layer_geotag_track ( const gpointer id, VikTrack *track, geotag_
 			 * in time between the two points. Ie, a number between 0 and 1 -
 			 * 0 is the first point, 1 is the next point, and 0.5 would be
 			 * half way. */
-			gdouble scale = (gdouble)trkpt_next->timestamp - (gdouble)trkpt->timestamp;
-			scale = ((gdouble)options->PhotoTime - (gdouble)trkpt->timestamp) / scale;
+			gdouble tdiff = (gdouble)trkpt_next->timestamp - (gdouble)trkpt->timestamp;
+			gdouble scale = ((gdouble)options->PhotoTime - (gdouble)trkpt->timestamp) / tdiff;
+
+			options->PhotoTime = options->PhotoTime + (time_t)(tdiff * scale);
 
 			struct LatLon ll_result, ll1, ll2;
 
@@ -264,6 +293,10 @@ static void trw_layer_geotag_track ( const gpointer id, VikTrack *track, geotag_
 
 			// Interpolate elevation
 			options->altitude = trkpt->altitude + ((trkpt_next->altitude - trkpt->altitude) * scale);
+
+			if ( options->ov.auto_image_direction )
+				options->image_direction = vik_coord_angle ( &trkpt->coord, &trkpt_next->coord );
+
 			break;
 		}
 	}
@@ -280,7 +313,9 @@ static void trw_layer_geotag_waypoint ( geotag_options_t *options )
 		gchar* datetime = a_geotag_get_exif_date_from_file ( options->image, &has_gps_exif );
 		// If image already has gps info - don't attempt to change it unless forced
 		if ( options->ov.overwrite_gps_exif || !has_gps_exif ) {
-			gint ans = a_geotag_write_exif_gps ( options->image, options->wpt->coord, options->wpt->altitude, options->ov.no_change_mtime );
+			gint ans = a_geotag_write_exif_gps ( options->image, options->wpt->coord, options->wpt->altitude,
+			                                     options->wpt->image_direction, options->wpt->image_direction_ref,
+			                                     options->ov.no_change_mtime );
 			if ( ans != 0 ) {
 				gchar *message = g_strdup_printf ( _("Failed updating EXIF on %s"), options->image );
 				vik_window_statusbar_update ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(options->vtl)), message, VIK_STATUSBAR_INFO );
@@ -357,6 +392,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 		options->PhotoTime = options->PhotoTime + options->ov.time_offset;
 
 		options->found_match = FALSE;
+		options->image_direction = NAN;
 
 		if ( options->track ) {
 			// Single specified track
@@ -388,6 +424,10 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 					if ( wp ) {
 						// Found, so set new position, comment and image
 						(void)a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, wp );
+						wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
+						wp->image_direction = options->image_direction;
+						wp->has_timestamp = TRUE;
+						wp->timestamp = options->PhotoTime;
 						updated_waypoint = TRUE;
 					}
 					g_free ( name );
@@ -399,6 +439,10 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 					VikWaypoint *wp = a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, NULL );
 					if ( !name )
 						name = g_strdup ( a_file_basename ( options->image ) );
+					wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
+					wp->image_direction = options->image_direction;
+					wp->has_timestamp = TRUE;
+					wp->timestamp = options->PhotoTime;
 					vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
 					g_free ( name );
 				}
@@ -409,7 +453,9 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 
 			// Write EXIF if specified
 			if ( options->ov.write_exif ) {
-				gint ans = a_geotag_write_exif_gps ( options->image, options->coord, options->altitude, options->ov.no_change_mtime );
+				gint ans = a_geotag_write_exif_gps ( options->image, options->coord, options->altitude,
+				                                     options->image_direction, WP_IMAGE_DIRECTION_REF_TRUE,
+				                                     options->ov.no_change_mtime );
 				if ( ans != 0 ) {
 					gchar *message = g_strdup_printf ( _("Failed updating EXIF on %s"), options->image );
 					vik_window_statusbar_update ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(options->vtl)), message, VIK_STATUSBAR_INFO );
@@ -485,6 +531,7 @@ static void trw_layer_geotag_response_cb ( GtkDialog *dialog, gint resp, GeoTagW
 		options->ov.overwrite_waypoints = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_waypoints_b) );
 		options->ov.write_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->write_exif_b) );
 		options->ov.overwrite_gps_exif = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_gps_exif_b) );
+		options->ov.auto_image_direction = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->auto_image_direction_b) );
 		options->ov.no_change_mtime = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->no_change_mtime_b) );
 		options->ov.interpolate_segments = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->interpolate_segments_b) );
 		options->ov.TimeZoneHours = 0;
@@ -602,6 +649,7 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	widgets->overwrite_gps_exif_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 	widgets->no_change_mtime_l = GTK_LABEL ( gtk_label_new ( _("Keep File Modification Timestamp:") ) );
 	widgets->no_change_mtime_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
+	widgets->auto_image_direction_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 	widgets->interpolate_segments_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 	widgets->time_zone_b = GTK_ENTRY ( gtk_entry_new () );
 	widgets->time_offset_b = GTK_ENTRY ( gtk_entry_new () );
@@ -616,6 +664,7 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_waypoints_b), default_values.overwrite_waypoints );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->write_exif_b), default_values.write_exif );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->overwrite_gps_exif_b), default_values.overwrite_gps_exif );
+	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->auto_image_direction_b), default_values.auto_image_direction );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->no_change_mtime_b), default_values.no_change_mtime );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->interpolate_segments_b), default_values.interpolate_segments );
 	gchar tmp_string[7];
@@ -651,6 +700,11 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	GtkWidget *fm_hbox = gtk_hbox_new ( FALSE, 0 );
 	gtk_box_pack_start ( GTK_BOX(fm_hbox), GTK_WIDGET(widgets->no_change_mtime_l), FALSE, FALSE, 5 );
 	gtk_box_pack_start ( GTK_BOX(fm_hbox), GTK_WIDGET(widgets->no_change_mtime_b), FALSE, FALSE, 5 );
+
+	GtkWidget *aid_hbox = gtk_hbox_new ( FALSE, 0 );
+	gtk_box_pack_start ( GTK_BOX(aid_hbox), gtk_label_new ( _("Automatic Image Direction:") ), FALSE, FALSE, 5 );
+	gtk_box_pack_start ( GTK_BOX(aid_hbox), GTK_WIDGET(widgets->auto_image_direction_b), FALSE, FALSE, 5 );
+	gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->auto_image_direction_b), _("Set image direction based on a heading derived from the track") );
 
 	GtkWidget *is_hbox = gtk_hbox_new ( FALSE, 0 );
 	GtkWidget *interpolate_segments_l = gtk_label_new ( _("Interpolate Between Track Segments:") );
@@ -698,6 +752,7 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), we_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), og_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), fm_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), aid_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), is_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), to_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), tz_hbox,  FALSE, FALSE, 0);

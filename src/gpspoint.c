@@ -85,6 +85,8 @@ static gint line_name_label = 0;
 static gint line_dist_label = 0;
 static gchar *line_image;
 static gchar *line_symbol;
+static gdouble line_image_direction = NAN;
+static VikWaypointImageDirectionRef line_image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 static gboolean line_newsegment = FALSE;
 static gboolean line_has_timestamp = FALSE;
 static time_t line_timestamp = 0;
@@ -276,6 +278,11 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
         g_free ( fn );
       }
 
+      if ( !isnan(line_image_direction) ) {
+        wp->image_direction = line_image_direction;
+        wp->image_direction_ref = line_image_direction_ref;
+      }
+
       if ( line_symbol )
         vik_waypoint_set_symbol ( wp, line_symbol );
     }
@@ -369,6 +376,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_xtype = NULL;
     line_color = NULL;
     line_image = NULL;
+    line_image_direction = NAN;
+    line_image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
     line_symbol = NULL;
     line_type = GPSPOINT_TYPE_NONE;
     line_newsegment = FALSE;
@@ -521,6 +530,14 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
     if (line_image == NULL)
       line_image = deslashndup ( value, value_len );
   }
+  else if (key_len == 15 && strncasecmp( key, "image_direction", key_len ) == 0 && value != NULL)
+  {
+    line_image_direction = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 19 && strncasecmp( key, "image_direction_ref", key_len ) == 0 && value != NULL)
+  {
+    line_image_direction_ref = atoi(value);
+  }
   else if (key_len == 8 && strncasecmp( key, "latitude", key_len ) == 0 && value != NULL)
   {
     line_latlon.lat = g_ascii_strtod(value, NULL);
@@ -660,6 +677,13 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
       fprintf ( f, " image=\"%s\"", tmp_image );
 
     g_free ( tmp_image );
+  }
+  if ( !isnan(wp->image_direction) )
+  {
+    gchar *tmp = util_formatd ( "%.2f", wp->image_direction );
+    fprintf ( f, " image_direction=\"%s\"", tmp );
+    g_free ( tmp );
+    fprintf ( f, " image_direction_ref=\"%d\"", wp->image_direction_ref );
   }
   if ( wp->symbol )
   {

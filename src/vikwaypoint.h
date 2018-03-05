@@ -27,7 +27,11 @@
 #include <gdk-pixbuf/gdk-pixdata.h>
 
 G_BEGIN_DECLS
-/* todo important: put these in their own header file, maybe.probably also rename */
+
+typedef enum {
+  WP_IMAGE_DIRECTION_REF_TRUE=0,
+  WP_IMAGE_DIRECTION_REF_MAGNETIC=1,
+} VikWaypointImageDirectionRef;
 
 #define VIK_WAYPOINT(x) ((VikWaypoint *)(x))
 
@@ -46,6 +50,9 @@ struct _VikWaypoint {
   gchar *type;
   gchar *url;
   gchar *image;
+  // NB Only really applicable if geotagging(exif info) is being used
+  gdouble image_direction;   /* NAN if data unavailable */
+  VikWaypointImageDirectionRef image_direction_ref;
   /* a rather misleading, ugly hack needed for trwlayer's click image.
    * these are the height at which the thumbnail is being drawn, not the 
    * dimensions of the original image. */
@@ -64,6 +71,7 @@ void vik_waypoint_set_source(VikWaypoint *wp, const gchar *source);
 void vik_waypoint_set_type(VikWaypoint *wp, const gchar *type);
 void vik_waypoint_set_url(VikWaypoint *wp, const gchar *url);
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image);
+void vik_waypoint_set_image_direction_info(VikWaypoint *wp, gdouble direction, VikWaypointImageDirectionRef direction_ref);
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);
 void vik_waypoint_free(VikWaypoint * wp);
 VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp);

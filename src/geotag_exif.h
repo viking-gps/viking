@@ -28,6 +28,12 @@
 
 G_BEGIN_DECLS
 
+typedef struct {
+	struct LatLon ll;
+	gdouble direction;
+	VikWaypointImageDirectionRef directionRef;
+} exif_gps_info_t;
+
 VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoordMode vcmode, gchar **name );
 
 VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coord, gdouble alt, gchar **name, VikWaypoint *wp );
@@ -36,7 +42,9 @@ gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_G
 
 struct LatLon a_geotag_get_position ( const gchar *filename );
 
-gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble alt, gboolean no_change_mtime );
+gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble alt,
+                               gdouble direction, VikWaypointImageDirectionRef direction_ref,
+                               gboolean no_change_mtime );
 
 G_END_DECLS
 

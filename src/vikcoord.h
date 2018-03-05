@@ -55,10 +55,13 @@ void vik_coord_to_latlon ( const VikCoord *coord, struct LatLon *dest );
 void vik_coord_to_utm ( const VikCoord *coord, struct UTM *dest );
 
 gboolean vik_coord_equals ( const VikCoord *coord1, const VikCoord *coord2 );
+gboolean vik_coord_equalish ( const VikCoord *coord1, const VikCoord *coord2 );
 
 void vik_coord_set_area(const VikCoord *coord, const struct LatLon *wh, VikCoord *tl, VikCoord *br);
 gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCoord *br);
 /* all coord operations MUST BE ABSTRACTED!!! */
+
+gdouble vik_coord_angle (const VikCoord *vc1, const VikCoord *vc2);
 
 G_END_DECLS
 
