@@ -599,12 +599,6 @@ and docbook-xsl in your Build-Depends control field.
        </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/cookies.txt</filename></term>
-        <listitem>
-          <para>File hosting cookies used by &dhpackage;.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
         <term><filename>~/.viking-maps/</filename></term>
         <listitem>
           <para>Default location of the map cache of tiles downloaded or created by &dhpackage;.</para>
