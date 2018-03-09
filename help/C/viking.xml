@@ -6,6 +6,7 @@
   <!ENTITY appversion   "1.6.1">
   <!ENTITY manrevision  "1.6.1">
   <!ENTITY date "November 2015">
+  <!ENTITY extfiles    "<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>datasources.xml</filename>, <filename>external_tools.xml</filename>, <filename>routing.xml</filename>">
 ]>
 <!--
       (Do not remove this comment block.)
@@ -3370,25 +3371,28 @@ Accept: */*
               <listitem><para>the part of the URL setting the end point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;stop=%s,%s")</para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>url-via-ll</term>
+              <term>url-via-ll (optional)</term>
               <listitem><para>the part of the URL setting via point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;via=%s,%s")</para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>url-start-dir</term>
-              <listitem><para>the part of the URL setting the starting point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para>
-						<para>(Optional)</para></listitem>
+              <term>url-start-dir (optional)</term>
+              <listitem><para>the part of the URL setting the starting point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>url-stop-dir</term>
-              <listitem><para>the part of the URL setting the end point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para>
-						<para>(Optional)</para></listitem>
+              <term>url-stop-dir (optional)</term>
+              <listitem><para>the part of the URL setting the end point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>referer</term>
-              <listitem><para>an URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+              <term>url-ll-lat-first (optional)</term>
+              <listitem><para>The ordering of the lat/long terms in the Start, Stop and Via URL settings. By default this is TRUE.</para>
+	      <para>For instance using Brouter services, the URL uses a pair of values which is longitude and then latitude. Thus setting this value to FALSE ensures the value substitution is performed in the necessary order.</para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>follow-location</term>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
               <listitem><para>the max depth of recursive redirections</para></listitem>
             </varlistentry>
           </variablelist>
@@ -3459,7 +3463,7 @@ Accept: */*
 
       <section>
         <title>System Extension File Locations</title>
-        <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>external_tools.xml</filename>, <filename>datasources.xml</filename>) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
+        <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (&extfiles;) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
         <para>The <envar>XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
         <para>The <envar>XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
       </section>
