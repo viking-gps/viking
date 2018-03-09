@@ -43,6 +43,9 @@ and docbook-xsl in your Build-Depends control field.
   <!ENTITY debian      "<productname>Debian</productname>">
   <!ENTITY gnu         "<acronym>GNU</acronym>">
   <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+
+  <!ENTITY appname     "Viking">
+  <!ENTITY extfiles    "<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>datasources.xml</filename>, <filename>external_tools.xml</filename>, <filename>routing.xml</filename>">
 ]>
 
 <reference>
@@ -479,6 +482,69 @@ and docbook-xsl in your Build-Depends control field.
       </formalpara>
 
       <formalpara>
+        <title>Routing engine</title>
+        <para>It is possible to declare new routing engines. The file is <filename>~/.viking/routing.xml</filename>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/routing.xml</filename>.</para>
+        <para>The <classname>VikRoutingWebEngine</classname> allows to declare a routing engine available via HTTP.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>a string, should be unique as it used to identify the routing engine</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>format</term>
+              <listitem>
+		<para>The <application>GPSBabel</application> format code to interpret the service response. By default a GPX response is expected and processed internally. However if the service returns different format then <application>GPSBabel</application> is used to transform the text into something that &appname; can understand. Only formats that <application>GPSBabel</application> supports can be used: e.g. 'gpx', 'kml', 'gtrnctr' (for Garmin Training Center .tcx files), etc...</para>
+		<para>Use <command>gpsbabel --help</command> on the command line to find out the supported file types and their codes to process them.</para>
+	      </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-base</term>
+              <listitem><para>the base URL of the web service (eg. "http://hostname/service?")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-start-ll</term>
+              <listitem><para>the part of the URL setting the starting point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;start=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-stop-ll</term>
+              <listitem><para>the part of the URL setting the end point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;stop=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-via-ll (optional)</term>
+              <listitem><para>the part of the URL setting via point location, parametrized in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;via=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-start-dir (optional)</term>
+              <listitem><para>the part of the URL setting the starting point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-stop-dir (optional)</term>
+              <listitem><para>the part of the URL setting the end point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-ll-lat-first (optional)</term>
+              <listitem><para>The ordering of the lat/long terms in the Start, Stop and Via URL settings. By default this is TRUE.</para>
+	      <para>For instance using Brouter services, the URL uses a pair of values which is longitude and then latitude. Thus setting this value to FALSE ensures the value substitution is performed in the necessary order.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>the max depth of recursive redirections</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </formalpara>
+
+      <formalpara>
         <title>Remote File Datasources</title>
         <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
         <para>The file is <filename>~/.viking/datasources.xml</filename>.</para>
@@ -572,6 +638,13 @@ and docbook-xsl in your Build-Depends control field.
        </listitem>
       </varlistentry>
       <varlistentry>
+        <term><filename>~/.viking/routing.xml</filename></term>
+        <listitem>
+          <para>File containing definition of routing sources.</para>
+          <para>See previous section for details.</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><filename>~/.viking/viking.prefs</filename></term>
         <listitem>
           <para>Preferences for &dhpackage;.</para>
@@ -606,10 +679,7 @@ and docbook-xsl in your Build-Depends control field.
       </varlistentry>
     </variablelist>
 
-	<para>Extension files (<filename>maps.xml</filename>,
-	<filename>goto_tools.xml</filename>,
-	<filename>datasources.xml</filename>,
-	<filename>external_tools.xml</filename>)
+	<para>Extension files (&extfiles;)
 	are also searched in <filename>/etc/viking</filename> and
 	<filename>/usr/share/viking</filename> directories (or related in your system).</para>
 
@@ -621,17 +691,13 @@ and docbook-xsl in your Build-Depends control field.
       <varlistentry>
         <term><envar>XDG_DATA_HOME</envar></term>
         <listitem>
-          <para>Optional directory to look for extension files
-          (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>,
-          <filename>external_tools.xml</filename>).</para>
+          <para>Optional directory to look for extension files (&extfiles;).</para>
        </listitem>
       </varlistentry>
       <varlistentry>
         <term><envar>XDG_DATA_DIRS</envar></term>
         <listitem>
-          <para>Path used to change the directories scanned for extension files
-          (<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>,
-          <filename>external_tools.xml</filename>).</para>
+          <para>Path used to change the directories scanned for extension files (&extfiles;).</para>
        </listitem>
       </varlistentry>
     </variablelist>
