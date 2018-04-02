@@ -140,7 +140,7 @@ VIAddVersionKey "FileDescription" "Viking Installer"
 
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
   !insertmacro MUI_RESERVEFILE_LANGDLL
-  ReserveFile "${NSISDIR}\Plugins\UserInfo.dll"
+  ReserveFile "${NSISDIR}\Plugins\x86-unicode\UserInfo.dll"
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
