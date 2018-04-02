@@ -308,7 +308,14 @@ AC_CACHE_CHECK([whether to enable Realtime GPS Tracking stuff],
                [ac_cv_enable_realtimegpstracking], [ac_cv_enable_realtimegpstracking=yes])
 case $ac_cv_enable_realtimegpstracking in
   yes)
-    AC_CHECK_LIB(gps,gps_close,,AC_MSG_ERROR([libgps is needed for Realtime GPS Tracking feature[,] but not found. The feature can be disable with --disable-realtime-gps-tracking]))
+    AC_CHECK_HEADERS([gps.h],[],[AC_MSG_ERROR([gps.h is needed but not found - you will need to install package 'libgps-dev' or similar. The feature can be disabled with --disable-realtime-gps-tracking])])
+    AC_CHECK_LIB(gps, gps_close, [],
+      if test "$ac_mingw32" = "yes"; then
+       [LIBS="-lgps $LIBS"
+        AC_MSG_WARN([libgps not found! Forcing it anyway!])]
+      else
+        AC_MSG_ERROR([libgps is needed but not found.])
+      fi)
     AC_DEFINE(VIK_CONFIG_REALTIME_GPS_TRACKING, [], [REALTIME GPS TRACKING STUFF])
     ;;
 esac
@@ -348,7 +355,14 @@ AC_CACHE_CHECK([whether to enable Magic Support],
 case $ac_cv_enable_magic in
   yes)
     AC_CHECK_HEADERS([magic.h],[],[AC_MSG_ERROR([magic.h is needed but not found - you will need to install package 'libmagic-dev' or similar. The feature can be disabled with --disable-magic])])
-    AC_CHECK_LIB(magic, magic_open, [], [AC_MSG_ERROR([libmagic is needed but not found.])])
+    # Using the cross compiler it fails to find libmagic.dll during the configure stage
+    AC_CHECK_LIB(magic, magic_open, [],
+      if test "$ac_mingw32" = "yes"; then
+        [LIBS="-lmagic $LIBS"
+         AC_MSG_WARN([libmagic not found! Forcing it anyway!])]
+      else
+         AC_MSG_ERROR([libmagic is needed but not found.])
+      fi)
     ;;
 esac
 AM_CONDITIONAL([MAGIC], [test x$ac_cv_enable_magic = xyes])
@@ -363,7 +377,13 @@ AC_CACHE_CHECK([whether to enable MBTiles Support],
 case $ac_cv_enable_mbtiles in
   yes)
     AC_CHECK_HEADERS([sqlite3.h],[],[AC_MSG_ERROR([sqlite3.h is needed but not found - you will need to install package 'libsqlite3-dev' or similar. The feature can be disabled with --disable-mbtiles])])
-    AC_CHECK_LIB(sqlite3, sqlite3_open, [], [AC_MSG_ERROR([libsqlite3 is needed but not found.])])
+    AC_CHECK_LIB(sqlite3, sqlite3_open, [],
+      if test "$ac_mingw32" = "yes"; then
+        [LIBS="-lsqlite3 $LIBS"
+         AC_MSG_WARN([libsqlite3 not found! Forcing it anyway!])]
+      else
+         AC_MSG_ERROR([libsqlite3 is needed but not found.])
+      fi)
     ;;
 esac
 AM_CONDITIONAL([SQLITE], [test x$ac_cv_enable_mbtiles = xyes])
@@ -385,7 +405,13 @@ case $ac_cv_enable_zip in
     # Resort to checking versioning only via pkgconfig
     PKG_CHECK_MODULES([LIBZIP], [libzip >= 0.11],
       [ AC_CHECK_HEADERS([zip.h],[],[AC_MSG_ERROR([zip.h is needed but not found - you will need to install package 'libzip-dev' or similar. The feature can be disabled with --disable-zip])])
-        AC_CHECK_LIB(zip, [main], [], [AC_MSG_ERROR([libzip is needed but not found.])]) ],
+        AC_CHECK_LIB(zip, [main], [],
+          if test "$ac_mingw32" = "yes"; then
+            [LIBS="-lzip $LIBS"
+             AC_MSG_WARN([libzip not found! Forcing it anyway!])]
+          else
+             AC_MSG_ERROR([libzip is needed but not found.])
+          fi)],
       [ AC_MSG_WARN([libzip version needs to be at least 0.11, use of libzip is disabled])
         ac_cv_enable_zip=no ]
   )
@@ -403,7 +429,13 @@ AC_CACHE_CHECK([whether to enable MD5 Hash support],
 case $ac_cv_enable_nettle in
   yes)
     AC_CHECK_HEADER([nettle/md5-compat.h],[],[AC_MSG_ERROR([nettle/md5-compat.h is needed but not found - you will need to install package 'nettle-dev' or similar. The feature can be disabled with --disable-nettle])])
-    AC_CHECK_LIB([nettle], [main], [], [AC_MSG_ERROR([libnettle is needed but not found.])])
+    AC_CHECK_LIB([nettle], [main], [],
+      if test "$ac_mingw32" = "yes"; then
+        [LIBS="-lnettle $LIBS"
+         AC_MSG_WARN([libnettle not found! Forcing it anyway!])]
+      else
+         AC_MSG_ERROR([libnettle is needed but not found.])
+      fi)
     ;;
 esac
 AM_CONDITIONAL([MD5_HASH], [test x$ac_cv_enable_nettle = xyes])
