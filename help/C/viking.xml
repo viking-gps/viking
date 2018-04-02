@@ -187,6 +187,11 @@ View, create and update Geotagged Images (using EXIF data).
   <graphic format="JPG" fileref="figures/Viking-OSM-CycleMap-ManyTracks.jpg"/>
 </screenshot>
 </figure>
+<note>
+<para>
+  The Windows build of Viking does not currently support verification of https connections.
+</para>
+</note>
 </section>
 
 <section><title>General Concepts</title>
@@ -3480,6 +3485,17 @@ Accept: */*
         <para>Some values in this file are <emphasis>read only</emphasis>, in the sense that there is no way to set it other than by manually entering in the keys and values (the key will not exist in the file otherwise). This allows some fine tuning of &app; behaviours, without resorting to recompiling the code. However is it not expected that these values should need to be changed for a normal user, hence no GUI options for these have been provided.</para>
         <para>Here is the list of the <emphasis>read only</emphasis> keys and their default values.</para>
 	<itemizedlist>
+	  <listitem>
+	    <para>curl_cainfo=NULL</para>
+	    <para>See <ulink url="https://curl.haxx.se/libcurl/c/CURLOPT_CAINFO.html">CURLOPT_CAINFO</ulink></para>
+	  </listitem>
+	  <listitem>
+	    <para>curl_ssl_verifypeer=1</para>
+	    <para>See <ulink url="https://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html">CURLOPT_SSL_VERIFYPEER</ulink></para>
+	    <note><para>On Windows this is defaulted to 0 to get HTTPS connections to at least work,
+	    otherwise any attempts at verifying always fail.
+	    [Some incompatibily is suspected in the reliant binary DLLs]</para></note>
+	  </listitem>
 	  <listitem>
 	    <para>gpx_tidy_points=true</para>
 	    <para>ATM Only attempts to remove a suspicious first point of a GPX track

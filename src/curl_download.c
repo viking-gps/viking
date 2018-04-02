@@ -46,6 +46,7 @@
 #include "file.h"
 #include "globals.h"
 #include "curl_download.h"
+#include "settings.h"
 
 gchar *curl_download_user_agent = NULL;
 
@@ -83,17 +84,33 @@ static int curl_progress_func(void *clientp, double dltotal, double dlnow, doubl
   return a_background_testcancel(NULL);
 }
 
+static gint curl_ssl_verifypeer = 1; // https://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html
+static gchar* curl_cainfo = NULL;    // https://curl.haxx.se/libcurl/c/CURLOPT_CAINFO.html
+
 /* This should to be called from main() to make sure thread safe */
 void curl_download_init()
 {
   curl_global_init(CURL_GLOBAL_ALL);
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
+
+#ifdef CURL_NO_SSL_VERIFYPEER
+  curl_ssl_verifypeer = 0;
+#endif
+  gboolean tmp;
+  if ( a_settings_get_boolean ( "curl_ssl_verifypeer", &tmp ) )
+    curl_ssl_verifypeer = tmp;
+  gchar *str = NULL;
+  if ( a_settings_get_string ( "curl_cainfo", &str ) ) {
+    curl_cainfo = g_strdup ( str );
+    g_free ( str );
+  }
 }
 
 /* This should to be called from main() to make sure thread safe */
 void curl_download_uninit()
 {
   curl_global_cleanup();
+  g_free ( curl_cainfo );
 }
 
 /**
@@ -152,6 +169,11 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
     }
   }
   curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
+
+  curl_easy_setopt ( curl, CURLOPT_SSL_VERIFYPEER, curl_ssl_verifypeer );
+  if ( curl_cainfo )
+     curl_easy_setopt ( curl, CURLOPT_CAINFO, curl_cainfo );
+
   res = curl_easy_perform ( curl );
 
   if (res == 0) {

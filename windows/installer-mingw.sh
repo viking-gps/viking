@@ -112,6 +112,9 @@ cp $MINGW_BIN/libplc*.dll $DESTINATION
 cp $MINGW_BIN/libplds*.dll $DESTINATION
 cp $MINGW_BIN/nss*.dll $DESTINATION
 cp $MINGW_BIN/ssl*.dll $DESTINATION
+cp $MINGW_BIN/softokn*.dll $DESTINATION
+cp $MINGW_BIN/smime*.dll $DESTINATION
+cp $MINGW_BIN/freebl*.dll $DESTINATION
 if [ "$HOSTTYPE" == "x86_64" ]; then
 	cp /usr/share/doc/packages/mingw64-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
 else
