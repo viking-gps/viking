@@ -2,7 +2,6 @@
 ;;  english.nsh
 ;;
 ;;  Default language strings for the Windows Viking NSIS installer.
-;;  Windows Code page: 1252
 ;;
 ;;  Version 3
 ;;  Note: If translating this file, replace '!insertmacro VIKING_MACRO_DEFAULT_STRING'
