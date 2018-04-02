@@ -294,6 +294,25 @@ static struct {
   { "Triangle, Green",        "triangle_green", 8352,  "green triangle symbol",             NULL,                NULL,            NULL },
   { "Triangle, Red",          "triangle_red",   8353,  "red triangle symbol",               NULL,                NULL,            NULL },
   /*---------------------------------------------------------------
+    Hunter symbols
+    ---------------------------------------------------------------*/
+  { "Upland Game",            "upland_game",    9000,  "upland game symbol",                NULL,                &wp_upland_game_large_pixbuf,    NULL },
+  { "Waterfowl",              "waterfowl",      9001,  "waterfowl symbol",                  NULL,                &wp_waterfowl_large_pixbuf,      NULL },
+  { "Furbearer",              "furbearer",      9002,  "furbearer symbol",                  NULL,                &wp_furbearer_large_pixbuf,      NULL },
+  { "Big Game",               "big_game",       9003,  "big game symbol",                   NULL,                &wp_big_game_large_pixbuf,       NULL },
+  { "Small Game",             "small_game",     9004,  "small game symbol",                 NULL,                &wp_small_game_large_pixbuf,     NULL },
+  { "Covey",                  "covey",          9005,  "covey symbol",                      NULL,                &wp_covey_large_pixbuf,          NULL },
+  { "Cover",                  "cover",          9006,  "cover symbol",                      NULL,                &wp_cover_large_pixbuf,          NULL },
+  { "Treed Quarry",           "treed_quarry",   9007,  "treed quarry symbol",               NULL,                &wp_treed_quarry_large_pixbuf,   NULL },
+  { "Water Source",           "water_source",   9008,  "water source symbol",               NULL,                &wp_water_source_large_pixbuf,   NULL },
+  { "Food Source",            "food_source",    9009,  "food source symbol",                NULL,                &wp_food_source_large_pixbuf,    NULL },
+  { "Animal Tracks",          "animal_tracks",  9010,  "animal tracks symbol",              NULL,                &wp_animal_tracks_large_pixbuf,  NULL },
+  { "Blood Trail",            "blood_trail",    9011,  "blood trail symbol",                NULL,                &wp_blood_trail_large_pixbuf,    NULL },
+  { "Truck",                  "truck",          9012,  "truck symbol",                      NULL,                &wp_truck_large_pixbuf,          NULL },
+  { "ATV",                    "atv",            9013,  "atv symbol",                        NULL,                &wp_atv_large_pixbuf,            NULL },
+  { "Blind",                  "blind",          9014,  "blind symbol",                      NULL,                &wp_blind_large_pixbuf,          NULL },
+  { "Tree Stand",             "tree_stand",     9015,  "tree stand symbol",                 NULL,                &wp_tree_stand_large_pixbuf,     NULL },
+  /*---------------------------------------------------------------
     Aviation symbols
     ---------------------------------------------------------------*/
   { "Airport",                "airport",        16384, "airport symbol",                    &wp_airplane_pixbuf,        &wp_airplane_large_pixbuf,        NULL },
