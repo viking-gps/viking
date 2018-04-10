@@ -483,6 +483,7 @@ void vu_check_latest_version ( GtkWindow *window )
 	}
 	else
 		do_check = TRUE;
+	g_free ( last_checked_date );
 
 	GTimeVal time_now;
 	g_get_current_time ( &time_now );

@@ -1773,20 +1773,15 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
 static void update_statusbar ( VikGpsLayer *vgl, VikWindow *vw )
 {
   gchar *statusbar_format_code = NULL;
-  gboolean need2free = FALSE;
   if ( !a_settings_get_string ( VIK_SETTINGS_GPS_STATUSBAR_FORMAT, &statusbar_format_code ) ) {
     // Otherwise use default
     statusbar_format_code = g_strdup ( "GSA" );
-    need2free = TRUE;
   }
 
   gchar *msg = vu_trackpoint_formatted_message ( statusbar_format_code, vgl->trkpt, vgl->trkpt_prev, vgl->realtime_track, vgl->last_fix.fix.climb );
   vik_statusbar_set_message ( vik_window_get_statusbar (vw), VIK_STATUSBAR_INFO, msg );
   g_free ( msg );
-
-  if ( need2free )
-    g_free ( statusbar_format_code );
-
+  g_free ( statusbar_format_code );
 }
 
 static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)

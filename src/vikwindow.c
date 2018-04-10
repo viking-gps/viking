@@ -816,6 +816,7 @@ static void default_tool_enable ( VikWindow *vw )
     gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
     break;
   }
+  g_free ( tool_str );
 }
 
 #define VIK_SETTINGS_WIN_MAX "window_maximized"

@@ -598,6 +598,7 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
       // Attempt to maintain default to Garmin devices (assumed most popular/numerous device)
       g_list_foreach (a_babel_device_list, find_protocol, "garmin");
     }
+    g_free ( protocol );
     // If not found set it to the first entry, otherwise use the entry
     last_active = ( wanted_entry < 0 ) ? 0 : wanted_entry;
   }

@@ -118,6 +118,7 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 			// Default to GPX if possible
 			g_list_foreach (a_babel_file_list, find_type, "gpx");
 		}
+		g_free ( type );
 		// If not found set it to the first entry, otherwise use the entry
 		last_type = ( wanted_entry < 0 ) ? 0 : wanted_entry;
 	}

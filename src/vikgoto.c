@@ -134,6 +134,7 @@ static void get_provider ()
         g_list_foreach (goto_tools_list, find_provider, provider);
       // If not found set it to the first entry, otherwise use the entry
       last_goto_tool = ( wanted_entry < 0 ) ? 0 : wanted_entry;
+      g_free ( provider );
     }
     else
       last_goto_tool = 0;

@@ -139,6 +139,9 @@ static gboolean settings_get_string ( const gchar *group, const gchar *name, gch
 	return success;
 }
 
+/**
+ * Free the returned string in @val after use
+ */
 gboolean a_settings_get_string ( const gchar *name, gchar **val )
 {
 	return settings_get_string ( VIKING_SETTINGS_GROUP, name, val );

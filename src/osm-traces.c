@@ -482,6 +482,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
           }
         }
       }
+      g_free ( vis );
       // If not found set it to the first entry, otherwise use the entry
       last_active = ( wanted_entry < 0 ) ? 0 : wanted_entry;
     }

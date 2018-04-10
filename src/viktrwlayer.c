@@ -3156,12 +3156,10 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 static void set_statusbar_msg_info_trkpt ( VikTrwLayer *vtl, VikTrackpoint *trkpt )
 {
   gchar *statusbar_format_code = NULL;
-  gboolean need2free = FALSE;
   VikTrackpoint *trkpt_prev = NULL;
   if ( !a_settings_get_string ( VIK_SETTINGS_TRKPT_SELECTED_STATUSBAR_FORMAT, &statusbar_format_code ) ) {
     // Otherwise use default
     statusbar_format_code = g_strdup ( "KEATDN" );
-    need2free = TRUE;
   }
   else {
     // Format code may want to show speed - so may need previous trkpt to work it out
@@ -3171,9 +3169,7 @@ static void set_statusbar_msg_info_trkpt ( VikTrwLayer *vtl, VikTrackpoint *trkp
   gchar *msg = vu_trackpoint_formatted_message ( statusbar_format_code, trkpt, trkpt_prev, vtl->current_tp_track, NAN );
   vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, msg );
   g_free ( msg );
-
-  if ( need2free )
-    g_free ( statusbar_format_code );
+  g_free ( statusbar_format_code );
 }
 
 /*
