@@ -5,12 +5,9 @@ services:
 
 jobs:
   include:
-  # draft for Ubuntu 14.04 (build of geoclue fails due to `error: 'g_autofree' undeclared` (reported at https://gitlab.freedesktop.org/geoclue/geoclue/merge_requests/1) - script: docker run ubuntu:trusty /bin/sh -c "sed -i '/^#\sdeb-src /s/^#//' '/etc/apt/sources.list' && apt-get update && apt-get build-dep --yes viking geoclue-2.0 && apt-get install --yes git gtk-doc-tools nettle-dev libmapnik-dev gobject-introspection libmm-glib-dev wget && wget https://ftp.gnu.org/gnu/gettext/gettext-0.19.8.1.tar.xz && tar xf gettext-0.19.8.1.tar.xz && cd gettext-0.19.8.1 && ./configure && make -j && make install && cd .. && git clone --depth 50 --recurse-submodules https://gitlab.freedesktop.org/geoclue/geoclue && cd geoclue && ./autogen.sh && make -j && make -j check && make install && cd .. && git clone --depth 50 --recurse-submodules --branch=$TRAVIS_BRANCH https://github.com/$TRAVIS_REPO_SLUG.git && cd viking && ./autogen.sh && make -j && make -j check && make install"
-    # Ubuntu 14.04/trusty doesn't provide a package for `libgeoclue-2.0` (`geoclue-2.0` isn't sufficient)
+  # Ubuntu 14.04 doesn't support building geoclue 2.x because it requires GLib >= 2.44.0 which is hard to install
   - script: docker run ubuntu:xenial /bin/sh -c "apt-get update && apt-get build-dep --yes viking && apt-get install --yes git gtk-doc-tools libgeoclue-2-dev nettle-dev libmapnik-dev && git clone --depth 50 --recurse-submodules --branch=$TRAVIS_BRANCH https://github.com/$TRAVIS_REPO_SLUG.git && cd viking && ./autogen.sh && make -j && make -j check && make install"
   - script: docker run ubuntu:artful /bin/sh -c "apt-get update && apt-get build-dep --yes viking && apt-get install --yes git gtk-doc-tools libgeoclue-2-dev nettle-dev && git clone --depth 50 --recurse-submodules --branch=$TRAVIS_BRANCH https://github.com/$TRAVIS_REPO_SLUG.git && cd viking && ./autogen.sh && make -j && make -j check && make install"
   - script: docker run ubuntu:bionic /bin/sh -c "apt-get update && apt-get build-dep --yes viking && apt-get install --yes git gtk-doc-tools libgeoclue-2-dev nettle-dev && git clone --depth 50 --recurse-submodules --branch=$TRAVIS_BRANCH https://github.com/$TRAVIS_REPO_SLUG.git && cd viking && ./autogen.sh && make -j && make -j check && make install"
     # Further packages are installed as these are new dependencies for the latest source code, compared to the dependencies listed in the distribution version (`apt-get build-dep` always refers to the version which is built for the OS rather than the up-to-date source)
     # unclear why `sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list"` is only necessary for 14.04/trusty
-
-# trusty requires building of libgeoclue 2.0 because it's not provided by package sources
