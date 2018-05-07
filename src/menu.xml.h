@@ -9,6 +9,7 @@ static const char *menu_xml =
 	"      <menuitem action='Open'/>"
 	"      <menuitem action='OpenRecentFile'/>"
 	"      <menuitem action='Append'/>"
+	"      <menuitem action='OpenExtLayer'/>"
 	"      <menuitem action='Save'/>"
 	"      <menuitem action='SaveAs'/>"
 	"      <menuitem action='FileProperties'/>"

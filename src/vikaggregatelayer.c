@@ -639,6 +639,26 @@ static void aggregate_layer_analyse ( menu_array_values values )
                                                              aggregate_layer_analyse_close );
 }
 
+static void aggregate_layer_load_external_layers ( VikAggregateLayer *val )
+{
+  GList *iter = val->children;
+  while ( iter ) {
+    VikLayer *vl = VIK_LAYER ( iter->data );
+    g_debug ( "child %d",  vl->type );
+    switch ( vl->type ) {
+      case VIK_LAYER_TRW: trw_ensure_layer_loaded ( VIK_TRW_LAYER ( iter->data ) ); break;
+      case VIK_LAYER_AGGREGATE: aggregate_layer_load_external_layers ( VIK_AGGREGATE_LAYER ( iter->data ) ); break;
+      default: /* do nothing */ break;
+    }
+    iter = iter->next;
+  }
+}
+
+static void aggregate_layer_load_external_layers_click ( menu_array_values values )
+{
+  aggregate_layer_load_external_layers ( VIK_AGGREGATE_LAYER ( values[MA_VAL] ) );
+}
+
 static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp )
 {
   // Data to pass on in menu functions
@@ -733,6 +753,12 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_search_date), values );
   gtk_menu_shell_append ( GTK_MENU_SHELL(search_submenu), item );
   gtk_widget_set_tooltip_text (item, _("Find the first item with a specified date"));
+  gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Load E_xternal Layers") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, NULL );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_load_external_layers_click), values );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
   gtk_widget_show ( item );
 }
 

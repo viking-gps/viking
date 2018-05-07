@@ -244,7 +244,9 @@ ICONS = \
 	vikgpslayer.png \
 	vikmapslayer.png \
 	vikmapniklayer.png \
-	viktrwlayer.png
+	viktrwlayer.png \
+	viktrwlayer_external.png \
+	viktrwlayer_external_nowrite.png
 
 CURSORS = \
 	cursor_addtr.png \
