@@ -158,6 +158,13 @@ static void choose_file ( VikFileEntry *vfe )
         gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
         break;
       }
+      case VF_FILTER_GPX: {
+        GtkFileFilter *filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("GPX") );
+        gtk_file_filter_add_pattern ( filter, "*.gpx" );
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+        break;
+      }
       default: break;
     }
     if ( vfe->filter_type ) {
@@ -169,11 +176,16 @@ static void choose_file ( VikFileEntry *vfe )
     }
   }
 
-  if ( gtk_dialog_run ( GTK_DIALOG(vfe->file_selector) ) == GTK_RESPONSE_ACCEPT ) {
+  while ( gtk_dialog_run ( GTK_DIALOG(vfe->file_selector) ) == GTK_RESPONSE_ACCEPT ) {
+    gchar *old_entry = g_strdup ( vik_file_entry_get_filename ( vfe ) );
     gtk_entry_set_text ( GTK_ENTRY (vfe->entry), gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(vfe->file_selector) ) );
     // Ideally this should only be called if the entry has changed, but ATM it's any time OK is selected.
-    if ( vfe->on_finish )
-      vfe->on_finish(vfe, vfe->user_data);
+    if ( vfe->on_finish &&
+         vfe->on_finish(vfe, vfe->user_data) )
+      break;
+    else
+      vik_file_entry_set_filename ( vfe, old_entry );
+    g_free ( old_entry );
   }
   gtk_widget_hide ( vfe->file_selector );
 }
