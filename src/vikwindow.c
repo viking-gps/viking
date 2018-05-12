@@ -198,6 +198,7 @@ struct _VikWindow {
   gboolean show_statusbar;
   gboolean show_toolbar;
   gboolean show_main_menu;
+  gboolean show_side_panel_buttons;
 
   gboolean select_move;
   gboolean pan_move;
@@ -350,6 +351,7 @@ static void destroy_window ( GtkWidget *widget,
 // It's not so obvious so to recover the menu visibility.
 // Thus this value is for setting manually via editting the settings file directly
 #define VIK_SETTINGS_WIN_MENUBAR "window_menubar"
+#define VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS "window_sidepanel_buttons"
 
 VikWindow *vik_window_new_window ()
 {
@@ -403,6 +405,15 @@ VikWindow *vik_window_new_window ()
           GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
           gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
         }
+
+      gboolean sidepanel_buttons;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS, &sidepanel_buttons ) )
+        if ( ! sidepanel_buttons ) {
+          vik_layers_panel_show_buttons ( vw->viking_vlp, FALSE );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanelButtons" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
     }
     window_count++;
 
@@ -989,6 +1000,7 @@ static void vik_window_init ( VikWindow *vw )
   vw->show_statusbar = TRUE;
   vw->show_toolbar = TRUE;
   vw->show_main_menu = TRUE;
+  vw->show_side_panel_buttons = TRUE;
 
   // Only accept Drag and Drop of files onto the viewport
   gtk_drag_dest_set ( GTK_WIDGET(vw->viking_vvp), GTK_DEST_DEFAULT_ALL, NULL, 0, GDK_ACTION_COPY );
@@ -1159,6 +1171,8 @@ static gboolean delete_event( VikWindow *vw )
       a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vs)) );
 
       a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (toolbar_get_widget(vw->viking_vtb)) );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS, vw->show_side_panel_buttons );
 
       // If supersized - no need to save the enlarged width+height values
       if ( ! (state_fullscreen || state_max) ) {
@@ -2629,6 +2643,12 @@ static void toggle_main_menu ( VikWindow *vw )
     gtk_widget_hide ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
 }
 
+static void toggle_side_panel_buttons ( VikWindow *vw )
+{
+  vw->show_side_panel_buttons = !vw->show_side_panel_buttons;
+  vik_layers_panel_show_buttons ( vw->viking_vlp, vw->show_side_panel_buttons );
+}
+
 // Only for 'view' toggle menu widgets ATM.
 GtkWidget *get_show_widget_by_name(VikWindow *vw, const gchar *name)
 {
@@ -2700,6 +2720,17 @@ static void tb_view_main_menu_cb ( GtkAction *a, VikWindow *vw )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
   else
     toggle_main_menu ( vw );
+}
+
+static void tb_view_side_panel_buttons_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_buttons;
+  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( next_state != menu_state )
+    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
+  else
+    toggle_side_panel_buttons ( vw );
 }
 
 static void tb_set_draw_scale ( GtkAction *a, VikWindow *vw )
@@ -2852,6 +2883,21 @@ static void view_main_menu_cb ( GtkAction *a, VikWindow *vw )
   }
   else
     toggle_main_menu ( vw );
+}
+
+static void view_side_panel_buttons_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_buttons;
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, gtk_action_get_name(a) );
+  if ( tbutton ) {
+    gboolean tb_state = gtk_toggle_tool_button_get_active ( tbutton );
+    if ( next_state != tb_state )
+      gtk_toggle_tool_button_set_active ( tbutton, next_state );
+    else
+      toggle_side_panel_buttons ( vw );
+  }
+  else
+    toggle_side_panel_buttons ( vw );
 }
 
 /***************************************
@@ -4714,6 +4760,7 @@ static GtkToggleActionEntry toggle_entries[] = {
   { "ViewStatusBar",  NULL,                 N_("Show Status_bar"),           "F12",        N_("Show Statusbar"),                          (GCallback)view_statusbar_cb, TRUE },
   { "ViewToolbar",    NULL,                 N_("Show _Toolbar"),             "F3",         N_("Show Toolbar"),                            (GCallback)view_toolbar_cb, TRUE },
   { "ViewMainMenu",   NULL,                 N_("Show _Menu"),                "F4",         N_("Show Menu"),                               (GCallback)view_main_menu_cb, TRUE },
+  { "ViewSidePanelButtons",    NULL,        N_("Show Side Panel B_uttons"),  "<shift>F9",  N_("Show Side Panel Buttons"),                 (GCallback)view_side_panel_buttons_cb, TRUE },
 };
 
 // This must match the toggle entries order above
@@ -4726,6 +4773,7 @@ static gpointer toggle_entries_toolbar_cb[] = {
   (GCallback)tb_view_statusbar_cb,
   (GCallback)tb_view_toolbar_cb,
   (GCallback)tb_view_main_menu_cb,
+  (GCallback)tb_view_side_panel_buttons_cb,
 };
 
 #include "menu.xml.h"
