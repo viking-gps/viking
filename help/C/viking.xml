@@ -1223,7 +1223,8 @@ This is not available on routes as they have no timestamps.
 
 <section><title>Merge With Other Tracks</title>
 <para>
-This opens a dialog listing the other tracks in the same TrackWaypoint layer, from which one can select the other tracks to merge with.
+  This opens a dialog listing the other tracks in the same TrackWaypoint layer, from which one can select the other tracks to merge with.
+  Tracks are merged in order of time.
 </para>
 </section>
 
