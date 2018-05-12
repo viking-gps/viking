@@ -5403,7 +5403,7 @@ static void trw_layer_convert_track_route ( menu_array_sublayer values )
   }
   else {
     // Extra route conversion bits...
-    vik_track_merge_segments ( trk_copy );
+    (void)vik_track_merge_segments ( trk_copy );
     vik_track_to_routepoints ( trk_copy );
 
     vik_trw_layer_delete_track ( vtl, trk );
@@ -6226,7 +6226,7 @@ static void trw_layer_append_other ( menu_array_sublayer values )
 
           if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
                                       _("Converting a track to a route removes extra track data such as segments, timestamps, etc...\nDo you want to continue?"), NULL ) ) {
-	    vik_track_merge_segments ( append_track );
+	    (void)vik_track_merge_segments ( append_track );
 	    vik_track_to_routepoints ( append_track );
 	  }
           else {
