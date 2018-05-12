@@ -6151,6 +6151,11 @@ static void trw_layer_append_track ( menu_array_sublayer values )
       g_free(l->data);
     g_list_free(append_list);
 
+    // Routes can only have one segment
+    if ( trk->is_route ) {
+      (void)vik_track_merge_segments ( trk );
+    }
+
     vik_layer_emit_update( VIK_LAYER(vtl) );
   }
 }
@@ -6246,6 +6251,12 @@ static void trw_layer_append_other ( menu_array_sublayer values )
     for (l = append_list; l != NULL; l = g_list_next(l))
       g_free(l->data);
     g_list_free(append_list);
+
+    // Routes can only have one segment
+    if ( trk->is_route ) {
+      (void)vik_track_merge_segments ( trk );
+    }
+
     vik_layer_emit_update( VIK_LAYER(vtl) );
   }
 }
