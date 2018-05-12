@@ -10066,7 +10066,7 @@ static gboolean tool_new_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event,
  *  . enables removal of last point via right click
  *  . finishing of the track or route via double clicking
  */
-static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, gboolean newsegment )
 {
   VikTrackpoint *tp;
 
@@ -10114,7 +10114,7 @@ static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton
       tp->coord = other_tp->coord;
   }
 
-  tp->newsegment = FALSE;
+  tp->newsegment = newsegment;
   tp->has_timestamp = FALSE;
   tp->timestamp = 0;
 
@@ -10135,6 +10135,7 @@ static gboolean tool_new_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton
 
 static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
+  gboolean newsegment = FALSE;
   // if we were running the route finder, cancel it
   vtl->route_finder_started = FALSE;
 
@@ -10149,8 +10150,9 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
     }
     new_track_create_common ( vtl, name );
     g_free ( name );
+    newsegment = TRUE;
   }
-  return tool_new_track_or_route_click ( vtl, event, vvp );
+  return tool_new_track_or_route_click ( vtl, event, vvp, newsegment );
 }
 
 static void tool_new_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
@@ -10171,6 +10173,7 @@ static gpointer tool_new_route_create ( VikWindow *vw, VikViewport *vvp)
 
 static gboolean tool_new_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
+  gboolean newsegment = FALSE;
   // if we were running the route finder, cancel it
   vtl->route_finder_started = FALSE;
 
@@ -10186,8 +10189,9 @@ static gboolean tool_new_route_click ( VikTrwLayer *vtl, GdkEventButton *event, 
     }
     new_route_create_common ( vtl, name );
     g_free ( name );
+    newsegment = TRUE;
   }
-  return tool_new_track_or_route_click ( vtl, event, vvp );
+  return tool_new_track_or_route_click ( vtl, event, vvp, newsegment );
 }
 
 /*** New waypoint ****/
@@ -10428,7 +10432,7 @@ static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventBut
   }
   // if we started the track but via undo deleted all the track points, begin again
   else if ( vtl->current_track && vtl->current_track->is_route && ! vik_track_get_tp_first ( vtl->current_track ) ) {
-    return tool_new_track_or_route_click ( vtl, event, vvp );
+    return tool_new_track_or_route_click ( vtl, event, vvp, TRUE );
   }
   else if ( ( vtl->current_track && vtl->current_track->is_route ) ||
             ( event->state & GDK_CONTROL_MASK && vtl->current_track ) ) {
