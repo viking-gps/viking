@@ -6267,8 +6267,9 @@ static void trw_layer_merge_by_segment ( menu_array_sublayer values )
   VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
   VikTrack *trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
   guint segments = vik_track_merge_segments ( trk );
-  // NB currently no need to redraw as segments not actually shown on the display
-  // However inform the user of what happened:
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+  // Any gaps previously in tracks may be too small to notice that they've now gone,
+  //  so put up a message to confirm what has happened.
   gchar str[64];
   const gchar *tmp_str = ngettext("%d segment merged", "%d segments merged", segments);
   g_snprintf(str, 64, tmp_str, segments);
