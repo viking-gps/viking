@@ -424,7 +424,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
       // Switch to vertical notebook mode when many groups
       if ( groups_count > 4 )
         gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(notebook), GTK_POS_LEFT );
-      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), notebook, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), notebook, TRUE, TRUE, 0);
       tables = g_malloc ( sizeof(GtkWidget *) * groups_count );
       for ( current_group = 0; current_group < groups_count; current_group++ )
       {
@@ -443,7 +443,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     else
     {
       table = gtk_table_new( widget_count, 1, FALSE );
-      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0);
     }
 
     for ( i = 0, j = 0; i < params_count; i++ )
@@ -458,7 +458,8 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
         if ( widgets[j] ) {
           labels[j] = gtk_label_new(_(params[i].title));
           gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
-          gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL, 0, 2, 2 );
+          gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL,
+                             params[i].type == VIK_LAYER_PARAM_STRING_LIST ? GTK_EXPAND | GTK_FILL : 0, 2, 2 );
 
           if ( changeparam )
           {
