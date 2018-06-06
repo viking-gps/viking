@@ -28,8 +28,6 @@
 
 #include "vikfileentry.h"
 
-static void choose_file ( VikFileEntry *vfe );
-
 struct _VikFileEntry {
   GtkHBox parent;
   GtkWidget *entry, *button;
@@ -96,7 +94,7 @@ void vik_file_entry_set_filename ( VikFileEntry *vfe, const gchar *filename )
   gtk_entry_set_text ( GTK_ENTRY(vfe->entry), filename );
 }
 
-static void choose_file ( VikFileEntry *vfe )
+void choose_file ( VikFileEntry *vfe )
 {
   if ( ! vfe->file_selector )
   {
