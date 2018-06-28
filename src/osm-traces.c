@@ -47,6 +47,7 @@
 #define VIKING_OSM_TRACES_PARAMS_NAMESPACE "osm_traces."
 
 #define VIK_SETTINGS_OSM_TRACE_VIS "osm_trace_visibility"
+#define VIK_SETTINGS_OSM_TRACE_URL "osm_trace_url"
 static gint last_active = -1;
 
 /**
@@ -185,14 +186,16 @@ static gint osm_traces_upload_file(const char *user,
   struct curl_httppost *post=NULL;
   struct curl_httppost *last=NULL;
 
-  char *base_url = "http://www.openstreetmap.org/api/0.6/gpx/create";
+  gchar *base_url = NULL;
+  if ( !a_settings_get_string ( VIK_SETTINGS_OSM_TRACE_URL, &base_url ) )
+    base_url = g_strdup ("https://www.openstreetmap.org/api/0.6/gpx/create");
 
   gchar *user_pass = osm_get_login();
 
   gint result = 0; // Default to it worked!
 
-  g_debug("%s: %s %s %s %s %s %s", __FUNCTION__,
-  	  user, password, file, filename, description, tags);
+  g_debug("%s: %s %s %s %s %s %s %s", __FUNCTION__,
+          base_url, user, password, file, filename, description, tags);
 
   /* Init CURL */
   curl = curl_easy_init();
@@ -223,6 +226,8 @@ static gint osm_traces_upload_file(const char *user,
   curl_easy_setopt(curl, CURLOPT_USERPWD, user_pass);
   curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
   curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_error_buffer);
+  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 3L);
   if (vik_verbose)
     curl_easy_setopt ( curl, CURLOPT_VERBOSE, 1 );
 
@@ -251,6 +256,7 @@ static gint osm_traces_upload_file(const char *user,
   }
 
   /* Memory */
+  g_free(base_url);
   g_free(user_pass); user_pass = NULL;
   
   curl_formfree(post);
