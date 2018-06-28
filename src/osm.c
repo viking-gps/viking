@@ -206,7 +206,7 @@ void osm_init () {
 
   // Goto
   VikGotoXmlTool *nominatim = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM Nominatim",
-    "url-format", "http://nominatim.openstreetmap.org/search?q=%s&format=xml",
+    "url-format", "https://nominatim.openstreetmap.org/search?q=%s&format=xml",
     "lat-path", "/searchresults/place",
     "lat-attr", "lat",
     "lon-path", "/searchresults/place",
