@@ -35,6 +35,7 @@
 #include "acquire.h"
 #include "maputils.h"
 #include "dialog.h"
+#include "ui_util.h"
 
 static GObjectClass *parent_class;
 static GHashTable *last_user_strings = NULL;
@@ -194,7 +195,7 @@ static void datasource_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, 
 	GtkWidget *user_string_label;
     gchar *label = g_strdup_printf( "%s:", priv->input_label );
 	user_string_label = gtk_label_new ( label );
-	widgets->user_string = gtk_entry_new ( );
+	widgets->user_string = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
 
     gchar *last_str = get_last_user_string ( widgets );
     if ( last_str )

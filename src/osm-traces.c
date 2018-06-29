@@ -39,6 +39,7 @@
 #include "viktrwlayer.h"
 #include "osm-traces.h"
 #include "gpx.h"
+#include "ui_util.h"
 #include "background.h"
 #include "preferences.h"
 #include "curl_download.h"
@@ -681,7 +682,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 
   if ( osm_use_basic_auth() ) {
     user_label = gtk_label_new(_("Email/username:"));
-    user_entry = gtk_entry_new();
+    user_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
     gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_label, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_entry, FALSE, FALSE, 0);
     gtk_widget_set_tooltip_markup(GTK_WIDGET(user_entry),
@@ -689,7 +690,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
                         "<small>Enter the email/username you use to login into www.openstreetmap.org.</small>"));
 
     password_label = gtk_label_new(_("Password:"));
-    password_entry = gtk_entry_new();
+    password_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
     gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_label, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_entry, FALSE, FALSE, 0);
     gtk_widget_set_tooltip_markup(GTK_WIDGET(password_entry),
@@ -700,7 +701,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   }
 
   name_label = gtk_label_new(_("File's name:"));
-  name_entry = gtk_entry_new();
+  name_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if (trk != NULL)
     name = trk->name;
   else
@@ -714,7 +715,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 			"This is not the name of the local file.</small>"));
 
   description_label = gtk_label_new(_("Description:"));
-  description_entry = gtk_entry_new();
+  description_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   const gchar *description = NULL;
   if (trk != NULL)
     description = trk->description;
@@ -740,7 +741,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   }
 
   tags_label = gtk_label_new(_("Tags:"));
-  tags_entry = gtk_entry_new();
+  tags_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
   if (md->keywords)
     gtk_entry_set_text(GTK_ENTRY(tags_entry), md->keywords);

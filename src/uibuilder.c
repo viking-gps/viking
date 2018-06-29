@@ -31,6 +31,7 @@
 #include "vikradiogroup.h"
 #include "vikfileentry.h"
 #include "vikfilelist.h"
+#include "ui_util.h"
 
 VikLayerParamData vik_lpd_true_default ( void ) { return VIK_LPD_BOOLEAN ( TRUE ); }
 VikLayerParamData vik_lpd_false_default ( void ) { return VIK_LPD_BOOLEAN ( FALSE ); }
@@ -179,7 +180,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_ENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = gtk_entry_new ();
+        rv = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
         if ( vlpd.s )
           gtk_entry_set_text ( GTK_ENTRY(rv), vlpd.s );
       }
@@ -187,7 +188,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_PASSWORD:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = gtk_entry_new ();
+        rv = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
         gtk_entry_set_visibility ( GTK_ENTRY(rv), FALSE );
         if ( vlpd.s )
           gtk_entry_set_text ( GTK_ENTRY(rv), vlpd.s );

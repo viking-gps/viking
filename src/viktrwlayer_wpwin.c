@@ -164,32 +164,29 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   namelabel = gtk_label_new (_("Name:"));
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), namelabel, FALSE, FALSE, 0);
   // Name is now always changeable
-  nameentry = gtk_entry_new ();
+  nameentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if ( default_name )
     gtk_entry_set_text( GTK_ENTRY(nameentry), default_name );
   g_signal_connect_swapped ( nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nameentry, FALSE, FALSE, 0);
 
   latlabel = gtk_label_new (_("Latitude:"));
-  latentry = gtk_entry_new ();
-  gtk_entry_set_text ( GTK_ENTRY(latentry), lat );
+  latentry = ui_entry_new ( lat, GTK_ENTRY_ICON_SECONDARY );
   g_free ( lat );
 
   lonlabel = gtk_label_new (_("Longitude:"));
-  lonentry = gtk_entry_new ();
-  gtk_entry_set_text ( GTK_ENTRY(lonentry), lon );
+  lonentry = ui_entry_new ( lon, GTK_ENTRY_ICON_SECONDARY );
   g_free ( lon );
 
   altlabel = gtk_label_new (_("Altitude:"));
-  altentry = gtk_entry_new ();
-  gtk_entry_set_text ( GTK_ENTRY(altentry), alt );
+  altentry = ui_entry_new ( alt, GTK_ENTRY_ICON_SECONDARY );
   g_free ( alt );
 
   if ( wp->comment && !strncmp(wp->comment, "http", 4) )
     commentlabel = gtk_link_button_new_with_label (wp->comment, _("Comment:") );
   else
     commentlabel = gtk_label_new (_("Comment:"));
-  commententry = gtk_entry_new ();
+  commententry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   gchar *cmt =  NULL;
   // Auto put in some kind of 'name' as a comment if one previously 'goto'ed this exact location
   cmt = a_vik_goto_get_search_string_for_this_place(VIK_WINDOW(parent));
@@ -200,18 +197,16 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     descriptionlabel = gtk_link_button_new_with_label (wp->description, _("Description:") );
   else
     descriptionlabel = gtk_label_new (_("Description:"));
-  descriptionentry = gtk_entry_new ();
+  descriptionentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
 
   sourcelabel = gtk_label_new (_("Source:"));
   if ( wp->source ) {
-    sourceentry = gtk_entry_new ();
-    gtk_entry_set_text(GTK_ENTRY(sourceentry), wp->source);
+    sourceentry = ui_entry_new ( wp->source, GTK_ENTRY_ICON_SECONDARY );
   }
 
   typelabel = gtk_label_new (_("Type:"));
   if ( wp->type ) {
-    typeentry = gtk_entry_new ();
-    gtk_entry_set_text(GTK_ENTRY(typeentry), wp->type);
+    typeentry = ui_entry_new ( wp->type, GTK_ENTRY_ICON_SECONDARY );
   }
 
   imagelabel = gtk_label_new (_("Image:"));

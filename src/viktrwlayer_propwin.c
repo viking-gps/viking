@@ -3274,22 +3274,22 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gdouble tmp_speed;
 
   // Properties
-  widgets->w_comment = gtk_entry_new ();
+  widgets->w_comment = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if ( tr->comment )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_comment), tr->comment );
   content_prop[cnt_prop++] = widgets->w_comment;
 
-  widgets->w_description = gtk_entry_new ();
+  widgets->w_description = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if ( tr->description )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_description), tr->description );
   content_prop[cnt_prop++] = widgets->w_description;
 
-  widgets->w_source = gtk_entry_new ();
+  widgets->w_source = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if ( tr->source )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_source), tr->source );
   content_prop[cnt_prop++] = widgets->w_source;
 
-  widgets->w_type = gtk_entry_new ();
+  widgets->w_type = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if ( tr->type )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_type), tr->type );
   content_prop[cnt_prop++] = widgets->w_type;
