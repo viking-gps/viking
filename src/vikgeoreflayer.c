@@ -639,7 +639,7 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
  *  Based on simple file name conventions
  * Only attempted if the preference is on.
  */
-static void maybe_read_world_file ( VikFileEntry *vfe, gpointer user_data )
+static gboolean maybe_read_world_file ( VikFileEntry *vfe, gpointer user_data )
 {
   if ( a_preferences_get (VIKING_PREFERENCES_IO_NAMESPACE "georef_auto_read_world_file")->b ) {
     const gchar* filename = vik_file_entry_get_filename(VIK_FILE_ENTRY(vfe));
@@ -668,6 +668,7 @@ static void maybe_read_world_file ( VikFileEntry *vfe, gpointer user_data )
       g_free ( filew );
     }
   }
+  return TRUE;
 }
 
 static struct LatLon get_ll_tl (VikGeorefLayer *vgl)

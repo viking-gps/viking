@@ -1968,6 +1968,7 @@ VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr )
 
 /**
  * Function to compare two tracks by their first timestamp
+ * If same timestamp, fall back on name
  **/
 int vik_track_compare_timestamp (const void *x, const void *y)
 {
@@ -1996,5 +1997,5 @@ int vik_track_compare_timestamp (const void *x, const void *y)
   if ( !tpa && tpb )
     return -1;
 
-  return 0;
+  return strcmp ( a->name, b->name );
 }

@@ -49,6 +49,7 @@
 #ifdef HAVE_LIBGEOCLUE_2
 #include "libgeoclue.h"
 #endif
+#include "viktrwlayer.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -164,6 +165,7 @@ static void register_vik_icons (GtkIconFactory *icon_factory);
 
 /* i/o */
 static void load_file ( GtkAction *a, VikWindow *vw );
+static void open_external_layer ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw );
 static gboolean save_file ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_and_exit ( GtkAction *a, VikWindow *vw );
@@ -3479,6 +3481,39 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   gtk_widget_destroy ( dialog );
 }
 
+static void open_external_layer ( GtkAction *a, VikWindow *vw )
+{
+  GtkWidget *dialog = gtk_file_chooser_dialog_new (_("Open File"),
+                                                   GTK_WINDOW(vw),
+                                                   GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                                   NULL);
+
+  GtkFileFilter *filter;
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name ( filter, _("GPX") );
+  gtk_file_filter_add_mime_type ( filter, "gpx+xml");
+  gtk_file_filter_add_pattern ( filter, "*.gpx" );
+  gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
+  gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
+
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name( filter, _("All") );
+  gtk_file_filter_add_pattern ( filter, "*" );
+  gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
+
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )  {
+    gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(dialog) );
+    VikTrwLayer *trw = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, vw->viking_vvp, FALSE ) );
+    vik_layer_rename ( VIK_LAYER ( trw ), _(fn) );
+    vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(trw), TRUE );
+    trw_layer_replace_external ( trw, fn );
+    draw_update ( vw );
+  }
+  gtk_widget_destroy ( dialog );
+}
+
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
 {
   gboolean rv = FALSE;
@@ -4663,6 +4698,7 @@ static GtkActionEntry entries[] = {
   { "Open",      GTK_STOCK_OPEN,         N_("_Open..."),                         "<control>O", N_("Open a file"),                                  (GCallback)load_file             },
   { "OpenRecentFile", NULL,              N_("Open _Recent File"),         NULL,         NULL,                                               (GCallback)NULL },
   { "Append",    GTK_STOCK_ADD,          N_("Append _File..."),           NULL,         N_("Append data from a different file"),            (GCallback)load_file             },
+  { "OpenExtLayer",  NULL,               N_("Open GPX as External _Layer..."),    NULL,         N_("Open a GPX file as an external layer"), (GCallback)open_external_layer },
   { "Export",    GTK_STOCK_CONVERT,      N_("_Export All"),               NULL,         N_("Export All TrackWaypoint Layers"),              (GCallback)NULL                  },
   { "ExportGPX", NULL,                   N_("_GPX..."),           	      NULL,         N_("Export as GPX"),                                (GCallback)export_to_gpx         },
   { "Acquire",   GTK_STOCK_GO_DOWN,      N_("A_cquire"),                  NULL,         NULL,                                               (GCallback)NULL },

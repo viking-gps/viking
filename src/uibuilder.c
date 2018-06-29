@@ -24,6 +24,9 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include "dialog.h"
+#include "fileutils.h"
+#include "globals.h"
 #include "uibuilder.h"
 #include "vikradiogroup.h"
 #include "vikfileentry.h"
@@ -31,6 +34,7 @@
 
 VikLayerParamData vik_lpd_true_default ( void ) { return VIK_LPD_BOOLEAN ( TRUE ); }
 VikLayerParamData vik_lpd_false_default ( void ) { return VIK_LPD_BOOLEAN ( FALSE ); }
+static gboolean file_save_cb ( VikFileEntry *vfe, gpointer user_data );
 
 /** i18n note
  * Since UI builder often uses static structures, the text is marked with N_()
@@ -199,6 +203,14 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
           vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), vlpd.s );
       }
       break;
+    case VIK_LAYER_WIDGET_FILESAVE:
+      if ( param->type == VIK_LAYER_PARAM_STRING )
+      {
+        rv = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_SAVE, GPOINTER_TO_INT(param->widget_data), file_save_cb, NULL );
+        if ( vlpd.s )
+          vik_file_entry_set_filename ( VIK_FILE_ENTRY(rv), vlpd.s );
+      }
+      break;
     case VIK_LAYER_WIDGET_FOLDERENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
@@ -302,6 +314,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       rv.s = gtk_entry_get_text ( GTK_ENTRY(widget) );
       break;
     case VIK_LAYER_WIDGET_FILEENTRY:
+    case VIK_LAYER_WIDGET_FILESAVE:
     case VIK_LAYER_WIDGET_FOLDERENTRY:
       rv.s = vik_file_entry_get_filename ( VIK_FILE_ENTRY(widget) );
       break;
@@ -594,3 +607,10 @@ void a_uibuilder_free_paramdatas ( VikLayerParamData *paramdatas, VikLayerParam 
   }
   g_free ( paramdatas );
 }
+
+static gboolean file_save_cb ( VikFileEntry *vfe, gpointer user_data ) {
+  const gchar *entry = vik_file_entry_get_filename ( vfe );
+  return ( g_file_test ( entry, G_FILE_TEST_EXISTS ) == FALSE ||
+           a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(vfe), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( entry ) ) );
+}
+

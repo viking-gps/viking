@@ -124,6 +124,13 @@ typedef enum {
   FS_NUM_SIZES
 } font_size_t;
 
+typedef enum {
+  VIK_TRW_LAYER_INTERNAL,
+  VIK_TRW_LAYER_EXTERNAL,
+  VIK_TRW_LAYER_EXTERNAL_NO_WRITE,
+  VIK_EXTERNAL_TYPE_LAST
+} trw_external_type_t;
+
 struct _VikTrwLayer {
   VikLayer vl;
   GHashTable *tracks;
@@ -228,6 +235,11 @@ struct _VikTrwLayer {
 
   // One per layer
   GtkWidget *tracks_analysis_dialog;
+
+  trw_external_type_t external_layer;
+  gchar *external_file;
+  gboolean external_loaded;
+  gchar *external_dirpath;
 };
 
 /* A caached waypoint image. */
@@ -496,8 +508,8 @@ enum {
 
 /****** PARAMETERS ******/
 
-static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images"), N_("Tracks Advanced"), N_("Metadata") };
-enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES, GROUP_TRACKS_ADV, GROUP_METADATA };
+static gchar *params_groups[] = { N_("Waypoints"), N_("Tracks"), N_("Waypoint Images"), N_("Tracks Advanced"), N_("Metadata"), N_("Filesystem") };
+enum { GROUP_WAYPOINTS, GROUP_TRACKS, GROUP_IMAGES, GROUP_TRACKS_ADV, GROUP_METADATA, GROUP_FILESYSTEM };
 
 static gchar *params_drawmodes[] = { N_("Draw by Track"), N_("Draw by Speed"), N_("All Tracks Same Color"), NULL };
 static gchar *params_wpsymbols[] = { N_("Filled Square"), N_("Square"), N_("Circle"), N_("X"), 0 };
@@ -545,6 +557,14 @@ static gchar* params_sort_order[] = {
   NULL
 };
 
+// Needs to align with trw_external_type_t
+static gchar* params_external_type[] = {
+  N_("No"),
+  N_("Yes"),
+  N_("No write"),
+  NULL
+};
+
 static VikLayerParamData black_color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#000000", &data.c ); return data; // Black
 }
@@ -583,6 +603,8 @@ static VikLayerParamData string_default ( void )
   data.s = "";
   return data;
 }
+
+static VikLayerParamData external_layer_default ( void ) { return VIK_LPD_UINT ( VIK_TRW_LAYER_INTERNAL ); }
 
 VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "tracks_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
@@ -633,6 +655,8 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "metadataauthor", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Author"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadatatime", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Creation Time"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadatakeywords", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Keywords"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "external_layer", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("External layer:"), VIK_LAYER_WIDGET_COMBOBOX, params_external_type, NULL, N_("Layer data stored in the Viking file, in an external file, or in an external file but changes are not written to the file (file only loaded at startup)"), external_layer_default, NULL, NULL },
+  { VIK_LAYER_TRW, "external_file", VIK_LAYER_PARAM_STRING, GROUP_FILESYSTEM, N_("Save layer as:"), VIK_LAYER_WIDGET_FILESAVE, GINT_TO_POINTER(VF_FILTER_GPX), NULL, N_("Specify where layer should be saved.  Overwrites file if it exists."), string_default, NULL, NULL },
 };
 
 // ENUMERATION MUST BE IN THE SAME ORDER AS THE NAMED PARAMS ABOVE
@@ -681,6 +705,8 @@ enum {
   PARAM_MDAUTH,
   PARAM_MDTIME,
   PARAM_MDKEYS,
+  PARAM_EXTL,
+  PARAM_EXTF,
   NUM_PARAMS
 };
 
@@ -723,6 +749,13 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
 static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static void trw_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static gboolean trw_load_external_layer ( VikTrwLayer *trw );
+static void trw_update_layer_icon ( VikTrwLayer *trw );
+
 /* End Layer Interface function definitions */
 
 VikLayerInterface vik_trw_layer_interface = {
@@ -770,8 +803,8 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncGetParam)                trw_layer_get_param,
   (VikLayerFuncChangeParam)             trw_layer_change_param,
 
-  (VikLayerFuncReadFileData)            a_gpspoint_read_file,
-  (VikLayerFuncWriteFileData)           a_gpspoint_write_file,
+  (VikLayerFuncReadFileData)            trw_read_file,
+  (VikLayerFuncWriteFileData)           trw_write_file,
 
   (VikLayerFuncDeleteItem)              trw_layer_del_item,
   (VikLayerFuncCutItem)                 trw_layer_cut_item,
@@ -1317,6 +1350,18 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
     case PARAM_MDAUTH: if ( vlsp->data.s && vtl->metadata ) vtl->metadata->author = g_strdup (vlsp->data.s); break;
     case PARAM_MDTIME: if ( vlsp->data.s && vtl->metadata ) vtl->metadata->timestamp = g_strdup (vlsp->data.s); break;
     case PARAM_MDKEYS: if ( vlsp->data.s && vtl->metadata ) vtl->metadata->keywords = g_strdup (vlsp->data.s); break;
+    case PARAM_EXTL:
+      if ( vlsp->data.u < VIK_EXTERNAL_TYPE_LAST ) {
+          vtl->external_layer = vlsp->data.u;
+          trw_update_layer_icon ( vtl );
+      }
+      break;
+    case PARAM_EXTF:
+      if ( vlsp->data.s ) {
+        g_free (vtl->external_file);
+        vtl->external_file = g_strdup (vlsp->data.s);
+      }
+      break;
     default: break;
   }
   return TRUE;
@@ -1367,6 +1412,8 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_MDAUTH: if (vtl->metadata) { rv.s = vtl->metadata->author; } break;
     case PARAM_MDTIME: if (vtl->metadata) { rv.s = vtl->metadata->timestamp; } break;
     case PARAM_MDKEYS: if (vtl->metadata) { rv.s = vtl->metadata->keywords; } break;
+    case PARAM_EXTL: rv.u = vtl->external_layer; break;
+    case PARAM_EXTF: rv.s = vtl->external_file; break;
     default: break;
   }
   return rv;
@@ -1443,6 +1490,25 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
     }
     // NB Since other track settings have been split across tabs,
     // I don't think it's useful to set sensitivities on widgets you can't immediately see
+    case PARAM_EXTL: {
+      VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+      gboolean sensitive = ( vlpd.u == VIK_TRW_LAYER_EXTERNAL || vlpd.u == VIK_TRW_LAYER_EXTERNAL_NO_WRITE );
+      GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+      GtkWidget **ww2 = values[UI_CHG_LABELS];
+      GtkWidget *w1 = ww1[OFFSET + PARAM_EXTF];
+      GtkWidget *w2 = ww2[OFFSET + PARAM_EXTF];
+      GtkWidget *w3 = ww1[OFFSET + PARAM_EXTL];
+      VikFileEntry *vfe = VIK_FILE_ENTRY(w1);
+      const gchar *file_name = vik_file_entry_get_filename ( vfe );
+      if ( w1 ) {
+        gtk_widget_set_sensitive ( w1, sensitive );
+        if ( sensitive && strlen( file_name ) == 0)
+            choose_file(VIK_FILE_ENTRY(w1));
+      }
+      if ( w2 ) gtk_widget_set_sensitive ( w2, sensitive );
+      if ( w3 && strlen ( file_name ) == 0 && vlpd.u != VIK_TRW_LAYER_EXTERNAL_NO_WRITE )
+        gtk_combo_box_text_remove ( GTK_COMBO_BOX_TEXT(w3), VIK_TRW_LAYER_EXTERNAL_NO_WRITE );
+    }
     default: break;
   }
 }
@@ -1691,6 +1757,9 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tracks_analysis_dialog) );
 
   image_cache_free ( trwlayer );
+
+  g_free ( trwlayer->external_file );
+  g_free ( trwlayer->external_dirpath );
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
@@ -2542,6 +2611,7 @@ static void trw_layer_draw_with_highlight ( VikTrwLayer *l, gpointer data, gbool
 
 static void trw_layer_draw ( VikTrwLayer *l, gpointer data )
 {
+  trw_ensure_layer_loaded ( l );
   // If this layer is to be highlighted - then don't draw now - as it will be drawn later on in the specific highlight draw stage
   // This may seem slightly inefficient to test each time for every layer
   //  but for a layer with *lots* of tracks & waypoints this can save some effort by not drawing the items twice
@@ -2711,6 +2781,9 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
 
   rv->menu_selection = vik_layer_get_interface(VIK_LAYER(rv)->type)->menu_items_selection;
 
+  // only set to false if load really needed
+  rv->external_loaded = TRUE;
+
   return rv;
 }
 
@@ -2836,6 +2909,8 @@ static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *
   trw_layer_verify_thumbnails ( vtl );
 
   trw_layer_sort_all ( vtl );
+
+  trw_update_layer_icon ( vtl );
 }
 
 static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer )
@@ -3213,6 +3288,8 @@ static void set_statusbar_msg_info_wpt ( VikTrwLayer *vtl, VikWaypoint *wpt )
  */
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp )
 {
+  trw_ensure_layer_loaded ( l );
+  
   // Reset
   l->current_wp    = NULL;
   l->current_wp_id = NULL;
@@ -11276,4 +11353,134 @@ static void trw_layer_waypoint_list_dialog ( menu_array_layer values )
   gchar *title = g_strdup_printf ( _("%s: Waypoint List"), VIK_LAYER(vtl)->name );
   vik_trw_layer_waypoint_list_show_dialog ( title, VIK_LAYER(vtl), NULL, trw_layer_create_waypoint_list, FALSE );
   g_free ( title );
+}
+
+static void trw_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+{
+  if ( trw->external_layer == VIK_TRW_LAYER_EXTERNAL ) {
+    trw_write_file_external ( trw, f, dirpath );
+  } else if ( trw->external_layer != VIK_TRW_LAYER_EXTERNAL_NO_WRITE ) {
+    a_gpspoint_write_file( trw, f, dirpath );
+  }
+}
+
+gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+{
+  if ( trw->external_layer != VIK_TRW_LAYER_INTERNAL ) {
+    return trw_read_file_external ( trw, f, dirpath );
+  } else {
+    return a_gpspoint_read_file( trw, f, dirpath );
+  }
+}
+
+static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+{
+  g_assert ( trw != NULL && trw->external_file != NULL );
+
+  // if never loaded or not for writing, no need to rewrite
+  if ( trw->external_layer != VIK_TRW_LAYER_EXTERNAL || ! trw->external_loaded )
+    return;
+
+  gboolean success = a_file_export ( trw, trw->external_file, FILE_TYPE_GPX, NULL, TRUE );
+
+  if ( ! success ) {
+    gchar *msg = g_strdup_printf ( _("Could not write external layer %s to %s, please fix and save before exiting or data will be lost"), VIK_LAYER(trw)->name, trw->external_file );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(trw), msg );
+    g_free ( msg );
+  }
+}
+
+static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+{
+  g_assert ( trw != NULL && trw->external_file != NULL && f != NULL );
+
+  g_free ( trw->external_dirpath );
+  trw->external_dirpath = g_strdup ( dirpath );
+
+  // leave loading to trw_layer_draw function
+  trw->external_loaded = FALSE;
+
+  // read ~EndLayerData
+  static char line_buffer[15];
+  fgets(line_buffer, 15, f);
+  gboolean success = ( strlen(line_buffer) >= 13 && strncmp ( line_buffer, "~EndLayerData", 13 ) == 0 );
+
+  return success;
+}
+
+static gboolean trw_load_external_layer ( VikTrwLayer *trw )
+{
+  g_assert ( trw != NULL && trw->external_file != NULL );
+
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(trw));
+  gchar *extfile_full = util_make_absolute_filename ( trw->external_file, trw->external_dirpath );
+  gchar *extfile = extfile_full ? extfile_full : trw->external_file;
+
+  gboolean failed = TRUE;
+  FILE *ext_f = g_fopen ( extfile, "r" );
+  if ( ext_f ) {
+    vik_window_set_busy_cursor ( vw );
+
+    gchar *dirpath = g_path_get_dirname ( extfile );
+    failed = ! a_gpx_read_file ( trw, ext_f, dirpath );
+    g_free ( dirpath );
+    fclose ( ext_f );
+
+    vik_window_clear_busy_cursor ( vw );
+  }
+
+  trw->external_loaded = ! failed;
+
+  if ( failed ) {
+    gchar *msg = g_strdup_printf ( _("WARNING: issues encountered loading external layer %s from %s"), VIK_LAYER(trw)->name, extfile );
+    vik_statusbar_set_message ( vik_window_get_statusbar ( vw ), VIK_STATUSBAR_INFO, msg );
+    g_free ( msg );
+  }
+
+  g_free ( extfile_full );
+
+  return ! failed;
+}
+
+void trw_ensure_layer_loaded ( VikTrwLayer *trw )
+{
+  if ( trw->external_layer != VIK_TRW_LAYER_INTERNAL && ! trw->external_loaded ) {
+    // set to true for now else the load will trigger redraws that will
+    // trigger reloads...
+    // trw_load_external_layer will set this to false if the load fails
+    trw->external_loaded = TRUE;
+    trw_load_external_layer ( trw );
+    trw_layer_post_read ( trw, NULL, FALSE );
+  }
+}
+
+/**
+ * Convert layer to an external layer and load data from file specified
+ * by external_file.  Set as a read only layer (i.e. don't write back to
+ * file by default)
+ */
+void trw_layer_replace_external ( VikTrwLayer *trw, gchar *external_file )
+{
+  trw->external_layer = VIK_TRW_LAYER_EXTERNAL_NO_WRITE;
+  trw_update_layer_icon ( trw );
+  g_free ( trw->external_file );
+  trw->external_file = g_strdup ( external_file );
+  trw->external_loaded = FALSE;
+  trw_ensure_layer_loaded ( trw );
+}
+
+static void trw_update_layer_icon ( VikTrwLayer *trw )
+{
+  if ( ! VIK_LAYER(trw)->vt )
+    return;
+
+  const GdkPixdata *data;
+  switch ( trw->external_layer ) {
+    case VIK_TRW_LAYER_EXTERNAL: data = &viktrwlayer_external_pixbuf; break;
+    case VIK_TRW_LAYER_EXTERNAL_NO_WRITE: data = &viktrwlayer_external_nowrite_pixbuf; break;
+    default: data = &viktrwlayer_pixbuf; break;
+  }
+
+  GdkPixbuf *buf = gdk_pixbuf_from_pixdata ( data, FALSE, NULL );
+  vik_treeview_item_set_icon ( VIK_LAYER(trw)->vt, &(VIK_LAYER(trw)->iter), buf );
 }

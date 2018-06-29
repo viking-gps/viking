@@ -527,6 +527,18 @@ GPX and KML files may also be appended, but this is exactly the same as the norm
 </para>
 </section>
 
+<section id="open_gpx_external"><title>Open GPX as External Layer</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Open GPX as External Layer...</guisubmenu></menuchoice> menu only.
+</para>
+<para>
+Selecting a GPX file from this method will create an external <xref linkend="TrackWaypoint"/> Layer that loads from the specified file.
+The layer is marked as a "no write" external layer, which means any changes made will not be written back to the GPX file.
+To enable changes to be written, you can change the layer to a standard external layer in the layer properties dialog.
+This is in contrast to importing the data and storing it in the Viking file.
+</para>
+</section>
+
 <section><title>Properties</title>
 <para>
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Properties</guisubmenu></menuchoice> menu only.
@@ -827,6 +839,21 @@ layers panel to show all the individual items and then typing the name of the tr
 <para>
 The containing Tracks, Routes or Waypoints sublayers are only shown when items of that type exist.
 To start creating them enter into a create mode via either the <guibutton>Create</guibutton> toolbar commands or the <guimenuitem>New</guimenuitem> menu commands.
+</para>
+
+<para>
+The new TrackWaypoint layer dialog allows the layer to be specified as external.
+In this case the layer is exported as GPX to the file specified instead of stored in the Viking file itself.
+It is also possible to specify the layer as "no write".
+This means that &appname; does not write the layer to the GPX file specified; instead, &appname; only reads the file.
+No-write layers are primarily intended to be used with the <xref linkend="open_gpx_external"/> option in the File menu.
+</para>
+
+<para>
+External layers are loaded only when they are displayed or selected.
+Hence, they will not appear in any summary statistics if they have not been loaded.
+It is possible to load all external layers contained in an <xref linkend="Aggregate"/> layer by selecting "Load External Layers" from the Aggregate Layer context menu.
+Note, &appname; specific options may not be saved if not supported by the GPX export.
 </para>
 
 <para>
