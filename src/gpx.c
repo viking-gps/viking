@@ -129,7 +129,7 @@ tag_mapping tag_path_map[] = {
         { tt_gpx_name, "/gpx/metadata/name" },
         { tt_gpx_desc, "/gpx/metadata/desc" },
         { tt_gpx_time, "/gpx/metadata/time" },
-        { tt_gpx_author, "/gpx/metadata/author" },
+        { tt_gpx_author, "/gpx/metadata/author/name" },
         { tt_gpx_keywords, "/gpx/metadata/keywords" },
 
         { tt_wpt, "/gpx/wpt" },
