@@ -546,10 +546,10 @@ AC_CHECK_PROG([HAVE_SCROLLKEEPER],scrollkeeper-config,"yes")
 AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && test "${HAVE_SCROLLKEEPER}" = "yes" )
 AM_COND_IF([GEN_MANPAGES], [ac_cv_enable_man=yes], [ac_cv_enable_man=no])
 
-ISODATE=`date +%Y-%m-%d`
+ISODATE="$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y-%m-%d)"
 AC_SUBST(ISODATE)
 
-AC_DEFINE_UNQUOTED(THEYEAR, "`date +%Y`", [The Year])
+AC_DEFINE_UNQUOTED(THEYEAR, "$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y)", [The Year])
 
 # Configuration
 AC_CONFIG_FILES([
