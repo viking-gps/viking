@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
 
 #include "fileutils.h"
 
@@ -63,14 +64,16 @@ char *file_realpath ( const char *path, char *real )
  */
 char *file_realpath_dup ( const char *path )
 {
-	char real[MAXPATHLEN];
-
-	g_return_val_if_fail(path != NULL, NULL);
-
-	if (file_realpath(path, real))
-		return g_strdup(real);
-
-	return g_strdup(path);
+  g_return_val_if_fail (path != NULL, NULL);
+#ifdef PATH_MAX
+  // Posix 2008, realpath() will handle memory allocation
+  return file_realpath ( path, NULL );
+#else
+  char real[MAXPATHLEN];
+  if ( file_realpath ( path, real ) )
+    return g_strdup ( real );
+  return NULL;
+#endif
 }
 
 /**
