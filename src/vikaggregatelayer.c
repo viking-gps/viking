@@ -544,27 +544,26 @@ static void aggregate_layer_search_date ( menu_array_values values )
 
   VikViewport *vvp = vik_window_viewport ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 
-  GList *gl = NULL;
-  gl = vik_aggregate_layer_get_all_layers_of_type ( val, gl, VIK_LAYER_TRW, TRUE );
+  GList *layers = NULL;
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
   gboolean found = FALSE;
+  GList *gl = layers;
   // Search tracks first
   while ( gl && !found ) {
     // Make it auto select the item if found
     found = vik_trw_layer_find_date ( VIK_TRW_LAYER(gl->data), date_str, &position, vvp, TRUE, TRUE );
     gl = g_list_next ( gl );
   }
-  g_list_free ( gl );
   if ( !found ) {
     // Reset and try on Waypoints
-    gl = NULL;
-    gl = vik_aggregate_layer_get_all_layers_of_type ( val, gl, VIK_LAYER_TRW, TRUE );
+    gl = g_list_first ( layers );
     while ( gl && !found ) {
       // Make it auto select the item if found
       found = vik_trw_layer_find_date ( VIK_TRW_LAYER(gl->data), date_str, &position, vvp, FALSE, TRUE );
       gl = g_list_next ( gl );
     }
-    g_list_free ( gl );
   }
+  g_list_free ( layers );
 
   if ( !found )
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(val), _("No items found with the requested date.") );
