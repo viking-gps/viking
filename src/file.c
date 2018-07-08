@@ -321,8 +321,10 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
         continue;
       else if ( str_starts_with ( line, "Layer ", 6, TRUE ) )
       {
+        if ( ! stack->data )
+          continue;
         int parent_type = VIK_LAYER(stack->data)->type;
-        if ( ( ! stack->data ) || ((parent_type != VIK_LAYER_AGGREGATE) && (parent_type != VIK_LAYER_GPS)) )
+        if ( (parent_type != VIK_LAYER_AGGREGATE) && (parent_type != VIK_LAYER_GPS) )
         {
           successful_read = FALSE;
           g_warning ( "Line %ld: Layer command inside non-Aggregate Layer (type %d)", line_num, parent_type );
