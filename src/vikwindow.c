@@ -4740,7 +4740,7 @@ static GtkActionEntry entries[] = {
   { "Cut",       GTK_STOCK_CUT,          N_("Cu_t"),                          NULL,         N_("Cut selected layer"),                       (GCallback)menu_cut_layer_cb     },
   { "Copy",      GTK_STOCK_COPY,         N_("_Copy"),                         NULL,         N_("Copy selected layer"),                      (GCallback)menu_copy_layer_cb    },
   { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         N_("Paste layer into selected container layer or otherwise above selected layer"), (GCallback)menu_paste_layer_cb },
-  { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         N_("Remove selected layer"),                    (GCallback)menu_delete_layer_cb  },
+  { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                   "<control>Delete",N_("Remove selected layer"),                    (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
   { "CopyCentre",NULL,                   N_("Copy Centre _Location"),     "<control>h",     NULL,                                           (GCallback)menu_copy_centre_cb   },
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
