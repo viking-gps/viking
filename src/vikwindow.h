@@ -102,6 +102,11 @@ typedef struct {
   gboolean is_waypoint; // otherwise a track
   GdkGC *gc;
   int oldx, oldy;
+  // Monitor the bounds for the tool with shift modifier
+  gboolean bounds_active;
+  gint start_x;
+  gint start_y;
+  GdkPixmap *pixmap;
 } tool_ed_t;
 
 VikWindow *a_vik_window_get_a_window ();
