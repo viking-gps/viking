@@ -1597,12 +1597,9 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
 
 #define tlm_size (*(gint *)data)
   // See marshalling above for order of how this is written
-#define tlm_next \
-  data += sizeof_len_and_subtype + tlm_size;
 
   // Now the individual sublayers:
-
-  while ( *data && consumed_length < len ) {
+  while ( consumed_length < len ) {
     // Normally four extra bytes at the end of the datastream
     //  (since it's a GByteArray and that's where it's length is stored)
     //  So only attempt read when there's an actual block of sublayer data
@@ -1635,9 +1632,9 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
       }
     }
     consumed_length += tlm_size + sizeof_len_and_subtype;
-    tlm_next;
+    //g_debug ("data %d, consumed_length %d vs len %d", tlm_size, consumed_length, len);
+    data += sizeof_len_and_subtype + tlm_size;
   }
-  //g_debug ("consumed_length %d vs len %d", consumed_length, len);
 
   // Not stored anywhere else so need to regenerate
   trw_layer_calculate_bounds_waypoints ( vtl );
