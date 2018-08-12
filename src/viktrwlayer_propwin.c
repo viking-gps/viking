@@ -3008,7 +3008,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_DEL_DUP:
-      vik_track_remove_dup_points(tr); // NB ignore the returned answer
+      (void)vik_track_remove_dup_points(tr); // NB ignore the returned answer
       // As we could have seen the number of duplicates that would be deleted in the properties statistics tab,
       //   choose not to inform the user unnecessarily
 

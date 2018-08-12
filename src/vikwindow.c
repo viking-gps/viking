@@ -2346,7 +2346,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
       /* Act on currently selected item to show menu */
       if ( t->vw->selected_track || t->vw->selected_waypoint )
 	if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
-	  vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, t->vw->viking_vvp );
+	  (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, t->vw->viking_vvp );
   }
 
   return VIK_LAYER_TOOL_ACK;
@@ -2358,7 +2358,7 @@ static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventMotion *eve
     // Don't care about vl here
     if ( t->vtl )
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_move )
-        vik_layer_get_interface(VIK_LAYER_TRW)->select_move ( vl, event, t->vvp, t );
+        (void)vik_layer_get_interface(VIK_LAYER_TRW)->select_move ( vl, event, t->vvp, t );
   }
   else
     // Optional Panning
@@ -2374,7 +2374,7 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
     // Don't care about vl here
     if ( t->vtl )
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_release )
-        vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
+        (void)vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
   }
 
   if ( event->button == 1 && (event->state & VIK_MOVE_MODIFIER) )
@@ -2991,7 +2991,7 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event)
   if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.click) {
     gint ltype = vt->tools[vt->active_tool].layer_type;
     if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
-      vt->tools[vt->active_tool].ti.click(vl, event, vt->tools[vt->active_tool].state);
+      (void)vt->tools[vt->active_tool].ti.click(vl, event, vt->tools[vt->active_tool].state);
   }
 }
 
@@ -3012,7 +3012,7 @@ static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event)
   if (vt->active_tool != -1 && vt->tools[vt->active_tool].ti.release ) {
     gint ltype = vt->tools[vt->active_tool].layer_type;
     if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
-      vt->tools[vt->active_tool].ti.release(vl, event, vt->tools[vt->active_tool].state);
+      (void)vt->tools[vt->active_tool].ti.release(vl, event, vt->tools[vt->active_tool].state);
   }
 }
 /** End tool management ************************************/
