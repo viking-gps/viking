@@ -2652,7 +2652,7 @@ void vik_trw_layer_draw_highlight_item ( VikTrwLayer *vtl, VikTrack *trk, VikWay
 }
 
 /**
- * vik_trw_layer_draw_highlight_item:
+ * vik_trw_layer_draw_highlight_items:
  *
  * Generally for drawing all tracks or routes or waypoints
  * trks may be actually routes
@@ -4852,8 +4852,8 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
     if (items) 
       g_list_free(items);
   } else {
-    gchar *name = vik_treeview_item_get_pointer(vt, src_item_iter);
-    trw_layer_move_item(vtl_src, vtl_dest, name, type);
+    gpointer ptr = vik_treeview_item_get_pointer ( vt, src_item_iter );
+    trw_layer_move_item ( vtl_src, vtl_dest, ptr, type );
   }
 }
 
