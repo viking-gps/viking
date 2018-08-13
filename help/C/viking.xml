@@ -958,7 +958,7 @@ Selecting this option ends the creation of that individual track or route.
 </para>
 <note>
 <para>
-This is only available when a track or route is being created by the <xref linkend="track_create"/> or <xref linkend="route_create"/> tools.
+This is only available when a track or route is being created by the <xref linkend="track_edit"/> or <xref linkend="route_edit"/> tools.
 </para>
 </note>
 </section>
@@ -971,12 +971,12 @@ This opens a dialog box to create a new waypoint. A default name will be suggest
 </section>
 <section id="new_track"><title>New Track</title>
 <para>
-This turns on the <xref linkend="track_create"/> tool.
+This turns on the <xref linkend="track_edit"/> tool.
 </para>
 </section>
 <section id="new_route"><title>New Route</title>
 <para>
-This turns on the <xref linkend="route_create"/> tool.
+This turns on the <xref linkend="route_edit"/> tool.
 </para>
 </section>
 </section>
@@ -1211,7 +1211,7 @@ Selecting this option ends the creation of the individual track.
 </para>
 <note>
 <para>
-This is only available when a track is being created by the <xref linkend="track_create"/> tool.
+This is only available when a track is being created by the <xref linkend="track_edit"/> tool.
 </para>
 </note>
 </section>
@@ -2104,14 +2104,23 @@ Left click will open the new waypoint dialog using the specified position.
 </para>
 </section>
 
-<section id="track_create" xreflabel="Create Track"><title>Create Track</title>
+<section id="track_edit" xreflabel="Edit Track"><title>Create/Edit Track</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addtr_18.png"/></guiicon>
 </para>
 <para>
-Left click to create a new trackpoint. If it's the initial trackpoint you will be asked to enter a name for the track.
-If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoint position to a nearby existing trackpoint.
+General track edit/create tool.
+The first left-click will create a new track and you will be asked to enter a name for the track.
+If <keycap>Shift</keycap> is held, a track will be continued from a nearby trackpoint.
+Subsequent left-clicks will add new trackpoints.
+If <keycap>Shift</keycap> is held, the track will be joined to an existing track at the point selected.
+If <keycap>Ctrl</keycap> is held, it will jump the new trackpoint position to a nearby existing trackpoint.
+</para>
+<para>
 Right click or <keycap>Backspace</keycap>: undo one point.
+</para>
+<para>
+
 </para>
 <para>
 Double click or <keycap>Escape</keycap>: to finish track creation.
@@ -2122,18 +2131,18 @@ One must finish the current track to be able to create another track.
 </para>
 </section>
 
-<section id="route_create" xreflabel="Create Route"><title>Create Route</title>
+<section id="route_edit" xreflabel="Edit Route"><title>Edit Route</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/vik_new_route_18.png"/></guiicon>
 </para>
 <para>
-This operates in exactly the same way as the <link linkend="track_create">Create Track</link> above.
+This operates in exactly the same way as the <link linkend="track_edit">Edit Track</link> above.
 </para>
 <para>
 One must finish the current route to be able to create another route.
 </para>
 <para>
-One can switch between the <link linkend="route_create">Create Route</link> and <link linkend="route_finder">Route Finder</link> tools while editing routes.
+One can switch between the <link linkend="route_edit">Edit Route</link> and <link linkend="route_finder">Route Finder</link> tools while editing routes.
 </para>
 </section>
 
@@ -2155,7 +2164,7 @@ Finishing the track is also available via the right click <xref linkend="TrackWa
 One must finish the current route to be able to create another route.
 </para>
 <para>
-One can switch between the <link linkend="route_create">Create Route</link> and <link linkend="route_finder">Route Finder</link> tools while editing routes.
+One can switch between the <link linkend="route_edit">Edit Route</link> and <link linkend="route_finder">Route Finder</link> tools while editing routes.
 </para>
 </section>
 
