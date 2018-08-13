@@ -10232,9 +10232,12 @@ static gboolean tool_new_track_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   {
     gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_TRACK, _("Track"));
     if ( a_vik_get_ask_for_create_track_name() ) {
-      name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), name, FALSE );
-      if ( !name )
+      gchar *newname = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), name, FALSE );
+      if ( !newname ) {
+        g_free ( name );
         return FALSE;
+      }
+      name = newname;
     }
     new_track_create_common ( vtl, name );
     g_free ( name );
@@ -10271,9 +10274,12 @@ static gboolean tool_new_route_click ( VikTrwLayer *vtl, GdkEventButton *event, 
   {
     gchar *name = trw_layer_new_unique_sublayer_name(vtl, VIK_TRW_LAYER_SUBLAYER_ROUTE, _("Route"));
     if ( a_vik_get_ask_for_create_track_name() ) {
-      name = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), name, TRUE );
-      if ( !name )
+      gchar *newname = a_dialog_new_track ( VIK_GTK_WINDOW_FROM_LAYER(vtl), name, TRUE );
+      if ( !newname ) {
+        g_free ( name );
         return FALSE;
+      }
+      name = newname;
     }
     new_route_create_common ( vtl, name );
     g_free ( name );
