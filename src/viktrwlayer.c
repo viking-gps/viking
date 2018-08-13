@@ -177,6 +177,7 @@ struct _VikTrwLayer {
   GdkGC *track_1color_gc;
   GdkColor track_color;
   GdkGC *current_track_gc;
+  GdkGC *splice_gc;
   // Separate GC for a track's potential new point as drawn via separate method
   //  (compared to the actual track points drawn in the main trw_layer_draw_track function)
   GdkGC *current_track_newpoint_gc;
@@ -219,6 +220,12 @@ struct _VikTrwLayer {
   GQueue *image_cache;
   guint8 image_size;
   guint16 image_cache_size;
+
+  /* Splicer tool (also uses track editing tool) */
+  GList *splice_start_tpl;
+  GList *splice_end_tpl;
+  VikTrack *splice_track;
+  gpointer splice_track_id;
 
   /* for waypoint text */
   PangoLayout *wplabellayout;
@@ -405,6 +412,10 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
 static gpointer tool_extended_route_finder_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
+static gpointer tool_splicer_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_splicer_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static gboolean tool_splicer_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
+static void tool_splicer_reset ( VikTrwLayer *vtl );
 
 static void cached_pixbuf_free ( CachedPixbuf *cp );
 static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
@@ -463,6 +474,16 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) tool_extended_route_finder_key_press,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
+
+  { &splicer_18_pixbuf,
+    { "Splicer", "vik-icon-Splicer", N_("Splicer"), "<control><shift>D", N_("Splicer"), 0 },
+    (VikToolConstructorFunc) tool_splicer_create,  NULL, NULL, NULL,
+    (VikToolMouseFunc) tool_splicer_click,
+    (VikToolMouseMoveFunc) NULL,
+    (VikToolMouseFunc) NULL,
+    (VikToolKeyFunc) tool_splicer_key_press,
+    TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
+    GDK_CURSOR_IS_PIXMAP, &cursor_splicer_pixbuf, NULL },
 
   { &edwp_18_pixbuf,
     { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
@@ -2147,6 +2168,9 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
   GList *list = track->trackpoints;
   GdkGC *main_gc;
   gboolean useoldvals = TRUE;
+  /* Draw section in a splice with splice_gc */
+  gboolean in_splice = FALSE;
+  GdkGC *old_main_gc;
 
   gboolean drawpoints;
   gboolean drawstops;
@@ -2398,6 +2422,21 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
           }
         }
         useoldvals = FALSE;
+      }
+
+      // test if we're in a splice the next loop
+      if (list == dp->vtl->splice_start_tpl || list == dp->vtl->splice_end_tpl)
+      {
+        in_splice = !in_splice;
+        if (in_splice)
+        {
+          old_main_gc = main_gc;
+          main_gc = dp->vtl->splice_gc;
+        }
+        else
+        {
+          main_gc = old_main_gc;
+        }
       }
     }
 
@@ -2696,6 +2735,11 @@ static void trw_layer_free_track_gcs ( VikTrwLayer *vtl )
     g_object_unref ( vtl->current_track_gc );
     vtl->current_track_gc = NULL;
   }
+  if ( vtl->splice_gc )
+  {
+    g_object_unref ( vtl->splice_gc );
+    vtl->splice_gc = NULL;
+  }
   if ( vtl->current_track_newpoint_gc )
   {
     g_object_unref ( vtl->current_track_newpoint_gc );
@@ -2730,6 +2774,11 @@ static void trw_layer_new_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
     g_object_unref ( vtl->current_track_gc );
   vtl->current_track_gc = vik_viewport_new_gc ( vp, "#FF0000", new_track_width );
   gdk_gc_set_line_attributes ( vtl->current_track_gc, new_track_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+
+  if ( vtl->splice_gc )
+    g_object_unref ( vtl->splice_gc );
+  vtl->splice_gc = vik_viewport_new_gc ( vp, "gray", new_track_width );
+  gdk_gc_set_line_attributes ( vtl->splice_gc, new_track_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_ROUND, GDK_JOIN_ROUND );
 
   // 'newpoint' gc is exactly the same as the current track gc
   if ( vtl->current_track_newpoint_gc )
@@ -4630,6 +4679,7 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk )
 {
   if (vtl->current_tp_track == trk )
     trw_layer_cancel_current_tp ( vtl, FALSE );
+  tool_splicer_reset ( vtl );
 }
 
 /**
@@ -11486,4 +11536,225 @@ static void trw_update_layer_icon ( VikTrwLayer *trw )
 
   GdkPixbuf *buf = gdk_pixbuf_from_pixdata ( data, FALSE, NULL );
   vik_treeview_item_set_icon ( VIK_LAYER(trw)->vt, &(VIK_LAYER(trw)->iter), buf );
+}
+
+
+/*** Splicer ***/
+
+static gpointer tool_splicer_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static void tool_splicer_reset ( VikTrwLayer *vtl )
+{
+  vtl->splice_start_tpl = NULL;
+  vtl->splice_end_tpl = NULL;
+  vtl->splice_track = NULL;
+  vtl->splice_track_id = NULL;
+}
+
+/* First click: choose beginning of segment to remove */
+static gboolean tool_splicer_first_click ( VikTrwLayer *vtl, TPSearchParams *params )
+{
+  if ( vtl->tracks_visible )
+    g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, params);
+
+  if ( params->closest_tp )
+  {
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, params->closest_track_id ), TRUE );
+    vtl->splice_start_tpl = params->closest_tpl;
+    vtl->splice_track_id = params->closest_track_id;
+    vtl->splice_track = g_hash_table_lookup ( vtl->tracks, params->closest_track_id );
+    set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+
+  if ( vtl->routes_visible )
+    g_hash_table_foreach ( vtl->routes, (GHFunc) track_search_closest_tp, params);
+
+  if ( params->closest_tp )
+  {
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->routes_iters, params->closest_track_id ), TRUE );
+    vtl->splice_start_tpl = params->closest_tpl;
+    vtl->splice_track_id = params->closest_track_id;
+    vtl->splice_track = g_hash_table_lookup ( vtl->routes, params->closest_track_id );
+    set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+
+  /* these aren't the droids you're looking for */
+  return FALSE;
+}
+
+// Second click: choose end of segment to remove from same track as
+// first click
+static gboolean tool_splicer_second_click ( VikTrwLayer *vtl, TPSearchParams *params )
+{
+  track_search_closest_tp ( vtl->splice_track_id, vtl->splice_track, params );
+
+  if ( params->closest_tp )
+  {
+    if ( params->closest_tpl == vtl->splice_start_tpl )
+    {
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Please choose distinct points to splice between.") );
+      return FALSE;
+    }
+
+    vtl->splice_end_tpl = params->closest_tpl;
+    set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+// The selected start and ends of the splice may not be in order
+// Copy them to first/second in order
+static void tool_splicer_order_out_ends ( GList *start, GList *end, GList **first, GList **second )
+{
+  *first = start;
+  *second = end;
+
+  if ( start == end )
+    return;
+
+  GList *cur = start;
+  while ( ( cur = g_list_next ( cur ) ) )
+  {
+    if ( cur == end )
+        return;
+  }
+
+  // did not find end after start, so swap
+  *first = end;
+  *second = start;
+}
+
+// splice track identified by in_id/in_track into segment identified by
+// vtl->splice_* variables
+static gboolean tool_splicer_splice ( VikTrwLayer *vtl, gpointer in_id, VikTrack *in_track )
+{
+  if ( in_id == vtl->splice_track_id )
+  {
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Cannot splice track/route into itself.") );
+    return FALSE;
+  }
+
+  GList *start, *end;
+  tool_splicer_order_out_ends ( vtl->splice_start_tpl, vtl->splice_end_tpl, &start, &end );
+
+  // We can assume start != end (enforced elsewhere)
+
+  GList *mid = in_track->trackpoints;
+  GList *mid_first = g_list_first ( mid );
+  GList *mid_last = g_list_last ( mid );
+  GList *out_start = start->next;
+  GList *out_end = end->prev;
+
+  start->next = mid_first;
+  mid_first->prev = start;
+  VIK_TRACKPOINT(mid_first->data)->newsegment = FALSE;
+
+  end->prev = mid_last;
+  mid_last->next = end;
+
+  if ( out_start != end )
+  {
+    out_start->prev = NULL;
+    out_end->next = NULL;
+    in_track->trackpoints = out_start;
+  }
+  else
+  {
+    // track is now empty since the removed segment contained no points
+    in_track->trackpoints = NULL;
+  }
+
+  // Bounds of the selected track changed due to the splice
+  vik_track_calculate_bounds ( vtl->splice_track );
+  vik_track_calculate_bounds ( in_track );
+
+  vik_layer_emit_update(VIK_LAYER(vtl));
+
+  return TRUE;
+}
+
+static gboolean tool_splicer_third_click ( VikTrwLayer *vtl, TPSearchParams *params )
+{
+  if ( ! vtl->splice_track->is_route )
+  {
+    if ( vtl->tracks_visible )
+      g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, params);
+
+    if ( params->closest_tp )
+    {
+      gpointer in_id = params->closest_track_id;
+      VikTrack *in_track = g_hash_table_lookup ( vtl->tracks, params->closest_track_id );
+      return tool_splicer_splice ( vtl, in_id, in_track );
+    }
+  }
+  else
+  {
+    if ( vtl->routes_visible )
+      g_hash_table_foreach ( vtl->routes, (GHFunc) track_search_closest_tp, params);
+
+    if ( params->closest_tp )
+    {
+      gpointer in_id = params->closest_track_id;
+      VikTrack *in_track = g_hash_table_lookup ( vtl->routes, params->closest_track_id );
+      return tool_splicer_splice ( vtl, in_id, in_track );
+    }
+  }
+  return FALSE;
+}
+
+static gboolean tool_splicer_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  TPSearchParams params;
+  params.vvp = vvp;
+  params.x = event->x;
+  params.y = event->y;
+  params.closest_track_id = NULL;
+  params.closest_tp = NULL;
+  params.closest_tpl = NULL;
+  params.bbox = vik_viewport_get_bbox ( vvp );
+
+  if ( event->button != 1 )
+    return FALSE;
+
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+
+  if ( !vtl->vl.visible || !(vtl->tracks_visible || vtl->routes_visible) )
+    return FALSE;
+
+  if ( ! vtl->splice_start_tpl )
+  {
+    return tool_splicer_first_click ( vtl, &params );
+  }
+  else if ( ! vtl->splice_end_tpl )
+  {
+    return tool_splicer_second_click ( vtl, &params );
+  }
+  else if ( tool_splicer_third_click ( vtl, &params ) )
+  {
+    tool_splicer_reset ( vtl );
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+static gboolean tool_splicer_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
+{
+  if ( event->keyval == GDK_Escape ) {
+    tool_splicer_reset ( vtl );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+  return FALSE;
 }

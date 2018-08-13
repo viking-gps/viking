@@ -2159,6 +2159,27 @@ One can switch between the <link linkend="route_create">Create Route</link> and 
 </para>
 </section>
 
+<section id="splicer" xreflabel="Splicer"><title>Edit a Track/Route Using the Splicer</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/splicer_18.png"/></guiicon>
+</para>
+<para>
+Use this tool to replace segments of an existing track/route with an alternative segment.
+First create the alternative track/route segment using any of the standard means.
+Then, enable the splicer by clicking the toolbar icon.
+Next, select a point along the track/route you want to edit.
+This starts the segment.
+End the segment by clicking another point.
+Then, select the alternative segment by clicking on any point along its path.
+The splicer will then swap the alternative segment into the track/route you are editing.
+The old segment is swapped out.
+Note, it is not possible to splice a route into a track or vice-versa.
+</para>
+<para>
+<keycap>Escape</keycap>: cancel the selection.
+</para>
+</section>
+
 <section><title>Edit Waypoint</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/edwp_18.png"/></guiicon>
