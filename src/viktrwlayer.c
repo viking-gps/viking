@@ -220,6 +220,9 @@ struct _VikTrwLayer {
   guint8 image_size;
   guint16 image_cache_size;
 
+  /* Split-join tool (also uses track editing tool) */
+  gboolean split_join_started;
+
   /* for waypoint text */
   PangoLayout *wplabellayout;
 
@@ -405,6 +408,12 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
 static gpointer tool_extended_route_finder_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
+static gpointer tool_split_join_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_split_join_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus tool_split_join_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp );
+static gboolean tool_split_join_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
+static void tool_split_join_reset ( VikTrwLayer *vtl );
+
 
 static void cached_pixbuf_free ( CachedPixbuf *cp );
 static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
@@ -463,6 +472,16 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) tool_extended_route_finder_key_press,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
+
+  { &split_join_18_pixbuf,
+    { "Split-Join", "vik-icon-Split-Join", N_("Split-Join"), "<control><shift>D", N_("Split-Join"), 0 },
+    (VikToolConstructorFunc) tool_split_join_create,  NULL, NULL, NULL,
+    (VikToolMouseFunc) tool_split_join_click,
+    (VikToolMouseMoveFunc) tool_split_join_move,
+    (VikToolMouseFunc) NULL,
+    (VikToolKeyFunc) tool_split_join_key_press,
+    TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
+    GDK_CURSOR_IS_PIXMAP, &cursor_split_join_pixbuf, NULL },
 
   { &edwp_18_pixbuf,
     { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
@@ -4630,6 +4649,7 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk )
 {
   if (vtl->current_tp_track == trk )
     trw_layer_cancel_current_tp ( vtl, FALSE );
+  tool_split_join_reset ( vtl );
 }
 
 /**
@@ -4878,6 +4898,7 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk )
       vtl->current_tp_id = NULL;
       vtl->moving_tp = FALSE;
       vtl->route_finder_started = FALSE;
+      vtl->split_join_started = FALSE;
     }
 
     was_visible = trk->visible;
@@ -4926,6 +4947,7 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
       vtl->current_tp_track = NULL;
       vtl->current_tp_id = NULL;
       vtl->moving_tp = FALSE;
+      tool_split_join_reset ( vtl );
     }
 
     was_visible = trk->visible;
@@ -10325,6 +10347,39 @@ static void tool_edit_trackpoint_destroy ( tool_ed_t *t )
   g_free ( t );
 }
 
+static gboolean tool_select_tp( VikTrwLayer *vtl, TPSearchParams *params, gboolean search_tracks, gboolean search_routes )
+{
+  if ( vtl->tracks_visible && search_tracks )
+    g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, params);
+
+  if ( params->closest_tp )
+  {
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, params->closest_track_id ), TRUE );
+    vtl->current_tpl = params->closest_tpl;
+    vtl->current_tp_id = params->closest_track_id;
+    vtl->current_tp_track = g_hash_table_lookup ( vtl->tracks, params->closest_track_id );
+    set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+
+  if ( vtl->routes_visible && search_routes )
+    g_hash_table_foreach ( vtl->routes, (GHFunc) track_search_closest_tp, params);
+
+  if ( params->closest_tp )
+  {
+    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->routes_iters, params->closest_track_id ), TRUE );
+    vtl->current_tpl = params->closest_tpl;
+    vtl->current_tp_id = params->closest_track_id;
+    vtl->current_tp_track = g_hash_table_lookup ( vtl->routes, params->closest_track_id );
+    set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
 /**
  * tool_edit_trackpoint_click:
  *
@@ -10378,33 +10433,9 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
 
   }
 
-  if ( vtl->tracks_visible )
-    g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
-
-  if ( params.closest_tp )
+  if ( tool_select_tp ( vtl, &params, TRUE, TRUE ) )
   {
-    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, params.closest_track_id ), TRUE );
-    vtl->current_tpl = params.closest_tpl;
-    vtl->current_tp_id = params.closest_track_id;
-    vtl->current_tp_track = g_hash_table_lookup ( vtl->tracks, params.closest_track_id );
     trw_layer_tpwin_init ( vtl );
-    set_statusbar_msg_info_trkpt ( vtl, params.closest_tp );
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
-  }
-
-  if ( vtl->routes_visible )
-    g_hash_table_foreach ( vtl->routes, (GHFunc) track_search_closest_tp, &params);
-
-  if ( params.closest_tp )
-  {
-    vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->routes_iters, params.closest_track_id ), TRUE );
-    vtl->current_tpl = params.closest_tpl;
-    vtl->current_tp_id = params.closest_track_id;
-    vtl->current_tp_track = g_hash_table_lookup ( vtl->routes, params.closest_track_id );
-    trw_layer_tpwin_init ( vtl );
-    set_statusbar_msg_info_trkpt ( vtl, params.closest_tp );
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
 
@@ -11486,4 +11517,140 @@ static void trw_update_layer_icon ( VikTrwLayer *trw )
 
   GdkPixbuf *buf = gdk_pixbuf_from_pixdata ( data, FALSE, NULL );
   vik_treeview_item_set_icon ( VIK_LAYER(trw)->vt, &(VIK_LAYER(trw)->iter), buf );
+}
+
+
+/*** Split-Join ***/
+
+static gpointer tool_split_join_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static void tool_split_join_reset ( VikTrwLayer *vtl )
+{
+  vtl->split_join_started = FALSE;
+  vtl->current_track = NULL;
+}
+
+static gboolean tool_split_join_first_click ( VikTrwLayer *vtl, TPSearchParams *params )
+{
+  if ( tool_select_tp ( vtl, params, TRUE, TRUE ) )
+  {
+    VikTrack *origin_tp_track = vtl->current_tp_track;
+
+    trw_layer_split_at_selected_trackpoint ( vtl, vtl->current_tp_track->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK );
+
+    vtl->current_track = origin_tp_track;
+    vtl->current_tpl = NULL;
+    vtl->current_tp_track = NULL;
+    vtl->current_tp_id = NULL;
+    vtl->split_join_started = TRUE;
+
+    vik_layer_emit_update(VIK_LAYER(vtl));
+    return TRUE;
+  }
+  return FALSE;
+}
+
+static void tool_split_join_select_track ( VikTrwLayer *vtl, VikTrack *trk )
+{
+  trku_udata udata;
+  udata.trk  = trk;
+  udata.uuid = NULL;
+
+  if ( trk->is_route )
+  {
+    gpointer trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udata );
+    if ( trkf && udata.uuid ) {
+      GtkTreeIter *it = g_hash_table_lookup ( vtl->routes_iters, udata.uuid );
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, it, TRUE );
+    }
+  }
+  else
+  {
+    gpointer trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
+    if ( trkf && udata.uuid ) {
+      GtkTreeIter *it = g_hash_table_lookup ( vtl->tracks_iters, udata.uuid );
+      vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, it, TRUE );
+    }
+  }
+}
+
+static gboolean tool_split_join_second_click ( VikTrwLayer *vtl, TPSearchParams *params )
+{
+  VikTrack *origin_track = vtl->current_track;
+  gboolean is_route = origin_track->is_route;
+
+  if ( tool_select_tp ( vtl, params, ! is_route, is_route ) )
+  {
+    if ( vtl->current_tp_track == origin_track )
+    {
+      a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Cannot join a track/route to itself!") );
+      return FALSE;
+    }
+
+    trw_layer_split_at_selected_trackpoint ( vtl, is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK );
+    vik_track_steal_and_append_trackpoints ( origin_track, vtl->current_tp_track );
+    VIK_TRACKPOINT(vtl->current_tpl->data)->newsegment = FALSE;
+
+    if ( is_route )
+      vik_trw_layer_delete_route ( vtl, vtl->current_tp_track );
+    else
+      vik_trw_layer_delete_track ( vtl, vtl->current_tp_track );
+
+    // Leave newly joined track selected
+    tool_split_join_select_track ( vtl, origin_track );
+    vtl->current_tpl = NULL;
+    vtl->current_tp_track = NULL;
+    vtl->current_tp_id = NULL;
+    tool_split_join_reset ( vtl );
+
+    vik_layer_emit_update( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+  return FALSE;
+}
+
+static gboolean tool_split_join_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  TPSearchParams params;
+  params.vvp = vvp;
+  params.x = event->x;
+  params.y = event->y;
+  params.closest_track_id = NULL;
+  params.closest_tp = NULL;
+  params.closest_tpl = NULL;
+  params.bbox = vik_viewport_get_bbox ( vvp );
+
+  if ( event->button != 1 )
+    return FALSE;
+
+  if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
+    return FALSE;
+
+  if ( !vtl->vl.visible || !(vtl->tracks_visible || vtl->routes_visible) )
+    return FALSE;
+
+  if ( ! vtl->split_join_started )
+    return tool_split_join_first_click ( vtl, &params );
+  else
+    return tool_split_join_second_click ( vtl, &params );
+}
+
+static VikLayerToolFuncStatus tool_split_join_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp )
+{
+  if ( vtl->split_join_started )
+    return tool_new_track_move ( vtl, event, vvp );
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static gboolean tool_split_join_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
+{
+  if ( event->keyval == GDK_Escape ) {
+    tool_split_join_reset ( vtl );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    return TRUE;
+  }
+  return FALSE;
 }

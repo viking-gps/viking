@@ -2159,6 +2159,36 @@ One can switch between the <link linkend="route_create">Create Route</link> and 
 </para>
 </section>
 
+<section id="split-join" xreflabel="Split-Join"><title>Split-Join Tool</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/split_join_18.png"/></guiicon>
+</para>
+<para>
+A multifunction tool for track editing.
+In full, it is used for diverting one track/route into another.
+The first click identifies a source track/route, and splits it at the selected point.
+Then the tool moves to append mode, aiming to append to the first half of source.
+The next click on a point identifies the target track/route, which again is split.
+The second part of the target is appended to the first half of the source.
+</para>
+<para>
+The tool has multiple uses.
+To split a track, only one click is needed.
+<keycap>Escape</keycap> will cancel the append.
+</para>
+<para>
+To append two tracks/routes, click on the last point of the source and the first point of the target.
+</para>
+<para>
+To divert a track/route, click on the point where the diversion should start, then the first point of the alternative track/route.
+Then click on the last point of the alternative, and then the point at which the previous route should be rejoined.
+This makes two full uses of the tool.
+</para>
+<para>
+<keycap>Escape</keycap>: cancel the selection.
+</para>
+</section>
+
 <section><title>Edit Waypoint</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/edwp_18.png"/></guiicon>

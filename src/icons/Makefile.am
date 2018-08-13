@@ -234,6 +234,7 @@ ICONS = \
 	ruler_18.png \
 	showpic_18.png \
 	zoom_18.png \
+	split_join_18.png \
 	route_finder_18.png \
 	select_18.png \
 	thumbnails.png \
@@ -256,6 +257,7 @@ CURSORS = \
 	cursor_ruler.png \
 	cursor_addwp.png \
 	cursor_edwp.png \
+	cursor_split_join.png \
 	cursor_route_finder.png \
 	cursor_showpic.png \
 	cursor_demdl.png \
