@@ -11405,7 +11405,7 @@ static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar 
 
   // read ~EndLayerData
   static char line_buffer[15];
-  fgets(line_buffer, 15, f);
+  (void)! fgets(line_buffer, 15, f); // Not worried about file read errors
   gboolean success = ( strlen(line_buffer) >= 13 && strncmp ( line_buffer, "~EndLayerData", 13 ) == 0 );
 
   return success;
