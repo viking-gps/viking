@@ -216,7 +216,7 @@ struct _VikTrwLayer {
   gboolean drawlabels;
   gboolean drawimages;
   guint8 image_alpha;
-  GQueue *image_cache;
+  GHashTable *image_cache;
   guint8 image_size;
   guint16 image_cache_size;
 
@@ -241,12 +241,6 @@ struct _VikTrwLayer {
   gboolean external_loaded;
   gchar *external_dirpath;
 };
-
-/* A caached waypoint image. */
-typedef struct {
-  GdkPixbuf *pixbuf;
-  gchar *image; /* filename */
-} CachedPixbuf;
 
 struct DrawingParams {
   VikViewport *vp;
@@ -409,9 +403,6 @@ static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventBut
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
 static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
-
-static void cached_pixbuf_free ( CachedPixbuf *cp );
-static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
 
 static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
 static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
@@ -1254,12 +1245,6 @@ static void trw_layer_free_copied_item ( gint subtype, gpointer item )
   }
 }
 
-static void image_cache_free ( VikTrwLayer *vtl )
-{
-  g_list_foreach ( vtl->image_cache->head, (GFunc)cached_pixbuf_free, NULL );
-  g_queue_free ( vtl->image_cache );
-}
-
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
 {
   switch ( vlsp->id )
@@ -1333,21 +1318,20 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
     case PARAM_IS:
       if ( vlsp->data.u != vtl->image_size ) {
         vtl->image_size = vlsp->data.u;
-        image_cache_free ( vtl );
-        vtl->image_cache = g_queue_new ();
+        g_hash_table_remove_all ( vtl->image_cache );
       }
       break;
     case PARAM_IA:
       if ( vlsp->data.u != vtl->image_alpha ) {
         vtl->image_alpha = vlsp->data.u;
-        image_cache_free ( vtl );
-        vtl->image_cache = g_queue_new ();
+        g_hash_table_remove_all ( vtl->image_cache );
       }
       break;
     case PARAM_ICS:
+      // If cache size is made smaller, then reset cache
+      if ( vlsp->data.u < vtl->image_cache_size )
+        g_hash_table_remove_all ( vtl->image_cache );
       vtl->image_cache_size = vlsp->data.u;
-      while ( vtl->image_cache->length > vtl->image_cache_size ) /* if shrinking cache_size, free pixbuf ASAP */
-          cached_pixbuf_free ( g_queue_pop_tail ( vtl->image_cache ) );
       break;
     case PARAM_WPC:
       vtl->waypoint_color = vlsp->data.c;
@@ -1717,6 +1701,11 @@ static guint strcase_hash(gconstpointer v)
 }
 */
 
+static void pixbuf_free ( GdkPixbuf *pixbuf )
+{
+  g_object_unref ( G_OBJECT(pixbuf) );
+}
+
 // Stick a 1 at the end of the function name to make it more unique
 //  thus more easily searchable in a simple text editor
 static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
@@ -1743,7 +1732,7 @@ static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
   rv->routes = g_hash_table_new_full ( g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) vik_track_free );
   rv->routes_iters = g_hash_table_new_full ( g_direct_hash, g_direct_equal, NULL, g_free );
 
-  rv->image_cache = g_queue_new(); // Must be performed before set_params via set_defaults
+  rv->image_cache = g_hash_table_new_full ( g_str_hash, g_str_equal, NULL, (GDestroyNotify) pixbuf_free ); // Must be performed before set_params via set_defaults
 
   vik_layer_set_defaults ( VIK_LAYER(rv), vvp );
 
@@ -1806,7 +1795,7 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   if ( trwlayer->tracks_analysis_dialog != NULL )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tracks_analysis_dialog) );
 
-  image_cache_free ( trwlayer );
+  g_hash_table_destroy ( trwlayer->image_cache );
 
   g_free ( trwlayer->external_file );
   g_free ( trwlayer->external_dirpath );
@@ -2481,17 +2470,6 @@ static void trw_layer_draw_track_cb ( const gpointer id, VikTrack *track, struct
   }
 }
 
-static void cached_pixbuf_free ( CachedPixbuf *cp )
-{
-  g_object_unref ( G_OBJECT(cp->pixbuf) );
-  g_free ( cp->image );
-}
-
-static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name )
-{
-  return strcmp ( cp->image, name );
-}
-
 static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct DrawingParams *dp )
 {
   if ( wp->visible )
@@ -2506,16 +2484,11 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
 
     if ( wp->image && dp->vtl->drawimages )
     {
-      GdkPixbuf *pixbuf = NULL;
-      GList *l;
-
       if ( dp->vtl->image_alpha == 0)
         return;
 
-      l = g_list_find_custom ( dp->vtl->image_cache->head, wp->image, (GCompareFunc) cached_pixbuf_cmp );
-      if ( l )
-        pixbuf = ((CachedPixbuf *) l->data)->pixbuf;
-      else
+      GdkPixbuf *pixbuf = g_hash_table_lookup ( dp->vtl->image_cache, wp->image );
+      if ( !pixbuf )
       {
         gchar *image = wp->image;
         GdkPixbuf *regularthumb = a_thumbnails_get ( wp->image );
@@ -2526,32 +2499,25 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
         }
         if ( regularthumb )
         {
-          CachedPixbuf *cp = NULL;
-          cp = g_malloc ( sizeof ( CachedPixbuf ) );
           if ( dp->vtl->image_size == 128 )
-            cp->pixbuf = regularthumb;
+            pixbuf = regularthumb;
           else
           {
-            cp->pixbuf = a_thumbnails_scale_pixbuf(regularthumb, dp->vtl->image_size, dp->vtl->image_size);
-            g_assert ( cp->pixbuf );
+            pixbuf = a_thumbnails_scale_pixbuf(regularthumb, dp->vtl->image_size, dp->vtl->image_size);
             g_object_unref ( G_OBJECT(regularthumb) );
           }
-          cp->image = g_strdup ( image );
 
           // Apply alpha setting to the image before the pixbuf gets stored in the cache
           if ( dp->vtl->image_alpha != 255 )
-            cp->pixbuf = ui_pixbuf_set_alpha ( cp->pixbuf, dp->vtl->image_alpha );
+            pixbuf = ui_pixbuf_set_alpha ( pixbuf, dp->vtl->image_alpha );
 
           /* needed so 'click picture' tool knows how big the pic is; we don't
-           * store it in cp because they may have been freed already. */
-          wp->image_width = gdk_pixbuf_get_width ( cp->pixbuf );
-          wp->image_height = gdk_pixbuf_get_height ( cp->pixbuf );
+           * store it in the cache because they may have been freed already. */
+          wp->image_width = gdk_pixbuf_get_width ( pixbuf );
+          wp->image_height = gdk_pixbuf_get_height ( pixbuf );
 
-          g_queue_push_head ( dp->vtl->image_cache, cp );
-          if ( dp->vtl->image_cache->length > dp->vtl->image_cache_size )
-            cached_pixbuf_free ( g_queue_pop_tail ( dp->vtl->image_cache ) );
-
-          pixbuf = cp->pixbuf;
+          if ( g_hash_table_size(dp->vtl->image_cache) < dp->vtl->image_cache_size )
+            g_hash_table_insert ( dp->vtl->image_cache, image, pixbuf );
         }
         else
         {
