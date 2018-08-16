@@ -1599,7 +1599,7 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
   // See marshalling above for order of how this is written
 
   // Now the individual sublayers:
-  while ( consumed_length < len ) {
+  while ( data && (consumed_length < len) ) {
     // Normally four extra bytes at the end of the datastream
     //  (since it's a GByteArray and that's where it's length is stored)
     //  So only attempt read when there's an actual block of sublayer data
