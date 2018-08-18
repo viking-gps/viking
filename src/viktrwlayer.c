@@ -750,7 +750,7 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl );
 static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
 static void trw_layer_marshall ( VikTrwLayer *vtl, guint8 **data, gint *len );
-static VikTrwLayer *trw_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp );
+static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikViewport *vvp );
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gboolean is_file_operation );
 static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values );
@@ -1595,11 +1595,12 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
   *len = ba->len;
 }
 
-static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikViewport *vvp )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, FALSE ));
   gint pl;
   gint consumed_length;
+  guint8 *data = (guint8*)data_in;
 
   // First the overall layer parameters
   memcpy(&pl, data, sizeof(pl));

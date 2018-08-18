@@ -291,9 +291,9 @@ void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file 
 gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp );
 
 void      vik_layer_marshall ( VikLayer *vl, guint8 **data, gint *len );
-VikLayer *vik_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp );
+VikLayer *vik_layer_unmarshall ( const guint8 *data, gint len, VikViewport *vvp );
 void      vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *len );
-void      vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint len, VikViewport *vvp );
+void      vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, gint len, VikViewport *vvp );
 
 const gchar *vik_layer_sublayer_rename_request ( VikLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 
