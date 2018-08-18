@@ -1040,6 +1040,16 @@ Useful if you are an OpenStreetMap contributor, access details are stored in &ap
 <section id="delete_selection_waypoints"><title>Delete Waypoints from Selection</title>
 <para>Opens a dialog with list of all the waypoints from this layer to choose the ones to delete.</para>
 </section>
+<section id="delete_duplicate_waypoints"><title>Delete Duplicate Waypoints</title>
+<para>
+  Deletes duplicate waypoints in this layer.
+  Waypoints are considered duplicate if they have the same location and symbol.
+  <note>
+    <para>If other properties are different such as name, comment, altitude, etc... they will still be considered a duplicate.
+    </para>
+  </note>
+</para>
+</section>
 </section>
 
 <section id="filter" xreflabel="Filter"><title>Filter</title>
@@ -1567,6 +1577,10 @@ The record of the Google route is stored in the track's comment, so if the comme
 <varlistentry>
 <term><guilabel>Delete Waypoints from Selection</guilabel></term>
 <listitem><para>Same as the layer <link linkend="delete_selection_waypoints">Delete Waypoints from Selection</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Delete Duplicate Waypoints</guilabel></term>
+<listitem><para>Same as the layer <link linkend="delete_duplicate_waypoints">Delete Duplicate Waypoints</link></para></listitem>
 </varlistentry>
 <varlistentry>
 <term><guilabel>List Waypoints</guilabel></term>

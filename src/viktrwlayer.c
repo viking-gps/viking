@@ -330,6 +330,7 @@ static void trw_layer_delete_all_tracks ( menu_array_layer values );
 static void trw_layer_delete_tracks_from_selection ( menu_array_layer values );
 static void trw_layer_delete_all_waypoints ( menu_array_layer values );
 static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values );
+static void trw_layer_delete_duplicate_waypoints ( menu_array_layer values );
 static void trw_layer_new_wikipedia_wp_viewport ( menu_array_layer values );
 static void trw_layer_new_wikipedia_wp_layer ( menu_array_layer values );
 #ifdef VIK_CONFIG_GEOTAG
@@ -4501,6 +4502,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_waypoints_from_selection), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Duplicate Waypoints") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DELETE, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_duplicate_waypoints), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->waypoints)) );
   
   item = a_acquire_trwlayer_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vlp,
 				   vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
@@ -4985,6 +4993,15 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
   return was_visible;
 }
 
+static void delete_waypoint_low_level ( VikTrwLayer *vtl, VikWaypoint *wp, gpointer uuid, GtkTreeIter *it )
+{
+  vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
+  g_hash_table_remove ( vtl->waypoints_iters, uuid );
+
+  highest_wp_number_remove_wp ( vtl, wp->name );
+  g_hash_table_remove ( vtl->waypoints, uuid ); // last because this frees the name
+}
+
 static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
 {
   gboolean was_visible = FALSE;
@@ -5010,11 +5027,7 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
       GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udata.uuid );
     
       if ( it ) {
-        vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
-        g_hash_table_remove ( vtl->waypoints_iters, udata.uuid );
-
-        highest_wp_number_remove_wp(vtl, wp->name);
-        g_hash_table_remove ( vtl->waypoints, udata.uuid ); // last because this frees the name
+        delete_waypoint_low_level ( vtl, wp, udata.uuid, it );
 
 	// If last sublayer, then remove sublayer container
 	if ( g_hash_table_size (vtl->waypoints) == 0 ) {
@@ -7576,6 +7589,78 @@ static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values 
 }
 
 /**
+ * Only deletes first copy of each duplicated waypoint
+ * Thus call repeatedly to remove all duplicates
+ */
+static guint trw_layer_delete_duplicate_waypoints_main ( VikTrwLayer *vtl )
+{
+  GHashTableIter iter;
+  gpointer key, value;
+
+  guint delete_count = 0;
+  guint sz = g_hash_table_size ( vtl->waypoints );
+
+  for ( int ii = 0; ii < (sz - delete_count); ii++ ) {
+    g_hash_table_iter_init ( &iter, vtl->waypoints );
+    g_hash_table_iter_next ( &iter, &key, &value );
+    // Progress to the nth waypoint
+    for ( int jj = 0; jj < ii; jj++ ) {
+      g_hash_table_iter_next ( &iter, &key, &value );
+    }
+    VikWaypoint *wpt1 = VIK_WAYPOINT(value);
+    if ( wpt1 ) {
+      // Compare against rest of the list
+      gboolean done = FALSE;
+      while ( !done && g_hash_table_iter_next (&iter, &key, &value) ) {
+        VikWaypoint *wpt2 = VIK_WAYPOINT(value);
+        // Just how many other fields is it sensible to compare? altitude, comment, etc ???
+        if ( vik_coord_equalish(&(wpt1->coord), &(wpt2->coord)) &&
+             !g_strcmp0(wpt1->symbol, wpt2->symbol) ) {
+
+          GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, key );
+          if ( it ) {
+              delete_waypoint_low_level ( vtl, wpt2, key, it );
+              // Have to exit now as hash table changed
+              //  (as otherwise continuing iterating over it can go badly wrong)
+              done = TRUE;
+              delete_count++;
+	  }
+        }
+      }
+    }
+  }
+  return delete_count;
+}
+
+/**
+ *
+ */
+static void trw_layer_delete_duplicate_waypoints ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+
+  guint delete_count = 0;
+  guint cnt = 0;
+  // Continually call until nothing more deleted
+  do {
+    cnt = trw_layer_delete_duplicate_waypoints_main ( vtl );
+    delete_count += cnt;
+  } while ( cnt );
+
+  if ( delete_count ) {
+    // Inform user how much was changed
+    gchar str[64];
+    const gchar *tmp_str = ngettext("%ld waypoint deleted", "%ld waypoints deleted", delete_count);
+    g_snprintf(str, 64, tmp_str, delete_count);
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), str );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+  }
+  else {
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("No duplicates found") );
+  }
+}
+
+/**
  *
  */
 static void trw_layer_iter_visibility_toggle ( gpointer id, GtkTreeIter *it, VikTreeview *vt )
@@ -8210,6 +8295,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     item = gtk_image_menu_item_new_with_mnemonic ( _("_Delete Waypoints From Selection...") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_waypoints_from_selection), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Duplicate Waypoints") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DELETE, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_duplicate_waypoints), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 
