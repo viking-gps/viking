@@ -28,6 +28,7 @@ static const char *toolbar_xml =
 "      <toolitem action='EditTrack'/>"
 "      <toolitem action='EditRoute'/>"
 "      <toolitem action='ExtendedRouteFinder'/>"
+"      <toolitem action='Cutter'/>"
 "      <toolitem action='EditWaypoint'/>"
 "      <toolitem action='EditTrackpoint'/>"
 "      <toolitem action='ShowPicture'/>"
