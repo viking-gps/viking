@@ -2168,6 +2168,16 @@ One can switch between the <link linkend="route_edit">Edit Route</link> and <lin
 </para>
 </section>
 
+<section id="splitter" xreflabel="Splitter"><title>Track Splitter</title>
+<para>
+Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/splitter_18.png"/></guiicon>
+</para>
+<para>
+Use this tool to split a track or route.
+After enabling the tool, click on the track/route point of the track/route at the position where you want the split to occur.
+</para>
+</section>
+
 <section><title>Edit Waypoint</title>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/edwp_18.png"/></guiicon>

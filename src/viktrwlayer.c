@@ -404,6 +404,8 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
 static gpointer tool_extended_route_finder_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
+static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp);
+static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 static void cached_pixbuf_free ( CachedPixbuf *cp );
 static gint cached_pixbuf_cmp ( CachedPixbuf *cp, const gchar *name );
@@ -464,6 +466,16 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) tool_extended_route_finder_key_press,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
+
+  { &splitter_18_pixbuf,
+    { "Splitter", "vik-icon-Splitter", N_("Splitter"), "<control><shift>L", N_("Splitter"), 0 },
+    (VikToolConstructorFunc) tool_splitter_create,  NULL, NULL, NULL,
+    (VikToolMouseFunc) tool_splitter_click,
+    (VikToolMouseMoveFunc) NULL,
+    (VikToolMouseFunc) NULL,
+    (VikToolKeyFunc) NULL,
+    TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
+    GDK_CURSOR_IS_PIXMAP, &cursor_splitter_pixbuf, NULL },
 
   { &edwp_18_pixbuf,
     { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
@@ -11652,4 +11664,31 @@ static void trw_update_layer_icon ( VikTrwLayer *trw )
 
   GdkPixbuf *buf = gdk_pixbuf_from_pixdata ( data, FALSE, NULL );
   vik_treeview_item_set_icon ( VIK_LAYER(trw)->vt, &(VIK_LAYER(trw)->iter), buf );
+}
+
+/*** Splitter ***/
+
+static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp)
+{
+  return vvp;
+}
+
+static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+{
+  TPSearchParams params;
+  params.vvp = vvp;
+  params.x = event->x;
+  params.y = event->y;
+  params.closest_track_id = NULL;
+  params.closest_tp = NULL;
+  params.closest_tpl = NULL;
+  params.bbox = vik_viewport_get_bbox ( vvp );
+
+  if ( tool_select_tp ( vtl, &params, TRUE, TRUE ) )
+  {
+    trw_layer_split_at_selected_trackpoint ( vtl, vtl->current_tp_track->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK );
+    return TRUE;
+  }
+
+  return FALSE;
 }
