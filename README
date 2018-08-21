@@ -1,3 +1,6 @@
+Viking [![Build Status](https://travis-ci.org/viking-gps/viking.svg?branch=master)](https://travis-ci.org/viking-gps/viking)
+======
+
 Viking is a free/open source program to manage GPS data. You can
 import, plot and create tracks, routes and waypoints, show OSM
 and other maps, generate maps (using Mapnik),
