@@ -1940,12 +1940,24 @@ You can also rearrange the columns via dragging the column header to the new loc
 </para>
 <para>
 This table may be invoked from a variety of different layer levels and will then list only the relevant tracks (and/or routes).
-<itemizedlist>
-<listitem><para>Aggregate Layer: Lists Tracks and Routes and the TrackWaypoint Layer they are in</para></listitem>
-<listitem><para>TrackWaypoint Layer: Lists Tracks and Routes</para></listitem>
-<listitem><para>TrackWaypoint Track sublayer: Lists Tracks only</para></listitem>
-<listitem><para>TrackWaypoint Route sublayer: Lists Routes only</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term>Aggregate Layer</term>
+<listitem><para>Lists Tracks and Routes and the TrackWaypoint Layer they are in</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Layer</term>
+<listitem><para>Lists Tracks and Routes</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Track sublayer</term>
+<listitem><para>Lists Tracks only</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Route sublayer</term>
+<listitem><para>Lists Routes only</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <para>
 <figure>
@@ -1996,11 +2008,20 @@ You can also rearrange the columns via dragging the column header to the new loc
 </para>
 <para>
 This table may be invoked from a variety of different layer levels and will then list only the relevant waypoints.
-<itemizedlist>
-<listitem><para>Aggregate Layer: Lists Waypoints and the TrackWaypoint Layer they are in</para></listitem>
-<listitem><para>TrackWaypoint Layer: : Lists Waypoints</para></listitem>
-<listitem><para>TrackWaypoint Waypoint sublayer: Lists Waypoints</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term>Aggregate Layer</term>
+<listitem><para>Lists Waypoints and the TrackWaypoint Layer they are in</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Layer</term>
+<listitem><para>Lists Waypoints</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Waypoint sublayer</term>
+<listitem><para>Lists Waypoints</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <para>
 <figure>
@@ -2363,11 +2384,20 @@ Right-click to redownload tiles via the selected method. Right-click and drag to
 The possible methods to redownload one or more tiles are:
 </para>
 <para>
-<itemizedlist>
-<listitem><para>Bad - Only if the tile is corrupt in some way or missing, then this will download a new copy</para></listitem>
-<listitem><para>New - Refresh the tile according to the local map cache and if server has a newer version</para></listitem>
-<listitem><para>All - Redownload the tile</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term>Bad</term>
+<listitem><para>Only if the tile is corrupt in some way or missing, then this will download a new copy</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>New</term>
+<listitem><para>Refresh the tile according to the local map cache and if server has a newer version</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>All</term>
+<listitem><para>Redownload the tile</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <formalpara><title>Map Tile Information</title>
 <para>
@@ -2649,16 +2679,28 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 </section>
 <section><title>Startup Method</title>
 <para>Enables selection of how the startup position should be determined.</para>
-<itemizedlist>
-<listitem><para>Home Location (default) - Position as set by the <guilabel>Set the Default Location</guilabel></para></listitem>
-<listitem><para>Last Location - Uses the last position viewed on the viewport</para></listitem>
-<listitem><para>Specified File - Load the file as specified below</para></listitem>
+<variablelist>
+<varlistentry>
+<term>Home Location (default)</term>
+<listitem><para>Position as set by the <guilabel>Set the Default Location</guilabel></para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Last Location</term>
+<listitem><para>Uses the last position viewed on the viewport</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Specified File</term>
+<listitem><para>Load the file as specified below</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Auto Location</term>
 <listitem>
-	<para>Auto Location - Uses the <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service if available
+	<para>Uses the <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service if available
 	or otherwise the web service <ulink url="http://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup
 	</para>
 </listitem>
-</itemizedlist>
+</varlistentry>
+</variablelist>
 </section>
 <section><title>Startup File</title>
 <para>Loads this specified file when the Startup method is set to <guilabel>Specified File</guilabel></para>
