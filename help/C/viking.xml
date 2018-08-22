@@ -2715,10 +2715,10 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 <para>Allows setting the toolbar on the same vertical space as the menu, thus increasing vertical space for the map.</para>
 </section>
 <section><title>Icon Size</title>
-<para>Allows configuration of the icon size, including overiding the system's default preference to the setting desired just for &appname;</para>
+<para>Allows configuration of the icon size, including overiding the system's default preference to the setting desired just for &appname;.</para>
 </section>
 <section><title>Icon Style</title>
-<para>Allows configuration of the icon style, including overiding the system's default preference to the setting desired just for &appname;</para>
+<para>Allows configuration of the icon style, including overiding the system's default preference to the setting desired just for &appname;.</para>
 </section>
 <section id="prefs_toolbar_customize" xreflabel="Customize Toolbar"><title>Customize</title>
 <para>Opens the Customize Toolbar dialog.</para>
