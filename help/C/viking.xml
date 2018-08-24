@@ -2457,6 +2457,11 @@ Hopefully a simplified track will be more useful to follow to your destination w
 	The number of recent files shown in the <menuchoice><guimenu>File</guimenu><guisubmenu>Open Recent File</guisubmenu></menuchoice> menu.
 	A value of -1 means all files. The new value applies to New Windows only (or on application restart).
 </para>
+<section><title>Open files in selected layer</title>
+<para>A setting to control whether non Viking format files (i.e. typically GPX or KML files) will open in the selected TrackWaypoint Layer.
+When no TrackWaypoint Layer is selected (or the layer is invisibile) then the file will be open in the default manner: at the top level.
+</para>
+</section>
 </section>
 </section>
 

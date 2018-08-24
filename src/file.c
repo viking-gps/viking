@@ -708,12 +708,14 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
     // Normally load the file as a new layer
     gboolean add_new = TRUE;
 
-    // However if a layer is specified, then load into that one
-    if ( IS_VIK_TRW_LAYER(vtl) ) {
-      // Provided that the is layer will be visible
-      //  (otherwise possibly confusing to load but not display it)
-      if ( vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) ) {
-        add_new = FALSE;
+    // However if a layer is specified, then potentially load into that one
+    if ( a_vik_get_open_files_in_selected_layer () ) {
+      if ( IS_VIK_TRW_LAYER(vtl) ) {
+        // Provided that the is layer will be visible
+        //  (otherwise possibly confusing to load but not display it)
+        if ( vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) ) {
+          add_new = FALSE;
+        }
       }
     }
 
