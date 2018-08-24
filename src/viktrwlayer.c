@@ -1631,9 +1631,15 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
         vik_track_convert (trk, vtl->coord_mode);
       }
     }
-    consumed_length += tlm_size + sizeof_len_and_subtype;
-    //g_debug ("data %d, consumed_length %d vs len %d", tlm_size, consumed_length, len);
-    data += sizeof_len_and_subtype + tlm_size;
+    // Don't shift data pointer to beyond our buffer of data - as otherwise it could point to anything
+    if ( consumed_length + tlm_size < len ) {
+      consumed_length += tlm_size + sizeof_len_and_subtype;
+      //g_debug ("data %d, consumed_length %d vs len %d", tlm_size, consumed_length, len);
+      data += sizeof_len_and_subtype + tlm_size;
+    }
+    else
+      // Done
+      data = NULL;
   }
 
   // Not stored anywhere else so need to regenerate
