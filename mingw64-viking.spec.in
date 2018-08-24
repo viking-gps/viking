@@ -102,7 +102,7 @@ rm -rf %{buildroot}
 
 %files -f %{_pkg_name}.lang
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING NEWS README doc/
+%doc AUTHORS ChangeLog COPYING NEWS README.md doc/
 %{_mingw64_bindir}/*%{_pkg_name}.exe
 %{_mingw64_datadir}/applications/%{_pkg_name}.desktop
 %{_mingw64_datadir}/%{_pkg_name}

@@ -105,7 +105,7 @@ popd
 
 %files -f %{_pkg_name}.lang
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING NEWS README doc/
+%doc AUTHORS ChangeLog COPYING NEWS README.md doc/
 %{_mingw32_bindir}/*%{_pkg_name}.exe
 %{_mingw32_datadir}/applications/%{_pkg_name}.desktop
 %{_mingw32_datadir}/%{_pkg_name}

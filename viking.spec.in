@@ -58,7 +58,7 @@ rm -rf %{buildroot}
 
 %files -f %{name}.lang
 %defattr(-,root,root,-)
-%doc AUTHORS ChangeLog COPYING NEWS README TODO doc/
+%doc AUTHORS ChangeLog COPYING NEWS README.md TODO doc/
 %{_bindir}/viking
 %{_datadir}/applications/viking.desktop
 %{_datadir}/icons/hicolor/48x48/apps/viking.png
