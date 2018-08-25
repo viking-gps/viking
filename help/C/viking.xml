@@ -523,7 +523,9 @@ Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Append File...</gu
 </para>
 <para>
 Selecting a <emphasis>Viking</emphasis> file from this method will join the file contents to the current window (instead of creating a new one).
-GPX and KML files may also be appended, but this is exactly the same as the normal file open method.
+</para>
+<para>
+GPX and KML files may also be appended, whereby the file contents are added to the currently selected TrackWaypoint layer. Otherwise they are loaded in the normal file open method when no layer is selected.
 </para>
 </section>
 

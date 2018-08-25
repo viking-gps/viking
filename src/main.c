@@ -250,7 +250,7 @@ int main( int argc, char *argv[] )
         load_startup_file = FALSE;
     }
     if ( load_startup_file )
-      vik_window_open_file ( first_window, a_vik_get_startup_file(), TRUE, TRUE, TRUE );
+      vik_window_open_file ( first_window, a_vik_get_startup_file(), TRUE, TRUE, TRUE, TRUE );
   }
 
   while ( ++i < argc ) {
@@ -266,7 +266,7 @@ int main( int argc, char *argv[] )
         change_filename = TRUE;
       }
 
-      vik_window_open_file ( newvw, argv[i], change_filename, (i==1), (i+1 == argc) );
+      vik_window_open_file ( newvw, argv[i], change_filename, (i==1), (i+1 == argc), TRUE );
     }
   }
 

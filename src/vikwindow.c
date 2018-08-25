@@ -567,10 +567,10 @@ static void open_window ( VikWindow *vw, GSList *files )
     if (vw->filename && check_file_magic_vik ( file_name ) ) {
       VikWindow *newvw = vik_window_new_window ();
       if (newvw)
-        vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE );
+        vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE );
     }
     else {
-      vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files) );
+      vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), TRUE );
     }
     g_free (file_name);
     cur_file = g_slist_next (cur_file);
@@ -3174,7 +3174,7 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
     }
     else {
       remove_default_map_layer ( self );
-      vik_window_open_file ( self, path, TRUE, TRUE, TRUE );
+      vik_window_open_file ( self, path, TRUE, TRUE, TRUE, TRUE );
       g_free ( path );
     }
   }
@@ -3266,7 +3266,7 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
  * @last:  Indicates the last file in a possible list of files to be loaded
  *        Hence a draw operation can be performed
  */
-void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last )
+void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last, gboolean new_layer )
 {
   if ( first )
     vik_window_set_busy_cursor ( vw );
@@ -3277,7 +3277,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   vw->filename = g_strdup ( filename );
   gboolean success = FALSE;
   gboolean restore_original_filename = FALSE;
-  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename );
+  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename, new_layer );
   switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:
@@ -3366,12 +3366,12 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 {
   GSList *files = NULL;
   GSList *cur_file = NULL;
-  gboolean newwindow;
+  gboolean append;
   if (!strcmp(gtk_action_get_name(a), "Open")) {
-    newwindow = TRUE;
+    append = FALSE;
   } 
   else if (!strcmp(gtk_action_get_name(a), "Append")) {
-    newwindow = FALSE;
+    append = TRUE;
   } 
   else {
     g_critical("Houston, we've had a problem.");
@@ -3438,9 +3438,9 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     last_folder_files_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(dialog) );
 
 #ifdef VIKING_PROMPT_IF_MODIFIED
-    if ( (vw->modified || vw->filename) && newwindow )
+    if ( (vw->modified || vw->filename) && !append )
 #else
-    if ( vw->filename && newwindow )
+    if ( vw->filename && !append )
 #endif
       g_signal_emit ( G_OBJECT(vw), window_signals[VW_OPENWINDOW_SIGNAL], 0, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) ) );
     else {
@@ -3448,29 +3448,29 @@ static void load_file ( GtkAction *a, VikWindow *vw )
       files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) );
       guint file_num = 0;
       guint num_files = g_slist_length(files);
-      gboolean change_fn = newwindow && (num_files==1); // only change fn if one file
+      gboolean change_fn = !append && (num_files==1); // only change fn if one file
       gboolean first_vik_file = TRUE;
       cur_file = files;
       while ( cur_file ) {
         gchar *file_name = cur_file->data;
         file_num++;
-        if ( newwindow && check_file_magic_vik ( file_name ) ) {
+        if ( !append && check_file_magic_vik ( file_name ) ) {
           // Load first of many .vik files in current window
           if ( first_vik_file ) {
             remove_default_map_layer ( vw );
-            vik_window_open_file ( vw, file_name, TRUE, TRUE, TRUE );
+            vik_window_open_file ( vw, file_name, TRUE, TRUE, TRUE, TRUE );
             first_vik_file = FALSE;
           }
           else {
             // Load each subsequent .vik file in a separate window
             VikWindow *newvw = vik_window_new_window ();
             if (newvw)
-              vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE );
+              vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE );
           }
         }
         else
-          // Other file types
-          vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files) );
+          // Other file types or appending a .vik file
+          vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), !append );
 
         g_free (file_name);
         cur_file = g_slist_next (cur_file);

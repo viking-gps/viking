@@ -662,7 +662,11 @@ gchar *append_file_ext ( const gchar *filename, VikFileType_t type )
   return new_name;
 }
 
-VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename_or_uri )
+/**
+ * a_file_load:
+ *
+ */
+VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename_or_uri, gboolean new_layer )
 {
   g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );
 
@@ -705,16 +709,19 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
 	//  must be loaded into a new TrackWaypoint layer (hence it be created)
     gboolean success = TRUE; // Detect load failures - mainly to remove the layer created as it's not required
 
-    // Normally load the file as a new layer
-    gboolean add_new = TRUE;
+    // Load the file as a new layer as instructed
+    gboolean add_new = new_layer;
 
-    // However if a layer is specified, then potentially load into that one
-    if ( a_vik_get_open_files_in_selected_layer () ) {
-      if ( IS_VIK_TRW_LAYER(vtl) ) {
-        // Provided that the is layer will be visible
-        //  (otherwise possibly confusing to load but not display it)
-        if ( vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) ) {
-          add_new = FALSE;
+    // If a layer is specified, then potentially load into that one
+    if ( a_vik_get_open_files_in_selected_layer() || !add_new ) {
+      add_new = TRUE;
+      if ( vtl ) {
+        if ( IS_VIK_TRW_LAYER(vtl) ) {
+          // Provided that the layer will be visible
+          //  (otherwise possibly confusing to load but not display it)
+          if ( vik_treeview_item_get_visible_tree (VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) ) {
+            add_new = FALSE;
+          }
         }
       }
     }
