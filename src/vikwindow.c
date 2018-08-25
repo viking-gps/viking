@@ -3357,8 +3357,9 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   if ( last ) {
     // Draw even if the last load unsuccessful, as may have successful loads in a list of files
     draw_update ( vw );
-    vik_window_clear_busy_cursor ( vw );
   }
+  // Always clear cursor (e.g. incase first & last loads are on different VikWindows)
+  vik_window_clear_busy_cursor ( vw );
 }
 
 static void load_file ( GtkAction *a, VikWindow *vw )
