@@ -107,6 +107,7 @@ static void destroy_window ( GtkWidget *widget,
 static gboolean delete_event( VikWindow *vw );
 
 static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer data );
+static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer data );
 
 static void center_changed_cb ( VikWindow *vw );
 static void window_configure_event ( VikWindow *vw );
@@ -923,7 +924,7 @@ static void vik_window_init ( VikWindow *vw )
   // Signals from GTK
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
-  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK );
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "scroll_event", G_CALLBACK(draw_scroll), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_press_event", G_CALLBACK(draw_click), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_release_event", G_CALLBACK(draw_release), vw);
@@ -934,6 +935,7 @@ static void vik_window_init ( VikWindow *vw )
 
   // Allow key presses to be processed anywhere
   g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
+  g_signal_connect_swapped (G_OBJECT (vw), "key_release_event", G_CALLBACK (key_release_event), vw);
 
   // Set initial button sensitivity
   center_changed_cb ( vw );
@@ -1133,6 +1135,20 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
   }
 
   return FALSE; /* don't handle the keypress */
+}
+
+static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer data )
+{
+  gboolean handled = FALSE;
+  VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
+  if (vl && vw->vt->active_tool != -1 && vw->vt->tools[vw->vt->active_tool].ti.key_release ) {
+    gint ltype = vw->vt->tools[vw->vt->active_tool].layer_type;
+    if ( vl && ltype == vl->type )
+      handled = vw->vt->tools[vw->vt->active_tool].ti.key_release(vl, event, vw->vt->tools[vw->vt->active_tool].state);
+    if ( handled )
+      return TRUE;
+  }
+  return FALSE;
 }
 
 static gboolean delete_event( VikWindow *vw )
@@ -1908,6 +1924,7 @@ static VikToolInterface ruler_tool =
     (VikToolMouseMoveFunc) ruler_move, 
     (VikToolMouseFunc) ruler_release,
     (VikToolKeyFunc) ruler_key_press,
+    (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP,
     &cursor_ruler_pixbuf,
@@ -2182,6 +2199,7 @@ static VikToolInterface zoom_tool =
     (VikToolMouseMoveFunc) zoomtool_move,
     (VikToolMouseFunc) zoomtool_release,
     NULL,
+    NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP,
     &cursor_zoom_pixbuf,
@@ -2247,6 +2265,7 @@ static VikToolInterface pan_tool =
     (VikToolMouseFunc) pantool_click, 
     (VikToolMouseMoveFunc) pantool_move,
     (VikToolMouseFunc) pantool_release,
+    NULL,
     NULL,
     FALSE,
     GDK_FLEUR,
@@ -2400,6 +2419,7 @@ static VikToolInterface select_tool =
     (VikToolMouseFunc) selecttool_click,
     (VikToolMouseMoveFunc) selecttool_move,
     (VikToolMouseFunc) selecttool_release,
+    (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
     GDK_LEFT_PTR,

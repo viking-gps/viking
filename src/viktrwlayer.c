@@ -431,7 +431,9 @@ static VikToolInterface trw_layer_tools[] = {
   { &addwp_18_pixbuf,
     { "CreateWaypoint", "vik-icon-Create Waypoint", N_("Create _Waypoint"), "<control><shift>W", N_("Create Waypoint"), 0 },
     (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL, (VikToolKeyFunc) NULL,
+    (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL,
+    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_addwp_pixbuf, NULL },
 
@@ -443,6 +445,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_track_move,
     (VikToolMouseFunc) tool_edit_track_release,
     (VikToolKeyFunc) tool_edit_track_key_press,
+    (VikToolKeyFunc) NULL,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf, NULL },
 
@@ -454,6 +457,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_track_move, // -\#
     (VikToolMouseFunc) tool_edit_track_release,  //   -> Reuse these track methods on a route
     (VikToolKeyFunc) tool_edit_track_key_press,  // -/#
+    (VikToolKeyFunc) NULL,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf, NULL },
 
@@ -464,6 +468,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_track_move, // -\#
     (VikToolMouseFunc) tool_edit_track_release,  //   -> Reuse these track methods on a route
     (VikToolKeyFunc) tool_extended_route_finder_key_press,
+    (VikToolKeyFunc) NULL,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
 
@@ -473,6 +478,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseFunc) tool_splitter_click,
     (VikToolMouseMoveFunc) NULL,
     (VikToolMouseFunc) NULL,
+    (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_splitter_pixbuf, NULL },
@@ -484,7 +490,9 @@ static VikToolInterface trw_layer_tools[] = {
     NULL, NULL,
     (VikToolMouseFunc) tool_edit_waypoint_click,   
     (VikToolMouseMoveFunc) tool_edit_waypoint_move,
-    (VikToolMouseFunc) tool_edit_waypoint_release, (VikToolKeyFunc) NULL,
+    (VikToolMouseFunc) tool_edit_waypoint_release,
+    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf, NULL },
 
@@ -495,14 +503,18 @@ static VikToolInterface trw_layer_tools[] = {
     NULL, NULL,
     (VikToolMouseFunc) tool_edit_trackpoint_click,
     (VikToolMouseMoveFunc) tool_edit_trackpoint_move,
-    (VikToolMouseFunc) tool_edit_trackpoint_release, (VikToolKeyFunc) NULL,
+    (VikToolMouseFunc) tool_edit_trackpoint_release,
+    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_edtr_pixbuf, NULL },
 
   { NULL, // a pixbuf for this one is already made globally available
     { "ShowPicture", VIK_ICON_SHOW_PICTURE, N_("Show P_icture"), "<control><shift>I", N_("Show Picture"), 0 },
     (VikToolConstructorFunc) tool_show_picture_create,    NULL, NULL, NULL,
-    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL, (VikToolKeyFunc) NULL,
+    (VikToolMouseFunc) tool_show_picture_click,    NULL, NULL,
+    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf, NULL },
 
