@@ -10560,6 +10560,10 @@ static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventBut
 
     gboolean find_status = vik_routing_default_find ( vtl, start, end );
 
+    if ( find_status ) {
+      vik_track_merge_segments ( vtl->current_track );
+    }
+
     /* Update UI to say we're done */
     vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
     msg = ( find_status ) ? g_strdup_printf ( _("%s returned route between (%.3f, %.3f) and (%.3f, %.3f)."),
