@@ -189,6 +189,7 @@ struct _VikTrwLayer {
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
   gboolean draw_sync_done;
   gboolean draw_sync_do;
+  GdkCursor *crosshair_cursor;
 
   VikCoordMode coord_mode;
 
@@ -399,6 +400,7 @@ static gboolean tool_edit_track_click ( VikTrwLayer *vtl, GdkEventButton *event,
 static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp );
 static void tool_edit_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
+static gboolean tool_edit_track_key_release ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gpointer tool_extended_route_finder_create ( VikWindow *vw, VikViewport *vvp);
@@ -445,7 +447,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_track_move,
     (VikToolMouseFunc) tool_edit_track_release,
     (VikToolKeyFunc) tool_edit_track_key_press,
-    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) tool_edit_track_key_release,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf, NULL },
 
@@ -457,7 +459,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_track_move, // -\#
     (VikToolMouseFunc) tool_edit_track_release,  //   -> Reuse these track methods on a route
     (VikToolKeyFunc) tool_edit_track_key_press,  // -/#
-    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) tool_edit_track_key_release,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf, NULL },
 
@@ -468,7 +470,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolMouseMoveFunc) tool_edit_track_move, // -\#
     (VikToolMouseFunc) tool_edit_track_release,  //   -> Reuse these track methods on a route
     (VikToolKeyFunc) tool_extended_route_finder_key_press,
-    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) tool_edit_track_key_release,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
     GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
 
@@ -1730,6 +1732,9 @@ static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
   rv->draw_sync_done = TRUE;
   rv->draw_sync_do = TRUE;
   rv->coord_mode = VIK_COORD_LATLON;
+
+  rv->crosshair_cursor = gdk_cursor_new ( GDK_CROSSHAIR );
+
   // Everything else is 0, FALSE or NULL
 
   return rv;
@@ -1782,6 +1787,12 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
 
   g_free ( trwlayer->external_file );
   g_free ( trwlayer->external_dirpath );
+
+  if ( trwlayer->crosshair_cursor )
+  {
+    gdk_cursor_unref ( trwlayer->crosshair_cursor );
+    trwlayer->crosshair_cursor = NULL;
+  }
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
@@ -10276,6 +10287,22 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
     update_statusbar ( vtl );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
+  } else if ( event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ) {
+    GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(vvp));
+    gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+static gboolean tool_edit_track_key_release ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
+{
+  if ( event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ) {
+    VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+    // this resets to standard tool cursor
+    vik_window_clear_busy_cursor ( vw );
+    return TRUE;
   }
   return FALSE;
 }
@@ -10786,7 +10813,12 @@ static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEven
   } else if ( vtl->current_track && event->keyval == GDK_BackSpace ) {
     tool_extended_route_finder_undo ( vtl );
     return TRUE;
+  } else if ( event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ) {
+    GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(vvp));
+    gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
+    return TRUE;
   }
+
   return FALSE;
 }
 
