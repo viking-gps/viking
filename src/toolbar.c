@@ -1173,8 +1173,11 @@ void toolbar_configure (VikToolbar *vtb, GtkWidget *toolbar, GtkWindow *parent, 
 	}
 	foreach_slist(sl, used_items)
 	{
-		gtk_list_store_append(tbw->store_used, &iter);
-		tb_editor_set_item_values(vtb, sl->data, tbw->store_used, &iter);
+		// Ensure only valid actions are added to the list
+		if ( get_action(vtb, sl->data) ) {
+			gtk_list_store_append(tbw->store_used, &iter);
+			tb_editor_set_item_values(vtb, sl->data, tbw->store_used, &iter);
+		}
 	}
 	/* select first item */
 	path = gtk_tree_path_new_from_string("0");
