@@ -9851,9 +9851,8 @@ static void marker_end_move ( tool_ed_t *t )
 
 static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp)
 {
-  tool_ed_t *t = g_new(tool_ed_t, 1);
+  tool_ed_t *t = g_new0(tool_ed_t, 1);
   t->vvp = vvp;
-  t->holding = FALSE;
   return t;
 }
 
@@ -10356,7 +10355,7 @@ static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventM
       g_free (str);
     }
 
-    passalong = g_new(draw_sync_t,1); // freed by draw_sync()
+    passalong = g_new0(draw_sync_t,1); // freed by draw_sync()
     passalong->vtl = vtl;
     passalong->pixmap = pixmap;
     passalong->drawable = gtk_widget_get_window(GTK_WIDGET(vvp));
@@ -10708,9 +10707,8 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
 
 static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp)
 {
-  tool_ed_t *t = g_new(tool_ed_t, 1);
+  tool_ed_t *t = g_new0(tool_ed_t, 1);
   t->vvp = vvp;
-  t->holding = FALSE;
   return t;
 }
 

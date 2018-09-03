@@ -1763,11 +1763,9 @@ typedef struct {
 
 static gpointer ruler_create (VikWindow *vw, VikViewport *vvp) 
 {
-  ruler_tool_state_t *s = g_new(ruler_tool_state_t, 1);
+  ruler_tool_state_t *s = g_new0(ruler_tool_state_t, 1);
   s->vw = vw;
   s->vvp = vvp;
-  s->has_oldcoord = FALSE;
-  s->displayed = FALSE;
   return s;
 }
 
@@ -2928,9 +2926,7 @@ static void view_side_panel_buttons_cb ( GtkAction *a, VikWindow *vw )
 
 static toolbox_tools_t* toolbox_create(VikWindow *vw)
 {
-  toolbox_tools_t *vt = g_new(toolbox_tools_t, 1);
-  vt->tools = NULL;
-  vt->n_tools = 0;
+  toolbox_tools_t *vt = g_new0(toolbox_tools_t, 1);
   vt->active_tool = -1;
   vt->vw = vw;
   return vt;

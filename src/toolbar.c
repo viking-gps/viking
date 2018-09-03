@@ -1002,7 +1002,7 @@ static TBEditorWidget *tb_editor_create_dialog(VikToolbar *vtb, GtkWindow *paren
 		return NULL;
 	}
 
-	TBEditorWidget *tbw = g_new(TBEditorWidget, 1);
+	TBEditorWidget *tbw = g_new0(TBEditorWidget, 1);
 
 	dialog = gtk_dialog_new_with_buttons(_("Customize Toolbar"),
 	                                     GTK_WINDOW(parent),
