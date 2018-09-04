@@ -1877,7 +1877,7 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
   if (condition == G_IO_IN) {
 #if GPSD_API_MAJOR_VERSION == 3 || GPSD_API_MAJOR_VERSION == 4
     if (!gps_poll(&vgl->vgpsd->gpsd)) {
-#elif GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
+#elif GPSD_API_MAJOR_VERSION >= 5
     if (gps_read(&vgl->vgpsd->gpsd) > -1) {
       // Reuse old function to perform operations on the new GPS data
       gpsd_raw_hook(vgl->vgpsd, NULL);
@@ -1918,6 +1918,16 @@ static gchar *make_track_name(VikTrwLayer *vtl)
   return(name);
 }
 
+/**
+ * rt_gpsd_try_connect:
+ *
+ * ATM Known to work up to at least GPSD_API_MAJOR_VERSION 7
+ *
+ * Support for the old/very old GPSD API versions is increasingly subject
+ *  to bitrot due to difficulty of creating/maintaining a test environment
+ *  of old software versions
+ *
+ */
 static gboolean rt_gpsd_try_connect(gpointer *data)
 {
   VikGpsLayer *vgl = (VikGpsLayer *)data;
@@ -1929,7 +1939,7 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   vgl->vgpsd = g_malloc(sizeof(VglGpsd));
 
   if (gps_open_r(vgl->gpsd_host, vgl->gpsd_port, /*(struct gps_data_t *)*/vgl->vgpsd) != 0) {
-#elif GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
+#elif GPSD_API_MAJOR_VERSION >= 5
   vgl->vgpsd = g_malloc(sizeof(VglGpsd));
   vgl->vgpsd->gpsd_open = gps_open ( vgl->gpsd_host, vgl->gpsd_port, &vgl->vgpsd->gpsd );
   if ( vgl->vgpsd->gpsd_open != 0 ) {
@@ -1979,7 +1989,7 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
 #if GPSD_API_MAJOR_VERSION == 3
   gps_query(&vgl->vgpsd->gpsd, "w+x");
 #endif
-#if GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
+#if GPSD_API_MAJOR_VERSION >= 4
   if ( gps_stream(&vgl->vgpsd->gpsd, WATCH_ENABLE, NULL) == -1 )
     g_critical ( "gps_stream error" );
 #endif
@@ -2030,14 +2040,14 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
     vgl->realtime_io_channel = NULL;
   }
   if (vgl->vgpsd) {
-#if GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
+#if GPSD_API_MAJOR_VERSION >= 4
     gps_stream(&vgl->vgpsd->gpsd, WATCH_DISABLE, NULL);
 #endif
     if ( vgl->vgpsd->gpsd_open == 0 )
       (void)gps_close(&vgl->vgpsd->gpsd);
 #if GPSD_API_MAJOR_VERSION == 3
     free(vgl->vgpsd);
-#elif GPSD_API_MAJOR_VERSION == 4 || GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
+#elif GPSD_API_MAJOR_VERSION >= 4
     g_free(vgl->vgpsd);
 #endif
     vgl->vgpsd = NULL;
