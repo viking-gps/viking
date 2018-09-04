@@ -5340,6 +5340,10 @@ static void trw_layer_properties_item ( menu_array_sublayer values )
 
       if ( updated && VIK_LAYER(vtl)->visible )
 	vik_layer_emit_update ( VIK_LAYER(vtl) );
+
+      // Position could have changed
+      if ( updated )
+        trw_layer_calculate_bounds_waypoints ( vtl );
     }
   }
   else
