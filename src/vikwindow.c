@@ -3173,7 +3173,8 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
       // NB: GSList & contents are freed by main.open_window
     }
     else {
-      remove_default_map_layer ( self );
+      if ( check_file_magic_vik ( path ) )
+        remove_default_map_layer ( self );
       vik_window_open_file ( self, path, TRUE, TRUE, TRUE, TRUE );
       g_free ( path );
     }
