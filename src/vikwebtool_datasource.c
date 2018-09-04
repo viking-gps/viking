@@ -99,7 +99,7 @@ static void webtool_datasource_set_property (GObject      *object,
 	case PROP_FILE_TYPE:
 		g_free ( priv->file_type );
 		priv->file_type = g_value_dup_string ( value );
-		g_debug ( "VikWebtoolDatasource.file_type: %s", priv->url_format_code );
+		g_debug ( "VikWebtoolDatasource.file_type: %s", priv->file_type );
 		break;
 
 	case PROP_BABEL_FILTER_ARGS:
